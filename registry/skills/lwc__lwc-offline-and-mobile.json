@@ -41,7 +41,7 @@
     "eaeca04eca84bb715e9f",
     "ed8341ae75454d93b8e4"
   ],
-  "content_hash": "dbfca1be08a797b4bfb84ec1772357f1774763a7570eed15fefb16cbf51e3739",
+  "content_hash": "aa57653ad7ccb2153a120dd2d95e6225400df42531907e52561b44f0ee3c84a8",
   "dependencies": [],
   "description": "Use when designing or reviewing Lightning Web Components for the Salesforce mobile app, mobile device capabilities, or offline-aware behavior. Triggers: 'lightning/mobileCapabilities', 'mobile lwc', 'offline lwc', 'supported mobile app only', 'barcode scanner availability'. NOT for Mobile SDK or fully native app architecture unless the decision is whether LWC in the Salesforce mobile app is sufficient.",
   "file_location": "skills/lwc/lwc-offline-and-mobile",
@@ -68,7 +68,6 @@
     "skills/lwc/lwc-offline-and-mobile/references/well-architected.md"
   ],
   "scripts": [
-    "skills/lwc/lwc-offline-and-mobile/scripts/__pycache__/check_lwc_offline_and_mobile.cpython-311.pyc",
     "skills/lwc/lwc-offline-and-mobile/scripts/check_lwc_offline_and_mobile.py"
   ],
   "tags": [
