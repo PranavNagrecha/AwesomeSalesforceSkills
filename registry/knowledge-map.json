@@ -10,6 +10,7 @@
       "admin/custom-field-creation",
       "admin/custom-metadata-types",
       "admin/data-import-and-management",
+      "admin/data-skew-and-sharing-performance",
       "admin/duplicate-management",
       "admin/einstein-analytics-basics",
       "admin/email-templates-and-alerts",
@@ -388,6 +389,9 @@
       "admin/duplicate-management",
       "admin/validation-rules"
     ],
+    "data-skew": [
+      "admin/data-skew-and-sharing-performance"
+    ],
     "data-visibility": [
       "admin/reports-and-dashboards"
     ],
@@ -697,6 +701,9 @@
     "keyboard-navigation": [
       "lwc/lwc-accessibility"
     ],
+    "large-data-volumes": [
+      "admin/data-skew-and-sharing-performance"
+    ],
     "lazy-instantiation": [
       "lwc/lwc-performance"
     ],
@@ -907,6 +914,9 @@
     "ownership": [
       "flow/flow-governance"
     ],
+    "ownership-skew": [
+      "admin/data-skew-and-sharing-performance"
+    ],
     "packaging": [
       "apex/custom-metadata-in-apex"
     ],
@@ -932,6 +942,7 @@
       "lwc/lwc-performance"
     ],
     "performance": [
+      "admin/data-skew-and-sharing-performance",
       "admin/formula-fields"
     ],
     "permission-set-architecture": [
@@ -1153,6 +1164,9 @@
     ],
     "sharing-model": [
       "admin/object-creation-and-design"
+    ],
+    "sharing-recalculation": [
+      "admin/data-skew-and-sharing-performance"
     ],
     "sharing-rules": [
       "admin/sharing-and-visibility"

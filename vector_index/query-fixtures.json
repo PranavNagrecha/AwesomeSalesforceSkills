@@ -545,6 +545,12 @@
       "domain": "admin",
       "expected_skill": "admin/escalation-rules",
       "top_k": 3
+    },
+    {
+      "query": "sharing recalculation taking too long after role change",
+      "domain": "admin",
+      "expected_skill": "admin/data-skew-and-sharing-performance",
+      "top_k": 3
     }
   ]
 }

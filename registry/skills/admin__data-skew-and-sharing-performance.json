@@ -1,0 +1,99 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "0d5a3604cde6dda4bb0a",
+    "12851d6c39db153a426d",
+    "14338d5a9db5261c1c5b",
+    "1db33362ced0697d1f16",
+    "1e13cb15557567ab2c40",
+    "287c33d2e3fd28e38aba",
+    "2a5332289b785b829dc4",
+    "2e5fa4bfdafcf91c38e4",
+    "2e8bd7f0366f92c623ed",
+    "33276ee83254caf521ce",
+    "37251122d40132dc090f",
+    "3fc10fe5375123ae8ebb",
+    "49f44bb81a647795f153",
+    "4b40fd0a4aa465a513e5",
+    "4d571bc681c4da79ee77",
+    "514008ec30b091bdba4d",
+    "5a03d7e17036901113d0",
+    "5d5b25122425444b0877",
+    "6aa24e09b8c8a59a373c",
+    "6e9432f47afb1956842c",
+    "7084a5d5101f5a858940",
+    "72d55125a2e5a4b41d7b",
+    "733f6ae4fb922d45fad7",
+    "73a615e04cbb49e55c87",
+    "80a083b50c160d6f0758",
+    "83b6936785a9ed6d8ded",
+    "84dc9002bb6dc4886477",
+    "953cd12403a7d6f4d5cc",
+    "987b0a503d3bfd375abc",
+    "9d336c113e0ba1960548",
+    "a0e5dc98a09e5f85c516",
+    "a4b6eafc668194ac4bac",
+    "aefce8d93d3b624c0145",
+    "bc7bca9135a37c46fc57",
+    "bfc6223ebdd3021b8249",
+    "c1e46a4b770236f6faf5",
+    "c9742076541dc96d1770",
+    "ccc05c5e43c171e162c5",
+    "d9fb5e3147cae76161ab",
+    "db5e2b8b3ea9c4b55efa",
+    "ddda83237d7430a50464",
+    "de1d99fcfd44ea50df85",
+    "e0561284887d036b9dc9",
+    "e31c977d91908b2dcfd7",
+    "f186fd600192d224820d",
+    "f52b7721bf192e80c4c1",
+    "fbd507270529855751a1",
+    "fbd7c674480a1cafa822",
+    "fd98c48a4f94dbe5281c",
+    "ffbc0af342fd99bc082d"
+  ],
+  "content_hash": "8d2bcbdc8863eb7d350592221df8d3bb09183ef4ffa2ecb0ab8915b1f119aa89",
+  "dependencies": [],
+  "description": "Diagnose and mitigate Salesforce data skew \u2014 ownership skew (single user owns >10,000 records) and parent-child skew (>10,000 children under one parent) \u2014 that cause sharing recalculation slowness, group membership lock errors, and record-level locking failures. NOT for sharing model design decisions (use sharing-and-visibility) or query optimization (use soql-query-optimization).",
+  "file_location": "skills/admin/data-skew-and-sharing-performance",
+  "id": "admin/data-skew-and-sharing-performance",
+  "inputs": [
+    "Object(s) suspected of data skew: name and rough record count",
+    "Ownership distribution: which users or queues own most records",
+    "Parent-child relationship details: which child objects and counts per parent",
+    "Current OWD (org-wide defaults) and sharing rule configuration"
+  ],
+  "name": "data-skew-and-sharing-performance",
+  "official_sources": [
+    "Designing Record Access for Enterprise Scale (Salesforce Architects) \u2014 primary source for ownership skew threshold (10,000 records), parent-child skew threshold (10,000 children), group membership locking behavior, granular locking concurrency table, and all mitigation recommendations. Stored locally at `knowledge/imports/draes.md`.",
+    "Salesforce Large Data Volumes Best Practices \u2014 supplementary source for parent-child skew impact on related list rendering and implicit sharing scan behavior.",
+    "Salesforce Well-Architected Overview \u2014 architecture quality framing for reliability and scalability pillars.",
+    "Object Reference \u2014 sObject relationship semantics (Lookup vs Master-Detail, Controlled by Parent OWD behavior)."
+  ],
+  "outputs": [
+    "Data skew diagnosis report identifying skew type (ownership vs parent-child)",
+    "Mitigation recommendations per skew type with trade-off notes",
+    "Review checklist for ongoing data health"
+  ],
+  "references": [
+    "skills/admin/data-skew-and-sharing-performance/references/examples.md",
+    "skills/admin/data-skew-and-sharing-performance/references/gotchas.md",
+    "skills/admin/data-skew-and-sharing-performance/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/data-skew-and-sharing-performance/scripts/check_data_skew_and_sharing_performance.py"
+  ],
+  "tags": [
+    "data-skew",
+    "sharing-recalculation",
+    "ownership-skew",
+    "performance",
+    "large-data-volumes"
+  ],
+  "templates": [
+    "skills/admin/data-skew-and-sharing-performance/templates/data-skew-and-sharing-performance-template.md"
+  ],
+  "updated": "2026-04-03",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}
