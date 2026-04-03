@@ -47,7 +47,7 @@
     "f4f60dec947619cac202",
     "fc1c54dbd673a83438d7"
   ],
-  "content_hash": "06f159f1bdb4ab05b9791ae95f2bcc8dbaccf0bf92f9a9d5388635f1317ba970",
+  "content_hash": "dacc83eb3549e2f18f20be0b15762cfabec7dc46d1af49dff9913ae2e8c2946c",
   "dependencies": [],
   "description": "Use when building, reviewing, or debugging outbound Apex HTTP callouts, Named Credentials, request/response handling, timeout behavior, or mock-based tests. Triggers: 'HttpRequest', 'Named Credential', 'callout exception', 'uncommitted work pending', 'HttpCalloutMock'. NOT for inbound Apex REST service design or non-HTTP integration architecture.",
   "file_location": "skills/apex/callouts-and-http-integrations",
@@ -74,7 +74,6 @@
     "skills/apex/callouts-and-http-integrations/references/well-architected.md"
   ],
   "scripts": [
-    "skills/apex/callouts-and-http-integrations/scripts/__pycache__/check_callouts_and_http_integrations.cpython-311.pyc",
     "skills/apex/callouts-and-http-integrations/scripts/check_callouts_and_http_integrations.py"
   ],
   "tags": [

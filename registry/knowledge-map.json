@@ -2,6 +2,7 @@
   "schema_version": 1,
   "skills_by_domain": {
     "admin": [
+      "admin/app-and-tab-configuration",
       "admin/approval-processes",
       "admin/change-management-and-deployment",
       "admin/connected-apps-and-auth",
@@ -164,6 +165,9 @@
     ],
     "api-properties": [
       "lwc/component-communication"
+    ],
+    "app-manager": [
+      "admin/app-and-tab-configuration"
     ],
     "approval-process": [
       "admin/approval-processes"
@@ -353,6 +357,9 @@
     ],
     "custom-settings": [
       "admin/custom-metadata-types"
+    ],
+    "custom-tabs": [
+      "admin/app-and-tab-configuration"
     ],
     "dashboards": [
       "admin/einstein-analytics-basics",
@@ -682,6 +689,9 @@
     "light-dom": [
       "lwc/lwc-security"
     ],
+    "lightning-app": [
+      "admin/app-and-tab-configuration"
+    ],
     "lightning-data-service": [
       "lwc/wire-service-patterns"
     ],
@@ -803,6 +813,7 @@
       "flow/flow-governance"
     ],
     "navigation": [
+      "admin/app-and-tab-configuration",
       "flow/screen-flows"
     ],
     "navigationmixin": [
@@ -1212,6 +1223,9 @@
     ],
     "users": [
       "admin/user-management"
+    ],
+    "utility-bar": [
+      "admin/app-and-tab-configuration"
     ],
     "validation": [
       "lwc/lwc-forms-and-validation"
