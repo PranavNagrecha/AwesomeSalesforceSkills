@@ -66,7 +66,7 @@
     "f4e35a28c0ac94f7b697",
     "f8a1ab0bad19ecca1e6a"
   ],
-  "content_hash": "38d15a8b84369511581bde6589c57312ce3d7a8af46fa3c4c21ac0054aad23a1",
+  "content_hash": "a9e4303604d2177365a10f7e2ff8ea8106d87a1282f9bf5b1b9d23ca5ed3b779",
   "dependencies": [],
   "description": "Use when creating a new Salesforce custom object: naming the object and setting its API name, selecting optional features (Activities, Chatter, History Tracking), choosing an org-wide default sharing model, and creating a tab. Triggers: 'create a custom object', 'new custom object setup', 'what sharing model should I choose', 'how do I create a tab for my object', 'object features like activities and history tracking'. NOT for custom field design on the object (use custom-field-creation), sharing rule or role hierarchy configuration (use sharing-and-visibility), or object relationship design decisions (use data-model-design-patterns).",
   "file_location": "skills/admin/object-creation-and-design",

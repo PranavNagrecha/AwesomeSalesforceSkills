@@ -1,6 +1,6 @@
 {
   "domain_counts": {
-    "admin": 22,
+    "admin": 23,
     "agentforce": 2,
     "apex": 19,
     "data": 3,
@@ -10,9 +10,9 @@
     "omnistudio": 4,
     "security": 2
   },
-  "generated_from_hash": "720ba9d2618ac0663553f9922748a263581b473836e94d4c76d9a482da706880",
+  "generated_from_hash": "27c94651e685adac8628e38bbf9277fdbac62f71d135266867bebc6451fc4a22",
   "schema_version": 1,
-  "skill_count": 80,
+  "skill_count": 81,
   "skills": [
     {
       "category": "admin",
@@ -337,7 +337,7 @@
         "f7ce676090ec2f5d3630",
         "f7ff60e003a1e1264dc9"
       ],
-      "content_hash": "a8cfeabdfd3dbf666b4e639fee16ddc03545c0014298babf3535fafcd0a1a5a7",
+      "content_hash": "bdc240cd8e134b9db269bd5c846493456add98ceaa505f73d0ecc760fdf428b5",
       "dependencies": [],
       "description": "Use when creating a new custom field on any Salesforce object: choosing field type, setting API name, configuring Field-Level Security, adding to page layouts, and deploying. Triggers: 'add a field', 'new custom field', 'what field type should I use', 'FLS not working', 'field not showing on page layout'. NOT for formula field logic (use formula-fields skill), picklist value set management (use picklist-and-value-sets skill), or object creation decisions (use object-creation-and-design skill).",
       "file_location": "skills/admin/custom-field-creation",
@@ -1184,7 +1184,7 @@
         "f4e35a28c0ac94f7b697",
         "f8a1ab0bad19ecca1e6a"
       ],
-      "content_hash": "38d15a8b84369511581bde6589c57312ce3d7a8af46fa3c4c21ac0054aad23a1",
+      "content_hash": "a9e4303604d2177365a10f7e2ff8ea8106d87a1282f9bf5b1b9d23ca5ed3b779",
       "dependencies": [],
       "description": "Use when creating a new Salesforce custom object: naming the object and setting its API name, selecting optional features (Activities, Chatter, History Tracking), choosing an org-wide default sharing model, and creating a tab. Triggers: 'create a custom object', 'new custom object setup', 'what sharing model should I choose', 'how do I create a tab for my object', 'object features like activities and history tracking'. NOT for custom field design on the object (use custom-field-creation), sharing rule or role hierarchy configuration (use sharing-and-visibility), or object relationship design decisions (use data-model-design-patterns).",
       "file_location": "skills/admin/object-creation-and-design",
@@ -1434,7 +1434,6 @@
     {
       "category": "admin",
       "chunk_ids": [
-        "013a54a7d2ca388685e4",
         "03ca9cbf41a6810f370b",
         "07253d054f1497d65c5d",
         "0f5e7fb0dea524a28230",
@@ -1443,13 +1442,10 @@
         "14f8bfd7f6e2581d1551",
         "17f1a8e746f19b05360f",
         "19d9173e2c0eae7d6e2a",
-        "1b1b1c5367139cb790ca",
         "1f497efe44a9f5d22287",
         "223807b01713da199e8f",
         "23c80eff9c09b6d7f3dc",
         "250a9e326d76188db9c3",
-        "2cb08c52a334ad586a3a",
-        "2d1a8fe0c77939899e33",
         "3570e1b93d243a49e8e8",
         "35e9bdcfcee39e9d372a",
         "366963cb216e97e9068c",
@@ -1465,6 +1461,7 @@
         "5706cfa3055ea0d8abd3",
         "598b58633b3eb6a6e5e0",
         "5ba182256d11b007aca1",
+        "5de17e0912790305465d",
         "5fd99e2b606ca4c24ea2",
         "6161d5de8f0b31b76dec",
         "6453c3bba2499513d12b",
@@ -1476,13 +1473,11 @@
         "7bf3fbbadbc0a39899cb",
         "80d45403c960275bfc52",
         "810fc3482352bcfd7fb1",
-        "9bd7fd7a7c19021e6ce0",
         "9d907543bcabbe2c441b",
         "9de8bb636d1f58beb747",
         "9e14c62d1a61de371c42",
         "b77ad924c3aed94debbc",
         "b9a99fd89895c02653f7",
-        "b9e10bc40c3567509575",
         "ba9c1e1864edb86d30e2",
         "c0e7490a0d986e95b81b",
         "c136a11f91a3924d7d41",
@@ -1493,12 +1488,11 @@
         "dcc242638651fffd3e02",
         "e6d0302bd017117d0ff1",
         "e6e2c18167a8e110f428",
-        "e8970a018e6a2c77ccfa",
         "f6e0a94dc21025800c2f",
         "fc2fa3ce866d5cdc7b35",
         "fc8a6d4a575b59c9f2f1"
       ],
-      "content_hash": "b52a63eaf30e53066f59882343b1c8ca5c42b9abaeece9e6e8486cdc8e342aaa",
+      "content_hash": "8666b95dcf5352626cb88dbb8026b03cc269de4898a109bf86ce6e0f9294ad9c",
       "dependencies": [],
       "description": "Use when creating or managing picklist fields: choosing between Global Value Sets and object-local picklists, configuring controlling and dependent field relationships, managing picklist values, and replacing values in existing data records. NOT for formula fields that reference picklists (use formula-fields), NOT for record type picklist filtering (use record-types-and-page-layouts), NOT for picklist fields in Flow (use the appropriate flow skill).",
       "file_location": "skills/admin/picklist-and-value-sets",
@@ -1511,15 +1505,10 @@
       ],
       "name": "picklist-and-value-sets",
       "official_sources": [
-        "Salesforce Help \u2014 Picklist Limitations: https://help.salesforce.com/s/articleView?id=platform.picklist_limitations.htm&language=en_US&type=5",
         "Salesforce Help \u2014 Create a Global Picklist Value Set: https://help.salesforce.com/s/articleView?id=platform.fields_creating_global_picklists.htm&language=en_US&type=5",
-        "Salesforce Help \u2014 Dependent Picklist Considerations: https://help.salesforce.com/s/articleView?id=platform.fields_dependent_field_considerations.htm&language=en_US&type=5",
-        "Salesforce Help \u2014 Define a Dependent Picklist (Field Dependencies): https://help.salesforce.com/s/articleView?id=platform.fields_defining_field_dependencies.htm&language=en_US&type=5",
-        "Salesforce Help \u2014 Replace Picklist Values: https://help.salesforce.com/s/articleView?id=platform.customize_replace.htm&language=en_US&type=5",
-        "Salesforce Help \u2014 Deactivate, Reactivate, or Remove a Picklist Value: https://help.salesforce.com/s/articleView?id=platform.fields_deactivate_reactivate_values.htm&language=en_US&type=5",
-        "Salesforce Help \u2014 Edit Picklists for Record Types: https://help.salesforce.com/s/articleView?id=platform.editing_picklists_for_record_types_and_business_processes.htm&language=en_US&type=5",
-        "Salesforce Help \u2014 Bulk Manage Picklist Values (GA): https://help.salesforce.com/s/articleView?id=release-notes.rn_forcecom_fields_bulk_manage_picklist_values.htm&language=en_US&release=238&type=5",
-        "Salesforce Help \u2014 Increase multi-select picklist limit (KA 000386685): https://help.salesforce.com/s/articleView?id=000386685&language=en_US&type=1",
+        "Salesforce Help \u2014 Dependent Picklists (About Dependent Fields): https://help.salesforce.com/s/articleView?id=sf.fields_about_dependent_fields.htm&language=en_US&type=5",
+        "Salesforce Help \u2014 Replace Picklist Values: https://help.salesforce.com/s/articleView?id=sf.customize_replace.htm&language=en_US&type=5",
+        "Salesforce Help \u2014 Picklist Limitations: https://help.salesforce.com/s/articleView?id=platform.picklist_limitations.htm&language=en_US&type=5",
         "Salesforce Developer Limits & Allocations \u2014 Picklist: https://developer.salesforce.com/docs/atlas.en-us.salesforce_app_limits_cheatsheet.meta/salesforce_app_limits_cheatsheet/salesforce_app_limits_picklist.htm",
         "Metadata API Developer Guide \u2014 GlobalValueSet: https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_globalvalueset.htm",
         "Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
@@ -1536,7 +1525,6 @@
         "skills/admin/picklist-and-value-sets/references/well-architected.md"
       ],
       "scripts": [
-        "skills/admin/picklist-and-value-sets/scripts/__pycache__/check_picklist_and_value_sets.cpython-311.pyc",
         "skills/admin/picklist-and-value-sets/scripts/check_picklist_and_value_sets.py"
       ],
       "tags": [
@@ -2023,6 +2011,110 @@
         "skills/admin/sharing-and-visibility/templates/sharing-model-template.md"
       ],
       "updated": "2026-03-13",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "admin",
+      "chunk_ids": [
+        "02c42ea0cc9f1e9bff04",
+        "06235192464db9cbd074",
+        "095ca669e2e6ab6b3596",
+        "10074b86709e32d5d3ae",
+        "1b079fe112804d781230",
+        "1c7eed1b05e9134d49a6",
+        "1e9321c72662d0a71bc0",
+        "282eb0fb1b97f073b39b",
+        "2d1d7c885f1b1f224686",
+        "2e5aea8a054881212988",
+        "344c31486e58ee42dd09",
+        "356f46691e581f3db2ce",
+        "3c54c6e29f942119cc9d",
+        "3d5232d0eef8a7b43a6a",
+        "44c21a0489da0917ca5e",
+        "4ac82f0c83daa79228ad",
+        "4d70dbcffeff2d8ba167",
+        "5113da07a363c2cdf913",
+        "523368fd070edc03f902",
+        "58f55b00609bef2b3878",
+        "5e0a15ef7a925a74f4ad",
+        "5f39bacc788893c5f0ba",
+        "6309c8cc78e0b028755d",
+        "6c19583465597d423285",
+        "7401968c5d06d684b508",
+        "7d1e0872363637a63567",
+        "7d78224d2ecc4203a9ed",
+        "8c0d526c40b54d619df6",
+        "8d244c92e1bde91617b4",
+        "946ca5b3dc141a336736",
+        "95c3dd14ff48614e5e46",
+        "9760d9fe6e030b72a5c9",
+        "a9e51eb7593b6e210a63",
+        "adf93f782414a512e740",
+        "aef7309b709798264b6e",
+        "af325edcc9c1b94a108f",
+        "b3ced96fcf66c5573a3a",
+        "b5d1d9243161c2b31d6c",
+        "b7616f9976f4a1c037a9",
+        "c384b1c082a5a2e81820",
+        "c4723c7682240087b9c3",
+        "c82b172957e2bb157ec9",
+        "cce1d5437bbb220780d6",
+        "cd103e52429612896873",
+        "d113388f4311830fbab0",
+        "d614b695c1bc10fe0c65",
+        "d7e22bd2cac31ab42c75",
+        "d9c180dc2b74744cfbed",
+        "f541df4a6b6161645adb",
+        "fb75eac3b300ad65dfc7",
+        "ff1e7ae9628ea5d7d607"
+      ],
+      "content_hash": "a5ebcac00da0bc898eb1eb98abb75ef88c21ec7b19c59688ca3ff88b90ac5eab",
+      "dependencies": [],
+      "description": "Use this skill to create, deactivate, freeze, or manage Salesforce users, assign user licenses and feature licenses, configure profiles and roles, set login hours and IP restrictions, and set up delegated administration. Triggers: adding a new user, deactivating a departing employee, license assignment, freezing a user account, delegated admin setup. NOT for permission sets (use permission-set-architecture) or sharing model design (use sharing-and-visibility).",
+      "file_location": "skills/admin/user-management",
+      "id": "admin/user-management",
+      "inputs": [
+        "User's name, email address, and desired username (must be globally unique in email format)",
+        "Profile to assign and any roles the user should occupy in the hierarchy",
+        "User license type required (Salesforce, Salesforce Platform, Chatter Free, etc.)",
+        "Any feature licenses needed (Marketing User, Service Cloud User, etc.)"
+      ],
+      "name": "user-management",
+      "official_sources": [
+        "Salesforce Help \u2014 Manage Salesforce Users: https://help.salesforce.com/s/articleView?id=sf.admin_users.htm",
+        "Salesforce Help \u2014 User Licenses: https://help.salesforce.com/s/articleView?id=sf.users_understanding_license_types.htm",
+        "Salesforce Help \u2014 Delegated Administration: https://help.salesforce.com/s/articleView?id=sf.delegating_admin_responsibilities.htm",
+        "Salesforce Help \u2014 Set Login Restrictions: https://help.salesforce.com/s/articleView?id=sf.admin_loginrestrict.htm",
+        "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
+        "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm"
+      ],
+      "outputs": [
+        "Active Salesforce user record with profile, role, and license assigned",
+        "Delegated administration group configuration (for delegated admin tasks)",
+        "Login restriction settings (hours and IP ranges per profile)",
+        "User deactivation or freeze checklist with reassignment steps"
+      ],
+      "references": [
+        "skills/admin/user-management/references/examples.md",
+        "skills/admin/user-management/references/gotchas.md",
+        "skills/admin/user-management/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/admin/user-management/scripts/__pycache__/check_user_management.cpython-311.pyc",
+        "skills/admin/user-management/scripts/check_user_management.py"
+      ],
+      "tags": [
+        "user-management",
+        "users",
+        "licenses",
+        "profiles",
+        "delegated-admin"
+      ],
+      "templates": [
+        "skills/admin/user-management/templates/user-management-template.md"
+      ],
+      "updated": "2026-04-03",
       "vector_embedding": null,
       "version": "1.0.0"
     },
