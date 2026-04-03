@@ -551,6 +551,12 @@
       "domain": "admin",
       "expected_skill": "admin/data-skew-and-sharing-performance",
       "top_k": 3
+    },
+    {
+      "query": "how do I write user stories for a Salesforce implementation project",
+      "domain": "admin",
+      "expected_skill": "admin/requirements-gathering-for-sf",
+      "top_k": 3
     }
   ]
 }

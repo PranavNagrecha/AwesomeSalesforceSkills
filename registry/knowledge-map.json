@@ -27,6 +27,7 @@
       "admin/process-automation-selection",
       "admin/record-types-and-page-layouts",
       "admin/reports-and-dashboards",
+      "admin/requirements-gathering-for-sf",
       "admin/sandbox-strategy",
       "admin/sharing-and-visibility",
       "admin/user-management",
@@ -248,6 +249,9 @@
     "bulkification": [
       "apex/governor-limits",
       "apex/trigger-framework"
+    ],
+    "business-analysis": [
+      "admin/requirements-gathering-for-sf"
     ],
     "business-hours": [
       "admin/escalation-rules"
@@ -586,6 +590,9 @@
     ],
     "future-method": [
       "apex/async-apex"
+    ],
+    "gap-analysis": [
+      "admin/requirements-gathering-for-sf"
     ],
     "global-actions": [
       "admin/global-actions-and-quick-actions"
@@ -977,6 +984,9 @@
     "process-builder-migration": [
       "admin/process-automation-selection"
     ],
+    "process-mapping": [
+      "admin/requirements-gathering-for-sf"
+    ],
     "productivity": [
       "admin/global-actions-and-quick-actions"
     ],
@@ -1051,6 +1061,9 @@
     "reports": [
       "admin/einstein-analytics-basics",
       "admin/reports-and-dashboards"
+    ],
+    "requirements-gathering": [
+      "admin/requirements-gathering-for-sf"
     ],
     "resource-url": [
       "lwc/static-resources-in-lwc"
@@ -1278,6 +1291,9 @@
     ],
     "user-mode": [
       "apex/apex-security-patterns"
+    ],
+    "user-stories": [
+      "admin/requirements-gathering-for-sf"
     ],
     "users": [
       "admin/user-management"

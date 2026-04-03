@@ -40,7 +40,7 @@
     "f36f00c4644cdf7a9a66",
     "fe4a3018da97e6ede055"
   ],
-  "content_hash": "f15d8116162912d5bd60a26614aa98e5ec17c99e533c287ff30102b4f4ae62a0",
+  "content_hash": "75e91c5e6b279a6831e4f30afde59684180f8a82a08b59367ceefefc2840d15a",
   "dependencies": [],
   "description": "Use when designing or reviewing Salesforce sandbox topology, refresh cadence, masking, and environment purpose. Triggers: 'Developer sandbox', 'Developer Pro', 'Partial Copy', 'Full sandbox', 'sandbox refresh', 'data masking', 'test environment', 'Gov Cloud sandbox'. NOT for scratch-org package workflows unless they affect environment planning.",
   "file_location": "skills/admin/sandbox-strategy",
