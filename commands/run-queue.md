@@ -234,6 +234,11 @@ grep -c "^| DONE" MASTER_QUEUE.md
 grep -c "^| TODO" MASTER_QUEUE.md
 ```
 
+Also update README.md:
+- Count total skills: `find skills/ -name "SKILL.md" | wc -l`
+- Update the "**N skills built**" line with the new total
+- Update the domain count in the Covered Skills table for the domain you just added to
+
 **2k. Commit and push everything**
 ```bash
 git add skills/<domain>/<skill-name>/ registry/ vector_index/ docs/SKILLS.md MASTER_QUEUE.md
