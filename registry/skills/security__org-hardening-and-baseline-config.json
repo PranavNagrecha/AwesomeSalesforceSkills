@@ -39,7 +39,7 @@
     "fb919b1dfcca450df10f",
     "fe99834f9902a707d821"
   ],
-  "content_hash": "915ee7f3241c804b633a6e6aa5b7ae2f0cb7b51819970e73be5059a44b82927e",
+  "content_hash": "1db0923f1f9533c6b7f5a928aad5e1c618b25e48ee6492d9b8c32b10b3b35854",
   "dependencies": [],
   "description": "Use when defining or reviewing baseline org hardening settings, especially Security Health Check gaps, clickjack and browser protections, CSP and CORS governance, password/session policies, network restrictions, and release-update hygiene. Triggers: 'org hardening', 'baseline security config', 'Health Check', 'CSP trusted sites', 'clickjack protection'. NOT for feature-level app permissions or record-sharing design.",
   "file_location": "skills/security/org-hardening-and-baseline-config",
