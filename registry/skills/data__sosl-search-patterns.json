@@ -39,7 +39,7 @@
     "f5a7edf958e38a2707c6",
     "f93f895d12fc66721e64"
   ],
-  "content_hash": "292c759cc323cffbfea38b5578f9c2ba6c9836e38c585a6a351c7b9a3049e5f1",
+  "content_hash": "81bb8f504c136c90ad700039dcf1558a4e5729994908c3049a98600fb83281f6",
   "dependencies": [],
   "description": "Use when choosing or implementing SOSL for cross-object or full-text search, especially around SOSL vs SOQL, search groups, result shaping, and injection-safe dynamic search. Triggers: 'SOSL', 'FIND clause', 'cross object search', 'Search.query', 'SOSL injection'. NOT for structured record retrieval where ordinary SOQL filters are the right tool.",
   "file_location": "skills/data/sosl-search-patterns",
@@ -66,7 +66,6 @@
     "skills/data/sosl-search-patterns/references/well-architected.md"
   ],
   "scripts": [
-    "skills/data/sosl-search-patterns/scripts/__pycache__/check_sosl_search_patterns.cpython-311.pyc",
     "skills/data/sosl-search-patterns/scripts/check_sosl_search_patterns.py"
   ],
   "tags": [
