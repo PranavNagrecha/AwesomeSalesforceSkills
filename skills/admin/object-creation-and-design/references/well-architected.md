@@ -33,9 +33,11 @@ Controlled by Parent ties child record access entirely to parent access — it i
 
 ## Official Sources Used
 
-- Salesforce Help — Custom Object Limits by Edition: https://help.salesforce.com/s/articleView?id=sf.limits_custom_object.htm
-- Salesforce Help — Create Custom Objects: https://help.salesforce.com/s/articleView?id=sf.dev_objectcreate_task_lex.htm
-- Salesforce Help — Set Your Organization's Sharing Model (OWDs): https://help.salesforce.com/s/articleView?id=sf.admin_sharing.htm
-- Object Reference — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm
-- Metadata API Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm
+- Salesforce Help — Create a Custom Object in Lightning Experience: https://help.salesforce.com/s/articleView?id=platform.dev_objectcreate_task_lex.htm
+- Salesforce Help — Considerations for Creating Custom Objects: https://help.salesforce.com/s/articleView?id=platform.dev_objectcreate_notes.htm
+- Salesforce Help — Set Your Internal Organization-Wide Sharing Defaults: https://help.salesforce.com/s/articleView?id=platform.admin_sharing.htm
+- Salesforce Help — Enterprise Edition Allocations (custom object limits): https://help.salesforce.com/s/articleView?id=xcloud.overview_limits_enterprise.htm
+- Salesforce Help — Create a Custom Object Tab: https://help.salesforce.com/s/articleView?id=platform.creating_custom_object_tabs.htm
+- Object Reference — Custom Objects: https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_custom_objects.htm
+- Salesforce Features and Edition Allocations (limits cheatsheet): https://developer.salesforce.com/docs/atlas.en-us.salesforce_app_limits_cheatsheet.meta/salesforce_app_limits_cheatsheet/salesforce_app_limits_features.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

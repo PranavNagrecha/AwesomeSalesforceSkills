@@ -3,11 +3,13 @@
   "chunk_ids": [
     "04fac2e534b118a42584",
     "05f10db88048097699cc",
+    "05faa2aef54ea78f30cf",
     "10a7e970af503e995aa4",
     "1102473395db6172623c",
     "1424fe0b0567892c6293",
     "18fd043712a8070034e7",
     "1ff5e1664cabab819ca8",
+    "2496305d505b20d58662",
     "283a65772800937d4f01",
     "2b0f1572b4fe73a67892",
     "2b4f9e82c79897bc9601",
@@ -23,6 +25,7 @@
     "608c3ea3eb7dfc7543df",
     "62390472afbd49f9eef6",
     "628cdb1da7aad50df497",
+    "640b9c5fb82ef311f0e1",
     "663edb380de2d22a0fcd",
     "6b8f1ead747f53cc77ba",
     "6fd262d2ba56912f8e55",
@@ -59,9 +62,11 @@
     "eb4d8aadfd16cc2d1d7e",
     "ed446cc20d410c808bbf",
     "eefa93b7cffb801af094",
+    "f41a600f8ec9b667d457",
+    "f4e35a28c0ac94f7b697",
     "f8a1ab0bad19ecca1e6a"
   ],
-  "content_hash": "2e76d2f27306769c0a3b80977bd61908dfb9a1bbe3c46ba6a37c5f712abffa22",
+  "content_hash": "eea01c38c03ef60615b03d3ac9e5bfad38f870d4db18c25e51938f0d1df8aa5f",
   "dependencies": [],
   "description": "Use when creating a new Salesforce custom object: naming the object and setting its API name, selecting optional features (Activities, Chatter, History Tracking), choosing an org-wide default sharing model, and creating a tab. Triggers: 'create a custom object', 'new custom object setup', 'what sharing model should I choose', 'how do I create a tab for my object', 'object features like activities and history tracking'. NOT for custom field design on the object (use custom-field-creation), sharing rule or role hierarchy configuration (use sharing-and-visibility), or object relationship design decisions (use data-model-design-patterns).",
   "file_location": "skills/admin/object-creation-and-design",
@@ -75,11 +80,13 @@
   ],
   "name": "object-creation-and-design",
   "official_sources": [
-    "Salesforce Help \u2014 Custom Object Limits by Edition: https://help.salesforce.com/s/articleView?id=sf.limits_custom_object.htm",
-    "Salesforce Help \u2014 Create Custom Objects: https://help.salesforce.com/s/articleView?id=sf.dev_objectcreate_task_lex.htm",
-    "Salesforce Help \u2014 Set Your Organization's Sharing Model (OWDs): https://help.salesforce.com/s/articleView?id=sf.admin_sharing.htm",
-    "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
-    "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+    "Salesforce Help \u2014 Create a Custom Object in Lightning Experience: https://help.salesforce.com/s/articleView?id=platform.dev_objectcreate_task_lex.htm",
+    "Salesforce Help \u2014 Considerations for Creating Custom Objects: https://help.salesforce.com/s/articleView?id=platform.dev_objectcreate_notes.htm",
+    "Salesforce Help \u2014 Set Your Internal Organization-Wide Sharing Defaults: https://help.salesforce.com/s/articleView?id=platform.admin_sharing.htm",
+    "Salesforce Help \u2014 Enterprise Edition Allocations (custom object limits): https://help.salesforce.com/s/articleView?id=xcloud.overview_limits_enterprise.htm",
+    "Salesforce Help \u2014 Create a Custom Object Tab: https://help.salesforce.com/s/articleView?id=platform.creating_custom_object_tabs.htm",
+    "Object Reference \u2014 Custom Objects: https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_custom_objects.htm",
+    "Salesforce Features and Edition Allocations (limits cheatsheet): https://developer.salesforce.com/docs/atlas.en-us.salesforce_app_limits_cheatsheet.meta/salesforce_app_limits_cheatsheet/salesforce_app_limits_features.htm",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
   ],
   "outputs": [
@@ -95,6 +102,7 @@
     "skills/admin/object-creation-and-design/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/object-creation-and-design/scripts/__pycache__/check_object_creation_and_design.cpython-311.pyc",
     "skills/admin/object-creation-and-design/scripts/check_object_creation_and_design.py"
   ],
   "tags": [
