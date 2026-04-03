@@ -15,6 +15,7 @@
       "admin/formula-fields",
       "admin/list-views-and-compact-layouts",
       "admin/object-creation-and-design",
+      "admin/org-setup-and-configuration",
       "admin/permission-set-architecture",
       "admin/permission-sets-vs-profiles",
       "admin/picklist-and-value-sets",
@@ -319,6 +320,9 @@
     "csp": [
       "lwc/static-resources-in-lwc",
       "security/org-hardening-and-baseline-config"
+    ],
+    "csp-trusted-sites": [
+      "admin/org-setup-and-configuration"
     ],
     "currencyisocode": [
       "data/multi-currency-and-advanced-currency-management"
@@ -763,6 +767,9 @@
       "admin/change-management-and-deployment",
       "admin/custom-field-creation"
     ],
+    "mfa": [
+      "admin/org-setup-and-configuration"
+    ],
     "migration": [
       "admin/data-import-and-management"
     ],
@@ -783,6 +790,9 @@
     ],
     "muting": [
       "security/permission-set-groups-and-muting"
+    ],
+    "my-domain": [
+      "admin/org-setup-and-configuration"
     ],
     "named-credentials": [
       "admin/connected-apps-and-auth",
@@ -839,6 +849,9 @@
     ],
     "org-hardening": [
       "security/org-hardening-and-baseline-config"
+    ],
+    "org-setup": [
+      "admin/org-setup-and-configuration"
     ],
     "org-wide-defaults": [
       "admin/object-creation-and-design"
@@ -1070,6 +1083,9 @@
     ],
     "service-layer": [
       "apex/apex-design-patterns"
+    ],
+    "session-settings": [
+      "admin/org-setup-and-configuration"
     ],
     "set-of-id": [
       "apex/recursive-trigger-prevention"
