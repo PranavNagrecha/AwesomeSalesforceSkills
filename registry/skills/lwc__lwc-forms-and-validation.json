@@ -45,7 +45,7 @@
     "f36d6c6ef97fce88ee3c",
     "fa92e22421c4f20fe159"
   ],
-  "content_hash": "0a72cdd24c60ea8b06fa77ad585cc750299fe184d16acb73d82aee96297d5354",
+  "content_hash": "bd0d4cee9ea6afe75799f75992dd7da58bcf155f8269ff692d7a97dc27b97210",
   "dependencies": [],
   "description": "Use when building or reviewing Lightning Web Component form UX, especially the choice between `lightning-record-edit-form` and custom inputs, client-side validation with `reportValidity()`, server-side validation feedback, and file upload flows. Triggers: 'record edit form in lwc', 'reportValidity not working', 'custom validation message', 'fieldErrors in onerror'. NOT for Flow screen design or Apex-only validation logic.",
   "file_location": "skills/lwc/lwc-forms-and-validation",
@@ -72,7 +72,6 @@
     "skills/lwc/lwc-forms-and-validation/references/well-architected.md"
   ],
   "scripts": [
-    "skills/lwc/lwc-forms-and-validation/scripts/__pycache__/check_lwc_forms_and_validation.cpython-311.pyc",
     "skills/lwc/lwc-forms-and-validation/scripts/check_lwc_forms_and_validation.py"
   ],
   "tags": [

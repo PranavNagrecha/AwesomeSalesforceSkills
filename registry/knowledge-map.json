@@ -31,6 +31,7 @@
       "admin/requirements-gathering-for-sf",
       "admin/sandbox-strategy",
       "admin/sharing-and-visibility",
+      "admin/uat-and-acceptance-criteria",
       "admin/user-management",
       "admin/validation-rules"
     ],
@@ -112,6 +113,9 @@
   "skills_by_tag": {
     "__mdt": [
       "apex/custom-metadata-in-apex"
+    ],
+    "acceptance-criteria": [
+      "admin/uat-and-acceptance-criteria"
     ],
     "access-architecture": [
       "security/permission-set-groups-and-muting"
@@ -252,7 +256,8 @@
       "apex/trigger-framework"
     ],
     "business-analysis": [
-      "admin/requirements-gathering-for-sf"
+      "admin/requirements-gathering-for-sf",
+      "admin/uat-and-acceptance-criteria"
     ],
     "business-hours": [
       "admin/escalation-rules"
@@ -429,6 +434,9 @@
     ],
     "debug-logs": [
       "apex/debug-and-logging"
+    ],
+    "defect-management": [
+      "admin/uat-and-acceptance-criteria"
     ],
     "delegated-admin": [
       "admin/user-management"
@@ -1258,7 +1266,8 @@
       "apex/apex-mocking-and-stubs"
     ],
     "testing": [
-      "admin/sandbox-strategy"
+      "admin/sandbox-strategy",
+      "admin/uat-and-acceptance-criteria"
     ],
     "third-party-library": [
       "lwc/static-resources-in-lwc"
@@ -1289,6 +1298,9 @@
     ],
     "turbo-extract": [
       "omnistudio/dataraptor-patterns"
+    ],
+    "uat": [
+      "admin/uat-and-acceptance-criteria"
     ],
     "ui-simplification": [
       "admin/record-types-and-page-layouts"
