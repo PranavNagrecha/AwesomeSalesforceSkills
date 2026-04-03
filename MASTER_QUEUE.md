@@ -149,7 +149,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 
 ### Core Platform × Architect Role
 
-> Domain folder: `admin` (architecture guidance for platform-wide concerns)
+> Domain folder: `architect` (skills live in `skills/architect/` with `category: architect`)
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|

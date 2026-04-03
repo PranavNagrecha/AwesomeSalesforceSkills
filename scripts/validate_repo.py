@@ -115,8 +115,10 @@ def main() -> int:
     for issue in issues:
         print_issue(issue)
 
-    print(f"Validated {len(seen_ids)} skill(s); {len(issues)} issue(s) found.")
-    return 1 if issues else 0
+    error_count = sum(1 for issue in issues if issue.level == "ERROR")
+    warn_count = sum(1 for issue in issues if issue.level == "WARN")
+    print(f"Validated {len(seen_ids)} skill(s); {error_count} error(s), {warn_count} warning(s).")
+    return 1 if error_count else 0
 
 
 if __name__ == "__main__":

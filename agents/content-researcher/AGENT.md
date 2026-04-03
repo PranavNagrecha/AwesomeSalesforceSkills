@@ -69,7 +69,9 @@ Extract from the calling agent or human:
 - Role audience (Admin, BA, Dev, Data, Architect)
 - Specific questions to answer (from the skill's planned Gather section)
 
-### Step 2 — Tier 1 research (mandatory, always first)
+### Step 2 — Tier 1 research (web — only for gaps not covered in Step 0)
+
+If Step 0 returned strong local coverage (`has_coverage: true`, score > 2.0) on the specific topic, you may skip this step for that topic. Only search the web for claims where local docs have no coverage or where you need a URL for `well-architected.md`.
 
 Search official Salesforce documentation:
 

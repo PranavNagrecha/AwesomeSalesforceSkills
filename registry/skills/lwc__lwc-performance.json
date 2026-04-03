@@ -52,7 +52,7 @@
     "fb5d042b75cc556d0f09",
     "ffb5ab5b3b14d216dead"
   ],
-  "content_hash": "2da708a50a75fea17f2811dc2ec79644654bddca1f88b0256b05ad7e1a120d0c",
+  "content_hash": "64cf5b65a593fe1e804958eb696b4c5ec40cb78e03390ed7d80094c25128a29e",
   "dependencies": [],
   "description": "Use when designing or reviewing Lightning Web Components for slow initial load, heavy rerenders, large-list rendering, payload reduction, and lazy instantiation choices such as `lwc:if`, tabs, or dynamic components. Triggers: 'slow lwc', 'rerenders too much', 'key index', 'dynamic import', 'large list lag'. NOT for wire-service data-source selection when provisioning strategy is the only question or for mobile/offline-specific tuning.",
   "file_location": "skills/lwc/lwc-performance",

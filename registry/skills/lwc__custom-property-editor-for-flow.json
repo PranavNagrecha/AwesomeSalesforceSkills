@@ -40,7 +40,7 @@
     "ee682931fefd9b2ea957",
     "fae3d77c79044d360f53"
   ],
-  "content_hash": "023fa129ea3a5e7f98e78e47457d48fa74abbf0566cee25af4a379904e9890ed",
+  "content_hash": "0db7999ab0159557b5dbb533d765ce63c330154e29ed7b42ef63b194a7b3ab09",
   "dependencies": [],
   "description": "Use when building or reviewing an LWC Custom Property Editor for Flow screen or action configuration, including the `configurationEditor` metadata hook, builder-side APIs, validation, and value-change events. Triggers: 'custom property editor', 'Flow configuration editor', 'builderContext', 'inputVariables', 'configurationEditor'. NOT for ordinary runtime screen-component behavior when no Flow Builder design-time customization is involved.",
   "file_location": "skills/lwc/custom-property-editor-for-flow",

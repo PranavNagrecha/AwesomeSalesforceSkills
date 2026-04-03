@@ -60,7 +60,7 @@
     "fbcf6853140e13d0a867",
     "fc584ff0c589e310cb02"
   ],
-  "content_hash": "583b6b2f5c5e7568e7f6265113292f6b18a6f6f8f4579476b66418116e41846a",
+  "content_hash": "6a7f79b02b8e6cc22b9ad5e8cbbef0e0fa15f5eab5167093962baaa7f8ecc716",
   "dependencies": [],
   "description": "Use when designing, auditing, or simplifying Record Types and Page Layouts. Triggers: 'record type', 'page layout', 'different picklist values', 'different fields per team', 'dynamic forms'. NOT for sharing rules or FLS \u2014 record types don't control data access.",
   "file_location": "skills/admin/record-types-and-page-layouts",

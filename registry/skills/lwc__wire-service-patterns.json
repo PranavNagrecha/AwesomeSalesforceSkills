@@ -41,7 +41,7 @@
     "e6de2abdbf8509cdcf71",
     "f7a5835815b66733d9f6"
   ],
-  "content_hash": "8ec65eb09e1174194d7c905f3a7c07cfab4dd2bfc694249d270f8b40b8f780a1",
+  "content_hash": "4c2d14583850c0b3c0001245c73a29cae556484f2523e58469ff2452b7ea0850",
   "dependencies": [],
   "description": "Use when designing or reviewing Lightning Web Components that use `@wire`, Lightning Data Service, UI API, or the GraphQL wire adapter, especially for reactive parameters, cache behavior, and refresh strategy. Triggers: 'wire service', 'refreshApex', 'reactive parameter', 'getRecord', 'wire vs imperative Apex'. NOT for component communication or generic lifecycle issues when data provisioning is not the main concern.",
   "file_location": "skills/lwc/wire-service-patterns",

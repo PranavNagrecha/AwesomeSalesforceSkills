@@ -46,7 +46,7 @@
     "fa760f97f777da8a2810",
     "fae8cfe185ba2c522991"
   ],
-  "content_hash": "dc3f05182a9cef54978b2c205ccd868746a8aa27f572372f52a66ae6f84270d0",
+  "content_hash": "a6e24ff9a6d9a18debf62e613a5aeb8b0300a6f5644e75b1dce537f26fc73fba",
   "dependencies": [],
   "description": "Use when designing or reviewing list views, compact layouts, highlights panels, and search-result presentation so users can scan, find, and act on records quickly across desktop and mobile. Triggers: 'too many list views', 'compact layout not showing the right fields', 'search layouts vs list views', 'mobile highlights panel'. NOT for page layout design, Dynamic Forms strategy, or record-type architecture.",
   "file_location": "skills/admin/list-views-and-compact-layouts",

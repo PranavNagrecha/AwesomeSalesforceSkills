@@ -108,7 +108,7 @@ Every `SKILL.md` must include:
 ---
 name: skill-name
 description: "When to use this skill. Trigger keywords. What it does NOT cover."
-category: admin | apex | lwc | flow | omnistudio | agentforce | security | integration | data | devops
+category: admin | apex | lwc | flow | omnistudio | agentforce | security | integration | data | devops | architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:
   - Security

@@ -28,6 +28,12 @@ only the **text files** that changed (skip binary files: `*.sqlite`, `*.pyc`, `_
 The `chunks.jsonl` and `lexical.sqlite` in `vector_index/` will be regenerated on the
 next run via `python3 scripts/skill_sync.py --all` — do not attempt to push them via MCP.
 
+**Note:** `lexical.sqlite` is listed in `.gitignore` (file size grows past GitHub's 50 MB limit).
+If the local index is missing or stale, regenerate it before running any search:
+```bash
+python3 scripts/skill_sync.py --all
+```
+
 ---
 
 ## Step 1 — Read the Queue
@@ -77,7 +83,7 @@ Use the domain folder that matches the Role:
 - BA → `admin` (BA skills live in admin domain)
 - Dev → use the most specific domain: `apex`, `lwc`, `flow`, `integration`, `devops`
 - Data → `data`
-- Architect → `admin` (platform-wide architectural guidance)
+- Architect → `architect` (skills live in `skills/architect/` with `category: architect`)
 
 **2e. Mark DONE**
 Edit MASTER_QUEUE.md: change `IN_PROGRESS` → `DONE` on the research row.
@@ -287,10 +293,62 @@ Do not create a duplicate.
 
 ---
 
+## Parallel Mode (Multiple Skills Per Run)
+
+When the queue has 3+ independent TODO tasks, the agent MAY process up to 3 tasks in parallel within a single invocation. Use this when you need to accelerate queue throughput.
+
+**Safety rule: only parallelize tasks from DIFFERENT domains.**
+Tasks in the same domain share registry and vector index files — running them simultaneously causes write conflicts.
+
+### How to run parallel
+
+**Step P1 — Claim N independent tasks**
+Find the first 3 TODO rows from different domains:
+```bash
+grep "^| TODO" MASTER_QUEUE.md | head -20
+```
+Pick tasks where no two share the same domain folder (`apex`, `lwc`, `admin`, etc.).
+Mark all N as IN_PROGRESS in one commit:
+```bash
+git add MASTER_QUEUE.md && git commit -m "queue: start parallel batch — <skill1>, <skill2>, <skill3>"
+```
+
+**Step P2 — Execute each skill concurrently**
+For each skill, run the TODO workflow (Steps 2b–2i) simultaneously as independent sub-agents.
+Each sub-agent works in the same working directory but touches only its own `skills/<domain>/<skill>/` folder.
+
+**Step P3 — Sync each skill sequentially**
+After all three builders complete, run skill_sync one at a time (not in parallel):
+```bash
+python3 scripts/skill_sync.py --skill skills/<domain1>/<skill1>
+python3 scripts/skill_sync.py --skill skills/<domain2>/<skill2>
+python3 scripts/skill_sync.py --skill skills/<domain3>/<skill3>
+```
+Then run final validation once:
+```bash
+python3 scripts/validate_repo.py
+```
+
+**Step P4 — Commit all, update queue**
+```bash
+git add skills/ registry/ vector_index/ docs/SKILLS.md MASTER_QUEUE.md
+git commit -m "feat: parallel batch — <skill1>, <skill2>, <skill3> [<Cloud>]"
+git push origin main || gh repo sync PranavNagrecha/AwesomeSalesforceSkills --source main --force
+```
+
+Mark all 3 rows DONE. Update the Progress Summary table.
+
+**When NOT to use parallel mode:**
+- Two tasks are in the same domain
+- One task depends on output from another (e.g., a foundational skill that others reference)
+- The queue has fewer than 3 TODO tasks remaining
+
+---
+
 ## What This Command Does NOT Do
 
 - It does not ask the user for input. It is fully autonomous.
 - It does not skip `validate_repo.py`. There are no shortcuts.
 - It does not hand-edit `registry/`, `vector_index/`, or `docs/SKILLS.md`.
 - It does not write content from memory alone. Every factual claim needs an official source.
-- It does not process more than one task per invocation. One task → commit → stop.
+- It does not process more than one task per invocation unless explicitly using Parallel Mode.

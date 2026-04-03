@@ -43,7 +43,7 @@
     "fb5e1d4613abce19f371",
     "ff220b4b270f0404948c"
   ],
-  "content_hash": "54a2dada122f66e6c72ae6ba4ca770e83e3b448a819b8330d4a9f0dc0a84ebcd",
+  "content_hash": "f44abcdcf9d4d5c9a718bc353720fba6394e0ef61095e9a5980527781e2def25",
   "dependencies": [],
   "description": "Use when diagnosing Apex behavior with debug logs, choosing log levels, or replacing `System.debug` habits with structured production logging and async job monitoring. Triggers: 'debug log', 'System.debug', 'logging framework', 'AsyncApexJob monitoring', 'production logs'. NOT for exception taxonomy design alone or for non-Apex observability platforms by themselves.",
   "file_location": "skills/apex/debug-and-logging",

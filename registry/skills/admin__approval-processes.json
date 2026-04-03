@@ -40,7 +40,7 @@
     "f73eae7fdfb502ec3e25",
     "ffbd07ff13bbc7cb298c"
   ],
-  "content_hash": "49d672308a995ece1633f568723cfecb3261a1599c95586613b7b59d14d0002b",
+  "content_hash": "4d91272ab59f20d4c52d5377b85acd8f6152a3da9258fd0993173891f727a85b",
   "dependencies": [],
   "description": "Use when designing, reviewing, or troubleshooting Salesforce Approval Processes. Triggers: 'submit for approval', 'approver', 'record locked', 'recall approval', 'approval step', 'discount approval'. NOT for complex orchestration across many objects - use Flow or custom approval patterns for that.",
   "file_location": "skills/admin/approval-processes",

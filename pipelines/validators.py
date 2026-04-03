@@ -25,6 +25,7 @@ ALLOWED_CATEGORIES = {
     "integration",
     "data",
     "devops",
+    "architect",
 }
 REQUIRED_FRONTMATTER_KEYS = [
     "name",
@@ -127,6 +128,57 @@ def validate_frontmatter(root: Path, path: Path) -> list[ValidationIssue]:
     return issues
 
 
+def _validate_checker_script_content(script: Path) -> list[ValidationIssue]:
+    """Detect always-pass stubs in skill checker scripts.
+
+    A real checker must have:
+    - At least 10 meaningful lines (non-blank, non-comment, non-shebang)
+    - At least one conditional branch (`if` keyword)
+    - At least one error-output path (sys.exit(1), raise, or ISSUE/WARN/ERROR print)
+    """
+    issues: list[ValidationIssue] = []
+    try:
+        source = script.read_text(encoding="utf-8")
+    except OSError:
+        return issues
+
+    lines = source.splitlines()
+    meaningful = [
+        ln for ln in lines
+        if ln.strip() and not ln.strip().startswith("#") and not ln.strip().startswith("#!/")
+    ]
+
+    if len(meaningful) < 10:
+        issues.append(ValidationIssue(
+            "WARN",
+            str(script),
+            f"checker script has only {len(meaningful)} meaningful lines — may be a stub; implement real validation logic",
+        ))
+        return issues  # skip further checks on very small files
+
+    has_conditional = any("if " in ln or "elif " in ln for ln in meaningful)
+    has_error_path = any(
+        "sys.exit(1)" in ln
+        or "raise " in ln
+        or ("print(" in ln and any(kw in ln.upper() for kw in ("ERROR", "ISSUE", "WARN", "FAIL")))
+        for ln in meaningful
+    )
+
+    if not has_conditional:
+        issues.append(ValidationIssue(
+            "WARN",
+            str(script),
+            "checker script has no conditional branches (`if`); it will always produce the same output regardless of input",
+        ))
+    if not has_error_path:
+        issues.append(ValidationIssue(
+            "WARN",
+            str(script),
+            "checker script has no error-output path (sys.exit(1), raise, or ERROR/ISSUE/WARN print); it may never report problems",
+        ))
+    return issues
+
+
 def validate_skill_structure(path: Path) -> list[ValidationIssue]:
     issues: list[ValidationIssue] = []
     for relative_path in REQUIRED_SKILL_FILES:
@@ -140,6 +192,10 @@ def validate_skill_structure(path: Path) -> list[ValidationIssue]:
         issues.append(ValidationIssue("ERROR", str(path), "templates/ must contain at least one file"))
     if not scripts_dir.exists() or not any(item.is_file() and item.suffix == ".py" for item in scripts_dir.iterdir()):
         issues.append(ValidationIssue("ERROR", str(path), "scripts/ must contain at least one Python file"))
+    else:
+        for script in scripts_dir.iterdir():
+            if script.is_file() and script.suffix == ".py":
+                issues.extend(_validate_checker_script_content(script))
 
     waf_path = path / "references" / "well-architected.md"
     if waf_path.exists():

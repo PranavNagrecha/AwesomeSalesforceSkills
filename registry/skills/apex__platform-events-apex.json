@@ -44,7 +44,7 @@
     "ee2fda2fc222b1bc0b69",
     "efd495cc7fda2f46a592"
   ],
-  "content_hash": "d1520d55de25221ae8c753851cb23f72223973f387e4463eb1757cb374643cfa",
+  "content_hash": "6a2fcb69abcbcc3d66892327b9a6e537ce2c72968058956916b4bf3861a6b51e",
   "dependencies": [],
   "description": "Use when publishing or subscribing to Salesforce Platform Events from Apex, comparing Platform Events with Change Data Capture, or designing event-triggered error handling and monitoring. Triggers: 'EventBus.publish', 'platform event trigger', 'CDC vs Platform Events', 'replay ID', 'high-volume event'. NOT for Flow-only publish/subscribe automation.",
   "file_location": "skills/apex/platform-events-apex",

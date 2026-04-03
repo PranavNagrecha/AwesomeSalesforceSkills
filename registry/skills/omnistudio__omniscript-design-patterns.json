@@ -42,7 +42,7 @@
     "f27eefec50e6efb5f2a8",
     "f3c07f0894d17d30c71c"
   ],
-  "content_hash": "dde9b9df07e5f7a44bae26652b9364821299852ddcfaab841c76740496b5a7d0",
+  "content_hash": "e08f81b7cde9441db4760da8db704f411a47407a6f1cbc6460740aca83c053d6",
   "dependencies": [],
   "description": "Use when designing or reviewing OmniScripts for guided experiences, step structure, branching, save/resume, and the boundary between OmniScript, Integration Procedures, DataRaptors, and custom LWCs. Triggers: 'omniscript design', 'too many steps in omniscript', 'save and resume omniscript', 'branching in omniscript', 'when should this be an integration procedure'. NOT for deep Integration Procedure or DataRaptor design when the guided interaction layer is not the main concern.",
   "file_location": "skills/omnistudio/omniscript-design-patterns",

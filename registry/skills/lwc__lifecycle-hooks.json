@@ -47,7 +47,7 @@
     "f880d823e0a03194bc49",
     "fbd6c319bfaa084ef82f"
   ],
-  "content_hash": "cd32a3935fed72b1e218a3aeb5dfc2f3fcdc7a6e5be8c4ae96c21d75bee25c72",
+  "content_hash": "23693b96b8e9a35bfc314d5f6d2159d0b7bd8c6d3cc3dc027fd4553f4821d7c5",
   "dependencies": [],
   "description": "Use when building or reviewing Lightning Web Components \u2014 specifically lifecycle management, wire service, memory leak prevention, navigation, and Lightning Locker Service constraints. Triggers: 'LWC', 'connectedCallback', 'renderedCallback', 'memory leak', 'NavigationMixin', 'wire'. NOT for Aura components.",
   "file_location": "skills/lwc/lifecycle-hooks",

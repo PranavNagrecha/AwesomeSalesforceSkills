@@ -53,7 +53,7 @@
     "f3c81eeec963b086a023",
     "fc0038e8bb8f327eb7c6"
   ],
-  "content_hash": "fc2291ed80a1e8fac96ccbfc47f9abe1ac4ea6a371a50be365d250827293c140",
+  "content_hash": "3b71d09f434e594b367edd8e99379766ebccd6cf059c0c7fc42265a033e20fc1",
   "dependencies": [],
   "description": "Configure and troubleshoot Salesforce Case Escalation Rules: setting up time-based escalation entries, business hours configuration, escalation actions (email alerts and reassignment), and diagnosing why cases are not escalating. NOT for case assignment on creation (use assignment-rules), approval routing (use approval-processes), or SLA milestones in Service Cloud (use entitlement-management).",
   "file_location": "skills/admin/escalation-rules",

@@ -44,7 +44,7 @@
     "f73502da79d08af2e96c",
     "fd3a9ca3ee0414ced4fb"
   ],
-  "content_hash": "7495f370ed9747ab5ce22de8498d055de115a861b58df51ab9a2beef2c521888",
+  "content_hash": "57484f47c90fb0bc3582bb9cea6242cb4aeb7a46b2f4cf3b351c6dc605754af5",
   "dependencies": [],
   "description": "Use when choosing or implementing Apex test doubles with `Test.setMock`, `HttpCalloutMock`, `StaticResourceCalloutMock`, or `StubProvider`, and when designing code seams to support those doubles cleanly. Triggers: 'StubProvider', 'Test.createStub', 'HttpCalloutMock', 'StaticResourceCalloutMock', 'mocking infrastructure'. NOT for general Apex test design outside the mocking and seam problem.",
   "file_location": "skills/apex/apex-mocking-and-stubs",

@@ -44,7 +44,7 @@
     "ebf13de6cead10cbd490",
     "f6ff105635d452d357f8"
   ],
-  "content_hash": "f63a78a9b3d2ed7ffb47bd45236a225acfb1f30a43aa358d724e36e533f6c962",
+  "content_hash": "97c96da49a0e88c5912d83c4787d0f02ddc407ff0c64facbf8479088b43ead9b",
   "dependencies": [],
   "description": "Use when designing or reviewing Agentforce topic structure, including topic boundaries, instruction quality, handoff rules, out-of-scope behavior, and topic-selector strategy. Triggers: 'agent topics', 'topic design', 'topic selector', 'agent scope boundary', 'handoff conditions'. NOT for action contract design or prompt-template wording when the main problem is not topic scoping.",
   "file_location": "skills/agentforce/agent-topic-design",

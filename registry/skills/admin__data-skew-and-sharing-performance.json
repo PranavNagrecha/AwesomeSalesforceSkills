@@ -52,7 +52,7 @@
     "fd98c48a4f94dbe5281c",
     "ffbc0af342fd99bc082d"
   ],
-  "content_hash": "8d2bcbdc8863eb7d350592221df8d3bb09183ef4ffa2ecb0ab8915b1f119aa89",
+  "content_hash": "541a090aefebcb1e0348a235802fd20e494b08bbe1547af4aefccd27a662ab8c",
   "dependencies": [],
   "description": "Diagnose and mitigate Salesforce data skew \u2014 ownership skew (single user owns >10,000 records) and parent-child skew (>10,000 children under one parent) \u2014 that cause sharing recalculation slowness, group membership lock errors, and record-level locking failures. NOT for sharing model design decisions (use sharing-and-visibility) or query optimization (use soql-query-optimization).",
   "file_location": "skills/admin/data-skew-and-sharing-performance",

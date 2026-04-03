@@ -52,7 +52,7 @@
     "f72ce657c520fa80c4d6",
     "fa1227e7a34c59ed6bcb"
   ],
-  "content_hash": "90d302d2820f43b56683cf0c075b0edc511e9df46762e4daeafc158c3fc27a58",
+  "content_hash": "fe17186805a20f4905791ce8c5546933c84085788d480d74f18a11e3ec7c9c9c",
   "dependencies": [],
   "description": "Use when writing, auditing, or troubleshooting Salesforce Validation Rules. Triggers: 'validation rule', 'required field formula', 'rule fires unexpectedly', 'integration failing validation', 'data quality'. NOT for Flow-based validation \u2014 use admin/flow-for-admins for that.",
   "file_location": "skills/admin/validation-rules",

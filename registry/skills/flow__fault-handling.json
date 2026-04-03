@@ -44,7 +44,7 @@
     "fee0b04151216d00b2b1",
     "ff520aa69c68d4e683ed"
   ],
-  "content_hash": "eee7ff01cb40819a3530964b0a173709bc22cabff536d70a92f4de4b94b84243",
+  "content_hash": "501c8907b32903728a9d9836b998b6ac8110386a6a58b4850df1fefd07e21a99",
   "dependencies": [],
   "description": "Use when designing, reviewing, or troubleshooting Salesforce Flow fault handling, error logging, and bulk-safe automation paths. Triggers: 'fault connector', '$Flow.FaultMessage', 'flow failed', 'record-triggered flow rollback', 'screen flow error'. NOT for generic Flow type selection unless the main risk is failure handling.",
   "file_location": "skills/flow/fault-handling",

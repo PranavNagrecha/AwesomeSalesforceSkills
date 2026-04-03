@@ -121,6 +121,35 @@ One task per invocation. The next scheduled run picks up the next task.
 
 ---
 
+## Stuck-Task Recovery
+
+IN_PROGRESS rows that never complete are detected and reset at the start of each run.
+
+**Rule:** If a row has status `IN_PROGRESS` and its timestamp is older than 2 hours, it is stuck.
+
+**Recovery procedure:**
+1. At the start of Step 1, before finding the next task, scan for stuck rows:
+   ```bash
+   grep "IN_PROGRESS" MASTER_QUEUE.md
+   ```
+2. For each stuck row, check the timestamp: `IN_PROGRESS (YYYY-MM-DDTHH:MMZ)`.
+3. If the timestamp is more than 2 hours ago (compare against current time):
+   - Reset status to `TODO`
+   - Clear the timestamp
+   - Add a note: `[reset: was stuck IN_PROGRESS since <timestamp>]`
+4. Commit the reset:
+   ```bash
+   git add MASTER_QUEUE.md && git commit -m "queue: reset stuck task <skill-name>"
+   ```
+5. Proceed with Step 1 normally — the reset task is now a valid TODO.
+
+**If a task gets stuck 3 times in a row** (detected by 3 `[reset: ...]` notes on the same row):
+- Change status to `BLOCKED`
+- Note: "Stuck 3 times — infrastructure or content issue. Requires human review."
+- Move to the next task.
+
+---
+
 ## Escalation Rules
 
 Some situations require human review before proceeding:

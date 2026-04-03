@@ -61,7 +61,7 @@
     "fb31d08a3406663791c7",
     "fb7c18665241801c89cb"
   ],
-  "content_hash": "b201d34d1e18ed1f6130b3a0627134c2beb2ecd37b0e4006df89b62c636ec0b4",
+  "content_hash": "2d34e82e505bfb0dc85de0e6d02cdf62b0c1afa9afcf79dc932f4ff08648c283",
   "dependencies": [],
   "description": "Use this skill when configuring or troubleshooting Lead or Case assignment rules in Salesforce: creating rule entries, setting filter criteria, assigning records to users or queues, understanding when rules run, and implementing round-robin patterns with Apex. Trigger keywords: lead assignment, case assignment, assignment rule, queue assignment, auto-assign. NOT for approval process routing (use approval-processes). NOT for Omni-Channel routing or Skills-Based Routing (those are separate routing engines). NOT for Flow-triggered field updates unrelated to ownership.",
   "file_location": "skills/admin/assignment-rules",

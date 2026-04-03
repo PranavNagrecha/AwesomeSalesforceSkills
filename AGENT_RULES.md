@@ -81,6 +81,35 @@ Commit all of:
 
 ---
 
+## Architect Domain
+
+Architect skills live in `skills/architect/` with `category: architect`.
+They do NOT go in `skills/admin/`.
+
+When routing a task for the Architect role:
+- Domain folder: `architect`
+- `category` frontmatter: `architect`
+- Scaffold: `python3 scripts/new_skill.py architect <skill-name>`
+
+This is enforced by `validate_repo.py` — `category` must match the parent folder name.
+
+---
+
+## Supporting Scripts (use these — they exist)
+
+Beyond the required workflow scripts, the following are available:
+
+| Script | Purpose | Usage |
+|--------|---------|-------|
+| `scripts/skill_graph.py` | Related-skill navigator — finds skills connected by shared tags, domain, or trigger overlap | `python3 scripts/skill_graph.py <domain/skill-name>` |
+| `scripts/search_skills.py` | Registry-level search across all skill metadata (faster than knowledge search for skill-ID lookups) | `python3 scripts/search_skills.py "<query>"` |
+| `scripts/export_skills.py` | Exports skill registry to CSV or JSON for external tooling | `python3 scripts/export_skills.py --format json` |
+
+Use `skill_graph.py` when writing cross-skill references in `references/well-architected.md`.
+Use `search_skills.py` for duplicate checking before scaffold (faster than full knowledge search).
+
+---
+
 ## Retrieval Rules
 
 - Always use `python3 scripts/search_knowledge.py "<query>"` before claiming that a new skill does not already exist or that a topic has no local coverage.
@@ -130,7 +159,7 @@ Every skill must have at least one entry in `vector_index/query-fixtures.json`. 
    ```
 4. Run `python3 scripts/validate_repo.py` — the fixture must pass retrieval, not just exist.
 
-Skills with no fixture will produce a WARN during validation, which causes a non-zero exit and will fail CI.
+Skills with no fixture will produce a WARN during validation. WARNs are advisory — they print but do not fail the exit code. Only ERRORs cause a non-zero exit.
 
 ---
 

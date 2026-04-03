@@ -39,7 +39,8 @@
         "security",
         "integration",
         "data",
-        "devops"
+        "devops",
+        "architect"
       ]
     },
     "salesforce-version": {

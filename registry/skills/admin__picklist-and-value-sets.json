@@ -65,7 +65,7 @@
     "fc2fa3ce866d5cdc7b35",
     "fc8a6d4a575b59c9f2f1"
   ],
-  "content_hash": "f18ba705aab7a2c9044925be9136c4d6e38b6fff07d25c41b14da160a85594ec",
+  "content_hash": "5816a83e6a7e8bb0d50044344a53a961429c159bd9dec86387c9c654ed0c604a",
   "dependencies": [],
   "description": "Use when creating or managing picklist fields: choosing between Global Value Sets and object-local picklists, configuring controlling and dependent field relationships, managing picklist values, and replacing values in existing data records. NOT for formula fields that reference picklists (use formula-fields), NOT for record type picklist filtering (use record-types-and-page-layouts), NOT for picklist fields in Flow (use the appropriate flow skill).",
   "file_location": "skills/admin/picklist-and-value-sets",

@@ -52,7 +52,7 @@
     "fbebc6e3875c6c02c1e1",
     "fc367c5a79b3c23fd9e7"
   ],
-  "content_hash": "50416b519fa15b52d9380168954dfcf62cbf713815d59c570b5697f119beb69c",
+  "content_hash": "754213c82731dee1f24e2c41a552db59d88ca1faddb04d0cc7d0a459031c28b0",
   "dependencies": [],
   "description": "Use when building, reviewing, or debugging OmniStudio Integration Procedures. Triggers: 'integration procedure', 'IP', 'HTTP action', 'DataRaptor', 'rollbackOnError', 'failureResponse'. NOT for Apex-only integrations unless the main design choice is whether OmniStudio is still appropriate.",
   "file_location": "skills/omnistudio/integration-procedures",

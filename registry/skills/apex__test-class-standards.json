@@ -47,7 +47,7 @@
     "f674034d90f8e14eafe0",
     "f85f34eee852bb61399b"
   ],
-  "content_hash": "1f996ee7f45f2259fe55cad49be7182106b4e6c7103a864e8c756e1553d7e738",
+  "content_hash": "8bc550b1f47abd6b3ac474ccf81c164e5bf31ca90cdb48f0a57b7d674a52f041",
   "dependencies": [],
   "description": "Use when writing, reviewing, or debugging Apex test classes, test data factories, async test behavior, negative-path assertions, or callout mocking. Triggers: 'SeeAllData', 'Test.startTest', 'HttpCalloutMock', 'test data factory', 'missing assertions'. NOT for LWC Jest tests or code-coverage-only conversations detached from test design.",
   "file_location": "skills/apex/test-class-standards",
