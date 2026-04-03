@@ -1,6 +1,24 @@
 {
   "queries": [
     {
+      "query": "how do I add a new user in Salesforce",
+      "domain": "admin",
+      "expected_skill": "admin/user-management",
+      "top_k": 3
+    },
+    {
+      "query": "how do I create a custom object in Salesforce",
+      "domain": "admin",
+      "expected_skill": "admin/object-creation-and-design",
+      "top_k": 3
+    },
+    {
+      "query": "how do I add a new field to a Salesforce object",
+      "domain": "admin",
+      "expected_skill": "admin/custom-field-creation",
+      "top_k": 3
+    },
+    {
       "query": "permission sets least privilege",
       "domain": "admin",
       "expected_skill": "admin/permission-sets-vs-profiles",
@@ -460,6 +478,18 @@
       "query": "flow test tool fault path debug interview",
       "domain": "flow",
       "expected_skill": "flow/flow-testing",
+      "top_k": 3
+    },
+    {
+      "query": "how do I set up a global picklist value set shared across multiple objects",
+      "domain": "admin",
+      "expected_skill": "admin/picklist-and-value-sets",
+      "top_k": 3
+    },
+    {
+      "query": "dependent picklist controlling field setup",
+      "domain": "admin",
+      "expected_skill": "admin/picklist-and-value-sets",
       "top_k": 3
     }
   ]
