@@ -26,6 +26,40 @@ Deep-researches a specific Salesforce skill topic across all 4 source tiers befo
 
 ## Orchestration Plan
 
+### Step 0 — Search local documentation (mandatory, before any web search)
+
+Official Salesforce guides are stored as markdown in `knowledge/imports/`. These are Tier 1 sources and are always accessible — no web blocking.
+
+```bash
+python3 scripts/search_knowledge.py "<skill-topic>"
+python3 scripts/search_knowledge.py "<skill-topic>" --domain <domain>
+```
+
+Read every chunk returned with `score > 1.0`. Extract:
+- Exact platform behavior and limits
+- API field names, supported values, constraints
+- Any "not supported" or edition-specific statements
+
+Tag findings: `[T1: local — <filename>]`
+
+If local search returns strong coverage (`has_coverage: true`, score > 2.0) → use local docs as the primary Tier 1 source. Skip web search for Tier 1 unless local coverage has gaps.
+
+If local search returns weak coverage → proceed to Step 2 (web search).
+
+Local docs available:
+- `salesforce-apex-developer-guide.md` — Apex behavior, limits, async, testing
+- `salesforce-bulk-api-guide.md` — Bulk API 2.0 and legacy, job states, limits
+- `salesforce-change-data-capture.md` — CDC events, Pub/Sub, Apex subscriptions
+- `salesforce-metadata-api-guide.md` — retrieve/deploy, CRUD API, REST deploy
+- `salesforce-large-data-volumes-best-practices.md` — LDV, indexing, query optimization
+- `salesforce-big-objects-guide.md` — Big Objects, async SOQL, archival
+- `salesforce-analytics-rest-api.md` — CRM Analytics REST API
+- `salesforce-automotive-cloud.md` — Automotive Cloud objects
+- `salesforce-channel-revenue-management.md` — Channel Revenue, Rebate, Price Protection
+- `salesforce-soql-sosl-guide.md` — SOQL/SOSL syntax, bulk queries
+
+---
+
 ### Step 1 — Define research scope
 
 Extract from the calling agent or human:

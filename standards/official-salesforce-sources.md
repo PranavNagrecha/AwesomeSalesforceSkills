@@ -16,13 +16,39 @@ Use this file as the first stop for source selection. It is intentionally curate
 
 ---
 
+## Local Documentation (Search First — Always)
+
+The following official Salesforce guides have been downloaded and stored as markdown in `knowledge/imports/`. **Always search these before hitting the web.** They are Tier 1 sources and are not blocked by any proxy.
+
+```bash
+python3 scripts/search_knowledge.py "<topic>"
+```
+
+| File | Covers |
+|------|--------|
+| `knowledge/imports/salesforce-apex-developer-guide.md` | Apex behavior, testing, transactions, async patterns, limits |
+| `knowledge/imports/salesforce-bulk-api-guide.md` | Bulk API 2.0 and legacy Bulk API, ingest/query, job states, limits |
+| `knowledge/imports/salesforce-change-data-capture.md` | CDC change events, Pub/Sub API, Apex trigger subscriptions |
+| `knowledge/imports/salesforce-channel-revenue-management.md` | Channel Revenue Management, Rebate, Price Protection |
+| `knowledge/imports/salesforce-metadata-api-guide.md` | Retrieve/deploy, CRUD-based API, REST deploy, result objects |
+| `knowledge/imports/salesforce-analytics-rest-api.md` | CRM Analytics REST API, SAQL, dataflow scheduling |
+| `knowledge/imports/salesforce-automotive-cloud.md` | Automotive Cloud standard objects |
+| `knowledge/imports/salesforce-big-objects-guide.md` | Big Objects design, async SOQL, archival patterns |
+| `knowledge/imports/salesforce-large-data-volumes-best-practices.md` | LDV design, indexing, query optimization, archival |
+| `knowledge/imports/salesforce-soql-sosl-guide.md` | SOQL/SOSL syntax, bulk queries, limits |
+
+If `search_knowledge.py` returns `has_coverage: true` on a topic — read that chunk before checking the web.
+
+---
+
 ## How To Use This File
 
-1. Identify the skill domain and feature area.
-2. Pick the smallest relevant official source set from the sections below.
-3. Use product/reference docs for factual behavior and limits.
-4. Use Architects / Well-Architected docs for best-practice and pattern guidance.
-5. Record the official docs actually used in the skill's `references/well-architected.md` under `## Official Sources Used`.
+1. **Search local imports first** — `python3 scripts/search_knowledge.py "<topic>"`
+2. Identify the skill domain and feature area.
+3. Pick the smallest relevant official source set from the sections below.
+4. Use product/reference docs for factual behavior and limits.
+5. Use Architects / Well-Architected docs for best-practice and pattern guidance.
+6. Record the official docs actually used in the skill's `references/well-architected.md` under `## Official Sources Used`.
 
 Minimum expectation for a new or materially revised skill:
 - 1 official Salesforce product/reference source

@@ -115,17 +115,23 @@ git add MASTER_QUEUE.md && git commit -m "wip: start <skill-name>"
 git push origin main || gh repo sync PranavNagrecha/AwesomeSalesforceSkills --source main --force
 ```
 
-**2b. Check coverage (mandatory — do not skip)**
+**2b. Check coverage and load local documentation (mandatory — do not skip)**
+
+First check if the skill already exists:
 ```bash
-cd /Users/user/VS\ Code/Personal/SfSkills
 python3 scripts/search_knowledge.py "<skill-name>" 2>/dev/null
 ```
-If `has_coverage: true` → the skill already exists.
-  - Mark the row DUPLICATE in MASTER_QUEUE.md.
-  - Commit the change.
-  - Stop. Move to next task on next invocation.
+If `has_coverage: true` and top result matches this skill exactly → mark DUPLICATE, commit, stop.
 
-If `has_coverage: false` → proceed.
+If `has_coverage: false` or results are unrelated → proceed.
+
+Then search local official documentation before any web search:
+```bash
+python3 scripts/search_knowledge.py "<skill-topic>" 2>/dev/null
+python3 scripts/search_knowledge.py "<key-term-from-skill>" 2>/dev/null
+```
+
+Read every chunk with score > 1.0. These are Tier 1 sources stored in `knowledge/imports/` — always accessible, never blocked. Use them as the primary research input. Only search the web for gaps not covered locally.
 
 **2c. Read official sources**
 ```bash
