@@ -4,7 +4,7 @@ The universal Salesforce knowledge layer for AI coding assistants.
 
 Drop this into Claude Code, Cursor, Aider, Windsurf, or any AI tool and get role-accurate, source-grounded Salesforce guidance — for every role, every cloud, every task.
 
-**77 skills built. 500+ planned across 5 roles × 16 clouds.**
+**86 skills built. 500+ planned across 5 roles × 16 clouds.**
 
 ---
 
@@ -37,8 +37,8 @@ Drop this into Claude Code, Cursor, Aider, Windsurf, or any AI tool and get role
 
 ```bash
 # 1. Clone
-git clone https://github.com/PranavNagrecha/SFSkills.git
-cd SFSkills
+git clone https://github.com/PranavNagrecha/AwesomeSalesforceSkills.git
+cd AwesomeSalesforceSkills
 
 # 2. Install dependencies
 python3 -m pip install -r requirements.txt
@@ -57,8 +57,8 @@ python3 scripts/search_knowledge.py "bulk data load"
 
 ```bash
 # 1. Clone
-git clone https://github.com/PranavNagrecha/SFSkills.git
-cd SFSkills
+git clone https://github.com/PranavNagrecha/AwesomeSalesforceSkills.git
+cd AwesomeSalesforceSkills
 
 # 2. Install dependencies
 python3 -m pip install -r requirements.txt
@@ -98,7 +98,7 @@ Skills are plain markdown. They work in any AI tool that can read a file.
 
 | Domain | Skills |
 |--------|--------|
-| Admin | 19 — custom fields, page layouts, permission sets, sharing, validation rules, flows, reports... |
+| Admin | 28 — custom fields, objects, picklists, users, org setup, page layouts, permission sets, sharing, validation rules, flows, reports... |
 | Apex | 19 — trigger framework, batch, async, security patterns, callouts, mocking, platform cache... |
 | LWC | 14 — wire service, component communication, testing, accessibility, offline, performance... |
 | Flow | 11 — record-triggered, screen flows, fault handling, bulkification, subflows, governance... |
@@ -279,5 +279,5 @@ Track progress: [MASTER_QUEUE.md](./MASTER_QUEUE.md)
 
 **Version:** 1.0.0 | **Last Updated:** April 2026
 
-Issues → [GitHub Issues](https://github.com/PranavNagrecha/SFSkills/issues)
+Issues → [GitHub Issues](https://github.com/PranavNagrecha/AwesomeSalesforceSkills/issues)
 Skill requests → `/request-skill` in Claude Code or open an issue with `[Skill Request]` prefix
