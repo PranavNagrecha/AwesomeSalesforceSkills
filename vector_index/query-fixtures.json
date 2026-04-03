@@ -473,6 +473,18 @@
       "domain": "flow",
       "expected_skill": "flow/flow-testing",
       "top_k": 3
+    },
+    {
+      "query": "how do I set up a global picklist value set shared across multiple objects",
+      "domain": "admin",
+      "expected_skill": "admin/picklist-and-value-sets",
+      "top_k": 3
+    },
+    {
+      "query": "dependent picklist controlling field setup",
+      "domain": "admin",
+      "expected_skill": "admin/picklist-and-value-sets",
+      "top_k": 3
     }
   ]
 }

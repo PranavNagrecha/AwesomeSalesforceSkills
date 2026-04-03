@@ -17,6 +17,7 @@
       "admin/object-creation-and-design",
       "admin/permission-set-architecture",
       "admin/permission-sets-vs-profiles",
+      "admin/picklist-and-value-sets",
       "admin/process-automation-selection",
       "admin/record-types-and-page-layouts",
       "admin/reports-and-dashboards",
@@ -289,6 +290,9 @@
     "connectedcallback": [
       "lwc/lifecycle-hooks"
     ],
+    "controlling-field": [
+      "admin/picklist-and-value-sets"
+    ],
     "convertcurrency": [
       "data/multi-currency-and-advanced-currency-management"
     ],
@@ -388,6 +392,9 @@
     ],
     "dependency-injection": [
       "apex/apex-design-patterns"
+    ],
+    "dependent-picklist": [
+      "admin/picklist-and-value-sets"
     ],
     "deployable-config": [
       "admin/custom-metadata-types"
@@ -541,6 +548,9 @@
     ],
     "future-method": [
       "apex/async-apex"
+    ],
+    "global-value-set": [
+      "admin/picklist-and-value-sets"
     ],
     "governor-limits": [
       "apex/governor-limits",
@@ -875,6 +885,12 @@
     ],
     "permission-sets": [
       "admin/permission-sets-vs-profiles"
+    ],
+    "picklist": [
+      "admin/picklist-and-value-sets"
+    ],
+    "picklist-values": [
+      "admin/picklist-and-value-sets"
     ],
     "picklists": [
       "admin/record-types-and-page-layouts"
