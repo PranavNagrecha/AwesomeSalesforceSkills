@@ -73,7 +73,10 @@ An **object-local picklist** is a value set defined within a single custom field
 | Promote to GVS later | Not possible once field is saved as local | Can promote via UI (one-time, irreversible) |
 | Metadata type | `GlobalValueSet` | `CustomField` value set |
 
-**Limit:** Standard picklists support up to **1,000 total values** (active + inactive combined). Multi-select picklists support up to **500 active values** and allow a maximum of **25 values selected simultaneously** on a single record.
+**Limits:**
+- Standard and custom picklists: up to **1,000 total values** (active + inactive combined); each value label has a max of **255 characters**; total characters across all values in a field is capped at **15,000**
+- Multi-select picklists: **150 active values** by default (raisable via Salesforce Support); maximum **100 values selected simultaneously** on a single record
+- Global Value Sets: max **500 Global Value Sets per org**; same 1,000 value limit applies per GVS; GVS fields are **always restricted** (API writes of arbitrary text fail with `INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST`)
 
 ### Controlling and Dependent Picklists
 
@@ -87,6 +90,15 @@ A **controlling field** determines which values are available in a **dependent p
 **Not supported as controlling fields:**
 - Multi-select picklists cannot be controlling fields
 - Formula fields, lookup fields, text fields — not supported
+- Certain Activity standard fields (Call Type, Subject, Task Type) cannot be controlling fields
+
+**Supported dependent field types:**
+- Custom picklist fields (object-local value set)
+- Custom multi-select picklist fields
+
+**Not supported as dependent fields:**
+- Standard picklist fields — standard picklists cannot be on the dependent side
+- Fields backed by a Global Value Set — GVS-backed fields can be **controlling** but **cannot be dependent**
 
 **Dependency enforcement:** Filtering is enforced in the Salesforce Lightning UI and Classic UI when a user creates or edits a record. **Dependencies are NOT enforced via API, Data Loader, or record import.** Records loaded through the API can have any value regardless of the dependency configuration. This is a known platform behavior, not a bug.
 
@@ -96,7 +108,9 @@ A **controlling field** determines which values are available in a **dependent p
 3. For each controlling value column, check the boxes for the dependent values that should be available
 4. Save — dependency is active immediately; no deployment needed in same org
 
-**Limit:** Up to **300 picklist values** can exist in a controlling picklist field before the dependency matrix becomes unmanageable in the UI. Salesforce imposes no hard limit on the matrix itself, but large matrices are difficult to maintain.
+**Limit:** A controlling picklist field may have at most **300 values**. If a picklist exceeds 300 values it cannot be used as a controlling field. This limit can be raised via Salesforce Support. Large dependency matrices are difficult to maintain in the UI — prefer simpler value sets for controlling fields.
+
+**Zero-mapping gotcha:** If no dependent values are checked for a given controlling value in the matrix, the dependent picklist shows **all** available values when that controlling value is selected — not zero values. This is the opposite of what most admins expect. Always confirm every controlling value has at least one mapped dependent value.
 
 ### Picklist Value Management (Add, Retire, Replace)
 

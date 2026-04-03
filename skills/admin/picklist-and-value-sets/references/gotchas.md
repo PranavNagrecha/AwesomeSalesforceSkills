@@ -59,7 +59,27 @@ Note: For new fields where no records exist yet, renaming labels before any data
 
 ---
 
-## Gotcha 5: Multi-Select Picklist Values Are Stored as Semicolon-Delimited Strings
+## Gotcha 5: Adding a New Value Does Not Automatically Add It to Existing Record Types
+
+**What happens:** An admin adds a new value "Strategic" to the Account Rating picklist. Users immediately report that "Strategic" is not appearing in the dropdown when creating or editing Account records. The admin confirms the value is active in the field definition. The cause: every existing record type has its own "Picklists Available for Editing" configuration that is a manually curated subset of the master value list. New master values are **not automatically added** to any existing record type's available set.
+
+**When it occurs:** Every time a new value is added to a picklist field (or GVS) that is used by records with a record type. The only exception is when a brand new record type is created fresh — it receives all current master values by default.
+
+**How to avoid:** After adding any new picklist value, go to Setup → Object Manager → [Object] → Record Types → for each record type → Picklists Available for Editing → find the field → edit → add the new value. If the org has many record types, this step is easy to miss. Establish a checklist: "after adding picklist value X, update record types: [list them]."
+
+---
+
+## Gotcha 6: GVS-Backed Fields Cannot Be Dependent Fields
+
+**What happens:** An admin creates a "Region" Global Value Set shared across Account and Opportunity. They then try to configure a dependency where "Country" (local picklist) controls "Region" (GVS-backed). The Field Dependencies configuration does not show "Region" as an available dependent field. There is no error message — "Region" simply doesn't appear in the dependent field list.
+
+**When it occurs:** Any attempt to make a GVS-backed picklist field the dependent side of a controlling/dependent relationship. GVS-backed fields can only be the **controlling** side.
+
+**How to avoid:** If you need Region to be a dependent field, it must be an object-local picklist (not GVS-backed). If Region values need to stay in sync across objects AND it needs to be a dependent field somewhere, you need separate object-local fields for the dependency use case. This is an architectural constraint to identify during field design — changing a field from GVS-backed to object-local requires deleting and recreating the field.
+
+---
+
+## Gotcha 7: Multi-Select Picklist Values Are Stored as Semicolon-Delimited Strings
 
 **What happens:** An admin creates a multi-select picklist "Interests" with values Red, Blue, Green. A user selects Red and Blue. The stored value is `"Red;Blue"`. A developer writes a Validation Rule `ISPICKVAL(Interests__c, 'Red')` expecting to detect if Red is selected — but this returns false because ISPICKVAL() does exact-match comparison and the stored string is `"Red;Blue"`, not `"Red"`.
 

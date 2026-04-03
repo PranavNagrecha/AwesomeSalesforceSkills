@@ -29,10 +29,15 @@ Field Dependencies provide UI-level filtering without any custom code — low co
 
 ## Official Sources Used
 
-- Salesforce Help — Create a Global Picklist Value Set: https://help.salesforce.com/s/articleView?id=platform.fields_creating_global_picklists.htm&language=en_US&type=5
-- Salesforce Help — Dependent Picklists (About Dependent Fields): https://help.salesforce.com/s/articleView?id=sf.fields_about_dependent_fields.htm&language=en_US&type=5
-- Salesforce Help — Replace Picklist Values: https://help.salesforce.com/s/articleView?id=sf.customize_replace.htm&language=en_US&type=5
 - Salesforce Help — Picklist Limitations: https://help.salesforce.com/s/articleView?id=platform.picklist_limitations.htm&language=en_US&type=5
+- Salesforce Help — Create a Global Picklist Value Set: https://help.salesforce.com/s/articleView?id=platform.fields_creating_global_picklists.htm&language=en_US&type=5
+- Salesforce Help — Dependent Picklist Considerations: https://help.salesforce.com/s/articleView?id=platform.fields_dependent_field_considerations.htm&language=en_US&type=5
+- Salesforce Help — Define a Dependent Picklist (Field Dependencies): https://help.salesforce.com/s/articleView?id=platform.fields_defining_field_dependencies.htm&language=en_US&type=5
+- Salesforce Help — Replace Picklist Values: https://help.salesforce.com/s/articleView?id=platform.customize_replace.htm&language=en_US&type=5
+- Salesforce Help — Deactivate, Reactivate, or Remove a Picklist Value: https://help.salesforce.com/s/articleView?id=platform.fields_deactivate_reactivate_values.htm&language=en_US&type=5
+- Salesforce Help — Edit Picklists for Record Types: https://help.salesforce.com/s/articleView?id=platform.editing_picklists_for_record_types_and_business_processes.htm&language=en_US&type=5
+- Salesforce Help — Bulk Manage Picklist Values (GA): https://help.salesforce.com/s/articleView?id=release-notes.rn_forcecom_fields_bulk_manage_picklist_values.htm&language=en_US&release=238&type=5
+- Salesforce Help — Increase multi-select picklist limit (KA 000386685): https://help.salesforce.com/s/articleView?id=000386685&language=en_US&type=1
 - Salesforce Developer Limits & Allocations — Picklist: https://developer.salesforce.com/docs/atlas.en-us.salesforce_app_limits_cheatsheet.meta/salesforce_app_limits_cheatsheet/salesforce_app_limits_picklist.htm
 - Metadata API Developer Guide — GlobalValueSet: https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_globalvalueset.htm
 - Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
