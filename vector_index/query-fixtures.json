@@ -533,6 +533,18 @@
       "domain": "admin",
       "expected_skill": "admin/assignment-rules",
       "top_k": 3
+    },
+    {
+      "query": "how to set up automatic case escalation after SLA hours",
+      "domain": "admin",
+      "expected_skill": "admin/escalation-rules",
+      "top_k": 3
+    },
+    {
+      "query": "case is not escalating to manager after required time passed",
+      "domain": "admin",
+      "expected_skill": "admin/escalation-rules",
+      "top_k": 3
     }
   ]
 }
