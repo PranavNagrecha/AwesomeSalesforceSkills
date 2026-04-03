@@ -79,7 +79,7 @@
     "f9d8b7b1beffc04657d4",
     "fbd4daeb1ad85621f68a"
   ],
-  "content_hash": "0ba2ed845da75ec657b7a66106d80af13eea6c442eb74658045120d4fa097b5c",
+  "content_hash": "d123cadaf8e1a4e31101b869580b9ae2310ee0977549300e4dcafbc93f8f0982",
   "dependencies": [],
   "description": "Use when configuring org-wide platform settings: MFA enforcement, My Domain setup and deployment, session timeout and security settings, password policies, trusted IP ranges (Network Access), and CSP Trusted Sites. Trigger keywords: 'MFA setup', 'My Domain', 'session settings', 'password policy', 'trusted IP ranges', 'CSP trusted sites'. NOT for user-level login restrictions (use user-management), NOT for permission model design (use permission-sets-vs-profiles), NOT for security audit and hardening review (use security/org-hardening-and-baseline-config).",
   "file_location": "skills/admin/org-setup-and-configuration",
@@ -110,6 +110,7 @@
     "skills/admin/org-setup-and-configuration/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/org-setup-and-configuration/scripts/__pycache__/check_org_setup_and_configuration.cpython-311.pyc",
     "skills/admin/org-setup-and-configuration/scripts/check_org_setup_and_configuration.py"
   ],
   "tags": [
