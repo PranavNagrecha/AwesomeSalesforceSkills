@@ -53,7 +53,7 @@
     "f20f77da3ed7cd4c033b",
     "f87448e4e89e22e81988"
   ],
-  "content_hash": "a482e0ba9aaed48efb742eb577d4e0d8ad579587ea26d61d932515d69cab7ee3",
+  "content_hash": "d06ee341902085f444158b1a720679eecb290cff2b185ff409b1787581329ec1",
   "dependencies": [],
   "description": "Use when designing deployable Salesforce configuration with Custom Metadata Types, especially when choosing between CMTs, Custom Settings, and Custom Objects, protecting packaged defaults, or exposing config to Apex, Flow, and formulas. Triggers: 'custom metadata vs custom settings', 'deployable config', 'protected custom metadata', 'feature flags in Salesforce'. NOT for high-churn transactional data, user-managed business records, or secret storage that should live in Named Credentials.",
   "file_location": "skills/admin/custom-metadata-types",
@@ -80,7 +80,6 @@
     "skills/admin/custom-metadata-types/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/custom-metadata-types/scripts/__pycache__/check_custom_metadata_types.cpython-311.pyc",
     "skills/admin/custom-metadata-types/scripts/check_custom_metadata_types.py"
   ],
   "tags": [

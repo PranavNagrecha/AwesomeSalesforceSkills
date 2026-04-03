@@ -60,7 +60,7 @@
     "fbcf6853140e13d0a867",
     "fc584ff0c589e310cb02"
   ],
-  "content_hash": "d2d1b163c60cdba3ab646323071ecafae674549938727348cd2932a61d19964b",
+  "content_hash": "583b6b2f5c5e7568e7f6265113292f6b18a6f6f8f4579476b66418116e41846a",
   "dependencies": [],
   "description": "Use when designing, auditing, or simplifying Record Types and Page Layouts. Triggers: 'record type', 'page layout', 'different picklist values', 'different fields per team', 'dynamic forms'. NOT for sharing rules or FLS \u2014 record types don't control data access.",
   "file_location": "skills/admin/record-types-and-page-layouts",
@@ -87,7 +87,6 @@
     "skills/admin/record-types-and-page-layouts/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/record-types-and-page-layouts/scripts/__pycache__/check_record_type_layouts.cpython-311.pyc",
     "skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py"
   ],
   "tags": [

@@ -44,7 +44,7 @@
     "ebf13de6cead10cbd490",
     "f6ff105635d452d357f8"
   ],
-  "content_hash": "b8d8bc454b55765451a1366a8c3a3d92dbc2d41894dc89c6cdecd5d3e744157e",
+  "content_hash": "f63a78a9b3d2ed7ffb47bd45236a225acfb1f30a43aa358d724e36e533f6c962",
   "dependencies": [],
   "description": "Use when designing or reviewing Agentforce topic structure, including topic boundaries, instruction quality, handoff rules, out-of-scope behavior, and topic-selector strategy. Triggers: 'agent topics', 'topic design', 'topic selector', 'agent scope boundary', 'handoff conditions'. NOT for action contract design or prompt-template wording when the main problem is not topic scoping.",
   "file_location": "skills/agentforce/agent-topic-design",
@@ -71,7 +71,6 @@
     "skills/agentforce/agent-topic-design/references/well-architected.md"
   ],
   "scripts": [
-    "skills/agentforce/agent-topic-design/scripts/__pycache__/check_agent_topic_design.cpython-311.pyc",
     "skills/agentforce/agent-topic-design/scripts/check_agent_topic_design.py"
   ],
   "tags": [
