@@ -44,7 +44,7 @@
     "f7a17a973d59b9c3eeee",
     "feb015aa161f13fe89c3"
   ],
-  "content_hash": "2504478b7e2276a4e934499328a28196cddbf9204693c94de070e92d1bd05ee6",
+  "content_hash": "5bcf2b7c6914d99d17ae808e88deb4735699038b9e93e34ca189501e667dc422",
   "dependencies": [],
   "description": "Use when choosing or reviewing overlay patterns in Lightning Web Components, especially `LightningModal`, confirmation dialogs, toasts, focus handling, and overlay dismissal behavior. Triggers: 'lightning modal in lwc', 'toast or modal decision', 'focus trap in modal', 'overlay close result'. NOT for full Flow screen UX design or record-edit processes that should stay on-page.",
   "file_location": "skills/lwc/lwc-modal-and-overlay",
@@ -71,7 +71,6 @@
     "skills/lwc/lwc-modal-and-overlay/references/well-architected.md"
   ],
   "scripts": [
-    "skills/lwc/lwc-modal-and-overlay/scripts/__pycache__/check_lwc_modal_and_overlay.cpython-311.pyc",
     "skills/lwc/lwc-modal-and-overlay/scripts/check_lwc_modal_and_overlay.py"
   ],
   "tags": [

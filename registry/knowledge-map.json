@@ -14,6 +14,7 @@
       "admin/flow-for-admins",
       "admin/formula-fields",
       "admin/list-views-and-compact-layouts",
+      "admin/object-creation-and-design",
       "admin/permission-set-architecture",
       "admin/permission-sets-vs-profiles",
       "admin/process-automation-selection",
@@ -121,7 +122,8 @@
       "apex/trigger-framework"
     ],
     "admin": [
-      "admin/custom-field-creation"
+      "admin/custom-field-creation",
+      "admin/object-creation-and-design"
     ],
     "advanced-currency-management": [
       "data/multi-currency-and-advanced-currency-management"
@@ -333,6 +335,9 @@
     ],
     "custom-metadata-types": [
       "admin/custom-metadata-types"
+    ],
+    "custom-objects": [
+      "admin/object-creation-and-design"
     ],
     "custom-property-editor": [
       "lwc/custom-property-editor-for-flow"
@@ -787,6 +792,9 @@
       "admin/connected-apps-and-auth",
       "integration/oauth-flows-and-connected-apps"
     ],
+    "object-design": [
+      "admin/object-creation-and-design"
+    ],
     "observability": [
       "apex/debug-and-logging"
     ],
@@ -814,6 +822,9 @@
     ],
     "org-hardening": [
       "security/org-hardening-and-baseline-config"
+    ],
+    "org-wide-defaults": [
+      "admin/object-creation-and-design"
     ],
     "org-wide-email": [
       "admin/email-templates-and-alerts"
@@ -1047,6 +1058,9 @@
     ],
     "sharing": [
       "admin/sharing-and-visibility"
+    ],
+    "sharing-model": [
+      "admin/object-creation-and-design"
     ],
     "sharing-rules": [
       "admin/sharing-and-visibility"
