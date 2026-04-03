@@ -73,11 +73,15 @@ I want [feature involving specific Salesforce object/field/automation],
 So that [business outcome].
 
 Acceptance Criteria:
-- [ ] [specific field] is visible and editable on [page layout] for [profile/permission set]
-- [ ] [validation rule or automation] fires when [condition]
-- [ ] Record is shared with [role/profile] under [sharing rule or OWD setting]
-- [ ] [report or list view] is available showing [fields] filtered by [criteria]
+- [ ] If on [page/screen], then [specific Salesforce field/button] is visible and editable for [profile/permission set]
+- [ ] If [condition], then [validation rule or automation] fires with error message "[text]"
+- [ ] If [user with role], then record is accessible under [sharing rule or OWD setting]
+- [ ] If [filter criteria], then [report or list view] returns records with [specific fields]
 ```
+
+Salesforce Trailhead specifies the **if/then format** for acceptance criteria: each criterion takes the form "If [condition], then [observable Salesforce outcome]." This format ensures every criterion is independently testable with a boolean pass/fail result — suitable for UAT without interpretation. A story is an invitation to a conversation, not a contract; do not over-specify which Flow type or which Apex class will implement it.
+
+**INVEST quality check:** Every Salesforce user story should meet the INVEST criteria — Independent (not blocked by another incomplete story), Negotiable (implementation detail is flexible), Valuable (delivers a business outcome), Estimable (the build team can size it), Small (fits in a sprint), Testable (acceptance criteria are boolean pass/fail). Stories that fail INVEST — especially "not independent" due to platform dependencies like page layout depending on record type completion — should be split or reordered in the backlog.
 
 This format forces discovery of FLS, page layout, and sharing requirements at the story level — not as a surprise during UAT.
 
@@ -91,7 +95,11 @@ As-Is mapping documents how the business currently operates — often in spreads
 
 To-Be mapping documents how the same process will operate in Salesforce. Each step of the To-Be process should reference a specific Salesforce feature: a screen flow, a record-triggered flow, an approval process, a queue, a report, or a dashboard.
 
-**Mapping standard:** Use a swimlane diagram (one lane per persona) with explicit decision points. Label each process step with the Salesforce feature that will execute it. Steps with no Salesforce equivalent are gaps.
+**Mapping notation:** Salesforce Trailhead recommends **Universal Process Notation (UPN)** as the preferred notation for BA process maps. UPN answers "Who needs to do what, when, why, and how?" in a single readable diagram. Each activity box uses a verb phrase and contains a named resource (the who). Lines between boxes represent handoffs with explanatory text. Limit each diagram to **8–10 activity boxes**; drill down to child diagrams for complex sub-processes. UPN is preferred over BPMN because it has fewer symbols and is readable left-to-right without specialized training.
+
+For swimlane diagrams: one lane per persona (e.g., Sales Rep | Salesforce System | ERP System). Label each step with the Salesforce feature that will execute it. Steps with no Salesforce equivalent are gaps.
+
+**Transition state:** The official Salesforce BA methodology requires three states, not two: As-Is (current), To-Be (target end state), and **Transition State** (how the org and team will operate during the migration from As-Is to To-Be). Omitting the transition state is a common gap in requirements packages that causes go-live disruption when the old process ends before the new one is stable.
 
 ### Fit-Gap Analysis
 

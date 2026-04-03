@@ -1,6 +1,7 @@
 {
   "category": "admin",
   "chunk_ids": [
+    "0b0dea7f994fccead308",
     "10ae716fcb0e8b9b43a8",
     "1186a222d6d75003bf45",
     "135b349120da9957f655",
@@ -25,6 +26,7 @@
     "446120a2d1a6ac13256a",
     "4670a4c5041d27260c2d",
     "4779dee85f0db831703c",
+    "48a5d539efde9f87df33",
     "51aa17c115ecf2d34c2b",
     "5635325fc08db60a6954",
     "585814369013778df584",
@@ -35,6 +37,7 @@
     "754725844266e64cc1e3",
     "7b4584237fada2d83a25",
     "80344c5651980955b62f",
+    "810ab40bc565641f01c7",
     "81cb2d527964c2e89e79",
     "81d8eef7327bff2085ad",
     "8be9fd2dcf14e05ce861",
@@ -44,6 +47,7 @@
     "b47a06f2cfbc628da23f",
     "ba585ec4f4db3e194b86",
     "bbf3762d6c927fd235bf",
+    "c10ac1d2a5d4246ee80d",
     "c1ded63d5b031714146c",
     "c3186deb0c99a920dd95",
     "c58f80ee706cc8f17cd1",
@@ -64,7 +68,7 @@
     "fcfd3bc326d5b68686ed",
     "fdba1803204366cf8de1"
   ],
-  "content_hash": "7aa6f77c28686c57da11c5c0fedff0d137116efff471a6880f6164fd6fb455da",
+  "content_hash": "20319ad09445fb9b435e7a0785ef9533c594c51cf20218dd4c9492b86e1d6c37",
   "dependencies": [],
   "description": "Use this skill when eliciting, documenting, and structuring requirements for a Salesforce implementation or enhancement: writing Salesforce-specific user stories with acceptance criteria, mapping As-Is and To-Be business processes, conducting stakeholder discovery interviews, and performing gap analysis against standard Salesforce capabilities. Trigger keywords: requirements gathering, user story, As-Is To-Be, gap analysis, stakeholder interview, process mapping, business requirements, fit gap. NOT for technical design decisions (use solution-design-patterns). NOT for automation implementation (use flow/* or apex/* skills). NOT for data model design (use data-model-design-patterns or object-creation-and-design).",
   "file_location": "skills/admin/requirements-gathering-for-sf",
@@ -78,7 +82,10 @@
   "name": "requirements-gathering-for-sf",
   "official_sources": [
     "Salesforce Well-Architected Overview \u2014 architecture quality framing, operational excellence and user experience pillars \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
-    "Salesforce Certified Business Analyst Exam Guide \u2014 canonical BA role, discovery, process mapping, user story, and fit-gap methodology for Salesforce \u2014 https://trailhead.salesforce.com/help?article=Salesforce-Certified-Business-Analyst-Exam-Guide",
+    "Salesforce Certified Business Analyst Exam Guide \u2014 canonical BA role, exam domains (Stakeholder Collaboration 23%, Requirements 18%, User Stories 18%, Customer Discovery 17%, Business Process Mapping 12%, UAT/Dev Support 12%) \u2014 https://trailhead.salesforce.com/credentials/businessanalyst",
+    "Trailhead: User Story Creation module \u2014 if/then acceptance criteria format, INVEST framework, user story structure \u2014 https://trailhead.salesforce.com/content/learn/modules/user-story-creation",
+    "Trailhead: Business Process Mapping module \u2014 UPN notation, 8\u201310 box limit per level, As-Is/To-Be/Transition State methodology \u2014 https://trailhead.salesforce.com/content/learn/modules/business-process-mapping",
+    "Trailhead: Explore Techniques for Information Discovery \u2014 BABOK-aligned elicitation, stakeholder discovery \u2014 https://trailhead.salesforce.com/content/learn/modules/business-analyst_skills-strategies/explore-techniques--information-discovery",
     "Salesforce Help: Field-Level Security \u2014 https://help.salesforce.com/s/articleView?id=sf.admin_fls.htm",
     "Salesforce Help: Sharing Rules \u2014 https://help.salesforce.com/s/articleView?id=sf.security_about_sharing.htm"
   ],
@@ -95,6 +102,7 @@
     "skills/admin/requirements-gathering-for-sf/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/requirements-gathering-for-sf/scripts/__pycache__/check_requirements_gathering_for_sf.cpython-311.pyc",
     "skills/admin/requirements-gathering-for-sf/scripts/check_requirements_gathering_for_sf.py"
   ],
   "tags": [
