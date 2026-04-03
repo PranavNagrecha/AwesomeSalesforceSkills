@@ -5,6 +5,7 @@
       "admin/approval-processes",
       "admin/change-management-and-deployment",
       "admin/connected-apps-and-auth",
+      "admin/custom-field-creation",
       "admin/custom-metadata-types",
       "admin/data-import-and-management",
       "admin/duplicate-management",
@@ -13,13 +14,16 @@
       "admin/flow-for-admins",
       "admin/formula-fields",
       "admin/list-views-and-compact-layouts",
+      "admin/object-creation-and-design",
       "admin/permission-set-architecture",
       "admin/permission-sets-vs-profiles",
+      "admin/picklist-and-value-sets",
       "admin/process-automation-selection",
       "admin/record-types-and-page-layouts",
       "admin/reports-and-dashboards",
       "admin/sandbox-strategy",
       "admin/sharing-and-visibility",
+      "admin/user-management",
       "admin/validation-rules"
     ],
     "agentforce": [
@@ -118,6 +122,10 @@
     ],
     "activation-bypass": [
       "apex/trigger-framework"
+    ],
+    "admin": [
+      "admin/custom-field-creation",
+      "admin/object-creation-and-design"
     ],
     "advanced-currency-management": [
       "data/multi-currency-and-advanced-currency-management"
@@ -283,6 +291,9 @@
     "connectedcallback": [
       "lwc/lifecycle-hooks"
     ],
+    "controlling-field": [
+      "admin/picklist-and-value-sets"
+    ],
     "convertcurrency": [
       "data/multi-currency-and-advanced-currency-management"
     ],
@@ -321,11 +332,17 @@
     "custom-events": [
       "lwc/component-communication"
     ],
+    "custom-fields": [
+      "admin/custom-field-creation"
+    ],
     "custom-metadata": [
       "apex/custom-metadata-in-apex"
     ],
     "custom-metadata-types": [
       "admin/custom-metadata-types"
+    ],
+    "custom-objects": [
+      "admin/object-creation-and-design"
     ],
     "custom-property-editor": [
       "lwc/custom-property-editor-for-flow"
@@ -374,8 +391,14 @@
     "debug-logs": [
       "apex/debug-and-logging"
     ],
+    "delegated-admin": [
+      "admin/user-management"
+    ],
     "dependency-injection": [
       "apex/apex-design-patterns"
+    ],
+    "dependent-picklist": [
+      "admin/picklist-and-value-sets"
     ],
     "deployable-config": [
       "admin/custom-metadata-types"
@@ -459,6 +482,9 @@
     "feature-flags": [
       "admin/custom-metadata-types"
     ],
+    "field-level-security": [
+      "admin/custom-field-creation"
+    ],
     "file-upload": [
       "lwc/lwc-forms-and-validation"
     ],
@@ -526,6 +552,9 @@
     ],
     "future-method": [
       "apex/async-apex"
+    ],
+    "global-value-set": [
+      "admin/picklist-and-value-sets"
     ],
     "governor-limits": [
       "apex/governor-limits",
@@ -643,6 +672,9 @@
       "admin/permission-sets-vs-profiles",
       "security/permission-set-groups-and-muting"
     ],
+    "licenses": [
+      "admin/user-management"
+    ],
     "light-dom": [
       "lwc/lwc-security"
     ],
@@ -728,7 +760,8 @@
       "admin/email-templates-and-alerts"
     ],
     "metadata": [
-      "admin/change-management-and-deployment"
+      "admin/change-management-and-deployment",
+      "admin/custom-field-creation"
     ],
     "migration": [
       "admin/data-import-and-management"
@@ -776,6 +809,9 @@
       "admin/connected-apps-and-auth",
       "integration/oauth-flows-and-connected-apps"
     ],
+    "object-design": [
+      "admin/object-creation-and-design"
+    ],
     "observability": [
       "apex/debug-and-logging"
     ],
@@ -804,6 +840,9 @@
     "org-hardening": [
       "security/org-hardening-and-baseline-config"
     ],
+    "org-wide-defaults": [
+      "admin/object-creation-and-design"
+    ],
     "org-wide-email": [
       "admin/email-templates-and-alerts"
     ],
@@ -818,6 +857,9 @@
     ],
     "packaging": [
       "apex/custom-metadata-in-apex"
+    ],
+    "page-layout": [
+      "admin/custom-field-creation"
     ],
     "page-layouts": [
       "admin/record-types-and-page-layouts"
@@ -851,6 +893,12 @@
     "permission-sets": [
       "admin/permission-sets-vs-profiles"
     ],
+    "picklist": [
+      "admin/picklist-and-value-sets"
+    ],
+    "picklist-values": [
+      "admin/picklist-and-value-sets"
+    ],
     "picklists": [
       "admin/record-types-and-page-layouts"
     ],
@@ -869,6 +917,7 @@
     "profiles": [
       "admin/permission-set-architecture",
       "admin/permission-sets-vs-profiles",
+      "admin/user-management",
       "security/permission-set-groups-and-muting"
     ],
     "queueable": [
@@ -1034,6 +1083,9 @@
     "sharing": [
       "admin/sharing-and-visibility"
     ],
+    "sharing-model": [
+      "admin/object-creation-and-design"
+    ],
     "sharing-rules": [
       "admin/sharing-and-visibility"
     ],
@@ -1136,8 +1188,14 @@
     "url-state": [
       "lwc/navigation-and-routing"
     ],
+    "user-management": [
+      "admin/user-management"
+    ],
     "user-mode": [
       "apex/apex-security-patterns"
+    ],
+    "users": [
+      "admin/user-management"
     ],
     "validation": [
       "lwc/lwc-forms-and-validation"
