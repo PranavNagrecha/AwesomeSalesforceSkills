@@ -1,0 +1,86 @@
+{
+  "category": "integration",
+  "chunk_ids": [
+    "01df1687a123cbff1716",
+    "0381be774fb364800f61",
+    "03998ddaf4043ec81b45",
+    "096e43ceec7a6e6ce57c",
+    "0f919474dd8d20381c44",
+    "1a4f46ed3b709ce5217c",
+    "25aa4df78e430856365b",
+    "2854bd509c90abcbeee1",
+    "3659e3040f0a2cc85a69",
+    "37162f9ec0ecae1778fe",
+    "3fac7955ad577f373a84",
+    "450a510ed73eea428cf2",
+    "47cd6d230153b264de75",
+    "4d15c2b235cb26205ea5",
+    "505ac60a487bcbbb2f35",
+    "50df010ce501ae913617",
+    "5bff4f1bbe937b86cd0b",
+    "701ff64c8ab3237deb2f",
+    "8616381204e0262bd2dd",
+    "86f375fcf16801a05d70",
+    "8861eadda437bf465580",
+    "8d28382de708b00b870d",
+    "94bd056c920647656e99",
+    "99ab441e0a1be53793b5",
+    "acb40511da9072535498",
+    "b23a250cdba8524d6dac",
+    "b86bca2fa4f5a0fd0d35",
+    "bc1da392fbd3f8974d79",
+    "bdcb24b0aed11d04b865",
+    "c43b62684eea9bfc9205",
+    "cbf72a8321c913d8b980",
+    "cc1cf94a54fa65b20333",
+    "cd297f8c0e609888473a",
+    "d14455681e121d286ebe",
+    "d5c4a06e7371ae030708",
+    "e39c9644b1bf8759bc50",
+    "e50d984dac29a5e62f1a",
+    "e7557678aac12f013557",
+    "fde54311c2747fc13add"
+  ],
+  "content_hash": "e8e69083136b8b71f1f4089d536947bc5c29515716be98c1fdade38a3b532748",
+  "dependencies": [],
+  "description": "Use when deciding whether Salesforce Connect and External Objects are the right fit for external data access, or when reviewing OData, cross-org, and custom adapter patterns, query limitations, and latency tradeoffs. Triggers: 'Salesforce Connect', 'External Objects', '__x', 'OData adapter', 'custom adapter'. NOT for ordinary ETL or replicated-data designs where the data should live inside Salesforce.",
+  "file_location": "skills/integration/salesforce-connect-external-objects",
+  "id": "integration/salesforce-connect-external-objects",
+  "inputs": [
+    "source system type and whether the data must remain outside Salesforce",
+    "latency, availability, and write requirements",
+    "query shape, reporting needs, and relationship model"
+  ],
+  "name": "salesforce-connect-external-objects",
+  "official_sources": [
+    "Salesforce Connect Overview - https://help.salesforce.com/s/articleView?id=sf.platform_connect_about.htm&type=5",
+    "External Objects - https://help.salesforce.com/s/articleView?id=sf.external_objects_overview.htm&type=5",
+    "OData Adapter for Salesforce Connect - https://help.salesforce.com/s/articleView?id=sf.platform_connect_odata_adapter.htm&type=5"
+  ],
+  "outputs": [
+    "virtual versus replicated data recommendation",
+    "review findings for adapter choice and platform-fit risks",
+    "Salesforce Connect pattern with operational guardrails"
+  ],
+  "references": [
+    "skills/integration/salesforce-connect-external-objects/references/examples.md",
+    "skills/integration/salesforce-connect-external-objects/references/gotchas.md",
+    "skills/integration/salesforce-connect-external-objects/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/integration/salesforce-connect-external-objects/scripts/check_salesforce_connect_external_objects.py"
+  ],
+  "tags": [
+    "salesforce-connect",
+    "external-objects",
+    "odata",
+    "custom-adapter",
+    "virtual-data"
+  ],
+  "templates": [
+    "skills/integration/salesforce-connect-external-objects/templates/salesforce-connect-external-objects-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

@@ -1,0 +1,87 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "0180bb57ec39d27afca0",
+    "0614981e35f3a4f915c6",
+    "110224ddb0ab5001014e",
+    "166c20112301b7e37938",
+    "1c3bb9412b576dea790b",
+    "27c017673fceb5541ae5",
+    "2c17ae39fcae1366281b",
+    "335ec9ba61a5ff53e5ad",
+    "49a119b1343a5c4a5ae0",
+    "4a18b4d73a38a27c60aa",
+    "4bf497eb88c04281a571",
+    "4d93a111972c266fc19f",
+    "5a562bae0e41f9ed4bfe",
+    "5f2c4dbcab47ee110c21",
+    "606c580c2a1d4bb9753c",
+    "623aa4cf5274a3d2ecfd",
+    "649db62e0f4ae28a6116",
+    "6c2f02aafbc64532328d",
+    "763a50da7afaf6228026",
+    "8662190e24d41d5b039e",
+    "8752687151183e6e7722",
+    "8b74c33c304b4e974001",
+    "92882a4518cb32189fde",
+    "92c3a5e5f0e1491bc224",
+    "93e290e9c498cd043831",
+    "9401c25e53d680559675",
+    "9fe3f47167eb9c0e9564",
+    "a8fea48de8ac93a9dc7d",
+    "b143f65a2ba74f83db4a",
+    "ca28be38f3594d0c8bfa",
+    "ce95548d817779565057",
+    "d08f9135874a300dfaea",
+    "d45444cd0a008be697e5",
+    "d6e26b81312b7eea9569",
+    "d782acf04e8a3190a20e",
+    "db47a536852cfa5fc656",
+    "dc691d6001ee3de15ce6",
+    "e31adba58e2688a7ae6f",
+    "e40c17fa4a0741fe18df",
+    "ef40977e0043a2197194"
+  ],
+  "content_hash": "7cf7449b5a9fd4963f4a8364b77f84fa8b41bd188d69eca1a8577733594897ad",
+  "dependencies": [],
+  "description": "Use when designing, reviewing, or troubleshooting Salesforce formula fields. Triggers: 'formula field', 'cross-object formula', 'null handling', 'compile size', 'HYPERLINK', 'IMAGE', 'why is formula slow'. NOT for save-time validation or persisted values - use validation rules, Flow, or real fields for that.",
+  "file_location": "skills/admin/formula-fields",
+  "id": "admin/formula-fields",
+  "inputs": [
+    "formula requirement",
+    "source fields",
+    "reporting use case"
+  ],
+  "name": "formula-fields",
+  "official_sources": [
+    "Salesforce Well-Architected Overview \u2014 performance and maintainability framing for formula usage",
+    "Object Reference \u2014 object and relationship semantics behind formula references",
+    "Metadata API Developer Guide \u2014 formula metadata behavior during deployment"
+  ],
+  "outputs": [
+    "formula design guidance",
+    "formula risk findings",
+    "alternative pattern recommendations"
+  ],
+  "references": [
+    "skills/admin/formula-fields/references/examples.md",
+    "skills/admin/formula-fields/references/gotchas.md",
+    "skills/admin/formula-fields/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/formula-fields/scripts/check_formula_fields.py"
+  ],
+  "tags": [
+    "formula-fields",
+    "cross-object",
+    "compile-size",
+    "null-handling",
+    "performance"
+  ],
+  "templates": [
+    "skills/admin/formula-fields/templates/formula-field-design-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

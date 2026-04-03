@@ -1,0 +1,1815 @@
+{
+  "schema_version": 1,
+  "skills_by_domain": {
+    "admin": [
+      "admin/approval-processes",
+      "admin/change-management-and-deployment",
+      "admin/connected-apps-and-auth",
+      "admin/custom-metadata-types",
+      "admin/data-import-and-management",
+      "admin/duplicate-management",
+      "admin/einstein-analytics-basics",
+      "admin/email-templates-and-alerts",
+      "admin/flow-for-admins",
+      "admin/formula-fields",
+      "admin/list-views-and-compact-layouts",
+      "admin/permission-set-architecture",
+      "admin/permission-sets-vs-profiles",
+      "admin/process-automation-selection",
+      "admin/record-types-and-page-layouts",
+      "admin/reports-and-dashboards",
+      "admin/sandbox-strategy",
+      "admin/sharing-and-visibility",
+      "admin/validation-rules"
+    ],
+    "agentforce": [
+      "agentforce/agent-actions",
+      "agentforce/agent-topic-design"
+    ],
+    "apex": [
+      "apex/apex-cpu-and-heap-optimization",
+      "apex/apex-design-patterns",
+      "apex/apex-mocking-and-stubs",
+      "apex/apex-rest-services",
+      "apex/apex-security-patterns",
+      "apex/async-apex",
+      "apex/batch-apex-patterns",
+      "apex/callouts-and-http-integrations",
+      "apex/custom-metadata-in-apex",
+      "apex/debug-and-logging",
+      "apex/exception-handling",
+      "apex/governor-limits",
+      "apex/invocable-methods",
+      "apex/platform-cache",
+      "apex/platform-events-apex",
+      "apex/recursive-trigger-prevention",
+      "apex/soql-security",
+      "apex/test-class-standards",
+      "apex/trigger-framework"
+    ],
+    "data": [
+      "data/multi-currency-and-advanced-currency-management",
+      "data/roll-up-summary-alternatives",
+      "data/sosl-search-patterns"
+    ],
+    "flow": [
+      "flow/fault-handling",
+      "flow/flow-bulkification",
+      "flow/flow-custom-property-editors",
+      "flow/flow-for-experience-cloud",
+      "flow/flow-governance",
+      "flow/flow-testing",
+      "flow/orchestration-flows",
+      "flow/record-triggered-flow-patterns",
+      "flow/scheduled-flows",
+      "flow/screen-flows",
+      "flow/subflows-and-reusability"
+    ],
+    "integration": [
+      "integration/graphql-api-patterns",
+      "integration/oauth-flows-and-connected-apps",
+      "integration/salesforce-connect-external-objects"
+    ],
+    "lwc": [
+      "lwc/component-communication",
+      "lwc/custom-property-editor-for-flow",
+      "lwc/lifecycle-hooks",
+      "lwc/lwc-accessibility",
+      "lwc/lwc-data-table",
+      "lwc/lwc-forms-and-validation",
+      "lwc/lwc-modal-and-overlay",
+      "lwc/lwc-offline-and-mobile",
+      "lwc/lwc-performance",
+      "lwc/lwc-security",
+      "lwc/lwc-testing",
+      "lwc/navigation-and-routing",
+      "lwc/static-resources-in-lwc",
+      "lwc/wire-service-patterns"
+    ],
+    "omnistudio": [
+      "omnistudio/dataraptor-patterns",
+      "omnistudio/integration-procedures",
+      "omnistudio/omniscript-design-patterns",
+      "omnistudio/omnistudio-security"
+    ],
+    "security": [
+      "security/org-hardening-and-baseline-config",
+      "security/permission-set-groups-and-muting"
+    ]
+  },
+  "skills_by_tag": {
+    "__mdt": [
+      "apex/custom-metadata-in-apex"
+    ],
+    "access-architecture": [
+      "security/permission-set-groups-and-muting"
+    ],
+    "access-control": [
+      "admin/permission-sets-vs-profiles"
+    ],
+    "access-governance": [
+      "admin/permission-set-architecture"
+    ],
+    "accessibility-testing": [
+      "lwc/lwc-testing"
+    ],
+    "action-contracts": [
+      "agentforce/agent-actions"
+    ],
+    "activation-bypass": [
+      "apex/trigger-framework"
+    ],
+    "advanced-currency-management": [
+      "data/multi-currency-and-advanced-currency-management"
+    ],
+    "after-save": [
+      "flow/record-triggered-flow-patterns"
+    ],
+    "agent-actions": [
+      "agentforce/agent-actions"
+    ],
+    "agent-boundaries": [
+      "agentforce/agent-topic-design"
+    ],
+    "agentforce": [
+      "agentforce/agent-actions",
+      "agentforce/agent-topic-design"
+    ],
+    "aggregate-soql": [
+      "data/roll-up-summary-alternatives"
+    ],
+    "apex-metadata-api": [
+      "apex/custom-metadata-in-apex"
+    ],
+    "apex-rest": [
+      "apex/apex-rest-services"
+    ],
+    "apex-security": [
+      "apex/apex-security-patterns"
+    ],
+    "apex-testing": [
+      "apex/test-class-standards"
+    ],
+    "api-design": [
+      "integration/graphql-api-patterns"
+    ],
+    "api-properties": [
+      "lwc/component-communication"
+    ],
+    "approval-process": [
+      "admin/approval-processes"
+    ],
+    "approvers": [
+      "admin/approval-processes"
+    ],
+    "aria": [
+      "lwc/lwc-accessibility"
+    ],
+    "async-apex": [
+      "apex/async-apex"
+    ],
+    "async-testing": [
+      "apex/test-class-standards"
+    ],
+    "asyncapexjob": [
+      "apex/batch-apex-patterns",
+      "apex/debug-and-logging"
+    ],
+    "asynchronous-process": [
+      "flow/orchestration-flows"
+    ],
+    "aurahandledexception": [
+      "apex/exception-handling"
+    ],
+    "auth-code": [
+      "integration/oauth-flows-and-connected-apps"
+    ],
+    "autolaunched-flow": [
+      "flow/subflows-and-reusability"
+    ],
+    "automation": [
+      "admin/flow-for-admins"
+    ],
+    "automation-selection": [
+      "admin/process-automation-selection"
+    ],
+    "batch": [
+      "apex/governor-limits"
+    ],
+    "batch-apex": [
+      "apex/async-apex",
+      "apex/batch-apex-patterns"
+    ],
+    "batch-apex-boundary": [
+      "flow/scheduled-flows"
+    ],
+    "batch-scope": [
+      "apex/batch-apex-patterns"
+    ],
+    "before-save": [
+      "flow/record-triggered-flow-patterns"
+    ],
+    "branching": [
+      "omnistudio/omniscript-design-patterns"
+    ],
+    "buildercontext": [
+      "flow/flow-custom-property-editors",
+      "lwc/custom-property-editor-for-flow"
+    ],
+    "bulk-api": [
+      "admin/data-import-and-management"
+    ],
+    "bulk-safe": [
+      "apex/invocable-methods"
+    ],
+    "bulkification": [
+      "apex/governor-limits",
+      "apex/trigger-framework"
+    ],
+    "bypass": [
+      "admin/validation-rules"
+    ],
+    "cache-aside": [
+      "apex/platform-cache"
+    ],
+    "cache-org": [
+      "apex/platform-cache"
+    ],
+    "cache-session": [
+      "apex/platform-cache"
+    ],
+    "cdc": [
+      "apex/platform-events-apex"
+    ],
+    "change-sets": [
+      "admin/change-management-and-deployment"
+    ],
+    "clickjack": [
+      "security/org-hardening-and-baseline-config"
+    ],
+    "client-credentials": [
+      "integration/oauth-flows-and-connected-apps"
+    ],
+    "collections": [
+      "flow/flow-bulkification"
+    ],
+    "compact-layouts": [
+      "admin/list-views-and-compact-layouts"
+    ],
+    "compile-size": [
+      "admin/formula-fields"
+    ],
+    "component-communication": [
+      "lwc/component-communication"
+    ],
+    "configuration": [
+      "admin/custom-metadata-types",
+      "apex/custom-metadata-in-apex"
+    ],
+    "configurationeditor": [
+      "flow/flow-custom-property-editors",
+      "lwc/custom-property-editor-for-flow"
+    ],
+    "confirm-dialog": [
+      "lwc/lwc-modal-and-overlay"
+    ],
+    "confirmation-patterns": [
+      "agentforce/agent-actions"
+    ],
+    "connected-apps": [
+      "admin/connected-apps-and-auth",
+      "integration/oauth-flows-and-connected-apps"
+    ],
+    "connectedcallback": [
+      "lwc/lifecycle-hooks"
+    ],
+    "convertcurrency": [
+      "data/multi-currency-and-advanced-currency-management"
+    ],
+    "cors": [
+      "security/org-hardening-and-baseline-config"
+    ],
+    "cpu-time": [
+      "apex/apex-cpu-and-heap-optimization",
+      "apex/governor-limits"
+    ],
+    "crm-analytics": [
+      "admin/einstein-analytics-basics"
+    ],
+    "cross-object": [
+      "admin/formula-fields"
+    ],
+    "crud": [
+      "apex/soql-security"
+    ],
+    "crud-fls": [
+      "apex/apex-security-patterns"
+    ],
+    "csp": [
+      "lwc/static-resources-in-lwc",
+      "security/org-hardening-and-baseline-config"
+    ],
+    "currencyisocode": [
+      "data/multi-currency-and-advanced-currency-management"
+    ],
+    "currentpagereference": [
+      "lwc/navigation-and-routing"
+    ],
+    "custom-adapter": [
+      "integration/salesforce-connect-external-objects"
+    ],
+    "custom-events": [
+      "lwc/component-communication"
+    ],
+    "custom-metadata": [
+      "apex/custom-metadata-in-apex"
+    ],
+    "custom-metadata-types": [
+      "admin/custom-metadata-types"
+    ],
+    "custom-property-editor": [
+      "lwc/custom-property-editor-for-flow"
+    ],
+    "custom-settings": [
+      "admin/custom-metadata-types"
+    ],
+    "dashboards": [
+      "admin/einstein-analytics-basics",
+      "admin/reports-and-dashboards"
+    ],
+    "data-load": [
+      "admin/data-import-and-management"
+    ],
+    "data-quality": [
+      "admin/duplicate-management",
+      "admin/validation-rules"
+    ],
+    "data-visibility": [
+      "admin/reports-and-dashboards"
+    ],
+    "database-batchable": [
+      "apex/batch-apex-patterns"
+    ],
+    "dataraptor": [
+      "omnistudio/dataraptor-patterns"
+    ],
+    "dataraptor-load": [
+      "omnistudio/dataraptor-patterns"
+    ],
+    "dataraptor-security": [
+      "omnistudio/omnistudio-security"
+    ],
+    "dataraptor-transform": [
+      "omnistudio/dataraptor-patterns"
+    ],
+    "datasets": [
+      "admin/einstein-analytics-basics"
+    ],
+    "dated-exchange-rates": [
+      "data/multi-currency-and-advanced-currency-management"
+    ],
+    "debug-interview": [
+      "flow/flow-testing"
+    ],
+    "debug-logs": [
+      "apex/debug-and-logging"
+    ],
+    "dependency-injection": [
+      "apex/apex-design-patterns"
+    ],
+    "deployable-config": [
+      "admin/custom-metadata-types"
+    ],
+    "deployment": [
+      "admin/change-management-and-deployment"
+    ],
+    "device-apis": [
+      "lwc/lwc-offline-and-mobile"
+    ],
+    "dlrs": [
+      "data/roll-up-summary-alternatives"
+    ],
+    "dml-exception": [
+      "apex/exception-handling"
+    ],
+    "domain-layer": [
+      "apex/apex-design-patterns"
+    ],
+    "duplicate-rules": [
+      "admin/duplicate-management"
+    ],
+    "dynamic-components": [
+      "lwc/lwc-performance"
+    ],
+    "dynamic-forms": [
+      "admin/record-types-and-page-layouts"
+    ],
+    "email-alerts": [
+      "admin/email-templates-and-alerts"
+    ],
+    "environment-strategy": [
+      "admin/sandbox-strategy"
+    ],
+    "error-logging": [
+      "flow/fault-handling"
+    ],
+    "error-mapping": [
+      "apex/exception-handling"
+    ],
+    "escalation": [
+      "admin/approval-processes"
+    ],
+    "event-trigger": [
+      "apex/platform-events-apex"
+    ],
+    "eventbus": [
+      "apex/platform-events-apex"
+    ],
+    "exception-handling": [
+      "apex/exception-handling"
+    ],
+    "experience-cloud": [
+      "flow/flow-for-experience-cloud",
+      "lwc/navigation-and-routing"
+    ],
+    "external-credentials": [
+      "admin/connected-apps-and-auth"
+    ],
+    "external-id": [
+      "admin/data-import-and-management"
+    ],
+    "external-objects": [
+      "integration/salesforce-connect-external-objects"
+    ],
+    "external-users": [
+      "flow/flow-for-experience-cloud"
+    ],
+    "factory-pattern": [
+      "apex/apex-design-patterns"
+    ],
+    "failure-response": [
+      "omnistudio/integration-procedures"
+    ],
+    "fault-connectors": [
+      "flow/fault-handling"
+    ],
+    "fault-handling": [
+      "admin/flow-for-admins"
+    ],
+    "feature-flags": [
+      "admin/custom-metadata-types"
+    ],
+    "file-upload": [
+      "lwc/lwc-forms-and-validation"
+    ],
+    "find-clause": [
+      "data/sosl-search-patterns"
+    ],
+    "flow": [
+      "admin/flow-for-admins"
+    ],
+    "flow-apex-action": [
+      "apex/invocable-methods"
+    ],
+    "flow-builder": [
+      "flow/flow-custom-property-editors",
+      "lwc/custom-property-editor-for-flow"
+    ],
+    "flow-bulkification": [
+      "flow/flow-bulkification"
+    ],
+    "flow-custom-property-editor": [
+      "flow/flow-custom-property-editors"
+    ],
+    "flow-faults": [
+      "flow/fault-handling"
+    ],
+    "flow-governance": [
+      "flow/flow-governance"
+    ],
+    "flow-orchestration": [
+      "flow/orchestration-flows"
+    ],
+    "flow-reuse": [
+      "flow/subflows-and-reusability"
+    ],
+    "flow-standards": [
+      "flow/flow-governance"
+    ],
+    "flow-testing": [
+      "flow/flow-testing"
+    ],
+    "flow-tests": [
+      "flow/flow-testing"
+    ],
+    "flow-ux": [
+      "flow/screen-flows"
+    ],
+    "flow-validation": [
+      "flow/screen-flows"
+    ],
+    "flow-vs-apex": [
+      "admin/process-automation-selection"
+    ],
+    "fls": [
+      "apex/soql-security"
+    ],
+    "focus-management": [
+      "lwc/lwc-accessibility",
+      "lwc/lwc-modal-and-overlay"
+    ],
+    "formula-fields": [
+      "admin/formula-fields"
+    ],
+    "formulas": [
+      "admin/validation-rules"
+    ],
+    "future-method": [
+      "apex/async-apex"
+    ],
+    "governor-limits": [
+      "apex/governor-limits",
+      "flow/flow-bulkification"
+    ],
+    "graphql": [
+      "integration/graphql-api-patterns"
+    ],
+    "graphql-wire": [
+      "lwc/wire-service-patterns"
+    ],
+    "guest-user": [
+      "flow/flow-for-experience-cloud"
+    ],
+    "guest-users": [
+      "omnistudio/omnistudio-security"
+    ],
+    "guided-experience": [
+      "omnistudio/omniscript-design-patterns"
+    ],
+    "handler-pattern": [
+      "apex/trigger-framework"
+    ],
+    "handoff-rules": [
+      "agentforce/agent-topic-design"
+    ],
+    "heap-size": [
+      "apex/apex-cpu-and-heap-optimization"
+    ],
+    "highlights-panel": [
+      "admin/list-views-and-compact-layouts"
+    ],
+    "http-action": [
+      "omnistudio/integration-procedures",
+      "omnistudio/omnistudio-security"
+    ],
+    "http-callout": [
+      "apex/callouts-and-http-integrations"
+    ],
+    "httpcalloutmock": [
+      "apex/apex-mocking-and-stubs",
+      "apex/callouts-and-http-integrations",
+      "apex/test-class-standards"
+    ],
+    "httprequest": [
+      "apex/callouts-and-http-integrations"
+    ],
+    "idempotency": [
+      "flow/scheduled-flows"
+    ],
+    "infinite-loading": [
+      "lwc/lwc-data-table"
+    ],
+    "inherited-sharing": [
+      "apex/apex-security-patterns"
+    ],
+    "injection": [
+      "apex/soql-security",
+      "data/sosl-search-patterns"
+    ],
+    "inline-edit": [
+      "lwc/lwc-data-table"
+    ],
+    "input-output-variables": [
+      "flow/subflows-and-reusability"
+    ],
+    "inputvariables": [
+      "flow/flow-custom-property-editors",
+      "lwc/custom-property-editor-for-flow"
+    ],
+    "integration-auth": [
+      "admin/connected-apps-and-auth"
+    ],
+    "integration-procedure": [
+      "omnistudio/integration-procedures"
+    ],
+    "integration-reliability": [
+      "apex/callouts-and-http-integrations"
+    ],
+    "integrations": [
+      "admin/validation-rules"
+    ],
+    "invalidation": [
+      "apex/platform-cache"
+    ],
+    "invocable-actions": [
+      "agentforce/agent-actions"
+    ],
+    "invocablemethod": [
+      "apex/invocable-methods"
+    ],
+    "invocablevariable": [
+      "apex/invocable-methods"
+    ],
+    "jest": [
+      "lwc/lwc-testing"
+    ],
+    "json-memory": [
+      "apex/apex-cpu-and-heap-optimization"
+    ],
+    "json-serialization": [
+      "apex/apex-rest-services"
+    ],
+    "jwt-bearer": [
+      "integration/oauth-flows-and-connected-apps"
+    ],
+    "keyboard-navigation": [
+      "lwc/lwc-accessibility"
+    ],
+    "lazy-instantiation": [
+      "lwc/lwc-performance"
+    ],
+    "least-privilege": [
+      "admin/permission-set-architecture",
+      "admin/permission-sets-vs-profiles",
+      "security/permission-set-groups-and-muting"
+    ],
+    "light-dom": [
+      "lwc/lwc-security"
+    ],
+    "lightning-data-service": [
+      "lwc/wire-service-patterns"
+    ],
+    "lightning-datatable": [
+      "lwc/lwc-data-table"
+    ],
+    "lightning-flow": [
+      "flow/flow-for-experience-cloud"
+    ],
+    "lightning-graphql": [
+      "integration/graphql-api-patterns"
+    ],
+    "lightning-message-service": [
+      "lwc/component-communication"
+    ],
+    "lightning-modal": [
+      "lwc/lwc-modal-and-overlay"
+    ],
+    "lightning-record-edit-form": [
+      "lwc/lwc-forms-and-validation"
+    ],
+    "lightning-web-security": [
+      "lwc/lwc-security"
+    ],
+    "limits-getcputime": [
+      "apex/apex-cpu-and-heap-optimization"
+    ],
+    "list-rendering": [
+      "lwc/lwc-performance"
+    ],
+    "list-views": [
+      "admin/list-views-and-compact-layouts"
+    ],
+    "logging": [
+      "apex/exception-handling"
+    ],
+    "logging-framework": [
+      "apex/debug-and-logging"
+    ],
+    "lookup-rollup": [
+      "data/roll-up-summary-alternatives"
+    ],
+    "lwc": [
+      "lwc/lifecycle-hooks"
+    ],
+    "lwc-accessibility": [
+      "lwc/lwc-accessibility"
+    ],
+    "lwc-data-table": [
+      "lwc/lwc-data-table"
+    ],
+    "lwc-forms": [
+      "lwc/lwc-forms-and-validation"
+    ],
+    "lwc-performance": [
+      "lwc/lwc-performance"
+    ],
+    "lwc-security": [
+      "lwc/lwc-security"
+    ],
+    "lwc-testing": [
+      "lwc/lwc-testing"
+    ],
+    "maintainability": [
+      "flow/subflows-and-reusability"
+    ],
+    "masking": [
+      "admin/sandbox-strategy"
+    ],
+    "matching-rules": [
+      "admin/duplicate-management"
+    ],
+    "memory-leaks": [
+      "lwc/lifecycle-hooks"
+    ],
+    "merge": [
+      "admin/duplicate-management"
+    ],
+    "merge-fields": [
+      "admin/email-templates-and-alerts"
+    ],
+    "metadata": [
+      "admin/change-management-and-deployment"
+    ],
+    "migration": [
+      "admin/data-import-and-management"
+    ],
+    "mobile-lwc": [
+      "lwc/lwc-offline-and-mobile"
+    ],
+    "mobile-ux": [
+      "admin/list-views-and-compact-layouts"
+    ],
+    "mobilecapabilities": [
+      "lwc/lwc-offline-and-mobile"
+    ],
+    "multi-currency": [
+      "data/multi-currency-and-advanced-currency-management"
+    ],
+    "multi-user": [
+      "flow/orchestration-flows"
+    ],
+    "muting": [
+      "security/permission-set-groups-and-muting"
+    ],
+    "named-credentials": [
+      "admin/connected-apps-and-auth",
+      "apex/callouts-and-http-integrations",
+      "omnistudio/integration-procedures"
+    ],
+    "naming-conventions": [
+      "flow/flow-governance"
+    ],
+    "navigation": [
+      "flow/screen-flows"
+    ],
+    "navigationmixin": [
+      "lwc/lifecycle-hooks",
+      "lwc/navigation-and-routing"
+    ],
+    "notifications": [
+      "admin/email-templates-and-alerts"
+    ],
+    "null-handling": [
+      "admin/formula-fields"
+    ],
+    "oauth": [
+      "admin/connected-apps-and-auth",
+      "integration/oauth-flows-and-connected-apps"
+    ],
+    "observability": [
+      "apex/debug-and-logging"
+    ],
+    "odata": [
+      "integration/salesforce-connect-external-objects"
+    ],
+    "offline": [
+      "lwc/lwc-offline-and-mobile"
+    ],
+    "omniscript": [
+      "omnistudio/omniscript-design-patterns"
+    ],
+    "omnistudio": [
+      "omnistudio/integration-procedures",
+      "omnistudio/omniscript-design-patterns"
+    ],
+    "omnistudio-data-mapping": [
+      "omnistudio/dataraptor-patterns"
+    ],
+    "omnistudio-security": [
+      "omnistudio/omnistudio-security"
+    ],
+    "order-of-execution": [
+      "flow/record-triggered-flow-patterns"
+    ],
+    "org-hardening": [
+      "security/org-hardening-and-baseline-config"
+    ],
+    "org-wide-email": [
+      "admin/email-templates-and-alerts"
+    ],
+    "overlay": [
+      "lwc/lwc-modal-and-overlay"
+    ],
+    "owd": [
+      "admin/sharing-and-visibility"
+    ],
+    "ownership": [
+      "flow/flow-governance"
+    ],
+    "packaging": [
+      "apex/custom-metadata-in-apex"
+    ],
+    "page-layouts": [
+      "admin/record-types-and-page-layouts"
+    ],
+    "pagereference": [
+      "lwc/navigation-and-routing"
+    ],
+    "pagination": [
+      "integration/graphql-api-patterns"
+    ],
+    "parent-child-summary": [
+      "data/roll-up-summary-alternatives"
+    ],
+    "path-coverage": [
+      "flow/flow-testing"
+    ],
+    "payload-reduction": [
+      "lwc/lwc-performance"
+    ],
+    "performance": [
+      "admin/formula-fields"
+    ],
+    "permission-set-architecture": [
+      "admin/permission-set-architecture"
+    ],
+    "permission-set-groups": [
+      "admin/permission-set-architecture",
+      "admin/permission-sets-vs-profiles",
+      "security/permission-set-groups-and-muting"
+    ],
+    "permission-sets": [
+      "admin/permission-sets-vs-profiles"
+    ],
+    "picklists": [
+      "admin/record-types-and-page-layouts"
+    ],
+    "platform-cache": [
+      "apex/platform-cache"
+    ],
+    "platform-events": [
+      "apex/platform-events-apex"
+    ],
+    "platform-resource-loader": [
+      "lwc/static-resources-in-lwc"
+    ],
+    "process-builder-migration": [
+      "admin/process-automation-selection"
+    ],
+    "profiles": [
+      "admin/permission-set-architecture",
+      "admin/permission-sets-vs-profiles",
+      "security/permission-set-groups-and-muting"
+    ],
+    "queueable": [
+      "apex/async-apex",
+      "apex/governor-limits"
+    ],
+    "reactive-parameters": [
+      "lwc/wire-service-patterns"
+    ],
+    "record-access": [
+      "admin/sharing-and-visibility"
+    ],
+    "record-locking": [
+      "admin/approval-processes"
+    ],
+    "record-triggered-flow": [
+      "admin/flow-for-admins",
+      "flow/fault-handling",
+      "flow/flow-bulkification",
+      "flow/record-triggered-flow-patterns"
+    ],
+    "record-types": [
+      "admin/record-types-and-page-layouts"
+    ],
+    "recurring-automation": [
+      "flow/scheduled-flows"
+    ],
+    "recursion": [
+      "apex/trigger-framework",
+      "flow/record-triggered-flow-patterns"
+    ],
+    "recursion-guard": [
+      "apex/recursive-trigger-prevention"
+    ],
+    "refresh": [
+      "admin/sandbox-strategy"
+    ],
+    "refreshapex": [
+      "lwc/wire-service-patterns"
+    ],
+    "release-management": [
+      "admin/change-management-and-deployment"
+    ],
+    "render-optimization": [
+      "lwc/lwc-performance"
+    ],
+    "renderedcallback": [
+      "lwc/lifecycle-hooks"
+    ],
+    "replay-id": [
+      "apex/platform-events-apex"
+    ],
+    "report-filters": [
+      "admin/reports-and-dashboards"
+    ],
+    "report-validity": [
+      "lwc/lwc-forms-and-validation"
+    ],
+    "reports": [
+      "admin/einstein-analytics-basics",
+      "admin/reports-and-dashboards"
+    ],
+    "resource-url": [
+      "lwc/static-resources-in-lwc"
+    ],
+    "restcontext": [
+      "apex/apex-rest-services"
+    ],
+    "restresource": [
+      "apex/apex-rest-services"
+    ],
+    "role-hierarchy": [
+      "admin/sharing-and-visibility"
+    ],
+    "roll-up-summary": [
+      "data/roll-up-summary-alternatives"
+    ],
+    "rollback": [
+      "admin/change-management-and-deployment"
+    ],
+    "routing": [
+      "admin/approval-processes"
+    ],
+    "row-actions": [
+      "lwc/lwc-data-table"
+    ],
+    "salesforce-connect": [
+      "integration/salesforce-connect-external-objects"
+    ],
+    "salesforce-mobile-app": [
+      "lwc/lwc-offline-and-mobile"
+    ],
+    "sandboxes": [
+      "admin/sandbox-strategy"
+    ],
+    "save-and-resume": [
+      "omnistudio/omniscript-design-patterns"
+    ],
+    "scalability": [
+      "flow/flow-bulkification"
+    ],
+    "schedulable": [
+      "apex/async-apex"
+    ],
+    "schedule-triggered": [
+      "flow/scheduled-flows"
+    ],
+    "scheduled-flows": [
+      "flow/scheduled-flows"
+    ],
+    "screen-components": [
+      "flow/screen-flows"
+    ],
+    "screen-flow": [
+      "admin/flow-for-admins",
+      "flow/fault-handling",
+      "flow/flow-for-experience-cloud"
+    ],
+    "screen-flows": [
+      "flow/screen-flows"
+    ],
+    "screen-reader": [
+      "lwc/lwc-accessibility"
+    ],
+    "search-layouts": [
+      "admin/list-views-and-compact-layouts",
+      "data/sosl-search-patterns"
+    ],
+    "search-query": [
+      "data/sosl-search-patterns"
+    ],
+    "secure-apex": [
+      "lwc/lwc-security",
+      "omnistudio/omnistudio-security"
+    ],
+    "security": [
+      "apex/soql-security"
+    ],
+    "security-health-check": [
+      "security/org-hardening-and-baseline-config"
+    ],
+    "seealldata": [
+      "apex/test-class-standards"
+    ],
+    "selector-pattern": [
+      "apex/apex-design-patterns"
+    ],
+    "self-dml": [
+      "apex/recursive-trigger-prevention"
+    ],
+    "service-layer": [
+      "apex/apex-design-patterns"
+    ],
+    "set-of-id": [
+      "apex/recursive-trigger-prevention"
+    ],
+    "sfdx-lwc-jest": [
+      "lwc/lwc-testing"
+    ],
+    "shadow-dom": [
+      "lwc/component-communication"
+    ],
+    "sharing": [
+      "admin/sharing-and-visibility"
+    ],
+    "sharing-rules": [
+      "admin/sharing-and-visibility"
+    ],
+    "soql": [
+      "apex/soql-security"
+    ],
+    "sosl": [
+      "data/sosl-search-patterns"
+    ],
+    "stages": [
+      "flow/orchestration-flows"
+    ],
+    "stateful": [
+      "apex/batch-apex-patterns"
+    ],
+    "static-boolean": [
+      "apex/recursive-trigger-prevention"
+    ],
+    "static-resources": [
+      "lwc/static-resources-in-lwc"
+    ],
+    "staticresourcecalloutmock": [
+      "apex/apex-mocking-and-stubs"
+    ],
+    "string-optimization": [
+      "apex/apex-cpu-and-heap-optimization"
+    ],
+    "stripinaccessible": [
+      "apex/apex-security-patterns"
+    ],
+    "stubprovider": [
+      "apex/apex-mocking-and-stubs"
+    ],
+    "subflows": [
+      "flow/subflows-and-reusability"
+    ],
+    "subscriptions": [
+      "admin/reports-and-dashboards"
+    ],
+    "survivorship": [
+      "admin/duplicate-management"
+    ],
+    "system-debug": [
+      "apex/debug-and-logging"
+    ],
+    "templates": [
+      "admin/email-templates-and-alerts"
+    ],
+    "test-data": [
+      "flow/flow-testing"
+    ],
+    "test-data-factory": [
+      "apex/test-class-standards"
+    ],
+    "test-doubles": [
+      "apex/apex-mocking-and-stubs"
+    ],
+    "test-setmock": [
+      "apex/apex-mocking-and-stubs"
+    ],
+    "testing": [
+      "admin/sandbox-strategy"
+    ],
+    "third-party-library": [
+      "lwc/static-resources-in-lwc"
+    ],
+    "toast": [
+      "lwc/lwc-modal-and-overlay"
+    ],
+    "tool-selection": [
+      "admin/einstein-analytics-basics"
+    ],
+    "topic-design": [
+      "agentforce/agent-topic-design"
+    ],
+    "topic-selector": [
+      "agentforce/agent-topic-design"
+    ],
+    "trigger-decision": [
+      "admin/process-automation-selection"
+    ],
+    "trigger-recursion": [
+      "apex/recursive-trigger-prevention"
+    ],
+    "triggers": [
+      "apex/trigger-framework"
+    ],
+    "turbo-extract": [
+      "omnistudio/dataraptor-patterns"
+    ],
+    "ui-simplification": [
+      "admin/record-types-and-page-layouts"
+    ],
+    "uiGraphQLApi": [
+      "integration/graphql-api-patterns"
+    ],
+    "upsert": [
+      "admin/data-import-and-management"
+    ],
+    "url-state": [
+      "lwc/navigation-and-routing"
+    ],
+    "user-mode": [
+      "apex/apex-security-patterns"
+    ],
+    "validation": [
+      "lwc/lwc-forms-and-validation"
+    ],
+    "validation-rules": [
+      "admin/validation-rules"
+    ],
+    "version-management": [
+      "flow/flow-governance"
+    ],
+    "versioning": [
+      "apex/apex-rest-services"
+    ],
+    "virtual-data": [
+      "integration/salesforce-connect-external-objects"
+    ],
+    "wire-mocks": [
+      "lwc/lwc-testing"
+    ],
+    "wire-service": [
+      "lwc/wire-service-patterns"
+    ],
+    "work-items": [
+      "flow/orchestration-flows"
+    ],
+    "workflow-rule-retirement": [
+      "admin/process-automation-selection"
+    ],
+    "wrapper-dto": [
+      "apex/invocable-methods"
+    ],
+    "xss": [
+      "lwc/lwc-security"
+    ]
+  },
+  "sources": [
+    {
+      "domains": [
+        "admin",
+        "apex",
+        "lwc",
+        "flow",
+        "omnistudio",
+        "agentforce",
+        "security",
+        "integration",
+        "data",
+        "devops"
+      ],
+      "id": "knowledge_topics",
+      "tags": [
+        "knowledge",
+        "retrieval",
+        "framework"
+      ],
+      "title": "Repo-native knowledge topics",
+      "trust": "repo-local",
+      "type": "local-directory"
+    },
+    {
+      "domains": [
+        "admin",
+        "apex",
+        "lwc",
+        "flow",
+        "omnistudio",
+        "agentforce",
+        "security",
+        "integration",
+        "data",
+        "devops"
+      ],
+      "id": "knowledge_imports",
+      "tags": [
+        "imported",
+        "retrieval",
+        "curated"
+      ],
+      "title": "Curated imported knowledge",
+      "trust": "imported",
+      "type": "local-directory"
+    },
+    {
+      "domains": [
+        "admin",
+        "apex",
+        "lwc",
+        "flow",
+        "omnistudio",
+        "agentforce",
+        "security",
+        "integration",
+        "data",
+        "devops"
+      ],
+      "id": "official_source_map",
+      "tags": [
+        "official-docs",
+        "standards",
+        "source-selection"
+      ],
+      "title": "Official Salesforce Source Map",
+      "trust": "repo-local",
+      "type": "local-file"
+    },
+    {
+      "domains": [
+        "admin",
+        "apex",
+        "lwc",
+        "flow",
+        "omnistudio",
+        "security",
+        "integration",
+        "data",
+        "devops"
+      ],
+      "id": "waf_mapping",
+      "tags": [
+        "waf",
+        "pillars",
+        "standards"
+      ],
+      "title": "Well-Architected Mapping",
+      "trust": "repo-local",
+      "type": "local-file"
+    },
+    {
+      "domains": [
+        "admin",
+        "apex",
+        "lwc",
+        "flow",
+        "omnistudio",
+        "security",
+        "integration",
+        "data",
+        "devops"
+      ],
+      "id": "salesforce_well_architected_overview",
+      "tags": [
+        "well-architected",
+        "architecture",
+        "best-practices"
+      ],
+      "title": "Salesforce Well-Architected Overview",
+      "trust": "official",
+      "type": "official-doc"
+    },
+    {
+      "domains": [
+        "integration",
+        "flow",
+        "omnistudio",
+        "admin",
+        "data"
+      ],
+      "id": "integration_patterns",
+      "tags": [
+        "integration",
+        "patterns",
+        "architecture"
+      ],
+      "title": "Integration Patterns",
+      "trust": "official",
+      "type": "official-doc"
+    },
+    {
+      "domains": [
+        "admin",
+        "data",
+        "integration"
+      ],
+      "id": "object_reference",
+      "tags": [
+        "objects",
+        "sobjects",
+        "metadata"
+      ],
+      "title": "Object Reference",
+      "trust": "official",
+      "type": "official-doc"
+    },
+    {
+      "domains": [
+        "integration",
+        "admin",
+        "omnistudio"
+      ],
+      "id": "rest_api_developer_guide",
+      "tags": [
+        "rest",
+        "api",
+        "integration"
+      ],
+      "title": "REST API Developer Guide",
+      "trust": "official",
+      "type": "official-doc"
+    },
+    {
+      "domains": [
+        "admin",
+        "devops",
+        "flow",
+        "data"
+      ],
+      "id": "metadata_api_developer_guide",
+      "tags": [
+        "metadata",
+        "deployment",
+        "release"
+      ],
+      "title": "Metadata API Developer Guide",
+      "trust": "official",
+      "type": "official-doc"
+    },
+    {
+      "domains": [
+        "apex",
+        "integration",
+        "flow"
+      ],
+      "id": "apex_developer_guide",
+      "tags": [
+        "apex",
+        "transactions",
+        "testing"
+      ],
+      "title": "Apex Developer Guide",
+      "trust": "official",
+      "type": "official-doc"
+    },
+    {
+      "domains": [
+        "apex"
+      ],
+      "id": "apex_reference_guide",
+      "tags": [
+        "apex",
+        "api-reference",
+        "limits"
+      ],
+      "title": "Apex Reference Guide",
+      "trust": "official",
+      "type": "official-doc"
+    },
+    {
+      "domains": [
+        "lwc"
+      ],
+      "id": "lightning_component_reference",
+      "tags": [
+        "lwc",
+        "base-components",
+        "ui"
+      ],
+      "title": "Lightning Component Reference",
+      "trust": "official",
+      "type": "official-doc"
+    },
+    {
+      "domains": [
+        "lwc"
+      ],
+      "id": "lwc_best_practices",
+      "tags": [
+        "lwc",
+        "best-practices",
+        "composition"
+      ],
+      "title": "Best Practices for Development with Lightning Web Components",
+      "trust": "official",
+      "type": "official-doc"
+    },
+    {
+      "domains": [
+        "lwc"
+      ],
+      "id": "lwc_data_guidelines",
+      "tags": [
+        "lwc",
+        "data",
+        "lds"
+      ],
+      "title": "Data Guidelines",
+      "trust": "official",
+      "type": "official-doc"
+    },
+    {
+      "domains": [
+        "apex",
+        "lwc",
+        "security"
+      ],
+      "id": "secure_apex_classes",
+      "tags": [
+        "security",
+        "apex",
+        "sharing"
+      ],
+      "title": "Secure Apex Classes",
+      "trust": "official",
+      "type": "official-doc"
+    },
+    {
+      "domains": [
+        "flow",
+        "admin"
+      ],
+      "id": "flow_reference",
+      "tags": [
+        "flow",
+        "flow-builder",
+        "automation"
+      ],
+      "title": "Flow Reference",
+      "trust": "official",
+      "type": "official-doc"
+    },
+    {
+      "domains": [
+        "flow",
+        "admin"
+      ],
+      "id": "flow_builder",
+      "tags": [
+        "flow",
+        "automation",
+        "declarative"
+      ],
+      "title": "Flow Builder",
+      "trust": "official",
+      "type": "official-doc"
+    },
+    {
+      "domains": [
+        "omnistudio"
+      ],
+      "id": "omnistudio_developer_guide",
+      "tags": [
+        "omnistudio",
+        "omniscript",
+        "integration-procedures",
+        "dataraptors"
+      ],
+      "title": "OmniStudio Developer Guide",
+      "trust": "official",
+      "type": "official-doc"
+    },
+    {
+      "domains": [
+        "agentforce"
+      ],
+      "id": "agentforce_developer_guide",
+      "tags": [
+        "agentforce",
+        "einstein",
+        "ai",
+        "agents"
+      ],
+      "title": "Agentforce Developer Guide",
+      "trust": "official",
+      "type": "official-doc"
+    },
+    {
+      "domains": [
+        "agentforce"
+      ],
+      "id": "einstein_platform_services",
+      "tags": [
+        "einstein",
+        "genai",
+        "llm",
+        "grounding"
+      ],
+      "title": "Einstein Platform Services",
+      "trust": "official",
+      "type": "official-doc"
+    },
+    {
+      "domains": [
+        "security",
+        "admin",
+        "data"
+      ],
+      "id": "shield_platform_encryption",
+      "tags": [
+        "security",
+        "encryption",
+        "shield",
+        "compliance"
+      ],
+      "title": "Shield Platform Encryption Implementation Guide",
+      "trust": "official",
+      "type": "official-doc"
+    },
+    {
+      "domains": [
+        "security",
+        "admin"
+      ],
+      "id": "salesforce_security_guide",
+      "tags": [
+        "security",
+        "authentication",
+        "profiles",
+        "permissions"
+      ],
+      "title": "Salesforce Security Guide",
+      "trust": "official",
+      "type": "official-doc"
+    },
+    {
+      "domains": [
+        "security",
+        "devops"
+      ],
+      "id": "event_monitoring",
+      "tags": [
+        "security",
+        "monitoring",
+        "audit",
+        "event-log"
+      ],
+      "title": "Event Monitoring",
+      "trust": "official",
+      "type": "official-doc"
+    },
+    {
+      "domains": [
+        "devops"
+      ],
+      "id": "sfdx_developer_guide",
+      "tags": [
+        "sfdx",
+        "dx",
+        "scratch-orgs",
+        "source-format"
+      ],
+      "title": "Salesforce DX Developer Guide",
+      "trust": "official",
+      "type": "official-doc"
+    },
+    {
+      "domains": [
+        "devops"
+      ],
+      "id": "sfdx_cli_reference",
+      "tags": [
+        "sfdx",
+        "cli",
+        "deployment",
+        "automation"
+      ],
+      "title": "Salesforce CLI Reference",
+      "trust": "official",
+      "type": "official-doc"
+    },
+    {
+      "domains": [
+        "data",
+        "integration"
+      ],
+      "id": "bulk_api_2",
+      "tags": [
+        "bulk-api",
+        "data-loading",
+        "async",
+        "large-data"
+      ],
+      "title": "Bulk API 2.0 Developer Guide",
+      "trust": "official",
+      "type": "official-doc"
+    },
+    {
+      "domains": [
+        "admin",
+        "apex",
+        "lwc",
+        "flow",
+        "omnistudio",
+        "agentforce",
+        "security",
+        "integration",
+        "data",
+        "devops"
+      ],
+      "id": "trailhead",
+      "tags": [
+        "learning",
+        "trailhead",
+        "official-community"
+      ],
+      "title": "Salesforce Trailhead",
+      "trust": "official-community",
+      "type": "official-community"
+    },
+    {
+      "domains": [
+        "admin",
+        "apex",
+        "lwc",
+        "flow",
+        "security",
+        "integration",
+        "data",
+        "devops"
+      ],
+      "id": "salesforce_architects_blog",
+      "tags": [
+        "architecture",
+        "patterns",
+        "best-practices",
+        "official-community"
+      ],
+      "title": "Salesforce Architects Blog",
+      "trust": "official-community",
+      "type": "official-community"
+    },
+    {
+      "domains": [
+        "admin",
+        "flow",
+        "security"
+      ],
+      "id": "salesforce_ben",
+      "tags": [
+        "admin",
+        "how-to",
+        "official-community"
+      ],
+      "title": "Salesforce Ben",
+      "trust": "official-community",
+      "type": "official-community"
+    },
+    {
+      "domains": [
+        "apex",
+        "lwc",
+        "integration",
+        "agentforce",
+        "devops"
+      ],
+      "id": "salesforce_developers_blog",
+      "tags": [
+        "dev-patterns",
+        "new-features",
+        "official-community"
+      ],
+      "title": "Salesforce Developers Blog",
+      "trust": "official-community",
+      "type": "official-community"
+    },
+    {
+      "domains": [
+        "apex",
+        "lwc",
+        "integration",
+        "devops"
+      ],
+      "id": "andy_in_the_cloud",
+      "tags": [
+        "apex",
+        "lwc",
+        "platform-internals",
+        "expert-community"
+      ],
+      "title": "Andy in the Cloud",
+      "trust": "expert-community",
+      "type": "expert-community"
+    },
+    {
+      "domains": [
+        "apex",
+        "lwc",
+        "flow",
+        "integration"
+      ],
+      "id": "apex_hours",
+      "tags": [
+        "apex",
+        "tutorials",
+        "governor-limits",
+        "expert-community"
+      ],
+      "title": "Apex Hours",
+      "trust": "expert-community",
+      "type": "expert-community"
+    },
+    {
+      "domains": [
+        "admin",
+        "apex",
+        "lwc",
+        "flow",
+        "omnistudio",
+        "security",
+        "integration",
+        "data",
+        "devops"
+      ],
+      "id": "salesforce_stack_exchange",
+      "tags": [
+        "q-and-a",
+        "expert-community",
+        "accepted-answers"
+      ],
+      "title": "Salesforce Stack Exchange",
+      "trust": "expert-community",
+      "type": "expert-community"
+    },
+    {
+      "domains": [
+        "lwc",
+        "flow"
+      ],
+      "id": "unofficial_sf",
+      "tags": [
+        "lwc",
+        "flow-extensions",
+        "screen-flow",
+        "expert-community"
+      ],
+      "title": "Unofficial SF",
+      "trust": "expert-community",
+      "type": "expert-community"
+    },
+    {
+      "domains": [
+        "admin",
+        "apex",
+        "lwc",
+        "flow",
+        "omnistudio",
+        "agentforce",
+        "security",
+        "integration",
+        "data",
+        "devops"
+      ],
+      "id": "source_hierarchy",
+      "tags": [
+        "standards",
+        "trust-ladder",
+        "contradiction-rules"
+      ],
+      "title": "Source Hierarchy",
+      "trust": "repo-local",
+      "type": "local-file"
+    },
+    {
+      "domains": [
+        "admin",
+        "apex",
+        "lwc",
+        "flow",
+        "omnistudio",
+        "agentforce",
+        "security",
+        "integration",
+        "data",
+        "devops"
+      ],
+      "id": "skill_content_contract",
+      "tags": [
+        "standards",
+        "quality-gates",
+        "contract"
+      ],
+      "title": "Skill Content Contract",
+      "trust": "repo-local",
+      "type": "local-file"
+    }
+  ]
+}

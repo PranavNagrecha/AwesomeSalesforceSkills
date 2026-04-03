@@ -1,0 +1,90 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "0207c1246c07e1bb24b5",
+    "042d5c3f352dc8b0d79b",
+    "04f30d9d1def21176f53",
+    "07c098afdd25fb9d76f3",
+    "1513c60e07be8c9816cc",
+    "1e2c40f318b786b833be",
+    "218fd73c22b890769ec5",
+    "25ce82ee3baf0dc0634b",
+    "339ff279c52915b8fd58",
+    "35ffd1a14b83f7b74a4d",
+    "3a594e70cf0f474755d1",
+    "3c00cbbe9ec4ceb7f2ef",
+    "438513e1b81a9316ae67",
+    "4e77bee9b1e52bd2c195",
+    "4eec587b443c4c96f093",
+    "5a602782f2facf4a714d",
+    "60fee04a1403df2db9a2",
+    "61b7238cf6fb0dfbe223",
+    "67e057bbe7d7c95b814f",
+    "764f4de1b039563dd66a",
+    "7f0607457577f468cdab",
+    "84d47ab2934ab911e0aa",
+    "8c9b5e74f8aa247902ba",
+    "993257c852ca42895900",
+    "9ca174dc34b8277115bf",
+    "9fd9c84aa4ffb5f3938a",
+    "a35294024905a389ab6e",
+    "aa3adf5f356b5baef004",
+    "ab3b82534f543903e67c",
+    "ac4eee129e4eac23f45c",
+    "b42d12d2f359fc9e48e0",
+    "b5e9949e1d0497a55fec",
+    "b7798b76a7423744d414",
+    "c22f6f3608aad20b3c60",
+    "c48ab72a379e24384957",
+    "c5c241c9711244b23bc2",
+    "ca394616c8cedf3d5251",
+    "cf71f46013762502de55",
+    "d5b27e5198b2db8c639f",
+    "d6f24e54a021dd100da6",
+    "df5420b8083d9229caa4",
+    "e8ab8bc278f9a339a3d7",
+    "f9c1a23c6e0fc0f7b834"
+  ],
+  "content_hash": "09f3de1ed1489cd023b89daa9f42e5393bb47059dd2c9915bca293ffb341244c",
+  "dependencies": [],
+  "description": "Use when designing or reviewing Apex actions exposed to Flow or similar orchestration layers via `@InvocableMethod`, especially around wrapper DTOs, bulk-safe list contracts, and error behavior. Triggers: 'InvocableMethod', 'InvocableVariable', 'Flow Apex action', 'bulk-safe invocable', 'Apex action input/output'. NOT for general Flow design without a custom Apex action boundary.",
+  "file_location": "skills/apex/invocable-methods",
+  "id": "apex/invocable-methods",
+  "inputs": [
+    "Flow or action use case and expected record volume",
+    "whether the action needs complex request or response fields",
+    "error-handling expectation for the calling automation"
+  ],
+  "name": "invocable-methods",
+  "official_sources": [
+    "Apex Developer Guide \u2014 `@InvocableMethod` contract",
+    "Flow Reference \u2014 Apex Action usage in Flow",
+    "Salesforce Well-Architected Overview \u2014 scalability, reliability, and operational framing"
+  ],
+  "outputs": [
+    "invocable method design recommendation",
+    "review findings for contract, bulk safety, and wrapper usage",
+    "Apex action scaffold with request and response DTOs"
+  ],
+  "references": [
+    "skills/apex/invocable-methods/references/examples.md",
+    "skills/apex/invocable-methods/references/gotchas.md",
+    "skills/apex/invocable-methods/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/invocable-methods/scripts/check_invocable_methods.py"
+  ],
+  "tags": [
+    "invocablemethod",
+    "invocablevariable",
+    "flow-apex-action",
+    "wrapper-dto",
+    "bulk-safe"
+  ],
+  "templates": [
+    "skills/apex/invocable-methods/templates/invocable-methods-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

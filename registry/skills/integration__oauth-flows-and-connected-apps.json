@@ -1,0 +1,85 @@
+{
+  "category": "integration",
+  "chunk_ids": [
+    "0eb059fcd59cc45b109b",
+    "2f40ff557f57715d3318",
+    "33352df2ca94abd12d7a",
+    "40653afeeff94572f7f7",
+    "4137a558912637a59343",
+    "42376a2571eb72b96df4",
+    "4637b100707b1b63bec2",
+    "4a3c37fa0230c5ddac6b",
+    "4ae2e2d80bee625922ea",
+    "52d38cfd890f1134a534",
+    "5483e26bde093a6a4e0f",
+    "5789cc8dc66f4dde1393",
+    "5974a98be76f66851131",
+    "5f6b99b57624af564bdf",
+    "5fd11087eaadd80c613c",
+    "6178049bda87f28d5cc4",
+    "69d4fa1dfd8894cb4b5a",
+    "6fce9c0d7f877e674132",
+    "782f44147f942d91aa50",
+    "7cd036b1fccc9a45cb9a",
+    "86169eef069ae6ce78ed",
+    "9128c4cf4d691af14b0a",
+    "a167aba60b8474bce3a1",
+    "a843390192375267404f",
+    "b4eee9b4e0fedb9d05ec",
+    "b576142ae9259d02e6ec",
+    "b6b038e0cc9ea6b26b98",
+    "c295dd063378a75d91ad",
+    "c493aa560abd3de67371",
+    "c8c066d62c92be233132",
+    "d00200d60ab3777be838",
+    "d75af6dc1f547f3ed172",
+    "d94fe63a5c4ece18980d",
+    "eb1c7104b3dc1428ab13",
+    "ede3aeb4c37534d87095",
+    "f4feb3cd68e6b48616f8",
+    "f8bd759648f1e0d01b89",
+    "fdffd3c139eb8841644f"
+  ],
+  "content_hash": "84d4ed0d05c4afa960cda06a01d56c3b880513ef4694fb1656f6506473099a6a",
+  "dependencies": [],
+  "description": "Use when choosing or reviewing Salesforce OAuth flows and connected-app policy for integrations, including client credentials, JWT bearer, authorization code, device flow, scopes, and token lifecycle controls. Triggers: 'OAuth flow', 'connected app', 'client credentials', 'JWT bearer', 'refresh token', 'integration user'. NOT for record-level sharing design or for simple Named Credential usage when the auth-flow decision is already settled.",
+  "file_location": "skills/integration/oauth-flows-and-connected-apps",
+  "id": "integration/oauth-flows-and-connected-apps",
+  "inputs": [
+    "traffic direction such as system to Salesforce, Salesforce to external system, or user delegated access",
+    "whether user context is required",
+    "scope, token lifetime, IP policy, and integration-user constraints"
+  ],
+  "name": "oauth-flows-and-connected-apps",
+  "official_sources": [
+    "OAuth Authorization Flows - https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_flows.htm&type=5",
+    "Connected Apps Overview - https://help.salesforce.com/s/articleView?id=sf.connected_app_overview.htm&type=5",
+    "JWT Bearer Token Flow - https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_jwt_flow.htm&type=5"
+  ],
+  "outputs": [
+    "OAuth flow recommendation",
+    "connected-app review findings",
+    "token lifecycle and governance checklist"
+  ],
+  "references": [
+    "skills/integration/oauth-flows-and-connected-apps/references/examples.md",
+    "skills/integration/oauth-flows-and-connected-apps/references/gotchas.md",
+    "skills/integration/oauth-flows-and-connected-apps/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/integration/oauth-flows-and-connected-apps/scripts/check_oauth_flows_and_connected_apps.py"
+  ],
+  "tags": [
+    "oauth",
+    "connected-apps",
+    "client-credentials",
+    "jwt-bearer",
+    "auth-code"
+  ],
+  "templates": [
+    "skills/integration/oauth-flows-and-connected-apps/templates/oauth-flows-and-connected-apps-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

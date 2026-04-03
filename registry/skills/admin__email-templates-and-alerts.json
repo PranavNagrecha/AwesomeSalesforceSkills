@@ -1,0 +1,83 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "00814b16cb8aef355dc8",
+    "0be8f05e817a51c7ba61",
+    "0fff7221e57c423634b7",
+    "1402da517b98831f9101",
+    "17db161675ede93d5aed",
+    "188e9745d2ee88c56b9b",
+    "1a2aeec76bf798e10ba3",
+    "28c52ccc04c4668bfcfb",
+    "2c00200bdaa9b4c6457b",
+    "2c9be42c765a60677bf1",
+    "3057003217aacbb20544",
+    "33b0ec35d3920883008a",
+    "353b13c6b8c6f64a4416",
+    "398523af96461351d895",
+    "39d6ea91a81dd093106e",
+    "42d17ba537cc4fbd89c3",
+    "46f9eab524432db0d0fe",
+    "48bfb5b7b19f498fbc1d",
+    "526a5f3731021cdbbae0",
+    "5424ad9a7067beca7a97",
+    "55ace35b502afb9d3a7b",
+    "644cd913bc6dbe22fb3d",
+    "780dcefe91c15bf666f3",
+    "7e4a8abc0806fc1afe24",
+    "82d4497b33a0219081f2",
+    "874c7973d4825d2219e4",
+    "9f71e79a1fa4e9f39e79",
+    "a586f3ce699e5e52247a",
+    "ac31f43ee167a538b7b2",
+    "aeac59a1878c84134d16",
+    "b995825b92b1ca9bff61",
+    "be35e1753bd7568b7a7e",
+    "e5d9cfec5c6fac58acaa",
+    "ee0a52ba4a4eee93e6d5",
+    "f4481b8954c0fe5b09f2",
+    "fad5c02c4194313e8171",
+    "fb004e8bbf77c42b5dd3"
+  ],
+  "content_hash": "e8ec2e959b589675843daad1eb827e85c45501cbad5abd23423d3264fca6a9b8",
+  "dependencies": [],
+  "description": "Use when designing, reviewing, or troubleshooting Salesforce email templates, email alerts, and declarative notification design. Triggers: 'Lightning Email Template', 'email alert', 'merge field', 'org-wide email', 'too many emails', 'mass email limit'. NOT for marketing automation or custom Apex email services.",
+  "file_location": "skills/admin/email-templates-and-alerts",
+  "id": "admin/email-templates-and-alerts",
+  "inputs": [
+    "notification scenario",
+    "audience",
+    "sender requirements"
+  ],
+  "name": "email-templates-and-alerts",
+  "official_sources": [
+    "Salesforce Well-Architected Overview \u2014 operational and user-facing notification design framing",
+    "Metadata API Developer Guide \u2014 email template and alert metadata deployment behavior"
+  ],
+  "outputs": [
+    "email design guidance",
+    "template governance findings",
+    "notification recommendations"
+  ],
+  "references": [
+    "skills/admin/email-templates-and-alerts/references/examples.md",
+    "skills/admin/email-templates-and-alerts/references/gotchas.md",
+    "skills/admin/email-templates-and-alerts/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/email-templates-and-alerts/scripts/check_email_templates.py"
+  ],
+  "tags": [
+    "email-alerts",
+    "templates",
+    "merge-fields",
+    "notifications",
+    "org-wide-email"
+  ],
+  "templates": [
+    "skills/admin/email-templates-and-alerts/templates/email-template-plan.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

@@ -1,0 +1,90 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "034966f5da86c2e6f799",
+    "085a90fd43beb445f608",
+    "1088c0615d005e828d81",
+    "123a04f5a5a7436d0c31",
+    "128d816e51c26c737cde",
+    "228e1322b4a49c85a603",
+    "2a108a05e08591bad758",
+    "32eacec573a757e616f4",
+    "3446939c5e2153041f0e",
+    "34f15b0018df74d8c989",
+    "3e227f15df5581d6851b",
+    "3ebdfdb5c4f3a4d8b346",
+    "41c3754d20a629bb2219",
+    "4423a55ce01030688ab8",
+    "66006dc2c597aeec3ea3",
+    "6a28d345e089991b0ad0",
+    "6b0fe81a54e7e3eb885a",
+    "6f461e3c7e3e43901897",
+    "728e22b1405fd58e79d8",
+    "7a7ff43b337ac9dcf3b8",
+    "83a7b71475966d8b2c56",
+    "8779cd721121b7f231d1",
+    "90dcf86696507e5bf866",
+    "9aec1280c750fc8e7036",
+    "a122d5e1c9b61453eac5",
+    "a6c58e1632091a5fc1eb",
+    "a7c00a8aaa4524eb0595",
+    "ae088b38b4ec79e1f072",
+    "b41c6bf3983938f73bc7",
+    "b6802bd791219478bb24",
+    "b9c29de35e2b64394aa8",
+    "bb164e2120f6f6c16311",
+    "beb1ad7466a34729d024",
+    "c9cfb3679815598e4730",
+    "c9d78cf563b134a6bb98",
+    "cf8afa0f9bdb2c41e1a6",
+    "d070e847b055d7389ce3",
+    "e0f797e4dffecaa3b4a3",
+    "eaf0806f55cd1bd8d1e9",
+    "f3ed715d4328b69e7478",
+    "f80deaf826f5e2cdd2a0",
+    "f9e7cb4528398ee92e98",
+    "fea2477c3e4cc87dbfa4"
+  ],
+  "content_hash": "46f381810b9a6af90e44cd8363f82b6be44200f076769dfd4c31ece3b0efcf2a",
+  "dependencies": [],
+  "description": "Use when designing, reviewing, or debugging Apex execution context, sharing keywords, CRUD/FLS enforcement, system-vs-user mode behavior, or secure write patterns. Triggers: 'with sharing', 'inherited sharing', 'stripInaccessible', 'AuraEnabled security', 'CRUD FLS'. NOT for SOQL injection review alone \u2014 use apex/soql-security for query-specific hardening.",
+  "file_location": "skills/apex/apex-security-patterns",
+  "id": "apex/apex-security-patterns",
+  "inputs": [
+    "entry point such as AuraEnabled, REST, Flow-invocable, trigger handler, or Batch",
+    "required data access model for records, objects, and fields",
+    "whether the code is read-heavy, write-heavy, or both"
+  ],
+  "name": "apex-security-patterns",
+  "official_sources": [
+    "Apex Developer Guide \u2014 security and sharing keyword guidance",
+    "Secure Apex Classes \u2014 explicit CRUD/FLS and user-context recommendations",
+    "Salesforce Well-Architected Overview \u2014 security and reliability framing"
+  ],
+  "outputs": [
+    "security design recommendation for execution context and access enforcement",
+    "review findings for sharing, CRUD/FLS, and system-context risks",
+    "secure service-layer pattern for reads and writes"
+  ],
+  "references": [
+    "skills/apex/apex-security-patterns/references/examples.md",
+    "skills/apex/apex-security-patterns/references/gotchas.md",
+    "skills/apex/apex-security-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/apex-security-patterns/scripts/check_apex_security_patterns.py"
+  ],
+  "tags": [
+    "apex-security",
+    "inherited-sharing",
+    "stripinaccessible",
+    "crud-fls",
+    "user-mode"
+  ],
+  "templates": [
+    "skills/apex/apex-security-patterns/templates/apex-security-patterns-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

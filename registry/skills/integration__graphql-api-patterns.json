@@ -1,0 +1,85 @@
+{
+  "category": "integration",
+  "chunk_ids": [
+    "06a6e509facd2e2a7fc1",
+    "096121cb749273aa2dbf",
+    "1192afea5f6d7840615f",
+    "1a00bf6c16084adf8a0b",
+    "1c03cbdfc41ddaa1bbd7",
+    "23302d56634c126f8ad9",
+    "3545767641af31f9d7b5",
+    "429a6323a4b2adf47048",
+    "46585f4cc792a00cb506",
+    "56ceefc5abcf78b4ce99",
+    "61bf47422f49048ac603",
+    "61fc8b9a9f4aa0800072",
+    "62091f87cc3802dc388b",
+    "66c18a077ec40661f1ec",
+    "6f4d368666e8721c9170",
+    "74dc81a00a241a01a7f7",
+    "809ce3c0be0466f4f1b3",
+    "84bd3d005f780b370c9e",
+    "8546b56abfd3028d706c",
+    "8c5d37ddc17ea64fd87b",
+    "8ff5a7413a9efcac6ded",
+    "909d237b8f01c95f2a59",
+    "90a1d7a06c4d0c15f7aa",
+    "9866b5972c9957a574cc",
+    "9a16d0c7aa7d14c416fb",
+    "9fa145886f3d6ece9404",
+    "a665113b092f1962f6df",
+    "afe3b7108e588b7a2a0b",
+    "c25634312d432215b138",
+    "c2b73eb5846319d5a41f",
+    "c453b36b9988ce1373e4",
+    "eb11091ddca3b2e38b9b",
+    "eb86ee5aa323199dfe4b",
+    "f3e826c22357f66112c4",
+    "f487b9e738329c846467",
+    "f6d3c2a76e1a8df42ce6",
+    "fb17b1de15cef4747f7b",
+    "fbe882e5e233176e96e2"
+  ],
+  "content_hash": "c578bc91a623f5c0f8784d901b7f72442a898b7a1da7cc0a04883410c27eb7ae",
+  "dependencies": [],
+  "description": "Use when designing or reviewing Salesforce GraphQL API usage, especially endpoint selection, field shaping, connection-based pagination, LWC wire adapters, and GraphQL vs REST tradeoffs. Triggers: 'GraphQL API', 'lightning/graphql', 'uiGraphQLApi', 'GraphQL pagination', 'GraphQL vs REST'. NOT for building a custom GraphQL server or for generic REST integration design with no GraphQL surface.",
+  "file_location": "skills/integration/graphql-api-patterns",
+  "id": "integration/graphql-api-patterns",
+  "inputs": [
+    "client type such as LWC, Experience Cloud, mobile, or server integration",
+    "query shape and whether pagination, aggregation, or mutation behavior is needed",
+    "offline support, payload size, and tracing expectations"
+  ],
+  "name": "graphql-api-patterns",
+  "official_sources": [
+    "Salesforce GraphQL API Developer Guide - https://developer.salesforce.com/docs/platform/graphql/guide/graphql-about.html",
+    "GraphQL Queries and Mutations - https://developer.salesforce.com/docs/platform/graphql/guide/graphql-queries.html",
+    "Salesforce Well-Architected Overview - https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "GraphQL versus REST recommendation",
+    "review findings for query design and adapter choice",
+    "request pattern for variables, pagination, and error handling"
+  ],
+  "references": [
+    "skills/integration/graphql-api-patterns/references/examples.md",
+    "skills/integration/graphql-api-patterns/references/gotchas.md",
+    "skills/integration/graphql-api-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/integration/graphql-api-patterns/scripts/check_graphql_api_patterns.py"
+  ],
+  "tags": [
+    "graphql",
+    "lightning-graphql",
+    "uiGraphQLApi",
+    "pagination",
+    "api-design"
+  ],
+  "templates": [
+    "skills/integration/graphql-api-patterns/templates/graphql-api-patterns-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

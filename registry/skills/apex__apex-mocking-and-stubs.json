@@ -1,0 +1,89 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "015a0452019ab0f6cf51",
+    "034a5185c309897a0742",
+    "081ee6b0552529fc2694",
+    "1004d2dac3eadfdacd23",
+    "1007e9ac309d9809c98c",
+    "10946f033bc7c0a569ce",
+    "1a1c74ad83b8da64d3d8",
+    "1ca20ed1e194d9019406",
+    "21aeeba4cd037c32086c",
+    "21eb93f82b2c025ebf81",
+    "32200277da3a617e033e",
+    "32687deb8a32219bb926",
+    "3a6c99618a37b50b88d6",
+    "493e6120f7cc47b88caf",
+    "4b17f10bb15f3a7c6dfd",
+    "4f9b6db2b8debe512765",
+    "4ffaab83861d9d1c234c",
+    "5398682d3c573c473c82",
+    "69583f7047fc11d88dac",
+    "7351334e9650e91092ce",
+    "74d450dce9d817d3bb48",
+    "757dec1d19bd3fb3e04b",
+    "7b0d87fa8582c6de8419",
+    "7fab6114cc9006ec3a50",
+    "8c2c6ddbbb550039a446",
+    "8e0504ee1afe48ce379b",
+    "8f48043fcb487df23226",
+    "99a5f779028369841b39",
+    "a2907082f9c09de8ea5a",
+    "ac5fbb3549499ebede90",
+    "b252dafdecfd36235d67",
+    "bf71b595840c5af7b3fe",
+    "c95a9c681f4f799cabf7",
+    "cc6eef3f829f3a134e74",
+    "d3928bc87dd6955a98ba",
+    "d7f0bba896076aba3a6b",
+    "dd1789add280b6b4e466",
+    "e3e2caa704621cc7c328",
+    "e5b6cfd3fdeb0f64dd15",
+    "efec3e736c0b2872e873",
+    "f73502da79d08af2e96c",
+    "fd3a9ca3ee0414ced4fb"
+  ],
+  "content_hash": "57484f47c90fb0bc3582bb9cea6242cb4aeb7a46b2f4cf3b351c6dc605754af5",
+  "dependencies": [],
+  "description": "Use when choosing or implementing Apex test doubles with `Test.setMock`, `HttpCalloutMock`, `StaticResourceCalloutMock`, or `StubProvider`, and when designing code seams to support those doubles cleanly. Triggers: 'StubProvider', 'Test.createStub', 'HttpCalloutMock', 'StaticResourceCalloutMock', 'mocking infrastructure'. NOT for general Apex test design outside the mocking and seam problem.",
+  "file_location": "skills/apex/apex-mocking-and-stubs",
+  "id": "apex/apex-mocking-and-stubs",
+  "inputs": [
+    "type of dependency being replaced such as HTTP, SOAP, service class, or helper",
+    "whether the seam is an interface, virtual class, or transport-level callout",
+    "test scenarios needed such as success, timeout, retry, or malformed response"
+  ],
+  "name": "apex-mocking-and-stubs",
+  "official_sources": [
+    "Apex Developer Guide \u2014 `Test.setMock` and HTTP callout testing",
+    "Apex Developer Guide \u2014 Stub API and `StubProvider`",
+    "Apex Reference Guide \u2014 `Test` class behavior"
+  ],
+  "outputs": [
+    "mocking strategy recommendation",
+    "review findings for missing seams or weak test doubles",
+    "test double scaffold for callouts or service collaborators"
+  ],
+  "references": [
+    "skills/apex/apex-mocking-and-stubs/references/examples.md",
+    "skills/apex/apex-mocking-and-stubs/references/gotchas.md",
+    "skills/apex/apex-mocking-and-stubs/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/apex-mocking-and-stubs/scripts/check_apex_mocking_and_stubs.py"
+  ],
+  "tags": [
+    "test-setmock",
+    "httpcalloutmock",
+    "stubprovider",
+    "test-doubles",
+    "staticresourcecalloutmock"
+  ],
+  "templates": [
+    "skills/apex/apex-mocking-and-stubs/templates/apex-mocking-and-stubs-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

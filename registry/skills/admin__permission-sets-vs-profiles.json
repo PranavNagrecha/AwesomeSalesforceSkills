@@ -1,0 +1,103 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "02ff86672d8e5c576b1d",
+    "075c5ea6311847b7f12a",
+    "08ddfcbc29de2314e852",
+    "0b81ece69501d47bede9",
+    "0d116be82cbc1fbdf298",
+    "1654f82e041b0a3a2521",
+    "18285a11b92a658f96dd",
+    "1abd7f2c1a22bfe98f0e",
+    "1c80dec72e946d6d5492",
+    "279a20ee647cdf400ed2",
+    "2adaa3a36e0bb9ca7e9e",
+    "30a1c1013b3c0c022d71",
+    "3608215e673775a33e2b",
+    "3a17e9bf3c4487d3c1d7",
+    "3d50d3847d01a7f4bf45",
+    "41d78e83b0b6433549ee",
+    "434f1e0254578003f16a",
+    "449a2b0a2a79a7b39d62",
+    "47e6ac47aa91bdd586a0",
+    "4a81a333df440293292a",
+    "4fc64966f7d2d3e6a4a0",
+    "5027ccfef51392767176",
+    "550ac7cccaa71d52e864",
+    "58bca1f9e4a3a09658b8",
+    "59136cbef610051c6acd",
+    "62af3a8bdb57bb1aa26d",
+    "6588accb255e82216381",
+    "67f4dce55256ef13f954",
+    "73e75b9225f894d9da8b",
+    "73ff508a0546c82b7ee0",
+    "793ec367bf6491e696a0",
+    "8506d83173f2c35b715f",
+    "85aa2705b666eb1ff4d5",
+    "89c27c36359b4d673488",
+    "9b84e7ea31bb2c595d90",
+    "a006fa5a51ff4d5bef83",
+    "a863f43413e792579b95",
+    "ac403a6e1f3aaf643cc4",
+    "adb2d727816462907b09",
+    "b15516e926cbdfbe5787",
+    "b372767c11168ef5bf93",
+    "b729f2617f0e43fc933e",
+    "b8b64f3c1d23fff0586d",
+    "c11991c7ba111949300a",
+    "c67fa40c44950dc25b28",
+    "ccd406f1009b44e07ba2",
+    "d1b8c36a8190c7428161",
+    "d32372c53a12da8436b2",
+    "d3a60020a0cf0ca2eea2",
+    "d494d1ace331a6367dc9",
+    "dfbe2c22dd2c5c0c36c3",
+    "dfc0c0d5d33eaeddbff9",
+    "e6af6caae9540ceeba62",
+    "ef52aaeef34b52e13ae8",
+    "f97bf6ffb1aa03e59d6a",
+    "fec6345e6f26e62cb4f5",
+    "ff744190cd55f783e23a"
+  ],
+  "content_hash": "97c2362b19a563379e130e2d8a859b9d9947c4dadbe8746956f57f7a2ed61487",
+  "dependencies": [],
+  "description": "Use when designing or auditing Salesforce access control \u2014 deciding between Profiles, Permission Sets, and Permission Set Groups. Triggers: 'user can't see field', 'too many profiles', 'permission model', 'least privilege', 'profile migration'. NOT for sharing rules or record-level access \u2014 use security/fls-crud for that.",
+  "file_location": "skills/admin/permission-sets-vs-profiles",
+  "id": "admin/permission-sets-vs-profiles",
+  "inputs": [
+    "persona matrix",
+    "current access model",
+    "managed package constraints"
+  ],
+  "name": "permission-sets-vs-profiles",
+  "official_sources": [
+    "Salesforce Well-Architected Overview \u2014 least-privilege and governance framing",
+    "Metadata API Developer Guide \u2014 profile and permission metadata movement constraints"
+  ],
+  "outputs": [
+    "permission model recommendation",
+    "access migration findings",
+    "least-privilege guidance"
+  ],
+  "references": [
+    "skills/admin/permission-sets-vs-profiles/references/examples.md",
+    "skills/admin/permission-sets-vs-profiles/references/gotchas.md",
+    "skills/admin/permission-sets-vs-profiles/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py"
+  ],
+  "tags": [
+    "profiles",
+    "permission-sets",
+    "permission-set-groups",
+    "least-privilege",
+    "access-control"
+  ],
+  "templates": [
+    "skills/admin/permission-sets-vs-profiles/templates/permission-set-design-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

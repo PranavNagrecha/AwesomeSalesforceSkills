@@ -1,0 +1,90 @@
+{
+  "category": "agentforce",
+  "chunk_ids": [
+    "04c33d8e7b46bc9d4f38",
+    "0ed1edad2fef22fada50",
+    "0feb8f8a584462860b57",
+    "1451709985319925f71c",
+    "1c4c1e38e0013f810e99",
+    "23715cd2c5ae64b46824",
+    "36021d84192ae88c00b9",
+    "3690108c2f9a1cd06ed0",
+    "3d92e888700cfba15a25",
+    "481192dcfacfed4602c3",
+    "4d314efc0e0f8cc1f362",
+    "5834978987cb52622c94",
+    "604cb4c4ddd18af1fe40",
+    "637b22f8f91b163a7e38",
+    "64c1d12e18b0939e0f7c",
+    "7b4a87283f5f778db5c7",
+    "83e3d7417b3ea6cd7a12",
+    "868e2cafb0c50bbcf8fd",
+    "8e1669797288a579e3ab",
+    "8e40f7185a4a3bea42cb",
+    "9001515f0c899c771abd",
+    "93ebd66f631711a4a5ce",
+    "9d130b3a472b1b82762b",
+    "9e1201993f7552f0feb2",
+    "a2976d319909a9887497",
+    "b3c7898ac81d39c072bb",
+    "ba18c0a28e905688299d",
+    "bac65572c970a42f093b",
+    "bfaee3aa2fdcaa3503c8",
+    "c0987499b3f576b839be",
+    "c14f5eff36b61afecb10",
+    "c1bd92c612cf5861a449",
+    "c7c4eeb41f2b96761fa8",
+    "d8be767a12f6123e5b5d",
+    "dada879874f33c4bd559",
+    "dcd41b1255b155641a1c",
+    "e0ae5bcb8e406e28e937",
+    "e3fdf0a2d2fbec80824e",
+    "ec7d43f4200f3a538225",
+    "ed7dfadede0a9e06cc1b",
+    "f81add6ec1383deb8c38",
+    "fce45be9210a35b2d0dc",
+    "ff86873c23d8adcb9e55"
+  ],
+  "content_hash": "c8cf5d98ce49c128bc851dddcee817f0af6afc2722f104bb3d4261381d937999",
+  "dependencies": [],
+  "description": "Use when designing or reviewing Agentforce actions, including Flow actions, Apex invocable actions, prompt-template actions, action naming, input and output contracts, confirmation requirements, and safe error behavior. Triggers: 'agent actions', 'flow action for agent', 'agent invocable action', 'action schema design', 'agent action error handling'. NOT for topic boundary design or general Apex invocable guidance when the main concern is not an agent-facing action contract.",
+  "file_location": "skills/agentforce/agent-actions",
+  "id": "agentforce/agent-actions",
+  "inputs": [
+    "which business capabilities the agent must invoke",
+    "whether the action is declarative Flow, Apex, or prompt-template based",
+    "expected inputs, side effects, and confirmation requirements"
+  ],
+  "name": "agent-actions",
+  "official_sources": [
+    "Agentforce Developer Guide - https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html",
+    "Einstein Platform Services - https://developer.salesforce.com/docs/einstein/genai/guide/overview.html",
+    "InvocableMethod Annotation - https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableMethod.htm"
+  ],
+  "outputs": [
+    "agent action design recommendation",
+    "action contract and naming review findings",
+    "error-handling and confirmation guidance"
+  ],
+  "references": [
+    "skills/agentforce/agent-actions/references/examples.md",
+    "skills/agentforce/agent-actions/references/gotchas.md",
+    "skills/agentforce/agent-actions/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/agentforce/agent-actions/scripts/check_agent_actions.py"
+  ],
+  "tags": [
+    "agentforce",
+    "agent-actions",
+    "invocable-actions",
+    "action-contracts",
+    "confirmation-patterns"
+  ],
+  "templates": [
+    "skills/agentforce/agent-actions/templates/agent-actions-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

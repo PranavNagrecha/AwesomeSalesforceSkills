@@ -1,0 +1,84 @@
+{
+  "category": "data",
+  "chunk_ids": [
+    "00a061f6687c39273645",
+    "0b17adbc428387f6c1d0",
+    "22dc298b3afa52dd08ac",
+    "23c52ec0681e20eade37",
+    "25a9289cca95f368afa4",
+    "2d9ffdc9946b340a1fa7",
+    "2f6597458ea823b36945",
+    "40766850987fd63202b4",
+    "4328aa58b4701758a09a",
+    "49da83779e7ab3a240ed",
+    "4bffe073c4e8a9701d64",
+    "592aae2218da7dc41c3c",
+    "5ce240feafa3baa1769a",
+    "65090f960daa4a021d16",
+    "70de71ca77e55ef63814",
+    "73aa7dea48720230f01c",
+    "77e4fa27d31de9f86a8d",
+    "781d59e82ec56cdc7e5b",
+    "7d89e4d2776e88d22e3d",
+    "7e62ad55867a8202e201",
+    "825dd34f280b9fe1dbd2",
+    "a67ee36811c7fbad9434",
+    "ac05f078f7559ddc162b",
+    "ad067e12431a0e6becb1",
+    "af3509eabccdd76190c8",
+    "b98484ca5ec40458eb85",
+    "bbb43d0828258932e89d",
+    "c1fe4e77e7a41171cc54",
+    "ca1e226c8517c6e24e30",
+    "cced3b73946849c27fd4",
+    "cd87546ff736bc14fed4",
+    "d227d232bf2bb1b8cc87",
+    "d3d89c1e0c4fbf6d1ed0",
+    "e17a6b80576b876b5e16",
+    "f0a6f3d614f867bb4c7b",
+    "f5a7edf958e38a2707c6",
+    "f93f895d12fc66721e64"
+  ],
+  "content_hash": "dd7d4245157afb80e436003343f3ea96d238a49659387036aa836e65f7084fc8",
+  "dependencies": [],
+  "description": "Use when choosing or implementing SOSL for cross-object or full-text search, especially around SOSL vs SOQL, search groups, result shaping, and injection-safe dynamic search. Triggers: 'SOSL', 'FIND clause', 'cross object search', 'Search.query', 'SOSL injection'. NOT for structured record retrieval where ordinary SOQL filters are the right tool.",
+  "file_location": "skills/data/sosl-search-patterns",
+  "id": "data/sosl-search-patterns",
+  "inputs": [
+    "search use case and whether it spans one object or many",
+    "expected result volume and UI shape",
+    "whether the query is static SOSL or dynamic `Search.query`"
+  ],
+  "name": "sosl-search-patterns",
+  "official_sources": [
+    "SOQL and SOSL Reference SOSL - https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_sosl.htm",
+    "Apex Developer Guide SOSL - https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_SOSL.htm",
+    "Search Manager Overview - https://help.salesforce.com/s/articleView?id=sf.search_manager_overview.htm&type=5"
+  ],
+  "outputs": [
+    "SOSL versus SOQL recommendation",
+    "review findings for search performance and injection risk",
+    "search pattern for result shaping and object grouping"
+  ],
+  "references": [
+    "skills/data/sosl-search-patterns/references/examples.md",
+    "skills/data/sosl-search-patterns/references/gotchas.md",
+    "skills/data/sosl-search-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/data/sosl-search-patterns/scripts/check_sosl_search_patterns.py"
+  ],
+  "tags": [
+    "sosl",
+    "search-query",
+    "find-clause",
+    "search-layouts",
+    "injection"
+  ],
+  "templates": [
+    "skills/data/sosl-search-patterns/templates/sosl-search-patterns-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

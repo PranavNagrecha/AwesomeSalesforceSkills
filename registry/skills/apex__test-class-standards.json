@@ -1,0 +1,92 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "00721cf3bd3aebabb82d",
+    "1168e97c68b3b8eeccaa",
+    "18537d204fce5e0c7a2c",
+    "23688c7308be82bcaa01",
+    "241365105f50904c2fac",
+    "2b643c30f1b7f55e1244",
+    "37dc618c4c90ceb5023e",
+    "3ad384fb8745104d9c14",
+    "3e72375cf1aadd7bce43",
+    "4394954cc683f4484659",
+    "482dfb29875289e62008",
+    "4e71f6d0fc1111bdfdee",
+    "52cd84415c94883a6b93",
+    "562983a22fa035c6f856",
+    "6206dd3bee659618a0fb",
+    "70900f7d93a2d26f9a06",
+    "71e55eff26075020d39d",
+    "74d0f51276a773cc6b15",
+    "77e46d0bd497b203f860",
+    "844e4b503172b02b6148",
+    "88565a289ac264dcb50d",
+    "928200a420869acb0553",
+    "9d902fbda455cfc28d00",
+    "a156e8cc3486e1296ba3",
+    "a2a74341f02665b27721",
+    "a73b673b76e64dfe36c9",
+    "af079de44452608633ea",
+    "b5e0f14325a1f279aa46",
+    "c865e69b354168b805bd",
+    "ca1b575f3916b2187004",
+    "cea8255092c535fa59ec",
+    "cef0de1a2c7519a9d5a2",
+    "d0071dfe34bb82c158ec",
+    "d1506a5a95b25280be94",
+    "d995717c83333d55b0cc",
+    "dc2f153d1b4fb1e48eed",
+    "de53d0dee8df5703e9c9",
+    "e0e870406c7a8b62e1ae",
+    "e228fdda7fd87ba02ce8",
+    "e42a2cd5984df7ad0eb6",
+    "e89ab4791eaabfc22148",
+    "e8cf99e4642d81fbb0d8",
+    "ebc0201ea5b3c42f8536",
+    "f674034d90f8e14eafe0",
+    "f85f34eee852bb61399b"
+  ],
+  "content_hash": "8bc550b1f47abd6b3ac474ccf81c164e5bf31ca90cdb48f0a57b7d674a52f041",
+  "dependencies": [],
+  "description": "Use when writing, reviewing, or debugging Apex test classes, test data factories, async test behavior, negative-path assertions, or callout mocking. Triggers: 'SeeAllData', 'Test.startTest', 'HttpCalloutMock', 'test data factory', 'missing assertions'. NOT for LWC Jest tests or code-coverage-only conversations detached from test design.",
+  "file_location": "skills/apex/test-class-standards",
+  "id": "apex/test-class-standards",
+  "inputs": [
+    "class or trigger under test and its entry points",
+    "required data setup including users, permissions, and related records",
+    "whether the code under test performs async work or callouts"
+  ],
+  "name": "test-class-standards",
+  "official_sources": [
+    "Apex Developer Guide \u2014 testing patterns, isolation guidance, and utility class usage",
+    "Apex Reference Guide \u2014 `Test`, `HttpCalloutMock`, and related testing APIs",
+    "Salesforce Well-Architected Overview \u2014 reliability and operational excellence framing"
+  ],
+  "outputs": [
+    "test design recommendation",
+    "review findings for test hygiene and coverage quality",
+    "test class scaffold with factory, assertions, and mocks"
+  ],
+  "references": [
+    "skills/apex/test-class-standards/references/examples.md",
+    "skills/apex/test-class-standards/references/gotchas.md",
+    "skills/apex/test-class-standards/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/test-class-standards/scripts/check_test_class_standards.py"
+  ],
+  "tags": [
+    "apex-testing",
+    "test-data-factory",
+    "seealldata",
+    "httpcalloutmock",
+    "async-testing"
+  ],
+  "templates": [
+    "skills/apex/test-class-standards/templates/test-class-standards-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

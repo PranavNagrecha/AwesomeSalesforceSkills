@@ -1,0 +1,86 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "001e37f78799a323d1d9",
+    "04d7dc2385f4c012449e",
+    "05aadab7b6326cfa98af",
+    "092e818104fce89d8a10",
+    "0a64ad7a93e210a34ade",
+    "0e59d56fd98869029c5e",
+    "28bf4c569bab6b892b8a",
+    "2b495524badd01a4bce0",
+    "3455ba6a08d056d0c49a",
+    "3776cd0d24783df17213",
+    "4050744c036deca5a6cc",
+    "414dcfccf1896b3e2abf",
+    "415fb0210bf8f19a8bc7",
+    "490b33fe8ad7f7a090a6",
+    "4c5a38a9f2e1fc524f0c",
+    "4f119a852cef25573878",
+    "4f50b8fa66b2f28b33ff",
+    "53fac2c1aa8b0722473a",
+    "54a9d08ce01606b72a0a",
+    "5f2593e22c36b351592d",
+    "640863548ea97dec9686",
+    "6da24170e38fbd48bfa4",
+    "6fd9637fb9fd43ee7e6e",
+    "798a3dc9443c42f4b7aa",
+    "85578c8e23cd87cfdaed",
+    "8e66ef5522cb6c8ef003",
+    "a124a1d71294f84912cc",
+    "a767bf55a9c8e005ef84",
+    "ae321b91f7c926568e31",
+    "b0156af7ca8e27c40d92",
+    "b0c9230353c00f61bc3d",
+    "b4218868c95b4733b415",
+    "c7dd13cece0eae3976dc",
+    "d873e09bb5fcd3c0f095",
+    "e3154a31e1225437842d",
+    "e91dcd2f0199d9df77dc",
+    "f3abf5362b11d33164e1",
+    "f52f5994e39de33f49e4",
+    "f7f44c502e73fdde669b"
+  ],
+  "content_hash": "bccda9da22c95f9edc6fb4c65b7dc5fc1b826dd9c05c6302e080b9034accecf4",
+  "dependencies": [],
+  "description": "Use when planning, reviewing, or troubleshooting Salesforce data imports, migrations, and bulk updates. Triggers: 'Data Loader', 'Data Import Wizard', 'Bulk API', 'upsert', 'cutover', 'load failed', 'reconcile data'. NOT for ongoing integration architecture - use integration/ skills for that.",
+  "file_location": "skills/admin/data-import-and-management",
+  "id": "admin/data-import-and-management",
+  "inputs": [
+    "source data files",
+    "load sequence",
+    "automation constraints"
+  ],
+  "name": "data-import-and-management",
+  "official_sources": [
+    "Salesforce Well-Architected Overview \u2014 reliability framing for large data change plans",
+    "Object Reference \u2014 object semantics and relationships that affect load design",
+    "REST API Developer Guide \u2014 API-oriented load and integration behavior context"
+  ],
+  "outputs": [
+    "load plan",
+    "data load findings",
+    "reconciliation checklist"
+  ],
+  "references": [
+    "skills/admin/data-import-and-management/references/examples.md",
+    "skills/admin/data-import-and-management/references/gotchas.md",
+    "skills/admin/data-import-and-management/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/data-import-and-management/scripts/check_load_plan.py"
+  ],
+  "tags": [
+    "data-load",
+    "migration",
+    "bulk-api",
+    "upsert",
+    "external-id"
+  ],
+  "templates": [
+    "skills/admin/data-import-and-management/templates/data-load-plan-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

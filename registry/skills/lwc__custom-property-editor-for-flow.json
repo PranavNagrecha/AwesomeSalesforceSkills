@@ -1,0 +1,85 @@
+{
+  "category": "lwc",
+  "chunk_ids": [
+    "0490e581bf78442f477f",
+    "0637696d38dd97d8fb46",
+    "10b875cc910cecb2b776",
+    "1c940cd2143bc7f6cdf2",
+    "24f830e8c3f0f517632d",
+    "390df3e51b1c4cb39090",
+    "4b994bb731be3458dfb1",
+    "5652a9b7f9a1b6ed0660",
+    "5c4dc47de5c78bc6339d",
+    "60075166880911dd1ca8",
+    "7053a4e9e6cbf3057cdb",
+    "764f695133fa9a42cf17",
+    "76d1539edb56ffd6e0d9",
+    "7bf8cc1ffa098d630320",
+    "7ffde6efe26de9adb1f1",
+    "890dc2fe9c6357d8a1f5",
+    "910e97f2c5a43a984bd5",
+    "9ea9e3797ec249ff6e6d",
+    "aa0ff9abd4c49916d4f4",
+    "adec02d4de68e6024662",
+    "ae72850ae5e8bf2c5138",
+    "b272a738b8aa09e1ad9b",
+    "b2f9c8245a7a57dc01f5",
+    "bb2e46fa057e8ff24835",
+    "c4ced69e923007c97c8e",
+    "c678d2bbdf25ed61688a",
+    "cd892049a83f1ad0a8ef",
+    "cf205c0eee12ad10bccd",
+    "d410447b8d3ea67b4fba",
+    "d9c2d686d9497a83cf61",
+    "df6415bbd28cf98feffa",
+    "e13aacdf6585ae4ce0a2",
+    "e146b52c057e0df9a6d4",
+    "e2cb3b89d937b6fc9cba",
+    "eabe600262bc9c382ccc",
+    "ec2b6da153bc5f5da5a7",
+    "ee682931fefd9b2ea957",
+    "fae3d77c79044d360f53"
+  ],
+  "content_hash": "0db7999ab0159557b5dbb533d765ce63c330154e29ed7b42ef63b194a7b3ab09",
+  "dependencies": [],
+  "description": "Use when building or reviewing an LWC Custom Property Editor for Flow screen or action configuration, including the `configurationEditor` metadata hook, builder-side APIs, validation, and value-change events. Triggers: 'custom property editor', 'Flow configuration editor', 'builderContext', 'inputVariables', 'configurationEditor'. NOT for ordinary runtime screen-component behavior when no Flow Builder design-time customization is involved.",
+  "file_location": "skills/lwc/custom-property-editor-for-flow",
+  "id": "lwc/custom-property-editor-for-flow",
+  "inputs": [
+    "whether the target is a Flow screen component or another Flow-exposed surface",
+    "which design-time fields must be configured in Flow Builder",
+    "validation and builder-only UX expectations"
+  ],
+  "name": "custom-property-editor-for-flow",
+  "official_sources": [
+    "Custom Property Editor Interface - https://developer.salesforce.com/docs/platform/lwc/guide/use-flow-custom-property-editor-interface?-escaped-fragment-=.html",
+    "Flow Reference Custom Property Editor - https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_screen_cpe.htm&type=5",
+    "LWC Best Practices - https://developer.salesforce.com/docs/platform/lwc/guide/get-started-best-practices.html"
+  ],
+  "outputs": [
+    "property-editor design recommendation",
+    "review findings for metadata registration and builder contract issues",
+    "LWC pattern for editor eventing and validation"
+  ],
+  "references": [
+    "skills/lwc/custom-property-editor-for-flow/references/examples.md",
+    "skills/lwc/custom-property-editor-for-flow/references/gotchas.md",
+    "skills/lwc/custom-property-editor-for-flow/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/lwc/custom-property-editor-for-flow/scripts/check_custom_property_editor_for_flow.py"
+  ],
+  "tags": [
+    "custom-property-editor",
+    "flow-builder",
+    "configurationeditor",
+    "inputvariables",
+    "buildercontext"
+  ],
+  "templates": [
+    "skills/lwc/custom-property-editor-for-flow/templates/custom-property-editor-for-flow-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

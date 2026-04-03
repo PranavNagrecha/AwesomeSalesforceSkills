@@ -1,0 +1,89 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "08817d45aadd413ef384",
+    "12c9e62fd750dbf2038c",
+    "212b8a904e2fcc524cd4",
+    "2377ed8dbcaa0002d296",
+    "2651e445e8ac226a066c",
+    "369e1cb85fc307b1c023",
+    "3bcdff5b8945d2249e19",
+    "3ca985eeccb1690d6bf6",
+    "41c36833622cb43b6ffc",
+    "4cd7d04f0518da5206d0",
+    "4f3c8a223ae72439f50d",
+    "5350dfe8d53a5652692b",
+    "6d66d67ab008c6daa435",
+    "6eebb9c2e5fe1d674b1a",
+    "733c3894572b3065832c",
+    "75e70d592c93f1a5b0aa",
+    "7bcfc9f33132e6fe5848",
+    "8264bddb264d1b467e64",
+    "8946eebdc2628ccb8a74",
+    "8f353c78c2f0d7e6de1a",
+    "944ce5c584f5bba192df",
+    "95c8ca70070ee521f586",
+    "9c0d779b95031f86a36d",
+    "9cee71e0421ea2717b23",
+    "b63eac8312a4177ccfdf",
+    "b6603069536337d15005",
+    "b6992549fab91b75f98d",
+    "b7ffd11c9bc12f6fcf0c",
+    "be6471fef092c29d905d",
+    "bf0c540b31b89e4d454b",
+    "bf4c6f9f4dbc267a3308",
+    "bff63d03dfd5d978cbf7",
+    "c406fe7efc3a4cde4422",
+    "c957aa0aa8d9150699b6",
+    "d96e2b4563b0896c8bd4",
+    "dbfafff375155c4c6222",
+    "dc33c462c940b6ad6247",
+    "e1717f3610482bf917fe",
+    "e8904936cd3edf499dc1",
+    "ec80f8699d309e69480d",
+    "ee2fda2fc222b1bc0b69",
+    "efd495cc7fda2f46a592"
+  ],
+  "content_hash": "6a2fcb69abcbcc3d66892327b9a6e537ce2c72968058956916b4bf3861a6b51e",
+  "dependencies": [],
+  "description": "Use when publishing or subscribing to Salesforce Platform Events from Apex, comparing Platform Events with Change Data Capture, or designing event-triggered error handling and monitoring. Triggers: 'EventBus.publish', 'platform event trigger', 'CDC vs Platform Events', 'replay ID', 'high-volume event'. NOT for Flow-only publish/subscribe automation.",
+  "file_location": "skills/apex/platform-events-apex",
+  "id": "apex/platform-events-apex",
+  "inputs": [
+    "publisher or subscriber use case and event volume",
+    "whether consumers are Apex triggers, external subscribers, or both",
+    "failure handling and retry expectations"
+  ],
+  "name": "platform-events-apex",
+  "official_sources": [
+    "Platform Events Developer Guide \u2014 publication and subscription concepts",
+    "Apex guidance for Platform Events \u2014 Apex trigger subscriber behavior and `EventBus.publish`",
+    "Change Data Capture Developer Guide \u2014 CDC comparison point"
+  ],
+  "outputs": [
+    "event architecture recommendation",
+    "review findings for publication, subscription, and monitoring risks",
+    "Apex publish and subscribe pattern with error handling"
+  ],
+  "references": [
+    "skills/apex/platform-events-apex/references/examples.md",
+    "skills/apex/platform-events-apex/references/gotchas.md",
+    "skills/apex/platform-events-apex/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/platform-events-apex/scripts/check_platform_events_apex.py"
+  ],
+  "tags": [
+    "platform-events",
+    "eventbus",
+    "cdc",
+    "replay-id",
+    "event-trigger"
+  ],
+  "templates": [
+    "skills/apex/platform-events-apex/templates/platform-events-apex-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

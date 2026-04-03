@@ -1,0 +1,95 @@
+{
+  "category": "lwc",
+  "chunk_ids": [
+    "05b6640b28245fbb5c1c",
+    "097bbbde1f229b4a0b8a",
+    "14785465c32bdae7eb2e",
+    "20348024d82d071d7683",
+    "320bd599fe0cc6265b70",
+    "3b6ee69c3122808ce375",
+    "4107933ae2407f5a7c50",
+    "42291b55b22efebdf700",
+    "434c98cec22efcac253b",
+    "596e0c7df52bab0ffa57",
+    "66c264da84e970c5ef54",
+    "67d4feb933874da36e2e",
+    "6c80c3cda57025fe752b",
+    "7382c14e44e36bfd467c",
+    "74bacac14f9e875558ff",
+    "7e96e13383e00027830b",
+    "7eafa6f3821e4d302d9f",
+    "7f4a830217ab06b9b137",
+    "7fb52e1534f20ddd83e8",
+    "7ff74d00f172fe5762fa",
+    "871ad418b8fafb26029a",
+    "9e036df40c97e8e906d1",
+    "a130af6154f033838053",
+    "aa655a3dc3a1629922c6",
+    "ae30b1440d51249c9529",
+    "b7ced17abee72ae3033f",
+    "b908b877cb6e948db807",
+    "ba4cfa17e42b36b49e3a",
+    "bacedfcd997e697d7248",
+    "c19bbd64c5b1de1d8042",
+    "c1bbb229fd44893fdab7",
+    "c38ac1e91852849cbf28",
+    "c7a19b0618ed1b779044",
+    "ca145bf8e5b06b086447",
+    "cbbd0c169487ac805e0a",
+    "d9acaba09ab8aa5a1772",
+    "dbc21e5a55721406469d",
+    "df7be27eaf91ebb2cabb",
+    "e14682a255d5f1cb7b2d",
+    "e39cb33d75e98bc20ce6",
+    "e4bacd45cf5a173e640f",
+    "f1ea3a08b28bdd8c96f1",
+    "f25ff45ca1cb4c745f23",
+    "f880d823e0a03194bc49",
+    "fbd6c319bfaa084ef82f"
+  ],
+  "content_hash": "23693b96b8e9a35bfc314d5f6d2159d0b7bd8c6d3cc3dc027fd4553f4821d7c5",
+  "dependencies": [],
+  "description": "Use when building or reviewing Lightning Web Components \u2014 specifically lifecycle management, wire service, memory leak prevention, navigation, and Lightning Locker Service constraints. Triggers: 'LWC', 'connectedCallback', 'renderedCallback', 'memory leak', 'NavigationMixin', 'wire'. NOT for Aura components.",
+  "file_location": "skills/lwc/lifecycle-hooks",
+  "id": "lwc/lifecycle-hooks",
+  "inputs": [
+    "component context",
+    "data access pattern",
+    "runtime environment"
+  ],
+  "name": "lifecycle-hooks",
+  "official_sources": [
+    "Salesforce Well-Architected Overview \u2014 UX, performance, and reliability framing for LWC design",
+    "Lightning Component Reference \u2014 base component behavior and supported APIs",
+    "Best Practices for Development with Lightning Web Components \u2014 lifecycle and composition guidance",
+    "Data Guidelines \u2014 data-access strategy for LWC",
+    "Secure Apex Classes \u2014 server-side security expectations for component-facing Apex"
+  ],
+  "outputs": [
+    "lifecycle review findings",
+    "component design guidance",
+    "navigation and cleanup recommendations"
+  ],
+  "references": [
+    "skills/lwc/lifecycle-hooks/references/examples.md",
+    "skills/lwc/lifecycle-hooks/references/gotchas.md",
+    "skills/lwc/lifecycle-hooks/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/lwc/lifecycle-hooks/scripts/check_lwc_lifecycle.py"
+  ],
+  "tags": [
+    "lwc",
+    "connectedcallback",
+    "renderedcallback",
+    "navigationmixin",
+    "memory-leaks"
+  ],
+  "templates": [
+    "skills/lwc/lifecycle-hooks/templates/lwc-component-scaffold.html",
+    "skills/lwc/lifecycle-hooks/templates/lwc-component-scaffold.js"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

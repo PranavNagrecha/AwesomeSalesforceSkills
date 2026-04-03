@@ -1,0 +1,88 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "0139d05ed7c61648d357",
+    "0174931b0b9d6724c2cb",
+    "13d653997ab8ed1300a1",
+    "16ba5c192e500a132ced",
+    "18be98d4a9d5ad1ca839",
+    "1e1c36faa4011889cfb3",
+    "436fa1a0cbb8195515de",
+    "45210baa38a5dfbf2dca",
+    "45d71c0325a632cdaecf",
+    "46c13a2885112b5be42c",
+    "483ae682b321ab0854da",
+    "605428d37fc691c313f0",
+    "6555502998cfb47bdd0f",
+    "66fbfdedb699f376c62b",
+    "70f47e38d42d40f6cd7d",
+    "7b64f89a1335282dfddd",
+    "7cd9a19a5821ea18b377",
+    "8c98e2431b01cc79782d",
+    "8f7a92296f5532b6d9a1",
+    "9bb96085979f87d4117d",
+    "9bbc3d082d21628565e4",
+    "a1caaf6cf616d826246c",
+    "a3a9fe5e894099f462ce",
+    "a45a59bec3d5c07c5810",
+    "a5786f2bde0148d59f16",
+    "a96b1e9a29b5fef00942",
+    "b05ba5113b0ef3eb07dc",
+    "bb7cf326225b3cf86662",
+    "c22b8fff2d7b86f48d03",
+    "cb5ceaa4a930ce62e63c",
+    "cf44dd565f6b96cea839",
+    "d6e7f73bbd4204c3c49f",
+    "daa3f37277e7053b185e",
+    "db756a0579af1c666639",
+    "ded941efde690cc138c5",
+    "e78d5ac59c2610cdbedb",
+    "e79a72b8e05c582c79a8",
+    "eb438045e56d028bacb4",
+    "ef77eac27037054dd3b4",
+    "ef9385319fb3b811f057",
+    "f1a84ae84d15e7f19ff3",
+    "fe3d95df59d46396a172"
+  ],
+  "content_hash": "a2f12ff82146cd8b8684b1251faf5549a589db3a3b7afd1ec93935859ada5325",
+  "dependencies": [],
+  "description": "Use when debugging or preventing recursive Apex trigger behavior, especially around self-DML, static guard flaws, Set<Id>-based deduplication, and legitimate re-entry scenarios. Triggers: 'trigger recursion', 'static boolean guard', 'recursive update', 'self DML', 'trigger firing multiple times'. NOT for general trigger-framework structure unless recursion is the actual design problem.",
+  "file_location": "skills/apex/recursive-trigger-prevention",
+  "id": "apex/recursive-trigger-prevention",
+  "inputs": [
+    "object and trigger events involved",
+    "whether recursion comes from self-DML, workflow/flow updates, or cross-object writes",
+    "whether some re-entry is legitimate and should not be blocked globally"
+  ],
+  "name": "recursive-trigger-prevention",
+  "official_sources": [
+    "Apex Developer Guide \u2014 trigger behavior and best-practice guidance",
+    "Salesforce Well-Architected Overview \u2014 reliability, scalability, and operational framing"
+  ],
+  "outputs": [
+    "recursion prevention recommendation",
+    "review findings for overbroad or missing guards",
+    "guard pattern for trigger handlers and services"
+  ],
+  "references": [
+    "skills/apex/recursive-trigger-prevention/references/examples.md",
+    "skills/apex/recursive-trigger-prevention/references/gotchas.md",
+    "skills/apex/recursive-trigger-prevention/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/recursive-trigger-prevention/scripts/check_recursive_trigger_prevention.py"
+  ],
+  "tags": [
+    "trigger-recursion",
+    "static-boolean",
+    "set-of-id",
+    "self-dml",
+    "recursion-guard"
+  ],
+  "templates": [
+    "skills/apex/recursive-trigger-prevention/templates/recursive-trigger-prevention-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

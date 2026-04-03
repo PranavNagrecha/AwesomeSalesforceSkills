@@ -1,0 +1,84 @@
+{
+  "category": "data",
+  "chunk_ids": [
+    "0cb71a15de4cae65c2e0",
+    "10ee4f8b9635d39e4da2",
+    "135ed469a9b605e2bb41",
+    "1584e7e5a8bbf1a0b156",
+    "1b3b2800dba99c44b082",
+    "27c817147ac31740ea72",
+    "2c529c9ccd6dca7f1736",
+    "32e7d19afa4e35cb32b0",
+    "33a5df6dc3fd87b82f50",
+    "40baa8a688118cbbe687",
+    "469208fcc468b8486c78",
+    "4a388f9778d08697f59b",
+    "61f29bfeb366dcd3130f",
+    "622e626d6cf808532c2e",
+    "64ec38e0dd52deb74bfc",
+    "6548dd041123483b1d63",
+    "6af1dccf5207ec4c630b",
+    "6b3bce6b5803f4890805",
+    "6d018894bfe18b248885",
+    "6f76b0ef92943e37da85",
+    "81e72fa7e2be4accc008",
+    "8b224d124e169fe3b6b2",
+    "8eddea41884820bb51d2",
+    "90b28e03a5a042864b8c",
+    "936d8a0da1f589fc6fec",
+    "9877b0ceb2cfb236871e",
+    "9f6e945c2f30b26f3938",
+    "a91a77d106a0547afd68",
+    "ab3338ae35c9e37974f1",
+    "ac71580cf7f5207d410d",
+    "b3d5ff94cee000b6646d",
+    "c98a75a25cca32c70d26",
+    "d11a90c6e40314b781eb",
+    "deaad27986130fad43eb",
+    "e908906c5fed3461d4e1",
+    "fa4b3fed8d850f762f2e",
+    "fc4fd29ac169c722c510"
+  ],
+  "content_hash": "7f4a03e75c79f1849cad003a69e3f632279851c574b0fba20cc305455fd4b841",
+  "dependencies": [],
+  "description": "Use when designing or reviewing Salesforce multi-currency behavior, especially irreversible activation, `CurrencyIsoCode`, `convertCurrency()`, dated exchange rates, and Advanced Currency Management tradeoffs. Triggers: 'multi currency', 'advanced currency management', 'CurrencyIsoCode', 'dated exchange rate', 'convertCurrency'. NOT for ordinary numeric field calculations with no currency conversion or reporting concern.",
+  "file_location": "skills/data/multi-currency-and-advanced-currency-management",
+  "id": "data/multi-currency-and-advanced-currency-management",
+  "inputs": [
+    "whether multi-currency or ACM is already enabled",
+    "objects and reports involved",
+    "query, rollup, or Apex behavior that must respect currency context"
+  ],
+  "name": "multi-currency-and-advanced-currency-management",
+  "official_sources": [
+    "Multi-Currency - https://help.salesforce.com/s/articleView?id=sf.admin_currency.htm&type=5",
+    "Advanced Currency Management - https://help.salesforce.com/s/articleView?id=sf.admin_currency_dated_exchange.htm&type=5",
+    "Currency In Queries - https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_currency.htm"
+  ],
+  "outputs": [
+    "currency architecture recommendation",
+    "review findings for conversion and reporting risks",
+    "query and Apex guidance for currency-aware behavior"
+  ],
+  "references": [
+    "skills/data/multi-currency-and-advanced-currency-management/references/examples.md",
+    "skills/data/multi-currency-and-advanced-currency-management/references/gotchas.md",
+    "skills/data/multi-currency-and-advanced-currency-management/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/data/multi-currency-and-advanced-currency-management/scripts/check_multi_currency_and_advanced_currency_management.py"
+  ],
+  "tags": [
+    "multi-currency",
+    "advanced-currency-management",
+    "currencyisocode",
+    "convertcurrency",
+    "dated-exchange-rates"
+  ],
+  "templates": [
+    "skills/data/multi-currency-and-advanced-currency-management/templates/multi-currency-and-advanced-currency-management-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

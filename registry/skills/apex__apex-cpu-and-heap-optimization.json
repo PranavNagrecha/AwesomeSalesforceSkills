@@ -1,0 +1,89 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "00c91da3d183d7762100",
+    "0cb44e1cd06edfb43423",
+    "0daf20ed73c7445eea02",
+    "0ece5380333ccfe737fe",
+    "126925d47e2730b1a347",
+    "1e28d6875c61e5f5bfe1",
+    "21b0f732d02230460e0d",
+    "27b4f448b4005dd35cd5",
+    "2b8974df88a1b2b3066a",
+    "3996f0d387f46f369d39",
+    "43908b0e66cee4a098d5",
+    "5151a2cc9864089f3302",
+    "5dd3d0a7d8d4e3c83257",
+    "6000e5f5f72b85f6246f",
+    "636e573ffd2a8c0acfed",
+    "663955ea1b1241d7a65d",
+    "69f5431b763e5dcbb047",
+    "6ce0821771270d6feeaf",
+    "72c0604615a11b53f600",
+    "75521d095e1d123c980d",
+    "7f1bd224b74d0cc0727f",
+    "8b93a007e5efc48aad24",
+    "96c4da8149e7d2dfa27e",
+    "9bc5da31d3cfe054563e",
+    "9c6bd672dc5eb4902c26",
+    "a2ec44298a7f9d3bb795",
+    "acc37e2e27a75566af8e",
+    "b34439be2b4ca1317f28",
+    "b761a3274f5db259c61d",
+    "bf5a0c1641480bff5731",
+    "c8ec474a379f71365f06",
+    "c90a261594b99ccf8397",
+    "cdfbe6f214706717e05d",
+    "d392c48fd2db925f6140",
+    "dc97032eef34d5634204",
+    "e044b1f7ddb7f49495d2",
+    "e2e9d7a63a10713d43de",
+    "e375e7b84e541e1cea96",
+    "e872968ce4e08d4f70a5",
+    "f196983bcb48f1244152",
+    "f68740035296b1c46506",
+    "fcfde5d9a323df314cfc"
+  ],
+  "content_hash": "c2b5c8e7a35b4ed1ae6a29a2c5cbf342d9c65aefd3494eeca76399a64c6810ba",
+  "dependencies": [],
+  "description": "Use when diagnosing or preventing Apex CPU time and heap size problems, including nested-loop refactors, JSON memory pressure, string work, and `Limits.getCpuTime()` checkpoints. Triggers: 'CPU time limit exceeded', 'heap size too large', 'string concatenation', 'regex in loop', 'Limits.getCpuTime'. NOT for generic SOQL/DML governor-limit basics without a CPU or heap bottleneck.",
+  "file_location": "skills/apex/apex-cpu-and-heap-optimization",
+  "id": "apex/apex-cpu-and-heap-optimization",
+  "inputs": [
+    "exact exception or hotspot location if known",
+    "whether the issue is CPU-heavy, heap-heavy, or both",
+    "transaction type and approximate data volume"
+  ],
+  "name": "apex-cpu-and-heap-optimization",
+  "official_sources": [
+    "Apex Developer Guide \u2014 governor limits and performance guidance",
+    "Apex Reference Guide \u2014 `Limits` methods",
+    "Salesforce Well-Architected Overview \u2014 performance, scalability, and reliability framing"
+  ],
+  "outputs": [
+    "CPU/heap optimization recommendation",
+    "review findings for high-cost patterns",
+    "remediation plan for memory and compute hotspots"
+  ],
+  "references": [
+    "skills/apex/apex-cpu-and-heap-optimization/references/examples.md",
+    "skills/apex/apex-cpu-and-heap-optimization/references/gotchas.md",
+    "skills/apex/apex-cpu-and-heap-optimization/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/apex-cpu-and-heap-optimization/scripts/check_apex_cpu_and_heap_optimization.py"
+  ],
+  "tags": [
+    "cpu-time",
+    "heap-size",
+    "limits-getcputime",
+    "string-optimization",
+    "json-memory"
+  ],
+  "templates": [
+    "skills/apex/apex-cpu-and-heap-optimization/templates/apex-cpu-and-heap-optimization-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

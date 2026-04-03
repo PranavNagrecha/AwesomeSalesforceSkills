@@ -1,0 +1,292 @@
+{
+  "description": "Alternate phrasings real users might type for the same intent. Used to test retrieval robustness.",
+  "variants": [
+    {
+      "expected_skill": "admin/validation-rules",
+      "queries": [
+        "validation rule not firing",
+        "why is my validation rule not running",
+        "validation rule blocking integration",
+        "how do I bypass a validation rule for data load",
+        "rule fires when it should not",
+        "required field validation formula"
+      ]
+    },
+    {
+      "expected_skill": "admin/permission-sets-vs-profiles",
+      "queries": [
+        "permission set vs profile which to use",
+        "should I use profile or permission set",
+        "too many profiles how to simplify",
+        "user cant see field permission",
+        "least privilege permission model",
+        "migrating from profiles to permission sets"
+      ]
+    },
+    {
+      "expected_skill": "admin/duplicate-management",
+      "queries": [
+        "How do I avoid duplicate records when importing leads",
+        "duplicate rule matching rule merge",
+        "same contact twice duplicate",
+        "dedupe leads before import",
+        "duplicate job merge strategy"
+      ]
+    },
+    {
+      "expected_skill": "admin/approval-processes",
+      "queries": [
+        "approval process routing approver",
+        "how to set up approval process",
+        "record locked by approval",
+        "dynamic approver approval step",
+        "recall approval submit for approval"
+      ]
+    },
+    {
+      "expected_skill": "admin/sharing-and-visibility",
+      "queries": [
+        "sharing rules OWD role hierarchy",
+        "user cant see record why",
+        "why can user see too much",
+        "record access sharing rule",
+        "how does role hierarchy affect sharing"
+      ]
+    },
+    {
+      "expected_skill": "admin/process-automation-selection",
+      "queries": [
+        "when to use process builder vs flow",
+        "flow or apex trigger for this",
+        "which automation tool should I use",
+        "process builder migration to flow",
+        "workflow rule retirement"
+      ]
+    },
+    {
+      "expected_skill": "flow/record-triggered-flow-patterns",
+      "queries": [
+        "record triggered flow before save vs after save",
+        "before save vs after save flow",
+        "flow runs too many times on update",
+        "how do I use prior value in flow",
+        "record triggered flow recursion"
+      ]
+    },
+    {
+      "expected_skill": "flow/fault-handling",
+      "queries": [
+        "fault connector rollback",
+        "flow error path fault",
+        "what happens when flow fails",
+        "flow fault connector handle error"
+      ]
+    },
+    {
+      "expected_skill": "apex/governor-limits",
+      "queries": [
+        "batch job hitting heap limit",
+        "governor limit exceeded",
+        "cpu time limit apex",
+        "too many SOQL queries",
+        "bulkify trigger avoid limits"
+      ]
+    },
+    {
+      "expected_skill": "apex/test-class-standards",
+      "queries": [
+        "test class best practices",
+        "SeeAllData test data factory",
+        "how to mock HTTP callouts in test",
+        "my test has coverage but no assertions",
+        "Test.startTest queueable test",
+        "Apex test best practices"
+      ]
+    },
+    {
+      "expected_skill": "apex/invocable-methods",
+      "queries": [
+        "invocable from flow",
+        "how to call apex from flow",
+        "InvocableMethod bulk safe",
+        "flow apex action input output",
+        "custom apex action for flow"
+      ]
+    },
+    {
+      "expected_skill": "apex/soql-security",
+      "queries": [
+        "stripInaccessible FLS",
+        "with user mode soql",
+        "with sharing soql",
+        "CRUD FLS check in apex",
+        "user mode strip inaccessible"
+      ]
+    },
+    {
+      "expected_skill": "apex/apex-security-patterns",
+      "queries": [
+        "inherited sharing stripInaccessible",
+        "with sharing vs without",
+        "Apex security CRUD FLS",
+        "enforce FLS in apex"
+      ]
+    },
+    {
+      "expected_skill": "apex/recursive-trigger-prevention",
+      "queries": [
+        "trigger recursion",
+        "trigger running twice",
+        "how to prevent recursive trigger",
+        "static boolean recursion guard",
+        "trigger firing multiple times"
+      ]
+    },
+    {
+      "expected_skill": "apex/async-apex",
+      "queries": [
+        "queueable vs batch vs future",
+        "when to use queueable",
+        "future method vs queueable",
+        "schedule apex batch",
+        "async job failed"
+      ]
+    },
+    {
+      "expected_skill": "lwc/wire-service-patterns",
+      "queries": [
+        "LWC not updating when data changes",
+        "wire adapter not firing",
+        "refreshApex not updating component",
+        "reactive wire parameter not firing",
+        "LWC wire not refreshing",
+        "component data not updating"
+      ]
+    },
+    {
+      "expected_skill": "lwc/lifecycle-hooks",
+      "queries": [
+        "renderedCallback memory leak",
+        "connectedCallback vs renderedCallback",
+        "when does LWC lifecycle run",
+        "LWC disconnectedCallback cleanup"
+      ]
+    },
+    {
+      "expected_skill": "integration/oauth-flows-and-connected-apps",
+      "queries": [
+        "OAuth for server to server integration",
+        "client credentials vs JWT bearer",
+        "connected app callback URL",
+        "refresh token invalid grant",
+        "which OAuth flow for integration"
+      ]
+    },
+    {
+      "expected_skill": "data/roll-up-summary-alternatives",
+      "queries": [
+        "roll up summary to parent",
+        "lookup rollup DLRS",
+        "aggregate child to parent",
+        "rollup summary cross object"
+      ]
+    },
+    {
+      "expected_skill": "admin/reports-and-dashboards",
+      "queries": [
+        "report filter dashboard subscription",
+        "report type join limits",
+        "missing data in report",
+        "dashboard refresh pipeline report"
+      ]
+    },
+    {
+      "expected_skill": "admin/sandbox-strategy",
+      "queries": [
+        "sandbox refresh best practices",
+        "developer vs partial copy sandbox",
+        "sandbox refresh strategy",
+        "test environment sandbox"
+      ]
+    },
+    {
+      "expected_skill": "admin/change-management-and-deployment",
+      "queries": [
+        "deployment release change set",
+        "how to deploy to production",
+        "change set rollback",
+        "release checklist deployment"
+      ]
+    },
+    {
+      "expected_skill": "admin/data-import-and-management",
+      "queries": [
+        "data loader bulk api upsert",
+        "how to load millions of records",
+        "data import wizard failing",
+        "bulk api external id"
+      ]
+    },
+    {
+      "expected_skill": "flow/flow-for-experience-cloud",
+      "queries": [
+        "experience cloud screen flow",
+        "flow on community site",
+        "guest user flow experience",
+        "lightning flow in experience cloud"
+      ]
+    },
+    {
+      "expected_skill": "security/org-hardening-and-baseline-config",
+      "queries": [
+        "Health Check security",
+        "org security baseline",
+        "CSP trusted site",
+        "security health check"
+      ]
+    },
+    {
+      "expected_skill": "apex/exception-handling",
+      "queries": [
+        "swallowed exception apex",
+        "DmlException handle",
+        "AuraHandledException",
+        "try catch trigger rollback"
+      ]
+    },
+    {
+      "expected_skill": "apex/callouts-and-http-integrations",
+      "queries": [
+        "Named Credential callout",
+        "uncommitted work pending callout",
+        "HTTP request timeout apex",
+        "how to call external API from apex"
+      ]
+    },
+    {
+      "expected_skill": "flow/orchestration-flows",
+      "queries": [
+        "flow orchestration stages",
+        "orchestration flow work item",
+        "work items ownership flow"
+      ]
+    },
+    {
+      "expected_skill": "omnistudio/omniscript-design-patterns",
+      "queries": [
+        "omniscript save and resume",
+        "omniscript step design",
+        "save resume branching omniscript"
+      ]
+    },
+    {
+      "expected_skill": "agentforce/agent-actions",
+      "queries": [
+        "agent actions flow apex",
+        "flow action for agent",
+        "agent invocable action",
+        "agent action confirmation"
+      ]
+    }
+  ]
+}

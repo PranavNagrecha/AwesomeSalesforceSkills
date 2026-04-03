@@ -1,0 +1,85 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "033bb23c8fb74026cfc5",
+    "0acc619d95b17343ff07",
+    "0b47b5400c504ebbfd2b",
+    "0bbe64faf05fa8ff3b5b",
+    "0f59c185e914d586d7c9",
+    "0ff08f486d5fb25ea7bc",
+    "149ad892e10c679e051c",
+    "1be5f582ebc1bffc1914",
+    "46c1e32ef0482fb0cd00",
+    "46c59ab9a9c546bf0dd9",
+    "4862c84efd6777985517",
+    "4c08d5d65ee7906a2be0",
+    "4d87bd447e66c3fd16b9",
+    "4eaf92725c49184b39d8",
+    "5658ad44b87e1b45c369",
+    "60b13e4f7fa4ffc11cdb",
+    "60bde20e9f5cdad4017a",
+    "64ced757e492aca2997c",
+    "68be5210fac249c29f01",
+    "69f0c7a7ab089518689b",
+    "71eada00ffcefb9a6f58",
+    "8693365c032d73dc7f5b",
+    "8b56eca7c2d6edc64ae0",
+    "929636372708581f871d",
+    "9a9e0ea81ac517c805aa",
+    "9bb52ad898e6c556d9d8",
+    "ae64eabdabe29a149357",
+    "b097dd0d0f7cac65495c",
+    "b4c66a16832519954021",
+    "b647cdc298dfd37ea7ba",
+    "dc3bc9418542b2283727",
+    "de3c91adb82703416ef8",
+    "eb4dc65721809e6d16c6",
+    "ec22ade4ade9bff3715f",
+    "f192ac0e51066245654f",
+    "f1e32ed2bb45a3d4496e",
+    "f7ea347f77922136045d",
+    "fb9ac915c066e3caaadc"
+  ],
+  "content_hash": "6c71dd7d3f42b5192092ab29e25741b9c4af462ce2c0db1091f454d880b5f8f2",
+  "dependencies": [],
+  "description": "Use when Apex must read, interpret, or deploy Custom Metadata Type configuration, or when deciding between Custom Metadata Types, Custom Settings, and Custom Labels. Triggers: 'Custom Metadata Type', '__mdt', 'getInstance', 'Apex Metadata API', 'protected custom metadata'. NOT for setup-only administration with no Apex behavior, packaging, or deployment concern.",
+  "file_location": "skills/apex/custom-metadata-in-apex",
+  "id": "apex/custom-metadata-in-apex",
+  "inputs": [
+    "the configuration use case and whether reads only or metadata updates are needed",
+    "packaging model such as unpackaged, unlocked, or managed package",
+    "test behavior, namespace, and visibility constraints"
+  ],
+  "name": "custom-metadata-in-apex",
+  "official_sources": [
+    "Apex Developer Guide - https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm",
+    "Apex Reference Guide - https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm",
+    "Salesforce Well-Architected Overview - https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "configuration storage recommendation",
+    "review findings for read, test, and deployment risks",
+    "Apex pattern for reading or deploying custom metadata safely"
+  ],
+  "references": [
+    "skills/apex/custom-metadata-in-apex/references/examples.md",
+    "skills/apex/custom-metadata-in-apex/references/gotchas.md",
+    "skills/apex/custom-metadata-in-apex/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/custom-metadata-in-apex/scripts/check_custom_metadata_in_apex.py"
+  ],
+  "tags": [
+    "custom-metadata",
+    "__mdt",
+    "apex-metadata-api",
+    "configuration",
+    "packaging"
+  ],
+  "templates": [
+    "skills/apex/custom-metadata-in-apex/templates/custom-metadata-in-apex-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

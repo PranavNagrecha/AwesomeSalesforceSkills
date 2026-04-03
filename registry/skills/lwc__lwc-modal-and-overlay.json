@@ -1,0 +1,89 @@
+{
+  "category": "lwc",
+  "chunk_ids": [
+    "055e9692c933c3c16a3c",
+    "1494c3e48709959e7094",
+    "1dd346619767c0c7b7c7",
+    "23d4c3a7b5736be88e95",
+    "28d9e764d0c8150d28cd",
+    "2963155d074ae948ad06",
+    "2ebc0249e826717a05de",
+    "2fde0ac87e9e213e2bfa",
+    "3012a5490dd7ae3d4523",
+    "37d54d24c3f3541bb031",
+    "39bda2ed179ee22fe671",
+    "3a3c3ea96c00b485d620",
+    "3c7938a8f762273aeb99",
+    "3db2a90725ee3d1be157",
+    "3fc256aa7f1f3faa63ac",
+    "489753bfea85a54f4b98",
+    "4be376c243b4882d7336",
+    "5ab7496c10eb2e1c717b",
+    "5b78467450f6ec222227",
+    "65cab3495919d5723be8",
+    "66f96d219820c461e7e7",
+    "764e8199ee6f131bafbc",
+    "7da8f2a18a08400239ed",
+    "813cbf89b2d560307abe",
+    "81aab8df9cb3566d2e43",
+    "870558359030d87f3729",
+    "9036f95a519845fb5b56",
+    "90794739cb161ed34c4b",
+    "93351203a6a745ff62ea",
+    "970efd87a89538fd8e69",
+    "97479d0840a7df479bd4",
+    "991e9a24f4b4614a1540",
+    "a2fec91edc5928382385",
+    "bed6df7ceae16a3605da",
+    "c8ac732a947e453c75c2",
+    "d66d772e2956ea382bac",
+    "e2238c0d09cc3fee1e41",
+    "e9ddb530de5d8093eb35",
+    "ed0f020a69ebb71ec960",
+    "f0d4f0b34757f47fb604",
+    "f7a17a973d59b9c3eeee",
+    "feb015aa161f13fe89c3"
+  ],
+  "content_hash": "1f9936d834c2c253271d7252327017e42915786f6b687dd85c9c8b7a6d88bdc0",
+  "dependencies": [],
+  "description": "Use when choosing or reviewing overlay patterns in Lightning Web Components, especially `LightningModal`, confirmation dialogs, toasts, focus handling, and overlay dismissal behavior. Triggers: 'lightning modal in lwc', 'toast or modal decision', 'focus trap in modal', 'overlay close result'. NOT for full Flow screen UX design or record-edit processes that should stay on-page.",
+  "file_location": "skills/lwc/lwc-modal-and-overlay",
+  "id": "lwc/lwc-modal-and-overlay",
+  "inputs": [
+    "what user action launches the overlay and whether the interaction is blocking or non-blocking",
+    "whether the component needs a return value, confirmation, form entry, or simple notification",
+    "how focus, dismissal, and save failure should behave"
+  ],
+  "name": "lwc-modal-and-overlay",
+  "official_sources": [
+    "lightning-modal - https://developer.salesforce.com/docs/platform/lightning-component-reference/guide/lightning-modal.html",
+    "Component Reference - https://developer.salesforce.com/docs/platform/lightning-component-reference/guide",
+    "Best Practices for Development with Lightning Web Components - https://developer.salesforce.com/docs/platform/lwc/guide/get-started-best-practices.html"
+  ],
+  "outputs": [
+    "overlay selection guidance for modal, confirm, toast, or inline messaging",
+    "review findings for focus handling, dismissal rules, and modal overuse",
+    "implementation pattern for opening, closing, and returning results from overlays"
+  ],
+  "references": [
+    "skills/lwc/lwc-modal-and-overlay/references/examples.md",
+    "skills/lwc/lwc-modal-and-overlay/references/gotchas.md",
+    "skills/lwc/lwc-modal-and-overlay/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/lwc/lwc-modal-and-overlay/scripts/check_lwc_modal_and_overlay.py"
+  ],
+  "tags": [
+    "lightning-modal",
+    "overlay",
+    "toast",
+    "confirm-dialog",
+    "focus-management"
+  ],
+  "templates": [
+    "skills/lwc/lwc-modal-and-overlay/templates/lwc-modal-and-overlay-template.md"
+  ],
+  "updated": "2026-03-15",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

@@ -1,0 +1,90 @@
+{
+  "category": "lwc",
+  "chunk_ids": [
+    "03edb6fa0865aafabb48",
+    "074dc8ba678495f889ff",
+    "09bea08751179ff56d14",
+    "0a61a193f98bb239ea2d",
+    "0fb0cb6bad0aee822447",
+    "109eb14e95a7118d3619",
+    "120ab226e85ecb009b85",
+    "188d0a4d9faa788ff19c",
+    "1c8b9fd244c0064ae11f",
+    "282d12e6fdeb4971ba95",
+    "2f1a13eddf82a10f8a27",
+    "337b45dc989199d56524",
+    "38946f0cf2e74ca4ad32",
+    "3a34f116fae0cb259573",
+    "3bbe39f1dccddc6def36",
+    "3d86f42e8e172a0defc0",
+    "40e6e8093b81b049c64e",
+    "421e1982395f0ca83502",
+    "48992b08370ed57f0bae",
+    "4b744cc793701a7e4e77",
+    "4dac11b9a80963cf802d",
+    "4fcff87a143864b41cd5",
+    "65fac309089fcad9d84c",
+    "7acb2e21db34a2a82695",
+    "7bc00bca68459f8a9b36",
+    "8f040d25e0b1547c8ce5",
+    "9184aef3a0728eb6e1a3",
+    "a3777633c808c4e65445",
+    "a88edf84e1b30718b13c",
+    "ade0bac75475223c5022",
+    "b9eb9c557ee0a5ed81b0",
+    "ba255daae57d814c499c",
+    "bb6610ce0c9f23ba04ba",
+    "bea94032fecf6cbb8838",
+    "c25ae1d3540d901b2bb3",
+    "c4ea9ba0409647e8ca0c",
+    "c830a93186d7182b6b5c",
+    "ccdeb59528d14b2b4e7e",
+    "d55c8a5f7685d8cc1904",
+    "de2d68dcf45bdc436b8c",
+    "de5ac1b6d10f7fb4c2eb",
+    "eae1df0ed79e739de579",
+    "ec1f3f7024c72cde8846"
+  ],
+  "content_hash": "bcaebbc4fe532b5fad6af51103fa3e62a6ab1f517a3d25d98e67e973d9264a27",
+  "dependencies": [],
+  "description": "Use when packaging third-party JavaScript, CSS, or asset files into Salesforce static resources for Lightning Web Components, including `@salesforce/resourceUrl`, `loadScript`, `loadStyle`, zip pathing, versioning, and CSP-safe delivery. Triggers: 'static resource in lwc', 'loadScript not working', 'resourceUrl path in zip', 'third party library in salesforce'. NOT for npm-bundled code that should ship through the build pipeline or server-side integration assets.",
+  "file_location": "skills/lwc/static-resources-in-lwc",
+  "id": "lwc/static-resources-in-lwc",
+  "inputs": [
+    "which library or asset is being loaded and whether it is zipped",
+    "whether the resource is JavaScript, CSS, images, fonts, or a mixed asset pack",
+    "whether Lightning Web Security or CSP constraints are affecting the load path"
+  ],
+  "name": "static-resources-in-lwc",
+  "official_sources": [
+    "Access Static Resources - https://developer.salesforce.com/docs/platform/lwc/guide/create-resources.html",
+    "platformResourceLoader - https://developer.salesforce.com/docs/platform/lightning-component-reference/guide/lightning-platform-resource-loader.html",
+    "StaticResource Metadata Type - https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_staticresource.htm"
+  ],
+  "outputs": [
+    "static-resource loading pattern for LWC with versioning and guard rails",
+    "review findings for CSP, duplicate loading, and pathing mistakes",
+    "implementation guidance for script, style, or asset references"
+  ],
+  "references": [
+    "skills/lwc/static-resources-in-lwc/references/examples.md",
+    "skills/lwc/static-resources-in-lwc/references/gotchas.md",
+    "skills/lwc/static-resources-in-lwc/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/lwc/static-resources-in-lwc/scripts/check_static_resources_in_lwc.py"
+  ],
+  "tags": [
+    "static-resources",
+    "resource-url",
+    "platform-resource-loader",
+    "third-party-library",
+    "csp"
+  ],
+  "templates": [
+    "skills/lwc/static-resources-in-lwc/templates/static-resources-in-lwc-template.md"
+  ],
+  "updated": "2026-03-15",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

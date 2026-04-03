@@ -1,0 +1,89 @@
+{
+  "category": "flow",
+  "chunk_ids": [
+    "16903ed96f6e25fd4acb",
+    "18e0957c431a7690a6c4",
+    "1fceabf2519da53bc58d",
+    "20f7f3bbe642b5fde366",
+    "22225c3d905f2a7f2d9a",
+    "2f996a9430d48a25423d",
+    "375a509ec157579fc188",
+    "37a535a77ce3e1ec54be",
+    "3fe3d07f66dd2d325b3e",
+    "484f0fe3e73362165430",
+    "4f0b8646ac495db46bf1",
+    "4f0db61c7da813c04aea",
+    "544c1f987764664570aa",
+    "566a03f6166ca9b5413d",
+    "630badb42178f793a4d7",
+    "633fd18d5d2ecd0e2ecc",
+    "64dc16c7c45f11ddd5fc",
+    "7300e842254deca59f4c",
+    "785d7b4281aa56ded650",
+    "7d8c58fbe5870b8988cb",
+    "8107145057c1015a19b5",
+    "8118a716f5a55e47bfec",
+    "869230264c4cf8d1e707",
+    "8acf6c12ec484ef70dc6",
+    "927f0bf122d7ebd4ce68",
+    "93c9f5c97c646e852b49",
+    "95e37c8e0421bf41445c",
+    "9721502820b2cacd15f5",
+    "9da551f2b53fc51eeb79",
+    "a37bc6adaace4f76ad29",
+    "a49abecd6e76eb449621",
+    "a4dfe7451ed27732fa81",
+    "a5a01ceb05d4b0417c7b",
+    "b588e785879a7d7a1430",
+    "c70fb859f2b4983ae9d4",
+    "d87e34162f9e54717a86",
+    "db47dee79225e68491c2",
+    "dd54dfcafe2c7571dafa",
+    "df5e57d3ddbfdf900cde",
+    "e0588e7c4a8687f06221",
+    "e6e117d521bd0b7eee99",
+    "effaafce78b339d6d2f3"
+  ],
+  "content_hash": "252b9450202b1ac642175e17559592a56d05a925e70a60a05b321d66590db153",
+  "dependencies": [],
+  "description": "Use when extracting reusable Flow logic into subflows, defining input and output variables, keeping parent flows maintainable, and sharing common automation contracts across multiple flows. Triggers: 'reuse this flow logic', 'how should subflow variables work', 'too much duplicated flow logic', 'subflow contract design'. NOT for Apex-called Flow execution direction or Flow Orchestration process design.",
+  "file_location": "skills/flow/subflows-and-reusability",
+  "id": "flow/subflows-and-reusability",
+  "inputs": [
+    "which parent flows repeat the same logic and what outputs they need back",
+    "whether the reusable step is pure calculation, data lookup, mutation, or error handling",
+    "how much of the current flow contract is stable across callers"
+  ],
+  "name": "subflows-and-reusability",
+  "official_sources": [
+    "Subflows - https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_subflow.htm&type=5",
+    "Flow Builder - https://help.salesforce.com/s/articleView?id=sf.flow.htm&type=5",
+    "Salesforce Well-Architected Overview - https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "subflow extraction recommendation with clear input and output contracts",
+    "review findings for over-coupled or under-specified flow reuse",
+    "guidance on when to keep logic inline versus moving it to subflow or Apex"
+  ],
+  "references": [
+    "skills/flow/subflows-and-reusability/references/examples.md",
+    "skills/flow/subflows-and-reusability/references/gotchas.md",
+    "skills/flow/subflows-and-reusability/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/flow/subflows-and-reusability/scripts/check_subflows_and_reusability.py"
+  ],
+  "tags": [
+    "subflows",
+    "flow-reuse",
+    "input-output-variables",
+    "autolaunched-flow",
+    "maintainability"
+  ],
+  "templates": [
+    "skills/flow/subflows-and-reusability/templates/subflows-and-reusability-template.md"
+  ],
+  "updated": "2026-03-15",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

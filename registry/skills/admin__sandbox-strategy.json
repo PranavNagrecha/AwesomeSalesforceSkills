@@ -1,0 +1,84 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "0388bc08abbb8c8669ce",
+    "0bee39833e8fb013427e",
+    "196d9dbf1118bac0c07f",
+    "1f56c1fb16c2499723b6",
+    "2739f1d6341d82914e5e",
+    "29e171ae3f17f3b3e54d",
+    "2cc94072ad3a54e8e57e",
+    "2e361609837ba1ae9d84",
+    "3635e8a222940a7c3e50",
+    "45b3a0b3f66de32cec53",
+    "4a5d21c9bb81f7876a34",
+    "4b4d5355f6b62b2bfb90",
+    "632fcd0a015d8250ff16",
+    "6b73c6247415e7bb1438",
+    "6bf0903b8123f0f62e2b",
+    "72a2ba7944c0748e0fea",
+    "776826ae6d74f7c95a0e",
+    "7e0851a6d18fe2c49cf8",
+    "8f5696dc47ffe9130ecc",
+    "8fe686e56cd74e74444b",
+    "9155363cb1450a3fd5b5",
+    "9f18ea82bbd62fea37f7",
+    "ad2e46483aa32f1a2850",
+    "af472316a0fe74c802b3",
+    "b07bfb7b2750f170d519",
+    "ba80a62a068c70bfed54",
+    "bc504c98d85b910d0555",
+    "c2487b906fcba5e1bc53",
+    "c3690d3eea635a6000e3",
+    "c4f2a0be82024a0037d6",
+    "c55db0d87ec9f75637d8",
+    "c6abfd2e6e91019d7559",
+    "cc6cd7353a366fc39951",
+    "d38cfd5ecd1705721a42",
+    "d48ee6ae09c1a196c104",
+    "daed4c42d421f2aa837e",
+    "f36f00c4644cdf7a9a66",
+    "fe4a3018da97e6ede055"
+  ],
+  "content_hash": "f15d8116162912d5bd60a26614aa98e5ec17c99e533c287ff30102b4f4ae62a0",
+  "dependencies": [],
+  "description": "Use when designing or reviewing Salesforce sandbox topology, refresh cadence, masking, and environment purpose. Triggers: 'Developer sandbox', 'Developer Pro', 'Partial Copy', 'Full sandbox', 'sandbox refresh', 'data masking', 'test environment', 'Gov Cloud sandbox'. NOT for scratch-org package workflows unless they affect environment planning.",
+  "file_location": "skills/admin/sandbox-strategy",
+  "id": "admin/sandbox-strategy",
+  "inputs": [
+    "environment goals",
+    "refresh cadence",
+    "data sensitivity"
+  ],
+  "name": "sandbox-strategy",
+  "official_sources": [
+    "Salesforce Well-Architected Overview \u2014 environment strategy and governance framing",
+    "Metadata API Developer Guide \u2014 metadata movement constraints across environments"
+  ],
+  "outputs": [
+    "sandbox topology recommendation",
+    "environment governance findings",
+    "refresh checklist"
+  ],
+  "references": [
+    "skills/admin/sandbox-strategy/references/examples.md",
+    "skills/admin/sandbox-strategy/references/gotchas.md",
+    "skills/admin/sandbox-strategy/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/sandbox-strategy/scripts/check_sandbox_plan.py"
+  ],
+  "tags": [
+    "sandboxes",
+    "refresh",
+    "masking",
+    "environment-strategy",
+    "testing"
+  ],
+  "templates": [
+    "skills/admin/sandbox-strategy/templates/sandbox-strategy-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

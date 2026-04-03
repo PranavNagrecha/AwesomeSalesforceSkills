@@ -1,0 +1,97 @@
+{
+  "category": "omnistudio",
+  "chunk_ids": [
+    "00e5bf9341dc0b953e16",
+    "024641ac4bf48a6845f5",
+    "035501a81298e764d8f5",
+    "070bece70508eec52bf8",
+    "091e17dd720e805f62a3",
+    "0bab59d9a46e1cd8ea03",
+    "0e7e2e946ea030a4c57c",
+    "1609daaff01c7596750a",
+    "19dc3ef3278406242b7d",
+    "1b1c1e8bd011d3f0a99c",
+    "1f1538c5337dd3991694",
+    "364a2c4c89467f1f6c02",
+    "3c7249932c74eb9880d9",
+    "52e529c2155e1d5b4d28",
+    "53bd1b3db5a438b4cdeb",
+    "54861e9e084041dce416",
+    "5644110d6956dbe1d001",
+    "57ff135b0efb6c76d106",
+    "59722dd9d03184b8ded9",
+    "5c1e0dd1a1e6ec1714d2",
+    "5e38e5ef7dd18f128dba",
+    "5ef7c472c5fea07478c0",
+    "6675fd05ef1700ddff17",
+    "6dfde6398a5529142a95",
+    "72df43ef0d0702ec859f",
+    "7777c7acd14ccde5a976",
+    "7bfb406a39be84630bdd",
+    "7d96f5c66dbe75102365",
+    "7db1db31d205b63373b3",
+    "88e338e5e084a85a9677",
+    "8e9911aae45c6d399d6f",
+    "977a5d10630222e6e4fd",
+    "a092bf758394a71f1015",
+    "a9fda9d87d3134f92bd4",
+    "ae9bdb8165c026eaa486",
+    "b84640724249bc316904",
+    "ba3a2d96becabc3ce605",
+    "c213a564d83e2037206e",
+    "c2ffca38d33ee981541c",
+    "c46dca18239321f35e63",
+    "cc0e681640ee2d74d473",
+    "d0d383d634fbd931914e",
+    "d47d57dd21c34cab50e7",
+    "d614cfa4c0873b760b47",
+    "d63ddb404595e981a6cd",
+    "d97c2bac0f01ddd238c1",
+    "e2a4fb6a4835887650f5",
+    "e4b2aa034757f63e3614",
+    "fbebc6e3875c6c02c1e1",
+    "fc367c5a79b3c23fd9e7"
+  ],
+  "content_hash": "754213c82731dee1f24e2c41a552db59d88ca1faddb04d0cc7d0a459031c28b0",
+  "dependencies": [],
+  "description": "Use when building, reviewing, or debugging OmniStudio Integration Procedures. Triggers: 'integration procedure', 'IP', 'HTTP action', 'DataRaptor', 'rollbackOnError', 'failureResponse'. NOT for Apex-only integrations unless the main design choice is whether OmniStudio is still appropriate.",
+  "file_location": "skills/omnistudio/integration-procedures",
+  "id": "omnistudio/integration-procedures",
+  "inputs": [
+    "caller contract",
+    "external systems",
+    "named credential setup"
+  ],
+  "name": "integration-procedures",
+  "official_sources": [
+    "Salesforce Well-Architected Overview \u2014 reliability and operational framing for orchestration design",
+    "REST API Developer Guide \u2014 request and response behavior grounding for external interactions",
+    "Integration Patterns \u2014 sync and async system-boundary tradeoffs for IP design"
+  ],
+  "outputs": [
+    "integration procedure review",
+    "orchestration recommendations",
+    "error-handling findings"
+  ],
+  "references": [
+    "skills/omnistudio/integration-procedures/references/examples.md",
+    "skills/omnistudio/integration-procedures/references/gotchas.md",
+    "skills/omnistudio/integration-procedures/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/omnistudio/integration-procedures/scripts/check_integration_procedure.py"
+  ],
+  "tags": [
+    "omnistudio",
+    "integration-procedure",
+    "http-action",
+    "named-credentials",
+    "failure-response"
+  ],
+  "templates": [
+    "skills/omnistudio/integration-procedures/templates/ip-design-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

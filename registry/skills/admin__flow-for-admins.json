@@ -1,0 +1,103 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "0c47a7c68ba5cf9dea35",
+    "0e07450657671d5c9c34",
+    "0f2e349ed725c4497282",
+    "12a7c55a0fb9a561c0b8",
+    "18ce67eb920f5f640ba2",
+    "1d312bf27a1986c1faec",
+    "2478ce648e5e2a95dfc4",
+    "2c929267c535efd6c80d",
+    "3015c5af85211cea2a79",
+    "32a905350cbfb0f558de",
+    "336e16f3f308e7968af7",
+    "33c9c64e9d4be46caeaf",
+    "345797949c37d4b3f85e",
+    "34e3c98cf576110d3650",
+    "42dea501ad98fc1bd1a2",
+    "50bea279f3a9bc9b27c5",
+    "548409ab9ef5fd2e3773",
+    "555b0eba4329b37bdeeb",
+    "579a994fc1b6ddb0b6ca",
+    "5defe043f2ac36e1e1e8",
+    "6268390504ace3ad3c97",
+    "67c4bb212086ae1e4baf",
+    "706484fb7e32e0dd2dc0",
+    "7199233df57986ea5c5e",
+    "71a8eacf1990819fefe5",
+    "763d4db7a7b8e40847ea",
+    "7c353935d6d0a498f25d",
+    "7e7540dbf72acd5b5edd",
+    "80a61b6aeac341a72f9c",
+    "822cd0fd7ba935718d24",
+    "9399372788fbd3c4d98d",
+    "94f419719c37fb481e56",
+    "96152f9b38d2868ccb3e",
+    "98faad369b2cdb31dfe8",
+    "9952ac54452fc1b22372",
+    "995ae0985c19dfd18f10",
+    "9bfa8a88d80465bb12c2",
+    "9cc0c6397291f4c210ea",
+    "9f8a9a6d1982bc4d2153",
+    "a163e6e704346b2187b0",
+    "a2923851582d15cad37d",
+    "ad794e54d5dd5b3c00d1",
+    "ae03c3dc7eebcee69f8f",
+    "aea67cd8b8bae149f5b4",
+    "b0c2e649cc60be12a755",
+    "b1e77c425a17da57d684",
+    "bd3c47a557cce48d7dc6",
+    "bfa26ce07926d7f3ac7f",
+    "c1e79c03d1964ed1af54",
+    "d45b599e49879da78eb4",
+    "d463838d0ecf792f4716",
+    "d64d0b3d24f95275fc87",
+    "d795dbab70897613e7d9",
+    "d8d67aee18fa3a9dd4f0",
+    "d96d5e3b65a5ba452881",
+    "f2521b03d587e85631cb",
+    "fe065148c65b3322bc8a"
+  ],
+  "content_hash": "cf03b272ddbe08530f472360860c363313b255ede333ce4f0090938d29132377",
+  "dependencies": [],
+  "description": "Use when designing, reviewing, or debugging Salesforce Flows from an Admin perspective. Triggers: 'flow', 'automation', 'record-triggered flow', 'screen flow', 'scheduled flow', 'flow error', 'flow interview'. NOT for OmniStudio OmniScripts \u2014 use omnistudio/ skills for that.",
+  "file_location": "skills/admin/flow-for-admins",
+  "id": "admin/flow-for-admins",
+  "inputs": [
+    "automation use case",
+    "entry point",
+    "data volume"
+  ],
+  "name": "flow-for-admins",
+  "official_sources": [
+    "Salesforce Well-Architected Overview \u2014 reliability and operability framing for automation choices",
+    "Metadata API Developer Guide \u2014 Flow metadata behavior and deployment context"
+  ],
+  "outputs": [
+    "flow pattern recommendation",
+    "flow review findings",
+    "automation design guidance"
+  ],
+  "references": [
+    "skills/admin/flow-for-admins/references/examples.md",
+    "skills/admin/flow-for-admins/references/gotchas.md",
+    "skills/admin/flow-for-admins/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/flow-for-admins/scripts/check_flow_metadata.py"
+  ],
+  "tags": [
+    "flow",
+    "record-triggered-flow",
+    "screen-flow",
+    "automation",
+    "fault-handling"
+  ],
+  "templates": [
+    "skills/admin/flow-for-admins/templates/flow-design-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

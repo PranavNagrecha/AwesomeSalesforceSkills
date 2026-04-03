@@ -1,0 +1,76 @@
+{
+  "category": "security",
+  "chunk_ids": [
+    "0239f411f445c6bb2768",
+    "11281f6162434949a189",
+    "1eddd5cfa00a9e1cac8e",
+    "20c49d50861b2a7639e8",
+    "28c57d616255f7b2cd4b",
+    "2ebf7e782834c8649f79",
+    "31196409844d41729315",
+    "34eb8fef235ed666f437",
+    "3a657348a4a996e7cd08",
+    "4ad1e91ccc72798b1d13",
+    "4f84039f4d38be1c7785",
+    "53f961b3134f36aebaa6",
+    "5836ea532a54d38b6f36",
+    "6cbd0c851a6c4f6a0e7b",
+    "725be2eb823337cf3c75",
+    "73f175584fdd361273fa",
+    "82bf4ee95ac1498537a7",
+    "87ced0dcc9ae0ba1e020",
+    "8b4908438ba398ab63c7",
+    "8f143c81ae11e7b7c8ac",
+    "8fd0484189890404c4f1",
+    "961da3c8a677813805cf",
+    "96aa24f1e71a100cd90c",
+    "9f895cbcc86cc82424b7",
+    "a572a02794bc7ce0ffc3",
+    "a58dc6a0478f0bab8e65",
+    "a887069da864e010f0e5",
+    "b51aa5df496a29bb47f2",
+    "b85e7cadd294119d59fb",
+    "bcbe9bcfd3585f1a39ce",
+    "c08f097ed37a9854450c",
+    "cd524d282fcbf7df46b6",
+    "e0912c0d5bda694da365",
+    "e58a9d34f4a8c61522b5",
+    "e84f0e1f812d1fe5c073",
+    "fffc79bb6fda0d39cfc3"
+  ],
+  "content_hash": "ff0680fbdd796e6239fefeb37ad87ca5cf659a51fd74a768d0bfe93fa2c1c7c5",
+  "dependencies": [],
+  "description": "TODO: One sentence explaining when to use this skill and its main trigger keywords. NOT for TODO: explicit scope exclusion \u2014 what does this skill NOT cover.",
+  "file_location": "skills/security/shield-encryption",
+  "id": "security/shield-encryption",
+  "inputs": [
+    "TODO: context or information this skill needs to work"
+  ],
+  "name": "shield-encryption",
+  "official_sources": [
+    "Shield Platform Encryption Implementation Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security_pe_overview.htm&type=5",
+    "Secure Apex Classes \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/apex-security",
+    "Salesforce Security Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security_overview.htm&type=5"
+  ],
+  "outputs": [
+    "TODO: artifact or guidance this skill produces"
+  ],
+  "references": [
+    "skills/security/shield-encryption/references/examples.md",
+    "skills/security/shield-encryption/references/gotchas.md",
+    "skills/security/shield-encryption/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/security/shield-encryption/scripts/check_shield_encryption.py"
+  ],
+  "tags": [
+    "shield-encryption",
+    "TODO_TAG_2"
+  ],
+  "templates": [
+    "skills/security/shield-encryption/templates/shield-encryption-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

@@ -1,0 +1,5 @@
+#!/bin/sh
+set -eu
+
+python3 scripts/skill_sync.py --changed-only
+python3 scripts/validate_repo.py

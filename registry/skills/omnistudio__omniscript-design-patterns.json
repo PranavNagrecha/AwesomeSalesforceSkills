@@ -1,0 +1,87 @@
+{
+  "category": "omnistudio",
+  "chunk_ids": [
+    "02c7d1f8833f42e83d10",
+    "19f5d87e55b0b567e38e",
+    "1c3888ece1f43f0d7e0a",
+    "1d1db359c75030cd7564",
+    "210b73ec7c5db3f39f6b",
+    "25ce2735ccee0c157fb0",
+    "2e3895a9d374ebd69efd",
+    "34c92d7fb244ba960afb",
+    "38f8e9b9ddc1f265fb6f",
+    "42bf549594c851eca479",
+    "49414ed6b4372ea11d10",
+    "4e27197debe28485c170",
+    "5e2a92bb2d11b740e78a",
+    "6019d8654a44f7d7c7db",
+    "729832e530953f6a6af6",
+    "757e4edddc6886952f78",
+    "8d6285cb6e9d607075c4",
+    "9883cc4df51cfde7cca8",
+    "9b22665edb7072caf599",
+    "9dbfa7647b1257804a40",
+    "9e2b7f7de988293c5643",
+    "9ed78d8e5e60c69c865f",
+    "aa77b2784df219fe2d5c",
+    "aaa8c126d12c3bba01a3",
+    "ad4c8158ef8fa551ee07",
+    "af5ac1a2f223aa8b3232",
+    "b5188eb602e7ff7e692f",
+    "b644da4d1d105cda7e32",
+    "b9f11cdacd3f83a5a741",
+    "bbdcbcb2efbe0f51714f",
+    "bc96cc9294de05f5e8f2",
+    "ca6f676439bdb8d112de",
+    "cb338e7057bba272c28b",
+    "d36ab9487b9d6697e40b",
+    "d4159a76d7a2ee4080f2",
+    "dad2502ee4fe0d907b16",
+    "ef6533490bd36498237a",
+    "efa7917d9f29fd6b049f",
+    "f27eefec50e6efb5f2a8",
+    "f3c07f0894d17d30c71c"
+  ],
+  "content_hash": "e08f81b7cde9441db4760da8db704f411a47407a6f1cbc6460740aca83c053d6",
+  "dependencies": [],
+  "description": "Use when designing or reviewing OmniScripts for guided experiences, step structure, branching, save/resume, and the boundary between OmniScript, Integration Procedures, DataRaptors, and custom LWCs. Triggers: 'omniscript design', 'too many steps in omniscript', 'save and resume omniscript', 'branching in omniscript', 'when should this be an integration procedure'. NOT for deep Integration Procedure or DataRaptor design when the guided interaction layer is not the main concern.",
+  "file_location": "skills/omnistudio/omniscript-design-patterns",
+  "id": "omnistudio/omniscript-design-patterns",
+  "inputs": [
+    "business journey, personas, and expected step count",
+    "which logic belongs in the guided UI vs backend services",
+    "save/resume, branching, and performance expectations"
+  ],
+  "name": "omniscript-design-patterns",
+  "official_sources": [
+    "OmniStudio Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer_guide.meta/omnistudio_developer_guide/omnistudio_intro.htm",
+    "Integration Patterns \u2014 https://architect.salesforce.com/docs/architect/fundamentals/guide/integration-patterns.html",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "omniscript design recommendation",
+    "review findings for step structure, branching, and handoff boundaries",
+    "decision on what should stay in omniscript vs move to integration procedures or lwc"
+  ],
+  "references": [
+    "skills/omnistudio/omniscript-design-patterns/references/examples.md",
+    "skills/omnistudio/omniscript-design-patterns/references/gotchas.md",
+    "skills/omnistudio/omniscript-design-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/omnistudio/omniscript-design-patterns/scripts/check_omniscript_design_patterns.py"
+  ],
+  "tags": [
+    "omniscript",
+    "guided-experience",
+    "save-and-resume",
+    "branching",
+    "omnistudio"
+  ],
+  "templates": [
+    "skills/omnistudio/omniscript-design-patterns/templates/omniscript-design-patterns-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

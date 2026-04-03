@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Skill Registry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "generated_from_hash",
+    "skill_count",
+    "domain_counts",
+    "skills"
+  ],
+  "properties": {
+    "schema_version": {"type": "integer"},
+    "generated_from_hash": {"type": "string"},
+    "skill_count": {"type": "integer", "minimum": 0},
+    "domain_counts": {
+      "type": "object",
+      "additionalProperties": {"type": "integer", "minimum": 0}
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "$ref": "./skill-record.schema.json"
+      }
+    }
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "04461b247f67a0d6ac5f",
+    "073f7b645a81d00abcae",
+    "0f57f250725096ef5bdf",
+    "0f8b072fe068694f7175",
+    "199d83641230121729bd",
+    "19a6f7e78338d53d9c73",
+    "1a5381eac0b0dc23ae6d",
+    "242bc6ce7924ac4e4de8",
+    "28946711c4984600d6a0",
+    "3722816e51c45de0b731",
+    "3964a7965e10e42e3841",
+    "483fc4b9b66bdf167d1a",
+    "502ef94f901c6c8a546f",
+    "506857b8e93a6d4dbc55",
+    "59dfcb1d4c6270048c10",
+    "5cb6417b3f9cb1fd440c",
+    "61b88738e3e8a666f6ab",
+    "65362382aea4a726bf43",
+    "6d6e55578c2a5ea688e3",
+    "7b471aab57d8d5fdc401",
+    "889d120a10a947540828",
+    "8bc373decbf8ffb8f049",
+    "8bc9cb44318079e200a2",
+    "8c49d284a386847e8e33",
+    "8d602a04e41e665747de",
+    "8f63c0338d0bd1e5bbf9",
+    "9b3bed86adf0a2c1af54",
+    "ac43e131c2c86930e813",
+    "b0f6018c62663b295e12",
+    "b2bcf2143d4ba47be4c5",
+    "b5dda33790ad16ff3811",
+    "b958789d62b828764823",
+    "b9a04b040288ec21fc30",
+    "c2d6e25e920eebd1c1f1",
+    "d45b97dcec20f4dfee5f",
+    "e213ae64e1a99eb50b29",
+    "e3dbe6de9733fa5026e7",
+    "e5f17e12a38ecf62f36a",
+    "e6cd312ded31b4ba05d2",
+    "e742999dcc60b23e5d09",
+    "f45bbe51464b793b0e13",
+    "f56c12c4ebe95cca7d09",
+    "f7c86fe799edfd823c6e"
+  ],
+  "content_hash": "583a0cb091c995d8e6fa054cbf0eb092c28e886431efb1a6f3839783fb11f3f5",
+  "dependencies": [],
+  "description": "Use when building, reviewing, or debugging inbound Apex REST resources, request/response handling, status codes, versioned URL mappings, or JSON serialization in `@RestResource` classes. Triggers: 'Apex REST', '@RestResource', 'HttpGet/HttpPost', 'RestContext', 'versioned endpoint'. NOT for outbound HTTP callouts or standard Salesforce REST API usage as a consumer.",
+  "file_location": "skills/apex/apex-rest-services",
+  "id": "apex/apex-rest-services",
+  "inputs": [
+    "resource use case and whether a custom endpoint is really necessary",
+    "authentication, caller identity, and sharing expectations",
+    "request schema, response schema, and versioning plan"
+  ],
+  "name": "apex-rest-services",
+  "official_sources": [
+    "Apex Developer Guide \u2014 Apex REST and `@RestResource`",
+    "REST API Developer Guide \u2014 API contract framing and HTTP semantics",
+    "Salesforce Well-Architected Overview \u2014 security, reliability, and operational framing"
+  ],
+  "outputs": [
+    "Apex REST design recommendation",
+    "review findings for endpoint security, versioning, and response handling",
+    "resource scaffold with explicit status and JSON patterns"
+  ],
+  "references": [
+    "skills/apex/apex-rest-services/references/examples.md",
+    "skills/apex/apex-rest-services/references/gotchas.md",
+    "skills/apex/apex-rest-services/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/apex-rest-services/scripts/check_apex_rest_services.py"
+  ],
+  "tags": [
+    "apex-rest",
+    "restresource",
+    "restcontext",
+    "json-serialization",
+    "versioning"
+  ],
+  "templates": [
+    "skills/apex/apex-rest-services/templates/apex-rest-services-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

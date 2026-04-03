@@ -1,0 +1,87 @@
+{
+  "category": "flow",
+  "chunk_ids": [
+    "06f1d1ced9e1a251d052",
+    "0881f713ddf36afd86e0",
+    "189d91cdec85ce27937c",
+    "31e9bb1f0072ce3ce74a",
+    "381f710a3780c0ac449c",
+    "3ec1be88dbe155e9dacb",
+    "43af48a7a701897fd6be",
+    "4d7b54e4cc58c7f90e70",
+    "513e879b52a9e9c341d6",
+    "5d94397ad6de2e6e2d4c",
+    "5dc2ea768d484944fbb8",
+    "614b9aafdbc7a232b1da",
+    "69bafdc76281bcd42862",
+    "75956836162be585972b",
+    "760ccf096d4bc9a50c9c",
+    "7885f136172b70a5df5f",
+    "7a14f26d9b74ff8ac16f",
+    "7aa83e33f51d0a0d9d23",
+    "7b0c0af42f420df6569c",
+    "7d04f3bf79c07851594c",
+    "841f4a0281b5f96e6909",
+    "85f5cb98dd947993a9be",
+    "8913de0fd4eba7f2b756",
+    "8dfa088d8e63157e1e70",
+    "97232a66661c5be8c21c",
+    "987d65a0a2339d41206e",
+    "a56d3a1b34810bf0c4df",
+    "b065822d650e1863bc2d",
+    "b56e3125440e6191b045",
+    "b764d3f376f2d81332e2",
+    "bafa5e97416dab4d5026",
+    "c6a3114c495e12681ef8",
+    "cd34f503e2f5b3cc4385",
+    "d1195077a2fbbdeb93a5",
+    "d263d7ce5afd27c15f75",
+    "e166dd7350a0a3c94203",
+    "e9b36cc960b4cefc645c",
+    "f1086a39c2e7734e80ce",
+    "f3519e1e8066f03e5632",
+    "f52d5e56709c618e2247"
+  ],
+  "content_hash": "e443e7cbfd7c750a372066989368d6ac17586f018e6974390dacbfc0f7516edf",
+  "dependencies": [],
+  "description": "Use when defining or reviewing test strategy for Salesforce Flow, including Flow Tests, debug runs, path coverage, test data, and explicit validation of fault paths and custom component behavior. Triggers: 'flow test tool', 'how do i test a flow', 'flow fault path testing', 'flow debug interview'. NOT for Apex unit testing or manual QA planning that is unrelated to Flow behavior.",
+  "file_location": "skills/flow/flow-testing",
+  "id": "flow/flow-testing",
+  "inputs": [
+    "which flow type is under test and which paths are business-critical",
+    "what test data is required for happy, edge, and failure scenarios",
+    "whether custom LWC components, Apex actions, or external dependencies are involved"
+  ],
+  "name": "flow-testing",
+  "official_sources": [
+    "Flow Testing Tool - https://help.salesforce.com/s/articleView?id=sf.flow_test.htm&type=5",
+    "FlowTest Metadata Type - https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_flowtest.htm",
+    "Flow Reference - https://help.salesforce.com/s/articleView?id=sf.flow_ref.htm&type=5"
+  ],
+  "outputs": [
+    "flow test strategy covering happy, edge, and fault paths",
+    "review findings for missing test coverage, weak data setup, or manual-only validation",
+    "guidance on combining Flow Tests, debug runs, and component-level tests where needed"
+  ],
+  "references": [
+    "skills/flow/flow-testing/references/examples.md",
+    "skills/flow/flow-testing/references/gotchas.md",
+    "skills/flow/flow-testing/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/flow/flow-testing/scripts/check_flow_testing.py"
+  ],
+  "tags": [
+    "flow-testing",
+    "flow-tests",
+    "path-coverage",
+    "debug-interview",
+    "test-data"
+  ],
+  "templates": [
+    "skills/flow/flow-testing/templates/flow-testing-template.md"
+  ],
+  "updated": "2026-03-15",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

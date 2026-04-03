@@ -1,0 +1,101 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "08cc87bf0d6a54076411",
+    "0970c8a1c6ab35fc237b",
+    "10698a3f347a0837b729",
+    "11e8ce6f84bd365e4bf8",
+    "143f66446c566aad59a5",
+    "160986139ef1bbd54a62",
+    "1fe804ed262863dee1b0",
+    "225902d559e7b7ca5b9b",
+    "231e1cfdff4860af1732",
+    "273d609d037dad53befb",
+    "336b7cfc6aec0c84ca77",
+    "3850d3cb2ce540a02e2d",
+    "3a07466b3a3f4d3dd989",
+    "3e362ab9d6c7d64d1171",
+    "42da10698f5a9b0cd4b1",
+    "4640cabf6293878f5d8c",
+    "47113c10aa994ba89586",
+    "4ae6d1852bc17983b78f",
+    "4bc89c2446179e4eefb1",
+    "4c5383be839bdbfe1bfb",
+    "4db3ff081ead4eece315",
+    "4dbd468aca2c41779128",
+    "54c44f77d2c732694a72",
+    "5c4ea01c4f9319e5c6ab",
+    "6eefef19de862066a268",
+    "737674bc7550de1de8c7",
+    "75c19d0103963e120bc3",
+    "7887e468ac8eadd16ff2",
+    "7eaefb22dc0e1a2e9dc4",
+    "83654ddb765ab91db66b",
+    "9afa8ceb4fa4888ce421",
+    "9de5d793866dd12e1034",
+    "9df15e10f246d0bf1fe7",
+    "a657f6e3abfc995a7c22",
+    "a80782b2561ae753504a",
+    "acc0a7e3a1ac94441a70",
+    "ad970f632f438c69072d",
+    "b105e3df39e430c9b21d",
+    "b5d046d44961bc34aab2",
+    "b68eee5c5daa8cb6f690",
+    "bb074fe5a69ff6e5a942",
+    "c016926b81f93d446f56",
+    "c220b2228c32e8cb6b5e",
+    "c8f4ca1c663ef42132aa",
+    "ccf6aa4eba6631815ea2",
+    "d371c03fe3bc6e94fda0",
+    "ec21a73e6c935ae7a6a4",
+    "ed41a8c0dd50d28ac769",
+    "eec8e47d0a247fb62eb4",
+    "efe36af382ba6e7d8627",
+    "f12f0711a5fc7259527c",
+    "f4cbce69035aee8bd74e",
+    "fb685f0ee98252a5145d"
+  ],
+  "content_hash": "4afbfef02e0cacd78fac77e1d8d4f91f80b52351881968192acdc1793cae95d0",
+  "dependencies": [],
+  "description": "Use when writing, reviewing, or troubleshooting Apex queries that may expose SOQL injection or CRUD/FLS issues. Triggers: 'Database.query', 'WITH USER_MODE', 'WITH SECURITY_ENFORCED', 'stripInaccessible', 'security review finding'. NOT for record-sharing design unless the main issue is Apex query security.",
+  "file_location": "skills/apex/soql-security",
+  "id": "apex/soql-security",
+  "inputs": [
+    "query context",
+    "user input path",
+    "sharing model"
+  ],
+  "name": "soql-security",
+  "official_sources": [
+    "Salesforce Well-Architected Overview \u2014 security and audit framing for data-access design",
+    "Apex Developer Guide \u2014 secure query and transaction behavior guidance",
+    "Apex Reference Guide \u2014 query, security API, and language reference confirmation",
+    "Secure Apex Classes \u2014 component-facing sharing and CRUD/FLS enforcement patterns"
+  ],
+  "outputs": [
+    "security review findings",
+    "secure query rewrite guidance",
+    "crud-fls enforcement recommendations"
+  ],
+  "references": [
+    "skills/apex/soql-security/references/examples.md",
+    "skills/apex/soql-security/references/gotchas.md",
+    "skills/apex/soql-security/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/soql-security/scripts/check_soql_security.py"
+  ],
+  "tags": [
+    "soql",
+    "security",
+    "crud",
+    "fls",
+    "injection"
+  ],
+  "templates": [
+    "skills/apex/soql-security/templates/soql-security-review.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

@@ -1,0 +1,86 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "0594977cbc8a466f1dec",
+    "0cce7448cad1207cf030",
+    "0f6bfbfcd52d5219c96f",
+    "15499782280d7e1075e2",
+    "28647c1da878674a8529",
+    "2d9b9706d569418af2d8",
+    "2f11f9e14a32e5e008d7",
+    "3023bd8db2bf19e1585e",
+    "31652ac3ba0475802e35",
+    "34cee31e9588a271df96",
+    "3ffd2b3990f7e27df666",
+    "46664be3b18f63986c16",
+    "520e5b80f1e631cac607",
+    "52af7b8f831203238305",
+    "5a4322c05492c8716e90",
+    "7869a9924dead1bcbcbe",
+    "7884ec4e2b1f4dd7185b",
+    "7e2823888edb161054de",
+    "7f0a7f843a6e1964fb03",
+    "7f999a7b7087f2b30211",
+    "8d3a78195ae157ee5bfc",
+    "8dad4cc90d41553e934e",
+    "8dd752c7b23768206df4",
+    "8ddac4e705ec48e7ee2a",
+    "95d471934a4edf6ad8ee",
+    "963db7b1b7888e52eeb4",
+    "a20fd2f7375f67fb6eb7",
+    "acd53c9d5f1a56222e14",
+    "b00a6532bb8a70ef62d5",
+    "c104b81a03eec8e81328",
+    "c1acf17c605ca69470fa",
+    "ca8c2f1d4a3513d1ae99",
+    "cc06ca6277b424b3b7ff",
+    "d1c5554b8c2ce6ca8fa7",
+    "d76235baa7375634ddb0",
+    "e172ae8d760ef8e7b8cb",
+    "e8a1d57de1a4942cdd4b",
+    "f750ca07957e557ca708",
+    "ff6e50ee61a4c07c4e15"
+  ],
+  "content_hash": "07767135f19327bfa39ee11788e6857881581bdf7dd982bd50c6c4e42a316134",
+  "dependencies": [],
+  "description": "Use when designing, reviewing, or troubleshooting Salesforce duplicate prevention, matching rules, duplicate rules, and merge governance. Triggers: 'duplicate rule', 'matching rule', 'merge strategy', 'dedupe', 'survivorship', 'D&B', 'same contact twice'. NOT for choosing data-load tooling unless duplicate control is the main problem.",
+  "file_location": "skills/admin/duplicate-management",
+  "id": "admin/duplicate-management",
+  "inputs": [
+    "duplicate scenarios",
+    "merge policy",
+    "stewardship owners"
+  ],
+  "name": "duplicate-management",
+  "official_sources": [
+    "Salesforce Well-Architected Overview \u2014 data quality and stewardship framing",
+    "Object Reference \u2014 object semantics that affect duplicate strategy and merge behavior",
+    "Metadata API Developer Guide \u2014 duplicate and matching rule metadata deployment behavior"
+  ],
+  "outputs": [
+    "duplicate strategy",
+    "merge governance recommendations",
+    "duplicate control findings"
+  ],
+  "references": [
+    "skills/admin/duplicate-management/references/examples.md",
+    "skills/admin/duplicate-management/references/gotchas.md",
+    "skills/admin/duplicate-management/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/duplicate-management/scripts/check_duplicate_rules.py"
+  ],
+  "tags": [
+    "duplicate-rules",
+    "matching-rules",
+    "merge",
+    "survivorship",
+    "data-quality"
+  ],
+  "templates": [
+    "skills/admin/duplicate-management/templates/duplicate-governance-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

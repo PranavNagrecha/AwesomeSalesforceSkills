@@ -1,0 +1,86 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "03a13badbd2d9486b70c",
+    "13c8aaa5c3ef669aa4da",
+    "1c3e66741ec9bfe37e0d",
+    "2913365bf11315cb0d20",
+    "2f6a2cd79ab3c59a9528",
+    "2ff6a11b500c9318e3e5",
+    "3af74bae7f620e625201",
+    "480382c98dc53481874e",
+    "4bd41d24b4a7de46da57",
+    "63b1f0ccecbe698e73ea",
+    "67de58abaab5c245f54e",
+    "71df4aa15001220280ad",
+    "749ea2fbc30c6c9314cb",
+    "7858be1f8a1db0f5f254",
+    "82ac00e1d60265d5f690",
+    "876bd791539db25c0cad",
+    "9659d5f97e667e086868",
+    "9d23a01a2eb6b0208139",
+    "9d2af859513b9e719e23",
+    "9f9237c57e20b117bc8d",
+    "9ff2ed85d3f2cd8da80b",
+    "a21ed368b8883e144c14",
+    "a45c2abd412da0bcb8c5",
+    "a9641dd4801c7402e8f1",
+    "aa31304fda774d6d1e42",
+    "aafe908ccb5d10e30f45",
+    "b3873bfa802f06d1a8ee",
+    "baf7b68bf18eb04e75fb",
+    "bb3cd5f7bf68f0d2c3b1",
+    "bd0ed784581d78fe5f4d",
+    "bd7e02665dd8f097db9c",
+    "bf25ee0a1ef879ae9670",
+    "bf6e1db3b8769a18684f",
+    "cc4baeca61c7ec0b1079",
+    "d4f97d0c3d05039d2bcc",
+    "e83026b566956f2e87de",
+    "f8e18a2fc0ad2c618bb1",
+    "fcbe5f11659853eec4f0",
+    "fdd7afc42b46d703cd7a"
+  ],
+  "content_hash": "3ce391bf5ffddbb8441c7a2c97b8a9a30f723cf4f7dc78f8d926d023b675a27b",
+  "dependencies": [],
+  "description": "Use when designing, auditing, or troubleshooting Salesforce record access. Triggers: 'OWD', 'role hierarchy', 'sharing rule', 'manual sharing', 'why can't user see record', 'why can user see too much'. NOT for object or field permissions - use permission and FLS skills for that.",
+  "file_location": "skills/admin/sharing-and-visibility",
+  "id": "admin/sharing-and-visibility",
+  "inputs": [
+    "record access requirement",
+    "ownership model",
+    "exception scenarios"
+  ],
+  "name": "sharing-and-visibility",
+  "official_sources": [
+    "Salesforce Well-Architected Overview \u2014 record-access and governance framing",
+    "Object Reference \u2014 relationship semantics that affect access design reasoning",
+    "Metadata API Developer Guide \u2014 sharing-related metadata deployment context"
+  ],
+  "outputs": [
+    "sharing model recommendation",
+    "record access findings",
+    "visibility troubleshooting guidance"
+  ],
+  "references": [
+    "skills/admin/sharing-and-visibility/references/examples.md",
+    "skills/admin/sharing-and-visibility/references/gotchas.md",
+    "skills/admin/sharing-and-visibility/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/sharing-and-visibility/scripts/check_sharing_model.py"
+  ],
+  "tags": [
+    "sharing",
+    "owd",
+    "role-hierarchy",
+    "sharing-rules",
+    "record-access"
+  ],
+  "templates": [
+    "skills/admin/sharing-and-visibility/templates/sharing-model-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

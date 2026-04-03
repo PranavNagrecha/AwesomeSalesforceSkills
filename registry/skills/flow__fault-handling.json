@@ -1,0 +1,89 @@
+{
+  "category": "flow",
+  "chunk_ids": [
+    "049f0752d124785689cf",
+    "0b3d53cd7093a5d9e11f",
+    "1315c46e778c774c91d4",
+    "1bfe9bc32315928be464",
+    "1c3af4094295663b13a9",
+    "1f9d3eef726204bd1cca",
+    "22c325f83907cd394a11",
+    "23a19fbb6c6ca12c5fdb",
+    "25f7092ed1a64c6a1161",
+    "28fa6ef0e1dbb28eddc1",
+    "2c96a4f12c9bbaa8042c",
+    "31046ddfe3a4f7a56b30",
+    "39429751d902656b9b2c",
+    "44a4b7d1d3da6ee1bb25",
+    "49575a7f9a53e4dab7e0",
+    "56a6641ed81d569326a2",
+    "63fb6410a4f1b005d2c3",
+    "6a72d4d3ce61104cdeec",
+    "6c94d04d0a5f2d4416de",
+    "6fc22ca0bb2f5790d8c3",
+    "72814b0d942999b3950b",
+    "74d199ab6565adfd5ff5",
+    "82aae1b338f7d823d097",
+    "83b2e885a4cbc6e3edc0",
+    "89e5b46206070ef2fea2",
+    "8f7f8a7b937ee9410045",
+    "936bf8cd269da02db62e",
+    "939d8b301bf2589971b1",
+    "93b1eb8227174a3328c9",
+    "aa905705db9c71833db0",
+    "ba1fdd9ced3eef622f32",
+    "bae6e1ec7a883a39ea1c",
+    "bd30a8edc5ac84a92672",
+    "c29a42b8f90f0f2f548e",
+    "c5a620f62c6a4525674c",
+    "cfe979819f335b680f3c",
+    "e8137878587b95ff14f8",
+    "eeb996cec76997154068",
+    "f064697863505c2240d1",
+    "fea431b476bcc675a7ea",
+    "fee0b04151216d00b2b1",
+    "ff520aa69c68d4e683ed"
+  ],
+  "content_hash": "501c8907b32903728a9d9836b998b6ac8110386a6a58b4850df1fefd07e21a99",
+  "dependencies": [],
+  "description": "Use when designing, reviewing, or troubleshooting Salesforce Flow fault handling, error logging, and bulk-safe automation paths. Triggers: 'fault connector', '$Flow.FaultMessage', 'flow failed', 'record-triggered flow rollback', 'screen flow error'. NOT for generic Flow type selection unless the main risk is failure handling.",
+  "file_location": "skills/flow/fault-handling",
+  "id": "flow/fault-handling",
+  "inputs": [
+    "flow type",
+    "failure points",
+    "user impact"
+  ],
+  "name": "fault-handling",
+  "official_sources": [
+    "Salesforce Well-Architected Overview \u2014 reliability and operational-quality framing for automation design",
+    "Metadata API Developer Guide \u2014 Flow metadata and deployment semantics used to keep the guidance grounded in platform configuration behavior",
+    "Integration Patterns \u2014 error-handling tradeoffs when Flow interacts with external systems or async boundaries"
+  ],
+  "outputs": [
+    "fault handling review",
+    "error path recommendations",
+    "bulk safety findings"
+  ],
+  "references": [
+    "skills/flow/fault-handling/references/examples.md",
+    "skills/flow/fault-handling/references/gotchas.md",
+    "skills/flow/fault-handling/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/flow/fault-handling/scripts/check_flow_faults.py"
+  ],
+  "tags": [
+    "flow-faults",
+    "fault-connectors",
+    "error-logging",
+    "record-triggered-flow",
+    "screen-flow"
+  ],
+  "templates": [
+    "skills/flow/fault-handling/templates/flow-fault-design-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

@@ -1,0 +1,90 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "013c678e8ab3e7dd45f5",
+    "02a2ac11e314cb737011",
+    "0644350552b72acd5200",
+    "1ad7730566367b3b6994",
+    "1d2f613f697dcf23bd28",
+    "25a55b64e7383a56d512",
+    "2e4bb3347a5ed705e16d",
+    "3c6c00d740d6b8853726",
+    "4469b5c731b17701e9a6",
+    "44b2550a7862ad1d6b5e",
+    "4706412c67b42672f8fb",
+    "475fa28a3c55a524b6d5",
+    "47b626f71e4d9b9410be",
+    "4fc8b288db2d92cad948",
+    "5282dcb9a76f41893291",
+    "5e3c8819a560e84b0816",
+    "79113f117c4755bd711c",
+    "79369b2a1ae5a4465e98",
+    "7dcafb13225d42aa0594",
+    "856e8db663c3802b4935",
+    "86375d3f1977de35ebb0",
+    "8a71cac04f01fc01fd8d",
+    "8ae0232780c1191e0f9b",
+    "8df10275ce680e089409",
+    "94a3a2d789bfd6d5429b",
+    "a3b46a17bc06a9d2d195",
+    "abc74bcf7ac9a92a6aa7",
+    "b02e1d9c0fe087aab132",
+    "b469bcd15dd564f656f2",
+    "b86db8dc613e9b4089e1",
+    "c03c9a363f043c8d16d0",
+    "c6a56613fefdbf860d18",
+    "cfde1f06763bbaf445e5",
+    "d722960798887f738ab0",
+    "d88bc7cc355fe163b726",
+    "d9c8db92474f26379230",
+    "dbf168aaab35e7454d9f",
+    "dc1af0b0924d623ea616",
+    "e0343fb949555e887960",
+    "e100d37e093e67d455ed",
+    "e78769604f78d7c7a7c6",
+    "ea71fb4e269f33c13fd0",
+    "ec8b5ee1fdc83f219e42",
+    "eeb7c58aaa7bd834306f"
+  ],
+  "content_hash": "ed8b67458cc2194d48043da962ea5293bdb587ac40ea940990d2f8d69a0bfb66",
+  "dependencies": [],
+  "description": "Use when structuring Apex into service, selector, domain, factory, and dependency-injection layers for maintainability and testability. Triggers: 'service layer', 'selector pattern', 'domain layer', 'dependency injection', 'fat trigger/controller'. NOT for installing a specific third-party framework or debating package-level architecture outside Apex code structure.",
+  "file_location": "skills/apex/apex-design-patterns",
+  "id": "apex/apex-design-patterns",
+  "inputs": [
+    "current entry points such as trigger, controller, invocable, or REST",
+    "team size and expected codebase growth",
+    "testing pain points and dependency boundaries"
+  ],
+  "name": "apex-design-patterns",
+  "official_sources": [
+    "Apex Developer Guide \u2014 class structure and language boundaries",
+    "Salesforce Well-Architected Overview \u2014 scalability, reliability, and operational excellence framing"
+  ],
+  "outputs": [
+    "Apex layering recommendation",
+    "review findings for coupling and responsibility issues",
+    "refactor pattern for service, selector, domain, or factory layers"
+  ],
+  "references": [
+    "skills/apex/apex-design-patterns/references/examples.md",
+    "skills/apex/apex-design-patterns/references/gotchas.md",
+    "skills/apex/apex-design-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/apex-design-patterns/scripts/check_apex_design_patterns.py"
+  ],
+  "tags": [
+    "service-layer",
+    "selector-pattern",
+    "domain-layer",
+    "dependency-injection",
+    "factory-pattern"
+  ],
+  "templates": [
+    "skills/apex/apex-design-patterns/templates/apex-design-patterns-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

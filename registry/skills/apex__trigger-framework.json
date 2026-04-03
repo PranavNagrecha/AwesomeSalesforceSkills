@@ -1,0 +1,94 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "02190dfbd9d001fcd34c",
+    "02f60d7b053db909469a",
+    "0cfc57ce8a7fd61a31d1",
+    "14e44d717c91d4577585",
+    "15c14f9d6e61eebfc610",
+    "1688e9d266ba81a0e9e6",
+    "2336c6f4bf4085c6eb24",
+    "27515af36498a6936aad",
+    "2933d721313fba6c17cb",
+    "2b92f4233828601667e4",
+    "2d94e905cefc16b481a2",
+    "2f70410319c442ec2113",
+    "2fb14bdfc766c67066a0",
+    "34969bcb5a08a9b1aab7",
+    "3616424d243d845bac9f",
+    "3882fd2592f1687f189a",
+    "44527527084faab29f8b",
+    "445f49e36e766c97e840",
+    "4a6b933d88a66f127e43",
+    "556fc96c52ed6531ffd3",
+    "572b4556e9dad5029e39",
+    "63e4bb552f8e92b224e3",
+    "6c58a1da5a625428b74d",
+    "77358b49dc67e3b04404",
+    "77f61edf80138ecabb8a",
+    "79125baa4c474f159b9f",
+    "7d656a31e852e429f0d2",
+    "88cb3c27f2298452be6d",
+    "8b29010c39e6e2fd7906",
+    "95e87eb07b1f61e6b363",
+    "9ca18ba1c85dd202ca46",
+    "9ea890f2c4f3d8f6d97b",
+    "9ec1bf920e5eb61fcda7",
+    "a2cfc0eba80b4526d309",
+    "ba897c94010d892f93a9",
+    "bbf525dce50ea162997d",
+    "c809a8e100f0271730ee",
+    "d358dcdf13eeeca4b37f",
+    "d3e4bbe1cfe599a8180e",
+    "d56cc6155b32a025ebaf",
+    "d960b94de9012536b5e9",
+    "dd0a850672fe5bcf8f49",
+    "e34e77119401055f25c5",
+    "e7a6c8fe7b318f1a0074",
+    "ecf410a9bb0eca283504",
+    "f0318c16599e802b70e0"
+  ],
+  "content_hash": "dbe4e74b1d169876a96b0aabe271ae66e7113ee2610c21783ae98ea591cbf6ab",
+  "dependencies": [],
+  "description": "Use when writing, reviewing, or designing Apex triggers. Triggers: 'trigger', 'trigger handler', 'trigger framework', 'recursion', 'before insert', 'after update', 'one trigger per object'. NOT for Flow-based automation \u2014 use admin/flow-for-admins for declarative automation decisions.",
+  "file_location": "skills/apex/trigger-framework",
+  "id": "apex/trigger-framework",
+  "inputs": [
+    "object context",
+    "trigger events",
+    "existing framework constraints"
+  ],
+  "name": "trigger-framework",
+  "official_sources": [
+    "Salesforce Well-Architected Overview \u2014 reliability and operability framing for trigger architecture",
+    "Apex Developer Guide \u2014 trigger behavior, testing, and transaction guidance",
+    "Apex Reference Guide \u2014 trigger context and Apex API reference confirmation"
+  ],
+  "outputs": [
+    "trigger design guidance",
+    "trigger review findings",
+    "framework recommendations"
+  ],
+  "references": [
+    "skills/apex/trigger-framework/references/examples.md",
+    "skills/apex/trigger-framework/references/gotchas.md",
+    "skills/apex/trigger-framework/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/trigger-framework/scripts/check_trigger_framework.py"
+  ],
+  "tags": [
+    "triggers",
+    "handler-pattern",
+    "recursion",
+    "activation-bypass",
+    "bulkification"
+  ],
+  "templates": [
+    "skills/apex/trigger-framework/templates/trigger_body.trigger",
+    "skills/apex/trigger-framework/templates/trigger_handler.cls"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

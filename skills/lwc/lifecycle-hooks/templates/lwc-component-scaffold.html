@@ -1,0 +1,36 @@
+<!-- [componentName].html -->
+<template>
+    <!-- Loading state -->
+    <template if:true={isLoading}>
+        <lightning-spinner
+            alternative-text="Loading..."
+            size="medium">
+        </lightning-spinner>
+    </template>
+
+    <!-- Error state -->
+    <template if:true={hasError}>
+        <div class="slds-notify slds-notify_alert slds-theme_error" role="alert">
+            <span class="slds-assistive-text">Error</span>
+            <p>{_error}</p>
+        </div>
+    </template>
+
+    <!-- Data state -->
+    <template if:true={isLoaded}>
+        <!-- TODO: Add your component markup here -->
+
+        <!-- Example: navigation button -->
+        <lightning-button
+            label="View Record"
+            onclick={handleNavigate}
+            variant="brand">
+        </lightning-button>
+
+        <!-- Example: save button -->
+        <lightning-button
+            label="Save"
+            onclick={handleSave}>
+        </lightning-button>
+    </template>
+</template>

@@ -1,0 +1,90 @@
+{
+  "category": "lwc",
+  "chunk_ids": [
+    "016822747ece937d3f6e",
+    "1350e24813c3f8ae026c",
+    "172a5014b2f00164421f",
+    "1b984c51856049db6a98",
+    "25465694dacc11a53a7b",
+    "2d2093a066e633f65abe",
+    "319176247358c7fdcfd2",
+    "38b26a9f06c9d613215f",
+    "3fb0314b8dc125719447",
+    "466374d50244a56c2cd0",
+    "4c7319945a3dc64c98a3",
+    "50edbe72e3d0127e9251",
+    "52dfc07f5a77884fe6e5",
+    "5530e3d038ab03178c9f",
+    "57f800e56477171c4784",
+    "5d82570a06611a3a98ab",
+    "635d78c635322150adbc",
+    "6580c7e3ba138e69c517",
+    "66c74f71ca0a64069fa9",
+    "6bf3f4dbf81a7b04594d",
+    "7360c54cdbecd8388dd2",
+    "8baa21594a15f5ce1fc2",
+    "958c862241ac83c9df94",
+    "9bf8b3d8c7847fced5f0",
+    "9e2b5ae0ec7a269fe36c",
+    "9f9037ab226117013df6",
+    "a68490839793b0cc7005",
+    "aa329422b6b9aff69862",
+    "b0bbef2822effc3388c6",
+    "b6dfda28c4a07768f837",
+    "b71695ba64f448c66cd3",
+    "b9e076fd3c63ca146391",
+    "c7e7aef4cbced872ae93",
+    "cfa5919bf0086a8735c3",
+    "cfd3e60ec0f9f98f5f0d",
+    "d649ac4ca369e55e00d4",
+    "dd49a8dc4529e30c5b60",
+    "de83c4b3695b69d77d0d",
+    "dec79b526f9a2d9cdd1e",
+    "e7d6ac184aae0e4e4be2",
+    "ea55bf0a73adca521c10",
+    "f36d6c6ef97fce88ee3c",
+    "fa92e22421c4f20fe159"
+  ],
+  "content_hash": "6e734236eacad47508d871ff0ab2b8ae83c5363a36d4b820be3559dd89b7387d",
+  "dependencies": [],
+  "description": "Use when building or reviewing Lightning Web Component form UX, especially the choice between `lightning-record-edit-form` and custom inputs, client-side validation with `reportValidity()`, server-side validation feedback, and file upload flows. Triggers: 'record edit form in lwc', 'reportValidity not working', 'custom validation message', 'fieldErrors in onerror'. NOT for Flow screen design or Apex-only validation logic.",
+  "file_location": "skills/lwc/lwc-forms-and-validation",
+  "id": "lwc/lwc-forms-and-validation",
+  "inputs": [
+    "whether the form uses LDS base components, UI API, or Apex",
+    "which fields need custom layout, conditional logic, or cross-field validation",
+    "whether file upload, multi-step save, or server-side validation must be handled"
+  ],
+  "name": "lwc-forms-and-validation",
+  "official_sources": [
+    "Data Edit Record - https://developer.salesforce.com/docs/platform/lwc/guide/data-edit-record.html",
+    "lightning-record-edit-form - https://developer.salesforce.com/docs/platform/lightning-component-reference/guide/lightning-record-edit-form.html",
+    "Best Practices for Development with Lightning Web Components - https://developer.salesforce.com/docs/platform/lwc/guide/get-started-best-practices.html"
+  ],
+  "outputs": [
+    "form architecture recommendation for record-edit-form versus manual inputs",
+    "validation design for client checks, server errors, and submit lifecycle",
+    "review findings for weak form UX, missing error handling, and brittle save logic"
+  ],
+  "references": [
+    "skills/lwc/lwc-forms-and-validation/references/examples.md",
+    "skills/lwc/lwc-forms-and-validation/references/gotchas.md",
+    "skills/lwc/lwc-forms-and-validation/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/lwc/lwc-forms-and-validation/scripts/check_lwc_forms_and_validation.py"
+  ],
+  "tags": [
+    "lwc-forms",
+    "lightning-record-edit-form",
+    "validation",
+    "report-validity",
+    "file-upload"
+  ],
+  "templates": [
+    "skills/lwc/lwc-forms-and-validation/templates/lwc-forms-and-validation-template.md"
+  ],
+  "updated": "2026-03-15",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

@@ -1,0 +1,466 @@
+{
+  "queries": [
+    {
+      "query": "permission sets least privilege",
+      "domain": "admin",
+      "expected_skill": "admin/permission-sets-vs-profiles",
+      "top_k": 3
+    },
+    {
+      "query": "renderedCallback memory leak",
+      "domain": "lwc",
+      "expected_skill": "lwc/lifecycle-hooks",
+      "top_k": 3
+    },
+    {
+      "query": "fault connector rollback",
+      "domain": "flow",
+      "expected_skill": "flow/fault-handling",
+      "top_k": 3
+    },
+    {
+      "query": "with user mode stripinaccessible",
+      "domain": "apex",
+      "expected_skill": "apex/soql-security",
+      "top_k": 3
+    },
+    {
+      "query": "approval process routing approver",
+      "domain": "admin",
+      "expected_skill": "admin/approval-processes",
+      "top_k": 3
+    },
+    {
+      "query": "deployment release change set rollback",
+      "domain": "admin",
+      "expected_skill": "admin/change-management-and-deployment",
+      "top_k": 3
+    },
+    {
+      "query": "OAuth connected app named credential",
+      "domain": "admin",
+      "expected_skill": "admin/connected-apps-and-auth",
+      "top_k": 3
+    },
+    {
+      "query": "data loader bulk api upsert external id",
+      "domain": "admin",
+      "expected_skill": "admin/data-import-and-management",
+      "top_k": 3
+    },
+    {
+      "query": "duplicate rule matching rule merge",
+      "domain": "admin",
+      "expected_skill": "admin/duplicate-management",
+      "top_k": 3
+    },
+    {
+      "query": "CRM analytics dashboard dataset",
+      "domain": "admin",
+      "expected_skill": "admin/einstein-analytics-basics",
+      "top_k": 3
+    },
+    {
+      "query": "email alert template merge field notification",
+      "domain": "admin",
+      "expected_skill": "admin/email-templates-and-alerts",
+      "top_k": 3
+    },
+    {
+      "query": "record triggered flow automation",
+      "domain": "admin",
+      "expected_skill": "admin/flow-for-admins",
+      "top_k": 3
+    },
+    {
+      "query": "formula field cross object compile size",
+      "domain": "admin",
+      "expected_skill": "admin/formula-fields",
+      "top_k": 3
+    },
+    {
+      "query": "record type page layout dynamic forms",
+      "domain": "admin",
+      "expected_skill": "admin/record-types-and-page-layouts",
+      "top_k": 3
+    },
+    {
+      "query": "report filter dashboard subscription",
+      "domain": "admin",
+      "expected_skill": "admin/reports-and-dashboards",
+      "top_k": 3
+    },
+    {
+      "query": "sandbox refresh environment strategy",
+      "domain": "admin",
+      "expected_skill": "admin/sandbox-strategy",
+      "top_k": 3
+    },
+    {
+      "query": "sharing rules OWD role hierarchy record access",
+      "domain": "admin",
+      "expected_skill": "admin/sharing-and-visibility",
+      "top_k": 3
+    },
+    {
+      "query": "validation rule bypass formula data quality",
+      "domain": "admin",
+      "expected_skill": "admin/validation-rules",
+      "top_k": 3
+    },
+    {
+      "query": "governor limit cpu time bulkification queueable",
+      "domain": "apex",
+      "expected_skill": "apex/governor-limits",
+      "top_k": 3
+    },
+    {
+      "query": "swallowed exception AuraHandledException DmlException",
+      "domain": "apex",
+      "expected_skill": "apex/exception-handling",
+      "top_k": 3
+    },
+    {
+      "query": "queueable vs batch future schedulable",
+      "domain": "apex",
+      "expected_skill": "apex/async-apex",
+      "top_k": 3
+    },
+    {
+      "query": "SeeAllData test data factory HttpCalloutMock",
+      "domain": "apex",
+      "expected_skill": "apex/test-class-standards",
+      "top_k": 3
+    },
+    {
+      "query": "Named Credential uncommitted work pending HttpRequest timeout",
+      "domain": "apex",
+      "expected_skill": "apex/callouts-and-http-integrations",
+      "top_k": 3
+    },
+    {
+      "query": "inherited sharing stripInaccessible CRUD FLS",
+      "domain": "apex",
+      "expected_skill": "apex/apex-security-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "EventBus publish CDC replay ID",
+      "domain": "apex",
+      "expected_skill": "apex/platform-events-apex",
+      "top_k": 3
+    },
+    {
+      "query": "service layer selector domain dependency injection",
+      "domain": "apex",
+      "expected_skill": "apex/apex-design-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "System.debug logging framework AsyncApexJob",
+      "domain": "apex",
+      "expected_skill": "apex/debug-and-logging",
+      "top_k": 3
+    },
+    {
+      "query": "Database.Stateful batch scope AsyncApexJob",
+      "domain": "apex",
+      "expected_skill": "apex/batch-apex-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "RestResource RestContext status codes versioning",
+      "domain": "apex",
+      "expected_skill": "apex/apex-rest-services",
+      "top_k": 3
+    },
+    {
+      "query": "StubProvider Test.createStub HttpCalloutMock",
+      "domain": "apex",
+      "expected_skill": "apex/apex-mocking-and-stubs",
+      "top_k": 3
+    },
+    {
+      "query": "InvocableMethod bulk safe flow apex action",
+      "domain": "apex",
+      "expected_skill": "apex/invocable-methods",
+      "top_k": 3
+    },
+    {
+      "query": "Cache.Org Cache.Session cache aside invalidation",
+      "domain": "apex",
+      "expected_skill": "apex/platform-cache",
+      "top_k": 3
+    },
+    {
+      "query": "Limits.getCpuTime heap limit string concatenation regex",
+      "domain": "apex",
+      "expected_skill": "apex/apex-cpu-and-heap-optimization",
+      "top_k": 3
+    },
+    {
+      "query": "static boolean recursion guard trigger set of id",
+      "domain": "apex",
+      "expected_skill": "apex/recursive-trigger-prevention",
+      "top_k": 3
+    },
+    {
+      "query": "custom metadata type __mdt getInstance package",
+      "domain": "apex",
+      "expected_skill": "apex/custom-metadata-in-apex",
+      "top_k": 3
+    },
+    {
+      "query": "trigger handler recursion bypass",
+      "domain": "apex",
+      "expected_skill": "apex/trigger-framework",
+      "top_k": 3
+    },
+    {
+      "query": "GraphQL api vs REST connection pagination lightning graphql",
+      "domain": "integration",
+      "expected_skill": "integration/graphql-api-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "Salesforce Connect external objects OData custom adapter",
+      "domain": "integration",
+      "expected_skill": "integration/salesforce-connect-external-objects",
+      "top_k": 3
+    },
+    {
+      "query": "client credentials JWT bearer connected app scope",
+      "domain": "integration",
+      "expected_skill": "integration/oauth-flows-and-connected-apps",
+      "top_k": 3
+    },
+    {
+      "query": "lookup rollup DLRS aggregate trigger",
+      "domain": "data",
+      "expected_skill": "data/roll-up-summary-alternatives",
+      "top_k": 3
+    },
+    {
+      "query": "SOSL Search.query FIND clause cross object search",
+      "domain": "data",
+      "expected_skill": "data/sosl-search-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "CurrencyIsoCode convertCurrency advanced currency management",
+      "domain": "data",
+      "expected_skill": "data/multi-currency-and-advanced-currency-management",
+      "top_k": 3
+    },
+    {
+      "query": "permission set group muting profile migration",
+      "domain": "security",
+      "expected_skill": "security/permission-set-groups-and-muting",
+      "top_k": 3
+    },
+    {
+      "query": "Health Check CSP Trusted Site clickjack CORS",
+      "domain": "security",
+      "expected_skill": "security/org-hardening-and-baseline-config",
+      "top_k": 3
+    },
+    {
+      "query": "Flow custom property editor configurationEditor inputVariables builderContext",
+      "domain": "lwc",
+      "expected_skill": "lwc/custom-property-editor-for-flow",
+      "top_k": 3
+    },
+    {
+      "query": "integration procedure HTTP action OmniStudio",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/integration-procedures",
+      "top_k": 3
+    },
+    {
+      "query": "custom permission bypass feature bundle architecture",
+      "domain": "admin",
+      "expected_skill": "admin/permission-set-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "wire service reactive parameter refresh apex",
+      "domain": "lwc",
+      "expected_skill": "lwc/wire-service-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "lightning web security innerhtml guest user",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-security",
+      "top_k": 3
+    },
+    {
+      "query": "flow bulkification collection update import",
+      "domain": "flow",
+      "expected_skill": "flow/flow-bulkification",
+      "top_k": 3
+    },
+    {
+      "query": "before save after save prior value recursion flow",
+      "domain": "flow",
+      "expected_skill": "flow/record-triggered-flow-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "omniscript step design save resume branching",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/omniscript-design-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "mobile offline lwc ui graphql api navigation",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-offline-and-mobile",
+      "top_k": 3
+    },
+    {
+      "query": "lwc key index large list rerender",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-performance",
+      "top_k": 3
+    },
+    {
+      "query": "flow custom property editor builder context validate",
+      "domain": "flow",
+      "expected_skill": "flow/flow-custom-property-editors",
+      "top_k": 3
+    },
+    {
+      "query": "experience cloud screen flow lightning flow guest user",
+      "domain": "flow",
+      "expected_skill": "flow/flow-for-experience-cloud",
+      "top_k": 3
+    },
+    {
+      "query": "flow orchestration stages work items ownership",
+      "domain": "flow",
+      "expected_skill": "flow/orchestration-flows",
+      "top_k": 3
+    },
+    {
+      "query": "flow apex trigger process builder migration",
+      "domain": "admin",
+      "expected_skill": "admin/process-automation-selection",
+      "top_k": 3
+    },
+    {
+      "query": "dataraptor extract turbo extract transform load",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/dataraptor-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "omnistudio guest user dataraptor apex security",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/omnistudio-security",
+      "top_k": 3
+    },
+    {
+      "query": "agent topic boundary handoff topic selector",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/agent-topic-design",
+      "top_k": 3
+    },
+    {
+      "query": "agent actions flow apex prompt action confirmation",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/agent-actions",
+      "top_k": 3
+    },
+    {
+      "query": "custom metadata vs custom settings",
+      "domain": "admin",
+      "expected_skill": "admin/custom-metadata-types",
+      "top_k": 3
+    },
+    {
+      "query": "public list views too many compact layout mobile",
+      "domain": "admin",
+      "expected_skill": "admin/list-views-and-compact-layouts",
+      "top_k": 3
+    },
+    {
+      "query": "custom event not reaching parent use lms or api",
+      "domain": "lwc",
+      "expected_skill": "lwc/component-communication",
+      "top_k": 3
+    },
+    {
+      "query": "how do i test wire adapter in lwc jest",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-testing",
+      "top_k": 3
+    },
+    {
+      "query": "pagereference state not working navigationmixin currentpagereference",
+      "domain": "lwc",
+      "expected_skill": "lwc/navigation-and-routing",
+      "top_k": 3
+    },
+    {
+      "query": "keyboard navigation screen reader focus management lwc",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-accessibility",
+      "top_k": 3
+    },
+    {
+      "query": "lightning record edit form report validity field errors",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-forms-and-validation",
+      "top_k": 3
+    },
+    {
+      "query": "lightning datatable inline edit row actions infinite loading key field",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-data-table",
+      "top_k": 3
+    },
+    {
+      "query": "resourceUrl loadScript static resource salesforce lwc",
+      "domain": "lwc",
+      "expected_skill": "lwc/static-resources-in-lwc",
+      "top_k": 3
+    },
+    {
+      "query": "LightningModal toast confirm dialog focus trap",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-modal-and-overlay",
+      "top_k": 3
+    },
+    {
+      "query": "flow subflow input output variables reusable autolaunched",
+      "domain": "flow",
+      "expected_skill": "flow/subflows-and-reusability",
+      "top_k": 3
+    },
+    {
+      "query": "screen flow custom validation back button custom component",
+      "domain": "flow",
+      "expected_skill": "flow/screen-flows",
+      "top_k": 3
+    },
+    {
+      "query": "flow naming ownership version governance stale flows",
+      "domain": "flow",
+      "expected_skill": "flow/flow-governance",
+      "top_k": 3
+    },
+    {
+      "query": "schedule triggered flow batch apex idempotent",
+      "domain": "flow",
+      "expected_skill": "flow/scheduled-flows",
+      "top_k": 3
+    },
+    {
+      "query": "flow test tool fault path debug interview",
+      "domain": "flow",
+      "expected_skill": "flow/flow-testing",
+      "top_k": 3
+    }
+  ]
+}

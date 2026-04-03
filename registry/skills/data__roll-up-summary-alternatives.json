@@ -1,0 +1,85 @@
+{
+  "category": "data",
+  "chunk_ids": [
+    "0254866f602ae55c83ce",
+    "1e27130dd5513a4ee757",
+    "20f0d5815adf599d8b46",
+    "2633124f83afcaa32969",
+    "280f5070e28667e49fa8",
+    "2a88b7afcbd3acc13fc8",
+    "31eb6d6603d4f9f71795",
+    "365fc47482df317fa1c0",
+    "3790cc34757cfd392700",
+    "3e0f6f96ac22e6478564",
+    "415c226bf20de9e206db",
+    "484012fb4596a2ab7989",
+    "4ee138b79bedcdad8808",
+    "4ee35323e1192431880e",
+    "518615c117f5bc4cace4",
+    "527ec1fd13324bc40efd",
+    "5b21f249e9fe4cf361d5",
+    "5b25f763632398fd8ee6",
+    "5e468272951b51ae4b73",
+    "5e8dceaabe4aea8c34fe",
+    "61ecf4780ca414eff380",
+    "7274694aed77a2f2af0c",
+    "86b3c838b9e00c0c8998",
+    "930e17f34629ca5c17c5",
+    "9bc449150e9a3c15bd48",
+    "9c78100d2648dab0fd00",
+    "a23efc7283356d1a2854",
+    "a339e0a878a76a75b222",
+    "a3ac57bf02efb3b361bb",
+    "a442c9e381d302c093a0",
+    "ba5c50e5d03dc3bf523b",
+    "bfb1c7bfa364e7b653c1",
+    "c3af1ae61bc46922a50f",
+    "c60f49e104a49042bfb9",
+    "d0a9ba856b3adcf549e5",
+    "dd2173e53b6e28952f18",
+    "dfa539389920aafd475a",
+    "ee18fbf6e17f7c1ec5ec"
+  ],
+  "content_hash": "e7bf2d08bda3ba61c5d3197fd76a47f545c3c08c99cd108d2e79d956febb7058",
+  "dependencies": [],
+  "description": "Use when native Roll-Up Summary fields are not enough and the design needs Flow, Apex aggregate, or DLRS-style alternatives for lookup or advanced summary scenarios. Triggers: 'roll up summary on lookup', 'DLRS', 'aggregate trigger', 'summary count on parent', 'roll-up limitation'. NOT for ordinary master-detail roll-up fields that fit native limits without extra design tradeoffs.",
+  "file_location": "skills/data/roll-up-summary-alternatives",
+  "id": "data/roll-up-summary-alternatives",
+  "inputs": [
+    "relationship type such as master-detail or lookup",
+    "summary type such as count, sum, min, max, or filtered total",
+    "data volume, real-time expectation, and allowed tooling"
+  ],
+  "name": "roll-up-summary-alternatives",
+  "official_sources": [
+    "Roll-Up Summary Fields - https://help.salesforce.com/s/articleView?id=sf.fields_about_roll_up_summary.htm&type=5",
+    "Apex Developer Guide Aggregate SOQL - https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_SOQL_agg_fns.htm",
+    "Record-Triggered Flow - https://help.salesforce.com/s/articleView?id=sf.flow_concepts_trigger.htm&type=5"
+  ],
+  "outputs": [
+    "summary-pattern recommendation",
+    "review findings for scale and maintenance risk",
+    "implementation sketch for Flow, Apex, or native summary"
+  ],
+  "references": [
+    "skills/data/roll-up-summary-alternatives/references/examples.md",
+    "skills/data/roll-up-summary-alternatives/references/gotchas.md",
+    "skills/data/roll-up-summary-alternatives/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/data/roll-up-summary-alternatives/scripts/check_roll_up_summary_alternatives.py"
+  ],
+  "tags": [
+    "roll-up-summary",
+    "dlrs",
+    "aggregate-soql",
+    "lookup-rollup",
+    "parent-child-summary"
+  ],
+  "templates": [
+    "skills/data/roll-up-summary-alternatives/templates/roll-up-summary-alternatives-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

@@ -1,0 +1,90 @@
+{
+  "category": "flow",
+  "chunk_ids": [
+    "01c82d532ce7f844696d",
+    "1e94216b1cb0b11b1998",
+    "1f99e365a741e44cb587",
+    "2ad090250577c080f574",
+    "2b6a528ab3a762e67f4a",
+    "32034505acb9e9e67333",
+    "3a27356e9ca5c53b9313",
+    "413623f536e9a8b103c3",
+    "4b0cd6bd48188da26365",
+    "51a566ef3e58d590b146",
+    "5ffb6447adf3c006583e",
+    "633d907cc30790d72486",
+    "6b4cf7a05bd1d56b6a69",
+    "75afbe14cb784823663f",
+    "8025eb1e5627b51b6f2e",
+    "8097e9bf2fab21b6f733",
+    "8ced5b05b8ebffe1d74d",
+    "92493bb222803c4e2c16",
+    "97459929fcbce0eabb61",
+    "99b5348f61863e4c97b6",
+    "a039dfed857eaec9b9df",
+    "a0dc33f126309cdc210a",
+    "ac07e33aa16b1635c466",
+    "ac9d02ce9104cd990594",
+    "adc00bd41792cd30231f",
+    "adf2192b8966962b31f1",
+    "b18bbc6e8f24978e9026",
+    "b3d49dd7140a6833aeb6",
+    "b75a30966a93fb2887af",
+    "bf052960eb6ac724e940",
+    "c4dac86fe6e328e256e7",
+    "cc28c517779a28e17e21",
+    "cd6c72229863de6bafa2",
+    "cfcc52e45de02a134ebc",
+    "d4a0d76a7e85799ba6c5",
+    "d687031d6d9834a2202f",
+    "dbb23d0b6cb1fdbd0feb",
+    "e151990297aad701f39c",
+    "e1b7920d98444b79a036",
+    "e87d25eb2ca99abbb014",
+    "f1e17237c03d6947d30f",
+    "f68db1c3f03adcc611e1",
+    "ffd4c765c3bd88d22bdd"
+  ],
+  "content_hash": "dae4fda1da0da642ed636fc876d245db1886799d1001cc51ea384e7cca829fec",
+  "dependencies": [],
+  "description": "Use when designing or reviewing interactive Flow screen experiences, including navigation, validation, screen component choice, custom LWC screen components, and user-safe commit timing. Triggers: 'screen flow validation', 'back button behavior in flow', 'custom flow screen component', 'screen flow UX'. NOT for Experience Cloud guest exposure or custom property editor design-time tooling.",
+  "file_location": "skills/flow/screen-flows",
+  "id": "flow/screen-flows",
+  "inputs": [
+    "how many screens the interview needs and where data should be committed",
+    "which standard or custom screen components are required",
+    "how validation, back navigation, cancel, and mobile usage should work"
+  ],
+  "name": "screen-flows",
+  "official_sources": [
+    "Screen Element - https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_screen.htm&type=5",
+    "Screen Components - https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_screen_fields.htm&type=5",
+    "Validate User Input for Custom Flow Screen Components - https://developer.salesforce.com/docs/platform/lwc/guide/use-flow-validate-external-internal-methods.html"
+  ],
+  "outputs": [
+    "screen-flow UX recommendation for navigation, validation, and commit timing",
+    "review findings for weak screen design or risky save placement",
+    "guidance for using standard components versus custom LWC screen components"
+  ],
+  "references": [
+    "skills/flow/screen-flows/references/examples.md",
+    "skills/flow/screen-flows/references/gotchas.md",
+    "skills/flow/screen-flows/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/flow/screen-flows/scripts/check_screen_flows.py"
+  ],
+  "tags": [
+    "screen-flows",
+    "flow-ux",
+    "screen-components",
+    "flow-validation",
+    "navigation"
+  ],
+  "templates": [
+    "skills/flow/screen-flows/templates/screen-flows-template.md"
+  ],
+  "updated": "2026-03-15",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

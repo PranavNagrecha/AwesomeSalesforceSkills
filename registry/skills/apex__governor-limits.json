@@ -1,0 +1,96 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "0077005226232e8b7911",
+    "07eb30d177ba0e10f981",
+    "0870e2c33b5006b3128c",
+    "0d7ca54ea2ee2bc9a5b4",
+    "0f36035a9ee9119c831c",
+    "0f99547620143ddfed44",
+    "22813b3f83fa9b9fc5c6",
+    "264515ab316c298d83ae",
+    "2b0862bcf99a2a912d58",
+    "2da94bd4cec1d0a623e1",
+    "2f1b6eca9ddbe1e98d04",
+    "316d2003424009b19f32",
+    "336d4981818cf2140152",
+    "388934ae70560cd2f492",
+    "3b46658fd04a98607e80",
+    "3d89747f712e3513d5a6",
+    "46085eeb3ee44f577c44",
+    "4ca7ff2c1ce12c4b59df",
+    "4e224b884374dc1f7e39",
+    "57c58ba495babf2d9b44",
+    "5d58f7bda3b65636fb7e",
+    "6bb7ef757ef92a1b0f8a",
+    "6f61bea707e53f63bf5f",
+    "761241a329ee6d8174a5",
+    "7b8ce740bc698d99b895",
+    "83c46c83e507dc671efe",
+    "84dac3b409090ddaa09f",
+    "889497ea9707bbb4701a",
+    "8defe82569e17ad4c29c",
+    "9cf22ed1afab7b550cfd",
+    "a2b5b5cc3e00690f6686",
+    "a38aaad7e143f0bd8417",
+    "a53cc2f19fdab2ab1cc2",
+    "af55c0a3e524f1ebad3f",
+    "b9610920d3c34b524001",
+    "bae659f88c69ca71ceec",
+    "d3e7b87c48898536dfd4",
+    "d9dd7f9ee49ef5611d53",
+    "df3a102e3e779ef07da1",
+    "e1ad65f527e4fb520ab0",
+    "e1d43a0a3cdfab9d8ba5",
+    "e30cd49b1c145c30c0a4",
+    "e5a4f1e316249a9616cd",
+    "e7a8b97f7221f377068e",
+    "f3a9a1f065104eee9dc7",
+    "f4ab916f02895ab2abc4",
+    "f86ef17c1c71e8031e9f",
+    "f9e35e9682f1addfd0b6",
+    "fbc5daec1c68db2ab690"
+  ],
+  "content_hash": "3d46731f467cbec72783e3a5e7a4ed82510aacee5e2f8e800cc02f60e6504e40",
+  "dependencies": [],
+  "description": "Use when writing, reviewing, or troubleshooting Apex that risks hitting Salesforce governor limits. Triggers: 'too many SOQL queries', 'too many DML statements', 'CPU time limit', 'bulkification', 'Queueable vs Batch'. NOT for trigger architecture decisions unless the core problem is limit consumption.",
+  "file_location": "skills/apex/governor-limits",
+  "id": "apex/governor-limits",
+  "inputs": [
+    "failing transaction",
+    "record volume",
+    "entry point"
+  ],
+  "name": "governor-limits",
+  "official_sources": [
+    "Salesforce Well-Architected Overview \u2014 performance and operability framing for transaction design",
+    "Apex Developer Guide \u2014 transaction, bulk, and async behavior guidance",
+    "Apex Reference Guide \u2014 Limits class and async API reference confirmation"
+  ],
+  "outputs": [
+    "limit triage findings",
+    "bulk-safe design guidance",
+    "async pattern recommendation"
+  ],
+  "references": [
+    "skills/apex/governor-limits/references/examples.md",
+    "skills/apex/governor-limits/references/gotchas.md",
+    "skills/apex/governor-limits/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/governor-limits/scripts/check_limit_usage.py"
+  ],
+  "tags": [
+    "governor-limits",
+    "bulkification",
+    "queueable",
+    "batch",
+    "cpu-time"
+  ],
+  "templates": [
+    "skills/apex/governor-limits/templates/bulk-safe-service.cls"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

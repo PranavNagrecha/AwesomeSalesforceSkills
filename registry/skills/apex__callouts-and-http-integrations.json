@@ -1,0 +1,92 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "00e814f90b2d1e2292cf",
+    "014f7b2958fdda858568",
+    "01bfec1a777d9b55848a",
+    "02bb4807cbe7593ad36a",
+    "05d9ffdb5e7706d5d4fe",
+    "1599cd435b1b6c4c959c",
+    "19f3bfc09746872a4f5b",
+    "374722f13c97eadaf042",
+    "39ddc8a7ed87f6520891",
+    "39f3e76ec8d9f645790f",
+    "3d50e1c09ada24ff1ad0",
+    "4160c784bce22953ada9",
+    "4b19b4f4f33bdb2684df",
+    "62a373d3df7b48bb0221",
+    "6f52494aa88b22e42421",
+    "78887659a559c6e373ef",
+    "7b8fc568a0912eda2735",
+    "8011a873707084afd556",
+    "8332f9f250c0a601a6f2",
+    "84e16b275fa7bb3cc090",
+    "84f048d45a53b6923739",
+    "86f43638411aaf95a43a",
+    "890110eb61e1c690a06c",
+    "8a11c80966c42d563d65",
+    "93ca1e32ef5d4969625c",
+    "979b50fddc61f1305bf3",
+    "a6a5d2adc4e84e7af65c",
+    "a8fafe95af4e20726f2a",
+    "d07d3a93ffda0ff0cd28",
+    "d13a4feccb0acc39e368",
+    "d1ad6414136558afff71",
+    "d355249198b63de553ae",
+    "d4794db7da1996b84f06",
+    "d892b9fe0ba6ec57bb81",
+    "dc2529ca4b2df22f3d64",
+    "e4bbad1c7e93253db024",
+    "e4edeb20cbced5b83d87",
+    "e76e18a7bb91aa514216",
+    "e8b33f821bc8e9bd6345",
+    "e96c185ab7f53cd83c88",
+    "e9cc0d3295e604d4f34b",
+    "eaaffe803aaa7cdd846f",
+    "f34b5008ecb0d8271019",
+    "f4f60dec947619cac202",
+    "fc1c54dbd673a83438d7"
+  ],
+  "content_hash": "d77bb5785607da216adc22b604b496665b43b67f1107e3c9a926cdfb7ee6bfaf",
+  "dependencies": [],
+  "description": "Use when building, reviewing, or debugging outbound Apex HTTP callouts, Named Credentials, request/response handling, timeout behavior, or mock-based tests. Triggers: 'HttpRequest', 'Named Credential', 'callout exception', 'uncommitted work pending', 'HttpCalloutMock'. NOT for inbound Apex REST service design or non-HTTP integration architecture.",
+  "file_location": "skills/apex/callouts-and-http-integrations",
+  "id": "apex/callouts-and-http-integrations",
+  "inputs": [
+    "authentication model and whether the target system uses per-user or org-wide identity",
+    "transaction context such as trigger, Queueable, controller, or Batch",
+    "timeout, retry, and failure-reporting expectations"
+  ],
+  "name": "callouts-and-http-integrations",
+  "official_sources": [
+    "Apex Developer Guide \u2014 HTTP request/response patterns and Named Credential callout guidance",
+    "Named Credentials Help \u2014 external credential and identity model overview",
+    "Salesforce Well-Architected Overview \u2014 security and reliability framing for integrations"
+  ],
+  "outputs": [
+    "callout design recommendation",
+    "review findings for security, transaction safety, and testability",
+    "Apex callout scaffold using Named Credentials and mocks"
+  ],
+  "references": [
+    "skills/apex/callouts-and-http-integrations/references/examples.md",
+    "skills/apex/callouts-and-http-integrations/references/gotchas.md",
+    "skills/apex/callouts-and-http-integrations/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/callouts-and-http-integrations/scripts/check_callouts_and_http_integrations.py"
+  ],
+  "tags": [
+    "http-callout",
+    "named-credentials",
+    "httprequest",
+    "httpcalloutmock",
+    "integration-reliability"
+  ],
+  "templates": [
+    "skills/apex/callouts-and-http-integrations/templates/callouts-and-http-integrations-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

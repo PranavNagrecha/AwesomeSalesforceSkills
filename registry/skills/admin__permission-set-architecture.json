@@ -1,0 +1,89 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "0e3793499b88f0e6c9c6",
+    "0f6a8bf79e72a6d8bdae",
+    "147d15231879c3d878a4",
+    "19c027a4b7cbbfc7c52d",
+    "1abf28d719a6907b3df6",
+    "1d062bc4322ade9cfa7f",
+    "330b7a95ff20081fad54",
+    "35a334f170d9733761b0",
+    "46ade6533866e938cb3f",
+    "4f5cba95aeaeffd70c96",
+    "57caf283c68c03b1727d",
+    "5cc69f1b6e96ad20a047",
+    "6415ff99d20c577d240c",
+    "71c192d19e1bfca8f61b",
+    "75778912372d6509f6c0",
+    "7db8c41a3b5efa9eca47",
+    "7e7a63da4456b7e710e0",
+    "823632e5c6be2794712c",
+    "825bfcbfa8223f52d29e",
+    "86e7012eae6e8f0f073d",
+    "9c2b67f02f099c0b1e4b",
+    "a11668a69180e99204ea",
+    "a1dcd12601f5d59f1325",
+    "a8db488509860f87e9b4",
+    "ad531c5676942776c7ab",
+    "aeae00caf796f1224ffb",
+    "aef263c8e6a6bdf4a713",
+    "b0b4b57dca702d1b15d3",
+    "bfd14a8c4808584eb18a",
+    "c82b9a9fd8c21b2e25fd",
+    "cad37041ad96bad192f5",
+    "ce00928798a39cefbada",
+    "d028195c58a298d624e5",
+    "e35eb81b0c4685905570",
+    "e5b0eb67d94f6b951002",
+    "e6fd54d2c10c9738d887",
+    "e70f8009f589143f752a",
+    "ef753da36812e6e9a684",
+    "f006da21a39c41bf3af2",
+    "f2628d841e34286715e2",
+    "f53aa3b216efd5a85011",
+    "f7bb52e3d137f809effa"
+  ],
+  "content_hash": "361c4d68edc7ffe0ec01a4c59780ec1864763b3e0c881961f2240517ab46449a",
+  "dependencies": [],
+  "description": "Use when designing or refactoring Salesforce access architecture around minimal profiles, permission sets, permission set groups, muting, and assignment governance. Triggers: 'profile sprawl', 'permission set strategy', 'PSG architecture', 'access bundle design', 'least privilege'. NOT for record-sharing model design or CRUD/FLS enforcement inside Apex.",
+  "file_location": "skills/admin/permission-set-architecture",
+  "id": "admin/permission-set-architecture",
+  "inputs": [
+    "current profile, permission-set, and permission-set-group inventory",
+    "target personas, feature bundles, and license constraints",
+    "assignment process such as manual admin work, Flow, or identity provisioning"
+  ],
+  "name": "permission-set-architecture",
+  "official_sources": [
+    "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
+    "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "access architecture recommendation",
+    "review findings for profile-heavy or inconsistent access models",
+    "migration plan from profile-centric access to governed bundles"
+  ],
+  "references": [
+    "skills/admin/permission-set-architecture/references/examples.md",
+    "skills/admin/permission-set-architecture/references/gotchas.md",
+    "skills/admin/permission-set-architecture/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py"
+  ],
+  "tags": [
+    "permission-set-architecture",
+    "least-privilege",
+    "permission-set-groups",
+    "profiles",
+    "access-governance"
+  ],
+  "templates": [
+    "skills/admin/permission-set-architecture/templates/permission-set-architecture-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

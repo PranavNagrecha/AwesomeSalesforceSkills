@@ -1,0 +1,239 @@
+# /run-queue — Autonomous Skill Queue Runner
+
+Runs the next task from `MASTER_QUEUE.md` end-to-end with no human input.
+Reads the queue, finds the first incomplete task, executes it fully, marks it done, commits, and exits.
+The next invocation picks up the next task automatically.
+
+---
+
+## Step 1 — Read the Queue
+
+```bash
+cat MASTER_QUEUE.md
+```
+
+Find the **first row** where Status is `TODO` or `RESEARCH`.
+Read the entire row: Status, Skill Name (or Research Task), Description, Cloud, Role, Domain.
+
+If no TODO or RESEARCH rows exist → the queue is complete. Print "QUEUE COMPLETE" and stop.
+
+---
+
+## Step 2 — Branch on Task Type
+
+### If the task is RESEARCH
+
+Goal: populate the empty skill rows for a Cloud × Role cell.
+
+**2a. Mark in-progress**
+Edit MASTER_QUEUE.md: change `RESEARCH` → `IN_PROGRESS` on that row. Add timestamp.
+
+**2b. Web search — ground everything in official docs**
+Search for: `"Salesforce <Cloud> <Role> tasks site:help.salesforce.com OR site:developer.salesforce.com OR site:trailhead.salesforce.com"`
+
+Also search: `"Salesforce <Cloud> <Role> Trailhead trail"`
+
+Read the top results. Extract every distinct practitioner task the Role performs in that Cloud.
+
+**2c. Check existing coverage**
+For each task identified, run:
+```bash
+cd /Users/user/VS\ Code/Personal/SfSkills && python3 scripts/search_knowledge.py "<task>" 2>/dev/null
+```
+If `has_coverage: true` → skip it (mark DUPLICATE in your working list).
+If `has_coverage: false` → it is a confirmed gap.
+
+**2d. Insert TODO rows**
+For each confirmed gap, insert a new row into the correct table in MASTER_QUEUE.md:
+```
+| TODO | <skill-name-kebab-case> | <one-line description. Must include "NOT for ..."> | |
+```
+Use the domain folder that matches the Role:
+- Admin → `admin`
+- BA → `admin` (BA skills live in admin domain)
+- Dev → use the most specific domain: `apex`, `lwc`, `flow`, `integration`, `devops`
+- Data → `data`
+- Architect → `admin` (platform-wide architectural guidance)
+
+**2e. Mark DONE**
+Edit MASTER_QUEUE.md: change `IN_PROGRESS` → `DONE` on the research row.
+
+**2f. Commit**
+```bash
+cd /Users/user/VS\ Code/Personal/SfSkills
+git add MASTER_QUEUE.md
+git commit -m "research: map <Cloud> × <Role> task universe
+
+Identified N confirmed gaps. Added TODO rows for:
+- <skill-1>
+- <skill-2>
+...
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>"
+```
+
+**Stop. The next invocation will pick up the first TODO row.**
+
+---
+
+### If the task is TODO
+
+Goal: build a complete, validated skill package.
+
+**2a. Mark in-progress**
+Edit MASTER_QUEUE.md: change `TODO` → `IN_PROGRESS` on that row. Add timestamp.
+```bash
+git add MASTER_QUEUE.md && git commit -m "wip: start <skill-name>"
+```
+
+**2b. Check coverage (mandatory — do not skip)**
+```bash
+cd /Users/user/VS\ Code/Personal/SfSkills
+python3 scripts/search_knowledge.py "<skill-name>" 2>/dev/null
+```
+If `has_coverage: true` → the skill already exists.
+  - Mark the row DUPLICATE in MASTER_QUEUE.md.
+  - Commit the change.
+  - Stop. Move to next task on next invocation.
+
+If `has_coverage: false` → proceed.
+
+**2c. Read official sources**
+```bash
+cat standards/official-salesforce-sources.md
+```
+Identify the official Salesforce docs for this skill's domain and cloud.
+These are the ONLY sources you may use for factual claims. Do not use training data alone.
+
+**2d. Web search for current official content**
+Search: `"Salesforce <skill topic> site:help.salesforce.com OR site:developer.salesforce.com"`
+Read the top 2-3 results. Extract:
+- Exact platform behavior (with version if available)
+- Known limits and restrictions
+- Non-obvious gotchas
+- Common mistakes
+
+**2e. Scaffold the skill package**
+```bash
+cd /Users/user/VS\ Code/Personal/SfSkills
+python3 scripts/new_skill.py <domain> <skill-name>
+```
+This creates the full package structure with TODO markers. Do not write files manually.
+
+**2f. Fill every TODO marker — this is the core work**
+
+Fill in order:
+
+**SKILL.md**
+- `description`: One sentence covering when to use this skill, 3+ trigger keywords, and at least one "NOT for ..." exclusion.
+- `salesforce-version`: Use "Spring '25+" unless the skill is version-specific.
+- `well-architected-pillars`: Choose from Security, Reliability, Scalability, Operational Excellence, User Experience.
+- `tags`: 4-6 lowercase kebab-case tags.
+- `triggers`: 3+ natural-language phrases a practitioner would actually type (10+ chars each). Write them as symptoms, not feature names. E.g. "how do I add a new field to an object" not "custom field".
+- `inputs`: What the agent/user needs to provide before this skill can execute.
+- `outputs`: What artifact or guidance this skill produces.
+- Body (300+ words): Structure as Mode 1 (build from scratch), Mode 2 (review/audit), Mode 3 (troubleshoot) where applicable. Include step-by-step guidance an AI can follow without asking the user for clarification. Every factual claim must be traceable to an official source.
+
+**references/examples.md**
+- 2+ real examples. Each must have: Scenario, Problem, Solution, Why it works.
+- No placeholder scenarios. Use realistic Salesforce org situations.
+
+**references/gotchas.md**
+- 3+ non-obvious platform behaviors that catch practitioners off guard.
+- Each must be grounded in official docs or known platform behavior.
+- Format: What happens → Why → How to avoid.
+
+**references/well-architected.md**
+- Map the skill to Well-Architected pillars.
+- `## Official Sources Used` section must list at least one real official Salesforce URL.
+- Do not delete the pre-seeded sources. Add usage context to them.
+
+**scripts/check_*.py**
+- Implement actual validation logic. stdlib only — no pip dependencies.
+- Must be runnable: `python3 scripts/check_<noun>.py`
+- Check for the most common mistake this skill prevents.
+
+**templates/<skill-name>-template.md**
+- A fill-in-the-blank output template the AI produces for the user.
+- Must be immediately usable — not a meta-template with instructions to the author.
+
+**2g. Sync and validate**
+```bash
+cd /Users/user/VS\ Code/Personal/SfSkills
+python3 scripts/skill_sync.py --skill skills/<domain>/<skill-name>
+```
+Fix every ERROR reported. Do not use `--skip-validation`. Re-run until clean.
+
+**2h. Add query fixture**
+```bash
+python3 scripts/search_knowledge.py "<natural language query>" --json 2>/dev/null
+```
+Confirm the skill appears in top 3 results for a query a real practitioner would type.
+Then add to `vector_index/query-fixtures.json`:
+```json
+{
+  "query": "<the query you tested>",
+  "domain": "<domain>",
+  "expected_skill": "<domain>/<skill-name>",
+  "top_k": 3
+}
+```
+
+**2i. Final validation**
+```bash
+python3 scripts/validate_repo.py
+```
+Must exit 0. If not, fix all errors and re-run. Do not proceed until this passes.
+
+**2j. Mark DONE in MASTER_QUEUE.md**
+Edit the row: change `IN_PROGRESS` → `DONE`.
+
+**2k. Commit everything**
+```bash
+cd /Users/user/VS\ Code/Personal/SfSkills
+git add skills/<domain>/<skill-name>/ registry/ vector_index/ docs/SKILLS.md MASTER_QUEUE.md
+git commit -m "feat(<domain>): add <skill-name> skill [<Cloud> × <Role>]
+
+<one sentence describing what the skill covers>
+
+Official sources: <primary doc URL>
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>"
+```
+
+**Stop. The next invocation picks up the next task.**
+
+---
+
+## Error Handling
+
+**If `new_skill.py` fails:**
+Read the error. Fix the input (domain name or skill name) and retry once.
+If it fails again, mark the row BLOCKED with a note and move on.
+
+**If `skill_sync.py` exits non-zero:**
+Read every ERROR line. Fix each one in the skill files. Re-run.
+Do not mark DONE until sync exits clean.
+
+**If `validate_repo.py` exits non-zero:**
+Read every WARN and ERROR. Fix all of them. Re-run.
+Do not commit until this exits 0.
+
+**If web search returns no useful official docs:**
+Do not write the skill from training data alone.
+Mark the row BLOCKED with note: "No official source found for <topic>. Manual research needed."
+Commit the BLOCKED status and move to next task.
+
+**If a skill overlaps heavily with an existing skill:**
+Mark the row DUPLICATE. Add a note: "Covered by skills/<domain>/<existing-skill>."
+Do not create a duplicate.
+
+---
+
+## What This Command Does NOT Do
+
+- It does not ask the user for input. It is fully autonomous.
+- It does not skip `validate_repo.py`. There are no shortcuts.
+- It does not hand-edit `registry/`, `vector_index/`, or `docs/SKILLS.md`.
+- It does not write content from memory alone. Every factual claim needs an official source.
+- It does not process more than one task per invocation. One task → commit → stop.

@@ -1,0 +1,89 @@
+{
+  "category": "flow",
+  "chunk_ids": [
+    "0109a996ad3b4388d3a4",
+    "1b83f3c815934f1ac1af",
+    "1c02bb210aee105172cc",
+    "2b8bc2eac74786ce2d2a",
+    "2e2cac801d3206ca4e8e",
+    "376c7e8d91d6879ce6e7",
+    "399597ae0f4bc7f07893",
+    "3bffe9c8892b9244d23d",
+    "3de931af15941453f2ee",
+    "426cead1ee8bcc34a161",
+    "4bb94dd07541ad169631",
+    "55a66e71f015db65f3b3",
+    "5e2726d8154939a3dd00",
+    "63d65c9f7b156bb0a59b",
+    "6e38081a854952a0a127",
+    "72772270cdb9d8a74582",
+    "727c42312561fa838120",
+    "79933f36ee931ed4c9f9",
+    "7c035379deb1b64c587b",
+    "7c06090fdf3b2edd623d",
+    "8bd759e637d6774e4864",
+    "8e7fc5bd86c099ddf2ea",
+    "a52cc5c960c6720c5164",
+    "b354748d9d52f318086c",
+    "b3c8c9e9a08d66594f40",
+    "b504a145070d22b3d283",
+    "b892d6abd8b2e4397b84",
+    "b945581432f3d493d55b",
+    "bed8388fc69bb5b3f6c1",
+    "c425331f3f5c2960f7bc",
+    "d695926b066631802914",
+    "d76a30482088ea25cf9f",
+    "d7fee46a5a4962a45137",
+    "db67ffc57a397bf30578",
+    "db6e6503ac078fc604ba",
+    "dee7e031ca8c4bbf41bd",
+    "e24e0060d8d4197f6633",
+    "ec4dc4e0a6395964f13e",
+    "ee1909281546d5192089",
+    "f32e91eb6c781d43f9df",
+    "f4df74123139d7ac6349",
+    "fe6930daac9af13fefdb"
+  ],
+  "content_hash": "50972dc5e7c73e84910c1e5584ae426b0d2a5624f53113ff57791d77960c7549",
+  "dependencies": [],
+  "description": "Use when designing or reviewing Salesforce record-triggered Flows, especially before-save vs after-save behavior, entry criteria, recursion avoidance, and when to escalate to Apex. Triggers: 'before save vs after save', '$Record__Prior', 'record-triggered flow', 'order of execution', 'flow recursion'. NOT for screen-flow UX or pure bulkification work when the trigger model is already correct.",
+  "file_location": "skills/flow/record-triggered-flow-patterns",
+  "id": "flow/record-triggered-flow-patterns",
+  "inputs": [
+    "business event that should trigger automation",
+    "whether only the current record or related records must change",
+    "existing Apex, validation rules, and other automation on the same object"
+  ],
+  "name": "record-triggered-flow-patterns",
+  "official_sources": [
+    "Flow Reference \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_ref.htm&type=5",
+    "Flow Builder \u2014 https://help.salesforce.com/s/articleView?id=sf.flow.htm&type=5",
+    "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm"
+  ],
+  "outputs": [
+    "record-triggered flow design recommendation",
+    "review findings for trigger context and recursion risk",
+    "decision on before-save, after-save, or Apex"
+  ],
+  "references": [
+    "skills/flow/record-triggered-flow-patterns/references/examples.md",
+    "skills/flow/record-triggered-flow-patterns/references/gotchas.md",
+    "skills/flow/record-triggered-flow-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/flow/record-triggered-flow-patterns/scripts/check_record_triggered_flow_patterns.py"
+  ],
+  "tags": [
+    "record-triggered-flow",
+    "before-save",
+    "after-save",
+    "order-of-execution",
+    "recursion"
+  ],
+  "templates": [
+    "skills/flow/record-triggered-flow-patterns/templates/record-triggered-flow-patterns-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

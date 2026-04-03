@@ -1,0 +1,86 @@
+{
+  "category": "lwc",
+  "chunk_ids": [
+    "0196e9faedb4753f8231",
+    "18af74f3671759f6f42f",
+    "19c2857314d6800d96a5",
+    "20bea9654ecfeceff1b9",
+    "23cb157a7b991e2bb03b",
+    "27a0ae4082d6ca9863f9",
+    "31f7b0ee805b5dc9b5a4",
+    "36a72f4d35bff8a68e22",
+    "38ba31ae788a681eb81b",
+    "3d41fae120d4482433cb",
+    "3e9410921f92a10e8fe6",
+    "464decc77b62105f38fc",
+    "46cacac3a5839a87b444",
+    "4780d0bd84f94d770aa1",
+    "47e42db515714f3ea9d7",
+    "5e68aaa0038d34ac4b38",
+    "5ea7e300dd873d42f969",
+    "6279584b9c95596af708",
+    "670a9a93404d5ddf482a",
+    "68bfd4ed5a31cfb2df06",
+    "69859e9c2f15b40ce162",
+    "74736dc203944b1a9489",
+    "78c6b9c1f468511f4fdb",
+    "83c30b9ac8dd852df537",
+    "8a7606fe1dab1027c4de",
+    "92c32113e449b4b60c3c",
+    "9d678a3ff634fa9afac0",
+    "9ec7e928d0e9ae0b6172",
+    "a3b894dacac57ab39416",
+    "a7139be3aff9bad38bc2",
+    "af9005d6be7328fac73b",
+    "b8ed86157b7dbeae8327",
+    "c3a65fdc6dce373fabd8",
+    "c4f8c5fd32091925ee2c",
+    "cea3b3bfc1a8d2a543b3",
+    "d2684534d567d63d045a",
+    "e4364684c3558752eb47",
+    "e6de2abdbf8509cdcf71",
+    "f7a5835815b66733d9f6"
+  ],
+  "content_hash": "4c2d14583850c0b3c0001245c73a29cae556484f2523e58469ff2452b7ea0850",
+  "dependencies": [],
+  "description": "Use when designing or reviewing Lightning Web Components that use `@wire`, Lightning Data Service, UI API, or the GraphQL wire adapter, especially for reactive parameters, cache behavior, and refresh strategy. Triggers: 'wire service', 'refreshApex', 'reactive parameter', 'getRecord', 'wire vs imperative Apex'. NOT for component communication or generic lifecycle issues when data provisioning is not the main concern.",
+  "file_location": "skills/lwc/wire-service-patterns",
+  "id": "lwc/wire-service-patterns",
+  "inputs": [
+    "data source such as UI API, Apex, or GraphQL",
+    "whether the component only reads data or also mutates it",
+    "what should trigger refresh or re-evaluation"
+  ],
+  "name": "wire-service-patterns",
+  "official_sources": [
+    "Understand the Wire Service \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-wire-service-about",
+    "Lightning Data Service \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-ui-api.html",
+    "GraphQL Wire Adapter for LWC \u2014 https://developer.salesforce.com/docs/platform/graphql/guide/graphql-wire-lwc"
+  ],
+  "outputs": [
+    "wire-service pattern recommendation",
+    "review findings for cache, reactive parameters, and refresh behavior",
+    "decision on wire adapters, LDS forms, or imperative Apex"
+  ],
+  "references": [
+    "skills/lwc/wire-service-patterns/references/examples.md",
+    "skills/lwc/wire-service-patterns/references/gotchas.md",
+    "skills/lwc/wire-service-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/lwc/wire-service-patterns/scripts/check_wire_service_patterns.py"
+  ],
+  "tags": [
+    "wire-service",
+    "lightning-data-service",
+    "refreshapex",
+    "reactive-parameters",
+    "graphql-wire"
+  ],
+  "templates": [
+    "skills/lwc/wire-service-patterns/templates/wire-service-patterns-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

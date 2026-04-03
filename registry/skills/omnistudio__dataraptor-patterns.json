@@ -1,0 +1,88 @@
+{
+  "category": "omnistudio",
+  "chunk_ids": [
+    "0576931b115f17c2f6f0",
+    "0c24fde8019a306f3a83",
+    "0e6cc046092f390342e8",
+    "109ebb3b05d3c06fe355",
+    "149f87e7284c3462f228",
+    "24a8d4c66dfea912f444",
+    "26ae4f2e8a8f8f04b6d3",
+    "29008611b8fda1af769d",
+    "361c4c7a6c55ac975a56",
+    "373d0e326062dfbef1c5",
+    "43b4a3d9123fb727269f",
+    "5153bc72150076fd6a2e",
+    "556b9851c83f8ee77fc7",
+    "7149c2c62bef43147627",
+    "73e13dc2142226b52aed",
+    "7817ecdd2699c8ebdcd7",
+    "78c891c12c6864bfe0a2",
+    "79c0874a5e889d2f11ba",
+    "817e395c427fd2195f23",
+    "85da8dad3ddef1e7a2eb",
+    "8d5de9b7e1b048c8ea74",
+    "92f76763bb64fec8066b",
+    "94a5919df124ac280700",
+    "953aac4ab6266df9a2c0",
+    "97aa56538f3798be918b",
+    "a042ea83cac729d7cdbf",
+    "a98d421db2af0c1afcd7",
+    "b3d183693a2ad34d7c3d",
+    "b554fcf7104b05495e79",
+    "b7ec957efdf37d8d4e1b",
+    "bd13cbe13b4446c4c10b",
+    "c09cdfc0c9a39c737b4a",
+    "c7f6d25b712d076fa641",
+    "caaeb373bdcee9b2920f",
+    "cad29b07db0d4c2c0362",
+    "e35087d1d1df21942de9",
+    "e45e329a5016b72489bb",
+    "e69e7edc49d924f52fde",
+    "ee4f888bc74692b73d34",
+    "f366843ea74dd6306d8c",
+    "f91bbef4bb186eae7656"
+  ],
+  "content_hash": "76e988955e3e50ef1a40409fd801093fd18d1cb959b84a998dbece862ad764b1",
+  "dependencies": [],
+  "description": "Use when designing or reviewing OmniStudio DataRaptors, especially Extract versus Turbo Extract versus Transform versus Load, field mapping strategy, performance tradeoffs, and when to move work into Integration Procedures or Apex. Triggers: 'DataRaptor Extract', 'Turbo Extract', 'DataRaptor Load', 'DataRaptor Transform', 'OmniStudio data mapping'. NOT for overall OmniScript journey design or Integration Procedure sequencing when the main question is not the DataRaptor shape itself.",
+  "file_location": "skills/omnistudio/dataraptor-patterns",
+  "id": "omnistudio/dataraptor-patterns",
+  "inputs": [
+    "whether the asset is reading, reshaping, or writing data",
+    "object count, response shape, and performance expectations",
+    "whether formulas, complex mappings, or orchestration logic are needed"
+  ],
+  "name": "dataraptor-patterns",
+  "official_sources": [
+    "OmniStudio Developer Guide - https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer_guide.meta/omnistudio_developer_guide/omnistudio_intro.htm",
+    "OmniStudio Developer Guide \u2014 DataRaptors - https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer_guide.meta/omnistudio_developer_guide/os_dataraptor_overview.htm",
+    "Integration Patterns - https://architect.salesforce.com/docs/architect/fundamentals/guide/integration-patterns.html"
+  ],
+  "outputs": [
+    "DataRaptor type recommendation",
+    "mapping and performance review findings",
+    "boundary guidance for DataRaptor versus IP versus Apex"
+  ],
+  "references": [
+    "skills/omnistudio/dataraptor-patterns/references/examples.md",
+    "skills/omnistudio/dataraptor-patterns/references/gotchas.md",
+    "skills/omnistudio/dataraptor-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/omnistudio/dataraptor-patterns/scripts/check_dataraptor_patterns.py"
+  ],
+  "tags": [
+    "dataraptor",
+    "turbo-extract",
+    "dataraptor-load",
+    "dataraptor-transform",
+    "omnistudio-data-mapping"
+  ],
+  "templates": [
+    "skills/omnistudio/dataraptor-patterns/templates/dataraptor-patterns-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

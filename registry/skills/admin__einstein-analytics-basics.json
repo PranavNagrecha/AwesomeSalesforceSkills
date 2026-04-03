@@ -1,0 +1,88 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "0192ab910e7dfae5b09b",
+    "025da424feba0b7259c3",
+    "0bb336c9f0af1acdb7f4",
+    "10ebb927c7cd861f579d",
+    "11303023ab2449db39b7",
+    "17134deece67636aafbf",
+    "179549e9f09f02bad72a",
+    "17e8c4cd82ac74daf1f6",
+    "217944cc1b512fc9474b",
+    "24534b8d02105a726076",
+    "2e6df6ca98d6e9a52814",
+    "3602537b1507b13dddb1",
+    "381a879fd1d750203ba9",
+    "3a8f9bb8def711e5cbf6",
+    "3b0b707ac336c89d6d56",
+    "3e2929ad9558c9e7721d",
+    "4ce714ee1a990ed8f701",
+    "4f796b29fff60cf09dd2",
+    "4f9259e31c238d959afd",
+    "51c5fabf84cca907856a",
+    "5b5714c024fd3f07e05c",
+    "5fc3275e70c91f6b1a8f",
+    "6b5aa7463eca6ac3ed51",
+    "70f40593f8f018948365",
+    "71320537807a4e0dc597",
+    "72bae9b7e875c83c68c6",
+    "7963a937e92d16de7e07",
+    "7d9b5dc9a1b4c797a1ca",
+    "87ec9d6845d9cec92dff",
+    "8fac3ac5df8a940564b3",
+    "a9e55aa678a63c37d901",
+    "bbc42c05043d87d9e621",
+    "c388dbe55259089c0daf",
+    "c8786094bc5dc9f870f8",
+    "d738a1a6227326534488",
+    "db0da4b47f19e57376cb",
+    "e14c1513c5639b35d318",
+    "e18c32c8579c5e477aee",
+    "e46a11d1311ba36ae834",
+    "eddf5a2281fc0300f968",
+    "fce64e384c4a426dd371"
+  ],
+  "content_hash": "3d4309aec4e7f729579e3c2f0e4f6963e353194015ca450844dfeddd86ca61ce",
+  "dependencies": [],
+  "description": "Use when deciding whether Salesforce Reports, CRM Analytics, or Tableau should be used for analytics, or when reviewing and troubleshooting basic CRM Analytics designs. Triggers: 'CRM Analytics', 'Einstein Analytics', 'Tableau CRM', 'lens', 'dataset', 'dataflow', 'analytics dashboard', 'license requirement'. NOT for standard report builder questions unless the decision is whether reports are still enough.",
+  "file_location": "skills/admin/einstein-analytics-basics",
+  "id": "admin/einstein-analytics-basics",
+  "inputs": [
+    "analytics requirement",
+    "data volume",
+    "license constraints"
+  ],
+  "name": "einstein-analytics-basics",
+  "official_sources": [
+    "Salesforce Well-Architected Overview \u2014 platform-fit and scalability framing for analytics decisions",
+    "Metadata API Developer Guide \u2014 deployment and packaging context for analytics and reporting assets",
+    "Integration Patterns \u2014 guidance for cross-system analytics boundary decisions"
+  ],
+  "outputs": [
+    "analytics platform recommendation",
+    "analytics design findings",
+    "adoption guidance"
+  ],
+  "references": [
+    "skills/admin/einstein-analytics-basics/references/examples.md",
+    "skills/admin/einstein-analytics-basics/references/gotchas.md",
+    "skills/admin/einstein-analytics-basics/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/einstein-analytics-basics/scripts/check_analytics_assets.py"
+  ],
+  "tags": [
+    "crm-analytics",
+    "reports",
+    "dashboards",
+    "datasets",
+    "tool-selection"
+  ],
+  "templates": [
+    "skills/admin/einstein-analytics-basics/templates/analytics-evaluation-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

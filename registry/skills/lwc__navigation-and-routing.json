@@ -1,0 +1,90 @@
+{
+  "category": "lwc",
+  "chunk_ids": [
+    "0a189fd0185ba334e874",
+    "18843bfbfcb4f71658b5",
+    "32bff11d8ed66c8a5c0f",
+    "37107662388366beb9b9",
+    "38d3ea96ecd75ff12e4e",
+    "39be34236e5370e9048d",
+    "3c5c8de58a1de45eec62",
+    "44db222f405e625f51eb",
+    "452144c2f1a8332e4bd2",
+    "4810dc116e9dc279934f",
+    "4897a4091604f583caf3",
+    "4934d435d9a29a7a9cb2",
+    "4b1f7046fff9cc2bae4a",
+    "4f903c69d7d8e33f3271",
+    "53628c78a92d14e7294b",
+    "548ae96cf4fbdbe209b3",
+    "55cf955be56184c96ee8",
+    "603bb3cd7502eb1c7a6d",
+    "672bc83c30fa50918257",
+    "6d697f968716f7c0ed08",
+    "7813eb073c1f77b10ab5",
+    "7a1940504d3340333be0",
+    "7af5d4196469198eea32",
+    "8c87be056ce2e47f9928",
+    "8cbc6d594a14142c743a",
+    "939212fbda3e294402de",
+    "9838b19fded8debe6bdc",
+    "9f5967fbe7be9f02d9ea",
+    "a200b4eb81df5bad1317",
+    "adc29a30d474f0069e57",
+    "c2ab26db8a1ab5a38ecb",
+    "c6dad9e52d71aca5701c",
+    "d911e6cbd8bc05857918",
+    "d9a1c45257737acd6073",
+    "dba7509415bcc096e322",
+    "dc610b9474f0c8e8a57d",
+    "e246ab5a69127ba9edc3",
+    "e5b2e8f49d5c84e9cdc4",
+    "e63e7f674d3685c05da2",
+    "ef5aa4687d611105956d",
+    "f610e8b348293078fdeb",
+    "f81459e18ada34a6dc50",
+    "fd190c46c6de0963df7b"
+  ],
+  "content_hash": "a99c6fee4d87848309ad9d7dd61f31e9dfc796928d55bb4d96e5380eeb89053d",
+  "dependencies": [],
+  "description": "Use when implementing or reviewing Lightning Web Component navigation with `NavigationMixin`, PageReference objects, URL state, and `CurrentPageReference` across Lightning Experience, mobile, and Experience Cloud. Triggers: 'navigate to record page from LWC', 'PageReference state not working', 'should I use window.location', 'Experience Cloud navigation issue'. NOT for component-to-component messaging or data-loading strategy when navigation is only a side effect.",
+  "file_location": "skills/lwc/navigation-and-routing",
+  "id": "lwc/navigation-and-routing",
+  "inputs": [
+    "target destination such as record, object list, component, web page, or named site page",
+    "which container is in use: Lightning Experience, mobile, Aura site, or LWR site",
+    "whether the navigation needs deep-linkable URL state or a generated href"
+  ],
+  "name": "navigation-and-routing",
+  "official_sources": [
+    "Use the Navigation Service - https://developer.salesforce.com/docs/platform/lwc/guide/use-navigate",
+    "Navigate to Different Page Types - https://developer.salesforce.com/docs/platform/lwc/guide/reference-page-reference-type",
+    "CurrentPageReference - https://developer.salesforce.com/docs/platform/lwr/references/csr-reference/currentpagereference.html"
+  ],
+  "outputs": [
+    "navigation pattern recommendation using page references",
+    "review findings for hardcoded urls, bad state keys, or container mismatches",
+    "code guidance for Navigate, GenerateUrl, and CurrentPageReference usage"
+  ],
+  "references": [
+    "skills/lwc/navigation-and-routing/references/examples.md",
+    "skills/lwc/navigation-and-routing/references/gotchas.md",
+    "skills/lwc/navigation-and-routing/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/lwc/navigation-and-routing/scripts/check_navigation_and_routing.py"
+  ],
+  "tags": [
+    "navigationmixin",
+    "pagereference",
+    "currentpagereference",
+    "experience-cloud",
+    "url-state"
+  ],
+  "templates": [
+    "skills/lwc/navigation-and-routing/templates/navigation-and-routing-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

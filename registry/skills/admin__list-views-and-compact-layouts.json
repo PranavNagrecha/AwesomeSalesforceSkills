@@ -1,0 +1,91 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "05ab291a87aa2e84f404",
+    "0c538f0ae5e16990802b",
+    "0dd91ad3c4df4bd61a99",
+    "0f1e0b87bfd8108ccd29",
+    "1115b9a3eb7eb3b4ca94",
+    "15a6b6ca01f677d88b97",
+    "1722b0a8bb44ac64c71b",
+    "1ea4e2ef76d9df91d77a",
+    "201588cd19c7cbad1cc2",
+    "30f3de2b92bd88737ca8",
+    "31be7bed83ae6d68bef0",
+    "36500b4fadf9307e70ac",
+    "41debb001f90db79bbae",
+    "427cef5c202e8d37101b",
+    "46f93c342960fc86a420",
+    "4e3d627652debbead291",
+    "4f03f7b1dc5181fe636d",
+    "4f57b1ce8fe5bbbcbf16",
+    "501289cacbcfa33d6ae1",
+    "57bef6243fe8c7b1598c",
+    "5d28e4dcbe9288082aa9",
+    "5e6dd4027c5b1cdb4cab",
+    "61bfd05629997be33101",
+    "623b27e4da68d85e0b45",
+    "67a6f439f65cefff5338",
+    "6c9b60342c62c9f34259",
+    "74f5a5b99c65bdf21369",
+    "776cddb887678ca94c81",
+    "7d5d807bc41dcefb6a61",
+    "82bb9abcdd50507f1016",
+    "86da290a3424ae153bbe",
+    "8eafdaaa86ae539a3aa1",
+    "9180e0b35624a5594f5b",
+    "a618b41babd8d73d5fd7",
+    "b4a2bec6f995755daaf2",
+    "b5e40d87b9cd6a260ae1",
+    "bae1b0f43df46f688a2f",
+    "d1ae67cac945034e0b87",
+    "d20c48f2d8754b945d7d",
+    "e20773ce7fffe962bc95",
+    "edf95e6f3a3024e3c12b",
+    "fa0814f9256ce8840a45",
+    "fa760f97f777da8a2810",
+    "fae8cfe185ba2c522991"
+  ],
+  "content_hash": "a6e24ff9a6d9a18debf62e613a5aeb8b0300a6f5644e75b1dce537f26fc73fba",
+  "dependencies": [],
+  "description": "Use when designing or reviewing list views, compact layouts, highlights panels, and search-result presentation so users can scan, find, and act on records quickly across desktop and mobile. Triggers: 'too many list views', 'compact layout not showing the right fields', 'search layouts vs list views', 'mobile highlights panel'. NOT for page layout design, Dynamic Forms strategy, or record-type architecture.",
+  "file_location": "skills/admin/list-views-and-compact-layouts",
+  "id": "admin/list-views-and-compact-layouts",
+  "inputs": [
+    "target objects, personas, and primary browse or search workflows",
+    "whether the experience is Lightning desktop, mobile, console, or Experience Cloud",
+    "which fields users must scan quickly before opening a full record"
+  ],
+  "name": "list-views-and-compact-layouts",
+  "official_sources": [
+    "Compact Layouts (Help) - https://help.salesforce.com/s/articleView?id=sf.compact_layout_overview.htm&type=5",
+    "List Views (Help) - https://help.salesforce.com/s/articleView?id=sf.customviews.htm&type=5",
+    "Salesforce Well-Architected Overview - https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "ux recommendation for list views, compact layouts, and search-result presentation",
+    "review findings for list-view sprawl, weak filters, and poor highlights design",
+    "configuration worksheet for object-level browse and scan paths"
+  ],
+  "references": [
+    "skills/admin/list-views-and-compact-layouts/references/examples.md",
+    "skills/admin/list-views-and-compact-layouts/references/gotchas.md",
+    "skills/admin/list-views-and-compact-layouts/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/list-views-and-compact-layouts/scripts/check_list_views_and_compact_layouts.py"
+  ],
+  "tags": [
+    "list-views",
+    "compact-layouts",
+    "search-layouts",
+    "highlights-panel",
+    "mobile-ux"
+  ],
+  "templates": [
+    "skills/admin/list-views-and-compact-layouts/templates/list-views-and-compact-layouts-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

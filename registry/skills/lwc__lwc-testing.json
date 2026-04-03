@@ -1,0 +1,89 @@
+{
+  "category": "lwc",
+  "chunk_ids": [
+    "030f0352f6ba80a848e1",
+    "0732e7796c4b1a29726b",
+    "07787d60704210fb51e5",
+    "0ab3b4c869e02a1519ff",
+    "1d8aa1bee592c059a7be",
+    "23ba2a1bb57172d2d63d",
+    "268c991ab57dea318169",
+    "2739068594267e92cfa7",
+    "27607174a3e6d30f598f",
+    "36c5f79bd55a8ff93e28",
+    "3f7bfc47bba7c6d93bac",
+    "52d6240f7a5188f89666",
+    "59c3e64d2ef5c2f6b43b",
+    "64874f48a8d3bc424816",
+    "67001973aa33c62bc129",
+    "78d68af901bc0025beba",
+    "7958d3edf3d056040b95",
+    "8f26c79b85cdfed2853d",
+    "9e45482588ad686120c5",
+    "9f6bfaf9d343968b6a37",
+    "9f76658168d6f8aeadff",
+    "a2bfae287e041985029f",
+    "a30f88360926654f3254",
+    "b3fbf0135a8f188aaa4e",
+    "bf6e50008b6c09efc7ba",
+    "c64fcc12ef68bed6038b",
+    "caf9f8156b24b14ceea3",
+    "dae05ab40588f6c540c9",
+    "dc38ee6fca64b4abb317",
+    "dd2ce3aef9ca555835d8",
+    "df8058b6cedc433aca7a",
+    "e0b3377ba9cbba822a9c",
+    "e1efcabb44f4119df754",
+    "e41303ebc8b5f3ce3686",
+    "e53cda17d66125218aa1",
+    "e9282a1f9867d2b29f1b",
+    "ed896201e1b22cddd315",
+    "ee42abf54b257a9e6350",
+    "f5a1d3fac64f8c129fae",
+    "f69e8344a38fb5f0e460",
+    "f6de2e3991f53f78c7b9",
+    "fdb625c3de0e1860a0d0"
+  ],
+  "content_hash": "d9fc78c1e6d3e2a24ffc016bc1e07ad0e3407931fba213b468796883c3b95460",
+  "dependencies": [],
+  "description": "Use when setting up or reviewing Lightning Web Component unit tests with Jest, including `@salesforce/sfdx-lwc-jest`, wire adapter mocks, imperative Apex mocks, async rerender handling, and accessibility smoke checks. Triggers: 'how do I test @wire in LWC', 'Jest test is flaky', 'mock Apex in LWC test', 'flushPromises pattern'. NOT for Apex unit tests, browser end-to-end automation, or performance testing.",
+  "file_location": "skills/lwc/lwc-testing",
+  "id": "lwc/lwc-testing",
+  "inputs": [
+    "component responsibilities, data sources, and important user interactions",
+    "whether the component uses wire adapters, imperative Apex, navigation, or LMS",
+    "current Jest setup, package.json scripts, and test coverage gaps"
+  ],
+  "name": "lwc-testing",
+  "official_sources": [
+    "Test Lightning Web Components - https://developer.salesforce.com/docs/platform/lwc/guide/testing.html",
+    "Write Jest Tests for Lightning Web Components That Use the Wire Service - https://developer.salesforce.com/docs/platform/lwc/guide/unit-testing-using-wire-utility?-escaped-fragment-=.html",
+    "Best Practices for Development with Lightning Web Components - https://developer.salesforce.com/docs/platform/lwc/guide/get-started-best-practices.html"
+  ],
+  "outputs": [
+    "jest testing strategy for the component",
+    "review findings for missing mocks, weak assertions, and flaky async handling",
+    "test skeletons for render, interaction, wire, and error scenarios"
+  ],
+  "references": [
+    "skills/lwc/lwc-testing/references/examples.md",
+    "skills/lwc/lwc-testing/references/gotchas.md",
+    "skills/lwc/lwc-testing/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/lwc/lwc-testing/scripts/check_lwc_testing.py"
+  ],
+  "tags": [
+    "lwc-testing",
+    "jest",
+    "sfdx-lwc-jest",
+    "wire-mocks",
+    "accessibility-testing"
+  ],
+  "templates": [
+    "skills/lwc/lwc-testing/templates/lwc-testing-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

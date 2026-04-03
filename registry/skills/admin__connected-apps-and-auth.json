@@ -1,0 +1,85 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "076d0043b332266709f4",
+    "0dba23cb3c37860d827c",
+    "0e62e2bc07c6e7309cfc",
+    "15404bbf5670ec116a86",
+    "1722ab5f2d34308bfd3b",
+    "29f9f1565bee2d8d9091",
+    "3556b1b316f80ea6a156",
+    "3b3cf149d8758d780c71",
+    "3cf3ac1d9184a8e3bd0a",
+    "407679e8da58074d8180",
+    "40e7e8f00b3ff8e706b8",
+    "47fdae71eda33e8e7c85",
+    "54e211ac0acf45ed3ce6",
+    "56a5b99371e9a66c14d9",
+    "68941db1b2df070c531b",
+    "6fd1d1d9bc8de3ce25d6",
+    "772c9e0bce3a12f418d5",
+    "7794646d3c9b4b249502",
+    "78b604b1b9258b931634",
+    "7a0308f72d937065f610",
+    "7e56f9afdbbbefbf1bd2",
+    "7e92f20648d53137ccca",
+    "82ffa0b8f1a7d1e23b5d",
+    "87db6fd55f0b3037b929",
+    "89cb041a4d5539818a30",
+    "a0a09c0431ad9ceb76cf",
+    "a640334894fab6384f46",
+    "a96709b357bd55315529",
+    "c094a2fa3bbeedea497e",
+    "cc18ab74dec31119d45a",
+    "cc87862fc009e48bfd7d",
+    "cfc47dfdbd7ddf6b2115",
+    "d401ecf4dae622cef1b6",
+    "d61d57ab71e82fb0e442",
+    "d676082cec5f976823d8",
+    "df90057b1e2b2533d61d",
+    "ed070677aeeef952072c",
+    "f5f0ced5cabd194af763"
+  ],
+  "content_hash": "ac202562d92f1bd5673dcd72ff4ad6cd4ed2e63a52b63258a82276f3c7581097",
+  "dependencies": [],
+  "description": "Use when designing, reviewing, or troubleshooting Salesforce connected apps, Named Credentials, External Credentials, and OAuth-based integration access. Triggers: 'connected app', 'OAuth flow', 'client credentials', 'JWT bearer', 'Named Credential', 'External Credential', 'integration user', 'IP restrictions'. NOT for business-user sharing or field permissions unless the auth design depends on them.",
+  "file_location": "skills/admin/connected-apps-and-auth",
+  "id": "admin/connected-apps-and-auth",
+  "inputs": [
+    "integration flow",
+    "credential model",
+    "environment constraints"
+  ],
+  "name": "connected-apps-and-auth",
+  "official_sources": [
+    "Salesforce Well-Architected Overview \u2014 security and operational framing for integration access",
+    "REST API Developer Guide \u2014 OAuth and API usage context for connected-app design",
+    "Integration Patterns \u2014 auth and system-boundary tradeoffs for integrations"
+  ],
+  "outputs": [
+    "auth pattern recommendation",
+    "connected app review findings",
+    "credential governance actions"
+  ],
+  "references": [
+    "skills/admin/connected-apps-and-auth/references/examples.md",
+    "skills/admin/connected-apps-and-auth/references/gotchas.md",
+    "skills/admin/connected-apps-and-auth/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/connected-apps-and-auth/scripts/check_connected_auth.py"
+  ],
+  "tags": [
+    "connected-apps",
+    "oauth",
+    "named-credentials",
+    "external-credentials",
+    "integration-auth"
+  ],
+  "templates": [
+    "skills/admin/connected-apps-and-auth/templates/auth-integration-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

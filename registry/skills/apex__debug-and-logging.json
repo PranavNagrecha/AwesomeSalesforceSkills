@@ -1,0 +1,88 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "0abd316e16555696bfca",
+    "104eaf2c1ddf2e8201ef",
+    "10912e103090db770def",
+    "152133d4a0face9db162",
+    "1d800391b8abbf9e62c8",
+    "2001a478e045f38865a7",
+    "24cb3118a780af099d2d",
+    "2783501d56047f8876bd",
+    "2e156664476969c2c9ce",
+    "3369a7efe6a9f33ba4bd",
+    "33ab3213d61c0dfd513f",
+    "3a7ea957ffd94308f540",
+    "698dd844f6b1e18cb8b2",
+    "7ff7e346c8946aeb2d1d",
+    "88bf2cac77af2c59949c",
+    "8bad95078425e4bb0ffd",
+    "8c40e96d1547e8f64c68",
+    "8d4efc721cca2ce0851e",
+    "92667c769d9038ea95e7",
+    "934248f29db3152a5fc2",
+    "94a96229cde3fa385871",
+    "a1d3a7c55e055f5fd1f7",
+    "a3a99e6d53800a561bf6",
+    "a635d6167f937a6ed2fc",
+    "a9ef900a7c16c32345c9",
+    "a9f7079eb26434da9d1d",
+    "b35ad7ccff40269f5cfc",
+    "b9561958c10ed3cbc530",
+    "ba66392f563b4d863e52",
+    "c1b5f9d447e5e7344a1b",
+    "cd45a027cfe9379eec1d",
+    "e18e9cbb63ae98cf61e5",
+    "e337a7918067711fdafc",
+    "ece3d816c6ef111078bf",
+    "ee8f0545c82fb586f5a2",
+    "f9adc8c1b43b5d9832ed",
+    "fa7d60949c9a30de032a",
+    "fad3c132c6048246b531",
+    "fae179cffaa802abec05",
+    "fb5e1d4613abce19f371",
+    "ff220b4b270f0404948c"
+  ],
+  "content_hash": "f44abcdcf9d4d5c9a718bc353720fba6394e0ef61095e9a5980527781e2def25",
+  "dependencies": [],
+  "description": "Use when diagnosing Apex behavior with debug logs, choosing log levels, or replacing `System.debug` habits with structured production logging and async job monitoring. Triggers: 'debug log', 'System.debug', 'logging framework', 'AsyncApexJob monitoring', 'production logs'. NOT for exception taxonomy design alone or for non-Apex observability platforms by themselves.",
+  "file_location": "skills/apex/debug-and-logging",
+  "id": "apex/debug-and-logging",
+  "inputs": [
+    "execution context such as synchronous request, trigger, Queueable, Batch, or REST",
+    "whether the issue is development-time debugging or production-time observability",
+    "current logging destination such as debug logs, custom object, or platform event"
+  ],
+  "name": "debug-and-logging",
+  "official_sources": [
+    "Apex Developer Guide \u2014 debug logs and runtime debugging guidance",
+    "Apex Reference Guide \u2014 `System.debug` and logging-level behavior",
+    "Salesforce Well-Architected Overview \u2014 operational excellence and reliability framing"
+  ],
+  "outputs": [
+    "logging strategy recommendation",
+    "review findings for observability gaps or noisy debug usage",
+    "Apex logging pattern with retention and escalation guidance"
+  ],
+  "references": [
+    "skills/apex/debug-and-logging/references/examples.md",
+    "skills/apex/debug-and-logging/references/gotchas.md",
+    "skills/apex/debug-and-logging/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/debug-and-logging/scripts/check_debug_and_logging.py"
+  ],
+  "tags": [
+    "debug-logs",
+    "system-debug",
+    "logging-framework",
+    "asyncapexjob",
+    "observability"
+  ],
+  "templates": [
+    "skills/apex/debug-and-logging/templates/debug-and-logging-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

@@ -1,0 +1,86 @@
+{
+  "category": "flow",
+  "chunk_ids": [
+    "05897d1a50f1288668ab",
+    "09b2f680dcfb95be9c66",
+    "0d763c5e99cac758abe9",
+    "1a6e350d92cacde9a4f8",
+    "1bbd492b94d57ddecefa",
+    "1edbb001cf32c5273378",
+    "2145cc1542b373adf8a9",
+    "22af93c7bcde4a0406de",
+    "24fb81b00f1f921d1217",
+    "26f26fcccce3a60ed429",
+    "29a13ab6060ca71ea37b",
+    "345831a28a3bc9436468",
+    "3bddd3d64e72285dc59c",
+    "3f5bca52d72e93609434",
+    "41e4a2cb9bbbfa54a766",
+    "4e2f6c0e6a0b8e7ca216",
+    "52c4b62dcd10469494f5",
+    "55331890a5f7a390886e",
+    "5970507a479076072a84",
+    "656b74b46e2027fead26",
+    "667fea5ddec000127f62",
+    "684137dae8e5dff537eb",
+    "72ec27f1bd66354e6435",
+    "7bc37f8a080fdd2b4085",
+    "8d313378e0aec3ae61c1",
+    "948d508136eeadf0f018",
+    "9df09bfa26b6ce3a92d2",
+    "a88090205b937dfc1063",
+    "b41e6b7994753a688db1",
+    "bf3a9b2aabe0708eccf3",
+    "c2620a409835471afe27",
+    "caf502e71ab131520858",
+    "ce5421cc1857ae1cf2f3",
+    "d2689c9ba4315fe3853a",
+    "df3361819e1de13cb70d",
+    "e6b257388650f5b90fc3",
+    "ea645478b41b9400262b",
+    "f1e2988d19cdcdd2d1f5",
+    "f590a15b7ceedd7f5acc"
+  ],
+  "content_hash": "eabb27b308504760968db14ba9181b59caa3a18ba6fd5e0c0e2f93ba86ffa072",
+  "dependencies": [],
+  "description": "Use when designing or reviewing Flow Orchestration for long-running, multi-user, or asynchronous business processes with stages, steps, work items, and monitoring needs. Triggers: 'flow orchestration', 'work item', 'stages and steps', 'multi-user process', 'long-running flow'. NOT for simple single-transaction record-triggered flows or lightweight approval routing that does not need orchestration.",
+  "file_location": "skills/flow/orchestration-flows",
+  "id": "flow/orchestration-flows",
+  "inputs": [
+    "business process timeline and handoff points",
+    "which steps are background vs human-interactive",
+    "monitoring, reassignment, and recovery expectations"
+  ],
+  "name": "orchestration-flows",
+  "official_sources": [
+    "Flow Reference \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_ref.htm&type=5",
+    "Flow Builder \u2014 https://help.salesforce.com/s/articleView?id=sf.flow.htm&type=5",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "orchestration design recommendation",
+    "stage-and-step review findings",
+    "decision on orchestration vs standard flow or apex"
+  ],
+  "references": [
+    "skills/flow/orchestration-flows/references/examples.md",
+    "skills/flow/orchestration-flows/references/gotchas.md",
+    "skills/flow/orchestration-flows/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/flow/orchestration-flows/scripts/check_orchestration_flows.py"
+  ],
+  "tags": [
+    "flow-orchestration",
+    "work-items",
+    "asynchronous-process",
+    "stages",
+    "multi-user"
+  ],
+  "templates": [
+    "skills/flow/orchestration-flows/templates/orchestration-flows-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

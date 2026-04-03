@@ -1,0 +1,87 @@
+{
+  "category": "lwc",
+  "chunk_ids": [
+    "002b2feb484a7ecd4b4f",
+    "0da9789d7df7d55c8607",
+    "1c0560efec56c795c5d0",
+    "1fe0fb8db227846d975f",
+    "208d7e9b717e94773a14",
+    "2e76eaad3266c8ac99e3",
+    "2ee632ecb72ee0521980",
+    "301316ae175cc9ee79e3",
+    "3b02f4553811cb09fb2f",
+    "3b702839decd697a166c",
+    "3b93eee7d89cb5e5d502",
+    "3cea90777c0d44cb44b8",
+    "45142b8bef02fbfba685",
+    "4f6c88f8cd5dfaeedf79",
+    "512c349ba18ee85adac7",
+    "52c44d44f09a311f5991",
+    "6e638bb667d9fe1d62f3",
+    "7b6e13e8691a7a0a1e7b",
+    "8c3cae3f4266b4218330",
+    "8e8fa04aa21df8596e15",
+    "907dd255ef072982f3b2",
+    "91e47f8fc5d0bf0ec7da",
+    "933a8573ca86df145634",
+    "936814d738dc58248a5c",
+    "964654b4faff78d23ca4",
+    "98d18571ed52e8391334",
+    "9aa2ad3b64b35e89a75e",
+    "9ad760c5b1a79cc5d70c",
+    "a1200b9ae021441a48eb",
+    "a35cbac72d5e6dcafcc0",
+    "a5030ae7965498d61b5e",
+    "b9dc4801f0e488031c32",
+    "c75821bd14abdfc7fb61",
+    "d46054458f632f8c4c4c",
+    "d6c446049366fa27fd11",
+    "d95f981be70b40bb2609",
+    "e869b30be629819771ac",
+    "f6bc4998d818ce328fc2",
+    "f72bc333670046afba63",
+    "fefd8892f7936cd17eb4"
+  ],
+  "content_hash": "de8dc7f2a337943ec2303b899131ca3d096cc489ba386993f5c8bace2e6c35b5",
+  "dependencies": [],
+  "description": "Use when designing or reviewing Lightning Web Components for DOM safety, Lightning Web Security boundaries, third-party library handling, and secure server-side data access from LWC. Triggers: 'innerHTML in lwc', 'Lightning Web Security', 'document.querySelector', 'light DOM security', 'secure apex class for lwc'. NOT for org-wide sharing architecture or Apex-only security reviews when no LWC surface is involved.",
+  "file_location": "skills/lwc/lwc-security",
+  "id": "lwc/lwc-security",
+  "inputs": [
+    "whether the component uses ui api, apex, or third-party libraries",
+    "whether it runs in lightning experience, experience cloud, or mobile",
+    "whether it uses light dom, manual dom, or direct html rendering"
+  ],
+  "name": "lwc-security",
+  "official_sources": [
+    "Secure Apex Classes \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/apex-security.html",
+    "Light DOM \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/create-light-dom.html",
+    "Access Elements the Component Owns \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/create-components-dom-work"
+  ],
+  "outputs": [
+    "security review findings for lwc and supporting apex",
+    "recommended safe rendering and data-access pattern",
+    "remediation plan for dom or server-side exposure risks"
+  ],
+  "references": [
+    "skills/lwc/lwc-security/references/examples.md",
+    "skills/lwc/lwc-security/references/gotchas.md",
+    "skills/lwc/lwc-security/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/lwc/lwc-security/scripts/check_lwc_security.py"
+  ],
+  "tags": [
+    "lwc-security",
+    "lightning-web-security",
+    "xss",
+    "light-dom",
+    "secure-apex"
+  ],
+  "templates": [
+    "skills/lwc/lwc-security/templates/lwc-security-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

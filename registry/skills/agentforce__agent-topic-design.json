@@ -1,0 +1,89 @@
+{
+  "category": "agentforce",
+  "chunk_ids": [
+    "02691b3d410dd4411503",
+    "234bda24dde042484402",
+    "2de08b12372b5da177d8",
+    "371e2c6cf2645f444b61",
+    "3765b1f40db56f787898",
+    "37cbaf4a421fa008485b",
+    "3bec3b33671d46454fc9",
+    "3c6e24965c34b4bb13b5",
+    "3d3b48567c22ba8adb7f",
+    "430d7871f38e2821a567",
+    "44ad0fbf0b278ac64d24",
+    "54b1bb3ed433915ca993",
+    "5bb17913e6871711f69f",
+    "5e758ca2398c0d19e01e",
+    "616b9c6c9e68b26108e6",
+    "665b1db770baa7e67297",
+    "691d4565016c68af1818",
+    "6c3bc79d9b1052be7c3e",
+    "73ac85dac928209c7840",
+    "767c4b5585929520bb57",
+    "888ac9fff0ef27211fdd",
+    "899a2dffe42a61817ff9",
+    "8b2d50013b859590d9ee",
+    "93d616f08f122e117dbb",
+    "9665b58070b06d522e0e",
+    "a305651706438166f92e",
+    "a73671514931489af5e9",
+    "aaa8e71effe392cad629",
+    "b3fd5a39af26a586b861",
+    "b52c80bcb6cdca50a5ea",
+    "b7b41eb06a4a4627f433",
+    "c07d5b32041a81f3eecd",
+    "ca564181b9b366824696",
+    "cb804bb60be4e85376c1",
+    "d0ff91d5fdc46c2dcd5a",
+    "d71f5990c3ef305408f0",
+    "dc78600824050365bea1",
+    "dc7974bd3ea4df81f587",
+    "e00c8b96278adb97e4fe",
+    "e7608e1235d4941c92a3",
+    "ebf13de6cead10cbd490",
+    "f6ff105635d452d357f8"
+  ],
+  "content_hash": "97c96da49a0e88c5912d83c4787d0f02ddc407ff0c64facbf8479088b43ead9b",
+  "dependencies": [],
+  "description": "Use when designing or reviewing Agentforce topic structure, including topic boundaries, instruction quality, handoff rules, out-of-scope behavior, and topic-selector strategy. Triggers: 'agent topics', 'topic design', 'topic selector', 'agent scope boundary', 'handoff conditions'. NOT for action contract design or prompt-template wording when the main problem is not topic scoping.",
+  "file_location": "skills/agentforce/agent-topic-design",
+  "id": "agentforce/agent-topic-design",
+  "inputs": [
+    "business capabilities the agent should and should not cover",
+    "candidate topic count and overlap between them",
+    "handoff, fallback, and escalation expectations"
+  ],
+  "name": "agent-topic-design",
+  "official_sources": [
+    "Agentforce Developer Guide - https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html",
+    "Einstein Platform Services - https://developer.salesforce.com/docs/einstein/genai/guide/overview.html",
+    "Salesforce Well-Architected Overview - https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "topic architecture recommendation",
+    "boundary and instruction review findings",
+    "topic selector and handoff guidance"
+  ],
+  "references": [
+    "skills/agentforce/agent-topic-design/references/examples.md",
+    "skills/agentforce/agent-topic-design/references/gotchas.md",
+    "skills/agentforce/agent-topic-design/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/agentforce/agent-topic-design/scripts/check_agent_topic_design.py"
+  ],
+  "tags": [
+    "agentforce",
+    "topic-design",
+    "topic-selector",
+    "agent-boundaries",
+    "handoff-rules"
+  ],
+  "templates": [
+    "skills/agentforce/agent-topic-design/templates/agent-topic-design-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

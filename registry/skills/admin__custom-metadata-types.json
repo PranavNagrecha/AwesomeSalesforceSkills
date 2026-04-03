@@ -1,0 +1,98 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "0a15a6653abc0f16ccc1",
+    "0f9e7af79a59397f9285",
+    "0fbcc77c02f863517b78",
+    "149263d61970889bfd70",
+    "193369385e5fc387a826",
+    "1b0a8306945229d30093",
+    "1f615716ae46b2e71ab4",
+    "28115a225ca0551fc080",
+    "2afd3f1c3004b7fee597",
+    "2df61cf957712d6b4a3f",
+    "3e9b93bb2962248dee0a",
+    "3ef088bf37fc4a51be1c",
+    "3f92a8da9cb3e97e4727",
+    "4107384b2979049071e7",
+    "4e1182959f20be73a8bd",
+    "51e2a22157b24b446c0d",
+    "551e6e7a8375cc5097ed",
+    "58854090f86b7af7a204",
+    "5a3e8bffa17f9623d279",
+    "5a9ba1bbf89fe6ba5256",
+    "61222d57c5458b9f9459",
+    "66f5bf0f24b3d7ea6859",
+    "69e451f8fa6e7066bc14",
+    "6bdce3bb13f4617a4ee8",
+    "6d647e4549bdbbf701e7",
+    "6e337b1a294976026df2",
+    "712a689c13327c5a8fab",
+    "75df4b147d0dc348f285",
+    "85e8d411307eb50036fd",
+    "8b21dac1f37ae3397952",
+    "8bf02f553161286e8b0b",
+    "91766f730a236fa35c8d",
+    "91d747233472a36574e9",
+    "95bb52448d641f894c67",
+    "96219df1340c479237d6",
+    "96cf5bed29e862fcef49",
+    "9c8e645a21502c1628c9",
+    "a87e51f2b6b7798f063c",
+    "b05bd69fcf5eabe1e09b",
+    "b173e055862611ef4f2d",
+    "b485981867206170a52f",
+    "ba44704d5df9e628b354",
+    "c4301aa4ab5939ab6c58",
+    "cfc9038490f369fd0d75",
+    "d1c60445898b9b5786dd",
+    "d381691a7d07653660d5",
+    "e4481fabb3365936e019",
+    "e6d281442072570c8983",
+    "e793058a6a3953f8d059",
+    "f20f77da3ed7cd4c033b",
+    "f87448e4e89e22e81988"
+  ],
+  "content_hash": "b457956818c0196dfe6136ad95765bd8bb8cc90973e5e5a1dd2a075695eac2a3",
+  "dependencies": [],
+  "description": "Use when designing deployable Salesforce configuration with Custom Metadata Types, especially when choosing between CMTs, Custom Settings, and Custom Objects, protecting packaged defaults, or exposing config to Apex, Flow, and formulas. Triggers: 'custom metadata vs custom settings', 'deployable config', 'protected custom metadata', 'feature flags in Salesforce'. NOT for high-churn transactional data, user-managed business records, or secret storage that should live in Named Credentials.",
+  "file_location": "skills/admin/custom-metadata-types",
+  "id": "admin/custom-metadata-types",
+  "inputs": [
+    "who owns the configuration values and how often they change",
+    "whether the values must move through source control, packaging, or CI/CD",
+    "whether the data needs per-user overrides, secrets, reporting, or end-user editing"
+  ],
+  "name": "custom-metadata-types",
+  "official_sources": [
+    "Metadata API Developer Guide - https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_custommetadata.htm",
+    "Custom Metadata Types (Help) - https://help.salesforce.com/s/articleView?id=sf.custommetadata_about.htm&type=5",
+    "Salesforce Well-Architected Overview - https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "storage decision between custom metadata, custom settings, custom objects, and named credentials",
+    "configuration design for Apex, Flow, and formula consumption",
+    "review findings for unsafe or non-deployable configuration patterns"
+  ],
+  "references": [
+    "skills/admin/custom-metadata-types/references/examples.md",
+    "skills/admin/custom-metadata-types/references/gotchas.md",
+    "skills/admin/custom-metadata-types/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/custom-metadata-types/scripts/check_custom_metadata_types.py"
+  ],
+  "tags": [
+    "custom-metadata-types",
+    "configuration",
+    "custom-settings",
+    "feature-flags",
+    "deployable-config"
+  ],
+  "templates": [
+    "skills/admin/custom-metadata-types/templates/custom-metadata-types-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

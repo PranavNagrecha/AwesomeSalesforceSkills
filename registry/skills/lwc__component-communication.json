@@ -1,0 +1,90 @@
+{
+  "category": "lwc",
+  "chunk_ids": [
+    "074e0bfee2f63a5409ad",
+    "0cd906e9d36a75804933",
+    "1193f8f745f1df5d545c",
+    "12a2ea52156115c122ed",
+    "138500f792327f82d1c1",
+    "189d73b4f16fd8c3150d",
+    "1c13c3a43747744df88c",
+    "1c2b898b866a53657ada",
+    "2369319b8384a3e4407d",
+    "2e458149b3f471b5db9a",
+    "2fc37e7786b98ba6d2b2",
+    "3374b5e93f90841af956",
+    "355f3063435de830fc93",
+    "3b1e97e58a7f426bf0a4",
+    "3fe6e766c2450277f7c0",
+    "481cb2890541b1226d6a",
+    "55d1acc6fdf22f4b3647",
+    "594f1dde7600eefe852c",
+    "5fed7037c56ff03f342a",
+    "6d1f76e23aff931ba529",
+    "71ede305b7c66a9d91af",
+    "77190221a21adabff141",
+    "79da9322858cd72e6aa2",
+    "7a7bd62cd1756ce46f99",
+    "7e45aa5b4bb27e5c339f",
+    "9238983f4c5caa6cdeb1",
+    "9d0049484bdcc4704a72",
+    "a551d0c619e7fcde12a4",
+    "ad266dc14e0e844528eb",
+    "b15c56e2c005479b89bd",
+    "bd1a53ce89093e4bcd5e",
+    "bf76ef222bce5f113138",
+    "d6fddd2fd15c5df4d37d",
+    "e56bcd9b8dbf612ca3b5",
+    "ea663abb19298362441b",
+    "eb32370cfad251a891d3",
+    "ed05b1f56d337c659f95",
+    "f1e9b68054dfe625f4ba",
+    "f2426167a9b39cf7d79b",
+    "f6b67011dc5283cf30d1",
+    "f726b1fd2ccf0695a3bb",
+    "f87f2ed928d0d41f0ca5",
+    "fdb8e02a6789398f07bb"
+  ],
+  "content_hash": "29ca3ebdcbb93051e9029d9763854735e89acb80769e8232e67b214c10f9966a",
+  "dependencies": [],
+  "description": "Use when designing or reviewing how Lightning Web Components pass data and intent between parent, child, sibling, utility, or workspace contexts using `@api`, public methods, custom events, and Lightning Message Service. Triggers: 'LWC communication pattern', 'custom event not reaching parent', 'should I use LMS or @api', 'child component API'. NOT for data provisioning decisions, wire-service strategy, or page navigation when communication is not the main problem.",
+  "file_location": "skills/lwc/component-communication",
+  "id": "lwc/component-communication",
+  "inputs": [
+    "component relationship such as parent-child, sibling, utility, or app-wide",
+    "whether the communication is state down, intent up, or cross-hierarchy broadcast",
+    "whether the interaction must cross shadow boundaries or page regions"
+  ],
+  "name": "component-communication",
+  "official_sources": [
+    "Set Properties on Child Components - https://developer.salesforce.com/docs/platform/lwc/guide/create-components-data-binding.html",
+    "Create and Dispatch Events - https://developer.salesforce.com/docs/platform/lwc/guide/events-create-dispatch.html",
+    "Lightning Message Service - https://developer.salesforce.com/docs/platform/lwc/guide/lwc-message-channel.html"
+  ],
+  "outputs": [
+    "communication mechanism recommendation",
+    "review findings for coupling, propagation, and lms lifecycle issues",
+    "refactor guidance for public apis, custom events, or message channels"
+  ],
+  "references": [
+    "skills/lwc/component-communication/references/examples.md",
+    "skills/lwc/component-communication/references/gotchas.md",
+    "skills/lwc/component-communication/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/lwc/component-communication/scripts/check_component_communication.py"
+  ],
+  "tags": [
+    "component-communication",
+    "custom-events",
+    "lightning-message-service",
+    "api-properties",
+    "shadow-dom"
+  ],
+  "templates": [
+    "skills/lwc/component-communication/templates/component-communication-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

@@ -1,0 +1,89 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "0375ed2bf4c32a7adb18",
+    "081503ea8221cfd039b0",
+    "0a154710412b480c1da6",
+    "0b9f665cb26b8816bf53",
+    "0fa761bb793017cbc627",
+    "1132ab6039030c850e9d",
+    "1155512bf82a1dc304d9",
+    "18326a20f4f70d351ddf",
+    "1c417c56eb694bb69b68",
+    "267e30c11cbbb94e64b1",
+    "34401a05d9d30fdfad7d",
+    "4967b9c7edee12f49730",
+    "4f7514a3a3f530af9341",
+    "59035d79d7b5506eb02b",
+    "5c0e2832b983bd59e9f1",
+    "655744c7e891e4244db9",
+    "66bdb72e8ea4c31d71c5",
+    "6d7ae7f722859b63d450",
+    "80dcabc03a1e51bd210b",
+    "8267e77bf7a3625337dd",
+    "830eb9ee177caf51dc1e",
+    "8473800009eb0705537f",
+    "9b388c0e4bccd6095273",
+    "9b62aefe73059c044e5b",
+    "a9e2d0b1abc480af5f9d",
+    "aa1845d1bddaf9de66b9",
+    "acd36f74d1cd2eb15f8f",
+    "ad7d2eb95dbe28b5c817",
+    "ba0e172eb94dd8f97bd3",
+    "c3625505df3038c941be",
+    "c44c334478c062a06172",
+    "ccc4418c3f5889301df6",
+    "d4b120f88672a8b012d6",
+    "d5e9e8a71ea54d1cb9fc",
+    "dc10377dbc23904ddc2d",
+    "e3792b4e3c3758be6809",
+    "e989e097104d96d4fc16",
+    "eced8bde1d1e90c6b1aa",
+    "ee3679e6bbd229c2a374",
+    "f8c2fda1f6845c5b0c5b",
+    "fe49c50ccd6eb38256ff"
+  ],
+  "content_hash": "4b746d225ce5a036002b6af5911c162e133f738d8af2674146e9f46a3441832f",
+  "dependencies": [],
+  "description": "Use when deciding which Salesforce automation tool should own a requirement, including before-save and after-save Flow, screen Flow, scheduled Flow, invocable Apex, Apex triggers, and migration off Workflow Rules or Process Builder. Triggers: 'Flow or Apex trigger', 'which automation tool should I use', 'Process Builder migration', 'Workflow Rule retirement', 'same-record update or trigger'. NOT for detailed implementation of a Flow or trigger after the automation boundary has already been chosen.",
+  "file_location": "skills/admin/process-automation-selection",
+  "id": "admin/process-automation-selection",
+  "inputs": [
+    "triggering event, user interaction model, and record volume",
+    "whether the work is same-record, related-record, async, or integration-heavy",
+    "existing automation already attached to the object or process"
+  ],
+  "name": "process-automation-selection",
+  "official_sources": [
+    "Flow Reference - https://help.salesforce.com/s/articleView?id=sf.flow_ref.htm&type=5",
+    "Flow Builder - https://help.salesforce.com/s/articleView?id=sf.flow.htm&type=5",
+    "Apex Triggers - https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_triggers.htm",
+    "Automate This! Migrate Workflow Rules and Processes to Flow - https://admin.salesforce.com/blog/2022/automate-this-migrate-workflow-rules-and-processes-to-flow"
+  ],
+  "outputs": [
+    "automation tool recommendation",
+    "migration or consolidation findings",
+    "boundary decision for Flow, Apex, or legacy retirement"
+  ],
+  "references": [
+    "skills/admin/process-automation-selection/references/examples.md",
+    "skills/admin/process-automation-selection/references/gotchas.md",
+    "skills/admin/process-automation-selection/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/process-automation-selection/scripts/check_process_automation_selection.py"
+  ],
+  "tags": [
+    "automation-selection",
+    "flow-vs-apex",
+    "process-builder-migration",
+    "workflow-rule-retirement",
+    "trigger-decision"
+  ],
+  "templates": [
+    "skills/admin/process-automation-selection/templates/process-automation-selection-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

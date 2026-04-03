@@ -1,0 +1,517 @@
+# synonyms.yaml — Query expansion for skill retrieval
+#
+# PURPOSE:
+#   Maps practitioner vocabulary → canonical skill terms.
+#   Used by search_knowledge.py to expand queries before lexical matching.
+#   Prevents retrieval failure when a user's words don't match the skill's words.
+#
+# FORMAT:
+#   canonical: the term used in SKILL.md files
+#   synonyms: list of alternative phrases a practitioner might type
+#
+# RULES:
+#   - Canonical terms must match actual words/phrases in skills/
+#   - Synonyms are case-insensitive at query time
+#   - Add new entries when search_knowledge.py returns no results for a
+#     real practitioner query — that's the signal a synonym is missing
+#   - Do not add generic English synonyms — only Salesforce-context mappings
+
+version: 1
+
+synonyms:
+
+  # ── Security ──────────────────────────────────────────────────────────────
+
+  - canonical: "field-level security"
+    synonyms:
+      - "FLS"
+      - "field access"
+      - "field permissions"
+      - "field visibility"
+      - "user can't see field"
+      - "field not showing"
+      - "field is blank for user"
+      - "field level security"
+      - "fls enforcement"
+
+  - canonical: "sharing rules"
+    synonyms:
+      - "record access"
+      - "record visibility"
+      - "user can't see record"
+      - "records not showing"
+      - "org-wide defaults"
+      - "OWD"
+      - "sharing model"
+      - "who can see records"
+
+  - canonical: "permission sets"
+    synonyms:
+      - "permissions"
+      - "access control"
+      - "user access"
+      - "grant access"
+      - "profile permissions"
+      - "perm set"
+      - "permset"
+
+  - canonical: "SOQL injection"
+    synonyms:
+      - "dynamic SOQL security"
+      - "query injection"
+      - "string concatenation SOQL"
+      - "unsafe query"
+      - "bind variables"
+
+  - canonical: "with sharing"
+    synonyms:
+      - "sharing enforcement"
+      - "enforce sharing"
+      - "respect sharing"
+      - "sharing in apex"
+      - "without sharing"
+
+  # ── Governor Limits ────────────────────────────────────────────────────────
+
+  - canonical: "governor limits"
+    synonyms:
+      - "limits"
+      - "hitting limits"
+      - "too many SOQL"
+      - "too many DML"
+      - "limit exceeded"
+      - "system limit"
+      - "apex limit"
+      - "transaction limits"
+
+  - canonical: "SOQL in loop"
+    synonyms:
+      - "query in loop"
+      - "query inside for"
+      - "SOQL inside loop"
+      - "querying in a loop"
+      - "n+1 query"
+      - "too many queries"
+
+  - canonical: "bulkification"
+    synonyms:
+      - "bulk"
+      - "bulk safe"
+      - "200 records"
+      - "process multiple records"
+      - "list of records"
+      - "batch of records"
+      - "bulk trigger"
+
+  - canonical: "heap size"
+    synonyms:
+      - "heap limit"
+      - "heap exceeded"
+      - "out of memory"
+      - "heap overflow"
+      - "heap space"
+
+  - canonical: "CPU time"
+    synonyms:
+      - "CPU limit"
+      - "CPU exceeded"
+      - "apex too slow"
+      - "timeout"
+      - "execution time"
+      - "long running apex"
+
+  # ── Triggers ──────────────────────────────────────────────────────────────
+
+  - canonical: "trigger framework"
+    synonyms:
+      - "trigger handler"
+      - "trigger pattern"
+      - "trigger architecture"
+      - "trigger structure"
+      - "handler pattern"
+
+  - canonical: "recursive trigger"
+    synonyms:
+      - "trigger firing twice"
+      - "trigger running twice"
+      - "trigger loop"
+      - "infinite trigger"
+      - "trigger recursion"
+      - "trigger keeps running"
+      - "trigger fires multiple times"
+      - "trigger called twice"
+
+  - canonical: "trigger context"
+    synonyms:
+      - "before insert"
+      - "after insert"
+      - "before update"
+      - "after update"
+      - "trigger event"
+      - "trigger operation"
+
+  # ── Apex Patterns ─────────────────────────────────────────────────────────
+
+  - canonical: "batch apex"
+    synonyms:
+      - "batch class"
+      - "batch job"
+      - "batchable"
+      - "process large data"
+      - "process all records"
+      - "scheduled batch"
+
+  - canonical: "queueable apex"
+    synonyms:
+      - "queueable"
+      - "async apex"
+      - "asynchronous apex"
+      - "background processing"
+      - "chain jobs"
+
+  - canonical: "future method"
+    synonyms:
+      - "@future"
+      - "future apex"
+      - "async method"
+      - "callout from trigger"
+
+  - canonical: "platform cache"
+    synonyms:
+      - "cache"
+      - "org cache"
+      - "session cache"
+      - "caching data"
+      - "avoid repeated queries"
+
+  - canonical: "exception handling"
+    synonyms:
+      - "try catch"
+      - "error handling"
+      - "handle errors"
+      - "catch exception"
+      - "apex error"
+      - "dml exception"
+
+  - canonical: "custom metadata"
+    synonyms:
+      - "CMT"
+      - "custom metadata type"
+      - "metadata driven"
+      - "configurable apex"
+      - "no hardcoding"
+      - "externalize config"
+
+  # ── LWC ───────────────────────────────────────────────────────────────────
+
+  - canonical: "wire service"
+    synonyms:
+      - "@wire"
+      - "wire adapter"
+      - "wire decorator"
+      - "reactive data"
+      - "lightning data service"
+      - "LDS"
+
+  - canonical: "component communication"
+    synonyms:
+      - "pass data between components"
+      - "parent child communication"
+      - "component events"
+      - "custom event"
+      - "pubsub"
+      - "message channel"
+      - "lightning message service"
+      - "LMS"
+
+  - canonical: "LWC lifecycle hooks"
+    synonyms:
+      - "connectedCallback"
+      - "disconnectedCallback"
+      - "renderedCallback"
+      - "lifecycle"
+      - "component initialization"
+
+  # ── Flow ──────────────────────────────────────────────────────────────────
+
+  - canonical: "record-triggered flow"
+    synonyms:
+      - "flow on record save"
+      - "before save flow"
+      - "after save flow"
+      - "record triggered"
+      - "flow trigger"
+      - "replace workflow rule"
+      - "replace process builder"
+
+  - canonical: "flow bulkification"
+    synonyms:
+      - "flow hitting limits"
+      - "flow too many SOQL"
+      - "flow governor limits"
+      - "flow bulk"
+      - "flow 200 records"
+
+  - canonical: "fault handling"
+    synonyms:
+      - "flow error"
+      - "flow fault"
+      - "fault connector"
+      - "flow exception"
+      - "handle flow error"
+      - "flow failing"
+
+  - canonical: "screen flow"
+    synonyms:
+      - "guided flow"
+      - "user input flow"
+      - "flow UI"
+      - "flow screen"
+      - "interactive flow"
+      - "wizard flow"
+
+  - canonical: "subflow"
+    synonyms:
+      - "reusable flow"
+      - "flow inside flow"
+      - "call a flow"
+      - "flow component"
+      - "extract flow logic"
+
+  # ── Admin ─────────────────────────────────────────────────────────────────
+
+  - canonical: "custom field"
+    synonyms:
+      - "add a field"
+      - "create a field"
+      - "new field"
+      - "field on object"
+      - "custom attribute"
+
+  - canonical: "validation rule"
+    synonyms:
+      - "required field logic"
+      - "enforce data quality"
+      - "block save"
+      - "field validation"
+      - "prevent bad data"
+
+  - canonical: "approval process"
+    synonyms:
+      - "approval workflow"
+      - "require approval"
+      - "multi-step approval"
+      - "approve record"
+      - "approval routing"
+
+  - canonical: "formula field"
+    synonyms:
+      - "calculated field"
+      - "derived field"
+      - "formula"
+      - "compute field value"
+      - "cross-object formula"
+
+  - canonical: "record types"
+    synonyms:
+      - "record type"
+      - "object variant"
+      - "different picklist values per profile"
+      - "different page layout per profile"
+
+  - canonical: "process automation selection"
+    synonyms:
+      - "flow vs apex"
+      - "when to use flow"
+      - "when to use apex"
+      - "declarative vs programmatic"
+      - "automation decision"
+      - "which automation tool"
+      - "flow or workflow"
+
+  # ── Data ──────────────────────────────────────────────────────────────────
+
+  - canonical: "data migration"
+    synonyms:
+      - "data import"
+      - "data load"
+      - "migrate data"
+      - "move data"
+      - "ETL"
+      - "data transfer"
+      - "import historical data"
+      - "load records"
+
+  - canonical: "Bulk API"
+    synonyms:
+      - "bulk load"
+      - "large data load"
+      - "bulk insert"
+      - "bulk update"
+      - "bulk upsert"
+      - "data loader"
+      - "bulk api 2.0"
+
+  - canonical: "SOQL optimization"
+    synonyms:
+      - "slow query"
+      - "query performance"
+      - "selective query"
+      - "query not selective"
+      - "full table scan"
+      - "query plan"
+      - "index"
+      - "SOQL timeout"
+
+  - canonical: "large data volumes"
+    synonyms:
+      - "LDV"
+      - "millions of records"
+      - "data at scale"
+      - "big data"
+      - "scalability data"
+      - "data volume"
+      - "too many records"
+
+  - canonical: "duplicate management"
+    synonyms:
+      - "deduplication"
+      - "dedupe"
+      - "duplicate records"
+      - "merge records"
+      - "duplicate rules"
+      - "matching rules"
+
+  # ── Integration ────────────────────────────────────────────────────────────
+
+  - canonical: "named credentials"
+    synonyms:
+      - "external credentials"
+      - "store api key"
+      - "callout authentication"
+      - "secure endpoint"
+      - "named credential"
+
+  - canonical: "platform events"
+    synonyms:
+      - "event driven"
+      - "pub sub"
+      - "publish subscribe"
+      - "event bus"
+      - "streaming api"
+      - "change events"
+      - "CDC"
+      - "change data capture"
+
+  - canonical: "OAuth flows"
+    synonyms:
+      - "OAuth"
+      - "connected app"
+      - "authentication flow"
+      - "JWT flow"
+      - "user-agent flow"
+      - "web server flow"
+      - "token"
+
+  # ── DevOps ────────────────────────────────────────────────────────────────
+
+  - canonical: "SFDX"
+    synonyms:
+      - "sf CLI"
+      - "salesforce CLI"
+      - "scratch org"
+      - "source format"
+      - "sfdx project"
+      - "force:source:deploy"
+      - "sf deploy"
+
+  - canonical: "deployment"
+    synonyms:
+      - "deploy"
+      - "release"
+      - "push to production"
+      - "migrate metadata"
+      - "change set"
+      - "package.xml"
+      - "destructive changes"
+
+  - canonical: "sandbox"
+    synonyms:
+      - "dev sandbox"
+      - "full sandbox"
+      - "partial sandbox"
+      - "sandbox refresh"
+      - "environment"
+      - "lower environment"
+
+  # ── Architecture ──────────────────────────────────────────────────────────
+
+  - canonical: "well-architected framework"
+    synonyms:
+      - "WAF"
+      - "salesforce architecture"
+      - "architecture review"
+      - "technical review"
+      - "best practices review"
+      - "org assessment"
+
+  - canonical: "technical debt"
+    synonyms:
+      - "code debt"
+      - "legacy code"
+      - "dead code"
+      - "outdated code"
+      - "messy org"
+      - "cleanup"
+      - "refactor"
+
+  - canonical: "multi-org strategy"
+    synonyms:
+      - "multiple orgs"
+      - "org design"
+      - "single org vs multiple"
+      - "org topology"
+      - "hub and spoke"
+
+  # ── Agentforce ────────────────────────────────────────────────────────────
+
+  - canonical: "agent actions"
+    synonyms:
+      - "agentforce action"
+      - "agent capability"
+      - "what can the agent do"
+      - "agent invocable"
+      - "agent tool"
+
+  - canonical: "Einstein trust layer"
+    synonyms:
+      - "AI safety"
+      - "data masking AI"
+      - "PII in prompts"
+      - "trust layer"
+      - "secure AI"
+      - "AI data protection"
+
+  # ── OmniStudio ────────────────────────────────────────────────────────────
+
+  - canonical: "OmniScript"
+    synonyms:
+      - "omni script"
+      - "guided process"
+      - "vlocity omniscript"
+      - "industries guided flow"
+
+  - canonical: "DataRaptor"
+    synonyms:
+      - "data raptor"
+      - "DR"
+      - "omnistudio data"
+      - "extract transform load omnistudio"
+
+  - canonical: "Integration Procedures"
+    synonyms:
+      - "IP"
+      - "integration procedure"
+      - "server side action"
+      - "omnistudio integration"
+      - "vlocity integration"

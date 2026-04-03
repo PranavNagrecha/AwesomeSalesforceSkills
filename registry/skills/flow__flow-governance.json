@@ -1,0 +1,87 @@
+{
+  "category": "flow",
+  "chunk_ids": [
+    "035f8454252034baba49",
+    "1331f821b0e35ce10edd",
+    "1463fb8c99c97c13864d",
+    "1a21e06b6678b33e2eb9",
+    "1ab7b1907b1078c3d84a",
+    "21c14902d5c6577605ee",
+    "25f1bdfb33a293ae882a",
+    "28f8b3f4a992a6c33ca7",
+    "2fa2c6b71da216805bf4",
+    "310ac9df4b7cca2e7ca0",
+    "36604c19bf8fe487d95a",
+    "36afebd7bc79629a2612",
+    "3e5f4d02b74421bc5793",
+    "44a4ed54829f911a016f",
+    "467a00a847b705e8a49b",
+    "4c4277f1957644ca280c",
+    "6f2ba27c8a26dcb5fd81",
+    "7394f6502d141abba2b5",
+    "76c42ceb56b043c0734d",
+    "800acf437c14499f8e3a",
+    "80eeb864b6eafe18adb6",
+    "8cda6863fcb80d0d693d",
+    "8f677ee8b6e719da127a",
+    "98147f30198fe3a065c2",
+    "9826359ed807678393da",
+    "9b808db982ed0ef4f00b",
+    "a77f8386e715a444d81b",
+    "a7f8eec3067d0f556d7d",
+    "a9ccce31c644575d7508",
+    "be9d2a75206ca7e238cf",
+    "bf560ce3693697ceebca",
+    "bf9b9e38db3cbaf98863",
+    "c20ae1474e404c52dbf4",
+    "c3f4f68bfee39198cd63",
+    "d7c49ebf77f6263f8be2",
+    "d7d13c501bbcb482a698",
+    "dd5c119034ad95b656ec",
+    "e629b9fbe422943fe99d",
+    "f89c798766d93876d31f",
+    "fdf5653add0503ea1c86"
+  ],
+  "content_hash": "67af3f8e9bd721b4b2ae7dfacae9e80968544f684cfa50439071937cfa3117aa",
+  "dependencies": [],
+  "description": "Use when establishing operational standards for a Salesforce Flow portfolio, including naming conventions, ownership, version discipline, retirement of stale flows, and release readiness checks. Triggers: 'flow naming convention', 'too many old flows', 'who owns this flow', 'flow version governance'. NOT for element-by-element flow logic design or dedicated fault-handling review.",
+  "file_location": "skills/flow/flow-governance",
+  "id": "flow/flow-governance",
+  "inputs": [
+    "how many flows exist, which teams own them, and where operational confusion appears today",
+    "current naming, documentation, and activation practices",
+    "how releases, testing, and retirement decisions are currently made"
+  ],
+  "name": "flow-governance",
+  "official_sources": [
+    "Flow Reference - https://help.salesforce.com/s/articleView?id=sf.flow_ref.htm&type=5",
+    "Flow Builder - https://help.salesforce.com/s/articleView?id=sf.flow.htm&type=5",
+    "Salesforce Well-Architected Overview - https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "governance standard for naming, ownership, and lifecycle management",
+    "review findings for stale, weakly named, or undocumented flows",
+    "release checklist for safe activation and retirement decisions"
+  ],
+  "references": [
+    "skills/flow/flow-governance/references/examples.md",
+    "skills/flow/flow-governance/references/gotchas.md",
+    "skills/flow/flow-governance/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/flow/flow-governance/scripts/check_flow_governance.py"
+  ],
+  "tags": [
+    "flow-governance",
+    "naming-conventions",
+    "version-management",
+    "ownership",
+    "flow-standards"
+  ],
+  "templates": [
+    "skills/flow/flow-governance/templates/flow-governance-template.md"
+  ],
+  "updated": "2026-03-15",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

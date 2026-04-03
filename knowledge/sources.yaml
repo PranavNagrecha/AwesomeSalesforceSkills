@@ -1,0 +1,303 @@
+version: 1
+sources:
+  - id: knowledge_topics
+    type: local-directory
+    title: Repo-native knowledge topics
+    trust: repo-local
+    path: knowledge/topics
+    domains: [admin, apex, lwc, flow, omnistudio, agentforce, security, integration, data, devops]
+    tags: [knowledge, retrieval, framework]
+    notes: Canonical local notes for the repo-native retrieval system.
+  - id: knowledge_imports
+    type: local-directory
+    title: Curated imported knowledge
+    trust: imported
+    path: knowledge/imports
+    domains: [admin, apex, lwc, flow, omnistudio, agentforce, security, integration, data, devops]
+    tags: [imported, retrieval, curated]
+    notes: Optional imported markdown from sibling repositories or local sources.
+  - id: official_source_map
+    type: local-file
+    title: Official Salesforce Source Map
+    trust: repo-local
+    path: standards/official-salesforce-sources.md
+    domains: [admin, apex, lwc, flow, omnistudio, agentforce, security, integration, data, devops]
+    tags: [official-docs, standards, source-selection]
+    notes: The canonical mapping of official Salesforce and Salesforce Architects sources.
+  - id: waf_mapping
+    type: local-file
+    title: Well-Architected Mapping
+    trust: repo-local
+    path: standards/well-architected-mapping.md
+    domains: [admin, apex, lwc, flow, omnistudio, security, integration, data, devops]
+    tags: [waf, pillars, standards]
+    notes: Repository-specific mapping between findings and Well-Architected pillars.
+  - id: salesforce_well_architected_overview
+    type: official-doc
+    title: Salesforce Well-Architected Overview
+    trust: official
+    url: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+    domains: [admin, apex, lwc, flow, omnistudio, security, integration, data, devops]
+    tags: [well-architected, architecture, best-practices]
+    summary: Use for architecture quality framing, anti-patterns, and trusted design guidance.
+  - id: integration_patterns
+    type: official-doc
+    title: Integration Patterns
+    trust: official
+    url: https://architect.salesforce.com/docs/architect/fundamentals/guide/integration-patterns.html
+    domains: [integration, flow, omnistudio, admin, data]
+    tags: [integration, patterns, architecture]
+    summary: Use for synchronous versus asynchronous pattern choices and system-boundary tradeoffs.
+  - id: object_reference
+    type: official-doc
+    title: Object Reference
+    trust: official
+    url: https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm
+    domains: [admin, data, integration]
+    tags: [objects, sobjects, metadata]
+    summary: Use for object semantics, relationships, and standard object behavior.
+  - id: rest_api_developer_guide
+    type: official-doc
+    title: REST API Developer Guide
+    trust: official
+    url: https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_what_is_rest_api.htm
+    domains: [integration, admin, omnistudio]
+    tags: [rest, api, integration]
+    summary: Use for REST resource behavior, API capabilities, and integration semantics.
+  - id: metadata_api_developer_guide
+    type: official-doc
+    title: Metadata API Developer Guide
+    trust: official
+    url: https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm
+    domains: [admin, devops, flow, data]
+    tags: [metadata, deployment, release]
+    summary: Use for retrieve and deploy behavior, metadata coverage, and release semantics.
+  - id: apex_developer_guide
+    type: official-doc
+    title: Apex Developer Guide
+    trust: official
+    url: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm
+    domains: [apex, integration, flow]
+    tags: [apex, transactions, testing]
+    summary: Use for Apex transactions, async patterns, testing, and language guidance.
+  - id: apex_reference_guide
+    type: official-doc
+    title: Apex Reference Guide
+    trust: official
+    url: https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm
+    domains: [apex]
+    tags: [apex, api-reference, limits]
+    summary: Use for class signatures, namespaces, and built-in API reference.
+  - id: lightning_component_reference
+    type: official-doc
+    title: Lightning Component Reference
+    trust: official
+    url: https://developer.salesforce.com/docs/platform/lightning-component-reference/guide
+    domains: [lwc]
+    tags: [lwc, base-components, ui]
+    summary: Use for base component behavior, supported attributes, and events.
+  - id: lwc_best_practices
+    type: official-doc
+    title: Best Practices for Development with Lightning Web Components
+    trust: official
+    url: https://developer.salesforce.com/docs/platform/lwc/guide/get-started-best-practices.html
+    domains: [lwc]
+    tags: [lwc, best-practices, composition]
+    summary: Use for lifecycle, DOM, event, and composition guidance.
+  - id: lwc_data_guidelines
+    type: official-doc
+    title: Data Guidelines
+    trust: official
+    url: https://developer.salesforce.com/docs/platform/lwc/guide/data-guidelines.html
+    domains: [lwc]
+    tags: [lwc, data, lds]
+    summary: Use for Lightning Data Service, wire adapters, and Apex data-access choices.
+  - id: secure_apex_classes
+    type: official-doc
+    title: Secure Apex Classes
+    trust: official
+    url: https://developer.salesforce.com/docs/platform/lwc/guide/apex-security
+    domains: [apex, lwc, security]
+    tags: [security, apex, sharing]
+    summary: Use for component-facing Apex security and CRUD/FLS enforcement patterns.
+  - id: flow_reference
+    type: official-doc
+    title: Flow Reference
+    trust: official
+    url: https://help.salesforce.com/s/articleView?id=sf.flow_ref.htm&type=5
+    domains: [flow, admin]
+    tags: [flow, flow-builder, automation]
+    summary: Use for flow element behavior, resource types, and built-in flow actions.
+  - id: flow_builder
+    type: official-doc
+    title: Flow Builder
+    trust: official
+    url: https://help.salesforce.com/s/articleView?id=sf.flow.htm&type=5
+    domains: [flow, admin]
+    tags: [flow, automation, declarative]
+    summary: Use for flow types, execution context, and transaction boundaries in Flow Builder.
+  - id: omnistudio_developer_guide
+    type: official-doc
+    title: OmniStudio Developer Guide
+    trust: official
+    url: https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer_guide.meta/omnistudio_developer_guide/omnistudio_intro.htm
+    domains: [omnistudio]
+    tags: [omnistudio, omniscript, integration-procedures, dataraptors]
+    summary: Use for OmniScript, Integration Procedures, DataRaptors, and FlexCards developer guidance.
+  - id: agentforce_developer_guide
+    type: official-doc
+    title: Agentforce Developer Guide
+    trust: official
+    url: https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html
+    domains: [agentforce]
+    tags: [agentforce, einstein, ai, agents]
+    summary: Use for Agentforce agent configuration, actions, topics, and grounding patterns.
+  - id: einstein_platform_services
+    type: official-doc
+    title: Einstein Platform Services
+    trust: official
+    url: https://developer.salesforce.com/docs/einstein/genai/guide/overview.html
+    domains: [agentforce]
+    tags: [einstein, genai, llm, grounding]
+    summary: Use for Einstein generative AI APIs, prompt templates, and grounding strategies.
+  - id: shield_platform_encryption
+    type: official-doc
+    title: Shield Platform Encryption Implementation Guide
+    trust: official
+    url: https://help.salesforce.com/s/articleView?id=sf.security_pe_overview.htm&type=5
+    domains: [security, admin, data]
+    tags: [security, encryption, shield, compliance]
+    summary: Use for field-level encryption decisions, key management, and compliance requirements.
+  - id: salesforce_security_guide
+    type: official-doc
+    title: Salesforce Security Guide
+    trust: official
+    url: https://help.salesforce.com/s/articleView?id=sf.security_overview.htm&type=5
+    domains: [security, admin]
+    tags: [security, authentication, profiles, permissions]
+    summary: Use for org security model, authentication, IP restrictions, and audit trail guidance.
+  - id: event_monitoring
+    type: official-doc
+    title: Event Monitoring
+    trust: official
+    url: https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/using_resources_event_log_files.htm
+    domains: [security, devops]
+    tags: [security, monitoring, audit, event-log]
+    summary: Use for event log file structure, login forensics, and usage monitoring patterns.
+  - id: sfdx_developer_guide
+    type: official-doc
+    title: Salesforce DX Developer Guide
+    trust: official
+    url: https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm
+    domains: [devops]
+    tags: [sfdx, dx, scratch-orgs, source-format]
+    summary: Use for source-driven development, scratch org lifecycle, and project structure guidance.
+  - id: sfdx_cli_reference
+    type: official-doc
+    title: Salesforce CLI Reference
+    trust: official
+    url: https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm
+    domains: [devops]
+    tags: [sfdx, cli, deployment, automation]
+    summary: Use for CLI command flags, output formats, and pipeline automation options.
+  - id: bulk_api_2
+    type: official-doc
+    title: Bulk API 2.0 Developer Guide
+    trust: official
+    url: https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/asynch_api_intro.htm
+    domains: [data, integration]
+    tags: [bulk-api, data-loading, async, large-data]
+    summary: Use for bulk insert/update/delete patterns, job lifecycle, and large-volume data guidance.
+
+  # ── Tier 2: Official Community ────────────────────────────────────────────
+  - id: trailhead
+    type: official-community
+    title: Salesforce Trailhead
+    trust: official-community
+    url: https://trailhead.salesforce.com
+    domains: [admin, apex, lwc, flow, omnistudio, agentforce, security, integration, data, devops]
+    tags: [learning, trailhead, official-community]
+    summary: Learning-oriented guidance. Use for feature overviews and practitioner onboarding. Verify limits against Tier 1 before citing specific numbers.
+
+  - id: salesforce_architects_blog
+    type: official-community
+    title: Salesforce Architects Blog
+    trust: official-community
+    url: https://architect.salesforce.com/content
+    domains: [admin, apex, lwc, flow, security, integration, data, devops]
+    tags: [architecture, patterns, best-practices, official-community]
+    summary: Real-world pattern application from Salesforce Architects. Use for architecture decisions and pattern selection.
+
+  - id: salesforce_ben
+    type: official-community
+    title: Salesforce Ben
+    trust: official-community
+    url: https://www.salesforceben.com
+    domains: [admin, flow, security]
+    tags: [admin, how-to, official-community]
+    summary: Admin-focused how-tos and feature walkthroughs. Strong on new release features. Cross-check UI flows against help.salesforce.com.
+
+  - id: salesforce_developers_blog
+    type: official-community
+    title: Salesforce Developers Blog
+    trust: official-community
+    url: https://developer.salesforce.com/blogs
+    domains: [apex, lwc, integration, agentforce, devops]
+    tags: [dev-patterns, new-features, official-community]
+    summary: Dev patterns and new feature guidance from Salesforce engineers. Use for "how we built X" context on new platform features.
+
+  # ── Tier 3: Expert Community ──────────────────────────────────────────────
+  - id: andy_in_the_cloud
+    type: expert-community
+    title: Andy in the Cloud
+    trust: expert-community
+    url: https://andyinthecloud.com
+    domains: [apex, lwc, integration, devops]
+    tags: [apex, lwc, platform-internals, expert-community]
+    summary: "Deep Apex and LWC technical content. Strong on platform internals, packaging, and non-obvious behaviors. Tag claims as [T3: Andy in the Cloud]."
+
+  - id: apex_hours
+    type: expert-community
+    title: Apex Hours
+    trust: expert-community
+    url: https://www.apexhours.com
+    domains: [apex, lwc, flow, integration]
+    tags: [apex, tutorials, governor-limits, expert-community]
+    summary: "Developer tutorials and governor limits deep-dives. Strong on async patterns. Tag claims as [T3: Apex Hours]."
+
+  - id: salesforce_stack_exchange
+    type: expert-community
+    title: Salesforce Stack Exchange
+    trust: expert-community
+    url: https://salesforce.stackexchange.com
+    domains: [admin, apex, lwc, flow, omnistudio, security, integration, data, devops]
+    tags: [q-and-a, expert-community, accepted-answers]
+    summary: "Accepted answers only count as Tier 3. Non-accepted answers are Tier 4. Tag claims as [T3: SFSE]."
+
+  - id: unofficial_sf
+    type: expert-community
+    title: Unofficial SF
+    trust: expert-community
+    url: https://unofficialsf.com
+    domains: [lwc, flow]
+    tags: [lwc, flow-extensions, screen-flow, expert-community]
+    summary: "LWC community components and screen flow extensions. Tag claims as [T3: Unofficial SF]."
+
+  # ── Standards cross-references ────────────────────────────────────────────
+  - id: source_hierarchy
+    type: local-file
+    title: Source Hierarchy
+    trust: repo-local
+    path: standards/source-hierarchy.md
+    domains: [admin, apex, lwc, flow, omnistudio, agentforce, security, integration, data, devops]
+    tags: [standards, trust-ladder, contradiction-rules]
+    summary: Defines the 4-tier source trust system and contradiction resolution rules all agents must follow.
+
+  - id: skill_content_contract
+    type: local-file
+    title: Skill Content Contract
+    trust: repo-local
+    path: standards/skill-content-contract.md
+    domains: [admin, apex, lwc, flow, omnistudio, agentforce, security, integration, data, devops]
+    tags: [standards, quality-gates, contract]
+    summary: Defines the 5 quality gates every skill must pass beyond validate_repo.py structural checks.

@@ -1,0 +1,89 @@
+{
+  "category": "omnistudio",
+  "chunk_ids": [
+    "0ff05b4710b13d38b7a0",
+    "10100831449df1b230a0",
+    "1173c5dae08d89b0071b",
+    "123aab818aa126ecd0c6",
+    "15b0eb3fa2484860cd26",
+    "1714a423a083f607b9b3",
+    "21baa711a9d0a56d5b9a",
+    "2a20cc92cd4a7c246a7c",
+    "2f78258aa1940f32103b",
+    "32d9e90c95d61436dc0a",
+    "41b2b34e7217708010ec",
+    "451e4f04cf4cba8d1a2a",
+    "4573440f9ef7a2ad3da3",
+    "45d85ea5298c3aad220b",
+    "5dab3fbb38dfd9a9df73",
+    "609a3f2ba0f565ce0725",
+    "60a4b685f13f68cd5a9a",
+    "64a33df05a35927cdcfc",
+    "68fc83c7bedeab31a1bf",
+    "6a056e8763ff873fe7fe",
+    "6f90166c39beded5ea29",
+    "7d2e18608971c09211c2",
+    "7fb36a8849a6bea74d17",
+    "82b77061ab3785837360",
+    "867be1bd694446dfd1d3",
+    "86ac0b46c7379cf298dd",
+    "9caddabca794b3b30aab",
+    "a52d2668cb6bff72bb9b",
+    "a610b86f22ff6d380643",
+    "b5b9cb7a805c021f0f34",
+    "b92a69b10809b46361f1",
+    "b9fcbc6f05f6528edb97",
+    "c77e1c11fd5288bf5dc2",
+    "c9fb05b39547cc9a56f3",
+    "d1ee0d768e269e5a33a3",
+    "d6a143b944812588a6bc",
+    "e3a084397a0f989eea07",
+    "eaa218fc5bec21c98109",
+    "f0ae63a731d8b214c691",
+    "f38ae5ea01b6d17fe6b0",
+    "f4d362a8b6a0a4451123",
+    "f7763591cb145ade3580"
+  ],
+  "content_hash": "97fb45d0ff4fe7f9ed6774bba87d8116548cfd2bf42476b2cb1b56dc16680cc3",
+  "dependencies": [],
+  "description": "Use when designing or reviewing OmniStudio security across OmniScripts, Integration Procedures, DataRaptors, custom LWCs, Apex actions, guest-user exposure, and outbound HTTP actions. Triggers: 'OmniStudio security', 'guest user omniscript', 'DataRaptor CRUD FLS', 'OmniStudio Apex security', 'HTTP action data exposure'. NOT for general portal identity architecture or generic Apex security reviews when OmniStudio is not the main surface.",
+  "file_location": "skills/omnistudio/omnistudio-security",
+  "id": "omnistudio/omnistudio-security",
+  "inputs": [
+    "whether the OmniStudio surface is internal, portal, or guest-facing",
+    "which DataRaptors, IPs, LWCs, and Apex actions are involved",
+    "what data is read, written, or sent to external systems"
+  ],
+  "name": "omnistudio-security",
+  "official_sources": [
+    "OmniStudio Developer Guide - https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer_guide.meta/omnistudio_developer_guide/omnistudio_intro.htm",
+    "Secure Apex Classes - https://developer.salesforce.com/docs/platform/lwc/guide/apex-security",
+    "Salesforce Security Guide - https://help.salesforce.com/s/articleView?id=sf.security_overview.htm&type=5"
+  ],
+  "outputs": [
+    "OmniStudio security review findings",
+    "guest and external-user hardening guidance",
+    "data exposure and secure-boundary recommendations"
+  ],
+  "references": [
+    "skills/omnistudio/omnistudio-security/references/examples.md",
+    "skills/omnistudio/omnistudio-security/references/gotchas.md",
+    "skills/omnistudio/omnistudio-security/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/omnistudio/omnistudio-security/scripts/check_omnistudio_security.py"
+  ],
+  "tags": [
+    "omnistudio-security",
+    "guest-users",
+    "dataraptor-security",
+    "http-action",
+    "secure-apex"
+  ],
+  "templates": [
+    "skills/omnistudio/omnistudio-security/templates/omnistudio-security-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

@@ -1,0 +1,93 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "00c631abb5d4748f2e68",
+    "04aae7690290970de401",
+    "0a9aa3fe840341eb7291",
+    "0ece69cc3ae3e0ef1975",
+    "12a729cc032a2d1fa211",
+    "15a3e0c878931ac0b364",
+    "1cc18345248e608b60be",
+    "23107c506be92773a3b9",
+    "25b279c2007b1cf4e43e",
+    "2f3bfb36f8fe50c90671",
+    "374d44414537f4baf8f7",
+    "3813d56a99b99271a0d5",
+    "3b745e27525842c5973a",
+    "3c368a7f2049ea0abe91",
+    "46f77d4c4494d484d4e7",
+    "4ab3ac17afbf7ccb545f",
+    "4c07bf8bfe88b165a5db",
+    "4c0803ef449f4e3b7b51",
+    "4e18acf97505890d3657",
+    "57468e867771cd36074b",
+    "659fdd8c68d597f00480",
+    "6661a24ed08c17952160",
+    "68464c852cfd3ba08bad",
+    "6cb6f5549c19b152de71",
+    "7ab7bc29b29517af199d",
+    "7d18efc7257cef00767b",
+    "832085842a38541fcf43",
+    "86c07a4e2f1158250d1b",
+    "8df97c1f23ebf3a88ecd",
+    "922d752d06e21af93fdf",
+    "933c8cbee61330070027",
+    "9a064e071882c5d80ce6",
+    "9a2d850802edd65b321b",
+    "b827563d23b67e462bd7",
+    "c0a92209bdfeeddecc6e",
+    "c2ad2886b3089ec4b346",
+    "d3d2b492f5125b24e3b9",
+    "d5db684048fd6ab33e67",
+    "d634995267f37effdb4d",
+    "d75e6e2504d747972514",
+    "dbd94658797113f8f92a",
+    "dc2ac18252af99ee2009",
+    "f2d0ca3d5c912102f70c",
+    "f645d843f65113e9f2a8",
+    "fb52d6b571c76fafc515",
+    "feab8c178e1c24ca7d84"
+  ],
+  "content_hash": "aa706198d64d0eb883416d37f5b4af85e3e003db0fcf78d4cca04a1bd5d00757",
+  "dependencies": [],
+  "description": "Use when writing, reviewing, or debugging Apex exception handling, DmlException behavior, custom exception hierarchies, or user-safe error messages. Triggers: 'DmlException', 'swallowed exception', 'AuraHandledException', 'trigger rollback', 'try catch'. NOT for choosing async execution models or general governor-limit tuning.",
+  "file_location": "skills/apex/exception-handling",
+  "id": "apex/exception-handling",
+  "inputs": [
+    "execution context such as trigger, Aura/LWC controller, REST, Queueable, or Batch",
+    "whether partial success is acceptable for the operation",
+    "available logging or monitoring mechanism in the org"
+  ],
+  "name": "exception-handling",
+  "official_sources": [
+    "Apex Developer Guide \u2014 exception handling behavior and trigger exception guidance",
+    "Apex Reference Guide \u2014 `Exception`, `DmlException`, and related API methods",
+    "Salesforce Well-Architected Overview \u2014 reliability and operational excellence framing"
+  ],
+  "outputs": [
+    "exception handling pattern recommendation",
+    "code review findings for error handling risks",
+    "remediation plan for bulk-safe and user-safe failures"
+  ],
+  "references": [
+    "skills/apex/exception-handling/references/examples.md",
+    "skills/apex/exception-handling/references/gotchas.md",
+    "skills/apex/exception-handling/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/exception-handling/scripts/check_exception_handling.py"
+  ],
+  "tags": [
+    "exception-handling",
+    "dml-exception",
+    "aurahandledexception",
+    "logging",
+    "error-mapping"
+  ],
+  "templates": [
+    "skills/apex/exception-handling/templates/exception-handling-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

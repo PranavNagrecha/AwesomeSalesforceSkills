@@ -1,0 +1,84 @@
+{
+  "category": "security",
+  "chunk_ids": [
+    "074579a929698b556560",
+    "092816bfc43efe08b6bf",
+    "0c35311937add88da815",
+    "1ad03e5515610afd2bb6",
+    "246f47a1c9d45fee15c1",
+    "31013b20b17ca3eb2001",
+    "3cb9c82b6a87128d9000",
+    "3e21765358a97f6b6999",
+    "40e9fc1627e9c36afeac",
+    "421b67903b5a720e3ed9",
+    "4502a890f93c670a8327",
+    "47bb1cedc86f3a71f032",
+    "4a9efe8b0fa114706dfc",
+    "4e0bdc6d825c0c36a3c9",
+    "6a6c3d21e7fe43b07742",
+    "7b9759e18fa0097bb9bc",
+    "830da61eff4d07c4110c",
+    "84645af417db7d6cefad",
+    "89c267e008810cb6bb7c",
+    "8fa344763207d2c140e4",
+    "90ffb717892b048e4c18",
+    "9ac9f303b028c322b98a",
+    "9e14bca2c0c00c4de8b4",
+    "a9ac3f686b1488de3edf",
+    "acdf55b1b6502b1dbabe",
+    "bb660d4bff38b759ceb9",
+    "bbd45ca970efb6c1045a",
+    "c20e95f7c0e77be7fc25",
+    "cf8466d95ebf2412878f",
+    "d47197682f5cf9bac362",
+    "d9eb679a436d61792634",
+    "dc0e6422f4a476054f0c",
+    "dc3edeb1d47322f17f69",
+    "e23a2d364d2abc57a091",
+    "e31e599312c5c49a44cb",
+    "e5f43b35df7e5350c45a",
+    "f7497850a182a02c044c"
+  ],
+  "content_hash": "dc1dc996e82199b4a5bba47c2639234531f7ddb5490614ef038312abd3cb0f3b",
+  "dependencies": [],
+  "description": "Use when designing or reviewing permission-set-group architecture, especially profile minimization, group composition, muting strategy, and migration away from profile-heavy security models. Triggers: 'permission set group', 'muting permission set', 'profiles to permission sets', 'PSG architecture', 'muted permissions'. NOT for record-sharing design or CRUD/FLS review in Apex code.",
+  "file_location": "skills/security/permission-set-groups-and-muting",
+  "id": "security/permission-set-groups-and-muting",
+  "inputs": [
+    "current profile and permission-set model",
+    "target job functions or feature bundles",
+    "whether subtractive muting is needed"
+  ],
+  "name": "permission-set-groups-and-muting",
+  "official_sources": [
+    "Permission Set Groups - https://help.salesforce.com/s/articleView?id=sf.perm_set_groups.htm&type=5",
+    "Muting Permission Sets - https://help.salesforce.com/s/articleView?id=sf.perm_set_groups_muting_overview.htm&type=5",
+    "Permission Sets Overview - https://help.salesforce.com/s/articleView?id=sf.perm_sets_overview.htm&type=5"
+  ],
+  "outputs": [
+    "PSG architecture recommendation",
+    "review findings for profile-heavy or unclear access design",
+    "migration pattern for permission bundle design"
+  ],
+  "references": [
+    "skills/security/permission-set-groups-and-muting/references/examples.md",
+    "skills/security/permission-set-groups-and-muting/references/gotchas.md",
+    "skills/security/permission-set-groups-and-muting/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/security/permission-set-groups-and-muting/scripts/check_permission_set_groups_and_muting.py"
+  ],
+  "tags": [
+    "permission-set-groups",
+    "muting",
+    "profiles",
+    "least-privilege",
+    "access-architecture"
+  ],
+  "templates": [
+    "skills/security/permission-set-groups-and-muting/templates/permission-set-groups-and-muting-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

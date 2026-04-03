@@ -1,0 +1,84 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "065bb44f063091a6e387",
+    "08ad89e355878e50ef82",
+    "13dd3faadf82a597fc6d",
+    "22fde896f83872d489db",
+    "266e4502a898f24b153f",
+    "354dc871340195485d43",
+    "42a002cbd2c0234ebdfe",
+    "4809ed49659dd759ecf3",
+    "49b7cfc1a3f56f65db35",
+    "4aa48d37b318ae0d4274",
+    "4e4d34f0e61a8d8d7e31",
+    "4fcbbe882a9d646c5fbb",
+    "510fe8b61ed6f9b6ef6f",
+    "77c307cc917a70dfd23e",
+    "7d3fbe03d309d184bfa9",
+    "7ee68a9f71ad1c971803",
+    "7f45b0430cd2b93f5382",
+    "7fc1e7c11421bd1a0c01",
+    "8065dcca3d287d822e2a",
+    "86dbb0b5201dd6980b64",
+    "890650d9f4c58470fbe6",
+    "98bc4d06bdcb5f570863",
+    "9c4a16d48864368e3a6d",
+    "9c94609c40c0c04a5736",
+    "a625568c56509d4d0f5b",
+    "a80a0a25a23789c726f9",
+    "b3a37900a648f86f9d17",
+    "ba2d0b1b009aaf542027",
+    "bd65bab2ce5c6268509b",
+    "c1a7f22624e7aa10e3e8",
+    "c45105405ce87f6f4782",
+    "cdb8637f6bd6cea3ff81",
+    "ce030da7fab4b9af7f85",
+    "f501414fe6caa09e25ef",
+    "f54ab71e16c20895dc0f",
+    "f5ee64682ca75a1cbee9",
+    "f73eae7fdfb502ec3e25",
+    "ffbd07ff13bbc7cb298c"
+  ],
+  "content_hash": "4d91272ab59f20d4c52d5377b85acd8f6152a3da9258fd0993173891f727a85b",
+  "dependencies": [],
+  "description": "Use when designing, reviewing, or troubleshooting Salesforce Approval Processes. Triggers: 'submit for approval', 'approver', 'record locked', 'recall approval', 'approval step', 'discount approval'. NOT for complex orchestration across many objects - use Flow or custom approval patterns for that.",
+  "file_location": "skills/admin/approval-processes",
+  "id": "admin/approval-processes",
+  "inputs": [
+    "approval criteria",
+    "approver source",
+    "record lock requirements"
+  ],
+  "name": "approval-processes",
+  "official_sources": [
+    "Salesforce Well-Architected Overview \u2014 governance and reliability framing for approval design",
+    "Metadata API Developer Guide \u2014 approval metadata packaging and deployment behavior"
+  ],
+  "outputs": [
+    "approval design guidance",
+    "approval risk findings",
+    "approval routing recommendations"
+  ],
+  "references": [
+    "skills/admin/approval-processes/references/examples.md",
+    "skills/admin/approval-processes/references/gotchas.md",
+    "skills/admin/approval-processes/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/approval-processes/scripts/check_approval_design.py"
+  ],
+  "tags": [
+    "approval-process",
+    "approvers",
+    "record-locking",
+    "routing",
+    "escalation"
+  ],
+  "templates": [
+    "skills/admin/approval-processes/templates/approval-design-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

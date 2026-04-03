@@ -1,0 +1,84 @@
+{
+  "category": "security",
+  "chunk_ids": [
+    "0626e11e731b15537074",
+    "06e349445a8de4f0c18c",
+    "07b3ac78c90643fea109",
+    "08dd60f84b49d9de6161",
+    "142b878404301727813b",
+    "17b2a4846acf15a42efb",
+    "28b74f94fc7dccb7eb3e",
+    "2a867973c3d7b677c8a5",
+    "2d013347b2453d0f6dc2",
+    "412c0db5cff6e5d13e9f",
+    "42956c8ad07f746debb8",
+    "4381d57ede6cc716f15e",
+    "4b1a10c40d8b77070342",
+    "663c6d1e3b74af88710c",
+    "669bebc01719d20988d6",
+    "700ad323eb2bd0787b7f",
+    "74eb269ceeced8e9ff2e",
+    "82ab3f3fa1e1ac3b997f",
+    "84dd98697705fe05beee",
+    "8a789cae94d41ab154ff",
+    "8dd2d4f88d592f59e54d",
+    "9152e8806c92cd026354",
+    "91f120195fca4a8bad0b",
+    "a339682b1fcf25c9c519",
+    "a68d4f7d462f23c137d3",
+    "a949622131fa99bce54c",
+    "ba53e874ca782d29d96e",
+    "ba9ca556a5a58ab04a76",
+    "bc9078321037c5f15e2d",
+    "d203f8e5a8b832167e6e",
+    "d50624331cc397e21746",
+    "d632ef8473118a81eddb",
+    "de60c8822df1915f7984",
+    "eb1e11917bf5c99697fc",
+    "f544fb2351dc5d680376",
+    "fb919b1dfcca450df10f",
+    "fe99834f9902a707d821"
+  ],
+  "content_hash": "915ee7f3241c804b633a6e6aa5b7ae2f0cb7b51819970e73be5059a44b82927e",
+  "dependencies": [],
+  "description": "Use when defining or reviewing baseline org hardening settings, especially Security Health Check gaps, clickjack and browser protections, CSP and CORS governance, password/session policies, network restrictions, and release-update hygiene. Triggers: 'org hardening', 'baseline security config', 'Health Check', 'CSP trusted sites', 'clickjack protection'. NOT for feature-level app permissions or record-sharing design.",
+  "file_location": "skills/security/org-hardening-and-baseline-config",
+  "id": "security/org-hardening-and-baseline-config",
+  "inputs": [
+    "org type and risk profile",
+    "existing hardening settings and exception history",
+    "browser, integration, and network-control requirements"
+  ],
+  "name": "org-hardening-and-baseline-config",
+  "official_sources": [
+    "Salesforce Security Guide - https://help.salesforce.com/s/articleView?id=sf.security_overview.htm&type=5",
+    "Security Health Check - https://help.salesforce.com/s/articleView?id=sf.security_health_check.htm&type=5",
+    "Critical Updates and Release Settings - https://help.salesforce.com/s/articleView?id=sf.release_updates.htm&type=5"
+  ],
+  "outputs": [
+    "baseline hardening checklist",
+    "review findings for missing or risky org controls",
+    "operational cadence for release and security settings review"
+  ],
+  "references": [
+    "skills/security/org-hardening-and-baseline-config/references/examples.md",
+    "skills/security/org-hardening-and-baseline-config/references/gotchas.md",
+    "skills/security/org-hardening-and-baseline-config/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/security/org-hardening-and-baseline-config/scripts/check_org_hardening_and_baseline_config.py"
+  ],
+  "tags": [
+    "org-hardening",
+    "security-health-check",
+    "csp",
+    "cors",
+    "clickjack"
+  ],
+  "templates": [
+    "skills/security/org-hardening-and-baseline-config/templates/org-hardening-and-baseline-config-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

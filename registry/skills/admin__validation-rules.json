@@ -1,0 +1,96 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "039d6d0d15f1cdf9a89a",
+    "060ad4e8a4e6ea89b84f",
+    "0ddb5f1f00a14ee39429",
+    "1df54e10de1fdd90be5c",
+    "2091a89e9395d17032a0",
+    "252fc1694914b3b749ad",
+    "26d2c854c44e7f87c289",
+    "2aac45ff6365fa43ae24",
+    "2c256d1dfb79df71b9e6",
+    "2c50a753ce3f7a419986",
+    "2c9f6496e3da85076a17",
+    "2e91efa6c17fd051e0a3",
+    "30048e5a52da0b351af4",
+    "37fa66b4b422e679ac42",
+    "399fe25d74c3ad776a7a",
+    "488f642ada618e571dd0",
+    "568d82625cc2dde07ff8",
+    "5f21cb437b73b6cfc27d",
+    "6bda771d021eb74b82a5",
+    "716ee1d547c6740f927f",
+    "724ac8f9eb4e84116ac8",
+    "73f567b1fd5f109b6627",
+    "7763f8bc3ff5d3d85911",
+    "857ad85620b95e494316",
+    "8a2cbbc23c8126958777",
+    "8fe1cb6db76c1b489ea7",
+    "9141dde2b5f6e1ef7562",
+    "95cabf96c72e4f02405d",
+    "98f0569a892c0bda6281",
+    "a0caa74a8cc53589eb96",
+    "a94c0ea7244767367519",
+    "a9b861b9a44ce50ac8eb",
+    "aa4a18002a2e0277e5cc",
+    "ac040e490d79144896a7",
+    "adc4fdaaf3ee709a019e",
+    "ae7f9016c4ddc9d58f34",
+    "af2d7ecbccba01451294",
+    "b0deb890f90157cc42f9",
+    "b15a7d6f4f377443463f",
+    "b276d6ca3a51d22e866d",
+    "c32313bd3cc9c8d609d3",
+    "c3bf6db9c72809280ac7",
+    "c4faa2a702246e2c46c2",
+    "cd548b4c70d2f8628981",
+    "d39e7de8e6a8fbaa30c9",
+    "e994bf3e5ca5960fa661",
+    "ef4c8743b896d31985c2",
+    "f4cb5e65622d902afd95",
+    "f72ce657c520fa80c4d6",
+    "fa1227e7a34c59ed6bcb"
+  ],
+  "content_hash": "fe17186805a20f4905791ce8c5546933c84085788d480d74f18a11e3ec7c9c9c",
+  "dependencies": [],
+  "description": "Use when writing, auditing, or troubleshooting Salesforce Validation Rules. Triggers: 'validation rule', 'required field formula', 'rule fires unexpectedly', 'integration failing validation', 'data quality'. NOT for Flow-based validation \u2014 use admin/flow-for-admins for that.",
+  "file_location": "skills/admin/validation-rules",
+  "id": "admin/validation-rules",
+  "inputs": [
+    "business rule",
+    "exception path",
+    "integration constraints"
+  ],
+  "name": "validation-rules",
+  "official_sources": [
+    "Salesforce Well-Architected Overview \u2014 reliability and change-discipline framing for validation design",
+    "Metadata API Developer Guide \u2014 validation-rule metadata behavior in releases"
+  ],
+  "outputs": [
+    "validation design guidance",
+    "rule review findings",
+    "bypass recommendations"
+  ],
+  "references": [
+    "skills/admin/validation-rules/references/examples.md",
+    "skills/admin/validation-rules/references/gotchas.md",
+    "skills/admin/validation-rules/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/validation-rules/scripts/check_validation_rules.py"
+  ],
+  "tags": [
+    "validation-rules",
+    "data-quality",
+    "bypass",
+    "formulas",
+    "integrations"
+  ],
+  "templates": [
+    "skills/admin/validation-rules/templates/validation-rule-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

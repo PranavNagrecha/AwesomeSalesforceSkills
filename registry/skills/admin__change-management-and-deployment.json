@@ -1,0 +1,86 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "1f59bffdcc0642342be4",
+    "24ed68c87b9e6ce9b9ce",
+    "26b65c74ab576ba756ec",
+    "38a2e59ac811b160dfa6",
+    "4159a245cb5d50ca983e",
+    "44ca67cab2fbc409a269",
+    "546b4d84cb789b4ba3e9",
+    "54b63d742db4e929e202",
+    "5514239f7a5e4dc4b971",
+    "5a4babcbe32d81d77ab8",
+    "5b5a905f6a6fed850317",
+    "6892e1f6597e3032c2c9",
+    "6b55667cfba5fa701c5e",
+    "6d40409683600525e515",
+    "74652749cfd83f6b44c6",
+    "7763576a079cd5479840",
+    "783fdeaa3ec352da3ec7",
+    "7beab2fdede39e17f8cd",
+    "7d8250bf87fb60700e3e",
+    "7e6afe359753b94b7994",
+    "84f1a117ef377b0f121c",
+    "88b8d8b84c46645a4a1e",
+    "8d5acf3fe578d0f7dfc7",
+    "8d7ba834c54a30604f8c",
+    "94d7afeb037b49e87f21",
+    "ae2a95bedab2c16a1f51",
+    "bc05e661a00c4ab5afee",
+    "bec09ee2be6be0b6e075",
+    "c32195f7fcd4bb95408f",
+    "c453ed5a7b88f91a1d65",
+    "c6978ee63bc836edf0b5",
+    "ce1c60542d66904943c6",
+    "d6a273994bfa1f8577c5",
+    "dc6b01fdc2a7d888eedf",
+    "def674ee9be8e46daad7",
+    "e5e2ab7cca63645f7742",
+    "ebed27d64b99087465e2",
+    "ecda0229fe098576515c",
+    "eda0d02f0b42a2e1d18c",
+    "f81055c8f20b19e5ae1b"
+  ],
+  "content_hash": "6a53fe44dea28cebbfa2e1c45a46da9e9397949343151ced2b7aea35abeb7392",
+  "dependencies": [],
+  "description": "Use when planning, reviewing, or troubleshooting Salesforce metadata releases and admin deployment processes. Triggers: 'change set', 'deployment plan', 'rollback', 'DevOps Center', 'SFDX deploy', 'release checklist', 'production deployment'. NOT for writing CI pipeline code unless the key problem is release method and governance.",
+  "file_location": "skills/admin/change-management-and-deployment",
+  "id": "admin/change-management-and-deployment",
+  "inputs": [
+    "release scope",
+    "deployment method",
+    "rollback plan"
+  ],
+  "name": "change-management-and-deployment",
+  "official_sources": [
+    "Salesforce Well-Architected Overview \u2014 operational-quality framing for release design",
+    "Metadata API Developer Guide \u2014 retrieve and deploy behavior for metadata movement"
+  ],
+  "outputs": [
+    "deployment plan",
+    "release risk findings",
+    "rollback checklist"
+  ],
+  "references": [
+    "skills/admin/change-management-and-deployment/references/examples.md",
+    "skills/admin/change-management-and-deployment/references/gotchas.md",
+    "skills/admin/change-management-and-deployment/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py"
+  ],
+  "tags": [
+    "deployment",
+    "release-management",
+    "change-sets",
+    "rollback",
+    "metadata"
+  ],
+  "templates": [
+    "skills/admin/change-management-and-deployment/templates/release-plan-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

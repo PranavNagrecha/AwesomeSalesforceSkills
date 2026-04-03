@@ -1,0 +1,93 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "00fc1ad40eeeec38b414",
+    "06b824a1b8f0a9eba74e",
+    "0cf5323a31b638aad156",
+    "0d8cb13b64184f56d195",
+    "10e12426e51e1b39d3a7",
+    "12ec84173a68e689e8c4",
+    "1a573b609f6f4897f7a4",
+    "391eb336aaddece90c7e",
+    "3c9f84b0c04810efe2c8",
+    "3e4d26e880bba591f5a6",
+    "3e54f6a48c9270b0ed2a",
+    "3e65386228b93a7f4225",
+    "4ec3dd2e35e25279150f",
+    "569e035c3be6a13243aa",
+    "5a3167dc519a562733de",
+    "5be1034884b7ddd30d3e",
+    "5d5547e900c01bf4f8dd",
+    "62b703e5388d81a3aefa",
+    "6bb4288b89bb6de0aae6",
+    "70e3ba0f824f6ca9d60a",
+    "77b7930b2c4320ae6961",
+    "7f8466b76918b0195aed",
+    "8196d6bfc94fe92196d2",
+    "8816476b157f702b06b1",
+    "88ad3f5b9edc358e78eb",
+    "89f5f40a3c6e53f83304",
+    "9a8dfb4876c31ad876ac",
+    "9d9345b8bccf4c0fe3d3",
+    "9e59ed7fe4b4e08a2d30",
+    "9eb372ebeee15c3ae128",
+    "a1641b313626ae9e7f12",
+    "b2623b579b80c92e151c",
+    "b5da0d86784bac4c2882",
+    "b953bf59f74c329d263c",
+    "bdcf78ec9b28df8184f6",
+    "be6feda2a5418a273ab1",
+    "be7a395e908e0fdfab35",
+    "bef5b6c4d2aa505144be",
+    "cca5bdb3c600fb33f8c1",
+    "cd4afdebda39ba498664",
+    "ce9d602c834bcb14d35a",
+    "d135e4f543494955fc13",
+    "d31c830099ef64666dfa",
+    "d998e4615e08d6f024c5",
+    "e5c2ea7cfd456fbbe010",
+    "f7ed50ab35131c4784e7"
+  ],
+  "content_hash": "bc0b8eb9d40632d1ccfd657b178885a047f8f8da90f7641a67d1e5d7b7403391",
+  "dependencies": [],
+  "description": "Use when selecting, designing, or reviewing Queueable, Batch, Future, or Schedulable Apex for callouts, large data processing, retries, or background work. Triggers: 'queueable vs batch', 'future method', 'flex queue', 'async job failed', 'schedule apex'. NOT for Platform Events or a deep-only Batch Apex implementation guide.",
+  "file_location": "skills/apex/async-apex",
+  "id": "apex/async-apex",
+  "inputs": [
+    "workload size and whether records can exceed one transaction",
+    "need for callouts, chaining, scheduling, or state across chunks",
+    "current entry point such as trigger, UI action, nightly job, or integration"
+  ],
+  "name": "async-apex",
+  "official_sources": [
+    "Apex Developer Guide \u2014 async Apex behavior and scheduling guidance",
+    "Apex Reference Guide \u2014 `Queueable`, `Database.Batchable`, and related API reference",
+    "Salesforce Well-Architected Overview \u2014 scalability, performance, and reliability framing"
+  ],
+  "outputs": [
+    "async mechanism recommendation",
+    "review findings for queueable, batch, future, or scheduler usage",
+    "migration guidance from legacy future methods"
+  ],
+  "references": [
+    "skills/apex/async-apex/references/examples.md",
+    "skills/apex/async-apex/references/gotchas.md",
+    "skills/apex/async-apex/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/async-apex/scripts/check_async_apex.py"
+  ],
+  "tags": [
+    "async-apex",
+    "queueable",
+    "batch-apex",
+    "future-method",
+    "schedulable"
+  ],
+  "templates": [
+    "skills/apex/async-apex/templates/async-apex-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

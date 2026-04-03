@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Knowledge Source Manifest Entry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "type",
+    "title",
+    "trust",
+    "domains",
+    "tags"
+  ],
+  "properties": {
+    "id": {"type": "string"},
+    "type": {
+      "type": "string",
+      "enum": ["local-file", "local-directory", "official-doc"]
+    },
+    "title": {"type": "string"},
+    "trust": {
+      "type": "string",
+      "enum": ["repo-local", "imported", "official"]
+    },
+    "path": {"type": "string"},
+    "url": {"type": "string"},
+    "domains": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "tags": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "notes": {"type": "string"},
+    "summary": {"type": "string"}
+  }
+}

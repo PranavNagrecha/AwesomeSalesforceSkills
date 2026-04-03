@@ -1,0 +1,89 @@
+{
+  "category": "flow",
+  "chunk_ids": [
+    "1203d3d8c8631126d6de",
+    "16ed62a3188e355b8363",
+    "1e16e53d3fc40a02077b",
+    "1e932743464edfa4a7ee",
+    "20c2df27138407d84aa1",
+    "23252efdc6db824abebc",
+    "4d2efd236c99224783d6",
+    "545de2eea8eb63afae83",
+    "5499a52afca4d14c9f86",
+    "6139ab49ab85c7f560e3",
+    "679b3a38b6ad1a2ff447",
+    "764428cb4b7ba81f8988",
+    "7700bd133df8c91cfcff",
+    "79132a695eff038cdbd9",
+    "7a0208e6fc606e3eff4b",
+    "7a259e798fe93f27dd31",
+    "899a0e34f2bd954dc631",
+    "899f0eb449269d4fbc1d",
+    "8ae03c0f00164e7f81be",
+    "94fba474e61573d2ebd3",
+    "9884316826a4af3187e8",
+    "a3416fc792521037739d",
+    "a974ad7710426b25c239",
+    "ab84cc2bbcce303cde75",
+    "b669c65d09d695f40e7f",
+    "b82423e53752ba390bdb",
+    "b8d31a83d3a9cb2c3431",
+    "baaf42d6034a86e45655",
+    "c083b56e22bff9876b87",
+    "cb5c2e41a17cb7b976b0",
+    "d256556ea8cb9731790d",
+    "db97db59f9ac54b371e4",
+    "db97fb0a1bca9f83fa69",
+    "e00c49bb04722903547c",
+    "e27462c10e27b0e4204a",
+    "e5c8f84a23d9658fdfb0",
+    "ef21ecb51a97a02762eb",
+    "f10932c6daf7cb93d677",
+    "f2adf928b42ccadea41e",
+    "f9d23f0ade7253c8960d",
+    "fc5c8ec9b3605dccd0bd",
+    "fde3cd628605fce8e256"
+  ],
+  "content_hash": "26eb90204321f6e2354a22f3452adf1121f572fb2c509be1892757962b7a5fcf",
+  "dependencies": [],
+  "description": "Use when designing, reviewing, or troubleshooting Salesforce Flows that must survive data loads, integrations, or high-volume record changes without hitting transaction limits. Triggers: 'Get Records in loop', 'Flow bulkification', 'data loader causing flow errors', 'DML in loop', 'record-triggered flow scale'. NOT for general screen-flow UX or Flow type selection when scale is not the main risk.",
+  "file_location": "skills/flow/flow-bulkification",
+  "id": "flow/flow-bulkification",
+  "inputs": [
+    "flow type and trigger context",
+    "expected record volume per transaction or schedule",
+    "whether the flow queries or updates related records"
+  ],
+  "name": "flow-bulkification",
+  "official_sources": [
+    "Flow Reference \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_ref.htm&type=5",
+    "Flow Builder \u2014 https://help.salesforce.com/s/articleView?id=sf.flow.htm&type=5",
+    "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm"
+  ],
+  "outputs": [
+    "bulkification review findings",
+    "collection-based flow redesign guidance",
+    "decision on whether Flow should stay Flow or move to Apex"
+  ],
+  "references": [
+    "skills/flow/flow-bulkification/references/examples.md",
+    "skills/flow/flow-bulkification/references/gotchas.md",
+    "skills/flow/flow-bulkification/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/flow/flow-bulkification/scripts/check_flow_bulkification.py"
+  ],
+  "tags": [
+    "flow-bulkification",
+    "governor-limits",
+    "record-triggered-flow",
+    "collections",
+    "scalability"
+  ],
+  "templates": [
+    "skills/flow/flow-bulkification/templates/flow-bulkification-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

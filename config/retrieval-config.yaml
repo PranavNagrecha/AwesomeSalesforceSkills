@@ -1,0 +1,44 @@
+version: 1
+
+embeddings:
+  # Keep enabled: false until the skill corpus reaches the threshold below.
+  # The only available backend is 'hash', which is a deterministic token-hashing
+  # scheme — not a semantic embedding model. Enabling it adds no meaningful
+  # reranking signal and can worsen results at low corpus sizes.
+  #
+  # WHEN TO ENABLE REAL EMBEDDINGS:
+  #   Lexical search (TF-IDF BM25) degrades when the corpus has many near-duplicate
+  #   skill names or when practitioner vocabulary diverges significantly from the
+  #   skill body text. Semantic embeddings fix both. Enable at:
+  #     - 300+ skills    → vocabulary-intent mismatch becomes the #1 retrieval failure mode
+  #     - 500+ skills    → mandatory for acceptable precision; lexical alone will return
+  #                         too many false positives across 16 clouds × 5 roles
+  #
+  # HOW TO ENABLE:
+  #   1. Wire an embedding API into pipelines/embedding_backends.py
+  #      (OpenAI text-embedding-3-small, Cohere embed-v3, or a local model)
+  #   2. Set backend: to your new backend name (e.g. 'openai', 'cohere', 'local')
+  #   3. Set enabled: true
+  #   4. Run: python3 scripts/build_index.py --embeddings
+  #   5. Set dimensions: to match your model output (e.g. 1536 for text-embedding-3-small)
+  #
+  # AUTO-DETECTION (scripts/search_knowledge.py will warn when threshold is reached):
+  #   The retrieval pipeline checks the skill count on startup and logs:
+  #   "WARNING: 312 skills detected — consider enabling embeddings (threshold: 300)"
+  #   when the threshold is crossed and embeddings are still disabled.
+  enabled: false
+  backend: hash
+  dimensions: 64
+  # Skill count thresholds for embedding adoption
+  warn_threshold: 300     # log warning when corpus exceeds this
+  require_threshold: 500  # consider required at this size
+
+retrieval:
+  lexical_limit: 30
+  vector_rerank_limit: 15
+  result_limit: 10
+  snippet_length: 220
+  # Skills scoring below this threshold are suppressed from results and
+  # has_coverage is set to false. Consumers should fall back to official_sources
+  # only when has_coverage is false rather than presenting a low-confidence skill.
+  min_skill_score: 1.5

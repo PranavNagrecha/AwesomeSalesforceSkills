@@ -1,0 +1,89 @@
+{
+  "category": "lwc",
+  "chunk_ids": [
+    "034fa0cf7e6df3a23b0f",
+    "068829c52a29e318d483",
+    "0700d5e665ea9ebcc6df",
+    "0c930d1bbc1a64295f90",
+    "114dae3b5a7d20ba2ee6",
+    "147935b045a0405259df",
+    "1d641ce8fa5009c8c6fb",
+    "1fdee557ac13af0834d2",
+    "22c781eebfb112a3b27d",
+    "23150fec68884e6cde56",
+    "247ad45e26683e3bc573",
+    "302eb38e312258ef5720",
+    "3f8c57906b55289789a7",
+    "42b0d4db76e9dced2984",
+    "44fd9aa32512f2b00f3f",
+    "49d7d2542488e12670db",
+    "5322d671b7e1c6bc2e1e",
+    "5a20e267e0c697715308",
+    "6d5d35a670f8cafe08d4",
+    "74a5e067e1c93fdbfa35",
+    "7c1312fba43e07626993",
+    "9fb8ba3d86ca2f3208b0",
+    "a83e92787e0df4a6140e",
+    "ab65e01a076cb2d4b21f",
+    "b0503fa81e943b8794df",
+    "b4943f2ad2bf8dec4391",
+    "bc767df4339c161cb2b1",
+    "bc9d9f1979bb47d6ec88",
+    "bd8f7daa70ef7bb4c290",
+    "c11d375ec2f7f7035601",
+    "c56337ec2a53cd24a8c3",
+    "c6eb6c2146a1d533f3f1",
+    "cda1adb52ef102dc8cd2",
+    "cfdc461148d17d96b157",
+    "d45aa64be3ec1bd27765",
+    "dac7ebb84ae2f97090e1",
+    "db53aa0ca0087961dc27",
+    "dc3d9b8464dbb0f83671",
+    "dced50ccd79c828157b6",
+    "e2041125af7a33defcf2",
+    "fea4272a1ed850f1deaf",
+    "ff236106ee6266b03ef8"
+  ],
+  "content_hash": "bd7c3a078e3ea585054b910d72727b5ae93e372bd75a50542d4ba796087d09b2",
+  "dependencies": [],
+  "description": "Use when designing or reviewing `lightning-datatable` usage in Lightning Web Components, including column configuration, stable `key-field` values, inline editing, row actions, infinite loading, and custom cell types. Triggers: 'lightning datatable inline edit', 'row actions in lwc datatable', 'key field missing', 'infinite loading in datatable'. NOT for highly custom virtualized grids or broad page-performance work outside the datatable boundary.",
+  "file_location": "skills/lwc/lwc-data-table",
+  "id": "lwc/lwc-data-table",
+  "inputs": [
+    "row count, data source, and whether the table needs inline edit or row actions",
+    "how rows are keyed and whether selection state must survive pagination",
+    "whether the use case needs standard types, custom cell rendering, or infinite loading"
+  ],
+  "name": "lwc-data-table",
+  "official_sources": [
+    "lightning-datatable - https://developer.salesforce.com/docs/platform/lightning-component-reference/guide/lightning-datatable.html",
+    "Best Practices for Development with Lightning Web Components - https://developer.salesforce.com/docs/platform/lwc/guide/get-started-best-practices.html",
+    "Data Guidelines - https://developer.salesforce.com/docs/platform/lwc/guide/data-guidelines.html"
+  ],
+  "outputs": [
+    "datatable design recommendation for columns, save flow, and loading strategy",
+    "review findings for key-field, selection, and edit-state issues",
+    "implementation guidance for inline edit, row actions, or bounded infinite loading"
+  ],
+  "references": [
+    "skills/lwc/lwc-data-table/references/examples.md",
+    "skills/lwc/lwc-data-table/references/gotchas.md",
+    "skills/lwc/lwc-data-table/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/lwc/lwc-data-table/scripts/check_lwc_data_table.py"
+  ],
+  "tags": [
+    "lwc-data-table",
+    "lightning-datatable",
+    "inline-edit",
+    "row-actions",
+    "infinite-loading"
+  ],
+  "templates": [
+    "skills/lwc/lwc-data-table/templates/lwc-data-table-template.md"
+  ],
+  "updated": "2026-03-15",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

@@ -1,0 +1,89 @@
+{
+  "category": "flow",
+  "chunk_ids": [
+    "054203a3d4e57b6f9a77",
+    "0a469255ef65e781c370",
+    "0b4f197788694bcf217b",
+    "1f7097148f59c73a40a9",
+    "29ce7cdf1702af16e05d",
+    "2dff55a3559a70933640",
+    "37ae8c29c983047c2707",
+    "38da1d65362a2e88e604",
+    "4d056477819952389412",
+    "4d6773079866349ea557",
+    "4e62cb11f2b456ba09a2",
+    "550144fe05214c4717bb",
+    "5f58fc38a778c84e7667",
+    "6104da4a8fcfaefed758",
+    "6b02c374e6e3cc385c86",
+    "7a6637d1d6276b6dd218",
+    "87bba0abb00837d2c7b0",
+    "8a131e242b6d1980feef",
+    "8e9b8d5913888cf43dbb",
+    "9393db9986be12977d52",
+    "93cdfdc07fc0bf8b6d9d",
+    "94a47d17a87a7f593a52",
+    "9ff3c8cedd39acd1c243",
+    "a115549048e273a408ed",
+    "a5406391a2f63471d605",
+    "aa554e0bcfafca76bf33",
+    "aeb3bb6dfd62d664425b",
+    "b1486bc7a06e77480f5d",
+    "b1c876a0a2f06f6db558",
+    "b251db07b75a3d29fee2",
+    "b36abea5a33001dde1d7",
+    "b5d4d26892b028a37238",
+    "b6d119fda03050d30a87",
+    "bfe51987fcc42c0a8312",
+    "c3703777c63e5197c6a2",
+    "cc1164913144c300e35b",
+    "d1552cc147f3d753de79",
+    "d1f4fcfdc5b1ea73f7ac",
+    "ddc7d1ceb5e666bc37c9",
+    "df73849aa31c22992ede",
+    "e1402881e14efc6b14f0",
+    "ea02e089fe50048186ff"
+  ],
+  "content_hash": "85254150f6eb1e2431749fcb112202c09abca083ce42de136a30f296cddecac8",
+  "dependencies": [],
+  "description": "Use when designing or reviewing schedule-triggered flows for recurring automation, replacement of time-based workflow patterns, bounded record selection, idempotent processing, and escalation to Apex when volume is too high. Triggers: 'scheduled flow design', 'nightly flow job', 'time based workflow replacement', 'schedule triggered flow limits'. NOT for record-triggered scheduled paths or large-scale batch processing that should be built directly in Batch Apex.",
+  "file_location": "skills/flow/scheduled-flows",
+  "id": "flow/scheduled-flows",
+  "inputs": [
+    "what recurrence is needed and whether the record set can be bounded tightly",
+    "how much data the flow will inspect or mutate on each run",
+    "what should happen on rerun, partial failure, or duplicate processing"
+  ],
+  "name": "scheduled-flows",
+  "official_sources": [
+    "Schedule-Triggered Flows - https://help.salesforce.com/s/articleView?id=sf.flow_concepts_trigger_schedule.htm&type=5",
+    "Flow Builder - https://help.salesforce.com/s/articleView?id=sf.flow.htm&type=5",
+    "Salesforce Well-Architected Overview - https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "scheduled-flow design for record selection, processing, and escalation boundaries",
+    "review findings for unbounded scope, weak retry behavior, and volume risk",
+    "guidance on when to stay in Flow versus move heavy work to Apex"
+  ],
+  "references": [
+    "skills/flow/scheduled-flows/references/examples.md",
+    "skills/flow/scheduled-flows/references/gotchas.md",
+    "skills/flow/scheduled-flows/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/flow/scheduled-flows/scripts/check_scheduled_flows.py"
+  ],
+  "tags": [
+    "scheduled-flows",
+    "schedule-triggered",
+    "recurring-automation",
+    "idempotency",
+    "batch-apex-boundary"
+  ],
+  "templates": [
+    "skills/flow/scheduled-flows/templates/scheduled-flows-template.md"
+  ],
+  "updated": "2026-03-15",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

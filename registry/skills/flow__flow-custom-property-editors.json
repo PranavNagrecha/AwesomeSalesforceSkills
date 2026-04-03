@@ -1,0 +1,86 @@
+{
+  "category": "flow",
+  "chunk_ids": [
+    "0256dcf493793764fd78",
+    "08e7a3f39b3d6e6d5b27",
+    "17ee15136c639d8d0afc",
+    "241779d8aaa3a180f4bf",
+    "243075e38937221d5974",
+    "29d03c4fb580e92a6411",
+    "2e303d6392d8cb570b33",
+    "39b532b5f25c68ad4a14",
+    "3be4a96f293f1bedbd6a",
+    "3c4f3ce829c55a2fd29e",
+    "4a790831d65cd7d56190",
+    "4e6499a38da7ae9263a1",
+    "4fb4bd2070e21ee90c41",
+    "50d8f4689723002222f1",
+    "51bffa39d173ce722b60",
+    "5d4b5acb24b830ab2ea5",
+    "6396c70d75133a3fe8db",
+    "69ed4fc5c8a5145ae985",
+    "6a54ef1739c9c385af34",
+    "6db84098e8cb4a9cbfa6",
+    "72fbb68625a1463b0459",
+    "731912beb4e6bd0105fb",
+    "84feebe6ae1626c023b1",
+    "8c753bd636e23c5ae285",
+    "93a43bba8edf4186991a",
+    "9435748b0f96a78672bf",
+    "9a7ff343458ba5430d82",
+    "9aefcd15b47db539219a",
+    "9bc76ef04704c24a8660",
+    "9ff555cc3a58adc42855",
+    "ae61a07819aff9b020b3",
+    "c0ffa85fad34de193f62",
+    "c911c57fab681d4e54cd",
+    "ceab22a7911fdce47504",
+    "da5526bb84605526cb20",
+    "e0a9d952ce654364f6c2",
+    "f43958f28bf57f428d01",
+    "f53928fc481ac0836e16",
+    "fa6ed9e8fafed96ebb21"
+  ],
+  "content_hash": "045e36543c4429851731dd1246c0136d1b05d386ac0344bea8c808e95aa1db38",
+  "dependencies": [],
+  "description": "Use when designing or reviewing Flow custom property editor patterns for screen components or actions, including when Flow Builder needs guided design-time configuration, generic type mapping, or builder-context-aware validation. Triggers: 'Flow custom property editor', 'configurationEditor', 'builderContext', 'inputVariables', 'Flow screen component setup'. NOT for general LWC runtime behavior when Flow Builder customization is not involved.",
+  "file_location": "skills/flow/flow-custom-property-editors",
+  "id": "flow/flow-custom-property-editors",
+  "inputs": [
+    "whether the target is a screen component or flow action",
+    "which configuration fields are hard to manage in the default property pane",
+    "whether generic sObject or builder-context-aware behavior is required"
+  ],
+  "name": "flow-custom-property-editors",
+  "official_sources": [
+    "Flow Reference \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_ref.htm&type=5",
+    "LWC Best Practices \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/get-started-best-practices.html",
+    "Lightning Component Reference \u2014 https://developer.salesforce.com/docs/platform/lightning-component-reference/guide"
+  ],
+  "outputs": [
+    "flow extensibility recommendation",
+    "review findings for builder-side contracts and metadata registration",
+    "property-editor design plan aligned to flow builder behavior"
+  ],
+  "references": [
+    "skills/flow/flow-custom-property-editors/references/examples.md",
+    "skills/flow/flow-custom-property-editors/references/gotchas.md",
+    "skills/flow/flow-custom-property-editors/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/flow/flow-custom-property-editors/scripts/check_flow_custom_property_editors.py"
+  ],
+  "tags": [
+    "flow-custom-property-editor",
+    "flow-builder",
+    "configurationeditor",
+    "buildercontext",
+    "inputvariables"
+  ],
+  "templates": [
+    "skills/flow/flow-custom-property-editors/templates/flow-custom-property-editors-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

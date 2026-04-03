@@ -1,0 +1,90 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "008fae4a0db355eda5f2",
+    "08cb664836c9f596231e",
+    "14da43db2dce1ba77479",
+    "1599763582a6aa0c44cd",
+    "19d9eb2b06a0a07fd5b3",
+    "207eeed097c41d069067",
+    "2ba950dfd3e23f56c568",
+    "2fe5b5a215a159737d3d",
+    "3190feecb64093c3e54b",
+    "34f5694a0862a42237db",
+    "382dd24d13dd30a0adb3",
+    "3a27953e753653e3575a",
+    "4281f8dc2405d64bd0b0",
+    "549f28882abe99b1fd32",
+    "54dce1c436a5ca73bdf8",
+    "57164c5eb8dfa05befb9",
+    "599a709d4a1ab6ad10dd",
+    "5b1959621861ec4e248f",
+    "5c249469c5ef7e0dc48d",
+    "685b2157f17da6aa18ca",
+    "7d82ca403d393df26c05",
+    "7de49522a8aeb71665da",
+    "828c023696528d333293",
+    "85e04a2d3412a879b96c",
+    "8c27caa61ff6ab4ac932",
+    "9b495c73ae1376c3d656",
+    "9fcfe46d7a533d069f07",
+    "a4a10150ea17f4122ebb",
+    "a4cdcde7705aecaab0a0",
+    "a667dd5aff55cbf3cbb1",
+    "b173ee78c79749ce62d6",
+    "bc7f29826269aff01200",
+    "bef97145872ef7984aa9",
+    "bf28999677cf9767ddb9",
+    "c306eeeac805e1c27c1a",
+    "c536d88f7a4e5e3cf579",
+    "cd97fbe05b05637600a3",
+    "ce8412d9d053db28419f",
+    "d12e1494846168ecf8a8",
+    "dfb9f3a8165fdfec266a",
+    "e3a281ccf72b7185b61d",
+    "f0743759e896315fcd81",
+    "feeb5df27ff7ec79500d"
+  ],
+  "content_hash": "f9f49ba30d877752c5007fb81331c2d5a2a3d905493c6c91c23098de22b550c0",
+  "dependencies": [],
+  "description": "Use when designing, reviewing, or debugging Batch Apex contracts, scope sizing, stateful behavior, chaining, and AsyncApexJob monitoring. Triggers: 'Database.Batchable', 'Database.Stateful', 'executeBatch', 'batch scope', 'AsyncApexJob'. NOT for generic async choice discussions where Queueable or Future might still be the better tool.",
+  "file_location": "skills/apex/batch-apex-patterns",
+  "id": "apex/batch-apex-patterns",
+  "inputs": [
+    "expected record volume and whether query locator is needed",
+    "whether callouts, state accumulation, or chaining are required",
+    "operational monitoring and retry expectations"
+  ],
+  "name": "batch-apex-patterns",
+  "official_sources": [
+    "Apex Developer Guide \u2014 Batch Apex lifecycle and behavior",
+    "Apex Reference Guide \u2014 `Database.Batchable` and `Database.executeBatch`",
+    "Salesforce Well-Architected Overview \u2014 scalability, performance, and reliability framing"
+  ],
+  "outputs": [
+    "Batch Apex design recommendation",
+    "review findings for scope, lifecycle, and state risks",
+    "batch scaffold with monitoring and error accumulation guidance"
+  ],
+  "references": [
+    "skills/apex/batch-apex-patterns/references/examples.md",
+    "skills/apex/batch-apex-patterns/references/gotchas.md",
+    "skills/apex/batch-apex-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/batch-apex-patterns/scripts/check_batch_apex_patterns.py"
+  ],
+  "tags": [
+    "batch-apex",
+    "database-batchable",
+    "stateful",
+    "asyncapexjob",
+    "batch-scope"
+  ],
+  "templates": [
+    "skills/apex/batch-apex-patterns/templates/batch-apex-patterns-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

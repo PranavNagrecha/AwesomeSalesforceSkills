@@ -1,0 +1,89 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "01ee61cf12319a703acd",
+    "0773897bd9c5f1d9a1c8",
+    "0c54b2d45dea42ea9ba9",
+    "19cb1d6f2163fa6ab9db",
+    "35aea4304bf1527fa424",
+    "3b26f0e37f869b60f9e1",
+    "455f8fafa12fd2da4ff8",
+    "462eee47c99b1b4e8423",
+    "4c519227ad01a223f984",
+    "4ff28a2e7c79db6dd2e4",
+    "54c542e248f610836686",
+    "59a253cf5ccf9b8567d6",
+    "5bfab8fbf0340873f527",
+    "5d395f0d15547d46c65d",
+    "5de71d417b536ff69bda",
+    "60065994cf4a03ad29b4",
+    "62b04f8d8ed565d5df92",
+    "6ff58747e882a688d69c",
+    "74ee4201ccc23b435aad",
+    "77861368f7fbdb8ebb10",
+    "84b51d543a99a7a4130f",
+    "868633529dc6d7ac64fc",
+    "91afd5da23bc44e1ea6d",
+    "94af566dd2118881fb82",
+    "9db9466f10a9dabf2762",
+    "b02680871e7a2bf93d15",
+    "b582263e15365bc4fdb0",
+    "b9c5817dc38845e2b3bf",
+    "ba28478c6c3015ebe024",
+    "bfb8bb63fa28003192fb",
+    "c0b79a63f8430c1df906",
+    "c36866eb9a3b0d54a1d3",
+    "ca20dfee48402e578df0",
+    "dbef31c18b6891197de2",
+    "e0643b7c7874b54b4124",
+    "e3aa3910832dbcd70f54",
+    "e868dbf789b77f26661c",
+    "ec236ab19937c5e76e09",
+    "f95bca0baac32c75b24d",
+    "fc3199e2f32090932a4e",
+    "fc79732947107fe4de32",
+    "ff80cb1a58c7a1170705"
+  ],
+  "content_hash": "90e311244ace791925e413240f532216eb766852bed00fc26f5c2fd1e4d55456",
+  "dependencies": [],
+  "description": "Use when designing or reviewing Salesforce Platform Cache usage in Apex, including org cache versus session cache, cache-aside patterns, invalidation, and safe key design. Triggers: 'Platform Cache', 'Cache.Org', 'Cache.Session', 'cache-aside', 'cache invalidation'. NOT for durable configuration storage or for caching user-specific sensitive data.",
+  "file_location": "skills/apex/platform-cache",
+  "id": "apex/platform-cache",
+  "inputs": [
+    "data being cached and how often it changes",
+    "whether the data is org-wide, session-specific, or transaction-local only",
+    "fallback behavior on cache miss or eviction"
+  ],
+  "name": "platform-cache",
+  "official_sources": [
+    "Apex Developer Guide \u2014 Platform Cache overview",
+    "Apex Reference Guide \u2014 cache partition APIs",
+    "Platform Cache considerations guidance \u2014 limits, scope, and operational considerations"
+  ],
+  "outputs": [
+    "Platform Cache design recommendation",
+    "review findings for cache safety, key design, and invalidation gaps",
+    "cache-aside Apex scaffold with invalidation notes"
+  ],
+  "references": [
+    "skills/apex/platform-cache/references/examples.md",
+    "skills/apex/platform-cache/references/gotchas.md",
+    "skills/apex/platform-cache/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/platform-cache/scripts/check_platform_cache.py"
+  ],
+  "tags": [
+    "platform-cache",
+    "cache-org",
+    "cache-session",
+    "cache-aside",
+    "invalidation"
+  ],
+  "templates": [
+    "skills/apex/platform-cache/templates/platform-cache-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

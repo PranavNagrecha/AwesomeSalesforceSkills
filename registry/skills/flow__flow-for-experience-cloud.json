@@ -1,0 +1,87 @@
+{
+  "category": "flow",
+  "chunk_ids": [
+    "03af54eba0034e4deea2",
+    "04956c14474fa8023ce2",
+    "0a9c1ab03abebff9979e",
+    "0ab59e8c8a7c892f7393",
+    "11da890ae1ca0d2af007",
+    "16a56f3710d6608a22a2",
+    "18317ab1c3da8cc4fd89",
+    "1e6f58766ad248d89c10",
+    "24f59808f688481a03ff",
+    "29f47424bfb7d8de0482",
+    "35c1519f3217120ef768",
+    "36f7dd0aee6f96601883",
+    "399765d082922a3228eb",
+    "3a61aaff9c51c6132790",
+    "3ec170b69ab3e615169a",
+    "4a3e97c2b47b8442be8b",
+    "4f0e78156ec76868d634",
+    "61799e160e82e1800915",
+    "6b121b82fb9f568f96e1",
+    "7044c20aced600cceea3",
+    "796d3b148b1e33b57019",
+    "7a2fc2b069ef7c4eed78",
+    "807431b4e66d7d77d1bd",
+    "8f6c202466a5634e96ee",
+    "9dd45e550ab22372794b",
+    "a2f580063897f4a8e68f",
+    "a577cbaa7f6db8df4829",
+    "c0703f0247abb1f61911",
+    "c79ccc06d9d157ebdc21",
+    "d07833cfac235079f741",
+    "d54635ed1e64c6480f64",
+    "d5c04a65a961fc0a6b93",
+    "e1bbbc49ab445c8f49e3",
+    "e2bd0627342ee0fc0bc8",
+    "eefb9eaf0b1e17d9bae3",
+    "f214391c771f81e92942",
+    "f41ba42ae12b39185689",
+    "f8105abe55c7454d5bad",
+    "f9460c0b40fab89ccfc4",
+    "fa46634f4500175afed9"
+  ],
+  "content_hash": "a04ac37d0bfbfb69f1d90833be9ba687886b74018ca98ceade8447114a0d4093",
+  "dependencies": [],
+  "description": "Use when embedding or exposing Salesforce Flows in Experience Cloud, especially for guest or external users, `lightning-flow` usage, site runtime differences, and data-access safety. Triggers: 'flow in experience cloud', 'guest user flow', 'lightning-flow on community page', 'external user flow access', 'LWR flow limitations'. NOT for general Experience Cloud sharing architecture when Flow is not part of the problem.",
+  "file_location": "skills/flow/flow-for-experience-cloud",
+  "id": "flow/flow-for-experience-cloud",
+  "inputs": [
+    "whether the audience is guest, authenticated external, or internal",
+    "site runtime such as Aura-based site or LWR site",
+    "whether the flow contains custom lwc or aura screen components"
+  ],
+  "name": "flow-for-experience-cloud",
+  "official_sources": [
+    "Experience Cloud Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.communities_dev.meta/communities_dev/communities_dev_intro.htm",
+    "Flow Builder \u2014 https://help.salesforce.com/s/articleView?id=sf.flow.htm&type=5",
+    "LWC `lightning-flow` embedding guide \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/use-flow-embed-component.html"
+  ],
+  "outputs": [
+    "experience-cloud flow design recommendation",
+    "security and runtime review findings",
+    "decision on guest-safe flow exposure and site compatibility"
+  ],
+  "references": [
+    "skills/flow/flow-for-experience-cloud/references/examples.md",
+    "skills/flow/flow-for-experience-cloud/references/gotchas.md",
+    "skills/flow/flow-for-experience-cloud/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/flow/flow-for-experience-cloud/scripts/check_flow_for_experience_cloud.py"
+  ],
+  "tags": [
+    "experience-cloud",
+    "lightning-flow",
+    "guest-user",
+    "external-users",
+    "screen-flow"
+  ],
+  "templates": [
+    "skills/flow/flow-for-experience-cloud/templates/flow-for-experience-cloud-template.md"
+  ],
+  "updated": "2026-03-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

@@ -1,0 +1,89 @@
+{
+  "category": "lwc",
+  "chunk_ids": [
+    "00d3f0005db533e6a997",
+    "066a41b2e6d0d1f869a0",
+    "08dc6ab23b834c4a080f",
+    "234cc3855ec2f9353cb9",
+    "24f21db01ee684a434d5",
+    "2d41358c1d220380a443",
+    "2ed503c587e2d128c115",
+    "30076afa54cc33e00a16",
+    "317657e0dfb23c3e00ee",
+    "31af485c7a05f44566f2",
+    "38851169936976789384",
+    "56d32e8fc2504cda12ec",
+    "58184dda40a8d104a16f",
+    "58f82e883a7ac3717316",
+    "5ac81ef98e32ffdf25af",
+    "5ade02f48caff48f9ccd",
+    "5bb58466f779328b9e9e",
+    "635396f78041e952dea9",
+    "66426795833c0743f4b9",
+    "6ab3dc9efbdaed273cb0",
+    "6d32c672931880807f26",
+    "6d63bfb72964865994ef",
+    "6e9a8949456c53213c66",
+    "6f1726497fcf0cfb406e",
+    "72ecd20e5a24774d6ad9",
+    "77067e041ffc69d245ae",
+    "7b5e0bfa410956189b1e",
+    "832c7b1bb8e733e7e2df",
+    "8999c765a66fef5f02b7",
+    "992ffc088d546b5fb2c2",
+    "a1f91585d702b9a3e11c",
+    "b0b726643168f83cc69a",
+    "b200e577baae0db41a09",
+    "b90f3f8e41ff31b5b4ab",
+    "beb3cab88402213c0e31",
+    "c9a955b82cfd0e8be3bf",
+    "cf466f3a28b10374f6f1",
+    "e17c5e90e32931c82ce8",
+    "e521dec9839923201d25",
+    "e79f1b4bb7661bf3c389",
+    "ebfe20f26794d277325b",
+    "fe59dfbd416f4793daf3"
+  ],
+  "content_hash": "36457b4eef198ff05bf1284dcf0b4023898f89bf57e534ca305a06dfe6365f71",
+  "dependencies": [],
+  "description": "Use when designing or reviewing Lightning Web Components for keyboard access, semantic labeling, focus management, screen-reader behavior, and WCAG-aligned UX in Salesforce. Triggers: 'lwc accessibility', 'keyboard navigation in lwc', 'screen reader labels', 'focus trap in modal'. NOT for Apex or sharing security reviews, or for purely visual SLDS styling that does not affect accessibility behavior.",
+  "file_location": "skills/lwc/lwc-accessibility",
+  "id": "lwc/lwc-accessibility",
+  "inputs": [
+    "which base components, custom markup, and interactive states the component uses",
+    "whether the issue affects keyboard users, screen readers, or both",
+    "where focus should land on open, error, save, and close transitions"
+  ],
+  "name": "lwc-accessibility",
+  "official_sources": [
+    "LWC Accessibility - https://developer.salesforce.com/docs/platform/lwc/guide/create-components-accessibility.html",
+    "Lightning Design System Accessibility Overview - https://www.lightningdesignsystem.com/accessibility/overview/",
+    "WCAG 2.1 - https://www.w3.org/TR/WCAG21/"
+  ],
+  "outputs": [
+    "accessibility review findings for semantics, labels, focus, and keyboard behavior",
+    "remediation plan for WCAG-aligned LWC interaction design",
+    "recommended component or markup changes to reduce accessibility risk"
+  ],
+  "references": [
+    "skills/lwc/lwc-accessibility/references/examples.md",
+    "skills/lwc/lwc-accessibility/references/gotchas.md",
+    "skills/lwc/lwc-accessibility/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/lwc/lwc-accessibility/scripts/check_lwc_accessibility.py"
+  ],
+  "tags": [
+    "lwc-accessibility",
+    "keyboard-navigation",
+    "aria",
+    "focus-management",
+    "screen-reader"
+  ],
+  "templates": [
+    "skills/lwc/lwc-accessibility/templates/lwc-accessibility-template.md"
+  ],
+  "updated": "2026-03-15",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}
