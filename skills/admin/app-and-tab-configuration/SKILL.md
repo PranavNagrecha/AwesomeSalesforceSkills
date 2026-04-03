@@ -86,14 +86,17 @@ When creating or editing a Lightning app in App Manager, the navigation items li
 
 The order of items in the list determines the order in the navigation bar. The first item becomes the default landing page when the user opens the app.
 
+**Hard limit: 50 navigation items per app.** When an app reaches 50 items, end-user personalization of the navigation bar is disabled entirely — users can no longer reorder or add items even if admin personalization is allowed. Design apps well under this ceiling.
+
 ### Utility Bar
 
 The utility bar is a persistent toolbar at the bottom of the screen, available only in Lightning Experience on desktop — it does NOT appear in the Salesforce mobile app. Each utility item is a standard or custom Lightning component. Common built-in utilities include:
-- **History** — recently visited records
+- **History** — recently visited records; **console apps only** — this utility does not appear in the Setup picker for standard-navigation apps
+- **Recent Items** — quick access to recently accessed records (available in all app types)
 - **Open CTI Softphone** — requires CTI adapter
 - **Notes** — quick note capture
 - **Macros** — for Service Console users
-- **Omni-Channel** — for agents using Service Cloud routing
+- **Omni-Channel** — for agents using Service Cloud routing; requires Service Cloud console app
 
 Utility items can have default width, height, and open-on-load behavior configured per item. Custom LWC components can be added as utilities if they implement the correct interface.
 
@@ -158,7 +161,7 @@ Before marking app configuration complete:
 
 1. **Utility bar is invisible in the mobile app** — Users who switch to the Salesforce mobile app will not see the utility bar. If CTI or other utilities are essential for mobile users, a separate mobile app configuration or Lightning out integration is needed.
 2. **Tab Hidden on profile overrides app navigation** — If a user's profile has a tab set to "Tab Hidden," that tab will not appear in any app for that user, regardless of app configuration. Admins sometimes add a tab to an app and wonder why users still can't see it — the profile tab setting is a hard override.
-3. **App Launcher visibility requires "Visible in App Launcher" to be checked** — When assigning profiles to an app, the "Visible in App Launcher" option must be checked for the app to appear in the App Launcher. Assigning the profile alone does not guarantee the app is launchable.
+3. **App Launcher visibility has two independent controls** — First, profile assignment on the app controls which profiles can access it. Second, there is a separate org-wide App Menu toggle per app (Setup → App Manager → App Menu) that can hide any app from the App Launcher for all users regardless of profile assignment. If a newly created app is assigned to profiles but users still cannot see it, check the App Menu toggle — it may be set to "Hidden in App Launcher."
 
 ---
 

@@ -42,7 +42,7 @@
     "eda0d02f0b42a2e1d18c",
     "f81055c8f20b19e5ae1b"
   ],
-  "content_hash": "eb69b59484b268b90dfe564993086230df48e8f01be03fe113fca24de438191e",
+  "content_hash": "2d8bf6b3465f57cee593f984793ee9f58cc46a7f6753d37e08cf25f76b4477b7",
   "dependencies": [],
   "description": "Use when planning, reviewing, or troubleshooting Salesforce metadata releases and admin deployment processes. Triggers: 'change set', 'deployment plan', 'rollback', 'DevOps Center', 'SFDX deploy', 'release checklist', 'production deployment'. NOT for writing CI pipeline code unless the key problem is release method and governance.",
   "file_location": "skills/admin/change-management-and-deployment",
@@ -68,6 +68,7 @@
     "skills/admin/change-management-and-deployment/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/change-management-and-deployment/scripts/__pycache__/check_deployment_manifest.cpython-311.pyc",
     "skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py"
   ],
   "tags": [
