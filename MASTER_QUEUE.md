@@ -115,7 +115,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| TODO | requirements-gathering-for-sf | Eliciting and documenting Salesforce requirements: user story format for SF features, As-Is vs To-Be process mapping, gap analysis, stakeholder interview questions. NOT for technical design. | |
+| IN_PROGRESS | requirements-gathering-for-sf | Eliciting and documenting Salesforce requirements: user story format for SF features, As-Is vs To-Be process mapping, gap analysis, stakeholder interview questions. NOT for technical design. | Claude Sonnet 4.6 · 2026-04-03T00:00:00Z |
 | TODO | process-mapping-and-automation-selection | Mapping business processes to Salesforce automation options: Flow vs Apex vs Workflow Email Alert vs Process Builder (legacy). Produces a recommendation, not an implementation. NOT for building the automation (use flow/* or apex/* skills). | |
 | TODO | data-model-documentation | Documenting the Salesforce data model: ER diagrams, object relationship maps, field inventory, field usage analysis. NOT for designing the model (use object-creation-and-design or architect skills). | |
 | TODO | uat-and-acceptance-criteria | Writing acceptance criteria for Salesforce features, UAT test script format, defect classification for SF, regression test planning. NOT for automated testing (use flow-testing or apex test-class-standards). | |
