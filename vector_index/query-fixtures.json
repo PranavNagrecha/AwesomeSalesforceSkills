@@ -563,6 +563,12 @@
       "domain": "admin",
       "expected_skill": "admin/data-model-documentation",
       "top_k": 3
+    },
+    {
+      "query": "how do I write UAT test scripts for a Salesforce release",
+      "domain": "admin",
+      "expected_skill": "admin/uat-and-acceptance-criteria",
+      "top_k": 3
     }
   ]
 }

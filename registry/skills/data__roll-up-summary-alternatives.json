@@ -40,7 +40,7 @@
     "dfa539389920aafd475a",
     "ee18fbf6e17f7c1ec5ec"
   ],
-  "content_hash": "5da0183372a2c4406b695b33393bab865cdf4e56bcca6db89cd2505f52640a84",
+  "content_hash": "df805631dd6d8c327f5af2b64bc3c8b18435ee08ef193190c370e9f96c8b9c58",
   "dependencies": [],
   "description": "Use when native Roll-Up Summary fields are not enough and the design needs Flow, Apex aggregate, or DLRS-style alternatives for lookup or advanced summary scenarios. Triggers: 'roll up summary on lookup', 'DLRS', 'aggregate trigger', 'summary count on parent', 'roll-up limitation'. NOT for ordinary master-detail roll-up fields that fit native limits without extra design tradeoffs.",
   "file_location": "skills/data/roll-up-summary-alternatives",
@@ -67,7 +67,6 @@
     "skills/data/roll-up-summary-alternatives/references/well-architected.md"
   ],
   "scripts": [
-    "skills/data/roll-up-summary-alternatives/scripts/__pycache__/check_roll_up_summary_alternatives.cpython-311.pyc",
     "skills/data/roll-up-summary-alternatives/scripts/check_roll_up_summary_alternatives.py"
   ],
   "tags": [
