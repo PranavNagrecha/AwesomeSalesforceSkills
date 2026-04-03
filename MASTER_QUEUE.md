@@ -99,7 +99,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
 | DONE | custom-field-creation | How to create any field type on any object: type selection decision tree, naming, FLS, page layout placement, deployment. NOT for formula field logic (use formula-fields) or object design decisions. | Claude Sonnet 4.6 · 2026-04-03T00:00:00Z |
-| TODO | object-creation-and-design | How to create a custom object: naming, API name, features (activities, chatter, history tracking), sharing model selection, tab creation. NOT for field design (use custom-field-creation). | |
+| IN_PROGRESS | object-creation-and-design | How to create a custom object: naming, API name, features (activities, chatter, history tracking), sharing model selection, tab creation. NOT for field design (use custom-field-creation). | Claude Sonnet 4.6 · 2026-04-03T00:00:00Z |
 | TODO | picklist-and-value-sets | Global value sets vs object-local picklists, controlling and dependent fields, picklist value management, replacing picklist values in data. NOT for formula fields that reference picklists. | |
 | TODO | user-management | Creating, deactivating, and freezing users; assigning licenses, roles, and profiles; login hours and IP restrictions; delegated administration. NOT for permission sets (use permission-set-architecture). | |
 | TODO | org-setup-and-configuration | MFA enforcement, session settings, login policies, password policies, trusted IP ranges, My Domain, CSP settings. NOT for user-level security (use user-management or permission-sets-vs-profiles). | |
