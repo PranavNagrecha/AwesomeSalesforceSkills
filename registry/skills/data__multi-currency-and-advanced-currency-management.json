@@ -39,7 +39,7 @@
     "fa4b3fed8d850f762f2e",
     "fc4fd29ac169c722c510"
   ],
-  "content_hash": "4ee3ab3b748fbedf5216b1f35bff0bbceb64f2282bf6a564c014005e6a277caf",
+  "content_hash": "7f4a03e75c79f1849cad003a69e3f632279851c574b0fba20cc305455fd4b841",
   "dependencies": [],
   "description": "Use when designing or reviewing Salesforce multi-currency behavior, especially irreversible activation, `CurrencyIsoCode`, `convertCurrency()`, dated exchange rates, and Advanced Currency Management tradeoffs. Triggers: 'multi currency', 'advanced currency management', 'CurrencyIsoCode', 'dated exchange rate', 'convertCurrency'. NOT for ordinary numeric field calculations with no currency conversion or reporting concern.",
   "file_location": "skills/data/multi-currency-and-advanced-currency-management",
@@ -66,7 +66,6 @@
     "skills/data/multi-currency-and-advanced-currency-management/references/well-architected.md"
   ],
   "scripts": [
-    "skills/data/multi-currency-and-advanced-currency-management/scripts/__pycache__/check_multi_currency_and_advanced_currency_management.cpython-311.pyc",
     "skills/data/multi-currency-and-advanced-currency-management/scripts/check_multi_currency_and_advanced_currency_management.py"
   ],
   "tags": [

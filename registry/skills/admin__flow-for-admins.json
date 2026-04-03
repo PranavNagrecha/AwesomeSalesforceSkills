@@ -59,7 +59,7 @@
     "f2521b03d587e85631cb",
     "fe065148c65b3322bc8a"
   ],
-  "content_hash": "952a5c873b7a90bafc3c544e2eb95a8ed50027d3648b88ff96511c43471a3dd0",
+  "content_hash": "cf03b272ddbe08530f472360860c363313b255ede333ce4f0090938d29132377",
   "dependencies": [],
   "description": "Use when designing, reviewing, or debugging Salesforce Flows from an Admin perspective. Triggers: 'flow', 'automation', 'record-triggered flow', 'screen flow', 'scheduled flow', 'flow error', 'flow interview'. NOT for OmniStudio OmniScripts \u2014 use omnistudio/ skills for that.",
   "file_location": "skills/admin/flow-for-admins",
@@ -85,7 +85,6 @@
     "skills/admin/flow-for-admins/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/flow-for-admins/scripts/__pycache__/check_flow_metadata.cpython-311.pyc",
     "skills/admin/flow-for-admins/scripts/check_flow_metadata.py"
   ],
   "tags": [
