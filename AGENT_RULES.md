@@ -103,7 +103,7 @@ Beyond the required workflow scripts, the following are available:
 |--------|---------|-------|
 | `scripts/skill_graph.py` | Related-skill navigator — finds skills connected by shared tags, domain, or trigger overlap | `python3 scripts/skill_graph.py <domain/skill-name>` |
 | `scripts/search_skills.py` | Registry-level search across all skill metadata (faster than knowledge search for skill-ID lookups) | `python3 scripts/search_skills.py "<query>"` |
-| `scripts/export_skills.py` | Exports skill registry to CSV or JSON for external tooling | `python3 scripts/export_skills.py --format json` |
+| `scripts/export_skills.py` | Converts skills into IDE-native formats for Cursor, Aider, Windsurf, and Augment (`.cursor/rules/`, `CONVENTIONS.md`, etc.) | `python3 scripts/export_skills.py --platform cursor` or `--all` |
 
 Use `skill_graph.py` when writing cross-skill references in `references/well-architected.md`.
 Use `search_skills.py` for duplicate checking before scaffold (faster than full knowledge search).

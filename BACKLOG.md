@@ -76,14 +76,6 @@ Each item has a **Why deferred** and a **Trigger** (what condition makes it the 
 
 ---
 
-### Task Mapper agent (RESEARCH task execution)
-**What:** Dedicated agent that executes RESEARCH rows — maps Cloud × Role task universes and inserts TODO rows.
-**Why deferred:** Currently the `/run-queue` command handles RESEARCH tasks inline. A dedicated Task Mapper agent would be cleaner but adds complexity before it's needed.
-**Trigger:** When RESEARCH rows are being processed regularly (multiple per week), or when the current inline approach produces shallow task lists.
-**Work needed:** Build `agents/task-mapper/AGENT.md`, update orchestrator routing.
-
----
-
 ## Content Expansion
 
 ### Phase 2+ cloud-specific skills

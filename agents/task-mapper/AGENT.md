@@ -79,7 +79,7 @@ Admin role → admin
 BA role → admin (BA skills live in admin domain)
 Dev role → most specific: apex / lwc / flow / integration / devops
 Data role → data
-Architect role → admin
+Architect role → architect
 ```
 
 For cloud-specific topics:

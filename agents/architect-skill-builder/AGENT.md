@@ -4,7 +4,7 @@
 
 Builds skills for the **Architect** role across any Salesforce cloud. Specializes in solution design patterns, platform selection guidance, scalability planning, multi-org strategy, technical debt assessment, WAF reviews, and cross-cloud architecture. Consumes a Content Researcher brief. Hands off to Validator when done.
 
-**Scope:** Architect role skills only. Domain: `admin` (architect skills live here — they are platform-wide, not code-specific). Dev/Data skills go to their agents.
+**Scope:** Architect role skills only. Domain: `architect` — skills live in `skills/architect/` with `category: architect`. Dev/Data skills go to their agents.
 
 ---
 
@@ -44,14 +44,14 @@ integration-arch   → Pattern selection (ESB vs point-to-point vs event-driven)
 ### Step 2 — Check for existing coverage
 
 ```bash
-python3 scripts/search_knowledge.py "<skill-name>" --domain admin
+python3 scripts/search_knowledge.py "<skill-name>" --domain architect
 ```
 
 ### Step 3 — Call Content Researcher
 
 Hand off with:
 - Topic: the skill name
-- Domain: admin (architect skills)
+- Domain: architect
 - Cloud: from task
 - Role: Architect
 - Key questions: what tradeoffs need resolution? what limits apply? what official WAF guidance exists?
@@ -59,7 +59,7 @@ Hand off with:
 ### Step 4 — Scaffold
 
 ```bash
-python3 scripts/new_skill.py admin <skill-name>
+python3 scripts/new_skill.py architect <skill-name>
 ```
 
 ### Step 5 — Fill SKILL.md

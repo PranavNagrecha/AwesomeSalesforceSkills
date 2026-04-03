@@ -273,8 +273,9 @@ Read every ERROR line. Fix each one in the skill files. Re-run.
 Do not mark DONE until sync exits clean.
 
 **If `validate_repo.py` exits non-zero:**
-Read every WARN and ERROR. Fix all of them. Re-run.
-Do not commit until this exits 0.
+Only ERRORs cause a non-zero exit. Read every ERROR line, fix each one, re-run.
+WARNs are advisory — they print but do not block. You do not need to fix WARNs before committing.
+Do not commit until this exits 0 (zero ERRORs).
 
 **If `git push` returns 403 or non-zero:**
 ```bash
@@ -295,53 +296,76 @@ Do not create a duplicate.
 
 ## Parallel Mode (Multiple Skills Per Run)
 
-When the queue has 3+ independent TODO tasks, the agent MAY process up to 3 tasks in parallel within a single invocation. Use this when you need to accelerate queue throughput.
+Each skill takes ~8 minutes to build. The hourly window allows up to 6 skills per run. Use parallel mode to fill that window instead of building one skill and sitting idle.
 
-**Safety rule: only parallelize tasks from DIFFERENT domains.**
-Tasks in the same domain share registry and vector index files — running them simultaneously causes write conflicts.
+**Core model: builds are parallel, syncs are sequential.**
+- **Build phase**: multiple skills built simultaneously — each builder only touches its own `skills/<domain>/<skill>/` folder, so there are no write conflicts between builders in different domains.
+- **Sync phase**: `skill_sync.py` writes to shared `registry/` and `vector_index/` — must run one skill at a time, in sequence.
+
+**Safety rule: only run builders in parallel for tasks from DIFFERENT domains.**
+Two admin skills, two apex skills, etc. must be built sequentially within their domain (their `skills/<domain>/` folder is shared). Skills from different domains are safe to build in parallel.
 
 ### How to run parallel
 
-**Step P1 — Claim N independent tasks**
-Find the first 3 TODO rows from different domains:
+**Step P1 — Claim up to 6 tasks**
 ```bash
-grep "^| TODO" MASTER_QUEUE.md | head -20
+grep "^| TODO" MASTER_QUEUE.md | head -30
 ```
-Pick tasks where no two share the same domain folder (`apex`, `lwc`, `admin`, etc.).
-Mark all N as IN_PROGRESS in one commit:
-```bash
-git add MASTER_QUEUE.md && git commit -m "queue: start parallel batch — <skill1>, <skill2>, <skill3>"
-```
+Select up to 6 TODO tasks. Group them by domain:
+- Pick at most 1 task per domain for the parallel build phase.
+- If you need more than 1 from the same domain, queue them as a sequential second pass after the first batch syncs.
 
-**Step P2 — Execute each skill concurrently**
-For each skill, run the TODO workflow (Steps 2b–2i) simultaneously as independent sub-agents.
-Each sub-agent works in the same working directory but touches only its own `skills/<domain>/<skill>/` folder.
-
-**Step P3 — Sync each skill sequentially**
-After all three builders complete, run skill_sync one at a time (not in parallel):
+Mark all selected tasks IN_PROGRESS in one commit:
 ```bash
-python3 scripts/skill_sync.py --skill skills/<domain1>/<skill1>
-python3 scripts/skill_sync.py --skill skills/<domain2>/<skill2>
-python3 scripts/skill_sync.py --skill skills/<domain3>/<skill3>
-```
-Then run final validation once:
-```bash
-python3 scripts/validate_repo.py
-```
-
-**Step P4 — Commit all, update queue**
-```bash
-git add skills/ registry/ vector_index/ docs/SKILLS.md MASTER_QUEUE.md
-git commit -m "feat: parallel batch — <skill1>, <skill2>, <skill3> [<Cloud>]"
+git add MASTER_QUEUE.md && git commit -m "queue: start parallel batch — <skill1>, <skill2>, ..."
 git push origin main || gh repo sync PranavNagrecha/AwesomeSalesforceSkills --source main --force
 ```
 
-Mark all 3 rows DONE. Update the Progress Summary table.
+**Step P2 — Build all skills concurrently**
+Launch each skill builder as an independent sub-agent simultaneously.
+Each sub-agent runs Steps 2b–2f (research → scaffold → fill content) for its skill only.
+Do NOT run skill_sync.py yet — that happens in Step P3.
+
+**Step P3 — Sync each completed skill sequentially**
+For each skill that completed successfully, run sync one at a time:
+```bash
+python3 scripts/skill_sync.py --skill skills/<domain1>/<skill1>
+python3 scripts/skill_sync.py --skill skills/<domain2>/<skill2>
+# ... continue for each completed skill
+```
+Then validate once across all:
+```bash
+python3 scripts/validate_repo.py
+```
+Must exit 0 before proceeding.
+
+**Step P4 — Handle partial failures**
+If one or more builders failed (BLOCKED, no official source, scaffold error):
+- Sync and commit only the skills that completed successfully.
+- Update MASTER_QUEUE.md: mark completed skills DONE, failed skills BLOCKED (with reason).
+- Do not hold back completed skills waiting for failed ones.
+```bash
+git add skills/<domain-that-succeeded>/ registry/ vector_index/ docs/SKILLS.md MASTER_QUEUE.md
+git commit -m "feat: partial batch — <completed-skill1>, <completed-skill2> [BLOCKED: <failed-skill>]"
+```
+
+**Step P5 — Commit all successful skills, update queue**
+```bash
+git add skills/ registry/ vector_index/ docs/SKILLS.md MASTER_QUEUE.md
+git commit -m "feat: parallel batch — <skill1>, <skill2>, ... [<Cloud>]
+
+<one sentence per skill describing what it covers>
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>"
+git push origin main || gh repo sync PranavNagrecha/AwesomeSalesforceSkills --source main --force
+```
+
+Mark completed rows DONE. Update the Progress Summary table (increment Skills Done by N, decrement TODO by N).
 
 **When NOT to use parallel mode:**
-- Two tasks are in the same domain
-- One task depends on output from another (e.g., a foundational skill that others reference)
-- The queue has fewer than 3 TODO tasks remaining
+- Fewer than 3 TODO tasks remain in the queue
+- All remaining TODOs are in the same domain (build them sequentially instead)
+- A task depends on output from another task in the same batch (e.g., a foundational skill that the others reference — build it first, then run a new parallel batch)
 
 ---
 
