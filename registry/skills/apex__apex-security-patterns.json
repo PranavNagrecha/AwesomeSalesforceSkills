@@ -45,7 +45,7 @@
     "f9e7cb4528398ee92e98",
     "fea2477c3e4cc87dbfa4"
   ],
-  "content_hash": "46f381810b9a6af90e44cd8363f82b6be44200f076769dfd4c31ece3b0efcf2a",
+  "content_hash": "ec7ee73bf5c6cec49f6546994b0fc4fe710a0c2ca3894282cc5a668cc581f43c",
   "dependencies": [],
   "description": "Use when designing, reviewing, or debugging Apex execution context, sharing keywords, CRUD/FLS enforcement, system-vs-user mode behavior, or secure write patterns. Triggers: 'with sharing', 'inherited sharing', 'stripInaccessible', 'AuraEnabled security', 'CRUD FLS'. NOT for SOQL injection review alone \u2014 use apex/soql-security for query-specific hardening.",
   "file_location": "skills/apex/apex-security-patterns",
