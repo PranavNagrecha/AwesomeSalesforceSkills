@@ -40,7 +40,7 @@
     "f73eae7fdfb502ec3e25",
     "ffbd07ff13bbc7cb298c"
   ],
-  "content_hash": "49d672308a995ece1633f568723cfecb3261a1599c95586613b7b59d14d0002b",
+  "content_hash": "1012943590f6b8b5869e03e9afcb83ac248fc09322ef25901abe6b302a5bda14",
   "dependencies": [],
   "description": "Use when designing, reviewing, or troubleshooting Salesforce Approval Processes. Triggers: 'submit for approval', 'approver', 'record locked', 'recall approval', 'approval step', 'discount approval'. NOT for complex orchestration across many objects - use Flow or custom approval patterns for that.",
   "file_location": "skills/admin/approval-processes",
@@ -66,6 +66,7 @@
     "skills/admin/approval-processes/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/approval-processes/scripts/__pycache__/check_approval_design.cpython-311.pyc",
     "skills/admin/approval-processes/scripts/check_approval_design.py"
   ],
   "tags": [

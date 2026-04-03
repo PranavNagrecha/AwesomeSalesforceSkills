@@ -6,7 +6,7 @@
 
 - **Operational Excellence** — Field type decisions made at creation time cannot be undone for most types. Choosing the wrong type (Text instead of Picklist, Lookup instead of Master-Detail) creates technical debt that is expensive to correct: new field creation, data migration, update of all references in flows/apex/reports, and removal of the old field. Operational Excellence here means making deliberate, documented decisions at creation time rather than improvising and correcting later.
 
-- **Scalability** — Custom field count per object is a hard platform limit (800 in Enterprise/Unlimited). Orgs with many custom objects and fields across hundreds of integrations approach this limit. Adding a field for every one-off reporting request without a field governance process creates objects with hundreds of fields, many of which become unused over time. Field creation should be intentional and subject to a governance review for large orgs.
+- **Scalability** — Custom field count per object is a hard platform limit (500 in Enterprise, 800 in Unlimited/Performance). Orgs with many custom objects and fields across hundreds of integrations approach this limit. Adding a field for every one-off reporting request without a field governance process creates objects with hundreds of fields, many of which become unused over time. Field creation should be intentional and subject to a governance review for large orgs.
 
 ## Architectural Tradeoffs
 
