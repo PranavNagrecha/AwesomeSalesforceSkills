@@ -1,0 +1,101 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "03503c66016f8deceaee",
+    "079c72a03cb0773d3ea3",
+    "0e2826fabe5fbfe172e8",
+    "0e57184b5e885aa79048",
+    "12f0e263c3efb9b53d7d",
+    "1f59eb8ec38b3c57570b",
+    "2106ce5b4e5d12d79f1a",
+    "26c97456e698f2a3177c",
+    "3184c10d6a5943606ba8",
+    "334a208a926857cb7391",
+    "3f2e18ecae35ff6f9fc9",
+    "4640c3da8ee9db844956",
+    "4e036f00309e9e29a484",
+    "57227af5a7ddf287353a",
+    "5a552b5fec3795eee346",
+    "61c28f0607f4a964f15e",
+    "63e13728208d6029ee65",
+    "644fc4b0e3b27f5cb598",
+    "682ba539908d231d6215",
+    "6925edef7f5cf7ebc003",
+    "72f33fae71b5d736dbb9",
+    "74e89b903601272ba78b",
+    "7632f20d68a4bfa79a39",
+    "7ab63388c770be68799c",
+    "7ebb6e1121a92216c6a0",
+    "7fadee7fd2f91cd5c1a2",
+    "8602edb0410063920c38",
+    "86076a0644f89f0f702a",
+    "86ec446c4403f17083a4",
+    "88a0f6431996fb593060",
+    "891808b0e08fac010ff7",
+    "8b21e87cee421e624bf1",
+    "8f5126bac2585cef335c",
+    "8fcb63fcaf84e91791e4",
+    "994d4ef72954ff60b77a",
+    "9a0f690a0f99b22e1852",
+    "9e21ae7b1975c9fbc1da",
+    "a0b455ec7728de90bfc3",
+    "a5adfb7c54707689d374",
+    "a76727fe958dc679b7fa",
+    "b82d8b7934594b5261d2",
+    "b8f7af6511c59cf67731",
+    "c3204b17a0886eab8b8d",
+    "c45358e5562b6c3da4e1",
+    "c4791838f45c6997f964",
+    "c4c5982830a9d2975aa1",
+    "d91d7645b9c8ca09f565",
+    "dba14d72df359fe81bd9",
+    "dce89a3fdf76b56be8cd",
+    "e8c0d047320c1669ad90"
+  ],
+  "content_hash": "efe1f10e1c92589fb0da344e6bd49643d0627696ab2b7d53ce10d5e080314d9f",
+  "dependencies": [],
+  "description": "Use this skill to create and configure Lightning apps in Salesforce Setup, add navigation items and tabs to apps, configure utility bar components, and control app visibility by profile or permission set. Trigger keywords: Lightning app, App Manager, custom tab, navigation bar, utility bar, app visibility. NOT for Experience Cloud site apps (use experience-cloud skills), NOT for configuring page layouts or record pages (use Lightning App Builder), NOT for permission set architecture (use permission-set-architecture).",
+  "file_location": "skills/admin/app-and-tab-configuration",
+  "id": "admin/app-and-tab-configuration",
+  "inputs": [
+    "List of objects or pages to expose in the app navigation",
+    "Profiles or permission sets that should have access to the app",
+    "Whether the app needs a utility bar and which utility items (e.g., Open CTI, History, Notes)",
+    "App type: standard Lightning app or console app"
+  ],
+  "name": "app-and-tab-configuration",
+  "official_sources": [
+    "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
+    "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
+    "Salesforce Help \u2014 Create and Edit Lightning Experience Apps: https://help.salesforce.com/s/articleView?id=sf.app_builder_apps.htm",
+    "Salesforce Help \u2014 Custom Tabs: https://help.salesforce.com/s/articleView?id=sf.custom_tabs.htm"
+  ],
+  "outputs": [
+    "Configured Lightning app visible in the App Launcher with correct navigation items",
+    "Custom tabs created and assigned to the app",
+    "Utility bar configured if required",
+    "App visibility restricted to correct profiles or permission sets"
+  ],
+  "references": [
+    "skills/admin/app-and-tab-configuration/references/examples.md",
+    "skills/admin/app-and-tab-configuration/references/gotchas.md",
+    "skills/admin/app-and-tab-configuration/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/app-and-tab-configuration/scripts/check_app_and_tab_configuration.py"
+  ],
+  "tags": [
+    "lightning-app",
+    "custom-tabs",
+    "app-manager",
+    "navigation",
+    "utility-bar"
+  ],
+  "templates": [
+    "skills/admin/app-and-tab-configuration/templates/app-and-tab-configuration-template.md"
+  ],
+  "updated": "2026-04-03",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

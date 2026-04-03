@@ -2,7 +2,9 @@
   "schema_version": 1,
   "skills_by_domain": {
     "admin": [
+      "admin/app-and-tab-configuration",
       "admin/approval-processes",
+      "admin/assignment-rules",
       "admin/change-management-and-deployment",
       "admin/connected-apps-and-auth",
       "admin/custom-field-creation",
@@ -11,10 +13,13 @@
       "admin/duplicate-management",
       "admin/einstein-analytics-basics",
       "admin/email-templates-and-alerts",
+      "admin/escalation-rules",
       "admin/flow-for-admins",
       "admin/formula-fields",
+      "admin/global-actions-and-quick-actions",
       "admin/list-views-and-compact-layouts",
       "admin/object-creation-and-design",
+      "admin/org-setup-and-configuration",
       "admin/permission-set-architecture",
       "admin/permission-sets-vs-profiles",
       "admin/picklist-and-value-sets",
@@ -120,6 +125,9 @@
     "action-contracts": [
       "agentforce/agent-actions"
     ],
+    "action-layout": [
+      "admin/global-actions-and-quick-actions"
+    ],
     "activation-bypass": [
       "apex/trigger-framework"
     ],
@@ -164,6 +172,9 @@
     "api-properties": [
       "lwc/component-communication"
     ],
+    "app-manager": [
+      "admin/app-and-tab-configuration"
+    ],
     "approval-process": [
       "admin/approval-processes"
     ],
@@ -172,6 +183,9 @@
     ],
     "aria": [
       "lwc/lwc-accessibility"
+    ],
+    "assignment-rules": [
+      "admin/assignment-rules"
     ],
     "async-apex": [
       "apex/async-apex"
@@ -234,6 +248,9 @@
       "apex/governor-limits",
       "apex/trigger-framework"
     ],
+    "business-hours": [
+      "admin/escalation-rules"
+    ],
     "bypass": [
       "admin/validation-rules"
     ],
@@ -245,6 +262,10 @@
     ],
     "cache-session": [
       "apex/platform-cache"
+    ],
+    "case-management": [
+      "admin/assignment-rules",
+      "admin/escalation-rules"
     ],
     "cdc": [
       "apex/platform-events-apex"
@@ -320,6 +341,9 @@
       "lwc/static-resources-in-lwc",
       "security/org-hardening-and-baseline-config"
     ],
+    "csp-trusted-sites": [
+      "admin/org-setup-and-configuration"
+    ],
     "currencyisocode": [
       "data/multi-currency-and-advanced-currency-management"
     ],
@@ -349,6 +373,9 @@
     ],
     "custom-settings": [
       "admin/custom-metadata-types"
+    ],
+    "custom-tabs": [
+      "admin/app-and-tab-configuration"
     ],
     "dashboards": [
       "admin/einstein-analytics-basics",
@@ -441,6 +468,9 @@
     ],
     "escalation": [
       "admin/approval-processes"
+    ],
+    "escalation-rules": [
+      "admin/escalation-rules"
     ],
     "event-trigger": [
       "apex/platform-events-apex"
@@ -552,6 +582,9 @@
     ],
     "future-method": [
       "apex/async-apex"
+    ],
+    "global-actions": [
+      "admin/global-actions-and-quick-actions"
     ],
     "global-value-set": [
       "admin/picklist-and-value-sets"
@@ -667,6 +700,9 @@
     "lazy-instantiation": [
       "lwc/lwc-performance"
     ],
+    "lead-management": [
+      "admin/assignment-rules"
+    ],
     "least-privilege": [
       "admin/permission-set-architecture",
       "admin/permission-sets-vs-profiles",
@@ -677,6 +713,9 @@
     ],
     "light-dom": [
       "lwc/lwc-security"
+    ],
+    "lightning-app": [
+      "admin/app-and-tab-configuration"
     ],
     "lightning-data-service": [
       "lwc/wire-service-patterns"
@@ -763,8 +802,14 @@
       "admin/change-management-and-deployment",
       "admin/custom-field-creation"
     ],
+    "mfa": [
+      "admin/org-setup-and-configuration"
+    ],
     "migration": [
       "admin/data-import-and-management"
+    ],
+    "mobile": [
+      "admin/global-actions-and-quick-actions"
     ],
     "mobile-lwc": [
       "lwc/lwc-offline-and-mobile"
@@ -784,6 +829,9 @@
     "muting": [
       "security/permission-set-groups-and-muting"
     ],
+    "my-domain": [
+      "admin/org-setup-and-configuration"
+    ],
     "named-credentials": [
       "admin/connected-apps-and-auth",
       "apex/callouts-and-http-integrations",
@@ -793,6 +841,7 @@
       "flow/flow-governance"
     ],
     "navigation": [
+      "admin/app-and-tab-configuration",
       "flow/screen-flows"
     ],
     "navigationmixin": [
@@ -839,6 +888,9 @@
     ],
     "org-hardening": [
       "security/org-hardening-and-baseline-config"
+    ],
+    "org-setup": [
+      "admin/org-setup-and-configuration"
     ],
     "org-wide-defaults": [
       "admin/object-creation-and-design"
@@ -914,6 +966,9 @@
     "process-builder-migration": [
       "admin/process-automation-selection"
     ],
+    "productivity": [
+      "admin/global-actions-and-quick-actions"
+    ],
     "profiles": [
       "admin/permission-set-architecture",
       "admin/permission-sets-vs-profiles",
@@ -923,6 +978,12 @@
     "queueable": [
       "apex/async-apex",
       "apex/governor-limits"
+    ],
+    "queues": [
+      "admin/assignment-rules"
+    ],
+    "quick-actions": [
+      "admin/global-actions-and-quick-actions"
     ],
     "reactive-parameters": [
       "lwc/wire-service-patterns"
@@ -999,7 +1060,8 @@
       "admin/change-management-and-deployment"
     ],
     "routing": [
-      "admin/approval-processes"
+      "admin/approval-processes",
+      "admin/assignment-rules"
     ],
     "row-actions": [
       "lwc/lwc-data-table"
@@ -1068,8 +1130,14 @@
     "self-dml": [
       "apex/recursive-trigger-prevention"
     ],
+    "service-cloud": [
+      "admin/escalation-rules"
+    ],
     "service-layer": [
       "apex/apex-design-patterns"
+    ],
+    "session-settings": [
+      "admin/org-setup-and-configuration"
     ],
     "set-of-id": [
       "apex/recursive-trigger-prevention"
@@ -1152,6 +1220,9 @@
     "third-party-library": [
       "lwc/static-resources-in-lwc"
     ],
+    "time-based-automation": [
+      "admin/escalation-rules"
+    ],
     "toast": [
       "lwc/lwc-modal-and-overlay"
     ],
@@ -1196,6 +1267,9 @@
     ],
     "users": [
       "admin/user-management"
+    ],
+    "utility-bar": [
+      "admin/app-and-tab-configuration"
     ],
     "validation": [
       "lwc/lwc-forms-and-validation"

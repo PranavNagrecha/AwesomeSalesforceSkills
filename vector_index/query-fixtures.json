@@ -1,6 +1,12 @@
 {
   "queries": [
     {
+      "query": "how do I create a Lightning app and add tabs for custom objects",
+      "domain": "admin",
+      "expected_skill": "admin/app-and-tab-configuration",
+      "top_k": 3
+    },
+    {
       "query": "how do I add a new user in Salesforce",
       "domain": "admin",
       "expected_skill": "admin/user-management",
@@ -490,6 +496,54 @@
       "query": "dependent picklist controlling field setup",
       "domain": "admin",
       "expected_skill": "admin/picklist-and-value-sets",
+      "top_k": 3
+    },
+    {
+      "query": "how do I enable MFA for all users in my Salesforce org",
+      "domain": "admin",
+      "expected_skill": "admin/org-setup-and-configuration",
+      "top_k": 3
+    },
+    {
+      "query": "how to set up and deploy My Domain in Salesforce",
+      "domain": "admin",
+      "expected_skill": "admin/org-setup-and-configuration",
+      "top_k": 3
+    },
+    {
+      "query": "how do I add a quick action to a record page in Lightning Experience",
+      "domain": "admin",
+      "expected_skill": "admin/global-actions-and-quick-actions",
+      "top_k": 3
+    },
+    {
+      "query": "difference between global action and object specific quick action",
+      "domain": "admin",
+      "expected_skill": "admin/global-actions-and-quick-actions",
+      "top_k": 3
+    },
+    {
+      "query": "how do I automatically assign new leads to the right sales rep based on region",
+      "domain": "admin",
+      "expected_skill": "admin/assignment-rules",
+      "top_k": 3
+    },
+    {
+      "query": "cases are not being assigned to the correct queue when submitted via web form",
+      "domain": "admin",
+      "expected_skill": "admin/assignment-rules",
+      "top_k": 3
+    },
+    {
+      "query": "how to set up automatic case escalation after SLA hours",
+      "domain": "admin",
+      "expected_skill": "admin/escalation-rules",
+      "top_k": 3
+    },
+    {
+      "query": "case is not escalating to manager after required time passed",
+      "domain": "admin",
+      "expected_skill": "admin/escalation-rules",
       "top_k": 3
     }
   ]

@@ -45,7 +45,7 @@
     "f56c12c4ebe95cca7d09",
     "f7c86fe799edfd823c6e"
   ],
-  "content_hash": "583a0cb091c995d8e6fa054cbf0eb092c28e886431efb1a6f3839783fb11f3f5",
+  "content_hash": "885bf48ca04082600f3186fcf8b9547f1031c4127c8be8d515cf8fd12127d031",
   "dependencies": [],
   "description": "Use when building, reviewing, or debugging inbound Apex REST resources, request/response handling, status codes, versioned URL mappings, or JSON serialization in `@RestResource` classes. Triggers: 'Apex REST', '@RestResource', 'HttpGet/HttpPost', 'RestContext', 'versioned endpoint'. NOT for outbound HTTP callouts or standard Salesforce REST API usage as a consumer.",
   "file_location": "skills/apex/apex-rest-services",

@@ -39,7 +39,7 @@
     "fad5c02c4194313e8171",
     "fb004e8bbf77c42b5dd3"
   ],
-  "content_hash": "e8ec2e959b589675843daad1eb827e85c45501cbad5abd23423d3264fca6a9b8",
+  "content_hash": "c27715133c8e56ea4e7d3e081d25aaff0c22ee2e38effcc1cd8bb09463ea2897",
   "dependencies": [],
   "description": "Use when designing, reviewing, or troubleshooting Salesforce email templates, email alerts, and declarative notification design. Triggers: 'Lightning Email Template', 'email alert', 'merge field', 'org-wide email', 'too many emails', 'mass email limit'. NOT for marketing automation or custom Apex email services.",
   "file_location": "skills/admin/email-templates-and-alerts",

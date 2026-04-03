@@ -1,0 +1,102 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "09f3d7908b7ce0627014",
+    "12d8641f6700cb89705f",
+    "1947b4002701c4988732",
+    "1b9fdcf1bb39e29944d2",
+    "1f67da33a03a2dd0e6e8",
+    "27fcb97efa1042e42b50",
+    "2fa0c0c1948e6b1f4e69",
+    "37e50f32ef65e3d5d842",
+    "488a29ca5a5c35288e65",
+    "49e024334afb43a27988",
+    "4f5ee883607de2f47ba7",
+    "4f64216a0e56a505abf6",
+    "646a053d652a055991c0",
+    "658100a77665a6237755",
+    "708c781ba70889ffde8d",
+    "73719346cc0090a743f9",
+    "7750ffcc2e939276a210",
+    "780875b71601954c68c4",
+    "7c6ca8d71c7ce1f0fc50",
+    "7cbe2e23a2bb44a4889c",
+    "7fc5730580bc37de1c45",
+    "80dcba6bbe189c9b5804",
+    "82f5319930793d75b8e0",
+    "83a1b703216c7314751c",
+    "83d22218f85b3f864068",
+    "853e7806cdf133412adb",
+    "8cb57b31c2bafad57fec",
+    "8d30873975baa2ab52ea",
+    "9b028d115aaeb97d860f",
+    "9c8db60a079f95d570b1",
+    "9fc2040d58a163c6b327",
+    "a598e2c641e22e0773cd",
+    "a660624d5cfa974716e3",
+    "bb6ed5202be58382142c",
+    "be0920bff07643e93603",
+    "c204051e9b43f9768a37",
+    "c28407ee56491e40d41c",
+    "c5e1e62aca72a26f73e8",
+    "c7ca77b52e15eb85e9c1",
+    "cd23f2f6463cee404fa4",
+    "cec76bcfce43ca5d015e",
+    "d060958f30cc43330706",
+    "d0d3fcb0f9af6f5241cb",
+    "d446f910d0b835127946",
+    "d58fcad1bdd04e3f5408",
+    "e3f51979ee2a93e99466",
+    "e7107d335f33fbabbaea",
+    "ed67fbb59e22bd795342",
+    "f27e653623d965f80451",
+    "f3c81eeec963b086a023",
+    "fc0038e8bb8f327eb7c6"
+  ],
+  "content_hash": "fc2291ed80a1e8fac96ccbfc47f9abe1ac4ea6a371a50be365d250827293c140",
+  "dependencies": [],
+  "description": "Configure and troubleshoot Salesforce Case Escalation Rules: setting up time-based escalation entries, business hours configuration, escalation actions (email alerts and reassignment), and diagnosing why cases are not escalating. NOT for case assignment on creation (use assignment-rules), approval routing (use approval-processes), or SLA milestones in Service Cloud (use entitlement-management).",
+  "file_location": "skills/admin/escalation-rules",
+  "id": "admin/escalation-rules",
+  "inputs": [
+    "The objects involved (always Case)",
+    "SLA requirements: how many hours before escalation fires",
+    "Whether escalation time should respect business hours or run 24/7",
+    "Escalation actions required: email notification targets, reassignment target (user, queue, or manager)",
+    "Case criteria for each escalation tier (priority, type, origin, etc.)"
+  ],
+  "name": "escalation-rules",
+  "official_sources": [
+    "Salesforce Help: Set Up Case Escalation Rules \u2014 https://help.salesforce.com/s/articleView?id=sf.customize_escalation.htm",
+    "Salesforce Help: Business Hours \u2014 https://help.salesforce.com/s/articleView?id=sf.businesshours.htm",
+    "Metadata API Developer Guide: EscalationRules Metadata Type \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_escalationrules.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Configured escalation rule with entries and actions",
+    "Business hours setup recommendation",
+    "Escalation configuration review checklist",
+    "Troubleshooting diagnosis for non-firing escalations"
+  ],
+  "references": [
+    "skills/admin/escalation-rules/references/examples.md",
+    "skills/admin/escalation-rules/references/gotchas.md",
+    "skills/admin/escalation-rules/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/escalation-rules/scripts/check_escalation_rules.py"
+  ],
+  "tags": [
+    "escalation-rules",
+    "case-management",
+    "business-hours",
+    "service-cloud",
+    "time-based-automation"
+  ],
+  "templates": [
+    "skills/admin/escalation-rules/templates/escalation-rules-template.md"
+  ],
+  "updated": "2026-04-03",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

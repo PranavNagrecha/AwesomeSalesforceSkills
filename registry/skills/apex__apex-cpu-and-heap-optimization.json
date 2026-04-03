@@ -44,7 +44,7 @@
     "f68740035296b1c46506",
     "fcfde5d9a323df314cfc"
   ],
-  "content_hash": "c2b5c8e7a35b4ed1ae6a29a2c5cbf342d9c65aefd3494eeca76399a64c6810ba",
+  "content_hash": "b19dd40fa82144f8cf4c0fcbe4604e12484d9071428203fbaad10f9926134cce",
   "dependencies": [],
   "description": "Use when diagnosing or preventing Apex CPU time and heap size problems, including nested-loop refactors, JSON memory pressure, string work, and `Limits.getCpuTime()` checkpoints. Triggers: 'CPU time limit exceeded', 'heap size too large', 'string concatenation', 'regex in loop', 'Limits.getCpuTime'. NOT for generic SOQL/DML governor-limit basics without a CPU or heap bottleneck.",
   "file_location": "skills/apex/apex-cpu-and-heap-optimization",
