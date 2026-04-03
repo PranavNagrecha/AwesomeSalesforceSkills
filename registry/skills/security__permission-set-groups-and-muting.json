@@ -39,7 +39,7 @@
     "e5f43b35df7e5350c45a",
     "f7497850a182a02c044c"
   ],
-  "content_hash": "bef365d0b93cebf55038957304f2e0be0d394acb7ebef5a6d3955c5e9fffaaab",
+  "content_hash": "51a3b47748cf79068689df88865a9f5ab78d66776b7a8acc502187e5fa40b855",
   "dependencies": [],
   "description": "Use when designing or reviewing permission-set-group architecture, especially profile minimization, group composition, muting strategy, and migration away from profile-heavy security models. Triggers: 'permission set group', 'muting permission set', 'profiles to permission sets', 'PSG architecture', 'muted permissions'. NOT for record-sharing design or CRUD/FLS review in Apex code.",
   "file_location": "skills/security/permission-set-groups-and-muting",
@@ -66,6 +66,7 @@
     "skills/security/permission-set-groups-and-muting/references/well-architected.md"
   ],
   "scripts": [
+    "skills/security/permission-set-groups-and-muting/scripts/__pycache__/check_permission_set_groups_and_muting.cpython-311.pyc",
     "skills/security/permission-set-groups-and-muting/scripts/check_permission_set_groups_and_muting.py"
   ],
   "tags": [
