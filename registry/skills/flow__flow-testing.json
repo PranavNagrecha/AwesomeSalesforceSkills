@@ -42,7 +42,7 @@
     "f3519e1e8066f03e5632",
     "f52d5e56709c618e2247"
   ],
-  "content_hash": "52b3ac919b6ade1c93f4c957e9c51f68683fe9cb2cff20610e8b7ea3aab1002b",
+  "content_hash": "8ea24ea3ba6580ed2319e66cd1c9627d1e98cbd0cc636b329c31f3b92fa86b56",
   "dependencies": [],
   "description": "Use when defining or reviewing test strategy for Salesforce Flow, including Flow Tests, debug runs, path coverage, test data, and explicit validation of fault paths and custom component behavior. Triggers: 'flow test tool', 'how do i test a flow', 'flow fault path testing', 'flow debug interview'. NOT for Apex unit testing or manual QA planning that is unrelated to Flow behavior.",
   "file_location": "skills/flow/flow-testing",
@@ -69,7 +69,6 @@
     "skills/flow/flow-testing/references/well-architected.md"
   ],
   "scripts": [
-    "skills/flow/flow-testing/scripts/__pycache__/check_flow_testing.cpython-311.pyc",
     "skills/flow/flow-testing/scripts/check_flow_testing.py"
   ],
   "tags": [
