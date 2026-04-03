@@ -53,8 +53,8 @@ Alternatively, set the expiration period to **Never** if the org relies on SSO +
 
 ## Anti-Pattern: Adding All CSP Directives for Every External Domain
 
-**What practitioners do:** When a CSP trusted site is needed for a new integration, the admin checks all directive checkboxes (connect-src, script-src, style-src, img-src, font-src, frame-src) to "make sure it works."
+**What practitioners do:** When a CSP trusted site is needed for a new integration, the admin checks all available directive checkboxes (connect-src, style-src, img-src, font-src, frame-src, media-src) to "make sure it works."
 
-**What goes wrong:** The domain is now trusted for script execution, which is a significant security grant. A compromised CDN or typosquatted domain could execute arbitrary JavaScript in the user's browser context. Over time, dozens of entries accumulate with all directives checked and no documented business justification.
+**What goes wrong:** The domain is trusted for far more than necessary. Over time, dozens of entries accumulate with all directives checked and no documented business justification. Stale entries for defunct integrations remain indefinitely. Note: Salesforce does not expose `script-src` through CSP Trusted Sites — external JavaScript must be hosted as a static resource instead.
 
 **Correct approach:** Check only the specific directive(s) actually required. Open browser DevTools and read the CSP violation message — it specifies exactly which directive was violated. Grant only that directive. Document the reason in the CSP Trusted Sites entry name or a separate exception register.

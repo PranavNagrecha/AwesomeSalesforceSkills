@@ -110,15 +110,17 @@ Trusted IP ranges do not bypass MFA. They only bypass the email verification ste
 
 ### CSP Trusted Sites Allow External Resources On Lightning Pages
 
-Lightning Experience uses a Content Security Policy that blocks external resources by default. If a Lightning page, LWC, or Visualforce page must load scripts, styles, images, or fonts from an external domain, that domain must be added to **Setup > Security > CSP Trusted Sites**.
+Lightning Experience uses a Content Security Policy that blocks external resources by default. If a Lightning page, LWC, or Visualforce page must load resources from an external domain, that domain must be added to **Setup > Security > CSP Trusted Sites** (also labeled **Trusted URLs** in newer API versions).
 
 For each entry you specify the directive context:
-- **connect-src**: Allows `fetch()` / `XHR` calls to the domain (API calls from LWC)
-- **script-src**: Allows JavaScript files from the domain
+- **connect-src**: Allows `fetch()` / `XHR` / WebSocket calls to the domain (API calls from LWC)
 - **style-src**: Allows CSS stylesheets from the domain
 - **img-src**: Allows images from the domain
 - **font-src**: Allows font files from the domain
 - **frame-src**: Allows iframes embedding content from the domain
+- **media-src**: Allows audio/video content from the domain
+
+**Important:** `script-src` cannot be relaxed via CSP Trusted Sites. Salesforce does not allow external JavaScript execution via this control — `unsafe-inline` and external script hosts are blocked by platform design. Loading JavaScript from an external domain requires a different approach (e.g., static resources).
 
 A CSP violation does not produce a Salesforce error message visible to the user — it is a browser console error. This makes blocked resources harder to diagnose.
 

@@ -22,7 +22,7 @@
 
 2. **Using trusted IP ranges as a substitute for MFA** — Trusted IP ranges only bypass the email verification challenge. They do not enforce authentication strength. An attacker with a stolen password who is on a trusted network (e.g., connected to the company VPN) can still log in without MFA if MFA is not independently enforced. Trusted ranges and MFA solve different problems and should both be in place.
 
-3. **Accumulating CSP Trusted Sites with all directives checked** — The "check all" approach to CSP entries defeats the purpose of CSP as a defense-in-depth control. Over time, orgs accumulate dozens of entries covering domains from defunct integrations, all granted full trust. Audit and prune CSP entries quarterly.
+3. **Accumulating CSP Trusted Sites with all available directives checked** — The "check all" approach defeats the purpose of CSP as a defense-in-depth control. Over time, orgs accumulate dozens of entries covering domains from defunct integrations, all granted broad trust across connect-src, style-src, img-src, font-src, frame-src, and media-src. Audit and prune CSP entries quarterly. Note: `script-src` is not exposed through the CSP Trusted Sites UI; external JavaScript must be delivered as a Salesforce static resource.
 
 ## Official Sources Used
 
