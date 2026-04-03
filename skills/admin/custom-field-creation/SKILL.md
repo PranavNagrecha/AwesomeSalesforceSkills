@@ -90,8 +90,9 @@ Choose a clear, unambiguous name. "Billing_Region__c" is better than "BR__c". Yo
 | Edition | Custom Fields per Object |
 |---------|--------------------------|
 | Contact Manager, Group | 100 |
+| Essentials | 100 |
 | Professional | 100 |
-| Enterprise | 800 |
+| Enterprise | 500 |
 | Performance, Unlimited | 800 |
 | Developer | 500 |
 
