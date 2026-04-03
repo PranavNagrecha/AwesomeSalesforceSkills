@@ -59,7 +59,7 @@
     "f4c0f883b700d95b47a9",
     "fb4607249efe9887ba10"
   ],
-  "content_hash": "53ff7cf6c199d3ce5454cbc8cadca357a574fea8c5442444d0bb093286bc1930",
+  "content_hash": "5c9a772b8b70057f5f41202facb8ca3a062a41e1d2dbebbdc75ea800732180c9",
   "dependencies": [],
   "description": "Use when building, auditing, or troubleshooting Salesforce Reports and Dashboards. Triggers: 'report', 'dashboard', 'missing data in report', 'pipeline report', 'cross-filter', 'report subscription', 'dashboard refresh'. NOT for Einstein Analytics / CRM Analytics \u2014 separate skill needed for that.",
   "file_location": "skills/admin/reports-and-dashboards",

@@ -5,6 +5,7 @@
       "admin/approval-processes",
       "admin/change-management-and-deployment",
       "admin/connected-apps-and-auth",
+      "admin/custom-field-creation",
       "admin/custom-metadata-types",
       "admin/data-import-and-management",
       "admin/duplicate-management",
@@ -118,6 +119,9 @@
     ],
     "activation-bypass": [
       "apex/trigger-framework"
+    ],
+    "admin": [
+      "admin/custom-field-creation"
     ],
     "advanced-currency-management": [
       "data/multi-currency-and-advanced-currency-management"
@@ -321,6 +325,9 @@
     "custom-events": [
       "lwc/component-communication"
     ],
+    "custom-fields": [
+      "admin/custom-field-creation"
+    ],
     "custom-metadata": [
       "apex/custom-metadata-in-apex"
     ],
@@ -458,6 +465,9 @@
     ],
     "feature-flags": [
       "admin/custom-metadata-types"
+    ],
+    "field-level-security": [
+      "admin/custom-field-creation"
     ],
     "file-upload": [
       "lwc/lwc-forms-and-validation"
@@ -728,7 +738,8 @@
       "admin/email-templates-and-alerts"
     ],
     "metadata": [
-      "admin/change-management-and-deployment"
+      "admin/change-management-and-deployment",
+      "admin/custom-field-creation"
     ],
     "migration": [
       "admin/data-import-and-management"
@@ -818,6 +829,9 @@
     ],
     "packaging": [
       "apex/custom-metadata-in-apex"
+    ],
+    "page-layout": [
+      "admin/custom-field-creation"
     ],
     "page-layouts": [
       "admin/record-types-and-page-layouts"
