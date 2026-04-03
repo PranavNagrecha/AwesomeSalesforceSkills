@@ -13,6 +13,7 @@
       "admin/duplicate-management",
       "admin/einstein-analytics-basics",
       "admin/email-templates-and-alerts",
+      "admin/escalation-rules",
       "admin/flow-for-admins",
       "admin/formula-fields",
       "admin/global-actions-and-quick-actions",
@@ -247,6 +248,9 @@
       "apex/governor-limits",
       "apex/trigger-framework"
     ],
+    "business-hours": [
+      "admin/escalation-rules"
+    ],
     "bypass": [
       "admin/validation-rules"
     ],
@@ -260,7 +264,8 @@
       "apex/platform-cache"
     ],
     "case-management": [
-      "admin/assignment-rules"
+      "admin/assignment-rules",
+      "admin/escalation-rules"
     ],
     "cdc": [
       "apex/platform-events-apex"
@@ -463,6 +468,9 @@
     ],
     "escalation": [
       "admin/approval-processes"
+    ],
+    "escalation-rules": [
+      "admin/escalation-rules"
     ],
     "event-trigger": [
       "apex/platform-events-apex"
@@ -1122,6 +1130,9 @@
     "self-dml": [
       "apex/recursive-trigger-prevention"
     ],
+    "service-cloud": [
+      "admin/escalation-rules"
+    ],
     "service-layer": [
       "apex/apex-design-patterns"
     ],
@@ -1208,6 +1219,9 @@
     ],
     "third-party-library": [
       "lwc/static-resources-in-lwc"
+    ],
+    "time-based-automation": [
+      "admin/escalation-rules"
     ],
     "toast": [
       "lwc/lwc-modal-and-overlay"

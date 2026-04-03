@@ -106,7 +106,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | DONE | app-and-tab-configuration | Creating Lightning apps, configuring navigation items, adding tabs for custom objects, utility bar, app visibility by profile. NOT for Experience Cloud apps. | Claude Sonnet 4.6 · 2026-04-03T00:00:00Z |
 | DONE | global-actions-and-quick-actions | Object-specific quick actions vs global actions, action layouts, pre-filling fields, adding actions to page layouts and mobile. NOT for Flow-triggered actions. | Claude Sonnet 4.6 · 2026-04-03T00:00:00Z |
 | DONE | assignment-rules | Lead assignment rules, case assignment rules, rule entry criteria, queue assignment, round-robin patterns using Apex. NOT for approval process routing (use approval-processes). | Claude Sonnet 4.6 · 2026-04-03T00:00:00Z |
-| TODO | escalation-rules | Case escalation rules, time-based escalation, business hours configuration, escalation actions. NOT for assignment rules or approval processes. | |
+| DONE | escalation-rules | Case escalation rules, time-based escalation, business hours configuration, escalation actions. NOT for assignment rules or approval processes. | Claude Sonnet 4.6 · 2026-04-03T00:00:00Z |
 | TODO | data-skew-and-sharing-performance | Recognizing data skew (account skew, ownership skew), impact on sharing recalculation, mitigation strategies. NOT for sharing model design (use sharing-and-visibility). | |
 
 ### Core Platform × BA Role
