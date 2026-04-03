@@ -39,7 +39,7 @@
     "fad5c02c4194313e8171",
     "fb004e8bbf77c42b5dd3"
   ],
-  "content_hash": "c27715133c8e56ea4e7d3e081d25aaff0c22ee2e38effcc1cd8bb09463ea2897",
+  "content_hash": "80adedfca430f5f33e3e59096c8dca8d6d74768b5a57a3fc10ef4a3aa29b4413",
   "dependencies": [],
   "description": "Use when designing, reviewing, or troubleshooting Salesforce email templates, email alerts, and declarative notification design. Triggers: 'Lightning Email Template', 'email alert', 'merge field', 'org-wide email', 'too many emails', 'mass email limit'. NOT for marketing automation or custom Apex email services.",
   "file_location": "skills/admin/email-templates-and-alerts",
@@ -65,6 +65,7 @@
     "skills/admin/email-templates-and-alerts/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/email-templates-and-alerts/scripts/__pycache__/check_email_templates.cpython-311.pyc",
     "skills/admin/email-templates-and-alerts/scripts/check_email_templates.py"
   ],
   "tags": [

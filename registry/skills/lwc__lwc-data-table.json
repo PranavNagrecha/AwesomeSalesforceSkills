@@ -44,7 +44,7 @@
     "fea4272a1ed850f1deaf",
     "ff236106ee6266b03ef8"
   ],
-  "content_hash": "48434e98d53998787b73274b10bd1d1d6cc451af9e693133c7fc0c1267c49dd6",
+  "content_hash": "50a7b21c8f47457c942c110d5795f6c7a82fe168ebe606c13d88c2e23f17352d",
   "dependencies": [],
   "description": "Use when designing or reviewing `lightning-datatable` usage in Lightning Web Components, including column configuration, stable `key-field` values, inline editing, row actions, infinite loading, and custom cell types. Triggers: 'lightning datatable inline edit', 'row actions in lwc datatable', 'key field missing', 'infinite loading in datatable'. NOT for highly custom virtualized grids or broad page-performance work outside the datatable boundary.",
   "file_location": "skills/lwc/lwc-data-table",
@@ -71,6 +71,7 @@
     "skills/lwc/lwc-data-table/references/well-architected.md"
   ],
   "scripts": [
+    "skills/lwc/lwc-data-table/scripts/__pycache__/check_lwc_data_table.cpython-311.pyc",
     "skills/lwc/lwc-data-table/scripts/check_lwc_data_table.py"
   ],
   "tags": [
