@@ -4264,8 +4264,8 @@ To make a request to Salesforce, substitute values from your org and external cl
 This cURL command generates an access token.
 curl -X POST https://instance_name.my.salesforce.com/services/oauth2/token -d
 'grant_type=client_credentials' -d
-'client_id=3MVG9VwZxxW3bBQjhE6m21CG2nSS4WC.GNbZCtKeQxFH7218ns6xOLCNnJVKnZFTZWKzt2qwSFqt2taMt5mcr'
--d 'client_secret=8A4BE698BCA216718ECB0B1DCA294C69732EAD9472A1790F8FED38DD2E02B5FA'
+'client_id=<YOUR_CONSUMER_KEY>'
+-d 'client_secret=<YOUR_CONSUMER_SECRET>'
 The value of grant_type depends on the OAuth authentication flow that you’re using. This example uses the OAuth 2.0 Client
 Credentials Flow for Server-to-Server Integration, so the grant type is client_credentials. The response includes the server
 instance and the access token.
