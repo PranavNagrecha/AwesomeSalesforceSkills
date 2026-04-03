@@ -41,7 +41,7 @@
     "f53928fc481ac0836e16",
     "fa6ed9e8fafed96ebb21"
   ],
-  "content_hash": "5855d1d7008eff78828f546c9a921c4b7e173d2f9cec068dd0e697f6c329a947",
+  "content_hash": "01e44f931cf2618426df668b46bf840f31a226c9ec4737cc0999c04f641cb656",
   "dependencies": [],
   "description": "Use when designing or reviewing Flow custom property editor patterns for screen components or actions, including when Flow Builder needs guided design-time configuration, generic type mapping, or builder-context-aware validation. Triggers: 'Flow custom property editor', 'configurationEditor', 'builderContext', 'inputVariables', 'Flow screen component setup'. NOT for general LWC runtime behavior when Flow Builder customization is not involved.",
   "file_location": "skills/flow/flow-custom-property-editors",
@@ -68,7 +68,6 @@
     "skills/flow/flow-custom-property-editors/references/well-architected.md"
   ],
   "scripts": [
-    "skills/flow/flow-custom-property-editors/scripts/__pycache__/check_flow_custom_property_editors.cpython-311.pyc",
     "skills/flow/flow-custom-property-editors/scripts/check_flow_custom_property_editors.py"
   ],
   "tags": [

@@ -14,6 +14,7 @@
       "admin/email-templates-and-alerts",
       "admin/flow-for-admins",
       "admin/formula-fields",
+      "admin/global-actions-and-quick-actions",
       "admin/list-views-and-compact-layouts",
       "admin/object-creation-and-design",
       "admin/org-setup-and-configuration",
@@ -121,6 +122,9 @@
     ],
     "action-contracts": [
       "agentforce/agent-actions"
+    ],
+    "action-layout": [
+      "admin/global-actions-and-quick-actions"
     ],
     "activation-bypass": [
       "apex/trigger-framework"
@@ -564,6 +568,9 @@
     "future-method": [
       "apex/async-apex"
     ],
+    "global-actions": [
+      "admin/global-actions-and-quick-actions"
+    ],
     "global-value-set": [
       "admin/picklist-and-value-sets"
     ],
@@ -783,6 +790,9 @@
     "migration": [
       "admin/data-import-and-management"
     ],
+    "mobile": [
+      "admin/global-actions-and-quick-actions"
+    ],
     "mobile-lwc": [
       "lwc/lwc-offline-and-mobile"
     ],
@@ -938,6 +948,9 @@
     "process-builder-migration": [
       "admin/process-automation-selection"
     ],
+    "productivity": [
+      "admin/global-actions-and-quick-actions"
+    ],
     "profiles": [
       "admin/permission-set-architecture",
       "admin/permission-sets-vs-profiles",
@@ -947,6 +960,9 @@
     "queueable": [
       "apex/async-apex",
       "apex/governor-limits"
+    ],
+    "quick-actions": [
+      "admin/global-actions-and-quick-actions"
     ],
     "reactive-parameters": [
       "lwc/wire-service-patterns"
