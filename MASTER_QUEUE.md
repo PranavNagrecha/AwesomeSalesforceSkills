@@ -57,7 +57,7 @@ STATUS KEY:
 
 | Phase | Cloud | Total Cells | Skills Planned | Skills Done | TODO |
 |-------|-------|-------------|----------------|-------------|------|
-| 1 | Core Platform | 5 roles | 34 | 11 | 23 |
+| 1 | Core Platform | 5 roles | 34 | 12 | 21 |
 | 2 | Sales Cloud | 5 roles | RESEARCH | 0 | — |
 | 3 | Service Cloud | 5 roles | RESEARCH | 0 | — |
 | 4 | Experience Cloud | 5 roles | RESEARCH | 0 | — |
@@ -116,8 +116,8 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
 | DONE | requirements-gathering-for-sf | Eliciting and documenting Salesforce requirements: user story format for SF features, As-Is vs To-Be process mapping, gap analysis, stakeholder interview questions. NOT for technical design. | Claude Sonnet 4.6 · 2026-04-03T00:00:00Z |
-| IN_PROGRESS | process-mapping-and-automation-selection | Mapping business processes to Salesforce automation options: Flow vs Apex vs Workflow Email Alert vs Process Builder (legacy). Produces a recommendation, not an implementation. NOT for building the automation (use flow/* or apex/* skills). | Claude Sonnet 4.6 · 2026-04-03T00:00:00Z |
-| TODO | data-model-documentation | Documenting the Salesforce data model: ER diagrams, object relationship maps, field inventory, field usage analysis. NOT for designing the model (use object-creation-and-design or architect skills). | |
+| DUPLICATE | process-mapping-and-automation-selection | Mapping business processes to Salesforce automation options: Flow vs Apex vs Workflow Email Alert vs Process Builder (legacy). Produces a recommendation, not an implementation. NOT for building the automation (use flow/* or apex/* skills). | Covered by admin/process-automation-selection · Claude Sonnet 4.6 · 2026-04-03T00:00:00Z |
+| DONE | data-model-documentation | Documenting the Salesforce data model: ER diagrams, object relationship maps, field inventory, field usage analysis. NOT for designing the model (use object-creation-and-design or architect skills). | Claude Sonnet 4.6 · 2026-04-03T00:00:00Z |
 | TODO | uat-and-acceptance-criteria | Writing acceptance criteria for Salesforce features, UAT test script format, defect classification for SF, regression test planning. NOT for automated testing (use flow-testing or apex test-class-standards). | |
 | TODO | change-management-and-training | User adoption planning, Salesforce training material structure, release communication templates, change impact assessment. NOT for org deployment (use change-management-and-deployment). | |
 

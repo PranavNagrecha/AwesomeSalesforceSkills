@@ -13,7 +13,7 @@
       "top_k": 3
     },
     {
-      "query": "how do I create a custom object in Salesforce",
+      "query": "steps to create a new custom object in Salesforce Setup",
       "domain": "admin",
       "expected_skill": "admin/object-creation-and-design",
       "top_k": 3
@@ -556,6 +556,12 @@
       "query": "how do I write user stories for a Salesforce implementation project",
       "domain": "admin",
       "expected_skill": "admin/requirements-gathering-for-sf",
+      "top_k": 3
+    },
+    {
+      "query": "how do I document the fields on my Salesforce objects",
+      "domain": "admin",
+      "expected_skill": "admin/data-model-documentation",
       "top_k": 3
     }
   ]

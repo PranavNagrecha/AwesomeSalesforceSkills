@@ -1,0 +1,96 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "03418c580a33318e52d7",
+    "0cd8dbb7d162390b080b",
+    "0ee01d5b7a4b3c7b37bc",
+    "12d2e22d5c8aab11f147",
+    "1371232a89fa1086e497",
+    "17b8b5e7e4f6c5eeca29",
+    "1c3781b7a0f045504bff",
+    "22d4589ea40e237bb8f8",
+    "2e9f79453f756f928721",
+    "2eae918276fb8eec09e2",
+    "35fff2b3c8d8f26ad9c6",
+    "36eca6cf0391e06bb232",
+    "3862497505d1eff82a0f",
+    "4262a76fa0d458e1c3b9",
+    "44289d796e685ec044b5",
+    "4af4f22acc7554ebe662",
+    "50d5f966ff09b51a0f99",
+    "59d236e9bc3c3b2ac438",
+    "5f1c4c95896bd72d56ae",
+    "756cfc6c7afe13f958b1",
+    "7b84e24826180d3bb828",
+    "833a46795bb1aad34c6f",
+    "9b97ceb91df374abca74",
+    "a5c26e651b18a9a375d9",
+    "a5f4c2d8dfa606ff0d9e",
+    "aa1229c50f0290e7b2c9",
+    "abca62b81662583053e1",
+    "ae3a345896e8e20c30e5",
+    "b188838d8988a5f0ceab",
+    "b4a665033e59d96373ad",
+    "b5a72ab4dd4b5310149a",
+    "bd5c6a0c26cf6253c176",
+    "c8137fd09873649c4a3d",
+    "cc53312e3ebf220b4519",
+    "d09da6efc0d4ea68a9e4",
+    "d1e03a07efaa77f9b3a4",
+    "d481ba5bc5444539df77",
+    "ddf2edec9b849e4ac2e3",
+    "de4080a3d289e58baf65",
+    "e733995915d05733eff2",
+    "ec381ad9f9876653db31",
+    "f480760408d6ac2bbd59",
+    "f6b5614af1f1e839c237",
+    "f8a2332c1bff63825516",
+    "f9509538a737c0e396b7",
+    "fc4fe16fffe5236d9dca",
+    "fcce0da13e677995c4c4"
+  ],
+  "content_hash": "175383449805df24ca596e285ef5c6e963a0cfb41bcfa1f80fd0b714af4f1e23",
+  "dependencies": [],
+  "description": "Use when a BA or admin needs to document the Salesforce data model: creating field inventories, object relationship maps, ER diagrams, or analyzing field usage across objects. Triggers: 'data dictionary', 'document our data model', 'object relationship map', 'field inventory', 'ER diagram for Salesforce'. NOT for designing the data model (use object-creation-and-design or architect skills) or for optimizing queries against the model (use soql-query-optimization).",
+  "file_location": "skills/admin/data-model-documentation",
+  "id": "admin/data-model-documentation",
+  "inputs": [
+    "List of objects to document (standard, custom, or both)",
+    "Access to Salesforce org Setup or exported metadata (package.xml retrieve)",
+    "Any specific documentation format required (spreadsheet, diagram, narrative)"
+  ],
+  "name": "data-model-documentation",
+  "official_sources": [
+    "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm \u2014 used for standard object and field type definitions, cardinality rules, and polymorphic lookup behavior",
+    "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm \u2014 used for CustomObject metadata structure, field XML elements, and FLS storage in Profile/PermissionSet metadata",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html \u2014 used for Operational Excellence pillar framing and documentation as a quality practice"
+  ],
+  "outputs": [
+    "Field inventory: object name, field label, API name, type, required, FLS, description",
+    "Object relationship map showing Lookup, Master-Detail, and Junction relationships",
+    "ER diagram draft suitable for stakeholder review or onboarding",
+    "Field usage analysis flagging blank Description fields or undocumented custom fields"
+  ],
+  "references": [
+    "skills/admin/data-model-documentation/references/examples.md",
+    "skills/admin/data-model-documentation/references/gotchas.md",
+    "skills/admin/data-model-documentation/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/data-model-documentation/scripts/__pycache__/check_data_model_documentation.cpython-311.pyc",
+    "skills/admin/data-model-documentation/scripts/check_data_model_documentation.py"
+  ],
+  "tags": [
+    "data-model",
+    "field-inventory",
+    "er-diagram",
+    "schema-documentation",
+    "object-relationships"
+  ],
+  "templates": [
+    "skills/admin/data-model-documentation/templates/data-model-documentation-template.md"
+  ],
+  "updated": "2026-04-03",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

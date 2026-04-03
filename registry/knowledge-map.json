@@ -10,6 +10,7 @@
       "admin/custom-field-creation",
       "admin/custom-metadata-types",
       "admin/data-import-and-management",
+      "admin/data-model-documentation",
       "admin/data-skew-and-sharing-performance",
       "admin/duplicate-management",
       "admin/einstein-analytics-basics",
@@ -389,6 +390,9 @@
     "data-load": [
       "admin/data-import-and-management"
     ],
+    "data-model": [
+      "admin/data-model-documentation"
+    ],
     "data-quality": [
       "admin/duplicate-management",
       "admin/validation-rules"
@@ -468,6 +472,9 @@
     "environment-strategy": [
       "admin/sandbox-strategy"
     ],
+    "er-diagram": [
+      "admin/data-model-documentation"
+    ],
     "error-logging": [
       "flow/fault-handling"
     ],
@@ -519,6 +526,9 @@
     ],
     "feature-flags": [
       "admin/custom-metadata-types"
+    ],
+    "field-inventory": [
+      "admin/data-model-documentation"
     ],
     "field-level-security": [
       "admin/custom-field-creation"
@@ -875,6 +885,9 @@
     "object-design": [
       "admin/object-creation-and-design"
     ],
+    "object-relationships": [
+      "admin/data-model-documentation"
+    ],
     "observability": [
       "apex/debug-and-logging"
     ],
@@ -1113,6 +1126,9 @@
     ],
     "scheduled-flows": [
       "flow/scheduled-flows"
+    ],
+    "schema-documentation": [
+      "admin/data-model-documentation"
     ],
     "screen-components": [
       "flow/screen-flows"
