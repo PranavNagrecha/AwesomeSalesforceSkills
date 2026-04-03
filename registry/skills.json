@@ -10,7 +10,7 @@
     "omnistudio": 4,
     "security": 2
   },
-  "generated_from_hash": "7b8477e04dfa7697e910418102c1fd1a666997f2b4d1d70634f5ff5a4f0f6d9c",
+  "generated_from_hash": "26fa3583025625ae3678007eea45c62854086879682431a166f60601c0c4ca91",
   "schema_version": 1,
   "skill_count": 81,
   "skills": [
@@ -56,7 +56,7 @@
         "f73eae7fdfb502ec3e25",
         "ffbd07ff13bbc7cb298c"
       ],
-      "content_hash": "1012943590f6b8b5869e03e9afcb83ac248fc09322ef25901abe6b302a5bda14",
+      "content_hash": "4d91272ab59f20d4c52d5377b85acd8f6152a3da9258fd0993173891f727a85b",
       "dependencies": [],
       "description": "Use when designing, reviewing, or troubleshooting Salesforce Approval Processes. Triggers: 'submit for approval', 'approver', 'record locked', 'recall approval', 'approval step', 'discount approval'. NOT for complex orchestration across many objects - use Flow or custom approval patterns for that.",
       "file_location": "skills/admin/approval-processes",
@@ -82,7 +82,6 @@
         "skills/admin/approval-processes/references/well-architected.md"
       ],
       "scripts": [
-        "skills/admin/approval-processes/scripts/__pycache__/check_approval_design.cpython-311.pyc",
         "skills/admin/approval-processes/scripts/check_approval_design.py"
       ],
       "tags": [
@@ -143,7 +142,7 @@
         "eda0d02f0b42a2e1d18c",
         "f81055c8f20b19e5ae1b"
       ],
-      "content_hash": "2d8bf6b3465f57cee593f984793ee9f58cc46a7f6753d37e08cf25f76b4477b7",
+      "content_hash": "6a53fe44dea28cebbfa2e1c45a46da9e9397949343151ced2b7aea35abeb7392",
       "dependencies": [],
       "description": "Use when planning, reviewing, or troubleshooting Salesforce metadata releases and admin deployment processes. Triggers: 'change set', 'deployment plan', 'rollback', 'DevOps Center', 'SFDX deploy', 'release checklist', 'production deployment'. NOT for writing CI pipeline code unless the key problem is release method and governance.",
       "file_location": "skills/admin/change-management-and-deployment",
@@ -169,7 +168,6 @@
         "skills/admin/change-management-and-deployment/references/well-architected.md"
       ],
       "scripts": [
-        "skills/admin/change-management-and-deployment/scripts/__pycache__/check_deployment_manifest.cpython-311.pyc",
         "skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py"
       ],
       "tags": [
@@ -228,7 +226,7 @@
         "ed070677aeeef952072c",
         "f5f0ced5cabd194af763"
       ],
-      "content_hash": "32b54ada1b79cf3dfd160aa8b867f144f34d2f93e24ec6e610e15a18f0fcbc4c",
+      "content_hash": "ac202562d92f1bd5673dcd72ff4ad6cd4ed2e63a52b63258a82276f3c7581097",
       "dependencies": [],
       "description": "Use when designing, reviewing, or troubleshooting Salesforce connected apps, Named Credentials, External Credentials, and OAuth-based integration access. Triggers: 'connected app', 'OAuth flow', 'client credentials', 'JWT bearer', 'Named Credential', 'External Credential', 'integration user', 'IP restrictions'. NOT for business-user sharing or field permissions unless the auth design depends on them.",
       "file_location": "skills/admin/connected-apps-and-auth",
@@ -255,7 +253,6 @@
         "skills/admin/connected-apps-and-auth/references/well-architected.md"
       ],
       "scripts": [
-        "skills/admin/connected-apps-and-auth/scripts/__pycache__/check_connected_auth.cpython-311.pyc",
         "skills/admin/connected-apps-and-auth/scripts/check_connected_auth.py"
       ],
       "tags": [
@@ -337,7 +334,7 @@
         "f7ce676090ec2f5d3630",
         "f7ff60e003a1e1264dc9"
       ],
-      "content_hash": "a8cfeabdfd3dbf666b4e639fee16ddc03545c0014298babf3535fafcd0a1a5a7",
+      "content_hash": "2359b18008dd330bcfdd4e2ade98103927f7cc233db26830bef3552299506d8c",
       "dependencies": [],
       "description": "Use when creating a new custom field on any Salesforce object: choosing field type, setting API name, configuring Field-Level Security, adding to page layouts, and deploying. Triggers: 'add a field', 'new custom field', 'what field type should I use', 'FLS not working', 'field not showing on page layout'. NOT for formula field logic (use formula-fields skill), picklist value set management (use picklist-and-value-sets skill), or object creation decisions (use object-creation-and-design skill).",
       "file_location": "skills/admin/custom-field-creation",
@@ -369,7 +366,6 @@
         "skills/admin/custom-field-creation/references/well-architected.md"
       ],
       "scripts": [
-        "skills/admin/custom-field-creation/scripts/__pycache__/check_custom_field_creation.cpython-311.pyc",
         "skills/admin/custom-field-creation/scripts/check_custom_field_creation.py"
       ],
       "tags": [
@@ -441,7 +437,7 @@
         "f20f77da3ed7cd4c033b",
         "f87448e4e89e22e81988"
       ],
-      "content_hash": "a482e0ba9aaed48efb742eb577d4e0d8ad579587ea26d61d932515d69cab7ee3",
+      "content_hash": "b457956818c0196dfe6136ad95765bd8bb8cc90973e5e5a1dd2a075695eac2a3",
       "dependencies": [],
       "description": "Use when designing deployable Salesforce configuration with Custom Metadata Types, especially when choosing between CMTs, Custom Settings, and Custom Objects, protecting packaged defaults, or exposing config to Apex, Flow, and formulas. Triggers: 'custom metadata vs custom settings', 'deployable config', 'protected custom metadata', 'feature flags in Salesforce'. NOT for high-churn transactional data, user-managed business records, or secret storage that should live in Named Credentials.",
       "file_location": "skills/admin/custom-metadata-types",
@@ -468,7 +464,6 @@
         "skills/admin/custom-metadata-types/references/well-architected.md"
       ],
       "scripts": [
-        "skills/admin/custom-metadata-types/scripts/__pycache__/check_custom_metadata_types.cpython-311.pyc",
         "skills/admin/custom-metadata-types/scripts/check_custom_metadata_types.py"
       ],
       "tags": [
@@ -528,7 +523,7 @@
         "f52f5994e39de33f49e4",
         "f7f44c502e73fdde669b"
       ],
-      "content_hash": "b128188621772e8c283935f2e3211077ffc9b50ea20e490557f49ff8f8705a7e",
+      "content_hash": "bccda9da22c95f9edc6fb4c65b7dc5fc1b826dd9c05c6302e080b9034accecf4",
       "dependencies": [],
       "description": "Use when planning, reviewing, or troubleshooting Salesforce data imports, migrations, and bulk updates. Triggers: 'Data Loader', 'Data Import Wizard', 'Bulk API', 'upsert', 'cutover', 'load failed', 'reconcile data'. NOT for ongoing integration architecture - use integration/ skills for that.",
       "file_location": "skills/admin/data-import-and-management",
@@ -555,7 +550,6 @@
         "skills/admin/data-import-and-management/references/well-architected.md"
       ],
       "scripts": [
-        "skills/admin/data-import-and-management/scripts/__pycache__/check_load_plan.cpython-311.pyc",
         "skills/admin/data-import-and-management/scripts/check_load_plan.py"
       ],
       "tags": [
@@ -615,7 +609,7 @@
         "f750ca07957e557ca708",
         "ff6e50ee61a4c07c4e15"
       ],
-      "content_hash": "5a54f7dbba37b3c0ccea16343ed67893d63950a2c1b66cfd0f0b9bd9f38cb579",
+      "content_hash": "07767135f19327bfa39ee11788e6857881581bdf7dd982bd50c6c4e42a316134",
       "dependencies": [],
       "description": "Use when designing, reviewing, or troubleshooting Salesforce duplicate prevention, matching rules, duplicate rules, and merge governance. Triggers: 'duplicate rule', 'matching rule', 'merge strategy', 'dedupe', 'survivorship', 'D&B', 'same contact twice'. NOT for choosing data-load tooling unless duplicate control is the main problem.",
       "file_location": "skills/admin/duplicate-management",
@@ -642,7 +636,6 @@
         "skills/admin/duplicate-management/references/well-architected.md"
       ],
       "scripts": [
-        "skills/admin/duplicate-management/scripts/__pycache__/check_duplicate_rules.cpython-311.pyc",
         "skills/admin/duplicate-management/scripts/check_duplicate_rules.py"
       ],
       "tags": [
@@ -704,7 +697,7 @@
         "eddf5a2281fc0300f968",
         "fce64e384c4a426dd371"
       ],
-      "content_hash": "48b7eff3e9f2a0aac105f364c470e1f8bfe13c580314d5c35045d6df3658e502",
+      "content_hash": "3d4309aec4e7f729579e3c2f0e4f6963e353194015ca450844dfeddd86ca61ce",
       "dependencies": [],
       "description": "Use when deciding whether Salesforce Reports, CRM Analytics, or Tableau should be used for analytics, or when reviewing and troubleshooting basic CRM Analytics designs. Triggers: 'CRM Analytics', 'Einstein Analytics', 'Tableau CRM', 'lens', 'dataset', 'dataflow', 'analytics dashboard', 'license requirement'. NOT for standard report builder questions unless the decision is whether reports are still enough.",
       "file_location": "skills/admin/einstein-analytics-basics",
@@ -731,7 +724,6 @@
         "skills/admin/einstein-analytics-basics/references/well-architected.md"
       ],
       "scripts": [
-        "skills/admin/einstein-analytics-basics/scripts/__pycache__/check_analytics_assets.cpython-311.pyc",
         "skills/admin/einstein-analytics-basics/scripts/check_analytics_assets.py"
       ],
       "tags": [
@@ -789,7 +781,7 @@
         "fad5c02c4194313e8171",
         "fb004e8bbf77c42b5dd3"
       ],
-      "content_hash": "80adedfca430f5f33e3e59096c8dca8d6d74768b5a57a3fc10ef4a3aa29b4413",
+      "content_hash": "e8ec2e959b589675843daad1eb827e85c45501cbad5abd23423d3264fca6a9b8",
       "dependencies": [],
       "description": "Use when designing, reviewing, or troubleshooting Salesforce email templates, email alerts, and declarative notification design. Triggers: 'Lightning Email Template', 'email alert', 'merge field', 'org-wide email', 'too many emails', 'mass email limit'. NOT for marketing automation or custom Apex email services.",
       "file_location": "skills/admin/email-templates-and-alerts",
@@ -815,7 +807,6 @@
         "skills/admin/email-templates-and-alerts/references/well-architected.md"
       ],
       "scripts": [
-        "skills/admin/email-templates-and-alerts/scripts/__pycache__/check_email_templates.cpython-311.pyc",
         "skills/admin/email-templates-and-alerts/scripts/check_email_templates.py"
       ],
       "tags": [
@@ -893,7 +884,7 @@
         "f2521b03d587e85631cb",
         "fe065148c65b3322bc8a"
       ],
-      "content_hash": "952a5c873b7a90bafc3c544e2eb95a8ed50027d3648b88ff96511c43471a3dd0",
+      "content_hash": "cf03b272ddbe08530f472360860c363313b255ede333ce4f0090938d29132377",
       "dependencies": [],
       "description": "Use when designing, reviewing, or debugging Salesforce Flows from an Admin perspective. Triggers: 'flow', 'automation', 'record-triggered flow', 'screen flow', 'scheduled flow', 'flow error', 'flow interview'. NOT for OmniStudio OmniScripts \u2014 use omnistudio/ skills for that.",
       "file_location": "skills/admin/flow-for-admins",
@@ -919,7 +910,6 @@
         "skills/admin/flow-for-admins/references/well-architected.md"
       ],
       "scripts": [
-        "skills/admin/flow-for-admins/scripts/__pycache__/check_flow_metadata.cpython-311.pyc",
         "skills/admin/flow-for-admins/scripts/check_flow_metadata.py"
       ],
       "tags": [
@@ -980,7 +970,7 @@
         "e40c17fa4a0741fe18df",
         "ef40977e0043a2197194"
       ],
-      "content_hash": "553cdb94c34247d04618d74c783a55fcf83fe45d9f6f8c7881bc8abaa5978325",
+      "content_hash": "7cf7449b5a9fd4963f4a8364b77f84fa8b41bd188d69eca1a8577733594897ad",
       "dependencies": [],
       "description": "Use when designing, reviewing, or troubleshooting Salesforce formula fields. Triggers: 'formula field', 'cross-object formula', 'null handling', 'compile size', 'HYPERLINK', 'IMAGE', 'why is formula slow'. NOT for save-time validation or persisted values - use validation rules, Flow, or real fields for that.",
       "file_location": "skills/admin/formula-fields",
@@ -1007,7 +997,6 @@
         "skills/admin/formula-fields/references/well-architected.md"
       ],
       "scripts": [
-        "skills/admin/formula-fields/scripts/__pycache__/check_formula_fields.cpython-311.pyc",
         "skills/admin/formula-fields/scripts/check_formula_fields.py"
       ],
       "tags": [
@@ -1072,7 +1061,7 @@
         "fa760f97f777da8a2810",
         "fae8cfe185ba2c522991"
       ],
-      "content_hash": "ae220519fc231c88a286d3330273c786bab4db01a159adb272d6deacfe681024",
+      "content_hash": "a6e24ff9a6d9a18debf62e613a5aeb8b0300a6f5644e75b1dce537f26fc73fba",
       "dependencies": [],
       "description": "Use when designing or reviewing list views, compact layouts, highlights panels, and search-result presentation so users can scan, find, and act on records quickly across desktop and mobile. Triggers: 'too many list views', 'compact layout not showing the right fields', 'search layouts vs list views', 'mobile highlights panel'. NOT for page layout design, Dynamic Forms strategy, or record-type architecture.",
       "file_location": "skills/admin/list-views-and-compact-layouts",
@@ -1099,7 +1088,6 @@
         "skills/admin/list-views-and-compact-layouts/references/well-architected.md"
       ],
       "scripts": [
-        "skills/admin/list-views-and-compact-layouts/scripts/__pycache__/check_list_views_and_compact_layouts.cpython-311.pyc",
         "skills/admin/list-views-and-compact-layouts/scripts/check_list_views_and_compact_layouts.py"
       ],
       "tags": [
@@ -1184,7 +1172,7 @@
         "f4e35a28c0ac94f7b697",
         "f8a1ab0bad19ecca1e6a"
       ],
-      "content_hash": "38d15a8b84369511581bde6589c57312ce3d7a8af46fa3c4c21ac0054aad23a1",
+      "content_hash": "d180659f4e258c8f88734cd07a923e01296af6fa44fe7cbe37183ca97e549194",
       "dependencies": [],
       "description": "Use when creating a new Salesforce custom object: naming the object and setting its API name, selecting optional features (Activities, Chatter, History Tracking), choosing an org-wide default sharing model, and creating a tab. Triggers: 'create a custom object', 'new custom object setup', 'what sharing model should I choose', 'how do I create a tab for my object', 'object features like activities and history tracking'. NOT for custom field design on the object (use custom-field-creation), sharing rule or role hierarchy configuration (use sharing-and-visibility), or object relationship design decisions (use data-model-design-patterns).",
       "file_location": "skills/admin/object-creation-and-design",
@@ -1220,7 +1208,6 @@
         "skills/admin/object-creation-and-design/references/well-architected.md"
       ],
       "scripts": [
-        "skills/admin/object-creation-and-design/scripts/__pycache__/check_object_creation_and_design.cpython-311.pyc",
         "skills/admin/object-creation-and-design/scripts/check_object_creation_and_design.py"
       ],
       "tags": [
@@ -1283,7 +1270,7 @@
         "f53aa3b216efd5a85011",
         "f7bb52e3d137f809effa"
       ],
-      "content_hash": "7d8f564d9f15c568da72fd22d63aa5eaf08794d67a77f34ad124b650bf3689cb",
+      "content_hash": "361c4d68edc7ffe0ec01a4c59780ec1864763b3e0c881961f2240517ab46449a",
       "dependencies": [],
       "description": "Use when designing or refactoring Salesforce access architecture around minimal profiles, permission sets, permission set groups, muting, and assignment governance. Triggers: 'profile sprawl', 'permission set strategy', 'PSG architecture', 'access bundle design', 'least privilege'. NOT for record-sharing model design or CRUD/FLS enforcement inside Apex.",
       "file_location": "skills/admin/permission-set-architecture",
@@ -1310,7 +1297,6 @@
         "skills/admin/permission-set-architecture/references/well-architected.md"
       ],
       "scripts": [
-        "skills/admin/permission-set-architecture/scripts/__pycache__/check_permission_set_architecture.cpython-311.pyc",
         "skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py"
       ],
       "tags": [
@@ -1388,7 +1374,7 @@
         "fec6345e6f26e62cb4f5",
         "ff744190cd55f783e23a"
       ],
-      "content_hash": "fbef9725a9e3336b62e28f28b7ca1a7dfbe47e8f1dbed6818776c2e8c5ea6a55",
+      "content_hash": "97c2362b19a563379e130e2d8a859b9d9947c4dadbe8746956f57f7a2ed61487",
       "dependencies": [],
       "description": "Use when designing or auditing Salesforce access control \u2014 deciding between Profiles, Permission Sets, and Permission Set Groups. Triggers: 'user can't see field', 'too many profiles', 'permission model', 'least privilege', 'profile migration'. NOT for sharing rules or record-level access \u2014 use security/fls-crud for that.",
       "file_location": "skills/admin/permission-sets-vs-profiles",
@@ -1414,7 +1400,6 @@
         "skills/admin/permission-sets-vs-profiles/references/well-architected.md"
       ],
       "scripts": [
-        "skills/admin/permission-sets-vs-profiles/scripts/__pycache__/check_access_model.cpython-311.pyc",
         "skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py"
       ],
       "tags": [
@@ -1498,7 +1483,7 @@
         "fc2fa3ce866d5cdc7b35",
         "fc8a6d4a575b59c9f2f1"
       ],
-      "content_hash": "968857aa06592976c41dd85e46c5758738a202931b37b976b0581e388aba5d82",
+      "content_hash": "5816a83e6a7e8bb0d50044344a53a961429c159bd9dec86387c9c654ed0c604a",
       "dependencies": [],
       "description": "Use when creating or managing picklist fields: choosing between Global Value Sets and object-local picklists, configuring controlling and dependent field relationships, managing picklist values, and replacing values in existing data records. NOT for formula fields that reference picklists (use formula-fields), NOT for record type picklist filtering (use record-types-and-page-layouts), NOT for picklist fields in Flow (use the appropriate flow skill).",
       "file_location": "skills/admin/picklist-and-value-sets",
@@ -1536,7 +1521,6 @@
         "skills/admin/picklist-and-value-sets/references/well-architected.md"
       ],
       "scripts": [
-        "skills/admin/picklist-and-value-sets/scripts/__pycache__/check_picklist_and_value_sets.cpython-311.pyc",
         "skills/admin/picklist-and-value-sets/scripts/check_picklist_and_value_sets.py"
       ],
       "tags": [
@@ -1598,7 +1582,7 @@
         "f8c2fda1f6845c5b0c5b",
         "fe49c50ccd6eb38256ff"
       ],
-      "content_hash": "fd4d1e12c12c859b2e71ec58bbdebebf220c266d45824974a1dd308a6a947298",
+      "content_hash": "4b746d225ce5a036002b6af5911c162e133f738d8af2674146e9f46a3441832f",
       "dependencies": [],
       "description": "Use when deciding which Salesforce automation tool should own a requirement, including before-save and after-save Flow, screen Flow, scheduled Flow, invocable Apex, Apex triggers, and migration off Workflow Rules or Process Builder. Triggers: 'Flow or Apex trigger', 'which automation tool should I use', 'Process Builder migration', 'Workflow Rule retirement', 'same-record update or trigger'. NOT for detailed implementation of a Flow or trigger after the automation boundary has already been chosen.",
       "file_location": "skills/admin/process-automation-selection",
@@ -1626,7 +1610,6 @@
         "skills/admin/process-automation-selection/references/well-architected.md"
       ],
       "scripts": [
-        "skills/admin/process-automation-selection/scripts/__pycache__/check_process_automation_selection.cpython-311.pyc",
         "skills/admin/process-automation-selection/scripts/check_process_automation_selection.py"
       ],
       "tags": [
@@ -1705,7 +1688,7 @@
         "fbcf6853140e13d0a867",
         "fc584ff0c589e310cb02"
       ],
-      "content_hash": "d2d1b163c60cdba3ab646323071ecafae674549938727348cd2932a61d19964b",
+      "content_hash": "6a7f79b02b8e6cc22b9ad5e8cbbef0e0fa15f5eab5167093962baaa7f8ecc716",
       "dependencies": [],
       "description": "Use when designing, auditing, or simplifying Record Types and Page Layouts. Triggers: 'record type', 'page layout', 'different picklist values', 'different fields per team', 'dynamic forms'. NOT for sharing rules or FLS \u2014 record types don't control data access.",
       "file_location": "skills/admin/record-types-and-page-layouts",
@@ -1732,7 +1715,6 @@
         "skills/admin/record-types-and-page-layouts/references/well-architected.md"
       ],
       "scripts": [
-        "skills/admin/record-types-and-page-layouts/scripts/__pycache__/check_record_type_layouts.cpython-311.pyc",
         "skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py"
       ],
       "tags": [
@@ -1810,7 +1792,7 @@
         "f4c0f883b700d95b47a9",
         "fb4607249efe9887ba10"
       ],
-      "content_hash": "ddcf49a49a9363df0d63ceab75dd076f78b5c65171ff44346119b7c7d81c194e",
+      "content_hash": "53ff7cf6c199d3ce5454cbc8cadca357a574fea8c5442444d0bb093286bc1930",
       "dependencies": [],
       "description": "Use when building, auditing, or troubleshooting Salesforce Reports and Dashboards. Triggers: 'report', 'dashboard', 'missing data in report', 'pipeline report', 'cross-filter', 'report subscription', 'dashboard refresh'. NOT for Einstein Analytics / CRM Analytics \u2014 separate skill needed for that.",
       "file_location": "skills/admin/reports-and-dashboards",
@@ -1837,7 +1819,6 @@
         "skills/admin/reports-and-dashboards/references/well-architected.md"
       ],
       "scripts": [
-        "skills/admin/reports-and-dashboards/scripts/__pycache__/check_report_inventory.cpython-311.pyc",
         "skills/admin/reports-and-dashboards/scripts/check_report_inventory.py"
       ],
       "tags": [
@@ -1896,7 +1877,7 @@
         "f36f00c4644cdf7a9a66",
         "fe4a3018da97e6ede055"
       ],
-      "content_hash": "ab0d97d18bf3affbe99a9686c2e1eaa147496ceb18efaf408af6882b8b36ce26",
+      "content_hash": "f15d8116162912d5bd60a26614aa98e5ec17c99e533c287ff30102b4f4ae62a0",
       "dependencies": [],
       "description": "Use when designing or reviewing Salesforce sandbox topology, refresh cadence, masking, and environment purpose. Triggers: 'Developer sandbox', 'Developer Pro', 'Partial Copy', 'Full sandbox', 'sandbox refresh', 'data masking', 'test environment', 'Gov Cloud sandbox'. NOT for scratch-org package workflows unless they affect environment planning.",
       "file_location": "skills/admin/sandbox-strategy",
@@ -1922,7 +1903,6 @@
         "skills/admin/sandbox-strategy/references/well-architected.md"
       ],
       "scripts": [
-        "skills/admin/sandbox-strategy/scripts/__pycache__/check_sandbox_plan.cpython-311.pyc",
         "skills/admin/sandbox-strategy/scripts/check_sandbox_plan.py"
       ],
       "tags": [
@@ -1982,7 +1962,7 @@
         "fcbe5f11659853eec4f0",
         "fdd7afc42b46d703cd7a"
       ],
-      "content_hash": "d29d6695ef46fcab8f1a0b20323fd738bfb5d9f33a579ee5a3fc9de4b30f0deb",
+      "content_hash": "3ce391bf5ffddbb8441c7a2c97b8a9a30f723cf4f7dc78f8d926d023b675a27b",
       "dependencies": [],
       "description": "Use when designing, auditing, or troubleshooting Salesforce record access. Triggers: 'OWD', 'role hierarchy', 'sharing rule', 'manual sharing', 'why can't user see record', 'why can user see too much'. NOT for object or field permissions - use permission and FLS skills for that.",
       "file_location": "skills/admin/sharing-and-visibility",
@@ -2009,7 +1989,6 @@
         "skills/admin/sharing-and-visibility/references/well-architected.md"
       ],
       "scripts": [
-        "skills/admin/sharing-and-visibility/scripts/__pycache__/check_sharing_model.cpython-311.pyc",
         "skills/admin/sharing-and-visibility/scripts/check_sharing_model.py"
       ],
       "tags": [
@@ -2081,7 +2060,7 @@
         "fb75eac3b300ad65dfc7",
         "ff1e7ae9628ea5d7d607"
       ],
-      "content_hash": "1dfeca276ac8b25b150391d11393afc79fa640f34be1c7e649a81eebb7f74b80",
+      "content_hash": "94483b5491b3d099ca918453519a98bce507693409a8d4b84fb1b182a75ac9a1",
       "dependencies": [],
       "description": "Use this skill to create, deactivate, freeze, or manage Salesforce users, assign user licenses and feature licenses, configure profiles and roles, set login hours and IP restrictions, and set up delegated administration. Triggers: adding a new user, deactivating a departing employee, license assignment, freezing a user account, delegated admin setup. NOT for permission sets (use permission-set-architecture) or sharing model design (use sharing-and-visibility).",
       "file_location": "skills/admin/user-management",
@@ -2183,7 +2162,7 @@
         "f72ce657c520fa80c4d6",
         "fa1227e7a34c59ed6bcb"
       ],
-      "content_hash": "b02200a13f7b6e7331735d6b07bed20a98542a656f21b6606f2725241adcd095",
+      "content_hash": "fe17186805a20f4905791ce8c5546933c84085788d480d74f18a11e3ec7c9c9c",
       "dependencies": [],
       "description": "Use when writing, auditing, or troubleshooting Salesforce Validation Rules. Triggers: 'validation rule', 'required field formula', 'rule fires unexpectedly', 'integration failing validation', 'data quality'. NOT for Flow-based validation \u2014 use admin/flow-for-admins for that.",
       "file_location": "skills/admin/validation-rules",
@@ -2209,7 +2188,6 @@
         "skills/admin/validation-rules/references/well-architected.md"
       ],
       "scripts": [
-        "skills/admin/validation-rules/scripts/__pycache__/check_validation_rules.cpython-311.pyc",
         "skills/admin/validation-rules/scripts/check_validation_rules.py"
       ],
       "tags": [
@@ -2273,7 +2251,7 @@
         "fce45be9210a35b2d0dc",
         "ff86873c23d8adcb9e55"
       ],
-      "content_hash": "f3d1b5c1bd0134d35f15e4850d251728e44dc8b0bb3be8c17f754816a64065b8",
+      "content_hash": "c8cf5d98ce49c128bc851dddcee817f0af6afc2722f104bb3d4261381d937999",
       "dependencies": [],
       "description": "Use when designing or reviewing Agentforce actions, including Flow actions, Apex invocable actions, prompt-template actions, action naming, input and output contracts, confirmation requirements, and safe error behavior. Triggers: 'agent actions', 'flow action for agent', 'agent invocable action', 'action schema design', 'agent action error handling'. NOT for topic boundary design or general Apex invocable guidance when the main concern is not an agent-facing action contract.",
       "file_location": "skills/agentforce/agent-actions",
@@ -2300,7 +2278,6 @@
         "skills/agentforce/agent-actions/references/well-architected.md"
       ],
       "scripts": [
-        "skills/agentforce/agent-actions/scripts/__pycache__/check_agent_actions.cpython-311.pyc",
         "skills/agentforce/agent-actions/scripts/check_agent_actions.py"
       ],
       "tags": [
@@ -2363,7 +2340,7 @@
         "ebf13de6cead10cbd490",
         "f6ff105635d452d357f8"
       ],
-      "content_hash": "b8d8bc454b55765451a1366a8c3a3d92dbc2d41894dc89c6cdecd5d3e744157e",
+      "content_hash": "97c96da49a0e88c5912d83c4787d0f02ddc407ff0c64facbf8479088b43ead9b",
       "dependencies": [],
       "description": "Use when designing or reviewing Agentforce topic structure, including topic boundaries, instruction quality, handoff rules, out-of-scope behavior, and topic-selector strategy. Triggers: 'agent topics', 'topic design', 'topic selector', 'agent scope boundary', 'handoff conditions'. NOT for action contract design or prompt-template wording when the main problem is not topic scoping.",
       "file_location": "skills/agentforce/agent-topic-design",
@@ -2390,7 +2367,6 @@
         "skills/agentforce/agent-topic-design/references/well-architected.md"
       ],
       "scripts": [
-        "skills/agentforce/agent-topic-design/scripts/__pycache__/check_agent_topic_design.cpython-311.pyc",
         "skills/agentforce/agent-topic-design/scripts/check_agent_topic_design.py"
       ],
       "tags": [
@@ -2453,7 +2429,7 @@
         "f68740035296b1c46506",
         "fcfde5d9a323df314cfc"
       ],
-      "content_hash": "677ec99be7ba2ec9cb70bfe3880b31ca7e1d6aada6f2c4688d59d9e166a5c811",
+      "content_hash": "c2b5c8e7a35b4ed1ae6a29a2c5cbf342d9c65aefd3494eeca76399a64c6810ba",
       "dependencies": [],
       "description": "Use when diagnosing or preventing Apex CPU time and heap size problems, including nested-loop refactors, JSON memory pressure, string work, and `Limits.getCpuTime()` checkpoints. Triggers: 'CPU time limit exceeded', 'heap size too large', 'string concatenation', 'regex in loop', 'Limits.getCpuTime'. NOT for generic SOQL/DML governor-limit basics without a CPU or heap bottleneck.",
       "file_location": "skills/apex/apex-cpu-and-heap-optimization",
@@ -2480,7 +2456,6 @@
         "skills/apex/apex-cpu-and-heap-optimization/references/well-architected.md"
       ],
       "scripts": [
-        "skills/apex/apex-cpu-and-heap-optimization/scripts/__pycache__/check_apex_cpu_and_heap_optimization.cpython-311.pyc",
         "skills/apex/apex-cpu-and-heap-optimization/scripts/check_apex_cpu_and_heap_optimization.py"
       ],
       "tags": [
@@ -2545,7 +2520,7 @@
         "ec8b5ee1fdc83f219e42",
         "eeb7c58aaa7bd834306f"
       ],
-      "content_hash": "c99b57265f110232d1b8148728906a7a9c27e8d8250fe6a2aba89c414f285bcc",
+      "content_hash": "ed8b67458cc2194d48043da962ea5293bdb587ac40ea940990d2f8d69a0bfb66",
       "dependencies": [],
       "description": "Use when structuring Apex into service, selector, domain, factory, and dependency-injection layers for maintainability and testability. Triggers: 'service layer', 'selector pattern', 'domain layer', 'dependency injection', 'fat trigger/controller'. NOT for installing a specific third-party framework or debating package-level architecture outside Apex code structure.",
       "file_location": "skills/apex/apex-design-patterns",
@@ -2571,7 +2546,6 @@
         "skills/apex/apex-design-patterns/references/well-architected.md"
       ],
       "scripts": [
-        "skills/apex/apex-design-patterns/scripts/__pycache__/check_apex_design_patterns.cpython-311.pyc",
         "skills/apex/apex-design-patterns/scripts/check_apex_design_patterns.py"
       ],
       "tags": [
@@ -2634,7 +2608,7 @@
         "f73502da79d08af2e96c",
         "fd3a9ca3ee0414ced4fb"
       ],
-      "content_hash": "3da9756b6b8ece2f0604f7419bc585cd8ef0fdf5a2781b7d5a967f67f603f30d",
+      "content_hash": "57484f47c90fb0bc3582bb9cea6242cb4aeb7a46b2f4cf3b351c6dc605754af5",
       "dependencies": [],
       "description": "Use when choosing or implementing Apex test doubles with `Test.setMock`, `HttpCalloutMock`, `StaticResourceCalloutMock`, or `StubProvider`, and when designing code seams to support those doubles cleanly. Triggers: 'StubProvider', 'Test.createStub', 'HttpCalloutMock', 'StaticResourceCalloutMock', 'mocking infrastructure'. NOT for general Apex test design outside the mocking and seam problem.",
       "file_location": "skills/apex/apex-mocking-and-stubs",
@@ -2661,7 +2635,6 @@
         "skills/apex/apex-mocking-and-stubs/references/well-architected.md"
       ],
       "scripts": [
-        "skills/apex/apex-mocking-and-stubs/scripts/__pycache__/check_apex_mocking_and_stubs.cpython-311.pyc",
         "skills/apex/apex-mocking-and-stubs/scripts/check_apex_mocking_and_stubs.py"
       ],
       "tags": [
@@ -2725,7 +2698,7 @@
         "f56c12c4ebe95cca7d09",
         "f7c86fe799edfd823c6e"
       ],
-      "content_hash": "c75290ad7e873d97b1f5c3707a947eee15129b22ae942f4c9199d75e77ddc9f5",
+      "content_hash": "583a0cb091c995d8e6fa054cbf0eb092c28e886431efb1a6f3839783fb11f3f5",
       "dependencies": [],
       "description": "Use when building, reviewing, or debugging inbound Apex REST resources, request/response handling, status codes, versioned URL mappings, or JSON serialization in `@RestResource` classes. Triggers: 'Apex REST', '@RestResource', 'HttpGet/HttpPost', 'RestContext', 'versioned endpoint'. NOT for outbound HTTP callouts or standard Salesforce REST API usage as a consumer.",
       "file_location": "skills/apex/apex-rest-services",
@@ -2752,7 +2725,6 @@
         "skills/apex/apex-rest-services/references/well-architected.md"
       ],
       "scripts": [
-        "skills/apex/apex-rest-services/scripts/__pycache__/check_apex_rest_services.cpython-311.pyc",
         "skills/apex/apex-rest-services/scripts/check_apex_rest_services.py"
       ],
       "tags": [
@@ -2816,7 +2788,7 @@
         "f9e7cb4528398ee92e98",
         "fea2477c3e4cc87dbfa4"
       ],
-      "content_hash": "43bd33c98bbad95f926390e2c4ebb40e4d68b4b1283357d4f0a207d695c6be32",
+      "content_hash": "46f381810b9a6af90e44cd8363f82b6be44200f076769dfd4c31ece3b0efcf2a",
       "dependencies": [],
       "description": "Use when designing, reviewing, or debugging Apex execution context, sharing keywords, CRUD/FLS enforcement, system-vs-user mode behavior, or secure write patterns. Triggers: 'with sharing', 'inherited sharing', 'stripInaccessible', 'AuraEnabled security', 'CRUD FLS'. NOT for SOQL injection review alone \u2014 use apex/soql-security for query-specific hardening.",
       "file_location": "skills/apex/apex-security-patterns",
@@ -2843,7 +2815,6 @@
         "skills/apex/apex-security-patterns/references/well-architected.md"
       ],
       "scripts": [
-        "skills/apex/apex-security-patterns/scripts/__pycache__/check_apex_security_patterns.cpython-311.pyc",
         "skills/apex/apex-security-patterns/scripts/check_apex_security_patterns.py"
       ],
       "tags": [
@@ -2910,7 +2881,7 @@
         "e5c2ea7cfd456fbbe010",
         "f7ed50ab35131c4784e7"
       ],
-      "content_hash": "8831bbb3fd09ebeb1a832a27adefe2cfd21b23171c0ba65492a951e6370ab137",
+      "content_hash": "bc0b8eb9d40632d1ccfd657b178885a047f8f8da90f7641a67d1e5d7b7403391",
       "dependencies": [],
       "description": "Use when selecting, designing, or reviewing Queueable, Batch, Future, or Schedulable Apex for callouts, large data processing, retries, or background work. Triggers: 'queueable vs batch', 'future method', 'flex queue', 'async job failed', 'schedule apex'. NOT for Platform Events or a deep-only Batch Apex implementation guide.",
       "file_location": "skills/apex/async-apex",
@@ -2937,7 +2908,6 @@
         "skills/apex/async-apex/references/well-architected.md"
       ],
       "scripts": [
-        "skills/apex/async-apex/scripts/__pycache__/check_async_apex.cpython-311.pyc",
         "skills/apex/async-apex/scripts/check_async_apex.py"
       ],
       "tags": [
@@ -3001,7 +2971,7 @@
         "f0743759e896315fcd81",
         "feeb5df27ff7ec79500d"
       ],
-      "content_hash": "a7431b526de2312374a9ac15c81fdc4864e73a05aec3f289256e3afc150a527f",
+      "content_hash": "f9f49ba30d877752c5007fb81331c2d5a2a3d905493c6c91c23098de22b550c0",
       "dependencies": [],
       "description": "Use when designing, reviewing, or debugging Batch Apex contracts, scope sizing, stateful behavior, chaining, and AsyncApexJob monitoring. Triggers: 'Database.Batchable', 'Database.Stateful', 'executeBatch', 'batch scope', 'AsyncApexJob'. NOT for generic async choice discussions where Queueable or Future might still be the better tool.",
       "file_location": "skills/apex/batch-apex-patterns",
@@ -3028,7 +2998,6 @@
         "skills/apex/batch-apex-patterns/references/well-architected.md"
       ],
       "scripts": [
-        "skills/apex/batch-apex-patterns/scripts/__pycache__/check_batch_apex_patterns.cpython-311.pyc",
         "skills/apex/batch-apex-patterns/scripts/check_batch_apex_patterns.py"
       ],
       "tags": [
@@ -3094,7 +3063,7 @@
         "f4f60dec947619cac202",
         "fc1c54dbd673a83438d7"
       ],
-      "content_hash": "06f159f1bdb4ab05b9791ae95f2bcc8dbaccf0bf92f9a9d5388635f1317ba970",
+      "content_hash": "d77bb5785607da216adc22b604b496665b43b67f1107e3c9a926cdfb7ee6bfaf",
       "dependencies": [],
       "description": "Use when building, reviewing, or debugging outbound Apex HTTP callouts, Named Credentials, request/response handling, timeout behavior, or mock-based tests. Triggers: 'HttpRequest', 'Named Credential', 'callout exception', 'uncommitted work pending', 'HttpCalloutMock'. NOT for inbound Apex REST service design or non-HTTP integration architecture.",
       "file_location": "skills/apex/callouts-and-http-integrations",
@@ -3121,7 +3090,6 @@
         "skills/apex/callouts-and-http-integrations/references/well-architected.md"
       ],
       "scripts": [
-        "skills/apex/callouts-and-http-integrations/scripts/__pycache__/check_callouts_and_http_integrations.cpython-311.pyc",
         "skills/apex/callouts-and-http-integrations/scripts/check_callouts_and_http_integrations.py"
       ],
       "tags": [
@@ -3180,7 +3148,7 @@
         "f7ea347f77922136045d",
         "fb9ac915c066e3caaadc"
       ],
-      "content_hash": "aed23515096e0a56bf0b336a963f0c3ef2ffb5ca9ee81adc584214741b183a98",
+      "content_hash": "6c71dd7d3f42b5192092ab29e25741b9c4af462ce2c0db1091f454d880b5f8f2",
       "dependencies": [],
       "description": "Use when Apex must read, interpret, or deploy Custom Metadata Type configuration, or when deciding between Custom Metadata Types, Custom Settings, and Custom Labels. Triggers: 'Custom Metadata Type', '__mdt', 'getInstance', 'Apex Metadata API', 'protected custom metadata'. NOT for setup-only administration with no Apex behavior, packaging, or deployment concern.",
       "file_location": "skills/apex/custom-metadata-in-apex",
@@ -3207,7 +3175,6 @@
         "skills/apex/custom-metadata-in-apex/references/well-architected.md"
       ],
       "scripts": [
-        "skills/apex/custom-metadata-in-apex/scripts/__pycache__/check_custom_metadata_in_apex.cpython-311.pyc",
         "skills/apex/custom-metadata-in-apex/scripts/check_custom_metadata_in_apex.py"
       ],
       "tags": [
@@ -3269,7 +3236,7 @@
         "fb5e1d4613abce19f371",
         "ff220b4b270f0404948c"
       ],
-      "content_hash": "756b2fe3efd73e261dc4d0f1ab63b6f398f66dfd1dc37ac0cac6f663327a7e8b",
+      "content_hash": "f44abcdcf9d4d5c9a718bc353720fba6394e0ef61095e9a5980527781e2def25",
       "dependencies": [],
       "description": "Use when diagnosing Apex behavior with debug logs, choosing log levels, or replacing `System.debug` habits with structured production logging and async job monitoring. Triggers: 'debug log', 'System.debug', 'logging framework', 'AsyncApexJob monitoring', 'production logs'. NOT for exception taxonomy design alone or for non-Apex observability platforms by themselves.",
       "file_location": "skills/apex/debug-and-logging",
@@ -3296,7 +3263,6 @@
         "skills/apex/debug-and-logging/references/well-architected.md"
       ],
       "scripts": [
-        "skills/apex/debug-and-logging/scripts/__pycache__/check_debug_and_logging.cpython-311.pyc",
         "skills/apex/debug-and-logging/scripts/check_debug_and_logging.py"
       ],
       "tags": [
@@ -3363,7 +3329,7 @@
         "fb52d6b571c76fafc515",
         "feab8c178e1c24ca7d84"
       ],
-      "content_hash": "f872fdcc9f2d167d84635a375aa0e8b3cd2500868ab0c67499afcf33084874cc",
+      "content_hash": "aa706198d64d0eb883416d37f5b4af85e3e003db0fcf78d4cca04a1bd5d00757",
       "dependencies": [],
       "description": "Use when writing, reviewing, or debugging Apex exception handling, DmlException behavior, custom exception hierarchies, or user-safe error messages. Triggers: 'DmlException', 'swallowed exception', 'AuraHandledException', 'trigger rollback', 'try catch'. NOT for choosing async execution models or general governor-limit tuning.",
       "file_location": "skills/apex/exception-handling",
@@ -3390,7 +3356,6 @@
         "skills/apex/exception-handling/references/well-architected.md"
       ],
       "scripts": [
-        "skills/apex/exception-handling/scripts/__pycache__/check_exception_handling.cpython-311.pyc",
         "skills/apex/exception-handling/scripts/check_exception_handling.py"
       ],
       "tags": [
@@ -3460,7 +3425,7 @@
         "f9e35e9682f1addfd0b6",
         "fbc5daec1c68db2ab690"
       ],
-      "content_hash": "e6c4d0d0bac029f3d1310c2ecdc86c57676e227e314253936edfa229601a361f",
+      "content_hash": "3d46731f467cbec72783e3a5e7a4ed82510aacee5e2f8e800cc02f60e6504e40",
       "dependencies": [],
       "description": "Use when writing, reviewing, or troubleshooting Apex that risks hitting Salesforce governor limits. Triggers: 'too many SOQL queries', 'too many DML statements', 'CPU time limit', 'bulkification', 'Queueable vs Batch'. NOT for trigger architecture decisions unless the core problem is limit consumption.",
       "file_location": "skills/apex/governor-limits",
@@ -3487,7 +3452,6 @@
         "skills/apex/governor-limits/references/well-architected.md"
       ],
       "scripts": [
-        "skills/apex/governor-limits/scripts/__pycache__/check_limit_usage.cpython-311.pyc",
         "skills/apex/governor-limits/scripts/check_limit_usage.py"
       ],
       "tags": [
@@ -3551,7 +3515,7 @@
         "e8ab8bc278f9a339a3d7",
         "f9c1a23c6e0fc0f7b834"
       ],
-      "content_hash": "38464bddf9f71454bb5570c2ec40c65926e46636fbf85c032f609ea2b5dfe2a0",
+      "content_hash": "09f3de1ed1489cd023b89daa9f42e5393bb47059dd2c9915bca293ffb341244c",
       "dependencies": [],
       "description": "Use when designing or reviewing Apex actions exposed to Flow or similar orchestration layers via `@InvocableMethod`, especially around wrapper DTOs, bulk-safe list contracts, and error behavior. Triggers: 'InvocableMethod', 'InvocableVariable', 'Flow Apex action', 'bulk-safe invocable', 'Apex action input/output'. NOT for general Flow design without a custom Apex action boundary.",
       "file_location": "skills/apex/invocable-methods",
@@ -3578,7 +3542,6 @@
         "skills/apex/invocable-methods/references/well-architected.md"
       ],
       "scripts": [
-        "skills/apex/invocable-methods/scripts/__pycache__/check_invocable_methods.cpython-311.pyc",
         "skills/apex/invocable-methods/scripts/check_invocable_methods.py"
       ],
       "tags": [
@@ -3641,7 +3604,7 @@
         "fc79732947107fe4de32",
         "ff80cb1a58c7a1170705"
       ],
-      "content_hash": "72550cfe8e441fbca266c61a63fe49672c568397895a4b918c08a9aa5aa04970",
+      "content_hash": "90e311244ace791925e413240f532216eb766852bed00fc26f5c2fd1e4d55456",
       "dependencies": [],
       "description": "Use when designing or reviewing Salesforce Platform Cache usage in Apex, including org cache versus session cache, cache-aside patterns, invalidation, and safe key design. Triggers: 'Platform Cache', 'Cache.Org', 'Cache.Session', 'cache-aside', 'cache invalidation'. NOT for durable configuration storage or for caching user-specific sensitive data.",
       "file_location": "skills/apex/platform-cache",
@@ -3668,7 +3631,6 @@
         "skills/apex/platform-cache/references/well-architected.md"
       ],
       "scripts": [
-        "skills/apex/platform-cache/scripts/__pycache__/check_platform_cache.cpython-311.pyc",
         "skills/apex/platform-cache/scripts/check_platform_cache.py"
       ],
       "tags": [
@@ -3731,7 +3693,7 @@
         "ee2fda2fc222b1bc0b69",
         "efd495cc7fda2f46a592"
       ],
-      "content_hash": "9c48ce434cf7b6c0a3fc7d56afd556aa8e17750fbdad17da2b5fcd65783200a1",
+      "content_hash": "6a2fcb69abcbcc3d66892327b9a6e537ce2c72968058956916b4bf3861a6b51e",
       "dependencies": [],
       "description": "Use when publishing or subscribing to Salesforce Platform Events from Apex, comparing Platform Events with Change Data Capture, or designing event-triggered error handling and monitoring. Triggers: 'EventBus.publish', 'platform event trigger', 'CDC vs Platform Events', 'replay ID', 'high-volume event'. NOT for Flow-only publish/subscribe automation.",
       "file_location": "skills/apex/platform-events-apex",
@@ -3758,7 +3720,6 @@
         "skills/apex/platform-events-apex/references/well-architected.md"
       ],
       "scripts": [
-        "skills/apex/platform-events-apex/scripts/__pycache__/check_platform_events_apex.cpython-311.pyc",
         "skills/apex/platform-events-apex/scripts/check_platform_events_apex.py"
       ],
       "tags": [
@@ -3821,7 +3782,7 @@
         "f1a84ae84d15e7f19ff3",
         "fe3d95df59d46396a172"
       ],
-      "content_hash": "37e4096098f96c58c38ab62a5cee2972656d85c24a3a2ab92c77773eee17e6a8",
+      "content_hash": "a2f12ff82146cd8b8684b1251faf5549a589db3a3b7afd1ec93935859ada5325",
       "dependencies": [],
       "description": "Use when debugging or preventing recursive Apex trigger behavior, especially around self-DML, static guard flaws, Set<Id>-based deduplication, and legitimate re-entry scenarios. Triggers: 'trigger recursion', 'static boolean guard', 'recursive update', 'self DML', 'trigger firing multiple times'. NOT for general trigger-framework structure unless recursion is the actual design problem.",
       "file_location": "skills/apex/recursive-trigger-prevention",
@@ -3847,7 +3808,6 @@
         "skills/apex/recursive-trigger-prevention/references/well-architected.md"
       ],
       "scripts": [
-        "skills/apex/recursive-trigger-prevention/scripts/__pycache__/check_recursive_trigger_prevention.cpython-311.pyc",
         "skills/apex/recursive-trigger-prevention/scripts/check_recursive_trigger_prevention.py"
       ],
       "tags": [
@@ -3921,7 +3881,7 @@
         "f4cbce69035aee8bd74e",
         "fb685f0ee98252a5145d"
       ],
-      "content_hash": "74e94184da2bfeb42ae7e04666ff219153ff7a95b9bb45d48241814deb50f4de",
+      "content_hash": "4afbfef02e0cacd78fac77e1d8d4f91f80b52351881968192acdc1793cae95d0",
       "dependencies": [],
       "description": "Use when writing, reviewing, or troubleshooting Apex queries that may expose SOQL injection or CRUD/FLS issues. Triggers: 'Database.query', 'WITH USER_MODE', 'WITH SECURITY_ENFORCED', 'stripInaccessible', 'security review finding'. NOT for record-sharing design unless the main issue is Apex query security.",
       "file_location": "skills/apex/soql-security",
@@ -3949,7 +3909,6 @@
         "skills/apex/soql-security/references/well-architected.md"
       ],
       "scripts": [
-        "skills/apex/soql-security/scripts/__pycache__/check_soql_security.cpython-311.pyc",
         "skills/apex/soql-security/scripts/check_soql_security.py"
       ],
       "tags": [
@@ -4015,7 +3974,7 @@
         "f674034d90f8e14eafe0",
         "f85f34eee852bb61399b"
       ],
-      "content_hash": "6dc2bfba62e6915eb0adc0fe36831c6515899d38dbdb185f224c9824aa585354",
+      "content_hash": "8bc550b1f47abd6b3ac474ccf81c164e5bf31ca90cdb48f0a57b7d674a52f041",
       "dependencies": [],
       "description": "Use when writing, reviewing, or debugging Apex test classes, test data factories, async test behavior, negative-path assertions, or callout mocking. Triggers: 'SeeAllData', 'Test.startTest', 'HttpCalloutMock', 'test data factory', 'missing assertions'. NOT for LWC Jest tests or code-coverage-only conversations detached from test design.",
       "file_location": "skills/apex/test-class-standards",
@@ -4042,7 +4001,6 @@
         "skills/apex/test-class-standards/references/well-architected.md"
       ],
       "scripts": [
-        "skills/apex/test-class-standards/scripts/__pycache__/check_test_class_standards.cpython-311.pyc",
         "skills/apex/test-class-standards/scripts/check_test_class_standards.py"
       ],
       "tags": [
@@ -4109,7 +4067,7 @@
         "ecf410a9bb0eca283504",
         "f0318c16599e802b70e0"
       ],
-      "content_hash": "16f2bf9123ce7237ea2a33af253455ebc721222c8638e155f80cdddb70add72c",
+      "content_hash": "dbe4e74b1d169876a96b0aabe271ae66e7113ee2610c21783ae98ea591cbf6ab",
       "dependencies": [],
       "description": "Use when writing, reviewing, or designing Apex triggers. Triggers: 'trigger', 'trigger handler', 'trigger framework', 'recursion', 'before insert', 'after update', 'one trigger per object'. NOT for Flow-based automation \u2014 use admin/flow-for-admins for declarative automation decisions.",
       "file_location": "skills/apex/trigger-framework",
@@ -4136,7 +4094,6 @@
         "skills/apex/trigger-framework/references/well-architected.md"
       ],
       "scripts": [
-        "skills/apex/trigger-framework/scripts/__pycache__/check_trigger_framework.cpython-311.pyc",
         "skills/apex/trigger-framework/scripts/check_trigger_framework.py"
       ],
       "tags": [
@@ -4195,7 +4152,7 @@
         "fa4b3fed8d850f762f2e",
         "fc4fd29ac169c722c510"
       ],
-      "content_hash": "4ee3ab3b748fbedf5216b1f35bff0bbceb64f2282bf6a564c014005e6a277caf",
+      "content_hash": "7f4a03e75c79f1849cad003a69e3f632279851c574b0fba20cc305455fd4b841",
       "dependencies": [],
       "description": "Use when designing or reviewing Salesforce multi-currency behavior, especially irreversible activation, `CurrencyIsoCode`, `convertCurrency()`, dated exchange rates, and Advanced Currency Management tradeoffs. Triggers: 'multi currency', 'advanced currency management', 'CurrencyIsoCode', 'dated exchange rate', 'convertCurrency'. NOT for ordinary numeric field calculations with no currency conversion or reporting concern.",
       "file_location": "skills/data/multi-currency-and-advanced-currency-management",
@@ -4222,7 +4179,6 @@
         "skills/data/multi-currency-and-advanced-currency-management/references/well-architected.md"
       ],
       "scripts": [
-        "skills/data/multi-currency-and-advanced-currency-management/scripts/__pycache__/check_multi_currency_and_advanced_currency_management.cpython-311.pyc",
         "skills/data/multi-currency-and-advanced-currency-management/scripts/check_multi_currency_and_advanced_currency_management.py"
       ],
       "tags": [
@@ -4281,7 +4237,7 @@
         "dfa539389920aafd475a",
         "ee18fbf6e17f7c1ec5ec"
       ],
-      "content_hash": "5da0183372a2c4406b695b33393bab865cdf4e56bcca6db89cd2505f52640a84",
+      "content_hash": "e7bf2d08bda3ba61c5d3197fd76a47f545c3c08c99cd108d2e79d956febb7058",
       "dependencies": [],
       "description": "Use when native Roll-Up Summary fields are not enough and the design needs Flow, Apex aggregate, or DLRS-style alternatives for lookup or advanced summary scenarios. Triggers: 'roll up summary on lookup', 'DLRS', 'aggregate trigger', 'summary count on parent', 'roll-up limitation'. NOT for ordinary master-detail roll-up fields that fit native limits without extra design tradeoffs.",
       "file_location": "skills/data/roll-up-summary-alternatives",
@@ -4308,7 +4264,6 @@
         "skills/data/roll-up-summary-alternatives/references/well-architected.md"
       ],
       "scripts": [
-        "skills/data/roll-up-summary-alternatives/scripts/__pycache__/check_roll_up_summary_alternatives.cpython-311.pyc",
         "skills/data/roll-up-summary-alternatives/scripts/check_roll_up_summary_alternatives.py"
       ],
       "tags": [
@@ -4366,7 +4321,7 @@
         "f5a7edf958e38a2707c6",
         "f93f895d12fc66721e64"
       ],
-      "content_hash": "292c759cc323cffbfea38b5578f9c2ba6c9836e38c585a6a351c7b9a3049e5f1",
+      "content_hash": "dd7d4245157afb80e436003343f3ea96d238a49659387036aa836e65f7084fc8",
       "dependencies": [],
       "description": "Use when choosing or implementing SOSL for cross-object or full-text search, especially around SOSL vs SOQL, search groups, result shaping, and injection-safe dynamic search. Triggers: 'SOSL', 'FIND clause', 'cross object search', 'Search.query', 'SOSL injection'. NOT for structured record retrieval where ordinary SOQL filters are the right tool.",
       "file_location": "skills/data/sosl-search-patterns",
@@ -4393,7 +4348,6 @@
         "skills/data/sosl-search-patterns/references/well-architected.md"
       ],
       "scripts": [
-        "skills/data/sosl-search-patterns/scripts/__pycache__/check_sosl_search_patterns.cpython-311.pyc",
         "skills/data/sosl-search-patterns/scripts/check_sosl_search_patterns.py"
       ],
       "tags": [
@@ -4456,7 +4410,7 @@
         "fee0b04151216d00b2b1",
         "ff520aa69c68d4e683ed"
       ],
-      "content_hash": "ec66d7bdd0cd3b71e0a9ac5b0b2d6644c1ec0a3f369f150e0df6cf8884f4189a",
+      "content_hash": "501c8907b32903728a9d9836b998b6ac8110386a6a58b4850df1fefd07e21a99",
       "dependencies": [],
       "description": "Use when designing, reviewing, or troubleshooting Salesforce Flow fault handling, error logging, and bulk-safe automation paths. Triggers: 'fault connector', '$Flow.FaultMessage', 'flow failed', 'record-triggered flow rollback', 'screen flow error'. NOT for generic Flow type selection unless the main risk is failure handling.",
       "file_location": "skills/flow/fault-handling",
@@ -4483,7 +4437,6 @@
         "skills/flow/fault-handling/references/well-architected.md"
       ],
       "scripts": [
-        "skills/flow/fault-handling/scripts/__pycache__/check_flow_faults.cpython-311.pyc",
         "skills/flow/fault-handling/scripts/check_flow_faults.py"
       ],
       "tags": [
@@ -4546,7 +4499,7 @@
         "fc5c8ec9b3605dccd0bd",
         "fde3cd628605fce8e256"
       ],
-      "content_hash": "1d1919bb07a857df937bcc4c057c057aa326bc0c49f63288cf73457dcaa1e251",
+      "content_hash": "26eb90204321f6e2354a22f3452adf1121f572fb2c509be1892757962b7a5fcf",
       "dependencies": [],
       "description": "Use when designing, reviewing, or troubleshooting Salesforce Flows that must survive data loads, integrations, or high-volume record changes without hitting transaction limits. Triggers: 'Get Records in loop', 'Flow bulkification', 'data loader causing flow errors', 'DML in loop', 'record-triggered flow scale'. NOT for general screen-flow UX or Flow type selection when scale is not the main risk.",
       "file_location": "skills/flow/flow-bulkification",
@@ -4573,7 +4526,6 @@
         "skills/flow/flow-bulkification/references/well-architected.md"
       ],
       "scripts": [
-        "skills/flow/flow-bulkification/scripts/__pycache__/check_flow_bulkification.cpython-311.pyc",
         "skills/flow/flow-bulkification/scripts/check_flow_bulkification.py"
       ],
       "tags": [
@@ -4633,7 +4585,7 @@
         "f53928fc481ac0836e16",
         "fa6ed9e8fafed96ebb21"
       ],
-      "content_hash": "5855d1d7008eff78828f546c9a921c4b7e173d2f9cec068dd0e697f6c329a947",
+      "content_hash": "045e36543c4429851731dd1246c0136d1b05d386ac0344bea8c808e95aa1db38",
       "dependencies": [],
       "description": "Use when designing or reviewing Flow custom property editor patterns for screen components or actions, including when Flow Builder needs guided design-time configuration, generic type mapping, or builder-context-aware validation. Triggers: 'Flow custom property editor', 'configurationEditor', 'builderContext', 'inputVariables', 'Flow screen component setup'. NOT for general LWC runtime behavior when Flow Builder customization is not involved.",
       "file_location": "skills/flow/flow-custom-property-editors",
@@ -4660,7 +4612,6 @@
         "skills/flow/flow-custom-property-editors/references/well-architected.md"
       ],
       "scripts": [
-        "skills/flow/flow-custom-property-editors/scripts/__pycache__/check_flow_custom_property_editors.cpython-311.pyc",
         "skills/flow/flow-custom-property-editors/scripts/check_flow_custom_property_editors.py"
       ],
       "tags": [
@@ -4721,7 +4672,7 @@
         "f9460c0b40fab89ccfc4",
         "fa46634f4500175afed9"
       ],
-      "content_hash": "be7a103b681ced3b0d2afd0fc0c00480d9ffea861bd30caf7d31e7347b2719d1",
+      "content_hash": "a04ac37d0bfbfb69f1d90833be9ba687886b74018ca98ceade8447114a0d4093",
       "dependencies": [],
       "description": "Use when embedding or exposing Salesforce Flows in Experience Cloud, especially for guest or external users, `lightning-flow` usage, site runtime differences, and data-access safety. Triggers: 'flow in experience cloud', 'guest user flow', 'lightning-flow on community page', 'external user flow access', 'LWR flow limitations'. NOT for general Experience Cloud sharing architecture when Flow is not part of the problem.",
       "file_location": "skills/flow/flow-for-experience-cloud",
@@ -4748,7 +4699,6 @@
         "skills/flow/flow-for-experience-cloud/references/well-architected.md"
       ],
       "scripts": [
-        "skills/flow/flow-for-experience-cloud/scripts/__pycache__/check_flow_for_experience_cloud.cpython-311.pyc",
         "skills/flow/flow-for-experience-cloud/scripts/check_flow_for_experience_cloud.py"
       ],
       "tags": [
@@ -4809,7 +4759,7 @@
         "f89c798766d93876d31f",
         "fdf5653add0503ea1c86"
       ],
-      "content_hash": "67b2cb720cfccd081ae5855c85169a956229bb9d0386fe67d37722f62a04b757",
+      "content_hash": "67af3f8e9bd721b4b2ae7dfacae9e80968544f684cfa50439071937cfa3117aa",
       "dependencies": [],
       "description": "Use when establishing operational standards for a Salesforce Flow portfolio, including naming conventions, ownership, version discipline, retirement of stale flows, and release readiness checks. Triggers: 'flow naming convention', 'too many old flows', 'who owns this flow', 'flow version governance'. NOT for element-by-element flow logic design or dedicated fault-handling review.",
       "file_location": "skills/flow/flow-governance",
@@ -4836,7 +4786,6 @@
         "skills/flow/flow-governance/references/well-architected.md"
       ],
       "scripts": [
-        "skills/flow/flow-governance/scripts/__pycache__/check_flow_governance.cpython-311.pyc",
         "skills/flow/flow-governance/scripts/check_flow_governance.py"
       ],
       "tags": [
@@ -4897,7 +4846,7 @@
         "f3519e1e8066f03e5632",
         "f52d5e56709c618e2247"
       ],
-      "content_hash": "52b3ac919b6ade1c93f4c957e9c51f68683fe9cb2cff20610e8b7ea3aab1002b",
+      "content_hash": "e443e7cbfd7c750a372066989368d6ac17586f018e6974390dacbfc0f7516edf",
       "dependencies": [],
       "description": "Use when defining or reviewing test strategy for Salesforce Flow, including Flow Tests, debug runs, path coverage, test data, and explicit validation of fault paths and custom component behavior. Triggers: 'flow test tool', 'how do i test a flow', 'flow fault path testing', 'flow debug interview'. NOT for Apex unit testing or manual QA planning that is unrelated to Flow behavior.",
       "file_location": "skills/flow/flow-testing",
@@ -4924,7 +4873,6 @@
         "skills/flow/flow-testing/references/well-architected.md"
       ],
       "scripts": [
-        "skills/flow/flow-testing/scripts/__pycache__/check_flow_testing.cpython-311.pyc",
         "skills/flow/flow-testing/scripts/check_flow_testing.py"
       ],
       "tags": [
@@ -4984,7 +4932,7 @@
         "f1e2988d19cdcdd2d1f5",
         "f590a15b7ceedd7f5acc"
       ],
-      "content_hash": "edd1861aa1f194c73b26f686f5d25ef11db015b4caf28addbf992ca050e8bf2a",
+      "content_hash": "eabb27b308504760968db14ba9181b59caa3a18ba6fd5e0c0e2f93ba86ffa072",
       "dependencies": [],
       "description": "Use when designing or reviewing Flow Orchestration for long-running, multi-user, or asynchronous business processes with stages, steps, work items, and monitoring needs. Triggers: 'flow orchestration', 'work item', 'stages and steps', 'multi-user process', 'long-running flow'. NOT for simple single-transaction record-triggered flows or lightweight approval routing that does not need orchestration.",
       "file_location": "skills/flow/orchestration-flows",
@@ -5011,7 +4959,6 @@
         "skills/flow/orchestration-flows/references/well-architected.md"
       ],
       "scripts": [
-        "skills/flow/orchestration-flows/scripts/__pycache__/check_orchestration_flows.cpython-311.pyc",
         "skills/flow/orchestration-flows/scripts/check_orchestration_flows.py"
       ],
       "tags": [
@@ -5074,7 +5021,7 @@
         "f4df74123139d7ac6349",
         "fe6930daac9af13fefdb"
       ],
-      "content_hash": "4f0c7e16e742a3bf67675111632cad9edf916888cbe8dfbc965cc5dbc9ba6995",
+      "content_hash": "50972dc5e7c73e84910c1e5584ae426b0d2a5624f53113ff57791d77960c7549",
       "dependencies": [],
       "description": "Use when designing or reviewing Salesforce record-triggered Flows, especially before-save vs after-save behavior, entry criteria, recursion avoidance, and when to escalate to Apex. Triggers: 'before save vs after save', '$Record__Prior', 'record-triggered flow', 'order of execution', 'flow recursion'. NOT for screen-flow UX or pure bulkification work when the trigger model is already correct.",
       "file_location": "skills/flow/record-triggered-flow-patterns",
@@ -5101,7 +5048,6 @@
         "skills/flow/record-triggered-flow-patterns/references/well-architected.md"
       ],
       "scripts": [
-        "skills/flow/record-triggered-flow-patterns/scripts/__pycache__/check_record_triggered_flow_patterns.cpython-311.pyc",
         "skills/flow/record-triggered-flow-patterns/scripts/check_record_triggered_flow_patterns.py"
       ],
       "tags": [
@@ -5164,7 +5110,7 @@
         "e1402881e14efc6b14f0",
         "ea02e089fe50048186ff"
       ],
-      "content_hash": "2db7b5b9397c5a59f495f1244c7cf5961ab4a2876baa72c4859f1835f1d832ae",
+      "content_hash": "85254150f6eb1e2431749fcb112202c09abca083ce42de136a30f296cddecac8",
       "dependencies": [],
       "description": "Use when designing or reviewing schedule-triggered flows for recurring automation, replacement of time-based workflow patterns, bounded record selection, idempotent processing, and escalation to Apex when volume is too high. Triggers: 'scheduled flow design', 'nightly flow job', 'time based workflow replacement', 'schedule triggered flow limits'. NOT for record-triggered scheduled paths or large-scale batch processing that should be built directly in Batch Apex.",
       "file_location": "skills/flow/scheduled-flows",
@@ -5191,7 +5137,6 @@
         "skills/flow/scheduled-flows/references/well-architected.md"
       ],
       "scripts": [
-        "skills/flow/scheduled-flows/scripts/__pycache__/check_scheduled_flows.cpython-311.pyc",
         "skills/flow/scheduled-flows/scripts/check_scheduled_flows.py"
       ],
       "tags": [
@@ -5255,7 +5200,7 @@
         "f68db1c3f03adcc611e1",
         "ffd4c765c3bd88d22bdd"
       ],
-      "content_hash": "4e602292c1a6954c958c2b86cc4ec7963555d72d922af3d45d097c709d7ef5f9",
+      "content_hash": "dae4fda1da0da642ed636fc876d245db1886799d1001cc51ea384e7cca829fec",
       "dependencies": [],
       "description": "Use when designing or reviewing interactive Flow screen experiences, including navigation, validation, screen component choice, custom LWC screen components, and user-safe commit timing. Triggers: 'screen flow validation', 'back button behavior in flow', 'custom flow screen component', 'screen flow UX'. NOT for Experience Cloud guest exposure or custom property editor design-time tooling.",
       "file_location": "skills/flow/screen-flows",
@@ -5282,7 +5227,6 @@
         "skills/flow/screen-flows/references/well-architected.md"
       ],
       "scripts": [
-        "skills/flow/screen-flows/scripts/__pycache__/check_screen_flows.cpython-311.pyc",
         "skills/flow/screen-flows/scripts/check_screen_flows.py"
       ],
       "tags": [
@@ -5345,7 +5289,7 @@
         "e6e117d521bd0b7eee99",
         "effaafce78b339d6d2f3"
       ],
-      "content_hash": "14d69d258c9a332eeeb542e634afe4f0553f41dbbd01af2ee20de8c67f529c5a",
+      "content_hash": "252b9450202b1ac642175e17559592a56d05a925e70a60a05b321d66590db153",
       "dependencies": [],
       "description": "Use when extracting reusable Flow logic into subflows, defining input and output variables, keeping parent flows maintainable, and sharing common automation contracts across multiple flows. Triggers: 'reuse this flow logic', 'how should subflow variables work', 'too much duplicated flow logic', 'subflow contract design'. NOT for Apex-called Flow execution direction or Flow Orchestration process design.",
       "file_location": "skills/flow/subflows-and-reusability",
@@ -5372,7 +5316,6 @@
         "skills/flow/subflows-and-reusability/references/well-architected.md"
       ],
       "scripts": [
-        "skills/flow/subflows-and-reusability/scripts/__pycache__/check_subflows_and_reusability.cpython-311.pyc",
         "skills/flow/subflows-and-reusability/scripts/check_subflows_and_reusability.py"
       ],
       "tags": [
@@ -5431,7 +5374,7 @@
         "fb17b1de15cef4747f7b",
         "fbe882e5e233176e96e2"
       ],
-      "content_hash": "c9fcd84133e4f242332bb2be6ae2f46837ed5e31efd3f1c1503a4efca6a39190",
+      "content_hash": "c578bc91a623f5c0f8784d901b7f72442a898b7a1da7cc0a04883410c27eb7ae",
       "dependencies": [],
       "description": "Use when designing or reviewing Salesforce GraphQL API usage, especially endpoint selection, field shaping, connection-based pagination, LWC wire adapters, and GraphQL vs REST tradeoffs. Triggers: 'GraphQL API', 'lightning/graphql', 'uiGraphQLApi', 'GraphQL pagination', 'GraphQL vs REST'. NOT for building a custom GraphQL server or for generic REST integration design with no GraphQL surface.",
       "file_location": "skills/integration/graphql-api-patterns",
@@ -5458,7 +5401,6 @@
         "skills/integration/graphql-api-patterns/references/well-architected.md"
       ],
       "scripts": [
-        "skills/integration/graphql-api-patterns/scripts/__pycache__/check_graphql_api_patterns.cpython-311.pyc",
         "skills/integration/graphql-api-patterns/scripts/check_graphql_api_patterns.py"
       ],
       "tags": [
@@ -5517,7 +5459,7 @@
         "f8bd759648f1e0d01b89",
         "fdffd3c139eb8841644f"
       ],
-      "content_hash": "9d4000366ab5938c89d7410084ec8d5a0ec40d65094e3c85e03957ab69df0ecb",
+      "content_hash": "84d4ed0d05c4afa960cda06a01d56c3b880513ef4694fb1656f6506473099a6a",
       "dependencies": [],
       "description": "Use when choosing or reviewing Salesforce OAuth flows and connected-app policy for integrations, including client credentials, JWT bearer, authorization code, device flow, scopes, and token lifecycle controls. Triggers: 'OAuth flow', 'connected app', 'client credentials', 'JWT bearer', 'refresh token', 'integration user'. NOT for record-level sharing design or for simple Named Credential usage when the auth-flow decision is already settled.",
       "file_location": "skills/integration/oauth-flows-and-connected-apps",
@@ -5544,7 +5486,6 @@
         "skills/integration/oauth-flows-and-connected-apps/references/well-architected.md"
       ],
       "scripts": [
-        "skills/integration/oauth-flows-and-connected-apps/scripts/__pycache__/check_oauth_flows_and_connected_apps.cpython-311.pyc",
         "skills/integration/oauth-flows-and-connected-apps/scripts/check_oauth_flows_and_connected_apps.py"
       ],
       "tags": [
@@ -5604,7 +5545,7 @@
         "e7557678aac12f013557",
         "fde54311c2747fc13add"
       ],
-      "content_hash": "9a7d601cf6c746467f0d2c750c700500b1c7aaa49ff11b8107152b399634be04",
+      "content_hash": "e8e69083136b8b71f1f4089d536947bc5c29515716be98c1fdade38a3b532748",
       "dependencies": [],
       "description": "Use when deciding whether Salesforce Connect and External Objects are the right fit for external data access, or when reviewing OData, cross-org, and custom adapter patterns, query limitations, and latency tradeoffs. Triggers: 'Salesforce Connect', 'External Objects', '__x', 'OData adapter', 'custom adapter'. NOT for ordinary ETL or replicated-data designs where the data should live inside Salesforce.",
       "file_location": "skills/integration/salesforce-connect-external-objects",
@@ -5631,7 +5572,6 @@
         "skills/integration/salesforce-connect-external-objects/references/well-architected.md"
       ],
       "scripts": [
-        "skills/integration/salesforce-connect-external-objects/scripts/__pycache__/check_salesforce_connect_external_objects.cpython-311.pyc",
         "skills/integration/salesforce-connect-external-objects/scripts/check_salesforce_connect_external_objects.py"
       ],
       "tags": [
@@ -5695,7 +5635,7 @@
         "f87f2ed928d0d41f0ca5",
         "fdb8e02a6789398f07bb"
       ],
-      "content_hash": "edce11035cca8e64300fb6650aacac9b80ad6acf17d994134f20890c40214656",
+      "content_hash": "29ca3ebdcbb93051e9029d9763854735e89acb80769e8232e67b214c10f9966a",
       "dependencies": [],
       "description": "Use when designing or reviewing how Lightning Web Components pass data and intent between parent, child, sibling, utility, or workspace contexts using `@api`, public methods, custom events, and Lightning Message Service. Triggers: 'LWC communication pattern', 'custom event not reaching parent', 'should I use LMS or @api', 'child component API'. NOT for data provisioning decisions, wire-service strategy, or page navigation when communication is not the main problem.",
       "file_location": "skills/lwc/component-communication",
@@ -5722,7 +5662,6 @@
         "skills/lwc/component-communication/references/well-architected.md"
       ],
       "scripts": [
-        "skills/lwc/component-communication/scripts/__pycache__/check_component_communication.cpython-311.pyc",
         "skills/lwc/component-communication/scripts/check_component_communication.py"
       ],
       "tags": [
@@ -5781,7 +5720,7 @@
         "ee682931fefd9b2ea957",
         "fae3d77c79044d360f53"
       ],
-      "content_hash": "8c1f8c16b2da517d8c9df69fb788e9ead5d9e8478a6672aa5c03de2da52becdb",
+      "content_hash": "0db7999ab0159557b5dbb533d765ce63c330154e29ed7b42ef63b194a7b3ab09",
       "dependencies": [],
       "description": "Use when building or reviewing an LWC Custom Property Editor for Flow screen or action configuration, including the `configurationEditor` metadata hook, builder-side APIs, validation, and value-change events. Triggers: 'custom property editor', 'Flow configuration editor', 'builderContext', 'inputVariables', 'configurationEditor'. NOT for ordinary runtime screen-component behavior when no Flow Builder design-time customization is involved.",
       "file_location": "skills/lwc/custom-property-editor-for-flow",
@@ -5808,7 +5747,6 @@
         "skills/lwc/custom-property-editor-for-flow/references/well-architected.md"
       ],
       "scripts": [
-        "skills/lwc/custom-property-editor-for-flow/scripts/__pycache__/check_custom_property_editor_for_flow.cpython-311.pyc",
         "skills/lwc/custom-property-editor-for-flow/scripts/check_custom_property_editor_for_flow.py"
       ],
       "tags": [
@@ -5874,7 +5812,7 @@
         "f880d823e0a03194bc49",
         "fbd6c319bfaa084ef82f"
       ],
-      "content_hash": "c2d1d3a5b2c4d1c3b6b5fa2d56ebdfa7b824e51b44d3fb74e69d97b5d755920b",
+      "content_hash": "23693b96b8e9a35bfc314d5f6d2159d0b7bd8c6d3cc3dc027fd4553f4821d7c5",
       "dependencies": [],
       "description": "Use when building or reviewing Lightning Web Components \u2014 specifically lifecycle management, wire service, memory leak prevention, navigation, and Lightning Locker Service constraints. Triggers: 'LWC', 'connectedCallback', 'renderedCallback', 'memory leak', 'NavigationMixin', 'wire'. NOT for Aura components.",
       "file_location": "skills/lwc/lifecycle-hooks",
@@ -5903,7 +5841,6 @@
         "skills/lwc/lifecycle-hooks/references/well-architected.md"
       ],
       "scripts": [
-        "skills/lwc/lifecycle-hooks/scripts/__pycache__/check_lwc_lifecycle.cpython-311.pyc",
         "skills/lwc/lifecycle-hooks/scripts/check_lwc_lifecycle.py"
       ],
       "tags": [
@@ -5967,7 +5904,7 @@
         "ebfe20f26794d277325b",
         "fe59dfbd416f4793daf3"
       ],
-      "content_hash": "53cebb581a2a1d3c466553fb83ea706bb4c58d6dd66eaab2315678f7620a9ab4",
+      "content_hash": "36457b4eef198ff05bf1284dcf0b4023898f89bf57e534ca305a06dfe6365f71",
       "dependencies": [],
       "description": "Use when designing or reviewing Lightning Web Components for keyboard access, semantic labeling, focus management, screen-reader behavior, and WCAG-aligned UX in Salesforce. Triggers: 'lwc accessibility', 'keyboard navigation in lwc', 'screen reader labels', 'focus trap in modal'. NOT for Apex or sharing security reviews, or for purely visual SLDS styling that does not affect accessibility behavior.",
       "file_location": "skills/lwc/lwc-accessibility",
@@ -5994,7 +5931,6 @@
         "skills/lwc/lwc-accessibility/references/well-architected.md"
       ],
       "scripts": [
-        "skills/lwc/lwc-accessibility/scripts/__pycache__/check_lwc_accessibility.cpython-311.pyc",
         "skills/lwc/lwc-accessibility/scripts/check_lwc_accessibility.py"
       ],
       "tags": [
@@ -6057,7 +5993,7 @@
         "fea4272a1ed850f1deaf",
         "ff236106ee6266b03ef8"
       ],
-      "content_hash": "50a7b21c8f47457c942c110d5795f6c7a82fe168ebe606c13d88c2e23f17352d",
+      "content_hash": "bd7c3a078e3ea585054b910d72727b5ae93e372bd75a50542d4ba796087d09b2",
       "dependencies": [],
       "description": "Use when designing or reviewing `lightning-datatable` usage in Lightning Web Components, including column configuration, stable `key-field` values, inline editing, row actions, infinite loading, and custom cell types. Triggers: 'lightning datatable inline edit', 'row actions in lwc datatable', 'key field missing', 'infinite loading in datatable'. NOT for highly custom virtualized grids or broad page-performance work outside the datatable boundary.",
       "file_location": "skills/lwc/lwc-data-table",
@@ -6084,7 +6020,6 @@
         "skills/lwc/lwc-data-table/references/well-architected.md"
       ],
       "scripts": [
-        "skills/lwc/lwc-data-table/scripts/__pycache__/check_lwc_data_table.cpython-311.pyc",
         "skills/lwc/lwc-data-table/scripts/check_lwc_data_table.py"
       ],
       "tags": [
@@ -6148,7 +6083,7 @@
         "f36d6c6ef97fce88ee3c",
         "fa92e22421c4f20fe159"
       ],
-      "content_hash": "0a72cdd24c60ea8b06fa77ad585cc750299fe184d16acb73d82aee96297d5354",
+      "content_hash": "6e734236eacad47508d871ff0ab2b8ae83c5363a36d4b820be3559dd89b7387d",
       "dependencies": [],
       "description": "Use when building or reviewing Lightning Web Component form UX, especially the choice between `lightning-record-edit-form` and custom inputs, client-side validation with `reportValidity()`, server-side validation feedback, and file upload flows. Triggers: 'record edit form in lwc', 'reportValidity not working', 'custom validation message', 'fieldErrors in onerror'. NOT for Flow screen design or Apex-only validation logic.",
       "file_location": "skills/lwc/lwc-forms-and-validation",
@@ -6175,7 +6110,6 @@
         "skills/lwc/lwc-forms-and-validation/references/well-architected.md"
       ],
       "scripts": [
-        "skills/lwc/lwc-forms-and-validation/scripts/__pycache__/check_lwc_forms_and_validation.cpython-311.pyc",
         "skills/lwc/lwc-forms-and-validation/scripts/check_lwc_forms_and_validation.py"
       ],
       "tags": [
@@ -6238,7 +6172,7 @@
         "f7a17a973d59b9c3eeee",
         "feb015aa161f13fe89c3"
       ],
-      "content_hash": "2504478b7e2276a4e934499328a28196cddbf9204693c94de070e92d1bd05ee6",
+      "content_hash": "1f9936d834c2c253271d7252327017e42915786f6b687dd85c9c8b7a6d88bdc0",
       "dependencies": [],
       "description": "Use when choosing or reviewing overlay patterns in Lightning Web Components, especially `LightningModal`, confirmation dialogs, toasts, focus handling, and overlay dismissal behavior. Triggers: 'lightning modal in lwc', 'toast or modal decision', 'focus trap in modal', 'overlay close result'. NOT for full Flow screen UX design or record-edit processes that should stay on-page.",
       "file_location": "skills/lwc/lwc-modal-and-overlay",
@@ -6265,7 +6199,6 @@
         "skills/lwc/lwc-modal-and-overlay/references/well-architected.md"
       ],
       "scripts": [
-        "skills/lwc/lwc-modal-and-overlay/scripts/__pycache__/check_lwc_modal_and_overlay.cpython-311.pyc",
         "skills/lwc/lwc-modal-and-overlay/scripts/check_lwc_modal_and_overlay.py"
       ],
       "tags": [
@@ -6325,7 +6258,7 @@
         "eaeca04eca84bb715e9f",
         "ed8341ae75454d93b8e4"
       ],
-      "content_hash": "dbfca1be08a797b4bfb84ec1772357f1774763a7570eed15fefb16cbf51e3739",
+      "content_hash": "aa57653ad7ccb2153a120dd2d95e6225400df42531907e52561b44f0ee3c84a8",
       "dependencies": [],
       "description": "Use when designing or reviewing Lightning Web Components for the Salesforce mobile app, mobile device capabilities, or offline-aware behavior. Triggers: 'lightning/mobileCapabilities', 'mobile lwc', 'offline lwc', 'supported mobile app only', 'barcode scanner availability'. NOT for Mobile SDK or fully native app architecture unless the decision is whether LWC in the Salesforce mobile app is sufficient.",
       "file_location": "skills/lwc/lwc-offline-and-mobile",
@@ -6352,7 +6285,6 @@
         "skills/lwc/lwc-offline-and-mobile/references/well-architected.md"
       ],
       "scripts": [
-        "skills/lwc/lwc-offline-and-mobile/scripts/__pycache__/check_lwc_offline_and_mobile.cpython-311.pyc",
         "skills/lwc/lwc-offline-and-mobile/scripts/check_lwc_offline_and_mobile.py"
       ],
       "tags": [
@@ -6423,7 +6355,7 @@
         "fb5d042b75cc556d0f09",
         "ffb5ab5b3b14d216dead"
       ],
-      "content_hash": "331db23720b0a660bcab220c3cb84f5cffb3f790774b2eaba9a5b95d6328b40b",
+      "content_hash": "64cf5b65a593fe1e804958eb696b4c5ec40cb78e03390ed7d80094c25128a29e",
       "dependencies": [],
       "description": "Use when designing or reviewing Lightning Web Components for slow initial load, heavy rerenders, large-list rendering, payload reduction, and lazy instantiation choices such as `lwc:if`, tabs, or dynamic components. Triggers: 'slow lwc', 'rerenders too much', 'key index', 'dynamic import', 'large list lag'. NOT for wire-service data-source selection when provisioning strategy is the only question or for mobile/offline-specific tuning.",
       "file_location": "skills/lwc/lwc-performance",
@@ -6456,7 +6388,6 @@
         "skills/lwc/lwc-performance/references/well-architected.md"
       ],
       "scripts": [
-        "skills/lwc/lwc-performance/scripts/__pycache__/check_lwc_performance.cpython-311.pyc",
         "skills/lwc/lwc-performance/scripts/check_lwc_performance.py"
       ],
       "tags": [
@@ -6518,7 +6449,7 @@
         "f72bc333670046afba63",
         "fefd8892f7936cd17eb4"
       ],
-      "content_hash": "3da235f0c7117dc6bdcafaf27c03422c78f07921aef331866ab9bffe93329058",
+      "content_hash": "de8dc7f2a337943ec2303b899131ca3d096cc489ba386993f5c8bace2e6c35b5",
       "dependencies": [],
       "description": "Use when designing or reviewing Lightning Web Components for DOM safety, Lightning Web Security boundaries, third-party library handling, and secure server-side data access from LWC. Triggers: 'innerHTML in lwc', 'Lightning Web Security', 'document.querySelector', 'light DOM security', 'secure apex class for lwc'. NOT for org-wide sharing architecture or Apex-only security reviews when no LWC surface is involved.",
       "file_location": "skills/lwc/lwc-security",
@@ -6545,7 +6476,6 @@
         "skills/lwc/lwc-security/references/well-architected.md"
       ],
       "scripts": [
-        "skills/lwc/lwc-security/scripts/__pycache__/check_lwc_security.cpython-311.pyc",
         "skills/lwc/lwc-security/scripts/check_lwc_security.py"
       ],
       "tags": [
@@ -6608,7 +6538,7 @@
         "f6de2e3991f53f78c7b9",
         "fdb625c3de0e1860a0d0"
       ],
-      "content_hash": "9f49e1a463766508fa7e27610d5888a8764b12ad3056f93c36f1f0c23a1693df",
+      "content_hash": "d9fc78c1e6d3e2a24ffc016bc1e07ad0e3407931fba213b468796883c3b95460",
       "dependencies": [],
       "description": "Use when setting up or reviewing Lightning Web Component unit tests with Jest, including `@salesforce/sfdx-lwc-jest`, wire adapter mocks, imperative Apex mocks, async rerender handling, and accessibility smoke checks. Triggers: 'how do I test @wire in LWC', 'Jest test is flaky', 'mock Apex in LWC test', 'flushPromises pattern'. NOT for Apex unit tests, browser end-to-end automation, or performance testing.",
       "file_location": "skills/lwc/lwc-testing",
@@ -6635,7 +6565,6 @@
         "skills/lwc/lwc-testing/references/well-architected.md"
       ],
       "scripts": [
-        "skills/lwc/lwc-testing/scripts/__pycache__/check_lwc_testing.cpython-311.pyc",
         "skills/lwc/lwc-testing/scripts/check_lwc_testing.py"
       ],
       "tags": [
@@ -6699,7 +6628,7 @@
         "f81459e18ada34a6dc50",
         "fd190c46c6de0963df7b"
       ],
-      "content_hash": "1ff50808f6d0cacd1c10ad0ac3de620108276a8c82528787613d264f6b042dac",
+      "content_hash": "a99c6fee4d87848309ad9d7dd61f31e9dfc796928d55bb4d96e5380eeb89053d",
       "dependencies": [],
       "description": "Use when implementing or reviewing Lightning Web Component navigation with `NavigationMixin`, PageReference objects, URL state, and `CurrentPageReference` across Lightning Experience, mobile, and Experience Cloud. Triggers: 'navigate to record page from LWC', 'PageReference state not working', 'should I use window.location', 'Experience Cloud navigation issue'. NOT for component-to-component messaging or data-loading strategy when navigation is only a side effect.",
       "file_location": "skills/lwc/navigation-and-routing",
@@ -6726,7 +6655,6 @@
         "skills/lwc/navigation-and-routing/references/well-architected.md"
       ],
       "scripts": [
-        "skills/lwc/navigation-and-routing/scripts/__pycache__/check_navigation_and_routing.cpython-311.pyc",
         "skills/lwc/navigation-and-routing/scripts/check_navigation_and_routing.py"
       ],
       "tags": [
@@ -6790,7 +6718,7 @@
         "eae1df0ed79e739de579",
         "ec1f3f7024c72cde8846"
       ],
-      "content_hash": "97b6c5e3a98bed42d13fcdbf9e477fff6c29cad736dae4fad81e45cda1378356",
+      "content_hash": "bcaebbc4fe532b5fad6af51103fa3e62a6ab1f517a3d25d98e67e973d9264a27",
       "dependencies": [],
       "description": "Use when packaging third-party JavaScript, CSS, or asset files into Salesforce static resources for Lightning Web Components, including `@salesforce/resourceUrl`, `loadScript`, `loadStyle`, zip pathing, versioning, and CSP-safe delivery. Triggers: 'static resource in lwc', 'loadScript not working', 'resourceUrl path in zip', 'third party library in salesforce'. NOT for npm-bundled code that should ship through the build pipeline or server-side integration assets.",
       "file_location": "skills/lwc/static-resources-in-lwc",
@@ -6817,7 +6745,6 @@
         "skills/lwc/static-resources-in-lwc/references/well-architected.md"
       ],
       "scripts": [
-        "skills/lwc/static-resources-in-lwc/scripts/__pycache__/check_static_resources_in_lwc.cpython-311.pyc",
         "skills/lwc/static-resources-in-lwc/scripts/check_static_resources_in_lwc.py"
       ],
       "tags": [
@@ -6877,7 +6804,7 @@
         "e6de2abdbf8509cdcf71",
         "f7a5835815b66733d9f6"
       ],
-      "content_hash": "8a486bc53066ddfb1f788a8ecefbc94339346fce9ccfdf14a4a2eb6db810b9da",
+      "content_hash": "4c2d14583850c0b3c0001245c73a29cae556484f2523e58469ff2452b7ea0850",
       "dependencies": [],
       "description": "Use when designing or reviewing Lightning Web Components that use `@wire`, Lightning Data Service, UI API, or the GraphQL wire adapter, especially for reactive parameters, cache behavior, and refresh strategy. Triggers: 'wire service', 'refreshApex', 'reactive parameter', 'getRecord', 'wire vs imperative Apex'. NOT for component communication or generic lifecycle issues when data provisioning is not the main concern.",
       "file_location": "skills/lwc/wire-service-patterns",
@@ -6904,7 +6831,6 @@
         "skills/lwc/wire-service-patterns/references/well-architected.md"
       ],
       "scripts": [
-        "skills/lwc/wire-service-patterns/scripts/__pycache__/check_wire_service_patterns.cpython-311.pyc",
         "skills/lwc/wire-service-patterns/scripts/check_wire_service_patterns.py"
       ],
       "tags": [
@@ -6966,7 +6892,7 @@
         "f366843ea74dd6306d8c",
         "f91bbef4bb186eae7656"
       ],
-      "content_hash": "a95c456eac4ea0f5777bc42c082f9c2d71db090162a12075c5ea5971a1a8ec06",
+      "content_hash": "76e988955e3e50ef1a40409fd801093fd18d1cb959b84a998dbece862ad764b1",
       "dependencies": [],
       "description": "Use when designing or reviewing OmniStudio DataRaptors, especially Extract versus Turbo Extract versus Transform versus Load, field mapping strategy, performance tradeoffs, and when to move work into Integration Procedures or Apex. Triggers: 'DataRaptor Extract', 'Turbo Extract', 'DataRaptor Load', 'DataRaptor Transform', 'OmniStudio data mapping'. NOT for overall OmniScript journey design or Integration Procedure sequencing when the main question is not the DataRaptor shape itself.",
       "file_location": "skills/omnistudio/dataraptor-patterns",
@@ -6993,7 +6919,6 @@
         "skills/omnistudio/dataraptor-patterns/references/well-architected.md"
       ],
       "scripts": [
-        "skills/omnistudio/dataraptor-patterns/scripts/__pycache__/check_dataraptor_patterns.cpython-311.pyc",
         "skills/omnistudio/dataraptor-patterns/scripts/check_dataraptor_patterns.py"
       ],
       "tags": [
@@ -7064,7 +6989,7 @@
         "fbebc6e3875c6c02c1e1",
         "fc367c5a79b3c23fd9e7"
       ],
-      "content_hash": "ba77a5ea394c0f00a763702e8e0610c1a1c84db846ee45f52c62df71ebe9187a",
+      "content_hash": "754213c82731dee1f24e2c41a552db59d88ca1faddb04d0cc7d0a459031c28b0",
       "dependencies": [],
       "description": "Use when building, reviewing, or debugging OmniStudio Integration Procedures. Triggers: 'integration procedure', 'IP', 'HTTP action', 'DataRaptor', 'rollbackOnError', 'failureResponse'. NOT for Apex-only integrations unless the main design choice is whether OmniStudio is still appropriate.",
       "file_location": "skills/omnistudio/integration-procedures",
@@ -7091,7 +7016,6 @@
         "skills/omnistudio/integration-procedures/references/well-architected.md"
       ],
       "scripts": [
-        "skills/omnistudio/integration-procedures/scripts/__pycache__/check_integration_procedure.cpython-311.pyc",
         "skills/omnistudio/integration-procedures/scripts/check_integration_procedure.py"
       ],
       "tags": [
@@ -7152,7 +7076,7 @@
         "f27eefec50e6efb5f2a8",
         "f3c07f0894d17d30c71c"
       ],
-      "content_hash": "25ef7ed4482c99fe72a7b52814dd645eab5b65a247978a6d10511b20f53a338b",
+      "content_hash": "e08f81b7cde9441db4760da8db704f411a47407a6f1cbc6460740aca83c053d6",
       "dependencies": [],
       "description": "Use when designing or reviewing OmniScripts for guided experiences, step structure, branching, save/resume, and the boundary between OmniScript, Integration Procedures, DataRaptors, and custom LWCs. Triggers: 'omniscript design', 'too many steps in omniscript', 'save and resume omniscript', 'branching in omniscript', 'when should this be an integration procedure'. NOT for deep Integration Procedure or DataRaptor design when the guided interaction layer is not the main concern.",
       "file_location": "skills/omnistudio/omniscript-design-patterns",
@@ -7179,7 +7103,6 @@
         "skills/omnistudio/omniscript-design-patterns/references/well-architected.md"
       ],
       "scripts": [
-        "skills/omnistudio/omniscript-design-patterns/scripts/__pycache__/check_omniscript_design_patterns.cpython-311.pyc",
         "skills/omnistudio/omniscript-design-patterns/scripts/check_omniscript_design_patterns.py"
       ],
       "tags": [
@@ -7242,7 +7165,7 @@
         "f4d362a8b6a0a4451123",
         "f7763591cb145ade3580"
       ],
-      "content_hash": "98bd93fff4bddb3e8bbafbd791f449d3e93f6670b79699ad97e336525468f668",
+      "content_hash": "97fb45d0ff4fe7f9ed6774bba87d8116548cfd2bf42476b2cb1b56dc16680cc3",
       "dependencies": [],
       "description": "Use when designing or reviewing OmniStudio security across OmniScripts, Integration Procedures, DataRaptors, custom LWCs, Apex actions, guest-user exposure, and outbound HTTP actions. Triggers: 'OmniStudio security', 'guest user omniscript', 'DataRaptor CRUD FLS', 'OmniStudio Apex security', 'HTTP action data exposure'. NOT for general portal identity architecture or generic Apex security reviews when OmniStudio is not the main surface.",
       "file_location": "skills/omnistudio/omnistudio-security",
@@ -7269,7 +7192,6 @@
         "skills/omnistudio/omnistudio-security/references/well-architected.md"
       ],
       "scripts": [
-        "skills/omnistudio/omnistudio-security/scripts/__pycache__/check_omnistudio_security.cpython-311.pyc",
         "skills/omnistudio/omnistudio-security/scripts/check_omnistudio_security.py"
       ],
       "tags": [
@@ -7327,7 +7249,7 @@
         "fb919b1dfcca450df10f",
         "fe99834f9902a707d821"
       ],
-      "content_hash": "419844c02b957be3a0969129e74d8f807b31117203f9759c123d2991bf0fb4be",
+      "content_hash": "915ee7f3241c804b633a6e6aa5b7ae2f0cb7b51819970e73be5059a44b82927e",
       "dependencies": [],
       "description": "Use when defining or reviewing baseline org hardening settings, especially Security Health Check gaps, clickjack and browser protections, CSP and CORS governance, password/session policies, network restrictions, and release-update hygiene. Triggers: 'org hardening', 'baseline security config', 'Health Check', 'CSP trusted sites', 'clickjack protection'. NOT for feature-level app permissions or record-sharing design.",
       "file_location": "skills/security/org-hardening-and-baseline-config",
@@ -7354,7 +7276,6 @@
         "skills/security/org-hardening-and-baseline-config/references/well-architected.md"
       ],
       "scripts": [
-        "skills/security/org-hardening-and-baseline-config/scripts/__pycache__/check_org_hardening_and_baseline_config.cpython-311.pyc",
         "skills/security/org-hardening-and-baseline-config/scripts/check_org_hardening_and_baseline_config.py"
       ],
       "tags": [
@@ -7412,7 +7333,7 @@
         "e5f43b35df7e5350c45a",
         "f7497850a182a02c044c"
       ],
-      "content_hash": "51a3b47748cf79068689df88865a9f5ab78d66776b7a8acc502187e5fa40b855",
+      "content_hash": "dc1dc996e82199b4a5bba47c2639234531f7ddb5490614ef038312abd3cb0f3b",
       "dependencies": [],
       "description": "Use when designing or reviewing permission-set-group architecture, especially profile minimization, group composition, muting strategy, and migration away from profile-heavy security models. Triggers: 'permission set group', 'muting permission set', 'profiles to permission sets', 'PSG architecture', 'muted permissions'. NOT for record-sharing design or CRUD/FLS review in Apex code.",
       "file_location": "skills/security/permission-set-groups-and-muting",
@@ -7439,7 +7360,6 @@
         "skills/security/permission-set-groups-and-muting/references/well-architected.md"
       ],
       "scripts": [
-        "skills/security/permission-set-groups-and-muting/scripts/__pycache__/check_permission_set_groups_and_muting.cpython-311.pyc",
         "skills/security/permission-set-groups-and-muting/scripts/check_permission_set_groups_and_muting.py"
       ],
       "tags": [

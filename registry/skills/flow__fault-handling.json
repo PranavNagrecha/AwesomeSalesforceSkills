@@ -44,7 +44,7 @@
     "fee0b04151216d00b2b1",
     "ff520aa69c68d4e683ed"
   ],
-  "content_hash": "ec66d7bdd0cd3b71e0a9ac5b0b2d6644c1ec0a3f369f150e0df6cf8884f4189a",
+  "content_hash": "501c8907b32903728a9d9836b998b6ac8110386a6a58b4850df1fefd07e21a99",
   "dependencies": [],
   "description": "Use when designing, reviewing, or troubleshooting Salesforce Flow fault handling, error logging, and bulk-safe automation paths. Triggers: 'fault connector', '$Flow.FaultMessage', 'flow failed', 'record-triggered flow rollback', 'screen flow error'. NOT for generic Flow type selection unless the main risk is failure handling.",
   "file_location": "skills/flow/fault-handling",
@@ -71,7 +71,6 @@
     "skills/flow/fault-handling/references/well-architected.md"
   ],
   "scripts": [
-    "skills/flow/fault-handling/scripts/__pycache__/check_flow_faults.cpython-311.pyc",
     "skills/flow/fault-handling/scripts/check_flow_faults.py"
   ],
   "tags": [

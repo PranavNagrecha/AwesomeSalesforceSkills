@@ -44,7 +44,7 @@
     "f73502da79d08af2e96c",
     "fd3a9ca3ee0414ced4fb"
   ],
-  "content_hash": "3da9756b6b8ece2f0604f7419bc585cd8ef0fdf5a2781b7d5a967f67f603f30d",
+  "content_hash": "57484f47c90fb0bc3582bb9cea6242cb4aeb7a46b2f4cf3b351c6dc605754af5",
   "dependencies": [],
   "description": "Use when choosing or implementing Apex test doubles with `Test.setMock`, `HttpCalloutMock`, `StaticResourceCalloutMock`, or `StubProvider`, and when designing code seams to support those doubles cleanly. Triggers: 'StubProvider', 'Test.createStub', 'HttpCalloutMock', 'StaticResourceCalloutMock', 'mocking infrastructure'. NOT for general Apex test design outside the mocking and seam problem.",
   "file_location": "skills/apex/apex-mocking-and-stubs",
@@ -71,7 +71,6 @@
     "skills/apex/apex-mocking-and-stubs/references/well-architected.md"
   ],
   "scripts": [
-    "skills/apex/apex-mocking-and-stubs/scripts/__pycache__/check_apex_mocking_and_stubs.cpython-311.pyc",
     "skills/apex/apex-mocking-and-stubs/scripts/check_apex_mocking_and_stubs.py"
   ],
   "tags": [
