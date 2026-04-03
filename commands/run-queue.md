@@ -220,8 +220,19 @@ python3 scripts/validate_repo.py
 ```
 Must exit 0. If not, fix all errors and re-run. Do not proceed until this passes.
 
-**2j. Mark DONE in MASTER_QUEUE.md**
-Edit the row: change `IN_PROGRESS` → `DONE`.
+**2j. Mark DONE and update Progress Summary**
+Edit the skill row: change `IN_PROGRESS` → `DONE`.
+
+Then update the Progress Summary table at the top of MASTER_QUEUE.md:
+- Increment **Skills Done** by 1
+- Decrement **TODO** by 1
+for the matching Phase row.
+
+```bash
+# Quick count to verify your numbers are correct
+grep -c "^| DONE" MASTER_QUEUE.md
+grep -c "^| TODO" MASTER_QUEUE.md
+```
 
 **2k. Commit and push everything**
 ```bash

@@ -57,7 +57,7 @@ STATUS KEY:
 
 | Phase | Cloud | Total Cells | Skills Planned | Skills Done | TODO |
 |-------|-------|-------------|----------------|-------------|------|
-| 1 | Core Platform | 5 roles | 42 | 0 | 42 |
+| 1 | Core Platform | 5 roles | 34 | 9 | 25 |
 | 2 | Sales Cloud | 5 roles | RESEARCH | 0 | — |
 | 3 | Service Cloud | 5 roles | RESEARCH | 0 | — |
 | 4 | Experience Cloud | 5 roles | RESEARCH | 0 | — |
@@ -102,11 +102,11 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | DONE | object-creation-and-design | How to create a custom object: naming, API name, features (activities, chatter, history tracking), sharing model selection, tab creation. NOT for field design (use custom-field-creation). | Claude Sonnet 4.6 · 2026-04-03T00:00:00Z |
 | DONE | picklist-and-value-sets | Global value sets vs object-local picklists, controlling and dependent fields, picklist value management, replacing picklist values in data. NOT for formula fields that reference picklists. | Claude Sonnet 4.6 · 2026-04-03T00:00:00Z |
 | DONE | user-management | Creating, deactivating, and freezing users; assigning licenses, roles, and profiles; login hours and IP restrictions; delegated administration. NOT for permission sets (use permission-set-architecture). | Claude Sonnet 4.6 · 2026-04-03T00:00:00Z |
-| TODO | org-setup-and-configuration | MFA enforcement, session settings, login policies, password policies, trusted IP ranges, My Domain, CSP settings. NOT for user-level security (use user-management or permission-sets-vs-profiles). | Reset — agent built but push failed |
-| TODO | app-and-tab-configuration | Creating Lightning apps, configuring navigation items, adding tabs for custom objects, utility bar, app visibility by profile. NOT for Experience Cloud apps. | |
-| TODO | global-actions-and-quick-actions | Object-specific quick actions vs global actions, action layouts, pre-filling fields, adding actions to page layouts and mobile. NOT for Flow-triggered actions. | |
-| TODO | assignment-rules | Lead assignment rules, case assignment rules, rule entry criteria, queue assignment, round-robin patterns using Apex. NOT for approval process routing (use approval-processes). | |
-| TODO | escalation-rules | Case escalation rules, time-based escalation, business hours configuration, escalation actions. NOT for assignment rules or approval processes. | |
+| DONE | org-setup-and-configuration | MFA enforcement, session settings, login policies, password policies, trusted IP ranges, My Domain, CSP settings. NOT for user-level security (use user-management or permission-sets-vs-profiles). | Reset — agent built but push failed |
+| DONE | app-and-tab-configuration | Creating Lightning apps, configuring navigation items, adding tabs for custom objects, utility bar, app visibility by profile. NOT for Experience Cloud apps. | |
+| DONE | global-actions-and-quick-actions | Object-specific quick actions vs global actions, action layouts, pre-filling fields, adding actions to page layouts and mobile. NOT for Flow-triggered actions. | |
+| DONE | assignment-rules | Lead assignment rules, case assignment rules, rule entry criteria, queue assignment, round-robin patterns using Apex. NOT for approval process routing (use approval-processes). | |
+| DONE | escalation-rules | Case escalation rules, time-based escalation, business hours configuration, escalation actions. NOT for assignment rules or approval processes. | |
 | TODO | data-skew-and-sharing-performance | Recognizing data skew (account skew, ownership skew), impact on sharing recalculation, mitigation strategies. NOT for sharing model design (use sharing-and-visibility). | |
 
 ### Core Platform × BA Role
