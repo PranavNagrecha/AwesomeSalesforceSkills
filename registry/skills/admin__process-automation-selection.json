@@ -43,7 +43,7 @@
     "f8c2fda1f6845c5b0c5b",
     "fe49c50ccd6eb38256ff"
   ],
-  "content_hash": "ddcb70af56a7f2a6e02f27a1151d4818d400484aa208612b20e8bfb2bd078733",
+  "content_hash": "fd4d1e12c12c859b2e71ec58bbdebebf220c266d45824974a1dd308a6a947298",
   "dependencies": [],
   "description": "Use when deciding which Salesforce automation tool should own a requirement, including before-save and after-save Flow, screen Flow, scheduled Flow, invocable Apex, Apex triggers, and migration off Workflow Rules or Process Builder. Triggers: 'Flow or Apex trigger', 'which automation tool should I use', 'Process Builder migration', 'Workflow Rule retirement', 'same-record update or trigger'. NOT for detailed implementation of a Flow or trigger after the automation boundary has already been chosen.",
   "file_location": "skills/admin/process-automation-selection",
@@ -71,6 +71,7 @@
     "skills/admin/process-automation-selection/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/process-automation-selection/scripts/__pycache__/check_process_automation_selection.cpython-311.pyc",
     "skills/admin/process-automation-selection/scripts/check_process_automation_selection.py"
   ],
   "tags": [

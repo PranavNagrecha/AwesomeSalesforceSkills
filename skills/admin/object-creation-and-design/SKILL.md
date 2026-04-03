@@ -104,8 +104,9 @@ The OWD for a custom object controls the **baseline access** any user has to rec
 | Private | Record owner and users above in role hierarchy | Record owner and users above in role hierarchy |
 | Public Read Only | All internal users | Record owner and users above in role hierarchy |
 | Public Read/Write | All internal users | All internal users |
-| Public Read/Write/Transfer | All internal users | All internal users (and can change ownership) |
 | Controlled by Parent | Inherited from master-detail parent record | Inherited from master-detail parent record |
+
+> Note: **Public Read/Write/Transfer** (which also allows any user to change record ownership) is available only on the standard Case and Lead objects — it is not a valid OWD option for custom objects.
 
 **Controlled by Parent** is only available when the object has at least one Master-Detail relationship. When this OWD is selected, users can only access child records if they can access the parent — manual sharing and sharing rules cannot be created for the child object.
 
@@ -116,7 +117,7 @@ Choose the most restrictive OWD that satisfies the baseline access requirement, 
 | Edition | Custom Objects Allowed |
 |---------|----------------------|
 | Contact Manager | 5 |
-| Group | 10 |
+| Group | 50 |
 | Professional | 50 |
 | Enterprise | 200 |
 | Performance, Unlimited | 2,000 |
@@ -139,9 +140,11 @@ These limits count all custom objects in the org, including those from installed
 3. Choose **Record Name** type: **Text** for user-supplied names, **Auto Number** for system-generated IDs. If Auto Number, set the Display Format (e.g. `REQ-{0000}`) and Starting Number.
 4. Add a **Description** (internal, admin-facing — helps future maintainers understand the purpose).
 5. Select optional features. Enable only what is known to be needed (Activities, Track Field History, Allow Notes, Allow Reports, Chatter). Remember: Track Field History and Activities cannot be turned off later.
-6. Set the **OWD (Sharing Model)**. Use the decision guide above. Default is Private — change only if users genuinely need broader baseline access.
-7. **Optionally** check "Launch New Custom Tab Wizard after saving" to proceed directly to tab setup. Or skip and create the tab separately.
-8. Click **Save**.
+6. Set the **Deployment Status**: choose **Deployed** for a live object or **In Development** to keep it hidden from non-admins during build/test. An object left in "In Development" is invisible to end users — flip this to Deployed before go-live.
+7. Set the **OWD (Sharing Model)**. Use the decision guide above. Default is Private — change only if users genuinely need broader baseline access.
+8. **Optionally** check "Launch New Custom Tab Wizard after saving" to proceed directly to tab setup. Or skip and create the tab separately.
+9. Click **Save**.
+10. If Track Field History was enabled, immediately go to Fields & Relationships → **Set History Tracking** and select which fields (up to 20) to track. Enabling the feature without configuring fields means nothing is tracked.
 9. After saving: create the required fields (see `custom-field-creation` skill), set up page layouts and record types if needed.
 
 ### Pattern 2: Review / Audit — Validate an Existing Custom Object Configuration
@@ -196,8 +199,10 @@ Before deploying the object to production:
 - [ ] Record Name type (Text vs Auto Number) chosen intentionally — cannot be changed after save.
 - [ ] Description added to the object — helps future admins and developers.
 - [ ] Only required features enabled (Activities, History Tracking, Chatter) — disabled features add storage overhead and cannot be turned off.
+- [ ] If Track Field History is enabled, fields to track are configured in Fields & Relationships → Set History Tracking (enabling the feature alone tracks nothing).
+- [ ] Deployment Status set to **Deployed** before go-live — objects in "In Development" are invisible to non-admins.
 - [ ] OWD set to the most restrictive level appropriate for the business requirement.
-- [ ] If Track Field History is enabled, the list of tracked fields is configured under Fields & Relationships.
+- [ ] External ID field planned if external systems will reference records by a non-Salesforce ID.
 - [ ] Tab created if the object is user-facing; tab visibility set per profile.
 - [ ] Object is included in the deployment artifact (change set or SFDX manifest) along with any page layouts and profiles.
 - [ ] Custom object count verified against edition limit before creating additional objects.
