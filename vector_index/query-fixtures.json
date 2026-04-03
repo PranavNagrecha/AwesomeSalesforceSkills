@@ -521,6 +521,18 @@
       "domain": "admin",
       "expected_skill": "admin/global-actions-and-quick-actions",
       "top_k": 3
+    },
+    {
+      "query": "how do I automatically assign new leads to the right sales rep based on region",
+      "domain": "admin",
+      "expected_skill": "admin/assignment-rules",
+      "top_k": 3
+    },
+    {
+      "query": "cases are not being assigned to the correct queue when submitted via web form",
+      "domain": "admin",
+      "expected_skill": "admin/assignment-rules",
+      "top_k": 3
     }
   ]
 }

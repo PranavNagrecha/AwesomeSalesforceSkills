@@ -4,6 +4,7 @@
     "admin": [
       "admin/app-and-tab-configuration",
       "admin/approval-processes",
+      "admin/assignment-rules",
       "admin/change-management-and-deployment",
       "admin/connected-apps-and-auth",
       "admin/custom-field-creation",
@@ -182,6 +183,9 @@
     "aria": [
       "lwc/lwc-accessibility"
     ],
+    "assignment-rules": [
+      "admin/assignment-rules"
+    ],
     "async-apex": [
       "apex/async-apex"
     ],
@@ -254,6 +258,9 @@
     ],
     "cache-session": [
       "apex/platform-cache"
+    ],
+    "case-management": [
+      "admin/assignment-rules"
     ],
     "cdc": [
       "apex/platform-events-apex"
@@ -685,6 +692,9 @@
     "lazy-instantiation": [
       "lwc/lwc-performance"
     ],
+    "lead-management": [
+      "admin/assignment-rules"
+    ],
     "least-privilege": [
       "admin/permission-set-architecture",
       "admin/permission-sets-vs-profiles",
@@ -961,6 +971,9 @@
       "apex/async-apex",
       "apex/governor-limits"
     ],
+    "queues": [
+      "admin/assignment-rules"
+    ],
     "quick-actions": [
       "admin/global-actions-and-quick-actions"
     ],
@@ -1039,7 +1052,8 @@
       "admin/change-management-and-deployment"
     ],
     "routing": [
-      "admin/approval-processes"
+      "admin/approval-processes",
+      "admin/assignment-rules"
     ],
     "row-actions": [
       "lwc/lwc-data-table"
