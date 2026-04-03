@@ -23,6 +23,7 @@
       "admin/reports-and-dashboards",
       "admin/sandbox-strategy",
       "admin/sharing-and-visibility",
+      "admin/user-management",
       "admin/validation-rules"
     ],
     "agentforce": [
@@ -390,6 +391,9 @@
     "debug-logs": [
       "apex/debug-and-logging"
     ],
+    "delegated-admin": [
+      "admin/user-management"
+    ],
     "dependency-injection": [
       "apex/apex-design-patterns"
     ],
@@ -668,6 +672,9 @@
       "admin/permission-sets-vs-profiles",
       "security/permission-set-groups-and-muting"
     ],
+    "licenses": [
+      "admin/user-management"
+    ],
     "light-dom": [
       "lwc/lwc-security"
     ],
@@ -910,6 +917,7 @@
     "profiles": [
       "admin/permission-set-architecture",
       "admin/permission-sets-vs-profiles",
+      "admin/user-management",
       "security/permission-set-groups-and-muting"
     ],
     "queueable": [
@@ -1180,8 +1188,14 @@
     "url-state": [
       "lwc/navigation-and-routing"
     ],
+    "user-management": [
+      "admin/user-management"
+    ],
     "user-mode": [
       "apex/apex-security-patterns"
+    ],
+    "users": [
+      "admin/user-management"
     ],
     "validation": [
       "lwc/lwc-forms-and-validation"

@@ -1,6 +1,12 @@
 {
   "queries": [
     {
+      "query": "how do I add a new user in Salesforce",
+      "domain": "admin",
+      "expected_skill": "admin/user-management",
+      "top_k": 3
+    },
+    {
       "query": "how do I create a custom object in Salesforce",
       "domain": "admin",
       "expected_skill": "admin/object-creation-and-design",
