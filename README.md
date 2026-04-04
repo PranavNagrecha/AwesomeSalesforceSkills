@@ -4,7 +4,7 @@ The universal Salesforce knowledge layer for AI coding assistants.
 
 Drop this into Claude Code, Cursor, Aider, Windsurf, or any AI tool and get role-accurate, source-grounded Salesforce guidance — for every role, every cloud, every task.
 
-**94 skills built. 500+ planned across 5 roles × 16 clouds.**
+**95 skills built. 500+ planned across 5 roles × 16 clouds.**
 
 ---
 
@@ -99,7 +99,7 @@ Skills are plain markdown. They work in any AI tool that can read a file.
 | Domain | Skills |
 |--------|--------|
 | Admin | 33 — custom fields, objects, picklists, users, org setup, page layouts, permission sets, sharing, validation rules, flows, reports, data skew, requirements gathering, data model documentation, UAT and acceptance criteria, change management and training... |
-| Apex | 22 — trigger framework, batch, async, security patterns, callouts, mocking, platform cache, SOQL fundamentals, sf CLI and SFDX essentials, Metadata API and package.xml... |
+| Apex | 23 — trigger framework, batch, async, security patterns, callouts, mocking, platform cache, SOQL fundamentals, sf CLI and SFDX essentials, Metadata API and package.xml, debug logs and Developer Console... |
 | LWC | 14 — wire service, component communication, testing, accessibility, offline, performance... |
 | Flow | 11 — record-triggered, screen flows, fault handling, bulkification, subflows, governance... |
 | OmniStudio | 4 — OmniScript design, DataRaptor, Integration Procedures, security |

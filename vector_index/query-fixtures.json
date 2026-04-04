@@ -593,6 +593,12 @@
       "domain": "apex",
       "expected_skill": "apex/metadata-api-and-package-xml",
       "top_k": 3
+    },
+    {
+      "query": "how do I set up a debug log for a user",
+      "domain": "apex",
+      "expected_skill": "apex/debug-logs-and-developer-console",
+      "top_k": 3
     }
   ]
 }

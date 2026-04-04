@@ -51,6 +51,7 @@
       "apex/callouts-and-http-integrations",
       "apex/custom-metadata-in-apex",
       "apex/debug-and-logging",
+      "apex/debug-logs-and-developer-console",
       "apex/exception-handling",
       "apex/governor-limits",
       "apex/invocable-methods",
@@ -165,11 +166,17 @@
     "aggregate-soql": [
       "data/roll-up-summary-alternatives"
     ],
+    "anonymous-apex": [
+      "apex/debug-logs-and-developer-console"
+    ],
     "apex": [
       "apex/soql-fundamentals"
     ],
     "apex-metadata-api": [
       "apex/custom-metadata-in-apex"
+    ],
+    "apex-replay-debugger": [
+      "apex/debug-logs-and-developer-console"
     ],
     "apex-rest": [
       "apex/apex-rest-services"
@@ -446,7 +453,8 @@
       "flow/flow-testing"
     ],
     "debug-logs": [
-      "apex/debug-and-logging"
+      "apex/debug-and-logging",
+      "apex/debug-logs-and-developer-console"
     ],
     "defect-management": [
       "admin/uat-and-acceptance-criteria"
@@ -470,6 +478,9 @@
     ],
     "destructive-changes": [
       "apex/metadata-api-and-package-xml"
+    ],
+    "developer-console": [
+      "apex/debug-logs-and-developer-console"
     ],
     "device-apis": [
       "lwc/lwc-offline-and-mobile"
@@ -1339,6 +1350,9 @@
     ],
     "topic-selector": [
       "agentforce/agent-topic-design"
+    ],
+    "trace-flags": [
+      "apex/debug-logs-and-developer-console"
     ],
     "training": [
       "admin/change-management-and-training"

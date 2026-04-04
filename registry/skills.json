@@ -2,7 +2,7 @@
   "domain_counts": {
     "admin": 33,
     "agentforce": 2,
-    "apex": 22,
+    "apex": 23,
     "data": 3,
     "flow": 11,
     "integration": 3,
@@ -10,9 +10,9 @@
     "omnistudio": 4,
     "security": 2
   },
-  "generated_from_hash": "05b34d0fd94521a69d3b092788516ccce72d79041d62932c8c0a3f1b777a1959",
+  "generated_from_hash": "ba6283c5a89a96ffc231fb4da832d12dc2e873e34cc810cc953dd75d1a30a1cc",
   "schema_version": 1,
-  "skill_count": 94,
+  "skill_count": 95,
   "skills": [
     {
       "category": "admin",
@@ -4370,6 +4370,106 @@
         "skills/apex/debug-and-logging/templates/debug-and-logging-template.md"
       ],
       "updated": "2026-03-13",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "apex",
+      "chunk_ids": [
+        "17b39a6bc08c6d3d8454",
+        "1aed0c179b778986235c",
+        "1cb8f94daf5e4914896e",
+        "20f344bcb12ae4edde76",
+        "2277b20bc33f3e985534",
+        "2a635a7df52f9abbab3e",
+        "3164fcc7cd4c6cee89eb",
+        "375a154dff8019360e58",
+        "396b5b47d49046a39403",
+        "3b9369e04b80d7e14a11",
+        "490d608ca3d5fa552f66",
+        "4b57584e0e20f5b278d3",
+        "4dca17cbae594fd181bb",
+        "4dead4d8d231a26a96a0",
+        "5c9b99ce7e99d4717f53",
+        "5ca1faae506ea8fffe33",
+        "5e969ff308f6d82c5c03",
+        "65b0ef58eda0a3927b15",
+        "6a07f8afe0c24f865003",
+        "6b1fd5f55c56b01eabb1",
+        "6baa9bea5043eb92be6d",
+        "7ac2ccf734d0bc29b52e",
+        "7af49f28534f563882d5",
+        "7c97791ebaacc753f1c5",
+        "86525f6424a631d8e9cf",
+        "8d18180b71029de3bd5a",
+        "9af6784b2aa867804589",
+        "9c75c4700443d264f0f2",
+        "9ff87c07e815faf42a1b",
+        "a031906f7e115c3d911b",
+        "a18645fe38de79536b54",
+        "a25de94cbf0611d52032",
+        "a31ef1c83e74d97d9969",
+        "a568d2f4f3c3f7cd9477",
+        "a972e02f16571c68d956",
+        "a9d57c129c87c68ec438",
+        "ab2c3931e9bae4afc45b",
+        "b9b914812b0c1ef83211",
+        "b9c707c1e5b86d0dd172",
+        "c9f9c1d9a28f89e71cee",
+        "cedcc9abace92eff2f3e",
+        "d8b01460421e8d7ad755",
+        "daa52efc9971a72ff9dd",
+        "dd9404c7ddd3e5d81f72",
+        "de1702740d14df8e0518",
+        "decab92efbab38fb336a",
+        "e2861b3a830fdde86f8c",
+        "e3516dbb1469d5ed4fd6",
+        "e66fda28882da739bf1d",
+        "eb533bf56c4fda853dcc",
+        "efe8d9fb2e5698823a11",
+        "f337e7138abb81ea7110"
+      ],
+      "content_hash": "5562a3ae1737f82df72c6125d773ec769c73fc674db6605fa46259afa8e8117a",
+      "dependencies": [],
+      "description": "Use when setting up debug logs and trace flags, reading Apex log output and log levels, running queries in the Developer Console, executing anonymous Apex, or using the Apex Replay Debugger in VS Code. Triggers: 'set up debug log', 'Developer Console', 'anonymous Apex', 'trace flag', 'Apex Replay Debugger'. NOT for production logging strategy or custom structured logging frameworks (use debug-and-logging), and NOT for writing test classes (use apex-test-class-standards).",
+      "file_location": "skills/apex/debug-logs-and-developer-console",
+      "id": "apex/debug-logs-and-developer-console",
+      "inputs": [
+        "Which user or automated process needs logging (user, scheduled job, Automated Process, platform event subscriber)",
+        "Which log categories matter (Apex, Database, Callout, Workflow, etc.)",
+        "Environment type (sandbox, scratch org, or production)"
+      ],
+      "name": "debug-logs-and-developer-console",
+      "official_sources": [
+        "Apex Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm \u2014 debug logs, trace flags, anonymous Apex behavior, log levels",
+        "Apex Reference Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm \u2014 `System.debug` method signatures and `LoggingLevel` enum",
+        "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html \u2014 operational excellence and reliability framing"
+      ],
+      "outputs": [
+        "Step-by-step trace flag setup with correct log levels",
+        "Guidance on reading and interpreting debug log output",
+        "Developer Console usage guidance for queries and anonymous Apex",
+        "Apex Replay Debugger setup and checkpoint instructions"
+      ],
+      "references": [
+        "skills/apex/debug-logs-and-developer-console/references/examples.md",
+        "skills/apex/debug-logs-and-developer-console/references/gotchas.md",
+        "skills/apex/debug-logs-and-developer-console/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/apex/debug-logs-and-developer-console/scripts/check_debug_logs_and_developer_console.py"
+      ],
+      "tags": [
+        "debug-logs",
+        "developer-console",
+        "trace-flags",
+        "anonymous-apex",
+        "apex-replay-debugger"
+      ],
+      "templates": [
+        "skills/apex/debug-logs-and-developer-console/templates/debug-logs-and-developer-console-template.md"
+      ],
+      "updated": "2026-04-04",
       "vector_embedding": null,
       "version": "1.0.0"
     },
