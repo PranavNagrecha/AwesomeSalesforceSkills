@@ -44,7 +44,7 @@ STATUS KEY:
 
 | Phase | Cloud / Domain | Total Cells | Skills Planned | Skills Done | TODO |
 |-------|----------------|-------------|----------------|-------------|------|
-| 0 | Domain Sweeps (Cross-Cloud) | — | 113 | 29 | 84 |
+| 0 | Domain Sweeps (Cross-Cloud) | — | 120 | 29 | 91 |
 | 1 | Core Platform | 5 roles | 310 | 58 | 252 |
 | 2 | Sales Cloud | 5 roles | 29 | 0 | 29 |
 | 3 | Service Cloud | 5 roles | 29 | 0 | 29 |
@@ -63,8 +63,8 @@ STATUS KEY:
 | 16 | DevOps (Cloud-Specific) | 5 roles | 22 | 0 | 22 |
 | 17 | Data Cloud | 3 roles | 13 | 0 | 13 |
 | 18 | Slack Integration | — | 5 | 0 | 5 |
-| 19 | Additional Industry Clouds | — | 15 | 0 | 15 |
-| **Total** | | | **639** | **76** | **561** |
+| 19 | Additional Industry Clouds | — | 16 | 0 | 16 |
+| **Total** | | | **643** | **87** | **554** |
 
 ---
 
