@@ -44,11 +44,11 @@ STATUS KEY:
 
 | Phase | Cloud / Domain | Total Cells | Skills Planned | Skills Done | TODO |
 |-------|----------------|-------------|----------------|-------------|------|
-| 0 | Domain Sweeps (Cross-Cloud) | — | 96 | 0 | 96 |
-| 1 | Core Platform | 5 roles | 249 | 30 | 219 |
+| 0 | Domain Sweeps (Cross-Cloud) | — | 99 | 0 | 99 |
+| 1 | Core Platform | 5 roles | 262 | 30 | 232 |
 | 2 | Sales Cloud | 5 roles | 29 | 0 | 29 |
 | 3 | Service Cloud | 5 roles | 29 | 0 | 29 |
-| 4 | Experience Cloud | 5 roles | 25 | 0 | 25 |
+| 4 | Experience Cloud | 5 roles | 26 | 0 | 26 |
 | 5 | Marketing Cloud / MCAE | 5 roles | 28 | 0 | 28 |
 | 6 | Revenue Cloud (CPQ) | 5 roles | 25 | 0 | 25 |
 | 7 | Field Service (FSL) | 5 roles | 24 | 0 | 24 |
@@ -63,8 +63,8 @@ STATUS KEY:
 | 16 | DevOps (Cloud-Specific) | 5 roles | 22 | 0 | 22 |
 | 17 | Data Cloud | 3 roles | 13 | 0 | 13 |
 | 18 | Slack Integration | — | 5 | 0 | 5 |
-| 19 | Additional Industry Clouds | — | 10 | 0 | 10 |
-| **Total** | | | **557** | **30** | **525** |
+| 19 | Additional Industry Clouds | — | 14 | 0 | 14 |
+| **Total** | | | **578** | **30** | **546** |
 
 ---
 
@@ -194,6 +194,8 @@ These skills apply across all clouds. Build before cloud-specific phases.
 | TODO | omnistudio-custom-lwc-elements | Creating custom LWC elements for OmniScripts: override patterns, event handling, custom validation in OmniStudio. NOT for standalone LWC. | |
 | TODO | dataraptor-load-and-extract | DataRaptor Extract and Load patterns: multi-object operations, error handling, bulk operations, output mapping. NOT for DataRaptor Transform (use dataraptor-patterns). | |
 | TODO | omnistudio-remote-actions | Configuring remote actions in OmniStudio: Apex vs Integration Procedure actions, response mapping, error handling. NOT for Integration Procedures themselves. | |
+| TODO | business-rules-engine | Business Rules Engine (BRE) design: decision tables, rule matrices, eligibility determination, versioning, testing rules, runtime execution. NOT for Flow decision elements (use flow/* skills). | |
+| TODO | document-generation-omnistudio | OmniStudio Document Generation: template design, merge fields, conditional sections, PDF output, batch generation, dynamic content. NOT for quote PDF templates (use cpq-quote-templates). | |
 
 ### Integration Domain (Gaps)
 
@@ -216,6 +218,7 @@ These skills apply across all clouds. Build before cloud-specific phases.
 | TODO | named-credentials-setup | Named Credentials configuration: per-user vs per-org, legacy vs enhanced, external credentials, principal types. NOT for callout code patterns. | |
 | TODO | callout-limits-and-async-patterns | Callout governor limits: continuation pattern, queueable callouts, async callout chains, timeout handling. NOT for HTTP implementation details. | |
 | TODO | api-led-connectivity | API-led connectivity pattern: system/process/experience API layers, API design principles for Salesforce. NOT for MuleSoft product features. | |
+| TODO | file-and-document-integration | Document management integration: file upload patterns, virus scanning API, external document storage (EDM/SharePoint), file size validation, async file processing. NOT for Salesforce Files administration. | |
 
 ---
 
@@ -246,6 +249,9 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | TODO | dynamic-forms-and-actions | Dynamic Forms on Lightning record pages: field sections, visibility rules, dynamic actions, migration from page layouts. NOT for page layout design (use record-types-and-page-layouts). | |
 | TODO | path-and-guidance | Path setup on opportunity and other objects: guidance steps, key fields, celebration confetti, path customization. NOT for sales process configuration. | |
 | TODO | queues-and-public-groups | Queue creation, queue membership, case/lead queues, public groups, using groups in sharing rules and assignment. NOT for assignment rules (use assignment-rules). | |
+| TODO | custom-metadata-types-and-settings | Custom Metadata Types vs Custom Settings: when to use each, hierarchical vs list, deployment behavior, accessing from Apex and Flow. NOT for custom objects (use object-creation-and-design). | |
+| TODO | reports-and-dashboards-fundamentals | Standard reports and dashboards: report types, filters, grouping, chart types, dashboard components, dynamic dashboards, subscriptions, folders. NOT for CRM Analytics (use crm-analytics-* skills). | |
+| TODO | email-templates-and-alerts | Email templates: Classic vs Lightning templates, merge fields, Visualforce email templates, email alerts in automation, deliverability settings, org-wide addresses. NOT for Marketing Cloud email. | |
 
 ### Core Platform × BA Role
 
@@ -286,6 +292,11 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | TODO | apex-metadata-api | Metadata.Operations for deploying metadata from Apex: creating custom fields/objects programmatically, callback handling. NOT for Metadata API REST/SOAP (use metadata-api-and-package-xml). | |
 | TODO | change-data-capture-apex | CDC trigger patterns in Apex: change event handling, header fields, replay, entity tracking configuration. NOT for platform events (use platform-events-apex). | |
 | TODO | apex-queueable-patterns | Advanced Queueable patterns: chaining, Finalizer interface, stack depth management, transaction control, state passing. NOT for basic async Apex (use async-apex). | |
+| TODO | error-handling-framework | Cross-cutting error handling framework: custom log objects, exception utility classes, error propagation patterns, integration error capture, UI error components. NOT for individual try/catch blocks. | |
+| TODO | test-data-factory-patterns | Test data factory design: reusable record creation methods, SObject hierarchy setup, bulk data generation, portal user factories, fixture patterns. NOT for test class structure (use test-class-standards). | |
+| TODO | custom-logging-and-monitoring | Custom logging frameworks in Apex: log object design, log levels, integration log capture, retention policies, monitoring dashboards, log forwarding. NOT for debug logs (use debug-logs-and-developer-console). | |
+| TODO | visualforce-fundamentals | Visualforce pages and controllers: standard/custom controllers, extensions, action methods, view state management, PDF rendering, Visualforce email templates. NOT for LWC development (use lwc/* skills). | |
+| TODO | platform-cache-patterns | Platform Cache usage: session and org cache partitions, cache-aside patterns, TTL configuration, cache limits, fallback strategies, cache diagnostics. NOT for custom settings as cache. | |
 
 #### LWC Domain Gaps
 
@@ -299,6 +310,8 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | TODO | message-channel-patterns | Lightning Message Service: message channels, cross-DOM communication, publish/subscribe patterns, scope management. NOT for parent-child communication (use component-communication). | |
 | TODO | lwc-imperative-apex | Imperative Apex calls from LWC: error handling, loading states, cacheable vs non-cacheable, data refresh patterns. NOT for wire service (use wire-service-patterns). | |
 | TODO | lwc-base-component-recipes | Effective use of lightning-record-form, lightning-record-edit-form, lightning-record-view-form, datatable customization. NOT for custom form building (use lwc-forms-and-validation). | |
+| TODO | aura-to-lwc-migration | Migrating Aura components to LWC: feature mapping, interoperability wrappers, event translation, navigation patterns, Aura-LWC coexistence. NOT for new LWC development. | |
+| TODO | lwc-accessibility-patterns | LWC accessibility: ARIA attributes, keyboard navigation, screen reader support, WCAG 2.1 compliance, focus management, accessible data tables. NOT for general LWC styling. | |
 
 #### Flow Domain Gaps
 
@@ -327,6 +340,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | DONE | soql-query-optimization | Selective queries, index usage, query plan tool, avoiding non-selective filters, skinny tables, field sets for dynamic queries. NOT for governor limits in Apex (use apex-cpu-and-heap-optimization). | Already built |
 | TODO | field-history-tracking | Enabling field history, 18-month retention limit, History related list behavior, querying history objects (AccountHistory, etc.), limitations and alternatives. NOT for Event Monitoring (use security skills). | |
 | TODO | external-data-and-big-objects | Big Objects for archival, async SOQL for Big Objects, External Objects vs Big Objects decision, custom index fields. NOT for Salesforce Connect (use salesforce-connect-external-objects). | |
+| TODO | person-accounts | Person Account model: enabling person accounts, B2C data model, account-contact behavior differences, limitations, migration considerations, reporting impact. NOT for standard business accounts. | |
 
 ### Core Platform × Architect Role
 
@@ -341,6 +355,8 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | DONE | well-architected-review | Applying Salesforce Well-Architected Framework pillars (Trusted, Easy, Adaptable) to an org assessment. Produces a structured review. NOT for individual pillar deep-dives. | Already built |
 | DONE | platform-selection-guidance | Choosing the right Salesforce platform feature for a requirement: Flow vs Apex, LWC vs Aura (legacy), Custom Metadata vs Custom Settings vs Custom Objects, OmniStudio vs standard automation. NOT for implementation of the chosen option. | Already built |
 | TODO | security-architecture-review | Reviewing an org's security posture: sharing model completeness, FLS coverage, Apex security patterns, exposed APIs, Shield needs. Produces findings. NOT for implementing fixes (use security/* skills). | |
+| TODO | government-cloud-compliance | Government Cloud architecture: FedRAMP High, Hyperforce, GovCloud Plus, data residency, CMS ARC-AMPE controls, compliance automation patterns. NOT for general security (use security/* skills). | |
+| TODO | integration-framework-design | Integration framework architecture: service interface pattern, factory pattern, centralized callout handling, dynamic service resolution, response logging, error propagation. NOT for individual API implementation. | |
 
 ---
 
@@ -518,6 +534,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | TODO | headless-experience-cloud | Headless CMS API: content delivery API, building custom frontends against Experience Cloud data, channel access. NOT for standard site building. | |
 | TODO | experience-cloud-api-access | API access for community users: guest user API limits, external user OAuth scopes, sharing enforcement. NOT for internal API security. | |
 | TODO | experience-cloud-search-customization | Customizing search in Experience Cloud: federated search, search result components, search scope, global search. NOT for SOSL queries. | |
+| TODO | experience-cloud-multi-idp-sso | Multi-IdP SSO for Experience Cloud: OIDC integration, multiple auth providers per site, federation ID mapping, tenant-specific login pages, vendor vs citizen portals. NOT for internal SSO or single auth provider. | |
 
 ### Experience Cloud × Data Role
 
@@ -1367,6 +1384,10 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | TODO | manufacturing-cloud-setup | Manufacturing Cloud: account-based forecasting, rebate management, sales agreements, partner performance. NOT for standard forecasting. | admin |
 | TODO | public-sector-solutions-setup | Public Sector Solutions: licensing, permits, inspections, case management for government, citizen engagement. NOT for standard case management. | admin |
 | TODO | media-cloud-setup | Media Cloud: ad sales management, audience segmentation, campaign management for media, revenue management. NOT for Marketing Cloud. | admin |
+| TODO | salesforce-maps-setup | Salesforce Maps: route optimization, territory planning, live tracking, geolocation visualization, proximity search, drive-time analysis. NOT for Field Service scheduling. | admin |
+| TODO | rebate-management-setup | Rebate Management: rebate types, payout calculations, accruals, partner rebates, program setup, compliance reporting. NOT for CPQ discounts. | admin |
+| TODO | revenue-intelligence-setup | Revenue Intelligence: pipeline inspection, deal insights, forecast accuracy analytics, Einstein analytics for sales leaders. NOT for CRM Analytics setup (use crm-analytics-* skills). | admin |
+| TODO | salesforce-backup-and-restore | Salesforce Backup & Restore: native backup service, Odaseva/OwnBackup, metadata backup, recovery procedures, retention policies, compliance. NOT for data archival (use data-archival-strategies). | devops |
 
 ---
 
@@ -1375,6 +1396,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | Agent | Task | Started | Completed | Notes |
 |-------|------|---------|-----------|-------|
 | Claude Opus 4.6 | Full queue population — Phase 0 + Phases 2-19 | 2026-04-04 | 2026-04-04 | 549 TODO rows added across 20 phases |
+| Claude Opus 4.6 | Second pass + TDD extraction — 21 new skills | 2026-04-04 | 2026-04-04 | Added skills from TDD v1.5 (error handling framework, BRE, gov cloud, multi-IdP SSO, doc gen, etc.) + general gap fills (Visualforce, Platform Cache, reports, person accounts, Salesforce Maps, etc.) |
 
 ---
 
