@@ -851,6 +851,42 @@
       "domain": "lwc",
       "expected_skill": "lwc/lwc-dynamic-components",
       "top_k": 3
+    },
+    {
+      "query": "how do I set up DevOps Center pipeline work items and promote changes",
+      "domain": "devops",
+      "expected_skill": "devops/devops-center-pipeline",
+      "top_k": 3
+    },
+    {
+      "query": "analyze login history to detect suspicious access in Salesforce",
+      "domain": "security",
+      "expected_skill": "security/login-forensics",
+      "top_k": 3
+    },
+    {
+      "query": "configure Einstein case classification and article recommendations for service agents",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/einstein-copilot-for-service",
+      "top_k": 3
+    },
+    {
+      "query": "handle inbound email with Apex InboundEmailHandler and parse attachments",
+      "domain": "apex",
+      "expected_skill": "apex/apex-email-services",
+      "top_k": 3
+    },
+    {
+      "query": "call Apex method imperatively from LWC with loading state and error handling",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-imperative-apex",
+      "top_k": 3
+    },
+    {
+      "query": "flow debug mode fault email interview log",
+      "domain": "flow",
+      "expected_skill": "flow/flow-debugging",
+      "top_k": 3
     }
   ]
 }

@@ -43,6 +43,7 @@
       "agentforce/agent-topic-design",
       "agentforce/agentforce-agent-creation",
       "agentforce/einstein-copilot-for-sales",
+      "agentforce/einstein-copilot-for-service",
       "agentforce/einstein-prediction-builder",
       "agentforce/einstein-trust-layer",
       "agentforce/prompt-builder-templates"
@@ -50,6 +51,7 @@
     "apex": [
       "apex/apex-cpu-and-heap-optimization",
       "apex/apex-design-patterns",
+      "apex/apex-email-services",
       "apex/apex-managed-sharing",
       "apex/apex-mocking-and-stubs",
       "apex/apex-queueable-patterns",
@@ -97,6 +99,7 @@
     ],
     "devops": [
       "devops/change-set-deployment",
+      "devops/devops-center-pipeline",
       "devops/sandbox-refresh-and-templates",
       "devops/scratch-org-management",
       "devops/second-generation-managed-packages",
@@ -106,6 +109,7 @@
       "flow/fault-handling",
       "flow/flow-bulkification",
       "flow/flow-custom-property-editors",
+      "flow/flow-debugging",
       "flow/flow-for-experience-cloud",
       "flow/flow-governance",
       "flow/flow-testing",
@@ -131,6 +135,7 @@
       "lwc/lwc-data-table",
       "lwc/lwc-dynamic-components",
       "lwc/lwc-forms-and-validation",
+      "lwc/lwc-imperative-apex",
       "lwc/lwc-in-flow-screens",
       "lwc/lwc-modal-and-overlay",
       "lwc/lwc-offline-and-mobile",
@@ -154,6 +159,7 @@
     "security": [
       "security/event-monitoring",
       "security/field-audit-trail",
+      "security/login-forensics",
       "security/org-hardening-and-baseline-config",
       "security/permission-set-groups-and-muting",
       "security/platform-encryption",
@@ -164,6 +170,9 @@
   "skills_by_tag": {
     "2gp": [
       "devops/second-generation-managed-packages"
+    ],
+    "InboundEmailHandler": [
+      "apex/apex-email-services"
     ],
     "ShowToastEvent": [
       "lwc/lwc-toast-and-notifications"
@@ -250,7 +259,11 @@
     "apex": [
       "admin/custom-permissions",
       "apex/soql-fundamentals",
-      "architect/solution-design-patterns"
+      "architect/solution-design-patterns",
+      "lwc/lwc-imperative-apex"
+    ],
+    "apex-email-services": [
+      "apex/apex-email-services"
     ],
     "apex-metadata-api": [
       "apex/custom-metadata-in-apex"
@@ -313,6 +326,9 @@
     "aria": [
       "lwc/lwc-accessibility"
     ],
+    "article-recommendations": [
+      "agentforce/einstein-copilot-for-service"
+    ],
     "assignment-rules": [
       "admin/assignment-rules"
     ],
@@ -325,6 +341,9 @@
       "apex/apex-scheduled-jobs",
       "apex/async-apex",
       "architect/limits-and-scalability-planning"
+    ],
+    "async-await": [
+      "lwc/lwc-imperative-apex"
     ],
     "async-testing": [
       "apex/test-class-standards"
@@ -341,6 +360,9 @@
     ],
     "audit-trail": [
       "agentforce/einstein-trust-layer"
+    ],
+    "auraenabled": [
+      "lwc/lwc-imperative-apex"
     ],
     "aurahandledexception": [
       "apex/exception-handling"
@@ -410,6 +432,9 @@
       "apex/governor-limits",
       "apex/trigger-framework"
     ],
+    "bundles": [
+      "devops/devops-center-pipeline"
+    ],
     "business-analysis": [
       "admin/requirements-gathering-for-sf",
       "admin/uat-and-acceptance-criteria"
@@ -440,6 +465,9 @@
     ],
     "card-actions": [
       "omnistudio/flexcard-design-patterns"
+    ],
+    "case-classification": [
+      "agentforce/einstein-copilot-for-service"
     ],
     "case-management": [
       "admin/assignment-rules",
@@ -698,6 +726,9 @@
       "apex/debug-and-logging",
       "apex/debug-logs-and-developer-console"
     ],
+    "debug-mode": [
+      "flow/flow-debugging"
+    ],
     "debugging": [
       "omnistudio/omnistudio-debugging"
     ],
@@ -750,6 +781,9 @@
       "devops/scratch-org-management",
       "devops/unlocked-package-development"
     ],
+    "devops-center": [
+      "devops/devops-center-pipeline"
+    ],
     "dlrs": [
       "data/roll-up-summary-alternatives"
     ],
@@ -779,7 +813,14 @@
     ],
     "einstein": [
       "agentforce/einstein-copilot-for-sales",
+      "agentforce/einstein-copilot-for-service",
       "agentforce/prompt-builder-templates"
+    ],
+    "einstein-conversation-mining": [
+      "agentforce/einstein-copilot-for-service"
+    ],
+    "einstein-for-service": [
+      "agentforce/einstein-copilot-for-service"
     ],
     "einstein-platform": [
       "agentforce/einstein-prediction-builder"
@@ -795,6 +836,9 @@
     ],
     "email-alerts": [
       "admin/email-templates-and-alerts"
+    ],
+    "email-automation": [
+      "apex/apex-email-services"
     ],
     "email-generation": [
       "agentforce/einstein-copilot-for-sales"
@@ -879,6 +923,9 @@
     "fault-connectors": [
       "flow/fault-handling"
     ],
+    "fault-email": [
+      "flow/flow-debugging"
+    ],
     "fault-handling": [
       "admin/flow-for-admins"
     ],
@@ -936,11 +983,17 @@
     "flow-custom-property-editor": [
       "flow/flow-custom-property-editors"
     ],
+    "flow-debugging": [
+      "flow/flow-debugging"
+    ],
     "flow-faults": [
       "flow/fault-handling"
     ],
     "flow-governance": [
       "flow/flow-governance"
+    ],
+    "flow-interview-log": [
+      "flow/flow-debugging"
     ],
     "flow-navigation": [
       "lwc/lwc-in-flow-screens"
@@ -956,6 +1009,9 @@
     ],
     "flow-standards": [
       "flow/flow-governance"
+    ],
+    "flow-test-suite": [
+      "flow/flow-debugging"
     ],
     "flow-testing": [
       "flow/flow-testing"
@@ -1003,6 +1059,9 @@
     ],
     "generative-ai-security": [
       "agentforce/einstein-trust-layer"
+    ],
+    "github": [
+      "devops/devops-center-pipeline"
     ],
     "global-actions": [
       "admin/global-actions-and-quick-actions"
@@ -1071,6 +1130,18 @@
     ],
     "idempotency": [
       "flow/scheduled-flows"
+    ],
+    "identity-verification": [
+      "security/login-forensics"
+    ],
+    "imperative": [
+      "lwc/lwc-imperative-apex"
+    ],
+    "inbound-email": [
+      "apex/apex-email-services"
+    ],
+    "incident-response": [
+      "security/login-forensics"
     ],
     "indexes": [
       "data/soql-query-optimization"
@@ -1236,6 +1307,15 @@
     "logging-framework": [
       "apex/debug-and-logging"
     ],
+    "login-flow": [
+      "security/login-forensics"
+    ],
+    "login-forensics": [
+      "security/login-forensics"
+    ],
+    "login-history": [
+      "security/login-forensics"
+    ],
     "lookup": [
       "data/data-model-design-patterns"
     ],
@@ -1246,6 +1326,7 @@
       "architect/platform-selection-guidance",
       "architect/solution-design-patterns",
       "lwc/lifecycle-hooks",
+      "lwc/lwc-imperative-apex",
       "lwc/lwc-toast-and-notifications"
     ],
     "lwc-accessibility": [
@@ -1299,6 +1380,9 @@
     "merge-fields": [
       "admin/email-templates-and-alerts",
       "agentforce/prompt-builder-templates"
+    ],
+    "messaging": [
+      "apex/apex-email-services"
     ],
     "metadata": [
       "admin/change-management-and-deployment",
@@ -1394,6 +1478,9 @@
     ],
     "offline": [
       "lwc/lwc-offline-and-mobile"
+    ],
+    "omni-channel": [
+      "agentforce/einstein-copilot-for-service"
     ],
     "omniscript": [
       "omnistudio/omniscript-design-patterns",
@@ -1535,6 +1622,9 @@
     "pii": [
       "data/data-quality-and-governance"
     ],
+    "pipeline": [
+      "devops/devops-center-pipeline"
+    ],
     "pipeline-inspection": [
       "agentforce/einstein-copilot-for-sales"
     ],
@@ -1578,6 +1668,12 @@
     "programmatic-sharing": [
       "apex/apex-managed-sharing"
     ],
+    "promise": [
+      "lwc/lwc-imperative-apex"
+    ],
+    "promotion": [
+      "devops/devops-center-pipeline"
+    ],
     "prompt-builder": [
       "agentforce/prompt-builder-templates"
     ],
@@ -1615,6 +1711,7 @@
       "admin/flow-for-admins",
       "flow/fault-handling",
       "flow/flow-bulkification",
+      "flow/flow-debugging",
       "flow/record-triggered-flow-patterns"
     ],
     "record-types": [
@@ -1647,7 +1744,8 @@
     ],
     "release-management": [
       "admin/change-management-and-deployment",
-      "devops/change-set-deployment"
+      "devops/change-set-deployment",
+      "devops/devops-center-pipeline"
     ],
     "render-optimization": [
       "lwc/lwc-performance"
@@ -1657,6 +1755,9 @@
     ],
     "replay-id": [
       "apex/platform-events-apex"
+    ],
+    "reply-recommendations": [
+      "agentforce/einstein-copilot-for-service"
     ],
     "report-filters": [
       "admin/reports-and-dashboards"
@@ -1798,6 +1899,9 @@
       "apex/soql-security",
       "security/platform-encryption"
     ],
+    "security-audit": [
+      "security/login-forensics"
+    ],
     "security-health-check": [
       "security/org-hardening-and-baseline-config",
       "security/security-health-check"
@@ -1815,10 +1919,14 @@
       "apex/recursive-trigger-prevention"
     ],
     "service-cloud": [
-      "admin/escalation-rules"
+      "admin/escalation-rules",
+      "agentforce/einstein-copilot-for-service"
     ],
     "service-layer": [
       "apex/apex-design-patterns"
+    ],
+    "service-replies": [
+      "agentforce/einstein-copilot-for-service"
     ],
     "session-management": [
       "integration/soap-api-patterns"
@@ -2098,7 +2206,11 @@
       "lwc/wire-service-patterns"
     ],
     "work-items": [
+      "devops/devops-center-pipeline",
       "flow/orchestration-flows"
+    ],
+    "work-summary": [
+      "agentforce/einstein-copilot-for-service"
     ],
     "workflow-rule-retirement": [
       "admin/process-automation-selection"
