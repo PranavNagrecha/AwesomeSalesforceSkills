@@ -2,7 +2,7 @@
   "domain_counts": {
     "admin": 33,
     "agentforce": 2,
-    "apex": 19,
+    "apex": 20,
     "data": 3,
     "flow": 11,
     "integration": 3,
@@ -10,9 +10,9 @@
     "omnistudio": 4,
     "security": 2
   },
-  "generated_from_hash": "2de40812b2e251815bb0cf3bd27466ea5fdced4866687a88d9e05165aa235635",
+  "generated_from_hash": "c98e173e6b56f15122c0c9d07c6e6282f794c3c53e581d58a7bc968b11725343",
   "schema_version": 1,
-  "skill_count": 91,
+  "skill_count": 92,
   "skills": [
     {
       "category": "admin",
@@ -68,7 +68,7 @@
         "dce89a3fdf76b56be8cd",
         "e8c0d047320c1669ad90"
       ],
-      "content_hash": "94fbb8ce84334b3b7f1c78717963e2aef289e070d3401db4fb8920ababedf91e",
+      "content_hash": "451325e5bb6299d54555fa49a20bb670395df4c43e9bb65d0d59a4edd70a8249",
       "dependencies": [],
       "description": "Use this skill to create and configure Lightning apps in Salesforce Setup, add navigation items and tabs to apps, configure utility bar components, and control app visibility by profile or permission set. Trigger keywords: Lightning app, App Manager, custom tab, navigation bar, utility bar, app visibility. NOT for Experience Cloud site apps (use experience-cloud skills), NOT for configuring page layouts or record pages (use Lightning App Builder), NOT for permission set architecture (use permission-set-architecture).",
       "file_location": "skills/admin/app-and-tab-configuration",
@@ -264,7 +264,7 @@
         "fb31d08a3406663791c7",
         "fb7c18665241801c89cb"
       ],
-      "content_hash": "9de1fb52c7859ae9a0c283a68d908746f009a62b66b0ca0c45cef53b1fc851ff",
+      "content_hash": "2db65f7f34357b49b63b1b986e4122a2333ef46426b638f63b3a38e8546989fb",
       "dependencies": [],
       "description": "Use this skill when configuring or troubleshooting Lead or Case assignment rules in Salesforce: creating rule entries, setting filter criteria, assigning records to users or queues, understanding when rules run, and implementing round-robin patterns with Apex. Trigger keywords: lead assignment, case assignment, assignment rule, queue assignment, auto-assign. NOT for approval process routing (use approval-processes). NOT for Omni-Channel routing or Skills-Based Routing (those are separate routing engines). NOT for Flow-triggered field updates unrelated to ownership.",
       "file_location": "skills/admin/assignment-rules",
@@ -459,7 +459,7 @@
         "f9a5982faed71944b7c8",
         "fc23ed7777c3578b58a4"
       ],
-      "content_hash": "b31c416ec4d6ab1a08589f073d9450c8cfc1823d129835985de39bb897ce5124",
+      "content_hash": "141665b0b3d8ae912ba98306933140711240c77cd90466ec8ba88da6e8a58cdb",
       "dependencies": [],
       "description": "Use this skill when planning user adoption, structuring Salesforce training materials, drafting release communications, or running a change impact assessment for a Salesforce rollout or update. Triggers: user adoption plan, training materials, release announcement, change impact, go-live communication. NOT for org deployment mechanics or sandbox promotion (use change-management-and-deployment).",
       "file_location": "skills/admin/change-management-and-training",
@@ -664,7 +664,7 @@
         "f7ce676090ec2f5d3630",
         "f7ff60e003a1e1264dc9"
       ],
-      "content_hash": "053514dea879cc276c3604417374b657f75504063e7b353d299bdfbbb97cb046",
+      "content_hash": "b0a779f95654e42ae907955b5fabe35847e347584ee19a1c5677fb87726ff4cd",
       "dependencies": [],
       "description": "Use when creating a new custom field on any Salesforce object: choosing field type, setting API name, configuring Field-Level Security, adding to page layouts, and deploying. Triggers: 'add a field', 'new custom field', 'what field type should I use', 'FLS not working', 'field not showing on page layout'. NOT for formula field logic (use formula-fields skill), picklist value set management (use picklist-and-value-sets skill), or object creation decisions (use object-creation-and-design skill).",
       "file_location": "skills/admin/custom-field-creation",
@@ -950,7 +950,7 @@
         "fc4fe16fffe5236d9dca",
         "fcce0da13e677995c4c4"
       ],
-      "content_hash": "d39455c94f350f14f9584e1c113bbfdd8de2e8a49e8f5b7d7c9dd754f3b974d6",
+      "content_hash": "7b2dd4d1a684f313334843fb17f9064508dba14984728d086ccc5083a93f6e4b",
       "dependencies": [],
       "description": "Use when a BA or admin needs to document the Salesforce data model: creating field inventories, object relationship maps, ER diagrams, or analyzing field usage across objects. Triggers: 'data dictionary', 'document our data model', 'object relationship map', 'field inventory', 'ER diagram for Salesforce'. NOT for designing the data model (use object-creation-and-design or architect skills) or for optimizing queries against the model (use soql-query-optimization).",
       "file_location": "skills/admin/data-model-documentation",
@@ -1049,7 +1049,7 @@
         "fd98c48a4f94dbe5281c",
         "ffbc0af342fd99bc082d"
       ],
-      "content_hash": "851bbbebf9c2d01b8ebc1bcb7a5096173539bc0c112b1208c31dce0f06e6ded0",
+      "content_hash": "c1c0f631aebf509bf6fb03598f1f28d425d7dbfb9bd7b6bd0b4e8c89a807c239",
       "dependencies": [],
       "description": "Diagnose and mitigate Salesforce data skew \u2014 ownership skew (single user owns >10,000 records) and parent-child skew (>10,000 children under one parent) \u2014 that cause sharing recalculation slowness, group membership lock errors, and record-level locking failures. NOT for sharing model design decisions (use sharing-and-visibility) or query optimization (use soql-query-optimization).",
       "file_location": "skills/admin/data-skew-and-sharing-performance",
@@ -1410,7 +1410,7 @@
         "f3c81eeec963b086a023",
         "fc0038e8bb8f327eb7c6"
       ],
-      "content_hash": "ef721a2ffd7df83e911302d2c58819df0d1f56253754287a1e3bc50da5b46b26",
+      "content_hash": "c7d5b6146670191c67ae22e8f2f3d32938816d842dfad246b6920dd3524ae1b5",
       "dependencies": [],
       "description": "Configure and troubleshoot Salesforce Case Escalation Rules: setting up time-based escalation entries, business hours configuration, escalation actions (email alerts and reassignment), and diagnosing why cases are not escalating. NOT for case assignment on creation (use assignment-rules), approval routing (use approval-processes), or SLA milestones in Service Cloud (use entitlement-management).",
       "file_location": "skills/admin/escalation-rules",
@@ -1708,7 +1708,7 @@
         "f86a26a415a4224e7b01",
         "fc2aad90b7dadd69a1ac"
       ],
-      "content_hash": "b55d91940a5e6757e59d83574175c18917d087286edbdb62fed39e224b7b7b83",
+      "content_hash": "96de5965b2027f36eecd25f2d30a05bd95050f4d39f1ab7218002ec35a9a233f",
       "dependencies": [],
       "description": "Use this skill when configuring object-specific quick actions or global actions in Salesforce: choosing between action types, editing action layouts, pre-filling fields with predefined values, and adding actions to Lightning page layouts or mobile navigation. Trigger keywords: quick action, global action, action layout, pre-fill fields, predefined values, Salesforce mobile actions. NOT for Flow-triggered actions or Next Best Action recommendations (use flow/* or agentforce skills). NOT for Apex-defined actions.",
       "file_location": "skills/admin/global-actions-and-quick-actions",
@@ -1917,7 +1917,7 @@
         "f4e35a28c0ac94f7b697",
         "f8a1ab0bad19ecca1e6a"
       ],
-      "content_hash": "6070586d0d65d98ea6bb762f27ee24021d8170debbb1ee76f4cdfa7e05fb281a",
+      "content_hash": "e760e0084c96cc8eeb5dbdd0b4a33188d98a2911b271b17f1d05de7fd31dbc29",
       "dependencies": [],
       "description": "Use when creating a new Salesforce custom object: naming the object and setting its API name, selecting optional features (Activities, Chatter, History Tracking), choosing an org-wide default sharing model, and creating a tab. Triggers: 'create a custom object', 'new custom object setup', 'what sharing model should I choose', 'how do I create a tab for my object', 'object features like activities and history tracking'. NOT for custom field design on the object (use custom-field-creation), sharing rule or role hierarchy configuration (use sharing-and-visibility), or object relationship design decisions (use data-model-design-patterns).",
       "file_location": "skills/admin/object-creation-and-design",
@@ -2053,7 +2053,7 @@
         "f9d8b7b1beffc04657d4",
         "fbd4daeb1ad85621f68a"
       ],
-      "content_hash": "1eaf32045e00e114c5390dea34f5b9f86df0aeacf16bce3685bd97c1ae8ce3f0",
+      "content_hash": "a474acb1b69cac2869996bec162c2254e12e01fecf6988aa3bcaf283b15c19f1",
       "dependencies": [],
       "description": "Use when configuring org-wide platform settings: MFA enforcement, My Domain setup and deployment, session timeout and security settings, password policies, trusted IP ranges (Network Access), and CSP Trusted Sites. Trigger keywords: 'MFA setup', 'My Domain', 'session settings', 'password policy', 'trusted IP ranges', 'CSP trusted sites'. NOT for user-level login restrictions (use user-management), NOT for permission model design (use permission-sets-vs-profiles), NOT for security audit and hardening review (use security/org-hardening-and-baseline-config).",
       "file_location": "skills/admin/org-setup-and-configuration",
@@ -2362,7 +2362,7 @@
         "fc2fa3ce866d5cdc7b35",
         "fc8a6d4a575b59c9f2f1"
       ],
-      "content_hash": "5ac20232e74fcfa41551a1c9256888e0c0551650b86c152d3e6824bb35a9c34d",
+      "content_hash": "7c24aeb8d4bdc9647b83a2709d45c23e46ca005cd3901069ddee5a60af4d6c93",
       "dependencies": [],
       "description": "Use when creating or managing picklist fields: choosing between Global Value Sets and object-local picklists, configuring controlling and dependent field relationships, managing picklist values, and replacing values in existing data records. NOT for formula fields that reference picklists (use formula-fields), NOT for record type picklist filtering (use record-types-and-page-layouts), NOT for picklist fields in Flow (use the appropriate flow skill).",
       "file_location": "skills/admin/picklist-and-value-sets",
@@ -2788,7 +2788,7 @@
         "fcfd3bc326d5b68686ed",
         "fdba1803204366cf8de1"
       ],
-      "content_hash": "01015aeb7e6fa3174bda19327d67dcd44f3a3c3b71a2b59d57afb69a7e2f5f79",
+      "content_hash": "3eac24d8a32f993ce5f609540bca28789d50b09d0c7ab0281ba1c61eedbfe685",
       "dependencies": [],
       "description": "Use this skill when eliciting, documenting, and structuring requirements for a Salesforce implementation or enhancement: writing Salesforce-specific user stories with acceptance criteria, mapping As-Is and To-Be business processes, conducting stakeholder discovery interviews, and performing gap analysis against standard Salesforce capabilities. Trigger keywords: requirements gathering, user story, As-Is To-Be, gap analysis, stakeholder interview, process mapping, business requirements, fit gap. NOT for technical design decisions (use solution-design-patterns). NOT for automation implementation (use flow/* or apex/* skills). NOT for data model design (use data-model-design-patterns or object-creation-and-design).",
       "file_location": "skills/admin/requirements-gathering-for-sf",
@@ -3083,7 +3083,7 @@
         "f7acc83ef3921eb7cda9",
         "fed03edda792fb3ef2bd"
       ],
-      "content_hash": "1529dd1594a49981fd3b5cca222a0dcd45c87cd21ac7edd45584ac82e665f404",
+      "content_hash": "5d576afe4605db3e5c0e1e7c239f0f064d53eb227f8176104f155a3c0e301713",
       "dependencies": [],
       "description": "Use this skill when writing acceptance criteria for Salesforce features, structuring UAT test scripts from user stories, classifying defects found during UAT, or planning regression testing before a Salesforce release. Trigger keywords: UAT, user acceptance testing, test script, acceptance criteria, defect classification, regression testing, test plan, test case. NOT for automated testing (use flow-testing or apex-test-class-standards). NOT for writing user stories or eliciting requirements (use requirements-gathering-for-sf). NOT for setting up sandboxes or environment strategy (use sandbox-strategy).",
       "file_location": "skills/admin/uat-and-acceptance-criteria",
@@ -3185,7 +3185,7 @@
         "fb75eac3b300ad65dfc7",
         "ff1e7ae9628ea5d7d607"
       ],
-      "content_hash": "82459e95b76325721cbafe4fd1570f123e738286dc6c5fb4eb5733c5551c8752",
+      "content_hash": "1cd88cde8fe02870eabee412d2e6ce5a6fc3bbe60d5efe002da0a6158fe22eed",
       "dependencies": [],
       "description": "Use this skill to create, deactivate, freeze, or manage Salesforce users, assign user licenses and feature licenses, configure profiles and roles, set login hours and IP restrictions, and set up delegated administration. Triggers: adding a new user, deactivating a departing employee, license assignment, freezing a user account, delegated admin setup. NOT for permission sets (use permission-set-architecture) or sharing model design (use sharing-and-visibility).",
       "file_location": "skills/admin/user-management",
@@ -4966,6 +4966,114 @@
         "skills/apex/recursive-trigger-prevention/templates/recursive-trigger-prevention-template.md"
       ],
       "updated": "2026-03-13",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "apex",
+      "chunk_ids": [
+        "067b158771221c3a5346",
+        "0affab086866e82a5c36",
+        "0c6edd1c1d6440bc5ee6",
+        "0d6bd497087dcb634576",
+        "180388e41345c8e5e60b",
+        "1b3a5151312a215649db",
+        "22dc665dc878cc381630",
+        "29fc460064e260ed5343",
+        "2cc1a83ebb6360d203d1",
+        "2d278c692d0cbd844d77",
+        "30aee149974ab853e078",
+        "30d35600c580fb31ace3",
+        "32b4df8aec58fac78914",
+        "35e02affe59201e19f35",
+        "36ae2c40cffa0dcdf6ad",
+        "38b053b6d6c0c963846f",
+        "3bcfffc8113c6e75568d",
+        "3dc5c601cc3bb5e43da5",
+        "3f1f194eeb4eaebedb07",
+        "48cdd13fefaa4b8e1d28",
+        "49d764cba3fc7669b6f6",
+        "4a501b379815e1607011",
+        "4dbd9a462ed54423c58c",
+        "50967a1756094436cfdd",
+        "55a612a9f7f7cbcf0875",
+        "56b680300c8f88eec0ab",
+        "634513eb590af512a8fc",
+        "65a5c4541ffa710f7dea",
+        "67cad19c0524b6f97fb8",
+        "6f77c9ba43f295089444",
+        "71046ff0570a6628ea2d",
+        "7f18ca4e488211d03ba0",
+        "88e730a432734c937f56",
+        "977f2d1f9defd4febbdd",
+        "97b808fdac6902df6d8a",
+        "9ec0d749e9230f6d89a2",
+        "9f783269369f8d42395b",
+        "a13fa5c73a8caa7895c7",
+        "a9ed5d7c712c5f069abb",
+        "ad6e4220894abd4c42dd",
+        "b26933968acf00ed9991",
+        "b3efbef6e43fb5a99860",
+        "ba8abe5d1ba01696a30e",
+        "c50064bb6227e6fbe49a",
+        "cf1fdbea03a5676eae74",
+        "d471aeaee6ba63839be0",
+        "ded434fbdba6fc47d4da",
+        "df1b570f27553b5ebfc4",
+        "e04069c9782ab72d1c17",
+        "e569d0db9144d795acdd",
+        "e610e56e310eb32f1386",
+        "e7fbc9f25c6166a5f9a9",
+        "e8064c6b5997b67d0e9b",
+        "efa7796aa628ed0f8a4f",
+        "f59fd560c84fe0c3d210",
+        "ff12e0cab0578877f27b"
+      ],
+      "content_hash": "648c8c0a5a58d040c905c27fdcb0d0239702aeddde4830a168c9af3e577ca177",
+      "dependencies": [],
+      "description": "Use this skill when writing or debugging SOQL queries: SELECT syntax, WHERE filters, ORDER BY, LIMIT, OFFSET, relationship queries (child-to-parent and parent-to-child), aggregate functions (COUNT, SUM, AVG, MIN, MAX), and date literals. Trigger keywords: soql, query, SELECT FROM WHERE. NOT for SOQL security enforcement (use soql-security), query optimization and index tuning (use soql-query-optimization), or SOSL full-text search.",
+      "file_location": "skills/apex/soql-fundamentals",
+      "id": "apex/soql-fundamentals",
+      "inputs": [
+        "Object name(s) to query",
+        "Fields to retrieve",
+        "Filter criteria (optional)",
+        "Whether the query is inline Apex or dynamic SOQL"
+      ],
+      "name": "soql-fundamentals",
+      "official_sources": [
+        "SOQL and SOSL Reference (Version 66.0, Spring '26) \u2014 https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql.htm",
+        "Used for: SELECT syntax, all clause definitions, relationship query rules, aggregate function behavior, LIMIT/OFFSET limits, FIELDS() keyword behavior, date literal reference",
+        "Apex Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm",
+        "Used for: inline SOQL syntax in Apex, Database.query() dynamic SOQL, FOR UPDATE locking, governor limits, WITH USER_MODE vs WITH SECURITY_ENFORCED guidance",
+        "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
+        "Used for: framing scalability and security pillars"
+      ],
+      "outputs": [
+        "Correct SOQL statement with proper syntax",
+        "Explanation of clauses and behavior",
+        "Guidance on known limits and gotchas"
+      ],
+      "references": [
+        "skills/apex/soql-fundamentals/references/examples.md",
+        "skills/apex/soql-fundamentals/references/gotchas.md",
+        "skills/apex/soql-fundamentals/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/apex/soql-fundamentals/scripts/__pycache__/check_soql_fundamentals.cpython-311.pyc",
+        "skills/apex/soql-fundamentals/scripts/check_soql_fundamentals.py"
+      ],
+      "tags": [
+        "soql",
+        "query",
+        "apex",
+        "data-access",
+        "relationship-queries"
+      ],
+      "templates": [
+        "skills/apex/soql-fundamentals/templates/soql-fundamentals-template.md"
+      ],
+      "updated": "2026-04-04",
       "vector_embedding": null,
       "version": "1.0.0"
     },
