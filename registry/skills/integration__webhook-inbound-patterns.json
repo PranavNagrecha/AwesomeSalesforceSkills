@@ -1,0 +1,103 @@
+{
+  "category": "integration",
+  "chunk_ids": [
+    "137154fa50035814b736",
+    "1fc50f3a5fe3601b241f",
+    "285b475ee775c4beb012",
+    "287cd30929d4800bf419",
+    "34cd4cf9b61fd8f10c3e",
+    "372bbab7d5ae2e68ad28",
+    "391e63176ad6be8902cc",
+    "3eb7a4a2241779327bbd",
+    "3fbdf0ee8e1cf5163b32",
+    "4337dbc6b87d18f8753d",
+    "49e1e66029dc845d23f6",
+    "4bc5b57522089e7b2190",
+    "5262d321f1a7f404a06b",
+    "55e738f72ccad0fa431a",
+    "5839ee6364ee2e9f9409",
+    "596a5c58e38cf26dc861",
+    "599de88188f03bb457cc",
+    "5dfd8911038279e7640c",
+    "5ed1298c07fd1089fd16",
+    "62103514398bfcf70894",
+    "70c2116fd6ee005db4e2",
+    "769fb01dfe320b670584",
+    "81d3f2ca1aea6efee81d",
+    "857fea27054ef461a18e",
+    "8b5ff70752e5eb3a4496",
+    "8c9ead5de4dff76b407e",
+    "8d93953cb43d4b012530",
+    "91e73038034c1a069fa1",
+    "97e8b2db95adb8cddc83",
+    "9d37b077b91a2ad62ba4",
+    "a14814b887d57fc18ba6",
+    "a3d085e076be86edda03",
+    "a479472f82de9b2219f2",
+    "a5f6cbbf52503e9702d5",
+    "a6730c5b44fd31badd18",
+    "aa98e623d25c22cbebd9",
+    "ab0edc7a03ba32ba1762",
+    "bfa97fcb72d6da96baa0",
+    "c6928f02d748659eb810",
+    "c88218c8987e8af22b55",
+    "ca76bd235a6eadff1773",
+    "cb3fb820e5ed9e54bfa8",
+    "ceb2b33cda9ef399e2f1",
+    "cf73f13782dd8a92207f",
+    "d8456c002cf0768b69ad",
+    "e1b95c86a55a86cf8106",
+    "e1c30db75ebac27b0702",
+    "e271f10b6ca7c84c47e3",
+    "e5398da716893065beea",
+    "eb760ebc7da4be057a2f",
+    "f64be4e76d014d748cc5"
+  ],
+  "content_hash": "64293d29ce9462aba5a79134202e48f22e5536b4fafcf1510106fd081a76ba3d",
+  "dependencies": [],
+  "description": "Use when implementing an inbound webhook receiver in Salesforce: routing via Apex REST and Salesforce Sites, authenticating webhook payloads via HMAC, ensuring idempotent processing, and handling the 5-second response window. NOT for outbound callouts from Salesforce to external systems (use callouts-and-http-integrations), NOT for general Apex REST service design (use apex-rest-services), NOT for platform events as inbound triggers.",
+  "file_location": "skills/integration/webhook-inbound-patterns",
+  "id": "integration/webhook-inbound-patterns",
+  "inputs": [
+    "External system's webhook payload format and HTTP method (POST/GET)",
+    "Authentication mechanism used by the sender (HMAC signature, OAuth, API key)",
+    "Whether authentication is required (authenticated vs. unauthenticated webhooks)",
+    "Expected processing latency and whether async processing is needed"
+  ],
+  "name": "webhook-inbound-patterns",
+  "official_sources": [
+    "Apex Developer Guide \u2014 Apex REST Methods \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_rest_methods.htm",
+    "Apex Developer Guide \u2014 Apex REST \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_rest.htm",
+    "Salesforce Help \u2014 Remote Access \u2014 OAuth Endpoints \u2014 https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_endpoints.htm",
+    "REST API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_rest.htm",
+    "Integration Patterns \u2014 https://architect.salesforce.com/docs/architecture/integration-patterns"
+  ],
+  "outputs": [
+    "Apex @RestResource class with @HttpPost handler and HMAC verification",
+    "Salesforce Site configuration steps for unauthenticated webhook routing",
+    "Idempotency pattern using External ID field for duplicate prevention"
+  ],
+  "references": [
+    "skills/integration/webhook-inbound-patterns/references/examples.md",
+    "skills/integration/webhook-inbound-patterns/references/gotchas.md",
+    "skills/integration/webhook-inbound-patterns/references/llm-anti-patterns.md",
+    "skills/integration/webhook-inbound-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/integration/webhook-inbound-patterns/scripts/check_webhook_inbound_patterns.py"
+  ],
+  "tags": [
+    "webhook",
+    "inbound-integration",
+    "apex-rest",
+    "salesforce-sites",
+    "hmac-verification",
+    "idempotency"
+  ],
+  "templates": [
+    "skills/integration/webhook-inbound-patterns/templates/webhook-inbound-patterns-template.md"
+  ],
+  "updated": "2026-04-04",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

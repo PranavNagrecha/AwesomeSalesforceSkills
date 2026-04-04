@@ -1,0 +1,103 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "007c47f9e37d803033d1",
+    "0c051c52cd61948b52cc",
+    "0e1c443a04a75457b93a",
+    "141b8e079404b5b6a39b",
+    "156a6b1b27b574017e6d",
+    "1bebe10e61bdab0e74cd",
+    "1fbfdf5f6833a83b2e25",
+    "27bd899930e8f9f16434",
+    "29b8ca1d1557ec816045",
+    "2c948e8ab965255dda2c",
+    "2e412f9eb61de5dcf7f6",
+    "3d994c90c8f740abba28",
+    "3fc16a769555caa93242",
+    "420abe3a2e25da496e39",
+    "4efbb4c32ecaed000f65",
+    "552d3b7a4bdbd6850303",
+    "59368aabccde4e37984c",
+    "5a0b18b73bbf91a8e833",
+    "63cb1017e707e30c4ab1",
+    "6751f2426aacfee0f8b6",
+    "6b269a967908fb4e70e6",
+    "6d7349fa572c45c7fd83",
+    "6ea95681f52da8cd05fa",
+    "739655f98664e4faad06",
+    "7aed8d4361a7a3f7c605",
+    "845ac18c84dd05e646f6",
+    "85d463556890770cdbcd",
+    "912370d420e90c93e673",
+    "95d154ec5b359a406edf",
+    "9884e596022a0a0ea427",
+    "a13cc857bacf1c127d61",
+    "a31cc4c80cb671f3534c",
+    "a3d0f99e52e18bbb20d7",
+    "a438dcbee24bd5a3a730",
+    "a8dafbaba4fce4f9e6a3",
+    "afcb7944cd12078aeba0",
+    "b183aad8ebaad244b75e",
+    "b5464f2119277b048da1",
+    "b9dde09d0498940a6e48",
+    "bad7df27e421a4e99c07",
+    "bb0d959a72f1d36ee193",
+    "c1d1643f646aabd60592",
+    "c2d2eefb754463721f10",
+    "c6c945d486f6abde6ec0",
+    "c74cb152fe94de177e04",
+    "c7a417e8de9cab1e1cbb",
+    "cb78171e67a2c4a0369c",
+    "e0300b68975f98019c14",
+    "f116c5cb48361be8a726",
+    "f1bdc416c07ab0e68f37",
+    "f570429348308bebec87"
+  ],
+  "content_hash": "e3a52da6bb6aa49bd9da9087c305f110715dace9353e78ecfd6dc33aa4854c63",
+  "dependencies": [],
+  "description": "Use when configuring Salesforce Translation Workbench, translating custom labels, picklist values, field labels, page layout sections, or Experience Cloud language switcher. Triggers: 'how to add a language to Salesforce', 'translate custom labels', 'Translation Workbench setup', 'picklist value translation', 'RTL language support'. NOT for Marketing Cloud email localization, NOT for Apex string formatting by locale (use formula fields or Apex String.format patterns), NOT for multi-currency (use currency management admin).",
+  "file_location": "skills/admin/multi-language-and-translation",
+  "id": "admin/multi-language-and-translation",
+  "inputs": [
+    "List of languages to support and their locale codes (e.g., es for Spanish)",
+    "List of components to translate: field labels, picklist values, custom labels, validation messages",
+    "Whether the org uses Experience Cloud sites with language switcher"
+  ],
+  "name": "multi-language-and-translation",
+  "official_sources": [
+    "Salesforce Help \u2014 Set Up Translation Workbench \u2014 https://help.salesforce.com/s/articleView?id=sf.workbench_overview.htm",
+    "Salesforce Help \u2014 Translate Custom Labels \u2014 https://help.salesforce.com/s/articleView?id=sf.cl_translate.htm",
+    "Salesforce Help \u2014 Experience Cloud Language Support \u2014 https://help.salesforce.com/s/articleView?id=sf.networks_multilingual.htm",
+    "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/well-architected/overview"
+  ],
+  "outputs": [
+    "Translation Workbench configuration steps for each language",
+    "Export/import workflow for bulk translations via Translation Workbench spreadsheet",
+    "Custom label translation setup",
+    "Experience Cloud language switcher configuration"
+  ],
+  "references": [
+    "skills/admin/multi-language-and-translation/references/examples.md",
+    "skills/admin/multi-language-and-translation/references/gotchas.md",
+    "skills/admin/multi-language-and-translation/references/llm-anti-patterns.md",
+    "skills/admin/multi-language-and-translation/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/multi-language-and-translation/scripts/check_multi_language_and_translation.py"
+  ],
+  "tags": [
+    "translation",
+    "multi-language",
+    "translation-workbench",
+    "custom-labels",
+    "localization",
+    "experience-cloud"
+  ],
+  "templates": [
+    "skills/admin/multi-language-and-translation/templates/multi-language-and-translation-template.md"
+  ],
+  "updated": "2026-04-04",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

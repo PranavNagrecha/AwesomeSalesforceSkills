@@ -1,0 +1,103 @@
+{
+  "category": "agentforce",
+  "chunk_ids": [
+    "04ddaa061afa3652375e",
+    "070ba8448f996af1e769",
+    "0cad63b13b35b7328829",
+    "0dd0485fda96fbba4ecc",
+    "15aa80f4aba6e0e03463",
+    "165b48322a6285fb7e9d",
+    "17efcd8942f738c58e72",
+    "1c7a5acaaeed7e2adc2a",
+    "1f144153489ef7df4fe3",
+    "25e16a04c623cdf13659",
+    "2ad1c4ff0b367496e1d9",
+    "2d71030045886b262ded",
+    "2dd03329eaec442a1b26",
+    "308f11b3c16877f69505",
+    "36d695d69754ff50567b",
+    "3fecbf4dd87f4e785c1d",
+    "427358a9e444fc992a6b",
+    "44bfbfee2cbdce8da743",
+    "44d8200accab079dce38",
+    "44f79cd873b93362a056",
+    "4e27703e2d2386529108",
+    "54e4c62f1ad2d1bdb98b",
+    "5633cc1775b3d78e030d",
+    "5c015ce607a4070dc913",
+    "608b8fd69e59afb55b7e",
+    "61bac6bf4baa3573413c",
+    "66f22e75bcb3935a1c06",
+    "69cae068de0aad3118cd",
+    "6c41203c633aca8dc764",
+    "6f3fe9f0dd0015d7e029",
+    "79d6730b66569bf0152f",
+    "7e2c90175b154d7f0df1",
+    "7f2235acd53c563a3097",
+    "8eefbc2db187f17d0008",
+    "93b6e7b1559c179497ff",
+    "9bea8f18714a5cdaa845",
+    "9d494c61503bcdc9926d",
+    "a69707a6abdc268dc6b4",
+    "a6eb43548a7f67b21b26",
+    "abd38d6df952f5f42dd9",
+    "b2dfc1edef4a65bb5a27",
+    "b375a3df57b67ee47f6a",
+    "b3e13453a931e68fe43b",
+    "bd1c8c3c89f44a379920",
+    "bea102e5e97120ebc542",
+    "cb5ac228de6fdc19ef95",
+    "d0bbb92f56b56d2ca38e",
+    "d545ebe4e1578a92b9e0",
+    "dbb2501f4c27f43d40ac",
+    "eacb0349b2bac2c9613d",
+    "f22dd3e0cddceb2af2e4",
+    "f542542f0a8135af1291",
+    "f8f15be5233435202db2"
+  ],
+  "content_hash": "77f21ad74b937f5002fea681d02f2a058adb625dc61f5a0412017d48a61f8839",
+  "dependencies": [],
+  "description": "Use when monitoring Agentforce agent sessions, analyzing conversation logs, measuring deflection rates, or diagnosing agent performance issues. Triggers: 'agentforce session analytics', 'how to query agent conversation data', 'monitor agentforce agent effectiveness', 'agent deflection rate', 'utterance analysis agentforce'. NOT for Einstein Trust Layer audit logging (use einstein-trust-layer), NOT for agent topic design or guardrails (use agent-topic-design or agentforce-guardrails), NOT for LLM prompt debugging (this skill covers session metrics and conversation trace, not prompt engineering).",
+  "file_location": "skills/agentforce/agentforce-observability",
+  "id": "agentforce/agentforce-observability",
+  "inputs": [
+    "Agentforce agent name or agent ID being monitored",
+    "Date range for session analysis",
+    "Specific metric of interest: deflection rate, session count, avg latency, escalation rate"
+  ],
+  "name": "agentforce-observability",
+  "official_sources": [
+    "Salesforce Help \u2014 Agentforce Observability \u2014 https://help.salesforce.com/s/articleView?id=sf.agentforce_observability.htm",
+    "Salesforce Help \u2014 Agent Analytics Data Cloud Objects \u2014 https://help.salesforce.com/s/articleView?id=sf.agentforce_analytics_data_objects.htm",
+    "Agentforce Developer Guide \u2014 https://developer.salesforce.com/docs/einstein/genai/guide/agentforce-dev-guide.html",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/well-architected/overview"
+  ],
+  "outputs": [
+    "SOQL/SQL queries against Data Cloud session trace objects",
+    "Dashboard or report configuration for key agent performance metrics",
+    "Interpretation of session trace data to diagnose specific agent issues"
+  ],
+  "references": [
+    "skills/agentforce/agentforce-observability/references/examples.md",
+    "skills/agentforce/agentforce-observability/references/gotchas.md",
+    "skills/agentforce/agentforce-observability/references/llm-anti-patterns.md",
+    "skills/agentforce/agentforce-observability/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/agentforce/agentforce-observability/scripts/check_agentforce_observability.py"
+  ],
+  "tags": [
+    "agentforce",
+    "observability",
+    "session-analytics",
+    "data-cloud",
+    "agent-performance",
+    "conversation-logs"
+  ],
+  "templates": [
+    "skills/agentforce/agentforce-observability/templates/agentforce-observability-template.md"
+  ],
+  "updated": "2026-04-04",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}
