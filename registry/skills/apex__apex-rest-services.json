@@ -45,7 +45,7 @@
     "f56c12c4ebe95cca7d09",
     "f7c86fe799edfd823c6e"
   ],
-  "content_hash": "c75290ad7e873d97b1f5c3707a947eee15129b22ae942f4c9199d75e77ddc9f5",
+  "content_hash": "583a0cb091c995d8e6fa054cbf0eb092c28e886431efb1a6f3839783fb11f3f5",
   "dependencies": [],
   "description": "Use when building, reviewing, or debugging inbound Apex REST resources, request/response handling, status codes, versioned URL mappings, or JSON serialization in `@RestResource` classes. Triggers: 'Apex REST', '@RestResource', 'HttpGet/HttpPost', 'RestContext', 'versioned endpoint'. NOT for outbound HTTP callouts or standard Salesforce REST API usage as a consumer.",
   "file_location": "skills/apex/apex-rest-services",
@@ -72,7 +72,6 @@
     "skills/apex/apex-rest-services/references/well-architected.md"
   ],
   "scripts": [
-    "skills/apex/apex-rest-services/scripts/__pycache__/check_apex_rest_services.cpython-311.pyc",
     "skills/apex/apex-rest-services/scripts/check_apex_rest_services.py"
   ],
   "tags": [

@@ -599,6 +599,42 @@
       "domain": "apex",
       "expected_skill": "apex/debug-logs-and-developer-console",
       "top_k": 3
+    },
+    {
+      "query": "junction object many to many relationship Salesforce",
+      "domain": "data",
+      "expected_skill": "data/data-model-design-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "data migration planning parent child sequence",
+      "domain": "data",
+      "expected_skill": "data/data-migration-planning",
+      "top_k": 3
+    },
+    {
+      "query": "data quality validation rules duplicate management",
+      "domain": "data",
+      "expected_skill": "data/data-quality-and-governance",
+      "top_k": 3
+    },
+    {
+      "query": "how to choose between Flow and Apex for automation",
+      "domain": "architect",
+      "expected_skill": "architect/solution-design-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "governor limits scalability planning org wide",
+      "domain": "architect",
+      "expected_skill": "architect/limits-and-scalability-planning",
+      "top_k": 3
+    },
+    {
+      "query": "when to use multiple Salesforce orgs vs single org",
+      "domain": "architect",
+      "expected_skill": "architect/multi-org-strategy",
+      "top_k": 3
     }
   ]
 }

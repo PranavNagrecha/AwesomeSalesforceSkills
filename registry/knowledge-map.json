@@ -65,7 +65,15 @@
       "apex/test-class-standards",
       "apex/trigger-framework"
     ],
+    "architect": [
+      "architect/limits-and-scalability-planning",
+      "architect/multi-org-strategy",
+      "architect/solution-design-patterns"
+    ],
     "data": [
+      "data/data-migration-planning",
+      "data/data-model-design-patterns",
+      "data/data-quality-and-governance",
       "data/multi-currency-and-advanced-currency-management",
       "data/roll-up-summary-alternatives",
       "data/sosl-search-patterns"
@@ -170,7 +178,8 @@
       "apex/debug-logs-and-developer-console"
     ],
     "apex": [
-      "apex/soql-fundamentals"
+      "apex/soql-fundamentals",
+      "architect/solution-design-patterns"
     ],
     "apex-metadata-api": [
       "apex/custom-metadata-in-apex"
@@ -202,6 +211,13 @@
     "approvers": [
       "admin/approval-processes"
     ],
+    "architecture-decision": [
+      "architect/multi-org-strategy",
+      "architect/solution-design-patterns"
+    ],
+    "architecture-planning": [
+      "architect/limits-and-scalability-planning"
+    ],
     "aria": [
       "lwc/lwc-accessibility"
     ],
@@ -209,7 +225,8 @@
       "admin/assignment-rules"
     ],
     "async-apex": [
-      "apex/async-apex"
+      "apex/async-apex",
+      "architect/limits-and-scalability-planning"
     ],
     "async-testing": [
       "apex/test-class-standards"
@@ -233,6 +250,9 @@
     "automation": [
       "admin/flow-for-admins"
     ],
+    "automation-layers": [
+      "architect/solution-design-patterns"
+    ],
     "automation-selection": [
       "admin/process-automation-selection"
     ],
@@ -241,7 +261,8 @@
     ],
     "batch-apex": [
       "apex/async-apex",
-      "apex/batch-apex-patterns"
+      "apex/batch-apex-patterns",
+      "architect/limits-and-scalability-planning"
     ],
     "batch-apex-boundary": [
       "flow/scheduled-flows"
@@ -260,7 +281,8 @@
       "lwc/custom-property-editor-for-flow"
     ],
     "bulk-api": [
-      "admin/data-import-and-management"
+      "admin/data-import-and-management",
+      "data/data-migration-planning"
     ],
     "bulk-safe": [
       "apex/invocable-methods"
@@ -304,6 +326,9 @@
     "clickjack": [
       "security/org-hardening-and-baseline-config"
     ],
+    "clicks-before-code": [
+      "architect/solution-design-patterns"
+    ],
     "client-credentials": [
       "integration/oauth-flows-and-connected-apps"
     ],
@@ -333,6 +358,9 @@
     "confirmation-patterns": [
       "agentforce/agent-actions"
     ],
+    "connected-app": [
+      "architect/multi-org-strategy"
+    ],
     "connected-apps": [
       "admin/connected-apps-and-auth",
       "integration/oauth-flows-and-connected-apps"
@@ -348,6 +376,9 @@
     ],
     "cors": [
       "security/org-hardening-and-baseline-config"
+    ],
+    "cpu-limits": [
+      "architect/limits-and-scalability-planning"
     ],
     "cpu-time": [
       "apex/apex-cpu-and-heap-optimization",
@@ -412,21 +443,41 @@
     "data-access": [
       "apex/soql-fundamentals"
     ],
+    "data-classification": [
+      "data/data-quality-and-governance"
+    ],
+    "data-governance": [
+      "data/data-quality-and-governance"
+    ],
     "data-load": [
       "admin/data-import-and-management"
     ],
+    "data-loader": [
+      "data/data-migration-planning"
+    ],
+    "data-migration": [
+      "data/data-migration-planning"
+    ],
     "data-model": [
-      "admin/data-model-documentation"
+      "admin/data-model-documentation",
+      "data/data-model-design-patterns"
     ],
     "data-quality": [
       "admin/duplicate-management",
-      "admin/validation-rules"
+      "admin/validation-rules",
+      "data/data-quality-and-governance"
+    ],
+    "data-residency": [
+      "architect/multi-org-strategy"
     ],
     "data-skew": [
       "admin/data-skew-and-sharing-performance"
     ],
     "data-visibility": [
       "admin/reports-and-dashboards"
+    ],
+    "data-volume": [
+      "architect/limits-and-scalability-planning"
     ],
     "database-batchable": [
       "apex/batch-apex-patterns"
@@ -456,6 +507,9 @@
       "apex/debug-and-logging",
       "apex/debug-logs-and-developer-console"
     ],
+    "declarative-vs-programmatic": [
+      "architect/solution-design-patterns"
+    ],
     "defect-management": [
       "admin/uat-and-acceptance-criteria"
     ],
@@ -476,6 +530,9 @@
       "apex/metadata-api-and-package-xml",
       "apex/sf-cli-and-sfdx-essentials"
     ],
+    "design-patterns": [
+      "architect/solution-design-patterns"
+    ],
     "destructive-changes": [
       "apex/metadata-api-and-package-xml"
     ],
@@ -491,8 +548,14 @@
     "dml-exception": [
       "apex/exception-handling"
     ],
+    "dml-limits": [
+      "architect/limits-and-scalability-planning"
+    ],
     "domain-layer": [
       "apex/apex-design-patterns"
+    ],
+    "duplicate-management": [
+      "data/data-quality-and-governance"
     ],
     "duplicate-rules": [
       "admin/duplicate-management"
@@ -524,6 +587,9 @@
     "escalation-rules": [
       "admin/escalation-rules"
     ],
+    "etl": [
+      "data/data-migration-planning"
+    ],
     "event-trigger": [
       "apex/platform-events-apex"
     ],
@@ -541,9 +607,12 @@
       "admin/connected-apps-and-auth"
     ],
     "external-id": [
-      "admin/data-import-and-management"
+      "admin/data-import-and-management",
+      "data/data-migration-planning",
+      "data/data-model-design-patterns"
     ],
     "external-objects": [
+      "architect/multi-org-strategy",
       "integration/salesforce-connect-external-objects"
     ],
     "external-users": [
@@ -564,11 +633,17 @@
     "feature-flags": [
       "admin/custom-metadata-types"
     ],
+    "field-history": [
+      "data/data-quality-and-governance"
+    ],
     "field-inventory": [
       "admin/data-model-documentation"
     ],
     "field-level-security": [
       "admin/custom-field-creation"
+    ],
+    "field-types": [
+      "data/data-model-design-patterns"
     ],
     "file-upload": [
       "lwc/lwc-forms-and-validation"
@@ -577,7 +652,8 @@
       "data/sosl-search-patterns"
     ],
     "flow": [
-      "admin/flow-for-admins"
+      "admin/flow-for-admins",
+      "architect/solution-design-patterns"
     ],
     "flow-apex-action": [
       "apex/invocable-methods"
@@ -641,6 +717,9 @@
     "gap-analysis": [
       "admin/requirements-gathering-for-sf"
     ],
+    "gdpr": [
+      "data/data-quality-and-governance"
+    ],
     "global-actions": [
       "admin/global-actions-and-quick-actions"
     ],
@@ -652,6 +731,7 @@
     ],
     "governor-limits": [
       "apex/governor-limits",
+      "architect/limits-and-scalability-planning",
       "flow/flow-bulkification"
     ],
     "graphql": [
@@ -675,6 +755,9 @@
     "handoff-rules": [
       "agentforce/agent-topic-design"
     ],
+    "heap-limits": [
+      "architect/limits-and-scalability-planning"
+    ],
     "heap-size": [
       "apex/apex-cpu-and-heap-optimization"
     ],
@@ -696,8 +779,14 @@
     "httprequest": [
       "apex/callouts-and-http-integrations"
     ],
+    "hub-and-spoke": [
+      "architect/multi-org-strategy"
+    ],
     "idempotency": [
       "flow/scheduled-flows"
+    ],
+    "indexing": [
+      "data/data-model-design-patterns"
     ],
     "infinite-loading": [
       "lwc/lwc-data-table"
@@ -751,6 +840,9 @@
     ],
     "json-serialization": [
       "apex/apex-rest-services"
+    ],
+    "junction-object": [
+      "data/data-model-design-patterns"
     ],
     "jwt-bearer": [
       "integration/oauth-flows-and-connected-apps"
@@ -820,10 +912,14 @@
     "logging-framework": [
       "apex/debug-and-logging"
     ],
+    "lookup": [
+      "data/data-model-design-patterns"
+    ],
     "lookup-rollup": [
       "data/roll-up-summary-alternatives"
     ],
     "lwc": [
+      "architect/solution-design-patterns",
       "lwc/lifecycle-hooks"
     ],
     "lwc-accessibility": [
@@ -850,6 +946,9 @@
     "masking": [
       "admin/sandbox-strategy"
     ],
+    "master-detail": [
+      "data/data-model-design-patterns"
+    ],
     "matching-rules": [
       "admin/duplicate-management"
     ],
@@ -875,6 +974,9 @@
     "migration": [
       "admin/data-import-and-management"
     ],
+    "migration-sequencing": [
+      "data/data-migration-planning"
+    ],
     "mobile": [
       "admin/global-actions-and-quick-actions"
     ],
@@ -890,6 +992,9 @@
     "multi-currency": [
       "data/multi-currency-and-advanced-currency-management"
     ],
+    "multi-org": [
+      "architect/multi-org-strategy"
+    ],
     "multi-user": [
       "flow/orchestration-flows"
     ],
@@ -902,6 +1007,7 @@
     "named-credentials": [
       "admin/connected-apps-and-auth",
       "apex/callouts-and-http-integrations",
+      "architect/multi-org-strategy",
       "omnistudio/integration-procedures"
     ],
     "naming-conventions": [
@@ -959,8 +1065,17 @@
     "org-hardening": [
       "security/org-hardening-and-baseline-config"
     ],
+    "org-limits": [
+      "architect/limits-and-scalability-planning"
+    ],
     "org-setup": [
       "admin/org-setup-and-configuration"
+    ],
+    "org-strategy": [
+      "architect/multi-org-strategy"
+    ],
+    "org-topology": [
+      "architect/multi-org-strategy"
     ],
     "org-wide-defaults": [
       "admin/object-creation-and-design"
@@ -1032,11 +1147,15 @@
     "picklists": [
       "admin/record-types-and-page-layouts"
     ],
+    "pii": [
+      "data/data-quality-and-governance"
+    ],
     "platform-cache": [
       "apex/platform-cache"
     ],
     "platform-events": [
-      "apex/platform-events-apex"
+      "apex/platform-events-apex",
+      "architect/limits-and-scalability-planning"
     ],
     "platform-resource-loader": [
       "lwc/static-resources-in-lwc"
@@ -1106,6 +1225,9 @@
     "relationship-queries": [
       "apex/soql-fundamentals"
     ],
+    "relationships": [
+      "data/data-model-design-patterns"
+    ],
     "release-communication": [
       "admin/change-management-and-training"
     ],
@@ -1153,7 +1275,8 @@
       "data/roll-up-summary-alternatives"
     ],
     "rollback": [
-      "admin/change-management-and-deployment"
+      "admin/change-management-and-deployment",
+      "data/data-migration-planning"
     ],
     "routing": [
       "admin/approval-processes",
@@ -1163,10 +1286,14 @@
       "lwc/lwc-data-table"
     ],
     "salesforce-connect": [
+      "architect/multi-org-strategy",
       "integration/salesforce-connect-external-objects"
     ],
     "salesforce-mobile-app": [
       "lwc/lwc-offline-and-mobile"
+    ],
+    "salesforce-to-salesforce": [
+      "architect/multi-org-strategy"
     ],
     "sandboxes": [
       "admin/sandbox-strategy"
@@ -1175,6 +1302,7 @@
       "omnistudio/omniscript-design-patterns"
     ],
     "scalability": [
+      "architect/limits-and-scalability-planning",
       "flow/flow-bulkification"
     ],
     "schedulable": [
@@ -1263,20 +1391,36 @@
       "admin/object-creation-and-design"
     ],
     "sharing-recalculation": [
-      "admin/data-skew-and-sharing-performance"
+      "admin/data-skew-and-sharing-performance",
+      "architect/limits-and-scalability-planning"
     ],
     "sharing-rules": [
       "admin/sharing-and-visibility"
     ],
+    "shield": [
+      "data/data-quality-and-governance"
+    ],
+    "skinny-tables": [
+      "data/data-model-design-patterns"
+    ],
+    "solution-design": [
+      "architect/solution-design-patterns"
+    ],
     "soql": [
       "apex/soql-fundamentals",
       "apex/soql-security"
+    ],
+    "soql-selectivity": [
+      "architect/limits-and-scalability-planning"
     ],
     "sosl": [
       "data/sosl-search-patterns"
     ],
     "source-tracking": [
       "apex/sf-cli-and-sfdx-essentials"
+    ],
+    "sso": [
+      "architect/multi-org-strategy"
     ],
     "stages": [
       "flow/orchestration-flows"
@@ -1292,6 +1436,9 @@
     ],
     "staticresourcecalloutmock": [
       "apex/apex-mocking-and-stubs"
+    ],
+    "storage-limits": [
+      "architect/limits-and-scalability-planning"
     ],
     "string-optimization": [
       "apex/apex-cpu-and-heap-optimization"
@@ -1379,7 +1526,8 @@
       "integration/graphql-api-patterns"
     ],
     "upsert": [
-      "admin/data-import-and-management"
+      "admin/data-import-and-management",
+      "data/data-migration-planning"
     ],
     "url-state": [
       "lwc/navigation-and-routing"
@@ -1405,8 +1553,12 @@
     "validation": [
       "lwc/lwc-forms-and-validation"
     ],
+    "validation-bypass": [
+      "data/data-migration-planning"
+    ],
     "validation-rules": [
-      "admin/validation-rules"
+      "admin/validation-rules",
+      "data/data-quality-and-governance"
     ],
     "version-management": [
       "flow/flow-governance"
