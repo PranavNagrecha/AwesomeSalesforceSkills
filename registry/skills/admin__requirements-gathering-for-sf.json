@@ -68,7 +68,7 @@
     "fcfd3bc326d5b68686ed",
     "fdba1803204366cf8de1"
   ],
-  "content_hash": "772690e38decb2cbf47220d683964356f4a826f41dc2522885634c6f240c8f45",
+  "content_hash": "01015aeb7e6fa3174bda19327d67dcd44f3a3c3b71a2b59d57afb69a7e2f5f79",
   "dependencies": [],
   "description": "Use this skill when eliciting, documenting, and structuring requirements for a Salesforce implementation or enhancement: writing Salesforce-specific user stories with acceptance criteria, mapping As-Is and To-Be business processes, conducting stakeholder discovery interviews, and performing gap analysis against standard Salesforce capabilities. Trigger keywords: requirements gathering, user story, As-Is To-Be, gap analysis, stakeholder interview, process mapping, business requirements, fit gap. NOT for technical design decisions (use solution-design-patterns). NOT for automation implementation (use flow/* or apex/* skills). NOT for data model design (use data-model-design-patterns or object-creation-and-design).",
   "file_location": "skills/admin/requirements-gathering-for-sf",
@@ -102,6 +102,7 @@
     "skills/admin/requirements-gathering-for-sf/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/requirements-gathering-for-sf/scripts/__pycache__/check_requirements_gathering_for_sf.cpython-311.pyc",
     "skills/admin/requirements-gathering-for-sf/scripts/check_requirements_gathering_for_sf.py"
   ],
   "tags": [

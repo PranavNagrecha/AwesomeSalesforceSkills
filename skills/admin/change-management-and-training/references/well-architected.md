@@ -26,17 +26,35 @@ A dedicated training org allows persistent, realistic data for exercises without
 
 ## Official Sources Used
 
-- Salesforce Well-Architected Overview — Operational Excellence pillar, adoption as a quality dimension
+- Salesforce Well-Architected Overview — Operational Excellence and Engaging pillar framing
   URL: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 
-- Salesforce In-App Guidance documentation — configuring walkthroughs and prompts in Lightning Experience
-  URL: https://help.salesforce.com/s/articleView?id=sf.customhelp_lex_prompt_overview.htm
+- Salesforce Well-Architected — Engaging sub-pillar (Easy pillar) — user adoption as an architecture quality dimension
+  URL: https://architect.salesforce.com/well-architected/easy/engaging
+
+- Trailhead: User Training and Motivation — four-step training plan workflow, super user program, training library structure
+  URL: https://trailhead.salesforce.com/content/learn/modules/user-training-and-motivation
+
+- Trailhead: Training Strategy and Communication Plan — role-specific communications, "What's in it for me?" framing
+  URL: https://trailhead.salesforce.com/content/learn/modules/user-training-and-motivation/create-your-training-strategy-and-communication-plan
+
+- Trailhead: Leveraging Change — Six Levers of Change model (Leadership, Ecosystem, Values, Enablement, Rewards, Structure)
+  URL: https://trailhead.salesforce.com/content/learn/modules/levers-of-change-model/learn-the-levers-of-change
+
+- Trailhead: Salesforce Adoption Strategies — adoption planning, go-live readiness, internal communication
+  URL: https://trailhead.salesforce.com/content/learn/modules/salesforce-adoption-strategies
+
+- Trailhead: Release Readiness Strategies — pre-release sandbox preview workflow, Release Notes triage, user communication timing
+  URL: https://trailhead.salesforce.com/content/learn/modules/sf_releases/sf_releases_strategy
+
+- Trailhead: Improve User Engagement with In-App Guidance — prompt types, targeting, walkthrough configuration
+  URL: https://trailhead.salesforce.com/content/learn/modules/user-engagement
+
+- Salesforce In-App Guidance Help — configuring walkthroughs and prompts in Lightning Experience
+  URL: https://help.salesforce.com/s/articleView?id=sales.customhelp_lexguid.htm&type=5
 
 - Salesforce Path documentation — Stage coaching text, record type scoping, Path setup
   URL: https://help.salesforce.com/s/articleView?id=sf.sales_path_overview.htm
 
-- Salesforce Adoption Dashboards (Salesforce Labs) — AppExchange listing, LoginHistory-based metrics
-  URL: https://appexchange.salesforce.com/appxListingDetail?listingId=a0N30000004gHhLEAU
-
-- Trailhead: User Adoption Strategies — official Salesforce learning trail for adoption planning
-  URL: https://trailhead.salesforce.com/content/learn/modules/user-adoption-strategies
+- Trailhead: Enhance User Adoption Metrics — LoginHistory-based adoption measurement
+  URL: https://trailhead.salesforce.com/content/learn/modules/user-adoption-metrics
