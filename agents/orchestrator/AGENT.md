@@ -43,13 +43,13 @@ Reads `MASTER_QUEUE.md`, finds the next actionable task, routes it to the correc
 ### Step 1 — Find the next task
 
 ```bash
-# Find first TODO or RESEARCH row in MASTER_QUEUE.md
-grep -n "| TODO\|| RESEARCH\|| UPDATE" MASTER_QUEUE.md | head -1
+# Find first RESEARCHED, TODO, or RESEARCH row in MASTER_QUEUE.md
+grep -n "| RESEARCHED\|| TODO\|| RESEARCH\|| UPDATE" MASTER_QUEUE.md | head -1
 ```
 
 Read that row completely: Status, Skill Name, Description, Cloud, Role.
 
-**If no TODO/RESEARCH/UPDATE rows exist:**
+**If no RESEARCHED/TODO/RESEARCH/UPDATE rows exist:**
 Check `SKILLS_BACKLOG.md` for any remaining TODO items there.
 If both queues are empty → print "ALL QUEUES COMPLETE" and stop.
 
@@ -169,9 +169,10 @@ Some situations require human review before proceeding:
 Process rows in this order, overriding queue position when necessary:
 
 1. **HIGH priority UPDATE rows** (security and limit changes from Currency Monitor)
-2. **RESEARCH rows** (must run before TODO rows for that cell can be built)
-3. **TODO rows** (Phase 1 before Phase 2, Admin before BA before Dev before Data before Architect within each phase)
-4. **MEDIUM/LOW UPDATE rows**
+2. **RESEARCHED rows** (pre-researched by Phase B — build these first, they have notes in the Notes column)
+3. **RESEARCH rows** (must run before TODO rows for that cell can be built)
+4. **TODO rows** (Phase 1 before Phase 2, Admin before BA before Dev before Data before Architect within each phase)
+5. **MEDIUM/LOW UPDATE rows**
 
 ---
 
