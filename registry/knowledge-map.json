@@ -32,6 +32,7 @@
       "admin/permission-sets-vs-profiles",
       "admin/picklist-and-value-sets",
       "admin/process-automation-selection",
+      "admin/queues-and-public-groups",
       "admin/record-types-and-page-layouts",
       "admin/reports-and-dashboards",
       "admin/requirements-gathering-for-sf",
@@ -43,6 +44,7 @@
     ],
     "agentforce": [
       "agentforce/agent-actions",
+      "agentforce/agent-channel-deployment",
       "agentforce/agent-testing-and-evaluation",
       "agentforce/agent-topic-design",
       "agentforce/agentforce-agent-creation",
@@ -59,6 +61,7 @@
       "apex/apex-design-patterns",
       "apex/apex-email-services",
       "apex/apex-managed-sharing",
+      "apex/apex-metadata-api",
       "apex/apex-mocking-and-stubs",
       "apex/apex-queueable-patterns",
       "apex/apex-rest-services",
@@ -88,6 +91,7 @@
     ],
     "architect": [
       "architect/government-cloud-compliance",
+      "architect/integration-framework-design",
       "architect/limits-and-scalability-planning",
       "architect/multi-org-strategy",
       "architect/platform-selection-guidance",
@@ -97,6 +101,7 @@
       "architect/well-architected-review"
     ],
     "data": [
+      "data/batch-data-cleanup-patterns",
       "data/bulk-api-and-large-data-loads",
       "data/bulk-api-patterns",
       "data/data-archival-strategies",
@@ -115,6 +120,7 @@
       "devops/bitbucket-pipelines-for-salesforce",
       "devops/change-set-deployment",
       "devops/devops-center-pipeline",
+      "devops/environment-strategy",
       "devops/github-actions-for-salesforce",
       "devops/gitlab-ci-for-salesforce",
       "devops/sandbox-refresh-and-templates",
@@ -141,6 +147,7 @@
     ],
     "integration": [
       "integration/change-data-capture-integration",
+      "integration/composite-api-patterns",
       "integration/graphql-api-patterns",
       "integration/named-credentials-setup",
       "integration/oauth-flows-and-connected-apps",
@@ -182,11 +189,13 @@
       "omnistudio/omniscript-design-patterns",
       "omnistudio/omnistudio-debugging",
       "omnistudio/omnistudio-deployment-datapacks",
+      "omnistudio/omnistudio-lwc-integration",
       "omnistudio/omnistudio-performance",
       "omnistudio/omnistudio-security"
     ],
     "security": [
       "security/api-security-and-rate-limiting",
+      "security/certificate-and-key-management",
       "security/event-monitoring",
       "security/field-audit-trail",
       "security/login-forensics",
@@ -212,11 +221,17 @@
     "CometD": [
       "integration/change-data-capture-integration"
     ],
+    "DeployCallback": [
+      "apex/apex-metadata-api"
+    ],
     "InboundEmailHandler": [
       "apex/apex-email-services"
     ],
     "IsPersonAccount": [
       "data/person-accounts"
+    ],
+    "JKS": [
+      "security/certificate-and-key-management"
     ],
     "ShowToastEvent": [
       "lwc/lwc-toast-and-notifications"
@@ -232,7 +247,8 @@
     ],
     "access-control": [
       "admin/custom-permissions",
-      "admin/permission-sets-vs-profiles"
+      "admin/permission-sets-vs-profiles",
+      "admin/queues-and-public-groups"
     ],
     "access-governance": [
       "admin/permission-set-architecture"
@@ -274,10 +290,14 @@
     "agent-actions": [
       "agentforce/agent-actions"
     ],
+    "agent-api": [
+      "agentforce/agent-channel-deployment"
+    ],
     "agent-boundaries": [
       "agentforce/agent-topic-design"
     ],
     "agent-channels": [
+      "agentforce/agent-channel-deployment",
       "agentforce/agentforce-agent-creation"
     ],
     "agent-creation": [
@@ -297,6 +317,7 @@
     ],
     "agentforce": [
       "agentforce/agent-actions",
+      "agentforce/agent-channel-deployment",
       "agentforce/agent-testing-and-evaluation",
       "agentforce/agent-topic-design",
       "agentforce/agentforce-agent-creation",
@@ -308,6 +329,9 @@
     ],
     "ai-scoring": [
       "agentforce/einstein-prediction-builder"
+    ],
+    "allOrNone": [
+      "integration/composite-api-patterns"
     ],
     "anonymous-apex": [
       "apex/debug-logs-and-developer-console"
@@ -326,6 +350,7 @@
       "flow/auto-launched-flow-patterns"
     ],
     "apex-metadata-api": [
+      "apex/apex-metadata-api",
       "apex/custom-metadata-in-apex"
     ],
     "apex-replay-debugger": [
@@ -381,6 +406,9 @@
       "architect/platform-selection-guidance",
       "architect/technical-debt-assessment",
       "architect/well-architected-review"
+    ],
+    "architecture": [
+      "architect/integration-framework-design"
     ],
     "architecture-decision": [
       "architect/multi-org-strategy",
@@ -489,7 +517,8 @@
       "apex/async-apex",
       "apex/batch-apex-patterns",
       "apex/custom-iterators-and-iterables",
-      "architect/limits-and-scalability-planning"
+      "architect/limits-and-scalability-planning",
+      "data/batch-data-cleanup-patterns"
     ],
     "batch-apex-boundary": [
       "flow/scheduled-flows"
@@ -512,6 +541,9 @@
     ],
     "branching": [
       "omnistudio/omniscript-design-patterns"
+    ],
+    "branching-strategy": [
+      "devops/environment-strategy"
     ],
     "buildercontext": [
       "flow/flow-custom-property-editors",
@@ -571,6 +603,9 @@
     "callout-auth": [
       "integration/named-credentials-setup"
     ],
+    "callout-framework": [
+      "architect/integration-framework-design"
+    ],
     "card-actions": [
       "omnistudio/flexcard-design-patterns"
     ],
@@ -579,10 +614,17 @@
     ],
     "case-management": [
       "admin/assignment-rules",
-      "admin/escalation-rules"
+      "admin/escalation-rules",
+      "admin/queues-and-public-groups"
     ],
     "cdc": [
       "apex/platform-events-apex"
+    ],
+    "certificate": [
+      "security/certificate-and-key-management"
+    ],
+    "certificate-rotation": [
+      "security/certificate-and-key-management"
     ],
     "change-data-capture": [
       "integration/change-data-capture-integration"
@@ -593,6 +635,9 @@
     "change-sets": [
       "admin/change-management-and-deployment",
       "devops/change-set-deployment"
+    ],
+    "channel-deployment": [
+      "agentforce/agent-channel-deployment"
     ],
     "ci-cd": [
       "devops/bitbucket-pipelines-for-salesforce",
@@ -647,6 +692,12 @@
     "composite": [
       "integration/rest-api-patterns"
     ],
+    "composite-api": [
+      "integration/composite-api-patterns"
+    ],
+    "composite-batch": [
+      "integration/composite-api-patterns"
+    ],
     "composite-index": [
       "data/external-data-and-big-objects"
     ],
@@ -678,7 +729,8 @@
     ],
     "connected-app": [
       "architect/multi-org-strategy",
-      "security/api-security-and-rate-limiting"
+      "security/api-security-and-rate-limiting",
+      "security/certificate-and-key-management"
     ],
     "connected-apps": [
       "admin/connected-apps-and-auth",
@@ -758,6 +810,9 @@
     "custom-baseline": [
       "security/security-health-check"
     ],
+    "custom-element": [
+      "omnistudio/omnistudio-lwc-integration"
+    ],
     "custom-events": [
       "lwc/component-communication"
     ],
@@ -766,6 +821,7 @@
     ],
     "custom-metadata": [
       "apex/custom-metadata-in-apex",
+      "architect/integration-framework-design",
       "architect/platform-selection-guidance"
     ],
     "custom-metadata-types": [
@@ -801,6 +857,9 @@
     ],
     "data-classification": [
       "data/data-quality-and-governance"
+    ],
+    "data-cleanup": [
+      "data/batch-data-cleanup-patterns"
     ],
     "data-cloud": [
       "agentforce/rag-patterns-in-salesforce"
@@ -923,6 +982,9 @@
     "delegated-administration": [
       "admin/delegated-administration"
     ],
+    "deletion": [
+      "data/batch-data-cleanup-patterns"
+    ],
     "dependency-injection": [
       "apex/apex-design-patterns"
     ],
@@ -957,6 +1019,7 @@
       "lwc/lwc-offline-and-mobile"
     ],
     "devops": [
+      "devops/environment-strategy",
       "devops/sandbox-refresh-and-templates",
       "devops/scratch-org-management",
       "devops/unlocked-package-development"
@@ -1040,17 +1103,27 @@
     "email-generation": [
       "agentforce/einstein-copilot-for-sales"
     ],
+    "embed": [
+      "omnistudio/omnistudio-lwc-integration"
+    ],
+    "embedded-service": [
+      "agentforce/agent-channel-deployment"
+    ],
     "encryption": [
       "security/platform-encryption"
     ],
     "enforcement-actions": [
       "security/transaction-security-policies"
     ],
+    "enqueueDeployment": [
+      "apex/apex-metadata-api"
+    ],
     "enterprise-wsdl": [
       "integration/soap-api-patterns"
     ],
     "environment-strategy": [
-      "admin/sandbox-strategy"
+      "admin/sandbox-strategy",
+      "devops/environment-strategy"
     ],
     "er-diagram": [
       "admin/data-model-documentation"
@@ -1060,6 +1133,9 @@
     ],
     "error-mapping": [
       "apex/exception-handling"
+    ],
+    "error-propagation": [
+      "architect/integration-framework-design"
     ],
     "escalation": [
       "admin/approval-processes"
@@ -1099,6 +1175,7 @@
       "apex/exception-handling"
     ],
     "experience-cloud": [
+      "agentforce/agent-channel-deployment",
       "flow/flow-for-experience-cloud",
       "lwc/navigation-and-routing"
     ],
@@ -1135,7 +1212,8 @@
       "flow/flow-for-experience-cloud"
     ],
     "factory-pattern": [
-      "apex/apex-design-patterns"
+      "apex/apex-design-patterns",
+      "architect/integration-framework-design"
     ],
     "failure-response": [
       "omnistudio/integration-procedures"
@@ -1363,6 +1441,9 @@
     "handoff-rules": [
       "agentforce/agent-topic-design"
     ],
+    "hard-delete": [
+      "data/batch-data-cleanup-patterns"
+    ],
     "health-cloud": [
       "data/person-accounts"
     ],
@@ -1450,6 +1531,10 @@
       "flow/flow-custom-property-editors",
       "lwc/custom-property-editor-for-flow"
     ],
+    "integration": [
+      "architect/integration-framework-design",
+      "integration/composite-api-patterns"
+    ],
     "integration-auth": [
       "admin/connected-apps-and-auth"
     ],
@@ -1458,7 +1543,8 @@
     ],
     "integration-procedure": [
       "omnistudio/integration-procedures",
-      "omnistudio/omnistudio-debugging"
+      "omnistudio/omnistudio-debugging",
+      "omnistudio/omnistudio-lwc-integration"
     ],
     "integration-procedures": [
       "omnistudio/omnistudio-performance"
@@ -1492,6 +1578,7 @@
       "security/api-security-and-rate-limiting"
     ],
     "isv": [
+      "apex/apex-metadata-api",
       "devops/second-generation-managed-packages"
     ],
     "iterable": [
@@ -1518,6 +1605,9 @@
     "junction-object": [
       "data/data-model-design-patterns"
     ],
+    "jwt": [
+      "security/certificate-and-key-management"
+    ],
     "jwt-bearer": [
       "integration/oauth-flows-and-connected-apps"
     ],
@@ -1534,6 +1624,9 @@
     ],
     "keyboard-navigation": [
       "lwc/lwc-accessibility"
+    ],
+    "keystore": [
+      "security/certificate-and-key-management"
     ],
     "large-data-volumes": [
       "admin/data-skew-and-sharing-performance",
@@ -1553,7 +1646,8 @@
       "omnistudio/omnistudio-performance"
     ],
     "lead-management": [
-      "admin/assignment-rules"
+      "admin/assignment-rules",
+      "admin/queues-and-public-groups"
     ],
     "least-privilege": [
       "admin/permission-set-architecture",
@@ -1663,7 +1757,8 @@
       "lwc/lifecycle-hooks",
       "lwc/lwc-base-component-recipes",
       "lwc/lwc-imperative-apex",
-      "lwc/lwc-toast-and-notifications"
+      "lwc/lwc-toast-and-notifications",
+      "omnistudio/omnistudio-lwc-integration"
     ],
     "lwc-accessibility": [
       "lwc/lwc-accessibility"
@@ -1695,11 +1790,16 @@
     "lwc-testing": [
       "lwc/lwc-testing"
     ],
+    "mTLS": [
+      "security/certificate-and-key-management"
+    ],
     "maintainability": [
       "flow/subflows-and-reusability"
     ],
     "managed-package": [
-      "devops/second-generation-managed-packages"
+      "apex/apex-metadata-api",
+      "devops/second-generation-managed-packages",
+      "omnistudio/omnistudio-lwc-integration"
     ],
     "masking": [
       "admin/sandbox-strategy"
@@ -1742,6 +1842,9 @@
     "metadata-deployment": [
       "integration/named-credentials-setup"
     ],
+    "metadata-namespace": [
+      "apex/apex-metadata-api"
+    ],
     "mfa": [
       "admin/org-setup-and-configuration",
       "security/transaction-security-policies"
@@ -1775,6 +1878,9 @@
     "model-builder": [
       "agentforce/model-builder-and-byollm"
     ],
+    "multi-channel": [
+      "agentforce/agent-channel-deployment"
+    ],
     "multi-currency": [
       "data/multi-currency-and-advanced-currency-management"
     ],
@@ -1786,6 +1892,9 @@
     ],
     "muting": [
       "security/permission-set-groups-and-muting"
+    ],
+    "mutual-tls": [
+      "security/certificate-and-key-management"
     ],
     "my-domain": [
       "admin/org-setup-and-configuration"
@@ -1801,6 +1910,9 @@
     ],
     "naming-conventions": [
       "flow/flow-governance"
+    ],
+    "native-omnistudio": [
+      "omnistudio/omnistudio-lwc-integration"
     ],
     "navigation": [
       "admin/app-and-tab-configuration",
@@ -1855,7 +1967,8 @@
     ],
     "omniscript": [
       "omnistudio/omniscript-design-patterns",
-      "omnistudio/omnistudio-debugging"
+      "omnistudio/omnistudio-debugging",
+      "omnistudio/omnistudio-lwc-integration"
     ],
     "omnistudio": [
       "omnistudio/calculation-procedures",
@@ -1864,7 +1977,8 @@
       "omnistudio/integration-procedures",
       "omnistudio/omniscript-design-patterns",
       "omnistudio/omnistudio-debugging",
-      "omnistudio/omnistudio-deployment-datapacks"
+      "omnistudio/omnistudio-deployment-datapacks",
+      "omnistudio/omnistudio-lwc-integration"
     ],
     "omnistudio-data-mapping": [
       "omnistudio/dataraptor-patterns"
@@ -1912,7 +2026,8 @@
       "architect/multi-org-strategy"
     ],
     "org-topology": [
-      "architect/multi-org-strategy"
+      "architect/multi-org-strategy",
+      "devops/environment-strategy"
     ],
     "org-wide-defaults": [
       "admin/object-creation-and-design"
@@ -2061,6 +2176,9 @@
       "admin/user-management",
       "security/permission-set-groups-and-muting"
     ],
+    "programmatic-metadata": [
+      "apex/apex-metadata-api"
+    ],
     "programmatic-sharing": [
       "apex/apex-managed-sharing"
     ],
@@ -2080,6 +2198,9 @@
       "integration/change-data-capture-integration",
       "integration/platform-events-integration"
     ],
+    "public-groups": [
+      "admin/queues-and-public-groups"
+    ],
     "pushtopic": [
       "integration/streaming-api-and-pushtopic"
     ],
@@ -2095,7 +2216,8 @@
       "apex/governor-limits"
     ],
     "queues": [
-      "admin/assignment-rules"
+      "admin/assignment-rules",
+      "admin/queues-and-public-groups"
     ],
     "quick-actions": [
       "admin/global-actions-and-quick-actions"
@@ -2144,6 +2266,12 @@
     ],
     "recursion-guard": [
       "apex/recursive-trigger-prevention"
+    ],
+    "recycle-bin": [
+      "data/batch-data-cleanup-patterns"
+    ],
+    "referenceId": [
+      "integration/composite-api-patterns"
     ],
     "refresh": [
       "admin/sandbox-strategy"
@@ -2201,9 +2329,13 @@
     "resource-url": [
       "lwc/static-resources-in-lwc"
     ],
+    "response-logging": [
+      "architect/integration-framework-design"
+    ],
     "rest-api": [
       "data/bulk-api-patterns",
       "flow/auto-launched-flow-patterns",
+      "integration/composite-api-patterns",
       "integration/rest-api-patterns"
     ],
     "rest-integration": [
@@ -2214,6 +2346,9 @@
     ],
     "restresource": [
       "apex/apex-rest-services"
+    ],
+    "retention-policy": [
+      "data/batch-data-cleanup-patterns"
     ],
     "retrieve": [
       "apex/metadata-api-and-package-xml"
@@ -2234,7 +2369,8 @@
     ],
     "routing": [
       "admin/approval-processes",
-      "admin/assignment-rules"
+      "admin/assignment-rules",
+      "admin/queues-and-public-groups"
     ],
     "row-actions": [
       "lwc/lwc-data-table"
@@ -2277,7 +2413,8 @@
       "devops/change-set-deployment"
     ],
     "sandboxes": [
-      "admin/sandbox-strategy"
+      "admin/sandbox-strategy",
+      "devops/environment-strategy"
     ],
     "sandboxpostcopy": [
       "devops/sandbox-refresh-and-templates"
@@ -2302,6 +2439,9 @@
     "scheduled-flows": [
       "flow/scheduled-flows"
     ],
+    "scheduler": [
+      "data/batch-data-cleanup-patterns"
+    ],
     "schema-describe": [
       "apex/dynamic-apex"
     ],
@@ -2311,6 +2451,9 @@
     "scratch-org": [
       "apex/sf-cli-and-sfdx-essentials",
       "devops/scratch-org-management"
+    ],
+    "scratch-orgs": [
+      "devops/environment-strategy"
     ],
     "screen-components": [
       "flow/screen-flows"
@@ -2350,6 +2493,7 @@
       "admin/delegated-administration",
       "apex/soql-security",
       "architect/security-architecture-review",
+      "security/certificate-and-key-management",
       "security/platform-encryption"
     ],
     "security-audit": [
@@ -2365,6 +2509,9 @@
     "seealldata": [
       "apex/test-class-standards"
     ],
+    "seed-data": [
+      "omnistudio/omnistudio-lwc-integration"
+    ],
     "selector-pattern": [
       "apex/apex-design-patterns"
     ],
@@ -2374,6 +2521,9 @@
     "service-cloud": [
       "admin/escalation-rules",
       "agentforce/einstein-copilot-for-service"
+    ],
+    "service-interface": [
+      "architect/integration-framework-design"
     ],
     "service-layer": [
       "apex/apex-design-patterns"
@@ -2412,6 +2562,7 @@
       "apex/apex-managed-sharing"
     ],
     "sharing": [
+      "admin/queues-and-public-groups",
       "admin/sharing-and-visibility"
     ],
     "sharing-model": [
@@ -2437,8 +2588,17 @@
     "skinny-tables": [
       "data/data-model-design-patterns"
     ],
+    "slack-deployment": [
+      "agentforce/agent-channel-deployment"
+    ],
     "soap-api": [
       "integration/soap-api-patterns"
+    ],
+    "sobject-collection": [
+      "integration/composite-api-patterns"
+    ],
+    "sobject-tree": [
+      "integration/composite-api-patterns"
     ],
     "sobjetype": [
       "apex/dynamic-apex"
@@ -2489,6 +2649,9 @@
     "storage-limits": [
       "architect/limits-and-scalability-planning"
     ],
+    "storage-optimization": [
+      "data/batch-data-cleanup-patterns"
+    ],
     "streaming-api": [
       "integration/streaming-api-and-pushtopic"
     ],
@@ -2503,6 +2666,9 @@
     ],
     "subflows": [
       "flow/subflows-and-reusability"
+    ],
+    "subrequest": [
+      "integration/composite-api-patterns"
     ],
     "subscriptions": [
       "admin/reports-and-dashboards"

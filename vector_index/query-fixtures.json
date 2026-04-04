@@ -1109,6 +1109,60 @@
       "domain": "admin",
       "expected_skill": "admin/path-and-guidance",
       "top_k": 3
+    },
+    {
+      "query": "how do I decide between scratch orgs and sandboxes for my environment strategy",
+      "domain": "devops",
+      "expected_skill": "devops/environment-strategy",
+      "top_k": 3
+    },
+    {
+      "query": "how to create a custom field programmatically from Apex code",
+      "domain": "apex",
+      "expected_skill": "apex/apex-metadata-api",
+      "top_k": 3
+    },
+    {
+      "query": "how to set up a case queue for my support team in Salesforce",
+      "domain": "admin",
+      "expected_skill": "admin/queues-and-public-groups",
+      "top_k": 3
+    },
+    {
+      "query": "how to create parent and child records in one Salesforce API call",
+      "domain": "integration",
+      "expected_skill": "integration/composite-api-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "how do I rotate an expiring certificate in Salesforce",
+      "domain": "security",
+      "expected_skill": "security/certificate-and-key-management",
+      "top_k": 3
+    },
+    {
+      "query": "how to design a reusable integration framework for Salesforce Apex callouts",
+      "domain": "architect",
+      "expected_skill": "architect/integration-framework-design",
+      "top_k": 3
+    },
+    {
+      "query": "how do I deploy an Agentforce agent to my website",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/agent-channel-deployment",
+      "top_k": 3
+    },
+    {
+      "query": "how to embed OmniScript in a Lightning Web Component",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/omnistudio-lwc-integration",
+      "top_k": 3
+    },
+    {
+      "query": "how to automatically delete old records in Salesforce on a schedule",
+      "domain": "data",
+      "expected_skill": "data/batch-data-cleanup-patterns",
+      "top_k": 3
     }
   ]
 }
