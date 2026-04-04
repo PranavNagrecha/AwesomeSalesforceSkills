@@ -4,7 +4,7 @@ The universal Salesforce knowledge layer for AI coding assistants.
 
 Drop this into Claude Code, Cursor, Aider, Windsurf, or any AI tool and get role-accurate, source-grounded Salesforce guidance — for every role, every cloud, every task.
 
-**107 skills built. 500+ planned across 5 roles × 16 clouds.**
+**113 skills built. 500+ planned across 5 roles × 16 clouds.**
 
 ---
 
@@ -102,13 +102,13 @@ Skills are plain markdown. They work in any AI tool that can read a file.
 | Apex | 23 — trigger framework, batch, async, security patterns, callouts, mocking, platform cache, SOQL fundamentals, sf CLI and SFDX essentials, Metadata API and package.xml, debug logs and Developer Console... |
 | LWC | 14 — wire service, component communication, testing, accessibility, offline, performance... |
 | Flow | 11 — record-triggered, screen flows, fault handling, bulkification, subflows, governance... |
-| OmniStudio | 4 — OmniScript design, DataRaptor, Integration Procedures, security |
-| Agentforce | 2 — agent actions, topic design |
-| Security | 2 — org hardening, permission set groups |
-| Integration | 3 — GraphQL, OAuth flows, Salesforce Connect |
-| Data | 9 — multi-currency, SOSL, rollup alternatives, data model design patterns, data migration planning, data quality and governance, bulk API and large data loads, data archival strategies, SOQL query optimization |
+| OmniStudio | 5 — OmniScript design, DataRaptor, Integration Procedures, security, FlexCard design patterns |
+| Agentforce | 3 — agent actions, topic design, Einstein Trust Layer |
+| Security | 3 — org hardening, permission set groups, Shield Platform Encryption |
+| Integration | 4 — GraphQL, OAuth flows, Salesforce Connect, REST API patterns |
+| Data | 10 — multi-currency, SOSL, rollup alternatives, data model design patterns, data migration planning, data quality and governance, bulk API and large data loads, data archival strategies, SOQL query optimization, Bulk API 2.0 patterns |
 | Architect | 6 — solution design patterns, limits and scalability planning, multi-org strategy, technical debt assessment, well-architected review, platform selection guidance |
-| DevOps | 0 — building now |
+| DevOps | 1 — scratch org management |
 
 **See the full catalog:** [docs/SKILLS.md](./docs/SKILLS.md)
 

@@ -38,7 +38,8 @@
     ],
     "agentforce": [
       "agentforce/agent-actions",
-      "agentforce/agent-topic-design"
+      "agentforce/agent-topic-design",
+      "agentforce/einstein-trust-layer"
     ],
     "apex": [
       "apex/apex-cpu-and-heap-optimization",
@@ -75,6 +76,7 @@
     ],
     "data": [
       "data/bulk-api-and-large-data-loads",
+      "data/bulk-api-patterns",
       "data/data-archival-strategies",
       "data/data-migration-planning",
       "data/data-model-design-patterns",
@@ -83,6 +85,9 @@
       "data/roll-up-summary-alternatives",
       "data/soql-query-optimization",
       "data/sosl-search-patterns"
+    ],
+    "devops": [
+      "devops/scratch-org-management"
     ],
     "flow": [
       "flow/fault-handling",
@@ -100,6 +105,7 @@
     "integration": [
       "integration/graphql-api-patterns",
       "integration/oauth-flows-and-connected-apps",
+      "integration/rest-api-patterns",
       "integration/salesforce-connect-external-objects"
     ],
     "lwc": [
@@ -120,13 +126,15 @@
     ],
     "omnistudio": [
       "omnistudio/dataraptor-patterns",
+      "omnistudio/flexcard-design-patterns",
       "omnistudio/integration-procedures",
       "omnistudio/omniscript-design-patterns",
       "omnistudio/omnistudio-security"
     ],
     "security": [
       "security/org-hardening-and-baseline-config",
-      "security/permission-set-groups-and-muting"
+      "security/permission-set-groups-and-muting",
+      "security/platform-encryption"
     ]
   },
   "skills_by_tag": {
@@ -205,6 +213,9 @@
     "api-design": [
       "integration/graphql-api-patterns"
     ],
+    "api-limits": [
+      "integration/rest-api-patterns"
+    ],
     "api-properties": [
       "lwc/component-communication"
     ],
@@ -242,7 +253,8 @@
       "admin/assignment-rules"
     ],
     "async": [
-      "data/bulk-api-and-large-data-loads"
+      "data/bulk-api-and-large-data-loads",
+      "data/bulk-api-patterns"
     ],
     "async-apex": [
       "apex/async-apex",
@@ -257,6 +269,9 @@
     ],
     "asynchronous-process": [
       "flow/orchestration-flows"
+    ],
+    "audit-trail": [
+      "agentforce/einstein-trust-layer"
     ],
     "aurahandledexception": [
       "apex/exception-handling"
@@ -310,7 +325,11 @@
     "bulk-api": [
       "admin/data-import-and-management",
       "data/bulk-api-and-large-data-loads",
+      "data/bulk-api-patterns",
       "data/data-migration-planning"
+    ],
+    "bulk-api-2": [
+      "data/bulk-api-patterns"
     ],
     "bulk-safe": [
       "apex/invocable-methods"
@@ -338,6 +357,9 @@
     "cache-session": [
       "apex/platform-cache"
     ],
+    "card-actions": [
+      "omnistudio/flexcard-design-patterns"
+    ],
     "case-management": [
       "admin/assignment-rules",
       "admin/escalation-rules"
@@ -350,6 +372,9 @@
     ],
     "change-sets": [
       "admin/change-management-and-deployment"
+    ],
+    "ci-cd": [
+      "devops/scratch-org-management"
     ],
     "clickjack": [
       "security/org-hardening-and-baseline-config"
@@ -369,8 +394,17 @@
     "compile-size": [
       "admin/formula-fields"
     ],
+    "compliance": [
+      "security/platform-encryption"
+    ],
     "component-communication": [
       "lwc/component-communication"
+    ],
+    "composite": [
+      "integration/rest-api-patterns"
+    ],
+    "conditional-visibility": [
+      "omnistudio/flexcard-design-patterns"
     ],
     "configuration": [
       "admin/custom-metadata-types",
@@ -431,6 +465,9 @@
     "csp-trusted-sites": [
       "admin/org-setup-and-configuration"
     ],
+    "csv": [
+      "data/bulk-api-patterns"
+    ],
     "currencyisocode": [
       "data/multi-currency-and-advanced-currency-management"
     ],
@@ -472,6 +509,9 @@
     "data-access": [
       "apex/soql-fundamentals"
     ],
+    "data-at-rest": [
+      "security/platform-encryption"
+    ],
     "data-classification": [
       "data/data-quality-and-governance"
     ],
@@ -485,7 +525,11 @@
       "data/data-migration-planning"
     ],
     "data-loading": [
-      "data/bulk-api-and-large-data-loads"
+      "data/bulk-api-and-large-data-loads",
+      "data/bulk-api-patterns"
+    ],
+    "data-masking": [
+      "agentforce/einstein-trust-layer"
     ],
     "data-migration": [
       "data/data-migration-planning"
@@ -507,6 +551,9 @@
     ],
     "data-skew": [
       "admin/data-skew-and-sharing-performance"
+    ],
+    "data-sources": [
+      "omnistudio/flexcard-design-patterns"
     ],
     "data-visibility": [
       "admin/reports-and-dashboards"
@@ -574,11 +621,17 @@
     "destructive-changes": [
       "apex/metadata-api-and-package-xml"
     ],
+    "dev-hub": [
+      "devops/scratch-org-management"
+    ],
     "developer-console": [
       "apex/debug-logs-and-developer-console"
     ],
     "device-apis": [
       "lwc/lwc-offline-and-mobile"
+    ],
+    "devops": [
+      "devops/scratch-org-management"
     ],
     "dlrs": [
       "data/roll-up-summary-alternatives"
@@ -604,8 +657,14 @@
     "dynamic-forms": [
       "admin/record-types-and-page-layouts"
     ],
+    "einstein-trust-layer": [
+      "agentforce/einstein-trust-layer"
+    ],
     "email-alerts": [
       "admin/email-templates-and-alerts"
+    ],
+    "encryption": [
+      "security/platform-encryption"
     ],
     "environment-strategy": [
       "admin/sandbox-strategy"
@@ -689,6 +748,9 @@
     "find-clause": [
       "data/sosl-search-patterns"
     ],
+    "flexcard": [
+      "omnistudio/flexcard-design-patterns"
+    ],
     "flow": [
       "admin/flow-for-admins",
       "architect/solution-design-patterns"
@@ -739,6 +801,9 @@
     "fls": [
       "apex/soql-security"
     ],
+    "flyout": [
+      "omnistudio/flexcard-design-patterns"
+    ],
     "focus-management": [
       "lwc/lwc-accessibility",
       "lwc/lwc-modal-and-overlay"
@@ -757,6 +822,9 @@
     ],
     "gdpr": [
       "data/data-quality-and-governance"
+    ],
+    "generative-ai-security": [
+      "agentforce/einstein-trust-layer"
     ],
     "global-actions": [
       "admin/global-actions-and-quick-actions"
@@ -890,6 +958,9 @@
     ],
     "jwt-bearer": [
       "integration/oauth-flows-and-connected-apps"
+    ],
+    "key-management": [
+      "security/platform-encryption"
     ],
     "keyboard-navigation": [
       "lwc/lwc-accessibility"
@@ -1077,7 +1148,8 @@
     ],
     "oauth": [
       "admin/connected-apps-and-auth",
-      "integration/oauth-flows-and-connected-apps"
+      "integration/oauth-flows-and-connected-apps",
+      "integration/rest-api-patterns"
     ],
     "object-design": [
       "admin/object-creation-and-design"
@@ -1098,6 +1170,7 @@
       "omnistudio/omniscript-design-patterns"
     ],
     "omnistudio": [
+      "omnistudio/flexcard-design-patterns",
       "omnistudio/integration-procedures",
       "omnistudio/omniscript-design-patterns"
     ],
@@ -1124,6 +1197,9 @@
     ],
     "org-setup": [
       "admin/org-setup-and-configuration"
+    ],
+    "org-shape": [
+      "devops/scratch-org-management"
     ],
     "org-strategy": [
       "architect/multi-org-strategy"
@@ -1166,7 +1242,8 @@
       "lwc/navigation-and-routing"
     ],
     "pagination": [
-      "integration/graphql-api-patterns"
+      "integration/graphql-api-patterns",
+      "integration/rest-api-patterns"
     ],
     "parent-child-summary": [
       "data/roll-up-summary-alternatives"
@@ -1320,6 +1397,10 @@
     "resource-url": [
       "lwc/static-resources-in-lwc"
     ],
+    "rest-api": [
+      "data/bulk-api-patterns",
+      "integration/rest-api-patterns"
+    ],
     "restcontext": [
       "apex/apex-rest-services"
     ],
@@ -1379,7 +1460,8 @@
       "admin/data-model-documentation"
     ],
     "scratch-org": [
-      "apex/sf-cli-and-sfdx-essentials"
+      "apex/sf-cli-and-sfdx-essentials",
+      "devops/scratch-org-management"
     ],
     "screen-components": [
       "flow/screen-flows"
@@ -1407,7 +1489,8 @@
       "omnistudio/omnistudio-security"
     ],
     "security": [
-      "apex/soql-security"
+      "apex/soql-security",
+      "security/platform-encryption"
     ],
     "security-health-check": [
       "security/org-hardening-and-baseline-config"
@@ -1437,7 +1520,8 @@
       "apex/sf-cli-and-sfdx-essentials"
     ],
     "sfdx": [
-      "apex/sf-cli-and-sfdx-essentials"
+      "apex/sf-cli-and-sfdx-essentials",
+      "devops/scratch-org-management"
     ],
     "sfdx-lwc-jest": [
       "lwc/lwc-testing"
@@ -1459,7 +1543,8 @@
       "admin/sharing-and-visibility"
     ],
     "shield": [
-      "data/data-quality-and-governance"
+      "data/data-quality-and-governance",
+      "security/platform-encryption"
     ],
     "skinny-tables": [
       "data/data-model-design-patterns"
@@ -1470,7 +1555,8 @@
     "soql": [
       "apex/soql-fundamentals",
       "apex/soql-security",
-      "data/soql-query-optimization"
+      "data/soql-query-optimization",
+      "integration/rest-api-patterns"
     ],
     "soql-selectivity": [
       "architect/limits-and-scalability-planning"
@@ -1566,6 +1652,9 @@
     "topic-selector": [
       "agentforce/agent-topic-design"
     ],
+    "toxicity-detection": [
+      "agentforce/einstein-trust-layer"
+    ],
     "trace-flags": [
       "apex/debug-logs-and-developer-console"
     ],
@@ -1660,6 +1749,9 @@
     ],
     "xss": [
       "lwc/lwc-security"
+    ],
+    "zero-data-retention": [
+      "agentforce/einstein-trust-layer"
     ]
   },
   "sources": [

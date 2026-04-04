@@ -45,7 +45,7 @@ STATUS KEY:
 | Phase | Cloud / Domain | Total Cells | Skills Planned | Skills Done | TODO |
 |-------|----------------|-------------|----------------|-------------|------|
 | 0 | Domain Sweeps (Cross-Cloud) | — | 99 | 0 | 99 |
-| 1 | Core Platform | 5 roles | 262 | 30 | 232 |
+| 1 | Core Platform | 5 roles | 262 | 36 | 226 |
 | 2 | Sales Cloud | 5 roles | 29 | 0 | 29 |
 | 3 | Service Cloud | 5 roles | 29 | 0 | 29 |
 | 4 | Experience Cloud | 5 roles | 26 | 0 | 26 |
@@ -92,7 +92,7 @@ These skills apply across all clouds. Build before cloud-specific phases.
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| IN_PROGRESS | scratch-org-management | Creating, configuring, and managing scratch orgs: definition files, limits, expiration, shape snapshots. NOT for SFDX CLI basics (use sf-cli-and-sfdx-essentials). | Agent 2026-04-04T00:00:00Z |
+| DONE | scratch-org-management | Creating, configuring, and managing scratch orgs: definition files, limits, expiration, shape snapshots. NOT for SFDX CLI basics (use sf-cli-and-sfdx-essentials). | Agent 2026-04-04T00:00:00Z |
 | TODO | sandbox-refresh-and-templates | Sandbox refresh cycles, sandbox templates, post-refresh automation (SandboxPostCopy interface), data handling during refresh. NOT for sandbox type selection (use sandbox-strategy). | |
 | TODO | change-set-deployment | Creating, uploading, and deploying change sets: component dependencies, inbound/outbound limitations, troubleshooting. NOT for SFDX-based deployments. | |
 | TODO | unlocked-package-development | Designing, creating, and versioning unlocked packages: package dependencies, namespace management, installation. NOT for 2GP managed packages. | |
@@ -134,7 +134,7 @@ These skills apply across all clouds. Build before cloud-specific phases.
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| IN_PROGRESS | platform-encryption | Salesforce Shield Platform Encryption: key management, deterministic vs probabilistic, field-level encryption, encrypted search. NOT for TLS/transport encryption. | Agent 2026-04-04T00:00:00Z |
+| DONE | platform-encryption | Salesforce Shield Platform Encryption: key management, deterministic vs probabilistic, field-level encryption, encrypted search. NOT for TLS/transport encryption. | Agent 2026-04-04T00:00:00Z |
 | TODO | event-monitoring | Shield Event Monitoring: event log types, downloading logs, real-time event monitoring, threat detection policies. NOT for debug logs (use debug-logs-and-developer-console). | |
 | TODO | field-audit-trail | Salesforce Shield Field Audit Trail: configuration, retention policies, querying archived field data, compliance requirements. NOT for field history tracking (use field-history-tracking). | |
 | TODO | security-health-check | Running and interpreting Security Health Check scores: remediating findings, custom baselines, periodic review. NOT for org hardening implementation. | |
@@ -161,7 +161,7 @@ These skills apply across all clouds. Build before cloud-specific phases.
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
 | TODO | agentforce-agent-creation | Creating Agentforce agents end-to-end: agent definition, channel assignment, instructions, deployment, lifecycle. NOT for topic design (use agent-topic-design). | |
-| IN_PROGRESS | einstein-trust-layer | Trust Layer configuration: data masking, zero data retention, toxicity detection, audit trail, grounding controls. NOT for agent action development. | Agent 2026-04-04T00:00:00Z |
+| DONE | einstein-trust-layer | Trust Layer configuration: data masking, zero data retention, toxicity detection, audit trail, grounding controls. NOT for agent action development. | Agent 2026-04-04T00:00:00Z |
 | TODO | prompt-builder-templates | Prompt templates in Prompt Builder: flex templates, field merge, grounding with flows, testing prompts, template sharing. NOT for agent topic instructions. | |
 | TODO | einstein-copilot-for-sales | Sales-specific AI: opportunity scoring, activity capture AI, email generation, pipeline inspection AI insights. NOT for core Agentforce setup. | |
 | TODO | einstein-copilot-for-service | Service-specific AI: case classification, article recommendations, reply suggestions, work summaries, auto-routing. NOT for core Agentforce setup. | |
@@ -182,7 +182,7 @@ These skills apply across all clouds. Build before cloud-specific phases.
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| IN_PROGRESS | flexcard-design-patterns | FlexCard creation: data sources, actions, templates, state management, flyout configuration, conditional visibility. NOT for OmniScript design (use omniscript-design-patterns). | Agent 2026-04-04T00:00:00Z |
+| DONE | flexcard-design-patterns | FlexCard creation: data sources, actions, templates, state management, flyout configuration, conditional visibility. NOT for OmniScript design (use omniscript-design-patterns). | Agent 2026-04-04T00:00:00Z |
 | TODO | calculation-procedures | Calculation Procedure and Calculation Matrix setup: step types, matrix versioning, lookup tables, pricing calculations. NOT for DataRaptor transforms. | |
 | TODO | omnistudio-debugging | OmniStudio debugging: console debugging, previewing, breakpoints, DataRaptor testing, error tracing, log analysis. NOT for Apex debugging. | |
 | TODO | omnistudio-deployment-datapacks | DataPack export, import, version control, migration between orgs, CI/CD for OmniStudio components. NOT for SFDX deployment. | |
@@ -203,12 +203,12 @@ These skills apply across all clouds. Build before cloud-specific phases.
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| IN_PROGRESS | rest-api-patterns | Salesforce REST API CRUD operations: query endpoint, composite resources, versioning, error handling, pagination. NOT for GraphQL API (use graphql-api-patterns). | Agent 2026-04-04T00:00:00Z |
+| DONE | rest-api-patterns | Salesforce REST API CRUD operations: query endpoint, composite resources, versioning, error handling, pagination. NOT for GraphQL API (use graphql-api-patterns). | Agent 2026-04-04T00:00:00Z |
 | TODO | soap-api-patterns | SOAP API usage: enterprise vs partner WSDL, when to use SOAP over REST, login and session management. NOT for REST API. | |
 | TODO | streaming-api-and-pushtopic | Streaming API setup: PushTopic events, Generic Streaming, CometD client setup, replay, channel limits. NOT for Platform Events (use platform-events-apex). | |
 | TODO | platform-events-integration | Platform Events for integration: publish from external systems, subscribe externally, replay ID handling, high-volume events. NOT for Apex-only event patterns (use platform-events-apex). | |
 | TODO | change-data-capture-integration | CDC setup for integration: change event channels, external subscription, replay, entity selection, subscriber management. NOT for Apex CDC triggers. | |
-| IN_PROGRESS | bulk-api-patterns | Bulk API 2.0 job lifecycle: serial vs parallel, ingest and query jobs, monitoring, failed records, large data volumes. NOT for Data Loader UI. | Agent 2026-04-04T00:00:00Z |
+| DONE | bulk-api-patterns | Bulk API 2.0 job lifecycle: serial vs parallel, ingest and query jobs, monitoring, failed records, large data volumes. NOT for Data Loader UI. | Agent 2026-04-04T00:00:00Z |
 | TODO | composite-api-patterns | Composite API requests: sObject Tree, batch operations, subrequest limits, dependency management. NOT for single REST API calls. | |
 | TODO | outbound-messages-and-callbacks | Workflow outbound messages: SOAP endpoint requirements, retry behavior, acknowledgment, monitoring delivery. NOT for Platform Events. | |
 | TODO | external-services-openapi | External Services registration: OpenAPI spec import, invocable actions in Flow, parameter mapping, error handling. NOT for Apex callouts. | |

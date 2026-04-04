@@ -671,6 +671,42 @@
       "domain": "architect",
       "expected_skill": "architect/platform-selection-guidance",
       "top_k": 3
+    },
+    {
+      "query": "how do I create a scratch org from a definition file with the right edition",
+      "domain": "devops",
+      "expected_skill": "devops/scratch-org-management",
+      "top_k": 3
+    },
+    {
+      "query": "how to encrypt sensitive PII fields at rest in Salesforce Shield",
+      "domain": "security",
+      "expected_skill": "security/platform-encryption",
+      "top_k": 3
+    },
+    {
+      "query": "how does Einstein Trust Layer data masking and zero retention work",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/einstein-trust-layer",
+      "top_k": 3
+    },
+    {
+      "query": "how do I create a FlexCard with data source and conditional visibility",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/flexcard-design-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "how to use Salesforce REST API composite to create related records in one call",
+      "domain": "integration",
+      "expected_skill": "integration/rest-api-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "how to load millions of records using Bulk API 2.0 ingest job",
+      "domain": "data",
+      "expected_skill": "data/bulk-api-patterns",
+      "top_k": 3
     }
   ]
 }
