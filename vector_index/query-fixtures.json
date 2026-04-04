@@ -887,6 +887,66 @@
       "domain": "flow",
       "expected_skill": "flow/flow-debugging",
       "top_k": 3
+    },
+    {
+      "query": "github actions salesforce CI pipeline",
+      "domain": "devops",
+      "expected_skill": "devops/github-actions-for-salesforce",
+      "top_k": 3
+    },
+    {
+      "query": "trusted IP ranges CSP salesforce login",
+      "domain": "security",
+      "expected_skill": "security/network-security-and-trusted-ips",
+      "top_k": 3
+    },
+    {
+      "query": "model builder bring your own LLM salesforce",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/model-builder-and-byollm",
+      "top_k": 3
+    },
+    {
+      "query": "omnistudio datapack export import",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/omnistudio-deployment-datapacks",
+      "top_k": 3
+    },
+    {
+      "query": "streaming API PushTopic salesforce",
+      "domain": "integration",
+      "expected_skill": "integration/streaming-api-and-pushtopic",
+      "top_k": 3
+    },
+    {
+      "query": "delegated admin group manage users",
+      "domain": "admin",
+      "expected_skill": "admin/delegated-administration",
+      "top_k": 3
+    },
+    {
+      "query": "continuation callout long running apex",
+      "domain": "apex",
+      "expected_skill": "apex/continuation-callouts",
+      "top_k": 3
+    },
+    {
+      "query": "lightning message service message channel",
+      "domain": "lwc",
+      "expected_skill": "lwc/message-channel-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "auto launched flow invoke from apex",
+      "domain": "flow",
+      "expected_skill": "flow/auto-launched-flow-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "field history tracking audit trail salesforce",
+      "domain": "data",
+      "expected_skill": "data/field-history-tracking",
+      "top_k": 3
     }
   ]
 }

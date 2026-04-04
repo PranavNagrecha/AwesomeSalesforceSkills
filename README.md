@@ -4,7 +4,7 @@ The universal Salesforce knowledge layer for AI coding assistants.
 
 Drop this into Claude Code, Cursor, Aider, Windsurf, or any AI tool and get role-accurate, source-grounded Salesforce guidance — for every role, every cloud, every task.
 
-**143 skills built. 500+ planned across 5 roles × 16 clouds.**
+**153 skills built. 500+ planned across 5 roles × 16 clouds.**
 
 ---
 
@@ -98,17 +98,17 @@ Skills are plain markdown. They work in any AI tool that can read a file.
 
 | Domain | Skills |
 |--------|--------|
-| Admin | 35 — custom fields, objects, picklists, users, org setup, page layouts, permission sets, sharing, validation rules, flows, reports, data skew, requirements gathering, data model documentation, UAT and acceptance criteria, change management and training, enterprise territory management, custom permissions... |
-| Apex | 27 — trigger framework, batch, async, security patterns, callouts, mocking, platform cache, SOQL fundamentals, sf CLI and SFDX essentials, Metadata API and package.xml, debug logs and Developer Console, apex managed sharing, scheduled jobs, email services... |
-| LWC | 18 — wire service, component communication, testing, accessibility, offline, performance, toast and notifications, dynamic components, imperative Apex... |
-| Flow | 12 — record-triggered, screen flows, fault handling, bulkification, subflows, governance, debugging... |
-| OmniStudio | 7 — OmniScript design, DataRaptor, Integration Procedures, security, FlexCard design patterns, calculation procedures |
-| Agentforce | 8 — agent actions, topic design, Einstein Trust Layer, agent creation, Einstein Copilot for Sales, Einstein Prediction Builder, Einstein Copilot for Service |
-| Security | 8 — org hardening, permission set groups, Shield Platform Encryption, event monitoring, field audit trail, transaction security policies, login forensics |
-| Integration | 6 — GraphQL, OAuth flows, Salesforce Connect, REST API patterns, SOAP API patterns, named credentials |
-| Data | 10 — multi-currency, SOSL, rollup alternatives, data model design patterns, data migration planning, data quality and governance, bulk API and large data loads, data archival strategies, SOQL query optimization, Bulk API 2.0 patterns |
+| Admin | 36 — custom fields, objects, picklists, users, org setup, page layouts, permission sets, sharing, validation rules, flows, reports, data skew, requirements gathering, data model documentation, UAT and acceptance criteria, change management and training, enterprise territory management, custom permissions, delegated administration... |
+| Apex | 28 — trigger framework, batch, async, security patterns, callouts, mocking, platform cache, SOQL fundamentals, sf CLI and SFDX essentials, Metadata API and package.xml, debug logs and Developer Console, apex managed sharing, scheduled jobs, email services, continuation callouts... |
+| LWC | 19 — wire service, component communication, testing, accessibility, offline, performance, toast and notifications, dynamic components, imperative Apex, message channel patterns... |
+| Flow | 13 — record-triggered, screen flows, fault handling, bulkification, subflows, governance, debugging, auto-launched flow patterns... |
+| OmniStudio | 8 — OmniScript design, DataRaptor, Integration Procedures, security, FlexCard design patterns, calculation procedures, DataPack deployment... |
+| Agentforce | 9 — agent actions, topic design, Einstein Trust Layer, agent creation, Einstein Copilot for Sales, Einstein Prediction Builder, Einstein Copilot for Service, Model Builder and BYOLLM... |
+| Security | 9 — org hardening, permission set groups, Shield Platform Encryption, event monitoring, field audit trail, transaction security policies, login forensics, network security and trusted IPs... |
+| Integration | 7 — GraphQL, OAuth flows, Salesforce Connect, REST API patterns, SOAP API patterns, named credentials, Streaming API and PushTopic... |
+| Data | 11 — multi-currency, SOSL, rollup alternatives, data model design patterns, data migration planning, data quality and governance, bulk API and large data loads, data archival strategies, SOQL query optimization, Bulk API 2.0 patterns, field history tracking... |
 | Architect | 6 — solution design patterns, limits and scalability planning, multi-org strategy, technical debt assessment, well-architected review, platform selection guidance |
-| DevOps | 6 — scratch org management, sandbox refresh and templates, unlocked package development, second-generation managed packages, DevOps Center pipeline |
+| DevOps | 7 — scratch org management, sandbox refresh and templates, unlocked package development, second-generation managed packages, DevOps Center pipeline, GitHub Actions for Salesforce... |
 
 **See the full catalog:** [docs/SKILLS.md](./docs/SKILLS.md)
 
