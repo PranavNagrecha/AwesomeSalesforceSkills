@@ -44,8 +44,8 @@ STATUS KEY:
 
 | Phase | Cloud / Domain | Total Cells | Skills Planned | Skills Done | TODO |
 |-------|----------------|-------------|----------------|-------------|------|
-| 0 | Domain Sweeps (Cross-Cloud) | — | 99 | 19 | 80 |
-| 1 | Core Platform | 5 roles | 262 | 47 | 215 |
+| 0 | Domain Sweeps (Cross-Cloud) | — | 105 | 19 | 86 |
+| 1 | Core Platform | 5 roles | 274 | 47 | 227 |
 | 2 | Sales Cloud | 5 roles | 29 | 0 | 29 |
 | 3 | Service Cloud | 5 roles | 29 | 0 | 29 |
 | 4 | Experience Cloud | 5 roles | 26 | 0 | 26 |
@@ -64,7 +64,7 @@ STATUS KEY:
 | 17 | Data Cloud | 3 roles | 13 | 0 | 13 |
 | 18 | Slack Integration | — | 5 | 0 | 5 |
 | 19 | Additional Industry Clouds | — | 14 | 0 | 14 |
-| **Total** | | | **578** | **54** | **522** |
+| **Total** | | | **590** | **66** | **522** |
 
 ---
 
@@ -122,6 +122,8 @@ These skills apply across all clouds. Build before cloud-specific phases.
 | TODO | rollback-and-hotfix-strategy | Rollback planning: hotfix deployment procedures, emergency change processes, safe rollback patterns. NOT for release planning. | |
 | TODO | salesforce-devops-tooling-selection | Comparing DevOps tools (Gearset, Copado, Flosum, AutoRABIT, native SFDX): selection criteria, feature comparison. NOT for implementing any specific tool. | |
 | TODO | pre-deployment-checklist | Pre-deploy validation steps: metadata review, test execution requirements, backup procedures, dependency verification. NOT for post-deployment. | |
+| TODO | go-live-cutover-planning | Go-live cutover planning: deployment sequencing, code freeze procedures, mock deployments, go/no-go checklists, rollback triggers, hypercare support model, smoke testing. NOT for deployment mechanics (use post-deployment-validation). | |
+| TODO | performance-testing-salesforce | Performance testing for Salesforce: load testing approaches, concurrent user simulation, API throughput benchmarks, LWC rendering performance, governor limit headroom analysis. NOT for Apex code optimization (use apex-cpu-and-heap-optimization). | |
 | TODO | multi-package-development | Managing multiple packages in one project: inter-package dependencies, deployment ordering, namespace strategy. NOT for single package development. | |
 | TODO | api-version-management | Managing API versions across metadata: deprecation tracking, upgrade planning, version alignment across components. NOT for REST API usage. | |
 | TODO | org-cleanup-and-technical-debt | Identifying unused metadata: removing deprecated components, org health maintenance, dead code detection. NOT for code-level refactoring. | |
@@ -153,6 +155,8 @@ These skills apply across all clouds. Build before cloud-specific phases.
 | TODO | threat-detection-patterns | Real-time event monitoring rules, anomaly detection, session hijacking prevention, credential stuffing detection. NOT for Event Monitoring log downloads. | |
 | TODO | xss-and-injection-prevention | XSS prevention in Visualforce and Apex: output encoding, Locker Service, CRLF injection, open redirect prevention. NOT for Apex CRUD/FLS enforcement. | |
 | TODO | secure-coding-review-checklist | Security review checklist for AppExchange: ISV security requirements, Checkmarx patterns, common vulnerabilities. NOT for implementing fixes. | |
+| TODO | recaptcha-and-bot-prevention | Bot prevention in Salesforce: Google reCAPTCHA integration for Experience Cloud, form spam prevention, rate limiting for guest submissions, CAPTCHA configuration. NOT for API rate limiting (use api-security-and-rate-limiting). | |
+| TODO | session-management-and-timeout | Session security: timeout configuration by user type, concurrent session limits, session-level IP locking, logout messaging, inactivity handling, CMS ARC-AMPE session controls. NOT for SSO authentication (use oauth-flows-and-connected-apps). | |
 
 ### Agentforce / Einstein AI Domain
 
@@ -219,6 +223,8 @@ These skills apply across all clouds. Build before cloud-specific phases.
 | TODO | callout-limits-and-async-patterns | Callout governor limits: continuation pattern, queueable callouts, async callout chains, timeout handling. NOT for HTTP implementation details. | |
 | TODO | api-led-connectivity | API-led connectivity pattern: system/process/experience API layers, API design principles for Salesforce. NOT for MuleSoft product features. | |
 | TODO | file-and-document-integration | Document management integration: file upload patterns, virus scanning API, external document storage (EDM/SharePoint), file size validation, async file processing. NOT for Salesforce Files administration. | |
+| TODO | stub-and-mock-testing-patterns | Integration stub testing: mock endpoints for sandbox environments, HttpCalloutMock in Apex, stub response configuration, test isolation for callouts, partner connectivity testing. NOT for Apex unit testing patterns (use test-class-standards). | |
+| TODO | api-error-handling-design | API error response design: HTTP status code strategy, error payload structure, retry-safe error codes, client-side error parsing, timeout handling, circuit breaker patterns. NOT for Apex exception handling. | |
 
 ---
 
@@ -252,6 +258,10 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | TODO | custom-metadata-types-and-settings | Custom Metadata Types vs Custom Settings: when to use each, hierarchical vs list, deployment behavior, accessing from Apex and Flow. NOT for custom objects (use object-creation-and-design). | |
 | TODO | reports-and-dashboards-fundamentals | Standard reports and dashboards: report types, filters, grouping, chart types, dashboard components, dynamic dashboards, subscriptions, folders. NOT for CRM Analytics (use crm-analytics-* skills). | |
 | TODO | email-templates-and-alerts | Email templates: Classic vs Lightning templates, merge fields, Visualforce email templates, email alerts in automation, deliverability settings, org-wide addresses. NOT for Marketing Cloud email. | |
+| TODO | multi-language-and-translation | Multi-language Salesforce: Translation Workbench setup, custom label translations, picklist value translation, Experience Cloud language switcher, RTL language support, translated validation messages. NOT for Marketing Cloud localization. | |
+| TODO | salesforce-surveys | Salesforce Surveys: survey creation, question types, branching logic, distribution, guest user surveys, survey invitation tracking, reporting on responses. NOT for custom form building or Experience Cloud feedback widgets. | |
+| TODO | user-access-policies | User Access Policies: automatic permission set assignment based on user attributes, provisioning rules, dynamic group membership, login-based license management. NOT for permission set design (use permission-set-architecture). | |
+| TODO | batch-job-scheduling-and-monitoring | Monitoring scheduled and batch jobs: Apex Jobs monitoring, Flow scheduled jobs, job queue management, concurrent limits, failure notification, retry patterns. NOT for writing batch Apex (use batch-apex-patterns). | |
 
 ### Core Platform × BA Role
 
@@ -341,6 +351,8 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | TODO | field-history-tracking | Enabling field history, 18-month retention limit, History related list behavior, querying history objects (AccountHistory, etc.), limitations and alternatives. NOT for Event Monitoring (use security skills). | |
 | TODO | external-data-and-big-objects | Big Objects for archival, async SOQL for Big Objects, External Objects vs Big Objects decision, custom index fields. NOT for Salesforce Connect (use salesforce-connect-external-objects). | |
 | TODO | person-accounts | Person Account model: enabling person accounts, B2C data model, account-contact behavior differences, limitations, migration considerations, reporting impact. NOT for standard business accounts. | |
+| TODO | batch-data-cleanup-patterns | Scheduled batch data cleanup: temporary record purging, retention policy enforcement, nightly cleanup jobs, storage optimization, recycle bin management, async deletion. NOT for data archival to external storage (use data-archival-strategies). | |
+| TODO | data-storage-management | Salesforce storage management: file storage vs data storage, storage usage monitoring, storage optimization, large text field strategies, attachment alternatives, storage alerts. NOT for external storage integration. | |
 
 ### Core Platform × Architect Role
 
@@ -1397,6 +1409,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 |-------|------|---------|-----------|-------|
 | Claude Opus 4.6 | Full queue population — Phase 0 + Phases 2-19 | 2026-04-04 | 2026-04-04 | 549 TODO rows added across 20 phases |
 | Claude Opus 4.6 | Second pass + TDD extraction — 21 new skills | 2026-04-04 | 2026-04-04 | Added skills from TDD v1.5 (error handling framework, BRE, gov cloud, multi-IdP SSO, doc gen, etc.) + general gap fills (Visualforce, Platform Cache, reports, person accounts, Salesforce Maps, etc.) |
+| Claude Opus 4.6 | Third pass — 14 more skills from SIP, BC/DR, Test Plan, R2/R3, Impl Plan docs | 2026-04-04 | 2026-04-04 | go-live-cutover-planning, performance-testing-salesforce, recaptcha-and-bot-prevention, session-management-and-timeout, multi-language, surveys, user-access-policies, batch-job-monitoring, stub-testing, api-error-handling, batch-data-cleanup, data-storage-management + 2 more |
 
 ---
 
