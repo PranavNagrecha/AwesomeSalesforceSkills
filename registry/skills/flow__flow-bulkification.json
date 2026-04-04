@@ -44,7 +44,7 @@
     "fc5c8ec9b3605dccd0bd",
     "fde3cd628605fce8e256"
   ],
-  "content_hash": "1d1919bb07a857df937bcc4c057c057aa326bc0c49f63288cf73457dcaa1e251",
+  "content_hash": "6368952da3141e8093576826af673567cdb7a75c5f9ddccf0a2723a157394d29",
   "dependencies": [],
   "description": "Use when designing, reviewing, or troubleshooting Salesforce Flows that must survive data loads, integrations, or high-volume record changes without hitting transaction limits. Triggers: 'Get Records in loop', 'Flow bulkification', 'data loader causing flow errors', 'DML in loop', 'record-triggered flow scale'. NOT for general screen-flow UX or Flow type selection when scale is not the main risk.",
   "file_location": "skills/flow/flow-bulkification",
@@ -71,7 +71,6 @@
     "skills/flow/flow-bulkification/references/well-architected.md"
   ],
   "scripts": [
-    "skills/flow/flow-bulkification/scripts/__pycache__/check_flow_bulkification.cpython-311.pyc",
     "skills/flow/flow-bulkification/scripts/check_flow_bulkification.py"
   ],
   "tags": [

@@ -58,7 +58,7 @@
     "f59fd560c84fe0c3d210",
     "ff12e0cab0578877f27b"
   ],
-  "content_hash": "648c8c0a5a58d040c905c27fdcb0d0239702aeddde4830a168c9af3e577ca177",
+  "content_hash": "f754576cb230cfce99fabf030fbd74848bab31694daaa9c45e2a62ce18c0c2ee",
   "dependencies": [],
   "description": "Use this skill when writing or debugging SOQL queries: SELECT syntax, WHERE filters, ORDER BY, LIMIT, OFFSET, relationship queries (child-to-parent and parent-to-child), aggregate functions (COUNT, SUM, AVG, MIN, MAX), and date literals. Trigger keywords: soql, query, SELECT FROM WHERE. NOT for SOQL security enforcement (use soql-security), query optimization and index tuning (use soql-query-optimization), or SOSL full-text search.",
   "file_location": "skills/apex/soql-fundamentals",
@@ -89,7 +89,6 @@
     "skills/apex/soql-fundamentals/references/well-architected.md"
   ],
   "scripts": [
-    "skills/apex/soql-fundamentals/scripts/__pycache__/check_soql_fundamentals.cpython-311.pyc",
     "skills/apex/soql-fundamentals/scripts/check_soql_fundamentals.py"
   ],
   "tags": [

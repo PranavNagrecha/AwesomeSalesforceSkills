@@ -57,7 +57,7 @@ STATUS KEY:
 
 | Phase | Cloud | Total Cells | Skills Planned | Skills Done | TODO |
 |-------|-------|-------------|----------------|-------------|------|
-| 1 | Core Platform | 5 roles | 34 | 15 | 18 |
+| 1 | Core Platform | 5 roles | 34 | 16 | 17 |
 | 2 | Sales Cloud | 5 roles | RESEARCH | 0 | — |
 | 3 | Service Cloud | 5 roles | RESEARCH | 0 | — |
 | 4 | Experience Cloud | 5 roles | RESEARCH | 0 | — |
@@ -128,7 +128,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
 | DONE | soql-fundamentals | Writing SOQL: SELECT syntax, WHERE filters, ORDER BY, LIMIT, OFFSET, relationship queries (child-to-parent, parent-to-child), aggregate functions, date literals. NOT for security enforcement (use soql-security) or query optimization (use apex-cpu-and-heap-optimization). | Claude Sonnet 4.6 · 2026-04-04T00:00:00Z |
-| IN_PROGRESS | sf-cli-and-sfdx-essentials | sf CLI auth, project setup, scratch org creation, source push/pull, deploy/retrieve commands, manifest (package.xml) basics. NOT for full CI/CD pipelines (use devops skills). | Claude Sonnet 4.6 · 2026-04-04T00:00:00Z |
+| DONE | sf-cli-and-sfdx-essentials | sf CLI auth, project setup, scratch org creation, source push/pull, deploy/retrieve commands, manifest (package.xml) basics. NOT for full CI/CD pipelines (use devops skills). | Claude Sonnet 4.6 · 2026-04-04T00:00:00Z |
 | TODO | metadata-api-and-package-xml | Metadata API concepts, package.xml structure, what can and cannot be retrieved, deployment order dependencies, destructiveChanges.xml. NOT for SFDX source format details (use sf-cli-and-sfdx-essentials). | |
 | TODO | debug-logs-and-developer-console | Setting up debug logs, reading log levels, Developer Console query editor, anonymous Apex execution, Apex replay debugger basics. NOT for production incident debugging strategy (use debug-and-logging). | |
 | TODO | named-credentials-and-callouts | Setting up Named Credentials for external callouts, using them in Apex HTTP requests, auth protocols supported. NOT for OAuth flows as a standalone pattern (use oauth-flows-and-connected-apps). | |

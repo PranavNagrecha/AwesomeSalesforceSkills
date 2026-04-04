@@ -56,7 +56,7 @@
     "f86a26a415a4224e7b01",
     "fc2aad90b7dadd69a1ac"
   ],
-  "content_hash": "96de5965b2027f36eecd25f2d30a05bd95050f4d39f1ab7218002ec35a9a233f",
+  "content_hash": "2f6c65e852be45d133dbfc1aed5054e5753ee9bda64c351a40e6036b9c016727",
   "dependencies": [],
   "description": "Use this skill when configuring object-specific quick actions or global actions in Salesforce: choosing between action types, editing action layouts, pre-filling fields with predefined values, and adding actions to Lightning page layouts or mobile navigation. Trigger keywords: quick action, global action, action layout, pre-fill fields, predefined values, Salesforce mobile actions. NOT for Flow-triggered actions or Next Best Action recommendations (use flow/* or agentforce skills). NOT for Apex-defined actions.",
   "file_location": "skills/admin/global-actions-and-quick-actions",
@@ -88,7 +88,6 @@
     "skills/admin/global-actions-and-quick-actions/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/global-actions-and-quick-actions/scripts/__pycache__/check_global_actions_and_quick_actions.cpython-311.pyc",
     "skills/admin/global-actions-and-quick-actions/scripts/check_global_actions_and_quick_actions.py"
   ],
   "tags": [

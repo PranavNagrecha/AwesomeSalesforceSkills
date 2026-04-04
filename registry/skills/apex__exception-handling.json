@@ -48,7 +48,7 @@
     "fb52d6b571c76fafc515",
     "feab8c178e1c24ca7d84"
   ],
-  "content_hash": "f872fdcc9f2d167d84635a375aa0e8b3cd2500868ab0c67499afcf33084874cc",
+  "content_hash": "0de5347beae6734366342491cc34b5323e85a80b044e8f489887c7ef3fb655b3",
   "dependencies": [],
   "description": "Use when writing, reviewing, or debugging Apex exception handling, DmlException behavior, custom exception hierarchies, or user-safe error messages. Triggers: 'DmlException', 'swallowed exception', 'AuraHandledException', 'trigger rollback', 'try catch'. NOT for choosing async execution models or general governor-limit tuning.",
   "file_location": "skills/apex/exception-handling",
@@ -75,7 +75,6 @@
     "skills/apex/exception-handling/references/well-architected.md"
   ],
   "scripts": [
-    "skills/apex/exception-handling/scripts/__pycache__/check_exception_handling.cpython-311.pyc",
     "skills/apex/exception-handling/scripts/check_exception_handling.py"
   ],
   "tags": [

@@ -581,6 +581,12 @@
       "domain": "apex",
       "expected_skill": "apex/soql-fundamentals",
       "top_k": 3
+    },
+    {
+      "query": "how do I create a scratch org with sf CLI",
+      "domain": "apex",
+      "expected_skill": "apex/sf-cli-and-sfdx-essentials",
+      "top_k": 3
     }
   ]
 }

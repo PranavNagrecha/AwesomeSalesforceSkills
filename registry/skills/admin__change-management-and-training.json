@@ -58,7 +58,7 @@
     "f9a5982faed71944b7c8",
     "fc23ed7777c3578b58a4"
   ],
-  "content_hash": "141665b0b3d8ae912ba98306933140711240c77cd90466ec8ba88da6e8a58cdb",
+  "content_hash": "f948c67bc637df21ebf605ce6789673a50bb6a784c4b7f5b94f962c14a154060",
   "dependencies": [],
   "description": "Use this skill when planning user adoption, structuring Salesforce training materials, drafting release communications, or running a change impact assessment for a Salesforce rollout or update. Triggers: user adoption plan, training materials, release announcement, change impact, go-live communication. NOT for org deployment mechanics or sandbox promotion (use change-management-and-deployment).",
   "file_location": "skills/admin/change-management-and-training",
@@ -95,7 +95,6 @@
     "skills/admin/change-management-and-training/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/change-management-and-training/scripts/__pycache__/check_change_management_and_training.cpython-311.pyc",
     "skills/admin/change-management-and-training/scripts/check_change_management_and_training.py"
   ],
   "tags": [

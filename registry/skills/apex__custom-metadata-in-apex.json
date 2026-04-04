@@ -40,7 +40,7 @@
     "f7ea347f77922136045d",
     "fb9ac915c066e3caaadc"
   ],
-  "content_hash": "aed23515096e0a56bf0b336a963f0c3ef2ffb5ca9ee81adc584214741b183a98",
+  "content_hash": "1ad7d42cd38441be08a890089bff75c39eb85903951035b6105e13250a7d4b75",
   "dependencies": [],
   "description": "Use when Apex must read, interpret, or deploy Custom Metadata Type configuration, or when deciding between Custom Metadata Types, Custom Settings, and Custom Labels. Triggers: 'Custom Metadata Type', '__mdt', 'getInstance', 'Apex Metadata API', 'protected custom metadata'. NOT for setup-only administration with no Apex behavior, packaging, or deployment concern.",
   "file_location": "skills/apex/custom-metadata-in-apex",
@@ -67,7 +67,6 @@
     "skills/apex/custom-metadata-in-apex/references/well-architected.md"
   ],
   "scripts": [
-    "skills/apex/custom-metadata-in-apex/scripts/__pycache__/check_custom_metadata_in_apex.cpython-311.pyc",
     "skills/apex/custom-metadata-in-apex/scripts/check_custom_metadata_in_apex.py"
   ],
   "tags": [

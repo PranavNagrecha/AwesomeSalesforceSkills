@@ -53,7 +53,7 @@
     "fb75eac3b300ad65dfc7",
     "ff1e7ae9628ea5d7d607"
   ],
-  "content_hash": "1cd88cde8fe02870eabee412d2e6ce5a6fc3bbe60d5efe002da0a6158fe22eed",
+  "content_hash": "1dfeca276ac8b25b150391d11393afc79fa640f34be1c7e649a81eebb7f74b80",
   "dependencies": [],
   "description": "Use this skill to create, deactivate, freeze, or manage Salesforce users, assign user licenses and feature licenses, configure profiles and roles, set login hours and IP restrictions, and set up delegated administration. Triggers: adding a new user, deactivating a departing employee, license assignment, freezing a user account, delegated admin setup. NOT for permission sets (use permission-set-architecture) or sharing model design (use sharing-and-visibility).",
   "file_location": "skills/admin/user-management",
@@ -85,7 +85,6 @@
     "skills/admin/user-management/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/user-management/scripts/__pycache__/check_user_management.cpython-311.pyc",
     "skills/admin/user-management/scripts/check_user_management.py"
   ],
   "tags": [

@@ -57,6 +57,7 @@
       "apex/platform-cache",
       "apex/platform-events-apex",
       "apex/recursive-trigger-prevention",
+      "apex/sf-cli-and-sfdx-essentials",
       "apex/soql-fundamentals",
       "apex/soql-security",
       "apex/test-class-standards",
@@ -462,7 +463,8 @@
       "admin/custom-metadata-types"
     ],
     "deployment": [
-      "admin/change-management-and-deployment"
+      "admin/change-management-and-deployment",
+      "apex/sf-cli-and-sfdx-essentials"
     ],
     "device-apis": [
       "lwc/lwc-offline-and-mobile"
@@ -959,6 +961,9 @@
     "ownership-skew": [
       "admin/data-skew-and-sharing-performance"
     ],
+    "package-xml": [
+      "apex/sf-cli-and-sfdx-essentials"
+    ],
     "packaging": [
       "apex/custom-metadata-in-apex"
     ],
@@ -1161,6 +1166,9 @@
     "schema-documentation": [
       "admin/data-model-documentation"
     ],
+    "scratch-org": [
+      "apex/sf-cli-and-sfdx-essentials"
+    ],
     "screen-components": [
       "flow/screen-flows"
     ],
@@ -1213,6 +1221,12 @@
     "set-of-id": [
       "apex/recursive-trigger-prevention"
     ],
+    "sf-cli": [
+      "apex/sf-cli-and-sfdx-essentials"
+    ],
+    "sfdx": [
+      "apex/sf-cli-and-sfdx-essentials"
+    ],
     "sfdx-lwc-jest": [
       "lwc/lwc-testing"
     ],
@@ -1237,6 +1251,9 @@
     ],
     "sosl": [
       "data/sosl-search-patterns"
+    ],
+    "source-tracking": [
+      "apex/sf-cli-and-sfdx-essentials"
     ],
     "stages": [
       "flow/orchestration-flows"

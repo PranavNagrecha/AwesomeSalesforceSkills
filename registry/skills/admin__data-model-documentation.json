@@ -49,7 +49,7 @@
     "fc4fe16fffe5236d9dca",
     "fcce0da13e677995c4c4"
   ],
-  "content_hash": "7b2dd4d1a684f313334843fb17f9064508dba14984728d086ccc5083a93f6e4b",
+  "content_hash": "09185dd60ee53ce1330422df36358fc324e2a5c20702162f7ee42d43356aa33d",
   "dependencies": [],
   "description": "Use when a BA or admin needs to document the Salesforce data model: creating field inventories, object relationship maps, ER diagrams, or analyzing field usage across objects. Triggers: 'data dictionary', 'document our data model', 'object relationship map', 'field inventory', 'ER diagram for Salesforce'. NOT for designing the data model (use object-creation-and-design or architect skills) or for optimizing queries against the model (use soql-query-optimization).",
   "file_location": "skills/admin/data-model-documentation",
@@ -77,7 +77,6 @@
     "skills/admin/data-model-documentation/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/data-model-documentation/scripts/__pycache__/check_data_model_documentation.cpython-311.pyc",
     "skills/admin/data-model-documentation/scripts/check_data_model_documentation.py"
   ],
   "tags": [
