@@ -57,7 +57,7 @@
     "f4b3c185937b4cd99f8c",
     "fbc39952b30f03f4e796"
   ],
-  "content_hash": "19034ecad829f5da173360e317b7fa1ef60cd07362fd7dddbf3c73dc816c6023",
+  "content_hash": "077137c59b637bbdafbba5ab9f8211a2349287fbe219bf7979ca5b329cc1362b",
   "dependencies": [],
   "description": "Metadata API concepts, package.xml manifest structure, retrieve and deploy workflows, what metadata types can and cannot be retrieved, deployment order dependencies, and destructiveChanges.xml for deletions. NOT for SFDX source-format details or sf CLI command syntax (use sf-cli-and-sfdx-essentials), and NOT for CI/CD pipeline automation (use devops skills).",
   "file_location": "skills/apex/metadata-api-and-package-xml",
@@ -84,6 +84,7 @@
     "skills/apex/metadata-api-and-package-xml/references/well-architected.md"
   ],
   "scripts": [
+    "skills/apex/metadata-api-and-package-xml/scripts/__pycache__/check_metadata_api_and_package_xml.cpython-311.pyc",
     "skills/apex/metadata-api-and-package-xml/scripts/check_metadata_api_and_package_xml.py"
   ],
   "tags": [

@@ -42,7 +42,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **When it occurs:** The Developer Console's Logs tab filters debug logs to the current authenticated user by default. Logs captured for other users via trace flags are stored in the org but not surfaced in the Developer Console's Logs panel for other users.
 
-**How to avoid:** To view logs for another user, go to **Setup → Debug Logs**, find the log entry (sorted by timestamp), and open it from Setup. Alternatively, use the sf CLI: `sf apex log list` to list all available logs, then `sf apex log get --log-id <id>` to download a specific log regardless of which user it belongs to.
+**How to avoid:** To view logs for another user (or for Automated Process), go to **Setup → Debug Logs**, find the log entry (sorted by timestamp), and open it from Setup. Alternatively, use the sf CLI: `sf apex log list` to list all available logs, then `sf apex log get --log-id <id>` to download a specific log. For Automated Process logs, you can also query them via the Tooling API: `SELECT Id, Body FROM ApexLog WHERE LogUser.Name = 'Automated Process'`.
 
 ---
 

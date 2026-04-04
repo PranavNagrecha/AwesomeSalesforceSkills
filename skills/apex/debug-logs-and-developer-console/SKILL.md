@@ -75,7 +75,7 @@ For most Apex debugging, set **ApexCode to DEBUG** and **Database to INFO**. Avo
 
 - **Setup path:** Setup → Debug Logs → New (choose Traced Entity Type → select entity → set start/end time → assign or create a Debug Level).
 - **Expiration:** Trace flags expire automatically at the configured end time. Expired flags produce no new logs. Always check whether the flag is still active.
-- **Retention:** The platform retains the most recent **50 logs per user**. Older logs are purged automatically. Logs in production are retained for **24 hours**; sandbox logs are retained for **7 days**.
+- **Retention:** The platform retains the most recent **20 logs per user**. Older logs are purged automatically. Logs in production are retained for **24 hours**; sandbox logs are retained for **7 days**. The org has an overall cap of **1,000 MB** of total debug log storage — when that cap is hit, Salesforce blocks adding new trace flags until old logs are deleted.
 - **Log size cap:** Each log file is capped at **20 MB**. Truncated logs display a message at the point of truncation. If the log is truncated, reduce verbosity or narrow the trace to a smaller time window.
 
 Trace flag **Traced Entity Types** and when to use each:

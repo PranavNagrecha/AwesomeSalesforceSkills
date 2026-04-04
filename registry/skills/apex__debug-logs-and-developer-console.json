@@ -54,7 +54,7 @@
     "efe8d9fb2e5698823a11",
     "f337e7138abb81ea7110"
   ],
-  "content_hash": "5562a3ae1737f82df72c6125d773ec769c73fc674db6605fa46259afa8e8117a",
+  "content_hash": "3cd3f6b5fec6163756f85ca1259678e99af83b67127e1fa063973ebfc86b8e1b",
   "dependencies": [],
   "description": "Use when setting up debug logs and trace flags, reading Apex log output and log levels, running queries in the Developer Console, executing anonymous Apex, or using the Apex Replay Debugger in VS Code. Triggers: 'set up debug log', 'Developer Console', 'anonymous Apex', 'trace flag', 'Apex Replay Debugger'. NOT for production logging strategy or custom structured logging frameworks (use debug-and-logging), and NOT for writing test classes (use apex-test-class-standards).",
   "file_location": "skills/apex/debug-logs-and-developer-console",
@@ -82,6 +82,7 @@
     "skills/apex/debug-logs-and-developer-console/references/well-architected.md"
   ],
   "scripts": [
+    "skills/apex/debug-logs-and-developer-console/scripts/__pycache__/check_debug_logs_and_developer_console.cpython-311.pyc",
     "skills/apex/debug-logs-and-developer-console/scripts/check_debug_logs_and_developer_console.py"
   ],
   "tags": [
