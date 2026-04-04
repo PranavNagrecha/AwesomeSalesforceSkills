@@ -51,6 +51,7 @@
       "agentforce/agent-topic-design",
       "agentforce/agentforce-agent-creation",
       "agentforce/agentforce-guardrails",
+      "agentforce/custom-agent-actions-apex",
       "agentforce/einstein-bots-to-agentforce-migration",
       "agentforce/einstein-copilot-for-sales",
       "agentforce/einstein-copilot-for-service",
@@ -93,6 +94,7 @@
       "apex/soql-fundamentals",
       "apex/soql-security",
       "apex/test-class-standards",
+      "apex/test-data-factory-patterns",
       "apex/trigger-framework"
     ],
     "architect": [
@@ -111,6 +113,7 @@
       "data/batch-data-cleanup-patterns",
       "data/bulk-api-and-large-data-loads",
       "data/bulk-api-patterns",
+      "data/custom-index-requests",
       "data/data-archival-strategies",
       "data/data-migration-planning",
       "data/data-model-design-patterns",
@@ -132,6 +135,7 @@
       "devops/environment-strategy",
       "devops/github-actions-for-salesforce",
       "devops/gitlab-ci-for-salesforce",
+      "devops/release-management",
       "devops/salesforce-code-analyzer",
       "devops/sandbox-refresh-and-templates",
       "devops/scratch-org-management",
@@ -205,6 +209,7 @@
       "omnistudio/industries-cpq-vs-salesforce-cpq",
       "omnistudio/integration-procedures",
       "omnistudio/omniscript-design-patterns",
+      "omnistudio/omniscript-versioning",
       "omnistudio/omnistudio-debugging",
       "omnistudio/omnistudio-deployment-datapacks",
       "omnistudio/omnistudio-lwc-integration",
@@ -219,6 +224,7 @@
       "security/event-monitoring",
       "security/field-audit-trail",
       "security/gdpr-data-privacy",
+      "security/guest-user-security",
       "security/login-forensics",
       "security/network-security-and-trusted-ips",
       "security/org-hardening-and-baseline-config",
@@ -302,6 +308,9 @@
     "action-layout": [
       "admin/global-actions-and-quick-actions"
     ],
+    "activation": [
+      "omnistudio/omniscript-versioning"
+    ],
     "activation-bypass": [
       "apex/trigger-framework"
     ],
@@ -322,7 +331,8 @@
       "flow/record-triggered-flow-patterns"
     ],
     "agent-actions": [
-      "agentforce/agent-actions"
+      "agentforce/agent-actions",
+      "agentforce/custom-agent-actions-apex"
     ],
     "agent-api": [
       "agentforce/agent-channel-deployment"
@@ -359,6 +369,7 @@
       "agentforce/agent-topic-design",
       "agentforce/agentforce-agent-creation",
       "agentforce/agentforce-guardrails",
+      "agentforce/custom-agent-actions-apex",
       "agentforce/einstein-bots-to-agentforce-migration",
       "agentforce/model-builder-and-byollm",
       "agentforce/rag-patterns-in-salesforce",
@@ -389,6 +400,9 @@
       "architect/solution-design-patterns",
       "lwc/lwc-imperative-apex"
     ],
+    "apex-actions": [
+      "agentforce/custom-agent-actions-apex"
+    ],
     "apex-email-services": [
       "apex/apex-email-services"
     ],
@@ -414,6 +428,7 @@
     ],
     "apex-testing": [
       "apex/test-class-standards",
+      "apex/test-data-factory-patterns",
       "devops/bitbucket-pipelines-for-salesforce",
       "devops/github-actions-for-salesforce",
       "devops/gitlab-ci-for-salesforce"
@@ -523,6 +538,9 @@
     ],
     "at-least-once-delivery": [
       "integration/outbound-messages-and-callbacks"
+    ],
+    "atlas-reasoning-engine": [
+      "agentforce/custom-agent-actions-apex"
     ],
     "ato": [
       "architect/government-cloud-compliance"
@@ -634,6 +652,9 @@
     ],
     "bulk-safe": [
       "apex/invocable-methods"
+    ],
+    "bulk-testing": [
+      "apex/test-data-factory-patterns"
     ],
     "bulkification": [
       "apex/governor-limits",
@@ -928,6 +949,9 @@
     "custom-fields": [
       "admin/custom-field-creation"
     ],
+    "custom-index": [
+      "data/custom-index-requests"
+    ],
     "custom-metadata": [
       "apex/custom-metadata-in-apex",
       "architect/integration-framework-design",
@@ -1165,6 +1189,7 @@
     ],
     "devops": [
       "devops/environment-strategy",
+      "devops/release-management",
       "devops/salesforce-code-analyzer",
       "devops/sandbox-refresh-and-templates",
       "devops/scratch-org-management",
@@ -1355,7 +1380,8 @@
     "experience-cloud": [
       "agentforce/agent-channel-deployment",
       "flow/flow-for-experience-cloud",
-      "lwc/navigation-and-routing"
+      "lwc/navigation-and-routing",
+      "security/guest-user-security"
     ],
     "expression-sets": [
       "omnistudio/business-rules-engine",
@@ -1629,7 +1655,8 @@
       "agentforce/agentforce-guardrails"
     ],
     "guest-user": [
-      "flow/flow-for-experience-cloud"
+      "flow/flow-for-experience-cloud",
+      "security/guest-user-security"
     ],
     "guest-users": [
       "omnistudio/omnistudio-security"
@@ -1793,6 +1820,9 @@
       "agentforce/agent-actions",
       "flow/flow-external-services"
     ],
+    "invocable-method": [
+      "agentforce/custom-agent-actions-apex"
+    ],
     "invocablemethod": [
       "apex/invocable-methods"
     ],
@@ -1860,6 +1890,7 @@
     "large-data-volumes": [
       "admin/data-skew-and-sharing-performance",
       "data/bulk-api-and-large-data-loads",
+      "data/custom-index-requests",
       "data/data-archival-strategies",
       "data/data-storage-management",
       "data/external-data-and-big-objects",
@@ -2227,6 +2258,7 @@
     ],
     "omniscript": [
       "omnistudio/omniscript-design-patterns",
+      "omnistudio/omniscript-versioning",
       "omnistudio/omnistudio-debugging",
       "omnistudio/omnistudio-lwc-integration",
       "omnistudio/vlocity-to-native-omnistudio-migration"
@@ -2238,6 +2270,7 @@
       "omnistudio/industries-cpq-vs-salesforce-cpq",
       "omnistudio/integration-procedures",
       "omnistudio/omniscript-design-patterns",
+      "omnistudio/omniscript-versioning",
       "omnistudio/omnistudio-debugging",
       "omnistudio/omnistudio-deployment-datapacks",
       "omnistudio/omnistudio-lwc-integration",
@@ -2433,6 +2466,9 @@
     "pmd": [
       "devops/salesforce-code-analyzer"
     ],
+    "portal-users": [
+      "apex/test-data-factory-patterns"
+    ],
     "post-refresh-automation": [
       "devops/sandbox-refresh-and-templates"
     ],
@@ -2491,6 +2527,9 @@
     ],
     "query-optimization": [
       "data/soql-query-optimization"
+    ],
+    "query-performance": [
+      "data/custom-index-requests"
     ],
     "queueable": [
       "apex/apex-queueable-patterns",
@@ -2577,7 +2616,11 @@
     "release-management": [
       "admin/change-management-and-deployment",
       "devops/change-set-deployment",
-      "devops/devops-center-pipeline"
+      "devops/devops-center-pipeline",
+      "devops/release-management"
+    ],
+    "release-planning": [
+      "devops/release-management"
     ],
     "render-optimization": [
       "lwc/lwc-performance"
@@ -2661,7 +2704,9 @@
     ],
     "rollback": [
       "admin/change-management-and-deployment",
-      "data/data-migration-planning"
+      "data/data-migration-planning",
+      "devops/release-management",
+      "omnistudio/omniscript-versioning"
     ],
     "rollback-safe-logging": [
       "apex/error-handling-framework"
@@ -2698,6 +2743,9 @@
     ],
     "salesforce-mobile-app": [
       "lwc/lwc-offline-and-mobile"
+    ],
+    "salesforce-support": [
+      "data/custom-index-requests"
     ],
     "salesforce-to-salesforce": [
       "architect/multi-org-strategy"
@@ -2809,6 +2857,9 @@
     "security-classification": [
       "security/data-classification-labels"
     ],
+    "security-hardening": [
+      "security/guest-user-security"
+    ],
     "security-health-check": [
       "security/org-hardening-and-baseline-config",
       "security/security-health-check"
@@ -2879,7 +2930,8 @@
     ],
     "sharing": [
       "admin/queues-and-public-groups",
-      "admin/sharing-and-visibility"
+      "admin/sharing-and-visibility",
+      "security/guest-user-security"
     ],
     "sharing-model": [
       "admin/object-creation-and-design",
@@ -2903,6 +2955,7 @@
       "security/transaction-security-policies"
     ],
     "skinny-tables": [
+      "data/custom-index-requests",
       "data/data-model-design-patterns"
     ],
     "slack-deployment": [
@@ -3042,13 +3095,17 @@
       "flow/flow-testing"
     ],
     "test-data-factory": [
-      "apex/test-class-standards"
+      "apex/test-class-standards",
+      "apex/test-data-factory-patterns"
     ],
     "test-doubles": [
       "apex/apex-mocking-and-stubs"
     ],
     "test-setmock": [
       "apex/apex-mocking-and-stubs"
+    ],
+    "test-setup": [
+      "apex/test-data-factory-patterns"
     ],
     "testing": [
       "admin/sandbox-strategy",
@@ -3139,6 +3196,9 @@
     "uiGraphQLApi": [
       "integration/graphql-api-patterns"
     ],
+    "unauthenticated-access": [
+      "security/guest-user-security"
+    ],
     "unlocked-packages": [
       "devops/unlocked-package-development"
     ],
@@ -3196,7 +3256,9 @@
       "flow/flow-governance"
     ],
     "versioning": [
-      "apex/apex-rest-services"
+      "apex/apex-rest-services",
+      "devops/release-management",
+      "omnistudio/omniscript-versioning"
     ],
     "virtual-data": [
       "integration/salesforce-connect-external-objects"

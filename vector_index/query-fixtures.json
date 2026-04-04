@@ -1235,6 +1235,42 @@
       "domain": "flow",
       "expected_skill": "flow/flow-email-and-notifications",
       "top_k": 3
+    },
+    {
+      "query": "how do I plan a Salesforce release with rollback strategy and release calendar",
+      "domain": "devops",
+      "expected_skill": "devops/release-management",
+      "top_k": 3
+    },
+    {
+      "query": "guest user is exposing records they should not see on our Experience Cloud site",
+      "domain": "security",
+      "expected_skill": "security/guest-user-security",
+      "top_k": 3
+    },
+    {
+      "query": "how do I build a custom Apex action for my Agentforce agent with @InvocableMethod",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/custom-agent-actions-apex",
+      "top_k": 3
+    },
+    {
+      "query": "how do I activate a new OmniScript version and roll back to a previous version",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/omniscript-versioning",
+      "top_k": 3
+    },
+    {
+      "query": "how do I build a reusable test data factory class in Apex",
+      "domain": "apex",
+      "expected_skill": "apex/test-data-factory-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "SOQL query is doing a TableScan and I need to request a custom index from Salesforce Support",
+      "domain": "data",
+      "expected_skill": "data/custom-index-requests",
+      "top_k": 3
     }
   ]
 }

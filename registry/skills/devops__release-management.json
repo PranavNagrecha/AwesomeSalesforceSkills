@@ -1,0 +1,99 @@
+{
+  "category": "devops",
+  "chunk_ids": [
+    "003720bc46b7a9de6867",
+    "007cc10bbf44a7ac2e70",
+    "06e5c32289cda0969810",
+    "0cbd96183bc22c86d50a",
+    "11ee7d2ccdd5fe46b422",
+    "13f8f6251a180d6d0213",
+    "1f3e54bc45799f54c5f9",
+    "20245705a4b2c6ac5cd7",
+    "266ba5b5c6edc032ebd5",
+    "291157b5da9db94668f2",
+    "2b90d14aeb1c63deb8c5",
+    "2c62d1374742b9f27cf5",
+    "2e1acbb4aa618eee04d4",
+    "347809cf5d2342f79dd6",
+    "3cc9dfa73e1bc7535e07",
+    "3dc408f03202cf59679b",
+    "4484118599c04b0c77b2",
+    "51e6741b02f7e316cadc",
+    "600a9e0c65882bc8467b",
+    "6769e341bd1c67559976",
+    "6f7e947bed8ab5c7a6c2",
+    "7bd32fb82845719b5af2",
+    "7f6f88457139ad9eee1a",
+    "8c136e37ae5691c43796",
+    "945ef8825a049619345f",
+    "9608eeb2ba662324504e",
+    "999035e6609f9a88fb08",
+    "9b92ebaf1462482572b9",
+    "9ccd978c628409094a0d",
+    "9e0b21270d7840547095",
+    "9edae8103cafbf968ddf",
+    "a13b35d331f93365eda8",
+    "a3d0ebe421a232fe69a4",
+    "a4cb97ce3a5b80990f9a",
+    "a562dc0115ecf670eb09",
+    "a57538697dc6d8fcae48",
+    "bec5227e478e6a1f71c1",
+    "bf2e496c91df5b39394a",
+    "c240c9fe89dbca69d05e",
+    "c74115691d67ddc66be9",
+    "cfd336a5cba12f49da42",
+    "d78436c172e494799861",
+    "dcab0ecb45861a52f77b",
+    "e07c683fbe7535e44c1a",
+    "e0d6bf74e18d12599d5c",
+    "e1bebb45eee7313aadb4",
+    "eb13ffd458ecfe72006f",
+    "f1570acaa4f865218f36",
+    "fdb6bed32b8d769e5f97"
+  ],
+  "content_hash": "3db0b7a6ac29a515d3d18fe7ec29a456b84651e827c6a11f3b050a8777ce63f0",
+  "dependencies": [],
+  "description": "Use when planning, coordinating, or governing Salesforce releases: version numbering, rollback strategy, release notes, go/no-go criteria, release calendar, and sandbox preview alignment. NOT for deployment mechanics (use devops/post-deployment-validation or devops/change-set-deployment).",
+  "file_location": "skills/devops/release-management",
+  "id": "devops/release-management",
+  "inputs": [
+    "Deployment target (production, partial sandbox, scratch org)",
+    "List of changes in the release (components, Apex, config)",
+    "Salesforce edition and Dev Hub availability",
+    "Release calendar constraints (freeze windows, go-live date)"
+  ],
+  "name": "release-management",
+  "official_sources": [
+    "Salesforce DX Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm",
+    "Metadata API Developer Guide (deployRecentValidation) \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+    "Salesforce CLI Reference (project deploy validate, quick, start) \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm",
+    "Salesforce Trust and Release Schedule \u2014 https://trust.salesforce.com"
+  ],
+  "outputs": [
+    "Release plan document with version number, go/no-go criteria, rollback trigger definition, and smoke test checklist",
+    "Release notes template populated with changes",
+    "Post-release validation checklist"
+  ],
+  "references": [
+    "skills/devops/release-management/references/examples.md",
+    "skills/devops/release-management/references/gotchas.md",
+    "skills/devops/release-management/references/llm-anti-patterns.md",
+    "skills/devops/release-management/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/devops/release-management/scripts/check_release_management.py"
+  ],
+  "tags": [
+    "release-management",
+    "release-planning",
+    "rollback",
+    "versioning",
+    "devops"
+  ],
+  "templates": [
+    "skills/devops/release-management/templates/release-management-template.md"
+  ],
+  "updated": "2026-04-04",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

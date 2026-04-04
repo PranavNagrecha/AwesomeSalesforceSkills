@@ -1,0 +1,100 @@
+{
+  "category": "omnistudio",
+  "chunk_ids": [
+    "01a8a92826e23d7bd571",
+    "08ee97f2bd481c335e7b",
+    "170297f24fe59430e91c",
+    "1ce2ef6203e51a6c5dbe",
+    "1e8f9e28d7775c4e01fc",
+    "1fd97ea1b3500bf4b6a3",
+    "20a76a91a49acb1ea3cb",
+    "28f972457b5623272a6e",
+    "336a1b299bf59e1ea31a",
+    "385817c271d1601bbefb",
+    "478dece2ce37f05bf0e8",
+    "4fac3541457b2ef7fd0a",
+    "54e156cb7d483b6e208d",
+    "555dd5d2fe9f3d29982a",
+    "57ea723922273cbdd3e7",
+    "5ff2f0a6bf541693cea8",
+    "63eb9985b61017a2412b",
+    "64d44edeb4d2b1c3b3e8",
+    "6683ae9e2fcad2460f42",
+    "6c59f69aaa7b1b29d8c0",
+    "795c03236a742d17f702",
+    "7a4b6752489fe57e083a",
+    "88231d1d0581801211ee",
+    "8c3a147fc91c1897d048",
+    "8c7300ed970b932c1e41",
+    "8e92cc755255e67cae14",
+    "9066804d86facf6b6b26",
+    "9b2f9c3315942c36ef37",
+    "a59f55595b38d7dc7cca",
+    "a5b087aa6f3c81dc0855",
+    "a5b2fb2482cfe280abaa",
+    "aa1dedd191080d32e569",
+    "af86b8306ca29e79296a",
+    "b17ff6bf4ccbfb10431c",
+    "b5f6327e941316d39437",
+    "b72bb08cd7fc4f6bcd97",
+    "ba5b223ee4949b947a16",
+    "bc2a0e3b7aafe05c7534",
+    "bf3da0c644f401d41433",
+    "bf7af63cc0d079179e9f",
+    "c7fe78593102faa01840",
+    "d2e7a69a42e17c66f80a",
+    "d890d108c57fd79a0ccc",
+    "d901f82e017b8cba597d",
+    "df6153d7b56878d3b140",
+    "e05b1e8f35c673dda287",
+    "e08ce328ebed9598317e",
+    "ef07e33f04060f0cefc9",
+    "f3bd2c4dbc14a841cd75",
+    "f62148e1cfad4416900d",
+    "f91202debc0526950d2a",
+    "ff5c740323c6ff262c0e"
+  ],
+  "content_hash": "f5aeceb4ff77b1b64f05867fa6c020b5cd0a43b64a8a6e030662203191a404cb",
+  "dependencies": [],
+  "description": "Use when managing OmniScript versions: activating new versions, deactivating prior versions, testing a specific version before activation, rolling back to a previous version, or understanding version identity (Type/Subtype/Language triplet). NOT for OmniStudio deployment or DataPack migration (use omnistudio/omnistudio-deployment-datapacks).",
+  "file_location": "skills/omnistudio/omniscript-versioning",
+  "id": "omnistudio/omniscript-versioning",
+  "inputs": [
+    "OmniScript Type, Subtype, and Language (the identity triplet)",
+    "Current active version number and the new version number to activate",
+    "Test results for the new version in a sandbox"
+  ],
+  "name": "omniscript-versioning",
+  "official_sources": [
+    "OmniStudio Developer Guide (Version Management) \u2014 https://help.salesforce.com/s/articleView?id=sf.os_omniscript_versioning.htm&type=5",
+    "OmniStudio Activate and Launch OmniScripts \u2014 https://help.salesforce.com/s/articleView?id=sf.os_activate_omniscript.htm&type=5",
+    "OmniStudio DataPack Reference \u2014 https://help.salesforce.com/s/articleView?id=sf.os_datapacks.htm&type=5"
+  ],
+  "outputs": [
+    "Activation checklist for the target version",
+    "Rollback procedure if the new version needs to be reverted",
+    "Version comparison guidance"
+  ],
+  "references": [
+    "skills/omnistudio/omniscript-versioning/references/examples.md",
+    "skills/omnistudio/omniscript-versioning/references/gotchas.md",
+    "skills/omnistudio/omniscript-versioning/references/llm-anti-patterns.md",
+    "skills/omnistudio/omniscript-versioning/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/omnistudio/omniscript-versioning/scripts/check_omniscript_versioning.py"
+  ],
+  "tags": [
+    "omniscript",
+    "versioning",
+    "activation",
+    "rollback",
+    "omnistudio"
+  ],
+  "templates": [
+    "skills/omnistudio/omniscript-versioning/templates/omniscript-versioning-template.md"
+  ],
+  "updated": "2026-04-04",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}
