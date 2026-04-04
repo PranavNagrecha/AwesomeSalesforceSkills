@@ -119,7 +119,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | DUPLICATE | process-mapping-and-automation-selection | Mapping business processes to Salesforce automation options: Flow vs Apex vs Workflow Email Alert vs Process Builder (legacy). Produces a recommendation, not an implementation. NOT for building the automation (use flow/* or apex/* skills). | Covered by admin/process-automation-selection · Claude Sonnet 4.6 · 2026-04-03T00:00:00Z |
 | DONE | data-model-documentation | Documenting the Salesforce data model: ER diagrams, object relationship maps, field inventory, field usage analysis. NOT for designing the model (use object-creation-and-design or architect skills). | Claude Sonnet 4.6 · 2026-04-03T00:00:00Z |
 | DONE | uat-and-acceptance-criteria | Writing acceptance criteria for Salesforce features, UAT test script format, defect classification for SF, regression test planning. NOT for automated testing (use flow-testing or apex test-class-standards). | Claude Sonnet 4.6 · 2026-04-03T00:00:00Z |
-| TODO | change-management-and-training | User adoption planning, Salesforce training material structure, release communication templates, change impact assessment. NOT for org deployment (use change-management-and-deployment). | |
+| IN_PROGRESS | change-management-and-training | User adoption planning, Salesforce training material structure, release communication templates, change impact assessment. NOT for org deployment (use change-management-and-deployment). | Claude Sonnet 4.6 · 2026-04-04T00:00:00Z |
 
 ### Core Platform × Dev Role
 
