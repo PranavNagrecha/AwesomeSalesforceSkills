@@ -4,7 +4,7 @@ The universal Salesforce knowledge layer for AI coding assistants.
 
 Drop this into Claude Code, Cursor, Aider, Windsurf, or any AI tool and get role-accurate, source-grounded Salesforce guidance — for every role, every cloud, every task.
 
-**153 skills built. 500+ planned across 5 roles × 16 clouds.**
+**164 skills built. 500+ planned across 5 roles × 16 clouds.**
 
 ---
 
@@ -98,17 +98,17 @@ Skills are plain markdown. They work in any AI tool that can read a file.
 
 | Domain | Skills |
 |--------|--------|
-| Admin | 36 — custom fields, objects, picklists, users, org setup, page layouts, permission sets, sharing, validation rules, flows, reports, data skew, requirements gathering, data model documentation, UAT and acceptance criteria, change management and training, enterprise territory management, custom permissions, delegated administration... |
-| Apex | 28 — trigger framework, batch, async, security patterns, callouts, mocking, platform cache, SOQL fundamentals, sf CLI and SFDX essentials, Metadata API and package.xml, debug logs and Developer Console, apex managed sharing, scheduled jobs, email services, continuation callouts... |
-| LWC | 19 — wire service, component communication, testing, accessibility, offline, performance, toast and notifications, dynamic components, imperative Apex, message channel patterns... |
-| Flow | 13 — record-triggered, screen flows, fault handling, bulkification, subflows, governance, debugging, auto-launched flow patterns... |
-| OmniStudio | 8 — OmniScript design, DataRaptor, Integration Procedures, security, FlexCard design patterns, calculation procedures, DataPack deployment... |
-| Agentforce | 9 — agent actions, topic design, Einstein Trust Layer, agent creation, Einstein Copilot for Sales, Einstein Prediction Builder, Einstein Copilot for Service, Model Builder and BYOLLM... |
-| Security | 9 — org hardening, permission set groups, Shield Platform Encryption, event monitoring, field audit trail, transaction security policies, login forensics, network security and trusted IPs... |
-| Integration | 7 — GraphQL, OAuth flows, Salesforce Connect, REST API patterns, SOAP API patterns, named credentials, Streaming API and PushTopic... |
-| Data | 11 — multi-currency, SOSL, rollup alternatives, data model design patterns, data migration planning, data quality and governance, bulk API and large data loads, data archival strategies, SOQL query optimization, Bulk API 2.0 patterns, field history tracking... |
-| Architect | 6 — solution design patterns, limits and scalability planning, multi-org strategy, technical debt assessment, well-architected review, platform selection guidance |
-| DevOps | 7 — scratch org management, sandbox refresh and templates, unlocked package development, second-generation managed packages, DevOps Center pipeline, GitHub Actions for Salesforce... |
+| Admin | 37 — custom fields, objects, picklists, users, org setup, page layouts, permission sets, sharing, validation rules, flows, reports, data skew, requirements gathering, data model documentation, UAT and acceptance criteria, change management and training, enterprise territory management, custom permissions, delegated administration, dynamic forms and actions... |
+| Apex | 29 — trigger framework, batch, async, security patterns, callouts, mocking, platform cache, SOQL fundamentals, sf CLI and SFDX essentials, Metadata API and package.xml, debug logs and Developer Console, apex managed sharing, scheduled jobs, email services, continuation callouts, custom iterators and iterables... |
+| LWC | 20 — wire service, component communication, testing, accessibility, offline, performance, toast and notifications, dynamic components, imperative Apex, message channel patterns, base component recipes... |
+| Flow | 14 — record-triggered, screen flows, fault handling, bulkification, subflows, governance, debugging, auto-launched flow patterns, collection processing... |
+| OmniStudio | 9 — OmniScript design, DataRaptor, Integration Procedures, security, FlexCard design patterns, calculation procedures, DataPack deployment, performance optimization... |
+| Agentforce | 10 — agent actions, topic design, Einstein Trust Layer, agent creation, Einstein Copilot for Sales, Einstein Prediction Builder, Einstein Copilot for Service, Model Builder and BYOLLM, RAG patterns in Salesforce... |
+| Security | 10 — org hardening, permission set groups, Shield Platform Encryption, event monitoring, field audit trail, transaction security policies, login forensics, network security and trusted IPs, sandbox data masking... |
+| Integration | 8 — GraphQL, OAuth flows, Salesforce Connect, REST API patterns, SOAP API patterns, named credentials, Streaming API and PushTopic, platform events integration... |
+| Data | 12 — multi-currency, SOSL, rollup alternatives, data model design patterns, data migration planning, data quality and governance, bulk API and large data loads, data archival strategies, SOQL query optimization, Bulk API 2.0 patterns, field history tracking, external data and big objects... |
+| Architect | 7 — solution design patterns, limits and scalability planning, multi-org strategy, technical debt assessment, well-architected review, platform selection guidance, security architecture review |
+| DevOps | 8 — scratch org management, sandbox refresh and templates, unlocked package development, second-generation managed packages, DevOps Center pipeline, GitHub Actions for Salesforce, Bitbucket Pipelines for Salesforce... |
 
 **See the full catalog:** [docs/SKILLS.md](./docs/SKILLS.md)
 

@@ -44,8 +44,8 @@ STATUS KEY:
 
 | Phase | Cloud / Domain | Total Cells | Skills Planned | Skills Done | TODO |
 |-------|----------------|-------------|----------------|-------------|------|
-| 0 | Domain Sweeps (Cross-Cloud) | — | 113 | 24 | 89 |
-| 1 | Core Platform | 5 roles | 310 | 52 | 258 |
+| 0 | Domain Sweeps (Cross-Cloud) | — | 113 | 29 | 84 |
+| 1 | Core Platform | 5 roles | 310 | 58 | 252 |
 | 2 | Sales Cloud | 5 roles | 29 | 0 | 29 |
 | 3 | Service Cloud | 5 roles | 29 | 0 | 29 |
 | 4 | Experience Cloud | 5 roles | 26 | 0 | 26 |
@@ -99,7 +99,7 @@ These skills apply across all clouds. Build before cloud-specific phases.
 | DONE | second-generation-managed-packages | 2GP package development: versioning, patch orgs, ISV partner considerations, AppExchange listing. NOT for unlocked packages. | Agent 2026-04-04T08:00:00Z |
 | DONE | devops-center-pipeline | DevOps Center setup: creating pipelines, work items, bundling changes, conflict resolution, release tracking. NOT for CLI-based deployment. | Agent 2026-04-04T10:30:00Z |
 | DONE | github-actions-for-salesforce | CI/CD with GitHub Actions for Salesforce: SFDX auth, test runs, deployment steps, secret management, reusable workflows. NOT for other CI tools. | Agent 2026-04-04T12:00:00Z |
-| IN_PROGRESS | bitbucket-pipelines-for-salesforce | CI/CD with Bitbucket Pipelines: pipe configuration, SFDX integration, deployment automation. NOT for GitHub Actions. | Agent 2026-04-04T00:00:00Z |
+| DONE | bitbucket-pipelines-for-salesforce | CI/CD with Bitbucket Pipelines: pipe configuration, SFDX integration, deployment automation. NOT for GitHub Actions. | Agent 2026-04-04T00:00:00Z |
 | TODO | gitlab-ci-for-salesforce | CI/CD with GitLab CI for Salesforce: runner configuration, deployment jobs, SFDX integration. NOT for other CI tools. | |
 | TODO | environment-strategy | Planning org environments: scratch orgs vs sandboxes vs production, branching strategy alignment, environment matrix. NOT for sandbox types (use sandbox-strategy). | |
 | TODO | source-tracking-and-conflict-resolution | SFDX source tracking: pull/push conflicts, force overwrite decisions, tracking files, conflict markers. NOT for Git merge conflicts. | |
@@ -146,7 +146,7 @@ These skills apply across all clouds. Build before cloud-specific phases.
 | DONE | transaction-security-policies | Transaction Security policies: condition builder, enhanced policies, enforcement actions, real-time monitoring. NOT for Event Monitoring log analysis. | Agent 2026-04-04T08:00:00Z |
 | DONE | login-forensics | Login history analysis: identity verification, session management, login flow customization, suspicious login detection. NOT for MFA setup (use org-setup-and-configuration). | Agent 2026-04-04T10:30:00Z |
 | DONE | network-security-and-trusted-ips | Trusted IP ranges, network access policies, CSP trusted sites, CORS configuration, My Domain security. NOT for org-wide session settings. | Agent 2026-04-04T12:00:00Z |
-| IN_PROGRESS | sandbox-data-masking | Data masking in sandboxes: Salesforce Data Mask product, field-level masking, compliance-driven policies. NOT for sandbox refresh mechanics. | Agent 2026-04-04T00:00:00Z |
+| DONE | sandbox-data-masking | Data masking in sandboxes: Salesforce Data Mask product, field-level masking, compliance-driven policies. NOT for sandbox refresh mechanics. | Agent 2026-04-04T00:00:00Z |
 | TODO | api-security-and-rate-limiting | API rate limits, OAuth scope restriction, Connected App IP restrictions, API session policies, API usage monitoring. NOT for OAuth flows (use oauth-flows-and-connected-apps). | |
 | TODO | certificate-and-key-management | Managing certificates in Salesforce: mutual TLS, certificate rotation, keystore management, self-signed vs CA-signed. NOT for Named Credential configuration. | |
 | TODO | data-classification-labels | Data sensitivity classification: compliance categorization, field-level classification, data access policies, labeling. NOT for data masking. | |
@@ -175,13 +175,16 @@ These skills apply across all clouds. Build before cloud-specific phases.
 | DONE | einstein-copilot-for-sales | Sales-specific AI: opportunity scoring, activity capture AI, email generation, pipeline inspection AI insights. NOT for core Agentforce setup. | Agent 2026-04-04T06:00:00Z |
 | DONE | einstein-copilot-for-service | Service-specific AI: case classification, article recommendations, reply suggestions, work summaries, auto-routing. NOT for core Agentforce setup. | Agent 2026-04-04T10:30:00Z |
 | DONE | model-builder-and-byollm | Model Builder configuration: bringing your own LLM, model selection, API configuration, cost and performance tradeoffs. NOT for Trust Layer. | Agent 2026-04-04T12:00:00Z |
-| IN_PROGRESS | rag-patterns-in-salesforce | Retrieval Augmented Generation using Data Cloud: vector search, knowledge grounding, prompt grounding strategies. NOT for Data Cloud data model setup. | Agent 2026-04-04T00:00:00Z |
+| DONE | rag-patterns-in-salesforce | Retrieval Augmented Generation using Data Cloud: vector search, knowledge grounding, prompt grounding strategies. NOT for Data Cloud data model setup. | Agent 2026-04-04T00:00:00Z |
 | TODO | agent-testing-and-evaluation | Testing agents: conversation testing, topic coverage, utterance testing, evaluation metrics, regression testing patterns. NOT for agent creation. | |
 | TODO | agent-channel-deployment | Deploying agents to channels: web, Slack, API, mobile, embedded service, multi-channel coordination. NOT for agent logic design. | |
 | TODO | einstein-bots-to-agentforce-migration | Migrating from legacy Einstein Bots to Agentforce: feature mapping, conversation design translation, cutover plan. NOT for new Agentforce setup. | |
 | TODO | agentforce-data-cloud-grounding | Grounding agents with Data Cloud: data streams for grounding, DMOs, vector embeddings, search index configuration. NOT for standalone Data Cloud setup. | |
 | TODO | custom-agent-actions-apex | Building custom Apex invocable actions for Agentforce: input/output schema, error handling, security context. NOT for standard agent actions (use agent-actions). | |
 | TODO | agentforce-guardrails | Agent guardrails: topic classification boundaries, fallback handling, escalation rules, restricted topics, abuse prevention. NOT for Trust Layer. | |
+| TODO | agentforce-observability | Agentforce session and message observability: extracting conversation data from Data Cloud, agent performance analytics, trace analysis, session query patterns, monitoring agent effectiveness. NOT for Einstein Trust Layer (use einstein-trust-layer). | |
+| TODO | agentforce-persona-design | Agentforce persona design: tone and behavior encoding, persona templates, brand voice alignment, persona testing, multi-persona strategies, conversation style guidelines. NOT for agent topic design (use agent-topic-design). | |
+| TODO | agent-script-dsl | Agent Script DSL (.agent files): syntax patterns, finite state machine architecture, metadata lifecycle, LSP validation, declarative agent behavior definitions, script testing. NOT for Apex-based agent actions (use custom-agent-actions-apex). | |
 | TODO | sf-to-llm-data-pipelines | Preparing and exporting Salesforce data for LLM consumption: data extraction patterns, chunking strategies, embedding pipelines, knowledge base preparation for external AI. NOT for Agentforce grounding (use agentforce-data-cloud-grounding). | |
 | DONE | einstein-prediction-builder | Einstein Prediction Builder: custom predictions, field selection, model training, scoring records, embedding predictions. NOT for Einstein Discovery. | Agent 2026-04-04T08:00:00Z |
 | TODO | einstein-next-best-action | Next Best Action: strategies, recommendations, action flows, display in Lightning, recommendation filtering. NOT for Prediction Builder. | |
@@ -196,7 +199,7 @@ These skills apply across all clouds. Build before cloud-specific phases.
 | DONE | calculation-procedures | Calculation Procedure and Calculation Matrix setup: step types, matrix versioning, lookup tables, pricing calculations. NOT for DataRaptor transforms. | Agent 2026-04-04T00:00:00Z |
 | DONE | omnistudio-debugging | OmniStudio debugging: console debugging, previewing, breakpoints, DataRaptor testing, error tracing, log analysis. NOT for Apex debugging. | Agent 2026-04-04T10:00:00Z |
 | DONE | omnistudio-deployment-datapacks | DataPack export, import, version control, migration between orgs, CI/CD for OmniStudio components. NOT for SFDX deployment. | Agent 2026-04-04T12:00:00Z |
-| IN_PROGRESS | omnistudio-performance | OmniStudio performance optimization: lazy loading, remote actions, caching, reducing API calls in OmniScripts. NOT for LWC performance. | Agent 2026-04-04T00:00:00Z |
+| DONE | omnistudio-performance | OmniStudio performance optimization: lazy loading, remote actions, caching, reducing API calls in OmniScripts. NOT for LWC performance. | Agent 2026-04-04T00:00:00Z |
 | TODO | industries-cpq-vs-salesforce-cpq | Comparing Industries CPQ (Vlocity) with Salesforce CPQ: feature parity, migration paths, decision criteria. NOT for implementing either CPQ. | |
 | TODO | omnistudio-lwc-integration | Embedding OmniScripts in LWC, calling LWC from OmniScripts, custom LWC elements in OmniStudio context. NOT for standalone LWC development. | |
 | TODO | vlocity-to-native-omnistudio-migration | Migrating from Vlocity managed package to native OmniStudio: component mapping, data conversion, testing. NOT for new OmniStudio setup. | |
@@ -216,7 +219,7 @@ These skills apply across all clouds. Build before cloud-specific phases.
 | DONE | rest-api-patterns | Salesforce REST API CRUD operations: query endpoint, composite resources, versioning, error handling, pagination. NOT for GraphQL API (use graphql-api-patterns). | Agent 2026-04-04T00:00:00Z |
 | DONE | soap-api-patterns | SOAP API usage: enterprise vs partner WSDL, when to use SOAP over REST, login and session management. NOT for REST API. | Agent 2026-04-04T00:00:00Z |
 | DONE | streaming-api-and-pushtopic | Streaming API setup: PushTopic events, Generic Streaming, CometD client setup, replay, channel limits. NOT for Platform Events (use platform-events-apex). | Agent 2026-04-04T12:00:00Z |
-| IN_PROGRESS | platform-events-integration | Platform Events for integration: publish from external systems, subscribe externally, replay ID handling, high-volume events. NOT for Apex-only event patterns (use platform-events-apex). | Agent 2026-04-04T00:00:00Z |
+| DONE | platform-events-integration | Platform Events for integration: publish from external systems, subscribe externally, replay ID handling, high-volume events. NOT for Apex-only event patterns (use platform-events-apex). | Agent 2026-04-04T00:00:00Z |
 | TODO | change-data-capture-integration | CDC setup for integration: change event channels, external subscription, replay, entity selection, subscriber management. NOT for Apex CDC triggers. | |
 | DONE | bulk-api-patterns | Bulk API 2.0 job lifecycle: serial vs parallel, ingest and query jobs, monitoring, failed records, large data volumes. NOT for Data Loader UI. | Agent 2026-04-04T00:00:00Z |
 | TODO | composite-api-patterns | Composite API requests: sObject Tree, batch operations, subrequest limits, dependency management. NOT for single REST API calls. | |
@@ -260,7 +263,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | DONE | enterprise-territory-management | Territory hierarchies, territory types, assignment rules, territory models, activation, forecast by territory. NOT for role hierarchy (use sharing-and-visibility). | Agent 2026-04-04T00:00:00Z |
 | DONE | custom-permissions | Creating and checking custom permissions: permission set integration, using in validation rules, Apex, and Flow. NOT for permission sets (use permission-set-architecture). | Agent 2026-04-04T06:00:00Z |
 | DONE | delegated-administration | Delegated admin setup: group membership management, custom object admin delegation, limitations, use cases. NOT for user management (use user-management). | Agent 2026-04-04T12:00:00Z |
-| IN_PROGRESS | dynamic-forms-and-actions | Dynamic Forms on Lightning record pages: field sections, visibility rules, dynamic actions, migration from page layouts. NOT for page layout design (use record-types-and-page-layouts). | Agent 2026-04-04T00:00:00Z |
+| DONE | dynamic-forms-and-actions | Dynamic Forms on Lightning record pages: field sections, visibility rules, dynamic actions, migration from page layouts. NOT for page layout design (use record-types-and-page-layouts). | Agent 2026-04-04T00:00:00Z |
 | TODO | path-and-guidance | Path setup on opportunity and other objects: guidance steps, key fields, celebration confetti, path customization. NOT for sales process configuration. | |
 | TODO | queues-and-public-groups | Queue creation, queue membership, case/lead queues, public groups, using groups in sharing rules and assignment. NOT for assignment rules (use assignment-rules). | |
 | TODO | custom-metadata-types-and-settings | Custom Metadata Types vs Custom Settings: when to use each, hierarchical vs list, deployment behavior, accessing from Apex and Flow. NOT for custom objects (use object-creation-and-design). | |
@@ -315,7 +318,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
 | DONE | continuation-callouts | Continuation pattern for long-running callouts from Visualforce/LWC: async HTTP, timeout handling, callback methods. NOT for synchronous callouts (use callouts-and-http-integrations). | Agent 2026-04-04T12:00:00Z |
-| IN_PROGRESS | custom-iterators-and-iterables | Implementing Iterable and Iterator interfaces for batch Apex: custom collection traversal, lazy evaluation patterns. NOT for standard list iteration. | Agent 2026-04-04T00:00:00Z |
+| DONE | custom-iterators-and-iterables | Implementing Iterable and Iterator interfaces for batch Apex: custom collection traversal, lazy evaluation patterns. NOT for standard list iteration. | Agent 2026-04-04T00:00:00Z |
 | DONE | apex-managed-sharing | Sharing records programmatically via Apex: Share objects, row cause, sharing recalculation, with/without sharing patterns. NOT for declarative sharing rules (use sharing-and-visibility). | Agent 2026-04-04T06:00:00Z |
 | DONE | apex-email-services | Inbound email handling: InboundEmailHandler, email-to-Apex routing, parsing attachments, email service addresses, error handling. NOT for outbound email templates. | Agent 2026-04-04T10:30:00Z |
 | TODO | dynamic-apex | Dynamic SOQL, dynamic SOSL, Schema.describe methods, runtime type inspection, dynamic field access, SObjectType. NOT for static SOQL (use soql-fundamentals). | |
@@ -356,7 +359,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | DONE | lwc-dynamic-components | Dynamic component creation with lwc:component, lazy loading, runtime component resolution, dynamic imports. NOT for static component composition. | Agent 2026-04-04T08:00:00Z |
 | DONE | message-channel-patterns | Lightning Message Service: message channels, cross-DOM communication, publish/subscribe patterns, scope management. NOT for parent-child communication (use component-communication). | Agent 2026-04-04T12:00:00Z |
 | DONE | lwc-imperative-apex | Imperative Apex calls from LWC: error handling, loading states, cacheable vs non-cacheable, data refresh patterns. NOT for wire service (use wire-service-patterns). | Agent 2026-04-04T10:30:00Z |
-| IN_PROGRESS | lwc-base-component-recipes | Effective use of lightning-record-form, lightning-record-edit-form, lightning-record-view-form, datatable customization. NOT for custom form building (use lwc-forms-and-validation). | Agent 2026-04-04T00:00:00Z |
+| DONE | lwc-base-component-recipes | Effective use of lightning-record-form, lightning-record-edit-form, lightning-record-view-form, datatable customization. NOT for custom form building (use lwc-forms-and-validation). | Agent 2026-04-04T00:00:00Z |
 | TODO | aura-to-lwc-migration | Migrating Aura components to LWC: feature mapping, interoperability wrappers, event translation, navigation patterns, Aura-LWC coexistence. NOT for new LWC development. | |
 | TODO | lwc-accessibility-patterns | LWC accessibility: ARIA attributes, keyboard navigation, screen reader support, WCAG 2.1 compliance, focus management, accessible data tables. NOT for general LWC styling. | |
 | TODO | common-lwc-runtime-errors | Common LWC runtime errors and fixes: wire adapter failures, navigation errors, Lightning Locker/LWS conflicts, shadow DOM issues, async rendering bugs, slot projection problems, event propagation mistakes. NOT for LWC fundamentals. | |
@@ -369,7 +372,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 |--------|------------|-------------|-------|
 | DONE | flow-debugging | Flow debug log analysis: flow fault email configuration, debugging record-triggered flows, step-by-step tracing, test runs. NOT for Apex debugging (use debug-and-logging). | Agent 2026-04-04T10:30:00Z |
 | DONE | auto-launched-flow-patterns | Auto-launched flow invocation: from Apex, from REST API, from platform events, from other flows, entry conditions. NOT for record-triggered flows (use record-triggered-flow-patterns). | Agent 2026-04-04T12:00:00Z |
-| IN_PROGRESS | flow-collection-processing | Collection variables, loop elements, assignment operations on collections, collection filters, sorting, Transform element. NOT for individual record processing. | Agent 2026-04-04T00:00:00Z |
+| DONE | flow-collection-processing | Collection variables, loop elements, assignment operations on collections, collection filters, sorting, Transform element. NOT for individual record processing. | Agent 2026-04-04T00:00:00Z |
 | TODO | flow-external-services | Calling external APIs from Flow via External Services: HTTP callout action, parsing responses, error handling. NOT for Apex callouts. | |
 | TODO | flow-email-and-notifications | Send email action, custom notifications from Flow, SMS via Flow, Slack notifications, rich notification content. NOT for email templates (use email-templates-and-alerts). | |
 | TODO | pause-elements-and-wait-events | Flow pause elements: wait event configuration, time-based resume, platform event resume, resume conditions. NOT for scheduled flows (use scheduled-flows). | |
@@ -388,7 +391,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | DONE | data-archival-strategies | Big Object usage, archival to external storage, field history truncation, record count limits and their impact, soft-delete and recycle bin behavior. NOT for data migration (use data-migration-planning). | Already built |
 | DONE | soql-query-optimization | Selective queries, index usage, query plan tool, avoiding non-selective filters, skinny tables, field sets for dynamic queries. NOT for governor limits in Apex (use apex-cpu-and-heap-optimization). | Already built |
 | DONE | field-history-tracking | Enabling field history, 18-month retention limit, History related list behavior, querying history objects (AccountHistory, etc.), limitations and alternatives. NOT for Event Monitoring (use security skills). | Agent 2026-04-04T12:00:00Z |
-| IN_PROGRESS | external-data-and-big-objects | Big Objects for archival, async SOQL for Big Objects, External Objects vs Big Objects decision, custom index fields. NOT for Salesforce Connect (use salesforce-connect-external-objects). | Agent 2026-04-04T00:00:00Z |
+| DONE | external-data-and-big-objects | Big Objects for archival, async SOQL for Big Objects, External Objects vs Big Objects decision, custom index fields. NOT for Salesforce Connect (use salesforce-connect-external-objects). | Agent 2026-04-04T00:00:00Z |
 | TODO | person-accounts | Person Account model: enabling person accounts, B2C data model, account-contact behavior differences, limitations, migration considerations, reporting impact. NOT for standard business accounts. | |
 | TODO | batch-data-cleanup-patterns | Scheduled batch data cleanup: temporary record purging, retention policy enforcement, nightly cleanup jobs, storage optimization, recycle bin management, async deletion. NOT for data archival to external storage (use data-archival-strategies). | |
 | TODO | data-storage-management | Salesforce storage management: file storage vs data storage, storage usage monitoring, storage optimization, large text field strategies, attachment alternatives, storage alerts. NOT for external storage integration. | |
@@ -411,7 +414,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | DONE | technical-debt-assessment | Identifying dead code, unused automations, overlapping flows and triggers, deprecated features in use, complexity indicators. Produces a findings report. NOT for implementing fixes. | Already built |
 | DONE | well-architected-review | Applying Salesforce Well-Architected Framework pillars (Trusted, Easy, Adaptable) to an org assessment. Produces a structured review. NOT for individual pillar deep-dives. | Already built |
 | DONE | platform-selection-guidance | Choosing the right Salesforce platform feature for a requirement: Flow vs Apex, LWC vs Aura (legacy), Custom Metadata vs Custom Settings vs Custom Objects, OmniStudio vs standard automation. NOT for implementation of the chosen option. | Already built |
-| IN_PROGRESS | security-architecture-review | Reviewing an org's security posture: sharing model completeness, FLS coverage, Apex security patterns, exposed APIs, Shield needs. Produces findings. NOT for implementing fixes (use security/* skills). | Agent 2026-04-04T00:00:00Z |
+| DONE | security-architecture-review | Reviewing an org's security posture: sharing model completeness, FLS coverage, Apex security patterns, exposed APIs, Shield needs. Produces findings. NOT for implementing fixes (use security/* skills). | Agent 2026-04-04T00:00:00Z |
 | TODO | government-cloud-compliance | Government Cloud architecture: FedRAMP High, Hyperforce, GovCloud Plus, data residency, CMS ARC-AMPE controls, compliance automation patterns. NOT for general security (use security/* skills). | |
 | TODO | integration-framework-design | Integration framework architecture: service interface pattern, factory pattern, centralized callout handling, dynamic service resolution, response logging, error propagation. NOT for individual API implementation. | |
 | TODO | org-edition-and-feature-licensing | Salesforce edition selection: Enterprise vs Unlimited vs Performance feature differences, add-on licensing (Shield, CPQ, Health Cloud), feature availability by edition, upgrade path planning. NOT for license optimization (use license-optimization-strategy). | |
@@ -1447,6 +1450,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | TODO | salesforce-maps-setup | Salesforce Maps: route optimization, territory planning, live tracking, geolocation visualization, proximity search, drive-time analysis. NOT for Field Service scheduling. | admin |
 | TODO | rebate-management-setup | Rebate Management: rebate types, payout calculations, accruals, partner rebates, program setup, compliance reporting. NOT for CPQ discounts. | admin |
 | TODO | revenue-intelligence-setup | Revenue Intelligence: pipeline inspection, deal insights, forecast accuracy analytics, Einstein analytics for sales leaders. NOT for CRM Analytics setup (use crm-analytics-* skills). | admin |
+| TODO | salesforce-erd-and-diagramming | Salesforce ERD and diagram generation: Mermaid/PlantUML data model diagrams for standard clouds (Sales, Service, FSL, Commerce, Revenue Cloud), OAuth flow diagrams, architecture diagram patterns, object relationship visualization. NOT for data model design decisions (use data-model-design-patterns). | architect |
 | TODO | salesforce-backup-and-restore | Salesforce Backup & Restore: native backup service, Odaseva/OwnBackup, metadata backup, recovery procedures, retention policies, compliance. NOT for data archival (use data-archival-strategies). | devops |
 | TODO | eda-data-model-and-patterns | Education Data Architecture (EDA) data model: Account record types for Academic, Household, Business, Administrative; Contact-centric model, Affiliations, Program Plans, Course Connections, Term/Course hierarchy. NOT for standard data model. | data |
 

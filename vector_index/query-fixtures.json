@@ -193,6 +193,12 @@
       "top_k": 3
     },
     {
+      "query": "custom Iterable Iterator batch Apex start method lazy evaluation",
+      "domain": "apex",
+      "expected_skill": "apex/custom-iterators-and-iterables",
+      "top_k": 3
+    },
+    {
       "query": "RestResource RestContext status codes versioning",
       "domain": "apex",
       "expected_skill": "apex/apex-rest-services",
@@ -649,6 +655,18 @@
       "top_k": 3
     },
     {
+      "query": "how do I query a big object with async SOQL and composite index",
+      "domain": "data",
+      "expected_skill": "data/external-data-and-big-objects",
+      "top_k": 3
+    },
+    {
+      "query": "external object vs big object decision for high volume historical data",
+      "domain": "data",
+      "expected_skill": "data/external-data-and-big-objects",
+      "top_k": 3
+    },
+    {
       "query": "slow soql query timeout index optimization",
       "domain": "data",
       "expected_skill": "data/soql-query-optimization",
@@ -895,6 +913,12 @@
       "top_k": 3
     },
     {
+      "query": "bitbucket pipelines salesforce deploy CI",
+      "domain": "devops",
+      "expected_skill": "devops/bitbucket-pipelines-for-salesforce",
+      "top_k": 3
+    },
+    {
       "query": "trusted IP ranges CSP salesforce login",
       "domain": "security",
       "expected_skill": "security/network-security-and-trusted-ips",
@@ -946,6 +970,54 @@
       "query": "field history tracking audit trail salesforce",
       "domain": "data",
       "expected_skill": "data/field-history-tracking",
+      "top_k": 3
+    },
+    {
+      "query": "flow loop filter sort transform collection variable DML",
+      "domain": "flow",
+      "expected_skill": "flow/flow-collection-processing",
+      "top_k": 3
+    },
+    {
+      "query": "dynamic forms lightning record page visibility rules field sections",
+      "domain": "admin",
+      "expected_skill": "admin/dynamic-forms-and-actions",
+      "top_k": 3
+    },
+    {
+      "query": "RAG retrieval augmented generation data cloud vector search agent grounding",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/rag-patterns-in-salesforce",
+      "top_k": 3
+    },
+    {
+      "query": "security architecture review org sharing model FLS exposed APIs Shield assessment",
+      "domain": "architect",
+      "expected_skill": "architect/security-architecture-review",
+      "top_k": 3
+    },
+    {
+      "query": "publish platform events from external system CometD replay ID durable subscriber",
+      "domain": "integration",
+      "expected_skill": "integration/platform-events-integration",
+      "top_k": 3
+    },
+    {
+      "query": "lightning record form record edit form datatable LWC base components",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-base-component-recipes",
+      "top_k": 3
+    },
+    {
+      "query": "omnistudio performance slow OmniScript integration procedure caching lazy loading",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/omnistudio-performance",
+      "top_k": 3
+    },
+    {
+      "query": "sandbox data masking PII compliance GDPR Salesforce Data Mask product",
+      "domain": "security",
+      "expected_skill": "security/sandbox-data-masking",
       "top_k": 3
     }
   ]
