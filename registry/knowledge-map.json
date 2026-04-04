@@ -16,6 +16,7 @@
       "admin/duplicate-management",
       "admin/einstein-analytics-basics",
       "admin/email-templates-and-alerts",
+      "admin/enterprise-territory-management",
       "admin/escalation-rules",
       "admin/flow-for-admins",
       "admin/formula-fields",
@@ -39,6 +40,7 @@
     "agentforce": [
       "agentforce/agent-actions",
       "agentforce/agent-topic-design",
+      "agentforce/agentforce-agent-creation",
       "agentforce/einstein-trust-layer"
     ],
     "apex": [
@@ -87,6 +89,7 @@
       "data/sosl-search-patterns"
     ],
     "devops": [
+      "devops/sandbox-refresh-and-templates",
       "devops/scratch-org-management"
     ],
     "flow": [
@@ -106,7 +109,8 @@
       "integration/graphql-api-patterns",
       "integration/oauth-flows-and-connected-apps",
       "integration/rest-api-patterns",
-      "integration/salesforce-connect-external-objects"
+      "integration/salesforce-connect-external-objects",
+      "integration/soap-api-patterns"
     ],
     "lwc": [
       "lwc/component-communication",
@@ -125,6 +129,7 @@
       "lwc/wire-service-patterns"
     ],
     "omnistudio": [
+      "omnistudio/calculation-procedures",
       "omnistudio/dataraptor-patterns",
       "omnistudio/flexcard-design-patterns",
       "omnistudio/integration-procedures",
@@ -132,6 +137,7 @@
       "omnistudio/omnistudio-security"
     ],
     "security": [
+      "security/event-monitoring",
       "security/org-hardening-and-baseline-config",
       "security/permission-set-groups-and-muting",
       "security/platform-encryption"
@@ -155,6 +161,9 @@
     ],
     "accessibility-testing": [
       "lwc/lwc-testing"
+    ],
+    "account-assignment-rules": [
+      "admin/enterprise-territory-management"
     ],
     "action-contracts": [
       "agentforce/agent-actions"
@@ -181,9 +190,25 @@
     "agent-boundaries": [
       "agentforce/agent-topic-design"
     ],
+    "agent-channels": [
+      "agentforce/agentforce-agent-creation"
+    ],
+    "agent-creation": [
+      "agentforce/agentforce-agent-creation"
+    ],
+    "agent-deployment": [
+      "agentforce/agentforce-agent-creation"
+    ],
+    "agent-lifecycle": [
+      "agentforce/agentforce-agent-creation"
+    ],
+    "agent-permissions": [
+      "agentforce/agentforce-agent-creation"
+    ],
     "agentforce": [
       "agentforce/agent-actions",
-      "agentforce/agent-topic-design"
+      "agentforce/agent-topic-design",
+      "agentforce/agentforce-agent-creation"
     ],
     "aggregate-soql": [
       "data/roll-up-summary-alternatives"
@@ -269,6 +294,9 @@
     ],
     "asynchronous-process": [
       "flow/orchestration-flows"
+    ],
+    "audit": [
+      "security/event-monitoring"
     ],
     "audit-trail": [
       "agentforce/einstein-trust-layer"
@@ -356,6 +384,12 @@
     ],
     "cache-session": [
       "apex/platform-cache"
+    ],
+    "calculation-matrix": [
+      "omnistudio/calculation-procedures"
+    ],
+    "calculation-procedures": [
+      "omnistudio/calculation-procedures"
     ],
     "card-actions": [
       "omnistudio/flexcard-design-patterns"
@@ -518,6 +552,9 @@
     "data-governance": [
       "data/data-quality-and-governance"
     ],
+    "data-handling": [
+      "devops/sandbox-refresh-and-templates"
+    ],
     "data-load": [
       "admin/data-import-and-management"
     ],
@@ -592,6 +629,9 @@
       "apex/debug-and-logging",
       "apex/debug-logs-and-developer-console"
     ],
+    "decision-matrix": [
+      "omnistudio/calculation-procedures"
+    ],
     "declarative-vs-programmatic": [
       "architect/solution-design-patterns"
     ],
@@ -631,6 +671,7 @@
       "lwc/lwc-offline-and-mobile"
     ],
     "devops": [
+      "devops/sandbox-refresh-and-templates",
       "devops/scratch-org-management"
     ],
     "dlrs": [
@@ -666,6 +707,9 @@
     "encryption": [
       "security/platform-encryption"
     ],
+    "enterprise-wsdl": [
+      "integration/soap-api-patterns"
+    ],
     "environment-strategy": [
       "admin/sandbox-strategy"
     ],
@@ -687,6 +731,15 @@
     "etl": [
       "data/data-migration-planning"
     ],
+    "etm": [
+      "admin/enterprise-territory-management"
+    ],
+    "event-log-file": [
+      "security/event-monitoring"
+    ],
+    "event-monitoring": [
+      "security/event-monitoring"
+    ],
     "event-trigger": [
       "apex/platform-events-apex"
     ],
@@ -699,6 +752,9 @@
     "experience-cloud": [
       "flow/flow-for-experience-cloud",
       "lwc/navigation-and-routing"
+    ],
+    "expression-sets": [
+      "omnistudio/calculation-procedures"
     ],
     "external-credentials": [
       "admin/connected-apps-and-auth"
@@ -982,6 +1038,9 @@
       "admin/permission-sets-vs-profiles",
       "security/permission-set-groups-and-muting"
     ],
+    "legacy-integration": [
+      "integration/soap-api-patterns"
+    ],
     "licenses": [
       "admin/user-management"
     ],
@@ -1085,7 +1144,8 @@
       "admin/custom-field-creation"
     ],
     "metadata-api": [
-      "apex/metadata-api-and-package-xml"
+      "apex/metadata-api-and-package-xml",
+      "integration/soap-api-patterns"
     ],
     "mfa": [
       "admin/org-setup-and-configuration"
@@ -1170,6 +1230,7 @@
       "omnistudio/omniscript-design-patterns"
     ],
     "omnistudio": [
+      "omnistudio/calculation-procedures",
       "omnistudio/flexcard-design-patterns",
       "omnistudio/integration-procedures",
       "omnistudio/omniscript-design-patterns"
@@ -1179,6 +1240,9 @@
     ],
     "omnistudio-security": [
       "omnistudio/omnistudio-security"
+    ],
+    "opportunity-territory": [
+      "admin/enterprise-territory-management"
     ],
     "order-of-execution": [
       "flow/record-triggered-flow-patterns"
@@ -1248,6 +1312,9 @@
     "parent-child-summary": [
       "data/roll-up-summary-alternatives"
     ],
+    "partner-wsdl": [
+      "integration/soap-api-patterns"
+    ],
     "path-coverage": [
       "flow/flow-testing"
     ],
@@ -1295,6 +1362,12 @@
     "platform-selection": [
       "architect/platform-selection-guidance"
     ],
+    "post-refresh-automation": [
+      "devops/sandbox-refresh-and-templates"
+    ],
+    "pricing": [
+      "omnistudio/calculation-procedures"
+    ],
     "process-builder-migration": [
       "admin/process-automation-selection"
     ],
@@ -1328,6 +1401,9 @@
     ],
     "reactive-parameters": [
       "lwc/wire-service-patterns"
+    ],
+    "real-time-events": [
+      "security/event-monitoring"
     ],
     "record-access": [
       "admin/sharing-and-visibility"
@@ -1437,8 +1513,17 @@
     "salesforce-to-salesforce": [
       "architect/multi-org-strategy"
     ],
+    "sandbox-refresh": [
+      "devops/sandbox-refresh-and-templates"
+    ],
+    "sandbox-templates": [
+      "devops/sandbox-refresh-and-templates"
+    ],
     "sandboxes": [
       "admin/sandbox-strategy"
+    ],
+    "sandboxpostcopy": [
+      "devops/sandbox-refresh-and-templates"
     ],
     "save-and-resume": [
       "omnistudio/omniscript-design-patterns"
@@ -1510,6 +1595,9 @@
     "service-layer": [
       "apex/apex-design-patterns"
     ],
+    "session-management": [
+      "integration/soap-api-patterns"
+    ],
     "session-settings": [
       "admin/org-setup-and-configuration"
     ],
@@ -1544,10 +1632,14 @@
     ],
     "shield": [
       "data/data-quality-and-governance",
+      "security/event-monitoring",
       "security/platform-encryption"
     ],
     "skinny-tables": [
       "data/data-model-design-patterns"
+    ],
+    "soap-api": [
+      "integration/soap-api-patterns"
     ],
     "solution-design": [
       "architect/solution-design-patterns"
@@ -1618,6 +1710,15 @@
     "templates": [
       "admin/email-templates-and-alerts"
     ],
+    "territory-forecast": [
+      "admin/enterprise-territory-management"
+    ],
+    "territory-hierarchy": [
+      "admin/enterprise-territory-management"
+    ],
+    "territory-model": [
+      "admin/enterprise-territory-management"
+    ],
     "test-data": [
       "flow/flow-testing"
     ],
@@ -1636,6 +1737,9 @@
     ],
     "third-party-library": [
       "lwc/static-resources-in-lwc"
+    ],
+    "threat-detection": [
+      "security/event-monitoring"
     ],
     "time-based-automation": [
       "admin/escalation-rules"
