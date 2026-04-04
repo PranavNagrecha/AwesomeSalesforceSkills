@@ -6,6 +6,7 @@
       "admin/approval-processes",
       "admin/assignment-rules",
       "admin/change-management-and-deployment",
+      "admin/change-management-and-training",
       "admin/connected-apps-and-auth",
       "admin/custom-field-creation",
       "admin/custom-metadata-types",
@@ -280,6 +281,9 @@
     ],
     "cdc": [
       "apex/platform-events-apex"
+    ],
+    "change-management": [
+      "admin/change-management-and-training"
     ],
     "change-sets": [
       "admin/change-management-and-deployment"
@@ -617,6 +621,9 @@
     ],
     "global-value-set": [
       "admin/picklist-and-value-sets"
+    ],
+    "go-live": [
+      "admin/change-management-and-training"
     ],
     "governor-limits": [
       "apex/governor-limits",
@@ -1061,6 +1068,9 @@
     "refreshapex": [
       "lwc/wire-service-patterns"
     ],
+    "release-communication": [
+      "admin/change-management-and-training"
+    ],
     "release-management": [
       "admin/change-management-and-deployment"
     ],
@@ -1287,6 +1297,9 @@
     "topic-selector": [
       "agentforce/agent-topic-design"
     ],
+    "training": [
+      "admin/change-management-and-training"
+    ],
     "trigger-decision": [
       "admin/process-automation-selection"
     ],
@@ -1313,6 +1326,9 @@
     ],
     "url-state": [
       "lwc/navigation-and-routing"
+    ],
+    "user-adoption": [
+      "admin/change-management-and-training"
     ],
     "user-management": [
       "admin/user-management"
