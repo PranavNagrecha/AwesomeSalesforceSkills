@@ -103,6 +103,19 @@ Reports and dashboards show what the running user can access. In a Private shari
 
 **Rule:** Default to "Run as logged-in user". Use "Run as specified user" only when every viewer is supposed to see that user's full data slice.
 
+
+## Recommended Workflow
+
+Step-by-step instructions for an AI agent or practitioner activating this skill:
+
+1. Gather context — confirm the org edition, relevant objects, and current configuration state
+2. Review official sources — check the references in this skill's well-architected.md before making changes
+3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
+4. Validate — run the skill's checker script and verify against the Review Checklist below
+5. Document — record any deviations from standard patterns and update the template if needed
+
+---
+
 ## Salesforce-Specific Gotchas
 
 - **Reports respect record-level sharing — always**: A report showing "0 results" often means the running user has no access to the records, not that the records don't exist. Before investigating the report, confirm the user's sharing access to the relevant records.

@@ -91,10 +91,14 @@ skills/<domain>/<skill-name>/
 ├── references/
 │   ├── examples.md
 │   ├── gotchas.md
-│   └── well-architected.md
+│   ├── well-architected.md
+│   └── llm-anti-patterns.md
 ├── templates/
 └── scripts/
 ```
+
+- `SKILL.md` must include a `## Recommended Workflow` section with 3–7 numbered steps.
+- `references/llm-anti-patterns.md` must list 5+ mistakes AI assistants commonly make in this domain.
 
 Do not add machine-generated metadata files inside a skill folder.
 

@@ -90,6 +90,19 @@ Apex has limited native DI ergonomics compared with other languages, but interfa
 | Object-specific business rules repeat across entry points | Domain layer | Keeps behavior tied to the object’s business rules |
 | Tests rely on `Test.isRunningTest()` to skip dependencies | Interface + injected dependency | Better isolation without production branching |
 
+
+## Recommended Workflow
+
+Step-by-step instructions for an AI agent or practitioner activating this skill:
+
+1. Gather context — confirm the org edition, relevant objects, and current configuration state
+2. Review official sources — check the references in this skill's well-architected.md before making changes
+3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
+4. Validate — run the skill's checker script and verify against the Review Checklist below
+5. Document — record any deviations from standard patterns and update the template if needed
+
+---
+
 ## Review Checklist
 
 - [ ] Entry points are adapters, not business-logic containers.

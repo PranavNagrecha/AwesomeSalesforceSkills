@@ -174,6 +174,7 @@ Fill in order:
 - `inputs`: What the agent/user needs to provide before this skill can execute.
 - `outputs`: What artifact or guidance this skill produces.
 - Body (300+ words): Structure as Mode 1 (build from scratch), Mode 2 (review/audit), Mode 3 (troubleshoot) where applicable. Include step-by-step guidance an AI can follow without asking the user for clarification. Every factual claim must be traceable to an official source.
+- `## Recommended Workflow`: 3–7 numbered steps that an AI agent or practitioner should follow when this skill activates. Write as directives ("Verify the sharing model", "Run the checker script"), not explanations. This section tells the consuming agent what to DO, not what to KNOW.
 
 **references/examples.md**
 - 2+ real examples. Each must have: Scenario, Problem, Solution, Why it works.
@@ -188,6 +189,11 @@ Fill in order:
 - Map the skill to Well-Architected pillars.
 - `## Official Sources Used` section must list at least one real official Salesforce URL.
 - Do not delete the pre-seeded sources. Add usage context to them.
+
+**references/llm-anti-patterns.md**
+- 5+ mistakes AI coding assistants commonly make in this skill's domain.
+- Each entry must have: What the LLM generates wrong, Why it happens (e.g. Java bleed, hallucinated API, training data bias), Correct pattern with code, Detection hint (regex or keyword).
+- Think about what Claude, Copilot, or Cursor would get wrong when generating code or config for this topic. Common categories: hallucinated methods/APIs, wrong syntax from adjacent languages, missing security enforcement, incorrect governor limit assumptions, outdated API versions.
 
 **scripts/check_*.py**
 - Implement actual validation logic. stdlib only — no pip dependencies.
@@ -296,7 +302,7 @@ Do not create a duplicate.
 
 ## Parallel Mode (Multiple Skills Per Run)
 
-Each skill takes ~8 minutes to build. The hourly window allows up to 6 skills per run. Use parallel mode to fill that window instead of building one skill and sitting idle.
+Each skill takes ~8 minutes to build. Builds run in parallel so wall clock time is ~8 min (longest build) + ~2 min per skill for sequential sync. 10 skills = ~28 min total — well within the 60 min window. Use parallel mode to fill that window instead of building one skill and sitting idle.
 
 **Core model: builds are parallel, syncs are sequential.**
 - **Build phase**: multiple skills built simultaneously — each builder only touches its own `skills/<domain>/<skill>/` folder, so there are no write conflicts between builders in different domains.

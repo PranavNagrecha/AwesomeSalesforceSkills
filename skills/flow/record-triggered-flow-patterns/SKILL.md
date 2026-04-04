@@ -93,6 +93,19 @@ Record-triggered flows do not replace Salesforce order of execution; they partic
 | Need field-change detection on update | Use entry criteria plus prior-value checks | Prevents irrelevant re-runs and recursion |
 | Heavy orchestration or deep transaction control required | Apex or mixed Flow/Apex design | Record-triggered Flow is not always the best boundary |
 
+
+## Recommended Workflow
+
+Step-by-step instructions for an AI agent or practitioner activating this skill:
+
+1. Gather context — confirm the org edition, relevant objects, and current configuration state
+2. Review official sources — check the references in this skill's well-architected.md before making changes
+3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
+4. Validate — run the skill's checker script and verify against the Review Checklist below
+5. Document — record any deviations from standard patterns and update the template if needed
+
+---
+
 ## Review Checklist
 
 - [ ] Before-save is used for same-record updates whenever possible.

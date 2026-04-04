@@ -197,6 +197,23 @@ def validate_skill_structure(path: Path) -> list[ValidationIssue]:
             if script.is_file() and script.suffix == ".py":
                 issues.extend(_validate_checker_script_content(script))
 
+    # LLM anti-patterns file — WARN if missing or still has TODOs
+    llm_ap_path = path / "references" / "llm-anti-patterns.md"
+    if not llm_ap_path.exists():
+        issues.append(ValidationIssue("WARN", str(path), "missing `references/llm-anti-patterns.md` — add LLM-specific anti-patterns for this skill"))
+    else:
+        llm_text = llm_ap_path.read_text(encoding="utf-8")
+        llm_todo_lines = [ln for ln in llm_text.splitlines() if "TODO:" in ln and not ln.strip().startswith("<!--")]
+        if llm_todo_lines:
+            issues.append(ValidationIssue("WARN", str(llm_ap_path), f"llm-anti-patterns.md contains {len(llm_todo_lines)} unfilled TODO marker(s)"))
+
+    # Recommended Workflow section in SKILL.md — WARN if missing
+    skill_md_path = path / "SKILL.md"
+    if skill_md_path.exists():
+        skill_text = skill_md_path.read_text(encoding="utf-8")
+        if "## Recommended Workflow" not in skill_text:
+            issues.append(ValidationIssue("WARN", str(skill_md_path), "SKILL.md has no `## Recommended Workflow` section — add step-by-step agent instructions"))
+
     waf_path = path / "references" / "well-architected.md"
     if waf_path.exists():
         text = waf_path.read_text(encoding="utf-8")

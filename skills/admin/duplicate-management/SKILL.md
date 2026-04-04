@@ -90,6 +90,19 @@ Use this when users complain about false positives, false negatives, or bad merg
 - **Document survivorship**: users should know which record wins and why.
 - **Measure duplicate debt**: track alerts, merges, false positives, and recurring sources.
 
+
+## Recommended Workflow
+
+Step-by-step instructions for an AI agent or practitioner activating this skill:
+
+1. Gather context — confirm the org edition, relevant objects, and current configuration state
+2. Review official sources — check the references in this skill's well-architected.md before making changes
+3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
+4. Validate — run the skill's checker script and verify against the Review Checklist below
+5. Document — record any deviations from standard patterns and update the template if needed
+
+---
+
 ## Salesforce-Specific Gotchas
 
 - **Fuzzy matching is useful and dangerous**: it catches real duplicates and also produces false positives if you tune lazily.

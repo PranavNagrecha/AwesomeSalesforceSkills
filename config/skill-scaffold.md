@@ -88,6 +88,18 @@ TODO: Provide a decision table or comparison for the main choices a practitioner
 
 ---
 
+## Recommended Workflow
+
+Step-by-step instructions for an AI agent or practitioner working on this task:
+
+1. TODO: First step — what context to gather or verify
+2. TODO: Second step — what to check or configure
+3. TODO: Third step — what to build or implement
+4. TODO: Fourth step — what to validate or test
+5. TODO: Fifth step — what to review before marking complete
+
+---
+
 ## Review Checklist
 
 Run through these before marking work in this area complete:

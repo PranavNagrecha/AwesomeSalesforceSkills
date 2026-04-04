@@ -319,6 +319,93 @@ if __name__ == "__main__":
 '''
 
 
+def _scaffold_llm_anti_patterns_md(skill_name: str, domain: str) -> str:
+    title = skill_name.replace("-", " ").title()
+    return f"""# LLM Anti-Patterns — {title}
+
+Common mistakes AI coding assistants make when generating or advising on {title}.
+These patterns help the consuming agent self-check its own output.
+
+## Anti-Pattern 1: TODO: Name the mistake
+
+**What the LLM generates:** TODO: show the wrong output
+
+**Why it happens:** TODO: explain why LLMs default to this (e.g. Java bleed, training data bias, hallucinated API)
+
+**Correct pattern:**
+
+```
+TODO: show the correct output
+```
+
+**Detection hint:** TODO: regex or keyword to spot this mistake
+
+---
+
+## Anti-Pattern 2: TODO: Name the mistake
+
+**What the LLM generates:** TODO: wrong output
+
+**Why it happens:** TODO: explanation
+
+**Correct pattern:**
+
+```
+TODO: correct output
+```
+
+**Detection hint:** TODO: how to catch it
+
+---
+
+## Anti-Pattern 3: TODO: Name the mistake
+
+**What the LLM generates:** TODO: wrong output
+
+**Why it happens:** TODO: explanation
+
+**Correct pattern:**
+
+```
+TODO: correct output
+```
+
+**Detection hint:** TODO: how to catch it
+
+---
+
+## Anti-Pattern 4: TODO: Name the mistake
+
+**What the LLM generates:** TODO: wrong output
+
+**Why it happens:** TODO: explanation
+
+**Correct pattern:**
+
+```
+TODO: correct output
+```
+
+**Detection hint:** TODO: how to catch it
+
+---
+
+## Anti-Pattern 5: TODO: Name the mistake
+
+**What the LLM generates:** TODO: wrong output
+
+**Why it happens:** TODO: explanation
+
+**Correct pattern:**
+
+```
+TODO: correct output
+```
+
+**Detection hint:** TODO: how to catch it
+"""
+
+
 def _scaffold_template_md(skill_name: str) -> str:
     title = skill_name.replace("-", " ").title()
     return f"""# {title} — Work Template
@@ -430,6 +517,7 @@ After scaffolding:
     write(skill_dir / "references" / "examples.md", _scaffold_examples_md(skill_name))
     write(skill_dir / "references" / "gotchas.md", _scaffold_gotchas_md(skill_name))
     write(skill_dir / "references" / "well-architected.md", _scaffold_well_architected_md(skill_name, domain))
+    write(skill_dir / "references" / "llm-anti-patterns.md", _scaffold_llm_anti_patterns_md(skill_name, domain))
     write(skill_dir / "templates" / f"{skill_name}-template.md", _scaffold_template_md(skill_name))
 
     checker = skill_dir / "scripts" / f"check_{noun}.py"

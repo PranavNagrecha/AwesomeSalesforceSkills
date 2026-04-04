@@ -92,6 +92,19 @@ If the use case requires deep joins, heavy fan-out, callouts per record, or nigh
 | Large nightly or imported dataset with complex joins | Batch Apex or async pattern | Flow becomes harder to bulkify than code at this scale |
 | Loop contains queries, DML, or invocable Apex | Refactor immediately | This is the highest-risk Flow bulkification smell |
 
+
+## Recommended Workflow
+
+Step-by-step instructions for an AI agent or practitioner activating this skill:
+
+1. Gather context — confirm the org edition, relevant objects, and current configuration state
+2. Review official sources — check the references in this skill's well-architected.md before making changes
+3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
+4. Validate — run the skill's checker script and verify against the Review Checklist below
+5. Document — record any deviations from standard patterns and update the template if needed
+
+---
+
 ## Review Checklist
 
 - [ ] No `Get Records`, `Create`, `Update`, `Delete`, or Apex action is executed per loop iteration without a justified exception.

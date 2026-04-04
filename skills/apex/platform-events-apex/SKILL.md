@@ -89,6 +89,19 @@ Change Data Capture is best when the event should represent Salesforce row chang
 | Apex subscriber needs callouts or heavier orchestration | Platform event trigger + Queueable | Thin trigger, safer processing boundary |
 | External consumer must recover after downtime | Replay-aware external subscriber | Replay handling belongs with external consumer state |
 
+
+## Recommended Workflow
+
+Step-by-step instructions for an AI agent or practitioner activating this skill:
+
+1. Gather context — confirm the org edition, relevant objects, and current configuration state
+2. Review official sources — check the references in this skill's well-architected.md before making changes
+3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
+4. Validate — run the skill's checker script and verify against the Review Checklist below
+5. Document — record any deviations from standard patterns and update the template if needed
+
+---
+
 ## Review Checklist
 
 - [ ] Publishers inspect publish results or log publication failures deliberately.

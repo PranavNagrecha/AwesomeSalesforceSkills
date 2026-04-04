@@ -159,7 +159,20 @@ For each org pair that must exchange data:
 
 Use this mode when reviewing an inherited or in-flight multi-org design for risks and improvement opportunities.
 
-### Review Checklist
+#
+## Recommended Workflow
+
+Step-by-step instructions for an AI agent or practitioner activating this skill:
+
+1. Gather context — confirm the org edition, relevant objects, and current configuration state
+2. Review official sources — check the references in this skill's well-architected.md before making changes
+3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
+4. Validate — run the skill's checker script and verify against the Review Checklist below
+5. Document — record any deviations from standard patterns and update the template if needed
+
+---
+
+## Review Checklist
 
 - [ ] **Justification is documented:** Each production org has a written requirement that a single org cannot satisfy. If not, consolidation should be evaluated.
 - [ ] **No Salesforce-to-Salesforce (S2S) in active use for new integrations:** S2S is a legacy feature. Any active S2S connections should have a migration plan to REST API + Named Credentials.

@@ -30,11 +30,12 @@ This creates the full directory structure:
 
 ```
 skills/<domain>/<skill-name>/
-├── SKILL.md                         ← pre-filled with TODO markers
+├── SKILL.md                         ← pre-filled with TODO markers (includes Recommended Workflow section)
 ├── references/
 │   ├── examples.md                  ← pre-filled with TODO markers
 │   ├── gotchas.md                   ← pre-filled with TODO markers
-│   └── well-architected.md          ← official sources PRE-SEEDED for domain
+│   ├── well-architected.md          ← official sources PRE-SEEDED for domain
+│   └── llm-anti-patterns.md         ← 5+ AI-specific mistakes to avoid
 ├── templates/<skill-name>-template.md
 └── scripts/check_<noun>.py          ← stdlib-only checker stub
 ```
@@ -45,10 +46,11 @@ skills/<domain>/<skill-name>/
 
 Every file created by the scaffold has `TODO:` markers. Fill them all:
 
-- `SKILL.md` — description (must include "NOT for ..."), triggers (3+, 10+ chars each), tags, inputs, outputs, well-architected-pillars, and the full body (300+ words)
+- `SKILL.md` — description (must include "NOT for ..."), triggers (3+, 10+ chars each), tags, inputs, outputs, well-architected-pillars, full body (300+ words), and `## Recommended Workflow` (3–7 numbered agent steps)
 - `references/examples.md` — real examples with context, problem, solution
 - `references/gotchas.md` — non-obvious platform behaviors
 - `references/well-architected.md` — WAF notes; official sources are pre-seeded, add usage context
+- `references/llm-anti-patterns.md` — 5+ mistakes AI assistants make in this domain: wrong output, why it happens, correct pattern, detection hint
 - `scripts/check_<noun>.py` — implement the actual checks (stdlib only)
 
 ### Step 4 — Sync (validates first, then writes)

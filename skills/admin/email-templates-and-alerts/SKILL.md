@@ -87,6 +87,19 @@ Use this when emails are wrong, duplicated, not sent, or missing merge values.
 - **Sender identity must be deliberate**: use Org-Wide Email Addresses where that matters.
 - **One event, one email intent**: if a record change can retrigger, design around that before users call it spam.
 
+
+## Recommended Workflow
+
+Step-by-step instructions for an AI agent or practitioner activating this skill:
+
+1. Gather context — confirm the org edition, relevant objects, and current configuration state
+2. Review official sources — check the references in this skill's well-architected.md before making changes
+3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
+4. Validate — run the skill's checker script and verify against the Review Checklist below
+5. Document — record any deviations from standard patterns and update the template if needed
+
+---
+
 ## Salesforce-Specific Gotchas
 
 - **Merge fields only work in the context you actually have**: wrong related record context means blank or misleading content.

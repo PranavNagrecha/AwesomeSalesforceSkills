@@ -113,6 +113,19 @@ The Master Record Type:
 
 **When to use:** Leave Master RT alone unless you're not using Record Types at all. Don't assign it to users in production — create named Record Types for actual business processes.
 
+
+## Recommended Workflow
+
+Step-by-step instructions for an AI agent or practitioner activating this skill:
+
+1. Gather context — confirm the org edition, relevant objects, and current configuration state
+2. Review official sources — check the references in this skill's well-architected.md before making changes
+3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
+4. Validate — run the skill's checker script and verify against the Review Checklist below
+5. Document — record any deviations from standard patterns and update the template if needed
+
+---
+
 ## Salesforce-Specific Gotchas
 
 - **Changing a record's Record Type can wipe picklist values**: If a picklist field has value "Premium" on the old RT but "Premium" doesn't exist on the new RT's picklist value set, that field goes blank after the RT change. No warning is shown. Run a data quality check BEFORE and AFTER any bulk RT reassignment.

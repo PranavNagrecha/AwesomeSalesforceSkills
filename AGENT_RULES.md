@@ -35,10 +35,11 @@ This creates the full package with pre-filled TODO markers and pre-seeded offici
 
 Every file created by the scaffold contains `TODO:` markers. Every marker must be replaced with real content before sync will succeed. Specifically:
 
-- `SKILL.md` — description (must include "NOT for ..."), triggers (3+, natural-language symptom phrases, 10+ chars each), tags, inputs, outputs, well-architected-pillars, body (300+ words)
+- `SKILL.md` — description (must include "NOT for ..."), triggers (3+, natural-language symptom phrases, 10+ chars each), tags, inputs, outputs, well-architected-pillars, body (300+ words), `## Recommended Workflow` section (3–7 numbered steps an AI agent should follow when this skill activates)
 - `references/examples.md` — real examples with context, problem, solution
 - `references/gotchas.md` — non-obvious platform behaviors
 - `references/well-architected.md` — WAF notes; official sources are pre-seeded, add usage context
+- `references/llm-anti-patterns.md` — 5+ mistakes AI coding assistants commonly make in this skill's domain. Each entry: what the LLM generates wrong, why it happens, the correct pattern, and a detection hint
 - `scripts/check_<noun>.py` — implement actual checks, stdlib only
 
 ### Step 4 — Sync (validates first, hard stop on errors)
@@ -139,6 +140,11 @@ These are enforced by `validate_repo.py` and `skill_sync.py` — they cause a ha
 - The `description` field **must include an explicit scope exclusion** — at least one "NOT for ..." clause. This is what keeps the skill from activating on unrelated queries.
 - The SKILL.md body must have at least 300 words. Do not commit stub skills.
 - `## Official Sources Used` in `references/well-architected.md` must have at least one source listed under the heading — not just the heading itself. Official sources are pre-seeded by `new_skill.py`; do not delete them.
+
+The following are validated as WARNs (advisory, do not block sync):
+
+- `references/llm-anti-patterns.md` should exist and have all TODOs filled. 5+ anti-patterns that AI assistants commonly get wrong in this skill's domain.
+- `## Recommended Workflow` section should exist in SKILL.md with 3–7 numbered steps an AI agent follows when this skill activates. These are directives ("do this"), not explanations ("this is how it works").
 
 ---
 
