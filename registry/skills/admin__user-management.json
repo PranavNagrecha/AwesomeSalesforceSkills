@@ -53,7 +53,7 @@
     "fb75eac3b300ad65dfc7",
     "ff1e7ae9628ea5d7d607"
   ],
-  "content_hash": "82459e95b76325721cbafe4fd1570f123e738286dc6c5fb4eb5733c5551c8752",
+  "content_hash": "1cd88cde8fe02870eabee412d2e6ce5a6fc3bbe60d5efe002da0a6158fe22eed",
   "dependencies": [],
   "description": "Use this skill to create, deactivate, freeze, or manage Salesforce users, assign user licenses and feature licenses, configure profiles and roles, set login hours and IP restrictions, and set up delegated administration. Triggers: adding a new user, deactivating a departing employee, license assignment, freezing a user account, delegated admin setup. NOT for permission sets (use permission-set-architecture) or sharing model design (use sharing-and-visibility).",
   "file_location": "skills/admin/user-management",

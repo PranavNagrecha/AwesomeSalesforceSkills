@@ -575,6 +575,12 @@
       "domain": "admin",
       "expected_skill": "admin/change-management-and-training",
       "top_k": 3
+    },
+    {
+      "query": "how to write a SOQL query with WHERE filter and ORDER BY",
+      "domain": "apex",
+      "expected_skill": "apex/soql-fundamentals",
+      "top_k": 3
     }
   ]
 }

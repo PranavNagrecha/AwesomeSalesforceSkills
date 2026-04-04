@@ -57,6 +57,7 @@
       "apex/platform-cache",
       "apex/platform-events-apex",
       "apex/recursive-trigger-prevention",
+      "apex/soql-fundamentals",
       "apex/soql-security",
       "apex/test-class-standards",
       "apex/trigger-framework"
@@ -161,6 +162,9 @@
     ],
     "aggregate-soql": [
       "data/roll-up-summary-alternatives"
+    ],
+    "apex": [
+      "apex/soql-fundamentals"
     ],
     "apex-metadata-api": [
       "apex/custom-metadata-in-apex"
@@ -395,6 +399,9 @@
     "dashboards": [
       "admin/einstein-analytics-basics",
       "admin/reports-and-dashboards"
+    ],
+    "data-access": [
+      "apex/soql-fundamentals"
     ],
     "data-load": [
       "admin/data-import-and-management"
@@ -1024,6 +1031,9 @@
       "admin/user-management",
       "security/permission-set-groups-and-muting"
     ],
+    "query": [
+      "apex/soql-fundamentals"
+    ],
     "queueable": [
       "apex/async-apex",
       "apex/governor-limits"
@@ -1067,6 +1077,9 @@
     ],
     "refreshapex": [
       "lwc/wire-service-patterns"
+    ],
+    "relationship-queries": [
+      "apex/soql-fundamentals"
     ],
     "release-communication": [
       "admin/change-management-and-training"
@@ -1219,6 +1232,7 @@
       "admin/sharing-and-visibility"
     ],
     "soql": [
+      "apex/soql-fundamentals",
       "apex/soql-security"
     ],
     "sosl": [
@@ -1838,8 +1852,8 @@
         "official-community"
       ],
       "title": "Salesforce Trailhead",
-      "trust": "official-community",
-      "type": "official-community"
+      "trust": "official",
+      "type": "official-doc"
     },
     {
       "domains": [
@@ -1860,8 +1874,8 @@
         "official-community"
       ],
       "title": "Salesforce Architects Blog",
-      "trust": "official-community",
-      "type": "official-community"
+      "trust": "official",
+      "type": "official-doc"
     },
     {
       "domains": [
@@ -1876,8 +1890,8 @@
         "official-community"
       ],
       "title": "Salesforce Ben",
-      "trust": "official-community",
-      "type": "official-community"
+      "trust": "imported",
+      "type": "official-doc"
     },
     {
       "domains": [
@@ -1894,8 +1908,8 @@
         "official-community"
       ],
       "title": "Salesforce Developers Blog",
-      "trust": "official-community",
-      "type": "official-community"
+      "trust": "official",
+      "type": "official-doc"
     },
     {
       "domains": [
@@ -1912,8 +1926,8 @@
         "expert-community"
       ],
       "title": "Andy in the Cloud",
-      "trust": "expert-community",
-      "type": "expert-community"
+      "trust": "imported",
+      "type": "official-doc"
     },
     {
       "domains": [
@@ -1930,8 +1944,8 @@
         "expert-community"
       ],
       "title": "Apex Hours",
-      "trust": "expert-community",
-      "type": "expert-community"
+      "trust": "imported",
+      "type": "official-doc"
     },
     {
       "domains": [
@@ -1952,8 +1966,8 @@
         "accepted-answers"
       ],
       "title": "Salesforce Stack Exchange",
-      "trust": "expert-community",
-      "type": "expert-community"
+      "trust": "imported",
+      "type": "official-doc"
     },
     {
       "domains": [
@@ -1968,8 +1982,8 @@
         "expert-community"
       ],
       "title": "Unofficial SF",
-      "trust": "expert-community",
-      "type": "expert-community"
+      "trust": "imported",
+      "type": "official-doc"
     },
     {
       "domains": [

@@ -211,36 +211,36 @@ sources:
 
   # ── Tier 2: Official Community ────────────────────────────────────────────
   - id: trailhead
-    type: official-community
+    type: official-doc
     title: Salesforce Trailhead
-    trust: official-community
+    trust: official
     url: https://trailhead.salesforce.com
     domains: [admin, apex, lwc, flow, omnistudio, agentforce, security, integration, data, devops]
     tags: [learning, trailhead, official-community]
     summary: Learning-oriented guidance. Use for feature overviews and practitioner onboarding. Verify limits against Tier 1 before citing specific numbers.
 
   - id: salesforce_architects_blog
-    type: official-community
+    type: official-doc
     title: Salesforce Architects Blog
-    trust: official-community
+    trust: official
     url: https://architect.salesforce.com/content
     domains: [admin, apex, lwc, flow, security, integration, data, devops]
     tags: [architecture, patterns, best-practices, official-community]
     summary: Real-world pattern application from Salesforce Architects. Use for architecture decisions and pattern selection.
 
   - id: salesforce_ben
-    type: official-community
+    type: official-doc
     title: Salesforce Ben
-    trust: official-community
+    trust: imported
     url: https://www.salesforceben.com
     domains: [admin, flow, security]
     tags: [admin, how-to, official-community]
     summary: Admin-focused how-tos and feature walkthroughs. Strong on new release features. Cross-check UI flows against help.salesforce.com.
 
   - id: salesforce_developers_blog
-    type: official-community
+    type: official-doc
     title: Salesforce Developers Blog
-    trust: official-community
+    trust: official
     url: https://developer.salesforce.com/blogs
     domains: [apex, lwc, integration, agentforce, devops]
     tags: [dev-patterns, new-features, official-community]
@@ -248,36 +248,36 @@ sources:
 
   # ── Tier 3: Expert Community ──────────────────────────────────────────────
   - id: andy_in_the_cloud
-    type: expert-community
+    type: official-doc
     title: Andy in the Cloud
-    trust: expert-community
+    trust: imported
     url: https://andyinthecloud.com
     domains: [apex, lwc, integration, devops]
     tags: [apex, lwc, platform-internals, expert-community]
     summary: "Deep Apex and LWC technical content. Strong on platform internals, packaging, and non-obvious behaviors. Tag claims as [T3: Andy in the Cloud]."
 
   - id: apex_hours
-    type: expert-community
+    type: official-doc
     title: Apex Hours
-    trust: expert-community
+    trust: imported
     url: https://www.apexhours.com
     domains: [apex, lwc, flow, integration]
     tags: [apex, tutorials, governor-limits, expert-community]
     summary: "Developer tutorials and governor limits deep-dives. Strong on async patterns. Tag claims as [T3: Apex Hours]."
 
   - id: salesforce_stack_exchange
-    type: expert-community
+    type: official-doc
     title: Salesforce Stack Exchange
-    trust: expert-community
+    trust: imported
     url: https://salesforce.stackexchange.com
     domains: [admin, apex, lwc, flow, omnistudio, security, integration, data, devops]
     tags: [q-and-a, expert-community, accepted-answers]
     summary: "Accepted answers only count as Tier 3. Non-accepted answers are Tier 4. Tag claims as [T3: SFSE]."
 
   - id: unofficial_sf
-    type: expert-community
+    type: official-doc
     title: Unofficial SF
-    trust: expert-community
+    trust: imported
     url: https://unofficialsf.com
     domains: [lwc, flow]
     tags: [lwc, flow-extensions, screen-flow, expert-community]

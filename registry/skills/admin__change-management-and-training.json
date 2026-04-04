@@ -58,7 +58,7 @@
     "f9a5982faed71944b7c8",
     "fc23ed7777c3578b58a4"
   ],
-  "content_hash": "b31c416ec4d6ab1a08589f073d9450c8cfc1823d129835985de39bb897ce5124",
+  "content_hash": "141665b0b3d8ae912ba98306933140711240c77cd90466ec8ba88da6e8a58cdb",
   "dependencies": [],
   "description": "Use this skill when planning user adoption, structuring Salesforce training materials, drafting release communications, or running a change impact assessment for a Salesforce rollout or update. Triggers: user adoption plan, training materials, release announcement, change impact, go-live communication. NOT for org deployment mechanics or sandbox promotion (use change-management-and-deployment).",
   "file_location": "skills/admin/change-management-and-training",
