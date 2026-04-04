@@ -54,6 +54,7 @@
       "apex/exception-handling",
       "apex/governor-limits",
       "apex/invocable-methods",
+      "apex/metadata-api-and-package-xml",
       "apex/platform-cache",
       "apex/platform-events-apex",
       "apex/recursive-trigger-prevention",
@@ -464,7 +465,11 @@
     ],
     "deployment": [
       "admin/change-management-and-deployment",
+      "apex/metadata-api-and-package-xml",
       "apex/sf-cli-and-sfdx-essentials"
+    ],
+    "destructive-changes": [
+      "apex/metadata-api-and-package-xml"
     ],
     "device-apis": [
       "lwc/lwc-offline-and-mobile"
@@ -850,6 +855,9 @@
       "admin/change-management-and-deployment",
       "admin/custom-field-creation"
     ],
+    "metadata-api": [
+      "apex/metadata-api-and-package-xml"
+    ],
     "mfa": [
       "admin/org-setup-and-configuration"
     ],
@@ -962,6 +970,7 @@
       "admin/data-skew-and-sharing-performance"
     ],
     "package-xml": [
+      "apex/metadata-api-and-package-xml",
       "apex/sf-cli-and-sfdx-essentials"
     ],
     "packaging": [
@@ -1122,6 +1131,9 @@
     ],
     "restresource": [
       "apex/apex-rest-services"
+    ],
+    "retrieve": [
+      "apex/metadata-api-and-package-xml"
     ],
     "role-hierarchy": [
       "admin/sharing-and-visibility"

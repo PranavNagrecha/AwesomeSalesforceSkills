@@ -41,7 +41,7 @@
     "fcbe5f11659853eec4f0",
     "fdd7afc42b46d703cd7a"
   ],
-  "content_hash": "d29d6695ef46fcab8f1a0b20323fd738bfb5d9f33a579ee5a3fc9de4b30f0deb",
+  "content_hash": "19afc5a5210563308133dfc887001f267b3426ef0f1f2e9c0c13a9cbf694b88f",
   "dependencies": [],
   "description": "Use when designing, auditing, or troubleshooting Salesforce record access. Triggers: 'OWD', 'role hierarchy', 'sharing rule', 'manual sharing', 'why can't user see record', 'why can user see too much'. NOT for object or field permissions - use permission and FLS skills for that.",
   "file_location": "skills/admin/sharing-and-visibility",
@@ -68,7 +68,6 @@
     "skills/admin/sharing-and-visibility/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/sharing-and-visibility/scripts/__pycache__/check_sharing_model.cpython-311.pyc",
     "skills/admin/sharing-and-visibility/scripts/check_sharing_model.py"
   ],
   "tags": [

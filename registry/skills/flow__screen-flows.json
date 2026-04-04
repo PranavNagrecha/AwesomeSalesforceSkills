@@ -45,7 +45,7 @@
     "f68db1c3f03adcc611e1",
     "ffd4c765c3bd88d22bdd"
   ],
-  "content_hash": "4e602292c1a6954c958c2b86cc4ec7963555d72d922af3d45d097c709d7ef5f9",
+  "content_hash": "8f8e92b77ec569c363fd443b271ad9c65fda032125a0f8e1c6465b4779e6e3ed",
   "dependencies": [],
   "description": "Use when designing or reviewing interactive Flow screen experiences, including navigation, validation, screen component choice, custom LWC screen components, and user-safe commit timing. Triggers: 'screen flow validation', 'back button behavior in flow', 'custom flow screen component', 'screen flow UX'. NOT for Experience Cloud guest exposure or custom property editor design-time tooling.",
   "file_location": "skills/flow/screen-flows",
@@ -72,7 +72,6 @@
     "skills/flow/screen-flows/references/well-architected.md"
   ],
   "scripts": [
-    "skills/flow/screen-flows/scripts/__pycache__/check_screen_flows.cpython-311.pyc",
     "skills/flow/screen-flows/scripts/check_screen_flows.py"
   ],
   "tags": [

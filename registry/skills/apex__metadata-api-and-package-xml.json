@@ -1,0 +1,102 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "03af4f3de31662d0c38a",
+    "1f313c9881ce62fda284",
+    "2637109c7d9652105396",
+    "29e3d1ceec2aa5265863",
+    "2c667ca804464296bdeb",
+    "32bd05a31b850bceb1fc",
+    "34b83749d63c1973b81b",
+    "364f8268d0a7edab81c7",
+    "3e5b21003051a8aacd23",
+    "4b42168ef3c5756e0219",
+    "51da9cd49af6bea2e65d",
+    "576dff409baccc5416db",
+    "581fe66cdcb2de0443d3",
+    "5a1ff651c935e6ea5431",
+    "630b8782d789d11af737",
+    "63954f1ee100f662bf20",
+    "6740260b0abeaec72a4e",
+    "68adc9654f820ff40d89",
+    "6c822f667917cc63f06f",
+    "7e586a14f124bc9bf48c",
+    "8f4643af6d4b8d73adb0",
+    "8ffa2619c9604eb68d8a",
+    "90207c6af0abadcca920",
+    "90dc3bde3e11b3ea83a2",
+    "919964bb1c8180ce4390",
+    "99412155582e9716b425",
+    "9e08d79b36b311c73e41",
+    "a14c3b129a949cc48bf5",
+    "a5ff687361dcd73fe3e6",
+    "ab463ed1b1dc3eddfdc7",
+    "ac7a62aabaa0e08c8611",
+    "ac996ed168d30bcff428",
+    "accc8d0a7cb84a830fde",
+    "af3c74e6d7a1494d562d",
+    "b7552f946f468cad7116",
+    "b88c12ebff81fd3736f8",
+    "b8909ffbba966636552b",
+    "c2afdf3061497f005446",
+    "c2ea959d5bc27514f8c7",
+    "c4026cea23daa13829f3",
+    "c67ed66b25f233e920f7",
+    "c7d05df85bc31f525dbd",
+    "cd18ee84008885fbb83c",
+    "cf60538e228883862512",
+    "d61062db81ef68a00f56",
+    "dcd00c77e457cd06a7ec",
+    "e19def3bebf296132077",
+    "e6eb533df2b10c24512e",
+    "e86be1c5ab0aed78a2b3",
+    "e9f90ba5d02cc3c08f76",
+    "ec37478649d084d3be27",
+    "f02602485594da78bd19",
+    "f1a3b4295a1a1b9933bc",
+    "f4b3c185937b4cd99f8c",
+    "fbc39952b30f03f4e796"
+  ],
+  "content_hash": "19034ecad829f5da173360e317b7fa1ef60cd07362fd7dddbf3c73dc816c6023",
+  "dependencies": [],
+  "description": "Metadata API concepts, package.xml manifest structure, retrieve and deploy workflows, what metadata types can and cannot be retrieved, deployment order dependencies, and destructiveChanges.xml for deletions. NOT for SFDX source-format details or sf CLI command syntax (use sf-cli-and-sfdx-essentials), and NOT for CI/CD pipeline automation (use devops skills).",
+  "file_location": "skills/apex/metadata-api-and-package-xml",
+  "id": "apex/metadata-api-and-package-xml",
+  "inputs": [
+    "Target metadata types and component names to retrieve or deploy",
+    "Source and destination org credentials",
+    "API version to use (check current supported range)"
+  ],
+  "name": "metadata-api-and-package-xml",
+  "official_sources": [
+    "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm \u2014 primary source for deploy/retrieve behavior, package.xml structure, destructiveChanges semantics, and test level options",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html \u2014 Operational Excellence and Reliability pillar framing for deployment quality"
+  ],
+  "outputs": [
+    "Correct package.xml manifest file for the target operation",
+    "Step-by-step retrieve or deploy procedure",
+    "destructiveChanges.xml for component deletion",
+    "Review checklist for deployment readiness"
+  ],
+  "references": [
+    "skills/apex/metadata-api-and-package-xml/references/examples.md",
+    "skills/apex/metadata-api-and-package-xml/references/gotchas.md",
+    "skills/apex/metadata-api-and-package-xml/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/metadata-api-and-package-xml/scripts/check_metadata_api_and_package_xml.py"
+  ],
+  "tags": [
+    "metadata-api",
+    "package-xml",
+    "deployment",
+    "retrieve",
+    "destructive-changes"
+  ],
+  "templates": [
+    "skills/apex/metadata-api-and-package-xml/templates/metadata-api-and-package-xml-template.md"
+  ],
+  "updated": "2026-04-04",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}
