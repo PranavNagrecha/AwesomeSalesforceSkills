@@ -39,7 +39,7 @@
     "fb919b1dfcca450df10f",
     "fe99834f9902a707d821"
   ],
-  "content_hash": "419844c02b957be3a0969129e74d8f807b31117203f9759c123d2991bf0fb4be",
+  "content_hash": "1db0923f1f9533c6b7f5a928aad5e1c618b25e48ee6492d9b8c32b10b3b35854",
   "dependencies": [],
   "description": "Use when defining or reviewing baseline org hardening settings, especially Security Health Check gaps, clickjack and browser protections, CSP and CORS governance, password/session policies, network restrictions, and release-update hygiene. Triggers: 'org hardening', 'baseline security config', 'Health Check', 'CSP trusted sites', 'clickjack protection'. NOT for feature-level app permissions or record-sharing design.",
   "file_location": "skills/security/org-hardening-and-baseline-config",
@@ -66,7 +66,6 @@
     "skills/security/org-hardening-and-baseline-config/references/well-architected.md"
   ],
   "scripts": [
-    "skills/security/org-hardening-and-baseline-config/scripts/__pycache__/check_org_hardening_and_baseline_config.cpython-311.pyc",
     "skills/security/org-hardening-and-baseline-config/scripts/check_org_hardening_and_baseline_config.py"
   ],
   "tags": [

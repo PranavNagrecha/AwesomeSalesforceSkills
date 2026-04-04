@@ -42,7 +42,7 @@
     "f72bc333670046afba63",
     "fefd8892f7936cd17eb4"
   ],
-  "content_hash": "3da235f0c7117dc6bdcafaf27c03422c78f07921aef331866ab9bffe93329058",
+  "content_hash": "36ae73407fa6ca60e73f5c8e4014b7c58af106ea3e7d3af3417cccaa302ead48",
   "dependencies": [],
   "description": "Use when designing or reviewing Lightning Web Components for DOM safety, Lightning Web Security boundaries, third-party library handling, and secure server-side data access from LWC. Triggers: 'innerHTML in lwc', 'Lightning Web Security', 'document.querySelector', 'light DOM security', 'secure apex class for lwc'. NOT for org-wide sharing architecture or Apex-only security reviews when no LWC surface is involved.",
   "file_location": "skills/lwc/lwc-security",
@@ -69,7 +69,6 @@
     "skills/lwc/lwc-security/references/well-architected.md"
   ],
   "scripts": [
-    "skills/lwc/lwc-security/scripts/__pycache__/check_lwc_security.cpython-311.pyc",
     "skills/lwc/lwc-security/scripts/check_lwc_security.py"
   ],
   "tags": [

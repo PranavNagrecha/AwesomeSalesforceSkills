@@ -59,7 +59,7 @@
     "fec6345e6f26e62cb4f5",
     "ff744190cd55f783e23a"
   ],
-  "content_hash": "fbef9725a9e3336b62e28f28b7ca1a7dfbe47e8f1dbed6818776c2e8c5ea6a55",
+  "content_hash": "6f6f0cc561825a0a93a6f3459dd0e508416098a3ee3884c954b29c0b00229779",
   "dependencies": [],
   "description": "Use when designing or auditing Salesforce access control \u2014 deciding between Profiles, Permission Sets, and Permission Set Groups. Triggers: 'user can't see field', 'too many profiles', 'permission model', 'least privilege', 'profile migration'. NOT for sharing rules or record-level access \u2014 use security/fls-crud for that.",
   "file_location": "skills/admin/permission-sets-vs-profiles",
@@ -85,7 +85,6 @@
     "skills/admin/permission-sets-vs-profiles/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/permission-sets-vs-profiles/scripts/__pycache__/check_access_model.cpython-311.pyc",
     "skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py"
   ],
   "tags": [

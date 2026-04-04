@@ -587,6 +587,12 @@
       "domain": "apex",
       "expected_skill": "apex/sf-cli-and-sfdx-essentials",
       "top_k": 3
+    },
+    {
+      "query": "how do I write a package.xml to retrieve metadata from Salesforce",
+      "domain": "apex",
+      "expected_skill": "apex/metadata-api-and-package-xml",
+      "top_k": 3
     }
   ]
 }
