@@ -95,7 +95,7 @@ These skills apply across all clouds. Build before cloud-specific phases.
 | DONE | scratch-org-management | Creating, configuring, and managing scratch orgs: definition files, limits, expiration, shape snapshots. NOT for SFDX CLI basics (use sf-cli-and-sfdx-essentials). | Agent 2026-04-04T00:00:00Z |
 | DONE | sandbox-refresh-and-templates | Sandbox refresh cycles, sandbox templates, post-refresh automation (SandboxPostCopy interface), data handling during refresh. NOT for sandbox type selection (use sandbox-strategy). | Agent 2026-04-04T00:00:00Z |
 | DONE | change-set-deployment | Creating, uploading, and deploying change sets: component dependencies, inbound/outbound limitations, troubleshooting. NOT for SFDX-based deployments. | Agent 2026-04-04T10:00:00Z |
-| TODO | unlocked-package-development | Designing, creating, and versioning unlocked packages: package dependencies, namespace management, installation. NOT for 2GP managed packages. | |
+| IN_PROGRESS | unlocked-package-development | Designing, creating, and versioning unlocked packages: package dependencies, namespace management, installation. NOT for 2GP managed packages. | Agent 2026-04-04T06:00:00Z |
 | TODO | second-generation-managed-packages | 2GP package development: versioning, patch orgs, ISV partner considerations, AppExchange listing. NOT for unlocked packages. | |
 | TODO | devops-center-pipeline | DevOps Center setup: creating pipelines, work items, bundling changes, conflict resolution, release tracking. NOT for CLI-based deployment. | |
 | TODO | github-actions-for-salesforce | CI/CD with GitHub Actions for Salesforce: SFDX auth, test runs, deployment steps, secret management, reusable workflows. NOT for other CI tools. | |
@@ -136,7 +136,7 @@ These skills apply across all clouds. Build before cloud-specific phases.
 |--------|------------|-------------|-------|
 | DONE | platform-encryption | Salesforce Shield Platform Encryption: key management, deterministic vs probabilistic, field-level encryption, encrypted search. NOT for TLS/transport encryption. | Agent 2026-04-04T00:00:00Z |
 | DONE | event-monitoring | Shield Event Monitoring: event log types, downloading logs, real-time event monitoring, threat detection policies. NOT for debug logs (use debug-logs-and-developer-console). | Agent 2026-04-04T00:00:00Z |
-| TODO | field-audit-trail | Salesforce Shield Field Audit Trail: configuration, retention policies, querying archived field data, compliance requirements. NOT for field history tracking (use field-history-tracking). | |
+| IN_PROGRESS | field-audit-trail | Salesforce Shield Field Audit Trail: configuration, retention policies, querying archived field data, compliance requirements. NOT for field history tracking (use field-history-tracking). | Agent 2026-04-04T06:00:00Z |
 | DONE | security-health-check | Running and interpreting Security Health Check scores: remediating findings, custom baselines, periodic review. NOT for org hardening implementation. | Agent 2026-04-04T10:00:00Z |
 | TODO | transaction-security-policies | Transaction Security policies: condition builder, enhanced policies, enforcement actions, real-time monitoring. NOT for Event Monitoring log analysis. | |
 | TODO | login-forensics | Login history analysis: identity verification, session management, login flow customization, suspicious login detection. NOT for MFA setup (use org-setup-and-configuration). | |
@@ -163,7 +163,7 @@ These skills apply across all clouds. Build before cloud-specific phases.
 | DONE | agentforce-agent-creation | Creating Agentforce agents end-to-end: agent definition, channel assignment, instructions, deployment, lifecycle. NOT for topic design (use agent-topic-design). | Agent 2026-04-04T00:00:00Z |
 | DONE | einstein-trust-layer | Trust Layer configuration: data masking, zero data retention, toxicity detection, audit trail, grounding controls. NOT for agent action development. | Agent 2026-04-04T00:00:00Z |
 | DONE | prompt-builder-templates | Prompt templates in Prompt Builder: flex templates, field merge, grounding with flows, testing prompts, template sharing. NOT for agent topic instructions. | Agent 2026-04-04T10:00:00Z |
-| TODO | einstein-copilot-for-sales | Sales-specific AI: opportunity scoring, activity capture AI, email generation, pipeline inspection AI insights. NOT for core Agentforce setup. | |
+| IN_PROGRESS | einstein-copilot-for-sales | Sales-specific AI: opportunity scoring, activity capture AI, email generation, pipeline inspection AI insights. NOT for core Agentforce setup. | Agent 2026-04-04T06:00:00Z |
 | TODO | einstein-copilot-for-service | Service-specific AI: case classification, article recommendations, reply suggestions, work summaries, auto-routing. NOT for core Agentforce setup. | |
 | TODO | model-builder-and-byollm | Model Builder configuration: bringing your own LLM, model selection, API configuration, cost and performance tradeoffs. NOT for Trust Layer. | |
 | TODO | rag-patterns-in-salesforce | Retrieval Augmented Generation using Data Cloud: vector search, knowledge grounding, prompt grounding strategies. NOT for Data Cloud data model setup. | |
@@ -244,7 +244,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | DONE | escalation-rules | Case escalation rules, time-based escalation, business hours configuration, escalation actions. NOT for assignment rules or approval processes. | |
 | DONE | data-skew-and-sharing-performance | Recognizing data skew (account skew, ownership skew), impact on sharing recalculation, mitigation strategies. NOT for sharing model design (use sharing-and-visibility). | Claude Sonnet 4.6 · 2026-04-03T00:00:00Z |
 | DONE | enterprise-territory-management | Territory hierarchies, territory types, assignment rules, territory models, activation, forecast by territory. NOT for role hierarchy (use sharing-and-visibility). | Agent 2026-04-04T00:00:00Z |
-| TODO | custom-permissions | Creating and checking custom permissions: permission set integration, using in validation rules, Apex, and Flow. NOT for permission sets (use permission-set-architecture). | |
+| IN_PROGRESS | custom-permissions | Creating and checking custom permissions: permission set integration, using in validation rules, Apex, and Flow. NOT for permission sets (use permission-set-architecture). | Agent 2026-04-04T06:00:00Z |
 | TODO | delegated-administration | Delegated admin setup: group membership management, custom object admin delegation, limitations, use cases. NOT for user management (use user-management). | |
 | TODO | dynamic-forms-and-actions | Dynamic Forms on Lightning record pages: field sections, visibility rules, dynamic actions, migration from page layouts. NOT for page layout design (use record-types-and-page-layouts). | |
 | TODO | path-and-guidance | Path setup on opportunity and other objects: guidance steps, key fields, celebration confetti, path customization. NOT for sales process configuration. | |
@@ -285,7 +285,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 |--------|------------|-------------|-------|
 | TODO | continuation-callouts | Continuation pattern for long-running callouts from Visualforce/LWC: async HTTP, timeout handling, callback methods. NOT for synchronous callouts (use callouts-and-http-integrations). | |
 | TODO | custom-iterators-and-iterables | Implementing Iterable and Iterator interfaces for batch Apex: custom collection traversal, lazy evaluation patterns. NOT for standard list iteration. | |
-| TODO | apex-managed-sharing | Sharing records programmatically via Apex: Share objects, row cause, sharing recalculation, with/without sharing patterns. NOT for declarative sharing rules (use sharing-and-visibility). | |
+| IN_PROGRESS | apex-managed-sharing | Sharing records programmatically via Apex: Share objects, row cause, sharing recalculation, with/without sharing patterns. NOT for declarative sharing rules (use sharing-and-visibility). | Agent 2026-04-04T06:00:00Z |
 | TODO | apex-email-services | Inbound email handling: InboundEmailHandler, email-to-Apex routing, parsing attachments, email service addresses, error handling. NOT for outbound email templates. | |
 | TODO | dynamic-apex | Dynamic SOQL, dynamic SOSL, Schema.describe methods, runtime type inspection, dynamic field access, SObjectType. NOT for static SOQL (use soql-fundamentals). | |
 | TODO | apex-scheduled-jobs | Scheduling Apex: Schedulable interface, cron expressions, monitoring scheduled jobs, job limits, chaining. NOT for Batch Apex scheduling (use batch-apex-patterns). | |
@@ -305,7 +305,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
 | DONE | lwc-in-flow-screens | Embedding LWC in Flow screens: flow reactive properties, flow output variables, navigation, FlowAttributeChangeEvent. NOT for custom property editors (use custom-property-editor-for-flow). | Agent 2026-04-04T10:00:00Z |
-| TODO | lwc-toast-and-notifications | Toast messages, platform notifications, lightning-alert, lightning-confirm, promise-based notification patterns. NOT for modal overlays (use lwc-modal-and-overlay). | |
+| IN_PROGRESS | lwc-toast-and-notifications | Toast messages, platform notifications, lightning-alert, lightning-confirm, promise-based notification patterns. NOT for modal overlays (use lwc-modal-and-overlay). | Agent 2026-04-04T06:00:00Z |
 | TODO | lwc-dynamic-components | Dynamic component creation with lwc:component, lazy loading, runtime component resolution, dynamic imports. NOT for static component composition. | |
 | TODO | message-channel-patterns | Lightning Message Service: message channels, cross-DOM communication, publish/subscribe patterns, scope management. NOT for parent-child communication (use component-communication). | |
 | TODO | lwc-imperative-apex | Imperative Apex calls from LWC: error handling, loading states, cacheable vs non-cacheable, data refresh patterns. NOT for wire service (use wire-service-patterns). | |
