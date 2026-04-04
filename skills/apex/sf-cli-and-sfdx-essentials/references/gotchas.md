@@ -75,3 +75,38 @@ Reserve trackingless push/pull only for scratch orgs. Use manifest or directory 
 1. Match the `<version>` in `package.xml` to the org's current API version. Check with `sf org display --target-org <alias>`.
 2. In `sfdx-project.json`, keep `sourceApiVersion` consistent with your target org's version.
 3. When in doubt, use a slightly lower version — Metadata API is backward compatible but not forward compatible.
+
+---
+
+## Gotcha 6: `.forceignore` Is Not `.gitignore`
+
+**What happens:** A developer adds a file to `.gitignore` expecting it to be excluded from CLI sync, or adds it to `.forceignore` expecting it to be excluded from version control. Neither assumption is correct. The two files govern completely separate systems.
+
+**When it occurs:** Any time a file needs to be excluded from both git and CLI operations (e.g., a scratch org-specific config file, or a large static resource used for local testing only). Developers who come from a git-only background often assume `.gitignore` controls everything.
+
+**How to avoid:** Maintain both files independently:
+- Add to `.gitignore` to keep a file out of git history.
+- Add to `.forceignore` to keep a file out of CLI push/pull/deploy/retrieve operations.
+- They use the same syntax but are read by different tools for different purposes.
+
+---
+
+## Gotcha 7: Source Tracking State Is Lost Between CI Pipeline Runs
+
+**What happens:** A CI pipeline run completes successfully (source pushed to scratch org). On the next pipeline run, the CLI reports that all local files are new changes, or raises a conflict error, even though nothing changed in source control.
+
+**When it occurs:** The source tracking state is stored in `.sf/orgs/<orgId>/` on the local runner filesystem. Ephemeral CI runners (e.g., GitHub Actions runners that spin up fresh per run) do not persist this directory. Without it, the CLI has no knowledge of what was last synced.
+
+**How to avoid:** Two options:
+1. Cache `.sf/` in CI (e.g., GitHub Actions `cache` action keyed to the org ID). This preserves tracking state across runs.
+2. Always use `--source-dir` or `--manifest` flags in CI scripts — this bypasses source tracking entirely and makes the deploy explicit and predictable regardless of tracking state.
+
+---
+
+## Gotcha 8: Each `-meta.xml` File Carries Its Own `apiVersion`
+
+**What happens:** A developer retrieves an Apex class from an org that was last modified years ago. The `MyClass.cls-meta.xml` file contains `<apiVersion>40.0</apiVersion>`. The class is then modified and deployed, but a new platform behavior available since API 55.0 does not apply.
+
+**When it occurs:** Retrieved components always reflect the API version at which they were last saved in the org. Old classes, flows, and components frequently have stale API versions in their metadata files. This is independent of the project's `sourceApiVersion` in `sfdx-project.json`.
+
+**How to avoid:** After retrieving components, scan `-meta.xml` files for outdated `<apiVersion>` values and update them to the current API version before committing. For flows, changing the API version can sometimes affect behavior — test carefully after bumping.

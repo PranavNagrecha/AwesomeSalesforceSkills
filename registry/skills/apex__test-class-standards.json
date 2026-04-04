@@ -47,7 +47,7 @@
     "f674034d90f8e14eafe0",
     "f85f34eee852bb61399b"
   ],
-  "content_hash": "1f996ee7f45f2259fe55cad49be7182106b4e6c7103a864e8c756e1553d7e738",
+  "content_hash": "6dc2bfba62e6915eb0adc0fe36831c6515899d38dbdb185f224c9824aa585354",
   "dependencies": [],
   "description": "Use when writing, reviewing, or debugging Apex test classes, test data factories, async test behavior, negative-path assertions, or callout mocking. Triggers: 'SeeAllData', 'Test.startTest', 'HttpCalloutMock', 'test data factory', 'missing assertions'. NOT for LWC Jest tests or code-coverage-only conversations detached from test design.",
   "file_location": "skills/apex/test-class-standards",
@@ -74,6 +74,7 @@
     "skills/apex/test-class-standards/references/well-architected.md"
   ],
   "scripts": [
+    "skills/apex/test-class-standards/scripts/__pycache__/check_test_class_standards.cpython-311.pyc",
     "skills/apex/test-class-standards/scripts/check_test_class_standards.py"
   ],
   "tags": [

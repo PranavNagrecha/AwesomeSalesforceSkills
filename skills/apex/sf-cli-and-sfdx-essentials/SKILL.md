@@ -77,7 +77,16 @@ Scratch orgs are ephemeral: lifespan is 1–30 days (specified at creation). The
 
 ### 3. Dev Hub and Scratch Org Lifecycle
 
-Dev Hub is a production or Developer Edition org with "Dev Hub" enabled in Setup. It is required to create scratch orgs. A single Dev Hub can have up to 200 active scratch orgs (Enterprise/Unlimited Edition limit; lower for DE orgs). Each scratch org is linked to the Dev Hub that created it.
+Dev Hub is a production or Developer Edition org with "Dev Hub" enabled in Setup. It is required to create scratch orgs. Each scratch org is linked to the Dev Hub that created it. Scratch org allocation limits vary by Dev Hub edition:
+
+| Dev Hub Edition | Daily Creates | Max Active Orgs |
+|---|---|---|
+| Developer Edition | 6 | 3 |
+| Enterprise Edition | 40 | 20 |
+| Performance Edition | 100 | 50 |
+| Unlimited Edition | 100 | 50 |
+
+Exceeding the active org limit causes `org create scratch` to fail with an allocation error — delete unused scratch orgs before creating new ones.
 
 ### 4. package.xml Manifest Structure
 
@@ -193,6 +202,9 @@ sf org delete scratch --target-org myscratch --no-prompt
 - `--edition` options: `developer`, `enterprise`, `group`, `professional`, `partner-developer`.
 - `--duration-days`: 1–30. Defaults vary by edition.
 - Without `--manifest` or `--source-dir`, push/pull use source tracking (delta only).
+- `--set-default` and `--set-default-dev-hub` are **separate flags**. If this org should also be the Dev Hub, pass both.
+- Scratch orgs start empty — no production data. Import sample data separately with `sf data import tree`.
+- Add users with `sf org create user --target-org <alias>` — only the creator exists by default.
 
 ### Pattern 4 — Deploy and Retrieve with Sandboxes and Production
 
@@ -229,11 +241,40 @@ sf project retrieve start \
   --target-metadata-dir retrieved/
 ```
 
+**Preview conflicts before deploying or retrieving:**
+```bash
+# See what would be deployed without doing it
+sf project deploy preview --target-org mysandbox
+
+# See what would be retrieved without doing it
+sf project retrieve preview --target-org mysandbox
+```
+
+**Resume a timed-out async deployment:**
+```bash
+sf project deploy start --manifest package.xml --target-org prod --async
+# Returns a job ID immediately. Resume status check with:
+sf project deploy resume --job-id <ID>
+```
+
+**Convert between formats explicitly:**
+```bash
+# Source format → metadata format (for inspection or legacy tooling)
+sf project convert source --output-dir mdapi-out --manifest package.xml
+
+# Metadata format → source format
+sf project convert mdapi --root-dir mdapi-out --output-dir force-app
+```
+
 **Test level options for deploy:**
 - `NoTestRun`: Skip tests. Only valid for sandboxes, not production.
 - `RunSpecifiedTests`: Run only tests you specify with `--tests`.
 - `RunLocalTests`: Run all local tests (no managed package tests). Required for production.
 - `RunAllTestsInOrg`: Run everything. Slow but thorough.
+
+**Platform limits for deploy/retrieve:**
+- Maximum deploy size: **39 MB** (compressed zip). Split large deployments across multiple packages.
+- Maximum retrieve component count: **10,000 items** per request. Manifests using `*` across many types can hit this limit.
 
 Per the Salesforce Metadata API Developer Guide: "A regular deploy call executes automated Apex tests that can take a long time to complete. To skip tests for validated components and deploy components to production quickly, use the deploy recent validation option."
 
@@ -264,13 +305,16 @@ sf project deploy quick --job-id <ID from validate output>
 
 Run through these before marking work in this area complete:
 
-- [ ] Dev Hub is enabled and authenticated with `--set-default-dev-hub`
+- [ ] Dev Hub is enabled and authenticated with `--set-default-dev-hub` (separate from `--set-default`)
 - [ ] JWT Connected App is configured with certificate (not password) if used for CI
+- [ ] JWT Connected App has the deploying user's profile pre-authorized under Manage → Edit Policies
 - [ ] `sfdx-project.json` has correct `sourceApiVersion` matching target org API version
 - [ ] `package.xml` version matches or is below the org's active API version
 - [ ] Scratch org duration is set to match the sprint/task timeline (1–30 days)
 - [ ] `--test-level RunLocalTests` or higher is used for production deploys
-- [ ] Private key files (`.key`, `.pem`) are excluded from version control (`.gitignore`)
+- [ ] Private key files (`.key`, `.pem`) are excluded from version control (`.gitignore` AND `.forceignore`)
+- [ ] Deploy size is under 39 MB; retrieve scope is under 10,000 components
+- [ ] `.sf/orgs/` directory is persisted in CI workspace if source tracking is needed across pipeline steps
 
 ---
 
@@ -285,6 +329,14 @@ Run through these before marking work in this area complete:
 4. **API version mismatch causes silent retrieve failures** — If `package.xml` specifies an API version higher than the org supports, the retrieve may succeed but return empty or partial results. Always match `<version>` to the org's current API version (`sf org display` shows the API version).
 
 5. **`--target-metadata-dir` disables source tracking** — Using this flag retrieves metadata in mdapi format and breaks the source-tracking chain. Subsequent `sf project deploy start` commands (without flags) may not include these retrieved files. Use it only for one-off investigations or when you need the zip-ready directory structure.
+
+6. **`.forceignore` is not `.gitignore`** — `.forceignore` controls what the CLI excludes from push/pull/deploy/retrieve operations. It uses `.gitignore` syntax but has no effect on git. A file ignored in `.forceignore` is still committed to version control. A file ignored in `.gitignore` is still synced by the CLI unless also in `.forceignore`.
+
+7. **Source tracking state is lost between CI pipeline runs** — The CLI stores source tracking state in `.sf/orgs/<orgId>/` on the local filesystem. If the CI workspace is not persisted (e.g., ephemeral GitHub Actions runners), this directory is lost between runs, causing the next push to treat all local files as new changes or report false conflicts. Either persist `.sf/` in CI cache, or always use `--source-dir`/`--manifest` flags in CI to avoid dependency on tracking state.
+
+8. **`--set-default` and `--set-default-dev-hub` are separate settings** — Setting a Dev Hub with `sf org login web --set-default-dev-hub` does not make it the default org for `deploy`/`retrieve`. You must also run `sf config set target-org <alias>` or pass `--set-default` separately. Conflating the two causes commands to target the wrong org silently.
+
+9. **Each `-meta.xml` file carries its own `apiVersion`** — When you retrieve components from an org, each `ClassName.cls-meta.xml` file contains the API version it was authored at. This is independent of `sfdx-project.json`'s `sourceApiVersion`. Old retrieved classes may still have API version 40.0 in their metadata even if the project is on 62.0. Update these manually when a newer API version behavior is required.
 
 ---
 
