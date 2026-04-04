@@ -1019,6 +1019,96 @@
       "domain": "security",
       "expected_skill": "security/sandbox-data-masking",
       "top_k": 3
+    },
+    {
+      "query": "how do I add guidance text and key fields to each stage on opportunity path",
+      "domain": "admin",
+      "expected_skill": "admin/path-and-guidance",
+      "top_k": 3
+    },
+    {
+      "query": "enable confetti celebration on closed won stage salesforce",
+      "domain": "admin",
+      "expected_skill": "admin/path-and-guidance",
+      "top_k": 3
+    },
+    {
+      "query": "how do I call an external REST API from Flow without writing Apex",
+      "domain": "flow",
+      "expected_skill": "flow/flow-external-services",
+      "top_k": 3
+    },
+    {
+      "query": "register OpenAPI spec as External Service in Salesforce Flow",
+      "domain": "flow",
+      "expected_skill": "flow/flow-external-services",
+      "top_k": 3
+    },
+    {
+      "query": "HTTP Callout action in Flow Builder Spring 24 Named Credential",
+      "domain": "flow",
+      "expected_skill": "flow/flow-external-services",
+      "top_k": 3
+    },
+    {
+      "query": "how do I configure Salesforce for government FedRAMP compliance",
+      "domain": "architect",
+      "expected_skill": "architect/government-cloud-compliance",
+      "top_k": 3
+    },
+    {
+      "query": "how do I test Salesforce agent conversations and measure topic coverage",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/agent-testing-and-evaluation",
+      "top_k": 3
+    },
+    {
+      "query": "dynamic SOQL query with Schema.describe at runtime",
+      "domain": "apex",
+      "expected_skill": "apex/dynamic-apex",
+      "top_k": 3
+    },
+    {
+      "query": "enable person accounts Salesforce B2C data model limitations",
+      "domain": "data",
+      "expected_skill": "data/person-accounts",
+      "top_k": 3
+    },
+    {
+      "query": "GitLab CI pipeline for Salesforce SFDX deployment jobs",
+      "domain": "devops",
+      "expected_skill": "devops/gitlab-ci-for-salesforce",
+      "top_k": 3
+    },
+    {
+      "query": "stream Salesforce record changes to external system CDC replay ID",
+      "domain": "integration",
+      "expected_skill": "integration/change-data-capture-integration",
+      "top_k": 3
+    },
+    {
+      "query": "migrate Aura component to LWC interoperability event translation",
+      "domain": "lwc",
+      "expected_skill": "lwc/aura-to-lwc-migration",
+      "top_k": 3
+    },
+    {
+      "query": "Industries CPQ vs Salesforce CPQ comparison migration decision",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/industries-cpq-vs-salesforce-cpq",
+      "top_k": 3
+    },
+    {
+      "query": "Salesforce API rate limits Connected App OAuth scope restriction",
+      "domain": "security",
+      "expected_skill": "security/api-security-and-rate-limiting",
+      "top_k": 3
+    },
+    {
+      "query": "set up Path on Opportunity guidance steps celebration confetti",
+      "domain": "admin",
+      "expected_skill": "admin/path-and-guidance",
+      "top_k": 3
     }
   ]
 }
