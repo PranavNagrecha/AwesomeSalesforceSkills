@@ -635,6 +635,42 @@
       "domain": "architect",
       "expected_skill": "architect/multi-org-strategy",
       "top_k": 3
+    },
+    {
+      "query": "bulk api 2.0 large data loads batch",
+      "domain": "data",
+      "expected_skill": "data/bulk-api-and-large-data-loads",
+      "top_k": 3
+    },
+    {
+      "query": "archive old salesforce records big object",
+      "domain": "data",
+      "expected_skill": "data/data-archival-strategies",
+      "top_k": 3
+    },
+    {
+      "query": "slow soql query timeout index optimization",
+      "domain": "data",
+      "expected_skill": "data/soql-query-optimization",
+      "top_k": 3
+    },
+    {
+      "query": "salesforce org technical debt dead code audit",
+      "domain": "architect",
+      "expected_skill": "architect/technical-debt-assessment",
+      "top_k": 3
+    },
+    {
+      "query": "salesforce well architected framework org review",
+      "domain": "architect",
+      "expected_skill": "architect/well-architected-review",
+      "top_k": 3
+    },
+    {
+      "query": "custom metadata vs custom settings lwc vs aura",
+      "domain": "architect",
+      "expected_skill": "architect/platform-selection-guidance",
+      "top_k": 3
     }
   ]
 }

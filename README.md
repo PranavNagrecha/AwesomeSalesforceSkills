@@ -4,7 +4,7 @@ The universal Salesforce knowledge layer for AI coding assistants.
 
 Drop this into Claude Code, Cursor, Aider, Windsurf, or any AI tool and get role-accurate, source-grounded Salesforce guidance — for every role, every cloud, every task.
 
-**101 skills built. 500+ planned across 5 roles × 16 clouds.**
+**107 skills built. 500+ planned across 5 roles × 16 clouds.**
 
 ---
 
@@ -106,8 +106,8 @@ Skills are plain markdown. They work in any AI tool that can read a file.
 | Agentforce | 2 — agent actions, topic design |
 | Security | 2 — org hardening, permission set groups |
 | Integration | 3 — GraphQL, OAuth flows, Salesforce Connect |
-| Data | 6 — multi-currency, SOSL, rollup alternatives, data model design patterns, data migration planning, data quality and governance |
-| Architect | 3 — solution design patterns, limits and scalability planning, multi-org strategy |
+| Data | 9 — multi-currency, SOSL, rollup alternatives, data model design patterns, data migration planning, data quality and governance, bulk API and large data loads, data archival strategies, SOQL query optimization |
+| Architect | 6 — solution design patterns, limits and scalability planning, multi-org strategy, technical debt assessment, well-architected review, platform selection guidance |
 | DevOps | 0 — building now |
 
 **See the full catalog:** [docs/SKILLS.md](./docs/SKILLS.md)

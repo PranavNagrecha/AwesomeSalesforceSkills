@@ -68,14 +68,20 @@
     "architect": [
       "architect/limits-and-scalability-planning",
       "architect/multi-org-strategy",
-      "architect/solution-design-patterns"
+      "architect/platform-selection-guidance",
+      "architect/solution-design-patterns",
+      "architect/technical-debt-assessment",
+      "architect/well-architected-review"
     ],
     "data": [
+      "data/bulk-api-and-large-data-loads",
+      "data/data-archival-strategies",
       "data/data-migration-planning",
       "data/data-model-design-patterns",
       "data/data-quality-and-governance",
       "data/multi-currency-and-advanced-currency-management",
       "data/roll-up-summary-alternatives",
+      "data/soql-query-optimization",
       "data/sosl-search-patterns"
     ],
     "flow": [
@@ -211,6 +217,11 @@
     "approvers": [
       "admin/approval-processes"
     ],
+    "architect": [
+      "architect/platform-selection-guidance",
+      "architect/technical-debt-assessment",
+      "architect/well-architected-review"
+    ],
     "architecture-decision": [
       "architect/multi-org-strategy",
       "architect/solution-design-patterns"
@@ -218,11 +229,20 @@
     "architecture-planning": [
       "architect/limits-and-scalability-planning"
     ],
+    "architecture-review": [
+      "architect/well-architected-review"
+    ],
+    "archival": [
+      "data/data-archival-strategies"
+    ],
     "aria": [
       "lwc/lwc-accessibility"
     ],
     "assignment-rules": [
       "admin/assignment-rules"
+    ],
+    "async": [
+      "data/bulk-api-and-large-data-loads"
     ],
     "async-apex": [
       "apex/async-apex",
@@ -253,11 +273,15 @@
     "automation-layers": [
       "architect/solution-design-patterns"
     ],
+    "automation-overlap": [
+      "architect/technical-debt-assessment"
+    ],
     "automation-selection": [
       "admin/process-automation-selection"
     ],
     "batch": [
-      "apex/governor-limits"
+      "apex/governor-limits",
+      "data/bulk-api-and-large-data-loads"
     ],
     "batch-apex": [
       "apex/async-apex",
@@ -273,6 +297,9 @@
     "before-save": [
       "flow/record-triggered-flow-patterns"
     ],
+    "big-objects": [
+      "data/data-archival-strategies"
+    ],
     "branching": [
       "omnistudio/omniscript-design-patterns"
     ],
@@ -282,6 +309,7 @@
     ],
     "bulk-api": [
       "admin/data-import-and-management",
+      "data/bulk-api-and-large-data-loads",
       "data/data-migration-planning"
     ],
     "bulk-safe": [
@@ -419,7 +447,8 @@
       "admin/custom-field-creation"
     ],
     "custom-metadata": [
-      "apex/custom-metadata-in-apex"
+      "apex/custom-metadata-in-apex",
+      "architect/platform-selection-guidance"
     ],
     "custom-metadata-types": [
       "admin/custom-metadata-types"
@@ -455,6 +484,9 @@
     "data-loader": [
       "data/data-migration-planning"
     ],
+    "data-loading": [
+      "data/bulk-api-and-large-data-loads"
+    ],
     "data-migration": [
       "data/data-migration-planning"
     ],
@@ -469,6 +501,9 @@
     ],
     "data-residency": [
       "architect/multi-org-strategy"
+    ],
+    "data-retention": [
+      "data/data-archival-strategies"
     ],
     "data-skew": [
       "admin/data-skew-and-sharing-performance"
@@ -499,6 +534,9 @@
     ],
     "dated-exchange-rates": [
       "data/multi-currency-and-advanced-currency-management"
+    ],
+    "dead-code": [
+      "architect/technical-debt-assessment"
     ],
     "debug-interview": [
       "flow/flow-testing"
@@ -785,6 +823,9 @@
     "idempotency": [
       "flow/scheduled-flows"
     ],
+    "indexes": [
+      "data/soql-query-optimization"
+    ],
     "indexing": [
       "data/data-model-design-patterns"
     ],
@@ -810,6 +851,9 @@
     ],
     "integration-auth": [
       "admin/connected-apps-and-auth"
+    ],
+    "integration-patterns": [
+      "architect/platform-selection-guidance"
     ],
     "integration-procedure": [
       "omnistudio/integration-procedures"
@@ -851,7 +895,10 @@
       "lwc/lwc-accessibility"
     ],
     "large-data-volumes": [
-      "admin/data-skew-and-sharing-performance"
+      "admin/data-skew-and-sharing-performance",
+      "data/bulk-api-and-large-data-loads",
+      "data/data-archival-strategies",
+      "data/soql-query-optimization"
     ],
     "lazy-instantiation": [
       "lwc/lwc-performance"
@@ -919,6 +966,7 @@
       "data/roll-up-summary-alternatives"
     ],
     "lwc": [
+      "architect/platform-selection-guidance",
       "architect/solution-design-patterns",
       "lwc/lifecycle-hooks"
     ],
@@ -1062,8 +1110,14 @@
     "order-of-execution": [
       "flow/record-triggered-flow-patterns"
     ],
+    "org-assessment": [
+      "architect/well-architected-review"
+    ],
     "org-hardening": [
       "security/org-hardening-and-baseline-config"
+    ],
+    "org-health": [
+      "architect/technical-debt-assessment"
     ],
     "org-limits": [
       "architect/limits-and-scalability-planning"
@@ -1125,7 +1179,8 @@
     ],
     "performance": [
       "admin/data-skew-and-sharing-performance",
-      "admin/formula-fields"
+      "admin/formula-fields",
+      "data/soql-query-optimization"
     ],
     "permission-set-architecture": [
       "admin/permission-set-architecture"
@@ -1160,6 +1215,9 @@
     "platform-resource-loader": [
       "lwc/static-resources-in-lwc"
     ],
+    "platform-selection": [
+      "architect/platform-selection-guidance"
+    ],
     "process-builder-migration": [
       "admin/process-automation-selection"
     ],
@@ -1177,6 +1235,9 @@
     ],
     "query": [
       "apex/soql-fundamentals"
+    ],
+    "query-optimization": [
+      "data/soql-query-optimization"
     ],
     "queueable": [
       "apex/async-apex",
@@ -1408,7 +1469,8 @@
     ],
     "soql": [
       "apex/soql-fundamentals",
-      "apex/soql-security"
+      "apex/soql-security",
+      "data/soql-query-optimization"
     ],
     "soql-selectivity": [
       "architect/limits-and-scalability-planning"
@@ -1437,6 +1499,9 @@
     "staticresourcecalloutmock": [
       "apex/apex-mocking-and-stubs"
     ],
+    "storage": [
+      "data/data-archival-strategies"
+    ],
     "storage-limits": [
       "architect/limits-and-scalability-planning"
     ],
@@ -1460,6 +1525,9 @@
     ],
     "system-debug": [
       "apex/debug-and-logging"
+    ],
+    "technical-debt": [
+      "architect/technical-debt-assessment"
     ],
     "templates": [
       "admin/email-templates-and-alerts"
@@ -1512,6 +1580,9 @@
     ],
     "triggers": [
       "apex/trigger-framework"
+    ],
+    "trusted-easy-adaptable": [
+      "architect/well-architected-review"
     ],
     "turbo-extract": [
       "omnistudio/dataraptor-patterns"
@@ -1568,6 +1639,9 @@
     ],
     "virtual-data": [
       "integration/salesforce-connect-external-objects"
+    ],
+    "well-architected": [
+      "architect/well-architected-review"
     ],
     "wire-mocks": [
       "lwc/lwc-testing"
