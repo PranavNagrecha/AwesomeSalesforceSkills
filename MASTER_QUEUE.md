@@ -93,7 +93,7 @@ These skills apply across all clouds. Build before cloud-specific phases.
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
 | DONE | scratch-org-management | Creating, configuring, and managing scratch orgs: definition files, limits, expiration, shape snapshots. NOT for SFDX CLI basics (use sf-cli-and-sfdx-essentials). | Agent 2026-04-04T00:00:00Z |
-| TODO | sandbox-refresh-and-templates | Sandbox refresh cycles, sandbox templates, post-refresh automation (SandboxPostCopy interface), data handling during refresh. NOT for sandbox type selection (use sandbox-strategy). | |
+| IN_PROGRESS | sandbox-refresh-and-templates | Sandbox refresh cycles, sandbox templates, post-refresh automation (SandboxPostCopy interface), data handling during refresh. NOT for sandbox type selection (use sandbox-strategy). | Agent 2026-04-04T00:00:00Z |
 | TODO | change-set-deployment | Creating, uploading, and deploying change sets: component dependencies, inbound/outbound limitations, troubleshooting. NOT for SFDX-based deployments. | |
 | TODO | unlocked-package-development | Designing, creating, and versioning unlocked packages: package dependencies, namespace management, installation. NOT for 2GP managed packages. | |
 | TODO | second-generation-managed-packages | 2GP package development: versioning, patch orgs, ISV partner considerations, AppExchange listing. NOT for unlocked packages. | |
@@ -135,7 +135,7 @@ These skills apply across all clouds. Build before cloud-specific phases.
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
 | DONE | platform-encryption | Salesforce Shield Platform Encryption: key management, deterministic vs probabilistic, field-level encryption, encrypted search. NOT for TLS/transport encryption. | Agent 2026-04-04T00:00:00Z |
-| TODO | event-monitoring | Shield Event Monitoring: event log types, downloading logs, real-time event monitoring, threat detection policies. NOT for debug logs (use debug-logs-and-developer-console). | |
+| IN_PROGRESS | event-monitoring | Shield Event Monitoring: event log types, downloading logs, real-time event monitoring, threat detection policies. NOT for debug logs (use debug-logs-and-developer-console). | Agent 2026-04-04T00:00:00Z |
 | TODO | field-audit-trail | Salesforce Shield Field Audit Trail: configuration, retention policies, querying archived field data, compliance requirements. NOT for field history tracking (use field-history-tracking). | |
 | TODO | security-health-check | Running and interpreting Security Health Check scores: remediating findings, custom baselines, periodic review. NOT for org hardening implementation. | |
 | TODO | transaction-security-policies | Transaction Security policies: condition builder, enhanced policies, enforcement actions, real-time monitoring. NOT for Event Monitoring log analysis. | |
@@ -160,7 +160,7 @@ These skills apply across all clouds. Build before cloud-specific phases.
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| TODO | agentforce-agent-creation | Creating Agentforce agents end-to-end: agent definition, channel assignment, instructions, deployment, lifecycle. NOT for topic design (use agent-topic-design). | |
+| IN_PROGRESS | agentforce-agent-creation | Creating Agentforce agents end-to-end: agent definition, channel assignment, instructions, deployment, lifecycle. NOT for topic design (use agent-topic-design). | Agent 2026-04-04T00:00:00Z |
 | DONE | einstein-trust-layer | Trust Layer configuration: data masking, zero data retention, toxicity detection, audit trail, grounding controls. NOT for agent action development. | Agent 2026-04-04T00:00:00Z |
 | TODO | prompt-builder-templates | Prompt templates in Prompt Builder: flex templates, field merge, grounding with flows, testing prompts, template sharing. NOT for agent topic instructions. | |
 | TODO | einstein-copilot-for-sales | Sales-specific AI: opportunity scoring, activity capture AI, email generation, pipeline inspection AI insights. NOT for core Agentforce setup. | |
@@ -183,7 +183,7 @@ These skills apply across all clouds. Build before cloud-specific phases.
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
 | DONE | flexcard-design-patterns | FlexCard creation: data sources, actions, templates, state management, flyout configuration, conditional visibility. NOT for OmniScript design (use omniscript-design-patterns). | Agent 2026-04-04T00:00:00Z |
-| TODO | calculation-procedures | Calculation Procedure and Calculation Matrix setup: step types, matrix versioning, lookup tables, pricing calculations. NOT for DataRaptor transforms. | |
+| IN_PROGRESS | calculation-procedures | Calculation Procedure and Calculation Matrix setup: step types, matrix versioning, lookup tables, pricing calculations. NOT for DataRaptor transforms. | Agent 2026-04-04T00:00:00Z |
 | TODO | omnistudio-debugging | OmniStudio debugging: console debugging, previewing, breakpoints, DataRaptor testing, error tracing, log analysis. NOT for Apex debugging. | |
 | TODO | omnistudio-deployment-datapacks | DataPack export, import, version control, migration between orgs, CI/CD for OmniStudio components. NOT for SFDX deployment. | |
 | TODO | omnistudio-performance | OmniStudio performance optimization: lazy loading, remote actions, caching, reducing API calls in OmniScripts. NOT for LWC performance. | |
@@ -204,7 +204,7 @@ These skills apply across all clouds. Build before cloud-specific phases.
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
 | DONE | rest-api-patterns | Salesforce REST API CRUD operations: query endpoint, composite resources, versioning, error handling, pagination. NOT for GraphQL API (use graphql-api-patterns). | Agent 2026-04-04T00:00:00Z |
-| TODO | soap-api-patterns | SOAP API usage: enterprise vs partner WSDL, when to use SOAP over REST, login and session management. NOT for REST API. | |
+| IN_PROGRESS | soap-api-patterns | SOAP API usage: enterprise vs partner WSDL, when to use SOAP over REST, login and session management. NOT for REST API. | Agent 2026-04-04T00:00:00Z |
 | TODO | streaming-api-and-pushtopic | Streaming API setup: PushTopic events, Generic Streaming, CometD client setup, replay, channel limits. NOT for Platform Events (use platform-events-apex). | |
 | TODO | platform-events-integration | Platform Events for integration: publish from external systems, subscribe externally, replay ID handling, high-volume events. NOT for Apex-only event patterns (use platform-events-apex). | |
 | TODO | change-data-capture-integration | CDC setup for integration: change event channels, external subscription, replay, entity selection, subscriber management. NOT for Apex CDC triggers. | |
@@ -243,7 +243,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | DONE | assignment-rules | Lead assignment rules, case assignment rules, rule entry criteria, queue assignment, round-robin patterns using Apex. NOT for approval process routing (use approval-processes). | |
 | DONE | escalation-rules | Case escalation rules, time-based escalation, business hours configuration, escalation actions. NOT for assignment rules or approval processes. | |
 | DONE | data-skew-and-sharing-performance | Recognizing data skew (account skew, ownership skew), impact on sharing recalculation, mitigation strategies. NOT for sharing model design (use sharing-and-visibility). | Claude Sonnet 4.6 · 2026-04-03T00:00:00Z |
-| TODO | enterprise-territory-management | Territory hierarchies, territory types, assignment rules, territory models, activation, forecast by territory. NOT for role hierarchy (use sharing-and-visibility). | |
+| IN_PROGRESS | enterprise-territory-management | Territory hierarchies, territory types, assignment rules, territory models, activation, forecast by territory. NOT for role hierarchy (use sharing-and-visibility). | Agent 2026-04-04T00:00:00Z |
 | TODO | custom-permissions | Creating and checking custom permissions: permission set integration, using in validation rules, Apex, and Flow. NOT for permission sets (use permission-set-architecture). | |
 | TODO | delegated-administration | Delegated admin setup: group membership management, custom object admin delegation, limitations, use cases. NOT for user management (use user-management). | |
 | TODO | dynamic-forms-and-actions | Dynamic Forms on Lightning record pages: field sections, visibility rules, dynamic actions, migration from page layouts. NOT for page layout design (use record-types-and-page-layouts). | |
