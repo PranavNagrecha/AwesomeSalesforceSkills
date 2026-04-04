@@ -10,6 +10,7 @@
       "admin/connected-apps-and-auth",
       "admin/custom-field-creation",
       "admin/custom-metadata-types",
+      "admin/custom-permissions",
       "admin/data-import-and-management",
       "admin/data-model-documentation",
       "admin/data-skew-and-sharing-performance",
@@ -41,12 +42,14 @@
       "agentforce/agent-actions",
       "agentforce/agent-topic-design",
       "agentforce/agentforce-agent-creation",
+      "agentforce/einstein-copilot-for-sales",
       "agentforce/einstein-trust-layer",
       "agentforce/prompt-builder-templates"
     ],
     "apex": [
       "apex/apex-cpu-and-heap-optimization",
       "apex/apex-design-patterns",
+      "apex/apex-managed-sharing",
       "apex/apex-mocking-and-stubs",
       "apex/apex-queueable-patterns",
       "apex/apex-rest-services",
@@ -93,7 +96,8 @@
     "devops": [
       "devops/change-set-deployment",
       "devops/sandbox-refresh-and-templates",
-      "devops/scratch-org-management"
+      "devops/scratch-org-management",
+      "devops/unlocked-package-development"
     ],
     "flow": [
       "flow/fault-handling",
@@ -128,6 +132,7 @@
       "lwc/lwc-performance",
       "lwc/lwc-security",
       "lwc/lwc-testing",
+      "lwc/lwc-toast-and-notifications",
       "lwc/navigation-and-routing",
       "lwc/static-resources-in-lwc",
       "lwc/wire-service-patterns"
@@ -143,6 +148,7 @@
     ],
     "security": [
       "security/event-monitoring",
+      "security/field-audit-trail",
       "security/org-hardening-and-baseline-config",
       "security/permission-set-groups-and-muting",
       "security/platform-encryption",
@@ -150,6 +156,9 @@
     ]
   },
   "skills_by_tag": {
+    "ShowToastEvent": [
+      "lwc/lwc-toast-and-notifications"
+    ],
     "__mdt": [
       "apex/custom-metadata-in-apex"
     ],
@@ -160,6 +169,7 @@
       "security/permission-set-groups-and-muting"
     ],
     "access-control": [
+      "admin/custom-permissions",
       "admin/permission-sets-vs-profiles"
     ],
     "access-governance": [
@@ -179,6 +189,9 @@
     ],
     "activation-bypass": [
       "apex/trigger-framework"
+    ],
+    "activity-capture": [
+      "agentforce/einstein-copilot-for-sales"
     ],
     "admin": [
       "admin/custom-field-creation",
@@ -223,6 +236,7 @@
       "apex/debug-logs-and-developer-console"
     ],
     "apex": [
+      "admin/custom-permissions",
       "apex/soql-fundamentals",
       "architect/solution-design-patterns"
     ],
@@ -237,6 +251,9 @@
     ],
     "apex-security": [
       "apex/apex-security-patterns"
+    ],
+    "apex-sharing": [
+      "apex/apex-managed-sharing"
     ],
     "apex-testing": [
       "apex/test-class-standards"
@@ -275,7 +292,8 @@
       "architect/well-architected-review"
     ],
     "archival": [
-      "data/data-archival-strategies"
+      "data/data-archival-strategies",
+      "security/field-audit-trail"
     ],
     "aria": [
       "lwc/lwc-accessibility"
@@ -437,6 +455,7 @@
       "admin/formula-fields"
     ],
     "compliance": [
+      "security/field-audit-trail",
       "security/platform-encryption"
     ],
     "component-communication": [
@@ -477,6 +496,9 @@
     ],
     "convertcurrency": [
       "data/multi-currency-and-advanced-currency-management"
+    ],
+    "copilot": [
+      "agentforce/einstein-copilot-for-sales"
     ],
     "cors": [
       "security/org-hardening-and-baseline-config"
@@ -538,6 +560,9 @@
     "custom-objects": [
       "admin/object-creation-and-design"
     ],
+    "custom-permissions": [
+      "admin/custom-permissions"
+    ],
     "custom-property-editor": [
       "lwc/custom-property-editor-for-flow"
     ],
@@ -595,7 +620,8 @@
       "architect/multi-org-strategy"
     ],
     "data-retention": [
-      "data/data-archival-strategies"
+      "data/data-archival-strategies",
+      "security/field-audit-trail"
     ],
     "data-skew": [
       "admin/data-skew-and-sharing-performance"
@@ -678,7 +704,8 @@
       "apex/metadata-api-and-package-xml"
     ],
     "dev-hub": [
-      "devops/scratch-org-management"
+      "devops/scratch-org-management",
+      "devops/unlocked-package-development"
     ],
     "developer-console": [
       "apex/debug-logs-and-developer-console"
@@ -688,7 +715,8 @@
     ],
     "devops": [
       "devops/sandbox-refresh-and-templates",
-      "devops/scratch-org-management"
+      "devops/scratch-org-management",
+      "devops/unlocked-package-development"
     ],
     "dlrs": [
       "data/roll-up-summary-alternatives"
@@ -715,13 +743,20 @@
       "admin/record-types-and-page-layouts"
     ],
     "einstein": [
+      "agentforce/einstein-copilot-for-sales",
       "agentforce/prompt-builder-templates"
+    ],
+    "einstein-relationship-insights": [
+      "agentforce/einstein-copilot-for-sales"
     ],
     "einstein-trust-layer": [
       "agentforce/einstein-trust-layer"
     ],
     "email-alerts": [
       "admin/email-templates-and-alerts"
+    ],
+    "email-generation": [
+      "agentforce/einstein-copilot-for-sales"
     ],
     "encryption": [
       "security/platform-encryption"
@@ -803,7 +838,11 @@
       "admin/flow-for-admins"
     ],
     "feature-flags": [
-      "admin/custom-metadata-types"
+      "admin/custom-metadata-types",
+      "admin/custom-permissions"
+    ],
+    "field-audit-trail": [
+      "security/field-audit-trail"
     ],
     "field-history": [
       "data/data-quality-and-governance"
@@ -1092,8 +1131,14 @@
     "light-dom": [
       "lwc/lwc-security"
     ],
+    "lightning-alert": [
+      "lwc/lwc-toast-and-notifications"
+    ],
     "lightning-app": [
       "admin/app-and-tab-configuration"
+    ],
+    "lightning-confirm": [
+      "lwc/lwc-toast-and-notifications"
     ],
     "lightning-data-service": [
       "lwc/wire-service-patterns"
@@ -1143,7 +1188,8 @@
     "lwc": [
       "architect/platform-selection-guidance",
       "architect/solution-design-patterns",
-      "lwc/lifecycle-hooks"
+      "lwc/lifecycle-hooks",
+      "lwc/lwc-toast-and-notifications"
     ],
     "lwc-accessibility": [
       "lwc/lwc-accessibility"
@@ -1251,7 +1297,8 @@
       "lwc/navigation-and-routing"
     ],
     "notifications": [
-      "admin/email-templates-and-alerts"
+      "admin/email-templates-and-alerts",
+      "lwc/lwc-toast-and-notifications"
     ],
     "null-handling": [
       "admin/formula-fields"
@@ -1292,6 +1339,9 @@
     ],
     "omnistudio-security": [
       "omnistudio/omnistudio-security"
+    ],
+    "opportunity-scoring": [
+      "agentforce/einstein-copilot-for-sales"
     ],
     "opportunity-territory": [
       "admin/enterprise-territory-management"
@@ -1341,6 +1391,9 @@
     "ownership-skew": [
       "admin/data-skew-and-sharing-performance"
     ],
+    "package-development": [
+      "devops/unlocked-package-development"
+    ],
     "package-xml": [
       "apex/metadata-api-and-package-xml",
       "apex/sf-cli-and-sfdx-essentials"
@@ -1381,6 +1434,9 @@
       "admin/formula-fields",
       "data/soql-query-optimization"
     ],
+    "permission-set": [
+      "admin/custom-permissions"
+    ],
     "permission-set-architecture": [
       "admin/permission-set-architecture"
     ],
@@ -1404,12 +1460,18 @@
     "pii": [
       "data/data-quality-and-governance"
     ],
+    "pipeline-inspection": [
+      "agentforce/einstein-copilot-for-sales"
+    ],
     "platform-cache": [
       "apex/platform-cache"
     ],
     "platform-events": [
       "apex/platform-events-apex",
       "architect/limits-and-scalability-planning"
+    ],
+    "platform-notifications": [
+      "lwc/lwc-toast-and-notifications"
     ],
     "platform-resource-loader": [
       "lwc/static-resources-in-lwc"
@@ -1437,6 +1499,9 @@
       "admin/permission-sets-vs-profiles",
       "admin/user-management",
       "security/permission-set-groups-and-muting"
+    ],
+    "programmatic-sharing": [
+      "apex/apex-managed-sharing"
     ],
     "prompt-builder": [
       "agentforce/prompt-builder-templates"
@@ -1563,6 +1628,12 @@
     "row-actions": [
       "lwc/lwc-data-table"
     ],
+    "row-cause": [
+      "apex/apex-managed-sharing"
+    ],
+    "sales-ai": [
+      "agentforce/einstein-copilot-for-sales"
+    ],
     "salesforce-connect": [
       "architect/multi-org-strategy",
       "integration/salesforce-connect-external-objects"
@@ -1633,6 +1704,9 @@
     "search-query": [
       "data/sosl-search-patterns"
     ],
+    "second-generation-packaging": [
+      "devops/unlocked-package-development"
+    ],
     "secure-apex": [
       "lwc/lwc-security",
       "omnistudio/omnistudio-security"
@@ -1678,13 +1752,17 @@
     ],
     "sfdx": [
       "apex/sf-cli-and-sfdx-essentials",
-      "devops/scratch-org-management"
+      "devops/scratch-org-management",
+      "devops/unlocked-package-development"
     ],
     "sfdx-lwc-jest": [
       "lwc/lwc-testing"
     ],
     "shadow-dom": [
       "lwc/component-communication"
+    ],
+    "share-objects": [
+      "apex/apex-managed-sharing"
     ],
     "sharing": [
       "admin/sharing-and-visibility"
@@ -1694,6 +1772,7 @@
     ],
     "sharing-recalculation": [
       "admin/data-skew-and-sharing-performance",
+      "apex/apex-managed-sharing",
       "architect/limits-and-scalability-planning"
     ],
     "sharing-rules": [
@@ -1702,6 +1781,7 @@
     "shield": [
       "data/data-quality-and-governance",
       "security/event-monitoring",
+      "security/field-audit-trail",
       "security/platform-encryption"
     ],
     "skinny-tables": [
@@ -1817,7 +1897,8 @@
       "admin/escalation-rules"
     ],
     "toast": [
-      "lwc/lwc-modal-and-overlay"
+      "lwc/lwc-modal-and-overlay",
+      "lwc/lwc-toast-and-notifications"
     ],
     "tool-selection": [
       "admin/einstein-analytics-basics"
@@ -1869,6 +1950,9 @@
     ],
     "uiGraphQLApi": [
       "integration/graphql-api-patterns"
+    ],
+    "unlocked-packages": [
+      "devops/unlocked-package-development"
     ],
     "upsert": [
       "admin/data-import-and-management",

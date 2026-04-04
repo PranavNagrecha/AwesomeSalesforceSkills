@@ -779,6 +779,42 @@
       "domain": "lwc",
       "expected_skill": "lwc/lwc-in-flow-screens",
       "top_k": 3
+    },
+    {
+      "query": "unlocked package version creation dependency management",
+      "domain": "devops",
+      "expected_skill": "devops/unlocked-package-development",
+      "top_k": 3
+    },
+    {
+      "query": "field audit trail shield retention compliance",
+      "domain": "security",
+      "expected_skill": "security/field-audit-trail",
+      "top_k": 3
+    },
+    {
+      "query": "einstein copilot opportunity scoring sales",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/einstein-copilot-for-sales",
+      "top_k": 3
+    },
+    {
+      "query": "custom permissions apex feature flag",
+      "domain": "admin",
+      "expected_skill": "admin/custom-permissions",
+      "top_k": 3
+    },
+    {
+      "query": "apex managed sharing share objects row cause",
+      "domain": "apex",
+      "expected_skill": "apex/apex-managed-sharing",
+      "top_k": 3
+    },
+    {
+      "query": "ShowToastEvent LWC toast notification",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-toast-and-notifications",
+      "top_k": 3
     }
   ]
 }
