@@ -44,8 +44,8 @@ STATUS KEY:
 
 | Phase | Cloud / Domain | Total Cells | Skills Planned | Skills Done | TODO |
 |-------|----------------|-------------|----------------|-------------|------|
-| 0 | Domain Sweeps (Cross-Cloud) | — | 105 | 24 | 81 |
-| 1 | Core Platform | 5 roles | 274 | 52 | 222 |
+| 0 | Domain Sweeps (Cross-Cloud) | — | 113 | 24 | 89 |
+| 1 | Core Platform | 5 roles | 310 | 52 | 258 |
 | 2 | Sales Cloud | 5 roles | 29 | 0 | 29 |
 | 3 | Service Cloud | 5 roles | 29 | 0 | 29 |
 | 4 | Experience Cloud | 5 roles | 26 | 0 | 26 |
@@ -63,8 +63,8 @@ STATUS KEY:
 | 16 | DevOps (Cloud-Specific) | 5 roles | 22 | 0 | 22 |
 | 17 | Data Cloud | 3 roles | 13 | 0 | 13 |
 | 18 | Slack Integration | — | 5 | 0 | 5 |
-| 19 | Additional Industry Clouds | — | 14 | 0 | 14 |
-| **Total** | | | **590** | **76** | **512** |
+| 19 | Additional Industry Clouds | — | 15 | 0 | 15 |
+| **Total** | | | **639** | **76** | **561** |
 
 ---
 
@@ -129,6 +129,9 @@ These skills apply across all clouds. Build before cloud-specific phases.
 | TODO | org-cleanup-and-technical-debt | Identifying unused metadata: removing deprecated components, org health maintenance, dead code detection. NOT for code-level refactoring. | |
 | TODO | copado-essentials | Copado deployment pipelines: user stories, branch management, conflict resolution, promotion paths. NOT for native SFDX CLI workflows. | |
 | TODO | cumulusci-automation | CumulusCI for Salesforce development: task and flow configuration, robot framework integration, CI automation. NOT for native SFDX. | |
+| TODO | metadata-api-coverage-gaps | Metadata types not supported by Metadata API or SFDX: manual migration workarounds, known coverage gaps by release, tracking unsupported components. NOT for Metadata API usage (use metadata-api-and-package-xml). | |
+| TODO | environment-specific-value-injection | Managing environment-specific values across orgs: Named Credential per-env config, Custom Metadata for env settings, post-deploy scripts, CI variable substitution. NOT for sandbox refresh (use sandbox-refresh-and-templates). | |
+| TODO | sandbox-data-isolation-gotchas | Sandbox data pitfalls: production data leaking into sandbox emails, scheduled jobs running in sandboxes, integration endpoints hitting production, post-copy cleanup. NOT for sandbox strategy (use sandbox-strategy). | |
 
 ### Security Domain
 
@@ -157,6 +160,8 @@ These skills apply across all clouds. Build before cloud-specific phases.
 | TODO | secure-coding-review-checklist | Security review checklist for AppExchange: ISV security requirements, Checkmarx patterns, common vulnerabilities. NOT for implementing fixes. | |
 | TODO | recaptcha-and-bot-prevention | Bot prevention in Salesforce: Google reCAPTCHA integration for Experience Cloud, form spam prevention, rate limiting for guest submissions, CAPTCHA configuration. NOT for API rate limiting (use api-security-and-rate-limiting). | |
 | TODO | session-management-and-timeout | Session security: timeout configuration by user type, concurrent session limits, session-level IP locking, logout messaging, inactivity handling, CMS ARC-AMPE session controls. NOT for SSO authentication (use oauth-flows-and-connected-apps). | |
+| TODO | ip-range-and-login-flow-strategy | Login flow customization: IP-range-based login flows, conditional MFA, geo-restricted access, login flow Apex handlers, custom login pages per community. NOT for basic MFA setup (use org-setup-and-configuration). | |
+| TODO | ferpa-compliance-in-salesforce | FERPA compliance patterns in Salesforce: student data protection, directory information controls, educational records handling, consent management for education orgs. NOT for HIPAA (use hipaa-compliance-architecture). | |
 
 ### Agentforce / Einstein AI Domain
 
@@ -177,6 +182,7 @@ These skills apply across all clouds. Build before cloud-specific phases.
 | TODO | agentforce-data-cloud-grounding | Grounding agents with Data Cloud: data streams for grounding, DMOs, vector embeddings, search index configuration. NOT for standalone Data Cloud setup. | |
 | TODO | custom-agent-actions-apex | Building custom Apex invocable actions for Agentforce: input/output schema, error handling, security context. NOT for standard agent actions (use agent-actions). | |
 | TODO | agentforce-guardrails | Agent guardrails: topic classification boundaries, fallback handling, escalation rules, restricted topics, abuse prevention. NOT for Trust Layer. | |
+| TODO | sf-to-llm-data-pipelines | Preparing and exporting Salesforce data for LLM consumption: data extraction patterns, chunking strategies, embedding pipelines, knowledge base preparation for external AI. NOT for Agentforce grounding (use agentforce-data-cloud-grounding). | |
 | DONE | einstein-prediction-builder | Einstein Prediction Builder: custom predictions, field selection, model training, scoring records, embedding predictions. NOT for Einstein Discovery. | Agent 2026-04-04T08:00:00Z |
 | TODO | einstein-next-best-action | Next Best Action: strategies, recommendations, action flows, display in Lightning, recommendation filtering. NOT for Prediction Builder. | |
 
@@ -225,6 +231,8 @@ These skills apply across all clouds. Build before cloud-specific phases.
 | TODO | file-and-document-integration | Document management integration: file upload patterns, virus scanning API, external document storage (EDM/SharePoint), file size validation, async file processing. NOT for Salesforce Files administration. | |
 | TODO | stub-and-mock-testing-patterns | Integration stub testing: mock endpoints for sandbox environments, HttpCalloutMock in Apex, stub response configuration, test isolation for callouts, partner connectivity testing. NOT for Apex unit testing patterns (use test-class-standards). | |
 | TODO | api-error-handling-design | API error response design: HTTP status code strategy, error payload structure, retry-safe error codes, client-side error parsing, timeout handling, circuit breaker patterns. NOT for Apex exception handling. | |
+| TODO | retry-and-backoff-patterns | Integration retry strategies: exponential backoff, jitter, retry budget, idempotency keys, dead-letter queues, circuit breaker implementation in Apex callouts. NOT for Apex async retry (use apex-queueable-patterns). | |
+| TODO | sis-integration-patterns | Student Information System integration with Salesforce: enrollment sync, transcript data, financial aid, advisor assignment, EDA/Education Cloud data mapping. NOT for generic integration patterns. | |
 
 ---
 
@@ -262,6 +270,19 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | TODO | salesforce-surveys | Salesforce Surveys: survey creation, question types, branching logic, distribution, guest user surveys, survey invitation tracking, reporting on responses. NOT for custom form building or Experience Cloud feedback widgets. | |
 | TODO | user-access-policies | User Access Policies: automatic permission set assignment based on user attributes, provisioning rules, dynamic group membership, login-based license management. NOT for permission set design (use permission-set-architecture). | |
 | TODO | batch-job-scheduling-and-monitoring | Monitoring scheduled and batch jobs: Apex Jobs monitoring, Flow scheduled jobs, job queue management, concurrent limits, failure notification, retry patterns. NOT for writing batch Apex (use batch-apex-patterns). | |
+| TODO | standard-object-quirks | Non-obvious behaviors of standard objects: Task/Event polymorphic WhoId/WhatId, Lead conversion field mapping gotchas, Account/Contact deletion cascades, Person Account dual-nature, Case comment quirks. NOT for object creation (use object-creation-and-design). | |
+| TODO | picklist-field-integrity-issues | Picklist data integrity: unrestricted vs restricted picklists, values loaded via API bypassing picklist validation, record type picklist mapping drift, dependent picklist loading order. NOT for picklist setup (use picklist-and-value-sets). | |
+| TODO | record-type-strategy-at-scale | Record type design patterns at scale: page layout explosion prevention, business process alignment, record type ID dependencies, migration between record types, sharing implications. NOT for basic record type setup (use record-types-and-page-layouts). | |
+| TODO | salesforce-release-preparation | Preparing for Salesforce seasonal releases: sandbox preview, release notes review, regression testing, feature deprecation tracking, org readiness assessment, critical update management. NOT for deployment mechanics. | |
+| TODO | org-limits-monitoring | Monitoring org-level limits: API call usage, storage consumption, custom object count, field-per-object limits, automation limits, setup audit trail, limit alert patterns. NOT for governor limits in Apex (use limits-and-scalability-planning). | |
+| TODO | salesforce-support-escalation | Navigating Salesforce support: case severity levels, known issue tracking, Trailblazer Community resources, partner support tiers, Trust site monitoring, escalation paths. NOT for Service Cloud case management. | |
+| TODO | lightning-page-performance-tuning | Lightning page performance: component count limits, lazy loading, conditional visibility for heavy components, page load analysis, Lightning Usage App metrics. NOT for LWC component performance (use lwc-performance). | |
+| TODO | report-performance-tuning | Report and dashboard performance: filter optimization, report type selection impact, custom report types vs standard, dashboard refresh scheduling, report row limits. NOT for CRM Analytics (use crm-analytics-* skills). | |
+| TODO | license-optimization-strategy | Salesforce license management: license type comparison, permission set license usage, feature license audit, login-based license strategy, license reclamation from inactive users. NOT for license purchasing decisions. | |
+| TODO | system-field-behavior-and-audit | System fields and audit behavior: CreatedDate vs SystemModstamp, LastModifiedDate triggers, system field queryability, audit field overrides on insert, IsDeleted behavior, formula field recalculation timing. NOT for field history tracking (use field-history-tracking). | |
+| TODO | in-app-guidance-and-walkthroughs | In-App Guidance setup: prompts, walkthroughs, floating prompts, docked prompts, targeting rules, scheduling, adoption tracking, user segment targeting. NOT for change management (use change-management-and-training). | |
+| TODO | lightning-app-builder-advanced | Advanced Lightning App Builder: dynamic pages, component visibility filters, custom address fields in pages, template cloning, org vs app vs record pages, page assignment rules. NOT for LWC development. | |
+| TODO | nfr-definition-for-salesforce | Non-functional requirements for Salesforce projects: performance benchmarks, scalability targets, availability SLAs, security requirements, data volume projections, concurrent user capacity. NOT for technical implementation. | |
 
 ### Core Platform × BA Role
 
@@ -307,6 +328,22 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | TODO | custom-logging-and-monitoring | Custom logging frameworks in Apex: log object design, log levels, integration log capture, retention policies, monitoring dashboards, log forwarding. NOT for debug logs (use debug-logs-and-developer-console). | |
 | TODO | visualforce-fundamentals | Visualforce pages and controllers: standard/custom controllers, extensions, action methods, view state management, PDF rendering, Visualforce email templates. NOT for LWC development (use lwc/* skills). | |
 | TODO | platform-cache-patterns | Platform Cache usage: session and org cache partitions, cache-aside patterns, TTL configuration, cache limits, fallback strategies, cache diagnostics. NOT for custom settings as cache. | |
+| TODO | order-of-execution-deep-dive | Complete Apex order of execution: before triggers, validation rules, after triggers, workflow, process builder, flow, assignment rules, auto-response, DML cascading, recursion implications. NOT for trigger framework design (use trigger-framework). | |
+| TODO | mixed-dml-and-setup-objects | Mixed DML operation errors: setup vs non-setup objects, System.runAs workarounds, future method separation, test class implications, common scenarios that trigger mixed DML. NOT for general DML patterns. | |
+| TODO | record-locking-and-contention | Record locking in Salesforce: row-level locking, FOR UPDATE queries, lock contention in high-volume orgs, parent record locking on child insert, deadlock patterns, retry strategies. NOT for sharing model (use sharing-and-visibility). | |
+| TODO | timezone-and-datetime-pitfalls | DateTime vs Date field behavior: timezone conversion pitfalls, user timezone vs org timezone, SOQL date literals, GMT storage, Visualforce timezone rendering, Flow datetime handling. NOT for formula field syntax. | |
+| TODO | formula-field-performance-and-limits | Formula field compile size limits, cross-object formula performance impact, formula field recalculation timing, SOQL filter limitations on formulas, compiled character limit workarounds. NOT for formula syntax (use formula-fields). | |
+| TODO | fflib-enterprise-patterns | FFLib (Apex Enterprise Patterns): Unit of Work, Domain layer, Selector layer, Service layer, Application factory, adoption strategy, when to use vs simpler patterns. NOT for basic trigger framework (use trigger-framework). | |
+| TODO | generic-sobject-handling | Dynamic SObject patterns: generic SObject DML, Schema.getGlobalDescribe performance, describe caching, dynamic field access, type-safe generic methods, SObject.put/get patterns. NOT for static SOQL (use soql-fundamentals). | |
+| TODO | feature-flags-and-kill-switches | Feature flag patterns in Salesforce: Custom Metadata-based toggles, Custom Permissions as flags, hierarchical custom settings for user-level flags, runtime feature gating, emergency kill switches. NOT for custom metadata basics (use custom-metadata-types-and-settings). | |
+| TODO | governor-limit-recovery-patterns | Recovering from governor limit errors: CPU timeout analysis, heap size diagnosis, SOQL query optimization under pressure, bulkification retrofit, limit-safe coding patterns. NOT for general limits overview (use limits-and-scalability-planning). | |
+| TODO | apex-performance-profiling | Apex performance analysis: Limits class usage, debug log analysis for CPU time, heap profiling, SOQL query plan analysis, identifying N+1 patterns, benchmark testing approaches. NOT for debug log setup (use debug-logs-and-developer-console). | |
+| TODO | cross-object-formula-and-rollup-performance | Cross-object formula and rollup summary field performance: spanning relationship limits, rollup recalculation triggers, DLRS alternatives, rollup on large data volumes, formula spanning cascade effects. NOT for formula syntax. | |
+| TODO | long-running-process-orchestration | Orchestrating long-running processes: chaining Queueable jobs, Continuations, Platform Event-driven state machines, process checkpointing, timeout handling, progress tracking patterns. NOT for basic async Apex (use async-apex). | |
+| TODO | callout-and-dml-transaction-boundaries | Transaction boundaries with callouts: uncommitted work errors, callout-before-DML vs DML-before-callout, mixed transaction patterns, queueable callout separation, future method boundaries. NOT for callout implementation (use callouts-and-http-integrations). | |
+| TODO | common-apex-runtime-errors | Common Apex runtime errors and fixes: UNABLE_TO_LOCK_ROW, MIXED_DML_OPERATION, FIELD_CUSTOM_VALIDATION_EXCEPTION, TOO_MANY_SOQL_QUERIES, System.LimitException diagnosis and resolution patterns. NOT for error handling framework design. | |
+| TODO | trigger-and-flow-coexistence | Managing triggers and flows on the same object: execution order interactions, recursion prevention across automation types, before-flow vs after-trigger timing, context variable conflicts. NOT for trigger framework (use trigger-framework). | |
+| TODO | pdf-generation-patterns | PDF generation in Salesforce: Visualforce renderAs PDF, page size and styling, dynamic PDF content, PDF from LWC via Visualforce, third-party PDF libraries, attachment and ContentVersion storage. NOT for quote PDF templates (use quote-pdf-customization). | |
 
 #### LWC Domain Gaps
 
@@ -322,6 +359,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | TODO | lwc-base-component-recipes | Effective use of lightning-record-form, lightning-record-edit-form, lightning-record-view-form, datatable customization. NOT for custom form building (use lwc-forms-and-validation). | |
 | TODO | aura-to-lwc-migration | Migrating Aura components to LWC: feature mapping, interoperability wrappers, event translation, navigation patterns, Aura-LWC coexistence. NOT for new LWC development. | |
 | TODO | lwc-accessibility-patterns | LWC accessibility: ARIA attributes, keyboard navigation, screen reader support, WCAG 2.1 compliance, focus management, accessible data tables. NOT for general LWC styling. | |
+| TODO | common-lwc-runtime-errors | Common LWC runtime errors and fixes: wire adapter failures, navigation errors, Lightning Locker/LWS conflicts, shadow DOM issues, async rendering bugs, slot projection problems, event propagation mistakes. NOT for LWC fundamentals. | |
 
 #### Flow Domain Gaps
 
@@ -335,6 +373,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | TODO | flow-external-services | Calling external APIs from Flow via External Services: HTTP callout action, parsing responses, error handling. NOT for Apex callouts. | |
 | TODO | flow-email-and-notifications | Send email action, custom notifications from Flow, SMS via Flow, Slack notifications, rich notification content. NOT for email templates (use email-templates-and-alerts). | |
 | TODO | pause-elements-and-wait-events | Flow pause elements: wait event configuration, time-based resume, platform event resume, resume conditions. NOT for scheduled flows (use scheduled-flows). | |
+| TODO | flow-runtime-error-diagnosis | Diagnosing Flow runtime errors: fault paths, unhandled fault emails, common runtime failures (null reference, SOQL limits, DML in loops), debug log correlation, error message interpretation. NOT for Flow design (use flow-debugging). | |
 
 ### Core Platform × Data Role
 
@@ -353,6 +392,12 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | TODO | person-accounts | Person Account model: enabling person accounts, B2C data model, account-contact behavior differences, limitations, migration considerations, reporting impact. NOT for standard business accounts. | |
 | TODO | batch-data-cleanup-patterns | Scheduled batch data cleanup: temporary record purging, retention policy enforcement, nightly cleanup jobs, storage optimization, recycle bin management, async deletion. NOT for data archival to external storage (use data-archival-strategies). | |
 | TODO | data-storage-management | Salesforce storage management: file storage vs data storage, storage usage monitoring, storage optimization, large text field strategies, attachment alternatives, storage alerts. NOT for external storage integration. | |
+| TODO | custom-index-requests | Custom indexing in Salesforce: requesting custom indexes from Salesforce Support, skinny tables, two-column indexes, when standard indexes aren't enough, index selectivity thresholds, monitoring index usage. NOT for SOQL optimization (use soql-query-optimization). | |
+| TODO | external-id-strategy | External ID field design: choosing external ID fields, composite key strategies, upsert behavior, external ID indexing, migration use cases, cross-system record correlation patterns. NOT for data migration steps (use data-migration-planning). | |
+| TODO | record-merge-implications | Record merge behavior: account merge, contact merge, lead merge, case merge, field value resolution rules, related record reparenting, trigger behavior during merge, losing record cleanup. NOT for duplicate management rules (use data-quality-and-governance). | |
+| TODO | large-scale-deduplication | Large-scale deduplication: matching rule tuning, batch dedup jobs, third-party dedup tools (DemandTools, Cloudingo), merge automation, surviving record selection logic, post-merge data validation. NOT for duplicate rule configuration (use data-quality-and-governance). | |
+| TODO | data-reconciliation-patterns | Data reconciliation between Salesforce and external systems: record count validation, field-level comparison, hash-based change detection, reconciliation reports, automated mismatch alerting. NOT for data migration (use data-migration-planning). | |
+| TODO | sharing-recalculation-performance | Sharing recalculation triggers and performance: role hierarchy changes, territory reassignment, group membership changes, OWD changes, deferring sharing calculation, async sharing, monitoring recalculation. NOT for sharing model design (use sharing-and-visibility). | |
 
 ### Core Platform × Architect Role
 
@@ -369,6 +414,9 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | TODO | security-architecture-review | Reviewing an org's security posture: sharing model completeness, FLS coverage, Apex security patterns, exposed APIs, Shield needs. Produces findings. NOT for implementing fixes (use security/* skills). | |
 | TODO | government-cloud-compliance | Government Cloud architecture: FedRAMP High, Hyperforce, GovCloud Plus, data residency, CMS ARC-AMPE controls, compliance automation patterns. NOT for general security (use security/* skills). | |
 | TODO | integration-framework-design | Integration framework architecture: service interface pattern, factory pattern, centralized callout handling, dynamic service resolution, response logging, error propagation. NOT for individual API implementation. | |
+| TODO | org-edition-and-feature-licensing | Salesforce edition selection: Enterprise vs Unlimited vs Performance feature differences, add-on licensing (Shield, CPQ, Health Cloud), feature availability by edition, upgrade path planning. NOT for license optimization (use license-optimization-strategy). | |
+| TODO | ai-ready-data-architecture | Designing data architecture for AI readiness: data completeness for ML, structured vs unstructured data strategy, embedding-ready fields, knowledge article structure for RAG, data freshness requirements. NOT for Data Cloud setup. | |
+| TODO | ha-dr-architecture | High availability and disaster recovery for Salesforce: Salesforce Trust site monitoring, backup strategies, cross-region considerations, business continuity planning, RTO/RPO targets, failover patterns for integrations. NOT for data backup mechanics (use salesforce-backup-and-restore). | |
 
 ---
 
@@ -1400,6 +1448,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | TODO | rebate-management-setup | Rebate Management: rebate types, payout calculations, accruals, partner rebates, program setup, compliance reporting. NOT for CPQ discounts. | admin |
 | TODO | revenue-intelligence-setup | Revenue Intelligence: pipeline inspection, deal insights, forecast accuracy analytics, Einstein analytics for sales leaders. NOT for CRM Analytics setup (use crm-analytics-* skills). | admin |
 | TODO | salesforce-backup-and-restore | Salesforce Backup & Restore: native backup service, Odaseva/OwnBackup, metadata backup, recovery procedures, retention policies, compliance. NOT for data archival (use data-archival-strategies). | devops |
+| TODO | eda-data-model-and-patterns | Education Data Architecture (EDA) data model: Account record types for Academic, Household, Business, Administrative; Contact-centric model, Affiliations, Program Plans, Course Connections, Term/Course hierarchy. NOT for standard data model. | data |
 
 ---
 
@@ -1410,6 +1459,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | Claude Opus 4.6 | Full queue population — Phase 0 + Phases 2-19 | 2026-04-04 | 2026-04-04 | 549 TODO rows added across 20 phases |
 | Claude Opus 4.6 | Second pass + TDD extraction — 21 new skills | 2026-04-04 | 2026-04-04 | Added skills from TDD v1.5 (error handling framework, BRE, gov cloud, multi-IdP SSO, doc gen, etc.) + general gap fills (Visualforce, Platform Cache, reports, person accounts, Salesforce Maps, etc.) |
 | Claude Opus 4.6 | Third pass — 14 more skills from SIP, BC/DR, Test Plan, R2/R3, Impl Plan docs | 2026-04-04 | 2026-04-04 | go-live-cutover-planning, performance-testing-salesforce, recaptcha-and-bot-prevention, session-management-and-timeout, multi-language, surveys, user-access-policies, batch-job-monitoring, stub-testing, api-error-handling, batch-data-cleanup, data-storage-management + 2 more |
+| Claude Opus 4.6 | Fourth pass — 49 tribal-knowledge + RAG-gap skills | 2026-04-04 | 2026-04-04 | Deep research: platform gotchas (order-of-execution, mixed DML, record locking, timezone), enterprise patterns (fflib, feature flags), production survival (release prep, org limits, support escalation), troubleshooting (common Apex/LWC/Flow errors), data reality (external IDs, merge implications, dedup, reconciliation), integration hardening (retry/backoff), senior admin (page perf, report perf, license optimization), AI-era (sf-to-llm pipelines, ai-ready architecture), Higher Ed (EDA, SIS, FERPA), plus RAG-gap fills (in-app guidance, Lightning App Builder, PDF generation, HA/DR) |
 
 ---
 
