@@ -1163,6 +1163,66 @@
       "domain": "data",
       "expected_skill": "data/batch-data-cleanup-patterns",
       "top_k": 3
+    },
+    {
+      "query": "org is approaching data storage limit and needs to free space",
+      "domain": "data",
+      "expected_skill": "data/data-storage-management",
+      "top_k": 3
+    },
+    {
+      "query": "sfdx source tracking conflict resolve force overwrite",
+      "domain": "devops",
+      "expected_skill": "devops/source-tracking-and-conflict-resolution",
+      "top_k": 3
+    },
+    {
+      "query": "how to classify field data sensitivity SecurityClassification ComplianceGroup",
+      "domain": "security",
+      "expected_skill": "security/data-classification-labels",
+      "top_k": 3
+    },
+    {
+      "query": "migrate einstein bots to agentforce legacy chat migration",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/einstein-bots-to-agentforce-migration",
+      "top_k": 3
+    },
+    {
+      "query": "platform events vs change data capture vs streaming API architecture",
+      "domain": "integration",
+      "expected_skill": "integration/event-driven-architecture-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "business rules engine decision table eligibility omnistudio",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/business-rules-engine",
+      "top_k": 3
+    },
+    {
+      "query": "custom metadata types vs custom settings when to use each",
+      "domain": "admin",
+      "expected_skill": "admin/custom-metadata-types-and-settings",
+      "top_k": 3
+    },
+    {
+      "query": "CDC trigger apex change data capture ChangeEventHeader changedFields",
+      "domain": "apex",
+      "expected_skill": "apex/change-data-capture-apex",
+      "top_k": 3
+    },
+    {
+      "query": "LWC accessibility ARIA keyboard navigation WCAG screen reader",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-accessibility-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "send email custom notification from flow bell icon",
+      "domain": "flow",
+      "expected_skill": "flow/flow-email-and-notifications",
+      "top_k": 3
     }
   ]
 }
