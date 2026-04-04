@@ -1271,6 +1271,66 @@
       "domain": "data",
       "expected_skill": "data/custom-index-requests",
       "top_k": 3
+    },
+    {
+      "query": "permission set deployment fails cross reference id error",
+      "domain": "devops",
+      "expected_skill": "devops/permission-set-deployment-ordering",
+      "top_k": 3
+    },
+    {
+      "query": "XSS injection prevention JSENCODE Visualforce script block",
+      "domain": "security",
+      "expected_skill": "security/xss-and-injection-prevention",
+      "top_k": 3
+    },
+    {
+      "query": "Agentforce session trace deflection rate observability",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/agentforce-observability",
+      "top_k": 3
+    },
+    {
+      "query": "DataRaptor load upsert key iferror OmniStudio",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/dataraptor-load-and-extract",
+      "top_k": 3
+    },
+    {
+      "query": "inbound webhook HMAC verification Salesforce Sites",
+      "domain": "integration",
+      "expected_skill": "integration/webhook-inbound-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "custom logging Platform Event Apex LoggerService",
+      "domain": "apex",
+      "expected_skill": "apex/custom-logging-and-monitoring",
+      "top_k": 3
+    },
+    {
+      "query": "Translation Workbench Custom Labels multilingual org setup",
+      "domain": "admin",
+      "expected_skill": "admin/multi-language-and-translation",
+      "top_k": 3
+    },
+    {
+      "query": "Flow runtime error fault email null reference SOQL limit",
+      "domain": "flow",
+      "expected_skill": "flow/flow-runtime-error-diagnosis",
+      "top_k": 3
+    },
+    {
+      "query": "Account merge implications field values child records",
+      "domain": "data",
+      "expected_skill": "data/record-merge-implications",
+      "top_k": 3
+    },
+    {
+      "query": "Salesforce edition feature not available Enterprise Unlimited",
+      "domain": "architect",
+      "expected_skill": "architect/org-edition-and-feature-licensing",
+      "top_k": 3
     }
   ]
 }

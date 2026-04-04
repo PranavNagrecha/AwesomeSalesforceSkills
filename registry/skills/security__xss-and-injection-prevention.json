@@ -1,0 +1,102 @@
+{
+  "category": "security",
+  "chunk_ids": [
+    "09ad2e0e73566f7b3199",
+    "0e40d1b5dce26d0f765d",
+    "135f5f5b8fe5ff833542",
+    "19637de69066571e4eff",
+    "1bf555310df9ff56703c",
+    "202c8a3dce3861b4ad1b",
+    "242ae2169114212e263c",
+    "28cfeb0b3ad3f3c5d72d",
+    "31c49575fc2a71aba4e2",
+    "3b7eaf77328fc701b1c0",
+    "409e2d39b471cc99325c",
+    "42c0d6b68affd9763049",
+    "439ec4e976463f2c5190",
+    "453db7b6a3da19dc9490",
+    "46393d5053a570e8500c",
+    "4f8690631ec99da0baa2",
+    "4f88e168ed69886a7f65",
+    "5343f63996ab1f9189b8",
+    "55c6de6f1ebb6c545c4e",
+    "5bff64dd817f2bf5b9bf",
+    "5c75be81b36649017c3e",
+    "5d7f48ec1bbef1aa42f0",
+    "6b0b2b003bd76d278386",
+    "719a677492b575e11dcd",
+    "765f4f86f90c32deae90",
+    "7777131220b7b7584dd2",
+    "7890e6989d23aec71ca7",
+    "798e1b24b8dc18d12bfb",
+    "8251c02197cd339d3aeb",
+    "9af4b3b97a1f90ae6cb3",
+    "9ff9ed9a6490608ea883",
+    "a3ed3ca1d4b22d4ba6b1",
+    "aa37df83f00f4aa91740",
+    "ae1bf7351d79f5f6f6cf",
+    "b130e1d19b4985ea3c7f",
+    "b308d98d05d0af00704a",
+    "b4fce429f5a67e02e525",
+    "b5a1c8767fbb5f6d56ed",
+    "b754b3ee0aefb86ab291",
+    "bb9ba1113c3116bdf1e1",
+    "bdd6de854be5197d2ad9",
+    "c483a65649f6be2b0adf",
+    "cb4966d41a5c591b283c",
+    "d1afe5da194075841f08",
+    "d54d2378e3abd6dc0913",
+    "d82712f93ffa85c32c23",
+    "d95e178067f2d5fd832e",
+    "e080ca483da6d85d7a52",
+    "e4cfce714ac6632be381",
+    "e68945983a143b09f2b5",
+    "e9614e053bd032f45853",
+    "f8dd97790ee28ae14464"
+  ],
+  "content_hash": "6ff5b72258af3b6c42ab0453dd7fe0d7c88f388dde8e576e82f72df8c98d92c8",
+  "dependencies": [],
+  "description": "Use when writing or reviewing Visualforce pages, Apex controllers, or LWC components that output user-supplied data, build dynamic queries, or construct HTTP responses. Triggers: 'XSS in Visualforce', 'SOQL injection vulnerability', 'how to encode output in Apex', 'JSENCODE Visualforce', 'open redirect prevention'. NOT for Apex CRUD/FLS enforcement (use soql-security or apex-crud-and-fls), NOT for Shield encryption (use shield-encryption-key-management), NOT for AppExchange security review process (use secure-coding-review-checklist).",
+  "file_location": "skills/security/xss-and-injection-prevention",
+  "id": "security/xss-and-injection-prevention",
+  "inputs": [
+    "Visualforce page markup or Apex controller code under review",
+    "Description of how user-controlled data flows through the component",
+    "Whether the output context is HTML, JavaScript, or a URL"
+  ],
+  "name": "xss-and-injection-prevention",
+  "official_sources": [
+    "Salesforce Secure Coding Guide \u2014 Cross-Site Scripting \u2014 https://developer.salesforce.com/docs/atlas.en-us.secure_coding_guide.meta/secure_coding_guide/secure_coding_cross_site_scripting.htm",
+    "Apex Developer Guide \u2014 Security Tips for Apex and Visualforce \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/pages_security_tips_xss.htm",
+    "Visualforce Developer Guide \u2014 Security Tips \u2014 https://developer.salesforce.com/docs/atlas.en-us.pages.meta/pages/pages_security_tips_xss.htm",
+    "Salesforce Security Implementation Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security_overview_applications.htm"
+  ],
+  "outputs": [
+    "Identified encoding gaps and the correct encoding function for each context",
+    "Corrected code using bind variables for SOQL and encoding functions for output",
+    "Open redirect fix using PageReference domain whitelisting"
+  ],
+  "references": [
+    "skills/security/xss-and-injection-prevention/references/examples.md",
+    "skills/security/xss-and-injection-prevention/references/gotchas.md",
+    "skills/security/xss-and-injection-prevention/references/llm-anti-patterns.md",
+    "skills/security/xss-and-injection-prevention/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/security/xss-and-injection-prevention/scripts/check_xss_and_injection_prevention.py"
+  ],
+  "tags": [
+    "xss",
+    "injection-prevention",
+    "visualforce",
+    "apex-security",
+    "soql-injection",
+    "output-encoding"
+  ],
+  "templates": [
+    "skills/security/xss-and-injection-prevention/templates/xss-and-injection-prevention-template.md"
+  ],
+  "updated": "2026-04-04",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

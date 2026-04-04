@@ -1,0 +1,98 @@
+{
+  "category": "omnistudio",
+  "chunk_ids": [
+    "0b66b1fadd231688c16a",
+    "0bf97f7f0e36c9785d38",
+    "1547067f2f7c388aab57",
+    "1ee29b4db824cb7e4241",
+    "24e2dd60599c0e7ed7b5",
+    "260e88d951d408feb5f0",
+    "2ad2e7815e940969b755",
+    "2bd681ed2dc98e447700",
+    "355933c1c86ea5e9b08f",
+    "35b3d5a1bca4916defe1",
+    "3abf829561d85c0ff18b",
+    "4bfcd68ea99ac989bcf0",
+    "4ec2486013afde27ccca",
+    "520bd2b672160d2f23be",
+    "5539af6e97278bfb1dfe",
+    "5c0710e42563ad0ce026",
+    "6707a65984fca7a9209d",
+    "6e8fde45502363d7499a",
+    "6e9c316c4abab7bc8e61",
+    "7d9a0dde718bc08d68aa",
+    "978be798c104b37d9c7f",
+    "994aa18848ca621a8a5e",
+    "9dfe74b5b23ea8cda687",
+    "9f4d9aa26af9173831e8",
+    "a02294ffd9bd74dc17e0",
+    "a02d20cd940f46e31459",
+    "a2bc0e55b138888e8246",
+    "a4a08bd75a4a3d71e5ab",
+    "a6370af88166054e17a4",
+    "a8531ee0d64bd53b555e",
+    "a9f02b2073bfc2f28bbb",
+    "ac3b6daa317afc558f28",
+    "b2087c6c4e96a8dd239e",
+    "b2574f88f02cae86f81d",
+    "b9982b37073a8e10b506",
+    "c168995172d679384dcd",
+    "c38aee473e55b7f8d3da",
+    "cf54c36013c6a674dfef",
+    "d1ef5817826f011bd529",
+    "d4abbf329a8c45f41894",
+    "d671cb932bcacc11c929",
+    "e058c5c34fe2e4ee98b3",
+    "e4b25aeeafdbf9f9f696",
+    "e6356c181617f335f164",
+    "f4acab6c1b176ab5da89",
+    "f911679d4da961d07a99",
+    "fe0cd2b061f03e938bd3",
+    "ff710d930c81c41141f3"
+  ],
+  "content_hash": "2f9d746f9c36982b8584d71653ddb9a800e932f8c91fce77d8fb6fd30cbf7c0a",
+  "dependencies": [],
+  "description": "Use when building or debugging DataRaptor Extract or DataRaptor Load operations in OmniStudio: designing multi-object extracts, configuring load upserts, handling iferror responses, or mapping output fields. NOT for DataRaptor Transform operations (use dataraptor-patterns), NOT for Integration Procedure design (use integration-procedures), NOT for bulk data loading outside OmniStudio.",
+  "file_location": "skills/omnistudio/dataraptor-load-and-extract",
+  "id": "omnistudio/dataraptor-load-and-extract",
+  "inputs": [
+    "SOQL query pattern or object/field list for the extract",
+    "Target sObject and operation type for a load (insert/update/upsert/delete)",
+    "Expected output JSON structure or input JSON structure for the operation"
+  ],
+  "name": "dataraptor-load-and-extract",
+  "official_sources": [
+    "OmniStudio Help \u2014 DataRaptor Extract Overview \u2014 https://help.salesforce.com/s/articleView?id=sf.os_dataraptor_extract_overview.htm",
+    "OmniStudio Help \u2014 DataRaptor Load Overview \u2014 https://help.salesforce.com/s/articleView?id=sf.os_dataraptor_load_overview.htm",
+    "OmniStudio Help \u2014 DataRaptor Extract Output \u2014 https://help.salesforce.com/s/articleView?id=sf.os_dataraptor_extract_output.htm",
+    "OmniStudio Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer_guide.meta/omnistudio_developer_guide/omnistudio_intro.htm"
+  ],
+  "outputs": [
+    "DataRaptor Extract configuration with SOQL and output field mappings",
+    "DataRaptor Load configuration with input mappings and upsert key",
+    "Diagnosis of iferror behavior and recommended error handling"
+  ],
+  "references": [
+    "skills/omnistudio/dataraptor-load-and-extract/references/examples.md",
+    "skills/omnistudio/dataraptor-load-and-extract/references/gotchas.md",
+    "skills/omnistudio/dataraptor-load-and-extract/references/llm-anti-patterns.md",
+    "skills/omnistudio/dataraptor-load-and-extract/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/omnistudio/dataraptor-load-and-extract/scripts/check_dataraptor_load_and_extract.py"
+  ],
+  "tags": [
+    "dataraptor",
+    "omnistudio",
+    "data-extract",
+    "data-load",
+    "upsert",
+    "integration-procedure"
+  ],
+  "templates": [
+    "skills/omnistudio/dataraptor-load-and-extract/templates/dataraptor-load-and-extract-template.md"
+  ],
+  "updated": "2026-04-04",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}
