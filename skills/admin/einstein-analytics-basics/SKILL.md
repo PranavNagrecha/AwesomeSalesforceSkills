@@ -90,6 +90,19 @@ Use this when dashboards are stale, users cannot see data, or analytics feels mu
 - **Keep dashboards decision-oriented**: each page should support an action, not just show that data exists.
 - **Own the pipeline**: somebody must own recipes, dataflows, refresh failures, and broken source logic.
 
+
+## Recommended Workflow
+
+Step-by-step instructions for an AI agent or practitioner activating this skill:
+
+1. Gather context — confirm the org edition, relevant objects, and current configuration state
+2. Review official sources — check the references in this skill's well-architected.md before making changes
+3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
+4. Validate — run the skill's checker script and verify against the Review Checklist below
+5. Document — record any deviations from standard patterns and update the template if needed
+
+---
+
 ## Salesforce-Specific Gotchas
 
 - **CRM Analytics is not just prettier dashboards**: it introduces datasets, refresh jobs, and a new security surface.

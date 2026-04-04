@@ -89,6 +89,19 @@ Teams often secure queries and then perform unsafe DML on fields the user should
 | User-facing code updates records | `Security.stripInaccessible` before DML | Prevents unauthorized field writes |
 | Documented admin or maintenance process truly needs elevated access | Narrow `without sharing` helper with explicit justification | Keeps privilege elevation contained |
 
+
+## Recommended Workflow
+
+Step-by-step instructions for an AI agent or practitioner activating this skill:
+
+1. Gather context — confirm the org edition, relevant objects, and current configuration state
+2. Review official sources — check the references in this skill's well-architected.md before making changes
+3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
+4. Validate — run the skill's checker script and verify against the Review Checklist below
+5. Document — record any deviations from standard patterns and update the template if needed
+
+---
+
 ## Review Checklist
 
 - [ ] Every public or global Apex class declares `with`, `without`, or `inherited sharing` intentionally.

@@ -90,6 +90,19 @@ Use this when test environments are stale, refreshes break integrations, or nobo
 - **Source control protects work**: no team should rely on an uncommitted sandbox as the system of record.
 - **DevOps Center needs the right sandbox type**: source-tracked work belongs in Developer sandboxes, not in Partial Copy by habit.
 
+
+## Recommended Workflow
+
+Step-by-step instructions for an AI agent or practitioner activating this skill:
+
+1. Gather context — confirm the org edition, relevant objects, and current configuration state
+2. Review official sources — check the references in this skill's well-architected.md before making changes
+3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
+4. Validate — run the skill's checker script and verify against the Review Checklist below
+5. Document — record any deviations from standard patterns and update the template if needed
+
+---
+
 ## Salesforce-Specific Gotchas
 
 - **Partial Copy is not a catch-all environment**: it is useful for sample-data testing, not for every build workflow.

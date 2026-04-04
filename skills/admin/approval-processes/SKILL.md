@@ -86,6 +86,19 @@ Use this when records will not submit, approvers are wrong, or locked records ar
 - **Approver source must be owned**: manager-based or lookup-field routing breaks when user records are stale.
 - **Email and mobile approval should be tested with the real template and device mix**, not assumed.
 
+
+## Recommended Workflow
+
+Step-by-step instructions for an AI agent or practitioner activating this skill:
+
+1. Gather context — confirm the org edition, relevant objects, and current configuration state
+2. Review official sources — check the references in this skill's well-architected.md before making changes
+3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
+4. Validate — run the skill's checker script and verify against the Review Checklist below
+5. Document — record any deviations from standard patterns and update the template if needed
+
+---
+
 ## Salesforce-Specific Gotchas
 
 - **Pending approval locks the record**: if downstream users still need edits, you must plan for that explicitly.

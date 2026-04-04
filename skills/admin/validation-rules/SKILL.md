@@ -134,6 +134,19 @@ Enter a Close Date to save this record."
 
 Error placement: Use **field-level** error messages when the error is about one specific field. Use **page-level** (top of page) only when the error spans multiple fields.
 
+
+## Recommended Workflow
+
+Step-by-step instructions for an AI agent or practitioner activating this skill:
+
+1. Gather context — confirm the org edition, relevant objects, and current configuration state
+2. Review official sources — check the references in this skill's well-architected.md before making changes
+3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
+4. Validate — run the skill's checker script and verify against the Review Checklist below
+5. Document — record any deviations from standard patterns and update the template if needed
+
+---
+
 ## Salesforce-Specific Gotchas
 
 - **PRIORVALUE does not work on insert**: `PRIORVALUE(Field__c)` returns null on insert. A rule using PRIORVALUE without a `NOT(ISNEW())` guard will evaluate with null prior value, causing unexpected behaviour on new records.

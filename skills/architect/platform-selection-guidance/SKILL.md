@@ -144,7 +144,20 @@ Use this framework when the requirement involves storing configuration data that
 
 Use this mode when reviewing a design document, inherited org, or completed build to identify mismatched platform choices.
 
-### Review Checklist
+#
+## Recommended Workflow
+
+Step-by-step instructions for an AI agent or practitioner activating this skill:
+
+1. Gather context — confirm the org edition, relevant objects, and current configuration state
+2. Review official sources — check the references in this skill's well-architected.md before making changes
+3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
+4. Validate — run the skill's checker script and verify against the Review Checklist below
+5. Document — record any deviations from standard patterns and update the template if needed
+
+---
+
+## Review Checklist
 
 - [ ] **Configuration storage audit:** Are routing rules, feature flags, thresholds, or integration endpoints stored in Custom Settings (List type) or hardcoded in Apex/Flow? If yes → candidate for migration to Custom Metadata Types.
 - [ ] **Custom Settings hierarchy usage:** Are Custom Settings being used only at the org level (no profile/user records)? If yes → migrate to Custom Metadata Types; the hierarchy feature is unused and Custom Settings carry a deployment liability.

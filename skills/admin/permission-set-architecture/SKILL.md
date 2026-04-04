@@ -93,6 +93,19 @@ Muting is useful when a shared bundle is almost right but slightly too broad. It
 | Users see the right permissions but the wrong records | Use sharing-model skills instead | Permission architecture does not solve record visibility |
 | A request is truly one-off and temporary | Time-boxed permission set assignment | Avoid distorting the core architecture for an exception |
 
+
+## Recommended Workflow
+
+Step-by-step instructions for an AI agent or practitioner activating this skill:
+
+1. Gather context — confirm the org edition, relevant objects, and current configuration state
+2. Review official sources — check the references in this skill's well-architected.md before making changes
+3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
+4. Validate — run the skill's checker script and verify against the Review Checklist below
+5. Document — record any deviations from standard patterns and update the template if needed
+
+---
+
 ## Review Checklist
 
 - [ ] Profiles are being minimized instead of expanded for every new feature.

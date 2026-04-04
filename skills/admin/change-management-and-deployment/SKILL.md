@@ -90,6 +90,19 @@ Use this when a deployment failed, caused regressions, or exposed process debt.
 - **Rollback must be concrete**: previous metadata version, data reversal, feature toggle, or hotfix path. Pick one before go-live.
 - **Manual steps count as risk**: document them, time them, and assign owners.
 
+
+## Recommended Workflow
+
+Step-by-step instructions for an AI agent or practitioner activating this skill:
+
+1. Gather context — confirm the org edition, relevant objects, and current configuration state
+2. Review official sources — check the references in this skill's well-architected.md before making changes
+3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
+4. Validate — run the skill's checker script and verify against the Review Checklist below
+5. Document — record any deviations from standard patterns and update the template if needed
+
+---
+
 ## Salesforce-Specific Gotchas
 
 - **Change Sets hide dependency mistakes until late**: they feel easy right up to the failure window.

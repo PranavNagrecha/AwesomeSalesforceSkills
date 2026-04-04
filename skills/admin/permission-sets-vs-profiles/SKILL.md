@@ -102,6 +102,19 @@ Every user =
 | Permission Set Group | `[Persona]_[Feature Set]` | `SalesRep_Core`, `CaseManager_Full` |
 | Base Profile | `[License Type]_MinimumAccess` | `SalesforceUser_MinimumAccess` |
 
+
+## Recommended Workflow
+
+Step-by-step instructions for an AI agent or practitioner activating this skill:
+
+1. Gather context — confirm the org edition, relevant objects, and current configuration state
+2. Review official sources — check the references in this skill's well-architected.md before making changes
+3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
+4. Validate — run the skill's checker script and verify against the Review Checklist below
+5. Document — record any deviations from standard patterns and update the template if needed
+
+---
+
 ## Salesforce-Specific Gotchas
 
 - **FLS is additive, not restrictive**: A Permission Set can grant MORE field access than a Profile, and it wins. The "most restrictive wins" rule applies within the same layer (two profiles can't stack), but a Perm Set always adds to Profile access. A user with Profile FLS=Read + Perm Set FLS=Edit has Edit. This surprises people who expect Profiles to cap access.

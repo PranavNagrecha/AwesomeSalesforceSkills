@@ -108,7 +108,20 @@ Do not treat callout failures as a last-minute patch.
 - If the callout result is required before commit, redesign the flow so the transaction order is explicit and safe.
 - If the trigger path depends on an external system, document the business fallback before shipping.
 
-### Review Checklist
+#
+## Recommended Workflow
+
+Step-by-step instructions for an AI agent or practitioner activating this skill:
+
+1. Gather context — confirm the org edition, relevant objects, and current configuration state
+2. Review official sources — check the references in this skill's well-architected.md before making changes
+3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
+4. Validate — run the skill's checker script and verify against the Review Checklist below
+5. Document — record any deviations from standard patterns and update the template if needed
+
+---
+
+## Review Checklist
 
 - [ ] No SOQL inside loops
 - [ ] No DML inside loops
