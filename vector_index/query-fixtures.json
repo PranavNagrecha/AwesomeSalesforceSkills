@@ -707,6 +707,42 @@
       "domain": "data",
       "expected_skill": "data/bulk-api-patterns",
       "top_k": 3
+    },
+    {
+      "query": "sandbox refresh SandboxPostCopy automation",
+      "domain": "devops",
+      "expected_skill": "devops/sandbox-refresh-and-templates",
+      "top_k": 3
+    },
+    {
+      "query": "shield event monitoring log files",
+      "domain": "security",
+      "expected_skill": "security/event-monitoring",
+      "top_k": 3
+    },
+    {
+      "query": "create agentforce agent deployment",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/agentforce-agent-creation",
+      "top_k": 3
+    },
+    {
+      "query": "calculation procedure expression set lookup",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/calculation-procedures",
+      "top_k": 3
+    },
+    {
+      "query": "salesforce SOAP API enterprise WSDL",
+      "domain": "integration",
+      "expected_skill": "integration/soap-api-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "enterprise territory management account assignment",
+      "domain": "admin",
+      "expected_skill": "admin/enterprise-territory-management",
+      "top_k": 3
     }
   ]
 }
