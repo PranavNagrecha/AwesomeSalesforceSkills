@@ -102,14 +102,14 @@ These skills apply across all clouds. Build before cloud-specific phases.
 | DONE | github-actions-for-salesforce | CI/CD with GitHub Actions for Salesforce: SFDX auth, test runs, deployment steps, secret management, reusable workflows. NOT for other CI tools. | Agent 2026-04-04T12:00:00Z |
 | DONE | bitbucket-pipelines-for-salesforce | CI/CD with Bitbucket Pipelines: pipe configuration, SFDX integration, deployment automation. NOT for GitHub Actions. | Agent 2026-04-04T00:00:00Z |
 | DONE | gitlab-ci-for-salesforce | CI/CD with GitLab CI for Salesforce: runner configuration, deployment jobs, SFDX integration. NOT for other CI tools. | Agent 2026-04-04T00:00:00Z |
-| TODO | environment-strategy | Planning org environments: scratch orgs vs sandboxes vs production, branching strategy alignment, environment matrix. NOT for sandbox types (use sandbox-strategy). | |
-| TODO | source-tracking-and-conflict-resolution | SFDX source tracking: pull/push conflicts, force overwrite decisions, tracking files, conflict markers. NOT for Git merge conflicts. | |
-| TODO | salesforce-code-analyzer | Salesforce Code Analyzer (Scanner CLI): PMD rules, ESLint for LWC, Graph Engine, custom rules, CI integration. NOT for manual code review. | |
-| TODO | release-management | Release planning: version numbering, rollback strategy, release notes generation, go/no-go criteria, release calendar. NOT for deployment mechanics. | |
-| TODO | permission-set-deployment-ordering | Permission set and profile deployment dependencies: assignment during deployment, ordering, cross-reference handling. NOT for permission set design (use permission-set-architecture). | |
-| TODO | data-seeding-for-testing | Test data creation for sandboxes and scratch orgs: data plans, record factories, data import scripts. NOT for production data migration. | |
-| TODO | destructive-changes-deployment | Managing destructiveChanges.xml: pre vs post destroy manifests, safe deletion patterns, dependency handling. NOT for package.xml basics. | |
-| TODO | continuous-integration-testing | Running Apex tests in CI: code coverage gates, parallel test execution, test result parsing, selective test runs. NOT for writing test classes (use test-class-standards). | |
+| IN_PROGRESS | environment-strategy | Planning org environments: scratch orgs vs sandboxes vs production, branching strategy alignment, environment matrix. NOT for sandbox types (use sandbox-strategy). | |
+| IN_PROGRESS | source-tracking-and-conflict-resolution | SFDX source tracking: pull/push conflicts, force overwrite decisions, tracking files, conflict markers. NOT for Git merge conflicts. | |
+| IN_PROGRESS | salesforce-code-analyzer | Salesforce Code Analyzer (Scanner CLI): PMD rules, ESLint for LWC, Graph Engine, custom rules, CI integration. NOT for manual code review. | |
+| IN_PROGRESS | release-management | Release planning: version numbering, rollback strategy, release notes generation, go/no-go criteria, release calendar. NOT for deployment mechanics. | |
+| IN_PROGRESS | permission-set-deployment-ordering | Permission set and profile deployment dependencies: assignment during deployment, ordering, cross-reference handling. NOT for permission set design (use permission-set-architecture). | |
+| IN_PROGRESS | data-seeding-for-testing | Test data creation for sandboxes and scratch orgs: data plans, record factories, data import scripts. NOT for production data migration. | |
+| IN_PROGRESS | destructive-changes-deployment | Managing destructiveChanges.xml: pre vs post destroy manifests, safe deletion patterns, dependency handling. NOT for package.xml basics. | |
+| IN_PROGRESS | continuous-integration-testing | Running Apex tests in CI: code coverage gates, parallel test execution, test result parsing, selective test runs. NOT for writing test classes (use test-class-standards). | |
 | TODO | org-shape-and-scratch-definition | Org shape snapshots, scratch org definition file features: settings, edition selection, feature flags, org preferences. NOT for scratch org CLI commands. | |
 | TODO | git-branching-for-salesforce | Branching models for SF projects: feature branches, release branches, org-based vs artifact-based development alignment. NOT for Git basics. | |
 | TODO | post-deployment-validation | Post-deploy smoke tests, validation deploy vs quick deploy, monitoring after deployment, rollback triggers. NOT for pre-deployment planning. | |
