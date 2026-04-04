@@ -45,7 +45,7 @@
     "e8ab8bc278f9a339a3d7",
     "f9c1a23c6e0fc0f7b834"
   ],
-  "content_hash": "38464bddf9f71454bb5570c2ec40c65926e46636fbf85c032f609ea2b5dfe2a0",
+  "content_hash": "09f3de1ed1489cd023b89daa9f42e5393bb47059dd2c9915bca293ffb341244c",
   "dependencies": [],
   "description": "Use when designing or reviewing Apex actions exposed to Flow or similar orchestration layers via `@InvocableMethod`, especially around wrapper DTOs, bulk-safe list contracts, and error behavior. Triggers: 'InvocableMethod', 'InvocableVariable', 'Flow Apex action', 'bulk-safe invocable', 'Apex action input/output'. NOT for general Flow design without a custom Apex action boundary.",
   "file_location": "skills/apex/invocable-methods",
@@ -72,7 +72,6 @@
     "skills/apex/invocable-methods/references/well-architected.md"
   ],
   "scripts": [
-    "skills/apex/invocable-methods/scripts/__pycache__/check_invocable_methods.cpython-311.pyc",
     "skills/apex/invocable-methods/scripts/check_invocable_methods.py"
   ],
   "tags": [

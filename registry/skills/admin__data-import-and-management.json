@@ -41,7 +41,7 @@
     "f52f5994e39de33f49e4",
     "f7f44c502e73fdde669b"
   ],
-  "content_hash": "b128188621772e8c283935f2e3211077ffc9b50ea20e490557f49ff8f8705a7e",
+  "content_hash": "bccda9da22c95f9edc6fb4c65b7dc5fc1b826dd9c05c6302e080b9034accecf4",
   "dependencies": [],
   "description": "Use when planning, reviewing, or troubleshooting Salesforce data imports, migrations, and bulk updates. Triggers: 'Data Loader', 'Data Import Wizard', 'Bulk API', 'upsert', 'cutover', 'load failed', 'reconcile data'. NOT for ongoing integration architecture - use integration/ skills for that.",
   "file_location": "skills/admin/data-import-and-management",
@@ -68,7 +68,6 @@
     "skills/admin/data-import-and-management/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/data-import-and-management/scripts/__pycache__/check_load_plan.cpython-311.pyc",
     "skills/admin/data-import-and-management/scripts/check_load_plan.py"
   ],
   "tags": [

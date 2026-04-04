@@ -41,7 +41,7 @@
     "e6de2abdbf8509cdcf71",
     "f7a5835815b66733d9f6"
   ],
-  "content_hash": "8a486bc53066ddfb1f788a8ecefbc94339346fce9ccfdf14a4a2eb6db810b9da",
+  "content_hash": "4c2d14583850c0b3c0001245c73a29cae556484f2523e58469ff2452b7ea0850",
   "dependencies": [],
   "description": "Use when designing or reviewing Lightning Web Components that use `@wire`, Lightning Data Service, UI API, or the GraphQL wire adapter, especially for reactive parameters, cache behavior, and refresh strategy. Triggers: 'wire service', 'refreshApex', 'reactive parameter', 'getRecord', 'wire vs imperative Apex'. NOT for component communication or generic lifecycle issues when data provisioning is not the main concern.",
   "file_location": "skills/lwc/wire-service-patterns",
@@ -68,7 +68,6 @@
     "skills/lwc/wire-service-patterns/references/well-architected.md"
   ],
   "scripts": [
-    "skills/lwc/wire-service-patterns/scripts/__pycache__/check_wire_service_patterns.cpython-311.pyc",
     "skills/lwc/wire-service-patterns/scripts/check_wire_service_patterns.py"
   ],
   "tags": [
