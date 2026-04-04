@@ -12,7 +12,7 @@ VISION:
 
 AGENT INSTRUCTIONS (read before doing anything):
   1. Read CLAUDE.md and AGENT_RULES.md first. This file does not override them.
-  2. Find the first row with status TODO in the queue below.
+  2. Find the first row with status RESEARCHED (preferred) or TODO in the queue below.
   3. Change status to IN_PROGRESS and record your agent name + ISO timestamp in the Notes column.
   4. python3 scripts/search_knowledge.py "<skill-name>" --domain <domain>
        → If has_coverage: true, the skill exists. Mark DUPLICATE and move to next.
@@ -31,11 +31,12 @@ AGENT INSTRUCTIONS (read before doing anything):
   12. Move to the next TODO row.
 
 STATUS KEY:
-  TODO       → Not started. Any agent can pick this up.
-  IN_PROGRESS → Being built. Do not touch — another agent is working on it.
-  DONE       → Complete. validate_repo.py passes. Committed.
-  DUPLICATE  → Skill already exists. Skipped.
-  BLOCKED    → Stopped. Read Notes before continuing.
+  TODO        → Not started. Needs research before building.
+  RESEARCHED  → Deep research done, notes in Notes column. Ready to build next session.
+  IN_PROGRESS → Being built or researched. Do not touch — another agent is working on it.
+  DONE        → Complete. validate_repo.py passes. Committed.
+  DUPLICATE   → Skill already exists. Skipped.
+  BLOCKED     → Stopped. Read Notes before continuing.
 -->
 
 ---

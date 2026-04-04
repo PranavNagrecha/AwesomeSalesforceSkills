@@ -313,13 +313,24 @@ Two admin skills, two apex skills, etc. must be built sequentially within their 
 
 ### How to run parallel
 
-**Step P1 — Claim up to 6 tasks**
+**Step P1 — Claim up to 6 tasks (prefer RESEARCHED)**
+
+First, look for skills that already have research notes:
+```bash
+grep "^| RESEARCHED" MASTER_QUEUE.md | head -30
+```
+
+If RESEARCHED rows exist, prefer them — they have research notes in the Notes column and will build faster because the agent doesn't need to search from scratch.
+
+If fewer than 6 RESEARCHED rows exist, fill the remaining slots with TODO rows:
 ```bash
 grep "^| TODO" MASTER_QUEUE.md | head -30
 ```
-Select up to 6 TODO tasks. Group them by domain:
+
+Select up to 6 tasks total (RESEARCHED + TODO). Group them by domain:
 - Pick at most 1 task per domain for the parallel build phase.
 - If you need more than 1 from the same domain, queue them as a sequential second pass after the first batch syncs.
+- When a skill has RESEARCHED status, read the Notes column for pre-gathered sources and key findings. Use them as your primary research input — skip web search unless the notes flag a gap.
 
 Mark all selected tasks IN_PROGRESS in one commit:
 ```bash
@@ -372,6 +383,91 @@ Mark completed rows DONE. Update the Progress Summary table (increment Skills Do
 - Fewer than 3 TODO tasks remain in the queue
 - All remaining TODOs are in the same domain (build them sequentially instead)
 - A task depends on output from another task in the same batch (e.g., a foundational skill that the others reference — build it first, then run a new parallel batch)
+
+---
+
+## Phase B — Research (Post-Build)
+
+After the build phase completes (or if no skills were available to build), use the remaining session time to research upcoming skills. This creates a pipeline: skills researched this session are built next session.
+
+**Budget:** ~20 minutes. If the build phase took longer than 40 minutes, skip research this session.
+
+**Step R1 — Check remaining time**
+If you have been running for more than 40 minutes total, skip Phase B. Commit what you have and stop.
+
+**Step R2 — Pick up to 8 TODO skills for research**
+```bash
+grep "^| TODO" MASTER_QUEUE.md | head -30
+```
+
+Select up to 8 TODO skills. Prefer skills from the next phase or batch after what was just built — this keeps the pipeline moving forward instead of researching skills that won't be built for weeks.
+
+Group by domain — you can research multiple skills from the same domain (unlike building, research has no write conflicts).
+
+Mark all selected tasks IN_PROGRESS in one commit:
+```bash
+git add MASTER_QUEUE.md && git commit -m "research: start batch — <skill1>, <skill2>, ..."
+git push origin main || gh repo sync PranavNagrecha/AwesomeSalesforceSkills --source main --force
+```
+
+**Step R3 — Research each skill (parallel, read-only)**
+
+Launch each skill's research as an independent sub-agent. Each agent does:
+
+1. **Search local knowledge:**
+   ```bash
+   python3 scripts/search_knowledge.py "<skill-topic>" 2>/dev/null
+   python3 scripts/search_knowledge.py "<key-term>" 2>/dev/null
+   ```
+   Read every chunk with score > 1.0 from local knowledge.
+
+2. **Read official sources:**
+   ```bash
+   cat standards/official-salesforce-sources.md
+   ```
+   Identify the relevant official docs for this skill's domain and cloud.
+
+3. **Web search for current content:**
+   Search: `"Salesforce <skill topic> site:help.salesforce.com OR site:developer.salesforce.com"`
+   Extract: exact platform behavior, known limits, non-obvious gotchas, common mistakes.
+
+4. **Check for duplicates:**
+   ```bash
+   python3 scripts/search_knowledge.py "<skill-name>" 2>/dev/null
+   ```
+   If `has_coverage: true` and the match is exact → this skill is a duplicate. Note it for marking.
+
+5. **Summarize findings** as a compact research note (1-2 lines) capturing:
+   - Primary official source URL(s)
+   - Key platform behavior or limit discovered
+   - Any duplicate/overlap flag
+
+**Step R4 — Mark RESEARCHED and write notes**
+
+For each successfully researched skill, update its row in MASTER_QUEUE.md:
+- Change `IN_PROGRESS` → `RESEARCHED`
+- Write the research note in the Notes column. Format:
+  ```
+  Researched <ISO-timestamp>. Sources: [<Doc Name>]. Key: <1-line finding>
+  ```
+
+For any skill found to be a duplicate during research:
+- Change `IN_PROGRESS` → `DUPLICATE`
+- Write: `Covered by skills/<domain>/<existing-skill>`
+
+**Step R5 — Commit and push research results**
+```bash
+git add MASTER_QUEUE.md
+git commit -m "research: batch complete — <N> skills researched
+
+Researched: <skill1>, <skill2>, ...
+Duplicates found: <any>
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>"
+git push origin main || gh repo sync PranavNagrecha/AwesomeSalesforceSkills --source main --force
+```
+
+**Stop. The next invocation will build RESEARCHED skills first, then research more.**
 
 ---
 
