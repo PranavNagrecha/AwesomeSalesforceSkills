@@ -569,6 +569,12 @@
       "domain": "admin",
       "expected_skill": "admin/uat-and-acceptance-criteria",
       "top_k": 3
+    },
+    {
+      "query": "how do I plan user adoption for a Salesforce rollout",
+      "domain": "admin",
+      "expected_skill": "admin/change-management-and-training",
+      "top_k": 3
     }
   ]
 }
