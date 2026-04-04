@@ -815,6 +815,42 @@
       "domain": "lwc",
       "expected_skill": "lwc/lwc-toast-and-notifications",
       "top_k": 3
+    },
+    {
+      "query": "second generation managed package 2GP AppExchange ISV",
+      "domain": "devops",
+      "expected_skill": "devops/second-generation-managed-packages",
+      "top_k": 3
+    },
+    {
+      "query": "transaction security policy block login from unknown location",
+      "domain": "security",
+      "expected_skill": "security/transaction-security-policies",
+      "top_k": 3
+    },
+    {
+      "query": "Einstein Prediction Builder score leads convert",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/einstein-prediction-builder",
+      "top_k": 3
+    },
+    {
+      "query": "configure named credentials for REST callout OAuth",
+      "domain": "integration",
+      "expected_skill": "integration/named-credentials-setup",
+      "top_k": 3
+    },
+    {
+      "query": "schedule Apex class run daily cron",
+      "domain": "apex",
+      "expected_skill": "apex/apex-scheduled-jobs",
+      "top_k": 3
+    },
+    {
+      "query": "LWC dynamic component lwc:component runtime rendering",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-dynamic-components",
+      "top_k": 3
     }
   ]
 }

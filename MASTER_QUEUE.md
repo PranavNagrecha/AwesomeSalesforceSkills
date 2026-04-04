@@ -44,8 +44,8 @@ STATUS KEY:
 
 | Phase | Cloud / Domain | Total Cells | Skills Planned | Skills Done | TODO |
 |-------|----------------|-------------|----------------|-------------|------|
-| 0 | Domain Sweeps (Cross-Cloud) | — | 99 | 12 | 87 |
-| 1 | Core Platform | 5 roles | 262 | 42 | 220 |
+| 0 | Domain Sweeps (Cross-Cloud) | — | 99 | 16 | 83 |
+| 1 | Core Platform | 5 roles | 262 | 44 | 218 |
 | 2 | Sales Cloud | 5 roles | 29 | 0 | 29 |
 | 3 | Service Cloud | 5 roles | 29 | 0 | 29 |
 | 4 | Experience Cloud | 5 roles | 26 | 0 | 26 |
@@ -64,7 +64,7 @@ STATUS KEY:
 | 17 | Data Cloud | 3 roles | 13 | 0 | 13 |
 | 18 | Slack Integration | — | 5 | 0 | 5 |
 | 19 | Additional Industry Clouds | — | 14 | 0 | 14 |
-| **Total** | | | **578** | **48** | **528** |
+| **Total** | | | **578** | **54** | **522** |
 
 ---
 
@@ -96,7 +96,7 @@ These skills apply across all clouds. Build before cloud-specific phases.
 | DONE | sandbox-refresh-and-templates | Sandbox refresh cycles, sandbox templates, post-refresh automation (SandboxPostCopy interface), data handling during refresh. NOT for sandbox type selection (use sandbox-strategy). | Agent 2026-04-04T00:00:00Z |
 | DONE | change-set-deployment | Creating, uploading, and deploying change sets: component dependencies, inbound/outbound limitations, troubleshooting. NOT for SFDX-based deployments. | Agent 2026-04-04T10:00:00Z |
 | DONE | unlocked-package-development | Designing, creating, and versioning unlocked packages: package dependencies, namespace management, installation. NOT for 2GP managed packages. | Agent 2026-04-04T06:00:00Z |
-| IN_PROGRESS | second-generation-managed-packages | 2GP package development: versioning, patch orgs, ISV partner considerations, AppExchange listing. NOT for unlocked packages. | Agent 2026-04-04T08:00:00Z |
+| DONE | second-generation-managed-packages | 2GP package development: versioning, patch orgs, ISV partner considerations, AppExchange listing. NOT for unlocked packages. | Agent 2026-04-04T08:00:00Z |
 | TODO | devops-center-pipeline | DevOps Center setup: creating pipelines, work items, bundling changes, conflict resolution, release tracking. NOT for CLI-based deployment. | |
 | TODO | github-actions-for-salesforce | CI/CD with GitHub Actions for Salesforce: SFDX auth, test runs, deployment steps, secret management, reusable workflows. NOT for other CI tools. | |
 | TODO | bitbucket-pipelines-for-salesforce | CI/CD with Bitbucket Pipelines: pipe configuration, SFDX integration, deployment automation. NOT for GitHub Actions. | |
@@ -138,7 +138,7 @@ These skills apply across all clouds. Build before cloud-specific phases.
 | DONE | event-monitoring | Shield Event Monitoring: event log types, downloading logs, real-time event monitoring, threat detection policies. NOT for debug logs (use debug-logs-and-developer-console). | Agent 2026-04-04T00:00:00Z |
 | DONE | field-audit-trail | Salesforce Shield Field Audit Trail: configuration, retention policies, querying archived field data, compliance requirements. NOT for field history tracking (use field-history-tracking). | Agent 2026-04-04T06:00:00Z |
 | DONE | security-health-check | Running and interpreting Security Health Check scores: remediating findings, custom baselines, periodic review. NOT for org hardening implementation. | Agent 2026-04-04T10:00:00Z |
-| IN_PROGRESS | transaction-security-policies | Transaction Security policies: condition builder, enhanced policies, enforcement actions, real-time monitoring. NOT for Event Monitoring log analysis. | Agent 2026-04-04T08:00:00Z |
+| DONE | transaction-security-policies | Transaction Security policies: condition builder, enhanced policies, enforcement actions, real-time monitoring. NOT for Event Monitoring log analysis. | Agent 2026-04-04T08:00:00Z |
 | TODO | login-forensics | Login history analysis: identity verification, session management, login flow customization, suspicious login detection. NOT for MFA setup (use org-setup-and-configuration). | |
 | TODO | network-security-and-trusted-ips | Trusted IP ranges, network access policies, CSP trusted sites, CORS configuration, My Domain security. NOT for org-wide session settings. | |
 | TODO | sandbox-data-masking | Data masking in sandboxes: Salesforce Data Mask product, field-level masking, compliance-driven policies. NOT for sandbox refresh mechanics. | |
@@ -173,7 +173,7 @@ These skills apply across all clouds. Build before cloud-specific phases.
 | TODO | agentforce-data-cloud-grounding | Grounding agents with Data Cloud: data streams for grounding, DMOs, vector embeddings, search index configuration. NOT for standalone Data Cloud setup. | |
 | TODO | custom-agent-actions-apex | Building custom Apex invocable actions for Agentforce: input/output schema, error handling, security context. NOT for standard agent actions (use agent-actions). | |
 | TODO | agentforce-guardrails | Agent guardrails: topic classification boundaries, fallback handling, escalation rules, restricted topics, abuse prevention. NOT for Trust Layer. | |
-| IN_PROGRESS | einstein-prediction-builder | Einstein Prediction Builder: custom predictions, field selection, model training, scoring records, embedding predictions. NOT for Einstein Discovery. | Agent 2026-04-04T08:00:00Z |
+| DONE | einstein-prediction-builder | Einstein Prediction Builder: custom predictions, field selection, model training, scoring records, embedding predictions. NOT for Einstein Discovery. | Agent 2026-04-04T08:00:00Z |
 | TODO | einstein-next-best-action | Next Best Action: strategies, recommendations, action flows, display in Lightning, recommendation filtering. NOT for Prediction Builder. | |
 
 ### OmniStudio Domain (Gaps)
@@ -215,7 +215,7 @@ These skills apply across all clouds. Build before cloud-specific phases.
 | TODO | mulesoft-salesforce-connector | MuleSoft Anypoint Salesforce connector: watermark pattern, batch processing, error handling, transformation. NOT for native Salesforce APIs. | |
 | TODO | event-driven-architecture-patterns | Choosing between Platform Events, CDC, Streaming API, and outbound messages: decision matrix, architecture patterns. NOT for implementing any single pattern. | |
 | TODO | webhook-inbound-patterns | Receiving webhooks in Salesforce via Apex REST endpoints: site.com routing, authentication, idempotency, error handling. NOT for outbound callouts. | |
-| IN_PROGRESS | named-credentials-setup | Named Credentials configuration: per-user vs per-org, legacy vs enhanced, external credentials, principal types. NOT for callout code patterns. | Agent 2026-04-04T08:00:00Z |
+| DONE | named-credentials-setup | Named Credentials configuration: per-user vs per-org, legacy vs enhanced, external credentials, principal types. NOT for callout code patterns. | Agent 2026-04-04T08:00:00Z |
 | TODO | callout-limits-and-async-patterns | Callout governor limits: continuation pattern, queueable callouts, async callout chains, timeout handling. NOT for HTTP implementation details. | |
 | TODO | api-led-connectivity | API-led connectivity pattern: system/process/experience API layers, API design principles for Salesforce. NOT for MuleSoft product features. | |
 | TODO | file-and-document-integration | Document management integration: file upload patterns, virus scanning API, external document storage (EDM/SharePoint), file size validation, async file processing. NOT for Salesforce Files administration. | |
@@ -288,7 +288,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | DONE | apex-managed-sharing | Sharing records programmatically via Apex: Share objects, row cause, sharing recalculation, with/without sharing patterns. NOT for declarative sharing rules (use sharing-and-visibility). | Agent 2026-04-04T06:00:00Z |
 | TODO | apex-email-services | Inbound email handling: InboundEmailHandler, email-to-Apex routing, parsing attachments, email service addresses, error handling. NOT for outbound email templates. | |
 | TODO | dynamic-apex | Dynamic SOQL, dynamic SOSL, Schema.describe methods, runtime type inspection, dynamic field access, SObjectType. NOT for static SOQL (use soql-fundamentals). | |
-| IN_PROGRESS | apex-scheduled-jobs | Scheduling Apex: Schedulable interface, cron expressions, monitoring scheduled jobs, job limits, chaining. NOT for Batch Apex scheduling (use batch-apex-patterns). | Agent 2026-04-04T08:00:00Z |
+| DONE | apex-scheduled-jobs | Scheduling Apex: Schedulable interface, cron expressions, monitoring scheduled jobs, job limits, chaining. NOT for Batch Apex scheduling (use batch-apex-patterns). | Agent 2026-04-04T08:00:00Z |
 | TODO | apex-metadata-api | Metadata.Operations for deploying metadata from Apex: creating custom fields/objects programmatically, callback handling. NOT for Metadata API REST/SOAP (use metadata-api-and-package-xml). | |
 | TODO | change-data-capture-apex | CDC trigger patterns in Apex: change event handling, header fields, replay, entity tracking configuration. NOT for platform events (use platform-events-apex). | |
 | DONE | apex-queueable-patterns | Advanced Queueable patterns: chaining, Finalizer interface, stack depth management, transaction control, state passing. NOT for basic async Apex (use async-apex). | Agent 2026-04-04T10:00:00Z |
@@ -306,7 +306,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 |--------|------------|-------------|-------|
 | DONE | lwc-in-flow-screens | Embedding LWC in Flow screens: flow reactive properties, flow output variables, navigation, FlowAttributeChangeEvent. NOT for custom property editors (use custom-property-editor-for-flow). | Agent 2026-04-04T10:00:00Z |
 | DONE | lwc-toast-and-notifications | Toast messages, platform notifications, lightning-alert, lightning-confirm, promise-based notification patterns. NOT for modal overlays (use lwc-modal-and-overlay). | Agent 2026-04-04T06:00:00Z |
-| IN_PROGRESS | lwc-dynamic-components | Dynamic component creation with lwc:component, lazy loading, runtime component resolution, dynamic imports. NOT for static component composition. | Agent 2026-04-04T08:00:00Z |
+| DONE | lwc-dynamic-components | Dynamic component creation with lwc:component, lazy loading, runtime component resolution, dynamic imports. NOT for static component composition. | Agent 2026-04-04T08:00:00Z |
 | TODO | message-channel-patterns | Lightning Message Service: message channels, cross-DOM communication, publish/subscribe patterns, scope management. NOT for parent-child communication (use component-communication). | |
 | TODO | lwc-imperative-apex | Imperative Apex calls from LWC: error handling, loading states, cacheable vs non-cacheable, data refresh patterns. NOT for wire service (use wire-service-patterns). | |
 | TODO | lwc-base-component-recipes | Effective use of lightning-record-form, lightning-record-edit-form, lightning-record-view-form, datatable customization. NOT for custom form building (use lwc-forms-and-validation). | |

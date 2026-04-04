@@ -43,6 +43,7 @@
       "agentforce/agent-topic-design",
       "agentforce/agentforce-agent-creation",
       "agentforce/einstein-copilot-for-sales",
+      "agentforce/einstein-prediction-builder",
       "agentforce/einstein-trust-layer",
       "agentforce/prompt-builder-templates"
     ],
@@ -53,6 +54,7 @@
       "apex/apex-mocking-and-stubs",
       "apex/apex-queueable-patterns",
       "apex/apex-rest-services",
+      "apex/apex-scheduled-jobs",
       "apex/apex-security-patterns",
       "apex/async-apex",
       "apex/batch-apex-patterns",
@@ -97,6 +99,7 @@
       "devops/change-set-deployment",
       "devops/sandbox-refresh-and-templates",
       "devops/scratch-org-management",
+      "devops/second-generation-managed-packages",
       "devops/unlocked-package-development"
     ],
     "flow": [
@@ -114,6 +117,7 @@
     ],
     "integration": [
       "integration/graphql-api-patterns",
+      "integration/named-credentials-setup",
       "integration/oauth-flows-and-connected-apps",
       "integration/rest-api-patterns",
       "integration/salesforce-connect-external-objects",
@@ -125,6 +129,7 @@
       "lwc/lifecycle-hooks",
       "lwc/lwc-accessibility",
       "lwc/lwc-data-table",
+      "lwc/lwc-dynamic-components",
       "lwc/lwc-forms-and-validation",
       "lwc/lwc-in-flow-screens",
       "lwc/lwc-modal-and-overlay",
@@ -152,10 +157,14 @@
       "security/org-hardening-and-baseline-config",
       "security/permission-set-groups-and-muting",
       "security/platform-encryption",
-      "security/security-health-check"
+      "security/security-health-check",
+      "security/transaction-security-policies"
     ]
   },
   "skills_by_tag": {
+    "2gp": [
+      "devops/second-generation-managed-packages"
+    ],
     "ShowToastEvent": [
       "lwc/lwc-toast-and-notifications"
     ],
@@ -232,6 +241,9 @@
     "aggregate-soql": [
       "data/roll-up-summary-alternatives"
     ],
+    "ai-scoring": [
+      "agentforce/einstein-prediction-builder"
+    ],
     "anonymous-apex": [
       "apex/debug-logs-and-developer-console"
     ],
@@ -270,6 +282,9 @@
     "app-manager": [
       "admin/app-and-tab-configuration"
     ],
+    "appexchange": [
+      "devops/second-generation-managed-packages"
+    ],
     "approval-process": [
       "admin/approval-processes"
     ],
@@ -307,6 +322,7 @@
     ],
     "async-apex": [
       "apex/apex-queueable-patterns",
+      "apex/apex-scheduled-jobs",
       "apex/async-apex",
       "architect/limits-and-scalability-planning"
     ],
@@ -368,6 +384,9 @@
     "big-objects": [
       "data/data-archival-strategies"
     ],
+    "binary-classification": [
+      "agentforce/einstein-prediction-builder"
+    ],
     "branching": [
       "omnistudio/omniscript-design-patterns"
     ],
@@ -416,6 +435,9 @@
     "calculation-procedures": [
       "omnistudio/calculation-procedures"
     ],
+    "callout-auth": [
+      "integration/named-credentials-setup"
+    ],
     "card-actions": [
       "omnistudio/flexcard-design-patterns"
     ],
@@ -463,6 +485,9 @@
     ],
     "composite": [
       "integration/rest-api-patterns"
+    ],
+    "condition-builder": [
+      "security/transaction-security-policies"
     ],
     "conditional-visibility": [
       "omnistudio/flexcard-design-patterns"
@@ -513,6 +538,9 @@
     "crm-analytics": [
       "admin/einstein-analytics-basics"
     ],
+    "cron": [
+      "apex/apex-scheduled-jobs"
+    ],
     "cross-object": [
       "admin/formula-fields"
     ],
@@ -562,6 +590,9 @@
     ],
     "custom-permissions": [
       "admin/custom-permissions"
+    ],
+    "custom-prediction": [
+      "agentforce/einstein-prediction-builder"
     ],
     "custom-property-editor": [
       "lwc/custom-property-editor-for-flow"
@@ -705,6 +736,7 @@
     ],
     "dev-hub": [
       "devops/scratch-org-management",
+      "devops/second-generation-managed-packages",
       "devops/unlocked-package-development"
     ],
     "developer-console": [
@@ -742,9 +774,18 @@
     "dynamic-forms": [
       "admin/record-types-and-page-layouts"
     ],
+    "dynamic-import": [
+      "lwc/lwc-dynamic-components"
+    ],
     "einstein": [
       "agentforce/einstein-copilot-for-sales",
       "agentforce/prompt-builder-templates"
+    ],
+    "einstein-platform": [
+      "agentforce/einstein-prediction-builder"
+    ],
+    "einstein-prediction-builder": [
+      "agentforce/einstein-prediction-builder"
     ],
     "einstein-relationship-insights": [
       "agentforce/einstein-copilot-for-sales"
@@ -760,6 +801,9 @@
     ],
     "encryption": [
       "security/platform-encryption"
+    ],
+    "enforcement-actions": [
+      "security/transaction-security-policies"
     ],
     "enterprise-wsdl": [
       "integration/soap-api-patterns"
@@ -811,7 +855,8 @@
       "omnistudio/calculation-procedures"
     ],
     "external-credentials": [
-      "admin/connected-apps-and-auth"
+      "admin/connected-apps-and-auth",
+      "integration/named-credentials-setup"
     ],
     "external-id": [
       "admin/data-import-and-management",
@@ -1066,6 +1111,9 @@
     "integration-reliability": [
       "apex/callouts-and-http-integrations"
     ],
+    "integration-security": [
+      "integration/named-credentials-setup"
+    ],
     "integrations": [
       "admin/validation-rules"
     ],
@@ -1081,11 +1129,17 @@
     "invocablevariable": [
       "apex/invocable-methods"
     ],
+    "isv": [
+      "devops/second-generation-managed-packages"
+    ],
     "jest": [
       "lwc/lwc-testing"
     ],
     "job-chaining": [
       "apex/apex-queueable-patterns"
+    ],
+    "job-management": [
+      "apex/apex-scheduled-jobs"
     ],
     "json-memory": [
       "apex/apex-cpu-and-heap-optimization"
@@ -1113,6 +1167,9 @@
     ],
     "lazy-instantiation": [
       "lwc/lwc-performance"
+    ],
+    "lazy-loading": [
+      "lwc/lwc-dynamic-components"
     ],
     "lead-management": [
       "admin/assignment-rules"
@@ -1194,8 +1251,14 @@
     "lwc-accessibility": [
       "lwc/lwc-accessibility"
     ],
+    "lwc-component-directive": [
+      "lwc/lwc-dynamic-components"
+    ],
     "lwc-data-table": [
       "lwc/lwc-data-table"
+    ],
+    "lwc-dynamic-components": [
+      "lwc/lwc-dynamic-components"
     ],
     "lwc-forms": [
       "lwc/lwc-forms-and-validation"
@@ -1214,6 +1277,9 @@
     ],
     "maintainability": [
       "flow/subflows-and-reusability"
+    ],
+    "managed-package": [
+      "devops/second-generation-managed-packages"
     ],
     "masking": [
       "admin/sandbox-strategy"
@@ -1243,8 +1309,12 @@
       "apex/metadata-api-and-package-xml",
       "integration/soap-api-patterns"
     ],
+    "metadata-deployment": [
+      "integration/named-credentials-setup"
+    ],
     "mfa": [
-      "admin/org-setup-and-configuration"
+      "admin/org-setup-and-configuration",
+      "security/transaction-security-policies"
     ],
     "migration": [
       "admin/data-import-and-management"
@@ -1283,6 +1353,7 @@
       "admin/connected-apps-and-auth",
       "apex/callouts-and-http-integrations",
       "architect/multi-org-strategy",
+      "integration/named-credentials-setup",
       "omnistudio/integration-procedures"
     ],
     "naming-conventions": [
@@ -1305,6 +1376,7 @@
     ],
     "oauth": [
       "admin/connected-apps-and-auth",
+      "integration/named-credentials-setup",
       "integration/oauth-flows-and-connected-apps",
       "integration/rest-api-patterns"
     ],
@@ -1393,6 +1465,9 @@
     ],
     "package-development": [
       "devops/unlocked-package-development"
+    ],
+    "package-versioning": [
+      "devops/second-generation-managed-packages"
     ],
     "package-xml": [
       "apex/metadata-api-and-package-xml",
@@ -1527,7 +1602,8 @@
       "lwc/wire-service-patterns"
     ],
     "real-time-events": [
-      "security/event-monitoring"
+      "security/event-monitoring",
+      "security/transaction-security-policies"
     ],
     "record-access": [
       "admin/sharing-and-visibility"
@@ -1631,6 +1707,9 @@
     "row-cause": [
       "apex/apex-managed-sharing"
     ],
+    "runtime-rendering": [
+      "lwc/lwc-dynamic-components"
+    ],
     "sales-ai": [
       "agentforce/einstein-copilot-for-sales"
     ],
@@ -1667,10 +1746,14 @@
       "flow/flow-bulkification"
     ],
     "schedulable": [
+      "apex/apex-scheduled-jobs",
       "apex/async-apex"
     ],
     "schedule-triggered": [
       "flow/scheduled-flows"
+    ],
+    "scheduled-apex": [
+      "apex/apex-scheduled-jobs"
     ],
     "scheduled-flows": [
       "flow/scheduled-flows"
@@ -1782,7 +1865,8 @@
       "data/data-quality-and-governance",
       "security/event-monitoring",
       "security/field-audit-trail",
-      "security/platform-encryption"
+      "security/platform-encryption",
+      "security/transaction-security-policies"
     ],
     "skinny-tables": [
       "data/data-model-design-patterns"
@@ -1856,6 +1940,9 @@
     "system-debug": [
       "apex/debug-and-logging"
     ],
+    "system-schedule": [
+      "apex/apex-scheduled-jobs"
+    ],
     "technical-debt": [
       "architect/technical-debt-assessment"
     ],
@@ -1923,6 +2010,9 @@
     ],
     "transaction-control": [
       "apex/apex-queueable-patterns"
+    ],
+    "transaction-security": [
+      "security/transaction-security-policies"
     ],
     "trigger-decision": [
       "admin/process-automation-selection"
