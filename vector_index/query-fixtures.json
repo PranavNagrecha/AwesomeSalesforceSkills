@@ -1201,6 +1201,18 @@
       "top_k": 3
     },
     {
+      "query": "migrate vlocity managed package to native omnistudio namespace update LWC Apex",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/vlocity-to-native-omnistudio-migration",
+      "top_k": 3
+    },
+    {
+      "query": "OmniStudio Migration Tool vlocity_ins to omnistudio enableOaForCore",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/vlocity-to-native-omnistudio-migration",
+      "top_k": 3
+    },
+    {
       "query": "custom metadata types vs custom settings when to use each",
       "domain": "admin",
       "expected_skill": "admin/custom-metadata-types-and-settings",
