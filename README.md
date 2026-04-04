@@ -4,7 +4,7 @@ The universal Salesforce knowledge layer for AI coding assistants.
 
 Drop this into Claude Code, Cursor, Aider, Windsurf, or any AI tool and get role-accurate, source-grounded Salesforce guidance — for every role, every cloud, every task.
 
-**119 skills built. 500+ planned across 5 roles × 16 clouds.**
+**125 skills built. 500+ planned across 5 roles × 16 clouds.**
 
 ---
 
@@ -99,16 +99,16 @@ Skills are plain markdown. They work in any AI tool that can read a file.
 | Domain | Skills |
 |--------|--------|
 | Admin | 34 — custom fields, objects, picklists, users, org setup, page layouts, permission sets, sharing, validation rules, flows, reports, data skew, requirements gathering, data model documentation, UAT and acceptance criteria, change management and training, enterprise territory management... |
-| Apex | 23 — trigger framework, batch, async, security patterns, callouts, mocking, platform cache, SOQL fundamentals, sf CLI and SFDX essentials, Metadata API and package.xml, debug logs and Developer Console... |
-| LWC | 14 — wire service, component communication, testing, accessibility, offline, performance... |
+| Apex | 24 — trigger framework, batch, async, security patterns, callouts, mocking, platform cache, SOQL fundamentals, sf CLI and SFDX essentials, Metadata API and package.xml, debug logs and Developer Console... |
+| LWC | 15 — wire service, component communication, testing, accessibility, offline, performance... |
 | Flow | 11 — record-triggered, screen flows, fault handling, bulkification, subflows, governance... |
-| OmniStudio | 6 — OmniScript design, DataRaptor, Integration Procedures, security, FlexCard design patterns, calculation procedures |
-| Agentforce | 4 — agent actions, topic design, Einstein Trust Layer, agent creation |
-| Security | 4 — org hardening, permission set groups, Shield Platform Encryption, event monitoring |
+| OmniStudio | 7 — OmniScript design, DataRaptor, Integration Procedures, security, FlexCard design patterns, calculation procedures |
+| Agentforce | 5 — agent actions, topic design, Einstein Trust Layer, agent creation |
+| Security | 5 — org hardening, permission set groups, Shield Platform Encryption, event monitoring |
 | Integration | 5 — GraphQL, OAuth flows, Salesforce Connect, REST API patterns, SOAP API patterns |
 | Data | 10 — multi-currency, SOSL, rollup alternatives, data model design patterns, data migration planning, data quality and governance, bulk API and large data loads, data archival strategies, SOQL query optimization, Bulk API 2.0 patterns |
 | Architect | 6 — solution design patterns, limits and scalability planning, multi-org strategy, technical debt assessment, well-architected review, platform selection guidance |
-| DevOps | 2 — scratch org management, sandbox refresh and templates |
+| DevOps | 3 — scratch org management, sandbox refresh and templates |
 
 **See the full catalog:** [docs/SKILLS.md](./docs/SKILLS.md)
 

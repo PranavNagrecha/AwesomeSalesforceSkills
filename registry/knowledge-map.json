@@ -41,12 +41,14 @@
       "agentforce/agent-actions",
       "agentforce/agent-topic-design",
       "agentforce/agentforce-agent-creation",
-      "agentforce/einstein-trust-layer"
+      "agentforce/einstein-trust-layer",
+      "agentforce/prompt-builder-templates"
     ],
     "apex": [
       "apex/apex-cpu-and-heap-optimization",
       "apex/apex-design-patterns",
       "apex/apex-mocking-and-stubs",
+      "apex/apex-queueable-patterns",
       "apex/apex-rest-services",
       "apex/apex-security-patterns",
       "apex/async-apex",
@@ -89,6 +91,7 @@
       "data/sosl-search-patterns"
     ],
     "devops": [
+      "devops/change-set-deployment",
       "devops/sandbox-refresh-and-templates",
       "devops/scratch-org-management"
     ],
@@ -119,6 +122,7 @@
       "lwc/lwc-accessibility",
       "lwc/lwc-data-table",
       "lwc/lwc-forms-and-validation",
+      "lwc/lwc-in-flow-screens",
       "lwc/lwc-modal-and-overlay",
       "lwc/lwc-offline-and-mobile",
       "lwc/lwc-performance",
@@ -134,13 +138,15 @@
       "omnistudio/flexcard-design-patterns",
       "omnistudio/integration-procedures",
       "omnistudio/omniscript-design-patterns",
+      "omnistudio/omnistudio-debugging",
       "omnistudio/omnistudio-security"
     ],
     "security": [
       "security/event-monitoring",
       "security/org-hardening-and-baseline-config",
       "security/permission-set-groups-and-muting",
-      "security/platform-encryption"
+      "security/platform-encryption",
+      "security/security-health-check"
     ]
   },
   "skills_by_tag": {
@@ -282,6 +288,7 @@
       "data/bulk-api-patterns"
     ],
     "async-apex": [
+      "apex/apex-queueable-patterns",
       "apex/async-apex",
       "architect/limits-and-scalability-planning"
     ],
@@ -405,7 +412,8 @@
       "admin/change-management-and-training"
     ],
     "change-sets": [
-      "admin/change-management-and-deployment"
+      "admin/change-management-and-deployment",
+      "devops/change-set-deployment"
     ],
     "ci-cd": [
       "devops/scratch-org-management"
@@ -511,6 +519,9 @@
     "custom-adapter": [
       "integration/salesforce-connect-external-objects"
     ],
+    "custom-baseline": [
+      "security/security-health-check"
+    ],
     "custom-events": [
       "lwc/component-communication"
     ],
@@ -602,7 +613,8 @@
       "apex/batch-apex-patterns"
     ],
     "dataraptor": [
-      "omnistudio/dataraptor-patterns"
+      "omnistudio/dataraptor-patterns",
+      "omnistudio/omnistudio-debugging"
     ],
     "dataraptor-load": [
       "omnistudio/dataraptor-patterns"
@@ -629,6 +641,9 @@
       "apex/debug-and-logging",
       "apex/debug-logs-and-developer-console"
     ],
+    "debugging": [
+      "omnistudio/omnistudio-debugging"
+    ],
     "decision-matrix": [
       "omnistudio/calculation-procedures"
     ],
@@ -653,7 +668,8 @@
     "deployment": [
       "admin/change-management-and-deployment",
       "apex/metadata-api-and-package-xml",
-      "apex/sf-cli-and-sfdx-essentials"
+      "apex/sf-cli-and-sfdx-essentials",
+      "devops/change-set-deployment"
     ],
     "design-patterns": [
       "architect/solution-design-patterns"
@@ -697,6 +713,9 @@
     ],
     "dynamic-forms": [
       "admin/record-types-and-page-layouts"
+    ],
+    "einstein": [
+      "agentforce/prompt-builder-templates"
     ],
     "einstein-trust-layer": [
       "agentforce/einstein-trust-layer"
@@ -801,8 +820,14 @@
     "file-upload": [
       "lwc/lwc-forms-and-validation"
     ],
+    "finalizer": [
+      "apex/apex-queueable-patterns"
+    ],
     "find-clause": [
       "data/sosl-search-patterns"
+    ],
+    "flex-template": [
+      "agentforce/prompt-builder-templates"
     ],
     "flexcard": [
       "omnistudio/flexcard-design-patterns"
@@ -813,6 +838,9 @@
     ],
     "flow-apex-action": [
       "apex/invocable-methods"
+    ],
+    "flow-attribute-change-event": [
+      "lwc/lwc-in-flow-screens"
     ],
     "flow-builder": [
       "flow/flow-custom-property-editors",
@@ -830,11 +858,17 @@
     "flow-governance": [
       "flow/flow-governance"
     ],
+    "flow-navigation": [
+      "lwc/lwc-in-flow-screens"
+    ],
     "flow-orchestration": [
       "flow/orchestration-flows"
     ],
     "flow-reuse": [
       "flow/subflows-and-reusability"
+    ],
+    "flow-screen": [
+      "lwc/lwc-in-flow-screens"
     ],
     "flow-standards": [
       "flow/flow-governance"
@@ -849,7 +883,8 @@
       "flow/screen-flows"
     ],
     "flow-validation": [
-      "flow/screen-flows"
+      "flow/screen-flows",
+      "lwc/lwc-in-flow-screens"
     ],
     "flow-vs-apex": [
       "admin/process-automation-selection"
@@ -879,6 +914,9 @@
     "gdpr": [
       "data/data-quality-and-governance"
     ],
+    "generative-ai": [
+      "agentforce/prompt-builder-templates"
+    ],
     "generative-ai-security": [
       "agentforce/einstein-trust-layer"
     ],
@@ -901,6 +939,9 @@
     ],
     "graphql-wire": [
       "lwc/wire-service-patterns"
+    ],
+    "grounding": [
+      "agentforce/prompt-builder-templates"
     ],
     "guest-user": [
       "flow/flow-for-experience-cloud"
@@ -980,7 +1021,8 @@
       "architect/platform-selection-guidance"
     ],
     "integration-procedure": [
-      "omnistudio/integration-procedures"
+      "omnistudio/integration-procedures",
+      "omnistudio/omnistudio-debugging"
     ],
     "integration-reliability": [
       "apex/callouts-and-http-integrations"
@@ -1002,6 +1044,9 @@
     ],
     "jest": [
       "lwc/lwc-testing"
+    ],
+    "job-chaining": [
+      "apex/apex-queueable-patterns"
     ],
     "json-memory": [
       "apex/apex-cpu-and-heap-optimization"
@@ -1109,6 +1154,9 @@
     "lwc-forms": [
       "lwc/lwc-forms-and-validation"
     ],
+    "lwc-in-flow": [
+      "lwc/lwc-in-flow-screens"
+    ],
     "lwc-performance": [
       "lwc/lwc-performance"
     ],
@@ -1137,11 +1185,13 @@
       "admin/duplicate-management"
     ],
     "merge-fields": [
-      "admin/email-templates-and-alerts"
+      "admin/email-templates-and-alerts",
+      "agentforce/prompt-builder-templates"
     ],
     "metadata": [
       "admin/change-management-and-deployment",
-      "admin/custom-field-creation"
+      "admin/custom-field-creation",
+      "devops/change-set-deployment"
     ],
     "metadata-api": [
       "apex/metadata-api-and-package-xml",
@@ -1227,13 +1277,15 @@
       "lwc/lwc-offline-and-mobile"
     ],
     "omniscript": [
-      "omnistudio/omniscript-design-patterns"
+      "omnistudio/omniscript-design-patterns",
+      "omnistudio/omnistudio-debugging"
     ],
     "omnistudio": [
       "omnistudio/calculation-procedures",
       "omnistudio/flexcard-design-patterns",
       "omnistudio/integration-procedures",
-      "omnistudio/omniscript-design-patterns"
+      "omnistudio/omniscript-design-patterns",
+      "omnistudio/omnistudio-debugging"
     ],
     "omnistudio-data-mapping": [
       "omnistudio/dataraptor-patterns"
@@ -1315,6 +1367,9 @@
     "partner-wsdl": [
       "integration/soap-api-patterns"
     ],
+    "password-policy": [
+      "security/security-health-check"
+    ],
     "path-coverage": [
       "flow/flow-testing"
     ],
@@ -1383,6 +1438,9 @@
       "admin/user-management",
       "security/permission-set-groups-and-muting"
     ],
+    "prompt-builder": [
+      "agentforce/prompt-builder-templates"
+    ],
     "query": [
       "apex/soql-fundamentals"
     ],
@@ -1390,6 +1448,7 @@
       "data/soql-query-optimization"
     ],
     "queueable": [
+      "apex/apex-queueable-patterns",
       "apex/async-apex",
       "apex/governor-limits"
     ],
@@ -1446,7 +1505,8 @@
       "admin/change-management-and-training"
     ],
     "release-management": [
-      "admin/change-management-and-deployment"
+      "admin/change-management-and-deployment",
+      "devops/change-set-deployment"
     ],
     "render-optimization": [
       "lwc/lwc-performance"
@@ -1519,6 +1579,9 @@
     "sandbox-templates": [
       "devops/sandbox-refresh-and-templates"
     ],
+    "sandbox-to-production": [
+      "devops/change-set-deployment"
+    ],
     "sandboxes": [
       "admin/sandbox-strategy"
     ],
@@ -1554,7 +1617,8 @@
     "screen-flow": [
       "admin/flow-for-admins",
       "flow/fault-handling",
-      "flow/flow-for-experience-cloud"
+      "flow/flow-for-experience-cloud",
+      "lwc/lwc-in-flow-screens"
     ],
     "screen-flows": [
       "flow/screen-flows"
@@ -1578,7 +1642,11 @@
       "security/platform-encryption"
     ],
     "security-health-check": [
-      "security/org-hardening-and-baseline-config"
+      "security/org-hardening-and-baseline-config",
+      "security/security-health-check"
+    ],
+    "security-score": [
+      "security/security-health-check"
     ],
     "seealldata": [
       "apex/test-class-standards"
@@ -1599,7 +1667,8 @@
       "integration/soap-api-patterns"
     ],
     "session-settings": [
-      "admin/org-setup-and-configuration"
+      "admin/org-setup-and-configuration",
+      "security/security-health-check"
     ],
     "set-of-id": [
       "apex/recursive-trigger-prevention"
@@ -1661,6 +1730,9 @@
     ],
     "sso": [
       "architect/multi-org-strategy"
+    ],
+    "stack-depth": [
+      "apex/apex-queueable-patterns"
     ],
     "stages": [
       "flow/orchestration-flows"
@@ -1750,6 +1822,9 @@
     "tool-selection": [
       "admin/einstein-analytics-basics"
     ],
+    "tooling-api": [
+      "security/security-health-check"
+    ],
     "topic-design": [
       "agentforce/agent-topic-design"
     ],
@@ -1765,6 +1840,9 @@
     "training": [
       "admin/change-management-and-training"
     ],
+    "transaction-control": [
+      "apex/apex-queueable-patterns"
+    ],
     "trigger-decision": [
       "admin/process-automation-selection"
     ],
@@ -1773,6 +1851,9 @@
     ],
     "triggers": [
       "apex/trigger-framework"
+    ],
+    "troubleshooting": [
+      "omnistudio/omnistudio-debugging"
     ],
     "trusted-easy-adaptable": [
       "architect/well-architected-review"

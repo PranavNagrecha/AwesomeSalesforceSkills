@@ -743,6 +743,42 @@
       "domain": "admin",
       "expected_skill": "admin/enterprise-territory-management",
       "top_k": 3
+    },
+    {
+      "query": "how do I deploy a change set to production and avoid missing dependencies",
+      "domain": "devops",
+      "expected_skill": "devops/change-set-deployment",
+      "top_k": 3
+    },
+    {
+      "query": "running security health check and interpreting scores in Salesforce",
+      "domain": "security",
+      "expected_skill": "security/security-health-check",
+      "top_k": 3
+    },
+    {
+      "query": "how do I create a prompt template in Prompt Builder with grounding",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/prompt-builder-templates",
+      "top_k": 3
+    },
+    {
+      "query": "omnistudio omniscript not working debug mode dataraptor empty results",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/omnistudio-debugging",
+      "top_k": 3
+    },
+    {
+      "query": "how to chain queueable apex jobs with finalizer interface",
+      "domain": "apex",
+      "expected_skill": "apex/apex-queueable-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "how do I pass data back from LWC component to flow screen output variable",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-in-flow-screens",
+      "top_k": 3
     }
   ]
 }
