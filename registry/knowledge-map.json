@@ -34,21 +34,26 @@
       "admin/permission-set-architecture",
       "admin/permission-sets-vs-profiles",
       "admin/picklist-and-value-sets",
+      "admin/picklist-field-integrity-issues",
       "admin/process-automation-selection",
       "admin/queues-and-public-groups",
+      "admin/record-type-strategy-at-scale",
       "admin/record-types-and-page-layouts",
       "admin/reports-and-dashboards",
       "admin/reports-and-dashboards-fundamentals",
       "admin/requirements-gathering-for-sf",
       "admin/sandbox-strategy",
       "admin/sharing-and-visibility",
+      "admin/standard-object-quirks",
       "admin/uat-and-acceptance-criteria",
+      "admin/user-access-policies",
       "admin/user-management",
       "admin/validation-rules"
     ],
     "agentforce": [
       "agentforce/agent-actions",
       "agentforce/agent-channel-deployment",
+      "agentforce/agent-script-dsl",
       "agentforce/agent-testing-and-evaluation",
       "agentforce/agent-topic-design",
       "agentforce/agentforce-agent-creation",
@@ -59,6 +64,7 @@
       "agentforce/einstein-bots-to-agentforce-migration",
       "agentforce/einstein-copilot-for-sales",
       "agentforce/einstein-copilot-for-service",
+      "agentforce/einstein-next-best-action",
       "agentforce/einstein-prediction-builder",
       "agentforce/einstein-trust-layer",
       "agentforce/model-builder-and-byollm",
@@ -89,9 +95,11 @@
       "apex/dynamic-apex",
       "apex/error-handling-framework",
       "apex/exception-handling",
+      "apex/feature-flags-and-kill-switches",
       "apex/governor-limits",
       "apex/invocable-methods",
       "apex/metadata-api-and-package-xml",
+      "apex/order-of-execution-deep-dive",
       "apex/platform-cache",
       "apex/platform-events-apex",
       "apex/recursive-trigger-prevention",
@@ -105,10 +113,12 @@
     "architect": [
       "architect/ai-ready-data-architecture",
       "architect/government-cloud-compliance",
+      "architect/ha-dr-architecture",
       "architect/integration-framework-design",
       "architect/limits-and-scalability-planning",
       "architect/multi-org-strategy",
       "architect/org-edition-and-feature-licensing",
+      "architect/org-limits-monitoring",
       "architect/platform-selection-guidance",
       "architect/security-architecture-review",
       "architect/solution-design-patterns",
@@ -128,6 +138,7 @@
       "data/external-data-and-big-objects",
       "data/external-id-strategy",
       "data/field-history-tracking",
+      "data/large-scale-deduplication",
       "data/multi-currency-and-advanced-currency-management",
       "data/person-accounts",
       "data/record-merge-implications",
@@ -136,13 +147,17 @@
       "data/sosl-search-patterns"
     ],
     "devops": [
+      "devops/automated-regression-testing",
       "devops/bitbucket-pipelines-for-salesforce",
       "devops/change-set-deployment",
+      "devops/continuous-integration-testing",
       "devops/data-seeding-for-testing",
+      "devops/destructive-changes-deployment",
       "devops/devops-center-pipeline",
       "devops/environment-strategy",
       "devops/github-actions-for-salesforce",
       "devops/gitlab-ci-for-salesforce",
+      "devops/org-shape-and-scratch-definition",
       "devops/permission-set-deployment-ordering",
       "devops/release-management",
       "devops/salesforce-code-analyzer",
@@ -178,11 +193,13 @@
       "integration/composite-api-patterns",
       "integration/event-driven-architecture-patterns",
       "integration/graphql-api-patterns",
+      "integration/mulesoft-salesforce-connector",
       "integration/named-credentials-setup",
       "integration/oauth-flows-and-connected-apps",
       "integration/outbound-messages-and-callbacks",
       "integration/platform-events-integration",
       "integration/rest-api-patterns",
+      "integration/retry-and-backoff-patterns",
       "integration/salesforce-connect-external-objects",
       "integration/soap-api-patterns",
       "integration/streaming-api-and-pushtopic",
@@ -223,16 +240,19 @@
       "omnistudio/integration-procedures",
       "omnistudio/omniscript-design-patterns",
       "omnistudio/omniscript-versioning",
+      "omnistudio/omnistudio-custom-lwc-elements",
       "omnistudio/omnistudio-debugging",
       "omnistudio/omnistudio-deployment-datapacks",
       "omnistudio/omnistudio-lwc-integration",
       "omnistudio/omnistudio-performance",
+      "omnistudio/omnistudio-remote-actions",
       "omnistudio/omnistudio-security",
       "omnistudio/vlocity-to-native-omnistudio-migration"
     ],
     "security": [
       "security/api-security-and-rate-limiting",
       "security/certificate-and-key-management",
+      "security/connected-app-security-policies",
       "security/data-classification-labels",
       "security/event-monitoring",
       "security/experience-cloud-security",
@@ -244,8 +264,11 @@
       "security/org-hardening-and-baseline-config",
       "security/permission-set-groups-and-muting",
       "security/platform-encryption",
+      "security/recaptcha-and-bot-prevention",
       "security/sandbox-data-masking",
+      "security/secure-coding-review-checklist",
       "security/security-health-check",
+      "security/session-management-and-timeout",
       "security/transaction-security-policies",
       "security/xss-and-injection-prevention"
     ]
@@ -281,6 +304,9 @@
     ],
     "ShowToastEvent": [
       "lwc/lwc-toast-and-notifications"
+    ],
+    "VlocityOpenInterface2": [
+      "omnistudio/omnistudio-remote-actions"
     ],
     "__mdt": [
       "apex/custom-metadata-in-apex"
@@ -326,6 +352,9 @@
     "action-layout": [
       "admin/global-actions-and-quick-actions"
     ],
+    "actions-and-recommendations": [
+      "agentforce/einstein-next-best-action"
+    ],
     "activation": [
       "omnistudio/omniscript-versioning"
     ],
@@ -335,12 +364,16 @@
     "activity-capture": [
       "agentforce/einstein-copilot-for-sales"
     ],
+    "activity-objects": [
+      "admin/standard-object-quirks"
+    ],
     "add-on": [
       "architect/org-edition-and-feature-licensing"
     ],
     "admin": [
       "admin/custom-field-creation",
-      "admin/object-creation-and-design"
+      "admin/object-creation-and-design",
+      "admin/user-access-policies"
     ],
     "admin-declarative": [
       "admin/dynamic-forms-and-actions"
@@ -371,6 +404,9 @@
     "agent-deployment": [
       "agentforce/agentforce-agent-creation"
     ],
+    "agent-dsl": [
+      "agentforce/agent-script-dsl"
+    ],
     "agent-instructions": [
       "agentforce/agentforce-guardrails",
       "agentforce/agentforce-persona-design"
@@ -390,6 +426,7 @@
     "agentforce": [
       "agentforce/agent-actions",
       "agentforce/agent-channel-deployment",
+      "agentforce/agent-script-dsl",
       "agentforce/agent-testing-and-evaluation",
       "agentforce/agent-topic-design",
       "agentforce/agentforce-agent-creation",
@@ -414,11 +451,17 @@
     "alarm-event": [
       "flow/pause-elements-and-wait-events"
     ],
+    "alerting": [
+      "architect/org-limits-monitoring"
+    ],
     "allOrNone": [
       "integration/composite-api-patterns"
     ],
     "anonymous-apex": [
       "apex/debug-logs-and-developer-console"
+    ],
+    "anypoint-connector": [
+      "integration/mulesoft-salesforce-connector"
     ],
     "apex": [
       "admin/custom-permissions",
@@ -426,6 +469,9 @@
       "apex/soql-fundamentals",
       "architect/solution-design-patterns",
       "lwc/lwc-imperative-apex"
+    ],
+    "apex-action": [
+      "omnistudio/omnistudio-remote-actions"
     ],
     "apex-actions": [
       "agentforce/custom-agent-actions-apex"
@@ -465,6 +511,7 @@
       "apex/test-class-standards",
       "apex/test-data-factory-patterns",
       "devops/bitbucket-pipelines-for-salesforce",
+      "devops/continuous-integration-testing",
       "devops/data-seeding-for-testing",
       "devops/github-actions-for-salesforce",
       "devops/gitlab-ci-for-salesforce"
@@ -487,12 +534,16 @@
     "api-security": [
       "security/api-security-and-rate-limiting"
     ],
+    "api-usage": [
+      "architect/org-limits-monitoring"
+    ],
     "app-manager": [
       "admin/app-and-tab-configuration"
     ],
     "appexchange": [
       "devops/salesforce-code-analyzer",
-      "devops/second-generation-managed-packages"
+      "devops/second-generation-managed-packages",
+      "security/secure-coding-review-checklist"
     ],
     "application-scope": [
       "lwc/message-channel-patterns"
@@ -611,8 +662,13 @@
     "autolaunched-flow": [
       "flow/subflows-and-reusability"
     ],
+    "automated-regression-testing": [
+      "devops/automated-regression-testing"
+    ],
     "automation": [
-      "admin/flow-for-admins"
+      "admin/flow-for-admins",
+      "admin/user-access-policies",
+      "apex/order-of-execution-deep-dive"
     ],
     "automation-layers": [
       "architect/solution-design-patterns"
@@ -622,6 +678,9 @@
     ],
     "automation-selection": [
       "admin/process-automation-selection"
+    ],
+    "backoff": [
+      "integration/retry-and-backoff-patterns"
     ],
     "base-components": [
       "lwc/lwc-base-component-recipes"
@@ -644,6 +703,10 @@
     "batch-apex-error-event": [
       "apex/error-handling-framework"
     ],
+    "batch-processing": [
+      "data/large-scale-deduplication",
+      "integration/mulesoft-salesforce-connector"
+    ],
     "batch-scope": [
       "apex/batch-apex-patterns"
     ],
@@ -660,8 +723,14 @@
     "bitbucket-pipelines": [
       "devops/bitbucket-pipelines-for-salesforce"
     ],
+    "bot-prevention": [
+      "security/recaptcha-and-bot-prevention"
+    ],
     "bot-to-agent": [
       "agentforce/einstein-bots-to-agentforce-migration"
+    ],
+    "bot-version": [
+      "agentforce/agent-script-dsl"
     ],
     "branching": [
       "omnistudio/omniscript-design-patterns"
@@ -684,7 +753,8 @@
       "data/bulk-api-and-large-data-loads",
       "data/bulk-api-patterns",
       "data/data-migration-planning",
-      "data/external-id-strategy"
+      "data/external-id-strategy",
+      "integration/mulesoft-salesforce-connector"
     ],
     "bulk-api-2": [
       "data/bulk-api-patterns"
@@ -709,6 +779,9 @@
     "business-analysis": [
       "admin/requirements-gathering-for-sf",
       "admin/uat-and-acceptance-criteria"
+    ],
+    "business-continuity": [
+      "architect/ha-dr-architecture"
     ],
     "business-hours": [
       "admin/escalation-rules"
@@ -755,6 +828,9 @@
     "case-classification": [
       "agentforce/einstein-copilot-for-service"
     ],
+    "case-comments": [
+      "admin/standard-object-quirks"
+    ],
     "case-management": [
       "admin/assignment-rules",
       "admin/escalation-rules",
@@ -792,12 +868,16 @@
     ],
     "ci-cd": [
       "devops/bitbucket-pipelines-for-salesforce",
+      "devops/continuous-integration-testing",
       "devops/data-seeding-for-testing",
       "devops/github-actions-for-salesforce",
       "devops/gitlab-ci-for-salesforce",
       "devops/salesforce-code-analyzer",
       "devops/scratch-org-management",
       "omnistudio/omnistudio-deployment-datapacks"
+    ],
+    "circuit-breaker": [
+      "integration/retry-and-backoff-patterns"
     ],
     "clickjack": [
       "security/org-hardening-and-baseline-config"
@@ -810,6 +890,12 @@
     ],
     "cms-arc-ampe": [
       "architect/government-cloud-compliance"
+    ],
+    "code-analyzer": [
+      "security/secure-coding-review-checklist"
+    ],
+    "code-coverage": [
+      "devops/continuous-integration-testing"
     ],
     "collection-filter": [
       "flow/flow-collection-processing"
@@ -861,6 +947,9 @@
     "concurrent-limits": [
       "security/api-security-and-rate-limiting"
     ],
+    "concurrent-sessions": [
+      "security/session-management-and-timeout"
+    ],
     "condition-builder": [
       "security/transaction-security-policies"
     ],
@@ -891,7 +980,9 @@
     "connected-app": [
       "architect/multi-org-strategy",
       "security/api-security-and-rate-limiting",
-      "security/certificate-and-key-management"
+      "security/certificate-and-key-management",
+      "security/connected-app-security-policies",
+      "security/session-management-and-timeout"
     ],
     "connected-apps": [
       "admin/connected-apps-and-auth",
@@ -913,6 +1004,9 @@
     "continuation": [
       "apex/continuation-callouts",
       "integration/callout-limits-and-async-patterns"
+    ],
+    "continuous-integration-testing": [
+      "devops/continuous-integration-testing"
     ],
     "controlling-field": [
       "admin/picklist-and-value-sets"
@@ -968,7 +1062,8 @@
       "apex/soql-security"
     ],
     "crud-fls": [
-      "apex/apex-security-patterns"
+      "apex/apex-security-patterns",
+      "security/secure-coding-review-checklist"
     ],
     "csp": [
       "lwc/static-resources-in-lwc",
@@ -992,6 +1087,9 @@
     ],
     "custom-baseline": [
       "security/security-health-check"
+    ],
+    "custom-component": [
+      "omnistudio/omnistudio-custom-lwc-elements"
     ],
     "custom-element": [
       "omnistudio/omnistudio-lwc-integration"
@@ -1018,7 +1116,8 @@
     ],
     "custom-metadata-types": [
       "admin/custom-metadata-types",
-      "admin/custom-metadata-types-and-settings"
+      "admin/custom-metadata-types-and-settings",
+      "apex/feature-flags-and-kill-switches"
     ],
     "custom-notification": [
       "flow/flow-email-and-notifications"
@@ -1027,7 +1126,8 @@
       "admin/object-creation-and-design"
     ],
     "custom-permissions": [
-      "admin/custom-permissions"
+      "admin/custom-permissions",
+      "apex/feature-flags-and-kill-switches"
     ],
     "custom-prediction": [
       "agentforce/einstein-prediction-builder"
@@ -1124,9 +1224,11 @@
     ],
     "data-quality": [
       "admin/duplicate-management",
+      "admin/picklist-field-integrity-issues",
       "admin/validation-rules",
       "architect/ai-ready-data-architecture",
-      "data/data-quality-and-governance"
+      "data/data-quality-and-governance",
+      "data/large-scale-deduplication"
     ],
     "data-residency": [
       "architect/government-cloud-compliance",
@@ -1213,6 +1315,9 @@
     "declarative-vs-programmatic": [
       "architect/solution-design-patterns"
     ],
+    "deduplication": [
+      "data/large-scale-deduplication"
+    ],
     "defect-management": [
       "admin/uat-and-acceptance-criteria"
     ],
@@ -1231,6 +1336,9 @@
     "dependent-picklist": [
       "admin/picklist-and-value-sets"
     ],
+    "dependent-picklist-bypass": [
+      "admin/picklist-field-integrity-issues"
+    ],
     "deployable-config": [
       "admin/custom-metadata-types",
       "admin/custom-metadata-types-and-settings"
@@ -1240,19 +1348,25 @@
       "apex/metadata-api-and-package-xml",
       "apex/sf-cli-and-sfdx-essentials",
       "devops/change-set-deployment",
+      "devops/destructive-changes-deployment",
       "devops/permission-set-deployment-ordering",
       "omnistudio/omnistudio-deployment-datapacks"
     ],
     "deployment-ordering": [
       "devops/permission-set-deployment-ordering"
     ],
+    "deployment-validation": [
+      "devops/continuous-integration-testing"
+    ],
     "design-patterns": [
       "architect/solution-design-patterns"
     ],
     "destructive-changes": [
-      "apex/metadata-api-and-package-xml"
+      "apex/metadata-api-and-package-xml",
+      "devops/destructive-changes-deployment"
     ],
     "dev-hub": [
+      "devops/org-shape-and-scratch-definition",
       "devops/scratch-org-management",
       "devops/second-generation-managed-packages",
       "devops/unlocked-package-development"
@@ -1265,6 +1379,7 @@
     ],
     "devops": [
       "devops/environment-strategy",
+      "devops/org-shape-and-scratch-definition",
       "devops/release-management",
       "devops/salesforce-code-analyzer",
       "devops/sandbox-refresh-and-templates",
@@ -1277,6 +1392,9 @@
     ],
     "digital-engagement": [
       "flow/flow-email-and-notifications"
+    ],
+    "disaster-recovery": [
+      "architect/ha-dr-architecture"
     ],
     "dlrs": [
       "data/roll-up-summary-alternatives"
@@ -1316,6 +1434,7 @@
     ],
     "dynamic-forms": [
       "admin/dynamic-forms-and-actions",
+      "admin/record-type-strategy-at-scale",
       "admin/record-types-and-page-layouts"
     ],
     "dynamic-import": [
@@ -1326,6 +1445,9 @@
     ],
     "dynamic-sosl": [
       "apex/dynamic-apex"
+    ],
+    "e2e-testing": [
+      "devops/automated-regression-testing"
     ],
     "editions": [
       "architect/org-edition-and-feature-licensing"
@@ -1344,6 +1466,9 @@
     ],
     "einstein-for-service": [
       "agentforce/einstein-copilot-for-service"
+    ],
+    "einstein-next-best-action": [
+      "agentforce/einstein-next-best-action"
     ],
     "einstein-platform": [
       "agentforce/einstein-prediction-builder"
@@ -1471,7 +1596,8 @@
       "flow/flow-for-experience-cloud",
       "lwc/navigation-and-routing",
       "security/experience-cloud-security",
-      "security/guest-user-security"
+      "security/guest-user-security",
+      "security/recaptcha-and-bot-prevention"
     ],
     "expression-sets": [
       "omnistudio/business-rules-engine",
@@ -1536,6 +1662,9 @@
       "admin/custom-metadata-types",
       "admin/custom-permissions"
     ],
+    "feature-flags-and-kill-switches": [
+      "apex/feature-flags-and-kill-switches"
+    ],
     "feature-store": [
       "architect/ai-ready-data-architecture"
     ],
@@ -1587,10 +1716,12 @@
     "flexcard": [
       "omnistudio/flexcard-design-patterns",
       "omnistudio/omnistudio-performance",
+      "omnistudio/omnistudio-remote-actions",
       "omnistudio/vlocity-to-native-omnistudio-migration"
     ],
     "flow": [
       "admin/flow-for-admins",
+      "apex/order-of-execution-deep-dive",
       "architect/solution-design-patterns",
       "flow/auto-launched-flow-patterns",
       "flow/flow-external-services",
@@ -1603,6 +1734,7 @@
       "lwc/lwc-in-flow-screens"
     ],
     "flow-builder": [
+      "agentforce/einstein-next-best-action",
       "flow/flow-custom-property-editors",
       "lwc/custom-property-editor-for-flow"
     ],
@@ -1703,6 +1835,9 @@
       "security/gdpr-data-privacy",
       "security/sandbox-data-masking"
     ],
+    "genai-plugin": [
+      "agentforce/agent-script-dsl"
+    ],
     "generative-ai": [
       "agentforce/prompt-builder-templates"
     ],
@@ -1781,6 +1916,9 @@
     "hard-delete": [
       "data/batch-data-cleanup-patterns"
     ],
+    "headless-identity": [
+      "security/recaptcha-and-bot-prevention"
+    ],
     "health-cloud": [
       "data/person-accounts"
     ],
@@ -1790,8 +1928,17 @@
     "heap-size": [
       "apex/apex-cpu-and-heap-optimization"
     ],
+    "hierarchical-custom-settings": [
+      "apex/feature-flags-and-kill-switches"
+    ],
     "hierarchical-settings": [
       "admin/custom-metadata-types-and-settings"
+    ],
+    "high-assurance-session": [
+      "security/connected-app-security-policies"
+    ],
+    "high-availability": [
+      "architect/ha-dr-architecture"
     ],
     "high-volume-events": [
       "integration/platform-events-integration"
@@ -1833,6 +1980,7 @@
     "idempotency": [
       "data/external-id-strategy",
       "flow/scheduled-flows",
+      "integration/retry-and-backoff-patterns",
       "integration/webhook-inbound-patterns"
     ],
     "identity-verification": [
@@ -1912,6 +2060,7 @@
       "omnistudio/integration-procedures",
       "omnistudio/omnistudio-debugging",
       "omnistudio/omnistudio-lwc-integration",
+      "omnistudio/omnistudio-remote-actions",
       "omnistudio/vlocity-to-native-omnistudio-migration"
     ],
     "integration-procedures": [
@@ -1919,6 +2068,9 @@
     ],
     "integration-reliability": [
       "apex/callouts-and-http-integrations"
+    ],
+    "integration-resilience": [
+      "integration/retry-and-backoff-patterns"
     ],
     "integration-security": [
       "integration/named-credentials-setup"
@@ -1944,6 +2096,9 @@
     ],
     "invocablevariable": [
       "apex/invocable-methods"
+    ],
+    "ip-relaxation": [
+      "security/connected-app-security-policies"
     ],
     "ip-restrictions": [
       "security/api-security-and-rate-limiting"
@@ -2003,6 +2158,9 @@
     "keystore": [
       "security/certificate-and-key-management"
     ],
+    "kill-switch": [
+      "apex/feature-flags-and-kill-switches"
+    ],
     "large-data-volumes": [
       "admin/data-skew-and-sharing-performance",
       "data/bulk-api-and-large-data-loads",
@@ -2011,6 +2169,9 @@
       "data/data-storage-management",
       "data/external-data-and-big-objects",
       "data/soql-query-optimization"
+    ],
+    "layout-assignment": [
+      "admin/record-type-strategy-at-scale"
     ],
     "lazy-evaluation": [
       "apex/custom-iterators-and-iterables"
@@ -2024,6 +2185,9 @@
     ],
     "lead": [
       "data/record-merge-implications"
+    ],
+    "lead-conversion": [
+      "admin/standard-object-quirks"
     ],
     "lead-management": [
       "admin/assignment-rules",
@@ -2101,6 +2265,9 @@
       "lwc/common-lwc-runtime-errors",
       "lwc/lwc-security"
     ],
+    "limits-api": [
+      "architect/org-limits-monitoring"
+    ],
     "limits-getcputime": [
       "apex/apex-cpu-and-heap-optimization"
     ],
@@ -2158,6 +2325,7 @@
       "lwc/lwc-base-component-recipes",
       "lwc/lwc-imperative-apex",
       "lwc/lwc-toast-and-notifications",
+      "omnistudio/omnistudio-custom-lwc-elements",
       "omnistudio/omnistudio-lwc-integration"
     ],
     "lwc-accessibility": [
@@ -2218,7 +2386,8 @@
       "data/data-model-design-patterns"
     ],
     "matching-rules": [
-      "admin/duplicate-management"
+      "admin/duplicate-management",
+      "data/large-scale-deduplication"
     ],
     "memory-leaks": [
       "lwc/lifecycle-hooks"
@@ -2228,6 +2397,7 @@
     ],
     "merge": [
       "admin/duplicate-management",
+      "data/large-scale-deduplication",
       "data/record-merge-implications"
     ],
     "merge-fields": [
@@ -2243,6 +2413,7 @@
     "metadata": [
       "admin/change-management-and-deployment",
       "admin/custom-field-creation",
+      "agentforce/agent-script-dsl",
       "data/field-history-tracking",
       "devops/change-set-deployment"
     ],
@@ -2250,6 +2421,9 @@
       "apex/metadata-api-and-package-xml",
       "devops/permission-set-deployment-ordering",
       "integration/soap-api-patterns"
+    ],
+    "metadata-deletion": [
+      "devops/destructive-changes-deployment"
     ],
     "metadata-deployment": [
       "integration/named-credentials-setup"
@@ -2297,7 +2471,11 @@
     ],
     "monitoring": [
       "admin/batch-job-scheduling-and-monitoring",
-      "apex/custom-logging-and-monitoring"
+      "apex/custom-logging-and-monitoring",
+      "architect/org-limits-monitoring"
+    ],
+    "mulesoft": [
+      "integration/mulesoft-salesforce-connector"
     ],
     "multi-channel": [
       "agentforce/agent-channel-deployment"
@@ -2354,6 +2532,9 @@
       "lwc/lifecycle-hooks",
       "lwc/navigation-and-routing"
     ],
+    "nba-strategy": [
+      "agentforce/einstein-next-best-action"
+    ],
     "network-access": [
       "security/network-security-and-trusted-ips"
     ],
@@ -2371,7 +2552,11 @@
       "admin/connected-apps-and-auth",
       "integration/named-credentials-setup",
       "integration/oauth-flows-and-connected-apps",
-      "integration/rest-api-patterns"
+      "integration/rest-api-patterns",
+      "security/connected-app-security-policies"
+    ],
+    "oauth-jwt-bearer": [
+      "integration/mulesoft-salesforce-connector"
     ],
     "oauth-scopes": [
       "security/api-security-and-rate-limiting"
@@ -2384,7 +2569,8 @@
     ],
     "observability": [
       "agentforce/agentforce-observability",
-      "apex/debug-and-logging"
+      "apex/debug-and-logging",
+      "architect/org-limits-monitoring"
     ],
     "odata": [
       "integration/salesforce-connect-external-objects"
@@ -2395,11 +2581,16 @@
     "omni-channel": [
       "agentforce/einstein-copilot-for-service"
     ],
+    "omniJsonData": [
+      "omnistudio/omnistudio-custom-lwc-elements"
+    ],
     "omniscript": [
       "omnistudio/omniscript-design-patterns",
       "omnistudio/omniscript-versioning",
+      "omnistudio/omnistudio-custom-lwc-elements",
       "omnistudio/omnistudio-debugging",
       "omnistudio/omnistudio-lwc-integration",
+      "omnistudio/omnistudio-remote-actions",
       "omnistudio/vlocity-to-native-omnistudio-migration"
     ],
     "omnistudio": [
@@ -2411,9 +2602,11 @@
       "omnistudio/integration-procedures",
       "omnistudio/omniscript-design-patterns",
       "omnistudio/omniscript-versioning",
+      "omnistudio/omnistudio-custom-lwc-elements",
       "omnistudio/omnistudio-debugging",
       "omnistudio/omnistudio-deployment-datapacks",
       "omnistudio/omnistudio-lwc-integration",
+      "omnistudio/omnistudio-remote-actions",
       "omnistudio/vlocity-to-native-omnistudio-migration"
     ],
     "omnistudio-data-mapping": [
@@ -2424,6 +2617,9 @@
     ],
     "omnistudio-security": [
       "omnistudio/omnistudio-security"
+    ],
+    "omniupdatebyfield": [
+      "omnistudio/omnistudio-custom-lwc-elements"
     ],
     "openapi": [
       "flow/flow-external-services"
@@ -2441,6 +2637,7 @@
       "admin/enterprise-territory-management"
     ],
     "order-of-execution": [
+      "apex/order-of-execution-deep-dive",
       "flow/record-triggered-flow-patterns"
     ],
     "org-assessment": [
@@ -2453,12 +2650,14 @@
       "architect/technical-debt-assessment"
     ],
     "org-limits": [
-      "architect/limits-and-scalability-planning"
+      "architect/limits-and-scalability-planning",
+      "architect/org-limits-monitoring"
     ],
     "org-setup": [
       "admin/org-setup-and-configuration"
     ],
     "org-shape": [
+      "devops/org-shape-and-scratch-definition",
       "devops/scratch-org-management"
     ],
     "org-strategy": [
@@ -2483,6 +2682,9 @@
     ],
     "overlay": [
       "lwc/lwc-modal-and-overlay"
+    ],
+    "override": [
+      "omnistudio/omnistudio-custom-lwc-elements"
     ],
     "owd": [
       "admin/sharing-and-visibility"
@@ -2510,6 +2712,7 @@
       "admin/custom-field-creation"
     ],
     "page-layouts": [
+      "admin/record-type-strategy-at-scale",
       "admin/record-types-and-page-layouts"
     ],
     "pagereference": [
@@ -2561,9 +2764,11 @@
     "permission-sets": [
       "admin/delegated-administration",
       "admin/permission-sets-vs-profiles",
+      "admin/user-access-policies",
       "devops/permission-set-deployment-ordering"
     ],
     "person-accounts": [
+      "admin/standard-object-quirks",
       "data/person-accounts"
     ],
     "persona-design": [
@@ -2573,8 +2778,15 @@
       "admin/path-and-guidance",
       "admin/picklist-and-value-sets"
     ],
+    "picklist-audit": [
+      "admin/picklist-field-integrity-issues"
+    ],
+    "picklist-integrity": [
+      "admin/picklist-field-integrity-issues"
+    ],
     "picklist-values": [
-      "admin/picklist-and-value-sets"
+      "admin/picklist-and-value-sets",
+      "admin/record-type-strategy-at-scale"
     ],
     "picklists": [
       "admin/record-types-and-page-layouts"
@@ -2592,6 +2804,9 @@
     "pipeline-inspection": [
       "agentforce/einstein-copilot-for-sales"
     ],
+    "pkce": [
+      "security/connected-app-security-policies"
+    ],
     "platform-cache": [
       "apex/platform-cache"
     ],
@@ -2603,6 +2818,7 @@
       "apex/error-handling-framework",
       "apex/platform-events-apex",
       "architect/limits-and-scalability-planning",
+      "architect/org-limits-monitoring",
       "flow/auto-launched-flow-patterns",
       "integration/event-driven-architecture-patterns",
       "integration/platform-events-integration"
@@ -2619,6 +2835,9 @@
     "pmd": [
       "devops/salesforce-code-analyzer"
     ],
+    "polymorphic-lookups": [
+      "admin/standard-object-quirks"
+    ],
     "portal-security": [
       "security/experience-cloud-security"
     ],
@@ -2628,11 +2847,17 @@
     "post-refresh-automation": [
       "devops/sandbox-refresh-and-templates"
     ],
+    "pre-release-testing": [
+      "devops/automated-regression-testing"
+    ],
     "pricing": [
       "omnistudio/calculation-procedures"
     ],
     "privacy-center": [
       "security/gdpr-data-privacy"
+    ],
+    "proactive-monitoring": [
+      "architect/org-limits-monitoring"
     ],
     "process-builder-migration": [
       "admin/process-automation-selection"
@@ -2656,6 +2881,9 @@
     "programmatic-sharing": [
       "apex/apex-managed-sharing"
     ],
+    "project-scratch-def": [
+      "devops/org-shape-and-scratch-definition"
+    ],
     "promise": [
       "lwc/lwc-imperative-apex"
     ],
@@ -2668,12 +2896,21 @@
     "prompt-grounding": [
       "agentforce/rag-patterns-in-salesforce"
     ],
+    "provar": [
+      "devops/automated-regression-testing"
+    ],
+    "provisioning": [
+      "admin/user-access-policies"
+    ],
     "pub-sub-api": [
       "integration/change-data-capture-integration",
       "integration/platform-events-integration"
     ],
     "public-groups": [
       "admin/queues-and-public-groups"
+    ],
+    "pubsub": [
+      "omnistudio/omnistudio-custom-lwc-elements"
     ],
     "pushtopic": [
       "integration/streaming-api-and-pushtopic"
@@ -2717,6 +2954,12 @@
     "real-time-integration": [
       "integration/streaming-api-and-pushtopic"
     ],
+    "recaptcha": [
+      "security/recaptcha-and-bot-prevention"
+    ],
+    "recommendations": [
+      "agentforce/einstein-next-best-action"
+    ],
     "record-access": [
       "admin/sharing-and-visibility"
     ],
@@ -2733,13 +2976,21 @@
       "flow/flow-debugging",
       "flow/record-triggered-flow-patterns"
     ],
+    "record-type-mapping-drift": [
+      "admin/picklist-field-integrity-issues"
+    ],
+    "record-type-strategy-at-scale": [
+      "admin/record-type-strategy-at-scale"
+    ],
     "record-types": [
+      "admin/record-type-strategy-at-scale",
       "admin/record-types-and-page-layouts"
     ],
     "recurring-automation": [
       "flow/scheduled-flows"
     ],
     "recursion": [
+      "apex/order-of-execution-deep-dive",
       "apex/trigger-framework",
       "flow/record-triggered-flow-patterns"
     ],
@@ -2778,6 +3029,9 @@
     ],
     "release-planning": [
       "devops/release-management"
+    ],
+    "remote-action": [
+      "omnistudio/omnistudio-remote-actions"
     ],
     "render-optimization": [
       "lwc/lwc-performance"
@@ -2849,6 +3103,9 @@
     "retrieve": [
       "apex/metadata-api-and-package-xml"
     ],
+    "retry": [
+      "integration/retry-and-backoff-patterns"
+    ],
     "revenue-cloud": [
       "omnistudio/industries-cpq-vs-salesforce-cpq"
     ],
@@ -2882,11 +3139,17 @@
     "row-cause": [
       "apex/apex-managed-sharing"
     ],
+    "rto-rpo": [
+      "architect/ha-dr-architecture"
+    ],
     "runtime-error": [
       "flow/flow-runtime-error-diagnosis"
     ],
     "runtime-rendering": [
       "lwc/lwc-dynamic-components"
+    ],
+    "runtime-toggle": [
+      "apex/feature-flags-and-kill-switches"
     ],
     "runtime-type-inspection": [
       "apex/dynamic-apex"
@@ -2894,12 +3157,18 @@
     "sales-ai": [
       "agentforce/einstein-copilot-for-sales"
     ],
+    "salesforce-cli": [
+      "devops/destructive-changes-deployment"
+    ],
     "salesforce-code-analyzer": [
       "devops/salesforce-code-analyzer"
     ],
     "salesforce-connect": [
       "architect/multi-org-strategy",
       "integration/salesforce-connect-external-objects"
+    ],
+    "salesforce-connector": [
+      "integration/mulesoft-salesforce-connector"
     ],
     "salesforce-cpq": [
       "omnistudio/industries-cpq-vs-salesforce-cpq"
@@ -2953,7 +3222,8 @@
       "flow/scheduled-flows"
     ],
     "scheduled-apex": [
-      "apex/apex-scheduled-jobs"
+      "apex/apex-scheduled-jobs",
+      "architect/org-limits-monitoring"
     ],
     "scheduled-flows": [
       "flow/scheduled-flows"
@@ -2973,6 +3243,9 @@
     "scratch-org": [
       "apex/sf-cli-and-sfdx-essentials",
       "devops/scratch-org-management"
+    ],
+    "scratch-org-definition": [
+      "devops/org-shape-and-scratch-definition"
     ],
     "scratch-orgs": [
       "devops/data-seeding-for-testing",
@@ -3013,6 +3286,9 @@
       "lwc/lwc-security",
       "omnistudio/omnistudio-security"
     ],
+    "secure-coding-review-checklist": [
+      "security/secure-coding-review-checklist"
+    ],
     "security": [
       "admin/delegated-administration",
       "apex/soql-security",
@@ -3034,8 +3310,14 @@
       "security/org-hardening-and-baseline-config",
       "security/security-health-check"
     ],
+    "security-review": [
+      "security/secure-coding-review-checklist"
+    ],
     "security-score": [
       "security/security-health-check"
+    ],
+    "security-settings": [
+      "security/session-management-and-timeout"
     ],
     "seealldata": [
       "apex/test-class-standards"
@@ -3045,6 +3327,9 @@
     ],
     "selector-pattern": [
       "apex/apex-design-patterns"
+    ],
+    "selenium": [
+      "devops/automated-regression-testing"
     ],
     "self-dml": [
       "apex/recursive-trigger-prevention"
@@ -3071,22 +3356,34 @@
     "session-management": [
       "integration/soap-api-patterns"
     ],
+    "session-management-and-timeout": [
+      "security/session-management-and-timeout"
+    ],
+    "session-security": [
+      "security/session-management-and-timeout"
+    ],
     "session-settings": [
       "admin/org-setup-and-configuration",
       "security/security-health-check"
+    ],
+    "session-timeout": [
+      "security/session-management-and-timeout"
     ],
     "set-of-id": [
       "apex/recursive-trigger-prevention"
     ],
     "sf-cli": [
       "apex/sf-cli-and-sfdx-essentials",
+      "devops/continuous-integration-testing",
       "devops/source-tracking-and-conflict-resolution"
     ],
     "sfdx": [
       "apex/sf-cli-and-sfdx-essentials",
       "devops/bitbucket-pipelines-for-salesforce",
+      "devops/destructive-changes-deployment",
       "devops/github-actions-for-salesforce",
       "devops/gitlab-ci-for-salesforce",
+      "devops/org-shape-and-scratch-definition",
       "devops/scratch-org-management",
       "devops/source-tracking-and-conflict-resolution",
       "devops/unlocked-package-development"
@@ -3095,6 +3392,7 @@
       "lwc/lwc-testing"
     ],
     "shadow-dom": [
+      "devops/automated-regression-testing",
       "lwc/common-lwc-runtime-errors",
       "lwc/component-communication"
     ],
@@ -3169,6 +3467,7 @@
       "integration/rest-api-patterns"
     ],
     "soql-injection": [
+      "security/secure-coding-review-checklist",
       "security/xss-and-injection-prevention"
     ],
     "soql-selectivity": [
@@ -3181,6 +3480,9 @@
       "apex/sf-cli-and-sfdx-essentials",
       "devops/source-tracking-and-conflict-resolution"
     ],
+    "spam-prevention": [
+      "security/recaptcha-and-bot-prevention"
+    ],
     "sso": [
       "architect/multi-org-strategy"
     ],
@@ -3189,6 +3491,9 @@
     ],
     "stages": [
       "flow/orchestration-flows"
+    ],
+    "standard-object-quirks": [
+      "admin/standard-object-quirks"
     ],
     "stateful": [
       "apex/batch-apex-patterns"
@@ -3206,6 +3511,7 @@
       "apex/apex-mocking-and-stubs"
     ],
     "storage": [
+      "architect/org-limits-monitoring",
       "data/data-archival-strategies"
     ],
     "storage-limits": [
@@ -3359,10 +3665,14 @@
       "apex/recursive-trigger-prevention"
     ],
     "triggers": [
+      "apex/order-of-execution-deep-dive",
       "apex/trigger-framework"
     ],
     "troubleshooting": [
       "omnistudio/omnistudio-debugging"
+    ],
+    "trust-site": [
+      "architect/ha-dr-architecture"
     ],
     "trusted-easy-adaptable": [
       "architect/well-architected-review"
@@ -3375,6 +3685,9 @@
     ],
     "uat": [
       "admin/uat-and-acceptance-criteria"
+    ],
+    "ui-automation": [
+      "devops/automated-regression-testing"
     ],
     "ui-simplification": [
       "admin/record-types-and-page-layouts"
@@ -3391,6 +3704,9 @@
     "unlocked-packages": [
       "devops/unlocked-package-development"
     ],
+    "unrestricted-picklist": [
+      "admin/picklist-field-integrity-issues"
+    ],
     "upsert": [
       "admin/data-import-and-management",
       "data/data-migration-planning",
@@ -3399,6 +3715,9 @@
     ],
     "url-state": [
       "lwc/navigation-and-routing"
+    ],
+    "user-access-policies": [
+      "admin/user-access-policies"
     ],
     "user-adoption": [
       "admin/change-management-and-training"
@@ -3418,6 +3737,9 @@
     ],
     "users": [
       "admin/user-management"
+    ],
+    "utam": [
+      "devops/automated-regression-testing"
     ],
     "utility-bar": [
       "admin/app-and-tab-configuration"
@@ -3475,8 +3797,17 @@
     "wait-events": [
       "flow/pause-elements-and-wait-events"
     ],
+    "watermark": [
+      "integration/mulesoft-salesforce-connector"
+    ],
     "wcag": [
       "lwc/lwc-accessibility-patterns"
+    ],
+    "web-to-case": [
+      "security/recaptcha-and-bot-prevention"
+    ],
+    "web-to-lead": [
+      "security/recaptcha-and-bot-prevention"
     ],
     "webhook": [
       "integration/webhook-inbound-patterns"
@@ -3511,6 +3842,7 @@
     ],
     "xss": [
       "lwc/lwc-security",
+      "security/secure-coding-review-checklist",
       "security/xss-and-injection-prevention"
     ],
     "zero-data-retention": [
