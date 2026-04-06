@@ -167,6 +167,7 @@
       "data/person-accounts",
       "data/record-merge-implications",
       "data/roll-up-summary-alternatives",
+      "data/sharing-recalculation-performance",
       "data/soql-query-optimization",
       "data/sosl-search-patterns"
     ],
@@ -570,7 +571,8 @@
       "security/xss-and-injection-prevention"
     ],
     "apex-sharing": [
-      "apex/apex-managed-sharing"
+      "apex/apex-managed-sharing",
+      "data/sharing-recalculation-performance"
     ],
     "apex-testing": [
       "apex/test-class-standards",
@@ -1491,6 +1493,9 @@
     ],
     "defect-management": [
       "admin/uat-and-acceptance-criteria"
+    ],
+    "defer-sharing-calculations": [
+      "data/sharing-recalculation-performance"
     ],
     "delegated-admin": [
       "admin/user-management"
@@ -2489,6 +2494,7 @@
       "data/data-archival-strategies",
       "data/data-storage-management",
       "data/external-data-and-big-objects",
+      "data/sharing-recalculation-performance",
       "data/soql-query-optimization"
     ],
     "layout-assignment": [
@@ -2718,6 +2724,9 @@
     ],
     "maintainability": [
       "flow/subflows-and-reusability"
+    ],
+    "maintenance-window": [
+      "data/sharing-recalculation-performance"
     ],
     "managed-package": [
       "apex/apex-metadata-api",
@@ -3099,6 +3108,9 @@
     ],
     "owd": [
       "admin/sharing-and-visibility"
+    ],
+    "owd-change": [
+      "data/sharing-recalculation-performance"
     ],
     "ownership": [
       "flow/flow-governance"
@@ -3930,10 +3942,12 @@
     "sharing-recalculation": [
       "admin/data-skew-and-sharing-performance",
       "apex/apex-managed-sharing",
-      "architect/limits-and-scalability-planning"
+      "architect/limits-and-scalability-planning",
+      "data/sharing-recalculation-performance"
     ],
     "sharing-rules": [
-      "admin/sharing-and-visibility"
+      "admin/sharing-and-visibility",
+      "data/sharing-recalculation-performance"
     ],
     "sharing-sets": [
       "security/experience-cloud-security"
