@@ -65,7 +65,7 @@ STATUS KEY:
 | 17 | Data Cloud | 3 roles | 13 | 0 | 13 |
 | 18 | Slack Integration | — | 5 | 0 | 5 |
 | 19 | Additional Industry Clouds | — | 16 | 0 | 16 |
-| **Total** | | | **643** | **172** | **481** |
+| **Total** | | | **643** | **172** | **430** |
 
 ---
 
