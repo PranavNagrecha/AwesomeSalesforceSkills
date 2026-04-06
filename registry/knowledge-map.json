@@ -5,6 +5,7 @@
       "admin/app-and-tab-configuration",
       "admin/approval-processes",
       "admin/assignment-rules",
+      "admin/batch-job-scheduling-and-monitoring",
       "admin/change-management-and-deployment",
       "admin/change-management-and-training",
       "admin/connected-apps-and-auth",
@@ -53,6 +54,7 @@
       "agentforce/agentforce-agent-creation",
       "agentforce/agentforce-guardrails",
       "agentforce/agentforce-observability",
+      "agentforce/agentforce-persona-design",
       "agentforce/custom-agent-actions-apex",
       "agentforce/einstein-bots-to-agentforce-migration",
       "agentforce/einstein-copilot-for-sales",
@@ -136,6 +138,7 @@
     "devops": [
       "devops/bitbucket-pipelines-for-salesforce",
       "devops/change-set-deployment",
+      "devops/data-seeding-for-testing",
       "devops/devops-center-pipeline",
       "devops/environment-strategy",
       "devops/github-actions-for-salesforce",
@@ -170,6 +173,7 @@
       "flow/subflows-and-reusability"
     ],
     "integration": [
+      "integration/callout-limits-and-async-patterns",
       "integration/change-data-capture-integration",
       "integration/composite-api-patterns",
       "integration/event-driven-architecture-patterns",
@@ -231,6 +235,7 @@
       "security/certificate-and-key-management",
       "security/data-classification-labels",
       "security/event-monitoring",
+      "security/experience-cloud-security",
       "security/field-audit-trail",
       "security/gdpr-data-privacy",
       "security/guest-user-security",
@@ -367,7 +372,8 @@
       "agentforce/agentforce-agent-creation"
     ],
     "agent-instructions": [
-      "agentforce/agentforce-guardrails"
+      "agentforce/agentforce-guardrails",
+      "agentforce/agentforce-persona-design"
     ],
     "agent-lifecycle": [
       "agentforce/agentforce-agent-creation"
@@ -389,6 +395,7 @@
       "agentforce/agentforce-agent-creation",
       "agentforce/agentforce-guardrails",
       "agentforce/agentforce-observability",
+      "agentforce/agentforce-persona-design",
       "agentforce/custom-agent-actions-apex",
       "agentforce/einstein-bots-to-agentforce-migration",
       "agentforce/model-builder-and-byollm",
@@ -432,6 +439,9 @@
     "apex-framework": [
       "apex/custom-logging-and-monitoring"
     ],
+    "apex-jobs": [
+      "admin/batch-job-scheduling-and-monitoring"
+    ],
     "apex-metadata-api": [
       "apex/apex-metadata-api",
       "apex/custom-metadata-in-apex"
@@ -455,6 +465,7 @@
       "apex/test-class-standards",
       "apex/test-data-factory-patterns",
       "devops/bitbucket-pipelines-for-salesforce",
+      "devops/data-seeding-for-testing",
       "devops/github-actions-for-salesforce",
       "devops/gitlab-ci-for-salesforce"
     ],
@@ -535,7 +546,8 @@
       "apex/apex-scheduled-jobs",
       "apex/async-apex",
       "apex/change-data-capture-apex",
-      "architect/limits-and-scalability-planning"
+      "architect/limits-and-scalability-planning",
+      "integration/callout-limits-and-async-patterns"
     ],
     "async-await": [
       "lwc/lwc-imperative-apex"
@@ -619,6 +631,7 @@
       "data/bulk-api-and-large-data-loads"
     ],
     "batch-apex": [
+      "admin/batch-job-scheduling-and-monitoring",
       "apex/async-apex",
       "apex/batch-apex-patterns",
       "apex/custom-iterators-and-iterables",
@@ -655,6 +668,9 @@
     ],
     "branching-strategy": [
       "devops/environment-strategy"
+    ],
+    "brand-voice": [
+      "agentforce/agentforce-persona-design"
     ],
     "bucket-fields": [
       "admin/reports-and-dashboards-fundamentals"
@@ -730,6 +746,9 @@
     "callout-framework": [
       "architect/integration-framework-design"
     ],
+    "callouts": [
+      "integration/callout-limits-and-async-patterns"
+    ],
     "card-actions": [
       "omnistudio/flexcard-design-patterns"
     ],
@@ -773,6 +792,7 @@
     ],
     "ci-cd": [
       "devops/bitbucket-pipelines-for-salesforce",
+      "devops/data-seeding-for-testing",
       "devops/github-actions-for-salesforce",
       "devops/gitlab-ci-for-salesforce",
       "devops/salesforce-code-analyzer",
@@ -891,7 +911,8 @@
       "data/data-storage-management"
     ],
     "continuation": [
-      "apex/continuation-callouts"
+      "apex/continuation-callouts",
+      "integration/callout-limits-and-async-patterns"
     ],
     "controlling-field": [
       "admin/picklist-and-value-sets"
@@ -901,6 +922,9 @@
     ],
     "conversation-testing": [
       "agentforce/agent-testing-and-evaluation"
+    ],
+    "conversational-ai": [
+      "agentforce/agentforce-persona-design"
     ],
     "convertcurrency": [
       "data/multi-currency-and-advanced-currency-management"
@@ -1111,6 +1135,9 @@
     "data-retention": [
       "data/data-archival-strategies",
       "security/field-audit-trail"
+    ],
+    "data-seeding": [
+      "devops/data-seeding-for-testing"
     ],
     "data-skew": [
       "admin/data-skew-and-sharing-performance"
@@ -1443,6 +1470,7 @@
       "agentforce/agent-channel-deployment",
       "flow/flow-for-experience-cloud",
       "lwc/navigation-and-routing",
+      "security/experience-cloud-security",
       "security/guest-user-security"
     ],
     "expression-sets": [
@@ -1472,6 +1500,9 @@
     ],
     "external-services": [
       "flow/flow-external-services"
+    ],
+    "external-sharing": [
+      "security/experience-cloud-security"
     ],
     "external-subscription": [
       "integration/change-data-capture-integration"
@@ -1709,7 +1740,8 @@
       "admin/custom-metadata-types-and-settings",
       "apex/governor-limits",
       "architect/limits-and-scalability-planning",
-      "flow/flow-bulkification"
+      "flow/flow-bulkification",
+      "integration/callout-limits-and-async-patterns"
     ],
     "graph-engine": [
       "devops/salesforce-code-analyzer"
@@ -1728,6 +1760,7 @@
     ],
     "guest-user": [
       "flow/flow-for-experience-cloud",
+      "security/experience-cloud-security",
       "security/guest-user-security"
     ],
     "guest-users": [
@@ -2263,6 +2296,7 @@
       "agentforce/model-builder-and-byollm"
     ],
     "monitoring": [
+      "admin/batch-job-scheduling-and-monitoring",
       "apex/custom-logging-and-monitoring"
     ],
     "multi-channel": [
@@ -2393,6 +2427,9 @@
     ],
     "openapi": [
       "flow/flow-external-services"
+    ],
+    "operational-excellence": [
+      "admin/batch-job-scheduling-and-monitoring"
     ],
     "opportunity": [
       "admin/path-and-guidance"
@@ -2529,6 +2566,9 @@
     "person-accounts": [
       "data/person-accounts"
     ],
+    "persona-design": [
+      "agentforce/agentforce-persona-design"
+    ],
     "picklist": [
       "admin/path-and-guidance",
       "admin/picklist-and-value-sets"
@@ -2578,6 +2618,9 @@
     ],
     "pmd": [
       "devops/salesforce-code-analyzer"
+    ],
+    "portal-security": [
+      "security/experience-cloud-security"
     ],
     "portal-users": [
       "apex/test-data-factory-patterns"
@@ -2647,7 +2690,8 @@
     "queueable": [
       "apex/apex-queueable-patterns",
       "apex/async-apex",
-      "apex/governor-limits"
+      "apex/governor-limits",
+      "integration/callout-limits-and-async-patterns"
     ],
     "queues": [
       "admin/assignment-rules",
@@ -2914,6 +2958,9 @@
     "scheduled-flows": [
       "flow/scheduled-flows"
     ],
+    "scheduled-jobs": [
+      "admin/batch-job-scheduling-and-monitoring"
+    ],
     "scheduler": [
       "data/batch-data-cleanup-patterns"
     ],
@@ -2928,6 +2975,7 @@
       "devops/scratch-org-management"
     ],
     "scratch-orgs": [
+      "devops/data-seeding-for-testing",
       "devops/environment-strategy"
     ],
     "screen-components": [
@@ -3069,6 +3117,9 @@
     ],
     "sharing-rules": [
       "admin/sharing-and-visibility"
+    ],
+    "sharing-sets": [
+      "security/experience-cloud-security"
     ],
     "shield": [
       "architect/security-architecture-review",
@@ -3220,6 +3271,7 @@
       "admin/enterprise-territory-management"
     ],
     "test-data": [
+      "devops/data-seeding-for-testing",
       "flow/flow-testing"
     ],
     "test-data-factory": [

@@ -1331,6 +1331,36 @@
       "domain": "architect",
       "expected_skill": "architect/org-edition-and-feature-licensing",
       "top_k": 3
+    },
+    {
+      "query": "how do I seed test data into scratch orgs for CI pipelines",
+      "domain": "devops",
+      "expected_skill": "devops/data-seeding-for-testing",
+      "top_k": 3
+    },
+    {
+      "query": "how does sharing work for external portal users in Experience Cloud",
+      "domain": "security",
+      "expected_skill": "security/experience-cloud-security",
+      "top_k": 3
+    },
+    {
+      "query": "how do I make my Agentforce agent sound more professional and empathetic",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/agentforce-persona-design",
+      "top_k": 3
+    },
+    {
+      "query": "System.CalloutException after DML in trigger Apex callout",
+      "domain": "integration",
+      "expected_skill": "integration/callout-limits-and-async-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "how do I check if my batch Apex job is stuck or failed",
+      "domain": "admin",
+      "expected_skill": "admin/batch-job-scheduling-and-monitoring",
+      "top_k": 3
     }
   ]
 }

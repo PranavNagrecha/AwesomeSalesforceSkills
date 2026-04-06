@@ -1,0 +1,103 @@
+{
+  "category": "security",
+  "chunk_ids": [
+    "0185a6a938b73d056b8a",
+    "01e14233dfd638152ffd",
+    "0409f24aafb241a686a2",
+    "0ed72e3fea876024f9e3",
+    "0ff8628d4d9a4679befe",
+    "122a55b8739c15b73170",
+    "13458a0b2ca84429bc4d",
+    "1dd3280585ddb25e525b",
+    "251a807cc87f7802b3f7",
+    "25d223afe618a7ce6d7b",
+    "2e9f6550d7be0b188e81",
+    "2eac0c04b723faac4499",
+    "2f33596daa15ffc7c947",
+    "34d11b234e1d0fa7c966",
+    "3fc8d3edfd40d03efb04",
+    "41f8afe570ab275265be",
+    "4e638c0441f05f1fb05b",
+    "54cdd915cfa7a4ee2528",
+    "602a3f3e22ec97627ea4",
+    "63a37c2f0574c59aa946",
+    "63ef0480c8758adc6c58",
+    "6dc353daf570ec59c3db",
+    "747f9cc60180b369f80b",
+    "7c7d32d2b8372be2a475",
+    "8056a9bc00fd6b52d532",
+    "82e55055807d66bc7b70",
+    "85b27bf927c73415555c",
+    "8cdaa4e67ec4bf9ff3c4",
+    "8fb8ae105bb43a75de7e",
+    "90f2c9329d5e2756b85b",
+    "9b3954dc5911254f4fe6",
+    "a5324a19ae6cf435ef02",
+    "abee915291cb787e06c9",
+    "b55a394d551ad9bb8a32",
+    "b758bc4b79cf3b0091ad",
+    "c807bfb25af392a57b01",
+    "ca5afae319eb6118b324",
+    "d13572e5d77db3f27b7c",
+    "d781bf6c1ab9f43c70e2",
+    "e53e559322223582710d",
+    "e580e9ed7f8ea53424c5",
+    "e98b91dd735e06260da2",
+    "edb46fc3349974641862",
+    "efab2ff25713d0411cf4",
+    "f3c67cb78a1185d95a5b",
+    "f3e733cbb906dbb04c07",
+    "f5c2955d9655ba12060c",
+    "f5cdf8dfc7a2b5bf26ed",
+    "f71a5e820ab7cb0fce79",
+    "f938ee974d6172cce5ee",
+    "fa82114cd4f9fd369602",
+    "fc2fdb39ee16e2d1a548",
+    "fe66d6c3e18a13119391"
+  ],
+  "content_hash": "06dcd7ff582c76952d4c79bb9c184f8c0074dbd472580d362eb8189ae89f5d05",
+  "dependencies": [],
+  "description": "Use when configuring access controls, sharing, or site security for authenticated or guest Experience Cloud (community) users: external OWD, Sharing Sets, Share Groups, CSP, clickjack protection, guest user record access. NOT for internal sharing model configuration (use sharing-and-visibility).",
+  "file_location": "skills/security/experience-cloud-security",
+  "id": "security/experience-cloud-security",
+  "inputs": [
+    "Site type: authenticated portal, guest-access site, or hybrid",
+    "Objects and records external users need access to",
+    "Whether guest user access is required and to which objects"
+  ],
+  "name": "experience-cloud-security",
+  "official_sources": [
+    "Salesforce Security Implementation Guide \u2014 External OWD and Sharing Sets \u2014 https://developer.salesforce.com/docs/atlas.en-us.securityImplGuide.meta/securityImplGuide/networks_setting_light_users.htm",
+    "Experience Cloud Developer Guide \u2014 Secure Sites: Authenticated and Guest Users \u2014 https://developer.salesforce.com/docs/atlas.en-us.communities_dev.meta/communities_dev/communities_dev_security_overview.htm",
+    "Salesforce Help \u2014 Securely Share Experience Cloud Sites \u2014 https://help.salesforce.com/s/articleView?id=sf.networks_security.htm&type=5",
+    "Salesforce Security Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security_overview.htm&type=5"
+  ],
+  "outputs": [
+    "External OWD configuration recommendation per object",
+    "Sharing Set or Share Group configuration steps",
+    "Guest user profile hardening checklist",
+    "CSP and clickjack protection configuration"
+  ],
+  "references": [
+    "skills/security/experience-cloud-security/references/examples.md",
+    "skills/security/experience-cloud-security/references/gotchas.md",
+    "skills/security/experience-cloud-security/references/llm-anti-patterns.md",
+    "skills/security/experience-cloud-security/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/security/experience-cloud-security/scripts/check_experience_cloud_security.py"
+  ],
+  "tags": [
+    "experience-cloud",
+    "external-sharing",
+    "guest-user",
+    "sharing-sets",
+    "portal-security"
+  ],
+  "templates": [
+    "skills/security/experience-cloud-security/templates/experience-cloud-security-template.md"
+  ],
+  "updated": "2026-04-05",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

@@ -1,0 +1,101 @@
+{
+  "category": "devops",
+  "chunk_ids": [
+    "0010f7ccd50e0bd9eecd",
+    "00721a1b7f6c13fd28fc",
+    "09d9d0530c3c8d9b7c9d",
+    "18bbdfadeae84c54c10c",
+    "1b2061d8191ceb17fc25",
+    "1d831685571344535163",
+    "1ea25cbe48ee873ceb1e",
+    "30bed29497b0e33eedb7",
+    "360994d2092cd802e067",
+    "3c5253e98c3abc912558",
+    "463ad254531719cabad2",
+    "480435c7f4feb0f61c37",
+    "4a5d74e0b88dcec03a16",
+    "4efc98d8cdde4a32b159",
+    "50e56e853b4acd7152bd",
+    "52b6e9d7901e15daef93",
+    "547a4089fad07f6693c1",
+    "5c862a4f5c4d6f4f2eef",
+    "5f71da9e4aa988f6c440",
+    "621cd666d2ced7b6b6b5",
+    "66b2e0665d3987c78ba0",
+    "6df87438920581b9e4f4",
+    "71e890c08d6f83f8c0ab",
+    "7993431156d1ca8924da",
+    "7f5ac978119af2827671",
+    "80f55d8913cade5f8368",
+    "917ee21d8e5c7a83e308",
+    "a0702e4fb7f281bb0c44",
+    "a47342ff4055c0e1f744",
+    "aaf952552cf06f39d735",
+    "ac9510264ed59ac23c56",
+    "b196db6ff70f72391fd0",
+    "bce67ab6a877a1c8a895",
+    "be8fefe9d03c9334c4ea",
+    "c0d71243fffafc360554",
+    "c566c277bd3c5acbb6d7",
+    "cb8b55d60742387c04f6",
+    "cc18ca7bef96861304c3",
+    "d467f3ef8f03a9f26073",
+    "d61f3ee2cc38740fe3e0",
+    "d69de9fd2238b456d144",
+    "d7eb8ab0bb66bba105b0",
+    "dcf293bdbf5e0381174a",
+    "e2beaf89effc39b9ab30",
+    "e58e315037f474376b6a",
+    "e5d5de499b87b56d1a9b",
+    "e83152961c549cfa1ba9",
+    "e8a603b46f8f621766c4",
+    "efdc2f71ea5f8c0b2b3d",
+    "f04ca524bdeaf61ee2ad",
+    "fbac30a443e68e41ecea",
+    "fcc9854f6fa2f0a8b444"
+  ],
+  "content_hash": "d2de17d1148ca29f811fd4a6c0f3cf28e13540a11619478dfe48c742d2f4f989",
+  "dependencies": [],
+  "description": "Use when creating test data for scratch orgs, sandboxes, or CI pipelines: Apex @testSetup factories, sf data import tree plans, CumulusCI datasets, Snowfakery. NOT for production data migration or ETL pipelines.",
+  "file_location": "skills/devops/data-seeding-for-testing",
+  "id": "devops/data-seeding-for-testing",
+  "inputs": [
+    "Target org type: scratch org, developer sandbox, or partial/full sandbox",
+    "Existing object relationships and required parent records",
+    "Volume of records needed and whether referential integrity is required"
+  ],
+  "name": "data-seeding-for-testing",
+  "official_sources": [
+    "Salesforce DX Developer Guide \u2014 Test Data and Snapshots \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_testing_test_data.htm",
+    "Apex Developer Guide \u2014 Using the isTest(SeeAllData=true) Annotation \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_testing_seealldata_annotation.htm",
+    "Salesforce CLI Reference \u2014 sf data import tree \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm",
+    "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm"
+  ],
+  "outputs": [
+    "Recommended seeding layer (Apex @testSetup vs sf data tree vs CumulusCI)",
+    "sf data import plan JSON or Apex test data factory pattern",
+    "CumulusCI dataset or Snowfakery recipe if applicable"
+  ],
+  "references": [
+    "skills/devops/data-seeding-for-testing/references/examples.md",
+    "skills/devops/data-seeding-for-testing/references/gotchas.md",
+    "skills/devops/data-seeding-for-testing/references/llm-anti-patterns.md",
+    "skills/devops/data-seeding-for-testing/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/devops/data-seeding-for-testing/scripts/check_data_seeding_for_testing.py"
+  ],
+  "tags": [
+    "test-data",
+    "data-seeding",
+    "scratch-orgs",
+    "ci-cd",
+    "apex-testing"
+  ],
+  "templates": [
+    "skills/devops/data-seeding-for-testing/templates/data-seeding-for-testing-template.md"
+  ],
+  "updated": "2026-04-05",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

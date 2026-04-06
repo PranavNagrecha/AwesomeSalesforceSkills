@@ -4,7 +4,7 @@ The universal Salesforce knowledge layer for AI coding assistants.
 
 Drop this into Claude Code, Cursor, Aider, Windsurf, or any AI tool and get role-accurate, source-grounded Salesforce guidance — for every role, every cloud, every task.
 
-**221 skills built. 500+ planned across 5 roles × 16 clouds.**
+**226 skills built. 500+ planned across 5 roles × 16 clouds.**
 
 ---
 
@@ -98,17 +98,17 @@ Skills are plain markdown. They work in any AI tool that can read a file.
 
 | Domain | Skills |
 |--------|--------|
-| Admin | 38 — custom fields, objects, picklists, users, org setup, page layouts, permission sets, sharing, validation rules, flows, reports, data skew, requirements gathering, data model documentation, UAT and acceptance criteria, change management and training, enterprise territory management, custom permissions, delegated administration, dynamic forms and actions, path and guidance... |
-| Apex | 30 — trigger framework, batch, async, security patterns, callouts, mocking, platform cache, SOQL fundamentals, sf CLI and SFDX essentials, Metadata API and package.xml, debug logs and Developer Console, apex managed sharing, scheduled jobs, email services, continuation callouts, custom iterators, dynamic SOQL and Schema.describe... |
-| LWC | 21 — wire service, component communication, testing, accessibility, offline, performance, toast and notifications, dynamic components, imperative Apex, message channel patterns, base component recipes, Aura-to-LWC migration... |
-| Flow | 15 — record-triggered, screen flows, fault handling, bulkification, subflows, governance, debugging, auto-launched flow patterns, collection processing, External Services callouts... |
-| OmniStudio | 10 — OmniScript design, DataRaptor, Integration Procedures, security, FlexCard design patterns, calculation procedures, DataPack deployment, performance optimization, Industries CPQ vs Salesforce CPQ... |
-| Agentforce | 11 — agent actions, topic design, Einstein Trust Layer, agent creation, Einstein Copilot for Sales, Einstein Prediction Builder, Einstein Copilot for Service, Model Builder and BYOLLM, RAG patterns, agent testing and evaluation... |
-| Security | 11 — org hardening, permission set groups, Shield Platform Encryption, event monitoring, field audit trail, transaction security policies, login forensics, network security and trusted IPs, sandbox data masking, API security and rate limiting... |
-| Integration | 9 — GraphQL, OAuth flows, Salesforce Connect, REST API patterns, SOAP API patterns, named credentials, Streaming API and PushTopic, platform events integration, Change Data Capture for external subscribers... |
-| Data | 13 — multi-currency, SOSL, rollup alternatives, data model design patterns, data migration planning, data quality and governance, bulk API and large data loads, data archival strategies, SOQL query optimization, Bulk API 2.0 patterns, field history tracking, external data and big objects, person accounts... |
-| Architect | 8 — solution design patterns, limits and scalability planning, multi-org strategy, technical debt assessment, well-architected review, platform selection guidance, security architecture review, government cloud compliance... |
-| DevOps | 9 — scratch org management, sandbox refresh and templates, unlocked package development, second-generation managed packages, DevOps Center pipeline, GitHub Actions for Salesforce, Bitbucket Pipelines for Salesforce, GitLab CI for Salesforce... |
+| Admin | 43 — custom fields, objects, picklists, users, org setup, page layouts, permission sets, sharing, validation rules, flows, reports, data skew, requirements gathering, data model documentation, UAT and acceptance criteria, change management and training, enterprise territory management, custom permissions, delegated administration, dynamic forms and actions, batch job scheduling and monitoring... |
+| Apex | 35 — trigger framework, batch, async, security patterns, callouts, mocking, platform cache, SOQL fundamentals, sf CLI and SFDX essentials, Metadata API and package.xml, debug logs and Developer Console, apex managed sharing, scheduled jobs, email services, continuation callouts, custom iterators, dynamic SOQL and Schema.describe... |
+| LWC | 23 — wire service, component communication, testing, accessibility, offline, performance, toast and notifications, dynamic components, imperative Apex, message channel patterns, base component recipes, Aura-to-LWC migration... |
+| Flow | 18 — record-triggered, screen flows, fault handling, bulkification, subflows, governance, debugging, auto-launched flow patterns, collection processing, External Services callouts... |
+| OmniStudio | 15 — OmniScript design, DataRaptor, Integration Procedures, security, FlexCard design patterns, calculation procedures, DataPack deployment, performance optimization, Industries CPQ vs Salesforce CPQ... |
+| Agentforce | 17 — agent actions, topic design, Einstein Trust Layer, agent creation, Einstein Copilot for Sales, Einstein Prediction Builder, Einstein Copilot for Service, Model Builder and BYOLLM, RAG patterns, agent testing and evaluation, persona design... |
+| Security | 17 — org hardening, permission set groups, Shield Platform Encryption, event monitoring, field audit trail, transaction security policies, login forensics, network security and trusted IPs, sandbox data masking, API security and rate limiting, experience cloud security... |
+| Integration | 14 — GraphQL, OAuth flows, Salesforce Connect, REST API patterns, SOAP API patterns, named credentials, Streaming API and PushTopic, platform events integration, Change Data Capture for external subscribers, callout limits and async patterns... |
+| Data | 18 — multi-currency, SOSL, rollup alternatives, data model design patterns, data migration planning, data quality and governance, bulk API and large data loads, data archival strategies, SOQL query optimization, Bulk API 2.0 patterns, field history tracking, external data and big objects, person accounts... |
+| Architect | 11 — solution design patterns, limits and scalability planning, multi-org strategy, technical debt assessment, well-architected review, platform selection guidance, security architecture review, government cloud compliance... |
+| DevOps | 15 — scratch org management, sandbox refresh and templates, unlocked package development, second-generation managed packages, DevOps Center pipeline, GitHub Actions for Salesforce, data seeding for testing, deployment error troubleshooting... |
 
 **See the full catalog:** [docs/SKILLS.md](./docs/SKILLS.md)
 
