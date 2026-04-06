@@ -8,18 +8,25 @@ well-architected-pillars:
   - Operational Excellence
 triggers:
   - "how do I add a new field to a Salesforce object"
+  - "add new custom field to object in Salesforce Setup"
+  - "create a field on a standard or custom Salesforce object"
   - "what custom field type should I use for storing this data"
   - "field I created is not showing up for users on the page"
   - "FLS field-level security not working after adding new field"
   - "how do I deploy a custom field from sandbox to production"
   - "user cannot see a field I added to the page layout"
   - "what is the difference between text and text area field type"
+  - "adding a new field to Account Contact Opportunity object"
 tags:
   - custom-fields
+  - add-field
+  - new-field
   - field-level-security
   - page-layout
   - metadata
   - admin
+  - object-field
+  - field-creation
 inputs:
   - "Object name (standard or custom) where the field will be created"
   - "Business requirement describing what data the field stores"
