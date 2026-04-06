@@ -29,6 +29,7 @@
       "admin/list-views-and-compact-layouts",
       "admin/multi-language-and-translation",
       "admin/object-creation-and-design",
+      "admin/org-cleanup-and-technical-debt",
       "admin/org-setup-and-configuration",
       "admin/path-and-guidance",
       "admin/permission-set-architecture",
@@ -116,6 +117,7 @@
       "architect/ha-dr-architecture",
       "architect/integration-framework-design",
       "architect/limits-and-scalability-planning",
+      "architect/metadata-coverage-and-dependencies",
       "architect/multi-org-strategy",
       "architect/org-edition-and-feature-licensing",
       "architect/org-limits-monitoring",
@@ -155,6 +157,7 @@
       "devops/destructive-changes-deployment",
       "devops/devops-center-pipeline",
       "devops/environment-strategy",
+      "devops/git-branching-for-salesforce",
       "devops/github-actions-for-salesforce",
       "devops/gitlab-ci-for-salesforce",
       "devops/org-shape-and-scratch-definition",
@@ -188,6 +191,7 @@
       "flow/subflows-and-reusability"
     ],
     "integration": [
+      "integration/api-led-connectivity",
       "integration/callout-limits-and-async-patterns",
       "integration/change-data-capture-integration",
       "integration/composite-api-patterns",
@@ -235,6 +239,7 @@
       "omnistudio/calculation-procedures",
       "omnistudio/dataraptor-load-and-extract",
       "omnistudio/dataraptor-patterns",
+      "omnistudio/document-generation-omnistudio",
       "omnistudio/flexcard-design-patterns",
       "omnistudio/industries-cpq-vs-salesforce-cpq",
       "omnistudio/integration-procedures",
@@ -259,6 +264,7 @@
       "security/field-audit-trail",
       "security/gdpr-data-privacy",
       "security/guest-user-security",
+      "security/ip-range-and-login-flow-strategy",
       "security/login-forensics",
       "security/network-security-and-trusted-ips",
       "security/org-hardening-and-baseline-config",
@@ -301,6 +307,9 @@
     ],
     "JKS": [
       "security/certificate-and-key-management"
+    ],
+    "MetadataComponentDependency": [
+      "architect/metadata-coverage-and-dependencies"
     ],
     "ShowToastEvent": [
       "lwc/lwc-toast-and-notifications"
@@ -406,6 +415,9 @@
     ],
     "agent-dsl": [
       "agentforce/agent-script-dsl"
+    ],
+    "agent-fabric": [
+      "integration/api-led-connectivity"
     ],
     "agent-instructions": [
       "agentforce/agentforce-guardrails",
@@ -522,6 +534,9 @@
     "api-design": [
       "integration/graphql-api-patterns"
     ],
+    "api-led-connectivity": [
+      "integration/api-led-connectivity"
+    ],
     "api-limits": [
       "integration/rest-api-patterns"
     ],
@@ -544,6 +559,9 @@
       "devops/salesforce-code-analyzer",
       "devops/second-generation-managed-packages",
       "security/secure-coding-review-checklist"
+    ],
+    "application-network": [
+      "integration/api-led-connectivity"
     ],
     "application-scope": [
       "lwc/message-channel-patterns"
@@ -736,7 +754,8 @@
       "omnistudio/omniscript-design-patterns"
     ],
     "branching-strategy": [
-      "devops/environment-strategy"
+      "devops/environment-strategy",
+      "devops/git-branching-for-salesforce"
     ],
     "brand-voice": [
       "agentforce/agentforce-persona-design"
@@ -953,6 +972,9 @@
     "condition-builder": [
       "security/transaction-security-policies"
     ],
+    "conditional-mfa": [
+      "security/ip-range-and-login-flow-strategy"
+    ],
     "conditional-visibility": [
       "omnistudio/flexcard-design-patterns"
     ],
@@ -983,6 +1005,9 @@
       "security/certificate-and-key-management",
       "security/connected-app-security-policies",
       "security/session-management-and-timeout"
+    ],
+    "connected-app-plugin": [
+      "security/ip-range-and-login-flow-strategy"
     ],
     "connected-apps": [
       "admin/connected-apps-and-auth",
@@ -1330,6 +1355,9 @@
     "deletion": [
       "data/batch-data-cleanup-patterns"
     ],
+    "dependency-graph": [
+      "architect/metadata-coverage-and-dependencies"
+    ],
     "dependency-injection": [
       "apex/apex-design-patterns"
     ],
@@ -1365,6 +1393,9 @@
       "apex/metadata-api-and-package-xml",
       "devops/destructive-changes-deployment"
     ],
+    "destructive-deploy": [
+      "admin/org-cleanup-and-technical-debt"
+    ],
     "dev-hub": [
       "devops/org-shape-and-scratch-definition",
       "devops/scratch-org-management",
@@ -1379,6 +1410,7 @@
     ],
     "devops": [
       "devops/environment-strategy",
+      "devops/git-branching-for-salesforce",
       "devops/org-shape-and-scratch-definition",
       "devops/release-management",
       "devops/salesforce-code-analyzer",
@@ -1405,8 +1437,17 @@
     "dml-limits": [
       "architect/limits-and-scalability-planning"
     ],
+    "docgen": [
+      "omnistudio/document-generation-omnistudio"
+    ],
     "docker-executor": [
       "devops/gitlab-ci-for-salesforce"
+    ],
+    "document-generation": [
+      "omnistudio/document-generation-omnistudio"
+    ],
+    "document-template": [
+      "omnistudio/document-generation-omnistudio"
     ],
     "dod-il4": [
       "architect/government-cloud-compliance"
@@ -1590,6 +1631,9 @@
     "exception-handling": [
       "apex/exception-handling"
     ],
+    "experience-api": [
+      "integration/api-led-connectivity"
+    ],
     "experience-cloud": [
       "admin/multi-language-and-translation",
       "agentforce/agent-channel-deployment",
@@ -1598,6 +1642,9 @@
       "security/experience-cloud-security",
       "security/guest-user-security",
       "security/recaptcha-and-bot-prevention"
+    ],
+    "experience-cloud-login": [
+      "security/ip-range-and-login-flow-strategy"
     ],
     "expression-sets": [
       "omnistudio/business-rules-engine",
@@ -1796,6 +1843,9 @@
       "flow/screen-flows",
       "lwc/lwc-in-flow-screens"
     ],
+    "flow-versions": [
+      "admin/org-cleanup-and-technical-debt"
+    ],
     "flow-vs-apex": [
       "admin/process-automation-selection"
     ],
@@ -1846,6 +1896,12 @@
     ],
     "generic-streaming": [
       "integration/streaming-api-and-pushtopic"
+    ],
+    "git-branching-for-salesforce": [
+      "devops/git-branching-for-salesforce"
+    ],
+    "gitflow": [
+      "devops/git-branching-for-salesforce"
     ],
     "github": [
       "devops/devops-center-pipeline"
@@ -1986,6 +2042,9 @@
     "identity-verification": [
       "security/login-forensics"
     ],
+    "impact-analysis": [
+      "architect/metadata-coverage-and-dependencies"
+    ],
     "imperative": [
       "lwc/lwc-imperative-apex"
     ],
@@ -2048,6 +2107,9 @@
       "integration/composite-api-patterns",
       "integration/outbound-messages-and-callbacks"
     ],
+    "integration-architecture": [
+      "integration/api-led-connectivity"
+    ],
     "integration-auth": [
       "admin/connected-apps-and-auth"
     ],
@@ -2057,6 +2119,7 @@
     ],
     "integration-procedure": [
       "omnistudio/dataraptor-load-and-extract",
+      "omnistudio/document-generation-omnistudio",
       "omnistudio/integration-procedures",
       "omnistudio/omnistudio-debugging",
       "omnistudio/omnistudio-lwc-integration",
@@ -2096,6 +2159,9 @@
     ],
     "invocablevariable": [
       "apex/invocable-methods"
+    ],
+    "ip-based-branching": [
+      "security/ip-range-and-login-flow-strategy"
     ],
     "ip-relaxation": [
       "security/connected-app-security-policies"
@@ -2294,6 +2360,7 @@
       "apex/debug-and-logging"
     ],
     "login-flow": [
+      "security/ip-range-and-login-flow-strategy",
       "security/login-forensics"
     ],
     "login-forensics": [
@@ -2419,14 +2486,21 @@
     ],
     "metadata-api": [
       "apex/metadata-api-and-package-xml",
+      "architect/metadata-coverage-and-dependencies",
       "devops/permission-set-deployment-ordering",
       "integration/soap-api-patterns"
+    ],
+    "metadata-coverage": [
+      "architect/metadata-coverage-and-dependencies"
     ],
     "metadata-deletion": [
       "devops/destructive-changes-deployment"
     ],
     "metadata-deployment": [
       "integration/named-credentials-setup"
+    ],
+    "metadata-hygiene": [
+      "admin/org-cleanup-and-technical-debt"
     ],
     "metadata-namespace": [
       "apex/apex-metadata-api"
@@ -2475,6 +2549,7 @@
       "architect/org-limits-monitoring"
     ],
     "mulesoft": [
+      "integration/api-led-connectivity",
       "integration/mulesoft-salesforce-connector"
     ],
     "multi-channel": [
@@ -2584,7 +2659,11 @@
     "omniJsonData": [
       "omnistudio/omnistudio-custom-lwc-elements"
     ],
+    "omnidatatransform": [
+      "omnistudio/document-generation-omnistudio"
+    ],
     "omniscript": [
+      "omnistudio/document-generation-omnistudio",
       "omnistudio/omniscript-design-patterns",
       "omnistudio/omniscript-versioning",
       "omnistudio/omnistudio-custom-lwc-elements",
@@ -2597,6 +2676,7 @@
       "omnistudio/business-rules-engine",
       "omnistudio/calculation-procedures",
       "omnistudio/dataraptor-load-and-extract",
+      "omnistudio/document-generation-omnistudio",
       "omnistudio/flexcard-design-patterns",
       "omnistudio/industries-cpq-vs-salesforce-cpq",
       "omnistudio/integration-procedures",
@@ -2636,12 +2716,18 @@
     "opportunity-territory": [
       "admin/enterprise-territory-management"
     ],
+    "optimizer": [
+      "admin/org-cleanup-and-technical-debt"
+    ],
     "order-of-execution": [
       "apex/order-of-execution-deep-dive",
       "flow/record-triggered-flow-patterns"
     ],
     "org-assessment": [
       "architect/well-architected-review"
+    ],
+    "org-cleanup": [
+      "admin/org-cleanup-and-technical-debt"
     ],
     "org-hardening": [
       "security/org-hardening-and-baseline-config"
@@ -2706,7 +2792,8 @@
       "apex/sf-cli-and-sfdx-essentials"
     ],
     "packaging": [
-      "apex/custom-metadata-in-apex"
+      "apex/custom-metadata-in-apex",
+      "architect/metadata-coverage-and-dependencies"
     ],
     "page-layout": [
       "admin/custom-field-creation"
@@ -2742,6 +2829,9 @@
     ],
     "payload-reduction": [
       "lwc/lwc-performance"
+    ],
+    "pdf": [
+      "omnistudio/document-generation-omnistudio"
     ],
     "performance": [
       "admin/data-skew-and-sharing-performance",
@@ -2844,6 +2934,9 @@
     "portal-users": [
       "apex/test-data-factory-patterns"
     ],
+    "post-authentication": [
+      "security/ip-range-and-login-flow-strategy"
+    ],
     "post-refresh-automation": [
       "devops/sandbox-refresh-and-templates"
     ],
@@ -2858,6 +2951,9 @@
     ],
     "proactive-monitoring": [
       "architect/org-limits-monitoring"
+    ],
+    "process-api": [
+      "integration/api-led-connectivity"
     ],
     "process-builder-migration": [
       "admin/process-automation-selection"
@@ -3258,7 +3354,8 @@
       "admin/flow-for-admins",
       "flow/fault-handling",
       "flow/flow-for-experience-cloud",
-      "lwc/lwc-in-flow-screens"
+      "lwc/lwc-in-flow-screens",
+      "security/ip-range-and-login-flow-strategy"
     ],
     "screen-flows": [
       "flow/screen-flows"
@@ -3381,6 +3478,7 @@
       "apex/sf-cli-and-sfdx-essentials",
       "devops/bitbucket-pipelines-for-salesforce",
       "devops/destructive-changes-deployment",
+      "devops/git-branching-for-salesforce",
       "devops/github-actions-for-salesforce",
       "devops/gitlab-ci-for-salesforce",
       "devops/org-shape-and-scratch-definition",
@@ -3555,6 +3653,9 @@
     "survivorship": [
       "admin/duplicate-management"
     ],
+    "system-api": [
+      "integration/api-led-connectivity"
+    ],
     "system-debug": [
       "apex/debug-and-logging"
     ],
@@ -3562,6 +3663,7 @@
       "apex/apex-scheduled-jobs"
     ],
     "technical-debt": [
+      "admin/org-cleanup-and-technical-debt",
       "architect/technical-debt-assessment"
     ],
     "templates": [
@@ -3620,6 +3722,7 @@
       "admin/einstein-analytics-basics"
     ],
     "tooling-api": [
+      "architect/metadata-coverage-and-dependencies",
       "security/security-health-check"
     ],
     "topic-coverage": [
@@ -3671,6 +3774,9 @@
     "troubleshooting": [
       "omnistudio/omnistudio-debugging"
     ],
+    "trunk-based-development": [
+      "devops/git-branching-for-salesforce"
+    ],
     "trust-site": [
       "architect/ha-dr-architecture"
     ],
@@ -3702,10 +3808,14 @@
       "architect/org-edition-and-feature-licensing"
     ],
     "unlocked-packages": [
+      "devops/git-branching-for-salesforce",
       "devops/unlocked-package-development"
     ],
     "unrestricted-picklist": [
       "admin/picklist-field-integrity-issues"
+    ],
+    "unused-fields": [
+      "admin/org-cleanup-and-technical-debt"
     ],
     "upsert": [
       "admin/data-import-and-management",

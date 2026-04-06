@@ -1505,6 +1505,42 @@
       "domain": "architect",
       "expected_skill": "architect/org-limits-monitoring",
       "top_k": 3
+    },
+    {
+      "query": "how to clean up unused fields and technical debt in Salesforce org",
+      "domain": "admin",
+      "expected_skill": "admin/org-cleanup-and-technical-debt",
+      "top_k": 3
+    },
+    {
+      "query": "which metadata types are supported in unlocked packages dependency graph",
+      "domain": "architect",
+      "expected_skill": "architect/metadata-coverage-and-dependencies",
+      "top_k": 3
+    },
+    {
+      "query": "git branching strategy for Salesforce DX projects trunk based GitFlow",
+      "domain": "devops",
+      "expected_skill": "devops/git-branching-for-salesforce",
+      "top_k": 3
+    },
+    {
+      "query": "API-led connectivity three layer architecture system process experience API",
+      "domain": "integration",
+      "expected_skill": "integration/api-led-connectivity",
+      "top_k": 3
+    },
+    {
+      "query": "OmniStudio document generation template merge tokens PDF",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/document-generation-omnistudio",
+      "top_k": 3
+    },
+    {
+      "query": "login flow IP range conditional MFA Experience Cloud custom login",
+      "domain": "security",
+      "expected_skill": "security/ip-range-and-login-flow-strategy",
+      "top_k": 3
     }
   ]
 }

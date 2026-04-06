@@ -27,7 +27,7 @@ if str(ROOT) not in sys.path:
 ALLOWED_CATEGORIES = {
     "admin", "apex", "lwc", "flow", "omnistudio",
     "agentforce", "security", "integration", "data", "devops",
-    "experience", "servicecloud",
+    "experience", "servicecloud", "architect",
 }
 
 # Pre-seeded official sources by domain — injected into well-architected.md on scaffold.
