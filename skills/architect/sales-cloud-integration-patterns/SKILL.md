@@ -25,6 +25,7 @@ triggers:
   - "partner portal integration patterns with Experience Cloud and Sales Cloud"
   - "how to handle Lead-to-Contact conversion in a marketing integration"
   - "map Opportunity line items to ERP order lines"
+  - "how to integrate Sales Cloud with ERP for quote-to-order sync"
 inputs:
   - "Source and target systems involved in the integration"
   - "Objects to sync (Account, Product, Opportunity, Lead, Campaign, Quote, Order)"

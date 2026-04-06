@@ -12,6 +12,7 @@ triggers:
   - "migrating from Live Agent to Messaging for In-App and Web"
   - "designing channel prioritization so high-priority channels get answered first"
   - "unified agent experience across phone, chat, email, and social channels"
+  - "multi-channel service strategy for phone email chat and social routing"
 tags:
   - multi-channel-service-architecture
   - omni-channel

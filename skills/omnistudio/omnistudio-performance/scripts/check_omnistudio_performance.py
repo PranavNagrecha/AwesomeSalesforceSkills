@@ -83,6 +83,8 @@ def emit_result(findings: list[str], summary: str) -> int:
     normalized = [normalize_finding(f) for f in findings]
     score = max(0, 100 - sum(SEVERITY_WEIGHTS.get(n["severity"], 0) for n in normalized))
     print(json.dumps({"score": score, "findings": normalized, "summary": summary}, indent=2))
+    if normalized:
+        print(f"WARN: {len(normalized)} finding(s) detected", file=sys.stderr)
     return 1 if normalized else 0
 
 
