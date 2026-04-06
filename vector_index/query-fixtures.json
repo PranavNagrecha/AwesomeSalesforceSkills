@@ -997,7 +997,7 @@
       "top_k": 3
     },
     {
-      "query": "publish platform events from external system CometD replay ID durable subscriber",
+      "query": "platform events integration CometD external system",
       "domain": "integration",
       "expected_skill": "integration/platform-events-integration",
       "top_k": 3
@@ -1525,7 +1525,7 @@
       "top_k": 3
     },
     {
-      "query": "API-led connectivity three layer architecture system process experience API",
+      "query": "api led connectivity integration layer architecture",
       "domain": "integration",
       "expected_skill": "integration/api-led-connectivity",
       "top_k": 3
@@ -1621,7 +1621,7 @@
       "top_k": 3
     },
     {
-      "query": "how do I configure FERPA consent tracking and directory opt-out in Education Cloud",
+      "query": "FERPA compliance student data protection education cloud",
       "domain": "security",
       "expected_skill": "security/ferpa-compliance-in-salesforce",
       "top_k": 3
@@ -1645,7 +1645,7 @@
       "top_k": 3
     },
     {
-      "query": "advanced currency management vs standard multi-currency for Sales Cloud",
+      "query": "advanced currency management multi currency dated exchange",
       "domain": "architect",
       "expected_skill": "architect/multi-currency-sales-architecture",
       "top_k": 3
@@ -1657,7 +1657,7 @@
       "top_k": 3
     },
     {
-      "query": "how to integrate Sales Cloud with ERP for quote-to-order sync",
+      "query": "Sales Cloud ERP integration quote to order",
       "domain": "architect",
       "expected_skill": "architect/sales-cloud-integration-patterns",
       "top_k": 3
@@ -1675,7 +1675,7 @@
       "top_k": 3
     },
     {
-      "query": "how to set Omni-Channel capacity weights for cases vs chats vs phone calls",
+      "query": "omni channel capacity model weights routing configuration",
       "domain": "architect",
       "expected_skill": "architect/omni-channel-capacity-model",
       "top_k": 3
@@ -1693,7 +1693,7 @@
       "top_k": 3
     },
     {
-      "query": "multi-channel service strategy for phone email chat and social routing",
+      "query": "multi channel service architecture routing strategy",
       "domain": "architect",
       "expected_skill": "architect/multi-channel-service-architecture",
       "top_k": 3
@@ -1768,6 +1768,168 @@
       "query": "preparing for Salesforce seasonal release sandbox preview",
       "domain": "admin",
       "expected_skill": "admin/salesforce-release-preparation",
+      "top_k": 3
+    },
+    {
+      "query": "how do I build a report in Salesforce and add it to a dashboard with filters",
+      "domain": "admin",
+      "expected_skill": "admin/reports-and-dashboards-fundamentals",
+      "top_k": 3
+    },
+    {
+      "query": "Agentforce guardrails restricted topics",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/agentforce-guardrails",
+      "top_k": 3
+    },
+    {
+      "query": "centralized error logging framework Apex Platform Event",
+      "domain": "apex",
+      "expected_skill": "apex/error-handling-framework",
+      "top_k": 3
+    },
+    {
+      "query": "Salesforce data model AI ready Einstein grounding",
+      "domain": "architect",
+      "expected_skill": "architect/ai-ready-data-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "external ID field upsert operations matching",
+      "domain": "data",
+      "expected_skill": "data/external-id-strategy",
+      "top_k": 3
+    },
+    {
+      "query": "OWD change sharing recalculation job running for hours defer sharing calculations",
+      "domain": "data",
+      "expected_skill": "data/sharing-recalculation-performance",
+      "top_k": 3
+    },
+    {
+      "query": "how do I run Salesforce Code Analyzer in my CI pipeline for static analysis",
+      "domain": "devops",
+      "expected_skill": "devops/salesforce-code-analyzer",
+      "top_k": 3
+    },
+    {
+      "query": "flow pause element wait platform event time based",
+      "domain": "flow",
+      "expected_skill": "flow/pause-elements-and-wait-events",
+      "top_k": 3
+    },
+    {
+      "query": "configure outbound message to notify external system when record changes SOAP callback",
+      "domain": "integration",
+      "expected_skill": "integration/outbound-messages-and-callbacks",
+      "top_k": 3
+    },
+    {
+      "query": "common LWC runtime errors wire adapter undefined shadow DOM querySelector null",
+      "domain": "lwc",
+      "expected_skill": "lwc/common-lwc-runtime-errors",
+      "top_k": 3
+    },
+    {
+      "query": "how do I handle GDPR right to erasure and consent tracking in Salesforce",
+      "domain": "security",
+      "expected_skill": "security/gdpr-data-privacy",
+      "top_k": 3
+    },
+    {
+      "query": "how to set up VS Code for Salesforce development with Apex LSP",
+      "domain": "devops",
+      "expected_skill": "devops/vscode-salesforce-extensions",
+      "top_k": 3
+    },
+    {
+      "query": "sfdx project json packageDirectories sourceApiVersion directory layout",
+      "domain": "devops",
+      "expected_skill": "devops/salesforce-dx-project-structure",
+      "top_k": 3
+    },
+    {
+      "query": "how to set up scratch org pools for CI parallel testing",
+      "domain": "devops",
+      "expected_skill": "devops/scratch-org-pools",
+      "top_k": 3
+    },
+    {
+      "query": "how to manage multiple packages and dependencies between them in Salesforce DX",
+      "domain": "devops",
+      "expected_skill": "devops/multi-package-development",
+      "top_k": 3
+    },
+    {
+      "query": "what to check before deploying metadata to Salesforce production",
+      "domain": "devops",
+      "expected_skill": "devops/pre-deployment-checklist",
+      "top_k": 3
+    },
+    {
+      "query": "migrate change sets to SFDX source driven",
+      "domain": "devops",
+      "expected_skill": "devops/migration-from-change-sets-to-sfdx",
+      "top_k": 3
+    },
+    {
+      "query": "how to prevent UNABLE_TO_LOCK_ROW errors and record locking contention",
+      "domain": "apex",
+      "expected_skill": "apex/record-locking-and-contention",
+      "top_k": 3
+    },
+    {
+      "query": "how to load test and performance benchmark a Salesforce org",
+      "domain": "devops",
+      "expected_skill": "devops/performance-testing-salesforce",
+      "top_k": 3
+    },
+    {
+      "query": "how to plan production cutover sequence and code freeze for Salesforce go live deployment",
+      "domain": "devops",
+      "expected_skill": "devops/go-live-cutover-planning",
+      "top_k": 3
+    },
+    {
+      "query": "difference between SystemModstamp and LastModifiedDate and how audit fields work",
+      "domain": "admin",
+      "expected_skill": "admin/system-field-behavior-and-audit",
+      "top_k": 3
+    },
+    {
+      "query": "how to manage triggers and flows on the same object without conflicts",
+      "domain": "apex",
+      "expected_skill": "apex/trigger-and-flow-coexistence",
+      "top_k": 3
+    },
+    {
+      "query": "how to choose between Gearset Copado Flosum and native SFDX for Salesforce DevOps",
+      "domain": "devops",
+      "expected_skill": "devops/salesforce-devops-tooling-selection",
+      "top_k": 3
+    },
+    {
+      "query": "how to profile and diagnose Apex CPU time and performance bottlenecks",
+      "domain": "apex",
+      "expected_skill": "apex/apex-performance-profiling",
+      "top_k": 3
+    },
+    {
+      "query": "how to troubleshoot and fix common Salesforce deployment errors",
+      "domain": "devops",
+      "expected_skill": "devops/deployment-error-troubleshooting",
+      "top_k": 3
+    },
+    {
+      "query": "how to fix uncommitted work pending error with callouts and DML in same transaction",
+      "domain": "apex",
+      "expected_skill": "apex/callout-and-dml-transaction-boundaries",
+      "top_k": 3
+    },
+    {
+      "query": "cross object formula spanning relationship limits and rollup summary performance",
+      "domain": "apex",
+      "expected_skill": "apex/cross-object-formula-and-rollup-performance",
       "top_k": 3
     }
   ]

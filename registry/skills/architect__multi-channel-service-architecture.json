@@ -71,7 +71,7 @@
     "fb44d82e6d6c2068caa7",
     "fe817695804c51437d18"
   ],
-  "content_hash": "7a5616a0374ebd77b32ef9ddc4c7728dbb4147adb5519aa5c9a1b095a65f863f",
+  "content_hash": "ca94e898da5c03905292e444cbe3adc332afb293a7293c41f0df16ab4af82b96",
   "dependencies": [],
   "description": "Use when designing a unified multi-channel service strategy spanning phone (Service Cloud Voice), email (Email-to-Case), chat (Messaging for In-App/Web), social, and SMS with Omni-Channel routing. Triggers: channel prioritization, unified routing across channels, service channel migration, multi-channel capacity planning. NOT for individual channel setup or configuration \u2014 see service-cloud-architecture for single-channel implementation details.",
   "file_location": "skills/architect/multi-channel-service-architecture",

@@ -30,6 +30,7 @@
       "admin/in-app-guidance-and-walkthroughs",
       "admin/lead-management-and-conversion",
       "admin/lightning-app-builder-advanced",
+      "admin/lightning-page-performance-tuning",
       "admin/list-views-and-compact-layouts",
       "admin/multi-language-and-translation",
       "admin/object-creation-and-design",
@@ -55,6 +56,7 @@
       "admin/sandbox-strategy",
       "admin/sharing-and-visibility",
       "admin/standard-object-quirks",
+      "admin/system-field-behavior-and-audit",
       "admin/uat-and-acceptance-criteria",
       "admin/user-access-policies",
       "admin/user-management",
@@ -89,16 +91,19 @@
       "apex/apex-managed-sharing",
       "apex/apex-metadata-api",
       "apex/apex-mocking-and-stubs",
+      "apex/apex-performance-profiling",
       "apex/apex-queueable-patterns",
       "apex/apex-rest-services",
       "apex/apex-scheduled-jobs",
       "apex/apex-security-patterns",
       "apex/async-apex",
       "apex/batch-apex-patterns",
+      "apex/callout-and-dml-transaction-boundaries",
       "apex/callouts-and-http-integrations",
       "apex/change-data-capture-apex",
       "apex/common-apex-runtime-errors",
       "apex/continuation-callouts",
+      "apex/cross-object-formula-and-rollup-performance",
       "apex/custom-iterators-and-iterables",
       "apex/custom-logging-and-monitoring",
       "apex/custom-metadata-in-apex",
@@ -115,9 +120,11 @@
       "apex/invocable-methods",
       "apex/long-running-process-orchestration",
       "apex/metadata-api-and-package-xml",
+      "apex/mixed-dml-and-setup-objects",
       "apex/order-of-execution-deep-dive",
       "apex/platform-cache",
       "apex/platform-events-apex",
+      "apex/record-locking-and-contention",
       "apex/recursive-trigger-prevention",
       "apex/sf-cli-and-sfdx-essentials",
       "apex/soql-fundamentals",
@@ -125,6 +132,7 @@
       "apex/test-class-standards",
       "apex/test-data-factory-patterns",
       "apex/timezone-and-datetime-pitfalls",
+      "apex/trigger-and-flow-coexistence",
       "apex/trigger-framework",
       "apex/visualforce-fundamentals"
     ],
@@ -180,29 +188,40 @@
       "data/sosl-search-patterns"
     ],
     "devops": [
+      "devops/api-version-management",
       "devops/automated-regression-testing",
       "devops/bitbucket-pipelines-for-salesforce",
       "devops/change-set-deployment",
       "devops/continuous-integration-testing",
       "devops/data-seeding-for-testing",
+      "devops/deployment-error-troubleshooting",
       "devops/destructive-changes-deployment",
       "devops/devops-center-pipeline",
       "devops/environment-strategy",
       "devops/git-branching-for-salesforce",
       "devops/github-actions-for-salesforce",
       "devops/gitlab-ci-for-salesforce",
+      "devops/go-live-cutover-planning",
+      "devops/metadata-api-coverage-gaps",
+      "devops/migration-from-change-sets-to-sfdx",
+      "devops/multi-package-development",
       "devops/org-shape-and-scratch-definition",
+      "devops/performance-testing-salesforce",
       "devops/permission-set-deployment-ordering",
       "devops/post-deployment-validation",
+      "devops/pre-deployment-checklist",
       "devops/release-management",
       "devops/rollback-and-hotfix-strategy",
       "devops/salesforce-code-analyzer",
       "devops/salesforce-devops-tooling-selection",
+      "devops/salesforce-dx-project-structure",
       "devops/sandbox-refresh-and-templates",
       "devops/scratch-org-management",
+      "devops/scratch-org-pools",
       "devops/second-generation-managed-packages",
       "devops/source-tracking-and-conflict-resolution",
-      "devops/unlocked-package-development"
+      "devops/unlocked-package-development",
+      "devops/vscode-salesforce-extensions"
     ],
     "flow": [
       "flow/auto-launched-flow-patterns",
@@ -338,20 +357,35 @@
     "CometD": [
       "integration/change-data-capture-integration"
     ],
+    "CreatedDate": [
+      "admin/system-field-behavior-and-audit"
+    ],
     "DeployCallback": [
       "apex/apex-metadata-api"
     ],
     "DmlException": [
       "apex/common-apex-runtime-errors"
     ],
+    "EPT": [
+      "admin/lightning-page-performance-tuning"
+    ],
+    "FOR-UPDATE": [
+      "apex/record-locking-and-contention"
+    ],
     "InboundEmailHandler": [
       "apex/apex-email-services"
+    ],
+    "IsDeleted": [
+      "admin/system-field-behavior-and-audit"
     ],
     "IsPersonAccount": [
       "data/person-accounts"
     ],
     "JKS": [
       "security/certificate-and-key-management"
+    ],
+    "LastModifiedDate": [
+      "admin/system-field-behavior-and-audit"
     ],
     "LimitException": [
       "apex/common-apex-runtime-errors",
@@ -369,8 +403,14 @@
     "ShowToastEvent": [
       "lwc/lwc-toast-and-notifications"
     ],
+    "SystemModstamp": [
+      "admin/system-field-behavior-and-audit"
+    ],
     "TypeException": [
       "apex/common-apex-runtime-errors"
+    ],
+    "UNABLE_TO_LOCK_ROW": [
+      "apex/record-locking-and-contention"
     ],
     "VlocityOpenInterface2": [
       "omnistudio/omnistudio-remote-actions"
@@ -559,6 +599,9 @@
     "apex-actions": [
       "agentforce/custom-agent-actions-apex"
     ],
+    "apex-debugger": [
+      "devops/vscode-salesforce-extensions"
+    ],
     "apex-email-services": [
       "apex/apex-email-services"
     ],
@@ -571,9 +614,18 @@
     "apex-jobs": [
       "admin/batch-job-scheduling-and-monitoring"
     ],
+    "apex-language-server": [
+      "devops/vscode-salesforce-extensions"
+    ],
+    "apex-log-analyzer": [
+      "apex/apex-performance-profiling"
+    ],
     "apex-metadata-api": [
       "apex/apex-metadata-api",
       "apex/custom-metadata-in-apex"
+    ],
+    "apex-performance-profiling": [
+      "apex/apex-performance-profiling"
     ],
     "apex-replay-debugger": [
       "apex/debug-logs-and-developer-console"
@@ -625,8 +677,14 @@
     "api-security": [
       "security/api-security-and-rate-limiting"
     ],
+    "api-throughput": [
+      "devops/performance-testing-salesforce"
+    ],
     "api-usage": [
       "architect/org-limits-monitoring"
+    ],
+    "api-version": [
+      "devops/api-version-management"
     ],
     "app-manager": [
       "admin/app-and-tab-configuration"
@@ -737,6 +795,9 @@
       "data/field-history-tracking",
       "security/event-monitoring"
     ],
+    "audit-fields": [
+      "admin/system-field-behavior-and-audit"
+    ],
     "audit-trail": [
       "agentforce/einstein-trust-layer"
     ],
@@ -771,6 +832,9 @@
       "admin/flow-for-admins",
       "admin/user-access-policies",
       "apex/order-of-execution-deep-dive"
+    ],
+    "automation-governance": [
+      "apex/trigger-and-flow-coexistence"
     ],
     "automation-layers": [
       "architect/solution-design-patterns"
@@ -837,6 +901,9 @@
     ],
     "bitbucket-pipelines": [
       "devops/bitbucket-pipelines-for-salesforce"
+    ],
+    "blazemeter": [
+      "devops/performance-testing-salesforce"
     ],
     "blue-canvas": [
       "devops/salesforce-devops-tooling-selection"
@@ -949,6 +1016,9 @@
     "callout-auth": [
       "integration/named-credentials-setup"
     ],
+    "callout-dml-boundary": [
+      "apex/callout-and-dml-transaction-boundaries"
+    ],
     "callout-error-handling": [
       "integration/api-error-handling-design"
     ],
@@ -1008,7 +1078,8 @@
     ],
     "change-sets": [
       "admin/change-management-and-deployment",
-      "devops/change-set-deployment"
+      "devops/change-set-deployment",
+      "devops/migration-from-change-sets-to-sfdx"
     ],
     "channel-deployment": [
       "agentforce/agent-channel-deployment"
@@ -1028,6 +1099,7 @@
       "devops/salesforce-code-analyzer",
       "devops/salesforce-devops-tooling-selection",
       "devops/scratch-org-management",
+      "devops/scratch-org-pools",
       "omnistudio/omnistudio-deployment-datapacks"
     ],
     "circuit-breaker": [
@@ -1052,7 +1124,11 @@
       "security/secure-coding-review-checklist"
     ],
     "code-coverage": [
-      "devops/continuous-integration-testing"
+      "devops/continuous-integration-testing",
+      "devops/deployment-error-troubleshooting"
+    ],
+    "code-freeze": [
+      "devops/go-live-cutover-planning"
     ],
     "collection-filter": [
       "flow/flow-collection-processing"
@@ -1086,6 +1162,9 @@
     ],
     "component-communication": [
       "lwc/component-communication"
+    ],
+    "component-count": [
+      "admin/lightning-page-performance-tuning"
     ],
     "composite": [
       "integration/rest-api-patterns"
@@ -1178,6 +1257,9 @@
     "contentdocument": [
       "data/data-storage-management"
     ],
+    "contention": [
+      "apex/record-locking-and-contention"
+    ],
     "continuation": [
       "apex/continuation-callouts",
       "integration/callout-limits-and-async-patterns"
@@ -1246,6 +1328,9 @@
     "cross-object": [
       "admin/formula-fields"
     ],
+    "cross-object-formula": [
+      "apex/cross-object-formula-and-rollup-performance"
+    ],
     "cross-system": [
       "data/external-id-strategy"
     ],
@@ -1272,6 +1357,9 @@
     ],
     "csv": [
       "data/bulk-api-patterns"
+    ],
+    "cumulusci": [
+      "devops/scratch-org-pools"
     ],
     "currency-conversion": [
       "architect/multi-currency-sales-architecture"
@@ -1354,6 +1442,9 @@
     "customer-facing-agent": [
       "agentforce/agentforce-guardrails"
     ],
+    "cutover-runbook": [
+      "devops/go-live-cutover-planning"
+    ],
     "dashboard-filters": [
       "admin/reports-and-dashboards-fundamentals"
     ],
@@ -1424,6 +1515,7 @@
       "agentforce/einstein-trust-layer"
     ],
     "data-migration": [
+      "admin/system-field-behavior-and-audit",
       "data/data-migration-planning"
     ],
     "data-model": [
@@ -1461,6 +1553,7 @@
     ],
     "data-skew": [
       "admin/data-skew-and-sharing-performance",
+      "apex/record-locking-and-contention",
       "architect/high-volume-sales-data-architecture"
     ],
     "data-sources": [
@@ -1518,6 +1611,9 @@
     "dead-code": [
       "architect/technical-debt-assessment"
     ],
+    "deadlock": [
+      "apex/record-locking-and-contention"
+    ],
     "debug-interview": [
       "flow/flow-testing"
     ],
@@ -1563,17 +1659,32 @@
     "delta-load": [
       "data/data-reconciliation-patterns"
     ],
+    "delta-sync": [
+      "admin/system-field-behavior-and-audit"
+    ],
+    "dependency-errors": [
+      "devops/deployment-error-troubleshooting"
+    ],
     "dependency-graph": [
       "architect/metadata-coverage-and-dependencies"
     ],
     "dependency-injection": [
       "apex/apex-design-patterns"
     ],
+    "dependency-management": [
+      "devops/multi-package-development"
+    ],
     "dependent-picklist": [
       "admin/picklist-and-value-sets"
     ],
     "dependent-picklist-bypass": [
       "admin/picklist-field-integrity-issues"
+    ],
+    "deploy-errors": [
+      "devops/deployment-error-troubleshooting"
+    ],
+    "deploy-on-save": [
+      "devops/vscode-salesforce-extensions"
     ],
     "deployable-config": [
       "admin/custom-metadata-types",
@@ -1584,13 +1695,18 @@
       "apex/metadata-api-and-package-xml",
       "apex/sf-cli-and-sfdx-essentials",
       "devops/change-set-deployment",
+      "devops/deployment-error-troubleshooting",
       "devops/destructive-changes-deployment",
+      "devops/metadata-api-coverage-gaps",
       "devops/permission-set-deployment-ordering",
       "devops/rollback-and-hotfix-strategy",
       "omnistudio/omnistudio-deployment-datapacks"
     ],
     "deployment-ordering": [
       "devops/permission-set-deployment-ordering"
+    ],
+    "deployment-readiness": [
+      "devops/pre-deployment-checklist"
     ],
     "deployment-status": [
       "devops/post-deployment-validation"
@@ -1600,6 +1716,9 @@
     ],
     "deployment-verification": [
       "devops/post-deployment-validation"
+    ],
+    "deprecation": [
+      "devops/api-version-management"
     ],
     "design-patterns": [
       "architect/solution-design-patterns"
@@ -1614,23 +1733,32 @@
     "dev-hub": [
       "devops/org-shape-and-scratch-definition",
       "devops/scratch-org-management",
+      "devops/scratch-org-pools",
       "devops/second-generation-managed-packages",
       "devops/unlocked-package-development"
     ],
     "developer-console": [
       "apex/debug-logs-and-developer-console"
     ],
+    "developer-tooling": [
+      "devops/vscode-salesforce-extensions"
+    ],
     "device-apis": [
       "lwc/lwc-offline-and-mobile"
     ],
     "devops": [
+      "devops/api-version-management",
       "devops/environment-strategy",
       "devops/git-branching-for-salesforce",
+      "devops/metadata-api-coverage-gaps",
+      "devops/migration-from-change-sets-to-sfdx",
+      "devops/multi-package-development",
       "devops/org-shape-and-scratch-definition",
       "devops/release-management",
       "devops/salesforce-code-analyzer",
       "devops/sandbox-refresh-and-templates",
       "devops/scratch-org-management",
+      "devops/scratch-org-pools",
       "devops/source-tracking-and-conflict-resolution",
       "devops/unlocked-package-development"
     ],
@@ -1689,6 +1817,9 @@
     ],
     "duplicates": [
       "data/record-merge-implications"
+    ],
+    "dx-project": [
+      "devops/salesforce-dx-project-structure"
     ],
     "dynamic-actions": [
       "admin/dynamic-forms-and-actions",
@@ -1812,6 +1943,9 @@
       "admin/sandbox-strategy",
       "devops/environment-strategy"
     ],
+    "ept": [
+      "devops/performance-testing-salesforce"
+    ],
     "er-diagram": [
       "admin/data-model-documentation"
     ],
@@ -1894,6 +2028,9 @@
     ],
     "exception-handling": [
       "apex/exception-handling"
+    ],
+    "execution-timeline": [
+      "apex/apex-performance-profiling"
     ],
     "experience-api": [
       "integration/api-led-connectivity"
@@ -2002,6 +2139,9 @@
     "field-audit-trail": [
       "security/field-audit-trail"
     ],
+    "field-conflict": [
+      "apex/trigger-and-flow-coexistence"
+    ],
     "field-history": [
       "data/data-quality-and-governance"
     ],
@@ -2042,6 +2182,9 @@
     ],
     "fisma": [
       "architect/government-cloud-compliance"
+    ],
+    "flame-graph": [
+      "apex/apex-performance-profiling"
     ],
     "flex-template": [
       "agentforce/prompt-builder-templates"
@@ -2154,6 +2297,9 @@
       "lwc/lwc-accessibility-patterns",
       "lwc/lwc-modal-and-overlay"
     ],
+    "force-app": [
+      "devops/salesforce-dx-project-structure"
+    ],
     "forecast-categories": [
       "admin/opportunity-management"
     ],
@@ -2173,8 +2319,12 @@
     "fsc": [
       "data/person-accounts"
     ],
+    "future-callout": [
+      "apex/callout-and-dml-transaction-boundaries"
+    ],
     "future-method": [
-      "apex/async-apex"
+      "apex/async-apex",
+      "apex/mixed-dml-and-setup-objects"
     ],
     "gap-analysis": [
       "admin/requirements-gathering-for-sf"
@@ -2222,6 +2372,12 @@
     ],
     "go-live": [
       "admin/change-management-and-training"
+    ],
+    "go-live-cutover-planning": [
+      "devops/go-live-cutover-planning"
+    ],
+    "go-no-go": [
+      "devops/go-live-cutover-planning"
     ],
     "govcloud-plus": [
       "architect/government-cloud-compliance"
@@ -2352,6 +2508,9 @@
     ],
     "hub-and-spoke": [
       "architect/multi-org-strategy"
+    ],
+    "hypercare": [
+      "devops/go-live-cutover-planning"
     ],
     "hyperforce": [
       "architect/government-cloud-compliance"
@@ -2520,6 +2679,9 @@
     "jest": [
       "lwc/lwc-testing"
     ],
+    "jmeter": [
+      "devops/performance-testing-salesforce"
+    ],
     "job-chaining": [
       "apex/apex-queueable-patterns"
     ],
@@ -2548,6 +2710,9 @@
       "devops/bitbucket-pipelines-for-salesforce",
       "devops/github-actions-for-salesforce",
       "devops/gitlab-ci-for-salesforce"
+    ],
+    "k6": [
+      "devops/performance-testing-salesforce"
     ],
     "key-fields": [
       "admin/path-and-guidance"
@@ -2600,6 +2765,7 @@
       "omnistudio/omnistudio-performance"
     ],
     "ldv": [
+      "apex/cross-object-formula-and-rollup-performance",
       "apex/formula-field-performance-and-limits"
     ],
     "lead": [
@@ -2665,7 +2831,8 @@
     ],
     "lightning-app-builder": [
       "admin/dynamic-forms-and-actions",
-      "admin/lightning-app-builder-advanced"
+      "admin/lightning-app-builder-advanced",
+      "admin/lightning-page-performance-tuning"
     ],
     "lightning-confirm": [
       "lwc/lwc-toast-and-notifications"
@@ -2679,6 +2846,9 @@
     ],
     "lightning-experience": [
       "admin/in-app-guidance-and-walkthroughs"
+    ],
+    "lightning-experience-insights": [
+      "admin/lightning-page-performance-tuning"
     ],
     "lightning-flow": [
       "flow/flow-for-experience-cloud"
@@ -2696,6 +2866,9 @@
     ],
     "lightning-modal": [
       "lwc/lwc-modal-and-overlay"
+    ],
+    "lightning-pages": [
+      "admin/lightning-page-performance-tuning"
     ],
     "lightning-record-edit-form": [
       "lwc/lwc-forms-and-validation"
@@ -2727,6 +2900,9 @@
     ],
     "lms": [
       "lwc/message-channel-patterns"
+    ],
+    "load-testing": [
+      "devops/performance-testing-salesforce"
     ],
     "localization": [
       "admin/multi-language-and-translation"
@@ -2876,17 +3052,25 @@
       "admin/custom-field-creation",
       "agentforce/agent-script-dsl",
       "data/field-history-tracking",
+      "devops/api-version-management",
       "devops/change-set-deployment"
     ],
     "metadata-api": [
       "apex/metadata-api-and-package-xml",
       "architect/metadata-coverage-and-dependencies",
+      "devops/deployment-error-troubleshooting",
+      "devops/metadata-api-coverage-gaps",
+      "devops/migration-from-change-sets-to-sfdx",
       "devops/permission-set-deployment-ordering",
       "devops/rollback-and-hotfix-strategy",
       "integration/soap-api-patterns"
     ],
+    "metadata-backup": [
+      "devops/pre-deployment-checklist"
+    ],
     "metadata-coverage": [
-      "architect/metadata-coverage-and-dependencies"
+      "architect/metadata-coverage-and-dependencies",
+      "devops/metadata-api-coverage-gaps"
     ],
     "metadata-deletion": [
       "devops/destructive-changes-deployment"
@@ -2911,6 +3095,7 @@
       "admin/data-import-and-management",
       "agentforce/einstein-bots-to-agentforce-migration",
       "data/person-accounts",
+      "devops/migration-from-change-sets-to-sfdx",
       "omnistudio/industries-cpq-vs-salesforce-cpq",
       "omnistudio/vlocity-to-native-omnistudio-migration"
     ],
@@ -2919,6 +3104,9 @@
     ],
     "migration-tool": [
       "omnistudio/vlocity-to-native-omnistudio-migration"
+    ],
+    "mixed-dml": [
+      "apex/mixed-dml-and-setup-objects"
     ],
     "mobile": [
       "admin/global-actions-and-quick-actions"
@@ -2932,6 +3120,9 @@
     "mobilecapabilities": [
       "lwc/lwc-offline-and-mobile"
     ],
+    "mock-deployment": [
+      "devops/go-live-cutover-planning"
+    ],
     "model-alias": [
       "agentforce/model-builder-and-byollm"
     ],
@@ -2942,6 +3133,9 @@
       "admin/batch-job-scheduling-and-monitoring",
       "apex/custom-logging-and-monitoring",
       "architect/org-limits-monitoring"
+    ],
+    "mono-repo": [
+      "devops/salesforce-dx-project-structure"
     ],
     "mulesoft": [
       "integration/api-led-connectivity",
@@ -2965,6 +3159,9 @@
     ],
     "multi-org": [
       "architect/multi-org-strategy"
+    ],
+    "multi-package": [
+      "devops/multi-package-development"
     ],
     "multi-user": [
       "flow/orchestration-flows"
@@ -3155,7 +3352,9 @@
       "apex/long-running-process-orchestration"
     ],
     "order-of-execution": [
+      "apex/cross-object-formula-and-rollup-performance",
       "apex/order-of-execution-deep-dive",
+      "apex/trigger-and-flow-coexistence",
       "flow/record-triggered-flow-patterns"
     ],
     "org-assessment": [
@@ -3222,8 +3421,17 @@
     "ownership-skew": [
       "admin/data-skew-and-sharing-performance"
     ],
+    "package-architecture": [
+      "devops/multi-package-development"
+    ],
+    "package-dependencies": [
+      "devops/multi-package-development"
+    ],
     "package-development": [
       "devops/unlocked-package-development"
+    ],
+    "package-directories": [
+      "devops/salesforce-dx-project-structure"
     ],
     "package-versioning": [
       "devops/second-generation-managed-packages"
@@ -3252,6 +3460,9 @@
     "pagination": [
       "integration/graphql-api-patterns",
       "integration/rest-api-patterns"
+    ],
+    "parallel-testing": [
+      "devops/scratch-org-pools"
     ],
     "parent-child-summary": [
       "data/roll-up-summary-alternatives"
@@ -3290,11 +3501,16 @@
     "performance": [
       "admin/data-skew-and-sharing-performance",
       "admin/formula-fields",
+      "admin/lightning-page-performance-tuning",
       "admin/report-performance-tuning",
+      "apex/cross-object-formula-and-rollup-performance",
       "apex/formula-field-performance-and-limits",
       "architect/nfr-definition-for-salesforce",
       "architect/org-edition-and-feature-licensing",
       "data/soql-query-optimization"
+    ],
+    "performance-testing-salesforce": [
+      "devops/performance-testing-salesforce"
     ],
     "permission-set": [
       "admin/custom-permissions"
@@ -3407,6 +3623,9 @@
     "post-refresh-automation": [
       "devops/sandbox-refresh-and-templates"
     ],
+    "pre-deployment-checklist": [
+      "devops/pre-deployment-checklist"
+    ],
     "pre-release-testing": [
       "devops/automated-regression-testing"
     ],
@@ -3457,11 +3676,17 @@
       "admin/user-management",
       "security/permission-set-groups-and-muting"
     ],
+    "profiling": [
+      "apex/apex-performance-profiling"
+    ],
     "programmatic-metadata": [
       "apex/apex-metadata-api"
     ],
     "programmatic-sharing": [
       "apex/apex-managed-sharing"
+    ],
+    "progressive-disclosure": [
+      "admin/lightning-page-performance-tuning"
     ],
     "project-scratch-def": [
       "devops/org-shape-and-scratch-definition"
@@ -3509,12 +3734,18 @@
     "query-performance": [
       "data/custom-index-requests"
     ],
+    "query-plan": [
+      "apex/apex-performance-profiling"
+    ],
     "queueable": [
       "apex/apex-queueable-patterns",
       "apex/async-apex",
       "apex/governor-limits",
       "apex/long-running-process-orchestration",
       "integration/callout-limits-and-async-patterns"
+    ],
+    "queueable-callout": [
+      "apex/callout-and-dml-transaction-boundaries"
     ],
     "queues": [
       "admin/assignment-rules",
@@ -3525,6 +3756,7 @@
     ],
     "quick-deploy": [
       "devops/post-deployment-validation",
+      "devops/pre-deployment-checklist",
       "devops/rollback-and-hotfix-strategy"
     ],
     "quote-to-order": [
@@ -3560,7 +3792,9 @@
       "admin/sharing-and-visibility"
     ],
     "record-locking": [
-      "admin/approval-processes"
+      "admin/approval-processes",
+      "apex/cross-object-formula-and-rollup-performance",
+      "apex/record-locking-and-contention"
     ],
     "record-page": [
       "admin/dynamic-forms-and-actions"
@@ -3588,6 +3822,7 @@
     ],
     "recursion": [
       "apex/order-of-execution-deep-dive",
+      "apex/trigger-and-flow-coexistence",
       "apex/trigger-framework",
       "flow/record-triggered-flow-patterns"
     ],
@@ -3632,6 +3867,9 @@
     ],
     "release-readiness": [
       "admin/salesforce-release-preparation"
+    ],
+    "release-runbook": [
+      "devops/metadata-api-coverage-gaps"
     ],
     "release-updates": [
       "admin/salesforce-release-preparation"
@@ -3751,6 +3989,9 @@
     "rollback-safe-logging": [
       "apex/error-handling-framework"
     ],
+    "rollup-summary": [
+      "apex/cross-object-formula-and-rollup-performance"
+    ],
     "routing": [
       "admin/approval-processes",
       "admin/assignment-rules",
@@ -3810,6 +4051,9 @@
     "salesforce-cpq": [
       "omnistudio/industries-cpq-vs-salesforce-cpq"
     ],
+    "salesforce-extensions": [
+      "devops/vscode-salesforce-extensions"
+    ],
     "salesforce-knowledge": [
       "architect/knowledge-vs-external-cms"
     ],
@@ -3841,6 +4085,9 @@
     "sandbox-refresh": [
       "devops/sandbox-refresh-and-templates"
     ],
+    "sandbox-sizing": [
+      "devops/performance-testing-salesforce"
+    ],
     "sandbox-templates": [
       "devops/sandbox-refresh-and-templates"
     ],
@@ -3865,6 +4112,9 @@
       "architect/nfr-definition-for-salesforce",
       "architect/sales-cloud-architecture",
       "flow/flow-bulkification"
+    ],
+    "scale-test": [
+      "devops/performance-testing-salesforce"
     ],
     "schedulable": [
       "apex/apex-scheduled-jobs",
@@ -3898,6 +4148,9 @@
     ],
     "scratch-org-definition": [
       "devops/org-shape-and-scratch-definition"
+    ],
+    "scratch-org-pools": [
+      "devops/scratch-org-pools"
     ],
     "scratch-orgs": [
       "devops/data-seeding-for-testing",
@@ -4043,6 +4296,9 @@
     "set-of-id": [
       "apex/recursive-trigger-prevention"
     ],
+    "setup-objects": [
+      "apex/mixed-dml-and-setup-objects"
+    ],
     "severity-levels": [
       "admin/salesforce-support-escalation"
     ],
@@ -4058,6 +4314,7 @@
       "devops/git-branching-for-salesforce",
       "devops/github-actions-for-salesforce",
       "devops/gitlab-ci-for-salesforce",
+      "devops/migration-from-change-sets-to-sfdx",
       "devops/org-shape-and-scratch-definition",
       "devops/scratch-org-management",
       "devops/source-tracking-and-conflict-resolution",
@@ -4065,6 +4322,12 @@
     ],
     "sfdx-lwc-jest": [
       "lwc/lwc-testing"
+    ],
+    "sfdx-project": [
+      "devops/multi-package-development"
+    ],
+    "sfdx-project-json": [
+      "devops/salesforce-dx-project-structure"
     ],
     "shadow-dom": [
       "devops/automated-regression-testing",
@@ -4173,12 +4436,29 @@
     "sosl": [
       "data/sosl-search-patterns"
     ],
+    "source-api-version": [
+      "devops/salesforce-dx-project-structure"
+    ],
+    "source-driven-development": [
+      "devops/migration-from-change-sets-to-sfdx"
+    ],
+    "source-format": [
+      "devops/migration-from-change-sets-to-sfdx",
+      "devops/salesforce-dx-project-structure"
+    ],
     "source-tracking": [
       "apex/sf-cli-and-sfdx-essentials",
+      "devops/metadata-api-coverage-gaps",
       "devops/source-tracking-and-conflict-resolution"
+    ],
+    "sourceApiVersion": [
+      "devops/api-version-management"
     ],
     "spam-prevention": [
       "security/recaptcha-and-bot-prevention"
+    ],
+    "spanning-relationships": [
+      "apex/cross-object-formula-and-rollup-performance"
     ],
     "sso": [
       "architect/multi-org-strategy"
@@ -4274,6 +4554,12 @@
     "system-debug": [
       "apex/debug-and-logging"
     ],
+    "system-fields": [
+      "admin/system-field-behavior-and-audit"
+    ],
+    "system-runas": [
+      "apex/mixed-dml-and-setup-objects"
+    ],
     "system-schedule": [
       "apex/apex-scheduled-jobs"
     ],
@@ -4306,6 +4592,9 @@
     ],
     "test-doubles": [
       "apex/apex-mocking-and-stubs"
+    ],
+    "test-isolation": [
+      "apex/mixed-dml-and-setup-objects"
     ],
     "test-setmock": [
       "apex/apex-mocking-and-stubs"
@@ -4371,6 +4660,9 @@
     "transaction-control": [
       "apex/apex-queueable-patterns"
     ],
+    "transaction-scope": [
+      "apex/callout-and-dml-transaction-boundaries"
+    ],
     "transaction-security": [
       "security/transaction-security-policies"
     ],
@@ -4383,6 +4675,9 @@
     "translation-workbench": [
       "admin/multi-language-and-translation"
     ],
+    "trigger-and-flow-coexistence": [
+      "apex/trigger-and-flow-coexistence"
+    ],
     "trigger-decision": [
       "admin/process-automation-selection"
     ],
@@ -4394,6 +4689,7 @@
       "apex/trigger-framework"
     ],
     "troubleshooting": [
+      "devops/deployment-error-troubleshooting",
       "omnistudio/omnistudio-debugging"
     ],
     "trunk-based-development": [
@@ -4427,6 +4723,9 @@
     "unauthenticated-access": [
       "security/guest-user-security"
     ],
+    "uncommitted-work-pending": [
+      "apex/callout-and-dml-transaction-boundaries"
+    ],
     "unified-routing": [
       "architect/multi-channel-service-architecture"
     ],
@@ -4445,6 +4744,9 @@
     ],
     "unused-fields": [
       "admin/org-cleanup-and-technical-debt"
+    ],
+    "upgrade": [
+      "devops/api-version-management"
     ],
     "upsert": [
       "admin/data-import-and-management",
@@ -4503,7 +4805,9 @@
       "data/data-migration-planning"
     ],
     "validation-deploy": [
-      "devops/post-deployment-validation"
+      "devops/go-live-cutover-planning",
+      "devops/post-deployment-validation",
+      "devops/pre-deployment-checklist"
     ],
     "validation-rules": [
       "admin/validation-rules",
@@ -4518,6 +4822,9 @@
     ],
     "version-control": [
       "omnistudio/omnistudio-deployment-datapacks"
+    ],
+    "version-drift": [
+      "devops/api-version-management"
     ],
     "version-management": [
       "flow/flow-governance"
@@ -4558,6 +4865,9 @@
     ],
     "vlocity-cpq": [
       "omnistudio/industries-cpq-vs-salesforce-cpq"
+    ],
+    "vscode": [
+      "devops/vscode-salesforce-extensions"
     ],
     "wait-element": [
       "flow/pause-elements-and-wait-events"

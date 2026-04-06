@@ -13,6 +13,7 @@ triggers:
   - "need to enforce the 45-day FERPA response window for student records requests"
   - "HasFerpaParentalDisclosure and HasFerpaThrdPtyDisclosure fields on LearnerProfile — what do they control"
   - "setting up FERPA-compliant field-level security to restrict access to education records"
+  - "how do I configure FERPA consent tracking and directory opt-out in Education Cloud"
 tags:
   - ferpa
   - education-cloud
@@ -187,6 +188,16 @@ Non-obvious platform behaviors that cause real production problems:
 | Consent object model | ContactPointTypeConsent records for parental and third-party disclosure linked to DataUsePurpose |
 | 45-day response tracking workflow | Case record type or custom object with SLA configuration and escalation rules |
 | FERPA rights transfer automation | Scheduled flow or batch job that updates HasParentalFerpa when students age out or enroll in postsecondary |
+
+---
+
+## Official Sources Used
+
+- Salesforce Security Guide — https://help.salesforce.com/s/articleView?id=sf.security_overview.htm&type=5
+- Education Cloud Documentation — https://help.salesforce.com/s/articleView?id=sf.education_cloud.htm&type=5
+- Salesforce Object Reference (LearnerProfile, Individual, ContactPointTypeConsent) — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm
+- Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+- U.S. Department of Education FERPA General Guidance — https://studentprivacy.ed.gov/ferpa
 
 ---
 

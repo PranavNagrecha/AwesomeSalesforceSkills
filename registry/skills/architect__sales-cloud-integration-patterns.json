@@ -78,7 +78,7 @@
     "efde3be138afe80779d3",
     "f561fa4f80a9590a3218"
   ],
-  "content_hash": "c9b1ee6d4429fb5eeb47c3998dd209c85abe656133ff7a1fbfba25bf5c2db0c5",
+  "content_hash": "f71bc57ff11b2b57ca22d90a501775e8a8a7f3390ea79d8e3f41b0be347f9efd",
   "dependencies": [
     "architect/integration-framework-design",
     "apex/callouts-and-http-integrations"
