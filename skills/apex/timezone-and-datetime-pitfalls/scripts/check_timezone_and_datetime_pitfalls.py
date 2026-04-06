@@ -281,6 +281,8 @@ def main() -> int:
     has_errors = any(
         "ERROR" in line and "[WARNING]" not in line for line in issues
     )
+    if has_errors:
+        print(f"WARN: timezone/datetime issues detected", file=sys.stderr)
     return 1 if has_errors else 0
 
 

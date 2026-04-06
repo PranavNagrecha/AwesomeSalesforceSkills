@@ -95,7 +95,7 @@
     "f9bffa9947e8eb088e58",
     "fce00e25db1c05fd4f05"
   ],
-  "content_hash": "dbcc2eed931254023317f3b02265eb2e85252b27a8de8b94e61e9afc77939046",
+  "content_hash": "fbb3259ca1be0e00c2717afa024cf4334778c4e9245fc1c7acb80fa75f769bd1",
   "dependencies": [],
   "description": "Use when writing or reviewing Apex, SOQL, or Flow logic that involves Date or Datetime fields: scheduling jobs, comparing dates across timezones, displaying Datetime values to users, filtering records by date literals, or persisting Datetime from external systems. NOT for calendar UI component layout, time-zone configuration in org settings, or Salesforce Connect external object date mapping.",
   "file_location": "skills/apex/timezone-and-datetime-pitfalls",

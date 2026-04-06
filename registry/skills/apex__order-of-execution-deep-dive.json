@@ -85,7 +85,7 @@
     "fe5705a838f3967739fb",
     "ff75e4710ee5d724f10d"
   ],
-  "content_hash": "f7a73f9b471439de47d782cc27285a0316ff728a043f78ddda8436ff5ad8a422",
+  "content_hash": "c8ed67215c957bf3130eddfcd013251056178a4e3b78aa465a818ced0fcb6a47",
   "dependencies": [],
   "description": "Complete reference for the Salesforce record save order of execution: all 18 steps from DB load through commit, covering trigger placement, validation rule sequencing, Flow execution timing, workflow field update re-fire behavior, and recursion patterns. Use when debugging unexpected automation behavior, designing multi-layer automation, or analyzing trigger vs Flow execution order. NOT for trigger framework design (use trigger-framework). NOT for record-triggered Flow patterns (use record-triggered-flow-patterns).",
   "file_location": "skills/apex/order-of-execution-deep-dive",
