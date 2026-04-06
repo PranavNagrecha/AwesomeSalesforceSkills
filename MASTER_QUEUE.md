@@ -593,12 +593,12 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
 | RESEARCHED | lwr-site-development | LWR (Lightning Web Runtime) site development: custom themes, LWC for Experience Cloud, build configuration. NOT for Aura-based communities. | Researched 2026-04-06. Sources: [LWR Sites for Experience Cloud developer guide v66.0 Spring '26 — local knowledge/imports/exp-cloud-lwr.md; Build Your Own (LWR) template documentation]. Key: Two templates — Build Your Own (LWR) and Microsite (LWR) — powered exclusively by LWC with Lightning Web Security (not Locker); publish-time-freeze/static-serving model requires explicit republish to deploy changes; custom theming via --dxp CSS styling hooks and lightningCommunity__Theme_Layout targets; no support for Aura components, default theme management, app-level events, or Chatter feeds. No duplicate. |
-| TODO | experience-cloud-lwc-components | Building custom LWC for Experience Cloud: data access patterns, guest user Apex, community context, navigation. NOT for internal LWC. | |
-| TODO | experience-cloud-authentication | Custom login flows: social sign-on, self-registration, passwordless login, SSO for external users, auth providers. NOT for internal SSO. | |
-| TODO | headless-experience-cloud | Headless CMS API: content delivery API, building custom frontends against Experience Cloud data, channel access. NOT for standard site building. | |
-| TODO | experience-cloud-api-access | API access for community users: guest user API limits, external user OAuth scopes, sharing enforcement. NOT for internal API security. | |
-| TODO | experience-cloud-search-customization | Customizing search in Experience Cloud: federated search, search result components, search scope, global search. NOT for SOSL queries. | |
-| TODO | experience-cloud-multi-idp-sso | Multi-IdP SSO for Experience Cloud: OIDC integration, multiple auth providers per site, federation ID mapping, tenant-specific login pages, vendor vs citizen portals. NOT for internal SSO or single auth provider. | |
+| IN_PROGRESS | experience-cloud-lwc-components | Building custom LWC for Experience Cloud: data access patterns, guest user Apex, community context, navigation. NOT for internal LWC. | |
+| IN_PROGRESS | experience-cloud-authentication | Custom login flows: social sign-on, self-registration, passwordless login, SSO for external users, auth providers. NOT for internal SSO. | |
+| IN_PROGRESS | headless-experience-cloud | Headless CMS API: content delivery API, building custom frontends against Experience Cloud data, channel access. NOT for standard site building. | |
+| IN_PROGRESS | experience-cloud-api-access | API access for community users: guest user API limits, external user OAuth scopes, sharing enforcement. NOT for internal API security. | |
+| IN_PROGRESS | experience-cloud-search-customization | Customizing search in Experience Cloud: federated search, search result components, search scope, global search. NOT for SOSL queries. | |
+| IN_PROGRESS | experience-cloud-multi-idp-sso | Multi-IdP SSO for Experience Cloud: OIDC integration, multiple auth providers per site, federation ID mapping, tenant-specific login pages, vendor vs citizen portals. NOT for internal SSO or single auth provider. | |
 
 ### Experience Cloud × Data Role
 
@@ -606,10 +606,10 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| TODO | external-user-data-sharing | Sharing sets, external organization-wide defaults, external sharing rules, portal account sharing model. NOT for internal sharing model. | |
-| TODO | community-user-data-migration | Migrating external user accounts: contact-user relationships, community membership data, profile assignment. NOT for internal user data. | |
-| TODO | community-analytics-data | Experience Cloud analytics: login metrics, page view tracking, member engagement data, content performance data. NOT for CRM Analytics. | |
-| TODO | partner-data-access-patterns | Partner user data visibility: partner role hierarchy, PRM data sharing, deal registration data, channel analytics. NOT for internal data access. | |
+| IN_PROGRESS | external-user-data-sharing | Sharing sets, external organization-wide defaults, external sharing rules, portal account sharing model. NOT for internal sharing model. | |
+| IN_PROGRESS | community-user-data-migration | Migrating external user accounts: contact-user relationships, community membership data, profile assignment. NOT for internal user data. | |
+| IN_PROGRESS | community-analytics-data | Experience Cloud analytics: login metrics, page view tracking, member engagement data, content performance data. NOT for CRM Analytics. | |
+| IN_PROGRESS | partner-data-access-patterns | Partner user data visibility: partner role hierarchy, PRM data sharing, deal registration data, channel analytics. NOT for internal data access. | |
 
 ### Experience Cloud × Architect Role
 
@@ -617,11 +617,11 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| TODO | experience-cloud-licensing-model | License selection: Customer Community, Partner Community, Customer Community Plus, login-based, channel licensing. NOT for internal licensing. | |
-| TODO | multi-site-architecture | Multi-site Experience Cloud strategy: shared components, cross-site navigation, domain strategy, template reuse. NOT for single site setup. | |
-| TODO | headless-vs-standard-experience | Decision framework for headless vs LWR vs Aura Experience Cloud: performance, development cost, flexibility tradeoffs. NOT for implementation. | |
-| TODO | experience-cloud-performance | Experience Cloud performance: CDN configuration, caching strategy, component loading, page weight optimization. NOT for LWC performance (use lwc-performance). | |
-| TODO | experience-cloud-integration-patterns | Integrating external systems with Experience Cloud: SSO, data sync, external content, third-party widgets. NOT for internal integration. | |
+| IN_PROGRESS | experience-cloud-licensing-model | License selection: Customer Community, Partner Community, Customer Community Plus, login-based, channel licensing. NOT for internal licensing. | |
+| IN_PROGRESS | multi-site-architecture | Multi-site Experience Cloud strategy: shared components, cross-site navigation, domain strategy, template reuse. NOT for single site setup. | |
+| IN_PROGRESS | headless-vs-standard-experience | Decision framework for headless vs LWR vs Aura Experience Cloud: performance, development cost, flexibility tradeoffs. NOT for implementation. | |
+| IN_PROGRESS | experience-cloud-performance | Experience Cloud performance: CDN configuration, caching strategy, component loading, page weight optimization. NOT for LWC performance (use lwc-performance). | |
+| IN_PROGRESS | experience-cloud-integration-patterns | Integrating external systems with Experience Cloud: SSO, data sync, external content, third-party widgets. NOT for internal integration. | |
 
 ---
 
@@ -633,13 +633,13 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| TODO | marketing-cloud-engagement-setup | Marketing Cloud Engagement setup: business units, user roles, sender profiles, delivery profiles, account configuration. NOT for MCAE/Pardot. | |
-| TODO | mcae-pardot-setup | MCAE (Pardot) setup: business unit configuration, connector setup, Salesforce sync, user roles, account engagement. NOT for Marketing Cloud Engagement. | |
-| TODO | email-studio-administration | Email Studio: email creation, templates, dynamic content, A/B testing, send classification, subscriber management. NOT for MCAE email. | |
-| TODO | journey-builder-administration | Journey Builder setup: entry sources, activities, decision splits, wait times, goal tracking, exit criteria. NOT for Flow-based automation. | |
-| TODO | marketing-cloud-connect | Marketing Cloud Connect configuration: Salesforce connector, synchronized data sources, tracking, scope configuration. NOT for MCAE connector. | |
-| TODO | mcae-lead-scoring-and-grading | MCAE lead scoring model setup: grading criteria, score decay, automation rules for score-based actions, profiles. NOT for Einstein Lead Scoring. | |
-| TODO | consent-management-marketing | Email consent management: subscription center, preference center, compliance (CAN-SPAM, GDPR), opt-out handling. NOT for general GDPR compliance. | |
+| IN_PROGRESS | marketing-cloud-engagement-setup | Marketing Cloud Engagement setup: business units, user roles, sender profiles, delivery profiles, account configuration. NOT for MCAE/Pardot. | |
+| IN_PROGRESS | mcae-pardot-setup | MCAE (Pardot) setup: business unit configuration, connector setup, Salesforce sync, user roles, account engagement. NOT for Marketing Cloud Engagement. | |
+| IN_PROGRESS | email-studio-administration | Email Studio: email creation, templates, dynamic content, A/B testing, send classification, subscriber management. NOT for MCAE email. | |
+| IN_PROGRESS | journey-builder-administration | Journey Builder setup: entry sources, activities, decision splits, wait times, goal tracking, exit criteria. NOT for Flow-based automation. | |
+| IN_PROGRESS | marketing-cloud-connect | Marketing Cloud Connect configuration: Salesforce connector, synchronized data sources, tracking, scope configuration. NOT for MCAE connector. | |
+| IN_PROGRESS | mcae-lead-scoring-and-grading | MCAE lead scoring model setup: grading criteria, score decay, automation rules for score-based actions, profiles. NOT for Einstein Lead Scoring. | |
+| IN_PROGRESS | consent-management-marketing | Email consent management: subscription center, preference center, compliance (CAN-SPAM, GDPR), opt-out handling. NOT for general GDPR compliance. | |
 
 ### Marketing Cloud × BA Role
 
@@ -647,11 +647,11 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| TODO | campaign-planning-and-attribution | Campaign planning: attribution models, ROI tracking, multi-touch attribution requirements, campaign hierarchy design. NOT for campaign implementation. | |
-| TODO | lead-nurture-journey-design | Lead nurture journey mapping: engagement scoring design, content strategy, conversion path, drip campaign structure. NOT for Journey Builder implementation. | |
-| TODO | email-deliverability-strategy | Email deliverability requirements: sender reputation, authentication (SPF, DKIM, DMARC), list hygiene, warm-up. NOT for email template design. | |
-| TODO | marketing-automation-requirements | Marketing automation requirements: lead lifecycle definition, MQL/SQL handoff criteria, scoring model design. NOT for implementation. | |
-| TODO | marketing-reporting-requirements | Marketing reporting KPI definition: dashboard requirements, funnel metrics, campaign performance, attribution. NOT for dashboard building. | |
+| IN_PROGRESS | campaign-planning-and-attribution | Campaign planning: attribution models, ROI tracking, multi-touch attribution requirements, campaign hierarchy design. NOT for campaign implementation. | |
+| IN_PROGRESS | lead-nurture-journey-design | Lead nurture journey mapping: engagement scoring design, content strategy, conversion path, drip campaign structure. NOT for Journey Builder implementation. | |
+| IN_PROGRESS | email-deliverability-strategy | Email deliverability requirements: sender reputation, authentication (SPF, DKIM, DMARC), list hygiene, warm-up. NOT for email template design. | |
+| IN_PROGRESS | marketing-automation-requirements | Marketing automation requirements: lead lifecycle definition, MQL/SQL handoff criteria, scoring model design. NOT for implementation. | |
+| IN_PROGRESS | marketing-reporting-requirements | Marketing reporting KPI definition: dashboard requirements, funnel metrics, campaign performance, attribution. NOT for dashboard building. | |
 
 ### Marketing Cloud × Dev Role
 
@@ -659,12 +659,12 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| TODO | ampscript-development | AMPscript in Marketing Cloud: personalization strings, functions, lookups, conditional content, FOR loops. NOT for SSJS. | |
-| TODO | ssjs-server-side-javascript | Server-Side JavaScript in Marketing Cloud: script activities, API calls, data extension operations, error handling. NOT for AMPscript. | |
-| TODO | marketing-cloud-api | Marketing Cloud REST and SOAP APIs: authentication, data extension CRUD, triggered sends, journey injection. NOT for Salesforce core APIs. | |
-| TODO | mcae-pardot-api | MCAE/Pardot API v5: prospect operations, list management, visitor tracking, form handler integration. NOT for Marketing Cloud API. | |
-| TODO | marketing-cloud-custom-activities | Custom Journey Builder activities: custom split activities, custom entry sources, activity SDK, webhook integration. NOT for standard Journey Builder. | |
-| TODO | marketing-cloud-data-views | System Data Views in Marketing Cloud: Sent, Open, Click, Bounce, Subscribers, Job data, query patterns. NOT for Data Extensions. | |
+| IN_PROGRESS | ampscript-development | AMPscript in Marketing Cloud: personalization strings, functions, lookups, conditional content, FOR loops. NOT for SSJS. | |
+| IN_PROGRESS | ssjs-server-side-javascript | Server-Side JavaScript in Marketing Cloud: script activities, API calls, data extension operations, error handling. NOT for AMPscript. | |
+| IN_PROGRESS | marketing-cloud-api | Marketing Cloud REST and SOAP APIs: authentication, data extension CRUD, triggered sends, journey injection. NOT for Salesforce core APIs. | |
+| IN_PROGRESS | mcae-pardot-api | MCAE/Pardot API v5: prospect operations, list management, visitor tracking, form handler integration. NOT for Marketing Cloud API. | |
+| IN_PROGRESS | marketing-cloud-custom-activities | Custom Journey Builder activities: custom split activities, custom entry sources, activity SDK, webhook integration. NOT for standard Journey Builder. | |
+| IN_PROGRESS | marketing-cloud-data-views | System Data Views in Marketing Cloud: Sent, Open, Click, Bounce, Subscribers, Job data, query patterns. NOT for Data Extensions. | |
 
 ### Marketing Cloud × Data Role
 
@@ -672,11 +672,11 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| TODO | data-extension-design | Data Extension architecture: primary keys, sendable vs non-sendable, relationships, data retention policies. NOT for CRM data model. | |
-| TODO | marketing-cloud-data-sync | Marketing Cloud Connect data sync: synchronized data extensions, data flow architecture, sync troubleshooting. NOT for manual imports. | |
-| TODO | subscriber-data-management | Subscriber key strategy: all-subscribers list, publication lists, suppression lists, data hygiene, deduplication. NOT for CRM contact management. | |
-| TODO | marketing-cloud-sql-queries | SQL queries in Marketing Cloud: Automation Studio queries, query activities, data extension joins, date functions. NOT for SOQL. | |
-| TODO | mcae-prospect-data-migration | MCAE prospect data import: field mapping, custom object sync, engagement history, list import, sync validation. NOT for CRM data migration. | |
+| IN_PROGRESS | data-extension-design | Data Extension architecture: primary keys, sendable vs non-sendable, relationships, data retention policies. NOT for CRM data model. | |
+| IN_PROGRESS | marketing-cloud-data-sync | Marketing Cloud Connect data sync: synchronized data extensions, data flow architecture, sync troubleshooting. NOT for manual imports. | |
+| IN_PROGRESS | subscriber-data-management | Subscriber key strategy: all-subscribers list, publication lists, suppression lists, data hygiene, deduplication. NOT for CRM contact management. | |
+| IN_PROGRESS | marketing-cloud-sql-queries | SQL queries in Marketing Cloud: Automation Studio queries, query activities, data extension joins, date functions. NOT for SOQL. | |
+| IN_PROGRESS | mcae-prospect-data-migration | MCAE prospect data import: field mapping, custom object sync, engagement history, list import, sync validation. NOT for CRM data migration. | |
 
 ### Marketing Cloud × Architect Role
 
@@ -684,11 +684,11 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| TODO | marketing-cloud-vs-mcae-selection | Choosing Marketing Cloud Engagement vs MCAE: feature comparison, licensing, integration complexity, use case fit. NOT for implementation. | |
-| TODO | multi-bu-marketing-architecture | Multi-business unit Marketing Cloud architecture: BU hierarchy, shared content, data segregation, governance. NOT for single-BU setup. | |
-| TODO | marketing-consent-architecture | Consent management architecture across Marketing Cloud and CRM: data model, sync patterns, compliance design. NOT for individual consent setup. | |
-| TODO | marketing-data-architecture | Marketing data architecture: data extension design, relational data model, data flow from CRM to MC. NOT for CRM data model. | |
-| TODO | marketing-integration-patterns | Marketing Cloud integration: real-time triggers, batch data sync, API patterns, journey injection, webhook patterns. NOT for generic integration. | |
+| IN_PROGRESS | marketing-cloud-vs-mcae-selection | Choosing Marketing Cloud Engagement vs MCAE: feature comparison, licensing, integration complexity, use case fit. NOT for implementation. | |
+| IN_PROGRESS | multi-bu-marketing-architecture | Multi-business unit Marketing Cloud architecture: BU hierarchy, shared content, data segregation, governance. NOT for single-BU setup. | |
+| IN_PROGRESS | marketing-consent-architecture | Consent management architecture across Marketing Cloud and CRM: data model, sync patterns, compliance design. NOT for individual consent setup. | |
+| IN_PROGRESS | marketing-data-architecture | Marketing data architecture: data extension design, relational data model, data flow from CRM to MC. NOT for CRM data model. | |
+| IN_PROGRESS | marketing-integration-patterns | Marketing Cloud integration: real-time triggers, batch data sync, API patterns, journey injection, webhook patterns. NOT for generic integration. | |
 
 ---
 
@@ -700,8 +700,8 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| TODO | cpq-product-catalog-setup | CPQ product setup: product rules, option constraints, product bundles, feature configuration, product families. NOT for standard Products & Pricebooks. | |
-| TODO | cpq-pricing-rules | CPQ pricing: price rules, price actions, block pricing, percent-of-total, contracted pricing, discount schedules. NOT for standard pricebook pricing. | |
+| IN_PROGRESS | cpq-product-catalog-setup | CPQ product setup: product rules, option constraints, product bundles, feature configuration, product families. NOT for standard Products & Pricebooks. | |
+| IN_PROGRESS | cpq-pricing-rules | CPQ pricing: price rules, price actions, block pricing, percent-of-total, contracted pricing, discount schedules. NOT for standard pricebook pricing. | |
 | TODO | cpq-quote-templates | CPQ quote template design: line columns, template sections, conditional content, PDF output, multi-language. NOT for standard quote templates. | |
 | TODO | cpq-approval-workflows | CPQ-specific approvals: discount approvals, advanced approvals, approval chains, smart approvals, escalation. NOT for standard approval processes. | |
 | TODO | billing-schedule-setup | Salesforce Billing: billing schedules, invoice generation, payment terms, credit notes, revenue schedules. NOT for CPQ quoting. | |
