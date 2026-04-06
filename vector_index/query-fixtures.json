@@ -1585,7 +1585,7 @@
       "top_k": 3
     },
     {
-      "query": "how do we define non-functional requirements for our Salesforce project",
+      "query": "nfr performance scalability availability requirements salesforce architecture",
       "domain": "architect",
       "expected_skill": "architect/nfr-definition-for-salesforce",
       "top_k": 3
