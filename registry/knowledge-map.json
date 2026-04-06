@@ -45,9 +45,12 @@
       "admin/queues-and-public-groups",
       "admin/record-type-strategy-at-scale",
       "admin/record-types-and-page-layouts",
+      "admin/report-performance-tuning",
       "admin/reports-and-dashboards",
       "admin/reports-and-dashboards-fundamentals",
       "admin/requirements-gathering-for-sf",
+      "admin/salesforce-release-preparation",
+      "admin/salesforce-support-escalation",
       "admin/salesforce-surveys",
       "admin/sandbox-strategy",
       "admin/sharing-and-visibility",
@@ -76,7 +79,8 @@
       "agentforce/einstein-trust-layer",
       "agentforce/model-builder-and-byollm",
       "agentforce/prompt-builder-templates",
-      "agentforce/rag-patterns-in-salesforce"
+      "agentforce/rag-patterns-in-salesforce",
+      "agentforce/sf-to-llm-data-pipelines"
     ],
     "apex": [
       "apex/apex-cpu-and-heap-optimization",
@@ -105,9 +109,11 @@
       "apex/exception-handling",
       "apex/feature-flags-and-kill-switches",
       "apex/fflib-enterprise-patterns",
+      "apex/formula-field-performance-and-limits",
       "apex/governor-limit-recovery-patterns",
       "apex/governor-limits",
       "apex/invocable-methods",
+      "apex/long-running-process-orchestration",
       "apex/metadata-api-and-package-xml",
       "apex/order-of-execution-deep-dive",
       "apex/platform-cache",
@@ -118,6 +124,7 @@
       "apex/soql-security",
       "apex/test-class-standards",
       "apex/test-data-factory-patterns",
+      "apex/timezone-and-datetime-pitfalls",
       "apex/trigger-framework",
       "apex/visualforce-fundamentals"
     ],
@@ -130,6 +137,7 @@
       "architect/high-volume-sales-data-architecture",
       "architect/integration-framework-design",
       "architect/knowledge-vs-external-cms",
+      "architect/license-optimization-strategy",
       "architect/limits-and-scalability-planning",
       "architect/metadata-coverage-and-dependencies",
       "architect/multi-channel-service-architecture",
@@ -217,6 +225,7 @@
       "flow/subflows-and-reusability"
     ],
     "integration": [
+      "integration/api-error-handling-design",
       "integration/api-led-connectivity",
       "integration/callout-limits-and-async-patterns",
       "integration/change-data-capture-integration",
@@ -232,6 +241,7 @@
       "integration/rest-api-patterns",
       "integration/retry-and-backoff-patterns",
       "integration/salesforce-connect-external-objects",
+      "integration/sis-integration-patterns",
       "integration/soap-api-patterns",
       "integration/streaming-api-and-pushtopic",
       "integration/webhook-inbound-patterns"
@@ -371,6 +381,9 @@
     "abuse-prevention": [
       "agentforce/agentforce-guardrails"
     ],
+    "academic-term-enrollment": [
+      "integration/sis-integration-patterns"
+    ],
     "acceptance-criteria": [
       "admin/uat-and-acceptance-criteria"
     ],
@@ -501,6 +514,7 @@
       "agentforce/einstein-bots-to-agentforce-migration",
       "agentforce/model-builder-and-byollm",
       "agentforce/rag-patterns-in-salesforce",
+      "agentforce/sf-to-llm-data-pipelines",
       "architect/ai-ready-data-architecture",
       "architect/einstein-bot-architecture"
     ],
@@ -521,6 +535,9 @@
     ],
     "allOrNone": [
       "integration/composite-api-patterns"
+    ],
+    "analytics-api": [
+      "admin/report-performance-tuning"
     ],
     "anonymous-apex": [
       "apex/debug-logs-and-developer-console"
@@ -563,7 +580,11 @@
     ],
     "apex-rest": [
       "apex/apex-rest-services",
+      "integration/api-error-handling-design",
       "integration/webhook-inbound-patterns"
+    ],
+    "apex-scheduling": [
+      "apex/timezone-and-datetime-pitfalls"
     ],
     "apex-security": [
       "apex/apex-security-patterns",
@@ -671,6 +692,7 @@
       "apex/apex-scheduled-jobs",
       "apex/async-apex",
       "apex/change-data-capture-apex",
+      "apex/long-running-process-orchestration",
       "architect/limits-and-scalability-planning",
       "integration/callout-limits-and-async-patterns"
     ],
@@ -685,6 +707,9 @@
     ],
     "async-ip": [
       "omnistudio/omnistudio-performance"
+    ],
+    "async-reports": [
+      "admin/report-performance-tuning"
     ],
     "async-soql": [
       "data/external-data-and-big-objects"
@@ -764,6 +789,9 @@
     ],
     "backoff": [
       "integration/retry-and-backoff-patterns"
+    ],
+    "banner": [
+      "integration/sis-integration-patterns"
     ],
     "base-components": [
       "lwc/lwc-base-component-recipes"
@@ -857,6 +885,9 @@
     "bulk-api-2": [
       "data/bulk-api-patterns"
     ],
+    "bulk-api-v2": [
+      "agentforce/sf-to-llm-data-pipelines"
+    ],
     "bulk-dml": [
       "flow/flow-collection-processing"
     ],
@@ -918,6 +949,9 @@
     "callout-auth": [
       "integration/named-credentials-setup"
     ],
+    "callout-error-handling": [
+      "integration/api-error-handling-design"
+    ],
     "callout-framework": [
       "architect/integration-framework-design"
     ],
@@ -963,7 +997,8 @@
     "change-data-capture": [
       "apex/change-data-capture-apex",
       "integration/change-data-capture-integration",
-      "integration/event-driven-architecture-patterns"
+      "integration/event-driven-architecture-patterns",
+      "integration/sis-integration-patterns"
     ],
     "change-event": [
       "apex/change-data-capture-apex"
@@ -1182,6 +1217,9 @@
     "cost-benefit": [
       "architect/cpq-vs-standard-products-decision"
     ],
+    "cost-optimization": [
+      "architect/license-optimization-strategy"
+    ],
     "cpq": [
       "architect/cpq-vs-standard-products-decision",
       "architect/sales-cloud-integration-patterns"
@@ -1210,6 +1248,9 @@
     ],
     "cross-system": [
       "data/external-id-strategy"
+    ],
+    "cross-transaction": [
+      "apex/long-running-process-orchestration"
     ],
     "crud": [
       "apex/soql-security"
@@ -1316,8 +1357,12 @@
     "dashboard-filters": [
       "admin/reports-and-dashboards-fundamentals"
     ],
+    "dashboard-refresh": [
+      "admin/report-performance-tuning"
+    ],
     "dashboards": [
       "admin/einstein-analytics-basics",
+      "admin/report-performance-tuning",
       "admin/reports-and-dashboards",
       "admin/reports-and-dashboards-fundamentals"
     ],
@@ -1350,6 +1395,9 @@
     ],
     "data-extract": [
       "omnistudio/dataraptor-load-and-extract"
+    ],
+    "data-extraction": [
+      "agentforce/sf-to-llm-data-pipelines"
     ],
     "data-governance": [
       "data/data-quality-and-governance",
@@ -1457,9 +1505,15 @@
     "datasets": [
       "admin/einstein-analytics-basics"
     ],
+    "date-handling": [
+      "apex/timezone-and-datetime-pitfalls"
+    ],
     "dated-exchange-rates": [
       "architect/multi-currency-sales-architecture",
       "data/multi-currency-and-advanced-currency-management"
+    ],
+    "datetime": [
+      "apex/timezone-and-datetime-pitfalls"
     ],
     "dead-code": [
       "architect/technical-debt-assessment"
@@ -1624,6 +1678,9 @@
       "apex/apex-design-patterns",
       "apex/fflib-enterprise-patterns"
     ],
+    "dst": [
+      "apex/timezone-and-datetime-pitfalls"
+    ],
     "duplicate-management": [
       "data/data-quality-and-governance"
     ],
@@ -1665,6 +1722,7 @@
       "architect/org-edition-and-feature-licensing"
     ],
     "education-cloud": [
+      "integration/sis-integration-patterns",
       "security/ferpa-compliance-in-salesforce"
     ],
     "education-data-architecture": [
@@ -1726,6 +1784,9 @@
     "embedded-service": [
       "agentforce/agent-channel-deployment"
     ],
+    "embedding-pipeline": [
+      "agentforce/sf-to-llm-data-pipelines"
+    ],
     "encryption": [
       "security/platform-encryption"
     ],
@@ -1760,6 +1821,9 @@
     "error-boundary": [
       "lwc/common-lwc-runtime-errors"
     ],
+    "error-classification": [
+      "integration/api-error-handling-design"
+    ],
     "error-diagnosis": [
       "flow/flow-runtime-error-diagnosis"
     ],
@@ -1771,6 +1835,9 @@
     ],
     "error-mapping": [
       "apex/exception-handling"
+    ],
+    "error-payload-design": [
+      "integration/api-error-handling-design"
     ],
     "error-propagation": [
       "architect/integration-framework-design"
@@ -1858,13 +1925,15 @@
       "data/data-migration-planning",
       "data/data-model-design-patterns",
       "data/data-reconciliation-patterns",
-      "data/external-id-strategy"
+      "data/external-id-strategy",
+      "integration/sis-integration-patterns"
     ],
     "external-integration": [
       "integration/platform-events-integration"
     ],
     "external-llm": [
-      "agentforce/model-builder-and-byollm"
+      "agentforce/model-builder-and-byollm",
+      "agentforce/sf-to-llm-data-pipelines"
     ],
     "external-objects": [
       "architect/multi-org-strategy",
@@ -1965,7 +2034,8 @@
       "integration/file-and-document-integration"
     ],
     "finalizer": [
-      "apex/apex-queueable-patterns"
+      "apex/apex-queueable-patterns",
+      "apex/long-running-process-orchestration"
     ],
     "find-clause": [
       "data/sosl-search-patterns"
@@ -2094,7 +2164,8 @@
       "lwc/lwc-base-component-recipes"
     ],
     "formula-fields": [
-      "admin/formula-fields"
+      "admin/formula-fields",
+      "apex/formula-field-performance-and-limits"
     ],
     "formulas": [
       "admin/validation-rules"
@@ -2160,6 +2231,7 @@
     ],
     "governor-limits": [
       "admin/custom-metadata-types-and-settings",
+      "apex/formula-field-performance-and-limits",
       "apex/governor-limit-recovery-patterns",
       "apex/governor-limits",
       "architect/limits-and-scalability-planning",
@@ -2223,6 +2295,9 @@
     "heap-size": [
       "apex/apex-cpu-and-heap-optimization"
     ],
+    "help-portal": [
+      "admin/salesforce-support-escalation"
+    ],
     "hierarchical-custom-settings": [
       "apex/feature-flags-and-kill-switches"
     ],
@@ -2264,6 +2339,9 @@
     "http-integration": [
       "apex/continuation-callouts"
     ],
+    "http-status-codes": [
+      "integration/api-error-handling-design"
+    ],
     "httpcalloutmock": [
       "apex/apex-mocking-and-stubs",
       "apex/callouts-and-http-integrations",
@@ -2299,11 +2377,17 @@
     "in-app-notification": [
       "flow/flow-email-and-notifications"
     ],
+    "inactive-users": [
+      "architect/license-optimization-strategy"
+    ],
     "inbound-email": [
       "apex/apex-email-services"
     ],
     "inbound-integration": [
       "integration/webhook-inbound-patterns"
+    ],
+    "incident-management": [
+      "admin/salesforce-support-escalation"
     ],
     "incident-response": [
       "security/login-forensics"
@@ -2312,6 +2396,7 @@
       "data/soql-query-optimization"
     ],
     "indexing": [
+      "apex/formula-field-performance-and-limits",
       "data/data-model-design-patterns",
       "data/external-id-strategy"
     ],
@@ -2351,6 +2436,7 @@
       "agentforce/agentforce-guardrails"
     ],
     "integration": [
+      "agentforce/sf-to-llm-data-pipelines",
       "architect/integration-framework-design",
       "integration/composite-api-patterns",
       "integration/outbound-messages-and-callbacks"
@@ -2381,6 +2467,7 @@
       "apex/callouts-and-http-integrations"
     ],
     "integration-resilience": [
+      "integration/api-error-handling-design",
       "integration/retry-and-backoff-patterns"
     ],
     "integration-security": [
@@ -2489,6 +2576,8 @@
     ],
     "large-data-volumes": [
       "admin/data-skew-and-sharing-performance",
+      "admin/report-performance-tuning",
+      "apex/formula-field-performance-and-limits",
       "data/bulk-api-and-large-data-loads",
       "data/custom-index-requests",
       "data/data-archival-strategies",
@@ -2509,6 +2598,9 @@
     "lazy-loading": [
       "lwc/lwc-dynamic-components",
       "omnistudio/omnistudio-performance"
+    ],
+    "ldv": [
+      "apex/formula-field-performance-and-limits"
     ],
     "lead": [
       "data/record-merge-implications"
@@ -2534,6 +2626,7 @@
       "admin/lead-management-and-conversion"
     ],
     "learner-profile": [
+      "integration/sis-integration-patterns",
       "security/ferpa-compliance-in-salesforce"
     ],
     "least-privilege": [
@@ -2550,11 +2643,15 @@
     "legacy-integration": [
       "integration/soap-api-patterns"
     ],
+    "license-audit": [
+      "architect/license-optimization-strategy"
+    ],
     "licenses": [
       "admin/user-management"
     ],
     "licensing": [
       "architect/cpq-vs-standard-products-decision",
+      "architect/license-optimization-strategy",
       "architect/org-edition-and-feature-licensing"
     ],
     "light-dom": [
@@ -2643,6 +2740,9 @@
     ],
     "logging-framework": [
       "apex/debug-and-logging"
+    ],
+    "login-based-license": [
+      "architect/license-optimization-strategy"
     ],
     "login-flow": [
       "security/ip-range-and-login-flow-strategy",
@@ -2845,7 +2945,8 @@
     ],
     "mulesoft": [
       "integration/api-led-connectivity",
-      "integration/mulesoft-salesforce-connector"
+      "integration/mulesoft-salesforce-connector",
+      "integration/sis-integration-patterns"
     ],
     "multi-channel": [
       "agentforce/agent-channel-deployment"
@@ -3050,6 +3151,9 @@
     "optimizer": [
       "admin/org-cleanup-and-technical-debt"
     ],
+    "orchestration": [
+      "apex/long-running-process-orchestration"
+    ],
     "order-of-execution": [
       "apex/order-of-execution-deep-dive",
       "flow/record-triggered-flow-patterns"
@@ -3180,9 +3284,14 @@
     "pdf-rendering": [
       "apex/visualforce-fundamentals"
     ],
+    "peoplesoft": [
+      "integration/sis-integration-patterns"
+    ],
     "performance": [
       "admin/data-skew-and-sharing-performance",
       "admin/formula-fields",
+      "admin/report-performance-tuning",
+      "apex/formula-field-performance-and-limits",
       "architect/nfr-definition-for-salesforce",
       "architect/org-edition-and-feature-licensing",
       "data/soql-query-optimization"
@@ -3198,6 +3307,9 @@
       "admin/permission-sets-vs-profiles",
       "devops/permission-set-deployment-ordering",
       "security/permission-set-groups-and-muting"
+    ],
+    "permission-set-license": [
+      "architect/license-optimization-strategy"
     ],
     "permission-sets": [
       "admin/delegated-administration",
@@ -3236,6 +3348,9 @@
     "pii-protection": [
       "security/sandbox-data-masking"
     ],
+    "pii-scrubbing": [
+      "agentforce/sf-to-llm-data-pipelines"
+    ],
     "pipeline": [
       "devops/devops-center-pipeline"
     ],
@@ -3254,6 +3369,7 @@
     "platform-events": [
       "apex/custom-logging-and-monitoring",
       "apex/error-handling-framework",
+      "apex/long-running-process-orchestration",
       "apex/platform-events-apex",
       "architect/limits-and-scalability-planning",
       "architect/org-limits-monitoring",
@@ -3293,6 +3409,9 @@
     ],
     "pre-release-testing": [
       "devops/automated-regression-testing"
+    ],
+    "premier-success": [
+      "admin/salesforce-support-escalation"
     ],
     "presence-configuration": [
       "architect/omni-channel-capacity-model"
@@ -3394,6 +3513,7 @@
       "apex/apex-queueable-patterns",
       "apex/async-apex",
       "apex/governor-limits",
+      "apex/long-running-process-orchestration",
       "integration/callout-limits-and-async-patterns"
     ],
     "queues": [
@@ -3507,6 +3627,15 @@
     "release-planning": [
       "devops/release-management"
     ],
+    "release-preparation": [
+      "admin/salesforce-release-preparation"
+    ],
+    "release-readiness": [
+      "admin/salesforce-release-preparation"
+    ],
+    "release-updates": [
+      "admin/salesforce-release-preparation"
+    ],
     "reliability": [
       "apex/governor-limit-recovery-patterns"
     ],
@@ -3531,6 +3660,7 @@
       "agentforce/einstein-copilot-for-service"
     ],
     "report-filters": [
+      "admin/report-performance-tuning",
       "admin/reports-and-dashboards"
     ],
     "report-optimization": [
@@ -3550,6 +3680,7 @@
     ],
     "reports": [
       "admin/einstein-analytics-basics",
+      "admin/report-performance-tuning",
       "admin/reports-and-dashboards",
       "admin/reports-and-dashboards-fundamentals"
     ],
@@ -3595,6 +3726,9 @@
     ],
     "revenue-cloud": [
       "omnistudio/industries-cpq-vs-salesforce-cpq"
+    ],
+    "rfc-7807": [
+      "integration/api-error-handling-design"
     ],
     "right-to-erasure": [
       "security/gdpr-data-privacy"
@@ -3686,6 +3820,7 @@
       "integration/webhook-inbound-patterns"
     ],
     "salesforce-support": [
+      "admin/salesforce-support-escalation",
       "data/custom-index-requests"
     ],
     "salesforce-surveys": [
@@ -3699,6 +3834,9 @@
     ],
     "sandbox-data-masking": [
       "security/sandbox-data-masking"
+    ],
+    "sandbox-preview": [
+      "admin/salesforce-release-preparation"
     ],
     "sandbox-refresh": [
       "devops/sandbox-refresh-and-templates"
@@ -3788,6 +3926,9 @@
     ],
     "search-query": [
       "data/sosl-search-patterns"
+    ],
+    "seasonal-release": [
+      "admin/salesforce-release-preparation"
     ],
     "second-generation-packaging": [
       "devops/unlocked-package-development"
@@ -3902,6 +4043,9 @@
     "set-of-id": [
       "apex/recursive-trigger-prevention"
     ],
+    "severity-levels": [
+      "admin/salesforce-support-escalation"
+    ],
     "sf-cli": [
       "apex/sf-cli-and-sfdx-essentials",
       "devops/continuous-integration-testing",
@@ -3961,6 +4105,9 @@
       "security/platform-encryption",
       "security/transaction-security-policies"
     ],
+    "sis-integration": [
+      "integration/sis-integration-patterns"
+    ],
     "skills-based-routing": [
       "architect/omni-channel-capacity-model"
     ],
@@ -4003,11 +4150,15 @@
       "architect/solution-design-patterns"
     ],
     "soql": [
+      "apex/formula-field-performance-and-limits",
       "apex/soql-fundamentals",
       "apex/soql-security",
       "data/field-history-tracking",
       "data/soql-query-optimization",
       "integration/rest-api-patterns"
+    ],
+    "soql-date-literals": [
+      "apex/timezone-and-datetime-pitfalls"
     ],
     "soql-injection": [
       "security/secure-coding-review-checklist",
@@ -4039,8 +4190,14 @@
       "admin/opportunity-management",
       "flow/orchestration-flows"
     ],
+    "stakeholder-communication": [
+      "admin/salesforce-release-preparation"
+    ],
     "standard-object-quirks": [
       "admin/standard-object-quirks"
+    ],
+    "state-machine": [
+      "apex/long-running-process-orchestration"
     ],
     "stateful": [
       "apex/batch-apex-patterns"
@@ -4175,6 +4332,9 @@
     "time-based-flow": [
       "flow/pause-elements-and-wait-events"
     ],
+    "timezone": [
+      "apex/timezone-and-datetime-pitfalls"
+    ],
     "toast": [
       "lwc/lwc-modal-and-overlay",
       "lwc/lwc-toast-and-notifications"
@@ -4240,6 +4400,7 @@
       "devops/git-branching-for-salesforce"
     ],
     "trust-site": [
+      "admin/salesforce-support-escalation",
       "architect/ha-dr-architecture"
     ],
     "trusted-easy-adaptable": [
@@ -4290,6 +4451,7 @@
       "architect/sales-cloud-integration-patterns",
       "data/data-migration-planning",
       "data/external-id-strategy",
+      "integration/sis-integration-patterns",
       "omnistudio/dataraptor-load-and-extract"
     ],
     "url-state": [
@@ -4310,7 +4472,8 @@
     ],
     "user-management": [
       "admin/delegated-administration",
-      "admin/user-management"
+      "admin/user-management",
+      "architect/license-optimization-strategy"
     ],
     "user-mode": [
       "apex/apex-security-patterns"
@@ -4323,6 +4486,9 @@
     ],
     "utam": [
       "devops/automated-regression-testing"
+    ],
+    "utc": [
+      "apex/timezone-and-datetime-pitfalls"
     ],
     "utility-bar": [
       "admin/app-and-tab-configuration"
@@ -4346,6 +4512,9 @@
     "vector-search": [
       "agentforce/rag-patterns-in-salesforce",
       "architect/ai-ready-data-architecture"
+    ],
+    "vector-store": [
+      "agentforce/sf-to-llm-data-pipelines"
     ],
     "version-control": [
       "omnistudio/omnistudio-deployment-datapacks"
@@ -4417,6 +4586,7 @@
       "integration/webhook-inbound-patterns"
     ],
     "well-architected": [
+      "architect/license-optimization-strategy",
       "architect/nfr-definition-for-salesforce",
       "architect/well-architected-review"
     ],

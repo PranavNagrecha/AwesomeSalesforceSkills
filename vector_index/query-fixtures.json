@@ -1703,6 +1703,72 @@
       "domain": "admin",
       "expected_skill": "admin/case-management-setup",
       "top_k": 3
+    },
+    {
+      "query": "how to integrate student information system with Salesforce Education Cloud",
+      "domain": "integration",
+      "expected_skill": "integration/sis-integration-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "API error response design and HTTP status codes for Apex REST services",
+      "domain": "integration",
+      "expected_skill": "integration/api-error-handling-design",
+      "top_k": 3
+    },
+    {
+      "query": "export Salesforce data for external LLM consumption and embedding pipelines",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/sf-to-llm-data-pipelines",
+      "top_k": 3
+    },
+    {
+      "query": "sharing recalculation performance after role hierarchy changes",
+      "domain": "data",
+      "expected_skill": "data/sharing-recalculation-performance",
+      "top_k": 3
+    },
+    {
+      "query": "Salesforce license optimization and inactive user reclamation strategy",
+      "domain": "architect",
+      "expected_skill": "architect/license-optimization-strategy",
+      "top_k": 3
+    },
+    {
+      "query": "DateTime timezone conversion pitfalls and Date.today wrong day",
+      "domain": "apex",
+      "expected_skill": "apex/timezone-and-datetime-pitfalls",
+      "top_k": 3
+    },
+    {
+      "query": "formula field compile size limit and cross-object formula performance",
+      "domain": "apex",
+      "expected_skill": "apex/formula-field-performance-and-limits",
+      "top_k": 3
+    },
+    {
+      "query": "chaining Queueable jobs for long running process orchestration",
+      "domain": "apex",
+      "expected_skill": "apex/long-running-process-orchestration",
+      "top_k": 3
+    },
+    {
+      "query": "report performance tuning slow dashboard filters optimization",
+      "domain": "admin",
+      "expected_skill": "admin/report-performance-tuning",
+      "top_k": 3
+    },
+    {
+      "query": "how to escalate a Salesforce support case severity levels",
+      "domain": "admin",
+      "expected_skill": "admin/salesforce-support-escalation",
+      "top_k": 3
+    },
+    {
+      "query": "preparing for Salesforce seasonal release sandbox preview",
+      "domain": "admin",
+      "expected_skill": "admin/salesforce-release-preparation",
+      "top_k": 3
     }
   ]
 }
