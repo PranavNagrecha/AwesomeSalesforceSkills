@@ -1741,7 +1741,7 @@
       "top_k": 3
     },
     {
-      "query": "formula field compile size limit and cross-object formula performance",
+      "query": "formula field causing full table scan large data volume SOQL",
       "domain": "apex",
       "expected_skill": "apex/formula-field-performance-and-limits",
       "top_k": 3
