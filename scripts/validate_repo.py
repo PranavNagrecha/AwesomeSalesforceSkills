@@ -80,7 +80,7 @@ def main() -> int:
         covered_skills = {fixture["expected_skill"] for fixture in fixtures.get("queries", [])}
         for skill_id in seen_ids:
             if skill_id not in covered_skills:
-                issues.append(ValidationIssue("WARN", "vector_index/query-fixtures.json", f"skill `{skill_id}` has no query fixture — add at least one entry to vector_index/query-fixtures.json"))
+                issues.append(ValidationIssue("ERROR", "vector_index/query-fixtures.json", f"skill `{skill_id}` has no query fixture — add at least one entry to vector_index/query-fixtures.json"))
         for fixture in fixtures.get("queries", []):
             result = subprocess.run(
                 [

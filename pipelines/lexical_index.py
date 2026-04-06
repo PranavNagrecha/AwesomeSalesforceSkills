@@ -6,7 +6,7 @@ from pathlib import Path
 import sqlite3
 
 
-_FTS5_SPECIAL = str.maketrans({c: " " for c in "'\".,$@#!?()[]{}|\\^~*:"})
+_FTS5_SPECIAL = str.maketrans({c: " " for c in "'\".,$@#!?()[]{}|\\^~*:-"})
 
 
 def tokenize_query(query: str) -> str:

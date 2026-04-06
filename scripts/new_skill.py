@@ -309,7 +309,7 @@ def main() -> int:
         return 0
 
     for issue in issues:
-        print(f"ISSUE: {{issue}}")
+        print(f"WARN: {{issue}}", file=sys.stderr)
 
     return 1 if issues else 0
 
