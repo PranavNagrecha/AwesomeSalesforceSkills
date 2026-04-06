@@ -1541,6 +1541,162 @@
       "domain": "security",
       "expected_skill": "security/ip-range-and-login-flow-strategy",
       "top_k": 3
+    },
+    {
+      "query": "component visibility filters AND OR conditions Lightning App Builder record page",
+      "domain": "admin",
+      "expected_skill": "admin/lightning-app-builder-advanced",
+      "top_k": 3
+    },
+    {
+      "query": "how do I create a walkthrough to guide users through a new process in Salesforce",
+      "domain": "admin",
+      "expected_skill": "admin/in-app-guidance-and-walkthroughs",
+      "top_k": 3
+    },
+    {
+      "query": "how to recover from LimitException in Apex transaction",
+      "domain": "apex",
+      "expected_skill": "apex/governor-limit-recovery-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "Apex NullPointerException QueryException DmlException ListException runtime error diagnosis root cause",
+      "domain": "apex",
+      "expected_skill": "apex/common-apex-runtime-errors",
+      "top_k": 3
+    },
+    {
+      "query": "how to reduce view state on a Visualforce page",
+      "domain": "apex",
+      "expected_skill": "apex/visualforce-fundamentals",
+      "top_k": 3
+    },
+    {
+      "query": "custom fields missing after lead conversion in Salesforce",
+      "domain": "admin",
+      "expected_skill": "admin/lead-management-and-conversion",
+      "top_k": 3
+    },
+    {
+      "query": "how do I set up opportunity stages and sales processes for different business units",
+      "domain": "admin",
+      "expected_skill": "admin/opportunity-management",
+      "top_k": 3
+    },
+    {
+      "query": "how do we define non-functional requirements for our Salesforce project",
+      "domain": "architect",
+      "expected_skill": "architect/nfr-definition-for-salesforce",
+      "top_k": 3
+    },
+    {
+      "query": "Salesforce record count does not match external system after data sync",
+      "domain": "data",
+      "expected_skill": "data/data-reconciliation-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "how do I verify my Salesforce deployment succeeded and validate before quick deploy",
+      "domain": "devops",
+      "expected_skill": "devops/post-deployment-validation",
+      "top_k": 3
+    },
+    {
+      "query": "how do I roll back a failed Salesforce production deployment",
+      "domain": "devops",
+      "expected_skill": "devops/rollback-and-hotfix-strategy",
+      "top_k": 3
+    },
+    {
+      "query": "how do I create and send a customer feedback survey in Salesforce",
+      "domain": "admin",
+      "expected_skill": "admin/salesforce-surveys",
+      "top_k": 3
+    },
+    {
+      "query": "how do I use fflib UnitOfWork and domain selector patterns in Apex",
+      "domain": "apex",
+      "expected_skill": "apex/fflib-enterprise-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "how do I configure FERPA consent tracking and directory opt-out in Education Cloud",
+      "domain": "security",
+      "expected_skill": "security/ferpa-compliance-in-salesforce",
+      "top_k": 3
+    },
+    {
+      "query": "how do I upload a file to Salesforce using the REST API and link it to a record",
+      "domain": "integration",
+      "expected_skill": "integration/file-and-document-integration",
+      "top_k": 3
+    },
+    {
+      "query": "which DevOps tool should we use for Salesforce deployments Gearset vs Copado",
+      "domain": "devops",
+      "expected_skill": "devops/salesforce-devops-tooling-selection",
+      "top_k": 3
+    },
+    {
+      "query": "how should I architect Sales Cloud for a large enterprise with territory management",
+      "domain": "architect",
+      "expected_skill": "architect/sales-cloud-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "advanced currency management vs standard multi-currency for Sales Cloud",
+      "domain": "architect",
+      "expected_skill": "architect/multi-currency-sales-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "should we buy Salesforce CPQ or use standard Products and Pricebooks",
+      "domain": "architect",
+      "expected_skill": "architect/cpq-vs-standard-products-decision",
+      "top_k": 3
+    },
+    {
+      "query": "how to integrate Sales Cloud with ERP for quote-to-order sync",
+      "domain": "architect",
+      "expected_skill": "architect/sales-cloud-integration-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "opportunity table is slow with millions of records and account ownership skew",
+      "domain": "architect",
+      "expected_skill": "architect/high-volume-sales-data-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "Service Cloud architecture for case management entitlements and SLA tracking",
+      "domain": "architect",
+      "expected_skill": "architect/service-cloud-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "how to set Omni-Channel capacity weights for cases vs chats vs phone calls",
+      "domain": "architect",
+      "expected_skill": "architect/omni-channel-capacity-model",
+      "top_k": 3
+    },
+    {
+      "query": "should we use Salesforce Knowledge or an external CMS for support content",
+      "domain": "architect",
+      "expected_skill": "architect/knowledge-vs-external-cms",
+      "top_k": 3
+    },
+    {
+      "query": "Einstein Bot dialog design and intent model architecture for service",
+      "domain": "architect",
+      "expected_skill": "architect/einstein-bot-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "multi-channel service strategy for phone email chat and social routing",
+      "domain": "architect",
+      "expected_skill": "architect/multi-channel-service-architecture",
+      "top_k": 3
     }
   ]
 }

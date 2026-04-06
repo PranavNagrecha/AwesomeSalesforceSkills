@@ -484,11 +484,11 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| IN_PROGRESS | sales-cloud-architecture | Sales Cloud solution architecture: process automation strategy, integration points, data model decisions, scalability. NOT for individual feature design. | |
-| IN_PROGRESS | multi-currency-sales-architecture | Multi-currency in Sales Cloud: advanced currency management, dated exchange rates, reporting implications, rollup impact. NOT for multi-currency admin setup. | |
-| IN_PROGRESS | cpq-vs-standard-products-decision | When to use Salesforce CPQ vs standard Products & Pricebooks: feature comparison, licensing impact, complexity tradeoffs. NOT for CPQ implementation. | |
-| IN_PROGRESS | sales-cloud-integration-patterns | Sales Cloud integration: ERP sync, marketing automation, CPQ integration, quote-to-order, partner portal patterns. NOT for generic integration patterns. | |
-| IN_PROGRESS | high-volume-sales-data-architecture | Handling large sales data volumes: opportunity archival, report optimization, data skew prevention in sales objects. NOT for generic data volume planning. | |
+| DONE | sales-cloud-architecture | Sales Cloud solution architecture: process automation strategy, integration points, data model decisions, scalability. NOT for individual feature design. | |
+| DONE | multi-currency-sales-architecture | Multi-currency in Sales Cloud: advanced currency management, dated exchange rates, reporting implications, rollup impact. NOT for multi-currency admin setup. | |
+| DONE | cpq-vs-standard-products-decision | When to use Salesforce CPQ vs standard Products & Pricebooks: feature comparison, licensing impact, complexity tradeoffs. NOT for CPQ implementation. | |
+| DONE | sales-cloud-integration-patterns | Sales Cloud integration: ERP sync, marketing automation, CPQ integration, quote-to-order, partner portal patterns. NOT for generic integration patterns. | |
+| DONE | high-volume-sales-data-architecture | Handling large sales data volumes: opportunity archival, report optimization, data skew prevention in sales objects. NOT for generic data volume planning. | |
 
 ---
 
@@ -552,11 +552,11 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| IN_PROGRESS | service-cloud-architecture | Service Cloud solution architecture: channel strategy, routing model, knowledge strategy, integration points, scalability. NOT for individual feature design. | |
-| IN_PROGRESS | omni-channel-capacity-model | Omni-Channel capacity planning: agent capacity allocation, channel weighting, skills matrix design, overflow strategy. NOT for routing configuration. | |
-| IN_PROGRESS | knowledge-vs-external-cms | Decision framework for Salesforce Knowledge vs external CMS: hybrid approaches, content federation, search strategy. NOT for CMS implementation. | |
-| IN_PROGRESS | einstein-bot-architecture | Einstein Bot / Agentforce for Service architecture: intent model, dialog design, handoff strategy, escalation paths. NOT for bot implementation. | |
-| IN_PROGRESS | multi-channel-service-architecture | Multi-channel service strategy: phone, email, chat, messaging, social, channel prioritization, unified routing. NOT for individual channel setup. | |
+| DONE | service-cloud-architecture | Service Cloud solution architecture: channel strategy, routing model, knowledge strategy, integration points, scalability. NOT for individual feature design. | |
+| DONE | omni-channel-capacity-model | Omni-Channel capacity planning: agent capacity allocation, channel weighting, skills matrix design, overflow strategy. NOT for routing configuration. | |
+| DONE | knowledge-vs-external-cms | Decision framework for Salesforce Knowledge vs external CMS: hybrid approaches, content federation, search strategy. NOT for CMS implementation. | |
+| DONE | einstein-bot-architecture | Einstein Bot / Agentforce for Service architecture: intent model, dialog design, handoff strategy, escalation paths. NOT for bot implementation. | |
+| DONE | multi-channel-service-architecture | Multi-channel service strategy: phone, email, chat, messaging, social, channel prioritization, unified routing. NOT for individual channel setup. | |
 
 ---
 
