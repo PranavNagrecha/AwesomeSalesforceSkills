@@ -439,7 +439,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | RESEARCHED | quotes-and-quote-templates | Quote configuration: quote templates, PDF generation, email quotes, quote sync to opportunity, discount approval. NOT for CPQ quote configuration. | Researched 2026-04-06. Sources: [SF Help - Quotes Limitations; SF Help - Quote Sync Overview; SF Help - Quote Template Landing Page]. Key: Only one quote per opportunity can be synced at a time (SyncedQuoteId on Opportunity); when synced, quote line items and opportunity products update bidirectionally. Quote templates use rich-text editor with 32,000-character limit per Text/Image field and do not support right-to-left text or custom font/color branding; standard templates only render QuoteLineItem (not CPQ SBQQ__QuoteLine__c). Custom fields on Opportunity/OpportunityLineItem do not auto-map to Quote/QuoteLineItem - require custom Apex or AppExchange package. No duplicate. |
 | DUPLICATE | territory-management-sales | Enterprise Territory Management for Sales Cloud: territory types, assignment rules, territory-based forecasting. NOT for general ETM admin (use enterprise-territory-management). | Researched 2026-04-06. Sources: [SF Sales Territories Implementation Guide Spring 26; SF Help - Territory Forecasts; SF Help - Set Up Territory Types]. Key: DUPLICATE — comprehensive enterprise-territory-management skill already exists at skills/admin/enterprise-territory-management covering territory types with priority values for OTA tie-breaking, assignment rules, territory-based forecast types, and limits (1,000 territories/model default, 20,000 on Performance/Unlimited). The NOT for clause explicitly defers to enterprise-territory-management and official Spring 26 docs confirm all ETM mechanics documented under a single unified framework with no Sales Cloud-specific variant. Covered by skills/admin/enterprise-territory-management. |
 | RESEARCHED | sales-engagement-cadences | Sales Engagement / High Velocity Sales setup: cadences, call scripts, email templates, work queue, sequence steps. NOT for Marketing Cloud campaigns. | Researched 2026-04-06. Sources: [SF Sales Engagement Implementation Guide Spring 26; SF Help - Cadence Considerations; Trailhead - Standard Cadences for Sales Engagement]. Key: Sales Engagement (formerly HVS) uses Cadence Builder 2.0 with multi-step sequences: Email, Call, LinkedIn, Wait, and Custom step types across three branching tracks (main, positive, negative) based on prospect engagement signals. Work Queue surfaces due steps for reps, embeddable in Outlook/Gmail; org-wide active target cap 500,000 and 150,000 active tracker limit. Bundled with Sales Cloud Unlimited, add-on for Professional/Enterprise. Setup requires enabling feature, assigning permission sets, configuring dialer, customizing page layouts. No duplicate. |
-| TODO | einstein-activity-capture-setup | Einstein Activity Capture configuration: email sync, calendar sync, activity metrics, privacy settings, user assignment. NOT for manual activity logging. | |
+| IN_PROGRESS | einstein-activity-capture-setup | Einstein Activity Capture configuration: email sync, calendar sync, activity metrics, privacy settings, user assignment. NOT for manual activity logging. | |
 
 ### Sales Cloud × BA Role
 
@@ -447,11 +447,11 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| TODO | sales-process-mapping | Mapping sales stages to opportunity stages: stage transition rules, win/loss analysis requirements, conversion criteria. NOT for implementation. | |
-| TODO | pipeline-review-design | Pipeline inspection requirements: forecast category mapping, stage duration analysis, conversion metrics, review cadence. NOT for dashboard building. | |
-| TODO | territory-design-requirements | Territory hierarchy design: alignment criteria, coverage model requirements, assignment rules, geographic considerations. NOT for ETM configuration. | |
-| TODO | lead-scoring-requirements | Lead scoring model design: qualifying criteria, MQL/SQL definitions, handoff requirements, scoring dimensions. NOT for Einstein Lead Scoring. | |
-| TODO | quote-to-cash-requirements | Quote-to-cash process mapping: approval requirements, discount policies, document output specs, order handoff. NOT for CPQ implementation. | |
+| IN_PROGRESS | sales-process-mapping | Mapping sales stages to opportunity stages: stage transition rules, win/loss analysis requirements, conversion criteria. NOT for implementation. | |
+| IN_PROGRESS | pipeline-review-design | Pipeline inspection requirements: forecast category mapping, stage duration analysis, conversion metrics, review cadence. NOT for dashboard building. | |
+| IN_PROGRESS | territory-design-requirements | Territory hierarchy design: alignment criteria, coverage model requirements, assignment rules, geographic considerations. NOT for ETM configuration. | |
+| IN_PROGRESS | lead-scoring-requirements | Lead scoring model design: qualifying criteria, MQL/SQL definitions, handoff requirements, scoring dimensions. NOT for Einstein Lead Scoring. | |
+| IN_PROGRESS | quote-to-cash-requirements | Quote-to-cash process mapping: approval requirements, discount policies, document output specs, order handoff. NOT for CPQ implementation. | |
 
 ### Sales Cloud × Dev Role
 
@@ -459,12 +459,12 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| TODO | opportunity-trigger-patterns | Apex trigger patterns for Opportunity: stage change automation, amount rollups, team member sync, split calculations. NOT for generic trigger patterns (use trigger-framework). | |
-| TODO | quote-pdf-customization | Quote PDF generation with Visualforce: custom templates, dynamic sections, multi-language quotes, logo placement. NOT for LWC-based documents. | |
-| TODO | territory-api-and-assignment | Territory2 API: territory assignment via Apex, territory member management, bulk territory assignment, rule evaluation. NOT for ETM admin setup. | |
-| TODO | lead-conversion-customization | Customizing lead conversion with Apex: custom field mapping, related record creation, conversion triggers, LeadConvert. NOT for admin conversion setup. | |
-| TODO | sales-engagement-api | Sales Engagement / HVS API: cadence enrollment via Apex, step customization, call result logging, action customization. NOT for cadence admin setup. | |
-| TODO | einstein-activity-capture-api | Einstein Activity Capture data access: activity metrics API, email and event sync data, reporting on captured activities. NOT for email template design. | |
+| IN_PROGRESS | opportunity-trigger-patterns | Apex trigger patterns for Opportunity: stage change automation, amount rollups, team member sync, split calculations. NOT for generic trigger patterns (use trigger-framework). | |
+| IN_PROGRESS | quote-pdf-customization | Quote PDF generation with Visualforce: custom templates, dynamic sections, multi-language quotes, logo placement. NOT for LWC-based documents. | |
+| IN_PROGRESS | territory-api-and-assignment | Territory2 API: territory assignment via Apex, territory member management, bulk territory assignment, rule evaluation. NOT for ETM admin setup. | |
+| IN_PROGRESS | lead-conversion-customization | Customizing lead conversion with Apex: custom field mapping, related record creation, conversion triggers, LeadConvert. NOT for admin conversion setup. | |
+| IN_PROGRESS | sales-engagement-api | Sales Engagement / HVS API: cadence enrollment via Apex, step customization, call result logging, action customization. NOT for cadence admin setup. | |
+| IN_PROGRESS | einstein-activity-capture-api | Einstein Activity Capture data access: activity metrics API, email and event sync data, reporting on captured activities. NOT for email template design. | |
 
 ### Sales Cloud × Data Role
 
@@ -472,11 +472,11 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| TODO | lead-data-import-and-dedup | Lead data imports: matching rules for leads, dedup strategies, web-to-lead data quality, enrichment patterns. NOT for Data Loader mechanics. | |
-| TODO | opportunity-pipeline-migration | Historical opportunity migration: stage history recreation, amount and date mapping, product line items, team members. NOT for generic data migration. | |
-| TODO | product-catalog-data-model | Product and Pricebook data model: PricebookEntry management, product hierarchies, data loading sequence, bulk loading. NOT for CPQ product model. | |
-| TODO | sales-reporting-data-model | Sales data model for reporting: opportunity snapshots, trending reports, custom report types for pipeline analysis. NOT for CRM Analytics. | |
-| TODO | territory-data-alignment | Territory alignment data: account-territory assignments, territory history, bulk reassignment, territory coverage analysis. NOT for ETM configuration. | |
+| IN_PROGRESS | lead-data-import-and-dedup | Lead data imports: matching rules for leads, dedup strategies, web-to-lead data quality, enrichment patterns. NOT for Data Loader mechanics. | |
+| IN_PROGRESS | opportunity-pipeline-migration | Historical opportunity migration: stage history recreation, amount and date mapping, product line items, team members. NOT for generic data migration. | |
+| IN_PROGRESS | product-catalog-data-model | Product and Pricebook data model: PricebookEntry management, product hierarchies, data loading sequence, bulk loading. NOT for CPQ product model. | |
+| IN_PROGRESS | sales-reporting-data-model | Sales data model for reporting: opportunity snapshots, trending reports, custom report types for pipeline analysis. NOT for CRM Analytics. | |
+| IN_PROGRESS | territory-data-alignment | Territory alignment data: account-territory assignments, territory history, bulk reassignment, territory coverage analysis. NOT for ETM configuration. | |
 
 ### Sales Cloud × Architect Role
 
@@ -506,8 +506,8 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | RESEARCHED | knowledge-base-administration | Salesforce Knowledge setup: article types, data categories, publishing workflow, Lightning Knowledge, approval processes. NOT for Knowledge in Experience Cloud. | Researched 2026-04-06. Sources: [SF Help - Set Up Lightning Knowledge; SF Help - Workflow and Approvals for Articles; Lightning Knowledge Guide PDF; SF Help - Record Type Considerations; SF Help - Data Categories]. Key: Lightning Knowledge replaces Classic article types with standard record types on single Knowledge__kav object - once enabled cannot be disabled, making migration irreversible. Data Categories serve dual purpose: content organization via hierarchical Category Groups and access control via role/profile/permission-set visibility (user must have visibility to at least one category in every group assigned to article). Publishing workflow uses three native statuses (Draft, Published, Archived) plus admin-customizable Validation Status picklist; approval processes can be layered on top. No duplicate. |
 | RESEARCHED | email-to-case-configuration | Email-to-Case and On-Demand Email-to-Case setup: routing addresses, email threading, attachment handling, auto-response. NOT for email templates. | Researched 2026-04-06. Sources: [SF Help - Set Up Email-to-Case; SF Help - Email-to-Case Limits and Limitations; astreait.com - Email-to-Case vs On-Demand]. Key: Standard Email-to-Case requires agent behind company firewall keeping email traffic internal; On-Demand uses Apex Email Services with no agent required but routes traffic externally and consumes API calls. Both support up to 25MB total email size but On-Demand caps individual attachments at 10MB. Threading works via Lightning tokens in outgoing email body/subject matched on customer reply to associate back to originating case; routing addresses map inbound emails to cases with configurable auto-response rules, priority, and team assignment. No duplicate. |
 | RESEARCHED | service-console-configuration | Service Console app setup: utility bar, split view, macros, quick text, keyboard shortcuts, console navigation. NOT for generic Lightning app setup. | Researched 2026-04-06. Sources: [SF Help - Keyboard Shortcuts for Lightning Console Apps; Trailhead - Set Up the Lightning Service Console; SF Help - Features Available in Lightning Console Apps]. Key: Service Console is Lightning App with Console Navigation (not Standard) enabling split view - side-panel list view persisting while agents work records in workspace tabs and subtabs. Utility bar configured per-app via App Manager supports Macros, History, Omni-Channel, Open CTI Softphone; macros automate multi-step repetitive actions with single click. Quick Text provides reusable message snippets. Keyboard shortcuts configurable at console app level covering tab navigation, record opening, macro execution; navigation rules define how each object opens (workspace tab vs subtab). No duplicate. |
-| TODO | messaging-and-chat-setup | Messaging for In-App and Web, Chat configuration: pre-chat forms, chat routing, embedded service deployment, queues. NOT for Agentforce bots. | |
-| TODO | service-cloud-voice-setup | Service Cloud Voice configuration: Amazon Connect integration, call routing, transcription, after-call work, recording. NOT for CTI adapter development. | |
+| IN_PROGRESS | messaging-and-chat-setup | Messaging for In-App and Web, Chat configuration: pre-chat forms, chat routing, embedded service deployment, queues. NOT for Agentforce bots. | |
+| IN_PROGRESS | service-cloud-voice-setup | Service Cloud Voice configuration: Amazon Connect integration, call routing, transcription, after-call work, recording. NOT for CTI adapter development. | |
 
 ### Service Cloud × BA Role
 
@@ -515,11 +515,11 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| TODO | sla-design-and-escalation-matrix | SLA tier design: escalation matrix documentation, response/resolution time requirements, business hours alignment. NOT for entitlement configuration. | |
-| TODO | knowledge-taxonomy-design | Knowledge article taxonomy: data category hierarchy, article lifecycle, content gap analysis, authoring guidelines. NOT for Knowledge admin setup. | |
-| TODO | agent-console-requirements | Service console requirements: agent workflow mapping, case handling process, macro requirements, screen layouts. NOT for console configuration. | |
-| TODO | case-deflection-strategy | Self-service strategy: knowledge article surfacing, chatbot requirements, case deflection metrics, ROI measurement. NOT for Experience Cloud setup. | |
-| TODO | customer-effort-scoring | Customer effort metrics: CSAT design, survey requirements, service quality measurement, NPS integration. NOT for custom survey implementation. | |
+| IN_PROGRESS | sla-design-and-escalation-matrix | SLA tier design: escalation matrix documentation, response/resolution time requirements, business hours alignment. NOT for entitlement configuration. | |
+| IN_PROGRESS | knowledge-taxonomy-design | Knowledge article taxonomy: data category hierarchy, article lifecycle, content gap analysis, authoring guidelines. NOT for Knowledge admin setup. | |
+| IN_PROGRESS | agent-console-requirements | Service console requirements: agent workflow mapping, case handling process, macro requirements, screen layouts. NOT for console configuration. | |
+| IN_PROGRESS | case-deflection-strategy | Self-service strategy: knowledge article surfacing, chatbot requirements, case deflection metrics, ROI measurement. NOT for Experience Cloud setup. | |
+| IN_PROGRESS | customer-effort-scoring | Customer effort metrics: CSAT design, survey requirements, service quality measurement, NPS integration. NOT for custom survey implementation. | |
 
 ### Service Cloud × Dev Role
 
@@ -527,12 +527,12 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| TODO | case-trigger-patterns | Apex triggers for Case: auto-assignment overrides, entitlement verification, SLA calculation, case merge handling. NOT for generic trigger patterns (use trigger-framework). | |
-| TODO | knowledge-article-lwc | Custom Lightning components for Knowledge: article display, search, recommendation widgets, feedback collection. NOT for standard Knowledge setup. | |
-| TODO | cti-adapter-development | CTI integration: Open CTI API, softphone panel, click-to-dial, screen pop, call logging via Apex, adapter patterns. NOT for Service Cloud Voice admin. | |
-| TODO | omni-channel-custom-routing | Custom Omni-Channel routing via Apex: PendingServiceRouting, custom skills matching, overflow handling, priority routing. NOT for admin routing setup. | |
-| TODO | entitlement-apex-hooks | Entitlement process Apex extension: custom milestone completion, SLA breach notifications, case status automation. NOT for admin entitlement setup. | |
-| TODO | service-cloud-rest-api | Service Cloud specific REST APIs: Case API patterns, Knowledge API, Chat REST API, Messaging API endpoints. NOT for generic REST API. | |
+| IN_PROGRESS | case-trigger-patterns | Apex triggers for Case: auto-assignment overrides, entitlement verification, SLA calculation, case merge handling. NOT for generic trigger patterns (use trigger-framework). | |
+| IN_PROGRESS | knowledge-article-lwc | Custom Lightning components for Knowledge: article display, search, recommendation widgets, feedback collection. NOT for standard Knowledge setup. | |
+| IN_PROGRESS | cti-adapter-development | CTI integration: Open CTI API, softphone panel, click-to-dial, screen pop, call logging via Apex, adapter patterns. NOT for Service Cloud Voice admin. | |
+| IN_PROGRESS | omni-channel-custom-routing | Custom Omni-Channel routing via Apex: PendingServiceRouting, custom skills matching, overflow handling, priority routing. NOT for admin routing setup. | |
+| IN_PROGRESS | entitlement-apex-hooks | Entitlement process Apex extension: custom milestone completion, SLA breach notifications, case status automation. NOT for admin entitlement setup. | |
+| IN_PROGRESS | service-cloud-rest-api | Service Cloud specific REST APIs: Case API patterns, Knowledge API, Chat REST API, Messaging API endpoints. NOT for generic REST API. | |
 
 ### Service Cloud × Data Role
 
@@ -540,11 +540,11 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| TODO | case-history-migration | Migrating historical case data: case comments, email messages, attachments, activity history, status mapping. NOT for generic data migration. | |
-| TODO | knowledge-article-import | Importing Knowledge articles: CSV import, article field mapping, category assignment, publishing status, bulk loading. NOT for Knowledge admin setup. | |
-| TODO | service-metrics-data-model | Service reporting data model: case duration calculations, SLA compliance metrics, agent performance data, MTTR. NOT for CRM Analytics. | |
-| TODO | omni-channel-reporting-data | Omni-Channel analytics data: agent work records, queue metrics, capacity utilization, wait time reporting. NOT for admin routing setup. | |
-| TODO | service-data-archival | Case archival strategies: email message cleanup, attachment management, compliance retention, storage optimization. NOT for generic data archival. | |
+| IN_PROGRESS | case-history-migration | Migrating historical case data: case comments, email messages, attachments, activity history, status mapping. NOT for generic data migration. | |
+| IN_PROGRESS | knowledge-article-import | Importing Knowledge articles: CSV import, article field mapping, category assignment, publishing status, bulk loading. NOT for Knowledge admin setup. | |
+| IN_PROGRESS | service-metrics-data-model | Service reporting data model: case duration calculations, SLA compliance metrics, agent performance data, MTTR. NOT for CRM Analytics. | |
+| IN_PROGRESS | omni-channel-reporting-data | Omni-Channel analytics data: agent work records, queue metrics, capacity utilization, wait time reporting. NOT for admin routing setup. | |
+| IN_PROGRESS | service-data-archival | Case archival strategies: email message cleanup, attachment management, compliance retention, storage optimization. NOT for generic data archival. | |
 
 ### Service Cloud × Architect Role
 
@@ -569,11 +569,11 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
 | RESEARCHED | experience-cloud-site-setup | Site creation: template selection (LWR vs Aura), branding, navigation menus, domain configuration, page builder. NOT for internal Lightning apps. | Researched 2026-04-06. Sources: [LWR Sites for Experience Cloud v66.0 Spring 26; SF Help - Custom Domain for Experience Cloud; SF Help - Experience Builder]. Key: LWR templates (Build Your Own LWR and Microsite LWR) use LWC exclusively with superior performance via publish-time freezing and HTTP caching; legacy Aura-based Build Your Own template supports both Aura and LWC but lacks performance optimizations - template choice is permanent post-creation (changing requires recreation). LWR branding uses --dxp CSS styling hooks and branding sets; custom domain pattern MyDomainName.my.site.com; LWR sites support clean custom URL paths (no /s prefix) unlike Aura sites. Editions: Enterprise, Performance, Unlimited, Developer. No duplicate. |
-| TODO | experience-cloud-member-management | Member profiles: external user licensing, registration flows, login page customization, self-registration. NOT for internal user management. | |
-| TODO | experience-cloud-cms-content | CMS workspace setup: content types, content publishing, audience targeting, content scheduling, managed content. NOT for Knowledge articles. | |
-| TODO | experience-cloud-guest-access | Guest user profile configuration: public access settings, unauthenticated page design, object-level security review. NOT for authenticated user features. | |
-| TODO | experience-cloud-moderation | Content moderation setup: flagging rules, reputation system, member management, content approval workflows. NOT for CMS content publishing. | |
-| TODO | experience-cloud-seo-settings | SEO configuration for Experience Cloud sites: page titles, meta descriptions, URL structure, robots.txt, sitemap. NOT for external SEO tools. | |
+| IN_PROGRESS | experience-cloud-member-management | Member profiles: external user licensing, registration flows, login page customization, self-registration. NOT for internal user management. | |
+| IN_PROGRESS | experience-cloud-cms-content | CMS workspace setup: content types, content publishing, audience targeting, content scheduling, managed content. NOT for Knowledge articles. | |
+| IN_PROGRESS | experience-cloud-guest-access | Guest user profile configuration: public access settings, unauthenticated page design, object-level security review. NOT for authenticated user features. | |
+| IN_PROGRESS | experience-cloud-moderation | Content moderation setup: flagging rules, reputation system, member management, content approval workflows. NOT for CMS content publishing. | |
+| IN_PROGRESS | experience-cloud-seo-settings | SEO configuration for Experience Cloud sites: page titles, meta descriptions, URL structure, robots.txt, sitemap. NOT for external SEO tools. | |
 
 ### Experience Cloud × BA Role
 
@@ -581,10 +581,10 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| TODO | portal-requirements-gathering | Requirements for customer/partner portals: user journey mapping, self-service capabilities, content requirements. NOT for implementation. | |
-| TODO | self-service-design | Self-service portal design: knowledge base UX, case submission flow, community engagement requirements, deflection goals. NOT for Experience Cloud setup. | |
-| TODO | partner-community-requirements | Partner community requirements: deal registration, lead distribution, MDF, co-marketing, partner tier management. NOT for partner portal configuration. | |
-| TODO | community-engagement-strategy | Community engagement model: gamification requirements, ideation process, content contribution strategy, recognition. NOT for moderation configuration. | |
+| IN_PROGRESS | portal-requirements-gathering | Requirements for customer/partner portals: user journey mapping, self-service capabilities, content requirements. NOT for implementation. | |
+| IN_PROGRESS | self-service-design | Self-service portal design: knowledge base UX, case submission flow, community engagement requirements, deflection goals. NOT for Experience Cloud setup. | |
+| IN_PROGRESS | partner-community-requirements | Partner community requirements: deal registration, lead distribution, MDF, co-marketing, partner tier management. NOT for partner portal configuration. | |
+| IN_PROGRESS | community-engagement-strategy | Community engagement model: gamification requirements, ideation process, content contribution strategy, recognition. NOT for moderation configuration. | |
 
 ### Experience Cloud × Dev Role
 
@@ -592,7 +592,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| TODO | lwr-site-development | LWR (Lightning Web Runtime) site development: custom themes, LWC for Experience Cloud, build configuration. NOT for Aura-based communities. | |
+| IN_PROGRESS | lwr-site-development | LWR (Lightning Web Runtime) site development: custom themes, LWC for Experience Cloud, build configuration. NOT for Aura-based communities. | |
 | TODO | experience-cloud-lwc-components | Building custom LWC for Experience Cloud: data access patterns, guest user Apex, community context, navigation. NOT for internal LWC. | |
 | TODO | experience-cloud-authentication | Custom login flows: social sign-on, self-registration, passwordless login, SSO for external users, auth providers. NOT for internal SSO. | |
 | TODO | headless-experience-cloud | Headless CMS API: content delivery API, building custom frontends against Experience Cloud data, channel access. NOT for standard site building. | |
