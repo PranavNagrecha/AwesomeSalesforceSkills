@@ -2087,6 +2087,156 @@
       "domain": "devops",
       "expected_skill": "devops/metadata-api-coverage-gaps",
       "top_k": 3
+    },
+    {
+      "query": "sandbox email leaking to real contacts after refresh",
+      "domain": "devops",
+      "expected_skill": "devops/sandbox-data-isolation-gotchas",
+      "top_k": 3
+    },
+    {
+      "query": "generate PDF from Apex visualforce renderAs Flying Saucer",
+      "domain": "apex",
+      "expected_skill": "apex/pdf-generation-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "set up standard pricebook custom pricebook product catalog",
+      "domain": "admin",
+      "expected_skill": "admin/products-and-pricebooks",
+      "top_k": 3
+    },
+    {
+      "query": "account territory assignment ObjectTerritory2Association coverage analysis",
+      "domain": "data",
+      "expected_skill": "data/territory-data-alignment",
+      "top_k": 3
+    },
+    {
+      "query": "configure omni channel queue based skills based routing setup",
+      "domain": "admin",
+      "expected_skill": "admin/omni-channel-routing-setup",
+      "top_k": 3
+    },
+    {
+      "query": "set up entitlements milestones SLA tracking case",
+      "domain": "admin",
+      "expected_skill": "admin/entitlements-and-milestones",
+      "top_k": 3
+    },
+    {
+      "query": "lightning knowledge setup data categories publishing workflow",
+      "domain": "admin",
+      "expected_skill": "admin/knowledge-base-administration",
+      "top_k": 3
+    },
+    {
+      "query": "email to case on demand routing address auto response threading",
+      "domain": "admin",
+      "expected_skill": "admin/email-to-case-configuration",
+      "top_k": 3
+    },
+    {
+      "query": "service console app setup utility bar macros navigation rules",
+      "domain": "admin",
+      "expected_skill": "admin/service-console-configuration",
+      "top_k": 3
+    },
+    {
+      "query": "MIAW messaging in app web chat embedded service deployment CORS",
+      "domain": "admin",
+      "expected_skill": "admin/messaging-and-chat-setup",
+      "top_k": 3
+    },
+    {
+      "query": "service cloud voice amazon connect setup transcription ACW",
+      "domain": "admin",
+      "expected_skill": "admin/service-cloud-voice-setup",
+      "top_k": 3
+    },
+    {
+      "query": "design SLA escalation matrix tier business hours milestone thresholds",
+      "domain": "architect",
+      "expected_skill": "architect/sla-design-and-escalation-matrix",
+      "top_k": 3
+    },
+    {
+      "query": "design knowledge taxonomy data category hierarchy KCS lifecycle",
+      "domain": "architect",
+      "expected_skill": "architect/knowledge-taxonomy-design",
+      "top_k": 3
+    },
+    {
+      "query": "gather requirements for service console agent workflow macros",
+      "domain": "architect",
+      "expected_skill": "architect/agent-console-requirements",
+      "top_k": 3
+    },
+    {
+      "query": "case deflection strategy self-service knowledge chatbot KPIs",
+      "domain": "architect",
+      "expected_skill": "architect/case-deflection-strategy",
+      "top_k": 3
+    },
+    {
+      "query": "CSAT NPS CES customer effort scoring measurement strategy",
+      "domain": "architect",
+      "expected_skill": "architect/customer-effort-scoring",
+      "top_k": 3
+    },
+    {
+      "query": "apex trigger case assignment rules entitlement merge milestone",
+      "domain": "apex",
+      "expected_skill": "apex/case-trigger-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "build LWC component display knowledge articles SOSL guest access",
+      "domain": "lwc",
+      "expected_skill": "lwc/knowledge-article-lwc",
+      "top_k": 3
+    },
+    {
+      "query": "open CTI adapter callcenter xml softphone panel click to dial",
+      "domain": "apex",
+      "expected_skill": "apex/cti-adapter-development",
+      "top_k": 3
+    },
+    {
+      "query": "custom omni channel routing apex PendingServiceRouting SkillRequirement",
+      "domain": "apex",
+      "expected_skill": "apex/omni-channel-custom-routing",
+      "top_k": 3
+    },
+    {
+      "query": "auto complete case milestone apex CompletionDate IsViolated hooks",
+      "domain": "apex",
+      "expected_skill": "apex/entitlement-apex-hooks",
+      "top_k": 3
+    },
+    {
+      "query": "service cloud REST API knowledge articles chat MIAW endpoints",
+      "domain": "apex",
+      "expected_skill": "apex/service-cloud-rest-api",
+      "top_k": 3
+    },
+    {
+      "query": "migrate case history email messages attachments ContentVersion load order",
+      "domain": "data",
+      "expected_skill": "data/case-history-migration",
+      "top_k": 3
+    },
+    {
+      "query": "bulk import knowledge articles ZIP CSV properties file draft",
+      "domain": "data",
+      "expected_skill": "data/knowledge-article-import",
+      "top_k": 3
+    },
+    {
+      "query": "service metrics data model MTTR CaseMilestone IsViolated reporting",
+      "domain": "data",
+      "expected_skill": "data/service-metrics-data-model",
+      "top_k": 3
     }
   ]
 }
