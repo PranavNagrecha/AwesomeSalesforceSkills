@@ -1469,6 +1469,42 @@
       "domain": "architect",
       "expected_skill": "architect/ha-dr-architecture",
       "top_k": 3
+    },
+    {
+      "query": "picklist values being created by API that are not in the value set",
+      "domain": "admin",
+      "expected_skill": "admin/picklist-field-integrity-issues",
+      "top_k": 3
+    },
+    {
+      "query": "how to set up automated regression testing for Salesforce Lightning",
+      "domain": "devops",
+      "expected_skill": "devops/automated-regression-testing",
+      "top_k": 3
+    },
+    {
+      "query": "configure MuleSoft Salesforce connector with watermark pattern",
+      "domain": "integration",
+      "expected_skill": "integration/mulesoft-salesforce-connector",
+      "top_k": 3
+    },
+    {
+      "query": "OmniScript remote action Apex vs Integration Procedure",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/omnistudio-remote-actions",
+      "top_k": 3
+    },
+    {
+      "query": "add reCAPTCHA to Experience Cloud site forms",
+      "domain": "security",
+      "expected_skill": "security/recaptcha-and-bot-prevention",
+      "top_k": 3
+    },
+    {
+      "query": "monitor org API limits and storage consumption proactively",
+      "domain": "architect",
+      "expected_skill": "architect/org-limits-monitoring",
+      "top_k": 3
     }
   ]
 }
