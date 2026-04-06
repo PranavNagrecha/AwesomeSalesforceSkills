@@ -1361,6 +1361,114 @@
       "domain": "admin",
       "expected_skill": "admin/batch-job-scheduling-and-monitoring",
       "top_k": 3
+    },
+    {
+      "query": "how to run Apex tests in a CI pipeline with code coverage",
+      "domain": "devops",
+      "expected_skill": "devops/continuous-integration-testing",
+      "top_k": 3
+    },
+    {
+      "query": "prepare my Apex code for the Salesforce AppExchange security review",
+      "domain": "security",
+      "expected_skill": "security/secure-coding-review-checklist",
+      "top_k": 3
+    },
+    {
+      "query": "how do I set up Einstein Next Best Action recommendations",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/einstein-next-best-action",
+      "top_k": 3
+    },
+    {
+      "query": "WhoId polymorphic lookup on Task object quirks",
+      "domain": "admin",
+      "expected_skill": "admin/standard-object-quirks",
+      "top_k": 3
+    },
+    {
+      "query": "what is the Salesforce order of execution for triggers and flows",
+      "domain": "apex",
+      "expected_skill": "apex/order-of-execution-deep-dive",
+      "top_k": 3
+    },
+    {
+      "query": "how to configure scratch org definition file features and settings",
+      "domain": "devops",
+      "expected_skill": "devops/org-shape-and-scratch-definition",
+      "top_k": 3
+    },
+    {
+      "query": "session timeout per profile inactivity settings",
+      "domain": "security",
+      "expected_skill": "security/session-management-and-timeout",
+      "top_k": 3
+    },
+    {
+      "query": "record type page layout explosion at scale Dynamic Forms",
+      "domain": "admin",
+      "expected_skill": "admin/record-type-strategy-at-scale",
+      "top_k": 3
+    },
+    {
+      "query": "implement feature flags with Custom Metadata Types and kill switches",
+      "domain": "apex",
+      "expected_skill": "apex/feature-flags-and-kill-switches",
+      "top_k": 3
+    },
+    {
+      "query": "delete metadata component salesforce deployment destructive changes",
+      "domain": "devops",
+      "expected_skill": "devops/destructive-changes-deployment",
+      "top_k": 3
+    },
+    {
+      "query": "connected app ip restriction oauth access policies",
+      "domain": "security",
+      "expected_skill": "security/connected-app-security-policies",
+      "top_k": 3
+    },
+    {
+      "query": "agentforce agent metadata types GenAiPlugin deployment",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/agent-script-dsl",
+      "top_k": 3
+    },
+    {
+      "query": "custom lwc component inside omniscript override patterns",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/omnistudio-custom-lwc-elements",
+      "top_k": 3
+    },
+    {
+      "query": "retry exponential backoff pattern apex callout",
+      "domain": "integration",
+      "expected_skill": "integration/retry-and-backoff-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "user access policy auto assign permission set on user create",
+      "domain": "admin",
+      "expected_skill": "admin/user-access-policies",
+      "top_k": 3
+    },
+    {
+      "query": "apex order of execution before after trigger flow",
+      "domain": "apex",
+      "expected_skill": "apex/order-of-execution-deep-dive",
+      "top_k": 3
+    },
+    {
+      "query": "merge duplicate records at scale batch apex",
+      "domain": "data",
+      "expected_skill": "data/large-scale-deduplication",
+      "top_k": 3
+    },
+    {
+      "query": "high availability disaster recovery RTO RPO salesforce",
+      "domain": "architect",
+      "expected_skill": "architect/ha-dr-architecture",
+      "top_k": 3
     }
   ]
 }
