@@ -1697,6 +1697,12 @@
       "domain": "architect",
       "expected_skill": "architect/multi-channel-service-architecture",
       "top_k": 3
+    },
+    {
+      "query": "how do I set up email to case so customer replies thread instead of creating new cases",
+      "domain": "admin",
+      "expected_skill": "admin/case-management-setup",
+      "top_k": 3
     }
   ]
 }
