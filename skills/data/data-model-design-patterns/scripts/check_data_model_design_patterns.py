@@ -20,7 +20,16 @@ from pathlib import Path
 _this_dir = Path(__file__).parent
 sys.path.insert(0, str(_this_dir))
 
-from check_data_model import main  # noqa: E402
+from check_data_model import main, run_all_checks  # noqa: E402
+
+
+def check_data_model_design_patterns(manifest_dir: Path) -> list[str]:
+    """Return issue strings for the given manifest directory."""
+    issues = run_all_checks(manifest_dir)
+    if issues:
+        print(f"WARN: {len(issues)} data model issue(s) detected", file=sys.stderr)
+    return issues
+
 
 if __name__ == "__main__":
     sys.exit(main())

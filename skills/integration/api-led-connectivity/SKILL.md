@@ -14,6 +14,8 @@ triggers:
   - "how do I expose SAP or ERP data to Salesforce through a reusable API layer"
   - "what is the difference between system API, process API, and experience API"
   - "how do I avoid building a monolithic integration that breaks when one backend changes"
+  - "API-led connectivity three layer architecture system process experience API"
+  - "three layer API architecture for Salesforce integration"
 tags:
   - api-led-connectivity
   - mulesoft

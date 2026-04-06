@@ -39,6 +39,8 @@ def check_einstein_copilot_for_sales(manifest_dir: Path, verbose: bool = False) 
         return issues
 
     issues.extend(run_all_checks(manifest_dir, verbose=verbose))
+    if issues:
+        print(f"WARN: {len(issues)} Einstein Copilot issue(s) detected", file=sys.stderr)
     return issues
 
 

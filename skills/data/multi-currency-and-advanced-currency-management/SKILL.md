@@ -18,6 +18,8 @@ triggers:
   - "CurrencyIsoCode handling in Apex"
   - "convertCurrency in SOQL"
   - "roll up summary and ACM currency issues"
+  - "advanced currency management vs standard multi-currency for Sales Cloud"
+  - "standard multi-currency versus advanced currency management comparison"
 inputs:
   - "whether multi-currency or ACM is already enabled"
   - "objects and reports involved"

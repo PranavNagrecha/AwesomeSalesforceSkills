@@ -337,6 +337,8 @@ def main() -> int:
     print_storage_checklist()
 
     errors = [f for f in findings if f.startswith("ERROR:") or f.startswith("WARNING:")]
+    if errors:
+        print(f"WARN: {len(errors)} archival issue(s) detected", file=sys.stderr)
     return 1 if errors else 0
 
 

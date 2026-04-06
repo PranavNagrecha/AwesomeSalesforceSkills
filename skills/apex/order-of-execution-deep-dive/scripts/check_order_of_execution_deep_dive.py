@@ -12,5 +12,8 @@ import sys
 from pathlib import Path
 
 _main = Path(__file__).parent / "check_order_of_execution.py"
+if not _main.exists():
+    print(f"ERROR: delegate script not found: {_main}", file=sys.stderr)
+    sys.exit(1)
 sys.argv[0] = str(_main)
 runpy.run_path(str(_main), run_name="__main__")

@@ -12,6 +12,7 @@ triggers:
   - "agents are getting overwhelmed with too many concurrent work items — how do I fix capacity"
   - "how do I design a skills-based routing model with overflow to backup queues"
   - "what capacity units should I assign per channel and how does interruptible work factor in"
+  - "how to set Omni-Channel capacity weights for cases vs chats vs phone calls"
 tags:
   - omni-channel
   - capacity-model
