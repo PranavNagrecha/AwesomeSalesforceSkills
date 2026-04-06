@@ -24,19 +24,24 @@
       "admin/einstein-activity-capture-setup",
       "admin/einstein-analytics-basics",
       "admin/email-templates-and-alerts",
+      "admin/email-to-case-configuration",
       "admin/enterprise-territory-management",
+      "admin/entitlements-and-milestones",
       "admin/escalation-rules",
       "admin/flow-for-admins",
       "admin/formula-fields",
       "admin/global-actions-and-quick-actions",
       "admin/in-app-guidance-and-walkthroughs",
+      "admin/knowledge-base-administration",
       "admin/lead-management-and-conversion",
       "admin/lead-scoring-requirements",
       "admin/lightning-app-builder-advanced",
       "admin/lightning-page-performance-tuning",
       "admin/list-views-and-compact-layouts",
+      "admin/messaging-and-chat-setup",
       "admin/multi-language-and-translation",
       "admin/object-creation-and-design",
+      "admin/omni-channel-routing-setup",
       "admin/opportunity-management",
       "admin/org-cleanup-and-technical-debt",
       "admin/org-setup-and-configuration",
@@ -47,6 +52,7 @@
       "admin/picklist-field-integrity-issues",
       "admin/pipeline-review-design",
       "admin/process-automation-selection",
+      "admin/products-and-pricebooks",
       "admin/queues-and-public-groups",
       "admin/quote-to-cash-requirements",
       "admin/quotes-and-quote-templates",
@@ -62,6 +68,8 @@
       "admin/salesforce-support-escalation",
       "admin/salesforce-surveys",
       "admin/sandbox-strategy",
+      "admin/service-cloud-voice-setup",
+      "admin/service-console-configuration",
       "admin/sharing-and-visibility",
       "admin/standard-object-quirks",
       "admin/system-field-behavior-and-audit",
@@ -109,10 +117,12 @@
       "apex/batch-apex-patterns",
       "apex/callout-and-dml-transaction-boundaries",
       "apex/callouts-and-http-integrations",
+      "apex/case-trigger-patterns",
       "apex/change-data-capture-apex",
       "apex/common-apex-runtime-errors",
       "apex/continuation-callouts",
       "apex/cross-object-formula-and-rollup-performance",
+      "apex/cti-adapter-development",
       "apex/custom-iterators-and-iterables",
       "apex/custom-logging-and-monitoring",
       "apex/custom-metadata-in-apex",
@@ -120,6 +130,7 @@
       "apex/debug-logs-and-developer-console",
       "apex/dynamic-apex",
       "apex/einstein-activity-capture-api",
+      "apex/entitlement-apex-hooks",
       "apex/error-handling-framework",
       "apex/exception-handling",
       "apex/feature-flags-and-kill-switches",
@@ -132,14 +143,17 @@
       "apex/long-running-process-orchestration",
       "apex/metadata-api-and-package-xml",
       "apex/mixed-dml-and-setup-objects",
+      "apex/omni-channel-custom-routing",
       "apex/opportunity-trigger-patterns",
       "apex/order-of-execution-deep-dive",
+      "apex/pdf-generation-patterns",
       "apex/platform-cache",
       "apex/platform-events-apex",
       "apex/quote-pdf-customization",
       "apex/record-locking-and-contention",
       "apex/recursive-trigger-prevention",
       "apex/sales-engagement-api",
+      "apex/service-cloud-rest-api",
       "apex/sf-cli-and-sfdx-essentials",
       "apex/soql-fundamentals",
       "apex/soql-security",
@@ -152,13 +166,17 @@
       "apex/visualforce-fundamentals"
     ],
     "architect": [
+      "architect/agent-console-requirements",
       "architect/ai-ready-data-architecture",
+      "architect/case-deflection-strategy",
       "architect/cpq-vs-standard-products-decision",
+      "architect/customer-effort-scoring",
       "architect/einstein-bot-architecture",
       "architect/government-cloud-compliance",
       "architect/ha-dr-architecture",
       "architect/high-volume-sales-data-architecture",
       "architect/integration-framework-design",
+      "architect/knowledge-taxonomy-design",
       "architect/knowledge-vs-external-cms",
       "architect/license-optimization-strategy",
       "architect/limits-and-scalability-planning",
@@ -175,6 +193,7 @@
       "architect/sales-cloud-integration-patterns",
       "architect/security-architecture-review",
       "architect/service-cloud-architecture",
+      "architect/sla-design-and-escalation-matrix",
       "architect/solution-design-patterns",
       "architect/technical-debt-assessment",
       "architect/well-architected-review"
@@ -183,6 +202,7 @@
       "data/batch-data-cleanup-patterns",
       "data/bulk-api-and-large-data-loads",
       "data/bulk-api-patterns",
+      "data/case-history-migration",
       "data/custom-index-requests",
       "data/data-archival-strategies",
       "data/data-migration-planning",
@@ -193,6 +213,7 @@
       "data/external-data-and-big-objects",
       "data/external-id-strategy",
       "data/field-history-tracking",
+      "data/knowledge-article-import",
       "data/large-scale-deduplication",
       "data/lead-data-import-and-dedup",
       "data/multi-currency-and-advanced-currency-management",
@@ -202,9 +223,11 @@
       "data/record-merge-implications",
       "data/roll-up-summary-alternatives",
       "data/sales-reporting-data-model",
+      "data/service-metrics-data-model",
       "data/sharing-recalculation-performance",
       "data/soql-query-optimization",
-      "data/sosl-search-patterns"
+      "data/sosl-search-patterns",
+      "data/territory-data-alignment"
     ],
     "devops": [
       "devops/api-version-management",
@@ -237,6 +260,7 @@
       "devops/salesforce-code-analyzer",
       "devops/salesforce-devops-tooling-selection",
       "devops/salesforce-dx-project-structure",
+      "devops/sandbox-data-isolation-gotchas",
       "devops/sandbox-refresh-and-templates",
       "devops/scratch-org-management",
       "devops/scratch-org-pools",
@@ -292,6 +316,7 @@
       "lwc/common-lwc-runtime-errors",
       "lwc/component-communication",
       "lwc/custom-property-editor-for-flow",
+      "lwc/knowledge-article-lwc",
       "lwc/lifecycle-hooks",
       "lwc/lwc-accessibility",
       "lwc/lwc-accessibility-patterns",
@@ -373,6 +398,12 @@
       "data/data-reconciliation-patterns",
       "integration/change-data-capture-integration"
     ],
+    "CES": [
+      "architect/customer-effort-scoring"
+    ],
+    "CSAT": [
+      "architect/customer-effort-scoring"
+    ],
     "ChangeEventHeader": [
       "apex/change-data-capture-apex"
     ],
@@ -381,6 +412,9 @@
     ],
     "CreatedDate": [
       "admin/system-field-behavior-and-audit"
+    ],
+    "Database.DmlOptions": [
+      "apex/case-trigger-patterns"
     ],
     "Database.LeadConvert": [
       "apex/lead-conversion-customization"
@@ -419,23 +453,45 @@
       "apex/common-apex-runtime-errors",
       "apex/governor-limit-recovery-patterns"
     ],
+    "MIAW": [
+      "admin/messaging-and-chat-setup"
+    ],
+    "MasterRecordId": [
+      "apex/case-trigger-patterns"
+    ],
     "MetadataComponentDependency": [
       "architect/metadata-coverage-and-dependencies"
+    ],
+    "NPS": [
+      "architect/customer-effort-scoring"
     ],
     "NullPointerException": [
       "apex/common-apex-runtime-errors"
     ],
     "ObjectTerritory2Association": [
-      "apex/territory-api-and-assignment"
+      "apex/territory-api-and-assignment",
+      "data/territory-data-alignment"
+    ],
+    "PendingServiceRouting": [
+      "apex/omni-channel-custom-routing"
     ],
     "QueryException": [
       "apex/common-apex-runtime-errors"
     ],
+    "SLA": [
+      "admin/entitlements-and-milestones"
+    ],
     "ShowToastEvent": [
       "lwc/lwc-toast-and-notifications"
     ],
+    "SkillRequirement": [
+      "apex/omni-channel-custom-routing"
+    ],
     "SystemModstamp": [
       "admin/system-field-behavior-and-audit"
+    ],
+    "Territory2ModelHistory": [
+      "data/territory-data-alignment"
     ],
     "TypeException": [
       "apex/common-apex-runtime-errors"
@@ -444,7 +500,8 @@
       "apex/record-locking-and-contention"
     ],
     "UserTerritory2Association": [
-      "apex/territory-api-and-assignment"
+      "apex/territory-api-and-assignment",
+      "data/territory-data-alignment"
     ],
     "VlocityOpenInterface2": [
       "omnistudio/omnistudio-remote-actions"
@@ -542,6 +599,9 @@
       "architect/multi-currency-sales-architecture",
       "data/multi-currency-and-advanced-currency-management"
     ],
+    "after-conversation-work": [
+      "admin/service-cloud-voice-setup"
+    ],
     "after-convert": [
       "apex/lead-conversion-customization"
     ],
@@ -593,6 +653,9 @@
     "agent-testing": [
       "agentforce/agent-testing-and-evaluation"
     ],
+    "agent-workspace": [
+      "architect/agent-console-requirements"
+    ],
     "agentforce": [
       "agentforce/agent-actions",
       "agentforce/agent-channel-deployment",
@@ -629,6 +692,9 @@
     "allOrNone": [
       "integration/composite-api-patterns"
     ],
+    "amazon-connect": [
+      "admin/service-cloud-voice-setup"
+    ],
     "analytics-api": [
       "admin/report-performance-tuning"
     ],
@@ -642,8 +708,10 @@
       "admin/custom-permissions",
       "apex/custom-iterators-and-iterables",
       "apex/governor-limit-recovery-patterns",
+      "apex/pdf-generation-patterns",
       "apex/soql-fundamentals",
       "architect/solution-design-patterns",
+      "lwc/knowledge-article-lwc",
       "lwc/lwc-imperative-apex"
     ],
     "apex-action": [
@@ -713,7 +781,8 @@
       "devops/gitlab-ci-for-salesforce"
     ],
     "apex-trigger": [
-      "apex/change-data-capture-apex"
+      "apex/change-data-capture-apex",
+      "apex/entitlement-apex-hooks"
     ],
     "apex-triggers": [
       "apex/lead-conversion-customization"
@@ -795,12 +864,16 @@
       "lwc/lwc-accessibility",
       "lwc/lwc-accessibility-patterns"
     ],
+    "article-lifecycle": [
+      "architect/knowledge-taxonomy-design"
+    ],
     "article-recommendations": [
       "agentforce/einstein-copilot-for-service"
     ],
     "assignment-rules": [
       "admin/assignment-rules",
-      "admin/territory-design-requirements"
+      "admin/territory-design-requirements",
+      "apex/case-trigger-patterns"
     ],
     "async": [
       "data/bulk-api-and-large-data-loads",
@@ -854,6 +927,7 @@
     ],
     "audit": [
       "data/field-history-tracking",
+      "data/territory-data-alignment",
       "security/event-monitoring"
     ],
     "audit-fields": [
@@ -881,7 +955,8 @@
       "flow/auto-launched-flow-patterns"
     ],
     "auto-response-rules": [
-      "admin/case-management-setup"
+      "admin/case-management-setup",
+      "admin/email-to-case-configuration"
     ],
     "autolaunched-flow": [
       "flow/subflows-and-reusability"
@@ -1008,6 +1083,7 @@
       "admin/data-import-and-management",
       "data/bulk-api-and-large-data-loads",
       "data/bulk-api-patterns",
+      "data/case-history-migration",
       "data/data-migration-planning",
       "data/data-reconciliation-patterns",
       "data/external-id-strategy",
@@ -1022,6 +1098,9 @@
     ],
     "bulk-dml": [
       "flow/flow-collection-processing"
+    ],
+    "bulk-import": [
+      "data/knowledge-article-import"
     ],
     "bulk-load": [
       "data/product-catalog-data-model"
@@ -1053,7 +1132,9 @@
       "architect/ha-dr-architecture"
     ],
     "business-hours": [
-      "admin/escalation-rules"
+      "admin/entitlements-and-milestones",
+      "admin/escalation-rules",
+      "architect/sla-design-and-escalation-matrix"
     ],
     "business-rules-engine": [
       "omnistudio/business-rules-engine"
@@ -1091,11 +1172,20 @@
     "calendar-sync": [
       "admin/einstein-activity-capture-setup"
     ],
+    "call-logging": [
+      "apex/cti-adapter-development"
+    ],
     "call-scripts": [
       "admin/sales-engagement-cadences"
     ],
+    "call-transcription": [
+      "admin/service-cloud-voice-setup"
+    ],
     "callbacks": [
       "integration/outbound-messages-and-callbacks"
+    ],
+    "callcenter-xml": [
+      "apex/cti-adapter-development"
     ],
     "callout-auth": [
       "integration/named-credentials-setup"
@@ -1118,20 +1208,49 @@
     "card-actions": [
       "omnistudio/flexcard-design-patterns"
     ],
+    "case": [
+      "data/service-metrics-data-model"
+    ],
     "case-classification": [
       "agentforce/einstein-copilot-for-service"
+    ],
+    "case-comment": [
+      "data/case-history-migration"
     ],
     "case-comments": [
       "admin/standard-object-quirks"
     ],
+    "case-creation": [
+      "admin/email-to-case-configuration"
+    ],
+    "case-deflection": [
+      "architect/case-deflection-strategy"
+    ],
+    "case-history": [
+      "data/case-history-migration"
+    ],
     "case-management": [
       "admin/assignment-rules",
+      "admin/entitlements-and-milestones",
       "admin/escalation-rules",
       "admin/queues-and-public-groups",
+      "architect/agent-console-requirements",
       "architect/service-cloud-architecture"
+    ],
+    "case-migration": [
+      "data/case-history-migration"
+    ],
+    "case-milestone": [
+      "apex/entitlement-apex-hooks"
     ],
     "case-teams": [
       "admin/case-management-setup"
+    ],
+    "case-trigger": [
+      "apex/case-trigger-patterns"
+    ],
+    "casemilestone": [
+      "data/service-metrics-data-model"
     ],
     "cases": [
       "admin/case-management-setup"
@@ -1175,6 +1294,12 @@
     "channel-strategy": [
       "architect/service-cloud-architecture"
     ],
+    "chat": [
+      "admin/messaging-and-chat-setup"
+    ],
+    "chat-api": [
+      "apex/service-cloud-rest-api"
+    ],
     "ci-cd": [
       "devops/bitbucket-pipelines-for-salesforce",
       "devops/continuous-integration-testing",
@@ -1191,6 +1316,9 @@
     ],
     "circuit-breaker": [
       "integration/retry-and-backoff-patterns"
+    ],
+    "click-to-dial": [
+      "apex/cti-adapter-development"
     ],
     "clickjack": [
       "security/org-hardening-and-baseline-config"
@@ -1333,20 +1461,37 @@
       "security/ferpa-compliance-in-salesforce",
       "security/gdpr-data-privacy"
     ],
+    "console-navigation": [
+      "admin/service-console-configuration"
+    ],
     "contact": [
       "data/record-merge-implications"
     ],
     "contact-center": [
+      "admin/service-cloud-voice-setup",
       "architect/service-cloud-architecture"
     ],
     "content-document": [
       "integration/file-and-document-integration"
     ],
+    "content-document-link": [
+      "data/case-history-migration"
+    ],
     "content-federation": [
       "architect/knowledge-vs-external-cms"
     ],
+    "content-governance": [
+      "architect/knowledge-taxonomy-design"
+    ],
     "content-version": [
+      "data/case-history-migration",
       "integration/file-and-document-integration"
+    ],
+    "contentDocumentLink": [
+      "apex/pdf-generation-patterns"
+    ],
+    "contentVersion": [
+      "apex/pdf-generation-patterns"
     ],
     "contentdocument": [
       "data/data-storage-management"
@@ -1398,6 +1543,9 @@
     ],
     "cost-optimization": [
       "architect/license-optimization-strategy"
+    ],
+    "coverage-analysis": [
+      "data/territory-data-alignment"
     ],
     "coverage-model": [
       "admin/territory-design-requirements"
@@ -1457,6 +1605,9 @@
     ],
     "csv": [
       "data/bulk-api-patterns"
+    ],
+    "cti-adapter": [
+      "apex/cti-adapter-development"
     ],
     "cumulative-rollup": [
       "admin/collaborative-forecasts"
@@ -1548,6 +1699,9 @@
     "custom-tabs": [
       "admin/app-and-tab-configuration"
     ],
+    "customer-effort-scoring": [
+      "architect/customer-effort-scoring"
+    ],
     "customer-experience": [
       "admin/salesforce-surveys"
     ],
@@ -1556,6 +1710,9 @@
     ],
     "cutover-runbook": [
       "devops/go-live-cutover-planning"
+    ],
+    "cx-metrics": [
+      "architect/customer-effort-scoring"
     ],
     "dashboard-filters": [
       "admin/reports-and-dashboards-fundamentals"
@@ -1580,6 +1737,11 @@
     ],
     "data-at-rest": [
       "security/platform-encryption"
+    ],
+    "data-categories": [
+      "admin/knowledge-base-administration",
+      "apex/service-cloud-rest-api",
+      "architect/knowledge-taxonomy-design"
     ],
     "data-classification": [
       "data/data-quality-and-governance",
@@ -1615,6 +1777,9 @@
     "data-integration": [
       "data/external-id-strategy"
     ],
+    "data-isolation": [
+      "devops/sandbox-data-isolation-gotchas"
+    ],
     "data-load": [
       "admin/data-import-and-management",
       "omnistudio/dataraptor-load-and-extract"
@@ -1632,8 +1797,11 @@
     ],
     "data-migration": [
       "admin/system-field-behavior-and-audit",
+      "data/case-history-migration",
       "data/data-migration-planning",
-      "data/opportunity-pipeline-migration"
+      "data/knowledge-article-import",
+      "data/opportunity-pipeline-migration",
+      "data/territory-data-alignment"
     ],
     "data-model": [
       "admin/data-model-documentation",
@@ -1641,7 +1809,8 @@
       "data/data-model-design-patterns",
       "data/person-accounts",
       "data/product-catalog-data-model",
-      "data/sales-reporting-data-model"
+      "data/sales-reporting-data-model",
+      "data/service-metrics-data-model"
     ],
     "data-privacy": [
       "security/gdpr-data-privacy",
@@ -1884,6 +2053,7 @@
       "devops/org-shape-and-scratch-definition",
       "devops/release-management",
       "devops/salesforce-code-analyzer",
+      "devops/sandbox-data-isolation-gotchas",
       "devops/sandbox-refresh-and-templates",
       "devops/scratch-org-management",
       "devops/scratch-org-pools",
@@ -2015,10 +2185,12 @@
       "architect/einstein-bot-architecture"
     ],
     "einstein-bots": [
-      "agentforce/einstein-bots-to-agentforce-migration"
+      "agentforce/einstein-bots-to-agentforce-migration",
+      "architect/case-deflection-strategy"
     ],
     "einstein-conversation-mining": [
-      "agentforce/einstein-copilot-for-service"
+      "agentforce/einstein-copilot-for-service",
+      "architect/case-deflection-strategy"
     ],
     "einstein-for-service": [
       "agentforce/einstein-copilot-for-service"
@@ -2048,8 +2220,17 @@
     "email-automation": [
       "apex/apex-email-services"
     ],
+    "email-deliverability": [
+      "devops/sandbox-data-isolation-gotchas"
+    ],
     "email-generation": [
       "agentforce/einstein-copilot-for-sales"
+    ],
+    "email-message": [
+      "data/case-history-migration"
+    ],
+    "email-message-relation": [
+      "data/case-history-migration"
     ],
     "email-sync": [
       "admin/einstein-activity-capture-setup",
@@ -2058,14 +2239,19 @@
     "email-templates": [
       "admin/sales-engagement-cadences"
     ],
+    "email-threading": [
+      "admin/email-to-case-configuration"
+    ],
     "email-to-case": [
       "admin/case-management-setup",
+      "admin/email-to-case-configuration",
       "architect/multi-channel-service-architecture"
     ],
     "embed": [
       "omnistudio/omnistudio-lwc-integration"
     ],
     "embedded-service": [
+      "admin/messaging-and-chat-setup",
       "agentforce/agent-channel-deployment"
     ],
     "embedding-pipeline": [
@@ -2076,6 +2262,9 @@
     ],
     "enforcement-actions": [
       "security/transaction-security-policies"
+    ],
+    "enhanced-chat": [
+      "apex/service-cloud-rest-api"
     ],
     "enqueueDeployment": [
       "apex/apex-metadata-api"
@@ -2089,8 +2278,17 @@
     "enterprise-wsdl": [
       "integration/soap-api-patterns"
     ],
+    "entitlement": [
+      "apex/case-trigger-patterns",
+      "data/service-metrics-data-model"
+    ],
+    "entitlement-processes": [
+      "architect/sla-design-and-escalation-matrix"
+    ],
     "entitlements": [
-      "admin/case-management-setup"
+      "admin/case-management-setup",
+      "admin/entitlements-and-milestones",
+      "apex/entitlement-apex-hooks"
     ],
     "entry-exit-criteria": [
       "admin/sales-process-mapping"
@@ -2138,6 +2336,9 @@
     "escalation": [
       "admin/approval-processes"
     ],
+    "escalation-matrix": [
+      "architect/sla-design-and-escalation-matrix"
+    ],
     "escalation-rules": [
       "admin/case-management-setup",
       "admin/escalation-rules"
@@ -2154,7 +2355,8 @@
     "etm": [
       "admin/enterprise-territory-management",
       "admin/territory-design-requirements",
-      "apex/territory-api-and-assignment"
+      "apex/territory-api-and-assignment",
+      "data/territory-data-alignment"
     ],
     "evaluation-metrics": [
       "agentforce/agent-testing-and-evaluation"
@@ -2201,6 +2403,7 @@
       "agentforce/agent-channel-deployment",
       "architect/knowledge-vs-external-cms",
       "flow/flow-for-experience-cloud",
+      "lwc/knowledge-article-lwc",
       "lwc/navigation-and-routing",
       "security/experience-cloud-security",
       "security/guest-user-security",
@@ -2289,7 +2492,8 @@
       "architect/government-cloud-compliance"
     ],
     "feedback-management": [
-      "admin/salesforce-surveys"
+      "admin/salesforce-surveys",
+      "architect/customer-effort-scoring"
     ],
     "ferpa": [
       "security/ferpa-compliance-in-salesforce"
@@ -2455,6 +2659,9 @@
       "apex/dynamic-apex",
       "apex/soql-security",
       "architect/security-architecture-review"
+    ],
+    "flying-saucer": [
+      "apex/pdf-generation-patterns"
     ],
     "flyout": [
       "omnistudio/flexcard-design-patterns"
@@ -2770,6 +2977,9 @@
     "injection-prevention": [
       "security/xss-and-injection-prevention"
     ],
+    "inline-css": [
+      "apex/pdf-generation-patterns"
+    ],
     "inline-edit": [
       "lwc/lwc-data-table"
     ],
@@ -2794,6 +3004,9 @@
     ],
     "integration-auth": [
       "admin/connected-apps-and-auth"
+    ],
+    "integration-endpoints": [
+      "devops/sandbox-data-isolation-gotchas"
     ],
     "integration-patterns": [
       "architect/platform-selection-guidance",
@@ -2909,6 +3122,9 @@
     "k6": [
       "devops/performance-testing-salesforce"
     ],
+    "kcs": [
+      "architect/knowledge-taxonomy-design"
+    ],
     "key-fields": [
       "admin/path-and-guidance"
     ],
@@ -2919,6 +3135,9 @@
       "lwc/lwc-accessibility",
       "lwc/lwc-accessibility-patterns"
     ],
+    "keyboard-shortcuts": [
+      "admin/service-console-configuration"
+    ],
     "keystore": [
       "security/certificate-and-key-management"
     ],
@@ -2926,10 +3145,27 @@
       "apex/feature-flags-and-kill-switches"
     ],
     "knowledge": [
-      "architect/service-cloud-architecture"
+      "admin/knowledge-base-administration",
+      "apex/service-cloud-rest-api",
+      "architect/knowledge-taxonomy-design",
+      "architect/service-cloud-architecture",
+      "data/knowledge-article-import",
+      "lwc/knowledge-article-lwc"
+    ],
+    "knowledge-article": [
+      "lwc/knowledge-article-lwc"
+    ],
+    "knowledge-article-import": [
+      "data/knowledge-article-import"
     ],
     "knowledge-articles": [
       "architect/einstein-bot-architecture"
+    ],
+    "knowledge-base": [
+      "admin/knowledge-base-administration"
+    ],
+    "knowledge-management": [
+      "architect/case-deflection-strategy"
     ],
     "knowledge-vs-external-cms": [
       "architect/knowledge-vs-external-cms"
@@ -3009,6 +3245,9 @@
     "legacy-chat": [
       "agentforce/einstein-bots-to-agentforce-migration"
     ],
+    "legacy-chat-migration": [
+      "apex/service-cloud-rest-api"
+    ],
     "legacy-integration": [
       "integration/soap-api-patterns"
     ],
@@ -3040,6 +3279,9 @@
     "lightning-confirm": [
       "lwc/lwc-toast-and-notifications"
     ],
+    "lightning-console": [
+      "architect/agent-console-requirements"
+    ],
     "lightning-data-service": [
       "lwc/wire-service-patterns"
     ],
@@ -3058,6 +3300,10 @@
     ],
     "lightning-graphql": [
       "integration/graphql-api-patterns"
+    ],
+    "lightning-knowledge": [
+      "admin/knowledge-base-administration",
+      "data/knowledge-article-import"
     ],
     "lightning-locker": [
       "lwc/common-lwc-runtime-errors"
@@ -3082,6 +3328,9 @@
     "lightning-security": [
       "security/network-security-and-trusted-ips"
     ],
+    "lightning-utility-bar": [
+      "apex/cti-adapter-development"
+    ],
     "lightning-web-security": [
       "lwc/common-lwc-runtime-errors",
       "lwc/lwc-security"
@@ -3100,6 +3349,9 @@
     ],
     "list-views": [
       "admin/list-views-and-compact-layouts"
+    ],
+    "live-agent": [
+      "admin/messaging-and-chat-setup"
     ],
     "lms": [
       "lwc/message-channel-patterns"
@@ -3152,6 +3404,7 @@
       "apex/continuation-callouts",
       "architect/platform-selection-guidance",
       "architect/solution-design-patterns",
+      "lwc/knowledge-article-lwc",
       "lwc/lifecycle-hooks",
       "lwc/lwc-base-component-recipes",
       "lwc/lwc-imperative-apex",
@@ -3201,6 +3454,10 @@
     "machine-learning": [
       "architect/ai-ready-data-architecture"
     ],
+    "macros": [
+      "admin/service-console-configuration",
+      "architect/agent-console-requirements"
+    ],
     "maintainability": [
       "flow/subflows-and-reusability"
     ],
@@ -3242,10 +3499,14 @@
       "admin/email-templates-and-alerts",
       "agentforce/prompt-builder-templates"
     ],
+    "merge-trigger": [
+      "apex/case-trigger-patterns"
+    ],
     "message-channel": [
       "lwc/message-channel-patterns"
     ],
     "messaging": [
+      "admin/messaging-and-chat-setup",
       "apex/apex-email-services"
     ],
     "messaging-for-in-app-web": [
@@ -3292,6 +3553,9 @@
       "admin/org-setup-and-configuration",
       "security/transaction-security-policies"
     ],
+    "miaw": [
+      "apex/service-cloud-rest-api"
+    ],
     "middleware": [
       "integration/change-data-capture-integration"
     ],
@@ -3308,6 +3572,12 @@
     ],
     "migration-tool": [
       "omnistudio/vlocity-to-native-omnistudio-migration"
+    ],
+    "milestones": [
+      "admin/entitlements-and-milestones",
+      "apex/case-trigger-patterns",
+      "apex/entitlement-apex-hooks",
+      "architect/sla-design-and-escalation-matrix"
     ],
     "mixed-dml": [
       "apex/mixed-dml-and-setup-objects"
@@ -3344,6 +3614,9 @@
     "mql": [
       "admin/lead-scoring-requirements"
     ],
+    "mttr": [
+      "data/service-metrics-data-model"
+    ],
     "mulesoft": [
       "integration/api-led-connectivity",
       "integration/mulesoft-salesforce-connector",
@@ -3356,6 +3629,7 @@
       "architect/multi-channel-service-architecture"
     ],
     "multi-currency": [
+      "admin/products-and-pricebooks",
       "data/multi-currency-and-advanced-currency-management"
     ],
     "multi-currency-sales-architecture": [
@@ -3481,7 +3755,12 @@
       "lwc/lwc-offline-and-mobile"
     ],
     "omni-channel": [
+      "admin/messaging-and-chat-setup",
+      "admin/omni-channel-routing-setup",
+      "admin/service-cloud-voice-setup",
+      "admin/service-console-configuration",
       "agentforce/einstein-copilot-for-service",
+      "apex/omni-channel-custom-routing",
       "architect/multi-channel-service-architecture",
       "architect/omni-channel-capacity-model",
       "architect/service-cloud-architecture"
@@ -3531,8 +3810,14 @@
     "omniupdatebyfield": [
       "omnistudio/omnistudio-custom-lwc-elements"
     ],
+    "on-demand-email-to-case": [
+      "admin/email-to-case-configuration"
+    ],
     "onboarding": [
       "admin/in-app-guidance-and-walkthroughs"
+    ],
+    "open-cti": [
+      "apex/cti-adapter-development"
     ],
     "openapi": [
       "flow/flow-external-services"
@@ -3557,6 +3842,7 @@
       "architect/sales-cloud-architecture"
     ],
     "opportunity-products": [
+      "admin/products-and-pricebooks",
       "admin/quotes-and-quote-templates"
     ],
     "opportunity-scoring": [
@@ -3698,6 +3984,7 @@
       "admin/lightning-app-builder-advanced"
     ],
     "pageReference": [
+      "apex/pdf-generation-patterns",
       "apex/quote-pdf-customization"
     ],
     "pagereference": [
@@ -3739,7 +4026,8 @@
       "omnistudio/document-generation-omnistudio"
     ],
     "pdf-generation": [
-      "admin/quotes-and-quote-templates"
+      "admin/quotes-and-quote-templates",
+      "apex/pdf-generation-patterns"
     ],
     "pdf-rendering": [
       "apex/quote-pdf-customization",
@@ -3900,6 +4188,9 @@
     "presence-configuration": [
       "architect/omni-channel-capacity-model"
     ],
+    "presence-status": [
+      "admin/omni-channel-routing-setup"
+    ],
     "price-book": [
       "data/product-catalog-data-model"
     ],
@@ -3908,9 +4199,11 @@
       "data/product-catalog-data-model"
     ],
     "pricebook-entry": [
+      "admin/products-and-pricebooks",
       "data/product-catalog-data-model"
     ],
     "pricebooks": [
+      "admin/products-and-pricebooks",
       "architect/cpq-vs-standard-products-decision"
     ],
     "pricing": [
@@ -3936,7 +4229,11 @@
       "admin/requirements-gathering-for-sf"
     ],
     "product-catalog": [
+      "admin/products-and-pricebooks",
       "data/product-catalog-data-model"
+    ],
+    "product-schedules": [
+      "admin/products-and-pricebooks"
     ],
     "product2": [
       "data/product-catalog-data-model"
@@ -3948,6 +4245,7 @@
       "admin/global-actions-and-quick-actions"
     ],
     "products": [
+      "admin/products-and-pricebooks",
       "architect/cpq-vs-standard-products-decision"
     ],
     "profiles": [
@@ -4003,6 +4301,9 @@
     "public-groups": [
       "admin/queues-and-public-groups"
     ],
+    "publishing-workflow": [
+      "admin/knowledge-base-administration"
+    ],
     "pubsub": [
       "omnistudio/omnistudio-custom-lwc-elements"
     ],
@@ -4023,6 +4324,9 @@
     ],
     "query-plan": [
       "apex/apex-performance-profiling"
+    ],
+    "queue-based-routing": [
+      "admin/omni-channel-routing-setup"
     ],
     "queueable": [
       "apex/apex-queueable-patterns",
@@ -4045,6 +4349,9 @@
       "devops/post-deployment-validation",
       "devops/pre-deployment-checklist",
       "devops/rollback-and-hotfix-strategy"
+    ],
+    "quick-text": [
+      "admin/service-console-configuration"
     ],
     "quota-management": [
       "admin/collaborative-forecasts"
@@ -4125,6 +4432,7 @@
       "admin/record-type-strategy-at-scale"
     ],
     "record-types": [
+      "admin/knowledge-base-administration",
       "admin/opportunity-management",
       "admin/record-type-strategy-at-scale",
       "admin/record-types-and-page-layouts"
@@ -4196,6 +4504,7 @@
       "lwc/lwc-performance"
     ],
     "renderAs-pdf": [
+      "apex/pdf-generation-patterns",
       "apex/quote-pdf-customization"
     ],
     "renderedcallback": [
@@ -4253,6 +4562,7 @@
       "architect/integration-framework-design"
     ],
     "rest-api": [
+      "apex/service-cloud-rest-api",
       "data/bulk-api-patterns",
       "flow/auto-launched-flow-patterns",
       "integration/composite-api-patterns",
@@ -4326,7 +4636,17 @@
       "admin/approval-processes",
       "admin/assignment-rules",
       "admin/queues-and-public-groups",
+      "apex/omni-channel-custom-routing",
       "architect/service-cloud-architecture"
+    ],
+    "routing-address": [
+      "admin/email-to-case-configuration"
+    ],
+    "routing-configuration": [
+      "admin/omni-channel-routing-setup"
+    ],
+    "routing-rules": [
+      "admin/omni-channel-routing-setup"
     ],
     "row-actions": [
       "lwc/lwc-data-table"
@@ -4361,6 +4681,7 @@
       "admin/lead-scoring-requirements",
       "admin/opportunity-management",
       "admin/pipeline-review-design",
+      "admin/products-and-pricebooks",
       "admin/quote-to-cash-requirements",
       "architect/multi-currency-sales-architecture",
       "architect/sales-cloud-architecture",
@@ -4422,6 +4743,7 @@
       "architect/multi-org-strategy"
     ],
     "sandbox": [
+      "devops/sandbox-data-isolation-gotchas",
       "devops/source-tracking-and-conflict-resolution"
     ],
     "sandbox-data-masking": [
@@ -4447,6 +4769,7 @@
       "devops/environment-strategy"
     ],
     "sandboxpostcopy": [
+      "devops/sandbox-data-isolation-gotchas",
       "devops/sandbox-refresh-and-templates"
     ],
     "save-and-resume": [
@@ -4479,7 +4802,8 @@
       "flow/scheduled-flows"
     ],
     "scheduled-jobs": [
-      "admin/batch-job-scheduling-and-monitoring"
+      "admin/batch-job-scheduling-and-monitoring",
+      "devops/sandbox-data-isolation-gotchas"
     ],
     "scheduler": [
       "data/batch-data-cleanup-patterns"
@@ -4552,6 +4876,7 @@
       "apex/soql-security",
       "architect/security-architecture-review",
       "devops/salesforce-code-analyzer",
+      "devops/sandbox-data-isolation-gotchas",
       "security/certificate-and-key-management",
       "security/platform-encryption"
     ],
@@ -4595,6 +4920,9 @@
     "self-dml": [
       "apex/recursive-trigger-prevention"
     ],
+    "self-service": [
+      "architect/case-deflection-strategy"
+    ],
     "send-email-action": [
       "flow/flow-email-and-notifications"
     ],
@@ -4602,26 +4930,53 @@
       "apex/fflib-enterprise-patterns"
     ],
     "service-channel": [
+      "admin/omni-channel-routing-setup",
       "architect/omni-channel-capacity-model"
     ],
     "service-cloud": [
       "admin/case-management-setup",
+      "admin/email-to-case-configuration",
+      "admin/entitlements-and-milestones",
       "admin/escalation-rules",
+      "admin/messaging-and-chat-setup",
       "agentforce/einstein-copilot-for-service",
-      "architect/service-cloud-architecture"
+      "apex/case-trigger-patterns",
+      "apex/entitlement-apex-hooks",
+      "apex/omni-channel-custom-routing",
+      "apex/service-cloud-rest-api",
+      "architect/agent-console-requirements",
+      "architect/case-deflection-strategy",
+      "architect/service-cloud-architecture",
+      "architect/sla-design-and-escalation-matrix",
+      "data/case-history-migration",
+      "data/service-metrics-data-model"
     ],
     "service-cloud-voice": [
+      "admin/service-cloud-voice-setup",
       "architect/multi-channel-service-architecture"
+    ],
+    "service-console": [
+      "admin/service-console-configuration",
+      "architect/agent-console-requirements"
     ],
     "service-interface": [
       "architect/integration-framework-design"
+    ],
+    "service-kpis": [
+      "architect/customer-effort-scoring"
     ],
     "service-layer": [
       "apex/apex-design-patterns",
       "apex/fflib-enterprise-patterns"
     ],
+    "service-metrics": [
+      "data/service-metrics-data-model"
+    ],
     "service-replies": [
       "agentforce/einstein-copilot-for-service"
+    ],
+    "service-resource": [
+      "admin/omni-channel-routing-setup"
     ],
     "session-analytics": [
       "agentforce/agentforce-observability"
@@ -4722,6 +5077,8 @@
       "integration/sis-integration-patterns"
     ],
     "skills-based-routing": [
+      "admin/omni-channel-routing-setup",
+      "apex/omni-channel-custom-routing",
       "architect/omni-channel-capacity-model"
     ],
     "skinny-tables": [
@@ -4730,7 +5087,12 @@
       "data/data-model-design-patterns"
     ],
     "sla": [
-      "architect/nfr-definition-for-salesforce"
+      "apex/entitlement-apex-hooks",
+      "architect/nfr-definition-for-salesforce",
+      "data/service-metrics-data-model"
+    ],
+    "sla-design": [
+      "architect/sla-design-and-escalation-matrix"
     ],
     "slack-deployment": [
       "agentforce/agent-channel-deployment"
@@ -4759,6 +5121,9 @@
     "sobjetype": [
       "apex/dynamic-apex"
     ],
+    "softphone": [
+      "apex/cti-adapter-development"
+    ],
     "solution-design": [
       "architect/solution-design-patterns"
     ],
@@ -4769,7 +5134,8 @@
       "apex/soql-security",
       "data/field-history-tracking",
       "data/soql-query-optimization",
-      "integration/rest-api-patterns"
+      "integration/rest-api-patterns",
+      "lwc/knowledge-article-lwc"
     ],
     "soql-date-literals": [
       "apex/timezone-and-datetime-pitfalls"
@@ -4785,7 +5151,8 @@
       "architect/limits-and-scalability-planning"
     ],
     "sosl": [
-      "data/sosl-search-patterns"
+      "data/sosl-search-patterns",
+      "lwc/knowledge-article-lwc"
     ],
     "source-api-version": [
       "devops/salesforce-dx-project-structure"
@@ -4917,6 +5284,9 @@
     "survey-invitation": [
       "admin/salesforce-surveys"
     ],
+    "survey-strategy": [
+      "architect/customer-effort-scoring"
+    ],
     "survivorship": [
       "admin/duplicate-management"
     ],
@@ -4944,12 +5314,18 @@
     "tasks": [
       "devops/cumulusci-automation"
     ],
+    "taxonomy": [
+      "architect/knowledge-taxonomy-design"
+    ],
     "team-members": [
       "apex/opportunity-trigger-patterns"
     ],
     "technical-debt": [
       "admin/org-cleanup-and-technical-debt",
       "architect/technical-debt-assessment"
+    ],
+    "telephony": [
+      "admin/service-cloud-voice-setup"
     ],
     "templates": [
       "admin/email-templates-and-alerts"
@@ -4958,7 +5334,8 @@
       "admin/territory-design-requirements"
     ],
     "territory-assignment": [
-      "apex/territory-api-and-assignment"
+      "apex/territory-api-and-assignment",
+      "data/territory-data-alignment"
     ],
     "territory-design": [
       "admin/territory-design-requirements"
@@ -4971,6 +5348,9 @@
     ],
     "territory-management": [
       "architect/sales-cloud-architecture"
+    ],
+    "territory-management-2": [
+      "data/territory-data-alignment"
     ],
     "territory-model": [
       "admin/enterprise-territory-management"
@@ -5010,6 +5390,9 @@
     ],
     "threat-detection": [
       "security/event-monitoring"
+    ],
+    "tier-design": [
+      "architect/sla-design-and-escalation-matrix"
     ],
     "time-based-automation": [
       "admin/escalation-rules"
@@ -5196,7 +5579,9 @@
       "apex/timezone-and-datetime-pitfalls"
     ],
     "utility-bar": [
-      "admin/app-and-tab-configuration"
+      "admin/app-and-tab-configuration",
+      "admin/service-console-configuration",
+      "architect/agent-console-requirements"
     ],
     "utterance-testing": [
       "agentforce/agent-testing-and-evaluation"
@@ -5257,6 +5642,7 @@
     ],
     "visualforce": [
       "apex/continuation-callouts",
+      "apex/pdf-generation-patterns",
       "apex/quote-pdf-customization",
       "apex/visualforce-fundamentals",
       "security/xss-and-injection-prevention"
@@ -5308,6 +5694,9 @@
     "win-loss-analysis": [
       "admin/sales-process-mapping"
     ],
+    "wire": [
+      "lwc/knowledge-article-lwc"
+    ],
     "wire-adapter": [
       "lwc/common-lwc-runtime-errors"
     ],
@@ -5333,6 +5722,9 @@
     ],
     "workflow-rules": [
       "integration/outbound-messages-and-callbacks"
+    ],
+    "workspace-tabs": [
+      "admin/service-console-configuration"
     ],
     "wrapper-dto": [
       "apex/invocable-methods"
