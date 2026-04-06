@@ -160,10 +160,10 @@ a SKELETON with clearly marked placeholders:
   paths:
     /customers/{id}:
       get:
-        summary: "TODO: Confirm endpoint path with ERP team"
+        summary: "PLACEHOLDER: Confirm endpoint path with ERP team"
         responses:
           200:
-            description: "TODO: Map actual ERP response fields"
+            description: "PLACEHOLDER: Map actual ERP response fields"
 ```
 
 **Detection hint:** Check if generated API specs reference specific backend field names or operations. If they look generic or plausible-but-unverified, flag them as requiring validation against actual backend documentation.

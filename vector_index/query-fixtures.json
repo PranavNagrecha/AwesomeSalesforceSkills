@@ -19,7 +19,7 @@
       "top_k": 3
     },
     {
-      "query": "how do I add a new field to a Salesforce object",
+      "query": "how do I add a new custom field to a Salesforce object and set FLS",
       "domain": "admin",
       "expected_skill": "admin/custom-field-creation",
       "top_k": 3
@@ -1930,6 +1930,162 @@
       "query": "cross object formula spanning relationship limits and rollup summary performance",
       "domain": "apex",
       "expected_skill": "apex/cross-object-formula-and-rollup-performance",
+      "top_k": 3
+    },
+    {
+      "query": "how to set up collaborative forecasts forecast types and rollup methods",
+      "domain": "admin",
+      "expected_skill": "admin/collaborative-forecasts",
+      "top_k": 3
+    },
+    {
+      "query": "configure Einstein Activity Capture email calendar sync OAuth profile",
+      "domain": "admin",
+      "expected_skill": "admin/einstein-activity-capture-setup",
+      "top_k": 3
+    },
+    {
+      "query": "lead scoring model MQL SQL threshold demographic behavioral criteria",
+      "domain": "admin",
+      "expected_skill": "admin/lead-scoring-requirements",
+      "top_k": 3
+    },
+    {
+      "query": "Lightning page slow EPT high too many components performance tuning",
+      "domain": "admin",
+      "expected_skill": "admin/lightning-page-performance-tuning",
+      "top_k": 3
+    },
+    {
+      "query": "Pipeline Inspection setup forecast categories days in stage review cadence",
+      "domain": "admin",
+      "expected_skill": "admin/pipeline-review-design",
+      "top_k": 3
+    },
+    {
+      "query": "quote to cash process opportunity to quote to order approval workflow",
+      "domain": "admin",
+      "expected_skill": "admin/quote-to-cash-requirements",
+      "top_k": 3
+    },
+    {
+      "query": "Salesforce quote template PDF email quote sync line items",
+      "domain": "admin",
+      "expected_skill": "admin/quotes-and-quote-templates",
+      "top_k": 3
+    },
+    {
+      "query": "Sales Engagement cadence builder HVS work queue steps setup",
+      "domain": "admin",
+      "expected_skill": "admin/sales-engagement-cadences",
+      "top_k": 3
+    },
+    {
+      "query": "sales process mapping stage sequencing entry exit criteria methodology",
+      "domain": "admin",
+      "expected_skill": "admin/sales-process-mapping",
+      "top_k": 3
+    },
+    {
+      "query": "territory design alignment criteria coverage model assignment rule hierarchy",
+      "domain": "admin",
+      "expected_skill": "admin/territory-design-requirements",
+      "top_k": 3
+    },
+    {
+      "query": "Einstein Activity Capture ActivityMetric SOQL UnifiedActivity API query",
+      "domain": "apex",
+      "expected_skill": "apex/einstein-activity-capture-api",
+      "top_k": 3
+    },
+    {
+      "query": "Database.LeadConvert Apex custom field mapping lead conversion trigger",
+      "domain": "apex",
+      "expected_skill": "apex/lead-conversion-customization",
+      "top_k": 3
+    },
+    {
+      "query": "MIXED_DML_OPERATION setup object User DML same transaction error",
+      "domain": "apex",
+      "expected_skill": "apex/mixed-dml-and-setup-objects",
+      "top_k": 3
+    },
+    {
+      "query": "opportunity trigger stage change detection amount rollup team member sync",
+      "domain": "apex",
+      "expected_skill": "apex/opportunity-trigger-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "Visualforce quote PDF template custom rendering getContentAsPDF",
+      "domain": "apex",
+      "expected_skill": "apex/quote-pdf-customization",
+      "top_k": 3
+    },
+    {
+      "query": "enroll lead in cadence Apex Sales Engagement ActionCadenceTracker API",
+      "domain": "apex",
+      "expected_skill": "apex/sales-engagement-api",
+      "top_k": 3
+    },
+    {
+      "query": "Territory2 API UserTerritory2Association ObjectTerritory2Association Apex",
+      "domain": "apex",
+      "expected_skill": "apex/territory-api-and-assignment",
+      "top_k": 3
+    },
+    {
+      "query": "lead import deduplication matching rules web to lead CSV duplicate detection strategy",
+      "domain": "data",
+      "expected_skill": "data/lead-data-import-and-dedup",
+      "top_k": 3
+    },
+    {
+      "query": "migrate opportunity records stage history product line items pricebook load",
+      "domain": "data",
+      "expected_skill": "data/opportunity-pipeline-migration",
+      "top_k": 3
+    },
+    {
+      "query": "Product2 Pricebook2 PricebookEntry data model standard pricebook load sequence",
+      "domain": "data",
+      "expected_skill": "data/product-catalog-data-model",
+      "top_k": 3
+    },
+    {
+      "query": "historical trend reporting snapshot custom report type pipeline analysis",
+      "domain": "data",
+      "expected_skill": "data/sales-reporting-data-model",
+      "top_k": 3
+    },
+    {
+      "query": "Salesforce API version drift audit upgrade sourceApiVersion standardize",
+      "domain": "devops",
+      "expected_skill": "devops/api-version-management",
+      "top_k": 3
+    },
+    {
+      "query": "Copado Essentials pipeline user story promotion conflict resolution deployment",
+      "domain": "devops",
+      "expected_skill": "devops/copado-essentials",
+      "top_k": 3
+    },
+    {
+      "query": "CumulusCI cci automation cumulusci.yml task flow Robot Framework CI",
+      "domain": "devops",
+      "expected_skill": "devops/cumulusci-automation",
+      "top_k": 3
+    },
+    {
+      "query": "environment specific values named credential custom metadata CI variable substitution",
+      "domain": "devops",
+      "expected_skill": "devops/environment-specific-value-injection",
+      "top_k": 3
+    },
+    {
+      "query": "metadata type unsupported deployment failure coverage gap post deploy runbook",
+      "domain": "devops",
+      "expected_skill": "devops/metadata-api-coverage-gaps",
       "top_k": 3
     }
   ]

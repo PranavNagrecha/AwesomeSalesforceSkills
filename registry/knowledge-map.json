@@ -9,6 +9,7 @@
       "admin/case-management-setup",
       "admin/change-management-and-deployment",
       "admin/change-management-and-training",
+      "admin/collaborative-forecasts",
       "admin/connected-apps-and-auth",
       "admin/custom-field-creation",
       "admin/custom-metadata-types",
@@ -20,6 +21,7 @@
       "admin/delegated-administration",
       "admin/duplicate-management",
       "admin/dynamic-forms-and-actions",
+      "admin/einstein-activity-capture-setup",
       "admin/einstein-analytics-basics",
       "admin/email-templates-and-alerts",
       "admin/enterprise-territory-management",
@@ -29,6 +31,7 @@
       "admin/global-actions-and-quick-actions",
       "admin/in-app-guidance-and-walkthroughs",
       "admin/lead-management-and-conversion",
+      "admin/lead-scoring-requirements",
       "admin/lightning-app-builder-advanced",
       "admin/lightning-page-performance-tuning",
       "admin/list-views-and-compact-layouts",
@@ -42,14 +45,19 @@
       "admin/permission-sets-vs-profiles",
       "admin/picklist-and-value-sets",
       "admin/picklist-field-integrity-issues",
+      "admin/pipeline-review-design",
       "admin/process-automation-selection",
       "admin/queues-and-public-groups",
+      "admin/quote-to-cash-requirements",
+      "admin/quotes-and-quote-templates",
       "admin/record-type-strategy-at-scale",
       "admin/record-types-and-page-layouts",
       "admin/report-performance-tuning",
       "admin/reports-and-dashboards",
       "admin/reports-and-dashboards-fundamentals",
       "admin/requirements-gathering-for-sf",
+      "admin/sales-engagement-cadences",
+      "admin/sales-process-mapping",
       "admin/salesforce-release-preparation",
       "admin/salesforce-support-escalation",
       "admin/salesforce-surveys",
@@ -57,6 +65,7 @@
       "admin/sharing-and-visibility",
       "admin/standard-object-quirks",
       "admin/system-field-behavior-and-audit",
+      "admin/territory-design-requirements",
       "admin/uat-and-acceptance-criteria",
       "admin/user-access-policies",
       "admin/user-management",
@@ -110,6 +119,7 @@
       "apex/debug-and-logging",
       "apex/debug-logs-and-developer-console",
       "apex/dynamic-apex",
+      "apex/einstein-activity-capture-api",
       "apex/error-handling-framework",
       "apex/exception-handling",
       "apex/feature-flags-and-kill-switches",
@@ -118,17 +128,22 @@
       "apex/governor-limit-recovery-patterns",
       "apex/governor-limits",
       "apex/invocable-methods",
+      "apex/lead-conversion-customization",
       "apex/long-running-process-orchestration",
       "apex/metadata-api-and-package-xml",
       "apex/mixed-dml-and-setup-objects",
+      "apex/opportunity-trigger-patterns",
       "apex/order-of-execution-deep-dive",
       "apex/platform-cache",
       "apex/platform-events-apex",
+      "apex/quote-pdf-customization",
       "apex/record-locking-and-contention",
       "apex/recursive-trigger-prevention",
+      "apex/sales-engagement-api",
       "apex/sf-cli-and-sfdx-essentials",
       "apex/soql-fundamentals",
       "apex/soql-security",
+      "apex/territory-api-and-assignment",
       "apex/test-class-standards",
       "apex/test-data-factory-patterns",
       "apex/timezone-and-datetime-pitfalls",
@@ -179,10 +194,14 @@
       "data/external-id-strategy",
       "data/field-history-tracking",
       "data/large-scale-deduplication",
+      "data/lead-data-import-and-dedup",
       "data/multi-currency-and-advanced-currency-management",
+      "data/opportunity-pipeline-migration",
       "data/person-accounts",
+      "data/product-catalog-data-model",
       "data/record-merge-implications",
       "data/roll-up-summary-alternatives",
+      "data/sales-reporting-data-model",
       "data/sharing-recalculation-performance",
       "data/soql-query-optimization",
       "data/sosl-search-patterns"
@@ -193,10 +212,13 @@
       "devops/bitbucket-pipelines-for-salesforce",
       "devops/change-set-deployment",
       "devops/continuous-integration-testing",
+      "devops/copado-essentials",
+      "devops/cumulusci-automation",
       "devops/data-seeding-for-testing",
       "devops/deployment-error-troubleshooting",
       "devops/destructive-changes-deployment",
       "devops/devops-center-pipeline",
+      "devops/environment-specific-value-injection",
       "devops/environment-strategy",
       "devops/git-branching-for-salesforce",
       "devops/github-actions-for-salesforce",
@@ -360,6 +382,9 @@
     "CreatedDate": [
       "admin/system-field-behavior-and-audit"
     ],
+    "Database.LeadConvert": [
+      "apex/lead-conversion-customization"
+    ],
     "DeployCallback": [
       "apex/apex-metadata-api"
     ],
@@ -387,6 +412,9 @@
     "LastModifiedDate": [
       "admin/system-field-behavior-and-audit"
     ],
+    "LeadConvert": [
+      "apex/lead-conversion-customization"
+    ],
     "LimitException": [
       "apex/common-apex-runtime-errors",
       "apex/governor-limit-recovery-patterns"
@@ -396,6 +424,9 @@
     ],
     "NullPointerException": [
       "apex/common-apex-runtime-errors"
+    ],
+    "ObjectTerritory2Association": [
+      "apex/territory-api-and-assignment"
     ],
     "QueryException": [
       "apex/common-apex-runtime-errors"
@@ -411,6 +442,9 @@
     ],
     "UNABLE_TO_LOCK_ROW": [
       "apex/record-locking-and-contention"
+    ],
+    "UserTerritory2Association": [
+      "apex/territory-api-and-assignment"
     ],
     "VlocityOpenInterface2": [
       "omnistudio/omnistudio-remote-actions"
@@ -453,6 +487,12 @@
     "account-contact": [
       "data/person-accounts"
     ],
+    "account-engagement": [
+      "admin/lead-scoring-requirements"
+    ],
+    "action-cadence": [
+      "apex/sales-engagement-api"
+    ],
     "action-contracts": [
       "agentforce/agent-actions"
     ],
@@ -474,8 +514,17 @@
     "activity-capture": [
       "agentforce/einstein-copilot-for-sales"
     ],
+    "activity-metrics": [
+      "apex/einstein-activity-capture-api"
+    ],
     "activity-objects": [
       "admin/standard-object-quirks"
+    ],
+    "activity-timeline": [
+      "admin/einstein-activity-capture-setup"
+    ],
+    "add-field": [
+      "admin/custom-field-creation"
     ],
     "add-on": [
       "architect/org-edition-and-feature-licensing"
@@ -483,6 +532,7 @@
     "admin": [
       "admin/custom-field-creation",
       "admin/object-creation-and-design",
+      "admin/sales-process-mapping",
       "admin/user-access-policies"
     ],
     "admin-declarative": [
@@ -491,6 +541,9 @@
     "advanced-currency-management": [
       "architect/multi-currency-sales-architecture",
       "data/multi-currency-and-advanced-currency-management"
+    ],
+    "after-convert": [
+      "apex/lead-conversion-customization"
     ],
     "after-save": [
       "flow/record-triggered-flow-patterns"
@@ -602,6 +655,9 @@
     "apex-debugger": [
       "devops/vscode-salesforce-extensions"
     ],
+    "apex-dml": [
+      "apex/territory-api-and-assignment"
+    ],
     "apex-email-services": [
       "apex/apex-email-services"
     ],
@@ -659,6 +715,9 @@
     "apex-trigger": [
       "apex/change-data-capture-apex"
     ],
+    "apex-triggers": [
+      "apex/lead-conversion-customization"
+    ],
     "api-design": [
       "integration/graphql-api-patterns"
     ],
@@ -701,7 +760,8 @@
       "lwc/message-channel-patterns"
     ],
     "approval-process": [
-      "admin/approval-processes"
+      "admin/approval-processes",
+      "admin/quote-to-cash-requirements"
     ],
     "approvers": [
       "admin/approval-processes"
@@ -739,7 +799,8 @@
       "agentforce/einstein-copilot-for-service"
     ],
     "assignment-rules": [
-      "admin/assignment-rules"
+      "admin/assignment-rules",
+      "admin/territory-design-requirements"
     ],
     "async": [
       "data/bulk-api-and-large-data-loads",
@@ -923,6 +984,9 @@
     "bot-version": [
       "agentforce/agent-script-dsl"
     ],
+    "branch-management": [
+      "devops/copado-essentials"
+    ],
     "branching": [
       "omnistudio/omniscript-design-patterns"
     ],
@@ -947,6 +1011,7 @@
       "data/data-migration-planning",
       "data/data-reconciliation-patterns",
       "data/external-id-strategy",
+      "data/opportunity-pipeline-migration",
       "integration/mulesoft-salesforce-connector"
     ],
     "bulk-api-2": [
@@ -958,6 +1023,9 @@
     "bulk-dml": [
       "flow/flow-collection-processing"
     ],
+    "bulk-load": [
+      "data/product-catalog-data-model"
+    ],
     "bulk-safe": [
       "apex/invocable-methods"
     ],
@@ -967,6 +1035,7 @@
     "bulkification": [
       "apex/governor-limit-recovery-patterns",
       "apex/governor-limits",
+      "apex/opportunity-trigger-patterns",
       "apex/trigger-framework",
       "flow/auto-launched-flow-patterns"
     ],
@@ -1004,11 +1073,26 @@
     "cache-session": [
       "apex/platform-cache"
     ],
+    "cadence-builder": [
+      "admin/sales-engagement-cadences"
+    ],
+    "cadence-enrollment": [
+      "apex/sales-engagement-api"
+    ],
+    "cadences": [
+      "admin/sales-engagement-cadences"
+    ],
     "calculation-matrix": [
       "omnistudio/calculation-procedures"
     ],
     "calculation-procedures": [
       "omnistudio/calculation-procedures"
+    ],
+    "calendar-sync": [
+      "admin/einstein-activity-capture-setup"
+    ],
+    "call-scripts": [
+      "admin/sales-engagement-cadences"
     ],
     "callbacks": [
       "integration/outbound-messages-and-callbacks"
@@ -1056,7 +1140,8 @@
       "security/gdpr-data-privacy"
     ],
     "cdc": [
-      "apex/platform-events-apex"
+      "apex/platform-events-apex",
+      "apex/sales-engagement-api"
     ],
     "certificate": [
       "security/certificate-and-key-management"
@@ -1093,7 +1178,9 @@
     "ci-cd": [
       "devops/bitbucket-pipelines-for-salesforce",
       "devops/continuous-integration-testing",
+      "devops/cumulusci-automation",
       "devops/data-seeding-for-testing",
+      "devops/environment-specific-value-injection",
       "devops/github-actions-for-salesforce",
       "devops/gitlab-ci-for-salesforce",
       "devops/salesforce-code-analyzer",
@@ -1129,6 +1216,9 @@
     ],
     "code-freeze": [
       "devops/go-live-cutover-planning"
+    ],
+    "collaborative-forecasts": [
+      "admin/collaborative-forecasts"
     ],
     "collection-filter": [
       "flow/flow-collection-processing"
@@ -1204,6 +1294,9 @@
       "admin/custom-metadata-types-and-settings",
       "apex/custom-metadata-in-apex"
     ],
+    "configuration-profile": [
+      "admin/einstein-activity-capture-setup"
+    ],
     "configurationeditor": [
       "flow/flow-custom-property-editors",
       "lwc/custom-property-editor-for-flow"
@@ -1215,6 +1308,7 @@
       "agentforce/agent-actions"
     ],
     "conflict-resolution": [
+      "devops/copado-essentials",
       "devops/source-tracking-and-conflict-resolution"
     ],
     "connected-app": [
@@ -1286,6 +1380,9 @@
     "copado": [
       "devops/salesforce-devops-tooling-selection"
     ],
+    "copado-essentials": [
+      "devops/copado-essentials"
+    ],
     "copilot": [
       "agentforce/einstein-copilot-for-sales"
     ],
@@ -1301,6 +1398,9 @@
     ],
     "cost-optimization": [
       "architect/license-optimization-strategy"
+    ],
+    "coverage-model": [
+      "admin/territory-design-requirements"
     ],
     "cpq": [
       "architect/cpq-vs-standard-products-decision",
@@ -1358,8 +1458,15 @@
     "csv": [
       "data/bulk-api-patterns"
     ],
+    "cumulative-rollup": [
+      "admin/collaborative-forecasts"
+    ],
     "cumulusci": [
+      "devops/cumulusci-automation",
       "devops/scratch-org-pools"
+    ],
+    "cumulusci-yml": [
+      "devops/cumulusci-automation"
     ],
     "currency-conversion": [
       "architect/multi-currency-sales-architecture"
@@ -1391,6 +1498,9 @@
     "custom-exceptions": [
       "apex/error-handling-framework"
     ],
+    "custom-field-mapping": [
+      "apex/lead-conversion-customization"
+    ],
     "custom-fields": [
       "admin/custom-field-creation"
     ],
@@ -1403,7 +1513,8 @@
     "custom-metadata": [
       "apex/custom-metadata-in-apex",
       "architect/integration-framework-design",
-      "architect/platform-selection-guidance"
+      "architect/platform-selection-guidance",
+      "devops/environment-specific-value-injection"
     ],
     "custom-metadata-types": [
       "admin/custom-metadata-types",
@@ -1427,7 +1538,8 @@
       "lwc/custom-property-editor-for-flow"
     ],
     "custom-report-types": [
-      "admin/reports-and-dashboards-fundamentals"
+      "admin/reports-and-dashboards-fundamentals",
+      "data/sales-reporting-data-model"
     ],
     "custom-settings": [
       "admin/custom-metadata-types",
@@ -1497,6 +1609,9 @@
     "data-handling": [
       "devops/sandbox-refresh-and-templates"
     ],
+    "data-import": [
+      "data/lead-data-import-and-dedup"
+    ],
     "data-integration": [
       "data/external-id-strategy"
     ],
@@ -1509,20 +1624,24 @@
     ],
     "data-loading": [
       "data/bulk-api-and-large-data-loads",
-      "data/bulk-api-patterns"
+      "data/bulk-api-patterns",
+      "data/product-catalog-data-model"
     ],
     "data-masking": [
       "agentforce/einstein-trust-layer"
     ],
     "data-migration": [
       "admin/system-field-behavior-and-audit",
-      "data/data-migration-planning"
+      "data/data-migration-planning",
+      "data/opportunity-pipeline-migration"
     ],
     "data-model": [
       "admin/data-model-documentation",
       "architect/sales-cloud-architecture",
       "data/data-model-design-patterns",
-      "data/person-accounts"
+      "data/person-accounts",
+      "data/product-catalog-data-model",
+      "data/sales-reporting-data-model"
     ],
     "data-privacy": [
       "security/gdpr-data-privacy",
@@ -1535,7 +1654,8 @@
       "architect/ai-ready-data-architecture",
       "data/data-quality-and-governance",
       "data/data-reconciliation-patterns",
-      "data/large-scale-deduplication"
+      "data/large-scale-deduplication",
+      "data/lead-data-import-and-dedup"
     ],
     "data-reconciliation": [
       "data/data-reconciliation-patterns"
@@ -1608,11 +1728,17 @@
     "datetime": [
       "apex/timezone-and-datetime-pitfalls"
     ],
+    "days-in-stage": [
+      "admin/pipeline-review-design"
+    ],
     "dead-code": [
       "architect/technical-debt-assessment"
     ],
     "deadlock": [
       "apex/record-locking-and-contention"
+    ],
+    "deal-velocity": [
+      "admin/pipeline-review-design"
     ],
     "debug-interview": [
       "flow/flow-testing"
@@ -1639,7 +1765,8 @@
       "architect/solution-design-patterns"
     ],
     "deduplication": [
-      "data/large-scale-deduplication"
+      "data/large-scale-deduplication",
+      "data/lead-data-import-and-dedup"
     ],
     "defect-management": [
       "admin/uat-and-acceptance-criteria"
@@ -1748,6 +1875,7 @@
     ],
     "devops": [
       "devops/api-version-management",
+      "devops/cumulusci-automation",
       "devops/environment-strategy",
       "devops/git-branching-for-salesforce",
       "devops/metadata-api-coverage-gaps",
@@ -1777,6 +1905,15 @@
     ],
     "disaster-recovery": [
       "architect/ha-dr-architecture"
+    ],
+    "discount-approval": [
+      "admin/quotes-and-quote-templates"
+    ],
+    "discount-policy": [
+      "admin/quote-to-cash-requirements"
+    ],
+    "discovery": [
+      "admin/sales-process-mapping"
     ],
     "dlrs": [
       "data/roll-up-summary-alternatives"
@@ -1813,7 +1950,8 @@
       "data/data-quality-and-governance"
     ],
     "duplicate-rules": [
-      "admin/duplicate-management"
+      "admin/duplicate-management",
+      "data/lead-data-import-and-dedup"
     ],
     "duplicates": [
       "data/record-merge-implications"
@@ -1849,6 +1987,10 @@
     "e2e-testing": [
       "devops/automated-regression-testing"
     ],
+    "eac": [
+      "admin/einstein-activity-capture-setup",
+      "apex/einstein-activity-capture-api"
+    ],
     "editions": [
       "architect/org-edition-and-feature-licensing"
     ],
@@ -1864,6 +2006,10 @@
       "agentforce/einstein-copilot-for-service",
       "agentforce/prompt-builder-templates",
       "architect/ai-ready-data-architecture"
+    ],
+    "einstein-activity-capture": [
+      "admin/einstein-activity-capture-setup",
+      "apex/einstein-activity-capture-api"
     ],
     "einstein-bot-architecture": [
       "architect/einstein-bot-architecture"
@@ -1905,6 +2051,13 @@
     "email-generation": [
       "agentforce/einstein-copilot-for-sales"
     ],
+    "email-sync": [
+      "admin/einstein-activity-capture-setup",
+      "apex/einstein-activity-capture-api"
+    ],
+    "email-templates": [
+      "admin/sales-engagement-cadences"
+    ],
     "email-to-case": [
       "admin/case-management-setup",
       "architect/multi-channel-service-architecture"
@@ -1938,6 +2091,12 @@
     ],
     "entitlements": [
       "admin/case-management-setup"
+    ],
+    "entry-exit-criteria": [
+      "admin/sales-process-mapping"
+    ],
+    "environment-config": [
+      "devops/environment-specific-value-injection"
     ],
     "environment-strategy": [
       "admin/sandbox-strategy",
@@ -1993,7 +2152,9 @@
       "data/data-migration-planning"
     ],
     "etm": [
-      "admin/enterprise-territory-management"
+      "admin/enterprise-territory-management",
+      "admin/territory-design-requirements",
+      "apex/territory-api-and-assignment"
     ],
     "evaluation-metrics": [
       "agentforce/agent-testing-and-evaluation"
@@ -2142,6 +2303,9 @@
     "field-conflict": [
       "apex/trigger-and-flow-coexistence"
     ],
+    "field-creation": [
+      "admin/custom-field-creation"
+    ],
     "field-history": [
       "data/data-quality-and-governance"
     ],
@@ -2284,6 +2448,9 @@
     "flow-vs-apex": [
       "admin/process-automation-selection"
     ],
+    "flows": [
+      "devops/cumulusci-automation"
+    ],
     "fls": [
       "apex/dynamic-apex",
       "apex/soql-security",
@@ -2300,8 +2467,16 @@
     "force-app": [
       "devops/salesforce-dx-project-structure"
     ],
+    "forecast-adjustments": [
+      "admin/collaborative-forecasts"
+    ],
     "forecast-categories": [
-      "admin/opportunity-management"
+      "admin/collaborative-forecasts",
+      "admin/opportunity-management",
+      "admin/pipeline-review-design"
+    ],
+    "forecast-types": [
+      "admin/collaborative-forecasts"
     ],
     "forecasting": [
       "admin/opportunity-management"
@@ -2311,6 +2486,7 @@
     ],
     "formula-fields": [
       "admin/formula-fields",
+      "admin/lead-scoring-requirements",
       "apex/formula-field-performance-and-limits"
     ],
     "formulas": [
@@ -2433,6 +2609,9 @@
     "handoff-rules": [
       "agentforce/agent-topic-design"
     ],
+    "handoff-sla": [
+      "admin/lead-scoring-requirements"
+    ],
     "hard-delete": [
       "data/batch-data-cleanup-patterns"
     ],
@@ -2466,6 +2645,10 @@
     "high-availability": [
       "architect/ha-dr-architecture"
     ],
+    "high-velocity-sales": [
+      "admin/sales-engagement-cadences",
+      "apex/sales-engagement-api"
+    ],
     "high-volume-events": [
       "integration/platform-events-integration"
     ],
@@ -2477,6 +2660,9 @@
     ],
     "hipaa": [
       "security/sandbox-data-masking"
+    ],
+    "historical-trending": [
+      "data/sales-reporting-data-model"
     ],
     "hmac-verification": [
       "integration/webhook-inbound-patterns"
@@ -2508,6 +2694,9 @@
     ],
     "hub-and-spoke": [
       "architect/multi-org-strategy"
+    ],
+    "hvs": [
+      "apex/sales-engagement-api"
     ],
     "hypercare": [
       "devops/go-live-cutover-planning"
@@ -2644,6 +2833,9 @@
     "invalidation": [
       "apex/platform-cache"
     ],
+    "invocable-action": [
+      "apex/sales-engagement-api"
+    ],
     "invocable-actions": [
       "agentforce/agent-actions",
       "flow/flow-external-services"
@@ -2702,6 +2894,9 @@
     ],
     "jwt": [
       "security/certificate-and-key-management"
+    ],
+    "jwt-auth": [
+      "devops/cumulusci-automation"
     ],
     "jwt-bearer": [
       "integration/oauth-flows-and-connected-apps"
@@ -2769,11 +2964,13 @@
       "apex/formula-field-performance-and-limits"
     ],
     "lead": [
+      "data/lead-data-import-and-dedup",
       "data/record-merge-implications"
     ],
     "lead-conversion": [
       "admin/lead-management-and-conversion",
-      "admin/standard-object-quirks"
+      "admin/standard-object-quirks",
+      "apex/lead-conversion-customization"
     ],
     "lead-management": [
       "admin/assignment-rules",
@@ -2782,8 +2979,14 @@
     "lead-mapping": [
       "admin/lead-management-and-conversion"
     ],
+    "lead-qualification": [
+      "admin/lead-scoring-requirements"
+    ],
     "lead-queues": [
       "admin/lead-management-and-conversion"
+    ],
+    "lead-scoring": [
+      "admin/lead-scoring-requirements"
     ],
     "lead-to-cash": [
       "architect/sales-cloud-architecture"
@@ -3021,7 +3224,8 @@
     ],
     "matching-rules": [
       "admin/duplicate-management",
-      "data/large-scale-deduplication"
+      "data/large-scale-deduplication",
+      "data/lead-data-import-and-dedup"
     ],
     "memory-leaks": [
       "lwc/lifecycle-hooks"
@@ -3137,6 +3341,9 @@
     "mono-repo": [
       "devops/salesforce-dx-project-structure"
     ],
+    "mql": [
+      "admin/lead-scoring-requirements"
+    ],
     "mulesoft": [
       "integration/api-led-connectivity",
       "integration/mulesoft-salesforce-connector",
@@ -3155,7 +3362,8 @@
       "architect/multi-currency-sales-architecture"
     ],
     "multi-language": [
-      "admin/multi-language-and-translation"
+      "admin/multi-language-and-translation",
+      "apex/quote-pdf-customization"
     ],
     "multi-org": [
       "architect/multi-org-strategy"
@@ -3183,6 +3391,7 @@
       "agentforce/model-builder-and-byollm",
       "apex/callouts-and-http-integrations",
       "architect/multi-org-strategy",
+      "devops/environment-specific-value-injection",
       "flow/flow-external-services",
       "integration/named-credentials-setup",
       "omnistudio/integration-procedures"
@@ -3215,6 +3424,9 @@
     "network-access": [
       "security/network-security-and-trusted-ips"
     ],
+    "new-field": [
+      "admin/custom-field-creation"
+    ],
     "nfr": [
       "architect/nfr-definition-for-salesforce"
     ],
@@ -3236,6 +3448,7 @@
     ],
     "oauth": [
       "admin/connected-apps-and-auth",
+      "admin/einstein-activity-capture-setup",
       "integration/named-credentials-setup",
       "integration/oauth-flows-and-connected-apps",
       "integration/rest-api-patterns",
@@ -3249,6 +3462,9 @@
     ],
     "object-design": [
       "admin/object-creation-and-design"
+    ],
+    "object-field": [
+      "admin/custom-field-creation"
     ],
     "object-relationships": [
       "admin/data-model-documentation"
@@ -3328,7 +3544,11 @@
       "admin/opportunity-management"
     ],
     "opportunity": [
-      "admin/path-and-guidance"
+      "admin/path-and-guidance",
+      "admin/quote-to-cash-requirements",
+      "apex/opportunity-trigger-patterns",
+      "data/opportunity-pipeline-migration",
+      "data/sales-reporting-data-model"
     ],
     "opportunity-archival": [
       "architect/high-volume-sales-data-architecture"
@@ -3336,20 +3556,43 @@
     "opportunity-management": [
       "architect/sales-cloud-architecture"
     ],
+    "opportunity-products": [
+      "admin/quotes-and-quote-templates"
+    ],
     "opportunity-scoring": [
       "agentforce/einstein-copilot-for-sales"
     ],
     "opportunity-splits": [
-      "admin/opportunity-management"
+      "admin/collaborative-forecasts",
+      "admin/opportunity-management",
+      "apex/opportunity-trigger-patterns"
+    ],
+    "opportunity-stages": [
+      "admin/sales-process-mapping"
     ],
     "opportunity-territory": [
       "admin/enterprise-territory-management"
+    ],
+    "opportunityhistory": [
+      "data/opportunity-pipeline-migration"
+    ],
+    "opportunitylineitem": [
+      "data/opportunity-pipeline-migration"
+    ],
+    "opportunitysplit": [
+      "data/opportunity-pipeline-migration"
+    ],
+    "opportunityteammember": [
+      "data/opportunity-pipeline-migration"
     ],
     "optimizer": [
       "admin/org-cleanup-and-technical-debt"
     ],
     "orchestration": [
       "apex/long-running-process-orchestration"
+    ],
+    "order": [
+      "admin/quote-to-cash-requirements"
     ],
     "order-of-execution": [
       "apex/cross-object-formula-and-rollup-performance",
@@ -3454,6 +3697,9 @@
     "page-performance": [
       "admin/lightning-app-builder-advanced"
     ],
+    "pageReference": [
+      "apex/quote-pdf-customization"
+    ],
     "pagereference": [
       "lwc/navigation-and-routing"
     ],
@@ -3492,7 +3738,11 @@
     "pdf": [
       "omnistudio/document-generation-omnistudio"
     ],
+    "pdf-generation": [
+      "admin/quotes-and-quote-templates"
+    ],
     "pdf-rendering": [
+      "apex/quote-pdf-customization",
       "apex/visualforce-fundamentals"
     ],
     "peoplesoft": [
@@ -3568,10 +3818,22 @@
       "agentforce/sf-to-llm-data-pipelines"
     ],
     "pipeline": [
+      "data/sales-reporting-data-model",
+      "devops/copado-essentials",
       "devops/devops-center-pipeline"
     ],
+    "pipeline-health": [
+      "admin/pipeline-review-design"
+    ],
     "pipeline-inspection": [
+      "admin/pipeline-review-design",
       "agentforce/einstein-copilot-for-sales"
+    ],
+    "pipeline-migration": [
+      "data/opportunity-pipeline-migration"
+    ],
+    "pipeline-review": [
+      "admin/pipeline-review-design"
     ],
     "pkce": [
       "security/connected-app-security-policies"
@@ -3605,6 +3867,9 @@
     "pmd": [
       "devops/salesforce-code-analyzer"
     ],
+    "point-in-time": [
+      "data/sales-reporting-data-model"
+    ],
     "polymorphic-lookups": [
       "admin/standard-object-quirks"
     ],
@@ -3635,6 +3900,16 @@
     "presence-configuration": [
       "architect/omni-channel-capacity-model"
     ],
+    "price-book": [
+      "data/product-catalog-data-model"
+    ],
+    "pricebook": [
+      "data/opportunity-pipeline-migration",
+      "data/product-catalog-data-model"
+    ],
+    "pricebook-entry": [
+      "data/product-catalog-data-model"
+    ],
     "pricebooks": [
       "architect/cpq-vs-standard-products-decision"
     ],
@@ -3659,6 +3934,12 @@
     ],
     "process-mapping": [
       "admin/requirements-gathering-for-sf"
+    ],
+    "product-catalog": [
+      "data/product-catalog-data-model"
+    ],
+    "product2": [
+      "data/product-catalog-data-model"
     ],
     "production-recovery": [
       "devops/rollback-and-hotfix-strategy"
@@ -3697,6 +3978,9 @@
     "promotion": [
       "devops/devops-center-pipeline"
     ],
+    "promotion-path": [
+      "devops/copado-essentials"
+    ],
     "prompt-builder": [
       "agentforce/prompt-builder-templates"
     ],
@@ -3721,6 +4005,9 @@
     ],
     "pubsub": [
       "omnistudio/omnistudio-custom-lwc-elements"
+    ],
+    "pull-requests": [
+      "devops/copado-essentials"
     ],
     "pushtopic": [
       "integration/streaming-api-and-pushtopic"
@@ -3759,8 +4046,33 @@
       "devops/pre-deployment-checklist",
       "devops/rollback-and-hotfix-strategy"
     ],
+    "quota-management": [
+      "admin/collaborative-forecasts"
+    ],
+    "quote": [
+      "admin/quote-to-cash-requirements"
+    ],
+    "quote-pdf": [
+      "apex/quote-pdf-customization"
+    ],
+    "quote-sync": [
+      "admin/quotes-and-quote-templates"
+    ],
+    "quote-template": [
+      "admin/quote-to-cash-requirements",
+      "apex/quote-pdf-customization"
+    ],
+    "quote-templates": [
+      "admin/quotes-and-quote-templates"
+    ],
+    "quote-to-cash": [
+      "admin/quote-to-cash-requirements"
+    ],
     "quote-to-order": [
       "architect/sales-cloud-integration-patterns"
+    ],
+    "quotes": [
+      "admin/quotes-and-quote-templates"
     ],
     "quoting": [
       "architect/cpq-vs-standard-products-decision"
@@ -3883,6 +4195,9 @@
     "render-optimization": [
       "lwc/lwc-performance"
     ],
+    "renderAs-pdf": [
+      "apex/quote-pdf-customization"
+    ],
     "renderedcallback": [
       "lwc/lifecycle-hooks"
     ],
@@ -3916,11 +4231,17 @@
     "reporting-currency": [
       "architect/multi-currency-sales-architecture"
     ],
+    "reporting-snapshots": [
+      "data/sales-reporting-data-model"
+    ],
     "reports": [
       "admin/einstein-analytics-basics",
       "admin/report-performance-tuning",
       "admin/reports-and-dashboards",
       "admin/reports-and-dashboards-fundamentals"
+    ],
+    "requirements": [
+      "admin/territory-design-requirements"
     ],
     "requirements-gathering": [
       "admin/requirements-gathering-for-sf"
@@ -3965,11 +4286,17 @@
     "revenue-cloud": [
       "omnistudio/industries-cpq-vs-salesforce-cpq"
     ],
+    "revenue-intelligence": [
+      "admin/pipeline-review-design"
+    ],
     "rfc-7807": [
       "integration/api-error-handling-design"
     ],
     "right-to-erasure": [
       "security/gdpr-data-privacy"
+    ],
+    "robot-framework": [
+      "devops/cumulusci-automation"
     ],
     "role-hierarchy": [
       "admin/delegated-administration",
@@ -3988,6 +4315,9 @@
     ],
     "rollback-safe-logging": [
       "apex/error-handling-framework"
+    ],
+    "rollup": [
+      "apex/opportunity-trigger-patterns"
     ],
     "rollup-summary": [
       "apex/cross-object-formula-and-rollup-performance"
@@ -4026,14 +4356,32 @@
       "agentforce/einstein-copilot-for-sales"
     ],
     "sales-cloud": [
+      "admin/einstein-activity-capture-setup",
       "admin/lead-management-and-conversion",
+      "admin/lead-scoring-requirements",
       "admin/opportunity-management",
+      "admin/pipeline-review-design",
+      "admin/quote-to-cash-requirements",
       "architect/multi-currency-sales-architecture",
       "architect/sales-cloud-architecture",
       "architect/sales-cloud-integration-patterns"
     ],
+    "sales-engagement": [
+      "admin/sales-engagement-cadences",
+      "apex/sales-engagement-api"
+    ],
+    "sales-methodology": [
+      "admin/sales-process-mapping"
+    ],
     "sales-process": [
-      "admin/opportunity-management"
+      "admin/opportunity-management",
+      "admin/sales-process-mapping"
+    ],
+    "sales-reporting": [
+      "data/sales-reporting-data-model"
+    ],
+    "sales-territories": [
+      "admin/territory-design-requirements"
     ],
     "salesforce-cli": [
       "devops/destructive-changes-deployment"
@@ -4188,6 +4536,7 @@
     ],
     "secrets-management": [
       "devops/bitbucket-pipelines-for-salesforce",
+      "devops/environment-specific-value-injection",
       "devops/github-actions-for-salesforce",
       "devops/gitlab-ci-for-salesforce"
     ],
@@ -4311,6 +4660,7 @@
       "apex/sf-cli-and-sfdx-essentials",
       "devops/bitbucket-pipelines-for-salesforce",
       "devops/destructive-changes-deployment",
+      "devops/environment-specific-value-injection",
       "devops/git-branching-for-salesforce",
       "devops/github-actions-for-salesforce",
       "devops/gitlab-ci-for-salesforce",
@@ -4413,6 +4763,7 @@
       "architect/solution-design-patterns"
     ],
     "soql": [
+      "apex/einstein-activity-capture-api",
       "apex/formula-field-performance-and-limits",
       "apex/soql-fundamentals",
       "apex/soql-security",
@@ -4460,11 +4811,26 @@
     "spanning-relationships": [
       "apex/cross-object-formula-and-rollup-performance"
     ],
+    "sql": [
+      "admin/lead-scoring-requirements"
+    ],
     "sso": [
       "architect/multi-org-strategy"
     ],
     "stack-depth": [
       "apex/apex-queueable-patterns"
+    ],
+    "stage-change": [
+      "apex/opportunity-trigger-patterns"
+    ],
+    "stage-design": [
+      "admin/sales-process-mapping"
+    ],
+    "stage-gate": [
+      "admin/sales-process-mapping"
+    ],
+    "stage-history": [
+      "data/opportunity-pipeline-migration"
     ],
     "stages": [
       "admin/opportunity-management",
@@ -4475,6 +4841,9 @@
     ],
     "standard-object-quirks": [
       "admin/standard-object-quirks"
+    ],
+    "standard-pricebook": [
+      "data/product-catalog-data-model"
     ],
     "state-machine": [
       "apex/long-running-process-orchestration"
@@ -4487,6 +4856,9 @@
     ],
     "static-boolean": [
       "apex/recursive-trigger-prevention"
+    ],
+    "static-resource": [
+      "apex/quote-pdf-customization"
     ],
     "static-resources": [
       "lwc/static-resources-in-lwc"
@@ -4514,6 +4886,9 @@
     ],
     "string-optimization": [
       "apex/apex-cpu-and-heap-optimization"
+    ],
+    "string-replacement": [
+      "devops/environment-specific-value-injection"
     ],
     "stripinaccessible": [
       "apex/apex-security-patterns"
@@ -4548,6 +4923,9 @@
     "sync": [
       "data/data-reconciliation-patterns"
     ],
+    "synced-quote": [
+      "admin/quote-to-cash-requirements"
+    ],
     "system-api": [
       "integration/api-led-connectivity"
     ],
@@ -4563,12 +4941,27 @@
     "system-schedule": [
       "apex/apex-scheduled-jobs"
     ],
+    "tasks": [
+      "devops/cumulusci-automation"
+    ],
+    "team-members": [
+      "apex/opportunity-trigger-patterns"
+    ],
     "technical-debt": [
       "admin/org-cleanup-and-technical-debt",
       "architect/technical-debt-assessment"
     ],
     "templates": [
       "admin/email-templates-and-alerts"
+    ],
+    "territory-alignment": [
+      "admin/territory-design-requirements"
+    ],
+    "territory-assignment": [
+      "apex/territory-api-and-assignment"
+    ],
+    "territory-design": [
+      "admin/territory-design-requirements"
     ],
     "territory-forecast": [
       "admin/enterprise-territory-management"
@@ -4581,6 +4974,9 @@
     ],
     "territory-model": [
       "admin/enterprise-territory-management"
+    ],
+    "territory2": [
+      "apex/territory-api-and-assignment"
     ],
     "test-data": [
       "devops/data-seeding-for-testing",
@@ -4675,6 +5071,9 @@
     "translation-workbench": [
       "admin/multi-language-and-translation"
     ],
+    "trigger": [
+      "apex/opportunity-trigger-patterns"
+    ],
     "trigger-and-flow-coexistence": [
       "apex/trigger-and-flow-coexistence"
     ],
@@ -4725,6 +5124,9 @@
     ],
     "uncommitted-work-pending": [
       "apex/callout-and-dml-transaction-boundaries"
+    ],
+    "unified-activity": [
+      "apex/einstein-activity-capture-api"
     ],
     "unified-routing": [
       "architect/multi-channel-service-architecture"
@@ -4781,7 +5183,8 @@
       "apex/apex-security-patterns"
     ],
     "user-stories": [
-      "admin/requirements-gathering-for-sf"
+      "admin/requirements-gathering-for-sf",
+      "devops/copado-essentials"
     ],
     "users": [
       "admin/user-management"
@@ -4854,6 +5257,7 @@
     ],
     "visualforce": [
       "apex/continuation-callouts",
+      "apex/quote-pdf-customization",
       "apex/visualforce-fundamentals",
       "security/xss-and-injection-prevention"
     ],
@@ -4890,6 +5294,7 @@
     ],
     "web-to-lead": [
       "admin/lead-management-and-conversion",
+      "data/lead-data-import-and-dedup",
       "security/recaptcha-and-bot-prevention"
     ],
     "webhook": [
@@ -4899,6 +5304,9 @@
       "architect/license-optimization-strategy",
       "architect/nfr-definition-for-salesforce",
       "architect/well-architected-review"
+    ],
+    "win-loss-analysis": [
+      "admin/sales-process-mapping"
     ],
     "wire-adapter": [
       "lwc/common-lwc-runtime-errors"
@@ -4910,8 +5318,12 @@
       "lwc/wire-service-patterns"
     ],
     "work-items": [
+      "devops/copado-essentials",
       "devops/devops-center-pipeline",
       "flow/orchestration-flows"
+    ],
+    "work-queue": [
+      "admin/sales-engagement-cadences"
     ],
     "work-summary": [
       "agentforce/einstein-copilot-for-service"
