@@ -5,8 +5,11 @@
       "admin/app-and-tab-configuration",
       "admin/approval-processes",
       "admin/assignment-rules",
+      "admin/b2b-commerce-store-setup",
       "admin/batch-job-scheduling-and-monitoring",
       "admin/billing-schedule-setup",
+      "admin/care-plan-configuration",
+      "admin/care-program-management",
       "admin/case-management-setup",
       "admin/change-management-and-deployment",
       "admin/change-management-and-training",
@@ -48,11 +51,16 @@
       "admin/financial-account-setup",
       "admin/flow-for-admins",
       "admin/formula-fields",
+      "admin/fsc-referral-management",
+      "admin/fsl-mobile-app-setup",
+      "admin/fsl-resource-management",
+      "admin/fsl-scheduling-policies",
       "admin/fsl-service-territory-setup",
       "admin/fsl-work-order-management",
       "admin/gift-entry-and-processing",
       "admin/global-actions-and-quick-actions",
       "admin/health-cloud-patient-setup",
+      "admin/household-model-configuration",
       "admin/in-app-guidance-and-walkthroughs",
       "admin/journey-builder-administration",
       "admin/knowledge-base-administration",
@@ -89,6 +97,7 @@
       "admin/quotes-and-quote-templates",
       "admin/record-type-strategy-at-scale",
       "admin/record-types-and-page-layouts",
+      "admin/recurring-donations-setup",
       "admin/report-performance-tuning",
       "admin/reports-and-dashboards",
       "admin/reports-and-dashboards-fundamentals",
@@ -103,6 +112,7 @@
       "admin/service-cloud-voice-setup",
       "admin/service-console-configuration",
       "admin/sharing-and-visibility",
+      "admin/soft-credits-and-matching",
       "admin/standard-object-quirks",
       "admin/system-field-behavior-and-audit",
       "admin/territory-design-requirements",
@@ -605,6 +615,9 @@
     "account-contact": [
       "data/person-accounts"
     ],
+    "account-contact-relation": [
+      "admin/household-model-configuration"
+    ],
     "account-engagement": [
       "admin/lead-scoring-requirements",
       "admin/mcae-lead-scoring-and-grading",
@@ -621,6 +634,9 @@
     ],
     "action-layout": [
       "admin/global-actions-and-quick-actions"
+    ],
+    "action-plan-template": [
+      "admin/care-plan-configuration"
     ],
     "actions-and-recommendations": [
       "agentforce/einstein-next-best-action"
@@ -909,6 +925,9 @@
     "api-version": [
       "devops/api-version-management"
     ],
+    "app-extensions": [
+      "admin/fsl-mobile-app-setup"
+    ],
     "app-manager": [
       "admin/app-and-tab-configuration"
     ],
@@ -1120,6 +1139,9 @@
     "availability": [
       "architect/nfr-definition-for-salesforce"
     ],
+    "b2b-commerce": [
+      "admin/b2b-commerce-store-setup"
+    ],
     "backoff": [
       "integration/retry-and-backoff-patterns"
     ],
@@ -1301,6 +1323,12 @@
     "business-units": [
       "admin/marketing-cloud-engagement-setup"
     ],
+    "buyer-account": [
+      "admin/b2b-commerce-store-setup"
+    ],
+    "buyer-group": [
+      "admin/b2b-commerce-store-setup"
+    ],
     "byollm": [
       "agentforce/model-builder-and-byollm"
     ],
@@ -1370,6 +1398,9 @@
     "can-spam": [
       "admin/consent-management-marketing"
     ],
+    "capacity": [
+      "admin/fsl-resource-management"
+    ],
     "capacity-model": [
       "architect/omni-channel-capacity-model"
     ],
@@ -1378,6 +1409,15 @@
     ],
     "card-actions": [
       "omnistudio/flexcard-design-patterns"
+    ],
+    "care-plan": [
+      "admin/care-plan-configuration"
+    ],
+    "care-program": [
+      "admin/care-program-management"
+    ],
+    "care-program-management": [
+      "admin/care-program-management"
     ],
     "care-team": [
       "admin/health-cloud-patient-setup"
@@ -1556,6 +1596,9 @@
       "integration/platform-events-integration",
       "integration/streaming-api-and-pushtopic"
     ],
+    "commerce-setup": [
+      "admin/b2b-commerce-store-setup"
+    ],
     "community": [
       "admin/experience-cloud-member-management",
       "admin/experience-cloud-moderation",
@@ -1695,6 +1738,7 @@
       "admin/marketing-cloud-connect"
     ],
     "consent": [
+      "admin/care-program-management",
       "admin/consent-management-marketing"
     ],
     "consent-management": [
@@ -2261,6 +2305,9 @@
       "data/lead-data-import-and-dedup",
       "data/subscriber-data-management"
     ],
+    "deep-linking": [
+      "admin/fsl-mobile-app-setup"
+    ],
     "defect-management": [
       "admin/uat-and-acceptance-criteria"
     ],
@@ -2634,8 +2681,14 @@
     "enhanced-chat": [
       "apex/service-cloud-rest-api"
     ],
+    "enhanced-recurring-donations": [
+      "admin/recurring-donations-setup"
+    ],
     "enqueueDeployment": [
       "apex/apex-metadata-api"
+    ],
+    "enrollment": [
+      "admin/care-program-management"
     ],
     "enterprise": [
       "architect/org-edition-and-feature-licensing"
@@ -2652,6 +2705,9 @@
     "entitlement": [
       "apex/case-trigger-patterns",
       "data/service-metrics-data-model"
+    ],
+    "entitlement-policy": [
+      "admin/b2b-commerce-store-setup"
     ],
     "entitlement-processes": [
       "architect/sla-design-and-escalation-matrix"
@@ -2679,6 +2735,9 @@
     ],
     "er-diagram": [
       "admin/data-model-documentation"
+    ],
+    "erd": [
+      "admin/recurring-donations-setup"
     ],
     "erp-integration": [
       "architect/sales-cloud-integration-patterns"
@@ -2789,6 +2848,7 @@
       "admin/experience-cloud-moderation",
       "admin/experience-cloud-seo-settings",
       "admin/experience-cloud-site-setup",
+      "admin/fsc-referral-management",
       "admin/multi-language-and-translation",
       "admin/partner-community-requirements",
       "admin/portal-requirements-gathering",
@@ -2963,6 +3023,9 @@
       "data/record-merge-implications"
     ],
     "field-service": [
+      "admin/fsl-mobile-app-setup",
+      "admin/fsl-resource-management",
+      "admin/fsl-scheduling-policies",
       "admin/fsl-service-territory-setup",
       "admin/fsl-work-order-management"
     ],
@@ -2990,7 +3053,9 @@
       "admin/financial-account-setup"
     ],
     "financial-services-cloud": [
-      "admin/financial-account-setup"
+      "admin/financial-account-setup",
+      "admin/fsc-referral-management",
+      "admin/household-model-configuration"
     ],
     "find-clause": [
       "data/sosl-search-patterns"
@@ -3149,11 +3214,23 @@
     ],
     "fsc": [
       "admin/financial-account-setup",
+      "admin/household-model-configuration",
       "data/person-accounts"
     ],
+    "fsc-admin": [
+      "admin/fsc-referral-management"
+    ],
+    "fsc-referral-management": [
+      "admin/fsc-referral-management"
+    ],
     "fsl": [
+      "admin/fsl-resource-management",
+      "admin/fsl-scheduling-policies",
       "admin/fsl-service-territory-setup",
       "admin/fsl-work-order-management"
+    ],
+    "fsl-mobile": [
+      "admin/fsl-mobile-app-setup"
     ],
     "future-callout": [
       "apex/callout-and-dml-transaction-boundaries"
@@ -3302,6 +3379,8 @@
       "security/recaptcha-and-bot-prevention"
     ],
     "health-cloud": [
+      "admin/care-plan-configuration",
+      "admin/care-program-management",
       "admin/health-cloud-patient-setup",
       "data/person-accounts"
     ],
@@ -3357,6 +3436,9 @@
     "hotfix": [
       "devops/rollback-and-hotfix-strategy"
     ],
+    "household": [
+      "admin/household-model-configuration"
+    ],
     "household-accounts": [
       "admin/npsp-household-accounts"
     ],
@@ -3393,6 +3475,9 @@
     ],
     "hyperforce": [
       "architect/government-cloud-compliance"
+    ],
+    "icm": [
+      "admin/care-plan-configuration"
     ],
     "ideation": [
       "admin/community-engagement-strategy"
@@ -3485,8 +3570,14 @@
       "flow/flow-custom-property-editors",
       "lwc/custom-property-editor-for-flow"
     ],
+    "installments": [
+      "admin/recurring-donations-setup"
+    ],
     "instruction-adherence": [
       "agentforce/agentforce-guardrails"
+    ],
+    "integrated-care-management": [
+      "admin/care-plan-configuration"
     ],
     "integration": [
       "agentforce/sf-to-llm-data-pipelines",
@@ -3719,6 +3810,9 @@
       "data/lead-data-import-and-dedup",
       "data/record-merge-implications"
     ],
+    "lead-assignment": [
+      "admin/fsc-referral-management"
+    ],
     "lead-conversion": [
       "admin/lead-management-and-conversion",
       "admin/standard-object-quirks",
@@ -3789,6 +3883,9 @@
       "architect/experience-cloud-licensing-model",
       "architect/license-optimization-strategy",
       "architect/org-edition-and-feature-licensing"
+    ],
+    "life-sciences": [
+      "admin/care-program-management"
     ],
     "light-dom": [
       "lwc/lwc-security"
@@ -4060,6 +4157,9 @@
     "master-detail": [
       "data/data-model-design-patterns"
     ],
+    "matching-gifts": [
+      "admin/soft-credits-and-matching"
+    ],
     "matching-rules": [
       "admin/duplicate-management",
       "data/large-scale-deduplication",
@@ -4192,6 +4292,7 @@
       "apex/mixed-dml-and-setup-objects"
     ],
     "mobile": [
+      "admin/fsl-mobile-app-setup",
       "admin/global-actions-and-quick-actions"
     ],
     "mobile-lwc": [
@@ -4337,7 +4438,8 @@
     ],
     "nonprofit": [
       "admin/gift-entry-and-processing",
-      "admin/npsp-household-accounts"
+      "admin/npsp-household-accounts",
+      "admin/recurring-donations-setup"
     ],
     "notifications": [
       "admin/email-templates-and-alerts",
@@ -4348,7 +4450,9 @@
     ],
     "npsp": [
       "admin/gift-entry-and-processing",
-      "admin/npsp-household-accounts"
+      "admin/npsp-household-accounts",
+      "admin/recurring-donations-setup",
+      "admin/soft-credits-and-matching"
     ],
     "null-handling": [
       "admin/formula-fields"
@@ -4389,7 +4493,11 @@
       "integration/salesforce-connect-external-objects"
     ],
     "offline": [
+      "admin/fsl-mobile-app-setup",
       "lwc/lwc-offline-and-mobile"
+    ],
+    "offline-priming": [
+      "admin/fsl-mobile-app-setup"
     ],
     "oidc": [
       "architect/experience-cloud-integration-patterns",
@@ -4483,6 +4591,9 @@
     "opportunity-archival": [
       "architect/high-volume-sales-data-architecture"
     ],
+    "opportunity-contact-role": [
+      "admin/soft-credits-and-matching"
+    ],
     "opportunity-management": [
       "architect/sales-cloud-architecture"
     ],
@@ -4519,6 +4630,9 @@
     "opt-out": [
       "admin/consent-management-marketing",
       "data/subscriber-data-management"
+    ],
+    "optimization": [
+      "admin/fsl-scheduling-policies"
     ],
     "optimizer": [
       "admin/org-cleanup-and-technical-debt"
@@ -4663,6 +4777,9 @@
     "parent-child-summary": [
       "data/roll-up-summary-alternatives"
     ],
+    "partial-soft-credit": [
+      "admin/soft-credits-and-matching"
+    ],
     "partner-community": [
       "admin/partner-community-requirements",
       "admin/portal-requirements-gathering",
@@ -4696,6 +4813,9 @@
     ],
     "patient": [
       "admin/health-cloud-patient-setup"
+    ],
+    "patient-program-outcome": [
+      "admin/care-program-management"
     ],
     "pause-element": [
       "flow/pause-elements-and-wait-events"
@@ -4763,11 +4883,15 @@
     ],
     "person-accounts": [
       "admin/health-cloud-patient-setup",
+      "admin/household-model-configuration",
       "admin/standard-object-quirks",
       "data/person-accounts"
     ],
     "persona-design": [
       "agentforce/agentforce-persona-design"
+    ],
+    "pgi-library": [
+      "admin/care-plan-configuration"
     ],
     "picklist": [
       "admin/path-and-guidance",
@@ -4919,6 +5043,9 @@
     ],
     "pricing-method": [
       "admin/pricing-model-design"
+    ],
+    "primary-group": [
+      "admin/household-model-configuration"
     ],
     "primary-key": [
       "data/data-extension-design"
@@ -5211,6 +5338,9 @@
     "recurring-automation": [
       "flow/scheduled-flows"
     ],
+    "recurring-donations": [
+      "admin/recurring-donations-setup"
+    ],
     "recursion": [
       "apex/order-of-execution-deep-dive",
       "apex/trigger-and-flow-coexistence",
@@ -5225,6 +5355,12 @@
     ],
     "referenceId": [
       "integration/composite-api-patterns"
+    ],
+    "referral-routing": [
+      "admin/fsc-referral-management"
+    ],
+    "referrer-score": [
+      "admin/fsc-referral-management"
     ],
     "refresh": [
       "admin/sandbox-strategy"
@@ -5340,6 +5476,12 @@
       "admin/portal-requirements-gathering",
       "admin/requirements-gathering-for-sf"
     ],
+    "resource-preference": [
+      "admin/fsl-resource-management"
+    ],
+    "resource-skills": [
+      "admin/fsl-resource-management"
+    ],
     "resource-url": [
       "lwc/static-resources-in-lwc"
     ],
@@ -5419,8 +5561,14 @@
       "admin/financial-account-setup",
       "apex/opportunity-trigger-patterns"
     ],
+    "rollup-recalculation": [
+      "admin/soft-credits-and-matching"
+    ],
     "rollup-summary": [
       "apex/cross-object-formula-and-rollup-performance"
+    ],
+    "rollups": [
+      "admin/household-model-configuration"
     ],
     "routing": [
       "admin/approval-processes",
@@ -5620,7 +5768,12 @@
       "data/batch-data-cleanup-patterns"
     ],
     "scheduling": [
+      "admin/fsl-resource-management",
+      "admin/fsl-scheduling-policies",
       "admin/fsl-service-territory-setup"
+    ],
+    "scheduling-policy": [
+      "admin/fsl-scheduling-policies"
     ],
     "schema-describe": [
       "apex/dynamic-apex"
@@ -5831,10 +5984,14 @@
     "service-metrics": [
       "data/service-metrics-data-model"
     ],
+    "service-objectives": [
+      "admin/fsl-scheduling-policies"
+    ],
     "service-replies": [
       "agentforce/einstein-copilot-for-service"
     ],
     "service-resource": [
+      "admin/fsl-resource-management",
       "admin/fsl-service-territory-setup",
       "admin/omni-channel-routing-setup"
     ],
@@ -6007,6 +6164,9 @@
     ],
     "social-login": [
       "lwc/experience-cloud-authentication"
+    ],
+    "soft-credits": [
+      "admin/soft-credits-and-matching"
     ],
     "softphone": [
       "apex/cti-adapter-development"
@@ -6630,6 +6790,9 @@
     "webhook": [
       "integration/webhook-inbound-patterns"
     ],
+    "webstore": [
+      "admin/b2b-commerce-store-setup"
+    ],
     "well-architected": [
       "architect/ai-agent-org-integration-architecture",
       "architect/license-optimization-strategy",
@@ -6661,6 +6824,9 @@
     ],
     "work-queue": [
       "admin/sales-engagement-cadences"
+    ],
+    "work-rules": [
+      "admin/fsl-scheduling-policies"
     ],
     "work-summary": [
       "agentforce/einstein-copilot-for-service"

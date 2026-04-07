@@ -2753,6 +2753,168 @@
       "domain": "apex",
       "expected_skill": "apex/cpq-apex-plugins",
       "top_k": 3
+    },
+    {
+      "query": "set up care plan templates in Health Cloud ICM model",
+      "domain": "admin",
+      "expected_skill": "admin/care-plan-configuration",
+      "top_k": 3
+    },
+    {
+      "query": "configure integrated care management PGI library problems goals action plan template",
+      "domain": "admin",
+      "expected_skill": "admin/care-plan-configuration",
+      "top_k": 3
+    },
+    {
+      "query": "enroll patient into care program Health Cloud CareProgramEnrollee",
+      "domain": "admin",
+      "expected_skill": "admin/care-program-management",
+      "top_k": 3
+    },
+    {
+      "query": "consent document not showing during Health Cloud care program enrollment",
+      "domain": "admin",
+      "expected_skill": "admin/care-program-management",
+      "top_k": 3
+    },
+    {
+      "query": "CareProgramEnrollee CareProgramProduct CareProgram hierarchy setup",
+      "domain": "admin",
+      "expected_skill": "admin/care-program-management",
+      "top_k": 3
+    },
+    {
+      "query": "FSL scheduling policy work rules service objectives configuration",
+      "domain": "admin",
+      "expected_skill": "admin/fsl-scheduling-policies",
+      "top_k": 3
+    },
+    {
+      "query": "field service scheduling ignores technician availability working hours",
+      "domain": "admin",
+      "expected_skill": "admin/fsl-scheduling-policies",
+      "top_k": 3
+    },
+    {
+      "query": "Service Resource Availability work rule missing FSL custom policy",
+      "domain": "admin",
+      "expected_skill": "admin/fsl-scheduling-policies",
+      "top_k": 3
+    },
+    {
+      "query": "field service mobile app technician missing records offline",
+      "domain": "admin",
+      "expected_skill": "admin/fsl-mobile-app-setup",
+      "top_k": 3
+    },
+    {
+      "query": "how to configure offline priming for FSL mobile app",
+      "domain": "admin",
+      "expected_skill": "admin/fsl-mobile-app-setup",
+      "top_k": 3
+    },
+    {
+      "query": "add LWC quick action to work order in field service mobile",
+      "domain": "admin",
+      "expected_skill": "admin/fsl-mobile-app-setup",
+      "top_k": 3
+    },
+    {
+      "query": "technician not appearing as scheduling candidate field service",
+      "domain": "admin",
+      "expected_skill": "admin/fsl-resource-management",
+      "top_k": 3
+    },
+    {
+      "query": "configure field service resource skill level certification expiry",
+      "domain": "admin",
+      "expected_skill": "admin/fsl-resource-management",
+      "top_k": 3
+    },
+    {
+      "query": "capacity-based resource FSL hours appointments per period",
+      "domain": "admin",
+      "expected_skill": "admin/fsl-resource-management",
+      "top_k": 3
+    },
+    {
+      "query": "recurring donation only creates one future installment not twelve NPSP",
+      "domain": "admin",
+      "expected_skill": "admin/recurring-donations-setup",
+      "top_k": 3
+    },
+    {
+      "query": "upcoming installments UI not showing edits to future opportunity NPSP",
+      "domain": "admin",
+      "expected_skill": "admin/recurring-donations-setup",
+      "top_k": 3
+    },
+    {
+      "query": "configure enhanced recurring donations NPSP ERD installment period status threshold",
+      "domain": "admin",
+      "expected_skill": "admin/recurring-donations-setup",
+      "top_k": 3
+    },
+    {
+      "query": "FSC household rollup totals not updating after adding financial account to household member",
+      "domain": "admin",
+      "expected_skill": "admin/household-model-configuration",
+      "top_k": 3
+    },
+    {
+      "query": "FinServ__PrimaryGroup__c FinServ__IncludeInGroup__c AccountContactRelation household membership setup",
+      "domain": "admin",
+      "expected_skill": "admin/household-model-configuration",
+      "top_k": 3
+    },
+    {
+      "query": "Rollups picklist missing Insurance Policy Case Opportunity existing FSC org household",
+      "domain": "admin",
+      "expected_skill": "admin/household-model-configuration",
+      "top_k": 3
+    },
+    {
+      "query": "NPSP soft credit totals on contact not updating after adding donation",
+      "domain": "admin",
+      "expected_skill": "admin/soft-credits-and-matching",
+      "top_k": 3
+    },
+    {
+      "query": "how to give employer matching gift credit when employee donates NPSP",
+      "domain": "admin",
+      "expected_skill": "admin/soft-credits-and-matching",
+      "top_k": 3
+    },
+    {
+      "query": "duplicate OpportunityContactRole records after Find Matched Gifts NPSP",
+      "domain": "admin",
+      "expected_skill": "admin/soft-credits-and-matching",
+      "top_k": 3
+    },
+    {
+      "query": "npsp partial soft credit record Partial_Soft_Credit__c Contact_Role_ID missing",
+      "domain": "admin",
+      "expected_skill": "admin/soft-credits-and-matching",
+      "top_k": 3
+    },
+    {
+      "query": "FSC referral management ReferralRecordTypeMapping routing not working",
+      "domain": "admin",
+      "expected_skill": "admin/fsc-referral-management",
+      "top_k": 3
+    },
+    {
+      "query": "referral routing Lead Assignment Rules Expressed Interest picklist FSC",
+      "domain": "admin",
+      "expected_skill": "admin/fsc-referral-management",
+      "top_k": 3
+    },
+    {
+      "query": "Referrer Score not visible partner Experience Cloud community financial services",
+      "domain": "admin",
+      "expected_skill": "admin/fsc-referral-management",
+      "top_k": 5
     }
   ]
 }
