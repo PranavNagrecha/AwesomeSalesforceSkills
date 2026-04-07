@@ -10,6 +10,7 @@
       "admin/change-management-and-deployment",
       "admin/change-management-and-training",
       "admin/collaborative-forecasts",
+      "admin/community-engagement-strategy",
       "admin/connected-apps-and-auth",
       "admin/custom-field-creation",
       "admin/custom-metadata-types",
@@ -28,6 +29,12 @@
       "admin/enterprise-territory-management",
       "admin/entitlements-and-milestones",
       "admin/escalation-rules",
+      "admin/experience-cloud-cms-content",
+      "admin/experience-cloud-guest-access",
+      "admin/experience-cloud-member-management",
+      "admin/experience-cloud-moderation",
+      "admin/experience-cloud-seo-settings",
+      "admin/experience-cloud-site-setup",
       "admin/flow-for-admins",
       "admin/formula-fields",
       "admin/global-actions-and-quick-actions",
@@ -45,12 +52,14 @@
       "admin/opportunity-management",
       "admin/org-cleanup-and-technical-debt",
       "admin/org-setup-and-configuration",
+      "admin/partner-community-requirements",
       "admin/path-and-guidance",
       "admin/permission-set-architecture",
       "admin/permission-sets-vs-profiles",
       "admin/picklist-and-value-sets",
       "admin/picklist-field-integrity-issues",
       "admin/pipeline-review-design",
+      "admin/portal-requirements-gathering",
       "admin/process-automation-selection",
       "admin/products-and-pricebooks",
       "admin/queues-and-public-groups",
@@ -68,6 +77,7 @@
       "admin/salesforce-support-escalation",
       "admin/salesforce-surveys",
       "admin/sandbox-strategy",
+      "admin/self-service-design",
       "admin/service-cloud-voice-setup",
       "admin/service-console-configuration",
       "admin/sharing-and-visibility",
@@ -172,6 +182,7 @@
       "architect/cpq-vs-standard-products-decision",
       "architect/customer-effort-scoring",
       "architect/einstein-bot-architecture",
+      "architect/experience-cloud-licensing-model",
       "architect/government-cloud-compliance",
       "architect/ha-dr-architecture",
       "architect/high-volume-sales-data-architecture",
@@ -184,6 +195,7 @@
       "architect/multi-channel-service-architecture",
       "architect/multi-currency-sales-architecture",
       "architect/multi-org-strategy",
+      "architect/multi-site-architecture",
       "architect/nfr-definition-for-salesforce",
       "architect/omni-channel-capacity-model",
       "architect/org-edition-and-feature-licensing",
@@ -203,6 +215,8 @@
       "data/bulk-api-and-large-data-loads",
       "data/bulk-api-patterns",
       "data/case-history-migration",
+      "data/community-analytics-data",
+      "data/community-user-data-migration",
       "data/custom-index-requests",
       "data/data-archival-strategies",
       "data/data-migration-planning",
@@ -212,6 +226,7 @@
       "data/data-storage-management",
       "data/external-data-and-big-objects",
       "data/external-id-strategy",
+      "data/external-user-data-sharing",
       "data/field-history-tracking",
       "data/knowledge-article-import",
       "data/large-scale-deduplication",
@@ -219,11 +234,13 @@
       "data/multi-currency-and-advanced-currency-management",
       "data/omni-channel-reporting-data",
       "data/opportunity-pipeline-migration",
+      "data/partner-data-access-patterns",
       "data/person-accounts",
       "data/product-catalog-data-model",
       "data/record-merge-implications",
       "data/roll-up-summary-alternatives",
       "data/sales-reporting-data-model",
+      "data/service-data-archival",
       "data/service-metrics-data-model",
       "data/sharing-recalculation-performance",
       "data/soql-query-optimization",
@@ -317,6 +334,12 @@
       "lwc/common-lwc-runtime-errors",
       "lwc/component-communication",
       "lwc/custom-property-editor-for-flow",
+      "lwc/experience-cloud-api-access",
+      "lwc/experience-cloud-authentication",
+      "lwc/experience-cloud-lwc-components",
+      "lwc/experience-cloud-multi-idp-sso",
+      "lwc/experience-cloud-search-customization",
+      "lwc/headless-experience-cloud",
       "lwc/knowledge-article-lwc",
       "lwc/lifecycle-hooks",
       "lwc/lwc-accessibility",
@@ -333,6 +356,7 @@
       "lwc/lwc-security",
       "lwc/lwc-testing",
       "lwc/lwc-toast-and-notifications",
+      "lwc/lwr-site-development",
       "lwc/message-channel-patterns",
       "lwc/navigation-and-routing",
       "lwc/static-resources-in-lwc",
@@ -699,6 +723,9 @@
     "amazon-connect": [
       "admin/service-cloud-voice-setup"
     ],
+    "analytics": [
+      "data/community-analytics-data"
+    ],
     "analytics-api": [
       "admin/report-performance-tuning"
     ],
@@ -791,6 +818,9 @@
     "apex-triggers": [
       "apex/lead-conversion-customization"
     ],
+    "api-access": [
+      "lwc/experience-cloud-api-access"
+    ],
     "api-design": [
       "integration/graphql-api-patterns"
     ],
@@ -845,12 +875,16 @@
       "architect/technical-debt-assessment",
       "architect/well-architected-review"
     ],
+    "architect-decision": [
+      "architect/experience-cloud-licensing-model"
+    ],
     "architecture": [
       "architect/integration-framework-design",
       "architect/sales-cloud-architecture"
     ],
     "architecture-decision": [
       "architect/multi-org-strategy",
+      "architect/multi-site-architecture",
       "architect/solution-design-patterns"
     ],
     "architecture-planning": [
@@ -929,6 +963,9 @@
     "ato": [
       "architect/government-cloud-compliance"
     ],
+    "audience-targeting": [
+      "admin/experience-cloud-cms-content"
+    ],
     "audit": [
       "data/field-history-tracking",
       "data/territory-data-alignment",
@@ -939,6 +976,11 @@
     ],
     "audit-trail": [
       "agentforce/einstein-trust-layer"
+    ],
+    "aura": [
+      "admin/experience-cloud-site-setup",
+      "lwc/experience-cloud-authentication",
+      "lwc/experience-cloud-search-customization"
     ],
     "aura-handled-exception": [
       "apex/error-handling-framework"
@@ -954,6 +996,13 @@
     ],
     "auth-code": [
       "integration/oauth-flows-and-connected-apps"
+    ],
+    "auth-provider": [
+      "lwc/experience-cloud-authentication",
+      "lwc/experience-cloud-multi-idp-sso"
+    ],
+    "authentication": [
+      "lwc/experience-cloud-authentication"
     ],
     "auto-launched-flow": [
       "flow/auto-launched-flow-patterns"
@@ -1075,6 +1124,9 @@
     ],
     "brand-voice": [
       "agentforce/agentforce-persona-design"
+    ],
+    "branding": [
+      "admin/experience-cloud-site-setup"
     ],
     "bucket-fields": [
       "admin/reports-and-dashboards-fundamentals"
@@ -1231,6 +1283,7 @@
       "admin/email-to-case-configuration"
     ],
     "case-deflection": [
+      "admin/self-service-design",
       "architect/case-deflection-strategy"
     ],
     "case-history": [
@@ -1242,7 +1295,8 @@
       "admin/escalation-rules",
       "admin/queues-and-public-groups",
       "architect/agent-console-requirements",
-      "architect/service-cloud-architecture"
+      "architect/service-cloud-architecture",
+      "data/service-data-archival"
     ],
     "case-migration": [
       "data/case-history-migration"
@@ -1269,6 +1323,9 @@
       "apex/platform-events-apex",
       "apex/sales-engagement-api"
     ],
+    "cdn": [
+      "architect/multi-site-architecture"
+    ],
     "certificate": [
       "security/certificate-and-key-management"
     ],
@@ -1291,6 +1348,9 @@
       "admin/change-management-and-deployment",
       "devops/change-set-deployment",
       "devops/migration-from-change-sets-to-sfdx"
+    ],
+    "channel-analytics": [
+      "data/partner-data-access-patterns"
     ],
     "channel-deployment": [
       "agentforce/agent-channel-deployment"
@@ -1342,6 +1402,15 @@
     "cms-connect": [
       "architect/knowledge-vs-external-cms"
     ],
+    "cms-delivery": [
+      "lwc/headless-experience-cloud"
+    ],
+    "cms-workspace": [
+      "admin/experience-cloud-cms-content"
+    ],
+    "co-marketing": [
+      "admin/partner-community-requirements"
+    ],
     "code-analyzer": [
       "security/secure-coding-review-checklist"
     ],
@@ -1368,6 +1437,28 @@
       "integration/platform-events-integration",
       "integration/streaming-api-and-pushtopic"
     ],
+    "community": [
+      "admin/experience-cloud-member-management",
+      "admin/experience-cloud-moderation",
+      "admin/experience-cloud-seo-settings",
+      "admin/experience-cloud-site-setup",
+      "architect/experience-cloud-licensing-model",
+      "data/community-analytics-data",
+      "lwc/experience-cloud-api-access",
+      "lwc/lwr-site-development"
+    ],
+    "community-context": [
+      "lwc/experience-cloud-lwc-components"
+    ],
+    "community-engagement": [
+      "admin/community-engagement-strategy"
+    ],
+    "community-portals": [
+      "architect/multi-site-architecture"
+    ],
+    "community-users": [
+      "data/community-user-data-migration"
+    ],
     "compact-layouts": [
       "admin/list-views-and-compact-layouts"
     ],
@@ -1377,6 +1468,7 @@
     "compliance": [
       "architect/nfr-definition-for-salesforce",
       "data/field-history-tracking",
+      "data/service-data-archival",
       "security/data-classification-labels",
       "security/field-audit-trail",
       "security/platform-encryption",
@@ -1446,6 +1538,9 @@
       "devops/copado-essentials",
       "devops/source-tracking-and-conflict-resolution"
     ],
+    "connect-rest-api": [
+      "lwc/headless-experience-cloud"
+    ],
     "connected-app": [
       "architect/multi-org-strategy",
       "security/api-security-and-rate-limiting",
@@ -1478,7 +1573,11 @@
       "admin/service-cloud-voice-setup",
       "architect/service-cloud-architecture"
     ],
+    "content-approval": [
+      "admin/experience-cloud-moderation"
+    ],
     "content-document": [
+      "data/service-data-archival",
       "integration/file-and-document-integration"
     ],
     "content-document-link": [
@@ -1489,6 +1588,12 @@
     ],
     "content-governance": [
       "architect/knowledge-taxonomy-design"
+    ],
+    "content-scheduling": [
+      "admin/experience-cloud-cms-content"
+    ],
+    "content-types": [
+      "admin/experience-cloud-cms-content"
     ],
     "content-version": [
       "data/case-history-migration",
@@ -1586,6 +1691,9 @@
     "cross-object-formula": [
       "apex/cross-object-formula-and-rollup-performance"
     ],
+    "cross-site-navigation": [
+      "architect/multi-site-architecture"
+    ],
     "cross-system": [
       "data/external-id-strategy"
     ],
@@ -1647,6 +1755,9 @@
     "custom-controller": [
       "apex/visualforce-fundamentals"
     ],
+    "custom-domain": [
+      "admin/experience-cloud-site-setup"
+    ],
     "custom-element": [
       "omnistudio/omnistudio-lwc-integration"
     ],
@@ -1707,6 +1818,10 @@
     "custom-tabs": [
       "admin/app-and-tab-configuration"
     ],
+    "customer-community": [
+      "admin/portal-requirements-gathering",
+      "data/external-user-data-sharing"
+    ],
     "customer-effort-scoring": [
       "architect/customer-effort-scoring"
     ],
@@ -1715,6 +1830,9 @@
     ],
     "customer-facing-agent": [
       "agentforce/agentforce-guardrails"
+    ],
+    "customer-service": [
+      "admin/self-service-design"
     ],
     "cutover-runbook": [
       "devops/go-live-cutover-planning"
@@ -1742,6 +1860,9 @@
     ],
     "data-architecture": [
       "architect/ai-ready-data-architecture"
+    ],
+    "data-archival": [
+      "data/service-data-archival"
     ],
     "data-at-rest": [
       "security/platform-encryption"
@@ -1793,6 +1914,7 @@
       "omnistudio/dataraptor-load-and-extract"
     ],
     "data-loader": [
+      "data/community-user-data-migration",
       "data/data-migration-planning"
     ],
     "data-loading": [
@@ -1806,6 +1928,7 @@
     "data-migration": [
       "admin/system-field-behavior-and-audit",
       "data/case-history-migration",
+      "data/community-user-data-migration",
       "data/data-migration-planning",
       "data/knowledge-article-import",
       "data/opportunity-pipeline-migration",
@@ -1913,6 +2036,10 @@
     ],
     "deadlock": [
       "apex/record-locking-and-contention"
+    ],
+    "deal-registration": [
+      "admin/partner-community-requirements",
+      "data/partner-data-access-patterns"
     ],
     "deal-velocity": [
       "admin/pipeline-review-design"
@@ -2078,6 +2205,12 @@
     "digital-engagement": [
       "flow/flow-email-and-notifications"
     ],
+    "digital-experience": [
+      "architect/multi-site-architecture"
+    ],
+    "digital-experiences": [
+      "admin/experience-cloud-cms-content"
+    ],
     "directory-information": [
       "security/ferpa-compliance-in-salesforce"
     ],
@@ -2121,6 +2254,9 @@
       "apex/apex-design-patterns",
       "apex/fflib-enterprise-patterns"
     ],
+    "domain-strategy": [
+      "architect/multi-site-architecture"
+    ],
     "dst": [
       "apex/timezone-and-datetime-pitfalls"
     ],
@@ -2136,6 +2272,9 @@
     ],
     "dx-project": [
       "devops/salesforce-dx-project-structure"
+    ],
+    "dxp": [
+      "lwc/lwr-site-development"
     ],
     "dynamic-actions": [
       "admin/dynamic-forms-and-actions",
@@ -2235,7 +2374,8 @@
       "agentforce/einstein-copilot-for-sales"
     ],
     "email-message": [
-      "data/case-history-migration"
+      "data/case-history-migration",
+      "data/service-data-archival"
     ],
     "email-message-relation": [
       "data/case-history-migration"
@@ -2270,6 +2410,9 @@
     ],
     "enforcement-actions": [
       "security/transaction-security-policies"
+    ],
+    "engagement-insights": [
+      "data/community-analytics-data"
     ],
     "enhanced-chat": [
       "apex/service-cloud-rest-api"
@@ -2406,16 +2549,45 @@
     "experience-api": [
       "integration/api-led-connectivity"
     ],
+    "experience-builder": [
+      "admin/experience-cloud-guest-access",
+      "admin/experience-cloud-seo-settings"
+    ],
     "experience-cloud": [
+      "admin/community-engagement-strategy",
+      "admin/experience-cloud-guest-access",
+      "admin/experience-cloud-member-management",
+      "admin/experience-cloud-moderation",
+      "admin/experience-cloud-seo-settings",
+      "admin/experience-cloud-site-setup",
       "admin/multi-language-and-translation",
+      "admin/partner-community-requirements",
+      "admin/portal-requirements-gathering",
+      "admin/self-service-design",
       "agentforce/agent-channel-deployment",
+      "architect/experience-cloud-licensing-model",
       "architect/knowledge-vs-external-cms",
+      "architect/multi-site-architecture",
+      "data/community-analytics-data",
+      "data/community-user-data-migration",
+      "data/external-user-data-sharing",
+      "data/partner-data-access-patterns",
       "flow/flow-for-experience-cloud",
+      "lwc/experience-cloud-api-access",
+      "lwc/experience-cloud-authentication",
+      "lwc/experience-cloud-lwc-components",
+      "lwc/experience-cloud-multi-idp-sso",
+      "lwc/experience-cloud-search-customization",
+      "lwc/headless-experience-cloud",
       "lwc/knowledge-article-lwc",
+      "lwc/lwr-site-development",
       "lwc/navigation-and-routing",
       "security/experience-cloud-security",
       "security/guest-user-security",
       "security/recaptcha-and-bot-prevention"
+    ],
+    "experience-cloud-cms-content": [
+      "admin/experience-cloud-cms-content"
     ],
     "experience-cloud-login": [
       "security/ip-range-and-login-flow-strategy"
@@ -2427,6 +2599,9 @@
     "external-credentials": [
       "admin/connected-apps-and-auth",
       "integration/named-credentials-setup"
+    ],
+    "external-frontend": [
+      "lwc/headless-experience-cloud"
     ],
     "external-id": [
       "admin/data-import-and-management",
@@ -2449,6 +2624,9 @@
       "data/external-data-and-big-objects",
       "integration/salesforce-connect-external-objects"
     ],
+    "external-owd": [
+      "data/external-user-data-sharing"
+    ],
     "external-services": [
       "flow/flow-external-services"
     ],
@@ -2461,7 +2639,14 @@
     "external-subscription": [
       "integration/change-data-capture-integration"
     ],
+    "external-user": [
+      "lwc/experience-cloud-api-access"
+    ],
     "external-users": [
+      "admin/experience-cloud-member-management",
+      "architect/experience-cloud-licensing-model",
+      "data/community-user-data-migration",
+      "data/external-user-data-sharing",
       "flow/flow-for-experience-cloud"
     ],
     "factory-pattern": [
@@ -2495,6 +2680,12 @@
     ],
     "feature-store": [
       "architect/ai-ready-data-architecture"
+    ],
+    "federated-search": [
+      "lwc/experience-cloud-search-customization"
+    ],
+    "federation-id": [
+      "lwc/experience-cloud-multi-idp-sso"
     ],
     "fedramp": [
       "architect/government-cloud-compliance"
@@ -2666,7 +2857,8 @@
     "fls": [
       "apex/dynamic-apex",
       "apex/soql-security",
-      "architect/security-architecture-review"
+      "architect/security-architecture-review",
+      "lwc/experience-cloud-api-access"
     ],
     "flying-saucer": [
       "apex/pdf-generation-patterns"
@@ -2716,6 +2908,12 @@
     "future-method": [
       "apex/async-apex",
       "apex/mixed-dml-and-setup-objects"
+    ],
+    "ga4": [
+      "data/community-analytics-data"
+    ],
+    "gamification": [
+      "admin/community-engagement-strategy"
     ],
     "gap-analysis": [
       "admin/requirements-gathering-for-sf"
@@ -2801,8 +2999,12 @@
       "agentforce/agentforce-guardrails"
     ],
     "guest-user": [
+      "admin/experience-cloud-guest-access",
       "admin/salesforce-surveys",
       "flow/flow-for-experience-cloud",
+      "lwc/experience-cloud-api-access",
+      "lwc/experience-cloud-lwc-components",
+      "lwc/experience-cloud-search-customization",
       "security/experience-cloud-security",
       "security/guest-user-security"
     ],
@@ -2831,9 +3033,11 @@
       "data/batch-data-cleanup-patterns"
     ],
     "headless-cms": [
-      "architect/knowledge-vs-external-cms"
+      "architect/knowledge-vs-external-cms",
+      "lwc/headless-experience-cloud"
     ],
     "headless-identity": [
+      "lwc/experience-cloud-authentication",
       "security/recaptcha-and-bot-prevention"
     ],
     "health-cloud": [
@@ -2844,6 +3048,9 @@
     ],
     "heap-size": [
       "apex/apex-cpu-and-heap-optimization"
+    ],
+    "help-center": [
+      "admin/self-service-design"
     ],
     "help-portal": [
       "admin/salesforce-support-escalation"
@@ -2918,6 +3125,9 @@
     ],
     "hyperforce": [
       "architect/government-cloud-compliance"
+    ],
+    "ideation": [
+      "admin/community-engagement-strategy"
     ],
     "idempotency": [
       "data/external-id-strategy",
@@ -3154,6 +3364,7 @@
     ],
     "knowledge": [
       "admin/knowledge-base-administration",
+      "admin/self-service-design",
       "apex/service-cloud-rest-api",
       "architect/knowledge-taxonomy-design",
       "architect/service-cloud-architecture",
@@ -3216,6 +3427,9 @@
       "admin/standard-object-quirks",
       "apex/lead-conversion-customization"
     ],
+    "lead-distribution": [
+      "admin/partner-community-requirements"
+    ],
     "lead-management": [
       "admin/assignment-rules",
       "admin/queues-and-public-groups"
@@ -3262,11 +3476,16 @@
     "license-audit": [
       "architect/license-optimization-strategy"
     ],
+    "license-migration": [
+      "data/community-user-data-migration"
+    ],
     "licenses": [
       "admin/user-management"
     ],
     "licensing": [
+      "admin/experience-cloud-member-management",
       "architect/cpq-vs-standard-products-decision",
+      "architect/experience-cloud-licensing-model",
       "architect/license-optimization-strategy",
       "architect/org-edition-and-feature-licensing"
     ],
@@ -3324,6 +3543,9 @@
     "lightning-modal": [
       "lwc/lwc-modal-and-overlay"
     ],
+    "lightning-navigation": [
+      "lwc/experience-cloud-lwc-components"
+    ],
     "lightning-pages": [
       "admin/lightning-page-performance-tuning"
     ],
@@ -3341,7 +3563,8 @@
     ],
     "lightning-web-security": [
       "lwc/common-lwc-runtime-errors",
-      "lwc/lwc-security"
+      "lwc/lwc-security",
+      "lwc/lwr-site-development"
     ],
     "limits-api": [
       "architect/org-limits-monitoring"
@@ -3412,11 +3635,14 @@
       "apex/continuation-callouts",
       "architect/platform-selection-guidance",
       "architect/solution-design-patterns",
+      "lwc/experience-cloud-authentication",
+      "lwc/experience-cloud-lwc-components",
       "lwc/knowledge-article-lwc",
       "lwc/lifecycle-hooks",
       "lwc/lwc-base-component-recipes",
       "lwc/lwc-imperative-apex",
       "lwc/lwc-toast-and-notifications",
+      "lwc/lwr-site-development",
       "omnistudio/omnistudio-custom-lwc-elements",
       "omnistudio/omnistudio-lwc-integration"
     ],
@@ -3447,6 +3673,9 @@
     "lwc-performance": [
       "lwc/lwc-performance"
     ],
+    "lwc-reuse": [
+      "architect/multi-site-architecture"
+    ],
     "lwc-runtime-errors": [
       "lwc/common-lwc-runtime-errors"
     ],
@@ -3455,6 +3684,13 @@
     ],
     "lwc-testing": [
       "lwc/lwc-testing"
+    ],
+    "lwr": [
+      "admin/experience-cloud-seo-settings",
+      "admin/experience-cloud-site-setup",
+      "lwc/experience-cloud-lwc-components",
+      "lwc/experience-cloud-search-customization",
+      "lwc/lwr-site-development"
     ],
     "mTLS": [
       "security/certificate-and-key-management"
@@ -3471,6 +3707,9 @@
     ],
     "maintenance-window": [
       "data/sharing-recalculation-performance"
+    ],
+    "managed-content": [
+      "admin/experience-cloud-cms-content"
     ],
     "managed-package": [
       "apex/apex-metadata-api",
@@ -3491,6 +3730,12 @@
       "admin/duplicate-management",
       "data/large-scale-deduplication",
       "data/lead-data-import-and-dedup"
+    ],
+    "mdf": [
+      "admin/partner-community-requirements"
+    ],
+    "member-management": [
+      "admin/experience-cloud-member-management"
     ],
     "memory-leaks": [
       "lwc/lifecycle-hooks"
@@ -3611,6 +3856,9 @@
     "model-builder": [
       "agentforce/model-builder-and-byollm"
     ],
+    "moderation": [
+      "admin/experience-cloud-moderation"
+    ],
     "monitoring": [
       "admin/batch-job-scheduling-and-monitoring",
       "apex/custom-logging-and-monitoring",
@@ -3643,6 +3891,9 @@
     "multi-currency-sales-architecture": [
       "architect/multi-currency-sales-architecture"
     ],
+    "multi-idp": [
+      "lwc/experience-cloud-multi-idp-sso"
+    ],
     "multi-language": [
       "admin/multi-language-and-translation",
       "apex/quote-pdf-customization"
@@ -3652,6 +3903,9 @@
     ],
     "multi-package": [
       "devops/multi-package-development"
+    ],
+    "multi-site": [
+      "architect/multi-site-architecture"
     ],
     "multi-user": [
       "flow/orchestration-flows"
@@ -3706,6 +3960,9 @@
     "network-access": [
       "security/network-security-and-trusted-ips"
     ],
+    "network-activity-audit": [
+      "data/community-analytics-data"
+    ],
     "new-field": [
       "admin/custom-field-creation"
     ],
@@ -3734,6 +3991,7 @@
       "integration/named-credentials-setup",
       "integration/oauth-flows-and-connected-apps",
       "integration/rest-api-patterns",
+      "lwc/experience-cloud-api-access",
       "security/connected-app-security-policies"
     ],
     "oauth-jwt-bearer": [
@@ -3761,6 +4019,9 @@
     ],
     "offline": [
       "lwc/lwc-offline-and-mobile"
+    ],
+    "oidc": [
+      "lwc/experience-cloud-multi-idp-sso"
     ],
     "omni-channel": [
       "admin/messaging-and-chat-setup",
@@ -4009,14 +4270,29 @@
     "parent-child-summary": [
       "data/roll-up-summary-alternatives"
     ],
+    "partner-community": [
+      "admin/partner-community-requirements",
+      "admin/portal-requirements-gathering",
+      "data/external-user-data-sharing",
+      "data/partner-data-access-patterns"
+    ],
     "partner-portal": [
       "architect/sales-cloud-integration-patterns"
+    ],
+    "partner-role-hierarchy": [
+      "data/partner-data-access-patterns"
+    ],
+    "partner-tiers": [
+      "admin/partner-community-requirements"
     ],
     "partner-wsdl": [
       "integration/soap-api-patterns"
     ],
     "password-policy": [
       "security/security-health-check"
+    ],
+    "passwordless": [
+      "lwc/experience-cloud-authentication"
     ],
     "path": [
       "admin/opportunity-management",
@@ -4170,11 +4446,16 @@
     "polymorphic-lookups": [
       "admin/standard-object-quirks"
     ],
+    "portal": [
+      "admin/portal-requirements-gathering",
+      "data/external-user-data-sharing"
+    ],
     "portal-security": [
       "security/experience-cloud-security"
     ],
     "portal-users": [
-      "apex/test-data-factory-patterns"
+      "apex/test-data-factory-patterns",
+      "data/community-user-data-migration"
     ],
     "post-authentication": [
       "security/ip-range-and-login-flow-strategy"
@@ -4221,6 +4502,10 @@
     ],
     "privacy-center": [
       "security/gdpr-data-privacy"
+    ],
+    "prm": [
+      "admin/partner-community-requirements",
+      "data/partner-data-access-patterns"
     ],
     "proactive-monitoring": [
       "architect/org-limits-monitoring"
@@ -4309,6 +4594,9 @@
     ],
     "public-groups": [
       "admin/queues-and-public-groups"
+    ],
+    "public-pages": [
+      "admin/experience-cloud-guest-access"
     ],
     "publishing-workflow": [
       "admin/knowledge-base-administration"
@@ -4470,6 +4758,9 @@
     "refreshapex": [
       "lwc/wire-service-patterns"
     ],
+    "registration-handler": [
+      "lwc/experience-cloud-multi-idp-sso"
+    ],
     "regression-testing": [
       "agentforce/agent-testing-and-evaluation"
     ],
@@ -4561,10 +4852,15 @@
       "admin/reports-and-dashboards",
       "admin/reports-and-dashboards-fundamentals"
     ],
+    "reputation": [
+      "admin/community-engagement-strategy",
+      "admin/experience-cloud-moderation"
+    ],
     "requirements": [
       "admin/territory-design-requirements"
     ],
     "requirements-gathering": [
+      "admin/portal-requirements-gathering",
       "admin/requirements-gathering-for-sf"
     ],
     "resource-url": [
@@ -4619,6 +4915,9 @@
     ],
     "robot-framework": [
       "devops/cumulusci-automation"
+    ],
+    "robots-txt": [
+      "admin/experience-cloud-seo-settings"
     ],
     "role-hierarchy": [
       "admin/delegated-administration",
@@ -4754,6 +5053,9 @@
     "salesforce-to-salesforce": [
       "architect/multi-org-strategy"
     ],
+    "saml": [
+      "lwc/experience-cloud-multi-idp-sso"
+    ],
     "sandbox": [
       "devops/sandbox-data-isolation-gotchas",
       "devops/source-tracking-and-conflict-resolution"
@@ -4857,12 +5159,21 @@
       "lwc/lwc-accessibility",
       "lwc/lwc-accessibility-patterns"
     ],
+    "search": [
+      "lwc/experience-cloud-search-customization"
+    ],
     "search-layouts": [
       "admin/list-views-and-compact-layouts",
       "data/sosl-search-patterns"
     ],
+    "search-manager": [
+      "lwc/experience-cloud-search-customization"
+    ],
     "search-query": [
       "data/sosl-search-patterns"
+    ],
+    "search-scope": [
+      "lwc/experience-cloud-search-customization"
     ],
     "seasonal-release": [
       "admin/salesforce-release-preparation"
@@ -4932,11 +5243,22 @@
     "self-dml": [
       "apex/recursive-trigger-prevention"
     ],
+    "self-registration": [
+      "admin/experience-cloud-member-management",
+      "lwc/experience-cloud-authentication"
+    ],
     "self-service": [
+      "admin/portal-requirements-gathering",
       "architect/case-deflection-strategy"
+    ],
+    "self-service-design": [
+      "admin/self-service-design"
     ],
     "send-email-action": [
       "flow/flow-email-and-notifications"
+    ],
+    "seo": [
+      "admin/experience-cloud-seo-settings"
     ],
     "separation-of-concerns": [
       "apex/fflib-enterprise-patterns"
@@ -5058,11 +5380,13 @@
     "sharing": [
       "admin/queues-and-public-groups",
       "admin/sharing-and-visibility",
+      "lwc/experience-cloud-api-access",
       "security/guest-user-security"
     ],
     "sharing-model": [
       "admin/object-creation-and-design",
-      "architect/security-architecture-review"
+      "architect/security-architecture-review",
+      "data/external-user-data-sharing"
     ],
     "sharing-recalculation": [
       "admin/data-skew-and-sharing-performance",
@@ -5072,7 +5396,11 @@
     ],
     "sharing-rules": [
       "admin/sharing-and-visibility",
+      "data/partner-data-access-patterns",
       "data/sharing-recalculation-performance"
+    ],
+    "sharing-set": [
+      "data/external-user-data-sharing"
     ],
     "sharing-sets": [
       "security/experience-cloud-security"
@@ -5088,6 +5416,15 @@
     ],
     "sis-integration": [
       "integration/sis-integration-patterns"
+    ],
+    "site-builder": [
+      "admin/experience-cloud-site-setup"
+    ],
+    "site-quota": [
+      "architect/multi-site-architecture"
+    ],
+    "sitemap": [
+      "admin/experience-cloud-seo-settings"
     ],
     "skills-based-routing": [
       "admin/omni-channel-routing-setup",
@@ -5133,6 +5470,9 @@
     ],
     "sobjetype": [
       "apex/dynamic-apex"
+    ],
+    "social-login": [
+      "lwc/experience-cloud-authentication"
     ],
     "softphone": [
       "apex/cti-adapter-development"
@@ -5195,7 +5535,9 @@
       "admin/lead-scoring-requirements"
     ],
     "sso": [
-      "architect/multi-org-strategy"
+      "architect/multi-org-strategy",
+      "lwc/experience-cloud-authentication",
+      "lwc/experience-cloud-multi-idp-sso"
     ],
     "stack-depth": [
       "apex/apex-queueable-patterns"
@@ -5248,7 +5590,8 @@
     ],
     "storage": [
       "architect/org-limits-monitoring",
-      "data/data-archival-strategies"
+      "data/data-archival-strategies",
+      "data/service-data-archival"
     ],
     "storage-limits": [
       "architect/limits-and-scalability-planning"
@@ -5398,6 +5741,9 @@
     "testing-api": [
       "agentforce/agent-testing-and-evaluation"
     ],
+    "theming": [
+      "lwc/lwr-site-development"
+    ],
     "third-party-library": [
       "lwc/static-resources-in-lwc"
     ],
@@ -5516,6 +5862,7 @@
       "integration/graphql-api-patterns"
     ],
     "unauthenticated-access": [
+      "admin/experience-cloud-guest-access",
       "security/guest-user-security"
     ],
     "uncommitted-work-pending": [

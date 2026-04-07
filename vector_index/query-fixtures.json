@@ -1,6 +1,24 @@
 {
   "queries": [
     {
+      "query": "partner user data visibility role hierarchy PRM sharing",
+      "domain": "data",
+      "expected_skill": "data/partner-data-access-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "partner community user cannot see deal registration records",
+      "domain": "data",
+      "expected_skill": "data/partner-data-access-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "configure SEO for Experience Cloud site page titles sitemap",
+      "domain": "admin",
+      "expected_skill": "admin/experience-cloud-seo-settings",
+      "top_k": 3
+    },
+    {
       "query": "how do I create a Lightning app and add tabs for custom objects",
       "domain": "admin",
       "expected_skill": "admin/app-and-tab-configuration",
@@ -2242,6 +2260,222 @@
       "query": "how do I report Omni-Channel wait time and agent capacity utilization historically",
       "domain": "data",
       "expected_skill": "data/omni-channel-reporting-data",
+      "top_k": 3
+    },
+    {
+      "query": "how do I add external users to an Experience Cloud site and set up self-registration",
+      "domain": "admin",
+      "expected_skill": "admin/experience-cloud-member-management",
+      "top_k": 3
+    },
+    {
+      "query": "how do I set up a CMS workspace and publish content to an Experience Cloud site",
+      "domain": "admin",
+      "expected_skill": "admin/experience-cloud-cms-content",
+      "top_k": 3
+    },
+    {
+      "query": "can a Customer Community user call the Salesforce REST API directly",
+      "domain": "lwc",
+      "expected_skill": "lwc/experience-cloud-api-access",
+      "top_k": 3
+    },
+    {
+      "query": "how do I add Google social login to an Experience Cloud site with custom self-registration",
+      "domain": "lwc",
+      "expected_skill": "lwc/experience-cloud-authentication",
+      "top_k": 3
+    },
+    {
+      "query": "headless Salesforce CMS deliver content to React app external frontend",
+      "domain": "lwc",
+      "expected_skill": "lwc/headless-experience-cloud",
+      "top_k": 3
+    },
+    {
+      "query": "how do I configure search scope in Experience Builder to show only Knowledge articles",
+      "domain": "lwc",
+      "expected_skill": "lwc/experience-cloud-search-customization",
+      "top_k": 3
+    },
+    {
+      "query": "multiple identity providers Experience Cloud login page OIDC SAML",
+      "domain": "lwc",
+      "expected_skill": "lwc/experience-cloud-multi-idp-sso",
+      "top_k": 3
+    },
+    {
+      "query": "tenant-specific login routing community parameter Start SSO URL portal",
+      "domain": "lwc",
+      "expected_skill": "lwc/experience-cloud-multi-idp-sso",
+      "top_k": 3
+    },
+    {
+      "query": "vendor portal corporate IdP citizen portal social IdP same Salesforce org",
+      "domain": "lwc",
+      "expected_skill": "lwc/experience-cloud-multi-idp-sso",
+      "top_k": 3
+    },
+    {
+      "query": "how do I set up content moderation rules in Experience Cloud to block banned words",
+      "domain": "admin",
+      "expected_skill": "admin/experience-cloud-moderation",
+      "top_k": 3
+    },
+    {
+      "query": "multiple Experience Cloud sites architecture domain strategy",
+      "expected_skill": "architect/multi-site-architecture",
+      "domain": "architect",
+      "top_k": 3
+    },
+    {
+      "query": "partner community requirements deal registration lead distribution tier management",
+      "domain": "admin",
+      "expected_skill": "admin/partner-community-requirements",
+      "top_k": 3
+    },
+    {
+      "query": "PRM deal registration approval flow opportunity conversion partner tier MDF",
+      "domain": "admin",
+      "expected_skill": "admin/partner-community-requirements",
+      "top_k": 3
+    },
+    {
+      "query": "build LWR site Experience Cloud Lightning Web Runtime",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwr-site-development",
+      "top_k": 3
+    },
+    {
+      "query": "custom theme layout component lightningCommunity__Theme_Layout dxp styling hooks",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwr-site-development",
+      "top_k": 3
+    },
+    {
+      "query": "LWR site republish component changes not showing live",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwr-site-development",
+      "top_k": 3
+    },
+    {
+      "query": "configure public pages Experience Cloud unauthenticated access",
+      "domain": "admin",
+      "expected_skill": "admin/experience-cloud-guest-access",
+      "top_k": 3
+    },
+    {
+      "query": "guest user profile setup public community page visibility",
+      "domain": "admin",
+      "expected_skill": "admin/experience-cloud-guest-access",
+      "top_k": 3
+    },
+    {
+      "query": "make Experience Builder page accessible without login",
+      "domain": "admin",
+      "expected_skill": "admin/experience-cloud-guest-access",
+      "top_k": 3
+    },
+    {
+      "query": "migrate community users bulk create external Experience Cloud Data Loader ContactId",
+      "domain": "data",
+      "expected_skill": "data/community-user-data-migration",
+      "top_k": 3
+    },
+    {
+      "query": "move users from Customer Community to Customer Community Plus license migration profile update",
+      "domain": "data",
+      "expected_skill": "data/community-user-data-migration",
+      "top_k": 3
+    },
+    {
+      "query": "import portal users Experience Cloud user insert fails ContactId",
+      "domain": "data",
+      "expected_skill": "data/community-user-data-migration",
+      "top_k": 3
+    },
+    {
+      "query": "sharing set for Customer Community users to access their own cases portal",
+      "domain": "data",
+      "expected_skill": "data/external-user-data-sharing",
+      "top_k": 3
+    },
+    {
+      "query": "external OWD setup how is it different from internal org-wide default portal users",
+      "domain": "data",
+      "expected_skill": "data/external-user-data-sharing",
+      "top_k": 3
+    },
+    {
+      "query": "High-Volume Portal user cannot access records criteria-based sharing rules not firing",
+      "domain": "data",
+      "expected_skill": "data/external-user-data-sharing",
+      "top_k": 3
+    },
+    {
+      "query": "how do I archive old EmailMessage records from Email-to-Case to free up storage",
+      "domain": "data",
+      "expected_skill": "data/service-data-archival",
+      "top_k": 3
+    },
+    {
+      "query": "how to report on community login activity and page views",
+      "domain": "data",
+      "expected_skill": "data/community-analytics-data",
+      "top_k": 3
+    },
+    {
+      "query": "how do I create a new Experience Cloud site with LWR template",
+      "domain": "admin",
+      "expected_skill": "admin/experience-cloud-site-setup",
+      "top_k": 3
+    },
+    {
+      "query": "gathering requirements for customer portal Experience Cloud",
+      "domain": "admin",
+      "expected_skill": "admin/portal-requirements-gathering",
+      "top_k": 3
+    },
+    {
+      "query": "design self-service help center to reduce support ticket volume",
+      "domain": "admin",
+      "expected_skill": "admin/self-service-design",
+      "top_k": 3
+    },
+    {
+      "query": "how to set up reputation points and gamification in Experience Cloud community",
+      "domain": "admin",
+      "expected_skill": "admin/community-engagement-strategy",
+      "top_k": 3
+    },
+    {
+      "query": "build custom LWC component for Experience Cloud with guest user Apex",
+      "domain": "lwc",
+      "expected_skill": "lwc/experience-cloud-lwc-components",
+      "top_k": 3
+    },
+    {
+      "query": "which Experience Cloud license should I choose Customer Community vs Partner Community",
+      "domain": "architect",
+      "expected_skill": "architect/experience-cloud-licensing-model",
+      "top_k": 3
+    },
+    {
+      "query": "Customer Community vs Partner Community which license do I need",
+      "domain": "architect",
+      "expected_skill": "architect/experience-cloud-licensing-model",
+      "top_k": 3
+    },
+    {
+      "query": "login-based vs member-based Experience Cloud license selection",
+      "domain": "architect",
+      "expected_skill": "architect/experience-cloud-licensing-model",
+      "top_k": 3
+    },
+    {
+      "query": "external user license tier Experience Cloud portal community",
+      "domain": "architect",
+      "expected_skill": "architect/experience-cloud-licensing-model",
       "top_k": 3
     }
   ]
