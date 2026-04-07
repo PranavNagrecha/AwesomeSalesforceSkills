@@ -1,0 +1,86 @@
+{
+  "category": "data",
+  "chunk_ids": [
+    "07bfef6eada47892624d",
+    "0eb6c73a797c4009d54d",
+    "13ffd260d1188a6ba372",
+    "242c373896667ef37d32",
+    "26cc9c2e7191ba79f31c",
+    "2a8f9851dbb35b101e72",
+    "3f76b21eba467e5c0f99",
+    "40bb4f23a2d349ffd12f",
+    "44cf0d0dc874d728048c",
+    "7099987a8210c55d2ff6",
+    "8101e74a121e56733d6e",
+    "820b7db62ab376fb8738",
+    "86e3add857648203c422",
+    "8b9b2788f6007cda48ef",
+    "8c8ffd3711b9fc6e94fb",
+    "8e1adde1628cbec87a12",
+    "8e5ce3be1034accd44bc",
+    "9141a3a4823cfa93e517",
+    "92da13a3396c049f6211",
+    "a20aefd0af4e99e67c4c",
+    "b0d509e12cfd748f48ca",
+    "b224804a391b1b89f2a1",
+    "b30ea227a6a371d4be69",
+    "be441b2af3f9bcf89215",
+    "bfbbf9596ed2774cb57c",
+    "c6f22aa7c8d9554663fb",
+    "d2e059c3bbfbc4cd938f",
+    "d6ca507e7c6b0e5b49a2",
+    "e5010297e7c2af2fbff0",
+    "e77686b2ff33ec49144d",
+    "e8597641b6aa8cd887c1",
+    "ea21ae647e1f41509a15",
+    "ed784c86be8ee62a8c6c",
+    "fa36f11ec1cec78a66bc",
+    "fc8946230d087d540e37"
+  ],
+  "content_hash": "d08f6e466d2255596fc877c4763b474048466fecded7c19b29daca00302c51e3",
+  "dependencies": [],
+  "description": "Omni-Channel analytics data: agent work records, queue metrics, capacity utilization, wait time reporting. NOT for admin routing setup.",
+  "file_location": "skills/data/omni-channel-reporting-data",
+  "id": "data/omni-channel-reporting-data",
+  "inputs": [
+    "Which service channels are in scope: Case, MessagingSession, VoiceCall, or a subset",
+    "Whether the request is for assignment-level metrics, presence utilization, or both",
+    "What reporting output is needed: native report, dashboard, or exported dataset",
+    "How the business wants to treat transferred and abandoned work in totals"
+  ],
+  "name": "omni-channel-reporting-data",
+  "official_sources": [
+    "[AgentWork Object Reference](https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_agentwork.htm) \u2014 documents the AgentWork fields used for assignment-level timing and capacity analysis, including RequestDateTime, AcceptDateTime, CloseDateTime, WaitTime, HandleTime, ActiveTime, CapacityWeight, and DeclineReason.",
+    "[UserServicePresence Object Reference](https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_userservicepresence.htm) \u2014 documents the object used to analyze agent presence-status durations for capacity utilization.",
+    "[Omni Supervisor PDF](https://resources.docs.salesforce.com/latest/latest/en-us/sfdc/pdf/omnichannel_supervisor.pdf) \u2014 explains the live queue, agent, wait-time, and capacity views that inform how supervisors interpret Omni-Channel reporting."
+  ],
+  "outputs": [
+    "Channel-specific reporting design for AgentWork joined to the correct work item object",
+    "Metric mapping for RequestDateTime, AcceptDateTime, CloseDateTime, WaitTime, HandleTime, ActiveTime, CapacityWeight, and DeclineReason",
+    "Capacity utilization approach using UserServicePresence duration data",
+    "Data interpretation rules for transfers, abandons, and assignment counts"
+  ],
+  "references": [
+    "skills/data/omni-channel-reporting-data/references/examples.md",
+    "skills/data/omni-channel-reporting-data/references/gotchas.md",
+    "skills/data/omni-channel-reporting-data/references/llm-anti-patterns.md",
+    "skills/data/omni-channel-reporting-data/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/data/omni-channel-reporting-data/scripts/check_omni_channel_reporting_data.py"
+  ],
+  "tags": [
+    "omni-channel",
+    "service-cloud",
+    "reporting-data",
+    "agentwork",
+    "capacity-utilization",
+    "custom-report-types"
+  ],
+  "templates": [
+    "skills/data/omni-channel-reporting-data/templates/omni-channel-reporting-data-template.md"
+  ],
+  "updated": "2026-04-06",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

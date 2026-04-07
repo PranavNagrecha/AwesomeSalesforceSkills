@@ -2237,6 +2237,12 @@
       "domain": "data",
       "expected_skill": "data/service-metrics-data-model",
       "top_k": 3
+    },
+    {
+      "query": "how do I report Omni-Channel wait time and agent capacity utilization historically",
+      "domain": "data",
+      "expected_skill": "data/omni-channel-reporting-data",
+      "top_k": 3
     }
   ]
 }

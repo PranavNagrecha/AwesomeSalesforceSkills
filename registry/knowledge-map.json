@@ -217,6 +217,7 @@
       "data/large-scale-deduplication",
       "data/lead-data-import-and-dedup",
       "data/multi-currency-and-advanced-currency-management",
+      "data/omni-channel-reporting-data",
       "data/opportunity-pipeline-migration",
       "data/person-accounts",
       "data/product-catalog-data-model",
@@ -673,6 +674,9 @@
       "agentforce/sf-to-llm-data-pipelines",
       "architect/ai-ready-data-architecture",
       "architect/einstein-bot-architecture"
+    ],
+    "agentwork": [
+      "data/omni-channel-reporting-data"
     ],
     "aggregate-soql": [
       "data/roll-up-summary-alternatives"
@@ -1205,6 +1209,9 @@
     "capacity-model": [
       "architect/omni-channel-capacity-model"
     ],
+    "capacity-utilization": [
+      "data/omni-channel-reporting-data"
+    ],
     "card-actions": [
       "omnistudio/flexcard-design-patterns"
     ],
@@ -1690,6 +1697,7 @@
     ],
     "custom-report-types": [
       "admin/reports-and-dashboards-fundamentals",
+      "data/omni-channel-reporting-data",
       "data/sales-reporting-data-model"
     ],
     "custom-settings": [
@@ -3763,7 +3771,8 @@
       "apex/omni-channel-custom-routing",
       "architect/multi-channel-service-architecture",
       "architect/omni-channel-capacity-model",
-      "architect/service-cloud-architecture"
+      "architect/service-cloud-architecture",
+      "data/omni-channel-reporting-data"
     ],
     "omniJsonData": [
       "omnistudio/omnistudio-custom-lwc-elements"
@@ -4540,6 +4549,9 @@
     "reporting-currency": [
       "architect/multi-currency-sales-architecture"
     ],
+    "reporting-data": [
+      "data/omni-channel-reporting-data"
+    ],
     "reporting-snapshots": [
       "data/sales-reporting-data-model"
     ],
@@ -4949,6 +4961,7 @@
       "architect/service-cloud-architecture",
       "architect/sla-design-and-escalation-matrix",
       "data/case-history-migration",
+      "data/omni-channel-reporting-data",
       "data/service-metrics-data-model"
     ],
     "service-cloud-voice": [
