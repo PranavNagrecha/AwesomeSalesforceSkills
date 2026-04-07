@@ -2477,6 +2477,84 @@
       "domain": "architect",
       "expected_skill": "architect/experience-cloud-licensing-model",
       "top_k": 3
+    },
+    {
+      "query": "CPQ product catalog setup price book price rules",
+      "domain": "admin",
+      "expected_skill": "admin/cpq-product-catalog-setup",
+      "top_k": 3
+    },
+    {
+      "query": "FSC financial account setup holdings roles portfolio",
+      "domain": "admin",
+      "expected_skill": "admin/financial-account-setup",
+      "top_k": 3
+    },
+    {
+      "query": "FSL service territory setup work type scheduling",
+      "domain": "admin",
+      "expected_skill": "admin/fsl-service-territory-setup",
+      "top_k": 3
+    },
+    {
+      "query": "FSL work order management field service mobile app",
+      "domain": "admin",
+      "expected_skill": "admin/fsl-work-order-management",
+      "top_k": 3
+    },
+    {
+      "query": "NPSP gift entry batch process donations gift template",
+      "domain": "admin",
+      "expected_skill": "admin/gift-entry-and-processing",
+      "top_k": 3
+    },
+    {
+      "query": "Health Cloud patient setup care plan clinical data",
+      "domain": "admin",
+      "expected_skill": "admin/health-cloud-patient-setup",
+      "top_k": 3
+    },
+    {
+      "query": "NPSP household account naming rules merge duplicate",
+      "domain": "admin",
+      "expected_skill": "admin/npsp-household-accounts",
+      "top_k": 3
+    },
+    {
+      "query": "how to install salesforce-mcp-lib Apex package connect Claude Desktop to Salesforce",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/salesforce-mcp-server-setup",
+      "top_k": 3
+    },
+    {
+      "query": "implement McpToolDefinition Apex class inputSchema validate execute MCP tool",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/mcp-tool-definition-apex",
+      "top_k": 3
+    },
+    {
+      "query": "architecture external AI agent connecting to Salesforce org MCP REST Platform Events",
+      "domain": "architect",
+      "expected_skill": "architect/ai-agent-org-integration-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "Experience Cloud integration patterns external data API Connected App architect",
+      "domain": "architect",
+      "expected_skill": "architect/experience-cloud-integration-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "Experience Cloud site performance slow page load speed CDN caching LWR",
+      "domain": "architect",
+      "expected_skill": "architect/experience-cloud-performance",
+      "top_k": 3
+    },
+    {
+      "query": "headless vs standard Experience Builder LWR when to choose architect",
+      "domain": "architect",
+      "expected_skill": "architect/headless-vs-standard-experience",
+      "top_k": 3
     }
   ]
 }
