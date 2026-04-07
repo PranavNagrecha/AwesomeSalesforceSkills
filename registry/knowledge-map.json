@@ -12,6 +12,7 @@
       "admin/collaborative-forecasts",
       "admin/community-engagement-strategy",
       "admin/connected-apps-and-auth",
+      "admin/cpq-product-catalog-setup",
       "admin/custom-field-creation",
       "admin/custom-metadata-types",
       "admin/custom-metadata-types-and-settings",
@@ -35,9 +36,14 @@
       "admin/experience-cloud-moderation",
       "admin/experience-cloud-seo-settings",
       "admin/experience-cloud-site-setup",
+      "admin/financial-account-setup",
       "admin/flow-for-admins",
       "admin/formula-fields",
+      "admin/fsl-service-territory-setup",
+      "admin/fsl-work-order-management",
+      "admin/gift-entry-and-processing",
       "admin/global-actions-and-quick-actions",
+      "admin/health-cloud-patient-setup",
       "admin/in-app-guidance-and-walkthroughs",
       "admin/knowledge-base-administration",
       "admin/lead-management-and-conversion",
@@ -47,6 +53,7 @@
       "admin/list-views-and-compact-layouts",
       "admin/messaging-and-chat-setup",
       "admin/multi-language-and-translation",
+      "admin/npsp-household-accounts",
       "admin/object-creation-and-design",
       "admin/omni-channel-routing-setup",
       "admin/opportunity-management",
@@ -106,9 +113,11 @@
       "agentforce/einstein-next-best-action",
       "agentforce/einstein-prediction-builder",
       "agentforce/einstein-trust-layer",
+      "agentforce/mcp-tool-definition-apex",
       "agentforce/model-builder-and-byollm",
       "agentforce/prompt-builder-templates",
       "agentforce/rag-patterns-in-salesforce",
+      "agentforce/salesforce-mcp-server-setup",
       "agentforce/sf-to-llm-data-pipelines"
     ],
     "apex": [
@@ -177,14 +186,18 @@
     ],
     "architect": [
       "architect/agent-console-requirements",
+      "architect/ai-agent-org-integration-architecture",
       "architect/ai-ready-data-architecture",
       "architect/case-deflection-strategy",
       "architect/cpq-vs-standard-products-decision",
       "architect/customer-effort-scoring",
       "architect/einstein-bot-architecture",
+      "architect/experience-cloud-integration-patterns",
       "architect/experience-cloud-licensing-model",
+      "architect/experience-cloud-performance",
       "architect/government-cloud-compliance",
       "architect/ha-dr-architecture",
+      "architect/headless-vs-standard-experience",
       "architect/high-volume-sales-data-architecture",
       "architect/integration-framework-design",
       "architect/knowledge-taxonomy-design",
@@ -693,9 +706,12 @@
       "agentforce/agentforce-persona-design",
       "agentforce/custom-agent-actions-apex",
       "agentforce/einstein-bots-to-agentforce-migration",
+      "agentforce/mcp-tool-definition-apex",
       "agentforce/model-builder-and-byollm",
       "agentforce/rag-patterns-in-salesforce",
+      "agentforce/salesforce-mcp-server-setup",
       "agentforce/sf-to-llm-data-pipelines",
+      "architect/ai-agent-org-integration-architecture",
       "architect/ai-ready-data-architecture",
       "architect/einstein-bot-architecture"
     ],
@@ -707,6 +723,9 @@
     ],
     "ai": [
       "architect/ai-ready-data-architecture"
+    ],
+    "ai-agent": [
+      "architect/ai-agent-org-integration-architecture"
     ],
     "ai-scoring": [
       "agentforce/einstein-prediction-builder"
@@ -737,6 +756,8 @@
     ],
     "apex": [
       "admin/custom-permissions",
+      "agentforce/mcp-tool-definition-apex",
+      "agentforce/salesforce-mcp-server-setup",
       "apex/custom-iterators-and-iterables",
       "apex/governor-limit-recovery-patterns",
       "apex/pdf-generation-patterns",
@@ -818,6 +839,9 @@
     "apex-triggers": [
       "apex/lead-conversion-customization"
     ],
+    "apex-wire": [
+      "architect/experience-cloud-performance"
+    ],
     "api-access": [
       "lwc/experience-cloud-api-access"
     ],
@@ -879,10 +903,12 @@
       "architect/experience-cloud-licensing-model"
     ],
     "architecture": [
+      "architect/ai-agent-org-integration-architecture",
       "architect/integration-framework-design",
       "architect/sales-cloud-architecture"
     ],
     "architecture-decision": [
+      "architect/headless-vs-standard-experience",
       "architect/multi-org-strategy",
       "architect/multi-site-architecture",
       "architect/solution-design-patterns"
@@ -979,6 +1005,7 @@
     ],
     "aura": [
       "admin/experience-cloud-site-setup",
+      "architect/headless-vs-standard-experience",
       "lwc/experience-cloud-authentication",
       "lwc/experience-cloud-search-customization"
     ],
@@ -1128,6 +1155,9 @@
     "branding": [
       "admin/experience-cloud-site-setup"
     ],
+    "browser-caching": [
+      "architect/experience-cloud-performance"
+    ],
     "bucket-fields": [
       "admin/reports-and-dashboards-fundamentals"
     ],
@@ -1175,6 +1205,7 @@
       "flow/auto-launched-flow-patterns"
     ],
     "bundles": [
+      "admin/cpq-product-catalog-setup",
       "devops/devops-center-pipeline"
     ],
     "bundling": [
@@ -1209,6 +1240,9 @@
     ],
     "cache-session": [
       "apex/platform-cache"
+    ],
+    "caching": [
+      "architect/experience-cloud-performance"
     ],
     "cadence-builder": [
       "admin/sales-engagement-cadences"
@@ -1267,6 +1301,9 @@
     "card-actions": [
       "omnistudio/flexcard-design-patterns"
     ],
+    "care-team": [
+      "admin/health-cloud-patient-setup"
+    ],
     "case": [
       "data/service-metrics-data-model"
     ],
@@ -1324,6 +1361,7 @@
       "apex/sales-engagement-api"
     ],
     "cdn": [
+      "architect/experience-cloud-performance",
       "architect/multi-site-architecture"
     ],
     "certificate": [
@@ -1383,6 +1421,9 @@
     ],
     "circuit-breaker": [
       "integration/retry-and-backoff-patterns"
+    ],
+    "claude-desktop": [
+      "agentforce/salesforce-mcp-server-setup"
     ],
     "click-to-dial": [
       "apex/cti-adapter-development"
@@ -1521,6 +1562,9 @@
       "admin/custom-metadata-types-and-settings",
       "apex/custom-metadata-in-apex"
     ],
+    "configuration-attributes": [
+      "admin/cpq-product-catalog-setup"
+    ],
     "configuration-profile": [
       "admin/einstein-activity-capture-setup"
     ],
@@ -1542,6 +1586,7 @@
       "lwc/headless-experience-cloud"
     ],
     "connected-app": [
+      "agentforce/salesforce-mcp-server-setup",
       "architect/multi-org-strategy",
       "security/api-security-and-rate-limiting",
       "security/certificate-and-key-management",
@@ -1663,6 +1708,7 @@
       "admin/territory-design-requirements"
     ],
     "cpq": [
+      "admin/cpq-product-catalog-setup",
       "architect/cpq-vs-standard-products-decision",
       "architect/sales-cloud-integration-patterns"
     ],
@@ -1882,7 +1928,8 @@
     "data-cloud": [
       "agentforce/agentforce-observability",
       "agentforce/rag-patterns-in-salesforce",
-      "architect/ai-ready-data-architecture"
+      "architect/ai-ready-data-architecture",
+      "architect/experience-cloud-integration-patterns"
     ],
     "data-display": [
       "lwc/lwc-base-component-recipes"
@@ -2206,6 +2253,7 @@
       "flow/flow-email-and-notifications"
     ],
     "digital-experience": [
+      "architect/headless-vs-standard-experience",
       "architect/multi-site-architecture"
     ],
     "digital-experiences": [
@@ -2256,6 +2304,9 @@
     ],
     "domain-strategy": [
       "architect/multi-site-architecture"
+    ],
+    "donations": [
+      "admin/gift-entry-and-processing"
     ],
     "dst": [
       "apex/timezone-and-datetime-pitfalls"
@@ -2565,7 +2616,10 @@
       "admin/portal-requirements-gathering",
       "admin/self-service-design",
       "agentforce/agent-channel-deployment",
+      "architect/experience-cloud-integration-patterns",
       "architect/experience-cloud-licensing-model",
+      "architect/experience-cloud-performance",
+      "architect/headless-vs-standard-experience",
       "architect/knowledge-vs-external-cms",
       "architect/multi-site-architecture",
       "data/community-analytics-data",
@@ -2638,6 +2692,9 @@
     ],
     "external-subscription": [
       "integration/change-data-capture-integration"
+    ],
+    "external-systems": [
+      "architect/experience-cloud-integration-patterns"
     ],
     "external-user": [
       "lwc/experience-cloud-api-access"
@@ -2727,6 +2784,10 @@
     "field-resolution": [
       "data/record-merge-implications"
     ],
+    "field-service": [
+      "admin/fsl-service-territory-setup",
+      "admin/fsl-work-order-management"
+    ],
     "field-types": [
       "data/data-model-design-patterns"
     ],
@@ -2743,6 +2804,15 @@
     "finalizer": [
       "apex/apex-queueable-patterns",
       "apex/long-running-process-orchestration"
+    ],
+    "financial-account-roles": [
+      "admin/financial-account-setup"
+    ],
+    "financial-accounts": [
+      "admin/financial-account-setup"
+    ],
+    "financial-services-cloud": [
+      "admin/financial-account-setup"
     ],
     "find-clause": [
       "data/sosl-search-patterns"
@@ -2900,7 +2970,12 @@
       "admin/validation-rules"
     ],
     "fsc": [
+      "admin/financial-account-setup",
       "data/person-accounts"
+    ],
+    "fsl": [
+      "admin/fsl-service-territory-setup",
+      "admin/fsl-work-order-management"
     ],
     "future-callout": [
       "apex/callout-and-dml-transaction-boundaries"
@@ -2937,6 +3012,9 @@
     ],
     "generic-streaming": [
       "integration/streaming-api-and-pushtopic"
+    ],
+    "gift-entry": [
+      "admin/gift-entry-and-processing"
     ],
     "git-branching-for-salesforce": [
       "devops/git-branching-for-salesforce"
@@ -3032,6 +3110,9 @@
     "hard-delete": [
       "data/batch-data-cleanup-patterns"
     ],
+    "headless": [
+      "architect/headless-vs-standard-experience"
+    ],
     "headless-cms": [
       "architect/knowledge-vs-external-cms",
       "lwc/headless-experience-cloud"
@@ -3041,6 +3122,7 @@
       "security/recaptcha-and-bot-prevention"
     ],
     "health-cloud": [
+      "admin/health-cloud-patient-setup",
       "data/person-accounts"
     ],
     "heap-limits": [
@@ -3089,8 +3171,14 @@
     "hmac-verification": [
       "integration/webhook-inbound-patterns"
     ],
+    "holdings": [
+      "admin/financial-account-setup"
+    ],
     "hotfix": [
       "devops/rollback-and-hotfix-strategy"
+    ],
+    "household-accounts": [
+      "admin/npsp-household-accounts"
     ],
     "http-action": [
       "omnistudio/integration-procedures",
@@ -3137,6 +3225,9 @@
     ],
     "identity-verification": [
       "security/login-forensics"
+    ],
+    "iframe": [
+      "architect/experience-cloud-integration-patterns"
     ],
     "impact-analysis": [
       "architect/metadata-coverage-and-dependencies"
@@ -3213,6 +3304,7 @@
     ],
     "integration": [
       "agentforce/sf-to-llm-data-pipelines",
+      "architect/ai-agent-org-integration-architecture",
       "architect/integration-framework-design",
       "integration/composite-api-patterns",
       "integration/outbound-messages-and-callbacks"
@@ -3316,6 +3408,10 @@
     ],
     "json-memory": [
       "apex/apex-cpu-and-heap-optimization"
+    ],
+    "json-rpc": [
+      "agentforce/mcp-tool-definition-apex",
+      "agentforce/salesforce-mcp-server-setup"
     ],
     "json-serialization": [
       "apex/apex-rest-services"
@@ -3584,6 +3680,9 @@
     "live-agent": [
       "admin/messaging-and-chat-setup"
     ],
+    "llm": [
+      "architect/ai-agent-org-integration-architecture"
+    ],
     "lms": [
       "lwc/message-channel-patterns"
     ],
@@ -3688,6 +3787,9 @@
     "lwr": [
       "admin/experience-cloud-seo-settings",
       "admin/experience-cloud-site-setup",
+      "architect/experience-cloud-integration-patterns",
+      "architect/experience-cloud-performance",
+      "architect/headless-vs-standard-experience",
       "lwc/experience-cloud-lwc-components",
       "lwc/experience-cloud-search-customization",
       "lwc/lwr-site-development"
@@ -3704,6 +3806,9 @@
     ],
     "maintainability": [
       "flow/subflows-and-reusability"
+    ],
+    "maintenance-plans": [
+      "admin/fsl-work-order-management"
     ],
     "maintenance-window": [
       "data/sharing-recalculation-performance"
@@ -3730,6 +3835,14 @@
       "admin/duplicate-management",
       "data/large-scale-deduplication",
       "data/lead-data-import-and-dedup"
+    ],
+    "mcp": [
+      "agentforce/mcp-tool-definition-apex",
+      "agentforce/salesforce-mcp-server-setup",
+      "architect/ai-agent-org-integration-architecture"
+    ],
+    "mcptooldefinition": [
+      "agentforce/mcp-tool-definition-apex"
     ],
     "mdf": [
       "admin/partner-community-requirements"
@@ -3935,6 +4048,9 @@
     "namespace": [
       "omnistudio/vlocity-to-native-omnistudio-migration"
     ],
+    "naming": [
+      "admin/npsp-household-accounts"
+    ],
     "naming-conventions": [
       "flow/flow-governance"
     ],
@@ -3975,6 +4091,10 @@
     "nlu-training": [
       "architect/einstein-bot-architecture"
     ],
+    "nonprofit": [
+      "admin/gift-entry-and-processing",
+      "admin/npsp-household-accounts"
+    ],
     "notifications": [
       "admin/email-templates-and-alerts",
       "lwc/lwc-toast-and-notifications"
@@ -3982,12 +4102,19 @@
     "nps": [
       "admin/salesforce-surveys"
     ],
+    "npsp": [
+      "admin/gift-entry-and-processing",
+      "admin/npsp-household-accounts"
+    ],
     "null-handling": [
       "admin/formula-fields"
     ],
     "oauth": [
       "admin/connected-apps-and-auth",
       "admin/einstein-activity-capture-setup",
+      "agentforce/salesforce-mcp-server-setup",
+      "architect/ai-agent-org-integration-architecture",
+      "architect/experience-cloud-integration-patterns",
       "integration/named-credentials-setup",
       "integration/oauth-flows-and-connected-apps",
       "integration/rest-api-patterns",
@@ -4021,6 +4148,7 @@
       "lwc/lwc-offline-and-mobile"
     ],
     "oidc": [
+      "architect/experience-cloud-integration-patterns",
       "lwc/experience-cloud-multi-idp-sso"
     ],
     "omni-channel": [
@@ -4092,6 +4220,9 @@
     "openapi": [
       "flow/flow-external-services"
     ],
+    "operating-hours": [
+      "admin/fsl-service-territory-setup"
+    ],
     "operational-excellence": [
       "admin/batch-job-scheduling-and-monitoring"
     ],
@@ -4143,6 +4274,9 @@
     ],
     "optimizer": [
       "admin/org-cleanup-and-technical-debt"
+    ],
+    "option-constraints": [
+      "admin/cpq-product-catalog-setup"
     ],
     "orchestration": [
       "apex/long-running-process-orchestration"
@@ -4251,7 +4385,11 @@
       "admin/record-types-and-page-layouts"
     ],
     "page-performance": [
-      "admin/lightning-app-builder-advanced"
+      "admin/lightning-app-builder-advanced",
+      "architect/experience-cloud-performance"
+    ],
+    "page-weight": [
+      "architect/experience-cloud-performance"
     ],
     "pageReference": [
       "apex/pdf-generation-patterns",
@@ -4301,6 +4439,9 @@
     "path-coverage": [
       "flow/flow-testing"
     ],
+    "patient": [
+      "admin/health-cloud-patient-setup"
+    ],
     "pause-element": [
       "flow/pause-elements-and-wait-events"
     ],
@@ -4328,9 +4469,13 @@
       "admin/report-performance-tuning",
       "apex/cross-object-formula-and-rollup-performance",
       "apex/formula-field-performance-and-limits",
+      "architect/headless-vs-standard-experience",
       "architect/nfr-definition-for-salesforce",
       "architect/org-edition-and-feature-licensing",
       "data/soql-query-optimization"
+    ],
+    "performance-optimization": [
+      "architect/experience-cloud-performance"
     ],
     "performance-testing-salesforce": [
       "devops/performance-testing-salesforce"
@@ -4357,6 +4502,7 @@
       "devops/permission-set-deployment-ordering"
     ],
     "person-accounts": [
+      "admin/health-cloud-patient-setup",
       "admin/standard-object-quirks",
       "data/person-accounts"
     ],
@@ -4422,6 +4568,7 @@
       "apex/error-handling-framework",
       "apex/long-running-process-orchestration",
       "apex/platform-events-apex",
+      "architect/ai-agent-org-integration-architecture",
       "architect/limits-and-scalability-planning",
       "architect/org-limits-monitoring",
       "flow/auto-launched-flow-patterns",
@@ -4503,6 +4650,9 @@
     "privacy-center": [
       "security/gdpr-data-privacy"
     ],
+    "privileged-script-tag": [
+      "architect/experience-cloud-integration-patterns"
+    ],
     "prm": [
       "admin/partner-community-requirements",
       "data/partner-data-access-patterns"
@@ -4523,8 +4673,12 @@
       "admin/requirements-gathering-for-sf"
     ],
     "product-catalog": [
+      "admin/cpq-product-catalog-setup",
       "admin/products-and-pricebooks",
       "data/product-catalog-data-model"
+    ],
+    "product-rules": [
+      "admin/cpq-product-catalog-setup"
     ],
     "product-schedules": [
       "admin/products-and-pricebooks"
@@ -4701,6 +4855,9 @@
     "recaptcha": [
       "security/recaptcha-and-bot-prevention"
     ],
+    "receipting": [
+      "admin/gift-entry-and-processing"
+    ],
     "recommendations": [
       "agentforce/einstein-next-best-action"
     ],
@@ -4871,6 +5028,7 @@
     ],
     "rest-api": [
       "apex/service-cloud-rest-api",
+      "architect/ai-agent-org-integration-architecture",
       "data/bulk-api-patterns",
       "flow/auto-launched-flow-patterns",
       "integration/composite-api-patterns",
@@ -4938,6 +5096,7 @@
       "apex/error-handling-framework"
     ],
     "rollup": [
+      "admin/financial-account-setup",
       "apex/opportunity-trigger-patterns"
     ],
     "rollup-summary": [
@@ -5037,6 +5196,10 @@
     "salesforce-knowledge": [
       "architect/knowledge-vs-external-cms"
     ],
+    "salesforce-mcp-lib": [
+      "agentforce/mcp-tool-definition-apex",
+      "agentforce/salesforce-mcp-server-setup"
+    ],
     "salesforce-mobile-app": [
       "lwc/lwc-offline-and-mobile"
     ],
@@ -5054,6 +5217,7 @@
       "architect/multi-org-strategy"
     ],
     "saml": [
+      "architect/experience-cloud-integration-patterns",
       "lwc/experience-cloud-multi-idp-sso"
     ],
     "sandbox": [
@@ -5121,6 +5285,9 @@
     ],
     "scheduler": [
       "data/batch-data-cleanup-patterns"
+    ],
+    "scheduling": [
+      "admin/fsl-service-territory-setup"
     ],
     "schema-describe": [
       "apex/dynamic-apex"
@@ -5263,6 +5430,9 @@
     "separation-of-concerns": [
       "apex/fflib-enterprise-patterns"
     ],
+    "service-appointments": [
+      "admin/fsl-work-order-management"
+    ],
     "service-channel": [
       "admin/omni-channel-routing-setup",
       "architect/omni-channel-capacity-model"
@@ -5311,7 +5481,11 @@
       "agentforce/einstein-copilot-for-service"
     ],
     "service-resource": [
+      "admin/fsl-service-territory-setup",
       "admin/omni-channel-routing-setup"
+    ],
+    "service-territory": [
+      "admin/fsl-service-territory-setup"
     ],
     "session-analytics": [
       "agentforce/agentforce-observability"
@@ -5422,6 +5596,9 @@
     ],
     "site-quota": [
       "architect/multi-site-architecture"
+    ],
+    "site-speed": [
+      "architect/experience-cloud-performance"
     ],
     "sitemap": [
       "admin/experience-cloud-seo-settings"
@@ -5535,6 +5712,7 @@
       "admin/lead-scoring-requirements"
     ],
     "sso": [
+      "architect/experience-cloud-integration-patterns",
       "architect/multi-org-strategy",
       "lwc/experience-cloud-authentication",
       "lwc/experience-cloud-multi-idp-sso"
@@ -5747,6 +5925,9 @@
     "third-party-library": [
       "lwc/static-resources-in-lwc"
     ],
+    "third-party-widgets": [
+      "architect/experience-cloud-integration-patterns"
+    ],
     "threat-detection": [
       "security/event-monitoring"
     ],
@@ -5765,6 +5946,9 @@
     "toast": [
       "lwc/lwc-modal-and-overlay",
       "lwc/lwc-toast-and-notifications"
+    ],
+    "tool-definition": [
+      "agentforce/mcp-tool-definition-apex"
     ],
     "tool-selection": [
       "admin/einstein-analytics-basics",
@@ -6047,6 +6231,7 @@
       "integration/webhook-inbound-patterns"
     ],
     "well-architected": [
+      "architect/ai-agent-org-integration-architecture",
       "architect/license-optimization-strategy",
       "architect/nfr-definition-for-salesforce",
       "architect/well-architected-review"
@@ -6071,11 +6256,17 @@
       "devops/devops-center-pipeline",
       "flow/orchestration-flows"
     ],
+    "work-orders": [
+      "admin/fsl-work-order-management"
+    ],
     "work-queue": [
       "admin/sales-engagement-cadences"
     ],
     "work-summary": [
       "agentforce/einstein-copilot-for-service"
+    ],
+    "work-types": [
+      "admin/fsl-work-order-management"
     ],
     "workflow-rule-retirement": [
       "admin/process-automation-selection"
