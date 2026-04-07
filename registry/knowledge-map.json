@@ -6,6 +6,7 @@
       "admin/approval-processes",
       "admin/assignment-rules",
       "admin/batch-job-scheduling-and-monitoring",
+      "admin/billing-schedule-setup",
       "admin/case-management-setup",
       "admin/change-management-and-deployment",
       "admin/change-management-and-training",
@@ -13,6 +14,9 @@
       "admin/community-engagement-strategy",
       "admin/connected-apps-and-auth",
       "admin/consent-management-marketing",
+      "admin/contract-and-renewal-management",
+      "admin/cpq-approval-workflows",
+      "admin/cpq-guided-selling",
       "admin/cpq-pricing-rules",
       "admin/cpq-product-catalog-setup",
       "admin/cpq-quote-templates",
@@ -77,6 +81,7 @@
       "admin/picklist-field-integrity-issues",
       "admin/pipeline-review-design",
       "admin/portal-requirements-gathering",
+      "admin/pricing-model-design",
       "admin/process-automation-selection",
       "admin/products-and-pricebooks",
       "admin/queues-and-public-groups",
@@ -150,6 +155,7 @@
       "apex/change-data-capture-apex",
       "apex/common-apex-runtime-errors",
       "apex/continuation-callouts",
+      "apex/cpq-apex-plugins",
       "apex/cross-object-formula-and-rollup-performance",
       "apex/cti-adapter-development",
       "apex/custom-iterators-and-iterables",
@@ -242,6 +248,7 @@
       "data/community-user-data-migration",
       "data/custom-index-requests",
       "data/data-archival-strategies",
+      "data/data-extension-design",
       "data/data-migration-planning",
       "data/data-model-design-patterns",
       "data/data-quality-and-governance",
@@ -254,6 +261,8 @@
       "data/knowledge-article-import",
       "data/large-scale-deduplication",
       "data/lead-data-import-and-dedup",
+      "data/marketing-cloud-data-sync",
+      "data/marketing-cloud-sql-queries",
       "data/multi-currency-and-advanced-currency-management",
       "data/omni-channel-reporting-data",
       "data/opportunity-pipeline-migration",
@@ -268,6 +277,7 @@
       "data/sharing-recalculation-performance",
       "data/soql-query-optimization",
       "data/sosl-search-patterns",
+      "data/subscriber-data-management",
       "data/territory-data-alignment"
     ],
     "devops": [
@@ -648,6 +658,9 @@
     "admin-declarative": [
       "admin/dynamic-forms-and-actions"
     ],
+    "advanced-approvals": [
+      "admin/cpq-approval-workflows"
+    ],
     "advanced-currency-management": [
       "architect/multi-currency-sales-architecture",
       "data/multi-currency-and-advanced-currency-management"
@@ -751,11 +764,17 @@
     "alerting": [
       "architect/org-limits-monitoring"
     ],
+    "all-subscribers": [
+      "data/subscriber-data-management"
+    ],
     "allOrNone": [
       "integration/composite-api-patterns"
     ],
     "amazon-connect": [
       "admin/service-cloud-voice-setup"
+    ],
+    "amendments": [
+      "admin/contract-and-renewal-management"
     ],
     "analytics": [
       "data/community-analytics-data"
@@ -817,6 +836,9 @@
     ],
     "apex-performance-profiling": [
       "apex/apex-performance-profiling"
+    ],
+    "apex-plugin": [
+      "apex/cpq-apex-plugins"
     ],
     "apex-replay-debugger": [
       "apex/debug-logs-and-developer-console"
@@ -901,9 +923,18 @@
     "application-scope": [
       "lwc/message-channel-patterns"
     ],
+    "approval-chains": [
+      "admin/cpq-approval-workflows"
+    ],
     "approval-process": [
       "admin/approval-processes",
       "admin/quote-to-cash-requirements"
+    ],
+    "approval-rules": [
+      "admin/cpq-approval-workflows"
+    ],
+    "approval-variables": [
+      "admin/cpq-approval-workflows"
     ],
     "approvers": [
       "admin/approval-processes"
@@ -1080,6 +1111,9 @@
     "automation-selection": [
       "admin/process-automation-selection"
     ],
+    "automation-studio": [
+      "data/marketing-cloud-sql-queries"
+    ],
     "autorabit": [
       "devops/salesforce-devops-tooling-selection"
     ],
@@ -1131,6 +1165,15 @@
       "data/data-archival-strategies",
       "data/external-data-and-big-objects"
     ],
+    "billing-policy": [
+      "admin/billing-schedule-setup"
+    ],
+    "billing-schedule-setup": [
+      "admin/billing-schedule-setup"
+    ],
+    "billing-treatment": [
+      "admin/billing-schedule-setup"
+    ],
     "binary-classification": [
       "agentforce/einstein-prediction-builder"
     ],
@@ -1140,8 +1183,12 @@
     "blazemeter": [
       "devops/performance-testing-salesforce"
     ],
+    "blng-namespace": [
+      "admin/billing-schedule-setup"
+    ],
     "block-pricing": [
-      "admin/cpq-pricing-rules"
+      "admin/cpq-pricing-rules",
+      "admin/pricing-model-design"
     ],
     "blue-canvas": [
       "devops/salesforce-devops-tooling-selection"
@@ -1599,6 +1646,9 @@
     "configuration-attributes": [
       "admin/cpq-product-catalog-setup"
     ],
+    "configuration-initializer-plugin": [
+      "apex/cpq-apex-plugins"
+    ],
     "configuration-profile": [
       "admin/einstein-activity-capture-setup"
     ],
@@ -1657,9 +1707,15 @@
     "contact": [
       "data/record-merge-implications"
     ],
+    "contact-builder": [
+      "data/marketing-cloud-data-sync"
+    ],
     "contact-center": [
       "admin/service-cloud-voice-setup",
       "architect/service-cloud-architecture"
+    ],
+    "contact-key": [
+      "data/subscriber-data-management"
     ],
     "content-approval": [
       "admin/experience-cloud-moderation"
@@ -1712,6 +1768,12 @@
     "contracted-pricing": [
       "admin/cpq-pricing-rules"
     ],
+    "contracting-plugin": [
+      "apex/cpq-apex-plugins"
+    ],
+    "contracts": [
+      "admin/contract-and-renewal-management"
+    ],
     "controlling-field": [
       "admin/picklist-and-value-sets"
     ],
@@ -1750,6 +1812,9 @@
     "cost-optimization": [
       "architect/license-optimization-strategy"
     ],
+    "cost-plus-markup": [
+      "admin/pricing-model-design"
+    ],
     "coverage-analysis": [
       "data/territory-data-alignment"
     ],
@@ -1757,9 +1822,14 @@
       "admin/territory-design-requirements"
     ],
     "cpq": [
+      "admin/contract-and-renewal-management",
+      "admin/cpq-approval-workflows",
+      "admin/cpq-guided-selling",
       "admin/cpq-pricing-rules",
       "admin/cpq-product-catalog-setup",
       "admin/cpq-quote-templates",
+      "admin/pricing-model-design",
+      "apex/cpq-apex-plugins",
       "architect/cpq-vs-standard-products-decision",
       "architect/sales-cloud-integration-patterns"
     ],
@@ -1778,6 +1848,9 @@
     ],
     "crm-analytics": [
       "admin/einstein-analytics-basics"
+    ],
+    "crm-sync": [
+      "data/marketing-cloud-data-sync"
     ],
     "cron": [
       "apex/apex-scheduled-jobs"
@@ -1988,6 +2061,13 @@
     "data-display": [
       "lwc/lwc-base-component-recipes"
     ],
+    "data-extension": [
+      "data/data-extension-design",
+      "data/marketing-cloud-sql-queries"
+    ],
+    "data-extensions": [
+      "data/marketing-cloud-data-sync"
+    ],
     "data-extract": [
       "omnistudio/dataraptor-load-and-extract"
     ],
@@ -2067,6 +2147,7 @@
     ],
     "data-retention": [
       "data/data-archival-strategies",
+      "data/data-extension-design",
       "security/field-audit-trail"
     ],
     "data-seeding": [
@@ -2177,7 +2258,8 @@
     ],
     "deduplication": [
       "data/large-scale-deduplication",
-      "data/lead-data-import-and-dedup"
+      "data/lead-data-import-and-dedup",
+      "data/subscriber-data-management"
     ],
     "defect-management": [
       "admin/uat-and-acceptance-criteria"
@@ -2329,10 +2411,14 @@
       "architect/ha-dr-architecture"
     ],
     "discount-approval": [
+      "admin/cpq-approval-workflows",
       "admin/quotes-and-quote-templates"
     ],
     "discount-policy": [
       "admin/quote-to-cash-requirements"
+    ],
+    "discount-schedule": [
+      "admin/pricing-model-design"
     ],
     "discount-schedules": [
       "admin/cpq-pricing-rules"
@@ -2673,6 +2759,9 @@
     ],
     "eventbus": [
       "apex/platform-events-apex"
+    ],
+    "evergreen-billing": [
+      "admin/billing-schedule-setup"
     ],
     "exception-diagnosis": [
       "apex/common-apex-runtime-errors"
@@ -3186,6 +3275,7 @@
       "omnistudio/omniscript-design-patterns"
     ],
     "guided-selling": [
+      "admin/cpq-guided-selling",
       "architect/cpq-vs-standard-products-decision"
     ],
     "handler-pattern": [
@@ -3325,11 +3415,17 @@
     "imperative": [
       "lwc/lwc-imperative-apex"
     ],
+    "in-advance": [
+      "admin/billing-schedule-setup"
+    ],
     "in-app-guidance": [
       "admin/in-app-guidance-and-walkthroughs"
     ],
     "in-app-notification": [
       "flow/flow-email-and-notifications"
+    ],
+    "in-arrears": [
+      "admin/billing-schedule-setup"
     ],
     "inactive-users": [
       "architect/license-optimization-strategy"
@@ -3462,6 +3558,9 @@
     "invocablevariable": [
       "apex/invocable-methods"
     ],
+    "invoice-run": [
+      "admin/billing-schedule-setup"
+    ],
     "ip-based-branching": [
       "security/ip-range-and-login-flow-strategy"
     ],
@@ -3504,6 +3603,9 @@
     ],
     "journey-versions": [
       "admin/journey-builder-administration"
+    ],
+    "js-qcp": [
+      "apex/cpq-apex-plugins"
     ],
     "json-memory": [
       "apex/apex-cpu-and-heap-optimization"
@@ -3926,6 +4028,7 @@
       "admin/experience-cloud-cms-content"
     ],
     "managed-package": [
+      "admin/cpq-approval-workflows",
       "apex/apex-metadata-api",
       "devops/second-generation-managed-packages",
       "omnistudio/omnistudio-lwc-integration",
@@ -3939,7 +4042,11 @@
       "admin/consent-management-marketing",
       "admin/email-deliverability-strategy",
       "admin/email-studio-administration",
-      "admin/journey-builder-administration"
+      "admin/journey-builder-administration",
+      "data/data-extension-design",
+      "data/marketing-cloud-data-sync",
+      "data/marketing-cloud-sql-queries",
+      "data/subscriber-data-management"
     ],
     "marketing-cloud-connect": [
       "admin/marketing-cloud-connect"
@@ -3959,7 +4066,11 @@
       "data/lead-data-import-and-dedup"
     ],
     "mc-connect": [
-      "admin/marketing-cloud-connect"
+      "admin/marketing-cloud-connect",
+      "data/marketing-cloud-data-sync"
+    ],
+    "mc-data-model": [
+      "data/data-extension-design"
     ],
     "mcae": [
       "admin/mcae-lead-scoring-and-grading",
@@ -4067,6 +4178,9 @@
     ],
     "migration-tool": [
       "omnistudio/vlocity-to-native-omnistudio-migration"
+    ],
+    "milestone-billing": [
+      "admin/billing-schedule-setup"
     ],
     "milestones": [
       "admin/entitlements-and-milestones",
@@ -4403,7 +4517,8 @@
       "data/opportunity-pipeline-migration"
     ],
     "opt-out": [
-      "admin/consent-management-marketing"
+      "admin/consent-management-marketing",
+      "data/subscriber-data-management"
     ],
     "optimizer": [
       "admin/org-cleanup-and-technical-debt"
@@ -4422,6 +4537,9 @@
       "apex/order-of-execution-deep-dive",
       "apex/trigger-and-flow-coexistence",
       "flow/record-triggered-flow-patterns"
+    ],
+    "order-plugin": [
+      "apex/cpq-apex-plugins"
     ],
     "org-assessment": [
       "architect/well-architected-review"
@@ -4601,7 +4719,8 @@
       "integration/sis-integration-patterns"
     ],
     "percent-of-total": [
-      "admin/cpq-pricing-rules"
+      "admin/cpq-pricing-rules",
+      "admin/pricing-model-design"
     ],
     "performance": [
       "admin/data-skew-and-sharing-performance",
@@ -4795,6 +4914,15 @@
       "architect/cpq-vs-standard-products-decision",
       "omnistudio/calculation-procedures"
     ],
+    "pricing-design": [
+      "admin/pricing-model-design"
+    ],
+    "pricing-method": [
+      "admin/pricing-model-design"
+    ],
+    "primary-key": [
+      "data/data-extension-design"
+    ],
     "privacy": [
       "admin/consent-management-marketing"
     ],
@@ -4820,6 +4948,9 @@
     "process-builder-migration": [
       "admin/process-automation-selection"
     ],
+    "process-input": [
+      "admin/cpq-guided-selling"
+    ],
     "process-mapping": [
       "admin/requirements-gathering-for-sf"
     ],
@@ -4833,6 +4964,15 @@
     ],
     "product-schedules": [
       "admin/products-and-pricebooks"
+    ],
+    "product-search": [
+      "admin/cpq-guided-selling"
+    ],
+    "product-search-plugin": [
+      "apex/cpq-apex-plugins"
+    ],
+    "product-selection": [
+      "admin/cpq-guided-selling"
     ],
     "product2": [
       "data/product-catalog-data-model"
@@ -4907,6 +5047,9 @@
     "public-pages": [
       "admin/experience-cloud-guest-access"
     ],
+    "publication-list": [
+      "data/subscriber-data-management"
+    ],
     "publication-lists": [
       "admin/consent-management-marketing"
     ],
@@ -4929,7 +5072,8 @@
       "data/soql-query-optimization"
     ],
     "query-performance": [
-      "data/custom-index-requests"
+      "data/custom-index-requests",
+      "data/marketing-cloud-sql-queries"
     ],
     "query-plan": [
       "apex/apex-performance-profiling"
@@ -4971,11 +5115,17 @@
     "quote-calculation": [
       "admin/cpq-pricing-rules"
     ],
+    "quote-calculator-plugin": [
+      "apex/cpq-apex-plugins"
+    ],
     "quote-documents": [
       "admin/cpq-quote-templates"
     ],
     "quote-pdf": [
       "apex/quote-pdf-customization"
+    ],
+    "quote-process": [
+      "admin/cpq-guided-selling"
     ],
     "quote-sync": [
       "admin/quotes-and-quote-templates"
@@ -5002,6 +5152,9 @@
     "rag": [
       "agentforce/rag-patterns-in-salesforce",
       "architect/ai-ready-data-architecture"
+    ],
+    "range-vs-slab": [
+      "admin/pricing-model-design"
     ],
     "rate-limiting": [
       "security/api-security-and-rate-limiting"
@@ -5130,6 +5283,9 @@
     ],
     "renderedcallback": [
       "lwc/lifecycle-hooks"
+    ],
+    "renewals": [
+      "admin/contract-and-renewal-management"
     ],
     "replay": [
       "integration/streaming-api-and-pushtopic"
@@ -5338,6 +5494,9 @@
     "sales-territories": [
       "admin/territory-design-requirements"
     ],
+    "salesforce-billing": [
+      "admin/billing-schedule-setup"
+    ],
     "salesforce-cli": [
       "devops/destructive-changes-deployment"
     ],
@@ -5352,6 +5511,7 @@
       "integration/mulesoft-salesforce-connector"
     ],
     "salesforce-cpq": [
+      "apex/cpq-apex-plugins",
       "omnistudio/industries-cpq-vs-salesforce-cpq"
     ],
     "salesforce-extensions": [
@@ -5420,8 +5580,14 @@
     "savepoints": [
       "apex/governor-limit-recovery-patterns"
     ],
+    "sbaa": [
+      "admin/cpq-approval-workflows"
+    ],
     "sbqq": [
-      "admin/cpq-quote-templates"
+      "admin/contract-and-renewal-management",
+      "admin/cpq-guided-selling",
+      "admin/cpq-quote-templates",
+      "apex/cpq-apex-plugins"
     ],
     "scalability": [
       "architect/limits-and-scalability-planning",
@@ -5599,6 +5765,12 @@
     ],
     "send-email-action": [
       "flow/flow-email-and-notifications"
+    ],
+    "send-relationship": [
+      "data/data-extension-design"
+    ],
+    "sendable-de": [
+      "data/data-extension-design"
     ],
     "sender-profiles": [
       "admin/marketing-cloud-engagement-setup"
@@ -5815,6 +5987,9 @@
     "slot-projection": [
       "lwc/common-lwc-runtime-errors"
     ],
+    "smart-approvals": [
+      "admin/cpq-approval-workflows"
+    ],
     "soap": [
       "integration/outbound-messages-and-callbacks"
     ],
@@ -5895,6 +6070,9 @@
     ],
     "sql": [
       "admin/lead-scoring-requirements"
+    ],
+    "sql-query-activity": [
+      "data/marketing-cloud-sql-queries"
     ],
     "sso": [
       "architect/experience-cloud-integration-patterns",
@@ -5994,14 +6172,24 @@
     "subrequest": [
       "integration/composite-api-patterns"
     ],
+    "subscriber-data-management": [
+      "data/subscriber-data-management"
+    ],
+    "subscriber-key": [
+      "data/subscriber-data-management"
+    ],
     "subscription-center": [
       "admin/consent-management-marketing"
     ],
     "subscriptions": [
+      "admin/contract-and-renewal-management",
       "admin/reports-and-dashboards"
     ],
     "summary-formulas": [
       "admin/reports-and-dashboards-fundamentals"
+    ],
+    "suppression": [
+      "data/subscriber-data-management"
     ],
     "suppression-lists": [
       "admin/email-studio-administration"
@@ -6021,11 +6209,17 @@
     "synced-quote": [
       "admin/quote-to-cash-requirements"
     ],
+    "synchronized-data-extensions": [
+      "data/marketing-cloud-data-sync"
+    ],
     "synchronized-data-sources": [
       "admin/marketing-cloud-connect"
     ],
     "system-api": [
       "integration/api-led-connectivity"
+    ],
+    "system-data-views": [
+      "data/marketing-cloud-sql-queries"
     ],
     "system-debug": [
       "apex/debug-and-logging"
@@ -6038,6 +6232,9 @@
     ],
     "system-schedule": [
       "apex/apex-scheduled-jobs"
+    ],
+    "t-sql": [
+      "data/marketing-cloud-sql-queries"
     ],
     "tasks": [
       "devops/cumulusci-automation"

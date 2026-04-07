@@ -2693,6 +2693,66 @@
       "domain": "admin",
       "expected_skill": "admin/cpq-quote-templates",
       "top_k": 3
+    },
+    {
+      "query": "CPQ advanced approvals discount approval chain smart approvals",
+      "domain": "admin",
+      "expected_skill": "admin/cpq-approval-workflows",
+      "top_k": 3
+    },
+    {
+      "query": "Salesforce Billing billing schedule invoice run setup",
+      "domain": "admin",
+      "expected_skill": "admin/billing-schedule-setup",
+      "top_k": 3
+    },
+    {
+      "query": "CPQ contract amendment renewal subscription management co-termination",
+      "domain": "admin",
+      "expected_skill": "admin/contract-and-renewal-management",
+      "top_k": 3
+    },
+    {
+      "query": "CPQ guided selling quote process product selection wizard",
+      "domain": "admin",
+      "expected_skill": "admin/cpq-guided-selling",
+      "top_k": 3
+    },
+    {
+      "query": "CPQ pricing model discount schedule volume pricing block pricing",
+      "domain": "admin",
+      "expected_skill": "admin/pricing-model-design",
+      "top_k": 3
+    },
+    {
+      "query": "Marketing Cloud data extension design primary key sendable DE",
+      "domain": "data",
+      "expected_skill": "data/data-extension-design",
+      "top_k": 3
+    },
+    {
+      "query": "Marketing Cloud Connect synchronized data extension CRM sync",
+      "domain": "data",
+      "expected_skill": "data/marketing-cloud-data-sync",
+      "top_k": 3
+    },
+    {
+      "query": "Marketing Cloud subscriber key management unsubscribe suppression list",
+      "domain": "data",
+      "expected_skill": "data/subscriber-data-management",
+      "top_k": 3
+    },
+    {
+      "query": "Marketing Cloud SQL query activity Automation Studio system data views",
+      "domain": "data",
+      "expected_skill": "data/marketing-cloud-sql-queries",
+      "top_k": 3
+    },
+    {
+      "query": "CPQ quote calculator plugin JS QCP apex plugin development",
+      "domain": "apex",
+      "expected_skill": "apex/cpq-apex-plugins",
+      "top_k": 3
     }
   ]
 }
