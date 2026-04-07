@@ -2573,6 +2573,126 @@
       "domain": "architect",
       "expected_skill": "architect/ai-agent-org-integration-architecture",
       "top_k": 3
+    },
+    {
+      "query": "how to set up business units in Marketing Cloud Engagement",
+      "domain": "admin",
+      "expected_skill": "admin/marketing-cloud-engagement-setup",
+      "top_k": 3
+    },
+    {
+      "query": "configure sender profile delivery profile send classification in MC",
+      "domain": "admin",
+      "expected_skill": "admin/marketing-cloud-engagement-setup",
+      "top_k": 3
+    },
+    {
+      "query": "how to activate MCAE Pardot connector to Salesforce",
+      "domain": "admin",
+      "expected_skill": "admin/mcae-pardot-setup",
+      "top_k": 3
+    },
+    {
+      "query": "set up Account Engagement business unit connector user sync",
+      "domain": "admin",
+      "expected_skill": "admin/mcae-pardot-setup",
+      "top_k": 3
+    },
+    {
+      "query": "how to build emails with dynamic content blocks in Email Studio",
+      "domain": "admin",
+      "expected_skill": "admin/email-studio-administration",
+      "top_k": 3
+    },
+    {
+      "query": "configure send classification commercial vs transactional Marketing Cloud",
+      "domain": "admin",
+      "expected_skill": "admin/email-studio-administration",
+      "top_k": 3
+    },
+    {
+      "query": "set up Journey Builder entry sources and decision splits",
+      "domain": "admin",
+      "expected_skill": "admin/journey-builder-administration",
+      "top_k": 3
+    },
+    {
+      "query": "journey builder exit criteria vs goal configuration",
+      "domain": "admin",
+      "expected_skill": "admin/journey-builder-administration",
+      "top_k": 3
+    },
+    {
+      "query": "configure Marketing Cloud Connect synchronized data sources",
+      "domain": "admin",
+      "expected_skill": "admin/marketing-cloud-connect",
+      "top_k": 3
+    },
+    {
+      "query": "MC connect scope configuration missing subscribers troubleshooting",
+      "domain": "admin",
+      "expected_skill": "admin/marketing-cloud-connect",
+      "top_k": 3
+    },
+    {
+      "query": "set up MCAE lead scoring and grading profiles",
+      "domain": "admin",
+      "expected_skill": "admin/mcae-lead-scoring-and-grading",
+      "top_k": 3
+    },
+    {
+      "query": "Pardot score decay automation rule MQL threshold configuration",
+      "domain": "admin",
+      "expected_skill": "admin/mcae-lead-scoring-and-grading",
+      "top_k": 3
+    },
+    {
+      "query": "marketing cloud email consent management CAN-SPAM unsubscribe setup",
+      "domain": "admin",
+      "expected_skill": "admin/consent-management-marketing",
+      "top_k": 3
+    },
+    {
+      "query": "subscription center preference center GDPR opt-out handling",
+      "domain": "admin",
+      "expected_skill": "admin/consent-management-marketing",
+      "top_k": 3
+    },
+    {
+      "query": "email deliverability SPF DKIM DMARC setup Marketing Cloud",
+      "domain": "admin",
+      "expected_skill": "admin/email-deliverability-strategy",
+      "top_k": 3
+    },
+    {
+      "query": "dedicated IP warm-up schedule sender reputation list hygiene",
+      "domain": "admin",
+      "expected_skill": "admin/email-deliverability-strategy",
+      "top_k": 3
+    },
+    {
+      "query": "CPQ price rules evaluation order discount schedules contracted pricing",
+      "domain": "admin",
+      "expected_skill": "admin/cpq-pricing-rules",
+      "top_k": 3
+    },
+    {
+      "query": "block pricing percent of total CPQ quote calculation",
+      "domain": "admin",
+      "expected_skill": "admin/cpq-pricing-rules",
+      "top_k": 3
+    },
+    {
+      "query": "CPQ quote template sections line columns conditional PDF generation",
+      "domain": "admin",
+      "expected_skill": "admin/cpq-quote-templates",
+      "top_k": 3
+    },
+    {
+      "query": "SBQQ QuoteTemplate conditional print field multi-language",
+      "domain": "admin",
+      "expected_skill": "admin/cpq-quote-templates",
+      "top_k": 3
     }
   ]
 }

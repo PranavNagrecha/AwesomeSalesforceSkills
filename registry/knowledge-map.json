@@ -12,7 +12,10 @@
       "admin/collaborative-forecasts",
       "admin/community-engagement-strategy",
       "admin/connected-apps-and-auth",
+      "admin/consent-management-marketing",
+      "admin/cpq-pricing-rules",
       "admin/cpq-product-catalog-setup",
+      "admin/cpq-quote-templates",
       "admin/custom-field-creation",
       "admin/custom-metadata-types",
       "admin/custom-metadata-types-and-settings",
@@ -25,6 +28,8 @@
       "admin/dynamic-forms-and-actions",
       "admin/einstein-activity-capture-setup",
       "admin/einstein-analytics-basics",
+      "admin/email-deliverability-strategy",
+      "admin/email-studio-administration",
       "admin/email-templates-and-alerts",
       "admin/email-to-case-configuration",
       "admin/enterprise-territory-management",
@@ -45,12 +50,17 @@
       "admin/global-actions-and-quick-actions",
       "admin/health-cloud-patient-setup",
       "admin/in-app-guidance-and-walkthroughs",
+      "admin/journey-builder-administration",
       "admin/knowledge-base-administration",
       "admin/lead-management-and-conversion",
       "admin/lead-scoring-requirements",
       "admin/lightning-app-builder-advanced",
       "admin/lightning-page-performance-tuning",
       "admin/list-views-and-compact-layouts",
+      "admin/marketing-cloud-connect",
+      "admin/marketing-cloud-engagement-setup",
+      "admin/mcae-lead-scoring-and-grading",
+      "admin/mcae-pardot-setup",
       "admin/messaging-and-chat-setup",
       "admin/multi-language-and-translation",
       "admin/npsp-household-accounts",
@@ -547,6 +557,9 @@
     "__mdt": [
       "apex/custom-metadata-in-apex"
     ],
+    "ab-testing": [
+      "admin/email-studio-administration"
+    ],
     "abuse-prevention": [
       "agentforce/agentforce-guardrails"
     ],
@@ -583,7 +596,9 @@
       "data/person-accounts"
     ],
     "account-engagement": [
-      "admin/lead-scoring-requirements"
+      "admin/lead-scoring-requirements",
+      "admin/mcae-lead-scoring-and-grading",
+      "admin/mcae-pardot-setup"
     ],
     "action-cadence": [
       "apex/sales-engagement-api"
@@ -1046,6 +1061,7 @@
     ],
     "automation": [
       "admin/flow-for-admins",
+      "admin/journey-builder-administration",
       "admin/user-access-policies",
       "apex/order-of-execution-deep-dive"
     ],
@@ -1057,6 +1073,9 @@
     ],
     "automation-overlap": [
       "architect/technical-debt-assessment"
+    ],
+    "automation-rules": [
+      "admin/mcae-lead-scoring-and-grading"
     ],
     "automation-selection": [
       "admin/process-automation-selection"
@@ -1120,6 +1139,9 @@
     ],
     "blazemeter": [
       "devops/performance-testing-salesforce"
+    ],
+    "block-pricing": [
+      "admin/cpq-pricing-rules"
     ],
     "blue-canvas": [
       "devops/salesforce-devops-tooling-selection"
@@ -1226,6 +1248,12 @@
     "business-rules-engine": [
       "omnistudio/business-rules-engine"
     ],
+    "business-unit": [
+      "admin/mcae-pardot-setup"
+    ],
+    "business-units": [
+      "admin/marketing-cloud-engagement-setup"
+    ],
     "byollm": [
       "agentforce/model-builder-and-byollm"
     ],
@@ -1291,6 +1319,9 @@
     ],
     "callouts": [
       "integration/callout-limits-and-async-patterns"
+    ],
+    "can-spam": [
+      "admin/consent-management-marketing"
     ],
     "capacity-model": [
       "architect/omni-channel-capacity-model"
@@ -1551,6 +1582,9 @@
     "conditional-mfa": [
       "security/ip-range-and-login-flow-strategy"
     ],
+    "conditional-sections": [
+      "admin/cpq-quote-templates"
+    ],
     "conditional-visibility": [
       "omnistudio/flexcard-design-patterns"
     ],
@@ -1604,6 +1638,15 @@
     "connectedcallback": [
       "lwc/lifecycle-hooks"
     ],
+    "connector": [
+      "admin/mcae-pardot-setup"
+    ],
+    "connector-user": [
+      "admin/marketing-cloud-connect"
+    ],
+    "consent": [
+      "admin/consent-management-marketing"
+    ],
     "consent-management": [
       "security/ferpa-compliance-in-salesforce",
       "security/gdpr-data-privacy"
@@ -1620,6 +1663,9 @@
     ],
     "content-approval": [
       "admin/experience-cloud-moderation"
+    ],
+    "content-builder": [
+      "admin/email-studio-administration"
     ],
     "content-document": [
       "data/service-data-archival",
@@ -1662,6 +1708,9 @@
     ],
     "continuous-integration-testing": [
       "devops/continuous-integration-testing"
+    ],
+    "contracted-pricing": [
+      "admin/cpq-pricing-rules"
     ],
     "controlling-field": [
       "admin/picklist-and-value-sets"
@@ -1708,12 +1757,17 @@
       "admin/territory-design-requirements"
     ],
     "cpq": [
+      "admin/cpq-pricing-rules",
       "admin/cpq-product-catalog-setup",
+      "admin/cpq-quote-templates",
       "architect/cpq-vs-standard-products-decision",
       "architect/sales-cloud-integration-patterns"
     ],
     "cpq-comparison": [
       "omnistudio/industries-cpq-vs-salesforce-cpq"
+    ],
+    "cpq-quote-templates": [
+      "admin/cpq-quote-templates"
     ],
     "cpu-limits": [
       "architect/limits-and-scalability-planning"
@@ -2109,11 +2163,17 @@
     "decision-matrix": [
       "omnistudio/calculation-procedures"
     ],
+    "decision-splits": [
+      "admin/journey-builder-administration"
+    ],
     "decision-table": [
       "omnistudio/business-rules-engine"
     ],
     "declarative-vs-programmatic": [
       "architect/solution-design-patterns"
+    ],
+    "dedicated-ip": [
+      "admin/email-deliverability-strategy"
     ],
     "deduplication": [
       "data/large-scale-deduplication",
@@ -2133,6 +2193,9 @@
     ],
     "deletion": [
       "data/batch-data-cleanup-patterns"
+    ],
+    "delivery-profiles": [
+      "admin/marketing-cloud-engagement-setup"
     ],
     "delta-load": [
       "data/data-reconciliation-patterns"
@@ -2271,11 +2334,20 @@
     "discount-policy": [
       "admin/quote-to-cash-requirements"
     ],
+    "discount-schedules": [
+      "admin/cpq-pricing-rules"
+    ],
     "discovery": [
       "admin/sales-process-mapping"
     ],
+    "dkim": [
+      "admin/email-deliverability-strategy"
+    ],
     "dlrs": [
       "data/roll-up-summary-alternatives"
+    ],
+    "dmarc": [
+      "admin/email-deliverability-strategy"
     ],
     "dml-exception": [
       "apex/exception-handling"
@@ -2333,6 +2405,9 @@
     ],
     "dynamic-components": [
       "lwc/lwc-performance"
+    ],
+    "dynamic-content": [
+      "admin/email-studio-administration"
     ],
     "dynamic-dashboards": [
       "admin/reports-and-dashboards-fundamentals"
@@ -2419,6 +2494,7 @@
       "apex/apex-email-services"
     ],
     "email-deliverability": [
+      "admin/email-deliverability-strategy",
       "devops/sandbox-data-isolation-gotchas"
     ],
     "email-generation": [
@@ -2430,6 +2506,10 @@
     ],
     "email-message-relation": [
       "data/case-history-migration"
+    ],
+    "email-studio": [
+      "admin/email-studio-administration",
+      "admin/marketing-cloud-connect"
     ],
     "email-sync": [
       "admin/einstein-activity-capture-setup",
@@ -2474,6 +2554,9 @@
     "enterprise": [
       "architect/org-edition-and-feature-licensing"
     ],
+    "enterprise-2-account": [
+      "admin/marketing-cloud-engagement-setup"
+    ],
     "enterprise-patterns": [
       "apex/fflib-enterprise-patterns"
     ],
@@ -2494,6 +2577,9 @@
     ],
     "entry-exit-criteria": [
       "admin/sales-process-mapping"
+    ],
+    "entry-sources": [
+      "admin/journey-builder-administration"
     ],
     "environment-config": [
       "devops/environment-specific-value-injection"
@@ -2596,6 +2682,9 @@
     ],
     "execution-timeline": [
       "apex/apex-performance-profiling"
+    ],
+    "exit-criteria": [
+      "admin/journey-builder-administration"
     ],
     "experience-api": [
       "integration/api-led-connectivity"
@@ -2994,6 +3083,7 @@
       "admin/requirements-gathering-for-sf"
     ],
     "gdpr": [
+      "admin/consent-management-marketing",
       "data/data-quality-and-governance",
       "security/gdpr-data-privacy",
       "security/sandbox-data-masking"
@@ -3406,6 +3496,15 @@
     "joined-reports": [
       "admin/reports-and-dashboards-fundamentals"
     ],
+    "journey-builder": [
+      "admin/journey-builder-administration"
+    ],
+    "journey-goals": [
+      "admin/journey-builder-administration"
+    ],
+    "journey-versions": [
+      "admin/journey-builder-administration"
+    ],
     "json-memory": [
       "apex/apex-cpu-and-heap-optimization"
     ],
@@ -3526,6 +3625,9 @@
     "lead-distribution": [
       "admin/partner-community-requirements"
     ],
+    "lead-grading": [
+      "admin/mcae-lead-scoring-and-grading"
+    ],
     "lead-management": [
       "admin/assignment-rules",
       "admin/queues-and-public-groups"
@@ -3540,7 +3642,8 @@
       "admin/lead-management-and-conversion"
     ],
     "lead-scoring": [
-      "admin/lead-scoring-requirements"
+      "admin/lead-scoring-requirements",
+      "admin/mcae-lead-scoring-and-grading"
     ],
     "lead-to-cash": [
       "architect/sales-cloud-architecture"
@@ -3670,6 +3773,12 @@
     ],
     "limits-getcputime": [
       "apex/apex-cpu-and-heap-optimization"
+    ],
+    "line-columns": [
+      "admin/cpq-quote-templates"
+    ],
+    "list-hygiene": [
+      "admin/email-deliverability-strategy"
     ],
     "list-rendering": [
       "lwc/lwc-performance"
@@ -3823,7 +3932,20 @@
       "omnistudio/vlocity-to-native-omnistudio-migration"
     ],
     "marketing-automation": [
+      "admin/mcae-pardot-setup",
       "architect/sales-cloud-integration-patterns"
+    ],
+    "marketing-cloud": [
+      "admin/consent-management-marketing",
+      "admin/email-deliverability-strategy",
+      "admin/email-studio-administration",
+      "admin/journey-builder-administration"
+    ],
+    "marketing-cloud-connect": [
+      "admin/marketing-cloud-connect"
+    ],
+    "marketing-cloud-engagement": [
+      "admin/marketing-cloud-engagement-setup"
     ],
     "masking": [
       "admin/sandbox-strategy"
@@ -3835,6 +3957,13 @@
       "admin/duplicate-management",
       "data/large-scale-deduplication",
       "data/lead-data-import-and-dedup"
+    ],
+    "mc-connect": [
+      "admin/marketing-cloud-connect"
+    ],
+    "mcae": [
+      "admin/mcae-lead-scoring-and-grading",
+      "admin/mcae-pardot-setup"
     ],
     "mcp": [
       "agentforce/mcp-tool-definition-apex",
@@ -3981,7 +4110,8 @@
       "devops/salesforce-dx-project-structure"
     ],
     "mql": [
-      "admin/lead-scoring-requirements"
+      "admin/lead-scoring-requirements",
+      "admin/mcae-lead-scoring-and-grading"
     ],
     "mttr": [
       "data/service-metrics-data-model"
@@ -4272,6 +4402,9 @@
     "opportunityteammember": [
       "data/opportunity-pipeline-migration"
     ],
+    "opt-out": [
+      "admin/consent-management-marketing"
+    ],
     "optimizer": [
       "admin/org-cleanup-and-technical-debt"
     ],
@@ -4405,6 +4538,10 @@
     "parallel-testing": [
       "devops/scratch-org-pools"
     ],
+    "pardot": [
+      "admin/mcae-lead-scoring-and-grading",
+      "admin/mcae-pardot-setup"
+    ],
     "parent-child-summary": [
       "data/roll-up-summary-alternatives"
     ],
@@ -4452,6 +4589,7 @@
       "omnistudio/document-generation-omnistudio"
     ],
     "pdf-generation": [
+      "admin/cpq-quote-templates",
       "admin/quotes-and-quote-templates",
       "apex/pdf-generation-patterns"
     ],
@@ -4461,6 +4599,9 @@
     ],
     "peoplesoft": [
       "integration/sis-integration-patterns"
+    ],
+    "percent-of-total": [
+      "admin/cpq-pricing-rules"
     ],
     "performance": [
       "admin/data-skew-and-sharing-performance",
@@ -4619,6 +4760,9 @@
     "pre-release-testing": [
       "devops/automated-regression-testing"
     ],
+    "preference-center": [
+      "admin/consent-management-marketing"
+    ],
     "premier-success": [
       "admin/salesforce-support-escalation"
     ],
@@ -4630,6 +4774,9 @@
     ],
     "price-book": [
       "data/product-catalog-data-model"
+    ],
+    "price-rules": [
+      "admin/cpq-pricing-rules"
     ],
     "pricebook": [
       "data/opportunity-pipeline-migration",
@@ -4644,8 +4791,12 @@
       "architect/cpq-vs-standard-products-decision"
     ],
     "pricing": [
+      "admin/cpq-pricing-rules",
       "architect/cpq-vs-standard-products-decision",
       "omnistudio/calculation-procedures"
+    ],
+    "privacy": [
+      "admin/consent-management-marketing"
     ],
     "privacy-center": [
       "security/gdpr-data-privacy"
@@ -4698,6 +4849,7 @@
     ],
     "profiles": [
       "admin/delegated-administration",
+      "admin/mcae-lead-scoring-and-grading",
       "admin/permission-set-architecture",
       "admin/permission-sets-vs-profiles",
       "admin/user-management",
@@ -4736,6 +4888,9 @@
     "prompts": [
       "admin/in-app-guidance-and-walkthroughs"
     ],
+    "prospect-sync": [
+      "admin/mcae-pardot-setup"
+    ],
     "provar": [
       "devops/automated-regression-testing"
     ],
@@ -4751,6 +4906,9 @@
     ],
     "public-pages": [
       "admin/experience-cloud-guest-access"
+    ],
+    "publication-lists": [
+      "admin/consent-management-marketing"
     ],
     "publishing-workflow": [
       "admin/knowledge-base-administration"
@@ -4809,6 +4967,12 @@
     ],
     "quote": [
       "admin/quote-to-cash-requirements"
+    ],
+    "quote-calculation": [
+      "admin/cpq-pricing-rules"
+    ],
+    "quote-documents": [
+      "admin/cpq-quote-templates"
     ],
     "quote-pdf": [
       "apex/quote-pdf-customization"
@@ -5256,6 +5420,9 @@
     "savepoints": [
       "apex/governor-limit-recovery-patterns"
     ],
+    "sbqq": [
+      "admin/cpq-quote-templates"
+    ],
     "scalability": [
       "architect/limits-and-scalability-planning",
       "architect/nfr-definition-for-salesforce",
@@ -5294,6 +5461,9 @@
     ],
     "schema-documentation": [
       "admin/data-model-documentation"
+    ],
+    "score-decay": [
+      "admin/mcae-lead-scoring-and-grading"
     ],
     "scratch-org": [
       "apex/sf-cli-and-sfdx-essentials",
@@ -5421,8 +5591,20 @@
     "self-service-design": [
       "admin/self-service-design"
     ],
+    "send-classification": [
+      "admin/email-studio-administration"
+    ],
+    "send-classifications": [
+      "admin/marketing-cloud-engagement-setup"
+    ],
     "send-email-action": [
       "flow/flow-email-and-notifications"
+    ],
+    "sender-profiles": [
+      "admin/marketing-cloud-engagement-setup"
+    ],
+    "sender-reputation": [
+      "admin/email-deliverability-strategy"
     ],
     "seo": [
       "admin/experience-cloud-seo-settings"
@@ -5708,6 +5890,9 @@
     "spanning-relationships": [
       "apex/cross-object-formula-and-rollup-performance"
     ],
+    "spf": [
+      "admin/email-deliverability-strategy"
+    ],
     "sql": [
       "admin/lead-scoring-requirements"
     ],
@@ -5809,11 +5994,17 @@
     "subrequest": [
       "integration/composite-api-patterns"
     ],
+    "subscription-center": [
+      "admin/consent-management-marketing"
+    ],
     "subscriptions": [
       "admin/reports-and-dashboards"
     ],
     "summary-formulas": [
       "admin/reports-and-dashboards-fundamentals"
+    ],
+    "suppression-lists": [
+      "admin/email-studio-administration"
     ],
     "survey-invitation": [
       "admin/salesforce-surveys"
@@ -5829,6 +6020,9 @@
     ],
     "synced-quote": [
       "admin/quote-to-cash-requirements"
+    ],
+    "synchronized-data-sources": [
+      "admin/marketing-cloud-connect"
     ],
     "system-api": [
       "integration/api-led-connectivity"
@@ -6009,6 +6203,9 @@
     "trigger-recursion": [
       "apex/recursive-trigger-prevention"
     ],
+    "triggered-sends": [
+      "admin/email-studio-administration"
+    ],
     "triggers": [
       "apex/order-of-execution-deep-dive",
       "apex/trigger-framework"
@@ -6109,9 +6306,15 @@
     "user-mode": [
       "apex/apex-security-patterns"
     ],
+    "user-roles": [
+      "admin/marketing-cloud-engagement-setup"
+    ],
     "user-stories": [
       "admin/requirements-gathering-for-sf",
       "devops/copado-essentials"
+    ],
+    "user-sync": [
+      "admin/mcae-pardot-setup"
     ],
     "users": [
       "admin/user-management"
