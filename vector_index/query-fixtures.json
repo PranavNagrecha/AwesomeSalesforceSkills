@@ -2555,6 +2555,24 @@
       "domain": "architect",
       "expected_skill": "architect/headless-vs-standard-experience",
       "top_k": 3
+    },
+    {
+      "query": "define MCP tool in Apex for Agentforce",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/mcp-tool-definition-apex",
+      "top_k": 3
+    },
+    {
+      "query": "set up Salesforce MCP server connection Agentforce",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/salesforce-mcp-server-setup",
+      "top_k": 3
+    },
+    {
+      "query": "AI agent integration architecture Salesforce org",
+      "domain": "architect",
+      "expected_skill": "architect/ai-agent-org-integration-architecture",
+      "top_k": 3
     }
   ]
 }
