@@ -40,10 +40,9 @@ _ROWCOUNT_GUARD_RE = re.compile(
 _SMART_QUOTE_RE = re.compile(r'[\u201c\u201d\u2018\u2019]')
 _AMPSCRIPT_BLOCK_RE = re.compile(r'%%\[(.*?)%%\]', re.DOTALL)
 _SET_RE = re.compile(r'\bSET\s+(@\w+)\s*=', re.IGNORECASE)
-_VAR_USE_RE = re.compile(r'(?<!\bSET\s{0,20})(@\w+)', re.IGNORECASE)
-_LOOKUPROWS_NO_ASSIGN_RE = re.compile(
-    r'(?<!SET\s{0,20}@\w{1,80}\s*=\s*)LookupRows\s*\(', re.IGNORECASE
-)
+_VAR_USE_RE = re.compile(r'(@\w+)', re.IGNORECASE)
+_LOOKUPROWS_NO_ASSIGN_RE = re.compile(r'LookupRows\s*\(', re.IGNORECASE)
+_LOOKUPROWS_ASSIGN_RE = re.compile(r'SET\s+@\w+\s*=\s*LookupRows\s*\(', re.IGNORECASE)
 
 
 def check_file(path: Path) -> list[str]:

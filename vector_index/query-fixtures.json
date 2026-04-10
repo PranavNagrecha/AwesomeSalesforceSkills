@@ -3035,6 +3035,72 @@
       "domain": "apex",
       "expected_skill": "apex/fsl-service-report-templates",
       "top_k": 3
+    },
+    {
+      "query": "import prospects into MCAE with custom field mapping",
+      "domain": "data",
+      "expected_skill": "data/mcae-prospect-data-migration",
+      "top_k": 3
+    },
+    {
+      "query": "should we use Marketing Cloud Engagement or Account Engagement for B2B",
+      "domain": "architect",
+      "expected_skill": "architect/marketing-cloud-vs-mcae-selection",
+      "top_k": 3
+    },
+    {
+      "query": "multi business unit Marketing Cloud BU hierarchy shared data extensions",
+      "domain": "architect",
+      "expected_skill": "architect/multi-bu-marketing-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "inject contacts into Marketing Cloud journey from external system API",
+      "domain": "architect",
+      "expected_skill": "architect/marketing-integration-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "quote to cash CPQ Revenue Cloud object chain approval workflow",
+      "domain": "admin",
+      "expected_skill": "admin/quote-to-cash-process",
+      "top_k": 3
+    },
+    {
+      "query": "ASC 606 revenue recognition Salesforce Billing blng objects",
+      "domain": "admin",
+      "expected_skill": "admin/revenue-recognition-requirements",
+      "top_k": 3
+    },
+    {
+      "query": "CPQ subscription amendments renewals proration co-termination",
+      "domain": "admin",
+      "expected_skill": "admin/subscription-lifecycle-requirements",
+      "top_k": 3
+    },
+    {
+      "query": "CPQ custom actions buttons quote line editor QLE",
+      "domain": "apex",
+      "expected_skill": "apex/cpq-custom-actions",
+      "top_k": 3
+    },
+    {
+      "query": "CPQ test class setup SBQQ Quote Apex testing ServiceRouter",
+      "domain": "apex",
+      "expected_skill": "apex/cpq-test-automation",
+      "top_k": 3
+    },
+    {
+      "query": "CPQ product catalog migration SBQQ objects bulk data load",
+      "domain": "data",
+      "expected_skill": "data/product-catalog-migration-cpq",
+      "top_k": 3
+    },
+    {
+      "query": "set up B2B Commerce store Salesforce storefront configuration",
+      "domain": "admin",
+      "expected_skill": "admin/b2b-commerce-store-setup",
+      "top_k": 3
     }
   ]
 }
