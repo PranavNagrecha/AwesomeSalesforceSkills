@@ -8,6 +8,7 @@
       "admin/b2b-commerce-store-setup",
       "admin/batch-job-scheduling-and-monitoring",
       "admin/billing-schedule-setup",
+      "admin/campaign-planning-and-attribution",
       "admin/care-plan-configuration",
       "admin/care-program-management",
       "admin/case-management-setup",
@@ -65,12 +66,15 @@
       "admin/journey-builder-administration",
       "admin/knowledge-base-administration",
       "admin/lead-management-and-conversion",
+      "admin/lead-nurture-journey-design",
       "admin/lead-scoring-requirements",
       "admin/lightning-app-builder-advanced",
       "admin/lightning-page-performance-tuning",
       "admin/list-views-and-compact-layouts",
+      "admin/marketing-automation-requirements",
       "admin/marketing-cloud-connect",
       "admin/marketing-cloud-engagement-setup",
+      "admin/marketing-reporting-requirements",
       "admin/mcae-lead-scoring-and-grading",
       "admin/mcae-pardot-setup",
       "admin/messaging-and-chat-setup",
@@ -146,6 +150,7 @@
       "agentforce/sf-to-llm-data-pipelines"
     ],
     "apex": [
+      "apex/ampscript-development",
       "apex/apex-cpu-and-heap-optimization",
       "apex/apex-design-patterns",
       "apex/apex-email-services",
@@ -186,6 +191,10 @@
       "apex/invocable-methods",
       "apex/lead-conversion-customization",
       "apex/long-running-process-orchestration",
+      "apex/marketing-cloud-api",
+      "apex/marketing-cloud-custom-activities",
+      "apex/marketing-cloud-data-views",
+      "apex/mcae-pardot-api",
       "apex/metadata-api-and-package-xml",
       "apex/mixed-dml-and-setup-objects",
       "apex/omni-channel-custom-routing",
@@ -202,6 +211,7 @@
       "apex/sf-cli-and-sfdx-essentials",
       "apex/soql-fundamentals",
       "apex/soql-security",
+      "apex/ssjs-server-side-javascript",
       "apex/territory-api-and-assignment",
       "apex/test-class-standards",
       "apex/test-data-factory-patterns",
@@ -455,6 +465,9 @@
     "2gp": [
       "devops/second-generation-managed-packages"
     ],
+    "B2B-marketing-analytics": [
+      "admin/campaign-planning-and-attribution"
+    ],
     "B2C": [
       "data/person-accounts"
     ],
@@ -521,6 +534,9 @@
       "apex/common-apex-runtime-errors",
       "apex/governor-limit-recovery-patterns"
     ],
+    "MCAE": [
+      "admin/campaign-planning-and-attribution"
+    ],
     "MIAW": [
       "admin/messaging-and-chat-setup"
     ],
@@ -545,6 +561,9 @@
     ],
     "QueryException": [
       "apex/common-apex-runtime-errors"
+    ],
+    "ROI": [
+      "admin/campaign-planning-and-attribution"
     ],
     "SLA": [
       "admin/entitlements-and-milestones"
@@ -619,9 +638,12 @@
       "admin/household-model-configuration"
     ],
     "account-engagement": [
+      "admin/lead-nurture-journey-design",
       "admin/lead-scoring-requirements",
+      "admin/marketing-automation-requirements",
       "admin/mcae-lead-scoring-and-grading",
-      "admin/mcae-pardot-setup"
+      "admin/mcae-pardot-setup",
+      "apex/mcae-pardot-api"
     ],
     "action-cadence": [
       "apex/sales-engagement-api"
@@ -792,6 +814,12 @@
     "amendments": [
       "admin/contract-and-renewal-management"
     ],
+    "ampscript": [
+      "apex/ampscript-development"
+    ],
+    "ampscript-interop": [
+      "apex/ssjs-server-side-javascript"
+    ],
     "analytics": [
       "data/community-analytics-data"
     ],
@@ -921,6 +949,9 @@
     ],
     "api-usage": [
       "architect/org-limits-monitoring"
+    ],
+    "api-v5": [
+      "apex/mcae-pardot-api"
     ],
     "api-version": [
       "devops/api-version-management"
@@ -1054,6 +1085,10 @@
     "ato": [
       "architect/government-cloud-compliance"
     ],
+    "attribution": [
+      "admin/campaign-planning-and-attribution",
+      "admin/marketing-reporting-requirements"
+    ],
     "audience-targeting": [
       "admin/experience-cloud-cms-content"
     ],
@@ -1131,6 +1166,8 @@
       "admin/process-automation-selection"
     ],
     "automation-studio": [
+      "apex/marketing-cloud-data-views",
+      "apex/ssjs-server-side-javascript",
       "data/marketing-cloud-sql-queries"
     ],
     "autorabit": [
@@ -1141,6 +1178,9 @@
     ],
     "b2b-commerce": [
       "admin/b2b-commerce-store-setup"
+    ],
+    "b2b-marketing-analytics": [
+      "admin/marketing-reporting-requirements"
     ],
     "backoff": [
       "integration/retry-and-backoff-patterns"
@@ -1178,6 +1218,9 @@
     ],
     "before-save": [
       "flow/record-triggered-flow-patterns"
+    ],
+    "behavioral-triggers": [
+      "admin/lead-nurture-journey-design"
     ],
     "bidirectional-sync": [
       "architect/sales-cloud-integration-patterns"
@@ -1395,6 +1438,22 @@
     "callouts": [
       "integration/callout-limits-and-async-patterns"
     ],
+    "campaign-hierarchy": [
+      "admin/campaign-planning-and-attribution"
+    ],
+    "campaign-influence": [
+      "admin/campaign-planning-and-attribution",
+      "admin/marketing-reporting-requirements"
+    ],
+    "campaign-member-status": [
+      "admin/campaign-planning-and-attribution"
+    ],
+    "campaign-performance-report": [
+      "admin/marketing-reporting-requirements"
+    ],
+    "campaigns": [
+      "admin/campaign-planning-and-attribution"
+    ],
     "can-spam": [
       "admin/consent-management-marketing"
     ],
@@ -1554,6 +1613,10 @@
     ],
     "client-credentials": [
       "integration/oauth-flows-and-connected-apps"
+    ],
+    "cloud-pages": [
+      "apex/ampscript-development",
+      "apex/ssjs-server-side-javascript"
     ],
     "cms-arc-ampe": [
       "architect/government-cloud-compliance"
@@ -1780,6 +1843,9 @@
     "content-governance": [
       "architect/knowledge-taxonomy-design"
     ],
+    "content-mapping": [
+      "admin/lead-nurture-journey-design"
+    ],
     "content-scheduling": [
       "admin/experience-cloud-cms-content"
     ],
@@ -1960,6 +2026,9 @@
     "currentpagereference": [
       "lwc/navigation-and-routing"
     ],
+    "custom-activity": [
+      "apex/marketing-cloud-custom-activities"
+    ],
     "custom-adapter": [
       "integration/salesforce-connect-external-objects"
     ],
@@ -2106,10 +2175,12 @@
       "lwc/lwc-base-component-recipes"
     ],
     "data-extension": [
+      "apex/ampscript-development",
       "data/data-extension-design",
       "data/marketing-cloud-sql-queries"
     ],
     "data-extensions": [
+      "apex/marketing-cloud-api",
       "data/marketing-cloud-data-sync"
     ],
     "data-extract": [
@@ -2190,6 +2261,7 @@
       "architect/multi-org-strategy"
     ],
     "data-retention": [
+      "apex/marketing-cloud-data-views",
       "data/data-archival-strategies",
       "data/data-extension-design",
       "security/field-audit-trail"
@@ -2513,6 +2585,9 @@
     "donations": [
       "admin/gift-entry-and-processing"
     ],
+    "drip-program": [
+      "admin/lead-nurture-journey-design"
+    ],
     "dst": [
       "apex/timezone-and-datetime-pitfalls"
     ],
@@ -2642,7 +2717,8 @@
     ],
     "email-studio": [
       "admin/email-studio-administration",
-      "admin/marketing-cloud-connect"
+      "admin/marketing-cloud-connect",
+      "apex/ampscript-development"
     ],
     "email-sync": [
       "admin/einstein-activity-capture-setup",
@@ -2675,8 +2751,14 @@
     "enforcement-actions": [
       "security/transaction-security-policies"
     ],
+    "engagement-data": [
+      "apex/marketing-cloud-data-views"
+    ],
     "engagement-insights": [
       "data/community-analytics-data"
+    ],
+    "engagement-studio": [
+      "admin/lead-nurture-journey-design"
     ],
     "enhanced-chat": [
       "apex/service-cloud-rest-api"
@@ -3201,6 +3283,9 @@
     "forecasting": [
       "admin/opportunity-management"
     ],
+    "form-handlers": [
+      "apex/mcae-pardot-api"
+    ],
     "forms": [
       "lwc/lwc-base-component-recipes"
     ],
@@ -3231,6 +3316,9 @@
     ],
     "fsl-mobile": [
       "admin/fsl-mobile-app-setup"
+    ],
+    "funnel-stages": [
+      "admin/lead-nurture-journey-design"
     ],
     "future-callout": [
       "apex/callout-and-dml-transaction-boundaries"
@@ -3362,7 +3450,8 @@
       "agentforce/agent-topic-design"
     ],
     "handoff-sla": [
-      "admin/lead-scoring-requirements"
+      "admin/lead-scoring-requirements",
+      "admin/marketing-automation-requirements"
     ],
     "hard-delete": [
       "data/batch-data-cleanup-patterns"
@@ -3449,6 +3538,9 @@
     "http-callout": [
       "apex/callouts-and-http-integrations",
       "flow/flow-external-services"
+    ],
+    "http-functions": [
+      "apex/ssjs-server-side-javascript"
     ],
     "http-integration": [
       "apex/continuation-callouts"
@@ -3570,6 +3662,9 @@
       "flow/flow-custom-property-editors",
       "lwc/custom-property-editor-for-flow"
     ],
+    "installed-package": [
+      "apex/marketing-cloud-custom-activities"
+    ],
     "installments": [
       "admin/recurring-donations-setup"
     ],
@@ -3581,6 +3676,9 @@
     ],
     "integration": [
       "agentforce/sf-to-llm-data-pipelines",
+      "apex/marketing-cloud-api",
+      "apex/marketing-cloud-custom-activities",
+      "apex/mcae-pardot-api",
       "architect/ai-agent-org-integration-architecture",
       "architect/integration-framework-design",
       "integration/composite-api-patterns",
@@ -3687,7 +3785,9 @@
       "admin/reports-and-dashboards-fundamentals"
     ],
     "journey-builder": [
-      "admin/journey-builder-administration"
+      "admin/journey-builder-administration",
+      "apex/marketing-cloud-api",
+      "apex/marketing-cloud-custom-activities"
     ],
     "journey-goals": [
       "admin/journey-builder-administration"
@@ -3777,6 +3877,9 @@
     "knowledge-vs-external-cms": [
       "architect/knowledge-vs-external-cms"
     ],
+    "kpi": [
+      "admin/marketing-reporting-requirements"
+    ],
     "large-data-volumes": [
       "admin/data-skew-and-sharing-performance",
       "admin/report-performance-tuning",
@@ -3830,6 +3933,9 @@
     ],
     "lead-mapping": [
       "admin/lead-management-and-conversion"
+    ],
+    "lead-nurture": [
+      "admin/lead-nurture-journey-design"
     ],
     "lead-qualification": [
       "admin/lead-scoring-requirements"
@@ -3886,6 +3992,9 @@
     ],
     "life-sciences": [
       "admin/care-program-management"
+    ],
+    "lifecycle-stages": [
+      "admin/marketing-automation-requirements"
     ],
     "light-dom": [
       "lwc/lwc-security"
@@ -4132,6 +4241,7 @@
       "omnistudio/vlocity-to-native-omnistudio-migration"
     ],
     "marketing-automation": [
+      "admin/marketing-automation-requirements",
       "admin/mcae-pardot-setup",
       "architect/sales-cloud-integration-patterns"
     ],
@@ -4140,6 +4250,12 @@
       "admin/email-deliverability-strategy",
       "admin/email-studio-administration",
       "admin/journey-builder-administration",
+      "admin/marketing-automation-requirements",
+      "apex/ampscript-development",
+      "apex/marketing-cloud-api",
+      "apex/marketing-cloud-custom-activities",
+      "apex/marketing-cloud-data-views",
+      "apex/ssjs-server-side-javascript",
       "data/data-extension-design",
       "data/marketing-cloud-data-sync",
       "data/marketing-cloud-sql-queries",
@@ -4150,6 +4266,15 @@
     ],
     "marketing-cloud-engagement": [
       "admin/marketing-cloud-engagement-setup"
+    ],
+    "marketing-influenced-pipeline": [
+      "admin/marketing-reporting-requirements"
+    ],
+    "marketing-reporting": [
+      "admin/marketing-reporting-requirements"
+    ],
+    "marketing-sourced-pipeline": [
+      "admin/marketing-reporting-requirements"
     ],
     "masking": [
       "admin/sandbox-strategy"
@@ -4173,8 +4298,12 @@
       "data/data-extension-design"
     ],
     "mcae": [
+      "admin/lead-nurture-journey-design",
+      "admin/marketing-automation-requirements",
+      "admin/marketing-reporting-requirements",
       "admin/mcae-lead-scoring-and-grading",
-      "admin/mcae-pardot-setup"
+      "admin/mcae-pardot-setup",
+      "apex/mcae-pardot-api"
     ],
     "mcp": [
       "agentforce/mcp-tool-definition-apex",
@@ -4325,7 +4454,9 @@
       "devops/salesforce-dx-project-structure"
     ],
     "mql": [
+      "admin/lead-nurture-journey-design",
       "admin/lead-scoring-requirements",
+      "admin/marketing-automation-requirements",
       "admin/mcae-lead-scoring-and-grading"
     ],
     "mttr": [
@@ -4364,6 +4495,9 @@
     ],
     "multi-site": [
       "architect/multi-site-architecture"
+    ],
+    "multi-touch-attribution": [
+      "admin/campaign-planning-and-attribution"
     ],
     "multi-user": [
       "flow/orchestration-flows"
@@ -4457,10 +4591,14 @@
     "null-handling": [
       "admin/formula-fields"
     ],
+    "nurture-journey": [
+      "admin/lead-nurture-journey-design"
+    ],
     "oauth": [
       "admin/connected-apps-and-auth",
       "admin/einstein-activity-capture-setup",
       "agentforce/salesforce-mcp-server-setup",
+      "apex/mcae-pardot-api",
       "architect/ai-agent-org-integration-architecture",
       "architect/experience-cloud-integration-patterns",
       "integration/named-credentials-setup",
@@ -4474,6 +4612,9 @@
     ],
     "oauth-scopes": [
       "security/api-security-and-rate-limiting"
+    ],
+    "oauth2": [
+      "apex/marketing-cloud-api"
     ],
     "object-design": [
       "admin/object-creation-and-design"
@@ -4771,8 +4912,11 @@
       "devops/scratch-org-pools"
     ],
     "pardot": [
+      "admin/lead-nurture-journey-design",
+      "admin/marketing-automation-requirements",
       "admin/mcae-lead-scoring-and-grading",
-      "admin/mcae-pardot-setup"
+      "admin/mcae-pardot-setup",
+      "apex/mcae-pardot-api"
     ],
     "parent-child-summary": [
       "data/roll-up-summary-alternatives"
@@ -4890,6 +5034,9 @@
     "persona-design": [
       "agentforce/agentforce-persona-design"
     ],
+    "personalization": [
+      "apex/ampscript-development"
+    ],
     "pgi-library": [
       "admin/care-plan-configuration"
     ],
@@ -4996,6 +5143,9 @@
     ],
     "post-refresh-automation": [
       "devops/sandbox-refresh-and-templates"
+    ],
+    "postmonger": [
+      "apex/marketing-cloud-custom-activities"
     ],
     "pre-deployment-checklist": [
       "devops/pre-deployment-checklist"
@@ -5157,6 +5307,9 @@
     ],
     "prospect-sync": [
       "admin/mcae-pardot-setup"
+    ],
+    "prospects": [
+      "apex/mcae-pardot-api"
     ],
     "provar": [
       "devops/automated-regression-testing"
@@ -5473,6 +5626,7 @@
       "admin/territory-design-requirements"
     ],
     "requirements-gathering": [
+      "admin/marketing-automation-requirements",
       "admin/portal-requirements-gathering",
       "admin/requirements-gathering-for-sf"
     ],
@@ -5489,6 +5643,8 @@
       "architect/integration-framework-design"
     ],
     "rest-api": [
+      "apex/marketing-cloud-api",
+      "apex/marketing-cloud-custom-activities",
       "apex/service-cloud-rest-api",
       "architect/ai-agent-org-integration-architecture",
       "data/bulk-api-patterns",
@@ -5784,6 +5940,9 @@
     "score-decay": [
       "admin/mcae-lead-scoring-and-grading"
     ],
+    "scoring-requirements": [
+      "admin/marketing-automation-requirements"
+    ],
     "scratch-org": [
       "apex/sf-cli-and-sfdx-essentials",
       "devops/scratch-org-management"
@@ -5814,6 +5973,9 @@
     "screen-reader": [
       "lwc/lwc-accessibility",
       "lwc/lwc-accessibility-patterns"
+    ],
+    "script-activity": [
+      "apex/ssjs-server-side-javascript"
     ],
     "search": [
       "lwc/experience-cloud-search-customization"
@@ -6151,6 +6313,7 @@
       "integration/outbound-messages-and-callbacks"
     ],
     "soap-api": [
+      "apex/marketing-cloud-api",
       "integration/soap-api-patterns"
     ],
     "sobject-collection": [
@@ -6229,10 +6392,15 @@
       "admin/email-deliverability-strategy"
     ],
     "sql": [
-      "admin/lead-scoring-requirements"
+      "admin/lead-scoring-requirements",
+      "admin/marketing-automation-requirements"
     ],
     "sql-query-activity": [
+      "apex/marketing-cloud-data-views",
       "data/marketing-cloud-sql-queries"
+    ],
+    "ssjs": [
+      "apex/ssjs-server-side-javascript"
     ],
     "sso": [
       "architect/experience-cloud-integration-patterns",
@@ -6338,6 +6506,9 @@
     "subscriber-key": [
       "data/subscriber-data-management"
     ],
+    "subscriber-management": [
+      "apex/marketing-cloud-data-views"
+    ],
     "subscription-center": [
       "admin/consent-management-marketing"
     ],
@@ -6379,6 +6550,7 @@
       "integration/api-led-connectivity"
     ],
     "system-data-views": [
+      "apex/marketing-cloud-data-views",
       "data/marketing-cloud-sql-queries"
     ],
     "system-debug": [
@@ -6561,7 +6733,8 @@
       "apex/recursive-trigger-prevention"
     ],
     "triggered-sends": [
-      "admin/email-studio-administration"
+      "admin/email-studio-administration",
+      "apex/marketing-cloud-api"
     ],
     "triggers": [
       "apex/order-of-execution-deep-dive",
@@ -6744,6 +6917,12 @@
     "visibility-rules": [
       "admin/dynamic-forms-and-actions"
     ],
+    "visitor-activity": [
+      "apex/mcae-pardot-api"
+    ],
+    "visitors": [
+      "apex/mcae-pardot-api"
+    ],
     "visualforce": [
       "apex/continuation-callouts",
       "apex/pdf-generation-patterns",
@@ -6845,6 +7024,9 @@
     ],
     "wrapper-dto": [
       "apex/invocable-methods"
+    ],
+    "wsproxy": [
+      "apex/ssjs-server-side-javascript"
     ],
     "xss": [
       "lwc/lwc-security",

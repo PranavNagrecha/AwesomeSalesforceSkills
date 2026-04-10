@@ -2915,6 +2915,66 @@
       "domain": "admin",
       "expected_skill": "admin/fsc-referral-management",
       "top_k": 5
+    },
+    {
+      "query": "how do I set up campaign hierarchy for multi-touch attribution ROI tracking",
+      "domain": "admin",
+      "expected_skill": "admin/campaign-planning-and-attribution",
+      "top_k": 3
+    },
+    {
+      "query": "how do I design a lead nurture journey in MCAE Engagement Studio",
+      "domain": "admin",
+      "expected_skill": "admin/lead-nurture-journey-design",
+      "top_k": 3
+    },
+    {
+      "query": "what are the requirements for marketing automation MQL scoring handoff",
+      "domain": "admin",
+      "expected_skill": "admin/marketing-automation-requirements",
+      "top_k": 3
+    },
+    {
+      "query": "how do I define marketing reporting KPIs and attribution model requirements",
+      "domain": "admin",
+      "expected_skill": "admin/marketing-reporting-requirements",
+      "top_k": 3
+    },
+    {
+      "query": "how do I use AMPscript LookupRows and FOR loops for personalization",
+      "domain": "apex",
+      "expected_skill": "apex/ampscript-development",
+      "top_k": 3
+    },
+    {
+      "query": "how do I use SSJS WSProxy for Marketing Cloud SOAP API calls",
+      "domain": "apex",
+      "expected_skill": "apex/ssjs-server-side-javascript",
+      "top_k": 3
+    },
+    {
+      "query": "how do I authenticate to Marketing Cloud REST API and inject contacts into journeys",
+      "domain": "apex",
+      "expected_skill": "apex/marketing-cloud-api",
+      "top_k": 3
+    },
+    {
+      "query": "how do I use MCAE Pardot API v5 to query prospects and visitor activities",
+      "domain": "apex",
+      "expected_skill": "apex/mcae-pardot-api",
+      "top_k": 3
+    },
+    {
+      "query": "how do I build a custom Journey Builder activity with Postmonger",
+      "domain": "apex",
+      "expected_skill": "apex/marketing-cloud-custom-activities",
+      "top_k": 3
+    },
+    {
+      "query": "how do I query Marketing Cloud system data views for email engagement reporting",
+      "domain": "apex",
+      "expected_skill": "apex/marketing-cloud-data-views",
+      "top_k": 3
     }
   ]
 }
