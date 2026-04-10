@@ -3221,6 +3221,66 @@
       "domain": "architect",
       "expected_skill": "architect/fsl-multi-region-architecture",
       "top_k": 3
+    },
+    {
+      "query": "how to configure Enhanced Timeline in Health Cloud for clinical data display",
+      "domain": "admin",
+      "expected_skill": "admin/health-cloud-timeline",
+      "top_k": 3
+    },
+    {
+      "query": "how to create FSC Action Plan templates for client onboarding tasks",
+      "domain": "admin",
+      "expected_skill": "admin/fsc-action-plans",
+      "top_k": 3
+    },
+    {
+      "query": "how to set up FSC relationship groups household wealth aggregation rollups",
+      "domain": "admin",
+      "expected_skill": "admin/fsc-relationship-groups",
+      "top_k": 3
+    },
+    {
+      "query": "how to configure NPSP Program Management Module PMM service deliveries",
+      "domain": "admin",
+      "expected_skill": "admin/npsp-program-management",
+      "top_k": 3
+    },
+    {
+      "query": "should we migrate from NPSP to Nonprofit Cloud NPC decision framework",
+      "domain": "architect",
+      "expected_skill": "architect/npsp-vs-nonprofit-cloud-decision",
+      "top_k": 3
+    },
+    {
+      "query": "how to set up B2C Commerce SFCC store site SFRA cartridge configuration",
+      "domain": "admin",
+      "expected_skill": "admin/b2c-commerce-store-setup",
+      "top_k": 3
+    },
+    {
+      "query": "how to configure Commerce Cloud product catalog categories buyer entitlements",
+      "domain": "admin",
+      "expected_skill": "admin/commerce-product-catalog",
+      "top_k": 3
+    },
+    {
+      "query": "how to set up Commerce pricing pricebooks promotions BuyerGroup discounts",
+      "domain": "admin",
+      "expected_skill": "admin/commerce-pricing-and-promotions",
+      "top_k": 3
+    },
+    {
+      "query": "how to configure Commerce checkout flow payment shipping tax calculation",
+      "domain": "admin",
+      "expected_skill": "admin/commerce-checkout-configuration",
+      "top_k": 3
+    },
+    {
+      "query": "how to enable Einstein for Service case classification article recommendations work summaries",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/agentforce-service-ai-setup",
+      "top_k": 3
     }
   ]
 }
