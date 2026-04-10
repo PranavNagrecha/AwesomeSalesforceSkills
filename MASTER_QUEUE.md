@@ -45,17 +45,17 @@ STATUS KEY:
 
 | Phase | Cloud / Domain | Total Cells | Skills Planned | Skills Done | TODO |
 |-------|----------------|-------------|----------------|-------------|------|
-| 0 | Domain Sweeps (Cross-Cloud) | — | 120 | 132 | 0 |
-| 1 | Core Platform | 5 roles | 310 | 80 | 230 |
-| 2 | Sales Cloud | 5 roles | 29 | 0 | 29 |
-| 3 | Service Cloud | 5 roles | 29 | 0 | 29 |
-| 4 | Experience Cloud | 5 roles | 26 | 0 | 26 |
+| 0 | Domain Sweeps (Cross-Cloud) | — | 190 | 190 | 0 |
+| 1 | Core Platform | 5 roles | 310 | 117 | 193 |
+| 2 | Sales Cloud | 5 roles | 29 | 28 | 1 |
+| 3 | Service Cloud | 5 roles | 29 | 29 | 0 |
+| 4 | Experience Cloud | 5 roles | 26 | 26 | 0 |
 | 5 | Marketing Cloud / MCAE | 5 roles | 28 | 28 | 0 |
-| 6 | Revenue Cloud (CPQ) | 5 roles | 25 | 19 | 6 |
-| 7 | Field Service (FSL) | 5 roles | 24 | 6 | 18 |
-| 8 | Health Cloud | 5 roles | 25 | 2 | 23 |
-| 9 | Financial Services Cloud | 5 roles | 24 | 2 | 22 |
-| 10 | Nonprofit Cloud (NPSP) | 5 roles | 23 | 2 | 21 |
+| 6 | Revenue Cloud (CPQ) | 5 roles | 25 | 20 | 5 |
+| 7 | Field Service (FSL) | 5 roles | 24 | 8 | 16 |
+| 8 | Health Cloud | 5 roles | 25 | 3 | 22 |
+| 9 | Financial Services Cloud | 5 roles | 24 | 3 | 21 |
+| 10 | Nonprofit Cloud (NPSP) | 5 roles | 23 | 4 | 19 |
 | 11 | Commerce Cloud | 5 roles | 25 | 1 | 24 |
 | 12 | Agentforce / Einstein AI | 5 roles | 22 | 0 | 22 |
 | 13 | OmniStudio / Industries | 5 roles | 22 | 0 | 22 |
@@ -65,7 +65,7 @@ STATUS KEY:
 | 17 | Data Cloud | 3 roles | 13 | 0 | 13 |
 | 18 | Slack Integration | — | 5 | 0 | 5 |
 | 19 | Additional Industry Clouds | — | 16 | 0 | 16 |
-| **Total** | | | **643** | **272** | **330** |
+| **Total** | | | **905** | **457** | **448** |
 
 ---
 
