@@ -200,7 +200,9 @@
       "apex/fflib-enterprise-patterns",
       "apex/formula-field-performance-and-limits",
       "apex/fsl-apex-extensions",
+      "apex/fsl-custom-actions-mobile",
       "apex/fsl-mobile-app-extensions",
+      "apex/fsl-scheduling-api",
       "apex/fsl-service-report-templates",
       "apex/governor-limit-recovery-patterns",
       "apex/governor-limits",
@@ -249,6 +251,10 @@
       "architect/experience-cloud-integration-patterns",
       "architect/experience-cloud-licensing-model",
       "architect/experience-cloud-performance",
+      "architect/fsl-integration-patterns",
+      "architect/fsl-multi-region-architecture",
+      "architect/fsl-offline-architecture",
+      "architect/fsl-optimization-architecture",
       "architect/government-cloud-compliance",
       "architect/ha-dr-architecture",
       "architect/headless-vs-standard-experience",
@@ -305,6 +311,10 @@
       "data/external-id-strategy",
       "data/external-user-data-sharing",
       "data/field-history-tracking",
+      "data/fsl-reporting-data-model",
+      "data/fsl-resource-and-skill-data",
+      "data/fsl-territory-data-setup",
+      "data/fsl-work-order-migration",
       "data/historical-order-migration",
       "data/knowledge-article-import",
       "data/large-scale-deduplication",
@@ -868,7 +878,8 @@
       "apex/ssjs-server-side-javascript"
     ],
     "analytics": [
-      "data/community-analytics-data"
+      "data/community-analytics-data",
+      "data/fsl-reporting-data-model"
     ],
     "analytics-api": [
       "admin/report-performance-tuning"
@@ -885,6 +896,7 @@
       "agentforce/salesforce-mcp-server-setup",
       "apex/custom-iterators-and-iterables",
       "apex/fsl-apex-extensions",
+      "apex/fsl-scheduling-api",
       "apex/governor-limit-recovery-patterns",
       "apex/pdf-generation-patterns",
       "apex/soql-fundamentals",
@@ -1023,7 +1035,8 @@
       "lwc/message-channel-patterns"
     ],
     "appointment-booking": [
-      "apex/fsl-apex-extensions"
+      "apex/fsl-apex-extensions",
+      "apex/fsl-scheduling-api"
     ],
     "appointment-priority": [
       "admin/fsl-scheduling-optimization-design"
@@ -1045,6 +1058,7 @@
       "admin/approval-processes"
     ],
     "architect": [
+      "architect/fsl-optimization-architecture",
       "architect/marketing-cloud-vs-mcae-selection",
       "architect/org-edition-and-feature-licensing",
       "architect/platform-selection-guidance",
@@ -1254,6 +1268,9 @@
     ],
     "banner": [
       "integration/sis-integration-patterns"
+    ],
+    "barcode": [
+      "apex/fsl-custom-actions-mobile"
     ],
     "base-components": [
       "lwc/lwc-base-component-recipes"
@@ -2151,6 +2168,9 @@
     "cross-system": [
       "data/external-id-strategy"
     ],
+    "cross-territory": [
+      "architect/fsl-multi-region-architecture"
+    ],
     "cross-transaction": [
       "apex/long-running-process-orchestration"
     ],
@@ -2408,6 +2428,9 @@
       "data/case-history-migration",
       "data/community-user-data-migration",
       "data/data-migration-planning",
+      "data/fsl-resource-and-skill-data",
+      "data/fsl-territory-data-setup",
+      "data/fsl-work-order-migration",
       "data/historical-order-migration",
       "data/knowledge-article-import",
       "data/mcae-prospect-data-migration",
@@ -3035,7 +3058,8 @@
       "admin/recurring-donations-setup"
     ],
     "erp": [
-      "architect/cpq-integration-with-erp"
+      "architect/cpq-integration-with-erp",
+      "architect/fsl-integration-patterns"
     ],
     "erp-integration": [
       "architect/sales-cloud-integration-patterns"
@@ -3079,6 +3103,9 @@
     ],
     "eslint": [
       "devops/salesforce-code-analyzer"
+    ],
+    "eso": [
+      "architect/fsl-optimization-architecture"
     ],
     "etl": [
       "data/data-migration-planning"
@@ -3336,8 +3363,18 @@
       "admin/fsl-sla-configuration-requirements",
       "admin/fsl-work-order-management",
       "apex/fsl-apex-extensions",
+      "apex/fsl-custom-actions-mobile",
       "apex/fsl-mobile-app-extensions",
-      "apex/fsl-service-report-templates"
+      "apex/fsl-scheduling-api",
+      "apex/fsl-service-report-templates",
+      "architect/fsl-integration-patterns",
+      "architect/fsl-multi-region-architecture",
+      "architect/fsl-offline-architecture",
+      "architect/fsl-optimization-architecture",
+      "data/fsl-reporting-data-model",
+      "data/fsl-resource-and-skill-data",
+      "data/fsl-territory-data-setup",
+      "data/fsl-work-order-migration"
     ],
     "field-types": [
       "data/data-model-design-patterns"
@@ -3550,7 +3587,23 @@
       "admin/fsl-shifts-and-crew",
       "admin/fsl-work-order-management",
       "apex/fsl-apex-extensions",
-      "apex/fsl-service-report-templates"
+      "apex/fsl-custom-actions-mobile",
+      "apex/fsl-scheduling-api",
+      "apex/fsl-service-report-templates",
+      "architect/fsl-integration-patterns",
+      "architect/fsl-multi-region-architecture",
+      "architect/fsl-offline-architecture",
+      "architect/fsl-optimization-architecture",
+      "data/fsl-reporting-data-model",
+      "data/fsl-resource-and-skill-data",
+      "data/fsl-territory-data-setup",
+      "data/fsl-work-order-migration"
+    ],
+    "fsl-custom-actions-mobile": [
+      "apex/fsl-custom-actions-mobile"
+    ],
+    "fsl-integration-patterns": [
+      "architect/fsl-integration-patterns"
     ],
     "fsl-mobile": [
       "admin/fsl-mobile-app-setup",
@@ -3559,8 +3612,32 @@
     "fsl-mobile-app-extensions": [
       "apex/fsl-mobile-app-extensions"
     ],
+    "fsl-multi-region-architecture": [
+      "architect/fsl-multi-region-architecture"
+    ],
     "fsl-namespace": [
       "apex/fsl-apex-extensions"
+    ],
+    "fsl-offline-architecture": [
+      "architect/fsl-offline-architecture"
+    ],
+    "fsl-optimization-architecture": [
+      "architect/fsl-optimization-architecture"
+    ],
+    "fsl-reporting-data-model": [
+      "data/fsl-reporting-data-model"
+    ],
+    "fsl-resource-and-skill-data": [
+      "data/fsl-resource-and-skill-data"
+    ],
+    "fsl-scheduling-api": [
+      "apex/fsl-scheduling-api"
+    ],
+    "fsl-territory-data-setup": [
+      "data/fsl-territory-data-setup"
+    ],
+    "fsl-work-order-migration": [
+      "data/fsl-work-order-migration"
     ],
     "funnel-stages": [
       "admin/lead-nurture-journey-design"
@@ -3660,6 +3737,9 @@
       "data/cpq-performance-optimization",
       "flow/flow-bulkification",
       "integration/callout-limits-and-async-patterns"
+    ],
+    "gps": [
+      "architect/fsl-integration-patterns"
     ],
     "graph-engine": [
       "devops/salesforce-code-analyzer"
@@ -3946,6 +4026,7 @@
       "architect/ai-agent-org-integration-architecture",
       "architect/cpq-architecture-patterns",
       "architect/cpq-integration-with-erp",
+      "architect/fsl-integration-patterns",
       "architect/integration-framework-design",
       "integration/composite-api-patterns",
       "integration/outbound-messages-and-callbacks"
@@ -4028,6 +4109,9 @@
     ],
     "invoice-run": [
       "admin/billing-schedule-setup"
+    ],
+    "iot": [
+      "architect/fsl-integration-patterns"
     ],
     "ip-based-branching": [
       "security/ip-range-and-login-flow-strategy"
@@ -4450,6 +4534,7 @@
     ],
     "lwc": [
       "apex/continuation-callouts",
+      "apex/fsl-custom-actions-mobile",
       "architect/platform-selection-guidance",
       "architect/solution-design-patterns",
       "lwc/experience-cloud-authentication",
@@ -4743,7 +4828,9 @@
     ],
     "mobile": [
       "admin/fsl-mobile-app-setup",
-      "admin/global-actions-and-quick-actions"
+      "admin/global-actions-and-quick-actions",
+      "apex/fsl-custom-actions-mobile",
+      "architect/fsl-offline-architecture"
     ],
     "mobile-extensions": [
       "apex/fsl-mobile-app-extensions"
@@ -4825,6 +4912,9 @@
     "multi-package": [
       "devops/multi-package-development"
     ],
+    "multi-region": [
+      "architect/fsl-multi-region-architecture"
+    ],
     "multi-site": [
       "architect/multi-site-architecture"
     ],
@@ -4895,6 +4985,9 @@
     ],
     "nfr": [
       "architect/nfr-definition-for-salesforce"
+    ],
+    "nimbus": [
+      "apex/fsl-custom-actions-mobile"
     ],
     "nist-800-53": [
       "architect/government-cloud-compliance"
@@ -4968,6 +5061,7 @@
     ],
     "offline": [
       "admin/fsl-mobile-app-setup",
+      "architect/fsl-offline-architecture",
       "lwc/lwc-offline-and-mobile"
     ],
     "offline-data": [
@@ -5055,7 +5149,8 @@
     "operating-hours": [
       "admin/fsl-service-territory-setup",
       "admin/fsl-shifts-and-crew",
-      "admin/fsl-sla-configuration-requirements"
+      "admin/fsl-sla-configuration-requirements",
+      "data/fsl-territory-data-setup"
     ],
     "operational-excellence": [
       "admin/batch-job-scheduling-and-monitoring"
@@ -5115,7 +5210,8 @@
     ],
     "optimization": [
       "admin/fsl-scheduling-policies",
-      "apex/fsl-apex-extensions"
+      "apex/fsl-apex-extensions",
+      "architect/fsl-optimization-architecture"
     ],
     "optimizer": [
       "admin/fsl-scheduling-optimization-design",
@@ -5492,6 +5588,9 @@
     "point-in-time": [
       "data/sales-reporting-data-model"
     ],
+    "polygon": [
+      "data/fsl-territory-data-setup"
+    ],
     "polymorphic-lookups": [
       "admin/standard-object-quirks"
     ],
@@ -5579,6 +5678,9 @@
     ],
     "primary-key": [
       "data/data-extension-design"
+    ],
+    "priming": [
+      "architect/fsl-offline-architecture"
     ],
     "privacy": [
       "admin/consent-management-marketing"
@@ -6035,6 +6137,9 @@
     "report-validity": [
       "lwc/lwc-forms-and-validation"
     ],
+    "reporting": [
+      "data/fsl-reporting-data-model"
+    ],
     "reporting-currency": [
       "architect/multi-currency-sales-architecture"
     ],
@@ -6394,7 +6499,11 @@
       "admin/fsl-scheduling-policies",
       "admin/fsl-service-territory-setup",
       "admin/fsl-shifts-and-crew",
-      "apex/fsl-apex-extensions"
+      "apex/fsl-apex-extensions",
+      "apex/fsl-scheduling-api"
+    ],
+    "scheduling-engine": [
+      "architect/fsl-optimization-architecture"
     ],
     "scheduling-optimization": [
       "admin/fsl-scheduling-optimization-design"
@@ -6570,6 +6679,10 @@
     "separation-of-concerns": [
       "apex/fflib-enterprise-patterns"
     ],
+    "service-appointment": [
+      "data/fsl-reporting-data-model",
+      "data/fsl-work-order-migration"
+    ],
     "service-appointments": [
       "admin/fsl-work-order-management"
     ],
@@ -6632,7 +6745,8 @@
     "service-resource": [
       "admin/fsl-resource-management",
       "admin/fsl-service-territory-setup",
-      "admin/omni-channel-routing-setup"
+      "admin/omni-channel-routing-setup",
+      "data/fsl-resource-and-skill-data"
     ],
     "service-router": [
       "apex/cpq-api-and-automation",
@@ -6642,7 +6756,8 @@
       "admin/fsl-sla-configuration-requirements"
     ],
     "service-territory": [
-      "admin/fsl-service-territory-setup"
+      "admin/fsl-service-territory-setup",
+      "data/fsl-territory-data-setup"
     ],
     "session-analytics": [
       "agentforce/agentforce-observability"
@@ -6780,6 +6895,9 @@
     ],
     "sitemap": [
       "admin/experience-cloud-seo-settings"
+    ],
+    "skills": [
+      "data/fsl-resource-and-skill-data"
     ],
     "skills-based-routing": [
       "admin/omni-channel-routing-setup",
@@ -7051,6 +7169,7 @@
       "admin/duplicate-management"
     ],
     "sync": [
+      "architect/fsl-offline-architecture",
       "data/data-reconciliation-patterns"
     ],
     "synced-quote": [
@@ -7102,6 +7221,9 @@
     ],
     "templates": [
       "admin/email-templates-and-alerts"
+    ],
+    "territories": [
+      "architect/fsl-multi-region-architecture"
     ],
     "territory": [
       "admin/fsl-capacity-planning"
@@ -7183,7 +7305,8 @@
       "flow/pause-elements-and-wait-events"
     ],
     "timezone": [
-      "apex/timezone-and-datetime-pitfalls"
+      "apex/timezone-and-datetime-pitfalls",
+      "architect/fsl-multi-region-architecture"
     ],
     "toast": [
       "lwc/lwc-modal-and-overlay",
@@ -7534,6 +7657,9 @@
       "devops/copado-essentials",
       "devops/devops-center-pipeline",
       "flow/orchestration-flows"
+    ],
+    "work-order": [
+      "data/fsl-work-order-migration"
     ],
     "work-orders": [
       "admin/fsl-sla-configuration-requirements",

@@ -1,0 +1,102 @@
+{
+  "category": "data",
+  "chunk_ids": [
+    "006b14c4dddbcd3c577c",
+    "00add7ce2723d304602b",
+    "196a4a504b7fe8739710",
+    "1988675b8806ccb28b8a",
+    "1af51f1e026f2587782b",
+    "23480053469dd329ac2f",
+    "255b6ddd13d9b7be0134",
+    "335724eb4eaa9021d207",
+    "3bd54934375a73133583",
+    "41573eb3f5c7f83bae84",
+    "56c4bd174dc084ea10d6",
+    "69de63e715fe687e2132",
+    "6cfeab46ffc5383b8afd",
+    "6e3a25ab588cf4e28924",
+    "701328b97ebc8d105e7f",
+    "7109dd021ce30df49c2f",
+    "7287914647b6d79072fe",
+    "763b5a459da1ea0e69d5",
+    "817a2e1015e5f61d5dc6",
+    "829555204a73a84ee025",
+    "845fad456b1826e48cb7",
+    "8719d0b18d7c55b0b218",
+    "88a4374f04b8a2f4eb2b",
+    "8998d837b4b68095b336",
+    "89bd54837567c9d0caa2",
+    "9cf9d894aa3dd7fdf771",
+    "9e3de409b6491af10b7f",
+    "9e790c46b04756aed1db",
+    "a17b6b45d10e5c5ed0df",
+    "a3c58365f800ed08cadc",
+    "a72b34bb95d0b2dbda9e",
+    "a8dfab80309cec5258ca",
+    "ae6067bc4be1a8c8efcb",
+    "bb30238d554135acac42",
+    "bba09bef6a1791391053",
+    "c3d74f0a115a94ce1bcc",
+    "c4ea5914f56ec24e5e8a",
+    "c7f98ab8e100b585b4e1",
+    "cbc7e86da58947b26a98",
+    "cdd4d2f67dabdbb24417",
+    "d0955ffa614c6ad1a790",
+    "d24db4362af64602170e",
+    "dbe15274e4f143e5193b",
+    "deedb8ebce99e41cf4ad",
+    "e4d474e31f823321ac18",
+    "ed048a0f4c7edf714fe5",
+    "ed4bd9715e979084af9e",
+    "ee98bce4d4422ecce9ed",
+    "ef5ac86d579da0701fe2",
+    "f011ac6842b5236bde43",
+    "f05cf2f396a33fabe2fb",
+    "fc0f3f8beda8ccfcf9fb"
+  ],
+  "content_hash": "0551c0d2c6eac7735c54914900a6d58d3424028d7f9f4ef462a6f8b1bde90e00",
+  "dependencies": [],
+  "description": "Use this skill when building Salesforce reports and dashboards on FSL operational data: job completion metrics, travel time analytics, first-time fix rate, utilization, and service performance. Trigger keywords: FSL reporting, ServiceAppointment reports, ActualDuration ActualTravelTime, first-time fix rate custom field, FSL utilization metrics. NOT for CRM Analytics / Field Service Intelligence (Einstein Analytics), ServiceReport PDF generation, or non-FSL service reporting.",
+  "file_location": "skills/data/fsl-reporting-data-model",
+  "id": "data/fsl-reporting-data-model",
+  "inputs": [
+    "Desired FSL operational metrics (FTF rate, utilization, travel time, job duration)",
+    "Whether FSL Mobile check-in is consistently used (required for travel time data)",
+    "Whether CRM Analytics / FSI license is available (out of scope for this skill)"
+  ],
+  "name": "fsl-reporting-data-model",
+  "official_sources": [
+    "Report on Field Service (help.salesforce.com) \u2014 https://help.salesforce.com/s/articleView?id=sf.fs_reports.htm",
+    "ServiceAppointment Object (Field Service Developer Guide) \u2014 https://developer.salesforce.com/docs/atlas.en-us.field_service_dev.meta/field_service_dev/fsl_dev_data_model_service_appointment.htm",
+    "Field Service Analytics (help.salesforce.com) \u2014 https://help.salesforce.com/s/articleView?id=sf.fs_analytics.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Report type and field selections for FSL operational metrics",
+    "Custom formula or Flow pattern for first-time fix rate",
+    "Data model explanation for ServiceAppointment reporting fields"
+  ],
+  "references": [
+    "skills/data/fsl-reporting-data-model/references/examples.md",
+    "skills/data/fsl-reporting-data-model/references/gotchas.md",
+    "skills/data/fsl-reporting-data-model/references/llm-anti-patterns.md",
+    "skills/data/fsl-reporting-data-model/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/data/fsl-reporting-data-model/scripts/check_fsl_reporting_data_model.py"
+  ],
+  "tags": [
+    "fsl",
+    "field-service",
+    "reporting",
+    "service-appointment",
+    "analytics",
+    "fsl-reporting-data-model"
+  ],
+  "templates": [
+    "skills/data/fsl-reporting-data-model/templates/fsl-reporting-data-model-template.md"
+  ],
+  "updated": "2026-04-10",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

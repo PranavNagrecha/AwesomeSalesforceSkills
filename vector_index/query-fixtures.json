@@ -3161,6 +3161,66 @@
       "domain": "admin",
       "expected_skill": "admin/fsl-capacity-planning",
       "top_k": 3
+    },
+    {
+      "query": "FSL scheduling API GetSlots AppointmentBookingService transaction boundary",
+      "domain": "apex",
+      "expected_skill": "apex/fsl-scheduling-api",
+      "top_k": 3
+    },
+    {
+      "query": "FSL Mobile custom action barcode scanner Nimbus plugin LWC",
+      "domain": "apex",
+      "expected_skill": "apex/fsl-custom-actions-mobile",
+      "top_k": 3
+    },
+    {
+      "query": "bulk load work orders service appointments migration FSL insert order",
+      "domain": "data",
+      "expected_skill": "data/fsl-work-order-migration",
+      "top_k": 3
+    },
+    {
+      "query": "service territory polygon KML import ServiceTerritoryMember setup",
+      "domain": "data",
+      "expected_skill": "data/fsl-territory-data-setup",
+      "top_k": 3
+    },
+    {
+      "query": "FSL service resource skill certification bulk load SkillLevel",
+      "domain": "data",
+      "expected_skill": "data/fsl-resource-and-skill-data",
+      "top_k": 3
+    },
+    {
+      "query": "FSL reporting first-time fix rate ActualTravelTime mobile check-in",
+      "domain": "data",
+      "expected_skill": "data/fsl-reporting-data-model",
+      "top_k": 3
+    },
+    {
+      "query": "FSL optimization architecture ESO global optimization territory sizing",
+      "domain": "architect",
+      "expected_skill": "architect/fsl-optimization-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "FSL offline priming data limits ghost records conflict resolution",
+      "domain": "architect",
+      "expected_skill": "architect/fsl-offline-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "FSL ERP integration ProductConsumed inventory sync IoT work order",
+      "domain": "architect",
+      "expected_skill": "architect/fsl-integration-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "FSL multi-region timezone territory operating hours cross-territory",
+      "domain": "architect",
+      "expected_skill": "architect/fsl-multi-region-architecture",
+      "top_k": 3
     }
   ]
 }
