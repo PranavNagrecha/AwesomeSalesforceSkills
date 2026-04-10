@@ -1,0 +1,103 @@
+{
+  "category": "data",
+  "chunk_ids": [
+    "00604456975ae64fc35b",
+    "05225bf1318336b62f32",
+    "069d021b4fa433ed1c40",
+    "06aefbff01675bf93447",
+    "07659b0394b7fdbc6baf",
+    "1aeb6dbcf1cb12d96876",
+    "262d1f6b02d8ca536b19",
+    "2a80b7dca6c6ba922c82",
+    "2c737c1e7804e9aac77e",
+    "31e9394433c694061ec9",
+    "31f8398d8f831c66e3f3",
+    "335b16632be0d473ea0e",
+    "3a321574aed4a55539de",
+    "3ba8781b38c4642e724b",
+    "4d8466dc4700be166acc",
+    "540092b43f8c7e435e44",
+    "606f01e51c7c6bb963f4",
+    "67016c8b87df2e20fbbe",
+    "6f901466f3d092611126",
+    "75eb9264c9693c3461c2",
+    "75f78d9406243d113ded",
+    "84481d9731b3d358b3fa",
+    "88f4c0aa57fe38bdd863",
+    "8b5503b8ecdca6659c96",
+    "8c16a111601b4b5ee95a",
+    "958bc77d96db242ce54f",
+    "97283ef5f7a6d0aab8ff",
+    "997ec786b800f20d77fa",
+    "9991d42acfb41d2ef413",
+    "a007904a4a373692103e",
+    "a2072f01620ea5e8e415",
+    "a64b61c6d3fe9ca5dda6",
+    "a7806b98779470b50354",
+    "a9f143185648f690cd18",
+    "affca4a06d0013eb047a",
+    "b6098ca7cc6e1a59b542",
+    "bb242f560f51afefb855",
+    "bdf89499f09c4253e3e0",
+    "c361faa4f5e1483092fd",
+    "c398fe91ac09a52d8b65",
+    "c49be6da4034033c1e0d",
+    "c8a0ae4a71830292d8ec",
+    "cf44c8d80efb58a3fbb0",
+    "d16a8e6b45e7743b0956",
+    "d732de7344e96d399de3",
+    "d7c321ef73b96c0bc24d",
+    "dceb2d67d78f13f063b8",
+    "e7733e6f87ca259ba5bd",
+    "ebd22d73b1cb19ff06bf",
+    "f572985f4a9dd6e4fa33",
+    "f84aa13ca4b552630c8a",
+    "f8b15689fdf9fae492c4"
+  ],
+  "content_hash": "d22b90af83691a2bc8d4e6dd9d63805a870f27e5b5e0eab2997168b5bcf2658c",
+  "dependencies": [],
+  "description": "Use this skill when bulk loading FSL ServiceResource records, ServiceResourceSkill data, skill certifications, capacity-based resource setup, and availability patterns. Trigger keywords: FSL resource migration, ServiceResourceSkill bulk load, skill certification tracking FSL, capacity-based resource, service resource availability. NOT for user provisioning, ServiceResource creation via UI, or ServiceTerritoryMember setup (covered by fsl-territory-data-setup).",
+  "file_location": "skills/data/fsl-resource-and-skill-data",
+  "id": "data/fsl-resource-and-skill-data",
+  "inputs": [
+    "Technician/resource records from source system with skill types and certification dates",
+    "Skill definitions and SkillLevel values (0\u201399999 numeric scale)",
+    "Whether resources are capacity-based (crews) or individual technicians"
+  ],
+  "name": "fsl-resource-and-skill-data",
+  "official_sources": [
+    "ServiceResourceSkill (Field Service Developer Guide) \u2014 https://developer.salesforce.com/docs/atlas.en-us.field_service_dev.meta/field_service_dev/fsl_dev_data_model_service_resource_skill.htm",
+    "Create Skills for Field Service (help.salesforce.com) \u2014 https://help.salesforce.com/s/articleView?id=sf.fs_skills.htm",
+    "ServiceResourceCapacity Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_serviceresourcecapacity.htm",
+    "FSL Core Data Model Gallery (architect.salesforce.com) \u2014 https://architect.salesforce.com/diagrams/framework/data-model-gallery",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Ordered data load sequence: Skill \u2192 ServiceResource \u2192 ServiceResourceSkill",
+    "SkillLevel mapping pattern from text/percentage to FSL numeric scale",
+    "Capacity resource configuration and ServiceResourceCapacity load"
+  ],
+  "references": [
+    "skills/data/fsl-resource-and-skill-data/references/examples.md",
+    "skills/data/fsl-resource-and-skill-data/references/gotchas.md",
+    "skills/data/fsl-resource-and-skill-data/references/llm-anti-patterns.md",
+    "skills/data/fsl-resource-and-skill-data/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/data/fsl-resource-and-skill-data/scripts/check_fsl_resource_and_skill_data.py"
+  ],
+  "tags": [
+    "fsl",
+    "field-service",
+    "data-migration",
+    "service-resource",
+    "skills",
+    "fsl-resource-and-skill-data"
+  ],
+  "templates": [
+    "skills/data/fsl-resource-and-skill-data/templates/fsl-resource-and-skill-data-template.md"
+  ],
+  "updated": "2026-04-10",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

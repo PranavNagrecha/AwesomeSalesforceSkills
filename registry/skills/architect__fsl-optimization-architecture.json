@@ -1,0 +1,111 @@
+{
+  "category": "architect",
+  "chunk_ids": [
+    "012e398f8a2d87774c61",
+    "050c25b2e9c04cfe0f1d",
+    "13bf605df5f03754e489",
+    "18b7304c04e6fbd8bd02",
+    "22b098c9b5e1b3015c9f",
+    "23e24a03ccf89ea4a19d",
+    "249d02b91a2c3db3fc74",
+    "2fdd4ef9bc60e767dca4",
+    "305e1609603f804fb457",
+    "331400730df92f193b4e",
+    "3aca1062cc902d410500",
+    "3b92cd89b5dd878f4914",
+    "3cd4d81b98ad9c51ec9e",
+    "4296e35a5c4d75296176",
+    "499f92e01d6c500b21b4",
+    "5465bef2fdfbdabd4776",
+    "6700315bc0b595544e4e",
+    "672f9fdefe57bc6126eb",
+    "6d619ba43e5f677c1a6f",
+    "6df9ead82786d6ff51a0",
+    "7130c06bcba5d0a55903",
+    "7238276885becd03a8b6",
+    "74bc0cb6c9c32b33670c",
+    "75df1a5ef882f39b1a31",
+    "78a525a5802f74ca0683",
+    "797e4ec151baf41fcf2b",
+    "7b1e8689bd013adb561b",
+    "7e82a55f150e2cfbf301",
+    "8a7fe6e5fa24ae56683c",
+    "92f79186f88c79bf8a31",
+    "a453bb167b8528640294",
+    "a53eec24dcd0c431037a",
+    "a9aabe20737d3eb3cf74",
+    "b187fde4ce51206450ef",
+    "b5c17b8d8de4485c4c1b",
+    "b7848ffb84d6df40bfa6",
+    "bdb6e5bd09577d47b5a2",
+    "c0300d12a5ec46c710d0",
+    "c9d650f971cdf49a1306",
+    "ca1518308d99ff383712",
+    "cdc088c07d4cd6b92d2e",
+    "cfce34bb3bc8a682ed7f",
+    "cffbdb3e0002425783bb",
+    "d0f7e4baa4baae567134",
+    "dab0f608ffb37962a0fb",
+    "ddf8a77ef4267db9f245",
+    "df961ec1256564223094",
+    "e0d6ebaa4eb87a60b44d",
+    "e4a0adfd61628794d22c",
+    "e605f5db9d51d4a17ab1",
+    "e71d5379c5b68502d2ec",
+    "f80221bbec880525e871",
+    "fcb153b5b32d44c46ade",
+    "ff3c4f91fb5ffd8432a4",
+    "ff90c993aedb7b2131e6"
+  ],
+  "content_hash": "283cf94b89ef3e755428bcd2468d376664892efdb77d83999d5ea16423e3db8b",
+  "dependencies": [
+    "architect/fsl-multi-region-architecture"
+  ],
+  "description": "Use this skill when designing or evaluating the FSL scheduling engine architecture: optimization mode selection (Global/In-Day/Resource/Reshuffle), ESO adoption strategy, territory sizing for optimization, and fallback planning. Trigger keywords: FSL optimization engine, ESO enhanced scheduling, global optimization timeout, in-day optimization, OAAS architecture, territory optimization design. NOT for admin-level scheduling policy configuration, scheduling rule setup in Setup, or per-appointment scheduling API calls (covered by apex/fsl-scheduling-api).",
+  "file_location": "skills/architect/fsl-optimization-architecture",
+  "id": "architect/fsl-optimization-architecture",
+  "inputs": [
+    "Number of territories, resources per territory, and daily SA volume",
+    "Whether ESO (Enhanced Scheduling and Optimization) add-on is licensed",
+    "Operational disruption patterns (appointment cancellations, resource unavailability)",
+    "Real-time vs batch optimization requirements"
+  ],
+  "name": "fsl-optimization-architecture",
+  "official_sources": [
+    "How Does the FSL Optimization Engine Work (help.salesforce.com) \u2014 https://help.salesforce.com/s/articleView?id=sf.fs_optimization_how.htm",
+    "Enhanced Scheduling and Optimization (help.salesforce.com) \u2014 https://help.salesforce.com/s/articleView?id=sf.fs_enhanced_scheduling.htm",
+    "Limits for Enhanced Scheduling (help.salesforce.com) \u2014 https://help.salesforce.com/s/articleView?id=sf.fs_enhanced_scheduling_limits.htm",
+    "Global Optimization (Trailhead) \u2014 https://trailhead.salesforce.com/content/learn/modules/field-service-scheduling-foundations/global-optimization",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Optimization mode selection recommendation with rationale",
+    "Territory sizing guidance to stay within optimization performance limits",
+    "ESO adoption strategy: phased territory-by-territory approach",
+    "Contingency plan for optimization failures or timeouts"
+  ],
+  "references": [
+    "skills/architect/fsl-optimization-architecture/references/examples.md",
+    "skills/architect/fsl-optimization-architecture/references/gotchas.md",
+    "skills/architect/fsl-optimization-architecture/references/llm-anti-patterns.md",
+    "skills/architect/fsl-optimization-architecture/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/architect/fsl-optimization-architecture/scripts/check_fsl_optimization_architecture.py"
+  ],
+  "tags": [
+    "fsl",
+    "field-service",
+    "optimization",
+    "scheduling-engine",
+    "eso",
+    "architect",
+    "fsl-optimization-architecture"
+  ],
+  "templates": [
+    "skills/architect/fsl-optimization-architecture/templates/fsl-optimization-architecture-template.md"
+  ],
+  "updated": "2026-04-10",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

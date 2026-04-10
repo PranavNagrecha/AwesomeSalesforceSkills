@@ -1,0 +1,112 @@
+{
+  "category": "architect",
+  "chunk_ids": [
+    "0988ea8a1370941858a8",
+    "0bbe12a226cda71dff06",
+    "0c6d08343ab704e55aab",
+    "15247decfca0a30e6944",
+    "1529857c00ddf9c5efba",
+    "184b5b78f55a6aeb41f1",
+    "1f979567993df22b531b",
+    "265d5fbdddb579141fa1",
+    "33dede6c992cd2ce1f9f",
+    "38e34b4a07516c0151d9",
+    "393c12c5f327ab8fa19c",
+    "3a752445c4d89c245f9e",
+    "3ced26d7212827dcdb5c",
+    "3ee231bfcf5572b883be",
+    "4b68f2bc32f875be83a2",
+    "4bdc2738d3f7e66a1c10",
+    "4daf4170637e2cb61d13",
+    "571e6b17d5802bbb8bee",
+    "62377c9fb75993f44e77",
+    "65a9371ee5e83eeb3eae",
+    "65cb3ee3829e317aad59",
+    "666e2479e579551838af",
+    "6a24c5cd494cd6d76855",
+    "73f671b6351e9e93b04c",
+    "76e523cb5349721f2448",
+    "78deeeed3dc0214b589d",
+    "7ef818c6a812817d7ba7",
+    "80638b5267417013457a",
+    "80b18d695b8155fdec83",
+    "80b3cd8b24616666e42a",
+    "8265a0521f35373cb3b8",
+    "93705b72e44b1989fe78",
+    "9562f3c2b654aa458406",
+    "973357efdb3fd28023a4",
+    "999f1f22b921d8c6559b",
+    "9a2f604082fc885a3af7",
+    "a3833ad9226139a38a32",
+    "a830bb6f37d314574c51",
+    "b1f0c5d82c31c40df9a8",
+    "b9141ef52e0cb6775361",
+    "c2939f6e3f73e1cab088",
+    "c47954eb150463edd041",
+    "c5241828454f2639dc7e",
+    "c763335dcede0031e59e",
+    "c76a41ad493e174d8b02",
+    "d3d2a2206ef9743088b1",
+    "d4aed4e6bbec6e2c4317",
+    "d85cee8c63d1014bde62",
+    "d8f1a0e4e59adb5df8e1",
+    "da10f41b23924c455444",
+    "e0815098209de844ac0e",
+    "e1bf6071c7c9b795670b",
+    "e1f7496f812935d273a7",
+    "e397ef529618b7800591",
+    "e968e751acd246224015",
+    "eb0250860b9cb892856c",
+    "ee5856d6a8c05a66cf10",
+    "f54cf7cf65d9024d0c15"
+  ],
+  "content_hash": "d75b079076390271fc73e840f371504c6d118e33df722612420a620af2c442cc",
+  "dependencies": [
+    "architect/fsl-optimization-architecture"
+  ],
+  "description": "Use this skill when designing FSL for multiple geographic regions or timezones: territory timezone configuration, cross-territory resource assignment, concurrent optimization serialization, and regional scheduling boundaries. Trigger keywords: multi-region FSL, FSL timezone territories, cross-territory resource scheduling, concurrent optimization territories, international FSL deployment. NOT for multi-org strategy, single-timezone single-region FSL deployments, or Experience Cloud multi-region (covered by architect/multi-org-strategy).",
+  "file_location": "skills/architect/fsl-multi-region-architecture",
+  "id": "architect/fsl-multi-region-architecture",
+  "inputs": [
+    "Geographic regions and timezone coverage of the FSL deployment",
+    "Whether resources serve multiple territories (cross-territory assignment)",
+    "Service territories that share resources across geographic boundaries"
+  ],
+  "name": "fsl-multi-region-architecture",
+  "official_sources": [
+    "Salesforce Help \u2014 Time Zones and Appointment Booking \u2014 https://help.salesforce.com/s/articleView?id=sf.fs_appointment_booking_timezones.htm",
+    "Salesforce Help \u2014 Guidelines for Creating Service Territories \u2014 https://help.salesforce.com/s/articleView?id=sf.fs_service_territories_guidelines.htm",
+    "Trailhead \u2014 Configure Territories and Set Operating Hours \u2014 https://trailhead.salesforce.com/content/learn/modules/field-service-scheduling-foundations/configure-territories",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Timezone-aligned territory design recommendations",
+    "Cross-territory resource assignment pattern (Hard vs. Soft boundary)",
+    "Optimization serialization strategy for multi-territory concurrent jobs",
+    "Appointment booking timezone configuration guidance"
+  ],
+  "references": [
+    "skills/architect/fsl-multi-region-architecture/references/examples.md",
+    "skills/architect/fsl-multi-region-architecture/references/gotchas.md",
+    "skills/architect/fsl-multi-region-architecture/references/llm-anti-patterns.md",
+    "skills/architect/fsl-multi-region-architecture/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/architect/fsl-multi-region-architecture/scripts/check_fsl_multi_region_architecture.py"
+  ],
+  "tags": [
+    "fsl",
+    "field-service",
+    "multi-region",
+    "timezone",
+    "territories",
+    "cross-territory",
+    "fsl-multi-region-architecture"
+  ],
+  "templates": [
+    "skills/architect/fsl-multi-region-architecture/templates/fsl-multi-region-architecture-template.md"
+  ],
+  "updated": "2026-04-10",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}
