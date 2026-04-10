@@ -1,0 +1,31 @@
+# Well-Architected Notes — Commerce Checkout Configuration
+
+## Relevant Pillars
+
+- **Security** — Checkout processes payment card data and personally identifiable information. PCI-DSS compliance requires that raw card numbers never pass through Salesforce servers. The Apex Payment Adapter pattern enforces client-side tokenization: the card is tokenized by the payment gateway's JavaScript component in the browser, and only the opaque token reaches Salesforce. Callouts from the Apex adapter to the payment gateway must use Named Credentials to avoid storing API keys in code or Custom Settings. Guest checkout must use site guest user permissions scoped to only the Commerce objects required for checkout — no broader org access.
+- **Reliability** — CartCheckoutSession is a stateful resource. A failed state transition (inventory, shipping, tax, payment) pauses the session and requires either automated retry or buyer-initiated re-submission. The adapter and shipping/tax provider classes must handle all external service failure modes gracefully — returning structured error responses rather than throwing exceptions — to preserve the ability to retry without session reset. External service dependencies (shipping carrier APIs, tax engines, payment gateways) must have SLA alignment with the expected buyer checkout experience.
+- **Performance** — Shipping and tax rates are fetched in a synchronous async job triggered on address entry. If the external provider's response time exceeds the platform's async callout timeout, the session pauses. Providers should be chosen or designed with sub-second p95 latency targets. For B2B stores with large carts (50+ line items), inventory state transitions can be slow; test with realistic cart sizes in staging before go-live.
+- **Operational Excellence** — CartCheckoutSession errors are written to `CartValidationOutput` records that are invisible in the default UI. Production support teams need SOQL-based dashboards or custom storefront error surfacing to observe checkout failures at scale. Apex Payment Adapter and shipping/tax provider classes must have unit test coverage with callout mocks — not sandbox-only manual testing — so regressions are caught in CI before deployment.
+
+## Architectural Tradeoffs
+
+**LWR Managed Checkout vs. Aura Flow Builder Checkout:** LWR Managed Checkout is the strategic direction. It reduces the amount of custom code required for the state machine itself, but moves customization into Apex Extension Points with strict interface contracts. Aura Flow Builder checkout gives more visual configurability in the Flow but couples checkout logic to a declarative tool that is harder to version-control and test. For new implementations, choose LWR unless the merchant has existing Aura checkout customizations that would require a full rebuild.
+
+**Native shipping/tax integration vs. custom Apex provider:** Native integration (for supported providers like Avalara and Vertex) is lower maintenance because Salesforce manages the callout contract and automatically updates it on API version changes. Custom Apex providers give full control over carrier selection logic and tax rule application but require the implementation team to maintain the callout contract when the external service changes its API. Use native integration where the provider is supported; use Apex only when the native path does not cover the use case.
+
+**Single session payment authorization vs. pre-authorization + capture:** Some B2B workflows require authorization at order placement and capture at shipment. The Apex Payment Adapter supports both: authorize-only (`capture=false` in gateway terms) at checkout, and a separate capture call triggered by order fulfillment events. This requires additional Apex automation but is the correct pattern for merchants who fulfill orders over multiple days.
+
+## Anti-Patterns
+
+1. **Storing payment tokens or authorization codes in standard Salesforce fields without field-level security** — Payment gateway tokens and authorization codes are sensitive data. Storing them in unprotected custom fields on Order or WebCart exposes them to all users with object access. Use field-level security to restrict read access to integration user profiles only. Never log token values in debug statements or Apex debug logs.
+2. **Using a single Apex Payment Adapter for both B2B and D2C stores without store-type branching** — B2B and D2C checkout flows may have different tax exemption rules, billing contact structures, and authorization behaviors. A shared adapter that does not branch on store type can silently apply B2C tax logic to B2B orders or vice versa. Implement separate adapter classes per store type, or add explicit store-type detection logic with test coverage for both paths.
+3. **Not testing the session reset path after payment adapter failures** — Teams test the happy path (successful authorization) and the declined path (card rejected) but rarely test what happens when the adapter throws an unhandled exception. In production, this produces stuck sessions that require manual deletion and buyer re-checkout. Add explicit unit tests that simulate `System.CalloutException` from inside `authorizePayment` and assert that the method returns a structured declined response rather than throwing.
+
+## Official Sources Used
+
+- B2B Commerce Developer Guide — Checkout Flow Architecture: https://developer.salesforce.com/docs/atlas.en-us.b2b_comm_dev.meta/b2b_comm_dev/b2b_comm_checkout_overview.htm
+- Shipping and Tax Integration — B2B Commerce Developer Guide: https://developer.salesforce.com/docs/atlas.en-us.b2b_comm_dev.meta/b2b_comm_dev/b2b_comm_checkout_shipping_tax.htm
+- Payment Architecture — B2B and D2C Commerce Developer Guide: https://developer.salesforce.com/docs/atlas.en-us.b2b_comm_dev.meta/b2b_comm_dev/b2b_comm_checkout_payment.htm
+- Set Up Guest Checkout for Headless Commerce Stores — Salesforce Help: https://help.salesforce.com/s/articleView?id=sf.comm_headless_guest_checkout.htm
+- Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+- Commerce REST API — Checkout Resource: https://developer.salesforce.com/docs/atlas.en-us.chatterapi.meta/chatterapi/connect_resources_commerce_checkout.htm

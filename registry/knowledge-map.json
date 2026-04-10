@@ -6,6 +6,7 @@
       "admin/approval-processes",
       "admin/assignment-rules",
       "admin/b2b-commerce-store-setup",
+      "admin/b2c-commerce-store-setup",
       "admin/batch-job-scheduling-and-monitoring",
       "admin/billing-schedule-setup",
       "admin/campaign-planning-and-attribution",
@@ -15,6 +16,9 @@
       "admin/change-management-and-deployment",
       "admin/change-management-and-training",
       "admin/collaborative-forecasts",
+      "admin/commerce-checkout-configuration",
+      "admin/commerce-pricing-and-promotions",
+      "admin/commerce-product-catalog",
       "admin/community-engagement-strategy",
       "admin/connected-apps-and-auth",
       "admin/consent-management-marketing",
@@ -52,7 +56,9 @@
       "admin/financial-account-setup",
       "admin/flow-for-admins",
       "admin/formula-fields",
+      "admin/fsc-action-plans",
       "admin/fsc-referral-management",
+      "admin/fsc-relationship-groups",
       "admin/fsl-capacity-planning",
       "admin/fsl-inventory-management",
       "admin/fsl-mobile-app-setup",
@@ -67,6 +73,7 @@
       "admin/gift-entry-and-processing",
       "admin/global-actions-and-quick-actions",
       "admin/health-cloud-patient-setup",
+      "admin/health-cloud-timeline",
       "admin/household-model-configuration",
       "admin/in-app-guidance-and-walkthroughs",
       "admin/journey-builder-administration",
@@ -86,6 +93,7 @@
       "admin/messaging-and-chat-setup",
       "admin/multi-language-and-translation",
       "admin/npsp-household-accounts",
+      "admin/npsp-program-management",
       "admin/object-creation-and-design",
       "admin/omni-channel-routing-setup",
       "admin/opportunity-management",
@@ -144,6 +152,7 @@
       "agentforce/agentforce-guardrails",
       "agentforce/agentforce-observability",
       "agentforce/agentforce-persona-design",
+      "agentforce/agentforce-service-ai-setup",
       "agentforce/custom-agent-actions-apex",
       "agentforce/einstein-bots-to-agentforce-migration",
       "agentforce/einstein-copilot-for-sales",
@@ -275,6 +284,7 @@
       "architect/multi-org-strategy",
       "architect/multi-site-architecture",
       "architect/nfr-definition-for-salesforce",
+      "architect/npsp-vs-nonprofit-cloud-decision",
       "architect/omni-channel-capacity-model",
       "architect/org-edition-and-feature-licensing",
       "architect/org-limits-monitoring",
@@ -627,6 +637,9 @@
     "Territory2ModelHistory": [
       "data/territory-data-alignment"
     ],
+    "TimelineObjectDefinition": [
+      "admin/health-cloud-timeline"
+    ],
     "TypeException": [
       "apex/common-apex-runtime-errors"
     ],
@@ -685,6 +698,7 @@
       "data/person-accounts"
     ],
     "account-contact-relation": [
+      "admin/fsc-relationship-groups",
       "admin/household-model-configuration"
     ],
     "account-engagement": [
@@ -709,7 +723,8 @@
       "admin/global-actions-and-quick-actions"
     ],
     "action-plan-template": [
-      "admin/care-plan-configuration"
+      "admin/care-plan-configuration",
+      "admin/fsc-action-plans"
     ],
     "actions-and-recommendations": [
       "agentforce/einstein-next-best-action"
@@ -740,6 +755,7 @@
     ],
     "admin": [
       "admin/custom-field-creation",
+      "admin/health-cloud-timeline",
       "admin/object-creation-and-design",
       "admin/sales-process-mapping",
       "admin/user-access-policies"
@@ -1098,6 +1114,7 @@
       "architect/knowledge-taxonomy-design"
     ],
     "article-recommendations": [
+      "agentforce/agentforce-service-ai-setup",
       "agentforce/einstein-copilot-for-service"
     ],
     "asc-606": [
@@ -1157,6 +1174,9 @@
     ],
     "ato": [
       "architect/government-cloud-compliance"
+    ],
+    "attendance": [
+      "admin/npsp-program-management"
     ],
     "attribution": [
       "admin/campaign-planning-and-attribution",
@@ -1252,13 +1272,19 @@
       "architect/nfr-definition-for-salesforce"
     ],
     "b2b-commerce": [
-      "admin/b2b-commerce-store-setup"
+      "admin/b2b-commerce-store-setup",
+      "admin/commerce-checkout-configuration",
+      "admin/commerce-pricing-and-promotions",
+      "admin/commerce-product-catalog"
     ],
     "b2b-marketing": [
       "architect/marketing-cloud-vs-mcae-selection"
     ],
     "b2b-marketing-analytics": [
       "admin/marketing-reporting-requirements"
+    ],
+    "b2c-commerce": [
+      "admin/b2c-commerce-store-setup"
     ],
     "b2c-marketing": [
       "architect/marketing-cloud-vs-mcae-selection"
@@ -1305,6 +1331,9 @@
     ],
     "behavioral-triggers": [
       "admin/lead-nurture-journey-design"
+    ],
+    "beneficiary": [
+      "admin/npsp-program-management"
     ],
     "bidirectional-sync": [
       "architect/sales-cloud-integration-patterns"
@@ -1473,6 +1502,9 @@
       "admin/fsl-sla-configuration-requirements",
       "architect/sla-design-and-escalation-matrix"
     ],
+    "business-manager": [
+      "admin/b2c-commerce-store-setup"
+    ],
     "business-rules-engine": [
       "omnistudio/business-rules-engine"
     ],
@@ -1487,7 +1519,8 @@
       "admin/b2b-commerce-store-setup"
     ],
     "buyer-group": [
-      "admin/b2b-commerce-store-setup"
+      "admin/b2b-commerce-store-setup",
+      "admin/commerce-pricing-and-promotions"
     ],
     "byollm": [
       "agentforce/model-builder-and-byollm"
@@ -1604,10 +1637,20 @@
     "care-team": [
       "admin/health-cloud-patient-setup"
     ],
+    "cart-checkout-session": [
+      "admin/commerce-checkout-configuration"
+    ],
+    "cart-discounts": [
+      "admin/commerce-pricing-and-promotions"
+    ],
+    "cartridge": [
+      "admin/b2c-commerce-store-setup"
+    ],
     "case": [
       "data/service-metrics-data-model"
     ],
     "case-classification": [
+      "agentforce/agentforce-service-ai-setup",
       "agentforce/einstein-copilot-for-service"
     ],
     "case-comment": [
@@ -1706,6 +1749,9 @@
     "chat-api": [
       "apex/service-cloud-rest-api"
     ],
+    "checkout": [
+      "admin/commerce-checkout-configuration"
+    ],
     "ci-cd": [
       "devops/bitbucket-pipelines-for-salesforce",
       "devops/continuous-integration-testing",
@@ -1737,6 +1783,12 @@
     ],
     "client-credentials": [
       "integration/oauth-flows-and-connected-apps"
+    ],
+    "client-onboarding": [
+      "admin/fsc-action-plans"
+    ],
+    "clinical-data": [
+      "admin/health-cloud-timeline"
     ],
     "cloud-pages": [
       "apex/ampscript-development",
@@ -1771,6 +1823,9 @@
     "code-freeze": [
       "devops/go-live-cutover-planning"
     ],
+    "cohort": [
+      "admin/npsp-program-management"
+    ],
     "collaborative-forecasts": [
       "admin/collaborative-forecasts"
     ],
@@ -1786,6 +1841,16 @@
     "cometd": [
       "integration/platform-events-integration",
       "integration/streaming-api-and-pushtopic"
+    ],
+    "commerce": [
+      "admin/commerce-checkout-configuration",
+      "admin/commerce-pricing-and-promotions"
+    ],
+    "commerce-cloud": [
+      "admin/b2c-commerce-store-setup"
+    ],
+    "commerce-product-catalog": [
+      "admin/commerce-product-catalog"
     ],
     "commerce-setup": [
       "admin/b2b-commerce-store-setup"
@@ -1832,6 +1897,9 @@
     ],
     "compliance-automation": [
       "architect/government-cloud-compliance"
+    ],
+    "compliance-tasks": [
+      "admin/fsc-action-plans"
     ],
     "component-communication": [
       "lwc/component-communication"
@@ -2080,6 +2148,9 @@
     "cost-plus-markup": [
       "admin/pricing-model-design"
     ],
+    "coupons": [
+      "admin/commerce-pricing-and-promotions"
+    ],
     "coverage-analysis": [
       "data/territory-data-alignment"
     ],
@@ -2323,6 +2394,10 @@
     "cx-metrics": [
       "architect/customer-effort-scoring"
     ],
+    "d2c-commerce": [
+      "admin/commerce-checkout-configuration",
+      "admin/commerce-pricing-and-promotions"
+    ],
     "dashboard-filters": [
       "admin/reports-and-dashboards-fundamentals"
     ],
@@ -2367,6 +2442,7 @@
     ],
     "data-cloud": [
       "agentforce/agentforce-observability",
+      "agentforce/agentforce-service-ai-setup",
       "agentforce/rag-patterns-in-salesforce",
       "architect/ai-ready-data-architecture",
       "architect/experience-cloud-integration-patterns"
@@ -2439,6 +2515,7 @@
     ],
     "data-model": [
       "admin/data-model-documentation",
+      "architect/npsp-vs-nonprofit-cloud-decision",
       "architect/sales-cloud-architecture",
       "data/cpq-data-model",
       "data/data-model-design-patterns",
@@ -2574,6 +2651,9 @@
       "apex/common-apex-runtime-errors",
       "flow/flow-runtime-error-diagnosis",
       "omnistudio/omnistudio-debugging"
+    ],
+    "decision-framework": [
+      "architect/npsp-vs-nonprofit-cloud-decision"
     ],
     "decision-matrix": [
       "omnistudio/calculation-procedures"
@@ -2903,7 +2983,11 @@
       "architect/case-deflection-strategy"
     ],
     "einstein-for-service": [
+      "agentforce/agentforce-service-ai-setup",
       "agentforce/einstein-copilot-for-service"
+    ],
+    "einstein-generative-ai": [
+      "agentforce/agentforce-service-ai-setup"
     ],
     "einstein-next-best-action": [
       "agentforce/einstein-next-best-action"
@@ -2998,6 +3082,9 @@
     "enhanced-recurring-donations": [
       "admin/recurring-donations-setup"
     ],
+    "enhanced-timeline": [
+      "admin/health-cloud-timeline"
+    ],
     "enqueueDeployment": [
       "apex/apex-metadata-api"
     ],
@@ -3024,7 +3111,8 @@
       "data/service-metrics-data-model"
     ],
     "entitlement-policy": [
-      "admin/b2b-commerce-store-setup"
+      "admin/b2b-commerce-store-setup",
+      "admin/commerce-product-catalog"
     ],
     "entitlement-processes": [
       "architect/sla-design-and-escalation-matrix"
@@ -3404,7 +3492,9 @@
     ],
     "financial-services-cloud": [
       "admin/financial-account-setup",
+      "admin/fsc-action-plans",
       "admin/fsc-referral-management",
+      "admin/fsc-relationship-groups",
       "admin/household-model-configuration"
     ],
     "find-clause": [
@@ -3568,8 +3658,12 @@
     ],
     "fsc": [
       "admin/financial-account-setup",
+      "admin/fsc-relationship-groups",
       "admin/household-model-configuration",
       "data/person-accounts"
+    ],
+    "fsc-action-plans": [
+      "admin/fsc-action-plans"
     ],
     "fsc-admin": [
       "admin/fsc-referral-management"
@@ -3756,6 +3850,9 @@
     "guardrails": [
       "agentforce/agentforce-guardrails"
     ],
+    "guest-checkout": [
+      "admin/commerce-checkout-configuration"
+    ],
     "guest-user": [
       "admin/experience-cloud-guest-access",
       "admin/salesforce-surveys",
@@ -3807,6 +3904,7 @@
       "admin/care-plan-configuration",
       "admin/care-program-management",
       "admin/health-cloud-patient-setup",
+      "admin/health-cloud-timeline",
       "data/person-accounts"
     ],
     "heap-limits": [
@@ -3865,10 +3963,12 @@
       "devops/rollback-and-hotfix-strategy"
     ],
     "household": [
+      "admin/fsc-relationship-groups",
       "admin/household-model-configuration"
     ],
     "household-accounts": [
-      "admin/npsp-household-accounts"
+      "admin/npsp-household-accounts",
+      "architect/npsp-vs-nonprofit-cloud-decision"
     ],
     "http-action": [
       "omnistudio/integration-procedures",
@@ -3978,6 +4078,9 @@
     ],
     "industries-cpq": [
       "omnistudio/industries-cpq-vs-salesforce-cpq"
+    ],
+    "industries-timeline": [
+      "admin/health-cloud-timeline"
     ],
     "infinite-loading": [
       "lwc/lwc-data-table"
@@ -4591,6 +4694,7 @@
       "lwc/lwc-testing"
     ],
     "lwr": [
+      "admin/commerce-checkout-configuration",
       "admin/experience-cloud-seo-settings",
       "admin/experience-cloud-site-setup",
       "architect/experience-cloud-integration-patterns",
@@ -4618,6 +4722,9 @@
     ],
     "maintenance-window": [
       "data/sharing-recalculation-performance"
+    ],
+    "managed-checkout": [
+      "admin/commerce-checkout-configuration"
     ],
     "managed-content": [
       "admin/experience-cloud-cms-content"
@@ -4755,6 +4862,7 @@
     "metadata": [
       "admin/change-management-and-deployment",
       "admin/custom-field-creation",
+      "admin/health-cloud-timeline",
       "agentforce/agent-script-dsl",
       "data/field-history-tracking",
       "devops/api-version-management",
@@ -4802,6 +4910,7 @@
     "migration": [
       "admin/data-import-and-management",
       "agentforce/einstein-bots-to-agentforce-migration",
+      "architect/npsp-vs-nonprofit-cloud-decision",
       "data/person-accounts",
       "devops/migration-from-change-sets-to-sfdx",
       "omnistudio/industries-cpq-vs-salesforce-cpq",
@@ -4998,11 +5107,19 @@
     "nonprofit": [
       "admin/gift-entry-and-processing",
       "admin/npsp-household-accounts",
-      "admin/recurring-donations-setup"
+      "admin/npsp-program-management",
+      "admin/recurring-donations-setup",
+      "architect/npsp-vs-nonprofit-cloud-decision"
+    ],
+    "nonprofit-cloud": [
+      "architect/npsp-vs-nonprofit-cloud-decision"
     ],
     "notifications": [
       "admin/email-templates-and-alerts",
       "lwc/lwc-toast-and-notifications"
+    ],
+    "npc": [
+      "architect/npsp-vs-nonprofit-cloud-decision"
     ],
     "nps": [
       "admin/salesforce-surveys"
@@ -5010,8 +5127,10 @@
     "npsp": [
       "admin/gift-entry-and-processing",
       "admin/npsp-household-accounts",
+      "admin/npsp-program-management",
       "admin/recurring-donations-setup",
-      "admin/soft-credits-and-matching"
+      "admin/soft-credits-and-matching",
+      "architect/npsp-vs-nonprofit-cloud-decision"
     ],
     "null-handling": [
       "admin/formula-fields"
@@ -5238,6 +5357,9 @@
     "order-plugin": [
       "apex/cpq-apex-plugins"
     ],
+    "order-summary": [
+      "admin/commerce-checkout-configuration"
+    ],
     "ordering": [
       "apex/cpq-test-automation"
     ],
@@ -5280,6 +5402,9 @@
     "outbound-messages": [
       "integration/event-driven-architecture-patterns",
       "integration/outbound-messages-and-callbacks"
+    ],
+    "outcomes": [
+      "admin/npsp-program-management"
     ],
     "output-encoding": [
       "security/xss-and-injection-prevention"
@@ -5414,11 +5539,17 @@
     "patient-program-outcome": [
       "admin/care-program-management"
     ],
+    "patient-record": [
+      "admin/health-cloud-timeline"
+    ],
     "pause-element": [
       "flow/pause-elements-and-wait-events"
     ],
     "payload-reduction": [
       "lwc/lwc-performance"
+    ],
+    "payment-adapter": [
+      "admin/commerce-checkout-configuration"
     ],
     "payment-allocation": [
       "data/billing-data-reconciliation"
@@ -5492,9 +5623,11 @@
       "devops/permission-set-deployment-ordering"
     ],
     "person-accounts": [
+      "admin/fsc-relationship-groups",
       "admin/health-cloud-patient-setup",
       "admin/household-model-configuration",
       "admin/standard-object-quirks",
+      "architect/npsp-vs-nonprofit-cloud-decision",
       "data/person-accounts"
     ],
     "persona-design": [
@@ -5582,8 +5715,14 @@
       "architect/marketing-cloud-vs-mcae-selection",
       "architect/platform-selection-guidance"
     ],
+    "platform-strategy": [
+      "architect/npsp-vs-nonprofit-cloud-decision"
+    ],
     "pmd": [
       "devops/salesforce-code-analyzer"
+    ],
+    "pmm": [
+      "admin/npsp-program-management"
     ],
     "point-in-time": [
       "data/sales-reporting-data-model"
@@ -5629,6 +5768,9 @@
     "premier-success": [
       "admin/salesforce-support-escalation"
     ],
+    "prerequisites": [
+      "agentforce/agentforce-service-ai-setup"
+    ],
     "presence-configuration": [
       "architect/omni-channel-capacity-model"
     ],
@@ -5646,6 +5788,7 @@
       "apex/cpq-test-automation"
     ],
     "pricebook": [
+      "admin/commerce-pricing-and-promotions",
       "data/opportunity-pipeline-migration",
       "data/product-catalog-data-model"
     ],
@@ -5658,6 +5801,7 @@
       "architect/cpq-vs-standard-products-decision"
     ],
     "pricing": [
+      "admin/commerce-pricing-and-promotions",
       "admin/cpq-pricing-rules",
       "architect/cpq-integration-with-erp",
       "architect/cpq-vs-standard-products-decision",
@@ -5674,6 +5818,7 @@
       "admin/pricing-model-design"
     ],
     "primary-group": [
+      "admin/fsc-relationship-groups",
       "admin/household-model-configuration"
     ],
     "primary-key": [
@@ -5713,10 +5858,16 @@
     "process-mapping": [
       "admin/requirements-gathering-for-sf"
     ],
+    "product-attributes": [
+      "admin/commerce-product-catalog"
+    ],
     "product-catalog": [
       "admin/cpq-product-catalog-setup",
       "admin/products-and-pricebooks",
       "data/product-catalog-data-model"
+    ],
+    "product-category": [
+      "admin/commerce-product-catalog"
     ],
     "product-consumed": [
       "admin/fsl-inventory-management"
@@ -5748,6 +5899,9 @@
     "product-transfer": [
       "admin/fsl-inventory-management"
     ],
+    "product-variants": [
+      "admin/commerce-product-catalog"
+    ],
     "product2": [
       "data/product-catalog-data-model"
     ],
@@ -5761,6 +5915,9 @@
       "admin/products-and-pricebooks",
       "architect/cpq-vs-standard-products-decision"
     ],
+    "professional-group": [
+      "admin/fsc-relationship-groups"
+    ],
     "profiles": [
       "admin/delegated-administration",
       "admin/mcae-lead-scoring-and-grading",
@@ -5771,6 +5928,9 @@
     ],
     "profiling": [
       "apex/apex-performance-profiling"
+    ],
+    "program-management-module": [
+      "admin/npsp-program-management"
     ],
     "programmatic-metadata": [
       "apex/apex-metadata-api"
@@ -5795,6 +5955,9 @@
     ],
     "promotion-path": [
       "devops/copado-essentials"
+    ],
+    "promotions": [
+      "admin/commerce-pricing-and-promotions"
     ],
     "prompt-builder": [
       "agentforce/prompt-builder-templates"
@@ -6058,6 +6221,9 @@
     "relational-data-model": [
       "architect/marketing-data-architecture"
     ],
+    "relationship-groups": [
+      "admin/fsc-relationship-groups"
+    ],
     "relationship-queries": [
       "apex/soql-fundamentals"
     ],
@@ -6119,6 +6285,7 @@
       "integration/platform-events-integration"
     ],
     "reply-recommendations": [
+      "agentforce/agentforce-service-ai-setup",
       "agentforce/einstein-copilot-for-service"
     ],
     "report-filters": [
@@ -6709,6 +6876,9 @@
       "data/omni-channel-reporting-data",
       "data/service-metrics-data-model"
     ],
+    "service-cloud-einstein": [
+      "agentforce/agentforce-service-ai-setup"
+    ],
     "service-cloud-voice": [
       "admin/service-cloud-voice-setup",
       "architect/multi-channel-service-architecture"
@@ -6716,6 +6886,9 @@
     "service-console": [
       "admin/service-console-configuration",
       "architect/agent-console-requirements"
+    ],
+    "service-delivery": [
+      "admin/npsp-program-management"
     ],
     "service-interface": [
       "architect/integration-framework-design"
@@ -6781,6 +6954,9 @@
     "set-of-id": [
       "apex/recursive-trigger-prevention"
     ],
+    "setup": [
+      "agentforce/agentforce-service-ai-setup"
+    ],
     "setup-objects": [
       "apex/mixed-dml-and-setup-objects"
     ],
@@ -6791,6 +6967,9 @@
       "apex/sf-cli-and-sfdx-essentials",
       "devops/continuous-integration-testing",
       "devops/source-tracking-and-conflict-resolution"
+    ],
+    "sfcc": [
+      "admin/b2c-commerce-store-setup"
     ],
     "sfdx": [
       "apex/sf-cli-and-sfdx-essentials",
@@ -6814,6 +6993,9 @@
     ],
     "sfdx-project-json": [
       "devops/salesforce-dx-project-structure"
+    ],
+    "sfra": [
+      "admin/b2c-commerce-store-setup"
     ],
     "sftp": [
       "architect/marketing-integration-patterns"
@@ -6877,6 +7059,9 @@
     ],
     "shifts": [
       "admin/fsl-shifts-and-crew"
+    ],
+    "shipping": [
+      "admin/commerce-checkout-configuration"
     ],
     "signature-capture": [
       "admin/fsl-mobile-workflow-design"
@@ -7095,6 +7280,9 @@
       "data/batch-data-cleanup-patterns",
       "data/data-storage-management"
     ],
+    "storefront": [
+      "admin/b2c-commerce-store-setup"
+    ],
     "streaming-api": [
       "integration/event-driven-architecture-patterns",
       "integration/streaming-api-and-pushtopic"
@@ -7203,8 +7391,14 @@
     "t-sql": [
       "data/marketing-cloud-sql-queries"
     ],
+    "task-sequence": [
+      "admin/fsc-action-plans"
+    ],
     "tasks": [
       "devops/cumulusci-automation"
+    ],
+    "tax": [
+      "admin/commerce-checkout-configuration"
     ],
     "taxonomy": [
       "architect/knowledge-taxonomy-design"
@@ -7297,6 +7491,9 @@
     ],
     "tier-design": [
       "architect/sla-design-and-escalation-matrix"
+    ],
+    "tiered-pricing": [
+      "admin/commerce-pricing-and-promotions"
     ],
     "time-based-automation": [
       "admin/escalation-rules"
@@ -7400,6 +7597,9 @@
     ],
     "trunk-based-development": [
       "devops/git-branching-for-salesforce"
+    ],
+    "trust": [
+      "admin/fsc-relationship-groups"
     ],
     "trust-site": [
       "admin/salesforce-support-escalation",
@@ -7617,6 +7817,9 @@
     "wcag": [
       "lwc/lwc-accessibility-patterns"
     ],
+    "wealth-aggregation": [
+      "admin/fsc-relationship-groups"
+    ],
     "web-to-case": [
       "admin/case-management-setup",
       "security/recaptcha-and-bot-prevention"
@@ -7631,6 +7834,9 @@
     ],
     "webstore": [
       "admin/b2b-commerce-store-setup"
+    ],
+    "webstore-catalog": [
+      "admin/commerce-product-catalog"
     ],
     "well-architected": [
       "architect/ai-agent-org-integration-architecture",
@@ -7670,6 +7876,9 @@
     ],
     "work-rules": [
       "admin/fsl-scheduling-policies"
+    ],
+    "work-summaries": [
+      "agentforce/agentforce-service-ai-setup"
     ],
     "work-summary": [
       "agentforce/einstein-copilot-for-service"
