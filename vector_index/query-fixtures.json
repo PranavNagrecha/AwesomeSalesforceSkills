@@ -2975,6 +2975,66 @@
       "domain": "apex",
       "expected_skill": "apex/marketing-cloud-data-views",
       "top_k": 3
+    },
+    {
+      "query": "CRM consent model ContactPointTypeConsent Marketing Cloud sync GDPR",
+      "domain": "architect",
+      "expected_skill": "architect/marketing-consent-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "Marketing Cloud data extension design relational model SubscriberKey CRM sync",
+      "domain": "architect",
+      "expected_skill": "architect/marketing-data-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "blng TransactionAPI callout DML billing invoice Apex payment gateway",
+      "domain": "apex",
+      "expected_skill": "apex/billing-integration-apex",
+      "top_k": 3
+    },
+    {
+      "query": "SBQQ ServiceRouter quote calculation API amendment renewal programmatic CPQ",
+      "domain": "apex",
+      "expected_skill": "apex/cpq-api-and-automation",
+      "top_k": 3
+    },
+    {
+      "query": "CPQ data model SBQQ Quote QuoteLine Subscription objects relationships",
+      "domain": "data",
+      "expected_skill": "data/cpq-data-model",
+      "top_k": 3
+    },
+    {
+      "query": "CPQ architecture bundle design pricing waterfall QLE line limit QCP static resource",
+      "domain": "architect",
+      "expected_skill": "architect/cpq-architecture-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "CPQ subscription amendment ledger model renewal automation co-termination billing integration",
+      "domain": "architect",
+      "expected_skill": "architect/subscription-management-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "FSL Apex GetSlots ScheduleService AppointmentBookingService callout DML transaction",
+      "domain": "apex",
+      "expected_skill": "apex/fsl-apex-extensions",
+      "top_k": 3
+    },
+    {
+      "query": "Field Service Mobile LWC extension offline Briefcase Builder priming custom action",
+      "domain": "apex",
+      "expected_skill": "apex/fsl-mobile-app-extensions",
+      "top_k": 3
+    },
+    {
+      "query": "Field Service service report template createServiceReport DigitalSignature Document Builder",
+      "domain": "apex",
+      "expected_skill": "apex/fsl-service-report-templates",
+      "top_k": 3
     }
   ]
 }
