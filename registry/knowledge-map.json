@@ -53,10 +53,16 @@
       "admin/flow-for-admins",
       "admin/formula-fields",
       "admin/fsc-referral-management",
+      "admin/fsl-capacity-planning",
+      "admin/fsl-inventory-management",
       "admin/fsl-mobile-app-setup",
+      "admin/fsl-mobile-workflow-design",
       "admin/fsl-resource-management",
+      "admin/fsl-scheduling-optimization-design",
       "admin/fsl-scheduling-policies",
       "admin/fsl-service-territory-setup",
+      "admin/fsl-shifts-and-crew",
+      "admin/fsl-sla-configuration-requirements",
       "admin/fsl-work-order-management",
       "admin/gift-entry-and-processing",
       "admin/global-actions-and-quick-actions",
@@ -236,6 +242,7 @@
       "architect/ai-ready-data-architecture",
       "architect/case-deflection-strategy",
       "architect/cpq-architecture-patterns",
+      "architect/cpq-integration-with-erp",
       "architect/cpq-vs-standard-products-decision",
       "architect/customer-effort-scoring",
       "architect/einstein-bot-architecture",
@@ -278,12 +285,14 @@
     ],
     "data": [
       "data/batch-data-cleanup-patterns",
+      "data/billing-data-reconciliation",
       "data/bulk-api-and-large-data-loads",
       "data/bulk-api-patterns",
       "data/case-history-migration",
       "data/community-analytics-data",
       "data/community-user-data-migration",
       "data/cpq-data-model",
+      "data/cpq-performance-optimization",
       "data/custom-index-requests",
       "data/data-archival-strategies",
       "data/data-extension-design",
@@ -296,6 +305,7 @@
       "data/external-id-strategy",
       "data/external-user-data-sharing",
       "data/field-history-tracking",
+      "data/historical-order-migration",
       "data/knowledge-article-import",
       "data/large-scale-deduplication",
       "data/lead-data-import-and-dedup",
@@ -532,6 +542,9 @@
     "FOR-UPDATE": [
       "apex/record-locking-and-contention"
     ],
+    "FSL": [
+      "admin/fsl-sla-configuration-requirements"
+    ],
     "InboundEmailHandler": [
       "apex/apex-email-services"
     ],
@@ -586,7 +599,11 @@
       "admin/campaign-planning-and-attribution"
     ],
     "SLA": [
-      "admin/entitlements-and-milestones"
+      "admin/entitlements-and-milestones",
+      "admin/fsl-sla-configuration-requirements"
+    ],
+    "ServiceResourceCapacity": [
+      "admin/fsl-capacity-planning"
     ],
     "ShowToastEvent": [
       "lwc/lwc-toast-and-notifications"
@@ -612,6 +629,9 @@
     ],
     "VlocityOpenInterface2": [
       "omnistudio/omnistudio-remote-actions"
+    ],
+    "WorkCapacityLimit": [
+      "admin/fsl-capacity-planning"
     ],
     "__mdt": [
       "apex/custom-metadata-in-apex"
@@ -833,6 +853,9 @@
     "amazon-connect": [
       "admin/service-cloud-voice-setup"
     ],
+    "amendment": [
+      "architect/cpq-integration-with-erp"
+    ],
     "amendments": [
       "admin/contract-and-renewal-management",
       "admin/subscription-lifecycle-requirements",
@@ -1001,6 +1024,9 @@
     ],
     "appointment-booking": [
       "apex/fsl-apex-extensions"
+    ],
+    "appointment-priority": [
+      "admin/fsl-scheduling-optimization-design"
     ],
     "approval-chains": [
       "admin/cpq-approval-workflows"
@@ -1274,6 +1300,9 @@
     "billing": [
       "admin/quote-to-cash-process"
     ],
+    "billing-data-reconciliation": [
+      "data/billing-data-reconciliation"
+    ],
     "billing-integration": [
       "architect/subscription-management-architecture"
     ],
@@ -1282,6 +1311,9 @@
     ],
     "billing-policy": [
       "admin/billing-schedule-setup"
+    ],
+    "billing-schedule": [
+      "data/billing-data-reconciliation"
     ],
     "billing-schedule-setup": [
       "admin/billing-schedule-setup"
@@ -1303,7 +1335,8 @@
     ],
     "blng-namespace": [
       "admin/billing-schedule-setup",
-      "admin/revenue-recognition-requirements"
+      "admin/revenue-recognition-requirements",
+      "data/billing-data-reconciliation"
     ],
     "block-pricing": [
       "admin/cpq-pricing-rules",
@@ -1343,6 +1376,9 @@
     "branding": [
       "admin/experience-cloud-site-setup"
     ],
+    "briefcase-priming": [
+      "admin/fsl-mobile-workflow-design"
+    ],
     "browser-caching": [
       "architect/experience-cloud-performance"
     ],
@@ -1361,6 +1397,7 @@
       "data/data-migration-planning",
       "data/data-reconciliation-patterns",
       "data/external-id-strategy",
+      "data/historical-order-migration",
       "data/opportunity-pipeline-migration",
       "integration/mulesoft-salesforce-connector"
     ],
@@ -1416,6 +1453,7 @@
     "business-hours": [
       "admin/entitlements-and-milestones",
       "admin/escalation-rules",
+      "admin/fsl-sla-configuration-requirements",
       "architect/sla-design-and-escalation-matrix"
     ],
     "business-rules-engine": [
@@ -1527,6 +1565,9 @@
     ],
     "capacity-model": [
       "architect/omni-channel-capacity-model"
+    ],
+    "capacity-planning": [
+      "admin/fsl-capacity-planning"
     ],
     "capacity-utilization": [
       "data/omni-channel-reporting-data"
@@ -1978,7 +2019,8 @@
       "apex/cpq-apex-plugins"
     ],
     "contracts": [
-      "admin/contract-and-renewal-management"
+      "admin/contract-and-renewal-management",
+      "data/historical-order-migration"
     ],
     "controlling-field": [
       "admin/picklist-and-value-sets"
@@ -2042,10 +2084,13 @@
       "apex/cpq-custom-actions",
       "apex/cpq-test-automation",
       "architect/cpq-architecture-patterns",
+      "architect/cpq-integration-with-erp",
       "architect/cpq-vs-standard-products-decision",
       "architect/sales-cloud-integration-patterns",
       "architect/subscription-management-architecture",
       "data/cpq-data-model",
+      "data/cpq-performance-optimization",
+      "data/historical-order-migration",
       "data/product-catalog-migration-cpq"
     ],
     "cpq-api": [
@@ -2060,6 +2105,9 @@
     "cpq-custom-actions": [
       "apex/cpq-custom-actions"
     ],
+    "cpq-performance": [
+      "data/cpq-performance-optimization"
+    ],
     "cpq-quote-templates": [
       "admin/cpq-quote-templates"
     ],
@@ -2069,6 +2117,9 @@
     "cpu-time": [
       "apex/apex-cpu-and-heap-optimization",
       "apex/governor-limits"
+    ],
+    "crew": [
+      "admin/fsl-shifts-and-crew"
     ],
     "crm-analytics": [
       "admin/einstein-analytics-basics"
@@ -2279,6 +2330,9 @@
     "data-at-rest": [
       "security/platform-encryption"
     ],
+    "data-capture-flow": [
+      "admin/fsl-mobile-workflow-design"
+    ],
     "data-categories": [
       "admin/knowledge-base-administration",
       "apex/service-cloud-rest-api",
@@ -2354,6 +2408,7 @@
       "data/case-history-migration",
       "data/community-user-data-migration",
       "data/data-migration-planning",
+      "data/historical-order-migration",
       "data/knowledge-article-import",
       "data/mcae-prospect-data-migration",
       "data/opportunity-pipeline-migration",
@@ -2384,6 +2439,7 @@
       "data/lead-data-import-and-dedup"
     ],
     "data-reconciliation": [
+      "data/billing-data-reconciliation",
       "data/data-reconciliation-patterns"
     ],
     "data-relationships": [
@@ -2953,6 +3009,7 @@
     "entitlements": [
       "admin/case-management-setup",
       "admin/entitlements-and-milestones",
+      "admin/fsl-sla-configuration-requirements",
       "apex/entitlement-apex-hooks"
     ],
     "entry-exit-criteria": [
@@ -2976,6 +3033,9 @@
     ],
     "erd": [
       "admin/recurring-donations-setup"
+    ],
+    "erp": [
+      "architect/cpq-integration-with-erp"
     ],
     "erp-integration": [
       "architect/sales-cloud-integration-patterns"
@@ -3264,10 +3324,16 @@
       "data/record-merge-implications"
     ],
     "field-service": [
+      "admin/fsl-capacity-planning",
+      "admin/fsl-inventory-management",
       "admin/fsl-mobile-app-setup",
+      "admin/fsl-mobile-workflow-design",
       "admin/fsl-resource-management",
+      "admin/fsl-scheduling-optimization-design",
       "admin/fsl-scheduling-policies",
       "admin/fsl-service-territory-setup",
+      "admin/fsl-shifts-and-crew",
+      "admin/fsl-sla-configuration-requirements",
       "admin/fsl-work-order-management",
       "apex/fsl-apex-extensions",
       "apex/fsl-mobile-app-extensions",
@@ -3475,15 +3541,20 @@
       "admin/fsc-referral-management"
     ],
     "fsl": [
+      "admin/fsl-capacity-planning",
+      "admin/fsl-inventory-management",
       "admin/fsl-resource-management",
+      "admin/fsl-scheduling-optimization-design",
       "admin/fsl-scheduling-policies",
       "admin/fsl-service-territory-setup",
+      "admin/fsl-shifts-and-crew",
       "admin/fsl-work-order-management",
       "apex/fsl-apex-extensions",
       "apex/fsl-service-report-templates"
     ],
     "fsl-mobile": [
-      "admin/fsl-mobile-app-setup"
+      "admin/fsl-mobile-app-setup",
+      "admin/fsl-mobile-workflow-design"
     ],
     "fsl-mobile-app-extensions": [
       "apex/fsl-mobile-app-extensions"
@@ -3556,6 +3627,9 @@
     "global-actions": [
       "admin/global-actions-and-quick-actions"
     ],
+    "global-optimization": [
+      "admin/fsl-scheduling-optimization-design"
+    ],
     "global-value-set": [
       "admin/picklist-and-value-sets"
     ],
@@ -3583,6 +3657,7 @@
       "apex/governor-limit-recovery-patterns",
       "apex/governor-limits",
       "architect/limits-and-scalability-planning",
+      "data/cpq-performance-optimization",
       "flow/flow-bulkification",
       "integration/callout-limits-and-async-patterns"
     ],
@@ -3694,6 +3769,9 @@
     "hipaa": [
       "security/sandbox-data-masking"
     ],
+    "historical-orders": [
+      "data/historical-order-migration"
+    ],
     "historical-trending": [
       "data/sales-reporting-data-model"
     ],
@@ -3785,6 +3863,9 @@
     "in-arrears": [
       "admin/billing-schedule-setup"
     ],
+    "in-day-optimization": [
+      "admin/fsl-scheduling-optimization-design"
+    ],
     "inactive-users": [
       "architect/license-optimization-strategy"
     ],
@@ -3864,6 +3945,7 @@
       "apex/mcae-pardot-api",
       "architect/ai-agent-org-integration-architecture",
       "architect/cpq-architecture-patterns",
+      "architect/cpq-integration-with-erp",
       "architect/integration-framework-design",
       "integration/composite-api-patterns",
       "integration/outbound-messages-and-callbacks"
@@ -3915,6 +3997,10 @@
     "invalidation": [
       "apex/platform-cache"
     ],
+    "inventory": [
+      "admin/fsl-inventory-management",
+      "architect/cpq-integration-with-erp"
+    ],
     "invocable-action": [
       "apex/sales-engagement-api"
     ],
@@ -3936,6 +4022,9 @@
     ],
     "invoice-api": [
       "apex/billing-integration-apex"
+    ],
+    "invoice-reconciliation": [
+      "data/billing-data-reconciliation"
     ],
     "invoice-run": [
       "admin/billing-schedule-setup"
@@ -3967,6 +4056,9 @@
     ],
     "job-chaining": [
       "apex/apex-queueable-patterns"
+    ],
+    "job-lifecycle": [
+      "admin/fsl-mobile-workflow-design"
     ],
     "job-management": [
       "apex/apex-scheduled-jobs"
@@ -4086,6 +4178,9 @@
       "data/sharing-recalculation-performance",
       "data/soql-query-optimization"
     ],
+    "large-quote-mode": [
+      "data/cpq-performance-optimization"
+    ],
     "large-scale-amendment": [
       "architect/subscription-management-architecture"
     ],
@@ -4170,6 +4265,9 @@
     ],
     "legacy-chat-migration": [
       "apex/service-cloud-rest-api"
+    ],
+    "legacy-data-upload": [
+      "data/historical-order-migration"
     ],
     "legacy-integration": [
       "integration/soap-api-patterns"
@@ -4635,6 +4733,7 @@
     ],
     "milestones": [
       "admin/entitlements-and-milestones",
+      "admin/fsl-sla-configuration-requirements",
       "apex/case-trigger-patterns",
       "apex/entitlement-apex-hooks",
       "architect/sla-design-and-escalation-matrix"
@@ -4678,6 +4777,9 @@
     "mono-repo": [
       "devops/salesforce-dx-project-structure"
     ],
+    "month-end-close": [
+      "data/billing-data-reconciliation"
+    ],
     "mql": [
       "admin/lead-nurture-journey-design",
       "admin/lead-scoring-requirements",
@@ -4688,6 +4790,7 @@
       "data/service-metrics-data-model"
     ],
     "mulesoft": [
+      "architect/cpq-integration-with-erp",
       "integration/api-led-connectivity",
       "integration/mulesoft-salesforce-connector",
       "integration/sis-integration-patterns"
@@ -4873,6 +4976,9 @@
     "offline-priming": [
       "admin/fsl-mobile-app-setup"
     ],
+    "offline-workflow": [
+      "admin/fsl-mobile-workflow-design"
+    ],
     "oidc": [
       "architect/experience-cloud-integration-patterns",
       "lwc/experience-cloud-multi-idp-sso"
@@ -4947,7 +5053,9 @@
       "flow/flow-external-services"
     ],
     "operating-hours": [
-      "admin/fsl-service-territory-setup"
+      "admin/fsl-service-territory-setup",
+      "admin/fsl-shifts-and-crew",
+      "admin/fsl-sla-configuration-requirements"
     ],
     "operational-excellence": [
       "admin/batch-job-scheduling-and-monitoring"
@@ -5010,6 +5118,7 @@
       "apex/fsl-apex-extensions"
     ],
     "optimizer": [
+      "admin/fsl-scheduling-optimization-design",
       "admin/org-cleanup-and-technical-debt"
     ],
     "option-constraints": [
@@ -5020,6 +5129,9 @@
     ],
     "order": [
       "admin/quote-to-cash-requirements"
+    ],
+    "order-management": [
+      "architect/cpq-integration-with-erp"
     ],
     "order-of-execution": [
       "apex/cross-object-formula-and-rollup-performance",
@@ -5181,6 +5293,12 @@
     "partner-wsdl": [
       "integration/soap-api-patterns"
     ],
+    "parts-consumption": [
+      "admin/fsl-mobile-workflow-design"
+    ],
+    "parts-management": [
+      "admin/fsl-inventory-management"
+    ],
     "password-policy": [
       "security/security-health-check"
     ],
@@ -5206,8 +5324,14 @@
     "payload-reduction": [
       "lwc/lwc-performance"
     ],
+    "payment-allocation": [
+      "data/billing-data-reconciliation"
+    ],
     "payment-gateway": [
       "apex/billing-integration-apex"
+    ],
+    "payment-matching": [
+      "data/billing-data-reconciliation"
     ],
     "pdf": [
       "omnistudio/document-generation-omnistudio"
@@ -5436,6 +5560,7 @@
     ],
     "pricing": [
       "admin/cpq-pricing-rules",
+      "architect/cpq-integration-with-erp",
       "architect/cpq-vs-standard-products-decision",
       "data/cpq-data-model",
       "omnistudio/calculation-procedures"
@@ -5491,6 +5616,12 @@
       "admin/products-and-pricebooks",
       "data/product-catalog-data-model"
     ],
+    "product-consumed": [
+      "admin/fsl-inventory-management"
+    ],
+    "product-item": [
+      "admin/fsl-inventory-management"
+    ],
     "product-migration": [
       "data/product-catalog-migration-cpq"
     ],
@@ -5511,6 +5642,9 @@
     ],
     "product-selection": [
       "admin/cpq-guided-selling"
+    ],
+    "product-transfer": [
+      "admin/fsl-inventory-management"
     ],
     "product2": [
       "data/product-catalog-data-model"
@@ -5616,7 +5750,8 @@
       "integration/streaming-api-and-pushtopic"
     ],
     "qcp": [
-      "architect/cpq-architecture-patterns"
+      "architect/cpq-architecture-patterns",
+      "data/cpq-performance-optimization"
     ],
     "qle": [
       "apex/cpq-custom-actions"
@@ -5672,7 +5807,8 @@
     "quote-calculation": [
       "admin/cpq-pricing-rules",
       "apex/cpq-api-and-automation",
-      "apex/cpq-test-automation"
+      "apex/cpq-test-automation",
+      "data/cpq-performance-optimization"
     ],
     "quote-calculator-plugin": [
       "apex/cpq-apex-plugins"
@@ -5704,7 +5840,8 @@
     ],
     "quote-to-cash": [
       "admin/quote-to-cash-process",
-      "admin/quote-to-cash-requirements"
+      "admin/quote-to-cash-requirements",
+      "architect/cpq-integration-with-erp"
     ],
     "quote-to-order": [
       "architect/sales-cloud-integration-patterns"
@@ -5868,7 +6005,8 @@
     "renewals": [
       "admin/contract-and-renewal-management",
       "admin/subscription-lifecycle-requirements",
-      "architect/subscription-management-architecture"
+      "architect/subscription-management-architecture",
+      "data/historical-order-migration"
     ],
     "replay": [
       "integration/streaming-api-and-pushtopic"
@@ -5991,6 +6129,9 @@
     "revenue-transaction": [
       "admin/revenue-recognition-requirements"
     ],
+    "revenue-transaction-error-log": [
+      "data/billing-data-reconciliation"
+    ],
     "rfc-7807": [
       "integration/api-error-handling-design"
     ],
@@ -6109,7 +6250,8 @@
     "salesforce-billing": [
       "admin/billing-schedule-setup",
       "admin/revenue-recognition-requirements",
-      "apex/billing-integration-apex"
+      "apex/billing-integration-apex",
+      "data/billing-data-reconciliation"
     ],
     "salesforce-cli": [
       "devops/destructive-changes-deployment"
@@ -6209,8 +6351,11 @@
       "apex/cpq-api-and-automation",
       "apex/cpq-custom-actions",
       "apex/cpq-test-automation",
+      "architect/cpq-integration-with-erp",
       "architect/subscription-management-architecture",
       "data/cpq-data-model",
+      "data/cpq-performance-optimization",
+      "data/historical-order-migration",
       "data/product-catalog-migration-cpq"
     ],
     "scalability": [
@@ -6244,10 +6389,15 @@
       "data/batch-data-cleanup-patterns"
     ],
     "scheduling": [
+      "admin/fsl-capacity-planning",
       "admin/fsl-resource-management",
       "admin/fsl-scheduling-policies",
       "admin/fsl-service-territory-setup",
+      "admin/fsl-shifts-and-crew",
       "apex/fsl-apex-extensions"
+    ],
+    "scheduling-optimization": [
+      "admin/fsl-scheduling-optimization-design"
     ],
     "scheduling-policy": [
       "admin/fsl-scheduling-policies"
@@ -6488,6 +6638,9 @@
       "apex/cpq-api-and-automation",
       "apex/cpq-test-automation"
     ],
+    "service-territories": [
+      "admin/fsl-sla-configuration-requirements"
+    ],
     "service-territory": [
       "admin/fsl-service-territory-setup"
     ],
@@ -6600,6 +6753,18 @@
       "security/field-audit-trail",
       "security/platform-encryption",
       "security/transaction-security-policies"
+    ],
+    "shift-pattern": [
+      "admin/fsl-shifts-and-crew"
+    ],
+    "shift-template": [
+      "admin/fsl-shifts-and-crew"
+    ],
+    "shifts": [
+      "admin/fsl-shifts-and-crew"
+    ],
+    "signature-capture": [
+      "admin/fsl-mobile-workflow-design"
     ],
     "sis-integration": [
       "integration/sis-integration-patterns"
@@ -6816,6 +6981,9 @@
       "integration/event-driven-architecture-patterns",
       "integration/streaming-api-and-pushtopic"
     ],
+    "street-level-routing": [
+      "admin/fsl-scheduling-optimization-design"
+    ],
     "string-optimization": [
       "apex/apex-cpu-and-heap-optimization"
     ],
@@ -6861,7 +7029,8 @@
       "admin/contract-and-renewal-management",
       "admin/reports-and-dashboards",
       "admin/subscription-lifecycle-requirements",
-      "architect/subscription-management-architecture"
+      "architect/subscription-management-architecture",
+      "data/historical-order-migration"
     ],
     "summary-formulas": [
       "admin/reports-and-dashboards-fundamentals"
@@ -6933,6 +7102,9 @@
     ],
     "templates": [
       "admin/email-templates-and-alerts"
+    ],
+    "territory": [
+      "admin/fsl-capacity-planning"
     ],
     "territory-alignment": [
       "admin/territory-design-requirements"
@@ -7072,6 +7244,9 @@
     ],
     "translation-workbench": [
       "admin/multi-language-and-translation"
+    ],
+    "travel-mode": [
+      "admin/fsl-scheduling-optimization-design"
     ],
     "trigger": [
       "apex/opportunity-trigger-patterns"
@@ -7237,6 +7412,9 @@
       "admin/validation-rules",
       "data/data-quality-and-governance"
     ],
+    "van-stock": [
+      "admin/fsl-inventory-management"
+    ],
     "vector-search": [
       "agentforce/rag-patterns-in-salesforce",
       "architect/ai-ready-data-architecture"
@@ -7358,6 +7536,7 @@
       "flow/orchestration-flows"
     ],
     "work-orders": [
+      "admin/fsl-sla-configuration-requirements",
       "admin/fsl-work-order-management"
     ],
     "work-queue": [
@@ -7377,6 +7556,9 @@
     ],
     "workflow-rules": [
       "integration/outbound-messages-and-callbacks"
+    ],
+    "workforce-management": [
+      "admin/fsl-capacity-planning"
     ],
     "workspace-tabs": [
       "admin/service-console-configuration"

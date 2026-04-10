@@ -4,7 +4,7 @@ The universal Salesforce knowledge layer for AI coding assistants.
 
 Drop this into Claude Code, Cursor, Aider, Windsurf, or any AI tool and get role-accurate, source-grounded Salesforce guidance — for every role, every cloud, every task.
 
-**457 skills built. 640+ planned across 5 roles × 16 clouds.**
+**467 skills built. 640+ planned across 5 roles × 16 clouds.**
 
 ---
 

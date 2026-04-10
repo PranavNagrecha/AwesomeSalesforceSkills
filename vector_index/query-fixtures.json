@@ -3101,6 +3101,66 @@
       "domain": "admin",
       "expected_skill": "admin/b2b-commerce-store-setup",
       "top_k": 3
+    },
+    {
+      "query": "migrate historical CPQ orders subscriptions legacy data upload renewals",
+      "domain": "data",
+      "expected_skill": "data/historical-order-migration",
+      "top_k": 3
+    },
+    {
+      "query": "CPQ invoice payment reconciliation revenue recognition billing",
+      "domain": "data",
+      "expected_skill": "data/billing-data-reconciliation",
+      "top_k": 3
+    },
+    {
+      "query": "CPQ quote calculation slow large quote mode QCP performance",
+      "domain": "data",
+      "expected_skill": "data/cpq-performance-optimization",
+      "top_k": 3
+    },
+    {
+      "query": "integrate Salesforce CPQ with ERP order sync pricing inventory",
+      "domain": "architect",
+      "expected_skill": "architect/cpq-integration-with-erp",
+      "top_k": 3
+    },
+    {
+      "query": "FSL inventory management product items van stock transfers parts",
+      "domain": "admin",
+      "expected_skill": "admin/fsl-inventory-management",
+      "top_k": 3
+    },
+    {
+      "query": "field service shift patterns crew scheduling multi-technician jobs",
+      "domain": "admin",
+      "expected_skill": "admin/fsl-shifts-and-crew",
+      "top_k": 3
+    },
+    {
+      "query": "FSL scheduling optimization work rules service objectives travel time SLA",
+      "domain": "admin",
+      "expected_skill": "admin/fsl-scheduling-optimization-design",
+      "top_k": 3
+    },
+    {
+      "query": "field service SLA entitlement milestones work order response time",
+      "domain": "admin",
+      "expected_skill": "admin/fsl-sla-configuration-requirements",
+      "top_k": 3
+    },
+    {
+      "query": "FSL mobile app job lifecycle offline signature parts consumption",
+      "domain": "admin",
+      "expected_skill": "admin/fsl-mobile-workflow-design",
+      "top_k": 3
+    },
+    {
+      "query": "field service capacity planning resource territory workforce utilization",
+      "domain": "admin",
+      "expected_skill": "admin/fsl-capacity-planning",
+      "top_k": 3
     }
   ]
 }
