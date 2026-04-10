@@ -97,6 +97,7 @@
       "admin/process-automation-selection",
       "admin/products-and-pricebooks",
       "admin/queues-and-public-groups",
+      "admin/quote-to-cash-process",
       "admin/quote-to-cash-requirements",
       "admin/quotes-and-quote-templates",
       "admin/record-type-strategy-at-scale",
@@ -106,6 +107,7 @@
       "admin/reports-and-dashboards",
       "admin/reports-and-dashboards-fundamentals",
       "admin/requirements-gathering-for-sf",
+      "admin/revenue-recognition-requirements",
       "admin/sales-engagement-cadences",
       "admin/sales-process-mapping",
       "admin/salesforce-release-preparation",
@@ -118,6 +120,7 @@
       "admin/sharing-and-visibility",
       "admin/soft-credits-and-matching",
       "admin/standard-object-quirks",
+      "admin/subscription-lifecycle-requirements",
       "admin/system-field-behavior-and-audit",
       "admin/territory-design-requirements",
       "admin/uat-and-acceptance-criteria",
@@ -173,6 +176,8 @@
       "apex/continuation-callouts",
       "apex/cpq-apex-plugins",
       "apex/cpq-api-and-automation",
+      "apex/cpq-custom-actions",
+      "apex/cpq-test-automation",
       "apex/cross-object-formula-and-rollup-performance",
       "apex/cti-adapter-development",
       "apex/custom-iterators-and-iterables",
@@ -246,9 +251,12 @@
       "architect/knowledge-vs-external-cms",
       "architect/license-optimization-strategy",
       "architect/limits-and-scalability-planning",
+      "architect/marketing-cloud-vs-mcae-selection",
       "architect/marketing-consent-architecture",
       "architect/marketing-data-architecture",
+      "architect/marketing-integration-patterns",
       "architect/metadata-coverage-and-dependencies",
+      "architect/multi-bu-marketing-architecture",
       "architect/multi-channel-service-architecture",
       "architect/multi-currency-sales-architecture",
       "architect/multi-org-strategy",
@@ -293,12 +301,14 @@
       "data/lead-data-import-and-dedup",
       "data/marketing-cloud-data-sync",
       "data/marketing-cloud-sql-queries",
+      "data/mcae-prospect-data-migration",
       "data/multi-currency-and-advanced-currency-management",
       "data/omni-channel-reporting-data",
       "data/opportunity-pipeline-migration",
       "data/partner-data-access-patterns",
       "data/person-accounts",
       "data/product-catalog-data-model",
+      "data/product-catalog-migration-cpq",
       "data/record-merge-implications",
       "data/roll-up-summary-alternatives",
       "data/sales-reporting-data-model",
@@ -653,7 +663,8 @@
       "admin/marketing-automation-requirements",
       "admin/mcae-lead-scoring-and-grading",
       "admin/mcae-pardot-setup",
-      "apex/mcae-pardot-api"
+      "apex/mcae-pardot-api",
+      "architect/marketing-cloud-vs-mcae-selection"
     ],
     "action-cadence": [
       "apex/sales-engagement-api"
@@ -707,7 +718,8 @@
       "admin/dynamic-forms-and-actions"
     ],
     "advanced-approvals": [
-      "admin/cpq-approval-workflows"
+      "admin/cpq-approval-workflows",
+      "admin/quote-to-cash-process"
     ],
     "advanced-currency-management": [
       "architect/multi-currency-sales-architecture",
@@ -823,6 +835,7 @@
     ],
     "amendments": [
       "admin/contract-and-renewal-management",
+      "admin/subscription-lifecycle-requirements",
       "architect/subscription-management-architecture"
     ],
     "ampscript": [
@@ -917,6 +930,7 @@
       "data/sharing-recalculation-performance"
     ],
     "apex-testing": [
+      "apex/cpq-test-automation",
       "apex/test-class-standards",
       "apex/test-data-factory-patterns",
       "devops/bitbucket-pipelines-for-salesforce",
@@ -1005,6 +1019,7 @@
       "admin/approval-processes"
     ],
     "architect": [
+      "architect/marketing-cloud-vs-mcae-selection",
       "architect/org-edition-and-feature-licensing",
       "architect/platform-selection-guidance",
       "architect/technical-debt-assessment",
@@ -1044,6 +1059,9 @@
     ],
     "article-recommendations": [
       "agentforce/einstein-copilot-for-service"
+    ],
+    "asc-606": [
+      "admin/revenue-recognition-requirements"
     ],
     "assignment-rules": [
       "admin/assignment-rules",
@@ -1184,6 +1202,7 @@
       "apex/marketing-cloud-data-views",
       "apex/ssjs-server-side-javascript",
       "architect/marketing-data-architecture",
+      "architect/marketing-integration-patterns",
       "data/marketing-cloud-sql-queries"
     ],
     "autorabit": [
@@ -1195,8 +1214,14 @@
     "b2b-commerce": [
       "admin/b2b-commerce-store-setup"
     ],
+    "b2b-marketing": [
+      "architect/marketing-cloud-vs-mcae-selection"
+    ],
     "b2b-marketing-analytics": [
       "admin/marketing-reporting-requirements"
+    ],
+    "b2c-marketing": [
+      "architect/marketing-cloud-vs-mcae-selection"
     ],
     "backoff": [
       "integration/retry-and-backoff-patterns"
@@ -1246,6 +1271,9 @@
       "data/data-archival-strategies",
       "data/external-data-and-big-objects"
     ],
+    "billing": [
+      "admin/quote-to-cash-process"
+    ],
     "billing-integration": [
       "architect/subscription-management-architecture"
     ],
@@ -1274,7 +1302,8 @@
       "apex/billing-integration-apex"
     ],
     "blng-namespace": [
-      "admin/billing-schedule-setup"
+      "admin/billing-schedule-setup",
+      "admin/revenue-recognition-requirements"
     ],
     "block-pricing": [
       "admin/cpq-pricing-rules",
@@ -1348,7 +1377,8 @@
       "data/knowledge-article-import"
     ],
     "bulk-load": [
-      "data/product-catalog-data-model"
+      "data/product-catalog-data-model",
+      "data/product-catalog-migration-cpq"
     ],
     "bulk-safe": [
       "apex/invocable-methods"
@@ -1365,6 +1395,9 @@
     ],
     "bundle-design": [
       "architect/cpq-architecture-patterns"
+    ],
+    "bundle-migration": [
+      "data/product-catalog-migration-cpq"
     ],
     "bundles": [
       "admin/cpq-product-catalog-setup",
@@ -1392,7 +1425,8 @@
       "admin/mcae-pardot-setup"
     ],
     "business-units": [
-      "admin/marketing-cloud-engagement-setup"
+      "admin/marketing-cloud-engagement-setup",
+      "architect/multi-bu-marketing-architecture"
     ],
     "buyer-account": [
       "admin/b2b-commerce-store-setup"
@@ -1666,6 +1700,7 @@
       "admin/partner-community-requirements"
     ],
     "co-termination": [
+      "admin/subscription-lifecycle-requirements",
       "architect/subscription-management-architecture"
     ],
     "code-analyzer": [
@@ -1786,6 +1821,9 @@
       "admin/custom-metadata-types",
       "admin/custom-metadata-types-and-settings",
       "apex/custom-metadata-in-apex"
+    ],
+    "configuration-attribute": [
+      "data/product-catalog-migration-cpq"
     ],
     "configuration-attributes": [
       "admin/cpq-product-catalog-setup"
@@ -1921,6 +1959,9 @@
     "continuous-integration-testing": [
       "devops/continuous-integration-testing"
     ],
+    "contract": [
+      "admin/quote-to-cash-process"
+    ],
     "contract-amendment": [
       "apex/cpq-api-and-automation"
     ],
@@ -1929,6 +1970,9 @@
     ],
     "contracted-pricing": [
       "admin/cpq-pricing-rules"
+    ],
+    "contracting": [
+      "apex/cpq-test-automation"
     ],
     "contracting-plugin": [
       "apex/cpq-apex-plugins"
@@ -1991,13 +2035,18 @@
       "admin/cpq-product-catalog-setup",
       "admin/cpq-quote-templates",
       "admin/pricing-model-design",
+      "admin/quote-to-cash-process",
+      "admin/subscription-lifecycle-requirements",
       "apex/cpq-apex-plugins",
       "apex/cpq-api-and-automation",
+      "apex/cpq-custom-actions",
+      "apex/cpq-test-automation",
       "architect/cpq-architecture-patterns",
       "architect/cpq-vs-standard-products-decision",
       "architect/sales-cloud-integration-patterns",
       "architect/subscription-management-architecture",
-      "data/cpq-data-model"
+      "data/cpq-data-model",
+      "data/product-catalog-migration-cpq"
     ],
     "cpq-api": [
       "apex/cpq-api-and-automation"
@@ -2007,6 +2056,9 @@
     ],
     "cpq-comparison": [
       "omnistudio/industries-cpq-vs-salesforce-cpq"
+    ],
+    "cpq-custom-actions": [
+      "apex/cpq-custom-actions"
     ],
     "cpq-quote-templates": [
       "admin/cpq-quote-templates"
@@ -2072,6 +2124,9 @@
     "csv": [
       "data/bulk-api-patterns"
     ],
+    "csv-import": [
+      "data/mcae-prospect-data-migration"
+    ],
     "cti-adapter": [
       "apex/cti-adapter-development"
     ],
@@ -2123,6 +2178,9 @@
     ],
     "custom-field-mapping": [
       "apex/lead-conversion-customization"
+    ],
+    "custom-field-sync": [
+      "data/mcae-prospect-data-migration"
     ],
     "custom-fields": [
       "admin/custom-field-creation"
@@ -2285,7 +2343,8 @@
     "data-loading": [
       "data/bulk-api-and-large-data-loads",
       "data/bulk-api-patterns",
-      "data/product-catalog-data-model"
+      "data/product-catalog-data-model",
+      "data/product-catalog-migration-cpq"
     ],
     "data-masking": [
       "agentforce/einstein-trust-layer"
@@ -2296,6 +2355,7 @@
       "data/community-user-data-migration",
       "data/data-migration-planning",
       "data/knowledge-article-import",
+      "data/mcae-prospect-data-migration",
       "data/opportunity-pipeline-migration",
       "data/territory-data-alignment"
     ],
@@ -2341,6 +2401,9 @@
     ],
     "data-seeding": [
       "devops/data-seeding-for-testing"
+    ],
+    "data-segregation": [
+      "architect/multi-bu-marketing-architecture"
     ],
     "data-skew": [
       "admin/data-skew-and-sharing-performance",
@@ -2617,13 +2680,17 @@
       "admin/quote-to-cash-requirements"
     ],
     "discount-schedule": [
-      "admin/pricing-model-design"
+      "admin/pricing-model-design",
+      "data/product-catalog-migration-cpq"
     ],
     "discount-schedules": [
       "admin/cpq-pricing-rules"
     ],
     "discovery": [
       "admin/sales-process-mapping"
+    ],
+    "distribution-method": [
+      "admin/revenue-recognition-requirements"
     ],
     "dkim": [
       "admin/email-deliverability-strategy"
@@ -2837,6 +2904,9 @@
     "engagement-data": [
       "apex/marketing-cloud-data-views"
     ],
+    "engagement-history": [
+      "data/mcae-prospect-data-migration"
+    ],
     "engagement-insights": [
       "data/community-analytics-data"
     ],
@@ -2857,6 +2927,9 @@
     ],
     "enterprise": [
       "architect/org-edition-and-feature-licensing"
+    ],
+    "enterprise-2-0": [
+      "architect/multi-bu-marketing-architecture"
     ],
     "enterprise-2-account": [
       "admin/marketing-cloud-engagement-setup"
@@ -2958,6 +3031,9 @@
     ],
     "evaluation-metrics": [
       "agentforce/agent-testing-and-evaluation"
+    ],
+    "event-api": [
+      "architect/marketing-integration-patterns"
     ],
     "event-driven-architecture": [
       "integration/event-driven-architecture-patterns"
@@ -3214,6 +3290,9 @@
       "apex/apex-queueable-patterns",
       "apex/long-running-process-orchestration"
     ],
+    "finance-periods": [
+      "admin/revenue-recognition-requirements"
+    ],
     "financial-account-roles": [
       "admin/financial-account-setup"
     ],
@@ -3251,6 +3330,7 @@
     ],
     "flow": [
       "admin/flow-for-admins",
+      "apex/cpq-custom-actions",
       "apex/order-of-execution-deep-dive",
       "architect/solution-design-patterns",
       "flow/auto-launched-flow-patterns",
@@ -3470,6 +3550,9 @@
     "gitlab-ci": [
       "devops/gitlab-ci-for-salesforce"
     ],
+    "gl-events": [
+      "admin/revenue-recognition-requirements"
+    ],
     "global-actions": [
       "admin/global-actions-and-quick-actions"
     ],
@@ -3487,6 +3570,9 @@
     ],
     "govcloud-plus": [
       "architect/government-cloud-compliance"
+    ],
+    "governance": [
+      "architect/multi-bu-marketing-architecture"
     ],
     "government-cloud": [
       "architect/government-cloud-compliance"
@@ -3759,7 +3845,8 @@
       "lwc/custom-property-editor-for-flow"
     ],
     "installed-package": [
-      "apex/marketing-cloud-custom-activities"
+      "apex/marketing-cloud-custom-activities",
+      "architect/marketing-integration-patterns"
     ],
     "installments": [
       "admin/recurring-donations-setup"
@@ -3844,6 +3931,9 @@
     "invocablevariable": [
       "apex/invocable-methods"
     ],
+    "invoice": [
+      "admin/quote-to-cash-process"
+    ],
     "invoice-api": [
       "apex/billing-integration-apex"
     ],
@@ -3887,10 +3977,14 @@
     "journey-builder": [
       "admin/journey-builder-administration",
       "apex/marketing-cloud-api",
-      "apex/marketing-cloud-custom-activities"
+      "apex/marketing-cloud-custom-activities",
+      "architect/marketing-integration-patterns"
     ],
     "journey-goals": [
       "admin/journey-builder-administration"
+    ],
+    "journey-injection": [
+      "architect/marketing-integration-patterns"
     ],
     "journey-versions": [
       "admin/journey-builder-administration"
@@ -4194,6 +4288,9 @@
     "list-hygiene": [
       "admin/email-deliverability-strategy"
     ],
+    "list-import": [
+      "data/mcae-prospect-data-migration"
+    ],
     "list-rendering": [
       "lwc/lwc-performance"
     ],
@@ -4350,6 +4447,9 @@
       "omnistudio/omnistudio-lwc-integration",
       "omnistudio/vlocity-to-native-omnistudio-migration"
     ],
+    "marketing-architecture": [
+      "architect/marketing-cloud-vs-mcae-selection"
+    ],
     "marketing-automation": [
       "admin/marketing-automation-requirements",
       "admin/mcae-pardot-setup",
@@ -4366,8 +4466,11 @@
       "apex/marketing-cloud-custom-activities",
       "apex/marketing-cloud-data-views",
       "apex/ssjs-server-side-javascript",
+      "architect/marketing-cloud-vs-mcae-selection",
       "architect/marketing-consent-architecture",
       "architect/marketing-data-architecture",
+      "architect/marketing-integration-patterns",
+      "architect/multi-bu-marketing-architecture",
       "data/data-extension-design",
       "data/marketing-cloud-data-sync",
       "data/marketing-cloud-sql-queries",
@@ -4408,6 +4511,7 @@
     "mc-connect": [
       "admin/marketing-cloud-connect",
       "architect/marketing-data-architecture",
+      "architect/marketing-integration-patterns",
       "data/marketing-cloud-data-sync"
     ],
     "mc-data-model": [
@@ -4419,7 +4523,9 @@
       "admin/marketing-reporting-requirements",
       "admin/mcae-lead-scoring-and-grading",
       "admin/mcae-pardot-setup",
-      "apex/mcae-pardot-api"
+      "apex/mcae-pardot-api",
+      "architect/marketing-cloud-vs-mcae-selection",
+      "data/mcae-prospect-data-migration"
     ],
     "mcp": [
       "agentforce/mcp-tool-definition-apex",
@@ -4586,6 +4692,9 @@
       "integration/mulesoft-salesforce-connector",
       "integration/sis-integration-patterns"
     ],
+    "multi-bu": [
+      "architect/multi-bu-marketing-architecture"
+    ],
     "multi-channel": [
       "agentforce/agent-channel-deployment"
     ],
@@ -4734,7 +4843,8 @@
       "security/api-security-and-rate-limiting"
     ],
     "oauth2": [
-      "apex/marketing-cloud-api"
+      "apex/marketing-cloud-api",
+      "architect/marketing-integration-patterns"
     ],
     "object-design": [
       "admin/object-creation-and-design"
@@ -4920,6 +5030,9 @@
     "order-plugin": [
       "apex/cpq-apex-plugins"
     ],
+    "ordering": [
+      "apex/cpq-test-automation"
+    ],
     "org-assessment": [
       "architect/well-architected-review"
     ],
@@ -5040,7 +5153,9 @@
       "admin/marketing-automation-requirements",
       "admin/mcae-lead-scoring-and-grading",
       "admin/mcae-pardot-setup",
-      "apex/mcae-pardot-api"
+      "apex/mcae-pardot-api",
+      "architect/marketing-cloud-vs-mcae-selection",
+      "data/mcae-prospect-data-migration"
     ],
     "parent-child-summary": [
       "data/roll-up-summary-alternatives"
@@ -5125,6 +5240,9 @@
       "architect/nfr-definition-for-salesforce",
       "architect/org-edition-and-feature-licensing",
       "data/soql-query-optimization"
+    ],
+    "performance-obligation": [
+      "admin/revenue-recognition-requirements"
     ],
     "performance-optimization": [
       "architect/experience-cloud-performance"
@@ -5241,6 +5359,7 @@
       "lwc/static-resources-in-lwc"
     ],
     "platform-selection": [
+      "architect/marketing-cloud-vs-mcae-selection",
       "architect/platform-selection-guidance"
     ],
     "pmd": [
@@ -5296,8 +5415,12 @@
     "price-book": [
       "data/product-catalog-data-model"
     ],
+    "price-rule": [
+      "data/product-catalog-migration-cpq"
+    ],
     "price-rules": [
-      "admin/cpq-pricing-rules"
+      "admin/cpq-pricing-rules",
+      "apex/cpq-test-automation"
     ],
     "pricebook": [
       "data/opportunity-pipeline-migration",
@@ -5367,6 +5490,12 @@
       "admin/cpq-product-catalog-setup",
       "admin/products-and-pricebooks",
       "data/product-catalog-data-model"
+    ],
+    "product-migration": [
+      "data/product-catalog-migration-cpq"
+    ],
+    "product-option": [
+      "data/product-catalog-migration-cpq"
     ],
     "product-rules": [
       "admin/cpq-product-catalog-setup"
@@ -5440,6 +5569,12 @@
     "prompts": [
       "admin/in-app-guidance-and-walkthroughs"
     ],
+    "proration": [
+      "admin/subscription-lifecycle-requirements"
+    ],
+    "prospect-import": [
+      "data/mcae-prospect-data-migration"
+    ],
     "prospect-sync": [
       "admin/mcae-pardot-setup"
     ],
@@ -5482,6 +5617,9 @@
     ],
     "qcp": [
       "architect/cpq-architecture-patterns"
+    ],
+    "qle": [
+      "apex/cpq-custom-actions"
     ],
     "query": [
       "apex/soql-fundamentals"
@@ -5533,13 +5671,17 @@
     ],
     "quote-calculation": [
       "admin/cpq-pricing-rules",
-      "apex/cpq-api-and-automation"
+      "apex/cpq-api-and-automation",
+      "apex/cpq-test-automation"
     ],
     "quote-calculator-plugin": [
       "apex/cpq-apex-plugins"
     ],
     "quote-documents": [
       "admin/cpq-quote-templates"
+    ],
+    "quote-line-editor": [
+      "apex/cpq-custom-actions"
     ],
     "quote-pdf": [
       "apex/quote-pdf-customization"
@@ -5561,6 +5703,7 @@
       "admin/quotes-and-quote-templates"
     ],
     "quote-to-cash": [
+      "admin/quote-to-cash-process",
       "admin/quote-to-cash-requirements"
     ],
     "quote-to-order": [
@@ -5724,6 +5867,7 @@
     ],
     "renewals": [
       "admin/contract-and-renewal-management",
+      "admin/subscription-lifecycle-requirements",
       "architect/subscription-management-architecture"
     ],
     "replay": [
@@ -5773,6 +5917,7 @@
       "admin/experience-cloud-moderation"
     ],
     "requirements": [
+      "admin/subscription-lifecycle-requirements",
       "admin/territory-design-requirements"
     ],
     "requirements-gathering": [
@@ -5828,10 +5973,23 @@
       "integration/retry-and-backoff-patterns"
     ],
     "revenue-cloud": [
+      "admin/quote-to-cash-process",
       "omnistudio/industries-cpq-vs-salesforce-cpq"
     ],
     "revenue-intelligence": [
       "admin/pipeline-review-design"
+    ],
+    "revenue-recognition-requirements": [
+      "admin/revenue-recognition-requirements"
+    ],
+    "revenue-recognition-rule": [
+      "admin/revenue-recognition-requirements"
+    ],
+    "revenue-schedule": [
+      "admin/revenue-recognition-requirements"
+    ],
+    "revenue-transaction": [
+      "admin/revenue-recognition-requirements"
     ],
     "rfc-7807": [
       "integration/api-error-handling-design"
@@ -5950,6 +6108,7 @@
     ],
     "salesforce-billing": [
       "admin/billing-schedule-setup",
+      "admin/revenue-recognition-requirements",
       "apex/billing-integration-apex"
     ],
     "salesforce-cli": [
@@ -6037,16 +6196,22 @@
       "apex/governor-limit-recovery-patterns"
     ],
     "sbaa": [
-      "admin/cpq-approval-workflows"
+      "admin/cpq-approval-workflows",
+      "admin/quote-to-cash-process"
     ],
     "sbqq": [
       "admin/contract-and-renewal-management",
       "admin/cpq-guided-selling",
       "admin/cpq-quote-templates",
+      "admin/quote-to-cash-process",
+      "admin/subscription-lifecycle-requirements",
       "apex/cpq-apex-plugins",
       "apex/cpq-api-and-automation",
+      "apex/cpq-custom-actions",
+      "apex/cpq-test-automation",
       "architect/subscription-management-architecture",
-      "data/cpq-data-model"
+      "data/cpq-data-model",
+      "data/product-catalog-migration-cpq"
     ],
     "scalability": [
       "architect/limits-and-scalability-planning",
@@ -6320,7 +6485,8 @@
       "admin/omni-channel-routing-setup"
     ],
     "service-router": [
-      "apex/cpq-api-and-automation"
+      "apex/cpq-api-and-automation",
+      "apex/cpq-test-automation"
     ],
     "service-territory": [
       "admin/fsl-service-territory-setup"
@@ -6381,6 +6547,9 @@
     "sfdx-project-json": [
       "devops/salesforce-dx-project-structure"
     ],
+    "sftp": [
+      "architect/marketing-integration-patterns"
+    ],
     "sftp-import": [
       "architect/marketing-data-architecture"
     ],
@@ -6391,6 +6560,9 @@
     ],
     "share-objects": [
       "apex/apex-managed-sharing"
+    ],
+    "shared-data-extensions": [
+      "architect/multi-bu-marketing-architecture"
     ],
     "sharing": [
       "admin/queues-and-public-groups",
@@ -6679,6 +6851,7 @@
       "apex/marketing-cloud-data-views"
     ],
     "subscription": [
+      "admin/quote-to-cash-process",
       "data/cpq-data-model"
     ],
     "subscription-center": [
@@ -6687,6 +6860,7 @@
     "subscriptions": [
       "admin/contract-and-renewal-management",
       "admin/reports-and-dashboards",
+      "admin/subscription-lifecycle-requirements",
       "architect/subscription-management-architecture"
     ],
     "summary-formulas": [
@@ -6887,6 +7061,9 @@
     "transaction-security": [
       "security/transaction-security-policies"
     ],
+    "transactional-messaging": [
+      "architect/marketing-integration-patterns"
+    ],
     "transform-element": [
       "flow/flow-collection-processing"
     ],
@@ -6907,6 +7084,9 @@
     ],
     "trigger-recursion": [
       "apex/recursive-trigger-prevention"
+    ],
+    "triggered-send": [
+      "architect/marketing-integration-patterns"
     ],
     "triggered-sends": [
       "admin/email-studio-administration",
@@ -7011,6 +7191,9 @@
     ],
     "user-mode": [
       "apex/apex-security-patterns"
+    ],
+    "user-provisioning": [
+      "architect/multi-bu-marketing-architecture"
     ],
     "user-roles": [
       "admin/marketing-cloud-engagement-setup"

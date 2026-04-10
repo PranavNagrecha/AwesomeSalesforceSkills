@@ -85,7 +85,7 @@
     "f7d19f5ded41cded4d61",
     "fc6275c16c4ab23b9185"
   ],
-  "content_hash": "60f4d9da6d58f6b003103e5827e14a929bf7e311adb81ea3286dfb9796dbc7d9",
+  "content_hash": "cff454523990dcf50e0bfe20058f9d41db98d34d2ee04dce98f67927dc06a757",
   "dependencies": [],
   "description": "Use this skill when writing, debugging, or reviewing AMPscript in Marketing Cloud email bodies, subject lines, preheaders, SMS, push notifications, or Cloud Pages \u2014 including Lookup/LookupRows data retrieval, IF/ELSEIF conditional blocks, FOR loops over rowsets, and inline personalization. NOT for Server-Side JavaScript (SSJS), REST API calls from content, SQL Query Activities, or Journey Builder configuration.",
   "file_location": "skills/apex/ampscript-development",
