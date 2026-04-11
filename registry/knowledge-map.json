@@ -289,6 +289,7 @@
       "architect/experience-cloud-integration-patterns",
       "architect/experience-cloud-licensing-model",
       "architect/experience-cloud-performance",
+      "architect/fhir-integration-architecture",
       "architect/fsc-architecture-patterns",
       "architect/fsl-integration-patterns",
       "architect/fsl-multi-region-architecture",
@@ -297,6 +298,8 @@
       "architect/government-cloud-compliance",
       "architect/ha-dr-architecture",
       "architect/headless-vs-standard-experience",
+      "architect/health-cloud-data-residency",
+      "architect/health-cloud-multi-cloud-strategy",
       "architect/high-volume-sales-data-architecture",
       "architect/hipaa-compliance-architecture",
       "architect/integration-framework-design",
@@ -319,6 +322,7 @@
       "architect/omni-channel-capacity-model",
       "architect/org-edition-and-feature-licensing",
       "architect/org-limits-monitoring",
+      "architect/payer-vs-provider-architecture",
       "architect/platform-selection-guidance",
       "architect/sales-cloud-architecture",
       "architect/sales-cloud-integration-patterns",
@@ -355,6 +359,7 @@
       "data/external-data-and-big-objects",
       "data/external-id-strategy",
       "data/external-user-data-sharing",
+      "data/fhir-data-mapping",
       "data/field-history-tracking",
       "data/financial-account-migration",
       "data/fsc-data-model",
@@ -1147,6 +1152,7 @@
     ],
     "architect": [
       "architect/fsl-optimization-architecture",
+      "architect/health-cloud-multi-cloud-strategy",
       "architect/hipaa-compliance-architecture",
       "architect/marketing-cloud-vs-mcae-selection",
       "architect/org-edition-and-feature-licensing",
@@ -1161,6 +1167,7 @@
       "architect/ai-agent-org-integration-architecture",
       "architect/fsc-architecture-patterns",
       "architect/integration-framework-design",
+      "architect/payer-vs-provider-architecture",
       "architect/sales-cloud-architecture"
     ],
     "architecture-decision": [
@@ -1925,7 +1932,8 @@
       "data/patient-data-migration"
     ],
     "clinical-data-model": [
-      "admin/clinical-data-requirements"
+      "admin/clinical-data-requirements",
+      "data/fhir-data-mapping"
     ],
     "clinical-decision-support": [
       "apex/clinical-decision-support"
@@ -2037,6 +2045,7 @@
       "admin/compliance-documentation-requirements",
       "architect/aml-kyc-process-architecture",
       "architect/fsc-architecture-patterns",
+      "architect/health-cloud-data-residency",
       "architect/hipaa-compliance-architecture",
       "architect/nfr-definition-for-salesforce",
       "data/field-history-tracking",
@@ -2695,6 +2704,7 @@
       "data/case-history-migration",
       "data/community-user-data-migration",
       "data/data-migration-planning",
+      "data/fhir-data-mapping",
       "data/financial-account-migration",
       "data/fsl-resource-and-skill-data",
       "data/fsl-territory-data-setup",
@@ -2709,6 +2719,7 @@
       "admin/data-model-documentation",
       "architect/fsc-architecture-patterns",
       "architect/npsp-vs-nonprofit-cloud-decision",
+      "architect/payer-vs-provider-architecture",
       "architect/sales-cloud-architecture",
       "data/consent-data-model-health",
       "data/cpq-data-model",
@@ -2748,6 +2759,7 @@
     ],
     "data-residency": [
       "architect/government-cloud-compliance",
+      "architect/health-cloud-data-residency",
       "architect/multi-org-strategy"
     ],
     "data-retention": [
@@ -3187,6 +3199,9 @@
     "education-data-architecture": [
       "security/ferpa-compliance-in-salesforce"
     ],
+    "ehr-integration": [
+      "architect/fhir-integration-architecture"
+    ],
     "einstein": [
       "agentforce/einstein-copilot-for-sales",
       "agentforce/einstein-copilot-for-service",
@@ -3292,6 +3307,9 @@
     ],
     "embedding-pipeline": [
       "agentforce/sf-to-llm-data-pipelines"
+    ],
+    "emr-sync": [
+      "architect/fhir-integration-architecture"
     ],
     "encryption": [
       "architect/hipaa-compliance-architecture",
@@ -3516,6 +3534,7 @@
       "architect/experience-cloud-licensing-model",
       "architect/experience-cloud-performance",
       "architect/headless-vs-standard-experience",
+      "architect/health-cloud-multi-cloud-strategy",
       "architect/knowledge-vs-external-cms",
       "architect/multi-site-architecture",
       "data/community-analytics-data",
@@ -3654,6 +3673,8 @@
       "apex/fflib-enterprise-patterns"
     ],
     "fhir": [
+      "architect/fhir-integration-architecture",
+      "data/fhir-data-mapping",
       "data/health-cloud-data-model"
     ],
     "fhir-api": [
@@ -3664,7 +3685,8 @@
     ],
     "fhir-r4": [
       "admin/clinical-data-requirements",
-      "apex/fhir-integration-patterns"
+      "apex/fhir-integration-patterns",
+      "data/fhir-data-mapping"
     ],
     "field-audit-trail": [
       "admin/compliance-documentation-requirements",
@@ -4090,6 +4112,7 @@
     "gdpr": [
       "admin/consent-management-marketing",
       "apex/fsc-document-generation",
+      "architect/health-cloud-data-residency",
       "architect/marketing-consent-architecture",
       "data/data-quality-and-governance",
       "security/gdpr-data-privacy",
@@ -4261,9 +4284,14 @@
       "apex/health-cloud-apex-extensions",
       "apex/health-cloud-apis",
       "apex/health-cloud-lwc-components",
+      "architect/fhir-integration-architecture",
+      "architect/health-cloud-data-residency",
+      "architect/health-cloud-multi-cloud-strategy",
       "architect/hipaa-compliance-architecture",
+      "architect/payer-vs-provider-architecture",
       "data/clinical-data-quality",
       "data/consent-data-model-health",
+      "data/fhir-data-mapping",
       "data/health-cloud-data-model",
       "data/patient-data-migration",
       "data/person-accounts"
@@ -4314,6 +4342,8 @@
     "hipaa": [
       "admin/health-cloud-consent-management",
       "admin/hipaa-workflow-design",
+      "architect/health-cloud-data-residency",
+      "architect/health-cloud-multi-cloud-strategy",
       "architect/hipaa-compliance-architecture",
       "data/consent-data-model-health",
       "data/patient-data-migration",
@@ -4387,7 +4417,8 @@
       "devops/go-live-cutover-planning"
     ],
     "hyperforce": [
-      "architect/government-cloud-compliance"
+      "architect/government-cloud-compliance",
+      "architect/health-cloud-data-residency"
     ],
     "icm": [
       "admin/care-plan-configuration"
@@ -4571,6 +4602,7 @@
     ],
     "interoperability": [
       "admin/clinical-data-requirements",
+      "architect/fhir-integration-architecture",
       "lwc/aura-to-lwc-migration"
     ],
     "invalidation": [
@@ -4874,6 +4906,7 @@
       "admin/experience-cloud-member-management",
       "architect/cpq-vs-standard-products-decision",
       "architect/experience-cloud-licensing-model",
+      "architect/health-cloud-multi-cloud-strategy",
       "architect/license-optimization-strategy",
       "architect/org-edition-and-feature-licensing"
     ],
@@ -5159,6 +5192,7 @@
       "apex/marketing-cloud-custom-activities",
       "apex/marketing-cloud-data-views",
       "apex/ssjs-server-side-javascript",
+      "architect/health-cloud-multi-cloud-strategy",
       "architect/marketing-cloud-vs-mcae-selection",
       "architect/marketing-consent-architecture",
       "architect/marketing-data-architecture",
@@ -5395,6 +5429,7 @@
       "apex/fhir-integration-patterns",
       "apex/fsc-integration-patterns-dev",
       "architect/cpq-integration-with-erp",
+      "architect/fhir-integration-architecture",
       "integration/api-led-connectivity",
       "integration/mulesoft-salesforce-connector",
       "integration/sis-integration-patterns"
@@ -5407,6 +5442,9 @@
     ],
     "multi-channel-service-architecture": [
       "architect/multi-channel-service-architecture"
+    ],
+    "multi-cloud": [
+      "architect/health-cloud-multi-cloud-strategy"
     ],
     "multi-currency": [
       "admin/products-and-pricebooks",
@@ -5629,6 +5667,9 @@
       "architect/omni-channel-capacity-model",
       "architect/service-cloud-architecture",
       "data/omni-channel-reporting-data"
+    ],
+    "omni-studio": [
+      "architect/health-cloud-multi-cloud-strategy"
     ],
     "omniJsonData": [
       "omnistudio/omnistudio-custom-lwc-elements"
@@ -6007,6 +6048,9 @@
     ],
     "pause-element": [
       "flow/pause-elements-and-wait-events"
+    ],
+    "payer": [
+      "architect/payer-vs-provider-architecture"
     ],
     "payload-reduction": [
       "lwc/lwc-performance"
@@ -6476,6 +6520,9 @@
     ],
     "provar": [
       "devops/automated-regression-testing"
+    ],
+    "provider": [
+      "architect/payer-vs-provider-architecture"
     ],
     "provider-search": [
       "admin/referral-management-health"
@@ -7401,6 +7448,7 @@
       "apex/service-cloud-rest-api",
       "architect/agent-console-requirements",
       "architect/case-deflection-strategy",
+      "architect/health-cloud-multi-cloud-strategy",
       "architect/service-cloud-architecture",
       "architect/sla-design-and-escalation-matrix",
       "data/case-history-migration",
@@ -7733,6 +7781,9 @@
     ],
     "spanning-relationships": [
       "apex/cross-object-formula-and-rollup-performance"
+    ],
+    "special-category-data": [
+      "architect/health-cloud-data-residency"
     ],
     "spf": [
       "admin/email-deliverability-strategy"
