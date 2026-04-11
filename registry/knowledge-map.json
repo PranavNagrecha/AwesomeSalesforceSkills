@@ -16,12 +16,15 @@
       "admin/case-management-setup",
       "admin/change-management-and-deployment",
       "admin/change-management-and-training",
+      "admin/client-onboarding-design",
       "admin/clinical-data-requirements",
       "admin/collaborative-forecasts",
       "admin/commerce-checkout-configuration",
+      "admin/commerce-order-management",
       "admin/commerce-pricing-and-promotions",
       "admin/commerce-product-catalog",
       "admin/community-engagement-strategy",
+      "admin/compliance-documentation-requirements",
       "admin/compliant-data-sharing-setup",
       "admin/connected-apps-and-auth",
       "admin/consent-management-marketing",
@@ -57,6 +60,7 @@
       "admin/experience-cloud-seo-settings",
       "admin/experience-cloud-site-setup",
       "admin/financial-account-setup",
+      "admin/financial-planning-process",
       "admin/flow-for-admins",
       "admin/formula-fields",
       "admin/fsc-action-plans",
@@ -149,7 +153,8 @@
       "admin/uat-and-acceptance-criteria",
       "admin/user-access-policies",
       "admin/user-management",
-      "admin/validation-rules"
+      "admin/validation-rules",
+      "admin/wealth-management-requirements"
     ],
     "agentforce": [
       "agentforce/agent-actions",
@@ -161,6 +166,7 @@
       "agentforce/agentforce-guardrails",
       "agentforce/agentforce-observability",
       "agentforce/agentforce-persona-design",
+      "agentforce/agentforce-sales-ai-setup",
       "agentforce/agentforce-service-ai-setup",
       "agentforce/custom-agent-actions-apex",
       "agentforce/einstein-bots-to-agentforce-migration",
@@ -197,6 +203,7 @@
       "apex/case-trigger-patterns",
       "apex/change-data-capture-apex",
       "apex/clinical-decision-support",
+      "apex/commerce-extension-points",
       "apex/common-apex-runtime-errors",
       "apex/continuation-callouts",
       "apex/cpq-apex-plugins",
@@ -334,6 +341,7 @@
       "data/community-analytics-data",
       "data/community-user-data-migration",
       "data/consent-data-model-health",
+      "data/constituent-data-migration",
       "data/cpq-data-model",
       "data/cpq-performance-optimization",
       "data/custom-index-requests",
@@ -363,9 +371,11 @@
       "data/marketing-cloud-sql-queries",
       "data/mcae-prospect-data-migration",
       "data/multi-currency-and-advanced-currency-management",
+      "data/npsp-data-model",
       "data/omni-channel-reporting-data",
       "data/opportunity-pipeline-migration",
       "data/partner-data-access-patterns",
+      "data/patient-data-migration",
       "data/person-accounts",
       "data/product-catalog-data-model",
       "data/product-catalog-migration-cpq",
@@ -565,6 +575,9 @@
     "CSAT": [
       "architect/customer-effort-scoring"
     ],
+    "CartExtension": [
+      "apex/commerce-extension-points"
+    ],
     "ChangeEventHeader": [
       "apex/change-data-capture-apex"
     ],
@@ -647,6 +660,9 @@
     ],
     "ROI": [
       "admin/campaign-planning-and-attribution"
+    ],
+    "RegisteredExternalService": [
+      "apex/commerce-extension-points"
     ],
     "SLA": [
       "admin/entitlements-and-milestones",
@@ -756,9 +772,15 @@
     "action-layout": [
       "admin/global-actions-and-quick-actions"
     ],
+    "action-plan": [
+      "admin/financial-planning-process"
+    ],
     "action-plan-template": [
       "admin/care-plan-configuration",
       "admin/fsc-action-plans"
+    ],
+    "action-plan-templates": [
+      "admin/client-onboarding-design"
     ],
     "actions-and-recommendations": [
       "agentforce/einstein-next-best-action"
@@ -804,6 +826,9 @@
     "advanced-currency-management": [
       "architect/multi-currency-sales-architecture",
       "data/multi-currency-and-advanced-currency-management"
+    ],
+    "advisor-tools": [
+      "admin/wealth-management-requirements"
     ],
     "advisor-workspace": [
       "architect/wealth-management-architecture"
@@ -925,6 +950,7 @@
       "architect/subscription-management-architecture"
     ],
     "aml": [
+      "admin/compliance-documentation-requirements",
       "architect/aml-kyc-process-architecture"
     ],
     "ampscript": [
@@ -1242,6 +1268,7 @@
       "admin/system-field-behavior-and-audit"
     ],
     "audit-trail": [
+      "admin/compliance-documentation-requirements",
       "admin/hipaa-workflow-design",
       "agentforce/einstein-trust-layer"
     ],
@@ -1331,7 +1358,8 @@
       "admin/b2b-commerce-store-setup",
       "admin/commerce-checkout-configuration",
       "admin/commerce-pricing-and-promotions",
-      "admin/commerce-product-catalog"
+      "admin/commerce-product-catalog",
+      "apex/commerce-extension-points"
     ],
     "b2b-marketing": [
       "architect/marketing-cloud-vs-mcae-selection"
@@ -1509,6 +1537,7 @@
       "data/external-id-strategy",
       "data/historical-order-migration",
       "data/opportunity-pipeline-migration",
+      "data/patient-data-migration",
       "integration/mulesoft-salesforce-connector"
     ],
     "bulk-api-2": [
@@ -1707,7 +1736,8 @@
     ],
     "care-plan": [
       "admin/care-plan-configuration",
-      "apex/health-cloud-apex-extensions"
+      "apex/health-cloud-apex-extensions",
+      "data/patient-data-migration"
     ],
     "care-program": [
       "admin/care-program-management"
@@ -1717,6 +1747,9 @@
     ],
     "care-team": [
       "admin/health-cloud-patient-setup"
+    ],
+    "cart-calculator": [
+      "apex/commerce-extension-points"
     ],
     "cart-checkout-session": [
       "admin/commerce-checkout-configuration"
@@ -1838,6 +1871,9 @@
     "checkout": [
       "admin/commerce-checkout-configuration"
     ],
+    "checkout-extension": [
+      "apex/commerce-extension-points"
+    ],
     "ci-cd": [
       "devops/bitbucket-pipelines-for-salesforce",
       "devops/continuous-integration-testing",
@@ -1873,6 +1909,9 @@
     "client-onboarding": [
       "admin/fsc-action-plans"
     ],
+    "client-onboarding-design": [
+      "admin/client-onboarding-design"
+    ],
     "clinical-alert": [
       "apex/clinical-decision-support"
     ],
@@ -1882,7 +1921,8 @@
     "clinical-data": [
       "admin/health-cloud-timeline",
       "apex/health-cloud-apex-extensions",
-      "data/health-cloud-data-model"
+      "data/health-cloud-data-model",
+      "data/patient-data-migration"
     ],
     "clinical-data-model": [
       "admin/clinical-data-requirements"
@@ -1953,7 +1993,8 @@
     ],
     "commerce": [
       "admin/commerce-checkout-configuration",
-      "admin/commerce-pricing-and-promotions"
+      "admin/commerce-pricing-and-promotions",
+      "apex/commerce-extension-points"
     ],
     "commerce-cloud": [
       "admin/b2c-commerce-store-setup"
@@ -1993,6 +2034,7 @@
       "admin/formula-fields"
     ],
     "compliance": [
+      "admin/compliance-documentation-requirements",
       "architect/aml-kyc-process-architecture",
       "architect/fsc-architecture-patterns",
       "architect/hipaa-compliance-architecture",
@@ -2009,6 +2051,9 @@
     ],
     "compliance-automation": [
       "architect/government-cloud-compliance"
+    ],
+    "compliance-checkpoints": [
+      "admin/client-onboarding-design"
     ],
     "compliance-tasks": [
       "admin/fsc-action-plans"
@@ -2093,6 +2138,9 @@
       "devops/copado-essentials",
       "devops/source-tracking-and-conflict-resolution"
     ],
+    "connect-api": [
+      "admin/commerce-order-management"
+    ],
     "connect-rest-api": [
       "lwc/headless-experience-cloud"
     ],
@@ -2138,6 +2186,9 @@
     "console-navigation": [
       "admin/service-console-configuration"
     ],
+    "constituent-data-migration": [
+      "data/constituent-data-migration"
+    ],
     "contact": [
       "data/record-merge-implications"
     ],
@@ -2151,6 +2202,9 @@
     "contact-key": [
       "architect/marketing-data-architecture",
       "data/subscriber-data-management"
+    ],
+    "contact-matching": [
+      "data/constituent-data-migration"
     ],
     "contact-point-consent": [
       "architect/marketing-consent-architecture"
@@ -2610,6 +2664,7 @@
       "devops/sandbox-refresh-and-templates"
     ],
     "data-import": [
+      "data/constituent-data-migration",
       "data/lead-data-import-and-dedup"
     ],
     "data-integration": [
@@ -2660,6 +2715,7 @@
       "data/data-model-design-patterns",
       "data/fsc-data-model",
       "data/health-cloud-data-model",
+      "data/npsp-data-model",
       "data/person-accounts",
       "data/product-catalog-data-model",
       "data/sales-reporting-data-model",
@@ -3003,6 +3059,10 @@
     "discovery": [
       "admin/sales-process-mapping"
     ],
+    "discovery-framework": [
+      "admin/compliance-documentation-requirements",
+      "admin/financial-planning-process"
+    ],
     "distribution-method": [
       "admin/revenue-recognition-requirements"
     ],
@@ -3032,6 +3092,9 @@
     ],
     "document-builder": [
       "apex/fsl-service-report-templates"
+    ],
+    "document-collection": [
+      "admin/client-onboarding-design"
     ],
     "document-generation": [
       "apex/fsc-document-generation",
@@ -3145,6 +3208,12 @@
       "agentforce/einstein-copilot-for-service",
       "architect/case-deflection-strategy"
     ],
+    "einstein-email": [
+      "agentforce/agentforce-sales-ai-setup"
+    ],
+    "einstein-for-sales": [
+      "agentforce/agentforce-sales-ai-setup"
+    ],
     "einstein-for-service": [
       "agentforce/agentforce-service-ai-setup",
       "agentforce/einstein-copilot-for-service"
@@ -3163,6 +3232,9 @@
     ],
     "einstein-relationship-insights": [
       "agentforce/einstein-copilot-for-sales"
+    ],
+    "einstein-setup": [
+      "agentforce/agentforce-sales-ai-setup"
     ],
     "einstein-trust-layer": [
       "agentforce/einstein-trust-layer",
@@ -3595,6 +3667,7 @@
       "apex/fhir-integration-patterns"
     ],
     "field-audit-trail": [
+      "admin/compliance-documentation-requirements",
       "security/field-audit-trail"
     ],
     "field-conflict": [
@@ -3683,23 +3756,39 @@
     "financial-calculations": [
       "apex/fsc-financial-calculations"
     ],
+    "financial-goal": [
+      "admin/financial-planning-process"
+    ],
     "financial-holding": [
       "apex/fsc-integration-patterns-dev"
     ],
     "financial-objects": [
       "data/fsc-data-model"
     ],
+    "financial-plan": [
+      "admin/financial-planning-process"
+    ],
+    "financial-planning": [
+      "admin/wealth-management-requirements"
+    ],
+    "financial-planning-process": [
+      "admin/financial-planning-process"
+    ],
     "financial-services": [
+      "admin/compliance-documentation-requirements",
       "admin/compliant-data-sharing-setup",
       "architect/aml-kyc-process-architecture",
       "data/fsc-data-model"
     ],
     "financial-services-cloud": [
+      "admin/client-onboarding-design",
       "admin/financial-account-setup",
+      "admin/financial-planning-process",
       "admin/fsc-action-plans",
       "admin/fsc-referral-management",
       "admin/fsc-relationship-groups",
       "admin/household-model-configuration",
+      "admin/wealth-management-requirements",
       "apex/fsc-apex-extensions",
       "apex/fsc-financial-calculations",
       "architect/fsc-architecture-patterns",
@@ -3859,6 +3948,9 @@
     "forecasting": [
       "admin/opportunity-management"
     ],
+    "forecasting-ai": [
+      "agentforce/agentforce-sales-ai-setup"
+    ],
     "form-handlers": [
       "apex/mcae-pardot-api"
     ],
@@ -3874,10 +3966,13 @@
       "admin/validation-rules"
     ],
     "fsc": [
+      "admin/compliance-documentation-requirements",
       "admin/compliant-data-sharing-setup",
       "admin/financial-account-setup",
+      "admin/financial-planning-process",
       "admin/fsc-relationship-groups",
       "admin/household-model-configuration",
+      "admin/wealth-management-requirements",
       "apex/fsc-apex-extensions",
       "apex/fsc-compliant-sharing-api",
       "apex/fsc-document-generation",
@@ -3895,6 +3990,9 @@
     ],
     "fsc-admin": [
       "admin/fsc-referral-management"
+    ],
+    "fsc-core": [
+      "admin/wealth-management-requirements"
     ],
     "fsc-referral-management": [
       "admin/fsc-referral-management"
@@ -3961,6 +4059,9 @@
     "fsl-work-order-migration": [
       "data/fsl-work-order-migration"
     ],
+    "fulfillment-order": [
+      "admin/commerce-order-management"
+    ],
     "funding-awards": [
       "admin/grant-management-setup"
     ],
@@ -3982,6 +4083,9 @@
     ],
     "gap-analysis": [
       "admin/requirements-gathering-for-sf"
+    ],
+    "gau-allocations": [
+      "data/npsp-data-model"
     ],
     "gdpr": [
       "admin/consent-management-marketing",
@@ -4161,6 +4265,7 @@
       "data/clinical-data-quality",
       "data/consent-data-model-health",
       "data/health-cloud-data-model",
+      "data/patient-data-migration",
       "data/person-accounts"
     ],
     "healthcare": [
@@ -4211,6 +4316,7 @@
       "admin/hipaa-workflow-design",
       "architect/hipaa-compliance-architecture",
       "data/consent-data-model-health",
+      "data/patient-data-migration",
       "security/sandbox-data-masking"
     ],
     "historical-orders": [
@@ -4242,6 +4348,9 @@
     "household-accounts": [
       "admin/npsp-household-accounts",
       "architect/npsp-vs-nonprofit-cloud-decision"
+    ],
+    "households": [
+      "data/constituent-data-migration"
     ],
     "http-action": [
       "omnistudio/integration-procedures",
@@ -4293,6 +4402,7 @@
       "integration/webhook-inbound-patterns"
     ],
     "identity-verification": [
+      "admin/compliance-documentation-requirements",
       "security/login-forensics"
     ],
     "iframe": [
@@ -4639,6 +4749,7 @@
       "admin/marketing-reporting-requirements"
     ],
     "kyc": [
+      "admin/compliance-documentation-requirements",
       "architect/aml-kyc-process-architecture"
     ],
     "large-data-volumes": [
@@ -4749,6 +4860,9 @@
     ],
     "license-audit": [
       "architect/license-optimization-strategy"
+    ],
+    "license-management": [
+      "agentforce/agentforce-sales-ai-setup"
     ],
     "license-migration": [
       "data/community-user-data-migration"
@@ -5352,6 +5466,9 @@
     "namespace": [
       "omnistudio/vlocity-to-native-omnistudio-migration"
     ],
+    "namespaces": [
+      "data/npsp-data-model"
+    ],
     "naming": [
       "admin/npsp-household-accounts"
     ],
@@ -5407,7 +5524,8 @@
       "admin/recurring-donations-setup",
       "apex/npsp-custom-rollups",
       "apex/npsp-trigger-framework-extension",
-      "architect/npsp-vs-nonprofit-cloud-decision"
+      "architect/npsp-vs-nonprofit-cloud-decision",
+      "data/npsp-data-model"
     ],
     "nonprofit-cloud": [
       "architect/npsp-vs-nonprofit-cloud-decision"
@@ -5432,7 +5550,9 @@
       "admin/soft-credits-and-matching",
       "apex/npsp-custom-rollups",
       "apex/npsp-trigger-framework-extension",
-      "architect/npsp-vs-nonprofit-cloud-decision"
+      "architect/npsp-vs-nonprofit-cloud-decision",
+      "data/constituent-data-migration",
+      "data/npsp-data-model"
     ],
     "null-handling": [
       "admin/formula-fields"
@@ -5527,6 +5647,7 @@
       "omnistudio/vlocity-to-native-omnistudio-migration"
     ],
     "omnistudio": [
+      "admin/client-onboarding-design",
       "admin/patient-engagement-requirements",
       "omnistudio/business-rules-engine",
       "omnistudio/calculation-procedures",
@@ -5559,11 +5680,17 @@
     "omniupdatebyfield": [
       "omnistudio/omnistudio-custom-lwc-elements"
     ],
+    "oms": [
+      "admin/commerce-order-management"
+    ],
     "on-demand-email-to-case": [
       "admin/email-to-case-configuration"
     ],
     "onboarding": [
       "admin/in-app-guidance-and-walkthroughs"
+    ],
+    "onboarding-process": [
+      "admin/client-onboarding-design"
     ],
     "open-cti": [
       "apex/cti-adapter-development"
@@ -5607,6 +5734,7 @@
       "admin/quotes-and-quote-templates"
     ],
     "opportunity-scoring": [
+      "agentforce/agentforce-sales-ai-setup",
       "agentforce/einstein-copilot-for-sales"
     ],
     "opportunity-splits": [
@@ -5655,6 +5783,7 @@
       "admin/quote-to-cash-requirements"
     ],
     "order-management": [
+      "admin/commerce-order-management",
       "architect/cpq-integration-with-erp"
     ],
     "order-of-execution": [
@@ -5667,7 +5796,8 @@
       "apex/cpq-apex-plugins"
     ],
     "order-summary": [
-      "admin/commerce-checkout-configuration"
+      "admin/commerce-checkout-configuration",
+      "admin/commerce-order-management"
     ],
     "ordering": [
       "apex/cpq-test-automation"
@@ -5860,6 +5990,9 @@
     "patient-engagement": [
       "admin/patient-engagement-requirements"
     ],
+    "patient-migration": [
+      "data/patient-data-migration"
+    ],
     "patient-portal": [
       "admin/patient-engagement-requirements"
     ],
@@ -5961,6 +6094,7 @@
       "architect/fsc-architecture-patterns",
       "architect/npsp-vs-nonprofit-cloud-decision",
       "data/clinical-data-quality",
+      "data/patient-data-migration",
       "data/person-accounts"
     ],
     "persona-design": [
@@ -6017,6 +6151,7 @@
     ],
     "pipeline-inspection": [
       "admin/pipeline-review-design",
+      "agentforce/agentforce-sales-ai-setup",
       "agentforce/einstein-copilot-for-sales"
     ],
     "pipeline-migration": [
@@ -6035,6 +6170,7 @@
       "flow/pause-elements-and-wait-events"
     ],
     "platform-events": [
+      "admin/commerce-order-management",
       "apex/custom-logging-and-monitoring",
       "apex/error-handling-framework",
       "apex/fsc-integration-patterns-dev",
@@ -6091,6 +6227,9 @@
     ],
     "portfolio-analytics": [
       "architect/wealth-management-architecture"
+    ],
+    "portfolio-review": [
+      "admin/wealth-management-requirements"
     ],
     "post-authentication": [
       "security/ip-range-and-login-flow-strategy"
@@ -6161,6 +6300,9 @@
     ],
     "pricing-engine": [
       "architect/cpq-architecture-patterns"
+    ],
+    "pricing-hook": [
+      "apex/commerce-extension-points"
     ],
     "pricing-method": [
       "admin/pricing-model-design"
@@ -6538,7 +6680,8 @@
       "flow/scheduled-flows"
     ],
     "recurring-donations": [
-      "admin/recurring-donations-setup"
+      "admin/recurring-donations-setup",
+      "data/npsp-data-model"
     ],
     "recursion": [
       "apex/order-of-execution-deep-dive",
@@ -6575,6 +6718,9 @@
     ],
     "regression-testing": [
       "agentforce/agent-testing-and-evaluation"
+    ],
+    "regulatory-documentation": [
+      "admin/compliance-documentation-requirements"
     ],
     "relational-data-model": [
       "architect/marketing-data-architecture"
@@ -6691,7 +6837,8 @@
     "requirements-gathering": [
       "admin/marketing-automation-requirements",
       "admin/portal-requirements-gathering",
-      "admin/requirements-gathering-for-sf"
+      "admin/requirements-gathering-for-sf",
+      "admin/wealth-management-requirements"
     ],
     "resource-preference": [
       "admin/fsl-resource-management"
@@ -6741,6 +6888,9 @@
     "retry": [
       "integration/retry-and-backoff-patterns"
     ],
+    "return-order": [
+      "admin/commerce-order-management"
+    ],
     "revenue-cloud": [
       "admin/quote-to-cash-process",
       "omnistudio/industries-cpq-vs-salesforce-cpq"
@@ -6763,6 +6913,9 @@
     "revenue-transaction-error-log": [
       "data/billing-data-reconciliation"
     ],
+    "review-cycle": [
+      "admin/financial-planning-process"
+    ],
     "rfc-7807": [
       "integration/api-error-handling-design"
     ],
@@ -6771,6 +6924,9 @@
     ],
     "risk-scoring": [
       "architect/aml-kyc-process-architecture"
+    ],
+    "risk-tolerance": [
+      "admin/financial-planning-process"
     ],
     "robot-framework": [
       "devops/cumulusci-automation"
@@ -6865,6 +7021,7 @@
       "admin/pipeline-review-design",
       "admin/products-and-pricebooks",
       "admin/quote-to-cash-requirements",
+      "agentforce/agentforce-sales-ai-setup",
       "architect/multi-currency-sales-architecture",
       "architect/sales-cloud-architecture",
       "architect/sales-cloud-integration-patterns"
@@ -7078,6 +7235,7 @@
       "flow/screen-flows"
     ],
     "screen-flow": [
+      "admin/client-onboarding-design",
       "admin/flow-for-admins",
       "flow/fault-handling",
       "flow/flow-for-experience-cloud",
@@ -8224,6 +8382,7 @@
       "admin/fsc-relationship-groups"
     ],
     "wealth-management": [
+      "admin/wealth-management-requirements",
       "apex/fsc-financial-calculations",
       "apex/fsc-integration-patterns-dev",
       "architect/wealth-management-architecture"
@@ -8245,6 +8404,9 @@
     ],
     "webstore-catalog": [
       "admin/commerce-product-catalog"
+    ],
+    "welcome-journey": [
+      "admin/client-onboarding-design"
     ],
     "well-architected": [
       "architect/ai-agent-org-integration-architecture",

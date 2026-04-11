@@ -3461,6 +3461,66 @@
       "domain": "admin",
       "expected_skill": "admin/npsp-engagement-plans",
       "top_k": 3
+    },
+    {
+      "query": "Einstein for Sales opportunity scoring setup prerequisites",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/agentforce-sales-ai-setup",
+      "top_k": 3
+    },
+    {
+      "query": "Commerce Cloud order management fulfillment returns order summary lifecycle",
+      "domain": "admin",
+      "expected_skill": "admin/commerce-order-management",
+      "top_k": 3
+    },
+    {
+      "query": "B2B Commerce cart calculator extension pricing hook Apex",
+      "domain": "apex",
+      "expected_skill": "apex/commerce-extension-points",
+      "top_k": 3
+    },
+    {
+      "query": "NPSP constituent data migration household import contact matching",
+      "domain": "data",
+      "expected_skill": "data/constituent-data-migration",
+      "top_k": 3
+    },
+    {
+      "query": "NPSP data model namespace prefixes GAU allocations recurring donations objects",
+      "domain": "data",
+      "expected_skill": "data/npsp-data-model",
+      "top_k": 3
+    },
+    {
+      "query": "FSC wealth management requirements financial planning workflow advisor tools",
+      "domain": "admin",
+      "expected_skill": "admin/wealth-management-requirements",
+      "top_k": 3
+    },
+    {
+      "query": "FSC KYC AML compliance documentation regulatory audit requirements",
+      "domain": "admin",
+      "expected_skill": "admin/compliance-documentation-requirements",
+      "top_k": 3
+    },
+    {
+      "query": "FSC client onboarding process design document collection approval steps",
+      "domain": "admin",
+      "expected_skill": "admin/client-onboarding-design",
+      "top_k": 3
+    },
+    {
+      "query": "FSC financial planning process FinancialGoal review cycle risk assessment",
+      "domain": "admin",
+      "expected_skill": "admin/financial-planning-process",
+      "top_k": 3
+    },
+    {
+      "query": "Health Cloud patient data migration HIPAA clinical history care plan",
+      "domain": "data",
+      "expected_skill": "data/patient-data-migration",
+      "top_k": 3
     }
   ]
 }
