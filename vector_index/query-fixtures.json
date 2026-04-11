@@ -3401,6 +3401,66 @@
       "domain": "apex",
       "expected_skill": "apex/npsp-custom-rollups",
       "top_k": 3
+    },
+    {
+      "query": "Health Cloud Apex extension points HealthCloudGA CarePlanProcessorCallback care plan lifecycle hook",
+      "domain": "apex",
+      "expected_skill": "apex/health-cloud-apex-extensions",
+      "top_k": 3
+    },
+    {
+      "query": "Health Cloud clinical data model HC24 namespace versus FHIR R4 aligned standard objects",
+      "domain": "data",
+      "expected_skill": "data/health-cloud-data-model",
+      "top_k": 3
+    },
+    {
+      "query": "Health Cloud consent data model AuthorizationFormConsent PHI authorization hierarchy",
+      "domain": "data",
+      "expected_skill": "data/consent-data-model-health",
+      "top_k": 3
+    },
+    {
+      "query": "clinical data quality duplicate patient detection person account merge orphaned records",
+      "domain": "data",
+      "expected_skill": "data/clinical-data-quality",
+      "top_k": 3
+    },
+    {
+      "query": "HIPAA compliance architecture Salesforce BAA Shield encryption PHI access controls",
+      "domain": "architect",
+      "expected_skill": "architect/hipaa-compliance-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "FSC Compliant Data Sharing setup ethical walls financial services participant roles",
+      "domain": "admin",
+      "expected_skill": "admin/compliant-data-sharing-setup",
+      "top_k": 3
+    },
+    {
+      "query": "FSC financial account data migration FinancialHolding insert order rollup disable bulk load",
+      "domain": "data",
+      "expected_skill": "data/financial-account-migration",
+      "top_k": 3
+    },
+    {
+      "query": "FSC data model FinServ namespace FinancialAccount FinancialHolding rollup objects",
+      "domain": "data",
+      "expected_skill": "data/fsc-data-model",
+      "top_k": 3
+    },
+    {
+      "query": "NPSP grant management FundingAward FundingDisbursement grantmaking setup",
+      "domain": "admin",
+      "expected_skill": "admin/grant-management-setup",
+      "top_k": 3
+    },
+    {
+      "query": "NPSP engagement plans donor stewardship task templates change set deployment",
+      "domain": "admin",
+      "expected_skill": "admin/npsp-engagement-plans",
+      "top_k": 3
     }
   ]
 }
