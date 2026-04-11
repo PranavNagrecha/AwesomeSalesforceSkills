@@ -22,6 +22,7 @@
       "admin/commerce-pricing-and-promotions",
       "admin/commerce-product-catalog",
       "admin/community-engagement-strategy",
+      "admin/compliant-data-sharing-setup",
       "admin/connected-apps-and-auth",
       "admin/consent-management-marketing",
       "admin/contract-and-renewal-management",
@@ -74,6 +75,7 @@
       "admin/fsl-work-order-management",
       "admin/gift-entry-and-processing",
       "admin/global-actions-and-quick-actions",
+      "admin/grant-management-setup",
       "admin/health-cloud-consent-management",
       "admin/health-cloud-patient-setup",
       "admin/health-cloud-timeline",
@@ -96,6 +98,7 @@
       "admin/mcae-pardot-setup",
       "admin/messaging-and-chat-setup",
       "admin/multi-language-and-translation",
+      "admin/npsp-engagement-plans",
       "admin/npsp-household-accounts",
       "admin/npsp-program-management",
       "admin/object-creation-and-design",
@@ -228,6 +231,7 @@
       "apex/fsl-service-report-templates",
       "apex/governor-limit-recovery-patterns",
       "apex/governor-limits",
+      "apex/health-cloud-apex-extensions",
       "apex/health-cloud-apis",
       "apex/health-cloud-lwc-components",
       "apex/invocable-methods",
@@ -287,6 +291,7 @@
       "architect/ha-dr-architecture",
       "architect/headless-vs-standard-experience",
       "architect/high-volume-sales-data-architecture",
+      "architect/hipaa-compliance-architecture",
       "architect/integration-framework-design",
       "architect/knowledge-taxonomy-design",
       "architect/knowledge-vs-external-cms",
@@ -325,8 +330,10 @@
       "data/bulk-api-and-large-data-loads",
       "data/bulk-api-patterns",
       "data/case-history-migration",
+      "data/clinical-data-quality",
       "data/community-analytics-data",
       "data/community-user-data-migration",
+      "data/consent-data-model-health",
       "data/cpq-data-model",
       "data/cpq-performance-optimization",
       "data/custom-index-requests",
@@ -341,10 +348,13 @@
       "data/external-id-strategy",
       "data/external-user-data-sharing",
       "data/field-history-tracking",
+      "data/financial-account-migration",
+      "data/fsc-data-model",
       "data/fsl-reporting-data-model",
       "data/fsl-resource-and-skill-data",
       "data/fsl-territory-data-setup",
       "data/fsl-work-order-migration",
+      "data/health-cloud-data-model",
       "data/historical-order-migration",
       "data/knowledge-article-import",
       "data/large-scale-deduplication",
@@ -945,6 +955,7 @@
       "apex/fsl-apex-extensions",
       "apex/fsl-scheduling-api",
       "apex/governor-limit-recovery-patterns",
+      "apex/health-cloud-apex-extensions",
       "apex/npsp-trigger-framework-extension",
       "apex/pdf-generation-patterns",
       "apex/soql-fundamentals",
@@ -1110,6 +1121,7 @@
     ],
     "architect": [
       "architect/fsl-optimization-architecture",
+      "architect/hipaa-compliance-architecture",
       "architect/marketing-cloud-vs-mcae-selection",
       "architect/org-edition-and-feature-licensing",
       "architect/platform-selection-guidance",
@@ -1261,6 +1273,9 @@
     "authentication": [
       "lwc/experience-cloud-authentication"
     ],
+    "authorization": [
+      "data/consent-data-model-health"
+    ],
     "authorization-form": [
       "admin/health-cloud-consent-management",
       "apex/fsc-document-generation"
@@ -1331,7 +1346,8 @@
       "architect/marketing-cloud-vs-mcae-selection"
     ],
     "baa": [
-      "admin/hipaa-workflow-design"
+      "admin/hipaa-workflow-design",
+      "architect/hipaa-compliance-architecture"
     ],
     "backoff": [
       "integration/retry-and-backoff-patterns"
@@ -1508,6 +1524,7 @@
       "data/knowledge-article-import"
     ],
     "bulk-load": [
+      "data/financial-account-migration",
       "data/product-catalog-data-model",
       "data/product-catalog-migration-cpq"
     ],
@@ -1689,7 +1706,8 @@
       "apex/clinical-decision-support"
     ],
     "care-plan": [
-      "admin/care-plan-configuration"
+      "admin/care-plan-configuration",
+      "apex/health-cloud-apex-extensions"
     ],
     "care-program": [
       "admin/care-program-management"
@@ -1862,7 +1880,9 @@
       "apex/health-cloud-lwc-components"
     ],
     "clinical-data": [
-      "admin/health-cloud-timeline"
+      "admin/health-cloud-timeline",
+      "apex/health-cloud-apex-extensions",
+      "data/health-cloud-data-model"
     ],
     "clinical-data-model": [
       "admin/clinical-data-requirements"
@@ -1975,6 +1995,7 @@
     "compliance": [
       "architect/aml-kyc-process-architecture",
       "architect/fsc-architecture-patterns",
+      "architect/hipaa-compliance-architecture",
       "architect/nfr-definition-for-salesforce",
       "data/field-history-tracking",
       "data/service-data-archival",
@@ -1993,6 +2014,7 @@
       "admin/fsc-action-plans"
     ],
     "compliant-data-sharing": [
+      "admin/compliant-data-sharing-setup",
       "apex/fsc-apex-extensions",
       "apex/fsc-compliant-sharing-api",
       "architect/fsc-architecture-patterns",
@@ -2105,7 +2127,8 @@
     "consent": [
       "admin/care-program-management",
       "admin/consent-management-marketing",
-      "architect/marketing-consent-architecture"
+      "architect/marketing-consent-architecture",
+      "data/consent-data-model-health"
     ],
     "consent-management": [
       "admin/health-cloud-consent-management",
@@ -2617,6 +2640,7 @@
       "data/case-history-migration",
       "data/community-user-data-migration",
       "data/data-migration-planning",
+      "data/financial-account-migration",
       "data/fsl-resource-and-skill-data",
       "data/fsl-territory-data-setup",
       "data/fsl-work-order-migration",
@@ -2631,8 +2655,11 @@
       "architect/fsc-architecture-patterns",
       "architect/npsp-vs-nonprofit-cloud-decision",
       "architect/sales-cloud-architecture",
+      "data/consent-data-model-health",
       "data/cpq-data-model",
       "data/data-model-design-patterns",
+      "data/fsc-data-model",
+      "data/health-cloud-data-model",
       "data/person-accounts",
       "data/product-catalog-data-model",
       "data/sales-reporting-data-model",
@@ -2650,6 +2677,7 @@
       "admin/picklist-field-integrity-issues",
       "admin/validation-rules",
       "architect/ai-ready-data-architecture",
+      "data/clinical-data-quality",
       "data/data-quality-and-governance",
       "data/data-reconciliation-patterns",
       "data/large-scale-deduplication",
@@ -2747,6 +2775,9 @@
     ],
     "deadlock": [
       "apex/record-locking-and-contention"
+    ],
+    "deal-management": [
+      "admin/compliant-data-sharing-setup"
     ],
     "deal-registration": [
       "admin/partner-community-requirements",
@@ -2949,6 +2980,9 @@
     "disaster-recovery": [
       "architect/ha-dr-architecture"
     ],
+    "disbursements": [
+      "admin/grant-management-setup"
+    ],
     "disclosure-compliance": [
       "apex/fsc-document-generation"
     ],
@@ -3019,6 +3053,9 @@
     "donations": [
       "admin/gift-entry-and-processing"
     ],
+    "donor-stewardship": [
+      "admin/npsp-engagement-plans"
+    ],
     "drip-program": [
       "admin/lead-nurture-journey-design"
     ],
@@ -3026,6 +3063,7 @@
       "apex/timezone-and-datetime-pitfalls"
     ],
     "duplicate-management": [
+      "data/clinical-data-quality",
       "data/data-quality-and-governance"
     ],
     "duplicate-rules": [
@@ -3184,6 +3222,7 @@
       "agentforce/sf-to-llm-data-pipelines"
     ],
     "encryption": [
+      "architect/hipaa-compliance-architecture",
       "security/platform-encryption"
     ],
     "enforcement-actions": [
@@ -3197,6 +3236,9 @@
     ],
     "engagement-insights": [
       "data/community-analytics-data"
+    ],
+    "engagement-plans": [
+      "admin/npsp-engagement-plans"
     ],
     "engagement-studio": [
       "admin/lead-nurture-journey-design"
@@ -3319,6 +3361,9 @@
     ],
     "eso": [
       "architect/fsl-optimization-architecture"
+    ],
+    "ethical-walls": [
+      "admin/compliant-data-sharing-setup"
     ],
     "etl": [
       "data/data-migration-planning"
@@ -3536,6 +3581,9 @@
     "fflib": [
       "apex/fflib-enterprise-patterns"
     ],
+    "fhir": [
+      "data/health-cloud-data-model"
+    ],
     "fhir-api": [
       "apex/health-cloud-apis"
     ],
@@ -3629,7 +3677,8 @@
       "admin/financial-account-setup"
     ],
     "financial-accounts": [
-      "admin/financial-account-setup"
+      "admin/financial-account-setup",
+      "data/financial-account-migration"
     ],
     "financial-calculations": [
       "apex/fsc-financial-calculations"
@@ -3637,8 +3686,13 @@
     "financial-holding": [
       "apex/fsc-integration-patterns-dev"
     ],
+    "financial-objects": [
+      "data/fsc-data-model"
+    ],
     "financial-services": [
-      "architect/aml-kyc-process-architecture"
+      "admin/compliant-data-sharing-setup",
+      "architect/aml-kyc-process-architecture",
+      "data/fsc-data-model"
     ],
     "financial-services-cloud": [
       "admin/financial-account-setup",
@@ -3656,6 +3710,9 @@
     ],
     "finra": [
       "apex/fsc-document-generation"
+    ],
+    "finserv": [
+      "data/fsc-data-model"
     ],
     "finserv-namespace": [
       "apex/fsc-apex-extensions"
@@ -3817,6 +3874,7 @@
       "admin/validation-rules"
     ],
     "fsc": [
+      "admin/compliant-data-sharing-setup",
       "admin/financial-account-setup",
       "admin/fsc-relationship-groups",
       "admin/household-model-configuration",
@@ -3828,6 +3886,8 @@
       "architect/aml-kyc-process-architecture",
       "architect/fsc-architecture-patterns",
       "architect/wealth-management-architecture",
+      "data/financial-account-migration",
+      "data/fsc-data-model",
       "data/person-accounts"
     ],
     "fsc-action-plans": [
@@ -3900,6 +3960,9 @@
     ],
     "fsl-work-order-migration": [
       "data/fsl-work-order-migration"
+    ],
+    "funding-awards": [
+      "admin/grant-management-setup"
     ],
     "funnel-stages": [
       "admin/lead-nurture-journey-design"
@@ -4004,6 +4067,12 @@
     "gps": [
       "architect/fsl-integration-patterns"
     ],
+    "grantmaking": [
+      "admin/grant-management-setup"
+    ],
+    "grants": [
+      "admin/grant-management-setup"
+    ],
     "graph-engine": [
       "devops/salesforce-code-analyzer"
     ],
@@ -4085,9 +4154,17 @@
       "admin/referral-management-health",
       "apex/clinical-decision-support",
       "apex/fhir-integration-patterns",
+      "apex/health-cloud-apex-extensions",
       "apex/health-cloud-apis",
       "apex/health-cloud-lwc-components",
+      "architect/hipaa-compliance-architecture",
+      "data/clinical-data-quality",
+      "data/consent-data-model-health",
+      "data/health-cloud-data-model",
       "data/person-accounts"
+    ],
+    "healthcare": [
+      "data/health-cloud-data-model"
     ],
     "healthcare-api": [
       "apex/health-cloud-apis"
@@ -4132,6 +4209,8 @@
     "hipaa": [
       "admin/health-cloud-consent-management",
       "admin/hipaa-workflow-design",
+      "architect/hipaa-compliance-architecture",
+      "data/consent-data-model-health",
       "security/sandbox-data-masking"
     ],
     "historical-orders": [
@@ -4150,7 +4229,8 @@
       "integration/webhook-inbound-patterns"
     ],
     "holdings": [
-      "admin/financial-account-setup"
+      "admin/financial-account-setup",
+      "data/financial-account-migration"
     ],
     "hotfix": [
       "devops/rollback-and-hotfix-strategy"
@@ -4265,6 +4345,9 @@
     "individual-object": [
       "architect/marketing-consent-architecture",
       "security/gdpr-data-privacy"
+    ],
+    "industries": [
+      "apex/health-cloud-apex-extensions"
     ],
     "industries-cloud": [
       "omnistudio/business-rules-engine"
@@ -5182,6 +5265,9 @@
     "month-end-close": [
       "data/billing-data-reconciliation"
     ],
+    "mpi": [
+      "data/clinical-data-quality"
+    ],
     "mql": [
       "admin/lead-nurture-journey-design",
       "admin/lead-scoring-requirements",
@@ -5314,6 +5400,8 @@
     ],
     "nonprofit": [
       "admin/gift-entry-and-processing",
+      "admin/grant-management-setup",
+      "admin/npsp-engagement-plans",
       "admin/npsp-household-accounts",
       "admin/npsp-program-management",
       "admin/recurring-donations-setup",
@@ -5336,6 +5424,8 @@
     ],
     "npsp": [
       "admin/gift-entry-and-processing",
+      "admin/grant-management-setup",
+      "admin/npsp-engagement-plans",
       "admin/npsp-household-accounts",
       "admin/npsp-program-management",
       "admin/recurring-donations-setup",
@@ -5721,6 +5811,9 @@
     "participant-role": [
       "apex/fsc-compliant-sharing-api"
     ],
+    "participant-roles": [
+      "admin/compliant-data-sharing-setup"
+    ],
     "partner-community": [
       "admin/partner-community-requirements",
       "admin/portal-requirements-gathering",
@@ -5775,6 +5868,9 @@
     ],
     "patient-record": [
       "admin/health-cloud-timeline"
+    ],
+    "patient-records": [
+      "data/clinical-data-quality"
     ],
     "pause-element": [
       "flow/pause-elements-and-wait-events"
@@ -5864,6 +5960,7 @@
       "admin/standard-object-quirks",
       "architect/fsc-architecture-patterns",
       "architect/npsp-vs-nonprofit-cloud-decision",
+      "data/clinical-data-quality",
       "data/person-accounts"
     ],
     "persona-design": [
@@ -5874,6 +5971,10 @@
     ],
     "pgi-library": [
       "admin/care-plan-configuration"
+    ],
+    "phi": [
+      "architect/hipaa-compliance-architecture",
+      "data/consent-data-model-health"
     ],
     "phi-compliance": [
       "admin/health-cloud-consent-management",
@@ -6710,7 +6811,8 @@
       "apex/cross-object-formula-and-rollup-performance"
     ],
     "rollups": [
-      "admin/household-model-configuration"
+      "admin/household-model-configuration",
+      "data/fsc-data-model"
     ],
     "routing": [
       "admin/approval-processes",
@@ -7292,6 +7394,7 @@
       "security/guest-user-security"
     ],
     "sharing-model": [
+      "admin/compliant-data-sharing-setup",
       "admin/object-creation-and-design",
       "architect/fsc-architecture-patterns",
       "architect/security-architecture-review",
@@ -7316,6 +7419,7 @@
     ],
     "shield": [
       "admin/hipaa-workflow-design",
+      "architect/hipaa-compliance-architecture",
       "architect/security-architecture-review",
       "data/data-quality-and-governance",
       "security/data-classification-labels",
@@ -7671,6 +7775,7 @@
       "admin/fsc-action-plans"
     ],
     "tasks": [
+      "admin/npsp-engagement-plans",
       "devops/cumulusci-automation"
     ],
     "tax": [
@@ -7693,7 +7798,8 @@
       "admin/service-cloud-voice-setup"
     ],
     "templates": [
-      "admin/email-templates-and-alerts"
+      "admin/email-templates-and-alerts",
+      "admin/npsp-engagement-plans"
     ],
     "territories": [
       "architect/fsl-multi-region-architecture"
@@ -7840,6 +7946,9 @@
     ],
     "transactional-messaging": [
       "architect/marketing-integration-patterns"
+    ],
+    "transactions": [
+      "data/financial-account-migration"
     ],
     "transform-element": [
       "flow/flow-collection-processing"
