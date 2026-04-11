@@ -1,0 +1,112 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "007f0904ef799c9c1a02",
+    "01eb16dd365931a9a220",
+    "0535629d6bae24ccff70",
+    "0b92d2c30d9cc7398dea",
+    "0c54997c677a7a13f404",
+    "110d2e7f20a385031cd6",
+    "1e1909f8ae8365aac7f5",
+    "20ad22fd1e20c007819d",
+    "229121e82170d558bd6e",
+    "294ad284e3c31c0341d7",
+    "32504a70745dcbd5ec91",
+    "38e7b295c1599ed9a1c9",
+    "483bdef80df98aebec53",
+    "4b37bc79a94723a012be",
+    "515cbfe31905edca428b",
+    "518c7e7a77f3442ec6a3",
+    "541d87d0c57a37d153e0",
+    "575b6fd6a4c87bd2d03d",
+    "5a720d62b16204bdbc78",
+    "5b6411f52173690a26fa",
+    "678e0c9a4c574a1263be",
+    "67963ca769e3dc117784",
+    "67f4f126628dd5a53cd5",
+    "76c0dd0b63efcb3077ed",
+    "76e35ee0d6c681926528",
+    "7f1eb52c243cc1ab731a",
+    "8680e9ee801da59e8a7d",
+    "8b2549f04d036104cad3",
+    "8b28692dbc95c94b746d",
+    "9061f282197e75679af9",
+    "91f0a72e8bfbbf600f43",
+    "9476e8db970177f9b668",
+    "991b62683902718765dd",
+    "9a80b6e2a26ebebe4aab",
+    "9ac45566ee741dc9fd9a",
+    "9c4cd5f9c9da1c5a4fec",
+    "9ca362cf31fa31aded34",
+    "ac8b3dac8cd8fadc81da",
+    "adbadfc0c8880df95a24",
+    "bd8238356a5b0e12dc5c",
+    "bd96f928e86e86044553",
+    "c30e53dd8408378349e5",
+    "d675468876593868ab5e",
+    "dcac12a575d654d4980d",
+    "dd630634f06b719ae928",
+    "df55b7a5cdc8cedb9829",
+    "e296a59f479d48c505f4",
+    "ea9ad54ac99e7f8c947e",
+    "eb9aeb92680a5aa6ae4f",
+    "ecc6a2e7790a819bbdde",
+    "ed6cbb35b70ce2d681f8",
+    "f1959dea5668f90c45f4",
+    "f283730767fe32f88385",
+    "f41a45a3284d33c54b4a",
+    "fa01a2b57c4f8784c3c3",
+    "fca10d1eecf34f374309"
+  ],
+  "content_hash": "c27e8bf7881b6f093d061e53bcabf2f7bce8aa3b2c59b78393bdd47e6dab68ac",
+  "dependencies": [
+    "admin/care-coordination-requirements",
+    "apex/health-cloud-apis"
+  ],
+  "description": "Use this skill when implementing clinical decision support in Health Cloud: creating ClinicalAlert records via Apex or Flow, ingesting CareGap records from external clinical rules engines, displaying CDS alerts in FlexCard UIs, and integrating the Business Rules Engine for custom protocol checks. NOT for standard Flow automation unrelated to clinical decision support, or for clinical rules engine design outside of Salesforce.",
+  "file_location": "skills/apex/clinical-decision-support",
+  "id": "apex/clinical-decision-support",
+  "inputs": [
+    "Health Cloud org with ICM enabled (for CareGap, API v59.0+)",
+    "ClinicalAlert accessible (API v51.0+)",
+    "External clinical rules engine or payer analytics system (for CareGap ingestion)",
+    "HealthCloudICM permission set"
+  ],
+  "name": "clinical-decision-support",
+  "official_sources": [
+    "Salesforce Health Cloud Developer Guide \u2014 ClinicalAlert Object Reference (API v51.0+): https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_clinicalalert.htm",
+    "Salesforce Health Cloud Developer Guide \u2014 CareGap Object Reference (API v59.0+): https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_caregap.htm",
+    "Salesforce Health Cloud Integrated Care Management Docs: https://help.salesforce.com/s/articleView?id=ind.hc_icm.htm",
+    "Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "ClinicalAlert creation pattern (Apex trigger, Flow DML, or FHIR API ingest)",
+    "CareGap ingestion architecture (external rules engine \u2192 FHIR API \u2192 Salesforce)",
+    "FlexCard or LWC display of ClinicalAlert/CareGap records",
+    "Business Rules Engine integration for custom protocol logic"
+  ],
+  "references": [
+    "skills/apex/clinical-decision-support/references/examples.md",
+    "skills/apex/clinical-decision-support/references/gotchas.md",
+    "skills/apex/clinical-decision-support/references/llm-anti-patterns.md",
+    "skills/apex/clinical-decision-support/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/clinical-decision-support/scripts/check_clinical_decision_support.py"
+  ],
+  "tags": [
+    "health-cloud",
+    "clinical-decision-support",
+    "clinical-alert",
+    "care-gap",
+    "business-rules-engine",
+    "cds-hooks",
+    "protocol-compliance"
+  ],
+  "templates": [
+    "skills/apex/clinical-decision-support/templates/clinical-decision-support-template.md"
+  ],
+  "updated": "2026-04-10",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

@@ -1,0 +1,111 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "00ca7f5de6a078aad05b",
+    "08b2540839c4179b3403",
+    "16480d3421375c5d41df",
+    "18875411a006cccbc2e8",
+    "1a67ea875ebdd4362c06",
+    "1ab203bc79cedd01d7a5",
+    "1c557931f4871b9bbdc6",
+    "1d8391b3ba8565b68549",
+    "2043fda62aa37aaab11d",
+    "2355686fbd520470c66c",
+    "2596159781a08cdcaf93",
+    "3537adc5dfbc1818f94b",
+    "3d2b134118b65f48a534",
+    "3f5daf309c69db4534bc",
+    "40383c76868f538290f0",
+    "46a28a07762a51ff44a0",
+    "47cfa22598e533382242",
+    "49ffe57ee08fc2189c97",
+    "4bec0c6adf4d0c389305",
+    "536e09bcb2bb6277478b",
+    "567b37a8dc765cc0768d",
+    "5845b8508a1adabcfe97",
+    "5a723b786cb53400b067",
+    "64e7633e3d7e0a3cf5ca",
+    "72d774dfb996e132eb90",
+    "745ef442363414346bb1",
+    "74859ed356a9846ffe94",
+    "7626ac16ba6a2fd2e92d",
+    "78f3e54b3f44ac832182",
+    "7b3768e3342cdbe202e0",
+    "8b66fc8195128ce97dd4",
+    "8b7c93cea3394ab9e453",
+    "92286a3049bacf682b07",
+    "9294b2fa60093ffa287b",
+    "93934a9d8cd8a17b9c39",
+    "93a6fbf029a1ec536490",
+    "a17e826508c12dda9fa2",
+    "a91bface1a73a1b4c8bf",
+    "aff265dfab41e3ea75ac",
+    "bad67944881bdecb920e",
+    "c0462fbe8c1e4a4e9470",
+    "c7f8aa0c6f4a9f502242",
+    "c9db27ad65247878f9ad",
+    "cd6831c56bcc7037ba82",
+    "cea69b62376d9518cc12",
+    "d0ddf6e954d9b6995faf",
+    "d505d6057a3348e10cd2",
+    "d548e3af17c5a4877804",
+    "ddce947b0dd995877c81",
+    "de44bdda2e841114f6a5",
+    "de4631376da0217e85d7",
+    "e57e73649572f06bc0a0",
+    "ec815b9d6b762bf87ba1",
+    "f60fd5029a6e6b53e166",
+    "f794cd5d42539d6ee5b2",
+    "fb6d2d0de379ab512f6e"
+  ],
+  "content_hash": "d698f63da17388cbbe1f175e08b0a08bc94b36b915d5e009533c510e72b5b1db",
+  "dependencies": [
+    "admin/health-cloud-patient-setup",
+    "admin/health-cloud-data-model"
+  ],
+  "description": "Use this skill when defining clinical data model requirements for Health Cloud: HL7/FHIR data mapping, interoperability requirements, FHIR R4-aligned object activation, CodeableConcept constraints, and middleware translation requirements. NOT for data migration procedures, Apex integration code, or generic data architecture unrelated to clinical interoperability.",
+  "file_location": "skills/admin/clinical-data-requirements",
+  "id": "admin/clinical-data-requirements",
+  "inputs": [
+    "Health Cloud org with FHIR R4 Support Settings enabled (or to be enabled)",
+    "Source system data model (EHR/payer FHIR resource inventory or HL7 v2 message types)",
+    "Clinical use cases requiring data interoperability"
+  ],
+  "name": "clinical-data-requirements",
+  "official_sources": [
+    "Life Sciences Cloud Developer Guide \u2014 Clinical Data Model and FHIR v4.0 Mapping: https://developer.salesforce.com/docs/atlas.en-us.health_cloud.meta/health_cloud/hco_dev_fhir_mapping.htm",
+    "Life Sciences Cloud Developer Guide \u2014 Store HL7 v2.3 Messages: https://developer.salesforce.com/docs/atlas.en-us.health_cloud.meta/health_cloud/hco_dev_hl7.htm",
+    "FHIR R4 Support Settings Setup: https://help.salesforce.com/s/articleView?id=ind.hc_fhir_r4_support_settings.htm",
+    "Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "FHIR R4-aligned object activation checklist",
+    "FHIR resource to Salesforce object mapping for in-scope resources",
+    "CodeableConcept cardinality constraint documentation",
+    "Middleware translation requirements for HL7 v2 or non-conformant FHIR payloads",
+    "Legacy EHR object migration requirements (if applicable)"
+  ],
+  "references": [
+    "skills/admin/clinical-data-requirements/references/examples.md",
+    "skills/admin/clinical-data-requirements/references/gotchas.md",
+    "skills/admin/clinical-data-requirements/references/llm-anti-patterns.md",
+    "skills/admin/clinical-data-requirements/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/clinical-data-requirements/scripts/check_clinical_data_requirements.py"
+  ],
+  "tags": [
+    "health-cloud",
+    "fhir-r4",
+    "clinical-data-model",
+    "hl7",
+    "interoperability",
+    "codeable-concept"
+  ],
+  "templates": [
+    "skills/admin/clinical-data-requirements/templates/clinical-data-requirements-template.md"
+  ],
+  "updated": "2026-04-10",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

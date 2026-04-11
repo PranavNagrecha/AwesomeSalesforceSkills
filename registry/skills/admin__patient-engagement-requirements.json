@@ -1,0 +1,109 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "001b88fb404cfcfe048b",
+    "015652e68e5d76d654e8",
+    "01e962f755c8b0de06ee",
+    "0d0567b918972cc2a9ae",
+    "113c974ca9a49b3aaae8",
+    "115775541cbedea65221",
+    "26a9392d7194c44222d2",
+    "2c0666a7eb5b13895a3a",
+    "2d84e9abec9ace586e6d",
+    "2f2277a8a7ae7092be96",
+    "3713d1be87d30b28de7c",
+    "410940c4beca09c77a0a",
+    "417478b560570c84c00a",
+    "45d40c099b370cb99fed",
+    "4a417fef7e81a200936f",
+    "5291949b648613334a9f",
+    "564fd3780fc4710a70a5",
+    "575cf2cd73731253a57a",
+    "5a2a333206c202ab01dd",
+    "5b8c235ad59f047f7496",
+    "64046bfdc06f9be3ee7b",
+    "6457464be773425b55f6",
+    "67b843b06c6d41dcba08",
+    "768c143f6b5d0007cad0",
+    "78c334a4ba29ee240ea2",
+    "7aacbcbdb3fef67bbf28",
+    "7f5aef9ef29410c9e861",
+    "916d1444c8e2fd893b70",
+    "925ff85c89bff8b99af1",
+    "94319fb1872e7d16b04a",
+    "99a8bc42f27bd03b4b07",
+    "9cb9f4f09962bde71959",
+    "a21371105adb35063a09",
+    "a265ff74f7fb168fb8ab",
+    "a7617302ff24f13e1b65",
+    "a82f9da2278d705e7e80",
+    "a9e3cb535d8f36177fc8",
+    "b2ec071adc8709a70a90",
+    "bff5951944e13a4901f9",
+    "c797b937adfe191e72c5",
+    "c90c2c8105fcbbfadd2e",
+    "cd175ee22675b3a08be5",
+    "cf881e57a8a4bd930b7c",
+    "d3872d18e6faf825a03c",
+    "d6333840cc3f409acd41",
+    "da3ac17936ed8a56f823",
+    "ec8cb35dc3f2f408137f",
+    "eebf05d85af23249f3d5",
+    "ef015bc5a1706e4de0bf",
+    "f372b99ba85fffc07d31",
+    "fa88f6a732ea3035adf3",
+    "fbefd52e74e671d09478"
+  ],
+  "content_hash": "e78f039fd7771d8d50452006ccb0ac404ec09985f811c845e472e31549466938",
+  "dependencies": [
+    "admin/health-cloud-patient-setup",
+    "admin/care-program-management"
+  ],
+  "description": "Use this skill when defining patient engagement portal requirements for Health Cloud: appointment scheduling, secure in-portal messaging, health assessments, patient education, and self-service features. NOT for Experience Cloud site configuration, OmniStudio development, or standard CRM portal setup unrelated to clinical patient engagement.",
+  "file_location": "skills/admin/patient-engagement-requirements",
+  "id": "admin/patient-engagement-requirements",
+  "inputs": [
+    "Health Cloud org with patient-facing use case",
+    "Patient records as Person Accounts",
+    "Experience Cloud license (required for patient portal)",
+    "List of patient engagement features in scope"
+  ],
+  "name": "patient-engagement-requirements",
+  "official_sources": [
+    "Salesforce Health Cloud Admin Guide \u2014 Intelligent Appointment Management: https://help.salesforce.com/s/articleView?id=ind.hc_iam.htm",
+    "Trailhead \u2014 Intelligent Appointment Management for Health Cloud: https://trailhead.salesforce.com/content/learn/modules/intelligent-appointment-management-for-health-cloud",
+    "OmniStudio Developer Guide: https://developer.salesforce.com/docs/industries/omnistudio/overview",
+    "Experience Cloud for Health Cloud: https://help.salesforce.com/s/articleView?id=ind.hc_exp_cloud_for_health_cloud.htm",
+    "Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Patient engagement feature requirements with license prerequisites identified",
+    "Intelligent Appointment Management (IAM) requirements including CRM Analytics dependency",
+    "Health assessment requirements with OmniStudio/Discovery Framework prerequisites",
+    "Secure messaging requirements with HIPAA-compliant channel specification",
+    "Engagement feature to license dependency matrix"
+  ],
+  "references": [
+    "skills/admin/patient-engagement-requirements/references/examples.md",
+    "skills/admin/patient-engagement-requirements/references/gotchas.md",
+    "skills/admin/patient-engagement-requirements/references/llm-anti-patterns.md",
+    "skills/admin/patient-engagement-requirements/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/patient-engagement-requirements/scripts/check_patient_engagement_requirements.py"
+  ],
+  "tags": [
+    "health-cloud",
+    "patient-engagement",
+    "intelligent-appointment-management",
+    "health-assessment",
+    "patient-portal",
+    "omnistudio"
+  ],
+  "templates": [
+    "skills/admin/patient-engagement-requirements/templates/patient-engagement-requirements-template.md"
+  ],
+  "updated": "2026-04-10",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

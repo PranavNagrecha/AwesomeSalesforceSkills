@@ -1,0 +1,111 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "018f913841748ab37fe9",
+    "04c2a36e0559d7f93eea",
+    "05bcb889a117cbbeac28",
+    "128e7379398b20133ddc",
+    "14fd81ee1b5caf1dd187",
+    "15bcc269b15736c50fb8",
+    "1e24a84b27ee1532efb9",
+    "1fdec247022db45960f1",
+    "2454aea9748c39b276b8",
+    "24f44fc198c26d8fdbbe",
+    "2c6ba9f5bf5b43e9be6a",
+    "2e4d907a78643f82855b",
+    "36fe411f97f177d06673",
+    "3a7ab709af810695ac9a",
+    "3a86f0496853012b5b7e",
+    "3c3fe95b89eb89eadfba",
+    "4636938c2548003c9fe5",
+    "4e3780c33aad1813e41c",
+    "520aa89fb58f4ecc3e46",
+    "533167ba44b0334f06b9",
+    "543023071d73bf2cbb88",
+    "5eac0fa65411a1e1c396",
+    "7246734a008b555521e8",
+    "72bcbdd751d1076be590",
+    "7d7a91eccf94646cd03f",
+    "83691d94640fd1040960",
+    "851be0ca2ab6a9b811b2",
+    "8fa9556a173fa4066bab",
+    "914dd850ed8fdcc76a41",
+    "94e26f04dbaf01453ef6",
+    "96abce013ea0287f7237",
+    "97b1010e3238154d79e5",
+    "9f4b677cf699c4f8c0f6",
+    "a76f6c6dadaaca32724e",
+    "a8bc6c2db660ac2a33ff",
+    "aab93b93c3b370590ade",
+    "b1efe09e531646749bfa",
+    "b35264a79f3c5eacefc8",
+    "bc16bcd141fbce8b3fa2",
+    "bee3ff47d0a4cd95e933",
+    "bf0296c7d951ee556aad",
+    "c1be6f925e488258bd51",
+    "c2a0b67c2231b407e5a1",
+    "cb3af9ba835918f973ee",
+    "cc5cabe901722fdbeabb",
+    "cc93d21274b01c44403f",
+    "d63711cbf084b7648f49",
+    "dbc232aeddb3e31b08d0",
+    "e648d6964ec140d1075c",
+    "ec36f62f47ed1b88927b",
+    "f20e288cbfc80564acaf",
+    "f4a8e72755964a787ec5",
+    "f9e6b0bea79fa2c33b2d",
+    "fbfbf7845eb9abc7351c"
+  ],
+  "content_hash": "e09abeb70963a57ffa19e82d0eb53baeee337e9fef657d9364c892084c101add",
+  "dependencies": [
+    "admin/health-cloud-patient-setup",
+    "admin/care-plan-configuration",
+    "admin/care-program-management"
+  ],
+  "description": "Use this skill when mapping care coordination process requirements for Health Cloud: designing care team workflows, transition of care handoffs, social determinants of health (SDOH) barrier tracking, and care gap identification. NOT for implementation of technical components \u2014 this skill covers requirements gathering and process design, not Apex/Flow build.",
+  "file_location": "skills/admin/care-coordination-requirements",
+  "id": "admin/care-coordination-requirements",
+  "inputs": [
+    "Health Cloud org with Integrated Care Management (ICM) enabled",
+    "Documented care coordination process requirements (care team roles, handoff triggers, SDOH categories)",
+    "HealthCloudICM permission set availability"
+  ],
+  "name": "care-coordination-requirements",
+  "official_sources": [
+    "Health Cloud Admin Guide \u2014 Protect Health Data with Salesforce Shield: https://help.salesforce.com/s/articleView?id=ind.hc_protect_health_data.htm",
+    "Integrated Care Management Data Model: https://developer.salesforce.com/docs/atlas.en-us.health_cloud_object_reference.meta/health_cloud_object_reference/hco_intro.htm",
+    "CareGap Object Reference (API v59.0+): https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_caregap.htm",
+    "CareBarrier Object Reference: https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_carebarrier.htm",
+    "Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "ICM object family mapping to care coordination process requirements",
+    "SDOH barrier tracking design using CareDeterminant/CareBarrier objects",
+    "Care gap detection requirements aligned to CareGap object constraints",
+    "Transition of care handoff workflow design"
+  ],
+  "references": [
+    "skills/admin/care-coordination-requirements/references/examples.md",
+    "skills/admin/care-coordination-requirements/references/gotchas.md",
+    "skills/admin/care-coordination-requirements/references/llm-anti-patterns.md",
+    "skills/admin/care-coordination-requirements/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/care-coordination-requirements/scripts/check_care_coordination_requirements.py"
+  ],
+  "tags": [
+    "health-cloud",
+    "care-coordination",
+    "integrated-care-management",
+    "sdoh",
+    "care-gap",
+    "care-episode",
+    "transition-of-care"
+  ],
+  "templates": [
+    "skills/admin/care-coordination-requirements/templates/care-coordination-requirements-template.md"
+  ],
+  "updated": "2026-04-10",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

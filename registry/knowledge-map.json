@@ -10,11 +10,13 @@
       "admin/batch-job-scheduling-and-monitoring",
       "admin/billing-schedule-setup",
       "admin/campaign-planning-and-attribution",
+      "admin/care-coordination-requirements",
       "admin/care-plan-configuration",
       "admin/care-program-management",
       "admin/case-management-setup",
       "admin/change-management-and-deployment",
       "admin/change-management-and-training",
+      "admin/clinical-data-requirements",
       "admin/collaborative-forecasts",
       "admin/commerce-checkout-configuration",
       "admin/commerce-pricing-and-promotions",
@@ -72,8 +74,10 @@
       "admin/fsl-work-order-management",
       "admin/gift-entry-and-processing",
       "admin/global-actions-and-quick-actions",
+      "admin/health-cloud-consent-management",
       "admin/health-cloud-patient-setup",
       "admin/health-cloud-timeline",
+      "admin/hipaa-workflow-design",
       "admin/household-model-configuration",
       "admin/in-app-guidance-and-walkthroughs",
       "admin/journey-builder-administration",
@@ -101,6 +105,7 @@
       "admin/org-setup-and-configuration",
       "admin/partner-community-requirements",
       "admin/path-and-guidance",
+      "admin/patient-engagement-requirements",
       "admin/permission-set-architecture",
       "admin/permission-sets-vs-profiles",
       "admin/picklist-and-value-sets",
@@ -117,6 +122,7 @@
       "admin/record-type-strategy-at-scale",
       "admin/record-types-and-page-layouts",
       "admin/recurring-donations-setup",
+      "admin/referral-management-health",
       "admin/report-performance-tuning",
       "admin/reports-and-dashboards",
       "admin/reports-and-dashboards-fundamentals",
@@ -187,6 +193,7 @@
       "apex/callouts-and-http-integrations",
       "apex/case-trigger-patterns",
       "apex/change-data-capture-apex",
+      "apex/clinical-decision-support",
       "apex/common-apex-runtime-errors",
       "apex/continuation-callouts",
       "apex/cpq-apex-plugins",
@@ -207,6 +214,7 @@
       "apex/exception-handling",
       "apex/feature-flags-and-kill-switches",
       "apex/fflib-enterprise-patterns",
+      "apex/fhir-integration-patterns",
       "apex/formula-field-performance-and-limits",
       "apex/fsl-apex-extensions",
       "apex/fsl-custom-actions-mobile",
@@ -215,6 +223,8 @@
       "apex/fsl-service-report-templates",
       "apex/governor-limit-recovery-patterns",
       "apex/governor-limits",
+      "apex/health-cloud-apis",
+      "apex/health-cloud-lwc-components",
       "apex/invocable-methods",
       "apex/lead-conversion-customization",
       "apex/long-running-process-orchestration",
@@ -676,6 +686,7 @@
     ],
     "access-control": [
       "admin/custom-permissions",
+      "admin/hipaa-workflow-design",
       "admin/permission-sets-vs-profiles",
       "admin/queues-and-public-groups"
     ],
@@ -1194,6 +1205,7 @@
       "admin/system-field-behavior-and-audit"
     ],
     "audit-trail": [
+      "admin/hipaa-workflow-design",
       "agentforce/einstein-trust-layer"
     ],
     "aura": [
@@ -1223,6 +1235,9 @@
     ],
     "authentication": [
       "lwc/experience-cloud-authentication"
+    ],
+    "authorization-form": [
+      "admin/health-cloud-consent-management"
     ],
     "auto-launched-flow": [
       "flow/auto-launched-flow-patterns"
@@ -1288,6 +1303,9 @@
     ],
     "b2c-marketing": [
       "architect/marketing-cloud-vs-mcae-selection"
+    ],
+    "baa": [
+      "admin/hipaa-workflow-design"
     ],
     "backoff": [
       "integration/retry-and-backoff-patterns"
@@ -1479,6 +1497,9 @@
     "bundle-design": [
       "architect/cpq-architecture-patterns"
     ],
+    "bundle-limits": [
+      "apex/health-cloud-apis"
+    ],
     "bundle-migration": [
       "data/product-catalog-migration-cpq"
     ],
@@ -1506,6 +1527,7 @@
       "admin/b2c-commerce-store-setup"
     ],
     "business-rules-engine": [
+      "apex/clinical-decision-support",
       "omnistudio/business-rules-engine"
     ],
     "business-unit": [
@@ -1625,6 +1647,17 @@
     "card-actions": [
       "omnistudio/flexcard-design-patterns"
     ],
+    "care-coordination": [
+      "admin/care-coordination-requirements",
+      "admin/referral-management-health"
+    ],
+    "care-episode": [
+      "admin/care-coordination-requirements"
+    ],
+    "care-gap": [
+      "admin/care-coordination-requirements",
+      "apex/clinical-decision-support"
+    ],
     "care-plan": [
       "admin/care-plan-configuration"
     ],
@@ -1708,6 +1741,10 @@
       "architect/experience-cloud-performance",
       "architect/multi-site-architecture"
     ],
+    "cds-hooks": [
+      "apex/clinical-decision-support",
+      "apex/fhir-integration-patterns"
+    ],
     "certificate": [
       "security/certificate-and-key-management"
     ],
@@ -1787,8 +1824,26 @@
     "client-onboarding": [
       "admin/fsc-action-plans"
     ],
+    "clinical-alert": [
+      "apex/clinical-decision-support"
+    ],
+    "clinical-components": [
+      "apex/health-cloud-lwc-components"
+    ],
     "clinical-data": [
       "admin/health-cloud-timeline"
+    ],
+    "clinical-data-model": [
+      "admin/clinical-data-requirements"
+    ],
+    "clinical-decision-support": [
+      "apex/clinical-decision-support"
+    ],
+    "clinical-objects": [
+      "apex/health-cloud-apis"
+    ],
+    "clinical-service-request": [
+      "admin/referral-management-health"
     ],
     "cloud-pages": [
       "apex/ampscript-development",
@@ -1822,6 +1877,9 @@
     ],
     "code-freeze": [
       "devops/go-live-cutover-planning"
+    ],
+    "codeable-concept": [
+      "admin/clinical-data-requirements"
     ],
     "cohort": [
       "admin/npsp-program-management"
@@ -2011,6 +2069,7 @@
       "architect/marketing-consent-architecture"
     ],
     "consent-management": [
+      "admin/health-cloud-consent-management",
       "security/ferpa-compliance-in-salesforce",
       "security/gdpr-data-privacy"
     ],
@@ -3411,6 +3470,16 @@
     "fflib": [
       "apex/fflib-enterprise-patterns"
     ],
+    "fhir-api": [
+      "apex/health-cloud-apis"
+    ],
+    "fhir-mapping": [
+      "apex/fhir-integration-patterns"
+    ],
+    "fhir-r4": [
+      "admin/clinical-data-requirements",
+      "apex/fhir-integration-patterns"
+    ],
     "field-audit-trail": [
       "security/field-audit-trail"
     ],
@@ -3900,12 +3969,28 @@
       "lwc/experience-cloud-authentication",
       "security/recaptcha-and-bot-prevention"
     ],
+    "health-assessment": [
+      "admin/patient-engagement-requirements"
+    ],
     "health-cloud": [
+      "admin/care-coordination-requirements",
       "admin/care-plan-configuration",
       "admin/care-program-management",
+      "admin/clinical-data-requirements",
+      "admin/health-cloud-consent-management",
       "admin/health-cloud-patient-setup",
       "admin/health-cloud-timeline",
+      "admin/hipaa-workflow-design",
+      "admin/patient-engagement-requirements",
+      "admin/referral-management-health",
+      "apex/clinical-decision-support",
+      "apex/fhir-integration-patterns",
+      "apex/health-cloud-apis",
+      "apex/health-cloud-lwc-components",
       "data/person-accounts"
+    ],
+    "healthcare-api": [
+      "apex/health-cloud-apis"
     ],
     "heap-limits": [
       "architect/limits-and-scalability-planning"
@@ -3945,6 +4030,8 @@
       "admin/list-views-and-compact-layouts"
     ],
     "hipaa": [
+      "admin/health-cloud-consent-management",
+      "admin/hipaa-workflow-design",
       "security/sandbox-data-masking"
     ],
     "historical-orders": [
@@ -3952,6 +4039,12 @@
     ],
     "historical-trending": [
       "data/sales-reporting-data-model"
+    ],
+    "hl7": [
+      "admin/clinical-data-requirements"
+    ],
+    "hl7-v2": [
+      "apex/fhir-integration-patterns"
     ],
     "hmac-verification": [
       "integration/webhook-inbound-patterns"
@@ -4119,10 +4212,12 @@
       "agentforce/agentforce-guardrails"
     ],
     "integrated-care-management": [
+      "admin/care-coordination-requirements",
       "admin/care-plan-configuration"
     ],
     "integration": [
       "agentforce/sf-to-llm-data-pipelines",
+      "apex/fhir-integration-patterns",
       "apex/marketing-cloud-api",
       "apex/marketing-cloud-custom-activities",
       "apex/mcae-pardot-api",
@@ -4172,10 +4267,14 @@
     "integrations": [
       "admin/validation-rules"
     ],
+    "intelligent-appointment-management": [
+      "admin/patient-engagement-requirements"
+    ],
     "intent-model": [
       "architect/einstein-bot-architecture"
     ],
     "interoperability": [
+      "admin/clinical-data-requirements",
       "lwc/aura-to-lwc-migration"
     ],
     "invalidation": [
@@ -4638,6 +4737,7 @@
     "lwc": [
       "apex/continuation-callouts",
       "apex/fsl-custom-actions-mobile",
+      "apex/health-cloud-lwc-components",
       "architect/platform-selection-guidance",
       "architect/solution-design-patterns",
       "lwc/experience-cloud-authentication",
@@ -4986,6 +5086,7 @@
       "data/service-metrics-data-model"
     ],
     "mulesoft": [
+      "apex/fhir-integration-patterns",
       "architect/cpq-integration-with-erp",
       "integration/api-led-connectivity",
       "integration/mulesoft-salesforce-connector",
@@ -5225,6 +5326,7 @@
       "omnistudio/vlocity-to-native-omnistudio-migration"
     ],
     "omnistudio": [
+      "admin/patient-engagement-requirements",
       "omnistudio/business-rules-engine",
       "omnistudio/calculation-procedures",
       "omnistudio/dataraptor-load-and-extract",
@@ -5536,6 +5638,15 @@
     "patient": [
       "admin/health-cloud-patient-setup"
     ],
+    "patient-card": [
+      "apex/health-cloud-lwc-components"
+    ],
+    "patient-engagement": [
+      "admin/patient-engagement-requirements"
+    ],
+    "patient-portal": [
+      "admin/patient-engagement-requirements"
+    ],
     "patient-program-outcome": [
       "admin/care-program-management"
     ],
@@ -5638,6 +5749,10 @@
     ],
     "pgi-library": [
       "admin/care-plan-configuration"
+    ],
+    "phi-compliance": [
+      "admin/health-cloud-consent-management",
+      "admin/hipaa-workflow-design"
     ],
     "picklist": [
       "admin/path-and-guidance",
@@ -5980,8 +6095,14 @@
     "prospects": [
       "apex/mcae-pardot-api"
     ],
+    "protocol-compliance": [
+      "apex/clinical-decision-support"
+    ],
     "provar": [
       "devops/automated-regression-testing"
+    ],
+    "provider-search": [
+      "admin/referral-management-health"
     ],
     "provisioning": [
       "admin/user-access-policies"
@@ -6200,6 +6321,9 @@
     "referenceId": [
       "integration/composite-api-patterns"
     ],
+    "referral-management": [
+      "admin/referral-management-health"
+    ],
     "referral-routing": [
       "admin/fsc-referral-management"
     ],
@@ -6348,6 +6472,7 @@
       "architect/integration-framework-design"
     ],
     "rest-api": [
+      "apex/health-cloud-apis",
       "apex/marketing-cloud-api",
       "apex/marketing-cloud-custom-activities",
       "apex/service-cloud-rest-api",
@@ -6724,6 +6849,9 @@
     "script-activity": [
       "apex/ssjs-server-side-javascript"
     ],
+    "sdoh": [
+      "admin/care-coordination-requirements"
+    ],
     "search": [
       "lwc/experience-cloud-search-customization"
     ],
@@ -7043,6 +7171,7 @@
       "security/experience-cloud-security"
     ],
     "shield": [
+      "admin/hipaa-workflow-design",
       "architect/security-architecture-review",
       "data/data-quality-and-governance",
       "security/data-classification-labels",
@@ -7116,6 +7245,9 @@
     ],
     "smart-approvals": [
       "admin/cpq-approval-workflows"
+    ],
+    "smart-on-fhir": [
+      "apex/fhir-integration-patterns"
     ],
     "soap": [
       "integration/outbound-messages-and-callbacks"
@@ -7501,6 +7633,12 @@
     "time-based-flow": [
       "flow/pause-elements-and-wait-events"
     ],
+    "timeline": [
+      "apex/health-cloud-lwc-components"
+    ],
+    "timeline-object-definition": [
+      "apex/health-cloud-lwc-components"
+    ],
     "timezone": [
       "apex/timezone-and-datetime-pitfalls",
       "architect/fsl-multi-region-architecture"
@@ -7558,6 +7696,9 @@
     ],
     "transform-element": [
       "flow/flow-collection-processing"
+    ],
+    "transition-of-care": [
+      "admin/care-coordination-requirements"
     ],
     "translation": [
       "admin/multi-language-and-translation"
