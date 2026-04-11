@@ -3551,6 +3551,66 @@
       "domain": "architect",
       "expected_skill": "architect/payer-vs-provider-architecture",
       "top_k": 3
+    },
+    {
+      "query": "AI use case assessment feasibility ROI data readiness",
+      "domain": "admin",
+      "expected_skill": "admin/ai-use-case-assessment",
+      "top_k": 3
+    },
+    {
+      "query": "conversation design utterance mapping fallback escalation dialog",
+      "domain": "admin",
+      "expected_skill": "admin/agent-conversation-design",
+      "top_k": 3
+    },
+    {
+      "query": "AI governance responsible AI bias mitigation audit requirements",
+      "domain": "admin",
+      "expected_skill": "admin/ai-ethics-and-governance-requirements",
+      "top_k": 3
+    },
+    {
+      "query": "Einstein Discovery model deployment prediction scoring API",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/einstein-discovery-development",
+      "top_k": 3
+    },
+    {
+      "query": "Data Cloud data streams DMO mapping identity resolution ingestion",
+      "domain": "data",
+      "expected_skill": "data/data-cloud-data-streams",
+      "top_k": 3
+    },
+    {
+      "query": "AI platform architecture trust layer model selection multi-agent orchestration",
+      "domain": "architect",
+      "expected_skill": "architect/ai-platform-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "insurance FSC OmniStudio policy administration quoting claim setup",
+      "domain": "admin",
+      "expected_skill": "admin/industries-insurance-setup",
+      "top_k": 3
+    },
+    {
+      "query": "OmniStudio admin setup namespace runtime permissions org settings",
+      "domain": "admin",
+      "expected_skill": "admin/omnistudio-admin-configuration",
+      "top_k": 3
+    },
+    {
+      "query": "Commerce LWC storefront wire adapters custom components product cart wishlist",
+      "domain": "lwc",
+      "expected_skill": "lwc/commerce-lwc-components",
+      "top_k": 3
+    },
+    {
+      "query": "CRM Analytics dataset management dataflow scheduling date fields refresh",
+      "domain": "admin",
+      "expected_skill": "admin/analytics-dataset-management",
+      "top_k": 3
     }
   ]
 }
