@@ -1,0 +1,109 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "08687f06899206c4ed22",
+    "21fd2cc0524ddf4c7a52",
+    "227a26eaaddae72ea073",
+    "252c2d9e080d9d00a896",
+    "26702b57bd67e1f8b8ae",
+    "295fd42fa08436ba349b",
+    "2ae7d0993b887ab02cbe",
+    "2c481ce203df472a28ff",
+    "334cf8120f3eea497edc",
+    "395423f89d1f619e62f4",
+    "3d26d3e859457bb1334b",
+    "43c4ddd336b35fa69a94",
+    "44b7843fcc998dd2e5f1",
+    "49f1e422c7e8a964ef71",
+    "4bd4dc0e02a82f8b954b",
+    "4fbdef786d9a778d42c6",
+    "5901a8bd4518b7c2ffb2",
+    "5921b4b8ed7906e0e018",
+    "5b9971d7c11c1e24e733",
+    "5e9088d0bf23f278f66b",
+    "67d519f8eea2f8d6b098",
+    "686b772f908d0fe18866",
+    "73fb54fd46ff47a9da50",
+    "7e9a018a5d0cdd4e71c2",
+    "841d5ea70d53645617f2",
+    "843acb44a0f7ca9eb259",
+    "9491f686d713b3e88493",
+    "996ef0106ea54e9c5286",
+    "a37a73ae996e68510813",
+    "a3f486b060dae4b37b18",
+    "a97dd08873ac0cc51daf",
+    "aaa23783a56226b5557c",
+    "aaade023559a6b7d9041",
+    "ace0eaaa934b2ef2ff26",
+    "ad2da2f65b031d757250",
+    "b7445a1129f1f420ac7b",
+    "b7732994d9a00f3bee56",
+    "bc5c4bb03dcd2b111632",
+    "c2952037a38593ae2062",
+    "c48fcaf787c55ca65120",
+    "cfe314da8af515a6b7ae",
+    "d1243cb0e73684ff001e",
+    "d3ccc5073e64a1f60ae9",
+    "d4f97c9f8352381bef20",
+    "d9dd37735d672c5313dc",
+    "dd188f5072cc29008394",
+    "ded93ef906dabc1efd1a",
+    "df593d23cb081bf602ff",
+    "e60c0cd36d9436e009f9",
+    "e77285e9dcee4c079d07",
+    "eb652aba49a510e0cc81",
+    "ed0dd85bcb945079d468",
+    "f7864d63fb20371b7b18",
+    "fb60b9644b99adc550cb",
+    "ffa8ef22f55e142923a3"
+  ],
+  "content_hash": "9bb0bfe35df9323b9b319c0efdd8f3d854e777c733b8934bca4b5333813ba0da",
+  "dependencies": [
+    "admin/health-cloud-patient-setup",
+    "admin/care-program-management"
+  ],
+  "description": "Use this skill when configuring Health Cloud referral management: setting up ClinicalServiceRequest-based referrals, provider search, referral status workflows, and network management. NOT for Sales Cloud referrals, FSC Einstein Referral Scoring, or Public Sector Solutions referral objects.",
+  "file_location": "skills/admin/referral-management-health",
+  "id": "admin/referral-management-health",
+  "inputs": [
+    "Health Cloud org with Referral Management enabled",
+    "ClinicalServiceRequest object access (API v51.0+)",
+    "Provider network records (Account/Contact with healthcare-specific record types)",
+    "Data Pipelines Base User permission set license (required for provider search)"
+  ],
+  "name": "referral-management-health",
+  "official_sources": [
+    "Health Cloud Administration Guide \u2014 Configure Referral Management: https://help.salesforce.com/s/articleView?id=ind.hc_referral_management.htm",
+    "Health Cloud Developer Guide \u2014 Provider Network Management Data Model: https://developer.salesforce.com/docs/atlas.en-us.health_cloud_object_reference.meta/health_cloud_object_reference/hco_object_care_provider.htm",
+    "ClinicalServiceRequest Object Reference: https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_clinicalservicerequest.htm",
+    "Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Configured referral type taxonomy and status workflow",
+    "Provider search index populated via Data Processing Engine job",
+    "ClinicalServiceRequest-based referral tracking with inbound/outbound distinction",
+    "Network management configuration for in-network vs. out-of-network routing"
+  ],
+  "references": [
+    "skills/admin/referral-management-health/references/examples.md",
+    "skills/admin/referral-management-health/references/gotchas.md",
+    "skills/admin/referral-management-health/references/llm-anti-patterns.md",
+    "skills/admin/referral-management-health/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/referral-management-health/scripts/check_referral_management_health.py"
+  ],
+  "tags": [
+    "health-cloud",
+    "referral-management",
+    "clinical-service-request",
+    "provider-search",
+    "care-coordination"
+  ],
+  "templates": [
+    "skills/admin/referral-management-health/templates/referral-management-health-template.md"
+  ],
+  "updated": "2026-04-10",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

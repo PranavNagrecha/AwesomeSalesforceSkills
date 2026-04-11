@@ -1,0 +1,101 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "0236833f6e34eca56a8e",
+    "0977d956282d4d0856b6",
+    "1a2bcd497b77d9df842a",
+    "207d486a4eeb8a2f803f",
+    "254fce98ded5f89481ec",
+    "25988f51fc36703cdefd",
+    "2e3721f3dcef2f3ad8e6",
+    "32c03f34a9a046f03e5d",
+    "36a22f7694be78a3f579",
+    "39aa6b166fa9ae8af24a",
+    "3b0108530ea2f766600b",
+    "44ea7dada622b8cc80aa",
+    "477c7058fa3660a8c4db",
+    "4e9b0a9076735483a96a",
+    "4f429eee7bee4e54598f",
+    "5425f63c7e062f64dd25",
+    "55bf239122a91cbe9d25",
+    "5799fb29f97c3d50cff4",
+    "5bca650008cfd70a802a",
+    "5d67547651142ff21241",
+    "628fe124f45848af1cac",
+    "65fbd175a0b251a9c131",
+    "6641fd2696b6a4bf7e98",
+    "678fd63944f12b052cb2",
+    "696c02c34a2bea996b4d",
+    "844660ac6b9136e65fed",
+    "8e872bb21dba2cdce134",
+    "8fe043c3b650eee9eea1",
+    "9e4bed759a9d67658841",
+    "9fba663a631e7ab93d17",
+    "a03dda16643c33f50f1a",
+    "abaf596c3280ee4f7406",
+    "ae950b66eb077ff2a28d",
+    "b0aff89ec9a7cbb1124f",
+    "b93874964193c9c60696",
+    "bfe57dca77031dd9bc77",
+    "c8a8dc2cd31d329a765a",
+    "cba63cd3967364ff379f",
+    "ce62bab6e53cf7a1e0cf",
+    "ced103f4c2830e52ccc9",
+    "e05b73ec8e450b65df49",
+    "e1ab50a708c534ab35c0",
+    "eb411ba6f7c0e023c011",
+    "efdcc2fd2cfffcbb3246",
+    "f33bca172e94ffe63f6b",
+    "f359615ffbf724768dba",
+    "f3837c889bdfb3b66032",
+    "f70e036201065a6549d3",
+    "f7f4bcd657d614f6c62b",
+    "fde8724d2044da69f179"
+  ],
+  "content_hash": "d3245b801ffd719ce3ac2b5468bcd40ae7a2e72204d6956503815e677b7b7706",
+  "dependencies": [],
+  "description": "Use this skill when working with Health Cloud APIs: querying healthcare-specific SObjects (CarePlan, ClinicalEncounter, HealthCondition) via standard SObject API, using the FHIR R4-aligned Healthcare API, handling FHIR bundle limits, and understanding API authentication differences between the two layers. NOT for generic REST API development or standard Salesforce SObject API patterns unrelated to Health Cloud clinical objects.",
+  "file_location": "skills/apex/health-cloud-apis",
+  "id": "apex/health-cloud-apis",
+  "inputs": [
+    "Health Cloud org with FHIR R4 Support Settings enabled",
+    "Connected App with correct OAuth scopes for FHIR Healthcare API",
+    "Target clinical objects identified (CarePlan, ClinicalEncounter, HealthCondition, etc.)"
+  ],
+  "name": "health-cloud-apis",
+  "official_sources": [
+    "Salesforce Healthcare API Get Started Guide: https://developer.salesforce.com/docs/atlas.en-us.health_cloud.meta/health_cloud/hco_dev_healthcare_api.htm",
+    "Health Cloud Developer Guide \u2014 Clinical Data Model: https://developer.salesforce.com/docs/atlas.en-us.health_cloud_object_reference.meta/health_cloud_object_reference/",
+    "Health Cloud Business APIs REST Reference: https://developer.salesforce.com/docs/atlas.en-us.health_cloud.meta/health_cloud/hco_dev_api.htm",
+    "Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Correct API endpoint selection (SObject API vs. FHIR Healthcare API)",
+    "FHIR bundle request structure with correct size limits",
+    "Authentication configuration for Healthcare API OAuth scopes",
+    "HTTP 424 dependency failure handling pattern"
+  ],
+  "references": [
+    "skills/apex/health-cloud-apis/references/examples.md",
+    "skills/apex/health-cloud-apis/references/gotchas.md",
+    "skills/apex/health-cloud-apis/references/llm-anti-patterns.md",
+    "skills/apex/health-cloud-apis/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/health-cloud-apis/scripts/check_health_cloud_apis.py"
+  ],
+  "tags": [
+    "health-cloud",
+    "fhir-api",
+    "healthcare-api",
+    "clinical-objects",
+    "rest-api",
+    "bundle-limits"
+  ],
+  "templates": [
+    "skills/apex/health-cloud-apis/templates/health-cloud-apis-template.md"
+  ],
+  "updated": "2026-04-10",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

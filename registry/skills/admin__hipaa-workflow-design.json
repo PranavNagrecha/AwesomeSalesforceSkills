@@ -1,0 +1,110 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "0379d9f465991d04b8f8",
+    "05b2301c09c83f8184a7",
+    "07118a1983219eb9e3d4",
+    "0a66d4a5fd21fdeb8a83",
+    "0c0691ae40962b1c8145",
+    "11e236a9208a10cf3efd",
+    "1549bb45ede63a7ad097",
+    "2ec3507de05a9ed2176e",
+    "36bdc1cdc04d93256519",
+    "371cca87c7cfaa7f2e9b",
+    "4615369ba37504bdbd03",
+    "471ad9aa99cd530bfc21",
+    "473fc26d8a6f903b790f",
+    "4ca97e42609471ca9060",
+    "50adf7a887b24fda55de",
+    "547d8f04c5637326de45",
+    "5bbbd1a79b42ccb88243",
+    "70952fb3336992e8c654",
+    "7b9f6fbc85d4c57ae9ec",
+    "80509412fa704866bf26",
+    "815532b6b23037b424ac",
+    "8a6d784ddc201a27e91e",
+    "918e5a49da84a0d0b63e",
+    "924c085341efba38a9a9",
+    "9743631c6a43f9ef986b",
+    "987a9bdc255d3e8e165c",
+    "9f38445fc0e1f40d0e11",
+    "a06408329e6b3d32348e",
+    "a16505dae27b229c4ce2",
+    "a5228027edb777930ad9",
+    "a723e8f1cecd24b62adc",
+    "ab17b992f0d179c75835",
+    "acba4263dcb23238b503",
+    "ae6f9ef22a7f9e4544e9",
+    "b4dce394e57d17511282",
+    "c1fe36aeb8d6acf36d7d",
+    "d49507b3848aa64f696a",
+    "d87fd8e7463ec49870d9",
+    "d9d9797d482fbe5f175d",
+    "da096d2649243cfb0989",
+    "dce3479ba25e8e9c8bd5",
+    "e4016a0a24f6fa668050",
+    "e5403274ecb291f7e0d6",
+    "ea959223be9615fce3cc",
+    "eab82ec07d175255168b",
+    "eb6036f646fd181fee8f",
+    "ed93cc394d533ec65883",
+    "ee4bcbedf1222c3ff67f",
+    "f0b369ba7ddda8327aa1",
+    "f2eb961a9add2a44a828",
+    "f3135373ba49e789e2e0",
+    "fa05d50a28338d04465a"
+  ],
+  "content_hash": "15e919904c77f46d152b5fc405bab20d769725241728baa8d746d94dc64d9d6e",
+  "dependencies": [
+    "admin/health-cloud-patient-setup",
+    "admin/health-cloud-consent-management"
+  ],
+  "description": "Use this skill when designing HIPAA-compliant workflow requirements for Health Cloud: minimum necessary access design, audit trail requirements mapping, access control patterns, and BAA dependency identification. NOT for security implementation (Shield Platform Encryption configuration, event monitoring setup) \u2014 this skill covers workflow requirements design, not technical security build steps.",
+  "file_location": "skills/admin/hipaa-workflow-design",
+  "id": "admin/hipaa-workflow-design",
+  "inputs": [
+    "Health Cloud org (BAA signed or in process with Salesforce)",
+    "PHI field inventory (which fields contain protected health information)",
+    "Documented user role taxonomy",
+    "HIPAA compliance requirements from legal/compliance team"
+  ],
+  "name": "hipaa-workflow-design",
+  "official_sources": [
+    "Health Cloud Admin Guide \u2014 Protect Your Health Data with Salesforce Shield: https://help.salesforce.com/s/articleView?id=ind.hc_protect_health_data.htm",
+    "Salesforce HIPAA BAA Help Article: https://help.salesforce.com/s/articleView?id=000394847",
+    "Salesforce Shield Security Guide: https://developer.salesforce.com/docs/atlas.en-us.securityImplGuide.meta/securityImplGuide/security_overview.htm",
+    "HIPAA Security Rule: https://www.hhs.gov/hipaa/for-professionals/security/index.html",
+    "Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "HIPAA workflow requirements mapped to Salesforce platform controls",
+    "PHI access control design (OWD + sharing + permission sets)",
+    "Audit trail requirements specification (Shield Field Audit Trail vs. standard field history)",
+    "Event Monitoring retention policy requirements",
+    "BAA dependency checklist"
+  ],
+  "references": [
+    "skills/admin/hipaa-workflow-design/references/examples.md",
+    "skills/admin/hipaa-workflow-design/references/gotchas.md",
+    "skills/admin/hipaa-workflow-design/references/llm-anti-patterns.md",
+    "skills/admin/hipaa-workflow-design/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/hipaa-workflow-design/scripts/check_hipaa_workflow_design.py"
+  ],
+  "tags": [
+    "health-cloud",
+    "hipaa",
+    "phi-compliance",
+    "audit-trail",
+    "shield",
+    "baa",
+    "access-control"
+  ],
+  "templates": [
+    "skills/admin/hipaa-workflow-design/templates/hipaa-workflow-design-template.md"
+  ],
+  "updated": "2026-04-10",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

@@ -3281,6 +3281,66 @@
       "domain": "agentforce",
       "expected_skill": "agentforce/agentforce-service-ai-setup",
       "top_k": 3
+    },
+    {
+      "query": "referral management setup Health Cloud ClinicalServiceRequest provider search",
+      "domain": "admin",
+      "expected_skill": "admin/referral-management-health",
+      "top_k": 3
+    },
+    {
+      "query": "HIPAA authorization form consent management patient Health Cloud",
+      "domain": "admin",
+      "expected_skill": "admin/health-cloud-consent-management",
+      "top_k": 3
+    },
+    {
+      "query": "care coordination process design ICM CareBarrier CareGap SDOH",
+      "domain": "admin",
+      "expected_skill": "admin/care-coordination-requirements",
+      "top_k": 3
+    },
+    {
+      "query": "HIPAA workflow design minimum necessary access audit trail Shield Field Audit Trail",
+      "domain": "admin",
+      "expected_skill": "admin/hipaa-workflow-design",
+      "top_k": 3
+    },
+    {
+      "query": "patient engagement portal requirements appointment scheduling health assessments OmniStudio",
+      "domain": "admin",
+      "expected_skill": "admin/patient-engagement-requirements",
+      "top_k": 3
+    },
+    {
+      "query": "FHIR R4 clinical data model requirements HL7 interoperability Health Cloud",
+      "domain": "admin",
+      "expected_skill": "admin/clinical-data-requirements",
+      "top_k": 3
+    },
+    {
+      "query": "Health Cloud FHIR Healthcare API bundle limits HTTP 424 clinical objects",
+      "domain": "apex",
+      "expected_skill": "apex/health-cloud-apis",
+      "top_k": 3
+    },
+    {
+      "query": "FHIR R4 integration patterns Health Cloud CDS Hooks SMART on FHIR mapping",
+      "domain": "apex",
+      "expected_skill": "apex/fhir-integration-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "Health Cloud LWC custom timeline component patient card TimelineObjectDefinition",
+      "domain": "apex",
+      "expected_skill": "apex/health-cloud-lwc-components",
+      "top_k": 3
+    },
+    {
+      "query": "clinical decision support ClinicalAlert CareGap rules engine Health Cloud",
+      "domain": "apex",
+      "expected_skill": "apex/clinical-decision-support",
+      "top_k": 3
     }
   ]
 }

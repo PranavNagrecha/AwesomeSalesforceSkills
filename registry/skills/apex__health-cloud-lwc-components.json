@@ -1,0 +1,109 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "037723fe3653f80047c1",
+    "0b6d397c03cf7aa51525",
+    "0bb51a441c74937346d8",
+    "0bf38903eb2c2e6e7fa0",
+    "10e5de03309c1be13d08",
+    "12589aea2295b7dac554",
+    "179060c09a419a053ee9",
+    "18574a73acd65f37e354",
+    "1bd4670bc55dae7eca1d",
+    "1bfa2365cb592dfd4500",
+    "1c4aa9f91a342c96f81b",
+    "1c5feafa428150733fe8",
+    "2860a307586a770e454a",
+    "2bdebe53baff4bc0a550",
+    "3143a421f7de229c82a2",
+    "315842473f11626975a7",
+    "34fdae0115f4f9a817b5",
+    "3694e7fdc12cd610c56f",
+    "3c2e96c094996e74123e",
+    "4073e4cccb19450e1f1d",
+    "40b7cb87f1c780aef249",
+    "4199b099af6264537690",
+    "42a3a6e86ad80b970db4",
+    "45b92e94196da0df1d35",
+    "4a650dec0eeeccceae37",
+    "4cf16b86fdf210dff301",
+    "514e2d597d086a61ca5b",
+    "519d50d41bb6229a0890",
+    "557e4dd3363cc5340c83",
+    "55cd88db479ddef92f2f",
+    "58f1e381c48d798a01db",
+    "6c481f2f86465573cc84",
+    "7b2ebe9f79a7fd04d957",
+    "7ff61ba3d995770f4f6c",
+    "806e7efcaa5611ce224a",
+    "8141071df33344c0c60f",
+    "844582bb1fa5eabde3cc",
+    "91df755577d77da40613",
+    "9432ae799610b3cadbc1",
+    "970f1f281902cfc73186",
+    "99910b6b8c64fd467fbc",
+    "9e9ddb907051a69750ff",
+    "a3eb367b3e1ac41f6389",
+    "b010719e6dc2a9ec976d",
+    "b6c0f11569a215543eee",
+    "b72d4865a99c09a46efc",
+    "ba2ec49574cc14a0aded",
+    "bb299f2bea6ed113f928",
+    "c4eb8c19552039ed047c",
+    "c68e2178bf537e7daedd",
+    "ca0259931cb6afd1bc0f",
+    "cb26430be68d4c1756b0",
+    "d5f43c6c02d931db7c8d",
+    "e058a0263c1a6a089764",
+    "f5913c994c7642fa2da3"
+  ],
+  "content_hash": "db2485e834d5f88f3f84654b5bbe6d550dbf43d9407a5acdab9fafca103f9ab3",
+  "dependencies": [
+    "admin/health-cloud-patient-setup",
+    "admin/health-cloud-timeline"
+  ],
+  "description": "Use this skill when building custom LWC components for Health Cloud: extending patient card configurations, building custom timeline components using TimelineObjectDefinition metadata, creating care plan visualizations, and surfacing clinical data via LWC. NOT for standard LWC development unrelated to Health Cloud clinical components, or OmniStudio FlexCard development.",
+  "file_location": "skills/apex/health-cloud-lwc-components",
+  "id": "apex/health-cloud-lwc-components",
+  "inputs": [
+    "Health Cloud org with appropriate clinical objects enabled",
+    "Existing Health Cloud patient page layout with patient card or timeline component",
+    "Clinical data objects to surface (HealthCondition, ClinicalEncounter, etc.)"
+  ],
+  "name": "health-cloud-lwc-components",
+  "official_sources": [
+    "Health Cloud Administration Guide (help.salesforce.com): https://help.salesforce.com/s/articleView?id=ind.hc_admin.htm",
+    "Health Cloud Developer Guide \u2014 TimelineObjectDefinition: https://developer.salesforce.com/docs/atlas.en-us.health_cloud.meta/health_cloud/hco_dev_timeline_object_definition.htm",
+    "TimelineObjectDefinition Object Reference (API v55.0+): https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_timelineobjectdefinition.htm",
+    "Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Custom patient card field configuration via Health Cloud Setup",
+    "TimelineObjectDefinition metadata for custom timeline entries",
+    "Custom LWC that queries Health Cloud clinical objects via Account lookups",
+    "Care plan visualization component"
+  ],
+  "references": [
+    "skills/apex/health-cloud-lwc-components/references/examples.md",
+    "skills/apex/health-cloud-lwc-components/references/gotchas.md",
+    "skills/apex/health-cloud-lwc-components/references/llm-anti-patterns.md",
+    "skills/apex/health-cloud-lwc-components/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/health-cloud-lwc-components/scripts/check_health_cloud_lwc_components.py"
+  ],
+  "tags": [
+    "health-cloud",
+    "lwc",
+    "patient-card",
+    "timeline",
+    "timeline-object-definition",
+    "clinical-components"
+  ],
+  "templates": [
+    "skills/apex/health-cloud-lwc-components/templates/health-cloud-lwc-components-template.md"
+  ],
+  "updated": "2026-04-10",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

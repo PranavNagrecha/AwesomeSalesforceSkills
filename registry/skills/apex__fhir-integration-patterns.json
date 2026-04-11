@@ -1,0 +1,111 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "0275a618c71aebba9e6c",
+    "05a0105e9c5bb9c6f476",
+    "0e04bdb8e721341bcce2",
+    "12819af350e405edc407",
+    "148e42adb0b2e8a0b090",
+    "1c58b341f8b6606238ff",
+    "1f9de3c366beddcce9d4",
+    "203bc3e72d6439351c6a",
+    "229e26ed3555fcb4baa8",
+    "26090099d53166d91712",
+    "275f84d7594890685455",
+    "34c620aa6c1283e60719",
+    "3fa73c6a41cb99578475",
+    "56b1890015555c9f772c",
+    "5bb302ef1badd6f1858e",
+    "5f3da7066dcab116062b",
+    "5ff0030bbfd3e1d6ca2a",
+    "66fd6c52d88ddbf62135",
+    "67684225299311369f0e",
+    "6d2c4b2dbf481926d236",
+    "6dc118ed40a2f2043761",
+    "71c163e20fae1bddaa55",
+    "7adc932cb604255ad7ee",
+    "7affb483258f7865d4a0",
+    "7c4da46149173b9edc30",
+    "85791c7cd5f9d29a83ef",
+    "85f238cff5edd0407de9",
+    "898bfea7bdd523b58afc",
+    "8bf3f59121751c5fa432",
+    "9355263bc4f0c37a9c7b",
+    "94bb10654fb7f9570860",
+    "a1d2cdcbc1ab72135246",
+    "a3ce98b0bf9a3a8a2833",
+    "a812d2f95dd5910d74a8",
+    "baba01c45120e4c7fb4d",
+    "bd16df3dbf24f7b24df3",
+    "c235a99df56b9789723b",
+    "c624213216d6aa6c9126",
+    "c9112b97838ed39685c3",
+    "d735654ac44a0b123ef2",
+    "d772eaa77718a6bbae89",
+    "dafd9345055163835393",
+    "dcec0bbe6ef11ba98f99",
+    "ddd8d83cf79db9048842",
+    "dfe46ab9bb2193bda6f5",
+    "e03961caed3040841c43",
+    "e44a70a83aa5245b6558",
+    "e91a9847b27518fa1098",
+    "ecd622e1ccac110be93c",
+    "eefb639b2c4f6dc5a416",
+    "f74d38b92e08fc1c3b52",
+    "f95dd9e8440b27898529",
+    "fdbe06d7efbd3a9ec84a",
+    "ff9462f19ea33add411c"
+  ],
+  "content_hash": "69b478f8c8106c7356ea44e39dce3afd7c438efb1b9c4b5c2aa82cc4d86c4200",
+  "dependencies": [
+    "admin/clinical-data-requirements",
+    "apex/health-cloud-apis"
+  ],
+  "description": "Use this skill when implementing FHIR R4 integration patterns for Health Cloud: FHIR resource mapping to Salesforce objects, REST API patterns for inbound/outbound FHIR, CDS Hooks via MuleSoft middleware, SMART on FHIR setup, and HL7 v2 to FHIR R4 conversion. NOT for generic REST API integration, standard Salesforce API patterns unrelated to FHIR, or Health Cloud admin setup.",
+  "file_location": "skills/apex/fhir-integration-patterns",
+  "id": "apex/fhir-integration-patterns",
+  "inputs": [
+    "Health Cloud org with FHIR R4 Support Settings enabled",
+    "Source EHR system FHIR R4 capability statement or HL7 v2 message types",
+    "Integration pattern requirements (inbound, outbound, real-time, batch)"
+  ],
+  "name": "fhir-integration-patterns",
+  "official_sources": [
+    "Health Cloud Developer Guide \u2014 Mapping FHIR v4.0 to Salesforce Standard Objects: https://developer.salesforce.com/docs/atlas.en-us.health_cloud.meta/health_cloud/hco_dev_fhir_mapping.htm",
+    "MuleSoft Direct Integration Apps \u2014 Healthcare FHIR Patterns: https://docs.mulesoft.com/healthcare-accelerator/",
+    "FHIR R4 Support for Better Interoperability (Release Notes): https://help.salesforce.com/s/articleView?id=release-notes.rn_ind_hc_fhir_r4.htm",
+    "Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "FHIR resource to Salesforce object field mapping with deviation documentation",
+    "Inbound FHIR integration architecture (middleware \u2192 Salesforce)",
+    "Outbound FHIR integration architecture (Salesforce \u2192 external FHIR client)",
+    "CDS Hooks middleware architecture (MuleSoft required)",
+    "SMART on FHIR OAuth app registration requirements"
+  ],
+  "references": [
+    "skills/apex/fhir-integration-patterns/references/examples.md",
+    "skills/apex/fhir-integration-patterns/references/gotchas.md",
+    "skills/apex/fhir-integration-patterns/references/llm-anti-patterns.md",
+    "skills/apex/fhir-integration-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/fhir-integration-patterns/scripts/check_fhir_integration_patterns.py"
+  ],
+  "tags": [
+    "health-cloud",
+    "fhir-r4",
+    "integration",
+    "cds-hooks",
+    "smart-on-fhir",
+    "mulesoft",
+    "hl7-v2",
+    "fhir-mapping"
+  ],
+  "templates": [
+    "skills/apex/fhir-integration-patterns/templates/fhir-integration-patterns-template.md"
+  ],
+  "updated": "2026-04-10",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

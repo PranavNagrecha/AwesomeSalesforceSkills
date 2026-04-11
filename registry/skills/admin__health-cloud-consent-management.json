@@ -1,0 +1,110 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "022b3f16327631371aac",
+    "065f7b794bcc6aa48419",
+    "083f8210257c947b490b",
+    "0ba35340bf3d0b677bdf",
+    "0c1a0671e3088d24b3ad",
+    "0de284d091b8888f2e34",
+    "1022cf67c5eca6449d6f",
+    "14bbd9dfc330f26994b5",
+    "25b4c6b0cf141f31fcbb",
+    "294ab13af62b23ebd93c",
+    "2df0578d8c336ad2f01f",
+    "2f86f21e3880a478f7fb",
+    "49668d27617608cf7188",
+    "5217135b668d3c13076a",
+    "52caeea73f71d58e9875",
+    "55fba6fe2d13d7b7769f",
+    "56b1b67ae43eae5b62e5",
+    "57dae5ebd108f9bf38cc",
+    "5870d4ce1c1de360c462",
+    "59381b72c2fcd6997e8e",
+    "5f158de6e0da7b4c9583",
+    "60b94f5fe7e8c58f7b19",
+    "6225226e61b8b0c2c4ca",
+    "63622c12db3c5b9358bf",
+    "6a2cdba4f1daf87d8112",
+    "6a54c0f016100b99e118",
+    "6b26d74c766e0d264b2e",
+    "71b892abd081c9db6861",
+    "773295fca682fe934d0f",
+    "79b27ee2e73189051565",
+    "7afdff3ccb6c4e028603",
+    "8013853f3820bd27e980",
+    "85c2af6e4e4c88bf0bcd",
+    "92bebaf1023859976d7d",
+    "9c8cd6a498e4c6b4cd07",
+    "9f8c87d8ecef3a23a9f7",
+    "9f989aebc3f6f501f13f",
+    "ae6b58f2ada9fbc51000",
+    "b147ba082827fe0819e2",
+    "b63a9404c9b96dacf443",
+    "ba4d27a73b8d61db1ddc",
+    "bca187a14e32a3feee53",
+    "c358cf66a8188cfac1bf",
+    "c9c8cacaa167a43abf59",
+    "c9f869dd4641fd74f387",
+    "d36dba0716a1c810c4f1",
+    "dc249a1d9bea734fd514",
+    "de7979cea200dea42b62",
+    "e1a10f06eda1665a6a22",
+    "e2b4da7fd137b6c9c861",
+    "ef0c9d98f386f11e824b",
+    "f7377c5ce516550aeb60",
+    "f74ccc668122489bc5c5",
+    "f7b927201ad1d544468c",
+    "fd8edbec327f82b1450d"
+  ],
+  "content_hash": "4b770dce8bb065116f5b52d4ae9b51d7f9e9c5f137ba6394af490d2566cc27f8",
+  "dependencies": [
+    "admin/health-cloud-patient-setup",
+    "admin/care-program-management"
+  ],
+  "description": "Use this skill when configuring Health Cloud patient consent management: setting up HIPAA authorization forms, consent templates, consent tracking per patient, and withdrawal handling. NOT for marketing consent (ContactPointTypeConsent/ContactPointConsent), GDPR opt-out workflows, or Experience Cloud consent forms unrelated to clinical authorization.",
+  "file_location": "skills/admin/health-cloud-consent-management",
+  "id": "admin/health-cloud-consent-management",
+  "inputs": [
+    "Health Cloud org with Consent Management feature enabled",
+    "Patient records as Person Accounts",
+    "Care program enrollment workflow (CareProgramEnrollee)",
+    "DataUsePurpose records defining the clinical use cases for PHI"
+  ],
+  "name": "health-cloud-consent-management",
+  "official_sources": [
+    "Consent Management for Health Cloud: https://help.salesforce.com/s/articleView?id=ind.hc_consent_management.htm",
+    "Optimizing Health Cloud Consent Management (Trailhead): https://trailhead.salesforce.com/content/learn/modules/health-cloud-consent-management",
+    "Privacy Consent Data Model: https://developer.salesforce.com/docs/atlas.en-us.health_cloud_object_reference.meta/health_cloud_object_reference/hco_object_authorization_form_consent.htm",
+    "AuthorizationFormConsent Object Reference: https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_authorizationformconsent.htm",
+    "Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Configured AuthorizationForm hierarchy (Form \u2192 Text \u2192 DataUse \u2192 Consent)",
+    "AuthorizationFormConsent records per patient per consent form",
+    "Withdrawal workflow for revoking consent without deleting records",
+    "Consent tracking integration with care program enrollment"
+  ],
+  "references": [
+    "skills/admin/health-cloud-consent-management/references/examples.md",
+    "skills/admin/health-cloud-consent-management/references/gotchas.md",
+    "skills/admin/health-cloud-consent-management/references/llm-anti-patterns.md",
+    "skills/admin/health-cloud-consent-management/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/health-cloud-consent-management/scripts/check_health_cloud_consent_management.py"
+  ],
+  "tags": [
+    "health-cloud",
+    "consent-management",
+    "hipaa",
+    "authorization-form",
+    "phi-compliance"
+  ],
+  "templates": [
+    "skills/admin/health-cloud-consent-management/templates/health-cloud-consent-management-template.md"
+  ],
+  "updated": "2026-04-10",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}
