@@ -3521,6 +3521,36 @@
       "domain": "data",
       "expected_skill": "data/patient-data-migration",
       "top_k": 3
+    },
+    {
+      "query": "how do I map a FHIR patient resource to Salesforce Health Cloud",
+      "domain": "data",
+      "expected_skill": "data/fhir-data-mapping",
+      "top_k": 3
+    },
+    {
+      "query": "what integration pattern should we use to sync patient data from Cerner into Salesforce",
+      "domain": "architect",
+      "expected_skill": "architect/fhir-integration-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "does Hyperforce guarantee complete data residency for Health Cloud HIPAA",
+      "domain": "architect",
+      "expected_skill": "architect/health-cloud-data-residency",
+      "top_k": 3
+    },
+    {
+      "query": "do we need separate Experience Cloud license for Health Cloud patient portal",
+      "domain": "architect",
+      "expected_skill": "architect/health-cloud-multi-cloud-strategy",
+      "top_k": 3
+    },
+    {
+      "query": "what is the difference between payer and provider Health Cloud data model",
+      "domain": "architect",
+      "expected_skill": "architect/payer-vs-provider-architecture",
+      "top_k": 3
     }
   ]
 }
