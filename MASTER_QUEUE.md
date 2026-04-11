@@ -65,7 +65,8 @@ STATUS KEY:
 | 17 | Data Cloud | 3 roles | 13 | 0 | 13 |
 | 18 | Slack Integration | — | 5 | 0 | 5 |
 | 19 | Additional Industry Clouds | — | 16 | 0 | 16 |
-| **Total** | | | **905** | **532** | **373** |
+| 20 | Gap Fill — Platform, Security, Integration, LWC, Flow | — | 62 | 0 | 62 |
+| **Total** | | | **967** | **532** | **435** |
 
 ---
 
@@ -1460,6 +1461,127 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 
 ---
 
+## Phase 20 — Gap Fill: Platform, Security, Integration, LWC, Flow, Revenue Cloud
+
+> Cross-domain gap fill. Skills identified as missing from the full matrix after Phase 0–19 audit.
+
+### 20a — Revenue Cloud (New — distinct from CPQ Phase 6)
+
+> Domain folder: varies by topic
+
+| Status | Skill Name | Description | Notes |
+|--------|------------|-------------|-------|
+| TODO | revenue-lifecycle-management | Revenue Cloud: revenue lifecycle, contract amendments, order decomposition, billing schedule, revenue recognition rules. NOT for CPQ quoting (use cpq-* skills). | admin |
+| TODO | usage-based-pricing-setup | Usage-based pricing in Revenue Cloud: metered billing, usage records, rating, tiering, consumption schedules. NOT for CPQ pricing rules. | admin |
+| TODO | revenue-cloud-architecture | Revenue Cloud architecture: order-to-cash flow, contract lifecycle, billing integration, ERP handoff, multi-entity. NOT for CPQ architecture. | architect |
+| TODO | revenue-cloud-data-model | Revenue Cloud data model: OrderItem, BillingSchedule, BillingScheduleGroup, Invoice, Payment, FinanceTransaction relationships. NOT for CPQ data model. | data |
+
+### 20b — Pub/Sub API & Modern Integration
+
+> Domain folder: `integration`
+
+| Status | Skill Name | Description | Notes |
+|--------|------------|-------------|-------|
+| TODO | pub-sub-api-patterns | Pub/Sub API: gRPC streaming, subscribe/publish, event replay, managed subscriptions, auth flow, language clients. NOT for legacy PushTopic or Streaming API. | integration |
+| TODO | bulk-api-2-patterns | Bulk API 2.0: ingest/query jobs, CSV streaming, job monitoring, retry on partial failure, multipart upload. NOT for Bulk API 1.0 or REST API (use rest-api-patterns). | integration |
+| TODO | heroku-salesforce-integration | Heroku integration: Heroku Connect, Heroku Postgres sync, add-on architecture, Salesforce Canvas, SSO. NOT for generic PaaS or AWS. | integration |
+| TODO | aws-salesforce-patterns | AWS integration with Salesforce: Amazon AppFlow, EventBridge, Lambda callouts, S3 file integration, Amazon Connect CTI. NOT for MuleSoft. | integration |
+| TODO | azure-salesforce-patterns | Azure integration: Azure Functions callouts, Azure Service Bus, Power Platform connectors, Azure AD SSO, Azure Blob storage. NOT for MuleSoft. | integration |
+| TODO | salesforce-functions-replacement | Post-Salesforce Functions patterns: External Services, Heroku, AWS Lambda, async Apex, Flow external callouts as function replacements. NOT for Salesforce Functions (retired). | integration |
+
+### 20c — Security Hardening
+
+> Domain folder: `security`
+
+| Status | Skill Name | Description | Notes |
+|--------|------------|-------------|-------|
+| TODO | mfa-enforcement-strategy | MFA enforcement: Salesforce Authenticator, TOTP apps, security keys, SSO MFA delegation, exemptions, rollout strategy, compliance deadlines. NOT for login flow customization (use ip-range-and-login-flow-strategy). | security |
+| TODO | private-connect-setup | Private Connect: AWS PrivateLink for Salesforce, inbound/outbound connections, VPC endpoint setup, DNS config. NOT for standard Named Credentials. | security |
+| TODO | zero-trust-salesforce-patterns | Zero-trust patterns: continuous verification, device trust, conditional access policies, session-level controls, event monitoring integration. NOT for basic login security. | security |
+| TODO | salesforce-shield-architecture | Shield architecture: Platform Encryption + Event Monitoring + Field Audit Trail as unified compliance strategy, key management strategy, BYOK, cost planning. NOT for individual Shield feature setup. | architect |
+| TODO | oauth-token-management | OAuth token lifecycle: refresh token rotation, token revocation, connected app policies, session management, token introspection. NOT for OAuth flow selection (use oauth-flows-and-connected-apps). | security |
+| TODO | security-incident-response | Security incident response in Salesforce: event monitoring alerts, transaction security actions, login anomaly detection, forensic investigation, containment steps. NOT for general security setup. | security |
+
+### 20d — Flow Gaps
+
+> Domain folder: `flow`
+
+| Status | Skill Name | Description | Notes |
+|--------|------------|-------------|-------|
+| TODO | process-builder-to-flow-migration | Process Builder to Flow migration: conversion tool, pattern mapping, order-of-execution changes, testing migrated flows, bulk behavior differences. NOT for building new flows. | flow |
+| TODO | workflow-rule-to-flow-migration | Workflow Rule to Flow migration: field update mapping, email alert migration, outbound message alternatives, time-based workflow replacement. NOT for Process Builder migration. | flow |
+| TODO | flow-large-data-volume-patterns | Flow patterns for large data volumes: collection variable limits, loop optimization, Get Records performance, batch-like patterns, async invocable. NOT for Batch Apex. | flow |
+| TODO | flow-dynamic-choices | Dynamic choice sets in flows: picklist sources, record choice sets, dependent choices, multi-select patterns, choice performance. NOT for screen flow design. | flow |
+| TODO | flow-action-framework | Flow action framework: standard actions, custom Apex actions, external service actions, action packs, Invocable variables. NOT for Invocable Methods in Apex. | flow |
+| TODO | flow-interview-debugging | Flow interview debugging: debug log analysis, flow interview records, fault email interpretation, flow version troubleshooting. NOT for Flow Builder debug mode. | flow |
+
+### 20e — LWC Gaps
+
+> Domain folder: `lwc`
+
+| Status | Skill Name | Description | Notes |
+|--------|------------|-------------|-------|
+| TODO | lwc-internationalization | LWC internationalization: @salesforce/i18n, locale-aware formatting, custom labels, translation management, RTL support, number/date/currency formatting. NOT for Translation Workbench admin. | lwc |
+| TODO | lwc-drag-and-drop | Drag-and-drop patterns in LWC: HTML5 drag API, sortable lists, kanban boards, file drop zones, cross-component drag. NOT for Lightning App Builder drag-and-drop. | lwc |
+| TODO | lwc-virtualized-lists | Virtualized/windowed lists in LWC: rendering large datasets, lazy loading, infinite scroll, virtual DOM patterns, dataset pagination. NOT for standard lightning-datatable. | lwc |
+| TODO | lwc-web-components-interop | LWC interop with third-party web components: loading external libraries, shadow DOM boundaries, locker service restrictions, static resources. NOT for standard LWC base components. | lwc |
+| TODO | lwc-service-worker-patterns | LWC offline patterns: service workers, cache strategies, offline data sync, PWA capabilities, Mobile SDK bridge. NOT for FSL mobile (use fsl-mobile-app-extensions). | lwc |
+| TODO | lwc-jest-testing-patterns | Jest testing for LWC: @salesforce module mocks, wire adapter testing, imperative Apex mocks, DOM assertions, event testing, test utilities. NOT for Apex testing. | devops |
+
+### 20f — Tableau / Analytics Connectors
+
+> Domain folder: varies
+
+| Status | Skill Name | Description | Notes |
+|--------|------------|-------------|-------|
+| TODO | tableau-salesforce-connector | Tableau Desktop/Cloud connector to Salesforce: data source setup, live vs extract, join patterns, custom SQL, incremental refresh. NOT for CRM Analytics. | integration |
+| TODO | tableau-embedding-in-lightning | Embedding Tableau dashboards in Lightning: Tableau Viz LWC, Connected App auth, URL parameters, SSO, cross-filtering. NOT for CRM Analytics dashboards. | lwc |
+| TODO | crm-analytics-security-predicates | CRM Analytics security predicates: row-level security, predicate syntax, multi-level predicates, team-based access, performance impact. NOT for standard sharing rules. | security |
+
+### 20g — DevOps Gaps
+
+> Domain folder: `devops`
+
+| Status | Skill Name | Description | Notes |
+|--------|------------|-------------|-------|
+| TODO | pmd-and-static-analysis | PMD for Apex: ruleset configuration, custom rules, Salesforce Code Analyzer integration, CI/CD gates, suppression patterns. NOT for manual code review (use secure-coding-review-checklist). | devops |
+| TODO | cicd-for-experience-cloud | CI/CD for Experience Cloud: site metadata deployment, CMS content promotion, theme deployment, guest user config, URL management. NOT for generic SFDX CI/CD. | devops |
+| TODO | devops-center-advanced | DevOps Center advanced: work items, change tracking, pipeline stages, conflict resolution, org comparison, vs SFDX tradeoffs. NOT for DevOps Center basic setup. | devops |
+| TODO | salesforce-cli-automation | Salesforce CLI (sf/sfdx) automation: scripting patterns, CI/CD commands, data export/import, org management, plugin ecosystem. NOT for VS Code extensions. | devops |
+| TODO | code-review-checklist-salesforce | Salesforce code review checklist: governor limits, CRUD/FLS, injection, bulk patterns, test coverage, naming conventions, architectural compliance. NOT for security-only review. | devops |
+
+### 20h — Admin & Architect Gaps
+
+> Domain folder: varies
+
+| Status | Skill Name | Description | Notes |
+|--------|------------|-------------|-------|
+| TODO | large-data-volume-architecture | Large data volume (LDV) architecture: skinny tables, custom indexes, query optimization, archival strategy, sharing performance at scale. NOT for individual SOQL tuning. | architect |
+| TODO | event-driven-salesforce-architecture | Event-driven architecture in Salesforce: Platform Events, CDC, Pub/Sub API, event bus patterns, eventual consistency, saga pattern. NOT for individual event implementation. | architect |
+| TODO | migration-architecture-patterns | Org migration architecture: org merge, org split, data migration strategy, metadata migration, cutover planning, coexistence patterns. NOT for go-live cutover. | architect |
+| TODO | tenant-isolation-patterns | Multi-tenant isolation: custom metadata per-tenant, permission-based feature gating, data partitioning, namespace isolation, ISV patterns. NOT for multi-org strategy. | architect |
+| TODO | composable-commerce-architecture | Composable commerce on Salesforce: headless API layer, micro-frontends, BFF pattern, CDN strategy, third-party composability. NOT for standard storefront. | architect |
+| TODO | nonprofit-cloud-vs-npsp-migration | Nonprofit Cloud (NPC) vs NPSP decision and migration: feature comparison, data model differences, migration path, timeline, coexistence. NOT for NPSP admin. | architect |
+| TODO | data-loader-and-tools | Data Loader, Workbench, Salesforce Inspector, and third-party tools: when to use each, configuration, common pitfalls, limits. NOT for Bulk API development. | admin |
+| TODO | formula-field-performance | Formula field performance at scale: compiled size limits, cross-object references, SOQL context, caching behavior, alternatives for complex logic. NOT for formula syntax. | admin |
+| TODO | report-type-strategy | Custom report types: object relationships, cross-filter design, bucketing, matrix reports, joined reports, analytics snapshots. NOT for dashboard design. | admin |
+| TODO | email-deliverability-monitoring | Email deliverability monitoring: bounce management, SPF/DKIM/DMARC, compliance BCC, Salesforce email logs, relay configuration. NOT for email template design. | admin |
+| TODO | flow-orchestration-admin | Flow Orchestration admin: stage configuration, step assignment, background steps, interactive steps, evaluation flows, work items. NOT for Flow Orchestration development. | admin |
+
+### 20i — Apex Gaps
+
+> Domain folder: `apex`
+
+| Status | Skill Name | Description | Notes |
+|--------|------------|-------------|-------|
+| TODO | apex-named-credentials-patterns | Named Credential patterns in Apex: external credentials, custom headers, per-user auth, legacy vs enhanced, callout configuration. NOT for admin setup (use named-credentials-setup). | apex |
+| TODO | apex-transaction-finalizers | Transaction Finalizers: Finalizer interface, retry patterns, cleanup logic, queueable finalizers, error recovery. NOT for try/catch (use exception-handling). | apex |
+| TODO | apex-switch-on-sobject | Switch-on-SObjectType patterns: type dispatching, dynamic trigger handlers, polymorphic processing, Type.forName. NOT for basic Apex syntax. | apex |
+| TODO | apex-data-cloud-sdk | Apex for Data Cloud: CdpQuery, data graph API, profile API, segment membership, calculated insight access from Apex. NOT for Data Cloud admin. | apex |
+| TODO | apex-event-bus-subscriber | EventBus.subscribe patterns: async event processing, position tracking, event replay, batch event handling, error handling. NOT for Platform Events triggers. | apex |
+
+---
+
 ## Handoff Log
 
 | Agent | Task | Started | Completed | Notes |
@@ -1468,6 +1590,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | Claude Opus 4.6 | Second pass + TDD extraction — 21 new skills | 2026-04-04 | 2026-04-04 | Added skills from TDD v1.5 (error handling framework, BRE, gov cloud, multi-IdP SSO, doc gen, etc.) + general gap fills (Visualforce, Platform Cache, reports, person accounts, Salesforce Maps, etc.) |
 | Claude Opus 4.6 | Third pass — 14 more skills from SIP, BC/DR, Test Plan, R2/R3, Impl Plan docs | 2026-04-04 | 2026-04-04 | go-live-cutover-planning, performance-testing-salesforce, recaptcha-and-bot-prevention, session-management-and-timeout, multi-language, surveys, user-access-policies, batch-job-monitoring, stub-testing, api-error-handling, batch-data-cleanup, data-storage-management + 2 more |
 | Claude Opus 4.6 | Fourth pass — 49 tribal-knowledge + RAG-gap skills | 2026-04-04 | 2026-04-04 | Deep research: platform gotchas (order-of-execution, mixed DML, record locking, timezone), enterprise patterns (fflib, feature flags), production survival (release prep, org limits, support escalation), troubleshooting (common Apex/LWC/Flow errors), data reality (external IDs, merge implications, dedup, reconciliation), integration hardening (retry/backoff), senior admin (page perf, report perf, license optimization), AI-era (sf-to-llm pipelines, ai-ready architecture), Higher Ed (EDA, SIS, FERPA), plus RAG-gap fills (in-app guidance, Lightning App Builder, PDF generation, HA/DR) |
+| Claude Opus 4.6 | Fifth pass — Phase 20 gap fill (62 skills) | 2026-04-11 | 2026-04-11 | Full matrix audit against 532 built skills. Added: Revenue Cloud (new, not CPQ) 4 skills, Pub/Sub API + modern integration 6, security hardening 6, Flow migration + gaps 6, LWC i18n/drag/virtualization 6, Tableau connectors 3, DevOps gaps 5, admin/architect gaps 11, Apex gaps 5. Total queue now 967. |
 
 ---
 
