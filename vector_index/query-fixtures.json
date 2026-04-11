@@ -3341,6 +3341,66 @@
       "domain": "apex",
       "expected_skill": "apex/clinical-decision-support",
       "top_k": 3
+    },
+    {
+      "query": "FSC rollup not recalculating after bulk data load FinServ TriggerSettings",
+      "domain": "apex",
+      "expected_skill": "apex/fsc-apex-extensions",
+      "top_k": 3
+    },
+    {
+      "query": "FSC compliant data sharing API AccountParticipant ParticipantRole programmatic",
+      "domain": "apex",
+      "expected_skill": "apex/fsc-compliant-sharing-api",
+      "top_k": 3
+    },
+    {
+      "query": "FSC financial calculations portfolio IRR TWR RollupRecalculationBatchable DPE",
+      "domain": "apex",
+      "expected_skill": "apex/fsc-financial-calculations",
+      "top_k": 3
+    },
+    {
+      "query": "FSC document generation OmniStudio DocGen disclosure AuthorizationForm FINRA compliance",
+      "domain": "apex",
+      "expected_skill": "apex/fsc-document-generation",
+      "top_k": 3
+    },
+    {
+      "query": "FSC integration patterns core banking FinancialHolding custodian Bulk API MuleSoft",
+      "domain": "apex",
+      "expected_skill": "apex/fsc-integration-patterns-dev",
+      "top_k": 3
+    },
+    {
+      "query": "FSC architecture patterns data model managed package compliant data sharing design",
+      "domain": "architect",
+      "expected_skill": "architect/fsc-architecture-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "AML KYC architecture Salesforce sanctions screening PartyProfileRisk risk scoring",
+      "domain": "architect",
+      "expected_skill": "architect/aml-kyc-process-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "wealth management architecture FSC IndustriesSettings enableWealthManagementAIPref CDS",
+      "domain": "architect",
+      "expected_skill": "architect/wealth-management-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "NPSP TDTM custom trigger handler DmlWrapper npsp__Trigger_Handler__c registration",
+      "domain": "apex",
+      "expected_skill": "apex/npsp-trigger-framework-extension",
+      "top_k": 3
+    },
+    {
+      "query": "NPSP customizable rollups CRLP batch recalculation filter groups configuration",
+      "domain": "apex",
+      "expected_skill": "apex/npsp-custom-rollups",
+      "top_k": 3
     }
   ]
 }
