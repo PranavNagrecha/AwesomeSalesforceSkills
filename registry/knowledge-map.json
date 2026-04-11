@@ -216,6 +216,11 @@
       "apex/fflib-enterprise-patterns",
       "apex/fhir-integration-patterns",
       "apex/formula-field-performance-and-limits",
+      "apex/fsc-apex-extensions",
+      "apex/fsc-compliant-sharing-api",
+      "apex/fsc-document-generation",
+      "apex/fsc-financial-calculations",
+      "apex/fsc-integration-patterns-dev",
       "apex/fsl-apex-extensions",
       "apex/fsl-custom-actions-mobile",
       "apex/fsl-mobile-app-extensions",
@@ -234,6 +239,8 @@
       "apex/mcae-pardot-api",
       "apex/metadata-api-and-package-xml",
       "apex/mixed-dml-and-setup-objects",
+      "apex/npsp-custom-rollups",
+      "apex/npsp-trigger-framework-extension",
       "apex/omni-channel-custom-routing",
       "apex/opportunity-trigger-patterns",
       "apex/order-of-execution-deep-dive",
@@ -261,6 +268,7 @@
       "architect/agent-console-requirements",
       "architect/ai-agent-org-integration-architecture",
       "architect/ai-ready-data-architecture",
+      "architect/aml-kyc-process-architecture",
       "architect/case-deflection-strategy",
       "architect/cpq-architecture-patterns",
       "architect/cpq-integration-with-erp",
@@ -270,6 +278,7 @@
       "architect/experience-cloud-integration-patterns",
       "architect/experience-cloud-licensing-model",
       "architect/experience-cloud-performance",
+      "architect/fsc-architecture-patterns",
       "architect/fsl-integration-patterns",
       "architect/fsl-multi-region-architecture",
       "architect/fsl-offline-architecture",
@@ -307,6 +316,7 @@
       "architect/solution-design-patterns",
       "architect/subscription-management-architecture",
       "architect/technical-debt-assessment",
+      "architect/wealth-management-architecture",
       "architect/well-architected-review"
     ],
     "data": [
@@ -721,6 +731,9 @@
       "apex/mcae-pardot-api",
       "architect/marketing-cloud-vs-mcae-selection"
     ],
+    "account-participant": [
+      "apex/fsc-compliant-sharing-api"
+    ],
     "action-cadence": [
       "apex/sales-engagement-api"
     ],
@@ -781,6 +794,9 @@
     "advanced-currency-management": [
       "architect/multi-currency-sales-architecture",
       "data/multi-currency-and-advanced-currency-management"
+    ],
+    "advisor-workspace": [
+      "architect/wealth-management-architecture"
     ],
     "after-conversation-work": [
       "admin/service-cloud-voice-setup"
@@ -898,6 +914,9 @@
       "admin/subscription-lifecycle-requirements",
       "architect/subscription-management-architecture"
     ],
+    "aml": [
+      "architect/aml-kyc-process-architecture"
+    ],
     "ampscript": [
       "apex/ampscript-development"
     ],
@@ -922,9 +941,11 @@
       "agentforce/mcp-tool-definition-apex",
       "agentforce/salesforce-mcp-server-setup",
       "apex/custom-iterators-and-iterables",
+      "apex/fsc-apex-extensions",
       "apex/fsl-apex-extensions",
       "apex/fsl-scheduling-api",
       "apex/governor-limit-recovery-patterns",
+      "apex/npsp-trigger-framework-extension",
       "apex/pdf-generation-patterns",
       "apex/soql-fundamentals",
       "architect/solution-design-patterns",
@@ -936,6 +957,9 @@
     ],
     "apex-actions": [
       "agentforce/custom-agent-actions-apex"
+    ],
+    "apex-batch": [
+      "apex/fsc-financial-calculations"
     ],
     "apex-debugger": [
       "devops/vscode-salesforce-extensions"
@@ -1097,6 +1121,7 @@
     ],
     "architecture": [
       "architect/ai-agent-org-integration-architecture",
+      "architect/fsc-architecture-patterns",
       "architect/integration-framework-design",
       "architect/sales-cloud-architecture"
     ],
@@ -1237,7 +1262,8 @@
       "lwc/experience-cloud-authentication"
     ],
     "authorization-form": [
-      "admin/health-cloud-consent-management"
+      "admin/health-cloud-consent-management",
+      "apex/fsc-document-generation"
     ],
     "auto-launched-flow": [
       "flow/auto-launched-flow-patterns"
@@ -1336,6 +1362,9 @@
     ],
     "batch-apex-error-event": [
       "apex/error-handling-framework"
+    ],
+    "batch-jobs": [
+      "apex/npsp-custom-rollups"
     ],
     "batch-processing": [
       "data/large-scale-deduplication",
@@ -1455,6 +1484,7 @@
     ],
     "bulk-api": [
       "admin/data-import-and-management",
+      "apex/fsc-integration-patterns-dev",
       "data/bulk-api-and-large-data-loads",
       "data/bulk-api-patterns",
       "data/case-history-migration",
@@ -1734,6 +1764,7 @@
       "security/gdpr-data-privacy"
     ],
     "cdc": [
+      "apex/fsc-integration-patterns-dev",
       "apex/platform-events-apex",
       "apex/sales-engagement-api"
     ],
@@ -1942,6 +1973,8 @@
       "admin/formula-fields"
     ],
     "compliance": [
+      "architect/aml-kyc-process-architecture",
+      "architect/fsc-architecture-patterns",
       "architect/nfr-definition-for-salesforce",
       "data/field-history-tracking",
       "data/service-data-archival",
@@ -1958,6 +1991,12 @@
     ],
     "compliance-tasks": [
       "admin/fsc-action-plans"
+    ],
+    "compliant-data-sharing": [
+      "apex/fsc-apex-extensions",
+      "apex/fsc-compliant-sharing-api",
+      "architect/fsc-architecture-patterns",
+      "architect/wealth-management-architecture"
     ],
     "component-communication": [
       "lwc/component-communication"
@@ -2191,6 +2230,9 @@
     "copilot": [
       "agentforce/einstein-copilot-for-sales"
     ],
+    "core-banking": [
+      "apex/fsc-integration-patterns-dev"
+    ],
     "correlation-id": [
       "apex/error-handling-framework"
     ],
@@ -2267,6 +2309,9 @@
     ],
     "crew": [
       "admin/fsl-shifts-and-crew"
+    ],
+    "crlp": [
+      "apex/npsp-custom-rollups"
     ],
     "crm-analytics": [
       "admin/einstein-analytics-basics"
@@ -2350,6 +2395,9 @@
     "currentpagereference": [
       "lwc/navigation-and-routing"
     ],
+    "custodian-integration": [
+      "apex/fsc-integration-patterns-dev"
+    ],
     "custom-activity": [
       "apex/marketing-cloud-custom-activities"
     ],
@@ -2385,6 +2433,9 @@
     ],
     "custom-fields": [
       "admin/custom-field-creation"
+    ],
+    "custom-handler": [
+      "apex/npsp-trigger-framework-extension"
     ],
     "custom-index": [
       "data/custom-index-requests"
@@ -2446,6 +2497,9 @@
     ],
     "customer-service": [
       "admin/self-service-design"
+    ],
+    "customizable-rollups": [
+      "apex/npsp-custom-rollups"
     ],
     "cutover-runbook": [
       "devops/go-live-cutover-planning"
@@ -2574,6 +2628,7 @@
     ],
     "data-model": [
       "admin/data-model-documentation",
+      "architect/fsc-architecture-patterns",
       "architect/npsp-vs-nonprofit-cloud-decision",
       "architect/sales-cloud-architecture",
       "data/cpq-data-model",
@@ -2586,6 +2641,9 @@
     "data-privacy": [
       "security/gdpr-data-privacy",
       "security/sandbox-data-masking"
+    ],
+    "data-processing-engine": [
+      "apex/fsc-financial-calculations"
     ],
     "data-quality": [
       "admin/duplicate-management",
@@ -2650,6 +2708,7 @@
       "omnistudio/omnistudio-deployment-datapacks"
     ],
     "dataraptor": [
+      "apex/fsc-document-generation",
       "omnistudio/dataraptor-load-and-extract",
       "omnistudio/dataraptor-patterns",
       "omnistudio/omnistudio-debugging",
@@ -2890,6 +2949,9 @@
     "disaster-recovery": [
       "architect/ha-dr-architecture"
     ],
+    "disclosure-compliance": [
+      "apex/fsc-document-generation"
+    ],
     "discount-approval": [
       "admin/cpq-approval-workflows",
       "admin/quotes-and-quote-templates"
@@ -2925,6 +2987,9 @@
     "dml-limits": [
       "architect/limits-and-scalability-planning"
     ],
+    "dml-wrapper": [
+      "apex/npsp-trigger-framework-extension"
+    ],
     "docgen": [
       "omnistudio/document-generation-omnistudio"
     ],
@@ -2935,6 +3000,7 @@
       "apex/fsl-service-report-templates"
     ],
     "document-generation": [
+      "apex/fsc-document-generation",
       "omnistudio/document-generation-omnistudio"
     ],
     "document-template": [
@@ -3546,6 +3612,9 @@
     "files-connect": [
       "integration/file-and-document-integration"
     ],
+    "filter-groups": [
+      "apex/npsp-custom-rollups"
+    ],
     "finalizer": [
       "apex/apex-queueable-patterns",
       "apex/long-running-process-orchestration"
@@ -3553,21 +3622,43 @@
     "finance-periods": [
       "admin/revenue-recognition-requirements"
     ],
+    "financial-account": [
+      "apex/fsc-integration-patterns-dev"
+    ],
     "financial-account-roles": [
       "admin/financial-account-setup"
     ],
     "financial-accounts": [
       "admin/financial-account-setup"
     ],
+    "financial-calculations": [
+      "apex/fsc-financial-calculations"
+    ],
+    "financial-holding": [
+      "apex/fsc-integration-patterns-dev"
+    ],
+    "financial-services": [
+      "architect/aml-kyc-process-architecture"
+    ],
     "financial-services-cloud": [
       "admin/financial-account-setup",
       "admin/fsc-action-plans",
       "admin/fsc-referral-management",
       "admin/fsc-relationship-groups",
-      "admin/household-model-configuration"
+      "admin/household-model-configuration",
+      "apex/fsc-apex-extensions",
+      "apex/fsc-financial-calculations",
+      "architect/fsc-architecture-patterns",
+      "architect/wealth-management-architecture"
     ],
     "find-clause": [
       "data/sosl-search-patterns"
+    ],
+    "finra": [
+      "apex/fsc-document-generation"
+    ],
+    "finserv-namespace": [
+      "apex/fsc-apex-extensions"
     ],
     "fisma": [
       "architect/government-cloud-compliance"
@@ -3729,6 +3820,14 @@
       "admin/financial-account-setup",
       "admin/fsc-relationship-groups",
       "admin/household-model-configuration",
+      "apex/fsc-apex-extensions",
+      "apex/fsc-compliant-sharing-api",
+      "apex/fsc-document-generation",
+      "apex/fsc-financial-calculations",
+      "apex/fsc-integration-patterns-dev",
+      "architect/aml-kyc-process-architecture",
+      "architect/fsc-architecture-patterns",
+      "architect/wealth-management-architecture",
       "data/person-accounts"
     ],
     "fsc-action-plans": [
@@ -3823,6 +3922,7 @@
     ],
     "gdpr": [
       "admin/consent-management-marketing",
+      "apex/fsc-document-generation",
       "architect/marketing-consent-architecture",
       "data/data-quality-and-governance",
       "security/gdpr-data-privacy",
@@ -4224,6 +4324,7 @@
       "architect/ai-agent-org-integration-architecture",
       "architect/cpq-architecture-patterns",
       "architect/cpq-integration-with-erp",
+      "architect/fsc-architecture-patterns",
       "architect/fsl-integration-patterns",
       "architect/integration-framework-design",
       "integration/composite-api-patterns",
@@ -4239,7 +4340,9 @@
       "devops/sandbox-data-isolation-gotchas"
     ],
     "integration-patterns": [
+      "architect/aml-kyc-process-architecture",
       "architect/platform-selection-guidance",
+      "architect/wealth-management-architecture",
       "integration/event-driven-architecture-patterns"
     ],
     "integration-procedure": [
@@ -4451,6 +4554,9 @@
     ],
     "kpi": [
       "admin/marketing-reporting-requirements"
+    ],
+    "kyc": [
+      "architect/aml-kyc-process-architecture"
     ],
     "large-data-volumes": [
       "admin/data-skew-and-sharing-performance",
@@ -5087,6 +5193,7 @@
     ],
     "mulesoft": [
       "apex/fhir-integration-patterns",
+      "apex/fsc-integration-patterns-dev",
       "architect/cpq-integration-with-erp",
       "integration/api-led-connectivity",
       "integration/mulesoft-salesforce-connector",
@@ -5210,6 +5317,8 @@
       "admin/npsp-household-accounts",
       "admin/npsp-program-management",
       "admin/recurring-donations-setup",
+      "apex/npsp-custom-rollups",
+      "apex/npsp-trigger-framework-extension",
       "architect/npsp-vs-nonprofit-cloud-decision"
     ],
     "nonprofit-cloud": [
@@ -5231,6 +5340,8 @@
       "admin/npsp-program-management",
       "admin/recurring-donations-setup",
       "admin/soft-credits-and-matching",
+      "apex/npsp-custom-rollups",
+      "apex/npsp-trigger-framework-extension",
       "architect/npsp-vs-nonprofit-cloud-decision"
     ],
     "null-handling": [
@@ -5346,6 +5457,9 @@
     "omnistudio-data-mapping": [
       "omnistudio/dataraptor-patterns"
     ],
+    "omnistudio-docgen": [
+      "apex/fsc-document-generation"
+    ],
     "omnistudio-performance": [
       "omnistudio/omnistudio-performance"
     ],
@@ -5394,6 +5508,9 @@
     ],
     "opportunity-management": [
       "architect/sales-cloud-architecture"
+    ],
+    "opportunity-participant": [
+      "apex/fsc-compliant-sharing-api"
     ],
     "opportunity-products": [
       "admin/products-and-pricebooks",
@@ -5598,6 +5715,12 @@
     "partial-soft-credit": [
       "admin/soft-credits-and-matching"
     ],
+    "participant-group": [
+      "apex/fsc-compliant-sharing-api"
+    ],
+    "participant-role": [
+      "apex/fsc-compliant-sharing-api"
+    ],
     "partner-community": [
       "admin/partner-community-requirements",
       "admin/portal-requirements-gathering",
@@ -5677,6 +5800,7 @@
     "pdf-generation": [
       "admin/cpq-quote-templates",
       "admin/quotes-and-quote-templates",
+      "apex/fsc-document-generation",
       "apex/fsl-service-report-templates",
       "apex/pdf-generation-patterns"
     ],
@@ -5738,6 +5862,7 @@
       "admin/health-cloud-patient-setup",
       "admin/household-model-configuration",
       "admin/standard-object-quirks",
+      "architect/fsc-architecture-patterns",
       "architect/npsp-vs-nonprofit-cloud-decision",
       "data/person-accounts"
     ],
@@ -5811,6 +5936,7 @@
     "platform-events": [
       "apex/custom-logging-and-monitoring",
       "apex/error-handling-framework",
+      "apex/fsc-integration-patterns-dev",
       "apex/long-running-process-orchestration",
       "apex/platform-events-apex",
       "architect/ai-agent-org-integration-architecture",
@@ -5858,6 +5984,12 @@
     "portal-users": [
       "apex/test-data-factory-patterns",
       "data/community-user-data-migration"
+    ],
+    "portfolio": [
+      "apex/fsc-financial-calculations"
+    ],
+    "portfolio-analytics": [
+      "architect/wealth-management-architecture"
     ],
     "post-authentication": [
       "security/ip-range-and-login-flow-strategy"
@@ -6054,7 +6186,8 @@
       "apex/cpq-api-and-automation"
     ],
     "programmatic-sharing": [
-      "apex/apex-managed-sharing"
+      "apex/apex-managed-sharing",
+      "apex/fsc-compliant-sharing-api"
     ],
     "progressive-disclosure": [
       "admin/lightning-page-performance-tuning"
@@ -6535,6 +6668,9 @@
     "right-to-erasure": [
       "security/gdpr-data-privacy"
     ],
+    "risk-scoring": [
+      "architect/aml-kyc-process-architecture"
+    ],
     "robot-framework": [
       "devops/cumulusci-automation"
     ],
@@ -6561,7 +6697,11 @@
     ],
     "rollup": [
       "admin/financial-account-setup",
+      "apex/fsc-financial-calculations",
       "apex/opportunity-trigger-patterns"
+    ],
+    "rollup-customization": [
+      "apex/fsc-apex-extensions"
     ],
     "rollup-recalculation": [
       "admin/soft-credits-and-matching"
@@ -6697,6 +6837,9 @@
     "saml": [
       "architect/experience-cloud-integration-patterns",
       "lwc/experience-cloud-multi-idp-sso"
+    ],
+    "sanctions-screening": [
+      "architect/aml-kyc-process-architecture"
     ],
     "sandbox": [
       "devops/sandbox-data-isolation-gotchas",
@@ -7150,6 +7293,7 @@
     ],
     "sharing-model": [
       "admin/object-creation-and-design",
+      "architect/fsc-architecture-patterns",
       "architect/security-architecture-review",
       "data/external-user-data-sharing"
     ],
@@ -7535,6 +7679,9 @@
     "taxonomy": [
       "architect/knowledge-taxonomy-design"
     ],
+    "tdtm": [
+      "apex/npsp-trigger-framework-extension"
+    ],
     "team-members": [
       "apex/opportunity-trigger-patterns"
     ],
@@ -7717,6 +7864,12 @@
     ],
     "trigger-decision": [
       "admin/process-automation-selection"
+    ],
+    "trigger-framework": [
+      "apex/npsp-trigger-framework-extension"
+    ],
+    "trigger-management": [
+      "apex/fsc-apex-extensions"
     ],
     "trigger-recursion": [
       "apex/recursive-trigger-prevention"
@@ -7960,6 +8113,11 @@
     ],
     "wealth-aggregation": [
       "admin/fsc-relationship-groups"
+    ],
+    "wealth-management": [
+      "apex/fsc-financial-calculations",
+      "apex/fsc-integration-patterns-dev",
+      "architect/wealth-management-architecture"
     ],
     "web-to-case": [
       "admin/case-management-setup",
