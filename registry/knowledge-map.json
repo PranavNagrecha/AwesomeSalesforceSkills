@@ -49,6 +49,7 @@
       "admin/data-model-documentation",
       "admin/data-skew-and-sharing-performance",
       "admin/delegated-administration",
+      "admin/digital-storefront-requirements",
       "admin/duplicate-management",
       "admin/dynamic-forms-and-actions",
       "admin/einstein-activity-capture-setup",
@@ -84,6 +85,7 @@
       "admin/fsl-shifts-and-crew",
       "admin/fsl-sla-configuration-requirements",
       "admin/fsl-work-order-management",
+      "admin/fundraising-process-mapping",
       "admin/gift-entry-and-processing",
       "admin/global-actions-and-quick-actions",
       "admin/grant-management-setup",
@@ -178,12 +180,14 @@
       "agentforce/agentforce-sales-ai-setup",
       "agentforce/agentforce-service-ai-setup",
       "agentforce/custom-agent-actions-apex",
+      "agentforce/data-cloud-vector-search-dev",
       "agentforce/einstein-bots-to-agentforce-migration",
       "agentforce/einstein-copilot-for-sales",
       "agentforce/einstein-copilot-for-service",
       "agentforce/einstein-discovery-development",
       "agentforce/einstein-next-best-action",
       "agentforce/einstein-prediction-builder",
+      "agentforce/einstein-search-personalization",
       "agentforce/einstein-trust-layer",
       "agentforce/mcp-tool-definition-apex",
       "agentforce/model-builder-and-byollm",
@@ -193,6 +197,7 @@
       "agentforce/sf-to-llm-data-pipelines"
     ],
     "apex": [
+      "apex/ai-model-integration-apex",
       "apex/ampscript-development",
       "apex/apex-cpu-and-heap-optimization",
       "apex/apex-design-patterns",
@@ -295,11 +300,14 @@
       "architect/ai-platform-architecture",
       "architect/ai-ready-data-architecture",
       "architect/aml-kyc-process-architecture",
+      "architect/b2b-vs-b2c-architecture",
       "architect/case-deflection-strategy",
+      "architect/commerce-integration-patterns",
       "architect/cpq-architecture-patterns",
       "architect/cpq-integration-with-erp",
       "architect/cpq-vs-standard-products-decision",
       "architect/customer-effort-scoring",
+      "architect/data-cloud-architecture",
       "architect/einstein-bot-architecture",
       "architect/experience-cloud-integration-patterns",
       "architect/experience-cloud-licensing-model",
@@ -313,6 +321,7 @@
       "architect/fundraising-integration-patterns",
       "architect/government-cloud-compliance",
       "architect/ha-dr-architecture",
+      "architect/headless-commerce-architecture",
       "architect/headless-vs-standard-experience",
       "architect/health-cloud-data-residency",
       "architect/health-cloud-multi-cloud-strategy",
@@ -333,10 +342,12 @@
       "architect/multi-currency-sales-architecture",
       "architect/multi-org-strategy",
       "architect/multi-site-architecture",
+      "architect/multi-store-architecture",
       "architect/nfr-definition-for-salesforce",
       "architect/nonprofit-platform-architecture",
       "architect/npsp-vs-nonprofit-cloud-decision",
       "architect/omni-channel-capacity-model",
+      "architect/order-management-architecture",
       "architect/org-edition-and-feature-licensing",
       "architect/org-limits-monitoring",
       "architect/payer-vs-provider-architecture",
@@ -380,6 +391,7 @@
       "data/fhir-data-mapping",
       "data/field-history-tracking",
       "data/financial-account-migration",
+      "data/financial-data-quality",
       "data/fsc-data-model",
       "data/fsl-reporting-data-model",
       "data/fsl-resource-and-skill-data",
@@ -580,17 +592,33 @@
     "2gp": [
       "devops/second-generation-managed-packages"
     ],
+    "AI": [
+      "apex/ai-model-integration-apex"
+    ],
+    "Agentforce": [
+      "agentforce/data-cloud-vector-search-dev"
+    ],
+    "Apex": [
+      "apex/ai-model-integration-apex"
+    ],
+    "B2B": [
+      "architect/b2b-vs-b2c-architecture",
+      "architect/multi-store-architecture"
+    ],
     "B2B-commerce": [
-      "apex/commerce-payment-integration"
+      "apex/commerce-payment-integration",
+      "architect/commerce-integration-patterns"
     ],
     "B2B-marketing-analytics": [
       "admin/campaign-planning-and-attribution"
     ],
     "B2C": [
+      "architect/b2b-vs-b2c-architecture",
       "data/person-accounts"
     ],
     "B2C-commerce": [
-      "apex/headless-commerce-api"
+      "apex/headless-commerce-api",
+      "architect/headless-commerce-architecture"
     ],
     "BatchApexErrorEvent": [
       "apex/governor-limit-recovery-patterns"
@@ -607,7 +635,8 @@
       "architect/customer-effort-scoring"
     ],
     "CartExtension": [
-      "apex/commerce-extension-points"
+      "apex/commerce-extension-points",
+      "architect/commerce-integration-patterns"
     ],
     "ChangeEventHeader": [
       "apex/change-data-capture-apex"
@@ -618,11 +647,28 @@
     "CommercePayments": [
       "apex/commerce-payment-integration"
     ],
+    "Composable-Storefront": [
+      "architect/headless-commerce-architecture"
+    ],
     "CreatedDate": [
       "admin/system-field-behavior-and-audit"
     ],
+    "D2C": [
+      "architect/multi-store-architecture"
+    ],
     "D2C-commerce": [
-      "apex/commerce-payment-integration"
+      "apex/commerce-payment-integration",
+      "architect/commerce-integration-patterns"
+    ],
+    "DMO": [
+      "architect/data-cloud-architecture"
+    ],
+    "Data-360": [
+      "agentforce/data-cloud-vector-search-dev"
+    ],
+    "Data-Cloud": [
+      "agentforce/data-cloud-vector-search-dev",
+      "architect/data-cloud-architecture"
     ],
     "Database.DmlOptions": [
       "apex/case-trigger-patterns"
@@ -638,6 +684,18 @@
     ],
     "EPT": [
       "admin/lightning-page-performance-tuning"
+    ],
+    "ERP": [
+      "architect/commerce-integration-patterns"
+    ],
+    "Einstein": [
+      "apex/ai-model-integration-apex"
+    ],
+    "Einstein-Search": [
+      "agentforce/einstein-search-personalization"
+    ],
+    "External-Services": [
+      "apex/ai-model-integration-apex"
     ],
     "FOR-UPDATE": [
       "apex/record-locking-and-contention"
@@ -673,20 +731,39 @@
     "MIAW": [
       "admin/messaging-and-chat-setup"
     ],
+    "Managed-Runtime": [
+      "architect/headless-commerce-architecture"
+    ],
     "MasterRecordId": [
       "apex/case-trigger-patterns"
     ],
     "MetadataComponentDependency": [
       "architect/metadata-coverage-and-dependencies"
     ],
+    "NLS": [
+      "agentforce/einstein-search-personalization"
+    ],
+    "NPC": [
+      "admin/fundraising-process-mapping"
+    ],
     "NPS": [
       "architect/customer-effort-scoring"
+    ],
+    "NPSP": [
+      "admin/fundraising-process-mapping"
     ],
     "NullPointerException": [
       "apex/common-apex-runtime-errors"
     ],
     "OAuth2": [
       "apex/headless-commerce-api"
+    ],
+    "OCI": [
+      "architect/order-management-architecture"
+    ],
+    "OMS": [
+      "architect/commerce-integration-patterns",
+      "architect/order-management-architecture"
     ],
     "ObjectTerritory2Association": [
       "apex/territory-api-and-assignment",
@@ -695,20 +772,44 @@
     "PCI-compliance": [
       "apex/commerce-payment-integration"
     ],
+    "PIM": [
+      "architect/commerce-integration-patterns"
+    ],
+    "PWA-kit": [
+      "admin/digital-storefront-requirements",
+      "architect/headless-commerce-architecture"
+    ],
     "PendingServiceRouting": [
       "apex/omni-channel-custom-routing"
     ],
+    "Platform-Cache": [
+      "apex/ai-model-integration-apex"
+    ],
+    "Query-API": [
+      "agentforce/data-cloud-vector-search-dev"
+    ],
     "QueryException": [
       "apex/common-apex-runtime-errors"
+    ],
+    "Queueable": [
+      "apex/ai-model-integration-apex"
+    ],
+    "RAG": [
+      "agentforce/data-cloud-vector-search-dev"
     ],
     "ROI": [
       "admin/campaign-planning-and-attribution"
     ],
     "RegisteredExternalService": [
-      "apex/commerce-extension-points"
+      "apex/commerce-extension-points",
+      "architect/commerce-integration-patterns"
     ],
     "SCAPI": [
-      "apex/headless-commerce-api"
+      "apex/headless-commerce-api",
+      "architect/headless-commerce-architecture"
+    ],
+    "SFRA": [
+      "admin/digital-storefront-requirements"
     ],
     "SLA": [
       "admin/entitlements-and-milestones",
@@ -748,6 +849,9 @@
     "VlocityOpenInterface2": [
       "omnistudio/omnistudio-remote-actions"
     ],
+    "WebStore": [
+      "architect/multi-store-architecture"
+    ],
     "WorkCapacityLimit": [
       "admin/fsl-capacity-planning"
     ],
@@ -777,6 +881,9 @@
     ],
     "access-governance": [
       "admin/permission-set-architecture"
+    ],
+    "accessibility": [
+      "admin/digital-storefront-requirements"
     ],
     "accessibility-testing": [
       "lwc/lwc-testing"
@@ -838,6 +945,7 @@
       "agentforce/einstein-next-best-action"
     ],
     "activation": [
+      "architect/data-cloud-architecture",
       "data/data-cloud-data-streams",
       "omnistudio/omniscript-versioning"
     ],
@@ -1000,6 +1108,9 @@
     ],
     "ai-use-case-assessment": [
       "admin/ai-use-case-assessment"
+    ],
+    "aiplatform-ModelsAPI": [
+      "apex/ai-model-integration-apex"
     ],
     "alarm-event": [
       "flow/pause-elements-and-wait-events"
@@ -1222,6 +1333,7 @@
       "admin/approval-processes"
     ],
     "architect": [
+      "architect/commerce-integration-patterns",
       "architect/fsl-optimization-architecture",
       "architect/health-cloud-multi-cloud-strategy",
       "architect/hipaa-compliance-architecture",
@@ -1236,7 +1348,9 @@
     ],
     "architecture": [
       "architect/ai-agent-org-integration-architecture",
+      "architect/b2b-vs-b2c-architecture",
       "architect/fsc-architecture-patterns",
+      "architect/headless-commerce-architecture",
       "architect/integration-framework-design",
       "architect/payer-vs-provider-architecture",
       "architect/sales-cloud-architecture"
@@ -1600,6 +1714,7 @@
       "agentforce/agentforce-persona-design"
     ],
     "branding": [
+      "admin/digital-storefront-requirements",
       "admin/experience-cloud-site-setup"
     ],
     "briefcase-priming": [
@@ -1790,6 +1905,7 @@
       "architect/integration-framework-design"
     ],
     "callouts": [
+      "apex/ai-model-integration-apex",
       "integration/callout-limits-and-async-patterns"
     ],
     "campaign-hierarchy": [
@@ -1913,6 +2029,9 @@
     "cases": [
       "admin/case-management-setup"
     ],
+    "catalog": [
+      "architect/multi-store-architecture"
+    ],
     "catalog-design": [
       "admin/commerce-catalog-strategy"
     ],
@@ -1983,6 +2102,9 @@
     ],
     "checkout-extension": [
       "apex/commerce-extension-points"
+    ],
+    "chunking": [
+      "agentforce/data-cloud-vector-search-dev"
     ],
     "ci-cd": [
       "devops/bitbucket-pipelines-for-salesforce",
@@ -2118,7 +2240,12 @@
       "admin/commerce-catalog-strategy"
     ],
     "commerce-cloud": [
-      "admin/b2c-commerce-store-setup"
+      "admin/b2c-commerce-store-setup",
+      "admin/digital-storefront-requirements",
+      "architect/b2b-vs-b2c-architecture",
+      "architect/commerce-integration-patterns",
+      "architect/headless-commerce-architecture",
+      "architect/multi-store-architecture"
     ],
     "commerce-lwc-components": [
       "lwc/commerce-lwc-components"
@@ -2603,6 +2730,9 @@
     "cti-adapter": [
       "apex/cti-adapter-development"
     ],
+    "cultivation": [
+      "admin/fundraising-process-mapping"
+    ],
     "cumulative-rollup": [
       "admin/collaborative-forecasts"
     ],
@@ -2826,8 +2956,14 @@
     "data-integration": [
       "data/external-id-strategy"
     ],
+    "data-integrity": [
+      "data/financial-data-quality"
+    ],
     "data-isolation": [
       "devops/sandbox-data-isolation-gotchas"
+    ],
+    "data-lake": [
+      "architect/data-cloud-architecture"
     ],
     "data-load": [
       "admin/data-import-and-management",
@@ -2864,6 +3000,7 @@
     ],
     "data-model": [
       "admin/data-model-documentation",
+      "architect/b2b-vs-b2c-architecture",
       "architect/fsc-architecture-patterns",
       "architect/npsp-vs-nonprofit-cloud-decision",
       "architect/payer-vs-provider-architecture",
@@ -2902,7 +3039,8 @@
     ],
     "data-reconciliation": [
       "data/billing-data-reconciliation",
-      "data/data-reconciliation-patterns"
+      "data/data-reconciliation-patterns",
+      "data/financial-data-quality"
     ],
     "data-refresh": [
       "admin/analytics-dataset-management"
@@ -3303,6 +3441,9 @@
     "donor-data": [
       "architect/fundraising-integration-patterns"
     ],
+    "donor-pipeline": [
+      "admin/fundraising-process-mapping"
+    ],
     "donor-stewardship": [
       "admin/npsp-engagement-plans"
     ],
@@ -3311,6 +3452,9 @@
     ],
     "dst": [
       "apex/timezone-and-datetime-pitfalls"
+    ],
+    "duplicate-detection": [
+      "data/financial-data-quality"
     ],
     "duplicate-management": [
       "data/clinical-data-quality",
@@ -3501,6 +3645,9 @@
     "embedding-pipeline": [
       "agentforce/sf-to-llm-data-pipelines"
     ],
+    "embeddings": [
+      "agentforce/data-cloud-vector-search-dev"
+    ],
     "emr-sync": [
       "architect/fhir-integration-architecture"
     ],
@@ -3558,6 +3705,7 @@
     ],
     "entitlement": [
       "apex/case-trigger-patterns",
+      "architect/multi-store-architecture",
       "data/service-metrics-data-model"
     ],
     "entitlement-policy": [
@@ -3975,7 +4123,8 @@
       "admin/revenue-recognition-requirements"
     ],
     "financial-account": [
-      "apex/fsc-integration-patterns-dev"
+      "apex/fsc-integration-patterns-dev",
+      "data/financial-data-quality"
     ],
     "financial-account-roles": [
       "admin/financial-account-setup"
@@ -3986,6 +4135,9 @@
     ],
     "financial-calculations": [
       "apex/fsc-financial-calculations"
+    ],
+    "financial-data-quality": [
+      "data/financial-data-quality"
     ],
     "financial-goal": [
       "admin/financial-planning-process"
@@ -4009,6 +4161,7 @@
       "admin/compliance-documentation-requirements",
       "admin/compliant-data-sharing-setup",
       "architect/aml-kyc-process-architecture",
+      "data/financial-data-quality",
       "data/fsc-data-model"
     ],
     "financial-services-cloud": [
@@ -4214,6 +4367,7 @@
       "architect/fsc-architecture-patterns",
       "architect/wealth-management-architecture",
       "data/financial-account-migration",
+      "data/financial-data-quality",
       "data/fsc-data-model",
       "data/person-accounts"
     ],
@@ -4291,6 +4445,9 @@
     "fsl-work-order-migration": [
       "data/fsl-work-order-migration"
     ],
+    "fulfillment": [
+      "architect/order-management-architecture"
+    ],
     "fulfillment-order": [
       "admin/commerce-order-management"
     ],
@@ -4298,6 +4455,7 @@
       "admin/grant-management-setup"
     ],
     "fundraising": [
+      "admin/fundraising-process-mapping",
       "architect/nonprofit-platform-architecture"
     ],
     "fundraising-integration": [
@@ -4433,6 +4591,7 @@
       "lwc/wire-service-patterns"
     ],
     "grounding": [
+      "agentforce/data-cloud-vector-search-dev",
       "agentforce/prompt-builder-templates"
     ],
     "guardrails": [
@@ -4479,6 +4638,7 @@
       "data/batch-data-cleanup-patterns"
     ],
     "headless": [
+      "architect/headless-commerce-architecture",
       "architect/headless-vs-standard-experience"
     ],
     "headless-cms": [
@@ -4613,6 +4773,9 @@
       "admin/npsp-household-accounts",
       "architect/npsp-vs-nonprofit-cloud-decision"
     ],
+    "household-rollup": [
+      "data/financial-data-quality"
+    ],
     "households": [
       "data/constituent-data-migration"
     ],
@@ -4670,6 +4833,7 @@
       "integration/webhook-inbound-patterns"
     ],
     "identity-resolution": [
+      "architect/data-cloud-architecture",
       "data/data-cloud-data-streams"
     ],
     "identity-verification": [
@@ -4805,6 +4969,7 @@
       "integration/outbound-messages-and-callbacks"
     ],
     "integration-architecture": [
+      "architect/b2b-vs-b2c-architecture",
       "integration/api-led-connectivity"
     ],
     "integration-auth": [
@@ -5034,6 +5199,9 @@
       "admin/compliance-documentation-requirements",
       "architect/aml-kyc-process-architecture"
     ],
+    "lakehouse": [
+      "architect/data-cloud-architecture"
+    ],
     "large-data-volumes": [
       "admin/data-skew-and-sharing-performance",
       "admin/report-performance-tuning",
@@ -5195,7 +5363,8 @@
       "lwc/lwc-data-table"
     ],
     "lightning-experience": [
-      "admin/in-app-guidance-and-walkthroughs"
+      "admin/in-app-guidance-and-walkthroughs",
+      "agentforce/einstein-search-personalization"
     ],
     "lightning-experience-insights": [
       "admin/lightning-page-performance-tuning"
@@ -5281,7 +5450,8 @@
       "devops/performance-testing-salesforce"
     ],
     "localization": [
-      "admin/multi-language-and-translation"
+      "admin/multi-language-and-translation",
+      "architect/multi-store-architecture"
     ],
     "log-levels": [
       "apex/custom-logging-and-monitoring"
@@ -5413,6 +5583,9 @@
     ],
     "maintenance-window": [
       "data/sharing-recalculation-performance"
+    ],
+    "major-gifts": [
+      "admin/fundraising-process-mapping"
     ],
     "managed-checkout": [
       "admin/commerce-checkout-configuration",
@@ -5681,6 +5854,9 @@
     "month-end-close": [
       "data/billing-data-reconciliation"
     ],
+    "moves-management": [
+      "admin/fundraising-process-mapping"
+    ],
     "mpi": [
       "data/clinical-data-quality"
     ],
@@ -5720,6 +5896,7 @@
     "multi-currency": [
       "admin/products-and-pricebooks",
       "architect/cpq-architecture-patterns",
+      "architect/multi-store-architecture",
       "data/multi-currency-and-advanced-currency-management"
     ],
     "multi-currency-sales-architecture": [
@@ -5743,6 +5920,9 @@
     ],
     "multi-site": [
       "architect/multi-site-architecture"
+    ],
+    "multi-store": [
+      "architect/multi-store-architecture"
     ],
     "multi-touch-attribution": [
       "admin/campaign-planning-and-attribution"
@@ -5825,6 +6005,7 @@
       "architect/einstein-bot-architecture"
     ],
     "nonprofit": [
+      "admin/fundraising-process-mapping",
       "admin/gift-entry-and-processing",
       "admin/grant-management-setup",
       "admin/npsp-engagement-plans",
@@ -5961,6 +6142,9 @@
     ],
     "omniJsonData": [
       "omnistudio/omnistudio-custom-lwc-elements"
+    ],
+    "omnichannel-inventory": [
+      "architect/order-management-architecture"
     ],
     "omnidatatransform": [
       "omnistudio/document-generation-omnistudio"
@@ -6120,7 +6304,8 @@
     ],
     "order-management": [
       "admin/commerce-order-management",
-      "architect/cpq-integration-with-erp"
+      "architect/cpq-integration-with-erp",
+      "architect/order-management-architecture"
     ],
     "order-of-execution": [
       "apex/cross-object-formula-and-rollup-performance",
@@ -6130,6 +6315,9 @@
     ],
     "order-plugin": [
       "apex/cpq-apex-plugins"
+    ],
+    "order-routing": [
+      "architect/order-management-architecture"
     ],
     "order-submission": [
       "apex/commerce-order-api"
@@ -6364,6 +6552,7 @@
     ],
     "payment-gateway": [
       "apex/billing-integration-apex",
+      "architect/commerce-integration-patterns",
       "architect/fundraising-integration-patterns"
     ],
     "payment-gateway-adapter": [
@@ -6455,6 +6644,8 @@
       "agentforce/agentforce-persona-design"
     ],
     "personalization": [
+      "admin/digital-storefront-requirements",
+      "agentforce/einstein-search-personalization",
       "apex/ampscript-development"
     ],
     "pgi-library": [
@@ -6544,6 +6735,7 @@
       "lwc/static-resources-in-lwc"
     ],
     "platform-selection": [
+      "architect/b2b-vs-b2c-architecture",
       "architect/marketing-cloud-vs-mcae-selection",
       "architect/platform-selection-guidance"
     ],
@@ -6806,6 +6998,9 @@
     ],
     "promise": [
       "lwc/lwc-imperative-apex"
+    ],
+    "promoted-results": [
+      "agentforce/einstein-search-personalization"
     ],
     "promotion": [
       "devops/devops-center-pipeline"
@@ -7265,6 +7460,9 @@
     "return-order": [
       "admin/commerce-order-management"
     ],
+    "returns": [
+      "architect/order-management-architecture"
+    ],
     "revenue-cloud": [
       "admin/quote-to-cash-process",
       "omnistudio/industries-cpq-vs-salesforce-cpq"
@@ -7655,6 +7853,7 @@
       "data/sosl-search-patterns"
     ],
     "search-ranking": [
+      "agentforce/einstein-search-personalization",
       "apex/commerce-search-customization"
     ],
     "search-scope": [
@@ -7718,6 +7917,9 @@
     ],
     "seed-data": [
       "omnistudio/omnistudio-lwc-integration"
+    ],
+    "segmentation": [
+      "architect/data-cloud-architecture"
     ],
     "selector-layer": [
       "apex/fflib-enterprise-patterns"
@@ -7893,7 +8095,8 @@
       "devops/source-tracking-and-conflict-resolution"
     ],
     "sfcc": [
-      "admin/b2c-commerce-store-setup"
+      "admin/b2c-commerce-store-setup",
+      "architect/b2b-vs-b2c-architecture"
     ],
     "sfdx": [
       "apex/sf-cli-and-sfdx-essentials",
@@ -7919,7 +8122,8 @@
       "devops/salesforce-dx-project-structure"
     ],
     "sfra": [
-      "admin/b2c-commerce-store-setup"
+      "admin/b2c-commerce-store-setup",
+      "architect/b2b-vs-b2c-architecture"
     ],
     "sftp": [
       "architect/marketing-integration-patterns"
@@ -8088,6 +8292,9 @@
     "softphone": [
       "apex/cti-adapter-development"
     ],
+    "solicitation": [
+      "admin/fundraising-process-mapping"
+    ],
     "solution-design": [
       "architect/solution-design-patterns"
     ],
@@ -8147,6 +8354,9 @@
     ],
     "spf": [
       "admin/email-deliverability-strategy"
+    ],
+    "split-orders": [
+      "architect/order-management-architecture"
     ],
     "sql": [
       "admin/lead-scoring-requirements",
@@ -8220,6 +8430,9 @@
     "staticresourcecalloutmock": [
       "apex/apex-mocking-and-stubs"
     ],
+    "stewardship": [
+      "admin/fundraising-process-mapping"
+    ],
     "storage": [
       "architect/org-limits-monitoring",
       "data/data-archival-strategies",
@@ -8236,7 +8449,8 @@
       "data/data-storage-management"
     ],
     "storefront": [
-      "admin/b2c-commerce-store-setup"
+      "admin/b2c-commerce-store-setup",
+      "admin/digital-storefront-requirements"
     ],
     "storefront-api": [
       "lwc/commerce-lwc-components"
@@ -8630,6 +8844,9 @@
     "unified-activity": [
       "apex/einstein-activity-capture-api"
     ],
+    "unified-profile": [
+      "architect/data-cloud-architecture"
+    ],
     "unified-routing": [
       "architect/multi-channel-service-architecture"
     ],
@@ -8739,6 +8956,7 @@
       "admin/fsl-inventory-management"
     ],
     "vector-search": [
+      "agentforce/data-cloud-vector-search-dev",
       "agentforce/rag-patterns-in-salesforce",
       "architect/ai-ready-data-architecture"
     ],
@@ -8846,7 +9064,8 @@
     ],
     "webstore": [
       "admin/b2b-commerce-store-setup",
-      "admin/b2b-vs-b2c-requirements"
+      "admin/b2b-vs-b2c-requirements",
+      "architect/b2b-vs-b2c-architecture"
     ],
     "webstore-catalog": [
       "admin/commerce-product-catalog"

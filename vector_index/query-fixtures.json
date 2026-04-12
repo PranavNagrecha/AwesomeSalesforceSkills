@@ -3671,6 +3671,78 @@
       "domain": "architect",
       "expected_skill": "architect/fundraising-integration-patterns",
       "top_k": 3
+    },
+    {
+      "query": "FSC FinancialAccount duplicate detection data quality reconciliation household rollup stale",
+      "domain": "data",
+      "expected_skill": "data/financial-data-quality",
+      "top_k": 3
+    },
+    {
+      "query": "NPSP fundraising process cultivation solicitation stewardship major gift donor pipeline stage",
+      "domain": "admin",
+      "expected_skill": "admin/fundraising-process-mapping",
+      "top_k": 3
+    },
+    {
+      "query": "Commerce Cloud digital storefront requirements SFRA PWA Kit branding accessibility mobile",
+      "domain": "admin",
+      "expected_skill": "admin/digital-storefront-requirements",
+      "top_k": 3
+    },
+    {
+      "query": "B2B vs B2C Commerce architecture platform selection BuyerGroup SFCC WebStore decision",
+      "domain": "architect",
+      "expected_skill": "architect/b2b-vs-b2c-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "headless commerce architecture PWA Kit SCAPI Composable Storefront API-first caching",
+      "domain": "architect",
+      "expected_skill": "architect/headless-commerce-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "multi-store Commerce architecture shared catalog localization multi-currency regional WebStore",
+      "domain": "architect",
+      "expected_skill": "architect/multi-store-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "Commerce Cloud integration ERP PIM payment gateway CartExtension tax shipping OMS",
+      "domain": "architect",
+      "expected_skill": "architect/commerce-integration-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "order management architecture fulfillment OMS OCI split orders routing returns refund",
+      "domain": "architect",
+      "expected_skill": "architect/order-management-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "Einstein Search personalization NLS natural language search promoted results ranking signals",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/einstein-search-personalization",
+      "top_k": 3
+    },
+    {
+      "query": "Apex AI model integration aiplatform ModelsAPI Einstein Platform Services callout caching",
+      "domain": "apex",
+      "expected_skill": "apex/ai-model-integration-apex",
+      "top_k": 3
+    },
+    {
+      "query": "Data Cloud vector search development embedding generation search index RAG Agentforce grounding",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/data-cloud-vector-search-dev",
+      "top_k": 3
+    },
+    {
+      "query": "Data Cloud architecture identity resolution activation targets segmentation DMO unified profile",
+      "domain": "architect",
+      "expected_skill": "architect/data-cloud-architecture",
+      "top_k": 3
     }
   ]
 }
