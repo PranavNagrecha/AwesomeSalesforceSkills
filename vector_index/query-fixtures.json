@@ -3611,6 +3611,66 @@
       "domain": "admin",
       "expected_skill": "admin/analytics-dataset-management",
       "top_k": 3
+    },
+    {
+      "query": "B2B vs D2C Commerce platform selection requirements buyer journey account-based",
+      "domain": "admin",
+      "expected_skill": "admin/b2b-vs-b2c-requirements",
+      "top_k": 3
+    },
+    {
+      "query": "checkout flow design LWR Managed Checkout vs Aura storefront requirements",
+      "domain": "admin",
+      "expected_skill": "admin/commerce-checkout-flow-design",
+      "top_k": 3
+    },
+    {
+      "query": "product catalog taxonomy design attribute management storefront navigation strategy",
+      "domain": "admin",
+      "expected_skill": "admin/commerce-catalog-strategy",
+      "top_k": 3
+    },
+    {
+      "query": "headless commerce SCAPI SLAS authentication custom frontend React storefront",
+      "domain": "apex",
+      "expected_skill": "apex/headless-commerce-api",
+      "top_k": 3
+    },
+    {
+      "query": "commerce payment gateway integration CommercePayments Apex PCI tokenization",
+      "domain": "apex",
+      "expected_skill": "apex/commerce-payment-integration",
+      "top_k": 3
+    },
+    {
+      "query": "commerce search indexing faceted navigation search ranking Einstein recommendations",
+      "domain": "apex",
+      "expected_skill": "apex/commerce-search-customization",
+      "top_k": 3
+    },
+    {
+      "query": "B2C commerce order API SCAPI OCAPI headless storefront order submission SLAS",
+      "domain": "apex",
+      "expected_skill": "apex/commerce-order-api",
+      "top_k": 3
+    },
+    {
+      "query": "nonprofit NPSP data model household account constituent giving history program participation",
+      "domain": "data",
+      "expected_skill": "data/nonprofit-data-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "Nonprofit Cloud platform architecture NPC modules fundraising program management Person Account",
+      "domain": "architect",
+      "expected_skill": "architect/nonprofit-platform-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "nonprofit fundraising integration payment gateway Elevate wealth screening email marketing",
+      "domain": "architect",
+      "expected_skill": "architect/fundraising-integration-patterns",
+      "top_k": 3
     }
   ]
 }
