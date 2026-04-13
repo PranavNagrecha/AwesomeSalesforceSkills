@@ -3923,6 +3923,66 @@
       "domain": "architect",
       "expected_skill": "architect/crm-analytics-vs-tableau-decision",
       "top_k": 3
+    },
+    {
+      "query": "how do I connect my external app to Agentforce via API with webhook handling",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/agentforce-custom-channel-dev",
+      "top_k": 3
+    },
+    {
+      "query": "how do I set up Communications Cloud Enterprise Product Catalog EPC for the first time",
+      "domain": "admin",
+      "expected_skill": "admin/industries-communications-setup",
+      "top_k": 3
+    },
+    {
+      "query": "configuring service points meter management rate plans in Energy and Utilities Cloud",
+      "domain": "admin",
+      "expected_skill": "admin/industries-energy-utilities-setup",
+      "top_k": 3
+    },
+    {
+      "query": "should we use OmniStudio or Screen Flow for this guided wizard does org have Industries license",
+      "domain": "architect",
+      "expected_skill": "architect/omnistudio-vs-standard-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "OmniScript performance degrading under high concurrent user load Integration Procedure hitting SOQL limits",
+      "domain": "architect",
+      "expected_skill": "architect/omnistudio-scalability-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "how do I create an Einstein Discovery story in CRM Analytics Studio set up prediction fields",
+      "domain": "admin",
+      "expected_skill": "admin/einstein-discovery-setup",
+      "top_k": 3
+    },
+    {
+      "query": "deploying a trained Einstein Discovery model to production records recommendations in Flow",
+      "domain": "admin",
+      "expected_skill": "admin/einstein-discovery-deployment",
+      "top_k": 3
+    },
+    {
+      "query": "how do I upload CSV data from external system into CRM Analytics using External Data API InsightsExternalData",
+      "domain": "data",
+      "expected_skill": "data/analytics-external-data",
+      "top_k": 3
+    },
+    {
+      "query": "CDC subscriber went offline for 3 days how to re-sync handling GAP_CREATE events incremental replication",
+      "domain": "data",
+      "expected_skill": "data/cdc-data-sync-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "should we use event-driven architecture choreography vs orchestration for multi-system workflow",
+      "domain": "architect",
+      "expected_skill": "architect/event-driven-architecture",
+      "top_k": 3
     }
   ]
 }

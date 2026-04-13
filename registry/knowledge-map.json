@@ -63,6 +63,8 @@
       "admin/dynamic-forms-and-actions",
       "admin/einstein-activity-capture-setup",
       "admin/einstein-analytics-basics",
+      "admin/einstein-discovery-deployment",
+      "admin/einstein-discovery-setup",
       "admin/email-deliverability-strategy",
       "admin/email-studio-administration",
       "admin/email-templates-and-alerts",
@@ -104,6 +106,8 @@
       "admin/hipaa-workflow-design",
       "admin/household-model-configuration",
       "admin/in-app-guidance-and-walkthroughs",
+      "admin/industries-communications-setup",
+      "admin/industries-energy-utilities-setup",
       "admin/industries-insurance-setup",
       "admin/integration-admin-connected-apps",
       "admin/integration-user-management",
@@ -190,6 +194,7 @@
       "agentforce/agent-testing-and-evaluation",
       "agentforce/agent-topic-design",
       "agentforce/agentforce-agent-creation",
+      "agentforce/agentforce-custom-channel-dev",
       "agentforce/agentforce-guardrails",
       "agentforce/agentforce-observability",
       "agentforce/agentforce-persona-design",
@@ -333,6 +338,7 @@
       "architect/customer-effort-scoring",
       "architect/data-cloud-architecture",
       "architect/einstein-bot-architecture",
+      "architect/event-driven-architecture",
       "architect/experience-cloud-integration-patterns",
       "architect/experience-cloud-licensing-model",
       "architect/experience-cloud-performance",
@@ -373,6 +379,8 @@
       "architect/nonprofit-platform-architecture",
       "architect/npsp-vs-nonprofit-cloud-decision",
       "architect/omni-channel-capacity-model",
+      "architect/omnistudio-scalability-patterns",
+      "architect/omnistudio-vs-standard-architecture",
       "architect/omnistudio-vs-standard-decision",
       "architect/order-management-architecture",
       "architect/org-edition-and-feature-licensing",
@@ -391,11 +399,13 @@
       "architect/well-architected-review"
     ],
     "data": [
+      "data/analytics-external-data",
       "data/batch-data-cleanup-patterns",
       "data/billing-data-reconciliation",
       "data/bulk-api-and-large-data-loads",
       "data/bulk-api-patterns",
       "data/case-history-migration",
+      "data/cdc-data-sync-patterns",
       "data/clinical-data-quality",
       "data/community-analytics-data",
       "data/community-user-data-migration",
@@ -657,6 +667,7 @@
     ],
     "CDC": [
       "apex/change-data-capture-apex",
+      "data/cdc-data-sync-patterns",
       "data/data-reconciliation-patterns",
       "integration/change-data-capture-integration"
     ],
@@ -737,6 +748,9 @@
     ],
     "InboundEmailHandler": [
       "apex/apex-email-services"
+    ],
+    "InsightsExternalData": [
+      "data/analytics-external-data"
     ],
     "IsDeleted": [
       "admin/system-field-behavior-and-audit"
@@ -1009,6 +1023,7 @@
     "admin": [
       "admin/analytics-permission-and-sharing",
       "admin/custom-field-creation",
+      "admin/einstein-discovery-deployment",
       "admin/health-cloud-timeline",
       "admin/object-creation-and-design",
       "admin/sales-process-mapping",
@@ -1016,6 +1031,9 @@
     ],
     "admin-declarative": [
       "admin/dynamic-forms-and-actions"
+    ],
+    "admin-setup": [
+      "admin/industries-energy-utilities-setup"
     ],
     "advanced-approvals": [
       "admin/cpq-approval-workflows",
@@ -1045,7 +1063,8 @@
       "agentforce/custom-agent-actions-apex"
     ],
     "agent-api": [
-      "agentforce/agent-channel-deployment"
+      "agentforce/agent-channel-deployment",
+      "agentforce/agentforce-custom-channel-dev"
     ],
     "agent-boundaries": [
       "agentforce/agent-topic-design"
@@ -1098,6 +1117,7 @@
       "agentforce/agent-testing-and-evaluation",
       "agentforce/agent-topic-design",
       "agentforce/agentforce-agent-creation",
+      "agentforce/agentforce-custom-channel-dev",
       "agentforce/agentforce-guardrails",
       "agentforce/agentforce-observability",
       "agentforce/agentforce-persona-design",
@@ -1420,11 +1440,13 @@
       "architect/industries-data-model",
       "architect/insurance-cloud-architecture",
       "architect/integration-framework-design",
+      "architect/omnistudio-vs-standard-architecture",
       "architect/omnistudio-vs-standard-decision",
       "architect/payer-vs-provider-architecture",
       "architect/sales-cloud-architecture"
     ],
     "architecture-decision": [
+      "architect/event-driven-architecture",
       "architect/headless-vs-standard-experience",
       "architect/multi-org-strategy",
       "architect/multi-site-architecture",
@@ -1471,6 +1493,7 @@
       "apex/change-data-capture-apex",
       "apex/long-running-process-orchestration",
       "architect/limits-and-scalability-planning",
+      "architect/omnistudio-scalability-patterns",
       "integration/callout-limits-and-async-patterns"
     ],
     "async-await": [
@@ -1717,6 +1740,9 @@
       "data/data-archival-strategies",
       "data/external-data-and-big-objects"
     ],
+    "bigquery": [
+      "data/analytics-external-data"
+    ],
     "billing": [
       "admin/quote-to-cash-process"
     ],
@@ -1820,6 +1846,7 @@
       "data/bulk-api-and-large-data-loads",
       "data/bulk-api-patterns",
       "data/case-history-migration",
+      "data/cdc-data-sync-patterns",
       "data/data-migration-planning",
       "data/data-reconciliation-patterns",
       "data/external-id-strategy",
@@ -1847,6 +1874,9 @@
       "data/financial-account-migration",
       "data/product-catalog-data-model",
       "data/product-catalog-migration-cpq"
+    ],
+    "bulk-predict": [
+      "admin/einstein-discovery-deployment"
     ],
     "bulk-safe": [
       "apex/invocable-methods"
@@ -1921,6 +1951,9 @@
     "buyergroup-entitlement": [
       "apex/commerce-search-customization"
     ],
+    "byoc": [
+      "agentforce/agentforce-custom-channel-dev"
+    ],
     "byollm": [
       "agentforce/model-builder-and-byollm",
       "architect/ai-platform-architecture"
@@ -1938,7 +1971,8 @@
       "apex/platform-cache"
     ],
     "caching": [
-      "architect/experience-cloud-performance"
+      "architect/experience-cloud-performance",
+      "architect/omnistudio-scalability-patterns"
     ],
     "cadence-builder": [
       "admin/sales-engagement-cadences"
@@ -2125,6 +2159,9 @@
     "catalog-design": [
       "admin/commerce-catalog-strategy"
     ],
+    "ccaas": [
+      "agentforce/agentforce-custom-channel-dev"
+    ],
     "ccpa": [
       "architect/marketing-consent-architecture",
       "security/gdpr-data-privacy"
@@ -2137,7 +2174,8 @@
     ],
     "cdn": [
       "architect/experience-cloud-performance",
-      "architect/multi-site-architecture"
+      "architect/multi-site-architecture",
+      "architect/omnistudio-scalability-patterns"
     ],
     "cds-hooks": [
       "apex/clinical-decision-support",
@@ -2152,6 +2190,7 @@
     "change-data-capture": [
       "admin/change-data-capture-admin",
       "apex/change-data-capture-apex",
+      "data/cdc-data-sync-patterns",
       "integration/change-data-capture-integration",
       "integration/event-driven-architecture-patterns",
       "integration/sis-integration-patterns"
@@ -2204,6 +2243,9 @@
     "checkout-extension": [
       "apex/commerce-extension-points"
     ],
+    "choreography": [
+      "architect/event-driven-architecture"
+    ],
     "chunking": [
       "agentforce/data-cloud-vector-search-dev",
       "data/vector-database-management"
@@ -2227,6 +2269,9 @@
     ],
     "circuit-breaker": [
       "integration/retry-and-backoff-patterns"
+    ],
+    "cis-integration": [
+      "admin/industries-energy-utilities-setup"
     ],
     "claims": [
       "admin/industries-insurance-setup",
@@ -2381,6 +2426,7 @@
       "admin/b2b-commerce-store-setup"
     ],
     "communications-cloud": [
+      "admin/industries-communications-setup",
       "architect/industries-data-model"
     ],
     "community": [
@@ -2465,6 +2511,9 @@
     ],
     "composite-key": [
       "data/external-id-strategy"
+    ],
+    "concurrency": [
+      "architect/omnistudio-scalability-patterns"
     ],
     "concurrent-limits": [
       "security/api-security-and-rate-limiting"
@@ -2654,6 +2703,9 @@
     "contract-amendment": [
       "apex/cpq-api-and-automation"
     ],
+    "contract-lifecycle": [
+      "admin/industries-communications-setup"
+    ],
     "contract-renewal": [
       "apex/cpq-api-and-automation"
     ],
@@ -2678,6 +2730,9 @@
     ],
     "conversation-logs": [
       "agentforce/agentforce-observability"
+    ],
+    "conversation-state": [
+      "agentforce/agentforce-custom-channel-dev"
     ],
     "conversation-testing": [
       "agentforce/agent-testing-and-evaluation"
@@ -2795,12 +2850,15 @@
       "admin/analytics-recipe-design",
       "admin/crm-analytics-app-creation",
       "admin/einstein-analytics-basics",
+      "admin/einstein-discovery-deployment",
+      "admin/einstein-discovery-setup",
       "admin/saql-query-development",
       "agentforce/einstein-discovery-development",
       "architect/analytics-data-architecture",
       "architect/analytics-embedded-components",
       "architect/analytics-security-architecture",
-      "architect/crm-analytics-vs-tableau-decision"
+      "architect/crm-analytics-vs-tableau-decision",
+      "data/analytics-external-data"
     ],
     "crm-analytics-app-creation": [
       "admin/crm-analytics-app-creation"
@@ -2899,6 +2957,9 @@
     ],
     "custom-baseline": [
       "security/security-health-check"
+    ],
+    "custom-channel": [
+      "agentforce/agentforce-custom-channel-dev"
     ],
     "custom-component": [
       "omnistudio/omnistudio-custom-lwc-elements"
@@ -3065,6 +3126,9 @@
       "architect/experience-cloud-integration-patterns",
       "data/data-cloud-data-streams",
       "data/vector-database-management"
+    ],
+    "data-connector": [
+      "data/analytics-external-data"
     ],
     "data-display": [
       "lwc/lwc-base-component-recipes"
@@ -3234,7 +3298,8 @@
       "security/gdpr-data-privacy"
     ],
     "data-sync": [
-      "admin/analytics-data-manager"
+      "admin/analytics-data-manager",
+      "data/cdc-data-sync-patterns"
     ],
     "data-use-purpose": [
       "architect/marketing-consent-architecture"
@@ -3347,6 +3412,7 @@
     "decision-framework": [
       "architect/crm-analytics-vs-tableau-decision",
       "architect/npsp-vs-nonprofit-cloud-decision",
+      "architect/omnistudio-vs-standard-architecture",
       "architect/omnistudio-vs-standard-decision"
     ],
     "decision-matrix": [
@@ -3529,6 +3595,9 @@
     ],
     "digital-signature": [
       "apex/fsl-service-report-templates"
+    ],
+    "direct-platform-access": [
+      "architect/omnistudio-scalability-patterns"
     ],
     "directory-information": [
       "security/ferpa-compliance-in-salesforce"
@@ -3736,10 +3805,15 @@
       "architect/case-deflection-strategy"
     ],
     "einstein-discovery": [
+      "admin/einstein-discovery-deployment",
+      "admin/einstein-discovery-setup",
       "agentforce/einstein-discovery-development"
     ],
     "einstein-discovery-development": [
       "agentforce/einstein-discovery-development"
+    ],
+    "einstein-discovery-setup": [
+      "admin/einstein-discovery-setup"
     ],
     "einstein-email": [
       "agentforce/agentforce-sales-ai-setup"
@@ -3851,6 +3925,7 @@
       "security/platform-encryption"
     ],
     "energy-utilities": [
+      "admin/industries-energy-utilities-setup",
       "architect/industries-data-model"
     ],
     "enforcement-actions": [
@@ -3898,6 +3973,9 @@
     "enterprise-patterns": [
       "apex/fflib-enterprise-patterns"
     ],
+    "enterprise-product-catalog": [
+      "admin/industries-communications-setup"
+    ],
     "enterprise-wsdl": [
       "integration/soap-api-patterns"
     ],
@@ -3934,6 +4012,9 @@
     "environment-strategy": [
       "admin/sandbox-strategy",
       "devops/environment-strategy"
+    ],
+    "epc": [
+      "admin/industries-communications-setup"
     ],
     "ept": [
       "devops/performance-testing-salesforce"
@@ -4016,11 +4097,18 @@
     "event-api": [
       "architect/marketing-integration-patterns"
     ],
+    "event-design": [
+      "architect/event-driven-architecture"
+    ],
     "event-driven-architecture": [
+      "architect/event-driven-architecture",
       "integration/event-driven-architecture-patterns"
     ],
     "event-log-file": [
       "security/event-monitoring"
+    ],
+    "event-mesh": [
+      "architect/event-driven-architecture"
     ],
     "event-monitoring": [
       "admin/integration-admin-connected-apps",
@@ -4029,6 +4117,9 @@
     ],
     "event-propagation": [
       "lwc/common-lwc-runtime-errors"
+    ],
+    "event-sourcing": [
+      "architect/event-driven-architecture"
     ],
     "event-streaming": [
       "integration/change-data-capture-integration"
@@ -4084,6 +4175,7 @@
       "architect/health-cloud-multi-cloud-strategy",
       "architect/knowledge-vs-external-cms",
       "architect/multi-site-architecture",
+      "architect/omnistudio-scalability-patterns",
       "data/community-analytics-data",
       "data/community-user-data-migration",
       "data/external-user-data-sharing",
@@ -4119,6 +4211,9 @@
     "external-credentials": [
       "admin/connected-apps-and-auth",
       "integration/named-credentials-setup"
+    ],
+    "external-data": [
+      "data/analytics-external-data"
     ],
     "external-frontend": [
       "lwc/headless-experience-cloud"
@@ -4429,6 +4524,9 @@
       "flow/flow-external-services",
       "flow/flow-runtime-error-diagnosis"
     ],
+    "flow-action": [
+      "admin/einstein-discovery-deployment"
+    ],
     "flow-apex-action": [
       "apex/invocable-methods"
     ],
@@ -4692,6 +4790,9 @@
     "gap-analysis": [
       "admin/requirements-gathering-for-sf"
     ],
+    "gap-events": [
+      "data/cdc-data-sync-patterns"
+    ],
     "gau-allocations": [
       "data/npsp-data-model"
     ],
@@ -4782,6 +4883,7 @@
       "apex/governor-limit-recovery-patterns",
       "apex/governor-limits",
       "architect/limits-and-scalability-planning",
+      "architect/omnistudio-scalability-patterns",
       "data/cpq-performance-optimization",
       "flow/flow-bulkification",
       "integration/callout-limits-and-async-patterns"
@@ -4939,6 +5041,9 @@
     "high-velocity-sales": [
       "admin/sales-engagement-cadences",
       "apex/sales-engagement-api"
+    ],
+    "high-volume": [
+      "architect/omnistudio-scalability-patterns"
     ],
     "high-volume-events": [
       "integration/platform-events-integration"
@@ -5113,6 +5218,9 @@
     "incremental": [
       "architect/analytics-data-architecture"
     ],
+    "incremental-load": [
+      "data/cdc-data-sync-patterns"
+    ],
     "incremental-sync": [
       "admin/analytics-data-manager"
     ],
@@ -5129,12 +5237,15 @@
       "security/gdpr-data-privacy"
     ],
     "industries": [
+      "admin/industries-communications-setup",
       "admin/industries-insurance-setup",
       "apex/health-cloud-apex-extensions",
       "architect/industries-data-model",
+      "architect/omnistudio-vs-standard-architecture",
       "architect/omnistudio-vs-standard-decision"
     ],
     "industries-cloud": [
+      "admin/industries-energy-utilities-setup",
       "omnistudio/business-rules-engine"
     ],
     "industries-cpq": [
@@ -5221,6 +5332,7 @@
     ],
     "integration-architecture": [
       "architect/b2b-vs-b2c-architecture",
+      "architect/event-driven-architecture",
       "integration/api-led-connectivity"
     ],
     "integration-auth": [
@@ -5237,6 +5349,7 @@
       "integration/idempotent-integration-patterns"
     ],
     "integration-procedure": [
+      "architect/omnistudio-scalability-patterns",
       "omnistudio/dataraptor-load-and-extract",
       "omnistudio/document-generation-omnistudio",
       "omnistudio/integration-procedures",
@@ -5319,6 +5432,9 @@
     ],
     "ip-based-branching": [
       "security/ip-range-and-login-flow-strategy"
+    ],
+    "ip-chainable": [
+      "architect/omnistudio-scalability-patterns"
     ],
     "ip-relaxation": [
       "admin/integration-admin-connected-apps",
@@ -5717,6 +5833,9 @@
     "live-agent": [
       "admin/messaging-and-chat-setup"
     ],
+    "live-dataset": [
+      "data/analytics-external-data"
+    ],
     "llm": [
       "architect/ai-agent-org-integration-architecture"
     ],
@@ -5777,6 +5896,7 @@
       "apex/fsl-custom-actions-mobile",
       "apex/health-cloud-lwc-components",
       "architect/analytics-embedded-components",
+      "architect/omnistudio-vs-standard-architecture",
       "architect/omnistudio-vs-standard-decision",
       "architect/platform-selection-guidance",
       "architect/solution-design-patterns",
@@ -5841,6 +5961,7 @@
       "architect/experience-cloud-integration-patterns",
       "architect/experience-cloud-performance",
       "architect/headless-vs-standard-experience",
+      "architect/omnistudio-scalability-patterns",
       "lwc/experience-cloud-lwc-components",
       "lwc/experience-cloud-search-customization",
       "lwc/lwr-site-development"
@@ -6049,6 +6170,9 @@
     "metadata-namespace": [
       "apex/apex-metadata-api"
     ],
+    "meter-management": [
+      "admin/industries-energy-utilities-setup"
+    ],
     "mfa": [
       "admin/org-setup-and-configuration",
       "security/transaction-security-policies"
@@ -6123,8 +6247,17 @@
     "model-builder": [
       "agentforce/model-builder-and-byollm"
     ],
+    "model-deployment": [
+      "admin/einstein-discovery-deployment"
+    ],
     "model-management": [
       "agentforce/einstein-discovery-development"
+    ],
+    "model-manager": [
+      "admin/einstein-discovery-deployment"
+    ],
+    "model-refresh": [
+      "admin/einstein-discovery-setup"
     ],
     "model-selection": [
       "architect/ai-platform-architecture"
@@ -6457,6 +6590,7 @@
       "omnistudio/document-generation-omnistudio"
     ],
     "omniscript": [
+      "architect/omnistudio-scalability-patterns",
       "omnistudio/document-generation-omnistudio",
       "omnistudio/omniscript-design-patterns",
       "omnistudio/omniscript-versioning",
@@ -6470,6 +6604,8 @@
       "admin/client-onboarding-design",
       "admin/industries-insurance-setup",
       "admin/patient-engagement-requirements",
+      "architect/omnistudio-scalability-patterns",
+      "architect/omnistudio-vs-standard-architecture",
       "architect/omnistudio-vs-standard-decision",
       "omnistudio/business-rules-engine",
       "omnistudio/calculation-procedures",
@@ -6616,13 +6752,15 @@
       "admin/cpq-product-catalog-setup"
     ],
     "orchestration": [
-      "apex/long-running-process-orchestration"
+      "apex/long-running-process-orchestration",
+      "architect/event-driven-architecture"
     ],
     "order": [
       "admin/quote-to-cash-requirements"
     ],
     "order-management": [
       "admin/commerce-order-management",
+      "admin/industries-communications-setup",
       "architect/cpq-integration-with-erp",
       "architect/order-management-architecture"
     ],
@@ -7139,6 +7277,10 @@
     "prediction-api": [
       "agentforce/einstein-discovery-development"
     ],
+    "prediction-definition": [
+      "admin/einstein-discovery-deployment",
+      "admin/einstein-discovery-setup"
+    ],
     "preference-center": [
       "admin/consent-management-marketing"
     ],
@@ -7385,6 +7527,9 @@
     "provisioning": [
       "admin/user-access-policies"
     ],
+    "pub-sub": [
+      "architect/event-driven-architecture"
+    ],
     "pub-sub-api": [
       "integration/change-data-capture-integration",
       "integration/platform-events-integration"
@@ -7446,6 +7591,9 @@
     ],
     "queueable-callout": [
       "apex/callout-and-dml-transaction-boundaries"
+    ],
+    "queueable-chainable": [
+      "architect/omnistudio-scalability-patterns"
     ],
     "queues": [
       "admin/assignment-rules",
@@ -7531,6 +7679,9 @@
     "rate-limiting": [
       "security/api-security-and-rate-limiting"
     ],
+    "rate-plan": [
+      "admin/industries-energy-utilities-setup"
+    ],
     "reactive-parameters": [
       "lwc/wire-service-patterns"
     ],
@@ -7602,6 +7753,9 @@
     ],
     "recycle-bin": [
       "data/batch-data-cleanup-patterns"
+    ],
+    "redshift": [
+      "data/analytics-external-data"
     ],
     "referenceId": [
       "integration/composite-api-patterns"
@@ -7702,8 +7856,12 @@
     ],
     "replay-id": [
       "apex/platform-events-apex",
+      "data/cdc-data-sync-patterns",
       "integration/change-data-capture-integration",
       "integration/platform-events-integration"
+    ],
+    "replication": [
+      "data/cdc-data-sync-patterns"
     ],
     "reply-recommendations": [
       "agentforce/agentforce-service-ai-setup",
@@ -8183,6 +8341,7 @@
     "screen-flow": [
       "admin/client-onboarding-design",
       "admin/flow-for-admins",
+      "architect/omnistudio-vs-standard-architecture",
       "architect/omnistudio-vs-standard-decision",
       "flow/fault-handling",
       "flow/flow-for-experience-cloud",
@@ -8341,6 +8500,9 @@
     "separation-of-concerns": [
       "apex/fflib-enterprise-patterns"
     ],
+    "sequenceNumber": [
+      "data/cdc-data-sync-patterns"
+    ],
     "service-appointment": [
       "data/fsl-reporting-data-model",
       "data/fsl-work-order-migration"
@@ -8402,6 +8564,12 @@
     "service-objectives": [
       "admin/fsl-scheduling-policies"
     ],
+    "service-order": [
+      "admin/industries-energy-utilities-setup"
+    ],
+    "service-point": [
+      "admin/industries-energy-utilities-setup"
+    ],
     "service-replies": [
       "agentforce/einstein-copilot-for-service"
     ],
@@ -8430,6 +8598,9 @@
     ],
     "session-analytics": [
       "agentforce/agentforce-observability"
+    ],
+    "session-lifecycle": [
+      "agentforce/agentforce-custom-channel-dev"
     ],
     "session-management": [
       "integration/soap-api-patterns"
@@ -8641,6 +8812,9 @@
     "smartdatadiscovery": [
       "agentforce/einstein-discovery-development"
     ],
+    "snowflake": [
+      "data/analytics-external-data"
+    ],
     "soap": [
       "integration/outbound-messages-and-callbacks"
     ],
@@ -8786,6 +8960,9 @@
     "standard-pricebook": [
       "data/product-catalog-data-model"
     ],
+    "standard-runtime": [
+      "architect/omnistudio-vs-standard-architecture"
+    ],
     "state-machine": [
       "apex/long-running-process-orchestration"
     ],
@@ -8832,6 +9009,9 @@
     "storefront-api": [
       "lwc/commerce-lwc-components"
     ],
+    "story-creation": [
+      "admin/einstein-discovery-setup"
+    ],
     "streaming-api": [
       "integration/event-driven-architecture-patterns",
       "integration/streaming-api-and-pushtopic"
@@ -8871,6 +9051,7 @@
       "data/subscriber-data-management"
     ],
     "subscriber-management": [
+      "admin/industries-communications-setup",
       "apex/marketing-cloud-data-views"
     ],
     "subscription": [
@@ -9073,6 +9254,9 @@
       "apex/timezone-and-datetime-pitfalls",
       "architect/fsl-multi-region-architecture"
     ],
+    "tm-forum": [
+      "admin/industries-communications-setup"
+    ],
     "toast": [
       "lwc/lwc-modal-and-overlay",
       "lwc/lwc-toast-and-notifications"
@@ -9123,6 +9307,9 @@
     ],
     "transaction-security": [
       "security/transaction-security-policies"
+    ],
+    "transactionKey": [
+      "data/cdc-data-sync-patterns"
     ],
     "transactional-messaging": [
       "architect/marketing-integration-patterns"
@@ -9403,6 +9590,7 @@
       "security/xss-and-injection-prevention"
     ],
     "vlocity": [
+      "architect/omnistudio-vs-standard-architecture",
       "omnistudio/vlocity-to-native-omnistudio-migration"
     ],
     "vlocity-cli": [
@@ -9454,6 +9642,7 @@
       "security/recaptcha-and-bot-prevention"
     ],
     "webhook": [
+      "agentforce/agentforce-custom-channel-dev",
       "integration/webhook-inbound-patterns"
     ],
     "webstore": [
@@ -9472,6 +9661,9 @@
       "architect/license-optimization-strategy",
       "architect/nfr-definition-for-salesforce",
       "architect/well-architected-review"
+    ],
+    "what-if-analysis": [
+      "admin/einstein-discovery-setup"
     ],
     "win-loss-analysis": [
       "admin/sales-process-mapping"
@@ -9538,6 +9730,9 @@
     ],
     "wrapper-dto": [
       "apex/invocable-methods"
+    ],
+    "writeback-field": [
+      "admin/einstein-discovery-setup"
     ],
     "wsproxy": [
       "apex/ssjs-server-side-javascript"
