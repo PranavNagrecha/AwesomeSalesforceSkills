@@ -5,3 +5,9 @@ __pycache__/
 
 # lexical.sqlite grows past GitHub's 50 MB limit — regenerate with: python3 scripts/skill_sync.py --all
 vector_index/lexical.sqlite
+
+# Claude Code worktrees (temporary agent working copies)
+.claude/worktrees/
+
+# Codex drops (unused)
+_codex_drops/
