@@ -67,7 +67,8 @@ STATUS KEY:
 | 19 | Additional Industry Clouds | — | 16 | 0 | 16 |
 | 20 | Gap Fill — Platform, Security, Integration, LWC, Flow | — | 62 | 0 | 62 |
 | 21 | LLM-Frequent — Patterns, Migrations, Tooling, Tribal Knowledge | — | 78 | 0 | 78 |
-| **Total** | | | **1045** | **604** | **441** |
+| 22 | LLM-Frequent II — Dev Primitives, Admin Workflows, Debugging | — | 53 | 0 | 53 |
+| **Total** | | | **1098** | **604** | **494** |
 
 ---
 
@@ -1329,7 +1330,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
 | IN_PROGRESS | cpq-deployment-administration | CPQ metadata deployment: product rules, pricing rules, quote templates, deployment ordering for CPQ components. NOT for standard change sets. | |
-| IN_PROGRESS | omnistudio-deployment-admin | OmniStudio DataPack management: export, import, version control, environment-specific data in DataPacks. NOT for standard deployment. | |
+| DUPLICATE | omnistudio-deployment-admin | OmniStudio DataPack management: export, import, version control, environment-specific data in DataPacks. NOT for standard deployment. | Covered by skills/omnistudio/omnistudio-deployment-datapacks |
 | IN_PROGRESS | experience-cloud-deployment-admin | Experience Cloud site deployment: publishing, template versioning, content migration between environments. NOT for standard deployment. | |
 | TODO | managed-package-installation | Installing and upgrading managed packages: pre-install checks, post-install configuration, version management. NOT for building packages. | |
 | IN_PROGRESS | deployment-monitoring | Deployment monitoring: status tracking, component errors, test failures, deployment history, troubleshooting. NOT for Apex debugging. | |
@@ -1363,7 +1364,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| IN_PROGRESS | test-data-management-devops | Test data management: factory patterns, data setup scripts, anonymization, data generation, fixture files. NOT for production data migration. | |
+| DUPLICATE | test-data-management-devops | Test data management: factory patterns, data setup scripts, anonymization, data generation, fixture files. NOT for production data migration. | Covered by skills/devops/data-seeding-for-testing |
 | TODO | deployment-data-dependencies | Managing data dependencies in deployments: record type IDs, custom metadata records, environment-specific values. NOT for metadata deployment. | |
 | TODO | sandbox-refresh-data-strategies | Managing data during sandbox refresh: post-copy automation, data selection, reference data seeding, cleanup. NOT for sandbox admin setup. | |
 | TODO | cross-cloud-data-deployment | Cross-cloud data deployment: deploying shared reference data across Sales, Service, Marketing environments. NOT for data migration. | |
@@ -1708,6 +1709,122 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 
 ---
 
+## Phase 22 — LLM-Frequent II: Dev Primitives, Admin Workflows, Debugging
+
+> The "every developer asks this weekly" and "every admin Googles this monthly" layer.
+> These are the atomic building blocks that LLMs need to answer correctly before they can compose higher-level guidance.
+
+### 22a — Apex Dev Primitives (things LLMs get wrong in code generation)
+
+> Domain folder: `apex`
+
+| Status | Skill Name | Description | Notes |
+|--------|------------|-------------|-------|
+| TODO | apex-trigger-context-variables | Trigger.new, Trigger.old, Trigger.newMap, Trigger.oldMap: when each is available, null in delete context, before vs after differences, isExecuting, operationType, size. NOT for trigger framework architecture. | apex |
+| TODO | apex-test-setup-patterns | @TestSetup method: execution timing, isolation behavior, @TestVisible annotation, System.runAs in tests, Test.startTest/stopTest governor reset, test data visibility. NOT for test data factory (use test-data-factory-patterns). | apex |
+| TODO | apex-http-callout-mocking | HttpCalloutMock, MultiStaticResourceCalloutMock, StaticResourceCalloutMock, Test.setMock, mock chaining for multi-callout tests. NOT for actual callout implementation (use callouts-and-http-integrations). | apex |
+| TODO | apex-future-method-patterns | @future method: when to use vs Queueable, parameter restrictions (no SObject), mixed DML workaround, governor limits in future context, testing future methods. NOT for general async (use async-apex). | apex |
+| TODO | apex-savepoint-and-rollback | Database.setSavepoint, Database.rollback: transaction control, nested savepoints, savepoint in triggers, partial rollback patterns, try-catch-rollback. NOT for DML patterns. | apex |
+| TODO | apex-system-runas | System.runAs in test context: profile/permission testing, sharing rule verification, mixed DML workaround, limitations (does not enforce FLS), community user testing. NOT for test setup. | apex |
+| TODO | apex-execute-anonymous | Execute Anonymous: Developer Console, VS Code, sf apex run, variable scope, transaction behavior, governor limits, debugging output, common errors. NOT for debug logs. | apex |
+| TODO | apex-custom-permissions-check | FeatureManagement.checkPermission, Custom Permissions in Apex and Flow: feature gating, license checks, conditional logic, package-aware permission checks. NOT for Permission Sets admin. | apex |
+| TODO | apex-outbound-email-patterns | Messaging.SingleEmailMessage, MassEmailMessage, email templates in Apex, org-wide email address, setTargetObjectId vs setToAddresses, attachment handling. NOT for Email-to-Case or email alerts. | apex |
+| TODO | apex-wsdl2apex-patterns | WSDL-to-Apex generation: importing WSDL, generated class structure, callout from generated stubs, common WSDL parsing failures, testing WSDL callouts. NOT for REST callouts. | apex |
+| TODO | apex-record-clone-patterns | SObject.clone(preserveId, isDeepClone, preserveReadonly, preserveAutonumber): deep clone behavior, related record cloning, clone with modifications. NOT for data migration. | apex |
+| TODO | apex-polymorphic-soql | TYPEOF in SOQL: WhoId/WhatId polymorphism, Event.WhoId resolution, Task.WhatId querying, Name object, polymorphic lookup handling in triggers. NOT for relationship queries. | apex |
+
+### 22b — LWC Dev Primitives (most-asked component patterns)
+
+> Domain folder: `lwc`
+
+| Status | Skill Name | Description | Notes |
+|--------|------------|-------------|-------|
+| TODO | lwc-navigation-mixin | NavigationMixin: navigate to record, list view, URL, related list, custom tab, web page, file download, replace vs push, generateUrl. NOT for Experience Cloud routing. | lwc |
+| TODO | lwc-wire-refresh-patterns | refreshApex, getRecordNotifyChange (deprecated → notifyRecordUpdateAvailable), wire error handling, stale wire data, provisioning lifecycle. NOT for wire basics (use wire-service-patterns). | lwc |
+| TODO | lwc-show-toast-patterns | ShowToastEvent: variants, modes (dismissible/pester/sticky), message formatting, toasts in LWR sites (not supported), alternative notification patterns. NOT for custom notifications admin. | lwc |
+| TODO | lwc-lightning-modal | LightningModal: modal creation, passing data, returning results, sizing, nested modals, modal vs popup vs overlay, header/footer/body slots. NOT for lwc-modal-and-overlay (use for Aura overlay library). | lwc |
+| TODO | lwc-record-picker | lightning-record-picker component: filter configuration, matching criteria, display fields, default selection, multi-object search, custom filter logic. NOT for custom lookup (use lwc-custom-lookup). | lwc |
+| TODO | lwc-async-patterns | Promise handling in LWC: imperative Apex with async/await, error boundaries, loading states, concurrent wire + imperative, AbortController patterns. NOT for wire service. | lwc |
+
+### 22c — Flow Dev Primitives
+
+> Domain folder: `flow`
+
+| Status | Skill Name | Description | Notes |
+|--------|------------|-------------|-------|
+| TODO | flow-screen-lwc-components | Custom LWC screen components for Flow: FlowAttributeChangeEvent, flow navigation events, validation, reactive inputs, FlowScreenComponentInterface. NOT for flow-custom-property-editors. | flow |
+| TODO | flow-resource-patterns | Flow resources: formulas, constants, text templates, choice sets, stages, picklist choice — when to use each, performance implications, limits. NOT for Flow building basics. | flow |
+| TODO | flow-cross-object-updates | Cross-object field updates in flows: Get Records → Loop → Update Records pattern, related record updates, avoiding recursion, bulk-safe patterns. NOT for trigger patterns. | flow |
+| TODO | flow-time-based-patterns | Time-based flows: scheduled paths in record-triggered flows, Wait elements, time-based workflow replacement, time zone behavior, resume conditions. NOT for scheduled flows (use scheduled-flows). | flow |
+
+### 22d — Admin Workflows (things admins do weekly that LLMs must get right)
+
+> Domain folder: `admin`
+
+| Status | Skill Name | Description | Notes |
+|--------|------------|-------------|-------|
+| TODO | approval-process-apex-patterns | Approval process Apex: ProcessSubmitRequest, ProcessWorkitemRequest, approval recall, reassignment, approval history queries, Approval.process limitations. NOT for approval process UI setup. | admin |
+| TODO | report-and-dashboard-subscriptions | Report subscriptions: scheduling, conditions, notification channels, dashboard refresh scheduling, snapshot reporting, limits. NOT for report building. | admin |
+| TODO | global-value-sets-and-picklists | Global Value Sets: creation, field binding, restricted vs unrestricted picklists, deployment behavior, value deactivation impact on reports/views. NOT for picklist admin basics. | admin |
+| TODO | compound-field-patterns | Compound fields: Address (BillingAddress, ShippingAddress, MailingAddress), Name, Geolocation — component field access, SOQL behavior, formula references, API quirks. NOT for custom field creation. | admin |
+| TODO | account-and-opportunity-teams | Account Teams and Opportunity Teams: team member roles, team-based sharing, trigger behavior, default teams, team template assignment, Splits integration. NOT for sharing rules. | admin |
+| TODO | sales-path-and-kanban | Path (Sales Path): key fields, guidance per stage, confetti, Kanban view configuration, Path on custom objects, Path vs business process. NOT for Opportunity management. | admin |
+| TODO | dynamic-forms-migration | Dynamic Forms migration: page layout to dynamic form conversion, field section creation, visibility rules, migration tool, Lightning App Builder, limitations by object. NOT for Dynamic Forms concepts (use dynamic-forms-and-actions). | admin |
+| TODO | experience-cloud-builder-patterns | Experience Builder: page variations, audience targeting, component visibility rules, SEO settings, theme customization, head markup, URL structure. NOT for Experience Cloud site setup. | admin |
+| TODO | flow-orchestration-patterns | Flow Orchestration: stages, steps, interactive vs background, work items, assigned user determination, evaluation flows, orchestration monitoring. NOT for basic flow building. | admin |
+| TODO | feedback-management-setup | Feedback Management (Advanced Surveys): lifecycle mapping, branching logic, scoring, reporting, merge fields, post-chat surveys, MicroSurveys. NOT for basic Salesforce Surveys. | admin |
+| TODO | email-service-inbound | Inbound Email Services: email handler Apex class, InboundEmail object, binary attachments, routing addresses, email-to-case vs custom handler, error replies. NOT for Email-to-Case admin. | admin |
+| TODO | messaging-for-in-app-and-web | Messaging for In-App and Web (MIAW): channel setup, Embedded Service deployment, pre-chat forms, routing to agents/bots, post-chat surveys. NOT for legacy Live Chat. | admin |
+
+### 22e — Debugging & Troubleshooting (the #1 reason people ask LLMs for help)
+
+> Domain folder: varies
+
+| Status | Skill Name | Description | Notes |
+|--------|------------|-------------|-------|
+| TODO | sso-saml-troubleshooting | SSO/SAML troubleshooting: SAML assertion inspector, login flow debug, federated auth errors, attribute mapping, Just-In-Time provisioning failures, relay state. NOT for SSO setup. | security |
+| TODO | connected-app-troubleshooting | Connected App troubleshooting: IP relaxation, refresh token policy, OAuth error codes, session revocation, user assignment vs admin approval, CORS. NOT for Connected App creation. | security |
+| TODO | guest-user-security-audit | Guest user security: permission audit, object access minimization, Apex class access, VF page access, sharing rule implications, login-required fallback. NOT for Experience Cloud setup. | security |
+| TODO | cors-and-csp-configuration | CORS allowlisting and CSP Trusted Sites: when each is needed, troubleshooting blocked requests, LWC Lightning Out, Experience Cloud CORS, iframe embedding. NOT for Named Credentials. | security |
+| TODO | event-log-file-analysis | EventLogFile (Event Monitoring): log types (Login, API, Apex, URI, Lightning), SOQL queries on EventLogFile, BigObject storage, real-time events vs hourly files. NOT for event monitoring setup. | security |
+| TODO | deployment-error-diagnosis | Common deployment error patterns: "Cannot change type", dependent metadata ordering, profile delta issues, missing references, flow version conflicts, test class failures. NOT for deployment process. | devops |
+| TODO | change-set-dependency-patterns | Change Set dependencies: implicit vs explicit members, View/Add Dependencies, common missing components, profile subset behavior, deployment ordering. NOT for SFDX migration. | devops |
+| TODO | formula-field-limits-and-patterns | Formula compiled size limit (5000 chars): CASE vs IF optimization, BLANKVALUE vs ISBLANK+IF, cross-object formula limits (10 relationships), compiled vs displayed size. NOT for basic formula syntax. | admin |
+
+### 22f — Integration Dev Primitives
+
+> Domain folder: `integration`
+
+| Status | Skill Name | Description | Notes |
+|--------|------------|-------------|-------|
+| TODO | composite-api-advanced | Composite API: composite batch, composite graph, SObject Tree API, dependent subrequests, reference resolution, error handling in composite graphs. NOT for basic composite (use composite-api-patterns). | integration |
+| TODO | external-credentials-setup | External Credentials and Named Principals: legacy Named Credential migration, per-user vs named principal, custom headers, OAuth external credentials, permission set mapping. NOT for admin Named Credentials (use named-credentials-setup). | integration |
+| TODO | salesforce-connect-odata | Salesforce Connect OData: adapter configuration, external object creation, writable external objects, high-volume adapter, paging, filter pushdown, callout limits. NOT for generic external objects. | integration |
+| TODO | event-relay-patterns | Platform Event Relay: AWS EventBridge relay, event relay configuration, channel members, relay health monitoring, filtering relay events. NOT for Platform Events Apex. | integration |
+| TODO | platform-event-publish-patterns | Platform Event publish patterns: publish after commit (Transaction.commitWork), EventBus.publish, publish immediate vs deferred, publish callback, transaction boundaries. NOT for event subscription. | integration |
+
+### 22g — Architect Primitives
+
+> Domain folder: `architect`
+
+| Status | Skill Name | Description | Notes |
+|--------|------------|-------------|-------|
+| TODO | sharing-rule-performance | Sharing rule performance at scale: group membership recalculation, sharing row count, share object bloat, criteria-based vs ownership-based, implicit sharing costs. NOT for sharing model design. | architect |
+| TODO | territory2-model-architecture | Territory2 model architecture: territory hierarchy design, assignment rules, forecast territory alignment, territory-based sharing, multi-model patterns. NOT for territory admin setup. | architect |
+| TODO | async-soql-and-big-objects | Async SOQL: BigObject queries, SOQL on BigObjects, async query job, limitations (no JOINs, no aggregate), use cases for archival data access. NOT for standard SOQL. | architect |
+| TODO | selective-query-and-indexing | Selective queries and custom indexes: selectivity threshold, standard vs custom indexes, two-column indexes, index request process, query plan tool, ThresholdManager. NOT for SOQL optimization (use soql-query-optimization). | architect |
+
+### 22h — Data Primitives
+
+> Domain folder: `data`
+
+| Status | Skill Name | Description | Notes |
+|--------|------------|-------------|-------|
+| TODO | platform-cache-partition-management | Platform Cache partitions: org cache vs session cache, partition allocation, cache.Org vs cache.Session API, TTL management, cache misses, multi-namespace caching. NOT for Apex Platform Cache patterns (use platform-cache). | data |
+| TODO | polymorphic-field-data-patterns | Polymorphic field data: WhoId, WhatId, OwnerId, RelatedTo — data model implications, reporting limitations, SOQL with TYPEOF, data migration of polymorphic fields. NOT for Apex TYPEOF queries. | data |
+
+---
+
 ## Handoff Log
 
 | Agent | Task | Started | Completed | Notes |
@@ -1718,6 +1835,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | Claude Opus 4.6 | Fourth pass — 49 tribal-knowledge + RAG-gap skills | 2026-04-04 | 2026-04-04 | Deep research: platform gotchas (order-of-execution, mixed DML, record locking, timezone), enterprise patterns (fflib, feature flags), production survival (release prep, org limits, support escalation), troubleshooting (common Apex/LWC/Flow errors), data reality (external IDs, merge implications, dedup, reconciliation), integration hardening (retry/backoff), senior admin (page perf, report perf, license optimization), AI-era (sf-to-llm pipelines, ai-ready architecture), Higher Ed (EDA, SIS, FERPA), plus RAG-gap fills (in-app guidance, Lightning App Builder, PDF generation, HA/DR) |
 | Claude Opus 4.6 | Fifth pass — Phase 20 gap fill (62 skills) | 2026-04-11 | 2026-04-11 | Full matrix audit against 532 built skills. Added: Revenue Cloud (new, not CPQ) 4 skills, Pub/Sub API + modern integration 6, security hardening 6, Flow migration + gaps 6, LWC i18n/drag/virtualization 6, Tableau connectors 3, DevOps gaps 5, admin/architect gaps 11, Apex gaps 5. Total queue now 967. |
 | Claude Opus 4.6 | Sixth pass — Phase 21 LLM-frequent patterns (78 skills) | 2026-04-13 | 2026-04-13 | Deep analysis of what LLMs actually get asked daily by SF practitioners. Identified 78 skills with zero coverage across 8 sub-phases: Apex daily patterns (12), LWC daily patterns (8), migration patterns (6), files/content/Chatter (5), admin tribal knowledge (10), API/tooling (6), cross-cutting patterns (14), data patterns (5). Focus: collections, JSON, DML, relationship SOQL, file management, ContentVersion, Chatter, custom notifications, Classic→Lightning migration, VF→LWC, record-form patterns, custom lookup, Inspector/Postman/Data Loader CLI, record access debugging, scheduled paths. Total queue now 1045. |
+| Claude Opus 4.6 | Seventh pass — Phase 22 dev primitives + debugging (53 skills) | 2026-04-13 | 2026-04-13 | Atomic building blocks LLMs must answer correctly: Apex primitives (12: trigger context vars, @TestSetup, callout mocking, @future, savepoint/rollback, System.runAs, execute anonymous, custom permissions, outbound email, WSDL2Apex, record clone, polymorphic SOQL), LWC primitives (6: NavigationMixin, refreshApex, ShowToast, LightningModal, record-picker, async/await), Flow primitives (4: screen LWC, resources, cross-object, time-based), admin workflows (12: approval Apex, report subscriptions, global value sets, compound fields, teams, sales path, dynamic forms migration, Experience Builder, orchestration, feedback mgmt, inbound email, MIAW), debugging (8: SSO/SAML, Connected App, guest user audit, CORS/CSP, event log files, deployment errors, change set deps, formula limits), integration (5: composite advanced, external credentials, OData, event relay, publish patterns), architect (4: sharing perf, Territory2, async SOQL, selective queries), data (2: cache partitions, polymorphic fields). Total queue now 1098. |
 
 ---
 
