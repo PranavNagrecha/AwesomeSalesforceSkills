@@ -5,6 +5,7 @@
       "admin/agent-conversation-design",
       "admin/ai-ethics-and-governance-requirements",
       "admin/ai-use-case-assessment",
+      "admin/analytics-dashboard-design",
       "admin/analytics-dataset-management",
       "admin/app-and-tab-configuration",
       "admin/approval-processes",
@@ -19,6 +20,7 @@
       "admin/care-plan-configuration",
       "admin/care-program-management",
       "admin/case-management-setup",
+      "admin/change-data-capture-admin",
       "admin/change-management-and-deployment",
       "admin/change-management-and-training",
       "admin/client-onboarding-design",
@@ -41,6 +43,7 @@
       "admin/cpq-pricing-rules",
       "admin/cpq-product-catalog-setup",
       "admin/cpq-quote-templates",
+      "admin/crm-analytics-app-creation",
       "admin/custom-field-creation",
       "admin/custom-metadata-types",
       "admin/custom-metadata-types-and-settings",
@@ -96,6 +99,8 @@
       "admin/household-model-configuration",
       "admin/in-app-guidance-and-walkthroughs",
       "admin/industries-insurance-setup",
+      "admin/integration-admin-connected-apps",
+      "admin/integration-user-management",
       "admin/journey-builder-administration",
       "admin/knowledge-base-administration",
       "admin/lead-management-and-conversion",
@@ -121,6 +126,7 @@
       "admin/opportunity-management",
       "admin/org-cleanup-and-technical-debt",
       "admin/org-setup-and-configuration",
+      "admin/outbound-message-setup",
       "admin/partner-community-requirements",
       "admin/path-and-guidance",
       "admin/patient-engagement-requirements",
@@ -141,6 +147,7 @@
       "admin/record-types-and-page-layouts",
       "admin/recurring-donations-setup",
       "admin/referral-management-health",
+      "admin/remote-site-settings",
       "admin/report-performance-tuning",
       "admin/reports-and-dashboards",
       "admin/reports-and-dashboards-fundamentals",
@@ -495,6 +502,7 @@
       "integration/event-driven-architecture-patterns",
       "integration/file-and-document-integration",
       "integration/graphql-api-patterns",
+      "integration/idempotent-integration-patterns",
       "integration/mulesoft-salesforce-connector",
       "integration/named-credentials-setup",
       "integration/oauth-flows-and-connected-apps",
@@ -553,6 +561,7 @@
       "omnistudio/integration-procedures",
       "omnistudio/omniscript-design-patterns",
       "omnistudio/omniscript-versioning",
+      "omnistudio/omnistudio-ci-cd-patterns",
       "omnistudio/omnistudio-custom-lwc-elements",
       "omnistudio/omnistudio-debugging",
       "omnistudio/omnistudio-deployment-datapacks",
@@ -560,6 +569,7 @@
       "omnistudio/omnistudio-performance",
       "omnistudio/omnistudio-remote-actions",
       "omnistudio/omnistudio-security",
+      "omnistudio/omnistudio-testing-patterns",
       "omnistudio/vlocity-to-native-omnistudio-migration"
     ],
     "security": [
@@ -1152,6 +1162,15 @@
     "analytics-api": [
       "admin/report-performance-tuning"
     ],
+    "analytics-app": [
+      "admin/crm-analytics-app-creation"
+    ],
+    "analytics-dashboard-design": [
+      "admin/analytics-dashboard-design"
+    ],
+    "analytics-studio": [
+      "admin/crm-analytics-app-creation"
+    ],
     "anonymous-apex": [
       "apex/debug-logs-and-developer-console"
     ],
@@ -1184,6 +1203,9 @@
     ],
     "apex-batch": [
       "apex/fsc-financial-calculations"
+    ],
+    "apex-callout": [
+      "admin/remote-site-settings"
     ],
     "apex-debugger": [
       "devops/vscode-salesforce-extensions"
@@ -1273,6 +1295,9 @@
     ],
     "api-monitoring": [
       "security/api-security-and-rate-limiting"
+    ],
+    "api-only": [
+      "admin/integration-user-management"
     ],
     "api-properties": [
       "lwc/component-communication"
@@ -1664,6 +1689,9 @@
     "binary-classification": [
       "agentforce/einstein-prediction-builder"
     ],
+    "bindings": [
+      "admin/analytics-dashboard-design"
+    ],
     "bitbucket-pipelines": [
       "devops/bitbucket-pipelines-for-salesforce"
     ],
@@ -1904,6 +1932,9 @@
     "callout-framework": [
       "architect/integration-framework-design"
     ],
+    "callout-security": [
+      "admin/remote-site-settings"
+    ],
     "callouts": [
       "apex/ai-model-integration-apex",
       "integration/callout-limits-and-async-patterns"
@@ -2040,6 +2071,7 @@
       "security/gdpr-data-privacy"
     ],
     "cdc": [
+      "admin/change-data-capture-admin",
       "apex/fsc-integration-patterns-dev",
       "apex/platform-events-apex",
       "apex/sales-engagement-api"
@@ -2059,6 +2091,7 @@
       "security/certificate-and-key-management"
     ],
     "change-data-capture": [
+      "admin/change-data-capture-admin",
       "apex/change-data-capture-apex",
       "integration/change-data-capture-integration",
       "integration/event-driven-architecture-patterns",
@@ -2086,6 +2119,9 @@
     ],
     "channel-strategy": [
       "architect/service-cloud-architecture"
+    ],
+    "chart-types": [
+      "admin/analytics-dashboard-design"
     ],
     "chat": [
       "admin/messaging-and-chat-setup"
@@ -2119,6 +2155,9 @@
       "devops/scratch-org-management",
       "devops/scratch-org-pools",
       "omnistudio/omnistudio-deployment-datapacks"
+    ],
+    "cicd": [
+      "omnistudio/omnistudio-ci-cd-patterns"
     ],
     "circuit-breaker": [
       "integration/retry-and-backoff-patterns"
@@ -2416,6 +2455,7 @@
       "apex/fsl-service-report-templates"
     ],
     "connected-app": [
+      "admin/integration-admin-connected-apps",
       "agentforce/salesforce-mcp-server-setup",
       "architect/multi-org-strategy",
       "security/api-security-and-rate-limiting",
@@ -2666,9 +2706,14 @@
       "data/nonprofit-data-architecture"
     ],
     "crm-analytics": [
+      "admin/analytics-dashboard-design",
       "admin/analytics-dataset-management",
+      "admin/crm-analytics-app-creation",
       "admin/einstein-analytics-basics",
       "agentforce/einstein-discovery-development"
+    ],
+    "crm-analytics-app-creation": [
+      "admin/crm-analytics-app-creation"
     ],
     "crm-integration": [
       "architect/marketing-consent-architecture"
@@ -2716,6 +2761,7 @@
     ],
     "csp-trusted-sites": [
       "admin/org-setup-and-configuration",
+      "admin/remote-site-settings",
       "security/network-security-and-trusted-ips"
     ],
     "csrf": [
@@ -2873,6 +2919,9 @@
       "apex/commerce-search-customization",
       "lwc/commerce-lwc-components"
     ],
+    "dashboard": [
+      "admin/analytics-dashboard-design"
+    ],
     "dashboard-filters": [
       "admin/reports-and-dashboards-fundamentals"
     ],
@@ -2880,6 +2929,7 @@
       "admin/report-performance-tuning"
     ],
     "dashboards": [
+      "admin/crm-analytics-app-creation",
       "admin/einstein-analytics-basics",
       "admin/report-performance-tuning",
       "admin/reports-and-dashboards",
@@ -3097,8 +3147,14 @@
     "dataflow-scheduling": [
       "admin/analytics-dataset-management"
     ],
+    "datapack": [
+      "omnistudio/omnistudio-ci-cd-patterns"
+    ],
     "datapacks": [
       "omnistudio/omnistudio-deployment-datapacks"
+    ],
+    "datarapter": [
+      "omnistudio/omnistudio-testing-patterns"
     ],
     "dataraptor": [
       "apex/fsc-document-generation",
@@ -3119,10 +3175,14 @@
     "dataraptor-transform": [
       "omnistudio/dataraptor-patterns"
     ],
+    "dataset": [
+      "admin/crm-analytics-app-creation"
+    ],
     "dataset-management": [
       "admin/analytics-dataset-management"
     ],
     "datasets": [
+      "admin/crm-analytics-app-creation",
       "admin/einstein-analytics-basics"
     ],
     "date-handling": [
@@ -3168,7 +3228,8 @@
     "debugging": [
       "apex/common-apex-runtime-errors",
       "flow/flow-runtime-error-diagnosis",
-      "omnistudio/omnistudio-debugging"
+      "omnistudio/omnistudio-debugging",
+      "omnistudio/omnistudio-testing-patterns"
     ],
     "decision-framework": [
       "architect/npsp-vs-nonprofit-cloud-decision"
@@ -3259,6 +3320,7 @@
       "devops/metadata-api-coverage-gaps",
       "devops/permission-set-deployment-ordering",
       "devops/rollback-and-hotfix-strategy",
+      "omnistudio/omnistudio-ci-cd-patterns",
       "omnistudio/omnistudio-deployment-datapacks"
     ],
     "deployment-ordering": [
@@ -3321,7 +3383,8 @@
       "devops/scratch-org-management",
       "devops/scratch-org-pools",
       "devops/source-tracking-and-conflict-resolution",
-      "devops/unlocked-package-development"
+      "devops/unlocked-package-development",
+      "omnistudio/omnistudio-ci-cd-patterns"
     ],
     "devops-center": [
       "devops/devops-center-pipeline",
@@ -3533,6 +3596,9 @@
       "admin/einstein-activity-capture-setup",
       "apex/einstein-activity-capture-api"
     ],
+    "einstein-analytics": [
+      "admin/crm-analytics-app-creation"
+    ],
     "einstein-bot-architecture": [
       "architect/einstein-bot-architecture"
     ],
@@ -3685,6 +3751,9 @@
     "enqueueDeployment": [
       "apex/apex-metadata-api"
     ],
+    "enrichment": [
+      "admin/change-data-capture-admin"
+    ],
     "enrollment": [
       "admin/care-program-management"
     ],
@@ -3720,6 +3789,9 @@
       "admin/entitlements-and-milestones",
       "admin/fsl-sla-configuration-requirements",
       "apex/entitlement-apex-hooks"
+    ],
+    "entity-selection": [
+      "admin/change-data-capture-admin"
     ],
     "entry-exit-criteria": [
       "admin/sales-process-mapping"
@@ -3821,6 +3893,7 @@
       "security/event-monitoring"
     ],
     "event-monitoring": [
+      "admin/integration-admin-connected-apps",
       "security/api-security-and-rate-limiting",
       "security/event-monitoring"
     ],
@@ -3927,6 +4000,7 @@
       "data/data-model-design-patterns",
       "data/data-reconciliation-patterns",
       "data/external-id-strategy",
+      "integration/idempotent-integration-patterns",
       "integration/sis-integration-patterns"
     ],
     "external-integration": [
@@ -3971,6 +4045,9 @@
     ],
     "faceted-navigation": [
       "apex/commerce-search-customization"
+    ],
+    "faceting": [
+      "admin/analytics-dashboard-design"
     ],
     "factory-pattern": [
       "apex/apex-design-patterns",
@@ -4829,6 +4906,7 @@
     "idempotency": [
       "data/external-id-strategy",
       "flow/scheduled-flows",
+      "integration/idempotent-integration-patterns",
       "integration/retry-and-backoff-patterns",
       "integration/webhook-inbound-patterns"
     ],
@@ -4968,6 +5046,13 @@
       "integration/composite-api-patterns",
       "integration/outbound-messages-and-callbacks"
     ],
+    "integration-admin": [
+      "admin/outbound-message-setup",
+      "admin/remote-site-settings"
+    ],
+    "integration-admin-connected-apps": [
+      "admin/integration-admin-connected-apps"
+    ],
     "integration-architecture": [
       "architect/b2b-vs-b2c-architecture",
       "integration/api-led-connectivity"
@@ -4991,6 +5076,7 @@
       "omnistudio/omnistudio-debugging",
       "omnistudio/omnistudio-lwc-integration",
       "omnistudio/omnistudio-remote-actions",
+      "omnistudio/omnistudio-testing-patterns",
       "omnistudio/vlocity-to-native-omnistudio-migration"
     ],
     "integration-procedures": [
@@ -5005,6 +5091,9 @@
     ],
     "integration-security": [
       "integration/named-credentials-setup"
+    ],
+    "integration-user": [
+      "admin/integration-user-management"
     ],
     "integrations": [
       "admin/validation-rules"
@@ -5062,6 +5151,7 @@
       "security/ip-range-and-login-flow-strategy"
     ],
     "ip-relaxation": [
+      "admin/integration-admin-connected-apps",
       "security/connected-app-security-policies"
     ],
     "ip-restrictions": [
@@ -5308,6 +5398,12 @@
     "legacy-integration": [
       "integration/soap-api-patterns"
     ],
+    "lens": [
+      "admin/crm-analytics-app-creation"
+    ],
+    "lenses": [
+      "admin/crm-analytics-app-creation"
+    ],
     "license-audit": [
       "architect/license-optimization-strategy"
     ],
@@ -5474,6 +5570,7 @@
       "security/login-forensics"
     ],
     "login-history": [
+      "admin/integration-user-management",
       "security/login-forensics"
     ],
     "login-ip-ranges": [
@@ -5770,6 +5867,9 @@
       "admin/org-setup-and-configuration",
       "security/transaction-security-policies"
     ],
+    "mfa-waiver": [
+      "admin/integration-user-management"
+    ],
     "miaw": [
       "apex/service-cloud-rest-api"
     ],
@@ -5812,6 +5912,9 @@
     ],
     "mobile-extensions": [
       "apex/fsl-mobile-app-extensions"
+    ],
+    "mobile-layout": [
+      "admin/analytics-dashboard-design"
     ],
     "mobile-lwc": [
       "lwc/lwc-offline-and-mobile"
@@ -6067,6 +6170,7 @@
     "oauth": [
       "admin/connected-apps-and-auth",
       "admin/einstein-activity-capture-setup",
+      "admin/integration-admin-connected-apps",
       "agentforce/salesforce-mcp-server-setup",
       "apex/mcae-pardot-api",
       "architect/ai-agent-org-integration-architecture",
@@ -6079,6 +6183,9 @@
     ],
     "oauth-jwt-bearer": [
       "integration/mulesoft-salesforce-connector"
+    ],
+    "oauth-policies": [
+      "admin/integration-admin-connected-apps"
     ],
     "oauth-scopes": [
       "security/api-security-and-rate-limiting"
@@ -6172,15 +6279,20 @@
       "omnistudio/integration-procedures",
       "omnistudio/omniscript-design-patterns",
       "omnistudio/omniscript-versioning",
+      "omnistudio/omnistudio-ci-cd-patterns",
       "omnistudio/omnistudio-custom-lwc-elements",
       "omnistudio/omnistudio-debugging",
       "omnistudio/omnistudio-deployment-datapacks",
       "omnistudio/omnistudio-lwc-integration",
       "omnistudio/omnistudio-remote-actions",
+      "omnistudio/omnistudio-testing-patterns",
       "omnistudio/vlocity-to-native-omnistudio-migration"
     ],
     "omnistudio-admin-configuration": [
       "admin/omnistudio-admin-configuration"
+    ],
+    "omnistudio-ci-cd-patterns": [
+      "omnistudio/omnistudio-ci-cd-patterns"
     ],
     "omnistudio-data-mapping": [
       "omnistudio/dataraptor-patterns"
@@ -6196,6 +6308,9 @@
     ],
     "omnistudio-settings": [
       "admin/omnistudio-admin-configuration"
+    ],
+    "omnistudio-testing-patterns": [
+      "omnistudio/omnistudio-testing-patterns"
     ],
     "omniupdatebyfield": [
       "omnistudio/omnistudio-custom-lwc-elements"
@@ -6364,6 +6479,12 @@
     ],
     "org-wide-email": [
       "admin/email-templates-and-alerts"
+    ],
+    "outbound-message": [
+      "admin/outbound-message-setup"
+    ],
+    "outbound-message-setup": [
+      "admin/outbound-message-setup"
     ],
     "outbound-messages": [
       "integration/event-driven-architecture-patterns",
@@ -6624,6 +6745,7 @@
     ],
     "permission-sets": [
       "admin/delegated-administration",
+      "admin/integration-user-management",
       "admin/permission-sets-vs-profiles",
       "admin/user-access-policies",
       "devops/permission-set-deployment-ordering"
@@ -6715,6 +6837,7 @@
       "flow/pause-elements-and-wait-events"
     ],
     "platform-events": [
+      "admin/change-data-capture-admin",
       "admin/commerce-order-management",
       "apex/custom-logging-and-monitoring",
       "apex/error-handling-framework",
@@ -6726,6 +6849,7 @@
       "architect/org-limits-monitoring",
       "flow/auto-launched-flow-patterns",
       "integration/event-driven-architecture-patterns",
+      "integration/idempotent-integration-patterns",
       "integration/platform-events-integration"
     ],
     "platform-notifications": [
@@ -7275,6 +7399,9 @@
     "refresh": [
       "admin/sandbox-strategy"
     ],
+    "refresh-token": [
+      "admin/integration-admin-connected-apps"
+    ],
     "refreshapex": [
       "lwc/wire-service-patterns"
     ],
@@ -7328,6 +7455,9 @@
     ],
     "remote-action": [
       "omnistudio/omnistudio-remote-actions"
+    ],
+    "remote-site-settings": [
+      "admin/remote-site-settings"
     ],
     "render-optimization": [
       "lwc/lwc-performance"
@@ -7455,7 +7585,11 @@
       "apex/metadata-api-and-package-xml"
     ],
     "retry": [
+      "admin/outbound-message-setup",
       "integration/retry-and-backoff-patterns"
+    ],
+    "retry-safe": [
+      "integration/idempotent-integration-patterns"
     ],
     "return-order": [
       "admin/commerce-order-management"
@@ -8143,6 +8277,7 @@
       "architect/multi-bu-marketing-architecture"
     ],
     "sharing": [
+      "admin/crm-analytics-app-creation",
       "admin/queues-and-public-groups",
       "admin/sharing-and-visibility",
       "lwc/experience-cloud-api-access",
@@ -8273,6 +8408,9 @@
     "soap-api": [
       "apex/marketing-cloud-api",
       "integration/soap-api-patterns"
+    ],
+    "soap-delivery": [
+      "admin/outbound-message-setup"
     ],
     "sobject-collection": [
       "integration/composite-api-patterns"
@@ -8653,7 +8791,8 @@
     ],
     "testing": [
       "admin/sandbox-strategy",
-      "admin/uat-and-acceptance-criteria"
+      "admin/uat-and-acceptance-criteria",
+      "omnistudio/omnistudio-testing-patterns"
     ],
     "testing-api": [
       "agentforce/agent-testing-and-evaluation"
@@ -8874,6 +9013,7 @@
       "architect/sales-cloud-integration-patterns",
       "data/data-migration-planning",
       "data/external-id-strategy",
+      "integration/idempotent-integration-patterns",
       "integration/sis-integration-patterns",
       "omnistudio/dataraptor-load-and-extract"
     ],
@@ -8918,7 +9058,8 @@
       "admin/user-management"
     ],
     "utam": [
-      "devops/automated-regression-testing"
+      "devops/automated-regression-testing",
+      "omnistudio/omnistudio-testing-patterns"
     ],
     "utc": [
       "apex/timezone-and-datetime-pitfalls"
@@ -9123,6 +9264,9 @@
     ],
     "work-types": [
       "admin/fsl-work-order-management"
+    ],
+    "workflow": [
+      "admin/outbound-message-setup"
     ],
     "workflow-rule-retirement": [
       "admin/process-automation-selection"
