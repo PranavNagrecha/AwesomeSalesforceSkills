@@ -3743,6 +3743,66 @@
       "domain": "architect",
       "expected_skill": "architect/data-cloud-architecture",
       "top_k": 3
+    },
+    {
+      "query": "CRM Analytics app creation analytics studio datasets lenses",
+      "domain": "admin",
+      "expected_skill": "admin/crm-analytics-app-creation",
+      "top_k": 3
+    },
+    {
+      "query": "dashboard design bindings faceting chart types mobile layout CRM Analytics",
+      "domain": "admin",
+      "expected_skill": "admin/analytics-dashboard-design",
+      "top_k": 3
+    },
+    {
+      "query": "Connected App OAuth policies IP relaxation refresh token monitoring",
+      "domain": "admin",
+      "expected_skill": "admin/integration-admin-connected-apps",
+      "top_k": 3
+    },
+    {
+      "query": "remote site settings apex callout CSP trusted sites",
+      "domain": "admin",
+      "expected_skill": "admin/remote-site-settings",
+      "top_k": 3
+    },
+    {
+      "query": "outbound message setup workflow SOAP retry endpoint",
+      "domain": "admin",
+      "expected_skill": "admin/outbound-message-setup",
+      "top_k": 3
+    },
+    {
+      "query": "integration user API only profile permission sets MFA waiver",
+      "domain": "admin",
+      "expected_skill": "admin/integration-user-management",
+      "top_k": 3
+    },
+    {
+      "query": "change data capture entity selection enrichment channel management",
+      "domain": "admin",
+      "expected_skill": "admin/change-data-capture-admin",
+      "top_k": 3
+    },
+    {
+      "query": "idempotent integration patterns external ID upsert retry safe",
+      "domain": "integration",
+      "expected_skill": "integration/idempotent-integration-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "OmniStudio testing OmniScript preview Integration Procedure debug DataRaptor",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/omnistudio-testing-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "OmniStudio CI CD DataPack export import pipeline activate",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/omnistudio-ci-cd-patterns",
+      "top_k": 3
     }
   ]
 }
