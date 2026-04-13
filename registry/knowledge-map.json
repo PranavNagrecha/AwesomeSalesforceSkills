@@ -6,7 +6,12 @@
       "admin/ai-ethics-and-governance-requirements",
       "admin/ai-use-case-assessment",
       "admin/analytics-dashboard-design",
+      "admin/analytics-dashboard-json",
+      "admin/analytics-data-manager",
+      "admin/analytics-dataflow-development",
       "admin/analytics-dataset-management",
+      "admin/analytics-permission-and-sharing",
+      "admin/analytics-recipe-design",
       "admin/app-and-tab-configuration",
       "admin/approval-processes",
       "admin/assignment-rules",
@@ -124,6 +129,7 @@
       "admin/object-creation-and-design",
       "admin/omni-channel-routing-setup",
       "admin/omnistudio-admin-configuration",
+      "admin/omnistudio-vs-standard-decision",
       "admin/opportunity-management",
       "admin/org-cleanup-and-technical-debt",
       "admin/org-setup-and-configuration",
@@ -161,6 +167,7 @@
       "admin/salesforce-support-escalation",
       "admin/salesforce-surveys",
       "admin/sandbox-strategy",
+      "admin/saql-query-development",
       "admin/self-service-design",
       "admin/service-cloud-voice-setup",
       "admin/service-console-configuration",
@@ -311,6 +318,9 @@
       "architect/ai-platform-architecture",
       "architect/ai-ready-data-architecture",
       "architect/aml-kyc-process-architecture",
+      "architect/analytics-data-architecture",
+      "architect/analytics-embedded-components",
+      "architect/analytics-security-architecture",
       "architect/b2b-vs-b2c-architecture",
       "architect/banking-lending-architecture",
       "architect/case-deflection-strategy",
@@ -319,6 +329,7 @@
       "architect/cpq-architecture-patterns",
       "architect/cpq-integration-with-erp",
       "architect/cpq-vs-standard-products-decision",
+      "architect/crm-analytics-vs-tableau-decision",
       "architect/customer-effort-scoring",
       "architect/data-cloud-architecture",
       "architect/einstein-bot-architecture",
@@ -415,6 +426,7 @@
       "data/fsl-work-order-migration",
       "data/health-cloud-data-model",
       "data/historical-order-migration",
+      "data/industries-data-model",
       "data/knowledge-article-import",
       "data/large-scale-deduplication",
       "data/lead-data-import-and-dedup",
@@ -850,6 +862,10 @@
     "SystemModstamp": [
       "admin/system-field-behavior-and-audit"
     ],
+    "TODO_TAG_2": [
+      "admin/omnistudio-vs-standard-decision",
+      "data/industries-data-model"
+    ],
     "Territory2ModelHistory": [
       "data/territory-data-alignment"
     ],
@@ -991,6 +1007,7 @@
       "architect/org-edition-and-feature-licensing"
     ],
     "admin": [
+      "admin/analytics-permission-and-sharing",
       "admin/custom-field-creation",
       "admin/health-cloud-timeline",
       "admin/object-creation-and-design",
@@ -1170,6 +1187,8 @@
       "apex/ssjs-server-side-javascript"
     ],
     "analytics": [
+      "admin/analytics-permission-and-sharing",
+      "admin/saql-query-development",
       "data/community-analytics-data",
       "data/fsl-reporting-data-model"
     ],
@@ -1373,7 +1392,11 @@
       "admin/approval-processes"
     ],
     "architect": [
+      "architect/analytics-data-architecture",
+      "architect/analytics-embedded-components",
+      "architect/analytics-security-architecture",
       "architect/commerce-integration-patterns",
+      "architect/crm-analytics-vs-tableau-decision",
       "architect/fsl-optimization-architecture",
       "architect/health-cloud-multi-cloud-strategy",
       "architect/hipaa-compliance-architecture",
@@ -1389,6 +1412,7 @@
     "architecture": [
       "architect/ai-agent-org-integration-architecture",
       "architect/ai-governance-architecture",
+      "architect/analytics-data-architecture",
       "architect/b2b-vs-b2c-architecture",
       "architect/banking-lending-architecture",
       "architect/fsc-architecture-patterns",
@@ -1679,6 +1703,9 @@
     "beneficiary": [
       "admin/npsp-program-management"
     ],
+    "bi": [
+      "architect/crm-analytics-vs-tableau-decision"
+    ],
     "bias-mitigation": [
       "admin/ai-ethics-and-governance-requirements"
     ],
@@ -1718,7 +1745,8 @@
       "agentforce/einstein-prediction-builder"
     ],
     "bindings": [
-      "admin/analytics-dashboard-design"
+      "admin/analytics-dashboard-design",
+      "admin/analytics-dashboard-json"
     ],
     "bitbucket-pipelines": [
       "devops/bitbucket-pipelines-for-salesforce"
@@ -2286,6 +2314,9 @@
     "codeable-concept": [
       "admin/clinical-data-requirements"
     ],
+    "cogroup": [
+      "admin/saql-query-development"
+    ],
     "cohort": [
       "admin/npsp-program-management"
     ],
@@ -2513,6 +2544,9 @@
       "admin/connected-apps-and-auth",
       "architect/security-architecture-review",
       "integration/oauth-flows-and-connected-apps"
+    ],
+    "connected-objects": [
+      "admin/analytics-data-manager"
     ],
     "connectedcallback": [
       "lwc/lifecycle-hooks"
@@ -2753,10 +2787,20 @@
     ],
     "crm-analytics": [
       "admin/analytics-dashboard-design",
+      "admin/analytics-dashboard-json",
+      "admin/analytics-data-manager",
+      "admin/analytics-dataflow-development",
       "admin/analytics-dataset-management",
+      "admin/analytics-permission-and-sharing",
+      "admin/analytics-recipe-design",
       "admin/crm-analytics-app-creation",
       "admin/einstein-analytics-basics",
-      "agentforce/einstein-discovery-development"
+      "admin/saql-query-development",
+      "agentforce/einstein-discovery-development",
+      "architect/analytics-data-architecture",
+      "architect/analytics-embedded-components",
+      "architect/analytics-security-architecture",
+      "architect/crm-analytics-vs-tableau-decision"
     ],
     "crm-analytics-app-creation": [
       "admin/crm-analytics-app-creation"
@@ -2966,7 +3010,9 @@
       "lwc/commerce-lwc-components"
     ],
     "dashboard": [
-      "admin/analytics-dashboard-design"
+      "admin/analytics-dashboard-design",
+      "admin/analytics-dashboard-json",
+      "architect/analytics-embedded-components"
     ],
     "dashboard-filters": [
       "admin/reports-and-dashboards-fundamentals"
@@ -3060,6 +3106,7 @@
       "devops/sandbox-data-isolation-gotchas"
     ],
     "data-lake": [
+      "architect/analytics-data-architecture",
       "architect/data-cloud-architecture"
     ],
     "data-load": [
@@ -3075,6 +3122,9 @@
       "data/bulk-api-patterns",
       "data/product-catalog-data-model",
       "data/product-catalog-migration-cpq"
+    ],
+    "data-manager": [
+      "admin/analytics-data-manager"
     ],
     "data-masking": [
       "agentforce/einstein-trust-layer"
@@ -3113,6 +3163,9 @@
       "data/product-catalog-data-model",
       "data/sales-reporting-data-model",
       "data/service-metrics-data-model"
+    ],
+    "data-prep": [
+      "admin/analytics-recipe-design"
     ],
     "data-privacy": [
       "security/gdpr-data-privacy",
@@ -3180,6 +3233,9 @@
     "data-subject-requests": [
       "security/gdpr-data-privacy"
     ],
+    "data-sync": [
+      "admin/analytics-data-manager"
+    ],
     "data-use-purpose": [
       "architect/marketing-consent-architecture"
     ],
@@ -3191,6 +3247,9 @@
     ],
     "database-batchable": [
       "apex/batch-apex-patterns"
+    ],
+    "dataflow": [
+      "admin/analytics-dataflow-development"
     ],
     "dataflow-scheduling": [
       "admin/analytics-dataset-management"
@@ -3226,8 +3285,14 @@
     "dataset": [
       "admin/crm-analytics-app-creation"
     ],
+    "dataset-design": [
+      "architect/analytics-data-architecture"
+    ],
     "dataset-management": [
       "admin/analytics-dataset-management"
+    ],
+    "dataset-security": [
+      "admin/analytics-permission-and-sharing"
     ],
     "datasets": [
       "admin/crm-analytics-app-creation",
@@ -3280,6 +3345,7 @@
       "omnistudio/omnistudio-testing-patterns"
     ],
     "decision-framework": [
+      "architect/crm-analytics-vs-tableau-decision",
       "architect/npsp-vs-nonprofit-cloud-decision",
       "architect/omnistudio-vs-standard-decision"
     ],
@@ -3763,6 +3829,9 @@
     "embed": [
       "omnistudio/omnistudio-lwc-integration"
     ],
+    "embedded": [
+      "architect/analytics-embedded-components"
+    ],
     "embedded-service": [
       "admin/messaging-and-chat-setup",
       "agentforce/agent-channel-deployment"
@@ -3932,6 +4001,7 @@
       "admin/compliant-data-sharing-setup"
     ],
     "etl": [
+      "admin/analytics-dataflow-development",
       "data/data-migration-planning"
     ],
     "etm": [
@@ -5040,6 +5110,12 @@
     "incident-response": [
       "security/login-forensics"
     ],
+    "incremental": [
+      "architect/analytics-data-architecture"
+    ],
+    "incremental-sync": [
+      "admin/analytics-data-manager"
+    ],
     "indexes": [
       "data/soql-query-optimization"
     ],
@@ -5063,6 +5139,9 @@
     ],
     "industries-cpq": [
       "omnistudio/industries-cpq-vs-salesforce-cpq"
+    ],
+    "industries-data-model": [
+      "data/industries-data-model"
     ],
     "industries-timeline": [
       "admin/health-cloud-timeline"
@@ -5294,6 +5373,9 @@
     "js-qcp": [
       "apex/cpq-apex-plugins"
     ],
+    "json": [
+      "admin/analytics-dashboard-json"
+    ],
     "json-memory": [
       "apex/apex-cpu-and-heap-optimization"
     ],
@@ -5502,6 +5584,7 @@
       "architect/license-optimization-strategy"
     ],
     "license-management": [
+      "admin/analytics-permission-and-sharing",
       "agentforce/agentforce-sales-ai-setup"
     ],
     "license-migration": [
@@ -5514,6 +5597,7 @@
       "admin/b2b-vs-b2c-requirements",
       "admin/experience-cloud-member-management",
       "architect/cpq-vs-standard-products-decision",
+      "architect/crm-analytics-vs-tableau-decision",
       "architect/experience-cloud-licensing-model",
       "architect/health-cloud-multi-cloud-strategy",
       "architect/license-optimization-strategy",
@@ -5692,6 +5776,7 @@
       "apex/continuation-callouts",
       "apex/fsl-custom-actions-mobile",
       "apex/health-cloud-lwc-components",
+      "architect/analytics-embedded-components",
       "architect/omnistudio-vs-standard-decision",
       "architect/platform-selection-guidance",
       "architect/solution-design-patterns",
@@ -6428,6 +6513,9 @@
     "omnistudio-testing-patterns": [
       "omnistudio/omnistudio-testing-patterns"
     ],
+    "omnistudio-vs-standard-decision": [
+      "admin/omnistudio-vs-standard-decision"
+    ],
     "omniupdatebyfield": [
       "omnistudio/omnistudio-custom-lwc-elements"
     ],
@@ -6915,6 +7003,9 @@
     "picklists": [
       "admin/record-types-and-page-layouts"
     ],
+    "piggyback": [
+      "admin/saql-query-development"
+    ],
     "pii": [
       "data/data-quality-and-governance",
       "security/data-classification-labels"
@@ -7041,6 +7132,9 @@
     ],
     "pre-release-testing": [
       "devops/automated-regression-testing"
+    ],
+    "predicate": [
+      "architect/analytics-security-architecture"
     ],
     "prediction-api": [
       "agentforce/einstein-discovery-development"
@@ -7327,6 +7421,7 @@
       "apex/cpq-custom-actions"
     ],
     "query": [
+      "admin/saql-query-development",
       "apex/soql-fundamentals"
     ],
     "query-optimization": [
@@ -7452,6 +7547,9 @@
     "receipting": [
       "admin/gift-entry-and-processing"
     ],
+    "recipe": [
+      "admin/analytics-recipe-design"
+    ],
     "recommendations": [
       "agentforce/einstein-next-best-action"
     ],
@@ -7576,6 +7674,9 @@
     ],
     "remote-action": [
       "omnistudio/omnistudio-remote-actions"
+    ],
+    "remote-connections": [
+      "admin/analytics-data-manager"
     ],
     "remote-site-settings": [
       "admin/remote-site-settings"
@@ -7821,6 +7922,10 @@
     "row-cause": [
       "apex/apex-managed-sharing"
     ],
+    "row-level-security": [
+      "admin/analytics-permission-and-sharing",
+      "architect/analytics-security-architecture"
+    ],
     "rto-rpo": [
       "architect/ha-dr-architecture"
     ],
@@ -7899,6 +8004,9 @@
       "apex/cpq-api-and-automation",
       "omnistudio/industries-cpq-vs-salesforce-cpq"
     ],
+    "salesforce-data-pipeline": [
+      "admin/analytics-data-manager"
+    ],
     "salesforce-extensions": [
       "devops/vscode-salesforce-extensions"
     ],
@@ -7961,6 +8069,9 @@
     "sandboxpostcopy": [
       "devops/sandbox-data-isolation-gotchas",
       "devops/sandbox-refresh-and-templates"
+    ],
+    "saql": [
+      "admin/saql-query-development"
     ],
     "save-and-resume": [
       "omnistudio/omniscript-design-patterns"
@@ -8139,6 +8250,7 @@
     "security": [
       "admin/delegated-administration",
       "apex/soql-security",
+      "architect/analytics-security-architecture",
       "architect/security-architecture-review",
       "devops/salesforce-code-analyzer",
       "devops/sandbox-data-isolation-gotchas",
@@ -8157,6 +8269,9 @@
     "security-health-check": [
       "security/org-hardening-and-baseline-config",
       "security/security-health-check"
+    ],
+    "security-predicate": [
+      "admin/analytics-permission-and-sharing"
     ],
     "security-review": [
       "security/secure-coding-review-checklist"
@@ -8403,6 +8518,9 @@
       "admin/sharing-and-visibility",
       "lwc/experience-cloud-api-access",
       "security/guest-user-security"
+    ],
+    "sharing-inheritance": [
+      "admin/analytics-permission-and-sharing"
     ],
     "sharing-model": [
       "admin/compliant-data-sharing-setup",
@@ -8825,6 +8943,9 @@
     "t-sql": [
       "data/marketing-cloud-sql-queries"
     ],
+    "tableau": [
+      "architect/crm-analytics-vs-tableau-decision"
+    ],
     "task-sequence": [
       "admin/fsc-action-plans"
     ],
@@ -9011,6 +9132,10 @@
     ],
     "transform-element": [
       "flow/flow-collection-processing"
+    ],
+    "transformation": [
+      "admin/analytics-dataflow-development",
+      "admin/analytics-recipe-design"
     ],
     "transition-of-care": [
       "admin/care-coordination-requirements"
@@ -9350,6 +9475,9 @@
     ],
     "win-loss-analysis": [
       "admin/sales-process-mapping"
+    ],
+    "windowing": [
+      "admin/saql-query-development"
     ],
     "wire": [
       "lwc/knowledge-article-lwc"

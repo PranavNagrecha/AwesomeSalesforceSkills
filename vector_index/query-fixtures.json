@@ -3863,6 +3863,66 @@
       "domain": "architect",
       "expected_skill": "architect/industries-data-model",
       "top_k": 3
+    },
+    {
+      "query": "How do I configure Data Manager to sync Salesforce objects into CRM Analytics?",
+      "domain": "admin",
+      "expected_skill": "admin/analytics-data-manager",
+      "top_k": 3
+    },
+    {
+      "query": "How do I restrict which rows a user sees in a CRM Analytics dataset?",
+      "domain": "admin",
+      "expected_skill": "admin/analytics-permission-and-sharing",
+      "top_k": 3
+    },
+    {
+      "query": "How do I write a SAQL query with windowing and ranking in CRM Analytics?",
+      "domain": "admin",
+      "expected_skill": "admin/saql-query-development",
+      "top_k": 3
+    },
+    {
+      "query": "How do I edit dashboard JSON to add custom bindings in CRM Analytics?",
+      "domain": "admin",
+      "expected_skill": "admin/analytics-dashboard-json",
+      "top_k": 3
+    },
+    {
+      "query": "How do I design a CRM Analytics recipe with a Lookup join to preserve all rows?",
+      "domain": "admin",
+      "expected_skill": "admin/analytics-recipe-design",
+      "top_k": 3
+    },
+    {
+      "query": "How do I build a CRM Analytics dataflow with sfdcDigest and Augment nodes?",
+      "domain": "admin",
+      "expected_skill": "admin/analytics-dataflow-development",
+      "top_k": 3
+    },
+    {
+      "query": "How do I embed a CRM Analytics dashboard in a Lightning record page using LWC?",
+      "domain": "architect",
+      "expected_skill": "architect/analytics-embedded-components",
+      "top_k": 3
+    },
+    {
+      "query": "How do I design row-level security for CRM Analytics using predicates and sharing inheritance?",
+      "domain": "architect",
+      "expected_skill": "architect/analytics-security-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "How should I design my CRM Analytics data architecture for incremental loads and high row volume?",
+      "domain": "architect",
+      "expected_skill": "architect/analytics-data-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "Should we use CRM Analytics or Tableau for our Salesforce reporting?",
+      "domain": "architect",
+      "expected_skill": "architect/crm-analytics-vs-tableau-decision",
+      "top_k": 3
     }
   ]
 }
