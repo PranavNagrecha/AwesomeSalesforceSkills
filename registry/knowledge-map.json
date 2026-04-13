@@ -25,6 +25,7 @@
       "admin/care-plan-configuration",
       "admin/care-program-management",
       "admin/case-management-setup",
+      "admin/change-advisory-board-process",
       "admin/change-data-capture-admin",
       "admin/change-management-and-deployment",
       "admin/change-management-and-training",
@@ -57,6 +58,8 @@
       "admin/data-model-documentation",
       "admin/data-skew-and-sharing-performance",
       "admin/delegated-administration",
+      "admin/deployment-risk-assessment",
+      "admin/devops-process-documentation",
       "admin/digital-storefront-requirements",
       "admin/donor-lifecycle-requirements",
       "admin/duplicate-management",
@@ -472,17 +475,24 @@
       "devops/change-set-deployment",
       "devops/continuous-integration-testing",
       "devops/copado-essentials",
+      "devops/cpq-deployment-administration",
+      "devops/cross-cloud-deployment-patterns",
       "devops/cumulusci-automation",
       "devops/data-seeding-for-testing",
       "devops/deployment-error-troubleshooting",
+      "devops/deployment-monitoring",
       "devops/destructive-changes-deployment",
       "devops/devops-center-pipeline",
       "devops/environment-specific-value-injection",
       "devops/environment-strategy",
+      "devops/experience-cloud-deployment-admin",
+      "devops/experience-cloud-deployment-dev",
+      "devops/fsc-deployment-patterns",
       "devops/git-branching-for-salesforce",
       "devops/github-actions-for-salesforce",
       "devops/gitlab-ci-for-salesforce",
       "devops/go-live-cutover-planning",
+      "devops/health-cloud-deployment-patterns",
       "devops/metadata-api-coverage-gaps",
       "devops/migration-from-change-sets-to-sfdx",
       "devops/multi-package-development",
@@ -722,6 +732,12 @@
     "DeployCallback": [
       "apex/apex-metadata-api"
     ],
+    "DeployResult": [
+      "devops/deployment-monitoring"
+    ],
+    "DigitalExperienceBundle": [
+      "devops/cross-cloud-deployment-patterns"
+    ],
     "DmlException": [
       "apex/common-apex-runtime-errors"
     ],
@@ -736,6 +752,9 @@
     ],
     "Einstein-Search": [
       "agentforce/einstein-search-personalization"
+    ],
+    "ExperienceBundle": [
+      "devops/cross-cloud-deployment-patterns"
     ],
     "External-Services": [
       "apex/ai-model-integration-apex"
@@ -1562,6 +1581,7 @@
       "admin/commerce-checkout-flow-design",
       "admin/experience-cloud-site-setup",
       "architect/headless-vs-standard-experience",
+      "devops/experience-cloud-deployment-dev",
       "lwc/experience-cloud-authentication",
       "lwc/experience-cloud-search-customization"
     ],
@@ -1961,6 +1981,9 @@
     "bypass": [
       "admin/validation-rules"
     ],
+    "cab-process": [
+      "admin/change-advisory-board-process"
+    ],
     "cache-aside": [
       "apex/platform-cache"
     ],
@@ -2080,7 +2103,8 @@
     "care-plan": [
       "admin/care-plan-configuration",
       "apex/health-cloud-apex-extensions",
-      "data/patient-data-migration"
+      "data/patient-data-migration",
+      "devops/health-cloud-deployment-patterns"
     ],
     "care-program": [
       "admin/care-program-management"
@@ -2187,6 +2211,9 @@
     "certificate-rotation": [
       "security/certificate-and-key-management"
     ],
+    "change-advisory-board": [
+      "admin/change-advisory-board-process"
+    ],
     "change-data-capture": [
       "admin/change-data-capture-admin",
       "apex/change-data-capture-apex",
@@ -2202,7 +2229,12 @@
       "apex/change-data-capture-apex"
     ],
     "change-management": [
-      "admin/change-management-and-training"
+      "admin/change-advisory-board-process",
+      "admin/change-management-and-training",
+      "admin/deployment-risk-assessment"
+    ],
+    "change-set": [
+      "devops/experience-cloud-deployment-admin"
     ],
     "change-sets": [
       "admin/change-management-and-deployment",
@@ -2232,6 +2264,9 @@
     ],
     "chat-api": [
       "apex/service-cloud-rest-api"
+    ],
+    "checkDeployStatus": [
+      "devops/deployment-monitoring"
     ],
     "checkout": [
       "admin/commerce-checkout-configuration",
@@ -2333,6 +2368,9 @@
     "cms-connect": [
       "architect/knowledge-vs-external-cms"
     ],
+    "cms-content": [
+      "devops/experience-cloud-deployment-dev"
+    ],
     "cms-delivery": [
       "lwc/headless-experience-cloud"
     ],
@@ -2429,6 +2467,9 @@
       "admin/industries-communications-setup",
       "architect/industries-data-model"
     ],
+    "communities": [
+      "devops/experience-cloud-deployment-dev"
+    ],
     "community": [
       "admin/experience-cloud-member-management",
       "admin/experience-cloud-moderation",
@@ -2489,7 +2530,8 @@
       "apex/fsc-apex-extensions",
       "apex/fsc-compliant-sharing-api",
       "architect/fsc-architecture-patterns",
-      "architect/wealth-management-architecture"
+      "architect/wealth-management-architecture",
+      "devops/fsc-deployment-patterns"
     ],
     "component-communication": [
       "lwc/component-communication"
@@ -2806,7 +2848,8 @@
       "data/cpq-data-model",
       "data/cpq-performance-optimization",
       "data/historical-order-migration",
-      "data/product-catalog-migration-cpq"
+      "data/product-catalog-migration-cpq",
+      "devops/cpq-deployment-administration"
     ],
     "cpq-api": [
       "apex/cpq-api-and-automation"
@@ -3207,7 +3250,8 @@
       "data/knowledge-article-import",
       "data/mcae-prospect-data-migration",
       "data/opportunity-pipeline-migration",
-      "data/territory-data-alignment"
+      "data/territory-data-alignment",
+      "devops/cpq-deployment-administration"
     ],
     "data-model": [
       "admin/data-model-documentation",
@@ -3487,6 +3531,9 @@
     "deploy-on-save": [
       "devops/vscode-salesforce-extensions"
     ],
+    "deploy-status": [
+      "devops/deployment-monitoring"
+    ],
     "deployable-config": [
       "admin/custom-metadata-types",
       "admin/custom-metadata-types-and-settings"
@@ -3496,19 +3543,41 @@
       "apex/metadata-api-and-package-xml",
       "apex/sf-cli-and-sfdx-essentials",
       "devops/change-set-deployment",
+      "devops/cpq-deployment-administration",
+      "devops/cross-cloud-deployment-patterns",
       "devops/deployment-error-troubleshooting",
       "devops/destructive-changes-deployment",
+      "devops/experience-cloud-deployment-admin",
+      "devops/experience-cloud-deployment-dev",
+      "devops/fsc-deployment-patterns",
+      "devops/health-cloud-deployment-patterns",
       "devops/metadata-api-coverage-gaps",
       "devops/permission-set-deployment-ordering",
       "devops/rollback-and-hotfix-strategy",
       "omnistudio/omnistudio-ci-cd-patterns",
       "omnistudio/omnistudio-deployment-datapacks"
     ],
+    "deployment-governance": [
+      "admin/change-advisory-board-process"
+    ],
+    "deployment-guide": [
+      "admin/devops-process-documentation"
+    ],
+    "deployment-history": [
+      "devops/deployment-monitoring"
+    ],
+    "deployment-monitoring": [
+      "devops/deployment-monitoring"
+    ],
     "deployment-ordering": [
+      "devops/cross-cloud-deployment-patterns",
       "devops/permission-set-deployment-ordering"
     ],
     "deployment-readiness": [
       "devops/pre-deployment-checklist"
+    ],
+    "deployment-risk-assessment": [
+      "admin/deployment-risk-assessment"
     ],
     "deployment-status": [
       "devops/post-deployment-validation"
@@ -3549,10 +3618,16 @@
       "lwc/lwc-offline-and-mobile"
     ],
     "devops": [
+      "admin/change-advisory-board-process",
+      "admin/deployment-risk-assessment",
       "devops/api-version-management",
+      "devops/cpq-deployment-administration",
       "devops/cumulusci-automation",
+      "devops/deployment-monitoring",
       "devops/environment-strategy",
+      "devops/experience-cloud-deployment-dev",
       "devops/git-branching-for-salesforce",
+      "devops/health-cloud-deployment-patterns",
       "devops/metadata-api-coverage-gaps",
       "devops/migration-from-change-sets-to-sfdx",
       "devops/multi-package-development",
@@ -3571,6 +3646,9 @@
       "devops/devops-center-pipeline",
       "devops/salesforce-devops-tooling-selection"
     ],
+    "devops-documentation": [
+      "admin/devops-process-documentation"
+    ],
     "devops-tooling": [
       "devops/salesforce-devops-tooling-selection"
     ],
@@ -3585,7 +3663,8 @@
       "architect/multi-site-architecture"
     ],
     "digital-experiences": [
-      "admin/experience-cloud-cms-content"
+      "admin/experience-cloud-cms-content",
+      "devops/experience-cloud-deployment-admin"
     ],
     "digital-insurance-platform": [
       "admin/industries-insurance-setup"
@@ -3595,6 +3674,9 @@
     ],
     "digital-signature": [
       "apex/fsl-service-report-templates"
+    ],
+    "digitalexperiencebundle": [
+      "devops/experience-cloud-deployment-dev"
     ],
     "direct-platform-access": [
       "architect/omnistudio-scalability-patterns"
@@ -4009,6 +4091,9 @@
     "environment-config": [
       "devops/environment-specific-value-injection"
     ],
+    "environment-matrix": [
+      "admin/devops-process-documentation"
+    ],
     "environment-strategy": [
       "admin/sandbox-strategy",
       "devops/environment-strategy"
@@ -4180,6 +4265,9 @@
       "data/community-user-data-migration",
       "data/external-user-data-sharing",
       "data/partner-data-access-patterns",
+      "devops/cross-cloud-deployment-patterns",
+      "devops/experience-cloud-deployment-admin",
+      "devops/experience-cloud-deployment-dev",
       "flow/flow-for-experience-cloud",
       "lwc/commerce-lwc-components",
       "lwc/experience-cloud-api-access",
@@ -4203,6 +4291,10 @@
     ],
     "experience-cloud-omnistudio": [
       "admin/omnistudio-admin-configuration"
+    ],
+    "experiencebundle": [
+      "devops/experience-cloud-deployment-admin",
+      "devops/experience-cloud-deployment-dev"
     ],
     "expression-sets": [
       "omnistudio/business-rules-engine",
@@ -4480,7 +4572,8 @@
       "architect/banking-lending-architecture",
       "architect/fsc-architecture-patterns",
       "architect/insurance-cloud-architecture",
-      "architect/wealth-management-architecture"
+      "architect/wealth-management-architecture",
+      "devops/fsc-deployment-patterns"
     ],
     "find-clause": [
       "data/sosl-search-patterns"
@@ -4678,7 +4771,8 @@
       "data/financial-account-migration",
       "data/financial-data-quality",
       "data/fsc-data-model",
-      "data/person-accounts"
+      "data/person-accounts",
+      "devops/fsc-deployment-patterns"
     ],
     "fsc-action-plans": [
       "admin/fsc-action-plans"
@@ -4872,6 +4966,7 @@
       "architect/government-cloud-compliance"
     ],
     "governance": [
+      "admin/change-advisory-board-process",
       "architect/multi-bu-marketing-architecture"
     ],
     "government-cloud": [
@@ -5006,7 +5101,8 @@
       "data/fhir-data-mapping",
       "data/health-cloud-data-model",
       "data/patient-data-migration",
-      "data/person-accounts"
+      "data/person-accounts",
+      "devops/health-cloud-deployment-patterns"
     ],
     "healthcare": [
       "data/health-cloud-data-model"
@@ -5062,6 +5158,7 @@
       "architect/hipaa-compliance-architecture",
       "data/consent-data-model-health",
       "data/patient-data-migration",
+      "devops/health-cloud-deployment-patterns",
       "security/sandbox-data-masking"
     ],
     "historical-orders": [
@@ -5242,7 +5339,8 @@
       "apex/health-cloud-apex-extensions",
       "architect/industries-data-model",
       "architect/omnistudio-vs-standard-architecture",
-      "architect/omnistudio-vs-standard-decision"
+      "architect/omnistudio-vs-standard-decision",
+      "devops/fsc-deployment-patterns"
     ],
     "industries-cloud": [
       "admin/industries-energy-utilities-setup",
@@ -5452,6 +5550,9 @@
     ],
     "iterator": [
       "apex/custom-iterators-and-iterables"
+    ],
+    "itil": [
+      "admin/change-advisory-board-process"
     ],
     "jest": [
       "lwc/lwc-testing"
@@ -5962,6 +6063,7 @@
       "architect/experience-cloud-performance",
       "architect/headless-vs-standard-experience",
       "architect/omnistudio-scalability-patterns",
+      "devops/experience-cloud-deployment-dev",
       "lwc/experience-cloud-lwc-components",
       "lwc/experience-cloud-search-customization",
       "lwc/lwr-site-development"
@@ -6002,6 +6104,7 @@
       "admin/cpq-approval-workflows",
       "apex/apex-metadata-api",
       "apex/billing-integration-apex",
+      "devops/health-cloud-deployment-patterns",
       "devops/second-generation-managed-packages",
       "omnistudio/omnistudio-lwc-integration",
       "omnistudio/vlocity-to-native-omnistudio-migration"
@@ -6144,7 +6247,12 @@
     "metadata-api": [
       "apex/metadata-api-and-package-xml",
       "architect/metadata-coverage-and-dependencies",
+      "devops/cross-cloud-deployment-patterns",
       "devops/deployment-error-troubleshooting",
+      "devops/deployment-monitoring",
+      "devops/experience-cloud-deployment-admin",
+      "devops/experience-cloud-deployment-dev",
+      "devops/fsc-deployment-patterns",
       "devops/metadata-api-coverage-gaps",
       "devops/migration-from-change-sets-to-sfdx",
       "devops/permission-set-deployment-ordering",
@@ -6320,7 +6428,8 @@
       "architect/multi-channel-service-architecture"
     ],
     "multi-cloud": [
-      "architect/health-cloud-multi-cloud-strategy"
+      "architect/health-cloud-multi-cloud-strategy",
+      "devops/cross-cloud-deployment-patterns"
     ],
     "multi-currency": [
       "admin/products-and-pricebooks",
@@ -6387,6 +6496,9 @@
     "namespaces": [
       "data/npsp-data-model"
     ],
+    "namespacing": [
+      "devops/fsc-deployment-patterns"
+    ],
     "naming": [
       "admin/npsp-household-accounts"
     ],
@@ -6417,6 +6529,9 @@
     ],
     "network-activity-audit": [
       "data/community-analytics-data"
+    ],
+    "network-metadata": [
+      "devops/experience-cloud-deployment-admin"
     ],
     "new-field": [
       "admin/custom-field-creation"
@@ -6680,7 +6795,8 @@
       "data/fsl-territory-data-setup"
     ],
     "operational-excellence": [
-      "admin/batch-job-scheduling-and-monitoring"
+      "admin/batch-job-scheduling-and-monitoring",
+      "admin/devops-process-documentation"
     ],
     "opportunities": [
       "admin/opportunity-management"
@@ -7103,7 +7219,8 @@
       "architect/npsp-vs-nonprofit-cloud-decision",
       "data/clinical-data-quality",
       "data/patient-data-migration",
-      "data/person-accounts"
+      "data/person-accounts",
+      "devops/fsc-deployment-patterns"
     ],
     "persona-design": [
       "agentforce/agentforce-persona-design"
@@ -7304,7 +7421,8 @@
     ],
     "price-rules": [
       "admin/cpq-pricing-rules",
-      "apex/cpq-test-automation"
+      "apex/cpq-test-automation",
+      "devops/cpq-deployment-administration"
     ],
     "pricebook": [
       "admin/commerce-pricing-and-promotions",
@@ -7405,7 +7523,8 @@
       "data/product-catalog-migration-cpq"
     ],
     "product-rules": [
-      "admin/cpq-product-catalog-setup"
+      "admin/cpq-product-catalog-setup",
+      "devops/cpq-deployment-administration"
     ],
     "product-schedules": [
       "admin/products-and-pricebooks"
@@ -7649,7 +7768,8 @@
       "apex/quote-pdf-customization"
     ],
     "quote-templates": [
-      "admin/quotes-and-quote-templates"
+      "admin/quotes-and-quote-templates",
+      "devops/cpq-deployment-administration"
     ],
     "quote-to-cash": [
       "admin/quote-to-cash-process",
@@ -7803,7 +7923,9 @@
       "admin/change-management-and-training"
     ],
     "release-management": [
+      "admin/change-advisory-board-process",
       "admin/change-management-and-deployment",
+      "admin/deployment-risk-assessment",
       "devops/change-set-deployment",
       "devops/devops-center-pipeline",
       "devops/release-management"
@@ -8037,6 +8159,9 @@
       "devops/rollback-and-hotfix-strategy",
       "omnistudio/omniscript-versioning"
     ],
+    "rollback-planning": [
+      "admin/deployment-risk-assessment"
+    ],
     "rollback-safe-logging": [
       "apex/error-handling-framework"
     ],
@@ -8086,6 +8211,9 @@
     ],
     "rto-rpo": [
       "architect/ha-dr-architecture"
+    ],
+    "runbook": [
+      "admin/devops-process-documentation"
     ],
     "runtime-error": [
       "flow/flow-runtime-error-diagnosis"
@@ -8160,6 +8288,7 @@
     "salesforce-cpq": [
       "apex/cpq-apex-plugins",
       "apex/cpq-api-and-automation",
+      "devops/cpq-deployment-administration",
       "omnistudio/industries-cpq-vs-salesforce-cpq"
     ],
     "salesforce-data-pipeline": [
@@ -8256,7 +8385,8 @@
       "data/cpq-data-model",
       "data/cpq-performance-optimization",
       "data/historical-order-migration",
-      "data/product-catalog-migration-cpq"
+      "data/product-catalog-migration-cpq",
+      "devops/cpq-deployment-administration"
     ],
     "scalability": [
       "architect/limits-and-scalability-planning",
@@ -8727,6 +8857,9 @@
       "security/field-audit-trail",
       "security/platform-encryption",
       "security/transaction-security-policies"
+    ],
+    "shield-encryption": [
+      "devops/health-cloud-deployment-patterns"
     ],
     "shift-pattern": [
       "admin/fsl-shifts-and-crew"
@@ -9657,6 +9790,7 @@
       "admin/client-onboarding-design"
     ],
     "well-architected": [
+      "admin/deployment-risk-assessment",
       "architect/ai-agent-org-integration-architecture",
       "architect/license-optimization-strategy",
       "architect/nfr-definition-for-salesforce",
