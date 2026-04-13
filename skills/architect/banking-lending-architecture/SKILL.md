@@ -6,7 +6,7 @@ salesforce-version: "Spring '25+"
 well-architected-pillars:
   - Security
   - Reliability
-  - Performance Efficiency
+  - Performance
 triggers:
   - "how do I architect loan origination on Salesforce Financial Services Cloud"
   - "designing Digital Lending on FSC with OmniStudio and ResidentialLoanApplication"

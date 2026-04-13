@@ -124,7 +124,6 @@
       "admin/object-creation-and-design",
       "admin/omni-channel-routing-setup",
       "admin/omnistudio-admin-configuration",
-      "admin/omnistudio-vs-standard-decision",
       "admin/opportunity-management",
       "admin/org-cleanup-and-technical-debt",
       "admin/org-setup-and-configuration",
@@ -341,6 +340,7 @@
       "architect/health-cloud-multi-cloud-strategy",
       "architect/high-volume-sales-data-architecture",
       "architect/hipaa-compliance-architecture",
+      "architect/industries-data-model",
       "architect/insurance-cloud-architecture",
       "architect/integration-framework-design",
       "architect/knowledge-taxonomy-design",
@@ -362,6 +362,7 @@
       "architect/nonprofit-platform-architecture",
       "architect/npsp-vs-nonprofit-cloud-decision",
       "architect/omni-channel-capacity-model",
+      "architect/omnistudio-vs-standard-decision",
       "architect/order-management-architecture",
       "architect/org-edition-and-feature-licensing",
       "architect/org-limits-monitoring",
@@ -414,7 +415,6 @@
       "data/fsl-work-order-migration",
       "data/health-cloud-data-model",
       "data/historical-order-migration",
-      "data/industries-data-model",
       "data/knowledge-article-import",
       "data/large-scale-deduplication",
       "data/lead-data-import-and-dedup",
@@ -850,15 +850,6 @@
     "SystemModstamp": [
       "admin/system-field-behavior-and-audit"
     ],
-    "TODO_TAG_2": [
-      "admin/donor-lifecycle-requirements",
-      "admin/omnistudio-vs-standard-decision",
-      "apex/npsp-api-and-integration",
-      "architect/ai-governance-architecture",
-      "architect/conversational-ai-architecture",
-      "data/industries-data-model",
-      "data/vector-database-management"
-    ],
     "Territory2ModelHistory": [
       "data/territory-data-alignment"
     ],
@@ -1101,9 +1092,12 @@
       "agentforce/salesforce-mcp-server-setup",
       "agentforce/sf-to-llm-data-pipelines",
       "architect/ai-agent-org-integration-architecture",
+      "architect/ai-governance-architecture",
       "architect/ai-platform-architecture",
       "architect/ai-ready-data-architecture",
-      "architect/einstein-bot-architecture"
+      "architect/conversational-ai-architecture",
+      "architect/einstein-bot-architecture",
+      "data/vector-database-management"
     ],
     "agentforce-nonprofit": [
       "architect/nonprofit-platform-architecture"
@@ -1124,9 +1118,7 @@
       "admin/ai-ethics-and-governance-requirements"
     ],
     "ai-governance": [
-      "admin/ai-ethics-and-governance-requirements"
-    ],
-    "ai-governance-architecture": [
+      "admin/ai-ethics-and-governance-requirements",
       "architect/ai-governance-architecture"
     ],
     "ai-platform-architecture": [
@@ -1210,6 +1202,7 @@
       "apex/fsl-scheduling-api",
       "apex/governor-limit-recovery-patterns",
       "apex/health-cloud-apex-extensions",
+      "apex/npsp-api-and-integration",
       "apex/npsp-trigger-framework-extension",
       "apex/pdf-generation-patterns",
       "apex/soql-fundamentals",
@@ -1395,12 +1388,15 @@
     ],
     "architecture": [
       "architect/ai-agent-org-integration-architecture",
+      "architect/ai-governance-architecture",
       "architect/b2b-vs-b2c-architecture",
       "architect/banking-lending-architecture",
       "architect/fsc-architecture-patterns",
       "architect/headless-commerce-architecture",
+      "architect/industries-data-model",
       "architect/insurance-cloud-architecture",
       "architect/integration-framework-design",
+      "architect/omnistudio-vs-standard-decision",
       "architect/payer-vs-provider-architecture",
       "architect/sales-cloud-architecture"
     ],
@@ -1485,7 +1481,8 @@
       "integration/outbound-messages-and-callbacks"
     ],
     "atlas-reasoning-engine": [
-      "agentforce/custom-agent-actions-apex"
+      "agentforce/custom-agent-actions-apex",
+      "architect/conversational-ai-architecture"
     ],
     "ato": [
       "architect/government-cloud-compliance"
@@ -1511,7 +1508,8 @@
     "audit-trail": [
       "admin/compliance-documentation-requirements",
       "admin/hipaa-workflow-design",
-      "agentforce/einstein-trust-layer"
+      "agentforce/einstein-trust-layer",
+      "architect/ai-governance-architecture"
     ],
     "aura": [
       "admin/commerce-checkout-flow-design",
@@ -1669,6 +1667,9 @@
     "batch-scope": [
       "apex/batch-apex-patterns"
     ],
+    "bdi": [
+      "apex/npsp-api-and-integration"
+    ],
     "before-save": [
       "flow/record-triggered-flow-patterns"
     ],
@@ -1804,6 +1805,9 @@
     ],
     "bulk-api-v2": [
       "agentforce/sf-to-llm-data-pipelines"
+    ],
+    "bulk-data-import": [
+      "apex/npsp-api-and-integration"
     ],
     "bulk-dml": [
       "flow/flow-collection-processing"
@@ -2173,7 +2177,8 @@
       "apex/commerce-extension-points"
     ],
     "chunking": [
-      "agentforce/data-cloud-vector-search-dev"
+      "agentforce/data-cloud-vector-search-dev",
+      "data/vector-database-management"
     ],
     "ci-cd": [
       "devops/bitbucket-pipelines-for-salesforce",
@@ -2344,6 +2349,9 @@
     "commerce-setup": [
       "admin/b2b-commerce-store-setup"
     ],
+    "communications-cloud": [
+      "architect/industries-data-model"
+    ],
     "community": [
       "admin/experience-cloud-member-management",
       "admin/experience-cloud-moderation",
@@ -2374,6 +2382,7 @@
     ],
     "compliance": [
       "admin/compliance-documentation-requirements",
+      "architect/ai-governance-architecture",
       "architect/aml-kyc-process-architecture",
       "architect/fsc-architecture-patterns",
       "architect/health-cloud-data-residency",
@@ -3008,7 +3017,8 @@
       "agentforce/rag-patterns-in-salesforce",
       "architect/ai-ready-data-architecture",
       "architect/experience-cloud-integration-patterns",
-      "data/data-cloud-data-streams"
+      "data/data-cloud-data-streams",
+      "data/vector-database-management"
     ],
     "data-display": [
       "lwc/lwc-base-component-recipes"
@@ -3089,6 +3099,7 @@
       "admin/data-model-documentation",
       "architect/b2b-vs-b2c-architecture",
       "architect/fsc-architecture-patterns",
+      "architect/industries-data-model",
       "architect/npsp-vs-nonprofit-cloud-decision",
       "architect/payer-vs-provider-architecture",
       "architect/sales-cloud-architecture",
@@ -3269,7 +3280,8 @@
       "omnistudio/omnistudio-testing-patterns"
     ],
     "decision-framework": [
-      "architect/npsp-vs-nonprofit-cloud-decision"
+      "architect/npsp-vs-nonprofit-cloud-decision",
+      "architect/omnistudio-vs-standard-decision"
     ],
     "decision-matrix": [
       "omnistudio/calculation-procedures"
@@ -3544,7 +3556,7 @@
     "donor-data": [
       "architect/fundraising-integration-patterns"
     ],
-    "donor-lifecycle-requirements": [
+    "donor-management": [
       "admin/donor-lifecycle-requirements"
     ],
     "donor-pipeline": [
@@ -3642,6 +3654,9 @@
     "einstein-analytics": [
       "admin/crm-analytics-app-creation"
     ],
+    "einstein-bot": [
+      "architect/conversational-ai-architecture"
+    ],
     "einstein-bot-architecture": [
       "architect/einstein-bot-architecture"
     ],
@@ -3696,7 +3711,8 @@
     ],
     "einstein-trust-layer": [
       "agentforce/einstein-trust-layer",
-      "agentforce/rag-patterns-in-salesforce"
+      "agentforce/rag-patterns-in-salesforce",
+      "architect/ai-governance-architecture"
     ],
     "elevate": [
       "architect/fundraising-integration-patterns"
@@ -3755,7 +3771,8 @@
       "agentforce/sf-to-llm-data-pipelines"
     ],
     "embeddings": [
-      "agentforce/data-cloud-vector-search-dev"
+      "agentforce/data-cloud-vector-search-dev",
+      "data/vector-database-management"
     ],
     "emr-sync": [
       "architect/fhir-integration-architecture"
@@ -3763,6 +3780,9 @@
     "encryption": [
       "architect/hipaa-compliance-architecture",
       "security/platform-encryption"
+    ],
+    "energy-utilities": [
+      "architect/industries-data-model"
     ],
     "enforcement-actions": [
       "security/transaction-security-policies"
@@ -4576,6 +4596,7 @@
       "admin/grant-management-setup"
     ],
     "fundraising": [
+      "admin/donor-lifecycle-requirements",
       "admin/fundraising-process-mapping",
       "architect/nonprofit-platform-architecture"
     ],
@@ -4630,6 +4651,9 @@
     ],
     "gift-entry": [
       "admin/gift-entry-and-processing"
+    ],
+    "gift-processing": [
+      "apex/npsp-api-and-integration"
     ],
     "gift-transaction": [
       "architect/fundraising-integration-patterns"
@@ -4803,6 +4827,7 @@
       "architect/health-cloud-data-residency",
       "architect/health-cloud-multi-cloud-strategy",
       "architect/hipaa-compliance-architecture",
+      "architect/industries-data-model",
       "architect/payer-vs-provider-architecture",
       "data/clinical-data-quality",
       "data/consent-data-model-health",
@@ -5029,16 +5054,15 @@
     ],
     "industries": [
       "admin/industries-insurance-setup",
-      "apex/health-cloud-apex-extensions"
+      "apex/health-cloud-apex-extensions",
+      "architect/industries-data-model",
+      "architect/omnistudio-vs-standard-decision"
     ],
     "industries-cloud": [
       "omnistudio/business-rules-engine"
     ],
     "industries-cpq": [
       "omnistudio/industries-cpq-vs-salesforce-cpq"
-    ],
-    "industries-data-model": [
-      "data/industries-data-model"
     ],
     "industries-timeline": [
       "admin/health-cloud-timeline"
@@ -5086,6 +5110,7 @@
       "admin/industries-insurance-setup"
     ],
     "insurance-cloud": [
+      "architect/industries-data-model",
       "architect/insurance-cloud-architecture"
     ],
     "integrated-care-management": [
@@ -5098,6 +5123,7 @@
       "apex/marketing-cloud-api",
       "apex/marketing-cloud-custom-activities",
       "apex/mcae-pardot-api",
+      "apex/npsp-api-and-integration",
       "architect/ai-agent-org-integration-architecture",
       "architect/cpq-architecture-patterns",
       "architect/cpq-integration-with-erp",
@@ -5496,6 +5522,9 @@
     "life-sciences": [
       "admin/care-program-management"
     ],
+    "lifecycle": [
+      "admin/donor-lifecycle-requirements"
+    ],
     "lifecycle-stages": [
       "admin/marketing-automation-requirements"
     ],
@@ -5663,6 +5692,7 @@
       "apex/continuation-callouts",
       "apex/fsl-custom-actions-mobile",
       "apex/health-cloud-lwc-components",
+      "architect/omnistudio-vs-standard-decision",
       "architect/platform-selection-guidance",
       "architect/solution-design-patterns",
       "lwc/experience-cloud-authentication",
@@ -5975,6 +6005,9 @@
     "mixed-dml": [
       "apex/mixed-dml-and-setup-objects"
     ],
+    "mlops": [
+      "architect/ai-governance-architecture"
+    ],
     "mobile": [
       "admin/fsl-mobile-app-setup",
       "admin/global-actions-and-quick-actions",
@@ -6029,6 +6062,7 @@
       "data/billing-data-reconciliation"
     ],
     "moves-management": [
+      "admin/donor-lifecycle-requirements",
       "admin/fundraising-process-mapping"
     ],
     "mpi": [
@@ -6051,6 +6085,9 @@
       "integration/api-led-connectivity",
       "integration/mulesoft-salesforce-connector",
       "integration/sis-integration-patterns"
+    ],
+    "multi-agent": [
+      "architect/conversational-ai-architecture"
     ],
     "multi-agent-orchestration": [
       "architect/ai-platform-architecture"
@@ -6195,6 +6232,7 @@
       "architect/nonprofit-platform-architecture"
     ],
     "nonprofit-cloud": [
+      "admin/donor-lifecycle-requirements",
       "admin/program-outcome-tracking-design",
       "architect/fundraising-integration-patterns",
       "architect/nonprofit-platform-architecture",
@@ -6218,6 +6256,7 @@
       "admin/salesforce-surveys"
     ],
     "npsp": [
+      "admin/donor-lifecycle-requirements",
       "admin/gift-entry-and-processing",
       "admin/grant-management-setup",
       "admin/npsp-engagement-plans",
@@ -6226,6 +6265,7 @@
       "admin/program-outcome-tracking-design",
       "admin/recurring-donations-setup",
       "admin/soft-credits-and-matching",
+      "apex/npsp-api-and-integration",
       "apex/npsp-custom-rollups",
       "apex/npsp-trigger-framework-extension",
       "architect/fundraising-integration-patterns",
@@ -6233,9 +6273,6 @@
       "data/constituent-data-migration",
       "data/nonprofit-data-architecture",
       "data/npsp-data-model"
-    ],
-    "npsp-api-and-integration": [
-      "apex/npsp-api-and-integration"
     ],
     "null-handling": [
       "admin/formula-fields"
@@ -6315,13 +6352,15 @@
       "admin/service-console-configuration",
       "agentforce/einstein-copilot-for-service",
       "apex/omni-channel-custom-routing",
+      "architect/conversational-ai-architecture",
       "architect/multi-channel-service-architecture",
       "architect/omni-channel-capacity-model",
       "architect/service-cloud-architecture",
       "data/omni-channel-reporting-data"
     ],
     "omni-studio": [
-      "architect/health-cloud-multi-cloud-strategy"
+      "architect/health-cloud-multi-cloud-strategy",
+      "architect/omnistudio-vs-standard-decision"
     ],
     "omniJsonData": [
       "omnistudio/omnistudio-custom-lwc-elements"
@@ -6346,6 +6385,7 @@
       "admin/client-onboarding-design",
       "admin/industries-insurance-setup",
       "admin/patient-engagement-requirements",
+      "architect/omnistudio-vs-standard-decision",
       "omnistudio/business-rules-engine",
       "omnistudio/calculation-procedures",
       "omnistudio/dataraptor-load-and-extract",
@@ -6387,9 +6427,6 @@
     ],
     "omnistudio-testing-patterns": [
       "omnistudio/omnistudio-testing-patterns"
-    ],
-    "omnistudio-vs-standard-decision": [
-      "admin/omnistudio-vs-standard-decision"
     ],
     "omniupdatebyfield": [
       "omnistudio/omnistudio-custom-lwc-elements"
@@ -7453,6 +7490,7 @@
     ],
     "recurring-donations": [
       "admin/recurring-donations-setup",
+      "apex/npsp-api-and-integration",
       "data/npsp-data-model"
     ],
     "recursion": [
@@ -7632,7 +7670,8 @@
       "architect/integration-framework-design"
     ],
     "responsible-ai": [
-      "admin/ai-ethics-and-governance-requirements"
+      "admin/ai-ethics-and-governance-requirements",
+      "architect/ai-governance-architecture"
     ],
     "rest-api": [
       "apex/health-cloud-apis",
@@ -8033,6 +8072,7 @@
     "screen-flow": [
       "admin/client-onboarding-design",
       "admin/flow-for-admins",
+      "architect/omnistudio-vs-standard-decision",
       "flow/fault-handling",
       "flow/flow-for-experience-cloud",
       "lwc/lwc-in-flow-screens",
@@ -9186,7 +9226,8 @@
     "vector-search": [
       "agentforce/data-cloud-vector-search-dev",
       "agentforce/rag-patterns-in-salesforce",
-      "architect/ai-ready-data-architecture"
+      "architect/ai-ready-data-architecture",
+      "data/vector-database-management"
     ],
     "vector-store": [
       "agentforce/sf-to-llm-data-pipelines"

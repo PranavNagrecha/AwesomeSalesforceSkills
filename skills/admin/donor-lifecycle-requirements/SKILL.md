@@ -36,7 +36,7 @@ updated: 2026-04-13
 
 # Donor Lifecycle Requirements
 
-TODO: Write a 1–2 sentence activation summary. When does this skill activate? What does it do?
+This skill activates when you need to map the full donor lifecycle in NPSP or Nonprofit Cloud — from prospect acquisition through cultivation, upgrade, and lapsed re-engagement. It produces lifecycle stage maps, Moves Management configuration requirements, segmentation designs, and upgrade path workflows grounded in NPSP/NPC platform capabilities.
 
 ---
 

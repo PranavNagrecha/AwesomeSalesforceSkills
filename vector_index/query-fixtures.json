@@ -3803,6 +3803,66 @@
       "domain": "omnistudio",
       "expected_skill": "omnistudio/omnistudio-ci-cd-patterns",
       "top_k": 3
+    },
+    {
+      "query": "FSC Insurance Cloud module licensing policy administration claims underwriting architecture",
+      "domain": "architect",
+      "expected_skill": "architect/insurance-cloud-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "FSC Digital Lending banking loan origination OmniStudio ResidentialLoanApplication architecture",
+      "domain": "architect",
+      "expected_skill": "architect/banking-lending-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "NPSP PMM program outcome tracking logic model indicator ServiceDelivery",
+      "domain": "admin",
+      "expected_skill": "admin/program-outcome-tracking-design",
+      "top_k": 3
+    },
+    {
+      "query": "NPSP donor lifecycle moves management lapsed re-engagement upgrade path segmentation",
+      "domain": "admin",
+      "expected_skill": "admin/donor-lifecycle-requirements",
+      "top_k": 3
+    },
+    {
+      "query": "NPSP BDI DataImport API gift processing recurring donation ERD API integration",
+      "domain": "apex",
+      "expected_skill": "apex/npsp-api-and-integration",
+      "top_k": 3
+    },
+    {
+      "query": "Data Cloud vector index chunking strategy embedding rebuild refresh PII",
+      "domain": "data",
+      "expected_skill": "data/vector-database-management",
+      "top_k": 3
+    },
+    {
+      "query": "AI governance architecture Einstein Trust Layer audit trail Policy-as-Code EU AI Act MLOps",
+      "domain": "architect",
+      "expected_skill": "architect/ai-governance-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "Agentforce conversational AI architecture topic intent routing Atlas Reasoning Engine Einstein Bot handoff",
+      "domain": "architect",
+      "expected_skill": "architect/conversational-ai-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "OmniStudio vs Screen Flow LWC Apex decision framework Industries license capability matrix",
+      "domain": "architect",
+      "expected_skill": "architect/omnistudio-vs-standard-decision",
+      "top_k": 3
+    },
+    {
+      "query": "Industries data model Insurance Communications Health Cloud FSC object relationships SOQL",
+      "domain": "architect",
+      "expected_skill": "architect/industries-data-model",
+      "top_k": 3
     }
   ]
 }

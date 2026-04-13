@@ -6,7 +6,7 @@ salesforce-version: "Spring '25+"
 well-architected-pillars:
   - Security
   - Reliability
-  - Performance Efficiency
+  - Performance
 triggers:
   - "how do I architect insurance policy administration on Salesforce FSC"
   - "what modules do I need to license for FSC Insurance claims and underwriting"
