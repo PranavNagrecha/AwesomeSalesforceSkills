@@ -1328,11 +1328,11 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| TODO | cpq-deployment-administration | CPQ metadata deployment: product rules, pricing rules, quote templates, deployment ordering for CPQ components. NOT for standard change sets. | |
-| TODO | omnistudio-deployment-admin | OmniStudio DataPack management: export, import, version control, environment-specific data in DataPacks. NOT for standard deployment. | |
-| TODO | experience-cloud-deployment-admin | Experience Cloud site deployment: publishing, template versioning, content migration between environments. NOT for standard deployment. | |
+| IN_PROGRESS | cpq-deployment-administration | CPQ metadata deployment: product rules, pricing rules, quote templates, deployment ordering for CPQ components. NOT for standard change sets. | |
+| IN_PROGRESS | omnistudio-deployment-admin | OmniStudio DataPack management: export, import, version control, environment-specific data in DataPacks. NOT for standard deployment. | |
+| IN_PROGRESS | experience-cloud-deployment-admin | Experience Cloud site deployment: publishing, template versioning, content migration between environments. NOT for standard deployment. | |
 | TODO | managed-package-installation | Installing and upgrading managed packages: pre-install checks, post-install configuration, version management. NOT for building packages. | |
-| TODO | deployment-monitoring | Deployment monitoring: status tracking, component errors, test failures, deployment history, troubleshooting. NOT for Apex debugging. | |
+| IN_PROGRESS | deployment-monitoring | Deployment monitoring: status tracking, component errors, test failures, deployment history, troubleshooting. NOT for Apex debugging. | |
 
 ### DevOps × BA Role
 
@@ -1340,9 +1340,9 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| TODO | deployment-risk-assessment | Deployment risk assessment: change impact analysis, rollback planning, user communication, go-live checklist. NOT for deployment execution. | |
-| TODO | devops-process-documentation | DevOps process documentation: runbook creation, deployment guides, environment matrix, onboarding docs. NOT for release planning. | |
-| TODO | change-advisory-board-process | Change advisory board process: change request classification, approval workflows, change calendar, risk assessment. NOT for Salesforce approval processes. | |
+| IN_PROGRESS | deployment-risk-assessment | Deployment risk assessment: change impact analysis, rollback planning, user communication, go-live checklist. NOT for deployment execution. | |
+| IN_PROGRESS | devops-process-documentation | DevOps process documentation: runbook creation, deployment guides, environment matrix, onboarding docs. NOT for release planning. | |
+| IN_PROGRESS | change-advisory-board-process | Change advisory board process: change request classification, approval workflows, change calendar, risk assessment. NOT for Salesforce approval processes. | |
 
 ### DevOps × Dev Role
 
@@ -1351,11 +1351,11 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
 | RESEARCHED | cpq-deployment-patterns | CPQ deployment ordering: product rules, pricing rules, quote templates, billing config, dependency sequence in CI/CD. NOT for generic SFDX deployment. | Researched 2026-04-13. Sources: [Salesforce Help CPQ Quote Calculation Sequence; Salesforce Help Integrating Salesforce CPQ and Salesforce Billing]. Key: CPQ configuration lives primarily as data records not metadata requiring dependency-ordered deployment Price Books and Discount Categories first (no dependencies) then Products and Price Book Entries then Price Rules then Product Rules (which reference Products) then Quote Templates last; objects with self-referential lookups require multi-pass strategy (insert base records then update reference fields) with External IDs as cross-org matching key; LLM anti-pattern is treating CPQ deployment like standard metadata deployment via SFDX since CPQ config data cannot be deployed with change sets or Metadata API alone requiring a separate data deployment step; no existing skill covers CPQ-specific deployment ordering. |
-| TODO | health-cloud-deployment-patterns | Health Cloud deployment: care plan templates, clinical metadata, HIPAA-specific deployment ordering. NOT for generic deployment. | |
-| TODO | fsc-deployment-patterns | FSC deployment: compliant data sharing config, household model metadata, industry-specific deployment ordering. NOT for generic deployment. | |
-| TODO | experience-cloud-deployment-dev | Experience Cloud deployment scripting: site metadata retrieval, CMS content deployment, LWR template deployment. NOT for standard SFDX. | |
-| TODO | managed-package-development | Building managed packages: namespace, versioned components, subscriber org patterns, package upgrade scripts, ISV patterns. NOT for unlocked packages. | |
-| TODO | cross-cloud-deployment-patterns | Cross-cloud deployment: handling dependencies across Sales/Service/Experience Cloud metadata, deployment sequencing. NOT for single-cloud deployment. | |
+| IN_PROGRESS | health-cloud-deployment-patterns | Health Cloud deployment: care plan templates, clinical metadata, HIPAA-specific deployment ordering. NOT for generic deployment. | |
+| IN_PROGRESS | fsc-deployment-patterns | FSC deployment: compliant data sharing config, household model metadata, industry-specific deployment ordering. NOT for generic deployment. | |
+| IN_PROGRESS | experience-cloud-deployment-dev | Experience Cloud deployment scripting: site metadata retrieval, CMS content deployment, LWR template deployment. NOT for standard SFDX. | |
+| IN_PROGRESS | managed-package-development | Building managed packages: namespace, versioned components, subscriber org patterns, package upgrade scripts, ISV patterns. NOT for unlocked packages. | |
+| IN_PROGRESS | cross-cloud-deployment-patterns | Cross-cloud deployment: handling dependencies across Sales/Service/Experience Cloud metadata, deployment sequencing. NOT for single-cloud deployment. | |
 
 ### DevOps × Data Role
 
@@ -1363,7 +1363,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| TODO | test-data-management-devops | Test data management: factory patterns, data setup scripts, anonymization, data generation, fixture files. NOT for production data migration. | |
+| IN_PROGRESS | test-data-management-devops | Test data management: factory patterns, data setup scripts, anonymization, data generation, fixture files. NOT for production data migration. | |
 | TODO | deployment-data-dependencies | Managing data dependencies in deployments: record type IDs, custom metadata records, environment-specific values. NOT for metadata deployment. | |
 | TODO | sandbox-refresh-data-strategies | Managing data during sandbox refresh: post-copy automation, data selection, reference data seeding, cleanup. NOT for sandbox admin setup. | |
 | TODO | cross-cloud-data-deployment | Cross-cloud data deployment: deploying shared reference data across Sales, Service, Marketing environments. NOT for data migration. | |
@@ -1376,7 +1376,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 |--------|------------|-------------|-------|
 | RESEARCHED | ci-cd-pipeline-architecture | CI/CD pipeline architecture for Salesforce: stages, quality gates, deployment automation, monitoring strategy. NOT for individual CI tool setup. | Researched 2026-04-13. Sources: [Salesforce DX Developer Guide (developer.salesforce.com); Salesforce DevOps Center Help Plan Your Pipeline (help.salesforce.com); Salesforce Well-Architected Overview (architect.salesforce.com)]. Key: A Salesforce CI/CD pipeline defines the stage sequence (feature branch to CI validation to QA sandbox to staging to production) and quality gates (Apex test thresholds PMD/Code Analyzer static analysis validation-only deployments) accounting for platform limits such as 10-minute Apex test timeouts and inability to natively roll back declarative metadata; DevOps Center supports up to 15 pipeline stages per pipeline but does NOT provide custom quality gates code scanning or test threshold enforcement those must be layered via external CI tooling; LLM anti-pattern is conflating pipeline architecture (stages gates promotion strategy) with CI tool setup covered by existing devops/github-actions-for-salesforce and devops/devops-center-pipeline skills. |
 | TODO | cloud-specific-deployment-architecture | Cloud-specific deployment architecture: deployment ordering across clouds, cross-cloud metadata dependencies. NOT for generic deployment. | |
-| TODO | package-development-strategy | Package development strategy: unmanaged vs unlocked vs managed, namespace decisions, ISV considerations. NOT for individual package creation. | |
+| IN_PROGRESS | package-development-strategy | Package development strategy: unmanaged vs unlocked vs managed, namespace decisions, ISV considerations. NOT for individual package creation. | |
 | TODO | deployment-automation-architecture | End-to-end deployment automation: zero-downtime deployments, canary releases, automated rollback, monitoring. NOT for manual deployment. | |
 
 ---
@@ -1389,10 +1389,10 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| TODO | data-cloud-provisioning | Data Cloud provisioning and setup: data spaces, data streams, ingestion API, activation targets, licensing. NOT for CRM Analytics. | |
-| TODO | data-cloud-identity-resolution | Identity resolution rulesets: matching rules, reconciliation rules, unified profiles, cross-device identity. NOT for duplicate management in CRM. | |
-| TODO | data-cloud-calculated-insights | Calculated insights creation: metrics, dimensions, streaming insights, scheduled refresh, insight configuration. NOT for standard formula fields. | |
-| TODO | data-cloud-segmentation | Segmentation in Data Cloud: segment creation, filters, activation, audience publishing, segment refresh. NOT for Marketing Cloud segments. | |
+| IN_PROGRESS | data-cloud-provisioning | Data Cloud provisioning and setup: data spaces, data streams, ingestion API, activation targets, licensing. NOT for CRM Analytics. | |
+| IN_PROGRESS | data-cloud-identity-resolution | Identity resolution rulesets: matching rules, reconciliation rules, unified profiles, cross-device identity. NOT for duplicate management in CRM. | |
+| IN_PROGRESS | data-cloud-calculated-insights | Calculated insights creation: metrics, dimensions, streaming insights, scheduled refresh, insight configuration. NOT for standard formula fields. | |
+| IN_PROGRESS | data-cloud-segmentation | Segmentation in Data Cloud: segment creation, filters, activation, audience publishing, segment refresh. NOT for Marketing Cloud segments. | |
 | TODO | data-cloud-data-model-objects | Data Model Objects (DMOs): mapping, relationships, data transforms, data lake objects, schema management. NOT for standard CRM objects. | |
 
 ### Data Cloud × Dev Role
@@ -1425,8 +1425,8 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| TODO | slack-salesforce-integration-setup | Slack app for Salesforce setup: connected org, channel linking, record sharing, notifications, search. NOT for custom Slack apps. | |
-| TODO | slack-workflow-builder | Slack Workflow Builder with Salesforce: triggers, steps, data actions, automated notifications, approval flows. NOT for Salesforce Flow. | |
+| IN_PROGRESS | slack-salesforce-integration-setup | Slack app for Salesforce setup: connected org, channel linking, record sharing, notifications, search. NOT for custom Slack apps. | |
+| IN_PROGRESS | slack-workflow-builder | Slack Workflow Builder with Salesforce: triggers, steps, data actions, automated notifications, approval flows. NOT for Salesforce Flow. | |
 | TODO | flow-for-slack | Flow actions for Slack: send Slack messages from Flow, create channels, post to Slack from automation, templates. NOT for Slack Workflow Builder. | |
 | TODO | slack-connect-patterns | Slack Connect for cross-org communication: channel sharing, data security, compliance, external collaboration. NOT for Salesforce-to-Salesforce integration. | |
 | TODO | agentforce-in-slack | Agentforce deployment in Slack: agent channel configuration, Slack-specific actions, user experience, permissions. NOT for core Agentforce setup. | |
