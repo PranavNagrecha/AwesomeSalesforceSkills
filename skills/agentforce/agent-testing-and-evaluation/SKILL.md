@@ -125,8 +125,58 @@ No single metric is sufficient. Containment without CSAT can mask an agent that 
 1. Build a coverage matrix: list every topic and define at least 5 utterances per topic — 2 happy-path, 2 edge-case, 1 boundary utterance near an adjacent topic.
 2. Create one `AiEvaluationDefinition` file per topic group (or one combined file). Each test case sets `expectTopicName` to the intended topic.
 3. Deploy the `AiEvaluationDefinition` to the sandbox via `sf project deploy start`.
-4. Execute via Testing API Connect endpoint: `POST /connect/einstein/ai-evaluations`.
-5. Poll the returned job ID until `status: Completed`.
+4. Execute via Testing API Connect endpoint:
+
+```bash
+# Start the evaluation run
+curl -X POST \
+  https://ORG_DOMAIN.my.salesforce.com/services/data/v62.0/connect/einstein/ai-evaluations \
+  -H "Authorization: Bearer SESSION_ID" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "aiEvaluationDefinitionName": "OrderAgentTopicTests"
+  }'
+# Response:
+# {
+#   "id": "0Xx000000000001AAA",
+#   "status": "IN_PROGRESS",
+#   "startTime": "2026-04-10T14:30:00.000Z"
+# }
+```
+
+5. Poll the returned job ID until `status: Completed`:
+
+```bash
+curl https://ORG_DOMAIN.my.salesforce.com/services/data/v62.0/connect/einstein/ai-evaluations/0Xx000000000001AAA \
+  -H "Authorization: Bearer SESSION_ID"
+# Response when complete:
+# {
+#   "id": "0Xx000000000001AAA",
+#   "status": "COMPLETED",
+#   "summary": {
+#     "totalTestCases": 12,
+#     "passed": 10,
+#     "failed": 2
+#   },
+#   "testCaseResults": [
+#     {
+#       "testCaseIndex": 0,
+#       "utterance": "Where is my order?",
+#       "expectations": { "expectTopicName": "OrderStatus" },
+#       "actuals": { "actualTopicName": "OrderStatus" },
+#       "result": "PASS"
+#     },
+#     {
+#       "testCaseIndex": 3,
+#       "utterance": "I was charged twice and want my money back",
+#       "expectations": { "expectTopicName": "ReturnRequest" },
+#       "actuals": { "actualTopicName": "BillingInquiry" },
+#       "result": "FAIL"
+#     }
+#   ]
+# }
+```
+
 6. Review results: any `FAIL` on a topic test means the utterance routed elsewhere. Inspect the `actualTopicName` in the result payload and tune the classification description of either the intended or the competing topic.
 7. Re-run until all topic tests pass. Document the final pass results as the baseline.
 
