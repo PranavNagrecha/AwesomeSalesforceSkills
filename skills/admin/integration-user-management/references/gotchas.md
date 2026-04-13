@@ -1,51 +1,36 @@
 # Gotchas — Integration User Management
 
-Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
+## Gotcha 1: MFA Waiver Is Not Automatic for New Integration Users After MFA Enforcement
 
-## Gotcha 1: MFA Waiver Is Not Inherited — New Integration Users Created After Enforcement Are Blocked
+**What happens:** A new integration user is created in an org with MFA enforcement enabled. The integration's first authentication attempt is challenged for MFA, which the server-to-server integration cannot complete. Authentication fails. The existing integration users (created before MFA enforcement) continue to work normally because they received a grandfathered waiver.
 
-**What happens:** When org-wide MFA enforcement is enabled, all users including integration users are subject to MFA. Existing integration users that already had the exemption retain it. However, any new integration user created after MFA enforcement is enabled does NOT automatically receive the MFA User Exemption. On first API login attempt, the user receives an authentication failure even though the profile is correct and the password is valid.
+**When it occurs:** Any time a new integration user is provisioned in an org that has already enabled MFA enforcement. Also occurs when an integration user's profile or license is changed, which may reset the waiver status.
 
-**When it occurs:** Any time a new integration user is provisioned in an org that has org-wide MFA enforcement active. This is particularly common during org migration projects, onboarding of new integrations post-hardening, or cloning an integration user without copying permission set assignments.
-
-**How to avoid:** Include MFA User Exemption assignment as a mandatory step in the integration user provisioning checklist. Use a dedicated "Integration MFA Waiver" permission set and assign it to every new integration user. Verify via Login History immediately after provisioning — do not wait for the first production failure.
+**How to avoid:** After creating any new integration user in an MFA-enforced org, immediately configure the MFA waiver before testing authentication. Check the org's current MFA enforcement status first — if enforcement is enabled, the waiver configuration is a mandatory step, not optional.
 
 ---
 
-## Gotcha 2: System Administrator Profile Silently Removes the API-Only Restriction
+## Gotcha 2: Admin Profile Grants Interactive Login — Defeating the API-Only Design
 
-**What happens:** Assigning the System Administrator profile (or any profile cloned from System Administrator) to an integration user silently removes the API-only enforcement. The integration user can now log in interactively via the browser, Salesforce mobile, and Lightning Experience — in addition to the API. This is not surfaced as an error or warning. The integration continues to function, making this easy to miss.
+**What happens:** An integration user with System Administrator or a cloned admin profile can log into the Salesforce web UI through a browser, in addition to making API calls. Any person or system with the integration user's credentials can access the full Salesforce UI with admin privileges. This is invisible in standard security audits unless profile assignments are specifically checked.
 
-**When it occurs:** When a practitioner wants to "quickly unblock" an integration by giving it admin access, or when an admin clones a profile from System Administrator thinking they can restrict permissions later. It also occurs when an integration user's profile is changed during a troubleshooting session and not reverted.
+**When it occurs:** Whenever an admin grants a non-API-only profile (System Administrator, Standard User, or any custom profile without the API-only flag) to an integration user for "simplicity" or to resolve permission errors quickly.
 
-**How to avoid:** Always use the Minimum Access - API Only Integrations profile for integration users. Do not clone admin profiles for integration use. Periodically audit integration user profiles via SOQL: `SELECT Username, Profile.Name FROM User WHERE UserType = 'Standard' AND Profile.Name != 'Minimum Access - API Only Integrations' AND IsActive = TRUE` — flag any integration-named users on non-API-only profiles.
-
----
-
-## Gotcha 3: Login History UI Cap Causes Audit Gaps for High-Volume Integrations
-
-**What happens:** The Setup > Login History UI displays a maximum of 20,000 records within a 6-month rolling window. High-volume integrations that make many API calls per hour can fill this window quickly, pushing older login records out of the visible range. This means an audit performed after the fact may not surface failed login attempts that occurred before the window was exhausted.
-
-**When it occurs:** In orgs with multiple active integrations, high-frequency polling integrations, or integrations performing batch operations. The problem is invisible until a security team requests a full login history report and discovers the gap.
-
-**How to avoid:** Do not rely solely on the Login History UI for integration user auditing. Query the `LoginHistory` object via SOQL directly or via the Reports tab to export data before it ages out. Schedule a weekly report export to an external system or append LoginHistory records to an external log store. Consider using Event Monitoring (if licensed) for durable, queryable login event data that is not subject to the 20,000-record UI cap.
+**How to avoid:** The Minimum Access - API Only Integrations profile is the only profile that enforces API-only access at the platform level for the Salesforce Integration user license. Never assign any other profile to a Salesforce Integration user. When permission errors occur, add a permission set — do not change the profile.
 
 ---
 
-## Gotcha 4: Permission Set License Mismatch Prevents Object Permission Assignment
+## Gotcha 3: Login History UI Truncates to 20,000 Records
 
-**What happens:** When creating a permission set to assign to an integration user (Salesforce Integration license), if the permission set is not assigned the **Salesforce API Integration** permission set license (PSL), the permission set editor may not display the expected object permissions or may silently fail to save certain permission configurations. The permission set appears to exist but the integration user cannot access the expected objects.
+**What happens:** An admin attempts to audit an integration user's login activity over the past month using Setup > Users > Login History. The history only shows records from the past few days — older records are not visible.
 
-**When it occurs:** When a practitioner creates a generic permission set without setting the correct PSL, then assigns it to an integration user. Also occurs when copying permission sets originally created for standard Salesforce license users and assigning them to integration license users without updating the PSL.
+**When it occurs:** High-frequency integrations making thousands of API calls per day can exhaust the 20,000-record UI display limit within days. The records still exist in the platform (6-month retention) but are not visible in the Setup UI.
 
-**How to avoid:** When creating any permission set for an integration user, set the Permission Set License to "Salesforce API Integration" before adding any object or field permissions. Verify via SOQL: `SELECT Id, Label, LicenseId FROM PermissionSet WHERE Label = '<your permission set name>'` — confirm the LicenseId corresponds to the Salesforce API Integration PSL.
-
----
-
-## Gotcha 5: Connected App "Run As" User Must Be the Integration User, Not an Admin
-
-**What happens:** When configuring a Connected App for OAuth client credentials flow, the "Run As" field determines the identity Salesforce uses when executing API calls authenticated via that connected app. If "Run As" is set to a System Administrator or any non-integration user, the API calls execute with that user's permissions — not the integration user's permission sets. The integration appears to work but is running with elevated privileges. If "Run As" is later corrected to the integration user, the integration may suddenly fail due to missing permissions that were silently provided by the admin account.
-
-**When it occurs:** During initial Connected App setup when the person configuring the app uses their own account or a generic admin account in the "Run As" field as a shortcut. The mismatch is not surfaced as an error.
-
-**How to avoid:** Always set the Connected App "Run As" field to the dedicated integration user. Validate after setup by checking Login History — the UserId in successful OAuth login records should match the integration user's Id, not any admin user's Id.
+**How to avoid:** For full audit history on high-frequency integration users, use the SOQL LoginHistory object via the Salesforce API:
+```soql
+SELECT UserId, Status, LoginType, SourceIp, LoginTime 
+FROM LoginHistory 
+WHERE UserId = '<integration_user_id>'
+ORDER BY LoginTime DESC
+```
+The API returns up to 6 months of login records regardless of the UI display limit. For compliance or security auditing, always use the API query rather than the Setup UI.

@@ -1,95 +1,61 @@
 # Examples — Integration User Management
 
-## Example 1: Setting Up a New Integration User for a MuleSoft ETL Pipeline
+## Example 1: Integration User Blocked by MFA After MFA Enforcement Rollout
 
-**Context:** A MuleSoft integration needs to read Accounts and Contacts and write to a custom object (Order__c) in a production Salesforce org. Org-wide MFA enforcement was enabled last quarter. The team wants to follow least-privilege and cannot use a named employee's credentials.
+**Context:** An org enables MFA enforcement for all users. The existing MuleSoft integration user was created before MFA enforcement and continues to authenticate normally (grandfathered waiver). A new Informatica integration project starts and the admin creates a new integration user. First authentication attempt from Informatica fails with MFA challenge.
 
-**Problem:** Without a dedicated integration user on the correct license and profile, the team either reuses an employee's account (a compliance risk) or uses an admin-cloned profile that grants far more access than needed and allows interactive login.
-
-**Solution:**
-
-```
-1. Create user:
-   - License: Salesforce Integration
-   - Profile: Minimum Access - API Only Integrations
-   - Username: mulesoft-etl@company.sf.prod (use a non-personal email convention)
-
-2. Create Permission Set: "MuleSoft ETL Integration Access"
-   - Permission Set License: Salesforce API Integration
-   - Object permissions:
-       Account: Read
-       Contact: Read
-       Order__c: Read, Create, Edit
-
-3. Assign the permission set to the integration user.
-
-4. Assign MFA User Exemption:
-   - Navigate to: Setup > Users > [Integration User] > Permission Set Assignments
-   - Assign a permission set that includes "Multi-Factor Authentication for API Logins" exemption
-   - Document justification: "Server-to-server integration; interactive login not possible on this profile"
-
-5. Configure Connected App for OAuth Client Credentials flow.
-   - Set Run As: the integration user
-   - Grant the connected app to the integration user
-
-6. Verify in Setup > Login History:
-   - Confirm LoginType = "OAuth 2.0"
-   - Confirm Status = "Success"
-   - Confirm SourceIp = known MuleSoft runtime IP
-```
-
-**Why it works:** The Minimum Access - API Only Integrations profile enforces the API-only restriction at the platform level. The targeted permission set ensures the integration can only touch the three objects it needs. The explicit MFA waiver prevents login failures after org-wide MFA enforcement. Using OAuth client credentials rather than username-password avoids credential rotation risk.
-
----
-
-## Example 2: Diagnosing an Integration Outage After MFA Enforcement
-
-**Context:** An org enables mandatory MFA enforcement as part of a security hardening project. The next morning, an existing Salesforce-to-ERP integration begins returning HTTP 400 / invalid_grant errors. The integration user was set up correctly before MFA was turned on.
-
-**Problem:** The integration user was not granted the MFA User Exemption before MFA enforcement went live. MFA enforcement applies retroactively to all users, including integration users. The exemption must be explicitly assigned — it is not inherited from the org's previous MFA state, and it is not granted automatically to Salesforce Integration license users.
+**Problem:** New integration users created after MFA enforcement is enabled do not automatically receive the MFA waiver. The new Informatica user requires MFA but cannot complete MFA challenges in a server-to-server flow.
 
 **Solution:**
 
-```
-1. Confirm the failure mode via LoginHistory SOQL:
-   SELECT Id, UserId, LoginTime, Status, LoginType, Application, SourceIp
-   FROM LoginHistory
-   WHERE UserId = '<integration_user_id>'
-   ORDER BY LoginTime DESC
-   LIMIT 50
+Option A — MFA Waiver via Permission:
+1. Create a permission set named "Integration MFA Waiver."
+2. Enable the "Waive Multi-Factor Authentication for Exempt Users" user permission.
+3. Assign to the Informatica integration user.
+4. Test authentication — MFA challenge should no longer appear.
 
-   Look for Status = "Failed" entries timestamped after MFA enforcement was activated.
+Option B — JWT Bearer Flow (preferred):
+1. Configure the connected app with a certificate-based JWT bearer flow instead of username-password OAuth.
+2. JWT bearer flow never triggers MFA — it uses a signed JWT assertion, not interactive authentication.
+3. This eliminates the need for MFA waivers entirely for this integration.
 
-2. Assign the MFA User Exemption:
-   Option A — via User detail page:
-     Setup > Users > [Integration User] > scroll to "Permissions" section
-     Enable: "Multi-Factor Authentication for API Logins" exemption (if available as a user permission)
-
-   Option B — via Permission Set (recommended for auditability):
-     Create or use a dedicated "Integration MFA Waiver" permission set
-     Enable: "Multi-Factor Authentication for API Logins" exemption in System Permissions
-     Assign the permission set to the integration user
-
-3. Retry the integration authentication.
-
-4. Confirm recovery in Login History:
-   Status = "Success" for new login attempts.
-
-5. Document the exemption assignment in the project record with:
-   - Date applied
-   - Who approved
-   - Business justification
-   - Review date (recommended: annual)
-```
-
-**Why it works:** The MFA User Exemption grants the integration user the ability to authenticate via API without completing an MFA challenge. Because server-to-server integrations cannot perform interactive MFA, this exemption is required — but it must be explicitly granted. Tracking it via a dedicated permission set makes it auditable and easy to revoke or review.
+**Why Option B is preferred:** JWT bearer flow is inherently MFA-resistant and does not require ongoing waiver management. Any new integration user using JWT bearer flow does not need an MFA waiver regardless of org MFA enforcement settings.
 
 ---
 
-## Anti-Pattern: Using the System Administrator Profile for Integration Users
+## Example 2: Auditing an Integration User for Unexpected API Activity
 
-**What practitioners do:** To avoid figuring out which specific permissions an integration needs, practitioners clone the System Administrator profile and assign it to the integration user. This "works" immediately because the admin profile has access to everything.
+**Context:** The security team flags that an integration user is making API calls at 3 AM on weekdays — outside the expected ETL window (11 PM to 1 AM). They need to determine whether this is legitimate activity or a compromised credential.
 
-**What goes wrong:** The System Administrator profile does not have the "API Only" flag set. This means the integration user can now authenticate via the Salesforce UI, browser, and mobile app — they are a fully interactive admin-level account with a service username. This violates least privilege, creates a significant blast-radius risk if the credential is compromised, and will fail security audits. Additionally, if the org is subject to MFA enforcement, an admin-profile user without the API Only flag is treated as an interactive user and may be required to complete MFA in unexpected ways.
+**Solution:**
 
-**Correct approach:** Always use the Minimum Access - API Only Integrations profile for integration users. Layer on exactly the permissions needed via targeted permission sets. If the list of required permissions is unclear, start with read-only access to the required objects and expand after testing.
+Query LoginHistory via the API to get full detail:
+
+```soql
+SELECT Id, UserId, Status, LoginType, SourceIp, LoginTime, Application
+FROM LoginHistory
+WHERE UserId = '005XXXXXXXXXXXXXXXXX'
+  AND LoginTime >= 2026-04-01T00:00:00Z
+  AND LoginTime < 2026-04-12T00:00:00Z
+ORDER BY LoginTime DESC
+LIMIT 500
+```
+
+Review the results:
+- `SourceIp` matches the known ETL server IP for the 11 PM–1 AM window.
+- `SourceIp` for the 3 AM calls shows a different IP address not in the known ETL server range.
+- `LoginType` shows "OAuth" for both windows — consistent with the integration pattern.
+
+Conclusion: The 3 AM activity appears to originate from an unrecognized IP. The security team temporarily disables the integration user, rotates the connected app consumer secret, and investigates the source. The ETL tool had a background retry job configured to run at 3 AM on failure — the retry was coming from a different server in the ETL cluster. The IP range was expanded in the integration user's profile to include the retry cluster's IP.
+
+**Why it works:** The `LoginHistory` SOQL object provides full audit history (up to 6 months) including IP address, login type, and status — detail that the Setup UI's 20,000-record limit would have truncated for a high-frequency integration.
+
+---
+
+## Anti-Pattern: Granting System Administrator Profile to Integration User
+
+**What practitioners do:** An integration user is getting permission errors accessing a specific object. The admin temporarily grants the System Administrator profile to "unblock" the integration, intending to narrow it down later.
+
+**What goes wrong:** System Administrator profile enables interactive Salesforce UI login. The integration user account now has full admin access via browser. "Temporary" admin profiles rarely get revoked. Audit logs now show integration API calls mixed with admin-session activity, making forensics impossible. If the integration user's credentials are compromised, the attacker has full admin access to the org.
+
+**Correct approach:** When an integration user encounters permission errors, investigate the specific error (which object, which operation), then add a permission to the integration user's permission set for only that specific object/operation. Never grant admin profile to resolve permission errors. Use the Salesforce Permission Set API or the Permission Set Debug Logs to identify exactly what permission is missing.

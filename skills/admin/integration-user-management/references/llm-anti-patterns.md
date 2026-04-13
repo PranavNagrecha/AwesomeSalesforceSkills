@@ -1,116 +1,130 @@
 # LLM Anti-Patterns — Integration User Management
 
-Common mistakes AI coding assistants make when generating or advising on Integration User Management.
-These patterns help the consuming agent self-check its own output.
+Common mistakes AI coding assistants make when advising on integration user setup.
 
-### Anti-Pattern 1: Recommending System Administrator Profile for Integration Users
+## Anti-Pattern 1: Recommending Admin Profile for Integration Users
 
-**What LLMs do:** When asked to set up an integration user, LLMs frequently recommend assigning the System Administrator profile or cloning it, citing "simplicity" or "avoiding permission issues." They may frame this as a temporary step that can be tightened later.
+**What the LLM generates:** "For simplicity, assign the System Administrator profile to your integration user to ensure it has all necessary permissions and avoid permission errors during development."
 
-**Why:** Training data contains many tutorials and Stack Exchange answers that use admin profiles as a quick fix. LLMs pattern-match to "integration needs to work" and surface the most permissive solution. The long-term security implications are not represented in the training signal.
+**Why it happens:** Admin profile is the universal solution to permission problems in Salesforce. LLMs recommend it to avoid the complexity of permission set configuration.
 
-**Correct approach:**
+**Correct pattern:**
+
 ```
-Profile: Minimum Access - API Only Integrations
-(paired with Salesforce Integration user license)
+NEVER assign admin profile to integration users.
+- Enables interactive UI login (security risk)
+- Violates least-privilege (all data accessible)
+- Makes audit logs uninterpretable
 
-Then layer permissions via targeted permission sets:
-- Create one permission set per integration boundary
-- Assign the Salesforce API Integration PSL to each permission set
-- Grant only the object/field/DML permissions the integration requires
+Correct approach:
+1. License: Salesforce Integration
+2. Profile: Minimum Access - API Only Integrations (enforces API-only)
+3. Permissions: Targeted permission sets for specific objects/fields only
+4. When permission errors occur: add to the permission set, never change the profile
 ```
 
-**Detection:** If the generated setup steps mention "System Administrator profile," "clone the admin profile," or "grant all permissions for now" — flag and reject. Integration users must always use the Minimum Access - API Only Integrations profile.
+**Detection hint:** Any recommendation of System Administrator or "cloned admin" profile for an integration user.
 
 ---
 
-### Anti-Pattern 2: Assuming the MFA Waiver Is Automatic for Integration License Users
+## Anti-Pattern 2: Omitting MFA Waiver for New Integration Users in MFA-Enforced Orgs
 
-**What LLMs do:** LLMs frequently state or imply that the Salesforce Integration user license automatically exempts users from org-wide MFA enforcement. They skip the MFA waiver assignment step entirely, or mention it only as an optional note.
+**What the LLM generates:** "Create the integration user with the Salesforce Integration license and Minimum Access - API Only Integrations profile, then test authentication."
 
-**Why:** The exemption behavior is nuanced — existing integration users before MFA enforcement may retain their access, creating the false impression that no action is needed. LLMs generalize this to all integration users, including new ones.
+**Why it happens:** MFA waiver configuration is a separate, easily overlooked step that is not part of the basic user creation workflow.
 
-**Correct approach:**
+**Correct pattern:**
+
 ```
-If org-wide MFA is enforced:
-1. Create a dedicated permission set: "Integration MFA Waiver"
-2. In System Permissions, enable:
-   "Multi-Factor Authentication for API Logins" exemption
-3. Assign this permission set to every integration user
-4. Document: user, date, approver, business justification
-5. Verify via Login History after first login
+In orgs with MFA enforcement enabled, ALSO:
+
+After creating the integration user:
+1. Check: Setup > Identity Verification > MFA for API Logins (is it Required?)
+2. If required: grant MFA waiver to the integration user
+
+Options:
+A) Permission set with "Waive MFA for Exempt Users" permission
+B) Use JWT bearer flow (certificate-based, inherently MFA-resistant — preferred)
+
+Without this step in MFA-enforced orgs:
+New integration users fail authentication on first attempt.
 ```
 
-**Detection:** If the generated workflow for integration user setup omits any mention of MFA waiver or states the Salesforce Integration license "automatically bypasses MFA" — this is incorrect. Explicitly check that MFA waiver assignment is included as a numbered step.
+**Detection hint:** Any integration user creation workflow in an MFA-enforced org that does not mention MFA waiver configuration.
 
 ---
 
-### Anti-Pattern 3: Recommending Username-Password OAuth Flow for Integration Users
+## Anti-Pattern 3: Using Login History UI for High-Frequency Integration Auditing
 
-**What LLMs do:** LLMs often suggest the OAuth username-password flow as the easiest way to configure API access for integration users. They generate sample code using `grant_type=password` with embedded credentials.
+**What the LLM generates:** "To monitor your integration user's activity, go to Setup > Users > Login History and filter by the integration user."
 
-**Why:** Username-password flow requires less configuration than client credentials and is heavily represented in older API tutorials. LLMs trained on this material surface it as the default, despite Salesforce deprecating the flow and recommending against it for server-to-server integrations.
+**Why it happens:** Login History UI is the most visible audit tool. LLMs recommend it without knowing the 20,000-record display limit.
 
-**Correct approach:**
+**Correct pattern:**
+
 ```
-Use OAuth 2.0 Client Credentials Flow:
-1. Create a Connected App with "Enable Client Credentials Flow" checked
-2. Set "Run As" to the dedicated integration user (not an admin)
-3. Grant the connected app to the integration user via Connected App Policies
-4. Authenticate using:
-   POST /services/oauth2/token
-   grant_type=client_credentials
-   client_id=<consumer key>
-   client_secret=<consumer secret>
-```
+Setup > Login History UI: Limited to 20,000 most recent records.
+High-frequency integrations exhaust this limit in hours/days.
 
-**Detection:** If generated code or steps include `grant_type=password` or transmit a username and password in the token request body — flag and reject. Client credentials flow is the correct pattern for server-to-server integrations.
-
----
-
-### Anti-Pattern 4: Using a Single Shared Integration User for Multiple Integrations
-
-**What LLMs do:** To simplify setup, LLMs often recommend one integration user with a broad permission set that covers all integrations. They may describe this as "the integration service account" and grant it permissions across multiple objects and domains.
-
-**Why:** LLMs model simplicity as reducing the number of entities. A single user with one permission set appears simpler than multiple users with separate permission sets. The operational and security consequences of consolidation are not reflected in typical training examples.
-
-**Correct approach:**
-```
-One user per logical integration boundary:
-- mulesoft-erp@company.sf.prod  → reads Accounts, writes Order__c
-- dataloader-finance@company.sf.prod → reads Opportunity, writes Revenue__c
-- external-portal@company.sf.prod → reads/writes Contact, Case
-
-Each user:
-- Has its own dedicated permission set
-- Can be disabled, rotated, or audited independently
-- Has a clean LoginHistory audit trail
-```
-
-**Detection:** If the generated setup uses a single username for multiple named integrations, or if a permission set grants CRUD to more than 4-5 unrelated objects — probe whether the design conflates multiple integrations into one identity.
-
----
-
-### Anti-Pattern 5: Relying Solely on the Login History UI for Audit Coverage
-
-**What LLMs do:** LLMs recommend Setup > Login History as the complete solution for integration user monitoring. They describe it as showing "all login activity" without disclosing the 20,000-record UI cap or the 6-month window limitation.
-
-**Why:** The Login History page is the most discoverable UI surface for login monitoring. LLMs surface it as the canonical answer without representing the platform limits that make it insufficient for high-volume integration monitoring.
-
-**Correct approach:**
-```
-For durable audit coverage, query LoginHistory via SOQL:
-
-SELECT Id, UserId, LoginTime, Status, LoginType,
-       Application, Browser, SourceIp
+For full audit history, use SOQL:
+SELECT UserId, Status, LoginType, SourceIp, LoginTime, Application
 FROM LoginHistory
 WHERE UserId = '<integration_user_id>'
   AND LoginTime >= LAST_N_DAYS:30
 ORDER BY LoginTime DESC
 
-Or schedule a weekly Salesforce Report export to an external log store.
-For high-volume orgs, evaluate Event Monitoring (if licensed) for
-queryable, durable login event history without the 20k-record cap.
+Available: 6 months retention, unlimited records via API
 ```
 
-**Detection:** If the recommended monitoring approach mentions only the Setup > Login History UI and does not reference SOQL queries against LoginHistory, scheduled exports, or Event Monitoring — flag as incomplete. The UI cap must be acknowledged and a durable alternative must be provided.
+**Detection hint:** Any monitoring recommendation that only mentions the Setup UI for high-frequency integration users.
+
+---
+
+## Anti-Pattern 4: Sharing One Integration User Across Multiple Systems
+
+**What the LLM generates:** "Create one integration user for all your Salesforce integrations. This simplifies user management and reduces license consumption."
+
+**Why it happens:** Single user = simpler management appears to be an efficiency. LLMs may not recognize the operational and security problems this creates.
+
+**Correct pattern:**
+
+```
+One integration user PER integration system (at minimum).
+Reasons:
+- Disabling one system's user doesn't break other integrations
+- Audit logs are interpretable (which system made which call)
+- Least-privilege is achievable (each user only has its system's permissions)
+- Compromised credentials affect only one integration
+
+Example naming: mulesoft_integration@company.com, informatica_etl@company.com
+```
+
+**Detection hint:** Any recommendation for a shared integration user across multiple systems.
+
+---
+
+## Anti-Pattern 5: Claiming Username-Password OAuth Is Sufficient for Production Integrations
+
+**What the LLM generates:** "Use username-password OAuth flow for your integration — it's the simplest way to authenticate a server-to-server integration."
+
+**Why it happens:** Username-password OAuth flow is the easiest to implement and the most common in beginner tutorials. LLMs may recommend it without flagging the security limitations.
+
+**Correct pattern:**
+
+```
+Username-password OAuth flow limitations:
+- Sends credentials over the network (risk if TLS is misconfigured)
+- Requires MFA waiver in MFA-enforced orgs
+- Salesforce plans to restrict this flow further in future releases
+
+Preferred: OAuth JWT Bearer Flow
+- Uses certificate pair (no credentials transmitted)
+- Inherently MFA-resistant
+- Works in all MFA enforcement configurations
+- Required for some Salesforce-to-Salesforce integrations
+
+Setup: Connected app > Use digital signatures > Upload public certificate
+Integration side: Generate signed JWT with private key, exchange for access token
+```
+
+**Detection hint:** Any recommendation of username-password OAuth for a production integration without mentioning JWT bearer flow as the preferred alternative.

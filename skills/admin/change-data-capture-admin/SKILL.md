@@ -1,45 +1,43 @@
 ---
 name: change-data-capture-admin
-description: "Use this skill when configuring Change Data Capture in Salesforce Setup: selecting entities, creating or auditing channels, monitoring PlatformEventUsageMetric, managing enrichment on custom channels, and staying within edition delivery limits. NOT for CDC Apex triggers or external subscriber patterns — use integration/change-data-capture-integration for subscriber-side setup."
+description: "Use when enabling, configuring, or monitoring Change Data Capture (CDC) entity selection, channel enrichment, and delivery usage limits from an admin perspective. NOT for CDC Apex trigger implementation (use change-data-capture-integration)."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
   - Reliability
-  - Security
+  - Operational Excellence
 triggers:
-  - "how do I enable Change Data Capture for an object in Salesforce Setup"
-  - "CDC daily delivery limit exceeded or approaching the allocation cap"
-  - "configure event enrichment on a custom Change Data Capture channel"
-  - "Data Cloud CRM Data Stream is interfering with my CDC channel configuration"
-  - "how to monitor Change Data Capture event usage with PlatformEventUsageMetric"
-  - "custom PlatformEventChannel not showing selected entities in Setup UI"
+  - "How do I enable Change Data Capture for an object in Salesforce?"
+  - "CDC entity selection is showing objects I did not configure — why?"
+  - "How do I add enrichment to a Change Data Capture channel?"
+  - "What is the daily CDC event delivery limit for my Salesforce edition?"
+  - "Data Cloud added objects to CDC without my approval — how do I fix this?"
 tags:
   - change-data-capture
   - cdc
+  - change-data-capture-admin
   - entity-selection
-  - enrichment
+  - channel-enrichment
   - platform-events
 inputs:
-  - List of objects (standard and/or custom) that need CDC enabled
-  - Salesforce org Edition (determines daily delivery allocation)
-  - Whether the CDC add-on is licensed (removes the 5-entity cap)
-  - Whether Data Cloud CRM Data Streams are active in the org
-  - Whether enrichment is needed and on which channel type (custom only)
+  - "Salesforce edition (Performance, Unlimited, Enterprise, Developer)"
+  - "Objects to enable for CDC (standard and custom)"
+  - "Whether Data Cloud CRM data streams are active in the org"
+  - "Whether multi-entity channel enrichment is needed"
 outputs:
-  - Entity selection configuration (Setup UI or Metadata API)
-  - PlatformEventChannel and PlatformEventChannelMember deployment guidance
-  - Enrichment field configuration for multi-entity custom channels
-  - PlatformEventUsageMetric query and monitoring plan
-  - Edition-specific delivery limit reference and alerting guidance
+  - "CDC entity selection configuration via Setup > Integrations > Change Data Capture"
+  - "PlatformEventUsageMetric monitoring query for daily delivery limits"
+  - "Channel enrichment configuration guidance (multi-entity channels only)"
+  - "Data Cloud CDC interaction guidance"
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-13
+updated: 2026-04-12
 ---
 
 # Change Data Capture Admin
 
-Use this skill when an admin or architect needs to configure, audit, or monitor the Salesforce-side CDC setup: which entities are tracked, which channels carry those events, how enrichment is configured, and whether delivery allocation is being consumed within edition limits. For subscriber-side concerns (CometD, Pub/Sub API, replay IDs, Apex triggers, gap event handling), use `integration/change-data-capture-integration` instead.
+This skill activates when an admin needs to configure Change Data Capture (CDC) entity selection, manage custom CDC channels, monitor daily delivery usage against edition limits, and understand the interaction between CDC and Data Cloud CRM data streams. It covers admin-facing CDC setup only — for Apex trigger subscriber implementation, see change-data-capture-integration.
 
 ---
 
@@ -47,118 +45,101 @@ Use this skill when an admin or architect needs to configure, audit, or monitor 
 
 Gather this context before working on anything in this domain:
 
-- **Which edition is the org on?** Daily event delivery allocations are hard limits: 50,000 events/24h (Performance and Unlimited), 25,000 events/24h (Enterprise), 10,000 events/24h (Developer Edition). The CDC add-on shifts billing to a monthly 3M/month model.
-- **Is the CDC add-on licensed?** Without the add-on, entity selection is capped at 5 objects (standard + custom combined) across all channels.
-- **Is Data Cloud active with CRM Data Streams?** Data Cloud silently adds entity selections to the `DataCloudEntities` channel when a CRM Data Stream is created. Modifying those selections directly via Metadata API or Tooling API can break Data Cloud sync.
-- **What channel type is in use?** Setup UI manages only the default `ChangeEvents` channel. Custom `PlatformEventChannel` entities are invisible in Setup — you must query Tooling API to audit them.
-- **Is enrichment needed?** Enrichment is only supported on custom multi-entity channels (`PlatformEventChannelMember` records in a custom channel). It is not supported on standard per-object channels such as `/data/AccountChangeEvent`.
+- **CDC is an admin-configuration feature**: Enabling CDC for an object is done in Setup > Integrations > Change Data Capture by selecting entities. No code is required to enable CDC — the events are published automatically by the platform once enabled.
+- **Most critical gotcha**: If the org has Data Cloud active and has created CRM Data Streams, Data Cloud silently adds CDC entity selections to the `DataCloudEntities` channel without admin intervention. Modifying these selections via the Metadata API or Tooling API can cause unintended Data Cloud sync side effects. Always check for Data Cloud CRM data streams before modifying CDC entity selections.
+- **Daily delivery limits differ by edition**: Performance and Unlimited editions receive 50,000 CDC events per 24 hours; Enterprise receives 25,000; Developer edition receives 10,000. These limits are monitored via `PlatformEventUsageMetric`.
 
 ---
 
 ## Core Concepts
 
-### Entity Selection and the 5-Entity Default Limit
+### Entity Selection
 
-CDC is enabled per object. Without the add-on, a maximum of 5 objects (standard + custom combined, counted across all channels) may be selected. Selecting the same entity on multiple channels counts as one entity toward the limit.
+CDC is enabled per object (entity) in Setup > Integrations > Change Data Capture. When an object is selected, Salesforce begins publishing change events to the `/data/<ObjectName>ChangeEvent` channel for every create, update, delete, and undelete operation on that object.
 
-The Setup UI at **Setup > Integrations > Change Data Capture** controls entity selections on the default `ChangeEvents` standard channel only. Custom channel selections made via `PlatformEventChannelMember` are not reflected in the Setup UI. To get a complete picture of all selected entities, query Tooling API:
+- Standard objects: Select from the "Standard Objects" list.
+- Custom objects: Select from the "Custom Objects" list (both standard and custom CDC channels exist).
+- The `ChangeEventHeader` included with every event captures: `changeType` (CREATE, UPDATE, DELETE, UNDELETE), `changedFields` (array of changed field API names for UPDATE events), `commitTimestamp`, `recordIds`, and `commitUser` (the user who made the change).
 
+### Channel Types
+
+Two channel types exist for CDC:
+
+1. **Per-Object Channels** (e.g., `/data/AccountChangeEvent`): Automatically created when an object is enabled for CDC. Subscribe to receive all change events for that object only.
+2. **Custom/Multi-Entity Channels**: Manually created channels that aggregate events from multiple objects into a single subscriber channel. Support enrichment (adding fields from related objects to the event payload). Enrichment is ONLY available on multi-entity channels — not on per-object channels.
+
+### Enrichment (Multi-Entity Channels Only)
+
+Enrichment adds additional fields to CDC events beyond what the changed record itself contains. For example, enriching AccountChangeEvent with the related Owner's Region field.
+
+Enrichment configuration:
+- Only supported on `PlatformEventChannel` records with `PlatformEventChannelMember` entries linking objects.
+- Enriched fields are defined in `EnrichedField` records on the `PlatformEventChannelMember`.
+- Formula fields cannot be enriched — only persistent field values.
+- Single-entity per-object channels (e.g., `/data/AccountChangeEvent`) do NOT support enrichment.
+
+### Daily Delivery Limits by Edition
+
+| Edition | Daily CDC Events (per 24h rolling window) |
+|---|---|
+| Performance + Unlimited | 50,000 |
+| Enterprise | 25,000 |
+| Developer | 10,000 |
+
+Monitor via SOQL:
 ```soql
-SELECT QualifiedApiName, PlatformEventChannelId
-FROM PlatformEventChannelMember
+SELECT StartDate, EndDate, Value, Name 
+FROM PlatformEventUsageMetric 
+WHERE Name = 'MonthlyPlatformEvents' 
+ORDER BY StartDate DESC 
+LIMIT 1
 ```
 
-Standard per-object channels (e.g., `/data/AccountChangeEvent`) are pre-built and do not need channel metadata — enabling the object in Setup is sufficient for subscribers on those channels.
-
-### Channel Types and Their Administrative Scope
-
-Three channel types exist, each with different admin responsibilities:
-
-| Channel Type | Example Path | Admin Configuration | Setup UI? |
-|---|---|---|---|
-| Default multi-entity | `/data/ChangeEvents` | Enable entities in Setup UI | Yes |
-| Standard per-object | `/data/AccountChangeEvent` | Enable entity in Setup UI | Yes |
-| Custom channel | `/data/ERP_Sync__chn` | Deploy `PlatformEventChannel` + `PlatformEventChannelMember` via Metadata API | No |
-
-Custom channels require Metadata API or Tooling API to create and manage. Up to 100 custom channels are supported per org. Each subscriber on a custom channel only receives events for entities assigned to that specific channel.
-
-### Event Enrichment
-
-Enrichment allows additional record fields to be included in the CDC event payload beyond those that changed in the triggering DML operation. This lets subscribers avoid follow-up REST API queries to retrieve context fields.
-
-**Critical constraint:** Enrichment is supported only on `PlatformEventChannelMember` records in custom multi-entity channels. It is **not** supported on:
-- Standard per-object channels (`/data/AccountChangeEvent`, etc.)
-- The default `ChangeEvents` channel
-
-**Formula fields are not supported as enriched fields.** Only stored field values can be included.
-
-Enrichment is configured by adding `EnrichedField` child records to `PlatformEventChannelMember` via Metadata API. There is no Setup UI for enrichment configuration.
-
-### Data Cloud and the DataCloudEntities Channel
-
-When a CRM Data Stream is created in Data Cloud, Salesforce automatically adds the target entity's CDC selection to the `DataCloudEntities` channel. This selection does not appear in the standard CDC Setup page and is not visible through the regular Channel Member query without filtering for the `DataCloudEntities` channel ID.
-
-**Do not modify `DataCloudEntities` channel members directly** via Metadata API or Tooling API. Removing or altering these selections can silently break Data Cloud sync for that CRM Data Stream. CRM Data Stream configuration in Data Cloud is the only supported management path for these selections.
-
-### PlatformEventUsageMetric Monitoring
-
-Salesforce exposes daily CDC delivery consumption through the `PlatformEventUsageMetric` standard object. Query it via SOQL to track actual usage against the edition allocation:
-
+Or for CDC-specific usage:
 ```soql
-SELECT Name, Value, StartDate, EndDate
-FROM PlatformEventUsageMetric
-WHERE Name = 'CDC Event Notifications Delivered'
-ORDER BY StartDate DESC
-LIMIT 7
+SELECT EventType, UsageDate, UsageCount 
+FROM PlatformEventUsageMetric 
+WHERE EventType = 'ChangeDataCapture'
+ORDER BY UsageDate DESC 
+LIMIT 30
 ```
 
-Delivery allocation is consumed per individual event delivery to each subscribed client. Two subscribers to the same channel each consume the full event count. Monitoring should alert when daily usage reaches 80% of the allocation to allow time for manual intervention before the hard cap is hit.
+### Data Cloud Interaction
+
+If Data Cloud is active in the org and CRM Data Streams have been created, Data Cloud silently adds CDC entity selections to the `DataCloudEntities` internal CDC channel. This channel appears in the entity selection UI as "managed by Data Cloud." Modifying these selections via the Metadata API or Tooling API (e.g., deleting or changing a `PlatformEventChannelMember` record for the `DataCloudEntities` channel) can disrupt Data Cloud's CRM data sync without any warning.
+
+If you need to adjust CDC for objects also used by Data Cloud, manage the entity selection through the Data Cloud Admin UI rather than the standard CDC setup or metadata deployment.
 
 ---
 
 ## Common Patterns
 
-### Pattern 1: Standard Entity Selection for a Small Object Set
+### Enabling CDC for Standard and Custom Objects
 
-**When to use:** Fewer than 5 entities need CDC and all consumers use the default or per-object channels.
-
-**How it works:**
-1. Go to **Setup > Integrations > Change Data Capture**.
-2. Move each target object from the Available list to the Selected Entities list.
-3. Save. CDC events start publishing to both `/data/ChangeEvents` and the per-object channel (e.g., `/data/OpportunityChangeEvent`) immediately — no deployment required.
-4. Confirm using Tooling API that the `PlatformEventChannelMember` records exist for the default channel.
-
-**Why not Metadata API here:** For the default channel, the Setup UI is faster and requires no deployment. Metadata API is needed only for custom channels or environments where all changes must be version-controlled.
-
-### Pattern 2: Custom Channel with Enrichment
-
-**When to use:** A downstream system needs CDC events enriched with fields that weren't part of the change (e.g., Account Name on Opportunity change events) to avoid follow-up REST queries.
+**When to use:** A new integration needs to subscribe to Salesforce object change events for real-time data sync.
 
 **How it works:**
-1. Create a `PlatformEventChannel` metadata record:
-   ```xml
-   <PlatformEventChannel>
-       <channelType>data</channelType>
-       <label>ERP Sync</label>
-   </PlatformEventChannel>
-   ```
-2. Create a `PlatformEventChannelMember` for each entity on the channel, including `EnrichedField` children:
-   ```xml
-   <PlatformEventChannelMember>
-       <eventChannel>ERP_Sync__chn</eventChannel>
-       <selectedEntity>Opportunity</selectedEntity>
-       <enrichedFields>
-           <name>AccountId</name>
-       </enrichedFields>
-       <enrichedFields>
-           <name>StageName</name>
-       </enrichedFields>
-   </PlatformEventChannelMember>
-   ```
-3. Deploy via `sf project deploy start` or Metadata API.
-4. Verify with Tooling API that `EnrichedField` child records exist on the channel member.
+1. Navigate to Setup > Integrations > Change Data Capture.
+2. Select standard objects (e.g., Account, Opportunity, Contact) by moving them to the "Selected Entities" list.
+3. Select custom objects the same way.
+4. Save. CDC is now enabled — events are published immediately for new changes.
+5. The integration subscribes to `/data/AccountChangeEvent` (and similar channels) via CometD or Apex triggers.
 
-**Why not the standard per-object channel:** Standard channels do not support enrichment. Enrichment is only available on custom `PlatformEventChannelMember` records.
+### Setting Up a Multi-Entity Channel with Enrichment
+
+**When to use:** A single subscriber needs change events from multiple objects in one channel, with additional context fields enriched into the payload.
+
+**How it works:**
+1. Create a `PlatformEventChannel` record with ChannelType = `data` (via Tooling API or metadata):
+```xml
+<PlatformEventChannel>
+    <channelType>data</channelType>
+    <label>Multi Object Integration Channel</label>
+</PlatformEventChannel>
+```
+2. Add `PlatformEventChannelMember` records linking each object to the channel.
+3. Add `EnrichedField` records to the `PlatformEventChannelMember` for fields to include in enrichment.
+4. The subscriber connects to the custom channel URL to receive aggregated multi-object events.
 
 ---
 
@@ -166,48 +147,49 @@ Delivery allocation is consumed per individual event delivery to each subscribed
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
-| Enabling CDC for 1–5 objects, single consumer | Setup UI, default channel | No deployment required; fastest path |
-| Enabling CDC for 6+ objects | Purchase CDC add-on first | Without add-on, entity selection fails silently at limit |
-| Multiple consumers needing different entity subsets | Custom channels via Metadata API | Server-side isolation; prevents cross-consumer event bleed |
-| Subscriber needs context fields not in the change | Custom channel with enrichment | Only supported on custom channel members |
-| Entity missing from Setup UI but events are being delivered | Query Tooling API for `PlatformEventChannelMember` | Custom channels and `DataCloudEntities` are invisible in Setup |
-| Data Cloud CRM Data Stream is active | Do not touch `DataCloudEntities` channel | Direct modification breaks Data Cloud sync |
-| Approaching daily delivery allocation | Monitor `PlatformEventUsageMetric`, consider custom channels with filtering | Custom channels reduce per-subscriber delivery count |
+| Subscribe to changes on a single object | Per-object channel (/data/AccountChangeEvent) | Built-in, no configuration beyond entity selection |
+| Subscribe to changes across multiple objects | Multi-entity custom channel | Single connection for multiple objects |
+| Need additional context fields in event payload | Multi-entity channel with enrichment | Enrichment only on multi-entity channels |
+| Monitor CDC delivery usage | PlatformEventUsageMetric SOQL query | Tracks events against edition limits |
+| Data Cloud has CDC selections I did not configure | Check Data Cloud CRM Data Streams — do not modify via Metadata API | Data Cloud manages its own CDC channel |
+| Need enrichment on a single-object per-object channel | Not supported — migrate to multi-entity channel | Enrichment cannot be added to per-object channels |
 
 ---
 
 ## Recommended Workflow
 
-1. **Confirm org edition, add-on status, and Data Cloud activity** — Identify the daily delivery limit (50K/25K/10K). Check whether the CDC add-on is licensed. Determine whether Data Cloud CRM Data Streams are active, as this constrains which channel members can be safely modified.
-2. **Inventory current entity selections** — Query Tooling API for all `PlatformEventChannelMember` records to see what is already enabled, including custom channels and `DataCloudEntities`. Do not rely solely on the Setup UI.
-3. **Plan channel topology** — Decide whether the default channel is sufficient or whether custom channels are needed (multiple consumers, isolation requirements, or enrichment). Document channel names, entities per channel, and any enriched fields.
-4. **Configure entities and channels** — For the default channel: use Setup UI. For custom channels: create `PlatformEventChannel` and `PlatformEventChannelMember` metadata records, add `EnrichedField` children where needed, and deploy via Metadata API.
-5. **Validate enrichment constraints** — Confirm that enrichment is only configured on custom multi-entity channels. Confirm no formula fields are listed as enriched fields. Verify via Tooling API that `EnrichedField` records exist on each relevant channel member.
-6. **Set up delivery allocation monitoring** — Create a `PlatformEventUsageMetric` query or dashboard to track daily CDC event delivery against the org's limit. Configure alerts at 80% of the daily allocation.
-7. **Document configuration in version control** — Commit all `PlatformEventChannel` and `PlatformEventChannelMember` metadata to the project's source control. Note the entities enabled via Setup UI (which are not tracked in metadata by default) in a separate audit document.
+Step-by-step instructions for an AI agent or practitioner working on this task:
+
+1. **Check for Data Cloud CDC interactions** — Before modifying any CDC entity selections, query the org for active Data Cloud CRM Data Streams. If Data Cloud is active, do not modify the `DataCloudEntities` channel member records directly via Metadata API.
+2. **Select entities for CDC** — Navigate to Setup > Integrations > Change Data Capture. Move required objects (standard and custom) to the Selected Entities list. Save.
+3. **Confirm entity selection** — Verify the selected objects appear in the Selected Entities list. For each selected object, confirm the per-object channel exists: `/data/<ObjectName>ChangeEvent`.
+4. **Configure multi-entity channel (if needed)** — If a single subscriber needs multiple objects or enrichment, create a `PlatformEventChannel` and link objects via `PlatformEventChannelMember` records. Add `EnrichedField` records for any enriched fields.
+5. **Monitor daily delivery usage** — Query `PlatformEventUsageMetric` for CDC event counts. Establish a baseline and alert if usage approaches the edition limit.
+6. **Test subscriber connectivity** — After enabling CDC, have the integration team confirm the subscriber can connect to the channel and receives test events generated by updating records in the org.
 
 ---
 
 ## Review Checklist
 
-- [ ] Org Edition and daily delivery allocation limit are confirmed
-- [ ] CDC add-on licensing status is verified against the entity count
-- [ ] All `PlatformEventChannelMember` records (including custom channels) are audited via Tooling API
-- [ ] `DataCloudEntities` channel is not manually modified
-- [ ] Enrichment is configured only on custom multi-entity channel members (not per-object channels)
-- [ ] No formula fields are listed as enriched fields
-- [ ] `PlatformEventUsageMetric` monitoring is in place with an alert threshold
-- [ ] Custom channel metadata is committed to version control
+Run through these before marking work in this area complete:
+
+- [ ] Data Cloud CRM Data Streams checked before modifying CDC entity selections
+- [ ] Required objects selected in Setup > Integrations > Change Data Capture
+- [ ] Per-object channel confirmed for each enabled object
+- [ ] Multi-entity channel and enrichment configured (if required)
+- [ ] Enriched fields are persistent (not formula fields)
+- [ ] PlatformEventUsageMetric monitoring scheduled
+- [ ] Subscriber team confirmed connectivity and event receipt
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-1. **Data Cloud silently modifies the `DataCloudEntities` channel** — Creating a CRM Data Stream in Data Cloud automatically adds the target entity's CDC selection to the `DataCloudEntities` channel without any visible trace in Setup. Modifying that channel selection directly via Metadata API or Tooling API breaks Data Cloud sync for that stream.
+Non-obvious platform behaviors that cause real production problems:
 
-2. **Enrichment is unsupported on standard per-object channels** — Practitioners frequently try to configure enrichment on `/data/AccountChangeEvent` or similar per-object channels. This configuration is not supported; enrichment only works on `PlatformEventChannelMember` records in custom multi-entity channels. The API does not always return a clear error — the enrichment configuration is silently ignored.
-
-3. **Custom channel selections are invisible in Setup UI** — The Change Data Capture Setup page at **Setup > Integrations > Change Data Capture** only reflects the default `ChangeEvents` channel. Entities enabled in custom channels or the `DataCloudEntities` channel do not appear. Auditing coverage using the UI alone will produce an undercount.
+1. **Data Cloud silently manages CDC entity selections** — When a CRM Data Stream is created in Data Cloud, Data Cloud automatically adds the relevant Salesforce objects to the `DataCloudEntities` CDC channel without notifying the Salesforce admin. These selections appear in the CDC setup UI but are managed by Data Cloud. Modifying or deleting these `PlatformEventChannelMember` records via Metadata API or Tooling API disrupts Data Cloud's CRM data ingestion without any error message at configuration time — the disruption surfaces later as stale or missing data in Data Cloud.
+2. **Enrichment is only supported on multi-entity channels** — Admins frequently attempt to add enrichment to per-object channels (e.g., add Account's Owner.Region field to `/data/AccountChangeEvent`). This is not supported. Enrichment requires a custom `PlatformEventChannel` with `PlatformEventChannelMember` records. Formula fields also cannot be used as enriched fields — only persistent stored fields.
+3. **Daily delivery limits are edition-specific and non-negotiable** — If an org's CDC usage exceeds the edition daily limit, events are dropped for the remainder of the 24-hour window with no error surfaced to the admin. Downstream subscribers receive no notification of the gap. Monitor `PlatformEventUsageMetric` proactively to detect trends before hitting the limit.
 
 ---
 
@@ -215,16 +197,14 @@ Delivery allocation is consumed per individual event delivery to each subscribed
 
 | Artifact | Description |
 |---|---|
-| Entity selection list | Objects enabled for CDC per channel, including default and custom channels |
-| PlatformEventChannel metadata | XML metadata for each custom channel to deploy via Metadata API |
-| PlatformEventChannelMember metadata | XML metadata for entity assignments and enriched fields per channel |
-| PlatformEventUsageMetric query | SOQL query and monitoring setup for daily delivery allocation tracking |
-| Channel audit | Tooling API query output showing all active channel members including Data Cloud |
+| CDC entity selection | List of objects enabled for CDC in Setup > Integrations |
+| Multi-entity channel configuration | PlatformEventChannel and PlatformEventChannelMember metadata |
+| PlatformEventUsageMetric query | SOQL to monitor daily CDC event delivery against edition limits |
+| Data Cloud interaction guidance | Steps to check for Data Cloud CDC management before modifying entity selections |
 
 ---
 
 ## Related Skills
 
-- `integration/change-data-capture-integration` — Use when configuring the subscriber side: Pub/Sub API, CometD, replay ID management, gap event handling, and external system integration patterns
-- `admin/outbound-message-setup` — Use when evaluating CDC vs outbound messaging for near-real-time notifications
-- `admin/remote-site-settings` — Required if outbound integrations depend on external endpoint allowlisting alongside CDC consumers
+- change-data-capture-integration — Apex trigger and subscriber implementation for CDC events
+- integration-admin-connected-apps — Configure connected apps for the subscriber's CometD authentication

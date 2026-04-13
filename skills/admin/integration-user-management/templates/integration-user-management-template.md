@@ -1,134 +1,75 @@
 # Integration User Management — Work Template
 
-Use this template when working on tasks in this area.
+Use this template when setting up or auditing a Salesforce integration user.
 
 ## Scope
 
 **Skill:** `integration-user-management`
 
-**Request summary:** (fill in what the user asked for)
+**Integration system name:** (e.g., MuleSoft, Informatica, Custom ETL)
 
-**Integration name / system:** (e.g., MuleSoft ETL, Dataloader batch job, External Portal API)
+**Integration user username:** ___@___.com
 
-**Target org:** (sandbox / production / scratch org name)
+## Integration User Configuration
 
----
+| Setting | Required Value | Configured? |
+|---|---|---|
+| License | Salesforce Integration | [ ] |
+| Profile | Minimum Access - API Only Integrations | [ ] |
+| Email | Team alias (not individual) | [ ] |
+| Active | true | [ ] |
 
-## Context Gathered
+## MFA Configuration
 
-Record the answers to the Before Starting questions from SKILL.md here.
+**Org MFA enforcement status:** [ ] Not enforced  [ ] Enforced
 
-- **Org-wide MFA enforcement enabled?** Yes / No / Unknown
-- **Authentication method:** OAuth Client Credentials / Named Credential / (other — describe)
-- **Objects and fields required:**
+If enforced:
+- [ ] MFA waiver configured via permission set
+- [ ] OR JWT bearer flow used (inherently MFA-resistant, preferred)
 
-  | Object | Read | Create | Edit | Delete | Notes |
-  |---|---|---|---|---|---|
-  | (e.g., Account) | Yes | No | No | No | Billing fields only |
-  | | | | | | |
+## Permission Set Configuration
 
-- **Known constraints or limits:** (e.g., API call volume, IP restrictions, certificate requirements)
-- **Failure modes to watch for:** MFA waiver missing / permission set license mismatch / Connected App run-as mismatch
+| Permission Set Name | Object Permissions Granted | Field Permissions | Assigned? |
+|---|---|---|---|
+| | | | [ ] |
+| | | | [ ] |
 
----
+**Guiding principle:** Grant only what this specific integration needs. No `Modify All Data` or `View All Data` unless technically required with documented justification.
 
-## Integration User Details
+## Connected App Assignment
 
-| Field | Value |
-|---|---|
-| Username | (e.g., mulesoft-erp@company.sf.prod) |
-| License | Salesforce Integration |
-| Profile | Minimum Access - API Only Integrations |
-| Created date | |
-| Created by | |
+- **Connected app name:** ___
+- **Permitted Users setting:** [ ] Admin approved users are pre-authorized
+- [ ] Connected app assigned to integration user's permission set or profile
 
----
+## Authentication Configuration
 
-## Permission Sets Assigned
+**Authentication flow:** [ ] JWT Bearer (preferred)  [ ] OAuth Client Credentials  [ ] Username-Password (avoid)
 
-| Permission Set Name | PSL | Objects Covered | DML Granted | Assigned Date |
-|---|---|---|---|---|
-| (e.g., MuleSoft ETL Integration Access) | Salesforce API Integration | Account (Read), Order__c (Create, Edit) | Read, Create, Edit | |
-| | | | | |
+For JWT Bearer:
+- [ ] Digital certificate uploaded to connected app
+- [ ] Private key stored securely (never in code/config files)
 
----
+## Testing
 
-## MFA Waiver
+- [ ] Authentication succeeds via selected flow
+- [ ] API call to required objects succeeds
+- [ ] UI login is blocked (API-only profile enforced)
+- [ ] MFA challenge does not appear during authentication
 
-| Field | Value |
-|---|---|
-| MFA enforcement active in org? | Yes / No |
-| Waiver required? | Yes / No |
-| Waiver granted via | Permission set: (name) / User permission (direct) |
-| Date granted | |
-| Approved by | |
-| Business justification | Server-to-server integration; no interactive login possible on API Only profile |
-| Next review date | (recommended: annual) |
+## Monitoring
 
----
+- [ ] LoginHistory monitoring configured
+- [ ] Periodic review scheduled (quarterly recommended)
+- [ ] Alert configured for failed login attempts from unexpected IPs
 
-## Connected App / Authentication
+## Documentation
 
-| Field | Value |
-|---|---|
-| Connected App name | |
-| Auth flow | OAuth 2.0 Client Credentials |
-| Run As user | (must match integration user username above) |
-| Consumer Key stored in | Named Credential / External Credential / Secure vault |
-| IP restrictions configured? | Yes / No |
-
----
-
-## Approach
-
-Which pattern from SKILL.md applies? Why?
-
-- [ ] New Integration User from Scratch — building a net-new identity for a new integration
-- [ ] Scoping Permission Sets Per Integration — auditing or splitting an existing over-permissioned user
-- [ ] Other — describe:
-
----
-
-## Checklist
-
-Complete each item before marking the task done.
-
-- [ ] Integration user created with Salesforce Integration license
-- [ ] Profile set to Minimum Access - API Only Integrations (not admin, not standard)
-- [ ] All object/field access granted via targeted permission sets (none via profile)
-- [ ] Permission sets use the Salesforce API Integration PSL
-- [ ] Permission sets scoped to only required objects and DML operations
-- [ ] MFA User Exemption assigned if org-wide MFA is enforced (and documented above)
-- [ ] Connected App run-as set to this integration user (not an admin user)
-- [ ] OAuth Client Credentials flow configured and tested (no username-password flow)
-- [ ] Login History verified: Status = Success, LoginType = OAuth 2.0, SourceIp = expected IP
-- [ ] Integration user confirmed unable to log in via browser / Salesforce UI
-- [ ] This template completed and committed to project record
-
----
-
-## Login History Verification
-
-Paste the SOQL query used to verify login activity:
-
-```sql
-SELECT Id, UserId, LoginTime, Status, LoginType, Application, Browser, SourceIp
-FROM LoginHistory
-WHERE UserId = '<paste integration user Id here>'
-ORDER BY LoginTime DESC
-LIMIT 50
-```
-
-Expected results:
-- Status = `Success`
-- LoginType = `OAuth 2.0` (or appropriate for the configured flow)
-- Browser = `No User Agent` (confirms API-only; no interactive browser session)
-- SourceIp = (matches expected integration infrastructure IP)
-
----
+- [ ] Integration user details documented in runbook
+- [ ] Permission set contents documented with justification for each permission
+- [ ] MFA waiver status documented
+- [ ] Quarterly access review date set
 
 ## Notes
 
-Record any deviations from the standard pattern and why. Include any temporary workarounds and the target date for resolving them.
-
-(e.g., "Org MFA enforcement scheduled for next quarter — MFA waiver will be required then. Calendar reminder set for [date].")
+(Record any deviations and justifications.)
