@@ -3983,6 +3983,66 @@
       "domain": "architect",
       "expected_skill": "architect/event-driven-architecture",
       "top_k": 3
+    },
+    {
+      "query": "how to deploy CPQ product rules and price rules between environments",
+      "domain": "devops",
+      "expected_skill": "devops/cpq-deployment-administration",
+      "top_k": 3
+    },
+    {
+      "query": "how to deploy Experience Cloud site to production environment",
+      "domain": "devops",
+      "expected_skill": "devops/experience-cloud-deployment-admin",
+      "top_k": 3
+    },
+    {
+      "query": "how to monitor Salesforce deployment status and check component errors",
+      "domain": "devops",
+      "expected_skill": "devops/deployment-monitoring",
+      "top_k": 3
+    },
+    {
+      "query": "how to assess deployment risk and plan rollback for Salesforce release",
+      "domain": "admin",
+      "expected_skill": "admin/deployment-risk-assessment",
+      "top_k": 3
+    },
+    {
+      "query": "how to create a Salesforce deployment runbook and environment matrix",
+      "domain": "admin",
+      "expected_skill": "admin/devops-process-documentation",
+      "top_k": 3
+    },
+    {
+      "query": "how to implement change advisory board process for Salesforce deployments",
+      "domain": "admin",
+      "expected_skill": "admin/change-advisory-board-process",
+      "top_k": 3
+    },
+    {
+      "query": "how to deploy Health Cloud to production with care plans and HIPAA compliance",
+      "domain": "devops",
+      "expected_skill": "devops/health-cloud-deployment-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "how to deploy FSC Financial Services Cloud with compliant data sharing",
+      "domain": "devops",
+      "expected_skill": "devops/fsc-deployment-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "how to deploy LWR Experience Cloud site using CLI and ExperienceBundle metadata",
+      "domain": "devops",
+      "expected_skill": "devops/experience-cloud-deployment-dev",
+      "top_k": 3
+    },
+    {
+      "query": "how to sequence deployment across multiple Salesforce clouds with metadata dependencies",
+      "domain": "devops",
+      "expected_skill": "devops/cross-cloud-deployment-patterns",
+      "top_k": 3
     }
   ]
 }
