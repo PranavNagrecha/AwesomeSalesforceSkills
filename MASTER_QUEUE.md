@@ -66,7 +66,8 @@ STATUS KEY:
 | 18 | Slack Integration | — | 5 | 0 | 5 |
 | 19 | Additional Industry Clouds | — | 16 | 0 | 16 |
 | 20 | Gap Fill — Platform, Security, Integration, LWC, Flow | — | 62 | 0 | 62 |
-| **Total** | | | **967** | **604** | **363** |
+| 21 | LLM-Frequent — Patterns, Migrations, Tooling, Tribal Knowledge | — | 78 | 0 | 78 |
+| **Total** | | | **1045** | **604** | **441** |
 
 ---
 
@@ -1578,6 +1579,135 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 
 ---
 
+## Phase 21 — LLM-Frequent: Patterns, Migrations, Tooling, Tribal Knowledge
+
+> Skills targeting the most common questions LLMs receive from Salesforce practitioners.
+> These are the "I ask ChatGPT/Claude this every week" topics with zero repo coverage.
+
+### 21a — Apex Patterns LLMs Get Asked Daily
+
+> Domain folder: `apex`
+
+| Status | Skill Name | Description | Notes |
+|--------|------------|-------------|-------|
+| TODO | apex-collections-patterns | Map<Id, List<SObject>> construction, nested maps, Set intersection, collection-based trigger patterns, Map.containsKey guard patterns. NOT for basic Apex syntax. | apex |
+| TODO | apex-json-serialization | JSON.serialize, JSON.deserialize, JSON.deserializeUntyped, JSON.createParser, wrapper class DTO patterns, API response mapping. NOT for callout patterns (use callouts-and-http-integrations). | apex |
+| TODO | apex-string-and-regex | String methods (substringBefore, split, replaceAll), Pattern/Matcher regex, text parsing, template rendering, safe null handling. NOT for formula functions. | apex |
+| TODO | apex-dml-patterns | Database.insert(records, false) partial success, SaveResult/UpsertResult handling, allOrNone patterns, Database.merge, convertLead. NOT for trigger framework. | apex |
+| TODO | apex-soql-relationship-queries | Parent-to-child subqueries, child-to-parent dot notation, polymorphic SOQL (TYPEOF), multi-level relationships, relationship naming conventions. NOT for SOQL fundamentals (use soql-fundamentals). | apex |
+| TODO | apex-aggregate-queries | GROUP BY, HAVING, AggregateResult handling, COUNT(), SUM(), AVG(), rollup patterns with aggregate SOQL, aggregate limitations. NOT for roll-up summary fields. | apex |
+| TODO | apex-schema-describe | Schema.SObjectType, Schema.DescribeFieldResult, dynamic field describe, RecordType ID retrieval, picklist values, field-level metadata at runtime. NOT for Metadata API. | apex |
+| TODO | apex-enum-patterns | Enum definition and usage, enum-based dispatch, ordinal values, enum in Custom Metadata, global enums for packages, enum limitations. NOT for picklist fields. | apex |
+| TODO | apex-batch-chaining | Batch job chaining via finish(), Queueable chains, hybrid batch-queueable orchestration, chain depth limits, monitoring chained jobs. NOT for single batch patterns (use batch-apex-patterns). | apex |
+| TODO | apex-limits-monitoring | Limits class methods (Limits.getQueries(), getHeapSize()), transaction budget tracking, proactive limit avoidance, limit-safe patterns. NOT for governor limits concepts (use governor-limits). | apex |
+| TODO | apex-jwt-bearer-flow | JWT bearer token flow: certificate-based auth, server-to-server integration, Connected App JWT setup, token exchange, headless auth. NOT for OAuth interactive flows. | apex |
+| TODO | apex-wrapper-class-patterns | Wrapper/DTO classes: SelectOption replacement, display wrappers, API response wrappers, inner class patterns, Comparable implementation. NOT for JSON serialization (use apex-json-serialization). | apex |
+
+### 21b — LWC Patterns LLMs Get Asked Daily
+
+> Domain folder: `lwc`
+
+| Status | Skill Name | Description | Notes |
+|--------|------------|-------------|-------|
+| TODO | lwc-file-upload-patterns | lightning-file-upload component, custom file upload with ContentVersion, drag-drop zones, file preview, file size limits, accepted formats. NOT for Apex file handling. | lwc |
+| TODO | lwc-lightning-record-forms | lightning-record-form vs record-edit-form vs record-view-form: when to use each, custom validation, field-level overrides, layout density, conditional fields. NOT for dynamic forms admin. | lwc |
+| TODO | lwc-chart-and-visualization | Chart.js/D3.js integration, canvas rendering, SVG charts, data visualization, chart responsiveness, static resource loading for chart libs. NOT for CRM Analytics dashboards. | lwc |
+| TODO | lwc-reactive-state-patterns | Post-@track reactive properties, reactive field behavior, when @track is still needed, reactive arrays/objects, state management in complex components. NOT for wire service. | lwc |
+| TODO | lwc-lightning-out | Lightning Out for Visualforce, LWC in external pages, $Lightning.use(), container page setup, authentication in external contexts, iframe alternatives. NOT for Experience Cloud LWC. | lwc |
+| TODO | lwc-custom-lookup | Custom lookup component: combobox search, debounced SOQL, record selection, multi-select lookup, lookup with custom display, lookup filtering. NOT for standard lightning-input-field. | lwc |
+| TODO | lwc-datatable-advanced | Advanced datatable: inline editing, custom types, row actions, infinite scroll, lazy loading, type attributes, custom cell rendering. NOT for basic datatable (use lwc-data-table). | lwc |
+| TODO | lwc-css-and-styling | LWC CSS: :host, ::slotted, CSS custom properties, SLDS utility classes, responsive design, dynamic classes, styling limitations in Locker. NOT for SLDS framework. | lwc |
+
+### 21c — Migration Patterns (the questions that never stop)
+
+> Domain folder: varies
+
+| Status | Skill Name | Description | Notes |
+|--------|------------|-------------|-------|
+| TODO | classic-to-lightning-migration | Lightning Experience migration: readiness check, Visualforce gaps, JavaScript button alternatives, Classic-only features, hybrid rollout strategy. NOT for LWC development. | admin |
+| TODO | visualforce-to-lwc-migration | VF page → LWC conversion: controller → Apex service, action functions → imperative Apex, viewState elimination, component mapping, incremental migration. NOT for Aura migration (use aura-to-lwc-migration). | lwc |
+| TODO | attachment-to-files-migration | Attachment/Note → ContentVersion/ContentNote migration: data mapping, parent linking, ContentDocumentLink creation, body encoding, bulk migration scripts. NOT for file upload LWC. | data |
+| TODO | classic-email-template-migration | Classic email templates → Lightning email templates: merge field syntax changes, Handlebars, Enhanced Letterhead, folder structure, Custom type limitations. NOT for email deliverability. | admin |
+| TODO | knowledge-classic-to-lightning | Knowledge Classic → Lightning Knowledge migration: article type consolidation, data categories, migration tool, validation rules, record type mapping. NOT for knowledge admin (use knowledge-base-administration). | data |
+| TODO | custom-button-to-action-migration | JavaScript buttons → Quick Actions/LWC actions: URL hack replacement, button behavior mapping, Mass Actions, Lightning-safe alternatives. NOT for global actions. | admin |
+
+### 21d — Files, Content, and Chatter (massive gap — constantly asked)
+
+> Domain folder: varies
+
+| Status | Skill Name | Description | Notes |
+|--------|------------|-------------|-------|
+| TODO | content-document-management | ContentVersion, ContentDocument, ContentDocumentLink: file creation, sharing, versioning, libraries, content delivery, rendition, file limits. NOT for file upload UI (use lwc-file-upload-patterns). | apex |
+| TODO | chatter-and-feed-patterns | FeedItem, FeedComment, @mentions, feed tracking configuration, Chatter REST API, ConnectApi, publisher actions, group posts, file sharing via Chatter. NOT for Experience Cloud. | apex |
+| TODO | chatter-administration | Chatter setup: feed tracking, groups, topics, moderation, Chatter email notifications, Chatter settings, unlicensed users, Chatter Free. NOT for Chatter API development. | admin |
+| TODO | custom-notification-types | Custom notifications: notification type creation, send from Apex/Flow, bell notifications, push notifications, mobile push, bulk notifications, in-app messaging. NOT for email alerts. | admin |
+| TODO | salesforce-files-architecture | Files architecture: storage limits, content library design, file sharing patterns, external file references, Files Connect, content delivery, CDN. NOT for file migration. | architect |
+
+### 21e — Admin Tribal Knowledge (the stuff training data gets wrong)
+
+> Domain folder: `admin`
+
+| Status | Skill Name | Description | Notes |
+|--------|------------|-------------|-------|
+| TODO | custom-settings-vs-metadata-types | Custom Settings vs Custom Metadata Types: decision criteria, hierarchy vs list, cache behavior, deployability, SOQL cost, when to use each, migration path. NOT for implementation (use custom-metadata-types). | admin |
+| TODO | record-type-id-management | RecordType ID differences across orgs: Schema.SObjectType methods, dynamic ID retrieval, hardcoding anti-patterns, RecordType DeveloperName usage. NOT for record type strategy. | admin |
+| TODO | activity-and-task-patterns | Task/Event data model: WhoId/WhatId polymorphism, shared activities, Activity object, ActivityHistory, OpenActivity, task automation patterns, activity settings. NOT for calendar integration. | admin |
+| TODO | custom-label-management | Custom labels: creation, translation, deployment, dynamic access from Apex/LWC/VF, label governance, namespace-awareness, label limits, bulk management. NOT for Translation Workbench. | admin |
+| TODO | related-list-configuration | Related lists: Enhanced Related Lists, related list components, quick related list, related list filters, related list actions, single-record components. NOT for page layouts. | admin |
+| TODO | lookup-and-relationship-design | Lookup vs Master-Detail decisions: cascade delete, roll-up availability, reparenting, junction objects, self-relationships, polymorphic lookups, external lookups. NOT for data model design. | admin |
+| TODO | salesforce-optimizer-usage | Salesforce Optimizer: running the report, interpreting recommendations, feature adoption, cleanup actions, custom object analysis, field usage audit. NOT for org cleanup scripts. | admin |
+| TODO | scheduled-path-patterns | Scheduled paths in record-triggered flows: timing behavior, re-evaluation, limitations with before-save, entry conditions, workarounds for complex scheduling. NOT for scheduled flows. | admin |
+| TODO | flow-error-notification-patterns | Flow fault email interpretation: common fault types, unhandled exceptions, fault paths best practices, admin notification patterns, monitoring. NOT for Flow debugging. | admin |
+| TODO | salesforce-mobile-app-customization | Salesforce Mobile app: compact layouts, mobile navigation, mobile cards, Quick Actions for mobile, publisher actions, offline briefcase, mobile-only customization. NOT for FSL mobile. | admin |
+
+### 21f — API & Tooling (every developer asks these)
+
+> Domain folder: varies
+
+| Status | Skill Name | Description | Notes |
+|--------|------------|-------------|-------|
+| TODO | tooling-api-patterns | Tooling API: metadata queries, ApexLog retrieval, code coverage queries, debug level management, compile requests, limit info from REST headers. NOT for Metadata API (use apex-metadata-api). | apex |
+| TODO | rest-api-pagination-patterns | REST API pagination: nextRecordsUrl for query results, queryMore, Composite API batching, OFFSET-based pagination, cursor-based patterns, batch size tuning. NOT for Bulk API. | integration |
+| TODO | postman-for-salesforce | Postman for Salesforce API testing: OAuth setup, environment variables, collection organization, chaining requests, pre/post scripts, Salesforce collection templates. NOT for integration development. | devops |
+| TODO | salesforce-inspector-patterns | Salesforce Inspector Reloaded: data export/import, inline SOQL, field metadata, object info, API usage monitoring, data editing shortcuts. NOT for Data Loader. | devops |
+| TODO | data-loader-cli-patterns | Data Loader CLI mode: process-conf.xml, encrypted passwords, scheduled batch imports/exports, mapping files, error handling, automation scripts. NOT for Data Loader GUI. | devops |
+| TODO | metadata-api-retrieve-deploy | Metadata API retrieve/deploy cycles: package.xml construction, retrieve patterns, deploy options (checkOnly, testLevel), status polling, CI/CD scripting. NOT for Change Sets. | devops |
+
+### 21g — Cross-Cutting Patterns & Tribal Knowledge
+
+> Domain folder: varies
+
+| Status | Skill Name | Description | Notes |
+|--------|------------|-------------|-------|
+| TODO | record-access-troubleshooting | "Insufficient Privileges" debugging: sharing debug, FLS audit, Permission Analyzer, CRUD checks, community user access, org-wide defaults walkthrough. NOT for sharing model design. | security |
+| TODO | cross-org-data-sync-patterns | Salesforce-to-Salesforce data sync: ETL tools, Platform Events bridge, Heroku Connect, MuleSoft sync, conflict resolution, latency tradeoffs. NOT for multi-org strategy (use multi-org-strategy). | integration |
+| TODO | salesforce-api-version-strategy | API version selection: version-locking metadata, auto-upgrade risks, version-specific behavior changes, API retirement timeline, backward compatibility. NOT for API version in sfdx-project.json. | architect |
+| TODO | org-data-export-patterns | Scheduled data export, Data Export Service, Bulk API export, weekly export, export file formats, export scheduling, compliance archival. NOT for Bulk API development. | data |
+| TODO | sandbox-post-refresh-automation | Post-copy Apex classes (SandboxPostCopy interface): user deactivation, email masking, data cleanup, integration endpoint swapping, test data seeding. NOT for sandbox admin (use sandbox-refresh-and-templates). | devops |
+| TODO | salesforce-release-impact-assessment | Reading release notes for org impact: critical updates, feature retirements, API changes, testing in preview sandboxes, release readiness checklist. NOT for general release management. | admin |
+| TODO | field-dependency-and-controlling | Dependent picklists: controlling/dependent field setup, multi-level dependencies, Record Type filtering, field dependency matrix, Flow handling of dependents. NOT for picklist admin. | admin |
+| TODO | page-layout-assignment-strategy | Page layout assignment: Record Type × Profile matrix, layout assignment optimization, Business Profile patterns, layout assignment deployment. NOT for Dynamic Forms. | admin |
+| TODO | salesforce-search-configuration | Global search configuration: searchable objects, search layouts, SOSL search groups, search result weights, Einstein Search, search scope. NOT for Experience Cloud search. | admin |
+| TODO | workflow-field-update-patterns | Field update patterns across automation tools: before-save flow vs after-save trigger, cross-object updates, field update order, re-evaluation patterns. NOT for trigger order-of-execution. | admin |
+| TODO | apex-webservice-annotation | @RestResource and @HttpGet/Post/Put/Delete patterns: URL mapping, request/response handling, error responses, versioning, authentication, testing REST resources. NOT for outbound callouts. | apex |
+| TODO | visualforce-pdf-rendering | Visualforce renderAs="pdf": page sizing, CSS for print, image rendering, dynamic PDF generation, merge fields, font handling, batch PDF via Apex. NOT for OmniStudio doc gen. | apex |
+| TODO | lightning-console-api | Console API in Lightning: workspace tabs, subtabs, utility bar API, tab focus events, console navigation, enclosing tab context, utility items. NOT for Service Console admin. | lwc |
+| TODO | lwc-pubsub-patterns | Custom pub/sub in LWC: singleton event bus, CustomEvent across DOM, Lightning Message Service vs custom events, cross-namespace communication. NOT for Platform Events. | lwc |
+
+### 21h — Data Patterns (frequently asked, poorly covered by LLM training data)
+
+> Domain folder: `data`
+
+| Status | Skill Name | Description | Notes |
+|--------|------------|-------------|-------|
+| TODO | record-ownership-patterns | Record ownership: default owner, ownership transfer, queue ownership, ownership-based sharing impact, owner change triggers, bulk ownership transfer. NOT for sharing rules. | data |
+| TODO | data-export-and-backup-patterns | Data export patterns: Data Export Service, Bulk API export, scheduled export automation, export to S3/GCS, incremental export, backup verification. NOT for admin backup setup. | data |
+| TODO | currency-management-patterns | Multi-currency data: CurrencyType, DatedConversionRate, converted currency in SOQL, advanced currency management, roll-up with currencies. NOT for admin setup (use multi-currency-and-advanced-currency-management). | data |
+| TODO | recycle-bin-and-undelete | Recycle Bin patterns: undelete behavior, cascade undelete, 15-day/25-day limits, ALL ROWS SOQL, purge implications, Apex undelete trigger. NOT for data archival. | data |
+| TODO | picklist-data-integrity | Picklist data integrity: restricted vs unrestricted, global value sets, value dependencies, inactive values in reports, picklist migration, field history with picklists. NOT for picklist admin (use picklist-and-value-sets). | data |
+
+---
+
 ## Handoff Log
 
 | Agent | Task | Started | Completed | Notes |
@@ -1587,6 +1717,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | Claude Opus 4.6 | Third pass — 14 more skills from SIP, BC/DR, Test Plan, R2/R3, Impl Plan docs | 2026-04-04 | 2026-04-04 | go-live-cutover-planning, performance-testing-salesforce, recaptcha-and-bot-prevention, session-management-and-timeout, multi-language, surveys, user-access-policies, batch-job-monitoring, stub-testing, api-error-handling, batch-data-cleanup, data-storage-management + 2 more |
 | Claude Opus 4.6 | Fourth pass — 49 tribal-knowledge + RAG-gap skills | 2026-04-04 | 2026-04-04 | Deep research: platform gotchas (order-of-execution, mixed DML, record locking, timezone), enterprise patterns (fflib, feature flags), production survival (release prep, org limits, support escalation), troubleshooting (common Apex/LWC/Flow errors), data reality (external IDs, merge implications, dedup, reconciliation), integration hardening (retry/backoff), senior admin (page perf, report perf, license optimization), AI-era (sf-to-llm pipelines, ai-ready architecture), Higher Ed (EDA, SIS, FERPA), plus RAG-gap fills (in-app guidance, Lightning App Builder, PDF generation, HA/DR) |
 | Claude Opus 4.6 | Fifth pass — Phase 20 gap fill (62 skills) | 2026-04-11 | 2026-04-11 | Full matrix audit against 532 built skills. Added: Revenue Cloud (new, not CPQ) 4 skills, Pub/Sub API + modern integration 6, security hardening 6, Flow migration + gaps 6, LWC i18n/drag/virtualization 6, Tableau connectors 3, DevOps gaps 5, admin/architect gaps 11, Apex gaps 5. Total queue now 967. |
+| Claude Opus 4.6 | Sixth pass — Phase 21 LLM-frequent patterns (78 skills) | 2026-04-13 | 2026-04-13 | Deep analysis of what LLMs actually get asked daily by SF practitioners. Identified 78 skills with zero coverage across 8 sub-phases: Apex daily patterns (12), LWC daily patterns (8), migration patterns (6), files/content/Chatter (5), admin tribal knowledge (10), API/tooling (6), cross-cutting patterns (14), data patterns (5). Focus: collections, JSON, DML, relationship SOQL, file management, ContentVersion, Chatter, custom notifications, Classic→Lightning migration, VF→LWC, record-form patterns, custom lookup, Inspector/Postman/Data Loader CLI, record access debugging, scheduled paths. Total queue now 1045. |
 
 ---
 
