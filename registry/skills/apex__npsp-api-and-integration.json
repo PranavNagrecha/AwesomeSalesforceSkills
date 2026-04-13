@@ -1,0 +1,84 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "03c489bf553cc66b5e1f",
+    "1286472738e2cc4ff0d9",
+    "15b79adccae63720212b",
+    "1a343c5dc0c5cade0cd2",
+    "1cabfbbedb9b3b75132c",
+    "27c8160764d2cb77213c",
+    "2ac25fbaa691c180288f",
+    "3bd383ed417e486b0a0a",
+    "4024d43a2fc00776650c",
+    "4131ce7d04063cb1b327",
+    "417dc33f30276dac8605",
+    "43adbce3ba2e9af8741f",
+    "48bb6fb1cf6ada894f95",
+    "49317766afb9519641d8",
+    "5e1ea54280f195c09d8a",
+    "6053515299af4f9398b6",
+    "64ee98c662a627410b05",
+    "6c3444c29c3f21037592",
+    "6e66747e66d6184458f3",
+    "6ff4e141b283dfa9f9f0",
+    "7c7444f896668bbd7ca5",
+    "7c956f96288eae1cfe42",
+    "83b1529470742ad776c6",
+    "87b9c0a00948c7bc3ccd",
+    "8a7e23c38422390cfe10",
+    "8d76bd9de50ccddb4a5e",
+    "9176630d8dd6c7291af0",
+    "9bf7777b00dfb0bd07cb",
+    "9c8dca0dc9b1b1e53641",
+    "9cf62a939f58e93c7f7e",
+    "a0d2a200dd691ef14829",
+    "afea61bd1f7724db3ce4",
+    "b4ddcd160572108a6d2c",
+    "bfb78ac0a1e0c7d7d4c0",
+    "c3778f9d760bfd3a111d",
+    "c51e5bb0d866f06ce153",
+    "cafdcbe832b88c11a5bd",
+    "d026430e2e3510ee1c1b",
+    "e6bda50224685cefa1ab",
+    "ee03ea008f87fdd29a2e",
+    "f0027850c271113aaebe",
+    "f89eb9db5014ee2d6067",
+    "fd254caeeeb5fe4f7db9"
+  ],
+  "content_hash": "330e253bbbecfc5f4a73d56b32a9ac93283d053333351ef93fbd42fd7d636107",
+  "dependencies": [],
+  "description": "TODO: One sentence explaining when to use this skill and its main trigger keywords. NOT for TODO: explicit scope exclusion \u2014 what does this skill NOT cover.",
+  "file_location": "skills/apex/npsp-api-and-integration",
+  "id": "apex/npsp-api-and-integration",
+  "inputs": [
+    "TODO: context or information this skill needs to work"
+  ],
+  "name": "npsp-api-and-integration",
+  "official_sources": [
+    "Apex Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm",
+    "Apex Reference Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "TODO: artifact or guidance this skill produces"
+  ],
+  "references": [
+    "skills/apex/npsp-api-and-integration/references/examples.md",
+    "skills/apex/npsp-api-and-integration/references/gotchas.md",
+    "skills/apex/npsp-api-and-integration/references/llm-anti-patterns.md",
+    "skills/apex/npsp-api-and-integration/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/npsp-api-and-integration/scripts/check_npsp_api_and_integration.py"
+  ],
+  "tags": [
+    "npsp-api-and-integration",
+    "TODO_TAG_2"
+  ],
+  "templates": [
+    "skills/apex/npsp-api-and-integration/templates/npsp-api-and-integration-template.md"
+  ],
+  "updated": "2026-04-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

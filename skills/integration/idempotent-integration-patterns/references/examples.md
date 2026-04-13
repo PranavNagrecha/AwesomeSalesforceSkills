@@ -1,163 +1,104 @@
 # Examples — Idempotent Integration Patterns
 
-## Example 1: External ID Upsert for Inbound Order Synchronization
+## Example 1: Fixing Duplicate Records from a Retrying ETL Integration
 
-**Context:** An ERP system pushes order records into Salesforce every 15 minutes via a scheduled job. Network timeouts and transient errors cause the ERP to retry failed batches. Without idempotency, each retry creates a duplicate Order record in Salesforce.
+**Context:** An ETL tool syncs Order records from an ERP into Salesforce. On network timeouts, the ETL retries the POST call to create the Order. Each retry creates a duplicate Order record in Salesforce because POST creates new records unconditionally.
 
-**Problem:** The ERP integration uses `POST /services/data/v59.0/sobjects/Order__c/` on each call. When the ERP retries after a timeout, Salesforce receives the payload a second time and inserts a new Order record rather than updating the one from the first (successful but unreceived) call. The operations team now has duplicate Orders that must be manually de-duplicated.
+**Problem:** The ETL generates a UUID for each sync request, but generates a new UUID on each retry. Each retry looks like a unique operation to both the ETL and Salesforce. After 3 retries, 4 identical Order records exist in Salesforce.
 
 **Solution:**
 
-Step 1 — Add the External ID field to Order__c via metadata:
-
-```xml
-<!-- Order__c.object-meta.xml snippet -->
-<fields>
-    <fullName>ERP_Order_Id__c</fullName>
-    <externalId>true</externalId>
-    <unique>true</unique>
-    <type>Text</type>
-    <length>50</length>
-    <label>ERP Order ID</label>
-</fields>
+1. Create a custom field on Order: `ERP_Order_Number__c` (type: Text, External ID: true, Unique: true).
+2. Update the ETL to populate this field with the ERP's stable order number (e.g., `ORD-2025-0012345`) — the same value on every attempt for the same order.
+3. Change the ETL's API call from POST to PATCH with the External ID path:
 ```
-
-Step 2 — ERP switches from POST (insert) to PATCH against the External ID endpoint:
-
-```
-PATCH /services/data/v59.0/sobjects/Order__c/ERP_Order_Id__c/ORD-20240315-9001
+PATCH /services/data/v63.0/sobjects/Order/ERP_Order_Number__c/ORD-2025-0012345
 Content-Type: application/json
-Authorization: Bearer {access_token}
-
 {
-  "Name": "Order 9001",
-  "Status__c": "Processing",
-  "Amount__c": 1500.00,
-  "ERP_Order_Id__c": "ORD-20240315-9001"
+  "Status": "Pending",
+  "ERP_Order_Number__c": "ORD-2025-0012345",
+  "Amount": 5200.00
 }
 ```
+4. First attempt: record does not exist → Salesforce inserts the Order.
+5. Retry attempt: record exists with same external ID → Salesforce updates (no-op for unchanged fields).
+6. No duplicate records. All retries produce the same result.
 
-Step 3 — ERP retry logic sends the identical PATCH on failure. Salesforce finds the matching External ID value and updates the existing record. No duplicate is created.
-
-Step 4 — If the ERP erroneously sends two records with the same ERP Order ID (a data quality problem), Salesforce returns `HTTP 300 MULTIPLE_CHOICES` rather than silently creating a third record. The ERP error handler logs this for human review.
-
-**Why it works:** The upsert endpoint performs a deterministic three-way branch — 0 matches insert, 1 match update, 2+ matches error — entirely based on the External ID value. The outcome of sending the same payload twice is identical to sending it once. The External ID field's `unique=true` constraint prevents the 2+ match case from occurring under normal conditions.
+**Why it works:** External ID upsert is inherently idempotent — 0 matches inserts, 1 match updates. The External ID field's UNIQUE constraint ensures 2+ match conditions cannot exist if the field is properly maintained.
 
 ---
 
-## Example 2: Platform Event Subscriber with ReplayId Checkpoint
+## Example 2: Platform Event Publish Immediately Delivering Orphan Events
 
-**Context:** A Salesforce org publishes `Payment_Processed__e` Platform Events when payments are confirmed. A subscriber Apex trigger receives these events and creates `Cash_Receipt__c` records. The subscriber has experienced downtime due to a deployment. During the outage, several Payment events were published and retained on the bus. On restart, the subscriber must process those missed events exactly once — not skip them, not re-process events it already handled before the outage.
+**Context:** An Apex trigger on Opportunity publishes a `DealClosed__e` Platform Event when an Opportunity reaches "Closed Won." Downstream subscribers process the event to trigger customer onboarding workflows. Occasionally, customers report being contacted for onboarding on deals that the sales team says were not actually closed — they were closed by mistake and then rolled back.
 
-**Problem:** On restart, the subscriber re-subscribes from ReplayId `-2` (tip of the queue), which skips all events published during the downtime. Cash receipts are never created for payments processed during the outage. Alternatively, if the team tries to fix this by subscribing from `-1` (all retained events), the subscriber re-processes every event from the last 3 days and creates duplicate Cash Receipt records.
+**Problem:** The Apex trigger uses `EventBus.publish()` with the default Publish Immediately setting. The event is published as soon as the trigger runs. If a subsequent trigger or validation on the same transaction fails and the transaction rolls back, the event has already been delivered to subscribers. The Opportunity was never actually saved as Closed Won, but the subscriber processed the onboarding workflow.
 
 **Solution:**
 
-Step 1 — Ensure the Platform Event uses "Publish After Commit":
-
-```
-Setup → Platform Events → Payment_Processed__e → Edit
-Publish Behavior: Publish After Commit   ← change from default "Publish Immediately"
-```
-
-Step 2 — Create a checkpoint object to persist the last processed ReplayId:
-
-```xml
-<!-- Event_Replay_Checkpoint__c.object-meta.xml snippet -->
-<fields>
-    <fullName>Channel_Name__c</fullName>
-    <type>Text</type>
-    <length>255</length>
-    <unique>true</unique>
-    <externalId>true</externalId>
-</fields>
-<fields>
-    <fullName>Last_Replay_Id__c</fullName>
-    <type>Text</type>
-    <length>50</length>
-</fields>
-```
-
-Step 3 — Subscriber Apex trigger with idempotent processing and checkpoint write:
+Change all `DealClosed__e` publishes to use Publish After Commit:
 
 ```apex
-trigger PaymentProcessedSubscriber on Payment_Processed__e (after insert) {
-    List<Cash_Receipt__c> receiptsToUpsert = new List<Cash_Receipt__c>();
-
-    for (Payment_Processed__e event : Trigger.new) {
-        // Build the Cash Receipt using the payment's stable ID as External ID
-        // so that re-delivery of the same event upserts rather than inserts.
-        Cash_Receipt__c receipt = new Cash_Receipt__c(
-            Payment_External_Id__c = event.Payment_Id__c,  // External ID field
-            Amount__c              = event.Amount__c,
-            Payment_Date__c        = event.Payment_Date__c
-        );
-        receiptsToUpsert.add(receipt);
+// Before (Publish Immediately — risky)
+trigger OpportunityTrigger on Opportunity (after update) {
+    for (Opportunity opp : Trigger.new) {
+        if (opp.StageName == 'Closed Won') {
+            EventBus.publish(new DealClosed__e(
+                OpportunityId__c = opp.Id,
+                AccountId__c = opp.AccountId
+            ));
+        }
     }
+}
 
-    // Use upsert with the External ID field — safe to run on re-delivery
-    Schema.SObjectField extIdField =
-        Cash_Receipt__c.Payment_External_Id__c.getDescribe().getSObjectField();
-    Database.upsert(receiptsToUpsert, extIdField, false);
-
-    // Write checkpoint AFTER successful processing
-    String lastReplayId = String.valueOf(
-        Trigger.new[Trigger.new.size() - 1].ReplayId
-    );
-    Event_Replay_Checkpoint__c checkpoint = new Event_Replay_Checkpoint__c(
-        Channel_Name__c  = 'Payment_Processed__e',
-        Last_Replay_Id__c = lastReplayId
-    );
-    upsert checkpoint Event_Replay_Checkpoint__c.Channel_Name__c;
+// After (Publish After Commit — safe)
+trigger OpportunityTrigger on Opportunity (after update) {
+    List<DealClosed__e> events = new List<DealClosed__e>();
+    for (Opportunity opp : Trigger.new) {
+        if (opp.StageName == 'Closed Won') {
+            events.add(new DealClosed__e(
+                OpportunityId__c = opp.Id,
+                AccountId__c = opp.AccountId,
+                PublishBehavior = 'PublishAfterCommit'
+            ));
+        }
+    }
+    EventBus.publish(events);
 }
 ```
 
-Step 4 — On subscriber restart, the CometD client reads the stored `Last_Replay_Id__c` and subscribes from that position, replaying only events published after the last successfully processed one.
-
-**Why it works:** Two complementary idempotency guards work together. The Platform Event's "Publish After Commit" setting ensures no phantom events are delivered. The `Database.upsert()` with the External ID field in the subscriber ensures that if the same event is delivered twice (at-least-once delivery), the second delivery updates the existing Cash Receipt rather than creating a duplicate. The checkpoint written after processing ensures that the subscriber resumes from precisely the right position, not from an arbitrary fixed point.
+**Why it works:** Publish After Commit holds the event until the DML transaction fully commits. If the transaction rolls back for any reason, the event is discarded — no subscriber receives it.
 
 ---
 
-## Anti-Pattern: Idempotency Key Generated at Callout Time
+## Anti-Pattern: Generating a New Idempotency Key on Each Retry
 
-**What practitioners do:** Generate a UUID inside the callout method body on every execution:
+**What practitioners do:** A middleware integration generates a UUID for each API call attempt:
 
-```apex
-// WRONG: key is regenerated on each execution attempt
-public void execute(QueueableContext ctx) {
-    String idempotencyKey = UUID.randomUUID().toString(); // new key every time
-    HttpRequest req = new HttpRequest();
-    req.setHeader('X-Idempotency-Key', idempotencyKey);
-    req.setBody(buildPayload(this.orderId));
-    new Http().send(req);
-}
+```python
+# Wrong — new UUID per retry
+for attempt in range(1, max_retries + 1):
+    idempotency_key = str(uuid.uuid4())  # New UUID every time
+    headers = {"X-Idempotency-Key": idempotency_key}
+    response = requests.post(salesforce_url, headers=headers, json=payload)
+    if response.ok:
+        break
 ```
 
-**What goes wrong:** Each execution attempt — including every retry — sends a different `X-Idempotency-Key`. The external payment processor treats each attempt as a distinct new charge because it has never seen that key before. The result is multiple charges for the same order, or multiple shipments, or multiple ERP entries. The logs show one Salesforce Queueable job; the external system shows three charges.
+**What goes wrong:** Each retry sends a different `X-Idempotency-Key`. Salesforce's idempotency log treats each key as a unique operation. Every retry that succeeds creates another record. After 3 retries, 3 records exist.
 
-**Correct approach:** Generate the key exactly once when the work item is first enqueued, persist it to the triggering record, and read it on every attempt:
+**Correct approach:** Generate the idempotency key once before the first attempt and reuse it for all retries:
 
-```apex
-// CORRECT: key generated once at enqueue time, stored in Order__c.Callout_Idempotency_Key__c
-public void execute(QueueableContext ctx) {
-    Order__c order = [
-        SELECT Id, Callout_Idempotency_Key__c
-        FROM Order__c
-        WHERE Id = :this.orderId
-        LIMIT 1
-    ];
-    // Key already exists from when the job was enqueued
-    HttpRequest req = new HttpRequest();
-    req.setHeader('X-Idempotency-Key', order.Callout_Idempotency_Key__c);
-    req.setBody(buildPayload(order));
-    new Http().send(req);
-}
+```python
+# Correct — key generated once before all retries
+idempotency_key = str(uuid.uuid4())  # Generated once
 
-// Enqueue method — called once when the order transitions to "Ready to Charge"
-public static void enqueue(Id orderId) {
-    Order__c order = [SELECT Id FROM Order__c WHERE Id = :orderId];
-    order.Callout_Idempotency_Key__c = generateStableKey(orderId);
-    update order;
-    System.enqueueJob(new PaymentCalloutQueueable(orderId));
-}
+for attempt in range(1, max_retries + 1):
+    headers = {"X-Idempotency-Key": idempotency_key}  # Same key every retry
+    response = requests.post(salesforce_url, headers=headers, json=payload)
+    if response.ok:
+        break
+    time.sleep(2 ** attempt)  # Exponential backoff
 ```
+
+The server-side idempotency log finds the same key on every retry and returns the prior result without creating additional records.

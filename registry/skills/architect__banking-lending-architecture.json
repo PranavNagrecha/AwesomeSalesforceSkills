@@ -1,0 +1,107 @@
+{
+  "category": "architect",
+  "chunk_ids": [
+    "0ba56ccb489f99269a0e",
+    "0c2effcdb09b4c8c9971",
+    "10df1c8d9b1380fb7da8",
+    "18fe1c2d910151966076",
+    "1d58e7dc6f1bf938071d",
+    "222096bf523c4b5aab81",
+    "26287611bec0b47b1da1",
+    "2844acc8677cca014651",
+    "3d88bebc435431069f99",
+    "45db32de5660094c75a0",
+    "462cd09e7224cd9bf5fd",
+    "48c2b0c5409e4be7449f",
+    "4cc9dc5bfc60850e44b1",
+    "5b76fba69a549b532a40",
+    "642310756a0d3a6c7e60",
+    "6482b07ccac2cc66c055",
+    "67771a0ecfd124f32e30",
+    "6c88b22b6d52ca285f85",
+    "729273561cf06c16fda4",
+    "759a29cdeea53a763039",
+    "75ee48f93e09818f34b6",
+    "79b4600a3cd66667e6b9",
+    "7fec4bb554f70773c540",
+    "8a395e94180be13775a5",
+    "8d95803afd654a2b357e",
+    "926021531c4f8cbb47d8",
+    "9264e97ed58eab5c4e71",
+    "9687aa255681487b5cf0",
+    "9b2e2d34b71b1c03d0d3",
+    "9bf2f99f2b926aa3eda5",
+    "9eca8e31771e29e339f0",
+    "a4983d87b185b51f98ab",
+    "ab55f746446a285c0ed4",
+    "adf3d2369c1a840a9553",
+    "b15a9ae91037a515fed3",
+    "b1e603fbaecd87ef7639",
+    "b4daa5d85b15ea6dc56d",
+    "b727912e6fa495d442aa",
+    "bb838afe290fdeafef41",
+    "c0154fd10030105bc7ae",
+    "c5197678a37bdfccc9a1",
+    "cc5a304d68f814649c0c",
+    "cf9fe2d2e83ccc6b41c1",
+    "df34595d74cdb3433905",
+    "e1df6a521fe2c7e6b2ca",
+    "e4845f2d08ede45809eb",
+    "f762b95c309b77534147",
+    "f77b525b4860dea47309",
+    "fa80bc4c732ef8ef2729",
+    "fc03ef19068588f1cb9d",
+    "fc87ecc9d2d09e2496bf",
+    "fe1de896d1498eaa029b"
+  ],
+  "content_hash": "3074376d2fe9a4e6dc0d7a3b9b1a69bab938ad7e3f3e0b85e5991b8b57acc7e2",
+  "dependencies": [
+    "fsc-architecture-patterns"
+  ],
+  "description": "Architecture guidance for Salesforce FSC banking and Digital Lending: loan origination platform design, ResidentialLoanApplication data model, payment processing integration patterns, and account servicing workflow architecture. NOT for implementation-level OmniScript development, FSC Insurance Cloud, or generic CRM data modeling.",
+  "file_location": "skills/architect/banking-lending-architecture",
+  "id": "architect/banking-lending-architecture",
+  "inputs": [
+    "Banking capabilities required: loan origination, account servicing, payment processing",
+    "Org license type (base FSC vs Digital Lending add-on)",
+    "OmniStudio availability (required for Digital Lending)",
+    "External system landscape: core banking, payment processor, credit bureau integrations"
+  ],
+  "name": "banking-lending-architecture",
+  "official_sources": [
+    "Financial Services Cloud Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.financial_services_cloud_dev.meta/financial_services_cloud_dev/fsc_dev_intro.htm",
+    "Financial Services Cloud Data Model Gallery \u2014 https://architect.salesforce.com/diagrams/framework/financial-services-cloud-data-model",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
+    "FSC Digital Lending Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.industries_reference.meta/industries_reference/digital_lending_overview.htm"
+  ],
+  "outputs": [
+    "Lending architecture decision matrix",
+    "ResidentialLoanApplication data model design",
+    "Payment integration pattern selection",
+    "OmniStudio prerequisite checklist for Digital Lending"
+  ],
+  "references": [
+    "skills/architect/banking-lending-architecture/references/examples.md",
+    "skills/architect/banking-lending-architecture/references/gotchas.md",
+    "skills/architect/banking-lending-architecture/references/llm-anti-patterns.md",
+    "skills/architect/banking-lending-architecture/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/architect/banking-lending-architecture/scripts/check_banking_lending_architecture.py"
+  ],
+  "tags": [
+    "banking",
+    "lending",
+    "fsc",
+    "digital-lending",
+    "loan-origination",
+    "financial-services-cloud",
+    "architecture"
+  ],
+  "templates": [
+    "skills/architect/banking-lending-architecture/templates/banking-lending-architecture-template.md"
+  ],
+  "updated": "2026-04-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

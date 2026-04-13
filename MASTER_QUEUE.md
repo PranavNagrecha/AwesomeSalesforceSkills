@@ -58,9 +58,9 @@ STATUS KEY:
 | 10 | Nonprofit Cloud (NPSP) | 5 roles | 23 | 16 | 7 |
 | 11 | Commerce Cloud | 5 roles | 25 | 21 | 4 |
 | 12 | Agentforce / Einstein AI | 5 roles | 22 | 12 | 10 |
-| 13 | OmniStudio / Industries | 5 roles | 22 | 4 | 18 |
-| 14 | CRM Analytics / Tableau | 5 roles | 24 | 3 | 21 |
-| 15 | Integration (Cloud-Specific) | 5 roles | 23 | 6 | 17 |
+| 13 | OmniStudio / Industries | 5 roles | 22 | 6 | 16 |
+| 14 | CRM Analytics / Tableau | 5 roles | 24 | 5 | 19 |
+| 15 | Integration (Cloud-Specific) | 5 roles | 23 | 12 | 11 |
 | 16 | DevOps (Cloud-Specific) | 5 roles | 22 | 0 | 22 |
 | 17 | Data Cloud | 3 roles | 13 | 0 | 13 |
 | 18 | Slack Integration | — | 5 | 0 | 5 |
