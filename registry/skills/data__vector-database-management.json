@@ -1,0 +1,84 @@
+{
+  "category": "data",
+  "chunk_ids": [
+    "00093c6d8af495256e92",
+    "019fe70bdbca1e00a842",
+    "0bb5533f97a14be0456c",
+    "134821f7609e8b5e57e6",
+    "2a0fc322909e16517ae8",
+    "2ac664622ad9458cea57",
+    "300f6b331a9120555718",
+    "34ef457ea23980746ad9",
+    "3781a6c656ee5866eda1",
+    "41f23ba6ba2e114b20f1",
+    "44225be14b8108456f43",
+    "4802bdc1df2d4424b2e9",
+    "4f18ff9fa6d97d60b145",
+    "52d94a255c030e2c89a1",
+    "546a7920be8bb035ce6a",
+    "5737fd32fb630b5bce01",
+    "5791c2254dcfd6aabf61",
+    "58006208f80c278d0aa9",
+    "5c348130464c94799c63",
+    "6f22d30127fc227f9c3a",
+    "8c097a3e07a34bcfe8ed",
+    "91bc0240efd26c9457d3",
+    "92d963159989d9ca3a29",
+    "976f1b866fb6381af869",
+    "9a20557d0fae559c33df",
+    "afadb6b6e91963539520",
+    "b00b68510e95ca2f2de2",
+    "b35aa19ec818d72630b2",
+    "bf50ce07fec283928229",
+    "c23781dc200f18a9a2ae",
+    "c284f0ec30336f58dcfc",
+    "c2a7d774e47fc97e9653",
+    "c9879ecfd131b19b0a41",
+    "cb60506acd8b89ba7e20",
+    "d15938b4e2df6b14b38f",
+    "d40041a745a5ba877004",
+    "d7fe01db011bff84e3a3",
+    "e01e34a620793ac1fd0e",
+    "e068fb717ab6aa8acaea",
+    "e7fca25c826fdec6b2f3",
+    "ec9656157077ec07be40",
+    "f40b7972097b1184b87b",
+    "feb7e4cdf7a2e334c1b7"
+  ],
+  "content_hash": "1463a378b010598591d0c6d0616b76c03ff179d4490b67ba2e5d8096d264b6f6",
+  "dependencies": [],
+  "description": "TODO: One sentence explaining when to use this skill and its main trigger keywords. NOT for TODO: explicit scope exclusion \u2014 what does this skill NOT cover.",
+  "file_location": "skills/data/vector-database-management",
+  "id": "data/vector-database-management",
+  "inputs": [
+    "TODO: context or information this skill needs to work"
+  ],
+  "name": "vector-database-management",
+  "official_sources": [
+    "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
+    "Bulk API 2.0 Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/asynch_api_intro.htm",
+    "Data Loader Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.data_loader.htm&type=5"
+  ],
+  "outputs": [
+    "TODO: artifact or guidance this skill produces"
+  ],
+  "references": [
+    "skills/data/vector-database-management/references/examples.md",
+    "skills/data/vector-database-management/references/gotchas.md",
+    "skills/data/vector-database-management/references/llm-anti-patterns.md",
+    "skills/data/vector-database-management/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/data/vector-database-management/scripts/check_vector_database_management.py"
+  ],
+  "tags": [
+    "vector-database-management",
+    "TODO_TAG_2"
+  ],
+  "templates": [
+    "skills/data/vector-database-management/templates/vector-database-management-template.md"
+  ],
+  "updated": "2026-04-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

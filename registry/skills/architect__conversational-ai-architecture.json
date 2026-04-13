@@ -1,0 +1,82 @@
+{
+  "category": "architect",
+  "chunk_ids": [
+    "04421ad83884d793866e",
+    "04f7b22ab9568d7428e0",
+    "05d01cfe7ad236ba7bc9",
+    "19ecb4283737ca33392d",
+    "2cfcb858e8d0c1d3b94f",
+    "33cbf1a7ea466254767f",
+    "3ff8fdcee271cf91f874",
+    "40cb1bcdd961d98d36be",
+    "42d43c09735b6c2308b4",
+    "4a7095ff3079d8738d53",
+    "4be9eac136e095e05e6a",
+    "52468fd2853d9b6809ea",
+    "53294d4470c97bf7c5f3",
+    "5449b6dfb96ce13aa7be",
+    "55aced0f248414bc71b8",
+    "61bdf6a332e3cd79e0f0",
+    "63123613fb7545e82b8c",
+    "675f4bdf6e3996fbf03b",
+    "6953c65fb07cd2deb47c",
+    "79481915463e175a0a2f",
+    "888be9679503b7eac8f7",
+    "92c6fbbaa15fd987cc34",
+    "9ed017f94b4b69f524cc",
+    "9fefdef2eeb5463ee4c8",
+    "a7921d342d4773a045e3",
+    "a954b9beb77c46a67caa",
+    "acb4bb5c2ac4a4321c46",
+    "af559adbe8ba3fc7b8e2",
+    "b7db0bf80e0677369a6f",
+    "b84aa0791f706b23af47",
+    "b88fe16cc481e727a91e",
+    "c00600206985a0888c29",
+    "c0ff6c17eabcc71059b6",
+    "c2cf48d95354d08dc356",
+    "c67d170e1f4969ee2417",
+    "da60f1e3e332f84b6ea9",
+    "e49e63d65360da0fe300",
+    "e5e1fc4b580c8e2de10c",
+    "f315357571b0902e72af",
+    "f747d19c6f47fbb0f1b2",
+    "fb874dbbe2178deeb44a",
+    "fd30d4ff7182ba333d04",
+    "fe9b9ad452f017f028e1"
+  ],
+  "content_hash": "35cb47aca70f61dbece5055c393e075c2c832d7b951cbbefb084993748bc52df",
+  "dependencies": [],
+  "description": "TODO: One sentence explaining when to use this skill and its main trigger keywords. NOT for TODO: explicit scope exclusion \u2014 what does this skill NOT cover.",
+  "file_location": "skills/architect/conversational-ai-architecture",
+  "id": "architect/conversational-ai-architecture",
+  "inputs": [
+    "TODO: context or information this skill needs to work"
+  ],
+  "name": "conversational-ai-architecture",
+  "official_sources": [
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "TODO: artifact or guidance this skill produces"
+  ],
+  "references": [
+    "skills/architect/conversational-ai-architecture/references/examples.md",
+    "skills/architect/conversational-ai-architecture/references/gotchas.md",
+    "skills/architect/conversational-ai-architecture/references/llm-anti-patterns.md",
+    "skills/architect/conversational-ai-architecture/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/architect/conversational-ai-architecture/scripts/check_conversational_ai_architecture.py"
+  ],
+  "tags": [
+    "conversational-ai-architecture",
+    "TODO_TAG_2"
+  ],
+  "templates": [
+    "skills/architect/conversational-ai-architecture/templates/conversational-ai-architecture-template.md"
+  ],
+  "updated": "2026-04-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

@@ -1,0 +1,113 @@
+{
+  "category": "architect",
+  "chunk_ids": [
+    "01d5cfd64418735e3918",
+    "0a7ec13b32043f12031c",
+    "0eb211e5da04225b1526",
+    "129a169a40da1365a271",
+    "157da3e7e4dd82407895",
+    "164e97a5fbd7f2c19764",
+    "1ad335837dc0e8e49b7b",
+    "1f5465bf50021b2ea55e",
+    "1fb79cc1a17a3c604f0e",
+    "209775f3f75577457d5a",
+    "21d565538626a46c28cb",
+    "2c919a7c059b6715ece3",
+    "313a3969276d04cb3ad1",
+    "3698602add71e04eb1ba",
+    "3fbee7bcafdf8e0f0e9d",
+    "431df33a4eb4c360fa88",
+    "4a5b92b605df4e935576",
+    "51ab267262389fd7b2ad",
+    "523bf55059b1e37fb480",
+    "52cfda3efd84ced5556d",
+    "53e27e5aa3ec229a8dbd",
+    "607fcf5c5cf9240c6171",
+    "624cf0e6a52f140feb64",
+    "65ece036271c923c069e",
+    "673e71ac60bb695f2d02",
+    "6bcb28ebf51467ac5707",
+    "6e8cf7375ca2437e2ba1",
+    "7904912e5d2a112f57c9",
+    "7cb5b84524d1be391ddf",
+    "7f74fb23e6db5af15971",
+    "8c74188c1c6dcc615aef",
+    "91c1672b0402c1ae3340",
+    "93f17d2ed6596856b488",
+    "9612ac192407704d112e",
+    "98696a16c791aa2cb884",
+    "9c57617c29add40fafe5",
+    "b03a3cd4a2d23885f968",
+    "b240b081ff64b1aec75f",
+    "bddafc85888edacad26e",
+    "c75bca5d83d041193503",
+    "c9a6fdf9c2e32f4147a3",
+    "cdbc19146cdab5df8ca7",
+    "cdf3cdaea3e8fb7fa736",
+    "d665343aa4a4fd91f6e6",
+    "e0ab7fd50d2549bb61df",
+    "e200a2bea068bf567c6c",
+    "e22d2eb1ed07b447aa6d",
+    "e65e2911d2527580d0c6",
+    "ece27c3b4df6788f064f",
+    "eda60c48c1ee36576c7d",
+    "eeaf4cae19d6b6011971",
+    "f2957fb14b586a436174",
+    "f58f493950c7e9bec855",
+    "f6d1e880504651ace165",
+    "fa082b1e8e33a30b5f1e",
+    "fde3a619a88c2880b2ce",
+    "fe62710a205e102be986"
+  ],
+  "content_hash": "27fdbc3e853f18625a89ce909661dff939e52e014f5786682e852281c24b8d75",
+  "dependencies": [
+    "fsc-architecture-patterns",
+    "industries-insurance-setup"
+  ],
+  "description": "Architecture guidance for Salesforce Insurance Cloud on FSC: module licensing strategy, policy administration object model, claims processing workflow design, underwriting rule integration, and channel routing. NOT for Health Cloud payer architecture, FSC retail banking, or implementation-level OmniScript development.",
+  "file_location": "skills/architect/insurance-cloud-architecture",
+  "id": "architect/insurance-cloud-architecture",
+  "inputs": [
+    "List of required insurance capabilities (brokerage, claims, policy admin, group benefits)",
+    "Org FSC license type (base FSC vs Industries Insurance add-on)",
+    "Integration requirements for external policy administration or rating engines",
+    "Channel requirements (agent portal, customer portal, contact center)"
+  ],
+  "name": "insurance-cloud-architecture",
+  "official_sources": [
+    "Salesforce Insurance Developer Guide v66.0 \u2014 https://developer.salesforce.com/docs/atlas.en-us.insurance_dev.meta/insurance_dev/insurance_dev_intro.htm",
+    "Get Started With Financial Services Cloud for Insurance \u2014 https://help.salesforce.com/s/articleView?id=sf.fsc_admin_insurance_getting_started.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
+    "FSC Compliant Data Sharing \u2014 https://help.salesforce.com/s/articleView?id=sf.fsc_admin_compliant_data_sharing.htm"
+  ],
+  "outputs": [
+    "Insurance module licensing decision matrix",
+    "Insurance data model architecture diagram (objects and relationships)",
+    "Claims and underwriting workflow design",
+    "ConnectAPI namespace mapping by module"
+  ],
+  "references": [
+    "skills/architect/insurance-cloud-architecture/references/examples.md",
+    "skills/architect/insurance-cloud-architecture/references/gotchas.md",
+    "skills/architect/insurance-cloud-architecture/references/llm-anti-patterns.md",
+    "skills/architect/insurance-cloud-architecture/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/architect/insurance-cloud-architecture/scripts/check_insurance_cloud_architecture.py"
+  ],
+  "tags": [
+    "insurance-cloud",
+    "fsc",
+    "financial-services-cloud",
+    "architecture",
+    "underwriting",
+    "claims",
+    "policy-administration"
+  ],
+  "templates": [
+    "skills/architect/insurance-cloud-architecture/templates/insurance-cloud-architecture-template.md"
+  ],
+  "updated": "2026-04-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

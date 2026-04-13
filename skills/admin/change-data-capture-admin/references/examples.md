@@ -1,123 +1,56 @@
 # Examples — Change Data Capture Admin
 
-## Example 1: Enabling CDC for a Custom Object with Enrichment on a Custom Channel
+## Example 1: Data Cloud Silently Adding CDC Entity Selections
 
-**Scenario:** A warehouse management system needs to receive Salesforce Inventory__c record changes enriched with the Warehouse_Location__c and Product_Name__c fields so it does not have to issue a follow-up REST query per event.
+**Context:** A Salesforce admin enables CDC for Account, Contact, and Opportunity objects in Setup > Integrations > Change Data Capture. Three months later, the admin reviews the CDC entity selection and finds six additional objects enabled: Lead, Order, Product2, Pricebook2, and two custom objects. The admin did not configure these.
 
-**Problem:** The team initially enables Inventory__c via Setup > Integrations > Change Data Capture and tries to add enriched fields through the UI. The Setup UI provides no enrichment configuration option, and attempting to add enrichment to the default `/data/Inventory__ChangeEvent` per-object channel via Metadata API silently fails — the enrichment records are created but ignored at delivery time.
+**Problem:** The org has Data Cloud active with several CRM Data Streams. When Data Cloud processes a CRM Data Stream for an object, it automatically adds that object to its internal `DataCloudEntities` channel by creating `PlatformEventChannelMember` records. These appear in the CDC setup UI but are managed by Data Cloud.
 
 **Solution:**
 
-Create a dedicated custom channel and configure enrichment through `PlatformEventChannelMember` with `EnrichedField` children:
+1. Do NOT deselect these objects from CDC setup without checking Data Cloud first.
+2. In Data Cloud Admin (Setup > Data Cloud > Data Streams), review which Salesforce objects have active CRM Data Streams.
+3. The objects Data Cloud added to CDC should match the CRM Data Stream sources.
+4. If a specific object's CDC is no longer needed by Data Cloud, remove the CRM Data Stream in Data Cloud Admin — this will automatically remove the CDC selection.
+5. Never use Metadata API to delete `PlatformEventChannelMember` records for channels named `DataCloudEntities`.
 
-`PlatformEventChannel` metadata (`WMS_Sync__chn.platformEventChannel`):
+**Why it works:** Data Cloud manages its own CDC requirements. Coordinating CDC changes through Data Cloud Admin ensures the sync pipeline is not disrupted.
 
+---
+
+## Example 2: Enrichment Not Working on Per-Object CDC Channel
+
+**Context:** An integration team requests that CDC events for Account records include the Account Owner's Region field (a field on the User object). The admin attempts to add an `EnrichedField` to the `AccountChangeEvent` channel via the Tooling API.
+
+**Problem:** The Tooling API returns an error or the enrichment silently has no effect. Per-object channels (`/data/AccountChangeEvent`) do not support enrichment.
+
+**Solution:**
+
+Create a multi-entity custom channel:
+
+1. Via Tooling API or metadata, create a `PlatformEventChannel`:
 ```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<PlatformEventChannel xmlns="http://soap.sforce.com/2006/04/metadata">
+<PlatformEventChannel>
     <channelType>data</channelType>
-    <label>WMS Sync</label>
+    <label>Account Enriched Channel</label>
+    <masterLabel>Account_Enriched_Channel</masterLabel>
 </PlatformEventChannel>
 ```
 
-`PlatformEventChannelMember` metadata (`WMS_Sync__chn-Inventory__c.platformEventChannelMember`):
+2. Create a `PlatformEventChannelMember` linking Account to the custom channel.
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<PlatformEventChannelMember xmlns="http://soap.sforce.com/2006/04/metadata">
-    <eventChannel>WMS_Sync__chn</eventChannel>
-    <selectedEntity>Inventory__c</selectedEntity>
-    <enrichedFields>
-        <name>Warehouse_Location__c</name>
-    </enrichedFields>
-    <enrichedFields>
-        <name>Product_Name__c</name>
-    </enrichedFields>
-</PlatformEventChannelMember>
-```
+3. Create an `EnrichedField` record on the member for `Owner.Region` (the field path through the relationship).
 
-Deploy both files:
+4. Subscribe the integration to the custom channel URL instead of `/data/AccountChangeEvent`.
 
-```bash
-sf project deploy start --source-dir force-app/main/default/platformEventChannels
-```
-
-Verify via Tooling API that enrichment records exist:
-
-```soql
-SELECT Id, Name, PlatformEventChannelMemberId
-FROM EnrichedField
-WHERE PlatformEventChannelMember.EventChannel.Name = 'WMS_Sync__chn'
-```
-
-**Why it works:** Enrichment is only supported on `PlatformEventChannelMember` records in custom multi-entity channels. The subscriber on `/data/WMS_Sync__chn` receives the full Warehouse_Location__c and Product_Name__c values in each event payload, regardless of whether those fields were part of the originating DML change.
+**Why it works:** Enrichment is only supported on custom multi-entity `PlatformEventChannel` records. Per-object channels are read-only system channels that do not support member or enrichment configuration.
 
 ---
 
-## Example 2: Auditing CDC Coverage When Data Cloud Is Active
+## Anti-Pattern: Not Monitoring PlatformEventUsageMetric for CDC-Heavy Orgs
 
-**Scenario:** An org uses both a custom ERP sync CDC channel and Data Cloud CRM Data Streams. A new team member assumes the Setup UI shows all enabled objects and misses entities that Data Cloud added to the `DataCloudEntities` channel. They then try to remove an entity from the `DataCloudEntities` channel via Metadata API to "clean up" what they believe is a duplicate, breaking Data Cloud sync.
+**What practitioners do:** Enable CDC for 15 high-volume Salesforce objects (Opportunity, Lead, Case, Contact, Account, Task, Event, and 8 custom objects) in a production Enterprise org (25,000 event daily limit) without configuring any usage monitoring.
 
-**Problem:** The Change Data Capture Setup page only reflects the default `ChangeEvents` channel. Custom channel members and `DataCloudEntities` channel members are invisible in the UI, creating a false audit baseline.
+**What goes wrong:** During a high-volume period (month-end close), the org generates 30,000 CDC events in a single day. After the 25,000 limit is reached (around 4 PM), all subsequent CDC events are silently dropped. Downstream integrations receive no notification — they simply stop receiving updates for the remainder of the day. Business teams discover stale data the next morning.
 
-**Solution:**
-
-Perform a full audit using Tooling API before making any channel modifications:
-
-```soql
-SELECT QualifiedApiName, PlatformEventChannelId,
-       PlatformEventChannel.MasterLabel, PlatformEventChannel.ChannelType
-FROM PlatformEventChannelMember
-ORDER BY PlatformEventChannel.MasterLabel, QualifiedApiName
-```
-
-To isolate Data Cloud-managed selections specifically:
-
-```soql
-SELECT QualifiedApiName
-FROM PlatformEventChannelMember
-WHERE PlatformEventChannel.MasterLabel = 'DataCloudEntities'
-```
-
-After running the audit, document which entities appear in each channel. Apply this rule:
-- Entities in `DataCloudEntities` — do not modify; manage only through Data Cloud CRM Data Stream configuration.
-- Entities in custom channels — manage via Metadata API deployment.
-- Entities in the default `ChangeEvents` channel — manage via Setup UI or Metadata API.
-
-**Why it works:** Tooling API provides a complete view across all channel types. Respecting the `DataCloudEntities` channel as Data Cloud-owned prevents silent data sync breakage that has no immediate error but surfaces as stale CRM data in Data Cloud analytics.
-
----
-
-## Example 3: Monitoring Delivery Allocation Before the Daily Cap Is Reached
-
-**Scenario:** An Enterprise Edition org (25,000 events/24h limit) is approaching its daily CDC delivery limit during peak hours. The team has no monitoring in place and discovers the cap only after subscribers stop receiving events.
-
-**Problem:** CDC event delivery stops silently when the daily allocation is exhausted. Salesforce does not send a proactive alert unless monitoring is configured.
-
-**Solution:**
-
-Query `PlatformEventUsageMetric` daily to track consumption:
-
-```soql
-SELECT Name, Value, StartDate, EndDate
-FROM PlatformEventUsageMetric
-WHERE Name = 'CDC Event Notifications Delivered'
-ORDER BY StartDate DESC
-LIMIT 7
-```
-
-Set up a scheduled Flow or Apex job that runs this query daily and sends an alert when `Value` exceeds 80% of the org's edition allocation (20,000 for Enterprise Edition).
-
-Additionally, consider reducing per-subscriber delivery volume by routing high-volume consumers to a single dedicated custom channel with server-side entity filtering instead of subscribing multiple clients to the default `ChangeEvents` channel.
-
-**Why it works:** `PlatformEventUsageMetric` is the only supported Salesforce-native mechanism for tracking CDC delivery consumption without enabling third-party monitoring tools. Alerting at 80% provides time to investigate and reduce subscriber count or purchase the add-on before delivery halts.
-
----
-
-## Anti-Pattern: Adding Enrichment to the Default Per-Object Channel
-
-**What practitioners do:** After enabling an object in Setup, they create `EnrichedField` records on the `PlatformEventChannelMember` for `/data/AccountChangeEvent` using Metadata API or Tooling API, expecting the enriched fields to appear in the standard per-object channel's event payload.
-
-**What goes wrong:** Enrichment is silently ignored on standard per-object channels. The metadata deployment succeeds, the `EnrichedField` records persist, but the delivered event payloads do not include the enriched field values. The subscriber receives only changed field values as with a non-enriched subscription, with no error surfaced.
-
-**Correct approach:** Create a custom `PlatformEventChannel`, assign the target entity via `PlatformEventChannelMember`, and configure `EnrichedField` children on that channel member. Route the subscriber to the custom channel path (e.g., `/data/Account_Enriched__chn`) instead of the standard per-object channel.
+**Correct approach:** Before enabling CDC for multiple high-volume objects, estimate daily event volume (based on historical record modification frequency) and compare against the edition limit. Set up a daily `PlatformEventUsageMetric` report or scheduled Apex job that alerts when CDC usage exceeds 70% of the daily limit. For orgs approaching the edition limit, contact Salesforce to discuss capacity upgrade or reduce the number of CDC-enabled objects to essential ones only.

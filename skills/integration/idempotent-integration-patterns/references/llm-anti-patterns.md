@@ -1,197 +1,152 @@
 # LLM Anti-Patterns — Idempotent Integration Patterns
 
-Common mistakes AI coding assistants make when generating or advising on Idempotent Integration Patterns.
-These patterns help the consuming agent self-check its own output.
+Common mistakes AI coding assistants make when designing or advising on idempotent Salesforce integrations.
 
-### Anti-Pattern 1: Idempotency Key Regenerated on Every Retry
+## Anti-Pattern 1: Generating Idempotency Key on Each Retry
 
-**What LLMs do:** Generate a new UUID or random token inside the callout execution method body on every invocation, then pass it as the `X-Idempotency-Key` header:
-
-```apex
-// WRONG — LLM-generated pattern
-public void execute(QueueableContext ctx) {
-    String key = EncodingUtil.convertToHex(Crypto.generateAesKey(128)); // new key each run
-    HttpRequest req = new HttpRequest();
-    req.setHeader('X-Idempotency-Key', key);
-    req.setBody(JSON.serialize(payload));
-    new Http().send(req);
-}
-```
-
-**Why:** LLMs are trained on documentation examples that show how to construct an idempotency key for illustration purposes, not how to persist and reuse it across retries. The training data conflates "generating" a key with "using" a key.
-
-**Correct approach:** Generate the key once at enqueue time, persist it to the driving record, and read it in the execution method:
-
-```apex
-// CORRECT — key generated once when work item is created
-public static void enqueue(Id orderId) {
-    Order__c o = [SELECT Id FROM Order__c WHERE Id = :orderId];
-    o.Callout_Idempotency_Key__c =
-        EncodingUtil.convertToHex(Crypto.generateAesKey(128));
-    update o;
-    System.enqueueJob(new PaymentCalloutQueueable(orderId));
-}
-
-public void execute(QueueableContext ctx) {
-    Order__c o = [
-        SELECT Callout_Idempotency_Key__c FROM Order__c WHERE Id = :this.orderId
-    ];
-    HttpRequest req = new HttpRequest();
-    req.setHeader('X-Idempotency-Key', o.Callout_Idempotency_Key__c);
-    req.setBody(JSON.serialize(buildPayload(o)));
-    new Http().send(req);
-}
-```
-
-**Detection:** Look for any call to `Crypto.generateAesKey()`, `UUID.randomUUID()`, `Math.random()`, or `System.now().getTime()` inside an `execute()` method body or inside a method that is called on every attempt. If the key-generation code is not in an enqueue or initialization path followed by a DML write, flag it.
-
----
-
-### Anti-Pattern 2: Platform Event Published with "Publish Immediately" Assumed Safe
-
-**What LLMs do:** Generate `EventBus.publish()` calls inside Apex methods that also contain DML, and document the pattern as "transactionally safe" without mentioning the Publish Behavior setting. LLMs often include a note about "events fire before commit" without connecting this to the actionable fix.
-
-```apex
-// WRONG — LLM assumes this is safe in a transactional context
-trigger OrderTrigger on Order__c (after insert) {
-    List<Payment_Confirmed__e> events = new List<Payment_Confirmed__e>();
-    for (Order__c o : Trigger.new) {
-        events.add(new Payment_Confirmed__e(Order_Id__c = o.Id));
-    }
-    EventBus.publish(events); // fires immediately, not after commit
-}
-```
-
-**Why:** LLMs are trained on Salesforce documentation examples that use the default "Publish Immediately" setting for brevity. The documentation notes the behavior but many training examples do not model the configuration step needed to change it.
-
-**Correct approach:** Explicitly verify and document the Platform Event's Publish Behavior setting. For any event published inside a transaction that performs DML, the setting must be "Publish After Commit":
-
-```
-Setup → Platform Events → Payment_Confirmed__e → Edit
-Publish Behavior: Publish After Commit
-```
-
-The Apex code itself does not change — `EventBus.publish()` is the same call. The configuration change is at the event definition level, not in the code.
-
-**Detection:** Look for `EventBus.publish()` calls in Apex triggers or methods that also contain DML (`insert`, `update`, `upsert`, `delete`). If the review does not include a note verifying the Platform Event's "Publish Behavior" is "Publish After Commit," flag it.
-
----
-
-### Anti-Pattern 3: Using POST (Insert) Instead of PATCH (Upsert) for Inbound Sync
-
-**What LLMs do:** Generate REST integration code that queries for an existing record and then branches: insert if not found, update if found. This is presented as "idempotent" because it avoids double inserts — but it is not safe under concurrent retries.
+**What the LLM generates:**
 
 ```python
-# WRONG — LLM-generated Python middleware
-existing = sf.query(f"SELECT Id FROM Order__c WHERE ERP_Order_Id__c = '{erp_id}'")
-if existing['totalSize'] == 0:
-    sf.Order__c.create({'ERP_Order_Id__c': erp_id, 'Status__c': 'New'})
-else:
-    sf.Order__c.update(existing['records'][0]['Id'], {'Status__c': 'New'})
+for attempt in range(max_retries):
+    idempotency_key = str(uuid.uuid4())  # New UUID per attempt
+    response = requests.post(url, 
+        headers={"X-Idempotency-Key": idempotency_key},
+        json=payload)
 ```
 
-**Why:** LLMs model CRUD patterns from general programming training data where query-then-branch is a common idiom. The Salesforce External ID upsert endpoint collapses this to one atomic operation, but LLMs do not consistently prefer it because the REST upsert endpoint is less prominent in training data than basic CRUD examples.
+**Why it happens:** LLMs apply the general pattern of adding an idempotency key header without understanding the requirement that the key must be pre-generated and stable across all retries.
 
-**Correct approach:** Use the External ID upsert endpoint directly — one call, one atomic operation:
+**Correct pattern:**
 
 ```python
-# CORRECT — single atomic upsert via External ID
-sf.Order__c.upsert(
-    'ERP_Order_Id__c',
-    erp_id,
-    {'Status__c': 'New', 'ERP_Order_Id__c': erp_id}
-)
-# Equivalent REST call:
-# PATCH /services/data/v59.0/sobjects/Order__c/ERP_Order_Id__c/{erp_id}
+# Generate ONCE before the retry loop
+idempotency_key = str(uuid.uuid4())  # Single key for this logical operation
+
+for attempt in range(max_retries):
+    response = requests.post(url, 
+        headers={"X-Idempotency-Key": idempotency_key},  # Same key every retry
+        json=payload)
+    if response.ok:
+        break
+    time.sleep(2 ** attempt)
 ```
 
-**Detection:** Look for a SOQL query (`SELECT Id FROM ... WHERE ExternalIdField__c = ...`) immediately followed by a conditional `insert`/`create` and `update`. This pattern should be replaced with an External ID upsert.
+**Detection hint:** Any retry loop that generates `uuid.uuid4()` or an equivalent random key inside the loop body.
 
 ---
 
-### Anti-Pattern 4: ReplayId Checkpoint Written Before Processing
+## Anti-Pattern 2: Using POST Instead of PATCH for Idempotent Inbound Record Writes
 
-**What LLMs do:** Generate Platform Event subscriber code that stores the ReplayId at the start of the trigger body to "mark the event as seen" and prevent re-processing. When processing fails after the checkpoint write, the failed event is permanently skipped.
+**What the LLM generates:** "Use the Salesforce REST API POST endpoint to create Account records: `POST /services/data/v63.0/sobjects/Account`"
+
+**Why it happens:** POST is the standard REST verb for creating resources. LLMs default to it without knowing that PATCH with External ID is the idempotent alternative.
+
+**Correct pattern:**
+
+```
+For idempotent inbound record writes:
+1. Create a custom External ID field: ExternalId__c (Text, External ID: true, Unique: true)
+2. Use PATCH with the External ID value:
+   PATCH /services/data/v63.0/sobjects/Account/ExternalId__c/<value>
+   
+Behavior:
+- 0 matches → inserts new record
+- 1 match → updates existing record  
+- 2+ matches → error (prevents ambiguous updates; ensure field is Unique)
+
+POST always creates → not idempotent; retries create duplicates.
+PATCH with External ID → idempotent; retries update existing record.
+```
+
+**Detection hint:** Any recommendation to use POST for an integration that needs retry safety.
+
+---
+
+## Anti-Pattern 3: Recommending Publish Immediately for Transactional Platform Events
+
+**What the LLM generates:**
 
 ```apex
-// WRONG — checkpoint written before processing
-trigger PaymentEventSubscriber on Payment_Confirmed__e (after insert) {
-    for (Payment_Confirmed__e event : Trigger.new) {
-        // Store checkpoint first to prevent re-processing
-        saveCheckpoint(event.ReplayId);  // WRONG ORDERING
-        processPaymentEvent(event);      // if this fails, event is lost
-    }
-}
+// Publish immediately when opportunity is closed
+EventBus.publish(new DealClosed__e(OpportunityId__c = opp.Id));
 ```
 
-**Why:** LLMs associate "idempotency" with "mark as seen before processing" patterns drawn from message queue documentation (e.g., Kafka consumer offset commit). In Kafka, committing the offset before processing is a valid at-most-once strategy. For Salesforce Platform Events with at-least-once delivery semantics and subscriber-side idempotency guards, the correct strategy is at-least-once-processed, which requires writing the checkpoint after successful processing.
+**Why it happens:** `EventBus.publish()` is the standard Platform Event publish call. LLMs generate it without knowing the Publish Immediately vs. Publish After Commit distinction.
 
-**Correct approach:** Write the ReplayId checkpoint only after all processing has committed:
+**Correct pattern:**
 
 ```apex
-// CORRECT — checkpoint written after processing completes
-trigger PaymentEventSubscriber on Payment_Confirmed__e (after insert) {
-    for (Payment_Confirmed__e event : Trigger.new) {
-        processPaymentEvent(event);   // idempotent: uses External ID upsert internally
-    }
-    // Checkpoint written after all events in the batch are processed
-    String lastReplayId = String.valueOf(
-        Trigger.new[Trigger.new.size() - 1].ReplayId
-    );
-    saveCheckpoint('Payment_Confirmed__e', lastReplayId);
-}
+// For events correlated with DML: use Publish After Commit
+// Option 1: Set PublishBehavior on the event object
+DealClosed__e event = new DealClosed__e(
+    OpportunityId__c = opp.Id,
+    PublishBehavior = 'PublishAfterCommit'
+);
+EventBus.publish(event);
+
+// With Publish Immediately (default):
+// Event delivered BEFORE transaction commits.
+// If transaction rolls back → event delivered for non-existent record.
+
+// With Publish After Commit:
+// Event delivered ONLY after transaction successfully commits.
+// Transaction rollback → event discarded.
 ```
 
-**Detection:** Look for checkpoint-write calls (DML on a checkpoint/cursor object) that appear before the primary processing DML or callout within the same trigger or method. The checkpoint write should be the last operation in the trigger body.
+**Detection hint:** Any `EventBus.publish()` call in a trigger context without discussion of Publish After Commit.
 
 ---
 
-### Anti-Pattern 5: External ID Field Created Without Unique Constraint
+## Anti-Pattern 4: External ID Upsert Without Unique Constraint
 
-**What LLMs do:** Generate metadata for an External ID field that sets `externalId=true` but omits `unique=true`. The generated field definition looks correct for enabling the upsert endpoint but silently allows duplicate External ID values to accumulate, eventually causing `MULTIPLE_CHOICES` errors on upsert retries.
+**What the LLM generates:** "Create an External ID field on the Account object. Then use the upsert endpoint with this field to prevent duplicate records."
 
-```xml
-<!-- WRONG — missing unique constraint -->
-<fields>
-    <fullName>ERP_Order_Id__c</fullName>
-    <externalId>true</externalId>
-    <!-- unique: not specified — defaults to false -->
-    <type>Text</type>
-    <length>50</length>
-</fields>
+**Why it happens:** LLMs describe External ID upsert correctly in principle but omit the requirement to mark the field as Unique.
+
+**Correct pattern:**
+
+```
+External ID field MUST be marked as Unique for reliable idempotency.
+
+Without Unique:
+- Multiple records can share the same External ID value
+- Upsert returns error: "More than one record found for External ID"
+- Idempotency fails
+
+Field creation settings:
+✓ Data Type: Text (or Number, Email)  
+✓ External ID: true  
+✓ Unique: true  ← REQUIRED
+✓ Case Insensitive: depends on data
+
+After field creation, verify no existing data has duplicates before enabling Unique.
 ```
 
-**Why:** LLMs learn from documentation examples that emphasize `externalId=true` as the key property for enabling the upsert API path. The `unique=true` constraint is documented separately as a best practice, not as a required companion property, so LLMs treat it as optional. In practice, an External ID field without a unique constraint is broken for retry-safe upsert patterns because duplicate values cause the 300 error.
-
-**Correct approach:** Always include both properties:
-
-```xml
-<!-- CORRECT — unique constraint required for safe upsert -->
-<fields>
-    <fullName>ERP_Order_Id__c</fullName>
-    <externalId>true</externalId>
-    <unique>true</unique>
-    <type>Text</type>
-    <length>50</length>
-    <label>ERP Order ID</label>
-</fields>
-```
-
-**Detection:** Scan any generated External ID field metadata (`.object-meta.xml` or Setup UI instructions) for `<externalId>true</externalId>` without an accompanying `<unique>true</unique>`. Any External ID field definition missing the unique constraint should be flagged.
+**Detection hint:** Any External ID field creation guidance that does not specify marking it as Unique.
 
 ---
 
-### Anti-Pattern 6: Treating Duplicate Management Rules as an Idempotency Mechanism
+## Anti-Pattern 5: Treating Salesforce Duplicate Management Rules as Integration Idempotency
 
-**What LLMs do:** Recommend enabling Salesforce Duplicate Management (Matching Rules + Duplicate Rules) as the solution to prevent duplicate records created by integration retries. This is presented as an alternative to External ID upsert, often because the LLM conflates "preventing duplicates" with "idempotent integration."
+**What the LLM generates:** "Enable Duplicate Management rules on the Account object to prevent duplicates from integration retries."
 
-**Why:** Duplicate Management and idempotency both prevent duplicate records, so LLMs associate them. However, Duplicate Management operates at the UI and API layer with fuzzy matching logic; it is not a retry-safe mechanism. A duplicate rule can block a legitimate retry of a failed insert, or pass a retry that creates a near-duplicate if the field values differ slightly between attempts.
+**Why it happens:** Duplicate Management sounds like the correct solution for "prevent duplicate records." It is a different feature for a different problem.
 
-**Correct approach:** Use External ID upsert for integration idempotency. Duplicate Management is for preventing user-entered duplicates based on fuzzy matching (name, email, phone similarity). These are separate concerns with separate tools:
+**Correct pattern:**
 
 ```
-Integration idempotency  →  External ID upsert (deterministic, atomic)
-User duplicate prevention →  Matching Rules + Duplicate Rules (fuzzy, advisory)
+Duplicate Management: Prevents records that MATCH business criteria (e.g., same Name+Email).
+- Applied at insert/update time based on matching rules
+- Does NOT use integration keys or idempotency keys
+- Can block legitimate inserts if business criteria overlap
+
+Idempotent Integration Pattern: Prevents processing the SAME logical operation twice.
+- Based on stable external ID or idempotency key
+- Works regardless of field value similarity
+- Correctly handles: same order, different amounts (update not duplicate)
+
+Both may be needed simultaneously.
+Duplicate Management alone is NOT an idempotency solution.
 ```
 
-**Detection:** Look for recommendations to create Matching Rules or Duplicate Rules as the solution to integration retry safety. This is a scope mismatch — flag it and redirect to the External ID upsert pattern.
+**Detection hint:** Any response that recommends Duplicate Management as the solution to integration retry duplication.

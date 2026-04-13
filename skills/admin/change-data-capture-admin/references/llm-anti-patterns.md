@@ -1,91 +1,132 @@
 # LLM Anti-Patterns — Change Data Capture Admin
 
-Common mistakes AI coding assistants make when generating or advising on Change Data Capture Admin.
-These patterns help the consuming agent self-check its own output.
+Common mistakes AI coding assistants make when advising on CDC admin configuration.
 
----
+## Anti-Pattern 1: Recommending Enrichment on Per-Object CDC Channels
 
-### Anti-Pattern 1: Recommending Enrichment on Standard Per-Object Channels
+**What the LLM generates:** "To add the Account Owner's Region to your AccountChangeEvent payload, add an EnrichedField to the AccountChangeEvent PlatformEventChannelMember."
 
-**What LLMs do:** When asked to add enriched fields to a CDC subscription for Account, LLMs generate `EnrichedField` configuration targeting the standard `AccountChangeEvent` per-object channel member, such as creating a `PlatformEventChannelMember` for `/data/AccountChangeEvent` with `EnrichedField` children.
+**Why it happens:** The enrichment API (PlatformEventChannelMember + EnrichedField) is documented in the context of CDC. LLMs may not know that it only applies to custom multi-entity channels.
 
-**Why:** Training data contains many examples of `PlatformEventChannelMember` and `EnrichedField` usage without the constraint that enrichment only works on custom multi-entity channels. The platform does not return an error during deployment, so this pattern is never corrected in training feedback loops.
+**Correct pattern:**
 
-**Correct approach:** Enrichment is only supported on `PlatformEventChannelMember` records in custom channels (channel names ending in `__chn`). Create a `PlatformEventChannel` metadata record first, assign the entity to it via `PlatformEventChannelMember`, then add `EnrichedField` children to that custom channel member. Route the subscriber to the custom channel path.
+```
+Enrichment is ONLY supported on custom multi-entity PlatformEventChannel records.
 
-```xml
-<!-- Correct: EnrichedField on a custom channel member -->
-<PlatformEventChannelMember>
-    <eventChannel>Account_Enriched__chn</eventChannel>
-    <selectedEntity>Account</selectedEntity>
-    <enrichedFields>
-        <name>Industry</name>
-    </enrichedFields>
-</PlatformEventChannelMember>
+Per-object channels (/data/AccountChangeEvent) are system-managed and 
+do NOT support enrichment configuration.
+
+For enrichment:
+1. Create a custom PlatformEventChannel (channelType=data)
+2. Add PlatformEventChannelMember for each object (including Account)
+3. Add EnrichedField records on the PlatformEventChannelMember
+4. Subscribe to the custom channel URL (not the per-object URL)
+
+Also: Formula fields cannot be enriched fields — only persistent stored fields.
 ```
 
-**Detection:** If generated metadata sets `eventChannel` to any value ending in `ChangeEvent` (e.g., `AccountChangeEvent`, `Contact__ChangeEvent`) and also includes `enrichedFields` children, the configuration is incorrect.
+**Detection hint:** Any instruction to add enrichment directly to `/data/AccountChangeEvent` or any per-object CDC channel.
 
 ---
 
-### Anti-Pattern 2: Directing Admins to Modify DataCloudEntities Channel Members
+## Anti-Pattern 2: Modifying Data Cloud CDC Channel Members via Metadata API
 
-**What LLMs do:** When asked to remove a "duplicate" entity selection or clean up unused channel members, LLMs generate Tooling API or Metadata API instructions to delete `PlatformEventChannelMember` records from the `DataCloudEntities` channel, treating it the same as any other custom channel.
+**What the LLM generates:** "To change the CDC entity selection, use the Metadata API to modify PlatformEventChannelMember records on the DataCloudEntities channel."
 
-**Why:** LLMs have no awareness that the `DataCloudEntities` channel is Data Cloud-managed and has special ownership semantics. The channel appears like any other custom channel in Tooling API results.
+**Why it happens:** Metadata API is the standard way to manage Salesforce configuration. LLMs apply it broadly without knowing the Data Cloud interaction.
 
-**Correct approach:** Never modify `PlatformEventChannelMember` records belonging to the `DataCloudEntities` channel directly. These are owned by Data Cloud and must be managed through CRM Data Stream configuration in the Data Cloud UI. Before any cleanup action, always filter audit results to exclude this channel:
+**Correct pattern:**
 
-```soql
-SELECT QualifiedApiName, PlatformEventChannel.MasterLabel
-FROM PlatformEventChannelMember
-WHERE PlatformEventChannel.MasterLabel != 'DataCloudEntities'
+```
+NEVER modify PlatformEventChannelMember records on the DataCloudEntities 
+channel via Metadata API or Tooling API.
+
+If the org has Data Cloud with CRM Data Streams:
+- Data Cloud manages its own CDC entity selections in DataCloudEntities channel
+- Modifying these records via API disrupts Data Cloud CRM sync silently
+- There is NO error at modification time — the disruption surfaces as stale 
+  or missing data in Data Cloud later
+
+Correct approach:
+- Manage Data Cloud CDC objects through Data Cloud Admin UI
+- Only modify non-DataCloud CDC entity selections via admin Setup UI or Metadata API
 ```
 
-**Detection:** If generated instructions include DELETE or update operations on `PlatformEventChannelMember` without first filtering out the `DataCloudEntities` channel, flag for human review.
+**Detection hint:** Any recommendation to use Metadata API or Tooling API to modify the `DataCloudEntities` channel members.
 
 ---
 
-### Anti-Pattern 3: Using the Setup UI as the Authoritative CDC Audit Source
+## Anti-Pattern 3: Not Distinguishing CDC Admin from CDC Apex Subscriber Implementation
 
-**What LLMs do:** When asked to audit which objects have CDC enabled, LLMs instruct users to navigate to **Setup > Integrations > Change Data Capture** and review the Selected Entities list as the complete inventory.
+**What the LLM generates:** "To use Change Data Capture, enable it in Setup and then write an Apex trigger to process the change events: `trigger AccountChangeEventTrigger on AccountChangeEvent (after insert) {...}`"
 
-**Why:** The Setup UI is the most prominently documented path in official documentation for enabling CDC, so LLMs anchor to it as the canonical view of CDC configuration state.
+**Why it happens:** CDC admin setup and CDC Apex subscriber implementation are often discussed together. LLMs may conflate the two in a single response.
 
-**Correct approach:** The Setup UI only shows entities selected on the default `ChangeEvents` channel. Custom channels and the `DataCloudEntities` channel are invisible there. Always use Tooling API for a complete audit:
+**Correct pattern:**
 
-```soql
-SELECT QualifiedApiName, PlatformEventChannelId,
-       PlatformEventChannel.MasterLabel, PlatformEventChannel.ChannelType
-FROM PlatformEventChannelMember
-ORDER BY PlatformEventChannel.MasterLabel, QualifiedApiName
+```
+CDC admin configuration (this skill):
+- Enable objects in Setup > Integrations > Change Data Capture
+- Configure channels and enrichment
+- Monitor PlatformEventUsageMetric
+
+CDC subscriber implementation (see change-data-capture-integration skill):
+- Apex trigger on *ChangeEvent objects
+- CometD subscriber for external systems
+- ReplayId management for replay
+
+These are separate concerns. Admins can enable CDC without any Apex code.
+External systems subscribe via CometD without Apex triggers.
 ```
 
-**Detection:** If generated audit instructions reference only the Setup UI path and do not include a Tooling API query, the audit is incomplete.
+**Detection hint:** Any CDC response that mixes Setup entity selection with Apex trigger code without clearly separating admin vs. developer concerns.
 
 ---
 
-### Anti-Pattern 4: Ignoring Edition-Based Delivery Limits When Designing Channel Topology
+## Anti-Pattern 4: Claiming CDC Has Real-Time Unlimited Event Delivery
 
-**What LLMs do:** When designing a CDC architecture for multiple subscribers, LLMs recommend that all consumers subscribe directly to the default `ChangeEvents` channel or to individual per-object channels, without accounting for how this multiplies delivery allocation consumption.
+**What the LLM generates:** "Change Data Capture delivers all record changes to subscribers in real-time with no limits."
 
-**Why:** LLMs understand that CDC has delivery limits but do not consistently apply the per-subscriber multiplication effect (N subscribers each consuming the full event count) when evaluating the impact of a multi-subscriber design.
+**Why it happens:** CDC is marketed as a real-time change notification mechanism. Edition-specific daily delivery limits are a constraint not always highlighted in feature descriptions.
 
-**Correct approach:** Calculate total expected delivery consumption as `(events per day) × (number of distinct subscribers)`. Compare against the org's edition allocation (50K/25K/10K per 24h). If the result approaches the limit, recommend:
-1. Custom channels with server-side entity filtering so subscribers only receive relevant events.
-2. A single bridge subscriber that fans out to Kafka or another message bus, reducing Salesforce-side subscriber count to 1.
-3. Purchasing the CDC add-on for monthly volume pricing if sustained high volumes are required.
+**Correct pattern:**
 
-**Detection:** If a multi-subscriber design is proposed without any mention of delivery allocation math or mitigation, request a delivery consumption estimate before accepting the design.
+```
+CDC delivery limits by edition (per 24-hour rolling window):
+- Performance + Unlimited: 50,000 events
+- Enterprise: 25,000 events  
+- Developer: 10,000 events
+
+When the limit is reached: events are SILENTLY DROPPED for the remainder 
+of the day. No alert, no error, no notification to subscribers.
+
+Monitor: PlatformEventUsageMetric SOQL object
+Alert threshold: 70% of edition limit
+```
+
+**Detection hint:** Any claim that CDC has no limits or delivers unlimited events.
 
 ---
 
-### Anti-Pattern 5: Conflating Admin-Side CDC Configuration with Subscriber-Side Setup
+## Anti-Pattern 5: Recommending Formula Fields for CDC Enrichment
 
-**What LLMs do:** When asked to "set up CDC for Account," LLMs generate a combined response that mixes admin configuration (Setup UI entity selection) with subscriber implementation (Apex trigger class with `handleChangeRequest`, CometD connection code, or Pub/Sub API gRPC stubs), presenting both as equally in scope for the admin performing the task.
+**What the LLM generates:** "Enrich your AccountChangeEvent with the Account's Tier__c formula field to include the calculated tier in every change event."
 
-**Why:** CDC documentation covers both the admin and developer/integration sides in the same guide, and LLMs do not apply the organizational skill boundary that separates platform configuration from subscriber implementation.
+**Why it happens:** Formula fields are commonly used for derived values in Salesforce. LLMs may not know the enrichment field limitation.
 
-**Correct approach:** Admin-side CDC setup is limited to entity selection, channel configuration, enrichment setup, and delivery monitoring. Subscriber implementation (Apex triggers, CometD clients, Pub/Sub API gRPC clients, replay ID management, gap event handling) is out of scope for an admin task and belongs to `integration/change-data-capture-integration` or the relevant Apex skill. When generating admin guidance, stop after channel configuration is validated and reference the integration skill explicitly for subscriber setup.
+**Correct pattern:**
 
-**Detection:** If generated output includes `CometD`, `replayId`, `handleChangeRequest`, `PlatformStreamingClient`, or gRPC subscription code in response to an admin-framed CDC question, the scope boundary has been violated.
+```
+Formula fields CANNOT be used as enriched fields in CDC channels.
+Only persistent stored field values can be enriched.
+
+If a formula-computed value needs to be in the CDC payload:
+Option A: Create a persistent custom field (populated via a trigger or flow)
+          and enrich with that field instead of the formula.
+Option B: Have the subscriber look up the formula value via a Salesforce API
+          callback using the record ID from the change event.
+Option C: Re-evaluate whether enrichment is needed or if the subscriber 
+          can compute the value locally.
+```
+
+**Detection hint:** Any enrichment configuration that specifies a formula field as the enriched field.

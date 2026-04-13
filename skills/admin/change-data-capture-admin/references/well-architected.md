@@ -2,40 +2,25 @@
 
 ## Relevant Pillars
 
-- **Reliability** — CDC delivery has hard per-edition daily limits (50K/25K/10K events/24h). When the daily allocation is exhausted, event delivery halts silently with no subscriber-side error. Reliable CDC admin requires proactive monitoring of `PlatformEventUsageMetric`, alerting before the cap is hit, and channel topology that minimizes per-subscriber delivery consumption. The 72-hour event retention window also imposes a reliability constraint: any downstream consumer that is offline for more than 72 hours cannot recover via CDC replay alone and requires a Bulk API re-sync.
-
-- **Security** — Entity selection determines which records' field changes flow to CDC subscribers. Enabling a highly sensitive object (e.g., one containing PII or compensation data) without reviewing who subscribes to the receiving channel creates unintended data exposure. Enriched fields amplify this risk: an enriched field on a change event may expose data the subscriber was not originally authorized to receive. Security review of enriched field lists and channel subscriber lists is a required step before production deployment.
-
-- **Performance** — The number of active subscribers and the breadth of enabled entities directly affect CDC delivery allocation consumption, which is shared across the org. Poorly scoped channel subscriptions (many subscribers on a wide entity set) consume delivery allocation at multiples of the event publication rate, leaving less headroom for other integrations. Custom channels with narrow entity sets and server-side filtering reduce the per-subscriber delivery impact.
-
-- **Scalability** — The default 5-entity limit and edition-based delivery caps constrain CDC scale. Growth plans must account for these limits: reaching the entity cap silently prevents new entity selections from taking effect. The CDC add-on removes the entity cap and shifts billing to a monthly volume model, enabling large-scale deployments. Custom channel topology (multiple isolated channels) also improves scalability by distributing delivery load across subscriber groups.
-
-- **Operational Excellence** — Custom channel configuration (PlatformEventChannel, PlatformEventChannelMember, EnrichedField) is not visible in the Setup UI and is not tracked in version control unless explicitly included in the Metadata API deployment package. Orgs that manage CDC configuration ad hoc via Tooling API queries accumulate untracked drift. Operational excellence requires all channel metadata in source control, documented entity-to-channel mapping, and regular Tooling API audits.
+- **Reliability** — Monitoring `PlatformEventUsageMetric` for daily delivery counts prevents silent event dropping when edition limits are reached. The 3-day event retention window for CDC subscribers means missed events can be replayed by reconnecting with a prior `replayId`.
+- **Operational Excellence** — Documenting which objects are CDC-enabled and which channels are managed by Data Cloud prevents accidental Metadata API modifications that disrupt Data Cloud data ingestion.
 
 ## Architectural Tradeoffs
 
-**Default channel vs custom channels:** The default `ChangeEvents` channel is the fastest path to production and requires no deployment. However, it provides no subscriber isolation — every subscriber receives every enabled entity's events, and every subscriber consumes the full per-event delivery allocation independently. As subscriber count or entity volume grows, the shared-channel model exhausts the daily allocation. Custom channels require more upfront configuration but provide server-side filtering and reduce per-subscriber consumption.
+**Per-object channel vs. multi-entity channel:** Per-object channels are zero-configuration (enabled by entity selection) but require separate subscriber connections per object and do not support enrichment. Multi-entity channels require Tooling API/metadata configuration but provide a single subscriber connection for multiple objects and support enrichment. For integrations consuming events from 5+ objects, multi-entity channels reduce subscriber complexity. For 1-3 objects, per-object channels are simpler.
 
-**Enrichment vs follow-up REST queries:** Enrichment reduces latency and REST API consumption for subscribers that need contextual fields not included in the changed-field set. The tradeoff is configuration complexity (custom channel required), enrichment field review for security (every enriched field broadens what the subscriber can see), and the constraint that formula fields cannot be enriched. Follow-up REST queries preserve a simpler channel configuration but increase per-event latency and API call consumption.
-
-**Setup UI management vs Metadata API management:** Setup UI changes to the default channel are immediate and require no deployment. However, they are not tracked in source control unless the team manually documents them, creating audit risk. Metadata API management of all channel members (including the default channel) enables version control and CI/CD deployment at the cost of deployment overhead.
+**CDC vs. Platform Events for change notification:** CDC captures all changes (including changes made via the Salesforce UI, API, triggers) and includes `changedFields` metadata. Platform Events require explicit publishing in Apex or Flow — they do not automatically capture UI changes unless triggered. CDC is preferable for "capture all changes" use cases. Platform Events are preferable for "publish specific business events" use cases.
 
 ## Anti-Patterns
 
-1. **Auditing CDC coverage via the Setup UI alone** — The Setup page shows only the default `ChangeEvents` channel. Custom channels and Data Cloud's `DataCloudEntities` channel are invisible. Any compliance or troubleshooting audit that relies only on the Setup UI will produce an incorrect baseline and may lead to inadvertent misconfiguration.
+1. **Modifying Data Cloud CDC channel members via Metadata API** — Creating, modifying, or deleting `PlatformEventChannelMember` records on the `DataCloudEntities` channel directly disrupts Data Cloud sync silently. Always manage Data Cloud CDC objects through the Data Cloud Admin UI.
 
-2. **Modifying the DataCloudEntities channel directly** — Removing or changing `PlatformEventChannelMember` records in the `DataCloudEntities` channel via Metadata API or Tooling API breaks Data Cloud CRM Data Stream sync without surfacing an immediate error. The correct administrative boundary is to treat this channel as Data Cloud-owned and manage it exclusively through Data Cloud CRM Data Stream configuration.
+2. **Attempting enrichment on per-object channels** — Adding `EnrichedField` records to per-object channels (like `AccountChangeEvent`). Enrichment is only supported on custom multi-entity channels. The configuration will either fail or silently be ignored.
 
-3. **Adding enrichment to standard per-object channels** — Configuring `EnrichedField` records on standard per-object channel members (e.g., `/data/AccountChangeEvent`) produces no error but delivers no enriched fields. This is a silent misconfiguration that wastes effort and leaves the subscriber issuing unnecessary follow-up REST queries.
+3. **No monitoring of PlatformEventUsageMetric** — Enabling CDC for many high-volume objects without monitoring daily delivery counts. When the edition limit is hit, events are silently dropped — downstream integrations receive a gap in change events with no notification.
 
 ## Official Sources Used
 
 - Change Data Capture Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.change_data_capture.meta/change_data_capture/cdc_intro.htm
-- Change Data Capture: Entity Selection — https://developer.salesforce.com/docs/atlas.en-us.change_data_capture.meta/change_data_capture/cdc_select_objects.htm
-- PlatformEventChannel Metadata — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_platformeventchannel.htm
-- PlatformEventChannelMember Metadata — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_platformeventchannelmember.htm
-- PlatformEventUsageMetric Object Reference — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_platformeventusagemetric.htm
-- Change Data Capture: Event Enrichment — https://developer.salesforce.com/docs/atlas.en-us.change_data_capture.meta/change_data_capture/cdc_enriched_fields.htm
-- Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
-- Object Reference — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm
-- Metadata API Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm
+- PlatformEventUsageMetric — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_platformeventusagemetric.htm
+- Enrich Change Events — https://help.salesforce.com/s/articleView?id=sf.cdc_enrich_events.htm&type=5

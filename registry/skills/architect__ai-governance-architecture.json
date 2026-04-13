@@ -1,0 +1,82 @@
+{
+  "category": "architect",
+  "chunk_ids": [
+    "0bbb7f0bec972ed916ec",
+    "0c7474be9552b1c84324",
+    "12187cd6b70b29e2477f",
+    "127fe0307d9b8a1b1648",
+    "1b0f9569d3b0cf74bb83",
+    "2cceaa009b1413b47e4c",
+    "2d0582aa61fef599c312",
+    "2dacb87fdd27ee903d6c",
+    "329ac4ace1aaae6adc83",
+    "3322039d2ff5e4313530",
+    "3906d0e59de8d76cff11",
+    "3dbb9b38c0271ef4fffc",
+    "43625e7aa4ba9939793b",
+    "4583a54894feaf87ffc0",
+    "46364b917053937850b8",
+    "4be22f7b686bd1c35b24",
+    "567804c5b03f43f41e6c",
+    "56d9a0ea70bcc3f69784",
+    "600cd09903b53312cd22",
+    "60dd7f42f101da00c467",
+    "64676173ae8db87c4219",
+    "78e9cfa98d94f6cd197a",
+    "7d845041b6dacb9d8dfc",
+    "84a550cb3eea1b1dd3c8",
+    "96ab3e7e63a9512f380b",
+    "9b087f6277de8c1c0f0d",
+    "9c3a8fe22d6e713d8ce0",
+    "9da6f301b74b2ff1d3b5",
+    "9ee212db2750f4c885c0",
+    "a2616458d47de3f417be",
+    "a505dd77bcb487a0885e",
+    "a5672dcdf29dc658a034",
+    "c09e78933eb6f1736e30",
+    "d3949721ad265dc87eaf",
+    "d6ecaa73b3b32275120d",
+    "d85c683728ddb3647465",
+    "d946a97a3c5e09c381c9",
+    "e3ac9474d6a534cc9b56",
+    "f27ad51bb888f06aff77",
+    "f38b902d1f77ea1c64b7",
+    "f5bc12c786eeaf0dcc66",
+    "fe0500b1024def79243c",
+    "fe1f54625b8a3637a266"
+  ],
+  "content_hash": "faee30d59674f8611e5e1649358ea91ab730e2f8ea5d77124baf5bcc89e9843f",
+  "dependencies": [],
+  "description": "TODO: One sentence explaining when to use this skill and its main trigger keywords. NOT for TODO: explicit scope exclusion \u2014 what does this skill NOT cover.",
+  "file_location": "skills/architect/ai-governance-architecture",
+  "id": "architect/ai-governance-architecture",
+  "inputs": [
+    "TODO: context or information this skill needs to work"
+  ],
+  "name": "ai-governance-architecture",
+  "official_sources": [
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "TODO: artifact or guidance this skill produces"
+  ],
+  "references": [
+    "skills/architect/ai-governance-architecture/references/examples.md",
+    "skills/architect/ai-governance-architecture/references/gotchas.md",
+    "skills/architect/ai-governance-architecture/references/llm-anti-patterns.md",
+    "skills/architect/ai-governance-architecture/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/architect/ai-governance-architecture/scripts/check_ai_governance_architecture.py"
+  ],
+  "tags": [
+    "ai-governance-architecture",
+    "TODO_TAG_2"
+  ],
+  "templates": [
+    "skills/architect/ai-governance-architecture/templates/ai-governance-architecture-template.md"
+  ],
+  "updated": "2026-04-13",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

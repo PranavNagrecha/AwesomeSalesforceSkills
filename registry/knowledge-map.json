@@ -53,6 +53,7 @@
       "admin/data-skew-and-sharing-performance",
       "admin/delegated-administration",
       "admin/digital-storefront-requirements",
+      "admin/donor-lifecycle-requirements",
       "admin/duplicate-management",
       "admin/dynamic-forms-and-actions",
       "admin/einstein-activity-capture-setup",
@@ -123,6 +124,7 @@
       "admin/object-creation-and-design",
       "admin/omni-channel-routing-setup",
       "admin/omnistudio-admin-configuration",
+      "admin/omnistudio-vs-standard-decision",
       "admin/opportunity-management",
       "admin/org-cleanup-and-technical-debt",
       "admin/org-setup-and-configuration",
@@ -139,6 +141,7 @@
       "admin/pricing-model-design",
       "admin/process-automation-selection",
       "admin/products-and-pricebooks",
+      "admin/program-outcome-tracking-design",
       "admin/queues-and-public-groups",
       "admin/quote-to-cash-process",
       "admin/quote-to-cash-requirements",
@@ -276,6 +279,7 @@
       "apex/mcae-pardot-api",
       "apex/metadata-api-and-package-xml",
       "apex/mixed-dml-and-setup-objects",
+      "apex/npsp-api-and-integration",
       "apex/npsp-custom-rollups",
       "apex/npsp-trigger-framework-extension",
       "apex/omni-channel-custom-routing",
@@ -304,12 +308,15 @@
     "architect": [
       "architect/agent-console-requirements",
       "architect/ai-agent-org-integration-architecture",
+      "architect/ai-governance-architecture",
       "architect/ai-platform-architecture",
       "architect/ai-ready-data-architecture",
       "architect/aml-kyc-process-architecture",
       "architect/b2b-vs-b2c-architecture",
+      "architect/banking-lending-architecture",
       "architect/case-deflection-strategy",
       "architect/commerce-integration-patterns",
+      "architect/conversational-ai-architecture",
       "architect/cpq-architecture-patterns",
       "architect/cpq-integration-with-erp",
       "architect/cpq-vs-standard-products-decision",
@@ -334,6 +341,7 @@
       "architect/health-cloud-multi-cloud-strategy",
       "architect/high-volume-sales-data-architecture",
       "architect/hipaa-compliance-architecture",
+      "architect/insurance-cloud-architecture",
       "architect/integration-framework-design",
       "architect/knowledge-taxonomy-design",
       "architect/knowledge-vs-external-cms",
@@ -406,6 +414,7 @@
       "data/fsl-work-order-migration",
       "data/health-cloud-data-model",
       "data/historical-order-migration",
+      "data/industries-data-model",
       "data/knowledge-article-import",
       "data/large-scale-deduplication",
       "data/lead-data-import-and-dedup",
@@ -431,7 +440,8 @@
       "data/soql-query-optimization",
       "data/sosl-search-patterns",
       "data/subscriber-data-management",
-      "data/territory-data-alignment"
+      "data/territory-data-alignment",
+      "data/vector-database-management"
     ],
     "devops": [
       "devops/api-version-management",
@@ -840,6 +850,15 @@
     "SystemModstamp": [
       "admin/system-field-behavior-and-audit"
     ],
+    "TODO_TAG_2": [
+      "admin/donor-lifecycle-requirements",
+      "admin/omnistudio-vs-standard-decision",
+      "apex/npsp-api-and-integration",
+      "architect/ai-governance-architecture",
+      "architect/conversational-ai-architecture",
+      "data/industries-data-model",
+      "data/vector-database-management"
+    ],
     "Territory2ModelHistory": [
       "data/territory-data-alignment"
     ],
@@ -1106,6 +1125,9 @@
     ],
     "ai-governance": [
       "admin/ai-ethics-and-governance-requirements"
+    ],
+    "ai-governance-architecture": [
+      "architect/ai-governance-architecture"
     ],
     "ai-platform-architecture": [
       "architect/ai-platform-architecture"
@@ -1374,8 +1396,10 @@
     "architecture": [
       "architect/ai-agent-org-integration-architecture",
       "architect/b2b-vs-b2c-architecture",
+      "architect/banking-lending-architecture",
       "architect/fsc-architecture-patterns",
       "architect/headless-commerce-architecture",
+      "architect/insurance-cloud-architecture",
       "architect/integration-framework-design",
       "architect/payer-vs-provider-architecture",
       "architect/sales-cloud-architecture"
@@ -1604,6 +1628,9 @@
     ],
     "backoff": [
       "integration/retry-and-backoff-patterns"
+    ],
+    "banking": [
+      "architect/banking-lending-architecture"
     ],
     "banner": [
       "integration/sis-integration-patterns"
@@ -2097,6 +2124,9 @@
       "integration/event-driven-architecture-patterns",
       "integration/sis-integration-patterns"
     ],
+    "change-data-capture-admin": [
+      "admin/change-data-capture-admin"
+    ],
     "change-event": [
       "apex/change-data-capture-apex"
     ],
@@ -2113,6 +2143,9 @@
     ],
     "channel-deployment": [
       "agentforce/agent-channel-deployment"
+    ],
+    "channel-enrichment": [
+      "admin/change-data-capture-admin"
     ],
     "channel-prioritization": [
       "architect/multi-channel-service-architecture"
@@ -2163,7 +2196,8 @@
       "integration/retry-and-backoff-patterns"
     ],
     "claims": [
-      "admin/industries-insurance-setup"
+      "admin/industries-insurance-setup",
+      "architect/insurance-cloud-architecture"
     ],
     "claude-desktop": [
       "agentforce/salesforce-mcp-server-setup"
@@ -2608,6 +2642,9 @@
     "conversational-ai": [
       "agentforce/agentforce-persona-design",
       "architect/einstein-bot-architecture"
+    ],
+    "conversational-ai-architecture": [
+      "architect/conversational-ai-architecture"
     ],
     "convertcurrency": [
       "data/multi-currency-and-advanced-currency-management"
@@ -3409,6 +3446,9 @@
     "digital-insurance-platform": [
       "admin/industries-insurance-setup"
     ],
+    "digital-lending": [
+      "architect/banking-lending-architecture"
+    ],
     "digital-signature": [
       "apex/fsl-service-report-templates"
     ],
@@ -3503,6 +3543,9 @@
     ],
     "donor-data": [
       "architect/fundraising-integration-patterns"
+    ],
+    "donor-lifecycle-requirements": [
+      "admin/donor-lifecycle-requirements"
     ],
     "donor-pipeline": [
       "admin/fundraising-process-mapping"
@@ -3750,9 +3793,6 @@
     ],
     "enqueueDeployment": [
       "apex/apex-metadata-api"
-    ],
-    "enrichment": [
-      "admin/change-data-capture-admin"
     ],
     "enrollment": [
       "admin/care-program-management"
@@ -4252,7 +4292,9 @@
       "admin/wealth-management-requirements",
       "apex/fsc-apex-extensions",
       "apex/fsc-financial-calculations",
+      "architect/banking-lending-architecture",
       "architect/fsc-architecture-patterns",
+      "architect/insurance-cloud-architecture",
       "architect/wealth-management-architecture"
     ],
     "find-clause": [
@@ -4441,7 +4483,9 @@
       "apex/fsc-financial-calculations",
       "apex/fsc-integration-patterns-dev",
       "architect/aml-kyc-process-architecture",
+      "architect/banking-lending-architecture",
       "architect/fsc-architecture-patterns",
+      "architect/insurance-cloud-architecture",
       "architect/wealth-management-architecture",
       "data/financial-account-migration",
       "data/financial-data-quality",
@@ -4650,6 +4694,9 @@
     ],
     "gps": [
       "architect/fsl-integration-patterns"
+    ],
+    "grant-compliance": [
+      "admin/program-outcome-tracking-design"
     ],
     "grantmaking": [
       "admin/grant-management-setup",
@@ -4906,9 +4953,14 @@
     "idempotency": [
       "data/external-id-strategy",
       "flow/scheduled-flows",
-      "integration/idempotent-integration-patterns",
       "integration/retry-and-backoff-patterns",
       "integration/webhook-inbound-patterns"
+    ],
+    "idempotent": [
+      "integration/idempotent-integration-patterns"
+    ],
+    "idempotent-integration-patterns": [
+      "integration/idempotent-integration-patterns"
     ],
     "identity-resolution": [
       "architect/data-cloud-architecture",
@@ -4926,6 +4978,9 @@
     ],
     "impact-effort-matrix": [
       "admin/ai-use-case-assessment"
+    ],
+    "impact-reporting": [
+      "admin/program-outcome-tracking-design"
     ],
     "imperative": [
       "lwc/lwc-imperative-apex"
@@ -4982,6 +5037,9 @@
     "industries-cpq": [
       "omnistudio/industries-cpq-vs-salesforce-cpq"
     ],
+    "industries-data-model": [
+      "data/industries-data-model"
+    ],
     "industries-timeline": [
       "admin/health-cloud-timeline"
     ],
@@ -5027,6 +5085,9 @@
     "insurance": [
       "admin/industries-insurance-setup"
     ],
+    "insurance-cloud": [
+      "architect/insurance-cloud-architecture"
+    ],
     "integrated-care-management": [
       "admin/care-coordination-requirements",
       "admin/care-plan-configuration"
@@ -5067,7 +5128,8 @@
       "architect/aml-kyc-process-architecture",
       "architect/platform-selection-guidance",
       "architect/wealth-management-architecture",
-      "integration/event-driven-architecture-patterns"
+      "integration/event-driven-architecture-patterns",
+      "integration/idempotent-integration-patterns"
     ],
     "integration-procedure": [
       "omnistudio/dataraptor-load-and-extract",
@@ -5093,6 +5155,9 @@
       "integration/named-credentials-setup"
     ],
     "integration-user": [
+      "admin/integration-user-management"
+    ],
+    "integration-user-management": [
       "admin/integration-user-management"
     ],
     "integrations": [
@@ -5398,6 +5463,9 @@
     "legacy-integration": [
       "integration/soap-api-patterns"
     ],
+    "lending": [
+      "architect/banking-lending-architecture"
+    ],
     "lens": [
       "admin/crm-analytics-app-creation"
     ],
@@ -5544,6 +5612,9 @@
     ],
     "load-testing": [
       "devops/performance-testing-salesforce"
+    ],
+    "loan-origination": [
+      "architect/banking-lending-architecture"
     ],
     "localization": [
       "admin/multi-language-and-translation",
@@ -6124,6 +6195,7 @@
       "architect/nonprofit-platform-architecture"
     ],
     "nonprofit-cloud": [
+      "admin/program-outcome-tracking-design",
       "architect/fundraising-integration-patterns",
       "architect/nonprofit-platform-architecture",
       "architect/npsp-vs-nonprofit-cloud-decision"
@@ -6151,6 +6223,7 @@
       "admin/npsp-engagement-plans",
       "admin/npsp-household-accounts",
       "admin/npsp-program-management",
+      "admin/program-outcome-tracking-design",
       "admin/recurring-donations-setup",
       "admin/soft-credits-and-matching",
       "apex/npsp-custom-rollups",
@@ -6160,6 +6233,9 @@
       "data/constituent-data-migration",
       "data/nonprofit-data-architecture",
       "data/npsp-data-model"
+    ],
+    "npsp-api-and-integration": [
+      "apex/npsp-api-and-integration"
     ],
     "null-handling": [
       "admin/formula-fields"
@@ -6311,6 +6387,9 @@
     ],
     "omnistudio-testing-patterns": [
       "omnistudio/omnistudio-testing-patterns"
+    ],
+    "omnistudio-vs-standard-decision": [
+      "admin/omnistudio-vs-standard-decision"
     ],
     "omniupdatebyfield": [
       "omnistudio/omnistudio-custom-lwc-elements"
@@ -6494,7 +6573,8 @@
       "architect/nonprofit-platform-architecture"
     ],
     "outcomes": [
-      "admin/npsp-program-management"
+      "admin/npsp-program-management",
+      "admin/program-outcome-tracking-design"
     ],
     "output-encoding": [
       "security/xss-and-injection-prevention"
@@ -6728,7 +6808,8 @@
       "devops/performance-testing-salesforce"
     ],
     "permission-set": [
-      "admin/custom-permissions"
+      "admin/custom-permissions",
+      "admin/integration-user-management"
     ],
     "permission-set-architecture": [
       "admin/permission-set-architecture"
@@ -6745,7 +6826,6 @@
     ],
     "permission-sets": [
       "admin/delegated-administration",
-      "admin/integration-user-management",
       "admin/permission-sets-vs-profiles",
       "admin/user-access-policies",
       "devops/permission-set-deployment-ordering"
@@ -6871,13 +6951,15 @@
     ],
     "pmm": [
       "admin/npsp-program-management",
+      "admin/program-outcome-tracking-design",
       "data/nonprofit-data-architecture"
     ],
     "point-in-time": [
       "data/sales-reporting-data-model"
     ],
     "policy-administration": [
-      "admin/industries-insurance-setup"
+      "admin/industries-insurance-setup",
+      "architect/insurance-cloud-architecture"
     ],
     "polygon": [
       "data/fsl-territory-data-setup"
@@ -7098,6 +7180,7 @@
       "apex/apex-performance-profiling"
     ],
     "program-management": [
+      "admin/program-outcome-tracking-design",
       "architect/nonprofit-platform-architecture",
       "data/nonprofit-data-architecture"
     ],
@@ -7586,10 +7669,8 @@
     ],
     "retry": [
       "admin/outbound-message-setup",
+      "integration/idempotent-integration-patterns",
       "integration/retry-and-backoff-patterns"
-    ],
-    "retry-safe": [
-      "integration/idempotent-integration-patterns"
     ],
     "return-order": [
       "admin/commerce-order-management"
@@ -8980,6 +9061,9 @@
     "uncommitted-work-pending": [
       "apex/callout-and-dml-transaction-boundaries"
     ],
+    "underwriting": [
+      "architect/insurance-cloud-architecture"
+    ],
     "unified-activity": [
       "apex/einstein-activity-capture-api"
     ],
@@ -9095,6 +9179,9 @@
     ],
     "van-stock": [
       "admin/fsl-inventory-management"
+    ],
+    "vector-database-management": [
+      "data/vector-database-management"
     ],
     "vector-search": [
       "agentforce/data-cloud-vector-search-dev",
