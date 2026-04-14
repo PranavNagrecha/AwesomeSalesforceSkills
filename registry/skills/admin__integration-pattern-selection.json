@@ -1,0 +1,103 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "0ec55004d056feb50bc4",
+    "1110f12fb695cd4f6566",
+    "16d9f1484a0edfd95a60",
+    "173660387b6da3595a2c",
+    "1c6eaa7983ec23f122e4",
+    "1dcf1dcfe3e081386e7d",
+    "21c2e1017f4d35a8e1ff",
+    "233e3fef95b1787d14aa",
+    "24d7b190e64f78c7465b",
+    "275ad6ad7ad2080a82f5",
+    "2b0aae25ad984d0174d8",
+    "2e52614f5d17732743c7",
+    "35f13ad8b8a4d75a9d5c",
+    "378dffcbf9cc3f56e2fd",
+    "3d276156bc53ad106eb0",
+    "3d665b05ac9e6af9652e",
+    "3d6b62891610a8d60f1b",
+    "4e54ee807e604929eab0",
+    "51df30633fe3eebd3cd9",
+    "52d8feb1c7e1c8cb69d7",
+    "5b095f1b0b66dce5319d",
+    "5cc1bdcfe62e1044fa27",
+    "5df6e2c61a382bf1f1c4",
+    "5f5e972288b2927c9529",
+    "624945d1ee7a5bc871da",
+    "66e0d6d270650e686169",
+    "6a8ff64aa39d9a6d1f38",
+    "6b51e6bb405c0ca29f5e",
+    "6baf309a099e45a28f29",
+    "6cb58ec8a3d33f18eb6b",
+    "75c737a85ed20ff82f14",
+    "78fd3f5ceba5187e6727",
+    "820088b8492f1ccc4c5d",
+    "857c053169f6402a7f71",
+    "8a5e825f2d879e05f815",
+    "90c83cd01b60ad2c9cb2",
+    "938a5cc3706ec11e5cbc",
+    "9988087ea5a36d850f5c",
+    "9b304da670ebf1ad2928",
+    "9da4268b5cf692b5d30e",
+    "a612f8bc5d3e583f795f",
+    "aaeaca3cfefcabd44256",
+    "af6dfa2c94504185282e",
+    "b1070acd1023f81538de",
+    "bca7398ea0d0b0398891",
+    "c1c82e9c4e0912219909",
+    "ca5e07e3c5be800347c1",
+    "cf2ee9c604787e240b44",
+    "d04598e83a081ca4effa",
+    "de7493904103f727997a",
+    "ea98720473b30e5b76d3",
+    "f02c7adf5f265684062f",
+    "f67204b8183ed7e314ca"
+  ],
+  "content_hash": "3c3b25bf9e6b89dffa223b8762bc0b421551fb412525a1d4bb32563928895a64",
+  "dependencies": [],
+  "description": "Use this skill to select the right Salesforce integration pattern \u2014 from point-to-point to event-driven to hub-and-spoke \u2014 by applying the official Salesforce two-axis decision framework (integration type \u00d7 timing) to a business integration scenario. Trigger keywords: integration pattern decision, choose integration approach, Salesforce integration architecture, when to use platform events vs API, integration type selection. NOT for implementation of any specific integration pattern (use domain-specific integration skills), MuleSoft architecture (use architect/mulesoft-anypoint-architecture), or middleware vendor selection.",
+  "file_location": "skills/admin/integration-pattern-selection",
+  "id": "admin/integration-pattern-selection",
+  "inputs": [
+    "Integration type: Process, Data, or Virtual",
+    "Timing requirement: synchronous (real-time response needed) or asynchronous",
+    "Volume: approximate record count per transaction or batch",
+    "Latency tolerance: real-time, near-real-time, scheduled batch",
+    "Transactional requirements: rollback needed across systems or not"
+  ],
+  "name": "integration-pattern-selection",
+  "official_sources": [
+    "Integration Patterns and Practices \u2014 Pattern Selection Guide \u2014 https://architect.salesforce.com/docs/architect/fundamentals/guide/integration-patterns.html",
+    "Salesforce Architects Integration Patterns Fundamentals \u2014 https://architect.salesforce.com/content/1508/integration-patterns-fundamentals",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Integration pattern decision record with selected pattern and rationale",
+    "Pattern comparison matrix for the specific integration scenario",
+    "Identified constraints and risks for the selected pattern"
+  ],
+  "references": [
+    "skills/admin/integration-pattern-selection/references/examples.md",
+    "skills/admin/integration-pattern-selection/references/gotchas.md",
+    "skills/admin/integration-pattern-selection/references/llm-anti-patterns.md",
+    "skills/admin/integration-pattern-selection/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/integration-pattern-selection/scripts/check_integration_pattern_selection.py"
+  ],
+  "tags": [
+    "integration",
+    "architecture",
+    "pattern-selection",
+    "ba-role",
+    "integration-pattern-selection"
+  ],
+  "templates": [
+    "skills/admin/integration-pattern-selection/templates/integration-pattern-selection-template.md"
+  ],
+  "updated": "2026-04-14",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

@@ -1,0 +1,98 @@
+{
+  "category": "integration",
+  "chunk_ids": [
+    "0251a91538e774662d4c",
+    "0941e7742127b8776797",
+    "0be1ba87ae967c1e45d2",
+    "20257c86b502e2c7e451",
+    "2198148390f7b1169568",
+    "2847780348e5fe3b7c92",
+    "2b475a693f6479c566f4",
+    "2e7fd83a356091a6b079",
+    "33c3d6161431e9d00544",
+    "379ba9c785365a2e0d64",
+    "3f3f6726ab6fff9c9c12",
+    "467233b9017a88c54645",
+    "5630fcb9698e45637295",
+    "5644c93638ca3264457e",
+    "56cda4b30661c5c7face",
+    "56fb3ecd1304c1ef654f",
+    "5e00ac7c176cbc7b02ea",
+    "5f2e5d732c20b6442565",
+    "6158e3820b00264d060e",
+    "61ca986db56a4c160852",
+    "64e264debce53408aebe",
+    "6527e988ded562ea743f",
+    "68a349b84de44e302638",
+    "6bc52a27964f60c2bdcf",
+    "73672b647a7e1f98b7cf",
+    "774c6d1ed8d365e0fe39",
+    "7de5f9a41f83e01357b0",
+    "84f4701e529ae6f0bd53",
+    "8ed44b104eb854eae831",
+    "925826c3f4f9668b7e87",
+    "9433c00af9c8ead3b1f9",
+    "962698e533980372aeb5",
+    "9e90a4c87d7782682413",
+    "a13208a8a49a36cde6b0",
+    "a412c104f371d688b318",
+    "ab184c4458b7fefc1a98",
+    "ad4b49f2bca278147f14",
+    "afb431b4fd0df7870eba",
+    "b25042a3373d3ff241e2",
+    "b72e635af5f74a2db04d",
+    "c22e22719e95518c4d1d",
+    "c466ae6d782ebe8c3604",
+    "ce526382e6d475c0bf17",
+    "cef6f2999a8682045530",
+    "dfdee2567198eb907a7c",
+    "e65ae0639f5fc3ae1237",
+    "eb4d74c2557f48802f8b",
+    "f32797705a130c0ec338",
+    "f3ba858ff89353d4f321"
+  ],
+  "content_hash": "134782bec3137c61ad09f3d124a382cc97c604965405641b9fab6f326a5b90c2",
+  "dependencies": [],
+  "description": "Use this skill to implement Salesforce-to-Salesforce integration patterns \u2014 covering the native S2S feature, API-based cross-org sync, Platform Event bridging, and Salesforce Connect Cross-Org adapter. Trigger keywords: Salesforce to Salesforce integration, cross-org data sharing, S2S feature, cross-org Platform Events, Salesforce Connect cross-org. NOT for multi-org strategy or architecture decisions (use architect/multi-org-strategy), single-org data sharing, or external (non-Salesforce) system integration.",
+  "file_location": "skills/integration/salesforce-to-salesforce-integration",
+  "id": "integration/salesforce-to-salesforce-integration",
+  "inputs": [
+    "Source org and target org details (sandbox or production)",
+    "Objects and fields to share or sync",
+    "Sync direction: one-way or bidirectional",
+    "Volume and frequency requirements"
+  ],
+  "name": "salesforce-to-salesforce-integration",
+  "official_sources": [
+    "Salesforce to Salesforce Help \u2014 https://help.salesforce.com/s/articleView?id=sf.business_network_s2s_overview.htm",
+    "Integration Patterns and Practices \u2014 https://architect.salesforce.com/docs/architect/fundamentals/guide/integration-patterns.html",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Cross-org integration pattern decision and implementation guidance",
+    "S2S feature constraint analysis if applicable",
+    "API-based sync or Platform Event bridge configuration guidance"
+  ],
+  "references": [
+    "skills/integration/salesforce-to-salesforce-integration/references/examples.md",
+    "skills/integration/salesforce-to-salesforce-integration/references/gotchas.md",
+    "skills/integration/salesforce-to-salesforce-integration/references/llm-anti-patterns.md",
+    "skills/integration/salesforce-to-salesforce-integration/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/integration/salesforce-to-salesforce-integration/scripts/check_salesforce_to_salesforce_integration.py"
+  ],
+  "tags": [
+    "integration",
+    "cross-org",
+    "salesforce-to-salesforce",
+    "platform-events",
+    "salesforce-to-salesforce-integration"
+  ],
+  "templates": [
+    "skills/integration/salesforce-to-salesforce-integration/templates/salesforce-to-salesforce-integration-template.md"
+  ],
+  "updated": "2026-04-14",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

@@ -10,8 +10,10 @@
       "admin/analytics-data-manager",
       "admin/analytics-dataflow-development",
       "admin/analytics-dataset-management",
+      "admin/analytics-kpi-definition",
       "admin/analytics-permission-and-sharing",
       "admin/analytics-recipe-design",
+      "admin/analytics-requirements-gathering",
       "admin/app-and-tab-configuration",
       "admin/approval-processes",
       "admin/assignment-rules",
@@ -83,6 +85,7 @@
       "admin/experience-cloud-site-setup",
       "admin/financial-account-setup",
       "admin/financial-planning-process",
+      "admin/flexcard-requirements",
       "admin/flow-for-admins",
       "admin/formula-fields",
       "admin/fsc-action-plans",
@@ -113,6 +116,7 @@
       "admin/industries-energy-utilities-setup",
       "admin/industries-insurance-setup",
       "admin/integration-admin-connected-apps",
+      "admin/integration-pattern-selection",
       "admin/integration-user-management",
       "admin/journey-builder-administration",
       "admin/knowledge-base-administration",
@@ -135,6 +139,7 @@
       "admin/npsp-program-management",
       "admin/object-creation-and-design",
       "admin/omni-channel-routing-setup",
+      "admin/omniscript-flow-design-requirements",
       "admin/omnistudio-admin-configuration",
       "admin/omnistudio-vs-standard-decision",
       "admin/opportunity-management",
@@ -329,6 +334,7 @@
       "architect/analytics-data-architecture",
       "architect/analytics-embedded-components",
       "architect/analytics-security-architecture",
+      "architect/api-led-connectivity-architecture",
       "architect/b2b-vs-b2c-architecture",
       "architect/banking-lending-architecture",
       "architect/case-deflection-strategy",
@@ -341,6 +347,7 @@
       "architect/customer-effort-scoring",
       "architect/data-cloud-architecture",
       "architect/einstein-bot-architecture",
+      "architect/embedded-analytics-architecture",
       "architect/event-driven-architecture",
       "architect/experience-cloud-integration-patterns",
       "architect/experience-cloud-licensing-model",
@@ -450,6 +457,7 @@
       "data/nonprofit-data-architecture",
       "data/npsp-data-model",
       "data/omni-channel-reporting-data",
+      "data/omnistudio-datapack-migration",
       "data/opportunity-pipeline-migration",
       "data/partner-data-access-patterns",
       "data/patient-data-migration",
@@ -541,6 +549,7 @@
       "integration/callout-limits-and-async-patterns",
       "integration/change-data-capture-integration",
       "integration/composite-api-patterns",
+      "integration/error-handling-in-integrations",
       "integration/event-driven-architecture-patterns",
       "integration/file-and-document-integration",
       "integration/graphql-api-patterns",
@@ -553,6 +562,7 @@
       "integration/rest-api-patterns",
       "integration/retry-and-backoff-patterns",
       "integration/salesforce-connect-external-objects",
+      "integration/salesforce-to-salesforce-integration",
       "integration/sis-integration-patterns",
       "integration/soap-api-patterns",
       "integration/streaming-api-and-pushtopic",
@@ -1151,6 +1161,7 @@
       "architect/ai-governance-architecture",
       "architect/ai-platform-architecture",
       "architect/ai-ready-data-architecture",
+      "architect/api-led-connectivity-architecture",
       "architect/conversational-ai-architecture",
       "architect/einstein-bot-architecture",
       "data/vector-database-management"
@@ -1239,6 +1250,16 @@
     ],
     "analytics-dashboard-design": [
       "admin/analytics-dashboard-design"
+    ],
+    "analytics-kpi-definition": [
+      "admin/analytics-kpi-definition"
+    ],
+    "analytics-requirements": [
+      "admin/analytics-kpi-definition",
+      "admin/analytics-requirements-gathering"
+    ],
+    "analytics-requirements-gathering": [
+      "admin/analytics-requirements-gathering"
     ],
     "analytics-studio": [
       "admin/crm-analytics-app-creation"
@@ -1361,7 +1382,11 @@
       "integration/graphql-api-patterns"
     ],
     "api-led-connectivity": [
+      "architect/api-led-connectivity-architecture",
       "integration/api-led-connectivity"
+    ],
+    "api-led-connectivity-architecture": [
+      "architect/api-led-connectivity-architecture"
     ],
     "api-limits": [
       "integration/rest-api-patterns"
@@ -1436,6 +1461,7 @@
       "architect/analytics-security-architecture",
       "architect/commerce-integration-patterns",
       "architect/crm-analytics-vs-tableau-decision",
+      "architect/embedded-analytics-architecture",
       "architect/fsl-optimization-architecture",
       "architect/health-cloud-multi-cloud-strategy",
       "architect/hipaa-compliance-architecture",
@@ -1449,9 +1475,11 @@
       "architect/experience-cloud-licensing-model"
     ],
     "architecture": [
+      "admin/integration-pattern-selection",
       "architect/ai-agent-org-integration-architecture",
       "architect/ai-governance-architecture",
       "architect/analytics-data-architecture",
+      "architect/api-led-connectivity-architecture",
       "architect/b2b-vs-b2c-architecture",
       "architect/banking-lending-architecture",
       "architect/fsc-architecture-patterns",
@@ -1686,6 +1714,11 @@
     ],
     "b2c-marketing": [
       "architect/marketing-cloud-vs-mcae-selection"
+    ],
+    "ba-role": [
+      "admin/flexcard-requirements",
+      "admin/integration-pattern-selection",
+      "admin/omniscript-flow-design-requirements"
     ],
     "baa": [
       "admin/hipaa-workflow-design",
@@ -2088,6 +2121,9 @@
     ],
     "card-actions": [
       "omnistudio/flexcard-design-patterns"
+    ],
+    "card-design": [
+      "admin/flexcard-requirements"
     ],
     "care-coordination": [
       "admin/care-coordination-requirements",
@@ -2889,8 +2925,10 @@
       "admin/analytics-data-manager",
       "admin/analytics-dataflow-development",
       "admin/analytics-dataset-management",
+      "admin/analytics-kpi-definition",
       "admin/analytics-permission-and-sharing",
       "admin/analytics-recipe-design",
+      "admin/analytics-requirements-gathering",
       "admin/crm-analytics-app-creation",
       "admin/einstein-analytics-basics",
       "admin/einstein-discovery-deployment",
@@ -2901,6 +2939,7 @@
       "architect/analytics-embedded-components",
       "architect/analytics-security-architecture",
       "architect/crm-analytics-vs-tableau-decision",
+      "architect/embedded-analytics-architecture",
       "data/analytics-external-data"
     ],
     "crm-analytics-app-creation": [
@@ -2926,6 +2965,9 @@
     ],
     "cross-object-formula": [
       "apex/cross-object-formula-and-rollup-performance"
+    ],
+    "cross-org": [
+      "integration/salesforce-to-salesforce-integration"
     ],
     "cross-site-navigation": [
       "architect/multi-site-architecture"
@@ -3329,6 +3371,9 @@
       "apex/record-locking-and-contention",
       "architect/high-volume-sales-data-architecture"
     ],
+    "data-source-mapping": [
+      "admin/analytics-requirements-gathering"
+    ],
     "data-sources": [
       "omnistudio/flexcard-design-patterns"
     ],
@@ -3364,6 +3409,7 @@
       "admin/analytics-dataset-management"
     ],
     "datapack": [
+      "data/omnistudio-datapack-migration",
       "omnistudio/omnistudio-ci-cd-patterns"
     ],
     "datapacks": [
@@ -3542,6 +3588,7 @@
       "admin/change-management-and-deployment",
       "apex/metadata-api-and-package-xml",
       "apex/sf-cli-and-sfdx-essentials",
+      "data/omnistudio-datapack-migration",
       "devops/change-set-deployment",
       "devops/cpq-deployment-administration",
       "devops/cross-cloud-deployment-patterns",
@@ -3988,6 +4035,12 @@
     "embedded": [
       "architect/analytics-embedded-components"
     ],
+    "embedded-analytics": [
+      "architect/embedded-analytics-architecture"
+    ],
+    "embedded-analytics-architecture": [
+      "architect/embedded-analytics-architecture"
+    ],
     "embedded-service": [
       "admin/messaging-and-chat-setup",
       "agentforce/agent-channel-deployment"
@@ -4126,8 +4179,14 @@
     "error-diagnosis": [
       "flow/flow-runtime-error-diagnosis"
     ],
+    "error-handling": [
+      "integration/error-handling-in-integrations"
+    ],
     "error-handling-framework": [
       "apex/error-handling-framework"
+    ],
+    "error-handling-in-integrations": [
+      "integration/error-handling-in-integrations"
     ],
     "error-logging": [
       "flow/fault-handling"
@@ -4597,6 +4656,7 @@
       "agentforce/prompt-builder-templates"
     ],
     "flexcard": [
+      "admin/flexcard-requirements",
       "omnistudio/flexcard-design-patterns",
       "omnistudio/omnistudio-performance",
       "omnistudio/omnistudio-remote-actions",
@@ -4967,6 +5027,7 @@
     ],
     "governance": [
       "admin/change-advisory-board-process",
+      "architect/api-led-connectivity-architecture",
       "architect/multi-bu-marketing-architecture"
     ],
     "government-cloud": [
@@ -5406,6 +5467,7 @@
       "admin/care-plan-configuration"
     ],
     "integration": [
+      "admin/integration-pattern-selection",
       "agentforce/sf-to-llm-data-pipelines",
       "apex/fhir-integration-patterns",
       "apex/marketing-cloud-api",
@@ -5413,13 +5475,16 @@
       "apex/mcae-pardot-api",
       "apex/npsp-api-and-integration",
       "architect/ai-agent-org-integration-architecture",
+      "architect/api-led-connectivity-architecture",
       "architect/cpq-architecture-patterns",
       "architect/cpq-integration-with-erp",
       "architect/fsc-architecture-patterns",
       "architect/fsl-integration-patterns",
       "architect/integration-framework-design",
       "integration/composite-api-patterns",
-      "integration/outbound-messages-and-callbacks"
+      "integration/error-handling-in-integrations",
+      "integration/outbound-messages-and-callbacks",
+      "integration/salesforce-to-salesforce-integration"
     ],
     "integration-admin": [
       "admin/outbound-message-setup",
@@ -5438,6 +5503,9 @@
     ],
     "integration-endpoints": [
       "devops/sandbox-data-isolation-gotchas"
+    ],
+    "integration-pattern-selection": [
+      "admin/integration-pattern-selection"
     ],
     "integration-patterns": [
       "architect/aml-kyc-process-architecture",
@@ -5673,6 +5741,7 @@
       "architect/knowledge-vs-external-cms"
     ],
     "kpi": [
+      "admin/analytics-kpi-definition",
       "admin/marketing-reporting-requirements"
     ],
     "kyc": [
@@ -5888,7 +5957,8 @@
       "lwc/experience-cloud-lwc-components"
     ],
     "lightning-pages": [
-      "admin/lightning-page-performance-tuning"
+      "admin/lightning-page-performance-tuning",
+      "architect/embedded-analytics-architecture"
     ],
     "lightning-record-edit-form": [
       "lwc/lwc-forms-and-validation"
@@ -6281,6 +6351,9 @@
     "meter-management": [
       "admin/industries-energy-utilities-setup"
     ],
+    "metrics": [
+      "admin/analytics-kpi-definition"
+    ],
     "mfa": [
       "admin/org-setup-and-configuration",
       "security/transaction-security-policies"
@@ -6298,6 +6371,7 @@
       "admin/data-import-and-management",
       "agentforce/einstein-bots-to-agentforce-migration",
       "architect/npsp-vs-nonprofit-cloud-decision",
+      "data/omnistudio-datapack-migration",
       "data/person-accounts",
       "devops/migration-from-change-sets-to-sfdx",
       "omnistudio/industries-cpq-vs-salesforce-cpq",
@@ -6406,6 +6480,7 @@
     "mulesoft": [
       "apex/fhir-integration-patterns",
       "apex/fsc-integration-patterns-dev",
+      "architect/api-led-connectivity-architecture",
       "architect/cpq-integration-with-erp",
       "architect/fhir-integration-architecture",
       "integration/api-led-connectivity",
@@ -6705,6 +6780,7 @@
       "omnistudio/document-generation-omnistudio"
     ],
     "omniscript": [
+      "admin/omniscript-flow-design-requirements",
       "architect/omnistudio-scalability-patterns",
       "omnistudio/document-generation-omnistudio",
       "omnistudio/omniscript-design-patterns",
@@ -6717,11 +6793,14 @@
     ],
     "omnistudio": [
       "admin/client-onboarding-design",
+      "admin/flexcard-requirements",
       "admin/industries-insurance-setup",
+      "admin/omniscript-flow-design-requirements",
       "admin/patient-engagement-requirements",
       "architect/omnistudio-scalability-patterns",
       "architect/omnistudio-vs-standard-architecture",
       "architect/omnistudio-vs-standard-decision",
+      "data/omnistudio-datapack-migration",
       "omnistudio/business-rules-engine",
       "omnistudio/calculation-procedures",
       "omnistudio/dataraptor-load-and-extract",
@@ -6748,6 +6827,9 @@
     ],
     "omnistudio-data-mapping": [
       "omnistudio/dataraptor-patterns"
+    ],
+    "omnistudio-datapack-migration": [
+      "data/omnistudio-datapack-migration"
     ],
     "omnistudio-docgen": [
       "apex/fsc-document-generation"
@@ -7115,6 +7197,9 @@
     "patient-records": [
       "data/clinical-data-quality"
     ],
+    "pattern-selection": [
+      "admin/integration-pattern-selection"
+    ],
     "pause-element": [
       "flow/pause-elements-and-wait-events"
     ],
@@ -7311,9 +7396,11 @@
       "architect/limits-and-scalability-planning",
       "architect/org-limits-monitoring",
       "flow/auto-launched-flow-patterns",
+      "integration/error-handling-in-integrations",
       "integration/event-driven-architecture-patterns",
       "integration/idempotent-integration-patterns",
-      "integration/platform-events-integration"
+      "integration/platform-events-integration",
+      "integration/salesforce-to-salesforce-integration"
     ],
     "platform-notifications": [
       "lwc/lwc-toast-and-notifications"
@@ -7946,7 +8033,8 @@
       "admin/salesforce-release-preparation"
     ],
     "reliability": [
-      "apex/governor-limit-recovery-patterns"
+      "apex/governor-limit-recovery-patterns",
+      "integration/error-handling-in-integrations"
     ],
     "remote-action": [
       "omnistudio/omnistudio-remote-actions"
@@ -8033,7 +8121,10 @@
       "admin/territory-design-requirements"
     ],
     "requirements-gathering": [
+      "admin/analytics-requirements-gathering",
+      "admin/flexcard-requirements",
       "admin/marketing-automation-requirements",
+      "admin/omniscript-flow-design-requirements",
       "admin/portal-requirements-gathering",
       "admin/requirements-gathering-for-sf",
       "admin/wealth-management-requirements"
@@ -8318,7 +8409,11 @@
       "admin/salesforce-surveys"
     ],
     "salesforce-to-salesforce": [
-      "architect/multi-org-strategy"
+      "architect/multi-org-strategy",
+      "integration/salesforce-to-salesforce-integration"
+    ],
+    "salesforce-to-salesforce-integration": [
+      "integration/salesforce-to-salesforce-integration"
     ],
     "saml": [
       "architect/experience-cloud-integration-patterns",
@@ -9601,6 +9696,9 @@
     ],
     "user-experience": [
       "admin/path-and-guidance"
+    ],
+    "user-journey": [
+      "admin/omniscript-flow-design-requirements"
     ],
     "user-management": [
       "admin/delegated-administration",
