@@ -1,0 +1,98 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "168abae6ed1a61afbc90",
+    "24c3699dc1f74d206a4d",
+    "25edae78a0a20045bd9d",
+    "2f1990936f24dd2fe0ef",
+    "311ed17fced3267f6153",
+    "359978840d4d58b88899",
+    "395ba082bb1cb8881c79",
+    "3a883874892d66661687",
+    "469cde464754aee6130a",
+    "4f90339a5745b5711682",
+    "52a70d54c29fc39a481d",
+    "5501a6f047fa26af6d73",
+    "5832e3ac2b0f366d27a9",
+    "5e5cc865153a9edca045",
+    "5f1fef191b86997bc524",
+    "624ab034cf2e9dd8031b",
+    "6669118da2653fdc70c1",
+    "66b9cb8dd6395f73a4d1",
+    "679974da8af9dcfec661",
+    "6c4e67d2f785e105b4e0",
+    "7ad69b88ab1c946510cd",
+    "824e65fbb176d80a0dd6",
+    "85af3baa3c1f48ad7e33",
+    "8bcc84df7fca81a1b6f8",
+    "94d96cfe2dd36ae2d40f",
+    "950e47b4e11499b41d7f",
+    "9631d991c2fc57dbe83c",
+    "96d0b1519ca0e751d1c9",
+    "9f02a64d2f3b484b516f",
+    "a02b069e6b20d5fcc815",
+    "a147f91fcf34e9a926a9",
+    "a556e3376091ad4edd3a",
+    "b42e540468595df1c88b",
+    "b475c1d5fae5ec6e66f9",
+    "b76f712a996006662ce0",
+    "b87f3eed9a01cfda0a8a",
+    "bd4ee6639996c3d3551b",
+    "c5909ce7217a6de77309",
+    "cc7d6db15d21f6048303",
+    "ccc4be221c226c8c2e64",
+    "d5d0a9c717521cab2ebc",
+    "d6de2dfb23852f960fa5",
+    "d7bfaf9e5142405698f7",
+    "e13bf92b11383fc17631",
+    "ed5ee45e05c59630caf1",
+    "ef3479fcbf619255f668",
+    "ef4cfaf0a65733f3e09b",
+    "f681b772f4f04f8eb5fc",
+    "f6eb62b6ff862d108f2d"
+  ],
+  "content_hash": "f89da9b990507b0edac1d24fde4261c6ebb28d43ba3d7a8e4f33d58b494102d2",
+  "dependencies": [],
+  "description": "Use this skill to define, document, and validate KPI metrics for CRM Analytics \u2014 covering metric formula design, dimension selection, target-dataset modeling, benchmark setting, and the KPI register that must exist before any dashboard or lens is built. Trigger keywords: KPI definition CRM Analytics, analytics metric design, analytics target attainment, CRM Analytics measures vs dimensions, analytics benchmark. NOT for building CRM Analytics dashboards or lenses (use analytics/dashboard-design), SOQL report KPI design, or Marketing Cloud analytics KPI work.",
+  "file_location": "skills/admin/analytics-kpi-definition",
+  "id": "admin/analytics-kpi-definition",
+  "inputs": [
+    "List of KPIs stakeholders need to track",
+    "Business definitions for each metric (what counts, what excludes)",
+    "Target values or benchmark sources",
+    "CRM Analytics dataset name and available fields"
+  ],
+  "name": "analytics-kpi-definition",
+  "official_sources": [
+    "Calculate Key Performance Indicators Using CRM Analytics \u2014 https://help.salesforce.com/s/articleView?id=sf.bi_kpis.htm",
+    "CRM Analytics Design Principles \u2014 https://trailhead.salesforce.com/content/learn/modules/wave_analytics_design_principles",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "KPI register with metric name, formula, dimension, target expression, and benchmark",
+    "Target dataset schema for loading attainment targets",
+    "SAQL snippet for KPI attainment calculation"
+  ],
+  "references": [
+    "skills/admin/analytics-kpi-definition/references/examples.md",
+    "skills/admin/analytics-kpi-definition/references/gotchas.md",
+    "skills/admin/analytics-kpi-definition/references/llm-anti-patterns.md",
+    "skills/admin/analytics-kpi-definition/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/analytics-kpi-definition/scripts/check_analytics_kpi_definition.py"
+  ],
+  "tags": [
+    "crm-analytics",
+    "kpi",
+    "metrics",
+    "analytics-requirements",
+    "analytics-kpi-definition"
+  ],
+  "templates": [
+    "skills/admin/analytics-kpi-definition/templates/analytics-kpi-definition-template.md"
+  ],
+  "updated": "2026-04-14",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}
