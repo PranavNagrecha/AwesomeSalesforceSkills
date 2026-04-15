@@ -4103,6 +4103,66 @@
       "domain": "data",
       "expected_skill": "data/commerce-analytics-data",
       "top_k": 3
+    },
+    {
+      "query": "how to call insurance policy API in Salesforce Industries",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/industries-api-extensions",
+      "top_k": 3
+    },
+    {
+      "query": "how to migrate insurance policy data to Salesforce Industries",
+      "domain": "data",
+      "expected_skill": "data/industries-data-migration",
+      "top_k": 3
+    },
+    {
+      "query": "how to manage OmniStudio component dependencies and metadata",
+      "domain": "data",
+      "expected_skill": "data/omnistudio-metadata-management",
+      "top_k": 3
+    },
+    {
+      "query": "which Salesforce industry cloud should I choose for insurance telecom utility",
+      "domain": "architect",
+      "expected_skill": "architect/industries-cloud-selection",
+      "top_k": 3
+    },
+    {
+      "query": "how to architect integration between Salesforce Industries and insurance or telecom backend systems",
+      "domain": "architect",
+      "expected_skill": "architect/industries-integration-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "how to design insurance FNOL process in Salesforce Industries",
+      "domain": "admin",
+      "expected_skill": "admin/industries-process-design",
+      "top_k": 3
+    },
+    {
+      "query": "how to plan AI adoption change management for Agentforce rollout",
+      "domain": "admin",
+      "expected_skill": "admin/ai-adoption-change-management",
+      "top_k": 3
+    },
+    {
+      "query": "how to optimize CRM Analytics dataset field selection and performance",
+      "domain": "data",
+      "expected_skill": "data/analytics-dataset-optimization",
+      "top_k": 3
+    },
+    {
+      "query": "how to implement data governance and audit logging for CRM Analytics datasets",
+      "domain": "data",
+      "expected_skill": "data/analytics-data-governance",
+      "top_k": 3
+    },
+    {
+      "query": "how to drive CRM Analytics adoption with embedded dashboards and training",
+      "domain": "admin",
+      "expected_skill": "admin/analytics-adoption-strategy",
+      "top_k": 3
     }
   ]
 }
