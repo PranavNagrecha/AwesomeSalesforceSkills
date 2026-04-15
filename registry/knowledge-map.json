@@ -56,6 +56,10 @@
       "admin/custom-metadata-types",
       "admin/custom-metadata-types-and-settings",
       "admin/custom-permissions",
+      "admin/data-cloud-calculated-insights",
+      "admin/data-cloud-identity-resolution",
+      "admin/data-cloud-provisioning",
+      "admin/data-cloud-segmentation",
       "admin/data-import-and-management",
       "admin/data-model-documentation",
       "admin/data-skew-and-sharing-performance",
@@ -338,6 +342,7 @@
       "architect/b2b-vs-b2c-architecture",
       "architect/banking-lending-architecture",
       "architect/case-deflection-strategy",
+      "architect/ci-cd-pipeline-architecture",
       "architect/commerce-integration-patterns",
       "architect/conversational-ai-architecture",
       "architect/cpq-architecture-patterns",
@@ -370,6 +375,7 @@
       "architect/industries-data-model",
       "architect/insurance-cloud-architecture",
       "architect/integration-framework-design",
+      "architect/integration-security-architecture",
       "architect/knowledge-taxonomy-design",
       "architect/knowledge-vs-external-cms",
       "architect/license-optimization-strategy",
@@ -417,6 +423,7 @@
       "data/case-history-migration",
       "data/cdc-data-sync-patterns",
       "data/clinical-data-quality",
+      "data/commerce-analytics-data",
       "data/community-analytics-data",
       "data/community-user-data-migration",
       "data/consent-data-model-health",
@@ -455,6 +462,7 @@
       "data/mcae-prospect-data-migration",
       "data/multi-currency-and-advanced-currency-management",
       "data/nonprofit-data-architecture",
+      "data/nonprofit-data-quality",
       "data/npsp-data-model",
       "data/omni-channel-reporting-data",
       "data/omnistudio-datapack-migration",
@@ -554,11 +562,13 @@
       "integration/file-and-document-integration",
       "integration/graphql-api-patterns",
       "integration/idempotent-integration-patterns",
+      "integration/middleware-integration-patterns",
       "integration/mulesoft-salesforce-connector",
       "integration/named-credentials-setup",
       "integration/oauth-flows-and-connected-apps",
       "integration/outbound-messages-and-callbacks",
       "integration/platform-events-integration",
+      "integration/real-time-vs-batch-integration",
       "integration/rest-api-patterns",
       "integration/retry-and-backoff-patterns",
       "integration/salesforce-connect-external-objects",
@@ -1024,12 +1034,16 @@
       "agentforce/einstein-next-best-action"
     ],
     "activation": [
+      "admin/data-cloud-segmentation",
       "architect/data-cloud-architecture",
       "data/data-cloud-data-streams",
       "omnistudio/omniscript-versioning"
     ],
     "activation-bypass": [
       "apex/trigger-framework"
+    ],
+    "activation-targets": [
+      "admin/data-cloud-provisioning"
     ],
     "activity-capture": [
       "agentforce/einstein-copilot-for-sales"
@@ -1049,9 +1063,13 @@
     "add-on": [
       "architect/org-edition-and-feature-licensing"
     ],
+    "address-standardization": [
+      "data/nonprofit-data-quality"
+    ],
     "admin": [
       "admin/analytics-permission-and-sharing",
       "admin/custom-field-creation",
+      "admin/data-cloud-provisioning",
       "admin/einstein-discovery-deployment",
       "admin/health-cloud-timeline",
       "admin/object-creation-and-design",
@@ -1239,6 +1257,7 @@
     "analytics": [
       "admin/analytics-permission-and-sharing",
       "admin/saql-query-development",
+      "data/commerce-analytics-data",
       "data/community-analytics-data",
       "data/fsl-reporting-data-model"
     ],
@@ -1380,6 +1399,9 @@
     ],
     "api-design": [
       "integration/graphql-api-patterns"
+    ],
+    "api-gateway": [
+      "architect/integration-security-architecture"
     ],
     "api-led-connectivity": [
       "architect/api-led-connectivity-architecture",
@@ -1588,6 +1610,9 @@
       "admin/campaign-planning-and-attribution",
       "admin/marketing-reporting-requirements"
     ],
+    "audience-publishing": [
+      "admin/data-cloud-segmentation"
+    ],
     "audience-targeting": [
       "admin/experience-cloud-cms-content"
     ],
@@ -1699,6 +1724,7 @@
       "admin/commerce-product-catalog",
       "apex/commerce-extension-points",
       "apex/commerce-search-customization",
+      "data/commerce-analytics-data",
       "lwc/commerce-lwc-components"
     ],
     "b2b-marketing": [
@@ -1710,7 +1736,8 @@
     "b2c-commerce": [
       "admin/b2c-commerce-store-setup",
       "admin/commerce-catalog-strategy",
-      "apex/commerce-order-api"
+      "apex/commerce-order-api",
+      "data/commerce-analytics-data"
     ],
     "b2c-marketing": [
       "architect/marketing-cloud-vs-mcae-selection"
@@ -1741,7 +1768,8 @@
     ],
     "batch": [
       "apex/governor-limits",
-      "data/bulk-api-and-large-data-loads"
+      "data/bulk-api-and-large-data-loads",
+      "integration/real-time-vs-batch-integration"
     ],
     "batch-apex": [
       "admin/batch-job-scheduling-and-monitoring",
@@ -1848,6 +1876,9 @@
     "blue-canvas": [
       "devops/salesforce-devops-tooling-selection"
     ],
+    "boomi": [
+      "integration/middleware-integration-patterns"
+    ],
     "bot-analytics": [
       "architect/einstein-bot-architecture"
     ],
@@ -1906,7 +1937,8 @@
       "data/historical-order-migration",
       "data/opportunity-pipeline-migration",
       "data/patient-data-migration",
-      "integration/mulesoft-salesforce-connector"
+      "integration/mulesoft-salesforce-connector",
+      "integration/real-time-vs-batch-integration"
     ],
     "bulk-api-2": [
       "data/bulk-api-patterns"
@@ -2043,6 +2075,7 @@
       "apex/cpq-api-and-automation"
     ],
     "calculated-insights": [
+      "admin/data-cloud-calculated-insights",
       "data/data-cloud-data-streams"
     ],
     "calculation-matrix": [
@@ -2151,6 +2184,9 @@
     "care-team": [
       "admin/health-cloud-patient-setup"
     ],
+    "cart-abandonment": [
+      "data/commerce-analytics-data"
+    ],
     "cart-calculator": [
       "apex/commerce-extension-points"
     ],
@@ -2230,7 +2266,8 @@
       "admin/change-data-capture-admin",
       "apex/fsc-integration-patterns-dev",
       "apex/platform-events-apex",
-      "apex/sales-engagement-api"
+      "apex/sales-engagement-api",
+      "integration/real-time-vs-batch-integration"
     ],
     "cdn": [
       "architect/experience-cloud-performance",
@@ -2243,6 +2280,9 @@
     ],
     "certificate": [
       "security/certificate-and-key-management"
+    ],
+    "certificate-management": [
+      "architect/integration-security-architecture"
     ],
     "certificate-rotation": [
       "security/certificate-and-key-management"
@@ -2322,6 +2362,7 @@
       "data/vector-database-management"
     ],
     "ci-cd": [
+      "architect/ci-cd-pipeline-architecture",
       "devops/bitbucket-pipelines-for-salesforce",
       "devops/continuous-integration-testing",
       "devops/cumulusci-automation",
@@ -2459,7 +2500,8 @@
       "admin/commerce-checkout-configuration",
       "admin/commerce-checkout-flow-design",
       "admin/commerce-pricing-and-promotions",
-      "apex/commerce-extension-points"
+      "apex/commerce-extension-points",
+      "data/commerce-analytics-data"
     ],
     "commerce-api": [
       "apex/commerce-order-api"
@@ -2822,6 +2864,9 @@
     "conversational-ai-architecture": [
       "architect/conversational-ai-architecture"
     ],
+    "conversion-funnel": [
+      "data/commerce-analytics-data"
+    ],
     "convertcurrency": [
       "data/multi-currency-and-advanced-currency-management"
     ],
@@ -3125,6 +3170,9 @@
       "admin/portal-requirements-gathering",
       "data/external-user-data-sharing"
     ],
+    "customer-data-platform": [
+      "admin/data-cloud-identity-resolution"
+    ],
     "customer-effort-scoring": [
       "architect/customer-effort-scoring"
     ],
@@ -3204,6 +3252,10 @@
       "data/batch-data-cleanup-patterns"
     ],
     "data-cloud": [
+      "admin/data-cloud-calculated-insights",
+      "admin/data-cloud-identity-resolution",
+      "admin/data-cloud-provisioning",
+      "admin/data-cloud-segmentation",
       "agentforce/agentforce-observability",
       "agentforce/agentforce-service-ai-setup",
       "agentforce/rag-patterns-in-salesforce",
@@ -3211,6 +3263,12 @@
       "architect/experience-cloud-integration-patterns",
       "data/data-cloud-data-streams",
       "data/vector-database-management"
+    ],
+    "data-cloud-metrics": [
+      "admin/data-cloud-calculated-insights"
+    ],
+    "data-cloud-provisioning": [
+      "admin/data-cloud-provisioning"
     ],
     "data-connector": [
       "data/analytics-external-data"
@@ -3240,6 +3298,9 @@
     ],
     "data-handling": [
       "devops/sandbox-refresh-and-templates"
+    ],
+    "data-hygiene": [
+      "data/nonprofit-data-quality"
     ],
     "data-import": [
       "data/constituent-data-migration",
@@ -3377,6 +3438,9 @@
     "data-sources": [
       "omnistudio/flexcard-design-patterns"
     ],
+    "data-spaces": [
+      "admin/data-cloud-provisioning"
+    ],
     "data-storage": [
       "data/data-storage-management"
     ],
@@ -3388,7 +3452,8 @@
     ],
     "data-sync": [
       "admin/analytics-data-manager",
-      "data/cdc-data-sync-patterns"
+      "data/cdc-data-sync-patterns",
+      "integration/real-time-vs-batch-integration"
     ],
     "data-use-purpose": [
       "architect/marketing-consent-architecture"
@@ -3629,6 +3694,9 @@
     "deployment-status": [
       "devops/post-deployment-validation"
     ],
+    "deployment-strategy": [
+      "architect/ci-cd-pipeline-architecture"
+    ],
     "deployment-validation": [
       "devops/continuous-integration-testing"
     ],
@@ -3667,6 +3735,7 @@
     "devops": [
       "admin/change-advisory-board-process",
       "admin/deployment-risk-assessment",
+      "architect/ci-cd-pipeline-architecture",
       "devops/api-version-management",
       "devops/cpq-deployment-administration",
       "devops/cumulusci-automation",
@@ -3836,7 +3905,8 @@
       "apex/timezone-and-datetime-pitfalls"
     ],
     "duplicate-detection": [
-      "data/financial-data-quality"
+      "data/financial-data-quality",
+      "data/nonprofit-data-quality"
     ],
     "duplicate-management": [
       "data/clinical-data-quality",
@@ -4150,6 +4220,9 @@
     "environment-strategy": [
       "admin/sandbox-strategy",
       "devops/environment-strategy"
+    ],
+    "environment-topology": [
+      "architect/ci-cd-pipeline-architecture"
     ],
     "epc": [
       "admin/industries-communications-setup"
@@ -5253,7 +5326,8 @@
     ],
     "household-accounts": [
       "admin/npsp-household-accounts",
-      "architect/npsp-vs-nonprofit-cloud-decision"
+      "architect/npsp-vs-nonprofit-cloud-decision",
+      "data/nonprofit-data-quality"
     ],
     "household-rollup": [
       "data/financial-data-quality"
@@ -5300,7 +5374,8 @@
     ],
     "hyperforce": [
       "architect/government-cloud-compliance",
-      "architect/health-cloud-data-residency"
+      "architect/health-cloud-data-residency",
+      "architect/integration-security-architecture"
     ],
     "icm": [
       "admin/care-plan-configuration"
@@ -5321,6 +5396,7 @@
       "integration/idempotent-integration-patterns"
     ],
     "identity-resolution": [
+      "admin/data-cloud-identity-resolution",
       "architect/data-cloud-architecture",
       "data/data-cloud-data-streams"
     ],
@@ -5419,7 +5495,11 @@
     "infinite-loading": [
       "lwc/lwc-data-table"
     ],
+    "informatica": [
+      "integration/middleware-integration-patterns"
+    ],
     "ingestion-api": [
+      "admin/data-cloud-provisioning",
       "data/data-cloud-data-streams"
     ],
     "inherited-sharing": [
@@ -5484,6 +5564,7 @@
       "integration/composite-api-patterns",
       "integration/error-handling-in-integrations",
       "integration/outbound-messages-and-callbacks",
+      "integration/real-time-vs-batch-integration",
       "integration/salesforce-to-salesforce-integration"
     ],
     "integration-admin": [
@@ -5496,7 +5577,8 @@
     "integration-architecture": [
       "architect/b2b-vs-b2c-architecture",
       "architect/event-driven-architecture",
-      "integration/api-led-connectivity"
+      "integration/api-led-connectivity",
+      "integration/middleware-integration-patterns"
     ],
     "integration-auth": [
       "admin/connected-apps-and-auth"
@@ -5512,7 +5594,8 @@
       "architect/platform-selection-guidance",
       "architect/wealth-management-architecture",
       "integration/event-driven-architecture-patterns",
-      "integration/idempotent-integration-patterns"
+      "integration/idempotent-integration-patterns",
+      "integration/real-time-vs-batch-integration"
     ],
     "integration-procedure": [
       "architect/omnistudio-scalability-patterns",
@@ -5536,6 +5619,7 @@
       "integration/retry-and-backoff-patterns"
     ],
     "integration-security": [
+      "architect/integration-security-architecture",
       "integration/named-credentials-setup"
     ],
     "integration-user": [
@@ -5608,6 +5692,9 @@
     ],
     "ip-restrictions": [
       "security/api-security-and-rate-limiting"
+    ],
+    "ipaas": [
+      "integration/middleware-integration-patterns"
     ],
     "isv": [
       "apex/apex-metadata-api",
@@ -6233,6 +6320,9 @@
     "master-detail": [
       "data/data-model-design-patterns"
     ],
+    "match-rules": [
+      "admin/data-cloud-identity-resolution"
+    ],
     "matching-gifts": [
       "admin/soft-credits-and-matching"
     ],
@@ -6297,6 +6387,9 @@
     ],
     "message-channel": [
       "lwc/message-channel-patterns"
+    ],
+    "message-transformation": [
+      "integration/middleware-integration-patterns"
     ],
     "messaging": [
       "admin/messaging-and-chat-setup",
@@ -6365,7 +6458,8 @@
       "apex/service-cloud-rest-api"
     ],
     "middleware": [
-      "integration/change-data-capture-integration"
+      "integration/change-data-capture-integration",
+      "integration/middleware-integration-patterns"
     ],
     "migration": [
       "admin/data-import-and-management",
@@ -6474,6 +6568,9 @@
       "admin/marketing-automation-requirements",
       "admin/mcae-lead-scoring-and-grading"
     ],
+    "mtls": [
+      "architect/integration-security-architecture"
+    ],
     "mttr": [
       "data/service-metrics-data-model"
     ],
@@ -6484,6 +6581,7 @@
       "architect/cpq-integration-with-erp",
       "architect/fhir-integration-architecture",
       "integration/api-led-connectivity",
+      "integration/middleware-integration-patterns",
       "integration/mulesoft-salesforce-connector",
       "integration/sis-integration-patterns"
     ],
@@ -6559,6 +6657,7 @@
       "admin/connected-apps-and-auth",
       "agentforce/model-builder-and-byollm",
       "apex/callouts-and-http-integrations",
+      "architect/integration-security-architecture",
       "architect/multi-org-strategy",
       "devops/environment-specific-value-injection",
       "flow/flow-external-services",
@@ -6598,6 +6697,9 @@
     ],
     "nba-strategy": [
       "agentforce/einstein-next-best-action"
+    ],
+    "ncoa": [
+      "data/nonprofit-data-quality"
     ],
     "network-access": [
       "security/network-security-and-trusted-ips"
@@ -6649,6 +6751,9 @@
     "nonprofit-data-architecture": [
       "data/nonprofit-data-architecture"
     ],
+    "nonprofit-data-quality": [
+      "data/nonprofit-data-quality"
+    ],
     "nonprofit-platform": [
       "architect/nonprofit-platform-architecture"
     ],
@@ -6680,6 +6785,7 @@
       "architect/npsp-vs-nonprofit-cloud-decision",
       "data/constituent-data-migration",
       "data/nonprofit-data-architecture",
+      "data/nonprofit-data-quality",
       "data/npsp-data-model"
     ],
     "null-handling": [
@@ -6696,6 +6802,7 @@
       "apex/mcae-pardot-api",
       "architect/ai-agent-org-integration-architecture",
       "architect/experience-cloud-integration-patterns",
+      "architect/integration-security-architecture",
       "integration/named-credentials-setup",
       "integration/oauth-flows-and-connected-apps",
       "integration/rest-api-patterns",
@@ -6951,7 +7058,8 @@
     ],
     "orchestration": [
       "apex/long-running-process-orchestration",
-      "architect/event-driven-architecture"
+      "architect/event-driven-architecture",
+      "integration/middleware-integration-patterns"
     ],
     "order": [
       "admin/quote-to-cash-requirements"
@@ -7289,6 +7397,7 @@
       "architect/license-optimization-strategy"
     ],
     "permission-sets": [
+      "admin/data-cloud-provisioning",
       "admin/delegated-administration",
       "admin/permission-sets-vs-profiles",
       "admin/user-access-policies",
@@ -7361,6 +7470,9 @@
       "devops/copado-essentials",
       "devops/devops-center-pipeline"
     ],
+    "pipeline-architecture": [
+      "architect/ci-cd-pipeline-architecture"
+    ],
     "pipeline-health": [
       "admin/pipeline-review-design"
     ],
@@ -7400,6 +7512,7 @@
       "integration/event-driven-architecture-patterns",
       "integration/idempotent-integration-patterns",
       "integration/platform-events-integration",
+      "integration/real-time-vs-batch-integration",
       "integration/salesforce-to-salesforce-integration"
     ],
     "platform-notifications": [
@@ -7560,6 +7673,9 @@
     "privacy-center": [
       "security/gdpr-data-privacy"
     ],
+    "private-connect": [
+      "architect/integration-security-architecture"
+    ],
     "privileged-script-tag": [
       "architect/experience-cloud-integration-patterns"
     ],
@@ -7608,6 +7724,9 @@
     ],
     "product-option": [
       "data/product-catalog-migration-cpq"
+    ],
+    "product-performance": [
+      "data/commerce-analytics-data"
     ],
     "product-rules": [
       "admin/cpq-product-catalog-setup",
@@ -7738,7 +7857,8 @@
     ],
     "pub-sub-api": [
       "integration/change-data-capture-integration",
-      "integration/platform-events-integration"
+      "integration/platform-events-integration",
+      "integration/real-time-vs-batch-integration"
     ],
     "public-groups": [
       "admin/queues-and-public-groups"
@@ -7770,6 +7890,9 @@
     ],
     "qle": [
       "apex/cpq-custom-actions"
+    ],
+    "quality-gates": [
+      "architect/ci-cd-pipeline-architecture"
     ],
     "query": [
       "admin/saql-query-development",
@@ -7892,12 +8015,18 @@
     "reactive-parameters": [
       "lwc/wire-service-patterns"
     ],
+    "real-time": [
+      "integration/real-time-vs-batch-integration"
+    ],
     "real-time-events": [
       "security/event-monitoring",
       "security/transaction-security-policies"
     ],
     "real-time-integration": [
       "integration/streaming-api-and-pushtopic"
+    ],
+    "real-time-segmentation": [
+      "admin/data-cloud-segmentation"
     ],
     "recaptcha": [
       "security/recaptcha-and-bot-prevention"
@@ -7910,6 +8039,9 @@
     ],
     "recommendations": [
       "agentforce/einstein-next-best-action"
+    ],
+    "reconciliation-rules": [
+      "admin/data-cloud-identity-resolution"
     ],
     "record-access": [
       "admin/sharing-and-visibility"
@@ -8013,6 +8145,7 @@
       "admin/change-advisory-board-process",
       "admin/change-management-and-deployment",
       "admin/deployment-risk-assessment",
+      "architect/ci-cd-pipeline-architecture",
       "devops/change-set-deployment",
       "devops/devops-center-pipeline",
       "devops/release-management"
@@ -8195,6 +8328,9 @@
     ],
     "revenue-intelligence": [
       "admin/pipeline-review-design"
+    ],
+    "revenue-metrics": [
+      "data/commerce-analytics-data"
     ],
     "revenue-recognition-requirements": [
       "admin/revenue-recognition-requirements"
@@ -8384,6 +8520,9 @@
     ],
     "salesforce-data-pipeline": [
       "admin/analytics-data-manager"
+    ],
+    "salesforce-dx": [
+      "architect/ci-cd-pipeline-architecture"
     ],
     "salesforce-extensions": [
       "devops/vscode-salesforce-extensions"
@@ -8672,7 +8811,12 @@
     "seed-data": [
       "omnistudio/omnistudio-lwc-integration"
     ],
+    "segment-refresh": [
+      "admin/data-cloud-segmentation"
+    ],
     "segmentation": [
+      "admin/data-cloud-calculated-insights",
+      "admin/data-cloud-segmentation",
       "architect/data-cloud-architecture"
     ],
     "selector-layer": [
@@ -9138,6 +9282,7 @@
       "architect/order-management-architecture"
     ],
     "sql": [
+      "admin/data-cloud-calculated-insights",
       "admin/lead-scoring-requirements",
       "admin/marketing-automation-requirements"
     ],
@@ -9243,6 +9388,9 @@
     "streaming-api": [
       "integration/event-driven-architecture-patterns",
       "integration/streaming-api-and-pushtopic"
+    ],
+    "streaming-insights": [
+      "admin/data-cloud-calculated-insights"
     ],
     "street-level-routing": [
       "admin/fsl-scheduling-optimization-design"
@@ -9648,6 +9796,7 @@
       "apex/einstein-activity-capture-api"
     ],
     "unified-profile": [
+      "admin/data-cloud-identity-resolution",
       "architect/data-cloud-architecture"
     ],
     "unified-routing": [
@@ -9774,6 +9923,9 @@
     ],
     "vector-store": [
       "agentforce/sf-to-llm-data-pipelines"
+    ],
+    "vendor-selection": [
+      "integration/middleware-integration-patterns"
     ],
     "version-control": [
       "omnistudio/omnistudio-deployment-datapacks"
@@ -9944,6 +10096,9 @@
     ],
     "work-types": [
       "admin/fsl-work-order-management"
+    ],
+    "workato": [
+      "integration/middleware-integration-patterns"
     ],
     "workflow": [
       "admin/outbound-message-setup"

@@ -4043,6 +4043,66 @@
       "domain": "devops",
       "expected_skill": "devops/cross-cloud-deployment-patterns",
       "top_k": 3
+    },
+    {
+      "query": "how to set up data cloud provisioning",
+      "domain": "admin",
+      "expected_skill": "admin/data-cloud-provisioning",
+      "top_k": 3
+    },
+    {
+      "query": "identity resolution matching rules unified profile",
+      "domain": "admin",
+      "expected_skill": "admin/data-cloud-identity-resolution",
+      "top_k": 3
+    },
+    {
+      "query": "how to create calculated insight in data cloud",
+      "domain": "admin",
+      "expected_skill": "admin/data-cloud-calculated-insights",
+      "top_k": 3
+    },
+    {
+      "query": "create segment publish audience data cloud",
+      "domain": "admin",
+      "expected_skill": "admin/data-cloud-segmentation",
+      "top_k": 3
+    },
+    {
+      "query": "salesforce ci cd pipeline stages quality gates",
+      "domain": "architect",
+      "expected_skill": "architect/ci-cd-pipeline-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "which middleware tool to use for salesforce integration mulesoft boomi",
+      "domain": "integration",
+      "expected_skill": "integration/middleware-integration-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "should I use real time or batch integration for high volume data",
+      "domain": "integration",
+      "expected_skill": "integration/real-time-vs-batch-integration",
+      "top_k": 3
+    },
+    {
+      "query": "salesforce integration security mtls hyperforce ip allowlisting",
+      "domain": "architect",
+      "expected_skill": "architect/integration-security-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "NPSP address standardization duplicate detection household",
+      "domain": "data",
+      "expected_skill": "data/nonprofit-data-quality",
+      "top_k": 3
+    },
+    {
+      "query": "commerce analytics cart abandonment conversion rate b2c b2b",
+      "domain": "data",
+      "expected_skill": "data/commerce-analytics-data",
+      "top_k": 3
     }
   ]
 }
