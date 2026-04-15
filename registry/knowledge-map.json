@@ -3,8 +3,10 @@
   "skills_by_domain": {
     "admin": [
       "admin/agent-conversation-design",
+      "admin/ai-adoption-change-management",
       "admin/ai-ethics-and-governance-requirements",
       "admin/ai-use-case-assessment",
+      "admin/analytics-adoption-strategy",
       "admin/analytics-dashboard-design",
       "admin/analytics-dashboard-json",
       "admin/analytics-data-manager",
@@ -119,6 +121,7 @@
       "admin/industries-communications-setup",
       "admin/industries-energy-utilities-setup",
       "admin/industries-insurance-setup",
+      "admin/industries-process-design",
       "admin/integration-admin-connected-apps",
       "admin/integration-pattern-selection",
       "admin/integration-user-management",
@@ -372,7 +375,9 @@
       "architect/health-cloud-multi-cloud-strategy",
       "architect/high-volume-sales-data-architecture",
       "architect/hipaa-compliance-architecture",
+      "architect/industries-cloud-selection",
       "architect/industries-data-model",
+      "architect/industries-integration-architecture",
       "architect/insurance-cloud-architecture",
       "architect/integration-framework-design",
       "architect/integration-security-architecture",
@@ -415,6 +420,8 @@
       "architect/well-architected-review"
     ],
     "data": [
+      "data/analytics-data-governance",
+      "data/analytics-dataset-optimization",
       "data/analytics-external-data",
       "data/batch-data-cleanup-patterns",
       "data/billing-data-reconciliation",
@@ -453,6 +460,7 @@
       "data/fsl-work-order-migration",
       "data/health-cloud-data-model",
       "data/historical-order-migration",
+      "data/industries-data-migration",
       "data/industries-data-model",
       "data/knowledge-article-import",
       "data/large-scale-deduplication",
@@ -466,6 +474,7 @@
       "data/npsp-data-model",
       "data/omni-channel-reporting-data",
       "data/omnistudio-datapack-migration",
+      "data/omnistudio-metadata-management",
       "data/opportunity-pipeline-migration",
       "data/partner-data-access-patterns",
       "data/patient-data-migration",
@@ -619,6 +628,7 @@
       "omnistudio/dataraptor-patterns",
       "omnistudio/document-generation-omnistudio",
       "omnistudio/flexcard-design-patterns",
+      "omnistudio/industries-api-extensions",
       "omnistudio/industries-cpq-vs-salesforce-cpq",
       "omnistudio/integration-procedures",
       "omnistudio/omniscript-design-patterns",
@@ -1082,6 +1092,12 @@
     "admin-setup": [
       "admin/industries-energy-utilities-setup"
     ],
+    "adoption-analytics-app": [
+      "admin/analytics-adoption-strategy"
+    ],
+    "adoption-metrics": [
+      "admin/ai-adoption-change-management"
+    ],
     "advanced-approvals": [
       "admin/cpq-approval-workflows",
       "admin/quote-to-cash-process"
@@ -1156,6 +1172,7 @@
     ],
     "agentforce": [
       "admin/agent-conversation-design",
+      "admin/ai-adoption-change-management",
       "admin/ai-ethics-and-governance-requirements",
       "admin/ai-use-case-assessment",
       "agentforce/agent-actions",
@@ -1195,6 +1212,9 @@
     ],
     "ai": [
       "architect/ai-ready-data-architecture"
+    ],
+    "ai-adoption": [
+      "admin/ai-adoption-change-management"
     ],
     "ai-agent": [
       "architect/ai-agent-org-integration-architecture"
@@ -1261,6 +1281,12 @@
       "data/community-analytics-data",
       "data/fsl-reporting-data-model"
     ],
+    "analytics-adoption": [
+      "admin/analytics-adoption-strategy"
+    ],
+    "analytics-adoption-strategy": [
+      "admin/analytics-adoption-strategy"
+    ],
     "analytics-api": [
       "admin/report-performance-tuning"
     ],
@@ -1269,6 +1295,9 @@
     ],
     "analytics-dashboard-design": [
       "admin/analytics-dashboard-design"
+    ],
+    "analytics-home": [
+      "admin/analytics-adoption-strategy"
     ],
     "analytics-kpi-definition": [
       "admin/analytics-kpi-definition"
@@ -1487,6 +1516,7 @@
       "architect/fsl-optimization-architecture",
       "architect/health-cloud-multi-cloud-strategy",
       "architect/hipaa-compliance-architecture",
+      "architect/industries-cloud-selection",
       "architect/marketing-cloud-vs-mcae-selection",
       "architect/org-edition-and-feature-licensing",
       "architect/platform-selection-guidance",
@@ -1623,6 +1653,9 @@
     ],
     "audit-fields": [
       "admin/system-field-behavior-and-audit"
+    ],
+    "audit-logging": [
+      "data/analytics-data-governance"
     ],
     "audit-trail": [
       "admin/compliance-documentation-requirements",
@@ -1917,6 +1950,9 @@
     "browser-caching": [
       "architect/experience-cloud-performance"
     ],
+    "bss-oss": [
+      "architect/industries-integration-architecture"
+    ],
     "bucket-fields": [
       "admin/reports-and-dashboards-fundamentals"
     ],
@@ -1957,6 +1993,7 @@
     ],
     "bulk-load": [
       "data/financial-account-migration",
+      "data/industries-data-migration",
       "data/product-catalog-data-model",
       "data/product-catalog-migration-cpq"
     ],
@@ -2305,6 +2342,7 @@
       "apex/change-data-capture-apex"
     ],
     "change-management": [
+      "admin/ai-adoption-change-management",
       "admin/change-advisory-board-process",
       "admin/change-management-and-training",
       "admin/deployment-risk-assessment"
@@ -2383,11 +2421,15 @@
       "integration/retry-and-backoff-patterns"
     ],
     "cis-integration": [
-      "admin/industries-energy-utilities-setup"
+      "admin/industries-energy-utilities-setup",
+      "architect/industries-integration-architecture"
     ],
     "claims": [
       "admin/industries-insurance-setup",
       "architect/insurance-cloud-architecture"
+    ],
+    "claims-management": [
+      "admin/industries-process-design"
     ],
     "claude-desktop": [
       "agentforce/salesforce-mcp-server-setup"
@@ -2543,7 +2585,13 @@
     ],
     "communications-cloud": [
       "admin/industries-communications-setup",
-      "architect/industries-data-model"
+      "admin/industries-process-design",
+      "architect/industries-cloud-selection",
+      "architect/industries-data-model",
+      "omnistudio/industries-api-extensions"
+    ],
+    "communications-integration": [
+      "architect/industries-integration-architecture"
     ],
     "communities": [
       "devops/experience-cloud-deployment-dev"
@@ -2584,6 +2632,7 @@
       "architect/health-cloud-data-residency",
       "architect/hipaa-compliance-architecture",
       "architect/nfr-definition-for-salesforce",
+      "data/analytics-data-governance",
       "data/field-history-tracking",
       "data/service-data-archival",
       "security/data-classification-labels",
@@ -2689,7 +2738,8 @@
     ],
     "connect-api": [
       "admin/commerce-order-management",
-      "admin/industries-insurance-setup"
+      "admin/industries-insurance-setup",
+      "omnistudio/industries-api-extensions"
     ],
     "connect-rest-api": [
       "lwc/headless-experience-cloud"
@@ -2965,6 +3015,7 @@
       "data/nonprofit-data-architecture"
     ],
     "crm-analytics": [
+      "admin/analytics-adoption-strategy",
       "admin/analytics-dashboard-design",
       "admin/analytics-dashboard-json",
       "admin/analytics-data-manager",
@@ -2985,6 +3036,8 @@
       "architect/analytics-security-architecture",
       "architect/crm-analytics-vs-tableau-decision",
       "architect/embedded-analytics-architecture",
+      "data/analytics-data-governance",
+      "data/analytics-dataset-optimization",
       "data/analytics-external-data"
     ],
     "crm-analytics-app-creation": [
@@ -3208,6 +3261,9 @@
       "admin/analytics-dashboard-json",
       "architect/analytics-embedded-components"
     ],
+    "dashboard-discovery": [
+      "admin/analytics-adoption-strategy"
+    ],
     "dashboard-filters": [
       "admin/reports-and-dashboards-fundamentals"
     ],
@@ -3245,6 +3301,7 @@
       "architect/knowledge-taxonomy-design"
     ],
     "data-classification": [
+      "data/analytics-data-governance",
       "data/data-quality-and-governance",
       "security/data-classification-labels"
     ],
@@ -3293,6 +3350,7 @@
       "agentforce/sf-to-llm-data-pipelines"
     ],
     "data-governance": [
+      "data/analytics-data-governance",
       "data/data-quality-and-governance",
       "data/field-history-tracking"
     ],
@@ -3350,6 +3408,7 @@
       "data/fsl-territory-data-setup",
       "data/fsl-work-order-migration",
       "data/historical-order-migration",
+      "data/industries-data-migration",
       "data/knowledge-article-import",
       "data/mcae-prospect-data-migration",
       "data/opportunity-pipeline-migration",
@@ -3485,6 +3544,7 @@
     ],
     "dataraptor": [
       "apex/fsc-document-generation",
+      "data/omnistudio-metadata-management",
       "omnistudio/dataraptor-load-and-extract",
       "omnistudio/dataraptor-patterns",
       "omnistudio/omnistudio-debugging",
@@ -3508,15 +3568,27 @@
     "dataset-design": [
       "architect/analytics-data-architecture"
     ],
+    "dataset-lineage": [
+      "data/analytics-data-governance"
+    ],
     "dataset-management": [
       "admin/analytics-dataset-management"
+    ],
+    "dataset-performance": [
+      "data/analytics-dataset-optimization"
     ],
     "dataset-security": [
       "admin/analytics-permission-and-sharing"
     ],
+    "dataset-splitting": [
+      "data/analytics-dataset-optimization"
+    ],
     "datasets": [
       "admin/crm-analytics-app-creation",
       "admin/einstein-analytics-basics"
+    ],
+    "date-granularity": [
+      "data/analytics-dataset-optimization"
     ],
     "date-handling": [
       "admin/analytics-dataset-management",
@@ -3617,6 +3689,9 @@
     ],
     "delta-sync": [
       "admin/system-field-behavior-and-audit"
+    ],
+    "dependencies": [
+      "data/omnistudio-metadata-management"
     ],
     "dependency-errors": [
       "devops/deployment-error-troubleshooting"
@@ -3974,6 +4049,7 @@
       "architect/fhir-integration-architecture"
     ],
     "einstein": [
+      "admin/ai-adoption-change-management",
       "admin/ai-ethics-and-governance-requirements",
       "admin/ai-use-case-assessment",
       "agentforce/einstein-copilot-for-sales",
@@ -3986,6 +4062,7 @@
       "apex/einstein-activity-capture-api"
     ],
     "einstein-analytics": [
+      "admin/analytics-adoption-strategy",
       "admin/crm-analytics-app-creation"
     ],
     "einstein-bot": [
@@ -4106,6 +4183,7 @@
       "architect/analytics-embedded-components"
     ],
     "embedded-analytics": [
+      "admin/analytics-adoption-strategy",
       "architect/embedded-analytics-architecture"
     ],
     "embedded-analytics-architecture": [
@@ -4131,7 +4209,16 @@
     ],
     "energy-utilities": [
       "admin/industries-energy-utilities-setup",
-      "architect/industries-data-model"
+      "architect/industries-data-model",
+      "data/industries-data-migration",
+      "omnistudio/industries-api-extensions"
+    ],
+    "energy-utilities-cloud": [
+      "admin/industries-process-design",
+      "architect/industries-cloud-selection"
+    ],
+    "energy-utilities-integration": [
+      "architect/industries-integration-architecture"
     ],
     "enforcement-actions": [
       "security/transaction-security-policies"
@@ -4329,6 +4416,7 @@
     ],
     "event-monitoring": [
       "admin/integration-admin-connected-apps",
+      "data/analytics-data-governance",
       "security/api-security-and-rate-limiting",
       "security/event-monitoring"
     ],
@@ -4449,6 +4537,7 @@
       "data/data-model-design-patterns",
       "data/data-reconciliation-patterns",
       "data/external-id-strategy",
+      "data/industries-data-migration",
       "integration/idempotent-integration-patterns",
       "integration/sis-integration-patterns"
     ],
@@ -4545,6 +4634,9 @@
     "fedramp": [
       "architect/government-cloud-compliance"
     ],
+    "feedback-api": [
+      "admin/ai-adoption-change-management"
+    ],
     "feedback-management": [
       "admin/salesforce-surveys",
       "architect/customer-effort-scoring"
@@ -4598,6 +4690,9 @@
     ],
     "field-resolution": [
       "data/record-merge-implications"
+    ],
+    "field-selection": [
+      "data/analytics-dataset-optimization"
     ],
     "field-service": [
       "admin/fsl-capacity-planning",
@@ -4703,6 +4798,7 @@
       "apex/fsc-financial-calculations",
       "architect/banking-lending-architecture",
       "architect/fsc-architecture-patterns",
+      "architect/industries-cloud-selection",
       "architect/insurance-cloud-architecture",
       "architect/wealth-management-architecture",
       "devops/fsc-deployment-patterns"
@@ -4730,6 +4826,7 @@
     ],
     "flexcard": [
       "admin/flexcard-requirements",
+      "data/omnistudio-metadata-management",
       "omnistudio/flexcard-design-patterns",
       "omnistudio/omnistudio-performance",
       "omnistudio/omnistudio-remote-actions",
@@ -4842,6 +4939,9 @@
     ],
     "flyout": [
       "omnistudio/flexcard-design-patterns"
+    ],
+    "fnol": [
+      "admin/industries-process-design"
     ],
     "focus-management": [
       "lwc/lwc-accessibility",
@@ -5228,6 +5328,7 @@
       "architect/health-cloud-data-residency",
       "architect/health-cloud-multi-cloud-strategy",
       "architect/hipaa-compliance-architecture",
+      "architect/industries-cloud-selection",
       "architect/industries-data-model",
       "architect/payer-vs-provider-architecture",
       "data/clinical-data-quality",
@@ -5408,7 +5509,8 @@
       "architect/experience-cloud-integration-patterns"
     ],
     "impact-analysis": [
-      "architect/metadata-coverage-and-dependencies"
+      "architect/metadata-coverage-and-dependencies",
+      "data/omnistudio-metadata-management"
     ],
     "impact-effort-matrix": [
       "admin/ai-use-case-assessment"
@@ -5473,14 +5575,20 @@
     "industries": [
       "admin/industries-communications-setup",
       "admin/industries-insurance-setup",
+      "admin/industries-process-design",
       "apex/health-cloud-apex-extensions",
       "architect/industries-data-model",
       "architect/omnistudio-vs-standard-architecture",
       "architect/omnistudio-vs-standard-decision",
+      "data/industries-data-migration",
       "devops/fsc-deployment-patterns"
+    ],
+    "industries-api": [
+      "omnistudio/industries-api-extensions"
     ],
     "industries-cloud": [
       "admin/industries-energy-utilities-setup",
+      "architect/industries-cloud-selection",
       "omnistudio/business-rules-engine"
     ],
     "industries-cpq": [
@@ -5488,6 +5596,12 @@
     ],
     "industries-data-model": [
       "data/industries-data-model"
+    ],
+    "industries-integration-architecture": [
+      "architect/industries-integration-architecture"
+    ],
+    "industries-portfolio": [
+      "architect/industries-cloud-selection"
     ],
     "industries-timeline": [
       "admin/health-cloud-timeline"
@@ -5536,11 +5650,18 @@
       "agentforce/agentforce-guardrails"
     ],
     "insurance": [
-      "admin/industries-insurance-setup"
+      "admin/industries-insurance-setup",
+      "data/industries-data-migration",
+      "omnistudio/industries-api-extensions"
     ],
     "insurance-cloud": [
+      "admin/industries-process-design",
+      "architect/industries-cloud-selection",
       "architect/industries-data-model",
       "architect/insurance-cloud-architecture"
+    ],
+    "insurance-integration": [
+      "architect/industries-integration-architecture"
     ],
     "integrated-care-management": [
       "admin/care-coordination-requirements",
@@ -5598,7 +5719,9 @@
       "integration/real-time-vs-batch-integration"
     ],
     "integration-procedure": [
+      "architect/industries-integration-architecture",
       "architect/omnistudio-scalability-patterns",
+      "data/omnistudio-metadata-management",
       "omnistudio/dataraptor-load-and-extract",
       "omnistudio/document-generation-omnistudio",
       "omnistudio/integration-procedures",
@@ -5973,6 +6096,7 @@
       "architect/crm-analytics-vs-tableau-decision",
       "architect/experience-cloud-licensing-model",
       "architect/health-cloud-multi-cloud-strategy",
+      "architect/industries-cloud-selection",
       "architect/license-optimization-strategy",
       "architect/org-edition-and-feature-licensing"
     ],
@@ -6099,6 +6223,9 @@
     ],
     "lms": [
       "lwc/message-channel-patterns"
+    ],
+    "load-order": [
+      "data/industries-data-migration"
     ],
     "load-testing": [
       "devops/performance-testing-salesforce"
@@ -6404,6 +6531,7 @@
       "admin/health-cloud-timeline",
       "agentforce/agent-script-dsl",
       "data/field-history-tracking",
+      "data/omnistudio-metadata-management",
       "devops/api-version-management",
       "devops/change-set-deployment"
     ],
@@ -6887,8 +7015,10 @@
       "omnistudio/document-generation-omnistudio"
     ],
     "omniscript": [
+      "admin/industries-process-design",
       "admin/omniscript-flow-design-requirements",
       "architect/omnistudio-scalability-patterns",
+      "data/omnistudio-metadata-management",
       "omnistudio/document-generation-omnistudio",
       "omnistudio/omniscript-design-patterns",
       "omnistudio/omniscript-versioning",
@@ -6908,11 +7038,13 @@
       "architect/omnistudio-vs-standard-architecture",
       "architect/omnistudio-vs-standard-decision",
       "data/omnistudio-datapack-migration",
+      "data/omnistudio-metadata-management",
       "omnistudio/business-rules-engine",
       "omnistudio/calculation-procedures",
       "omnistudio/dataraptor-load-and-extract",
       "omnistudio/document-generation-omnistudio",
       "omnistudio/flexcard-design-patterns",
+      "omnistudio/industries-api-extensions",
       "omnistudio/industries-cpq-vs-salesforce-cpq",
       "omnistudio/integration-procedures",
       "omnistudio/omniscript-design-patterns",
@@ -6940,6 +7072,12 @@
     ],
     "omnistudio-docgen": [
       "apex/fsc-document-generation"
+    ],
+    "omnistudio-integration": [
+      "architect/industries-integration-architecture"
+    ],
+    "omnistudio-metadata-management": [
+      "data/omnistudio-metadata-management"
     ],
     "omnistudio-performance": [
       "omnistudio/omnistudio-performance"
@@ -7067,6 +7205,7 @@
     "order-management": [
       "admin/commerce-order-management",
       "admin/industries-communications-setup",
+      "admin/industries-process-design",
       "architect/cpq-integration-with-erp",
       "architect/order-management-architecture"
     ],
@@ -7523,6 +7662,7 @@
     ],
     "platform-selection": [
       "architect/b2b-vs-b2c-architecture",
+      "architect/industries-cloud-selection",
       "architect/marketing-cloud-vs-mcae-selection",
       "architect/platform-selection-guidance"
     ],
@@ -7694,6 +7834,9 @@
     ],
     "process-builder-migration": [
       "admin/process-automation-selection"
+    ],
+    "process-design": [
+      "admin/industries-process-design"
     ],
     "process-input": [
       "admin/cpq-guided-selling"
@@ -8288,7 +8431,8 @@
       "flow/auto-launched-flow-patterns",
       "integration/composite-api-patterns",
       "integration/file-and-document-integration",
-      "integration/rest-api-patterns"
+      "integration/rest-api-patterns",
+      "omnistudio/industries-api-extensions"
     ],
     "rest-integration": [
       "flow/flow-external-services"
@@ -8303,7 +8447,8 @@
       "agentforce/agentforce-guardrails"
     ],
     "retention": [
-      "apex/custom-logging-and-monitoring"
+      "apex/custom-logging-and-monitoring",
+      "data/analytics-data-governance"
     ],
     "retention-policy": [
       "data/batch-data-cleanup-patterns"
@@ -8438,6 +8583,9 @@
     ],
     "rto-rpo": [
       "architect/ha-dr-architecture"
+    ],
+    "run-budget": [
+      "data/analytics-dataset-optimization"
     ],
     "runbook": [
       "admin/devops-process-documentation"
@@ -8592,7 +8740,8 @@
       "devops/sandbox-refresh-and-templates"
     ],
     "saql": [
-      "admin/saql-query-development"
+      "admin/saql-query-development",
+      "data/analytics-dataset-optimization"
     ],
     "save-and-resume": [
       "omnistudio/omniscript-design-patterns"
@@ -8839,6 +8988,9 @@
       "admin/portal-requirements-gathering",
       "architect/case-deflection-strategy"
     ],
+    "self-service-analytics": [
+      "admin/analytics-adoption-strategy"
+    ],
     "self-service-design": [
       "admin/self-service-design"
     ],
@@ -8934,7 +9086,8 @@
       "admin/fsl-scheduling-policies"
     ],
     "service-order": [
-      "admin/industries-energy-utilities-setup"
+      "admin/industries-energy-utilities-setup",
+      "admin/industries-process-design"
     ],
     "service-point": [
       "admin/industries-energy-utilities-setup"
@@ -9633,6 +9786,12 @@
     "tm-forum": [
       "admin/industries-communications-setup"
     ],
+    "tm-forum-api": [
+      "architect/industries-integration-architecture"
+    ],
+    "tmforum": [
+      "omnistudio/industries-api-extensions"
+    ],
     "toast": [
       "lwc/lwc-modal-and-overlay",
       "lwc/lwc-toast-and-notifications"
@@ -9752,6 +9911,7 @@
       "devops/git-branching-for-salesforce"
     ],
     "trust": [
+      "admin/ai-adoption-change-management",
       "admin/fsc-relationship-groups"
     ],
     "trust-layer-design": [
@@ -9870,6 +10030,9 @@
     "user-sync": [
       "admin/mcae-pardot-setup"
     ],
+    "user-training": [
+      "admin/ai-adoption-change-management"
+    ],
     "users": [
       "admin/user-management"
     ],
@@ -9940,6 +10103,9 @@
       "apex/apex-rest-services",
       "devops/release-management",
       "omnistudio/omniscript-versioning"
+    ],
+    "vertical-cloud": [
+      "architect/industries-cloud-selection"
     ],
     "vf-email-templates": [
       "apex/visualforce-fundamentals"
