@@ -1,0 +1,109 @@
+{
+  "category": "devops",
+  "chunk_ids": [
+    "04d357dd34f0875f92e5",
+    "07957a5ce8d7de335b00",
+    "091ca9854c8383c4325b",
+    "13cbc741ee3f7afb4045",
+    "1821e2b53baa8d6f6778",
+    "1927f0b6798819c4d31e",
+    "1c0775df99db65a35b95",
+    "20fbeea053ba3a6f2c95",
+    "217746db7629e8385be3",
+    "2dbe46f9573140120d51",
+    "2dc00b0950290c6a19a8",
+    "2eed33dee988038fedf8",
+    "33de217d16ec05e9bc3a",
+    "39469743652cca084f7e",
+    "41308e137c20305dc457",
+    "4dd47f44234c16b83467",
+    "4ee25a58ac5745d12bc2",
+    "4eebd08773d93da69af5",
+    "502355160413f9e10e36",
+    "563dea21dd4a527545b9",
+    "59c88e6967138fcede63",
+    "5acd107d6e0baffd0092",
+    "60a6539274c2204dd991",
+    "664af221ab00ffb99493",
+    "6a875a0719d41fd0e906",
+    "6c01f075d7085144a3aa",
+    "718ced6ec953dbb601de",
+    "75f1b305e4b27c4b37cd",
+    "792834f0395664cf1062",
+    "839c750a0bebbe601d82",
+    "85a95fdbdd0f5be09f85",
+    "8883a70177f9f53d4079",
+    "8af34b25095a3df0b15d",
+    "8c6fc896e42bc032c641",
+    "8cc78387caaaf55ed578",
+    "90edbe86bfbe1a1a53d0",
+    "994b18e54b97ec0e9f98",
+    "9ed08206c9e70eda1148",
+    "a28c27102d46f0587623",
+    "ac18654b3a48833b4ec6",
+    "ac5d966511dbca50edc9",
+    "aefc3635703b33ddbdc8",
+    "af7bfa4df39292b12016",
+    "afc4f31f9cb1b96d1b99",
+    "b8adc949a38edb63d8b4",
+    "bb48b29e9ce3ceccfe3e",
+    "bf8e5734b6380a56157d",
+    "c5b04639aec1a9ccea9a",
+    "c6a407eb103688cb00c6",
+    "cd3067892e763ee8afc3",
+    "d60b08732608f6406bf1",
+    "deda0473d2c22774c89b",
+    "e68dce0ca88204041185",
+    "e6c27c4d390acf57382c",
+    "ec83be8a59fc07fa6407",
+    "f1637c8a8a490d193857"
+  ],
+  "content_hash": "c5288379d1fef965373772fb90e41a9ef8df6c11445d138a73cff64610886d49",
+  "dependencies": [
+    "apex/sf-cli-and-sfdx-essentials",
+    "devops/continuous-integration-testing"
+  ],
+  "description": "Use this skill when automating Salesforce work with the unified Salesforce CLI (`sf`, v2): shell scripts, Make/npm tasks, cron jobs, and CI steps that need stable flags, `--json` output, org aliases, bulk/data commands, plugins, and non-interactive auth patterns. Trigger keywords: sf CLI automation, sfdx migration, JSON output CI, sf project deploy script, sf data bulk, CLI plugins, target-org alias, machine-readable CLI. NOT for choosing or wiring a specific CI platform (GitHub Actions, GitLab, Jenkins, Bitbucket, Azure DevOps\u2014use those devops skills), VS Code Salesforce extensions, or Copado/Gearset release management UIs.",
+  "file_location": "skills/devops/salesforce-cli-automation",
+  "id": "devops/salesforce-cli-automation",
+  "inputs": [
+    "Automation context: local developer script, shared build script, or CI runner image constraints",
+    "Target org alias or username and whether login is interactive, JWT, or existing SFDX auth file",
+    "Operation: deploy, retrieve, test, data import/export, org creation, or query",
+    "Whether downstream tooling expects JSON, JUnit XML, or human logs"
+  ],
+  "name": "salesforce-cli-automation",
+  "official_sources": [
+    "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm \u2014 clarifies what the CLI ultimately deploys or validates against the Metadata API contract.",
+    "Salesforce CLI Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm \u2014 authoritative list of `sf` topics, flags, `--json`, and data/project command behavior.",
+    "Salesforce DX Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm \u2014 project layout, scratch org model, and CI authentication patterns such as JWT."
+  ],
+  "outputs": [
+    "Concrete `sf` command sequences with flags suited for automation",
+    "Notes on `--json`, `--wait`, `--async`, and exit-code behavior for reliable gates",
+    "Migration mapping away from legacy `sfdx force:*` where relevant"
+  ],
+  "references": [
+    "skills/devops/salesforce-cli-automation/references/examples.md",
+    "skills/devops/salesforce-cli-automation/references/gotchas.md",
+    "skills/devops/salesforce-cli-automation/references/llm-anti-patterns.md",
+    "skills/devops/salesforce-cli-automation/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/devops/salesforce-cli-automation/scripts/check_salesforce_cli_automation.py"
+  ],
+  "tags": [
+    "salesforce-cli",
+    "sf-cli-v2",
+    "cli-automation",
+    "json-output",
+    "shell-scripting",
+    "devops"
+  ],
+  "templates": [
+    "skills/devops/salesforce-cli-automation/templates/salesforce-cli-automation-template.md"
+  ],
+  "updated": "2026-04-16",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

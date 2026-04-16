@@ -252,6 +252,7 @@ The Currency Monitor agent will handle it if you flag it during a release cycle.
 | `standards/naming-conventions.md` | Apex, LWC, Flow, Object naming rules |
 | `standards/code-review-checklist.md` | Full code review checklist |
 | `standards/decision-trees/` | Cross-skill routing: automation, async, integration, sharing |
+| `evals/` | Golden output-quality evals for flagship skills (10 skills × 3 P0 cases) |
 
 ---
 
@@ -318,11 +319,10 @@ Skill requests → `/request-skill` in Claude Code or open an issue with `[Skill
 ## MCP Server (live-org context)
 
 The `mcp/sfskills-mcp/` package exposes this library and your real Salesforce
-org to any MCP-capable agent (Cursor, Claude Code, Windsurf, Codex, etc.) so
-the agent can answer "does this trigger framework already exist in my org?"
-without asking you.
+org to any MCP-capable AI tool so the agent can answer "does this trigger
+framework already exist in my org?" **without asking you**.
 
-Six tools:
+Six tools, all read-only:
 
 | Tool                   | What it does                                                                    |
 | ---------------------- | ------------------------------------------------------------------------------- |
@@ -333,21 +333,22 @@ Six tools:
 | `list_flows_on_object` | Flows (record / scheduled / platform-event triggered) targeting an sObject.    |
 | `validate_against_org` | Category-aware probe: does the skill's guidance already have analogs in the org?|
 
-Quick start:
+### Install
 
 ```bash
-cd mcp/sfskills-mcp
-python3 -m pip install -e .
+# From the repo root
+python3 -m pip install -e mcp/sfskills-mcp
 
-# authenticate once via the Salesforce CLI (no secrets enter the MCP server)
+# Authenticate via the Salesforce CLI (no secrets enter the MCP server)
 sf org login web --alias my-dev
 sf config set target-org=my-dev
-
-# run the server
-python3 -m sfskills_mcp
 ```
 
-Cursor (`~/.cursor/mcp.json` or project-scoped `.cursor/mcp.json`):
+### Connect your AI tool
+
+The server speaks the standard MCP stdio transport, so it drops into every
+modern AI coding tool with a single snippet. Quick start for Cursor
+(`~/.cursor/mcp.json` or project-scoped `.cursor/mcp.json`):
 
 ```json
 {
@@ -361,5 +362,12 @@ Cursor (`~/.cursor/mcp.json` or project-scoped `.cursor/mcp.json`):
 }
 ```
 
-See [mcp/sfskills-mcp/README.md](./mcp/sfskills-mcp/README.md) for Claude Code,
-Windsurf, Aider, and Codex setup, tool schemas, and design notes.
+**[→ Full setup guide for every MCP-capable AI tool](./mcp/sfskills-mcp/docs/CONNECT.md)**
+— Claude Code, Claude Desktop, Cursor, Windsurf, Zed, VS Code (Copilot Agent),
+Cline, Continue, Sourcegraph Cody, OpenAI Codex CLI, Gemini CLI, Goose,
+LibreChat, Open WebUI, JetBrains AI Assistant, 5ire, and the generic stdio
+transport — with per-client pitfalls, verification steps (MCP Inspector),
+troubleshooting, and the security model.
+
+See [mcp/sfskills-mcp/README.md](./mcp/sfskills-mcp/README.md) for tool
+schemas, validate_against_org probe routing, and design notes.

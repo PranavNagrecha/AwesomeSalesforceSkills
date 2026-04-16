@@ -1,0 +1,112 @@
+{
+  "category": "integration",
+  "chunk_ids": [
+    "0836bdb64dbcfc328121",
+    "123fe12151b616d40df8",
+    "12bfeb176969d0c133af",
+    "159654f49d9c87de2d37",
+    "15e66ead271b1328b5e3",
+    "1e6accbb1ed5ab1c41e7",
+    "2e579c5d4bb3c975e1a8",
+    "3212e3d0c4f8ab2bd65a",
+    "34fbc5bc75339d569e67",
+    "3a7aaf70af900d57d62c",
+    "3bddff3d6f9bc08b6085",
+    "3dbcd32d21c3d5c39aa9",
+    "3efdcb3d5149c76759cb",
+    "4a8e146e73f69827f16b",
+    "4ba54659fe695308a0fc",
+    "4ceb817492a5287e3b9d",
+    "4efe877b00dbe54489f7",
+    "6149096a675199a5a5e4",
+    "62d89ea72557bfd3b473",
+    "67c5379113b89aaae609",
+    "681731d13949e16687ab",
+    "6c1f2d3577fb3b20f387",
+    "6dabb2c7c274234a2519",
+    "7c1b021c94444026ee7d",
+    "7d3c6008d5d5172ced6c",
+    "81f8a3371a6733cbfdfd",
+    "849bfb7afbe5c9aa66cd",
+    "84dba176b2bec3eddd54",
+    "864c86fb555a8e2aab1c",
+    "93f6115ed307b8ade3dc",
+    "9488439cd991d5a3b8b3",
+    "9540c9b1efb25105eb27",
+    "97303b24239f4719b299",
+    "97af587d970d3746e272",
+    "9b72b8113de63c347f92",
+    "a1828433b358beb0231f",
+    "b68a1fc29865dfbad5cb",
+    "b8bef481023db42e67ae",
+    "c057b304a76862d025a6",
+    "c3076d6d0644560996b8",
+    "c3616eb2da269ddbf56f",
+    "c5ee014cc8abfeb8231e",
+    "c638849c86c825725776",
+    "cacca61f2bde221309c3",
+    "cd8d03b51c356fc02881",
+    "ce739ffb9a7a86170276",
+    "d1435b89f3b7ed37dee5",
+    "d763cb83a0735a7d44ee",
+    "dd317f8bd9df52c556e5",
+    "e122617a1f1935b3cbbb",
+    "e2a8b3f6ea3dbdd5c1b4",
+    "e718ba160d2b5314716e",
+    "e8b5097a13ab316b404b",
+    "f963735fe1a5aa346b9f"
+  ],
+  "content_hash": "cff0d8e88a640e772d60214e23d97d1b5cecd54188d0f5a95d0d3ac0802c8327",
+  "dependencies": [
+    "data/bulk-api-patterns",
+    "integration/real-time-vs-batch-integration"
+  ],
+  "description": "Use when designing or hardening external-to-Salesforce integrations that orchestrate Bulk API 2.0 ingest or query jobs: OAuth-backed job lifecycle, mandatory UploadComplete, polling JobComplete/Failed, CSV upload sizing, locator pagination for query results, partial-failure retry, and ordered multi-job loads (parent before child). Trigger keywords: bulk ingest job stuck in Open, retry only failed bulk rows, poll Bulk API 2 job status, Sforce-Locator pagination, multipart bulk ingest vs CSV upload. NOT for Bulk API 1.0 SOAP jobs (use data/bulk-api-patterns v1 sections), NOT for choosing batch vs real-time architecture alone (use integration/real-time-vs-batch-integration), NOT for low-level REST field/csv mechanics without integration context (use data/bulk-api-patterns).",
+  "file_location": "skills/integration/bulk-api-2-patterns",
+  "id": "integration/bulk-api-2-patterns",
+  "inputs": [
+    "Operation (insert, update, upsert, delete, hardDelete, or query) and target object API name",
+    "Whether the client uses single-part CSV uploads or multipart create-and-upload",
+    "Peak daily record volume versus org Bulk API 2.0 daily processing limits",
+    "Whether dependent objects require strictly ordered jobs (parent then child)",
+    "How the integration stores job IDs and checkpoints for restart after outage"
+  ],
+  "name": "bulk-api-2-patterns",
+  "official_sources": [
+    "[Bulk API 2.0 Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/asynch_api_intro.htm) \u2014 ingest/query resources, job states, upload completion requirement, locator pagination",
+    "[REST API Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_what_is_rest_api.htm) \u2014 OAuth, HTTP verbs, and REST conventions used by Bulk 2.0 endpoints",
+    "[Integration Patterns and Best Practices](https://architect.salesforce.com/docs/architect/fundamentals/guide/integration-patterns.html) \u2014 batch vs synchronous tradeoffs for large data exchange",
+    "[Salesforce Well-Architected Overview](https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html) \u2014 trusted, easy, adaptable quality model for integration solutions"
+  ],
+  "outputs": [
+    "End-to-end job orchestration sequence with explicit state transitions and polling gates",
+    "Retry and partial-failure handling that respects non-rollback of successful batches",
+    "Query-result pagination rules using only the Sforce-Locator header value",
+    "Operational checklist for monitoring, logging, and alerting on job states"
+  ],
+  "references": [
+    "skills/integration/bulk-api-2-patterns/references/examples.md",
+    "skills/integration/bulk-api-2-patterns/references/gotchas.md",
+    "skills/integration/bulk-api-2-patterns/references/llm-anti-patterns.md",
+    "skills/integration/bulk-api-2-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/integration/bulk-api-2-patterns/scripts/check_bulk_api_2_patterns.py"
+  ],
+  "tags": [
+    "integration",
+    "bulk-api-2",
+    "bulk-ingest",
+    "bulk-query",
+    "async-jobs",
+    "csv-upload",
+    "oauth",
+    "job-orchestration"
+  ],
+  "templates": [
+    "skills/integration/bulk-api-2-patterns/templates/bulk-api-2-patterns-template.md"
+  ],
+  "updated": "2026-04-16",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

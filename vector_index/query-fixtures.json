@@ -4403,6 +4403,66 @@
       "domain": "data",
       "expected_skill": "data/revenue-cloud-data-model",
       "top_k": 3
+    },
+    {
+      "query": "our Bulk API 2 ingest job stays Open after we finish uploading the CSV",
+      "domain": "integration",
+      "expected_skill": "integration/bulk-api-2-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "org-wide multi-factor authentication enforcement Salesforce phased rollout exemptions",
+      "domain": "security",
+      "expected_skill": "security/mfa-enforcement-strategy",
+      "top_k": 3
+    },
+    {
+      "query": "Our integration gets invalid_grant after refresh token rotation was enabled on the Connected App",
+      "domain": "security",
+      "expected_skill": "security/oauth-token-management",
+      "top_k": 3
+    },
+    {
+      "query": "Flow LDV Too many query rows Get Records cap production volume",
+      "domain": "flow",
+      "expected_skill": "flow/flow-large-data-volume-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "how do I add an Apex action to my Flow and map collection inputs to InvocableMethod",
+      "domain": "flow",
+      "expected_skill": "flow/flow-action-framework",
+      "top_k": 3
+    },
+    {
+      "query": "automate Salesforce sf CLI in shell scripts with JSON output and explicit org alias for CI",
+      "domain": "devops",
+      "expected_skill": "devops/salesforce-cli-automation",
+      "top_k": 3
+    },
+    {
+      "query": "code-review-checklist-salesforce devops skill governor limits CRUD FLS",
+      "domain": "devops",
+      "expected_skill": "devops/code-review-checklist-salesforce",
+      "top_k": 3
+    },
+    {
+      "query": "org-wide LDV architecture skinny tables ownership skew bulk load archival",
+      "domain": "architect",
+      "expected_skill": "architect/large-data-volume-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "Data Cloud vs CRM Analytics when to use each direct data DMO decision",
+      "domain": "architect",
+      "expected_skill": "architect/data-cloud-vs-analytics-decision",
+      "top_k": 3
+    },
+    {
+      "query": "Slack Workflow Builder Run a Flow autolaunched Salesforce",
+      "domain": "integration",
+      "expected_skill": "integration/slack-workflow-builder",
+      "top_k": 3
     }
   ]
 }

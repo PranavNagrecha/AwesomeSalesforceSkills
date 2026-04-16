@@ -1,0 +1,106 @@
+{
+  "category": "security",
+  "chunk_ids": [
+    "0b763e81bc8fc78ca548",
+    "0d313ced7f85841d07dd",
+    "12f5204a0a04eed1947c",
+    "1befe7c5c12d9df57bd7",
+    "23e0ec9137264abe78b5",
+    "27dc0130f4f254aa6745",
+    "3196038a95cb4c9a0e4f",
+    "328f8374c88848ad16db",
+    "3ab2296333280cb99c83",
+    "3d12fc7cc119aff589df",
+    "3fa91e8557c4437fd28a",
+    "428c69989d11b91a710c",
+    "42b7c56083bf4f2196a2",
+    "43f5fb804a0587dee4ee",
+    "43fb7016f2866145cadd",
+    "45192e6bb622a5f04478",
+    "4c4f612ca962690b8d69",
+    "5eb8a0713cc0e6d9d7ef",
+    "60c5fa17647913fed65f",
+    "6134584571a537813dc8",
+    "78431f7c3a1f35813a74",
+    "7c4e87bd60c607f5f6da",
+    "8001ff81d447356d03d2",
+    "8035cfc730c96cf807af",
+    "808712a21068b7c2f6ed",
+    "8b4b1d292d87f0efe26e",
+    "8bdfafad29ba2ef3e8d0",
+    "9c1b86e10eef025b10a3",
+    "a41e9ee4e713e1ab2764",
+    "ae0da68ad6ccfa024945",
+    "b40f2397dbab327d9999",
+    "bd6fae05d7b7106b0ec5",
+    "bea83a8369fee56fc302",
+    "bffa0511c235200b2362",
+    "c9878804a69302daa0db",
+    "ca3808070ecddca167af",
+    "cceec87ffb500bbcc6d7",
+    "cf0e00e62626d91e8ee9",
+    "d20680a7e627b7f5bc9a",
+    "d3de29ca28b556da0752",
+    "d3f03065ce4122d71313",
+    "d43341e89ce67e7e278f",
+    "daf9b7765fe58ed3f626",
+    "db9aaa96114ea7d989a1",
+    "dce7d2dd61d62b558b1b",
+    "e15e09dd6b5890c5608e",
+    "e51cca1e0d8e578d3fb0",
+    "e9f0ee7203ba0a6c57fa",
+    "edda6fc0427dd4f8b2ce",
+    "f0657dbb5527fba99324",
+    "f98b7b81b22fd3a07eee"
+  ],
+  "content_hash": "0853f87f929d3214585e0298ca7b269685998e1bf732d221fb16aaaf896a0092",
+  "dependencies": [
+    "integration/oauth-flows-and-connected-apps",
+    "security/connected-app-security-policies"
+  ],
+  "description": "Use when work depends on how Salesforce OAuth access and refresh tokens are issued, refreshed, rotated, revoked, or introspected for a Connected App or API client\u2014including unexpected logouts, invalid_grant after refresh, or designing token incident response. NOT for choosing which OAuth grant or Connected App flow to implement (use integration/oauth-flows-and-connected-apps), Named Credential packaging (use integration/named-credentials-setup), or broad Connected App IP and PKCE policy hardening without a token-lifecycle angle (use security/connected-app-security-policies).",
+  "file_location": "skills/security/oauth-token-management",
+  "id": "security/oauth-token-management",
+  "inputs": [
+    "Connected App name or metadata, OAuth scopes in use, and which grant type produced the tokens (authorization code, refresh token, JWT bearer, device, etc.).",
+    "Whether the problem appears at token issuance, refresh, API call, or after admin or security action (revocation, password reset, policy change)."
+  ],
+  "name": "oauth-token-management",
+  "official_sources": [
+    "[Manage OAuth Access Policies for a Connected App](https://help.salesforce.com/s/articleView?id=sf.connected_app_manage_oauth.htm&type=5) \u2014 session and refresh behavior configured on the app",
+    "[OAuth 2.0 Refresh Token Flow](https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_refresh_token_flow.htm&type=5) \u2014 how refresh exchanges work at the token endpoint",
+    "[Revoke OAuth Tokens](https://help.salesforce.com/s/articleView?id=sf.remoteaccess_revoke_token.htm&type=5) \u2014 programmatic revocation semantics",
+    "[Rotate Refresh Tokens (release notes)](https://help.salesforce.com/s/articleView?id=sf.rn_security_refresh_token_rotation.htm&release=248.0&type=5) \u2014 rotation expectations for clients",
+    "[OpenID Connect Token Introspection Endpoint](https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oidc_token_introspection_endpoint.htm&type=5) \u2014 validating token active state where supported",
+    "[Salesforce Security Guide](https://help.salesforce.com/s/articleView?id=sf.security_overview.htm&type=5) \u2014 broader security context for credentials and sessions",
+    "[Integration Patterns \u2014 Salesforce Architects](https://architect.salesforce.com/docs/architect/fundamentals/guide/integration-patterns.html) \u2014 how token-heavy integrations fit larger integration topologies"
+  ],
+  "outputs": [
+    "A clear model of access vs refresh token lifetime, rotation behavior, and what each revocation target invalidates.",
+    "Concrete next steps: which Setup policies to inspect, which revoke or introspection calls apply, and what clients must do to obtain a new grant."
+  ],
+  "references": [
+    "skills/security/oauth-token-management/references/examples.md",
+    "skills/security/oauth-token-management/references/gotchas.md",
+    "skills/security/oauth-token-management/references/llm-anti-patterns.md",
+    "skills/security/oauth-token-management/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/security/oauth-token-management/scripts/check_oauth_token_management.py"
+  ],
+  "tags": [
+    "oauth-token-management",
+    "oauth-2",
+    "refresh-token",
+    "token-revocation",
+    "connected-app",
+    "token-introspection",
+    "session-timeout"
+  ],
+  "templates": [
+    "skills/security/oauth-token-management/templates/oauth-token-management-template.md"
+  ],
+  "updated": "2026-04-16",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

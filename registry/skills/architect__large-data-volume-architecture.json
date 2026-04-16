@@ -1,0 +1,101 @@
+{
+  "category": "architect",
+  "chunk_ids": [
+    "001180c2f6532a020ea3",
+    "023accd7ab126efa08de",
+    "02649c1ed19bc8bc49d3",
+    "06e81de95d2fedde160d",
+    "081f7651310db961d3f1",
+    "0850a7246570059cb24e",
+    "0ed086fd650c30e0871d",
+    "11c4c63d1dc93edbb7fb",
+    "15600e48d583f5da4751",
+    "16339a99aaf7087f9cdf",
+    "179c0ec82afebb6d521e",
+    "1bd3a4705bb24a4c4919",
+    "2c631fe767491fc2c208",
+    "30b0eaaed9ce1d42b84f",
+    "31799ab7a15b9d60ec0e",
+    "3457196eae725314c826",
+    "3aa60283b4e1e584e7cf",
+    "3c2133b911d9fea0e847",
+    "57001c5a2904672a8f9c",
+    "5c9b87f3c8b43cd0364a",
+    "5d08e17e02d57772a2a4",
+    "6322115d3e4aaba60a43",
+    "64b24c47bbdf2434cb01",
+    "69b9f66b7e05a5c6021a",
+    "6a0aeb6a0e4231bb5399",
+    "7951c1b60a6bc7eeee9e",
+    "8d375b83026093bebc06",
+    "8e9c17738c562c52d41f",
+    "ac0a6e57f09a7989e52f",
+    "ace0d39dc2d921426b41",
+    "b1b8c8b7db306afbd1d0",
+    "b21b4050d2ca199b02a3",
+    "b9af463a7bb531cd161d",
+    "ba6751ddcf9cdc7f4464",
+    "bacb54a51abed36cb57c",
+    "be79e7eede5f44781462",
+    "c0f05d71b4e24a82a876",
+    "c513f17328967a0ffda8",
+    "c669e6268eabbb3275a6",
+    "c8bf8a61540fd41f729e",
+    "cbb52b19dd4649efbd93",
+    "e4ce3a090c9a684893a5",
+    "e5f0610951f0c0fdf980",
+    "e7b6706f54b1104e1e57",
+    "e9f334b46fe89701e1af",
+    "eb58ee1dde9e9268d146",
+    "f670278d82062e825462",
+    "fa1c3314146168873896"
+  ],
+  "content_hash": "2b57957877b75d0db73ec6eadc1883cd33b59c5f41e6d308da6bb5673ee3940c",
+  "dependencies": [],
+  "description": "Use when designing or reviewing org-wide large data volume (LDV) concerns: query optimizer behavior and selectivity, custom indexes and skinny tables, sharing and ownership skew, bulk data loads, archival to Big Objects, and divisions. Triggers: LDV architecture review, skinny table request, ownership skew hurting sharing, millions of records on custom object, bulk load performance. NOT for rewriting individual SOQL statements or interpreting Query Plan output in isolation (use data/soql-query-optimization), sales-only Opportunity and Account skew playbooks (use architect/high-volume-sales-data-architecture), or Marketing Cloud data extensions.",
+  "file_location": "skills/architect/large-data-volume-architecture",
+  "id": "architect/large-data-volume-architecture",
+  "inputs": [
+    "Approximate record counts per high-volume object and monthly growth",
+    "Ownership distribution (especially any user or integration user near or above 10,000 owned records)",
+    "Which filters drive reports, list views, integrations, and batch jobs",
+    "Current sharing model complexity (roles, public groups, criteria-based rules)"
+  ],
+  "name": "large-data-volume-architecture",
+  "official_sources": [
+    "Salesforce Large Data Volumes Best Practices \u2014 https://developer.salesforce.com/docs/atlas.en-us.salesforce_large_data_volumes_bp.meta/salesforce_large_data_volumes_bp/ldv_deployments_introduction.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Index and skinny-table request strategy grounded in selectivity math",
+    "Skew and sharing remediation plan (ownership, parent-child distribution, deferral options)",
+    "Archival or Big Object boundary recommendation for cold data",
+    "Bulk load sequencing checklist (rules, triggers, sharing deferral)"
+  ],
+  "references": [
+    "skills/architect/large-data-volume-architecture/references/examples.md",
+    "skills/architect/large-data-volume-architecture/references/gotchas.md",
+    "skills/architect/large-data-volume-architecture/references/llm-anti-patterns.md",
+    "skills/architect/large-data-volume-architecture/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/architect/large-data-volume-architecture/scripts/check_large_data_volume_architecture.py"
+  ],
+  "tags": [
+    "large-data-volume-architecture",
+    "ldv",
+    "skinny-tables",
+    "custom-index",
+    "data-skew",
+    "sharing-performance",
+    "big-objects",
+    "bulk-load",
+    "selectivity"
+  ],
+  "templates": [
+    "skills/architect/large-data-volume-architecture/templates/large-data-volume-architecture-template.md"
+  ],
+  "updated": "2026-04-16",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

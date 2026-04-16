@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sfskills-mcp"
+version = "0.1.0"
+description = "Model Context Protocol server exposing the SfSkills library and live Salesforce org metadata."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "Pranav Nagrecha" }]
+license = { text = "MIT" }
+keywords = ["salesforce", "mcp", "model-context-protocol", "ai", "sfskills"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Intended Audience :: Developers",
+  "Topic :: Software Development :: Libraries",
+]
+dependencies = [
+  "mcp>=1.2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=7.4",
+]
+
+[project.scripts]
+sfskills-mcp = "sfskills_mcp.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+sfskills_mcp = ["py.typed"]

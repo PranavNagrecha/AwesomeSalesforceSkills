@@ -165,6 +165,32 @@ Cross-skill routing logic lives under `standards/decision-trees/`:
 
 ---
 
+## Golden Evals
+
+Output-quality checks live under `evals/golden/<category>__<slug>.md`.
+Each file has 3+ P0 cases covering the most common scenarios that skill
+handles. Retrieval fixtures (which skill gets picked) live separately in
+`vector_index/query-fixtures.json` — do not duplicate.
+
+**Rule for agents:**
+
+- When you change a flagship skill, update its eval file in the same PR.
+  "Flagship" today means: the 10 skills listed in `evals/README.md`.
+- Before concluding a session that edited a flagship skill, run
+  `python3 evals/scripts/run_evals.py --structure` to confirm the eval
+  file is still well-formed.
+
+**Rule for skill authors:**
+
+- When adding a new skill you consider flagship (likely high retrieval
+  volume or high-blast-radius wrong answer), add a new eval file using
+  `evals/framework.md` as the schema source.
+- Reference answers in evals should cite `templates/…` and
+  `standards/decision-trees/…` where appropriate — evals are the integration
+  point where those artifacts get exercised.
+
+---
+
 ## Retrieval Rules
 
 - Always use `python3 scripts/search_knowledge.py "<query>"` before claiming that a new skill does not already exist or that a topic has no local coverage.

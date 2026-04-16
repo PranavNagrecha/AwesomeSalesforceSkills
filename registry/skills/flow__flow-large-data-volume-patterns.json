@@ -1,0 +1,103 @@
+{
+  "category": "flow",
+  "chunk_ids": [
+    "0332dbc6e3078993b8cf",
+    "0d949121c6b1c98ff7dc",
+    "15522eb711c73587ecd4",
+    "251bbea746317e3866bc",
+    "258d77490e76afb49a3d",
+    "25d49d1253f18bb8e29c",
+    "268cb864ea1f5a72b852",
+    "2e8ba5de4e6a5dfb26ee",
+    "389e5412e933567a636a",
+    "3be84d948fb403f0eb57",
+    "530b2f47fcff12d2ccd0",
+    "5818c3ad08cae145f020",
+    "58ea41dae709515244d6",
+    "59032de761432419ab43",
+    "5bcc34aa2417c32c0ffe",
+    "62c430e066279a497b5d",
+    "683415129007a38db4d1",
+    "6940d06f50867945f2bb",
+    "6a94c64a9805fcdc2236",
+    "6ad46b1f188850fe3817",
+    "6fbf9fbc5edc63b84e25",
+    "70a3910c6c476921b71e",
+    "7f252c5d011fd3465303",
+    "87a643363396b1438718",
+    "8d56637de97cd9f71fae",
+    "8d8708576ca3c1413219",
+    "8e8a4027ad5cacb87dca",
+    "8ef30c88b181926792fc",
+    "915203d4a62c31f67bbd",
+    "916a120f738ac410abda",
+    "93c1b39e0f1e878d999d",
+    "95623118b5772a308520",
+    "9e8f42958a9f2310ddf3",
+    "a911b00a965facee3d92",
+    "adf2ea13b8c5504bf892",
+    "b57a6297b7d8303c6eb3",
+    "bd095173439b72177ea3",
+    "be17c7ba59f7194c0330",
+    "bea57b29caf58641d4b9",
+    "c9bae70ead76c9600cac",
+    "d30ea36be398e7731955",
+    "d3efdfe5105bcb17ae5e",
+    "d8a40ceab840a43ad021",
+    "da550c607baa073c313d",
+    "e6a2a201c48fe6c2f4cf",
+    "f127e3a59d3069ae928a",
+    "f496dc1044c6767c9694",
+    "faa1f7782e9420320c19",
+    "ff33770ea1f89cc7306c"
+  ],
+  "content_hash": "65e29913b16b6c07911e68c0bae99a77843088f458ddad4c686ba7b15b3f01d7",
+  "dependencies": [
+    "flow/flow-bulkification"
+  ],
+  "description": "Use when Flows must stay healthy at large data volumes: total SOQL rows returned per transaction, unbounded Get Records, collection sizing, scheduled or record-triggered scale, and when to cap or move work async. Triggers: 'Too many query rows 50001 flow', 'Get Records returns too many rows', 'LDV flow design', 'flow collection limit', 'record triggered flow production data volume'. NOT for writing or tuning Batch Apex jobs, Bulk API 2.0 data loads, or general Flow Builder UX when volume and governor ceilings are not the concern.",
+  "file_location": "skills/flow/flow-large-data-volume-patterns",
+  "id": "flow/flow-large-data-volume-patterns",
+  "inputs": [
+    "flow type (record-triggered, autolaunched, scheduled, screen) and entry conditions",
+    "approximate row counts for objects queried and related fan-out per transaction",
+    "whether Get Records is first record only, all records, or capped with a limit"
+  ],
+  "name": "flow-large-data-volume-patterns",
+  "official_sources": [
+    "Salesforce Well-Architected Overview \u2014 quality framing for scalability and operational tradeoffs \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
+    "Flow Builder \u2014 product behavior and builder capabilities for Flow design \u2014 https://help.salesforce.com/s/articleView?id=sf.flow.htm&type=5",
+    "Flow Reference \u2014 element behavior, limits, and considerations tied to Flow runtime \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_ref.htm&type=5",
+    "General Flow Limits \u2014 per-transaction Flow limits including totals that apply alongside Apex governor limits \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_considerations_limit.htm&type=5",
+    "Flow Considerations \u2014 additional runtime considerations for automation at scale \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_considerations.htm&type=5",
+    "Metadata API Developer Guide \u2014 Flow metadata structure when reviewing `*.flow-meta.xml` in source control \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm"
+  ],
+  "outputs": [
+    "risk assessment against query-row and collection ceilings",
+    "redesign options: cap queries, narrow filters, async path, or Apex boundary",
+    "test plan for production-like volumes"
+  ],
+  "references": [
+    "skills/flow/flow-large-data-volume-patterns/references/examples.md",
+    "skills/flow/flow-large-data-volume-patterns/references/gotchas.md",
+    "skills/flow/flow-large-data-volume-patterns/references/llm-anti-patterns.md",
+    "skills/flow/flow-large-data-volume-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/flow/flow-large-data-volume-patterns/scripts/check_flow_large_data_volume_patterns.py"
+  ],
+  "tags": [
+    "flow-large-data-volume-patterns",
+    "governor-limits",
+    "get-records",
+    "ldv",
+    "soql-rows",
+    "collections"
+  ],
+  "templates": [
+    "skills/flow/flow-large-data-volume-patterns/templates/flow-large-data-volume-patterns-template.md"
+  ],
+  "updated": "2026-04-16",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

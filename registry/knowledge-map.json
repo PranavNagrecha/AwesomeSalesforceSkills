@@ -356,6 +356,7 @@
       "architect/crm-analytics-vs-tableau-decision",
       "architect/customer-effort-scoring",
       "architect/data-cloud-architecture",
+      "architect/data-cloud-vs-analytics-decision",
       "architect/einstein-bot-architecture",
       "architect/embedded-analytics-architecture",
       "architect/event-driven-architecture",
@@ -386,6 +387,7 @@
       "architect/integration-security-architecture",
       "architect/knowledge-taxonomy-design",
       "architect/knowledge-vs-external-cms",
+      "architect/large-data-volume-architecture",
       "architect/license-optimization-strategy",
       "architect/limits-and-scalability-planning",
       "architect/marketing-cloud-vs-mcae-selection",
@@ -516,6 +518,7 @@
       "devops/automated-regression-testing",
       "devops/bitbucket-pipelines-for-salesforce",
       "devops/change-set-deployment",
+      "devops/code-review-checklist-salesforce",
       "devops/continuous-integration-testing",
       "devops/copado-essentials",
       "devops/cpq-deployment-administration",
@@ -549,6 +552,7 @@
       "devops/pre-deployment-checklist",
       "devops/release-management",
       "devops/rollback-and-hotfix-strategy",
+      "devops/salesforce-cli-automation",
       "devops/salesforce-code-analyzer",
       "devops/salesforce-devops-tooling-selection",
       "devops/salesforce-dx-project-structure",
@@ -564,6 +568,7 @@
     "flow": [
       "flow/auto-launched-flow-patterns",
       "flow/fault-handling",
+      "flow/flow-action-framework",
       "flow/flow-bulkification",
       "flow/flow-collection-processing",
       "flow/flow-custom-property-editors",
@@ -573,6 +578,7 @@
       "flow/flow-for-experience-cloud",
       "flow/flow-for-slack",
       "flow/flow-governance",
+      "flow/flow-large-data-volume-patterns",
       "flow/flow-runtime-error-diagnosis",
       "flow/flow-testing",
       "flow/orchestration-flows",
@@ -585,6 +591,7 @@
     "integration": [
       "integration/api-error-handling-design",
       "integration/api-led-connectivity",
+      "integration/bulk-api-2-patterns",
       "integration/callout-limits-and-async-patterns",
       "integration/change-data-capture-integration",
       "integration/composite-api-patterns",
@@ -613,6 +620,7 @@
       "integration/salesforce-to-salesforce-integration",
       "integration/sis-integration-patterns",
       "integration/slack-salesforce-integration-setup",
+      "integration/slack-workflow-builder",
       "integration/soap-api-patterns",
       "integration/streaming-api-and-pushtopic",
       "integration/webhook-inbound-patterns"
@@ -687,7 +695,9 @@
       "security/guest-user-security",
       "security/ip-range-and-login-flow-strategy",
       "security/login-forensics",
+      "security/mfa-enforcement-strategy",
       "security/network-security-and-trusted-ips",
+      "security/oauth-token-management",
       "security/org-hardening-and-baseline-config",
       "security/permission-set-groups-and-muting",
       "security/platform-encryption",
@@ -757,6 +767,9 @@
     "CPQ": [
       "devops/cpq-deployment-patterns"
     ],
+    "CRM-Analytics": [
+      "architect/data-cloud-vs-analytics-decision"
+    ],
     "CSAT": [
       "architect/customer-effort-scoring"
     ],
@@ -791,6 +804,7 @@
     ],
     "DMO": [
       "architect/data-cloud-architecture",
+      "architect/data-cloud-vs-analytics-decision",
       "data/data-cloud-data-model-objects"
     ],
     "Data-360": [
@@ -798,7 +812,8 @@
     ],
     "Data-Cloud": [
       "agentforce/data-cloud-vector-search-dev",
-      "architect/data-cloud-architecture"
+      "architect/data-cloud-architecture",
+      "architect/data-cloud-vs-analytics-decision"
     ],
     "DataImport__c": [
       "data/gift-history-import"
@@ -829,6 +844,9 @@
     ],
     "Einstein": [
       "apex/ai-model-integration-apex"
+    ],
+    "Einstein-Analytics": [
+      "architect/data-cloud-vs-analytics-decision"
     ],
     "Einstein-Search": [
       "agentforce/einstein-search-personalization"
@@ -1426,10 +1444,12 @@
       "apex/pdf-generation-patterns",
       "apex/soql-fundamentals",
       "architect/solution-design-patterns",
+      "devops/code-review-checklist-salesforce",
       "lwc/knowledge-article-lwc",
       "lwc/lwc-imperative-apex"
     ],
     "apex-action": [
+      "flow/flow-action-framework",
       "omnistudio/omnistudio-remote-actions"
     ],
     "apex-actions": [
@@ -1617,6 +1637,7 @@
       "architect/analytics-security-architecture",
       "architect/commerce-integration-patterns",
       "architect/crm-analytics-vs-tableau-decision",
+      "architect/data-cloud-vs-analytics-decision",
       "architect/embedded-analytics-architecture",
       "architect/fsl-optimization-architecture",
       "architect/health-cloud-multi-cloud-strategy",
@@ -1714,6 +1735,9 @@
     ],
     "async-ip": [
       "omnistudio/omnistudio-performance"
+    ],
+    "async-jobs": [
+      "integration/bulk-api-2-patterns"
     ],
     "async-reports": [
       "admin/report-performance-tuning"
@@ -1816,7 +1840,8 @@
       "admin/email-to-case-configuration"
     ],
     "autolaunched-flow": [
-      "flow/subflows-and-reusability"
+      "flow/subflows-and-reusability",
+      "integration/slack-workflow-builder"
     ],
     "automated-regression-testing": [
       "devops/automated-regression-testing"
@@ -1960,6 +1985,7 @@
     ],
     "big-objects": [
       "architect/high-volume-sales-data-architecture",
+      "architect/large-data-volume-architecture",
       "data/data-archival-strategies",
       "data/external-data-and-big-objects"
     ],
@@ -2092,7 +2118,8 @@
       "integration/real-time-vs-batch-integration"
     ],
     "bulk-api-2": [
-      "data/bulk-api-patterns"
+      "data/bulk-api-patterns",
+      "integration/bulk-api-2-patterns"
     ],
     "bulk-api-v2": [
       "agentforce/sf-to-llm-data-pipelines"
@@ -2106,11 +2133,15 @@
     "bulk-import": [
       "data/knowledge-article-import"
     ],
+    "bulk-ingest": [
+      "integration/bulk-api-2-patterns"
+    ],
     "bulk-ingestion": [
       "integration/data-cloud-ingestion-api",
       "integration/data-cloud-integration-strategy"
     ],
     "bulk-load": [
+      "architect/large-data-volume-architecture",
       "data/financial-account-migration",
       "data/industries-data-migration",
       "data/product-catalog-data-model",
@@ -2118,6 +2149,9 @@
     ],
     "bulk-predict": [
       "admin/einstein-discovery-deployment"
+    ],
+    "bulk-query": [
+      "integration/bulk-api-2-patterns"
     ],
     "bulk-safe": [
       "apex/invocable-methods"
@@ -2133,6 +2167,7 @@
       "apex/governor-limits",
       "apex/opportunity-trigger-patterns",
       "apex/trigger-framework",
+      "devops/code-review-checklist-salesforce",
       "flow/auto-launched-flow-patterns"
     ],
     "bundle-design": [
@@ -2557,6 +2592,9 @@
     "claude-desktop": [
       "agentforce/salesforce-mcp-server-setup"
     ],
+    "cli-automation": [
+      "devops/salesforce-cli-automation"
+    ],
     "click-to-dial": [
       "apex/cti-adapter-development"
     ],
@@ -2639,6 +2677,12 @@
     "code-freeze": [
       "devops/go-live-cutover-planning"
     ],
+    "code-review": [
+      "devops/code-review-checklist-salesforce"
+    ],
+    "code-review-checklist-salesforce": [
+      "devops/code-review-checklist-salesforce"
+    ],
     "codeable-concept": [
       "admin/clinical-data-requirements"
     ],
@@ -2658,7 +2702,8 @@
       "flow/flow-collection-processing"
     ],
     "collections": [
-      "flow/flow-bulkification"
+      "flow/flow-bulkification",
+      "flow/flow-large-data-volume-patterns"
     ],
     "cometd": [
       "integration/platform-events-integration",
@@ -2883,6 +2928,7 @@
       "security/api-security-and-rate-limiting",
       "security/certificate-and-key-management",
       "security/connected-app-security-policies",
+      "security/oauth-token-management",
       "security/session-management-and-timeout"
     ],
     "connected-app-plugin": [
@@ -3065,6 +3111,9 @@
     "copilot": [
       "agentforce/einstein-copilot-for-sales"
     ],
+    "core-actions": [
+      "flow/flow-action-framework"
+    ],
     "core-banking": [
       "apex/fsc-integration-patterns-dev"
     ],
@@ -3226,6 +3275,7 @@
     ],
     "crud-fls": [
       "apex/apex-security-patterns",
+      "devops/code-review-checklist-salesforce",
       "security/secure-coding-review-checklist"
     ],
     "csp": [
@@ -3245,6 +3295,9 @@
     ],
     "csv-import": [
       "data/mcae-prospect-data-migration"
+    ],
+    "csv-upload": [
+      "integration/bulk-api-2-patterns"
     ],
     "cti-adapter": [
       "apex/cti-adapter-development"
@@ -3317,6 +3370,7 @@
       "apex/npsp-trigger-framework-extension"
     ],
     "custom-index": [
+      "architect/large-data-volume-architecture",
       "data/custom-index-requests"
     ],
     "custom-labels": [
@@ -3425,6 +3479,9 @@
     ],
     "data": [
       "data/record-merge-implications"
+    ],
+    "data-360": [
+      "architect/data-cloud-vs-analytics-decision"
     ],
     "data-access": [
       "apex/soql-fundamentals"
@@ -3669,7 +3726,8 @@
     "data-skew": [
       "admin/data-skew-and-sharing-performance",
       "apex/record-locking-and-contention",
-      "architect/high-volume-sales-data-architecture"
+      "architect/high-volume-sales-data-architecture",
+      "architect/large-data-volume-architecture"
     ],
     "data-source-mapping": [
       "admin/analytics-requirements-gathering"
@@ -3831,6 +3889,7 @@
     ],
     "decision-framework": [
       "architect/crm-analytics-vs-tableau-decision",
+      "architect/data-cloud-vs-analytics-decision",
       "architect/npsp-vs-nonprofit-cloud-decision",
       "architect/omnistudio-vs-standard-architecture",
       "architect/omnistudio-vs-standard-decision"
@@ -4010,6 +4069,7 @@
       "admin/deployment-risk-assessment",
       "architect/ci-cd-pipeline-architecture",
       "devops/api-version-management",
+      "devops/code-review-checklist-salesforce",
       "devops/cpq-deployment-administration",
       "devops/cpq-deployment-patterns",
       "devops/cumulusci-automation",
@@ -4023,6 +4083,7 @@
       "devops/multi-package-development",
       "devops/org-shape-and-scratch-definition",
       "devops/release-management",
+      "devops/salesforce-cli-automation",
       "devops/salesforce-code-analyzer",
       "devops/sandbox-data-isolation-gotchas",
       "devops/sandbox-refresh-and-templates",
@@ -4067,6 +4128,9 @@
     ],
     "digitalexperiencebundle": [
       "devops/experience-cloud-deployment-dev"
+    ],
+    "direct-data": [
+      "architect/data-cloud-vs-analytics-decision"
     ],
     "direct-platform-access": [
       "architect/omnistudio-scalability-patterns"
@@ -5083,6 +5147,9 @@
     "flow-action": [
       "admin/einstein-discovery-deployment"
     ],
+    "flow-action-framework": [
+      "flow/flow-action-framework"
+    ],
     "flow-apex-action": [
       "apex/invocable-methods"
     ],
@@ -5091,6 +5158,7 @@
     ],
     "flow-builder": [
       "agentforce/einstein-next-best-action",
+      "flow/flow-action-framework",
       "flow/flow-custom-property-editors",
       "lwc/custom-property-editor-for-flow"
     ],
@@ -5124,10 +5192,14 @@
     "flow-interview-persistence": [
       "flow/pause-elements-and-wait-events"
     ],
+    "flow-large-data-volume-patterns": [
+      "flow/flow-large-data-volume-patterns"
+    ],
     "flow-navigation": [
       "lwc/lwc-in-flow-screens"
     ],
     "flow-orchestration": [
+      "flow/flow-action-framework",
       "flow/orchestration-flows"
     ],
     "flow-reuse": [
@@ -5385,6 +5457,9 @@
     "generic-streaming": [
       "integration/streaming-api-and-pushtopic"
     ],
+    "get-records": [
+      "flow/flow-large-data-volume-patterns"
+    ],
     "gift-entry": [
       "admin/gift-entry-and-processing"
     ],
@@ -5455,7 +5530,9 @@
       "architect/limits-and-scalability-planning",
       "architect/omnistudio-scalability-patterns",
       "data/cpq-performance-optimization",
+      "devops/code-review-checklist-salesforce",
       "flow/flow-bulkification",
+      "flow/flow-large-data-volume-patterns",
       "integration/callout-limits-and-async-patterns"
     ],
     "gps": [
@@ -5937,12 +6014,14 @@
       "architect/fsc-architecture-patterns",
       "architect/fsl-integration-patterns",
       "architect/integration-framework-design",
+      "integration/bulk-api-2-patterns",
       "integration/composite-api-patterns",
       "integration/error-handling-in-integrations",
       "integration/outbound-messages-and-callbacks",
       "integration/real-time-vs-batch-integration",
       "integration/salesforce-to-salesforce-integration",
-      "integration/slack-salesforce-integration-setup"
+      "integration/slack-salesforce-integration-setup",
+      "integration/slack-workflow-builder"
     ],
     "integration-admin": [
       "admin/outbound-message-setup",
@@ -6044,10 +6123,12 @@
       "agentforce/custom-agent-actions-apex"
     ],
     "invocablemethod": [
-      "apex/invocable-methods"
+      "apex/invocable-methods",
+      "flow/flow-action-framework"
     ],
     "invocablevariable": [
-      "apex/invocable-methods"
+      "apex/invocable-methods",
+      "flow/flow-action-framework"
     ],
     "invoice": [
       "admin/quote-to-cash-process",
@@ -6113,6 +6194,9 @@
     "job-management": [
       "apex/apex-scheduled-jobs"
     ],
+    "job-orchestration": [
+      "integration/bulk-api-2-patterns"
+    ],
     "joined-reports": [
       "admin/reports-and-dashboards-fundamentals"
     ],
@@ -6139,6 +6223,9 @@
     ],
     "json-memory": [
       "apex/apex-cpu-and-heap-optimization"
+    ],
+    "json-output": [
+      "devops/salesforce-cli-automation"
     ],
     "json-rpc": [
       "agentforce/mcp-tool-definition-apex",
@@ -6228,6 +6315,9 @@
       "architect/data-cloud-architecture",
       "integration/data-cloud-integration-strategy"
     ],
+    "large-data-volume-architecture": [
+      "architect/large-data-volume-architecture"
+    ],
     "large-data-volumes": [
       "admin/data-skew-and-sharing-performance",
       "admin/report-performance-tuning",
@@ -6261,7 +6351,9 @@
     ],
     "ldv": [
       "apex/cross-object-formula-and-rollup-performance",
-      "apex/formula-field-performance-and-limits"
+      "apex/formula-field-performance-and-limits",
+      "architect/large-data-volume-architecture",
+      "flow/flow-large-data-volume-patterns"
     ],
     "lead": [
       "data/lead-data-import-and-dedup",
@@ -6863,6 +6955,9 @@
       "admin/org-setup-and-configuration",
       "security/transaction-security-policies"
     ],
+    "mfa-enforcement-strategy": [
+      "security/mfa-enforcement-strategy"
+    ],
     "mfa-waiver": [
       "admin/integration-user-management"
     ],
@@ -7030,6 +7125,9 @@
     ],
     "multi-currency-sales-architecture": [
       "architect/multi-currency-sales-architecture"
+    ],
+    "multi-factor-authentication": [
+      "security/mfa-enforcement-strategy"
     ],
     "multi-idp": [
       "lwc/experience-cloud-multi-idp-sso"
@@ -7238,12 +7336,16 @@
       "architect/ai-agent-org-integration-architecture",
       "architect/experience-cloud-integration-patterns",
       "architect/integration-security-architecture",
+      "integration/bulk-api-2-patterns",
       "integration/named-credentials-setup",
       "integration/oauth-flows-and-connected-apps",
       "integration/rest-api-patterns",
       "integration/slack-salesforce-integration-setup",
       "lwc/experience-cloud-api-access",
       "security/connected-app-security-policies"
+    ],
+    "oauth-2": [
+      "security/oauth-token-management"
     ],
     "oauth-jwt-bearer": [
       "integration/mulesoft-salesforce-connector"
@@ -7253,6 +7355,9 @@
     ],
     "oauth-scopes": [
       "security/api-security-and-rate-limiting"
+    ],
+    "oauth-token-management": [
+      "security/oauth-token-management"
     ],
     "oauth2": [
       "apex/marketing-cloud-api",
@@ -7590,6 +7695,9 @@
     ],
     "org-wide-email": [
       "admin/email-templates-and-alerts"
+    ],
+    "org-wide-mfa": [
+      "security/mfa-enforcement-strategy"
     ],
     "outbound-message": [
       "admin/outbound-message-setup"
@@ -8369,6 +8477,9 @@
     "pubsub": [
       "omnistudio/omnistudio-custom-lwc-elements"
     ],
+    "pull-request": [
+      "devops/code-review-checklist-salesforce"
+    ],
     "pull-requests": [
       "devops/copado-essentials"
     ],
@@ -8619,7 +8730,8 @@
       "admin/sandbox-strategy"
     ],
     "refresh-token": [
-      "admin/integration-admin-connected-apps"
+      "admin/integration-admin-connected-apps",
+      "security/oauth-token-management"
     ],
     "refreshapex": [
       "lwc/wire-service-patterns"
@@ -9022,7 +9134,8 @@
       "data/billing-data-reconciliation"
     ],
     "salesforce-cli": [
-      "devops/destructive-changes-deployment"
+      "devops/destructive-changes-deployment",
+      "devops/salesforce-cli-automation"
     ],
     "salesforce-code-analyzer": [
       "devops/salesforce-code-analyzer"
@@ -9050,7 +9163,8 @@
       "devops/vscode-salesforce-extensions"
     ],
     "salesforce-for-slack": [
-      "integration/slack-salesforce-integration-setup"
+      "integration/slack-salesforce-integration-setup",
+      "integration/slack-workflow-builder"
     ],
     "salesforce-knowledge": [
       "architect/knowledge-vs-external-cms"
@@ -9334,6 +9448,7 @@
       "security/security-health-check"
     ],
     "security-settings": [
+      "security/mfa-enforcement-strategy",
       "security/session-management-and-timeout"
     ],
     "seealldata": [
@@ -9349,6 +9464,9 @@
       "admin/data-cloud-calculated-insights",
       "admin/data-cloud-segmentation",
       "architect/data-cloud-architecture"
+    ],
+    "selectivity": [
+      "architect/large-data-volume-architecture"
     ],
     "selector-layer": [
       "apex/fflib-enterprise-patterns"
@@ -9523,6 +9641,7 @@
       "security/security-health-check"
     ],
     "session-timeout": [
+      "security/oauth-token-management",
       "security/session-management-and-timeout"
     ],
     "set-of-id": [
@@ -9541,6 +9660,9 @@
       "apex/sf-cli-and-sfdx-essentials",
       "devops/continuous-integration-testing",
       "devops/source-tracking-and-conflict-resolution"
+    ],
+    "sf-cli-v2": [
+      "devops/salesforce-cli-automation"
     ],
     "sfcc": [
       "admin/b2c-commerce-store-setup",
@@ -9607,6 +9729,9 @@
       "architect/security-architecture-review",
       "data/external-user-data-sharing"
     ],
+    "sharing-performance": [
+      "architect/large-data-volume-architecture"
+    ],
     "sharing-recalculation": [
       "admin/data-skew-and-sharing-performance",
       "apex/apex-managed-sharing",
@@ -9623,6 +9748,9 @@
     ],
     "sharing-sets": [
       "security/experience-cloud-security"
+    ],
+    "shell-scripting": [
+      "devops/salesforce-cli-automation"
     ],
     "shield": [
       "admin/hipaa-workflow-design",
@@ -9687,6 +9815,7 @@
     ],
     "skinny-tables": [
       "architect/high-volume-sales-data-architecture",
+      "architect/large-data-volume-architecture",
       "data/custom-index-requests",
       "data/data-model-design-patterns"
     ],
@@ -9700,13 +9829,17 @@
     ],
     "slack": [
       "flow/flow-for-slack",
-      "integration/slack-salesforce-integration-setup"
+      "integration/slack-salesforce-integration-setup",
+      "integration/slack-workflow-builder"
     ],
     "slack-deployment": [
       "agentforce/agent-channel-deployment"
     ],
     "slack-integration": [
       "flow/flow-email-and-notifications"
+    ],
+    "slack-workflow-builder": [
+      "integration/slack-workflow-builder"
     ],
     "slas": [
       "apex/commerce-order-api"
@@ -9784,6 +9917,9 @@
     "soql-performance": [
       "architect/high-volume-sales-data-architecture"
     ],
+    "soql-rows": [
+      "flow/flow-large-data-volume-patterns"
+    ],
     "soql-selectivity": [
       "architect/limits-and-scalability-planning"
     ],
@@ -9842,6 +9978,9 @@
       "architect/multi-org-strategy",
       "lwc/experience-cloud-authentication",
       "lwc/experience-cloud-multi-idp-sso"
+    ],
+    "sso-mfa": [
+      "security/mfa-enforcement-strategy"
     ],
     "stack-depth": [
       "apex/apex-queueable-patterns"
@@ -9966,6 +10105,9 @@
     ],
     "student-privacy": [
       "security/ferpa-compliance-in-salesforce"
+    ],
+    "subflow": [
+      "flow/flow-action-framework"
     ],
     "subflows": [
       "flow/subflows-and-reusability"
@@ -10202,6 +10344,12 @@
       "lwc/lwc-modal-and-overlay",
       "lwc/lwc-toast-and-notifications"
     ],
+    "token-introspection": [
+      "security/oauth-token-management"
+    ],
+    "token-revocation": [
+      "security/oauth-token-management"
+    ],
     "tokenization": [
       "apex/commerce-payment-integration"
     ],
@@ -10375,6 +10523,9 @@
     "unit-of-work": [
       "apex/fflib-enterprise-patterns"
     ],
+    "unit-tests": [
+      "devops/code-review-checklist-salesforce"
+    ],
     "unlimited": [
       "architect/org-edition-and-feature-licensing"
     ],
@@ -10500,6 +10651,9 @@
     ],
     "vendor-selection": [
       "integration/middleware-integration-patterns"
+    ],
+    "verification-methods": [
+      "security/mfa-enforcement-strategy"
     ],
     "version-control": [
       "omnistudio/omnistudio-deployment-datapacks"
@@ -10684,6 +10838,9 @@
     ],
     "workflow": [
       "admin/outbound-message-setup"
+    ],
+    "workflow-automation": [
+      "integration/slack-workflow-builder"
     ],
     "workflow-rule-retirement": [
       "admin/process-automation-selection"

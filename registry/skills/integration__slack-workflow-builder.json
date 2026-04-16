@@ -1,0 +1,97 @@
+{
+  "category": "integration",
+  "chunk_ids": [
+    "0cbf6a7c6b25099968e8",
+    "0fd8fd66252b45686ad7",
+    "102afc1d8e30db664b57",
+    "12e4c8d6b0b09c957de1",
+    "1c6625de9f888ead8169",
+    "1f4d0d203d52f46e8bd0",
+    "22940510207490a965be",
+    "2461689b7f0bb75c1e7e",
+    "2704d03c99f1e94138b7",
+    "2743ad4197e9371d82b4",
+    "2f1ac43922fb23fe512c",
+    "320a753667708c3e384d",
+    "3951a56ece07a37dfd6c",
+    "39f6e3ae3b2fe27e7397",
+    "448c6b962464c3911716",
+    "46570ee8a2a4395c0229",
+    "4d4281c05979215faa09",
+    "597653512ce76445aace",
+    "5f8a5a3167f7fa4c07d3",
+    "5ff806f9c3d7f751fc15",
+    "68ce8f32d33ce13da5e4",
+    "6bd9e9100d00207d9dc0",
+    "70ef2df7146070b024fe",
+    "7694dc1d014ce7464198",
+    "7775604eefac35516244",
+    "83cbdc767a626f3063a5",
+    "8c8d1be38287f76ae8a0",
+    "9d18b66726f6a7cb2202",
+    "9d635ae7759b90e1f7bf",
+    "a6477b0568b80e79ea57",
+    "a875e4f1209225bc4e16",
+    "ad9700f7f88296fa50ec",
+    "afccf0cc387e867cd0b5",
+    "b360fa094eaa3d289715",
+    "bcb31b84c6895151b02c",
+    "c61b37138da6fcdf4b05",
+    "cfa5a9335d0f07cc7cec",
+    "d294fdc1a41ca54377a1",
+    "d6cec89f4f9c1d4d19e4",
+    "da5cc0683f289f680626",
+    "de214fc56c8b19a9ee9e",
+    "e5a0eb87abf6807a74a6",
+    "e837b1a1649a727031d6",
+    "ebfc233fb0911269ee6d",
+    "fedb6652005c792c4d70"
+  ],
+  "content_hash": "5626a9d7b86c0439570a9df1b29d3f1ddd6bdea1dfa9d6d6d44d2d8b927c0039",
+  "dependencies": [],
+  "description": "Use this skill when designing or troubleshooting Slack Workflow Builder workflows that call Salesforce \u2014 especially the Salesforce connector step Run a Flow, mapping inputs/outputs, handling failures, and understanding limits. Triggers on: Slack Workflow Builder Salesforce, Run a Flow from Slack, autolaunched flow from Slack, Slack automation calling Salesforce. NOT for Salesforce Flow Builder tutorials unrelated to Slack (use flow skills), not for Flow Core Actions that send Slack messages from Salesforce (use flow-for-slack), not for initial org-to-workspace connection (use slack-salesforce-integration-setup), and not for building custom Slack apps outside Workflow Builder.",
+  "file_location": "skills/integration/slack-workflow-builder",
+  "id": "integration/slack-workflow-builder",
+  "inputs": [
+    "Salesforce org already connected to the Slack workspace (Salesforce for Slack)",
+    "Slack workspace permission to create or edit workflows in Workflow Builder",
+    "Target Salesforce Flow API name and required input variables (if using Run a Flow)"
+  ],
+  "name": "slack-workflow-builder",
+  "official_sources": [
+    "Guide to Slack Workflow Builder \u2014 https://slack.com/help/articles/360035692513 (Slack product behavior, publishing, activity logs)",
+    "Slack connectors for Workflow Builder \u2014 https://slack.com/help/articles/20155812595219 (connector authentication and approval model)",
+    "Connect the Salesforce for Slack App to a Salesforce Org \u2014 https://help.salesforce.com/s/articleView?id=sf.slack_apps_digital_hq_setup.htm (prerequisite org connection)",
+    "Flow Reference: Slack Actions in Salesforce Flow \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_actions_slack.htm (disambiguates Salesforce Flow actions that *send to Slack* from Slack-initiated **Run a Flow**)",
+    "Integration Patterns \u2014 https://architect.salesforce.com/docs/architect/fundamentals/guide/integration-patterns.html (system boundaries, synchronous vs asynchronous tradeoffs)",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (trusted, easy, adaptable solution quality)"
+  ],
+  "outputs": [
+    "Correct choice of Salesforce step (Run a Flow vs alternatives)",
+    "Checklist for autolaunched-only targets, activation, and runtime permissions",
+    "Operational guidance on throttling, error handling, and governance"
+  ],
+  "references": [
+    "skills/integration/slack-workflow-builder/references/examples.md",
+    "skills/integration/slack-workflow-builder/references/gotchas.md",
+    "skills/integration/slack-workflow-builder/references/llm-anti-patterns.md",
+    "skills/integration/slack-workflow-builder/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/integration/slack-workflow-builder/scripts/check_slack_workflow_builder.py"
+  ],
+  "tags": [
+    "slack-workflow-builder",
+    "slack",
+    "salesforce-for-slack",
+    "autolaunched-flow",
+    "workflow-automation",
+    "integration"
+  ],
+  "templates": [
+    "skills/integration/slack-workflow-builder/templates/slack-workflow-builder-template.md"
+  ],
+  "updated": "2026-04-16",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

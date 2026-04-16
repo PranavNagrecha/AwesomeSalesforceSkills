@@ -208,6 +208,19 @@ Rule: when a user query straddles more than one technology in a tree's
 scope, read the tree before activating any skill. Cite the tree step that
 resolved the choice. See `standards/decision-trees/README.md`.
 
+## Golden Evals Layer
+
+Output-quality checks for flagship skills live under `evals/golden/`.
+Format is markdown-based (see `evals/framework.md`) and each flagship
+skill has 3+ P0 cases with assertions, rubric, and reference answers.
+
+Current coverage: 10 flagship skills × 3 cases = 30 P0 cases. Lint with
+`python3 evals/scripts/run_evals.py --structure`.
+
+Rule: when editing a flagship skill (see list in `evals/README.md`),
+update its eval file in the same PR — reference answers should cite the
+templates and decision trees the skill points to.
+
 ## Shared Templates Layer
 
 Canonical, cross-skill building blocks live under `templates/`:
