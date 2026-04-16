@@ -94,6 +94,35 @@ Skills are plain markdown. They work in any AI tool that can read a file.
 
 ---
 
+## Shared Templates
+
+Canonical, copy-pasteable Salesforce building blocks live under `templates/`:
+
+```
+templates/
+├── apex/              TriggerHandler, TriggerControl, BaseDomain/Service/Selector,
+│                      ApplicationLogger, SecurityUtils, HttpClient
+├── apex/tests/        TestDataFactory, TestRecordBuilder, MockHttpResponseGenerator,
+│                      TestUserFactory, BulkTestPattern
+├── apex/cmdt/         Trigger_Setting__mdt, Logger_Setting__mdt
+├── apex/custom_objects/  Application_Log__c (+ fields)
+├── lwc/               jest.config.js, component-skeleton/ (bundle + tests),
+│                      patterns/ (wire, imperative, LDS form)
+├── flow/              RecordTriggered_Skeleton, FaultPath_Template, Subflow_Pattern
+└── agentforce/        AgentSkeleton.json, AgentActionSkeleton.cls, AgentTopic_Template.md
+```
+
+Every skill in this repo references these canonical files instead of
+re-inventing scaffolds. AI tools reading the skills get one consistent
+implementation of each Salesforce idiom — testable, version-pinned, and
+deployable.
+
+Drop the files you need into your SFDX project under `force-app/main/default/`
+and rename. See [templates/README.md](./templates/README.md) for the layout
+and dependency order.
+
+---
+
 ## Covered Skills
 
 | Domain | Skills |
@@ -222,6 +251,7 @@ The Currency Monitor agent will handle it if you flag it during a release cycle.
 | `standards/well-architected-mapping.md` | WAF pillar definitions and scoring |
 | `standards/naming-conventions.md` | Apex, LWC, Flow, Object naming rules |
 | `standards/code-review-checklist.md` | Full code review checklist |
+| `standards/decision-trees/` | Cross-skill routing: automation, async, integration, sharing |
 
 ---
 
@@ -282,3 +312,54 @@ Track progress: [MASTER_QUEUE.md](./MASTER_QUEUE.md)
 
 Issues → [GitHub Issues](https://github.com/PranavNagrecha/AwesomeSalesforceSkills/issues)
 Skill requests → `/request-skill` in Claude Code or open an issue with `[Skill Request]` prefix
+
+---
+
+## MCP Server (live-org context)
+
+The `mcp/sfskills-mcp/` package exposes this library and your real Salesforce
+org to any MCP-capable agent (Cursor, Claude Code, Windsurf, Codex, etc.) so
+the agent can answer "does this trigger framework already exist in my org?"
+without asking you.
+
+Six tools:
+
+| Tool                   | What it does                                                                    |
+| ---------------------- | ------------------------------------------------------------------------------- |
+| `search_skill`         | Lexical search over the 686+ SfSkills corpus with optional domain filter.       |
+| `get_skill`            | Full SKILL.md + registry metadata for a given skill id.                         |
+| `describe_org`         | `sf org display` summary (org id, instance, edition, sandbox/scratch flags).    |
+| `list_custom_objects`  | Custom sObjects in the target org with optional substring filter.               |
+| `list_flows_on_object` | Flows (record / scheduled / platform-event triggered) targeting an sObject.    |
+| `validate_against_org` | Category-aware probe: does the skill's guidance already have analogs in the org?|
+
+Quick start:
+
+```bash
+cd mcp/sfskills-mcp
+python3 -m pip install -e .
+
+# authenticate once via the Salesforce CLI (no secrets enter the MCP server)
+sf org login web --alias my-dev
+sf config set target-org=my-dev
+
+# run the server
+python3 -m sfskills_mcp
+```
+
+Cursor (`~/.cursor/mcp.json` or project-scoped `.cursor/mcp.json`):
+
+```json
+{
+  "mcpServers": {
+    "sfskills": {
+      "command": "python3",
+      "args": ["-m", "sfskills_mcp"],
+      "env": { "SFSKILLS_REPO_ROOT": "/absolute/path/to/AwesomeSalesforceSkills" }
+    }
+  }
+}
+```
+
+See [mcp/sfskills-mcp/README.md](./mcp/sfskills-mcp/README.md) for Claude Code,
+Windsurf, Aider, and Codex setup, tool schemas, and design notes.

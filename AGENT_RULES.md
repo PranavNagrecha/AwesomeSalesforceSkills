@@ -111,6 +111,60 @@ Use `search_skills.py` for duplicate checking before scaffold (faster than full 
 
 ---
 
+## Shared Templates
+
+Canonical cross-skill code scaffolds live under `templates/` at the repo root:
+
+- `templates/apex/` — `TriggerHandler`, `TriggerControl`, `BaseDomain`, `BaseService`, `BaseSelector`, `ApplicationLogger`, `SecurityUtils`, `HttpClient`, + supporting CMDT and custom objects
+- `templates/apex/tests/` — `TestDataFactory`, `TestRecordBuilder`, `MockHttpResponseGenerator`, `TestUserFactory`, `BulkTestPattern`
+- `templates/lwc/` — Jest config, full component skeleton with tests, wire/imperative/LDS patterns
+- `templates/flow/` — record-triggered skeleton, fault-path runbook, subflow contract rules
+- `templates/agentforce/` — agent spec, invocable action skeleton, topic template
+
+**Rule for skill authors:** when a skill needs to show example code for a
+well-known idiom (trigger handler, test factory, wire pattern, fault path,
+invocable action), do NOT re-invent the example inline. Reference the
+canonical template from `templates/<domain>/` by relative path and mark what
+must be renamed / specialized.
+
+**Rule for agents during `/new-skill` and `/review`:**
+
+- Read `templates/README.md` for the layout.
+- Use a template path (e.g. `templates/apex/TriggerHandler.cls`) instead of
+  pasting a reimplementation into `references/examples.md`.
+- If a needed idiom is missing from `templates/`, flag it as a gap rather
+  than writing a one-off in the skill.
+
+---
+
+## Decision Trees
+
+Cross-skill routing logic lives under `standards/decision-trees/`:
+
+- `automation-selection.md` — Flow vs Apex vs Agentforce vs Approvals vs Platform Events
+- `async-selection.md` — `@future` vs Queueable vs Batch vs Schedulable vs Platform Events vs Scheduled Flow
+- `integration-pattern-selection.md` — REST vs Bulk API vs Platform Events vs CDC vs Pub/Sub vs Salesforce Connect vs Named Credentials vs MuleSoft
+- `sharing-selection.md` — OWD vs Role Hierarchy vs Sharing Rules vs Teams vs Manual vs Apex Managed vs Restriction/Scoping
+
+**Rule for agents:**
+
+- If the user's request straddles more than one technology in a tree's
+  scope, read the tree top-to-bottom **before** activating any skill.
+- Cite the tree step that resolved the choice (e.g. "per
+  `automation-selection.md` Q3, this needs a callout, so Apex — not Flow").
+- When two skills score close in retrieval, the tree's recommended skill wins.
+- If a scenario falls outside the existing trees, flag it as a gap; do not
+  force-fit.
+
+**Rule for skill authors:**
+
+- Skills must **link** to the relevant decision tree from their `## Related`
+  section, not duplicate its logic.
+- A skill body that re-answers a tree's decision is a smell — delete the
+  re-answer and link to the tree.
+
+---
+
 ## Retrieval Rules
 
 - Always use `python3 scripts/search_knowledge.py "<query>"` before claiming that a new skill does not already exist or that a topic has no local coverage.

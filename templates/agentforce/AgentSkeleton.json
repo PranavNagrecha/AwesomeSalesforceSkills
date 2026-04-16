@@ -1,0 +1,57 @@
+{
+    "$comment": "Agentforce agent skeleton. Use with: sf agent create --spec agents/agent-skeleton.yaml (structure shown as JSON for readability).",
+    "agent": {
+        "name": "Agent_Skeleton",
+        "label": "Agent Skeleton",
+        "description": "Short summary of what this agent does and for whom. Keep under 300 chars — this is what appears in picklists.",
+        "persona": {
+            "name": "Support Specialist",
+            "tone": "professional, empathetic, concise",
+            "roleDescription": "You are a senior support specialist helping the user manage cases. You always confirm destructive actions. You never invent record IDs or field values."
+        },
+        "model": {
+            "provider": "Einstein",
+            "reasoningModel": "gpt-4",
+            "temperature": 0.1
+        },
+        "topics": [
+            {
+                "name": "Create_Case",
+                "reference": "./topics/Create_Case.topic.md",
+                "actions": [
+                    "CreateCaseAction",
+                    "GetCaseQueuesAction",
+                    "NotifyOwnerAction"
+                ]
+            },
+            {
+                "name": "Summarize_Account",
+                "reference": "./topics/Summarize_Account.topic.md",
+                "actions": [
+                    "GetAccountSummaryAction",
+                    "GetRelatedContactsAction"
+                ]
+            }
+        ],
+        "fallback": {
+            "message": "I can help with creating cases and summarizing accounts. For other requests, please contact your admin.",
+            "escalateTo": "Queue: Support Escalations"
+        },
+        "guardrails": {
+            "trustLayer": {
+                "maskPII": true,
+                "blockToxicity": true,
+                "preventPromptInjection": true
+            },
+            "confirmationRequired": [
+                "any action that creates more than 1 record",
+                "any action that deletes records",
+                "any action that sends external communication"
+            ]
+        },
+        "evaluation": {
+            "testUtterances": "./evals/test-utterances.json",
+            "minAccuracy": 0.85
+        }
+    }
+}

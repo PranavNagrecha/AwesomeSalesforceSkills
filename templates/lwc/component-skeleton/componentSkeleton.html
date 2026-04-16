@@ -1,0 +1,26 @@
+<template>
+    <lightning-card title={title}>
+        <template if:true={state.loading}>
+            <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+        </template>
+
+        <template if:true={hasError}>
+            <div role="alert" class="slds-p-around_medium slds-text-color_error">
+                {state.error}
+                <div class="slds-m-top_small">
+                    <lightning-button
+                        label="Retry"
+                        variant="neutral"
+                        onclick={handleRetry}>
+                    </lightning-button>
+                </div>
+            </div>
+        </template>
+
+        <template if:true={isReady}>
+            <div class="slds-p-around_medium">
+                <slot>Replace this slot with the component's body.</slot>
+            </div>
+        </template>
+    </lightning-card>
+</template>

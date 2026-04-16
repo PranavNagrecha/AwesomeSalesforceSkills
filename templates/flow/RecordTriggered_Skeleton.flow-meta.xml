@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    RecordTriggered_Skeleton
+
+    Canonical record-triggered flow skeleton. Copy, rename, and adapt.
+
+    Choice matrix:
+      - Before-save: field updates on the triggering record only. ~10x faster than after-save.
+      - After-save: DML on related records, async paths (Queueable/Platform Event), post-commit side effects.
+      - Scheduled Paths: the "X days after Y" pattern — no more scheduled batch jobs for simple cases.
+
+    Gotchas:
+      - Always add a Fault path on any element that can fail (Create/Update/Delete/Action) — orphan
+        fault paths cause silent data corruption.
+      - Use entry criteria ("Only when a record is updated to meet the condition requirements") to
+        avoid re-firing on unrelated field changes — same as the `oldMap` delta check in Apex.
+      - Flow interviews bulkify across records in the triggering DML; avoid Get Records inside a
+        loop — use a single Get Records before the loop and an in-memory map.
+-->
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>64.0</apiVersion>
+    <description>Skeleton record-triggered flow. Replace object, entry criteria, and actions.</description>
+    <environments>Default</environments>
+    <interviewLabel>Record Triggered Skeleton {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Record Triggered Skeleton</label>
+    <processType>AutoLaunchedFlow</processType>
+    <runInMode>DefaultMode</runInMode>
+    <start>
+        <locationX>50</locationX>
+        <locationY>50</locationY>
+        <connector>
+            <targetReference>Check_Entry_Criteria</targetReference>
+        </connector>
+        <object>Account</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Active__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+    </start>
+    <status>Draft</status>
+    <decisions>
+        <name>Check_Entry_Criteria</name>
+        <label>Check Entry Criteria</label>
+        <locationX>176</locationX>
+        <locationY>50</locationY>
+        <defaultConnectorLabel>No Action</defaultConnectorLabel>
+        <rules>
+            <name>Run</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Id</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <label>Run</label>
+        </rules>
+    </decisions>
+</Flow>
