@@ -1,0 +1,94 @@
+{
+  "category": "data",
+  "chunk_ids": [
+    "051aa28ac6b3fbb9b0c8",
+    "0b53359582dc0bd9b48d",
+    "127c0ef454e61cf9eec6",
+    "15fcf8450d49a91d694a",
+    "29c410ed397996b68fc8",
+    "380aefca2e34b91ff19e",
+    "3c90ce13d21f6b66f2a2",
+    "3ede505b7933d02bea73",
+    "469af6661a2f426dd757",
+    "4b941783161933ef35fb",
+    "56af0ef53a5713b28f38",
+    "591b6a79b5b040476dcd",
+    "623568a6f545ec07dc25",
+    "623c20c914d2b1b4d896",
+    "6301c9ba53bc58a5fbc2",
+    "6d65a7c17a9940e92e72",
+    "7199bcc182a751b93247",
+    "73419e5a0c7fa4a3b133",
+    "755ea4d66d275a4282cf",
+    "79d711a39f66a5c571b7",
+    "84c1af591a22582f8e4f",
+    "89bb8d4bf8803d2f2760",
+    "8b1e741751d0e0b36947",
+    "9736b760124a49a86aab",
+    "9b13b5eb47feb0485253",
+    "9b52f65dee5cbe9d675b",
+    "a3058dc38427a08150ad",
+    "a35e3d8ad7f801b4e506",
+    "bef5f8dbd5a746c84c72",
+    "c0770c0363e0c1d31d29",
+    "c1b756ec875510975f01",
+    "c325dde1557cd8f40f23",
+    "df33597696ec314d3fc1",
+    "df41a7c5cce3543e540a",
+    "df43dfd032d71e0ee9bb",
+    "dfaf027069131b9ae2d4",
+    "e49b7019b9ff274de495",
+    "e6ecc0530ab80de750a0",
+    "f2319d2716b332bd84dc",
+    "f3c05cac069005a6bcd5",
+    "f42ac523f31c5cca86b9",
+    "f611661a1713b2c873f5",
+    "f7e3f754bde1d4ce9d0c",
+    "f980ad747ab78ce2ec06",
+    "fac80fac6f2fc88669e5",
+    "fd8c2595381754e5d765"
+  ],
+  "content_hash": "d0dda08f8ddbf2aa15b7e305edce1f442af6339d767d2ede1cf61fcb7f263c66",
+  "dependencies": [],
+  "description": "Use this skill when working with CRM Analytics (Einstein Analytics) extended metadata (XMD) \u2014 the multi-layer metadata system that controls field display labels, aliases, number formatting, date formatting, measure/dimension classification, and color palettes on CRM Analytics datasets. Trigger keywords: XMD API, dataset field formatting CRM Analytics, wave dataset labels, main XMD update, dataset versioning Analytics. NOT for dataflow development, recipe node configuration, dataset ingestion setup, standard dashboard design, or SAQL query construction \u2014 those are covered by analytics-dataflow-development and analytics-recipe-design.",
+  "file_location": "skills/data/einstein-analytics-data-model",
+  "id": "data/einstein-analytics-data-model",
+  "inputs": [
+    "CRM Analytics dataset API name and dataset ID",
+    "Field API names requiring formatting or label customization",
+    "Target XMD layer: main (org-wide) or user (per-user)"
+  ],
+  "name": "einstein-analytics-data-model",
+  "official_sources": [
+    "CRM Analytics REST API Developer Guide \u2014 Wave XMD: https://developer.salesforce.com/docs/atlas.en-us.bi_dev_guide_rest.meta/bi_dev_guide_rest/bi_rest_xmd.htm",
+    "CRM Analytics REST API \u2014 Datasets Resource: https://developer.salesforce.com/docs/atlas.en-us.bi_dev_guide_rest.meta/bi_dev_guide_rest/bi_rest_resources_datasets.htm",
+    "Salesforce Help: CRM Analytics Extended Metadata (XMD): https://help.salesforce.com/s/articleView?id=sf.bi_xmd.htm"
+  ],
+  "outputs": [
+    "XMD PATCH request payload for field label or formatting change",
+    "Guidance on which XMD layer to target for each type of change",
+    "Dataset versioning awareness documentation"
+  ],
+  "references": [
+    "skills/data/einstein-analytics-data-model/references/examples.md",
+    "skills/data/einstein-analytics-data-model/references/gotchas.md",
+    "skills/data/einstein-analytics-data-model/references/llm-anti-patterns.md",
+    "skills/data/einstein-analytics-data-model/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/data/einstein-analytics-data-model/scripts/check_einstein_analytics_data_model.py"
+  ],
+  "tags": [
+    "crm-analytics",
+    "einstein-analytics",
+    "xmd",
+    "dataset-metadata",
+    "wave"
+  ],
+  "templates": [
+    "skills/data/einstein-analytics-data-model/templates/einstein-analytics-data-model-template.md"
+  ],
+  "updated": "2026-04-16",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

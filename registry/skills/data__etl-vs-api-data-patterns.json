@@ -1,0 +1,98 @@
+{
+  "category": "data",
+  "chunk_ids": [
+    "028fc1a8ca530ea875b4",
+    "03460b3f1ec62602a449",
+    "03629db8bffa5c6c9908",
+    "045572fa73dfb414e9f3",
+    "07613ac670dfd6fd6c9b",
+    "09d840a8c48ef4378916",
+    "0dba196fa41a91f1530b",
+    "23d4aa6132e2b23eeae1",
+    "2ec3b42833a3c6afdd9b",
+    "31c7cb470f4c3b78ef16",
+    "33bb61295a343542a672",
+    "38414431ef8638ff3d95",
+    "3e99329af3f249c23216",
+    "44da29255be08cdd5ac1",
+    "4c7147e49e266e56dae2",
+    "4cc430832a2392b15bfa",
+    "5b560ccf6660d9c8e14f",
+    "5f97a2f0fc68fa09d920",
+    "6242f84e4c6a737ab29c",
+    "6f8a1d4d4de83472802f",
+    "7033727fbf18e41348da",
+    "780be566cd4eda9029b4",
+    "79be9b196d888474f253",
+    "81b0fb18cb0190c6c968",
+    "82ef19ea138d79ec8396",
+    "86a24f78bae53aa41334",
+    "9267af2882ec3c46c2df",
+    "97339faeb14512d9ad42",
+    "998c9fa7c2868a17edc0",
+    "a56b90de452b0033758a",
+    "a5d762bd05854ea9dd97",
+    "ace658a3444fdeb07983",
+    "afba1d179371e34b6f22",
+    "afef171e9cabf4165268",
+    "bb0e103c5d5640371c8e",
+    "bb52bf3d46f75d747809",
+    "d1abec9ef75a3b419671",
+    "d3b55aaaaa3662380ae5",
+    "d42e45769c313b7c250a",
+    "d7c0ccde36cd3746d0a2",
+    "dc826965cef2ea3e5d91",
+    "e43a9c10c7681be77d29",
+    "eaa5adeb3dcc97b742b3",
+    "eb3fef864a055850f7ca",
+    "f8dbad9a4422c5976c56",
+    "f930fb5f67b194735cb3"
+  ],
+  "content_hash": "b30dd5c6cfddbf3edeae0b6b2bbfbd903ace87e0168ac8b6fdc8a17c9ddd3bf2",
+  "dependencies": [],
+  "description": "Use this skill when selecting between ETL/ELT tools and API-based integration for ongoing data pipelines between Salesforce and external systems: Informatica Cloud, MuleSoft Batch, Jitterbit, and direct Bulk API patterns. Trigger keywords: ETL vs API integration choice, Informatica vs MuleSoft data pipeline, should I use ETL or API for Salesforce, bulk data pipeline architecture, ongoing data sync tool selection. NOT for one-time data migration tool selection (use data-migration-planning), Data Loader usage, or real-time event-driven integration (use event-driven-architecture-patterns).",
+  "file_location": "skills/data/etl-vs-api-data-patterns",
+  "id": "data/etl-vs-api-data-patterns",
+  "inputs": [
+    "Data volume: row count and frequency of change",
+    "Latency requirement: real-time, near-real-time, or batch",
+    "Source system type: Salesforce as source, target, or both",
+    "Available tools: MuleSoft license, Informatica license, or custom",
+    "Data quality and lineage governance requirements"
+  ],
+  "name": "etl-vs-api-data-patterns",
+  "official_sources": [
+    "Salesforce Architects \u2014 Leveraging MuleSoft and Informatica: https://architect.salesforce.com/docs/architect/fundamentals/guide/integration-informatica-mulesoft",
+    "Salesforce Architects \u2014 Data Integration Decision Guide: https://architect.salesforce.com/docs/architect/decision-guides/guide/data-integration",
+    "Salesforce Architects \u2014 Integration Patterns: https://architect.salesforce.com/docs/architect/fundamentals/guide/integration-patterns.html",
+    "Bulk API 2.0 Developer Guide: https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/asynch_api_intro.htm"
+  ],
+  "outputs": [
+    "ETL vs API integration decision with rationale",
+    "Tool selection recommendation (Informatica, MuleSoft, Bulk API)",
+    "Architecture pattern for the selected approach"
+  ],
+  "references": [
+    "skills/data/etl-vs-api-data-patterns/references/examples.md",
+    "skills/data/etl-vs-api-data-patterns/references/gotchas.md",
+    "skills/data/etl-vs-api-data-patterns/references/llm-anti-patterns.md",
+    "skills/data/etl-vs-api-data-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/data/etl-vs-api-data-patterns/scripts/check_etl_vs_api_data_patterns.py"
+  ],
+  "tags": [
+    "etl",
+    "data-integration",
+    "informatica",
+    "mulesoft",
+    "bulk-api",
+    "integration-architecture"
+  ],
+  "templates": [
+    "skills/data/etl-vs-api-data-patterns/templates/etl-vs-api-data-patterns-template.md"
+  ],
+  "updated": "2026-04-16",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

@@ -4223,6 +4223,126 @@
       "domain": "architect",
       "expected_skill": "architect/mulesoft-anypoint-architecture",
       "top_k": 3
+    },
+    {
+      "query": "how do I prepare training data for Einstein Discovery story creation",
+      "domain": "data",
+      "expected_skill": "data/ai-training-data-preparation",
+      "top_k": 3
+    },
+    {
+      "query": "fill rate threshold Einstein Discovery field dropped from model",
+      "domain": "data",
+      "expected_skill": "data/ai-training-data-preparation",
+      "top_k": 3
+    },
+    {
+      "query": "XMD field labels CRM Analytics dataset wave REST API",
+      "domain": "data",
+      "expected_skill": "data/einstein-analytics-data-model",
+      "top_k": 3
+    },
+    {
+      "query": "WaveXmd SOQL query dataset metadata Einstein Analytics",
+      "domain": "data",
+      "expected_skill": "data/einstein-analytics-data-model",
+      "top_k": 3
+    },
+    {
+      "query": "how to design executive analytics dashboard CRM Analytics Z-pattern layout",
+      "domain": "admin",
+      "expected_skill": "admin/data-storytelling-design",
+      "top_k": 3
+    },
+    {
+      "query": "Tableau Story sheets sequential narrative analytics presentation",
+      "domain": "admin",
+      "expected_skill": "admin/data-storytelling-design",
+      "top_k": 3
+    },
+    {
+      "query": "PATCH main XMD CRM Analytics REST API field formatting overwriting",
+      "domain": "data",
+      "expected_skill": "data/analytics-data-preparation",
+      "top_k": 3
+    },
+    {
+      "query": "augment CRM Analytics dataset external CSV data recipe",
+      "domain": "data",
+      "expected_skill": "data/analytics-data-preparation",
+      "top_k": 3
+    },
+    {
+      "query": "Salesforce API versioning policy how long is each version supported",
+      "domain": "admin",
+      "expected_skill": "admin/api-contract-documentation",
+      "top_k": 3
+    },
+    {
+      "query": "Sforce-Limit-Info header REST API rate limit remaining calls",
+      "domain": "admin",
+      "expected_skill": "admin/api-contract-documentation",
+      "top_k": 3
+    },
+    {
+      "query": "should I use Informatica or MuleSoft for Salesforce data pipeline ETL vs API",
+      "domain": "data",
+      "expected_skill": "data/etl-vs-api-data-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "ETL tool using REST API sObjects for bulk insert hitting daily API limit",
+      "domain": "data",
+      "expected_skill": "data/etl-vs-api-data-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "Salesforce Private Connect AWS PrivateLink Hyperforce on-premises connectivity",
+      "domain": "architect",
+      "expected_skill": "architect/hybrid-integration-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "DMZ relay pattern Salesforce on-premises integration no VPN",
+      "domain": "architect",
+      "expected_skill": "architect/hybrid-integration-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "INVALID_CROSS_REFERENCE_KEY RecordTypeId data migration cross org",
+      "domain": "data",
+      "expected_skill": "data/deployment-data-dependencies",
+      "top_k": 3
+    },
+    {
+      "query": "Custom Settings values not deployed post deployment data seeding",
+      "domain": "data",
+      "expected_skill": "data/deployment-data-dependencies",
+      "top_k": 3
+    },
+    {
+      "query": "SandboxPostCopy Queueable Apex governor limits reference data seeding",
+      "domain": "data",
+      "expected_skill": "data/sandbox-refresh-data-strategies",
+      "top_k": 3
+    },
+    {
+      "query": "native Data Seeding Salesforce sandbox refresh unsupported objects",
+      "domain": "data",
+      "expected_skill": "data/sandbox-refresh-data-strategies",
+      "top_k": 3
+    },
+    {
+      "query": "should I use unlocked or 2GP managed package for AppExchange ISV product",
+      "domain": "devops",
+      "expected_skill": "devops/package-development-strategy",
+      "top_k": 3
+    },
+    {
+      "query": "Salesforce namespace permanent irreversible 2GP managed package selection",
+      "domain": "devops",
+      "expected_skill": "devops/package-development-strategy",
+      "top_k": 3
     }
   ]
 }

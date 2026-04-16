@@ -1,0 +1,103 @@
+{
+  "category": "data",
+  "chunk_ids": [
+    "0023e382236de8274bd2",
+    "00a7ff5682042a9aea20",
+    "0909d9c2f18cb7a43aaf",
+    "0d7e52099f4ef75ef7c8",
+    "0e62e8274fd0736391df",
+    "128c67c6682e03d49351",
+    "161e073f63e626a1dcff",
+    "17610cfd349a1b909b1e",
+    "28a7f26613d3c1aa9bff",
+    "2b1c0e8afe4911e30e7c",
+    "2e65f5edb83f98408cfb",
+    "31a7619f945d7196af8b",
+    "35009ad6e2f68b28e7d4",
+    "3a67738d0ea6ac28e754",
+    "40f8c517644888099a23",
+    "43eefaa4de53bc74ca6b",
+    "4d6c726f693180fe7d08",
+    "55c3572e49464a3b6a6b",
+    "5b3512300c96f1f0b6a8",
+    "600f1c1835a3f4640684",
+    "62545282def14c9caa43",
+    "678616a3c9ac39026268",
+    "6bca175121c905a612c5",
+    "756067bbc0271a0d946e",
+    "7568922c8706be775a39",
+    "790fe01fae29d7ec748c",
+    "7a948df9591a987c095d",
+    "82427d92aa7d3221f356",
+    "86e47ed9bc1b5497a62a",
+    "8e913bd6e73cf74b6923",
+    "98f420b54027ead7cdbf",
+    "a1a46728c9593c64d96b",
+    "ad49bd2fd4b46c0b1a93",
+    "ad8062b41d61f9414400",
+    "b15da84b62602014192d",
+    "b2b017cbeb34450f6d1b",
+    "b7a5c3f04197aa2f0e86",
+    "bd432a709dc153052cc3",
+    "be87027890ad0a2d8430",
+    "c09d51c898e014baf401",
+    "c1b196e501a2b28cb17b",
+    "c1c0061e46acff4585d6",
+    "c1e169bfc7dbe89e4c8c",
+    "c8e4d73daceafea35926",
+    "dc2d7e4ddc850a49881e",
+    "dc88a49dd7e03147da47",
+    "e96a96a1b6967be64515",
+    "eb63a7ea10f03d2ae12e",
+    "ee5049a22236e065cc52",
+    "f05c2f1e104e0201e88d",
+    "fae30fc272c460a8783c",
+    "ffb0d54d2d816ce534c7"
+  ],
+  "content_hash": "a238579eaea3e12f41e460133cc73f833c2174f06feda19ad0219b2c76a8d010",
+  "dependencies": [],
+  "description": "Use this skill when preparing data for Salesforce Einstein ML features: Einstein Discovery story creation, Einstein Prediction Builder model setup, feature field selection, outcome definition, data quality thresholds, and leakage detection. Trigger keywords: Einstein Discovery data requirements, training data for Einstein, ML feature engineering, Einstein Prediction Builder data prep, AI model training data. NOT for generic CRM data quality management, Data Cloud ingestion pipeline setup, or standard CRM Analytics dashboard analytics.",
+  "file_location": "skills/data/ai-training-data-preparation",
+  "id": "data/ai-training-data-preparation",
+  "inputs": [
+    "Salesforce object and fields intended as the ML training dataset",
+    "Outcome field (the value the model should predict)",
+    "License context: CRM Analytics license available or not",
+    "Minimum row count and data completeness metrics per field"
+  ],
+  "name": "ai-training-data-preparation",
+  "official_sources": [
+    "Einstein Discovery \u2014 Determine Data Requirements: https://help.salesforce.com/s/articleView?id=sf.bi_edd_data_requirements.htm",
+    "Einstein Prediction Builder Considerations: https://help.salesforce.com/s/articleView?id=sf.einstein_prediction_considerations.htm",
+    "CRM Analytics REST API Developer Guide: https://developer.salesforce.com/docs/atlas.en-us.bi_dev_guide_rest.meta/bi_dev_guide_rest/bi_rest_overview.htm"
+  ],
+  "outputs": [
+    "Feature field selection checklist with fill-rate thresholds",
+    "Outcome field definition and leakage audit",
+    "Data preparation checklist for Einstein Discovery story or EPB model",
+    "Decision matrix: Einstein Discovery vs Einstein Prediction Builder"
+  ],
+  "references": [
+    "skills/data/ai-training-data-preparation/references/examples.md",
+    "skills/data/ai-training-data-preparation/references/gotchas.md",
+    "skills/data/ai-training-data-preparation/references/llm-anti-patterns.md",
+    "skills/data/ai-training-data-preparation/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/data/ai-training-data-preparation/scripts/check_ai_training_data_preparation.py"
+  ],
+  "tags": [
+    "einstein",
+    "machine-learning",
+    "einstein-discovery",
+    "prediction-builder",
+    "data-quality",
+    "ai"
+  ],
+  "templates": [
+    "skills/data/ai-training-data-preparation/templates/ai-training-data-preparation-template.md"
+  ],
+  "updated": "2026-04-16",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

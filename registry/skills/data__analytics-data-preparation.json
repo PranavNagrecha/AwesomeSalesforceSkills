@@ -1,0 +1,94 @@
+{
+  "category": "data",
+  "chunk_ids": [
+    "019c74661d9738acfb81",
+    "046feff1a73aac03b931",
+    "06cdc8fd5a232280df66",
+    "0cc5abefb127e09f8177",
+    "0e4ad1c422fe81a0b7b2",
+    "0fa37a86d2678de10d40",
+    "1785c5e387044309d9bc",
+    "25590d32f810c3b06d64",
+    "294a4ab4f5c257e6821d",
+    "2d5ba6079bd8b2ce4a6c",
+    "371c5ccd5abbf1ceaaa9",
+    "37b47a787bdc551a5255",
+    "3958d166e6c4ed6ec238",
+    "3e77aeff022c0f41639e",
+    "42ebeb373267df326301",
+    "4818a887596bad42adff",
+    "53cd2160add4cec34e6c",
+    "55d60b35f339398e6544",
+    "55e4059b1b6edd13e141",
+    "560cccf66df908b796a0",
+    "59046f80c724eb38b0e8",
+    "5b5ef4681e8c16308b2f",
+    "614b44129da96d6ec296",
+    "619e5b7a5b8732415f7d",
+    "657d0d8047328901e5a6",
+    "6c0b67dfc53938b11155",
+    "6d458298f752a64e1fca",
+    "7678f0f2acd47f94fa17",
+    "785f1b84e485e79882ba",
+    "7f24df1657628fb0899e",
+    "82feaa4bc4eb83c69fda",
+    "86641b715c668444ae7e",
+    "8798a9ba078c79ff8cee",
+    "886e332b38f4208be9c5",
+    "920990bfebce3f3f658a",
+    "956e017f1c4388a9314c",
+    "99b3d5ca7213dfa9965f",
+    "99ed2f4f2824c3affe88",
+    "a1064535f64d955fb64a",
+    "a96eb6806838d05c535b",
+    "bc66d8f072d24782fed5",
+    "c61c120593a04a9a0226",
+    "d6f5844360cbadecfdc4",
+    "dcfa4e887012e0e2e92f",
+    "e58072a8a8e4d80e3a2b"
+  ],
+  "content_hash": "2a31fb8e45db0adb41d8559632d164a6bba32e864490b87dd5463128a7a2636c",
+  "dependencies": [],
+  "description": "Use this skill when customizing CRM Analytics dataset field metadata via the XMD (Extended Metadata) REST API or augmenting CRM Analytics recipes with external non-Salesforce data: labeling fields, setting display formats, reclassifying measures vs dimensions, and applying org-level field annotations via main XMD PATCH. Trigger keywords: XMD field labels, CRM Analytics main XMD update, dataset field formatting wave, analytics external data augmentation, WaveXmd REST API. NOT for recipe node transformation logic, dataflow SOQL extraction, dataset row count management, or standard CRM data quality \u2014 those are covered by analytics-recipe-design, analytics-dataflow-development, and analytics-dataset-management.",
+  "file_location": "skills/data/analytics-data-preparation",
+  "id": "data/analytics-data-preparation",
+  "inputs": [
+    "CRM Analytics dataset ID and API name",
+    "Field API names requiring label or format changes",
+    "Target XMD layer: main (org-wide) or user (per-user)",
+    "External data source details if augmenting datasets with non-CRM data"
+  ],
+  "name": "analytics-data-preparation",
+  "official_sources": [
+    "CRM Analytics REST API Developer Guide \u2014 XMD Resource: https://developer.salesforce.com/docs/atlas.en-us.bi_dev_guide_rest.meta/bi_dev_guide_rest/bi_rest_xmd.htm",
+    "Salesforce Help: CRM Analytics Extended Metadata (XMD): https://help.salesforce.com/s/articleView?id=sf.bi_xmd.htm",
+    "CRM Analytics REST API \u2014 Datasets: https://developer.salesforce.com/docs/atlas.en-us.bi_dev_guide_rest.meta/bi_dev_guide_rest/bi_rest_resources_datasets.htm"
+  ],
+  "outputs": [
+    "XMD PATCH payload for field-level formatting and label changes",
+    "Step-by-step XMD update procedure using the Wave REST API",
+    "External data augmentation design using Files node and Augment node in recipe"
+  ],
+  "references": [
+    "skills/data/analytics-data-preparation/references/examples.md",
+    "skills/data/analytics-data-preparation/references/gotchas.md",
+    "skills/data/analytics-data-preparation/references/llm-anti-patterns.md",
+    "skills/data/analytics-data-preparation/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/data/analytics-data-preparation/scripts/check_analytics_data_preparation.py"
+  ],
+  "tags": [
+    "crm-analytics",
+    "xmd",
+    "dataset-metadata",
+    "analytics",
+    "data-preparation"
+  ],
+  "templates": [
+    "skills/data/analytics-data-preparation/templates/analytics-data-preparation-template.md"
+  ],
+  "updated": "2026-04-16",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

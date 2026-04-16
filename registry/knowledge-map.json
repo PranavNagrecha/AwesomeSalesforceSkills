@@ -16,6 +16,7 @@
       "admin/analytics-permission-and-sharing",
       "admin/analytics-recipe-design",
       "admin/analytics-requirements-gathering",
+      "admin/api-contract-documentation",
       "admin/app-and-tab-configuration",
       "admin/approval-processes",
       "admin/assignment-rules",
@@ -65,6 +66,7 @@
       "admin/data-import-and-management",
       "admin/data-model-documentation",
       "admin/data-skew-and-sharing-performance",
+      "admin/data-storytelling-design",
       "admin/delegated-administration",
       "admin/deployment-risk-assessment",
       "admin/devops-process-documentation",
@@ -375,6 +377,7 @@
       "architect/health-cloud-multi-cloud-strategy",
       "architect/high-volume-sales-data-architecture",
       "architect/hipaa-compliance-architecture",
+      "architect/hybrid-integration-architecture",
       "architect/industries-cloud-selection",
       "architect/industries-data-model",
       "architect/industries-integration-architecture",
@@ -421,7 +424,9 @@
       "architect/well-architected-review"
     ],
     "data": [
+      "data/ai-training-data-preparation",
       "data/analytics-data-governance",
+      "data/analytics-data-preparation",
       "data/analytics-dataset-optimization",
       "data/analytics-external-data",
       "data/batch-data-cleanup-patterns",
@@ -450,6 +455,9 @@
       "data/data-quality-and-governance",
       "data/data-reconciliation-patterns",
       "data/data-storage-management",
+      "data/deployment-data-dependencies",
+      "data/einstein-analytics-data-model",
+      "data/etl-vs-api-data-patterns",
       "data/external-data-and-big-objects",
       "data/external-id-strategy",
       "data/external-user-data-sharing",
@@ -490,6 +498,7 @@
       "data/record-merge-implications",
       "data/roll-up-summary-alternatives",
       "data/sales-reporting-data-model",
+      "data/sandbox-refresh-data-strategies",
       "data/service-data-archival",
       "data/service-metrics-data-model",
       "data/sharing-recalculation-performance",
@@ -531,6 +540,7 @@
       "devops/migration-from-change-sets-to-sfdx",
       "devops/multi-package-development",
       "devops/org-shape-and-scratch-definition",
+      "devops/package-development-strategy",
       "devops/performance-testing-salesforce",
       "devops/permission-set-deployment-ordering",
       "devops/post-deployment-validation",
@@ -685,6 +695,7 @@
       "devops/managed-package-development"
     ],
     "2gp": [
+      "devops/package-development-strategy",
       "devops/second-generation-managed-packages"
     ],
     "AI": [
@@ -1271,7 +1282,8 @@
       "data/roll-up-summary-alternatives"
     ],
     "ai": [
-      "architect/ai-ready-data-architecture"
+      "architect/ai-ready-data-architecture",
+      "data/ai-training-data-preparation"
     ],
     "ai-adoption": [
       "admin/ai-adoption-change-management"
@@ -1336,7 +1348,9 @@
     ],
     "analytics": [
       "admin/analytics-permission-and-sharing",
+      "admin/data-storytelling-design",
       "admin/saql-query-development",
+      "data/analytics-data-preparation",
       "data/commerce-analytics-data",
       "data/community-analytics-data",
       "data/fsl-reporting-data-model"
@@ -1492,6 +1506,9 @@
     "api-design": [
       "integration/graphql-api-patterns"
     ],
+    "api-documentation": [
+      "admin/api-contract-documentation"
+    ],
     "api-gateway": [
       "architect/integration-security-architecture"
     ],
@@ -1535,6 +1552,9 @@
     "api-version": [
       "devops/api-version-management"
     ],
+    "api-versioning": [
+      "admin/api-contract-documentation"
+    ],
     "app-extensions": [
       "admin/fsl-mobile-app-setup"
     ],
@@ -1542,6 +1562,7 @@
       "admin/app-and-tab-configuration"
     ],
     "appexchange": [
+      "devops/package-development-strategy",
       "devops/salesforce-code-analyzer",
       "devops/second-generation-managed-packages",
       "security/secure-coding-review-checklist"
@@ -2038,6 +2059,7 @@
       "data/cdc-data-sync-patterns",
       "data/data-migration-planning",
       "data/data-reconciliation-patterns",
+      "data/etl-vs-api-data-patterns",
       "data/external-id-strategy",
       "data/historical-order-migration",
       "data/opportunity-pipeline-migration",
@@ -3104,6 +3126,7 @@
       "admin/analytics-recipe-design",
       "admin/analytics-requirements-gathering",
       "admin/crm-analytics-app-creation",
+      "admin/data-storytelling-design",
       "admin/einstein-analytics-basics",
       "admin/einstein-discovery-deployment",
       "admin/einstein-discovery-setup",
@@ -3115,8 +3138,10 @@
       "architect/crm-analytics-vs-tableau-decision",
       "architect/embedded-analytics-architecture",
       "data/analytics-data-governance",
+      "data/analytics-data-preparation",
       "data/analytics-dataset-optimization",
-      "data/analytics-external-data"
+      "data/analytics-external-data",
+      "data/einstein-analytics-data-model"
     ],
     "crm-analytics-app-creation": [
       "admin/crm-analytics-app-creation"
@@ -3292,7 +3317,8 @@
     ],
     "custom-settings": [
       "admin/custom-metadata-types",
-      "admin/custom-metadata-types-and-settings"
+      "admin/custom-metadata-types-and-settings",
+      "data/deployment-data-dependencies"
     ],
     "custom-tabs": [
       "admin/app-and-tab-configuration"
@@ -3338,6 +3364,9 @@
       "admin/analytics-dashboard-design",
       "admin/analytics-dashboard-json",
       "architect/analytics-embedded-components"
+    ],
+    "dashboard-design": [
+      "admin/data-storytelling-design"
     ],
     "dashboard-discovery": [
       "admin/analytics-adoption-strategy"
@@ -3448,6 +3477,7 @@
       "data/lead-data-import-and-dedup"
     ],
     "data-integration": [
+      "data/etl-vs-api-data-patterns",
       "data/external-id-strategy"
     ],
     "data-integrity": [
@@ -3474,6 +3504,9 @@
       "data/product-catalog-data-model",
       "data/product-catalog-migration-cpq"
     ],
+    "data-management": [
+      "data/sandbox-refresh-data-strategies"
+    ],
     "data-manager": [
       "admin/analytics-data-manager"
     ],
@@ -3485,6 +3518,7 @@
       "data/case-history-migration",
       "data/community-user-data-migration",
       "data/data-migration-planning",
+      "data/deployment-data-dependencies",
       "data/fhir-data-mapping",
       "data/financial-account-migration",
       "data/fsl-resource-and-skill-data",
@@ -3522,6 +3556,9 @@
     "data-prep": [
       "admin/analytics-recipe-design"
     ],
+    "data-preparation": [
+      "data/analytics-data-preparation"
+    ],
     "data-privacy": [
       "security/gdpr-data-privacy",
       "security/sandbox-data-masking"
@@ -3534,6 +3571,7 @@
       "admin/picklist-field-integrity-issues",
       "admin/validation-rules",
       "architect/ai-ready-data-architecture",
+      "data/ai-training-data-preparation",
       "data/clinical-data-quality",
       "data/data-quality-and-governance",
       "data/data-reconciliation-patterns",
@@ -3548,6 +3586,9 @@
       "data/data-reconciliation-patterns",
       "data/financial-data-quality"
     ],
+    "data-records": [
+      "data/deployment-data-dependencies"
+    ],
     "data-refresh": [
       "admin/analytics-dataset-management"
     ],
@@ -3557,6 +3598,7 @@
     "data-residency": [
       "architect/government-cloud-compliance",
       "architect/health-cloud-data-residency",
+      "architect/hybrid-integration-architecture",
       "architect/multi-org-strategy"
     ],
     "data-retention": [
@@ -3566,6 +3608,7 @@
       "security/field-audit-trail"
     ],
     "data-seeding": [
+      "data/sandbox-refresh-data-strategies",
       "devops/data-seeding-for-testing"
     ],
     "data-segregation": [
@@ -3587,6 +3630,9 @@
     ],
     "data-storage": [
       "data/data-storage-management"
+    ],
+    "data-storytelling": [
+      "admin/data-storytelling-design"
     ],
     "data-streams": [
       "data/data-cloud-data-streams"
@@ -3661,6 +3707,10 @@
     ],
     "dataset-management": [
       "admin/analytics-dataset-management"
+    ],
+    "dataset-metadata": [
+      "data/analytics-data-preparation",
+      "data/einstein-analytics-data-model"
     ],
     "dataset-performance": [
       "data/analytics-dataset-optimization"
@@ -3816,6 +3866,7 @@
       "admin/change-management-and-deployment",
       "apex/metadata-api-and-package-xml",
       "apex/sf-cli-and-sfdx-essentials",
+      "data/deployment-data-dependencies",
       "data/omnistudio-datapack-migration",
       "devops/change-set-deployment",
       "devops/cpq-deployment-administration",
@@ -4019,6 +4070,9 @@
     "dml-wrapper": [
       "apex/npsp-trigger-framework-extension"
     ],
+    "dmz": [
+      "architect/hybrid-integration-architecture"
+    ],
     "docgen": [
       "omnistudio/document-generation-omnistudio"
     ],
@@ -4145,7 +4199,8 @@
       "agentforce/einstein-copilot-for-sales",
       "agentforce/einstein-copilot-for-service",
       "agentforce/prompt-builder-templates",
-      "architect/ai-ready-data-architecture"
+      "architect/ai-ready-data-architecture",
+      "data/ai-training-data-preparation"
     ],
     "einstein-activity-capture": [
       "admin/einstein-activity-capture-setup",
@@ -4153,7 +4208,8 @@
     ],
     "einstein-analytics": [
       "admin/analytics-adoption-strategy",
-      "admin/crm-analytics-app-creation"
+      "admin/crm-analytics-app-creation",
+      "data/einstein-analytics-data-model"
     ],
     "einstein-bot": [
       "architect/conversational-ai-architecture"
@@ -4171,9 +4227,11 @@
       "architect/case-deflection-strategy"
     ],
     "einstein-discovery": [
+      "admin/data-storytelling-design",
       "admin/einstein-discovery-deployment",
       "admin/einstein-discovery-setup",
-      "agentforce/einstein-discovery-development"
+      "agentforce/einstein-discovery-development",
+      "data/ai-training-data-preparation"
     ],
     "einstein-discovery-development": [
       "agentforce/einstein-discovery-development"
@@ -4477,7 +4535,8 @@
     ],
     "etl": [
       "admin/analytics-dataflow-development",
-      "data/data-migration-planning"
+      "data/data-migration-planning",
+      "data/etl-vs-api-data-patterns"
     ],
     "etm": [
       "admin/enterprise-territory-management",
@@ -5563,6 +5622,9 @@
     "hvs": [
       "apex/sales-engagement-api"
     ],
+    "hybrid-integration": [
+      "architect/hybrid-integration-architecture"
+    ],
     "hypercare": [
       "devops/go-live-cutover-planning"
     ],
@@ -5704,6 +5766,7 @@
       "lwc/lwc-data-table"
     ],
     "informatica": [
+      "data/etl-vs-api-data-patterns",
       "integration/middleware-integration-patterns"
     ],
     "ingestion-api": [
@@ -5763,6 +5826,7 @@
       "admin/care-plan-configuration"
     ],
     "integration": [
+      "admin/api-contract-documentation",
       "admin/integration-pattern-selection",
       "agentforce/sf-to-llm-data-pipelines",
       "apex/fhir-integration-patterns",
@@ -5794,6 +5858,7 @@
       "architect/b2b-vs-b2c-architecture",
       "architect/event-driven-architecture",
       "architect/mulesoft-anypoint-architecture",
+      "data/etl-vs-api-data-patterns",
       "integration/api-led-connectivity",
       "integration/middleware-integration-patterns"
     ],
@@ -5920,6 +5985,7 @@
     ],
     "isv": [
       "apex/apex-metadata-api",
+      "devops/package-development-strategy",
       "devops/second-generation-managed-packages"
     ],
     "iterable": [
@@ -6458,7 +6524,8 @@
       "security/certificate-and-key-management"
     ],
     "machine-learning": [
-      "architect/ai-ready-data-architecture"
+      "architect/ai-ready-data-architecture",
+      "data/ai-training-data-preparation"
     ],
     "macros": [
       "admin/service-console-configuration",
@@ -6492,6 +6559,9 @@
       "devops/second-generation-managed-packages",
       "omnistudio/omnistudio-lwc-integration",
       "omnistudio/vlocity-to-native-omnistudio-migration"
+    ],
+    "managed-packages": [
+      "devops/package-development-strategy"
     ],
     "marketing-architecture": [
       "architect/marketing-cloud-vs-mcae-selection"
@@ -6810,6 +6880,7 @@
       "architect/cpq-integration-with-erp",
       "architect/fhir-integration-architecture",
       "architect/mulesoft-anypoint-architecture",
+      "data/etl-vs-api-data-patterns",
       "integration/api-led-connectivity",
       "integration/middleware-integration-patterns",
       "integration/mulesoft-salesforce-connector",
@@ -6896,6 +6967,7 @@
     ],
     "namespace": [
       "devops/managed-package-development",
+      "devops/package-development-strategy",
       "omnistudio/vlocity-to-native-omnistudio-migration"
     ],
     "namespaces": [
@@ -6940,6 +7012,9 @@
     ],
     "network-metadata": [
       "devops/experience-cloud-deployment-admin"
+    ],
+    "network-topology": [
+      "architect/hybrid-integration-architecture"
     ],
     "new-field": [
       "admin/custom-field-creation"
@@ -7210,6 +7285,9 @@
     "on-demand-email-to-case": [
       "admin/email-to-case-configuration"
     ],
+    "on-premises": [
+      "architect/hybrid-integration-architecture"
+    ],
     "onboarding": [
       "admin/in-app-guidance-and-walkthroughs"
     ],
@@ -7220,6 +7298,7 @@
       "apex/cti-adapter-development"
     ],
     "openapi": [
+      "admin/api-contract-documentation",
       "flow/flow-external-services"
     ],
     "operating-hours": [
@@ -7365,6 +7444,9 @@
       "devops/org-shape-and-scratch-definition",
       "devops/scratch-org-management"
     ],
+    "org-specific-ids": [
+      "data/deployment-data-dependencies"
+    ],
     "org-strategy": [
       "architect/multi-org-strategy"
     ],
@@ -7440,7 +7522,8 @@
     ],
     "packaging": [
       "apex/custom-metadata-in-apex",
-      "architect/metadata-coverage-and-dependencies"
+      "architect/metadata-coverage-and-dependencies",
+      "devops/package-development-strategy"
     ],
     "packaging-org": [
       "devops/managed-package-development"
@@ -7848,6 +7931,9 @@
     "prediction-api": [
       "agentforce/einstein-discovery-development"
     ],
+    "prediction-builder": [
+      "data/ai-training-data-preparation"
+    ],
     "prediction-definition": [
       "admin/einstein-discovery-deployment",
       "admin/einstein-discovery-setup"
@@ -7929,6 +8015,7 @@
       "security/gdpr-data-privacy"
     ],
     "private-connect": [
+      "architect/hybrid-integration-architecture",
       "architect/integration-security-architecture"
     ],
     "privileged-script-tag": [
@@ -8268,6 +8355,9 @@
     "rate-limiting": [
       "security/api-security-and-rate-limiting"
     ],
+    "rate-limits": [
+      "admin/api-contract-documentation"
+    ],
     "rate-plan": [
       "admin/industries-energy-utilities-setup"
     ],
@@ -8330,7 +8420,8 @@
       "admin/knowledge-base-administration",
       "admin/opportunity-management",
       "admin/record-type-strategy-at-scale",
-      "admin/record-types-and-page-layouts"
+      "admin/record-types-and-page-layouts",
+      "data/deployment-data-dependencies"
     ],
     "recurring-automation": [
       "flow/scheduled-flows"
@@ -8354,6 +8445,9 @@
     ],
     "redshift": [
       "data/analytics-external-data"
+    ],
+    "reference-data": [
+      "data/sandbox-refresh-data-strategies"
     ],
     "referenceId": [
       "integration/composite-api-patterns"
@@ -8538,6 +8632,7 @@
       "architect/ai-governance-architecture"
     ],
     "rest-api": [
+      "admin/api-contract-documentation",
       "apex/health-cloud-apis",
       "apex/marketing-cloud-api",
       "apex/marketing-cloud-custom-activities",
@@ -8829,6 +8924,7 @@
       "architect/aml-kyc-process-architecture"
     ],
     "sandbox": [
+      "data/sandbox-refresh-data-strategies",
       "devops/sandbox-data-isolation-gotchas",
       "devops/source-tracking-and-conflict-resolution"
     ],
@@ -8855,6 +8951,7 @@
       "devops/environment-strategy"
     ],
     "sandboxpostcopy": [
+      "data/sandbox-refresh-data-strategies",
       "devops/sandbox-data-isolation-gotchas",
       "devops/sandbox-refresh-and-templates"
     ],
@@ -9783,6 +9880,7 @@
       "data/marketing-cloud-sql-queries"
     ],
     "tableau": [
+      "admin/data-storytelling-design",
       "architect/crm-analytics-vs-tableau-decision"
     ],
     "task-sequence": [
@@ -10099,6 +10197,7 @@
     ],
     "unlocked-packages": [
       "devops/git-branching-for-salesforce",
+      "devops/package-development-strategy",
       "devops/unlocked-package-development"
     ],
     "unrestricted-picklist": [
@@ -10296,6 +10395,9 @@
     "watermark": [
       "integration/mulesoft-salesforce-connector"
     ],
+    "wave": [
+      "data/einstein-analytics-data-model"
+    ],
     "wcag": [
       "lwc/lwc-accessibility-patterns"
     ],
@@ -10419,6 +10521,10 @@
     ],
     "wsproxy": [
       "apex/ssjs-server-side-javascript"
+    ],
+    "xmd": [
+      "data/analytics-data-preparation",
+      "data/einstein-analytics-data-model"
     ],
     "xss": [
       "lwc/lwc-security",

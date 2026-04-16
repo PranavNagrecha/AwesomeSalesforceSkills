@@ -1,0 +1,100 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "008a36805a709fa1016f",
+    "00f561df2e53309b633e",
+    "03e8b60b9d917a1b6645",
+    "066dcd16b8e0be8eac24",
+    "0948f4a8c2e98dafc09f",
+    "1af7c266f5740e3aa77e",
+    "28afe84441ef2036e56a",
+    "305dda441959dd4758f5",
+    "32d913a3b66e6bd72039",
+    "3480f193a604e890682a",
+    "3a36874d0b7213f8a951",
+    "4611ce6e531b6b7c6b3c",
+    "46f660c050f681c002d1",
+    "503745210ce0ddd47287",
+    "55bac3a4542505d55523",
+    "5ae52485c61993ae03ca",
+    "5b4258e94e1d0fc11210",
+    "5dc48a4a1ffbb966f757",
+    "5e230fb7cae9a543f480",
+    "5fa04b7b631871e29284",
+    "6476c6964edd4c626b35",
+    "71ea702a74d97e003b32",
+    "729756e8842600d04087",
+    "74fdea80a70bcab8395c",
+    "7f127316ddea907e1afd",
+    "7f59eec1f823e72bf55b",
+    "7fa355624f264fb9f078",
+    "83b4d32232a51f3e7ed0",
+    "87fec5188006d5962fb2",
+    "8ee335ba8959243f6c2d",
+    "92af6f649f01fcaf7cfd",
+    "9391c8040f79bcbda20b",
+    "9657b6bbf166a26a720b",
+    "9e32fe03a363bc4fe2e8",
+    "aa28835d70d8e6e30f31",
+    "b3b6c562297c4bcabe48",
+    "b75fa6ac30d162d2ed6d",
+    "be0a9e87542496731ccf",
+    "c1284a2f4f8682bd8849",
+    "cd4577f73d4dd028d7b4",
+    "d9147c2bef160b29c747",
+    "e676b987e7316bd9bb35",
+    "e6b84f4e5d30eb967eeb",
+    "f7151015faeb68866927",
+    "f769434dd8a1edaac0d1",
+    "f77718d16404e7f820b5",
+    "fa489ff0d73a09e21772"
+  ],
+  "content_hash": "41ef4cd9b6256fc1ccdcbb567d882e36110ce35dc58c43c828cfecde3f5d774f",
+  "dependencies": [],
+  "description": "Use this skill when producing or reviewing API contract documentation for Salesforce integrations: versioning policy artifacts, request/response schema specs, error code catalogs, rate limit documentation, and OpenAPI generation for sObjects. Trigger keywords: Salesforce API versioning policy, API end-of-life policy, document API endpoints, REST API rate limits, OpenAPI sObjects. NOT for API implementation (building the API endpoint), Apex REST service coding, or Connected App setup \u2014 those are covered by apex-rest-services and connected-app-security.",
+  "file_location": "skills/admin/api-contract-documentation",
+  "id": "admin/api-contract-documentation",
+  "inputs": [
+    "List of Salesforce API endpoints to document",
+    "Current API version in use",
+    "Consumer systems needing to know rate limit and versioning policies",
+    "Whether custom Apex REST (@RestResource) endpoints exist alongside standard APIs"
+  ],
+  "name": "api-contract-documentation",
+  "official_sources": [
+    "Salesforce REST API Developer Guide \u2014 API End-of-Life Policy: https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/api_rest_eol.htm",
+    "Salesforce REST API Developer Guide \u2014 Status Codes and Error Responses: https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/errorcodes.htm",
+    "Salesforce REST API Developer Guide \u2014 Limits Resource: https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_limits.htm",
+    "Salesforce Developer Limits Quick Reference: https://developer.salesforce.com/docs/atlas.en-us.salesforce_app_limits_cheatsheet.meta/salesforce_app_limits_cheatsheet/",
+    "OpenAPI 3.0 for sObjects REST API (Beta): https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/openapi_beta.htm"
+  ],
+  "outputs": [
+    "API versioning policy summary with support window and retirement notice requirements",
+    "Rate limit documentation format with Sforce-Limit-Info header guidance",
+    "Error code catalog covering HTTP 4xx/5xx responses",
+    "OpenAPI 3.0 generation guidance for sObject endpoints (beta)"
+  ],
+  "references": [
+    "skills/admin/api-contract-documentation/references/examples.md",
+    "skills/admin/api-contract-documentation/references/gotchas.md",
+    "skills/admin/api-contract-documentation/references/llm-anti-patterns.md",
+    "skills/admin/api-contract-documentation/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/api-contract-documentation/scripts/check_api_contract_documentation.py"
+  ],
+  "tags": [
+    "rest-api",
+    "api-versioning",
+    "api-documentation",
+    "rate-limits",
+    "openapi",
+    "integration"
+  ],
+  "templates": [
+    "skills/admin/api-contract-documentation/templates/api-contract-documentation-template.md"
+  ],
+  "updated": "2026-04-16",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

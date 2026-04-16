@@ -1,0 +1,97 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "01cc5ad86acc51be624b",
+    "0405e421137af3a2839e",
+    "17a1cab595d45669bac1",
+    "1d244b144b0dcbb60315",
+    "23f5f0d2810f455dd707",
+    "28c205057068179e2d69",
+    "33c3d3cd715adbd00881",
+    "472def62915c3a36e482",
+    "4a807f29481d1d7d0c0a",
+    "53f96e7fa5386716fe67",
+    "5b040d486e373ad1d73d",
+    "62407373622b1d9aacbf",
+    "64dd070dc18c4af85275",
+    "65c9f3c8e420a5c81c95",
+    "6607b1f651bb5a53b7b0",
+    "6944ac1123104ebfa166",
+    "6cd1fa58d9180c0e6f4f",
+    "702df366de44db8f5866",
+    "7579f7b48a362843bdda",
+    "760707c6883d0ed51e3f",
+    "783894a7ece90dd3b90c",
+    "7bd765a9d5bd284cd90f",
+    "821a0b3242dbc467512c",
+    "888be5c4b4a446a2f126",
+    "8d32e51d26188e500b67",
+    "8eb18a34cfc6d1737a19",
+    "917c30722f2ef0104df6",
+    "9b504e13ab13507f7876",
+    "9d8aaf9b2071c43501b0",
+    "9fc9fea2fd51080dea9d",
+    "a63a3619c9c5a1c08f54",
+    "a89c053cf472e15cb9ff",
+    "abbcb6c27e201f78e248",
+    "b49b45c80adff3c84791",
+    "b845ecc881a2fe8d4137",
+    "c1fc76a638aa4f5713ff",
+    "cee7de33965fc0717d7c",
+    "d1da90bd7edb60ca1558",
+    "d1f1d275babdcfe4d933",
+    "d25ccd4d7f24427bd9d0",
+    "d8918754bc679c341566",
+    "e4ccb23b720e96b990ea",
+    "e9832dbe263c77f94b94",
+    "f919666dd631a4257eda",
+    "fca54fd0b5edeb5abf27",
+    "feee6574d21c8b287556"
+  ],
+  "content_hash": "f2c3ed5cdbac821e33f5222624cd2385fe6becff22b698225599126788ec1a6e",
+  "dependencies": [],
+  "description": "Use this skill when designing data stories and narrative-driven analytics experiences in Salesforce: structuring CRM Analytics dashboards for executive communication, using text widgets and conditional highlights for contextual annotation, building sequential narrative in Tableau Story sheets, or using Einstein Discovery narrative REST API endpoints for machine-generated insight text. Trigger keywords: data storytelling dashboard, executive analytics narrative, CRM Analytics text widget annotation, Tableau story sheet, smart data discovery narrative API. NOT for technical chart-type selection, SAQL query construction, recipe node configuration, or CRM Analytics field binding mechanics.",
+  "file_location": "skills/admin/data-storytelling-design",
+  "id": "admin/data-storytelling-design",
+  "inputs": [
+    "Target audience: executive, operational, frontline, or self-service",
+    "Available analytics surface: CRM Analytics, Tableau, or both",
+    "Existing dataset and KPI definitions",
+    "Key insight or decision the story must drive"
+  ],
+  "name": "data-storytelling-design",
+  "official_sources": [
+    "CRM Analytics Design Trailhead \u2014 Principles of Good Design: https://trailhead.salesforce.com/content/learn/modules/analytics-app-design/principles-good-design",
+    "CRM Analytics App Structuring and Design Concepts: https://trailhead.salesforce.com/content/learn/modules/analytics-app-design/structure-your-app",
+    "Salesforce Well-Architected Overview: https://architect.salesforce.com/well-architected/overview"
+  ],
+  "outputs": [
+    "Narrative dashboard layout plan with Z-pattern structure",
+    "Text widget content and conditional highlight strategy",
+    "Storytelling surface selection guidance (CRM Analytics vs Tableau vs Smart Data Discovery)",
+    "Executive annotation blueprint"
+  ],
+  "references": [
+    "skills/admin/data-storytelling-design/references/examples.md",
+    "skills/admin/data-storytelling-design/references/gotchas.md",
+    "skills/admin/data-storytelling-design/references/llm-anti-patterns.md",
+    "skills/admin/data-storytelling-design/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/data-storytelling-design/scripts/check_data_storytelling_design.py"
+  ],
+  "tags": [
+    "crm-analytics",
+    "tableau",
+    "data-storytelling",
+    "dashboard-design",
+    "analytics",
+    "einstein-discovery"
+  ],
+  "templates": [
+    "skills/admin/data-storytelling-design/templates/data-storytelling-design-template.md"
+  ],
+  "updated": "2026-04-16",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}
