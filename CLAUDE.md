@@ -60,6 +60,7 @@ After any skill add or skill update:
 ├── scripts/
 ├── docs/
 ├── skills/
+├── templates/
 ├── agents/
 ├── commands/
 └── standards/
@@ -68,6 +69,7 @@ After any skill add or skill update:
 ### Key Areas
 
 - `skills/`: canonical human-authored skill packages
+- `templates/`: shared, cross-skill canonical building blocks (Apex base classes, test factory, LWC skeleton, Flow fault paths, Agentforce action scaffold) — see `templates/README.md`
 - `knowledge/`: repo-native local corpus and curated imports
 - `registry/`: generated normalized skill records
 - `vector_index/`: generated retrieval chunks, lexical index, optional embeddings
@@ -193,6 +195,44 @@ A skill or framework change is not complete unless:
 - generated artifacts are current
 - `python3 scripts/validate_repo.py` passes
 
+## Decision Trees Layer
+
+Cross-skill routing logic lives under `standards/decision-trees/`:
+
+- `automation-selection.md` — Flow vs Apex vs Agentforce vs Approvals vs Platform Events
+- `async-selection.md` — `@future` vs Queueable vs Batch vs Schedulable vs Platform Events
+- `integration-pattern-selection.md` — REST vs Bulk API vs PE vs CDC vs Pub/Sub vs Salesforce Connect vs MuleSoft
+- `sharing-selection.md` — OWD vs Role Hierarchy vs Sharing Rules vs Teams vs Manual vs Apex Managed vs Restriction
+
+Rule: when a user query straddles more than one technology in a tree's
+scope, read the tree before activating any skill. Cite the tree step that
+resolved the choice. See `standards/decision-trees/README.md`.
+
+## Shared Templates Layer
+
+Canonical, cross-skill building blocks live under `templates/`:
+
+```text
+templates/
+├── apex/       TriggerHandler, TriggerControl, BaseDomain/Service/Selector,
+│               ApplicationLogger, SecurityUtils, HttpClient, cmdt/, custom_objects/
+├── apex/tests/ TestDataFactory, TestRecordBuilder, MockHttpResponseGenerator,
+│               TestUserFactory, BulkTestPattern
+├── lwc/        jest.config.js, component-skeleton/, patterns/
+├── flow/       RecordTriggered_Skeleton, FaultPath_Template, Subflow_Pattern
+└── agentforce/ AgentSkeleton.json, AgentActionSkeleton.cls, AgentTopic_Template.md
+```
+
+Rule for authors and agents:
+
+- Before writing example code inside a skill, check `templates/<domain>/` for
+  a canonical version and reference it by relative path.
+- Skill-local templates in `skills/.../templates/` are fine for skill-specific
+  placeholders. If a skill-local template starts being referenced by a second
+  skill, promote it to `templates/<domain>/`.
+- Do NOT hand-edit `templates/` artifacts downstream — copy and rename in the
+  consuming project.
+
 ## Anti-Patterns
 
 - Do not create a new skill without searching the local corpus first.
@@ -201,3 +241,4 @@ A skill or framework change is not complete unless:
 - Do not introduce hosted retrieval as a requirement for local authoring.
 - Do not leave stale docs or registry artifacts after changing skills.
 - Do not make factual Salesforce claims without official-source grounding.
+- Do not reinvent an idiom that already exists under `templates/` — link to the template instead.
