@@ -4343,6 +4343,66 @@
       "domain": "devops",
       "expected_skill": "devops/package-development-strategy",
       "top_k": 3
+    },
+    {
+      "query": "Data Cloud SQL query unified profile dcInstanceUrl token exchange",
+      "domain": "integration",
+      "expected_skill": "integration/data-cloud-query-api",
+      "top_k": 3
+    },
+    {
+      "query": "Data Cloud webhook HMAC signature verification data action target",
+      "domain": "integration",
+      "expected_skill": "integration/data-cloud-activation-development",
+      "top_k": 3
+    },
+    {
+      "query": "Data Cloud ingestion API streaming vs batch connector strategy",
+      "domain": "integration",
+      "expected_skill": "integration/data-cloud-integration-strategy",
+      "top_k": 3
+    },
+    {
+      "query": "Data Cloud consent opt-out ContactPointConsent segmentation filter",
+      "domain": "data",
+      "expected_skill": "data/data-cloud-consent-and-privacy",
+      "top_k": 3
+    },
+    {
+      "query": "Salesforce for Slack org connection setup three-party handshake",
+      "domain": "integration",
+      "expected_skill": "integration/slack-salesforce-integration-setup",
+      "top_k": 3
+    },
+    {
+      "query": "Send Slack Message from Flow Core Actions prerequisite setup",
+      "domain": "flow",
+      "expected_skill": "flow/flow-for-slack",
+      "top_k": 3
+    },
+    {
+      "query": "Pub/Sub API gRPC subscribe platform events tenantid auth header",
+      "domain": "integration",
+      "expected_skill": "integration/pub-sub-api-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "Dynamic Revenue Orchestrator DRO billing schedule Connect API post",
+      "domain": "integration",
+      "expected_skill": "integration/revenue-lifecycle-management",
+      "top_k": 3
+    },
+    {
+      "query": "Loyalty Management qualifying currency tier group DPE batch job",
+      "domain": "integration",
+      "expected_skill": "integration/loyalty-management-setup",
+      "top_k": 3
+    },
+    {
+      "query": "native Revenue Cloud BillingSchedule FinanceTransaction data model SOQL",
+      "domain": "data",
+      "expected_skill": "data/revenue-cloud-data-model",
+      "top_k": 3
     }
   ]
 }

@@ -447,6 +447,7 @@
       "data/cpq-performance-optimization",
       "data/custom-index-requests",
       "data/data-archival-strategies",
+      "data/data-cloud-consent-and-privacy",
       "data/data-cloud-data-model-objects",
       "data/data-cloud-data-streams",
       "data/data-extension-design",
@@ -496,6 +497,7 @@
       "data/product-catalog-migration-commerce",
       "data/product-catalog-migration-cpq",
       "data/record-merge-implications",
+      "data/revenue-cloud-data-model",
       "data/roll-up-summary-alternatives",
       "data/sales-reporting-data-model",
       "data/sandbox-refresh-data-strategies",
@@ -569,6 +571,7 @@
       "flow/flow-email-and-notifications",
       "flow/flow-external-services",
       "flow/flow-for-experience-cloud",
+      "flow/flow-for-slack",
       "flow/flow-governance",
       "flow/flow-runtime-error-diagnosis",
       "flow/flow-testing",
@@ -585,24 +588,31 @@
       "integration/callout-limits-and-async-patterns",
       "integration/change-data-capture-integration",
       "integration/composite-api-patterns",
+      "integration/data-cloud-activation-development",
       "integration/data-cloud-ingestion-api",
+      "integration/data-cloud-integration-strategy",
+      "integration/data-cloud-query-api",
       "integration/error-handling-in-integrations",
       "integration/event-driven-architecture-patterns",
       "integration/file-and-document-integration",
       "integration/graphql-api-patterns",
       "integration/idempotent-integration-patterns",
+      "integration/loyalty-management-setup",
       "integration/middleware-integration-patterns",
       "integration/mulesoft-salesforce-connector",
       "integration/named-credentials-setup",
       "integration/oauth-flows-and-connected-apps",
       "integration/outbound-messages-and-callbacks",
       "integration/platform-events-integration",
+      "integration/pub-sub-api-patterns",
       "integration/real-time-vs-batch-integration",
       "integration/rest-api-patterns",
       "integration/retry-and-backoff-patterns",
+      "integration/revenue-lifecycle-management",
       "integration/salesforce-connect-external-objects",
       "integration/salesforce-to-salesforce-integration",
       "integration/sis-integration-patterns",
+      "integration/slack-salesforce-integration-setup",
       "integration/soap-api-patterns",
       "integration/streaming-api-and-pushtopic",
       "integration/webhook-inbound-patterns"
@@ -1118,6 +1128,7 @@
       "admin/data-cloud-segmentation",
       "architect/data-cloud-architecture",
       "data/data-cloud-data-streams",
+      "integration/data-cloud-activation-development",
       "omnistudio/omniscript-versioning"
     ],
     "activation-bypass": [
@@ -1161,7 +1172,8 @@
       "admin/dynamic-forms-and-actions"
     ],
     "admin-setup": [
-      "admin/industries-energy-utilities-setup"
+      "admin/industries-energy-utilities-setup",
+      "integration/slack-salesforce-integration-setup"
     ],
     "adoption-analytics-app": [
       "admin/analytics-adoption-strategy"
@@ -1388,6 +1400,9 @@
     ],
     "anonymous-apex": [
       "apex/debug-logs-and-developer-console"
+    ],
+    "ansi-sql": [
+      "integration/data-cloud-query-api"
     ],
     "anypoint-connector": [
       "integration/mulesoft-salesforce-connector"
@@ -1666,6 +1681,9 @@
     "asc-606": [
       "admin/revenue-recognition-requirements"
     ],
+    "asset-lifecycle": [
+      "integration/revenue-lifecycle-management"
+    ],
     "assignment-rules": [
       "admin/assignment-rules",
       "admin/territory-design-requirements",
@@ -1807,7 +1825,8 @@
       "admin/flow-for-admins",
       "admin/journey-builder-administration",
       "admin/user-access-policies",
-      "apex/order-of-execution-deep-dive"
+      "apex/order-of-execution-deep-dive",
+      "flow/flow-for-slack"
     ],
     "automation-governance": [
       "apex/trigger-and-flow-coexistence"
@@ -1963,7 +1982,12 @@
       "admin/billing-schedule-setup"
     ],
     "billing-schedule": [
-      "data/billing-data-reconciliation"
+      "data/billing-data-reconciliation",
+      "data/revenue-cloud-data-model",
+      "integration/revenue-lifecycle-management"
+    ],
+    "billing-schedule-group": [
+      "data/revenue-cloud-data-model"
     ],
     "billing-schedule-setup": [
       "admin/billing-schedule-setup"
@@ -2083,7 +2107,8 @@
       "data/knowledge-article-import"
     ],
     "bulk-ingestion": [
-      "integration/data-cloud-ingestion-api"
+      "integration/data-cloud-ingestion-api",
+      "integration/data-cloud-integration-strategy"
     ],
     "bulk-load": [
       "data/financial-account-migration",
@@ -2207,7 +2232,8 @@
     ],
     "calculated-insights": [
       "admin/data-cloud-calculated-insights",
-      "data/data-cloud-data-streams"
+      "data/data-cloud-data-streams",
+      "integration/data-cloud-query-api"
     ],
     "calculation-matrix": [
       "omnistudio/calculation-procedures"
@@ -2391,6 +2417,7 @@
     ],
     "ccpa": [
       "architect/marketing-consent-architecture",
+      "data/data-cloud-consent-and-privacy",
       "security/gdpr-data-privacy"
     ],
     "cdc": [
@@ -2398,6 +2425,7 @@
       "apex/fsc-integration-patterns-dev",
       "apex/platform-events-apex",
       "apex/sales-engagement-api",
+      "integration/pub-sub-api-patterns",
       "integration/real-time-vs-batch-integration"
     ],
     "cdn": [
@@ -2427,6 +2455,7 @@
       "data/cdc-data-sync-patterns",
       "integration/change-data-capture-integration",
       "integration/event-driven-architecture-patterns",
+      "integration/pub-sub-api-patterns",
       "integration/sis-integration-patterns"
     ],
     "change-data-capture-admin": [
@@ -2876,11 +2905,15 @@
     "connector-user": [
       "admin/marketing-cloud-connect"
     ],
+    "connectors": [
+      "integration/data-cloud-integration-strategy"
+    ],
     "consent": [
       "admin/care-program-management",
       "admin/consent-management-marketing",
       "architect/marketing-consent-architecture",
-      "data/consent-data-model-health"
+      "data/consent-data-model-health",
+      "data/data-cloud-consent-and-privacy"
     ],
     "consent-management": [
       "admin/health-cloud-consent-management",
@@ -2915,6 +2948,9 @@
     ],
     "contact-point-consent": [
       "architect/marketing-consent-architecture"
+    ],
+    "contactpointconsent": [
+      "data/data-cloud-consent-and-privacy"
     ],
     "content-approval": [
       "admin/experience-cloud-moderation"
@@ -3106,6 +3142,9 @@
     "cpu-time": [
       "apex/apex-cpu-and-heap-optimization",
       "apex/governor-limits"
+    ],
+    "create-slack-channel": [
+      "flow/flow-for-slack"
     ],
     "crew": [
       "admin/fsl-shifts-and-crew"
@@ -3390,6 +3429,9 @@
     "data-access": [
       "apex/soql-fundamentals"
     ],
+    "data-action-target": [
+      "integration/data-cloud-activation-development"
+    ],
     "data-architecture": [
       "architect/ai-ready-data-architecture"
     ],
@@ -3425,10 +3467,14 @@
       "agentforce/rag-patterns-in-salesforce",
       "architect/ai-ready-data-architecture",
       "architect/experience-cloud-integration-patterns",
+      "data/data-cloud-consent-and-privacy",
       "data/data-cloud-data-model-objects",
       "data/data-cloud-data-streams",
       "data/vector-database-management",
-      "integration/data-cloud-ingestion-api"
+      "integration/data-cloud-activation-development",
+      "integration/data-cloud-ingestion-api",
+      "integration/data-cloud-integration-strategy",
+      "integration/data-cloud-query-api"
     ],
     "data-cloud-metrics": [
       "admin/data-cloud-calculated-insights"
@@ -3490,6 +3536,9 @@
       "architect/analytics-data-architecture",
       "architect/data-cloud-architecture"
     ],
+    "data-lake-objects": [
+      "integration/data-cloud-query-api"
+    ],
     "data-load": [
       "admin/data-import-and-management",
       "omnistudio/dataraptor-load-and-extract"
@@ -3549,6 +3598,7 @@
       "data/npsp-data-model",
       "data/person-accounts",
       "data/product-catalog-data-model",
+      "data/revenue-cloud-data-model",
       "data/sales-reporting-data-model",
       "data/service-metrics-data-model",
       "data/volunteer-management-requirements"
@@ -3564,7 +3614,8 @@
       "security/sandbox-data-masking"
     ],
     "data-processing-engine": [
-      "apex/fsc-financial-calculations"
+      "apex/fsc-financial-calculations",
+      "integration/loyalty-management-setup"
     ],
     "data-quality": [
       "admin/duplicate-management",
@@ -3604,6 +3655,7 @@
     "data-retention": [
       "apex/marketing-cloud-data-views",
       "data/data-archival-strategies",
+      "data/data-cloud-consent-and-privacy",
       "data/data-extension-design",
       "security/field-audit-trail"
     ],
@@ -3639,6 +3691,9 @@
     ],
     "data-subject-requests": [
       "security/gdpr-data-privacy"
+    ],
+    "data-subject-rights": [
+      "data/data-cloud-consent-and-privacy"
     ],
     "data-sync": [
       "admin/analytics-data-manager",
@@ -3818,6 +3873,9 @@
     ],
     "deletion": [
       "data/batch-data-cleanup-patterns"
+    ],
+    "deletion-api": [
+      "data/data-cloud-consent-and-privacy"
     ],
     "delivery-profiles": [
       "admin/marketing-cloud-engagement-setup"
@@ -4052,6 +4110,9 @@
     "dkim": [
       "admin/email-deliverability-strategy"
     ],
+    "dlo": [
+      "integration/data-cloud-integration-strategy"
+    ],
     "dlo-dmo-mapping": [
       "data/data-cloud-data-streams"
     ],
@@ -4069,6 +4130,9 @@
     ],
     "dml-wrapper": [
       "apex/npsp-trigger-framework-extension"
+    ],
+    "dmo": [
+      "integration/data-cloud-integration-strategy"
     ],
     "dmz": [
       "architect/hybrid-integration-architecture"
@@ -4117,8 +4181,17 @@
     "donor-stewardship": [
       "admin/npsp-engagement-plans"
     ],
+    "dpe": [
+      "integration/loyalty-management-setup"
+    ],
     "drip-program": [
       "admin/lead-nurture-journey-design"
+    ],
+    "dro": [
+      "integration/revenue-lifecycle-management"
+    ],
+    "dso": [
+      "integration/data-cloud-integration-strategy"
     ],
     "dst": [
       "apex/timezone-and-datetime-pitfalls"
@@ -4165,6 +4238,9 @@
     ],
     "dynamic-import": [
       "lwc/lwc-dynamic-components"
+    ],
+    "dynamic-revenue-orchestrator": [
+      "integration/revenue-lifecycle-management"
     ],
     "dynamic-soql": [
       "apex/dynamic-apex"
@@ -4572,6 +4648,9 @@
     "event-propagation": [
       "lwc/common-lwc-runtime-errors"
     ],
+    "event-replay": [
+      "integration/pub-sub-api-patterns"
+    ],
     "event-sourcing": [
       "architect/event-driven-architecture"
     ],
@@ -4638,6 +4717,7 @@
       "devops/experience-cloud-deployment-admin",
       "devops/experience-cloud-deployment-dev",
       "flow/flow-for-experience-cloud",
+      "integration/loyalty-management-setup",
       "lwc/commerce-lwc-components",
       "lwc/experience-cloud-api-access",
       "lwc/experience-cloud-authentication",
@@ -4892,6 +4972,9 @@
     "finance-periods": [
       "admin/revenue-recognition-requirements"
     ],
+    "finance-transaction": [
+      "data/revenue-cloud-data-model"
+    ],
     "financial-account": [
       "apex/fsc-integration-patterns-dev",
       "data/financial-data-quality"
@@ -4994,6 +5077,7 @@
       "architect/solution-design-patterns",
       "flow/auto-launched-flow-patterns",
       "flow/flow-external-services",
+      "flow/flow-for-slack",
       "flow/flow-runtime-error-diagnosis"
     ],
     "flow-action": [
@@ -5015,6 +5099,9 @@
     ],
     "flow-collections": [
       "flow/flow-collection-processing"
+    ],
+    "flow-core-actions": [
+      "flow/flow-for-slack"
     ],
     "flow-custom-property-editor": [
       "flow/flow-custom-property-editors"
@@ -5231,7 +5318,8 @@
       "data/fsl-work-order-migration"
     ],
     "fulfillment": [
-      "architect/order-management-architecture"
+      "architect/order-management-architecture",
+      "integration/revenue-lifecycle-management"
     ],
     "fulfillment-order": [
       "admin/commerce-order-management"
@@ -5277,6 +5365,7 @@
       "apex/fsc-document-generation",
       "architect/health-cloud-data-residency",
       "architect/marketing-consent-architecture",
+      "data/data-cloud-consent-and-privacy",
       "data/data-quality-and-governance",
       "security/gdpr-data-privacy",
       "security/sandbox-data-masking"
@@ -5394,6 +5483,9 @@
     "grounding": [
       "agentforce/data-cloud-vector-search-dev",
       "agentforce/prompt-builder-templates"
+    ],
+    "grpc": [
+      "integration/pub-sub-api-patterns"
     ],
     "guardrails": [
       "agentforce/agentforce-guardrails"
@@ -5559,6 +5651,9 @@
     ],
     "hl7-v2": [
       "apex/fhir-integration-patterns"
+    ],
+    "hmac": [
+      "integration/data-cloud-activation-development"
     ],
     "hmac-verification": [
       "integration/webhook-inbound-patterns"
@@ -5772,7 +5867,8 @@
     "ingestion-api": [
       "admin/data-cloud-provisioning",
       "data/data-cloud-data-streams",
-      "integration/data-cloud-ingestion-api"
+      "integration/data-cloud-ingestion-api",
+      "integration/data-cloud-integration-strategy"
     ],
     "inherited-sharing": [
       "apex/apex-security-patterns"
@@ -5845,7 +5941,8 @@
       "integration/error-handling-in-integrations",
       "integration/outbound-messages-and-callbacks",
       "integration/real-time-vs-batch-integration",
-      "integration/salesforce-to-salesforce-integration"
+      "integration/salesforce-to-salesforce-integration",
+      "integration/slack-salesforce-integration-setup"
     ],
     "integration-admin": [
       "admin/outbound-message-setup",
@@ -5953,10 +6050,14 @@
       "apex/invocable-methods"
     ],
     "invoice": [
-      "admin/quote-to-cash-process"
+      "admin/quote-to-cash-process",
+      "data/revenue-cloud-data-model"
     ],
     "invoice-api": [
       "apex/billing-integration-apex"
+    ],
+    "invoice-management": [
+      "integration/revenue-lifecycle-management"
     ],
     "invoice-reconciliation": [
       "data/billing-data-reconciliation"
@@ -6124,7 +6225,8 @@
       "architect/aml-kyc-process-architecture"
     ],
     "lakehouse": [
-      "architect/data-cloud-architecture"
+      "architect/data-cloud-architecture",
+      "integration/data-cloud-integration-strategy"
     ],
     "large-data-volumes": [
       "admin/data-skew-and-sharing-performance",
@@ -6441,6 +6543,12 @@
     "loop-element": [
       "flow/flow-collection-processing"
     ],
+    "loyalty-management": [
+      "integration/loyalty-management-setup"
+    ],
+    "loyalty-program": [
+      "integration/loyalty-management-setup"
+    ],
     "lwc": [
       "apex/continuation-callouts",
       "apex/fsl-custom-actions-mobile",
@@ -6563,6 +6671,9 @@
     "managed-packages": [
       "devops/package-development-strategy"
     ],
+    "managed-subscriptions": [
+      "integration/pub-sub-api-patterns"
+    ],
     "marketing-architecture": [
       "architect/marketing-cloud-vs-mcae-selection"
     ],
@@ -6660,6 +6771,9 @@
     ],
     "member-management": [
       "admin/experience-cloud-member-management"
+    ],
+    "member-portal": [
+      "integration/loyalty-management-setup"
     ],
     "memory-leaks": [
       "lwc/lifecycle-hooks"
@@ -6886,6 +7000,9 @@
       "integration/mulesoft-salesforce-connector",
       "integration/sis-integration-patterns"
     ],
+    "mulesoft-direct": [
+      "integration/data-cloud-integration-strategy"
+    ],
     "multi-agent": [
       "architect/conversational-ai-architecture"
     ],
@@ -7004,6 +7121,9 @@
     "ncoa": [
       "data/nonprofit-data-quality"
     ],
+    "near-real-time": [
+      "integration/data-cloud-activation-development"
+    ],
     "network-access": [
       "security/network-security-and-trusted-ips"
     ],
@@ -7030,6 +7150,9 @@
     ],
     "nlu-training": [
       "architect/einstein-bot-architecture"
+    ],
+    "non-qualifying-points": [
+      "integration/loyalty-management-setup"
     ],
     "nonprofit": [
       "admin/fundraising-process-mapping",
@@ -7063,6 +7186,9 @@
     ],
     "nonprofit-platform": [
       "architect/nonprofit-platform-architecture"
+    ],
+    "notification": [
+      "flow/flow-for-slack"
     ],
     "notifications": [
       "admin/email-templates-and-alerts",
@@ -7115,6 +7241,7 @@
       "integration/named-credentials-setup",
       "integration/oauth-flows-and-connected-apps",
       "integration/rest-api-patterns",
+      "integration/slack-salesforce-integration-setup",
       "lwc/experience-cloud-api-access",
       "security/connected-app-security-policies"
     ],
@@ -7418,6 +7545,10 @@
       "admin/commerce-checkout-configuration",
       "admin/commerce-order-management"
     ],
+    "order-to-cash": [
+      "data/revenue-cloud-data-model",
+      "integration/revenue-lifecycle-management"
+    ],
     "ordering": [
       "apex/cpq-test-automation"
     ],
@@ -7550,6 +7681,7 @@
       "lwc/navigation-and-routing"
     ],
     "pagination": [
+      "integration/data-cloud-query-api",
       "integration/graphql-api-patterns",
       "integration/rest-api-patterns"
     ],
@@ -7585,6 +7717,9 @@
       "admin/portal-requirements-gathering",
       "data/external-user-data-sharing",
       "data/partner-data-access-patterns"
+    ],
+    "partner-loyalty": [
+      "integration/loyalty-management-setup"
     ],
     "partner-portal": [
       "architect/sales-cloud-integration-patterns"
@@ -7652,6 +7787,9 @@
     ],
     "payload-reduction": [
       "lwc/lwc-performance"
+    ],
+    "payment": [
+      "data/revenue-cloud-data-model"
     ],
     "payment-adapter": [
       "admin/commerce-checkout-configuration"
@@ -7804,7 +7942,8 @@
     "pipeline": [
       "data/sales-reporting-data-model",
       "devops/copado-essentials",
-      "devops/devops-center-pipeline"
+      "devops/devops-center-pipeline",
+      "integration/data-cloud-integration-strategy"
     ],
     "pipeline-architecture": [
       "architect/ci-cd-pipeline-architecture"
@@ -7829,6 +7968,9 @@
     "platform-cache": [
       "apex/platform-cache"
     ],
+    "platform-event": [
+      "integration/data-cloud-activation-development"
+    ],
     "platform-event-resume": [
       "flow/pause-elements-and-wait-events"
     ],
@@ -7848,6 +7990,7 @@
       "integration/event-driven-architecture-patterns",
       "integration/idempotent-integration-patterns",
       "integration/platform-events-integration",
+      "integration/pub-sub-api-patterns",
       "integration/real-time-vs-batch-integration",
       "integration/salesforce-to-salesforce-integration"
     ],
@@ -8009,7 +8152,8 @@
       "architect/fsl-offline-architecture"
     ],
     "privacy": [
-      "admin/consent-management-marketing"
+      "admin/consent-management-marketing",
+      "data/data-cloud-consent-and-privacy"
     ],
     "privacy-center": [
       "security/gdpr-data-privacy"
@@ -8204,6 +8348,7 @@
     "pub-sub-api": [
       "integration/change-data-capture-integration",
       "integration/platform-events-integration",
+      "integration/pub-sub-api-patterns",
       "integration/real-time-vs-batch-integration"
     ],
     "public-groups": [
@@ -8237,12 +8382,18 @@
     "qle": [
       "apex/cpq-custom-actions"
     ],
+    "qualifying-points": [
+      "integration/loyalty-management-setup"
+    ],
     "quality-gates": [
       "architect/ci-cd-pipeline-architecture"
     ],
     "query": [
       "admin/saql-query-development",
       "apex/soql-fundamentals"
+    ],
+    "query-api": [
+      "integration/data-cloud-query-api"
     ],
     "query-optimization": [
       "data/soql-query-optimization"
@@ -8402,6 +8553,9 @@
     ],
     "record-page": [
       "admin/dynamic-forms-and-actions"
+    ],
+    "record-sharing": [
+      "integration/slack-salesforce-integration-setup"
     ],
     "record-triggered-flow": [
       "admin/flow-for-admins",
@@ -8680,6 +8834,8 @@
     ],
     "revenue-cloud": [
       "admin/quote-to-cash-process",
+      "data/revenue-cloud-data-model",
+      "integration/revenue-lifecycle-management",
       "omnistudio/industries-cpq-vs-salesforce-cpq"
     ],
     "revenue-intelligence": [
@@ -8717,6 +8873,10 @@
     ],
     "risk-tolerance": [
       "admin/financial-planning-process"
+    ],
+    "rlm": [
+      "data/revenue-cloud-data-model",
+      "integration/revenue-lifecycle-management"
     ],
     "robot-framework": [
       "devops/cumulusci-automation"
@@ -8888,6 +9048,9 @@
     ],
     "salesforce-extensions": [
       "devops/vscode-salesforce-extensions"
+    ],
+    "salesforce-for-slack": [
+      "integration/slack-salesforce-integration-setup"
     ],
     "salesforce-knowledge": [
       "architect/knowledge-vs-external-cms"
@@ -9225,6 +9388,9 @@
     "send-relationship": [
       "data/data-extension-design"
     ],
+    "send-slack-message": [
+      "flow/flow-for-slack"
+    ],
     "sendable-de": [
       "data/data-extension-design"
     ],
@@ -9532,6 +9698,10 @@
     "sla-design": [
       "architect/sla-design-and-escalation-matrix"
     ],
+    "slack": [
+      "flow/flow-for-slack",
+      "integration/slack-salesforce-integration-setup"
+    ],
     "slack-deployment": [
       "agentforce/agent-channel-deployment"
     ],
@@ -9657,7 +9827,8 @@
     "sql": [
       "admin/data-cloud-calculated-insights",
       "admin/lead-scoring-requirements",
-      "admin/marketing-automation-requirements"
+      "admin/marketing-automation-requirements",
+      "integration/data-cloud-query-api"
     ],
     "sql-query-activity": [
       "apex/marketing-cloud-data-views",
@@ -9761,12 +9932,16 @@
     "story-creation": [
       "admin/einstein-discovery-setup"
     ],
+    "streaming": [
+      "integration/pub-sub-api-patterns"
+    ],
     "streaming-api": [
       "integration/event-driven-architecture-patterns",
       "integration/streaming-api-and-pushtopic"
     ],
     "streaming-ingestion": [
-      "integration/data-cloud-ingestion-api"
+      "integration/data-cloud-ingestion-api",
+      "integration/data-cloud-integration-strategy"
     ],
     "streaming-insights": [
       "admin/data-cloud-calculated-insights"
@@ -9821,7 +9996,8 @@
       "admin/reports-and-dashboards",
       "admin/subscription-lifecycle-requirements",
       "architect/subscription-management-architecture",
-      "data/historical-order-migration"
+      "data/historical-order-migration",
+      "integration/pub-sub-api-patterns"
     ],
     "summary-formulas": [
       "admin/reports-and-dashboards-fundamentals"
@@ -9991,6 +10167,9 @@
     "tier-design": [
       "architect/sla-design-and-escalation-matrix"
     ],
+    "tier-management": [
+      "integration/loyalty-management-setup"
+    ],
     "tiered-pricing": [
       "admin/commerce-pricing-and-promotions"
     ],
@@ -10119,6 +10298,9 @@
     "trigger-recursion": [
       "apex/recursive-trigger-prevention"
     ],
+    "triggered-flow": [
+      "integration/data-cloud-activation-development"
+    ],
     "triggered-send": [
       "architect/marketing-integration-patterns"
     ],
@@ -10184,7 +10366,8 @@
     ],
     "unified-profile": [
       "admin/data-cloud-identity-resolution",
-      "architect/data-cloud-architecture"
+      "architect/data-cloud-architecture",
+      "integration/data-cloud-query-api"
     ],
     "unified-routing": [
       "architect/multi-channel-service-architecture"
@@ -10424,6 +10607,7 @@
     ],
     "webhook": [
       "agentforce/agentforce-custom-channel-dev",
+      "integration/data-cloud-activation-development",
       "integration/webhook-inbound-patterns"
     ],
     "webstore": [
@@ -10509,6 +10693,9 @@
     ],
     "workforce-management": [
       "admin/fsl-capacity-planning"
+    ],
+    "workspace": [
+      "integration/slack-salesforce-integration-setup"
     ],
     "workspace-tabs": [
       "admin/service-console-configuration"
