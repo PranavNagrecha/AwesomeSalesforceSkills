@@ -1,0 +1,101 @@
+{
+  "category": "data",
+  "chunk_ids": [
+    "051d86abb054cc83cd40",
+    "0b42a75faa609a7005ac",
+    "0ef03868e3f69e8a1d79",
+    "10006633bd1c7cfafba7",
+    "10e24a28e1802125a583",
+    "17dd74f0e2bb2e451462",
+    "1dc5caa87c53792abb84",
+    "1f814e7a62a2af6266e4",
+    "23ccb820e2706e344fdf",
+    "25c92b31f7f86cec5bfc",
+    "27ad63b3d133e6f22d11",
+    "30d0760ba7d9cdb7c5a3",
+    "31acf800c6e2c5d2c96e",
+    "38574305d46d5b7f9163",
+    "399a0efecdee3fa09155",
+    "3b95e2976a500cd12a6d",
+    "3c92b19cfaebf9647e85",
+    "4cb76a391621b1ff2b3d",
+    "4e294e7c5e227ebe2a1c",
+    "4ebe98b2ce9d406cf6e5",
+    "5313bbb37587597d7ebb",
+    "5d84bc55ea47f173d88b",
+    "60fdcdb1fa6c68bf6252",
+    "638b64f58565981ecf3d",
+    "6420978166689414b810",
+    "824495ddfcf70ea0db38",
+    "8635ed6c9928257219a2",
+    "8ef63fc134db9989d538",
+    "94595288087fc243973b",
+    "96406f712579ccee8d89",
+    "984663075acbbaa3feb3",
+    "9f555ef66251a5b367b8",
+    "a1e48bd8058e4a685b9c",
+    "a9812d8fbfba34acfec2",
+    "ac12f0f7eab1011aaca0",
+    "af0cff5ba8bebf9ca901",
+    "b0752a276663be1ec59b",
+    "b9882e891cc8e31d4b8e",
+    "c02d9e0b23c4990b457a",
+    "c4427cf212b46381f4e6",
+    "c5418d910748b330e8a1",
+    "c5f0150e2a95f5776f6e",
+    "cbde01724df754fb91e8",
+    "cd88afb84d392f08fabb",
+    "db7d4996dd3b023fe03c",
+    "dcde15b9e31c8b10cf26",
+    "ec1eec0607d44506b6bc",
+    "ef3e8bb7c6b9bdffe6c9",
+    "fa0963f51dd44d7153f5",
+    "ff2a10f0ae41f380ce0f",
+    "ff71549f986aeda9409f",
+    "ff73aa7452608bb8342c"
+  ],
+  "content_hash": "a121782b27a60d2698614beb9ba3adf3e401739d0d4042bcaa107d775e42fe41",
+  "dependencies": [],
+  "description": "Use when migrating historical order records into Salesforce Order Management \u2014 covers the required object creation sequence (Order > OrderDeliveryGroup > OrderItem > OrderSummary), LifeCycleType=Unmanaged for historical orders, and OrderSummary creation via ConnectAPI. NOT for standard Opportunity migration, CPQ legacy order migration using SBQQ objects, or active order processing.",
+  "file_location": "skills/data/commerce-order-history-migration",
+  "id": "data/commerce-order-history-migration",
+  "inputs": [
+    "Historical order data: order header, line items, delivery groups, payment records",
+    "Whether orders are historical (no longer being serviced) or active (still subject to fulfillment/refunds)",
+    "Target Salesforce Order Management org with Order object and OrderSummary enabled"
+  ],
+  "name": "commerce-order-history-migration",
+  "official_sources": [
+    "Salesforce Order Management Developer Guide: Importing Order Data \u2014 https://developer.salesforce.com/docs/atlas.en-us.order_management_developer_guide.meta/order_management_developer_guide/order_management_import_data.htm",
+    "Salesforce Help: Order Management Object Reference \u2014 https://help.salesforce.com/s/articleView?id=sf.om_object_reference.htm",
+    "ConnectAPI OrderSummary Class \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_connectapi_order_summary.htm"
+  ],
+  "outputs": [
+    "Object load sequence plan with dependency documentation",
+    "ConnectAPI or Flow core action specification for OrderSummary creation",
+    "LifeCycleType selection guidance per order type",
+    "Validation queries to confirm OrderSummary creation"
+  ],
+  "references": [
+    "skills/data/commerce-order-history-migration/references/examples.md",
+    "skills/data/commerce-order-history-migration/references/gotchas.md",
+    "skills/data/commerce-order-history-migration/references/llm-anti-patterns.md",
+    "skills/data/commerce-order-history-migration/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/data/commerce-order-history-migration/scripts/check_commerce_order_history_migration.py"
+  ],
+  "tags": [
+    "order-management",
+    "order-migration",
+    "OrderSummary",
+    "commerce",
+    "LifeCycleType"
+  ],
+  "templates": [
+    "skills/data/commerce-order-history-migration/templates/commerce-order-history-migration-template.md"
+  ],
+  "updated": "2026-04-16",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

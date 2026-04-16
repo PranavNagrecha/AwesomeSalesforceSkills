@@ -4163,6 +4163,66 @@
       "domain": "admin",
       "expected_skill": "admin/analytics-adoption-strategy",
       "top_k": 3
+    },
+    {
+      "query": "volunteer management requirements V4S NPC platform selection for Salesforce nonprofit",
+      "domain": "data",
+      "expected_skill": "data/volunteer-management-requirements",
+      "top_k": 3
+    },
+    {
+      "query": "how to import gift history into NPSP using NPSP Data Importer BDI",
+      "domain": "data",
+      "expected_skill": "data/gift-history-import",
+      "top_k": 3
+    },
+    {
+      "query": "migrate product catalog to Salesforce B2B Commerce using Import API",
+      "domain": "data",
+      "expected_skill": "data/product-catalog-migration-commerce",
+      "top_k": 3
+    },
+    {
+      "query": "how to migrate historical orders to Salesforce Order Management OrderSummary",
+      "domain": "data",
+      "expected_skill": "data/commerce-order-history-migration",
+      "top_k": 3
+    },
+    {
+      "query": "OCI inventory data loading batchInventoryUpdate IMPEX Commerce Cloud",
+      "domain": "data",
+      "expected_skill": "data/commerce-inventory-data",
+      "top_k": 3
+    },
+    {
+      "query": "Data Cloud DMO mandatory identity resolution objects data model",
+      "domain": "data",
+      "expected_skill": "data/data-cloud-data-model-objects",
+      "top_k": 3
+    },
+    {
+      "query": "Data Cloud Ingestion API streaming vs bulk ingest schema deployment",
+      "domain": "integration",
+      "expected_skill": "integration/data-cloud-ingestion-api",
+      "top_k": 3
+    },
+    {
+      "query": "1GP managed package development PostInstall handler namespace Salesforce",
+      "domain": "devops",
+      "expected_skill": "devops/managed-package-development",
+      "top_k": 3
+    },
+    {
+      "query": "CPQ deployment between Salesforce orgs SFDMU External ID Price Rules",
+      "domain": "devops",
+      "expected_skill": "devops/cpq-deployment-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "MuleSoft CloudHub Runtime Fabric Anypoint Platform runtime model selection",
+      "domain": "architect",
+      "expected_skill": "architect/mulesoft-anypoint-architecture",
+      "top_k": 3
     }
   ]
 }

@@ -1,0 +1,101 @@
+{
+  "category": "data",
+  "chunk_ids": [
+    "030a0daa57ed37fe7770",
+    "0bf5c283751c14c3e92f",
+    "0dc326707719bd5736e9",
+    "1187a3ffcbe17d0d63af",
+    "12eb8f9774c2184d488a",
+    "15074763e9e0ee2cd82a",
+    "169c7f12901717483eb6",
+    "1852ea5da455199bfcbf",
+    "1ac11728f521770fba3e",
+    "1bb9e169103ec6847564",
+    "24d2822af0106a0fb498",
+    "28f05d24cb16ecb9e71e",
+    "2d0fe0f926c21232b350",
+    "2f028f9b0b8bd4ef236f",
+    "2f75fc5dc7881f195536",
+    "3a92b7e59d42d9eb390b",
+    "3d055450bd078315ec39",
+    "3d9fe5799e24471a7f34",
+    "42a839642f78dba63dce",
+    "45e852d88e9f9f1fb793",
+    "49d00a7612d9dc7ecedb",
+    "4ebcc00ccfb552c1c442",
+    "4f5f3ed049ed5c6b22b8",
+    "54163d9fc70c2cdef931",
+    "5b10e52c4744ce15b34a",
+    "6642256297f2ccb27815",
+    "6e9bb593b6842c8e9ab4",
+    "757bbd2adbce669dadfb",
+    "7909a93004583fa65645",
+    "7c0da1463f836a575035",
+    "85934318e7eb9d527bb0",
+    "8bf68a13842eeadcd212",
+    "a14c0def7ed078b839bd",
+    "aad1c52667ac4e1b89ea",
+    "ad39186b1b70ad427b6b",
+    "ad6303a28951667a9737",
+    "af891f04356b9120e8dc",
+    "b14cce5b1230eba129f3",
+    "b31baf6d79066b083877",
+    "b3ccfa50726adab7f055",
+    "b75bb909dbf2393268ea",
+    "b9f6bdc237bb1b2df628",
+    "cd807b77e7c48fe90028",
+    "d0d5ba70f342eaea8c97",
+    "d1dfa8c15d98f54e6b6f",
+    "d94f964878758e041f0e",
+    "dbb17b431d193820dc5b",
+    "dc7ab40ce9b1ba77302d",
+    "e1b08c65dd9ae99a402f",
+    "ec42f5a4adc314f2f546",
+    "f1cb58933e6f15572f6f",
+    "fcf7013ec43a7e7e257f",
+    "fdff5b2be31c66bfe588"
+  ],
+  "content_hash": "3766ee94e0b4d628b70e19f23216719870faaf0424ad572cf4272f40b541295f",
+  "dependencies": [],
+  "description": "Use when migrating product catalog data into Salesforce B2B Commerce \u2014 covers category hierarchy, product attributes, images, pricing, and variant structure using the Commerce Import API. NOT for CPQ product catalog migration, post-migration catalog configuration, or commerce catalog taxonomy planning.",
+  "file_location": "skills/data/product-catalog-migration-commerce",
+  "id": "data/product-catalog-migration-commerce",
+  "inputs": [
+    "Source product catalog data: categories, products, variants, attributes, images, pricing",
+    "Target Commerce store ID and catalog ID",
+    "Product volume and variant depth (max 200 variants per parent, max 9 images per product)"
+  ],
+  "name": "product-catalog-migration-commerce",
+  "official_sources": [
+    "B2B Commerce Import APIs Developer Guide \u2014 https://developer.salesforce.com/docs/commerce/b2b-commerce/guide/import-api.html",
+    "Product Data Limits \u2014 B2B Commerce Developer Guide \u2014 https://developer.salesforce.com/docs/commerce/b2b-commerce/guide/product-data-limits.html",
+    "B2B Commerce Product Import API Reference \u2014 https://developer.salesforce.com/docs/commerce/b2b-commerce/references/b2b-comm-product-import-api"
+  ],
+  "outputs": [
+    "Ordered load plan: ProductCatalog > ProductCategory > Product2 > ProductCategoryProduct > WebStoreCatalog > Pricebook2/PricebookEntry",
+    "Commerce Import API job specification and CSV column structure",
+    "Validation queries to confirm category assignments and pricing after import"
+  ],
+  "references": [
+    "skills/data/product-catalog-migration-commerce/references/examples.md",
+    "skills/data/product-catalog-migration-commerce/references/gotchas.md",
+    "skills/data/product-catalog-migration-commerce/references/llm-anti-patterns.md",
+    "skills/data/product-catalog-migration-commerce/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/data/product-catalog-migration-commerce/scripts/check_product_catalog_migration_commerce.py"
+  ],
+  "tags": [
+    "commerce",
+    "product-catalog",
+    "migration",
+    "B2B-Commerce",
+    "Import-API"
+  ],
+  "templates": [
+    "skills/data/product-catalog-migration-commerce/templates/product-catalog-migration-commerce-template.md"
+  ],
+  "updated": "2026-04-16",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}
