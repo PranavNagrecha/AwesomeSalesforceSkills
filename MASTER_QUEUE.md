@@ -1447,10 +1447,10 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | RESEARCHED | automotive-cloud-setup | Automotive Cloud: vehicle lifecycle, dealer management, lead distribution, inventory management, test drives. NOT for standard Sales Cloud. | Researched 2026-04-14. Sources: [Automotive Cloud Developer Guide v66.0 Spring '26 (developer.salesforce.com/docs/atlas.en-us.automotive_cloud); Automotive Cloud Standard Objects (help.salesforce.com — ind.auto_cloud.htm); Set Up Vehicle Inventory Search (ind.auto_search_configure_parent.htm); Automotive Cloud Integrations API — Vehicle Inventory Resource Mapping (industries/automotive/guide/vehicle-inventory-resource-mapping.html)]. Key: Automotive Cloud is available only in Enterprise, Unlimited, and Developer Editions and requires an Industries Automotive permission set license per user — without it, core objects (Vehicle, VehicleDefinition, LeadLineItem, LeadPreferredSeller, DealerVehDefSearchableField, Fleet, Appraisal, WarrantyTerm) are inaccessible even on eligible orgs. The data model spans 100+ domain-specific objects covering vehicle lifecycle, dealer group and OEM management, lead distribution via LeadPreferredSeller, inventory search via VehicleSearchableField, test drive scheduling, financial accounts, appraisals, claims, and telematics — all Lightning Experience only. A hard boundary exists with Manufacturing Cloud: sales agreements, advanced account forecasting, and program-based business are NOT in Automotive Cloud. MuleSoft Direct integration assets are provided for vehicle inventory BOD flows and require separate MuleSoft licensing; Name is the only mandatory field across most vehicle inventory resource mappings. Gaps: permission set license details, test drive scheduler config, vehicle inventory search setup steps return 403 from help.salesforce.com — needs Salesforce docs browser session during build; pricing tiers and Automotive Cloud Data Kit basic settings also need direct Salesforce Help access. |
 | TODO | education-cloud-eda-setup | Education Cloud (EDA): student success hub, advisor workflows, enrollment management, academic data model. NOT for standard case management. | admin |
 | TODO | consumer-goods-cloud-setup | Consumer Goods Cloud: visit execution, retail execution, route planning, compliance checks, off-shelf detection. NOT for Field Service. | admin |
-| TODO | manufacturing-cloud-setup | Manufacturing Cloud: account-based forecasting, rebate management, sales agreements, partner performance. NOT for standard forecasting. | admin |
+| IN_PROGRESS | manufacturing-cloud-setup | Manufacturing Cloud: account-based forecasting, rebate management, sales agreements, partner performance. NOT for standard forecasting. | admin |
 | TODO | public-sector-solutions-setup | Public Sector Solutions: licensing, permits, inspections, case management for government, citizen engagement. NOT for standard case management. | admin |
 | TODO | media-cloud-setup | Media Cloud: ad sales management, audience segmentation, campaign management for media, revenue management. NOT for Marketing Cloud. | admin |
-| TODO | salesforce-maps-setup | Salesforce Maps: route optimization, territory planning, live tracking, geolocation visualization, proximity search, drive-time analysis. NOT for Field Service scheduling. | admin |
+| IN_PROGRESS | salesforce-maps-setup | Salesforce Maps: route optimization, territory planning, live tracking, geolocation visualization, proximity search, drive-time analysis. NOT for Field Service scheduling. | admin |
 | TODO | rebate-management-setup | Rebate Management: rebate types, payout calculations, accruals, partner rebates, program setup, compliance reporting. NOT for CPQ discounts. | admin |
 | TODO | revenue-intelligence-setup | Revenue Intelligence: pipeline inspection, deal insights, forecast accuracy analytics, Einstein analytics for sales leaders. NOT for CRM Analytics setup (use crm-analytics-* skills). | admin |
 | TODO | salesforce-erd-and-diagramming | Salesforce ERD and diagram generation: Mermaid/PlantUML data model diagrams for standard clouds (Sales, Service, FSL, Commerce, Revenue Cloud), OAuth flow diagrams, architecture diagram patterns, object relationship visualization. NOT for data model design decisions (use data-model-design-patterns). | architect |
@@ -1481,7 +1481,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
 | DONE | pub-sub-api-patterns | Pub/Sub API: gRPC streaming, subscribe/publish, event replay, managed subscriptions, auth flow, language clients. NOT for legacy PushTopic or Streaming API. | Researched 2026-04-14. Sources: [Pub/Sub API Developer Guide — Get Started (pub-sub-api/guide/intro.html); Pub/Sub API Allocations (pub-sub-api/guide/allocations.html); Pub/Sub API Authentication (pub-sub-api/guide/supported-auth.html); Managed Event Subscriptions Beta (pub-sub-api/guide/managed-sub.html)]. Key: Pub/Sub API is a gRPC/HTTP2 API (GA since Summer '22) exposing Subscribe, ManagedSubscribe, and Publish/PublishStream RPC methods; event bus retains events for 3 days with replay via Earliest/Latest/Custom replay-ID presets, capped at 100 events per FetchRequest and 1,000 concurrent gRPC streams per HTTP/2 connection; Managed Subscriptions (Summer '24 Open Beta) offload replay-ID tracking to server-side ManagedEventSubscription metadata records, with a hard org limit of 200 managed subscriptions; publish requests capped at 1 MB per event, 3 MB recommended / 4 MB hard limit per batch, max 200 events per publish request; auth requires accesstoken + instanceurl + tenantid headers using OAuth or session ID, with a default 2-hour session timeout that does NOT drop active Subscribe streams but does close idle PublishStream connections. Overlap confirmed with change-data-capture-integration and platform-events-integration (both cover gRPC subscription mechanics as supporting detail) — this skill must scope tightly to the transport/protocol layer (gRPC method contracts, auth flow, flow control, managed subscription lifecycle). Gaps: Managed Subscriptions GA date and changes from Beta need verification at build time; language client library maturity and official sample repo status; interaction between org-level Platform Event delivery allocations and Pub/Sub API stream limits needs cross-referencing with Limits cheatsheet. LLM anti-pattern: recommending CometD/EMP Connector for new external subscriptions when Pub/Sub API gRPC is now the preferred path; also conflating the 100-event-per-fetch cap with a throughput ceiling (it is a per-request fetch size, not a rate limit). |
-| TODO | bulk-api-2-patterns | Bulk API 2.0: ingest/query jobs, CSV streaming, job monitoring, retry on partial failure, multipart upload. NOT for Bulk API 1.0 or REST API (use rest-api-patterns). | integration |
+| IN_PROGRESS | bulk-api-2-patterns | Bulk API 2.0: ingest/query jobs, CSV streaming, job monitoring, retry on partial failure, multipart upload. NOT for Bulk API 1.0 or REST API (use rest-api-patterns). | integration |
 | TODO | heroku-salesforce-integration | Heroku integration: Heroku Connect, Heroku Postgres sync, add-on architecture, Salesforce Canvas, SSO. NOT for generic PaaS or AWS. | integration |
 | TODO | aws-salesforce-patterns | AWS integration with Salesforce: Amazon AppFlow, EventBridge, Lambda callouts, S3 file integration, Amazon Connect CTI. NOT for MuleSoft. | integration |
 | TODO | azure-salesforce-patterns | Azure integration: Azure Functions callouts, Azure Service Bus, Power Platform connectors, Azure AD SSO, Azure Blob storage. NOT for MuleSoft. | integration |
@@ -1493,12 +1493,12 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| TODO | mfa-enforcement-strategy | MFA enforcement: Salesforce Authenticator, TOTP apps, security keys, SSO MFA delegation, exemptions, rollout strategy, compliance deadlines. NOT for login flow customization (use ip-range-and-login-flow-strategy). | security |
+| IN_PROGRESS | mfa-enforcement-strategy | MFA enforcement: Salesforce Authenticator, TOTP apps, security keys, SSO MFA delegation, exemptions, rollout strategy, compliance deadlines. NOT for login flow customization (use ip-range-and-login-flow-strategy). | security |
 | TODO | private-connect-setup | Private Connect: AWS PrivateLink for Salesforce, inbound/outbound connections, VPC endpoint setup, DNS config. NOT for standard Named Credentials. | security |
 | TODO | zero-trust-salesforce-patterns | Zero-trust patterns: continuous verification, device trust, conditional access policies, session-level controls, event monitoring integration. NOT for basic login security. | security |
 | TODO | salesforce-shield-architecture | Shield architecture: Platform Encryption + Event Monitoring + Field Audit Trail as unified compliance strategy, key management strategy, BYOK, cost planning. NOT for individual Shield feature setup. | architect |
-| TODO | oauth-token-management | OAuth token lifecycle: refresh token rotation, token revocation, connected app policies, session management, token introspection. NOT for OAuth flow selection (use oauth-flows-and-connected-apps). | security |
-| TODO | security-incident-response | Security incident response in Salesforce: event monitoring alerts, transaction security actions, login anomaly detection, forensic investigation, containment steps. NOT for general security setup. | security |
+| IN_PROGRESS | oauth-token-management | OAuth token lifecycle: refresh token rotation, token revocation, connected app policies, session management, token introspection. NOT for OAuth flow selection (use oauth-flows-and-connected-apps). | security |
+| IN_PROGRESS | security-incident-response | Security incident response in Salesforce: event monitoring alerts, transaction security actions, login anomaly detection, forensic investigation, containment steps. NOT for general security setup. | security |
 
 ### 20d — Flow Gaps
 
@@ -1506,11 +1506,11 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| TODO | process-builder-to-flow-migration | Process Builder to Flow migration: conversion tool, pattern mapping, order-of-execution changes, testing migrated flows, bulk behavior differences. NOT for building new flows. | flow |
-| TODO | workflow-rule-to-flow-migration | Workflow Rule to Flow migration: field update mapping, email alert migration, outbound message alternatives, time-based workflow replacement. NOT for Process Builder migration. | flow |
-| TODO | flow-large-data-volume-patterns | Flow patterns for large data volumes: collection variable limits, loop optimization, Get Records performance, batch-like patterns, async invocable. NOT for Batch Apex. | flow |
+| IN_PROGRESS | process-builder-to-flow-migration | Process Builder to Flow migration: conversion tool, pattern mapping, order-of-execution changes, testing migrated flows, bulk behavior differences. NOT for building new flows. | flow |
+| IN_PROGRESS | workflow-rule-to-flow-migration | Workflow Rule to Flow migration: field update mapping, email alert migration, outbound message alternatives, time-based workflow replacement. NOT for Process Builder migration. | flow |
+| IN_PROGRESS | flow-large-data-volume-patterns | Flow patterns for large data volumes: collection variable limits, loop optimization, Get Records performance, batch-like patterns, async invocable. NOT for Batch Apex. | flow |
 | TODO | flow-dynamic-choices | Dynamic choice sets in flows: picklist sources, record choice sets, dependent choices, multi-select patterns, choice performance. NOT for screen flow design. | flow |
-| TODO | flow-action-framework | Flow action framework: standard actions, custom Apex actions, external service actions, action packs, Invocable variables. NOT for Invocable Methods in Apex. | flow |
+| IN_PROGRESS | flow-action-framework | Flow action framework: standard actions, custom Apex actions, external service actions, action packs, Invocable variables. NOT for Invocable Methods in Apex. | flow |
 | TODO | flow-interview-debugging | Flow interview debugging: debug log analysis, flow interview records, fault email interpretation, flow version troubleshooting. NOT for Flow Builder debug mode. | flow |
 
 ### 20e — LWC Gaps
@@ -1519,12 +1519,12 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| TODO | lwc-internationalization | LWC internationalization: @salesforce/i18n, locale-aware formatting, custom labels, translation management, RTL support, number/date/currency formatting. NOT for Translation Workbench admin. | lwc |
+| IN_PROGRESS | lwc-internationalization | LWC internationalization: @salesforce/i18n, locale-aware formatting, custom labels, translation management, RTL support, number/date/currency formatting. NOT for Translation Workbench admin. | lwc |
 | TODO | lwc-drag-and-drop | Drag-and-drop patterns in LWC: HTML5 drag API, sortable lists, kanban boards, file drop zones, cross-component drag. NOT for Lightning App Builder drag-and-drop. | lwc |
 | TODO | lwc-virtualized-lists | Virtualized/windowed lists in LWC: rendering large datasets, lazy loading, infinite scroll, virtual DOM patterns, dataset pagination. NOT for standard lightning-datatable. | lwc |
 | TODO | lwc-web-components-interop | LWC interop with third-party web components: loading external libraries, shadow DOM boundaries, locker service restrictions, static resources. NOT for standard LWC base components. | lwc |
 | TODO | lwc-service-worker-patterns | LWC offline patterns: service workers, cache strategies, offline data sync, PWA capabilities, Mobile SDK bridge. NOT for FSL mobile (use fsl-mobile-app-extensions). | lwc |
-| TODO | lwc-jest-testing-patterns | Jest testing for LWC: @salesforce module mocks, wire adapter testing, imperative Apex mocks, DOM assertions, event testing, test utilities. NOT for Apex testing. | devops |
+| IN_PROGRESS | lwc-jest-testing-patterns | Jest testing for LWC: @salesforce module mocks, wire adapter testing, imperative Apex mocks, DOM assertions, event testing, test utilities. NOT for Apex testing. | devops |
 
 ### 20f — Tableau / Analytics Connectors
 
@@ -1534,7 +1534,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 |--------|------------|-------------|-------|
 | TODO | tableau-salesforce-connector | Tableau Desktop/Cloud connector to Salesforce: data source setup, live vs extract, join patterns, custom SQL, incremental refresh. NOT for CRM Analytics. | integration |
 | TODO | tableau-embedding-in-lightning | Embedding Tableau dashboards in Lightning: Tableau Viz LWC, Connected App auth, URL parameters, SSO, cross-filtering. NOT for CRM Analytics dashboards. | lwc |
-| TODO | crm-analytics-security-predicates | CRM Analytics security predicates: row-level security, predicate syntax, multi-level predicates, team-based access, performance impact. NOT for standard sharing rules. | security |
+| IN_PROGRESS | crm-analytics-security-predicates | CRM Analytics security predicates: row-level security, predicate syntax, multi-level predicates, team-based access, performance impact. NOT for standard sharing rules. | security |
 
 ### 20g — DevOps Gaps
 
@@ -1542,11 +1542,11 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| TODO | pmd-and-static-analysis | PMD for Apex: ruleset configuration, custom rules, Salesforce Code Analyzer integration, CI/CD gates, suppression patterns. NOT for manual code review (use secure-coding-review-checklist). | devops |
+| IN_PROGRESS | pmd-and-static-analysis | PMD for Apex: ruleset configuration, custom rules, Salesforce Code Analyzer integration, CI/CD gates, suppression patterns. NOT for manual code review (use secure-coding-review-checklist). | devops |
 | TODO | cicd-for-experience-cloud | CI/CD for Experience Cloud: site metadata deployment, CMS content promotion, theme deployment, guest user config, URL management. NOT for generic SFDX CI/CD. | devops |
 | TODO | devops-center-advanced | DevOps Center advanced: work items, change tracking, pipeline stages, conflict resolution, org comparison, vs SFDX tradeoffs. NOT for DevOps Center basic setup. | devops |
-| TODO | salesforce-cli-automation | Salesforce CLI (sf/sfdx) automation: scripting patterns, CI/CD commands, data export/import, org management, plugin ecosystem. NOT for VS Code extensions. | devops |
-| TODO | code-review-checklist-salesforce | Salesforce code review checklist: governor limits, CRUD/FLS, injection, bulk patterns, test coverage, naming conventions, architectural compliance. NOT for security-only review. | devops |
+| IN_PROGRESS | salesforce-cli-automation | Salesforce CLI (sf/sfdx) automation: scripting patterns, CI/CD commands, data export/import, org management, plugin ecosystem. NOT for VS Code extensions. | devops |
+| IN_PROGRESS | code-review-checklist-salesforce | Salesforce code review checklist: governor limits, CRUD/FLS, injection, bulk patterns, test coverage, naming conventions, architectural compliance. NOT for security-only review. | devops |
 
 ### 20h — Admin & Architect Gaps
 
@@ -1554,14 +1554,14 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| TODO | large-data-volume-architecture | Large data volume (LDV) architecture: skinny tables, custom indexes, query optimization, archival strategy, sharing performance at scale. NOT for individual SOQL tuning. | architect |
-| TODO | event-driven-salesforce-architecture | Event-driven architecture in Salesforce: Platform Events, CDC, Pub/Sub API, event bus patterns, eventual consistency, saga pattern. NOT for individual event implementation. | architect |
+| IN_PROGRESS | large-data-volume-architecture | Large data volume (LDV) architecture: skinny tables, custom indexes, query optimization, archival strategy, sharing performance at scale. NOT for individual SOQL tuning. | architect |
+| IN_PROGRESS | event-driven-salesforce-architecture | Event-driven architecture in Salesforce: Platform Events, CDC, Pub/Sub API, event bus patterns, eventual consistency, saga pattern. NOT for individual event implementation. | architect |
 | TODO | migration-architecture-patterns | Org migration architecture: org merge, org split, data migration strategy, metadata migration, cutover planning, coexistence patterns. NOT for go-live cutover. | architect |
 | TODO | tenant-isolation-patterns | Multi-tenant isolation: custom metadata per-tenant, permission-based feature gating, data partitioning, namespace isolation, ISV patterns. NOT for multi-org strategy. | architect |
 | TODO | composable-commerce-architecture | Composable commerce on Salesforce: headless API layer, micro-frontends, BFF pattern, CDN strategy, third-party composability. NOT for standard storefront. | architect |
 | TODO | nonprofit-cloud-vs-npsp-migration | Nonprofit Cloud (NPC) vs NPSP decision and migration: feature comparison, data model differences, migration path, timeline, coexistence. NOT for NPSP admin. | architect |
-| TODO | data-loader-and-tools | Data Loader, Workbench, Salesforce Inspector, and third-party tools: when to use each, configuration, common pitfalls, limits. NOT for Bulk API development. | admin |
-| TODO | formula-field-performance | Formula field performance at scale: compiled size limits, cross-object references, SOQL context, caching behavior, alternatives for complex logic. NOT for formula syntax. | admin |
+| IN_PROGRESS | data-loader-and-tools | Data Loader, Workbench, Salesforce Inspector, and third-party tools: when to use each, configuration, common pitfalls, limits. NOT for Bulk API development. | admin |
+| IN_PROGRESS | formula-field-performance | Formula field performance at scale: compiled size limits, cross-object references, SOQL context, caching behavior, alternatives for complex logic. NOT for formula syntax. | admin |
 | TODO | report-type-strategy | Custom report types: object relationships, cross-filter design, bucketing, matrix reports, joined reports, analytics snapshots. NOT for dashboard design. | admin |
 | TODO | email-deliverability-monitoring | Email deliverability monitoring: bounce management, SPF/DKIM/DMARC, compliance BCC, Salesforce email logs, relay configuration. NOT for email template design. | admin |
 | TODO | flow-orchestration-admin | Flow Orchestration admin: stage configuration, step assignment, background steps, interactive steps, evaluation flows, work items. NOT for Flow Orchestration development. | admin |
