@@ -171,7 +171,9 @@ python3 scripts/search_knowledge.py "data skew performance" --domain data
 
 ## Request a Missing Skill
 
-Two ways:
+Three ways:
+
+**Run the `/request-skill` command** — Ask the AI to follow [`commands/request-skill.md`](./commands/request-skill.md). It asks 4 questions, checks existing coverage, and adds a TODO row to `MASTER_QUEUE.md` automatically.
 
 **Add directly to the queue** — Open `MASTER_QUEUE.md` and append a row:
 ```markdown
@@ -254,7 +256,41 @@ The Currency Monitor agent will handle it if you flag it during a release cycle.
 
 ---
 
-## Source Hierarchy
+## How Skills Get Built
+
+This repo ships its own build-time agent system. The agents live in `agents/<agent-name>/AGENT.md` as instruction files any agentic AI can follow (Claude Code, Codex, Cursor, Windsurf). The workflow:
+
+```
+MASTER_QUEUE.md                  what needs to be built
+      │
+      ▼
+agents/orchestrator/             routes TODOs to the right builder
+      │
+      ├── agents/task-mapper/           researches Cloud × Role task universes
+      ├── agents/content-researcher/    grounds every claim in Tier 1–3 sources
+      ├── agents/admin-skill-builder/   builds Admin + BA skills
+      ├── agents/dev-skill-builder/     builds Apex / LWC / Flow / Integration / DevOps
+      ├── agents/data-skill-builder/    builds data modeling, migration, SOQL
+      ├── agents/architect-skill-builder/  builds solution design + WAF review
+      ├── agents/code-reviewer/         canon-gate review (templates, decision-trees, evals)
+      ├── agents/validator/             structural + quality gates before every commit
+      ├── agents/currency-monitor/      flags stale skills after each SF release
+      ├── agents/org-assessor/          audits a target org against the library
+      └── agents/release-planner/       assembles release notes from skill deltas
+```
+
+Operators drive the system via slash commands under `commands/` (invoke by asking the AI to "follow `commands/<name>.md`"):
+
+| Command | What it does |
+|---|---|
+| [`/run-queue`](./commands/run-queue.md) | Autonomous loop: claim → research → build → validate → commit |
+| [`/new-skill`](./commands/new-skill.md) | Scaffold one skill through the full contract |
+| [`/request-skill`](./commands/request-skill.md) | 4-question flow to append a TODO to `MASTER_QUEUE.md` |
+| [`/assess-org`](./commands/assess-org.md) | Run `agents/org-assessor` against a live org via the MCP server |
+| [`/review`](./commands/review.md) | Run `agents/code-reviewer` against a PR or local change |
+| [`/release-notes`](./commands/release-notes.md) | Generate release notes from recent skill deltas |
+
+### Source Hierarchy
 
 Every claim in every skill is grounded against a 4-tier trust ladder. When sources disagree, the lower tier loses. Defined in [`standards/source-hierarchy.md`](./standards/source-hierarchy.md).
 
