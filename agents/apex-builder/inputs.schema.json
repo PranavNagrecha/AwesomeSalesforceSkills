@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/apex-builder/inputs.schema.json",
+  "title": "Apex Builder Inputs",
+  "description": "Typed inputs for the apex-builder agent. This schema is the machine-readable form of the Inputs table in AGENT.md. The run_builder.py harness validates every caller-supplied input packet against this file before Gate A is marked complete. If validation fails, the harness emits the exact list of missing or invalid fields as a question packet the caller must answer before any code is written.",
+  "type": "object",
+  "required": [
+    "kind",
+    "feature_summary",
+    "api_version"
+  ],
+  "properties": {
+    "kind": {
+      "type": "string",
+      "enum": [
+        "trigger",
+        "service",
+        "selector",
+        "domain",
+        "controller",
+        "batch",
+        "queueable",
+        "schedulable",
+        "invocable",
+        "rest",
+        "soap",
+        "platform_event_subscriber",
+        "cdc_subscriber",
+        "continuation",
+        "iterator",
+        "test_only"
+      ],
+      "description": "Which Apex surface the builder emits. Determines the class list in AGENT.md Plan Step 2.",
+      "example": "queueable"
+    },
+    "feature_summary": {
+      "type": "string",
+      "description": "Plain-English statement of what the feature does. Must be at least ten words so the builder has enough signal to decompose the feature; shorter inputs trigger REFUSAL_INPUT_AMBIGUOUS.",
+      "example": "Nightly Account hierarchy rebuild triggered when Parent changes for large families."
+    },
+    "feature_token": {
+      "type": "string",
+      "description": "PascalCase noun that forms the stem of every emitted class name (e.g., AccountHierarchyRebuild → AccountHierarchyRebuildQueueable). Required when kind is not trigger/selector/domain (which name off primary_sobject). Must match ^[A-Z][A-Za-z0-9]+$.",
+      "example": "AccountHierarchyRebuild"
+    },
+    "primary_sobject": {
+      "type": "string",
+      "description": "API name of the primary SObject the code operates on. Required for kind in {trigger, selector, domain, batch, cdc_subscriber}; optional otherwise. Must match an SObject returned by describe_org during Gate B.",
+      "example": "Account"
+    },
+    "referenced_fields": {
+      "type": "array",
+      "description": "Explicit list of SObject.Field API names the emitted code will read or write. Every entry MUST be grounded at Gate B via describe_sobject. Omitting a field that the emitted code uses is a Gate B failure, so list every custom field the feature requires.",
+      "example": ["Account.Hierarchy_Depth__c"]
+    },
+    "api_version": {
+      "type": "string",
+      "description": "Salesforce API version written into every .cls-meta.xml. Defaults to 60.0 if the caller does not specify.",
+      "default": "60.0",
+      "example": "60.0"
+    },
+    "namespace": {
+      "type": "string",
+      "description": "Managed package namespace prefix. Leave blank or null for non-packaged orgs.",
+      "default": "",
+      "example": ""
+    },
+    "include_logger": {
+      "type": "boolean",
+      "description": "Whether every emitted class wires through templates/apex/ApplicationLogger.cls. Default true; set false only when the caller has an explicit reason (e.g., preview class in a scratch).",
+      "default": true
+    },
+    "test_bulk_size": {
+      "type": "integer",
+      "description": "How many records the generated test inserts for its bulk path. Default 200 (governor-limit sentinel). Must be 1..10000.",
+      "default": 200,
+      "example": 200
+    },
+    "async_hint": {
+      "type": "string",
+      "enum": ["conservative", "standard", "high"],
+      "description": "For async kinds (batch/queueable/schedulable/platform_event_subscriber/cdc_subscriber/continuation), governor-limit sizing hint. Conservative = batch size 50; Standard = 200; High = 2000 for Batchable only.",
+      "default": "standard"
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "sf CLI alias of the org Gate B will probe with describe_org / list_custom_objects. Optional — when absent the builder runs in library-only mode and forces confidence to at most MEDIUM.",
+      "example": "uat-fixture"
+    },
+    "repo_path": {
+      "type": "string",
+      "description": "Repo-relative path to the caller's force-app source tree. Gate C writes emitted classes under <repo_path>/main/default/classes/ and triggers under <repo_path>/main/default/triggers/. Defaults to ./force-app.",
+      "default": "./force-app",
+      "example": "./force-app"
+    },
+    "sharing_mode": {
+      "type": "string",
+      "enum": ["with_sharing", "without_sharing", "inherited_sharing"],
+      "description": "Sharing keyword for the emitted classes. with_sharing is the default; without_sharing requires a caller-supplied justification in business_justification or Gate D refuses with REFUSAL_SECURITY_GUARD.",
+      "default": "with_sharing"
+    },
+    "business_justification": {
+      "type": "string",
+      "description": "Required iff sharing_mode == without_sharing. One-paragraph business reason the builder copies verbatim into a header comment on the emitted class. Must be at least 40 characters.",
+      "example": ""
+    }
+  }
+}

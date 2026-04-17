@@ -1,0 +1,92 @@
+eval:
+  id: apex-builder__queueable-account-hierarchy
+  agent: apex-builder
+  mode: single
+  priority: P0
+  last_verified: 2026-04-17
+  description: >
+    A queueable that recalculates Account.Hierarchy_Depth__c after a
+    parent change, for orgs with deep account families (>1000 accounts
+    per root). Covers: Gate A (inputs complete), Gate A.5 (requirements
+    anchor), Gate B (primary_sobject resolves, Hierarchy_Depth__c
+    resolves), Gate C (parse clean, test coverage ≥85%), Gate D (computed
+    confidence HIGH).
+
+inputs:
+  kind: queueable
+  feature_token: AccountHierarchyRebuild
+  feature_summary: "Nightly Account hierarchy depth rebuild triggered when ParentId changes for accounts in large families"
+  primary_sobject: Account
+  referenced_fields:
+    - Account.Hierarchy_Depth__c
+    - Account.ParentId
+  api_version: "60.0"
+  namespace: ""
+  include_logger: true
+  test_bulk_size: 200
+  async_hint: standard
+  target_org_alias: uat-fixture
+  repo_path: ./force-app
+  sharing_mode: with_sharing
+
+org_stub:
+  org_metadata:
+    org_id: 00Dxxx
+    edition: Enterprise
+    api_version: "60.0"
+    sandbox: true
+  describe_sobject:
+    Account:
+      queryable: true
+      custom: false
+      fields:
+        - { name: Id, type: id }
+        - { name: Name, type: string }
+        - { name: ParentId, type: reference }
+        - { name: Hierarchy_Depth__c, type: number, custom: true }
+  apex_hits: []
+  flow_hits: []
+  existing_handlers_on_sobject:
+    Account:
+      - AccountTriggerHandler
+
+expect:
+  confidence: HIGH
+  gates_passed:
+    - inputs
+    - requirements
+    - ground
+    - build
+    - seal
+  requirements_document_must_reference:
+    - "queueable"
+    - "Account"
+    - "Hierarchy_Depth__c"
+    - "ApplicationLogger"
+    - "with sharing"
+  must_include_deliverables_with_kinds:
+    - apex
+  deliverables_must_include_classes:
+    - AccountHierarchyRebuildQueueable
+    - AccountHierarchyRebuildQueueableTest
+  must_cite_any_of:
+    - { type: skill, id: apex/apex-queueable-patterns }
+    - { type: skill, id: apex/async-apex }
+    - { type: template, id: apex/BaseService.cls }
+    - { type: decision_tree, id: async-selection.md }
+  must_not_cite_probes: []
+  grounding:
+    unresolved_max: 0
+  build_gate:
+    parse_errors_max: 0
+    coverage_min: 85
+  process_observations:
+    min_count: 1
+    categories_present_any_of:
+      - healthy
+      - concerning
+      - ambiguous
+  followups_include_any_of:
+    - trigger-consolidator
+    - test-class-generator
+    - soql-optimizer

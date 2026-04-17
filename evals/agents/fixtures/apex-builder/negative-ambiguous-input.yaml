@@ -1,0 +1,21 @@
+eval:
+  id: apex-builder__negative-ambiguous-input
+  agent: apex-builder
+  mode: single
+  priority: P0
+  last_verified: 2026-04-17
+  description: >
+    Gate A MUST refuse when feature_summary is under 10 words. Proves the
+    input-readiness gate actually stops the run before code is written.
+
+inputs:
+  kind: queueable
+  feature_token: Foo
+  feature_summary: "Do the thing fast"
+  api_version: "60.0"
+
+org_stub: {}
+
+expect:
+  refusal_code: REFUSAL_INPUT_AMBIGUOUS
+  gates_passed: []
