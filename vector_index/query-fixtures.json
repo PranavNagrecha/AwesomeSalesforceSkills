@@ -4943,6 +4943,102 @@
       "domain": "security",
       "expected_skill": "security/salesforce-shield-deployment",
       "top_k": 3
+    },
+    {
+      "query": "feature flag salesforce",
+      "domain": "devops",
+      "expected_skill": "devops/feature-flag-custom-metadata",
+      "top_k": 3
+    },
+    {
+      "query": "custom metadata toggle",
+      "domain": "devops",
+      "expected_skill": "devops/feature-flag-custom-metadata",
+      "top_k": 3
+    },
+    {
+      "query": "jwt auth ci salesforce",
+      "domain": "devops",
+      "expected_skill": "devops/pipeline-secrets-management",
+      "top_k": 3
+    },
+    {
+      "query": "leak sfdx auth url",
+      "domain": "devops",
+      "expected_skill": "devops/pipeline-secrets-management",
+      "top_k": 3
+    },
+    {
+      "query": "slow scratch org creation",
+      "domain": "devops",
+      "expected_skill": "devops/scratch-org-snapshots",
+      "top_k": 3
+    },
+    {
+      "query": "snapshot scratch org",
+      "domain": "devops",
+      "expected_skill": "devops/scratch-org-snapshots",
+      "top_k": 3
+    },
+    {
+      "query": "monorepo salesforce",
+      "domain": "devops",
+      "expected_skill": "devops/sfdx-monorepo-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "multiple unlocked packages one repo",
+      "domain": "devops",
+      "expected_skill": "devops/sfdx-monorepo-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "unlocked package dependency",
+      "domain": "devops",
+      "expected_skill": "devops/packaging-dependency-graph",
+      "top_k": 3
+    },
+    {
+      "query": "package version pinning",
+      "domain": "devops",
+      "expected_skill": "devops/packaging-dependency-graph",
+      "top_k": 3
+    },
+    {
+      "query": "sfdx hardis setup",
+      "domain": "devops",
+      "expected_skill": "devops/sfdx-hardis-integration",
+      "top_k": 3
+    },
+    {
+      "query": "salesforce monitoring open source",
+      "domain": "devops",
+      "expected_skill": "devops/sfdx-hardis-integration",
+      "top_k": 3
+    },
+    {
+      "query": "pr template salesforce",
+      "domain": "devops",
+      "expected_skill": "devops/pr-policy-templates",
+      "top_k": 3
+    },
+    {
+      "query": "codeowners metadata",
+      "domain": "devops",
+      "expected_skill": "devops/pr-policy-templates",
+      "top_k": 3
+    },
+    {
+      "query": "devops center pipeline",
+      "domain": "devops",
+      "expected_skill": "devops/devops-center-advanced",
+      "top_k": 3
+    },
+    {
+      "query": "work item salesforce",
+      "domain": "devops",
+      "expected_skill": "devops/devops-center-advanced",
+      "top_k": 3
     }
   ]
 }

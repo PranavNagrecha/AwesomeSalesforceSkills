@@ -1,0 +1,72 @@
+{
+  "category": "devops",
+  "chunk_ids": [
+    "0084bb358cf2bfef6d25",
+    "1117cd102304873b4604",
+    "2501a420f84d4f5dc3b0",
+    "282a8d1c35f9fdf7ba78",
+    "29e7d3590483e66fca85",
+    "3603061a91adc5d6ee59",
+    "3b6a04062991907c0d68",
+    "56ea0542d2a42e976708",
+    "5aaf9378ecaa54c83ba4",
+    "6f61dd1ef070aa052207",
+    "74262d2f373e6c110c37",
+    "7a63ebbec1571a028777",
+    "7cd9e46574c2db12ac24",
+    "85faa40b33cf9487570b",
+    "8917871ca1818d7247de",
+    "946d40ce4e117dd2cfbc",
+    "961008a6b8a57b75d9f2",
+    "9876a4a34ff4b2bfeae5",
+    "a671ae8250b757fe94a7",
+    "a7994a7a0c484d2854d2",
+    "b782b89760085b7a540e",
+    "dc33eecaf7b611dc6abb",
+    "e806389536ed602b54d9",
+    "e9be54a612e1984fa0f6",
+    "fe4133c9ffcf1ddec042",
+    "ff3b96c77250b04115f2"
+  ],
+  "content_hash": "064d8d548be1e40f84ee665cc8d5e379c41749389095d5e0957f8516c347fdc8",
+  "dependencies": [],
+  "description": "Structure a single repo with multiple unlocked packages, shared templates, and cross-package test strategies. NOT for multi-repo org strategies.",
+  "file_location": "skills/devops/sfdx-monorepo-patterns",
+  "id": "devops/sfdx-monorepo-patterns",
+  "inputs": [
+    "current repo layout",
+    "list of logical packages"
+  ],
+  "name": "sfdx-monorepo-patterns",
+  "official_sources": [
+    "Salesforce DX Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/",
+    "Unlocked Packaging \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_dev2gp.htm",
+    "SF CLI \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/",
+    "DevOps Center \u2014 https://help.salesforce.com/s/articleView?id=sf.devops_center_overview.htm",
+    "Scratch Org Snapshots \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_snapshots.htm",
+    "sfdx-hardis \u2014 https://sfdx-hardis.cloudity.com/"
+  ],
+  "outputs": [
+    "sfdx-project.json package directive list, Turborepo/Nx analog, CI matrix"
+  ],
+  "references": [
+    "skills/devops/sfdx-monorepo-patterns/references/examples.md",
+    "skills/devops/sfdx-monorepo-patterns/references/gotchas.md",
+    "skills/devops/sfdx-monorepo-patterns/references/llm-anti-patterns.md",
+    "skills/devops/sfdx-monorepo-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/devops/sfdx-monorepo-patterns/scripts/check_sfdx_monorepo_patterns.py"
+  ],
+  "tags": [
+    "monorepo",
+    "packaging",
+    "sfdx"
+  ],
+  "templates": [
+    "skills/devops/sfdx-monorepo-patterns/templates/sfdx-monorepo-patterns-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

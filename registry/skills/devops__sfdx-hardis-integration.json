@@ -1,0 +1,73 @@
+{
+  "category": "devops",
+  "chunk_ids": [
+    "01c737fae18441070728",
+    "06a5cfd5df5b6d23ad76",
+    "120b4255d57cd4d33eb8",
+    "1b8d599fcbab1f937783",
+    "1c6556942d9429dad3d4",
+    "1c8d9c790af838671988",
+    "1df95b61d259df4dca87",
+    "228a6cfc7b3298f7fc31",
+    "2b4e5254757130466af0",
+    "577700cf5340f87834d0",
+    "6938554e3919e961dfe4",
+    "6c556419800d54a94c3e",
+    "7268be3c33eabef489f3",
+    "9159f396261085344e55",
+    "95ca3f77f868c4829545",
+    "a08b1045f9b8edbba79a",
+    "be30efb0a58568e799cc",
+    "ca9e69f829c201138cf5",
+    "ccc6f1357fa1dc21d4a1",
+    "d4f3df47f4b7b56f22ab",
+    "d7373f675f74547df602",
+    "de544e43355a3e343930",
+    "e45d2aca90c91fe6307f",
+    "e760750d8edba3b26f35",
+    "f2804401eeae82fd71d4",
+    "f9bc2875f5f4e734c354"
+  ],
+  "content_hash": "a2f566a43cfad045632cea967334308923e64b16645cdf80ddc8757ff4e1c5e1",
+  "dependencies": [],
+  "description": "Adopt sfdx-hardis for org monitoring, CI pipelines, and release automation. NOT for writing plugins to sfdx-hardis itself.",
+  "file_location": "skills/devops/sfdx-hardis-integration",
+  "id": "devops/sfdx-hardis-integration",
+  "inputs": [
+    "CI provider",
+    "monitoring SLAs",
+    "release cadence"
+  ],
+  "name": "sfdx-hardis-integration",
+  "official_sources": [
+    "Salesforce DX Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/",
+    "Unlocked Packaging \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_dev2gp.htm",
+    "SF CLI \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/",
+    "DevOps Center \u2014 https://help.salesforce.com/s/articleView?id=sf.devops_center_overview.htm",
+    "Scratch Org Snapshots \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_snapshots.htm",
+    "sfdx-hardis \u2014 https://sfdx-hardis.cloudity.com/"
+  ],
+  "outputs": [
+    "hardis configuration + CI pipeline + monitoring job"
+  ],
+  "references": [
+    "skills/devops/sfdx-hardis-integration/references/examples.md",
+    "skills/devops/sfdx-hardis-integration/references/gotchas.md",
+    "skills/devops/sfdx-hardis-integration/references/llm-anti-patterns.md",
+    "skills/devops/sfdx-hardis-integration/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/devops/sfdx-hardis-integration/scripts/check_sfdx_hardis_integration.py"
+  ],
+  "tags": [
+    "sfdx-hardis",
+    "cicd",
+    "monitoring"
+  ],
+  "templates": [
+    "skills/devops/sfdx-hardis-integration/templates/sfdx-hardis-integration-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}
