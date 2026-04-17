@@ -1,0 +1,74 @@
+{
+  "category": "security",
+  "chunk_ids": [
+    "2263ce5ad6f9fc1bbc1a",
+    "26920a0583036ea29839",
+    "27de63151d1adc3f04ea",
+    "36d2129da4ef5e578b91",
+    "3e3adf8593a1de938d10",
+    "438f84b98a617a7e0826",
+    "43adb1db9fb8a4690783",
+    "48555330446f846acc0c",
+    "4bb25dfe4744f7681247",
+    "4d233aec7e47879391a5",
+    "515cf34663ae7530fd77",
+    "61a31db06f9aae918084",
+    "6ed11ccaa64822aca4f7",
+    "74f8b9e9727754d9cb31",
+    "77368da301c6ce2a481e",
+    "84b4358e20da7fccf672",
+    "9a1670139896fbc6232b",
+    "a398d401d189f71cb914",
+    "aa99201cdfe34b49aecb",
+    "b15d7ae3e52b30d1ff07",
+    "cbb49b699f984c777578",
+    "cf87b32dba44aa71d6f3",
+    "e01fa2682d50167b05f2",
+    "e3a518640505c485371c",
+    "f1eef71a6e11e340eeee",
+    "f9deeff16c4e0da8f4dc"
+  ],
+  "content_hash": "aa9bab8c015decb63a54c6b0b7ca8f92bacdd4e442a25ad289f4a265771d3413",
+  "dependencies": [],
+  "description": "Provision and harden integration (API-only) users: no UI login, IP restrictions, minimum permission set, session lifetime, and monitoring. NOT for human admin account hardening.",
+  "file_location": "skills/security/api-only-user-hardening",
+  "id": "security/api-only-user-hardening",
+  "inputs": [
+    "Integration name",
+    "required objects/fields",
+    "caller IP range"
+  ],
+  "name": "api-only-user-hardening",
+  "official_sources": [
+    "Apex Developer Guide \u2014 Sharing \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_understanding.htm",
+    "Salesforce Security Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security.htm",
+    "Shield Platform Encryption \u2014 https://help.salesforce.com/s/articleView?id=sf.security_pe_overview.htm",
+    "Session Security Levels \u2014 https://help.salesforce.com/s/articleView?id=sf.security_hap_session.htm",
+    "CSP and Trusted URLs \u2014 https://help.salesforce.com/s/articleView?id=sf.security_csp_overview.htm",
+    "API Only User Profile \u2014 https://help.salesforce.com/s/articleView?id=sf.users_profiles_api_only.htm",
+    "Privacy Center and DSR \u2014 https://help.salesforce.com/s/articleView?id=sf.privacy_center_overview.htm"
+  ],
+  "outputs": [
+    "User record + Profile + Permission Set Group + Connected App config"
+  ],
+  "references": [
+    "skills/security/api-only-user-hardening/references/examples.md",
+    "skills/security/api-only-user-hardening/references/gotchas.md",
+    "skills/security/api-only-user-hardening/references/llm-anti-patterns.md",
+    "skills/security/api-only-user-hardening/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/security/api-only-user-hardening/scripts/check_api_only_user_hardening.py"
+  ],
+  "tags": [
+    "integration",
+    "service-account",
+    "api"
+  ],
+  "templates": [
+    "skills/security/api-only-user-hardening/templates/api-only-user-hardening-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

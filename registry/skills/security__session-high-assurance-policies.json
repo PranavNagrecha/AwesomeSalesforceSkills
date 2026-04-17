@@ -1,0 +1,74 @@
+{
+  "category": "security",
+  "chunk_ids": [
+    "00dc2cbce0a258884b7c",
+    "0aecc5bd9a6fd05b99a3",
+    "0b51b52e2b28c4ef9d9b",
+    "0c7323528787a881bebe",
+    "115c07741211199c661d",
+    "26fd81a02ac6aedea915",
+    "2c5edf05fddd90303889",
+    "2ce785efcea5ae990684",
+    "3e5ae7e01b8840877bc2",
+    "483c184f710335d3590a",
+    "4af7c97e39ed2d41af32",
+    "5fcc9cbb3ba2a8042388",
+    "7a95c65dc06d559b896c",
+    "7b4bd2f19aca6fb699f4",
+    "81c55074d631443e84f9",
+    "861b37adbcfff6ca0c2e",
+    "8c615192a883560908cb",
+    "92bbe54dd820bb5e2a66",
+    "94b2b97a73b4d830d83b",
+    "a9cdd1862f9f5c0892fd",
+    "b8a17d81e79d396f3354",
+    "c6a79a31672ba9ce40ec",
+    "c72c6193e537cd8974bb",
+    "cbe3a3e314dc9eaeb675",
+    "e1cc205064bbf99e1330",
+    "ee831a47cc25f7186fa5"
+  ],
+  "content_hash": "560f7dbe162c7bc1e568a9b295b223e37efff0a750058aa56616add11d2df8c3",
+  "dependencies": [],
+  "description": "Enforce step-up authentication for sensitive pages/objects using High Assurance session level and login flow policies. NOT for initial MFA enrollment UX.",
+  "file_location": "skills/security/session-high-assurance-policies",
+  "id": "security/session-high-assurance-policies",
+  "inputs": [
+    "Which objects/pages require step-up",
+    "current login policies"
+  ],
+  "name": "session-high-assurance-policies",
+  "official_sources": [
+    "Apex Developer Guide \u2014 Sharing \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_understanding.htm",
+    "Salesforce Security Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security.htm",
+    "Shield Platform Encryption \u2014 https://help.salesforce.com/s/articleView?id=sf.security_pe_overview.htm",
+    "Session Security Levels \u2014 https://help.salesforce.com/s/articleView?id=sf.security_hap_session.htm",
+    "CSP and Trusted URLs \u2014 https://help.salesforce.com/s/articleView?id=sf.security_csp_overview.htm",
+    "API Only User Profile \u2014 https://help.salesforce.com/s/articleView?id=sf.users_profiles_api_only.htm",
+    "Privacy Center and DSR \u2014 https://help.salesforce.com/s/articleView?id=sf.privacy_center_overview.htm"
+  ],
+  "outputs": [
+    "Session Settings policy",
+    "profile/permission-set config"
+  ],
+  "references": [
+    "skills/security/session-high-assurance-policies/references/examples.md",
+    "skills/security/session-high-assurance-policies/references/gotchas.md",
+    "skills/security/session-high-assurance-policies/references/llm-anti-patterns.md",
+    "skills/security/session-high-assurance-policies/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/security/session-high-assurance-policies/scripts/check_session_high_assurance_policies.py"
+  ],
+  "tags": [
+    "session",
+    "mfa",
+    "high-assurance"
+  ],
+  "templates": [
+    "skills/security/session-high-assurance-policies/templates/session-high-assurance-policies-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

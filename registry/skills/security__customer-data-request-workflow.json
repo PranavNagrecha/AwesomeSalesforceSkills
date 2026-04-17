@@ -1,0 +1,77 @@
+{
+  "category": "security",
+  "chunk_ids": [
+    "083f9376de90d161129c",
+    "0ad2385618e6b0e8dbf2",
+    "0b07fc374b455b8bd432",
+    "16d5472cc8af846157fc",
+    "23a6cd3656b7273fc585",
+    "3082a2c6086852bf64dc",
+    "4338d8b82d922d41f7d2",
+    "4342b130de1977ec17ae",
+    "450f3f27281761be1c02",
+    "5cadf567934f6f202c98",
+    "5dacd54569c397c7f64c",
+    "62175e39c1669bb06de5",
+    "7678bfe60bbe59a4be23",
+    "827762554f7593d2310a",
+    "8950503753886ec10300",
+    "963e09d7cb7c8462cc82",
+    "9749021d1bd7341364b2",
+    "9f8d7af9fe27faf10e94",
+    "a035efa2e2d9aab88cec",
+    "ab45c153e9fd5c3e1b02",
+    "bd6f6f1f9fc68e69cd07",
+    "c68ad2bc7729c1c0b922",
+    "c6c2d739fd08c97f0911",
+    "d006849587e67f79ff28",
+    "edd2de84df6f3bfdb778",
+    "fd826ef75e59e3df20a6"
+  ],
+  "content_hash": "fa072f39bebc33f57ce9ebe41555a8cbdd9cd21cdca0e88f78279181346a983d",
+  "dependencies": [],
+  "description": "Implement GDPR/CCPA data subject rights (access, deletion, rectification) using Salesforce Privacy Center and/or custom workflow. NOT for general backup or org-level data retention policy.",
+  "file_location": "skills/security/customer-data-request-workflow",
+  "id": "security/customer-data-request-workflow",
+  "inputs": [
+    "Request type (access/delete/correct)",
+    "subject identifiers",
+    "org regulatory scope"
+  ],
+  "name": "customer-data-request-workflow",
+  "official_sources": [
+    "Apex Developer Guide \u2014 Sharing \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_understanding.htm",
+    "Salesforce Security Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security.htm",
+    "Shield Platform Encryption \u2014 https://help.salesforce.com/s/articleView?id=sf.security_pe_overview.htm",
+    "Session Security Levels \u2014 https://help.salesforce.com/s/articleView?id=sf.security_hap_session.htm",
+    "CSP and Trusted URLs \u2014 https://help.salesforce.com/s/articleView?id=sf.security_csp_overview.htm",
+    "API Only User Profile \u2014 https://help.salesforce.com/s/articleView?id=sf.users_profiles_api_only.htm",
+    "Privacy Center and DSR \u2014 https://help.salesforce.com/s/articleView?id=sf.privacy_center_overview.htm"
+  ],
+  "outputs": [
+    "Runbook",
+    "Privacy Center policy or Apex batch",
+    "audit log"
+  ],
+  "references": [
+    "skills/security/customer-data-request-workflow/references/examples.md",
+    "skills/security/customer-data-request-workflow/references/gotchas.md",
+    "skills/security/customer-data-request-workflow/references/llm-anti-patterns.md",
+    "skills/security/customer-data-request-workflow/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/security/customer-data-request-workflow/scripts/check_customer_data_request_workflow.py"
+  ],
+  "tags": [
+    "privacy",
+    "gdpr",
+    "ccpa",
+    "compliance"
+  ],
+  "templates": [
+    "skills/security/customer-data-request-workflow/templates/customer-data-request-workflow-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

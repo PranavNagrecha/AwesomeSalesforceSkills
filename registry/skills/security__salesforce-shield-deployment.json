@@ -1,0 +1,76 @@
+{
+  "category": "security",
+  "chunk_ids": [
+    "04203ee412c5819ba95c",
+    "0528a8569a795e673715",
+    "0cb0212223c6632b0d48",
+    "1a1ea05b7bf132f03f43",
+    "2f005aaa94d025bfd8fa",
+    "40759587901b46c9c848",
+    "6482d0064ab9a0cd6e37",
+    "652899ba0c28ada15068",
+    "7927444e2f10f6e86246",
+    "7b265a97a41ba14eb47a",
+    "8774b5fda8bfb7d324c1",
+    "9086c1117f62b9c5550f",
+    "9799d469e411ede3dedb",
+    "98996f7e373c13b669a3",
+    "9a0d34fad6e3a08ad518",
+    "9bfc904f19f8a402d40d",
+    "9cf7e1258a13919bfdc2",
+    "a7edfb8d8bb7d404f00c",
+    "bb5de34087fd96ffcf36",
+    "c099b152f221020f2e3a",
+    "cbb382852346c251cc58",
+    "db897d69a710683881bf",
+    "e477ac61167bd79ee675",
+    "eab18912366b892c79bd",
+    "fc5584b44b58f823d438",
+    "ff30335311739a2ae693"
+  ],
+  "content_hash": "0aeb8816d6eb71b21da3227d4c8d185b6c9ef824438483769caa3cccee424589",
+  "dependencies": [],
+  "description": "Roll out Shield (Platform Encryption + Event Monitoring + Field Audit Trail) end-to-end, sequencing feature enablement to avoid data lockout. NOT for Classic Encryption or general PE design.",
+  "file_location": "skills/security/salesforce-shield-deployment",
+  "id": "security/salesforce-shield-deployment",
+  "inputs": [
+    "Shield license",
+    "scoped field list",
+    "log retention SLA"
+  ],
+  "name": "salesforce-shield-deployment",
+  "official_sources": [
+    "Apex Developer Guide \u2014 Sharing \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_understanding.htm",
+    "Salesforce Security Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security.htm",
+    "Shield Platform Encryption \u2014 https://help.salesforce.com/s/articleView?id=sf.security_pe_overview.htm",
+    "Session Security Levels \u2014 https://help.salesforce.com/s/articleView?id=sf.security_hap_session.htm",
+    "CSP and Trusted URLs \u2014 https://help.salesforce.com/s/articleView?id=sf.security_csp_overview.htm",
+    "API Only User Profile \u2014 https://help.salesforce.com/s/articleView?id=sf.users_profiles_api_only.htm",
+    "Privacy Center and DSR \u2014 https://help.salesforce.com/s/articleView?id=sf.privacy_center_overview.htm"
+  ],
+  "outputs": [
+    "Rollout runbook with order of operations",
+    "validation report"
+  ],
+  "references": [
+    "skills/security/salesforce-shield-deployment/references/examples.md",
+    "skills/security/salesforce-shield-deployment/references/gotchas.md",
+    "skills/security/salesforce-shield-deployment/references/llm-anti-patterns.md",
+    "skills/security/salesforce-shield-deployment/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/security/salesforce-shield-deployment/scripts/check_salesforce_shield_deployment.py"
+  ],
+  "tags": [
+    "shield",
+    "encryption",
+    "event-monitoring",
+    "fhr"
+  ],
+  "templates": [
+    "skills/security/salesforce-shield-deployment/templates/salesforce-shield-deployment-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

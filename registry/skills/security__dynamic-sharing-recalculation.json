@@ -1,0 +1,73 @@
+{
+  "category": "security",
+  "chunk_ids": [
+    "14caa7dc871b5b6aafd2",
+    "1846fbc05369a783b023",
+    "21aa26a1fd641475c433",
+    "2253f8cfa487ad97c979",
+    "2ec8aa5a9e9f1b617877",
+    "325c768e0d923a0c7428",
+    "32ff8569c96acd1ea51d",
+    "4840db7d23c07cbe7181",
+    "4daaecf26ead77214d57",
+    "52c6967781fbd1841883",
+    "5886c7fa09235ab326be",
+    "5d4b1984f1e103767ce4",
+    "623b8ebbe4cc278c4375",
+    "63bc37652ef91c6cc25a",
+    "6b3ed11efe70eb8436c1",
+    "6ce28e0fb7fa35418a35",
+    "6d5b5528b6498a517cb5",
+    "7c836da9884c5731fc8f",
+    "8a7275ceb3132d82f3d3",
+    "8e34ac8abece7601c67f",
+    "9ba0500cbcc4d303fd40",
+    "b2566cb069fbbf6ec3d5",
+    "c5203bb12d55ccf2708c",
+    "e55304b194501e473106",
+    "e61a8b0b4b2fe8d3a312",
+    "ec173dabb4d4626a0a08"
+  ],
+  "content_hash": "bf09d75ea1f2784d01d8dd6d4ec9b761dcb28ee3e30addf5362571c03cb23a88",
+  "dependencies": [],
+  "description": "Force or orchestrate sharing recalculation after bulk data loads, rule changes, or user/role reorgs so row access catches up with policy. NOT for designing new sharing rules \u2014 use sharing-selection tree.",
+  "file_location": "skills/security/dynamic-sharing-recalculation",
+  "id": "security/dynamic-sharing-recalculation",
+  "inputs": [
+    "Which driving event triggered the drift",
+    "estimated record volume"
+  ],
+  "name": "dynamic-sharing-recalculation",
+  "official_sources": [
+    "Apex Developer Guide \u2014 Sharing \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_understanding.htm",
+    "Salesforce Security Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security.htm",
+    "Shield Platform Encryption \u2014 https://help.salesforce.com/s/articleView?id=sf.security_pe_overview.htm",
+    "Session Security Levels \u2014 https://help.salesforce.com/s/articleView?id=sf.security_hap_session.htm",
+    "CSP and Trusted URLs \u2014 https://help.salesforce.com/s/articleView?id=sf.security_csp_overview.htm",
+    "API Only User Profile \u2014 https://help.salesforce.com/s/articleView?id=sf.users_profiles_api_only.htm",
+    "Privacy Center and DSR \u2014 https://help.salesforce.com/s/articleView?id=sf.privacy_center_overview.htm"
+  ],
+  "outputs": [
+    "Recalc orchestration plan (defer rules, enable in batches, verify)"
+  ],
+  "references": [
+    "skills/security/dynamic-sharing-recalculation/references/examples.md",
+    "skills/security/dynamic-sharing-recalculation/references/gotchas.md",
+    "skills/security/dynamic-sharing-recalculation/references/llm-anti-patterns.md",
+    "skills/security/dynamic-sharing-recalculation/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/security/dynamic-sharing-recalculation/scripts/check_dynamic_sharing_recalculation.py"
+  ],
+  "tags": [
+    "sharing",
+    "recalculation",
+    "bulk"
+  ],
+  "templates": [
+    "skills/security/dynamic-sharing-recalculation/templates/dynamic-sharing-recalculation-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

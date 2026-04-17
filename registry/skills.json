@@ -10,11 +10,11 @@
     "integration": 36,
     "lwc": 32,
     "omnistudio": 21,
-    "security": 26
+    "security": 36
   },
-  "generated_from_hash": "43e0388480337b16ed6ce4b64346d9443ab1bbe1aa4cfbabcd45d231a41b9634",
+  "generated_from_hash": "b3d5ce8fe44d75051abd7d0c56afe87956403139bb9e4228d51a26238924210a",
   "schema_version": 1,
-  "skill_count": 711,
+  "skill_count": 721,
   "skills": [
     {
       "category": "admin",
@@ -93251,6 +93251,154 @@
     {
       "category": "security",
       "chunk_ids": [
+        "0e50b0e7f0cd471898b9",
+        "18018410127812900881",
+        "1a51b8169302b716f346",
+        "24b8ec1aab1b0132b24c",
+        "276e4a99a38e57372288",
+        "2c0fe014f50c94be5180",
+        "2d3eed1cb739b0fd26ba",
+        "3159b20bf52dad5118a6",
+        "3439a7aef3934e29df22",
+        "36a943f8e4cad28c6537",
+        "4bc8a937051e6cb4d209",
+        "544492740985971c4474",
+        "704233b98eb70c3ed794",
+        "849faa1efecb11e498b6",
+        "85859f101adb083c8417",
+        "960586a5363c28455076",
+        "9ad202257d38f9780fcd",
+        "9ae3fe113a69bad68515",
+        "a60dcff4b1d06f1f2a91",
+        "a8851aaae9954a4a19d1",
+        "a95a43adb7b6858f2482",
+        "aab3056004799e9919c2",
+        "bc0668beb9038853201b",
+        "c424fe3c35412bf3e08e",
+        "cc180d1e591424596b5b",
+        "ef0bd69df51755a4f05c"
+      ],
+      "content_hash": "50aa943827f5ff3ae7884fc35886d6d8c0d537b4ed384173c7df4237eacdf376",
+      "dependencies": [],
+      "description": "Grant row-level access programmatically via __Share records when declarative sharing rules cannot express the policy. NOT for OWD, role hierarchy, or criteria-based sharing rule design.",
+      "file_location": "skills/security/apex-managed-sharing-patterns",
+      "id": "security/apex-managed-sharing-patterns",
+      "inputs": [
+        "Target SObject",
+        "policy rule describing who sees the record and why"
+      ],
+      "name": "apex-managed-sharing-patterns",
+      "official_sources": [
+        "Apex Developer Guide \u2014 Sharing \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_understanding.htm",
+        "Salesforce Security Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security.htm",
+        "Shield Platform Encryption \u2014 https://help.salesforce.com/s/articleView?id=sf.security_pe_overview.htm",
+        "Session Security Levels \u2014 https://help.salesforce.com/s/articleView?id=sf.security_hap_session.htm",
+        "CSP and Trusted URLs \u2014 https://help.salesforce.com/s/articleView?id=sf.security_csp_overview.htm",
+        "API Only User Profile \u2014 https://help.salesforce.com/s/articleView?id=sf.users_profiles_api_only.htm",
+        "Privacy Center and DSR \u2014 https://help.salesforce.com/s/articleView?id=sf.privacy_center_overview.htm"
+      ],
+      "outputs": [
+        "Apex class that maintains __Share rows with RowCause and access levels",
+        "tests proving access is granted and revoked"
+      ],
+      "references": [
+        "skills/security/apex-managed-sharing-patterns/references/examples.md",
+        "skills/security/apex-managed-sharing-patterns/references/gotchas.md",
+        "skills/security/apex-managed-sharing-patterns/references/llm-anti-patterns.md",
+        "skills/security/apex-managed-sharing-patterns/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/security/apex-managed-sharing-patterns/scripts/check_apex_managed_sharing_patterns.py"
+      ],
+      "tags": [
+        "sharing",
+        "apex",
+        "row-level-security"
+      ],
+      "templates": [
+        "skills/security/apex-managed-sharing-patterns/templates/apex-managed-sharing-patterns-template.md"
+      ],
+      "updated": "2026-04-17",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "security",
+      "chunk_ids": [
+        "2263ce5ad6f9fc1bbc1a",
+        "26920a0583036ea29839",
+        "27de63151d1adc3f04ea",
+        "36d2129da4ef5e578b91",
+        "3e3adf8593a1de938d10",
+        "438f84b98a617a7e0826",
+        "43adb1db9fb8a4690783",
+        "48555330446f846acc0c",
+        "4bb25dfe4744f7681247",
+        "4d233aec7e47879391a5",
+        "515cf34663ae7530fd77",
+        "61a31db06f9aae918084",
+        "6ed11ccaa64822aca4f7",
+        "74f8b9e9727754d9cb31",
+        "77368da301c6ce2a481e",
+        "84b4358e20da7fccf672",
+        "9a1670139896fbc6232b",
+        "a398d401d189f71cb914",
+        "aa99201cdfe34b49aecb",
+        "b15d7ae3e52b30d1ff07",
+        "cbb49b699f984c777578",
+        "cf87b32dba44aa71d6f3",
+        "e01fa2682d50167b05f2",
+        "e3a518640505c485371c",
+        "f1eef71a6e11e340eeee",
+        "f9deeff16c4e0da8f4dc"
+      ],
+      "content_hash": "aa9bab8c015decb63a54c6b0b7ca8f92bacdd4e442a25ad289f4a265771d3413",
+      "dependencies": [],
+      "description": "Provision and harden integration (API-only) users: no UI login, IP restrictions, minimum permission set, session lifetime, and monitoring. NOT for human admin account hardening.",
+      "file_location": "skills/security/api-only-user-hardening",
+      "id": "security/api-only-user-hardening",
+      "inputs": [
+        "Integration name",
+        "required objects/fields",
+        "caller IP range"
+      ],
+      "name": "api-only-user-hardening",
+      "official_sources": [
+        "Apex Developer Guide \u2014 Sharing \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_understanding.htm",
+        "Salesforce Security Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security.htm",
+        "Shield Platform Encryption \u2014 https://help.salesforce.com/s/articleView?id=sf.security_pe_overview.htm",
+        "Session Security Levels \u2014 https://help.salesforce.com/s/articleView?id=sf.security_hap_session.htm",
+        "CSP and Trusted URLs \u2014 https://help.salesforce.com/s/articleView?id=sf.security_csp_overview.htm",
+        "API Only User Profile \u2014 https://help.salesforce.com/s/articleView?id=sf.users_profiles_api_only.htm",
+        "Privacy Center and DSR \u2014 https://help.salesforce.com/s/articleView?id=sf.privacy_center_overview.htm"
+      ],
+      "outputs": [
+        "User record + Profile + Permission Set Group + Connected App config"
+      ],
+      "references": [
+        "skills/security/api-only-user-hardening/references/examples.md",
+        "skills/security/api-only-user-hardening/references/gotchas.md",
+        "skills/security/api-only-user-hardening/references/llm-anti-patterns.md",
+        "skills/security/api-only-user-hardening/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/security/api-only-user-hardening/scripts/check_api_only_user_hardening.py"
+      ],
+      "tags": [
+        "integration",
+        "service-account",
+        "api"
+      ],
+      "templates": [
+        "skills/security/api-only-user-hardening/templates/api-only-user-hardening-template.md"
+      ],
+      "updated": "2026-04-17",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "security",
+      "chunk_ids": [
         "0468c67e0ccd84df1c59",
         "06dae68be8612e082263",
         "085f855658aca4c40278",
@@ -93590,6 +93738,80 @@
     {
       "category": "security",
       "chunk_ids": [
+        "0aaa4de207c49248aa9e",
+        "0f40c27b4425151c9380",
+        "0fb009170e8221b08df2",
+        "322791053c727579da71",
+        "3db982906aec0e2a1366",
+        "42e02c3332c98763921b",
+        "4364ccc5b55221b6d859",
+        "5440881376a90883832a",
+        "56784a6b23db3f62f754",
+        "68b3cd4153c93d83061e",
+        "7a02bc7fcf5a8243dfee",
+        "8482f96ac4ec2b7d05e9",
+        "884690e0aefce0c094f4",
+        "8cef949dda85c9bfb0eb",
+        "932237aab38958e6791e",
+        "9be704e53f285cb1a4ed",
+        "9f06cf5340e74b5f8f02",
+        "a6a82774f79630940546",
+        "b3da74a623427388de1b",
+        "c273a269698892748a84",
+        "d9bc583a36a9c080ac00",
+        "e0a6cda85c06b0d5b578",
+        "e80d1adf85c91a7a1d69",
+        "e81e5623895a6c8dfc06",
+        "f3c813066302bb86d201",
+        "f75228bf5ef0dd23548f"
+      ],
+      "content_hash": "a5b62d5353932e42bfe90c4fd17d4d51492c17077391149ac031f5685fab5284",
+      "dependencies": [],
+      "description": "Configure clickjack protection headers and frame-ancestors for VF pages, LWR sites, and Aura apps. NOT for CSP or Trusted URL configuration.",
+      "file_location": "skills/security/clickjack-and-frame-protection",
+      "id": "security/clickjack-and-frame-protection",
+      "inputs": [
+        "Custom VF pages",
+        "Experience Cloud sites",
+        "intended embedding parents"
+      ],
+      "name": "clickjack-and-frame-protection",
+      "official_sources": [
+        "Apex Developer Guide \u2014 Sharing \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_understanding.htm",
+        "Salesforce Security Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security.htm",
+        "Shield Platform Encryption \u2014 https://help.salesforce.com/s/articleView?id=sf.security_pe_overview.htm",
+        "Session Security Levels \u2014 https://help.salesforce.com/s/articleView?id=sf.security_hap_session.htm",
+        "CSP and Trusted URLs \u2014 https://help.salesforce.com/s/articleView?id=sf.security_csp_overview.htm",
+        "API Only User Profile \u2014 https://help.salesforce.com/s/articleView?id=sf.users_profiles_api_only.htm",
+        "Privacy Center and DSR \u2014 https://help.salesforce.com/s/articleView?id=sf.privacy_center_overview.htm"
+      ],
+      "outputs": [
+        "Frame policy settings per page/site"
+      ],
+      "references": [
+        "skills/security/clickjack-and-frame-protection/references/examples.md",
+        "skills/security/clickjack-and-frame-protection/references/gotchas.md",
+        "skills/security/clickjack-and-frame-protection/references/llm-anti-patterns.md",
+        "skills/security/clickjack-and-frame-protection/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/security/clickjack-and-frame-protection/scripts/check_clickjack_and_frame_protection.py"
+      ],
+      "tags": [
+        "clickjack",
+        "frame",
+        "csp"
+      ],
+      "templates": [
+        "skills/security/clickjack-and-frame-protection/templates/clickjack-and-frame-protection-template.md"
+      ],
+      "updated": "2026-04-17",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "security",
+      "chunk_ids": [
         "0a43570e376699609da0",
         "0edea41fa9578bf186e2",
         "13e09c4d00b6a62730e2",
@@ -93706,6 +93928,156 @@
         "skills/security/connected-app-security-policies/templates/connected-app-security-policies-template.md"
       ],
       "updated": "2026-04-05",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "security",
+      "chunk_ids": [
+        "066b335f34b3abc645b2",
+        "11e15161e9281bac03e0",
+        "1292eaa72396e028840f",
+        "13344985f72660824174",
+        "1b760cbe1aeb02936752",
+        "24ed6dd2ab79ad1347b4",
+        "3245795bb0d41b822acb",
+        "4e9a1590a6b4588717f0",
+        "568dc8cb5024cc8b1ba3",
+        "62c237f032904b8680d0",
+        "67bf7e27143dbe46b11a",
+        "6e03302f05974b51084c",
+        "6f41c5cce9ef4f5560ca",
+        "7df6c6149d32998c85a8",
+        "7ea7100342c4cb02ca74",
+        "874a57253e5e411c23d0",
+        "8b6b46e82ad180926cd6",
+        "906c8434690b29e0b65d",
+        "a50a1c2c6cea084f0e69",
+        "b1c4bc54dcca0d2c361f",
+        "b244f44779cd979c371c",
+        "b9d2d83e33b534a18ec8",
+        "c2cd6d11f4af560e122b",
+        "e0e86fa4d32f4b12c716",
+        "e77d77b50adde077ec4f",
+        "e8a3885deb047e093cd9"
+      ],
+      "content_hash": "91547267c35e89592b4010e945d49b93baf4c274813134448e3faa13199972df",
+      "dependencies": [],
+      "description": "Configure Content Security Policy via Trusted URLs and CSP Trusted Sites so Lightning, LWR, and LWC can call third-party scripts, APIs, and frame sources. NOT for clickjack configuration.",
+      "file_location": "skills/security/csp-and-trusted-urls",
+      "id": "security/csp-and-trusted-urls",
+      "inputs": [
+        "External URLs the UI must reach",
+        "context (Lightning vs LWR vs Experience)"
+      ],
+      "name": "csp-and-trusted-urls",
+      "official_sources": [
+        "Apex Developer Guide \u2014 Sharing \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_understanding.htm",
+        "Salesforce Security Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security.htm",
+        "Shield Platform Encryption \u2014 https://help.salesforce.com/s/articleView?id=sf.security_pe_overview.htm",
+        "Session Security Levels \u2014 https://help.salesforce.com/s/articleView?id=sf.security_hap_session.htm",
+        "CSP and Trusted URLs \u2014 https://help.salesforce.com/s/articleView?id=sf.security_csp_overview.htm",
+        "API Only User Profile \u2014 https://help.salesforce.com/s/articleView?id=sf.users_profiles_api_only.htm",
+        "Privacy Center and DSR \u2014 https://help.salesforce.com/s/articleView?id=sf.privacy_center_overview.htm"
+      ],
+      "outputs": [
+        "Trusted URL records with correct context scopes"
+      ],
+      "references": [
+        "skills/security/csp-and-trusted-urls/references/examples.md",
+        "skills/security/csp-and-trusted-urls/references/gotchas.md",
+        "skills/security/csp-and-trusted-urls/references/llm-anti-patterns.md",
+        "skills/security/csp-and-trusted-urls/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/security/csp-and-trusted-urls/scripts/check_csp_and_trusted_urls.py"
+      ],
+      "tags": [
+        "csp",
+        "trusted-urls",
+        "lightning"
+      ],
+      "templates": [
+        "skills/security/csp-and-trusted-urls/templates/csp-and-trusted-urls-template.md"
+      ],
+      "updated": "2026-04-17",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "security",
+      "chunk_ids": [
+        "083f9376de90d161129c",
+        "0ad2385618e6b0e8dbf2",
+        "0b07fc374b455b8bd432",
+        "16d5472cc8af846157fc",
+        "23a6cd3656b7273fc585",
+        "3082a2c6086852bf64dc",
+        "4338d8b82d922d41f7d2",
+        "4342b130de1977ec17ae",
+        "450f3f27281761be1c02",
+        "5cadf567934f6f202c98",
+        "5dacd54569c397c7f64c",
+        "62175e39c1669bb06de5",
+        "7678bfe60bbe59a4be23",
+        "827762554f7593d2310a",
+        "8950503753886ec10300",
+        "963e09d7cb7c8462cc82",
+        "9749021d1bd7341364b2",
+        "9f8d7af9fe27faf10e94",
+        "a035efa2e2d9aab88cec",
+        "ab45c153e9fd5c3e1b02",
+        "bd6f6f1f9fc68e69cd07",
+        "c68ad2bc7729c1c0b922",
+        "c6c2d739fd08c97f0911",
+        "d006849587e67f79ff28",
+        "edd2de84df6f3bfdb778",
+        "fd826ef75e59e3df20a6"
+      ],
+      "content_hash": "fa072f39bebc33f57ce9ebe41555a8cbdd9cd21cdca0e88f78279181346a983d",
+      "dependencies": [],
+      "description": "Implement GDPR/CCPA data subject rights (access, deletion, rectification) using Salesforce Privacy Center and/or custom workflow. NOT for general backup or org-level data retention policy.",
+      "file_location": "skills/security/customer-data-request-workflow",
+      "id": "security/customer-data-request-workflow",
+      "inputs": [
+        "Request type (access/delete/correct)",
+        "subject identifiers",
+        "org regulatory scope"
+      ],
+      "name": "customer-data-request-workflow",
+      "official_sources": [
+        "Apex Developer Guide \u2014 Sharing \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_understanding.htm",
+        "Salesforce Security Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security.htm",
+        "Shield Platform Encryption \u2014 https://help.salesforce.com/s/articleView?id=sf.security_pe_overview.htm",
+        "Session Security Levels \u2014 https://help.salesforce.com/s/articleView?id=sf.security_hap_session.htm",
+        "CSP and Trusted URLs \u2014 https://help.salesforce.com/s/articleView?id=sf.security_csp_overview.htm",
+        "API Only User Profile \u2014 https://help.salesforce.com/s/articleView?id=sf.users_profiles_api_only.htm",
+        "Privacy Center and DSR \u2014 https://help.salesforce.com/s/articleView?id=sf.privacy_center_overview.htm"
+      ],
+      "outputs": [
+        "Runbook",
+        "Privacy Center policy or Apex batch",
+        "audit log"
+      ],
+      "references": [
+        "skills/security/customer-data-request-workflow/references/examples.md",
+        "skills/security/customer-data-request-workflow/references/gotchas.md",
+        "skills/security/customer-data-request-workflow/references/llm-anti-patterns.md",
+        "skills/security/customer-data-request-workflow/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/security/customer-data-request-workflow/scripts/check_customer_data_request_workflow.py"
+      ],
+      "tags": [
+        "privacy",
+        "gdpr",
+        "ccpa",
+        "compliance"
+      ],
+      "templates": [
+        "skills/security/customer-data-request-workflow/templates/customer-data-request-workflow-template.md"
+      ],
+      "updated": "2026-04-17",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -93866,6 +94238,79 @@
         "skills/security/data-classification-labels/templates/data-classification-labels-template.md"
       ],
       "updated": "2026-04-04",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "security",
+      "chunk_ids": [
+        "14caa7dc871b5b6aafd2",
+        "1846fbc05369a783b023",
+        "21aa26a1fd641475c433",
+        "2253f8cfa487ad97c979",
+        "2ec8aa5a9e9f1b617877",
+        "325c768e0d923a0c7428",
+        "32ff8569c96acd1ea51d",
+        "4840db7d23c07cbe7181",
+        "4daaecf26ead77214d57",
+        "52c6967781fbd1841883",
+        "5886c7fa09235ab326be",
+        "5d4b1984f1e103767ce4",
+        "623b8ebbe4cc278c4375",
+        "63bc37652ef91c6cc25a",
+        "6b3ed11efe70eb8436c1",
+        "6ce28e0fb7fa35418a35",
+        "6d5b5528b6498a517cb5",
+        "7c836da9884c5731fc8f",
+        "8a7275ceb3132d82f3d3",
+        "8e34ac8abece7601c67f",
+        "9ba0500cbcc4d303fd40",
+        "b2566cb069fbbf6ec3d5",
+        "c5203bb12d55ccf2708c",
+        "e55304b194501e473106",
+        "e61a8b0b4b2fe8d3a312",
+        "ec173dabb4d4626a0a08"
+      ],
+      "content_hash": "bf09d75ea1f2784d01d8dd6d4ec9b761dcb28ee3e30addf5362571c03cb23a88",
+      "dependencies": [],
+      "description": "Force or orchestrate sharing recalculation after bulk data loads, rule changes, or user/role reorgs so row access catches up with policy. NOT for designing new sharing rules \u2014 use sharing-selection tree.",
+      "file_location": "skills/security/dynamic-sharing-recalculation",
+      "id": "security/dynamic-sharing-recalculation",
+      "inputs": [
+        "Which driving event triggered the drift",
+        "estimated record volume"
+      ],
+      "name": "dynamic-sharing-recalculation",
+      "official_sources": [
+        "Apex Developer Guide \u2014 Sharing \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_understanding.htm",
+        "Salesforce Security Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security.htm",
+        "Shield Platform Encryption \u2014 https://help.salesforce.com/s/articleView?id=sf.security_pe_overview.htm",
+        "Session Security Levels \u2014 https://help.salesforce.com/s/articleView?id=sf.security_hap_session.htm",
+        "CSP and Trusted URLs \u2014 https://help.salesforce.com/s/articleView?id=sf.security_csp_overview.htm",
+        "API Only User Profile \u2014 https://help.salesforce.com/s/articleView?id=sf.users_profiles_api_only.htm",
+        "Privacy Center and DSR \u2014 https://help.salesforce.com/s/articleView?id=sf.privacy_center_overview.htm"
+      ],
+      "outputs": [
+        "Recalc orchestration plan (defer rules, enable in batches, verify)"
+      ],
+      "references": [
+        "skills/security/dynamic-sharing-recalculation/references/examples.md",
+        "skills/security/dynamic-sharing-recalculation/references/gotchas.md",
+        "skills/security/dynamic-sharing-recalculation/references/llm-anti-patterns.md",
+        "skills/security/dynamic-sharing-recalculation/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/security/dynamic-sharing-recalculation/scripts/check_dynamic_sharing_recalculation.py"
+      ],
+      "tags": [
+        "sharing",
+        "recalculation",
+        "bulk"
+      ],
+      "templates": [
+        "skills/security/dynamic-sharing-recalculation/templates/dynamic-sharing-recalculation-template.md"
+      ],
+      "updated": "2026-04-17",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -95640,6 +96085,82 @@
     {
       "category": "security",
       "chunk_ids": [
+        "02c401d2828f8a7d488a",
+        "07b8ffdc2361152a1c1a",
+        "16b742183e00e2cb799a",
+        "170a1ea2151092043b14",
+        "1c1b3373634e42ace03a",
+        "1c2b82e45b29950bf781",
+        "20e9f717d51baa92746b",
+        "252545d717abe9d578da",
+        "31e29dbf9080af0516f5",
+        "3d11933cb638a41552a0",
+        "3fe1b5310b367054130e",
+        "51a5de48350cd468acc6",
+        "5302f2798df4fee10d05",
+        "5b4e4045bafeae35dbdd",
+        "5ff4fa2bb1b955e7d82c",
+        "7e7a776a9762a9b0c91a",
+        "8536882f3d19365e29e3",
+        "9387827d0a90025780e0",
+        "b0118c6f7500d3617865",
+        "bbb3206986d8e8d24156",
+        "c43936a3a264fb0e0dcd",
+        "d7356e06ebce0f080e81",
+        "ddd4c481462e87216ca8",
+        "e1675db8889cefc12831",
+        "e6769c776bb3c70931d4",
+        "ef94ddd5a648221a5026"
+      ],
+      "content_hash": "6365b870c37cfa823e4630352b7af5999c9b0ee8807174a39de4f6dbe9fc7c27",
+      "dependencies": [],
+      "description": "Design just-in-time elevation, break-glass accounts, and audit trails for Modify All Data / System Admin / Customize Application permissions. NOT for regular permission set design.",
+      "file_location": "skills/security/privileged-access-management",
+      "id": "security/privileged-access-management",
+      "inputs": [
+        "Current admin user list",
+        "audit log retention capability"
+      ],
+      "name": "privileged-access-management",
+      "official_sources": [
+        "Apex Developer Guide \u2014 Sharing \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_understanding.htm",
+        "Salesforce Security Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security.htm",
+        "Shield Platform Encryption \u2014 https://help.salesforce.com/s/articleView?id=sf.security_pe_overview.htm",
+        "Session Security Levels \u2014 https://help.salesforce.com/s/articleView?id=sf.security_hap_session.htm",
+        "CSP and Trusted URLs \u2014 https://help.salesforce.com/s/articleView?id=sf.security_csp_overview.htm",
+        "API Only User Profile \u2014 https://help.salesforce.com/s/articleView?id=sf.users_profiles_api_only.htm",
+        "Privacy Center and DSR \u2014 https://help.salesforce.com/s/articleView?id=sf.privacy_center_overview.htm"
+      ],
+      "outputs": [
+        "PAM runbook",
+        "permission-set-group rotation policy",
+        "break-glass procedure"
+      ],
+      "references": [
+        "skills/security/privileged-access-management/references/examples.md",
+        "skills/security/privileged-access-management/references/gotchas.md",
+        "skills/security/privileged-access-management/references/llm-anti-patterns.md",
+        "skills/security/privileged-access-management/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/security/privileged-access-management/scripts/check_privileged_access_management.py"
+      ],
+      "tags": [
+        "pam",
+        "admin",
+        "sod",
+        "audit"
+      ],
+      "templates": [
+        "skills/security/privileged-access-management/templates/privileged-access-management-template.md"
+      ],
+      "updated": "2026-04-17",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "security",
+      "chunk_ids": [
         "0233421c5d1632f0c11f",
         "02c241260c5f836875e1",
         "06c9bb7c8017a762a31e",
@@ -95760,6 +96281,82 @@
         "skills/security/recaptcha-and-bot-prevention/templates/recaptcha-and-bot-prevention-template.md"
       ],
       "updated": "2026-04-05",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "security",
+      "chunk_ids": [
+        "04203ee412c5819ba95c",
+        "0528a8569a795e673715",
+        "0cb0212223c6632b0d48",
+        "1a1ea05b7bf132f03f43",
+        "2f005aaa94d025bfd8fa",
+        "40759587901b46c9c848",
+        "6482d0064ab9a0cd6e37",
+        "652899ba0c28ada15068",
+        "7927444e2f10f6e86246",
+        "7b265a97a41ba14eb47a",
+        "8774b5fda8bfb7d324c1",
+        "9086c1117f62b9c5550f",
+        "9799d469e411ede3dedb",
+        "98996f7e373c13b669a3",
+        "9a0d34fad6e3a08ad518",
+        "9bfc904f19f8a402d40d",
+        "9cf7e1258a13919bfdc2",
+        "a7edfb8d8bb7d404f00c",
+        "bb5de34087fd96ffcf36",
+        "c099b152f221020f2e3a",
+        "cbb382852346c251cc58",
+        "db897d69a710683881bf",
+        "e477ac61167bd79ee675",
+        "eab18912366b892c79bd",
+        "fc5584b44b58f823d438",
+        "ff30335311739a2ae693"
+      ],
+      "content_hash": "0aeb8816d6eb71b21da3227d4c8d185b6c9ef824438483769caa3cccee424589",
+      "dependencies": [],
+      "description": "Roll out Shield (Platform Encryption + Event Monitoring + Field Audit Trail) end-to-end, sequencing feature enablement to avoid data lockout. NOT for Classic Encryption or general PE design.",
+      "file_location": "skills/security/salesforce-shield-deployment",
+      "id": "security/salesforce-shield-deployment",
+      "inputs": [
+        "Shield license",
+        "scoped field list",
+        "log retention SLA"
+      ],
+      "name": "salesforce-shield-deployment",
+      "official_sources": [
+        "Apex Developer Guide \u2014 Sharing \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_understanding.htm",
+        "Salesforce Security Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security.htm",
+        "Shield Platform Encryption \u2014 https://help.salesforce.com/s/articleView?id=sf.security_pe_overview.htm",
+        "Session Security Levels \u2014 https://help.salesforce.com/s/articleView?id=sf.security_hap_session.htm",
+        "CSP and Trusted URLs \u2014 https://help.salesforce.com/s/articleView?id=sf.security_csp_overview.htm",
+        "API Only User Profile \u2014 https://help.salesforce.com/s/articleView?id=sf.users_profiles_api_only.htm",
+        "Privacy Center and DSR \u2014 https://help.salesforce.com/s/articleView?id=sf.privacy_center_overview.htm"
+      ],
+      "outputs": [
+        "Rollout runbook with order of operations",
+        "validation report"
+      ],
+      "references": [
+        "skills/security/salesforce-shield-deployment/references/examples.md",
+        "skills/security/salesforce-shield-deployment/references/gotchas.md",
+        "skills/security/salesforce-shield-deployment/references/llm-anti-patterns.md",
+        "skills/security/salesforce-shield-deployment/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/security/salesforce-shield-deployment/scripts/check_salesforce_shield_deployment.py"
+      ],
+      "tags": [
+        "shield",
+        "encryption",
+        "event-monitoring",
+        "fhr"
+      ],
+      "templates": [
+        "skills/security/salesforce-shield-deployment/templates/salesforce-shield-deployment-template.md"
+      ],
+      "updated": "2026-04-17",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -96331,6 +96928,80 @@
     {
       "category": "security",
       "chunk_ids": [
+        "00dc2cbce0a258884b7c",
+        "0aecc5bd9a6fd05b99a3",
+        "0b51b52e2b28c4ef9d9b",
+        "0c7323528787a881bebe",
+        "115c07741211199c661d",
+        "26fd81a02ac6aedea915",
+        "2c5edf05fddd90303889",
+        "2ce785efcea5ae990684",
+        "3e5ae7e01b8840877bc2",
+        "483c184f710335d3590a",
+        "4af7c97e39ed2d41af32",
+        "5fcc9cbb3ba2a8042388",
+        "7a95c65dc06d559b896c",
+        "7b4bd2f19aca6fb699f4",
+        "81c55074d631443e84f9",
+        "861b37adbcfff6ca0c2e",
+        "8c615192a883560908cb",
+        "92bbe54dd820bb5e2a66",
+        "94b2b97a73b4d830d83b",
+        "a9cdd1862f9f5c0892fd",
+        "b8a17d81e79d396f3354",
+        "c6a79a31672ba9ce40ec",
+        "c72c6193e537cd8974bb",
+        "cbe3a3e314dc9eaeb675",
+        "e1cc205064bbf99e1330",
+        "ee831a47cc25f7186fa5"
+      ],
+      "content_hash": "560f7dbe162c7bc1e568a9b295b223e37efff0a750058aa56616add11d2df8c3",
+      "dependencies": [],
+      "description": "Enforce step-up authentication for sensitive pages/objects using High Assurance session level and login flow policies. NOT for initial MFA enrollment UX.",
+      "file_location": "skills/security/session-high-assurance-policies",
+      "id": "security/session-high-assurance-policies",
+      "inputs": [
+        "Which objects/pages require step-up",
+        "current login policies"
+      ],
+      "name": "session-high-assurance-policies",
+      "official_sources": [
+        "Apex Developer Guide \u2014 Sharing \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_understanding.htm",
+        "Salesforce Security Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security.htm",
+        "Shield Platform Encryption \u2014 https://help.salesforce.com/s/articleView?id=sf.security_pe_overview.htm",
+        "Session Security Levels \u2014 https://help.salesforce.com/s/articleView?id=sf.security_hap_session.htm",
+        "CSP and Trusted URLs \u2014 https://help.salesforce.com/s/articleView?id=sf.security_csp_overview.htm",
+        "API Only User Profile \u2014 https://help.salesforce.com/s/articleView?id=sf.users_profiles_api_only.htm",
+        "Privacy Center and DSR \u2014 https://help.salesforce.com/s/articleView?id=sf.privacy_center_overview.htm"
+      ],
+      "outputs": [
+        "Session Settings policy",
+        "profile/permission-set config"
+      ],
+      "references": [
+        "skills/security/session-high-assurance-policies/references/examples.md",
+        "skills/security/session-high-assurance-policies/references/gotchas.md",
+        "skills/security/session-high-assurance-policies/references/llm-anti-patterns.md",
+        "skills/security/session-high-assurance-policies/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/security/session-high-assurance-policies/scripts/check_session_high_assurance_policies.py"
+      ],
+      "tags": [
+        "session",
+        "mfa",
+        "high-assurance"
+      ],
+      "templates": [
+        "skills/security/session-high-assurance-policies/templates/session-high-assurance-policies-template.md"
+      ],
+      "updated": "2026-04-17",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "security",
+      "chunk_ids": [
         "030bc8f3be482ebf3e2e",
         "08b38cc489e99e017afb",
         "0b68fe8b094373abc14e",
@@ -96441,6 +97112,82 @@
         "skills/security/session-management-and-timeout/templates/session-management-and-timeout-template.md"
       ],
       "updated": "2026-04-05",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "security",
+      "chunk_ids": [
+        "04786f8eb10251eeb769",
+        "06e8bfdf1dd9e20b9561",
+        "172a757c885c656180b1",
+        "1eb6916001c41988c562",
+        "326249562dd32d1f07bb",
+        "3e20f1a7a0e9dc10eb9d",
+        "450c92a4363230796d9f",
+        "51b69b6f0780459a51d8",
+        "574a085231628e511fc4",
+        "75ce57e7c33d4dd607f6",
+        "79aa576549ef53a3b3de",
+        "82cde1381a5fb8bea0c2",
+        "8789ef042b008ee9277f",
+        "90d785c0471e76cd4af5",
+        "921ef02584d092987ec3",
+        "9fc3325792626d26b58d",
+        "b88453361a981af5ba7c",
+        "bfdd8451bdf58c0fb182",
+        "c3cc65b459c3fe626f33",
+        "c42dbc00f551e3c72e33",
+        "d3da23d5ca6d4045a029",
+        "e8f827a217b17813f3ba",
+        "e95956121aff55048f4c",
+        "e95ed5eca786cb2ec7f5",
+        "ea3a60416b61c8982cda",
+        "ebf2241e4395d1be1e3e"
+      ],
+      "content_hash": "6f73c6c91ec1323492de0cc86978c83335109b20b47827f7a5a763c37ea6f8d3",
+      "dependencies": [],
+      "description": "Configure Shield Platform Encryption with customer-supplied (BYOK) or customer-held (Cache-Only Key Service) tenant secrets, rotate them, and recover. NOT for Classic Encryption or field masking.",
+      "file_location": "skills/security/shield-kms-byok-setup",
+      "id": "security/shield-kms-byok-setup",
+      "inputs": [
+        "KMS (AWS KMS / Azure Key Vault) endpoint",
+        "key material",
+        "org Shield license"
+      ],
+      "name": "shield-kms-byok-setup",
+      "official_sources": [
+        "Apex Developer Guide \u2014 Sharing \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_understanding.htm",
+        "Salesforce Security Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security.htm",
+        "Shield Platform Encryption \u2014 https://help.salesforce.com/s/articleView?id=sf.security_pe_overview.htm",
+        "Session Security Levels \u2014 https://help.salesforce.com/s/articleView?id=sf.security_hap_session.htm",
+        "CSP and Trusted URLs \u2014 https://help.salesforce.com/s/articleView?id=sf.security_csp_overview.htm",
+        "API Only User Profile \u2014 https://help.salesforce.com/s/articleView?id=sf.users_profiles_api_only.htm",
+        "Privacy Center and DSR \u2014 https://help.salesforce.com/s/articleView?id=sf.privacy_center_overview.htm"
+      ],
+      "outputs": [
+        "Tenant secret rotation policy",
+        "CMK setup runbook"
+      ],
+      "references": [
+        "skills/security/shield-kms-byok-setup/references/examples.md",
+        "skills/security/shield-kms-byok-setup/references/gotchas.md",
+        "skills/security/shield-kms-byok-setup/references/llm-anti-patterns.md",
+        "skills/security/shield-kms-byok-setup/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/security/shield-kms-byok-setup/scripts/check_shield_kms_byok_setup.py"
+      ],
+      "tags": [
+        "shield",
+        "encryption",
+        "byok",
+        "kms"
+      ],
+      "templates": [
+        "skills/security/shield-kms-byok-setup/templates/shield-kms-byok-setup-template.md"
+      ],
+      "updated": "2026-04-17",
       "vector_embedding": null,
       "version": "1.0.0"
     },

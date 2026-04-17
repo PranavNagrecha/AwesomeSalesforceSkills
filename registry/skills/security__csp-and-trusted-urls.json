@@ -1,0 +1,73 @@
+{
+  "category": "security",
+  "chunk_ids": [
+    "066b335f34b3abc645b2",
+    "11e15161e9281bac03e0",
+    "1292eaa72396e028840f",
+    "13344985f72660824174",
+    "1b760cbe1aeb02936752",
+    "24ed6dd2ab79ad1347b4",
+    "3245795bb0d41b822acb",
+    "4e9a1590a6b4588717f0",
+    "568dc8cb5024cc8b1ba3",
+    "62c237f032904b8680d0",
+    "67bf7e27143dbe46b11a",
+    "6e03302f05974b51084c",
+    "6f41c5cce9ef4f5560ca",
+    "7df6c6149d32998c85a8",
+    "7ea7100342c4cb02ca74",
+    "874a57253e5e411c23d0",
+    "8b6b46e82ad180926cd6",
+    "906c8434690b29e0b65d",
+    "a50a1c2c6cea084f0e69",
+    "b1c4bc54dcca0d2c361f",
+    "b244f44779cd979c371c",
+    "b9d2d83e33b534a18ec8",
+    "c2cd6d11f4af560e122b",
+    "e0e86fa4d32f4b12c716",
+    "e77d77b50adde077ec4f",
+    "e8a3885deb047e093cd9"
+  ],
+  "content_hash": "91547267c35e89592b4010e945d49b93baf4c274813134448e3faa13199972df",
+  "dependencies": [],
+  "description": "Configure Content Security Policy via Trusted URLs and CSP Trusted Sites so Lightning, LWR, and LWC can call third-party scripts, APIs, and frame sources. NOT for clickjack configuration.",
+  "file_location": "skills/security/csp-and-trusted-urls",
+  "id": "security/csp-and-trusted-urls",
+  "inputs": [
+    "External URLs the UI must reach",
+    "context (Lightning vs LWR vs Experience)"
+  ],
+  "name": "csp-and-trusted-urls",
+  "official_sources": [
+    "Apex Developer Guide \u2014 Sharing \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_understanding.htm",
+    "Salesforce Security Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security.htm",
+    "Shield Platform Encryption \u2014 https://help.salesforce.com/s/articleView?id=sf.security_pe_overview.htm",
+    "Session Security Levels \u2014 https://help.salesforce.com/s/articleView?id=sf.security_hap_session.htm",
+    "CSP and Trusted URLs \u2014 https://help.salesforce.com/s/articleView?id=sf.security_csp_overview.htm",
+    "API Only User Profile \u2014 https://help.salesforce.com/s/articleView?id=sf.users_profiles_api_only.htm",
+    "Privacy Center and DSR \u2014 https://help.salesforce.com/s/articleView?id=sf.privacy_center_overview.htm"
+  ],
+  "outputs": [
+    "Trusted URL records with correct context scopes"
+  ],
+  "references": [
+    "skills/security/csp-and-trusted-urls/references/examples.md",
+    "skills/security/csp-and-trusted-urls/references/gotchas.md",
+    "skills/security/csp-and-trusted-urls/references/llm-anti-patterns.md",
+    "skills/security/csp-and-trusted-urls/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/security/csp-and-trusted-urls/scripts/check_csp_and_trusted_urls.py"
+  ],
+  "tags": [
+    "csp",
+    "trusted-urls",
+    "lightning"
+  ],
+  "templates": [
+    "skills/security/csp-and-trusted-urls/templates/csp-and-trusted-urls-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

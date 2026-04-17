@@ -4823,6 +4823,126 @@
       "domain": "agentforce",
       "expected_skill": "agentforce/agent-deployment-checklist",
       "top_k": 3
+    },
+    {
+      "query": "need to share records based on data from another object",
+      "domain": "security",
+      "expected_skill": "security/apex-managed-sharing-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "grant access when a custom field flips to a value",
+      "domain": "security",
+      "expected_skill": "security/apex-managed-sharing-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "after data load users cant see records",
+      "domain": "security",
+      "expected_skill": "security/dynamic-sharing-recalculation",
+      "top_k": 3
+    },
+    {
+      "query": "added sharing rule recalculation is still running",
+      "domain": "security",
+      "expected_skill": "security/dynamic-sharing-recalculation",
+      "top_k": 3
+    },
+    {
+      "query": "gdpr deletion request from a customer",
+      "domain": "security",
+      "expected_skill": "security/customer-data-request-workflow",
+      "top_k": 3
+    },
+    {
+      "query": "right to be forgotten in salesforce",
+      "domain": "security",
+      "expected_skill": "security/customer-data-request-workflow",
+      "top_k": 3
+    },
+    {
+      "query": "system admin break glass account",
+      "domain": "security",
+      "expected_skill": "security/privileged-access-management",
+      "top_k": 3
+    },
+    {
+      "query": "too many modify all data users",
+      "domain": "security",
+      "expected_skill": "security/privileged-access-management",
+      "top_k": 3
+    },
+    {
+      "query": "shield byok setup",
+      "domain": "security",
+      "expected_skill": "security/shield-kms-byok-setup",
+      "top_k": 3
+    },
+    {
+      "query": "cache only key service",
+      "domain": "security",
+      "expected_skill": "security/shield-kms-byok-setup",
+      "top_k": 3
+    },
+    {
+      "query": "step up auth for sensitive record",
+      "domain": "security",
+      "expected_skill": "security/session-high-assurance-policies",
+      "top_k": 3
+    },
+    {
+      "query": "high assurance session salesforce",
+      "domain": "security",
+      "expected_skill": "security/session-high-assurance-policies",
+      "top_k": 3
+    },
+    {
+      "query": "clickjack protection salesforce",
+      "domain": "security",
+      "expected_skill": "security/clickjack-and-frame-protection",
+      "top_k": 3
+    },
+    {
+      "query": "x frame options visualforce",
+      "domain": "security",
+      "expected_skill": "security/clickjack-and-frame-protection",
+      "top_k": 3
+    },
+    {
+      "query": "script refused to load salesforce csp",
+      "domain": "security",
+      "expected_skill": "security/csp-and-trusted-urls",
+      "top_k": 3
+    },
+    {
+      "query": "add trusted url for external api",
+      "domain": "security",
+      "expected_skill": "security/csp-and-trusted-urls",
+      "top_k": 3
+    },
+    {
+      "query": "integration user setup salesforce",
+      "domain": "security",
+      "expected_skill": "security/api-only-user-hardening",
+      "top_k": 3
+    },
+    {
+      "query": "api only user profile",
+      "domain": "security",
+      "expected_skill": "security/api-only-user-hardening",
+      "top_k": 3
+    },
+    {
+      "query": "shield rollout plan",
+      "domain": "security",
+      "expected_skill": "security/salesforce-shield-deployment",
+      "top_k": 3
+    },
+    {
+      "query": "enable event monitoring",
+      "domain": "security",
+      "expected_skill": "security/salesforce-shield-deployment",
+      "top_k": 3
     }
   ]
 }

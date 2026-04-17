@@ -707,10 +707,16 @@
       "omnistudio/vlocity-to-native-omnistudio-migration"
     ],
     "security": [
+      "security/apex-managed-sharing-patterns",
+      "security/api-only-user-hardening",
       "security/api-security-and-rate-limiting",
       "security/certificate-and-key-management",
+      "security/clickjack-and-frame-protection",
       "security/connected-app-security-policies",
+      "security/csp-and-trusted-urls",
+      "security/customer-data-request-workflow",
       "security/data-classification-labels",
+      "security/dynamic-sharing-recalculation",
       "security/event-monitoring",
       "security/experience-cloud-security",
       "security/ferpa-compliance-in-salesforce",
@@ -725,12 +731,16 @@
       "security/org-hardening-and-baseline-config",
       "security/permission-set-groups-and-muting",
       "security/platform-encryption",
+      "security/privileged-access-management",
       "security/recaptcha-and-bot-prevention",
+      "security/salesforce-shield-deployment",
       "security/sandbox-data-masking",
       "security/secure-coding-review-checklist",
       "security/security-health-check",
       "security/security-incident-response",
+      "security/session-high-assurance-policies",
       "security/session-management-and-timeout",
+      "security/shield-kms-byok-setup",
       "security/transaction-security-policies",
       "security/xss-and-injection-prevention"
     ]
@@ -1205,7 +1215,8 @@
       "admin/health-cloud-timeline",
       "admin/object-creation-and-design",
       "admin/sales-process-mapping",
-      "admin/user-access-policies"
+      "admin/user-access-policies",
+      "security/privileged-access-management"
     ],
     "admin-declarative": [
       "admin/dynamic-forms-and-actions"
@@ -1497,7 +1508,8 @@
       "flow/flow-invocable-from-apex",
       "flow/flow-migration-from-trigger",
       "lwc/knowledge-article-lwc",
-      "lwc/lwc-imperative-apex"
+      "lwc/lwc-imperative-apex",
+      "security/apex-managed-sharing-patterns"
     ],
     "apex-action": [
       "flow/flow-action-framework",
@@ -1589,6 +1601,9 @@
     ],
     "apex-wire": [
       "architect/experience-cloud-performance"
+    ],
+    "api": [
+      "security/api-only-user-hardening"
     ],
     "api-access": [
       "lwc/experience-cloud-api-access"
@@ -1837,7 +1852,8 @@
     "audit": [
       "data/field-history-tracking",
       "data/territory-data-alignment",
-      "security/event-monitoring"
+      "security/event-monitoring",
+      "security/privileged-access-management"
     ],
     "audit-fields": [
       "admin/system-field-behavior-and-audit"
@@ -2171,6 +2187,9 @@
       "flow/flow-custom-property-editors",
       "lwc/custom-property-editor-for-flow"
     ],
+    "bulk": [
+      "security/dynamic-sharing-recalculation"
+    ],
     "bulk-api": [
       "admin/data-import-and-management",
       "apex/fsc-integration-patterns-dev",
@@ -2302,6 +2321,9 @@
     ],
     "byoc": [
       "agentforce/agentforce-custom-channel-dev"
+    ],
+    "byok": [
+      "security/shield-kms-byok-setup"
     ],
     "byollm": [
       "agentforce/model-builder-and-byollm",
@@ -2526,6 +2548,7 @@
     "ccpa": [
       "architect/marketing-consent-architecture",
       "data/data-cloud-consent-and-privacy",
+      "security/customer-data-request-workflow",
       "security/gdpr-data-privacy"
     ],
     "cdc": [
@@ -2683,6 +2706,7 @@
       "apex/cti-adapter-development"
     ],
     "clickjack": [
+      "security/clickjack-and-frame-protection",
       "security/org-hardening-and-baseline-config"
     ],
     "clicks-before-code": [
@@ -2897,6 +2921,7 @@
       "data/field-history-tracking",
       "data/service-data-archival",
       "integration/slack-connect-patterns",
+      "security/customer-data-request-workflow",
       "security/data-classification-labels",
       "security/field-audit-trail",
       "security/platform-encryption",
@@ -3382,6 +3407,8 @@
     ],
     "csp": [
       "lwc/static-resources-in-lwc",
+      "security/clickjack-and-frame-protection",
+      "security/csp-and-trusted-urls",
       "security/org-hardening-and-baseline-config"
     ],
     "csp-trusted-sites": [
@@ -4628,7 +4655,9 @@
     ],
     "encryption": [
       "architect/hipaa-compliance-architecture",
-      "security/platform-encryption"
+      "security/platform-encryption",
+      "security/salesforce-shield-deployment",
+      "security/shield-kms-byok-setup"
     ],
     "energy-utilities": [
       "admin/industries-energy-utilities-setup",
@@ -4850,6 +4879,7 @@
       "data/analytics-data-governance",
       "security/api-security-and-rate-limiting",
       "security/event-monitoring",
+      "security/salesforce-shield-deployment",
       "security/security-incident-response"
     ],
     "event-propagation": [
@@ -5106,6 +5136,9 @@
       "admin/clinical-data-requirements",
       "apex/fhir-integration-patterns",
       "data/fhir-data-mapping"
+    ],
+    "fhr": [
+      "security/salesforce-shield-deployment"
     ],
     "field-audit-trail": [
       "admin/compliance-documentation-requirements",
@@ -5463,6 +5496,9 @@
     "formulas": [
       "admin/validation-rules"
     ],
+    "frame": [
+      "security/clickjack-and-frame-protection"
+    ],
     "fsc": [
       "admin/compliance-documentation-requirements",
       "admin/compliant-data-sharing-setup",
@@ -5612,6 +5648,7 @@
       "architect/marketing-consent-architecture",
       "data/data-cloud-consent-and-privacy",
       "data/data-quality-and-governance",
+      "security/customer-data-request-workflow",
       "security/gdpr-data-privacy",
       "security/sandbox-data-masking"
     ],
@@ -5865,6 +5902,9 @@
     ],
     "hierarchical-settings": [
       "admin/custom-metadata-types-and-settings"
+    ],
+    "high-assurance": [
+      "security/session-high-assurance-policies"
     ],
     "high-assurance-session": [
       "security/connected-app-security-policies"
@@ -6207,7 +6247,8 @@
       "integration/real-time-vs-batch-integration",
       "integration/salesforce-to-salesforce-integration",
       "integration/slack-salesforce-integration-setup",
-      "integration/slack-workflow-builder"
+      "integration/slack-workflow-builder",
+      "security/api-only-user-hardening"
     ],
     "integration-admin": [
       "admin/outbound-message-setup",
@@ -6471,6 +6512,9 @@
     "kill-switch": [
       "apex/feature-flags-and-kill-switches"
     ],
+    "kms": [
+      "security/shield-kms-byok-setup"
+    ],
     "knowledge": [
       "admin/knowledge-base-administration",
       "admin/self-service-design",
@@ -6666,6 +6710,9 @@
     ],
     "light-dom": [
       "lwc/lwc-security"
+    ],
+    "lightning": [
+      "security/csp-and-trusted-urls"
     ],
     "lightning-alert": [
       "lwc/lwc-toast-and-notifications"
@@ -7153,6 +7200,7 @@
     ],
     "mfa": [
       "admin/org-setup-and-configuration",
+      "security/session-high-assurance-policies",
       "security/transaction-security-policies"
     ],
     "mfa-enforcement-strategy": [
@@ -8013,6 +8061,9 @@
       "integration/graphql-api-patterns",
       "integration/rest-api-patterns"
     ],
+    "pam": [
+      "security/privileged-access-management"
+    ],
     "parallel-testing": [
       "devops/scratch-org-pools"
     ],
@@ -8489,7 +8540,8 @@
     ],
     "privacy": [
       "admin/consent-management-marketing",
-      "data/data-cloud-consent-and-privacy"
+      "data/data-cloud-consent-and-privacy",
+      "security/customer-data-request-workflow"
     ],
     "privacy-center": [
       "security/gdpr-data-privacy"
@@ -8888,6 +8940,9 @@
     ],
     "real-time-segmentation": [
       "admin/data-cloud-segmentation"
+    ],
+    "recalculation": [
+      "security/dynamic-sharing-recalculation"
     ],
     "recaptcha": [
       "security/recaptcha-and-bot-prevention"
@@ -9331,7 +9386,8 @@
     ],
     "row-level-security": [
       "admin/analytics-permission-and-sharing",
-      "architect/analytics-security-architecture"
+      "architect/analytics-security-architecture",
+      "security/apex-managed-sharing-patterns"
     ],
     "rto-rpo": [
       "architect/ha-dr-architecture"
@@ -9807,6 +9863,9 @@
     "sequenceNumber": [
       "data/cdc-data-sync-patterns"
     ],
+    "service-account": [
+      "security/api-only-user-hardening"
+    ],
     "service-appointment": [
       "data/fsl-reporting-data-model",
       "data/fsl-work-order-migration"
@@ -9903,6 +9962,9 @@
     ],
     "servicenow": [
       "admin/agent-output-formats"
+    ],
+    "session": [
+      "security/session-high-assurance-policies"
     ],
     "session-analytics": [
       "agentforce/agentforce-observability"
@@ -10013,6 +10075,8 @@
       "admin/queues-and-public-groups",
       "admin/sharing-and-visibility",
       "lwc/experience-cloud-api-access",
+      "security/apex-managed-sharing-patterns",
+      "security/dynamic-sharing-recalculation",
       "security/guest-user-security"
     ],
     "sharing-inheritance": [
@@ -10057,7 +10121,9 @@
       "security/event-monitoring",
       "security/field-audit-trail",
       "security/platform-encryption",
+      "security/salesforce-shield-deployment",
       "security/security-incident-response",
+      "security/shield-kms-byok-setup",
       "security/transaction-security-policies"
     ],
     "shield-encryption": [
@@ -10194,6 +10260,9 @@
     ],
     "social-login": [
       "lwc/experience-cloud-authentication"
+    ],
+    "sod": [
+      "security/privileged-access-management"
     ],
     "soft-credits": [
       "admin/soft-credits-and-matching",
@@ -10812,6 +10881,9 @@
     ],
     "trusted-ip-ranges": [
       "security/network-security-and-trusted-ips"
+    ],
+    "trusted-urls": [
+      "security/csp-and-trusted-urls"
     ],
     "tuning": [
       "flow/flow-performance-optimization"

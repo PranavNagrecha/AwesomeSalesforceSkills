@@ -1,0 +1,76 @@
+{
+  "category": "security",
+  "chunk_ids": [
+    "02c401d2828f8a7d488a",
+    "07b8ffdc2361152a1c1a",
+    "16b742183e00e2cb799a",
+    "170a1ea2151092043b14",
+    "1c1b3373634e42ace03a",
+    "1c2b82e45b29950bf781",
+    "20e9f717d51baa92746b",
+    "252545d717abe9d578da",
+    "31e29dbf9080af0516f5",
+    "3d11933cb638a41552a0",
+    "3fe1b5310b367054130e",
+    "51a5de48350cd468acc6",
+    "5302f2798df4fee10d05",
+    "5b4e4045bafeae35dbdd",
+    "5ff4fa2bb1b955e7d82c",
+    "7e7a776a9762a9b0c91a",
+    "8536882f3d19365e29e3",
+    "9387827d0a90025780e0",
+    "b0118c6f7500d3617865",
+    "bbb3206986d8e8d24156",
+    "c43936a3a264fb0e0dcd",
+    "d7356e06ebce0f080e81",
+    "ddd4c481462e87216ca8",
+    "e1675db8889cefc12831",
+    "e6769c776bb3c70931d4",
+    "ef94ddd5a648221a5026"
+  ],
+  "content_hash": "6365b870c37cfa823e4630352b7af5999c9b0ee8807174a39de4f6dbe9fc7c27",
+  "dependencies": [],
+  "description": "Design just-in-time elevation, break-glass accounts, and audit trails for Modify All Data / System Admin / Customize Application permissions. NOT for regular permission set design.",
+  "file_location": "skills/security/privileged-access-management",
+  "id": "security/privileged-access-management",
+  "inputs": [
+    "Current admin user list",
+    "audit log retention capability"
+  ],
+  "name": "privileged-access-management",
+  "official_sources": [
+    "Apex Developer Guide \u2014 Sharing \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_understanding.htm",
+    "Salesforce Security Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security.htm",
+    "Shield Platform Encryption \u2014 https://help.salesforce.com/s/articleView?id=sf.security_pe_overview.htm",
+    "Session Security Levels \u2014 https://help.salesforce.com/s/articleView?id=sf.security_hap_session.htm",
+    "CSP and Trusted URLs \u2014 https://help.salesforce.com/s/articleView?id=sf.security_csp_overview.htm",
+    "API Only User Profile \u2014 https://help.salesforce.com/s/articleView?id=sf.users_profiles_api_only.htm",
+    "Privacy Center and DSR \u2014 https://help.salesforce.com/s/articleView?id=sf.privacy_center_overview.htm"
+  ],
+  "outputs": [
+    "PAM runbook",
+    "permission-set-group rotation policy",
+    "break-glass procedure"
+  ],
+  "references": [
+    "skills/security/privileged-access-management/references/examples.md",
+    "skills/security/privileged-access-management/references/gotchas.md",
+    "skills/security/privileged-access-management/references/llm-anti-patterns.md",
+    "skills/security/privileged-access-management/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/security/privileged-access-management/scripts/check_privileged_access_management.py"
+  ],
+  "tags": [
+    "pam",
+    "admin",
+    "sod",
+    "audit"
+  ],
+  "templates": [
+    "skills/security/privileged-access-management/templates/privileged-access-management-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

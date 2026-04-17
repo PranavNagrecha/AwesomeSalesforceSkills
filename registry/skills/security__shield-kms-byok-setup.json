@@ -1,0 +1,76 @@
+{
+  "category": "security",
+  "chunk_ids": [
+    "04786f8eb10251eeb769",
+    "06e8bfdf1dd9e20b9561",
+    "172a757c885c656180b1",
+    "1eb6916001c41988c562",
+    "326249562dd32d1f07bb",
+    "3e20f1a7a0e9dc10eb9d",
+    "450c92a4363230796d9f",
+    "51b69b6f0780459a51d8",
+    "574a085231628e511fc4",
+    "75ce57e7c33d4dd607f6",
+    "79aa576549ef53a3b3de",
+    "82cde1381a5fb8bea0c2",
+    "8789ef042b008ee9277f",
+    "90d785c0471e76cd4af5",
+    "921ef02584d092987ec3",
+    "9fc3325792626d26b58d",
+    "b88453361a981af5ba7c",
+    "bfdd8451bdf58c0fb182",
+    "c3cc65b459c3fe626f33",
+    "c42dbc00f551e3c72e33",
+    "d3da23d5ca6d4045a029",
+    "e8f827a217b17813f3ba",
+    "e95956121aff55048f4c",
+    "e95ed5eca786cb2ec7f5",
+    "ea3a60416b61c8982cda",
+    "ebf2241e4395d1be1e3e"
+  ],
+  "content_hash": "6f73c6c91ec1323492de0cc86978c83335109b20b47827f7a5a763c37ea6f8d3",
+  "dependencies": [],
+  "description": "Configure Shield Platform Encryption with customer-supplied (BYOK) or customer-held (Cache-Only Key Service) tenant secrets, rotate them, and recover. NOT for Classic Encryption or field masking.",
+  "file_location": "skills/security/shield-kms-byok-setup",
+  "id": "security/shield-kms-byok-setup",
+  "inputs": [
+    "KMS (AWS KMS / Azure Key Vault) endpoint",
+    "key material",
+    "org Shield license"
+  ],
+  "name": "shield-kms-byok-setup",
+  "official_sources": [
+    "Apex Developer Guide \u2014 Sharing \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_understanding.htm",
+    "Salesforce Security Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security.htm",
+    "Shield Platform Encryption \u2014 https://help.salesforce.com/s/articleView?id=sf.security_pe_overview.htm",
+    "Session Security Levels \u2014 https://help.salesforce.com/s/articleView?id=sf.security_hap_session.htm",
+    "CSP and Trusted URLs \u2014 https://help.salesforce.com/s/articleView?id=sf.security_csp_overview.htm",
+    "API Only User Profile \u2014 https://help.salesforce.com/s/articleView?id=sf.users_profiles_api_only.htm",
+    "Privacy Center and DSR \u2014 https://help.salesforce.com/s/articleView?id=sf.privacy_center_overview.htm"
+  ],
+  "outputs": [
+    "Tenant secret rotation policy",
+    "CMK setup runbook"
+  ],
+  "references": [
+    "skills/security/shield-kms-byok-setup/references/examples.md",
+    "skills/security/shield-kms-byok-setup/references/gotchas.md",
+    "skills/security/shield-kms-byok-setup/references/llm-anti-patterns.md",
+    "skills/security/shield-kms-byok-setup/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/security/shield-kms-byok-setup/scripts/check_shield_kms_byok_setup.py"
+  ],
+  "tags": [
+    "shield",
+    "encryption",
+    "byok",
+    "kms"
+  ],
+  "templates": [
+    "skills/security/shield-kms-byok-setup/templates/shield-kms-byok-setup-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

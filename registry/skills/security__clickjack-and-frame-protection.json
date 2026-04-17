@@ -1,0 +1,74 @@
+{
+  "category": "security",
+  "chunk_ids": [
+    "0aaa4de207c49248aa9e",
+    "0f40c27b4425151c9380",
+    "0fb009170e8221b08df2",
+    "322791053c727579da71",
+    "3db982906aec0e2a1366",
+    "42e02c3332c98763921b",
+    "4364ccc5b55221b6d859",
+    "5440881376a90883832a",
+    "56784a6b23db3f62f754",
+    "68b3cd4153c93d83061e",
+    "7a02bc7fcf5a8243dfee",
+    "8482f96ac4ec2b7d05e9",
+    "884690e0aefce0c094f4",
+    "8cef949dda85c9bfb0eb",
+    "932237aab38958e6791e",
+    "9be704e53f285cb1a4ed",
+    "9f06cf5340e74b5f8f02",
+    "a6a82774f79630940546",
+    "b3da74a623427388de1b",
+    "c273a269698892748a84",
+    "d9bc583a36a9c080ac00",
+    "e0a6cda85c06b0d5b578",
+    "e80d1adf85c91a7a1d69",
+    "e81e5623895a6c8dfc06",
+    "f3c813066302bb86d201",
+    "f75228bf5ef0dd23548f"
+  ],
+  "content_hash": "a5b62d5353932e42bfe90c4fd17d4d51492c17077391149ac031f5685fab5284",
+  "dependencies": [],
+  "description": "Configure clickjack protection headers and frame-ancestors for VF pages, LWR sites, and Aura apps. NOT for CSP or Trusted URL configuration.",
+  "file_location": "skills/security/clickjack-and-frame-protection",
+  "id": "security/clickjack-and-frame-protection",
+  "inputs": [
+    "Custom VF pages",
+    "Experience Cloud sites",
+    "intended embedding parents"
+  ],
+  "name": "clickjack-and-frame-protection",
+  "official_sources": [
+    "Apex Developer Guide \u2014 Sharing \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_understanding.htm",
+    "Salesforce Security Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security.htm",
+    "Shield Platform Encryption \u2014 https://help.salesforce.com/s/articleView?id=sf.security_pe_overview.htm",
+    "Session Security Levels \u2014 https://help.salesforce.com/s/articleView?id=sf.security_hap_session.htm",
+    "CSP and Trusted URLs \u2014 https://help.salesforce.com/s/articleView?id=sf.security_csp_overview.htm",
+    "API Only User Profile \u2014 https://help.salesforce.com/s/articleView?id=sf.users_profiles_api_only.htm",
+    "Privacy Center and DSR \u2014 https://help.salesforce.com/s/articleView?id=sf.privacy_center_overview.htm"
+  ],
+  "outputs": [
+    "Frame policy settings per page/site"
+  ],
+  "references": [
+    "skills/security/clickjack-and-frame-protection/references/examples.md",
+    "skills/security/clickjack-and-frame-protection/references/gotchas.md",
+    "skills/security/clickjack-and-frame-protection/references/llm-anti-patterns.md",
+    "skills/security/clickjack-and-frame-protection/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/security/clickjack-and-frame-protection/scripts/check_clickjack_and_frame_protection.py"
+  ],
+  "tags": [
+    "clickjack",
+    "frame",
+    "csp"
+  ],
+  "templates": [
+    "skills/security/clickjack-and-frame-protection/templates/clickjack-and-frame-protection-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

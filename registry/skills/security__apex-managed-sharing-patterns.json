@@ -1,0 +1,74 @@
+{
+  "category": "security",
+  "chunk_ids": [
+    "0e50b0e7f0cd471898b9",
+    "18018410127812900881",
+    "1a51b8169302b716f346",
+    "24b8ec1aab1b0132b24c",
+    "276e4a99a38e57372288",
+    "2c0fe014f50c94be5180",
+    "2d3eed1cb739b0fd26ba",
+    "3159b20bf52dad5118a6",
+    "3439a7aef3934e29df22",
+    "36a943f8e4cad28c6537",
+    "4bc8a937051e6cb4d209",
+    "544492740985971c4474",
+    "704233b98eb70c3ed794",
+    "849faa1efecb11e498b6",
+    "85859f101adb083c8417",
+    "960586a5363c28455076",
+    "9ad202257d38f9780fcd",
+    "9ae3fe113a69bad68515",
+    "a60dcff4b1d06f1f2a91",
+    "a8851aaae9954a4a19d1",
+    "a95a43adb7b6858f2482",
+    "aab3056004799e9919c2",
+    "bc0668beb9038853201b",
+    "c424fe3c35412bf3e08e",
+    "cc180d1e591424596b5b",
+    "ef0bd69df51755a4f05c"
+  ],
+  "content_hash": "50aa943827f5ff3ae7884fc35886d6d8c0d537b4ed384173c7df4237eacdf376",
+  "dependencies": [],
+  "description": "Grant row-level access programmatically via __Share records when declarative sharing rules cannot express the policy. NOT for OWD, role hierarchy, or criteria-based sharing rule design.",
+  "file_location": "skills/security/apex-managed-sharing-patterns",
+  "id": "security/apex-managed-sharing-patterns",
+  "inputs": [
+    "Target SObject",
+    "policy rule describing who sees the record and why"
+  ],
+  "name": "apex-managed-sharing-patterns",
+  "official_sources": [
+    "Apex Developer Guide \u2014 Sharing \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_understanding.htm",
+    "Salesforce Security Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security.htm",
+    "Shield Platform Encryption \u2014 https://help.salesforce.com/s/articleView?id=sf.security_pe_overview.htm",
+    "Session Security Levels \u2014 https://help.salesforce.com/s/articleView?id=sf.security_hap_session.htm",
+    "CSP and Trusted URLs \u2014 https://help.salesforce.com/s/articleView?id=sf.security_csp_overview.htm",
+    "API Only User Profile \u2014 https://help.salesforce.com/s/articleView?id=sf.users_profiles_api_only.htm",
+    "Privacy Center and DSR \u2014 https://help.salesforce.com/s/articleView?id=sf.privacy_center_overview.htm"
+  ],
+  "outputs": [
+    "Apex class that maintains __Share rows with RowCause and access levels",
+    "tests proving access is granted and revoked"
+  ],
+  "references": [
+    "skills/security/apex-managed-sharing-patterns/references/examples.md",
+    "skills/security/apex-managed-sharing-patterns/references/gotchas.md",
+    "skills/security/apex-managed-sharing-patterns/references/llm-anti-patterns.md",
+    "skills/security/apex-managed-sharing-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/security/apex-managed-sharing-patterns/scripts/check_apex_managed_sharing_patterns.py"
+  ],
+  "tags": [
+    "sharing",
+    "apex",
+    "row-level-security"
+  ],
+  "templates": [
+    "skills/security/apex-managed-sharing-patterns/templates/apex-managed-sharing-patterns-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}
