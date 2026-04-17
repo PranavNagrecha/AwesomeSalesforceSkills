@@ -71,6 +71,18 @@ python3 scripts/validate_repo.py
 
 This must exit 0. Fix all errors before committing.
 
+**Faster iteration — validator flags (Wave 1):**
+
+| Flag | What it does | When to use |
+|---|---|---|
+| `--changed-only` | Validate only skills touched by current git diff (staged + unstaged + untracked); always runs drift check. | Pre-commit hook. Fastest path on small changes. |
+| `--shard N/M` | Validate the N-th bucket of skills partitioned by stable hash mod M (0-indexed). | CI matrix jobs (see `.github/workflows/validate.yml`). |
+| `--domain <name>` | Restrict to `skills/<name>/`. Composable with `--shard` and `--changed-only`. | Local work on one domain. |
+| `--skip-drift` | Skip generated-artifact freshness check. | Only when sync_engine is intentionally mid-rebuild. |
+| `--skip-fixture-retrieval` | Skip per-fixture retrieval-quality check; coverage (every skill has a fixture) still runs. | When the lexical index is intentionally absent (synthetic benches, CI shard warm-up). |
+
+**Benchmarking the validator:** `python3 scripts/validate_repo_bench.py --count 500` spins up a throwaway temp repo with 500 synthetic skills and asserts validation stays under a 30-second threshold. Run this before merging changes to `scripts/validate_repo.py` or `pipelines/agent_validators.py` to catch orchestration regressions.
+
 ### Step 6 — Commit
 
 Commit all of:

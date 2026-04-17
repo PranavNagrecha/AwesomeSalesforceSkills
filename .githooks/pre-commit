@@ -2,4 +2,7 @@
 set -eu
 
 python3 scripts/skill_sync.py --changed-only
-python3 scripts/validate_repo.py
+# --changed-only keeps the hook fast on 1-file commits while still running
+# the generated-artifact drift check (critical to prevent registry rot).
+# For a full-repo pass use: python3 scripts/validate_repo.py (or --all).
+python3 scripts/validate_repo.py --changed-only

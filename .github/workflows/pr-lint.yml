@@ -1,0 +1,54 @@
+name: pr-lint
+
+# Lightweight PR lint. Intentionally faster and narrower than validate.yml —
+# this is the "first impression" contributors see when opening a PR. The
+# heavier skill validation runs in validate.yml.
+#
+# Today: frontmatter schema round-trip + export manifest existence check.
+# Wave 2 will flesh out the manifest check with real determinism assertions.
+
+on:
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+jobs:
+  frontmatter-schema:
+    name: frontmatter schema round-trip
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: install deps
+        run: python3 -m pip install -r requirements.txt
+
+      - name: round-trip every AGENT.md frontmatter
+        working-directory: mcp/sfskills-mcp
+        run: python3 -m unittest tests.test_agent_frontmatter -v
+
+  export-manifest-check:
+    name: export manifest (stub; fleshed out in Wave 2)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      # Wave-1 stub: assert the export script runs without error. Wave 2
+      # will replace this step with a ``--check`` mode that diffs against
+      # a committed registry/export_manifest.json.
+      - name: export script smoke
+        run: |
+          if [ -f scripts/export_skills.py ]; then
+            python3 scripts/export_skills.py --help > /dev/null
+          else
+            echo "scripts/export_skills.py not present yet — Wave 2 will add --check"
+          fi
