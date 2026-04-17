@@ -578,9 +578,12 @@
       "flow/flow-for-experience-cloud",
       "flow/flow-for-slack",
       "flow/flow-governance",
+      "flow/flow-invocable-from-apex",
       "flow/flow-large-data-volume-patterns",
+      "flow/flow-platform-events-integration",
       "flow/flow-runtime-error-diagnosis",
       "flow/flow-testing",
+      "flow/flow-transactional-boundaries",
       "flow/orchestration-flows",
       "flow/pause-elements-and-wait-events",
       "flow/process-builder-to-flow-migration",
@@ -1220,6 +1223,7 @@
       "apex/lead-conversion-customization"
     ],
     "after-save": [
+      "flow/flow-transactional-boundaries",
       "flow/record-triggered-flow-patterns"
     ],
     "agent-actions": [
@@ -1449,6 +1453,7 @@
       "apex/soql-fundamentals",
       "architect/solution-design-patterns",
       "devops/code-review-checklist-salesforce",
+      "flow/flow-invocable-from-apex",
       "lwc/knowledge-article-lwc",
       "lwc/lwc-imperative-apex"
     ],
@@ -1977,6 +1982,7 @@
       "apex/npsp-api-and-integration"
     ],
     "before-save": [
+      "flow/flow-transactional-boundaries",
       "flow/record-triggered-flow-patterns"
     ],
     "behavioral-triggers": [
@@ -2183,7 +2189,8 @@
       "apex/opportunity-trigger-patterns",
       "apex/trigger-framework",
       "devops/code-review-checklist-salesforce",
-      "flow/auto-launched-flow-patterns"
+      "flow/auto-launched-flow-patterns",
+      "flow/flow-invocable-from-apex"
     ],
     "bundle-design": [
       "architect/cpq-architecture-patterns"
@@ -3934,6 +3941,9 @@
     "declarative-vs-programmatic": [
       "architect/solution-design-patterns"
     ],
+    "decoupling": [
+      "flow/flow-platform-events-integration"
+    ],
     "dedicated-ip": [
       "admin/email-deliverability-strategy"
     ],
@@ -5177,7 +5187,10 @@
       "flow/auto-launched-flow-patterns",
       "flow/flow-external-services",
       "flow/flow-for-slack",
-      "flow/flow-runtime-error-diagnosis"
+      "flow/flow-invocable-from-apex",
+      "flow/flow-platform-events-integration",
+      "flow/flow-runtime-error-diagnosis",
+      "flow/flow-transactional-boundaries"
     ],
     "flow-action": [
       "admin/einstein-discovery-deployment"
@@ -5579,6 +5592,7 @@
       "devops/code-review-checklist-salesforce",
       "flow/flow-bulkification",
       "flow/flow-large-data-volume-patterns",
+      "flow/flow-transactional-boundaries",
       "integration/callout-limits-and-async-patterns"
     ],
     "gps": [
@@ -5744,6 +5758,7 @@
       "architect/omnistudio-scalability-patterns"
     ],
     "high-volume-events": [
+      "flow/flow-platform-events-integration",
       "integration/platform-events-integration"
     ],
     "high-volume-sales-data-architecture": [
@@ -6061,6 +6076,8 @@
       "architect/fsc-architecture-patterns",
       "architect/fsl-integration-patterns",
       "architect/integration-framework-design",
+      "flow/flow-invocable-from-apex",
+      "flow/flow-platform-events-integration",
       "integration/bulk-api-2-patterns",
       "integration/composite-api-patterns",
       "integration/error-handling-in-integrations",
@@ -6158,6 +6175,9 @@
     ],
     "inventory-management": [
       "data/commerce-inventory-data"
+    ],
+    "invocable": [
+      "flow/flow-invocable-from-apex"
     ],
     "invocable-action": [
       "apex/sales-engagement-api"
@@ -7668,6 +7688,7 @@
     "orchestration": [
       "apex/long-running-process-orchestration",
       "architect/event-driven-architecture",
+      "flow/flow-transactional-boundaries",
       "integration/middleware-integration-patterns"
     ],
     "order": [
@@ -7941,6 +7962,9 @@
     "pattern-selection": [
       "admin/integration-pattern-selection"
     ],
+    "pause": [
+      "flow/flow-transactional-boundaries"
+    ],
     "pause-element": [
       "flow/pause-elements-and-wait-events"
     ],
@@ -8148,6 +8172,7 @@
       "architect/limits-and-scalability-planning",
       "architect/org-limits-monitoring",
       "flow/auto-launched-flow-patterns",
+      "flow/flow-platform-events-integration",
       "integration/error-handling-in-integrations",
       "integration/event-driven-architecture-patterns",
       "integration/idempotent-integration-patterns",
@@ -8511,7 +8536,8 @@
       "admin/user-access-policies"
     ],
     "pub-sub": [
-      "architect/event-driven-architecture"
+      "architect/event-driven-architecture",
+      "flow/flow-platform-events-integration"
     ],
     "pub-sub-api": [
       "integration/change-data-capture-integration",
@@ -8533,6 +8559,9 @@
     ],
     "publication-lists": [
       "admin/consent-management-marketing"
+    ],
+    "publish-after-commit": [
+      "flow/flow-platform-events-integration"
     ],
     "publishing-workflow": [
       "admin/knowledge-base-administration"
@@ -9367,6 +9396,9 @@
     "scheduled-jobs": [
       "admin/batch-job-scheduling-and-monitoring",
       "devops/sandbox-data-isolation-gotchas"
+    ],
+    "scheduled-path": [
+      "flow/flow-transactional-boundaries"
     ],
     "scheduler": [
       "data/batch-data-cleanup-patterns"
@@ -10505,7 +10537,8 @@
       "architect/marketing-integration-patterns"
     ],
     "transactions": [
-      "data/financial-account-migration"
+      "data/financial-account-migration",
+      "flow/flow-transactional-boundaries"
     ],
     "transform-element": [
       "flow/flow-collection-processing"
