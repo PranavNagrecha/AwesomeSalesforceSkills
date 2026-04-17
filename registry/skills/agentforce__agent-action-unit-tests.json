@@ -1,0 +1,70 @@
+{
+  "category": "agentforce",
+  "chunk_ids": [
+    "0f1f440aec8aca92b2c4",
+    "109d8f81f4462a48c12d",
+    "235544c6a9e9e4f78321",
+    "25dc66a6f92d496ac032",
+    "2e8b32f48cd174f30261",
+    "3954e304be1e6fb24e54",
+    "449a07a8770a0aed3ec4",
+    "44d9441abd1b1331150b",
+    "61391f2d045e455c6e73",
+    "68f43714daccfc9f0799",
+    "723e069fbd3e9eb4bc18",
+    "76d0d35298d20d672b37",
+    "845723318cbda138c5e7",
+    "85f02e00406faa0849a1",
+    "961955be6e2607914acd",
+    "99b73daf33b8ecfbf545",
+    "a535ed075f8817a38780",
+    "b6e4b8d6c81953f3f058",
+    "c4b97071179c9c10f81b",
+    "cc662012f18540fe6c93",
+    "d2aff0f252afaa33601f",
+    "dbee2a7c47062800e583",
+    "df2962384847191d526b",
+    "e0788c309ae76f2ed770",
+    "f15a86d81551bb6db3f3",
+    "f84f9a8a1052a86e29ad"
+  ],
+  "content_hash": "3aaea6a8ff0075013afb69f4ba3c59b471c8648afc36ce15f1393da491f726c6",
+  "dependencies": [],
+  "description": "Apex test patterns for @InvocableMethod agent actions: per-branch coverage, bulk safety, deterministic assertions. NOT for UI/LWC testing or agent conversational quality scoring.",
+  "file_location": "skills/agentforce/agent-action-unit-tests",
+  "id": "agentforce/agent-action-unit-tests",
+  "inputs": [
+    "@InvocableMethod class"
+  ],
+  "name": "agent-action-unit-tests",
+  "official_sources": [
+    "Agentforce Developer Guide \u2014 https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html",
+    "Einstein Trust Layer \u2014 https://help.salesforce.com/s/articleView?id=sf.generative_ai_trust_layer.htm",
+    "Invocable Actions (Apex) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_invocable_action.htm",
+    "Agentforce Testing Center \u2014 https://help.salesforce.com/s/articleView?id=sf.agentforce_testing_center.htm"
+  ],
+  "outputs": [
+    "Test class with per-branch assertions + bulk test"
+  ],
+  "references": [
+    "skills/agentforce/agent-action-unit-tests/references/examples.md",
+    "skills/agentforce/agent-action-unit-tests/references/gotchas.md",
+    "skills/agentforce/agent-action-unit-tests/references/llm-anti-patterns.md",
+    "skills/agentforce/agent-action-unit-tests/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/agentforce/agent-action-unit-tests/scripts/check_agent_action_unit_tests.py"
+  ],
+  "tags": [
+    "agentforce",
+    "apex-tests",
+    "invocable",
+    "coverage"
+  ],
+  "templates": [
+    "skills/agentforce/agent-action-unit-tests/templates/agent-action-unit-tests-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

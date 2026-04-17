@@ -446,8 +446,13 @@ def main() -> int:
     lines.append("")
 
     rollup_path.write_text("\n".join(lines), encoding="utf-8")
-    print(f"\n✓ Rollup: {rollup_path.relative_to(REPO_ROOT)}")
-    print(f"✓ Per-agent reports: {per_agent_dir.relative_to(REPO_ROOT)}/")
+    def _rel(p):
+        try:
+            return p.relative_to(REPO_ROOT)
+        except ValueError:
+            return p
+    print(f"\n✓ Rollup: {_rel(rollup_path)}")
+    print(f"✓ Per-agent reports: {_rel(per_agent_dir)}/")
 
     return 0 if failed == 0 else 1
 

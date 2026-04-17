@@ -206,9 +206,15 @@
       "admin/wealth-management-requirements"
     ],
     "agentforce": [
+      "agentforce/agent-action-error-handling",
+      "agentforce/agent-action-unit-tests",
       "agentforce/agent-actions",
       "agentforce/agent-channel-deployment",
+      "agentforce/agent-deployment-checklist",
+      "agentforce/agent-metric-dashboards",
+      "agentforce/agent-rate-limit-strategy",
       "agentforce/agent-script-dsl",
+      "agentforce/agent-security-review",
       "agentforce/agent-testing-and-evaluation",
       "agentforce/agent-topic-design",
       "agentforce/agentforce-agent-creation",
@@ -235,6 +241,8 @@
       "agentforce/mcp-tool-definition-apex",
       "agentforce/model-builder-and-byollm",
       "agentforce/prompt-builder-templates",
+      "agentforce/prompt-injection-defense",
+      "agentforce/prompt-template-versioning",
       "agentforce/rag-patterns-in-salesforce",
       "agentforce/salesforce-mcp-server-setup",
       "agentforce/sf-to-llm-data-pipelines"
@@ -1300,9 +1308,15 @@
       "admin/ai-adoption-change-management",
       "admin/ai-ethics-and-governance-requirements",
       "admin/ai-use-case-assessment",
+      "agentforce/agent-action-error-handling",
+      "agentforce/agent-action-unit-tests",
       "agentforce/agent-actions",
       "agentforce/agent-channel-deployment",
+      "agentforce/agent-deployment-checklist",
+      "agentforce/agent-metric-dashboards",
+      "agentforce/agent-rate-limit-strategy",
       "agentforce/agent-script-dsl",
+      "agentforce/agent-security-review",
       "agentforce/agent-testing-and-evaluation",
       "agentforce/agent-topic-design",
       "agentforce/agentforce-agent-creation",
@@ -1318,6 +1332,8 @@
       "agentforce/einstein-bots-to-agentforce-migration",
       "agentforce/mcp-tool-definition-apex",
       "agentforce/model-builder-and-byollm",
+      "agentforce/prompt-injection-defense",
+      "agentforce/prompt-template-versioning",
       "agentforce/rag-patterns-in-salesforce",
       "agentforce/salesforce-mcp-server-setup",
       "agentforce/sf-to-llm-data-pipelines",
@@ -1462,6 +1478,7 @@
     ],
     "apex": [
       "admin/custom-permissions",
+      "agentforce/agent-action-error-handling",
       "agentforce/mcp-tool-definition-apex",
       "agentforce/salesforce-mcp-server-setup",
       "apex/commerce-payment-integration",
@@ -1559,6 +1576,9 @@
       "devops/data-seeding-for-testing",
       "devops/github-actions-for-salesforce",
       "devops/gitlab-ci-for-salesforce"
+    ],
+    "apex-tests": [
+      "agentforce/agent-action-unit-tests"
     ],
     "apex-trigger": [
       "apex/change-data-capture-apex",
@@ -2593,6 +2613,10 @@
     "checkDeployStatus": [
       "devops/deployment-monitoring"
     ],
+    "checklist": [
+      "agentforce/agent-deployment-checklist",
+      "agentforce/agent-security-review"
+    ],
     "checkout": [
       "admin/commerce-checkout-configuration",
       "admin/commerce-checkout-flow-design"
@@ -3192,6 +3216,9 @@
       "security/network-security-and-trusted-ips",
       "security/org-hardening-and-baseline-config"
     ],
+    "cost": [
+      "agentforce/agent-rate-limit-strategy"
+    ],
     "cost-benefit": [
       "architect/cpq-vs-standard-products-decision"
     ],
@@ -3203,6 +3230,9 @@
     ],
     "coupons": [
       "admin/commerce-pricing-and-promotions"
+    ],
+    "coverage": [
+      "agentforce/agent-action-unit-tests"
     ],
     "coverage-analysis": [
       "data/territory-data-alignment"
@@ -3550,6 +3580,7 @@
       "admin/report-performance-tuning",
       "admin/reports-and-dashboards",
       "admin/reports-and-dashboards-fundamentals",
+      "agentforce/agent-metric-dashboards",
       "flow/flow-error-monitoring"
     ],
     "data": [
@@ -4071,6 +4102,7 @@
     ],
     "deployment": [
       "admin/change-management-and-deployment",
+      "agentforce/agent-deployment-checklist",
       "apex/metadata-api-and-package-xml",
       "apex/sf-cli-and-sfdx-essentials",
       "data/deployment-data-dependencies",
@@ -4731,6 +4763,7 @@
       "flow/flow-runtime-error-diagnosis"
     ],
     "error-handling": [
+      "agentforce/agent-action-error-handling",
       "integration/error-handling-in-integrations"
     ],
     "error-handling-framework": [
@@ -5646,7 +5679,8 @@
       "admin/picklist-and-value-sets"
     ],
     "go-live": [
-      "admin/change-management-and-training"
+      "admin/change-management-and-training",
+      "agentforce/agent-deployment-checklist"
     ],
     "go-live-cutover-planning": [
       "devops/go-live-cutover-planning"
@@ -6268,12 +6302,14 @@
       "data/commerce-inventory-data"
     ],
     "invocable": [
+      "agentforce/agent-action-unit-tests",
       "flow/flow-invocable-from-apex"
     ],
     "invocable-action": [
       "apex/sales-engagement-api"
     ],
     "invocable-actions": [
+      "agentforce/agent-action-error-handling",
       "agentforce/agent-actions",
       "flow/flow-external-services"
     ],
@@ -6622,7 +6658,8 @@
       "admin/care-program-management"
     ],
     "lifecycle": [
-      "admin/donor-lifecycle-requirements"
+      "admin/donor-lifecycle-requirements",
+      "agentforce/prompt-template-versioning"
     ],
     "lifecycle-stages": [
       "admin/marketing-automation-requirements"
@@ -7111,7 +7148,8 @@
       "admin/industries-energy-utilities-setup"
     ],
     "metrics": [
-      "admin/analytics-kpi-definition"
+      "admin/analytics-kpi-definition",
+      "agentforce/agent-metric-dashboards"
     ],
     "mfa": [
       "admin/org-setup-and-configuration",
@@ -7551,6 +7589,7 @@
       "admin/data-model-documentation"
     ],
     "observability": [
+      "agentforce/agent-metric-dashboards",
       "agentforce/agentforce-observability",
       "apex/debug-and-logging",
       "architect/org-limits-monitoring"
@@ -8272,6 +8311,7 @@
     "platform-events": [
       "admin/change-data-capture-admin",
       "admin/commerce-order-management",
+      "agentforce/agent-rate-limit-strategy",
       "apex/custom-logging-and-monitoring",
       "apex/error-handling-framework",
       "apex/fsc-integration-patterns-dev",
@@ -8610,10 +8650,14 @@
       "admin/commerce-pricing-and-promotions"
     ],
     "prompt-builder": [
-      "agentforce/prompt-builder-templates"
+      "agentforce/prompt-builder-templates",
+      "agentforce/prompt-template-versioning"
     ],
     "prompt-grounding": [
       "agentforce/rag-patterns-in-salesforce"
+    ],
+    "prompt-injection": [
+      "agentforce/prompt-injection-defense"
     ],
     "prompt-templates": [
       "agentforce/agentforce-tool-use-patterns"
@@ -8820,6 +8864,7 @@
       "admin/pricing-model-design"
     ],
     "rate-limiting": [
+      "agentforce/agent-rate-limit-strategy",
       "security/api-security-and-rate-limiting"
     ],
     "rate-limits": [
@@ -8914,6 +8959,9 @@
     ],
     "recycle-bin": [
       "data/batch-data-cleanup-patterns"
+    ],
+    "red-team": [
+      "agentforce/prompt-injection-defense"
     ],
     "redshift": [
       "data/analytics-external-data"
@@ -9186,6 +9234,9 @@
     ],
     "revenue-transaction-error-log": [
       "data/billing-data-reconciliation"
+    ],
+    "review": [
+      "agentforce/agent-security-review"
     ],
     "review-cycle": [
       "admin/financial-planning-process"
@@ -9644,6 +9695,8 @@
     ],
     "security": [
       "admin/delegated-administration",
+      "agentforce/agent-security-review",
+      "agentforce/prompt-injection-defense",
       "apex/soql-security",
       "architect/analytics-security-architecture",
       "architect/security-architecture-review",
@@ -10944,6 +10997,7 @@
       "flow/flow-governance"
     ],
     "versioning": [
+      "agentforce/prompt-template-versioning",
       "apex/apex-rest-services",
       "devops/release-management",
       "omnistudio/omniscript-versioning"

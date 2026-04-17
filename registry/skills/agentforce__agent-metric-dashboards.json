@@ -1,0 +1,72 @@
+{
+  "category": "agentforce",
+  "chunk_ids": [
+    "002b31012ad47bd01783",
+    "0b11b90423e680dd628b",
+    "1f8ddbf48950e3e239f7",
+    "235ff75427e00e0e6abc",
+    "24818844113ded18f6ee",
+    "3d339ba39ad6e396a70e",
+    "465d9fca78b928d3f4cf",
+    "5e5b0f02f718f9964079",
+    "6f0906e5c3255fc345dd",
+    "718a9a5433f92ca773e5",
+    "7985a99f7060f6c11e47",
+    "7d6cb81a45431de1915c",
+    "868615c27cbb4f27a9a0",
+    "8fcfded0675891a05a5a",
+    "963d432aecd1f4484afb",
+    "9e909b71bb4a4253cfef",
+    "ade893f5035ebebbb043",
+    "b3f46e82c2faf1f1d1f5",
+    "bf3504147ceba18866c7",
+    "c0db74f163ac560a9511",
+    "cfa35478b5924084908c",
+    "d9ffeaa6c829c4608797",
+    "dc8fd7fee2bdb5079568",
+    "e4023472a2977da8dec2",
+    "fb5f831f7fef60986e0a",
+    "fddc82e858f991127db0"
+  ],
+  "content_hash": "f239ccc5fcf07680ef34c181642487390693a3dea0defcb666450cce0375da3f",
+  "dependencies": [],
+  "description": "Observability for Agentforce: adoption, deflection, latency, cost, quality. NOT for agent evaluation/testing (see agentforce-eval-harness) or raw platform-event monitoring.",
+  "file_location": "skills/agentforce/agent-metric-dashboards",
+  "id": "agentforce/agent-metric-dashboards",
+  "inputs": [
+    "Conversation log access",
+    "CSAT or quality signal"
+  ],
+  "name": "agent-metric-dashboards",
+  "official_sources": [
+    "Agentforce Developer Guide \u2014 https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html",
+    "Einstein Trust Layer \u2014 https://help.salesforce.com/s/articleView?id=sf.generative_ai_trust_layer.htm",
+    "Invocable Actions (Apex) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_invocable_action.htm",
+    "Agentforce Testing Center \u2014 https://help.salesforce.com/s/articleView?id=sf.agentforce_testing_center.htm"
+  ],
+  "outputs": [
+    "Einstein Analytics / CRM Analytics dashboard",
+    "weekly rollup email"
+  ],
+  "references": [
+    "skills/agentforce/agent-metric-dashboards/references/examples.md",
+    "skills/agentforce/agent-metric-dashboards/references/gotchas.md",
+    "skills/agentforce/agent-metric-dashboards/references/llm-anti-patterns.md",
+    "skills/agentforce/agent-metric-dashboards/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/agentforce/agent-metric-dashboards/scripts/check_agent_metric_dashboards.py"
+  ],
+  "tags": [
+    "agentforce",
+    "observability",
+    "dashboards",
+    "metrics"
+  ],
+  "templates": [
+    "skills/agentforce/agent-metric-dashboards/templates/agent-metric-dashboards-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

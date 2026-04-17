@@ -1,0 +1,73 @@
+{
+  "category": "agentforce",
+  "chunk_ids": [
+    "01db0a799773a80782d3",
+    "02a7817be76d79f2af0f",
+    "0ad1fd892d57ea53be52",
+    "1063e6ba3ed96f46f9d5",
+    "1450cdedd46a5ff9a37f",
+    "2c2cb3d85e8f4bd34127",
+    "3deb7328e58117b2d483",
+    "43b2cff78cf2c8aeb15f",
+    "5b83d2995ee8b60eb612",
+    "63bf93a40b099ee1a59b",
+    "666301daadc61954b61d",
+    "6fdb1c1df6aeebb039fe",
+    "703ecce46965d529c918",
+    "713ac9a67d1d67c1e697",
+    "8ff05685e4e171b6b411",
+    "9557c11c0e571703135c",
+    "bd8daac00d0211e9aabe",
+    "c1f800fd2d892b55b4f5",
+    "c3285a2ccd9143ac0622",
+    "d104bf765989e65c8605",
+    "d3b1e25d536bd912f1a2",
+    "d97605c6f196626706d7",
+    "d9b26393fe56e54ed470",
+    "dec43fa8aa28ced4d33d",
+    "e51e37ac6169e797d71e",
+    "fe1ca7ebb62600907d04"
+  ],
+  "content_hash": "09fb7dd2b39c81e434f85e3e9e377fd03546bf3f57e08989047d6bdd2178d510",
+  "dependencies": [],
+  "description": "Pre-production security checklist for Agentforce deployments: permission scope, data exposure, authentication, logging. NOT for general Salesforce security review (see security-health-check).",
+  "file_location": "skills/agentforce/agent-security-review",
+  "id": "agentforce/agent-security-review",
+  "inputs": [
+    "Agent configuration export",
+    "persona + channel map",
+    "data classification"
+  ],
+  "name": "agent-security-review",
+  "official_sources": [
+    "Agentforce Developer Guide \u2014 https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html",
+    "Einstein Trust Layer \u2014 https://help.salesforce.com/s/articleView?id=sf.generative_ai_trust_layer.htm",
+    "Invocable Actions (Apex) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_invocable_action.htm",
+    "Agentforce Testing Center \u2014 https://help.salesforce.com/s/articleView?id=sf.agentforce_testing_center.htm"
+  ],
+  "outputs": [
+    "Signed-off review doc",
+    "remediation ticket list"
+  ],
+  "references": [
+    "skills/agentforce/agent-security-review/references/examples.md",
+    "skills/agentforce/agent-security-review/references/gotchas.md",
+    "skills/agentforce/agent-security-review/references/llm-anti-patterns.md",
+    "skills/agentforce/agent-security-review/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/agentforce/agent-security-review/scripts/check_agent_security_review.py"
+  ],
+  "tags": [
+    "agentforce",
+    "security",
+    "review",
+    "checklist"
+  ],
+  "templates": [
+    "skills/agentforce/agent-security-review/templates/agent-security-review-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

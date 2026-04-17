@@ -1,7 +1,7 @@
 {
   "domain_counts": {
     "admin": 202,
-    "agentforce": 32,
+    "agentforce": 40,
     "apex": 97,
     "architect": 90,
     "data": 86,
@@ -12,9 +12,9 @@
     "omnistudio": 21,
     "security": 26
   },
-  "generated_from_hash": "d76bf9787ea180843a263e66d853418399377d54e6499bdd9c55b73c2688e060",
+  "generated_from_hash": "43e0388480337b16ed6ce4b64346d9443ab1bbe1aa4cfbabcd45d231a41b9634",
   "schema_version": 1,
-  "skill_count": 703,
+  "skill_count": 711,
   "skills": [
     {
       "category": "admin",
@@ -27796,6 +27796,151 @@
     {
       "category": "agentforce",
       "chunk_ids": [
+        "080d4b2bd87de1a507cf",
+        "09d79dd0e7d7c5e2c073",
+        "1aebed54848261d1ce6b",
+        "2251790f1a7860037dce",
+        "234730edcb6b256708e8",
+        "3e119f9510d60a9b12f4",
+        "41c0286d41ef32002dae",
+        "421de3da6e867911cd0e",
+        "467e90b893e3fb915f46",
+        "5cb1d7e986338d3fe82c",
+        "641bd87acb7d1e86fd00",
+        "6bd46f527ef6f896f0cb",
+        "728a2918f4df16db75f4",
+        "735eb232373498b1fae3",
+        "8c98b23d386a4331aa85",
+        "969f3fd106e9b93344df",
+        "9f5cb51d61a4f6a8bf03",
+        "b140e7787aff94bf54e3",
+        "b702ff5f81893dd4993e",
+        "bb21adb8a1b2685f4984",
+        "bb58609f98b1beead2f4",
+        "c75b8f603dccf2ac5ece",
+        "c7c8c27cb10a2b26188c",
+        "c8639c0fe12e355c5627",
+        "cdd3c440aca7ac9eac70",
+        "d0b3b49b7ccfb92c1071",
+        "ddc6b69f50f60a32a377",
+        "e09adb25032ede53a6a2",
+        "f674caa60c1cbce70167"
+      ],
+      "content_hash": "638f09411523554e96d90642695528ebde644ab206224b8bb9d0993777faad96",
+      "dependencies": [],
+      "description": "Design Invocable Apex actions that return deterministic, agent-friendly errors instead of surfacing raw exceptions to the LLM. NOT for generic Apex exception handling or Flow fault paths.",
+      "file_location": "skills/agentforce/agent-action-error-handling",
+      "id": "agentforce/agent-action-error-handling",
+      "inputs": [
+        "Invocable action Apex class",
+        "expected agent behavior on failure"
+      ],
+      "name": "agent-action-error-handling",
+      "official_sources": [
+        "Agentforce Developer Guide \u2014 https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html",
+        "Einstein Trust Layer \u2014 https://help.salesforce.com/s/articleView?id=sf.generative_ai_trust_layer.htm",
+        "Invocable Actions (Apex) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_invocable_action.htm",
+        "Agentforce Testing Center \u2014 https://help.salesforce.com/s/articleView?id=sf.agentforce_testing_center.htm"
+      ],
+      "outputs": [
+        "Updated class returning typed error envelope",
+        "topic instruction update for retry vs. terminal errors"
+      ],
+      "references": [
+        "skills/agentforce/agent-action-error-handling/references/examples.md",
+        "skills/agentforce/agent-action-error-handling/references/gotchas.md",
+        "skills/agentforce/agent-action-error-handling/references/llm-anti-patterns.md",
+        "skills/agentforce/agent-action-error-handling/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/agentforce/agent-action-error-handling/scripts/check_agent_action_error_handling.py"
+      ],
+      "tags": [
+        "agentforce",
+        "invocable-actions",
+        "error-handling",
+        "apex"
+      ],
+      "templates": [
+        "skills/agentforce/agent-action-error-handling/templates/agent-action-error-handling-template.md"
+      ],
+      "updated": "2026-04-17",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "agentforce",
+      "chunk_ids": [
+        "0f1f440aec8aca92b2c4",
+        "109d8f81f4462a48c12d",
+        "235544c6a9e9e4f78321",
+        "25dc66a6f92d496ac032",
+        "2e8b32f48cd174f30261",
+        "3954e304be1e6fb24e54",
+        "449a07a8770a0aed3ec4",
+        "44d9441abd1b1331150b",
+        "61391f2d045e455c6e73",
+        "68f43714daccfc9f0799",
+        "723e069fbd3e9eb4bc18",
+        "76d0d35298d20d672b37",
+        "845723318cbda138c5e7",
+        "85f02e00406faa0849a1",
+        "961955be6e2607914acd",
+        "99b73daf33b8ecfbf545",
+        "a535ed075f8817a38780",
+        "b6e4b8d6c81953f3f058",
+        "c4b97071179c9c10f81b",
+        "cc662012f18540fe6c93",
+        "d2aff0f252afaa33601f",
+        "dbee2a7c47062800e583",
+        "df2962384847191d526b",
+        "e0788c309ae76f2ed770",
+        "f15a86d81551bb6db3f3",
+        "f84f9a8a1052a86e29ad"
+      ],
+      "content_hash": "3aaea6a8ff0075013afb69f4ba3c59b471c8648afc36ce15f1393da491f726c6",
+      "dependencies": [],
+      "description": "Apex test patterns for @InvocableMethod agent actions: per-branch coverage, bulk safety, deterministic assertions. NOT for UI/LWC testing or agent conversational quality scoring.",
+      "file_location": "skills/agentforce/agent-action-unit-tests",
+      "id": "agentforce/agent-action-unit-tests",
+      "inputs": [
+        "@InvocableMethod class"
+      ],
+      "name": "agent-action-unit-tests",
+      "official_sources": [
+        "Agentforce Developer Guide \u2014 https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html",
+        "Einstein Trust Layer \u2014 https://help.salesforce.com/s/articleView?id=sf.generative_ai_trust_layer.htm",
+        "Invocable Actions (Apex) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_invocable_action.htm",
+        "Agentforce Testing Center \u2014 https://help.salesforce.com/s/articleView?id=sf.agentforce_testing_center.htm"
+      ],
+      "outputs": [
+        "Test class with per-branch assertions + bulk test"
+      ],
+      "references": [
+        "skills/agentforce/agent-action-unit-tests/references/examples.md",
+        "skills/agentforce/agent-action-unit-tests/references/gotchas.md",
+        "skills/agentforce/agent-action-unit-tests/references/llm-anti-patterns.md",
+        "skills/agentforce/agent-action-unit-tests/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/agentforce/agent-action-unit-tests/scripts/check_agent_action_unit_tests.py"
+      ],
+      "tags": [
+        "agentforce",
+        "apex-tests",
+        "invocable",
+        "coverage"
+      ],
+      "templates": [
+        "skills/agentforce/agent-action-unit-tests/templates/agent-action-unit-tests-template.md"
+      ],
+      "updated": "2026-04-17",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "agentforce",
+      "chunk_ids": [
         "0009fdc94a9ebe101d3a",
         "04c33d8e7b46bc9d4f38",
         "0cc947d7f990d9b3ad4d",
@@ -28081,6 +28226,225 @@
     {
       "category": "agentforce",
       "chunk_ids": [
+        "108caaf39ae774d92c02",
+        "1d2ab2f761158b172b96",
+        "2281e1169fb0a766cb5f",
+        "506698fd5c2d55a6e836",
+        "54dfe1297f542ca0bb91",
+        "777b732c3d0081fc09bf",
+        "7dec94c57fbfd79204e4",
+        "86e3caa667edda09a7d8",
+        "96956c22899d953a00a5",
+        "9fbe7341352d891507e9",
+        "a122430c4708465b23f8",
+        "a2823e883cf137eef97c",
+        "a3953f83d365dc984c9f",
+        "a8fac217a9d72dc3e588",
+        "ac0f07e675b0d6970b1f",
+        "ad120c56c348192fa6dd",
+        "b85afd7be0c01165a7ba",
+        "c700d3734ab993ad63c5",
+        "cc093feaf03725e2b128",
+        "d14f1e728eaac0767887",
+        "d4b179cce7f6b42ffd3a",
+        "d81e9c5c71f59c76662d",
+        "eb5dab9e2ee1c17b8d11",
+        "fb6b62b21b28dbe6f9ef",
+        "fe6f48fa65d1b85df17f",
+        "fffc6907a6f19d6f60e0"
+      ],
+      "content_hash": "84e5718711d61caca41f1831c36688c4f549e95beb4ec1b748c120cf5c539eb0",
+      "dependencies": [],
+      "description": "Canonical go-live checklist for Agentforce deployments with rehearsed rollback and stakeholder sign-off records. NOT for general Salesforce release management (see release-management).",
+      "file_location": "skills/agentforce/agent-deployment-checklist",
+      "id": "agentforce/agent-deployment-checklist",
+      "inputs": [
+        "Agent configuration export",
+        "test results",
+        "runbooks"
+      ],
+      "name": "agent-deployment-checklist",
+      "official_sources": [
+        "Agentforce Developer Guide \u2014 https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html",
+        "Einstein Trust Layer \u2014 https://help.salesforce.com/s/articleView?id=sf.generative_ai_trust_layer.htm",
+        "Invocable Actions (Apex) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_invocable_action.htm",
+        "Agentforce Testing Center \u2014 https://help.salesforce.com/s/articleView?id=sf.agentforce_testing_center.htm"
+      ],
+      "outputs": [
+        "Signed checklist",
+        "activation record"
+      ],
+      "references": [
+        "skills/agentforce/agent-deployment-checklist/references/examples.md",
+        "skills/agentforce/agent-deployment-checklist/references/gotchas.md",
+        "skills/agentforce/agent-deployment-checklist/references/llm-anti-patterns.md",
+        "skills/agentforce/agent-deployment-checklist/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/agentforce/agent-deployment-checklist/scripts/check_agent_deployment_checklist.py"
+      ],
+      "tags": [
+        "agentforce",
+        "deployment",
+        "checklist",
+        "go-live"
+      ],
+      "templates": [
+        "skills/agentforce/agent-deployment-checklist/templates/agent-deployment-checklist-template.md"
+      ],
+      "updated": "2026-04-17",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "agentforce",
+      "chunk_ids": [
+        "002b31012ad47bd01783",
+        "0b11b90423e680dd628b",
+        "1f8ddbf48950e3e239f7",
+        "235ff75427e00e0e6abc",
+        "24818844113ded18f6ee",
+        "3d339ba39ad6e396a70e",
+        "465d9fca78b928d3f4cf",
+        "5e5b0f02f718f9964079",
+        "6f0906e5c3255fc345dd",
+        "718a9a5433f92ca773e5",
+        "7985a99f7060f6c11e47",
+        "7d6cb81a45431de1915c",
+        "868615c27cbb4f27a9a0",
+        "8fcfded0675891a05a5a",
+        "963d432aecd1f4484afb",
+        "9e909b71bb4a4253cfef",
+        "ade893f5035ebebbb043",
+        "b3f46e82c2faf1f1d1f5",
+        "bf3504147ceba18866c7",
+        "c0db74f163ac560a9511",
+        "cfa35478b5924084908c",
+        "d9ffeaa6c829c4608797",
+        "dc8fd7fee2bdb5079568",
+        "e4023472a2977da8dec2",
+        "fb5f831f7fef60986e0a",
+        "fddc82e858f991127db0"
+      ],
+      "content_hash": "f239ccc5fcf07680ef34c181642487390693a3dea0defcb666450cce0375da3f",
+      "dependencies": [],
+      "description": "Observability for Agentforce: adoption, deflection, latency, cost, quality. NOT for agent evaluation/testing (see agentforce-eval-harness) or raw platform-event monitoring.",
+      "file_location": "skills/agentforce/agent-metric-dashboards",
+      "id": "agentforce/agent-metric-dashboards",
+      "inputs": [
+        "Conversation log access",
+        "CSAT or quality signal"
+      ],
+      "name": "agent-metric-dashboards",
+      "official_sources": [
+        "Agentforce Developer Guide \u2014 https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html",
+        "Einstein Trust Layer \u2014 https://help.salesforce.com/s/articleView?id=sf.generative_ai_trust_layer.htm",
+        "Invocable Actions (Apex) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_invocable_action.htm",
+        "Agentforce Testing Center \u2014 https://help.salesforce.com/s/articleView?id=sf.agentforce_testing_center.htm"
+      ],
+      "outputs": [
+        "Einstein Analytics / CRM Analytics dashboard",
+        "weekly rollup email"
+      ],
+      "references": [
+        "skills/agentforce/agent-metric-dashboards/references/examples.md",
+        "skills/agentforce/agent-metric-dashboards/references/gotchas.md",
+        "skills/agentforce/agent-metric-dashboards/references/llm-anti-patterns.md",
+        "skills/agentforce/agent-metric-dashboards/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/agentforce/agent-metric-dashboards/scripts/check_agent_metric_dashboards.py"
+      ],
+      "tags": [
+        "agentforce",
+        "observability",
+        "dashboards",
+        "metrics"
+      ],
+      "templates": [
+        "skills/agentforce/agent-metric-dashboards/templates/agent-metric-dashboards-template.md"
+      ],
+      "updated": "2026-04-17",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "agentforce",
+      "chunk_ids": [
+        "0776c58e24b15ade6742",
+        "0b02478650c6742e941c",
+        "0fa34d304d82506a2611",
+        "145f127492cc76ee0688",
+        "1e810add61544dfea150",
+        "23f3dcce51b0f17e9343",
+        "2e0c50fe958e5c1e1087",
+        "2eb721b61fbf35eafde3",
+        "39d014df158645056e3d",
+        "43e844d821965fbf03b5",
+        "4709cc390ef1e9047de4",
+        "57a868216f383756e701",
+        "890d2cdc90a45fbd658a",
+        "8c3b419f0cfb4a23347d",
+        "8d03a75c6f43a8b6c7f2",
+        "906d30ed30c5dc9cf61b",
+        "9d2124833e45c7d4945e",
+        "a20706b516723e995902",
+        "a9509909173a06d73d87",
+        "b5b3b0d92847db5499c0",
+        "bd0a8c4d31f2e7831e9e",
+        "dcc59b1e7b91e322a372",
+        "dfa05e06c65d15eb3cde",
+        "e1c4308476facf23cf68",
+        "e6943493bd5faaf9c356",
+        "fc01f40af6026981e16a"
+      ],
+      "content_hash": "145d66b037a8774cb13ce56c7303a9a39ec9f41af2bdaa787cee25c90e8b72f6",
+      "dependencies": [],
+      "description": "Control LLM spend and Apex governor exposure for high-traffic Agentforce agents via per-user token budgets and graceful fallback. NOT for API rate-limiting of REST endpoints.",
+      "file_location": "skills/agentforce/agent-rate-limit-strategy",
+      "id": "agentforce/agent-rate-limit-strategy",
+      "inputs": [
+        "Traffic forecast",
+        "per-tenant/per-user quotas",
+        "fallback UX"
+      ],
+      "name": "agent-rate-limit-strategy",
+      "official_sources": [
+        "Agentforce Developer Guide \u2014 https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html",
+        "Einstein Trust Layer \u2014 https://help.salesforce.com/s/articleView?id=sf.generative_ai_trust_layer.htm",
+        "Invocable Actions (Apex) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_invocable_action.htm",
+        "Agentforce Testing Center \u2014 https://help.salesforce.com/s/articleView?id=sf.agentforce_testing_center.htm"
+      ],
+      "outputs": [
+        "Rate-limit policy CMDT",
+        "fallback messaging",
+        "observability dashboard"
+      ],
+      "references": [
+        "skills/agentforce/agent-rate-limit-strategy/references/examples.md",
+        "skills/agentforce/agent-rate-limit-strategy/references/gotchas.md",
+        "skills/agentforce/agent-rate-limit-strategy/references/llm-anti-patterns.md",
+        "skills/agentforce/agent-rate-limit-strategy/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/agentforce/agent-rate-limit-strategy/scripts/check_agent_rate_limit_strategy.py"
+      ],
+      "tags": [
+        "agentforce",
+        "rate-limiting",
+        "cost",
+        "platform-events"
+      ],
+      "templates": [
+        "skills/agentforce/agent-rate-limit-strategy/templates/agent-rate-limit-strategy-template.md"
+      ],
+      "updated": "2026-04-17",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "agentforce",
+      "chunk_ids": [
         "046d0f6ce0a47c99f4a7",
         "04f3c3c8ca457296502b",
         "063bb7e47c16f1c4eeca",
@@ -28233,6 +28597,79 @@
         "skills/agentforce/agent-script-dsl/templates/agent-script-dsl-template.md"
       ],
       "updated": "2026-04-05",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "agentforce",
+      "chunk_ids": [
+        "01db0a799773a80782d3",
+        "02a7817be76d79f2af0f",
+        "0ad1fd892d57ea53be52",
+        "1063e6ba3ed96f46f9d5",
+        "1450cdedd46a5ff9a37f",
+        "2c2cb3d85e8f4bd34127",
+        "3deb7328e58117b2d483",
+        "43b2cff78cf2c8aeb15f",
+        "5b83d2995ee8b60eb612",
+        "63bf93a40b099ee1a59b",
+        "666301daadc61954b61d",
+        "6fdb1c1df6aeebb039fe",
+        "703ecce46965d529c918",
+        "713ac9a67d1d67c1e697",
+        "8ff05685e4e171b6b411",
+        "9557c11c0e571703135c",
+        "bd8daac00d0211e9aabe",
+        "c1f800fd2d892b55b4f5",
+        "c3285a2ccd9143ac0622",
+        "d104bf765989e65c8605",
+        "d3b1e25d536bd912f1a2",
+        "d97605c6f196626706d7",
+        "d9b26393fe56e54ed470",
+        "dec43fa8aa28ced4d33d",
+        "e51e37ac6169e797d71e",
+        "fe1ca7ebb62600907d04"
+      ],
+      "content_hash": "09fb7dd2b39c81e434f85e3e9e377fd03546bf3f57e08989047d6bdd2178d510",
+      "dependencies": [],
+      "description": "Pre-production security checklist for Agentforce deployments: permission scope, data exposure, authentication, logging. NOT for general Salesforce security review (see security-health-check).",
+      "file_location": "skills/agentforce/agent-security-review",
+      "id": "agentforce/agent-security-review",
+      "inputs": [
+        "Agent configuration export",
+        "persona + channel map",
+        "data classification"
+      ],
+      "name": "agent-security-review",
+      "official_sources": [
+        "Agentforce Developer Guide \u2014 https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html",
+        "Einstein Trust Layer \u2014 https://help.salesforce.com/s/articleView?id=sf.generative_ai_trust_layer.htm",
+        "Invocable Actions (Apex) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_invocable_action.htm",
+        "Agentforce Testing Center \u2014 https://help.salesforce.com/s/articleView?id=sf.agentforce_testing_center.htm"
+      ],
+      "outputs": [
+        "Signed-off review doc",
+        "remediation ticket list"
+      ],
+      "references": [
+        "skills/agentforce/agent-security-review/references/examples.md",
+        "skills/agentforce/agent-security-review/references/gotchas.md",
+        "skills/agentforce/agent-security-review/references/llm-anti-patterns.md",
+        "skills/agentforce/agent-security-review/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/agentforce/agent-security-review/scripts/check_agent_security_review.py"
+      ],
+      "tags": [
+        "agentforce",
+        "security",
+        "review",
+        "checklist"
+      ],
+      "templates": [
+        "skills/agentforce/agent-security-review/templates/agent-security-review-template.md"
+      ],
+      "updated": "2026-04-17",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -32000,6 +32437,152 @@
         "skills/agentforce/prompt-builder-templates/templates/prompt-builder-templates-template.md"
       ],
       "updated": "2026-04-04",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "agentforce",
+      "chunk_ids": [
+        "0d25f248e0d70adf0859",
+        "16486d59e36ff963eaf0",
+        "18c8b25622d9114f1fb5",
+        "1c1518aab9b9112c8fba",
+        "22f6f2dc728e6303067b",
+        "2c4286d7c24d944bd409",
+        "32740c6a7886079b1a97",
+        "3677efc35293d65d03d1",
+        "3854dca006f6a3d23888",
+        "3a03a22626adb7f108ce",
+        "3a55667852cf698dad19",
+        "444ed50f8b674fda3fda",
+        "44ff47f14ed54ef87449",
+        "5069de71bdc2d7b8d442",
+        "5c291521f3b3f123a7a6",
+        "679fb9b3876e8f42946e",
+        "85bf866d5f21b5f31826",
+        "8e9c978c101157a81e23",
+        "8f318dc746dd7011c1a6",
+        "9e337a51ba8299c6fb6e",
+        "a88c5eb23b1f33fef191",
+        "ab66718a68dafe28444f",
+        "c212b104b80d7556f267",
+        "c5cfbe738a6f41d04ad0",
+        "c6f804a6461fa748128d",
+        "d1e4c83546276f9df12a"
+      ],
+      "content_hash": "e27d7170a35777d8bf2499a7e6847d96387d9f00f025f051287caaece55a8fc6",
+      "dependencies": [],
+      "description": "Red-team an Agentforce agent against prompt-injection and jailbreak attacks; codify test cases and guardrails. NOT for general application-security reviews outside the agent boundary.",
+      "file_location": "skills/agentforce/prompt-injection-defense",
+      "id": "agentforce/prompt-injection-defense",
+      "inputs": [
+        "Agent topic + actions list",
+        "threat model (who, what data)"
+      ],
+      "name": "prompt-injection-defense",
+      "official_sources": [
+        "Agentforce Developer Guide \u2014 https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html",
+        "Einstein Trust Layer \u2014 https://help.salesforce.com/s/articleView?id=sf.generative_ai_trust_layer.htm",
+        "Invocable Actions (Apex) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_invocable_action.htm",
+        "Agentforce Testing Center \u2014 https://help.salesforce.com/s/articleView?id=sf.agentforce_testing_center.htm"
+      ],
+      "outputs": [
+        "Adversarial test set",
+        "Trust Layer policy updates",
+        "topic instruction hardening"
+      ],
+      "references": [
+        "skills/agentforce/prompt-injection-defense/references/examples.md",
+        "skills/agentforce/prompt-injection-defense/references/gotchas.md",
+        "skills/agentforce/prompt-injection-defense/references/llm-anti-patterns.md",
+        "skills/agentforce/prompt-injection-defense/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/agentforce/prompt-injection-defense/scripts/check_prompt_injection_defense.py"
+      ],
+      "tags": [
+        "agentforce",
+        "security",
+        "prompt-injection",
+        "red-team"
+      ],
+      "templates": [
+        "skills/agentforce/prompt-injection-defense/templates/prompt-injection-defense-template.md"
+      ],
+      "updated": "2026-04-17",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "agentforce",
+      "chunk_ids": [
+        "04c07181761fc324408b",
+        "0c1c6fb9de6a3523d859",
+        "0fda694d79a6b2b379e3",
+        "2ec547ad032976838502",
+        "35d87c5a2ad35dd5df38",
+        "39f80eb398eb5078a201",
+        "57481e7751ff18ba2a57",
+        "6612920cf81e62940624",
+        "68517c980338fcc509da",
+        "68c6f56eddcb7308b714",
+        "6a4153d3ca93e832b4bf",
+        "a6dba737caf40042f595",
+        "a8134a4cc33110786809",
+        "aba261a9757cd41d17d3",
+        "afeb5906b75aa3d52618",
+        "bac782a95a6ce47b2f79",
+        "c4e743e69d4dfc9aef6f",
+        "cd363ebec31ca1b0d6ae",
+        "ce41ebe3df3ba0237c25",
+        "cec53c317538a7aefaa2",
+        "d3234f4d5d783a0198f6",
+        "d49d130f2c65674909ee",
+        "dead937fda46364a8804",
+        "f5ff1dc854ee61d3ed6b",
+        "fd5022a69fa1a407be66",
+        "fdf3cd6d196e36c4cd43"
+      ],
+      "content_hash": "793041194eb3eb62d4f1ee6f9a5aeaff787c208ffe070e33435dc84420d2585e",
+      "dependencies": [],
+      "description": "Lifecycle management for Prompt Builder templates: version, test, promote, roll back via CMDT-backed bindings. NOT for authoring initial templates or generic prompt engineering.",
+      "file_location": "skills/agentforce/prompt-template-versioning",
+      "id": "agentforce/prompt-template-versioning",
+      "inputs": [
+        "Prompt template name",
+        "release cadence",
+        "test cases"
+      ],
+      "name": "prompt-template-versioning",
+      "official_sources": [
+        "Agentforce Developer Guide \u2014 https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html",
+        "Einstein Trust Layer \u2014 https://help.salesforce.com/s/articleView?id=sf.generative_ai_trust_layer.htm",
+        "Invocable Actions (Apex) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_invocable_action.htm",
+        "Agentforce Testing Center \u2014 https://help.salesforce.com/s/articleView?id=sf.agentforce_testing_center.htm"
+      ],
+      "outputs": [
+        "Versioning policy doc",
+        "promotion checklist"
+      ],
+      "references": [
+        "skills/agentforce/prompt-template-versioning/references/examples.md",
+        "skills/agentforce/prompt-template-versioning/references/gotchas.md",
+        "skills/agentforce/prompt-template-versioning/references/llm-anti-patterns.md",
+        "skills/agentforce/prompt-template-versioning/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/agentforce/prompt-template-versioning/scripts/check_prompt_template_versioning.py"
+      ],
+      "tags": [
+        "agentforce",
+        "prompt-builder",
+        "lifecycle",
+        "versioning"
+      ],
+      "templates": [
+        "skills/agentforce/prompt-template-versioning/templates/prompt-template-versioning-template.md"
+      ],
+      "updated": "2026-04-17",
       "vector_embedding": null,
       "version": "1.0.0"
     },
