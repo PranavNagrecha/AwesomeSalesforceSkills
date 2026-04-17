@@ -1,0 +1,75 @@
+{
+  "category": "agentforce",
+  "chunk_ids": [
+    "080d4b2bd87de1a507cf",
+    "09d79dd0e7d7c5e2c073",
+    "1aebed54848261d1ce6b",
+    "2251790f1a7860037dce",
+    "234730edcb6b256708e8",
+    "3e119f9510d60a9b12f4",
+    "41c0286d41ef32002dae",
+    "421de3da6e867911cd0e",
+    "467e90b893e3fb915f46",
+    "5cb1d7e986338d3fe82c",
+    "641bd87acb7d1e86fd00",
+    "6bd46f527ef6f896f0cb",
+    "728a2918f4df16db75f4",
+    "735eb232373498b1fae3",
+    "8c98b23d386a4331aa85",
+    "969f3fd106e9b93344df",
+    "9f5cb51d61a4f6a8bf03",
+    "b140e7787aff94bf54e3",
+    "b702ff5f81893dd4993e",
+    "bb21adb8a1b2685f4984",
+    "bb58609f98b1beead2f4",
+    "c75b8f603dccf2ac5ece",
+    "c7c8c27cb10a2b26188c",
+    "c8639c0fe12e355c5627",
+    "cdd3c440aca7ac9eac70",
+    "d0b3b49b7ccfb92c1071",
+    "ddc6b69f50f60a32a377",
+    "e09adb25032ede53a6a2",
+    "f674caa60c1cbce70167"
+  ],
+  "content_hash": "638f09411523554e96d90642695528ebde644ab206224b8bb9d0993777faad96",
+  "dependencies": [],
+  "description": "Design Invocable Apex actions that return deterministic, agent-friendly errors instead of surfacing raw exceptions to the LLM. NOT for generic Apex exception handling or Flow fault paths.",
+  "file_location": "skills/agentforce/agent-action-error-handling",
+  "id": "agentforce/agent-action-error-handling",
+  "inputs": [
+    "Invocable action Apex class",
+    "expected agent behavior on failure"
+  ],
+  "name": "agent-action-error-handling",
+  "official_sources": [
+    "Agentforce Developer Guide \u2014 https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html",
+    "Einstein Trust Layer \u2014 https://help.salesforce.com/s/articleView?id=sf.generative_ai_trust_layer.htm",
+    "Invocable Actions (Apex) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_invocable_action.htm",
+    "Agentforce Testing Center \u2014 https://help.salesforce.com/s/articleView?id=sf.agentforce_testing_center.htm"
+  ],
+  "outputs": [
+    "Updated class returning typed error envelope",
+    "topic instruction update for retry vs. terminal errors"
+  ],
+  "references": [
+    "skills/agentforce/agent-action-error-handling/references/examples.md",
+    "skills/agentforce/agent-action-error-handling/references/gotchas.md",
+    "skills/agentforce/agent-action-error-handling/references/llm-anti-patterns.md",
+    "skills/agentforce/agent-action-error-handling/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/agentforce/agent-action-error-handling/scripts/check_agent_action_error_handling.py"
+  ],
+  "tags": [
+    "agentforce",
+    "invocable-actions",
+    "error-handling",
+    "apex"
+  ],
+  "templates": [
+    "skills/agentforce/agent-action-error-handling/templates/agent-action-error-handling-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

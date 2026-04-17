@@ -1,0 +1,73 @@
+{
+  "category": "agentforce",
+  "chunk_ids": [
+    "04c07181761fc324408b",
+    "0c1c6fb9de6a3523d859",
+    "0fda694d79a6b2b379e3",
+    "2ec547ad032976838502",
+    "35d87c5a2ad35dd5df38",
+    "39f80eb398eb5078a201",
+    "57481e7751ff18ba2a57",
+    "6612920cf81e62940624",
+    "68517c980338fcc509da",
+    "68c6f56eddcb7308b714",
+    "6a4153d3ca93e832b4bf",
+    "a6dba737caf40042f595",
+    "a8134a4cc33110786809",
+    "aba261a9757cd41d17d3",
+    "afeb5906b75aa3d52618",
+    "bac782a95a6ce47b2f79",
+    "c4e743e69d4dfc9aef6f",
+    "cd363ebec31ca1b0d6ae",
+    "ce41ebe3df3ba0237c25",
+    "cec53c317538a7aefaa2",
+    "d3234f4d5d783a0198f6",
+    "d49d130f2c65674909ee",
+    "dead937fda46364a8804",
+    "f5ff1dc854ee61d3ed6b",
+    "fd5022a69fa1a407be66",
+    "fdf3cd6d196e36c4cd43"
+  ],
+  "content_hash": "793041194eb3eb62d4f1ee6f9a5aeaff787c208ffe070e33435dc84420d2585e",
+  "dependencies": [],
+  "description": "Lifecycle management for Prompt Builder templates: version, test, promote, roll back via CMDT-backed bindings. NOT for authoring initial templates or generic prompt engineering.",
+  "file_location": "skills/agentforce/prompt-template-versioning",
+  "id": "agentforce/prompt-template-versioning",
+  "inputs": [
+    "Prompt template name",
+    "release cadence",
+    "test cases"
+  ],
+  "name": "prompt-template-versioning",
+  "official_sources": [
+    "Agentforce Developer Guide \u2014 https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html",
+    "Einstein Trust Layer \u2014 https://help.salesforce.com/s/articleView?id=sf.generative_ai_trust_layer.htm",
+    "Invocable Actions (Apex) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_invocable_action.htm",
+    "Agentforce Testing Center \u2014 https://help.salesforce.com/s/articleView?id=sf.agentforce_testing_center.htm"
+  ],
+  "outputs": [
+    "Versioning policy doc",
+    "promotion checklist"
+  ],
+  "references": [
+    "skills/agentforce/prompt-template-versioning/references/examples.md",
+    "skills/agentforce/prompt-template-versioning/references/gotchas.md",
+    "skills/agentforce/prompt-template-versioning/references/llm-anti-patterns.md",
+    "skills/agentforce/prompt-template-versioning/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/agentforce/prompt-template-versioning/scripts/check_prompt_template_versioning.py"
+  ],
+  "tags": [
+    "agentforce",
+    "prompt-builder",
+    "lifecycle",
+    "versioning"
+  ],
+  "templates": [
+    "skills/agentforce/prompt-template-versioning/templates/prompt-template-versioning-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

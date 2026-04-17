@@ -1,0 +1,73 @@
+{
+  "category": "agentforce",
+  "chunk_ids": [
+    "108caaf39ae774d92c02",
+    "1d2ab2f761158b172b96",
+    "2281e1169fb0a766cb5f",
+    "506698fd5c2d55a6e836",
+    "54dfe1297f542ca0bb91",
+    "777b732c3d0081fc09bf",
+    "7dec94c57fbfd79204e4",
+    "86e3caa667edda09a7d8",
+    "96956c22899d953a00a5",
+    "9fbe7341352d891507e9",
+    "a122430c4708465b23f8",
+    "a2823e883cf137eef97c",
+    "a3953f83d365dc984c9f",
+    "a8fac217a9d72dc3e588",
+    "ac0f07e675b0d6970b1f",
+    "ad120c56c348192fa6dd",
+    "b85afd7be0c01165a7ba",
+    "c700d3734ab993ad63c5",
+    "cc093feaf03725e2b128",
+    "d14f1e728eaac0767887",
+    "d4b179cce7f6b42ffd3a",
+    "d81e9c5c71f59c76662d",
+    "eb5dab9e2ee1c17b8d11",
+    "fb6b62b21b28dbe6f9ef",
+    "fe6f48fa65d1b85df17f",
+    "fffc6907a6f19d6f60e0"
+  ],
+  "content_hash": "84e5718711d61caca41f1831c36688c4f549e95beb4ec1b748c120cf5c539eb0",
+  "dependencies": [],
+  "description": "Canonical go-live checklist for Agentforce deployments with rehearsed rollback and stakeholder sign-off records. NOT for general Salesforce release management (see release-management).",
+  "file_location": "skills/agentforce/agent-deployment-checklist",
+  "id": "agentforce/agent-deployment-checklist",
+  "inputs": [
+    "Agent configuration export",
+    "test results",
+    "runbooks"
+  ],
+  "name": "agent-deployment-checklist",
+  "official_sources": [
+    "Agentforce Developer Guide \u2014 https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html",
+    "Einstein Trust Layer \u2014 https://help.salesforce.com/s/articleView?id=sf.generative_ai_trust_layer.htm",
+    "Invocable Actions (Apex) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_invocable_action.htm",
+    "Agentforce Testing Center \u2014 https://help.salesforce.com/s/articleView?id=sf.agentforce_testing_center.htm"
+  ],
+  "outputs": [
+    "Signed checklist",
+    "activation record"
+  ],
+  "references": [
+    "skills/agentforce/agent-deployment-checklist/references/examples.md",
+    "skills/agentforce/agent-deployment-checklist/references/gotchas.md",
+    "skills/agentforce/agent-deployment-checklist/references/llm-anti-patterns.md",
+    "skills/agentforce/agent-deployment-checklist/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/agentforce/agent-deployment-checklist/scripts/check_agent_deployment_checklist.py"
+  ],
+  "tags": [
+    "agentforce",
+    "deployment",
+    "checklist",
+    "go-live"
+  ],
+  "templates": [
+    "skills/agentforce/agent-deployment-checklist/templates/agent-deployment-checklist-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

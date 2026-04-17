@@ -1,0 +1,74 @@
+{
+  "category": "agentforce",
+  "chunk_ids": [
+    "0776c58e24b15ade6742",
+    "0b02478650c6742e941c",
+    "0fa34d304d82506a2611",
+    "145f127492cc76ee0688",
+    "1e810add61544dfea150",
+    "23f3dcce51b0f17e9343",
+    "2e0c50fe958e5c1e1087",
+    "2eb721b61fbf35eafde3",
+    "39d014df158645056e3d",
+    "43e844d821965fbf03b5",
+    "4709cc390ef1e9047de4",
+    "57a868216f383756e701",
+    "890d2cdc90a45fbd658a",
+    "8c3b419f0cfb4a23347d",
+    "8d03a75c6f43a8b6c7f2",
+    "906d30ed30c5dc9cf61b",
+    "9d2124833e45c7d4945e",
+    "a20706b516723e995902",
+    "a9509909173a06d73d87",
+    "b5b3b0d92847db5499c0",
+    "bd0a8c4d31f2e7831e9e",
+    "dcc59b1e7b91e322a372",
+    "dfa05e06c65d15eb3cde",
+    "e1c4308476facf23cf68",
+    "e6943493bd5faaf9c356",
+    "fc01f40af6026981e16a"
+  ],
+  "content_hash": "145d66b037a8774cb13ce56c7303a9a39ec9f41af2bdaa787cee25c90e8b72f6",
+  "dependencies": [],
+  "description": "Control LLM spend and Apex governor exposure for high-traffic Agentforce agents via per-user token budgets and graceful fallback. NOT for API rate-limiting of REST endpoints.",
+  "file_location": "skills/agentforce/agent-rate-limit-strategy",
+  "id": "agentforce/agent-rate-limit-strategy",
+  "inputs": [
+    "Traffic forecast",
+    "per-tenant/per-user quotas",
+    "fallback UX"
+  ],
+  "name": "agent-rate-limit-strategy",
+  "official_sources": [
+    "Agentforce Developer Guide \u2014 https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html",
+    "Einstein Trust Layer \u2014 https://help.salesforce.com/s/articleView?id=sf.generative_ai_trust_layer.htm",
+    "Invocable Actions (Apex) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_invocable_action.htm",
+    "Agentforce Testing Center \u2014 https://help.salesforce.com/s/articleView?id=sf.agentforce_testing_center.htm"
+  ],
+  "outputs": [
+    "Rate-limit policy CMDT",
+    "fallback messaging",
+    "observability dashboard"
+  ],
+  "references": [
+    "skills/agentforce/agent-rate-limit-strategy/references/examples.md",
+    "skills/agentforce/agent-rate-limit-strategy/references/gotchas.md",
+    "skills/agentforce/agent-rate-limit-strategy/references/llm-anti-patterns.md",
+    "skills/agentforce/agent-rate-limit-strategy/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/agentforce/agent-rate-limit-strategy/scripts/check_agent_rate_limit_strategy.py"
+  ],
+  "tags": [
+    "agentforce",
+    "rate-limiting",
+    "cost",
+    "platform-events"
+  ],
+  "templates": [
+    "skills/agentforce/agent-rate-limit-strategy/templates/agent-rate-limit-strategy-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

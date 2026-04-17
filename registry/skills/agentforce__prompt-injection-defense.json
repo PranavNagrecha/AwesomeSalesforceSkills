@@ -1,0 +1,73 @@
+{
+  "category": "agentforce",
+  "chunk_ids": [
+    "0d25f248e0d70adf0859",
+    "16486d59e36ff963eaf0",
+    "18c8b25622d9114f1fb5",
+    "1c1518aab9b9112c8fba",
+    "22f6f2dc728e6303067b",
+    "2c4286d7c24d944bd409",
+    "32740c6a7886079b1a97",
+    "3677efc35293d65d03d1",
+    "3854dca006f6a3d23888",
+    "3a03a22626adb7f108ce",
+    "3a55667852cf698dad19",
+    "444ed50f8b674fda3fda",
+    "44ff47f14ed54ef87449",
+    "5069de71bdc2d7b8d442",
+    "5c291521f3b3f123a7a6",
+    "679fb9b3876e8f42946e",
+    "85bf866d5f21b5f31826",
+    "8e9c978c101157a81e23",
+    "8f318dc746dd7011c1a6",
+    "9e337a51ba8299c6fb6e",
+    "a88c5eb23b1f33fef191",
+    "ab66718a68dafe28444f",
+    "c212b104b80d7556f267",
+    "c5cfbe738a6f41d04ad0",
+    "c6f804a6461fa748128d",
+    "d1e4c83546276f9df12a"
+  ],
+  "content_hash": "e27d7170a35777d8bf2499a7e6847d96387d9f00f025f051287caaece55a8fc6",
+  "dependencies": [],
+  "description": "Red-team an Agentforce agent against prompt-injection and jailbreak attacks; codify test cases and guardrails. NOT for general application-security reviews outside the agent boundary.",
+  "file_location": "skills/agentforce/prompt-injection-defense",
+  "id": "agentforce/prompt-injection-defense",
+  "inputs": [
+    "Agent topic + actions list",
+    "threat model (who, what data)"
+  ],
+  "name": "prompt-injection-defense",
+  "official_sources": [
+    "Agentforce Developer Guide \u2014 https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html",
+    "Einstein Trust Layer \u2014 https://help.salesforce.com/s/articleView?id=sf.generative_ai_trust_layer.htm",
+    "Invocable Actions (Apex) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_invocable_action.htm",
+    "Agentforce Testing Center \u2014 https://help.salesforce.com/s/articleView?id=sf.agentforce_testing_center.htm"
+  ],
+  "outputs": [
+    "Adversarial test set",
+    "Trust Layer policy updates",
+    "topic instruction hardening"
+  ],
+  "references": [
+    "skills/agentforce/prompt-injection-defense/references/examples.md",
+    "skills/agentforce/prompt-injection-defense/references/gotchas.md",
+    "skills/agentforce/prompt-injection-defense/references/llm-anti-patterns.md",
+    "skills/agentforce/prompt-injection-defense/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/agentforce/prompt-injection-defense/scripts/check_prompt_injection_defense.py"
+  ],
+  "tags": [
+    "agentforce",
+    "security",
+    "prompt-injection",
+    "red-team"
+  ],
+  "templates": [
+    "skills/agentforce/prompt-injection-defense/templates/prompt-injection-defense-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}
