@@ -1,0 +1,73 @@
+eval:
+  id: agentforce-builder__live-green-account-summary
+  agent: agentforce-builder
+  mode: single
+  priority: P0
+  last_verified: 2026-04-17
+  description: >
+    Live-green fixture for agentforce-builder. A minimal @InvocableMethod
+    action that returns a short plain-text summary of an Account's recent
+    case activity. Uses only standard fields so the scratch org accepts
+    the .cls and the five-gate run reaches confidence HIGH against a real
+    org.
+
+inputs:
+  action_class_name: SummarizeAccountCasesAction
+  feature_summary: "Invocable action returns a plain-text summary of recent Case counts for an Account so a Service Agent can answer case-status questions"
+  primary_object: Account
+  actor: Service Agent
+  referenced_fields:
+    - Account.Id
+    - Account.Name
+  trust_constraints:
+    - no-pii-in-prompt
+    - mask-email
+  api_version: "60.0"
+  target_org_alias: sfskills-dev
+  repo_path: ./force-app
+
+org_stub:
+  org_metadata:
+    org_id: 00Dxxx
+    edition: Enterprise
+    api_version: "60.0"
+    sandbox: true
+  describe_sobject:
+    Account:
+      queryable: true
+      custom: false
+      fields:
+        - { name: Id, type: id }
+        - { name: Name, type: string }
+
+expect:
+  confidence: HIGH
+  gates_passed:
+    - inputs
+    - requirements
+    - ground
+    - build
+    - seal
+  requirements_document_must_reference:
+    - "Account"
+    - "SummarizeAccountCasesAction"
+    - "Service Agent"
+    - "@InvocableMethod"
+  must_cite_any_of:
+    - { type: skill, id: agentforce/agent-actions }
+    - { type: skill, id: agentforce/agent-topic-design }
+    - { type: skill, id: agentforce/einstein-trust-layer }
+  deliverables_must_include_classes:
+    - SummarizeAccountCasesAction
+    - SummarizeAccountCasesActionTest
+  grounding:
+    unresolved_max: 0
+  build_gate:
+    parse_errors_max: 0
+    coverage_min: 85
+  process_observations:
+    min_count: 1
+    categories_present_any_of:
+      - healthy
+      - concerning
+      - ambiguous

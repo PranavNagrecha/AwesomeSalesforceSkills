@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills/agents/agentforce-builder/inputs.schema.json",
+  "title": "agentforce-builder inputs",
+  "description": "Typed Gate-A input contract for the agentforce-builder agent. Missing-required or under-constrained inputs trigger REFUSAL_INPUT_AMBIGUOUS.",
+  "type": "object",
+  "required": ["action_class_name", "feature_summary", "primary_object", "actor", "api_version"],
+  "properties": {
+    "action_class_name": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Za-z0-9]+Action$",
+      "minLength": 7,
+      "description": "PascalCase Apex class name ending in 'Action'. E.g. SummarizeAccountCasesAction."
+    },
+    "feature_summary": {
+      "type": "string",
+      "minLength": 1,
+      "description": "One-line description of the action — what verb, for whom, on which object. At least 10 words."
+    },
+    "primary_object": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+      "description": "SObject API name the action grounds on. Gate B validates via describe_sobject."
+    },
+    "actor": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Who the agent represents. 'Service Agent', 'Sales Rep', 'Customer', etc."
+    },
+    "referenced_fields": {
+      "type": "array",
+      "items": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_]*\\.[A-Za-z][A-Za-z0-9_]*$"},
+      "description": "Fully-qualified Object.Field names the action reads. Gate B validates each against the org stub."
+    },
+    "trust_constraints": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Trust-layer constraints. E.g. no-pii-in-prompt, mask-email, no-external-callout.",
+      "default": []
+    },
+    "agent_name": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+      "description": "Developer name of the containing Agent — used for the optional AgentSkeleton.json spec file."
+    },
+    "topic_name": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+      "description": "Developer name of the Topic this action is filed under — used for the optional Topic_Template.md spec file."
+    },
+    "emit_agent_spec": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether to emit a companion AgentSkeleton.json file. When true, agent_name is required."
+    },
+    "api_version": {"type": "string", "pattern": "^\\d{2}\\.0$"},
+    "namespace": {"type": "string", "default": ""},
+    "target_org_alias": {
+      "type": "string",
+      "description": "sf CLI alias of a real org Gate C can deploy-validate against. When absent, Gate C runs static-only."
+    },
+    "repo_path": {"type": "string", "default": "./force-app"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"emit_agent_spec": {"const": true}}, "required": ["emit_agent_spec"]},
+      "then": {"required": ["agent_name"]}
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+eval:
+  id: agentforce-builder__negative-ambiguous-input
+  agent: agentforce-builder
+  mode: single
+  priority: P0
+  last_verified: 2026-04-17
+  description: >
+    Gate A MUST refuse when feature_summary is under 10 words. Proves the
+    input-readiness gate stops the run before any .cls is written.
+
+inputs:
+  action_class_name: SummarizeAction
+  feature_summary: "Summarize account"
+  primary_object: Account
+  actor: Service Agent
+  api_version: "60.0"
+
+org_stub: {}
+
+expect:
+  refusal_code: REFUSAL_INPUT_AMBIGUOUS
+  gates_passed: []
