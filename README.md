@@ -36,14 +36,15 @@ Three layers that turn generic LLMs into Salesforce-literate agents:
 
 ## Supported AI Tools
 
-| Tool | Setup |
-|------|-------|
-| **Claude Code** | Clone + open. Works automatically via `CLAUDE.md`. |
-| **Cursor** | `python3 scripts/export_skills.py --platform cursor` then copy `exports/cursor/.cursor/` to your project |
-| **Aider** | `python3 scripts/export_skills.py --platform aider` then `aider --read exports/aider/CONVENTIONS.md` |
-| **Windsurf** | `python3 scripts/export_skills.py --platform windsurf` then copy `exports/windsurf/.windsurf/` to your project |
-| **Augment** | `python3 scripts/export_skills.py --platform augment` then copy `exports/augment/.augment/` to your project |
-| **Any LLM** | Copy any `skills/<domain>/<skill>/SKILL.md` as a system prompt |
+| Tool | Setup | Slash commands in `/` menu? |
+|------|-------|-----------------------------|
+| **Claude Code** | Clone + open. Works automatically via `CLAUDE.md`. | ✅ Auto — `.claude/commands/` ships in-tree |
+| **Cursor** | `python3 scripts/export_skills.py --target cursor` then copy `exports/cursor/.cursor/` to your project | ✅ Yes (Wave 11) |
+| **Windsurf** | `python3 scripts/export_skills.py --target windsurf` then copy `exports/windsurf/.windsurf/` to your project | ✅ Yes (as Cascade workflows; 12 KB cap per file) |
+| **Augment** | `python3 scripts/export_skills.py --target augment` then copy `exports/augment/.augment/` to your project | ✅ Yes (Wave 11) |
+| **Codex CLI** | `python3 scripts/export_skills.py --target codex` then `cp exports/codex/codex-prompts/*.md ~/.codex/prompts/` | ✅ Yes (as `/prompts:<name>`; user-scope) |
+| **Aider** | `python3 scripts/export_skills.py --target aider` then `aider --read exports/aider/CONVENTIONS.md` | ❌ Aider doesn't support custom slash; index embedded in CONVENTIONS.md |
+| **Any LLM** | Copy any `skills/<domain>/<skill>/SKILL.md` as a system prompt | — |
 
 ### Live-org validation (Wave 9)
 

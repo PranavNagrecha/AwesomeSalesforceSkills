@@ -17,11 +17,12 @@ Three platforms get a **strong parity guarantee**: the SET of skills available i
 
 ### Second-class targets
 
-Three platforms get a **best-effort subset guarantee**: every skill available in the first-class targets SHOULD be available here, but format-specific limitations may cause subset behavior.
+Four platforms get a **best-effort subset guarantee**: every skill available in the first-class targets SHOULD be available here, but format-specific limitations may cause subset behavior.
 
-- **Windsurf** (`--target windsurf`) — `.windsurf/rules/*.md` format.
-- **Aider** (`--target aider`) — single `CONVENTIONS.md` concatenation. Cannot represent per-skill routing; skills compressed into one file.
-- **Augment** (`--target augment`) — `.augment/rules/*.md` format.
+- **Windsurf** (`--target windsurf`) — `.windsurf/rules/*.md` format + `.windsurf/workflows/*.md` for slash-commands. Workflows capped at 12 KB per file; oversized commands are documented-skip.
+- **Aider** (`--target aider`) — single `CONVENTIONS.md` concatenation. Cannot represent per-skill routing; skills compressed into one file. No custom slash-command surface, so `commands/*.md` are indexed inside CONVENTIONS.md as prose references.
+- **Augment** (`--target augment`) — `.augment/rules/*.md` + `.augment/commands/*.md`. Also reads `.claude/commands/` for compatibility.
+- **Codex CLI** (`--target codex`) — OpenAI Codex CLI. Flat prompt files staged for `~/.codex/prompts/` (user-scope only; Codex has no project-scope slash surface). Exporter produces an `INSTALL.md` with the `cp` command.
 
 ### What parity means exactly
 

@@ -64,21 +64,34 @@ my-export/user-access-diff/
 ├── shared/
 │   ├── AGENT_CONTRACT.md
 │   ├── AGENT_RULES.md
+│   ├── DELIVERABLE_CONTRACT.md          ← Wave 10 output contract
+│   ├── lib/emit_deliverable.md
 │   └── schemas/
 │       ├── output-envelope.schema.json
 │       └── ...
+├── .cursor/commands/diff-users.md       ← Wave 11: slash command, per-target
+├── .claude/commands/diff-users.md
+├── .windsurf/workflows/diff-users.md
+├── .augment/commands/diff-users.md
+├── codex-prompts/diff-users.md
 └── INSTALL.md
 ```
 
 Drop the folder into your project:
 
-| Tool | Location |
-|---|---|
-| Claude Code | `.claude/agents/user-access-diff/` |
-| Cursor | `.cursor/agents/user-access-diff/` |
-| Anywhere else | Any folder; reference `AGENT.md` directly |
+| Tool | Location | Slash-command visibility |
+|---|---|---|
+| Claude Code | `.claude/agents/user-access-diff/` | `/diff-users` appears in `/` menu (Wave 11) |
+| Cursor | `.cursor/agents/user-access-diff/` | `/diff-users` appears in `/` menu (Wave 11) |
+| Windsurf | copy contents of `.windsurf/workflows/` into project root | `/diff-users` runs as a Cascade workflow |
+| Augment | copy `.augment/commands/` into project root | `/diff-users` appears in `/` menu |
+| Codex | `cp codex-prompts/*.md ~/.codex/prompts/` (user-scope) | `/prompts:diff-users` appears in `/` menu after restart |
+| Aider | copy `AGENT.md` + dependencies into project | No slash support; reference in prose |
+| Anywhere else | Any folder; reference `AGENT.md` directly | — |
 
-**Pros:** Works offline. No MCP server needed. Single self-contained folder.
+The bundle ships the slash-command file for ALL five slash-supporting targets. Whichever tool your project uses, the command is already there.
+
+**Pros:** Works offline. No MCP server needed. Single self-contained folder. Slash commands appear natively in all five supporting tools.
 
 **Cons:** Manual update when the source agent changes. Regenerate the bundle on a schedule.
 
