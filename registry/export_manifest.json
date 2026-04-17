@@ -4,18 +4,18 @@
     "cursor",
     "mcp"
   ],
-  "generated_at": "2026-04-17T04:28:02Z",
+  "generated_at": "2026-04-17T12:27:39Z",
   "schema_version": 1,
   "targets": {
     "aider": {
-      "overall_hash": "sha256:f101d69b12cc065492802a5f5090a8c55bc2516f0e2a33b9db0a11a2b10b3c45",
+      "overall_hash": "sha256:3abbac99ee95b0ac85f8ea66863f7514ec6605cbfac8e57c430f461a308c6589",
       "skill_count": 1,
       "skills": {
-        "CONVENTIONS.md": "sha256:a3f5faddc81f886d49ee259f7ed24cb0e77c8f222d448d7936dfb6a28b7885f8"
+        "CONVENTIONS.md": "sha256:e40bbd35891f4e844a0d081c6776a3990e9e78059d1dd9f32efb22fadebe3e98"
       }
     },
     "augment": {
-      "overall_hash": "sha256:f62da3847ddd7984260f9b62274527dad5da49f30cbdcda63008b0ac08d05c9f",
+      "overall_hash": "sha256:17b67484f303b9fcdaa79b4d619df91fbbe26ff146eb5b1797bdbe67224c0f38",
       "skill_count": 684,
       "skills": {
         "admin/agent-conversation-design": "sha256:44cb058d8d94c6e07f82b0b0fd6c113c834488fd0603fc3384606e72a4fa8ffc",
@@ -569,9 +569,9 @@
         "devops/unlocked-package-development": "sha256:fa122d89f7bb611e028453c1c6bb0de24b6bdbe5d05a8f4add4284ebe63d152e",
         "devops/vscode-salesforce-extensions": "sha256:5d38dded52255caf181b8c78988726a4c3563829347c50318be6d99665153c20",
         "flow/auto-launched-flow-patterns": "sha256:956bfdbe835fe96047d467ecac1e01955d91a4e0780b21056f7e2a710704164e",
-        "flow/fault-handling": "sha256:eda3d317566d2d55d2b334d4e9405eb33ecc407ccd2e03cc48eb63b1371366e8",
+        "flow/fault-handling": "sha256:3fc0f27315ea688274c66adf46d87ef92b31e515d9e224b3bd6c19bc47ea1d37",
         "flow/flow-action-framework": "sha256:e24a14aac85bd0f43fe992a769babf5f668f6bf32dcd2686f1cf0e0a40836c19",
-        "flow/flow-bulkification": "sha256:c1f6f64c45ba770c7bbdbd156a19c83c2f61158fa1127e7bc231343c32654c88",
+        "flow/flow-bulkification": "sha256:d25d3dd082a080d74c86fe5dcaee7e878758b928d4967c02156c6c4427c50e18",
         "flow/flow-collection-processing": "sha256:17aa4fb3a0e1fbfb3d5977b1c99626e94f8edd80944949e3c129aeda195854d3",
         "flow/flow-custom-property-editors": "sha256:9c05899111b6eca1f72ed6d89229accbc62eff257815ce43eb16a7f369a0b569",
         "flow/flow-debugging": "sha256:37ccb86da132acc229ceeeccceba387818901d4988c5d679be3b28511c0c9ae4",
@@ -585,7 +585,7 @@
         "flow/flow-testing": "sha256:929a186e69695195a142b8a968fb0fc133bf556ad9789a60100b33f84df40906",
         "flow/orchestration-flows": "sha256:955a5775ed73ac839c92f9513a4194602e4aeffbce278fd36c52d112a39156f7",
         "flow/pause-elements-and-wait-events": "sha256:1d844ef2900680091012d8f2afbd2dca02ffbfa91b16a38753fb1c6bd0262a42",
-        "flow/record-triggered-flow-patterns": "sha256:fd373df44211c1cac562dd74253c4e6787c7c87c30068985bbd3fc44d08396d5",
+        "flow/record-triggered-flow-patterns": "sha256:bb94e87ff46d322118503c01675417d9d43a47bd3c4408d0ad90a9529e75b06a",
         "flow/scheduled-flows": "sha256:b79a302cf451dba4769cdf26d9735585c832f9f62c0f18063786dab9a9289e61",
         "flow/screen-flows": "sha256:cb2dea280120f0f39d6dbdd87cc91587f1793e6f40cbca51b04c8188438db0e5",
         "flow/subflows-and-reusability": "sha256:798b83af53ac75c3dc049c4e6db3288e82d927656fe4da58a54f0a742f64051f",
@@ -705,7 +705,7 @@
       }
     },
     "claude": {
-      "overall_hash": "sha256:63ce0b0e2aac63cce0965d0043e95d3b80617cdf5b990e7ae4578d39f9464602",
+      "overall_hash": "sha256:9f8c14da858a0cb5c899aadfe6a135e4a660cfeb3425cf2671b9d3933e2f8640",
       "skill_count": 684,
       "skills": {
         "admin/agent-conversation-design": "sha256:97e62ae3c713d44e243cb505d23e6d66d0f9452826c4c6232eabf2d01d678ae6",
@@ -1259,9 +1259,9 @@
         "devops/unlocked-package-development": "sha256:fdea9b693a7c54cd44022edcd29bf5ae78ad99247a81d877092a870f22cbe4c2",
         "devops/vscode-salesforce-extensions": "sha256:267b6d68500d900b7728de4a760f0b8b662e26a3c68f954bd1c9f46fb79e42dc",
         "flow/auto-launched-flow-patterns": "sha256:6116c9080849b9b4732c98b35040e88ab2e4feaa6f8ed73dfd11be5c91dab3fa",
-        "flow/fault-handling": "sha256:c10871ac506642b3b39d540837df62a1512b68bcae34092fde7059d97dbbe8cd",
+        "flow/fault-handling": "sha256:87986b203aebaec65cccef0b886f0acf123d85168e7aa371429cba1beb67d070",
         "flow/flow-action-framework": "sha256:08c98bec9fc20f3c7aa6ef82238cde9c2e2af346e38cd1454cbbdad8b08ac64b",
-        "flow/flow-bulkification": "sha256:7d9020c10298235604819123756e77f6443e54f68701a3c7057c01bde169c5f1",
+        "flow/flow-bulkification": "sha256:a5894e411e8d850a12c7df0864abcc0526f96f68e471322bfb37748e0bc51df8",
         "flow/flow-collection-processing": "sha256:02d39268960294e7671bb435401218013685963c5c09369e848daba74ac78683",
         "flow/flow-custom-property-editors": "sha256:898e0f4df7545bf5eabd8a9c10ffc19aa8e2dfb7c34f2974fb064630c005e976",
         "flow/flow-debugging": "sha256:4479ead0f72c8ffc3cc2305095d07611b567f567efc95a412e9e9722eca6999d",
@@ -1275,7 +1275,7 @@
         "flow/flow-testing": "sha256:6edcb00ae1880aa0af743f0f8f454af5807daad675e76f6e3bce384ca5db002c",
         "flow/orchestration-flows": "sha256:dee9a08aa30cc7c569230be3fe6deb2e433b1249a674345004021190c85f8180",
         "flow/pause-elements-and-wait-events": "sha256:b56c3759824b7d4492eaf7ce145bfb6644f95067dcdb97edf706002f156675ab",
-        "flow/record-triggered-flow-patterns": "sha256:908989d43225411572c888987181fb303df46ea04dbe6e089d4e257109ebbd67",
+        "flow/record-triggered-flow-patterns": "sha256:768f477e61e531c5285e9d5feb60ed4c0923af93d35c1ef1c377868b47853e6c",
         "flow/scheduled-flows": "sha256:33621e27d63a0f1788a4d5c405a61226d8a8fc7d1a8d25af23ea3971a0624e61",
         "flow/screen-flows": "sha256:2bc4e49a562e6793b3284623a35cdbf38ef59a994aab38c5af1da05bb6f21633",
         "flow/subflows-and-reusability": "sha256:4ce9b88a1ed7cbfad8284602f342dbf41fd52bb619c8d8c3f5db3ecfb39eb42b",
@@ -1395,7 +1395,7 @@
       }
     },
     "cursor": {
-      "overall_hash": "sha256:a65b8e4d090faf9f6735009b70f2af3d2f000ce806b45809d87a1855f761a87a",
+      "overall_hash": "sha256:b51d17702b71d5b50debf759b77da8e14fc0c8bf8a0e6a7c9f6d8916b132f940",
       "skill_count": 684,
       "skills": {
         "admin/agent-conversation-design": "sha256:968c5453ac99b06ee0131052ed77de5241a2ac751e17a5248832d3f8458af1c1",
@@ -1949,9 +1949,9 @@
         "devops/unlocked-package-development": "sha256:5ec2c052f165aea374294b7811a71df0bea5677db421bcdace6c1200d2d09169",
         "devops/vscode-salesforce-extensions": "sha256:e16468c7c38b837a81a9d35ea673fbcd6713ae6f0b8de3e9f0c075a0bdc42c21",
         "flow/auto-launched-flow-patterns": "sha256:a5a758ae4f9a7d59ddc5a45f87a7d75a91be18fe3df95b351b9ebfbed8ddce85",
-        "flow/fault-handling": "sha256:6e6054aa32faed934add05eade25b647099c1f8d5323fcd9e942782eabff526c",
+        "flow/fault-handling": "sha256:449d63dcd44942b59ede2c07b2b9add37c5a0f67cb25146ed8c1057cbdb03335",
         "flow/flow-action-framework": "sha256:d7f6f38c07bdb9c008ab1ae3815190ea7dbef5561d2693a178eb0c169b5672a9",
-        "flow/flow-bulkification": "sha256:20b5f23d1dd22c581ae32b0d8c704319c7e3b26323d187217d9d3fab1626dd05",
+        "flow/flow-bulkification": "sha256:3c095074f411234f54faa5b2c550c925f4f8c2a1136b70afb77af049477fdb84",
         "flow/flow-collection-processing": "sha256:6808f7f6cc563c549b6b9de9722d50e652cd822be70dbb056598e86aa3f0355f",
         "flow/flow-custom-property-editors": "sha256:9fc3a88bfaf4a7a0facb54eae0bd103a2a619975c94afc135ce81de37c2a5db4",
         "flow/flow-debugging": "sha256:0a9f47d8370c07cc3670705657de273ba86b1fc50b778773d651e5c781078383",
@@ -1965,7 +1965,7 @@
         "flow/flow-testing": "sha256:353611e59b4c124fcee0049219394bdf41c8413bba6e7060b9ee07c533742e9b",
         "flow/orchestration-flows": "sha256:d31fae3c3b138761949ff7d6b6e75f1b9bafda3dde74843978fa176e46f8f874",
         "flow/pause-elements-and-wait-events": "sha256:2eaef825a72f2a3724a023c17c5ad30fa085339f851d5f679410fdc7fa06b627",
-        "flow/record-triggered-flow-patterns": "sha256:17b8f2fef701b231ef0cb0c40ed5386bfaff653caed4b3c366f61b0cb6aa6147",
+        "flow/record-triggered-flow-patterns": "sha256:d14554a6302ae1e0d5effd06b15228bc74fa535f14a497f46e4380d11987ed02",
         "flow/scheduled-flows": "sha256:3fbb959282a781e3607d0e6bae4c6f0150327b3f076133b560896b9d2a1392f6",
         "flow/screen-flows": "sha256:b5c86e14d0001e36348f826465207cc7f80d4551827fb8a74ecf02da44a952cb",
         "flow/subflows-and-reusability": "sha256:52ff1bf897799e66adf60c18a6168ed29562104233c206b69afbc627617c6d11",
@@ -2085,7 +2085,7 @@
       }
     },
     "mcp": {
-      "overall_hash": "sha256:63ce0b0e2aac63cce0965d0043e95d3b80617cdf5b990e7ae4578d39f9464602",
+      "overall_hash": "sha256:9f8c14da858a0cb5c899aadfe6a135e4a660cfeb3425cf2671b9d3933e2f8640",
       "skill_count": 684,
       "skills": {
         "admin/agent-conversation-design": "sha256:97e62ae3c713d44e243cb505d23e6d66d0f9452826c4c6232eabf2d01d678ae6",
@@ -2639,9 +2639,9 @@
         "devops/unlocked-package-development": "sha256:fdea9b693a7c54cd44022edcd29bf5ae78ad99247a81d877092a870f22cbe4c2",
         "devops/vscode-salesforce-extensions": "sha256:267b6d68500d900b7728de4a760f0b8b662e26a3c68f954bd1c9f46fb79e42dc",
         "flow/auto-launched-flow-patterns": "sha256:6116c9080849b9b4732c98b35040e88ab2e4feaa6f8ed73dfd11be5c91dab3fa",
-        "flow/fault-handling": "sha256:c10871ac506642b3b39d540837df62a1512b68bcae34092fde7059d97dbbe8cd",
+        "flow/fault-handling": "sha256:87986b203aebaec65cccef0b886f0acf123d85168e7aa371429cba1beb67d070",
         "flow/flow-action-framework": "sha256:08c98bec9fc20f3c7aa6ef82238cde9c2e2af346e38cd1454cbbdad8b08ac64b",
-        "flow/flow-bulkification": "sha256:7d9020c10298235604819123756e77f6443e54f68701a3c7057c01bde169c5f1",
+        "flow/flow-bulkification": "sha256:a5894e411e8d850a12c7df0864abcc0526f96f68e471322bfb37748e0bc51df8",
         "flow/flow-collection-processing": "sha256:02d39268960294e7671bb435401218013685963c5c09369e848daba74ac78683",
         "flow/flow-custom-property-editors": "sha256:898e0f4df7545bf5eabd8a9c10ffc19aa8e2dfb7c34f2974fb064630c005e976",
         "flow/flow-debugging": "sha256:4479ead0f72c8ffc3cc2305095d07611b567f567efc95a412e9e9722eca6999d",
@@ -2655,7 +2655,7 @@
         "flow/flow-testing": "sha256:6edcb00ae1880aa0af743f0f8f454af5807daad675e76f6e3bce384ca5db002c",
         "flow/orchestration-flows": "sha256:dee9a08aa30cc7c569230be3fe6deb2e433b1249a674345004021190c85f8180",
         "flow/pause-elements-and-wait-events": "sha256:b56c3759824b7d4492eaf7ce145bfb6644f95067dcdb97edf706002f156675ab",
-        "flow/record-triggered-flow-patterns": "sha256:908989d43225411572c888987181fb303df46ea04dbe6e089d4e257109ebbd67",
+        "flow/record-triggered-flow-patterns": "sha256:768f477e61e531c5285e9d5feb60ed4c0923af93d35c1ef1c377868b47853e6c",
         "flow/scheduled-flows": "sha256:33621e27d63a0f1788a4d5c405a61226d8a8fc7d1a8d25af23ea3971a0624e61",
         "flow/screen-flows": "sha256:2bc4e49a562e6793b3284623a35cdbf38ef59a994aab38c5af1da05bb6f21633",
         "flow/subflows-and-reusability": "sha256:4ce9b88a1ed7cbfad8284602f342dbf41fd52bb619c8d8c3f5db3ecfb39eb42b",
@@ -2775,7 +2775,7 @@
       }
     },
     "windsurf": {
-      "overall_hash": "sha256:a13f1de4e1e55a4712728a75968e7414d85460ffa00658d8209f8374d23b7918",
+      "overall_hash": "sha256:2eec47b40630fa184cbfa8660593fbd4e81868bbac105ea832c2a4ed206a5298",
       "skill_count": 684,
       "skills": {
         "admin/agent-conversation-design": "sha256:9890e3826d897e2598a1d21a81bf6b79d9c4f1e1178df87dc355cf97674cf891",
@@ -3329,9 +3329,9 @@
         "devops/unlocked-package-development": "sha256:3a5919d850d93fc51fc1397e28479924457ea3346b260145cbd216c93892f4ec",
         "devops/vscode-salesforce-extensions": "sha256:16fe90355cf5961342f670d41ce44f8f2edc7fbf4e7fc1530dd82f7ceec8ecea",
         "flow/auto-launched-flow-patterns": "sha256:d04873fa7f50186d02d4922d021c006eb7061def2d0ae9da412564e412e1a163",
-        "flow/fault-handling": "sha256:707ce165e95b1f37bb64acd698206486ea81df03bdf8ba664ff9114c5d091505",
+        "flow/fault-handling": "sha256:fd89176dee109c6f31e41ce62334b554fccd460d0ae94b41561923f67818ca91",
         "flow/flow-action-framework": "sha256:6194a31a9995a4b781ac2475d2fe679d9c51009b4a4feb20e1db08a4fb04ac16",
-        "flow/flow-bulkification": "sha256:d7d1a8cb1eaba4663879dada1eb26ef7fa82a8db1b4c834d595f63e2619e60e4",
+        "flow/flow-bulkification": "sha256:0f8cac2cebcd34cec9bbc50f2d83793693a53a5a07b9250394f43899ced96b88",
         "flow/flow-collection-processing": "sha256:ecd9572723350db2957b745a5c48c6112bd5ecca642269ce5e9920ea8902e20f",
         "flow/flow-custom-property-editors": "sha256:f9933e04686f982d9a049f10ff9f42891c9afdb7e38bf9a343476b3b15369be6",
         "flow/flow-debugging": "sha256:d2fd5d8633f0232b8212b408af80bc01cbb753824b1c7be528d06eeb096b77ed",
@@ -3345,7 +3345,7 @@
         "flow/flow-testing": "sha256:6d0301e8bca4e5047a6bfa08726227ac8d2394207f51e64790d5d06e55060f4f",
         "flow/orchestration-flows": "sha256:9c26e9f2df7fc250ba9e430c2f65e4c45cae0016375c439089afec820fbd7a9f",
         "flow/pause-elements-and-wait-events": "sha256:3e43f08161b74b8644f88dab9c28dc6ab21b7995980f874f196af56bda27e6cd",
-        "flow/record-triggered-flow-patterns": "sha256:1aaeee80f7bbab7fb2c82e09ece8662f057401cad3e63453204dd6243cf2645c",
+        "flow/record-triggered-flow-patterns": "sha256:73b341d5622fa018799af8b35b64afffd26b37e650496d1b2d3a0189c2c9fcee",
         "flow/scheduled-flows": "sha256:ad50c5d235173eb28e7ac81bc5eae5a83c37c469abf7f4f90d5a44566f5d1406",
         "flow/screen-flows": "sha256:3fc0f6491410f7ee12aecf6b7c9f35c43dcf583e97e7d597973de159e6b4ac3b",
         "flow/subflows-and-reusability": "sha256:e57152505e338534003b47687eebdbe26c38d0a92e19e946e783f8e58e898f9e",
