@@ -45,6 +45,23 @@ Three layers that turn generic LLMs into Salesforce-literate agents:
 | **Augment** | `python3 scripts/export_skills.py --platform augment` then copy `exports/augment/.augment/` to your project |
 | **Any LLM** | Copy any `skills/<domain>/<skill>/SKILL.md` as a system prompt |
 
+### Live-org validation (Wave 9)
+
+Every probe, agent, and skill in this repo is verified against a live Salesforce org via three automated harnesses:
+
+- **Layer 1** — Probe SOQL correctness (every SOQL query executes against a real org)
+- **Layer 2** — Agent smoke tests (42/42 runtime agents pass structural + dependency checks)
+- **Layer 3** — Skill factuality sampling (200-skill sample, 0 fabricated field references)
+
+Re-runnable on any dev/scratch org:
+```bash
+python3 scripts/validate_probes_against_org.py --target-org <alias>
+python3 scripts/smoke_test_agents.py --target-org <alias>
+python3 scripts/validate_skill_factuality.py --target-org <alias> --sample 200
+```
+
+Reports land in `docs/validation/`. See [`docs/validation/README.md`](./docs/validation/README.md) for what each layer catches.
+
 ### Installing just one agent (not the whole library)
 
 If you only need a specific agent in another project (e.g. `user-access-diff`):
