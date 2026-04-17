@@ -13,7 +13,7 @@ updated: 2026-04-17
 
 ## What This Agent Does
 
-Dispatches one of the audit domains in the [`audit_harness`](../_shared/harnesses/audit_harness/README.md) into its domain-specific classifier, returning a uniform output envelope: inventory + findings (P0/P1/P2 with domain-scoped codes) + optional mechanical patches + Process Observations + citations. Replaces ~15 single-mode auditor agents whose logic was 80% duplicated boilerplate. Wave 3b-1 ships 5 domains (validation_rule, picklist, approval_process, record_type_layout, report_dashboard); Wave 3b-2 adds the remaining 10.
+Dispatches one of the audit domains in the [`audit_harness`](../_shared/harnesses/audit_harness/README.md) into its domain-specific classifier, returning a uniform output envelope: inventory + findings (P0/P1/P2 with domain-scoped codes) + optional mechanical patches + Process Observations + citations. Replaces 15 single-mode auditor agents whose logic was 80% duplicated boilerplate. Wave 3b-1 shipped 5 domains; Wave 3b-2 adds the remaining 10 for a total of 15 audit surfaces through one router.
 
 **Scope:** one `--domain` per invocation. Output is a review-ready plan; the router never modifies org metadata and never deploys.
 
@@ -22,7 +22,7 @@ Dispatches one of the audit domains in the [`audit_harness`](../_shared/harnesse
 ## Invocation
 
 - **Direct read** — "Follow `agents/audit-router/AGENT.md` with domain=validation_rule for Opportunity"
-- **Slash command** — [`/audit-router`](../../commands/audit-router.md). Legacy aliases (`/audit-validation-rules`, `/govern-picklists`, `/audit-approvals`, `/audit-record-types`, `/audit-reports`) each invoke the router with a preset `--domain` and emit a one-line deprecation notice. Aliases ship until the removal window declared in `docs/MIGRATION.md` (Wave 7).
+- **Slash command** — [`/audit-router`](../../commands/audit-router.md). Legacy aliases for all 15 retired auditors (e.g. `/audit-validation-rules`, `/govern-picklists`, `/audit-approvals`, `/audit-record-types`, `/audit-reports`, `/audit-case-escalation`, `/audit-record-page`, `/audit-list-views`, `/audit-actions`, `/audit-report-folder-sharing`, `/govern-field-history`, `/audit-sharing`, `/detect-drift`, `/audit-identity-and-session`, `/govern-prompt-library`) each invoke the router with a preset `--domain` and emit a one-line deprecation notice. Aliases ship until the removal window declared in `docs/MIGRATION.md` (Wave 7).
 - **MCP** — `get_agent("audit-router")`
 
 ---
@@ -43,7 +43,7 @@ Dispatches one of the audit domains in the [`audit_harness`](../_shared/harnesse
 
 | Input | Required | Example |
 |---|---|---|
-| `domain` | yes | `validation_rule` \| `picklist` \| `approval_process` \| `record_type_layout` \| `report_dashboard` (Wave 3b-2 adds more) |
+| `domain` | yes | 15 values: `validation_rule`, `picklist`, `approval_process`, `record_type_layout`, `report_dashboard`, `case_escalation`, `lightning_record_page`, `list_view_search_layout`, `quick_action`, `reports_dashboards_folder_sharing`, `field_audit_trail_history_tracking`, `sharing`, `org_drift`, `my_domain_session_security`, `prompt_library` |
 | `target_org_alias` | yes | `prod`, `uat` |
 | `object_name` | conditional — required by `validation_rule` / `record_type_layout`; optional for `picklist` / `approval_process` | `Opportunity` |
 | `audit_scope` | conditional — for `approval_process` | `org` \| `object:<Name>` \| `process:<Name>` |

@@ -1,66 +1,24 @@
-# /detect-drift — Library ↔ org drift report
+# /detect-drift — LEGACY ALIAS (Wave 3b-2)
 
-Wraps [`agents/org-drift-detector/AGENT.md`](../agents/org-drift-detector/AGENT.md). Compares the SfSkills library's canonical templates and patterns against a connected Salesforce org via MCP, and returns a ranked backlog of gaps, bloat, forks, and orphans.
+> **Deprecation notice:** this command is now an alias. It invokes
+> [`audit-router`](../agents/audit-router/AGENT.md) with `--domain=org_drift`
+> and emits this deprecation notice. Switch to `/audit-router` at your
+> convenience; the alias ships until the removal window declared in
+> `docs/MIGRATION.md` (Wave 7).
 
----
-
-## Step 1 — Collect inputs
-
-Ask:
+## Canonical form
 
 ```
-1. Target-org alias? (must be authenticated via sf CLI)
-   Example: prod, uat, my-sandbox
-
-2. Scope to narrow the analysis? (default: all)
-   Options: apex / flow / integration / security / all
-
-3. Max findings in the report? (default 50)
+/audit-router --domain org_drift --target-org <alias> [--scope <apex|flow|integration|security|all>] [--max-findings N]
 ```
 
----
+## Alias behavior
 
-## Step 2 — Load the agent
+`/detect-drift <args>` is equivalent to `/audit-router --domain org_drift <args>`.
 
-Read `agents/org-drift-detector/AGENT.md` fully + `registry/skills.json` + every decision tree + `evals/framework.md`.
+Rule table preserved in [`classifiers/org_drift.md`](../agents/_shared/harnesses/audit_harness/classifiers/org_drift.md).
 
----
+## See also
 
-## Step 3 — Execute
-
-Follow the 6-step plan:
-1. Ground the org via `describe_org` — flip to manual-review-required if prod
-2. Enumerate library prescriptions (flagship skills + their canonical templates)
-3. Probe the org (`validate_against_org`, `list_custom_objects`, `list_flows_on_object`)
-4. Classify each finding as gap / bloat / fork / orphan / stale-skill
-5. Rank by `impact DESC, effort ASC`
-6. Per-finding remediation with the matching run-time agent to invoke
-
----
-
-## Step 4 — Deliver
-
-- Org summary (id, edition, API version, sandbox/prod, object count)
-- Drift matrix (prescription → status)
-- Top findings (capped at max_findings, ranked)
-- Skill-coverage gaps (`orphan` findings as draft `/request-skill` payloads)
-- Citations (every skill id + every MCP tool call)
-
----
-
-## Step 5 — Recommend follow-ups
-
-For each HIGH-impact finding, point at the exact agent to drive remediation:
-- Missing trigger framework → `/consolidate-triggers`
-- CRUD/FLS violations → `/scan-security`
-- Stale integration pattern → `/plan-bulk-migration`
-- Missing canonical Apex patterns → `/refactor-apex`
-- Undocumented custom frameworks → `/request-skill`
-
----
-
-## What this command does NOT do
-
-- Does not modify the org.
-- Does not auto-chain to other agents.
-- Does not treat managed-package metadata as drift.
+- [`/audit-router`](./audit-router.md) — canonical router entry point
+- [`docs/MIGRATION.md`](../docs/MIGRATION.md) — removal timeline (authored in Wave 7)

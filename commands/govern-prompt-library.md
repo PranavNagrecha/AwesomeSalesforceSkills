@@ -1,35 +1,24 @@
-# /govern-prompt-library — Govern Prompt Builder template library
+# /govern-prompt-library — LEGACY ALIAS (Wave 3b-2)
 
-Wraps [`agents/prompt-library-governor/AGENT.md`](../agents/prompt-library-governor/AGENT.md). Inventory, duplicate detection, grounding citation checks, Trust Layer alignment, owner + version hygiene, usage report, and consolidation plan.
+> **Deprecation notice:** this command is now an alias. It invokes
+> [`audit-router`](../agents/audit-router/AGENT.md) with
+> `--domain=prompt_library` and emits this deprecation notice. Switch to
+> `/audit-router` at your convenience; the alias ships until the removal
+> window declared in `docs/MIGRATION.md` (Wave 7).
 
----
-
-## Step 1 — Collect inputs
+## Canonical form
 
 ```
-1. Target org alias?
-2. Scope?  all (default) | type:FieldGeneration | type:EmailGeneration | type:Flex | ...
+/audit-router --domain prompt_library --target-org <alias> [--scope <filter>]
 ```
 
-## Step 2 — Load the agent
+## Alias behavior
 
-Read `agents/prompt-library-governor/AGENT.md` + mandatory reads.
+`/govern-prompt-library <args>` is equivalent to `/audit-router --domain prompt_library <args>`.
 
-## Step 3 — Execute the plan
+Rule table preserved in [`classifiers/prompt_library.md`](../agents/_shared/harnesses/audit_harness/classifiers/prompt_library.md).
 
-Inventory → dedupe → grounding checks → Trust Layer alignment → owner/version hygiene → usage → consolidation plan.
+## See also
 
-## Step 4 — Deliver the output
-
-Summary, inventory, duplicate clusters, grounding + Trust Layer gaps, consolidation plan, Process Observations, citations.
-
-## Step 5 — Recommend follow-ups
-
-- `/review-agentforce-action` if templates are consumed by agent actions
-- `/catalog-integrations` if templates trigger callouts
-
-## What this command does NOT do
-
-- Does not modify, activate, or deprecate templates.
-- Does not rewrite prompts.
-- Does not change model selection.
+- [`/audit-router`](./audit-router.md) — canonical router entry point
+- [`docs/MIGRATION.md`](../docs/MIGRATION.md) — removal timeline (authored in Wave 7)

@@ -1,36 +1,24 @@
-# /audit-case-escalation — Audit Case escalation surface
+# /audit-case-escalation — LEGACY ALIAS (Wave 3b-2)
 
-Wraps [`agents/case-escalation-auditor/AGENT.md`](../agents/case-escalation-auditor/AGENT.md). Scores assignment + escalation rules, entitlement coverage, milestone instrumentation, and ownership black-holes. Produces a prioritized remediation backlog.
+> **Deprecation notice:** this command is now an alias. It invokes
+> [`audit-router`](../agents/audit-router/AGENT.md) with
+> `--domain=case_escalation` and emits this deprecation notice. Switch to
+> `/audit-router` at your convenience; the alias ships until the removal
+> window declared in `docs/MIGRATION.md` (Wave 7).
 
----
-
-## Step 1 — Collect inputs
+## Canonical form
 
 ```
-1. Target org alias?
-2. Scope?  org (default) | record_type:Case.<RT>
-3. Customer segments (optional)?  basic / premium / enterprise
+/audit-router --domain case_escalation --target-org <alias>
 ```
 
-## Step 2 — Load the agent
+## Alias behavior
 
-Read `agents/case-escalation-auditor/AGENT.md` + mandatory reads.
+`/audit-case-escalation <args>` is equivalent to `/audit-router --domain case_escalation <args>`.
 
-## Step 3 — Execute the plan
+Rule table preserved in [`classifiers/case_escalation.md`](../agents/_shared/harnesses/audit_harness/classifiers/case_escalation.md).
 
-Inventory → coverage analysis → black-hole probe → escalation-action correctness → milestone instrumentation → remediation backlog.
+## See also
 
-## Step 4 — Deliver the output
-
-Summary, coverage table, findings, remediation backlog, Process Observations, citations.
-
-## Step 5 — Recommend follow-ups
-
-- `/design-lead-routing` if assignment fabric is compromised
-- `/audit-sharing` if ownership reassignment reveals visibility holes
-
-## What this command does NOT do
-
-- Does not modify rules, entitlements, or milestones.
-- Does not stop/start milestone timers.
-- Does not size headcount.
+- [`/audit-router`](./audit-router.md) — canonical router entry point
+- [`docs/MIGRATION.md`](../docs/MIGRATION.md) — removal timeline (authored in Wave 7)
