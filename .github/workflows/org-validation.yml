@@ -1,0 +1,127 @@
+name: org-validation
+
+# Wave 9 — live-org validation. NOT run on every PR (would need a shared
+# sandbox token). Trigger manually via Actions → Run Workflow, or on a
+# weekly cron to catch drift between Salesforce releases.
+#
+# Requires repo secret SFDX_AUTH_URL — an auth-URL token for an org dedicated
+# to this validation. Prefer a scratch/dev org; NOT production.
+#
+# See docs/validation/README.md for the full three-layer validation plan.
+
+on:
+  workflow_dispatch:
+    inputs:
+      layer:
+        description: "Which validation layer to run"
+        required: true
+        default: "all"
+        type: choice
+        options:
+          - probes
+          - agents
+          - skills
+          - all
+  schedule:
+    # Every Monday at 7:17 UTC — 7 minutes past the hour to avoid thundering herd
+    - cron: "17 7 * * 1"
+
+jobs:
+  validate-probes:
+    name: Layer 1 — Probe SOQL correctness
+    if: github.event.inputs.layer == 'probes' || github.event.inputs.layer == 'all' || github.event.inputs.layer == ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install deps
+        run: python3 -m pip install -r requirements.txt
+
+      - name: Install Salesforce CLI
+        run: npm install -g @salesforce/cli
+
+      - name: Authenticate to validation org
+        env:
+          SFDX_AUTH_URL: ${{ secrets.SFDX_AUTH_URL }}
+        run: |
+          echo "$SFDX_AUTH_URL" > ./auth-url.txt
+          sf org login sfdx-url --sfdx-url-file ./auth-url.txt --alias sfskills-validation
+          rm ./auth-url.txt
+
+      - name: Run probe validation
+        run: python3 scripts/validate_probes_against_org.py --target-org sfskills-validation
+
+      - name: Upload probe report
+        uses: actions/upload-artifact@v4
+        with:
+          name: probe-report
+          path: docs/validation/probe_report_*.md
+
+  validate-agents:
+    name: Layer 2 — Agent smoke tests
+    if: github.event.inputs.layer == 'agents' || github.event.inputs.layer == 'all' || github.event.inputs.layer == ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install deps
+        run: python3 -m pip install -r requirements.txt
+
+      - name: Install Salesforce CLI
+        run: npm install -g @salesforce/cli
+
+      - name: Authenticate to validation org
+        env:
+          SFDX_AUTH_URL: ${{ secrets.SFDX_AUTH_URL }}
+        run: |
+          echo "$SFDX_AUTH_URL" > ./auth-url.txt
+          sf org login sfdx-url --sfdx-url-file ./auth-url.txt --alias sfskills-validation
+          rm ./auth-url.txt
+
+      - name: Run agent smoke tests
+        run: python3 scripts/smoke_test_agents.py --target-org sfskills-validation
+
+      - name: Upload agent reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-reports
+          path: docs/validation/agent_smoke_*
+
+  validate-skills:
+    name: Layer 3 — Skill factuality sampling
+    if: github.event.inputs.layer == 'skills' || github.event.inputs.layer == 'all' || github.event.inputs.layer == ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install deps
+        run: python3 -m pip install -r requirements.txt
+
+      - name: Install Salesforce CLI
+        run: npm install -g @salesforce/cli
+
+      - name: Authenticate to validation org
+        env:
+          SFDX_AUTH_URL: ${{ secrets.SFDX_AUTH_URL }}
+        run: |
+          echo "$SFDX_AUTH_URL" > ./auth-url.txt
+          sf org login sfdx-url --sfdx-url-file ./auth-url.txt --alias sfskills-validation
+          rm ./auth-url.txt
+
+      - name: Run skill factuality sampling
+        run: python3 scripts/validate_skill_factuality.py --target-org sfskills-validation --sample 200
+
+      - name: Upload skill report
+        uses: actions/upload-artifact@v4
+        with:
+          name: skill-report
+          path: docs/validation/skill_factuality_*.md
