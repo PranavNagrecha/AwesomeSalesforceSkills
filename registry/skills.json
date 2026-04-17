@@ -5,16 +5,16 @@
     "apex": 97,
     "architect": 90,
     "data": 86,
-    "devops": 50,
+    "devops": 58,
     "flow": 31,
     "integration": 36,
     "lwc": 32,
     "omnistudio": 21,
     "security": 36
   },
-  "generated_from_hash": "b3d5ce8fe44d75051abd7d0c56afe87956403139bb9e4228d51a26238924210a",
+  "generated_from_hash": "b0e2d1dc773c968e8f4a641710a13fe8277228abbb5fe83711e7961eb7ee22bc",
   "schema_version": 1,
-  "skill_count": 721,
+  "skill_count": 729,
   "skills": [
     {
       "category": "admin",
@@ -73251,6 +73251,78 @@
     {
       "category": "devops",
       "chunk_ids": [
+        "05fa74f99d41dff86f9b",
+        "064aeef27ac27272a5c2",
+        "2a4bf1f465d68fbf78ef",
+        "325aa7a2dd6e601154b9",
+        "4f2a53ee263b4beedd6b",
+        "5561f985d887f33fda90",
+        "578e3c8bdfcbe5773bbc",
+        "6a00eb899b9ff087d739",
+        "744d546a4389c1c1ce0f",
+        "88d7513a80f5ec29bd58",
+        "8910eaee8de71a029105",
+        "89bc855b91ed226c6bcb",
+        "90a311bb2435169e8ac8",
+        "953b8869988c20eabb1d",
+        "a4f63636ab8dd537cf97",
+        "a6a2ea877038bfd1074c",
+        "b24e3e86fca14178d322",
+        "b57f97004d53b10d778d",
+        "b8bd16732bb7e6d56407",
+        "be3873ba92f88bdd0d25",
+        "c28b2750fcc12d8fe73b",
+        "c782e94c93ffd0a77846",
+        "e914391761d19f32e64c",
+        "eae9d5ac40e46def1fd6",
+        "f46f9b9f3b1ff072f21c",
+        "ff112f0d3296b7cef82d"
+      ],
+      "content_hash": "1a723d963dcedc6b4b4e0b1e72efe64874cbffb798bbd9b3d6be65b35c21a023",
+      "dependencies": [],
+      "description": "Use DevOps Center for work item tracking, org-based release pipelines, and merging into existing SFDX workflows. NOT for first-time setup.",
+      "file_location": "skills/devops/devops-center-advanced",
+      "id": "devops/devops-center-advanced",
+      "inputs": [
+        "existing pipeline",
+        "team size"
+      ],
+      "name": "devops-center-advanced",
+      "official_sources": [
+        "Salesforce DX Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/",
+        "Unlocked Packaging \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_dev2gp.htm",
+        "SF CLI \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/",
+        "DevOps Center \u2014 https://help.salesforce.com/s/articleView?id=sf.devops_center_overview.htm",
+        "Scratch Org Snapshots \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_snapshots.htm",
+        "sfdx-hardis \u2014 https://sfdx-hardis.cloudity.com/"
+      ],
+      "outputs": [
+        "work-item model + bypass rules + hybrid SFDX + DOC workflow"
+      ],
+      "references": [
+        "skills/devops/devops-center-advanced/references/examples.md",
+        "skills/devops/devops-center-advanced/references/gotchas.md",
+        "skills/devops/devops-center-advanced/references/llm-anti-patterns.md",
+        "skills/devops/devops-center-advanced/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/devops/devops-center-advanced/scripts/check_devops_center_advanced.py"
+      ],
+      "tags": [
+        "devops-center",
+        "work-item",
+        "pipeline"
+      ],
+      "templates": [
+        "skills/devops/devops-center-advanced/templates/devops-center-advanced-template.md"
+      ],
+      "updated": "2026-04-17",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "devops",
+      "chunk_ids": [
         "065ac745f429ac600e0d",
         "0cb77eefaf9a9284ede7",
         "0cf6ccd8ff68baeb8261",
@@ -74010,6 +74082,79 @@
         "skills/devops/experience-cloud-deployment-dev/templates/experience-cloud-deployment-dev-template.md"
       ],
       "updated": "2026-04-13",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "devops",
+      "chunk_ids": [
+        "13d7c68c2ca340d41216",
+        "1a0b8b9743a13b15b92e",
+        "255111b66ae04dcab892",
+        "433b454c03c7741409be",
+        "477f24583501543f0c37",
+        "4cbc7b41ea78bb3382db",
+        "52c6cd7c4d927a5b2891",
+        "54d543c51620bf8ec866",
+        "5e72cb4cd4ecd4e750c1",
+        "65ae5662e2c2a75e3264",
+        "684ed103920bfce2ad4d",
+        "754ca54bdb97ee07ec13",
+        "76b458ecff6229b0479a",
+        "79288cb07582ee726b5b",
+        "798a62238f121da2c0a7",
+        "88afd85821dbfca7e706",
+        "92642bdb8abf61b6c447",
+        "b3e773d400eea8c4b032",
+        "b9fab2e5c27ff6340e52",
+        "c298a8bdc8ab8e3afaa6",
+        "cda471d8129f82a2d78b",
+        "e43f233510293b5287d6",
+        "f555ea7c737475674d3b",
+        "fa0b330480ed09b45a33",
+        "fa351612504893f28be1",
+        "fe318f8797e7b50cd8c0"
+      ],
+      "content_hash": "cacbf790ff59a3fa00f7ff46ca023b944245df7066ff37d8353c478abbd43a55",
+      "dependencies": [],
+      "description": "Implement environment-safe feature flags using Custom Metadata Types for Apex, LWC, and Flow. NOT for user-level entitlements or permission sets.",
+      "file_location": "skills/devops/feature-flag-custom-metadata",
+      "id": "devops/feature-flag-custom-metadata",
+      "inputs": [
+        "feature name",
+        "rollout criteria",
+        "consuming components"
+      ],
+      "name": "feature-flag-custom-metadata",
+      "official_sources": [
+        "Salesforce DX Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/",
+        "Unlocked Packaging \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_dev2gp.htm",
+        "SF CLI \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/",
+        "DevOps Center \u2014 https://help.salesforce.com/s/articleView?id=sf.devops_center_overview.htm",
+        "Scratch Org Snapshots \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_snapshots.htm",
+        "sfdx-hardis \u2014 https://sfdx-hardis.cloudity.com/"
+      ],
+      "outputs": [
+        "Feature_Flag__mdt record + Apex/LWC/Flow accessor"
+      ],
+      "references": [
+        "skills/devops/feature-flag-custom-metadata/references/examples.md",
+        "skills/devops/feature-flag-custom-metadata/references/gotchas.md",
+        "skills/devops/feature-flag-custom-metadata/references/llm-anti-patterns.md",
+        "skills/devops/feature-flag-custom-metadata/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/devops/feature-flag-custom-metadata/scripts/check_feature_flag_custom_metadata.py"
+      ],
+      "tags": [
+        "feature-flag",
+        "custom-metadata",
+        "release"
+      ],
+      "templates": [
+        "skills/devops/feature-flag-custom-metadata/templates/feature-flag-custom-metadata-template.md"
+      ],
+      "updated": "2026-04-17",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -75753,6 +75898,78 @@
     {
       "category": "devops",
       "chunk_ids": [
+        "05441dba41d1cd7f0d84",
+        "099026eb85f5c4cdb11f",
+        "0f775c58d969762898a1",
+        "109814649f7fb852a3e5",
+        "1d4646a3b22e390466bb",
+        "35432ca211164836a6bd",
+        "37b7574ce9bf5cb18ec9",
+        "37e0b8b33cbae20d264b",
+        "38ab0fb119e032074ab4",
+        "47863b680ec9b3ab731b",
+        "4b8b6c575873312e62a8",
+        "4b9b707b599c24b2f120",
+        "59f3bac4325dc4556088",
+        "6920441115bbfc6f23bd",
+        "6d33332dbb64885bfabd",
+        "74c36fbb12806816da2d",
+        "786759c0109fa205b201",
+        "9d0548eb35b5983b605e",
+        "b36c8466e644101b7e0c",
+        "bc4e815e528ef3759a46",
+        "cb8dcbfac16e352620ec",
+        "dbc4fe534b01345d7085",
+        "dcfa08c18c7b17450a16",
+        "dd08580521669f0ef2f7",
+        "de1d83df15f717ce1569",
+        "f9d50a5a1b960a878be6"
+      ],
+      "content_hash": "9f85c267f94a97f51b67ce4cf98c22ce8ea00317e2fe578f53fd117ad0e6a56d",
+      "dependencies": [],
+      "description": "Model and verify unlocked package dependencies, version pinning, and promotion. NOT for 1GP managed packages.",
+      "file_location": "skills/devops/packaging-dependency-graph",
+      "id": "devops/packaging-dependency-graph",
+      "inputs": [
+        "list of packages + current version",
+        "intended promotion plan"
+      ],
+      "name": "packaging-dependency-graph",
+      "official_sources": [
+        "Salesforce DX Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/",
+        "Unlocked Packaging \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_dev2gp.htm",
+        "SF CLI \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/",
+        "DevOps Center \u2014 https://help.salesforce.com/s/articleView?id=sf.devops_center_overview.htm",
+        "Scratch Org Snapshots \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_snapshots.htm",
+        "sfdx-hardis \u2014 https://sfdx-hardis.cloudity.com/"
+      ],
+      "outputs": [
+        "dependency diagram, pinning strategy, promotion runbook"
+      ],
+      "references": [
+        "skills/devops/packaging-dependency-graph/references/examples.md",
+        "skills/devops/packaging-dependency-graph/references/gotchas.md",
+        "skills/devops/packaging-dependency-graph/references/llm-anti-patterns.md",
+        "skills/devops/packaging-dependency-graph/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/devops/packaging-dependency-graph/scripts/check_packaging_dependency_graph.py"
+      ],
+      "tags": [
+        "packaging",
+        "2gp",
+        "dependencies"
+      ],
+      "templates": [
+        "skills/devops/packaging-dependency-graph/templates/packaging-dependency-graph-template.md"
+      ],
+      "updated": "2026-04-17",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "devops",
+      "chunk_ids": [
         "0413e467fb1e75f470b0",
         "0428e735d64691cae7a9",
         "06e8db1eae800ee851de",
@@ -76009,6 +76226,80 @@
     {
       "category": "devops",
       "chunk_ids": [
+        "0bad5d5097720a8d777a",
+        "0c354f422d7ec3c766f1",
+        "175c60be7bea966f2659",
+        "189bd58e5f8c148fdc93",
+        "1b19f1fb230d8a0547a0",
+        "25f2c198a04ad55a4280",
+        "2cf4f839dbd14beb9043",
+        "30fbff3777689a0073c0",
+        "43279710172a608e9ed2",
+        "53e46ece8b63e348f16e",
+        "569e7bd289126ead751d",
+        "5f49d94985730bc0fca7",
+        "622f67329c8340af4960",
+        "815c2b7e54eb2aae73fe",
+        "88d10260ee78504a3b86",
+        "896a52442fcbab15864c",
+        "8c03e52f84e95c084b49",
+        "9ca77d7b8cd15b9da98b",
+        "a05a90d833d0128fe1d6",
+        "a59df05a64c07d5dc00b",
+        "b1cf8c0993194d79b00a",
+        "c0005c7f677bade1aeb0",
+        "c14260ff3b31fcb3b436",
+        "c7e4a11252c486a467f0",
+        "c8973ea3f788117dd2dd",
+        "e609628ceb80af037b08"
+      ],
+      "content_hash": "3003d6a26cf3fcc200b3de2b6b3e0208a9e53d4882f2c611b93379009bcfda43",
+      "dependencies": [],
+      "description": "Store and inject Salesforce auth URLs, JWT keys, and API credentials into CI without leaking them. NOT for runtime secrets in Apex.",
+      "file_location": "skills/devops/pipeline-secrets-management",
+      "id": "devops/pipeline-secrets-management",
+      "inputs": [
+        "CI provider (GitHub Actions / GitLab / Jenkins)",
+        "target orgs"
+      ],
+      "name": "pipeline-secrets-management",
+      "official_sources": [
+        "Salesforce DX Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/",
+        "Unlocked Packaging \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_dev2gp.htm",
+        "SF CLI \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/",
+        "DevOps Center \u2014 https://help.salesforce.com/s/articleView?id=sf.devops_center_overview.htm",
+        "Scratch Org Snapshots \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_snapshots.htm",
+        "sfdx-hardis \u2014 https://sfdx-hardis.cloudity.com/"
+      ],
+      "outputs": [
+        "Secret store layout",
+        "JWT auth workflow snippet"
+      ],
+      "references": [
+        "skills/devops/pipeline-secrets-management/references/examples.md",
+        "skills/devops/pipeline-secrets-management/references/gotchas.md",
+        "skills/devops/pipeline-secrets-management/references/llm-anti-patterns.md",
+        "skills/devops/pipeline-secrets-management/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/devops/pipeline-secrets-management/scripts/check_pipeline_secrets_management.py"
+      ],
+      "tags": [
+        "ci",
+        "secrets",
+        "jwt",
+        "sfdx-auth"
+      ],
+      "templates": [
+        "skills/devops/pipeline-secrets-management/templates/pipeline-secrets-management-template.md"
+      ],
+      "updated": "2026-04-17",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "devops",
+      "chunk_ids": [
         "003ab56d60fc47005329",
         "02687f83d8a24cb1c6bd",
         "0b06b8eb5224943ab50e",
@@ -76133,6 +76424,79 @@
         "skills/devops/post-deployment-validation/templates/post-deployment-validation-template.md"
       ],
       "updated": "2026-04-05",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "devops",
+      "chunk_ids": [
+        "0daab8e976e0c6408bf4",
+        "10534a747145938c0649",
+        "1a67144b8e1614a2ff63",
+        "297d97ff94b0239d9f54",
+        "2b156c2e9fca8e480076",
+        "30d009e643c62448a765",
+        "499f6ec30481713ab94a",
+        "4ecf8457a2e5a4ae9933",
+        "5da5cdf4389a65ecc90c",
+        "60a172420221ac6bce5d",
+        "732ef821a8d11ac4e75f",
+        "7bb71fb689f8f88d0e70",
+        "7be89f2517b3a09e041d",
+        "878449f74cb71411a1aa",
+        "8e76bf4e497c74145842",
+        "941251dc7d124066dcd0",
+        "9b02d7e7ddb5769b5972",
+        "a6f49e91d1d03f847ed1",
+        "b851ad0a0ccc917ee971",
+        "b9448d2d930620002aa2",
+        "ccaa7981dadf65cbf15a",
+        "d129761530caa766d5be",
+        "d40a4d57eabbb100f1f5",
+        "e180c76d5da8fa419943",
+        "e70011c9b516cc19310f",
+        "eb8dc28c14f21a54ab95"
+      ],
+      "content_hash": "6ec6bb54561895fca63570e3c90f43cf3961ed819f90f9969b9dcb16a8da14f0",
+      "dependencies": [],
+      "description": "Enforce change quality via PR templates, required reviews, metadata ownership, and automated checks. NOT for branching model selection.",
+      "file_location": "skills/devops/pr-policy-templates",
+      "id": "devops/pr-policy-templates",
+      "inputs": [
+        "team topology",
+        "coverage SLA"
+      ],
+      "name": "pr-policy-templates",
+      "official_sources": [
+        "Salesforce DX Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/",
+        "Unlocked Packaging \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_dev2gp.htm",
+        "SF CLI \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/",
+        "DevOps Center \u2014 https://help.salesforce.com/s/articleView?id=sf.devops_center_overview.htm",
+        "Scratch Org Snapshots \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_snapshots.htm",
+        "sfdx-hardis \u2014 https://sfdx-hardis.cloudity.com/"
+      ],
+      "outputs": [
+        "PR template, CODEOWNERS, branch protection config"
+      ],
+      "references": [
+        "skills/devops/pr-policy-templates/references/examples.md",
+        "skills/devops/pr-policy-templates/references/gotchas.md",
+        "skills/devops/pr-policy-templates/references/llm-anti-patterns.md",
+        "skills/devops/pr-policy-templates/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/devops/pr-policy-templates/scripts/check_pr_policy_templates.py"
+      ],
+      "tags": [
+        "pr",
+        "github",
+        "codeowners",
+        "governance"
+      ],
+      "templates": [
+        "skills/devops/pr-policy-templates/templates/pr-policy-templates-template.md"
+      ],
+      "updated": "2026-04-17",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -77618,6 +77982,79 @@
     {
       "category": "devops",
       "chunk_ids": [
+        "1024ac893fd5a845a1ff",
+        "245af9eedac8b5108b64",
+        "27654ab417220ba9c53c",
+        "2aedc075df0c93dba303",
+        "2bf86ed8af2faf3f174c",
+        "37d8dc827a4b8553cd31",
+        "3a5097bd26aab13fbe7f",
+        "41e666b439053f5c8d56",
+        "4bb553959f39a204537e",
+        "4c1132ed45339521a21f",
+        "4c67bd9d12ad59c94281",
+        "51fac64fe358e7915b17",
+        "576f1d6925a49b11a17e",
+        "638746587abda4d4fc24",
+        "6ab15250b55eaff2b525",
+        "6cdc9c267725935df652",
+        "7372c7d048e6244f2b86",
+        "7dbf9bc9cbc45b53611f",
+        "90550f1c72c467cec203",
+        "909bf7d144a458224139",
+        "b5eb7474f90ad93f49e5",
+        "ba484326a7ed2608866b",
+        "c9cb6711da317097482c",
+        "e353f21f7a10bc0365d7",
+        "f62836efc48f0e1b35c0",
+        "fab836e38e0f23bd5dfe"
+      ],
+      "content_hash": "e456a7dff9acf07b1ef91ea001145ca54e0ded17bd5dde0051e63d81ea17d211",
+      "dependencies": [],
+      "description": "Use Scratch Org Snapshots to reduce CI bring-up time from 10\u201320 minutes to under 2. NOT for persistent sandbox provisioning.",
+      "file_location": "skills/devops/scratch-org-snapshots",
+      "id": "devops/scratch-org-snapshots",
+      "inputs": [
+        "Dev Hub",
+        "base scratch org definition",
+        "managed package install list"
+      ],
+      "name": "scratch-org-snapshots",
+      "official_sources": [
+        "Salesforce DX Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/",
+        "Unlocked Packaging \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_dev2gp.htm",
+        "SF CLI \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/",
+        "DevOps Center \u2014 https://help.salesforce.com/s/articleView?id=sf.devops_center_overview.htm",
+        "Scratch Org Snapshots \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_snapshots.htm",
+        "sfdx-hardis \u2014 https://sfdx-hardis.cloudity.com/"
+      ],
+      "outputs": [
+        "Snapshot + nightly refresh job + CI consumption pattern"
+      ],
+      "references": [
+        "skills/devops/scratch-org-snapshots/references/examples.md",
+        "skills/devops/scratch-org-snapshots/references/gotchas.md",
+        "skills/devops/scratch-org-snapshots/references/llm-anti-patterns.md",
+        "skills/devops/scratch-org-snapshots/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/devops/scratch-org-snapshots/scripts/check_scratch_org_snapshots.py"
+      ],
+      "tags": [
+        "scratch-org",
+        "ci",
+        "snapshots"
+      ],
+      "templates": [
+        "skills/devops/scratch-org-snapshots/templates/scratch-org-snapshots-template.md"
+      ],
+      "updated": "2026-04-17",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "devops",
+      "chunk_ids": [
         "058a6dac4440298a3d6f",
         "079ba6efd096d9a7c5ad",
         "086e7c8dae040331b90e",
@@ -77772,6 +78209,151 @@
         "skills/devops/second-generation-managed-packages/templates/second-generation-managed-packages-template.md"
       ],
       "updated": "2026-04-04",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "devops",
+      "chunk_ids": [
+        "01c737fae18441070728",
+        "06a5cfd5df5b6d23ad76",
+        "120b4255d57cd4d33eb8",
+        "1b8d599fcbab1f937783",
+        "1c6556942d9429dad3d4",
+        "1c8d9c790af838671988",
+        "1df95b61d259df4dca87",
+        "228a6cfc7b3298f7fc31",
+        "2b4e5254757130466af0",
+        "577700cf5340f87834d0",
+        "6938554e3919e961dfe4",
+        "6c556419800d54a94c3e",
+        "7268be3c33eabef489f3",
+        "9159f396261085344e55",
+        "95ca3f77f868c4829545",
+        "a08b1045f9b8edbba79a",
+        "be30efb0a58568e799cc",
+        "ca9e69f829c201138cf5",
+        "ccc6f1357fa1dc21d4a1",
+        "d4f3df47f4b7b56f22ab",
+        "d7373f675f74547df602",
+        "de544e43355a3e343930",
+        "e45d2aca90c91fe6307f",
+        "e760750d8edba3b26f35",
+        "f2804401eeae82fd71d4",
+        "f9bc2875f5f4e734c354"
+      ],
+      "content_hash": "a2f566a43cfad045632cea967334308923e64b16645cdf80ddc8757ff4e1c5e1",
+      "dependencies": [],
+      "description": "Adopt sfdx-hardis for org monitoring, CI pipelines, and release automation. NOT for writing plugins to sfdx-hardis itself.",
+      "file_location": "skills/devops/sfdx-hardis-integration",
+      "id": "devops/sfdx-hardis-integration",
+      "inputs": [
+        "CI provider",
+        "monitoring SLAs",
+        "release cadence"
+      ],
+      "name": "sfdx-hardis-integration",
+      "official_sources": [
+        "Salesforce DX Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/",
+        "Unlocked Packaging \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_dev2gp.htm",
+        "SF CLI \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/",
+        "DevOps Center \u2014 https://help.salesforce.com/s/articleView?id=sf.devops_center_overview.htm",
+        "Scratch Org Snapshots \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_snapshots.htm",
+        "sfdx-hardis \u2014 https://sfdx-hardis.cloudity.com/"
+      ],
+      "outputs": [
+        "hardis configuration + CI pipeline + monitoring job"
+      ],
+      "references": [
+        "skills/devops/sfdx-hardis-integration/references/examples.md",
+        "skills/devops/sfdx-hardis-integration/references/gotchas.md",
+        "skills/devops/sfdx-hardis-integration/references/llm-anti-patterns.md",
+        "skills/devops/sfdx-hardis-integration/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/devops/sfdx-hardis-integration/scripts/check_sfdx_hardis_integration.py"
+      ],
+      "tags": [
+        "sfdx-hardis",
+        "cicd",
+        "monitoring"
+      ],
+      "templates": [
+        "skills/devops/sfdx-hardis-integration/templates/sfdx-hardis-integration-template.md"
+      ],
+      "updated": "2026-04-17",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "devops",
+      "chunk_ids": [
+        "0084bb358cf2bfef6d25",
+        "1117cd102304873b4604",
+        "2501a420f84d4f5dc3b0",
+        "282a8d1c35f9fdf7ba78",
+        "29e7d3590483e66fca85",
+        "3603061a91adc5d6ee59",
+        "3b6a04062991907c0d68",
+        "56ea0542d2a42e976708",
+        "5aaf9378ecaa54c83ba4",
+        "6f61dd1ef070aa052207",
+        "74262d2f373e6c110c37",
+        "7a63ebbec1571a028777",
+        "7cd9e46574c2db12ac24",
+        "85faa40b33cf9487570b",
+        "8917871ca1818d7247de",
+        "946d40ce4e117dd2cfbc",
+        "961008a6b8a57b75d9f2",
+        "9876a4a34ff4b2bfeae5",
+        "a671ae8250b757fe94a7",
+        "a7994a7a0c484d2854d2",
+        "b782b89760085b7a540e",
+        "dc33eecaf7b611dc6abb",
+        "e806389536ed602b54d9",
+        "e9be54a612e1984fa0f6",
+        "fe4133c9ffcf1ddec042",
+        "ff3b96c77250b04115f2"
+      ],
+      "content_hash": "064d8d548be1e40f84ee665cc8d5e379c41749389095d5e0957f8516c347fdc8",
+      "dependencies": [],
+      "description": "Structure a single repo with multiple unlocked packages, shared templates, and cross-package test strategies. NOT for multi-repo org strategies.",
+      "file_location": "skills/devops/sfdx-monorepo-patterns",
+      "id": "devops/sfdx-monorepo-patterns",
+      "inputs": [
+        "current repo layout",
+        "list of logical packages"
+      ],
+      "name": "sfdx-monorepo-patterns",
+      "official_sources": [
+        "Salesforce DX Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/",
+        "Unlocked Packaging \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_dev2gp.htm",
+        "SF CLI \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/",
+        "DevOps Center \u2014 https://help.salesforce.com/s/articleView?id=sf.devops_center_overview.htm",
+        "Scratch Org Snapshots \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_snapshots.htm",
+        "sfdx-hardis \u2014 https://sfdx-hardis.cloudity.com/"
+      ],
+      "outputs": [
+        "sfdx-project.json package directive list, Turborepo/Nx analog, CI matrix"
+      ],
+      "references": [
+        "skills/devops/sfdx-monorepo-patterns/references/examples.md",
+        "skills/devops/sfdx-monorepo-patterns/references/gotchas.md",
+        "skills/devops/sfdx-monorepo-patterns/references/llm-anti-patterns.md",
+        "skills/devops/sfdx-monorepo-patterns/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/devops/sfdx-monorepo-patterns/scripts/check_sfdx_monorepo_patterns.py"
+      ],
+      "tags": [
+        "monorepo",
+        "packaging",
+        "sfdx"
+      ],
+      "templates": [
+        "skills/devops/sfdx-monorepo-patterns/templates/sfdx-monorepo-patterns-template.md"
+      ],
+      "updated": "2026-04-17",
       "vector_embedding": null,
       "version": "1.0.0"
     },

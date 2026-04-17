@@ -1,0 +1,72 @@
+{
+  "category": "devops",
+  "chunk_ids": [
+    "05fa74f99d41dff86f9b",
+    "064aeef27ac27272a5c2",
+    "2a4bf1f465d68fbf78ef",
+    "325aa7a2dd6e601154b9",
+    "4f2a53ee263b4beedd6b",
+    "5561f985d887f33fda90",
+    "578e3c8bdfcbe5773bbc",
+    "6a00eb899b9ff087d739",
+    "744d546a4389c1c1ce0f",
+    "88d7513a80f5ec29bd58",
+    "8910eaee8de71a029105",
+    "89bc855b91ed226c6bcb",
+    "90a311bb2435169e8ac8",
+    "953b8869988c20eabb1d",
+    "a4f63636ab8dd537cf97",
+    "a6a2ea877038bfd1074c",
+    "b24e3e86fca14178d322",
+    "b57f97004d53b10d778d",
+    "b8bd16732bb7e6d56407",
+    "be3873ba92f88bdd0d25",
+    "c28b2750fcc12d8fe73b",
+    "c782e94c93ffd0a77846",
+    "e914391761d19f32e64c",
+    "eae9d5ac40e46def1fd6",
+    "f46f9b9f3b1ff072f21c",
+    "ff112f0d3296b7cef82d"
+  ],
+  "content_hash": "1a723d963dcedc6b4b4e0b1e72efe64874cbffb798bbd9b3d6be65b35c21a023",
+  "dependencies": [],
+  "description": "Use DevOps Center for work item tracking, org-based release pipelines, and merging into existing SFDX workflows. NOT for first-time setup.",
+  "file_location": "skills/devops/devops-center-advanced",
+  "id": "devops/devops-center-advanced",
+  "inputs": [
+    "existing pipeline",
+    "team size"
+  ],
+  "name": "devops-center-advanced",
+  "official_sources": [
+    "Salesforce DX Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/",
+    "Unlocked Packaging \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_dev2gp.htm",
+    "SF CLI \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/",
+    "DevOps Center \u2014 https://help.salesforce.com/s/articleView?id=sf.devops_center_overview.htm",
+    "Scratch Org Snapshots \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_snapshots.htm",
+    "sfdx-hardis \u2014 https://sfdx-hardis.cloudity.com/"
+  ],
+  "outputs": [
+    "work-item model + bypass rules + hybrid SFDX + DOC workflow"
+  ],
+  "references": [
+    "skills/devops/devops-center-advanced/references/examples.md",
+    "skills/devops/devops-center-advanced/references/gotchas.md",
+    "skills/devops/devops-center-advanced/references/llm-anti-patterns.md",
+    "skills/devops/devops-center-advanced/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/devops/devops-center-advanced/scripts/check_devops_center_advanced.py"
+  ],
+  "tags": [
+    "devops-center",
+    "work-item",
+    "pipeline"
+  ],
+  "templates": [
+    "skills/devops/devops-center-advanced/templates/devops-center-advanced-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

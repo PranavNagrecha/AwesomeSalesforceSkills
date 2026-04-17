@@ -1,0 +1,73 @@
+{
+  "category": "devops",
+  "chunk_ids": [
+    "1024ac893fd5a845a1ff",
+    "245af9eedac8b5108b64",
+    "27654ab417220ba9c53c",
+    "2aedc075df0c93dba303",
+    "2bf86ed8af2faf3f174c",
+    "37d8dc827a4b8553cd31",
+    "3a5097bd26aab13fbe7f",
+    "41e666b439053f5c8d56",
+    "4bb553959f39a204537e",
+    "4c1132ed45339521a21f",
+    "4c67bd9d12ad59c94281",
+    "51fac64fe358e7915b17",
+    "576f1d6925a49b11a17e",
+    "638746587abda4d4fc24",
+    "6ab15250b55eaff2b525",
+    "6cdc9c267725935df652",
+    "7372c7d048e6244f2b86",
+    "7dbf9bc9cbc45b53611f",
+    "90550f1c72c467cec203",
+    "909bf7d144a458224139",
+    "b5eb7474f90ad93f49e5",
+    "ba484326a7ed2608866b",
+    "c9cb6711da317097482c",
+    "e353f21f7a10bc0365d7",
+    "f62836efc48f0e1b35c0",
+    "fab836e38e0f23bd5dfe"
+  ],
+  "content_hash": "e456a7dff9acf07b1ef91ea001145ca54e0ded17bd5dde0051e63d81ea17d211",
+  "dependencies": [],
+  "description": "Use Scratch Org Snapshots to reduce CI bring-up time from 10\u201320 minutes to under 2. NOT for persistent sandbox provisioning.",
+  "file_location": "skills/devops/scratch-org-snapshots",
+  "id": "devops/scratch-org-snapshots",
+  "inputs": [
+    "Dev Hub",
+    "base scratch org definition",
+    "managed package install list"
+  ],
+  "name": "scratch-org-snapshots",
+  "official_sources": [
+    "Salesforce DX Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/",
+    "Unlocked Packaging \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_dev2gp.htm",
+    "SF CLI \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/",
+    "DevOps Center \u2014 https://help.salesforce.com/s/articleView?id=sf.devops_center_overview.htm",
+    "Scratch Org Snapshots \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_snapshots.htm",
+    "sfdx-hardis \u2014 https://sfdx-hardis.cloudity.com/"
+  ],
+  "outputs": [
+    "Snapshot + nightly refresh job + CI consumption pattern"
+  ],
+  "references": [
+    "skills/devops/scratch-org-snapshots/references/examples.md",
+    "skills/devops/scratch-org-snapshots/references/gotchas.md",
+    "skills/devops/scratch-org-snapshots/references/llm-anti-patterns.md",
+    "skills/devops/scratch-org-snapshots/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/devops/scratch-org-snapshots/scripts/check_scratch_org_snapshots.py"
+  ],
+  "tags": [
+    "scratch-org",
+    "ci",
+    "snapshots"
+  ],
+  "templates": [
+    "skills/devops/scratch-org-snapshots/templates/scratch-org-snapshots-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

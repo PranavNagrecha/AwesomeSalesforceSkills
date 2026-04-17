@@ -1,0 +1,73 @@
+{
+  "category": "devops",
+  "chunk_ids": [
+    "0daab8e976e0c6408bf4",
+    "10534a747145938c0649",
+    "1a67144b8e1614a2ff63",
+    "297d97ff94b0239d9f54",
+    "2b156c2e9fca8e480076",
+    "30d009e643c62448a765",
+    "499f6ec30481713ab94a",
+    "4ecf8457a2e5a4ae9933",
+    "5da5cdf4389a65ecc90c",
+    "60a172420221ac6bce5d",
+    "732ef821a8d11ac4e75f",
+    "7bb71fb689f8f88d0e70",
+    "7be89f2517b3a09e041d",
+    "878449f74cb71411a1aa",
+    "8e76bf4e497c74145842",
+    "941251dc7d124066dcd0",
+    "9b02d7e7ddb5769b5972",
+    "a6f49e91d1d03f847ed1",
+    "b851ad0a0ccc917ee971",
+    "b9448d2d930620002aa2",
+    "ccaa7981dadf65cbf15a",
+    "d129761530caa766d5be",
+    "d40a4d57eabbb100f1f5",
+    "e180c76d5da8fa419943",
+    "e70011c9b516cc19310f",
+    "eb8dc28c14f21a54ab95"
+  ],
+  "content_hash": "6ec6bb54561895fca63570e3c90f43cf3961ed819f90f9969b9dcb16a8da14f0",
+  "dependencies": [],
+  "description": "Enforce change quality via PR templates, required reviews, metadata ownership, and automated checks. NOT for branching model selection.",
+  "file_location": "skills/devops/pr-policy-templates",
+  "id": "devops/pr-policy-templates",
+  "inputs": [
+    "team topology",
+    "coverage SLA"
+  ],
+  "name": "pr-policy-templates",
+  "official_sources": [
+    "Salesforce DX Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/",
+    "Unlocked Packaging \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_dev2gp.htm",
+    "SF CLI \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/",
+    "DevOps Center \u2014 https://help.salesforce.com/s/articleView?id=sf.devops_center_overview.htm",
+    "Scratch Org Snapshots \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_snapshots.htm",
+    "sfdx-hardis \u2014 https://sfdx-hardis.cloudity.com/"
+  ],
+  "outputs": [
+    "PR template, CODEOWNERS, branch protection config"
+  ],
+  "references": [
+    "skills/devops/pr-policy-templates/references/examples.md",
+    "skills/devops/pr-policy-templates/references/gotchas.md",
+    "skills/devops/pr-policy-templates/references/llm-anti-patterns.md",
+    "skills/devops/pr-policy-templates/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/devops/pr-policy-templates/scripts/check_pr_policy_templates.py"
+  ],
+  "tags": [
+    "pr",
+    "github",
+    "codeowners",
+    "governance"
+  ],
+  "templates": [
+    "skills/devops/pr-policy-templates/templates/pr-policy-templates-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

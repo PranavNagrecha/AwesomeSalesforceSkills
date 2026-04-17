@@ -542,11 +542,13 @@
       "devops/deployment-error-troubleshooting",
       "devops/deployment-monitoring",
       "devops/destructive-changes-deployment",
+      "devops/devops-center-advanced",
       "devops/devops-center-pipeline",
       "devops/environment-specific-value-injection",
       "devops/environment-strategy",
       "devops/experience-cloud-deployment-admin",
       "devops/experience-cloud-deployment-dev",
+      "devops/feature-flag-custom-metadata",
       "devops/fsc-deployment-patterns",
       "devops/git-branching-for-salesforce",
       "devops/github-actions-for-salesforce",
@@ -559,9 +561,12 @@
       "devops/multi-package-development",
       "devops/org-shape-and-scratch-definition",
       "devops/package-development-strategy",
+      "devops/packaging-dependency-graph",
       "devops/performance-testing-salesforce",
       "devops/permission-set-deployment-ordering",
+      "devops/pipeline-secrets-management",
       "devops/post-deployment-validation",
+      "devops/pr-policy-templates",
       "devops/pre-deployment-checklist",
       "devops/release-management",
       "devops/rollback-and-hotfix-strategy",
@@ -573,7 +578,10 @@
       "devops/sandbox-refresh-and-templates",
       "devops/scratch-org-management",
       "devops/scratch-org-pools",
+      "devops/scratch-org-snapshots",
       "devops/second-generation-managed-packages",
+      "devops/sfdx-hardis-integration",
+      "devops/sfdx-monorepo-patterns",
       "devops/source-tracking-and-conflict-resolution",
       "devops/unlocked-package-development",
       "devops/vscode-salesforce-extensions"
@@ -751,6 +759,7 @@
     ],
     "2gp": [
       "devops/package-development-strategy",
+      "devops/packaging-dependency-graph",
       "devops/second-generation-managed-packages"
     ],
     "AI": [
@@ -2658,7 +2667,9 @@
       "data/vector-database-management"
     ],
     "ci": [
-      "agentforce/agentforce-eval-harness"
+      "agentforce/agentforce-eval-harness",
+      "devops/pipeline-secrets-management",
+      "devops/scratch-org-snapshots"
     ],
     "ci-cd": [
       "architect/ci-cd-pipeline-architecture",
@@ -2677,6 +2688,7 @@
       "omnistudio/omnistudio-deployment-datapacks"
     ],
     "cicd": [
+      "devops/sfdx-hardis-integration",
       "omnistudio/omnistudio-ci-cd-patterns"
     ],
     "circuit-breaker": [
@@ -2793,6 +2805,9 @@
     ],
     "codeable-concept": [
       "admin/clinical-data-requirements"
+    ],
+    "codeowners": [
+      "devops/pr-policy-templates"
     ],
     "cogroup": [
       "admin/saql-query-development"
@@ -3511,7 +3526,8 @@
       "apex/custom-metadata-in-apex",
       "architect/integration-framework-design",
       "architect/platform-selection-guidance",
-      "devops/environment-specific-value-injection"
+      "devops/environment-specific-value-injection",
+      "devops/feature-flag-custom-metadata"
     ],
     "custom-metadata-types": [
       "admin/custom-metadata-types",
@@ -4094,7 +4110,8 @@
       "admin/system-field-behavior-and-audit"
     ],
     "dependencies": [
-      "data/omnistudio-metadata-management"
+      "data/omnistudio-metadata-management",
+      "devops/packaging-dependency-graph"
     ],
     "dependency-errors": [
       "devops/deployment-error-troubleshooting"
@@ -4243,6 +4260,7 @@
       "omnistudio/omnistudio-ci-cd-patterns"
     ],
     "devops-center": [
+      "devops/devops-center-advanced",
       "devops/devops-center-pipeline",
       "devops/salesforce-devops-tooling-selection"
     ],
@@ -5089,6 +5107,9 @@
     "feature-availability": [
       "architect/org-edition-and-feature-licensing"
     ],
+    "feature-flag": [
+      "devops/feature-flag-custom-metadata"
+    ],
     "feature-flags": [
       "admin/custom-metadata-types",
       "admin/custom-permissions"
@@ -5692,7 +5713,8 @@
       "devops/git-branching-for-salesforce"
     ],
     "github": [
-      "devops/devops-center-pipeline"
+      "devops/devops-center-pipeline",
+      "devops/pr-policy-templates"
     ],
     "github-actions": [
       "devops/github-actions-for-salesforce"
@@ -5731,7 +5753,8 @@
     "governance": [
       "admin/change-advisory-board-process",
       "architect/api-led-connectivity-architecture",
-      "architect/multi-bu-marketing-architecture"
+      "architect/multi-bu-marketing-architecture",
+      "devops/pr-policy-templates"
     ],
     "government-cloud": [
       "architect/government-cloud-compliance"
@@ -6473,6 +6496,7 @@
       "data/data-model-design-patterns"
     ],
     "jwt": [
+      "devops/pipeline-secrets-management",
       "security/certificate-and-key-management"
     ],
     "jwt-auth": [
@@ -7313,10 +7337,14 @@
       "admin/batch-job-scheduling-and-monitoring",
       "apex/custom-logging-and-monitoring",
       "architect/org-limits-monitoring",
+      "devops/sfdx-hardis-integration",
       "flow/flow-error-monitoring"
     ],
     "mono-repo": [
       "devops/salesforce-dx-project-structure"
+    ],
+    "monorepo": [
+      "devops/sfdx-monorepo-patterns"
     ],
     "month-end-close": [
       "data/billing-data-reconciliation"
@@ -8030,7 +8058,9 @@
     "packaging": [
       "apex/custom-metadata-in-apex",
       "architect/metadata-coverage-and-dependencies",
-      "devops/package-development-strategy"
+      "devops/package-development-strategy",
+      "devops/packaging-dependency-graph",
+      "devops/sfdx-monorepo-patterns"
     ],
     "packaging-org": [
       "devops/managed-package-development"
@@ -8327,6 +8357,7 @@
     "pipeline": [
       "data/sales-reporting-data-model",
       "devops/copado-essentials",
+      "devops/devops-center-advanced",
       "devops/devops-center-pipeline",
       "integration/data-cloud-integration-strategy"
     ],
@@ -8448,6 +8479,9 @@
     ],
     "postmonger": [
       "apex/marketing-cloud-custom-activities"
+    ],
+    "pr": [
+      "devops/pr-policy-templates"
     ],
     "pre-deployment-checklist": [
       "devops/pre-deployment-checklist"
@@ -9070,6 +9104,9 @@
     "relationships": [
       "data/data-model-design-patterns"
     ],
+    "release": [
+      "devops/feature-flag-custom-metadata"
+    ],
     "release-communication": [
       "admin/change-management-and-training"
     ],
@@ -9666,7 +9703,8 @@
     ],
     "scratch-org": [
       "apex/sf-cli-and-sfdx-essentials",
-      "devops/scratch-org-management"
+      "devops/scratch-org-management",
+      "devops/scratch-org-snapshots"
     ],
     "scratch-org-definition": [
       "devops/org-shape-and-scratch-definition"
@@ -9735,6 +9773,9 @@
     ],
     "second-generation-packaging": [
       "devops/unlocked-package-development"
+    ],
+    "secrets": [
+      "devops/pipeline-secrets-management"
     ],
     "secrets-management": [
       "devops/bitbucket-pipelines-for-salesforce",
@@ -10034,8 +10075,15 @@
       "devops/migration-from-change-sets-to-sfdx",
       "devops/org-shape-and-scratch-definition",
       "devops/scratch-org-management",
+      "devops/sfdx-monorepo-patterns",
       "devops/source-tracking-and-conflict-resolution",
       "devops/unlocked-package-development"
+    ],
+    "sfdx-auth": [
+      "devops/pipeline-secrets-management"
+    ],
+    "sfdx-hardis": [
+      "devops/sfdx-hardis-integration"
     ],
     "sfdx-lwc-jest": [
       "lwc/lwc-testing"
@@ -10232,6 +10280,9 @@
     ],
     "smartdatadiscovery": [
       "agentforce/einstein-discovery-development"
+    ],
+    "snapshots": [
+      "devops/scratch-org-snapshots"
     ],
     "snowflake": [
       "data/analytics-external-data"
@@ -11210,6 +11261,9 @@
     ],
     "wire-service": [
       "lwc/wire-service-patterns"
+    ],
+    "work-item": [
+      "devops/devops-center-advanced"
     ],
     "work-items": [
       "devops/copado-essentials",

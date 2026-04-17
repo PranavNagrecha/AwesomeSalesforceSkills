@@ -1,0 +1,72 @@
+{
+  "category": "devops",
+  "chunk_ids": [
+    "05441dba41d1cd7f0d84",
+    "099026eb85f5c4cdb11f",
+    "0f775c58d969762898a1",
+    "109814649f7fb852a3e5",
+    "1d4646a3b22e390466bb",
+    "35432ca211164836a6bd",
+    "37b7574ce9bf5cb18ec9",
+    "37e0b8b33cbae20d264b",
+    "38ab0fb119e032074ab4",
+    "47863b680ec9b3ab731b",
+    "4b8b6c575873312e62a8",
+    "4b9b707b599c24b2f120",
+    "59f3bac4325dc4556088",
+    "6920441115bbfc6f23bd",
+    "6d33332dbb64885bfabd",
+    "74c36fbb12806816da2d",
+    "786759c0109fa205b201",
+    "9d0548eb35b5983b605e",
+    "b36c8466e644101b7e0c",
+    "bc4e815e528ef3759a46",
+    "cb8dcbfac16e352620ec",
+    "dbc4fe534b01345d7085",
+    "dcfa08c18c7b17450a16",
+    "dd08580521669f0ef2f7",
+    "de1d83df15f717ce1569",
+    "f9d50a5a1b960a878be6"
+  ],
+  "content_hash": "9f85c267f94a97f51b67ce4cf98c22ce8ea00317e2fe578f53fd117ad0e6a56d",
+  "dependencies": [],
+  "description": "Model and verify unlocked package dependencies, version pinning, and promotion. NOT for 1GP managed packages.",
+  "file_location": "skills/devops/packaging-dependency-graph",
+  "id": "devops/packaging-dependency-graph",
+  "inputs": [
+    "list of packages + current version",
+    "intended promotion plan"
+  ],
+  "name": "packaging-dependency-graph",
+  "official_sources": [
+    "Salesforce DX Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/",
+    "Unlocked Packaging \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_dev2gp.htm",
+    "SF CLI \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/",
+    "DevOps Center \u2014 https://help.salesforce.com/s/articleView?id=sf.devops_center_overview.htm",
+    "Scratch Org Snapshots \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_snapshots.htm",
+    "sfdx-hardis \u2014 https://sfdx-hardis.cloudity.com/"
+  ],
+  "outputs": [
+    "dependency diagram, pinning strategy, promotion runbook"
+  ],
+  "references": [
+    "skills/devops/packaging-dependency-graph/references/examples.md",
+    "skills/devops/packaging-dependency-graph/references/gotchas.md",
+    "skills/devops/packaging-dependency-graph/references/llm-anti-patterns.md",
+    "skills/devops/packaging-dependency-graph/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/devops/packaging-dependency-graph/scripts/check_packaging_dependency_graph.py"
+  ],
+  "tags": [
+    "packaging",
+    "2gp",
+    "dependencies"
+  ],
+  "templates": [
+    "skills/devops/packaging-dependency-graph/templates/packaging-dependency-graph-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}
