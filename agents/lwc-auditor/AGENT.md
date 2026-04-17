@@ -8,14 +8,20 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+default_output_dir: "docs/reports/lwc-auditor/"
+output_formats:
+  - markdown
+  - json
 dependencies:
   skills:
+    - admin/agent-output-formats
     - lwc/lwc-accessibility
     - lwc/lwc-imperative-apex
     - lwc/lwc-performance
     - lwc/wire-service-patterns
   shared:
     - AGENT_CONTRACT.md
+    - DELIVERABLE_CONTRACT.md
   templates:
     - lwc/component-skeleton/
     - lwc/jest.config.js
@@ -49,6 +55,7 @@ Audits a Lightning Web Component bundle for accessibility, performance, security
 6. `templates/lwc/component-skeleton/` (the whole folder)
 7. `templates/lwc/jest.config.js`
 8. `templates/lwc/patterns/`
+9. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---
 
@@ -139,6 +146,24 @@ Map each finding back to the skeleton file or pattern that prevents it. Produce 
 6. **Citations** — skill ids, template paths.
 
 ---
+
+### Persistence (Wave 10 contract)
+
+Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md`.
+
+- **Markdown report:** `docs/reports/lwc-auditor/<run_id>.md`
+- **JSON envelope:** `docs/reports/lwc-auditor/<run_id>.json`
+- **Atomic write:** both files succeed or neither is left on disk.
+- **Run ID:** ISO-8601 UTC compact timestamp (colons → dashes) OR UUID; ≥ 8 chars.
+- **Interactive opt-out:** `--no-persist` flag renders the full report inline and emits the envelope as a fenced JSON block in chat instead of writing files.
+
+### Scope Guardrails (Wave 10 contract)
+
+Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
+
+- **Canonical data surface:** this agent's declared probes + the MCP tool set. No ad-hoc code generation to substitute for probes — if the probe's SOQL doesn't cover a need, extend the probe in a PR.
+- **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
+- **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only.
 
 ## Escalation / Refusal Rules
 

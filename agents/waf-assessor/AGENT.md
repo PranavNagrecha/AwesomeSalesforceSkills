@@ -8,8 +8,14 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+default_output_dir: "docs/reports/waf-assessor/"
+output_formats:
+  - markdown
+  - json
+multi_dimensional: true
 dependencies:
   skills:
+    - admin/agent-output-formats
     - apex/trigger-and-flow-coexistence
     - architect/ha-dr-architecture
     - architect/limits-and-scalability-planning
@@ -20,6 +26,7 @@ dependencies:
   shared:
     - AGENT_CONTRACT.md
     - AGENT_RULES.md
+    - DELIVERABLE_CONTRACT.md
 ---
 # Well-Architected Framework Assessor Agent
 
@@ -48,6 +55,7 @@ Runs a Well-Architected Framework (WAF) assessment against a Salesforce implemen
 5. `skills/architect/limits-and-scalability-planning`
 6. `skills/architect/nfr-definition-for-salesforce`
 7. `skills/architect/ha-dr-architecture`
+8. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---
 
@@ -126,6 +134,37 @@ Each finding: pillar, severity (P0/P1/P2), evidence, rationale, cost-to-fix, fix
 6. **Citations**.
 
 ---
+
+### Persistence (Wave 10 contract)
+
+Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md`.
+
+- **Markdown report:** `docs/reports/waf-assessor/<run_id>.md`
+- **JSON envelope:** `docs/reports/waf-assessor/<run_id>.json`
+- **Atomic write:** both files succeed or neither is left on disk.
+- **Run ID:** ISO-8601 UTC compact timestamp (colons → dashes) OR UUID; ≥ 8 chars.
+- **Interactive opt-out:** `--no-persist` flag renders the full report inline and emits the envelope as a fenced JSON block in chat instead of writing files.
+
+### Scope Guardrails (Wave 10 contract)
+
+Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
+
+- **Canonical data surface:** this agent's declared probes + the MCP tool set. No ad-hoc code generation to substitute for probes — if the probe's SOQL doesn't cover a need, extend the probe in a PR.
+- **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
+- **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only.
+
+### Dimensions (Wave 10 contract)
+
+The agent's envelope MUST place every Well-Architected pillar below in either `dimensions_compared[]` or `dimensions_skipped[]`.
+
+| Dimension | Notes |
+|---|---|
+| `security` | FLS, sharing, auth, secret handling |
+| `reliability` | Fault paths, governor headroom, recovery |
+| `performance` | SOQL selectivity, CPU, heap |
+| `scalability` | LDV patterns, bulk safety, async design |
+| `user-experience` | Path guidance, navigation, error messaging |
+| `operational-excellence` | Monitoring, deploy hygiene, incident runbooks |
 
 ## Escalation / Refusal Rules
 

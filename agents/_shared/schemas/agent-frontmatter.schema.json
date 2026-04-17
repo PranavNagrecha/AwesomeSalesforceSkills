@@ -127,6 +127,25 @@
       "type": "string",
       "enum": ["repo-absolute", "bundle-relative"],
       "description": "How citation paths inside this AGENT.md are written. 'repo-absolute' (default for in-tree agents) = paths like 'agents/_shared/probes/foo.md' valid only from repo root. 'bundle-relative' (set by the exporter) = paths like './probes/foo.md' valid inside a bundled export. Never hand-edit; the exporter sets this when producing a bundle."
+    },
+    "multi_dimensional": {
+      "type": "boolean",
+      "description": "Wave 10: set true if the agent's output covers 3+ distinct dimensions that could be compared / skipped independently (e.g. user-access-diff, org-drift-detector, deployment-risk-scorer). Multi-dimensional agents MUST enumerate dimensions_compared and dimensions_skipped in their output envelope. Defaults false."
+    },
+    "output_formats": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": ["markdown", "json", "xml", "csv", "html", "xlsx", "other"]
+      },
+      "description": "Wave 10: the formats the agent natively emits as deliverables. 'markdown' + 'json' is the canonical pair required by DELIVERABLE_CONTRACT.md. Additional formats (xlsx, csv, etc.) are converted FROM the canonical artifacts by downstream tooling — never regenerated. Defaults to [\"markdown\", \"json\"]."
+    },
+    "default_output_dir": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_/-]+/$",
+      "description": "Wave 10: where this agent writes its deliverables by default. Convention: 'docs/reports/<agent-id>/'. Consumers may override per-invocation but the agent's AGENT.md must declare the default."
     }
   },
   "allOf": [

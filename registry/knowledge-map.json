@@ -3,6 +3,7 @@
   "skills_by_domain": {
     "admin": [
       "admin/agent-conversation-design",
+      "admin/agent-output-formats",
       "admin/ai-adoption-change-management",
       "admin/ai-ethics-and-governance-requirements",
       "admin/ai-use-case-assessment",
@@ -1278,6 +1279,9 @@
     ],
     "agent-lifecycle": [
       "agentforce/agentforce-agent-creation"
+    ],
+    "agent-output": [
+      "admin/agent-output-formats"
     ],
     "agent-performance": [
       "agentforce/agentforce-observability"
@@ -3157,6 +3161,9 @@
     "conversational-ai-architecture": [
       "architect/conversational-ai-architecture"
     ],
+    "conversion": [
+      "admin/agent-output-formats"
+    ],
     "conversion-funnel": [
       "data/commerce-analytics-data"
     ],
@@ -3356,6 +3363,7 @@
       "apex/visualforce-fundamentals"
     ],
     "csv": [
+      "admin/agent-output-formats",
       "data/bulk-api-patterns"
     ],
     "csv-import": [
@@ -4014,6 +4022,9 @@
     ],
     "deletion-api": [
       "data/data-cloud-consent-and-privacy"
+    ],
+    "deliverable-contract": [
+      "admin/agent-output-formats"
     ],
     "delivery-profiles": [
       "admin/marketing-cloud-engagement-setup"
@@ -4831,6 +4842,9 @@
     ],
     "evergreen-billing": [
       "admin/billing-schedule-setup"
+    ],
+    "excel": [
+      "admin/agent-output-formats"
     ],
     "exception-diagnosis": [
       "apex/common-apex-runtime-errors"
@@ -7453,6 +7467,9 @@
       "admin/email-templates-and-alerts",
       "lwc/lwc-toast-and-notifications"
     ],
+    "notion": [
+      "admin/agent-output-formats"
+    ],
     "npc": [
       "architect/nonprofit-platform-architecture",
       "architect/npsp-vs-nonprofit-cloud-decision"
@@ -8087,6 +8104,7 @@
       "admin/commerce-checkout-flow-design"
     ],
     "pdf": [
+      "admin/agent-output-formats",
       "omnistudio/document-generation-omnistudio"
     ],
     "pdf-generation": [
@@ -9829,6 +9847,9 @@
     "service-territory": [
       "admin/fsl-service-territory-setup",
       "data/fsl-territory-data-setup"
+    ],
+    "servicenow": [
+      "admin/agent-output-formats"
     ],
     "session-analytics": [
       "agentforce/agentforce-observability"

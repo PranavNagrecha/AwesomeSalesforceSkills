@@ -8,9 +8,17 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-17
 updated: 2026-04-17
+default_output_dir: "docs/reports/audit-router/"
+output_formats:
+  - markdown
+  - json
+multi_dimensional: true
 dependencies:
+  skills:
+    - admin/agent-output-formats
   shared:
     - AGENT_CONTRACT.md
+    - DELIVERABLE_CONTRACT.md
     - REFUSAL_CODES.md
 ---
 # Audit Router Agent
@@ -40,6 +48,7 @@ Dispatches one of the audit domains in the [`audit_harness`](../_shared/harnesse
 5. `agents/_shared/harnesses/audit_harness/classifier_contract.md`
 6. The domain's classifier at `agents/_shared/harnesses/audit_harness/classifiers/<domain>.md` — read entirely before running any probe.
 7. The **Mandatory Reads** block inside that classifier — every skill / template listed there is a hard requirement for this run.
+8. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---
 
@@ -97,6 +106,31 @@ Conforms to [`output_schema.md`](../_shared/harnesses/audit_harness/output_schem
 6. **Citations** — per AGENT_CONTRACT.
 
 ---
+
+### Persistence (Wave 10 contract)
+
+Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md`.
+
+- **Markdown report:** `docs/reports/audit-router/<run_id>.md`
+- **JSON envelope:** `docs/reports/audit-router/<run_id>.json`
+- **Atomic write:** both files succeed or neither is left on disk.
+- **Run ID:** ISO-8601 UTC compact timestamp (colons → dashes) OR UUID; ≥ 8 chars.
+- **Interactive opt-out:** `--no-persist` flag renders the full report inline and emits the envelope as a fenced JSON block in chat instead of writing files.
+
+### Scope Guardrails (Wave 10 contract)
+
+Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
+
+- **Canonical data surface:** this agent's declared probes + the MCP tool set. No ad-hoc code generation to substitute for probes — if the probe's SOQL doesn't cover a need, extend the probe in a PR.
+- **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
+- **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only.
+
+### Dimensions (Wave 10 contract)
+
+The agent's envelope MUST place every classifier below in either `dimensions_compared[]` or `dimensions_skipped[]`. Classifier state reflects whether the underlying probe ran fully, partially, or not at all.
+
+Domain classifiers (one dimension per `--domain` value):
+`validation_rule`, `picklist`, `approval_process`, `record_type_layout`, `report_dashboard`, `case_escalation`, `lightning_record_page`, `list_view_search_layout`, `quick_action`, `report_folder_sharing`, `field_history`, `sharing`, `org_drift`, `my_domain_session`, `prompt_library`.
 
 ## Escalation / Refusal Rules
 

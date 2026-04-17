@@ -8,12 +8,19 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+default_output_dir: "docs/reports/security-scanner/"
+output_formats:
+  - markdown
+  - json
+multi_dimensional: true
 dependencies:
   skills:
+    - admin/agent-output-formats
     - apex/apex-security-patterns
     - integration/named-credentials-setup
   shared:
     - AGENT_CONTRACT.md
+    - DELIVERABLE_CONTRACT.md
   templates:
     - apex/HttpClient.cls
     - apex/SecurityUtils.cls
@@ -46,6 +53,7 @@ Walks a `force-app/` tree and flags CRUD/FLS violations, sharing leaks, hardcode
 4. `standards/decision-trees/sharing-selection.md`
 5. `templates/apex/SecurityUtils.cls`
 6. `templates/apex/HttpClient.cls`
+7. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---
 
@@ -118,6 +126,38 @@ If `target_org_alias` is set:
 5. **Citations** — skill ids, template paths, decision-tree branches.
 
 ---
+
+### Persistence (Wave 10 contract)
+
+Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md`.
+
+- **Markdown report:** `docs/reports/security-scanner/<run_id>.md`
+- **JSON envelope:** `docs/reports/security-scanner/<run_id>.json`
+- **Atomic write:** both files succeed or neither is left on disk.
+- **Run ID:** ISO-8601 UTC compact timestamp (colons → dashes) OR UUID; ≥ 8 chars.
+- **Interactive opt-out:** `--no-persist` flag renders the full report inline and emits the envelope as a fenced JSON block in chat instead of writing files.
+
+### Scope Guardrails (Wave 10 contract)
+
+Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
+
+- **Canonical data surface:** this agent's declared probes + the MCP tool set. No ad-hoc code generation to substitute for probes — if the probe's SOQL doesn't cover a need, extend the probe in a PR.
+- **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
+- **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only.
+
+### Dimensions (Wave 10 contract)
+
+The agent's envelope MUST place every dimension below in either `dimensions_compared[]` or `dimensions_skipped[]`.
+
+| Dimension | Notes |
+|---|---|
+| `apex-crud-fls` | CRUD/FLS enforcement in Apex |
+| `soql-injection` | Dynamic-SOQL concatenation smells |
+| `callout-auth` | Named Credential vs hard-coded endpoints |
+| `sharing-posture` | `with sharing` / `without sharing` / inherited |
+| `open-redirects` | Redirect params without validation |
+| `exposed-endpoints` | Site / Guest-user-exposed Apex |
+| `secret-leakage` | Logged tokens, hard-coded keys |
 
 ## Escalation / Refusal Rules
 

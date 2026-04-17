@@ -164,6 +164,16 @@ def bundle_paths_for(agent_id: str, deps: dict) -> list[tuple[Path, str]]:
         if src.exists():
             out.append((src, f"shared/schemas/{schema_name}"))
 
+    # Wave 10: always bundle the Deliverable Contract + emit_deliverable helper.
+    # Every runtime agent depends on both, regardless of whether the frontmatter
+    # `dependencies` block explicitly lists them.
+    wave10_contract = SHARED_DIR / "DELIVERABLE_CONTRACT.md"
+    if wave10_contract.exists():
+        out.append((wave10_contract, "shared/DELIVERABLE_CONTRACT.md"))
+    wave10_helper = SHARED_DIR / "lib" / "emit_deliverable.md"
+    if wave10_helper.exists():
+        out.append((wave10_helper, "shared/lib/emit_deliverable.md"))
+
     # Templates.
     for rel in deps.get("templates", []):
         src = TEMPLATES_DIR / rel
@@ -184,6 +194,8 @@ def bundle_paths_for(agent_id: str, deps: dict) -> list[tuple[Path, str]]:
 _REWRITES = [
     # Probe citations: `agents/_shared/probes/foo.md` → `./probes/foo.md`
     (re.compile(r"agents/_shared/probes/([a-z0-9-]+(?:\.md)?)"), r"./probes/\1"),
+    # Wave 10 helper: `agents/_shared/lib/emit_deliverable.md` → `./shared/lib/emit_deliverable.md`
+    (re.compile(r"agents/_shared/lib/([a-z0-9_-]+\.md)"), r"./shared/lib/\1"),
     # Schema references: `agents/_shared/schemas/foo.json` → `./shared/schemas/foo.json`
     (re.compile(r"agents/_shared/schemas/([a-z0-9-]+\.schema\.json)"), r"./shared/schemas/\1"),
     # Other shared docs under _shared/: `agents/_shared/FOO.md` → `./shared/FOO.md`

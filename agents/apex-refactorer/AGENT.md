@@ -8,13 +8,19 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+default_output_dir: "docs/reports/apex-refactorer/"
+output_formats:
+  - markdown
+  - json
 dependencies:
   skills:
+    - admin/agent-output-formats
     - apex/apex-security-patterns
     - apex/trigger-framework
   shared:
     - AGENT_CONTRACT.md
     - AGENT_RULES.md
+    - DELIVERABLE_CONTRACT.md
   templates:
     - apex/
     - apex/README.md
@@ -50,6 +56,7 @@ Takes an existing Apex class the user points at, compares it against the canonic
 4. `skills/apex/apex-security-patterns/SKILL.md` — via `get_skill("apex/apex-security-patterns")`
 5. `templates/apex/README.md` — what each template does and its dependency order
 6. `standards/decision-trees/automation-selection.md` — in case the class should really be a Flow
+7. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---
 
@@ -131,6 +138,24 @@ Return one markdown document with these sections:
 5. **Citations** — ids of every skill, template, and decision-tree branch consulted.
 
 ---
+
+### Persistence (Wave 10 contract)
+
+Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md`.
+
+- **Markdown report:** `docs/reports/apex-refactorer/<run_id>.md`
+- **JSON envelope:** `docs/reports/apex-refactorer/<run_id>.json`
+- **Atomic write:** both files succeed or neither is left on disk.
+- **Run ID:** ISO-8601 UTC compact timestamp (colons → dashes) OR UUID; ≥ 8 chars.
+- **Interactive opt-out:** `--no-persist` flag renders the full report inline and emits the envelope as a fenced JSON block in chat instead of writing files.
+
+### Scope Guardrails (Wave 10 contract)
+
+Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
+
+- **Canonical data surface:** this agent's declared probes + the MCP tool set. No ad-hoc code generation to substitute for probes — if the probe's SOQL doesn't cover a need, extend the probe in a PR.
+- **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
+- **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only.
 
 ## Escalation / Refusal Rules
 

@@ -8,11 +8,17 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-17
 updated: 2026-04-17
+default_output_dir: "docs/reports/user-access-diff/"
+output_formats:
+  - markdown
+  - json
+multi_dimensional: true
 dependencies:
   probes:
     - permission-set-assignment-shape.md
     - user-access-comparison.md
   skills:
+    - admin/agent-output-formats
     - admin/custom-permissions
     - admin/permission-set-architecture
     - admin/permission-sets-vs-profiles
@@ -22,6 +28,7 @@ dependencies:
   shared:
     - AGENT_CONTRACT.md
     - AGENT_RULES.md
+    - DELIVERABLE_CONTRACT.md
 ---
 
 # User Access Diff Agent
@@ -54,6 +61,7 @@ Given two Users in the same org, produces a symmetric, dimension-by-dimension co
 8. `skills/security/permission-set-groups-and-muting`
 9. `skills/admin/custom-permissions`
 10. `skills/admin/user-access-policies`
+11. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---
 
@@ -150,6 +158,45 @@ Conforms to `agents/_shared/schemas/output-envelope.schema.json`. At minimum:
 8. **Citations** — every skill, probe recipe, and MCP tool consulted.
 
 ---
+
+### Persistence (Wave 10 contract)
+
+Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md`.
+
+- **Markdown report:** `docs/reports/user-access-diff/<run_id>.md`
+- **JSON envelope:** `docs/reports/user-access-diff/<run_id>.json`
+- **Atomic write:** both files succeed or neither is left on disk.
+- **Run ID:** ISO-8601 UTC compact timestamp (colons → dashes) OR UUID; ≥ 8 chars.
+- **Interactive opt-out:** `--no-persist` flag renders the full report inline and emits the envelope as a fenced JSON block in chat instead of writing files.
+
+### Scope Guardrails (Wave 10 contract)
+
+Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
+
+- **Canonical data surface:** this agent's declared probes + the MCP tool set. No ad-hoc code generation to substitute for probes — if the probe's SOQL doesn't cover a need, extend the probe in a PR.
+- **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
+- **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only.
+
+### Dimensions (Wave 10 contract)
+
+The agent's envelope MUST place every dimension below in either `dimensions_compared[]` or `dimensions_skipped[]`. Partial or count-only coverage is recorded with `state: count-only | partial`, not elided.
+
+| Dimension | Notes |
+|---|---|
+| `profile` | Profile ID + name |
+| `permission-sets` | Direct PSA rows (excluding expired) |
+| `psg-components` | Flattened via `PermissionSetGroupComponent` |
+| `object-crud` | Per-sObject read/create/edit/delete/view-all/modify-all |
+| `fls` | Opt-in via `include_field_permissions=true`; default `state: not-run` with `confidence_impact: NONE` |
+| `system-perms` | ModifyAllData, ViewAllUsers, AuthorApex, etc. |
+| `apex-classes` | SetupEntityAccess where SetupEntityType='ApexClass' |
+| `vf-pages` | SetupEntityAccess where SetupEntityType='ApexPage' |
+| `flow-access` | SetupEntityAccess where SetupEntityType='FlowDefinition' |
+| `custom-perms` | SetupEntityAccess where SetupEntityType='CustomPermission' |
+| `named-credentials` | SetupEntityAccess where SetupEntityType IN ('NamedCredential', 'ExternalDataSource') |
+| `public-groups` | GroupMember where Group.Type='Regular' |
+| `queues` | GroupMember where Group.Type='Queue' |
+| `territories` | `UserTerritory2Association`; `state: not-run` when ETM not enabled |
 
 ## Escalation / Refusal Rules
 
