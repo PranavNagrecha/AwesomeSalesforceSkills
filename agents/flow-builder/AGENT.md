@@ -71,7 +71,13 @@ Given a business requirement, designs the correct Flow: Flow type (record-trigge
 12. `standards/decision-trees/automation-selection.md` — the Flow-vs-Apex-vs-Agentforce gate
 13. `templates/flow/FaultPath_Template.md`
 14. `templates/flow/Subflow_Pattern.md`
-15. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+15. `skills/flow/flow-dynamic-choices` — record/picklist/collection choice sets
+16. `skills/flow/flow-interview-debugging` — debug panel + fault path patterns
+17. `skills/flow/flow-and-platform-events` — PE publish/subscribe from Flow
+18. `skills/flow/flow-reactive-screen-components` — reactive screens (Winter '24+)
+19. `skills/flow/flow-data-tables` — Data Table screen selection
+20. `skills/flow/flow-http-callout-action` — declarative HTTP callouts
+21. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---
 

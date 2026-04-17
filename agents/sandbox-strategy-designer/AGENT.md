@@ -55,7 +55,8 @@ Designs or audits the sandbox + scratch-org strategy for a Salesforce program: w
 5. `skills/devops/sandbox-refresh-and-templates`
 6. `skills/devops/scratch-org-management`
 7. `skills/devops/scratch-org-pools`
-8. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+8. `skills/devops/scratch-org-snapshots` — GA snapshot-based fast bring-up
+9. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---
 
