@@ -45,10 +45,19 @@ jobs:
       - name: install deps
         run: python3 -m pip install -r requirements.txt
 
+      # lexical.sqlite is gitignored; rebuild before --check so the
+      # drift detector doesn't flag it stale. Cheap (~2s).
+      - name: build local retrieval index
+        run: python3 scripts/build_index.py
+
       # Wave 2: rebuild every export target in a scratch dir, hash, and
       # diff against the committed registry/export_manifest.json. Exits
       # non-zero on any drift — the PR must update the manifest in the
       # same commit. Runs in ~20-30 s for 684 skills * 6 targets.
+      #
+      # Wave 6: this exit-non-zero-on-drift contract is the enforcement
+      # mechanism for docs/multi-ai-parity.md. Do not remove without
+      # updating that doc + tests/test_export_parity.py.
       - name: export_skills.py --check
         run: python3 scripts/export_skills.py --check
 
