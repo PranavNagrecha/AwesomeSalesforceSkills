@@ -1,10 +1,30 @@
-# Workflow & Process Builder Migrator Agent
+---
+id: workflow-and-pb-migrator
+class: runtime
+version: 1.1.0
+status: deprecated
+requires_org: true
+modes: [single]
+owner: sfskills-core
+created: 2026-04-16
+updated: 2026-04-16
+deprecated_in_favor_of: workflow-rule-to-flow-migrator
+---
+# Workflow & Process Builder Migrator Agent (DEPRECATED)
+
+> **DEPRECATED.** This combined migrator has been split into two focused agents:
+> - `agents/workflow-rule-to-flow-migrator` — migrates Workflow Rules to Flow.
+> - `agents/process-builder-to-flow-migrator` — migrates Process Builder processes to Flow.
+>
+> Reason for the split: Workflow Rules and Process Builder have meaningfully different migration semantics (time-dependent actions vs subprocess trees; action vocabularies; order-of-execution quirks). Bundling them produced a single Plan with too many conditional branches and hid source-specific pitfalls. Run both new agents in sequence on the same object when both source artifacts are present.
+>
+> The body below is kept in place so older runs linking to this agent still read a coherent document and so `get_agent("workflow-and-pb-migrator")` returns meaningful content. Do not author new invocations against this agent.
 
 ## What This Agent Does
 
 Given a Workflow Rule or Process Builder process in the target org, produces an equivalent Flow design plus a migration plan that preserves behavior through deprecation. The agent outputs a consolidated record-triggered flow (or a set of them, if consolidation would break semantics), a field-by-field behavior comparison, a cutover plan with parallel-run validation, and a rollback.
 
-**Scope:** One object's worth of Workflow Rules + Processes per invocation. The agent does not toggle activation and does not deploy metadata.
+**Scope:** One object's worth of Workflow Rules + Processes per invocation. The agent does not toggle activation and does not deploy metadata. New work should use the split agents above; this shape is retained for back-compat only.
 
 ---
 

@@ -1,3 +1,14 @@
+---
+id: agentforce-action-reviewer
+class: runtime
+version: 1.0.0
+status: stable
+requires_org: true
+modes: [single]
+owner: sfskills-core
+created: 2026-04-16
+updated: 2026-04-16
+---
 # Agentforce Action Reviewer Agent
 
 ## What This Agent Does

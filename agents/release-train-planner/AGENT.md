@@ -1,3 +1,14 @@
+---
+id: release-train-planner
+class: runtime
+version: 1.0.0
+status: stable
+requires_org: false
+modes: [design, audit]
+owner: sfskills-core
+created: 2026-04-16
+updated: 2026-04-16
+---
 # Release Train Planner Agent
 
 ## What This Agent Does

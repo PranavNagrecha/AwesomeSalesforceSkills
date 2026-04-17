@@ -1,3 +1,14 @@
+---
+id: soql-optimizer
+class: runtime
+version: 1.0.0
+status: stable
+requires_org: true
+modes: [single]
+owner: sfskills-core
+created: 2026-04-16
+updated: 2026-04-16
+---
 # SOQL Optimizer Agent
 
 ## What This Agent Does
@@ -91,7 +102,12 @@ If `target_org_alias` is provided:
 2. **Findings table** — one row per finding: file, line, severity, finding code, one-line description.
 3. **Per-finding fix** — each P0 and P1 gets a before/after code block and a citation.
 4. **Centralization recommendation** — if applicable.
-5. **Citations** — skill + template ids.
+5. **Process Observations** — peripheral signal noticed while scanning, separate from the direct findings. Each observation cites its evidence (file, query count, sObject name).
+   - **Healthy** — e.g. repo already has a `<Object>Selector extends BaseSelector` pattern in place for the most-queried objects; queries consistently use `WITH SECURITY_ENFORCED` even where not yet required; `LIMIT` clauses present on every paginated query.
+   - **Concerning** — e.g. more than 3 `SELECT` on a single sObject are distributed across unrelated classes (centralization gap); dynamic-SOQL string concatenation patterns that the agent can't safely rewrite; use of `Database.getQueryLocator` outside of Batch contexts.
+   - **Ambiguous** — e.g. a query that is `query-in-loop` only in a code path guarded by a flag the agent can't evaluate; a non-selective WHERE where the agent cannot confirm live record count.
+   - **Suggested follow-ups** — `apex-refactorer` when centralization is needed (to introduce a Selector); `security-scanner` on any `no-security` P1 finding; `test-class-generator` when new Selectors are created.
+6. **Citations** — skill + template ids.
 
 ---
 

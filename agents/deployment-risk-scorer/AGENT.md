@@ -1,3 +1,14 @@
+---
+id: deployment-risk-scorer
+class: runtime
+version: 1.0.0
+status: stable
+requires_org: true
+modes: [single]
+owner: sfskills-core
+created: 2026-04-16
+updated: 2026-04-16
+---
 # Deployment Risk Scorer Agent
 
 ## What This Agent Does
@@ -103,7 +114,12 @@ Produce a short list of post-deploy verification steps:
 3. **Per-finding row** — severity, item, description, remediation, skill citation.
 4. **Pre-deploy checklist** — actionable TODOs in order.
 5. **Post-deploy smoke steps**.
-6. **Citations** — skill ids + any MCP tool output that informed the score.
+6. **Process Observations** — peripheral signal noticed while scoring, separate from the direct findings. Each observation cites its evidence (file, MCP probe, metadata count).
+   - **Healthy** — e.g. change set has an associated test-delta; Apex classes already subclass `BaseService` / `BaseSelector`; profile/permset delta is contained to new permission sets rather than modifying shipped ones.
+   - **Concerning** — e.g. the target org has no active Flow error-email recipient configured; deploy touches an object whose `describe_org` record count suggests undisclosed LDV risk; the change set adds Apex but modifies no tests.
+   - **Ambiguous** — e.g. a renamed field could be a rename OR a delete-and-recreate (requires the user to disambiguate); a validation-rule change whose formula references a dynamically-evaluated merge field.
+   - **Suggested follow-ups** — `code-reviewer` on any HIGH finding; `security-scanner` when CRUD/FLS surface changes; `soql-optimizer` when the deploy adds selector queries; `trigger-consolidator` when new triggers land on objects with existing Flow automation.
+7. **Citations** — skill ids + any MCP tool output that informed the score.
 
 ---
 

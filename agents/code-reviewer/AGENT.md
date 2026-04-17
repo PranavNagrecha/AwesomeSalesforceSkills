@@ -1,3 +1,14 @@
+---
+id: code-reviewer
+class: build
+version: 1.0.0
+status: stable
+requires_org: false
+modes: [single]
+owner: sfskills-core
+created: 2026-04-16
+updated: 2026-04-16
+---
 # Code Reviewer Agent
 
 ## What This Agent Does
@@ -12,6 +23,15 @@ Reviews Apex classes, triggers, LWC components, and Flows against this library's
 - "PR review"
 - User pastes code directly into the chat
 - User references a file path to a Salesforce component
+
+## Mandatory Reads Before Starting
+
+1. `agents/_shared/AGENT_CONTRACT.md`
+2. `AGENT_RULES.md`
+3. `standards/source-hierarchy.md`
+4. `standards/code-review-checklist.md` — the checklist reviews must hit
+5. `standards/decision-trees/automation-selection.md` when a Flow-vs-Apex question surfaces
+6. Discovered skill-local validators via `python3 scripts/search_knowledge.py` for the component type
 
 ## Orchestration Plan
 
@@ -101,3 +121,10 @@ Reviews Apex classes, triggers, LWC components, and Flows against this library's
 
 - **org-assessor**: Use when reviewing an entire org or metadata directory, not a single component.
 - **release-planner**: Use after review to generate release notes for the changes.
+
+## What This Agent Does NOT Do
+
+- Does not modify the code it reviews — emits findings and suggested replacements only.
+- Does not run tests, deploy, or execute anonymous Apex — analysis is static.
+- Does not expand scope beyond what the user submits; if review spills into neighbouring classes, it flags them instead of silently pulling them in.
+- Does not author new skills mid-review; coverage gaps are logged for `/request-skill`.

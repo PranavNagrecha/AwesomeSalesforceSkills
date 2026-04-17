@@ -1,3 +1,14 @@
+---
+id: validator
+class: build
+version: 1.0.0
+status: stable
+requires_org: false
+modes: [single]
+owner: sfskills-core
+created: 2026-04-16
+updated: 2026-04-16
+---
 # Validator Agent
 
 ## What This Agent Does

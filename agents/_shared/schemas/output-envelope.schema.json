@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/schemas/output-envelope.schema.json",
+  "title": "Agent Output Envelope",
+  "description": "Structured JSON envelope every run-time agent emits alongside its human-readable markdown report. Build-time agents MAY use it but are not required to.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["agent", "mode", "summary", "confidence", "process_observations", "citations"],
+  "properties": {
+    "agent": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "description": "The agent id (matches frontmatter.id)."
+    },
+    "mode": {
+      "type": "string",
+      "description": "One of the modes declared in the agent's frontmatter.modes."
+    },
+    "run_id": {
+      "type": "string",
+      "description": "Optional correlation id the caller assigns."
+    },
+    "inputs_received": {
+      "type": "object",
+      "description": "Echo of the inputs the agent used, after defaults are applied. Sensitive values (credentials) MUST be redacted.",
+      "additionalProperties": true
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 20,
+      "description": "One paragraph — the deliverable in a single screen."
+    },
+    "confidence": {
+      "type": "string",
+      "enum": ["HIGH", "MEDIUM", "LOW"]
+    },
+    "confidence_rationale": {
+      "type": "string",
+      "description": "One-line reason for the score, keyed to the rubric in AGENT_CONTRACT.md."
+    },
+    "findings": {
+      "type": "array",
+      "description": "Structured deliverable findings. Optional — some agents emit pure documents via `deliverables[]` instead.",
+      "items": {
+        "type": "object",
+        "required": ["id", "severity", "title"],
+        "properties": {
+          "id": { "type": "string" },
+          "severity": { "type": "string", "enum": ["P0", "P1", "P2", "INFO"] },
+          "title": { "type": "string" },
+          "detail": { "type": "string" },
+          "evidence": { "type": "object", "additionalProperties": true },
+          "recommendation": { "type": "string" }
+        }
+      }
+    },
+    "deliverables": {
+      "type": "array",
+      "description": "Artifacts the agent produced (metadata XML stubs, markdown reports, proposed patches).",
+      "items": {
+        "type": "object",
+        "required": ["kind", "title", "content"],
+        "properties": {
+          "kind": { "type": "string", "enum": ["markdown", "xml", "apex", "lwc", "flow", "json", "yaml", "patch", "other"] },
+          "title": { "type": "string" },
+          "target_path": { "type": "string", "description": "Where this deliverable is intended to land in the user's repo, if applicable." },
+          "content": { "type": "string" }
+        }
+      }
+    },
+    "process_observations": {
+      "type": "array",
+      "description": "Structured Process Observations. Schema: schemas/observation.schema.json. Per AGENT_CONTRACT.md this block is REQUIRED; an empty array means the agent genuinely observed nothing beyond the deliverable.",
+      "items": { "$ref": "observation.schema.json" }
+    },
+    "refusal": {
+      "type": "object",
+      "description": "Set iff the agent stopped per an Escalation/Refusal rule. When set, all other deliverable fields MAY be absent.",
+      "required": ["code", "message"],
+      "properties": {
+        "code": { "type": "string", "description": "One of the codes in REFUSAL_CODES.md." },
+        "message": { "type": "string" },
+        "remediation_hint": { "type": "string" }
+      }
+    },
+    "citations": {
+      "type": "array",
+      "description": "Every skill/template/standard/decision-tree branch/MCP tool/probe consulted.",
+      "items": { "$ref": "citation.schema.json" }
+    },
+    "followups": {
+      "type": "array",
+      "description": "Recommended follow-up agents. Each entry references a real agents/<id>/.",
+      "items": {
+        "type": "object",
+        "required": ["agent", "because"],
+        "properties": {
+          "agent": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+          "because": { "type": "string", "minLength": 10 }
+        }
+      }
+    }
+  }
+}

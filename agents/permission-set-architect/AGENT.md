@@ -1,3 +1,14 @@
+---
+id: permission-set-architect
+class: runtime
+version: 1.0.0
+status: stable
+requires_org: true
+modes: [design, audit]
+owner: sfskills-core
+created: 2026-04-16
+updated: 2026-04-16
+---
 # Permission Set Architect Agent
 
 ## What This Agent Does
