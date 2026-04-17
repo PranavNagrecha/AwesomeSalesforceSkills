@@ -1,35 +1,24 @@
-# /audit-sharing — Audit the org's record-level access model
+# /audit-sharing — LEGACY ALIAS (Wave 3b-2)
 
-Wraps [`agents/sharing-audit-agent/AGENT.md`](../agents/sharing-audit-agent/AGENT.md). Returns OWD + sharing-rule findings, data-skew hot-list, recalc-cost estimate, and Experience Cloud guest exposure.
+> **Deprecation notice:** this command is now an alias. It invokes
+> [`audit-router`](../agents/audit-router/AGENT.md) with `--domain=sharing`
+> and emits this deprecation notice. Switch to `/audit-router` at your
+> convenience; the alias ships until the removal window declared in
+> `docs/MIGRATION.md` (Wave 7).
 
----
-
-## Step 1 — Collect inputs
+## Canonical form
 
 ```
-1. Scope?  object:<ApiName>  OR  org
-2. Target org alias (required)?
+/audit-router --domain sharing --scope <object:<Name>|org> --target-org <alias>
 ```
 
-## Step 2 — Load the agent
+## Alias behavior
 
-Read `agents/sharing-audit-agent/AGENT.md` + mandatory reads, including `standards/decision-trees/sharing-selection.md`.
+`/audit-sharing <args>` is equivalent to `/audit-router --domain sharing <args>`.
 
-## Step 3 — Execute the plan
+Rule table preserved in [`classifiers/sharing.md`](../agents/_shared/harnesses/audit_harness/classifiers/sharing.md).
 
-Fetch model, classify per decision tree, data-skew probe, guest-user probe, recalc-cost estimate, emit findings.
+## See also
 
-## Step 4 — Deliver the output
-
-Summary, model snapshot, findings table, data-skew hot-list, recalc-cost estimate, guest-user exposure, Process Observations, citations.
-
-## Step 5 — Recommend follow-ups
-
-- `/architect-perms` for persona-level access gaps
-- `/review-data-model` if cross-object cascade is the real problem
-
-## What this command does NOT do
-
-- Does not modify OWD or sharing rules.
-- Does not design persona-level FLS.
-- Does not fix data skew (flags; remediation is separate).
+- [`/audit-router`](./audit-router.md) — canonical router entry point
+- [`docs/MIGRATION.md`](../docs/MIGRATION.md) — removal timeline (authored in Wave 7)
