@@ -211,12 +211,15 @@
       "agentforce/agent-topic-design",
       "agentforce/agentforce-agent-creation",
       "agentforce/agentforce-custom-channel-dev",
+      "agentforce/agentforce-eval-harness",
       "agentforce/agentforce-guardrails",
       "agentforce/agentforce-in-slack",
+      "agentforce/agentforce-multi-turn-patterns",
       "agentforce/agentforce-observability",
       "agentforce/agentforce-persona-design",
       "agentforce/agentforce-sales-ai-setup",
       "agentforce/agentforce-service-ai-setup",
+      "agentforce/agentforce-tool-use-patterns",
       "agentforce/custom-agent-actions-apex",
       "agentforce/data-cloud-vector-search-dev",
       "agentforce/einstein-bots-to-agentforce-migration",
@@ -1228,6 +1231,7 @@
     ],
     "agent-actions": [
       "agentforce/agent-actions",
+      "agentforce/agentforce-tool-use-patterns",
       "agentforce/custom-agent-actions-apex"
     ],
     "agent-api": [
@@ -1287,10 +1291,13 @@
       "agentforce/agent-topic-design",
       "agentforce/agentforce-agent-creation",
       "agentforce/agentforce-custom-channel-dev",
+      "agentforce/agentforce-eval-harness",
       "agentforce/agentforce-guardrails",
       "agentforce/agentforce-in-slack",
+      "agentforce/agentforce-multi-turn-patterns",
       "agentforce/agentforce-observability",
       "agentforce/agentforce-persona-design",
+      "agentforce/agentforce-tool-use-patterns",
       "agentforce/custom-agent-actions-apex",
       "agentforce/einstein-bots-to-agentforce-migration",
       "agentforce/mcp-tool-definition-apex",
@@ -1462,6 +1469,7 @@
       "omnistudio/omnistudio-remote-actions"
     ],
     "apex-actions": [
+      "agentforce/agentforce-tool-use-patterns",
       "agentforce/custom-agent-actions-apex"
     ],
     "apex-batch": [
@@ -2579,6 +2587,9 @@
       "agentforce/data-cloud-vector-search-dev",
       "data/vector-database-management"
     ],
+    "ci": [
+      "agentforce/agentforce-eval-harness"
+    ],
     "ci-cd": [
       "architect/ci-cd-pipeline-architecture",
       "devops/bitbucket-pipelines-for-salesforce",
@@ -2611,6 +2622,9 @@
     ],
     "claims-management": [
       "admin/industries-process-design"
+    ],
+    "clarifying-questions": [
+      "agentforce/agentforce-multi-turn-patterns"
     ],
     "claude-desktop": [
       "agentforce/salesforce-mcp-server-setup"
@@ -3108,7 +3122,8 @@
       "agentforce/agentforce-observability"
     ],
     "conversation-state": [
-      "agentforce/agentforce-custom-channel-dev"
+      "agentforce/agentforce-custom-channel-dev",
+      "agentforce/agentforce-multi-turn-patterns"
     ],
     "conversation-testing": [
       "agentforce/agent-testing-and-evaluation"
@@ -4725,6 +4740,9 @@
       "apex/territory-api-and-assignment",
       "data/territory-data-alignment"
     ],
+    "evaluation": [
+      "agentforce/agentforce-eval-harness"
+    ],
     "evaluation-metrics": [
       "agentforce/agent-testing-and-evaluation"
     ],
@@ -4895,6 +4913,7 @@
       "data/external-user-data-sharing"
     ],
     "external-services": [
+      "agentforce/agentforce-tool-use-patterns",
       "flow/flow-external-services"
     ],
     "external-sharing": [
@@ -5159,6 +5178,9 @@
     "fisma": [
       "architect/government-cloud-compliance"
     ],
+    "fixtures": [
+      "agentforce/agentforce-eval-harness"
+    ],
     "flame-graph": [
       "apex/apex-performance-profiling"
     ],
@@ -5197,6 +5219,9 @@
     ],
     "flow-action-framework": [
       "flow/flow-action-framework"
+    ],
+    "flow-actions": [
+      "agentforce/agentforce-tool-use-patterns"
     ],
     "flow-apex-action": [
       "apex/invocable-methods"
@@ -7230,6 +7255,9 @@
     "multi-touch-attribution": [
       "admin/campaign-planning-and-attribution"
     ],
+    "multi-turn": [
+      "agentforce/agentforce-multi-turn-patterns"
+    ],
     "multi-user": [
       "flow/orchestration-flows"
     ],
@@ -8505,6 +8533,9 @@
     "prompt-grounding": [
       "agentforce/rag-patterns-in-salesforce"
     ],
+    "prompt-templates": [
+      "agentforce/agentforce-tool-use-patterns"
+    ],
     "prompts": [
       "admin/in-app-guidance-and-walkthroughs"
     ],
@@ -8833,6 +8864,9 @@
     "registration-handler": [
       "lwc/experience-cloud-multi-idp-sso"
     ],
+    "regression": [
+      "agentforce/agentforce-eval-harness"
+    ],
     "regression-testing": [
       "agentforce/agent-testing-and-evaluation"
     ],
@@ -9142,6 +9176,7 @@
       "admin/approval-processes",
       "admin/assignment-rules",
       "admin/queues-and-public-groups",
+      "agentforce/agentforce-tool-use-patterns",
       "apex/omni-channel-custom-routing",
       "architect/service-cloud-architecture"
     ],
@@ -9166,6 +9201,9 @@
     ],
     "rto-rpo": [
       "architect/ha-dr-architecture"
+    ],
+    "rubric": [
+      "agentforce/agentforce-eval-harness"
     ],
     "run-budget": [
       "data/analytics-dataset-optimization"
@@ -9750,6 +9788,9 @@
     "session-timeout": [
       "security/oauth-token-management",
       "security/session-management-and-timeout"
+    ],
+    "session-variables": [
+      "agentforce/agentforce-multi-turn-patterns"
     ],
     "set-of-id": [
       "apex/recursive-trigger-prevention"
@@ -10417,6 +10458,7 @@
     "testing": [
       "admin/sandbox-strategy",
       "admin/uat-and-acceptance-criteria",
+      "agentforce/agentforce-eval-harness",
       "omnistudio/omnistudio-testing-patterns"
     ],
     "testing-api": [
@@ -10492,6 +10534,9 @@
       "data/data-loader-and-tools",
       "devops/salesforce-devops-tooling-selection"
     ],
+    "tool-use": [
+      "agentforce/agentforce-tool-use-patterns"
+    ],
     "tooling-api": [
       "architect/metadata-coverage-and-dependencies",
       "security/security-health-check"
@@ -10507,6 +10552,9 @@
     ],
     "topic-selector": [
       "agentforce/agent-topic-design"
+    ],
+    "topics": [
+      "agentforce/agentforce-multi-turn-patterns"
     ],
     "toxicity-detection": [
       "agentforce/einstein-trust-layer"
