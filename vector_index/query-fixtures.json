@@ -4463,6 +4463,66 @@
       "domain": "integration",
       "expected_skill": "integration/slack-workflow-builder",
       "top_k": 3
+    },
+    {
+      "query": "analytics KPI definition stakeholder requirements dashboard metrics",
+      "domain": "admin",
+      "expected_skill": "admin/analytics-kpi-definition",
+      "top_k": 3
+    },
+    {
+      "query": "analytics requirements gathering dashboard reporting BA user stories",
+      "domain": "admin",
+      "expected_skill": "admin/analytics-requirements-gathering",
+      "top_k": 3
+    },
+    {
+      "query": "FlexCard requirements layout data sources actions BA OmniStudio",
+      "domain": "admin",
+      "expected_skill": "admin/flexcard-requirements",
+      "top_k": 3
+    },
+    {
+      "query": "integration pattern selection admin decision REST bulk platform events",
+      "domain": "admin",
+      "expected_skill": "admin/integration-pattern-selection",
+      "top_k": 3
+    },
+    {
+      "query": "omniscript flow design requirements screen steps data raptor BA",
+      "domain": "admin",
+      "expected_skill": "admin/omniscript-flow-design-requirements",
+      "top_k": 3
+    },
+    {
+      "query": "API-led connectivity layered system process experience architecture MuleSoft",
+      "domain": "architect",
+      "expected_skill": "architect/api-led-connectivity-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "embedded analytics architecture CRM Analytics Tableau dashboard",
+      "domain": "architect",
+      "expected_skill": "architect/embedded-analytics-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "OmniStudio datapack migration deployment IDX workbench",
+      "domain": "data",
+      "expected_skill": "data/omnistudio-datapack-migration",
+      "top_k": 3
+    },
+    {
+      "query": "integration error handling retry circuit breaker dead letter queue",
+      "domain": "integration",
+      "expected_skill": "integration/error-handling-in-integrations",
+      "top_k": 3
+    },
+    {
+      "query": "Salesforce to Salesforce integration org-to-org platform events pub sub",
+      "domain": "integration",
+      "expected_skill": "integration/salesforce-to-salesforce-integration",
+      "top_k": 3
     }
   ]
 }

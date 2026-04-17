@@ -33,14 +33,14 @@ Two modes:
 ## Mandatory Reads Before Starting
 
 1. `agents/_shared/AGENT_CONTRACT.md`
-2. `skills/admin/path-configuration`
-3. `skills/admin/sales-stage-design` — when object is Opportunity
+2. `skills/admin/path-and-guidance`
+3. `skills/admin/opportunity-management` — when object is Opportunity
 4. `skills/admin/case-management-setup` — when object is Case
 5. `skills/admin/lead-management-and-conversion` — when object is Lead
-6. `skills/admin/picklist-value-governance`
+6. `skills/admin/picklist-and-value-sets`
 7. `skills/admin/record-types-and-page-layouts`
-8. `skills/admin/validation-rules-admin`
-9. `skills/admin/dynamic-forms-and-dynamic-actions`
+8. `skills/admin/validation-rules`
+9. `skills/admin/dynamic-forms-and-actions`
 10. `templates/admin/naming-conventions.md`
 
 ---
@@ -67,7 +67,7 @@ Two modes:
 
 #### Step 1 — Confirm Path is the right vehicle
 
-Consult `skills/admin/path-configuration`. Path is the right answer when:
+Consult `skills/admin/path-and-guidance`. Path is the right answer when:
 
 - The object has a driver picklist that represents a linear or mostly-linear progression.
 - Users benefit from step-specific Key Fields and Guidance.
@@ -122,7 +122,7 @@ Paths don't enforce progression; they suggest it. The hard enforcement lives in 
 - Fire when the driver picklist advances to the step's value AND a Key Field is still null.
 - Use `ISCHANGED(<driver field>)` + `ISPICKVAL(<driver field>, '<value>')` + `ISBLANK(<key field>)` to catch the transition.
 
-Cite `skills/admin/validation-rules-admin`. Name per `naming-conventions.md`: `<Object>_<Stage>_RequireKeyFields`.
+Cite `skills/admin/validation-rules`. Name per `naming-conventions.md`: `<Object>_<Stage>_RequireKeyFields`.
 
 Flag if the org already has overlapping validation rules — don't add duplicates.
 

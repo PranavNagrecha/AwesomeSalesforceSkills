@@ -34,7 +34,6 @@ Builds skills for the **DevOps / Release Engineering** role across any Salesforc
 3. `standards/skill-content-contract.md`
 4. `standards/naming-conventions.md` — DevOps naming conventions
 5. `standards/official-salesforce-sources.md` — DevOps / Release Engineering domain sources
-6. `standards/decision-trees/deployment-tool-selection.md` — if present
 
 ---
 

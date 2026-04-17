@@ -30,12 +30,11 @@ Audits Report Folders, Dashboard Folders, and individual Reports / Dashboards fo
 ## Mandatory Reads Before Starting
 
 1. `agents/_shared/AGENT_CONTRACT.md`
-2. `skills/admin/reports-and-dashboards-admin`
-3. `skills/admin/report-folder-sharing-and-access` — if present, else fall back to the general reports skill
-4. `skills/security/field-level-security-and-permissions`
-5. `skills/security/sharing-and-visibility`
-6. `skills/admin/queues-and-public-groups`
-7. `templates/admin/naming-conventions.md`
+2. `skills/admin/reports-and-dashboards`
+3. `skills/admin/analytics-permission-and-sharing`
+4. `skills/admin/sharing-and-visibility`
+5. `skills/admin/queues-and-public-groups`
+6. `templates/admin/naming-conventions.md`
 
 ---
 

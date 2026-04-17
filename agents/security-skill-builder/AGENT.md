@@ -34,7 +34,6 @@ Builds skills for the **Security / Compliance / IAM** role across any Salesforce
 3. `standards/skill-content-contract.md`
 4. `standards/naming-conventions.md` — Security naming conventions
 5. `standards/official-salesforce-sources.md` — Security domain sources
-6. `standards/compliance-frameworks.md` — if present; else cite the specific framework docs the skill targets
 
 ---
 

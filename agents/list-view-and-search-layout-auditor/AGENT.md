@@ -30,12 +30,11 @@ Audits every object's List Views and Search Layouts (lookup dialogs, search resu
 ## Mandatory Reads Before Starting
 
 1. `agents/_shared/AGENT_CONTRACT.md`
-2. `skills/admin/list-views-and-search-layouts`
+2. `skills/admin/list-views-and-compact-layouts`
 3. `skills/admin/record-types-and-page-layouts`
 4. `skills/admin/queues-and-public-groups`
-5. `skills/admin/picklist-value-governance`
-6. `skills/security/field-level-security-and-permissions`
-7. `templates/admin/naming-conventions.md`
+5. `skills/admin/picklist-and-value-sets`
+6. `templates/admin/naming-conventions.md`
 
 ---
 

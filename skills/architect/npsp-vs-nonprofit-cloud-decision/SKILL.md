@@ -4,9 +4,9 @@ description: "Use this skill when an organization must decide whether to stay on
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:
-  - Adaptability
+  - Scalability
   - Operational Excellence
-  - Trustworthiness
+  - Reliability
 triggers:
   - "should we stay on NPSP or move to Nonprofit Cloud"
   - "what is the difference between NPSP and Nonprofit Cloud"

@@ -33,13 +33,12 @@ Two modes:
 ## Mandatory Reads Before Starting
 
 1. `agents/_shared/AGENT_CONTRACT.md`
-2. `skills/admin/quick-actions-and-global-actions`
-3. `skills/admin/dynamic-forms-and-dynamic-actions`
+2. `skills/admin/global-actions-and-quick-actions`
+3. `skills/admin/dynamic-forms-and-actions`
 4. `skills/admin/record-types-and-page-layouts`
-5. `skills/flow/screen-flow-patterns` — for Flow-backed actions
-6. `skills/lwc/lwc-in-action-contexts` — for LWC-backed actions (if available)
-7. `standards/decision-trees/automation-selection.md`
-8. `templates/admin/naming-conventions.md`
+5. `skills/flow/screen-flows` — for Flow-backed actions
+6. `standards/decision-trees/automation-selection.md`
+7. `templates/admin/naming-conventions.md`
 
 ---
 
@@ -94,7 +93,7 @@ Build a reverse index: for every action, which layouts / Dynamic Actions pages /
 
 #### Step 3 — Consolidation proposals
 
-For consolidation candidates, propose a merged action with a parameterization strategy (record type prompt, Flow-backed branching, or different Dynamic Action filters that show one action per context). Cite `skills/admin/dynamic-forms-and-dynamic-actions`.
+For consolidation candidates, propose a merged action with a parameterization strategy (record type prompt, Flow-backed branching, or different Dynamic Action filters that show one action per context). Cite `skills/admin/dynamic-forms-and-actions`.
 
 ### Design mode
 
