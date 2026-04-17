@@ -212,6 +212,7 @@
       "agentforce/agentforce-agent-creation",
       "agentforce/agentforce-custom-channel-dev",
       "agentforce/agentforce-guardrails",
+      "agentforce/agentforce-in-slack",
       "agentforce/agentforce-observability",
       "agentforce/agentforce-persona-design",
       "agentforce/agentforce-sales-ai-setup",
@@ -452,6 +453,7 @@
       "data/data-cloud-data-model-objects",
       "data/data-cloud-data-streams",
       "data/data-extension-design",
+      "data/data-loader-and-tools",
       "data/data-migration-planning",
       "data/data-model-design-patterns",
       "data/data-quality-and-governance",
@@ -581,10 +583,12 @@
       "flow/flow-testing",
       "flow/orchestration-flows",
       "flow/pause-elements-and-wait-events",
+      "flow/process-builder-to-flow-migration",
       "flow/record-triggered-flow-patterns",
       "flow/scheduled-flows",
       "flow/screen-flows",
-      "flow/subflows-and-reusability"
+      "flow/subflows-and-reusability",
+      "flow/workflow-rule-to-flow-migration"
     ],
     "integration": [
       "integration/api-error-handling-design",
@@ -617,6 +621,7 @@
       "integration/salesforce-connect-external-objects",
       "integration/salesforce-to-salesforce-integration",
       "integration/sis-integration-patterns",
+      "integration/slack-connect-patterns",
       "integration/slack-salesforce-integration-setup",
       "integration/slack-workflow-builder",
       "integration/soap-api-patterns",
@@ -703,6 +708,7 @@
       "security/sandbox-data-masking",
       "security/secure-coding-review-checklist",
       "security/security-health-check",
+      "security/security-incident-response",
       "security/session-management-and-timeout",
       "security/transaction-security-policies",
       "security/xss-and-injection-prevention"
@@ -1278,6 +1284,7 @@
       "agentforce/agentforce-agent-creation",
       "agentforce/agentforce-custom-channel-dev",
       "agentforce/agentforce-guardrails",
+      "agentforce/agentforce-in-slack",
       "agentforce/agentforce-observability",
       "agentforce/agentforce-persona-design",
       "agentforce/custom-agent-actions-apex",
@@ -1298,6 +1305,9 @@
     ],
     "agentforce-nonprofit": [
       "architect/nonprofit-platform-architecture"
+    ],
+    "agentforce-slack": [
+      "agentforce/agentforce-in-slack"
     ],
     "agentwork": [
       "data/omni-channel-reporting-data"
@@ -1826,6 +1836,9 @@
       "admin/health-cloud-consent-management",
       "apex/fsc-document-generation"
     ],
+    "authsession": [
+      "security/security-incident-response"
+    ],
     "auto-launched-flow": [
       "flow/auto-launched-flow-patterns"
     ],
@@ -1852,6 +1865,10 @@
     ],
     "automation-layers": [
       "architect/solution-design-patterns"
+    ],
+    "automation-modernization": [
+      "flow/process-builder-to-flow-migration",
+      "flow/workflow-rule-to-flow-migration"
     ],
     "automation-overlap": [
       "architect/technical-debt-assessment"
@@ -2078,6 +2095,9 @@
       "admin/digital-storefront-requirements",
       "admin/experience-cloud-site-setup"
     ],
+    "breach-response": [
+      "security/security-incident-response"
+    ],
     "briefcase-priming": [
       "admin/fsl-mobile-workflow-design"
     ],
@@ -2101,6 +2121,7 @@
       "data/bulk-api-patterns",
       "data/case-history-migration",
       "data/cdc-data-sync-patterns",
+      "data/data-loader-and-tools",
       "data/data-migration-planning",
       "data/data-reconciliation-patterns",
       "data/etl-vs-api-data-patterns",
@@ -2804,6 +2825,7 @@
       "data/analytics-data-governance",
       "data/field-history-tracking",
       "data/service-data-archival",
+      "integration/slack-connect-patterns",
       "security/data-classification-labels",
       "security/field-audit-trail",
       "security/platform-encryption",
@@ -3251,7 +3273,8 @@
       "apex/cross-object-formula-and-rollup-performance"
     ],
     "cross-org": [
-      "integration/salesforce-to-salesforce-integration"
+      "integration/salesforce-to-salesforce-integration",
+      "integration/slack-connect-patterns"
     ],
     "cross-site-navigation": [
       "architect/multi-site-architecture"
@@ -3289,6 +3312,7 @@
       "data/bulk-api-patterns"
     ],
     "csv-import": [
+      "data/data-loader-and-tools",
       "data/mcae-prospect-data-migration"
     ],
     "csv-upload": [
@@ -3543,6 +3567,9 @@
     "data-display": [
       "lwc/lwc-base-component-recipes"
     ],
+    "data-export": [
+      "data/data-loader-and-tools"
+    ],
     "data-extension": [
       "apex/ampscript-development",
       "data/data-extension-design",
@@ -3562,7 +3589,8 @@
     "data-governance": [
       "data/analytics-data-governance",
       "data/data-quality-and-governance",
-      "data/field-history-tracking"
+      "data/field-history-tracking",
+      "integration/slack-connect-patterns"
     ],
     "data-handling": [
       "devops/sandbox-refresh-and-templates"
@@ -3573,6 +3601,9 @@
     "data-import": [
       "data/constituent-data-migration",
       "data/lead-data-import-and-dedup"
+    ],
+    "data-import-wizard": [
+      "data/data-loader-and-tools"
     ],
     "data-integration": [
       "data/etl-vs-api-data-patterns",
@@ -3597,6 +3628,7 @@
     ],
     "data-loader": [
       "data/community-user-data-migration",
+      "data/data-loader-and-tools",
       "data/data-migration-planning"
     ],
     "data-loading": [
@@ -3618,6 +3650,7 @@
       "admin/system-field-behavior-and-audit",
       "data/case-history-migration",
       "data/community-user-data-migration",
+      "data/data-loader-and-tools",
       "data/data-migration-planning",
       "data/deployment-data-dependencies",
       "data/fhir-data-mapping",
@@ -4175,6 +4208,9 @@
     "dlo-dmo-mapping": [
       "data/data-cloud-data-streams"
     ],
+    "dlp": [
+      "integration/slack-connect-patterns"
+    ],
     "dlrs": [
       "data/roll-up-summary-alternatives"
     ],
@@ -4702,7 +4738,8 @@
       "admin/integration-admin-connected-apps",
       "data/analytics-data-governance",
       "security/api-security-and-rate-limiting",
-      "security/event-monitoring"
+      "security/event-monitoring",
+      "security/security-incident-response"
     ],
     "event-propagation": [
       "lwc/common-lwc-runtime-errors"
@@ -4807,6 +4844,9 @@
     "expression-sets": [
       "omnistudio/business-rules-engine",
       "omnistudio/calculation-procedures"
+    ],
+    "external-collaboration": [
+      "integration/slack-connect-patterns"
     ],
     "external-credentials": [
       "admin/connected-apps-and-auth",
@@ -5155,6 +5195,8 @@
       "agentforce/einstein-next-best-action",
       "flow/flow-action-framework",
       "flow/flow-custom-property-editors",
+      "flow/process-builder-to-flow-migration",
+      "flow/workflow-rule-to-flow-migration",
       "lwc/custom-property-editor-for-flow"
     ],
     "flow-bulkification": [
@@ -5215,6 +5257,9 @@
     "flow-tests": [
       "flow/flow-testing"
     ],
+    "flow-trigger-explorer": [
+      "flow/process-builder-to-flow-migration"
+    ],
     "flow-ux": [
       "flow/screen-flows"
     ],
@@ -5270,6 +5315,9 @@
     ],
     "forecasting-ai": [
       "agentforce/agentforce-sales-ai-setup"
+    ],
+    "forensics": [
+      "security/security-incident-response"
     ],
     "form-handlers": [
       "apex/mcae-pardot-api"
@@ -5442,6 +5490,9 @@
     ],
     "genai-plugin": [
       "agentforce/agent-script-dsl"
+    ],
+    "general-slack-actions": [
+      "agentforce/agentforce-in-slack"
     ],
     "generative-ai": [
       "agentforce/prompt-builder-templates"
@@ -5818,6 +5869,9 @@
     "idempotent-integration-patterns": [
       "integration/idempotent-integration-patterns"
     ],
+    "identity-mapping": [
+      "agentforce/agentforce-in-slack"
+    ],
     "identity-resolution": [
       "admin/data-cloud-identity-resolution",
       "architect/data-cloud-architecture",
@@ -5872,7 +5926,8 @@
       "admin/salesforce-support-escalation"
     ],
     "incident-response": [
-      "security/login-forensics"
+      "security/login-forensics",
+      "security/security-incident-response"
     ],
     "incremental": [
       "architect/analytics-data-architecture"
@@ -6599,6 +6654,9 @@
     "logging-framework": [
       "apex/debug-and-logging"
     ],
+    "login-anomaly": [
+      "security/security-incident-response"
+    ],
     "login-based-license": [
       "architect/license-optimization-strategy"
     ],
@@ -6961,6 +7019,9 @@
       "integration/change-data-capture-integration",
       "integration/middleware-integration-patterns"
     ],
+    "migrate-to-flow": [
+      "flow/process-builder-to-flow-migration"
+    ],
     "migration": [
       "admin/data-import-and-management",
       "agentforce/einstein-bots-to-agentforce-migration",
@@ -6969,6 +7030,8 @@
       "data/person-accounts",
       "data/product-catalog-migration-commerce",
       "devops/migration-from-change-sets-to-sfdx",
+      "flow/process-builder-to-flow-migration",
+      "flow/workflow-rule-to-flow-migration",
       "omnistudio/industries-cpq-vs-salesforce-cpq",
       "omnistudio/vlocity-to-native-omnistudio-migration"
     ],
@@ -7690,7 +7753,8 @@
       "security/mfa-enforcement-strategy"
     ],
     "outbound-message": [
-      "admin/outbound-message-setup"
+      "admin/outbound-message-setup",
+      "flow/workflow-rule-to-flow-migration"
     ],
     "outbound-message-setup": [
       "admin/outbound-message-setup"
@@ -8256,6 +8320,9 @@
     "privacy-center": [
       "security/gdpr-data-privacy"
     ],
+    "private-actions": [
+      "agentforce/agentforce-in-slack"
+    ],
     "private-connect": [
       "architect/hybrid-integration-architecture",
       "architect/integration-security-architecture"
@@ -8275,6 +8342,9 @@
     ],
     "process-automation": [
       "architect/sales-cloud-architecture"
+    ],
+    "process-builder": [
+      "flow/process-builder-to-flow-migration"
     ],
     "process-builder-migration": [
       "admin/process-automation-selection"
@@ -8448,6 +8518,9 @@
       "integration/platform-events-integration",
       "integration/pub-sub-api-patterns",
       "integration/real-time-vs-batch-integration"
+    ],
+    "public-actions": [
+      "agentforce/agentforce-in-slack"
     ],
     "public-groups": [
       "admin/queues-and-public-groups"
@@ -8663,7 +8736,9 @@
       "flow/fault-handling",
       "flow/flow-bulkification",
       "flow/flow-debugging",
-      "flow/record-triggered-flow-patterns"
+      "flow/process-builder-to-flow-migration",
+      "flow/record-triggered-flow-patterns",
+      "flow/workflow-rule-to-flow-migration"
     ],
     "record-type-mapping-drift": [
       "admin/picklist-field-integrity-issues"
@@ -8920,6 +8995,12 @@
     "retention-policy": [
       "data/batch-data-cleanup-patterns"
     ],
+    "retire-process-builder": [
+      "flow/process-builder-to-flow-migration"
+    ],
+    "retire-workflow-rules": [
+      "flow/workflow-rule-to-flow-migration"
+    ],
     "retrieve": [
       "apex/metadata-api-and-package-xml"
     ],
@@ -9155,6 +9236,9 @@
     "salesforce-for-slack": [
       "integration/slack-salesforce-integration-setup",
       "integration/slack-workflow-builder"
+    ],
+    "salesforce-inspector": [
+      "data/data-loader-and-tools"
     ],
     "salesforce-knowledge": [
       "architect/knowledge-vs-external-cms"
@@ -9618,7 +9702,8 @@
       "agentforce/agentforce-custom-channel-dev"
     ],
     "session-management": [
-      "integration/soap-api-patterns"
+      "integration/soap-api-patterns",
+      "security/security-incident-response"
     ],
     "session-management-and-timeout": [
       "security/session-management-and-timeout"
@@ -9760,6 +9845,7 @@
       "security/event-monitoring",
       "security/field-audit-trail",
       "security/platform-encryption",
+      "security/security-incident-response",
       "security/transaction-security-policies"
     ],
     "shield-encryption": [
@@ -9827,15 +9913,26 @@
       "architect/sla-design-and-escalation-matrix"
     ],
     "slack": [
+      "agentforce/agentforce-in-slack",
       "flow/flow-for-slack",
+      "integration/slack-connect-patterns",
       "integration/slack-salesforce-integration-setup",
       "integration/slack-workflow-builder"
+    ],
+    "slack-canvas": [
+      "agentforce/agentforce-in-slack"
+    ],
+    "slack-connect": [
+      "integration/slack-connect-patterns"
     ],
     "slack-deployment": [
       "agentforce/agent-channel-deployment"
     ],
     "slack-integration": [
       "flow/flow-email-and-notifications"
+    ],
+    "slack-native-actions": [
+      "agentforce/agentforce-in-slack"
     ],
     "slack-workflow-builder": [
       "integration/slack-workflow-builder"
@@ -10320,6 +10417,9 @@
     "time-based-flow": [
       "flow/pause-elements-and-wait-events"
     ],
+    "time-based-workflow": [
+      "flow/workflow-rule-to-flow-migration"
+    ],
     "timeline": [
       "apex/health-cloud-lwc-components"
     ],
@@ -10357,6 +10457,7 @@
     ],
     "tool-selection": [
       "admin/einstein-analytics-basics",
+      "data/data-loader-and-tools",
       "devops/salesforce-devops-tooling-selection"
     ],
     "tooling-api": [
@@ -10394,6 +10495,7 @@
       "apex/callout-and-dml-transaction-boundaries"
     ],
     "transaction-security": [
+      "security/security-incident-response",
       "security/transaction-security-policies"
     ],
     "transactionKey": [
@@ -10835,6 +10937,9 @@
     "workato": [
       "integration/middleware-integration-patterns"
     ],
+    "workbench": [
+      "data/data-loader-and-tools"
+    ],
     "workflow": [
       "admin/outbound-message-setup"
     ],
@@ -10845,6 +10950,7 @@
       "admin/process-automation-selection"
     ],
     "workflow-rules": [
+      "flow/workflow-rule-to-flow-migration",
       "integration/outbound-messages-and-callbacks"
     ],
     "workforce-management": [

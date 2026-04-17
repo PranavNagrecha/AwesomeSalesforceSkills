@@ -4523,6 +4523,42 @@
       "domain": "integration",
       "expected_skill": "integration/salesforce-to-salesforce-integration",
       "top_k": 3
+    },
+    {
+      "query": "how to migrate Process Builder to Flow",
+      "domain": "flow",
+      "expected_skill": "flow/process-builder-to-flow-migration",
+      "top_k": 3
+    },
+    {
+      "query": "migrate workflow rules to flow builder",
+      "domain": "flow",
+      "expected_skill": "flow/workflow-rule-to-flow-migration",
+      "top_k": 3
+    },
+    {
+      "query": "salesforce security incident investigation event monitoring",
+      "domain": "security",
+      "expected_skill": "security/security-incident-response",
+      "top_k": 3
+    },
+    {
+      "query": "Slack Connect external organization channel sharing compliance",
+      "domain": "integration",
+      "expected_skill": "integration/slack-connect-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "Agentforce Slack native actions canvas user identity permission",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/agentforce-in-slack",
+      "top_k": 3
+    },
+    {
+      "query": "data loader workbench which tool to use import records",
+      "domain": "data",
+      "expected_skill": "data/data-loader-and-tools",
+      "top_k": 3
     }
   ]
 }
