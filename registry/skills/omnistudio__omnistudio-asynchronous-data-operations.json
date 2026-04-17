@@ -1,0 +1,68 @@
+{
+  "category": "omnistudio",
+  "chunk_ids": [
+    "034e2cb8a11f10939227",
+    "0c868d51640ab5858387",
+    "1522d8a25c818b6630ab",
+    "15c0977221fa1714191d",
+    "2aab05feb8b73968828c",
+    "312195e9bb775ae77fcf",
+    "3e074912dbb1bc69a6d6",
+    "42ed33444a98ef8ee908",
+    "4afdf93dd53c970c449e",
+    "6dfdc3d731d26852670a",
+    "7421da0355cd4de7f845",
+    "7485cba55e3dcb9901b2",
+    "7e293c993873edcaaba4",
+    "81d98540e899aa9d1a3e",
+    "895ce0826c157d45888d",
+    "8f6bc1f896386b1b44df",
+    "9fd32b03a1fafa11e331",
+    "a054d81df4d8ad697362",
+    "a0b470320bdef2dfda6b",
+    "b7e09560db122245e660",
+    "bfe9738b1245ae757515",
+    "d2d1b264b70abde9277a",
+    "ec8f5f8d87e4f7e0496a",
+    "ee0fd01d81f4354a2214",
+    "f49a66c143bfa9b11f96",
+    "f578e5f8556b7ad30330"
+  ],
+  "content_hash": "f7af49d91644ccd14892e0fb0aba5fee21719ff26b90080c7fe3fb5e4dc51c3b",
+  "dependencies": [],
+  "description": "Use Integration Procedures queues, DataRaptor Chain, and Remote Actions with async patterns for long-running OmniStudio flows. NOT for simple DataRaptor reads.",
+  "file_location": "skills/omnistudio/omnistudio-asynchronous-data-operations",
+  "id": "omnistudio/omnistudio-asynchronous-data-operations",
+  "inputs": [
+    "use case with >5s response or multi-system orchestration"
+  ],
+  "name": "omnistudio-asynchronous-data-operations",
+  "official_sources": [
+    "OmniStudio Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer.meta/omnistudio_developer/",
+    "OmniStudio for Salesforce \u2014 https://help.salesforce.com/s/articleView?id=sf.os_omnistudio_for_salesforce_overview.htm",
+    "OmniScript to LWC OSS \u2014 https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer.meta/omnistudio_developer/os_migrate_from_vf_to_lwc.htm"
+  ],
+  "outputs": [
+    "IP design with queued steps + error handling"
+  ],
+  "references": [
+    "skills/omnistudio/omnistudio-asynchronous-data-operations/references/examples.md",
+    "skills/omnistudio/omnistudio-asynchronous-data-operations/references/gotchas.md",
+    "skills/omnistudio/omnistudio-asynchronous-data-operations/references/llm-anti-patterns.md",
+    "skills/omnistudio/omnistudio-asynchronous-data-operations/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/omnistudio/omnistudio-asynchronous-data-operations/scripts/check_omnistudio_asynchronous_data_operations.py"
+  ],
+  "tags": [
+    "omnistudio",
+    "integration-procedure",
+    "async"
+  ],
+  "templates": [
+    "skills/omnistudio/omnistudio-asynchronous-data-operations/templates/omnistudio-asynchronous-data-operations-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

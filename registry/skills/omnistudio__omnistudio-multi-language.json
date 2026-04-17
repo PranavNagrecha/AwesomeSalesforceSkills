@@ -1,0 +1,69 @@
+{
+  "category": "omnistudio",
+  "chunk_ids": [
+    "0a24c630011188a82f2b",
+    "0ce9786fdf6fec4568f2",
+    "10299fe84b3cca5801a9",
+    "13fe7fb8a93c6ac92739",
+    "210ef86d5d7277fdc5d0",
+    "3f27a475e83713b9d973",
+    "43ead215015cc671834d",
+    "52d2a7047cde580db82c",
+    "69e26758c89d0ce9ec3c",
+    "6e7f7482b807638981da",
+    "77de98fe7106fad7f3b7",
+    "7936e211324ab33efbc5",
+    "865dc4d6b4b234ed7f25",
+    "88c47a9650cb1f2ce1a9",
+    "9d1075839f47fbd26162",
+    "a456c07e97c92e52e08a",
+    "b77e79eef1cacc820476",
+    "d3a23925a39d323b8079",
+    "d4f5bd4750e7a9da5159",
+    "d5071a04ed105f0ab5fc",
+    "d83aeca9f1b09e1cc60a",
+    "e5188fae44976bbc03db",
+    "eda1783b56dbe841cc89",
+    "f06c030107e99474fee3",
+    "f2638b11e389c35933ce",
+    "fb6196b5553a67bad33f"
+  ],
+  "content_hash": "659436a7ae62d1476a837d65e022d2db8c4e223f6409fbd99d05f2d7a37a2e03",
+  "dependencies": [],
+  "description": "Localize OmniScripts, FlexCards, and DataRaptors using Label-based translation, multi-language JSON, and locale-aware number/date formatting. NOT for Salesforce Translation Workbench alone.",
+  "file_location": "skills/omnistudio/omnistudio-multi-language",
+  "id": "omnistudio/omnistudio-multi-language",
+  "inputs": [
+    "target languages",
+    "OmniScripts/FlexCards in scope"
+  ],
+  "name": "omnistudio-multi-language",
+  "official_sources": [
+    "OmniStudio Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer.meta/omnistudio_developer/",
+    "OmniStudio for Salesforce \u2014 https://help.salesforce.com/s/articleView?id=sf.os_omnistudio_for_salesforce_overview.htm",
+    "OmniScript to LWC OSS \u2014 https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer.meta/omnistudio_developer/os_migrate_from_vf_to_lwc.htm"
+  ],
+  "outputs": [
+    "language data JSON + label extraction plan"
+  ],
+  "references": [
+    "skills/omnistudio/omnistudio-multi-language/references/examples.md",
+    "skills/omnistudio/omnistudio-multi-language/references/gotchas.md",
+    "skills/omnistudio/omnistudio-multi-language/references/llm-anti-patterns.md",
+    "skills/omnistudio/omnistudio-multi-language/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/omnistudio/omnistudio-multi-language/scripts/check_omnistudio_multi_language.py"
+  ],
+  "tags": [
+    "omnistudio",
+    "i18n",
+    "translation"
+  ],
+  "templates": [
+    "skills/omnistudio/omnistudio-multi-language/templates/omnistudio-multi-language-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

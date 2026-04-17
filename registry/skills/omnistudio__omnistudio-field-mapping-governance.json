@@ -1,0 +1,68 @@
+{
+  "category": "omnistudio",
+  "chunk_ids": [
+    "0690071ae85897c47f5e",
+    "143e74c5a9348b647f87",
+    "18df40ce4ee2f1784603",
+    "256898c388bc24885041",
+    "2f135b4845d914822810",
+    "42e9213ae152a307edec",
+    "4452b81e803aa986ff17",
+    "5233e4e35091723a9864",
+    "52d4ba056ed0e61eb686",
+    "607e94ce2b7fa9f54417",
+    "6696fb53a2569aecaf8f",
+    "6a72d0490b8736710afa",
+    "70b2dd98ba50b07b559c",
+    "762cee0b91be84e49983",
+    "7df9ff9d35be03741dd3",
+    "a76e86ffbbffe6e98f07",
+    "b4a9af2f652090fa8120",
+    "b5372faafdeda578b20f",
+    "b5a35a9b2b65ccf221de",
+    "cc329227cd00149d817c",
+    "db8e4970500ebd486f75",
+    "ddc9edb7311c9ba82b29",
+    "e90a50396866775180b2",
+    "f0f490dc69951fea2c48",
+    "fdd027f0207a188833e4",
+    "febaf6d6912708d3c44e"
+  ],
+  "content_hash": "7d6684fa931e5fe117070d1eff803babe20f3dcb89d04886886df79920d48311",
+  "dependencies": [],
+  "description": "Govern DataRaptor field mappings to prevent runtime errors when source metadata changes: naming, versioning, and dependency tracking. NOT for DataRaptor authoring fundamentals.",
+  "file_location": "skills/omnistudio/omnistudio-field-mapping-governance",
+  "id": "omnistudio/omnistudio-field-mapping-governance",
+  "inputs": [
+    "org DataRaptor count + field dependency scope"
+  ],
+  "name": "omnistudio-field-mapping-governance",
+  "official_sources": [
+    "OmniStudio Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer.meta/omnistudio_developer/",
+    "OmniStudio for Salesforce \u2014 https://help.salesforce.com/s/articleView?id=sf.os_omnistudio_for_salesforce_overview.htm",
+    "OmniScript to LWC OSS \u2014 https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer.meta/omnistudio_developer/os_migrate_from_vf_to_lwc.htm"
+  ],
+  "outputs": [
+    "naming standard + dependency report + CI check"
+  ],
+  "references": [
+    "skills/omnistudio/omnistudio-field-mapping-governance/references/examples.md",
+    "skills/omnistudio/omnistudio-field-mapping-governance/references/gotchas.md",
+    "skills/omnistudio/omnistudio-field-mapping-governance/references/llm-anti-patterns.md",
+    "skills/omnistudio/omnistudio-field-mapping-governance/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/omnistudio/omnistudio-field-mapping-governance/scripts/check_omnistudio_field_mapping_governance.py"
+  ],
+  "tags": [
+    "dataraptor",
+    "governance",
+    "metadata"
+  ],
+  "templates": [
+    "skills/omnistudio/omnistudio-field-mapping-governance/templates/omnistudio-field-mapping-governance-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

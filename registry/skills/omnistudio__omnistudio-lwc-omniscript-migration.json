@@ -1,0 +1,69 @@
+{
+  "category": "omnistudio",
+  "chunk_ids": [
+    "078d79102800c6764fbb",
+    "16dc414c31b649785f10",
+    "285739d7b394204d0223",
+    "2a12ffac819496e4c278",
+    "34f34ba024c9ba046f22",
+    "3b7203d6208a66394dc7",
+    "44792d3f2a0876d7aa33",
+    "45e6e8404183b75f8410",
+    "4b509a5a0f5eafa87218",
+    "4b87715cd274b8ded5a5",
+    "5299e9277ae3fde05f72",
+    "5406eab6ad19960aefa5",
+    "594b55e2b73e8d93a0b6",
+    "7cf9b7f550007073e634",
+    "882415be07fcc3641bf0",
+    "8a3501c2c0fe60fd8731",
+    "8e36811c2c3f0dbc06d1",
+    "9556e75784c1ee0db4a1",
+    "a2be547e36f747c1f5e2",
+    "ae9641aef4ae876eba43",
+    "b5e37127201c8824aeb2",
+    "bdc418fe80229b29e55e",
+    "c73dc59f076373dc6f30",
+    "cd9836a0e65f0889891b",
+    "dd9559eecee54a80347b",
+    "e19a7a866a1b7406b445"
+  ],
+  "content_hash": "9d12e78f31a3abe4b6f7bb972e5072b38ecd29f96636db8c9e5a9da1f11d7a9d",
+  "dependencies": [],
+  "description": "Migrate classic Visualforce-based OmniScripts to LWC-based runtime with feature parity and regression testing. NOT for new OmniScript design.",
+  "file_location": "skills/omnistudio/omnistudio-lwc-omniscript-migration",
+  "id": "omnistudio/omnistudio-lwc-omniscript-migration",
+  "inputs": [
+    "list of OmniScripts and their activation mode",
+    "custom LWCs embedded in scripts"
+  ],
+  "name": "omnistudio-lwc-omniscript-migration",
+  "official_sources": [
+    "OmniStudio Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer.meta/omnistudio_developer/",
+    "OmniStudio for Salesforce \u2014 https://help.salesforce.com/s/articleView?id=sf.os_omnistudio_for_salesforce_overview.htm",
+    "OmniScript to LWC OSS \u2014 https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer.meta/omnistudio_developer/os_migrate_from_vf_to_lwc.htm"
+  ],
+  "outputs": [
+    "migration plan + parity matrix + rollout runbook"
+  ],
+  "references": [
+    "skills/omnistudio/omnistudio-lwc-omniscript-migration/references/examples.md",
+    "skills/omnistudio/omnistudio-lwc-omniscript-migration/references/gotchas.md",
+    "skills/omnistudio/omnistudio-lwc-omniscript-migration/references/llm-anti-patterns.md",
+    "skills/omnistudio/omnistudio-lwc-omniscript-migration/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/omnistudio/omnistudio-lwc-omniscript-migration/scripts/check_omnistudio_lwc_omniscript_migration.py"
+  ],
+  "tags": [
+    "omnistudio",
+    "omniscript",
+    "lwc-migration"
+  ],
+  "templates": [
+    "skills/omnistudio/omnistudio-lwc-omniscript-migration/templates/omnistudio-lwc-omniscript-migration-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

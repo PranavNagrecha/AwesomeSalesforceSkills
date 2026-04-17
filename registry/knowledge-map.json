@@ -722,11 +722,16 @@
       "omnistudio/integration-procedures",
       "omnistudio/omniscript-design-patterns",
       "omnistudio/omniscript-versioning",
+      "omnistudio/omnistudio-asynchronous-data-operations",
+      "omnistudio/omnistudio-cache-strategies",
       "omnistudio/omnistudio-ci-cd-patterns",
       "omnistudio/omnistudio-custom-lwc-elements",
       "omnistudio/omnistudio-debugging",
       "omnistudio/omnistudio-deployment-datapacks",
+      "omnistudio/omnistudio-field-mapping-governance",
       "omnistudio/omnistudio-lwc-integration",
+      "omnistudio/omnistudio-lwc-omniscript-migration",
+      "omnistudio/omnistudio-multi-language",
       "omnistudio/omnistudio-performance",
       "omnistudio/omnistudio-remote-actions",
       "omnistudio/omnistudio-security",
@@ -1820,7 +1825,8 @@
     "async": [
       "data/bulk-api-and-large-data-loads",
       "data/bulk-api-patterns",
-      "flow/flow-and-platform-events"
+      "flow/flow-and-platform-events",
+      "omnistudio/omnistudio-asynchronous-data-operations"
     ],
     "async-apex": [
       "apex/apex-queueable-patterns",
@@ -2372,6 +2378,9 @@
     ],
     "cab-process": [
       "admin/change-advisory-board-process"
+    ],
+    "cache": [
+      "omnistudio/omnistudio-cache-strategies"
     ],
     "cache-aside": [
       "apex/platform-cache"
@@ -4001,6 +4010,7 @@
       "omnistudio/dataraptor-load-and-extract",
       "omnistudio/dataraptor-patterns",
       "omnistudio/omnistudio-debugging",
+      "omnistudio/omnistudio-field-mapping-governance",
       "omnistudio/vlocity-to-native-omnistudio-migration"
     ],
     "dataraptor-caching": [
@@ -5826,7 +5836,8 @@
       "architect/api-led-connectivity-architecture",
       "architect/multi-bu-marketing-architecture",
       "devops/pr-policy-templates",
-      "integration/api-governance-and-rate-limits"
+      "integration/api-governance-and-rate-limits",
+      "omnistudio/omnistudio-field-mapping-governance"
     ],
     "government-cloud": [
       "architect/government-cloud-compliance"
@@ -6126,7 +6137,8 @@
       "integration/private-connect-setup"
     ],
     "i18n": [
-      "lwc/lwc-internationalization"
+      "lwc/lwc-internationalization",
+      "omnistudio/omnistudio-multi-language"
     ],
     "icm": [
       "admin/care-plan-configuration"
@@ -6392,6 +6404,7 @@
       "omnistudio/dataraptor-load-and-extract",
       "omnistudio/document-generation-omnistudio",
       "omnistudio/integration-procedures",
+      "omnistudio/omnistudio-asynchronous-data-operations",
       "omnistudio/omnistudio-debugging",
       "omnistudio/omnistudio-lwc-integration",
       "omnistudio/omnistudio-remote-actions",
@@ -7042,6 +7055,9 @@
     "lwc-interop": [
       "lwc/message-channel-patterns"
     ],
+    "lwc-migration": [
+      "omnistudio/omnistudio-lwc-omniscript-migration"
+    ],
     "lwc-performance": [
       "lwc/lwc-performance"
     ],
@@ -7263,7 +7279,8 @@
       "data/field-history-tracking",
       "data/omnistudio-metadata-management",
       "devops/api-version-management",
-      "devops/change-set-deployment"
+      "devops/change-set-deployment",
+      "omnistudio/omnistudio-field-mapping-governance"
     ],
     "metadata-api": [
       "apex/metadata-api-and-package-xml",
@@ -7820,6 +7837,7 @@
       "omnistudio/omnistudio-custom-lwc-elements",
       "omnistudio/omnistudio-debugging",
       "omnistudio/omnistudio-lwc-integration",
+      "omnistudio/omnistudio-lwc-omniscript-migration",
       "omnistudio/omnistudio-remote-actions",
       "omnistudio/vlocity-to-native-omnistudio-migration"
     ],
@@ -7844,11 +7862,15 @@
       "omnistudio/integration-procedures",
       "omnistudio/omniscript-design-patterns",
       "omnistudio/omniscript-versioning",
+      "omnistudio/omnistudio-asynchronous-data-operations",
+      "omnistudio/omnistudio-cache-strategies",
       "omnistudio/omnistudio-ci-cd-patterns",
       "omnistudio/omnistudio-custom-lwc-elements",
       "omnistudio/omnistudio-debugging",
       "omnistudio/omnistudio-deployment-datapacks",
       "omnistudio/omnistudio-lwc-integration",
+      "omnistudio/omnistudio-lwc-omniscript-migration",
+      "omnistudio/omnistudio-multi-language",
       "omnistudio/omnistudio-remote-actions",
       "omnistudio/omnistudio-testing-patterns",
       "omnistudio/vlocity-to-native-omnistudio-migration"
@@ -8346,7 +8368,8 @@
       "data/soql-query-optimization",
       "flow/flow-governor-limits-deep-dive",
       "flow/flow-performance-optimization",
-      "lwc/virtualized-lists"
+      "lwc/virtualized-lists",
+      "omnistudio/omnistudio-cache-strategies"
     ],
     "performance-obligation": [
       "admin/revenue-recognition-requirements"
@@ -10980,7 +11003,8 @@
       "admin/care-coordination-requirements"
     ],
     "translation": [
-      "admin/multi-language-and-translation"
+      "admin/multi-language-and-translation",
+      "omnistudio/omnistudio-multi-language"
     ],
     "translation-workbench": [
       "admin/multi-language-and-translation"

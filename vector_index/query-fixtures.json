@@ -5267,6 +5267,66 @@
       "domain": "flow",
       "expected_skill": "flow/flow-http-callout-action",
       "top_k": 3
+    },
+    {
+      "query": "omniscript lwc migration",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/omnistudio-lwc-omniscript-migration",
+      "top_k": 3
+    },
+    {
+      "query": "visualforce omniscript deprecated",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/omnistudio-lwc-omniscript-migration",
+      "top_k": 3
+    },
+    {
+      "query": "integration procedure queue",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/omnistudio-asynchronous-data-operations",
+      "top_k": 3
+    },
+    {
+      "query": "dataraptor chain",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/omnistudio-asynchronous-data-operations",
+      "top_k": 3
+    },
+    {
+      "query": "dataraptor cache",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/omnistudio-cache-strategies",
+      "top_k": 3
+    },
+    {
+      "query": "integration procedure cache",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/omnistudio-cache-strategies",
+      "top_k": 3
+    },
+    {
+      "query": "translate omniscript",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/omnistudio-multi-language",
+      "top_k": 3
+    },
+    {
+      "query": "omnistudio multilingual",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/omnistudio-multi-language",
+      "top_k": 3
+    },
+    {
+      "query": "dataraptor field mapping broken",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/omnistudio-field-mapping-governance",
+      "top_k": 3
+    },
+    {
+      "query": "omnistudio dependency tracking",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/omnistudio-field-mapping-governance",
+      "top_k": 3
     }
   ]
 }

@@ -1,0 +1,69 @@
+{
+  "category": "omnistudio",
+  "chunk_ids": [
+    "120f0ad6b7cc00c16e21",
+    "1e64c2f3a1f7a9a3f0b6",
+    "1ed17a73454fe470ca02",
+    "2bae16804380ffbe222d",
+    "3c1b601b64239a2ff4b9",
+    "493d642cc7a69faa5cbd",
+    "4940077bfdc4a48d191f",
+    "4fdaf54edf122c2935b6",
+    "6f53cb0ae6c16c76299e",
+    "81b53169d6cc8817fd9f",
+    "84c25bf9d08b0d6dc1c2",
+    "88dfd831285e6980e910",
+    "a34212f37c8055808187",
+    "a66323f4aa59c3915d19",
+    "a9273b7152c1fa96f986",
+    "aa0226fbd34ae6a47184",
+    "b362f362d8f2d4da96c1",
+    "b6ad444bb3e844967104",
+    "bd3b09056ad20351f304",
+    "c4d76df50779c4ec2522",
+    "d00bbfb912e8d3215f44",
+    "d921cdb0c7283bf03a01",
+    "e56473e48fe6517ec863",
+    "f1bdd130377cf16716f2",
+    "f26b259b55478e6b175c",
+    "f98091ed2c2b72a1f54d"
+  ],
+  "content_hash": "9b6bad68b88f4a8858b02aa5c26602e1e40e0e4cf2c2506d9b63a44e40aa4a6c",
+  "dependencies": [],
+  "description": "Configure caching on DataRaptors and Integration Procedures to cut response times, with cache-bust and freshness guarantees. NOT for platform-level org cache.",
+  "file_location": "skills/omnistudio/omnistudio-cache-strategies",
+  "id": "omnistudio/omnistudio-cache-strategies",
+  "inputs": [
+    "current response times per IP/DR",
+    "data freshness requirements"
+  ],
+  "name": "omnistudio-cache-strategies",
+  "official_sources": [
+    "OmniStudio Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer.meta/omnistudio_developer/",
+    "OmniStudio for Salesforce \u2014 https://help.salesforce.com/s/articleView?id=sf.os_omnistudio_for_salesforce_overview.htm",
+    "OmniScript to LWC OSS \u2014 https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer.meta/omnistudio_developer/os_migrate_from_vf_to_lwc.htm"
+  ],
+  "outputs": [
+    "cache config + bust strategy + monitoring"
+  ],
+  "references": [
+    "skills/omnistudio/omnistudio-cache-strategies/references/examples.md",
+    "skills/omnistudio/omnistudio-cache-strategies/references/gotchas.md",
+    "skills/omnistudio/omnistudio-cache-strategies/references/llm-anti-patterns.md",
+    "skills/omnistudio/omnistudio-cache-strategies/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/omnistudio/omnistudio-cache-strategies/scripts/check_omnistudio_cache_strategies.py"
+  ],
+  "tags": [
+    "omnistudio",
+    "cache",
+    "performance"
+  ],
+  "templates": [
+    "skills/omnistudio/omnistudio-cache-strategies/templates/omnistudio-cache-strategies-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}
