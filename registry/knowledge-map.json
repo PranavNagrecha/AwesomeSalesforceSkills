@@ -621,11 +621,14 @@
     ],
     "integration": [
       "integration/api-error-handling-design",
+      "integration/api-governance-and-rate-limits",
       "integration/api-led-connectivity",
+      "integration/api-versioning-strategy",
       "integration/bulk-api-2-patterns",
       "integration/callout-limits-and-async-patterns",
       "integration/change-data-capture-integration",
       "integration/composite-api-patterns",
+      "integration/connect-rest-api-patterns",
       "integration/data-cloud-activation-development",
       "integration/data-cloud-ingestion-api",
       "integration/data-cloud-integration-strategy",
@@ -638,16 +641,19 @@
       "integration/loyalty-management-setup",
       "integration/middleware-integration-patterns",
       "integration/mulesoft-salesforce-connector",
+      "integration/mutual-tls-callouts",
       "integration/named-credentials-setup",
       "integration/oauth-flows-and-connected-apps",
       "integration/outbound-messages-and-callbacks",
       "integration/platform-events-integration",
+      "integration/private-connect-setup",
       "integration/pub-sub-api-patterns",
       "integration/real-time-vs-batch-integration",
       "integration/rest-api-patterns",
       "integration/retry-and-backoff-patterns",
       "integration/revenue-lifecycle-management",
       "integration/salesforce-connect-external-objects",
+      "integration/salesforce-data-pipeline-etl",
       "integration/salesforce-to-salesforce-integration",
       "integration/sis-integration-patterns",
       "integration/slack-connect-patterns",
@@ -655,7 +661,8 @@
       "integration/slack-workflow-builder",
       "integration/soap-api-patterns",
       "integration/streaming-api-and-pushtopic",
-      "integration/webhook-inbound-patterns"
+      "integration/webhook-inbound-patterns",
+      "integration/webhook-signature-verification"
     ],
     "lwc": [
       "lwc/aura-to-lwc-migration",
@@ -1574,7 +1581,9 @@
     "apex-rest": [
       "apex/apex-rest-services",
       "integration/api-error-handling-design",
-      "integration/webhook-inbound-patterns"
+      "integration/api-versioning-strategy",
+      "integration/webhook-inbound-patterns",
+      "integration/webhook-signature-verification"
     ],
     "apex-scheduling": [
       "apex/timezone-and-datetime-pitfalls"
@@ -1612,6 +1621,7 @@
       "architect/experience-cloud-performance"
     ],
     "api": [
+      "integration/api-versioning-strategy",
       "security/api-only-user-hardening"
     ],
     "api-access": [
@@ -1637,6 +1647,7 @@
       "architect/api-led-connectivity-architecture"
     ],
     "api-limits": [
+      "integration/api-governance-and-rate-limits",
       "integration/rest-api-patterns"
     ],
     "api-manager": [
@@ -2215,7 +2226,8 @@
       "data/opportunity-pipeline-migration",
       "data/patient-data-migration",
       "integration/mulesoft-salesforce-connector",
-      "integration/real-time-vs-batch-integration"
+      "integration/real-time-vs-batch-integration",
+      "integration/salesforce-data-pipeline-etl"
     ],
     "bulk-api-2": [
       "data/bulk-api-patterns",
@@ -2398,6 +2410,9 @@
     "callcenter-xml": [
       "apex/cti-adapter-development"
     ],
+    "callout": [
+      "integration/mutual-tls-callouts"
+    ],
     "callout-auth": [
       "integration/named-credentials-setup"
     ],
@@ -2566,7 +2581,8 @@
       "apex/platform-events-apex",
       "apex/sales-engagement-api",
       "integration/pub-sub-api-patterns",
-      "integration/real-time-vs-batch-integration"
+      "integration/real-time-vs-batch-integration",
+      "integration/salesforce-data-pipeline-etl"
     ],
     "cdn": [
       "architect/experience-cloud-performance",
@@ -2641,6 +2657,9 @@
     ],
     "chat-api": [
       "apex/service-cloud-rest-api"
+    ],
+    "chatter": [
+      "integration/connect-rest-api-patterns"
     ],
     "checkDeployStatus": [
       "devops/deployment-monitoring"
@@ -2764,6 +2783,9 @@
     ],
     "cloudhub": [
       "architect/mulesoft-anypoint-architecture"
+    ],
+    "cms": [
+      "integration/connect-rest-api-patterns"
     ],
     "cms-arc-ampe": [
       "architect/government-cloud-compliance"
@@ -3042,6 +3064,9 @@
       "admin/commerce-order-management",
       "admin/industries-insurance-setup",
       "omnistudio/industries-api-extensions"
+    ],
+    "connect-rest": [
+      "integration/connect-rest-api-patterns"
     ],
     "connect-rest-api": [
       "lwc/headless-experience-cloud"
@@ -4862,7 +4887,8 @@
     "etl": [
       "admin/analytics-dataflow-development",
       "data/data-migration-planning",
-      "data/etl-vs-api-data-patterns"
+      "data/etl-vs-api-data-patterns",
+      "integration/salesforce-data-pipeline-etl"
     ],
     "etm": [
       "admin/enterprise-territory-management",
@@ -5754,7 +5780,8 @@
       "admin/change-advisory-board-process",
       "architect/api-led-connectivity-architecture",
       "architect/multi-bu-marketing-architecture",
-      "devops/pr-policy-templates"
+      "devops/pr-policy-templates",
+      "integration/api-governance-and-rate-limits"
     ],
     "government-cloud": [
       "architect/government-cloud-compliance"
@@ -5976,7 +6003,8 @@
       "apex/fhir-integration-patterns"
     ],
     "hmac": [
-      "integration/data-cloud-activation-development"
+      "integration/data-cloud-activation-development",
+      "integration/webhook-signature-verification"
     ],
     "hmac-verification": [
       "integration/webhook-inbound-patterns"
@@ -6049,7 +6077,8 @@
     "hyperforce": [
       "architect/government-cloud-compliance",
       "architect/health-cloud-data-residency",
-      "architect/integration-security-architecture"
+      "architect/integration-security-architecture",
+      "integration/private-connect-setup"
     ],
     "icm": [
       "admin/care-plan-configuration"
@@ -7363,7 +7392,8 @@
       "admin/mcae-lead-scoring-and-grading"
     ],
     "mtls": [
-      "architect/integration-security-architecture"
+      "architect/integration-security-architecture",
+      "integration/mutual-tls-callouts"
     ],
     "mttr": [
       "data/service-metrics-data-model"
@@ -7457,6 +7487,9 @@
     ],
     "my-domain": [
       "admin/org-setup-and-configuration"
+    ],
+    "named-credential": [
+      "integration/mutual-tls-callouts"
     ],
     "named-credentials": [
       "admin/connected-apps-and-auth",
@@ -8585,7 +8618,11 @@
     ],
     "private-connect": [
       "architect/hybrid-integration-architecture",
-      "architect/integration-security-architecture"
+      "architect/integration-security-architecture",
+      "integration/private-connect-setup"
+    ],
+    "privatelink": [
+      "integration/private-connect-setup"
     ],
     "privileged-script-tag": [
       "architect/experience-cloud-integration-patterns"
@@ -8948,6 +8985,9 @@
     ],
     "range-vs-slab": [
       "admin/pricing-model-design"
+    ],
+    "rate-limit": [
+      "integration/api-governance-and-rate-limits"
     ],
     "rate-limiting": [
       "agentforce/agent-rate-limit-strategy",
@@ -10198,6 +10238,9 @@
     "shopper-orders": [
       "apex/commerce-order-api"
     ],
+    "signature": [
+      "integration/webhook-signature-verification"
+    ],
     "signature-capture": [
       "admin/fsl-mobile-workflow-design"
     ],
@@ -10285,7 +10328,8 @@
       "devops/scratch-org-snapshots"
     ],
     "snowflake": [
-      "data/analytics-external-data"
+      "data/analytics-external-data",
+      "integration/salesforce-data-pipeline-etl"
     ],
     "soap": [
       "integration/outbound-messages-and-callbacks"
@@ -11123,6 +11167,7 @@
       "agentforce/prompt-template-versioning",
       "apex/apex-rest-services",
       "devops/release-management",
+      "integration/api-versioning-strategy",
       "omnistudio/omniscript-versioning"
     ],
     "vertical-cloud": [
@@ -11218,7 +11263,8 @@
     "webhook": [
       "agentforce/agentforce-custom-channel-dev",
       "integration/data-cloud-activation-development",
-      "integration/webhook-inbound-patterns"
+      "integration/webhook-inbound-patterns",
+      "integration/webhook-signature-verification"
     ],
     "webstore": [
       "admin/b2b-commerce-store-setup",

@@ -1,0 +1,72 @@
+{
+  "category": "integration",
+  "chunk_ids": [
+    "01b3810954c7cb9c3e58",
+    "05ed790254fcc1c65835",
+    "11de1fe7ca8bac3cb668",
+    "132faaa3f31ff03daef1",
+    "19e4c25c298824a23cab",
+    "1bd33cb35024c774da27",
+    "1c3da7d3abb20c0f9ec1",
+    "38f1f4d48b2f071f9dc0",
+    "3e8dec2e611e5914ddbd",
+    "3f734fadcd9841e2b3f5",
+    "4070b28431d8bdadaa0d",
+    "4d6894ff19e6041c5b48",
+    "59fa3221e8aa2f5c5fce",
+    "7085a182e1933e0a8f19",
+    "70e7a23b6f30bd18f8d8",
+    "8f954507b444457e2cee",
+    "93e641833e2a02d7d4c3",
+    "97fcf92e47271de7880c",
+    "9e562e2b51732ef037e1",
+    "ad71ade31960dd6ae75b",
+    "b49336967f3e72082939",
+    "b5ddfd8382c3abd334ad",
+    "b8a6a712ae7cc90f8236",
+    "d89dc2f501a889eb387c",
+    "e51b6bc7fc22920fdfc7",
+    "ea6e94e494ca8901f1e2"
+  ],
+  "content_hash": "34e3cf397ea8785d32fb4ecea1d3b426b95823136ec982b2d5c4acbff9e65b18",
+  "dependencies": [],
+  "description": "Design versioning for custom Apex REST endpoints: URI versioning, backward compatibility, deprecation sunset. NOT for consuming external APIs.",
+  "file_location": "skills/integration/api-versioning-strategy",
+  "id": "integration/api-versioning-strategy",
+  "inputs": [
+    "existing endpoints",
+    "consumer list"
+  ],
+  "name": "api-versioning-strategy",
+  "official_sources": [
+    "Apex REST & Callouts \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts.htm",
+    "Named Credentials \u2014 https://help.salesforce.com/s/articleView?id=sf.named_credentials_about.htm",
+    "Connect REST API \u2014 https://developer.salesforce.com/docs/atlas.en-us.chatterapi.meta/chatterapi/",
+    "Private Connect \u2014 https://help.salesforce.com/s/articleView?id=sf.private_connect_overview.htm",
+    "Bulk API 2.0 \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/",
+    "Pub/Sub API \u2014 https://developer.salesforce.com/docs/platform/pub-sub-api/guide/intro.html"
+  ],
+  "outputs": [
+    "URI versioning scheme, deprecation policy, Apex class layout"
+  ],
+  "references": [
+    "skills/integration/api-versioning-strategy/references/examples.md",
+    "skills/integration/api-versioning-strategy/references/gotchas.md",
+    "skills/integration/api-versioning-strategy/references/llm-anti-patterns.md",
+    "skills/integration/api-versioning-strategy/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/integration/api-versioning-strategy/scripts/check_api_versioning_strategy.py"
+  ],
+  "tags": [
+    "api",
+    "versioning",
+    "apex-rest"
+  ],
+  "templates": [
+    "skills/integration/api-versioning-strategy/templates/api-versioning-strategy-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

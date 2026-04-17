@@ -1,0 +1,73 @@
+{
+  "category": "integration",
+  "chunk_ids": [
+    "04dcbbdd1a933db1adf5",
+    "0a946758296de9dbf6e7",
+    "0cdd9d67447385f41502",
+    "151958a82028bc356d85",
+    "177c0152038893ffafb8",
+    "1a09e6db209b2dd39d49",
+    "1dcf72ba47d44fc133f5",
+    "1f142002e7fcc0361310",
+    "2567d21598f69a2b1c24",
+    "2b2860d131c20165293a",
+    "3a8202e8233f21343930",
+    "4a01f0a6553219c8d897",
+    "4caddbfbd939087216af",
+    "6ea41fa85fb660028ae6",
+    "6ff8eff7076ca587863f",
+    "707d1c504c226fe0f6f5",
+    "7517ab9a47f4392eaf9b",
+    "758ad4b10523802c1872",
+    "9899563ce08bcddd709f",
+    "aad38893029aa1c30d2d",
+    "ab10d4fc8054cb94854c",
+    "afe3647b6f5280169817",
+    "b9f0bcae6f149e3ddc21",
+    "bf866ad9caec654daae6",
+    "d3970969868c3b120e90",
+    "f338ad45248b9c725ca1"
+  ],
+  "content_hash": "499d953dece297015e7b2cc759cbcdac08d5b99c9bc38042d8f873ad927be1d6",
+  "dependencies": [],
+  "description": "Accept inbound webhooks (Stripe, GitHub, Slack, partner) and verify HMAC signatures in Apex REST. NOT for outbound webhooks.",
+  "file_location": "skills/integration/webhook-signature-verification",
+  "id": "integration/webhook-signature-verification",
+  "inputs": [
+    "webhook provider HMAC spec",
+    "shared secret location"
+  ],
+  "name": "webhook-signature-verification",
+  "official_sources": [
+    "Apex REST & Callouts \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts.htm",
+    "Named Credentials \u2014 https://help.salesforce.com/s/articleView?id=sf.named_credentials_about.htm",
+    "Connect REST API \u2014 https://developer.salesforce.com/docs/atlas.en-us.chatterapi.meta/chatterapi/",
+    "Private Connect \u2014 https://help.salesforce.com/s/articleView?id=sf.private_connect_overview.htm",
+    "Bulk API 2.0 \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/",
+    "Pub/Sub API \u2014 https://developer.salesforce.com/docs/platform/pub-sub-api/guide/intro.html"
+  ],
+  "outputs": [
+    "@RestResource endpoint with signature verification"
+  ],
+  "references": [
+    "skills/integration/webhook-signature-verification/references/examples.md",
+    "skills/integration/webhook-signature-verification/references/gotchas.md",
+    "skills/integration/webhook-signature-verification/references/llm-anti-patterns.md",
+    "skills/integration/webhook-signature-verification/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/integration/webhook-signature-verification/scripts/check_webhook_signature_verification.py"
+  ],
+  "tags": [
+    "webhook",
+    "hmac",
+    "signature",
+    "apex-rest"
+  ],
+  "templates": [
+    "skills/integration/webhook-signature-verification/templates/webhook-signature-verification-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

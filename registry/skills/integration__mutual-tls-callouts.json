@@ -1,0 +1,72 @@
+{
+  "category": "integration",
+  "chunk_ids": [
+    "07478b08138bdfcf7479",
+    "163ed71b00e6c871e6dc",
+    "17416e4bad7d7e46d23d",
+    "22c45ab3dde8c19e87e0",
+    "39aeeb20b76482c9b0a0",
+    "40643e1e14e1d12cc554",
+    "42df230c77ce289a002b",
+    "48c622ecbaa3313f473e",
+    "4b25bc2284f2f47a8945",
+    "60f5e891390a25f8458d",
+    "626909622089cdf1a580",
+    "62697fbf72994a727468",
+    "6867807e0443f1ee595a",
+    "7629139a381d933be1d1",
+    "78ecea7b0c414c836fcd",
+    "7a964da7a69ea1d3746a",
+    "8a23aac8ae4fd2103dd6",
+    "958052bfd182e7c0934f",
+    "99f1c979f68d5af195b0",
+    "b50dc6afea4946884eec",
+    "c58cac9adb6486daadf7",
+    "ca4dc4cec5e3fbce1e9a",
+    "cb23d7c195a75fe69129",
+    "cedde8cf05d1ebbac432",
+    "d50d6e0acc40304faeff",
+    "d8325a5c192caa73e701"
+  ],
+  "content_hash": "375992af606da86bd14fc89ea12d43a03b7db17b1313bea955723b66bb8bbca7",
+  "dependencies": [],
+  "description": "Configure mTLS for Apex callouts using Named Credentials with client certificate authentication. NOT for standard TLS or API key auth.",
+  "file_location": "skills/integration/mutual-tls-callouts",
+  "id": "integration/mutual-tls-callouts",
+  "inputs": [
+    "partner's required cert details",
+    "current Apex HttpClient"
+  ],
+  "name": "mutual-tls-callouts",
+  "official_sources": [
+    "Apex REST & Callouts \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts.htm",
+    "Named Credentials \u2014 https://help.salesforce.com/s/articleView?id=sf.named_credentials_about.htm",
+    "Connect REST API \u2014 https://developer.salesforce.com/docs/atlas.en-us.chatterapi.meta/chatterapi/",
+    "Private Connect \u2014 https://help.salesforce.com/s/articleView?id=sf.private_connect_overview.htm",
+    "Bulk API 2.0 \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/",
+    "Pub/Sub API \u2014 https://developer.salesforce.com/docs/platform/pub-sub-api/guide/intro.html"
+  ],
+  "outputs": [
+    "Named Credential + uploaded certificate + callout snippet"
+  ],
+  "references": [
+    "skills/integration/mutual-tls-callouts/references/examples.md",
+    "skills/integration/mutual-tls-callouts/references/gotchas.md",
+    "skills/integration/mutual-tls-callouts/references/llm-anti-patterns.md",
+    "skills/integration/mutual-tls-callouts/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/integration/mutual-tls-callouts/scripts/check_mutual_tls_callouts.py"
+  ],
+  "tags": [
+    "mtls",
+    "callout",
+    "named-credential"
+  ],
+  "templates": [
+    "skills/integration/mutual-tls-callouts/templates/mutual-tls-callouts-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

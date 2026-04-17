@@ -1,0 +1,72 @@
+{
+  "category": "integration",
+  "chunk_ids": [
+    "0a53dbd938b1302f6bda",
+    "1115c264561f108ee5b9",
+    "1865345f922708deb3d4",
+    "1f3216395a46cdf8258c",
+    "438f583c614ac81f6306",
+    "4a0a041280d1d2aaaa27",
+    "5b73cfd5a4cfbe0450aa",
+    "66f156fb8f22378eac37",
+    "7fa128cfec0ee03d8d41",
+    "80df61d90484b748fad1",
+    "82e82b196bf7584c1480",
+    "87dd29015ecdc9114aae",
+    "9e3e8dc130415bdae61b",
+    "a88b23182722e6efcf82",
+    "a8dbca1a4a92b89c4752",
+    "ac458a72fd391e79a128",
+    "ac78390edb8fadd46d11",
+    "bb614e04e380e3e310b8",
+    "ccaaf5bfe899c1c69687",
+    "d09e22d2c9dc9ffadb09",
+    "d9249ed9a482554548f3",
+    "daf1ea32e2ba99b6c1df",
+    "df0fc10ad5f0064a5177",
+    "ec62b93733285309e304",
+    "ed659631af428791eaa3",
+    "fd65427bf14d558d6e74"
+  ],
+  "content_hash": "2e5351a5ba5797115e4a22be2511c71997eb962230a018eb79806318bd57b929",
+  "dependencies": [],
+  "description": "Configure Private Connect between Salesforce and AWS/Azure for traffic to stay on private networks. NOT for standard internet callouts.",
+  "file_location": "skills/integration/private-connect-setup",
+  "id": "integration/private-connect-setup",
+  "inputs": [
+    "cloud provider + VPC/VNet",
+    "endpoints to connect"
+  ],
+  "name": "private-connect-setup",
+  "official_sources": [
+    "Apex REST & Callouts \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts.htm",
+    "Named Credentials \u2014 https://help.salesforce.com/s/articleView?id=sf.named_credentials_about.htm",
+    "Connect REST API \u2014 https://developer.salesforce.com/docs/atlas.en-us.chatterapi.meta/chatterapi/",
+    "Private Connect \u2014 https://help.salesforce.com/s/articleView?id=sf.private_connect_overview.htm",
+    "Bulk API 2.0 \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/",
+    "Pub/Sub API \u2014 https://developer.salesforce.com/docs/platform/pub-sub-api/guide/intro.html"
+  ],
+  "outputs": [
+    "Private Connect config + Named Credential + verification plan"
+  ],
+  "references": [
+    "skills/integration/private-connect-setup/references/examples.md",
+    "skills/integration/private-connect-setup/references/gotchas.md",
+    "skills/integration/private-connect-setup/references/llm-anti-patterns.md",
+    "skills/integration/private-connect-setup/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/integration/private-connect-setup/scripts/check_private_connect_setup.py"
+  ],
+  "tags": [
+    "private-connect",
+    "hyperforce",
+    "privatelink"
+  ],
+  "templates": [
+    "skills/integration/private-connect-setup/templates/private-connect-setup-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

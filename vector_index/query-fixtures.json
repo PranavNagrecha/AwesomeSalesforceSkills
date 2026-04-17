@@ -5039,6 +5039,90 @@
       "domain": "devops",
       "expected_skill": "devops/devops-center-advanced",
       "top_k": 3
+    },
+    {
+      "query": "apex rest versioning",
+      "domain": "integration",
+      "expected_skill": "integration/api-versioning-strategy",
+      "top_k": 3
+    },
+    {
+      "query": "deprecate salesforce api endpoint",
+      "domain": "integration",
+      "expected_skill": "integration/api-versioning-strategy",
+      "top_k": 3
+    },
+    {
+      "query": "mtls salesforce callout",
+      "domain": "integration",
+      "expected_skill": "integration/mutual-tls-callouts",
+      "top_k": 3
+    },
+    {
+      "query": "client certificate apex",
+      "domain": "integration",
+      "expected_skill": "integration/mutual-tls-callouts",
+      "top_k": 3
+    },
+    {
+      "query": "webhook hmac verification apex",
+      "domain": "integration",
+      "expected_skill": "integration/webhook-signature-verification",
+      "top_k": 3
+    },
+    {
+      "query": "stripe webhook salesforce",
+      "domain": "integration",
+      "expected_skill": "integration/webhook-signature-verification",
+      "top_k": 3
+    },
+    {
+      "query": "connect rest api chatter",
+      "domain": "integration",
+      "expected_skill": "integration/connect-rest-api-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "post feed item api",
+      "domain": "integration",
+      "expected_skill": "integration/connect-rest-api-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "private connect aws salesforce",
+      "domain": "integration",
+      "expected_skill": "integration/private-connect-setup",
+      "top_k": 3
+    },
+    {
+      "query": "privatelink salesforce",
+      "domain": "integration",
+      "expected_skill": "integration/private-connect-setup",
+      "top_k": 3
+    },
+    {
+      "query": "salesforce to snowflake",
+      "domain": "integration",
+      "expected_skill": "integration/salesforce-data-pipeline-etl",
+      "top_k": 3
+    },
+    {
+      "query": "etl from salesforce",
+      "domain": "integration",
+      "expected_skill": "integration/salesforce-data-pipeline-etl",
+      "top_k": 3
+    },
+    {
+      "query": "salesforce api limit exceeded",
+      "domain": "integration",
+      "expected_skill": "integration/api-governance-and-rate-limits",
+      "top_k": 3
+    },
+    {
+      "query": "request limit exceeded 24 hour",
+      "domain": "integration",
+      "expected_skill": "integration/api-governance-and-rate-limits",
+      "top_k": 3
     }
   ]
 }

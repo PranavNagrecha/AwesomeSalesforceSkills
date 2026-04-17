@@ -1,0 +1,72 @@
+{
+  "category": "integration",
+  "chunk_ids": [
+    "0c5e77148c3c3d86970b",
+    "0fa96553631234403e98",
+    "14ffa54fa84700c994c0",
+    "1d3cb5648bd81a6db945",
+    "2553ace7986832988aff",
+    "26b0ea604398fa84a0ca",
+    "2dcf4c92038f1e991e3f",
+    "31a47bc7cfb8270c2a71",
+    "42601f13e5d6602afa41",
+    "4e27d49e86ab292f379a",
+    "52c17f50f125cfa3a02a",
+    "561ba2168b9e43835ced",
+    "67369f7fe9a4554433a4",
+    "6cdaddb6a62d66c7b721",
+    "76f1445f2006ce14b986",
+    "846b78d3650925649f81",
+    "992c70c431524539f34f",
+    "9a32acab348d335e4380",
+    "a0a2b185987754b940ea",
+    "a15e8776e10eb6793180",
+    "c15d7c1d6a84d912667a",
+    "c39f144fe548f4521438",
+    "c88c0075eeec6b8941cc",
+    "c8d3ff14823700dfc3f3",
+    "d2faba80ac20113c6e54",
+    "de37839eb06d00fc88a7"
+  ],
+  "content_hash": "ec860ee0a131886201677b698b880912a99d73de3f2a0312bfdfb66618aa1353",
+  "dependencies": [],
+  "description": "Use Connect REST API for Chatter, feeds, communities, and CMS content instead of querying underlying SObjects. NOT for custom business object CRUD.",
+  "file_location": "skills/integration/connect-rest-api-patterns",
+  "id": "integration/connect-rest-api-patterns",
+  "inputs": [
+    "feature area (Chatter, CMS, Communities)",
+    "required payload"
+  ],
+  "name": "connect-rest-api-patterns",
+  "official_sources": [
+    "Apex REST & Callouts \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts.htm",
+    "Named Credentials \u2014 https://help.salesforce.com/s/articleView?id=sf.named_credentials_about.htm",
+    "Connect REST API \u2014 https://developer.salesforce.com/docs/atlas.en-us.chatterapi.meta/chatterapi/",
+    "Private Connect \u2014 https://help.salesforce.com/s/articleView?id=sf.private_connect_overview.htm",
+    "Bulk API 2.0 \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/",
+    "Pub/Sub API \u2014 https://developer.salesforce.com/docs/platform/pub-sub-api/guide/intro.html"
+  ],
+  "outputs": [
+    "REST call examples + Apex ConnectApi equivalents"
+  ],
+  "references": [
+    "skills/integration/connect-rest-api-patterns/references/examples.md",
+    "skills/integration/connect-rest-api-patterns/references/gotchas.md",
+    "skills/integration/connect-rest-api-patterns/references/llm-anti-patterns.md",
+    "skills/integration/connect-rest-api-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/integration/connect-rest-api-patterns/scripts/check_connect_rest_api_patterns.py"
+  ],
+  "tags": [
+    "connect-rest",
+    "chatter",
+    "cms"
+  ],
+  "templates": [
+    "skills/integration/connect-rest-api-patterns/templates/connect-rest-api-patterns-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

@@ -1,0 +1,72 @@
+{
+  "category": "integration",
+  "chunk_ids": [
+    "087a64f332dd1e4c0e6b",
+    "11328f7945b72ec81408",
+    "2012d4727af0c144575b",
+    "267630ac7f82af00417b",
+    "2e7e9c9865d77d8191fb",
+    "2ea106153e70d805b334",
+    "3ea28316e1cf74ca35ec",
+    "517279db84d427fdf543",
+    "5405ba76b79fccf14637",
+    "69e10d5759b9c3611468",
+    "6ac1861df978e3ea3c7c",
+    "75499791da3fa37aa51d",
+    "75c396499e61b2f7c6a8",
+    "785ed6f48e84c38e68ab",
+    "80cc31c675e3c639fab3",
+    "935ad8ec67b711896662",
+    "9883b30476e05de0455f",
+    "98ce682b3dd34bd49386",
+    "99d0e4b3d1672bc66a20",
+    "9bba5dc06d57cecbf062",
+    "9ecdc87629304b71af65",
+    "a7b73161f440e7abec66",
+    "b4e8cc3b75732ed3e697",
+    "c05ec37c900d9841a55d",
+    "ed9f37138a786a3d5c6f",
+    "f496d72018651e8cb1cb"
+  ],
+  "content_hash": "9284dc330000b010f19a93c5e7f6ce0622d6b74d1fce8369137c28717bfa5dd1",
+  "dependencies": [],
+  "description": "Monitor and govern Salesforce API consumption: per-user limits, org allocation, lightning-rest limits, and backoff. NOT for designing new endpoints.",
+  "file_location": "skills/integration/api-governance-and-rate-limits",
+  "id": "integration/api-governance-and-rate-limits",
+  "inputs": [
+    "API usage report",
+    "problematic consumer"
+  ],
+  "name": "api-governance-and-rate-limits",
+  "official_sources": [
+    "Apex REST & Callouts \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts.htm",
+    "Named Credentials \u2014 https://help.salesforce.com/s/articleView?id=sf.named_credentials_about.htm",
+    "Connect REST API \u2014 https://developer.salesforce.com/docs/atlas.en-us.chatterapi.meta/chatterapi/",
+    "Private Connect \u2014 https://help.salesforce.com/s/articleView?id=sf.private_connect_overview.htm",
+    "Bulk API 2.0 \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/",
+    "Pub/Sub API \u2014 https://developer.salesforce.com/docs/platform/pub-sub-api/guide/intro.html"
+  ],
+  "outputs": [
+    "governance dashboard + per-consumer throttling + allocation plan"
+  ],
+  "references": [
+    "skills/integration/api-governance-and-rate-limits/references/examples.md",
+    "skills/integration/api-governance-and-rate-limits/references/gotchas.md",
+    "skills/integration/api-governance-and-rate-limits/references/llm-anti-patterns.md",
+    "skills/integration/api-governance-and-rate-limits/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/integration/api-governance-and-rate-limits/scripts/check_api_governance_and_rate_limits.py"
+  ],
+  "tags": [
+    "api-limits",
+    "governance",
+    "rate-limit"
+  ],
+  "templates": [
+    "skills/integration/api-governance-and-rate-limits/templates/api-governance-and-rate-limits-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

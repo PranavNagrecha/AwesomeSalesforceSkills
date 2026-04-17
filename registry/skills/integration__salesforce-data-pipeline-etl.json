@@ -1,0 +1,73 @@
+{
+  "category": "integration",
+  "chunk_ids": [
+    "01211bdb06643b074c17",
+    "12a7a4502b52e3efb05c",
+    "2b02a6ab7855c4ef0827",
+    "300a6a0b983047bb5f5b",
+    "428551959183f83addf3",
+    "447698edf9793293ca06",
+    "465d3eb8d0f7e22d5c63",
+    "4eb6625ffd255de18e91",
+    "5a974d234db4ce085655",
+    "5b1fe193a3a6566cba5b",
+    "5c4a03ae27f035cd80ea",
+    "68cd6e21a140f01be410",
+    "6914fc933b3a41eaace1",
+    "71930137fceddd6c812a",
+    "74de8abc1a1fcd0d86d0",
+    "763bf106072bc8269ab5",
+    "83a36a3c5e83426f5fa0",
+    "8869170b17cba963ce84",
+    "8b91c1924432c079650d",
+    "a98ac14344c5f7a14212",
+    "aa953d89eb4ecc9bd6ca",
+    "aed4fca74e14aa9c1c30",
+    "bd078d187491ab2cb71d",
+    "c4d4cb4cc2802218ba5c",
+    "f6eb72b645d33b38151f",
+    "fbb383e6e940db6c39d7"
+  ],
+  "content_hash": "6b6822d9ff2d59fbd98b4d4cd8984c107803bcbd49d3679f00cb3641fdce06b6",
+  "dependencies": [],
+  "description": "Export large Salesforce datasets to a lakehouse via Bulk API 2.0, CDC streams, or Salesforce Data Pipelines. NOT for ad-hoc exports.",
+  "file_location": "skills/integration/salesforce-data-pipeline-etl",
+  "id": "integration/salesforce-data-pipeline-etl",
+  "inputs": [
+    "source objects + volume",
+    "sink (Snowflake, BigQuery, Databricks)"
+  ],
+  "name": "salesforce-data-pipeline-etl",
+  "official_sources": [
+    "Apex REST & Callouts \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts.htm",
+    "Named Credentials \u2014 https://help.salesforce.com/s/articleView?id=sf.named_credentials_about.htm",
+    "Connect REST API \u2014 https://developer.salesforce.com/docs/atlas.en-us.chatterapi.meta/chatterapi/",
+    "Private Connect \u2014 https://help.salesforce.com/s/articleView?id=sf.private_connect_overview.htm",
+    "Bulk API 2.0 \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/",
+    "Pub/Sub API \u2014 https://developer.salesforce.com/docs/platform/pub-sub-api/guide/intro.html"
+  ],
+  "outputs": [
+    "ETL architecture: initial load + incremental CDC pattern"
+  ],
+  "references": [
+    "skills/integration/salesforce-data-pipeline-etl/references/examples.md",
+    "skills/integration/salesforce-data-pipeline-etl/references/gotchas.md",
+    "skills/integration/salesforce-data-pipeline-etl/references/llm-anti-patterns.md",
+    "skills/integration/salesforce-data-pipeline-etl/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/integration/salesforce-data-pipeline-etl/scripts/check_salesforce_data_pipeline_etl.py"
+  ],
+  "tags": [
+    "etl",
+    "bulk-api",
+    "cdc",
+    "snowflake"
+  ],
+  "templates": [
+    "skills/integration/salesforce-data-pipeline-etl/templates/salesforce-data-pipeline-etl-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}
