@@ -55,7 +55,13 @@ Runs a Well-Architected Framework (WAF) assessment against a Salesforce implemen
 5. `skills/architect/limits-and-scalability-planning`
 6. `skills/architect/nfr-definition-for-salesforce`
 7. `skills/architect/ha-dr-architecture`
-8. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+8. `skills/security/salesforce-shield-deployment` — Shield rollout sequencing
+9. `skills/security/shield-kms-byok-setup` — BYOK / Cache-Only KMS
+10. `skills/security/customer-data-request-workflow` — GDPR/CCPA DSR workflow
+11. `skills/security/privileged-access-management` — PAM, break-glass, JIT elevation
+12. `skills/security/session-high-assurance-policies` — step-up auth
+13. `skills/devops/pipeline-secrets-management` — pipeline auth hardening
+14. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---
 

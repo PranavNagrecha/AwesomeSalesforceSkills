@@ -56,7 +56,15 @@ Reviews an Agentforce agent (Topics + Actions + Persona + Guardrails) against be
 7. `skills/agentforce/agentforce-observability`
 8. `skills/agentforce/einstein-trust-layer`
 9. `skills/agentforce/agentforce-persona-design`
-10. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+10. `skills/agentforce/agent-action-error-handling` — typed response envelopes
+11. `skills/agentforce/prompt-injection-defense` — input sanitization
+12. `skills/agentforce/agent-action-unit-tests` — Invocable test patterns
+13. `skills/agentforce/agent-rate-limit-strategy` — per-consumer throttling
+14. `skills/agentforce/agent-security-review` — security review checklist
+15. `skills/agentforce/agent-metric-dashboards` — observability
+16. `skills/agentforce/agent-deployment-checklist` — deploy gates
+17. `skills/agentforce/prompt-template-versioning` — prompt rev management
+18. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---
 

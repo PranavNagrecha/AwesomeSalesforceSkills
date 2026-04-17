@@ -69,7 +69,11 @@ Two modes, selectable via input:
 11. `skills/devops/permission-set-deployment-ordering` — the deploy order is a first-class concern
 12. `templates/admin/permission-set-patterns.md` — the template the agent conforms to
 13. `templates/admin/naming-conventions.md`
-14. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+14. `skills/security/privileged-access-management` — PAM tiers + break-glass
+15. `skills/security/api-only-user-hardening` — integration user hardening
+16. `skills/security/session-high-assurance-policies` — HA session policy
+17. `skills/security/apex-managed-sharing-patterns` — row-level via __Share
+18. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---
 

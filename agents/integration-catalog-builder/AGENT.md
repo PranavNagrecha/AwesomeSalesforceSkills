@@ -62,7 +62,14 @@ Builds a catalog of every live integration endpoint reachable from the org: Name
 10. `skills/security/certificate-and-key-management`
 11. `skills/architect/integration-framework-design`
 12. `skills/architect/integration-security-architecture`
-13. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+13. `skills/integration/api-versioning-strategy` — contract evolution + sunset policy
+14. `skills/integration/mutual-tls-callouts` — mTLS via Named Credentials
+15. `skills/integration/webhook-signature-verification` — inbound HMAC verification
+16. `skills/integration/connect-rest-api-patterns` — Connect API vs raw SObject
+17. `skills/integration/private-connect-setup` — Hyperforce private networking
+18. `skills/integration/salesforce-data-pipeline-etl` — Bulk + CDC lake pipelines
+19. `skills/integration/api-governance-and-rate-limits` — 24h allocation governance
+20. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---
 

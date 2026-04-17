@@ -192,6 +192,52 @@ migrated into the router's consolidated entry above.
 
 ---
 
+## Wave D — 2026 skill pack additions (50 skills)
+
+New skills landed in 2026-04 and are available for citation. Existing agents can reference them without authoring changes; the mapping below is the recommended affinity.
+
+### Agentforce (8 new)
+`agentforce-action-reviewer`, `prompt-library-governor` additionally cite:
+- `agentforce/agent-action-error-handling`, `agentforce/prompt-injection-defense`, `agentforce/prompt-template-versioning`
+- `agentforce/agent-action-unit-tests`, `agentforce/agent-rate-limit-strategy`, `agentforce/agent-security-review`
+- `agentforce/agent-metric-dashboards`, `agentforce/agent-deployment-checklist`
+
+### Security (10 new)
+`sharing-audit-agent`, `permission-set-architect`, `waf-assessor`, `lightning-record-page-auditor`, `integration-catalog-builder` additionally cite (per affinity):
+- `security/apex-managed-sharing-patterns`, `security/dynamic-sharing-recalculation` → sharing-audit-agent
+- `security/privileged-access-management`, `security/session-high-assurance-policies`, `security/api-only-user-hardening` → permission-set-architect
+- `security/shield-kms-byok-setup`, `security/salesforce-shield-deployment`, `security/customer-data-request-workflow` → waf-assessor
+- `security/clickjack-and-frame-protection`, `security/csp-and-trusted-urls` → lightning-record-page-auditor
+
+### DevOps (8 new)
+`release-train-planner`, `sandbox-strategy-designer` additionally cite:
+- `devops/feature-flag-custom-metadata`, `devops/pipeline-secrets-management`, `devops/sfdx-monorepo-patterns`
+- `devops/packaging-dependency-graph`, `devops/sfdx-hardis-integration`, `devops/pr-policy-templates`, `devops/devops-center-advanced`
+- `devops/scratch-org-snapshots` → sandbox-strategy-designer
+
+### Integration (7 new)
+`integration-catalog-builder` additionally cites:
+- `integration/api-versioning-strategy`, `integration/mutual-tls-callouts`, `integration/webhook-signature-verification`
+- `integration/connect-rest-api-patterns`, `integration/private-connect-setup`
+- `integration/salesforce-data-pipeline-etl`, `integration/api-governance-and-rate-limits`
+
+### LWC (6 new)
+`lightning-record-page-auditor` additionally cites:
+- `lwc/drag-and-drop`, `lwc/file-upload-patterns`, `lwc/virtualized-lists`
+- `lwc/lwc-state-management`, `lwc/lwc-error-boundaries`, `lwc/lwc-internationalization`
+
+### Flow (6 new)
+`flow-builder` additionally cites:
+- `flow/flow-dynamic-choices`, `flow/flow-interview-debugging`, `flow/flow-and-platform-events`
+- `flow/flow-reactive-screen-components`, `flow/flow-data-tables`, `flow/flow-http-callout-action`
+
+### OmniStudio (5 new)
+No existing dedicated agent; skills are available for new agents and ad-hoc queries:
+- `omnistudio/omnistudio-lwc-omniscript-migration`, `omnistudio/omnistudio-asynchronous-data-operations`
+- `omnistudio/omnistudio-cache-strategies`, `omnistudio/omnistudio-multi-language`, `omnistudio/omnistudio-field-mapping-governance`
+
+---
+
 ## MCP tools available to these agents
 
 Existing: `search_skill`, `get_skill`, `describe_org`, `list_custom_objects`, `list_flows_on_object`, `validate_against_org`, `list_agents`, `get_agent`.

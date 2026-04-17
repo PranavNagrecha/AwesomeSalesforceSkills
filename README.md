@@ -4,7 +4,7 @@ The universal Salesforce knowledge layer for AI coding assistants.
 
 Drop this into Claude Code, Cursor, Aider, Windsurf, or any AI tool and get role-accurate, source-grounded Salesforce guidance — for every role, every cloud, every task.
 
-**701 skills · shared Apex/LWC/Flow templates · golden evals · live-org MCP server.**
+**753 skills · shared Apex/LWC/Flow templates · golden evals · live-org MCP server.**
 1119+ skills planned across 5 roles × 16 clouds.
 
 ---
@@ -421,7 +421,7 @@ Every claim in every skill is grounded against a 4-tier trust ladder. When sourc
 
 **Shipped in v1:**
 
-- [x] 701 skills across Admin, Apex, LWC, Flow, OmniStudio, Agentforce, Security, Integration, Data, Architect, DevOps
+- [x] 753 skills across Admin, Apex, LWC, Flow, OmniStudio, Agentforce, Security, Integration, Data, Architect, DevOps
 - [x] Shared templates (Apex handler framework, logger, security utils, HTTP client, test factories, LWC skeleton, Flow fault paths, Agentforce action shell)
 - [x] Decision trees for automation, async, integration, and sharing selection
 - [x] Golden evals for 10 flagship skills (30 P0 cases)

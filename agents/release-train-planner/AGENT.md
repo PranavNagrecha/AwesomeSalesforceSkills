@@ -54,7 +54,14 @@ Plans a Salesforce release train: branch model, package strategy (unlocked vs 2G
 6. `skills/devops/unlocked-package-development`
 7. `skills/devops/second-generation-managed-packages`
 8. `skills/devops/git-branching-for-salesforce`
-9. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+9. `skills/devops/feature-flag-custom-metadata` — decouple deploy from release
+10. `skills/devops/pipeline-secrets-management` — JWT auth + rotation
+11. `skills/devops/sfdx-monorepo-patterns` — multi-package repo layout
+12. `skills/devops/packaging-dependency-graph` — version pinning
+13. `skills/devops/sfdx-hardis-integration` — OSS CI/CD
+14. `skills/devops/pr-policy-templates` — CODEOWNERS + branch protection
+15. `skills/devops/devops-center-advanced` — DOC hybrid workflow
+16. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---
 
