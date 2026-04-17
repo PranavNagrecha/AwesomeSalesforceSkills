@@ -54,12 +54,18 @@ jobs:
         run: python3 scripts/validate_repo.py --skills-only --shard ${{ matrix.shard }}/4 --skip-fixture-retrieval
 
   # -----------------------------------------------------------------------
-  # Agent validation — single job. 72 agents validate in ~1 second; not worth
-  # sharding. Keeps the matrix output readable.
+  # Agent validation — 72 agents validate in ~1 second; not worth sharding.
+  # Wave 6: matrixed on ubuntu + macos so cross-OS hash drift in the
+  # frontmatter round-trip or export parity tests surfaces here before it
+  # poisons the manifest baseline downstream.
   # -----------------------------------------------------------------------
   validate-agents:
-    name: agents
-    runs-on: ubuntu-latest
+    name: agents (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
     steps:
       - uses: actions/checkout@v4
 
@@ -87,6 +93,42 @@ jobs:
         run: |
           python3 -m pip install -e . --quiet
           python3 -m unittest tests.test_tools -v
+
+  # -----------------------------------------------------------------------
+  # Export parity matrix — Wave 6. Runs the deterministic-export tests and
+  # the manifest check on both ubuntu-latest and macos-latest to catch any
+  # path-handling regression in stable_hash_for_files (the Wave 1.1 hotfix
+  # that made hashes cross-OS stable). If this job diverges between OSes,
+  # the multi-AI parity contract is broken and the PR must not merge.
+  # -----------------------------------------------------------------------
+  export-parity-matrix:
+    name: export parity (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: install deps
+        run: python3 -m pip install -r requirements.txt
+
+      # Must run before --check so the lexical.sqlite drift check is clean.
+      - name: build local retrieval index
+        run: python3 scripts/build_index.py
+
+      - name: export_skills.py --check (cross-OS determinism)
+        run: python3 scripts/export_skills.py --check
+
+      - name: export parity unittests
+        working-directory: mcp/sfskills-mcp
+        run: python3 -m unittest tests.test_export_parity -v
 
   # -----------------------------------------------------------------------
   # Bench — verifies the sharded orchestration hasn't regressed past the
