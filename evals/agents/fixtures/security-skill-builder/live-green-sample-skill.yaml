@@ -1,0 +1,45 @@
+eval:
+  id: security-skill-builder__live-green-sample-skill
+  agent: security-skill-builder
+  mode: single
+  priority: P0
+  last_verified: 2026-04-17
+  description: >
+    Scaffold a minimal compliant skill package for domain=security. Proves
+    Gate C static enforces frontmatter keys, workflow step count, and
+    the references/ quartet + 5-item anti-patterns file.
+
+inputs:
+  skill_slug: sample-security-pattern
+  domain: security
+  skill_category: security
+  feature_summary: "Scaffold a minimal security domain skill for fixture verification; exercises every static check the skill-builder plugin performs"
+  api_version: "60.0"
+
+org_stub: {}
+
+expect:
+  confidence: MEDIUM
+  gates_passed:
+    - inputs
+    - requirements
+    - ground
+    - build
+    - seal
+  requirements_document_must_reference:
+    - "sample-security-pattern"
+    - "security"
+  must_cite_any_of:
+    - { type: standard, id: CLAUDE.md }
+    - { type: standard, id: AGENT_RULES.md }
+  grounding:
+    unresolved_max: 0
+  build_gate:
+    parse_errors_max: 0
+    coverage_min: 0
+  process_observations:
+    min_count: 1
+    categories_present_any_of:
+      - healthy
+      - concerning
+      - ambiguous

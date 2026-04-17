@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills/agents/security-skill-builder/inputs.schema.json",
+  "title": "security-skill-builder inputs",
+  "type": "object",
+  "required": ["skill_slug", "domain", "feature_summary", "skill_category", "api_version"],
+  "properties": {
+    "skill_slug": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
+    "domain": {"type": "string", "enum": ["security"]},
+    "skill_category": {"type": "string", "enum": ["security"]},
+    "feature_summary": {"type": "string", "minLength": 1},
+    "api_version": {"type": "string", "pattern": "^\\d{2}\\.0$"},
+    "target_org_alias": {"type": "string"},
+    "repo_path": {"type": "string", "default": "./"}
+  }
+}

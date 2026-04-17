@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills/agents/dev-skill-builder/inputs.schema.json",
+  "title": "dev-skill-builder inputs",
+  "description": "Typed Gate-A input contract for the dev-skill-builder. Shared schema used by all six skill-builder agents.",
+  "type": "object",
+  "required": ["skill_slug", "domain", "feature_summary", "skill_category", "api_version"],
+  "properties": {
+    "skill_slug": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "description": "kebab-case directory name of the new skill"
+    },
+    "domain": {
+      "type": "string",
+      "enum": ["apex", "lwc", "flow", "omnistudio", "integration", "agentforce", "admin", "architect", "data", "devops", "security"],
+      "description": "skills/<domain>/ directory"
+    },
+    "skill_category": {
+      "type": "string",
+      "enum": ["admin", "apex", "lwc", "flow", "omnistudio", "agentforce", "security", "integration", "data", "devops", "architect"]
+    },
+    "feature_summary": {"type": "string", "minLength": 1, "description": "≥10 words"},
+    "api_version": {"type": "string", "pattern": "^\\d{2}\\.0$"},
+    "target_org_alias": {"type": "string"},
+    "repo_path": {"type": "string", "default": "./"}
+  }
+}

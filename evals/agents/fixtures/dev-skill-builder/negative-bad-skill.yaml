@@ -1,0 +1,30 @@
+eval:
+  id: dev-skill-builder__negative-bad-skill
+  agent: dev-skill-builder
+  mode: single
+  priority: P0
+  last_verified: 2026-04-17
+  description: >
+    Gate C MUST catch a skill missing required frontmatter keys, the
+    Recommended Workflow section, and references/ files. Static check
+    surfaces all three classes of errors.
+
+inputs:
+  skill_slug: bad-skill
+  domain: apex
+  skill_category: apex
+  feature_summary: "Malformed skill package missing required frontmatter keys and references files to exercise the Gate C static rejection"
+  api_version: "60.0"
+
+org_stub: {}
+
+expect:
+  confidence: LOW
+  gates_passed:
+    - inputs
+    - requirements
+    - ground
+  grounding:
+    unresolved_max: 0
+  build_gate:
+    parse_errors_max: 999
