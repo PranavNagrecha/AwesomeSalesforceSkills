@@ -528,6 +528,43 @@ def validate_agents(root: Path) -> list[ValidationIssue]:
                 )
             )
 
+    # Wave 5: every class=runtime, status!=deprecated agent must have a matching
+    # slash-command file in commands/. Reverse-index every commands/*.md by the
+    # agent-id it wraps (the wrap target appears as agents/<id>/AGENT.md in the
+    # command body). This lets one command file serve multiple alias commands
+    # (e.g. commands/migrate-workflow-pb.md aliasing automation-migration-router).
+    commands_dir = root / "commands"
+    wrapped_by_command: dict[str, list[str]] = {}
+    if commands_dir.exists():
+        wrap_pat = re.compile(r"agents/([a-z0-9-]+)/AGENT\.md")
+        for cmd_path in commands_dir.glob("*.md"):
+            try:
+                body = cmd_path.read_text(encoding="utf-8")
+            except OSError:
+                continue
+            for wrapped in wrap_pat.findall(body):
+                wrapped_by_command.setdefault(wrapped, []).append(cmd_path.stem)
+
+    for md_path in agent_md_paths:
+        parse, _ = _parse_agent(md_path)
+        if parse is None:
+            continue
+        fm = parse.frontmatter
+        if fm.get("class") != "runtime":
+            continue
+        if fm.get("status") == "deprecated":
+            continue
+        agent_id = fm.get("id") or md_path.parent.name
+        if agent_id not in wrapped_by_command:
+            issues.append(
+                ValidationIssue(
+                    "ERROR",
+                    str(md_path),
+                    f"runtime agent `{agent_id}` has no matching slash-command — "
+                    f"add commands/<slug>.md whose body links agents/{agent_id}/AGENT.md",
+                )
+            )
+
     return issues
 
 
