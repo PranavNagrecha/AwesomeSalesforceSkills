@@ -9,5 +9,10 @@ vector_index/lexical.sqlite
 # Claude Code worktrees (temporary agent working copies)
 .claude/worktrees/
 
-# Codex drops (unused)
-_codex_drops/
+# Codex ↔ Claude Code handoff zone: raw skill file drops (=== FILE: ... ===
+# format) that Claude Code picks up, writes into the tree, syncs, validates,
+# and commits. Processed files go under _codex_drops/processed/. The zone
+# itself is tracked (README + prompt) but individual drops are not.
+_codex_drops/*.txt
+_codex_drops/*.out
+_codex_drops/processed/
