@@ -58,7 +58,7 @@
     "ec83be8a59fc07fa6407",
     "f1637c8a8a490d193857"
   ],
-  "content_hash": "cbf0af2b9e5a73381aeb3838c66ec70149aa3053ce86f0c550b7a86201f3f58c",
+  "content_hash": "a86e61a3d38610c0c6c700530f17201a5a369154ab5672f479a696c16d008184",
   "dependencies": [
     "apex/sf-cli-and-sfdx-essentials",
     "devops/continuous-integration-testing"
@@ -98,7 +98,12 @@
     "cli-automation",
     "json-output",
     "shell-scripting",
-    "devops"
+    "devops",
+    "ci-cd",
+    "jwt-auth",
+    "sfdx-migration",
+    "sf-project-deploy",
+    "sf-data-bulk"
   ],
   "templates": [
     "skills/devops/salesforce-cli-automation/templates/salesforce-cli-automation-template.md"

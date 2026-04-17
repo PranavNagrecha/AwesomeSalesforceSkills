@@ -2560,6 +2560,7 @@
       "devops/environment-specific-value-injection",
       "devops/github-actions-for-salesforce",
       "devops/gitlab-ci-for-salesforce",
+      "devops/salesforce-cli-automation",
       "devops/salesforce-code-analyzer",
       "devops/salesforce-devops-tooling-selection",
       "devops/scratch-org-management",
@@ -6232,7 +6233,8 @@
       "security/certificate-and-key-management"
     ],
     "jwt-auth": [
-      "devops/cumulusci-automation"
+      "devops/cumulusci-automation",
+      "devops/salesforce-cli-automation"
     ],
     "jwt-bearer": [
       "integration/oauth-flows-and-connected-apps"
@@ -9652,6 +9654,12 @@
     "sf-cli-v2": [
       "devops/salesforce-cli-automation"
     ],
+    "sf-data-bulk": [
+      "devops/salesforce-cli-automation"
+    ],
+    "sf-project-deploy": [
+      "devops/salesforce-cli-automation"
+    ],
     "sfcc": [
       "admin/b2c-commerce-store-setup",
       "architect/b2b-vs-b2c-architecture"
@@ -9672,6 +9680,9 @@
     ],
     "sfdx-lwc-jest": [
       "lwc/lwc-testing"
+    ],
+    "sfdx-migration": [
+      "devops/salesforce-cli-automation"
     ],
     "sfdx-project": [
       "devops/multi-package-development"

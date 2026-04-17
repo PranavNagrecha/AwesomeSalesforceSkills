@@ -67,7 +67,11 @@ Org-wide coverage gates exist, but reviewers should insist on assertions that pr
 
 ### Naming and structure
 
-Consistent class and method names reduce onboarding cost and align with the Apex Developer Guide naming guidance. Triggers should be one per object and thin, delegating to handler layers if your team uses that pattern.
+Consistent class and method names reduce onboarding cost and align with the Apex Developer Guide naming guidance. Triggers should follow the Apex Developer Guide naming conventions (e.g., `ObjectNameTrigger`, handler class `ObjectNameTriggerHandler`).
+
+### Architectural compliance
+
+The Apex Developer Guide trigger best-practices guidance calls for a single trigger per object and zero business logic in the trigger body. Logic in the body is untestable in isolation and creates merge conflicts when multiple developers change the same trigger file. A compliant pattern routes every entry point through a handler class that owns the logic and can be instantiated independently in tests. Reviewers flag any logic-bearing trigger body (branching, SOQL, DML, service calls) as a blocking architectural issue.
 
 ---
 
@@ -105,12 +109,13 @@ Consistent class and method names reduce onboarding cost and align with the Apex
 
 ## Recommended Workflow
 
-1. Map entry points and data flows from the diff; note trigger context variables used (`Trigger.newMap`, etc.).
-2. Walk the governor and bulk section of the checklist: SOQL/DML/callouts per loop, collection sizes, queries against large objects.
-3. Verify CRUD/FLS and sharing: keywords on class, SOQL modifiers, and any `as System` or elevated paths.
-4. Read test classes: assert messages, bulk test methods (200 rows), and failure expectations; run or inspect CI output.
-5. Scan naming (class/trigger/test naming), dead code, and debug statements left in the branch.
-6. Record blocking vs advisory items in the PR or release template and link to official limit or testing docs when teaching the author.
+1. Map entry points and data flows from the diff; note trigger context variables used (`Trigger.newMap`, etc.) and the transaction context (synchronous trigger, async job, REST controller).
+2. Walk the governor and bulk section: SOQL/DML/callouts per loop, collection sizes, queries against large objects; all synchronous trigger paths must tolerate 200 records without per-row queries or DML.
+3. Verify CRUD/FLS and sharing: explicit `with sharing` / `without sharing` / `inherited sharing` on every class and trigger; SOQL modifiers (`WITH USER_MODE`, `WITH SECURITY_ENFORCED`, or `Security.stripInaccessible` on returned rows) for user-facing reads.
+4. Read test classes: assert messages, bulk test methods (200 rows), negative/error paths, `System.runAs` for permission-sensitive code; target 90%+ meaningful line coverage, not 75% minimum.
+5. Scan naming against Apex Developer Guide conventions (`ObjectNameTrigger`, handler suffix, test class suffix `_Test` or `Test`); flag dead code and `System.debug` statements left on production paths.
+6. Verify architectural compliance: one trigger per object, no business logic in the trigger body (no SOQL, DML, branching, or service calls inline); logic must live in a dedicated handler class.
+7. Record blocking vs advisory items in the PR or release template and link to official limit or testing docs when teaching the author.
 
 ---
 
@@ -125,6 +130,7 @@ Run through these before marking work in this area complete:
 - [ ] Tests assert outcomes (not only coverage); include bulk and negative cases where behavior branches; avoid `SeeAllData=true` unless documented and unavoidable.
 - [ ] Async entry points (`execute`, `start`, schedulable `execute`) respect queueable/batch limits and do not chain blindly into unbounded recursion.
 - [ ] Naming matches team conventions and Apex naming guidance; no `System.debug` left for production paths unless behind diagnostic flags.
+- [ ] One trigger per object; trigger body contains no business logic (no SOQL, DML, or service calls inline) — all logic routes through a handler class.
 
 ---
 

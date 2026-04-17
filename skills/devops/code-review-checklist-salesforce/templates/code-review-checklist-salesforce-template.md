@@ -31,6 +31,7 @@ Copy the review checklist from SKILL.md and tick items as you complete them.
 - [ ] Tests assert outcomes (not only coverage); include bulk and negative cases where behavior branches; avoid `SeeAllData=true` unless documented and unavoidable.
 - [ ] Async entry points (`execute`, `start`, schedulable `execute`) respect queueable/batch limits and do not chain blindly into unbounded recursion.
 - [ ] Naming matches team conventions and Apex naming guidance; no `System.debug` left for production paths unless behind diagnostic flags.
+- [ ] One trigger per object; trigger body contains no business logic (no SOQL, DML, or service calls inline) — all logic routes through a handler class.
 
 ## Notes
 
