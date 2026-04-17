@@ -4631,6 +4631,66 @@
       "domain": "agentforce",
       "expected_skill": "agentforce/agentforce-eval-harness",
       "top_k": 3
+    },
+    {
+      "query": "flow rollback records element undo dml fault path",
+      "domain": "flow",
+      "expected_skill": "flow/flow-rollback-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "atomic flow rollback opportunity line items partial commit",
+      "domain": "flow",
+      "expected_skill": "flow/flow-rollback-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "flow error monitoring central log alerting dashboard",
+      "domain": "flow",
+      "expected_skill": "flow/flow-error-monitoring",
+      "top_k": 3
+    },
+    {
+      "query": "flow fault email routing integration log severity",
+      "domain": "flow",
+      "expected_skill": "flow/flow-error-monitoring",
+      "top_k": 3
+    },
+    {
+      "query": "migrate apex trigger to flow decision shadow mode",
+      "domain": "flow",
+      "expected_skill": "flow/flow-migration-from-trigger",
+      "top_k": 3
+    },
+    {
+      "query": "trigger to flow migration test parity custom permission",
+      "domain": "flow",
+      "expected_skill": "flow/flow-migration-from-trigger",
+      "top_k": 3
+    },
+    {
+      "query": "flow governor limits soql dml cpu shared transaction budget",
+      "domain": "flow",
+      "expected_skill": "flow/flow-governor-limits-deep-dive",
+      "top_k": 3
+    },
+    {
+      "query": "flow 101 soql limit exceeded bulkification math",
+      "domain": "flow",
+      "expected_skill": "flow/flow-governor-limits-deep-dive",
+      "top_k": 3
+    },
+    {
+      "query": "flow performance optimization benchmark before-save scheduled path",
+      "domain": "flow",
+      "expected_skill": "flow/flow-performance-optimization",
+      "top_k": 3
+    },
+    {
+      "query": "flow slow tuning cpu time hoist soql dml from loop",
+      "domain": "flow",
+      "expected_skill": "flow/flow-performance-optimization",
+      "top_k": 3
     }
   ]
 }

@@ -577,13 +577,18 @@
       "flow/flow-custom-property-editors",
       "flow/flow-debugging",
       "flow/flow-email-and-notifications",
+      "flow/flow-error-monitoring",
       "flow/flow-external-services",
       "flow/flow-for-experience-cloud",
       "flow/flow-for-slack",
       "flow/flow-governance",
+      "flow/flow-governor-limits-deep-dive",
       "flow/flow-invocable-from-apex",
       "flow/flow-large-data-volume-patterns",
+      "flow/flow-migration-from-trigger",
+      "flow/flow-performance-optimization",
       "flow/flow-platform-events-integration",
+      "flow/flow-rollback-patterns",
       "flow/flow-runtime-error-diagnosis",
       "flow/flow-testing",
       "flow/flow-transactional-boundaries",
@@ -1195,6 +1200,9 @@
     "admin-declarative": [
       "admin/dynamic-forms-and-actions"
     ],
+    "admin-maintainability": [
+      "flow/flow-migration-from-trigger"
+    ],
     "admin-setup": [
       "admin/industries-energy-utilities-setup",
       "integration/slack-salesforce-integration-setup"
@@ -1362,7 +1370,8 @@
       "flow/pause-elements-and-wait-events"
     ],
     "alerting": [
-      "architect/org-limits-monitoring"
+      "architect/org-limits-monitoring",
+      "flow/flow-error-monitoring"
     ],
     "all-subscribers": [
       "data/subscriber-data-management"
@@ -1461,6 +1470,7 @@
       "architect/solution-design-patterns",
       "devops/code-review-checklist-salesforce",
       "flow/flow-invocable-from-apex",
+      "flow/flow-migration-from-trigger",
       "lwc/knowledge-article-lwc",
       "lwc/lwc-imperative-apex"
     ],
@@ -1990,11 +2000,15 @@
       "apex/npsp-api-and-integration"
     ],
     "before-save": [
+      "flow/flow-performance-optimization",
       "flow/flow-transactional-boundaries",
       "flow/record-triggered-flow-patterns"
     ],
     "behavioral-triggers": [
       "admin/lead-nurture-journey-design"
+    ],
+    "benchmarking": [
+      "flow/flow-performance-optimization"
     ],
     "beneficiary": [
       "admin/npsp-program-management"
@@ -2832,6 +2846,9 @@
     "compact-layouts": [
       "admin/list-views-and-compact-layouts"
     ],
+    "compensation": [
+      "flow/flow-rollback-patterns"
+    ],
     "compile-size": [
       "admin/formula-fields"
     ],
@@ -3224,6 +3241,9 @@
     "cpq-quote-templates": [
       "admin/cpq-quote-templates"
     ],
+    "cpu": [
+      "flow/flow-governor-limits-deep-dive"
+    ],
     "cpu-limits": [
       "architect/limits-and-scalability-planning"
     ],
@@ -3516,7 +3536,8 @@
       "admin/einstein-analytics-basics",
       "admin/report-performance-tuning",
       "admin/reports-and-dashboards",
-      "admin/reports-and-dashboards-fundamentals"
+      "admin/reports-and-dashboards-fundamentals",
+      "flow/flow-error-monitoring"
     ],
     "data": [
       "data/record-merge-implications"
@@ -4242,6 +4263,10 @@
     "dmarc": [
       "admin/email-deliverability-strategy"
     ],
+    "dml": [
+      "flow/flow-governor-limits-deep-dive",
+      "flow/flow-rollback-patterns"
+    ],
     "dml-exception": [
       "apex/exception-handling"
     ],
@@ -4704,6 +4729,9 @@
     "error-propagation": [
       "architect/integration-framework-design"
     ],
+    "error-reports": [
+      "flow/flow-error-monitoring"
+    ],
     "escalation": [
       "admin/approval-processes"
     ],
@@ -4961,7 +4989,8 @@
       "flow/flow-debugging"
     ],
     "fault-handling": [
-      "admin/flow-for-admins"
+      "admin/flow-for-admins",
+      "flow/flow-rollback-patterns"
     ],
     "fault-path": [
       "flow/flow-runtime-error-diagnosis"
@@ -5207,10 +5236,15 @@
       "apex/order-of-execution-deep-dive",
       "architect/solution-design-patterns",
       "flow/auto-launched-flow-patterns",
+      "flow/flow-error-monitoring",
       "flow/flow-external-services",
       "flow/flow-for-slack",
+      "flow/flow-governor-limits-deep-dive",
       "flow/flow-invocable-from-apex",
+      "flow/flow-migration-from-trigger",
+      "flow/flow-performance-optimization",
       "flow/flow-platform-events-integration",
+      "flow/flow-rollback-patterns",
       "flow/flow-runtime-error-diagnosis",
       "flow/flow-transactional-boundaries"
     ],
@@ -5616,6 +5650,7 @@
       "data/cpq-performance-optimization",
       "devops/code-review-checklist-salesforce",
       "flow/flow-bulkification",
+      "flow/flow-governor-limits-deep-dive",
       "flow/flow-large-data-volume-patterns",
       "flow/flow-transactional-boundaries",
       "integration/callout-limits-and-async-patterns"
@@ -5750,6 +5785,9 @@
     ],
     "healthcare-api": [
       "apex/health-cloud-apis"
+    ],
+    "heap": [
+      "flow/flow-governor-limits-deep-dive"
     ],
     "heap-limits": [
       "architect/limits-and-scalability-planning"
@@ -6132,6 +6170,9 @@
     ],
     "integration-endpoints": [
       "devops/sandbox-data-isolation-gotchas"
+    ],
+    "integration-log": [
+      "flow/flow-error-monitoring"
     ],
     "integration-pattern-selection": [
       "admin/integration-pattern-selection"
@@ -7075,6 +7116,7 @@
       "data/person-accounts",
       "data/product-catalog-migration-commerce",
       "devops/migration-from-change-sets-to-sfdx",
+      "flow/flow-migration-from-trigger",
       "flow/process-builder-to-flow-migration",
       "flow/workflow-rule-to-flow-migration",
       "omnistudio/industries-cpq-vs-salesforce-cpq",
@@ -7150,13 +7192,17 @@
     "moderation": [
       "admin/experience-cloud-moderation"
     ],
+    "modernization": [
+      "flow/flow-migration-from-trigger"
+    ],
     "modular-adoption": [
       "architect/nonprofit-platform-architecture"
     ],
     "monitoring": [
       "admin/batch-job-scheduling-and-monitoring",
       "apex/custom-logging-and-monitoring",
-      "architect/org-limits-monitoring"
+      "architect/org-limits-monitoring",
+      "flow/flow-error-monitoring"
     ],
     "mono-repo": [
       "devops/salesforce-dx-project-structure"
@@ -7697,6 +7743,9 @@
     "opportunityteammember": [
       "data/opportunity-pipeline-migration"
     ],
+    "ops": [
+      "flow/flow-error-monitoring"
+    ],
     "opt-out": [
       "admin/consent-management-marketing",
       "data/subscriber-data-management"
@@ -7704,7 +7753,8 @@
     "optimization": [
       "admin/fsl-scheduling-policies",
       "apex/fsl-apex-extensions",
-      "architect/fsl-optimization-architecture"
+      "architect/fsl-optimization-architecture",
+      "flow/flow-performance-optimization"
     ],
     "optimizer": [
       "admin/fsl-scheduling-optimization-design",
@@ -8056,7 +8106,9 @@
       "architect/headless-vs-standard-experience",
       "architect/nfr-definition-for-salesforce",
       "architect/org-edition-and-feature-licensing",
-      "data/soql-query-optimization"
+      "data/soql-query-optimization",
+      "flow/flow-governor-limits-deep-dive",
+      "flow/flow-performance-optimization"
     ],
     "performance-obligation": [
       "admin/revenue-recognition-requirements"
@@ -8486,7 +8538,8 @@
       "security/permission-set-groups-and-muting"
     ],
     "profiling": [
-      "apex/apex-performance-profiling"
+      "apex/apex-performance-profiling",
+      "flow/flow-performance-optimization"
     ],
     "program-management": [
       "admin/program-outcome-tracking-design",
@@ -9146,6 +9199,7 @@
       "devops/post-deployment-validation",
       "devops/release-management",
       "devops/rollback-and-hotfix-strategy",
+      "flow/flow-rollback-patterns",
       "omnistudio/omniscript-versioning"
     ],
     "rollback-planning": [
@@ -10073,6 +10127,7 @@
       "apex/soql-security",
       "data/field-history-tracking",
       "data/soql-query-optimization",
+      "flow/flow-governor-limits-deep-dive",
       "integration/rest-api-patterns",
       "lwc/knowledge-article-lwc"
     ],
@@ -10569,7 +10624,8 @@
       "apex/billing-integration-apex"
     ],
     "transaction-control": [
-      "apex/apex-queueable-patterns"
+      "apex/apex-queueable-patterns",
+      "flow/flow-rollback-patterns"
     ],
     "transaction-scope": [
       "apex/callout-and-dml-transaction-boundaries"
@@ -10611,7 +10667,8 @@
       "admin/fsl-scheduling-optimization-design"
     ],
     "trigger": [
-      "apex/opportunity-trigger-patterns"
+      "apex/opportunity-trigger-patterns",
+      "flow/flow-migration-from-trigger"
     ],
     "trigger-and-flow-coexistence": [
       "apex/trigger-and-flow-coexistence"
@@ -10665,6 +10722,9 @@
     ],
     "trusted-ip-ranges": [
       "security/network-security-and-trusted-ips"
+    ],
+    "tuning": [
+      "flow/flow-performance-optimization"
     ],
     "turbo-extract": [
       "omnistudio/dataraptor-patterns"
