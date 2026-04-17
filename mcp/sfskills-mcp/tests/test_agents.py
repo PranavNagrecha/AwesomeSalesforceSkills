@@ -24,6 +24,7 @@ from sfskills_mcp import agents  # noqa: E402
 
 
 EXPECTED_RUNTIME = {
+    # Wave-1 developer + architecture tier (11)
     "apex-refactorer",
     "trigger-consolidator",
     "test-class-generator",
@@ -35,6 +36,37 @@ EXPECTED_RUNTIME = {
     "deployment-risk-scorer",
     "agentforce-builder",
     "org-drift-detector",
+    # Wave A — Tier-1 admin accelerators (8)
+    "field-impact-analyzer",
+    "object-designer",
+    "permission-set-architect",
+    "flow-builder",
+    "workflow-and-pb-migrator",
+    "validation-rule-auditor",
+    "data-loader-pre-flight",
+    "duplicate-rule-designer",
+    # Wave B — Tier-2 strategic (10)
+    "sharing-audit-agent",
+    "lightning-record-page-auditor",
+    "approval-to-flow-orchestrator-migrator",
+    "record-type-and-layout-auditor",
+    "picklist-governor",
+    "data-model-reviewer",
+    "integration-catalog-builder",
+    "report-and-dashboard-auditor",
+    "csv-to-object-mapper",
+    "email-template-modernizer",
+    # Wave C — Tier-3 vertical + governance (10)
+    "omni-channel-routing-designer",
+    "knowledge-article-taxonomy-agent",
+    "sales-stage-designer",
+    "lead-routing-rules-designer",
+    "case-escalation-auditor",
+    "sandbox-strategy-designer",
+    "release-train-planner",
+    "waf-assessor",
+    "agentforce-action-reviewer",
+    "prompt-library-governor",
 }
 
 

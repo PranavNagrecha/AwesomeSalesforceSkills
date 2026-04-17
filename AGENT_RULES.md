@@ -195,19 +195,39 @@ handles. Retrieval fixtures (which skill gets picked) live separately in
 
 Two classes of agents live in `agents/`:
 
-1. **Build-time** — orchestrator, task-mapper, content-researcher, the 4
+1. **Build-time (12)** — orchestrator, task-mapper, content-researcher, the 4
    skill-builders, code-reviewer, validator, currency-monitor, org-assessor,
    release-planner. These produce the library. Invoked by `/run-queue`.
 
-2. **Run-time** — apex-refactorer, trigger-consolidator, test-class-generator,
-   soql-optimizer, security-scanner, flow-analyzer, bulk-migration-planner,
-   lwc-auditor, deployment-risk-scorer, agentforce-builder, org-drift-detector.
+2. **Run-time (39)** — grouped in four tiers:
+   - **Developer + architecture (11):** `apex-refactorer`, `trigger-consolidator`,
+     `test-class-generator`, `soql-optimizer`, `security-scanner`,
+     `flow-analyzer`, `bulk-migration-planner`, `lwc-auditor`,
+     `deployment-risk-scorer`, `agentforce-builder`, `org-drift-detector`.
+   - **Admin accelerators — Tier 1 (8):** `field-impact-analyzer`,
+     `object-designer`, `permission-set-architect`, `flow-builder`,
+     `workflow-and-pb-migrator`, `validation-rule-auditor`,
+     `data-loader-pre-flight`, `duplicate-rule-designer`.
+   - **Strategic — Tier 2 (10):** `sharing-audit-agent`,
+     `lightning-record-page-auditor`, `approval-to-flow-orchestrator-migrator`,
+     `record-type-and-layout-auditor`, `picklist-governor`,
+     `data-model-reviewer`, `integration-catalog-builder`,
+     `report-and-dashboard-auditor`, `csv-to-object-mapper`,
+     `email-template-modernizer`.
+   - **Vertical + governance — Tier 3 (10):** `omni-channel-routing-designer`,
+     `knowledge-article-taxonomy-agent`, `sales-stage-designer`,
+     `lead-routing-rules-designer`, `case-escalation-auditor`,
+     `sandbox-strategy-designer`, `release-train-planner`, `waf-assessor`,
+     `agentforce-action-reviewer`, `prompt-library-governor`.
+
    These USE the library to do real Salesforce work. Invoked via the matching
    `commands/<name>.md`, direct AGENT.md read, or the MCP `get_agent` tool.
 
 The single source of truth for what an AGENT.md must contain is
 `agents/_shared/AGENT_CONTRACT.md`. The full roster lives in
-`agents/_shared/RUNTIME_VS_BUILD.md`.
+`agents/_shared/RUNTIME_VS_BUILD.md`. The authoring reference mapping every
+agent to its verified source skills, templates, and decision trees is
+`agents/_shared/SKILL_MAP.md`.
 
 **Rules for any agent (build-time or run-time):**
 
@@ -216,9 +236,15 @@ The single source of truth for what an AGENT.md must contain is
   Plan, Output Contract, Escalation / Refusal Rules, What This Agent Does NOT Do.
 - Every agent MUST list in "Mandatory Reads" the specific skill ids, templates,
   and decision trees it consumes. "Follow the skills" is not sufficient.
+- Every agent MUST include a **Process Observations** subsection in its
+  Output Contract (healthy / concerning / ambiguous / suggested follow-ups),
+  per `AGENT_CONTRACT.md`.
 - Every run-time agent MUST return a Citations block enumerating every skill,
   template, and decision-tree branch used. No citations = the agent ran blind.
 - No agent may bypass `standards/source-hierarchy.md` when skills disagree.
+- No agent may cite an invented skill path — every citation must resolve to
+  a real file in `skills/`, `templates/`, or `standards/` at commit time.
+  The citation gate in `agents/_shared/SKILL_MAP.md` is authoritative.
 - No run-time agent may write to an org, call `sf project deploy`, or mutate
   files outside the paths the user supplied as input.
 - No agent may auto-chain to another agent. Recommending a follow-up in the
@@ -229,9 +255,16 @@ The single source of truth for what an AGENT.md must contain is
 - `list_agents` and `get_agent` are the only two tools that expose agent
   instructions. The MCP server never executes an agent — execution happens
   in the caller's model.
-- Any new run-time agent added to `agents/` must also be added to the
+- Any new run-time agent added to `agents/` MUST also be added to the
   `_RUNTIME_AGENTS` frozenset in `mcp/sfskills-mcp/src/sfskills_mcp/agents.py`
-  so it shows up as `kind: "runtime"` in `list_agents` output.
+  (and the matching `EXPECTED_RUNTIME` test in
+  `mcp/sfskills-mcp/tests/test_agents.py`) so it shows up as `kind: "runtime"`
+  in `list_agents` output.
+- The admin-land MCP tools (`list_validation_rules`, `list_permission_sets`,
+  `describe_permission_set`, `list_record_types`, `list_named_credentials`,
+  `list_approval_processes`, `tooling_query`) are read-only. `tooling_query`
+  rejects any SOQL containing DML keywords; adding a new admin probe MUST
+  keep that blocklist intact.
 
 ---
 

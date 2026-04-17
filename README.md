@@ -263,7 +263,7 @@ This repo ships **two classes of agents**, both as instruction files (`agents/<n
 | Class | Purpose | Who invokes |
 |---|---|---|
 | **Build-time (12)** | Produce and maintain the skill library itself | Repo maintainers, `/run-queue` |
-| **Run-time (11)** | Use the library to do real Salesforce work in your codebase / org | You — via slash commands, direct AGENT.md reads, or MCP `get_agent` |
+| **Run-time (39)** | Use the library to do real Salesforce work in your codebase / org | You — via slash commands, direct AGENT.md reads, or MCP `get_agent` |
 
 The contract every agent follows: [`agents/_shared/AGENT_CONTRACT.md`](./agents/_shared/AGENT_CONTRACT.md).
 The full roster: [`agents/_shared/RUNTIME_VS_BUILD.md`](./agents/_shared/RUNTIME_VS_BUILD.md).
@@ -272,11 +272,15 @@ The full roster: [`agents/_shared/RUNTIME_VS_BUILD.md`](./agents/_shared/RUNTIME
 
 ### Run-time Agents (the ones you call)
 
-Each agent takes concrete inputs, composes skills + templates + decision-trees + (optional) live-org probes, and returns a PR-ready report or patch. **Three invocation modes** — all fire the same AGENT.md:
+Each agent takes concrete inputs, composes skills + templates + decision-trees + (optional) live-org probes, and returns a PR-ready report or plan. **Three invocation modes** — all fire the same AGENT.md:
 
 1. **Slash command** — ask your AI to follow `commands/<name>.md`
 2. **Direct read** — point any AI at `agents/<name>/AGENT.md`
 3. **MCP** — call `get_agent(name)` on the SfSkills MCP server; the server returns the instructions for your model to execute
+
+Every run-time agent follows the same 8-section contract (including a mandatory **Process Observations** block that flags healthy, concerning, and ambiguous patterns in the org while producing the output), cites every skill / template / decision-tree it used, and never writes to your org.
+
+#### Developer + architecture tier (11)
 
 | Agent | Slash command | What it does |
 |---|---|---|
@@ -292,7 +296,50 @@ Each agent takes concrete inputs, composes skills + templates + decision-trees +
 | `agentforce-builder` | [`/build-agentforce-action`](./commands/build-agentforce-action.md) | Scaffold Agentforce action: Apex `@InvocableMethod` + topic YAML + test + golden eval |
 | `org-drift-detector` | [`/detect-drift`](./commands/detect-drift.md) | Library ↔ live-org gap and bloat report across every flagship prescription |
 
-Every run-time agent follows the same 8-section contract, returns a citations block with every skill/template/decision-tree it used, and never writes to your org.
+#### Admin accelerators — Tier 1 (8)
+
+| Agent | Slash command | What it does |
+|---|---|---|
+| `field-impact-analyzer` | [`/analyze-field-impact`](./commands/analyze-field-impact.md) | Blast-radius report before renaming or deleting a field |
+| `object-designer` | [`/design-object`](./commands/design-object.md) | Setup-ready sObject design from a concept (fields, RTs, VRs, layouts) |
+| `permission-set-architect` | [`/architect-perms`](./commands/architect-perms.md) | Profile-less PS / PSG / Muting design per persona |
+| `flow-builder` | [`/build-flow`](./commands/build-flow.md) | Design a Flow from requirements, route to Apex when the tree says so |
+| `workflow-and-pb-migrator` | [`/migrate-workflow-pb`](./commands/migrate-workflow-pb.md) | Migrate legacy Workflow Rules + Process Builders to Flow |
+| `validation-rule-auditor` | [`/audit-validation-rules`](./commands/audit-validation-rules.md) | Audit VRs for bypass, bulk safety, and Flow coexistence |
+| `data-loader-pre-flight` | [`/preflight-load`](./commands/preflight-load.md) | Go/no-go checklist for a Data Loader / Bulk API load |
+| `duplicate-rule-designer` | [`/design-duplicate-rule`](./commands/design-duplicate-rule.md) | Matching + Duplicate Rules scoped to the load and post-load hygiene |
+
+#### Strategic — Tier 2 (10)
+
+| Agent | Slash command | What it does |
+|---|---|---|
+| `sharing-audit-agent` | [`/audit-sharing`](./commands/audit-sharing.md) | OWD + sharing-rule findings, data-skew hot-list, guest-user exposure |
+| `lightning-record-page-auditor` | [`/audit-record-page`](./commands/audit-record-page.md) | Dynamic Forms, render cost, related-list strategy, Path, LWC weight |
+| `approval-to-flow-orchestrator-migrator` | [`/migrate-approval-to-orchestrator`](./commands/migrate-approval-to-orchestrator.md) | Migrate Approval Processes to Flow Orchestrator with parallel-run plan |
+| `record-type-and-layout-auditor` | [`/audit-record-types`](./commands/audit-record-types.md) | Flag RT proliferation, Master Layout issues, LRP mapping gaps |
+| `picklist-governor` | [`/govern-picklists`](./commands/govern-picklists.md) | GVS adoption, inactive-value drift, dependent-chain probe |
+| `data-model-reviewer` | [`/review-data-model`](./commands/review-data-model.md) | Review relationships, rollups, External IDs, growth forecast, indexes |
+| `integration-catalog-builder` | [`/catalog-integrations`](./commands/catalog-integrations.md) | NCs + Remote Sites + Connected Apps + certs, scored for posture |
+| `report-and-dashboard-auditor` | [`/audit-reports`](./commands/audit-reports.md) | Stale / unfiltered / dashboard running-user leakage, subscription abuse |
+| `csv-to-object-mapper` | [`/map-csv-to-object`](./commands/map-csv-to-object.md) | Map CSV headers → sObject fields + External ID + VR collision report |
+| `email-template-modernizer` | [`/modernize-email-templates`](./commands/modernize-email-templates.md) | Classic / Lightning / Enhanced LEX classification + migration plan |
+
+#### Vertical + governance — Tier 3 (10)
+
+| Agent | Slash command | What it does |
+|---|---|---|
+| `omni-channel-routing-designer` | [`/design-omni-channel`](./commands/design-omni-channel.md) | Queue + routing-config + presence design with capacity math |
+| `knowledge-article-taxonomy-agent` | [`/design-knowledge-taxonomy`](./commands/design-knowledge-taxonomy.md) | Data categories, article types, channel-audience matrix, lifecycle |
+| `sales-stage-designer` | [`/design-sales-stages`](./commands/design-sales-stages.md) | Opportunity stage ladder + forecast categories + VR gates + Path |
+| `lead-routing-rules-designer` | [`/design-lead-routing`](./commands/design-lead-routing.md) | Source × geo × product routing matrix, queues, SLAs, conversion handoff |
+| `case-escalation-auditor` | [`/audit-case-escalation`](./commands/audit-case-escalation.md) | Assignment + escalation + entitlement + milestone coverage audit |
+| `sandbox-strategy-designer` | [`/design-sandbox-strategy`](./commands/design-sandbox-strategy.md) | Environment ladder + scratch pools + refresh calendar + masking |
+| `release-train-planner` | [`/plan-release-train`](./commands/plan-release-train.md) | Package strategy, branching, CI/CD gates, release calendar, hotfix plan |
+| `waf-assessor` | [`/assess-waf`](./commands/assess-waf.md) | Well-Architected scorecard across Trusted / Easy / Adaptable / Resilient / Composable |
+| `agentforce-action-reviewer` | [`/review-agentforce-action`](./commands/review-agentforce-action.md) | Per-action A–F scorecard + topic coherence + guardrails gap list |
+| `prompt-library-governor` | [`/govern-prompt-library`](./commands/govern-prompt-library.md) | Prompt template inventory, duplicate detection, Trust Layer alignment |
+
+Full list + source-skill map: [`agents/_shared/SKILL_MAP.md`](./agents/_shared/SKILL_MAP.md).
 
 ---
 
@@ -380,18 +427,25 @@ The `mcp/sfskills-mcp/` package exposes this library and your real Salesforce
 org to any MCP-capable AI tool so the agent can answer "does this trigger
 framework already exist in my org?" **without asking you**.
 
-Eight tools, all read-only:
+Fifteen tools, all read-only:
 
-| Tool                   | What it does                                                                    |
-| ---------------------- | ------------------------------------------------------------------------------- |
-| `search_skill`         | Lexical search over the 686+ SfSkills corpus with optional domain filter.       |
-| `get_skill`            | Full SKILL.md + registry metadata for a given skill id.                         |
-| `describe_org`         | `sf org display` summary (org id, instance, edition, sandbox/scratch flags).    |
-| `list_custom_objects`  | Custom sObjects in the target org with optional substring filter.               |
-| `list_flows_on_object` | Flows (record / scheduled / platform-event triggered) targeting an sObject.    |
-| `validate_against_org` | Category-aware probe: does the skill's guidance already have analogs in the org?|
-| `list_agents`          | Enumerate SfSkills run-time + build-time agents (one-line summary each).        |
-| `get_agent`            | Fetch an agent's full AGENT.md (refactorer, scanner, risk scorer, etc.) so the caller's model can execute it. |
+| Tool                       | What it does                                                                    |
+| -------------------------- | ------------------------------------------------------------------------------- |
+| `search_skill`             | Lexical search over the 686+ SfSkills corpus with optional domain filter.       |
+| `get_skill`                | Full SKILL.md + registry metadata for a given skill id.                         |
+| `describe_org`             | `sf org display` summary (org id, instance, edition, sandbox/scratch flags).    |
+| `list_custom_objects`      | Custom sObjects in the target org with optional substring filter.               |
+| `list_flows_on_object`     | Flows (record / scheduled / platform-event triggered) targeting an sObject.    |
+| `validate_against_org`     | Category-aware probe: does the skill's guidance already have analogs in the org?|
+| `list_agents`              | Enumerate SfSkills run-time + build-time agents (one-line summary each).        |
+| `get_agent`                | Fetch an agent's full AGENT.md (refactorer, scanner, admin accelerators, etc.) so the caller's model can execute it. |
+| `list_validation_rules`    | Validation rules for a given sObject with formula, active flag, error display. |
+| `list_permission_sets`     | Permission sets + groups + muting permission sets, with license + assignment counts. |
+| `describe_permission_set`  | Full object / field / user permission matrix for a specific permission set.    |
+| `list_record_types`        | Record types, active flag, master-layout assignments, picklist value scoping.  |
+| `list_named_credentials`   | Named Credentials + External Credentials (read-only; never returns secrets).   |
+| `list_approval_processes`  | Approval processes + steps + next approver rules for an sObject.               |
+| `tooling_query`            | Generic read-only Tooling API SOQL with a DML/mutation blocklist (escape hatch for admin-land agents). |
 
 ### Install
 

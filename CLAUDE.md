@@ -179,12 +179,18 @@ Must:
 - prefer skill-local validators where they exist
 - avoid referencing nonexistent repo-level analysis scripts
 
-### Run-time agents (`/refactor-apex`, `/consolidate-triggers`, `/gen-tests`, `/optimize-soql`, `/scan-security`, `/analyze-flow`, `/plan-bulk-migration`, `/audit-lwc`, `/score-deployment`, `/build-agentforce-action`, `/detect-drift`)
+### Run-time agents (39)
 
-These are user-facing agents that USE the library to do real Salesforce work — they do not build the library.
+These are user-facing agents that USE the library to do real Salesforce work — they do not build the library. The full roster is documented in [`agents/_shared/RUNTIME_VS_BUILD.md`](./agents/_shared/RUNTIME_VS_BUILD.md) and source-mapped in [`agents/_shared/SKILL_MAP.md`](./agents/_shared/SKILL_MAP.md).
+
+The roster:
+- **Developer + architecture (11)** — `/refactor-apex`, `/consolidate-triggers`, `/gen-tests`, `/optimize-soql`, `/scan-security`, `/analyze-flow`, `/plan-bulk-migration`, `/audit-lwc`, `/score-deployment`, `/build-agentforce-action`, `/detect-drift`.
+- **Admin accelerators — Tier 1 (8)** — `/analyze-field-impact`, `/design-object`, `/architect-perms`, `/build-flow`, `/migrate-workflow-pb`, `/audit-validation-rules`, `/preflight-load`, `/design-duplicate-rule`.
+- **Strategic — Tier 2 (10)** — `/audit-sharing`, `/audit-record-page`, `/migrate-approval-to-orchestrator`, `/audit-record-types`, `/govern-picklists`, `/review-data-model`, `/catalog-integrations`, `/audit-reports`, `/map-csv-to-object`, `/modernize-email-templates`.
+- **Vertical + governance — Tier 3 (10)** — `/design-omni-channel`, `/design-knowledge-taxonomy`, `/design-sales-stages`, `/design-lead-routing`, `/audit-case-escalation`, `/design-sandbox-strategy`, `/plan-release-train`, `/assess-waf`, `/review-agentforce-action`, `/govern-prompt-library`.
 
 Must:
-- follow `agents/_shared/AGENT_CONTRACT.md` — the 8-section AGENT.md shape
+- follow `agents/_shared/AGENT_CONTRACT.md` — the 8-section AGENT.md shape, including the mandatory **Process Observations** block that flags healthy / concerning / ambiguous patterns seen while executing
 - read every skill / template / decision tree cited in Mandatory Reads before producing output
 - cite every skill id, template path, and decision-tree branch consulted in a Citations block
 - NEVER deploy to an org, NEVER mutate files outside the user-supplied paths
@@ -192,10 +198,11 @@ Must:
 - recommend (but never auto-chain to) other run-time agents
 
 Must not:
-- freestyle Apex/LWC/Flow patterns when a template exists
+- freestyle Apex/LWC/Flow/admin patterns when a template or decision tree exists
 - recommend a technology without citing the matching decision-tree branch
 - print secrets in output (always `[REDACTED]`)
 - process more than one target per invocation
+- invent a skill path — every citation must resolve to a real `skills/<domain>/<slug>/SKILL.md` (see `SKILL_MAP.md`)
 
 ## Python Tooling Rules
 

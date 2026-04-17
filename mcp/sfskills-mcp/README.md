@@ -6,11 +6,13 @@ three things at once:
 1. The full **SfSkills** library (686+ Salesforce skills, source-grounded,
    role-tagged, versioned) — via `search_skill` and `get_skill`.
 2. **Live metadata from your actual Salesforce org** — via `describe_org`,
-   `list_custom_objects`, `list_flows_on_object`, and `validate_against_org`.
-3. **Run-time agents** that compose the skill library + live-org tools into
-   concrete deliverables (Apex refactor, security scan, deployment risk
-   score, Agentforce action scaffold, org drift report) — via `list_agents`
-   and `get_agent`.
+   `list_custom_objects`, `list_flows_on_object`, `list_validation_rules`,
+   `list_permission_sets`, `describe_permission_set`, `list_record_types`,
+   `list_named_credentials`, `list_approval_processes`, `tooling_query`, and
+   `validate_against_org`.
+3. **Run-time agents** (39 total across developer, admin, strategic, and
+   vertical/governance tiers) that compose the skill library + live-org tools
+   into concrete deliverables — via `list_agents` and `get_agent`.
 
 The net effect: the agent can answer "does this trigger framework already
 exist in my org?" by itself instead of asking you — and if you say "refactor
@@ -39,18 +41,27 @@ This MCP server closes both gaps using the Salesforce CLI for org access
 
 ## Tools
 
-| Tool                   | What it does                                                                                              |
-| ---------------------- | --------------------------------------------------------------------------------------------------------- |
-| `search_skill`         | Lexical search over the SfSkills corpus. Returns ranked skill ids + top chunks. Optional `domain` filter. |
-| `get_skill`            | Full SKILL.md + registry metadata for a given skill id. Optional `include_references` for deep context.   |
-| `describe_org`         | `sf org display` summary: org id, instance, edition, API version, sandbox/scratch flags.                  |
-| `list_custom_objects`  | Custom (or standard) sObjects in the org. Substring filter via `name_filter`.                             |
-| `list_flows_on_object` | Flows whose `TriggerObjectOrEvent` matches the given sObject (Tooling API).                               |
-| `validate_against_org` | Category-aware probe: "does a skill's guidance already have analogs in the org?"                          |
-| `list_agents`          | Enumerate SfSkills run-time + build-time agents with one-line summaries. Filter via `kind="runtime"`.     |
-| `get_agent`            | Fetch an agent's full `AGENT.md` body so the caller's model can execute it (MCP does not execute agents). |
+| Tool                      | What it does                                                                                              |
+| ------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `search_skill`            | Lexical search over the SfSkills corpus. Returns ranked skill ids + top chunks. Optional `domain` filter. |
+| `get_skill`               | Full SKILL.md + registry metadata for a given skill id. Optional `include_references` for deep context.   |
+| `describe_org`            | `sf org display` summary: org id, instance, edition, API version, sandbox/scratch flags.                  |
+| `list_custom_objects`     | Custom (or standard) sObjects in the org. Substring filter via `name_filter`.                             |
+| `list_flows_on_object`    | Flows whose `TriggerObjectOrEvent` matches the given sObject (Tooling API).                               |
+| `validate_against_org`    | Category-aware probe: "does a skill's guidance already have analogs in the org?"                          |
+| `list_agents`             | Enumerate SfSkills run-time + build-time agents with one-line summaries. Filter via `kind="runtime"`.     |
+| `get_agent`               | Fetch an agent's full `AGENT.md` body so the caller's model can execute it (MCP does not execute agents). |
+| `list_validation_rules`   | Validation rules for a given sObject with formula, active flag, error display.                            |
+| `list_permission_sets`    | Permission sets + groups + muting permission sets, with license + assignment counts.                      |
+| `describe_permission_set` | Full object / field / user permission matrix for a specific permission set.                               |
+| `list_record_types`       | Record types, active flag, master-layout assignments, picklist value scoping.                             |
+| `list_named_credentials`  | Named Credentials + External Credentials (read-only; never returns secrets).                              |
+| `list_approval_processes` | Approval processes + steps + next approver rules for an sObject.                                          |
+| `tooling_query`           | Generic read-only Tooling API SOQL with a DML/mutation blocklist (escape hatch for admin-land agents).    |
 
-### Run-time agents reachable via `get_agent`
+### Run-time agents reachable via `get_agent` (39)
+
+Developer + architecture tier (11):
 
 | Agent name                 | What it returns |
 | -------------------------- | --------------- |
@@ -65,6 +76,49 @@ This MCP server closes both gaps using the Salesforce CLI for org access
 | `deployment-risk-scorer`   | HIGH/MEDIUM/LOW risk score + breaking-change list |
 | `agentforce-builder`       | Full Agentforce action scaffold: Apex + topic + test + eval |
 | `org-drift-detector`       | Library ↔ live-org gap and bloat report |
+
+Admin accelerators — Tier 1 (8):
+
+| Agent name                   | What it returns |
+| ---------------------------- | --------------- |
+| `field-impact-analyzer`      | Blast-radius report before renaming / deleting a field |
+| `object-designer`            | Setup-ready sObject design from a business concept |
+| `permission-set-architect`   | Profile-less PS / PSG / Muting design per persona |
+| `flow-builder`               | Flow design from requirements + automation-tree routing |
+| `workflow-and-pb-migrator`   | Migration plan: Workflow Rules / Process Builders → Flow |
+| `validation-rule-auditor`    | VR audit (bypass, bulk safety, Flow coexistence) |
+| `data-loader-pre-flight`     | Go/no-go checklist for a Data Loader / Bulk API load |
+| `duplicate-rule-designer`    | Matching + Duplicate Rules + post-load hygiene |
+
+Strategic — Tier 2 (10):
+
+| Agent name                                 | What it returns |
+| ------------------------------------------ | --------------- |
+| `sharing-audit-agent`                      | OWD + sharing + data-skew + guest-user findings |
+| `lightning-record-page-auditor`            | Dynamic Forms + render-cost + Path scorecard |
+| `approval-to-flow-orchestrator-migrator`   | Approval → Flow Orchestrator migration plan |
+| `record-type-and-layout-auditor`           | RT + layout + LRP mapping audit |
+| `picklist-governor`                        | GVS adoption + drift + dependency audit |
+| `data-model-reviewer`                      | Data-model domain review (rollups, XID, growth) |
+| `integration-catalog-builder`              | Integration catalog + posture scorecard |
+| `report-and-dashboard-auditor`             | Report + dashboard hygiene audit |
+| `csv-to-object-mapper`                     | CSV → sObject mapping + VR collision report |
+| `email-template-modernizer`                | Template classification + migration plan |
+
+Vertical + governance — Tier 3 (10):
+
+| Agent name                            | What it returns |
+| ------------------------------------- | --------------- |
+| `omni-channel-routing-designer`       | Queue + routing + presence design with capacity math |
+| `knowledge-article-taxonomy-agent`    | Data categories + article types + channel-audience plan |
+| `sales-stage-designer`                | Opportunity stage ladder + forecast + VR gates |
+| `lead-routing-rules-designer`         | Source × geo × product routing matrix + SLAs |
+| `case-escalation-auditor`             | Assignment + escalation + milestone audit |
+| `sandbox-strategy-designer`           | Environment ladder + pools + refresh calendar |
+| `release-train-planner`               | Package + branching + CI/CD + release calendar |
+| `waf-assessor`                        | Well-Architected scorecard + remediation backlog |
+| `agentforce-action-reviewer`          | Per-action A–F scorecard + guardrails gap list |
+| `prompt-library-governor`             | Prompt template inventory + consolidation plan |
 
 ### `validate_against_org` routing
 
