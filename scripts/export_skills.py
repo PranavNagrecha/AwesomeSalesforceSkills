@@ -34,6 +34,7 @@ import shutil
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Optional
 
 # ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -46,8 +47,64 @@ MANIFEST_FILE = REPO_ROOT / "registry" / "export_manifest.json"
 # First-class targets (Wave 2): Claude, Cursor, MCP must contain the same
 # SET of skill IDs on every export. Second-class targets (Windsurf, Aider,
 # Augment) may be a documented subset — see docs/multi-ai-parity.md (Wave 6).
-PLATFORMS = ["claude", "cursor", "mcp", "windsurf", "aider", "augment"]
+# Wave 11 added Codex (OpenAI CLI) and formalized per-target slash-command
+# mirroring. Aider is the only target with no user-extensible slash surface,
+# so its commands land as a navigation index inside CONVENTIONS.md.
+PLATFORMS = ["claude", "cursor", "mcp", "windsurf", "aider", "augment", "codex"]
 FIRST_CLASS_TARGETS = {"claude", "cursor", "mcp"}
+COMMANDS_SOURCE_DIR = REPO_ROOT / "commands"
+
+# Per-target destination for mirrored slash-command markdown files.
+# `None` means the target has no user-extensible slash surface — handled
+# specially (e.g. Aider embeds an index into CONVENTIONS.md).
+SLASH_COMMAND_DEST: dict = {
+    "cursor": Path(".cursor/commands"),
+    "claude": Path(".claude/commands"),
+    # Windsurf calls them "workflows" and uses a different directory name.
+    # 12 KB per-file cap per Windsurf docs; we warn on exceed.
+    "windsurf": Path(".windsurf/workflows"),
+    "augment": Path(".augment/commands"),
+    # Codex looks at ~/.codex/prompts/ at USER scope only; project-scope not
+    # supported. We ship a staging tree that the user copies via a helper script.
+    "codex": Path("codex-prompts"),
+    # Aider: no custom slash commands; we generate an index appended to
+    # CONVENTIONS.md inside export_aider itself.
+    "aider": None,
+    # MCP: no slash-command surface — clients invoke via get_agent(name).
+    "mcp": None,
+}
+
+# Windsurf per-workflow character cap (per Windsurf docs).
+WINDSURF_WORKFLOW_MAX_CHARS = 12000
+
+
+def _mirror_commands(output_dir: Path, target: str) -> tuple[int, list[str]]:
+    """Copy every `commands/*.md` file into the target's slash-command dir.
+
+    Returns (files_copied, warnings). No-op for targets whose SLASH_COMMAND_DEST
+    is None. For Windsurf, warns on files that exceed the 12 KB workflow limit.
+    """
+    warnings: list[str] = []
+    dest_rel = SLASH_COMMAND_DEST.get(target)
+    if dest_rel is None:
+        return 0, []
+    if not COMMANDS_SOURCE_DIR.exists():
+        return 0, []
+
+    dest_dir = output_dir / dest_rel
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    copied = 0
+    for cmd_md in sorted(COMMANDS_SOURCE_DIR.glob("*.md")):
+        content = cmd_md.read_text(encoding="utf-8")
+        if target == "windsurf" and len(content) > WINDSURF_WORKFLOW_MAX_CHARS:
+            warnings.append(
+                f"  {cmd_md.name}: {len(content)} chars exceeds Windsurf's "
+                f"{WINDSURF_WORKFLOW_MAX_CHARS}-char workflow cap — skipped"
+            )
+            continue
+        (dest_dir / cmd_md.name).write_text(content, encoding="utf-8")
+        copied += 1
+    return copied, warnings
 
 
 # ── Frontmatter parsing ───────────────────────────────────────────────────────
@@ -202,6 +259,14 @@ alwaysApply: false
         index_lines.append(f"- `{skill['domain']}-{skill['skill_name']}.mdc` — {skill['name']}\n")
     (output_dir / ".cursor" / "rules" / "INDEX.md").write_text("".join(index_lines), encoding="utf-8")
 
+    # Wave 11: mirror repo-root commands/ → .cursor/commands/ so slash commands
+    # (/architect-perms, /diff-users, /build-flow, …) appear in Cursor's `/` menu.
+    cmd_count, cmd_warnings = _mirror_commands(output_dir, "cursor")
+    if cmd_count:
+        print(f"  + {cmd_count} slash command(s) → .cursor/commands/")
+    for w in cmd_warnings:
+        print(w)
+
     return count
 
 
@@ -238,6 +303,26 @@ def export_aider(skills: list[dict], output_dir: Path) -> int:
                 lines.append(skill["references"]["gotchas.md"])
                 lines.append("\n\n")
             lines.append("---\n\n")
+
+    # Wave 11: Aider has no user-extensible slash commands (per aider.chat/docs).
+    # Instead, append a command INDEX to CONVENTIONS.md so Aider users can
+    # reference any SfSkills workflow in prose ("follow the architect-perms
+    # playbook from CONVENTIONS.md").
+    if COMMANDS_SOURCE_DIR.exists():
+        lines.append("---\n\n# Available Workflows (referenceable in prose)\n\n")
+        lines.append(
+            "Aider does not support user-defined slash commands. Invoke any of "
+            "the workflows below by asking Aider to 'follow the <name> playbook' "
+            "and the CONVENTIONS.md body will be in its context:\n\n"
+        )
+        for cmd_md in sorted(COMMANDS_SOURCE_DIR.glob("*.md")):
+            alias = cmd_md.stem
+            # Try to extract the first heading from the command file as description.
+            body = cmd_md.read_text(encoding="utf-8")
+            desc_match = re.search(r"^#\s+(.+)$", body, re.MULTILINE)
+            desc = desc_match.group(1) if desc_match else alias.replace("-", " ").title()
+            lines.append(f"- **`{alias}`** — {desc}\n")
+        lines.append("\n")
 
     (output_dir / "CONVENTIONS.md").write_text("".join(lines), encoding="utf-8")
     return len(skills)
@@ -279,6 +364,14 @@ triggers:
         out_file.write_text(content, encoding="utf-8")
         count += 1
 
+    # Wave 11: mirror repo-root commands/ → .windsurf/workflows/ with
+    # per-workflow 12 KB cap enforced by _mirror_commands.
+    cmd_count, cmd_warnings = _mirror_commands(output_dir, "windsurf")
+    if cmd_count:
+        print(f"  + {cmd_count} workflow(s) → .windsurf/workflows/")
+    for w in cmd_warnings:
+        print(w)
+
     return count
 
 
@@ -311,6 +404,16 @@ description: {first_sentence}
         out_file = rules_dir / f"{skill['domain']}-{skill['skill_name']}.md"
         out_file.write_text(content, encoding="utf-8")
         count += 1
+
+    # Wave 11: mirror repo-root commands/ → .augment/commands/.
+    # Augment also natively reads .claude/commands/ but we ship both for
+    # explicitness (users expect their slash commands to live in their tool's
+    # namespace, not a foreign one).
+    cmd_count, cmd_warnings = _mirror_commands(output_dir, "augment")
+    if cmd_count:
+        print(f"  + {cmd_count} slash command(s) → .augment/commands/")
+    for w in cmd_warnings:
+        print(w)
 
     return count
 
@@ -381,6 +484,14 @@ def export_claude(skills: list[dict], output_dir: Path) -> int:
     for skill in sorted(skills, key=lambda s: (s["domain"], s["skill_name"])):
         lines.append(f"- `skills/{skill['domain']}/{skill['skill_name']}/SKILL.md` — {skill['name']}\n")
     (output_dir / "INDEX.md").write_text("".join(lines), encoding="utf-8")
+
+    # Wave 11: mirror repo-root commands/ → .claude/commands/.
+    cmd_count, cmd_warnings = _mirror_commands(output_dir, "claude")
+    if cmd_count:
+        print(f"  + {cmd_count} slash command(s) → .claude/commands/")
+    for w in cmd_warnings:
+        print(w)
+
     return len(skills)
 
 
@@ -412,6 +523,80 @@ def export_mcp(skills: list[dict], output_dir: Path) -> int:
     for skill in sorted(skills, key=lambda s: (s["domain"], s["skill_name"])):
         lines.append(f"- `skills/{skill['domain']}/{skill['skill_name']}/SKILL.md` — {skill['name']}\n")
     (output_dir / "INDEX.md").write_text("".join(lines), encoding="utf-8")
+    return len(skills)
+
+
+def export_codex(skills: list[dict], output_dir: Path) -> int:
+    """Codex target: OpenAI Codex CLI (``~/.codex/``).
+
+    Per developers.openai.com/codex/custom-prompts, Codex scans only the
+    top-level Markdown files in ``~/.codex/prompts/`` (user-scope, not
+    project-scope). We can't emit directly there from a repo build, so we
+    stage:
+
+    - ``codex-prompts/*.md`` (flat, ready to copy into ~/.codex/prompts/)
+    - ``codex-skills/*.md`` (flat, one per skill, ready for ~/.codex/skills/ if used)
+    - ``INSTALL.md`` with the ``cp`` command so the user installs with one step
+
+    Codex doesn't have a project-scoped skill tree like Claude; it's a
+    per-user prompts model. This is a fundamental Codex design choice, not
+    our gap.
+    """
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Skills → one flat markdown per skill (Codex prompts are flat files).
+    skills_staging = output_dir / "codex-skills"
+    skills_staging.mkdir(exist_ok=True)
+    for skill in skills:
+        # Codex prompt frontmatter supports `description:` for the /prompts menu.
+        desc = skill["description"].split(".")[0].strip()
+        if len(desc) > 200:
+            desc = desc[:197] + "..."
+        body_combined = skill["body"]
+        if skill["references"].get("gotchas.md"):
+            body_combined += "\n\n---\n\n" + skill["references"]["gotchas.md"]
+        content = f"""---
+description: {desc}
+---
+
+{body_combined}
+"""
+        # Codex prompt filenames become the /prompts:<name>; keep them readable.
+        filename = f"sfskill-{skill['domain']}-{skill['skill_name']}.md"
+        (skills_staging / filename).write_text(content, encoding="utf-8")
+
+    # Slash commands → one flat prompt per command.
+    prompts_copied, prompt_warnings = _mirror_commands(output_dir, "codex")
+    prompts_dir = output_dir / SLASH_COMMAND_DEST["codex"]
+    for w in prompt_warnings:
+        print(w)
+
+    # Install instructions — Codex is user-scope, so we can't write into the
+    # user's dir from here. Ship a clear copy command.
+    install_lines = [
+        "# Installing SfSkills for Codex CLI\n\n",
+        "Codex reads prompts from `~/.codex/prompts/` at USER scope (not project).\n",
+        "There is no project-scope equivalent, so install with one `cp` command:\n\n",
+        "```bash\n",
+        "# Slash commands (e.g. /prompts:architect-perms)\n",
+        "mkdir -p ~/.codex/prompts\n",
+        "cp codex-prompts/*.md ~/.codex/prompts/\n\n",
+        "# Skills (if you want them accessible as /prompts:sfskill-*)\n",
+        "cp codex-skills/*.md ~/.codex/prompts/\n",
+        "```\n\n",
+        "Then restart Codex. Verify with `/` → type `prompts:` to browse.\n\n",
+        f"**Commands staged:** {prompts_copied}\n",
+        f"**Skills staged:** {len(skills)}\n\n",
+        "## Notes\n\n",
+        "- Codex prompts are flat — no subdirectories. Every file in `~/.codex/prompts/` becomes a slash prompt.\n",
+        "- Skill filenames use the `sfskill-<domain>-<slug>.md` prefix so you can distinguish SfSkills prompts from your own.\n",
+        "- Re-run this export and re-copy whenever you pull updates from SfSkills.\n",
+    ]
+    (output_dir / "INSTALL.md").write_text("".join(install_lines), encoding="utf-8")
+
+    print(f"  + {len(skills)} skill(s) → codex-skills/ (staged for ~/.codex/prompts/)")
+    if prompts_copied:
+        print(f"  + {prompts_copied} slash command(s) → codex-prompts/ (staged for ~/.codex/prompts/)")
     return len(skills)
 
 
@@ -501,6 +686,21 @@ def _hash_target_tree(target_dir: Path) -> tuple[str, dict[str, str]]:
     aider_conv = target_dir / "CONVENTIONS.md"
     if aider_conv.exists():
         per_skill["CONVENTIONS.md"] = _sha256_file(aider_conv)
+
+    # Codex (Wave 11): flat per-skill prompts at `<target>/codex-skills/sfskill-<domain>-<slug>.md`.
+    codex_skills = target_dir / "codex-skills"
+    if codex_skills.is_dir():
+        for md in sorted(codex_skills.glob("sfskill-*.md")):
+            stem = md.stem  # sfskill-<domain>-<slug>
+            rest = stem[len("sfskill-"):]
+            for domain in sorted(["admin", "apex", "lwc", "flow", "omnistudio",
+                                   "agentforce", "security", "integration",
+                                   "data", "devops", "architect"], key=len, reverse=True):
+                if rest.startswith(f"{domain}-"):
+                    slug = rest[len(domain) + 1:]
+                    skill_id = f"{domain}/{slug}"
+                    per_skill[skill_id] = _sha256_file(md)
+                    break
 
     # Overall = sha256 of sorted "id:hash" pairs. Deterministic across runs.
     overall = hashlib.sha256()
@@ -625,6 +825,7 @@ EXPORTERS = {
     "aider": export_aider,
     "windsurf": export_windsurf,
     "augment": export_augment,
+    "codex": export_codex,
 }
 
 

@@ -174,6 +174,33 @@ def bundle_paths_for(agent_id: str, deps: dict) -> list[tuple[Path, str]]:
     if wave10_helper.exists():
         out.append((wave10_helper, "shared/lib/emit_deliverable.md"))
 
+    # Wave 11: bundle every commands/<alias>.md that links back to this agent.
+    # A single agent may have multiple aliases (e.g. automation-migration-router
+    # has /migrate-workflow-pb, /migrate-wfr-to-flow, /migrate-pb-to-flow).
+    # We ship them in EVERY supported target-specific location so the bundle
+    # drop-in works regardless of which tool the consumer uses.
+    commands_dir = REPO_ROOT / "commands"
+    if commands_dir.exists():
+        wrap_pat = re.compile(rf"agents/{re.escape(agent_id)}/AGENT\.md")
+        for cmd_md in sorted(commands_dir.glob("*.md")):
+            try:
+                body = cmd_md.read_text(encoding="utf-8")
+            except OSError:
+                continue
+            if not wrap_pat.search(body):
+                continue
+            # Ship into every slash-command-supporting target's convention.
+            # The bundle consumer drops the bundle root into their project;
+            # whichever subdir their tool reads, the command is there.
+            for target_subdir in (
+                ".cursor/commands",
+                ".claude/commands",
+                ".windsurf/workflows",
+                ".augment/commands",
+                "codex-prompts",
+            ):
+                out.append((cmd_md, f"{target_subdir}/{cmd_md.name}"))
+
     # Templates.
     for rel in deps.get("templates", []):
         src = TEMPLATES_DIR / rel
