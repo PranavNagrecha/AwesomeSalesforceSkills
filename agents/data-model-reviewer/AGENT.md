@@ -8,8 +8,14 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+default_output_dir: "docs/reports/data-model-reviewer/"
+output_formats:
+  - markdown
+  - json
+multi_dimensional: true
 dependencies:
   skills:
+    - admin/agent-output-formats
     - admin/data-model-documentation
     - admin/object-creation-and-design
     - architect/high-volume-sales-data-architecture
@@ -20,6 +26,7 @@ dependencies:
   shared:
     - AGENT_CONTRACT.md
     - AGENT_RULES.md
+    - DELIVERABLE_CONTRACT.md
 ---
 # Data Model Reviewer Agent
 
@@ -50,6 +57,7 @@ Reviews the data model of a target domain (a parent object + its descendants, or
 7. `skills/admin/data-model-documentation`
 8. `skills/architect/solution-design-patterns`
 9. `skills/architect/high-volume-sales-data-architecture`
+10. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---
 
@@ -96,6 +104,38 @@ Reviews the data model of a target domain (a parent object + its descendants, or
 8. **Citations**.
 
 ---
+
+### Persistence (Wave 10 contract)
+
+Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md`.
+
+- **Markdown report:** `docs/reports/data-model-reviewer/<run_id>.md`
+- **JSON envelope:** `docs/reports/data-model-reviewer/<run_id>.json`
+- **Atomic write:** both files succeed or neither is left on disk.
+- **Run ID:** ISO-8601 UTC compact timestamp (colons → dashes) OR UUID; ≥ 8 chars.
+- **Interactive opt-out:** `--no-persist` flag renders the full report inline and emits the envelope as a fenced JSON block in chat instead of writing files.
+
+### Scope Guardrails (Wave 10 contract)
+
+Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
+
+- **Canonical data surface:** this agent's declared probes + the MCP tool set. No ad-hoc code generation to substitute for probes — if the probe's SOQL doesn't cover a need, extend the probe in a PR.
+- **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
+- **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only.
+
+### Dimensions (Wave 10 contract)
+
+The agent's envelope MUST place every dimension below in either `dimensions_compared[]` or `dimensions_skipped[]`.
+
+| Dimension | Notes |
+|---|---|
+| `object-design` | Standard vs custom, record-type usage, fields |
+| `relationships` | Lookup vs master-detail vs junction |
+| `sharing-posture` | OWD + sharing rules + teams |
+| `indexes` | Custom indexes, skinny tables, LDV markers |
+| `history-tracking` | Field History + Audit Trail configuration |
+| `external-id-coverage` | Upsert-ready external IDs per integration |
+| `validation-rule-hygiene` | VR count, bypass pattern compliance |
 
 ## Escalation / Refusal Rules
 

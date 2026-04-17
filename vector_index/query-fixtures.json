@@ -4709,6 +4709,24 @@
       "domain": "admin",
       "expected_skill": "admin/salesforce-object-queryability",
       "top_k": 3
+    },
+    {
+      "query": "convert agent output to excel without installing exceljs",
+      "domain": "admin",
+      "expected_skill": "admin/agent-output-formats",
+      "top_k": 3
+    },
+    {
+      "query": "export user-access-diff report to pdf pandoc",
+      "domain": "admin",
+      "expected_skill": "admin/agent-output-formats",
+      "top_k": 3
+    },
+    {
+      "query": "servicenow ticket from agent output envelope jq",
+      "domain": "admin",
+      "expected_skill": "admin/agent-output-formats",
+      "top_k": 3
     }
   ]
 }

@@ -8,13 +8,19 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+default_output_dir: "docs/reports/flow-analyzer/"
+output_formats:
+  - markdown
+  - json
 dependencies:
   skills:
+    - admin/agent-output-formats
     - apex/trigger-and-flow-coexistence
     - flow/flow-bulkification
     - flow/flow-large-data-volume-patterns
   shared:
     - AGENT_CONTRACT.md
+    - DELIVERABLE_CONTRACT.md
   templates:
     - flow/FaultPath_Template.md
     - flow/Subflow_Pattern.md
@@ -48,6 +54,7 @@ For a given Flow or sObject, decides whether the automation is in the right tool
 5. `templates/flow/FaultPath_Template.md`
 6. `templates/flow/Subflow_Pattern.md`
 7. `skills/apex/trigger-and-flow-coexistence/SKILL.md`
+8. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---
 
@@ -122,6 +129,24 @@ For each flow analyzed, produce:
 5. **Citations** — decision-tree branch, skill ids, template paths.
 
 ---
+
+### Persistence (Wave 10 contract)
+
+Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md`.
+
+- **Markdown report:** `docs/reports/flow-analyzer/<run_id>.md`
+- **JSON envelope:** `docs/reports/flow-analyzer/<run_id>.json`
+- **Atomic write:** both files succeed or neither is left on disk.
+- **Run ID:** ISO-8601 UTC compact timestamp (colons → dashes) OR UUID; ≥ 8 chars.
+- **Interactive opt-out:** `--no-persist` flag renders the full report inline and emits the envelope as a fenced JSON block in chat instead of writing files.
+
+### Scope Guardrails (Wave 10 contract)
+
+Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
+
+- **Canonical data surface:** this agent's declared probes + the MCP tool set. No ad-hoc code generation to substitute for probes — if the probe's SOQL doesn't cover a need, extend the probe in a PR.
+- **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
+- **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only.
 
 ## Escalation / Refusal Rules
 

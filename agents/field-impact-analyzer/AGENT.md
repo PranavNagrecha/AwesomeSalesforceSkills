@@ -8,8 +8,14 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+default_output_dir: "docs/reports/field-impact-analyzer/"
+output_formats:
+  - markdown
+  - json
+multi_dimensional: true
 dependencies:
   skills:
+    - admin/agent-output-formats
     - admin/custom-field-creation
     - admin/formula-fields
     - admin/picklist-and-value-sets
@@ -19,6 +25,7 @@ dependencies:
   shared:
     - AGENT_CONTRACT.md
     - AGENT_RULES.md
+    - DELIVERABLE_CONTRACT.md
   templates:
     - admin/naming-conventions.md
 ---
@@ -51,6 +58,7 @@ Given a field on an sObject, produces a blast-radius report: every Apex class, t
 7. `skills/data/record-merge-implications` — merge-time field behavior
 8. `skills/architect/metadata-coverage-and-dependencies` — global dependency model
 9. `templates/admin/naming-conventions.md`
+10. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---
 
@@ -151,6 +159,39 @@ One markdown document:
 6. **Citations** — every skill, template, and MCP tool invocation the agent used.
 
 ---
+
+### Persistence (Wave 10 contract)
+
+Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md`.
+
+- **Markdown report:** `docs/reports/field-impact-analyzer/<run_id>.md`
+- **JSON envelope:** `docs/reports/field-impact-analyzer/<run_id>.json`
+- **Atomic write:** both files succeed or neither is left on disk.
+- **Run ID:** ISO-8601 UTC compact timestamp (colons → dashes) OR UUID; ≥ 8 chars.
+- **Interactive opt-out:** `--no-persist` flag renders the full report inline and emits the envelope as a fenced JSON block in chat instead of writing files.
+
+### Scope Guardrails (Wave 10 contract)
+
+Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
+
+- **Canonical data surface:** this agent's declared probes + the MCP tool set. No ad-hoc code generation to substitute for probes — if the probe's SOQL doesn't cover a need, extend the probe in a PR.
+- **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
+- **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only.
+
+### Dimensions (Wave 10 contract)
+
+The agent's envelope MUST place every dimension below in either `dimensions_compared[]` or `dimensions_skipped[]`.
+
+| Dimension | Notes |
+|---|---|
+| `apex-references` | ApexClass/Trigger Body mentions via probe |
+| `flow-references` | Flow Metadata XML mentions |
+| `validation-rules` | VR formulas referencing the field |
+| `reports-dashboards` | Reports + dashboard filters using the field |
+| `layouts` | Page layouts / compact layouts placing the field |
+| `permission-sets` | PS + profile grants on the field |
+| `data-exports` | Recent export jobs referencing the field |
+| `external-integrations` | CDC / PE / REST mappings exposing the field |
 
 ## Escalation / Refusal Rules
 

@@ -8,14 +8,20 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+default_output_dir: "docs/reports/soql-optimizer/"
+output_formats:
+  - markdown
+  - json
 dependencies:
   skills:
+    - admin/agent-output-formats
     - admin/data-skew-and-sharing-performance
     - apex/apex-security-patterns
     - data/custom-index-requests
     - data/soql-query-optimization
   shared:
     - AGENT_CONTRACT.md
+    - DELIVERABLE_CONTRACT.md
   templates:
     - apex/BaseSelector.cls
 ---
@@ -44,6 +50,7 @@ Scans a user-specified scope (file, folder, or entire `force-app/`) for SOQL ant
 3. `skills/admin/data-skew-and-sharing-performance/SKILL.md`
 4. `skills/apex/apex-security-patterns/SKILL.md` — for `WITH SECURITY_ENFORCED` enforcement
 5. `templates/apex/BaseSelector.cls` — canonical centralization pattern
+6. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---
 
@@ -120,6 +127,24 @@ If `target_org_alias` is provided:
 6. **Citations** — skill + template ids.
 
 ---
+
+### Persistence (Wave 10 contract)
+
+Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md`.
+
+- **Markdown report:** `docs/reports/soql-optimizer/<run_id>.md`
+- **JSON envelope:** `docs/reports/soql-optimizer/<run_id>.json`
+- **Atomic write:** both files succeed or neither is left on disk.
+- **Run ID:** ISO-8601 UTC compact timestamp (colons → dashes) OR UUID; ≥ 8 chars.
+- **Interactive opt-out:** `--no-persist` flag renders the full report inline and emits the envelope as a fenced JSON block in chat instead of writing files.
+
+### Scope Guardrails (Wave 10 contract)
+
+Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
+
+- **Canonical data surface:** this agent's declared probes + the MCP tool set. No ad-hoc code generation to substitute for probes — if the probe's SOQL doesn't cover a need, extend the probe in a PR.
+- **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
+- **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only.
 
 ## Escalation / Refusal Rules
 

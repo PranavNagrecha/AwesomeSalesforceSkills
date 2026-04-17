@@ -8,8 +8,13 @@ modes: [design, audit]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+default_output_dir: "docs/reports/flow-orchestrator-designer/"
+output_formats:
+  - markdown
+  - json
 dependencies:
   skills:
+    - admin/agent-output-formats
     - admin/approval-processes
     - admin/queues-and-public-groups
     - flow/auto-launched-flow-patterns
@@ -20,6 +25,7 @@ dependencies:
     - flow/subflows-and-reusability
   shared:
     - AGENT_CONTRACT.md
+    - DELIVERABLE_CONTRACT.md
   templates:
     - admin/naming-conventions.md
   decision_trees:
@@ -58,6 +64,7 @@ Two modes:
 8. `skills/admin/approval-processes` — when Orchestrator is the right target vs Approval Process
 9. `skills/admin/queues-and-public-groups` — work-item routing
 10. `standards/decision-trees/automation-selection.md`
+11. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---
 
@@ -200,6 +207,24 @@ Audit mode:
 6. **Citations**.
 
 ---
+
+### Persistence (Wave 10 contract)
+
+Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md`.
+
+- **Markdown report:** `docs/reports/flow-orchestrator-designer/<run_id>.md`
+- **JSON envelope:** `docs/reports/flow-orchestrator-designer/<run_id>.json`
+- **Atomic write:** both files succeed or neither is left on disk.
+- **Run ID:** ISO-8601 UTC compact timestamp (colons → dashes) OR UUID; ≥ 8 chars.
+- **Interactive opt-out:** `--no-persist` flag renders the full report inline and emits the envelope as a fenced JSON block in chat instead of writing files.
+
+### Scope Guardrails (Wave 10 contract)
+
+Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
+
+- **Canonical data surface:** this agent's declared probes + the MCP tool set. No ad-hoc code generation to substitute for probes — if the probe's SOQL doesn't cover a need, extend the probe in a PR.
+- **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
+- **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only.
 
 ## Escalation / Refusal Rules
 

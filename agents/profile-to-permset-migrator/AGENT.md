@@ -8,10 +8,16 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+default_output_dir: "docs/reports/profile-to-permset-migrator/"
+output_formats:
+  - markdown
+  - json
+multi_dimensional: true
 dependencies:
   probes:
     - permission-set-assignment-shape.md
   skills:
+    - admin/agent-output-formats
     - admin/custom-permissions
     - admin/integration-user-management
     - admin/permission-set-architecture
@@ -22,6 +28,7 @@ dependencies:
     - security/permission-set-groups-and-muting
   shared:
     - AGENT_CONTRACT.md
+    - DELIVERABLE_CONTRACT.md
   templates:
     - admin/naming-conventions.md
     - admin/permission-set-patterns.md
@@ -58,6 +65,7 @@ Given one profile (or a set of profiles scoped by name filter) in the target org
 10. `templates/admin/permission-set-patterns.md`
 11. `templates/admin/naming-conventions.md`
 12. `agents/_shared/probes/permission-set-assignment-shape.md`
+13. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---
 
@@ -171,6 +179,41 @@ Include the rollback shape: un-assign the PSG, restore profile from version cont
 10. **Citations**.
 
 ---
+
+### Persistence (Wave 10 contract)
+
+Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md`.
+
+- **Markdown report:** `docs/reports/profile-to-permset-migrator/<run_id>.md`
+- **JSON envelope:** `docs/reports/profile-to-permset-migrator/<run_id>.json`
+- **Atomic write:** both files succeed or neither is left on disk.
+- **Run ID:** ISO-8601 UTC compact timestamp (colons → dashes) OR UUID; ≥ 8 chars.
+- **Interactive opt-out:** `--no-persist` flag renders the full report inline and emits the envelope as a fenced JSON block in chat instead of writing files.
+
+### Scope Guardrails (Wave 10 contract)
+
+Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
+
+- **Canonical data surface:** this agent's declared probes + the MCP tool set. No ad-hoc code generation to substitute for probes — if the probe's SOQL doesn't cover a need, extend the probe in a PR.
+- **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
+- **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only.
+
+### Dimensions (Wave 10 contract)
+
+The agent's envelope MUST place every permission category below in either `dimensions_compared[]` or `dimensions_skipped[]`.
+
+| Dimension | Notes |
+|---|---|
+| `object-crud` | Per-sObject CRUD from profile → target PS |
+| `fls` | Per-field permissions |
+| `system-permissions` | Boolean system flags |
+| `apex-class-access` | SetupEntityAccess (ApexClass) |
+| `vf-page-access` | SetupEntityAccess (ApexPage) |
+| `tab-settings` | Tab visibility |
+| `app-access` | App visibility |
+| `custom-permissions` | SetupEntityAccess (CustomPermission) |
+| `named-credentials` | SetupEntityAccess (NamedCredential) |
+| `residue` | License + default RT + default app + page layouts + login IP/hours + session (stays on profile) |
 
 ## Escalation / Refusal Rules
 

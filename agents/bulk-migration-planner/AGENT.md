@@ -8,8 +8,13 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+default_output_dir: "docs/reports/bulk-migration-planner/"
+output_formats:
+  - markdown
+  - json
 dependencies:
   skills:
+    - admin/agent-output-formats
     - apex/callouts-and-http-integrations
     - architect/large-data-volume-architecture
     - integration/bulk-api-2-patterns
@@ -17,6 +22,7 @@ dependencies:
     - integration/named-credentials-setup
   shared:
     - AGENT_CONTRACT.md
+    - DELIVERABLE_CONTRACT.md
   templates:
     - apex/HttpClient.cls
   decision_trees:
@@ -49,6 +55,7 @@ Takes a data-integration requirement — volume, latency, source system, directi
 5. `skills/apex/callouts-and-http-integrations/SKILL.md`
 6. `templates/apex/HttpClient.cls`
 7. `skills/architect/large-data-volume-architecture/SKILL.md`
+8. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---
 
@@ -143,6 +150,24 @@ Always include:
 8. **Citations** — decision-tree branch, skill ids, template paths.
 
 ---
+
+### Persistence (Wave 10 contract)
+
+Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md`.
+
+- **Markdown report:** `docs/reports/bulk-migration-planner/<run_id>.md`
+- **JSON envelope:** `docs/reports/bulk-migration-planner/<run_id>.json`
+- **Atomic write:** both files succeed or neither is left on disk.
+- **Run ID:** ISO-8601 UTC compact timestamp (colons → dashes) OR UUID; ≥ 8 chars.
+- **Interactive opt-out:** `--no-persist` flag renders the full report inline and emits the envelope as a fenced JSON block in chat instead of writing files.
+
+### Scope Guardrails (Wave 10 contract)
+
+Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
+
+- **Canonical data surface:** this agent's declared probes + the MCP tool set. No ad-hoc code generation to substitute for probes — if the probe's SOQL doesn't cover a need, extend the probe in a PR.
+- **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
+- **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only.
 
 ## Escalation / Refusal Rules
 

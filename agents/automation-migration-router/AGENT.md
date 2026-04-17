@@ -8,9 +8,16 @@ modes: [analyze, plan, migrate]
 owner: sfskills-core
 created: 2026-04-17
 updated: 2026-04-17
+default_output_dir: "docs/reports/automation-migration-router/"
+output_formats:
+  - markdown
+  - json
 dependencies:
+  skills:
+    - admin/agent-output-formats
   shared:
     - AGENT_CONTRACT.md
+    - DELIVERABLE_CONTRACT.md
     - REFUSAL_CODES.md
   decision_trees:
     - automation-selection.md
@@ -42,6 +49,7 @@ Dispatches one of four source automation types (`wf_rule`, `process_builder`, `a
 5. `agents/_shared/harnesses/migration_router/phase_gates.md` — parallel-run + rollback
 6. `standards/decision-trees/automation-selection.md` — consulted whenever the router is tempted to suggest Apex instead
 7. Source-type–specific mandatory reads — pulled from `decision_table.md` based on the chosen `source_type`
+8. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 The agent MUST read the source-type row in `decision_table.md` before emitting any classification. Every mandatory skill/template listed in that row is then a hard requirement for this run.
 
@@ -127,6 +135,24 @@ The agent's response MUST conform to [`output_schema.md`](../_shared/harnesses/m
 8. **Citations** — every skill / template / decision-tree / probe / MCP tool the run consulted.
 
 ---
+
+### Persistence (Wave 10 contract)
+
+Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md`.
+
+- **Markdown report:** `docs/reports/automation-migration-router/<run_id>.md`
+- **JSON envelope:** `docs/reports/automation-migration-router/<run_id>.json`
+- **Atomic write:** both files succeed or neither is left on disk.
+- **Run ID:** ISO-8601 UTC compact timestamp (colons → dashes) OR UUID; ≥ 8 chars.
+- **Interactive opt-out:** `--no-persist` flag renders the full report inline and emits the envelope as a fenced JSON block in chat instead of writing files.
+
+### Scope Guardrails (Wave 10 contract)
+
+Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
+
+- **Canonical data surface:** this agent's declared probes + the MCP tool set. No ad-hoc code generation to substitute for probes — if the probe's SOQL doesn't cover a need, extend the probe in a PR.
+- **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
+- **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only.
 
 ## Escalation / Refusal Rules
 

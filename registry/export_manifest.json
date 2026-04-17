@@ -4,21 +4,22 @@
     "cursor",
     "mcp"
   ],
-  "generated_at": "2026-04-17T19:18:26Z",
+  "generated_at": "2026-04-17T20:11:22Z",
   "schema_version": 1,
   "targets": {
     "aider": {
-      "overall_hash": "sha256:1659d958671e106d653fe7ecef8bbcad78a27eb896d071667272c6228d114563",
+      "overall_hash": "sha256:6deefaba54b75ac75bd5133a8f873b0359f78acc67cdd69f45d53b56ec60eebc",
       "skill_count": 1,
       "skills": {
-        "CONVENTIONS.md": "sha256:4375339548e7ac349d4b29a2b1de6e89f2029dd390b841f0b782d62e53ef695c"
+        "CONVENTIONS.md": "sha256:9f882f24a7074191a4e21e3f9b47afb9c685eac9758bc6f436673152d177ed3e"
       }
     },
     "augment": {
-      "overall_hash": "sha256:e76dd50e0fe0e71f6da955a3f0f2c522720a76a4939a0c2fea9827352121af8e",
-      "skill_count": 702,
+      "overall_hash": "sha256:7a19317634ee27579144f48ed46e44eaf262273f3c6de1befa24bb8e535bb19a",
+      "skill_count": 703,
       "skills": {
         "admin/agent-conversation-design": "sha256:44cb058d8d94c6e07f82b0b0fd6c113c834488fd0603fc3384606e72a4fa8ffc",
+        "admin/agent-output-formats": "sha256:d37c5291d644d375d44ff822520b6aed0e868b75f5ce37a42c954eed13fe548f",
         "admin/ai-adoption-change-management": "sha256:36485a25ae84e0c7d3c0f5f5f89e0f0d9998ae69b4663f03490816210fb123de",
         "admin/ai-ethics-and-governance-requirements": "sha256:9c384815c9c3d971e8943ef3e3cf00a3dedced0f19851387ca3bc44b8eae825b",
         "admin/ai-use-case-assessment": "sha256:c00fefffe9f4b1c56b1b0d507e2454f06bf8ef82e42dfc49cfebd2b6e33fd098",
@@ -723,10 +724,11 @@
       }
     },
     "claude": {
-      "overall_hash": "sha256:c9216c0b68d9459a9fa126dd6d126ec793552c07b7e4554da5aefdf279d3a486",
-      "skill_count": 702,
+      "overall_hash": "sha256:914eede81f1c35a7a14f18a49de69cce9d638c2200c23fc4d85fe3ac515e4aae",
+      "skill_count": 703,
       "skills": {
         "admin/agent-conversation-design": "sha256:97e62ae3c713d44e243cb505d23e6d66d0f9452826c4c6232eabf2d01d678ae6",
+        "admin/agent-output-formats": "sha256:17a3aad6148d9d5083342c91673a957dcfc15195490add4685b37d1b2dcd88d2",
         "admin/ai-adoption-change-management": "sha256:56ef2ef1bf54bd8236c2774406dc407ff7536fb20ac36b3d5f79471c432c5eca",
         "admin/ai-ethics-and-governance-requirements": "sha256:d08b932e34ee7831f82e993050c93e6fc8b9d612b5abc6466748f30f45d28b07",
         "admin/ai-use-case-assessment": "sha256:f702cd100ca7d886919cf7676ca72b0acf9c9dd0bf4cbb42de34dd6d4b8736ff",
@@ -1431,10 +1433,11 @@
       }
     },
     "cursor": {
-      "overall_hash": "sha256:e9863dc576ce21cdb6a27ab5758d637c7061187e8831ba39d994ae4df8b6056c",
-      "skill_count": 702,
+      "overall_hash": "sha256:545bb4be79edafdda67b9961640c8ad796d5856b51f6f04e2d60e8fc67cb355d",
+      "skill_count": 703,
       "skills": {
         "admin/agent-conversation-design": "sha256:968c5453ac99b06ee0131052ed77de5241a2ac751e17a5248832d3f8458af1c1",
+        "admin/agent-output-formats": "sha256:28e766e03dacad8975101fe3b388f7b6ab18a5bfd50c48485cd731b79736ed6f",
         "admin/ai-adoption-change-management": "sha256:2ccc49b3de10f7380f11dfa5374de5f3d7c6215fd66fa556293550f530070602",
         "admin/ai-ethics-and-governance-requirements": "sha256:146d2e3cd20f6617ace9c4b28235456c10ac23434de66145c595549d9cab713d",
         "admin/ai-use-case-assessment": "sha256:e2170795d21a37afcedf4e527a73ab53954221e8ca7eb579f230c46685ee3732",
@@ -2139,10 +2142,11 @@
       }
     },
     "mcp": {
-      "overall_hash": "sha256:c9216c0b68d9459a9fa126dd6d126ec793552c07b7e4554da5aefdf279d3a486",
-      "skill_count": 702,
+      "overall_hash": "sha256:914eede81f1c35a7a14f18a49de69cce9d638c2200c23fc4d85fe3ac515e4aae",
+      "skill_count": 703,
       "skills": {
         "admin/agent-conversation-design": "sha256:97e62ae3c713d44e243cb505d23e6d66d0f9452826c4c6232eabf2d01d678ae6",
+        "admin/agent-output-formats": "sha256:17a3aad6148d9d5083342c91673a957dcfc15195490add4685b37d1b2dcd88d2",
         "admin/ai-adoption-change-management": "sha256:56ef2ef1bf54bd8236c2774406dc407ff7536fb20ac36b3d5f79471c432c5eca",
         "admin/ai-ethics-and-governance-requirements": "sha256:d08b932e34ee7831f82e993050c93e6fc8b9d612b5abc6466748f30f45d28b07",
         "admin/ai-use-case-assessment": "sha256:f702cd100ca7d886919cf7676ca72b0acf9c9dd0bf4cbb42de34dd6d4b8736ff",
@@ -2847,10 +2851,11 @@
       }
     },
     "windsurf": {
-      "overall_hash": "sha256:53cb5c18466c8b0f38db11fdced7a1d515a94fcb38e52fba2c9562e06305c894",
-      "skill_count": 702,
+      "overall_hash": "sha256:fc41e9506c95ad27edafcaaa1d302972658d09fcf31bd86bdbc501ff051dfcfb",
+      "skill_count": 703,
       "skills": {
         "admin/agent-conversation-design": "sha256:9890e3826d897e2598a1d21a81bf6b79d9c4f1e1178df87dc355cf97674cf891",
+        "admin/agent-output-formats": "sha256:4d531d5981e326ff97f33730b9a01030a6f7be945be5e674d08d84f3155611a9",
         "admin/ai-adoption-change-management": "sha256:722b39f4f4b79c0240be386eb96af46eab40899be962ee472a327e2c8e589e65",
         "admin/ai-ethics-and-governance-requirements": "sha256:eb22c9c89a854361827b0325c82c63592f5d0d978fc61484237b141a92fa8227",
         "admin/ai-use-case-assessment": "sha256:b2f3102c2c2d0681db9bc5b11b74fa1bfa785a01e979b30038d87fdc6d02a88b",

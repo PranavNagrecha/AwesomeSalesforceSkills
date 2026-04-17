@@ -8,13 +8,20 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+default_output_dir: "docs/reports/deployment-risk-scorer/"
+output_formats:
+  - markdown
+  - json
+multi_dimensional: true
 dependencies:
   skills:
+    - admin/agent-output-formats
     - devops/code-review-checklist-salesforce
     - devops/deployment-error-troubleshooting
     - devops/pre-deployment-checklist
   shared:
     - AGENT_CONTRACT.md
+    - DELIVERABLE_CONTRACT.md
   decision_trees:
     - sharing-selection.md
 ---
@@ -43,6 +50,7 @@ Before a user deploys a change set / package / SFDX delta, this agent compares w
 3. `skills/devops/pre-deployment-checklist/SKILL.md` (or closest via `search_skill`)
 4. `skills/devops/deployment-error-troubleshooting/SKILL.md` (or closest)
 5. `standards/decision-trees/sharing-selection.md` — for profile/permission-set delta analysis
+6. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---
 
@@ -131,6 +139,38 @@ Produce a short list of post-deploy verification steps:
 7. **Citations** — skill ids + any MCP tool output that informed the score.
 
 ---
+
+### Persistence (Wave 10 contract)
+
+Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md`.
+
+- **Markdown report:** `docs/reports/deployment-risk-scorer/<run_id>.md`
+- **JSON envelope:** `docs/reports/deployment-risk-scorer/<run_id>.json`
+- **Atomic write:** both files succeed or neither is left on disk.
+- **Run ID:** ISO-8601 UTC compact timestamp (colons → dashes) OR UUID; ≥ 8 chars.
+- **Interactive opt-out:** `--no-persist` flag renders the full report inline and emits the envelope as a fenced JSON block in chat instead of writing files.
+
+### Scope Guardrails (Wave 10 contract)
+
+Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
+
+- **Canonical data surface:** this agent's declared probes + the MCP tool set. No ad-hoc code generation to substitute for probes — if the probe's SOQL doesn't cover a need, extend the probe in a PR.
+- **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
+- **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only.
+
+### Dimensions (Wave 10 contract)
+
+The agent's envelope MUST place every dimension below in either `dimensions_compared[]` or `dimensions_skipped[]`.
+
+| Dimension | Notes |
+|---|---|
+| `metadata-surface` | Components in the deployment package |
+| `test-coverage-delta` | Projected change in org coverage |
+| `destructive-changes` | Removals + dependents |
+| `cross-object-refs` | Apex/Flow references across the package boundary |
+| `permission-churn` | PS / PSG / Profile drift |
+| `production-traffic-impact` | Touched objects' production write volume |
+| `rollback-feasibility` | Whether the package is safely reversible |
 
 ## Escalation / Refusal Rules
 

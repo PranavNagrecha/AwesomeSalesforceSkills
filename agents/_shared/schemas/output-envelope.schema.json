@@ -5,7 +5,7 @@
   "description": "Structured JSON envelope every run-time agent emits alongside its human-readable markdown report. Build-time agents MAY use it but are not required to.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["agent", "mode", "summary", "confidence", "process_observations", "citations"],
+  "required": ["agent", "mode", "summary", "confidence", "process_observations", "citations", "run_id", "report_path", "envelope_path"],
   "properties": {
     "agent": {
       "type": "string",
@@ -18,7 +18,23 @@
     },
     "run_id": {
       "type": "string",
-      "description": "Optional correlation id the caller assigns."
+      "minLength": 8,
+      "description": "Wave 10: run identifier — ISO-8601 timestamp with UTC Z suffix OR a UUID. Forms the filename stem for report_path and envelope_path. Required so every run's deliverable is uniquely addressable and prior runs are preserved."
+    },
+    "report_path": {
+      "type": "string",
+      "pattern": "^docs/reports/[a-z0-9-]+/.+\\.md$",
+      "description": "Wave 10: the repo-relative path where the human-readable markdown report was written. Convention: docs/reports/<agent-id>/<run_id>.md. Required for every runtime agent run — reports persisted only in chat are not a deliverable."
+    },
+    "envelope_path": {
+      "type": "string",
+      "pattern": "^docs/reports/[a-z0-9-]+/.+\\.json$",
+      "description": "Wave 10: the repo-relative path where this JSON envelope was serialized. Convention: same stem as report_path, .json suffix. Required so downstream AI tooling and human reviewers can both consume the run."
+    },
+    "input_fixture": {
+      "type": "object",
+      "description": "Wave 10: echo of the effective inputs used, after defaults applied. Sensitive values (tokens, passwords) MUST be redacted to the literal string '[REDACTED]'. Duplicates information in inputs_received; kept for back-compat.",
+      "additionalProperties": true
     },
     "inputs_received": {
       "type": "object",
@@ -45,15 +61,20 @@
     },
     "dimensions_skipped": {
       "type": "array",
-      "description": "Wave 8: dimensions the agent could not compare because of query failure, permission limits, or edition restrictions. If non-empty, confidence MUST be MEDIUM or LOW. Prevents the 'silently complete report' failure mode where a skipped dimension looks like coverage.",
+      "description": "Wave 8 / refined in Wave 10: dimensions the agent did not FULLY compare. Every non-fully-compared dimension MUST appear here — partial coverage (e.g. row count without detail) counts as not-full. If non-empty, confidence MUST be MEDIUM or LOW. Prevents the 'silently complete report' failure mode AND the 'count-only dimension drop' mode.",
       "items": {
         "type": "object",
-        "required": ["dimension", "reason"],
+        "required": ["dimension", "reason", "state"],
         "additionalProperties": false,
         "properties": {
           "dimension": {
             "type": "string",
             "description": "The dimension name as it would appear in dimensions_compared."
+          },
+          "state": {
+            "type": "string",
+            "enum": ["count-only", "not-run", "partial"],
+            "description": "Wave 10: three-way classification. 'not-run' = dimension wasn't queried at all. 'count-only' = agent got a count/summary but not the detail needed for a diff. 'partial' = some sub-dimensions covered, others not. Prevents the Cursor-session pattern where SetupEntityAccess was summed but not detailed, yet the dimension appeared 'covered'."
           },
           "reason": {
             "type": "string",
