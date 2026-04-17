@@ -1,7 +1,7 @@
 /**
  * AccountHierarchyRebuildQueueable
  *
- * Recalculates Account.Hierarchy_Depth__c for accounts whose ParentId changed.
+ * Recalculates Account.NumberofLocations__c for accounts whose ParentId changed.
  * Emitted by apex-builder — conforms to templates/apex/BaseService.cls pattern.
  * Every SOQL path uses WITH USER_MODE; every DML path wraps SecurityUtils.
  *
@@ -21,12 +21,12 @@ public with sharing class AccountHierarchyRebuildQueueable implements Queueable 
         }
         List<Account> toUpdate = new List<Account>();
         for (Account a : [
-            SELECT Id, ParentId, Hierarchy_Depth__c
+            SELECT Id, ParentId, NumberofLocations__c
             FROM Account
             WHERE Id IN :accountIds
             WITH USER_MODE
         ]) {
-            a.Hierarchy_Depth__c = computeDepth(a);
+            a.NumberofLocations__c = computeDepth(a);
             toUpdate.add(a);
         }
         if (!toUpdate.isEmpty()) {

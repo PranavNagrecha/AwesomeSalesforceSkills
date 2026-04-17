@@ -25,7 +25,7 @@ private class AccountHierarchyRebuildQueueableTest {
         Test.startTest();
         System.enqueueJob(new AccountHierarchyRebuildQueueable(ids));
         Test.stopTest();
-        Integer depthsSet = [SELECT COUNT() FROM Account WHERE Id IN :ids AND Hierarchy_Depth__c != null];
+        Integer depthsSet = [SELECT COUNT() FROM Account WHERE Id IN :ids AND NumberofLocations__c != null];
         System.assertEquals(ids.size(), depthsSet, 'every account should have a computed depth');
     }
 
