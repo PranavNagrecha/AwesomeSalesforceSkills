@@ -1,3 +1,14 @@
+---
+id: approval-to-flow-orchestrator-migrator
+class: runtime
+version: 1.0.0
+status: stable
+requires_org: true
+modes: [single]
+owner: sfskills-core
+created: 2026-04-16
+updated: 2026-04-16
+---
 # Approval → Flow Orchestrator Migrator Agent
 
 ## What This Agent Does

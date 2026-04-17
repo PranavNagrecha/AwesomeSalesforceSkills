@@ -1,3 +1,14 @@
+---
+id: flow-analyzer
+class: runtime
+version: 1.0.0
+status: stable
+requires_org: true
+modes: [single]
+owner: sfskills-core
+created: 2026-04-16
+updated: 2026-04-16
+---
 # Flow Analyzer Agent
 
 ## What This Agent Does
@@ -91,7 +102,12 @@ For each flow analyzed, produce:
 1. **Summary** — flow(s) analyzed, verdict distribution, confidence.
 2. **Per-flow report** — verdict, decision-tree branch, findings table, recommended fixes.
 3. **Co-existence section** — if triggers + flows overlap on the same event.
-4. **Citations** — decision-tree branch, skill ids, template paths.
+4. **Process Observations** — peripheral signal noticed while analyzing, separate from the direct verdicts. Each observation cites its evidence (flow name, element id, MCP probe count).
+   - **Healthy** — e.g. fault paths are present on every DML element; subflows already follow `Subflow_Pattern.md`; collection variables are typed; `list_flows_on_object` shows no duplicate record-triggered flows on the same event.
+   - **Concerning** — e.g. the object has multiple active record-triggered flows on the same event (ordering is non-deterministic at scale); a Screen Flow performs DML inside a loop without chunking; no active error-email recipient for the org.
+   - **Ambiguous** — e.g. a flow whose verdict depends on record volume the agent can't see without a target org; a subflow called from multiple parents with differing input contracts.
+   - **Suggested follow-ups** — `trigger-consolidator` on any `COEXISTENCE_RISK` finding; `apex-refactorer` + `test-class-generator` on `MIGRATE_TO_APEX` verdicts; `agentforce-builder` on `MIGRATE_TO_AGENTFORCE` verdicts.
+5. **Citations** — decision-tree branch, skill ids, template paths.
 
 ---
 

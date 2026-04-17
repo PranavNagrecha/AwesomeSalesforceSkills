@@ -1,3 +1,14 @@
+---
+id: sharing-audit-agent
+class: runtime
+version: 1.0.0
+status: stable
+requires_org: true
+modes: [single]
+owner: sfskills-core
+created: 2026-04-16
+updated: 2026-04-16
+---
 # Sharing Audit Agent
 
 ## What This Agent Does

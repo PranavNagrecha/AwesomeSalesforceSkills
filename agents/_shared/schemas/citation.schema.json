@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/schemas/citation.schema.json",
+  "title": "Agent Citation",
+  "description": "One entry in a run-time agent's citations[] block. Every skill, template, decision-tree branch, MCP tool, or probe recipe the agent consulted gets one entry.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["type", "id", "used_for"],
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": ["skill", "template", "standard", "decision_tree", "mcp_tool", "probe"]
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "For skill/template/standard/decision_tree/probe: the repo-relative identifier (e.g. admin/permission-set-architecture). For mcp_tool: the tool name (e.g. tooling_query)."
+    },
+    "path": {
+      "type": "string",
+      "description": "Repo-relative path that the id resolves to. Omit for mcp_tool entries."
+    },
+    "branch": {
+      "type": "string",
+      "description": "For decision_tree: the specific branch or Q-number that resolved the choice (e.g. \"Q3 — async callout\")."
+    },
+    "used_for": {
+      "type": "string",
+      "minLength": 5,
+      "description": "One-line rationale for consulting this citation."
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "type": { "const": "decision_tree" } } },
+      "then": { "required": ["branch"] }
+    },
+    {
+      "if": { "properties": { "type": { "enum": ["skill", "template", "standard", "decision_tree", "probe"] } } },
+      "then": { "required": ["path"] }
+    }
+  ]
+}

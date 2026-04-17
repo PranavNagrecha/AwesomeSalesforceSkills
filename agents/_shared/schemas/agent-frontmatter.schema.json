@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/schemas/agent-frontmatter.schema.json",
+  "title": "Agent Frontmatter",
+  "description": "YAML frontmatter required at the top of every agents/<slug>/AGENT.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "class",
+    "version",
+    "status",
+    "requires_org",
+    "modes",
+    "owner",
+    "created",
+    "updated"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "description": "Kebab-case identifier. Must match the folder name agents/<id>/."
+    },
+    "class": {
+      "type": "string",
+      "enum": ["runtime", "build"],
+      "description": "runtime = user-facing; build = skill-library factory agent."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semver. Bump when the agent's plan or output contract changes."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["stable", "beta", "deprecated"]
+    },
+    "requires_org": {
+      "type": "boolean",
+      "description": "True if the agent refuses without a live-org target alias."
+    },
+    "modes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "single",
+          "design",
+          "audit",
+          "analyze",
+          "plan",
+          "migrate",
+          "review",
+          "build",
+          "validate"
+        ]
+      },
+      "description": "Named operational modes. Single-mode agents use [\"single\"]; dual-mode use e.g. [\"design\", \"audit\"]. Enumerated to catch typos at schema time (historical bugs: [\"n\", \"audit\"], [\"s\"]). Extend the enum when a new mode is genuinely needed."
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 2,
+      "description": "Team or handle responsible for this agent."
+    },
+    "created": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "updated": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "compatible_mcp": {
+      "type": "string",
+      "description": "Optional: minimum MCP tool wave this agent requires (e.g. \"wave-0\")."
+    },
+    "expected_mcp_calls": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Optional: rough upper bound on MCP tool invocations per run — surfaces cost."
+    },
+    "deprecated_in_favor_of": {
+      "type": "string",
+      "description": "Required iff status == deprecated. The replacement agent id."
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "deprecated" } } },
+      "then": { "required": ["deprecated_in_favor_of"] }
+    }
+  ]
+}

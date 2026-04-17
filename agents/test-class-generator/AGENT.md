@@ -1,3 +1,14 @@
+---
+id: test-class-generator
+class: runtime
+version: 1.0.0
+status: stable
+requires_org: false
+modes: [single]
+owner: sfskills-core
+created: 2026-04-16
+updated: 2026-04-16
+---
 # Test Class Generator Agent
 
 ## What This Agent Does

@@ -1,0 +1,59 @@
+eval:
+  id: field-impact-analyzer__case-rename-billingcity
+  agent: field-impact-analyzer
+  mode: single
+  priority: P0
+  last_verified: 2026-04-16
+  description: >
+    Rename Account.BillingCity in a fixture org that has one Apex reader,
+    one Apex writer, and no Flow references. Agent should return HIGH
+    confidence, enumerate both Apex hits, and not claim Flow evidence.
+
+inputs:
+  object: Account
+  field: BillingCity
+  target_org_alias: uat-fixture
+  repo_path: ./force-app
+
+org_stub:
+  org_metadata:
+    org_id: 00Dxxx
+    edition: Enterprise
+    api_version: "63.0"
+    sandbox: true
+  apex_hits:
+    - kind: ApexClass
+      id: 01pAA0000000001
+      name: AccountService
+      namespace: null
+      access_type: read
+      evidence_line: "acc.BillingCity = something;"
+    - kind: ApexTrigger
+      id: 01qAA0000000001
+      name: AccountTrigger
+      namespace: null
+      access_type: write
+      evidence_line: "Trigger.new[0].BillingCity = 'X';"
+  flow_hits: []
+  matching_rule_hits: []
+  duplicate_rule_hits: []
+
+expect:
+  confidence: HIGH
+  must_include_findings_with_any_of_ids:
+    - apex.read
+    - apex.write
+  must_cite_any_of:
+    - { type: skill, id: admin/field-impact-analysis }
+    - { type: probe, id: apex-references-to-field }
+  must_not_cite_probes:
+    - flow-references-to-field
+  process_observations:
+    min_count: 1
+    categories_present_any_of:
+      - healthy
+      - concerning
+      - suggested_followup
+  followups_include_any_of:
+    - data-model-reviewer
+    - picklist-governor

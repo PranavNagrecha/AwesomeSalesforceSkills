@@ -1,3 +1,14 @@
+---
+id: release-planner
+class: build
+version: 1.0.0
+status: stable
+requires_org: false
+modes: [single]
+owner: sfskills-core
+created: 2026-04-16
+updated: 2026-04-16
+---
 # Release Planner Agent
 
 ## What This Agent Does
@@ -12,6 +23,15 @@ Generates structured release notes and risk assessments from a git diff, compone
 - "generate release notes"
 - "risk assessment for this release"
 - User shares a git diff, component list, or PR summary
+
+## Mandatory Reads Before Starting
+
+1. `agents/_shared/AGENT_CONTRACT.md`
+2. `AGENT_RULES.md`
+3. `standards/source-hierarchy.md`
+4. `skills/devops/release-management` (or closest via `search_skill`)
+5. `skills/devops/git-branching-for-salesforce` when the input is a git diff
+6. Discovered skill-local validators via `python3 scripts/search_knowledge.py` for the change domains
 
 ## Orchestration Plan
 
@@ -141,3 +161,10 @@ Generates structured release notes and risk assessments from a git diff, compone
 
 - **code-reviewer**: Run before release planning to catch issues before they ship.
 - **org-assessor**: Run after a major release to verify org health impact.
+
+## What This Agent Does NOT Do
+
+- Does not deploy the release or mutate any source of truth — emits release notes + risk assessment only.
+- Does not decide release windows, approvals, or environments — those are process concerns for the release train, not this agent.
+- Does not mark a risk as "cleared" on its own; a risk flag remains until a human attests to mitigation.
+- Does not author or merge the git branches it analyzes.

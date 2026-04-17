@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/schemas/observation.schema.json",
+  "title": "Process Observation",
+  "description": "One entry in a run-time agent's Process Observations block. Structured so nightly rollups can aggregate observations across agent runs into an Org Health Report.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["category", "severity", "observation", "evidence"],
+  "properties": {
+    "category": {
+      "type": "string",
+      "enum": ["healthy", "concerning", "ambiguous", "suggested_followup"]
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["info", "low", "medium", "high"],
+      "description": "info is reserved for healthy observations. Concerning/ambiguous use low|medium|high."
+    },
+    "observation": {
+      "type": "string",
+      "minLength": 10,
+      "description": "One-sentence factual observation. Not an accusation."
+    },
+    "domain": {
+      "type": "string",
+      "description": "Free-form tag for roll-up (e.g. \"data-quality\", \"fls\", \"naming\", \"automation-drift\")."
+    },
+    "evidence": {
+      "type": "object",
+      "description": "What the agent was looking at when it made the call.",
+      "additionalProperties": true,
+      "properties": {
+        "source": { "type": "string", "description": "repo_scan | mcp_probe | input | heuristic" },
+        "probe": { "type": "string", "description": "If source=mcp_probe: the probe id or MCP tool name." },
+        "query": { "type": "string", "description": "If applicable: the SOQL or grep pattern." },
+        "count": { "type": "integer", "minimum": 0 },
+        "path": { "type": "string", "description": "If source=repo_scan: the path where the observation originates." }
+      }
+    },
+    "suggested_followup_agent": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "description": "Required iff category == suggested_followup. Must resolve to a real agents/<id>/ folder."
+    },
+    "followup_reason": {
+      "type": "string",
+      "description": "One-sentence 'because…' rationale for the follow-up agent."
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "category": { "const": "suggested_followup" } } },
+      "then": { "required": ["suggested_followup_agent", "followup_reason"] }
+    },
+    {
+      "if": { "properties": { "category": { "const": "healthy" } } },
+      "then": { "properties": { "severity": { "const": "info" } } }
+    }
+  ]
+}

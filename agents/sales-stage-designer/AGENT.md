@@ -1,3 +1,14 @@
+---
+id: sales-stage-designer
+class: runtime
+version: 1.0.0
+status: stable
+requires_org: true
+modes: [design, audit]
+owner: sfskills-core
+created: 2026-04-16
+updated: 2026-04-16
+---
 # Sales Stage Designer Agent
 
 ## What This Agent Does

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/schemas/inputs.schema.json",
+  "title": "Agent Inputs (meta-schema)",
+  "description": "Meta-schema validating the shape of per-agent inputs.schema.json files. Each agent may ship its own inputs.schema.json at agents/<slug>/inputs.schema.json; this file describes what those per-agent schemas must look like.",
+  "type": "object",
+  "required": ["$schema", "title", "type", "properties"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "$id": { "type": "string" },
+    "title": { "type": "string" },
+    "description": { "type": "string" },
+    "type": { "const": "object" },
+    "required": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "properties": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "required": ["type", "description"],
+        "properties": {
+          "type": {
+            "oneOf": [
+              { "type": "string", "enum": ["string", "number", "integer", "boolean", "array", "object"] },
+              { "type": "array", "items": { "type": "string" } }
+            ]
+          },
+          "description": { "type": "string", "minLength": 10 },
+          "enum": { "type": "array" },
+          "example": {},
+          "default": {}
+        }
+      }
+    }
+  }
+}

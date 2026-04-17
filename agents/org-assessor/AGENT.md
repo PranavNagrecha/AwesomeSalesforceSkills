@@ -1,3 +1,14 @@
+---
+id: org-assessor
+class: build
+version: 1.0.0
+status: stable
+requires_org: false
+modes: [single]
+owner: sfskills-core
+created: 2026-04-16
+updated: 2026-04-16
+---
 # Org Assessor Agent
 
 ## What This Agent Does
@@ -12,6 +23,14 @@ Assesses a Salesforce org or SFDX project against the Well-Architected Framework
 - "technical debt audit"
 - "what's wrong with this org"
 - User shares an SFDX project path or metadata export directory
+
+## Mandatory Reads Before Starting
+
+1. `agents/_shared/AGENT_CONTRACT.md`
+2. `AGENT_RULES.md`
+3. `standards/source-hierarchy.md` — resolves conflicts between skills
+4. `standards/official-salesforce-sources.md` — WAF and limits references
+5. Discovered skills from `python3 scripts/search_knowledge.py` for the domain set under review
 
 ## Orchestration Plan
 
@@ -116,3 +135,10 @@ Headline score, top risk, top opportunity.]
 
 - **code-reviewer**: Use for a single component, not a full org scan.
 - **release-planner**: Run after assessment to plan the remediation release.
+
+## What This Agent Does NOT Do
+
+- Does not deploy remediations or modify the org — output is a report with a roadmap.
+- Does not replace domain-specific run-time agents (e.g. `security-scanner`, `sharing-audit-agent`); it scopes findings broadly and recommends the specialist when one domain needs depth.
+- Does not execute against a live org without an explicit SFDX project path or metadata export — speculative assessments are refused.
+- Does not author new skills; if the assessment surfaces a coverage gap, it flags the gap for `/request-skill` rather than freestyling guidance.

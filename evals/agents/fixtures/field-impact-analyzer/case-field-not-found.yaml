@@ -1,0 +1,31 @@
+eval:
+  id: field-impact-analyzer__case-field-not-found
+  agent: field-impact-analyzer
+  mode: single
+  priority: P0
+  last_verified: 2026-04-16
+  description: >
+    Rename a field that doesn't exist on the target object in the target org.
+    Agent must refuse with REFUSAL_FIELD_NOT_FOUND and emit no deliverables.
+
+inputs:
+  object: Account
+  field: Industry2__c
+  target_org_alias: uat-fixture
+
+org_stub:
+  org_metadata:
+    org_id: 00Dxxx
+    edition: Enterprise
+    api_version: "63.0"
+    sandbox: true
+  field_definition_hits: []
+  apex_hits: []
+  flow_hits: []
+
+expect:
+  refusal_code: REFUSAL_FIELD_NOT_FOUND
+  confidence: LOW
+  process_observations:
+    min_count: 0
+    categories_present_any_of: []

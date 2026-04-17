@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate skills, manifests, and generated retrieval artifacts."""
+"""Validate skills, agents, manifests, and generated retrieval artifacts."""
 
 from __future__ import annotations
 
@@ -18,16 +18,14 @@ from pipelines.registry_builder import discover_skill_dirs
 from pipelines.sync_engine import build_state, diff_state
 from pipelines.validators import ValidationIssue, validate_frontmatter, validate_knowledge_source, validate_skill_registry_record, validate_skill_structure
 from pipelines.knowledge_builder import load_sources_manifest
+from pipelines.agent_validators import validate_agents
 
 
 def print_issue(issue: ValidationIssue) -> None:
     print(f"{issue.level} {issue.path}: {issue.message}")
 
 
-def main() -> int:
-    parser = argparse.ArgumentParser(description="Validate the repository skill framework and generated artifacts.")
-    args = parser.parse_args()
-
+def run_skill_validation() -> tuple[list[ValidationIssue], int]:
     issues: list[ValidationIssue] = []
     seen_ids: dict[str, str] = {}
     seen_names: dict[str, str] = {}
@@ -112,12 +110,63 @@ def main() -> int:
     for path in drift:
         issues.append(ValidationIssue("ERROR", path, "generated artifact is stale; run `python3 scripts/skill_sync.py --all`"))
 
+    return issues, len(seen_ids)
+
+
+def run_agent_validation() -> list[ValidationIssue]:
+    return validate_agents(ROOT)
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        description="Validate the repository skill framework, agents, and generated artifacts.",
+    )
+    parser.add_argument(
+        "--agents",
+        action="store_true",
+        help="Run only the AGENT.md structural + citation gate.",
+    )
+    parser.add_argument(
+        "--skills-only",
+        action="store_true",
+        help="Run only the existing skill validation (default if neither flag set).",
+    )
+    parser.add_argument(
+        "--all",
+        action="store_true",
+        help="Run both skill and agent validation.",
+    )
+    args = parser.parse_args()
+
+    # Default behavior (no flags) preserves pre-existing CI: run skill validation only.
+    run_skills = args.skills_only or args.all or (not args.agents and not args.skills_only and not args.all)
+    run_agents = args.agents or args.all
+
+    issues: list[ValidationIssue] = []
+    skill_count = 0
+
+    if run_skills:
+        skill_issues, skill_count = run_skill_validation()
+        issues.extend(skill_issues)
+
+    agent_count = 0
+    if run_agents:
+        agent_issues = run_agent_validation()
+        issues.extend(agent_issues)
+        agent_count = sum(1 for _ in (ROOT / "agents").glob("*/AGENT.md"))
+
     for issue in issues:
         print_issue(issue)
 
     error_count = sum(1 for issue in issues if issue.level == "ERROR")
     warn_count = sum(1 for issue in issues if issue.level == "WARN")
-    print(f"Validated {len(seen_ids)} skill(s); {error_count} error(s), {warn_count} warning(s).")
+    summary_parts = []
+    if run_skills:
+        summary_parts.append(f"{skill_count} skill(s)")
+    if run_agents:
+        summary_parts.append(f"{agent_count} agent(s)")
+    summary = " + ".join(summary_parts) if summary_parts else "nothing"
+    print(f"Validated {summary}; {error_count} error(s), {warn_count} warning(s).")
     return 1 if error_count else 0
 
 
