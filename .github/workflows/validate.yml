@@ -36,6 +36,12 @@ jobs:
       - name: install deps
         run: python3 -m pip install -r requirements.txt
 
+      # lexical.sqlite is gitignored (> 50 MB, past GitHub's file limit).
+      # Every CI run rebuilds it from the committed chunks. This also primes
+      # the drift-check state machine so the shard validation stays green.
+      - name: build local retrieval index
+        run: python3 scripts/build_index.py
+
       # --skip-fixture-retrieval is scoped to WAVE 1.1 only.
       # The retrieval-quality gate is re-enabled in Wave 6 once Wave 4 has
       # deepened the weak Flow/Agentforce skills (today ~40 shallow skills
