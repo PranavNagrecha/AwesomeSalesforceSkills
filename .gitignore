@@ -6,6 +6,13 @@ __pycache__/
 # lexical.sqlite grows past GitHub's 50 MB limit — regenerate with: python3 scripts/skill_sync.py --all
 vector_index/lexical.sqlite
 
+# Export tree is a generated artifact (~130 MB for claude+mcp+cursor+windsurf+
+# aider+augment at 684 skills). Consumers regenerate via:
+#   python3 scripts/export_skills.py --all
+# The committed registry/export_manifest.json records per-target content hashes
+# so CI parity checks don't need the bytes — just the hashes.
+exports/
+
 # Claude Code worktrees (temporary agent working copies)
 .claude/worktrees/
 
