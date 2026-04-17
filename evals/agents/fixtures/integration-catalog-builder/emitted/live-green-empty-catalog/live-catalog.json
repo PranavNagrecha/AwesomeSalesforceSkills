@@ -1,0 +1,17 @@
+{
+  "catalog_version": "1.0",
+  "org_alias": "sfskills-dev",
+  "generated_at": "2026-04-17T21:00:00Z",
+  "integrations": [
+    {
+      "name": "Account_Sync_Outbound",
+      "direction": "outbound",
+      "pattern": "REST",
+      "auth": "None",
+      "owner": "platform-ops@example.com",
+      "endpoint": "https://example.com/api/accounts",
+      "sla": "P1",
+      "notes": "Placeholder integration for live-green fixture — no NamedCredential so Gate C live oracle returns clean with 0 NCs to verify."
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "catalog_version": "oops",
+  "integrations": [
+    {"name": "Missing_Fields"},
+    {"name": "Bad_Direction", "direction": "sideways", "pattern": "REST", "auth": "None", "owner": "x@y"}
+  ]
+}
