@@ -34,4 +34,7 @@ def get_plugin(agent: str) -> BuilderPlugin:
     if agent == "flow-builder":
         from .flow import FlowBuilderPlugin
         return FlowBuilderPlugin()
+    if agent == "agentforce-builder":
+        from .agentforce import AgentforceBuilderPlugin
+        return AgentforceBuilderPlugin()
     raise KeyError(f"no builder plugin registered for agent={agent!r}")

@@ -1,0 +1,43 @@
+eval:
+  id: agentforce-builder__negative-bad-action
+  agent: agentforce-builder
+  mode: single
+  priority: P0
+  last_verified: 2026-04-17
+  description: >
+    Gate C MUST catch a malformed Agentforce action. The emitted .cls
+    parses but is missing @InvocableMethod, has no inner Request/Response
+    classes, and has no @InvocableVariable — the planner can't reason about
+    a class that lacks the invocable surface. Static check surfaces all
+    three before any live oracle runs.
+
+inputs:
+  action_class_name: BrokenAccountAction
+  feature_summary: "Malformed invocable action for Account missing InvocableMethod annotation to exercise Gate C static rejection"
+  primary_object: Account
+  actor: Service Agent
+  referenced_fields:
+    - Account.Id
+    - Account.Name
+  api_version: "60.0"
+  repo_path: ./force-app
+
+org_stub:
+  describe_sobject:
+    Account:
+      queryable: true
+      custom: false
+      fields:
+        - { name: Id, type: id }
+        - { name: Name, type: string }
+
+expect:
+  confidence: LOW
+  gates_passed:
+    - inputs
+    - requirements
+    - ground
+  grounding:
+    unresolved_max: 0
+  build_gate:
+    parse_errors_max: 999
