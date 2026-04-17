@@ -108,7 +108,7 @@
     "fe6a150200bb2b3fa4c9",
     "ff6dd78d6d41670613bd"
   ],
-  "content_hash": "769fb4f52c2807c0ac98afe0c349fae0ba42ed08f44689410ba91800251d7594",
+  "content_hash": "8444e60a748de910cab38dd652e5286443aa680bba3ecd10cb522afd9cd42a89",
   "dependencies": [],
   "description": "Use this skill when configuring or troubleshooting Marketing Cloud subscriber identity, opt-in/opt-out status, list membership, suppression, or deduplication behavior. Triggers include: setting up Subscriber Key, diagnosing duplicate sends, handling global unsubscribes, configuring Auto-Suppression Lists, or auditing subscriber status across Business Units. NOT for CRM contact management in Sales/Service Cloud, not for SFMC audience segmentation via Data Extensions alone, and not for Email Studio content authoring.",
   "file_location": "skills/data/subscriber-data-management",

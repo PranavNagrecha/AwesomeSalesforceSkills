@@ -92,7 +92,7 @@
     "f99526c1d00f13a3d693",
     "f99f878248c2920324e6"
   ],
-  "content_hash": "619d3099908e39551ea1c8b1fe1376973559286cb808af89bd72d5b91579dc34",
+  "content_hash": "f0fb8c7b8f0f3c389a2ab8678a72633d8407705a364eb35ac091175320d63315",
   "dependencies": [],
   "description": "Designing a customer experience measurement strategy using CSAT, NPS, and CES metrics in Salesforce Feedback Management: metric selection, survey timing, Feedback Management license requirements, Flow-triggered survey delivery, and CX KPI integration into Service Analytics dashboards. Use when choosing which CX metric to deploy, defining survey timing rules, or connecting survey response data to operational KPIs. NOT for building or configuring the technical survey objects, flows, or email templates (use admin/salesforce-surveys for that). NOT for custom programmatic survey delivery via API.",
   "file_location": "skills/architect/customer-effort-scoring",

@@ -50,7 +50,7 @@
     "f3519e1e8066f03e5632",
     "f52d5e56709c618e2247"
   ],
-  "content_hash": "31217e91bf72478294621789e64b57e748c7970d3796b6a604677c82f6b82cc3",
+  "content_hash": "ffcca983e60586cb4e6aff23745f2e019b6d8f5569840e0f54efa2dd18c0e46a",
   "dependencies": [],
   "description": "Use when defining or reviewing test strategy for Salesforce Flow, including Flow Tests, debug runs, path coverage, test data, and explicit validation of fault paths and custom component behavior. Triggers: 'flow test tool', 'how do i test a flow', 'flow fault path testing', 'flow debug interview'. NOT for Apex unit testing or manual QA planning that is unrelated to Flow behavior.",
   "file_location": "skills/flow/flow-testing",

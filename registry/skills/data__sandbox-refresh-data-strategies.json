@@ -56,7 +56,7 @@
     "f874a9f4c95492ca552f",
     "fbf9bac03c16e78fb1f8"
   ],
-  "content_hash": "5e0c37762157192d478b9dd19b8bc57f21b948d2bcac4ae6a3965f89b06193b5",
+  "content_hash": "dc6ff3a0346af50ea872f5662ec696848b7e9be05e97589d4a5259aceb660b5e",
   "dependencies": [],
   "description": "Use this skill when designing data management strategies for sandbox refreshes: deciding which reference data must be re-seeded after every refresh, using Salesforce's native Data Seeding feature, writing SandboxPostCopy implementations that hand off to Queueable jobs for large data loads, and cleaning up stale data between sprints. Trigger keywords: seed data after sandbox refresh, SandboxPostCopy data strategy, native data seeding Salesforce, reference data re-seed after refresh, post-refresh data cleanup. NOT for sandbox administration setup, sandbox type selection (use sandbox-strategy), sandbox refresh mechanics and PII masking (use sandbox-refresh-and-templates), or scratch org data seeding for CI (use data-seeding-for-testing).",
   "file_location": "skills/data/sandbox-refresh-data-strategies",

@@ -76,7 +76,7 @@
     "fcf687eb2683f12a401a",
     "fcfe0e638138b5b752cb"
   ],
-  "content_hash": "d1815aa4dbd50be17a56367ea56ad5f4c20410848dd3ef135b2bd2b5768aed31",
+  "content_hash": "dc1d57fbbffea83a43f4462dd51ccbe0758e727f9d399ae729b9d4b53f167ba2",
   "dependencies": [],
   "description": "Use when diagnosing where Apex transactions spend CPU, heap, SOQL, or DML time using the Salesforce diagnostic toolchain: Apex Log Analyzer flame graphs in VS Code, Developer Console execution timeline, SOQL Query Plan tool, and Limits-class checkpoint instrumentation. Triggers: 'why is my Apex slow', 'flame graph Apex', 'profile Apex transaction', 'Query Plan tool', 'Apex Log Analyzer'. NOT for fixing specific CPU or heap patterns after the hotspot is found (use apex-cpu-and-heap-optimization), NOT for debug log setup or trace flag mechanics (use debug-logs-and-developer-console), and NOT for SOQL query rewriting (use soql-query-optimization).",
   "file_location": "skills/apex/apex-performance-profiling",

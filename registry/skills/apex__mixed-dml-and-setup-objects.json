@@ -72,7 +72,7 @@
     "fec79b2ffc8bf1bffec9",
     "ffeeb18710131e154d96"
   ],
-  "content_hash": "0dd4812d3759c98cdb0ecde57b92d3227c41efc7d587fcc84ba096f66fd2b89b",
+  "content_hash": "dde6f5c2fc3988938f1b02946d05f2b5d90e7b25e48025fc3aa9fbfef5c56a4d",
   "dependencies": [],
   "description": "Use when encountering or preventing MIXED_DML_OPERATION errors caused by DML on setup objects (User, UserRole, PermissionSet, Group, GroupMember) in the same transaction as non-setup objects. Triggers: 'MIXED_DML_OPERATION', 'setup object DML error', 'cannot insert User and Account together', 'System.runAs mixed DML', '@future setup object workaround'. NOT for general async Apex patterns \u2014 see async-apex. NOT for test data factory structure \u2014 see test-data-factory-patterns.",
   "file_location": "skills/apex/mixed-dml-and-setup-objects",

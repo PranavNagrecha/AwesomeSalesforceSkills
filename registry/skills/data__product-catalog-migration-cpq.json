@@ -108,7 +108,7 @@
     "fa7a20970376e7d39702",
     "fbbd9d00c3c8b20160ab"
   ],
-  "content_hash": "02d799658bbabe9c04983cfec653a711a83c8c91edd9e39db1455d3077215892",
+  "content_hash": "08a121762a0969d9866bdd5b0da25118555d9d0e056f2643385af7dccf924cc0",
   "dependencies": [
     "product-catalog-data-model",
     "cpq-data-model"

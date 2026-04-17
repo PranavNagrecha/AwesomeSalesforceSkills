@@ -84,7 +84,7 @@
     "f2534eb01246352fe920",
     "fef3aa614a6a7837ebcf"
   ],
-  "content_hash": "6633e9941f53cb20518fa7b1eedd9575d35636507ac0561de3daa39ba194fb96",
+  "content_hash": "2fed3891eff233d5b0de85e88dbfda839ece0e25e4f61fd59446a1e0e2bac543",
   "dependencies": [],
   "description": "Use when choosing between Headless, LWR (Lightning Web Runtime), or Aura as the Experience Cloud frontend architecture: performance tradeoffs, developer cost, migration readiness, and flexibility. Trigger keywords: headless vs LWR, LWR vs Aura, Experience Cloud architecture decision, site performance architecture, community site technology choice. NOT for implementing a chosen architecture, NOT for Experience Builder component development, NOT for CMS headless content delivery via Connect REST API.",
   "file_location": "skills/architect/headless-vs-standard-experience",

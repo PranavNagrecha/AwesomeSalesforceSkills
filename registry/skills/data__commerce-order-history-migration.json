@@ -54,7 +54,7 @@
     "ff71549f986aeda9409f",
     "ff73aa7452608bb8342c"
   ],
-  "content_hash": "a121782b27a60d2698614beb9ba3adf3e401739d0d4042bcaa107d775e42fe41",
+  "content_hash": "985bfbbd8ad553a976e33861096c4af8507cf9fb7776a312cf12465ad67868bb",
   "dependencies": [],
   "description": "Use when migrating historical order records into Salesforce Order Management \u2014 covers the required object creation sequence (Order > OrderDeliveryGroup > OrderItem > OrderSummary), LifeCycleType=Unmanaged for historical orders, and OrderSummary creation via ConnectAPI. NOT for standard Opportunity migration, CPQ legacy order migration using SBQQ objects, or active order processing.",
   "file_location": "skills/data/commerce-order-history-migration",

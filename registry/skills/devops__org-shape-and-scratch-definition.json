@@ -73,7 +73,7 @@
     "fba872d1ad2a0983c40a",
     "ff0258ed48f0119bc134"
   ],
-  "content_hash": "b13b96e097adbb0faee8034ed9aa32d162c2f62e5214900aedcb952e73d10ad8",
+  "content_hash": "c5ed5496ad70ffa4ab0d5ccbf8929c06e2d01e7d7b53c91c8cd9f11f3de82359",
   "dependencies": [],
   "description": "Use this skill when authoring, debugging, or optimizing a scratch org definition file (project-scratch-def.json): schema structure, features array, settings hierarchy, Org Shape sourcing, edition selection, orgPreferences-to-settings migration, and release pinning. NOT for scratch org lifecycle management (use scratch-org-management), CI pipeline design, or sandbox configuration.",
   "file_location": "skills/devops/org-shape-and-scratch-definition",

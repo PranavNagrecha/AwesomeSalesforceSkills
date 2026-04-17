@@ -60,7 +60,7 @@
     "ee5856d6a8c05a66cf10",
     "f54cf7cf65d9024d0c15"
   ],
-  "content_hash": "d75b079076390271fc73e840f371504c6d118e33df722612420a620af2c442cc",
+  "content_hash": "fd3eed19ef99d3a87138c92552ea77912234df8fc41eaa8211880af6e78e8d09",
   "dependencies": [
     "architect/fsl-optimization-architecture"
   ],

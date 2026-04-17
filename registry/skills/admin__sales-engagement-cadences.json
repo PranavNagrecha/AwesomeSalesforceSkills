@@ -70,7 +70,7 @@
     "f81f22d75416337b2a96",
     "f843296bc37f6f22fdb7"
   ],
-  "content_hash": "284898e4e473fd899a359e38d3627a2349bf4b467c202f8778f1fda6dfa978dc",
+  "content_hash": "e783be76b68e7e301657f1a59ccf183d52aa5cae21ae0e5301742f6141065af2",
   "dependencies": [],
   "description": "Use when setting up, configuring, or troubleshooting Salesforce Sales Engagement (formerly High Velocity Sales) cadences, call scripts, email templates, work queue, or rep assignment. Triggers: 'cadence builder', 'HVS cadence', 'work queue steps', 'sales engagement setup', 'sequence steps not appearing', 'cadence not sending email', 'Sales Engagement permission set'. NOT for Marketing Cloud campaigns, Marketing Cloud Account Engagement (Pardot) journeys, or custom Apex email services.",
   "file_location": "skills/admin/sales-engagement-cadences",

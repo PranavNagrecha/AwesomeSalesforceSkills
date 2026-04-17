@@ -87,7 +87,7 @@
     "fb879a4200b4e9145411",
     "fcb28b27288e3dc97782"
   ],
-  "content_hash": "0513ac51cb26ef37918ff3d715461a26c81353989b1117255ddb904d13099270",
+  "content_hash": "a3ba8cb42242a956e06794adb104eb1d35738c48f6f1592b8dc56d7505988d98",
   "dependencies": [],
   "description": "Use this skill to run Salesforce Code Analyzer v5 for static analysis, CI quality gates, and AppExchange security review preparation. Trigger keywords: code analyzer, sca run, pmd apex, eslint lwc, graph engine, taint analysis, retire js, ci gate, severity threshold, AppExchange scan. NOT for manual code review workflows, runtime debugging, performance profiling, or Checkmarx/CodeScan third-party tools.",
   "file_location": "skills/devops/salesforce-code-analyzer",

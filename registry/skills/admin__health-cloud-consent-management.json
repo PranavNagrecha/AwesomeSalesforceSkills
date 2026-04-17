@@ -57,7 +57,7 @@
     "f7b927201ad1d544468c",
     "fd8edbec327f82b1450d"
   ],
-  "content_hash": "4b770dce8bb065116f5b52d4ae9b51d7f9e9c5f137ba6394af490d2566cc27f8",
+  "content_hash": "b65836294816055e789e37f06146d302dcb7fad331c72c72526898c03afa3336",
   "dependencies": [
     "admin/health-cloud-patient-setup",
     "admin/care-program-management"

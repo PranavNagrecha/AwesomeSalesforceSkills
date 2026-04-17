@@ -85,7 +85,7 @@
     "fb9e06e8fdf392f53efc",
     "fe3506cebd7c84e94a8e"
   ],
-  "content_hash": "a546f54717e2f196ec494d7bd4af381e3ff9d7324a33dde119388b99706d5eab",
+  "content_hash": "0c7fdf4fc2e2828e2a31b8297fa2fe972723176a65fb001a2050b83770150a65",
   "dependencies": [],
   "description": "Step-by-step setup and configuration of Einstein for Sales AI features: Opportunity Scoring, Pipeline Inspection AI insights, Einstein email insights and composition, and Forecasting AI. Covers prerequisites, license checks, feature sequencing, and data readiness validation. NOT for core Agentforce agent creation, agent topic design, Einstein Trust Layer configuration, or Einstein Activity Capture troubleshooting.",
   "file_location": "skills/agentforce/agentforce-sales-ai-setup",

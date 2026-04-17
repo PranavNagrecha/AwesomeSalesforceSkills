@@ -78,7 +78,7 @@
     "fde3c7281b8c36a104ce",
     "fdfac1a4ee1225553e54"
   ],
-  "content_hash": "38bb04df91ef1d3ac629a2cc4e1ca39e5b91d84eca5ca68b1bf78265074e886f",
+  "content_hash": "52016f8aa3bb60de2c451f38c2a546926606763a09e1631bc151b421532774d0",
   "dependencies": [
     "cpq-pricing-rules",
     "cpq-product-catalog-setup"

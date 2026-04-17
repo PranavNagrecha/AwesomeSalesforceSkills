@@ -62,7 +62,7 @@
     "e818d52704631a849adf",
     "f7516fe9fe9be46a50e5"
   ],
-  "content_hash": "3d0b96fcf654281e010b66dd283c6fe544c1b07a3ec26ad9b7c850914be00878",
+  "content_hash": "bb8209e41b1b3c9d1e6c085f663cfe7ee1d5c8481276aedf63a4d2c7c6a0bd3f",
   "dependencies": [],
   "description": "Use when building custom Apex-based actions for Agentforce agents: designing @InvocableMethod classes for Atlas Reasoning Engine invocation, defining input/output schema, handling errors, and managing security context. NOT for standard out-of-the-box agent actions, Flow-based actions, or general @InvocableMethod usage in Flow (use flow/* skills).",
   "file_location": "skills/agentforce/custom-agent-actions-apex",

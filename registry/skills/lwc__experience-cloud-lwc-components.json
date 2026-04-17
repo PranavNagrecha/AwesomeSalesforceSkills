@@ -93,7 +93,7 @@
     "fdd5e3e37943be86e29b",
     "fde7973e7e0b9810d311"
   ],
-  "content_hash": "06799f3c32c51b86b24c9b02d78c88198aac5327748985b82eaa10ff07b4180b",
+  "content_hash": "810186b600b1f1c78bc336dc2da5546c07239c28ee5f22e3f06dd7e699c8e1d6",
   "dependencies": [],
   "description": "Use when building custom LWC components for Experience Cloud (Experience Builder sites, LWR portals, Aura-based communities). Covers community context imports, guest user Apex access patterns, navigation API differences between LWR and Aura, and JS-meta.xml target configuration for Experience Builder exposure. NOT for internal LWC components deployed to Lightning App Builder or standard record pages (see lwc/lwc-development). NOT for Aura community components. Trigger keywords: build LWC for Experience Cloud, custom component community portal LWC, guest user LWC component, community context import salesforce, lightningCommunity target, @salesforce/community, guest Apex.",
   "file_location": "skills/lwc/experience-cloud-lwc-components",

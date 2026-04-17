@@ -87,7 +87,7 @@
     "f71420a7e1275beb2aa4",
     "f996eff01e6cf217d87e"
   ],
-  "content_hash": "26cde1d3926a8cb3a49e58879510afd26714b853fc0d47004a4f9b0b40a4b230",
+  "content_hash": "a8f250525933a5cd38c4287ec040e201447fe949e7a8d3dadf25f3d248e005d6",
   "dependencies": [
     "insurance-cloud-architecture",
     "fsc-architecture-patterns"

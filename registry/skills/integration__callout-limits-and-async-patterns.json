@@ -56,7 +56,7 @@
     "ff4c32ca4235462d7506",
     "ff762cb152c7bbf64e68"
   ],
-  "content_hash": "4c71fbadf7a96f7541d4ebdceb76d52fb712b8668875b9673c3a0ab836f42f90",
+  "content_hash": "ff7cda77155a2de67ac7fe46eb7cf9dbd408a09120ad8f612168c39de3c8b99b",
   "dependencies": [],
   "description": "Use when designing or troubleshooting Apex callouts that approach governor limits: choosing between synchronous callouts, @future, Queueable, Continuation, or async chaining strategies. NOT for HTTP request construction or Named Credential setup (use named-credentials-setup).",
   "file_location": "skills/integration/callout-limits-and-async-patterns",

@@ -53,7 +53,7 @@
     "eda0d02f0b42a2e1d18c",
     "f81055c8f20b19e5ae1b"
   ],
-  "content_hash": "04faa0afabe300182499cda3522d8363547fb30431827617d8003cec9de6ed9e",
+  "content_hash": "98822342cdb9b9fccc906fc85f8e9c7ebe5406f05065503273683a18f7af9a68",
   "dependencies": [],
   "description": "Use when planning, reviewing, or troubleshooting Salesforce metadata releases and admin deployment processes. Triggers: 'change set', 'deployment plan', 'rollback', 'DevOps Center', 'SFDX deploy', 'release checklist', 'production deployment'. NOT for writing CI pipeline code unless the key problem is release method and governance.",
   "file_location": "skills/admin/change-management-and-deployment",

@@ -72,7 +72,7 @@
     "f242d4abd82ed0b3840e",
     "fe065148c65b3322bc8a"
   ],
-  "content_hash": "dda019869b64e7d3bbf7d4fd313bc1193cf193ea1cdf4d58879b459e7df7e63c",
+  "content_hash": "1af30910ab3ce4c10afdb4605da7ab19a2e56b519ae33153381746aa1105183c",
   "dependencies": [],
   "description": "Use when designing, reviewing, or debugging Salesforce Flows from an Admin perspective. Triggers: 'flow', 'automation', 'record-triggered flow', 'screen flow', 'scheduled flow', 'flow error', 'flow interview'. NOT for OmniStudio OmniScripts \u2014 use omnistudio/ skills for that.",
   "file_location": "skills/admin/flow-for-admins",

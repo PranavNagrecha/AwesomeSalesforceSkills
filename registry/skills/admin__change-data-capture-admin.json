@@ -60,7 +60,7 @@
     "fc3a9cfd4cda6890e874",
     "fcad5b50a6e6c614ca0b"
   ],
-  "content_hash": "93ffb8651d3b9fe2c556f2affdbe85d270944e5955c48463d7cdd2404d675ce1",
+  "content_hash": "85ddc66ea54078ee165bab5c33825292e930710f63d3d21c7fdfa8538af3e734",
   "dependencies": [],
   "description": "Use when enabling, configuring, or monitoring Change Data Capture (CDC) entity selection, channel enrichment, and delivery usage limits from an admin perspective. NOT for CDC Apex trigger implementation (use change-data-capture-integration).",
   "file_location": "skills/admin/change-data-capture-admin",

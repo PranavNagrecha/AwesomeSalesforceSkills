@@ -71,7 +71,7 @@
     "f9f0a35a067fa4083878",
     "fd563824cac8f7a1a8e9"
   ],
-  "content_hash": "f2aab87109d63eebf36d8aa7da65b8322d3b18ff31cd01715e311d6bf8c8cbaa",
+  "content_hash": "9f788501a1d32d4b06d5c21138d59b95d963f27c7efe2a416540ed70c679b794",
   "dependencies": [],
   "description": "Use when implementing runtime feature toggles, emergency kill switches, or gradual rollout controls in Apex using Custom Metadata Types, Custom Permissions, or Hierarchical Custom Settings. NOT for Custom Metadata Type fundamentals \u2014 see custom-metadata-types skill for CMDT basics.",
   "file_location": "skills/apex/feature-flags-and-kill-switches",

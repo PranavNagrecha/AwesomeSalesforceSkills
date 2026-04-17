@@ -113,7 +113,7 @@
     "fc4507061da57d8ba195",
     "fc5400b57084eb75b3d1"
   ],
-  "content_hash": "37f7f5568a42605d5a12461e921851fa4843123a7d71c371217b3c7cadb7c24d",
+  "content_hash": "3bba6f968d9607e4a53b3750f539dbe4bf284189310ba852e912f93dd7e33b0d",
   "dependencies": [
     "data/data-migration-planning",
     "data/industries-data-model"

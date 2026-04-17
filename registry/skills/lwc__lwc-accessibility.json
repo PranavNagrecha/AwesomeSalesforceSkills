@@ -52,7 +52,7 @@
     "ebfe20f26794d277325b",
     "fe59dfbd416f4793daf3"
   ],
-  "content_hash": "b16100c320a33dd4d030e718e602fcb37eccbf7f86defd0a8cf0d8515e628b58",
+  "content_hash": "48b9d4e2d129b087716923c38ec0734681d595e5450dc8f058cf1180ff0c20e8",
   "dependencies": [],
   "description": "Use when designing or reviewing Lightning Web Components for keyboard access, semantic labeling, focus management, screen-reader behavior, and WCAG-aligned UX in Salesforce. Triggers: 'lwc accessibility', 'keyboard navigation in lwc', 'screen reader labels', 'focus trap in modal'. NOT for Apex or sharing security reviews, or for purely visual SLDS styling that does not affect accessibility behavior.",
   "file_location": "skills/lwc/lwc-accessibility",

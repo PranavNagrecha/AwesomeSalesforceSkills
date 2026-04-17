@@ -103,7 +103,7 @@
     "fd1e9eb218e25c4b6a3c",
     "fd7572258bbdd4321f2c"
   ],
-  "content_hash": "62d074de1854022c84d4e43c23e7fe2b51585f1a69ae2898058b61cf13f6c17e",
+  "content_hash": "b08b720ea24c35fa717c1dd2c0b735e3e51154c5cb8f7732d680e0b6463dbb8d",
   "dependencies": [],
   "description": "Use this skill when designing or evaluating the holistic Salesforce AI platform strategy: model tier selection (Salesforce Default vs BYOLLM vs zero-data-retention partner models), Trust Layer design decisions at the architecture level, and multi-agent Supervisor/Specialist orchestration topology. Trigger keywords: AI platform strategy, model selection strategy, Supervisor agent topology, multi-agent orchestration, Einstein LLM gateway, BYOLLM architecture, trust layer design, agentic platform design, model tier decision. NOT for individual agent action development, Trust Layer feature configuration steps, RAG grounding mechanics, or BYOLLM registration procedures (see agentforce/einstein-trust-layer, agentforce/rag-patterns-in-salesforce, agentforce/model-builder-and-byollm for those).",
   "file_location": "skills/architect/ai-platform-architecture",

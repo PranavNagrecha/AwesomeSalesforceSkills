@@ -72,7 +72,7 @@
     "f4a9d3b4ff00e660020f",
     "ff949b07b85889f00b9f"
   ],
-  "content_hash": "cdf191b32cf0192a404125719dae353bf71738ad6bbb4b9715018e9b2cdeb243",
+  "content_hash": "0b1776fc751c715d391e9b71579661602467d47c4fdd1ab5208708a3a4864ddf",
   "dependencies": [],
   "description": "Use when setting up CMS workspaces, creating or publishing content types for Experience Cloud sites, managing content scheduling, or configuring audience targeting on content variants. Triggers: 'set up CMS workspace', 'publish content to Experience Cloud site', 'content scheduling community', 'audience targeting content', 'managed content vs unmanaged', 'custom content type metadata', 'CMS channel configuration'. NOT for Salesforce Knowledge articles, CMS Connect to external CMS platforms, or Experience Builder layout/theming work.",
   "file_location": "skills/admin/experience-cloud-cms-content",

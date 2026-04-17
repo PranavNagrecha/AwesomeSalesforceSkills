@@ -104,7 +104,7 @@
     "fb1c2b71fe3de43ee618",
     "ffe9418b79582e52d52d"
   ],
-  "content_hash": "9a795c31b863094c4001b96555d34caff3006e4654922a8f194028bc95ea40c4",
+  "content_hash": "a653472384b708174d8930ae8f405421c9c07cc3c640b1e6dcf5941e3c3d02e7",
   "dependencies": [],
   "description": "Use this skill when designing or auditing CRM Analytics (formerly Einstein Analytics / Tableau CRM) data access controls: row-level security predicates, dataset-level visibility, app-level sharing roles, sharing inheritance configuration, and cross-dataset security embedding strategies. Trigger keywords: CRM Analytics security, row-level security predicate, Analytics dataset access, sharing inheritance, security predicate design, cross-dataset security, analytics entitlement dataset. NOT for standard Salesforce sharing model design (OWD, role hierarchy, sharing rules on standard objects), standard reports/dashboards folder sharing, or Tableau Server/Tableau Cloud security.",
   "file_location": "skills/architect/analytics-security-architecture",

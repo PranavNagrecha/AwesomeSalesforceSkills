@@ -76,7 +76,7 @@
     "f33f48210e30c3d1d335",
     "f3f7103b4c6f0f7d5041"
   ],
-  "content_hash": "581d010e548d6f1d20b88cca7344fd33fa9a5e98b503e48dfbe1bea381f3db8c",
+  "content_hash": "e4cb12b45212c11c6c725f93a1784bc9a1d3128961b71db7459c3b893ca8b1d3",
   "dependencies": [
     "products-and-pricebooks",
     "approval-processes"

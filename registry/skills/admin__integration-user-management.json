@@ -62,7 +62,7 @@
     "e9231ffe3dc12bfc1a8c",
     "fad9f75558971a649dd5"
   ],
-  "content_hash": "45870be8e40a94e68f14fa837705aae6753992e3b5fb0ee4f1a4a982d1b84a49",
+  "content_hash": "215411bcb358aab9e6012014ed61d0b4dad5d9f3c6c35383e40a7e69756d9a63",
   "dependencies": [],
   "description": "Use when setting up or auditing dedicated Salesforce integration users \u2014 including the Salesforce Integration user license, API-only profile, permission set layering, MFA waiver configuration, and login monitoring. NOT for standard user management.",
   "file_location": "skills/admin/integration-user-management",

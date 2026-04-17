@@ -83,7 +83,7 @@
     "f15ba4149a79df1a91c2",
     "f193b3fc447a217e8b37"
   ],
-  "content_hash": "e69461d35e8590e16d9105109da402ecf64b1f7cec4747debcf527bf8475f221",
+  "content_hash": "2ea903651cfa80cfdbbc76177b2ee594874698791e0e872084453b4133265dd2",
   "dependencies": [
     "integration/event-driven-architecture-patterns"
   ],

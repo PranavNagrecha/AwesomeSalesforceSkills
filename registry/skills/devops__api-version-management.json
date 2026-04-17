@@ -92,7 +92,7 @@
     "f7a04d4790bac1f60ff3",
     "fba4e7c5a08ccdf144ff"
   ],
-  "content_hash": "b46e2a7c85e0df0b1101e620c3c646a1207f8b29eab9c90feef1343bddec492d",
+  "content_hash": "c4930a7ba2cc8a0e5fce078f351d3902875d0891683c22c175e339c7b87e71d0",
   "dependencies": [],
   "description": "Use this skill when auditing, upgrading, or standardizing Salesforce API versions across metadata components, sfdx-project.json sourceApiVersion, Apex classes, LWC bundles, Aura bundles, and integration endpoints. Covers version drift detection, retirement risk analysis, and upgrade planning. NOT for REST/SOAP API design patterns (use rest-api-patterns or soap-api-patterns), OAuth configuration (use oauth-flows-and-connected-apps), or Metadata API deployment mechanics (use change-set-deployment or unlocked-package-development).",
   "file_location": "skills/devops/api-version-management",

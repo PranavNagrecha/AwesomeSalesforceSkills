@@ -52,7 +52,7 @@
     "f192ac0e51066245654f",
     "f7ea347f77922136045d"
   ],
-  "content_hash": "c57382f4a00c00966cbac00bf4bea6c8fb88b84f6dd3b13673326d7c963a2683",
+  "content_hash": "88401f474de39284872a9b4058025fed7bac02c5054dc9db7f624381e6831758",
   "dependencies": [],
   "description": "Use when Apex must read, interpret, or deploy Custom Metadata Type configuration, or when deciding between Custom Metadata Types, Custom Settings, and Custom Labels. Triggers: 'Custom Metadata Type', '__mdt', 'getInstance', 'Apex Metadata API', 'protected custom metadata'. NOT for setup-only administration with no Apex behavior, packaging, or deployment concern.",
   "file_location": "skills/apex/custom-metadata-in-apex",

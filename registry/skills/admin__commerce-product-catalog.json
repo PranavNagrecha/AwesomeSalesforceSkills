@@ -94,7 +94,7 @@
     "fabbf56cfda2e2df2a9e",
     "fad49b192c85508d475d"
   ],
-  "content_hash": "6372a8e2ed9096737a232f559fd48a486f2c3bc87480f5b220166f589262a244",
+  "content_hash": "88cc4c796431e514e0ecc865b40e2de23ef7cda57df429a49aef491ff8c13d19",
   "dependencies": [],
   "description": "Use when configuring or troubleshooting the B2B/B2C Commerce product catalog \u2014 ProductCatalog, ProductCategory, ProductCategoryProduct, WebStoreCatalog, CommerceEntitlementPolicy, product attributes, and product variants. Trigger keywords: product catalog, product category, commerce catalog, entitlement policy, product variants, product attributes, catalog visibility. NOT for CPQ product catalog (bundles, options, price rules) or for loading standard Product2/Pricebook2 data outside Commerce.",
   "file_location": "skills/admin/commerce-product-catalog",

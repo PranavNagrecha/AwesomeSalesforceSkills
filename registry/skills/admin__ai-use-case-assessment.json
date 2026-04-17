@@ -102,7 +102,7 @@
     "fd75611759191621a5cd",
     "ffe6e2c8659c0a396260"
   ],
-  "content_hash": "258dc48ef824ea192c08afc55f68dad861d02625e3e9054447acd9e5a3ada7ee",
+  "content_hash": "018177877bb1c4caf3ebff3d959bd73b0d3b5476ae71ab4e250b1a3e5c28a890",
   "dependencies": [
     "ai-ready-data-architecture",
     "agentforce-service-ai-setup"

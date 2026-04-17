@@ -114,7 +114,7 @@
     "fd14fde97c7591a0045e",
     "fd868bc8d58124cceb96"
   ],
-  "content_hash": "38c7c382595c7a38ecbc8fd4c4c1f8d6aba5d93d578fb590144122e4fa559438",
+  "content_hash": "5069c6cb600ce298ec75badfc9e3b5dc4ba334cc2532d866fc6d53b3791e320d",
   "dependencies": [
     "apex/marketing-cloud-api",
     "admin/marketing-cloud-connect"

@@ -93,7 +93,7 @@
     "fce3fab18ab9b6972198",
     "fe870d664f01cf91dcf1"
   ],
-  "content_hash": "7860be99a07d5cede8312f7e126af87528dd1a505a6a71793f4537b5867e8a44",
+  "content_hash": "7fe8f599bfa3ad76791d9e3536ac5d7b3e5f9ccc987c892ad418723c2abb6a0e",
   "dependencies": [],
   "description": "Use this skill when designing or troubleshooting an integration between Salesforce CPQ and an ERP system (SAP, Oracle, NetSuite, Microsoft Dynamics). Covers the canonical order transmission trigger, pricing data mastery strategy, amendment delta-quantity handling, and non-blocking inventory checks during quoting. NOT for generic Salesforce-to-ERP integration without CPQ, standard Quote-to-ERP patterns that do not involve SBQQ objects, or CPQ-internal configuration such as pricing rules, bundles, or guided selling.",
   "file_location": "skills/architect/cpq-integration-with-erp",

@@ -103,7 +103,7 @@
     "fbf9df53656511b3e62b",
     "fc1aede10d7c218b3a5d"
   ],
-  "content_hash": "8f22b27c1f1d5f5496ab6a7353ac14da712445d4a7ebb208b1ae5d4f896b4a12",
+  "content_hash": "da50f32c8ac7d7777f532a6c40a2176611fb83db56abefda182efd335b1840e4",
   "dependencies": [
     "event-driven-architecture-patterns"
   ],

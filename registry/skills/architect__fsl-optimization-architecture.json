@@ -57,7 +57,7 @@
     "ff3c4f91fb5ffd8432a4",
     "ff90c993aedb7b2131e6"
   ],
-  "content_hash": "283cf94b89ef3e755428bcd2468d376664892efdb77d83999d5ea16423e3db8b",
+  "content_hash": "7ed0843d482e1798ba9b10e4094e7fc7aa4e4720b3df8e26e9e257580607f75e",
   "dependencies": [
     "architect/fsl-multi-region-architecture"
   ],

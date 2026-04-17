@@ -91,7 +91,7 @@
     "fdb8b550e8ca39de1a75",
     "fea005c622a9f121bc60"
   ],
-  "content_hash": "c7158ce502d68cd13e7f88e253908c8b7fa8973997648559196f699f74105b9a",
+  "content_hash": "4c7688023036629192b1e0ca1e74e91142330ba2d8691c07ee22678500e1aac5",
   "dependencies": [],
   "description": "Use when configuring the Salesforce product catalog and pricing structure: creating Product2 records, setting up Standard and custom Pricebooks, managing PricebookEntry junction records, enabling multi-currency pricing, configuring Product Schedules (Revenue and Quantity), or troubleshooting incorrect prices on Opportunity line items and Quotes. Triggers: 'add product to pricebook', 'pricebook entry', 'standard pricebook', 'product catalog', 'multi-currency product pricing', 'product schedule', 'revenue schedule', 'quantity schedule', 'deactivate product'. NOT for CPQ (Salesforce Revenue Cloud / SBQQ) product configuration, CPQ pricing rules, or CPQ bundle setup. NOT for Quote template layout or PDF generation.",
   "file_location": "skills/admin/products-and-pricebooks",

@@ -97,7 +97,7 @@
     "ff760dd3259bf0b32935",
     "fff4d1bcb269a4e9156b"
   ],
-  "content_hash": "92f99bd997189bbe636e8ca9ce601d6d5ae83723a65b8bf3be4ebfea80a77dd0",
+  "content_hash": "9fa76573f6d7a723ceadb8c27a5b1b2c85cfd7f84c4679b4e29a19b03bc337d8",
   "dependencies": [],
   "description": "Salesforce storage management: monitoring data storage vs file storage usage, diagnosing storage alerts, optimizing large text fields, choosing between Attachment and ContentDocument (Files), and planning storage reclamation. NOT for external storage integration (S3, MuleSoft file offload, Heroku Connect).",
   "file_location": "skills/data/data-storage-management",

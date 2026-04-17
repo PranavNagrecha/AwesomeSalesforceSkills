@@ -100,7 +100,7 @@
     "f43d2d16408ffa060dbb",
     "f4d651ab89e53746e85b"
   ],
-  "content_hash": "c2895290452d9f704dc02ef84f39afec77fb59db894175643bcfdd4d38e46429",
+  "content_hash": "56c4ef2949a5a66103129cc0f27c874f741187dc29e53a3ea3ffc65bf1aee5dc",
   "dependencies": [],
   "description": "Auditing, right-sizing, and reclaiming Salesforce licenses to reduce cost and ensure compliant allocation. Trigger keywords: license audit, license cost reduction, unused licenses, permission set license, login-based license, inactive users, license reclamation, right-size licenses. NOT for provisioning net-new licenses (contact AE). NOT for Experience Cloud community license troubleshooting. NOT for permission set assignment logic outside of license gating.",
   "file_location": "skills/architect/license-optimization-strategy",

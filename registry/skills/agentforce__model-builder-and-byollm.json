@@ -106,7 +106,7 @@
     "fc4da21545927c6feab5",
     "ff8cb26a0d031a179039"
   ],
-  "content_hash": "62f0ccd0378db829d466bdc7292f1632cbd7fd5e74e34be5330af41b9fbd2b08",
+  "content_hash": "d98fe45ad9bd39c857baff52a07667c386608fa366c5c8a2e24fb4ed95386b61",
   "dependencies": [],
   "description": "Use when configuring Model Builder in Salesforce to register external LLMs or select standard models for Agentforce and Einstein features. Covers model registration, API key configuration, model aliases, and cost/performance tradeoffs. NOT for Trust Layer configuration (use agentforce-trust-layer).",
   "file_location": "skills/agentforce/model-builder-and-byollm",

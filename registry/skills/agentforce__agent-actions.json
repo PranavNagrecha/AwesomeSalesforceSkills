@@ -57,7 +57,7 @@
     "f81add6ec1383deb8c38",
     "fce45be9210a35b2d0dc"
   ],
-  "content_hash": "a94ccfbfd1a662e909d57a7a9f3b95ebcb7cfbd87b8f8b2c1bcd685f5158ca68",
+  "content_hash": "f3d00b6b855b963296f314834bd1efff3ce58a2fb9d6fd804502a6eef295c66b",
   "dependencies": [],
   "description": "Use when designing or reviewing Agentforce actions, including Flow actions, Apex invocable actions, prompt-template actions, action naming, input and output contracts, confirmation requirements, and safe error behavior. Triggers: 'agent actions', 'flow action for agent', 'agent invocable action', 'action schema design', 'agent action error handling'. NOT for topic boundary design or general Apex invocable guidance when the main concern is not an agent-facing action contract.",
   "file_location": "skills/agentforce/agent-actions",

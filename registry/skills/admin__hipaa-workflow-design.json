@@ -54,7 +54,7 @@
     "f3135373ba49e789e2e0",
     "fa05d50a28338d04465a"
   ],
-  "content_hash": "15e919904c77f46d152b5fc405bab20d769725241728baa8d746d94dc64d9d6e",
+  "content_hash": "8a0a2d5827bb8dd51553ff68d441b2401e0b9b7e40a39ac5ccc42028c252686f",
   "dependencies": [
     "admin/health-cloud-patient-setup",
     "admin/health-cloud-consent-management"

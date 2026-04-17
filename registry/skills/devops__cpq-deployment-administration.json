@@ -101,7 +101,7 @@
     "f9638aacb1674952db66",
     "f97432576adbb5c78178"
   ],
-  "content_hash": "85009e9e2d27507e51b69cf722d5273e0138f720f8ca018a6e858672e083527a",
+  "content_hash": "580c9d8cba4f22374773fec24ddf8be525a2d8c5c69d6d293c97ad81c75d79cc",
   "dependencies": [
     "devops/salesforce-devops-tooling-selection",
     "devops/copado-essentials"

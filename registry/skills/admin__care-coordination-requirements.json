@@ -56,7 +56,7 @@
     "f9e6b0bea79fa2c33b2d",
     "fbfbf7845eb9abc7351c"
   ],
-  "content_hash": "e09abeb70963a57ffa19e82d0eb53baeee337e9fef657d9364c892084c101add",
+  "content_hash": "298d7e745920305aa88ba78ba817d739fad830afa4529891753102be62f06eb8",
   "dependencies": [
     "admin/health-cloud-patient-setup",
     "admin/care-plan-configuration",

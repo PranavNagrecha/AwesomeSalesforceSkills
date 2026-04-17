@@ -58,7 +58,7 @@
     "f83d9a5574e5317593b0",
     "fe4131971f88de98f9ac"
   ],
-  "content_hash": "79395d460e41da490efd5da1a6f1246b85e250d5cf79905f760a10484fdfb422",
+  "content_hash": "692adc289ec8e38f992dac98ea0c354a955a7eced44036c51b455d969b239868",
   "dependencies": [],
   "description": "Use when designing or building reusable Apex test data factories: @IsTest utility classes, SObject hierarchy construction, bulk data generation, portal user factories with System.runAs(), and @testSetup methods. NOT for test class structure and assertions (use apex/test-class-standards) or for loading data into sandboxes (use devops/data-seeding-for-testing).",
   "file_location": "skills/apex/test-data-factory-patterns",

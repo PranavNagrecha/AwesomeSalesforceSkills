@@ -85,7 +85,7 @@
     "fcb3e8106e980437e9cb",
     "fdf001675bc95dd27400"
   ],
-  "content_hash": "bc2e52f9c6db62f1276d487248058f302a742d4cd82e38ec4d8eb7f4c6b3a43c",
+  "content_hash": "fad78b1fbebf5f72bb3d120fa79a0194b535ada2d5fda9a9c0e1527c9bdc8833",
   "dependencies": [],
   "description": "Use when creating, assigning, or checking custom permissions to control feature access beyond CRUD and FLS. Trigger keywords: 'custom permission', 'FeatureManagement.checkPermission', '$Permission global variable', 'feature gate', 'named access grant', 'beta feature flag'. NOT for permission sets (use permission-set-architecture).",
   "file_location": "skills/admin/custom-permissions",

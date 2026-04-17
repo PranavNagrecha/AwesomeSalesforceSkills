@@ -91,7 +91,7 @@
     "fd0b1914a8523833f09d",
     "ffd0f3672179f362cb06"
   ],
-  "content_hash": "4985347be5af296d8239a19ccaff774dd615bb9978e7a7fdd2eee6e81532f0a5",
+  "content_hash": "25c0cde38f4ab87b417f855081d7182c6c306cd0ae5fd94c36481ede53a5d0c3",
   "dependencies": [],
   "description": "Use this skill when integrating Einstein Discovery predictions into Salesforce apps, automating bulk scoring jobs, deploying stories as prediction definitions, managing models via API, or querying prediction history. Trigger keywords: Einstein Discovery, smartdatadiscovery, predict endpoint, bulk scoring job, model refresh job, prediction definition, story deployment, regression prediction, multiclass prediction, CRM Analytics ML. NOT for CRM Analytics dashboard design, TCRM dataset management, Einstein Prediction Builder binary classification (which requires no CRM Analytics license), or Einstein Next Best Action recommendation strategies.",
   "file_location": "skills/agentforce/einstein-discovery-development",

@@ -102,7 +102,7 @@
     "fccf601cad61ee8b430c",
     "fee1fcdfd2439398ab3b"
   ],
-  "content_hash": "86c453662eaffc152d69999ad74bc1b1f0829e73d347b217c9276ada44e85658",
+  "content_hash": "219968bdefbaffdf71f748a5a296e51f8de53e6ebec59d6224e7d07f9d543d41",
   "dependencies": [],
   "description": "When to use this skill: choosing between real-time (synchronous callouts, Platform Events, CDC, Pub/Sub API) and batch (Bulk API 2.0, scheduled ETL) integration patterns. Trigger keywords: should I use real-time or batch, how to sync high-volume data, when to use Platform Events vs Bulk API, integration latency vs volume tradeoff. NOT for Batch Apex internals (use batch-apex-patterns), NOT for MuleSoft middleware design (use middleware-integration-patterns), NOT for CDC field tracking configuration.",
   "file_location": "skills/integration/real-time-vs-batch-integration",

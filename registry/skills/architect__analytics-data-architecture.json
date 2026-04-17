@@ -109,7 +109,7 @@
     "ed933246c62288ab79b2",
     "f15b9950ae4e5f5bcb3b"
   ],
-  "content_hash": "632a311bab41b883c923ae79940c42af6f9f68d7924b2e7289bfa3c8f49d2cd6",
+  "content_hash": "dd3844ce4d936f27023a49078bf399f71b70202c559e05304bee3a9ee0becff0",
   "dependencies": [],
   "description": "Use this skill when designing CRM Analytics dataset architecture, planning dataflow or Recipe ELT strategies, implementing incremental extraction patterns, or integrating external data lakes (Snowflake, BigQuery, Redshift). Trigger keywords: CRM Analytics dataset design, dataflow performance, Recipe incremental, remote connection data lake, analytics ELT strategy, dataset row limits. NOT for standard Salesforce object data modeling, Salesforce Data Cloud architecture, or MuleSoft integration design.",
   "file_location": "skills/architect/analytics-data-architecture",

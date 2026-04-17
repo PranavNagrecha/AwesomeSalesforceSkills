@@ -118,7 +118,7 @@
     "f75753c64038f954e6c8",
     "fbd7651a81547ff22591"
   ],
-  "content_hash": "eb3f2afb03efd05849e445231988e64ab9b11c11fc20f8528ee6a3149959a23f",
+  "content_hash": "24ca7c0ad578db9359e1cb7b3ea6aa382c504f098a1fb9f5893b3ff2085b7c2b",
   "dependencies": [
     "lwc/experience-cloud-multi-idp-sso",
     "architect/security-architecture-review"

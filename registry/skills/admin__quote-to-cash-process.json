@@ -102,7 +102,7 @@
     "fc87de848678ae35a794",
     "fe5ae3862798f51f4582"
   ],
-  "content_hash": "4149d84fc8bfbe2813684267493db04e08d653f489aaa5a9f2959ecdd1315201",
+  "content_hash": "caa69a905dba8796ba4fb6cb6a2556b441d103cb6dc723816a8280a9c2a8eb3f",
   "dependencies": [
     "cpq-data-model",
     "cpq-architecture-patterns"

@@ -93,7 +93,7 @@
     "f962c9d0592a1c3755eb",
     "f9d8b7b1beffc04657d4"
   ],
-  "content_hash": "c3d1a1e744e2752cd62cb7caf952d4483e51a192100461133ad35e04d43bd977",
+  "content_hash": "215be3f8f79fab1dd860f40a975c22fdbaefb47d01fa19c611d1c77d60a73f66",
   "dependencies": [],
   "description": "Use when configuring org-wide platform settings: MFA enforcement, My Domain setup and deployment, session timeout and security settings, password policies, trusted IP ranges (Network Access), and CSP Trusted Sites. Trigger keywords: 'MFA setup', 'My Domain', 'session settings', 'password policy', 'trusted IP ranges', 'CSP trusted sites'. NOT for user-level login restrictions (use user-management), NOT for permission model design (use permission-sets-vs-profiles), NOT for security audit and hardening review (use security/org-hardening-and-baseline-config).",
   "file_location": "skills/admin/org-setup-and-configuration",

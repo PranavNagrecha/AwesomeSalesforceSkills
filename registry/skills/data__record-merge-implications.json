@@ -57,7 +57,7 @@
     "f4acb8979e19562a4ec2",
     "f8a7dfc349a1393d95a5"
   ],
-  "content_hash": "8ff88a012b12852018abe9a00414760d9448e22a75da95f34317561e8d8f1e15",
+  "content_hash": "08ac64685439be4583a54590c284b3fef9a8787dfec8a4903aa76c88867f612c",
   "dependencies": [],
   "description": "Use when merging Account, Contact, or Lead records in Salesforce and needing to understand what data is kept, what is deleted, and what side effects occur on related records. Triggers: 'which fields win in a merge', 'child records after merge', 'merge duplicate accounts', 'what happens to opportunities after contact merge', 'Lead merge field resolution'. NOT for deduplication strategy design (use data-quality-and-deduplication), NOT for Apex Merge DML beyond its direct implications.",
   "file_location": "skills/data/record-merge-implications",

@@ -53,7 +53,7 @@
     "f8ff9ccba793a90cc528",
     "fde54311c2747fc13add"
   ],
-  "content_hash": "bb727592fe14254958cc053a8bb2bf273c807d00b3786943f2a930b009c1a1d6",
+  "content_hash": "3d605b0c51e35e0f01d8636f1008f059d35caaa2ddafd6d261cd64f573afa178",
   "dependencies": [],
   "description": "Use when deciding whether Salesforce Connect and External Objects are the right fit for external data access, or when reviewing OData, cross-org, and custom adapter patterns, query limitations, and latency tradeoffs. Triggers: 'Salesforce Connect', 'External Objects', '__x', 'OData adapter', 'custom adapter'. NOT for ordinary ETL or replicated-data designs where the data should live inside Salesforce.",
   "file_location": "skills/integration/salesforce-connect-external-objects",

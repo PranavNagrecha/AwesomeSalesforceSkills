@@ -59,7 +59,7 @@
     "f7ed50ab35131c4784e7",
     "fcc938aead54845dbe5b"
   ],
-  "content_hash": "7a81ccf3f3da467fbf9e171ef2a1387e7f34dc6b97c4d96d61e3853ea64d00e7",
+  "content_hash": "13629bc455298d848d25bf6366a44e42d27ed7f975df7cf1115decdb7d46a961",
   "dependencies": [],
   "description": "Use when selecting, designing, or reviewing Queueable, Batch, Future, or Schedulable Apex for callouts, large data processing, retries, or background work. Triggers: 'queueable vs batch', 'future method', 'flex queue', 'async job failed', 'schedule apex'. NOT for Platform Events or a deep-only Batch Apex implementation guide.",
   "file_location": "skills/apex/async-apex",

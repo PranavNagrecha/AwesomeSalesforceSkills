@@ -89,7 +89,7 @@
     "fbd327efff72ba54b0fd",
     "feabb43d44cc2de977e2"
   ],
-  "content_hash": "09fbbd6cc9651cd164e88350f97c25f23f1c062c57dcb246c5c1526e16767491",
+  "content_hash": "79e3732989becdfa81f229b41444be4339d50381ef75822aa8158cb15e4d2141",
   "dependencies": [],
   "description": "Diagnosing and resolving common Apex runtime exceptions: NullPointerException, QueryException, DmlException, ListException, LimitException, TypeException. Use when debugging Apex runtime failures or writing defensive code. NOT for error handling framework design (use error-handling-framework). NOT for governor limit prevention strategies (use governor-limits). NOT for structuring try/catch blocks (use exception-handling).",
   "file_location": "skills/apex/common-apex-runtime-errors",

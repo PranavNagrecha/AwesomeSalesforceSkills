@@ -89,7 +89,7 @@
     "fdb829213ac761a9b2f9",
     "fe1a2ce17c249ea5a74e"
   ],
-  "content_hash": "fb61c7df9cc8c12114349ade3c486a0155e49104c3a4b4942b452a429f86959f",
+  "content_hash": "2e3a7c961142ff33b69f80cde7f9a48cc75c1c40332d79a7b5234f8ce0228d16",
   "dependencies": [
     "admin/financial-account-setup",
     "admin/fsc-data-model"

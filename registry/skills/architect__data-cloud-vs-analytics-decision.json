@@ -51,7 +51,7 @@
     "fde114888982b1c56ea4",
     "ff08755630e503de4cf2"
   ],
-  "content_hash": "ba3f76776fda5aeeb2b2a542fa1f5f6805488a092586328fc310b3b53a54e910",
+  "content_hash": "4e936b5af49f4e51cc4f832f8342c0520df961a3c15898d5204e97600a13335e",
   "dependencies": [],
   "description": "Use when choosing or explaining how Salesforce Data Cloud (Data 360) and CRM Analytics (Tableau CRM / Einstein Analytics) fit together versus overlap \u2014 unified data platform vs analytics consumption, Direct Data on Data Model Objects (DMOs), identity and activation vs dashboards and recipes. Triggers: 'Data Cloud vs CRM Analytics', 'when to use Data Cloud versus Einstein Analytics', 'should we buy Data Cloud or CRM Analytics', 'CRM Analytics on Data Cloud DMOs', 'direct data connector Data Cloud', 'analytics on unified profile architecture'. NOT for step-by-step implementation of Data Cloud data streams, identity resolution rules, CRM Analytics recipes, dataflows, or dashboard build \u2014 use architect/data-cloud-architecture, admin/data-cloud-identity-resolution, or admin/einstein-analytics-basics for that.",
   "file_location": "skills/architect/data-cloud-vs-analytics-decision",

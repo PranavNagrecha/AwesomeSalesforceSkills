@@ -115,7 +115,7 @@
     "fcff24ce8dc578648e80",
     "fe2b2a770dd01611e701"
   ],
-  "content_hash": "1aa948c23587f7f72f869db957038c9d39d8a5eb250eab0eb002827a912b89cb",
+  "content_hash": "88c393fcf7a5291f1a325655f7b0b8d71551b4a2950afc5c5217556907ae9b89",
   "dependencies": [
     "agentforce/agent-channel-deployment"
   ],

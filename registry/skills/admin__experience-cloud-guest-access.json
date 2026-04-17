@@ -76,7 +76,7 @@
     "febe1a4dbedc94f012a5",
     "fec65d748d2838fa818b"
   ],
-  "content_hash": "a56675b06615ca95b2c25bb034cb3f8f1b71a10969cfe17010d0296dbd969f52",
+  "content_hash": "1302feb945d51a8cc581c7fcd7c6f08e5513b6e97f5cfc5653b4f10cc463d5a6",
   "dependencies": [],
   "description": "Use when designing or configuring public pages on an Experience Cloud site \u2014 guest user profile setup, page-level access settings in Experience Builder, object/field visibility for unauthenticated visitors, and explicit sharing rules that expose data on public pages. Triggers: 'configure public pages Experience Cloud', 'guest user profile setup', 'unauthenticated site access', 'public community page visibility', 'make page visible without login'. NOT for authenticated user features (use admin/experience-cloud-member-management). NOT for security hardening or remediation of guest user exposure (use security/guest-user-security).",
   "file_location": "skills/admin/experience-cloud-guest-access",

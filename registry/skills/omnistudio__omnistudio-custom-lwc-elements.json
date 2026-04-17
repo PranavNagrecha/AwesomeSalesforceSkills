@@ -103,7 +103,7 @@
     "facd4eb34fadf5f5d6f2",
     "fb1125a28c6536f896b5"
   ],
-  "content_hash": "efcfffd2da66425f27848b9334bfec6d19fa33994298fb1954bcd77fc239a59d",
+  "content_hash": "fa12d63914ce4d57da6cce9f80797929b73ffaafaa47777530f053e14561ce99",
   "dependencies": [
     "omnistudio/omnistudio-lwc-integration",
     "omnistudio/omniscript-design-patterns"

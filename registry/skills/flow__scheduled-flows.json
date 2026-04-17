@@ -52,7 +52,7 @@
     "eaa23a7e6824277ff008",
     "f87b3a7ebf593fbcd1e3"
   ],
-  "content_hash": "a444394d283f1ef11246cb33e98628930382b3e92a73df7d700c145c3444a893",
+  "content_hash": "2e3838ae33f4c6139a0b6d61b77ac8dc8bf1a3daab09a9a0206fe7c24a183e84",
   "dependencies": [],
   "description": "Use when designing or reviewing schedule-triggered flows for recurring automation, replacement of time-based workflow patterns, bounded record selection, idempotent processing, and escalation to Apex when volume is too high. Triggers: 'scheduled flow design', 'nightly flow job', 'time based workflow replacement', 'schedule triggered flow limits'. NOT for record-triggered scheduled paths or large-scale batch processing that should be built directly in Batch Apex.",
   "file_location": "skills/flow/scheduled-flows",
