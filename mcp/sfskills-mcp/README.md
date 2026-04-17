@@ -1,15 +1,21 @@
 # sfskills-mcp
 
 Model Context Protocol server that hands any MCP-capable AI coding assistant
-two things at once:
+three things at once:
 
 1. The full **SfSkills** library (686+ Salesforce skills, source-grounded,
    role-tagged, versioned) — via `search_skill` and `get_skill`.
 2. **Live metadata from your actual Salesforce org** — via `describe_org`,
    `list_custom_objects`, `list_flows_on_object`, and `validate_against_org`.
+3. **Run-time agents** that compose the skill library + live-org tools into
+   concrete deliverables (Apex refactor, security scan, deployment risk
+   score, Agentforce action scaffold, org drift report) — via `list_agents`
+   and `get_agent`.
 
 The net effect: the agent can answer "does this trigger framework already
-exist in my org?" by itself instead of asking you.
+exist in my org?" by itself instead of asking you — and if you say "refactor
+this Apex class", it can pull the full `apex-refactorer` instruction set via
+`get_agent` and execute it.
 
 ---
 
@@ -41,6 +47,24 @@ This MCP server closes both gaps using the Salesforce CLI for org access
 | `list_custom_objects`  | Custom (or standard) sObjects in the org. Substring filter via `name_filter`.                             |
 | `list_flows_on_object` | Flows whose `TriggerObjectOrEvent` matches the given sObject (Tooling API).                               |
 | `validate_against_org` | Category-aware probe: "does a skill's guidance already have analogs in the org?"                          |
+| `list_agents`          | Enumerate SfSkills run-time + build-time agents with one-line summaries. Filter via `kind="runtime"`.     |
+| `get_agent`            | Fetch an agent's full `AGENT.md` body so the caller's model can execute it (MCP does not execute agents). |
+
+### Run-time agents reachable via `get_agent`
+
+| Agent name                 | What it returns |
+| -------------------------- | --------------- |
+| `apex-refactorer`          | Refactor an Apex class onto canonical `templates/apex/` patterns + a test class |
+| `trigger-consolidator`     | Collapse N triggers on one sObject into the `TriggerHandler` framework |
+| `test-class-generator`     | Bulk-safe ≥85% coverage test class using `TestDataFactory` + `BulkTestPattern` |
+| `soql-optimizer`           | Ranked SOQL findings with before/after fixes |
+| `security-scanner`         | CRUD/FLS + sharing + hardcoded-secret audit |
+| `flow-analyzer`            | Flow-vs-Apex routing + bulkification review |
+| `bulk-migration-planner`   | Bulk API 2.0 / PE / Pub-Sub / REST / Connect plan from volume + latency |
+| `lwc-auditor`              | A11y + performance + security audit of an LWC bundle |
+| `deployment-risk-scorer`   | HIGH/MEDIUM/LOW risk score + breaking-change list |
+| `agentforce-builder`       | Full Agentforce action scaffold: Apex + topic + test + eval |
+| `org-drift-detector`       | Library ↔ live-org gap and bloat report |
 
 ### `validate_against_org` routing
 

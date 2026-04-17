@@ -256,9 +256,49 @@ The Currency Monitor agent will handle it if you flag it during a release cycle.
 
 ---
 
-## How Skills Get Built
+## Agents: Build-time vs Run-time
 
-This repo ships its own build-time agent system. The agents live in `agents/<agent-name>/AGENT.md` as instruction files any agentic AI can follow (Claude Code, Codex, Cursor, Windsurf). The workflow:
+This repo ships **two classes of agents**, both as instruction files (`agents/<name>/AGENT.md`) that any agentic AI can follow (Claude Code, Codex, Cursor, Windsurf, or any MCP client).
+
+| Class | Purpose | Who invokes |
+|---|---|---|
+| **Build-time (12)** | Produce and maintain the skill library itself | Repo maintainers, `/run-queue` |
+| **Run-time (11)** | Use the library to do real Salesforce work in your codebase / org | You — via slash commands, direct AGENT.md reads, or MCP `get_agent` |
+
+The contract every agent follows: [`agents/_shared/AGENT_CONTRACT.md`](./agents/_shared/AGENT_CONTRACT.md).
+The full roster: [`agents/_shared/RUNTIME_VS_BUILD.md`](./agents/_shared/RUNTIME_VS_BUILD.md).
+
+---
+
+### Run-time Agents (the ones you call)
+
+Each agent takes concrete inputs, composes skills + templates + decision-trees + (optional) live-org probes, and returns a PR-ready report or patch. **Three invocation modes** — all fire the same AGENT.md:
+
+1. **Slash command** — ask your AI to follow `commands/<name>.md`
+2. **Direct read** — point any AI at `agents/<name>/AGENT.md`
+3. **MCP** — call `get_agent(name)` on the SfSkills MCP server; the server returns the instructions for your model to execute
+
+| Agent | Slash command | What it does |
+|---|---|---|
+| `apex-refactorer` | [`/refactor-apex`](./commands/refactor-apex.md) | Refactor an Apex class onto the canonical `templates/apex/` patterns + generate a test class |
+| `trigger-consolidator` | [`/consolidate-triggers`](./commands/consolidate-triggers.md) | Collapse N triggers on one sObject into the handler framework with a deactivation plan |
+| `test-class-generator` | [`/gen-tests`](./commands/gen-tests.md) | Generate a bulk-safe ≥ 85%-coverage test class using `TestDataFactory` / `BulkTestPattern` |
+| `soql-optimizer` | [`/optimize-soql`](./commands/optimize-soql.md) | Find and fix SOQL anti-patterns (query-in-loop, non-selective, no-security) |
+| `security-scanner` | [`/scan-security`](./commands/scan-security.md) | Audit CRUD/FLS, sharing, hardcoded secrets, Remote Sites vs Named Credentials |
+| `flow-analyzer` | [`/analyze-flow`](./commands/analyze-flow.md) | Decide Flow vs Apex per the automation decision tree + bulkification review |
+| `bulk-migration-planner` | [`/plan-bulk-migration`](./commands/plan-bulk-migration.md) | Pick Bulk API 2.0 / Platform Events / Pub/Sub / REST Composite from volume + latency |
+| `lwc-auditor` | [`/audit-lwc`](./commands/audit-lwc.md) | A11y + performance + security audit of an LWC bundle |
+| `deployment-risk-scorer` | [`/score-deployment`](./commands/score-deployment.md) | Pre-deploy risk score vs live org (breaking-change list via MCP probes) |
+| `agentforce-builder` | [`/build-agentforce-action`](./commands/build-agentforce-action.md) | Scaffold Agentforce action: Apex `@InvocableMethod` + topic YAML + test + golden eval |
+| `org-drift-detector` | [`/detect-drift`](./commands/detect-drift.md) | Library ↔ live-org gap and bloat report across every flagship prescription |
+
+Every run-time agent follows the same 8-section contract, returns a citations block with every skill/template/decision-tree it used, and never writes to your org.
+
+---
+
+### How the library itself gets built
+
+The build-time agents live in the same `agents/` tree. They're the skill factory:
 
 ```
 MASTER_QUEUE.md                  what needs to be built
@@ -340,7 +380,7 @@ The `mcp/sfskills-mcp/` package exposes this library and your real Salesforce
 org to any MCP-capable AI tool so the agent can answer "does this trigger
 framework already exist in my org?" **without asking you**.
 
-Six tools, all read-only:
+Eight tools, all read-only:
 
 | Tool                   | What it does                                                                    |
 | ---------------------- | ------------------------------------------------------------------------------- |
@@ -350,6 +390,8 @@ Six tools, all read-only:
 | `list_custom_objects`  | Custom sObjects in the target org with optional substring filter.               |
 | `list_flows_on_object` | Flows (record / scheduled / platform-event triggered) targeting an sObject.    |
 | `validate_against_org` | Category-aware probe: does the skill's guidance already have analogs in the org?|
+| `list_agents`          | Enumerate SfSkills run-time + build-time agents (one-line summary each).        |
+| `get_agent`            | Fetch an agent's full AGENT.md (refactorer, scanner, risk scorer, etc.) so the caller's model can execute it. |
 
 ### Install
 
