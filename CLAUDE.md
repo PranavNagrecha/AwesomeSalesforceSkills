@@ -179,6 +179,24 @@ Must:
 - prefer skill-local validators where they exist
 - avoid referencing nonexistent repo-level analysis scripts
 
+### Run-time agents (`/refactor-apex`, `/consolidate-triggers`, `/gen-tests`, `/optimize-soql`, `/scan-security`, `/analyze-flow`, `/plan-bulk-migration`, `/audit-lwc`, `/score-deployment`, `/build-agentforce-action`, `/detect-drift`)
+
+These are user-facing agents that USE the library to do real Salesforce work — they do not build the library.
+
+Must:
+- follow `agents/_shared/AGENT_CONTRACT.md` — the 8-section AGENT.md shape
+- read every skill / template / decision tree cited in Mandatory Reads before producing output
+- cite every skill id, template path, and decision-tree branch consulted in a Citations block
+- NEVER deploy to an org, NEVER mutate files outside the user-supplied paths
+- return a confidence score (HIGH/MEDIUM/LOW) and list ambiguities
+- recommend (but never auto-chain to) other run-time agents
+
+Must not:
+- freestyle Apex/LWC/Flow patterns when a template exists
+- recommend a technology without citing the matching decision-tree branch
+- print secrets in output (always `[REDACTED]`)
+- process more than one target per invocation
+
 ## Python Tooling Rules
 
 - Skill-local checker scripts in `skills/*/*/scripts/` remain stdlib-only unless explicitly documented otherwise.

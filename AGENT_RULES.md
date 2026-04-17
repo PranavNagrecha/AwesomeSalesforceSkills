@@ -191,6 +191,50 @@ handles. Retrieval fixtures (which skill gets picked) live separately in
 
 ---
 
+## Run-time Agents
+
+Two classes of agents live in `agents/`:
+
+1. **Build-time** — orchestrator, task-mapper, content-researcher, the 4
+   skill-builders, code-reviewer, validator, currency-monitor, org-assessor,
+   release-planner. These produce the library. Invoked by `/run-queue`.
+
+2. **Run-time** — apex-refactorer, trigger-consolidator, test-class-generator,
+   soql-optimizer, security-scanner, flow-analyzer, bulk-migration-planner,
+   lwc-auditor, deployment-risk-scorer, agentforce-builder, org-drift-detector.
+   These USE the library to do real Salesforce work. Invoked via the matching
+   `commands/<name>.md`, direct AGENT.md read, or the MCP `get_agent` tool.
+
+The single source of truth for what an AGENT.md must contain is
+`agents/_shared/AGENT_CONTRACT.md`. The full roster lives in
+`agents/_shared/RUNTIME_VS_BUILD.md`.
+
+**Rules for any agent (build-time or run-time):**
+
+- Every AGENT.md MUST have the 8 sections defined in `AGENT_CONTRACT.md`:
+  What This Agent Does, Invocation, Mandatory Reads Before Starting, Inputs,
+  Plan, Output Contract, Escalation / Refusal Rules, What This Agent Does NOT Do.
+- Every agent MUST list in "Mandatory Reads" the specific skill ids, templates,
+  and decision trees it consumes. "Follow the skills" is not sufficient.
+- Every run-time agent MUST return a Citations block enumerating every skill,
+  template, and decision-tree branch used. No citations = the agent ran blind.
+- No agent may bypass `standards/source-hierarchy.md` when skills disagree.
+- No run-time agent may write to an org, call `sf project deploy`, or mutate
+  files outside the paths the user supplied as input.
+- No agent may auto-chain to another agent. Recommending a follow-up in the
+  output is fine; silently invoking one is not.
+
+**Rules for the MCP server:**
+
+- `list_agents` and `get_agent` are the only two tools that expose agent
+  instructions. The MCP server never executes an agent — execution happens
+  in the caller's model.
+- Any new run-time agent added to `agents/` must also be added to the
+  `_RUNTIME_AGENTS` frozenset in `mcp/sfskills-mcp/src/sfskills_mcp/agents.py`
+  so it shows up as `kind: "runtime"` in `list_agents` output.
+
+---
+
 ## Retrieval Rules
 
 - Always use `python3 scripts/search_knowledge.py "<query>"` before claiming that a new skill does not already exist or that a topic has no local coverage.

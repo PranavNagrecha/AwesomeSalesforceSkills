@@ -1,7 +1,7 @@
-"""FastMCP server exposing SfSkills + live-org tools.
+"""FastMCP server exposing SfSkills + live-org + agent tools.
 
 Run with ``python -m sfskills_mcp`` (stdio transport). The server registers
-six tools:
+eight tools:
 
 - ``search_skill``
 - ``get_skill``
@@ -9,6 +9,8 @@ six tools:
 - ``list_custom_objects``
 - ``list_flows_on_object``
 - ``validate_against_org``
+- ``list_agents``
+- ``get_agent``
 
 Each tool returns JSON-serializable dicts. Errors are returned as fields on
 the response (``{"error": ...}``) rather than raised, so MCP clients can
@@ -21,11 +23,11 @@ from typing import Any
 
 from mcp.server.fastmcp import FastMCP
 
-from . import org, skills
+from . import agents, org, skills
 
 
 SERVER_INSTRUCTIONS = """\
-SfSkills — Salesforce skill library + live-org metadata over MCP.
+SfSkills — Salesforce skill library + live-org metadata + run-time agents over MCP.
 
 Use search_skill/get_skill to pull grounded Salesforce guidance from the
 SfSkills library (source-cited, versioned, role-tagged). Use describe_org,
@@ -33,6 +35,14 @@ list_custom_objects, list_flows_on_object, and validate_against_org to check
 those recommendations against the user's real Salesforce org before writing
 code. Prefer validate_against_org before scaffolding new Apex/Flow patterns
 to avoid duplicating an existing framework.
+
+For higher-level tasks (refactor this Apex class, consolidate triggers,
+generate tests, audit an LWC bundle, score a deployment, detect org drift,
+etc.), call list_agents to see available run-time agents and get_agent to
+fetch the instruction file. The agent's AGENT.md tells your model how to
+compose skills, templates, decision trees, and the live-org tools above
+into a deliverable output. The MCP server does not execute agents — your
+model does, with the instructions returned by get_agent.
 """
 
 
@@ -144,6 +154,32 @@ def build_server() -> FastMCP:
             target_org=target_org,
             object_name=object_name,
         )
+
+    @mcp.tool(
+        name="list_agents",
+        description=(
+            "List SfSkills run-time agents available to the caller. These are "
+            "instruction files (AGENT.md) that tell an LLM how to compose the "
+            "skill library, templates, decision-trees, and live-org tools into "
+            "a concrete deliverable (refactor, audit, migration plan, etc.). "
+            "Pass kind='runtime' for user-facing agents, kind='build' for the "
+            "skill-factory agents, or leave unset for all."
+        ),
+    )
+    def list_agents(kind: str | None = None) -> dict[str, Any]:
+        return agents.list_agents(kind=kind)
+
+    @mcp.tool(
+        name="get_agent",
+        description=(
+            "Fetch the full AGENT.md body for a named agent (e.g. "
+            "'apex-refactorer', 'security-scanner', 'deployment-risk-scorer'). "
+            "Returns the markdown instructions plus metadata. The caller's LLM "
+            "executes the agent; the MCP server only surfaces the instructions."
+        ),
+    )
+    def get_agent(agent_name: str) -> dict[str, Any]:
+        return agents.get_agent(agent_name=agent_name)
 
     return mcp
 
