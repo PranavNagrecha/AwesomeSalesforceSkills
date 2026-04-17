@@ -37,11 +37,22 @@ The existing 11 run-time agents are documented in their own `AGENT.md`. This fil
 - `standards/decision-trees/automation-selection.md`
 - `templates/flow/FaultPath_Template.md`, `templates/flow/Subflow_Pattern.md`
 
-### `workflow-and-pb-migrator`
+### `automation-migration-router` (Wave 3a)
+
+Replaces `workflow-rule-to-flow-migrator`, `process-builder-to-flow-migrator`,
+`approval-to-flow-orchestrator-migrator`, and `workflow-and-pb-migrator`
+(all now deprecated stubs). Skills cited per `source_type` dispatch in
+[`agents/_shared/harnesses/migration_router/decision_table.md`](./harnesses/migration_router/decision_table.md).
+
 - `flow/record-triggered-flow-patterns`, `flow/fault-handling`, `flow/flow-bulkification`
-- `admin/process-automation-selection`, `admin/flow-for-admins`
+- `flow/subflows-and-reusability`, `flow/auto-launched-flow-patterns`, `flow/scheduled-flows`
+- `flow/orchestration-flows` (for `approval_process` dispatch)
+- `admin/flow-for-admins`, `admin/approval-processes`
 - `apex/trigger-and-flow-coexistence`
 - `standards/decision-trees/automation-selection.md`
+- `templates/flow/RecordTriggered_Skeleton.flow-meta.xml`, `templates/flow/FaultPath_Template.md`, `templates/flow/Subflow_Pattern.md`
+
+### `workflow-and-pb-migrator` (deprecated — use `automation-migration-router`)
 
 ### `validation-rule-auditor`
 - `admin/validation-rules`, `admin/formula-fields`, `admin/picklist-field-integrity-issues`
@@ -75,10 +86,10 @@ The existing 11 run-time agents are documented in their own `AGENT.md`. This fil
 - `admin/record-types-and-page-layouts`, `admin/path-and-guidance`
 - `lwc/lwc-performance`
 
-### `approval-to-flow-orchestrator-migrator`
-- `admin/approval-processes`
-- `flow/orchestration-flows`
-- `standards/decision-trees/automation-selection.md`
+### `approval-to-flow-orchestrator-migrator` (deprecated — use `automation-migration-router`)
+
+Replaced by the router with `--source-type=approval_process`. Citations
+migrated into the router's consolidated entry above.
 
 ### `record-type-and-layout-auditor`
 - `admin/record-type-strategy-at-scale`, `admin/record-types-and-page-layouts`

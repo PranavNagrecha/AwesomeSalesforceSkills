@@ -1,8 +1,8 @@
-# /migrate-approval-to-orchestrator — LEGACY ALIAS (Wave 3a)
+# /migrate-pb-to-flow — LEGACY ALIAS (Wave 3a)
 
 > **Deprecation notice:** this command is now an alias. It invokes the
 > [`automation-migration-router`](../agents/automation-migration-router/AGENT.md)
-> with `--source-type=approval_process` and emits this deprecation notice.
+> with `--source-type=process_builder` and emits this deprecation notice.
 > Switch to the canonical `/migrate-automation` form at your convenience;
 > the alias ships until the removal window declared in `docs/MIGRATION.md`
 > (Wave 7).
@@ -10,26 +10,22 @@
 ## Canonical form
 
 ```
-/migrate-automation --source-type approval_process [--object <ApiName>] --target-org <alias>
+/migrate-automation --source-type process_builder --object <ApiName> --target-org <alias>
 ```
 
 ## Alias behavior
 
-Running `/migrate-approval-to-orchestrator <args>` is equivalent to:
+Running `/migrate-pb-to-flow <args>` is equivalent to:
 
 ```
-/migrate-automation --source-type approval_process <args>
+/migrate-automation --source-type process_builder <args>
 ```
 
-The approval-specific migration gate — deciding whether each approval
-process should become a Flow Orchestration, stay as-is, route to
-Agentforce, migrate with caveats, or retire — is preserved verbatim in
-the router's
+The PB-specific classification table (Criteria node → Decision, Update
+Records → before-save vs after-save, Launch a Flow → Subflow, etc.) is
+preserved verbatim in the router's
 [`decision_table.md`](../agents/_shared/harnesses/migration_router/decision_table.md)
-under the `approval_process` row. The canary-population parallel-run
-pattern (vs the shadow-field pattern used for Flow-target migrations)
-lives in
-[`phase_gates.md`](../agents/_shared/harnesses/migration_router/phase_gates.md).
+under the `process_builder` row.
 
 ## Why the change
 

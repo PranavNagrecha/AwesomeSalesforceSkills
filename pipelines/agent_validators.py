@@ -180,12 +180,20 @@ def _validate_sections(parse: AgentParse) -> list[ValidationIssue]:
     issues: list[ValidationIssue] = []
     headings_in_order = [heading for heading, _ in sorted(parse.sections.items(), key=lambda item: item[1][0])]
 
-    agent_class = parse.frontmatter.get("class", "runtime")
-    required = (
-        BUILD_REQUIRED_SECTIONS_IN_ORDER
-        if agent_class == "build"
-        else RUNTIME_REQUIRED_SECTIONS_IN_ORDER
-    )
+    # Deprecated agents are stubs pointing at their replacement. They don't
+    # execute, so the full 8-section runtime shape is noise — we only
+    # require `Plan` + `What This Agent Does NOT Do` so the stub still
+    # reads as a coherent AGENT.md. Wave 3a introduced this relaxation
+    # when four migrators collapsed into one router.
+    if parse.frontmatter.get("status") == "deprecated":
+        required = ("Plan", "What This Agent Does NOT Do")
+    else:
+        agent_class = parse.frontmatter.get("class", "runtime")
+        required = (
+            BUILD_REQUIRED_SECTIONS_IN_ORDER
+            if agent_class == "build"
+            else RUNTIME_REQUIRED_SECTIONS_IN_ORDER
+        )
 
     found_positions: list[int] = []
     for section in required:
