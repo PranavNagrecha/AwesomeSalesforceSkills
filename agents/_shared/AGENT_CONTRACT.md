@@ -24,9 +24,29 @@ Each agent lives at `agents/<agent-name>/AGENT.md` and MUST have these sections,
 3. **Mandatory Reads Before Starting** — the files and skills the agent MUST read first. Always includes `AGENT_RULES.md` + any domain-specific decision trees or templates.
 4. **Inputs** — structured list of what the agent needs from the caller (file paths, object names, target org alias, etc.). Ask for missing inputs up front; never guess.
 5. **Plan** — numbered steps. Each step cites the skill, template, or decision tree it relies on. Steps use MCP tools where the agent needs live-org data.
-6. **Output Contract** — exactly what the agent returns. Format (markdown report, generated files, PR-ready patch, etc.). Every run-time agent returns at minimum: a finding summary, a confidence score (HIGH/MEDIUM/LOW), and links to the skills/templates it used.
+6. **Output Contract** — exactly what the agent returns. Format (markdown report, generated files, PR-ready patch, etc.). Every run-time agent returns at minimum: a finding summary, a confidence score (HIGH/MEDIUM/LOW), a **Process Observations** block (see below), and links to the skills/templates it used.
 7. **Escalation / Refusal Rules** — conditions under which the agent stops and asks a human. At minimum: missing org connection when one is required, ambiguous inputs, contradicting skills (resolved per `standards/source-hierarchy.md`).
 8. **What This Agent Does NOT Do** — explicit non-goals. Prevents scope creep.
+
+### The Process Observations requirement
+
+Every run-time agent's Output Contract MUST include a **Process Observations** section, separate from the direct deliverable. This is the agent reporting back what it noticed *about the org and the process* while executing the task — the kind of peripheral signal a senior consultant captures in their head during a one-hour engagement but a junior admin walks past.
+
+Why this matters: we are not just building. We are building while analyzing. Every agent run is also a lightweight assessment of the org's health in the agent's domain. An admin asking "rename this field" should also learn "by the way, 12 fields on this object have never been populated" — because that's the formula a real architect runs in the background.
+
+Process Observations must include at minimum:
+
+- **What was healthy** — patterns the org already gets right that the agent noticed in passing.
+- **What was concerning** — issues the agent saw that weren't part of the direct ask but warrant attention.
+- **What was ambiguous** — things the agent couldn't resolve and the human should adjudicate.
+- **Suggested follow-up agents** — one or two other run-time agents that would deepen the analysis, with a one-sentence "because…".
+
+Rules:
+
+- Process Observations are observations, not accusations. "Noticed X" not "You did Y wrong."
+- Every observation cites what the agent was looking at when it made the call — a file path, an MCP probe result, a query count.
+- Do not inflate. If the agent genuinely observed nothing notable beyond the deliverable, say "nothing notable outside the direct finding." Empty honesty beats padded signal.
+- Process Observations do NOT cross the boundary into the deliverable. They enrich, they don't replace.
 
 ---
 
