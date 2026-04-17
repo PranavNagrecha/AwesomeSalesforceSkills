@@ -4,7 +4,7 @@ The universal Salesforce knowledge layer for AI coding assistants.
 
 Drop this into Claude Code, Cursor, Aider, Windsurf, or any AI tool and get role-accurate, source-grounded Salesforce guidance — for every role, every cloud, every task.
 
-**686 skills · shared Apex/LWC/Flow templates · golden evals · live-org MCP server.**
+**701 skills · shared Apex/LWC/Flow templates · golden evals · live-org MCP server.**
 1119+ skills planned across 5 roles × 16 clouds.
 
 ---
@@ -13,7 +13,7 @@ Drop this into Claude Code, Cursor, Aider, Windsurf, or any AI tool and get role
 
 Three layers that turn generic LLMs into Salesforce-literate agents:
 
-1. **Skills** (`skills/<domain>/<skill>/`) — 686 structured guides. Every skill carries source-grounded instructions, code examples, gotchas, WAF mapping, and a per-skill list of **LLM anti-patterns** the model must refuse to produce.
+1. **Skills** (`skills/<domain>/<skill>/`) — 701 structured guides. Every skill carries source-grounded instructions, code examples, gotchas, WAF mapping, and a per-skill list of **LLM anti-patterns** the model must refuse to produce.
 2. **Shared canon** — One set of reusable building blocks the skills all point at, so the AI never reinvents them:
    - `templates/` → TriggerHandler, ApplicationLogger, SecurityUtils, HttpClient, TestDataFactory, LWC skeleton, Flow fault paths, Agentforce actions.
    - `standards/decision-trees/` → Routing for automation, async, integration, and sharing decisions — agents consult these **before** writing code.
@@ -392,7 +392,7 @@ Every claim in every skill is grounded against a 4-tier trust ladder. When sourc
 
 **Shipped in v1:**
 
-- [x] 686 skills across Admin, Apex, LWC, Flow, OmniStudio, Agentforce, Security, Integration, Data, Architect, DevOps
+- [x] 701 skills across Admin, Apex, LWC, Flow, OmniStudio, Agentforce, Security, Integration, Data, Architect, DevOps
 - [x] Shared templates (Apex handler framework, logger, security utils, HTTP client, test factories, LWC skeleton, Flow fault paths, Agentforce action shell)
 - [x] Decision trees for automation, async, integration, and sharing selection
 - [x] Golden evals for 10 flagship skills (30 P0 cases)
@@ -431,7 +431,7 @@ Fifteen tools, all read-only:
 
 | Tool                       | What it does                                                                    |
 | -------------------------- | ------------------------------------------------------------------------------- |
-| `search_skill`             | Lexical search over the 686+ SfSkills corpus with optional domain filter.       |
+| `search_skill`             | Lexical search over the 700+ SfSkills corpus with optional domain filter.       |
 | `get_skill`                | Full SKILL.md + registry metadata for a given skill id.                         |
 | `describe_org`             | `sf org display` summary (org id, instance, edition, sandbox/scratch flags).    |
 | `list_custom_objects`      | Custom sObjects in the target org with optional substring filter.               |
