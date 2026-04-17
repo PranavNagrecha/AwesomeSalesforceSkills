@@ -4595,6 +4595,42 @@
       "domain": "flow",
       "expected_skill": "flow/flow-invocable-from-apex",
       "top_k": 3
+    },
+    {
+      "query": "agentforce multi turn conversation session variables",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/agentforce-multi-turn-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "agent topic handoff cross-topic identity verification",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/agentforce-multi-turn-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "agentforce tool selection apex vs flow vs external service",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/agentforce-tool-use-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "agent action description llm discriminating USE WHEN",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/agentforce-tool-use-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "agentforce eval harness regression baseline rubric",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/agentforce-eval-harness",
+      "top_k": 3
+    },
+    {
+      "query": "agent llm-as-judge calibration fixture format",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/agentforce-eval-harness",
+      "top_k": 3
     }
   ]
 }

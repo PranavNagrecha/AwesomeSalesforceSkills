@@ -4,19 +4,19 @@
     "cursor",
     "mcp"
   ],
-  "generated_at": "2026-04-17T14:17:13Z",
+  "generated_at": "2026-04-17T14:37:43Z",
   "schema_version": 1,
   "targets": {
     "aider": {
-      "overall_hash": "sha256:8705c85a754ae7619e3fe1c23e024423c93a8d55b6e83b38e315d36f776197da",
+      "overall_hash": "sha256:f9e065037c305523968ecceec8864adf0a49c3946651172a07374f040722fbb4",
       "skill_count": 1,
       "skills": {
-        "CONVENTIONS.md": "sha256:44091bef752103340cc38991391943092200bafd0e1a8704a608c711e21cdaa4"
+        "CONVENTIONS.md": "sha256:140c49a27000f676ffb1aa4b90bc18713e378a8d8ba33ac7b8ba8cb20647e5d1"
       }
     },
     "augment": {
-      "overall_hash": "sha256:7d75f9838914ba9374afdd54f819bc6e9bcdf42bbeaed3325f52a1f42f345f85",
-      "skill_count": 693,
+      "overall_hash": "sha256:3c5e31a9d74902bcd2b16d4c47567cebdbabc1a5408a96d7cfa82f0f5899dbb8",
+      "skill_count": 696,
       "skills": {
         "admin/agent-conversation-design": "sha256:44cb058d8d94c6e07f82b0b0fd6c113c834488fd0603fc3384606e72a4fa8ffc",
         "admin/ai-adoption-change-management": "sha256:36485a25ae84e0c7d3c0f5f5f89e0f0d9998ae69b4663f03490816210fb123de",
@@ -225,12 +225,15 @@
         "agentforce/agent-topic-design": "sha256:c1a6fdc7a275a4e8db8c5c6bb5105024640e35579a3392ddea526bb09f8fdb97",
         "agentforce/agentforce-agent-creation": "sha256:777a1ceecf8d224b0c9a6d2ce7657ad36d91af628819a7e0f84576311537029e",
         "agentforce/agentforce-custom-channel-dev": "sha256:9ad7126a53dfb513e532ffa5361d47ebca3cb472980dd08e9c95ed8eed16cc6b",
+        "agentforce/agentforce-eval-harness": "sha256:b8586c42137a849be40fa973379a5cebf08dab43b7455ada401cc9b558a941e8",
         "agentforce/agentforce-guardrails": "sha256:99e824a5b4cd56413b8298b0dde307b41fed74ff4cb09cbab713d3a4209d34e9",
         "agentforce/agentforce-in-slack": "sha256:d86173bc9b12e6bd9da9522830e5aeadebda40edd8fb4c80fcaeca10e86e7a58",
+        "agentforce/agentforce-multi-turn-patterns": "sha256:a07c0d5b1f7dd8fdfbc1fe09f4b6088ffbe2e77e37eccb25d3b101e810ee9e1d",
         "agentforce/agentforce-observability": "sha256:9b91f064251603787fe8448389d25d0361bcb7ff42d8ef4cb21f14b2f01eb83d",
         "agentforce/agentforce-persona-design": "sha256:0b7c0e45ef7d6a40026b4d84168250366af6c7f92ac8fe8066bd8fbcadd5c2c8",
         "agentforce/agentforce-sales-ai-setup": "sha256:2c16fb90dfd68b506c62d124114290753496d9d2e23582565666230b3a887a57",
         "agentforce/agentforce-service-ai-setup": "sha256:aaa93894b3843d572698ca17fc1352097c348c6af7e98b4c764384e7ab9fe252",
+        "agentforce/agentforce-tool-use-patterns": "sha256:e6bdba31d2ee26f5dd632a3c3064ebde6e22681d958016dc6b159a93a231bfba",
         "agentforce/custom-agent-actions-apex": "sha256:dd42ff63c24a723c6a1fdcc8d2d60f7b533567963952788c13f5b571662f8dbd",
         "agentforce/data-cloud-vector-search-dev": "sha256:595e6236dc307f8b1719aea5cdbcd4a0af7451130b34f6035278dff146a635a9",
         "agentforce/einstein-bots-to-agentforce-migration": "sha256:200493092775db723e6b9540c4bd3580c45905d7e766432cf123f495e35a3eaf",
@@ -714,8 +717,8 @@
       }
     },
     "claude": {
-      "overall_hash": "sha256:135584f9700d209f0ee2e09b75e30f282ef5247e130f84a70d00bdf8dadc72a1",
-      "skill_count": 693,
+      "overall_hash": "sha256:e6033ad9e750b536e0e078b324f8f490d82a3f450937b55208a71377129f53f0",
+      "skill_count": 696,
       "skills": {
         "admin/agent-conversation-design": "sha256:97e62ae3c713d44e243cb505d23e6d66d0f9452826c4c6232eabf2d01d678ae6",
         "admin/ai-adoption-change-management": "sha256:56ef2ef1bf54bd8236c2774406dc407ff7536fb20ac36b3d5f79471c432c5eca",
@@ -924,12 +927,15 @@
         "agentforce/agent-topic-design": "sha256:84a2afd4ad4d9409ed744c7eac7a237e7b90df2dbeeda911f107fd17670bed2d",
         "agentforce/agentforce-agent-creation": "sha256:0623bdde5af91af9e7177265c8acaead9051956a40a759bfdb8be0ad88767ca5",
         "agentforce/agentforce-custom-channel-dev": "sha256:b64a1bba8c56db65109eccb200ee4a04cf45ec6b795a4cdde53c70cff0103c63",
+        "agentforce/agentforce-eval-harness": "sha256:cbc152713c90641e389aa2fa1c959d872345751c033bd89ae06ea8ab63af4913",
         "agentforce/agentforce-guardrails": "sha256:39679d64cbe6776d7cdacd48b2b299aef4ee04e87f5bf6327f1050cf31f9629f",
         "agentforce/agentforce-in-slack": "sha256:65974d165fd8ff853ed8823445c2e65caf02586adec4e0a3f9e8f11d9b06a08a",
+        "agentforce/agentforce-multi-turn-patterns": "sha256:3545b5b0c8052e281d244f54ef580f1c3b11acb9cb85030cf2ca6594a8c52589",
         "agentforce/agentforce-observability": "sha256:70d87cdf4a4d9153118a2435d8db358dd7b082ca9cbf4587d79b284d12333abe",
         "agentforce/agentforce-persona-design": "sha256:6b350ba30d9e3bc10bc4d870a408f0b68e1bd0a6275962d585414f86e43b8ce2",
         "agentforce/agentforce-sales-ai-setup": "sha256:521d50b69bc87817d806113826cdde4a7b01d7b3c31a4dbe033ec85995af36f6",
         "agentforce/agentforce-service-ai-setup": "sha256:7cf57e36415283fbc69b2ee7e74efd88994e1b9617365efa3e078f96832a1c0b",
+        "agentforce/agentforce-tool-use-patterns": "sha256:5e9af143da0050b2774c5f067400da2792d7cb018e6cb2d6d67f19d291c521b5",
         "agentforce/custom-agent-actions-apex": "sha256:8ba2fcc4aefdd4c95b72d2415456b943ce9663da8a5ee993490f0b4f01c41313",
         "agentforce/data-cloud-vector-search-dev": "sha256:195286b48702ec29975bdd57b8b401c423018ebeba41619cc0d63d713a082f64",
         "agentforce/einstein-bots-to-agentforce-migration": "sha256:d5734c964ab7630aa7ad8c51e5fc130b7944e981cb5c0588ef2205ebccdbeb47",
@@ -1413,8 +1419,8 @@
       }
     },
     "cursor": {
-      "overall_hash": "sha256:c618b73a2e11552c4bd88b053ca350e813c99c21b83435c1bb71d28149efaf85",
-      "skill_count": 693,
+      "overall_hash": "sha256:2a6738457057539d67769743ab76e9758f1708f5e9e4f1bd9bc36c776f24daf2",
+      "skill_count": 696,
       "skills": {
         "admin/agent-conversation-design": "sha256:968c5453ac99b06ee0131052ed77de5241a2ac751e17a5248832d3f8458af1c1",
         "admin/ai-adoption-change-management": "sha256:2ccc49b3de10f7380f11dfa5374de5f3d7c6215fd66fa556293550f530070602",
@@ -1623,12 +1629,15 @@
         "agentforce/agent-topic-design": "sha256:75ac35be310129ed7a6314758951cb664b5d9c82712aca8635d2ed3ac3854fe7",
         "agentforce/agentforce-agent-creation": "sha256:ed1f88bec2e14ca81b54d2bee85da307bc3ddb1d83da46aed19de03e0ce0bfa9",
         "agentforce/agentforce-custom-channel-dev": "sha256:124a63a00f9b81486de636aff70ce7bf204b222919b51a9d1ac9dc0eec19b09e",
+        "agentforce/agentforce-eval-harness": "sha256:e1148eefc77a9bdf52fa0eef7b55e56aa3072362de33e0024490bd29dfe14f0b",
         "agentforce/agentforce-guardrails": "sha256:c5da59fd2a9ef7ae26dfe84179812bd487788f4f4de926cbcf36334b9670f284",
         "agentforce/agentforce-in-slack": "sha256:767d65dd0fda6a57f9e7397d370d296d13fa1e20a645cfaea62a6f7612dfdb51",
+        "agentforce/agentforce-multi-turn-patterns": "sha256:1ec74f5db8f3616fdbe5784454fffebbf3008d8d165777233e462b97df24de66",
         "agentforce/agentforce-observability": "sha256:f9f13309173236aed0374ca6c010e97d2f84d84c6a219ab0165e2f09b03af2e3",
         "agentforce/agentforce-persona-design": "sha256:58776cfc4c4a40bdee9281968840f23c99fb476098991ebd6f440268f8476015",
         "agentforce/agentforce-sales-ai-setup": "sha256:46c7a5a2b5304b75087268b7510874ce56ca45990fdbb3c3feca706630bc97ba",
         "agentforce/agentforce-service-ai-setup": "sha256:d601e207be475cbf1cf29d2e66b96288c047166578f53cb520b2593b96a5505d",
+        "agentforce/agentforce-tool-use-patterns": "sha256:101acfa23179d4c5f22cf6a8642c01ff4633ce91d3c82f373288eae884a182e2",
         "agentforce/custom-agent-actions-apex": "sha256:b3486f2c77f5bce1090b6b7ce8f9d8e0aee64cd5706b5c74b939f1f42c6222a9",
         "agentforce/data-cloud-vector-search-dev": "sha256:259680e8730fe1a485cc56714166f056ace946905a93168c78536972df767a83",
         "agentforce/einstein-bots-to-agentforce-migration": "sha256:b496dabe7d94aa467ca23b2cc90fe6f4ead80d21b7e0faa67fff460eb94744f1",
@@ -2112,8 +2121,8 @@
       }
     },
     "mcp": {
-      "overall_hash": "sha256:135584f9700d209f0ee2e09b75e30f282ef5247e130f84a70d00bdf8dadc72a1",
-      "skill_count": 693,
+      "overall_hash": "sha256:e6033ad9e750b536e0e078b324f8f490d82a3f450937b55208a71377129f53f0",
+      "skill_count": 696,
       "skills": {
         "admin/agent-conversation-design": "sha256:97e62ae3c713d44e243cb505d23e6d66d0f9452826c4c6232eabf2d01d678ae6",
         "admin/ai-adoption-change-management": "sha256:56ef2ef1bf54bd8236c2774406dc407ff7536fb20ac36b3d5f79471c432c5eca",
@@ -2322,12 +2331,15 @@
         "agentforce/agent-topic-design": "sha256:84a2afd4ad4d9409ed744c7eac7a237e7b90df2dbeeda911f107fd17670bed2d",
         "agentforce/agentforce-agent-creation": "sha256:0623bdde5af91af9e7177265c8acaead9051956a40a759bfdb8be0ad88767ca5",
         "agentforce/agentforce-custom-channel-dev": "sha256:b64a1bba8c56db65109eccb200ee4a04cf45ec6b795a4cdde53c70cff0103c63",
+        "agentforce/agentforce-eval-harness": "sha256:cbc152713c90641e389aa2fa1c959d872345751c033bd89ae06ea8ab63af4913",
         "agentforce/agentforce-guardrails": "sha256:39679d64cbe6776d7cdacd48b2b299aef4ee04e87f5bf6327f1050cf31f9629f",
         "agentforce/agentforce-in-slack": "sha256:65974d165fd8ff853ed8823445c2e65caf02586adec4e0a3f9e8f11d9b06a08a",
+        "agentforce/agentforce-multi-turn-patterns": "sha256:3545b5b0c8052e281d244f54ef580f1c3b11acb9cb85030cf2ca6594a8c52589",
         "agentforce/agentforce-observability": "sha256:70d87cdf4a4d9153118a2435d8db358dd7b082ca9cbf4587d79b284d12333abe",
         "agentforce/agentforce-persona-design": "sha256:6b350ba30d9e3bc10bc4d870a408f0b68e1bd0a6275962d585414f86e43b8ce2",
         "agentforce/agentforce-sales-ai-setup": "sha256:521d50b69bc87817d806113826cdde4a7b01d7b3c31a4dbe033ec85995af36f6",
         "agentforce/agentforce-service-ai-setup": "sha256:7cf57e36415283fbc69b2ee7e74efd88994e1b9617365efa3e078f96832a1c0b",
+        "agentforce/agentforce-tool-use-patterns": "sha256:5e9af143da0050b2774c5f067400da2792d7cb018e6cb2d6d67f19d291c521b5",
         "agentforce/custom-agent-actions-apex": "sha256:8ba2fcc4aefdd4c95b72d2415456b943ce9663da8a5ee993490f0b4f01c41313",
         "agentforce/data-cloud-vector-search-dev": "sha256:195286b48702ec29975bdd57b8b401c423018ebeba41619cc0d63d713a082f64",
         "agentforce/einstein-bots-to-agentforce-migration": "sha256:d5734c964ab7630aa7ad8c51e5fc130b7944e981cb5c0588ef2205ebccdbeb47",
@@ -2811,8 +2823,8 @@
       }
     },
     "windsurf": {
-      "overall_hash": "sha256:919c7f13253bc3935090fb3f12db970ab78d2e671c6194dc22ca549fdabfd2da",
-      "skill_count": 693,
+      "overall_hash": "sha256:750969535fe9bcd09a0e19a33f15e763e137e7cbf1175140984f66e8625ac655",
+      "skill_count": 696,
       "skills": {
         "admin/agent-conversation-design": "sha256:9890e3826d897e2598a1d21a81bf6b79d9c4f1e1178df87dc355cf97674cf891",
         "admin/ai-adoption-change-management": "sha256:722b39f4f4b79c0240be386eb96af46eab40899be962ee472a327e2c8e589e65",
@@ -3021,12 +3033,15 @@
         "agentforce/agent-topic-design": "sha256:c67a4066956670406841b2384037934b80383e6bf8dbc200c42360802c349761",
         "agentforce/agentforce-agent-creation": "sha256:ae1675bc405f024041f3dc4dadfc3fc70ec968cf3c4021d6d338ec965de1337c",
         "agentforce/agentforce-custom-channel-dev": "sha256:8103c002408638a1ebe6d3ccba10180655990abc3b83f87258f803d5a216cd0c",
+        "agentforce/agentforce-eval-harness": "sha256:c9f89d2875207cc353a4c1cd19ac213449363ff11dcd0dab9eb61ed1c3d2f0d9",
         "agentforce/agentforce-guardrails": "sha256:8bdf80bd3a6ee19b46e339a7f9ba826143c695469aa2970c86d4e769f932b23e",
         "agentforce/agentforce-in-slack": "sha256:2184ba3a415d840d2c2c062068ab67fae942bb28b9fd7aab21b78948929c6a37",
+        "agentforce/agentforce-multi-turn-patterns": "sha256:32370357e6ae41e4659d9bbd17a481b3f82f0e820522a21d8f1e22fc7c93f415",
         "agentforce/agentforce-observability": "sha256:761d991e021544ae22c9bebaf4970336e19b9fb1c4e67c3b607e975adad6646d",
         "agentforce/agentforce-persona-design": "sha256:1d8ff20c049ee3924ea723226a5622b69f8511eeaf426dae624b6c75f8adc4ea",
         "agentforce/agentforce-sales-ai-setup": "sha256:0b1a118222bf6d354324e35e3b75affadb2ee16532db9a911f145d18f057ff86",
         "agentforce/agentforce-service-ai-setup": "sha256:c20605cbf84f7bab29ee8670e922d7d33c29420770ae5bbe9a8e6f48b854edb0",
+        "agentforce/agentforce-tool-use-patterns": "sha256:aba7275451d9259a3aaef4efac4718f2b3c355882e64c75ac7e3c77e11632341",
         "agentforce/custom-agent-actions-apex": "sha256:81b80646ad2758a496302b5d9e6f79907e131f31909add852d6f767bbbc78289",
         "agentforce/data-cloud-vector-search-dev": "sha256:8f5bee7abec6c804e71b1ab6225623f0da1ce27991960b7275b1921c3f0b1421",
         "agentforce/einstein-bots-to-agentforce-migration": "sha256:39999640f9e43e4288cc6c428f8dc80e1fa92b9579424fe7528500d822ace5cb",
