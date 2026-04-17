@@ -1,94 +1,56 @@
 ---
 id: record-type-and-layout-auditor
 class: runtime
-version: 1.0.0
-status: stable
-requires_org: true
+version: 1.1.0
+status: deprecated
+requires_org: false
 modes: [single]
 owner: sfskills-core
 created: 2026-04-16
-updated: 2026-04-16
+updated: 2026-04-17
+deprecated_in_favor_of: audit-router
 ---
-# Record Type & Layout Auditor Agent
+# Record Type & Layout Auditor — DEPRECATED (Wave 3b-1)
 
-## What This Agent Does
+Replaced by [`audit-router`](../audit-router/AGENT.md) with `--domain=record_type_layout`.
 
-Audits the Record Type + Page Layout surface on a target sObject: record-type count vs persona count, page-layout assignment coverage, picklist value set per record type, master-default-record-type drift, and the relationship between record types and Lightning Record Pages. Identifies the three common failure patterns: record-type proliferation, Master Layout as primary, and orphan record types.
+## Why this changed
 
-**Scope:** One sObject per invocation.
+Wave 3b-1 consolidated 5 auditors into one router backed by the
+[`audit_harness`](../_shared/harnesses/audit_harness/README.md). See the
+router's README for the rationale and
+[`classifiers/record_type_layout.md`](../_shared/harnesses/audit_harness/classifiers/record_type_layout.md)
+for the per-domain rule table.
 
----
+## What replaces this agent
 
-## Invocation
+Run the router:
 
-- **Direct read** — "Follow `agents/record-type-and-layout-auditor/AGENT.md` for Case"
-- **Slash command** — [`/audit-record-types`](../../commands/audit-record-types.md)
-- **MCP** — `get_agent("record-type-and-layout-auditor")`
+```
+/audit-router --domain record_type_layout --object <ApiName> --target-org <alias>
+```
 
----
+Legacy alias: `/audit-record-types` invokes the router with
+`--domain=record_type_layout` plus a one-line deprecation notice. Aliases
+ship until the removal window declared in `docs/MIGRATION.md` (Wave 7).
 
-## Mandatory Reads Before Starting
+The full RT + Layout rule set (proliferation, Master Layout as primary,
+orphan RTs, inactive RT still referenced by flows or VRs, picklist-value
+divergence across RTs, missing Lightning Record Pages for persona RTs,
+inactive Business Process attachments) is preserved verbatim in the
+classifier. Every rule has a stable domain-scoped finding code
+(`RT_PROLIFERATION`, `RT_ORPHAN`, `RT_INACTIVE_REFERENCED`, etc.).
 
-1. `agents/_shared/AGENT_CONTRACT.md`
-2. `AGENT_RULES.md`
-3. `skills/admin/record-type-strategy-at-scale`
-4. `skills/admin/record-types-and-page-layouts`
-5. `skills/admin/picklist-and-value-sets`
-6. `skills/admin/picklist-field-integrity-issues`
+## Removal timeline
 
----
-
-## Inputs
-
-| Input | Required | Example |
-|---|---|---|
-| `object_name` | yes | `Case` |
-| `target_org_alias` | yes |
-
----
+This stub stays in the repo for two minor versions after the Wave-3b-1
+commit. After that it is removed; the `docs/MIGRATION.md` table (Wave 7)
+records the mapping permanently.
 
 ## Plan
 
-1. **Inventory record types** — `list_record_types(object_name)`. Fetch each record type's metadata via `tooling_query("SELECT Id, DeveloperName, Metadata FROM RecordType WHERE Id = '<id>'")` to read business process + picklist value mappings.
-2. **Inventory page layouts** — `tooling_query("SELECT Id, Name, SobjectType, LayoutType, CreatedDate, LastModifiedDate FROM Layout WHERE EntityDefinition.QualifiedApiName = '<object>'")` (via Tooling).
-3. **Inventory assignments** — profile/PS → RT → Layout map. Use `tooling_query` on `ProfileLayout` / `PermissionSetAssignmentFieldLevelSecurity` equivalents; fall back to the `--metadata Profile` export if Tooling API lacks coverage.
-4. **Score against patterns:**
-   - **Record-type count > 6** on a single object → P1 (record-type proliferation). Cite `skills/admin/record-type-strategy-at-scale`.
-   - **Master Layout as primary assignment** for any active persona → P1.
-   - **Orphan record type** (no active users assigned) → P1.
-   - **Inactive record type still referenced by active flows/VRs** → P0.
-   - **Description blank** on any RT → P2.
-   - **Picklist value sets diverge widely across RTs on the same field** → P2 (consider GVS with record-type filter).
-5. **Lightning Record Page ↔ RT mapping** — `tooling_query` on `FlexiPageRegionAssignment` and `ProfilePageAssignment`. Record types without a dedicated LRP default to a generic page — P2 if the RT is persona-specific.
-6. **Emit findings + remediation suggestions.**
-
----
-
-## Output Contract
-
-1. **Summary** — object, RT count, layout count, max severity, confidence.
-2. **Record type table** — each RT with layout, active user count, LRP assignment, description quality.
-3. **Findings** — sorted by severity with evidence.
-4. **Remediation suggestions** — consolidation candidates (RTs that could merge), deprecation candidates (orphan RTs), rename candidates (naming drift).
-5. **Process Observations**:
-   - **What was healthy** — Master Layout not in active rotation, RTs named per convention.
-   - **What was concerning** — RT proliferation over time (compare CreatedDate clustering), RTs whose Business Process points at an inactive sales/service process.
-   - **What was ambiguous** — RTs shared across Record Types (implicit inheritance via relationships).
-   - **Suggested follow-up agents** — `lightning-record-page-auditor` (for the page-layer audit), `picklist-governor` (if picklist drift is the main story).
-6. **Citations**.
-
----
-
-## Escalation / Refusal Rules
-
-- Object has > 20 record types → sample top 8 by assignment volume; flag count as P1.
-- Inactive RT referenced by active flows → P0 escalation, recommend `flow-analyzer` before any further change.
-
----
+Deprecated — no longer executable. Route to the router.
 
 ## What This Agent Does NOT Do
 
-- Does not activate/deactivate record types.
-- Does not modify layouts or LRPs.
-- Does not redesign picklist values (that's `picklist-governor`).
-- Does not auto-chain.
+Anything — it's deprecated. Use the router.

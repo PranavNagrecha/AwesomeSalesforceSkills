@@ -1,35 +1,39 @@
-# /audit-record-types — Audit Record Types + Page Layouts
+# /audit-record-types — LEGACY ALIAS (Wave 3b-1)
 
-Wraps [`agents/record-type-and-layout-auditor/AGENT.md`](../agents/record-type-and-layout-auditor/AGENT.md). Identifies record-type proliferation, Master Layout as primary, orphan RTs, and LRP mapping gaps.
+> **Deprecation notice:** this command is now an alias. It invokes the
+> [`audit-router`](../agents/audit-router/AGENT.md) with
+> `--domain=record_type_layout` and emits this deprecation notice. Switch
+> to the canonical `/audit-router` form at your convenience; the alias
+> ships until the removal window declared in `docs/MIGRATION.md` (Wave 7).
 
----
-
-## Step 1 — Collect inputs
+## Canonical form
 
 ```
-1. Object API name?
-2. Target org alias?
+/audit-router --domain record_type_layout --object <ApiName> --target-org <alias>
 ```
 
-## Step 2 — Load the agent
+## Alias behavior
 
-Read `agents/record-type-and-layout-auditor/AGENT.md` + mandatory reads.
+Running `/audit-record-types <args>` is equivalent to:
 
-## Step 3 — Execute the plan
+```
+/audit-router --domain record_type_layout <args>
+```
 
-Inventory RTs + layouts + assignments, score against patterns, LRP mapping check, emit findings + remediation.
+The RT + Layout rule table (proliferation, Master Layout as primary,
+orphan RTs, inactive RT still referenced by flows or VRs, Lightning
+Record Page mapping gaps, Business Process attachments) is preserved
+verbatim in
+[`classifiers/record_type_layout.md`](../agents/_shared/harnesses/audit_harness/classifiers/record_type_layout.md).
 
-## Step 4 — Deliver the output
+## Why the change
 
-Summary, record type table, findings table, remediation suggestions, Process Observations, citations.
+Wave 3b-1 of the redesign consolidated 5 auditors into one router.
+See [`agents/_shared/harnesses/audit_harness/README.md`](../agents/_shared/harnesses/audit_harness/README.md)
+for the rationale.
 
-## Step 5 — Recommend follow-ups
+## See also
 
-- `/audit-record-page` for the Lightning Record Page layer
-- `/govern-picklists` if picklist drift is the main story
-
-## What this command does NOT do
-
-- Does not activate/deactivate record types.
-- Does not modify layouts or LRPs.
-- Does not redesign picklist values.
+- [`/audit-router`](./audit-router.md) — canonical router entry point
+- [`agents/audit-router/AGENT.md`](../agents/audit-router/AGENT.md) — router contract
+- [`docs/MIGRATION.md`](../docs/MIGRATION.md) — removal timeline (authored in Wave 7)

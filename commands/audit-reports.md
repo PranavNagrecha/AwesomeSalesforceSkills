@@ -1,35 +1,39 @@
-# /audit-reports — Audit reports and dashboards for a folder or org
+# /audit-reports — LEGACY ALIAS (Wave 3b-1)
 
-Wraps [`agents/report-and-dashboard-auditor/AGENT.md`](../agents/report-and-dashboard-auditor/AGENT.md). Flags stale reports, unfiltered wide scans, dashboard running-user leakage, subscription abuse, folder sprawl.
+> **Deprecation notice:** this command is now an alias. It invokes the
+> [`audit-router`](../agents/audit-router/AGENT.md) with
+> `--domain=report_dashboard` and emits this deprecation notice. Switch to
+> the canonical `/audit-router` form at your convenience; the alias ships
+> until the removal window declared in `docs/MIGRATION.md` (Wave 7).
 
----
-
-## Step 1 — Collect inputs
+## Canonical form
 
 ```
-1. Scope?  folder:<DeveloperName>  OR  org
-2. Target org alias?
+/audit-router --domain report_dashboard --target-org <alias> [--folder-filter <FolderName>]
 ```
 
-## Step 2 — Load the agent
+## Alias behavior
 
-Read `agents/report-and-dashboard-auditor/AGENT.md` + mandatory reads.
+Running `/audit-reports <args>` is equivalent to:
 
-## Step 3 — Execute the plan
+```
+/audit-router --domain report_dashboard <args>
+```
 
-Inventory reports + dashboards + folders + subscriptions, score each, folder sprawl analysis, emit findings + cleanup.
+The analytics rule table (stale reports, orphan folder owners, dashboard
+running-user posture including Modify-All-Data, folder oversharing with
+PII, tabular-over-limit, shadow copies, undocumented reports) is preserved
+verbatim in
+[`classifiers/report_dashboard.md`](../agents/_shared/harnesses/audit_harness/classifiers/report_dashboard.md).
 
-## Step 4 — Deliver the output
+## Why the change
 
-Summary, per-report findings, per-dashboard findings, folder-sprawl analysis, cleanup suggestions, Process Observations, citations.
+Wave 3b-1 of the redesign consolidated 5 auditors into one router.
+See [`agents/_shared/harnesses/audit_harness/README.md`](../agents/_shared/harnesses/audit_harness/README.md)
+for the rationale.
 
-## Step 5 — Recommend follow-ups
+## See also
 
-- `/audit-sharing` if dashboard running-user leakage is the main story
-- `/analyze-field-impact` before deleting fields used only by stale reports
-
-## What this command does NOT do
-
-- Does not delete or modify reports/dashboards/folders.
-- Does not change subscription recipients.
-- Does not build new reports.
+- [`/audit-router`](./audit-router.md) — canonical router entry point
+- [`agents/audit-router/AGENT.md`](../agents/audit-router/AGENT.md) — router contract
+- [`docs/MIGRATION.md`](../docs/MIGRATION.md) — removal timeline (authored in Wave 7)

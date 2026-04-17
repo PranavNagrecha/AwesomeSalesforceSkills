@@ -1,36 +1,38 @@
-# /govern-picklists — Govern picklist hygiene on an sObject (or org)
+# /govern-picklists — LEGACY ALIAS (Wave 3b-1)
 
-Wraps [`agents/picklist-governor/AGENT.md`](../agents/picklist-governor/AGENT.md). GVS adoption, inactive-value drift, translation coverage, dependent-picklist chains, integration-usage probe.
+> **Deprecation notice:** this command is now an alias. It invokes the
+> [`audit-router`](../agents/audit-router/AGENT.md) with `--domain=picklist`
+> and emits this deprecation notice. Switch to the canonical `/audit-router`
+> form at your convenience; the alias ships until the removal window
+> declared in `docs/MIGRATION.md` (Wave 7).
 
----
-
-## Step 1 — Collect inputs
+## Canonical form
 
 ```
-1. Scope?  object:<ApiName>  OR  org
-2. Target org alias?
-3. Include inactive values? yes (default) / no
+/audit-router --domain picklist --scope <object:<Name>|org> --target-org <alias>
 ```
 
-## Step 2 — Load the agent
+## Alias behavior
 
-Read `agents/picklist-governor/AGENT.md` + mandatory reads.
+Running `/govern-picklists <args>` is equivalent to:
 
-## Step 3 — Execute the plan
+```
+/audit-router --domain picklist <args>
+```
 
-Inventory picklists + GVS, score each, usage probe, emit consolidation plan.
+The picklist-specific rule table (GVS adoption, restricted-flag, inactive-
+value drift, translation coverage, dependent-picklist chains, integration-
+usage heuristic) is preserved verbatim in
+[`classifiers/picklist.md`](../agents/_shared/harnesses/audit_harness/classifiers/picklist.md).
 
-## Step 4 — Deliver the output
+## Why the change
 
-Summary, per-picklist findings, dependency graph, consolidation plan, Process Observations, citations.
+Wave 3b-1 of the redesign consolidated 5 auditors into one router.
+See [`agents/_shared/harnesses/audit_harness/README.md`](../agents/_shared/harnesses/audit_harness/README.md)
+for the rationale.
 
-## Step 5 — Recommend follow-ups
+## See also
 
-- `/audit-record-types` if RT-level picklist filtering is implicated
-- `/analyze-field-impact` for any picklist whose values drive downstream integrations
-
-## What this command does NOT do
-
-- Does not modify picklist values in the org.
-- Does not deploy GVS migrations.
-- Does not clean data rows with invalid picklist values.
+- [`/audit-router`](./audit-router.md) — canonical router entry point
+- [`agents/audit-router/AGENT.md`](../agents/audit-router/AGENT.md) — router contract
+- [`docs/MIGRATION.md`](../docs/MIGRATION.md) — removal timeline (authored in Wave 7)

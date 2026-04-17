@@ -1,29 +1,32 @@
-# /audit-validation-rules — LEGACY ALIAS (Wave 3b-1)
+# /audit-approvals — LEGACY ALIAS (Wave 3b-1)
 
 > **Deprecation notice:** this command is now an alias. It invokes the
 > [`audit-router`](../agents/audit-router/AGENT.md) with
-> `--domain=validation_rule` and emits this deprecation notice. Switch to
+> `--domain=approval_process` and emits this deprecation notice. Switch to
 > the canonical `/audit-router` form at your convenience; the alias ships
 > until the removal window declared in `docs/MIGRATION.md` (Wave 7).
 
 ## Canonical form
 
 ```
-/audit-router --domain validation_rule --object <ApiName> --target-org <alias>
+/audit-router --domain approval_process --audit-scope <org|object:<Name>|process:<Name>> --target-org <alias>
 ```
 
 ## Alias behavior
 
-Running `/audit-validation-rules <args>` is equivalent to:
+Running `/audit-approvals <args>` is equivalent to:
 
 ```
-/audit-router --domain validation_rule <args>
+/audit-router --domain approval_process <args>
 ```
 
-The VR-specific rule table (bypass contract, Wrong-Tool classification,
-record-type relevance gate, VR ↔ flow conflicts, message quality) is
-preserved verbatim in
-[`classifiers/validation_rule.md`](../agents/_shared/harnesses/audit_harness/classifiers/validation_rule.md).
+The approval-specific rule table (broken-reference checks, concurrent-
+automation conflicts, stale in-flight detection, migration-fitness
+verdicts) is preserved verbatim in
+[`classifiers/approval_process.md`](../agents/_shared/harnesses/audit_harness/classifiers/approval_process.md).
+
+`migrate_to_orchestrator` verdicts route to Wave-3a's
+[`/migrate-automation --source-type approval_process`](./automation-migration-router.md).
 
 ## Why the change
 

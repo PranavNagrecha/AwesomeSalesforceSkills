@@ -54,10 +54,27 @@ Replaces `workflow-rule-to-flow-migrator`, `process-builder-to-flow-migrator`,
 
 ### `workflow-and-pb-migrator` (deprecated — use `automation-migration-router`)
 
-### `validation-rule-auditor`
+### `audit-router` (Wave 3b-1)
+
+Replaces `validation-rule-auditor`, `picklist-governor`,
+`approval-process-auditor`, `record-type-and-layout-auditor`, and
+`report-and-dashboard-auditor` (all now deprecation stubs). Wave 3b-2
+will add 10 more domains. Per-domain skill citations live in each
+[`classifiers/<domain>.md`](./harnesses/audit_harness/classifiers/)
+under the classifier's `Mandatory Reads` section.
+
 - `admin/validation-rules`, `admin/formula-fields`, `admin/picklist-field-integrity-issues`
+- `admin/picklist-and-value-sets`, `admin/multi-language-and-translation`
+- `admin/approval-processes`, `admin/queues-and-public-groups`
+- `admin/record-type-strategy-at-scale`, `admin/record-types-and-page-layouts`
+- `admin/reports-and-dashboards`, `admin/reports-and-dashboards-fundamentals`
+- `admin/report-performance-tuning`, `admin/analytics-permission-and-sharing`
+- `flow/orchestration-flows`
 - `data/data-quality-and-governance`
-- `templates/admin/validation-rule-patterns.md`
+- `standards/decision-trees/automation-selection.md`
+- `templates/admin/validation-rule-patterns.md`, `templates/admin/naming-conventions.md`
+
+### `validation-rule-auditor` (deprecated — use `audit-router --domain validation_rule`)
 
 ### `data-loader-pre-flight`
 - `admin/data-import-and-management`, `admin/duplicate-management`
@@ -91,13 +108,9 @@ Replaces `workflow-rule-to-flow-migrator`, `process-builder-to-flow-migrator`,
 Replaced by the router with `--source-type=approval_process`. Citations
 migrated into the router's consolidated entry above.
 
-### `record-type-and-layout-auditor`
-- `admin/record-type-strategy-at-scale`, `admin/record-types-and-page-layouts`
-- `admin/picklist-and-value-sets`, `admin/picklist-field-integrity-issues`
+### `record-type-and-layout-auditor` (deprecated — use `audit-router --domain record_type_layout`)
 
-### `picklist-governor`
-- `admin/picklist-and-value-sets`, `admin/picklist-field-integrity-issues`
-- `admin/multi-language-and-translation`
+### `picklist-governor` (deprecated — use `audit-router --domain picklist`)
 
 ### `data-model-reviewer`
 - `data/data-model-design-patterns`, `data/external-id-strategy`, `data/roll-up-summary-alternatives`
@@ -111,9 +124,7 @@ migrated into the router's consolidated entry above.
 - `security/connected-app-security-policies`, `security/certificate-and-key-management`
 - `architect/integration-framework-design`, `architect/integration-security-architecture`
 
-### `report-and-dashboard-auditor`
-- `admin/reports-and-dashboards`, `admin/reports-and-dashboards-fundamentals`
-- `admin/report-performance-tuning`, `admin/analytics-permission-and-sharing`
+### `report-and-dashboard-auditor` (deprecated — use `audit-router --domain report_dashboard`)
 
 ### `csv-to-object-mapper`
 - `admin/object-creation-and-design`, `admin/custom-field-creation`
