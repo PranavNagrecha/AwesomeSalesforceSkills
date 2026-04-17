@@ -1,0 +1,70 @@
+{
+  "category": "lwc",
+  "chunk_ids": [
+    "18971adc1d5de76d4aff",
+    "23f075f1363a4fdadfcd",
+    "3ffd9652b3c1a0424474",
+    "6233a30704704fe373ad",
+    "6d0270e726af0d58f27b",
+    "8846aa807f79e7f16ed3",
+    "88fafad4b571afc22105",
+    "99318396f2ebae049ba1",
+    "9a712cc9ec09cefb4e62",
+    "9b2b10c7c1c5edfde58d",
+    "a20db240465c3f15f138",
+    "b31f7bfe85eb1cf72f3e",
+    "b847ed27a1569e000420",
+    "be10d66bbcbb4fd1b776",
+    "c5e207d728dd13f1e8df",
+    "cd5a8db03f401ef13382",
+    "d194dbd3f1c781d51a00",
+    "d86811ddc313cae94417",
+    "de7731e3a303d1674450",
+    "e2106bf375e49a415236",
+    "e47629b3b6f6cb9cefee",
+    "e8f0ebdbc8666804b0e1",
+    "ea0ad790540eaf3b0d99",
+    "eb4a321d81b4d9d73baf",
+    "f09dadb7d10dd4b180ab",
+    "f832b67235af6c0c3f1d"
+  ],
+  "content_hash": "f738e70565955e75ea2d43a253642dc9a0f6085d30e54419825d21a8f9f5141f",
+  "dependencies": [],
+  "description": "Render only visible rows for long lists (1k+ rows) using intersection observer or lightning-datatable virtual scroll. NOT for simple lists under 100 rows.",
+  "file_location": "skills/lwc/virtualized-lists",
+  "id": "lwc/virtualized-lists",
+  "inputs": [
+    "row count",
+    "row height (fixed or variable)"
+  ],
+  "name": "virtualized-lists",
+  "official_sources": [
+    "Lightning Web Components Developer Guide \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/",
+    "Lightning Data Service \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-wire-service-about.html",
+    "LWC Recipes \u2014 https://github.com/trailheadapps/lwc-recipes",
+    "SLDS 2 \u2014 https://www.lightningdesignsystem.com/2e/"
+  ],
+  "outputs": [
+    "virtualized component or datatable config"
+  ],
+  "references": [
+    "skills/lwc/virtualized-lists/references/examples.md",
+    "skills/lwc/virtualized-lists/references/gotchas.md",
+    "skills/lwc/virtualized-lists/references/llm-anti-patterns.md",
+    "skills/lwc/virtualized-lists/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/lwc/virtualized-lists/scripts/check_virtualized_lists.py"
+  ],
+  "tags": [
+    "performance",
+    "virtualization",
+    "datatable"
+  ],
+  "templates": [
+    "skills/lwc/virtualized-lists/templates/virtualized-lists-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

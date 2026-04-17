@@ -1,0 +1,70 @@
+{
+  "category": "lwc",
+  "chunk_ids": [
+    "08c2ddce8082df169421",
+    "0da84891ff0e4be4a52e",
+    "28d003c44253e562eca2",
+    "2ff98f6a704b2abceec0",
+    "3a8f8cc437aca8794e4a",
+    "48e76728a426f9875b8a",
+    "4f2544a79a5d7ee8c3e3",
+    "59ea20aec0afc66e321d",
+    "604155523af1bf0e36f1",
+    "6464ce869c87d235f394",
+    "750759762080a7c8b2da",
+    "79e63a4750cc11ff46e4",
+    "7e4193d4df1791e253d9",
+    "86d64c04640813b83c55",
+    "968e9ad0868c7f78da61",
+    "b44bd6c01f80d0f45b68",
+    "b6d8946a285d330f4c58",
+    "b90649429152b64b2ec0",
+    "c6ac5f2b5f55ae88e2ba",
+    "d4997357d2c32633941c",
+    "d9673ea29863740d468e",
+    "e0bbeb691df1249f8f1b",
+    "e242857ea1de8019a8f9",
+    "e389c11caa546b5e6c4d",
+    "e8a3e984e0bb72804234",
+    "f2127ad24b8205401a01"
+  ],
+  "content_hash": "70cf1ce92ba3f71751a39252d8bfafa6626efdad7d084fdd89540a2f322b2e08",
+  "dependencies": [],
+  "description": "Build LWCs that support translation, locale-aware formatting, and RTL layouts. NOT for Translation Workbench setup.",
+  "file_location": "skills/lwc/lwc-internationalization",
+  "id": "lwc/lwc-internationalization",
+  "inputs": [
+    "target locales",
+    "strings to translate"
+  ],
+  "name": "lwc-internationalization",
+  "official_sources": [
+    "Lightning Web Components Developer Guide \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/",
+    "Lightning Data Service \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-wire-service-about.html",
+    "LWC Recipes \u2014 https://github.com/trailheadapps/lwc-recipes",
+    "SLDS 2 \u2014 https://www.lightningdesignsystem.com/2e/"
+  ],
+  "outputs": [
+    "component using custom labels + locale-aware components"
+  ],
+  "references": [
+    "skills/lwc/lwc-internationalization/references/examples.md",
+    "skills/lwc/lwc-internationalization/references/gotchas.md",
+    "skills/lwc/lwc-internationalization/references/llm-anti-patterns.md",
+    "skills/lwc/lwc-internationalization/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/lwc/lwc-internationalization/scripts/check_lwc_internationalization.py"
+  ],
+  "tags": [
+    "i18n",
+    "custom-labels",
+    "locale"
+  ],
+  "templates": [
+    "skills/lwc/lwc-internationalization/templates/lwc-internationalization-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

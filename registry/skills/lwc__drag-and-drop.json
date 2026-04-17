@@ -1,0 +1,70 @@
+{
+  "category": "lwc",
+  "chunk_ids": [
+    "02fa7b6df58c535e626c",
+    "0714f97150ed3d6ca582",
+    "18ba67b7b2fa80a5a85a",
+    "2676e8e771cdc2585cb9",
+    "372ba607314417d743dc",
+    "3925f92b596882e71700",
+    "4bb26e2911ce8b0729cd",
+    "668bc2e92d21ad77bab8",
+    "6d7d4b92e7adf7a09de6",
+    "6df61f9fe4553cb81f33",
+    "70144a0e63d4963cb432",
+    "742c1afc9761ddf15eb9",
+    "85a662e90a8877eee857",
+    "8d2f35d4fcbb006ee315",
+    "8eb9e6694610ed612d2e",
+    "9f1108e301dd3620520b",
+    "9f1892491ed5a0302896",
+    "a08dcfc0e5383378ea26",
+    "b708b9478aa361b42836",
+    "bc2f927e1f817bdabf3e",
+    "bef434e6ced41ad70516",
+    "c06530fce6bcd9284f09",
+    "c913bc482263e6c5c4e8",
+    "c92546b8d84aeb5795d9",
+    "db2dc24d14097954af47",
+    "efb9e573ff9457eb271d"
+  ],
+  "content_hash": "738cdc5c73c27957630816b405fdbf585b2b0e1c2a7c043c5b8c3939d5aac8af",
+  "dependencies": [],
+  "description": "Implement drag-and-drop in LWC using HTML5 Drag and Drop API, keyboard alternatives, and accessible announcements. NOT for kanban migration from legacy Lightning.",
+  "file_location": "skills/lwc/drag-and-drop",
+  "id": "lwc/drag-and-drop",
+  "inputs": [
+    "items to reorder or move",
+    "accessibility requirements"
+  ],
+  "name": "drag-and-drop",
+  "official_sources": [
+    "Lightning Web Components Developer Guide \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/",
+    "Lightning Data Service \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-wire-service-about.html",
+    "LWC Recipes \u2014 https://github.com/trailheadapps/lwc-recipes",
+    "SLDS 2 \u2014 https://www.lightningdesignsystem.com/2e/"
+  ],
+  "outputs": [
+    "component with dragstart/dragover/drop handlers + keyboard fallback"
+  ],
+  "references": [
+    "skills/lwc/drag-and-drop/references/examples.md",
+    "skills/lwc/drag-and-drop/references/gotchas.md",
+    "skills/lwc/drag-and-drop/references/llm-anti-patterns.md",
+    "skills/lwc/drag-and-drop/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/lwc/drag-and-drop/scripts/check_drag_and_drop.py"
+  ],
+  "tags": [
+    "lwc",
+    "drag-drop",
+    "a11y"
+  ],
+  "templates": [
+    "skills/lwc/drag-and-drop/templates/drag-and-drop-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

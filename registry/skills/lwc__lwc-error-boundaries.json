@@ -1,0 +1,70 @@
+{
+  "category": "lwc",
+  "chunk_ids": [
+    "0179022f58471852e121",
+    "0a8ff50fb97be1110eec",
+    "136d86bbe5c21f43042a",
+    "225d2a66b37ef691b260",
+    "2b85dc33d0a636a30fec",
+    "3e304e98758331f59cf0",
+    "482f770ca49c0e2c1c0a",
+    "484782cfb5cb50677448",
+    "6382bf2f5c6368a7b909",
+    "73de9e6e100e5ecff329",
+    "755a447de511ad1e33f9",
+    "7dd86996e4d227d04412",
+    "9083d1d918328210740c",
+    "90acdcfd6c1403b89424",
+    "94b5bf1977f1bf26144b",
+    "9c4359d022a058971b88",
+    "9f0dcbe7888ac50b5c98",
+    "a1919fdb6c02f761957e",
+    "a73fde9f0e3f19102282",
+    "b1f58ec4dd61827cdd9f",
+    "b4ad8ee3e931bf836697",
+    "d121373a65dee0742682",
+    "dd6f2b8f281d4eff6f08",
+    "de5dd7376ccfbb206082",
+    "ec4af10c8b829d3b9a2e",
+    "ff4ca98b50cb45925d4b"
+  ],
+  "content_hash": "de7e27617f6c08deb0c1d89b06c90791954daf007519b05466bf577263676eec",
+  "dependencies": [],
+  "description": "Isolate component errors so one failure does not blank an entire page using errorCallback and graceful fallbacks. NOT for server-side Apex exception design.",
+  "file_location": "skills/lwc/lwc-error-boundaries",
+  "id": "lwc/lwc-error-boundaries",
+  "inputs": [
+    "parent component",
+    "child components that may error"
+  ],
+  "name": "lwc-error-boundaries",
+  "official_sources": [
+    "Lightning Web Components Developer Guide \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/",
+    "Lightning Data Service \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-wire-service-about.html",
+    "LWC Recipes \u2014 https://github.com/trailheadapps/lwc-recipes",
+    "SLDS 2 \u2014 https://www.lightningdesignsystem.com/2e/"
+  ],
+  "outputs": [
+    "wrapper boundary component + fallback UI"
+  ],
+  "references": [
+    "skills/lwc/lwc-error-boundaries/references/examples.md",
+    "skills/lwc/lwc-error-boundaries/references/gotchas.md",
+    "skills/lwc/lwc-error-boundaries/references/llm-anti-patterns.md",
+    "skills/lwc/lwc-error-boundaries/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/lwc/lwc-error-boundaries/scripts/check_lwc_error_boundaries.py"
+  ],
+  "tags": [
+    "error-handling",
+    "lwc",
+    "errorcallback"
+  ],
+  "templates": [
+    "skills/lwc/lwc-error-boundaries/templates/lwc-error-boundaries-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

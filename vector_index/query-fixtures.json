@@ -5123,6 +5123,78 @@
       "domain": "integration",
       "expected_skill": "integration/api-governance-and-rate-limits",
       "top_k": 3
+    },
+    {
+      "query": "lwc drag drop",
+      "domain": "lwc",
+      "expected_skill": "lwc/drag-and-drop",
+      "top_k": 3
+    },
+    {
+      "query": "reorder list lwc",
+      "domain": "lwc",
+      "expected_skill": "lwc/drag-and-drop",
+      "top_k": 3
+    },
+    {
+      "query": "lightning file upload lwc",
+      "domain": "lwc",
+      "expected_skill": "lwc/file-upload-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "chunked upload salesforce lwc",
+      "domain": "lwc",
+      "expected_skill": "lwc/file-upload-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "lwc slow list 10000 rows",
+      "domain": "lwc",
+      "expected_skill": "lwc/virtualized-lists",
+      "top_k": 3
+    },
+    {
+      "query": "virtualize lwc",
+      "domain": "lwc",
+      "expected_skill": "lwc/virtualized-lists",
+      "top_k": 3
+    },
+    {
+      "query": "lwc shared state",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-state-management",
+      "top_k": 3
+    },
+    {
+      "query": "lightning message service",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-state-management",
+      "top_k": 3
+    },
+    {
+      "query": "lwc errorcallback",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-error-boundaries",
+      "top_k": 3
+    },
+    {
+      "query": "lwc component blank page",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-error-boundaries",
+      "top_k": 3
+    },
+    {
+      "query": "lwc translate label",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-internationalization",
+      "top_k": 3
+    },
+    {
+      "query": "custom labels lwc",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-internationalization",
+      "top_k": 3
     }
   ]
 }

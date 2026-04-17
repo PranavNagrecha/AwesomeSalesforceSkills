@@ -1,0 +1,70 @@
+{
+  "category": "lwc",
+  "chunk_ids": [
+    "0270ae7cc563ce616349",
+    "06e98cd6968061540604",
+    "08e566ce5da331ea2513",
+    "0bdb94117b3e09ac2df6",
+    "1ddda3191b064bfac5a8",
+    "2b817145b623cb928c83",
+    "3306e36148ef31771f95",
+    "3498987196404c87afab",
+    "3deddd8816a8cd7430d4",
+    "3e04cf9c3a067dd93211",
+    "4183f2ff8a5aac49d72c",
+    "475496462f933110c232",
+    "5825a933d8cb0652d48c",
+    "61b94c9f0561624580ee",
+    "8c12342f70f136e056dc",
+    "987c97b84fc265dfa218",
+    "9fe41c3c6a6421d7bf82",
+    "b7772439f83d43a456aa",
+    "bf41bdabcdd0c1bd3896",
+    "db37808dc77377465800",
+    "db6b1159d25fa7614a76",
+    "e281b068dca824b933b5",
+    "e5122520355e331fd6f0",
+    "efcf44d553d741b88fd9",
+    "f4e3abe795804219c990",
+    "f8cd41234b742e678e97"
+  ],
+  "content_hash": "60e5ddb0565f49730b30f4750358d2a93a26335f3a7b68d6617af09cb1a9d6cd",
+  "dependencies": [],
+  "description": "Upload files in LWC: lightning-file-upload, manual multipart, large-file chunked upload, and ContentDocument associations. NOT for ContentDocument query patterns.",
+  "file_location": "skills/lwc/file-upload-patterns",
+  "id": "lwc/file-upload-patterns",
+  "inputs": [
+    "max file size",
+    "target record"
+  ],
+  "name": "file-upload-patterns",
+  "official_sources": [
+    "Lightning Web Components Developer Guide \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/",
+    "Lightning Data Service \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-wire-service-about.html",
+    "LWC Recipes \u2014 https://github.com/trailheadapps/lwc-recipes",
+    "SLDS 2 \u2014 https://www.lightningdesignsystem.com/2e/"
+  ],
+  "outputs": [
+    "component with appropriate upload strategy + server-side Apex"
+  ],
+  "references": [
+    "skills/lwc/file-upload-patterns/references/examples.md",
+    "skills/lwc/file-upload-patterns/references/gotchas.md",
+    "skills/lwc/file-upload-patterns/references/llm-anti-patterns.md",
+    "skills/lwc/file-upload-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/lwc/file-upload-patterns/scripts/check_file_upload_patterns.py"
+  ],
+  "tags": [
+    "file-upload",
+    "content-document",
+    "lwc"
+  ],
+  "templates": [
+    "skills/lwc/file-upload-patterns/templates/file-upload-patterns-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}
