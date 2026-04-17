@@ -20,6 +20,11 @@ tags:
   - json-output
   - shell-scripting
   - devops
+  - ci-cd
+  - jwt-auth
+  - sfdx-migration
+  - sf-project-deploy
+  - sf-data-bulk
 inputs:
   - "Automation context: local developer script, shared build script, or CI runner image constraints"
   - "Target org alias or username and whether login is interactive, JWT, or existing SFDX auth file"

@@ -21,8 +21,14 @@ Strict user-mode SOQL everywhere improves safety but can increase `FlsException`
 ## Official Sources Used
 
 - Salesforce Well-Architected Overview — quality framing for what “done” means beyond syntax
-- Apex Developer Guide — governor execution limits, testing, transactions, and Apex behavior
-- Apex Developer Guide — trigger and bulk request best practices
-- Apex Developer Guide — naming conventions for Apex classes and methods
-- Apex Developer Guide — code coverage best practices
+  https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+- Apex Developer Guide — Running Apex within Governor Execution Limits
+  https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_limits_tips.htm
+- Apex Developer Guide — Trigger and Bulk Request Best Practices
+  https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_triggers_bestpract.htm
+- Apex Developer Guide — Naming Conventions
+  https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_naming_conventions.htm
+- Apex Developer Guide — Code Coverage Best Practices
+  https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_code_coverage_best_pract.htm
 - Secure Apex Classes (LWC guide) — component-facing Apex security when reviewing LWC-backed services
+  https://developer.salesforce.com/docs/component-library/documentation/en/lwc/security_apex
