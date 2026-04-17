@@ -4,6 +4,15 @@ This is the authoring reference for the run-time agent roster. Every skill id li
 
 The existing 11 run-time agents are documented in their own `AGENT.md`. This file focuses on the 28 admin-land agents shipped in Waves A–C.
 
+## Harnesses (Wave 3)
+
+Shared convention documents under `agents/_shared/harnesses/` that consolidate common patterns across related agents:
+
+- **`migration_router`** (Wave 3a) — consolidates 4 automation migrators into `automation-migration-router`. See [harness README](./harnesses/migration_router/README.md).
+- **`audit_harness`** (Wave 3b) — consolidates 15 single-mode auditors into `audit-router`. See [harness README](./harnesses/audit_harness/README.md).
+- **`designer_base`** (Wave 3c) — shared conventions for 8 designer agents (not a consolidation; designers keep their public identity). See [harness README](./harnesses/designer_base/README.md). Inheriting agents declare `harness: designer_base` in their frontmatter:
+  - `object-designer`, `permission-set-architect`, `flow-builder`, `omni-channel-routing-designer`, `sales-stage-designer`, `lead-routing-rules-designer`, `duplicate-rule-designer`, `sandbox-strategy-designer`.
+
 ---
 
 ## Wave A — Tier 1 (8 admin accelerators)

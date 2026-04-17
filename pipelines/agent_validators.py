@@ -407,6 +407,72 @@ def _validate_inputs_schema(path: Path, agent_dir: Path) -> list[ValidationIssue
     return []
 
 
+_HARNESS_ALLOWED_MODES = {
+    # Wave 3c: designer_base restricts modes to these three values.
+    # Designers that need a new mode must extend the harness doc first.
+    "designer_base": {"design", "audit", "single"},
+}
+
+
+def _validate_harness(root: Path, parse: AgentParse) -> list[ValidationIssue]:
+    """Enforce shape requirements for agents that declare a shared harness.
+
+    Wave 3c adds `harness: designer_base` as an optional frontmatter key. When
+    present, the validator confirms the agent inherits the harness's conventions:
+    allowed modes, required sections, canonical refusal codes. Other harness
+    names (e.g. migration_router, audit_harness) are declared in the schema
+    enum but don't have inheritance validation — their router is the only
+    agent inside them.
+    """
+    issues: list[ValidationIssue] = []
+    harness = parse.frontmatter.get("harness")
+    if not harness:
+        return issues
+
+    # Harness files must exist under agents/_shared/harnesses/<name>/README.md.
+    harness_readme = root / "agents" / "_shared" / "harnesses" / harness / "README.md"
+    if not harness_readme.exists():
+        issues.append(
+            ValidationIssue(
+                "ERROR", str(parse.path),
+                f"declares `harness: {harness}` but "
+                f"{harness_readme.relative_to(root)} does not exist",
+            )
+        )
+        return issues
+
+    if harness == "designer_base":
+        # Rule 1: modes must be a subset of allowed modes.
+        declared_modes = set(parse.frontmatter.get("modes") or [])
+        allowed = _HARNESS_ALLOWED_MODES["designer_base"]
+        bad = declared_modes - allowed
+        if bad:
+            issues.append(
+                ValidationIssue(
+                    "ERROR", str(parse.path),
+                    f"harness=designer_base requires modes subset of {sorted(allowed)}; "
+                    f"unknown modes: {sorted(bad)}",
+                )
+            )
+
+        # Rule 2: must have an Escalation / Refusal Rules section (or alias)
+        # per refusal_patterns.md. For deprecated agents the runtime check
+        # already relaxes this — only enforce for non-deprecated.
+        if parse.frontmatter.get("status") != "deprecated":
+            section_names = set(parse.sections.keys())
+            refusal_aliases = {"Escalation / Refusal Rules", "Escalation Rules"}
+            if not (section_names & refusal_aliases):
+                issues.append(
+                    ValidationIssue(
+                        "ERROR", str(parse.path),
+                        "harness=designer_base requires an `## Escalation / Refusal Rules` "
+                        "section (or `## Escalation Rules` alias) per refusal_patterns.md",
+                    )
+                )
+
+    return issues
+
+
 def validate_agents(root: Path) -> list[ValidationIssue]:
     """Run every agent check against the repo.
 
@@ -431,6 +497,7 @@ def validate_agents(root: Path) -> list[ValidationIssue]:
         issues.extend(_validate_sections(parse))
         issues.extend(_validate_citations(root, parse, known_agents, mcp_tools))
         issues.extend(_validate_inputs_schema(md_path, md_path.parent))
+        issues.extend(_validate_harness(root, parse))
 
         declared_id = parse.frontmatter.get("id")
         if declared_id:

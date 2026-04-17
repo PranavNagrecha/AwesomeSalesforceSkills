@@ -85,6 +85,11 @@
     "deprecated_in_favor_of": {
       "type": "string",
       "description": "Required iff status == deprecated. The replacement agent id."
+    },
+    "harness": {
+      "type": "string",
+      "enum": ["designer_base", "migration_router", "audit_harness"],
+      "description": "Optional: declares the agent inherits a shared harness under agents/_shared/harnesses/. The validator enforces shape compliance for declared harnesses. designer_base was added in Wave 3c."
     }
   },
   "allOf": [
