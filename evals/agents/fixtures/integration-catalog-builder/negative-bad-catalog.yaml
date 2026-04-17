@@ -1,0 +1,29 @@
+eval:
+  id: integration-catalog-builder__negative-bad-catalog
+  agent: integration-catalog-builder
+  mode: single
+  priority: P0
+  last_verified: 2026-04-17
+  description: >
+    Gate C MUST catch a malformed catalog. The emitted JSON parses but is
+    missing org_alias, has malformed catalog_version, and an integration
+    with an invalid direction.
+
+inputs:
+  catalog_name: bad-catalog
+  org_alias: sfskills-dev
+  feature_summary: "Malformed integration catalog missing org_alias and carrying an invalid direction value to exercise the Gate C static rejection"
+  api_version: "60.0"
+
+org_stub: {}
+
+expect:
+  confidence: LOW
+  gates_passed:
+    - inputs
+    - requirements
+    - ground
+  grounding:
+    unresolved_max: 0
+  build_gate:
+    parse_errors_max: 999

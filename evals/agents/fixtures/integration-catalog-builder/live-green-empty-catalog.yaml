@@ -1,0 +1,47 @@
+eval:
+  id: integration-catalog-builder__live-green-empty-catalog
+  agent: integration-catalog-builder
+  mode: single
+  priority: P0
+  last_verified: 2026-04-17
+  description: >
+    Minimal 1-integration catalog with no NamedCredential references.
+    Proves the static JSON shape passes and the live oracle returns clean
+    when there are no NCs to verify against sfskills-dev.
+
+inputs:
+  catalog_name: live-catalog
+  org_alias: sfskills-dev
+  feature_summary: "Minimal integration catalog containing a single outbound placeholder entry for round-trip validation of the five-gate JSON catalog path"
+  named_credentials: []
+  api_version: "60.0"
+  target_org_alias: sfskills-dev
+
+org_stub: {}
+
+expect:
+  confidence: HIGH
+  gates_passed:
+    - inputs
+    - requirements
+    - ground
+    - build
+    - seal
+  requirements_document_must_reference:
+    - "live-catalog"
+    - "sfskills-dev"
+  must_cite_any_of:
+    - { type: skill, id: integration/named-credentials-setup }
+    - { type: skill, id: integration/rest-api-patterns }
+    - { type: decision_tree, id: integration-pattern-selection.md }
+  grounding:
+    unresolved_max: 0
+  build_gate:
+    parse_errors_max: 0
+    coverage_min: 0
+  process_observations:
+    min_count: 1
+    categories_present_any_of:
+      - healthy
+      - concerning
+      - ambiguous
