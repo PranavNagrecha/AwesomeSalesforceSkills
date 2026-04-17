@@ -155,7 +155,7 @@
     "fc651790ee7f55ae2466",
     "fe5f5c8dea4a7a8ff015"
   ],
-  "content_hash": "6e72be3fae8cde3fd60bba94f6fad71bfb5cf5dd9bc0ad51855bb537c48fd855",
+  "content_hash": "bc2853e87014851f9afaf198098f81c75c51fe95bc740a962d8e9bd64af26780",
   "dependencies": [
     "architect/security-architecture-review",
     "security/platform-encryption"

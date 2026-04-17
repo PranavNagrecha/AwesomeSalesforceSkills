@@ -123,7 +123,7 @@
     "f7e03d03328e12e468cb",
     "fd05623fbadd5c33a1e8"
   ],
-  "content_hash": "d87d10b2eadb0e0203e35eb7043af6633becbc1b24c96ff87913dc92e1805b21",
+  "content_hash": "7f466b72d81b6144b7738ed039872656534ae601c3fe1b8ad24649a8601f6448",
   "dependencies": [],
   "description": "Scheduling Apex classes using the Schedulable interface: implementing execute(), cron expressions, System.schedule(), monitoring CronTrigger records, job limits, and job chaining patterns. NOT for Batch Apex scheduling (use batch-apex-patterns) or Flow scheduled paths.",
   "file_location": "skills/apex/apex-scheduled-jobs",

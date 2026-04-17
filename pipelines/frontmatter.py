@@ -53,10 +53,30 @@ def normalize_metadata(metadata: dict) -> dict:
     return normalized
 
 
-def stable_hash_for_files(paths: list[Path]) -> str:
+def stable_hash_for_files(paths: list[Path], root: Path | None = None) -> str:
+    """Compute a deterministic content hash over a set of files.
+
+    If ``root`` is provided, paths are encoded into the digest as POSIX paths
+    relative to ``root`` — this makes the hash machine-independent. Absolute
+    paths (the pre-Wave-1 behavior) caused CI drift errors because macOS dev
+    machines used /Users/.../ prefixes while GitHub runners used /home/runner/.
+    ``root`` is optional to preserve backward compatibility with callers that
+    don't yet pass it; callers that care about cross-machine determinism
+    should always pass it.
+    """
     digest = hashlib.sha256()
-    for path in sorted(paths, key=lambda value: str(value).replace("\\", "/")):
-        digest.update(str(path).replace("\\", "/").encode("utf-8"))
+    sorted_paths = sorted(paths, key=lambda value: str(value).replace("\\", "/"))
+    for path in sorted_paths:
+        if root is not None:
+            try:
+                rel = path.resolve().relative_to(root.resolve()).as_posix()
+            except ValueError:
+                # Path is outside root — fall back to basename. Guards against
+                # pathological inputs; normal repo walks won't hit this.
+                rel = path.name
+        else:
+            rel = str(path).replace("\\", "/")
+        digest.update(rel.encode("utf-8"))
         digest.update(b"\0")
         digest.update(path.read_bytes())
         digest.update(b"\0")

@@ -106,7 +106,7 @@
     "fbfde93aad1f1d99d7a3",
     "fdcf8eaa21100748fe77"
   ],
-  "content_hash": "fc5a86d799b1aa1f8194407eb436d5f135975fe22245e2592912defc84895667",
+  "content_hash": "3df528b884e5641c0818194d5bb7814d19fc13e17b7658d7e21f91bca0688c3c",
   "dependencies": [],
   "description": "Territory2 API in Apex: programmatic territory member management (UserTerritory2Association, ObjectTerritory2Association), bulk assignment DML, and SOAP-based rule evaluation. NOT for ETM admin setup, territory model design, declarative assignment rules, or Opportunity territory configuration (use admin/enterprise-territory-management).",
   "file_location": "skills/apex/territory-api-and-assignment",

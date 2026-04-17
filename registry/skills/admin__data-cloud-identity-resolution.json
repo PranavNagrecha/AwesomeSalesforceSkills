@@ -115,7 +115,7 @@
     "f8af824bf4cdabdc805e",
     "fee92e267eb8ad23e285"
   ],
-  "content_hash": "c1174fc7a005e2c88134d1271e89f61285fe8371e62fca9afc515bd6bac71f90",
+  "content_hash": "0a64501d0b793c04fe1cb9761faebefe3715b016712b65cf8aa1084eb684a743",
   "dependencies": [],
   "description": "Use this skill when configuring or troubleshooting Data Cloud identity resolution rulesets \u2014 matching rules, reconciliation rules, unified profiles, and cross-device identity linking. Trigger keywords: identity resolution ruleset, unified individual, match rule, reconciliation rule, unified profile, cross-device identity, Data Cloud deduplication, cluster creation. NOT for CRM duplicate management (Duplicate Rules / Matching Rules on standard objects), and NOT for Experience Cloud or Salesforce Identity login deduplication.",
   "file_location": "skills/admin/data-cloud-identity-resolution",

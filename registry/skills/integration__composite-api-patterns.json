@@ -81,7 +81,7 @@
     "fcd98364db1d99a07676",
     "fe58c6ce97b636daa6f9"
   ],
-  "content_hash": "7d83267c2158040683b2d81e0ade8595913c8dde3921fed8f424e379258afe02",
+  "content_hash": "ca3e827d229a1020ea91e6aac5c26415be89de437990a34d44d6823617553fa1",
   "dependencies": [],
   "description": "Use when designing, implementing, or troubleshooting Salesforce Composite API requests \u2014 covering the /composite/ resource with cross-subrequest referenceId wiring, /composite/sobjects/ bulk CRUD, /composite/tree/ hierarchical inserts, and /composite/batch/ independent subrequest bundling. Triggers: 'composite API', 'sObject Tree', 'sObject Collection', 'composite batch', 'subrequest', 'referenceId', 'allOrNone', 'parent child insert one call', 'bulk CRUD same object', 'batch API requests'. NOT for single REST API calls, Bulk API 2.0 large-data-load jobs, GraphQL API queries, Metadata API deployments, or custom Apex REST endpoints.",
   "file_location": "skills/integration/composite-api-patterns",

@@ -116,7 +116,7 @@
     "fda53a6c15051c92c441",
     "ffb3a93f5c65ebe388ad"
   ],
-  "content_hash": "9307381d172246131ee21e0a3bd8e75d47c7428033cb5e2e27e459048ccdc2ba",
+  "content_hash": "780cd487a82cd9b49a6cd0a0169cdaa95b75a1071981d5bce960d7a59e641b64",
   "dependencies": [
     "apex/sf-cli-and-sfdx-essentials",
     "devops/scratch-org-management"

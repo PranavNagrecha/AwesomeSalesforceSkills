@@ -55,7 +55,7 @@
     "fa119a9df96a36d06a22",
     "ff590181940d25fcac3e"
   ],
-  "content_hash": "8ad88f30c5d5c02c4c51525820c8a63973cbe7ed31a67dd03d74c7fe87a89003",
+  "content_hash": "d1fbf8ffc0bf6b1368dcf54a20327a95f3f09c3bfbc3e8fe3ad41a7a6fad14b3",
   "dependencies": [],
   "description": "Use this skill to architect CRM Analytics dashboard embedding in Lightning pages, Experience Cloud, or Visualforce \u2014 covering dashboard context strategy, filter/state management, cross-dashboard context propagation, performance optimization, and LWC vs Aura component selection. Trigger keywords: embed CRM Analytics dashboard, embedded analytics Lightning page, analytics dashboard filter, wave dashboard LWC, analytics state attribute. NOT for CRM Analytics dashboard design/building (use analytics skills), standard Lightning report embedding, or Data Cloud analytics.",
   "file_location": "skills/architect/embedded-analytics-architecture",

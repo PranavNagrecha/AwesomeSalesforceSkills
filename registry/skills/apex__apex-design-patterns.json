@@ -58,7 +58,7 @@
     "f8cf2ac4f926b532fe10",
     "ff2aec9312459c364911"
   ],
-  "content_hash": "cf29039def53cb2d645f60b93ef72620757ab66e0d075f94caad111b33ce706a",
+  "content_hash": "05533644581f70e6141ed494616d7dfc95c61989128ceb8ec7c93754121b996f",
   "dependencies": [],
   "description": "Use when structuring Apex into service, selector, domain, factory, and dependency-injection layers for maintainability and testability. Triggers: 'service layer', 'selector pattern', 'domain layer', 'dependency injection', 'fat trigger/controller'. NOT for installing a specific third-party framework or debating package-level architecture outside Apex code structure.",
   "file_location": "skills/apex/apex-design-patterns",

@@ -49,7 +49,7 @@
     "f590a15b7ceedd7f5acc",
     "f7e88134862429730aed"
   ],
-  "content_hash": "a98a20e947f5c57be5c305d3eb1d0fbc26caa2e915d8a755e9fe7b99eb53bcba",
+  "content_hash": "0bc9442090e8e1cadc65e0ad18cfb896a97a91cc25a74f9e48ad74ca7d70839b",
   "dependencies": [],
   "description": "Use when designing or reviewing Flow Orchestration for long-running, multi-user, or asynchronous business processes with stages, steps, work items, and monitoring needs. Triggers: 'flow orchestration', 'work item', 'stages and steps', 'multi-user process', 'long-running flow'. NOT for simple single-transaction record-triggered flows or lightweight approval routing that does not need orchestration.",
   "file_location": "skills/flow/orchestration-flows",

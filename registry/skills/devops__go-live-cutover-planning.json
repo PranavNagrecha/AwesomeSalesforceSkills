@@ -83,7 +83,7 @@
     "f638768dddbd7a0a4907",
     "f9ab00fa8855dd6f96ac"
   ],
-  "content_hash": "afae7ce7354cf3acf6f2723dc3f4a73d9e59330d12fc26dd9998b6416f00416d",
+  "content_hash": "9281980901c6ef4ac7f8b69b8303b738cb58ff5a374e7c61c05acbf7f75d8cf8",
   "dependencies": [],
   "description": "Use when planning, sequencing, or executing the final cutover to production for a Salesforce implementation or major release. Covers cutover runbooks, code freeze enforcement, mock deployments, go/no-go decision gates, validation deploy timing, quick deploy windows, hypercare scheduling, and rollback trigger definitions. NOT for deployment mechanics (use devops/post-deployment-validation). NOT for release calendar or versioning strategy (use devops/release-management). NOT for writing smoke tests (use devops/post-deployment-validation).",
   "file_location": "skills/devops/go-live-cutover-planning",

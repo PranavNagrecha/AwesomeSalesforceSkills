@@ -74,7 +74,7 @@
     "fee113e2cc873c9dd0f1",
     "fef2e3be4615ab72d010"
   ],
-  "content_hash": "38ca7189a7fc52bfd7be68666729a72ed1471b60751476d75c5dc1e42ba09b94",
+  "content_hash": "bfca3136b72e711f8eb34ea801a5f4e9514f271492ae9f80db6b3da6b8ed7a2f",
   "dependencies": [
     "dynamic-forms-and-actions",
     "record-types-and-page-layouts"

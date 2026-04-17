@@ -101,7 +101,7 @@
     "f9489519e1dd5e057f53",
     "fc4da965957a934a939c"
   ],
-  "content_hash": "7a98fe921315ac4a694b0c28229963267df1dfc611a6256e32de66dd251e00b8",
+  "content_hash": "267917a89cc83cd457c4bc0a362eb7c683e0fa12f0f9015a223f641b642bdac7",
   "dependencies": [],
   "description": "Use when designing or restructuring a Salesforce Knowledge taxonomy: Data Category Group structure, hierarchy depth, article type selection, article lifecycle governance (Draft/Published/Archived), Validation Status gating, and content gap analysis via KCS methodology and Search Activity Gaps. Triggers: knowledge taxonomy design, data category hierarchy, knowledge article lifecycle, knowledge governance model, KCS content gap analysis, search activity gaps, knowledge category structure. NOT for Knowledge admin feature setup (use admin/knowledge-setup), NOT for Experience Cloud search configuration, NOT for Einstein Article Recommendations tuning.",
   "file_location": "skills/architect/knowledge-taxonomy-design",

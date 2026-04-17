@@ -91,7 +91,7 @@
     "f7ee6dc3218a7582b7c6",
     "ff379c96f5f1312ccb9a"
   ],
-  "content_hash": "ef2315e17c68645595dc327e9d1c9a44ec153bace2ab23f1b13c9fab7a3ad296",
+  "content_hash": "6d9ef1af0755a2d41bcde8afb3139f7e2e5d0e926c3c806b9c53617c241bb795",
   "dependencies": [],
   "description": "Use when choosing between Custom Metadata Types and Custom Settings, understanding hierarchical vs list settings, deployment behavior, governor limit implications, or accessing either from Apex and Flow. Trigger keywords: 'custom metadata vs custom settings', 'hierarchical settings per user profile', 'deployable config vs runtime settings', 'getValues getInstance in apex', 'flow get records custom settings'. NOT for custom objects (use object-creation-and-design), NOT for Named Credentials (use named-credentials-setup), NOT for general CMT field design in isolation (use custom-metadata-types).",
   "file_location": "skills/admin/custom-metadata-types-and-settings",

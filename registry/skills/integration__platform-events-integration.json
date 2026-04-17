@@ -77,7 +77,7 @@
     "ff405ab916cc82b201ee",
     "ffe5fa52c4526a0d31c8"
   ],
-  "content_hash": "6889d5de426d8ec1a131c4d32422420a2976743f94ea53c585f9193d52082ddf",
+  "content_hash": "6d455a8aa4915cf2a89e31169da57db917bc6e2ed98f5c341452a5411ad6185e",
   "dependencies": [],
   "description": "Use when publishing Platform Events from external systems via REST API, subscribing to Platform Events from outside Salesforce via CometD or Pub/Sub API, designing replay ID strategy for durable external consumers, or handling high-volume event delivery guarantees. Trigger keywords: 'external publish platform event', 'CometD subscribe', 'Pub/Sub API', 'replay ID external', 'durable subscription', 'RetainUntilDate'. NOT for Apex-only event publishing or triggering (use platform-events-apex). NOT for Change Data Capture external subscription (use change-data-capture-integration).",
   "file_location": "skills/integration/platform-events-integration",

@@ -95,7 +95,7 @@
     "fc039d8aa9f9213ad3ea",
     "ff4aa4cde460e31d9cf8"
   ],
-  "content_hash": "2172e85f268a9eb7912a470b29300bc6918f29408395f4613fc2fe1fdb2e3814",
+  "content_hash": "87b8de3a4a3687efa0d9865e312b174e49bfd64101cc01c2b7de981b277886d4",
   "dependencies": [],
   "description": "Use when invoking auto-launched Flows from Apex (Flow.Interview), from external systems via REST API, from Platform Events, or from other Flows (subflow element). Covers input/output variable mapping, bulkification patterns, and error/fault handling. NOT for record-triggered flows (use record-triggered-flow-patterns) or scheduled flows (use scheduled-flows).",
   "file_location": "skills/flow/auto-launched-flow-patterns",

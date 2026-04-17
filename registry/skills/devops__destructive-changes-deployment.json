@@ -70,7 +70,7 @@
     "f66e74cb4d42f64cd038",
     "fd2355390be2e0d13eae"
   ],
-  "content_hash": "216ac1382e4570d9c94b54935bdf101075cdeffdb7ec1fdc86b62b7fb817d1a3",
+  "content_hash": "ad6de9d87bc850c15ed5226f0420ef1202801884261b8a4adbcaa340b22cd19b",
   "dependencies": [],
   "description": "Managing destructiveChanges.xml manifests for safe metadata deletion in Salesforce deployments. Use when deleting metadata components via Metadata API or sf CLI. Covers pre vs post destructive manifests, safe deletion sequencing, dependency handling. NOT for package.xml basics (use metadata-api-and-package-xml). NOT for basic deployment setup (use change-set-deployment).",
   "file_location": "skills/devops/destructive-changes-deployment",

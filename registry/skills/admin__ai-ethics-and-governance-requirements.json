@@ -95,7 +95,7 @@
     "f6103f0943620d34580a",
     "ff349b09bdeb281095b3"
   ],
-  "content_hash": "1223f209dc7c49c87bce7f5a85b390fc0cb5853ebad4ba26ba655032cf239c31",
+  "content_hash": "d696798598c072c5d58167dbdca0a7dfcaa58c75ceb67b760b20386b5aac971b",
   "dependencies": [],
   "description": "Use this skill when defining AI governance policies, designing human oversight workflows, documenting bias mitigation strategies, or meeting regulatory transparency requirements for Salesforce AI features. Trigger keywords: responsible AI, AI bias, AI audit trail, AI transparency, human-in-the-loop, AI risk inventory, AI disclosure. NOT for Trust Layer technical configuration \u2014 that is covered by agentforce/einstein-trust-layer.",
   "file_location": "skills/admin/ai-ethics-and-governance-requirements",

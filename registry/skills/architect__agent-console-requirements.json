@@ -101,7 +101,7 @@
     "f62a8027be17a77f2611",
     "f8131fce56a32a9b0c02"
   ],
-  "content_hash": "70cad923c224bef960d7c450e2fadcb2d9fc945ce90cf1a7d2c30cdf689ff02f",
+  "content_hash": "902b4a5ea640d45163d78cc38899dc33e3f40946fce4971a30fcb5c8fe3eaaac",
   "dependencies": [],
   "description": "Use when gathering and documenting requirements for a Lightning Service Console deployment: agent workspace layout, page template selection, utility bar composition, macro requirements, case handling workflows, split-view navigation design, and licensing requirements. Triggers: service console requirements, agent workspace design, console page layout, utility bar planning, console licensing. NOT for console configuration steps or click-by-click setup (use admin/case-management), NOT for Omni-Channel routing model design (use architect/service-cloud-architecture), NOT for CTI telephony integration details.",
   "file_location": "skills/architect/agent-console-requirements",

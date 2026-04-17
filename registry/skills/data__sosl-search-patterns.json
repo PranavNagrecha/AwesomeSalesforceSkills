@@ -51,7 +51,7 @@
     "f5a7edf958e38a2707c6",
     "f93f895d12fc66721e64"
   ],
-  "content_hash": "c52262c668e6e5cb79335e2c800d9f6df8ea90a66f66bd40e83eb40b0feb3252",
+  "content_hash": "f099099de37f84247f8d8ad872f760a1e5ed77ce1f8a06268dd1350196b7495d",
   "dependencies": [],
   "description": "Use when choosing or implementing SOSL for cross-object or full-text search, especially around SOSL vs SOQL, search groups, result shaping, and injection-safe dynamic search. Triggers: 'SOSL', 'FIND clause', 'cross object search', 'Search.query', 'SOSL injection'. NOT for structured record retrieval where ordinary SOQL filters are the right tool.",
   "file_location": "skills/data/sosl-search-patterns",

@@ -57,7 +57,10 @@ def build_skill_record(root: Path, skill_dir: Path, chunk_ids: list[str], vector
         "scripts": list_relative_files(root, skill_dir / "scripts"),
         "chunk_ids": chunk_ids,
         "vector_embedding": vector_embedding,
-        "content_hash": stable_hash_for_files([path for path in skill_dir.rglob("*") if path.is_file()]),
+        "content_hash": stable_hash_for_files(
+            [path for path in skill_dir.rglob("*") if path.is_file()],
+            root=root,
+        ),
     }
     return record
 

@@ -80,7 +80,7 @@
     "f4b87dc2d51f044937aa",
     "f9f15936267218a3433b"
   ],
-  "content_hash": "8482ed3335c0459ec02144153872f95c0ba130670a2af10e89d5ff727d2d2890",
+  "content_hash": "938eb40114ef9293b423ae9772e8352d427870457c1a48bfe8f8b4752b0594ff",
   "dependencies": [],
   "description": "Use this skill when integrating Salesforce or external systems with Marketing Cloud Engagement REST or SOAP APIs \u2014 including OAuth 2.0 authentication, journey injection via /interaction/v1/events, triggered sends, and Data Extension row operations. Trigger keywords: MC API, Marketing Cloud REST, journey injection, triggered send, fire entry event, DE row upsert, dataeventsasync, Installed Package API integration. NOT for Salesforce core REST/SOAP APIs, MCAE/Pardot APIs, or Marketing Cloud Connect (CRM connector sync).",
   "file_location": "skills/apex/marketing-cloud-api",

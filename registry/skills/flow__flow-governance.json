@@ -50,7 +50,7 @@
     "f89c798766d93876d31f",
     "fdf5653add0503ea1c86"
   ],
-  "content_hash": "d4814e5f18da93ae5e8ac5dde6cc6d23983bb45d500d4121f8f947a3a9877361",
+  "content_hash": "3c8e5a45789d477b7ac1caa97bf0564f53e82bb562d41e8948654919bf600f36",
   "dependencies": [],
   "description": "Use when establishing operational standards for a Salesforce Flow portfolio, including naming conventions, ownership, version discipline, retirement of stale flows, and release readiness checks. Triggers: 'flow naming convention', 'too many old flows', 'who owns this flow', 'flow version governance'. NOT for element-by-element flow logic design or dedicated fault-handling review.",
   "file_location": "skills/flow/flow-governance",

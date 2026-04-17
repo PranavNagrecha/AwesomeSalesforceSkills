@@ -89,7 +89,7 @@
     "f64b4461b59b36423b82",
     "fd5f11e9e3ae48f19a05"
   ],
-  "content_hash": "4c9c2aa110282c6f7aa33a78c00064041ddf7ca756d5eb2e35ac812292ac30ed",
+  "content_hash": "8bdab09b3c48e11a97baf22dfe38b33a3d512240a5f051c92349729b8472eb9f",
   "dependencies": [],
   "description": "Use this skill when storing large historical datasets in Salesforce using Big Objects, querying them with Async SOQL, or deciding between Big Objects and External Objects for high-volume or external data access patterns. Trigger keywords: big object, async SOQL, AsyncQueryJob, external object, Salesforce Connect, IoT data, audit history, event log archival, Database.insertImmediate, composite index. NOT for Salesforce Connect adapter configuration or OAuth setup (use salesforce-connect-external-objects), and NOT for standard data archival strategies (use data-archival-strategies).",
   "file_location": "skills/data/external-data-and-big-objects",

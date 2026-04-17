@@ -92,7 +92,7 @@
     "fb36f19f99db5e2f8384",
     "fce42042299e66ceaa23"
   ],
-  "content_hash": "28314944cbe0ac24aa766e7a9c0e1bc0be0c4046e5bb3fc824fd08c50a6a1961",
+  "content_hash": "ac846d7b541d01321d1f6498bb9e4297676e3d43407b7c9c4be565ff7442aab9",
   "dependencies": [],
   "description": "Use when implementing or reviewing user feedback patterns in Lightning Web Components \u2014 specifically toast messages, lightning-alert, lightning-confirm, lightning-prompt, and platform notifications. Trigger keywords: 'ShowToastEvent', 'toast in lwc', 'lightning-alert lwc', 'lightning-confirm promise', 'Experience Cloud notification'. NOT for modal overlays (use lwc-modal-and-overlay).",
   "file_location": "skills/lwc/lwc-toast-and-notifications",

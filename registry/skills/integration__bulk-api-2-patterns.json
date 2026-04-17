@@ -56,7 +56,7 @@
     "e8b5097a13ab316b404b",
     "f963735fe1a5aa346b9f"
   ],
-  "content_hash": "cff0d8e88a640e772d60214e23d97d1b5cecd54188d0f5a95d0d3ac0802c8327",
+  "content_hash": "bfdbec8ec0812d49d3218e207287212f45e266171cd9a521e79f027043727e7e",
   "dependencies": [
     "data/bulk-api-patterns",
     "integration/real-time-vs-batch-integration"

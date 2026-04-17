@@ -83,7 +83,7 @@
     "f3bbab116db4b5986e45",
     "fb1ff311d8baf1fb958f"
   ],
-  "content_hash": "16bbdf725c7bb33c2454a612008a62636e4341e5d020e13e243df3f00a13c50f",
+  "content_hash": "41ec1b60f824e361445ff77db2f2825e9bbf10408a488dc1791f13520cbe7d03",
   "dependencies": [
     "data/cpq-data-model",
     "apex/cpq-api-and-automation"

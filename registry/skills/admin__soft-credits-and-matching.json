@@ -104,7 +104,7 @@
     "fd9264f0c3fe8d720c63",
     "fe27013b91900706fe8c"
   ],
-  "content_hash": "ca3f2e5883011e01e9aeb1370bdad634ad649b4fd3848da3fc5d97cbdaf1ca96",
+  "content_hash": "7c54b80dbb5e8785b5e0b6d3ad6e425d8ece7b621cdabd29818ef2a3a9a10da8",
   "dependencies": [
     "npsp-household-accounts",
     "gift-entry-and-processing"

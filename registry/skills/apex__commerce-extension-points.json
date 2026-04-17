@@ -89,7 +89,7 @@
     "f8fb98f95e97b5909dd1",
     "fe3e1513dd84504b68eb"
   ],
-  "content_hash": "c777caa1397dcc7ecfba2063e8cbe29cb12d04c536aaf212d989257cde59412b",
+  "content_hash": "51e6b9afc2a99b313d352aae891cf091f27bce89c39cc9521755821d7d381e3a",
   "dependencies": [],
   "description": "Use this skill when extending Salesforce B2B/B2C Commerce Cloud behavior through Apex: building custom cart calculators, implementing pricing hooks, integrating inventory checks, or registering custom checkout extensions via the CartExtension Apex namespace and RegisteredExternalService metadata. NOT for standard LWC Commerce components, declarative store configuration, or Experience Builder page layouts \u2014 use admin/commerce-checkout-configuration for those.",
   "file_location": "skills/apex/commerce-extension-points",

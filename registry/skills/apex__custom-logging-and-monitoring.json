@@ -54,7 +54,7 @@
     "fd6d49b079e3c520b599",
     "ff374d951e0006da58d0"
   ],
-  "content_hash": "e1bd62c431dd2ea66aac7c5948cd1288757bd8054eff23614a747cf3415d34d9",
+  "content_hash": "f04d6297ba4416e5b4f33c0556d4f4af7321faa6eed4df00b7f27d25bdbb891f",
   "dependencies": [],
   "description": "Use when designing or implementing a custom logging framework in Apex: log sObject schema, log level gating, retention policies, batch purge jobs, and forwarding logs to external monitoring systems (Splunk, Datadog, etc.). NOT for built-in debug logs or Developer Console (use debug-logs-and-developer-console), NOT for exception capture and error propagation (use error-handling-framework), NOT for Event Monitoring (use security skills).",
   "file_location": "skills/apex/custom-logging-and-monitoring",

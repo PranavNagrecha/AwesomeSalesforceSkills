@@ -72,7 +72,7 @@
     "fa48de52921d40fcf4e4",
     "fefe7cc3db070c05d158"
   ],
-  "content_hash": "1a2fab9acc8f81d5a145ab8187aa42a8c1da2ce44f2c1d69465dabbb54d34527",
+  "content_hash": "0baad4f3e8cf2a5268e0567357d15cb725d3c334377157dbfbc92268ba5ed5e5",
   "dependencies": [
     "architect/nfr-definition-for-salesforce",
     "devops/environment-strategy"

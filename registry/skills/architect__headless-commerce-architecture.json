@@ -133,7 +133,7 @@
     "fe1af517b0a8d8089183",
     "ffc45163b61ba980dda8"
   ],
-  "content_hash": "360af3334781265f89bcf952c0e99631bfe0ba6c1bc257b72a298694389d6505",
+  "content_hash": "04263c44659d1a17235b36a9ac9dcaffc35f1e463a59e4dae17124fdafb18ee2",
   "dependencies": [],
   "description": "Use this skill when designing or evaluating a headless B2C Commerce storefront architecture \u2014 covering the Composable Storefront (PWA Kit on Managed Runtime), SCAPI-first API design, frontend framework selection, latency budgets, and caching strategy. NOT for standard SFRA storefronts, Experience Cloud headless CMS delivery, B2B Commerce architecture, or SCAPI implementation-level coding (use apex/headless-commerce-api for that).",
   "file_location": "skills/architect/headless-commerce-architecture",

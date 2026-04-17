@@ -119,7 +119,7 @@
     "fe44f485dfb4340cdb42",
     "fe93884a66edd067fb4a"
   ],
-  "content_hash": "96409d512d01e6dcdb1821ee264e08601bead87e3b0cff3bb48a55d357af8316",
+  "content_hash": "99d49eaef60a0c6131979ae100bca1ee2ba46d2657ac8a4b330bf3fb2f7a7e7a",
   "dependencies": [],
   "description": "Use this skill when implementing or auditing data governance controls for CRM Analytics (Tableau CRM / Wave Analytics): dataset lineage tracing, access audit logging, data classification handling, retention management, and compliance readiness. Trigger keywords: CRM Analytics audit, dataset lineage, event monitoring analytics, access logging Wave, data classification propagation, analytics retention, GDPR analytics datasets, analytics compliance. NOT for general Salesforce data governance (use data-quality-and-governance), NOT for row-level security predicates or app sharing (use analytics-security-architecture), NOT for user licensing and sharing roles (use analytics-permission-and-sharing).",
   "file_location": "skills/data/analytics-data-governance",

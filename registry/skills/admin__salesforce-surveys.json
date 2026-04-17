@@ -59,7 +59,7 @@
     "f2c8b9ecc41dab31cbb7",
     "f4c7c2f341056fa3a468"
   ],
-  "content_hash": "ec556344fa156b880f4489f4ef49d59f151b1a958ed23e5fa8aa4fcfaa6a2323",
+  "content_hash": "b24bba462e102d08b24aca37d07c92cc57d3af8d5c3cb3ef0c4f97c60a260834",
   "dependencies": [],
   "description": "Use when designing, configuring, distributing, or troubleshooting Salesforce Surveys and Feedback Management. Triggers: 'create a survey', 'NPS score', 'survey invitation', 'survey response report', 'customer feedback form', 'guest user survey access'. NOT for custom-built LWC form components or third-party survey tools like SurveyMonkey or Qualtrics.",
   "file_location": "skills/admin/salesforce-surveys",

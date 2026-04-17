@@ -56,7 +56,7 @@
     "fdbe06d7efbd3a9ec84a",
     "ff9462f19ea33add411c"
   ],
-  "content_hash": "69b478f8c8106c7356ea44e39dce3afd7c438efb1b9c4b5c2aa82cc4d86c4200",
+  "content_hash": "19aa9a457b8d12318ab21df872d0bc69b80ccd81ac4f643ed885fff68048d737",
   "dependencies": [
     "admin/clinical-data-requirements",
     "apex/health-cloud-apis"

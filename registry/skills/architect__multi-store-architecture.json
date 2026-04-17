@@ -100,7 +100,7 @@
     "f9c9f74f4177d27a5678",
     "fca07a7ff402650be403"
   ],
-  "content_hash": "4966153bb9980341d45f08a237e10fc7e780d51f140d1c7c62997e7acf900f42",
+  "content_hash": "f74d99310a5d5dece48b8cfb6b1ce11afb33c648dbcd7ba6e2e6b30b2f34f29a",
   "dependencies": [],
   "description": "Multi-store Commerce architecture: shared catalog, localization, multi-currency, multi-language, and regional storefront design for B2B, D2C, and SFCC deployments. Trigger keywords: multi-store, regional storefronts, shared catalog, multi-currency commerce, localization, multiple WebStores. NOT for single-store setup, store creation basics, or non-Commerce use cases.",
   "file_location": "skills/architect/multi-store-architecture",

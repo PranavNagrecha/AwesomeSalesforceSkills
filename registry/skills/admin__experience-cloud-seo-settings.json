@@ -74,7 +74,7 @@
     "fe86a0210e766d3ce133",
     "ffc4ddedcc062756fa82"
   ],
-  "content_hash": "4c92d6bfd5ac8d552efa4d31c308bae26a66f2720fa350800267b53071edaf24",
+  "content_hash": "c75777070bf5e0a6e981f9d9e432284ca646c2c0dfcb4879227c617bf44121ad",
   "dependencies": [],
   "description": "Configure SEO for Experience Cloud sites: per-page titles and meta descriptions, sitemap.xml generation, robots.txt, and URL structure. Triggers: 'configure SEO for community site', 'Experience Cloud page titles meta descriptions', 'sitemap generation community portal', 'robots.txt Experience Cloud', 'noindex Experience Builder page'. NOT for external SEO tools (Moz, Ahrefs, Google Search Console setup). NOT for Salesforce CMS headless SEO.",
   "file_location": "skills/admin/experience-cloud-seo-settings",

@@ -97,7 +97,7 @@
     "fc581e45b6e04325f1be",
     "fe7739483f81de201390"
   ],
-  "content_hash": "3a3ed57fa14648ca0c7d07b20b6f0b801f6a8991f8884b6765ac70ec1396891b",
+  "content_hash": "a056798f3dd2e8445550a4223b866e2ec51b3dd05792c08e4fe33e98623e8fd4",
   "dependencies": [],
   "description": "Use when a report or dashboard is slow, timing out, hitting row limits, or consuming excessive system resources on large-volume objects \u2014 covers selective filter strategy, custom report type optimization, async report execution via Analytics API, dashboard refresh scheduling, and grouping/aggregation tuning. Triggers: 'report times out', 'report is slow', 'dashboard not refreshing', 'report row limit hit', 'too many report results'. NOT for CRM Analytics / Tableau CRM performance (separate skill). NOT for sharing-model or visibility issues causing missing rows (use admin/sharing-and-visibility). NOT for building or designing reports from scratch (use admin/reports-and-dashboards-fundamentals).",
   "file_location": "skills/admin/report-performance-tuning",

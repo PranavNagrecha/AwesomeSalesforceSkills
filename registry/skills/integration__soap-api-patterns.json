@@ -110,7 +110,7 @@
     "fcdb6760742545ae1b0a",
     "fe090862de4a4d39be9b"
   ],
-  "content_hash": "a72b3a53464a2471ba6f954d9583ae6eefab977edf00467d6d81e67a71fd48eb",
+  "content_hash": "13bc1955a7916f35918b2ed62f5fd36ff24877f3159c3b6ae5bc93336537af64",
   "dependencies": [],
   "description": "Use when designing, implementing, or reviewing Salesforce SOAP API integrations \u2014 covering enterprise vs partner WSDL selection, login() and session management, core operations (query/create/update/upsert/delete), and Metadata API SOAP usage. Trigger keywords: 'enterprise WSDL', 'partner WSDL', 'login() call', 'sessionId', 'SOAP API', 'WSC', 'force-wsc', 'Ant Migration Tool', '.NET SOAP integration'. NOT for REST API, Bulk API 2.0, or GraphQL API.",
   "file_location": "skills/integration/soap-api-patterns",

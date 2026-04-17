@@ -101,7 +101,7 @@
     "fef52536d2a31c8ae728",
     "ff42d47e6c05501d5a47"
   ],
-  "content_hash": "573260087574087918fa714bb8b3d792123e80bdbf9621e3395773d9786b564b",
+  "content_hash": "96296043fc9aa82a5e1450cd6f8bb5683999e74383119a214c54d92379b7c8e9",
   "dependencies": [],
   "description": "Use this skill when setting up CDC to stream Salesforce record changes to external systems via CometD or Pub/Sub API. Covers change event channels, entity selection, event structure, replay ID management, gap events, and subscriber management. NOT for Apex CDC trigger subscribers (see apex/platform-events-apex). NOT for publishing custom business events (use integration/platform-events-integration).",
   "file_location": "skills/integration/change-data-capture-integration",

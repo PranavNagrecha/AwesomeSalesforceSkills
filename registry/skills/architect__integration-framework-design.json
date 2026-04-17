@@ -68,7 +68,7 @@
     "fd476d8c7601e17fc96d",
     "fe44266e112dd940293f"
   ],
-  "content_hash": "ade97a942c6ea68c802a102c65594655a629bb80b775ca666c7e152d66ee5bc7",
+  "content_hash": "4951d90178084bc6ec6b275b6a404d17796aa11a11c9934b14d6af40f4aef085",
   "dependencies": [
     "apex/callouts-and-http-integrations",
     "apex/apex-design-patterns",

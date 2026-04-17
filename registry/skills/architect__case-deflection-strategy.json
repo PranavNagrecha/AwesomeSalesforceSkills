@@ -74,7 +74,7 @@
     "f67fd3f54f0096ec0f65",
     "f882ad05dfd50d270e6d"
   ],
-  "content_hash": "6f1c7abd35df8fce309812e20fcae3b73ea679555f03d223f879526f35aba214",
+  "content_hash": "e66dbed7cbbc6719a9343aab78203d129d33e71a050c1e2ef80fe1117d3e74b5",
   "dependencies": [],
   "description": "Use this skill when designing or assessing a Salesforce case deflection program \u2014 identifying high-frequency contact reasons, selecting deflection channels, and defining KPIs such as deflection rate and goal completion rate. Trigger keywords: case deflection, self-service, Einstein Conversation Mining, chatbot containment, knowledge-led deflection, contact reason analysis. NOT for Experience Cloud site setup, Einstein Bot dialog authoring, or Omni-Channel routing configuration.",
   "file_location": "skills/architect/case-deflection-strategy",

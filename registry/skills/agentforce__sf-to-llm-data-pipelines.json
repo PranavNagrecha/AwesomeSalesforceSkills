@@ -159,7 +159,7 @@
     "fdf460b2285e59238459",
     "fe34b12dbca2034c1cfa"
   ],
-  "content_hash": "3b263366ceac9af40ef984a281e9e843a2cd76f94d4313c88e06eecc952c6f2c",
+  "content_hash": "9d2bb7904f537477e21ab342864c85f05c0d76373bdbb87c6683642a91a554f9",
   "dependencies": [
     "einstein-trust-layer",
     "rag-patterns-in-salesforce"

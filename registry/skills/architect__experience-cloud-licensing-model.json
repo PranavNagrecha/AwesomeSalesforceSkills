@@ -70,7 +70,7 @@
     "ff56316dd01ba311e3e4",
     "ff75dac94367fb445735"
   ],
-  "content_hash": "93199c129a40a0d6c85f4fa67d65b240c865fcb10b76039a4325b267102b07a5",
+  "content_hash": "b11ac40f00044d7ed314676511d647ef45d95cb7fd6333af5bdd3ca9233667a4",
   "dependencies": [],
   "description": "Use this skill to select the correct Experience Cloud external user license type for a portal or community. Trigger keywords: Customer Community vs Partner Community, login-based vs member-based license, External Apps license, external user license selection, Experience Cloud license tiers. NOT for internal Salesforce employee licensing. NOT for Marketing Cloud licensing. NOT for ISV or OEM licensing.",
   "file_location": "skills/architect/experience-cloud-licensing-model",

@@ -105,7 +105,7 @@
     "fd3667764c78e2c60ffa",
     "fd558fed2d5e3316e3a7"
   ],
-  "content_hash": "5645201d236f5b0aacef95adfe0518b47e71761809406e77849676cc94c068c8",
+  "content_hash": "b7354ad8b83f3ebf5252f796e55b7c3586db0c38b1233ef759798efa44d87ac8",
   "dependencies": [
     "apex/apex-queueable-patterns",
     "apex/platform-events-apex"

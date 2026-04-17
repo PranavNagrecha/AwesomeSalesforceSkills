@@ -78,7 +78,7 @@
     "f907a8d0047d11bb30ff",
     "fd8d3e7e88770743e80c"
   ],
-  "content_hash": "0597ee6693113567c201ae2ab4b3088758b65fb94636e0a090536a8af21d60c5",
+  "content_hash": "995a60c7b9bec6af2e4d62c1128f6e477fd5f3ee7d3bb6e95bf02ff6778b53d1",
   "dependencies": [],
   "description": "Use when sending emails, in-app bell notifications, SMS, or Slack messages from Salesforce Flow. Trigger keywords: 'send email action', 'custom notification', 'bell icon', 'Send Custom Notification', 'SMS from flow', 'Slack notification flow'. NOT for designing or managing email templates from Setup (use admin/email-templates-and-alerts), and NOT for Email Alerts defined in workflow rules.",
   "file_location": "skills/flow/flow-email-and-notifications",

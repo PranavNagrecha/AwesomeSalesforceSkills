@@ -58,7 +58,7 @@
     "ec83be8a59fc07fa6407",
     "f1637c8a8a490d193857"
   ],
-  "content_hash": "c5288379d1fef965373772fb90e41a9ef8df6c11445d138a73cff64610886d49",
+  "content_hash": "cbf0af2b9e5a73381aeb3838c66ec70149aa3053ce86f0c550b7a86201f3f58c",
   "dependencies": [
     "apex/sf-cli-and-sfdx-essentials",
     "devops/continuous-integration-testing"

@@ -97,7 +97,7 @@
     "fe69d9a03af9df7132ae",
     "fea1d2469c18e448c61d"
   ],
-  "content_hash": "3087cad533afa4809ad368960a2f6649945d408d37298c17587f547d41be5dc7",
+  "content_hash": "2c3016d406e55dd81c68315a27323a2d631666c440772669460af3955abf5dec",
   "dependencies": [],
   "description": "Use when modeling, loading, or troubleshooting Salesforce product and pricebook data \u2014 covering the Product2 \u2192 Pricebook2 \u2192 PricebookEntry three-object chain, standard pricebook constraints, bulk load sequencing (Product2 \u2192 Standard PBE \u2192 custom Pricebook2 \u2192 custom PBE), UseStandardPrice inheritance, and product hierarchy strategies. NOT for Salesforce CPQ product and pricing model (use cpq-vs-standard-products-decision). NOT for Industries CPQ catalog-item model (use industries-cpq-vs-salesforce-cpq). NOT for Opportunity Line Item mechanics.",
   "file_location": "skills/data/product-catalog-data-model",

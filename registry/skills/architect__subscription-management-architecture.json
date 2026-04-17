@@ -124,7 +124,7 @@
     "fb9ef306f7ef100d8b93",
     "fcbc6c454ccc5e625b19"
   ],
-  "content_hash": "548ef25f5f65ce92393b20f6a9966e40d5236454885de03398b82734ce7c74c2",
+  "content_hash": "3888c47e517bc6cc98a6e0247060de66a18ecd5b69f0d4e1d80028752b170190",
   "dependencies": [
     "contract-and-renewal-management",
     "cpq-pricing-rules",

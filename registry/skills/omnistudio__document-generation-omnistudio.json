@@ -72,7 +72,7 @@
     "fb54d4cdbc6cd7fea94e",
     "ff98e94643cc0667a96c"
   ],
-  "content_hash": "bbec431c13b7a40277f15b50ff95d7afc3e2b44cb67e318b2763fa99307b607b",
+  "content_hash": "63be3374cf9c79f3ac2b818b5e8a406f793d444d201a698e811b59011055272c",
   "dependencies": [
     "omnistudio/omniscript-design-patterns"
   ],

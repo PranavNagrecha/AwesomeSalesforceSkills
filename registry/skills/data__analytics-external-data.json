@@ -113,7 +113,7 @@
     "fc5bba6cce6bfcc2ff67",
     "fd25f2983c33ce921d03"
   ],
-  "content_hash": "3b5804142926416afb3c962a2e5c7f9b086d87cb9b2f253a2d7286b05051a192",
+  "content_hash": "38792efe8f2afce12df6a6e768394dedf2bfda8c16f42e01e23a3ddeb5f0ce8e",
   "dependencies": [],
   "description": "Use when bringing non-Salesforce data into CRM Analytics via the External Data API, Data Connectors, or Live Datasets. Trigger keywords: InsightsExternalData, External Data API, live dataset, remote connection, Snowflake connector, BigQuery connector, Tableau Bridge, external CSV upload, analytics connector. NOT for standard data import into Salesforce objects. NOT for Salesforce object sync via dataflow local connectors. NOT for standard ETL into Sales or Service Cloud.",
   "file_location": "skills/data/analytics-external-data",

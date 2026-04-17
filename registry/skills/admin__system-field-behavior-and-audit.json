@@ -63,7 +63,7 @@
     "fda03c863d0c8058d384",
     "ffba8e93bc1c279976ae"
   ],
-  "content_hash": "9bd2d5e0a2e1cf806e4ed7aa03bdc18b1a9e987e2bf63752e343a9ebf260e794",
+  "content_hash": "13dfdf349d05edf289cc81fe6857b2a36160ff6b69af5ed439c7cd19ab247798",
   "dependencies": [],
   "description": "Use when practitioners need to understand system-managed fields (CreatedDate, LastModifiedDate, SystemModstamp, CreatedById, LastModifiedById, IsDeleted) \u2014 their update behavior, indexing, and queryability. Triggers: 'difference between SystemModstamp and LastModifiedDate', 'how to query deleted records', 'set CreatedDate during data migration', 'why does LastModifiedDate not match SystemModstamp', 'Create Audit Fields permission'. NOT for field-level change tracking (use field-history-tracking skill), Shield Field Audit Trail for compliance retention (use field-audit-trail skill), or custom audit logging with Apex triggers.",
   "file_location": "skills/admin/system-field-behavior-and-audit",

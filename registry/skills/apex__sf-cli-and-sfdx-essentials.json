@@ -128,7 +128,7 @@
     "fee004a0054b09125186",
     "ffacee2187dfb5290702"
   ],
-  "content_hash": "079561fb6d623c7f011e9e962856d139f602ac4a5b3167f6df28c1219c3a48f2",
+  "content_hash": "3e1e4e8ef4342ae65b0f2d42ea93362727324c97a3120f95dcb706d878441327",
   "dependencies": [],
   "description": "Use this skill when a developer needs to authenticate orgs with sf CLI, set up a Salesforce DX project, create scratch orgs, push or pull source between the local repo and a scratch org, deploy or retrieve metadata to sandboxes or production using package.xml manifests, or diagnose common sf CLI errors. Trigger keywords: sf CLI, sfdx, scratch org, source push, source pull, deploy, retrieve, package.xml, org login, sf project. NOT for full CI/CD pipeline design (use devops skills) or Metadata API SOAP programming (that is SOAP API work, not CLI).",
   "file_location": "skills/apex/sf-cli-and-sfdx-essentials",

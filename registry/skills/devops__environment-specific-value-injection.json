@@ -110,7 +110,7 @@
     "fd691393dd62c7448288",
     "fffa3c0a6045816317fe"
   ],
-  "content_hash": "178389584015a3614f87f0c79c95252380a4f0a1d04feea2259374d9b20c206f",
+  "content_hash": "425d225bdc57ef483a4abf56f2a83e16d6b7ea3f879996690f1a08d28c752aef",
   "dependencies": [
     "devops/github-actions-for-salesforce",
     "admin/custom-metadata-types"

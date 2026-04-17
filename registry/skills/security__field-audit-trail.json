@@ -97,7 +97,7 @@
     "f395d504b28d4d86cab7",
     "f7b2ef95163a932dfd68"
   ],
-  "content_hash": "437357b03c2c40fd0473d92680bbfc5c8927565ee0072f2461428ce5576f3e41",
+  "content_hash": "6da30cc1e3d4b6e2b7b58a26ec9b2f060ed17e997a9fe0c0dcd68033964e1c9b",
   "dependencies": [],
   "description": "Salesforce Shield Field Audit Trail: configuration, retention policies, querying archived field data, compliance requirements. NOT for field history tracking (use field-history-tracking).",
   "file_location": "skills/security/field-audit-trail",

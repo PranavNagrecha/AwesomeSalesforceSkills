@@ -72,7 +72,7 @@
     "fa5f98f8901ddb947842",
     "ff7b98f9135074f699f0"
   ],
-  "content_hash": "ab82df5dfc475adf7b9b2c1ab7ec9e1256672bd191e41029d7c4571dbd674116",
+  "content_hash": "baa294b38875314526fdd8833a35382f4a08fdd4f47b517b6f80f3ea408c5818",
   "dependencies": [
     "mulesoft-salesforce-connector",
     "rest-api-patterns",

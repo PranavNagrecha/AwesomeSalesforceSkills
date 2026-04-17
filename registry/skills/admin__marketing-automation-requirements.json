@@ -129,7 +129,7 @@
     "fcc6d84231ee16024f1a",
     "fd824727da58098ab6c9"
   ],
-  "content_hash": "8d7917e95e93bc8dd5aae88920e907b6a7ad47f4e9b6c7d153e10954d7ca7efc",
+  "content_hash": "c628097ba7e45206bb1f1b545bdf43a2a200482e4ec19f262f14715a021cb3f3",
   "dependencies": [],
   "description": "Use this skill when gathering, documenting, or validating requirements for a Salesforce marketing automation program \u2014 covering MCAE (Account Engagement / Pardot) lifecycle stages, MQL/SQL threshold definitions, scoring model specifications (sources, weights, decay, ceiling), handoff notification design, CRM field updates on status change, and sales SLA. Trigger keywords: MQL criteria, marketing-to-sales handoff, lead lifecycle, scoring requirements, automation program requirements, Marketing Cloud Automation Studio scope. NOT for implementation of MCAE automation rules, MCAE scoring configuration, MC Automation Studio SQL activity authoring, or Einstein Lead Scoring setup \u2014 those are covered by dedicated implementation skills.",
   "file_location": "skills/admin/marketing-automation-requirements",

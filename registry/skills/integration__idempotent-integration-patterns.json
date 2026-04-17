@@ -65,7 +65,7 @@
     "f978db0bdd01656fdb11",
     "fda75f20b4e820dc4c0b"
   ],
-  "content_hash": "610ef3055eabd5e888aaeb6fbd5dfcce72acbafa4587522415dfaafd72d3d55a",
+  "content_hash": "2483b07bfb302507eda99bb685183c500fe0cc900ae16dd36703b9f65ac9d884",
   "dependencies": [],
   "description": "Use when designing retry-safe integrations with Salesforce \u2014 including external ID upsert strategies, idempotency key management for inbound calls, Platform Event replay safety, and Outbound Message retry handling. NOT for Salesforce duplicate management rules.",
   "file_location": "skills/integration/idempotent-integration-patterns",

@@ -84,7 +84,7 @@
     "fadcb86095f76edd96e9",
     "fe59d2f1a1a642f4fad0"
   ],
-  "content_hash": "299fde9c1ef2fd4f4741031c94b35972226d950e8b4caa9eac77665c76907e89",
+  "content_hash": "43419a252dbf19fe172ca62d57ac4aa6e4a82aa67afd2383aa942b7298fe6f29",
   "dependencies": [],
   "description": "Shield Event Monitoring: event log types, downloading logs via REST API and SOQL, real-time event monitoring with streaming API, and threat detection policies. NOT for debug logs (use debug-logs-and-developer-console). NOT for custom platform event publishing/subscribing (use platform-events-apex).",
   "file_location": "skills/security/event-monitoring",

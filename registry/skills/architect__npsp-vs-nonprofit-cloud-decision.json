@@ -94,7 +94,7 @@
     "f9d8cc5288a999542dda",
     "fffe425962846032a24e"
   ],
-  "content_hash": "fd212d4ee912192872befe691f737d3359c4c953e3b195bfcd050983674ee248",
+  "content_hash": "bc6f3da6a1e40ff62b5040e90dd5b3ee763f134cd012fc482337b429f2e5c5f2",
   "dependencies": [],
   "description": "Use this skill when an organization must decide whether to stay on NPSP (Nonprofit Success Pack) or move to Nonprofit Cloud (NPC), evaluate the timeline for that move, and understand what the migration entails at an architectural level. Trigger keywords: NPSP vs Nonprofit Cloud, upgrade NPSP, migrate to NPC, nonprofit platform decision, NPSP end of life, Nonprofit Cloud vs NPSP comparison. NOT for implementation \u2014 does not cover post-decision NPC build, NPSP customization, or data migration execution.",
   "file_location": "skills/architect/npsp-vs-nonprofit-cloud-decision",

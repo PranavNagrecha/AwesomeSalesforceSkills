@@ -53,7 +53,7 @@
     "f5650e05be874c05f081",
     "ff8e5b1c05c9cb31bc56"
   ],
-  "content_hash": "5866884c609d42ec1413fb5142deab19db2b4447ae6c56594ecb4b0ab37ee854",
+  "content_hash": "449705a33066e36f963faa942a9ce219971e07623040010ecd2169681d54cdee",
   "dependencies": [],
   "description": "Structured Salesforce code review for Apex, triggers, async, and tests before merge or deployment \u2014 governor limits, bulk-safe triggers, CRUD/FLS and sharing posture, meaningful tests, and naming consistency. NOT for AppExchange security-review-only deep dives (use the security secure-coding checklist), network penetration testing, or org-wide permission model design without code artifacts.",
   "file_location": "skills/devops/code-review-checklist-salesforce",

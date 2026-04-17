@@ -57,7 +57,7 @@
     "fd810edadf7523330780",
     "fddaf1dd20e840b9614d"
   ],
-  "content_hash": "b517ec5c7b6f5f285137e558c819cd8f25a2981d4296bd8276b708cb17325742",
+  "content_hash": "cf2a230b208129e803540a6494508819197f3a01c279e366cca0ccae30d2aaba",
   "dependencies": [],
   "description": "Use when designing or managing Data Model Objects (DMOs) in Salesforce Data Cloud \u2014 covers DMO schema design, subject area governance, data relationships between DMOs, XMD (extended metadata) layer management, data transforms (streaming vs. batch), and mandatory DMO requirements for identity resolution. NOT for standard Salesforce CRM object design, Data Cloud data stream configuration, or SOQL queries against Data Cloud objects.",
   "file_location": "skills/data/data-cloud-data-model-objects",

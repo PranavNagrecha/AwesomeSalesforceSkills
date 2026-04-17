@@ -80,7 +80,7 @@
     "f94c61bfc64ede18cb50",
     "fb6124a7abeb49f10ba4"
   ],
-  "content_hash": "c8d4f336ee9053d6667b99682384c5358e0d578cbf8b0bda7fd3d6bb11f5466a",
+  "content_hash": "02487460f624aaab2d6c9915a46cbeb5b6c02818832fb7ef292e1bece6997c91",
   "dependencies": [],
   "description": "Use when writing Apex to customize lead conversion: controlling which records are created, copying custom field values post-conversion, firing related record logic on convert, or structuring LeadConvert calls. Triggers: 'lead conversion apex', 'Database.LeadConvert', 'custom field mapping conversion', 'convert lead trigger', 'lead convert opportunity', 'LeadConvertResult'. NOT for configuring lead conversion field mapping in Setup UI, managing lead assignment rules, or building web-to-lead forms \u2014 use admin/lead-management-and-conversion for those.",
   "file_location": "skills/apex/lead-conversion-customization",
