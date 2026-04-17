@@ -1,71 +1,40 @@
-# /migrate-workflow-pb — Migrate Workflow Rules + Process Builders to Flow
+# /migrate-workflow-pb — LEGACY ALIAS (Wave 3a)
 
-Wraps [`agents/workflow-and-pb-migrator/AGENT.md`](../agents/workflow-and-pb-migrator/AGENT.md). Inventories existing declarative automation on an object, produces a consolidated Flow design, and emits a parallel-run + rollback plan.
+> **Deprecation notice:** this command is now an alias. It invokes the
+> [`automation-migration-router`](../agents/automation-migration-router/AGENT.md)
+> with `--source-type=auto` and emits this deprecation notice. Switch to
+> the canonical `/migrate-automation` form at your convenience; the alias
+> ships until the removal window declared in `docs/MIGRATION.md` (Wave 7).
 
----
-
-## Step 1 — Collect inputs
-
-Ask the user:
+## Canonical form
 
 ```
-1. Object API name?
-   Example: Opportunity
-
-2. Target org alias (required — agent reads WF + PB metadata from the org)?
-
-3. Consolidation mode? aggressive / conservative / auto
-   - aggressive: one flow per object
-   - conservative: one flow per original WF/PB (highest fidelity)
-   - auto (default): group by trigger context
-
-4. Include inactive WF/PBs in the migration? yes / no (default no)
+/migrate-automation --source-type auto --object <ApiName> --target-org <alias>
 ```
 
----
+## Alias behavior
 
-## Step 2 — Load the agent
+Running `/migrate-workflow-pb <args>` is equivalent to:
 
-Read `agents/workflow-and-pb-migrator/AGENT.md` + mandatory reads. Note: Outbound Messages are unsupported — the agent refuses to migrate them.
+```
+/migrate-automation --source-type auto <args>
+```
 
----
+`source_type=auto` runs the `wf_rule` and `process_builder` dispatches
+back-to-back against the same object, merges the inventories, and flags
+any WFR + PB pair hitting the same action type on the same field (a real
+conflict the human should resolve before migrating).
 
-## Step 3 — Execute the plan
+## Why the change
 
-1. Inventory existing WF + PB + related flows + triggers on the object
-2. Classify each rule / process against the migration table
-3. Apply consolidation mode
-4. Emit the target flow design (with source + canon citations per element)
-5. Parallel-run validation plan (default 7 business days)
-6. Rollback plan
+Wave 3a of the redesign consolidated four migrators into one router. See
+[`agents/_shared/harnesses/migration_router/README.md`](../agents/_shared/harnesses/migration_router/README.md)
+for the rationale and
+[`agents/_shared/harnesses/migration_router/decision_table.md`](../agents/_shared/harnesses/migration_router/decision_table.md)
+for the per-source-type dispatch logic.
 
----
+## See also
 
-## Step 4 — Deliver the output
-
-- Summary (WF + PB counts, target flow count, confidence)
-- Inventory table
-- Target flow design
-- Unmigratable items (with explanation)
-- Parallel-run plan (with concrete shadow-field + comparison query)
-- Rollback plan
-- Process Observations
-- Citations
-
----
-
-## Step 5 — Recommend follow-ups
-
-- `/build-flow` to refine any specific migrated flow
-- `/analyze-flow` post-cutover
-- `/audit-validation-rules` to check VR vs migrated-flow conflicts
-- `/detect-drift` (existing) for inactive rules still cluttering the object
-
----
-
-## What this command does NOT do
-
-- Does not activate or deactivate Workflow Rules, PBs, or Flows.
-- Does not deploy metadata.
-- Does not migrate Workflow Outbound Messages (unsupported path — documented in the agent).
-- Does not generate rollback SQL/DML — the user owns data-fix after rollback.
+- [`/migrate-automation`](./automation-migration-router.md) — canonical router entry point
+- [`agents/automation-migration-router/AGENT.md`](../agents/automation-migration-router/AGENT.md) — router contract
+- [`docs/MIGRATION.md`](../docs/MIGRATION.md) — removal timeline (authored in Wave 7)
