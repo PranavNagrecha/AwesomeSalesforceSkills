@@ -4559,6 +4559,42 @@
       "domain": "data",
       "expected_skill": "data/data-loader-and-tools",
       "top_k": 3
+    },
+    {
+      "query": "before-save vs after-save flow transaction boundary governor limits",
+      "domain": "flow",
+      "expected_skill": "flow/flow-transactional-boundaries",
+      "top_k": 3
+    },
+    {
+      "query": "flow scheduled path new transaction fresh governor limits",
+      "domain": "flow",
+      "expected_skill": "flow/flow-transactional-boundaries",
+      "top_k": 3
+    },
+    {
+      "query": "publish platform event from flow after commit idempotency",
+      "domain": "flow",
+      "expected_skill": "flow/flow-platform-events-integration",
+      "top_k": 3
+    },
+    {
+      "query": "platform event triggered flow subscriber error handling at-least-once",
+      "domain": "flow",
+      "expected_skill": "flow/flow-platform-events-integration",
+      "top_k": 3
+    },
+    {
+      "query": "invocable apex method from flow bulk contract list input output",
+      "domain": "flow",
+      "expected_skill": "flow/flow-invocable-from-apex",
+      "top_k": 3
+    },
+    {
+      "query": "call flow from apex flow interview createinterview",
+      "domain": "flow",
+      "expected_skill": "flow/flow-invocable-from-apex",
+      "top_k": 3
     }
   ]
 }
