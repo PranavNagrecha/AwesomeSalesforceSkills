@@ -1,0 +1,70 @@
+{
+  "category": "flow",
+  "chunk_ids": [
+    "00309ee2ebd459450116",
+    "0160165bb999a2de887a",
+    "055ab95abc6a00ea3505",
+    "0d8470012a25cdc939fc",
+    "0f623c4fe9d905e81659",
+    "1ac29e2a66d107962708",
+    "1c4fdc6c95740d2cd5fe",
+    "1de651cab429c773863c",
+    "2340f59af642d40780f7",
+    "279e206bc0f1f9999ce9",
+    "3d7dc14e154900dd524f",
+    "4216f0d82aaf2c1eb027",
+    "4c7b113523bbb7673c9c",
+    "5282fa0e926102b989c6",
+    "5e21f76cad0b4772b4db",
+    "718a7f9ddeade3f9adaa",
+    "76db5ebb8e7905ed3093",
+    "940da54ceab7dfed7b1d",
+    "97ae0ca8ae1fd820bcef",
+    "b096524d3b5c636dc390",
+    "b1f808df7eada6af85b4",
+    "bccc69112d6dd2591c76",
+    "c1ea3d3095abe2d5c6c9",
+    "dbe2c075d5e8fa474c96",
+    "e89429df0eb33200d611",
+    "fba142e9b0d018536827"
+  ],
+  "content_hash": "adaaabc79e6e413bfdc8e411d3f7466a41ded1c40ee35e6ce3b7da9f89e5c9f2",
+  "dependencies": [],
+  "description": "Use the Data Table screen component for selecting rows from collections in Screen Flows, including single/multi-select and inline actions. NOT for displaying read-only data outside flows.",
+  "file_location": "skills/flow/flow-data-tables",
+  "id": "flow/flow-data-tables",
+  "inputs": [
+    "collection to display",
+    "selection mode"
+  ],
+  "name": "flow-data-tables",
+  "official_sources": [
+    "Flow Builder Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.flow.htm",
+    "Flow Best Practices \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_best_practices.htm",
+    "Reactive Screens \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_screen_reactive.htm",
+    "Flow HTTP Callout Action \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_concepts_callout.htm"
+  ],
+  "outputs": [
+    "screen with Data Table configured"
+  ],
+  "references": [
+    "skills/flow/flow-data-tables/references/examples.md",
+    "skills/flow/flow-data-tables/references/gotchas.md",
+    "skills/flow/flow-data-tables/references/llm-anti-patterns.md",
+    "skills/flow/flow-data-tables/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/flow/flow-data-tables/scripts/check_flow_data_tables.py"
+  ],
+  "tags": [
+    "flow",
+    "datatable",
+    "screen"
+  ],
+  "templates": [
+    "skills/flow/flow-data-tables/templates/flow-data-tables-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

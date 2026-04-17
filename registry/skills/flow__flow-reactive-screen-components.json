@@ -1,0 +1,70 @@
+{
+  "category": "flow",
+  "chunk_ids": [
+    "060df1c6d887b6f8f23b",
+    "0a698731bda6b0ab9f80",
+    "0b14fa9833117529329e",
+    "16aa8bc499be9e790e1e",
+    "457c4616d208fefbfae7",
+    "4b7c4426eb51599491e1",
+    "4c20276965aacdad8afc",
+    "5a77a78bbd332cd4d179",
+    "601abfd9412e9f73e2f8",
+    "611be536775981433175",
+    "86b80d83c8ca5c8888ee",
+    "88d96b57e8818a8f4947",
+    "89a068decca1a738e7f1",
+    "97765277fb05025129d6",
+    "9c8c342d7248569b114a",
+    "af0caad8f10a3b90fb11",
+    "af39c6c0d6dfa6f4feea",
+    "b4517af8159a1f34186a",
+    "ba9b16b180a234c1ad2b",
+    "d06ef0854c82888709a5",
+    "d127350c825834345094",
+    "d6af17d111bc0654e403",
+    "dba00a7cf1634fefe611",
+    "e4f2c4043f5ef9e91041",
+    "e72ac5cdee45d09f4ddb",
+    "f45db7fb7d281ac41ba2"
+  ],
+  "content_hash": "fe7b34bb405c2310fcd8ab16b7f96420a22a5e4475385d265a8d036d3bdc77fd",
+  "dependencies": [],
+  "description": "Build reactive Flow screens where one component updates another without navigation using reactive formulas and component outputs. NOT for Aura-based screens.",
+  "file_location": "skills/flow/flow-reactive-screen-components",
+  "id": "flow/flow-reactive-screen-components",
+  "inputs": [
+    "user workflow that benefits from reactivity",
+    "components involved"
+  ],
+  "name": "flow-reactive-screen-components",
+  "official_sources": [
+    "Flow Builder Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.flow.htm",
+    "Flow Best Practices \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_best_practices.htm",
+    "Reactive Screens \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_screen_reactive.htm",
+    "Flow HTTP Callout Action \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_concepts_callout.htm"
+  ],
+  "outputs": [
+    "reactive screen with live formula outputs"
+  ],
+  "references": [
+    "skills/flow/flow-reactive-screen-components/references/examples.md",
+    "skills/flow/flow-reactive-screen-components/references/gotchas.md",
+    "skills/flow/flow-reactive-screen-components/references/llm-anti-patterns.md",
+    "skills/flow/flow-reactive-screen-components/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/flow/flow-reactive-screen-components/scripts/check_flow_reactive_screen_components.py"
+  ],
+  "tags": [
+    "flow",
+    "reactive",
+    "screen"
+  ],
+  "templates": [
+    "skills/flow/flow-reactive-screen-components/templates/flow-reactive-screen-components-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

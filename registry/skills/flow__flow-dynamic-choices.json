@@ -1,0 +1,70 @@
+{
+  "category": "flow",
+  "chunk_ids": [
+    "0a56c6dfeeb681e538c2",
+    "27a8f6b116571038c5db",
+    "299d3889a5213fb1e1b7",
+    "34078d53c169175f6af5",
+    "38faeb8d21e28b3b2e3d",
+    "39811ef248fe9eed7a4c",
+    "3b439b2b6190bf36074f",
+    "467b3d2c5301571949fa",
+    "54ea3b10fdfe9046e193",
+    "57e07e236908a48772fb",
+    "58381292da223c7fdbf8",
+    "5a083fb0d962cc58cabd",
+    "5aae3a4d837a9cdad87f",
+    "5bb45cd7a5430117aee2",
+    "5f72109e8c699cb839a1",
+    "67a9362b5a43d44bdbd6",
+    "7105f0d6b950fb2bf608",
+    "7887f04217c214d3c7c8",
+    "857f10ff5e4c4ef990dd",
+    "88b21ade0058476dc47f",
+    "a947a067d94b8aba0fd9",
+    "c55d161dc96b11fe6fb8",
+    "cdcf9bd8c9391461bde9",
+    "d50e967ad325d816b8a9",
+    "e857ae46bbe50718309b",
+    "fcdeabfc9104a61d9dfb"
+  ],
+  "content_hash": "2467743adb05fc4dbee62e4298ae10337ef9a6b9e4e7a8af4aeffc0e47e13105",
+  "dependencies": [],
+  "description": "Build picklists and choice sets in Flow Builder sourced from records, picklist fields, or collections, including dependent choices. NOT for static hard-coded choice sets.",
+  "file_location": "skills/flow/flow-dynamic-choices",
+  "id": "flow/flow-dynamic-choices",
+  "inputs": [
+    "picklist source (SObject query or picklist field)",
+    "filter criteria"
+  ],
+  "name": "flow-dynamic-choices",
+  "official_sources": [
+    "Flow Builder Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.flow.htm",
+    "Flow Best Practices \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_best_practices.htm",
+    "Reactive Screens \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_screen_reactive.htm",
+    "Flow HTTP Callout Action \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_concepts_callout.htm"
+  ],
+  "outputs": [
+    "Choice configuration + fallback on empty results"
+  ],
+  "references": [
+    "skills/flow/flow-dynamic-choices/references/examples.md",
+    "skills/flow/flow-dynamic-choices/references/gotchas.md",
+    "skills/flow/flow-dynamic-choices/references/llm-anti-patterns.md",
+    "skills/flow/flow-dynamic-choices/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/flow/flow-dynamic-choices/scripts/check_flow_dynamic_choices.py"
+  ],
+  "tags": [
+    "flow",
+    "choices",
+    "screen-flow"
+  ],
+  "templates": [
+    "skills/flow/flow-dynamic-choices/templates/flow-dynamic-choices-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}
