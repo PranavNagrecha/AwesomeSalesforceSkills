@@ -5,10 +5,10 @@ eval:
   priority: P0
   last_verified: 2026-04-17
   description: >
-    A queueable that recalculates Account.Hierarchy_Depth__c after a
+    A queueable that recalculates Account.NumberofLocations__c after a
     parent change, for orgs with deep account families (>1000 accounts
     per root). Covers: Gate A (inputs complete), Gate A.5 (requirements
-    anchor), Gate B (primary_sobject resolves, Hierarchy_Depth__c
+    anchor), Gate B (primary_sobject resolves, NumberofLocations__c
     resolves), Gate C (parse clean, test coverage ≥85%), Gate D (computed
     confidence HIGH).
 
@@ -18,14 +18,14 @@ inputs:
   feature_summary: "Nightly Account hierarchy depth rebuild triggered when ParentId changes for accounts in large families"
   primary_sobject: Account
   referenced_fields:
-    - Account.Hierarchy_Depth__c
+    - Account.NumberofLocations__c
     - Account.ParentId
   api_version: "60.0"
   namespace: ""
   include_logger: true
   test_bulk_size: 200
   async_hint: standard
-  target_org_alias: uat-fixture
+  target_org_alias: sfskills-dev
   repo_path: ./force-app
   sharing_mode: with_sharing
 
@@ -43,7 +43,7 @@ org_stub:
         - { name: Id, type: id }
         - { name: Name, type: string }
         - { name: ParentId, type: reference }
-        - { name: Hierarchy_Depth__c, type: number, custom: true }
+        - { name: NumberofLocations__c, type: number, custom: true }
   apex_hits: []
   flow_hits: []
   existing_handlers_on_sobject:
@@ -61,7 +61,7 @@ expect:
   requirements_document_must_reference:
     - "queueable"
     - "Account"
-    - "Hierarchy_Depth__c"
+    - "NumberofLocations__c"
     - "ApplicationLogger"
     - "with sharing"
   must_include_deliverables_with_kinds:
