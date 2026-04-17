@@ -1,10 +1,10 @@
 {
   "domain_counts": {
-    "admin": 201,
+    "admin": 200,
     "agentforce": 28,
     "apex": 97,
     "architect": 90,
-    "data": 86,
+    "data": 85,
     "devops": 50,
     "flow": 21,
     "integration": 35,
@@ -12,9 +12,9 @@
     "omnistudio": 21,
     "security": 25
   },
-  "generated_from_hash": "9e12cb9327d7c993f680adbe5fe4cf02eb9468407546f19e9fd1cb355b7ef0d9",
+  "generated_from_hash": "8de7866f58a02074959f7e9a297bdff7ad2f1d83d30e30ed50266f08d06f022d",
   "schema_version": 1,
-  "skill_count": 686,
+  "skill_count": 684,
   "skills": [
     {
       "category": "admin",
@@ -20608,90 +20608,6 @@
         "skills/admin/omnistudio-admin-configuration/templates/omnistudio-admin-configuration-template.md"
       ],
       "updated": "2026-04-11",
-      "vector_embedding": null,
-      "version": "1.0.0"
-    },
-    {
-      "category": "admin",
-      "chunk_ids": [
-        "09337f9d7e4d881761fd",
-        "0b8a95e4bb090d3ab99c",
-        "0dab26016152bdec28f1",
-        "2341a8b5e3a014c78027",
-        "2b4f9e17d6394e58a27d",
-        "2f9d55a11e7a6c03600c",
-        "3e7ff91cf381df8a717f",
-        "416102fb40a321ecd91c",
-        "433bf0e41c9e0d4c7f5c",
-        "46864759ac148d69d203",
-        "46cae06c466f695e17da",
-        "4d56e94e227c49fc87a9",
-        "5008d55a2ee85e79c50d",
-        "53a32d08d6753769a435",
-        "59f3e4c97ec508254410",
-        "5d8971438d757697e83f",
-        "66b595e7b44ac5e3fded",
-        "70c1d20285555d11acde",
-        "74d328d32f7c652d347b",
-        "762bb5d6cc3d42c586c9",
-        "7a45088580185f25882e",
-        "7b3e79891c454e2cec1c",
-        "7c6b0239b4f6da84cc05",
-        "82a4834f9e497faed4da",
-        "9b827c0fc7a553750b85",
-        "9dab22325e956825c4af",
-        "a2140aec4aac6cc70345",
-        "a664d72997f3b46ff2df",
-        "a8e1f39171bf6566dc70",
-        "aaf8ad1ca710e2dac9f2",
-        "af2778a92bedebbd865f",
-        "b97174ad8450abd66944",
-        "bcc21b23718f72dadcc9",
-        "c56cec9174a440c30a5d",
-        "c57d298e1a9fe52f964e",
-        "cda5aaf6e843a72128d1",
-        "d4d259b852ed3f0e9273",
-        "d4d562f3ec0271f7554a",
-        "da73d2b4b24489a22db9",
-        "db4d2a0aeb3996bcbdf6",
-        "e1698f32602e2c415eaa",
-        "eb85cef940324f992dd5",
-        "ec3f0fda49bc9f39ae7e"
-      ],
-      "content_hash": "5219499550ff127ac1c32c87f88b6ac2a7e7fb506a1fa0ae7fbbf27d210d49a3",
-      "dependencies": [],
-      "description": "TODO: One sentence explaining when to use this skill and its main trigger keywords. NOT for TODO: explicit scope exclusion \u2014 what does this skill NOT cover.",
-      "file_location": "skills/admin/omnistudio-vs-standard-decision",
-      "id": "admin/omnistudio-vs-standard-decision",
-      "inputs": [
-        "TODO: context or information this skill needs to work"
-      ],
-      "name": "omnistudio-vs-standard-decision",
-      "official_sources": [
-        "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
-        "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
-        "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
-      ],
-      "outputs": [
-        "TODO: artifact or guidance this skill produces"
-      ],
-      "references": [
-        "skills/admin/omnistudio-vs-standard-decision/references/examples.md",
-        "skills/admin/omnistudio-vs-standard-decision/references/gotchas.md",
-        "skills/admin/omnistudio-vs-standard-decision/references/llm-anti-patterns.md",
-        "skills/admin/omnistudio-vs-standard-decision/references/well-architected.md"
-      ],
-      "scripts": [
-        "skills/admin/omnistudio-vs-standard-decision/scripts/check_omnistudio_vs_standard_decision.py"
-      ],
-      "tags": [
-        "omnistudio-vs-standard-decision",
-        "TODO_TAG_2"
-      ],
-      "templates": [
-        "skills/admin/omnistudio-vs-standard-decision/templates/omnistudio-vs-standard-decision-template.md"
-      ],
-      "updated": "2026-04-13",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -55121,7 +55037,7 @@
         "f9d8cc5288a999542dda",
         "fffe425962846032a24e"
       ],
-      "content_hash": "5932e93294fa3640bbe43549fc57fc0155a2cc0c251d0ea321e4bfe3ba08605d",
+      "content_hash": "fd212d4ee912192872befe691f737d3359c4c953e3b195bfcd050983674ee248",
       "dependencies": [],
       "description": "Use this skill when an organization must decide whether to stay on NPSP (Nonprofit Success Pack) or move to Nonprofit Cloud (NPC), evaluate the timeline for that move, and understand what the migration entails at an architectural level. Trigger keywords: NPSP vs Nonprofit Cloud, upgrade NPSP, migrate to NPC, nonprofit platform decision, NPSP end of life, Nonprofit Cloud vs NPSP comparison. NOT for implementation \u2014 does not cover post-decision NPC build, NPSP customization, or data migration execution.",
       "file_location": "skills/architect/npsp-vs-nonprofit-cloud-decision",
@@ -65054,90 +64970,6 @@
         "skills/data/industries-data-migration/templates/industries-data-migration-template.md"
       ],
       "updated": "2026-04-15",
-      "vector_embedding": null,
-      "version": "1.0.0"
-    },
-    {
-      "category": "data",
-      "chunk_ids": [
-        "01a9bbfd59a71fcca732",
-        "0804719b0ead06b8802b",
-        "0afac31ae08c80a616b5",
-        "13dc776350a7f34b7523",
-        "148fe8990dd0cb4d06f0",
-        "1c2ac7669ec18a3cd3aa",
-        "1f24878e30bcb08f9507",
-        "31505efe82e0e44fab42",
-        "3789e9e4cf77af82b0f7",
-        "45d65fd6bf27b97e7c89",
-        "45f35f5d225363e965e3",
-        "48ba6ffc48843bf16a0e",
-        "4d5ccd92ece957373a7f",
-        "4f0e50223c7b7956babc",
-        "5b098dab5cd06cad00f7",
-        "5b2504c5afbffa3e11b1",
-        "5d097eaf587b71d0ca24",
-        "69938d977156592f227b",
-        "6cbb5f38ad8db4ec72f3",
-        "6db2224767642b06a8fe",
-        "71807b2b94d403e63386",
-        "7554125c6b252e8c4555",
-        "77205fbdf6227b926565",
-        "81f1f736bbb57c40a311",
-        "8b7748a762b1d1ae2024",
-        "9d52f83c82f83fa55dff",
-        "9dd7a4bc852911b6d67f",
-        "a10227a709d844ddf0b6",
-        "aa35a2ea411a2cde2a67",
-        "b964f350a544221113af",
-        "ccfebc5470a0b8275da2",
-        "ce56a585fb61b5328b4d",
-        "cfbec38540a3611bc7b9",
-        "d0bfa7038f72dbc69cd4",
-        "d5fa8e182fafe311177c",
-        "dd1af6a38c27dbb8e08b",
-        "ec611a1f57e7bda177f2",
-        "f2fb5e0b742c9505ee6e",
-        "f3bc78f80f75dc547a8f",
-        "f7658f79ca8db73e5406",
-        "f8f157777b25e53f1f71",
-        "fa55e305f612a530063e",
-        "fe1608667d14631b5c84"
-      ],
-      "content_hash": "2a9f3c10d1ed3df516ee2a625360c9945e866173dabc7e9b6d66c62037e14787",
-      "dependencies": [],
-      "description": "TODO: One sentence explaining when to use this skill and its main trigger keywords. NOT for TODO: explicit scope exclusion \u2014 what does this skill NOT cover.",
-      "file_location": "skills/data/industries-data-model",
-      "id": "data/industries-data-model",
-      "inputs": [
-        "TODO: context or information this skill needs to work"
-      ],
-      "name": "industries-data-model",
-      "official_sources": [
-        "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
-        "Bulk API 2.0 Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/asynch_api_intro.htm",
-        "Data Loader Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.data_loader.htm&type=5"
-      ],
-      "outputs": [
-        "TODO: artifact or guidance this skill produces"
-      ],
-      "references": [
-        "skills/data/industries-data-model/references/examples.md",
-        "skills/data/industries-data-model/references/gotchas.md",
-        "skills/data/industries-data-model/references/llm-anti-patterns.md",
-        "skills/data/industries-data-model/references/well-architected.md"
-      ],
-      "scripts": [
-        "skills/data/industries-data-model/scripts/check_industries_data_model.py"
-      ],
-      "tags": [
-        "industries-data-model",
-        "TODO_TAG_2"
-      ],
-      "templates": [
-        "skills/data/industries-data-model/templates/industries-data-model-template.md"
-      ],
-      "updated": "2026-04-13",
       "vector_embedding": null,
       "version": "1.0.0"
     },

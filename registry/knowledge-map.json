@@ -150,7 +150,6 @@
       "admin/omni-channel-routing-setup",
       "admin/omniscript-flow-design-requirements",
       "admin/omnistudio-admin-configuration",
-      "admin/omnistudio-vs-standard-decision",
       "admin/opportunity-management",
       "admin/org-cleanup-and-technical-debt",
       "admin/org-setup-and-configuration",
@@ -477,7 +476,6 @@
       "data/health-cloud-data-model",
       "data/historical-order-migration",
       "data/industries-data-migration",
-      "data/industries-data-model",
       "data/knowledge-article-import",
       "data/large-scale-deduplication",
       "data/lead-data-import-and-dedup",
@@ -1017,10 +1015,6 @@
     ],
     "SystemModstamp": [
       "admin/system-field-behavior-and-audit"
-    ],
-    "TODO_TAG_2": [
-      "admin/omnistudio-vs-standard-decision",
-      "data/industries-data-model"
     ],
     "Territory2ModelHistory": [
       "data/territory-data-alignment"
@@ -5922,9 +5916,6 @@
     "industries-cpq": [
       "omnistudio/industries-cpq-vs-salesforce-cpq"
     ],
-    "industries-data-model": [
-      "data/industries-data-model"
-    ],
     "industries-integration-architecture": [
       "architect/industries-integration-architecture"
     ],
@@ -7504,9 +7495,6 @@
     ],
     "omnistudio-testing-patterns": [
       "omnistudio/omnistudio-testing-patterns"
-    ],
-    "omnistudio-vs-standard-decision": [
-      "admin/omnistudio-vs-standard-decision"
     ],
     "omniupdatebyfield": [
       "omnistudio/omnistudio-custom-lwc-elements"
