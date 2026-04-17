@@ -37,4 +37,29 @@ def get_plugin(agent: str) -> BuilderPlugin:
     if agent == "agentforce-builder":
         from .agentforce import AgentforceBuilderPlugin
         return AgentforceBuilderPlugin()
+    if agent == "process-builder-to-flow-migrator":
+        from .pb_to_flow import PbToFlowMigratorPlugin
+        return PbToFlowMigratorPlugin()
+    if agent == "workflow-rule-to-flow-migrator":
+        from .pb_to_flow import PbToFlowMigratorPlugin
+        # Same gated shape — migrating WF rules produces Flow XML too.
+        p = PbToFlowMigratorPlugin()
+        p.agent = "workflow-rule-to-flow-migrator"
+        return p
+    if agent == "changeset-builder":
+        from .changeset import ChangesetBuilderPlugin
+        return ChangesetBuilderPlugin()
+    if agent == "integration-catalog-builder":
+        from .integration_catalog import IntegrationCatalogBuilderPlugin
+        return IntegrationCatalogBuilderPlugin()
+    if agent in (
+        "dev-skill-builder",
+        "admin-skill-builder",
+        "architect-skill-builder",
+        "data-skill-builder",
+        "devops-skill-builder",
+        "security-skill-builder",
+    ):
+        from .skill_builder import SkillBuilderPlugin
+        return SkillBuilderPlugin(agent_name=agent)
     raise KeyError(f"no builder plugin registered for agent={agent!r}")

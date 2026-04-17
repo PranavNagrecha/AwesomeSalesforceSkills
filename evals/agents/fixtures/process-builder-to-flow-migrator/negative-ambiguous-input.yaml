@@ -1,0 +1,23 @@
+eval:
+  id: process-builder-to-flow-migrator__negative-ambiguous-input
+  agent: process-builder-to-flow-migrator
+  mode: single
+  priority: P0
+  last_verified: 2026-04-17
+  description: >
+    Gate A MUST refuse when feature_summary is under 10 words.
+
+inputs:
+  source_process_name: Account_PB
+  flow_developer_name: Account_Flow
+  feature_summary: "Migrate account pb"
+  flow_type: record-triggered
+  trigger_sobject: Account
+  record_trigger_type: Update
+  api_version: "60.0"
+
+org_stub: {}
+
+expect:
+  refusal_code: REFUSAL_INPUT_AMBIGUOUS
+  gates_passed: []

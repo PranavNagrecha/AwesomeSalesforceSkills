@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills/agents/process-builder-to-flow-migrator/inputs.schema.json",
+  "title": "process-builder-to-flow-migrator inputs",
+  "description": "Typed Gate-A input contract for the process-builder-to-flow-migrator. Missing-required or under-constrained inputs trigger REFUSAL_INPUT_AMBIGUOUS.",
+  "type": "object",
+  "required": ["source_process_name", "flow_developer_name", "feature_summary", "trigger_sobject", "flow_type", "api_version"],
+  "properties": {
+    "source_process_name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "API name of the source Process Builder being migrated. Gate B validates it exists in source metadata."
+    },
+    "flow_developer_name": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Za-z0-9_]+$",
+      "description": "Developer name of the target Flow. Must NOT already exist under repo_path."
+    },
+    "feature_summary": {
+      "type": "string",
+      "minLength": 1,
+      "description": "One-line description of the migration target. At least 10 words."
+    },
+    "migration_rationale": {
+      "type": "string",
+      "description": "Why we are migrating. Deprecation, consolidation, performance, etc."
+    },
+    "flow_type": {
+      "type": "string",
+      "enum": ["record-triggered", "auto-launched", "scheduled", "platform-event-triggered"],
+      "description": "Migrators from Process Builder always land on an auto-launched family (typically record-triggered)."
+    },
+    "trigger_sobject": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_]*$"},
+    "trigger_context": {"type": "string", "enum": ["before-save", "after-save"], "default": "after-save"},
+    "record_trigger_type": {"type": "string", "enum": ["Create", "Update", "CreateAndUpdate", "Delete"]},
+    "expected_volume": {"type": "string", "enum": ["low", "medium", "high"], "default": "medium"},
+    "referenced_fields": {
+      "type": "array",
+      "items": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_]*\\.[A-Za-z][A-Za-z0-9_]*$"}
+    },
+    "subflows": {"type": "array", "items": {"type": "string"}},
+    "parity_checklist": {"type": "array", "items": {"type": "string"}},
+    "api_version": {"type": "string", "pattern": "^\\d{2}\\.0$"},
+    "target_org_alias": {"type": "string"},
+    "repo_path": {"type": "string", "default": "./force-app"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"flow_type": {"const": "record-triggered"}}, "required": ["flow_type"]},
+      "then": {"required": ["trigger_sobject", "record_trigger_type"]}
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+eval:
+  id: process-builder-to-flow-migrator__live-green-migrate-account-pb
+  agent: process-builder-to-flow-migrator
+  mode: single
+  priority: P0
+  last_verified: 2026-04-17
+  description: >
+    Migrate a legacy Account Process Builder that stamps Description from
+    Name to a before-save record-triggered flow. Proves Gate B grounds the
+    source PB, Gate C runs the inherited flow static + live checks, and the
+    parity checklist surfaces in REQUIREMENTS.md.
+
+inputs:
+  source_process_name: Account_Stamp_Description_PB
+  flow_developer_name: Account_Stamp_Description_From_PB
+  feature_summary: "Migrate the Account Stamp Description Process Builder to an equivalent before-save record-triggered flow preserving entry criteria"
+  migration_rationale: "Process Builder is retired in Summer '25; consolidate onto Flow per governance"
+  flow_type: record-triggered
+  trigger_sobject: Account
+  trigger_context: before-save
+  record_trigger_type: Update
+  expected_volume: medium
+  referenced_fields:
+    - Account.Name
+    - Account.Industry
+    - Account.Description
+  parity_checklist:
+    - "entry criteria preserved (Industry is not null)"
+    - "immediate field update becomes same-transaction assignment"
+    - "no scheduled actions — migration is a single transaction"
+    - "Description assignment value preserved"
+  api_version: "60.0"
+  target_org_alias: sfskills-dev
+  repo_path: ./force-app
+
+org_stub:
+  org_metadata:
+    org_id: 00Dxxx
+    edition: Enterprise
+    api_version: "60.0"
+    sandbox: true
+  describe_sobject:
+    Account:
+      queryable: true
+      custom: false
+      fields:
+        - { name: Id, type: id }
+        - { name: Name, type: string }
+        - { name: Industry, type: picklist }
+        - { name: Description, type: textarea }
+
+expect:
+  confidence: HIGH
+  gates_passed:
+    - inputs
+    - requirements
+    - ground
+    - build
+    - seal
+  requirements_document_must_reference:
+    - "Account_Stamp_Description_PB"
+    - "record-triggered"
+    - "Parity checklist"
+  must_cite_any_of:
+    - { type: skill, id: flow/process-builder-to-flow-migration }
+    - { type: decision_tree, id: automation-selection.md }
+  grounding:
+    unresolved_max: 0
+  build_gate:
+    parse_errors_max: 0
+    coverage_min: 0
+  process_observations:
+    min_count: 1
+    categories_present_any_of:
+      - healthy
+      - concerning
+      - ambiguous
