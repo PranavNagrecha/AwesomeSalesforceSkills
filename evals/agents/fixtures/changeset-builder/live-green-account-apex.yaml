@@ -1,0 +1,45 @@
+eval:
+  id: changeset-builder__live-green-account-apex
+  agent: changeset-builder
+  mode: single
+  priority: P0
+  last_verified: 2026-04-17
+  description: >
+    Minimal manifest retrieving the Account CustomObject. Proves Gate C
+    static passes and the live preview CLI round-trips against sfskills-dev.
+
+inputs:
+  package_name: account-only
+  feature_summary: "Minimal changeset that retrieves the standard Account custom object definition for round-trip validation of the preview oracle"
+  items:
+    - { type: CustomObject, member: Account }
+  api_version: "60.0"
+  target_org_alias: sfskills-dev
+
+org_stub: {}
+
+expect:
+  confidence: HIGH
+  gates_passed:
+    - inputs
+    - requirements
+    - ground
+    - build
+    - seal
+  requirements_document_must_reference:
+    - "Account"
+    - "CustomObject"
+  must_cite_any_of:
+    - { type: skill, id: devops/change-set-deployment }
+    - { type: skill, id: devops/migration-from-change-sets-to-sfdx }
+  grounding:
+    unresolved_max: 0
+  build_gate:
+    parse_errors_max: 0
+    coverage_min: 0
+  process_observations:
+    min_count: 1
+    categories_present_any_of:
+      - healthy
+      - concerning
+      - ambiguous

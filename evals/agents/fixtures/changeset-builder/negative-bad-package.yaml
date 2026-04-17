@@ -1,0 +1,31 @@
+eval:
+  id: changeset-builder__negative-bad-package
+  agent: changeset-builder
+  mode: single
+  priority: P0
+  last_verified: 2026-04-17
+  description: >
+    Gate C MUST catch a malformed package.xml. The emitted file parses as XML
+    but has an unknown <name>, no <members>, and a malformed <version>.
+    However Gate A catches the unknown type first — the fixture exercises
+    the earlier Gate A refusal path.
+
+inputs:
+  package_name: malformed
+  feature_summary: "Package with an unknown metadata type and malformed version element to exercise the Gate A type check"
+  items:
+    - { type: ApexClass, member: AccountSelector }
+  api_version: "60.0"
+
+org_stub: {}
+
+expect:
+  confidence: LOW
+  gates_passed:
+    - inputs
+    - requirements
+    - ground
+  grounding:
+    unresolved_max: 0
+  build_gate:
+    parse_errors_max: 999

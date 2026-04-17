@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills/agents/changeset-builder/inputs.schema.json",
+  "title": "changeset-builder inputs",
+  "description": "Typed Gate-A input contract for the changeset-builder agent. Missing-required or under-constrained inputs trigger REFUSAL_INPUT_AMBIGUOUS.",
+  "type": "object",
+  "required": ["package_name", "feature_summary", "items", "api_version"],
+  "properties": {
+    "package_name": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+      "description": "Logical name for the package / changeset. Becomes the emitted folder name."
+    },
+    "feature_summary": {"type": "string", "minLength": 1, "description": "One-line description. At least 10 words."},
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["type", "member"],
+        "properties": {
+          "type": {"type": "string", "description": "Metadata API type (ApexClass, Flow, CustomObject, …)"},
+          "member": {"type": "string", "description": "Fully qualified member name. '*' for all when permitted."}
+        }
+      }
+    },
+    "api_version": {"type": "string", "pattern": "^\\d{2}\\.0$"},
+    "target_org_alias": {"type": "string"},
+    "repo_path": {"type": "string", "default": "./force-app"}
+  }
+}
