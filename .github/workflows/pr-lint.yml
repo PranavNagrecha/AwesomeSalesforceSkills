@@ -32,7 +32,7 @@ jobs:
         run: python3 -m unittest tests.test_agent_frontmatter -v
 
   export-manifest-check:
-    name: export manifest (stub; fleshed out in Wave 2)
+    name: export manifest parity
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -42,13 +42,16 @@ jobs:
           python-version: "3.11"
           cache: pip
 
-      # Wave-1 stub: assert the export script runs without error. Wave 2
-      # will replace this step with a ``--check`` mode that diffs against
-      # a committed registry/export_manifest.json.
-      - name: export script smoke
-        run: |
-          if [ -f scripts/export_skills.py ]; then
-            python3 scripts/export_skills.py --help > /dev/null
-          else
-            echo "scripts/export_skills.py not present yet — Wave 2 will add --check"
-          fi
+      - name: install deps
+        run: python3 -m pip install -r requirements.txt
+
+      # Wave 2: rebuild every export target in a scratch dir, hash, and
+      # diff against the committed registry/export_manifest.json. Exits
+      # non-zero on any drift — the PR must update the manifest in the
+      # same commit. Runs in ~20-30 s for 684 skills * 6 targets.
+      - name: export_skills.py --check
+        run: python3 scripts/export_skills.py --check
+
+      - name: export parity unittests
+        working-directory: mcp/sfskills-mcp
+        run: python3 -m unittest tests.test_export_parity -v

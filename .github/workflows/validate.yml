@@ -78,6 +78,16 @@ jobs:
         working-directory: mcp/sfskills-mcp
         run: python3 -m unittest tests.test_agent_frontmatter -v
 
+      # Wave-2 probe input-validation tests. Runs without the mcp package
+      # (TestProbeInputValidation) + with it (TestMCPServerRegistration,
+      # skipped if mcp not installed — install -e is done separately for
+      # the registration test).
+      - name: probe + mcp tool tests
+        working-directory: mcp/sfskills-mcp
+        run: |
+          python3 -m pip install -e . --quiet
+          python3 -m unittest tests.test_tools -v
+
   # -----------------------------------------------------------------------
   # Bench — verifies the sharded orchestration hasn't regressed past the
   # 30-second threshold on 500 synthetic skills. Runs on PRs that touch

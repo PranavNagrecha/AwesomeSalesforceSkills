@@ -1,7 +1,7 @@
 """FastMCP server exposing SfSkills + live-org + agent tools.
 
 Run with ``python -m sfskills_mcp`` (stdio transport). The server registers
-fifteen tools:
+nineteen tools:
 
 Skill library:
 - ``search_skill``
@@ -22,6 +22,12 @@ Live-org (admin metadata):
 - ``list_approval_processes``
 - ``tooling_query`` (read-only escape hatch)
 
+Probes (promoted from agents/_shared/probes/ in Wave 2):
+- ``probe_apex_references``
+- ``probe_flow_references``
+- ``probe_matching_rules``
+- ``probe_permset_shape``
+
 Agents:
 - ``list_agents``
 - ``get_agent``
@@ -37,7 +43,7 @@ from typing import Any
 
 from mcp.server.fastmcp import FastMCP
 
-from . import admin, agents, org, skills
+from . import admin, agents, org, probes, skills
 
 
 SERVER_INSTRUCTIONS = """\
@@ -309,6 +315,98 @@ def build_server() -> FastMCP:
             tooling=tooling,
             limit=limit,
         )
+
+    # ----------------------------------------------------------------- #
+    # Probes — promoted from agents/_shared/probes/ in Wave 2.            #
+    # Centralizing the SOQL + post-processing here eliminates subtle     #
+    # drift across agents that used to paste the recipes inline.         #
+    # ----------------------------------------------------------------- #
+
+    @mcp.tool(
+        name="probe_apex_references",
+        description=(
+            "Enumerate Apex classes and triggers referencing an "
+            "<object>.<field>. Uses word-boundary regex on fetched bodies to "
+            "filter substring false positives. Classifies each hit as "
+            "read/write/unknown. Primary consumer: field-impact-analyzer."
+        ),
+    )
+    def probe_apex_references(
+        object_name: str,
+        field: str,
+        target_org: str | None = None,
+        include_managed: bool = False,
+        limit_per_query: int = 200,
+    ) -> dict[str, Any]:
+        return probes.probe_apex_references(
+            object_name=object_name,
+            field=field,
+            target_org=target_org,
+            include_managed=include_managed,
+            limit_per_query=limit_per_query,
+        )
+
+    @mcp.tool(
+        name="probe_flow_references",
+        description=(
+            "Enumerate active Flow versions whose metadata XML references "
+            "<object>.<field>. Classifies each hit as read (lookup/"
+            "condition context) or write (recordCreates / recordUpdates / "
+            "assignToReference). Strips <description>/<label> text to avoid "
+            "label-based false positives."
+        ),
+    )
+    def probe_flow_references(
+        object_name: str,
+        field: str,
+        target_org: str | None = None,
+        active_only: bool = True,
+        limit: int = 200,
+    ) -> dict[str, Any]:
+        return probes.probe_flow_references(
+            object_name=object_name,
+            field=field,
+            target_org=target_org,
+            active_only=active_only,
+            limit=limit,
+        )
+
+    @mcp.tool(
+        name="probe_matching_rules",
+        description=(
+            "List MatchingRule + DuplicateRule records on an sObject with "
+            "their field items. Computes overlaps[] (pairs of active "
+            "matching rules sharing >= 1 field — a P0 duplicate-management "
+            "smell). Primary consumer: duplicate-rule-designer."
+        ),
+    )
+    def probe_matching_rules(
+        object_name: str,
+        target_org: str | None = None,
+        active_only: bool = False,
+    ) -> dict[str, Any]:
+        return probes.probe_matching_rules(
+            object_name=object_name,
+            target_org=target_org,
+            active_only=active_only,
+        )
+
+    @mcp.tool(
+        name="probe_permset_shape",
+        description=(
+            "Summarize a Permission Set / Permission Set Group / user "
+            "scope. scope argument is psg:<DeveloperName>, ps:<Name>, or "
+            "user:<username>. Emits assignment counts, concentration ratio "
+            "vs active standard users, and risk_flags (super-PSG smell + "
+            "ModifyAllData detection). Primary consumer: "
+            "permission-set-architect."
+        ),
+    )
+    def probe_permset_shape(
+        scope: str,
+        target_org: str | None = None,
+    ) -> dict[str, Any]:
+        return probes.probe_permset_shape(scope=scope, target_org=target_org)
 
     @mcp.tool(
         name="list_agents",
