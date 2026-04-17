@@ -8,6 +8,41 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+dependencies:
+  skills:
+    - apex/apex-design-patterns
+    - apex/apex-queueable-patterns
+    - apex/apex-rest-services
+    - apex/apex-scheduled-jobs
+    - apex/apex-security-patterns
+    - apex/async-apex
+    - apex/batch-apex-patterns
+    - apex/change-data-capture-apex
+    - apex/error-handling-framework
+    - apex/governor-limits
+    - apex/invocable-methods
+    - apex/platform-events-apex
+    - apex/soql-fundamentals
+    - apex/soql-security
+    - apex/test-class-standards
+    - apex/test-data-factory-patterns
+    - apex/trigger-and-flow-coexistence
+    - apex/trigger-framework
+  shared:
+    - AGENT_CONTRACT.md
+  templates:
+    - apex/
+    - apex/ApplicationLogger.cls
+    - apex/BaseDomain.cls
+    - apex/BaseSelector.cls
+    - apex/BaseService.cls
+    - apex/HttpClient.cls
+    - apex/SecurityUtils.cls
+    - apex/TriggerControl.cls
+    - apex/TriggerHandler.cls
+    - apex/tests/
+  decision_trees:
+    - async-selection.md
 ---
 # Apex Builder Agent
 

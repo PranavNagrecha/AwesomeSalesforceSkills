@@ -9,6 +9,16 @@ owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-17
 harness: designer_base
+dependencies:
+  skills:
+    - admin/case-management-setup
+    - admin/messaging-and-chat-setup
+    - admin/omni-channel-routing-setup
+    - architect/multi-channel-service-architecture
+    - architect/omni-channel-capacity-model
+  shared:
+    - AGENT_CONTRACT.md
+    - AGENT_RULES.md
 ---
 # Omni-Channel Routing Designer Agent
 

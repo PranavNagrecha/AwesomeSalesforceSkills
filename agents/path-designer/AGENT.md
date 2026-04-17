@@ -8,6 +8,20 @@ modes: [design, audit]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+dependencies:
+  skills:
+    - admin/case-management-setup
+    - admin/dynamic-forms-and-actions
+    - admin/lead-management-and-conversion
+    - admin/opportunity-management
+    - admin/path-and-guidance
+    - admin/picklist-and-value-sets
+    - admin/record-types-and-page-layouts
+    - admin/validation-rules
+  shared:
+    - AGENT_CONTRACT.md
+  templates:
+    - admin/naming-conventions.md
 ---
 # Path Designer Agent
 

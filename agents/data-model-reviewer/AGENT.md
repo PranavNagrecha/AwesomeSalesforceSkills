@@ -8,6 +8,18 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+dependencies:
+  skills:
+    - admin/data-model-documentation
+    - admin/object-creation-and-design
+    - architect/high-volume-sales-data-architecture
+    - architect/solution-design-patterns
+    - data/data-model-design-patterns
+    - data/external-id-strategy
+    - data/roll-up-summary-alternatives
+  shared:
+    - AGENT_CONTRACT.md
+    - AGENT_RULES.md
 ---
 # Data Model Reviewer Agent
 

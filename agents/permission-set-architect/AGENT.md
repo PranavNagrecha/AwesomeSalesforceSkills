@@ -9,6 +9,23 @@ owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-17
 harness: designer_base
+dependencies:
+  skills:
+    - admin/custom-permissions
+    - admin/delegated-administration
+    - admin/integration-user-management
+    - admin/permission-set-architecture
+    - admin/permission-sets-vs-profiles
+    - admin/user-access-policies
+    - admin/user-management
+    - devops/permission-set-deployment-ordering
+    - security/permission-set-groups-and-muting
+  shared:
+    - AGENT_CONTRACT.md
+    - AGENT_RULES.md
+  templates:
+    - admin/naming-conventions.md
+    - admin/permission-set-patterns.md
 ---
 # Permission Set Architect Agent
 

@@ -8,6 +8,9 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+dependencies:
+  shared:
+    - AGENT_RULES.md
 ---
 # Admin Skill Builder Agent
 

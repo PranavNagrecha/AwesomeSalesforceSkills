@@ -8,6 +8,28 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+dependencies:
+  skills:
+    - lwc/component-communication
+    - lwc/lifecycle-hooks
+    - lwc/lwc-accessibility-patterns
+    - lwc/lwc-base-component-recipes
+    - lwc/lwc-forms-and-validation
+    - lwc/lwc-imperative-apex
+    - lwc/lwc-in-flow-screens
+    - lwc/lwc-performance
+    - lwc/lwc-security
+    - lwc/lwc-testing
+    - lwc/message-channel-patterns
+    - lwc/wire-service-patterns
+  shared:
+    - AGENT_CONTRACT.md
+  templates:
+    - apex/BaseService.cls
+    - apex/SecurityUtils.cls
+    - lwc/component-skeleton/
+    - lwc/jest.config.js
+    - lwc/patterns/
 ---
 # LWC Builder Agent
 

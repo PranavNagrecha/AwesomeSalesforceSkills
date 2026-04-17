@@ -8,6 +8,12 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+dependencies:
+  skills:
+    - admin/email-templates-and-alerts
+  shared:
+    - AGENT_CONTRACT.md
+    - AGENT_RULES.md
 ---
 # Email Template Modernizer Agent
 

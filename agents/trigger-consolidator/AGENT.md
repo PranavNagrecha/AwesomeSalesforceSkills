@@ -8,6 +8,16 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+dependencies:
+  skills:
+    - apex/recursive-trigger-prevention
+    - apex/trigger-framework
+  shared:
+    - AGENT_CONTRACT.md
+  templates:
+    - apex/TriggerControl.cls
+    - apex/TriggerHandler.cls
+    - apex/cmdt/Trigger_Setting__mdt.object-meta.xml
 ---
 # Trigger Consolidator Agent
 

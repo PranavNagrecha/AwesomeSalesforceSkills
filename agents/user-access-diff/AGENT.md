@@ -8,6 +8,20 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-17
 updated: 2026-04-17
+dependencies:
+  probes:
+    - permission-set-assignment-shape.md
+    - user-access-comparison.md
+  skills:
+    - admin/custom-permissions
+    - admin/permission-set-architecture
+    - admin/permission-sets-vs-profiles
+    - admin/user-access-policies
+    - admin/user-management
+    - security/permission-set-groups-and-muting
+  shared:
+    - AGENT_CONTRACT.md
+    - AGENT_RULES.md
 ---
 
 # User Access Diff Agent

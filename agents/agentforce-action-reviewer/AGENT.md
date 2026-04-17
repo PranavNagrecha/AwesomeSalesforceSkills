@@ -8,6 +8,18 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+dependencies:
+  skills:
+    - agentforce/agent-actions
+    - agentforce/agent-testing-and-evaluation
+    - agentforce/agent-topic-design
+    - agentforce/agentforce-guardrails
+    - agentforce/agentforce-observability
+    - agentforce/agentforce-persona-design
+    - agentforce/einstein-trust-layer
+  shared:
+    - AGENT_CONTRACT.md
+    - AGENT_RULES.md
 ---
 # Agentforce Action Reviewer Agent
 

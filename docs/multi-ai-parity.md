@@ -124,6 +124,18 @@ exports/mcp/
 
 The extra `registry/skills.json` lets an MCP server serve `search_skill` and `get_skill` tools against this bundle without rebuilding state from the raw tree. Use this target when distributing SfSkills as a standalone MCP-accessible knowledge base.
 
+### Per-agent bundles (`exports/agent-bundles/<agent-id>/`)
+
+Wave 8 added a separate exporter for installing one agent into another project. Unlike the target-wide exports above (which ship the whole skill library in a platform's format), a per-agent bundle ships one `AGENT.md` plus only the files it declares in its frontmatter `dependencies` block.
+
+```bash
+python3 scripts/export_agent_bundle.py --agent user-access-diff --rewrite-paths
+```
+
+See [`docs/installing-single-agents.md`](./installing-single-agents.md) for the three supported install paths (MCP server, bundle drop-in, git subtree) and when each applies.
+
+**Why both exist:** the six-platform exports under `exports/<target>/` are for library-wide distribution. Per-agent bundles are for single-agent install — the use case where a team wants `user-access-diff` in their project without the other 74 agents. The parity contract applies to both surfaces: first-class targets get identical skill content; agent bundles carry their declared dependencies with byte-for-byte fidelity.
+
 ### Windsurf (`exports/windsurf/`)
 
 Similar to Cursor but in Windsurf's `.windsurf/rules/*.md` format:

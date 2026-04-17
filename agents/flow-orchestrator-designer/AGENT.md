@@ -8,6 +8,22 @@ modes: [design, audit]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+dependencies:
+  skills:
+    - admin/approval-processes
+    - admin/queues-and-public-groups
+    - flow/auto-launched-flow-patterns
+    - flow/fault-handling
+    - flow/orchestration-flows
+    - flow/pause-elements-and-wait-events
+    - flow/screen-flows
+    - flow/subflows-and-reusability
+  shared:
+    - AGENT_CONTRACT.md
+  templates:
+    - admin/naming-conventions.md
+  decision_trees:
+    - automation-selection.md
 ---
 # Flow Orchestrator Designer Agent
 

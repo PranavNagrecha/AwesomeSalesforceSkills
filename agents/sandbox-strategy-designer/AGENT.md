@@ -9,6 +9,18 @@ owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-17
 harness: designer_base
+dependencies:
+  skills:
+    - admin/sandbox-strategy
+    - devops/environment-strategy
+    - devops/sandbox-refresh-and-templates
+    - devops/scratch-org-management
+    - devops/scratch-org-pools
+  shared:
+    - AGENT_CONTRACT.md
+    - AGENT_RULES.md
+  templates:
+    - apex/
 ---
 # Sandbox Strategy Designer Agent
 

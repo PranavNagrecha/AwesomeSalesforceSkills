@@ -8,6 +8,17 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+dependencies:
+  skills:
+    - agentforce/agent-actions
+    - agentforce/agent-topic-design
+    - agentforce/einstein-trust-layer
+  shared:
+    - AGENT_CONTRACT.md
+  templates:
+    - agentforce/AgentActionSkeleton.cls
+    - agentforce/AgentSkeleton.json
+    - agentforce/AgentTopic_Template.md
 ---
 # Agentforce Builder Agent
 

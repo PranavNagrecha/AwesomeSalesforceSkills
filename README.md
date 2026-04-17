@@ -45,6 +45,17 @@ Three layers that turn generic LLMs into Salesforce-literate agents:
 | **Augment** | `python3 scripts/export_skills.py --platform augment` then copy `exports/augment/.augment/` to your project |
 | **Any LLM** | Copy any `skills/<domain>/<skill>/SKILL.md` as a system prompt |
 
+### Installing just one agent (not the whole library)
+
+If you only need a specific agent in another project (e.g. `user-access-diff`):
+
+```bash
+python3 scripts/export_agent_bundle.py --agent user-access-diff --rewrite-paths --out ./my-export
+# Drop ./my-export/user-access-diff/ into .cursor/agents/ or .claude/agents/
+```
+
+The bundle carries the AGENT.md **plus every probe, skill, template, and shared doc** it needs — with paths auto-rewritten to resolve inside the bundle. See [`docs/installing-single-agents.md`](./docs/installing-single-agents.md).
+
 ---
 
 ## 5-Minute Setup

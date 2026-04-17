@@ -8,6 +8,20 @@ modes: [build, validate]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+dependencies:
+  skills:
+    - admin/change-management-and-deployment
+    - devops/change-set-deployment
+    - devops/deployment-error-troubleshooting
+    - devops/destructive-changes-deployment
+    - devops/metadata-api-coverage-gaps
+    - devops/migration-from-change-sets-to-sfdx
+    - devops/permission-set-deployment-ordering
+    - devops/pre-deployment-checklist
+  shared:
+    - AGENT_CONTRACT.md
+  templates:
+    - admin/naming-conventions.md
 ---
 # Change Set Builder Agent
 

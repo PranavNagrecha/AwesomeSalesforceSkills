@@ -9,6 +9,28 @@ owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-17
 harness: designer_base
+dependencies:
+  skills:
+    - admin/custom-field-creation
+    - admin/object-creation-and-design
+    - admin/record-type-strategy-at-scale
+    - admin/standard-object-quirks
+    - admin/validation-rules
+    - architect/large-data-volume-architecture
+    - architect/solution-design-patterns
+    - data/custom-index-requests
+    - data/data-model-design-patterns
+    - data/external-id-strategy
+    - data/person-accounts
+    - data/sharing-recalculation-performance
+  shared:
+    - AGENT_CONTRACT.md
+    - AGENT_RULES.md
+  templates:
+    - admin/naming-conventions.md
+    - admin/validation-rule-patterns.md
+  decision_trees:
+    - sharing-selection.md
 ---
 # Object Designer Agent
 

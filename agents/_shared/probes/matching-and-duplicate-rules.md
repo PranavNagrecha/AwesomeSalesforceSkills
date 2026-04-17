@@ -14,27 +14,33 @@ Enumerate Matching Rules and Duplicate Rules for an sObject, with active state, 
 ## Query
 
 ```sql
-SELECT Id, DeveloperName, MasterLabel, IsActive, SobjectType
+SELECT Id, DeveloperName, MasterLabel, RuleStatus, SobjectType
 FROM MatchingRule
 WHERE SobjectType = '<object>'
 LIMIT 200
 ```
 
+Active-rule filter: `MatchingRule` uses `RuleStatus` (picklist values include `Active`, `Inactive`, `Activating`, `Deactivating`), NOT a boolean `IsActive`. Post-filter client-side when `active_only=true`.
+
 ```sql
-SELECT Id, DeveloperName, MasterLabel, IsActive, SobjectType, SobjectSubtype, ParentId
+SELECT Id, DeveloperName, MasterLabel, IsActive, SobjectType, SobjectSubtype
 FROM DuplicateRule
 WHERE SobjectType = '<object>'
 LIMIT 200
 ```
 
+`DuplicateRule` has a boolean `IsActive` (unlike MatchingRule). It does NOT have a `ParentId` field on the standard object — the parent-rule relationship is stored in the rule's `Metadata` body (see below).
+
 For each MatchingRule id, fetch the items:
 
 ```sql
-SELECT MatchingRuleId, FieldName, MatchingMethod, BlankValueBehavior, SortOrder
+SELECT MatchingRuleId, Field, MatchingMethod, BlankValueBehavior, SortOrder
 FROM MatchingRuleItem
 WHERE MatchingRuleId IN (<ids>)
 LIMIT 2000
 ```
+
+`MatchingRuleItem.Field` (not `FieldName`) — the column name is just `Field`.
 
 For each DuplicateRule, check the bypass Custom Permission (if any) via the rule's metadata. The `tooling_query` API returns the rule body inside `Metadata` for DuplicateRule — parse the XML and look for:
 

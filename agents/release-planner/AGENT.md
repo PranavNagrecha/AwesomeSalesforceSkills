@@ -8,6 +8,13 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+dependencies:
+  skills:
+    - devops/git-branching-for-salesforce
+    - devops/release-management
+  shared:
+    - AGENT_CONTRACT.md
+    - AGENT_RULES.md
 ---
 # Release Planner Agent
 

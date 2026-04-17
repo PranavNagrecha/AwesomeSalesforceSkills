@@ -25,13 +25,15 @@ LIMIT 200
 Assignment concentration:
 
 ```sql
-SELECT PermissionSetGroup.DeveloperName, COUNT(Id) AS assignees
+SELECT PermissionSetGroup.DeveloperName, COUNT(Id)
 FROM PermissionSetAssignment
 WHERE PermissionSetGroupId != null
 GROUP BY PermissionSetGroup.DeveloperName
 ORDER BY COUNT(Id) DESC
 LIMIT 50
 ```
+
+Post-processing: the second column appears as `expr0` in the result set — SOQL aggregate queries don't accept `AS alias` syntax. Map to a named field client-side.
 
 Per-user assignment shape:
 

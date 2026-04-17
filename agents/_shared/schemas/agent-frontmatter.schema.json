@@ -90,6 +90,43 @@
       "type": "string",
       "enum": ["designer_base", "migration_router", "audit_harness"],
       "description": "Optional: declares the agent inherits a shared harness under agents/_shared/harnesses/. The validator enforces shape compliance for declared harnesses. designer_base was added in Wave 3c."
+    },
+    "dependencies": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Wave 8: explicit declaration of the files this agent needs to function. Used by `scripts/export_skills.py --agent <id>` to bundle the agent with its dependencies for install into another repo. Populating this block is optional on existing agents (a migration script auto-populates from Mandatory Reads); required on new agents created after Wave 8.",
+      "properties": {
+        "probes": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[a-z0-9-]+\\.md$" },
+          "description": "Probe recipe filenames under agents/_shared/probes/, e.g. 'user-access-comparison.md'."
+        },
+        "skills": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[a-z0-9-]+/[a-z0-9-]+$" },
+          "description": "Skill ids in '<domain>/<slug>' form, e.g. 'admin/user-management'."
+        },
+        "shared": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Filenames under agents/_shared/ that this agent reads, e.g. 'AGENT_CONTRACT.md', 'REFUSAL_CODES.md'."
+        },
+        "templates": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Template paths under templates/, e.g. 'apex/TriggerHandler.cls'."
+        },
+        "decision_trees": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[a-z0-9-]+\\.md$" },
+          "description": "Decision-tree filenames under standards/decision-trees/."
+        }
+      }
+    },
+    "dependency_path_mode": {
+      "type": "string",
+      "enum": ["repo-absolute", "bundle-relative"],
+      "description": "How citation paths inside this AGENT.md are written. 'repo-absolute' (default for in-tree agents) = paths like 'agents/_shared/probes/foo.md' valid only from repo root. 'bundle-relative' (set by the exporter) = paths like './probes/foo.md' valid inside a bundled export. Never hand-edit; the exporter sets this when producing a bundle."
     }
   },
   "allOf": [

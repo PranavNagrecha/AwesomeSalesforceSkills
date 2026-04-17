@@ -8,6 +8,21 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+dependencies:
+  skills:
+    - admin/connected-apps-and-auth
+    - admin/integration-admin-connected-apps
+    - admin/integration-user-management
+    - admin/remote-site-settings
+    - architect/integration-framework-design
+    - architect/integration-security-architecture
+    - integration/named-credentials-setup
+    - integration/oauth-flows-and-connected-apps
+    - security/certificate-and-key-management
+    - security/connected-app-security-policies
+  shared:
+    - AGENT_CONTRACT.md
+    - AGENT_RULES.md
 ---
 # Integration Catalog Builder Agent
 

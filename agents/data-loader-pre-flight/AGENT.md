@@ -8,6 +8,23 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+dependencies:
+  skills:
+    - admin/data-import-and-management
+    - admin/data-skew-and-sharing-performance
+    - admin/duplicate-management
+    - data/bulk-api-and-large-data-loads
+    - data/external-id-strategy
+    - data/field-history-tracking
+    - data/lead-data-import-and-dedup
+    - data/record-merge-implications
+    - data/sharing-recalculation-performance
+    - flow/flow-bulkification
+  shared:
+    - AGENT_CONTRACT.md
+    - AGENT_RULES.md
+  templates:
+    - admin/validation-rule-patterns.md
 ---
 # Data Loader Pre-Flight Agent
 

@@ -8,6 +8,18 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+dependencies:
+  skills:
+    - lwc/lwc-accessibility
+    - lwc/lwc-imperative-apex
+    - lwc/lwc-performance
+    - lwc/wire-service-patterns
+  shared:
+    - AGENT_CONTRACT.md
+  templates:
+    - lwc/component-skeleton/
+    - lwc/jest.config.js
+    - lwc/patterns/
 ---
 # LWC Auditor Agent
 

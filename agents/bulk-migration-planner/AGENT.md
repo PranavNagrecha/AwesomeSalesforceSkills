@@ -8,6 +8,19 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+dependencies:
+  skills:
+    - apex/callouts-and-http-integrations
+    - architect/large-data-volume-architecture
+    - integration/bulk-api-2-patterns
+    - integration/idempotent-integration-patterns
+    - integration/named-credentials-setup
+  shared:
+    - AGENT_CONTRACT.md
+  templates:
+    - apex/HttpClient.cls
+  decision_trees:
+    - integration-pattern-selection.md
 ---
 # Bulk Migration Planner Agent
 

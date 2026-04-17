@@ -8,6 +8,18 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+dependencies:
+  skills:
+    - apex/trigger-and-flow-coexistence
+    - architect/ha-dr-architecture
+    - architect/limits-and-scalability-planning
+    - architect/nfr-definition-for-salesforce
+    - architect/security-architecture-review
+    - architect/well-architected-review
+    - devops/metadata-api-coverage-gaps
+  shared:
+    - AGENT_CONTRACT.md
+    - AGENT_RULES.md
 ---
 # Well-Architected Framework Assessor Agent
 

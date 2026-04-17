@@ -19,13 +19,15 @@ Two steps — list then fetch.
 Step 1 — list candidate flows targeting the object:
 
 ```sql
-SELECT Id, DeveloperName, ActiveVersionId, LatestVersionId, TriggerType
+SELECT Id, ApiName, ActiveVersionId, LatestVersionId, TriggerType
 FROM FlowDefinitionView
 WHERE (ProcessType = 'AutoLaunchedFlow'
     OR ProcessType = 'Flow'
     OR ProcessType = 'Workflow')
 LIMIT 2000
 ```
+
+`FlowDefinitionView.ApiName` — NOT `DeveloperName`. The camelCase flow developer name surfaces on this view object as `ApiName`.
 
 (Agents that already know the object's automation context may use `list_flows_on_object(object_name)` directly.)
 

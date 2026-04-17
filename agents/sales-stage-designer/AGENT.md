@@ -9,6 +9,18 @@ owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-17
 harness: designer_base
+dependencies:
+  skills:
+    - admin/collaborative-forecasts
+    - admin/opportunity-management
+    - admin/pipeline-review-design
+    - admin/sales-process-mapping
+  shared:
+    - AGENT_CONTRACT.md
+    - AGENT_RULES.md
+  templates:
+    - admin/naming-conventions.md
+    - admin/validation-rule-patterns.md
 ---
 # Sales Stage Designer Agent
 

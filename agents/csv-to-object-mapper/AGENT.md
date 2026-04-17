@@ -8,6 +8,17 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+dependencies:
+  skills:
+    - admin/custom-field-creation
+    - admin/data-import-and-management
+    - admin/object-creation-and-design
+    - data/external-id-strategy
+  shared:
+    - AGENT_CONTRACT.md
+    - AGENT_RULES.md
+  templates:
+    - admin/naming-conventions.md
 ---
 # CSV to Object Mapper Agent
 

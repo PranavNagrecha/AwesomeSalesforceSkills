@@ -8,6 +8,19 @@ modes: [design, audit]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+dependencies:
+  skills:
+    - admin/custom-metadata-types
+    - admin/custom-metadata-types-and-settings
+    - admin/picklist-and-value-sets
+    - apex/custom-metadata-in-apex
+    - apex/feature-flags-and-kill-switches
+    - devops/environment-specific-value-injection
+  shared:
+    - AGENT_CONTRACT.md
+  templates:
+    - admin/naming-conventions.md
+    - apex/cmdt/
 ---
 # Custom Metadata & Custom Settings Designer Agent
 

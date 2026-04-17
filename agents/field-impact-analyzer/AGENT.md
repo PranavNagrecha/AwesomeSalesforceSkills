@@ -8,6 +8,19 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+dependencies:
+  skills:
+    - admin/custom-field-creation
+    - admin/formula-fields
+    - admin/picklist-and-value-sets
+    - architect/metadata-coverage-and-dependencies
+    - data/field-history-tracking
+    - data/record-merge-implications
+  shared:
+    - AGENT_CONTRACT.md
+    - AGENT_RULES.md
+  templates:
+    - admin/naming-conventions.md
 ---
 # Field Impact Analyzer Agent
 

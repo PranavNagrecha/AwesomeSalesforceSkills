@@ -38,6 +38,40 @@
       "type": "string",
       "description": "One-line reason for the score, keyed to the rubric in AGENT_CONTRACT.md."
     },
+    "dimensions_compared": {
+      "type": "array",
+      "description": "Wave 8: agents that analyze a multi-dimensional surface (user-access-diff, org-drift-detector, etc.) MUST list which dimensions they successfully covered. Agents operating on a single surface MAY omit.",
+      "items": { "type": "string" }
+    },
+    "dimensions_skipped": {
+      "type": "array",
+      "description": "Wave 8: dimensions the agent could not compare because of query failure, permission limits, or edition restrictions. If non-empty, confidence MUST be MEDIUM or LOW. Prevents the 'silently complete report' failure mode where a skipped dimension looks like coverage.",
+      "items": {
+        "type": "object",
+        "required": ["dimension", "reason"],
+        "additionalProperties": false,
+        "properties": {
+          "dimension": {
+            "type": "string",
+            "description": "The dimension name as it would appear in dimensions_compared."
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 10,
+            "description": "Why it was skipped. Must distinguish 'query returned zero rows' (skill-authoring concern) from 'query failed' (infrastructure concern) from 'feature not licensed'. Never collapse to 'not queryable in this org'."
+          },
+          "confidence_impact": {
+            "type": "string",
+            "enum": ["LOW", "MEDIUM", "NONE"],
+            "description": "How much this skip should pull the overall confidence down. LOW = dimension is load-bearing for the agent's purpose (skip → LOW confidence); MEDIUM = secondary (skip → at most MEDIUM); NONE = opt-in / cosmetic dimension."
+          },
+          "retry_hint": {
+            "type": "string",
+            "description": "What the caller could do to unblock this dimension — e.g. 'grant View Setup', 'enable Enterprise Territory Management', 'rerun with include_field_permissions=true'."
+          }
+        }
+      }
+    },
     "findings": {
       "type": "array",
       "description": "Structured deliverable findings. Optional — some agents emit pure documents via `deliverables[]` instead.",

@@ -8,6 +8,18 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+dependencies:
+  skills:
+    - apex/trigger-and-flow-coexistence
+    - flow/flow-bulkification
+    - flow/flow-large-data-volume-patterns
+  shared:
+    - AGENT_CONTRACT.md
+  templates:
+    - flow/FaultPath_Template.md
+    - flow/Subflow_Pattern.md
+  decision_trees:
+    - automation-selection.md
 ---
 # Flow Analyzer Agent
 

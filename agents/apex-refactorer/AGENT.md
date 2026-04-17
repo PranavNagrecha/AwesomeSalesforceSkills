@@ -8,6 +8,21 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+dependencies:
+  skills:
+    - apex/apex-security-patterns
+    - apex/trigger-framework
+  shared:
+    - AGENT_CONTRACT.md
+    - AGENT_RULES.md
+  templates:
+    - apex/
+    - apex/README.md
+    - apex/TriggerHandler.cls
+    - apex/tests/BulkTestPattern.cls
+    - apex/tests/TestDataFactory.cls
+  decision_trees:
+    - automation-selection.md
 ---
 # Apex Refactorer Agent
 

@@ -28,13 +28,15 @@ This probe is read-only. It does not compute sharing-rule outcomes — two users
 ```sql
 SELECT Id, Username, Name, IsActive, UserType, ProfileId, Profile.Name,
        UserRoleId, UserRole.Name, ManagerId, Manager.Username,
-       DefaultCurrencyIsoCode, LanguageLocaleKey, TimeZoneSidKey
+       LanguageLocaleKey, TimeZoneSidKey
 FROM User
 WHERE Id = '<user_a_id>'
 LIMIT 1
 ```
 
 Run twice — once per user.
+
+**Multi-currency orgs:** if `OrganizationType = 'Multi'`, add `DefaultCurrencyIsoCode` to the projection. Probe runner should introspect via `SELECT IsMultiCurrencyOrganization FROM Organization LIMIT 1` before adding the field — including it in a single-currency org raises `INVALID_FIELD`. See `skills/admin/salesforce-object-queryability` Mode 4.
 
 ### 2. Active Permission Set + PSG assignments (excludes any expired via `ExpirationDate`)
 
@@ -88,7 +90,7 @@ LIMIT 5000
 SELECT Id, Name, PermissionsModifyAllData, PermissionsViewAllData,
        PermissionsManageUsers, PermissionsApiEnabled, PermissionsAuthorApex,
        PermissionsCustomizeApplication, PermissionsManageDataCategories,
-       PermissionsEditPublicReports, PermissionsManageSharing,
+       PermissionsViewPublicReports, PermissionsManageSharing,
        PermissionsViewSetup, PermissionsViewAllUsers,
        PermissionsViewEventLogFiles, PermissionsPasswordNeverExpires,
        PermissionsManagePasswordPolicies
@@ -96,6 +98,8 @@ FROM PermissionSet
 WHERE Id IN (<effective-ps-ids>)
 LIMIT 500
 ```
+
+Field note: the classic "edit public reports" permission is surfaced as `PermissionsViewPublicReports` — there is no `PermissionsEditPublicReports` field on `PermissionSet` despite the UI label. For the related "manage public reports" concept, check report-folder access separately via `FolderShare`.
 
 ### 7. Setup Entity Access (Apex classes, VF pages, Flows, Custom Permissions, Named Credentials)
 
@@ -119,7 +123,17 @@ LIMIT 500
 
 `Group.Type` values include `Regular` (public group), `Queue`, `Role`, `RoleAndSubordinates`, `Territory`, `TerritoryAndSubordinates`.
 
-### 9. Territory2 assignment (if Enterprise Territory Management is enabled)
+### 9. Territory2 assignment (only if Enterprise Territory Management is enabled)
+
+**Feature gate:** `UserTerritory2Association` exists ONLY when Enterprise Territory Management is enabled. On orgs without it, this query returns `INVALID_TYPE` — which is the correct failure per `skills/admin/salesforce-object-queryability` (Mode 2: not queryable in this edition).
+
+Probe runners MUST check feature availability FIRST via:
+
+```sql
+SELECT Id FROM Territory2Model LIMIT 1
+```
+
+If that succeeds, ETM is enabled and the association query below is safe. Otherwise, record this dimension in `dimensions_skipped` with `reason: "Enterprise Territory Management not enabled"` and `confidence_impact: NONE`.
 
 ```sql
 SELECT Territory2Id, Territory2.Name, Territory2.Territory2ModelId

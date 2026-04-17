@@ -8,6 +8,10 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-17
 updated: 2026-04-17
+dependencies:
+  shared:
+    - AGENT_CONTRACT.md
+    - REFUSAL_CODES.md
 ---
 # Audit Router Agent
 

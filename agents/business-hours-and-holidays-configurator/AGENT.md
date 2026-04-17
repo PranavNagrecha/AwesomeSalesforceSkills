@@ -8,6 +8,18 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+dependencies:
+  skills:
+    - admin/approval-processes
+    - admin/case-management-setup
+    - admin/email-to-case-configuration
+    - admin/entitlements-and-milestones
+    - admin/escalation-rules
+    - admin/omni-channel-routing-setup
+  shared:
+    - AGENT_CONTRACT.md
+  templates:
+    - admin/naming-conventions.md
 ---
 # Business Hours & Holidays Configurator Agent
 

@@ -8,6 +8,15 @@ modes: [design, audit]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+dependencies:
+  skills:
+    - admin/knowledge-base-administration
+    - architect/knowledge-taxonomy-design
+    - architect/knowledge-vs-external-cms
+    - data/knowledge-article-import
+  shared:
+    - AGENT_CONTRACT.md
+    - AGENT_RULES.md
 ---
 # Knowledge Article Taxonomy Agent
 

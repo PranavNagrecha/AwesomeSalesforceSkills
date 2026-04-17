@@ -15,25 +15,29 @@ Enumerate Apex classes and triggers whose body references a given `<sObject>.<Fi
 
 ## Query
 
+**Endpoint:** Tooling API (`/services/data/vXX/tooling/query`). The `ApexClass` and `ApexTrigger` sObjects are Tooling-API-only.
+
+**Critical constraint:** `Body` is NOT a filterable column on `ApexClass` or `ApexTrigger`. You cannot use `WHERE Body LIKE '%x%'` — Salesforce rejects the query with `field 'Body' can not be filtered in a query call`. Fetch the full body and filter client-side.
+
 Two Tooling queries, looped for pagination:
 
 ```sql
 SELECT Id, Name, NamespacePrefix, Body
 FROM ApexClass
-WHERE Body LIKE '%<field>%'
-  AND (<managed_filter>)
-LIMIT <limit_per_query> OFFSET <offset>
+WHERE NamespacePrefix = null
+LIMIT 200 OFFSET 0
 ```
 
 ```sql
 SELECT Id, Name, NamespacePrefix, TableEnumOrId, Body
 FROM ApexTrigger
-WHERE TableEnumOrId = '<object>'
-  AND Body LIKE '%<field>%'
-LIMIT <limit_per_query> OFFSET <offset>
+WHERE TableEnumOrId = 'Account'
+LIMIT 200 OFFSET 0
 ```
 
-Where `<managed_filter>` is `NamespacePrefix = null` when `include_managed == false`, otherwise omitted.
+Then **client-side**, filter the returned rows where `Body` contains the field name using the word-boundary regex below. This is the only safe pattern — `Body` is effectively a "blob" column from SOQL's perspective.
+
+When `include_managed = true`, omit the `NamespacePrefix = null` filter. When `object` is not specified for the `ApexTrigger` query, drop the `WHERE TableEnumOrId` clause and filter client-side.
 
 ## Post-processing (word-boundary filter)
 

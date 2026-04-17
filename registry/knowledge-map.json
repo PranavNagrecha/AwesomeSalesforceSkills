@@ -183,6 +183,7 @@
       "admin/revenue-recognition-requirements",
       "admin/sales-engagement-cadences",
       "admin/sales-process-mapping",
+      "admin/salesforce-object-queryability",
       "admin/salesforce-release-preparation",
       "admin/salesforce-support-escalation",
       "admin/salesforce-surveys",
@@ -1262,6 +1263,9 @@
     "agent-deployment": [
       "agentforce/agentforce-agent-creation"
     ],
+    "agent-discipline": [
+      "admin/salesforce-object-queryability"
+    ],
     "agent-dsl": [
       "agentforce/agent-script-dsl"
     ],
@@ -1612,6 +1616,7 @@
       "apex/mcae-pardot-api"
     ],
     "api-version": [
+      "admin/salesforce-object-queryability",
       "devops/api-version-management"
     ],
     "api-versioning": [
@@ -4177,6 +4182,9 @@
     "devops-tooling": [
       "devops/salesforce-devops-tooling-selection"
     ],
+    "diagnostics": [
+      "admin/salesforce-object-queryability"
+    ],
     "dialog-scripting": [
       "admin/agent-conversation-design"
     ],
@@ -4399,6 +4407,9 @@
     "eac": [
       "admin/einstein-activity-capture-setup",
       "apex/einstein-activity-capture-api"
+    ],
+    "edition-limits": [
+      "admin/salesforce-object-queryability"
     ],
     "editions": [
       "architect/org-edition-and-feature-licensing"
@@ -10095,6 +10106,9 @@
     "soap-delivery": [
       "admin/outbound-message-setup"
     ],
+    "sobject": [
+      "admin/salesforce-object-queryability"
+    ],
     "sobject-collection": [
       "integration/composite-api-patterns"
     ],
@@ -10121,6 +10135,7 @@
       "architect/solution-design-patterns"
     ],
     "soql": [
+      "admin/salesforce-object-queryability",
       "apex/einstein-activity-capture-api",
       "apex/formula-field-performance-and-limits",
       "apex/soql-fundamentals",
@@ -10593,6 +10608,7 @@
       "agentforce/agentforce-tool-use-patterns"
     ],
     "tooling-api": [
+      "admin/salesforce-object-queryability",
       "architect/metadata-coverage-and-dependencies",
       "security/security-health-check"
     ],

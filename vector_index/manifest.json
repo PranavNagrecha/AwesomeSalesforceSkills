@@ -1,11 +1,11 @@
 {
-  "chunk_count": 108898,
-  "chunks_hash": "132985aeffec47b042521f2483233ec15e4c5749380d822e0ac06dc7d8edabc1",
+  "chunk_count": 108970,
+  "chunks_hash": "596151cb01f845d12c8b7829c22301ef2be6e25cf2739fe34a1bfeec3d71d242",
   "embedding_backend": null,
   "embedding_count": 0,
   "embeddings_enabled": false,
-  "generated_from_hash": "ae32896ca9f7d2b2518cfaeab5a52ee1d3c2dc081d5aa8446f6ed7380c9a217d",
+  "generated_from_hash": "7bd2201d3a8dc64498f4d7710c4a25415c5a8ac2ced59e3e2ec6b0f0f81f515f",
   "knowledge_source_count": 36,
   "schema_version": 1,
-  "skill_count": 701
+  "skill_count": 702
 }

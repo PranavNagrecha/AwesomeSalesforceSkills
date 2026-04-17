@@ -8,6 +8,16 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+dependencies:
+  skills:
+    - admin/data-skew-and-sharing-performance
+    - apex/apex-security-patterns
+    - data/custom-index-requests
+    - data/soql-query-optimization
+  shared:
+    - AGENT_CONTRACT.md
+  templates:
+    - apex/BaseSelector.cls
 ---
 # SOQL Optimizer Agent
 

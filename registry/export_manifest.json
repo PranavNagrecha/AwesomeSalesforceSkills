@@ -4,19 +4,19 @@
     "cursor",
     "mcp"
   ],
-  "generated_at": "2026-04-17T17:32:15Z",
+  "generated_at": "2026-04-17T19:18:26Z",
   "schema_version": 1,
   "targets": {
     "aider": {
-      "overall_hash": "sha256:27f58c80416f757a238f061d13ef70ad08c0c1ad59d025dbfbccf8d9e6e3fc4e",
+      "overall_hash": "sha256:1659d958671e106d653fe7ecef8bbcad78a27eb896d071667272c6228d114563",
       "skill_count": 1,
       "skills": {
-        "CONVENTIONS.md": "sha256:6ff42113a011800b34433f4f949e583d78db53c782c1141250f7d20dfa868de7"
+        "CONVENTIONS.md": "sha256:4375339548e7ac349d4b29a2b1de6e89f2029dd390b841f0b782d62e53ef695c"
       }
     },
     "augment": {
-      "overall_hash": "sha256:d83b7542a17776cab6b6b709f6133aa2c202a5b8cbf212d8e2a50c5f43d551cc",
-      "skill_count": 701,
+      "overall_hash": "sha256:e76dd50e0fe0e71f6da955a3f0f2c522720a76a4939a0c2fea9827352121af8e",
+      "skill_count": 702,
       "skills": {
         "admin/agent-conversation-design": "sha256:44cb058d8d94c6e07f82b0b0fd6c113c834488fd0603fc3384606e72a4fa8ffc",
         "admin/ai-adoption-change-management": "sha256:36485a25ae84e0c7d3c0f5f5f89e0f0d9998ae69b4663f03490816210fb123de",
@@ -199,6 +199,7 @@
         "admin/revenue-recognition-requirements": "sha256:a27eabb96a6e5aeaaf53b74987c251968ce225f98b457422e97a08b8494a6fdb",
         "admin/sales-engagement-cadences": "sha256:f1be3be73969c824acc58ac292527c16efb781eb8c38dc83ba8ac5b1e4bec692",
         "admin/sales-process-mapping": "sha256:34d4fcffe89af40de27439780b0c4604323f625bed7b057ea1d7d239e9215867",
+        "admin/salesforce-object-queryability": "sha256:f93d0bfbbac6f5da1fc093978d5f31c4f28daed7ff92cc6f9db9258d72f361c5",
         "admin/salesforce-release-preparation": "sha256:c43620d4f1a018a66ca2150e5bd5b37255fcc0ac511a63e90734d4b284ff8ec1",
         "admin/salesforce-support-escalation": "sha256:60ea0c29e4819288aa7b1ccd57882f8cf620111f6794cb7796c6d1f69ce5b6f9",
         "admin/salesforce-surveys": "sha256:775406892493f3684e13d2ce9586f483c4faf8c9d435575758485adb89cd7a74",
@@ -722,8 +723,8 @@
       }
     },
     "claude": {
-      "overall_hash": "sha256:9b0a5ebe4873f4089a209be1dbe63575c97bf54292427e528c371a71206411dc",
-      "skill_count": 701,
+      "overall_hash": "sha256:c9216c0b68d9459a9fa126dd6d126ec793552c07b7e4554da5aefdf279d3a486",
+      "skill_count": 702,
       "skills": {
         "admin/agent-conversation-design": "sha256:97e62ae3c713d44e243cb505d23e6d66d0f9452826c4c6232eabf2d01d678ae6",
         "admin/ai-adoption-change-management": "sha256:56ef2ef1bf54bd8236c2774406dc407ff7536fb20ac36b3d5f79471c432c5eca",
@@ -906,6 +907,7 @@
         "admin/revenue-recognition-requirements": "sha256:27e49b4eb4caa2686babec627f716797d0bc09aa665ac88f2e20aa123f852877",
         "admin/sales-engagement-cadences": "sha256:c696984d88ee7066ead25d59dd350b99d09dfaad64368981724edf3ca88be76b",
         "admin/sales-process-mapping": "sha256:52227609f0f1f139f91543a20129724792c8b2504782770a3c40f084e09e98e3",
+        "admin/salesforce-object-queryability": "sha256:976b03c9acbb4e8f2a2c7c8c8c1b837792c664aaa06389c12af78c455f616a95",
         "admin/salesforce-release-preparation": "sha256:a7044c4779a344adb57c3f4fb7296c475b742bb7da2c512179064ab4b4a134f1",
         "admin/salesforce-support-escalation": "sha256:3625635ea6255703d58e91bb3fb899ee4cce96c73fb5fff2119e56e1a8281365",
         "admin/salesforce-surveys": "sha256:6ae74f44b2e866a47ccb2a1925d9b821560cc297dfdba00d71723479d1702153",
@@ -1429,8 +1431,8 @@
       }
     },
     "cursor": {
-      "overall_hash": "sha256:18fd4d5167f1e8763e0210eaad2eec370d487f9a4650cdffd7f41621a05f6937",
-      "skill_count": 701,
+      "overall_hash": "sha256:e9863dc576ce21cdb6a27ab5758d637c7061187e8831ba39d994ae4df8b6056c",
+      "skill_count": 702,
       "skills": {
         "admin/agent-conversation-design": "sha256:968c5453ac99b06ee0131052ed77de5241a2ac751e17a5248832d3f8458af1c1",
         "admin/ai-adoption-change-management": "sha256:2ccc49b3de10f7380f11dfa5374de5f3d7c6215fd66fa556293550f530070602",
@@ -1613,6 +1615,7 @@
         "admin/revenue-recognition-requirements": "sha256:d7bb7d1b2025a6f3a1d57ef2def4d59a8f0abe95ee58be9984742a683504a9c7",
         "admin/sales-engagement-cadences": "sha256:039dbc429e1074abb68fa91b170de0b52b60530b21949818af82edfa97512aec",
         "admin/sales-process-mapping": "sha256:f5d914059da42eeebd77c4f37b3950caf0197fb2821c2317045ee646301e08da",
+        "admin/salesforce-object-queryability": "sha256:430e20653130413cb16cbd184c1f90051016cc786c27a747d6f66eb8ab6d9c06",
         "admin/salesforce-release-preparation": "sha256:f5bbff6d3f1d94c5ee1aa5fb8854ed62ab5eb93b65a0d2d2ebf63e99bdf6d6e1",
         "admin/salesforce-support-escalation": "sha256:e50b44374839dac95c881f3bf3c5690784b9df3595fd8d188cdac74c95a4001c",
         "admin/salesforce-surveys": "sha256:fb75d5dc81f4f0f32989cfe6eecbc394e619c71da8e1d1748ab86e6d4d8a9216",
@@ -2136,8 +2139,8 @@
       }
     },
     "mcp": {
-      "overall_hash": "sha256:9b0a5ebe4873f4089a209be1dbe63575c97bf54292427e528c371a71206411dc",
-      "skill_count": 701,
+      "overall_hash": "sha256:c9216c0b68d9459a9fa126dd6d126ec793552c07b7e4554da5aefdf279d3a486",
+      "skill_count": 702,
       "skills": {
         "admin/agent-conversation-design": "sha256:97e62ae3c713d44e243cb505d23e6d66d0f9452826c4c6232eabf2d01d678ae6",
         "admin/ai-adoption-change-management": "sha256:56ef2ef1bf54bd8236c2774406dc407ff7536fb20ac36b3d5f79471c432c5eca",
@@ -2320,6 +2323,7 @@
         "admin/revenue-recognition-requirements": "sha256:27e49b4eb4caa2686babec627f716797d0bc09aa665ac88f2e20aa123f852877",
         "admin/sales-engagement-cadences": "sha256:c696984d88ee7066ead25d59dd350b99d09dfaad64368981724edf3ca88be76b",
         "admin/sales-process-mapping": "sha256:52227609f0f1f139f91543a20129724792c8b2504782770a3c40f084e09e98e3",
+        "admin/salesforce-object-queryability": "sha256:976b03c9acbb4e8f2a2c7c8c8c1b837792c664aaa06389c12af78c455f616a95",
         "admin/salesforce-release-preparation": "sha256:a7044c4779a344adb57c3f4fb7296c475b742bb7da2c512179064ab4b4a134f1",
         "admin/salesforce-support-escalation": "sha256:3625635ea6255703d58e91bb3fb899ee4cce96c73fb5fff2119e56e1a8281365",
         "admin/salesforce-surveys": "sha256:6ae74f44b2e866a47ccb2a1925d9b821560cc297dfdba00d71723479d1702153",
@@ -2843,8 +2847,8 @@
       }
     },
     "windsurf": {
-      "overall_hash": "sha256:b08c81f4c3bf8d6db485bb8e89065016c1c2e1be4a94f13731335ad1f5643d0d",
-      "skill_count": 701,
+      "overall_hash": "sha256:53cb5c18466c8b0f38db11fdced7a1d515a94fcb38e52fba2c9562e06305c894",
+      "skill_count": 702,
       "skills": {
         "admin/agent-conversation-design": "sha256:9890e3826d897e2598a1d21a81bf6b79d9c4f1e1178df87dc355cf97674cf891",
         "admin/ai-adoption-change-management": "sha256:722b39f4f4b79c0240be386eb96af46eab40899be962ee472a327e2c8e589e65",
@@ -3027,6 +3031,7 @@
         "admin/revenue-recognition-requirements": "sha256:2f3ff5967e7720c316f72801332f3207c8f9187d1b06801b73610b82b8919bbe",
         "admin/sales-engagement-cadences": "sha256:7ec5cc64cd6c05084272e7b4b7c7b6dced97e3a9172daaecf8e9966e6f168962",
         "admin/sales-process-mapping": "sha256:be43a16be0aa71ec9bb5eb13ca9baa72de358e6ac102c9ffdec2f271e62719d6",
+        "admin/salesforce-object-queryability": "sha256:c0ab3531a01182cf247cb2a14f27e621dc7d36d2892486b4323b981fa9c5db84",
         "admin/salesforce-release-preparation": "sha256:53b3af08c28578cd6a21b3d00ee00fcbda18012d710e0f7137eb09f09e20a3c4",
         "admin/salesforce-support-escalation": "sha256:7f3291632a673b2a18c747b6fc5630f44759722f27f0468b2fb4d9b86d294217",
         "admin/salesforce-surveys": "sha256:21dd4eed6c4a63ca33809a7fed348240f106bbf28328ea00bdcf6b0642b8bbe1",

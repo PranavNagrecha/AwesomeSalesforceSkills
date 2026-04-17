@@ -8,6 +8,17 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+dependencies:
+  skills:
+    - apex/apex-security-patterns
+    - integration/named-credentials-setup
+  shared:
+    - AGENT_CONTRACT.md
+  templates:
+    - apex/HttpClient.cls
+    - apex/SecurityUtils.cls
+  decision_trees:
+    - sharing-selection.md
 ---
 # Security Scanner Agent
 

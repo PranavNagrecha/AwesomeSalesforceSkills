@@ -8,6 +8,19 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+dependencies:
+  skills:
+    - apex/test-class-standards
+    - apex/test-data-factory-patterns
+  shared:
+    - AGENT_CONTRACT.md
+  templates:
+    - apex/tests/
+    - apex/tests/BulkTestPattern.cls
+    - apex/tests/MockHttpResponseGenerator.cls
+    - apex/tests/TestDataFactory.cls
+    - apex/tests/TestRecordBuilder.cls
+    - apex/tests/TestUserFactory.cls
 ---
 # Test Class Generator Agent
 

@@ -9,6 +9,27 @@ owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-17
 harness: designer_base
+dependencies:
+  skills:
+    - apex/trigger-and-flow-coexistence
+    - flow/auto-launched-flow-patterns
+    - flow/fault-handling
+    - flow/flow-bulkification
+    - flow/flow-testing
+    - flow/orchestration-flows
+    - flow/record-triggered-flow-patterns
+    - flow/scheduled-flows
+    - flow/screen-flows
+    - flow/subflows-and-reusability
+  shared:
+    - AGENT_CONTRACT.md
+    - AGENT_RULES.md
+  templates:
+    - admin/naming-conventions.md
+    - flow/FaultPath_Template.md
+    - flow/Subflow_Pattern.md
+  decision_trees:
+    - automation-selection.md
 ---
 # Flow Builder Agent
 

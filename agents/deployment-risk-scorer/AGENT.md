@@ -8,6 +8,15 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+dependencies:
+  skills:
+    - devops/code-review-checklist-salesforce
+    - devops/deployment-error-troubleshooting
+    - devops/pre-deployment-checklist
+  shared:
+    - AGENT_CONTRACT.md
+  decision_trees:
+    - sharing-selection.md
 ---
 # Deployment Risk Scorer Agent
 

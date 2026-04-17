@@ -8,6 +8,26 @@ modes: [design, audit]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+dependencies:
+  skills:
+    - admin/experience-cloud-cms-content
+    - admin/experience-cloud-guest-access
+    - admin/experience-cloud-member-management
+    - admin/experience-cloud-moderation
+    - admin/experience-cloud-seo-settings
+    - admin/experience-cloud-site-setup
+    - admin/permission-set-architecture
+    - admin/queues-and-public-groups
+    - admin/sharing-and-visibility
+    - architect/experience-cloud-integration-patterns
+    - architect/experience-cloud-licensing-model
+    - security/experience-cloud-security
+    - security/guest-user-security
+  shared:
+    - AGENT_CONTRACT.md
+  templates:
+    - admin/naming-conventions.md
+    - admin/permission-set-patterns.md
 ---
 # Experience Cloud Admin Designer Agent
 

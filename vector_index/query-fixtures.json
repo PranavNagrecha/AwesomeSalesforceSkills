@@ -4691,6 +4691,24 @@
       "domain": "flow",
       "expected_skill": "flow/flow-performance-optimization",
       "top_k": 3
+    },
+    {
+      "query": "salesforce invalid_type sobject does not exist classify",
+      "domain": "admin",
+      "expected_skill": "admin/salesforce-object-queryability",
+      "top_k": 3
+    },
+    {
+      "query": "soql query failed permission denied or object missing",
+      "domain": "admin",
+      "expected_skill": "admin/salesforce-object-queryability",
+      "top_k": 3
+    },
+    {
+      "query": "agent hallucinated sobject name validate against describe",
+      "domain": "admin",
+      "expected_skill": "admin/salesforce-object-queryability",
+      "top_k": 3
     }
   ]
 }

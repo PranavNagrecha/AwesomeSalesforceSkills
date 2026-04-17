@@ -8,6 +8,22 @@ modes: [design, audit]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+dependencies:
+  skills:
+    - admin/assignment-rules
+    - admin/case-management-setup
+    - admin/email-templates-and-alerts
+    - admin/email-to-case-configuration
+    - admin/escalation-rules
+    - admin/lead-management-and-conversion
+    - admin/omni-channel-routing-setup
+    - admin/queues-and-public-groups
+  shared:
+    - AGENT_CONTRACT.md
+  templates:
+    - admin/naming-conventions.md
+  decision_trees:
+    - automation-selection.md
 ---
 # Assignment & Auto-Response Rules Designer Agent
 

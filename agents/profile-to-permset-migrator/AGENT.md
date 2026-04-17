@@ -8,6 +8,23 @@ modes: [single]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+dependencies:
+  probes:
+    - permission-set-assignment-shape.md
+  skills:
+    - admin/custom-permissions
+    - admin/integration-user-management
+    - admin/permission-set-architecture
+    - admin/permission-sets-vs-profiles
+    - admin/user-access-policies
+    - admin/user-management
+    - devops/permission-set-deployment-ordering
+    - security/permission-set-groups-and-muting
+  shared:
+    - AGENT_CONTRACT.md
+  templates:
+    - admin/naming-conventions.md
+    - admin/permission-set-patterns.md
 ---
 # Profile → Permission Set Migrator Agent
 

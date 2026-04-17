@@ -8,6 +8,18 @@ modes: [design, audit]
 owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
+dependencies:
+  skills:
+    - admin/assignment-rules
+    - admin/case-management-setup
+    - admin/entitlements-and-milestones
+    - admin/escalation-rules
+    - admin/omni-channel-routing-setup
+    - admin/service-console-configuration
+  shared:
+    - AGENT_CONTRACT.md
+  templates:
+    - admin/naming-conventions.md
 ---
 # Entitlement & Milestone Designer Agent
 

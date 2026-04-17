@@ -9,6 +9,15 @@ owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-17
 harness: designer_base
+dependencies:
+  skills:
+    - admin/assignment-rules
+    - admin/enterprise-territory-management
+    - admin/lead-management-and-conversion
+    - admin/queues-and-public-groups
+  shared:
+    - AGENT_CONTRACT.md
+    - AGENT_RULES.md
 ---
 # Lead Routing Rules Designer Agent
 
