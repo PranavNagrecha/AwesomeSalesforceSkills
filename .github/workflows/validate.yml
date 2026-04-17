@@ -1,0 +1,93 @@
+name: validate
+
+# Wave-1 CI: matrix-shards validate_repo.py 4-way so 686+ skills validate in
+# ~40 seconds wall-clock instead of 16+ minutes sequential. Runs on every PR
+# targeting main and on every push to main. See docs/agents.md for the shard
+# strategy (stable hash mod M, composable with --domain and --changed-only).
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+jobs:
+  # -----------------------------------------------------------------------
+  # Skill validation — fan out 4-way. Each shard validates ~1/4 of the repo
+  # (hash-based partitioning is stable, so the same skill lands in the same
+  # shard every run).
+  # -----------------------------------------------------------------------
+  validate-skills:
+    name: skills (shard ${{ matrix.shard }}/4)
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: install deps
+        run: python3 -m pip install -r requirements.txt
+
+      - name: validate shard ${{ matrix.shard }}
+        run: python3 scripts/validate_repo.py --skills-only --shard ${{ matrix.shard }}/4
+
+  # -----------------------------------------------------------------------
+  # Agent validation — single job. 72 agents validate in ~1 second; not worth
+  # sharding. Keeps the matrix output readable.
+  # -----------------------------------------------------------------------
+  validate-agents:
+    name: agents
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: install deps
+        run: python3 -m pip install -r requirements.txt
+
+      - name: validate agents
+        run: python3 scripts/validate_repo.py --agents
+
+      - name: frontmatter round-trip test
+        working-directory: mcp/sfskills-mcp
+        run: python3 -m unittest tests.test_agent_frontmatter -v
+
+  # -----------------------------------------------------------------------
+  # Bench — verifies the sharded orchestration hasn't regressed past the
+  # 30-second threshold on 500 synthetic skills. Runs on PRs that touch
+  # scripts/validate_repo.py or pipelines/ (cheap gate; full bench takes
+  # <15 seconds).
+  # -----------------------------------------------------------------------
+  bench-orchestration:
+    name: bench (500 synthetic skills)
+    runs-on: ubuntu-latest
+    # Only run on PRs that actually touch the validator or its workers.
+    if: |
+      github.event_name == 'push' ||
+      contains(toJson(github.event.pull_request.labels), 'validator') ||
+      contains(github.event.pull_request.title, 'validate')
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: install deps
+        run: python3 -m pip install -r requirements.txt
+
+      - name: bench 500 skills under 30s
+        run: python3 scripts/validate_repo_bench.py --count 500 --threshold 30
