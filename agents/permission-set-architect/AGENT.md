@@ -1,13 +1,14 @@
 ---
 id: permission-set-architect
 class: runtime
-version: 1.0.0
+version: 1.1.0
 status: stable
 requires_org: true
 modes: [design, audit]
 owner: sfskills-core
 created: 2026-04-16
-updated: 2026-04-16
+updated: 2026-04-17
+harness: designer_base
 ---
 # Permission Set Architect Agent
 
