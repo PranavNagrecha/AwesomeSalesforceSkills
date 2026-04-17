@@ -6,15 +6,15 @@
     "architect": 90,
     "data": 86,
     "devops": 58,
-    "flow": 31,
+    "flow": 37,
     "integration": 43,
     "lwc": 38,
     "omnistudio": 21,
     "security": 36
   },
-  "generated_from_hash": "6170077b4dac3800a766b287347411aeecf36af5dcea60e042269474b3c7c537",
+  "generated_from_hash": "bf2982c54d582ad98684929cb94f231c7995f85e4bed48d8dcf313dc19e78b8b",
   "schema_version": 1,
-  "skill_count": 742,
+  "skill_count": 748,
   "skills": [
     {
       "category": "admin",
@@ -79260,6 +79260,76 @@
     {
       "category": "flow",
       "chunk_ids": [
+        "1da8d9c9b189f874a574",
+        "20f3564f01cc0cabf92f",
+        "221798a908a5ca2c9fe1",
+        "22882dd69a0b98a6dedf",
+        "2390c740fa2db187f2c5",
+        "37558def4c55695a049b",
+        "3795bba3a8c21314c23d",
+        "4520cc06971e8f68d8c2",
+        "54b15f99b09668c39f14",
+        "56276e7eb013444a5532",
+        "5a24497c3be6063862ca",
+        "5b29dd567a7703777572",
+        "5bc5bc9f59e0a686d6c7",
+        "78a1d741ca0377085a4d",
+        "853f8f18ada622121ee3",
+        "952db3f432adca654bd1",
+        "97749da605a7eb1cd91e",
+        "a98358090f73e53683b8",
+        "acc99ebe4be5639e0743",
+        "aff201cdb3289b82f122",
+        "ba098457ffff9c7a4220",
+        "c9b74d732d5df3193123",
+        "e2a51b6d3110d7bc796e",
+        "ec34c9704d06c246bd44",
+        "f2cf4c736a4e1f3624c9",
+        "f4b341322f2ce3e2303e"
+      ],
+      "content_hash": "54705415b63c48512b3925ff8c8034f8afd181be5b10d068f4e906e240413796",
+      "dependencies": [],
+      "description": "Publish and subscribe to Platform Events from Flow for async decoupling, high-volume triggers, and cross-org signaling. NOT for regular DML-triggered flows.",
+      "file_location": "skills/flow/flow-and-platform-events",
+      "id": "flow/flow-and-platform-events",
+      "inputs": [
+        "use case (decouple / fan-out / cross-org)",
+        "event payload"
+      ],
+      "name": "flow-and-platform-events",
+      "official_sources": [
+        "Flow Builder Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.flow.htm",
+        "Flow Best Practices \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_best_practices.htm",
+        "Reactive Screens \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_screen_reactive.htm",
+        "Flow HTTP Callout Action \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_concepts_callout.htm"
+      ],
+      "outputs": [
+        "PE definition + publish flow + subscribe flow"
+      ],
+      "references": [
+        "skills/flow/flow-and-platform-events/references/examples.md",
+        "skills/flow/flow-and-platform-events/references/gotchas.md",
+        "skills/flow/flow-and-platform-events/references/llm-anti-patterns.md",
+        "skills/flow/flow-and-platform-events/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/flow/flow-and-platform-events/scripts/check_flow_and_platform_events.py"
+      ],
+      "tags": [
+        "platform-events",
+        "flow",
+        "async"
+      ],
+      "templates": [
+        "skills/flow/flow-and-platform-events/templates/flow-and-platform-events-template.md"
+      ],
+      "updated": "2026-04-17",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "flow",
+      "chunk_ids": [
         "0a795272bf0c1fa18a96",
         "0ec681f0247282f02f43",
         "1203d3d8c8631126d6de",
@@ -79596,6 +79666,76 @@
     {
       "category": "flow",
       "chunk_ids": [
+        "00309ee2ebd459450116",
+        "0160165bb999a2de887a",
+        "055ab95abc6a00ea3505",
+        "0d8470012a25cdc939fc",
+        "0f623c4fe9d905e81659",
+        "1ac29e2a66d107962708",
+        "1c4fdc6c95740d2cd5fe",
+        "1de651cab429c773863c",
+        "2340f59af642d40780f7",
+        "279e206bc0f1f9999ce9",
+        "3d7dc14e154900dd524f",
+        "4216f0d82aaf2c1eb027",
+        "4c7b113523bbb7673c9c",
+        "5282fa0e926102b989c6",
+        "5e21f76cad0b4772b4db",
+        "718a7f9ddeade3f9adaa",
+        "76db5ebb8e7905ed3093",
+        "940da54ceab7dfed7b1d",
+        "97ae0ca8ae1fd820bcef",
+        "b096524d3b5c636dc390",
+        "b1f808df7eada6af85b4",
+        "bccc69112d6dd2591c76",
+        "c1ea3d3095abe2d5c6c9",
+        "dbe2c075d5e8fa474c96",
+        "e89429df0eb33200d611",
+        "fba142e9b0d018536827"
+      ],
+      "content_hash": "adaaabc79e6e413bfdc8e411d3f7466a41ded1c40ee35e6ce3b7da9f89e5c9f2",
+      "dependencies": [],
+      "description": "Use the Data Table screen component for selecting rows from collections in Screen Flows, including single/multi-select and inline actions. NOT for displaying read-only data outside flows.",
+      "file_location": "skills/flow/flow-data-tables",
+      "id": "flow/flow-data-tables",
+      "inputs": [
+        "collection to display",
+        "selection mode"
+      ],
+      "name": "flow-data-tables",
+      "official_sources": [
+        "Flow Builder Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.flow.htm",
+        "Flow Best Practices \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_best_practices.htm",
+        "Reactive Screens \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_screen_reactive.htm",
+        "Flow HTTP Callout Action \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_concepts_callout.htm"
+      ],
+      "outputs": [
+        "screen with Data Table configured"
+      ],
+      "references": [
+        "skills/flow/flow-data-tables/references/examples.md",
+        "skills/flow/flow-data-tables/references/gotchas.md",
+        "skills/flow/flow-data-tables/references/llm-anti-patterns.md",
+        "skills/flow/flow-data-tables/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/flow/flow-data-tables/scripts/check_flow_data_tables.py"
+      ],
+      "tags": [
+        "flow",
+        "datatable",
+        "screen"
+      ],
+      "templates": [
+        "skills/flow/flow-data-tables/templates/flow-data-tables-template.md"
+      ],
+      "updated": "2026-04-17",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "flow",
+      "chunk_ids": [
         "0f36ffe039edf170ea0b",
         "1001afe9c878e09bbd71",
         "164ad9a1c9a4da8206af",
@@ -79713,6 +79853,76 @@
         "skills/flow/flow-debugging/templates/flow-debugging-template.md"
       ],
       "updated": "2026-04-04",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "flow",
+      "chunk_ids": [
+        "0a56c6dfeeb681e538c2",
+        "27a8f6b116571038c5db",
+        "299d3889a5213fb1e1b7",
+        "34078d53c169175f6af5",
+        "38faeb8d21e28b3b2e3d",
+        "39811ef248fe9eed7a4c",
+        "3b439b2b6190bf36074f",
+        "467b3d2c5301571949fa",
+        "54ea3b10fdfe9046e193",
+        "57e07e236908a48772fb",
+        "58381292da223c7fdbf8",
+        "5a083fb0d962cc58cabd",
+        "5aae3a4d837a9cdad87f",
+        "5bb45cd7a5430117aee2",
+        "5f72109e8c699cb839a1",
+        "67a9362b5a43d44bdbd6",
+        "7105f0d6b950fb2bf608",
+        "7887f04217c214d3c7c8",
+        "857f10ff5e4c4ef990dd",
+        "88b21ade0058476dc47f",
+        "a947a067d94b8aba0fd9",
+        "c55d161dc96b11fe6fb8",
+        "cdcf9bd8c9391461bde9",
+        "d50e967ad325d816b8a9",
+        "e857ae46bbe50718309b",
+        "fcdeabfc9104a61d9dfb"
+      ],
+      "content_hash": "2467743adb05fc4dbee62e4298ae10337ef9a6b9e4e7a8af4aeffc0e47e13105",
+      "dependencies": [],
+      "description": "Build picklists and choice sets in Flow Builder sourced from records, picklist fields, or collections, including dependent choices. NOT for static hard-coded choice sets.",
+      "file_location": "skills/flow/flow-dynamic-choices",
+      "id": "flow/flow-dynamic-choices",
+      "inputs": [
+        "picklist source (SObject query or picklist field)",
+        "filter criteria"
+      ],
+      "name": "flow-dynamic-choices",
+      "official_sources": [
+        "Flow Builder Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.flow.htm",
+        "Flow Best Practices \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_best_practices.htm",
+        "Reactive Screens \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_screen_reactive.htm",
+        "Flow HTTP Callout Action \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_concepts_callout.htm"
+      ],
+      "outputs": [
+        "Choice configuration + fallback on empty results"
+      ],
+      "references": [
+        "skills/flow/flow-dynamic-choices/references/examples.md",
+        "skills/flow/flow-dynamic-choices/references/gotchas.md",
+        "skills/flow/flow-dynamic-choices/references/llm-anti-patterns.md",
+        "skills/flow/flow-dynamic-choices/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/flow/flow-dynamic-choices/scripts/check_flow_dynamic_choices.py"
+      ],
+      "tags": [
+        "flow",
+        "choices",
+        "screen-flow"
+      ],
+      "templates": [
+        "skills/flow/flow-dynamic-choices/templates/flow-dynamic-choices-template.md"
+      ],
+      "updated": "2026-04-17",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -80526,6 +80736,146 @@
     {
       "category": "flow",
       "chunk_ids": [
+        "00d102610b6b14f6e9e9",
+        "095dd7436a4794546f01",
+        "11d1c8c31955a488f4ef",
+        "1ad212d2f70726025419",
+        "2c70075ff2d6a98c8273",
+        "378bc8d4c57399d7e6e5",
+        "3c4e7ae505ab0086be4c",
+        "3cec0fbe78b0def09efa",
+        "4d22f33048007438d0aa",
+        "587ab0eaeedbda4ecd9f",
+        "6339664c84809ae54ade",
+        "6a9849fe1bca5910b725",
+        "6b6a74d0a34541e4335a",
+        "76c6546645281642209b",
+        "77c492b4d42523364bc0",
+        "7976a78dd30d858d591b",
+        "805ef573f586d5d7ac49",
+        "9318a0cf8084ec7b53b6",
+        "9933e099abaf47baf460",
+        "a0fae23454a4f7f92a13",
+        "ad1499c01d86073ed515",
+        "b9f5a75c8aa2069a3c7a",
+        "cb839b0d640126004828",
+        "cdfb6137ce20fc97a4ba",
+        "d4cbd986b1898d6cbdbf",
+        "f439d84be95e6c2480bf"
+      ],
+      "content_hash": "86a3208938570583de747cfdd074382eb5a79fbbf0dea4aebf2a884d5a435bdc",
+      "dependencies": [],
+      "description": "Call external HTTP APIs directly from Flow using HTTP Callout actions (no Apex), handling auth, schema, and errors. NOT for complex Apex-based integration logic.",
+      "file_location": "skills/flow/flow-http-callout-action",
+      "id": "flow/flow-http-callout-action",
+      "inputs": [
+        "target endpoint + Named Credential",
+        "sample request/response"
+      ],
+      "name": "flow-http-callout-action",
+      "official_sources": [
+        "Flow Builder Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.flow.htm",
+        "Flow Best Practices \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_best_practices.htm",
+        "Reactive Screens \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_screen_reactive.htm",
+        "Flow HTTP Callout Action \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_concepts_callout.htm"
+      ],
+      "outputs": [
+        "Flow HTTP Callout action with schema + fault path"
+      ],
+      "references": [
+        "skills/flow/flow-http-callout-action/references/examples.md",
+        "skills/flow/flow-http-callout-action/references/gotchas.md",
+        "skills/flow/flow-http-callout-action/references/llm-anti-patterns.md",
+        "skills/flow/flow-http-callout-action/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/flow/flow-http-callout-action/scripts/check_flow_http_callout_action.py"
+      ],
+      "tags": [
+        "flow",
+        "callout",
+        "rest"
+      ],
+      "templates": [
+        "skills/flow/flow-http-callout-action/templates/flow-http-callout-action-template.md"
+      ],
+      "updated": "2026-04-17",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "flow",
+      "chunk_ids": [
+        "09177c380278e9420c5d",
+        "1d4548c154c74f8c0074",
+        "24c3109ea869c34acb32",
+        "26d25db48a59cc1a32d7",
+        "2bac0101f2a80620d2e0",
+        "2c0da64b86a6d93f9341",
+        "32efd3a80f3862fc38b2",
+        "53a1fc43139e6c14aa2a",
+        "604e82120fea847d63c6",
+        "62bd0c7e9c02cd6474c0",
+        "66911d203452a71d7d69",
+        "7113986abd508596f056",
+        "7927eeef64f351ad6688",
+        "82758f28201353550bb1",
+        "8453e332d358f6683d9a",
+        "99adf8a837b4c0547077",
+        "9e654039a7a821e71d33",
+        "a8d04c0ba48bba6345cf",
+        "aea7d6ae61043f0d8f89",
+        "b392ffb6876d43106ade",
+        "ceabfbd9f48d818a8c30",
+        "e2ac8f0314f073e33ce8",
+        "e669d9b40d4c0248d4ed",
+        "e797e7dc9b19f2648b73",
+        "ec4c06a6ce71c8288722",
+        "ffc3b3a5a2e80ec388b5"
+      ],
+      "content_hash": "edaf57312d070a8470b186f00cae944447b9b03d7be3076d0909da8f23c14d96",
+      "dependencies": [],
+      "description": "Diagnose Flow failures using the Debug Log, Flow Error emails, and the Debug panel; instrument flows so production issues are triageable. NOT for Apex debugging.",
+      "file_location": "skills/flow/flow-interview-debugging",
+      "id": "flow/flow-interview-debugging",
+      "inputs": [
+        "failing flow + error email",
+        "repro data"
+      ],
+      "name": "flow-interview-debugging",
+      "official_sources": [
+        "Flow Builder Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.flow.htm",
+        "Flow Best Practices \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_best_practices.htm",
+        "Reactive Screens \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_screen_reactive.htm",
+        "Flow HTTP Callout Action \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_concepts_callout.htm"
+      ],
+      "outputs": [
+        "root cause + remediation + logging upgrade"
+      ],
+      "references": [
+        "skills/flow/flow-interview-debugging/references/examples.md",
+        "skills/flow/flow-interview-debugging/references/gotchas.md",
+        "skills/flow/flow-interview-debugging/references/llm-anti-patterns.md",
+        "skills/flow/flow-interview-debugging/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/flow/flow-interview-debugging/scripts/check_flow_interview_debugging.py"
+      ],
+      "tags": [
+        "flow",
+        "debug",
+        "error-handling"
+      ],
+      "templates": [
+        "skills/flow/flow-interview-debugging/templates/flow-interview-debugging-template.md"
+      ],
+      "updated": "2026-04-17",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "flow",
+      "chunk_ids": [
         "00cc65ec6c3e169247c5",
         "03bbebf47c18e42a93cf",
         "0d312de83af3a2a22ea1",
@@ -81104,6 +81454,76 @@
       ],
       "templates": [
         "skills/flow/flow-platform-events-integration/templates/flow-platform-events-integration-template.md"
+      ],
+      "updated": "2026-04-17",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "flow",
+      "chunk_ids": [
+        "060df1c6d887b6f8f23b",
+        "0a698731bda6b0ab9f80",
+        "0b14fa9833117529329e",
+        "16aa8bc499be9e790e1e",
+        "457c4616d208fefbfae7",
+        "4b7c4426eb51599491e1",
+        "4c20276965aacdad8afc",
+        "5a77a78bbd332cd4d179",
+        "601abfd9412e9f73e2f8",
+        "611be536775981433175",
+        "86b80d83c8ca5c8888ee",
+        "88d96b57e8818a8f4947",
+        "89a068decca1a738e7f1",
+        "97765277fb05025129d6",
+        "9c8c342d7248569b114a",
+        "af0caad8f10a3b90fb11",
+        "af39c6c0d6dfa6f4feea",
+        "b4517af8159a1f34186a",
+        "ba9b16b180a234c1ad2b",
+        "d06ef0854c82888709a5",
+        "d127350c825834345094",
+        "d6af17d111bc0654e403",
+        "dba00a7cf1634fefe611",
+        "e4f2c4043f5ef9e91041",
+        "e72ac5cdee45d09f4ddb",
+        "f45db7fb7d281ac41ba2"
+      ],
+      "content_hash": "fe7b34bb405c2310fcd8ab16b7f96420a22a5e4475385d265a8d036d3bdc77fd",
+      "dependencies": [],
+      "description": "Build reactive Flow screens where one component updates another without navigation using reactive formulas and component outputs. NOT for Aura-based screens.",
+      "file_location": "skills/flow/flow-reactive-screen-components",
+      "id": "flow/flow-reactive-screen-components",
+      "inputs": [
+        "user workflow that benefits from reactivity",
+        "components involved"
+      ],
+      "name": "flow-reactive-screen-components",
+      "official_sources": [
+        "Flow Builder Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.flow.htm",
+        "Flow Best Practices \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_best_practices.htm",
+        "Reactive Screens \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_screen_reactive.htm",
+        "Flow HTTP Callout Action \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_concepts_callout.htm"
+      ],
+      "outputs": [
+        "reactive screen with live formula outputs"
+      ],
+      "references": [
+        "skills/flow/flow-reactive-screen-components/references/examples.md",
+        "skills/flow/flow-reactive-screen-components/references/gotchas.md",
+        "skills/flow/flow-reactive-screen-components/references/llm-anti-patterns.md",
+        "skills/flow/flow-reactive-screen-components/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/flow/flow-reactive-screen-components/scripts/check_flow_reactive_screen_components.py"
+      ],
+      "tags": [
+        "flow",
+        "reactive",
+        "screen"
+      ],
+      "templates": [
+        "skills/flow/flow-reactive-screen-components/templates/flow-reactive-screen-components-template.md"
       ],
       "updated": "2026-04-17",
       "vector_embedding": null,

@@ -1,0 +1,70 @@
+{
+  "category": "flow",
+  "chunk_ids": [
+    "09177c380278e9420c5d",
+    "1d4548c154c74f8c0074",
+    "24c3109ea869c34acb32",
+    "26d25db48a59cc1a32d7",
+    "2bac0101f2a80620d2e0",
+    "2c0da64b86a6d93f9341",
+    "32efd3a80f3862fc38b2",
+    "53a1fc43139e6c14aa2a",
+    "604e82120fea847d63c6",
+    "62bd0c7e9c02cd6474c0",
+    "66911d203452a71d7d69",
+    "7113986abd508596f056",
+    "7927eeef64f351ad6688",
+    "82758f28201353550bb1",
+    "8453e332d358f6683d9a",
+    "99adf8a837b4c0547077",
+    "9e654039a7a821e71d33",
+    "a8d04c0ba48bba6345cf",
+    "aea7d6ae61043f0d8f89",
+    "b392ffb6876d43106ade",
+    "ceabfbd9f48d818a8c30",
+    "e2ac8f0314f073e33ce8",
+    "e669d9b40d4c0248d4ed",
+    "e797e7dc9b19f2648b73",
+    "ec4c06a6ce71c8288722",
+    "ffc3b3a5a2e80ec388b5"
+  ],
+  "content_hash": "edaf57312d070a8470b186f00cae944447b9b03d7be3076d0909da8f23c14d96",
+  "dependencies": [],
+  "description": "Diagnose Flow failures using the Debug Log, Flow Error emails, and the Debug panel; instrument flows so production issues are triageable. NOT for Apex debugging.",
+  "file_location": "skills/flow/flow-interview-debugging",
+  "id": "flow/flow-interview-debugging",
+  "inputs": [
+    "failing flow + error email",
+    "repro data"
+  ],
+  "name": "flow-interview-debugging",
+  "official_sources": [
+    "Flow Builder Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.flow.htm",
+    "Flow Best Practices \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_best_practices.htm",
+    "Reactive Screens \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_screen_reactive.htm",
+    "Flow HTTP Callout Action \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_concepts_callout.htm"
+  ],
+  "outputs": [
+    "root cause + remediation + logging upgrade"
+  ],
+  "references": [
+    "skills/flow/flow-interview-debugging/references/examples.md",
+    "skills/flow/flow-interview-debugging/references/gotchas.md",
+    "skills/flow/flow-interview-debugging/references/llm-anti-patterns.md",
+    "skills/flow/flow-interview-debugging/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/flow/flow-interview-debugging/scripts/check_flow_interview_debugging.py"
+  ],
+  "tags": [
+    "flow",
+    "debug",
+    "error-handling"
+  ],
+  "templates": [
+    "skills/flow/flow-interview-debugging/templates/flow-interview-debugging-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

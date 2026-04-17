@@ -5195,6 +5195,78 @@
       "domain": "lwc",
       "expected_skill": "lwc/lwc-internationalization",
       "top_k": 3
+    },
+    {
+      "query": "dynamic choice flow",
+      "domain": "flow",
+      "expected_skill": "flow/flow-dynamic-choices",
+      "top_k": 3
+    },
+    {
+      "query": "record choice set flow",
+      "domain": "flow",
+      "expected_skill": "flow/flow-dynamic-choices",
+      "top_k": 3
+    },
+    {
+      "query": "flow error email",
+      "domain": "flow",
+      "expected_skill": "flow/flow-interview-debugging",
+      "top_k": 3
+    },
+    {
+      "query": "flow debug log",
+      "domain": "flow",
+      "expected_skill": "flow/flow-interview-debugging",
+      "top_k": 3
+    },
+    {
+      "query": "flow publish platform event",
+      "domain": "flow",
+      "expected_skill": "flow/flow-and-platform-events",
+      "top_k": 3
+    },
+    {
+      "query": "platform event triggered flow",
+      "domain": "flow",
+      "expected_skill": "flow/flow-and-platform-events",
+      "top_k": 3
+    },
+    {
+      "query": "reactive screen flow",
+      "domain": "flow",
+      "expected_skill": "flow/flow-reactive-screen-components",
+      "top_k": 3
+    },
+    {
+      "query": "flow screen update without next",
+      "domain": "flow",
+      "expected_skill": "flow/flow-reactive-screen-components",
+      "top_k": 3
+    },
+    {
+      "query": "flow data table",
+      "domain": "flow",
+      "expected_skill": "flow/flow-data-tables",
+      "top_k": 3
+    },
+    {
+      "query": "flow collection screen selection",
+      "domain": "flow",
+      "expected_skill": "flow/flow-data-tables",
+      "top_k": 3
+    },
+    {
+      "query": "flow http callout",
+      "domain": "flow",
+      "expected_skill": "flow/flow-http-callout-action",
+      "top_k": 3
+    },
+    {
+      "query": "call rest api from flow",
+      "domain": "flow",
+      "expected_skill": "flow/flow-http-callout-action",
+      "top_k": 3
     }
   ]
 }

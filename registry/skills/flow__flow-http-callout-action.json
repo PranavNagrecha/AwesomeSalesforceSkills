@@ -1,0 +1,70 @@
+{
+  "category": "flow",
+  "chunk_ids": [
+    "00d102610b6b14f6e9e9",
+    "095dd7436a4794546f01",
+    "11d1c8c31955a488f4ef",
+    "1ad212d2f70726025419",
+    "2c70075ff2d6a98c8273",
+    "378bc8d4c57399d7e6e5",
+    "3c4e7ae505ab0086be4c",
+    "3cec0fbe78b0def09efa",
+    "4d22f33048007438d0aa",
+    "587ab0eaeedbda4ecd9f",
+    "6339664c84809ae54ade",
+    "6a9849fe1bca5910b725",
+    "6b6a74d0a34541e4335a",
+    "76c6546645281642209b",
+    "77c492b4d42523364bc0",
+    "7976a78dd30d858d591b",
+    "805ef573f586d5d7ac49",
+    "9318a0cf8084ec7b53b6",
+    "9933e099abaf47baf460",
+    "a0fae23454a4f7f92a13",
+    "ad1499c01d86073ed515",
+    "b9f5a75c8aa2069a3c7a",
+    "cb839b0d640126004828",
+    "cdfb6137ce20fc97a4ba",
+    "d4cbd986b1898d6cbdbf",
+    "f439d84be95e6c2480bf"
+  ],
+  "content_hash": "86a3208938570583de747cfdd074382eb5a79fbbf0dea4aebf2a884d5a435bdc",
+  "dependencies": [],
+  "description": "Call external HTTP APIs directly from Flow using HTTP Callout actions (no Apex), handling auth, schema, and errors. NOT for complex Apex-based integration logic.",
+  "file_location": "skills/flow/flow-http-callout-action",
+  "id": "flow/flow-http-callout-action",
+  "inputs": [
+    "target endpoint + Named Credential",
+    "sample request/response"
+  ],
+  "name": "flow-http-callout-action",
+  "official_sources": [
+    "Flow Builder Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.flow.htm",
+    "Flow Best Practices \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_best_practices.htm",
+    "Reactive Screens \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_screen_reactive.htm",
+    "Flow HTTP Callout Action \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_concepts_callout.htm"
+  ],
+  "outputs": [
+    "Flow HTTP Callout action with schema + fault path"
+  ],
+  "references": [
+    "skills/flow/flow-http-callout-action/references/examples.md",
+    "skills/flow/flow-http-callout-action/references/gotchas.md",
+    "skills/flow/flow-http-callout-action/references/llm-anti-patterns.md",
+    "skills/flow/flow-http-callout-action/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/flow/flow-http-callout-action/scripts/check_flow_http_callout_action.py"
+  ],
+  "tags": [
+    "flow",
+    "callout",
+    "rest"
+  ],
+  "templates": [
+    "skills/flow/flow-http-callout-action/templates/flow-http-callout-action-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

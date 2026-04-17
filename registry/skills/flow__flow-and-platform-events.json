@@ -1,0 +1,70 @@
+{
+  "category": "flow",
+  "chunk_ids": [
+    "1da8d9c9b189f874a574",
+    "20f3564f01cc0cabf92f",
+    "221798a908a5ca2c9fe1",
+    "22882dd69a0b98a6dedf",
+    "2390c740fa2db187f2c5",
+    "37558def4c55695a049b",
+    "3795bba3a8c21314c23d",
+    "4520cc06971e8f68d8c2",
+    "54b15f99b09668c39f14",
+    "56276e7eb013444a5532",
+    "5a24497c3be6063862ca",
+    "5b29dd567a7703777572",
+    "5bc5bc9f59e0a686d6c7",
+    "78a1d741ca0377085a4d",
+    "853f8f18ada622121ee3",
+    "952db3f432adca654bd1",
+    "97749da605a7eb1cd91e",
+    "a98358090f73e53683b8",
+    "acc99ebe4be5639e0743",
+    "aff201cdb3289b82f122",
+    "ba098457ffff9c7a4220",
+    "c9b74d732d5df3193123",
+    "e2a51b6d3110d7bc796e",
+    "ec34c9704d06c246bd44",
+    "f2cf4c736a4e1f3624c9",
+    "f4b341322f2ce3e2303e"
+  ],
+  "content_hash": "54705415b63c48512b3925ff8c8034f8afd181be5b10d068f4e906e240413796",
+  "dependencies": [],
+  "description": "Publish and subscribe to Platform Events from Flow for async decoupling, high-volume triggers, and cross-org signaling. NOT for regular DML-triggered flows.",
+  "file_location": "skills/flow/flow-and-platform-events",
+  "id": "flow/flow-and-platform-events",
+  "inputs": [
+    "use case (decouple / fan-out / cross-org)",
+    "event payload"
+  ],
+  "name": "flow-and-platform-events",
+  "official_sources": [
+    "Flow Builder Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.flow.htm",
+    "Flow Best Practices \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_best_practices.htm",
+    "Reactive Screens \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_screen_reactive.htm",
+    "Flow HTTP Callout Action \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_concepts_callout.htm"
+  ],
+  "outputs": [
+    "PE definition + publish flow + subscribe flow"
+  ],
+  "references": [
+    "skills/flow/flow-and-platform-events/references/examples.md",
+    "skills/flow/flow-and-platform-events/references/gotchas.md",
+    "skills/flow/flow-and-platform-events/references/llm-anti-patterns.md",
+    "skills/flow/flow-and-platform-events/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/flow/flow-and-platform-events/scripts/check_flow_and_platform_events.py"
+  ],
+  "tags": [
+    "platform-events",
+    "flow",
+    "async"
+  ],
+  "templates": [
+    "skills/flow/flow-and-platform-events/templates/flow-and-platform-events-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

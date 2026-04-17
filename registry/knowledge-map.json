@@ -590,10 +590,13 @@
       "flow/auto-launched-flow-patterns",
       "flow/fault-handling",
       "flow/flow-action-framework",
+      "flow/flow-and-platform-events",
       "flow/flow-bulkification",
       "flow/flow-collection-processing",
       "flow/flow-custom-property-editors",
+      "flow/flow-data-tables",
       "flow/flow-debugging",
+      "flow/flow-dynamic-choices",
       "flow/flow-email-and-notifications",
       "flow/flow-error-monitoring",
       "flow/flow-external-services",
@@ -601,11 +604,14 @@
       "flow/flow-for-slack",
       "flow/flow-governance",
       "flow/flow-governor-limits-deep-dive",
+      "flow/flow-http-callout-action",
+      "flow/flow-interview-debugging",
       "flow/flow-invocable-from-apex",
       "flow/flow-large-data-volume-patterns",
       "flow/flow-migration-from-trigger",
       "flow/flow-performance-optimization",
       "flow/flow-platform-events-integration",
+      "flow/flow-reactive-screen-components",
       "flow/flow-rollback-patterns",
       "flow/flow-runtime-error-diagnosis",
       "flow/flow-testing",
@@ -1813,7 +1819,8 @@
     ],
     "async": [
       "data/bulk-api-and-large-data-loads",
-      "data/bulk-api-patterns"
+      "data/bulk-api-patterns",
+      "flow/flow-and-platform-events"
     ],
     "async-apex": [
       "apex/apex-queueable-patterns",
@@ -2421,6 +2428,7 @@
       "apex/cti-adapter-development"
     ],
     "callout": [
+      "flow/flow-http-callout-action",
       "integration/mutual-tls-callouts"
     ],
     "callout-auth": [
@@ -2687,6 +2695,9 @@
     ],
     "checkout-extension": [
       "apex/commerce-extension-points"
+    ],
+    "choices": [
+      "flow/flow-dynamic-choices"
     ],
     "choreography": [
       "architect/event-driven-architecture"
@@ -4034,6 +4045,7 @@
       "admin/einstein-analytics-basics"
     ],
     "datatable": [
+      "flow/flow-data-tables",
       "lwc/virtualized-lists"
     ],
     "date-granularity": [
@@ -4068,6 +4080,9 @@
     ],
     "deal-velocity": [
       "admin/pipeline-review-design"
+    ],
+    "debug": [
+      "flow/flow-interview-debugging"
     ],
     "debug-interview": [
       "flow/flow-testing"
@@ -4854,6 +4869,7 @@
     ],
     "error-handling": [
       "agentforce/agent-action-error-handling",
+      "flow/flow-interview-debugging",
       "integration/error-handling-in-integrations",
       "lwc/lwc-error-boundaries"
     ],
@@ -5397,14 +5413,20 @@
       "apex/order-of-execution-deep-dive",
       "architect/solution-design-patterns",
       "flow/auto-launched-flow-patterns",
+      "flow/flow-and-platform-events",
+      "flow/flow-data-tables",
+      "flow/flow-dynamic-choices",
       "flow/flow-error-monitoring",
       "flow/flow-external-services",
       "flow/flow-for-slack",
       "flow/flow-governor-limits-deep-dive",
+      "flow/flow-http-callout-action",
+      "flow/flow-interview-debugging",
       "flow/flow-invocable-from-apex",
       "flow/flow-migration-from-trigger",
       "flow/flow-performance-optimization",
       "flow/flow-platform-events-integration",
+      "flow/flow-reactive-screen-components",
       "flow/flow-rollback-patterns",
       "flow/flow-runtime-error-diagnosis",
       "flow/flow-transactional-boundaries"
@@ -8470,6 +8492,7 @@
       "architect/limits-and-scalability-planning",
       "architect/org-limits-monitoring",
       "flow/auto-launched-flow-patterns",
+      "flow/flow-and-platform-events",
       "flow/flow-platform-events-integration",
       "integration/error-handling-in-integrations",
       "integration/event-driven-architecture-patterns",
@@ -9033,6 +9056,9 @@
     "rate-plan": [
       "admin/industries-energy-utilities-setup"
     ],
+    "reactive": [
+      "flow/flow-reactive-screen-components"
+    ],
     "reactive-parameters": [
       "lwc/wire-service-patterns"
     ],
@@ -9320,6 +9346,9 @@
     "responsible-ai": [
       "admin/ai-ethics-and-governance-requirements",
       "architect/ai-governance-architecture"
+    ],
+    "rest": [
+      "flow/flow-http-callout-action"
     ],
     "rest-api": [
       "admin/api-contract-documentation",
@@ -9790,6 +9819,10 @@
       "devops/data-seeding-for-testing",
       "devops/environment-strategy"
     ],
+    "screen": [
+      "flow/flow-data-tables",
+      "flow/flow-reactive-screen-components"
+    ],
     "screen-components": [
       "flow/screen-flows"
     ],
@@ -9799,6 +9832,7 @@
       "architect/omnistudio-vs-standard-architecture",
       "architect/omnistudio-vs-standard-decision",
       "flow/fault-handling",
+      "flow/flow-dynamic-choices",
       "flow/flow-for-experience-cloud",
       "lwc/lwc-in-flow-screens",
       "security/ip-range-and-login-flow-strategy"
