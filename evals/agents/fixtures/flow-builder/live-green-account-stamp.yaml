@@ -1,0 +1,73 @@
+eval:
+  id: flow-builder__live-green-account-stamp
+  agent: flow-builder
+  mode: single
+  priority: P0
+  last_verified: 2026-04-17
+  description: >
+    Live-green fixture for flow-builder. Minimal before-save
+    record-triggered flow on Account that sets Description from Name
+    when Industry changes. Uses only standard Account fields so the
+    scratch org accepts the flow and the five-gate run reaches
+    confidence HIGH against a real org.
+
+inputs:
+  flow_developer_name: Account_Stamp_Description_Before_Save
+  feature_summary: "Before-save record-triggered flow stamps Account Description with Name and Industry when Industry changes on any account record"
+  flow_type: record-triggered
+  trigger_sobject: Account
+  trigger_context: before-save
+  record_trigger_type: Update
+  expected_volume: medium
+  referenced_fields:
+    - Account.Name
+    - Account.Industry
+    - Account.Description
+  api_version: "60.0"
+  target_org_alias: sfskills-dev
+  repo_path: ./force-app
+
+org_stub:
+  org_metadata:
+    org_id: 00Dxxx
+    edition: Enterprise
+    api_version: "60.0"
+    sandbox: true
+  describe_sobject:
+    Account:
+      queryable: true
+      custom: false
+      fields:
+        - { name: Id, type: id }
+        - { name: Name, type: string }
+        - { name: Industry, type: picklist }
+        - { name: Description, type: textarea }
+
+expect:
+  confidence: HIGH
+  gates_passed:
+    - inputs
+    - requirements
+    - ground
+    - build
+    - seal
+  requirements_document_must_reference:
+    - "Account"
+    - "record-triggered"
+    - "before-save"
+    - "Industry"
+  must_cite_any_of:
+    - { type: skill, id: flow/record-triggered-flow-patterns }
+    - { type: skill, id: flow/fault-handling }
+    - { type: decision_tree, id: automation-selection.md }
+  grounding:
+    unresolved_max: 0
+  build_gate:
+    parse_errors_max: 0
+    coverage_min: 0
+  process_observations:
+    min_count: 1
+    categories_present_any_of:
+      - healthy
+      - concerning
+      - ambiguous

@@ -1,0 +1,24 @@
+eval:
+  id: flow-builder__negative-ambiguous-input
+  agent: flow-builder
+  mode: single
+  priority: P0
+  last_verified: 2026-04-17
+  description: >
+    Gate A MUST refuse when feature_summary is under 10 words. Proves the
+    input-readiness gate stops the run before any flow XML is written.
+
+inputs:
+  flow_developer_name: Account_Stamp_Short
+  feature_summary: "Stamp account description"
+  flow_type: record-triggered
+  trigger_sobject: Account
+  trigger_context: before-save
+  record_trigger_type: Update
+  api_version: "60.0"
+
+org_stub: {}
+
+expect:
+  refusal_code: REFUSAL_INPUT_AMBIGUOUS
+  gates_passed: []

@@ -31,4 +31,7 @@ def get_plugin(agent: str) -> BuilderPlugin:
     if agent == "lwc-builder":
         from .lwc import LwcBuilderPlugin
         return LwcBuilderPlugin()
+    if agent == "flow-builder":
+        from .flow import FlowBuilderPlugin
+        return FlowBuilderPlugin()
     raise KeyError(f"no builder plugin registered for agent={agent!r}")

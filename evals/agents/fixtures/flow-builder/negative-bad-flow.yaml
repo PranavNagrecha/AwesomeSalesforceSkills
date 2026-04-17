@@ -1,0 +1,43 @@
+eval:
+  id: flow-builder__negative-bad-flow
+  agent: flow-builder
+  mode: single
+  priority: P0
+  last_verified: 2026-04-17
+  description: >
+    Gate C MUST catch a malformed Flow. The emitted XML is well-formed but
+    is missing required metadata (no <processType>, no <status>, and a
+    <recordUpdates> element with no <faultConnector>). The static check
+    surfaces all three errors before any live oracle runs.
+
+inputs:
+  flow_developer_name: Account_Bad_Flow
+  feature_summary: "Record-triggered flow that updates Account Description without proper fault handling to test Gate C rejection"
+  flow_type: record-triggered
+  trigger_sobject: Account
+  trigger_context: after-save
+  record_trigger_type: Update
+  referenced_fields:
+    - Account.Description
+  api_version: "60.0"
+  repo_path: ./force-app
+
+org_stub:
+  describe_sobject:
+    Account:
+      queryable: true
+      custom: false
+      fields:
+        - { name: Id, type: id }
+        - { name: Description, type: textarea }
+
+expect:
+  confidence: LOW
+  gates_passed:
+    - inputs
+    - requirements
+    - ground
+  grounding:
+    unresolved_max: 0
+  build_gate:
+    parse_errors_max: 999
