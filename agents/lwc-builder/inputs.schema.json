@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills/agents/lwc-builder/inputs.schema.json",
+  "title": "lwc-builder inputs",
+  "description": "Typed Gate-A input contract for the lwc-builder agent. Missing-required or under-constrained inputs trigger REFUSAL_INPUT_AMBIGUOUS.",
+  "type": "object",
+  "required": ["component_name", "feature_summary", "binding_kind", "data_shape", "api_version"],
+  "properties": {
+    "component_name": {
+      "type": "string",
+      "pattern": "^[a-z][a-zA-Z0-9]+$",
+      "minLength": 3,
+      "description": "camelCase bundle name, e.g. 'opportunityClosePlan'. No hyphens, no leading uppercase."
+    },
+    "feature_summary": {
+      "type": "string",
+      "minLength": 1,
+      "description": "One-line feature prose. At least 10 words — enforced by Gate A word-count rule."
+    },
+    "binding_kind": {
+      "type": "string",
+      "enum": ["record-page", "flow-screen", "app-page", "experience-cloud", "utility-bar", "home-page", "standalone"],
+      "description": "Where the component mounts. Drives .js-meta.xml <targets>."
+    },
+    "data_shape": {
+      "type": "string",
+      "enum": ["record-form", "list-view", "search", "no-data"],
+      "description": "What kind of data the component needs. Drives wire vs imperative choice."
+    },
+    "target_objects": {
+      "oneOf": [
+        {"type": "array", "items": {"type": "string"}, "minItems": 1},
+        {"type": "string", "minLength": 1}
+      ],
+      "description": "SObject API names the component reads/writes. Required when data_shape ∈ {record-form, list-view, search}. Accepts list or comma-separated string."
+    },
+    "referenced_fields": {
+      "type": "array",
+      "items": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_]*\\.[A-Za-z][A-Za-z0-9_]*$"},
+      "description": "Fully-qualified Object.Field names the component binds to. Gate B validates each against the org stub."
+    },
+    "public_api": {
+      "oneOf": [
+        {"type": "array", "items": {"type": "string", "pattern": "^[a-z][a-zA-Z0-9]+$"}},
+        {"type": "string"}
+      ],
+      "description": "camelCase @api property names to expose. recordId is required for record-page binding."
+    },
+    "a11y_tier": {
+      "type": "string",
+      "enum": ["wcag-aa", "wcag-aaa"],
+      "default": "wcag-aa"
+    },
+    "include_tests": {"type": "boolean", "default": true},
+    "emit_controller": {
+      "type": "boolean",
+      "default": false,
+      "description": "True when the component needs a custom @AuraEnabled Apex controller (UI API isn't sufficient). Gate B then requires controller_class_name."
+    },
+    "controller_class_name": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Za-z0-9]+$",
+      "description": "PascalCase Apex class name when emit_controller=true."
+    },
+    "controller_methods": {
+      "type": "array",
+      "items": {"type": "string", "pattern": "^[a-z][a-zA-Z0-9]+$"},
+      "description": "@AuraEnabled method names the controller must expose. Each appears as an imperative or @wire import from the LWC."
+    },
+    "api_version": {"type": "string", "pattern": "^\\d{2}\\.0$"},
+    "namespace": {"type": "string", "default": ""},
+    "target_org_alias": {
+      "type": "string",
+      "description": "sf CLI alias of a real org Gate C can deploy-validate against. When absent, Gate C runs static-only."
+    },
+    "repo_path": {"type": "string", "default": "./force-app"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"data_shape": {"enum": ["record-form", "list-view", "search"]}}, "required": ["data_shape"]},
+      "then": {"required": ["target_objects"]}
+    },
+    {
+      "if": {"properties": {"emit_controller": {"const": true}}, "required": ["emit_controller"]},
+      "then": {"required": ["controller_class_name"]}
+    },
+    {
+      "if": {"properties": {"binding_kind": {"const": "record-page"}}, "required": ["binding_kind"]},
+      "then": {"required": ["public_api"]}
+    }
+  ]
+}

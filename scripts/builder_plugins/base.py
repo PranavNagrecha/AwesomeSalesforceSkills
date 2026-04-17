@@ -57,6 +57,42 @@ class BuilderPlugin(Protocol):
 
     agent: str  # e.g. "apex-builder"
 
+    # --- Gate A extras (beyond JSON Schema + universal 10-word rule) ------
+    def additional_input_checks(self, inputs: dict[str, Any]) -> tuple[list[str], list[str]]:
+        """Agent-specific Gate A conditionals JSON Schema can't express.
+
+        Returns (missing, invalid) — each a list of human-readable messages.
+        The harness appends these to the Gate A result. Examples:
+          * Apex: `feature_token` required for non-SObject-named kinds
+          * LWC: `controller_methods` required when emit_controller=true
+        """
+        ...
+
+    # --- grounding (consumed by Gate B) ------------------------------------
+    def grounding_sobjects(self, inputs: dict[str, Any]) -> list[str]:
+        """SObject API names to resolve against org_stub.describe_sobject.
+
+        Apex: [primary_sobject]. LWC: target_objects. Flow: trigger_sobject.
+        Return empty list if the agent has no SObject grounding.
+        """
+        ...
+
+    def expected_resources(self, inputs: dict[str, Any]) -> list[dict[str, str]]:
+        """Filesystem resources Gate B should confirm exist.
+
+        Each item: {"type": "template", "path": "templates/..."}. Resolved against
+        REPO_ROOT. Any missing path appears in unresolved.
+        """
+        ...
+
+    def expected_citations(self, inputs: dict[str, Any]) -> list[dict[str, str]]:
+        """Skills + decision-tree branches expected in the envelope citations.
+
+        Each item: {"type": "skill"|"decision_tree", "id": "<path stem>"}.
+        Gate B checks they exist on disk; Gate D checks the envelope cites them.
+        """
+        ...
+
     # --- deliverables ------------------------------------------------------
     def class_inventory(self, inputs: dict[str, Any]) -> list[str]:
         """Human-readable list of expected deliverable names.
@@ -111,5 +147,16 @@ class BuilderPlugin(Protocol):
 
         Plugins that don't need live validation (e.g. pure schema plugins) can
         return LiveCheckResult(ran=False, succeeded=True, oracle_label="(none)").
+        """
+        ...
+
+    # --- coverage thresholds ----------------------------------------------
+    def coverage_thresholds(self, inputs: dict[str, Any]) -> dict[str, int]:
+        """Return {'floor': int, 'high_tier': int} for Gate C / confidence.
+
+        Apex: {'floor': 75, 'high_tier': 85} — deploy-validate + test coverage gate.
+        LWC:  {'floor':  0, 'high_tier':  0} — Jest is not a Gate C requirement;
+              deploy-validate alone determines HIGH/MEDIUM.
+        Plugins that don't produce test coverage return {'floor': 0, 'high_tier': 0}.
         """
         ...

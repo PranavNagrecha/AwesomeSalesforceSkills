@@ -28,4 +28,7 @@ def get_plugin(agent: str) -> BuilderPlugin:
     if agent == "apex-builder":
         from .apex import ApexBuilderPlugin
         return ApexBuilderPlugin()
+    if agent == "lwc-builder":
+        from .lwc import LwcBuilderPlugin
+        return LwcBuilderPlugin()
     raise KeyError(f"no builder plugin registered for agent={agent!r}")

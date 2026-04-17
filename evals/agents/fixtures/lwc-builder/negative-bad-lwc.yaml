@@ -1,0 +1,41 @@
+eval:
+  id: lwc-builder__negative-bad-lwc
+  agent: lwc-builder
+  mode: single
+  priority: P0
+  last_verified: 2026-04-17
+  description: >
+    Gate C MUST catch a malformed LWC bundle. The emitted skillSample.js
+    is missing `extends LightningElement` AND has unbalanced braces; the
+    static check surfaces both errors and Gate C fails even before the
+    live oracle runs.
+
+inputs:
+  component_name: skillSample
+  feature_summary: "Render a simple greeting tile on any Lightning app page so developers can smoke test local LWC deploys quickly"
+  binding_kind: standalone
+  data_shape: no-data
+  api_version: "60.0"
+  include_tests: false
+  emit_controller: false
+  a11y_tier: wcag-aa
+  repo_path: ./force-app
+
+org_stub:
+  org_metadata:
+    org_id: 00Dxxx
+    edition: Enterprise
+    api_version: "60.0"
+    sandbox: true
+  describe_sobject: {}
+
+expect:
+  confidence: LOW
+  gates_passed:
+    - inputs
+    - requirements
+    - ground
+  build_gate:
+    parse_errors_max: 999
+  grounding:
+    unresolved_max: 0

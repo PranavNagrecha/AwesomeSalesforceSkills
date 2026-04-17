@@ -67,6 +67,61 @@ def _strip_strings_and_comments(src: str) -> str:
 class ApexBuilderPlugin:
     agent = "apex-builder"
 
+    # --- Gate A extras -----------------------------------------------------
+    def additional_input_checks(self, inputs: dict[str, Any]) -> tuple[list[str], list[str]]:
+        missing: list[str] = []
+        invalid: list[str] = []
+        sobject_kinds = {"trigger", "selector", "domain", "batch", "cdc_subscriber"}
+        if inputs.get("kind") in sobject_kinds and not inputs.get("primary_sobject"):
+            missing.append("primary_sobject (required because kind implies an SObject target)")
+        sobject_named = {"trigger", "selector", "domain", "cdc_subscriber"}
+        if inputs.get("kind") not in sobject_named and not inputs.get("feature_token"):
+            missing.append("feature_token (required PascalCase stem for class names)")
+        ft = inputs.get("feature_token")
+        if ft and not re.match(r"^[A-Z][A-Za-z0-9]+$", ft):
+            invalid.append(f"feature_token: '{ft}' must match ^[A-Z][A-Za-z0-9]+$")
+        if inputs.get("sharing_mode") == "without_sharing":
+            bj = inputs.get("business_justification") or ""
+            if len(bj) < 40:
+                invalid.append("business_justification: required ≥40 chars when sharing_mode=without_sharing")
+        return missing, invalid
+
+    # --- grounding (Gate B) -----------------------------------------------
+    def grounding_sobjects(self, inputs: dict[str, Any]) -> list[str]:
+        sobj = inputs.get("primary_sobject")
+        return [sobj] if sobj else []
+
+    def expected_resources(self, inputs: dict[str, Any]) -> list[dict[str, str]]:
+        out = [
+            {"type": "template", "path": "templates/apex/BaseService.cls"},
+            {"type": "template", "path": "templates/apex/SecurityUtils.cls"},
+        ]
+        if inputs.get("include_logger", True):
+            out.append({"type": "template", "path": "templates/apex/ApplicationLogger.cls"})
+        return out
+
+    def expected_citations(self, inputs: dict[str, Any]) -> list[dict[str, str]]:
+        out: list[dict[str, str]] = []
+        kind = inputs.get("kind", "")
+        if kind in ("queueable", "batch", "schedulable", "platform_event_subscriber", "cdc_subscriber", "continuation"):
+            out += [
+                {"type": "skill", "id": "apex/async-apex"},
+                {"type": "decision_tree", "id": "async-selection.md"},
+            ]
+        kind_to_skill = {
+            "queueable": "apex/apex-queueable-patterns",
+            "batch": "apex/batch-apex-patterns",
+            "schedulable": "apex/apex-scheduled-jobs",
+            "rest": "apex/apex-rest-services",
+            "invocable": "apex/invocable-methods",
+            "platform_event_subscriber": "apex/platform-events-apex",
+            "cdc_subscriber": "apex/change-data-capture-apex",
+            "trigger": "apex/trigger-framework",
+        }
+        if kind in kind_to_skill:
+            out.append({"type": "skill", "id": kind_to_skill[kind]})
+        return out
+
     # --- deliverables ------------------------------------------------------
     def class_inventory(self, inputs: dict[str, Any]) -> list[str]:
         kind = inputs.get("kind")
@@ -267,6 +322,10 @@ class ApexBuilderPlugin:
                 "num_component_success": result.get("numberComponentsDeployed", len(component_success)),
             }
             return res
+
+    def coverage_thresholds(self, inputs: dict[str, Any]) -> dict[str, int]:
+        # Apex demands deploy-validate + ≥75% coverage as the bar.
+        return {"floor": 75, "high_tier": 85}
 
     # --- private helpers ---------------------------------------------------
     def _test_class_name(self, classes: list[str]) -> str:

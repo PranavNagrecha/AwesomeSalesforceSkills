@@ -1,0 +1,22 @@
+eval:
+  id: lwc-builder__negative-ambiguous-input
+  agent: lwc-builder
+  mode: single
+  priority: P0
+  last_verified: 2026-04-17
+  description: >
+    Gate A MUST refuse when feature_summary is under 10 words. Proves the
+    input-readiness gate stops the run before any bundle is written.
+
+inputs:
+  component_name: skillSample
+  feature_summary: "Show a tile"
+  binding_kind: standalone
+  data_shape: no-data
+  api_version: "60.0"
+
+org_stub: {}
+
+expect:
+  refusal_code: REFUSAL_INPUT_AMBIGUOUS
+  gates_passed: []

@@ -1,0 +1,60 @@
+eval:
+  id: lwc-builder__live-green-standalone
+  agent: lwc-builder
+  mode: single
+  priority: P0
+  last_verified: 2026-04-17
+  description: >
+    Live-green fixture for lwc-builder. Standalone / no-data bundle — the
+    simplest LWC shape that still goes through all five gates and passes
+    `sf project deploy validate` against a real scratch org. Proves the
+    pluggable Gate C works end-to-end for LWC.
+
+inputs:
+  component_name: skillSample
+  feature_summary: "Render a simple greeting tile on any Lightning app page so developers can smoke test local LWC deploys quickly"
+  binding_kind: standalone
+  data_shape: no-data
+  api_version: "60.0"
+  include_tests: false
+  emit_controller: false
+  a11y_tier: wcag-aa
+  target_org_alias: sfskills-dev
+  repo_path: ./force-app
+
+org_stub:
+  org_metadata:
+    org_id: 00Dxxx
+    edition: Enterprise
+    api_version: "60.0"
+    sandbox: true
+  describe_sobject: {}
+
+expect:
+  confidence: HIGH
+  gates_passed:
+    - inputs
+    - requirements
+    - ground
+    - build
+    - seal
+  requirements_document_must_reference:
+    - "skillSample"
+    - "standalone"
+    - "no-data"
+    - "wcag-aa"
+  must_cite_any_of:
+    - { type: skill, id: lwc/lwc-testing }
+    - { type: skill, id: lwc/lwc-accessibility-patterns }
+    - { type: template, id: lwc/component-skeleton }
+  grounding:
+    unresolved_max: 0
+  build_gate:
+    parse_errors_max: 0
+    coverage_min: 0
+  process_observations:
+    min_count: 1
+    categories_present_any_of:
+      - healthy
+      - concerning
+      - ambiguous

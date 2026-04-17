@@ -179,25 +179,21 @@ def gate_a_inputs(agent: str, inputs: dict[str, Any], run_id: str | None) -> tup
             path = "/".join(str(p) for p in exc.absolute_path) or "(root)"
             invalid.append(f"{path}: {exc.message}")
 
-    # Conditional fields — encoded in GATES.md; hard-coded here for apex-builder
-    if agent == "apex-builder":
-        sobject_kinds = {"trigger", "selector", "domain", "batch", "cdc_subscriber"}
-        if inputs.get("kind") in sobject_kinds and not inputs.get("primary_sobject"):
-            missing.append("primary_sobject (required because kind implies an SObject target)")
-        # feature_token is required for all non-SObject-named kinds
-        sobject_named = {"trigger", "selector", "domain", "cdc_subscriber"}
-        if inputs.get("kind") not in sobject_named and not inputs.get("feature_token"):
-            missing.append("feature_token (required PascalCase stem for class names)")
-        ft = inputs.get("feature_token")
-        if ft and not re.match(r"^[A-Z][A-Za-z0-9]+$", ft):
-            invalid.append(f"feature_token: '{ft}' must match ^[A-Z][A-Za-z0-9]+$")
-        if inputs.get("sharing_mode") == "without_sharing":
-            bj = inputs.get("business_justification") or ""
-            if len(bj) < 40:
-                invalid.append("business_justification: required ≥40 chars when sharing_mode=without_sharing")
-        fs = inputs.get("feature_summary") or ""
-        if fs and len(fs.split()) < 10:
-            invalid.append("feature_summary: must be at least 10 words (REFUSAL_INPUT_AMBIGUOUS)")
+    # Universal rule: feature_summary must be at least 10 words.
+    fs = inputs.get("feature_summary") or ""
+    if fs and len(fs.split()) < 10:
+        invalid.append("feature_summary: must be at least 10 words (REFUSAL_INPUT_AMBIGUOUS)")
+
+    # Agent-specific conditionals — delegated to the plugin so each builder
+    # encodes its own required-field dependencies.
+    try:
+        plugin = get_plugin(agent)
+        extra_missing, extra_invalid = plugin.additional_input_checks(inputs)
+        missing.extend(extra_missing)
+        invalid.extend(extra_invalid)
+    except KeyError:
+        # Builders without a registered plugin can still run Gate A on schema alone.
+        pass
 
     passed = not missing and not invalid
     result = GateResult(name="inputs", passed=passed)
@@ -284,27 +280,27 @@ def gate_b_ground(state: RunState) -> GateResult:
 
     inputs = state.inputs
     stub = state.org_stub or {}
+    plugin = get_plugin(state.agent)
     unresolved: list[dict[str, str]] = []
     resolved: list[dict[str, str]] = []
 
-    # SObject resolution (captured in grounding.resolved but NOT emitted as a
-    # citation — citations are skill/template/standard/decision_tree/mcp_tool/probe
-    # per schemas/citation.schema.json. SObject grounding is evidence for the
-    # run, not a cite-able source.)
-    sobj = inputs.get("primary_sobject")
-    describe = None
-    if sobj:
+    # SObject resolution (plugin declares which SObjects to ground).
+    # Captured in grounding.resolved but NOT emitted as a citation — citations
+    # are skill/template/standard/decision_tree/mcp_tool/probe per
+    # schemas/citation.schema.json. SObject grounding is evidence, not a cite-able source.
+    for sobj in plugin.grounding_sobjects(inputs):
         describe = (stub.get("describe_sobject") or {}).get(sobj)
         if describe:
             resolved.append({"type": "sobject", "name": sobj, "source": "org_stub.describe_sobject"})
         elif inputs.get("target_org_alias"):
-            result.notes.append(f"primary_sobject '{sobj}' not in fixture stub; live describe_org not wired in this harness version")
+            result.notes.append(f"SObject '{sobj}' not in fixture stub; live describe_org not wired in this harness version")
             unresolved.append({"type": "sobject", "name": sobj, "reason": "no stub and no live probe available"})
         else:
             unresolved.append({"type": "sobject", "name": sobj, "reason": "library-only mode and no stub provided"})
 
     # Field resolution — every referenced_fields entry must resolve against
     # describe_sobject. Silent field misses are the #1 hallucination vector.
+    # This check is universal across builders — all use SObject.Field form.
     for fqn in inputs.get("referenced_fields") or []:
         if "." not in fqn:
             unresolved.append({"type": "field", "name": fqn, "reason": "must be SObject.Field form"})
@@ -320,49 +316,29 @@ def gate_b_ground(state: RunState) -> GateResult:
         else:
             unresolved.append({"type": "field", "name": fqn, "reason": f"field not on {obj_name}"})
 
-    # Template resolution (repo-local — always resolvable against the filesystem)
-    for tpl in ("templates/apex/BaseService.cls", "templates/apex/SecurityUtils.cls"):
-        if (REPO_ROOT / tpl).exists():
-            resolved.append({"type": "template", "name": tpl, "source": "filesystem"})
+    # Filesystem resources the plugin expects (templates, shared helpers).
+    for res in plugin.expected_resources(inputs):
+        path = res.get("path", "")
+        if (REPO_ROOT / path).exists():
+            resolved.append({"type": res.get("type", "resource"), "name": path, "source": "filesystem"})
         else:
-            unresolved.append({"type": "template", "name": tpl, "reason": "path not found"})
-    if inputs.get("include_logger", True):
-        tpl = "templates/apex/ApplicationLogger.cls"
-        if (REPO_ROOT / tpl).exists():
-            resolved.append({"type": "template", "name": tpl, "source": "filesystem"})
-        else:
-            unresolved.append({"type": "template", "name": tpl, "reason": "path not found"})
+            unresolved.append({"type": res.get("type", "resource"), "name": path, "reason": "path not found"})
 
-    # Skill / decision-tree citations expected for this kind
-    expected_citations: list[dict[str, str]] = []
-    kind = inputs.get("kind", "")
-    if kind in ("queueable", "batch", "schedulable", "platform_event_subscriber", "cdc_subscriber", "continuation"):
-        expected_citations += [
-            {"type": "skill", "id": "apex/async-apex"},
-            {"type": "decision_tree", "id": "async-selection.md"},
-        ]
-    kind_to_skill = {
-        "queueable": "apex/apex-queueable-patterns",
-        "batch": "apex/batch-apex-patterns",
-        "schedulable": "apex/apex-scheduled-jobs",
-        "rest": "apex/apex-rest-services",
-        "invocable": "apex/invocable-methods",
-        "platform_event_subscriber": "apex/platform-events-apex",
-        "cdc_subscriber": "apex/change-data-capture-apex",
-        "trigger": "apex/trigger-framework",
-    }
-    if kind in kind_to_skill:
-        expected_citations.append({"type": "skill", "id": kind_to_skill[kind]})
-
+    # Skill / decision-tree citations the plugin declares relevant for the inputs.
+    expected_citations = plugin.expected_citations(inputs)
     for cit in expected_citations:
-        if cit["type"] == "skill":
-            p = REPO_ROOT / "skills" / cit["id"] / "SKILL.md"
+        cit_type = cit.get("type")
+        cit_id = cit.get("id")
+        if cit_type == "skill":
+            p = REPO_ROOT / "skills" / cit_id / "SKILL.md"
+        elif cit_type == "decision_tree":
+            p = REPO_ROOT / "standards" / "decision-trees" / cit_id
         else:
-            p = REPO_ROOT / "standards" / "decision-trees" / cit["id"]
+            p = REPO_ROOT / cit_id  # generic path
         if p.exists():
-            resolved.append({"type": cit["type"], "name": cit["id"], "source": "filesystem"})
+            resolved.append({"type": cit_type, "name": cit_id, "source": "filesystem"})
         else:
-            unresolved.append({"type": cit["type"], "name": cit["id"], "reason": "path not found"})
+            unresolved.append({"type": cit_type, "name": cit_id, "reason": "path not found"})
 
     result.data = {
         "resolved": resolved,
@@ -469,9 +445,11 @@ def gate_c_build(
         label = live_dict.get("oracle_label") or "live oracle"
         result.notes.append(f"{label} FAILED against {live_org}: {err_count} error(s)")
 
-    if result.passed and coverage < 75:
+    thresholds = plugin.coverage_thresholds(state.inputs) if hasattr(plugin, "coverage_thresholds") else {"floor": 75, "high_tier": 85}
+    result.data["coverage_thresholds"] = thresholds
+    if result.passed and coverage < thresholds.get("floor", 0):
         result.passed = False
-        result.notes.append(f"coverage {coverage}% below 75% floor")
+        result.notes.append(f"coverage {coverage}% below {thresholds['floor']}% floor")
 
     return result
 
@@ -489,17 +467,26 @@ def compute_confidence(state: RunState) -> tuple[str, str]:
     coverage = (build.data.get("coverage") or 0) if build else 0
     deploy_validated = bool(state.inputs.get("target_org_alias")) and build and build.passed
 
+    thresholds = (build.data.get("coverage_thresholds") if build else None) or {"floor": 75, "high_tier": 85}
+    floor = thresholds.get("floor", 75)
+    high = thresholds.get("high_tier", 85)
+
     if unresolved >= 2:
         return "LOW", f"REFUSAL-level ungrounded output ({unresolved} unresolved symbols)"
     if parse_errors > 0:
         return "LOW", f"Gate C parse had {parse_errors} errors"
     if unresolved == 1:
         return "LOW", "one unresolved symbol — UNKNOWN marker required"
-    if coverage >= 85 and deploy_validated:
-        return "HIGH", "all gates green, deploy-validate clean, coverage ≥85%"
-    if coverage >= 75:
+    # When the plugin has no coverage gate (floor=0), deploy-validate alone drives HIGH.
+    if floor == 0:
+        if deploy_validated:
+            return "HIGH", "all gates green, deploy-validate clean (no coverage gate for this builder)"
+        return "MEDIUM", "green static check, deploy-validate skipped"
+    if coverage >= high and deploy_validated:
+        return "HIGH", f"all gates green, deploy-validate clean, coverage ≥{high}%"
+    if coverage >= floor:
         return "MEDIUM", f"green parse, coverage {coverage}%, deploy-validate {'skipped' if not deploy_validated else 'clean'}"
-    return "LOW", f"coverage {coverage}% under 75%"
+    return "LOW", f"coverage {coverage}% under {floor}%"
 
 
 def _citation_entries(state: RunState) -> list[dict[str, str]]:
@@ -576,6 +563,48 @@ def _process_observations(state: RunState) -> list[dict[str, Any]]:
     return obs
 
 
+def _classify_deliverable(path: Path, repo_path: str) -> dict[str, str]:
+    """Map an emitted file to envelope deliverable {kind, target_path}.
+
+    Kinds match output-envelope.schema.json: markdown/xml/apex/lwc/flow/json/yaml/patch/other.
+    target_path mirrors the conventional SFDX source tree under repo_path.
+    """
+    name = path.name
+    suffix = path.suffix.lower()
+
+    # Apex
+    if suffix in (".cls", ".trigger"):
+        sub = "classes" if suffix == ".cls" else "triggers"
+        return {"kind": "apex", "target_path": f"{repo_path}/main/default/{sub}/{name}"}
+
+    # LWC bundle files — preserve bundle + optional __tests__ subdir
+    if suffix in (".js", ".html", ".css") or name.endswith(".js-meta.xml"):
+        if path.parent.name == "__tests__":
+            bundle = path.parent.parent.name
+            rel = f"{bundle}/__tests__/{name}"
+        else:
+            bundle = path.parent.name
+            rel = f"{bundle}/{name}"
+        return {"kind": "lwc", "target_path": f"{repo_path}/main/default/lwc/{rel}"}
+
+    # Flow
+    if name.endswith(".flow-meta.xml") or suffix == ".flow":
+        return {"kind": "flow", "target_path": f"{repo_path}/main/default/flows/{name}"}
+
+    # Generic XML (object/permset/etc.)
+    if suffix == ".xml":
+        return {"kind": "xml", "target_path": f"{repo_path}/main/default/{name}"}
+
+    if suffix == ".json":
+        return {"kind": "json", "target_path": f"{repo_path}/main/default/{name}"}
+    if suffix in (".yaml", ".yml"):
+        return {"kind": "yaml", "target_path": f"{repo_path}/main/default/{name}"}
+    if suffix == ".md":
+        return {"kind": "markdown", "target_path": f"{repo_path}/main/default/{name}"}
+
+    return {"kind": "other", "target_path": f"{repo_path}/main/default/{name}"}
+
+
 def _default_followups(state: RunState) -> list[dict[str, str]]:
     kind = state.inputs.get("kind", "")
     out = []
@@ -598,9 +627,9 @@ def gate_d_seal(state: RunState) -> GateResult:
         "run_id": state.run_id,
         "inputs_received": state.inputs,
         "summary": (
-            f"apex-builder produced {build.data.get('files_checked', 0) if build else 0} file(s) "
-            f"for kind={state.inputs.get('kind')}, feature="
-            f"{(state.inputs.get('feature_summary') or '')[:80]}. "
+            f"{state.agent} produced {build.data.get('files_checked', 0) if build else 0} file(s) "
+            f"for kind={state.inputs.get('kind') or state.inputs.get('component_name') or state.inputs.get('flow_name') or '?'}, "
+            f"feature={(state.inputs.get('feature_summary') or '')[:80]}. "
             f"Gates: {', '.join(g for g, gr in state.gates.items() if gr.passed)}."
         ),
         "confidence": confidence,
@@ -613,17 +642,22 @@ def gate_d_seal(state: RunState) -> GateResult:
         "deliverables": [],
     }
 
-    # Deliverables: every emitted file becomes a deliverable block
+    # Deliverables: every emitted file becomes a deliverable block, classified
+    # by suffix. Valid kinds per output-envelope.schema.json: markdown, xml,
+    # apex, lwc, flow, json, yaml, patch, other.
     if build and build.data.get("files"):
+        repo_path = state.inputs.get("repo_path", "./force-app")
         for rel in build.data["files"]:
             p = REPO_ROOT / rel
-            if p.exists():
-                envelope["deliverables"].append({
-                    "kind": "apex",
-                    "title": p.name,
-                    "target_path": f"{state.inputs.get('repo_path', './force-app')}/main/default/classes/{p.name}",
-                    "content": p.read_text(encoding="utf-8", errors="replace"),
-                })
+            if not p.exists():
+                continue
+            classified = _classify_deliverable(p, repo_path)
+            envelope["deliverables"].append({
+                "kind": classified["kind"],
+                "title": p.name,
+                "target_path": classified["target_path"],
+                "content": p.read_text(encoding="utf-8", errors="replace"),
+            })
 
     # Validate against the envelope schema — build a local schema registry so
     # $ref to observation.schema.json / citation.schema.json resolve against
