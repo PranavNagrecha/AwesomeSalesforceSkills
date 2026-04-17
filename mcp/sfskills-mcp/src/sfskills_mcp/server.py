@@ -1,14 +1,28 @@
 """FastMCP server exposing SfSkills + live-org + agent tools.
 
 Run with ``python -m sfskills_mcp`` (stdio transport). The server registers
-eight tools:
+fifteen tools:
 
+Skill library:
 - ``search_skill``
 - ``get_skill``
+
+Live-org (core):
 - ``describe_org``
 - ``list_custom_objects``
 - ``list_flows_on_object``
 - ``validate_against_org``
+
+Live-org (admin metadata):
+- ``list_validation_rules``
+- ``list_permission_sets``
+- ``describe_permission_set``
+- ``list_record_types``
+- ``list_named_credentials``
+- ``list_approval_processes``
+- ``tooling_query`` (read-only escape hatch)
+
+Agents:
 - ``list_agents``
 - ``get_agent``
 
@@ -23,7 +37,7 @@ from typing import Any
 
 from mcp.server.fastmcp import FastMCP
 
-from . import agents, org, skills
+from . import admin, agents, org, skills
 
 
 SERVER_INSTRUCTIONS = """\
@@ -153,6 +167,147 @@ def build_server() -> FastMCP:
             skill_id=skill_id,
             target_org=target_org,
             object_name=object_name,
+        )
+
+    @mcp.tool(
+        name="list_validation_rules",
+        description=(
+            "List Validation Rules on an sObject via the Tooling API. Returns "
+            "rule name, active state, error message, error display field, and "
+            "id. Use this as the entry point for validation-rule-auditor."
+        ),
+    )
+    def list_validation_rules(
+        object_name: str,
+        target_org: str | None = None,
+        active_only: bool = False,
+        limit: int = 100,
+    ) -> dict[str, Any]:
+        return admin.list_validation_rules(
+            object_name=object_name,
+            target_org=target_org,
+            active_only=active_only,
+            limit=limit,
+        )
+
+    @mcp.tool(
+        name="list_permission_sets",
+        description=(
+            "List Permission Sets in the org. By default excludes the "
+            "profile-owned shadow PSes Salesforce creates per profile. Pass "
+            "include_owned_by_profile=true when auditing legacy custom "
+            "profiles. name_filter does a SOQL LIKE match on Name."
+        ),
+    )
+    def list_permission_sets(
+        target_org: str | None = None,
+        name_filter: str | None = None,
+        include_owned_by_profile: bool = False,
+        limit: int = 200,
+    ) -> dict[str, Any]:
+        return admin.list_permission_sets(
+            target_org=target_org,
+            name_filter=name_filter,
+            include_owned_by_profile=include_owned_by_profile,
+            limit=limit,
+        )
+
+    @mcp.tool(
+        name="describe_permission_set",
+        description=(
+            "Describe a single Permission Set by API name — header metadata, "
+            "ObjectPermissions, and (optionally) FieldPermissions. Use this "
+            "inside permission-set-architect to audit what a PSG actually "
+            "grants. Set include_field_permissions=false for broad PSes where "
+            "the field-perm row count would explode."
+        ),
+    )
+    def describe_permission_set(
+        name: str,
+        target_org: str | None = None,
+        include_field_permissions: bool = True,
+    ) -> dict[str, Any]:
+        return admin.describe_permission_set(
+            name=name,
+            target_org=target_org,
+            include_field_permissions=include_field_permissions,
+        )
+
+    @mcp.tool(
+        name="list_record_types",
+        description=(
+            "List Record Types on an sObject — developer name, label, active "
+            "flag, and description. Use this in record-type-and-layout-auditor "
+            "and object-designer."
+        ),
+    )
+    def list_record_types(
+        object_name: str,
+        target_org: str | None = None,
+        active_only: bool = False,
+        limit: int = 100,
+    ) -> dict[str, Any]:
+        return admin.list_record_types(
+            object_name=object_name,
+            target_org=target_org,
+            active_only=active_only,
+            limit=limit,
+        )
+
+    @mcp.tool(
+        name="list_named_credentials",
+        description=(
+            "List Named Credentials in the org. Includes endpoint and "
+            "principal type. Source of truth for integration-catalog-builder."
+        ),
+    )
+    def list_named_credentials(
+        target_org: str | None = None,
+        limit: int = 100,
+    ) -> dict[str, Any]:
+        return admin.list_named_credentials(target_org=target_org, limit=limit)
+
+    @mcp.tool(
+        name="list_approval_processes",
+        description=(
+            "List Approval ProcessDefinitions, optionally filtered by object. "
+            "By default returns only active approvals. Source of truth for "
+            "approval-to-flow-orchestrator-migrator."
+        ),
+    )
+    def list_approval_processes(
+        object_name: str | None = None,
+        target_org: str | None = None,
+        active_only: bool = True,
+        limit: int = 100,
+    ) -> dict[str, Any]:
+        return admin.list_approval_processes(
+            object_name=object_name,
+            target_org=target_org,
+            active_only=active_only,
+            limit=limit,
+        )
+
+    @mcp.tool(
+        name="tooling_query",
+        description=(
+            "Escape-hatch read-only SOQL against the Tooling or REST API. "
+            "Refuses any statement that is not a SELECT or that contains DML "
+            "keywords / semicolons. Applies an automatic LIMIT if missing. "
+            "Prefer the specialized list_* tools where they exist."
+        ),
+    )
+    def tooling_query(
+        soql: str,
+        target_org: str | None = None,
+        tooling: bool = True,
+        limit: int = 200,
+    ) -> dict[str, Any]:
+        return admin.tooling_query(
+            soql=soql,
+            target_org=target_org,
+            tooling=tooling,
+            limit=limit,
         )
 
     @mcp.tool(
