@@ -670,11 +670,13 @@
       "lwc/common-lwc-runtime-errors",
       "lwc/component-communication",
       "lwc/custom-property-editor-for-flow",
+      "lwc/drag-and-drop",
       "lwc/experience-cloud-api-access",
       "lwc/experience-cloud-authentication",
       "lwc/experience-cloud-lwc-components",
       "lwc/experience-cloud-multi-idp-sso",
       "lwc/experience-cloud-search-customization",
+      "lwc/file-upload-patterns",
       "lwc/headless-experience-cloud",
       "lwc/knowledge-article-lwc",
       "lwc/lifecycle-hooks",
@@ -683,19 +685,23 @@
       "lwc/lwc-base-component-recipes",
       "lwc/lwc-data-table",
       "lwc/lwc-dynamic-components",
+      "lwc/lwc-error-boundaries",
       "lwc/lwc-forms-and-validation",
       "lwc/lwc-imperative-apex",
       "lwc/lwc-in-flow-screens",
+      "lwc/lwc-internationalization",
       "lwc/lwc-modal-and-overlay",
       "lwc/lwc-offline-and-mobile",
       "lwc/lwc-performance",
       "lwc/lwc-security",
+      "lwc/lwc-state-management",
       "lwc/lwc-testing",
       "lwc/lwc-toast-and-notifications",
       "lwc/lwr-site-development",
       "lwc/message-channel-patterns",
       "lwc/navigation-and-routing",
       "lwc/static-resources-in-lwc",
+      "lwc/virtualized-lists",
       "lwc/wire-service-patterns"
     ],
     "omnistudio": [
@@ -1102,6 +1108,9 @@
     ],
     "__mdt": [
       "apex/custom-metadata-in-apex"
+    ],
+    "a11y": [
+      "lwc/drag-and-drop"
     ],
     "ab-testing": [
       "admin/email-studio-administration"
@@ -1759,7 +1768,8 @@
       "architect/omnistudio-vs-standard-architecture",
       "architect/omnistudio-vs-standard-decision",
       "architect/payer-vs-provider-architecture",
-      "architect/sales-cloud-architecture"
+      "architect/sales-cloud-architecture",
+      "lwc/lwc-state-management"
     ],
     "architecture-decision": [
       "architect/event-driven-architecture",
@@ -3159,7 +3169,8 @@
     ],
     "content-document": [
       "data/service-data-archival",
-      "integration/file-and-document-integration"
+      "integration/file-and-document-integration",
+      "lwc/file-upload-patterns"
     ],
     "content-document-link": [
       "data/case-history-migration"
@@ -3545,7 +3556,8 @@
       "data/custom-index-requests"
     ],
     "custom-labels": [
-      "admin/multi-language-and-translation"
+      "admin/multi-language-and-translation",
+      "lwc/lwc-internationalization"
     ],
     "custom-metadata": [
       "apex/custom-metadata-in-apex",
@@ -4021,6 +4033,9 @@
       "admin/crm-analytics-app-creation",
       "admin/einstein-analytics-basics"
     ],
+    "datatable": [
+      "lwc/virtualized-lists"
+    ],
     "date-granularity": [
       "data/analytics-dataset-optimization"
     ],
@@ -4450,6 +4465,9 @@
     "dpe": [
       "integration/loyalty-management-setup"
     ],
+    "drag-drop": [
+      "lwc/drag-and-drop"
+    ],
     "drip-program": [
       "admin/lead-nurture-journey-design"
     ],
@@ -4836,7 +4854,8 @@
     ],
     "error-handling": [
       "agentforce/agent-action-error-handling",
-      "integration/error-handling-in-integrations"
+      "integration/error-handling-in-integrations",
+      "lwc/lwc-error-boundaries"
     ],
     "error-handling-framework": [
       "apex/error-handling-framework"
@@ -4858,6 +4877,9 @@
     ],
     "error-reports": [
       "flow/flow-error-monitoring"
+    ],
+    "errorcallback": [
+      "lwc/lwc-error-boundaries"
     ],
     "escalation": [
       "admin/approval-processes"
@@ -5252,6 +5274,7 @@
     ],
     "file-upload": [
       "integration/file-and-document-integration",
+      "lwc/file-upload-patterns",
       "lwc/lwc-forms-and-validation"
     ],
     "files-connect": [
@@ -6080,6 +6103,9 @@
       "architect/integration-security-architecture",
       "integration/private-connect-setup"
     ],
+    "i18n": [
+      "lwc/lwc-internationalization"
+    ],
     "icm": [
       "admin/care-plan-configuration"
     ],
@@ -6877,6 +6903,7 @@
       "architect/ai-agent-org-integration-architecture"
     ],
     "lms": [
+      "lwc/lwc-state-management",
       "lwc/message-channel-patterns"
     ],
     "load-order": [
@@ -6887,6 +6914,9 @@
     ],
     "loan-origination": [
       "architect/banking-lending-architecture"
+    ],
+    "locale": [
+      "lwc/lwc-internationalization"
     ],
     "localization": [
       "admin/multi-language-and-translation",
@@ -6949,11 +6979,14 @@
       "architect/omnistudio-vs-standard-decision",
       "architect/platform-selection-guidance",
       "architect/solution-design-patterns",
+      "lwc/drag-and-drop",
       "lwc/experience-cloud-authentication",
       "lwc/experience-cloud-lwc-components",
+      "lwc/file-upload-patterns",
       "lwc/knowledge-article-lwc",
       "lwc/lifecycle-hooks",
       "lwc/lwc-base-component-recipes",
+      "lwc/lwc-error-boundaries",
       "lwc/lwc-imperative-apex",
       "lwc/lwc-toast-and-notifications",
       "lwc/lwr-site-development",
@@ -8290,7 +8323,8 @@
       "architect/org-edition-and-feature-licensing",
       "data/soql-query-optimization",
       "flow/flow-governor-limits-deep-dive",
-      "flow/flow-performance-optimization"
+      "flow/flow-performance-optimization",
+      "lwc/virtualized-lists"
     ],
     "performance-obligation": [
       "admin/revenue-recognition-requirements"
@@ -10496,6 +10530,9 @@
     "standard-runtime": [
       "architect/omnistudio-vs-standard-architecture"
     ],
+    "state": [
+      "lwc/lwc-state-management"
+    ],
     "state-machine": [
       "apex/long-running-process-orchestration"
     ],
@@ -11182,6 +11219,9 @@
     "virtual-data": [
       "integration/salesforce-connect-external-objects"
     ],
+    "virtualization": [
+      "lwc/virtualized-lists"
+    ],
     "virus-scanning": [
       "integration/file-and-document-integration"
     ],
@@ -11294,7 +11334,8 @@
       "admin/saql-query-development"
     ],
     "wire": [
-      "lwc/knowledge-article-lwc"
+      "lwc/knowledge-article-lwc",
+      "lwc/lwc-state-management"
     ],
     "wire-adapter": [
       "lwc/common-lwc-runtime-errors"

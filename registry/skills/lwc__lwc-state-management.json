@@ -1,0 +1,71 @@
+{
+  "category": "lwc",
+  "chunk_ids": [
+    "08fed2861398706058e5",
+    "0e6e1722405d88edef98",
+    "13d7ebddf5e22d55ad0d",
+    "2362a2c9148854a649dc",
+    "30afe07fe0aee7f3c56b",
+    "44cb2b3436c86424c9fc",
+    "484cd5fef6184a4e887c",
+    "4868209580f7a240c835",
+    "5544578f5c4219d18681",
+    "5de5350a33b757dd388c",
+    "6376738e43a5498e3a8a",
+    "6b28fce293dfc91753fd",
+    "7218d4ec0a3180f84e67",
+    "7cbfbe35ca35a19df2f2",
+    "a774b9c9631bc4aabe79",
+    "b0a4d7faba70607bc08a",
+    "c3cb137eae1001f32250",
+    "c477568070ee629970be",
+    "d2ae7790d523c45dddaf",
+    "d2e17a5b950fe8d4ff9f",
+    "d864b2d239c4890d5a3e",
+    "e0f5fdaf43ced272e342",
+    "e4762730f3c7da9c5df6",
+    "e511cfc79ced87523a6f",
+    "eb07ff015d8d9a4748c8",
+    "ee138321efa00b806ab1"
+  ],
+  "content_hash": "93b5eb6f984dd8fe60c304b47ca5be9c93b64bbd9455df35f22e991120594f85",
+  "dependencies": [],
+  "description": "Share state across LWCs using pub/sub, Lightning Message Service, @wire, and reactive stores. NOT for in-component reactivity.",
+  "file_location": "skills/lwc/lwc-state-management",
+  "id": "lwc/lwc-state-management",
+  "inputs": [
+    "components that need to share state",
+    "scope (tab-local / app-wide)"
+  ],
+  "name": "lwc-state-management",
+  "official_sources": [
+    "Lightning Web Components Developer Guide \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/",
+    "Lightning Data Service \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-wire-service-about.html",
+    "LWC Recipes \u2014 https://github.com/trailheadapps/lwc-recipes",
+    "SLDS 2 \u2014 https://www.lightningdesignsystem.com/2e/"
+  ],
+  "outputs": [
+    "state-management decision + implementation snippets"
+  ],
+  "references": [
+    "skills/lwc/lwc-state-management/references/examples.md",
+    "skills/lwc/lwc-state-management/references/gotchas.md",
+    "skills/lwc/lwc-state-management/references/llm-anti-patterns.md",
+    "skills/lwc/lwc-state-management/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/lwc/lwc-state-management/scripts/check_lwc_state_management.py"
+  ],
+  "tags": [
+    "state",
+    "lms",
+    "wire",
+    "architecture"
+  ],
+  "templates": [
+    "skills/lwc/lwc-state-management/templates/lwc-state-management-template.md"
+  ],
+  "updated": "2026-04-17",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

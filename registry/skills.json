@@ -8,13 +8,13 @@
     "devops": 58,
     "flow": 31,
     "integration": 43,
-    "lwc": 32,
+    "lwc": 38,
     "omnistudio": 21,
     "security": 36
   },
-  "generated_from_hash": "8cffd4ab597362cb0548220f6823caed867ee5cbd5ac0b3dad713325a41b2ca6",
+  "generated_from_hash": "6170077b4dac3800a766b287347411aeecf36af5dcea60e042269474b3c7c537",
   "schema_version": 1,
-  "skill_count": 736,
+  "skill_count": 742,
   "skills": [
     {
       "category": "admin",
@@ -88258,6 +88258,76 @@
     {
       "category": "lwc",
       "chunk_ids": [
+        "02fa7b6df58c535e626c",
+        "0714f97150ed3d6ca582",
+        "18ba67b7b2fa80a5a85a",
+        "2676e8e771cdc2585cb9",
+        "372ba607314417d743dc",
+        "3925f92b596882e71700",
+        "4bb26e2911ce8b0729cd",
+        "668bc2e92d21ad77bab8",
+        "6d7d4b92e7adf7a09de6",
+        "6df61f9fe4553cb81f33",
+        "70144a0e63d4963cb432",
+        "742c1afc9761ddf15eb9",
+        "85a662e90a8877eee857",
+        "8d2f35d4fcbb006ee315",
+        "8eb9e6694610ed612d2e",
+        "9f1108e301dd3620520b",
+        "9f1892491ed5a0302896",
+        "a08dcfc0e5383378ea26",
+        "b708b9478aa361b42836",
+        "bc2f927e1f817bdabf3e",
+        "bef434e6ced41ad70516",
+        "c06530fce6bcd9284f09",
+        "c913bc482263e6c5c4e8",
+        "c92546b8d84aeb5795d9",
+        "db2dc24d14097954af47",
+        "efb9e573ff9457eb271d"
+      ],
+      "content_hash": "738cdc5c73c27957630816b405fdbf585b2b0e1c2a7c043c5b8c3939d5aac8af",
+      "dependencies": [],
+      "description": "Implement drag-and-drop in LWC using HTML5 Drag and Drop API, keyboard alternatives, and accessible announcements. NOT for kanban migration from legacy Lightning.",
+      "file_location": "skills/lwc/drag-and-drop",
+      "id": "lwc/drag-and-drop",
+      "inputs": [
+        "items to reorder or move",
+        "accessibility requirements"
+      ],
+      "name": "drag-and-drop",
+      "official_sources": [
+        "Lightning Web Components Developer Guide \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/",
+        "Lightning Data Service \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-wire-service-about.html",
+        "LWC Recipes \u2014 https://github.com/trailheadapps/lwc-recipes",
+        "SLDS 2 \u2014 https://www.lightningdesignsystem.com/2e/"
+      ],
+      "outputs": [
+        "component with dragstart/dragover/drop handlers + keyboard fallback"
+      ],
+      "references": [
+        "skills/lwc/drag-and-drop/references/examples.md",
+        "skills/lwc/drag-and-drop/references/gotchas.md",
+        "skills/lwc/drag-and-drop/references/llm-anti-patterns.md",
+        "skills/lwc/drag-and-drop/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/lwc/drag-and-drop/scripts/check_drag_and_drop.py"
+      ],
+      "tags": [
+        "lwc",
+        "drag-drop",
+        "a11y"
+      ],
+      "templates": [
+        "skills/lwc/drag-and-drop/templates/drag-and-drop-template.md"
+      ],
+      "updated": "2026-04-17",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "lwc",
+      "chunk_ids": [
         "01dad560a984bf1c59f8",
         "0296b7945e5b5807b6a8",
         "07cbe1b51e5a6f7ecb17",
@@ -88961,6 +89031,76 @@
         "skills/lwc/experience-cloud-search-customization/templates/experience-cloud-search-customization-template.md"
       ],
       "updated": "2026-04-06",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "lwc",
+      "chunk_ids": [
+        "0270ae7cc563ce616349",
+        "06e98cd6968061540604",
+        "08e566ce5da331ea2513",
+        "0bdb94117b3e09ac2df6",
+        "1ddda3191b064bfac5a8",
+        "2b817145b623cb928c83",
+        "3306e36148ef31771f95",
+        "3498987196404c87afab",
+        "3deddd8816a8cd7430d4",
+        "3e04cf9c3a067dd93211",
+        "4183f2ff8a5aac49d72c",
+        "475496462f933110c232",
+        "5825a933d8cb0652d48c",
+        "61b94c9f0561624580ee",
+        "8c12342f70f136e056dc",
+        "987c97b84fc265dfa218",
+        "9fe41c3c6a6421d7bf82",
+        "b7772439f83d43a456aa",
+        "bf41bdabcdd0c1bd3896",
+        "db37808dc77377465800",
+        "db6b1159d25fa7614a76",
+        "e281b068dca824b933b5",
+        "e5122520355e331fd6f0",
+        "efcf44d553d741b88fd9",
+        "f4e3abe795804219c990",
+        "f8cd41234b742e678e97"
+      ],
+      "content_hash": "60e5ddb0565f49730b30f4750358d2a93a26335f3a7b68d6617af09cb1a9d6cd",
+      "dependencies": [],
+      "description": "Upload files in LWC: lightning-file-upload, manual multipart, large-file chunked upload, and ContentDocument associations. NOT for ContentDocument query patterns.",
+      "file_location": "skills/lwc/file-upload-patterns",
+      "id": "lwc/file-upload-patterns",
+      "inputs": [
+        "max file size",
+        "target record"
+      ],
+      "name": "file-upload-patterns",
+      "official_sources": [
+        "Lightning Web Components Developer Guide \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/",
+        "Lightning Data Service \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-wire-service-about.html",
+        "LWC Recipes \u2014 https://github.com/trailheadapps/lwc-recipes",
+        "SLDS 2 \u2014 https://www.lightningdesignsystem.com/2e/"
+      ],
+      "outputs": [
+        "component with appropriate upload strategy + server-side Apex"
+      ],
+      "references": [
+        "skills/lwc/file-upload-patterns/references/examples.md",
+        "skills/lwc/file-upload-patterns/references/gotchas.md",
+        "skills/lwc/file-upload-patterns/references/llm-anti-patterns.md",
+        "skills/lwc/file-upload-patterns/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/lwc/file-upload-patterns/scripts/check_file_upload_patterns.py"
+      ],
+      "tags": [
+        "file-upload",
+        "content-document",
+        "lwc"
+      ],
+      "templates": [
+        "skills/lwc/file-upload-patterns/templates/file-upload-patterns-template.md"
+      ],
+      "updated": "2026-04-17",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -89968,6 +90108,76 @@
     {
       "category": "lwc",
       "chunk_ids": [
+        "0179022f58471852e121",
+        "0a8ff50fb97be1110eec",
+        "136d86bbe5c21f43042a",
+        "225d2a66b37ef691b260",
+        "2b85dc33d0a636a30fec",
+        "3e304e98758331f59cf0",
+        "482f770ca49c0e2c1c0a",
+        "484782cfb5cb50677448",
+        "6382bf2f5c6368a7b909",
+        "73de9e6e100e5ecff329",
+        "755a447de511ad1e33f9",
+        "7dd86996e4d227d04412",
+        "9083d1d918328210740c",
+        "90acdcfd6c1403b89424",
+        "94b5bf1977f1bf26144b",
+        "9c4359d022a058971b88",
+        "9f0dcbe7888ac50b5c98",
+        "a1919fdb6c02f761957e",
+        "a73fde9f0e3f19102282",
+        "b1f58ec4dd61827cdd9f",
+        "b4ad8ee3e931bf836697",
+        "d121373a65dee0742682",
+        "dd6f2b8f281d4eff6f08",
+        "de5dd7376ccfbb206082",
+        "ec4af10c8b829d3b9a2e",
+        "ff4ca98b50cb45925d4b"
+      ],
+      "content_hash": "de7e27617f6c08deb0c1d89b06c90791954daf007519b05466bf577263676eec",
+      "dependencies": [],
+      "description": "Isolate component errors so one failure does not blank an entire page using errorCallback and graceful fallbacks. NOT for server-side Apex exception design.",
+      "file_location": "skills/lwc/lwc-error-boundaries",
+      "id": "lwc/lwc-error-boundaries",
+      "inputs": [
+        "parent component",
+        "child components that may error"
+      ],
+      "name": "lwc-error-boundaries",
+      "official_sources": [
+        "Lightning Web Components Developer Guide \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/",
+        "Lightning Data Service \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-wire-service-about.html",
+        "LWC Recipes \u2014 https://github.com/trailheadapps/lwc-recipes",
+        "SLDS 2 \u2014 https://www.lightningdesignsystem.com/2e/"
+      ],
+      "outputs": [
+        "wrapper boundary component + fallback UI"
+      ],
+      "references": [
+        "skills/lwc/lwc-error-boundaries/references/examples.md",
+        "skills/lwc/lwc-error-boundaries/references/gotchas.md",
+        "skills/lwc/lwc-error-boundaries/references/llm-anti-patterns.md",
+        "skills/lwc/lwc-error-boundaries/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/lwc/lwc-error-boundaries/scripts/check_lwc_error_boundaries.py"
+      ],
+      "tags": [
+        "error-handling",
+        "lwc",
+        "errorcallback"
+      ],
+      "templates": [
+        "skills/lwc/lwc-error-boundaries/templates/lwc-error-boundaries-template.md"
+      ],
+      "updated": "2026-04-17",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "lwc",
+      "chunk_ids": [
         "1343a5d7b7d6fff55394",
         "1350e24813c3f8ae026c",
         "172a5014b2f00164421f",
@@ -90322,6 +90532,76 @@
         "skills/lwc/lwc-in-flow-screens/templates/lwc-in-flow-screens-template.md"
       ],
       "updated": "2026-04-04",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "lwc",
+      "chunk_ids": [
+        "08c2ddce8082df169421",
+        "0da84891ff0e4be4a52e",
+        "28d003c44253e562eca2",
+        "2ff98f6a704b2abceec0",
+        "3a8f8cc437aca8794e4a",
+        "48e76728a426f9875b8a",
+        "4f2544a79a5d7ee8c3e3",
+        "59ea20aec0afc66e321d",
+        "604155523af1bf0e36f1",
+        "6464ce869c87d235f394",
+        "750759762080a7c8b2da",
+        "79e63a4750cc11ff46e4",
+        "7e4193d4df1791e253d9",
+        "86d64c04640813b83c55",
+        "968e9ad0868c7f78da61",
+        "b44bd6c01f80d0f45b68",
+        "b6d8946a285d330f4c58",
+        "b90649429152b64b2ec0",
+        "c6ac5f2b5f55ae88e2ba",
+        "d4997357d2c32633941c",
+        "d9673ea29863740d468e",
+        "e0bbeb691df1249f8f1b",
+        "e242857ea1de8019a8f9",
+        "e389c11caa546b5e6c4d",
+        "e8a3e984e0bb72804234",
+        "f2127ad24b8205401a01"
+      ],
+      "content_hash": "70cf1ce92ba3f71751a39252d8bfafa6626efdad7d084fdd89540a2f322b2e08",
+      "dependencies": [],
+      "description": "Build LWCs that support translation, locale-aware formatting, and RTL layouts. NOT for Translation Workbench setup.",
+      "file_location": "skills/lwc/lwc-internationalization",
+      "id": "lwc/lwc-internationalization",
+      "inputs": [
+        "target locales",
+        "strings to translate"
+      ],
+      "name": "lwc-internationalization",
+      "official_sources": [
+        "Lightning Web Components Developer Guide \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/",
+        "Lightning Data Service \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-wire-service-about.html",
+        "LWC Recipes \u2014 https://github.com/trailheadapps/lwc-recipes",
+        "SLDS 2 \u2014 https://www.lightningdesignsystem.com/2e/"
+      ],
+      "outputs": [
+        "component using custom labels + locale-aware components"
+      ],
+      "references": [
+        "skills/lwc/lwc-internationalization/references/examples.md",
+        "skills/lwc/lwc-internationalization/references/gotchas.md",
+        "skills/lwc/lwc-internationalization/references/llm-anti-patterns.md",
+        "skills/lwc/lwc-internationalization/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/lwc/lwc-internationalization/scripts/check_lwc_internationalization.py"
+      ],
+      "tags": [
+        "i18n",
+        "custom-labels",
+        "locale"
+      ],
+      "templates": [
+        "skills/lwc/lwc-internationalization/templates/lwc-internationalization-template.md"
+      ],
+      "updated": "2026-04-17",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -90734,6 +91014,77 @@
         "skills/lwc/lwc-security/templates/lwc-security-template.md"
       ],
       "updated": "2026-03-13",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "lwc",
+      "chunk_ids": [
+        "08fed2861398706058e5",
+        "0e6e1722405d88edef98",
+        "13d7ebddf5e22d55ad0d",
+        "2362a2c9148854a649dc",
+        "30afe07fe0aee7f3c56b",
+        "44cb2b3436c86424c9fc",
+        "484cd5fef6184a4e887c",
+        "4868209580f7a240c835",
+        "5544578f5c4219d18681",
+        "5de5350a33b757dd388c",
+        "6376738e43a5498e3a8a",
+        "6b28fce293dfc91753fd",
+        "7218d4ec0a3180f84e67",
+        "7cbfbe35ca35a19df2f2",
+        "a774b9c9631bc4aabe79",
+        "b0a4d7faba70607bc08a",
+        "c3cb137eae1001f32250",
+        "c477568070ee629970be",
+        "d2ae7790d523c45dddaf",
+        "d2e17a5b950fe8d4ff9f",
+        "d864b2d239c4890d5a3e",
+        "e0f5fdaf43ced272e342",
+        "e4762730f3c7da9c5df6",
+        "e511cfc79ced87523a6f",
+        "eb07ff015d8d9a4748c8",
+        "ee138321efa00b806ab1"
+      ],
+      "content_hash": "93b5eb6f984dd8fe60c304b47ca5be9c93b64bbd9455df35f22e991120594f85",
+      "dependencies": [],
+      "description": "Share state across LWCs using pub/sub, Lightning Message Service, @wire, and reactive stores. NOT for in-component reactivity.",
+      "file_location": "skills/lwc/lwc-state-management",
+      "id": "lwc/lwc-state-management",
+      "inputs": [
+        "components that need to share state",
+        "scope (tab-local / app-wide)"
+      ],
+      "name": "lwc-state-management",
+      "official_sources": [
+        "Lightning Web Components Developer Guide \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/",
+        "Lightning Data Service \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-wire-service-about.html",
+        "LWC Recipes \u2014 https://github.com/trailheadapps/lwc-recipes",
+        "SLDS 2 \u2014 https://www.lightningdesignsystem.com/2e/"
+      ],
+      "outputs": [
+        "state-management decision + implementation snippets"
+      ],
+      "references": [
+        "skills/lwc/lwc-state-management/references/examples.md",
+        "skills/lwc/lwc-state-management/references/gotchas.md",
+        "skills/lwc/lwc-state-management/references/llm-anti-patterns.md",
+        "skills/lwc/lwc-state-management/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/lwc/lwc-state-management/scripts/check_lwc_state_management.py"
+      ],
+      "tags": [
+        "state",
+        "lms",
+        "wire",
+        "architecture"
+      ],
+      "templates": [
+        "skills/lwc/lwc-state-management/templates/lwc-state-management-template.md"
+      ],
+      "updated": "2026-04-17",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -91443,6 +91794,76 @@
         "skills/lwc/static-resources-in-lwc/templates/static-resources-in-lwc-template.md"
       ],
       "updated": "2026-03-15",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "lwc",
+      "chunk_ids": [
+        "18971adc1d5de76d4aff",
+        "23f075f1363a4fdadfcd",
+        "3ffd9652b3c1a0424474",
+        "6233a30704704fe373ad",
+        "6d0270e726af0d58f27b",
+        "8846aa807f79e7f16ed3",
+        "88fafad4b571afc22105",
+        "99318396f2ebae049ba1",
+        "9a712cc9ec09cefb4e62",
+        "9b2b10c7c1c5edfde58d",
+        "a20db240465c3f15f138",
+        "b31f7bfe85eb1cf72f3e",
+        "b847ed27a1569e000420",
+        "be10d66bbcbb4fd1b776",
+        "c5e207d728dd13f1e8df",
+        "cd5a8db03f401ef13382",
+        "d194dbd3f1c781d51a00",
+        "d86811ddc313cae94417",
+        "de7731e3a303d1674450",
+        "e2106bf375e49a415236",
+        "e47629b3b6f6cb9cefee",
+        "e8f0ebdbc8666804b0e1",
+        "ea0ad790540eaf3b0d99",
+        "eb4a321d81b4d9d73baf",
+        "f09dadb7d10dd4b180ab",
+        "f832b67235af6c0c3f1d"
+      ],
+      "content_hash": "f738e70565955e75ea2d43a253642dc9a0f6085d30e54419825d21a8f9f5141f",
+      "dependencies": [],
+      "description": "Render only visible rows for long lists (1k+ rows) using intersection observer or lightning-datatable virtual scroll. NOT for simple lists under 100 rows.",
+      "file_location": "skills/lwc/virtualized-lists",
+      "id": "lwc/virtualized-lists",
+      "inputs": [
+        "row count",
+        "row height (fixed or variable)"
+      ],
+      "name": "virtualized-lists",
+      "official_sources": [
+        "Lightning Web Components Developer Guide \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/",
+        "Lightning Data Service \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-wire-service-about.html",
+        "LWC Recipes \u2014 https://github.com/trailheadapps/lwc-recipes",
+        "SLDS 2 \u2014 https://www.lightningdesignsystem.com/2e/"
+      ],
+      "outputs": [
+        "virtualized component or datatable config"
+      ],
+      "references": [
+        "skills/lwc/virtualized-lists/references/examples.md",
+        "skills/lwc/virtualized-lists/references/gotchas.md",
+        "skills/lwc/virtualized-lists/references/llm-anti-patterns.md",
+        "skills/lwc/virtualized-lists/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/lwc/virtualized-lists/scripts/check_virtualized_lists.py"
+      ],
+      "tags": [
+        "performance",
+        "virtualization",
+        "datatable"
+      ],
+      "templates": [
+        "skills/lwc/virtualized-lists/templates/virtualized-lists-template.md"
+      ],
+      "updated": "2026-04-17",
       "vector_embedding": null,
       "version": "1.0.0"
     },
