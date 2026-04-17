@@ -147,7 +147,7 @@ exports/aider/
   CONVENTIONS.md   # ~10 MB of all skills concatenated by domain
 ```
 
-Aider's model treats conventions as one large context. No per-skill activation; the whole file is provided on every Aider invocation. This works for small skill libraries but produces context-pressure on a 686-skill library. Use with a narrow `--domain` filter when invoking export for Aider in a specific project.
+Aider's model treats conventions as one large context. No per-skill activation; the whole file is provided on every Aider invocation. This works for small skill libraries but produces context-pressure on a 700+-skill library. Use with a narrow `--domain` filter when invoking export for Aider in a specific project.
 
 ### Augment (`exports/augment/`)
 

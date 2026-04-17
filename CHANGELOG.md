@@ -2,9 +2,38 @@
 
 All notable changes to SfSkills are documented here. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The project uses semantic versioning keyed to the Salesforce release cadence (minor bumps per Spring/Summer/Winter release).
 
-## [Unreleased] — Wave 3 + Wave 4a Redesign
+## [Unreleased] — Full 8-Wave Redesign
 
-A substantial redesign completed in April 2026 (commits `8bcabde` through `f7de019`), landing in waves 0 through 4a-2 of the approved plan at `/Users/pranavnagrecha/.claude/plans/keen-napping-wombat.md`.
+A substantial redesign completed in April 2026, landing all 8 waves of the approved plan at `/Users/pranavnagrecha/.claude/plans/keen-napping-wombat.md`. This section documents Waves 4b, 4c, 5, 6, 7 added on top of the earlier Wave 3 + 4a work (originally in commits `8bcabde` through `f7de019`).
+
+### Added in Waves 4b + 4c + 5 + 6 + 7
+
+- **3 new Agentforce skills** (Wave 4c): `agentforce-multi-turn-patterns`, `agentforce-tool-use-patterns`, `agentforce-eval-harness`. Each 250+ lines with full 4 reference files.
+- **8 new Flow skills** (Wave 4b + extension): `flow-transactional-boundaries`, `flow-platform-events-integration`, `flow-invocable-from-apex`, `flow-rollback-patterns`, `flow-error-monitoring`, `flow-migration-from-trigger`, `flow-governor-limits-deep-dive`, `flow-performance-optimization`.
+- **2 new decision trees** (Waves 4b + 4c):
+  - `standards/decision-trees/flow-pattern-selector.md` — Before-Save / After-Save / Scheduled / Screen / Orchestration / Platform-Event-triggered routing.
+  - `standards/decision-trees/agentforce-capability-selector.md` — Agentforce / Copilot / Prompt Builder / Next Best Action / Einstein Discovery / BYOLLM / Bots routing.
+- **2 new templates**:
+  - `templates/flow/PlatformEvent_Publisher_Flow.md` (Wave 4b).
+  - `templates/agentforce/AgentEval_Fixture.md` (Wave 4c).
+- **11 new slash commands** (Wave 5): `/build-apex`, `/design-assignment-rules`, `/configure-business-hours`, `/build-changeset`, `/design-custom-metadata`, `/design-entitlements`, `/design-experience-cloud`, `/design-flow-orchestrator`, `/build-lwc`, `/design-path`, `/migrate-profile-to-permset`. Every runtime agent now has a slash-command entry point.
+- **Slash-command coverage validator rule** (Wave 5): `pipelines/agent_validators.py` fails when any `class: runtime, status != deprecated` agent lacks a matching `commands/*.md` linking its `AGENT.md`.
+- **macOS CI matrix** (Wave 6): `.github/workflows/validate.yml` runs `validate-agents` and new `export-parity-matrix` jobs on both `ubuntu-latest` and `macos-latest` to catch cross-OS hash drift.
+- **pr-lint hardened** (Wave 6): `build_index.py` runs before `export_skills.py --check` so the gitignored `lexical.sqlite` doesn't trip drift detection.
+- **Open-source readiness docs** (Wave 7): `LICENSE` (Apache 2.0), `SECURITY.md`, `docs/MIGRATION.md` (deprecated-agent removal timeline), `docs/multi-ai-parity.md` (first-class vs second-class tier contract).
+
+### Changed in Waves 4b+
+
+- **`vector_index/chunks.jsonl` gitignored** — grew to ~98 MB at 700+ skills, crossing GitHub's 50 MB warning threshold. CI and local workflows rebuild via `python3 scripts/build_index.py`. `vector_index/manifest.json` stays committed as the drift-detection hash.
+- **`scripts/export_skills.py` → 6 platforms** (Wave 2): `claude`, `cursor`, `mcp` first-class; `windsurf`, `aider`, `augment` second-class with documented subset contract.
+- **701 skills total** (was 686 pre-redesign) — net of deletions + new additions. Breakdown:
+  - +11 new Agentforce/Flow skills authored (Waves 4b + 4c).
+  - +16 Flow + 3 Agentforce skills rewritten from shallow to deep (Wave 4a).
+  - –8 TODO-stub skills removed.
+
+## [Earlier] — Wave 3 + Wave 4a Redesign
+
+Original wave 0–4a work in commits `8bcabde` through `f7de019`.
 
 ### Added
 
