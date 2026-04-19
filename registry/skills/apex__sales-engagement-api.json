@@ -80,7 +80,7 @@
     "fb6aa7c2079b05572ff1",
     "fe095cff63be608b8659"
   ],
-  "content_hash": "ce1ec20d38c5bf60726ddc1e9f348910c59a934c40ab31b7ff9c267598cda1d5",
+  "content_hash": "953e5a7522bda0016a3bd827f7d83daaa2a693c51de17c5717974d0147a256a1",
   "dependencies": [],
   "description": "Use when enrolling records in Sales Engagement cadences from Apex, logging call outcomes on cadence steps, customizing cadence step actions via Apex, or consuming cadence lifecycle events through Change Data Capture. Triggers: 'enroll lead in cadence', 'assignTargetToSalesCadence', 'ActionCadenceTracker', 'log call result cadence', 'Sales Engagement Apex'. NOT for building or administering cadence structures (steps, branches, variants) \u2014 cadence content must be authored in the Cadence Builder UI and cannot be created or mutated via API.",
   "file_location": "skills/apex/sales-engagement-api",
@@ -113,6 +113,7 @@
     "skills/apex/sales-engagement-api/references/well-architected.md"
   ],
   "scripts": [
+    "skills/apex/sales-engagement-api/scripts/__pycache__/check_sales_engagement_api.cpython-314.pyc",
     "skills/apex/sales-engagement-api/scripts/check_sales_engagement_api.py"
   ],
   "tags": [

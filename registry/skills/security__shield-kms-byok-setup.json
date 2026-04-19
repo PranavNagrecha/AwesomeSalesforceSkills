@@ -28,7 +28,7 @@
     "ea3a60416b61c8982cda",
     "ebf2241e4395d1be1e3e"
   ],
-  "content_hash": "6f73c6c91ec1323492de0cc86978c83335109b20b47827f7a5a763c37ea6f8d3",
+  "content_hash": "5760895c872b4316fd691fdc24a133747ccb89a3b18bda38fb4798b3e16544ce",
   "dependencies": [],
   "description": "Configure Shield Platform Encryption with customer-supplied (BYOK) or customer-held (Cache-Only Key Service) tenant secrets, rotate them, and recover. NOT for Classic Encryption or field masking.",
   "file_location": "skills/security/shield-kms-byok-setup",
@@ -59,6 +59,7 @@
     "skills/security/shield-kms-byok-setup/references/well-architected.md"
   ],
   "scripts": [
+    "skills/security/shield-kms-byok-setup/scripts/__pycache__/check_shield_kms_byok_setup.cpython-314.pyc",
     "skills/security/shield-kms-byok-setup/scripts/check_shield_kms_byok_setup.py"
   ],
   "tags": [

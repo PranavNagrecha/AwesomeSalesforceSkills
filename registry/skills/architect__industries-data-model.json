@@ -87,7 +87,7 @@
     "f71420a7e1275beb2aa4",
     "f996eff01e6cf217d87e"
   ],
-  "content_hash": "a8f250525933a5cd38c4287ec040e201447fe949e7a8d3dadf25f3d248e005d6",
+  "content_hash": "ca84bdbf65dbff4878a2f7cbffc4e10fa6467cb85252e9a78fdb31ab481fe743",
   "dependencies": [
     "insurance-cloud-architecture",
     "fsc-architecture-patterns"
@@ -122,6 +122,7 @@
     "skills/architect/industries-data-model/references/well-architected.md"
   ],
   "scripts": [
+    "skills/architect/industries-data-model/scripts/__pycache__/check_industries_data_model.cpython-314.pyc",
     "skills/architect/industries-data-model/scripts/check_industries_data_model.py"
   ],
   "tags": [

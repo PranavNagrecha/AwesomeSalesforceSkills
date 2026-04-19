@@ -100,7 +100,7 @@
     "fb12c22e3e6c74603533",
     "fef7438835dbb6db00eb"
   ],
-  "content_hash": "9abedf85cd0f5b7d3e713df5c224c32316cc0d03d9a376f38501ff576906a968",
+  "content_hash": "5594f85a94998e707236a8cb49485551abf66741aabb2190822b1b48a5f935af",
   "dependencies": [],
   "description": "Use when building or reviewing code that constructs SOQL/SOSL at runtime, inspects schema metadata via Schema.describe methods, accesses fields dynamically on sObjects, or performs runtime type inspection. Triggers: 'Database.query', 'Schema.getGlobalDescribe', 'Schema.describeSObjects', 'dynamic field access', 'SObjectType', 'DescribeFieldResult'. NOT for static SOQL queries or query performance tuning \u2014 use soql-fundamentals or soql-query-optimization.",
   "file_location": "skills/apex/dynamic-apex",
@@ -131,6 +131,7 @@
     "skills/apex/dynamic-apex/references/well-architected.md"
   ],
   "scripts": [
+    "skills/apex/dynamic-apex/scripts/__pycache__/check_dynamic_apex.cpython-314.pyc",
     "skills/apex/dynamic-apex/scripts/check_dynamic_apex.py"
   ],
   "tags": [

@@ -114,7 +114,7 @@
     "fd14fde97c7591a0045e",
     "fd868bc8d58124cceb96"
   ],
-  "content_hash": "5069c6cb600ce298ec75badfc9e3b5dc4ba334cc2532d866fc6d53b3791e320d",
+  "content_hash": "46d4a69dc4d3f977040dffc28c7a529c142f06cac7c850236888fc54109ed32c",
   "dependencies": [
     "apex/marketing-cloud-api",
     "admin/marketing-cloud-connect"
@@ -154,6 +154,7 @@
     "skills/architect/marketing-integration-patterns/references/well-architected.md"
   ],
   "scripts": [
+    "skills/architect/marketing-integration-patterns/scripts/__pycache__/check_marketing_integration_patterns.cpython-314.pyc",
     "skills/architect/marketing-integration-patterns/scripts/check_marketing_integration_patterns.py"
   ],
   "tags": [

@@ -75,7 +75,7 @@
     "f52e3f443aceafa95471",
     "fc93de40636b55ab8ba1"
   ],
-  "content_hash": "2131fe030dbb493dba16edc3814b33f1386642a81921d041716aa9778f89ee10",
+  "content_hash": "7cff756bfe504c7907523d5a551158d1ce9c50e00c8c5d75d4ceb461caea8b8f",
   "dependencies": [],
   "description": "Einstein Search personalization: configure search result ranking, promoted results, searchable objects, and Natural Language Search (NLS) for Lightning Experience. Triggers when users ask about search personalization signals, why search results feel irrelevant, how to enable NLS conversational queries, or how to manage Einstein Search settings in Setup. NOT for SOSL query authoring, Experience Cloud search customization, or Commerce storefront search tuning.",
   "file_location": "skills/agentforce/einstein-search-personalization",
@@ -110,6 +110,7 @@
     "skills/agentforce/einstein-search-personalization/references/well-architected.md"
   ],
   "scripts": [
+    "skills/agentforce/einstein-search-personalization/scripts/__pycache__/check_einstein_search_personalization.cpython-314.pyc",
     "skills/agentforce/einstein-search-personalization/scripts/check_einstein_search_personalization.py"
   ],
   "tags": [

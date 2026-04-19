@@ -28,7 +28,7 @@
     "e77d77b50adde077ec4f",
     "e8a3885deb047e093cd9"
   ],
-  "content_hash": "91547267c35e89592b4010e945d49b93baf4c274813134448e3faa13199972df",
+  "content_hash": "95b117edd4c91e79854e75531318cf799889bacc4797a4908b2b976a95fa7d3c",
   "dependencies": [],
   "description": "Configure Content Security Policy via Trusted URLs and CSP Trusted Sites so Lightning, LWR, and LWC can call third-party scripts, APIs, and frame sources. NOT for clickjack configuration.",
   "file_location": "skills/security/csp-and-trusted-urls",
@@ -57,6 +57,7 @@
     "skills/security/csp-and-trusted-urls/references/well-architected.md"
   ],
   "scripts": [
+    "skills/security/csp-and-trusted-urls/scripts/__pycache__/check_csp_and_trusted_urls.cpython-314.pyc",
     "skills/security/csp-and-trusted-urls/scripts/check_csp_and_trusted_urls.py"
   ],
   "tags": [

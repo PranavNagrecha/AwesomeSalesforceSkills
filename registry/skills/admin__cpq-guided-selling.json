@@ -106,7 +106,7 @@
     "f63b3489483ba849ac30",
     "fc74fe23428b54d47ce7"
   ],
-  "content_hash": "89680ee9016288aec987399139c93a63db11afaf8a10fc8730757290bb050426",
+  "content_hash": "bb8143ea065ac2800e87b3f5f679a58b98ed13295f20590cee08ec97bff27dce",
   "dependencies": [
     "cpq-product-catalog-setup",
     "products-and-pricebooks"
@@ -143,6 +143,7 @@
     "skills/admin/cpq-guided-selling/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/cpq-guided-selling/scripts/__pycache__/check_cpq_guided_selling.cpython-314.pyc",
     "skills/admin/cpq-guided-selling/scripts/check_cpq_guided_selling.py"
   ],
   "tags": [

@@ -96,7 +96,7 @@
     "fe11582fc93dc690d013",
     "ff1bbba99e7841f0447c"
   ],
-  "content_hash": "a40ae17df797eaa92efe79247737bda532d1c3f17b57acc6cc611ba6d9d5a063",
+  "content_hash": "f5ee9ad242ca15bbb1be623d7d7f2f4fd9fac7ec4e624184d08728718e6befb9",
   "dependencies": [],
   "description": "Use when programmatically driving Salesforce CPQ operations from Apex or REST \u2014 creating quotes, adding products, calculating pricing, saving quotes, amending contracts, or renewing contracts through the SBQQ.ServiceRouter API. Trigger keywords: CPQ API, SBQQ.ServiceRouter, QuoteCalculator, QuoteReader, QuoteSaver, QuoteProductAdder, ProductLoader, ContractAmender, ContractRenewer, programmatic quote, calculate callback, CPQ REST API. NOT for standard REST API or Salesforce Connect. NOT for declarative CPQ configuration such as price rules, discount schedules, or product rules. NOT for CPQ plugin interfaces (QuoteCalculatorPlugin, OrderPlugin).",
   "file_location": "skills/apex/cpq-api-and-automation",
@@ -132,6 +132,7 @@
     "skills/apex/cpq-api-and-automation/references/well-architected.md"
   ],
   "scripts": [
+    "skills/apex/cpq-api-and-automation/scripts/__pycache__/check_cpq_api_and_automation.cpython-314.pyc",
     "skills/apex/cpq-api-and-automation/scripts/check_cpq_api_and_automation.py"
   ],
   "tags": [

@@ -55,7 +55,7 @@
     "f880d823e0a03194bc49",
     "fbd6c319bfaa084ef82f"
   ],
-  "content_hash": "000422725582122eb861893d4677aee19e204c802e8a572b563457e638a70280",
+  "content_hash": "e55c23d849ff3b7949c553c5a2baf95c282a8c1a2eb8c3eda666a9bdde7188b1",
   "dependencies": [],
   "description": "Use when building or reviewing Lightning Web Components \u2014 specifically lifecycle management, wire service, memory leak prevention, navigation, and Lightning Locker Service constraints. Triggers: 'LWC', 'connectedCallback', 'renderedCallback', 'memory leak', 'NavigationMixin', 'wire'. NOT for Aura components.",
   "file_location": "skills/lwc/lifecycle-hooks",
@@ -85,6 +85,7 @@
     "skills/lwc/lifecycle-hooks/references/well-architected.md"
   ],
   "scripts": [
+    "skills/lwc/lifecycle-hooks/scripts/__pycache__/check_lwc_lifecycle.cpython-314.pyc",
     "skills/lwc/lifecycle-hooks/scripts/check_lwc_lifecycle.py"
   ],
   "tags": [

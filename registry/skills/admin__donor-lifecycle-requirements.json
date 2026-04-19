@@ -72,7 +72,7 @@
     "fa1ea392d30c300590e9",
     "fb094391fd414950cec7"
   ],
-  "content_hash": "0870437e08a153a82e0a5b690646531ee222c22c2e9fa2d42970015c1d088e07",
+  "content_hash": "e05d515499ec281add33f161afa4870cb091d76321eb796b93b031dea195b3ed",
   "dependencies": [],
   "description": "Requirements mapping for the full donor lifecycle in NPSP or Nonprofit Cloud: acquisition stage design, moves management for cultivation and solicitation, upgrade path design, lapsed donor re-engagement strategy, and segmentation for portfolio management. NOT for marketing automation execution, email campaign configuration, or recurring donation implementation.",
   "file_location": "skills/admin/donor-lifecycle-requirements",
@@ -102,6 +102,7 @@
     "skills/admin/donor-lifecycle-requirements/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/donor-lifecycle-requirements/scripts/__pycache__/check_donor_lifecycle_requirements.cpython-314.pyc",
     "skills/admin/donor-lifecycle-requirements/scripts/check_donor_lifecycle_requirements.py"
   ],
   "tags": [

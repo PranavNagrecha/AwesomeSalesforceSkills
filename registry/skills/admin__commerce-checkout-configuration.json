@@ -103,7 +103,7 @@
     "fe393a85422d327408dc",
     "ff0cafac37ccd0cdbc14"
   ],
-  "content_hash": "85342eab871665147b4f8630c441562cac55112e30fa0dc91227f2fd438f59e4",
+  "content_hash": "fb76ff5fe56a5339bdabd5e81a1fb1d608f912619f4c678a1bbf4238f7631ba5",
   "dependencies": [],
   "description": "Use this skill when configuring Salesforce B2B or D2C Commerce checkout: payment methods, shipping/tax integration, guest checkout, order summary setup, and CartCheckoutSession state orchestration. Trigger keywords: checkout flow, payment adapter, shipping tax integration, guest checkout, order summary, CartCheckoutSession, Managed Checkout, Commerce checkout flow. NOT for CPQ quoting, Checkout.com account management, or Service Cloud Order Management post-fulfillment logic.",
   "file_location": "skills/admin/commerce-checkout-configuration",
@@ -139,6 +139,7 @@
     "skills/admin/commerce-checkout-configuration/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/commerce-checkout-configuration/scripts/__pycache__/check_commerce_checkout_configuration.cpython-314.pyc",
     "skills/admin/commerce-checkout-configuration/scripts/check_commerce_checkout_configuration.py"
   ],
   "tags": [

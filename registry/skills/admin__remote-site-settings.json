@@ -60,7 +60,7 @@
     "fd62b65c90d30d4957d7",
     "fdad5186376f382c9bf1"
   ],
-  "content_hash": "15f81c33dc01aef76510637662c18228cea3a3d00638a181893dfad8806788fc",
+  "content_hash": "e29658e2ca372210c810f5b8030cc3e6a5558c85ffe9cbf324b45d8f6da45528",
   "dependencies": [],
   "description": "Use when configuring Remote Site Settings to allow Apex callouts to external URLs, or when distinguishing Remote Site Settings from CSP Trusted Sites for Lightning component resource loading. NOT for Named Credentials (use named-credential-configuration).",
   "file_location": "skills/admin/remote-site-settings",
@@ -90,6 +90,7 @@
     "skills/admin/remote-site-settings/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/remote-site-settings/scripts/__pycache__/check_remote_site_settings.cpython-314.pyc",
     "skills/admin/remote-site-settings/scripts/check_remote_site_settings.py"
   ],
   "tags": [

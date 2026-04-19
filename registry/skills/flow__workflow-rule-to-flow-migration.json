@@ -65,7 +65,7 @@
     "ff98e36d60cd814e6472",
     "fff4116d9be300a5726e"
   ],
-  "content_hash": "4ccf2e3271e8d72bd7496667097fadf67ebeae130678358463bab9c314ef1253",
+  "content_hash": "f49d05e9482eb110fad269ce6bef0b93b513770651670f9abc6bf89dce28c1a8",
   "dependencies": [],
   "description": "Migrate Workflow Rules to record-triggered Flows: field update mapping, email alert migration, outbound message alternatives using Flow Core Actions, time-based workflow replacement with Scheduled Paths. NOT for Process Builder migration (use process-builder-to-flow-migration), NOT for building new flows from scratch.",
   "file_location": "skills/flow/workflow-rule-to-flow-migration",
@@ -97,6 +97,7 @@
     "skills/flow/workflow-rule-to-flow-migration/references/well-architected.md"
   ],
   "scripts": [
+    "skills/flow/workflow-rule-to-flow-migration/scripts/__pycache__/check_workflow_rule_to_flow_migration.cpython-314.pyc",
     "skills/flow/workflow-rule-to-flow-migration/scripts/check_workflow_rule_to_flow_migration.py"
   ],
   "tags": [

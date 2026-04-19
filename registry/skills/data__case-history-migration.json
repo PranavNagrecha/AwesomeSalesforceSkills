@@ -159,7 +159,7 @@
     "ff333564290c5a2dbcf4",
     "ffdad79fc1cdbdb99c90"
   ],
-  "content_hash": "3e50f821548612219157e2e9eb1464e2f2ecaf92fab7ceb1cd4aea1a97a01781",
+  "content_hash": "cab06338aa675db3d308742418443f699c8b23ab369c1a831933ed96dabfc8a7",
   "dependencies": [],
   "description": "Use when migrating historical Case records \u2014 including CaseComments, EmailMessages, email attachments, and related files \u2014 from a legacy system into Salesforce Service Cloud. Covers strict object load order, EmailMessage Status='3' permanent locking, ContentDocumentLink Bulk API limitation, CaseHistory non-insertable constraint, and EmailMessageRelation setup. NOT for generic multi-object data migration planning (use data-migration-planning). NOT for ongoing email sync or Einstein Activity Capture configuration. NOT for Contact or Account record migration.",
   "file_location": "skills/data/case-history-migration",
@@ -199,6 +199,7 @@
     "skills/data/case-history-migration/references/well-architected.md"
   ],
   "scripts": [
+    "skills/data/case-history-migration/scripts/__pycache__/check_case_history_migration.cpython-314.pyc",
     "skills/data/case-history-migration/scripts/check_case_history_migration.py"
   ],
   "tags": [

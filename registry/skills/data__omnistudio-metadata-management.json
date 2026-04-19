@@ -116,7 +116,7 @@
     "fbe09ea022e836a468f6",
     "ff865c2dd9524c03c6a9"
   ],
-  "content_hash": "6e40791f215952cc6fa8a5b1675570f988f29dd9f5cb8a8f970ea8c2845fe85b",
+  "content_hash": "b166710095f8a79890b3931d0a938ce410ba362e9adab872809b4721d0f03a73",
   "dependencies": [],
   "description": "Use this skill when tracking, auditing, or cleaning up OmniStudio component dependencies and cross-references \u2014 covering the four OmniStudio metadata API types (OmniProcess, OmniDataTransform, OmniUiCard, OmniInteractionConfig), dependency graph construction from embedded JSON bodies, impact analysis before deleting or modifying a component, and stale-component cleanup. Trigger keywords: OmniStudio metadata types, OmniStudio dependency tracking, FlexCard DataRaptor dependency, OmniScript Integration Procedure reference, OmniStudio component cleanup, metadata impact analysis. NOT for DataPack export/import mechanics (use data/omnistudio-datapack-migration), standard Salesforce Metadata API coverage (use a metadata coverage skill), or OmniStudio CI/CD pipeline automation.",
   "file_location": "skills/data/omnistudio-metadata-management",
@@ -149,6 +149,7 @@
     "skills/data/omnistudio-metadata-management/references/well-architected.md"
   ],
   "scripts": [
+    "skills/data/omnistudio-metadata-management/scripts/__pycache__/check_omnistudio_metadata_management.cpython-314.pyc",
     "skills/data/omnistudio-metadata-management/scripts/check_omnistudio_metadata_management.py"
   ],
   "tags": [

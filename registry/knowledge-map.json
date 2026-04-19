@@ -250,17 +250,27 @@
     "apex": [
       "apex/ai-model-integration-apex",
       "apex/ampscript-development",
+      "apex/apex-aggregate-queries",
+      "apex/apex-batch-chaining",
+      "apex/apex-collections-patterns",
       "apex/apex-cpu-and-heap-optimization",
       "apex/apex-design-patterns",
+      "apex/apex-dml-patterns",
       "apex/apex-email-services",
+      "apex/apex-json-serialization",
+      "apex/apex-limits-monitoring",
       "apex/apex-managed-sharing",
       "apex/apex-metadata-api",
       "apex/apex-mocking-and-stubs",
+      "apex/apex-named-credentials-patterns",
       "apex/apex-performance-profiling",
       "apex/apex-queueable-patterns",
       "apex/apex-rest-services",
       "apex/apex-scheduled-jobs",
       "apex/apex-security-patterns",
+      "apex/apex-soql-relationship-queries",
+      "apex/apex-transaction-finalizers",
+      "apex/apex-wrapper-class-patterns",
       "apex/async-apex",
       "apex/batch-apex-patterns",
       "apex/billing-integration-apex",
@@ -1402,8 +1412,14 @@
     "agentwork": [
       "data/omni-channel-reporting-data"
     ],
+    "aggregate-queries": [
+      "apex/apex-aggregate-queries"
+    ],
     "aggregate-soql": [
       "data/roll-up-summary-alternatives"
+    ],
+    "aggregateresult": [
+      "apex/apex-aggregate-queries"
     ],
     "ai": [
       "architect/ai-ready-data-architecture",
@@ -1559,16 +1575,24 @@
       "apex/fsc-financial-calculations"
     ],
     "apex-callout": [
-      "admin/remote-site-settings"
+      "admin/remote-site-settings",
+      "apex/apex-named-credentials-patterns"
+    ],
+    "apex-collections": [
+      "apex/apex-collections-patterns"
     ],
     "apex-debugger": [
       "devops/vscode-salesforce-extensions"
     ],
     "apex-dml": [
+      "apex/apex-dml-patterns",
       "apex/territory-api-and-assignment"
     ],
     "apex-email-services": [
       "apex/apex-email-services"
+    ],
+    "apex-finalizer": [
+      "apex/apex-transaction-finalizers"
     ],
     "apex-flow-interview": [
       "flow/auto-launched-flow-patterns"
@@ -1579,8 +1603,14 @@
     "apex-jobs": [
       "admin/batch-job-scheduling-and-monitoring"
     ],
+    "apex-json": [
+      "apex/apex-json-serialization"
+    ],
     "apex-language-server": [
       "devops/vscode-salesforce-extensions"
+    ],
+    "apex-limits": [
+      "apex/apex-limits-monitoring"
     ],
     "apex-log-analyzer": [
       "apex/apex-performance-profiling"
@@ -1639,6 +1669,9 @@
     ],
     "apex-wire": [
       "architect/experience-cloud-performance"
+    ],
+    "apex-wrapper": [
+      "apex/apex-wrapper-class-patterns"
     ],
     "api": [
       "integration/api-versioning-strategy",
@@ -1823,6 +1856,7 @@
       "apex/case-trigger-patterns"
     ],
     "async": [
+      "apex/apex-batch-chaining",
       "data/bulk-api-and-large-data-loads",
       "data/bulk-api-patterns",
       "flow/flow-and-platform-events",
@@ -1831,6 +1865,7 @@
     "async-apex": [
       "apex/apex-queueable-patterns",
       "apex/apex-scheduled-jobs",
+      "apex/apex-transaction-finalizers",
       "apex/async-apex",
       "apex/change-data-capture-apex",
       "apex/long-running-process-orchestration",
@@ -1917,6 +1952,9 @@
       "devops/experience-cloud-deployment-dev",
       "lwc/experience-cloud-authentication",
       "lwc/experience-cloud-search-customization"
+    ],
+    "aura-enabled": [
+      "apex/apex-wrapper-class-patterns"
     ],
     "aura-handled-exception": [
       "apex/error-handling-framework"
@@ -2062,6 +2100,8 @@
     ],
     "batch-apex": [
       "admin/batch-job-scheduling-and-monitoring",
+      "apex/apex-batch-chaining",
+      "apex/apex-collections-patterns",
       "apex/async-apex",
       "apex/batch-apex-patterns",
       "apex/custom-iterators-and-iterables",
@@ -2073,6 +2113,9 @@
     ],
     "batch-apex-error-event": [
       "apex/error-handling-framework"
+    ],
+    "batch-chaining": [
+      "apex/apex-batch-chaining"
     ],
     "batch-jobs": [
       "apex/npsp-custom-rollups"
@@ -2298,6 +2341,7 @@
       "apex/test-data-factory-patterns"
     ],
     "bulkification": [
+      "apex/apex-collections-patterns",
       "apex/governor-limit-recovery-patterns",
       "apex/governor-limits",
       "apex/opportunity-trigger-patterns",
@@ -2457,6 +2501,8 @@
     ],
     "callouts": [
       "apex/ai-model-integration-apex",
+      "apex/apex-json-serialization",
+      "apex/apex-named-credentials-patterns",
       "integration/callout-limits-and-async-patterns"
     ],
     "campaign-hierarchy": [
@@ -2705,6 +2751,9 @@
     "checkout-extension": [
       "apex/commerce-extension-points"
     ],
+    "child-to-parent": [
+      "apex/apex-soql-relationship-queries"
+    ],
     "choices": [
       "flow/flow-dynamic-choices"
     ],
@@ -2759,6 +2808,9 @@
     ],
     "claude-desktop": [
       "agentforce/salesforce-mcp-server-setup"
+    ],
+    "cleanup": [
+      "apex/apex-transaction-finalizers"
     ],
     "cli-automation": [
       "devops/salesforce-cli-automation"
@@ -2969,6 +3021,12 @@
     ],
     "compact-layouts": [
       "admin/list-views-and-compact-layouts"
+    ],
+    "comparable": [
+      "apex/apex-wrapper-class-patterns"
+    ],
+    "comparator": [
+      "apex/apex-wrapper-class-patterns"
     ],
     "compensation": [
       "flow/flow-rollback-patterns"
@@ -3988,6 +4046,9 @@
     "database-batchable": [
       "apex/batch-apex-patterns"
     ],
+    "database-class": [
+      "apex/apex-dml-patterns"
+    ],
     "dataflow": [
       "admin/analytics-dataflow-development"
     ],
@@ -4146,6 +4207,9 @@
     ],
     "defect-management": [
       "admin/uat-and-acceptance-criteria"
+    ],
+    "defensive-coding": [
+      "apex/apex-limits-monitoring"
     ],
     "defer-sharing-calculations": [
       "data/sharing-recalculation-performance"
@@ -4433,6 +4497,9 @@
     ],
     "dml-limits": [
       "architect/limits-and-scalability-planning"
+    ],
+    "dml-options": [
+      "apex/apex-dml-patterns"
     ],
     "dml-wrapper": [
       "apex/npsp-trigger-framework-extension"
@@ -4879,6 +4946,7 @@
     ],
     "error-handling": [
       "agentforce/agent-action-error-handling",
+      "apex/apex-transaction-finalizers",
       "flow/flow-interview-debugging",
       "integration/error-handling-in-integrations",
       "lwc/lwc-error-boundaries"
@@ -5083,6 +5151,9 @@
     ],
     "external-collaboration": [
       "integration/slack-connect-patterns"
+    ],
+    "external-credential": [
+      "apex/apex-named-credentials-patterns"
     ],
     "external-credentials": [
       "admin/connected-apps-and-auth",
@@ -5399,6 +5470,9 @@
     ],
     "flame-graph": [
       "apex/apex-performance-profiling"
+    ],
+    "flex-queue": [
+      "apex/apex-batch-chaining"
     ],
     "flex-template": [
       "agentforce/prompt-builder-templates"
@@ -5775,6 +5849,9 @@
     "get-records": [
       "flow/flow-large-data-volume-patterns"
     ],
+    "getSObjects": [
+      "apex/apex-soql-relationship-queries"
+    ],
     "gift-entry": [
       "admin/gift-entry-and-processing"
     ],
@@ -5844,6 +5921,8 @@
     ],
     "governor-limits": [
       "admin/custom-metadata-types-and-settings",
+      "apex/apex-dml-patterns",
+      "apex/apex-limits-monitoring",
       "apex/formula-field-performance-and-limits",
       "apex/governor-limit-recovery-patterns",
       "apex/governor-limits",
@@ -5882,6 +5961,9 @@
     "grounding": [
       "agentforce/data-cloud-vector-search-dev",
       "agentforce/prompt-builder-templates"
+    ],
+    "groupby": [
+      "apex/apex-aggregate-queries"
     ],
     "grpc": [
       "integration/pub-sub-api-patterns"
@@ -5928,6 +6010,9 @@
     ],
     "hard-delete": [
       "data/batch-data-cleanup-patterns"
+    ],
+    "having": [
+      "apex/apex-aggregate-queries"
     ],
     "headless": [
       "architect/headless-commerce-architecture",
@@ -5993,6 +6078,9 @@
     ],
     "heap-limits": [
       "architect/limits-and-scalability-planning"
+    ],
+    "heap-management": [
+      "apex/apex-collections-patterns"
     ],
     "heap-size": [
       "apex/apex-cpu-and-heap-optimization"
@@ -6299,6 +6387,9 @@
     "inline-edit": [
       "lwc/lwc-data-table"
     ],
+    "inner-class": [
+      "apex/apex-wrapper-class-patterns"
+    ],
     "input-output-variables": [
       "flow/subflows-and-reusability"
     ],
@@ -6338,6 +6429,7 @@
       "admin/api-contract-documentation",
       "admin/integration-pattern-selection",
       "agentforce/sf-to-llm-data-pipelines",
+      "apex/apex-json-serialization",
       "apex/fhir-integration-patterns",
       "apex/marketing-cloud-api",
       "apex/marketing-cloud-custom-activities",
@@ -6569,11 +6661,20 @@
     "json": [
       "admin/analytics-dashboard-json"
     ],
+    "json-access": [
+      "apex/apex-wrapper-class-patterns"
+    ],
+    "json-generator": [
+      "apex/apex-json-serialization"
+    ],
     "json-memory": [
       "apex/apex-cpu-and-heap-optimization"
     ],
     "json-output": [
       "devops/salesforce-cli-automation"
+    ],
+    "json-parser": [
+      "apex/apex-json-serialization"
     ],
     "json-rpc": [
       "agentforce/mcp-tool-definition-apex",
@@ -6908,6 +7009,7 @@
       "architect/org-limits-monitoring"
     ],
     "limits-class": [
+      "apex/apex-limits-monitoring",
       "apex/governor-limit-recovery-patterns"
     ],
     "limits-getcputime": [
@@ -7135,6 +7237,9 @@
     ],
     "managed-subscriptions": [
       "integration/pub-sub-api-patterns"
+    ],
+    "maps-and-sets": [
+      "apex/apex-collections-patterns"
     ],
     "marketing-architecture": [
       "architect/marketing-cloud-vs-mcae-selection"
@@ -7436,6 +7541,7 @@
     ],
     "monitoring": [
       "admin/batch-job-scheduling-and-monitoring",
+      "apex/apex-limits-monitoring",
       "apex/custom-logging-and-monitoring",
       "architect/org-limits-monitoring",
       "devops/sfdx-hardis-integration",
@@ -7566,6 +7672,7 @@
     "named-credentials": [
       "admin/connected-apps-and-auth",
       "agentforce/model-builder-and-byollm",
+      "apex/apex-named-credentials-patterns",
       "apex/callouts-and-http-integrations",
       "architect/integration-security-architecture",
       "architect/multi-org-strategy",
@@ -7729,6 +7836,7 @@
       "admin/einstein-activity-capture-setup",
       "admin/integration-admin-connected-apps",
       "agentforce/salesforce-mcp-server-setup",
+      "apex/apex-named-credentials-patterns",
       "apex/mcae-pardot-api",
       "architect/ai-agent-org-integration-architecture",
       "architect/experience-cloud-integration-patterns",
@@ -8219,8 +8327,14 @@
     "parent-child-summary": [
       "data/roll-up-summary-alternatives"
     ],
+    "parent-to-child": [
+      "apex/apex-soql-relationship-queries"
+    ],
     "partial-soft-credit": [
       "admin/soft-credits-and-matching"
+    ],
+    "partial-success": [
+      "apex/apex-dml-patterns"
     ],
     "participant-group": [
       "apex/fsc-compliant-sharing-api"
@@ -8557,6 +8671,9 @@
     ],
     "polygon": [
       "data/fsl-territory-data-setup"
+    ],
+    "polymorphic": [
+      "apex/apex-soql-relationship-queries"
     ],
     "polymorphic-lookups": [
       "admin/standard-object-quirks"
@@ -8973,6 +9090,7 @@
     ],
     "queueable": [
       "apex/apex-queueable-patterns",
+      "apex/apex-transaction-finalizers",
       "apex/async-apex",
       "apex/governor-limits",
       "apex/long-running-process-orchestration",
@@ -9222,6 +9340,7 @@
       "admin/fsc-relationship-groups"
     ],
     "relationship-queries": [
+      "apex/apex-soql-relationship-queries",
       "apex/soql-fundamentals"
     ],
     "relationships": [
@@ -9508,6 +9627,7 @@
     ],
     "rollup": [
       "admin/financial-account-setup",
+      "apex/apex-aggregate-queries",
       "apex/fsc-financial-calculations",
       "apex/opportunity-trigger-patterns"
     ],
@@ -9733,8 +9853,14 @@
     "save-and-resume": [
       "omnistudio/omniscript-design-patterns"
     ],
+    "savepoint": [
+      "apex/apex-dml-patterns"
+    ],
     "savepoints": [
       "apex/governor-limit-recovery-patterns"
+    ],
+    "saveresult": [
+      "apex/apex-dml-patterns"
     ],
     "sbaa": [
       "admin/cpq-approval-workflows",
@@ -10034,6 +10160,9 @@
     ],
     "sequenceNumber": [
       "data/cdc-data-sync-patterns"
+    ],
+    "serialization": [
+      "apex/apex-json-serialization"
     ],
     "service-account": [
       "security/api-only-user-hardening"
@@ -10465,6 +10594,8 @@
     ],
     "soql": [
       "admin/salesforce-object-queryability",
+      "apex/apex-aggregate-queries",
+      "apex/apex-soql-relationship-queries",
       "apex/einstein-activity-capture-api",
       "apex/formula-field-performance-and-limits",
       "apex/soql-fundamentals",
@@ -10682,6 +10813,9 @@
     ],
     "subflows": [
       "flow/subflows-and-reusability"
+    ],
+    "subquery": [
+      "apex/apex-soql-relationship-queries"
     ],
     "subrequest": [
       "integration/composite-api-patterns"
@@ -11045,6 +11179,7 @@
       "apex/marketing-cloud-api"
     ],
     "triggers": [
+      "apex/apex-collections-patterns",
       "apex/order-of-execution-deep-dive",
       "apex/trigger-framework"
     ],
@@ -11080,6 +11215,9 @@
     ],
     "turbo-extract": [
       "omnistudio/dataraptor-patterns"
+    ],
+    "typeof": [
+      "apex/apex-soql-relationship-queries"
     ],
     "uat": [
       "admin/uat-and-acceptance-criteria"

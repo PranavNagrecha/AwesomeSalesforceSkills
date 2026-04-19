@@ -114,7 +114,7 @@
     "fd315f4b1dc3ab6016e8",
     "ff6b3081f317a7ef462c"
   ],
-  "content_hash": "a2242811f870c42c05837f63af94c3d158ed244a14dfca0836261aac46bf07b2",
+  "content_hash": "ca1b822a18e28b8d46586fd2e7d534798bd2250c224a4fb8a2a4067d0a45052e",
   "dependencies": [],
   "description": "Use when learning, designing, or explaining Salesforce Reports and Dashboards from first principles \u2014 report types, custom report types, groupings, bucket fields, summary formulas, charts, dashboard components, dynamic dashboards, report subscriptions, and folder permissions. Triggers: 'how do I build a report', 'what report type should I use', 'set up a dashboard', 'joined report limits', 'bucket field vs formula', 'dynamic dashboard running user'. NOT for CRM Analytics (use crm-analytics-* skills). NOT for Einstein Discovery predictive analytics. NOT for troubleshooting missing report data caused by sharing model issues (use admin/reports-and-dashboards for that).",
   "file_location": "skills/admin/reports-and-dashboards-fundamentals",
@@ -151,6 +151,7 @@
     "skills/admin/reports-and-dashboards-fundamentals/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/reports-and-dashboards-fundamentals/scripts/__pycache__/check_reports_and_dashboards_fundamentals.cpython-314.pyc",
     "skills/admin/reports-and-dashboards-fundamentals/scripts/check_reports_and_dashboards_fundamentals.py"
   ],
   "tags": [

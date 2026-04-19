@@ -72,7 +72,7 @@
     "fb8043fb9dd78fbfa890",
     "fdad7b3d551ba0e35a08"
   ],
-  "content_hash": "b8ab73b6f0e1e0dfa7cec8605fe52b0a161fbb458734a3b8060a7dd1275f6f8e",
+  "content_hash": "2a8b8a44cb882690aa45b4e872d8004d1a0cd6d0eb685174b21ca1034d1195a0",
   "dependencies": [
     "apex/fsl-apex-extensions"
   ],
@@ -107,6 +107,7 @@
     "skills/apex/fsl-scheduling-api/references/well-architected.md"
   ],
   "scripts": [
+    "skills/apex/fsl-scheduling-api/scripts/__pycache__/check_fsl_scheduling_api.cpython-314.pyc",
     "skills/apex/fsl-scheduling-api/scripts/check_fsl_scheduling_api.py"
   ],
   "tags": [

@@ -106,7 +106,7 @@
     "fbfde93aad1f1d99d7a3",
     "fdcf8eaa21100748fe77"
   ],
-  "content_hash": "3df528b884e5641c0818194d5bb7814d19fc13e17b7658d7e21f91bca0688c3c",
+  "content_hash": "ce5df891be5e6ddb235f9300a86741f0db991584a96f1bbbd60b7a02acd7899a",
   "dependencies": [],
   "description": "Territory2 API in Apex: programmatic territory member management (UserTerritory2Association, ObjectTerritory2Association), bulk assignment DML, and SOAP-based rule evaluation. NOT for ETM admin setup, territory model design, declarative assignment rules, or Opportunity territory configuration (use admin/enterprise-territory-management).",
   "file_location": "skills/apex/territory-api-and-assignment",
@@ -138,6 +138,7 @@
     "skills/apex/territory-api-and-assignment/references/well-architected.md"
   ],
   "scripts": [
+    "skills/apex/territory-api-and-assignment/scripts/__pycache__/check_territory_api_and_assignment.cpython-314.pyc",
     "skills/apex/territory-api-and-assignment/scripts/check_territory_api_and_assignment.py"
   ],
   "tags": [

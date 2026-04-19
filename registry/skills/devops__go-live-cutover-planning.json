@@ -83,7 +83,7 @@
     "f638768dddbd7a0a4907",
     "f9ab00fa8855dd6f96ac"
   ],
-  "content_hash": "9281980901c6ef4ac7f8b69b8303b738cb58ff5a374e7c61c05acbf7f75d8cf8",
+  "content_hash": "14dc426e2752ad42846de428e139cd782711258c8fd1ecadd94d2340f22bc5e3",
   "dependencies": [],
   "description": "Use when planning, sequencing, or executing the final cutover to production for a Salesforce implementation or major release. Covers cutover runbooks, code freeze enforcement, mock deployments, go/no-go decision gates, validation deploy timing, quick deploy windows, hypercare scheduling, and rollback trigger definitions. NOT for deployment mechanics (use devops/post-deployment-validation). NOT for release calendar or versioning strategy (use devops/release-management). NOT for writing smoke tests (use devops/post-deployment-validation).",
   "file_location": "skills/devops/go-live-cutover-planning",
@@ -116,6 +116,7 @@
     "skills/devops/go-live-cutover-planning/references/well-architected.md"
   ],
   "scripts": [
+    "skills/devops/go-live-cutover-planning/scripts/__pycache__/check_go_live_cutover_planning.cpython-314.pyc",
     "skills/devops/go-live-cutover-planning/scripts/check_go_live_cutover_planning.py"
   ],
   "tags": [

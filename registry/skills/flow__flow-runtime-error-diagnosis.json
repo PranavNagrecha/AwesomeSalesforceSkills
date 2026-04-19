@@ -70,7 +70,7 @@
     "fc221e5b8c25bd56ee3a",
     "feff36a6068d4b6b9763"
   ],
-  "content_hash": "8f90dd74b24ca1defcb2e286224df6a5074cc68765732ae9f9cc1bb137e01709",
+  "content_hash": "7d7658a9813def6b00d4319992b0bdd9537dfebfd9a8823bc6b74755bfa23dbe",
   "dependencies": [],
   "description": "Use when a Salesforce Flow throws a runtime error, sends an unhandled fault email, or produces unexpected results in production or sandbox. Triggers: 'Flow error email', 'Flow failed at element', 'null reference in Flow', 'Flow SOQL limit error', 'Flow DML in loop error'. NOT for Flow design or building new flows (use record-triggered-flow-patterns or other flow/* skills), NOT for Flow debug log setup (use flow-debugging).",
   "file_location": "skills/flow/flow-runtime-error-diagnosis",
@@ -101,6 +101,7 @@
     "skills/flow/flow-runtime-error-diagnosis/references/well-architected.md"
   ],
   "scripts": [
+    "skills/flow/flow-runtime-error-diagnosis/scripts/__pycache__/check_flow_runtime_error_diagnosis.cpython-314.pyc",
     "skills/flow/flow-runtime-error-diagnosis/scripts/check_flow_runtime_error_diagnosis.py"
   ],
   "tags": [

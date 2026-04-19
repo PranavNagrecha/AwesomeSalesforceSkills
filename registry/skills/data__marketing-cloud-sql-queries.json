@@ -72,7 +72,7 @@
     "f332ffd9d7b0c91085d3",
     "fba0c9535f5eba05212f"
   ],
-  "content_hash": "0150ca9a3b5a56630028a56bf3d4eca563c5a2e3dcf9492c0bd3fd67e551ba80",
+  "content_hash": "f9e0f808e3cfd36a7d0a5e0b721005242f226553fc78dfe2adc578570693e0c3",
   "dependencies": [],
   "description": "Use this skill when writing, debugging, or optimizing SQL Query Activities in Salesforce Marketing Cloud Automation Studio. Trigger keywords: SFMC SQL, Marketing Cloud query activity, system data views, _Sent _Open _Click, Automation Studio SQL, SELECT INTO data extension. NOT for SOQL (Salesforce CRM queries against sObjects), NOT for standard SQL databases, NOT for Data Cloud ANSI SQL, NOT for Query Studio as a standalone topic.",
   "file_location": "skills/data/marketing-cloud-sql-queries",
@@ -105,6 +105,7 @@
     "skills/data/marketing-cloud-sql-queries/references/well-architected.md"
   ],
   "scripts": [
+    "skills/data/marketing-cloud-sql-queries/scripts/__pycache__/check_marketing_cloud_sql_queries.cpython-314.pyc",
     "skills/data/marketing-cloud-sql-queries/scripts/check_marketing_cloud_sql_queries.py"
   ],
   "tags": [

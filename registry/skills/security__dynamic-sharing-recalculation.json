@@ -28,7 +28,7 @@
     "e61a8b0b4b2fe8d3a312",
     "ec173dabb4d4626a0a08"
   ],
-  "content_hash": "bf09d75ea1f2784d01d8dd6d4ec9b761dcb28ee3e30addf5362571c03cb23a88",
+  "content_hash": "2a3e26df3d3bcf357107c9ed83576ae61d9494174697a352afd140c7644a4412",
   "dependencies": [],
   "description": "Force or orchestrate sharing recalculation after bulk data loads, rule changes, or user/role reorgs so row access catches up with policy. NOT for designing new sharing rules \u2014 use sharing-selection tree.",
   "file_location": "skills/security/dynamic-sharing-recalculation",
@@ -57,6 +57,7 @@
     "skills/security/dynamic-sharing-recalculation/references/well-architected.md"
   ],
   "scripts": [
+    "skills/security/dynamic-sharing-recalculation/scripts/__pycache__/check_dynamic_sharing_recalculation.cpython-314.pyc",
     "skills/security/dynamic-sharing-recalculation/scripts/check_dynamic_sharing_recalculation.py"
   ],
   "tags": [

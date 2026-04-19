@@ -80,7 +80,7 @@
     "fd647acafa39554283b4",
     "fefac2a9a21dd6228d80"
   ],
-  "content_hash": "b3fcf7fa8ed1374cc8eabe15b2669ffb35cc85a2a0047ffa43d07b8c5ad38bfb",
+  "content_hash": "c85722f524103d93d6de261e8849261f4092e4c7ea629218e101b8cbd1d4ad59",
   "dependencies": [],
   "description": "Configuring Salesforce lead management and conversion: lead settings, web-to-lead, conversion field mapping, lead queues, auto-response rules, lead processes. Use when setting up lead capture, routing, or conversion for Sales Cloud. Trigger keywords: web-to-lead, lead conversion, lead field mapping, lead settings, lead process, lead queue, lead auto-response. NOT for lead assignment rule logic (use assignment-rules). NOT for duplicate rule configuration (use data-quality-and-governance).",
   "file_location": "skills/admin/lead-management-and-conversion",
@@ -115,6 +115,7 @@
     "skills/admin/lead-management-and-conversion/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/lead-management-and-conversion/scripts/__pycache__/check_lead_management_and_conversion.cpython-314.pyc",
     "skills/admin/lead-management-and-conversion/scripts/check_lead_management_and_conversion.py"
   ],
   "tags": [

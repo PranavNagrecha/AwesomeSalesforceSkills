@@ -28,7 +28,7 @@
     "ec4af10c8b829d3b9a2e",
     "ff4ca98b50cb45925d4b"
   ],
-  "content_hash": "de7e27617f6c08deb0c1d89b06c90791954daf007519b05466bf577263676eec",
+  "content_hash": "0eb5cca09510b0b883004dded5d1200c881bcdc50d81ae04ce75dc0a1c4a4417",
   "dependencies": [],
   "description": "Isolate component errors so one failure does not blank an entire page using errorCallback and graceful fallbacks. NOT for server-side Apex exception design.",
   "file_location": "skills/lwc/lwc-error-boundaries",
@@ -54,6 +54,7 @@
     "skills/lwc/lwc-error-boundaries/references/well-architected.md"
   ],
   "scripts": [
+    "skills/lwc/lwc-error-boundaries/scripts/__pycache__/check_lwc_error_boundaries.cpython-314.pyc",
     "skills/lwc/lwc-error-boundaries/scripts/check_lwc_error_boundaries.py"
   ],
   "tags": [

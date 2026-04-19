@@ -98,7 +98,7 @@
     "f90dad7a006f518dff9a",
     "f9cbc03eaf6c551866ba"
   ],
-  "content_hash": "927a7a0940a2e51382c1c82497a96f285bb84d636840af789b702099486a3103",
+  "content_hash": "ba4ad53f03af8471ed413aa56d3c19f43ba55bcd6ff7af614b02a346a783dc7c",
   "dependencies": [],
   "description": "Use when building, configuring, or troubleshooting email sends in Marketing Cloud Email Studio and Content Builder. Triggers: 'dynamic content', 'send classification', 'A/B test email', 'Content Builder template', 'triggered send', 'suppression list', 'Commercial vs Transactional'. NOT for MCAE (Pardot) email, SMS/push channel setup, or Journey Builder orchestration design.",
   "file_location": "skills/admin/email-studio-administration",
@@ -135,6 +135,7 @@
     "skills/admin/email-studio-administration/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/email-studio-administration/scripts/__pycache__/check_email_studio_administration.cpython-314.pyc",
     "skills/admin/email-studio-administration/scripts/check_email_studio_administration.py"
   ],
   "tags": [

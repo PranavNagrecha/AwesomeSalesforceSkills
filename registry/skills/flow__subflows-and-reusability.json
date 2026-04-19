@@ -57,7 +57,7 @@
     "eb6ee6c4618a44035559",
     "f3ef0f85a158725361f8"
   ],
-  "content_hash": "1eabec87856b07b9287d020bdabb3c52312c1bd6f13bf418a8928d76220fcbba",
+  "content_hash": "c22f93c9ad75f0b098d84ae83ba77622dadd1feed5fbaa99950ba9d44a8f4271",
   "dependencies": [],
   "description": "Use when extracting reusable Flow logic into subflows, defining input and output variables, keeping parent flows maintainable, and sharing common automation contracts across multiple flows. Triggers: 'reuse this flow logic', 'how should subflow variables work', 'too much duplicated flow logic', 'subflow contract design'. NOT for Apex-called Flow execution direction or Flow Orchestration process design.",
   "file_location": "skills/flow/subflows-and-reusability",
@@ -85,6 +85,7 @@
     "skills/flow/subflows-and-reusability/references/well-architected.md"
   ],
   "scripts": [
+    "skills/flow/subflows-and-reusability/scripts/__pycache__/check_subflows_and_reusability.cpython-314.pyc",
     "skills/flow/subflows-and-reusability/scripts/check_subflows_and_reusability.py"
   ],
   "tags": [

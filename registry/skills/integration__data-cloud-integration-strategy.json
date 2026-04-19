@@ -56,7 +56,7 @@
     "fb84bed395aec9777558",
     "fc43a6d1bc529eaf69f2"
   ],
-  "content_hash": "8a10a26c4e3337b86442d3a89ad29cdb867f39c5a3b235b3776a0bf47816a2ef",
+  "content_hash": "e79c5c242fbf0389d8c75403d5b2bf96743d605468bbbc5ed84f45793309f979",
   "dependencies": [],
   "description": "Use this skill when designing or troubleshooting the data pipeline strategy for connecting source systems to Data Cloud \u2014 including ingestion API pattern selection (streaming vs. batch), connector type decisions, DSO-to-DLO-to-DMO pipeline lag, and lakehouse federation patterns. Triggers on: Data Cloud ingestion API setup, streaming vs batch connector decision, Data Cloud connector types, MuleSoft Direct for Data Cloud, data pipeline lag for segmentation. NOT for standard Salesforce integration patterns (use integration-patterns skill), not for querying Data Cloud once data is ingested (use data-cloud-query-api), not for configuring standard admin connectors through the UI only.",
   "file_location": "skills/integration/data-cloud-integration-strategy",
@@ -87,6 +87,7 @@
     "skills/integration/data-cloud-integration-strategy/references/well-architected.md"
   ],
   "scripts": [
+    "skills/integration/data-cloud-integration-strategy/scripts/__pycache__/check_data_cloud_integration_strategy.cpython-314.pyc",
     "skills/integration/data-cloud-integration-strategy/scripts/check_data_cloud_integration_strategy.py"
   ],
   "tags": [

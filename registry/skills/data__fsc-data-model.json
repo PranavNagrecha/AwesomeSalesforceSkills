@@ -93,7 +93,7 @@
     "fc2be24e9979a4fd0913",
     "ff074dcae5a9c97e316e"
   ],
-  "content_hash": "7f4cf900c388189d3f5a9a2a79e3a57618ce719ba5e888064e058c377cf0fcbd",
+  "content_hash": "fb453d2b1f7840c21a3a9e7450a940d324b98c627bc7825cd98401b86048be97",
   "dependencies": [
     "data/person-accounts"
   ],
@@ -127,6 +127,7 @@
     "skills/data/fsc-data-model/references/well-architected.md"
   ],
   "scripts": [
+    "skills/data/fsc-data-model/scripts/__pycache__/check_fsc_data_model.cpython-314.pyc",
     "skills/data/fsc-data-model/scripts/check_fsc_data_model.py"
   ],
   "tags": [

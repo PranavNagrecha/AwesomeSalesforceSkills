@@ -54,7 +54,7 @@
     "fd6d49b079e3c520b599",
     "ff374d951e0006da58d0"
   ],
-  "content_hash": "f04d6297ba4416e5b4f33c0556d4f4af7321faa6eed4df00b7f27d25bdbb891f",
+  "content_hash": "e0db4ec02d988c71c35bcf18fda6fa830d69812eb87f93358f41edb5b91284fb",
   "dependencies": [],
   "description": "Use when designing or implementing a custom logging framework in Apex: log sObject schema, log level gating, retention policies, batch purge jobs, and forwarding logs to external monitoring systems (Splunk, Datadog, etc.). NOT for built-in debug logs or Developer Console (use debug-logs-and-developer-console), NOT for exception capture and error propagation (use error-handling-framework), NOT for Event Monitoring (use security skills).",
   "file_location": "skills/apex/custom-logging-and-monitoring",
@@ -85,6 +85,7 @@
     "skills/apex/custom-logging-and-monitoring/references/well-architected.md"
   ],
   "scripts": [
+    "skills/apex/custom-logging-and-monitoring/scripts/__pycache__/check_custom_logging_and_monitoring.cpython-314.pyc",
     "skills/apex/custom-logging-and-monitoring/scripts/check_custom_logging_and_monitoring.py"
   ],
   "tags": [

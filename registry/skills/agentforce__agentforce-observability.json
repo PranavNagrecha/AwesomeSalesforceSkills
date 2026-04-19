@@ -55,7 +55,7 @@
     "f542542f0a8135af1291",
     "f8f15be5233435202db2"
   ],
-  "content_hash": "edd2e0d047d33f3418baff071f65cfce26ae69506a5d11bf3676e50456c6f42f",
+  "content_hash": "50855c2a07eca238dbaeff9431ec75bd51899196cebef5db3bc5fd18454fc70b",
   "dependencies": [],
   "description": "Use when monitoring Agentforce agent sessions, analyzing conversation logs, measuring deflection rates, or diagnosing agent performance issues. Triggers: 'agentforce session analytics', 'how to query agent conversation data', 'monitor agentforce agent effectiveness', 'agent deflection rate', 'utterance analysis agentforce'. NOT for Einstein Trust Layer audit logging (use einstein-trust-layer), NOT for agent topic design or guardrails (use agent-topic-design or agentforce-guardrails), NOT for LLM prompt debugging (this skill covers session metrics and conversation trace, not prompt engineering).",
   "file_location": "skills/agentforce/agentforce-observability",
@@ -84,6 +84,7 @@
     "skills/agentforce/agentforce-observability/references/well-architected.md"
   ],
   "scripts": [
+    "skills/agentforce/agentforce-observability/scripts/__pycache__/check_agentforce_observability.cpython-314.pyc",
     "skills/agentforce/agentforce-observability/scripts/check_agentforce_observability.py"
   ],
   "tags": [

@@ -115,7 +115,7 @@
     "fcff24ce8dc578648e80",
     "fe2b2a770dd01611e701"
   ],
-  "content_hash": "88c393fcf7a5291f1a325655f7b0b8d71551b4a2950afc5c5217556907ae9b89",
+  "content_hash": "f2d2eef8bb85ccaf867dbd7f75c3dd785282a61f867a5842779debaf5304cff2",
   "dependencies": [
     "agentforce/agent-channel-deployment"
   ],
@@ -154,6 +154,7 @@
     "skills/agentforce/agentforce-custom-channel-dev/references/well-architected.md"
   ],
   "scripts": [
+    "skills/agentforce/agentforce-custom-channel-dev/scripts/__pycache__/check_agentforce_custom_channel_dev.cpython-314.pyc",
     "skills/agentforce/agentforce-custom-channel-dev/scripts/check_agentforce_custom_channel_dev.py"
   ],
   "tags": [

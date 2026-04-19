@@ -97,7 +97,7 @@
     "fb5cc9b5dc5e64ff3e3d",
     "fc6e8f23c17f1251008e"
   ],
-  "content_hash": "b0e42c37d44505f0643fefd55afe20ed57d03278c4db1e1f27cd37845369b2fc",
+  "content_hash": "36824d1a522f215b9c6a70248d2181f06ec2926b1ecf436b063f17ca6fe65dfc",
   "dependencies": [
     "products-and-pricebooks"
   ],
@@ -134,6 +134,7 @@
     "skills/admin/cpq-product-catalog-setup/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/cpq-product-catalog-setup/scripts/__pycache__/check_cpq_product_catalog_setup.cpython-314.pyc",
     "skills/admin/cpq-product-catalog-setup/scripts/check_cpq_product_catalog_setup.py"
   ],
   "tags": [

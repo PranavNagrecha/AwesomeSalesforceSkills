@@ -115,7 +115,7 @@
     "fc226298924253288177",
     "fec2b1df20ebcb10f473"
   ],
-  "content_hash": "42c7d64ff11d21bce71ef79b318bfb2c4411e993cabab825a79f4216a0dc2138",
+  "content_hash": "a22360fa6306f1aa9b952dd94187ed2e1e932dbbed69a4a777d035defc764e46",
   "dependencies": [],
   "description": "Use when designing or evaluating a Data Cloud implementation architecture \u2014 covering data lake strategy (DSO/DLO/DMO layers), identity resolution rule design, activation target configuration, and segmentation strategy. Trigger phrases: Data Cloud architecture design, identity resolution strategy, activation target setup, data lakehouse layers, unified profile design, Data Cloud segment activation, DMO mapping strategy, golden profile design. NOT for individual data stream ingestion setup, not for Data Cloud licensing questions, not for Marketing Cloud journey builder, not for individual calculated insight formulas.",
   "file_location": "skills/architect/data-cloud-architecture",
@@ -151,6 +151,7 @@
     "skills/architect/data-cloud-architecture/references/well-architected.md"
   ],
   "scripts": [
+    "skills/architect/data-cloud-architecture/scripts/__pycache__/check_data_cloud_architecture.cpython-314.pyc",
     "skills/architect/data-cloud-architecture/scripts/check_data_cloud_architecture.py"
   ],
   "tags": [

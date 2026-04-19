@@ -94,7 +94,7 @@
     "fd4516128d99e1f3564a",
     "fd5efd6e3f5030cfd5d3"
   ],
-  "content_hash": "8ce18f6632f7d96378ec5816c29eeda46779712fd491a44db99788df78fdef7b",
+  "content_hash": "3b0ac7bee7f64d5ea1cef08346b407c59f1cb43cc324c7168c03de0f08a8a1df",
   "dependencies": [
     "admin/care-plan-configuration",
     "apex/apex-security-patterns"
@@ -130,6 +130,7 @@
     "skills/apex/health-cloud-apex-extensions/references/well-architected.md"
   ],
   "scripts": [
+    "skills/apex/health-cloud-apex-extensions/scripts/__pycache__/check_health_cloud_apex_extensions.cpython-314.pyc",
     "skills/apex/health-cloud-apex-extensions/scripts/check_health_cloud_apex_extensions.py"
   ],
   "tags": [

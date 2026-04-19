@@ -109,7 +109,7 @@
     "fdf9ebd2919e5410427f",
     "fe0684b4ccf9ff70529e"
   ],
-  "content_hash": "804e53abc458d363283c5f3da98454b1332f911ea5bc298daeaa2ce21c5298b2",
+  "content_hash": "85f7d1e6a7e36fcca9f9d97d30d04d1213312e29c4b76b9d4b50e5ea2afb18c7",
   "dependencies": [
     "contract-and-renewal-management"
   ],
@@ -146,6 +146,7 @@
     "skills/admin/subscription-lifecycle-requirements/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/subscription-lifecycle-requirements/scripts/__pycache__/check_subscription_lifecycle_requirements.cpython-314.pyc",
     "skills/admin/subscription-lifecycle-requirements/scripts/check_subscription_lifecycle_requirements.py"
   ],
   "tags": [

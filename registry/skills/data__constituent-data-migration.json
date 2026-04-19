@@ -75,7 +75,7 @@
     "ff9a99374989fb310568",
     "ffce86e1384584c0ccb4"
   ],
-  "content_hash": "d2c06156261a44402a9df7a8836ef70fce398438eea0bfd3eb6a2d4e7f3a8642",
+  "content_hash": "2ad3c4710a3f1a2ce52c3b2bb2d64b7d28b9500a34c2926a24c9b7aff4aeaaf9",
   "dependencies": [],
   "description": "Use this skill when migrating constituent records (Contacts, Household Accounts, relationships, addresses, donations) into an NPSP org using the NPSP Data Importer. Triggers: importing contacts into NPSP, migrating nonprofit constituents, loading household data, bulk contact upload NPSP, constituent ETL. NOT for standard contact import, Nonprofit Cloud (NPC) migration, or generic Data Loader bulk loads.",
   "file_location": "skills/data/constituent-data-migration",
@@ -106,6 +106,7 @@
     "skills/data/constituent-data-migration/references/well-architected.md"
   ],
   "scripts": [
+    "skills/data/constituent-data-migration/scripts/__pycache__/check_constituent_data_migration.cpython-314.pyc",
     "skills/data/constituent-data-migration/scripts/check_constituent_data_migration.py"
   ],
   "tags": [

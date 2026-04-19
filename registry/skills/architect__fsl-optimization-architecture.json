@@ -57,7 +57,7 @@
     "ff3c4f91fb5ffd8432a4",
     "ff90c993aedb7b2131e6"
   ],
-  "content_hash": "7ed0843d482e1798ba9b10e4094e7fc7aa4e4720b3df8e26e9e257580607f75e",
+  "content_hash": "212e71109fdc59347455036aa6b8197bc982517d2ce99e402e98f739e4ec77d4",
   "dependencies": [
     "architect/fsl-multi-region-architecture"
   ],
@@ -91,6 +91,7 @@
     "skills/architect/fsl-optimization-architecture/references/well-architected.md"
   ],
   "scripts": [
+    "skills/architect/fsl-optimization-architecture/scripts/__pycache__/check_fsl_optimization_architecture.cpython-314.pyc",
     "skills/architect/fsl-optimization-architecture/scripts/check_fsl_optimization_architecture.py"
   ],
   "tags": [

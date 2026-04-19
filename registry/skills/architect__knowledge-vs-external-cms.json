@@ -68,7 +68,7 @@
     "fa58e0d2d420b6db5265",
     "fd794c4eafa8e6e6601b"
   ],
-  "content_hash": "6e3cb9609b2efc8bd51c70c5199a3652e6d84a659183a239291b991cff399511",
+  "content_hash": "ab1e6f23512eaa979522cc1fb2a62785db02cad0849b69dcdc9deb29158c58ba",
   "dependencies": [],
   "description": "Use when deciding between Salesforce Knowledge, an external CMS (Contentful, WordPress, AEM), or a hybrid content strategy. Triggers: 'should we use Salesforce Knowledge or a CMS', 'content federation across Salesforce and headless CMS', 'CMS Connect for Experience Cloud', 'agent-facing vs customer-facing content architecture'. NOT for CMS platform implementation, WordPress theme development, or AEM component authoring.",
   "file_location": "skills/architect/knowledge-vs-external-cms",
@@ -97,6 +97,7 @@
     "skills/architect/knowledge-vs-external-cms/references/well-architected.md"
   ],
   "scripts": [
+    "skills/architect/knowledge-vs-external-cms/scripts/__pycache__/check_knowledge_vs_external_cms.cpython-314.pyc",
     "skills/architect/knowledge-vs-external-cms/scripts/check_knowledge_vs_external_cms.py"
   ],
   "tags": [

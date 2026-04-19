@@ -83,7 +83,7 @@
     "fd963575edf6cc24e599",
     "ffde0a4783004db08c33"
   ],
-  "content_hash": "e4b7c3be002424e30ffb7a4eed5b2f973feb4cd8e8268420433ea5648a5e4069",
+  "content_hash": "1c5b9062a9f686fa2e86fb78c09eb6146bd2c0df2f062cc30fdfadae3a7a58db",
   "dependencies": [],
   "description": "Use this skill when editing CRM Analytics dashboard JSON directly to implement advanced bindings, custom SAQL/SOQL step queries, layout changes, step parameters, or cross-widget interactions. Trigger keywords: dashboard JSON, SAQL step, binding syntax, mustache binding, dashboard REST API, widget layout, step limit, datasetId, datasetVersionId. NOT for standard dashboard builder UI configuration, chart type selection, or dataset design.",
   "file_location": "skills/admin/analytics-dashboard-json",
@@ -113,6 +113,7 @@
     "skills/admin/analytics-dashboard-json/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/analytics-dashboard-json/scripts/__pycache__/check_analytics_dashboard_json.cpython-314.pyc",
     "skills/admin/analytics-dashboard-json/scripts/check_analytics_dashboard_json.py"
   ],
   "tags": [

@@ -77,7 +77,7 @@
     "f7ff60e003a1e1264dc9",
     "fcbe0b4caa29349419d8"
   ],
-  "content_hash": "7d2e7dbd964dafe7a01311243ee775d7ec10d2e4a36db8926bba998ef2055384",
+  "content_hash": "0f7935e00be356287217a76f38c09ad189e066917bf5367393956b64476f70a1",
   "dependencies": [],
   "description": "Use when creating a new custom field on any Salesforce object: choosing field type, setting API name, configuring Field-Level Security, adding to page layouts, and deploying. Triggers: 'add a field', 'new custom field', 'what field type should I use', 'FLS not working', 'field not showing on page layout'. NOT for formula field logic (use formula-fields skill), picklist value set management (use picklist-and-value-sets skill), or object creation decisions (use object-creation-and-design skill).",
   "file_location": "skills/admin/custom-field-creation",
@@ -110,6 +110,7 @@
     "skills/admin/custom-field-creation/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/custom-field-creation/scripts/__pycache__/check_custom_field_creation.cpython-314.pyc",
     "skills/admin/custom-field-creation/scripts/check_custom_field_creation.py"
   ],
   "tags": [

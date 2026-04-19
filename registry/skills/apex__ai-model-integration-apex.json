@@ -99,7 +99,7 @@
     "f9dac54d2e2f34b98756",
     "fb1e14ec23fa4e9387ef"
   ],
-  "content_hash": "1fc0dbdb3525056aee8bb7be1753c9d452ac2e92d374d059128d3f12e2675383",
+  "content_hash": "d059e9365301121203beae7d8de2ff5f6ecaaeea297d01d8c1652f224b9dcea0",
   "dependencies": [
     "apex/platform-cache",
     "apex/apex-queueable-patterns",
@@ -136,6 +136,7 @@
     "skills/apex/ai-model-integration-apex/references/well-architected.md"
   ],
   "scripts": [
+    "skills/apex/ai-model-integration-apex/scripts/__pycache__/check_ai_model_integration_apex.cpython-314.pyc",
     "skills/apex/ai-model-integration-apex/scripts/check_ai_model_integration_apex.py"
   ],
   "tags": [

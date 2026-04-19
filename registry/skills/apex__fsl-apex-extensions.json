@@ -119,7 +119,7 @@
     "fdcc95d7228222908207",
     "fed3cb9493576d901d8a"
   ],
-  "content_hash": "0fe142bed5cca278204b5625b6a07d5bd97220d39ffb9cd28898808947a3767d",
+  "content_hash": "d2763b737cf326d9c7eaef1e55945d0b72b66e09e63d30d24731573bf5858723",
   "dependencies": [
     "admin/fsl-scheduling-policies",
     "admin/fsl-service-territory-setup",
@@ -159,6 +159,8 @@
     "skills/apex/fsl-apex-extensions/references/well-architected.md"
   ],
   "scripts": [
+    "skills/apex/fsl-apex-extensions/scripts/__pycache__/check_fsl_apex.cpython-314.pyc",
+    "skills/apex/fsl-apex-extensions/scripts/__pycache__/check_fsl_apex_extensions.cpython-314.pyc",
     "skills/apex/fsl-apex-extensions/scripts/check_fsl_apex.py",
     "skills/apex/fsl-apex-extensions/scripts/check_fsl_apex_extensions.py"
   ],

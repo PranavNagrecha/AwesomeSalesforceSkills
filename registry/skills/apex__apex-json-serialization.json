@@ -1,0 +1,102 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "0387aef2d450f6bfa238",
+    "0707a821c370a39c2a6e",
+    "0fa30ad2df1598513d98",
+    "1122ced7346e3898b7c1",
+    "1203e34c5ee00362e2a6",
+    "1a9e1d64c92e0c1e5ec3",
+    "219cbe0f6135056180b3",
+    "2a8af845b171ceb64b24",
+    "312272ee115225b14089",
+    "331ff970c859ae20935e",
+    "333e66eea510f5ae5672",
+    "36cc4e9141db1b8fce61",
+    "3d8a4df961a847506df3",
+    "4096d5c03db2d4908c02",
+    "416bacde502c3d0744db",
+    "4224a343d6f3eeab924a",
+    "4854b2bf1907391792f2",
+    "4c1e7eeafd477931cc40",
+    "4f7765470b33a4856542",
+    "571f33756a71a93acb71",
+    "5dd290c80a8024fbaf4b",
+    "611de8dbd858c5f1fcc0",
+    "638c0fb30e52355c58de",
+    "684610ffedeb8dcd7678",
+    "77c3115d9e30c2f0b050",
+    "79fbdece69510ea5d44d",
+    "7e77613839ec1029c5a4",
+    "7ff683bb3a624ca087ff",
+    "80bb69b2666d61def4ec",
+    "a111b735b9c499cd0a7e",
+    "a2d04a8a37c2ac131de6",
+    "a6b8bdf839e34f62a8ac",
+    "a9d4f21fb558d9c046a8",
+    "b1d4861688b36bc3ec45",
+    "b508a8c3ccc325c88f7f",
+    "b75f54dde7e40eb18ffc",
+    "c560acdd3c450fa7ce3d",
+    "c5f19acbfef93c30d58e",
+    "c834cbdcf1214359a72f",
+    "d12e951029c3b978a262",
+    "d392092075f67d3e78c6",
+    "d39f4f7d8627bb049d9d",
+    "d52efad29cc9bdd8cbef",
+    "d94584d0072bcb4c4e5a",
+    "e7af34ebfa0e9920b4d6",
+    "e7c5a94b6b1b5988ca10",
+    "ef3be5f5fe4f0c7d6012",
+    "f44b1433394422147677",
+    "fca1fcf4ba1f920d32e2",
+    "fe5c1cd5ba1a970d0667",
+    "fe9a6a0727fee3ad26f4"
+  ],
+  "content_hash": "8f114787546f5e95eafcdf4fcc2c17ea62056f1cd2f0449e45e162358761ba72",
+  "dependencies": [],
+  "description": "Use when serializing Apex objects to JSON strings or deserializing JSON responses into Apex types \u2014 especially for callout payloads, integration parsing, and controlling null field output. Trigger keywords: 'suppress null fields JSON Apex', 'deserialize JSON into Apex class', 'JSON parse unknown shape', 'TypeException JSON deserialize', 'JSONGenerator streaming'. NOT for REST endpoint response shaping (use apex-rest-services), NOT for Apex remote actions returning JSON to LWC.",
+  "file_location": "skills/apex/apex-json-serialization",
+  "id": "apex/apex-json-serialization",
+  "inputs": [
+    "Apex object graph to serialize, or raw JSON string to deserialize",
+    "Expected output type (typed Apex class or untyped Map)",
+    "Whether null fields should be suppressed in output"
+  ],
+  "name": "apex-json-serialization",
+  "official_sources": [
+    "Apex Developer Guide \u2014 JSON Support: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_methods_system_json_overview.htm",
+    "Apex Reference Guide \u2014 JSON Class: https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_Json.htm",
+    "Apex Reference Guide \u2014 JSONGenerator: https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_JSONGenerator.htm",
+    "Apex Reference Guide \u2014 JSONParser: https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_JSONParser.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Serialized JSON string for callout payload or storage",
+    "Hydrated Apex object or Map<String,Object> from JSON response"
+  ],
+  "references": [
+    "skills/apex/apex-json-serialization/references/examples.md",
+    "skills/apex/apex-json-serialization/references/gotchas.md",
+    "skills/apex/apex-json-serialization/references/llm-anti-patterns.md",
+    "skills/apex/apex-json-serialization/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/apex-json-serialization/scripts/__pycache__/check_apex_json_serialization.cpython-314.pyc",
+    "skills/apex/apex-json-serialization/scripts/check_apex_json_serialization.py"
+  ],
+  "tags": [
+    "apex-json",
+    "serialization",
+    "json-parser",
+    "callouts",
+    "integration",
+    "json-generator"
+  ],
+  "templates": [
+    "skills/apex/apex-json-serialization/templates/apex-json-serialization-template.md"
+  ],
+  "updated": "2026-04-19",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

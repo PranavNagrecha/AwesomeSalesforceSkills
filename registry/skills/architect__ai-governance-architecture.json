@@ -90,7 +90,7 @@
     "fe1f54625b8a3637a266",
     "feb109122f9eded4465d"
   ],
-  "content_hash": "34b69a31d0dca37c80ed099bf7e7bdacd6cb9e615410c765aee68146b502a7f3",
+  "content_hash": "af5f5e69c53874a5b6ef4dea17da7fed7e5d5d1e22442a901e8da8161836e235",
   "dependencies": [
     "ai-platform-architecture"
   ],
@@ -123,6 +123,7 @@
     "skills/architect/ai-governance-architecture/references/well-architected.md"
   ],
   "scripts": [
+    "skills/architect/ai-governance-architecture/scripts/__pycache__/check_ai_governance_architecture.cpython-314.pyc",
     "skills/architect/ai-governance-architecture/scripts/check_ai_governance_architecture.py"
   ],
   "tags": [

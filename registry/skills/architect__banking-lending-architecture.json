@@ -67,7 +67,7 @@
     "fcca3cbae91fc59d3109",
     "fe1de896d1498eaa029b"
   ],
-  "content_hash": "a41324d5a192fe31b7b18641b5f09670285d61d57513e6b424a248186717fe08",
+  "content_hash": "48f393789bf7a95bd4d0d5b7b54039e935c0a98af70bc4bf1b0530ef227604e4",
   "dependencies": [
     "fsc-architecture-patterns"
   ],
@@ -100,6 +100,7 @@
     "skills/architect/banking-lending-architecture/references/well-architected.md"
   ],
   "scripts": [
+    "skills/architect/banking-lending-architecture/scripts/__pycache__/check_banking_lending_architecture.cpython-314.pyc",
     "skills/architect/banking-lending-architecture/scripts/check_banking_lending_architecture.py"
   ],
   "tags": [

@@ -69,7 +69,7 @@
     "f1ffe78b35a3a6749fca",
     "f36a79d037060626d8ee"
   ],
-  "content_hash": "af2a69621baaf013236b0b66fc92e95500634c15c5231c6bcdd407cc21f020da",
+  "content_hash": "ce42c7bb74d962ec3ce81a818ea90f403841032ca232944d73e0cb63be447011",
   "dependencies": [],
   "description": "Use this skill when implementing FERPA (Family Educational Rights and Privacy Act) compliance controls in Salesforce Education Cloud or Education Data Architecture (EDA): LearnerProfile FERPA boolean fields, directory information opt-out via FLS and Individual data privacy flags, ContactPointTypeConsent for parental and third-party disclosure, 45-day student records response window tracking, and consent workflow automation. Trigger keywords: FERPA, student records privacy, LearnerProfile, parental disclosure, directory information opt-out, education data privacy, student consent, education cloud compliance. NOT for GDPR/CCPA general data privacy (see gdpr-data-privacy skill), platform encryption at rest (see platform-encryption skill), or HIPAA health-data compliance.",
   "file_location": "skills/security/ferpa-compliance-in-salesforce",
@@ -103,6 +103,7 @@
     "skills/security/ferpa-compliance-in-salesforce/references/well-architected.md"
   ],
   "scripts": [
+    "skills/security/ferpa-compliance-in-salesforce/scripts/__pycache__/check_ferpa_compliance_in_salesforce.cpython-314.pyc",
     "skills/security/ferpa-compliance-in-salesforce/scripts/check_ferpa_compliance_in_salesforce.py"
   ],
   "tags": [

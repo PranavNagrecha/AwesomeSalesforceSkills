@@ -135,7 +135,7 @@
     "fe1d8f5cf260e49a3454",
     "fe574f3e180168a09c46"
   ],
-  "content_hash": "ca022ab95b2ee41ba69f2180d5b1112037f02aa7d76aaf32692088c536ffa7ed",
+  "content_hash": "1b1de10f19b65112032f0e58bd533e407eb21fed59f0c2d61b52f1b19cf070ee",
   "dependencies": [
     "devops/permission-set-deployment-ordering",
     "devops/go-live-cutover-planning"
@@ -176,6 +176,7 @@
     "skills/devops/health-cloud-deployment-patterns/references/well-architected.md"
   ],
   "scripts": [
+    "skills/devops/health-cloud-deployment-patterns/scripts/__pycache__/check_health_cloud_deployment_patterns.cpython-314.pyc",
     "skills/devops/health-cloud-deployment-patterns/scripts/check_health_cloud_deployment_patterns.py"
   ],
   "tags": [

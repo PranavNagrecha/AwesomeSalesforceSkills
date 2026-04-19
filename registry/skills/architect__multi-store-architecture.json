@@ -100,7 +100,7 @@
     "f9c9f74f4177d27a5678",
     "fca07a7ff402650be403"
   ],
-  "content_hash": "f74d99310a5d5dece48b8cfb6b1ce11afb33c648dbcd7ba6e2e6b30b2f34f29a",
+  "content_hash": "6bc97cc1836f5bb22162fcb6c10d4b7072b876905741d6064c222ae63f23f272",
   "dependencies": [],
   "description": "Multi-store Commerce architecture: shared catalog, localization, multi-currency, multi-language, and regional storefront design for B2B, D2C, and SFCC deployments. Trigger keywords: multi-store, regional storefronts, shared catalog, multi-currency commerce, localization, multiple WebStores. NOT for single-store setup, store creation basics, or non-Commerce use cases.",
   "file_location": "skills/architect/multi-store-architecture",
@@ -134,6 +134,7 @@
     "skills/architect/multi-store-architecture/references/well-architected.md"
   ],
   "scripts": [
+    "skills/architect/multi-store-architecture/scripts/__pycache__/check_multi_store_architecture.cpython-314.pyc",
     "skills/architect/multi-store-architecture/scripts/check_multi_store_architecture.py"
   ],
   "tags": [

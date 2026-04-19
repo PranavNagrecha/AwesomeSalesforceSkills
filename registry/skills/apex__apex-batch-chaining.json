@@ -1,0 +1,113 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "03fd92fabc12d86cc26e",
+    "043b4c07fe4404c2d09c",
+    "051ecc6bb2087823b4b5",
+    "08c2640fa90dcbbd4d93",
+    "10aea26e103cb54e7c6b",
+    "1227cb971c55fb443826",
+    "171ccec0597fce83e500",
+    "21db960ccf420036c55c",
+    "2208e3a6e922af9fe5d4",
+    "295b5c7bd8b7534e2dbf",
+    "313ba19520f54e3a9922",
+    "316808142581ee9f3120",
+    "321e2ff83f75ffa9d10c",
+    "340c5e9653cc6ad75fb9",
+    "35762f781102df986b90",
+    "3bac219179156f290ad0",
+    "418ab8d9ab2efe9cce9f",
+    "419487bc22f53d7bd672",
+    "42c9c7a9de3763c9b26a",
+    "4469b39e49b779ce5789",
+    "48f7c7d9bf966a63e456",
+    "5ac583230bf59d4c46c9",
+    "5d0f82371f1d4980364f",
+    "5ddd96dd27a14a314fce",
+    "5f325a93d2aa3470738a",
+    "6ca99f7f333667216dcf",
+    "702c98355ce95c115def",
+    "760d4df88a3695e3f1e6",
+    "7b3dd4cb05a7b29cc8a7",
+    "852880a0b877af0d731f",
+    "91cf41ebb50622f24f18",
+    "987ecc1f80b2613c5c8f",
+    "99ef1afbffad624551b0",
+    "9a4130a339e84b9867e4",
+    "a38dded19a1bb11fc209",
+    "a4a3d570121670b6ddb0",
+    "af908c33440deabc6402",
+    "b1f06356f702658f663f",
+    "b88d8fe33b659cf03f3f",
+    "b8cb0712834424060a55",
+    "c3a9a97cc0eea4bffd2d",
+    "c488c5b70013c2ad1cd9",
+    "c667ba1bcebf8e41b8ef",
+    "c8521f2a380a438e04d1",
+    "c9f4451af08d59435c20",
+    "cc8c164d7ab6f7430678",
+    "e0e949567b9f378c12d6",
+    "e1b9c1f29a0d16d78a62",
+    "e3d327bb2e36c9816950",
+    "e447785440bee1b743a6",
+    "e4dac178294cbdfbb47a",
+    "e678de5b824960722bb6",
+    "e7de2ec4656bf7fa94e3",
+    "e9f46b18b46ae97b2856",
+    "ec95c502856a2fd438f4",
+    "ed105053a211173aee0f",
+    "f168403a508c1c97497f",
+    "f2238b91cca77ac50405",
+    "f54e1ed104c351300a36",
+    "f590a8e270df904281bd"
+  ],
+  "content_hash": "e7d872416df0fc3f410e7bd795abee521fcb11f0a8d9b673c0c73e9db5742d99",
+  "dependencies": [
+    "batch-apex-patterns",
+    "apex-queueable-patterns"
+  ],
+  "description": "Use this skill when you need to run one Batch Apex job immediately after another completes \u2014 chaining via finish(), managing Flex Queue capacity, or choosing between batch-to-batch chaining and a Queueable bridge. NOT for async job technology selection \u2014 use the async-selection decision tree. NOT for single-job batch patterns, scope sizing, or Database.Stateful design \u2014 use batch-apex-patterns.",
+  "file_location": "skills/apex/apex-batch-chaining",
+  "id": "apex/apex-batch-chaining",
+  "inputs": [
+    "The batch class(es) to be chained in sequence",
+    "Any state that must be passed between chained jobs (record IDs, counters, error lists)",
+    "Expected volume of jobs to be enqueued \u2014 needed to assess Flex Queue risk"
+  ],
+  "name": "apex-batch-chaining",
+  "official_sources": [
+    "Using Batch Apex \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_batch_interface.htm",
+    "Queueable Apex \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_queueing_jobs.htm",
+    "FlexQueue Class \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_FlexQueue.htm",
+    "Apex Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Apex finish() implementation with FlexQueue capacity guard",
+    "Optional Queueable bridge for unlimited-depth or conditional chaining",
+    "Review checklist for test-class coverage and governor limit exposure"
+  ],
+  "references": [
+    "skills/apex/apex-batch-chaining/references/examples.md",
+    "skills/apex/apex-batch-chaining/references/gotchas.md",
+    "skills/apex/apex-batch-chaining/references/llm-anti-patterns.md",
+    "skills/apex/apex-batch-chaining/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/apex-batch-chaining/scripts/__pycache__/check_apex_batch_chaining.cpython-314.pyc",
+    "skills/apex/apex-batch-chaining/scripts/check_apex_batch_chaining.py"
+  ],
+  "tags": [
+    "batch-apex",
+    "batch-chaining",
+    "flex-queue",
+    "async"
+  ],
+  "templates": [
+    "skills/apex/apex-batch-chaining/templates/apex-batch-chaining-template.md"
+  ],
+  "updated": "2026-04-19",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

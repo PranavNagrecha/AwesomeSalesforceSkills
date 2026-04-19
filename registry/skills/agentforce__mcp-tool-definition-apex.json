@@ -72,7 +72,7 @@
     "fc666b44dd419e18d72d",
     "fe90436c31c8c7bdf427"
   ],
-  "content_hash": "a1f9aa31480f2c46f8f8c5c8313e23225dbb86364b2f7bb379b8303698e8161d",
+  "content_hash": "13098e7db6088f4c8d09712adee2ad70b7497164b895e73857b535ea9b000a6a",
   "dependencies": [
     "salesforce-mcp-server-setup"
   ],
@@ -108,6 +108,7 @@
     "skills/agentforce/mcp-tool-definition-apex/references/well-architected.md"
   ],
   "scripts": [
+    "skills/agentforce/mcp-tool-definition-apex/scripts/__pycache__/check_mcp_tool_definition_apex.cpython-314.pyc",
     "skills/agentforce/mcp-tool-definition-apex/scripts/check_mcp_tool_definition_apex.py"
   ],
   "tags": [

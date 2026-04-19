@@ -110,7 +110,7 @@
     "fcdb6760742545ae1b0a",
     "fe090862de4a4d39be9b"
   ],
-  "content_hash": "13bc1955a7916f35918b2ed62f5fd36ff24877f3159c3b6ae5bc93336537af64",
+  "content_hash": "e5b3a6dcee3857b1887c324b45958ee5e29a362707780c069d7b382692c57dc9",
   "dependencies": [],
   "description": "Use when designing, implementing, or reviewing Salesforce SOAP API integrations \u2014 covering enterprise vs partner WSDL selection, login() and session management, core operations (query/create/update/upsert/delete), and Metadata API SOAP usage. Trigger keywords: 'enterprise WSDL', 'partner WSDL', 'login() call', 'sessionId', 'SOAP API', 'WSC', 'force-wsc', 'Ant Migration Tool', '.NET SOAP integration'. NOT for REST API, Bulk API 2.0, or GraphQL API.",
   "file_location": "skills/integration/soap-api-patterns",
@@ -144,6 +144,7 @@
     "skills/integration/soap-api-patterns/references/well-architected.md"
   ],
   "scripts": [
+    "skills/integration/soap-api-patterns/scripts/__pycache__/check_soap_api_patterns.cpython-314.pyc",
     "skills/integration/soap-api-patterns/scripts/check_soap_api_patterns.py"
   ],
   "tags": [

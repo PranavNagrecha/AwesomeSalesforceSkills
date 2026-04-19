@@ -80,7 +80,7 @@
     "fa892f080df78c955120",
     "ff5f73b97fd208cf0eb0"
   ],
-  "content_hash": "314b629916d7e6aeb2fe28d46508789218f65112818efb4276141584e2ff34b6",
+  "content_hash": "671e03427c5c7b79b3365205b63fbbf3506a164bcd0ab8b51587cdd432792270",
   "dependencies": [
     "data/data-migration-planning",
     "security/experience-cloud-security"
@@ -118,6 +118,7 @@
     "skills/data/community-user-data-migration/references/well-architected.md"
   ],
   "scripts": [
+    "skills/data/community-user-data-migration/scripts/__pycache__/check_community_user_data_migration.cpython-314.pyc",
     "skills/data/community-user-data-migration/scripts/check_community_user_data_migration.py"
   ],
   "tags": [

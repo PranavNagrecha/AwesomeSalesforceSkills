@@ -28,7 +28,7 @@
     "c6f804a6461fa748128d",
     "d1e4c83546276f9df12a"
   ],
-  "content_hash": "e27d7170a35777d8bf2499a7e6847d96387d9f00f025f051287caaece55a8fc6",
+  "content_hash": "9586958e052478c4afff3d59a8ce975143a0b108af177ade66f61b0b7f03a26a",
   "dependencies": [],
   "description": "Red-team an Agentforce agent against prompt-injection and jailbreak attacks; codify test cases and guardrails. NOT for general application-security reviews outside the agent boundary.",
   "file_location": "skills/agentforce/prompt-injection-defense",
@@ -56,6 +56,7 @@
     "skills/agentforce/prompt-injection-defense/references/well-architected.md"
   ],
   "scripts": [
+    "skills/agentforce/prompt-injection-defense/scripts/__pycache__/check_prompt_injection_defense.cpython-314.pyc",
     "skills/agentforce/prompt-injection-defense/scripts/check_prompt_injection_defense.py"
   ],
   "tags": [

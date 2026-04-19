@@ -108,7 +108,7 @@
     "f72c8163d57e08df2008",
     "f94f13768813348f7f10"
   ],
-  "content_hash": "f9fe43291c14fa569a47737d922f88ee1bc94c577bc405900b53694c59bf5d4e",
+  "content_hash": "b2f8360d437231310207ad09ee12e1d2be19bdc9ea182078cda68041c0b44691",
   "dependencies": [],
   "description": "2GP managed package development: creating managed packages with Dev Hub and Salesforce CLI, semantic versioning, patch versions, namespace linking, ISV AppExchange listing, and subscriber upgrade management. NOT for unlocked packages, unmanaged packages, or 1GP-only workflows.",
   "file_location": "skills/devops/second-generation-managed-packages",
@@ -141,6 +141,7 @@
     "skills/devops/second-generation-managed-packages/references/well-architected.md"
   ],
   "scripts": [
+    "skills/devops/second-generation-managed-packages/scripts/__pycache__/check_second_generation_managed_packages.cpython-314.pyc",
     "skills/devops/second-generation-managed-packages/scripts/check_second_generation_managed_packages.py"
   ],
   "tags": [

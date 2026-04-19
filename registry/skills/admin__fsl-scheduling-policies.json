@@ -78,7 +78,7 @@
     "f436cac44d78fc7cc1a9",
     "fa4f49fe409c4e4e3163"
   ],
-  "content_hash": "697c4a578afe4ee93de331d72434980c3bf7e90b6b90d77d420d7cd57001fb98",
+  "content_hash": "d663f929599d773a1196ff533b778a30789d4b2049c3c30dd211b30f161c43c0",
   "dependencies": [
     "fsl-service-territory-setup"
   ],
@@ -115,6 +115,7 @@
     "skills/admin/fsl-scheduling-policies/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/fsl-scheduling-policies/scripts/__pycache__/check_fsl_scheduling_policies.cpython-314.pyc",
     "skills/admin/fsl-scheduling-policies/scripts/check_fsl_scheduling_policies.py"
   ],
   "tags": [

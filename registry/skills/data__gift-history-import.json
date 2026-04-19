@@ -62,7 +62,7 @@
     "f91375e20c14f584a8d1",
     "fcfccd05e8e8ad042972"
   ],
-  "content_hash": "417c0da5a6a7efa466fad2e177b42e8117b007e630139de9fd4000a3eddf94b6",
+  "content_hash": "a93c2485c3c5ad5aa2eac2fb5bdadaa8525fa66a45e4892efe6e84ce14cbb4e1",
   "dependencies": [],
   "description": "Use when migrating donation or gift history into Salesforce NPSP using the NPSP Data Importer (BDI) \u2014 covers DataImport__c staging, payment mapping, soft credit creation via Opportunity Contact Roles, GAU allocation, and campaign attribution. NOT for standard Opportunity import via Data Loader, NPC gift records, or recurring donation setup.",
   "file_location": "skills/data/gift-history-import",
@@ -91,6 +91,7 @@
     "skills/data/gift-history-import/references/well-architected.md"
   ],
   "scripts": [
+    "skills/data/gift-history-import/scripts/__pycache__/check_gift_history_import.cpython-314.pyc",
     "skills/data/gift-history-import/scripts/check_gift_history_import.py"
   ],
   "tags": [

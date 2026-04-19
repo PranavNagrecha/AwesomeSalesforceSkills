@@ -28,7 +28,7 @@
     "d50d6e0acc40304faeff",
     "d8325a5c192caa73e701"
   ],
-  "content_hash": "375992af606da86bd14fc89ea12d43a03b7db17b1313bea955723b66bb8bbca7",
+  "content_hash": "d30ee1992675bd112eab556c41bc37f9ff3171bfb2e35f1237bf491f264b08e1",
   "dependencies": [],
   "description": "Configure mTLS for Apex callouts using Named Credentials with client certificate authentication. NOT for standard TLS or API key auth.",
   "file_location": "skills/integration/mutual-tls-callouts",
@@ -56,6 +56,7 @@
     "skills/integration/mutual-tls-callouts/references/well-architected.md"
   ],
   "scripts": [
+    "skills/integration/mutual-tls-callouts/scripts/__pycache__/check_mutual_tls_callouts.cpython-314.pyc",
     "skills/integration/mutual-tls-callouts/scripts/check_mutual_tls_callouts.py"
   ],
   "tags": [

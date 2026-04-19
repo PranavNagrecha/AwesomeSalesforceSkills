@@ -126,7 +126,7 @@
     "fc0f3d86e0744ce9667a",
     "ffacce4d4f4bd60b89fe"
   ],
-  "content_hash": "606f477d727e08bb5137293748eb7a1bcd320b38a5225a76fa6c12aa5d999211",
+  "content_hash": "83417eab387663db158aad4dd1749a14cfc48ef601f84f0023d302035fb39516",
   "dependencies": [],
   "description": "Use when designing or implementing a cross-cutting Apex error handling framework: custom exception hierarchies, rollback-safe logging via Platform Events, BatchApexErrorEvent processing, correlation ID threading, or a unified catch/log/rethrow utility class. Trigger keywords: 'error framework', 'centralized logging', 'rollback-safe log', 'BatchApexErrorEvent', 'correlation ID async', 'AuraHandledException boundary', 'Error_Log__c design'. NOT for individual try/catch block syntax help, basic DmlException handling, or choosing between synchronous and asynchronous execution models.",
   "file_location": "skills/apex/error-handling-framework",
@@ -161,6 +161,7 @@
     "skills/apex/error-handling-framework/references/well-architected.md"
   ],
   "scripts": [
+    "skills/apex/error-handling-framework/scripts/__pycache__/check_error_handling_framework.cpython-314.pyc",
     "skills/apex/error-handling-framework/scripts/check_error_handling_framework.py"
   ],
   "tags": [

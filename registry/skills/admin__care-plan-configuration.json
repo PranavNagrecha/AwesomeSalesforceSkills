@@ -99,7 +99,7 @@
     "fd41c8fa72f762ed8cbf",
     "fed603eaa3572a772c59"
   ],
-  "content_hash": "40c4464b45176ba503ee0aa8ca07966ea5529608fcba6bd13d8eb2c3a98fbde4",
+  "content_hash": "0b387b77962f7fbad01b4a07b6f7f33035bd7ecd366fea1587e6acf14f21eefa",
   "dependencies": [
     "admin/health-cloud-patient-setup"
   ],
@@ -137,6 +137,7 @@
     "skills/admin/care-plan-configuration/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/care-plan-configuration/scripts/__pycache__/check_care_plan_configuration.cpython-314.pyc",
     "skills/admin/care-plan-configuration/scripts/check_care_plan_configuration.py"
   ],
   "tags": [

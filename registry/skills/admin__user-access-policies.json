@@ -78,7 +78,7 @@
     "fc3c5801421e90fd8647",
     "ffcfdd52ba6205d0e469"
   ],
-  "content_hash": "1bd593416a992f2274fe6f9b439c4f42587c61198b7b7dce3eb91570e46f9ffe",
+  "content_hash": "373825f052a1bc88c0fa3e9248ab176b8b9e8a394188639861c0a08edf9192a6",
   "dependencies": [],
   "description": "Configuring User Access Policies (UAP) to automatically assign or revoke permission sets and permission set groups based on user attributes. Use when automating permission provisioning on user create/update without Apex triggers. Covers policy configuration, filter criteria, evaluation order, and PSL assignment. NOT for permission set design (use permission-set-architecture). NOT for delegated user management (use delegated-administration).",
   "file_location": "skills/admin/user-access-policies",
@@ -107,6 +107,7 @@
     "skills/admin/user-access-policies/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/user-access-policies/scripts/__pycache__/check_user_access_policies.cpython-314.pyc",
     "skills/admin/user-access-policies/scripts/check_user_access_policies.py"
   ],
   "tags": [

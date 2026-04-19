@@ -82,7 +82,7 @@
     "f55185df29475c07d97c",
     "ff5648d6dd9ba03e24a6"
   ],
-  "content_hash": "057ba68063308e7169f5b78e11c06d8cb676007eb6ee1999d12d8cd950cfb070",
+  "content_hash": "77872b4939e7251d876584b86313c9dfb9591ab88aefa114288713eca6c30286",
   "dependencies": [],
   "description": "Use this skill when configuring or troubleshooting FSC Referral Management: setting up referral types via ReferralRecordTypeMapping custom metadata, routing referrals through Lead Assignment Rules keyed on the Expressed Interest picklist, tracking Referrer Score, or enabling partner referral visibility in Experience Cloud. Trigger keywords: referral routing, FSC referral types, ReferralRecordTypeMapping, Expressed Interest picklist, partner referral Contact, Referrer Score Experience Cloud. NOT for standard Salesforce Lead management outside FSC, Einstein Referral Scoring (retiring feature), or Marketing Cloud referral campaigns.",
   "file_location": "skills/admin/fsc-referral-management",
@@ -116,6 +116,7 @@
     "skills/admin/fsc-referral-management/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/fsc-referral-management/scripts/__pycache__/check_fsc_referral_management.cpython-314.pyc",
     "skills/admin/fsc-referral-management/scripts/check_fsc_referral_management.py"
   ],
   "tags": [

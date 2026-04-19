@@ -87,7 +87,7 @@
     "f8ba7d26d9af64b2384f",
     "fe6c5897c6fd48fe460f"
   ],
-  "content_hash": "cef1ff0351ecd6038f790bed29e96d60154d863eba16d3844048eae611b72f8e",
+  "content_hash": "91ab91cbb2ea43169a26fe0211d9d79d1fe8683a69f193e627351b3b0ff9e625",
   "dependencies": [],
   "description": "Use this skill when adding external users to an Experience Cloud site, configuring self-registration, managing external user licenses, or customising the login and registration pages. Trigger keywords: add members to community, external user license, self-registration, customer portal login, partner user onboarding, ConfigurableSelfRegHandler. NOT for internal (Employee) user management, internal profile or permission-set assignments, or Experience Cloud page-layout / component design.",
   "file_location": "skills/admin/experience-cloud-member-management",
@@ -120,6 +120,7 @@
     "skills/admin/experience-cloud-member-management/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/experience-cloud-member-management/scripts/__pycache__/check_experience_cloud_member_management.cpython-314.pyc",
     "skills/admin/experience-cloud-member-management/scripts/check_experience_cloud_member_management.py"
   ],
   "tags": [

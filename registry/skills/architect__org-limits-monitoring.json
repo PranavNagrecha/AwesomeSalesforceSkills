@@ -82,7 +82,7 @@
     "f791df5fd9f3502dbc68",
     "fa0c20b7337a1fd3bbf1"
   ],
-  "content_hash": "093c459bc60755c40236174f147bfa7d58f618edfc763fbd8aa39c65782c2bb3",
+  "content_hash": "d7910551d3fbd6f198c550b5579572ed7307150b91269cf64bc66e01029a392a",
   "dependencies": [
     "limits-and-scalability-planning"
   ],
@@ -118,6 +118,7 @@
     "skills/architect/org-limits-monitoring/references/well-architected.md"
   ],
   "scripts": [
+    "skills/architect/org-limits-monitoring/scripts/__pycache__/check_org_limits_monitoring.cpython-314.pyc",
     "skills/architect/org-limits-monitoring/scripts/check_org_limits_monitoring.py"
   ],
   "tags": [

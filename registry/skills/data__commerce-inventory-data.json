@@ -58,7 +58,7 @@
     "fadf281cabf794ea0ef1",
     "fc1c43ceaf7ad6ca7dbf"
   ],
-  "content_hash": "c2be6eb03ef768311ff321ff0c13d7917005e5ba721f0083cff2e01ff5f11ccc",
+  "content_hash": "677acb4fbb2dd57f807362a399499b71166605072f6edccdaae02ffd6d095446",
   "dependencies": [],
   "description": "Use when managing inventory data in Salesforce Omnichannel Inventory (OCI) \u2014 covers stock level APIs, warehouse location mapping, IMPEX bulk upload, inventory availability queries, reservation management, and reorder point design. NOT for Field Service Lightning inventory management, Salesforce standard Product object stock fields, or CPQ product configuration.",
   "file_location": "skills/data/commerce-inventory-data",
@@ -87,6 +87,7 @@
     "skills/data/commerce-inventory-data/references/well-architected.md"
   ],
   "scripts": [
+    "skills/data/commerce-inventory-data/scripts/__pycache__/check_commerce_inventory_data.cpython-314.pyc",
     "skills/data/commerce-inventory-data/scripts/check_commerce_inventory_data.py"
   ],
   "tags": [

@@ -110,7 +110,7 @@
     "fc9908242d3d260de925",
     "ff1e8469c59798407657"
   ],
-  "content_hash": "5c1e8617cb1fd37b7b0bbbd8f42c27a79f9c9e72f45f0c33b36a642ac260f8af",
+  "content_hash": "3c9f6d9bc492f9e78968b7e29b8f74c2304ec70aac39fe15d059ee8182791eef",
   "dependencies": [],
   "description": "Use this skill when gathering, structuring, and documenting requirements for a Financial Services Cloud (FSC) wealth management implementation \u2014 including financial planning workflow discovery, portfolio review process mapping, client lifecycle requirements, advisor tooling needs, and FSC architecture determination (managed package vs. FSC Core). Trigger keywords: wealth management requirements, FSC requirements gathering, financial planning workflow, portfolio review process, advisor tools setup, FSC data model scoping, wealth management process mapping. NOT for implementation, configuration, or code \u2014 use financial-account-setup, fsc-action-plans, or apex/fsc-financial-calculations for those. NOT for FSC architecture decisions \u2014 use architect/wealth-management-architecture. NOT for Health Cloud or NPSP requirements.",
   "file_location": "skills/admin/wealth-management-requirements",
@@ -148,6 +148,7 @@
     "skills/admin/wealth-management-requirements/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/wealth-management-requirements/scripts/__pycache__/check_wealth_management_requirements.cpython-314.pyc",
     "skills/admin/wealth-management-requirements/scripts/check_wealth_management_requirements.py"
   ],
   "tags": [

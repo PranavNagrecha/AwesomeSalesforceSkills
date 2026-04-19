@@ -70,7 +70,7 @@
     "fd494b360286be5f34eb",
     "ff4da42314e823cc357b"
   ],
-  "content_hash": "ce6823e8648ceda1eb6ef56208c74872a937d8264359800b06ea2a6de1670519",
+  "content_hash": "fe12a514704383ea88a89f79c54ca6dbcc20f44a6afc31e5a20c2c9e1036da39",
   "dependencies": [
     "integration-procedures"
   ],
@@ -102,6 +102,7 @@
     "skills/omnistudio/omnistudio-remote-actions/references/well-architected.md"
   ],
   "scripts": [
+    "skills/omnistudio/omnistudio-remote-actions/scripts/__pycache__/check_omnistudio_remote_actions.cpython-314.pyc",
     "skills/omnistudio/omnistudio-remote-actions/scripts/check_omnistudio_remote_actions.py"
   ],
   "tags": [

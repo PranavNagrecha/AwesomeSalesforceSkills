@@ -77,7 +77,7 @@
     "fe345b383d5cca199a00",
     "ffaa0d61c170ee473f4c"
   ],
-  "content_hash": "7d8124dfb3d69a6f39ad5591af8455686d3f95382d9267c5309cb924364359a1",
+  "content_hash": "bed3622bf181efad26eeee699a209acdcb3aade724958f2f48e36d35cd2f5438",
   "dependencies": [],
   "description": "Governance patterns for orgs where Apex triggers and record-triggered Flows both run on the same object. Covers field-write conflict prevention, single-entry-point consolidation, recursion guards across automation types, and automation inventory documentation. Use when inheriting a mixed-automation org, adding a Flow to an object that already has triggers, or resolving silent field-overwrite bugs. NOT for order-of-execution mechanics (use order-of-execution-deep-dive). NOT for trigger handler framework design (use trigger-framework). NOT for Flow-only design patterns (use record-triggered-flow-patterns).",
   "file_location": "skills/apex/trigger-and-flow-coexistence",
@@ -107,6 +107,7 @@
     "skills/apex/trigger-and-flow-coexistence/references/well-architected.md"
   ],
   "scripts": [
+    "skills/apex/trigger-and-flow-coexistence/scripts/__pycache__/check_trigger_and_flow_coexistence.cpython-314.pyc",
     "skills/apex/trigger-and-flow-coexistence/scripts/check_trigger_and_flow_coexistence.py"
   ],
   "tags": [

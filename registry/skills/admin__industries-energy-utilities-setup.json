@@ -92,7 +92,7 @@
     "fda46f4ef6c07d027b5d",
     "fee0144c123275e96b79"
   ],
-  "content_hash": "177e964146424e3ce72abfe7e49896a5ebd8a788631754250da0617a94fc9006",
+  "content_hash": "08f8941e0ad458d4c55a5cb3353ce1660a3a0e825884d44cbf3b34a75beeb8c9",
   "dependencies": [
     "industries-data-model"
   ],
@@ -128,6 +128,7 @@
     "skills/admin/industries-energy-utilities-setup/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/industries-energy-utilities-setup/scripts/__pycache__/check_industries_energy_utilities_setup.cpython-314.pyc",
     "skills/admin/industries-energy-utilities-setup/scripts/check_industries_energy_utilities_setup.py"
   ],
   "tags": [
