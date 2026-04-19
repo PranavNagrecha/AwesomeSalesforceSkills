@@ -1,0 +1,36 @@
+#!/bin/sh
+# pre-push — catch the full-repo validation failures that --changed-only would miss.
+#
+# pre-commit runs --changed-only for speed on single-file edits. That's fine
+# for catching issues INSIDE the edited skill, but it misses:
+#   - Stale generated artifacts (registry/, vector_index/) after a SKILL.md
+#     edit that didn't touch the generators.
+#   - Schema drift where someone introduces a value the validator's enum
+#     doesn't accept (e.g. 'Performance Efficiency' from AWS WAF).
+#   - Missing query fixtures for a skill.
+#
+# Those all show up when CI runs the full shard sweep. This hook runs the
+# same check locally, before you push, so CI is never the first to tell you.
+#
+# Skip this hook:     git push --no-verify
+# Install all hooks:  python3 scripts/install_hooks.py
+
+set -eu
+
+echo "pre-push: running full skill validation (4 shards, ~10–20s)..."
+
+FAILED=0
+for shard in 0 1 2 3; do
+    if ! python3 scripts/validate_repo.py --skills-only --shard $shard/4 --skip-fixture-retrieval; then
+        FAILED=1
+    fi
+done
+
+if [ $FAILED -eq 1 ]; then
+    echo ""
+    echo "✘ pre-push FAILED — fix the errors above, or push with --no-verify to bypass."
+    echo "  (Bypass is fine for WIP branches; CI will still gate merge.)"
+    exit 1
+fi
+
+echo "✔ pre-push: all shards clean."

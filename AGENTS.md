@@ -31,6 +31,21 @@ python3 scripts/validate_repo.py --agents
 compilation + query fixtures). Use `--agents` or `--skills-only` for fast
 iteration.
 
+## Install the git hooks (strongly recommended)
+
+One-time setup per clone:
+
+```bash
+python3 scripts/install_hooks.py
+```
+
+This configures `core.hooksPath` to `.githooks/` and installs two hooks:
+
+- **`pre-commit`** — runs `skill_sync --changed-only` and `validate_repo --changed-only`. Fast (<5s).
+- **`pre-push`** — runs the full 4-shard validation CI runs. Catches cross-cutting drift (stale registries, schema-enum drift, missing query fixtures) that `--changed-only` can't see. 10–20s.
+
+Bypass for WIP: `git commit --no-verify` / `git push --no-verify`. CI still gates merge.
+
 ## Reading / updating the skill queue
 
 `MASTER_QUEUE.md` is the authoritative queue. Do not `grep`/`sed` it — use:

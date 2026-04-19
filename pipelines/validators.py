@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
+import difflib
+import json
 from dataclasses import dataclass
 from pathlib import Path
-import json
 
 from .frontmatter import parse_markdown_with_frontmatter
 
@@ -12,6 +13,20 @@ try:
     import jsonschema
 except Exception:  # pragma: no cover - optional dependency fallback
     jsonschema = None
+
+
+# Common drift aliases we see from authors cross-referencing other frameworks
+# (notably AWS WAF). The validator still REJECTS these — it just prints a
+# pointed hint so the fix is obvious. Adding an alias here is a deliberate
+# decision to ship better error UX without weakening the contract.
+_KNOWN_ENUM_ALIASES: dict[str, str] = {
+    # AWS WAF pillar name → Salesforce-convention name we use in the enum.
+    "Performance Efficiency": "Performance",
+    # AWS WAF "Cost Optimization" is not a pillar in our enum at all; point
+    # authors at the closest local equivalent so they don't guess.
+    "Cost Optimization": "Operational Excellence",
+    "Cost Efficiency": "Operational Excellence",
+}
 
 
 ALLOWED_CATEGORIES = {
@@ -67,7 +82,53 @@ def validate_with_jsonschema(instance: dict, schema: dict) -> list[str]:
     if jsonschema is None:
         return []
     validator = jsonschema.Draft202012Validator(schema)
-    return [error.message for error in sorted(validator.iter_errors(instance), key=lambda item: item.path)]
+    messages: list[str] = []
+    for error in sorted(validator.iter_errors(instance), key=lambda item: item.path):
+        messages.append(_humanize_jsonschema_error(error))
+    return messages
+
+
+def _humanize_jsonschema_error(error) -> str:
+    """Turn a raw jsonschema error into a pointed, actionable message.
+
+    Specifically: when the failure is an enum mismatch, append a 'did you
+    mean X?' suggestion computed from (1) the known-alias table and
+    (2) difflib.get_close_matches against the enum values. This converts
+    a cryptic 'not one of [...]' into something a human can act on in one
+    read.
+
+    Falls back to the raw message when there's no obvious suggestion.
+    """
+    raw = error.message
+
+    # Only enrich enum errors; leave other failure modes (type, required,
+    # minLength, etc.) alone so we don't mask real issues.
+    validator_name = getattr(error, "validator", None)
+    if validator_name != "enum":
+        return raw
+
+    bad_value = error.instance
+    if not isinstance(bad_value, str):
+        return raw
+
+    allowed = error.validator_value or []
+
+    # First: check our known-alias table (e.g. AWS WAF → Salesforce names).
+    hint = _KNOWN_ENUM_ALIASES.get(bad_value)
+    if hint and hint in allowed:
+        return (
+            f"{raw} "
+            f"— did you mean '{hint}'? "
+            f"('{bad_value}' is the AWS WAF pillar name; "
+            f"our enum uses Salesforce-convention names.)"
+        )
+
+    # Second: fuzzy match against the allowed list.
+    close = difflib.get_close_matches(bad_value, allowed, n=1, cutoff=0.6)
+    if close:
+        return f"{raw} — did you mean '{close[0]}'?"
+
+    return raw
 
 
 def validate_frontmatter(root: Path, path: Path) -> list[ValidationIssue]:
