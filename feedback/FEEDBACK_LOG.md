@@ -4,6 +4,131 @@ Reverse chronological. See `README.md` for the triage verdicts and cadence.
 
 ---
 
+## 2026-04-19 — Cursor invocation review (all 75 agents)
+
+**Anchor:** `2026-04-19-cursor-invocation-review`
+**Source:** External AI assistant (Cursor) — `/Users/pranavnagrecha/Desktop/agent-informal-invocation-analysis.md` (~1,170 lines, not committed). Same reviewer as the 2026-04-19 flow-builder entry below.
+**Decision owner:** Pranav Nagrecha + Claude Opus 4.7.
+**Decided on:** 2026-04-19.
+
+### Context
+
+Second external review from Cursor. Unlike the earlier flow-builder-only transcript, this one covers **the entire agent roster** alphabetically, with per-agent friction bullets. Structure:
+
+1. 15-mode invocation catalog (MCP, informal chat, slash, bundle, queue, harness, PR review, subagent, advisory, etc.)
+2. Per-agent section for all 75 folders — intent, contract snapshot, 2-4 risk/mitigation bullets, repeated QA PASS boilerplate.
+3. Quick Picker table mapping "what you have" → "which channel."
+
+Repo-ownership note: the user has explicitly decided we're **doubling down on MCP adoption** going forward. This shaped triage below.
+
+### Verified before triage
+
+- `requires_org` flag has only one runtime consumer: `scripts/smoke_test_agents.py`, where it's printed as a label (not execution-gating). Full sweep via grep confirmed no MCP / bundle / CLI gating on this flag.
+- `lwc-auditor`, `security-scanner`, `soql-optimizer` all document `target_org_alias: no` in their Inputs tables — their frontmatter `requires_org: true` contradicts the body. Reviewer's flag is factually correct.
+- `docs/installing-single-agents.md`, `docs/consumer-responsibilities.md`, `docs/MIGRATION.md` all exist and match the reviewer's characterization.
+
+### Verdicts
+
+#### 1. `requires_org` is mis-set on 3 static-scan agents
+
+**Reviewer's claim:** "YAML marks `requires_org: true` but bundle on disk is usually enough" (re: `lwc-auditor`). Same pattern on `security-scanner` (force-app tree walker) and `soql-optimizer` (file/folder scope).
+
+**Verdict:** ACCEPT.
+
+**Shipped:** flipped `requires_org: true → false` on the three agents. Body specs were already honest (`target_org_alias: no (optional, enables X)`); this just makes the frontmatter agree with the spec. No behavior change, no refusal change — smoke test now correctly reports these as no-org-required.
+
+**Provenance:** this commit.
+
+---
+
+#### 2. 15-mode invocation catalog is a real doc gap
+
+**Reviewer's claim:** nothing in the repo consolidates the channels; it's scattered across `installing-single-agents.md`, `consumer-responsibilities.md`, per-agent AGENT.md Invocation sections, and `CAPABILITY_MATRIX.md`.
+
+**Verdict:** ACCEPT.
+
+**Shipped:** new `docs/agent-invocation-modes.md`. Adopted the catalog with attribution. Reframed with **MCP as Channel 1** (the canonical channel) because of the strategic priority on MCP. The doc explicitly lists what MCP currently exposes (20 tools) and what's missing (4 gaps tracked as next-round candidates: `list_deprecated_redirects`, `get_invocation_modes`, `automation_graph_for_sobject` probe tool, `emit_envelope` persistence helper).
+
+**Provenance:** this commit.
+
+---
+
+#### 3. Agent-pair overlap disambiguation
+
+**Reviewer's claim:** repeated per-agent friction — `permission-set-architect` vs `user-access-diff`, `orchestrator` vs `flow-builder`, `dev-skill-builder` vs `apex-builder`/`lwc-builder`, `validator` (ambiguous verb), deprecated-name muscle memory.
+
+**Verdict:** ACCEPT.
+
+**Shipped:** new `agents/_shared/AGENT_DISAMBIGUATION.md`. Five axes:
+
+- Build-time vs run-time (most common misroute)
+- Design vs audit vs diff
+- Author skill docs vs emit code scaffolds
+- "Validate" disambiguation (library-structure vs compile-deploy vs input-schema)
+- `orchestrator` is the queue router, not ad-hoc work
+
+Plus the full 19-entry deprecated-name redirect table.
+
+**For MCP:** the doc includes a short "For MCP clients" section with the explicit rule "ask a clarifying question before `get_agent` when the request matches multiple agents on these axes."
+
+**Provenance:** this commit.
+
+---
+
+#### 4. Per-agent vague-prompt mitigations (repeated bullets)
+
+**Reviewer's claim:** every `design`+`audit` agent gets the same "needs scoping before blueprint" warning; every static scanner gets "bundle is enough"; every narrative agent gets "label as desk-level."
+
+**Verdict:** DEFER.
+
+**Rationale:** the repetition suggests a standardized warning schema rendered automatically in AGENT.md — but that's a bigger doc-generation refactor than we should ship reactively. For now the disambiguation doc (item 3) covers the most common misroutes; per-agent warning normalization can wait for a sprint where we own the full AGENT.md generator.
+
+**Revisit:** 2026-Q3.
+
+---
+
+#### 5. Deprecated-folder @-mention hard redirect in informal chat
+
+**Reviewer's claim:** `@validation-rule-auditor` still resolves to the stub; no automatic redirect in informal chat.
+
+**Verdict:** DEFER — but add MCP-side fix to the queue.
+
+**Rationale:** informal chat is the model's job — the `AGENT.md` stub + `AGENT_DISAMBIGUATION.md` give the model what it needs to redirect, and a doc-only solution is fragile. The real fix is at the MCP layer: a `list_deprecated_redirects` tool that surfaces the mapping programmatically so MCP clients can never route to a stub. Tracked in `docs/agent-invocation-modes.md` as MCP gap #1.
+
+**Revisit:** next MCP sprint.
+
+---
+
+#### 6. QA PASS boilerplate repeated 75 times
+
+**Observational, no action.** Reviewer's per-agent QA line is identical: "`validate_repo.py --agents` reports 0 errors; this folder is in the validated set." Accurate — our own smoke agrees (75/75). Not additional signal.
+
+**Verdict:** NO-OP. Repetition noted; not a change request.
+
+---
+
+### Summary
+
+| Item | Verdict | Commit |
+|---|---|---|
+| `requires_org` fix on 3 agents | ACCEPT | this |
+| 15-mode invocation catalog | ACCEPT | this |
+| Agent disambiguation map | ACCEPT | this |
+| Per-agent warning schema | DEFER (2026-Q3) | — |
+| Deprecated-name hard redirect | DEFER → MCP sprint | — |
+| QA boilerplate | NO-OP | — |
+
+**Net:** 3 accept / 2 defer / 1 no-op. Loop works as designed — external review in, triaged, shipped in one day.
+
+**MCP queue (from this review, for the MCP double-down):**
+
+1. `list_deprecated_redirects` — routes old names to routers automatically.
+2. `get_invocation_modes` — surfaces `docs/agent-invocation-modes.md` as a tool resource.
+3. `automation_graph_for_sobject` probe tool — lift the recipe from `agents/_shared/probes/` into an executable tool.
+4. `emit_envelope` helper — implement `docs/consumer-responsibilities.md` persistence so every consumer gets it for free.
+
+---
+
 ## 2026-04-19 — Cursor (another AI assistant) review of `agents/flow-builder`
 
 **Source:** External AI assistant (Cursor 3.1.15) session transcript supplied by repo owner.
