@@ -5,7 +5,7 @@
 **Agent version:** `1.0.0`
 **Class:** `runtime`
 **Modes:** ``
-**Requires org:** `true`
+**Requires org:** `false`
 
 ## TL;DR for humans
 
