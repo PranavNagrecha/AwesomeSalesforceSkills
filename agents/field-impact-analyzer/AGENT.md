@@ -108,10 +108,10 @@ For every reference, capture file path + line number for citation. No string-fin
 
 Use MCP tools against the target org:
 
-1. `list_flows_on_object(object_name)` → for each active flow, fetch its metadata via `tooling_query("SELECT Metadata FROM Flow WHERE DurableId = '<id>'")` and text-search the `Metadata` XML for `<object>.<field>`.
+1. `list_flows_on_object(object_name)` → for each active flow, fetch its metadata via `tooling_query("SELECT Metadata FROM Flow WHERE DurableId = '<id>'")` and text-search the `Metadata` XML for `<object>.<field>`. **Cite probe `flow-references-to-field` when used.**
 2. `list_validation_rules(object_name)` → for each rule, check `ErrorConditionFormula` + `ErrorDisplayField` for the field.
-3. `tooling_query("SELECT Id, Name, Body FROM ApexClass WHERE Body LIKE '%<field>%' AND NamespacePrefix = null LIMIT 200")` (then in-memory filter for real references — avoids false positives from substring matches).
-4. `tooling_query("SELECT Id, DeveloperName, Body FROM ApexTrigger WHERE TableEnumOrId = '<object>' LIMIT 200")` and scan `Body` for the field.
+3. Apex body scan: follow the probe recipe in `agents/_shared/probes/apex-references-to-field.md` — it encapsulates the non-filterable-Body workaround (fetch full bodies, client-side filter). **Always cite `{"type":"probe","id":"apex-references-to-field"}` when enumerating Apex hits**, even when the actual SOQL is inlined here.
+4. `tooling_query("SELECT Id, DeveloperName, Body FROM ApexTrigger WHERE TableEnumOrId = '<object>' LIMIT 200")` and scan `Body` for the field. Covered by the same `apex-references-to-field` probe citation.
 5. `tooling_query("SELECT DeveloperName, Metadata FROM CustomField WHERE EntityDefinitionId IN (SELECT DurableId FROM EntityDefinition WHERE QualifiedApiName = '<object>') LIMIT 500")` — for formula fields on the same object, scan their metadata for the target field.
 6. `tooling_query("SELECT DeveloperName, Body FROM AuraDefinition WHERE Body LIKE '%<field>%' LIMIT 200")` and `LightningComponentResource` for LWC.
 7. `tooling_query("SELECT Id, Name, DeveloperName FROM Report WHERE Format != 'Deprecated' AND Report.DeveloperName LIKE '%' LIMIT 500")` + description scan for the field (reports don't expose column metadata via Tooling for free — flag this as LOW confidence if not covered by the repo scan).

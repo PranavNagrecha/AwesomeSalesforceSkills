@@ -23,6 +23,12 @@ dependencies:
     - architect/security-architecture-review
     - architect/well-architected-review
     - devops/metadata-api-coverage-gaps
+    - devops/pipeline-secrets-management
+    - security/customer-data-request-workflow
+    - security/privileged-access-management
+    - security/salesforce-shield-deployment
+    - security/session-high-assurance-policies
+    - security/shield-kms-byok-setup
   shared:
     - AGENT_CONTRACT.md
     - AGENT_RULES.md

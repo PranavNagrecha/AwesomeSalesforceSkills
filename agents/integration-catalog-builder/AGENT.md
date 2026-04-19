@@ -21,8 +21,15 @@ dependencies:
     - admin/remote-site-settings
     - architect/integration-framework-design
     - architect/integration-security-architecture
+    - integration/api-governance-and-rate-limits
+    - integration/api-versioning-strategy
+    - integration/connect-rest-api-patterns
+    - integration/mutual-tls-callouts
     - integration/named-credentials-setup
     - integration/oauth-flows-and-connected-apps
+    - integration/private-connect-setup
+    - integration/salesforce-data-pipeline-etl
+    - integration/webhook-signature-verification
     - security/certificate-and-key-management
     - security/connected-app-security-policies
   shared:

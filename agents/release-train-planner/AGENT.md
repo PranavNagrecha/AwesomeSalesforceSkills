@@ -15,11 +15,18 @@ output_formats:
 dependencies:
   skills:
     - admin/agent-output-formats
+    - devops/devops-center-advanced
     - devops/environment-strategy
+    - devops/feature-flag-custom-metadata
     - devops/git-branching-for-salesforce
     - devops/package-development-strategy
+    - devops/packaging-dependency-graph
+    - devops/pipeline-secrets-management
+    - devops/pr-policy-templates
     - devops/release-management
     - devops/second-generation-managed-packages
+    - devops/sfdx-hardis-integration
+    - devops/sfdx-monorepo-patterns
     - devops/unlocked-package-development
   shared:
     - AGENT_CONTRACT.md

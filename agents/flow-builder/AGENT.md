@@ -19,7 +19,13 @@ dependencies:
     - apex/trigger-and-flow-coexistence
     - flow/auto-launched-flow-patterns
     - flow/fault-handling
+    - flow/flow-and-platform-events
     - flow/flow-bulkification
+    - flow/flow-data-tables
+    - flow/flow-dynamic-choices
+    - flow/flow-http-callout-action
+    - flow/flow-interview-debugging
+    - flow/flow-reactive-screen-components
     - flow/flow-testing
     - flow/orchestration-flows
     - flow/record-triggered-flow-patterns

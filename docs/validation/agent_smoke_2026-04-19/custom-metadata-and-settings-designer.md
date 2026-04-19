@@ -1,0 +1,86 @@
+# Agent Smoke Test — `custom-metadata-and-settings-designer`
+
+**Date:** 2026-04-19
+**Status:** ✅ PASS
+**Agent version:** `1.0.0`
+**Class:** `runtime`
+**Modes:** ``
+**Requires org:** `true`
+
+## TL;DR for humans
+
+Agent `custom-metadata-and-settings-designer` passed all structural + dependency checks. Its declared dependencies exist, its slash-command exists, and its frontmatter is schema-valid.
+
+## What the smoke test did
+
+- Parsed `agents/custom-metadata-and-settings-designer/AGENT.md`
+- Ran 6 structural checks against a live-org context (`sfskills-dev`)
+- No tool calls issued against the org beyond what probe validation already covered
+
+## Check results
+
+| Check | Status | Detail |
+|---|---|---|
+| Required sections present + in order | ✅ | (none) |
+| Citations resolve to real files | ✅ | (none) |
+| Dependencies cover all citations | ✅ | (none) |
+| Slash-command coverage | ✅ | covered by /design-custom-metadata |
+| Inputs schema valid JSON (if present) | ✅ | (none) |
+| Declared probes executable | ✅ | (none) |
+
+## Machine-readable result
+
+```json
+{
+  "agent": "custom-metadata-and-settings-designer",
+  "date": "2026-04-19",
+  "overall_pass": true,
+  "any_soft": false,
+  "checks": [
+    {
+      "name": "Required sections present + in order",
+      "pass": true,
+      "soft": false,
+      "messages": []
+    },
+    {
+      "name": "Citations resolve to real files",
+      "pass": true,
+      "soft": false,
+      "messages": []
+    },
+    {
+      "name": "Dependencies cover all citations",
+      "pass": true,
+      "soft": false,
+      "messages": []
+    },
+    {
+      "name": "Slash-command coverage",
+      "pass": true,
+      "soft": false,
+      "messages": [
+        "covered by /design-custom-metadata"
+      ]
+    },
+    {
+      "name": "Inputs schema valid JSON (if present)",
+      "pass": true,
+      "soft": false,
+      "messages": []
+    },
+    {
+      "name": "Declared probes executable",
+      "pass": true,
+      "soft": false,
+      "messages": []
+    }
+  ]
+}
+```
+
+## What a human reviewer should check
+
+- [ ] Does the TL;DR match the actual behavior of `custom-metadata-and-settings-designer` in production?
+- [ ] Are any of the warnings actually critical in your environment?
+- [ ] Do the declared dependencies cover everything the agent actually needs?

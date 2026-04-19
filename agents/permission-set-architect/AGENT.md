@@ -24,7 +24,11 @@ dependencies:
     - admin/user-access-policies
     - admin/user-management
     - devops/permission-set-deployment-ordering
+    - security/apex-managed-sharing-patterns
+    - security/api-only-user-hardening
     - security/permission-set-groups-and-muting
+    - security/privileged-access-management
+    - security/session-high-assurance-policies
   shared:
     - AGENT_CONTRACT.md
     - AGENT_RULES.md
