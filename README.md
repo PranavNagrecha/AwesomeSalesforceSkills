@@ -13,12 +13,12 @@ Drop this into Claude Code, Cursor, Aider, Windsurf, or any AI tool and get role
 
 Three layers that turn generic LLMs into Salesforce-literate agents:
 
-1. **Skills** (`skills/<domain>/<skill>/`) — 701 structured guides. Every skill carries source-grounded instructions, code examples, gotchas, WAF mapping, and a per-skill list of **LLM anti-patterns** the model must refuse to produce.
+1. **Skills** (`skills/<domain>/<skill>/`) — 763 structured guides. Every skill carries source-grounded instructions, code examples, gotchas, WAF mapping, and a per-skill list of **LLM anti-patterns** the model must refuse to produce.
 2. **Shared canon** — One set of reusable building blocks the skills all point at, so the AI never reinvents them:
    - `templates/` → TriggerHandler, ApplicationLogger, SecurityUtils, HttpClient, TestDataFactory, LWC skeleton, Flow fault paths, Agentforce actions.
    - `standards/decision-trees/` → Routing for automation, async, integration, and sharing decisions — agents consult these **before** writing code.
    - `evals/` → Golden P0 cases for flagship skills. Output quality is testable, not vibes-based.
-3. **Live-org MCP server** (`mcp/sfskills-mcp/`) — An AI agent can read this library **and** ask your actual org "does this already exist?" via your `sf` CLI auth. No secrets handled in-process. [Jump to setup ↓](#mcp-server-live-org-context)
+3. **Live-org MCP server** (`mcp/sfskills-mcp/`) — 23 tools: skill search, live-org metadata + SOQL, 5 probes (Apex/Flow refs, matching rules, permset shape, automation graph), agent discovery + invocation modes, atomic envelope persistence. An AI agent reads this library **and** asks your actual org "does this already exist?" via your `sf` CLI auth. No secrets handled in-process. [Jump to setup ↓](#mcp-server-live-org-context)
 
 ---
 
