@@ -5,7 +5,7 @@ category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:
   - Reliability
-  - Performance Efficiency
+  - Performance
 triggers:
   - "check governor limits before SOQL apex"
   - "defensive coding against limits apex"

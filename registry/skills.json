@@ -12,7 +12,7 @@
     "omnistudio": 26,
     "security": 36
   },
-  "generated_from_hash": "c65b3e1093da54da415e984cc8f48bf55a9292bae5eb790d73614f8b435fbc95",
+  "generated_from_hash": "f8571560f0e034dcfbace2a71063ab94eebdd6ae1d8e452e803c31803c63cb17",
   "schema_version": 1,
   "skill_count": 763,
   "skills": [
@@ -33711,7 +33711,7 @@
         "fac9ad58a5d7810c9853",
         "fed5554651b6ef6df43d"
       ],
-      "content_hash": "6fe41035b6a807c8b89641e6950a6e0d0b2691d78492b55cf6fbbed6ac0ea9af",
+      "content_hash": "924524504d91d0fd11a2ac3b5610016794dad23936af9a685046d8f6b8e2a1c9",
       "dependencies": [],
       "description": "Use this skill when writing SOQL aggregate queries in Apex \u2014 GROUP BY, GROUP BY ROLLUP/CUBE, HAVING, COUNT/SUM/AVG/MIN/MAX, AggregateResult, and date grouping functions. Trigger keywords: soql aggregate groupby apex, count sum group by salesforce, aggregateresult get alias, having clause soql, rollup cube subtotals. NOT for relationship subqueries or inner queries (use apex-soql-relationship-queries), NOT for the Reporting API or Analytics Wave API.",
       "file_location": "skills/apex/apex-aggregate-queries",
@@ -33822,7 +33822,7 @@
         "f54e1ed104c351300a36",
         "f590a8e270df904281bd"
       ],
-      "content_hash": "e7d872416df0fc3f410e7bd795abee521fcb11f0a8d9b673c0c73e9db5742d99",
+      "content_hash": "9eb2ca64b79a17e52852bc890a83351ffc0c66614330883dd18c01ad30cbaa3f",
       "dependencies": [
         "batch-apex-patterns",
         "apex-queueable-patterns"
@@ -33927,7 +33927,7 @@
         "f2ed71dc748a07202a07",
         "f8d6aa2bd4edf6556c7a"
       ],
-      "content_hash": "5f7fc207ad3f99068643df5ee408770671fe2106f4b7fb021549534cc009f71a",
+      "content_hash": "6eb6e24a8d43eb394161265753386a7cedd9191d4d830a8e92140cbb62cd6785",
       "dependencies": [],
       "description": "Use when designing, reviewing, or debugging Apex code that relies on List, Set, or Map collections in triggers, batch classes, or service layers \u2014 especially for bulkification, heap management, and safe null handling. Trigger keywords: 'Map<Id, SObject>', 'containsKey', 'retainAll', 'putAll', 'Set intersection', 'heap limit', 'collection in loop', 'unbounded accumulation'. NOT for SOQL query optimization (use soql-fundamentals), NOT for async job design (use apex-queueable-patterns or batch-apex-patterns), NOT for platform cache strategies (use platform-cache).",
       "file_location": "skills/apex/apex-collections-patterns",
@@ -34232,7 +34232,7 @@
         "f97dd41a1276f216d059",
         "ff19eb3f1dd38141ee58"
       ],
-      "content_hash": "188e01982ee20007c0ecff5f90dd22e9e7ef55251db50742b9281f7081f2da81",
+      "content_hash": "1a9e62462a092f49b02e5bc10ed7ddfc64fefa82497827eea07d581f943bad00",
       "dependencies": [],
       "description": "Use when choosing between DML statements and Database class methods, handling partial success, managing savepoints, or using Database.DMLOptions for assignment rules and duplicate handling. Trigger keywords: 'Database.insert allOrNone false', 'partial DML success apex', 'SaveResult isSuccess', 'database merge apex', 'DML exception handling'. NOT for SOQL query patterns (use soql-fundamentals or apex-soql-relationship-queries), NOT for sharing model setup (use apex-managed-sharing-patterns).",
       "file_location": "skills/apex/apex-dml-patterns",
@@ -34466,7 +34466,7 @@
         "fe5c1cd5ba1a970d0667",
         "fe9a6a0727fee3ad26f4"
       ],
-      "content_hash": "8f114787546f5e95eafcdf4fcc2c17ea62056f1cd2f0449e45e162358761ba72",
+      "content_hash": "bfc9fcd663003b9d529df7da2e9d9eda9ed24e132c65035baf320caae3941588",
       "dependencies": [],
       "description": "Use when serializing Apex objects to JSON strings or deserializing JSON responses into Apex types \u2014 especially for callout payloads, integration parsing, and controlling null field output. Trigger keywords: 'suppress null fields JSON Apex', 'deserialize JSON into Apex class', 'JSON parse unknown shape', 'TypeException JSON deserialize', 'JSONGenerator streaming'. NOT for REST endpoint response shaping (use apex-rest-services), NOT for Apex remote actions returning JSON to LWC.",
       "file_location": "skills/apex/apex-json-serialization",
@@ -34583,7 +34583,7 @@
         "f8435f180d62951245fd",
         "fabc3dc3247e556b11c1"
       ],
-      "content_hash": "4b047e4c2a37e816bc8a8ab9548cf3f6dce63067c82eeb34bd5c7d8ba413a154",
+      "content_hash": "7d98eb66750c2f8e468212a9ecd01cb7fa52c23d46dbd9ad3343a5d3faca2e8e",
       "dependencies": [],
       "description": "Use this skill when writing Apex that must check governor limits at runtime before executing expensive operations \u2014 guard clauses, early-exit patterns, Queueable re-queue on limit approach, and batch scope sizing. Trigger keywords: check governor limits before SOQL apex, defensive coding against limits apex, Limits.getDMLStatements getLimitDMLStatements, Limits class usage, guard clause governor limits, remaining SOQL queries Apex, heap size check before DML, LimitException handling. NOT for limit values themselves \u2014 see apex-cpu-and-heap-optimization. NOT for async job design choices \u2014 use the async-selection decision tree. NOT for org-level aggregate limit consumption \u2014 see architect/org-limits-monitoring.",
       "file_location": "skills/apex/apex-limits-monitoring",
@@ -35096,7 +35096,7 @@
         "fd50f16b0f83255de8b5",
         "fd9a732d0ca1e219bdef"
       ],
-      "content_hash": "8d400c38bb7bec0b5382de6e0e71d1780d9d27ea32de78bbd0eb698a480eb06c",
+      "content_hash": "3e03d7f5562a23bca0446dfe992ba4198c72e23699a1e1ea8a5ddea0f1115822",
       "dependencies": [],
       "description": "Use when writing Apex that calls out to external endpoints via Named Credentials, working with custom header formula tokens ({!$Credential.OAuthToken}), querying per-user auth state through the UserExternalCredential SObject, or diagnosing why Named Credential callouts fail. Trigger keywords: 'callout: prefix', 'named credential header formula', 'UserExternalCredential', 'External Credential per-user principal', 'Named Credential oauth token apex'. NOT for Named Credential setup in the Salesforce Setup UI \u2014 use integration/named-credentials-setup. NOT for general HTTP callout mechanics (HttpRequest, HttpResponse, mock patterns) \u2014 use integration/callouts-and-http-integrations.",
       "file_location": "skills/apex/apex-named-credentials-patterns",
@@ -35851,7 +35851,7 @@
         "fbb0adf22342f6562b58",
         "fe49271f4802ad199abf"
       ],
-      "content_hash": "5aa2563ae668295b3ddd83b4e31aa859780f6ac3e6ba7b2e129ec2ff2eabfbdd",
+      "content_hash": "770f03651c901f6c080ff3389d7b9963ec7e2811547f7396bf12fcb0ec18e19f",
       "dependencies": [],
       "description": "Use this skill when writing or debugging SOQL relationship queries in Apex \u2014 child-to-parent dot notation traversal, parent-to-child subqueries, and polymorphic TYPEOF lookups. Trigger keywords: relationship query, subquery, dot notation, getSObjects, TYPEOF, WhatId, WhoId. NOT for aggregate queries (use apex-aggregate-queries), NOT for SOSL text search, NOT for Bulk API data loads (subqueries unsupported there).",
       "file_location": "skills/apex/apex-soql-relationship-queries",
@@ -36077,7 +36077,7 @@
         "fdbdf7b4940892af33ce",
         "feb0cf2aec77add5b632"
       ],
-      "content_hash": "b949c043f47a64491afe2ec6f7fe40a8c0dc471b9dcca207af3a7aa718e5219c",
+      "content_hash": "1fd8d0d8ee66e3fa63bcb78656d19ea4de0b1332fa523806184efa0b355170d5",
       "dependencies": [],
       "description": "Use when designing wrapper or inner classes in Apex to combine SObjects with computed fields, shape data for LWC consumption, or sort collections with Comparable or Comparator. Trigger keywords: wrapper class, inner class, Comparable, Comparator, @AuraEnabled fields, @JsonAccess. NOT for JSON serialization mechanics \u2014 use apex-json-serialization. NOT for LWC data-binding patterns \u2014 use lwc-reactive-state-patterns or lwc-lightning-record-forms.",
       "file_location": "skills/apex/apex-wrapper-class-patterns",

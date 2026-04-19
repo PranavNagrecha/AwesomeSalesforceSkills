@@ -4,7 +4,7 @@ description: "Use this skill when writing or debugging SOQL relationship queries
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:
-  - Performance Efficiency
+  - Performance
   - Reliability
 triggers:
   - "soql parent to child subquery apex getSObjects iterate related records"

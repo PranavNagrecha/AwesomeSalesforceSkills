@@ -63,7 +63,7 @@
     "fbb0adf22342f6562b58",
     "fe49271f4802ad199abf"
   ],
-  "content_hash": "5aa2563ae668295b3ddd83b4e31aa859780f6ac3e6ba7b2e129ec2ff2eabfbdd",
+  "content_hash": "770f03651c901f6c080ff3389d7b9963ec7e2811547f7396bf12fcb0ec18e19f",
   "dependencies": [],
   "description": "Use this skill when writing or debugging SOQL relationship queries in Apex \u2014 child-to-parent dot notation traversal, parent-to-child subqueries, and polymorphic TYPEOF lookups. Trigger keywords: relationship query, subquery, dot notation, getSObjects, TYPEOF, WhatId, WhoId. NOT for aggregate queries (use apex-aggregate-queries), NOT for SOSL text search, NOT for Bulk API data loads (subqueries unsupported there).",
   "file_location": "skills/apex/apex-soql-relationship-queries",

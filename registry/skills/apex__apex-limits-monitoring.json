@@ -68,7 +68,7 @@
     "f8435f180d62951245fd",
     "fabc3dc3247e556b11c1"
   ],
-  "content_hash": "4b047e4c2a37e816bc8a8ab9548cf3f6dce63067c82eeb34bd5c7d8ba413a154",
+  "content_hash": "7d98eb66750c2f8e468212a9ecd01cb7fa52c23d46dbd9ad3343a5d3faca2e8e",
   "dependencies": [],
   "description": "Use this skill when writing Apex that must check governor limits at runtime before executing expensive operations \u2014 guard clauses, early-exit patterns, Queueable re-queue on limit approach, and batch scope sizing. Trigger keywords: check governor limits before SOQL apex, defensive coding against limits apex, Limits.getDMLStatements getLimitDMLStatements, Limits class usage, guard clause governor limits, remaining SOQL queries Apex, heap size check before DML, LimitException handling. NOT for limit values themselves \u2014 see apex-cpu-and-heap-optimization. NOT for async job design choices \u2014 use the async-selection decision tree. NOT for org-level aggregate limit consumption \u2014 see architect/org-limits-monitoring.",
   "file_location": "skills/apex/apex-limits-monitoring",

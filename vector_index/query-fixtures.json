@@ -5369,6 +5369,66 @@
       "expected_skill": "apex/apex-collections-patterns",
       "domain": "apex",
       "top_k": 3
+    },
+    {
+      "query": "chain batch apex jobs run sequentially after completion",
+      "domain": "apex",
+      "expected_skill": "apex/apex-batch-chaining",
+      "top_k": 3
+    },
+    {
+      "query": "batch finish method enqueue next job dependency",
+      "domain": "apex",
+      "expected_skill": "apex/apex-batch-chaining",
+      "top_k": 3
+    },
+    {
+      "query": "monitor apex governor limits during transaction SOQL CPU heap",
+      "domain": "apex",
+      "expected_skill": "apex/apex-limits-monitoring",
+      "top_k": 3
+    },
+    {
+      "query": "Limits.getQueries getDmlRows getCpuTime approaching ceiling alert",
+      "domain": "apex",
+      "expected_skill": "apex/apex-limits-monitoring",
+      "top_k": 3
+    },
+    {
+      "query": "queueable finalizer handle failure retry apex async",
+      "domain": "apex",
+      "expected_skill": "apex/apex-transaction-finalizers",
+      "top_k": 3
+    },
+    {
+      "query": "Database.Queueable System.FinalizerContext error handling",
+      "domain": "apex",
+      "expected_skill": "apex/apex-transaction-finalizers",
+      "top_k": 3
+    },
+    {
+      "query": "named credential oauth apex callout external system",
+      "domain": "apex",
+      "expected_skill": "apex/apex-named-credentials-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "HttpRequest setEndpoint callout colon named credential auth header",
+      "domain": "apex",
+      "expected_skill": "apex/apex-named-credentials-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "apex wrapper class sort selected checkbox visualforce lwc",
+      "domain": "apex",
+      "expected_skill": "apex/apex-wrapper-class-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "custom sort comparable wrapper inner class list",
+      "domain": "apex",
+      "expected_skill": "apex/apex-wrapper-class-patterns",
+      "top_k": 3
     }
   ]
 }

@@ -5,7 +5,7 @@ category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:
   - Reliability
-  - Performance Efficiency
+  - Performance
 triggers:
   - "chain batch jobs apex finish"
   - "run batch after batch completes"

@@ -67,7 +67,7 @@
     "fdbdf7b4940892af33ce",
     "feb0cf2aec77add5b632"
   ],
-  "content_hash": "b949c043f47a64491afe2ec6f7fe40a8c0dc471b9dcca207af3a7aa718e5219c",
+  "content_hash": "1fd8d0d8ee66e3fa63bcb78656d19ea4de0b1332fa523806184efa0b355170d5",
   "dependencies": [],
   "description": "Use when designing wrapper or inner classes in Apex to combine SObjects with computed fields, shape data for LWC consumption, or sort collections with Comparable or Comparator. Trigger keywords: wrapper class, inner class, Comparable, Comparator, @AuraEnabled fields, @JsonAccess. NOT for JSON serialization mechanics \u2014 use apex-json-serialization. NOT for LWC data-binding patterns \u2014 use lwc-reactive-state-patterns or lwc-lightning-record-forms.",
   "file_location": "skills/apex/apex-wrapper-class-patterns",

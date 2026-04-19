@@ -4,7 +4,7 @@ description: "Use when serializing Apex objects to JSON strings or deserializing
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:
-  - Performance Efficiency
+  - Performance
   - Reliability
 triggers:
   - "suppress null fields in JSON serialization Apex callout payload"
