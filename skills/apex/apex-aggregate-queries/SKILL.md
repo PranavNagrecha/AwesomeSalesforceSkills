@@ -4,7 +4,7 @@ description: "Use this skill when writing SOQL aggregate queries in Apex — GRO
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:
-  - Performance Efficiency
+  - Performance
 triggers:
   - "soql aggregate groupby apex — practitioner needs GROUP BY with COUNT, SUM, AVG, MIN, or MAX in Apex"
   - "count sum group by salesforce aggregateresult — developer iterating AggregateResult rows and reading field values"

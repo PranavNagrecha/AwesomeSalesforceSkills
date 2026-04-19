@@ -4,7 +4,7 @@ description: "Use when designing wrapper or inner classes in Apex to combine SOb
 category: apex
 salesforce-version: "Spring '24+"
 well-architected-pillars:
-  - Performance Efficiency
+  - Performance
   - Reliability
 triggers:
   - "apex wrapper class SObject computed field combine rollup display LWC"

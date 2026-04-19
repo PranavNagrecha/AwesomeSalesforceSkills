@@ -62,7 +62,7 @@
     "f54e1ed104c351300a36",
     "f590a8e270df904281bd"
   ],
-  "content_hash": "e7d872416df0fc3f410e7bd795abee521fcb11f0a8d9b673c0c73e9db5742d99",
+  "content_hash": "9eb2ca64b79a17e52852bc890a83351ffc0c66614330883dd18c01ad30cbaa3f",
   "dependencies": [
     "batch-apex-patterns",
     "apex-queueable-patterns"

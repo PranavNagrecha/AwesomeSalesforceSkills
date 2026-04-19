@@ -5,7 +5,7 @@ category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:
   - Reliability
-  - Performance Efficiency
+  - Performance
 triggers:
   - "partial DML success apex Database.insert allOrNone false"
   - "SaveResult isSuccess getErrors loop apex bulk insert"

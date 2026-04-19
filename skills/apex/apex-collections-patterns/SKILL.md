@@ -4,7 +4,7 @@ description: "Use when designing, reviewing, or debugging Apex code that relies 
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:
-  - Performance Efficiency
+  - Performance
   - Reliability
 triggers:
   - "Map containsKey guard null pointer exception apex collections"
