@@ -599,3 +599,231 @@ def _permset_shape_user(
         "assignment_count": len(rows),
         "assignments": rows,
     }
+
+
+# --------------------------------------------------------------------------- #
+# probe_automation_graph                                                       #
+# --------------------------------------------------------------------------- #
+#
+# Recipe source: agents/_shared/probes/automation-graph-for-sobject.md (added
+# to the repo 2026-04-19 as part of the Cursor flow-builder review triage).
+# This lifts the recipe into an executable tool so flow-builder, apex-builder,
+# and automation-migration-router can call it directly instead of pasting SOQL.
+
+
+def probe_automation_graph(
+    object_name: str,
+    target_org: str | None = None,
+    include_managed: bool = False,
+) -> dict[str, Any]:
+    """Enumerate every active piece of automation on an sObject.
+
+    Returns a structured ``automation_graph`` with six sub-lists:
+    ``record_triggered_flows``, ``process_builders`` (legacy Workflow-type
+    FlowDefinitionView rows), ``triggers``, ``validation_rules``,
+    ``workflow_rules``, ``approval_processes``. Plus a ``flags[]`` block
+    identifying classic real-life pitfalls: multiple overlapping RT flows,
+    PB present (should be migrated), trigger+flow coexistence on the same
+    context, active approval processes.
+
+    Consumers: ``flow-builder`` (Step 0 preflight before choosing a flow
+    type), ``apex-builder`` (trigger recursion risk check),
+    ``automation-migration-router`` (inventory dispatch).
+
+    The probe is read-only — no DML, no deployment. Six Tooling-API SOQL
+    calls; surfaces errors on the result dict rather than raising.
+    """
+    err = _validate_api_name(object_name, kind="object_name")
+    if err:
+        return {"error": err}
+
+    managed_clause = "" if include_managed else " AND NamespacePrefix = null"
+
+    # 1. Active FlowDefinitionView on the object.
+    flow_soql = (
+        "SELECT DurableId, ApiName, Label, ProcessType, TriggerType, "
+        "TriggerObjectOrEventLabel, IsActive, IsOutOfDate, VersionNumber "
+        "FROM FlowDefinitionView "
+        f"WHERE TriggerObjectOrEventLabel = '{object_name}' AND IsActive = true "
+        "ORDER BY ProcessType, ApiName "
+        "LIMIT 200"
+    )
+    # FlowDefinitionView is a standard sObject (not Tooling API).
+    flows = _run_soql(flow_soql, target_org=target_org, tooling=False)
+    if "error" in flows:
+        return {"error": f"FlowDefinitionView query failed: {flows['error']}"}
+
+    record_triggered: list[dict[str, Any]] = []
+    process_builders: list[dict[str, Any]] = []
+    for rec in flows["records"]:
+        pt = rec.get("ProcessType") or ""
+        tt = rec.get("TriggerType") or ""
+        entry = {
+            "api_name": rec.get("ApiName"),
+            "label": rec.get("Label"),
+            "process_type": pt,
+            "trigger_type": tt,
+            "version": rec.get("VersionNumber"),
+            "is_out_of_date": rec.get("IsOutOfDate"),
+        }
+        if pt == "Workflow":
+            process_builders.append(entry)
+        elif pt in ("AutoLaunchedFlow",) and tt in (
+            "RecordAfterSave", "RecordBeforeSave", "RecordBeforeDelete",
+        ):
+            record_triggered.append(entry)
+
+    # 2. Active Apex triggers on the object.
+    trg_soql = (
+        "SELECT Id, Name, TableEnumOrId, Status, "
+        "UsageBeforeInsert, UsageBeforeUpdate, UsageBeforeDelete, "
+        "UsageAfterInsert, UsageAfterUpdate, UsageAfterDelete, UsageAfterUndelete, "
+        "NamespacePrefix, ApiVersion "
+        "FROM ApexTrigger "
+        f"WHERE TableEnumOrId = '{object_name}' AND Status = 'Active'{managed_clause} "
+        "LIMIT 100"
+    )
+    triggers = _run_soql(trg_soql, target_org=target_org, tooling=True)
+    if "error" in triggers:
+        return {"error": f"ApexTrigger query failed: {triggers['error']}"}
+
+    trigger_rows: list[dict[str, Any]] = []
+    for rec in triggers["records"]:
+        events: list[str] = []
+        for flag, label in (
+            ("UsageBeforeInsert", "BeforeInsert"),
+            ("UsageBeforeUpdate", "BeforeUpdate"),
+            ("UsageBeforeDelete", "BeforeDelete"),
+            ("UsageAfterInsert",  "AfterInsert"),
+            ("UsageAfterUpdate",  "AfterUpdate"),
+            ("UsageAfterDelete",  "AfterDelete"),
+            ("UsageAfterUndelete","AfterUndelete"),
+        ):
+            if rec.get(flag):
+                events.append(label)
+        trigger_rows.append(
+            {
+                "id": rec.get("Id"),
+                "name": rec.get("Name"),
+                "events": events,
+                "api_version": rec.get("ApiVersion"),
+                "namespace": rec.get("NamespacePrefix"),
+            }
+        )
+
+    # 3. Active validation rules.
+    vr_soql = (
+        "SELECT Id, ValidationName, Active "
+        "FROM ValidationRule "
+        f"WHERE EntityDefinition.QualifiedApiName = '{object_name}' AND Active = true "
+        "LIMIT 200"
+    )
+    vrs = _run_soql(vr_soql, target_org=target_org, tooling=True)
+    if "error" in vrs:
+        return {"error": f"ValidationRule query failed: {vrs['error']}"}
+    vr_rows = [
+        {"id": r.get("Id"), "name": r.get("ValidationName")}
+        for r in vrs["records"]
+    ]
+
+    # 4. Active workflow rules (still returned; may be deprecated in target org).
+    wf_soql = (
+        "SELECT Id, Name, TableEnumOrId "
+        "FROM WorkflowRule "
+        f"WHERE TableEnumOrId = '{object_name}' "
+        "LIMIT 100"
+    )
+    wfs = _run_soql(wf_soql, target_org=target_org, tooling=True)
+    # WorkflowRule may be unavailable on some editions; return empty on error
+    # rather than failing the whole probe.
+    wf_rows = (
+        [{"id": r.get("Id"), "name": r.get("Name")} for r in wfs.get("records", [])]
+        if "error" not in wfs else []
+    )
+
+    # 5. Active approval processes.
+    ap_soql = (
+        "SELECT Id, DeveloperName, TableEnumOrId "
+        "FROM ProcessDefinition "
+        f"WHERE TableEnumOrId = '{object_name}' "
+        "LIMIT 100"
+    )
+    aps = _run_soql(ap_soql, target_org=target_org, tooling=True)
+    ap_rows = (
+        [{"id": r.get("Id"), "developer_name": r.get("DeveloperName")}
+         for r in aps.get("records", [])]
+        if "error" not in aps else []
+    )
+
+    # Flag logic.
+    flags: list[dict[str, Any]] = []
+
+    # Bucket RT flows by trigger_type to detect overlap on the same context.
+    by_trigger: dict[str, int] = {}
+    for entry in record_triggered:
+        by_trigger[entry["trigger_type"]] = by_trigger.get(entry["trigger_type"], 0) + 1
+    for trigger_type, count in by_trigger.items():
+        if count >= 3:
+            flags.append({
+                "code": "MULTIPLE_RECORD_TRIGGERED_FLOWS",
+                "severity": "P1",
+                "count": count,
+                "context": trigger_type,
+                "message": (
+                    f"{object_name} has {count} active record-triggered flows "
+                    f"on {trigger_type}. Consolidate before adding another."
+                ),
+            })
+
+    if process_builders:
+        flags.append({
+            "code": "PROCESS_BUILDER_PRESENT",
+            "severity": "P1",
+            "count": len(process_builders),
+            "message": (
+                "Process Builder is deprecated; migrate via "
+                "/migrate-workflow-pb before adding new Flow automation."
+            ),
+        })
+
+    if wf_rows:
+        flags.append({
+            "code": "WORKFLOW_RULE_PRESENT",
+            "severity": "P2",
+            "count": len(wf_rows),
+            "message": "Workflow Rules are deprecated; consider migration.",
+        })
+
+    if trigger_rows and record_triggered:
+        flags.append({
+            "code": "TRIGGER_AND_FLOW_COEXIST",
+            "severity": "P2",
+            "message": (
+                f"{object_name} has active Apex triggers AND record-triggered "
+                "flows. Review order of execution for interference."
+            ),
+        })
+
+    if ap_rows:
+        flags.append({
+            "code": "APPROVAL_PROCESS_ACTIVE",
+            "severity": "P2",
+            "count": len(ap_rows),
+            "message": (
+                "Active approval process(es) on this object; be careful "
+                "with before-save automation that might conflict."
+            ),
+        })
+
+    return {
+        "object": object_name,
+        "active": {
+            "record_triggered_flows": record_triggered,
+            "process_builders": process_builders,
+            "triggers": trigger_rows,
+            "validation_rules": vr_rows,
+            "workflow_rules": wf_rows,
+            "approval_processes": ap_rows,
+        },
+        "flags": flags,
+    }

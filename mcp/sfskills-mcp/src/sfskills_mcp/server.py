@@ -1,7 +1,7 @@
 """FastMCP server exposing SfSkills + live-org + agent tools.
 
 Run with ``python -m sfskills_mcp`` (stdio transport). The server registers
-nineteen tools:
+twenty-three tools:
 
 Skill library:
 - ``search_skill``
@@ -22,15 +22,22 @@ Live-org (admin metadata):
 - ``list_approval_processes``
 - ``tooling_query`` (read-only escape hatch)
 
-Probes (promoted from agents/_shared/probes/ in Wave 2):
+Probes (promoted from agents/_shared/probes/):
 - ``probe_apex_references``
 - ``probe_flow_references``
 - ``probe_matching_rules``
 - ``probe_permset_shape``
+- ``probe_automation_graph`` (added 2026-04-19 — flow-builder Step 0 preflight,
+  apex-builder recursion check)
 
 Agents:
 - ``list_agents``
 - ``get_agent``
+
+Meta / session bootstrap (added 2026-04-19 for the MCP double-down):
+- ``list_deprecated_redirects`` — retired agent ids → canonical router
+- ``get_invocation_modes`` — the 15 channels this library exposes
+- ``emit_envelope`` — atomic write of agent output envelope + paired markdown
 
 Each tool returns JSON-serializable dicts. Errors are returned as fields on
 the response (``{"error": ...}``) rather than raised, so MCP clients can
@@ -43,7 +50,7 @@ from typing import Any
 
 from mcp.server.fastmcp import FastMCP
 
-from . import admin, agents, org, probes, skills
+from . import admin, agents, meta, org, probes, skills
 
 
 SERVER_INSTRUCTIONS = """\
@@ -433,6 +440,88 @@ def build_server() -> FastMCP:
     )
     def get_agent(agent_name: str) -> dict[str, Any]:
         return agents.get_agent(agent_name=agent_name)
+
+    # --- Meta / session-bootstrap tools ----------------------------------- #
+
+    @mcp.tool(
+        name="list_deprecated_redirects",
+        description=(
+            "Return the map of retired agent ids → canonical router + flag. "
+            "Call this once per session; before get_agent, check whether the "
+            "requested id is in this map and redirect. Example: "
+            "'validation-rule-auditor' → {'router': 'audit-router', "
+            "'flag': '--domain=validation_rule'}. Prevents routing to a "
+            "deprecation stub."
+        ),
+    )
+    def list_deprecated_redirects() -> dict[str, Any]:
+        return meta.list_deprecated_redirects()
+
+    @mcp.tool(
+        name="get_invocation_modes",
+        description=(
+            "Return docs/agent-invocation-modes.md — the 15 channels this "
+            "library can be consumed through (MCP, slash commands, bundle "
+            "export, informal chat, CI harness, subagents, etc.) plus a "
+            "Quick Picker. MCP is Channel 1 and the canonical channel. "
+            "Call this once at session start to match the user's situation "
+            "to the right channel."
+        ),
+    )
+    def get_invocation_modes() -> dict[str, Any]:
+        return meta.get_invocation_modes()
+
+    @mcp.tool(
+        name="emit_envelope",
+        description=(
+            "Atomically write an agent's output envelope JSON + paired "
+            "markdown report to docs/reports/<agent>/<run_id>.{json,md} per "
+            "docs/consumer-responsibilities.md. Use this at the END of any "
+            "runtime agent run so the deliverable persists beyond the chat "
+            "session. Overwrite protection is ON by default. Returns the "
+            "written paths; returns {error, partial_write} on failure."
+        ),
+    )
+    def emit_envelope(
+        agent: str,
+        run_id: str,
+        envelope: dict[str, Any],
+        markdown_report: str,
+        overwrite: bool = False,
+    ) -> dict[str, Any]:
+        return meta.emit_envelope(
+            agent=agent,
+            run_id=run_id,
+            envelope=envelope,
+            markdown_report=markdown_report,
+            overwrite=overwrite,
+        )
+
+    # --- Extra probe ------------------------------------------------------ #
+
+    @mcp.tool(
+        name="probe_automation_graph",
+        description=(
+            "Enumerate every active automation on a given sObject: "
+            "record-triggered flows (grouped by trigger context), legacy "
+            "Process Builders, active Apex triggers (with event usage), "
+            "validation rules, workflow rules, and approval processes. "
+            "Returns a flags[] block with codes like "
+            "MULTIPLE_RECORD_TRIGGERED_FLOWS, PROCESS_BUILDER_PRESENT, "
+            "TRIGGER_AND_FLOW_COEXIST. flow-builder Step 0 preflight; "
+            "apex-builder recursion-risk check."
+        ),
+    )
+    def probe_automation_graph(
+        object_name: str,
+        target_org: str | None = None,
+        include_managed: bool = False,
+    ) -> dict[str, Any]:
+        return probes.probe_automation_graph(
+            object_name=object_name,
+            target_org=target_org,
+            include_managed=include_managed,
+        )
 
     return mcp
 

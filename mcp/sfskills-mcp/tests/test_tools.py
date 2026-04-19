@@ -45,14 +45,19 @@ EXPECTED_TOOLS = {
     "list_named_credentials",
     "list_approval_processes",
     "tooling_query",
-    # Probes (4, Wave-2 promotion)
+    # Probes (5 — Wave-2 promotion + 2026-04-19 automation graph)
     "probe_apex_references",
     "probe_flow_references",
     "probe_matching_rules",
     "probe_permset_shape",
+    "probe_automation_graph",
     # Agents (2)
     "list_agents",
     "get_agent",
+    # Meta / session bootstrap (3, added 2026-04-19 for MCP double-down)
+    "list_deprecated_redirects",
+    "get_invocation_modes",
+    "emit_envelope",
 }
 
 
@@ -99,14 +104,16 @@ class TestProbeInputValidation(unittest.TestCase):
             self.assertIn("error", result, f"Expected error for scope={bad!r}")
 
     def test_expected_tool_count(self):
-        """Documentation asserts 19 tools in Wave 2. Guard against drift.
+        """2026-04-19 baseline: 23 tools (19 Wave-2 + 4 MCP double-down:
+        probe_automation_graph, list_deprecated_redirects,
+        get_invocation_modes, emit_envelope).
 
         Changing this number without updating ``server.py``'s module docstring
         + ``EXPECTED_TOOLS`` + ``docs/SKILLS.md`` is a failure by design.
         """
         self.assertEqual(
-            len(EXPECTED_TOOLS), 19,
-            "Wave 2 baseline is 19 tools — update docstring if intentional",
+            len(EXPECTED_TOOLS), 23,
+            "2026-04-19 baseline is 23 tools — update docstring if intentional",
         )
 
 

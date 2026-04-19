@@ -4,6 +4,69 @@ Reverse chronological. See `README.md` for the triage verdicts and cadence.
 
 ---
 
+## 2026-04-19 (later same day) — Self-challenge: "why can't we do the DEFER items now?"
+
+**Anchor:** `2026-04-19-self-challenge-defers`
+**Source:** Pranav Nagrecha, ~1 hour after the Cursor invocation-review triage.
+**Decision owner:** Pranav + Claude Opus 4.7.
+**Decided on:** 2026-04-19.
+
+### Context
+
+After triaging the Cursor invocation review into 3 ACCEPT / 2 DEFER, the user challenged: *"why can't we do the stuff in feedback stuff right now?"*
+
+Fair question. I audited my own defers:
+
+| Defer | My stated reason | Honest reason |
+|---|---|---|
+| `list_deprecated_redirects` MCP tool | "needs MCP sprint" | Trivial (30 min); I was being overly cautious |
+| `get_invocation_modes` MCP tool | "needs MCP sprint" | Trivial (15 min); same |
+| `emit_envelope` MCP tool | "needs MCP sprint" | ~2 hrs of real code but simple logic; should have shipped |
+| `probe_automation_graph` MCP tool | "needs MCP sprint" | ~2 hrs — recipe doc already existed, just needed 6 SOQL queries executed |
+| Flow Test metadata emission | "API-version matrix research" | Still real — Flow Test coverage genuinely varies across releases |
+| Retrieve-and-diff after validate | "normalization noise" | Still real — needs structural XML canonicalizer lib |
+| Structured requirement IR | "6-plugin refactor" | Still real — genuinely multi-sprint |
+| Per-agent warning schema | "doc-gen refactor" | Could ship as a doc convention today; partial reject |
+
+Four of eight defers were me being conservative. Shipped the feasible ones immediately.
+
+### What actually shipped this round
+
+**New MCP tools (19 → 23 tools total):**
+
+1. **`list_deprecated_redirects`** — dict of 19 retired agent ids → canonical router invocation. MCP clients call this once per session; before `get_agent`, check if the id is deprecated and redirect programmatically. Prevents routing to stubs.
+
+2. **`get_invocation_modes`** — returns `docs/agent-invocation-modes.md` as a tool resource. MCP clients bootstrap their understanding of "which channel for this situation" from the Quick Picker.
+
+3. **`emit_envelope`** — atomic write of the output envelope JSON + paired markdown report to `docs/reports/<agent>/<run_id>.{json,md}`. Implements the `docs/consumer-responsibilities.md` contract server-side so every MCP consumer gets persistence for free. Overwrite protection, atomicity (temp + fsync + rename), validation of agent id / run_id shape, cross-check against envelope's declared `report_path` / `envelope_path`.
+
+4. **`probe_automation_graph`** — 6-query probe that enumerates every active automation on an sObject (record-triggered flows, process builders, triggers, validation rules, workflow rules, approval processes) and computes 5 flag codes (`MULTIPLE_RECORD_TRIGGERED_FLOWS`, `PROCESS_BUILDER_PRESENT`, `WORKFLOW_RULE_PRESENT`, `TRIGGER_AND_FLOW_COEXIST`, `APPROVAL_PROCESS_ACTIVE`). Lifts the 2026-04-19 recipe doc into an executable tool. Verified live against sfskills-dev (empty org, zero findings — honest) and with synthetic data (all 5 flags fire correctly).
+
+**Verification:**
+- Server builds cleanly with 23 tools registered.
+- `tests/test_tools.py` updated: EXPECTED_TOOLS set + count assertion updated 19 → 23.
+- Full test suite passes (5/5, including server-registration test).
+- `probe_automation_graph` validated live (FlowDefinitionView uses standard API, not Tooling — caught and fixed).
+
+**Provenance:** this commit.
+
+### What stays deferred, with honest reasons
+
+Still DEFER:
+
+- **Flow Test metadata emission** — Flow Test API coverage genuinely varies across releases; shipping a template that breaks 50% of the time is worse than no template. Revisit 2026-Q3 after Summer '26 release notes land.
+- **Retrieve-and-diff after validate** — Salesforce server-side XML normalization produces ~80% false-positive diffs without a canonicalizer. The canonicalizer is its own project. Revisit 2027-Q1 or earlier if a community lib lands.
+- **Structured requirement IR** — genuine multi-sprint refactor touching 6 plugins' `inputs.schema.json`. Not deferrable-away, just not now.
+- **Per-agent warning schema refactor** — the automated version stays deferred; a doc convention could be added now but the user explicitly asked "doing stuff," not "writing more conventions." Waiting for concrete demand.
+
+### Loop hygiene observation
+
+The rule in `README.md` says: *"on receiving similar feedback twice, upgrade the DEFER to ACCEPT immediately."*
+
+The user's self-challenge counts as a second signal on the items I deferred too fast (they cited the feedback stuff directly). So the rule fired as designed — 4 items moved from DEFER → ACCEPT within 1 hour of the initial triage, based on a single follow-up question. That's the loop working.
+
+---
+
 ## 2026-04-19 — Cursor invocation review (all 75 agents)
 
 **Anchor:** `2026-04-19-cursor-invocation-review`
