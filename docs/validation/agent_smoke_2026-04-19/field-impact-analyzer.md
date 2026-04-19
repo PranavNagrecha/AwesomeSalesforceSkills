@@ -1,7 +1,7 @@
 # Agent Smoke Test — `field-impact-analyzer`
 
 **Date:** 2026-04-19
-**Status:** ❌ FAIL
+**Status:** ✅ PASS
 **Agent version:** `1.0.0`
 **Class:** `runtime`
 **Modes:** ``
@@ -9,7 +9,7 @@
 
 ## TL;DR for humans
 
-Agent `field-impact-analyzer` has **1** structural / dependency issue(s). See details below.
+Agent `field-impact-analyzer` passed all structural + dependency checks. Its declared dependencies exist, its slash-command exists, and its frontmatter is schema-valid.
 
 ## What the smoke test did
 
@@ -23,10 +23,10 @@ Agent `field-impact-analyzer` has **1** structural / dependency issue(s). See de
 |---|---|---|
 | Required sections present + in order | ✅ | (none) |
 | Citations resolve to real files | ✅ | (none) |
-| Dependencies cover all citations | ❌ | probe cited but not declared in dependencies: apex-references-to-field.md |
+| Dependencies cover all citations | ✅ | (none) |
 | Slash-command coverage | ✅ | covered by /analyze-field-impact |
 | Inputs schema valid JSON (if present) | ✅ | (none) |
-| Declared probes executable | ✅ | (none) |
+| Declared probes executable | ✅ | probe_validation_report not found — run validate_probes_against_org.py first |
 
 ## Machine-readable result
 
@@ -34,7 +34,7 @@ Agent `field-impact-analyzer` has **1** structural / dependency issue(s). See de
 {
   "agent": "field-impact-analyzer",
   "date": "2026-04-19",
-  "overall_pass": false,
+  "overall_pass": true,
   "any_soft": false,
   "checks": [
     {
@@ -51,11 +51,9 @@ Agent `field-impact-analyzer` has **1** structural / dependency issue(s). See de
     },
     {
       "name": "Dependencies cover all citations",
-      "pass": false,
+      "pass": true,
       "soft": false,
-      "messages": [
-        "probe cited but not declared in dependencies: apex-references-to-field.md"
-      ]
+      "messages": []
     },
     {
       "name": "Slash-command coverage",
@@ -75,7 +73,9 @@ Agent `field-impact-analyzer` has **1** structural / dependency issue(s). See de
       "name": "Declared probes executable",
       "pass": true,
       "soft": false,
-      "messages": []
+      "messages": [
+        "probe_validation_report not found \u2014 run validate_probes_against_org.py first"
+      ]
     }
   ]
 }

@@ -28,6 +28,8 @@ dependencies:
     - DELIVERABLE_CONTRACT.md
   templates:
     - admin/naming-conventions.md
+  probes:
+    - apex-references-to-field.md
 ---
 # Field Impact Analyzer Agent
 

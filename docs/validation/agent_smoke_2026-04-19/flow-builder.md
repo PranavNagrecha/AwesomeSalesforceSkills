@@ -26,7 +26,7 @@ Agent `flow-builder` passed all structural + dependency checks. Its declared dep
 | Dependencies cover all citations | ✅ | (none) |
 | Slash-command coverage | ✅ | covered by /build-flow |
 | Inputs schema valid JSON (if present) | ✅ | (none) |
-| Declared probes executable | ✅ | (none) |
+| Declared probes executable | ✅ | probe_validation_report not found — run validate_probes_against_org.py first |
 
 ## Machine-readable result
 
@@ -73,7 +73,9 @@ Agent `flow-builder` passed all structural + dependency checks. Its declared dep
       "name": "Declared probes executable",
       "pass": true,
       "soft": false,
-      "messages": []
+      "messages": [
+        "probe_validation_report not found \u2014 run validate_probes_against_org.py first"
+      ]
     }
   ]
 }

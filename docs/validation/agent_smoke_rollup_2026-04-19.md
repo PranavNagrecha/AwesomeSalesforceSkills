@@ -2,8 +2,8 @@
 
 **Org:** `sfskills-dev` (API v66.0)
 **Total agents tested:** 42
-**Passed:** 41
-**Failed:** 1
+**Passed:** 42
+**Failed:** 0
 
 Per-agent reports: `docs/validation/agent_smoke_2026-04-19/<agent-id>.md`
 
@@ -28,6 +28,7 @@ Per-agent reports: `docs/validation/agent_smoke_2026-04-19/<agent-id>.md`
 | `email-template-modernizer` | ✅ | 0 | 0 |
 | `entitlement-and-milestone-designer` | ✅ | 0 | 0 |
 | `experience-cloud-admin-designer` | ✅ | 0 | 0 |
+| `field-impact-analyzer` | ✅ | 0 | 0 |
 | `flow-analyzer` | ✅ | 0 | 0 |
 | `flow-builder` | ✅ | 0 | 0 |
 | `flow-orchestrator-designer` | ✅ | 0 | 0 |
@@ -50,4 +51,3 @@ Per-agent reports: `docs/validation/agent_smoke_2026-04-19/<agent-id>.md`
 | `trigger-consolidator` | ✅ | 0 | 0 |
 | `user-access-diff` | ✅ | 0 | 0 |
 | `waf-assessor` | ✅ | 0 | 0 |
-| `field-impact-analyzer` | ❌ | 1 | 0 |
