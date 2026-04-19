@@ -54,7 +54,7 @@
     "f27eefec50e6efb5f2a8",
     "fd591329354e7172379f"
   ],
-  "content_hash": "b79deb85165b27eb18d83c503c074f45941a536d0530a87be97b8f14ecc35e7e",
+  "content_hash": "cf5919e4b1a626287da9baedc73a087098e6d9a7119420c0661d071b75fea26e",
   "dependencies": [],
   "description": "Use when designing or reviewing OmniScripts for guided experiences, step structure, branching, save/resume, and the boundary between OmniScript, Integration Procedures, DataRaptors, and custom LWCs. Triggers: 'omniscript design', 'too many steps in omniscript', 'save and resume omniscript', 'branching in omniscript', 'when should this be an integration procedure'. NOT for deep Integration Procedure or DataRaptor design when the guided interaction layer is not the main concern.",
   "file_location": "skills/omnistudio/omniscript-design-patterns",
@@ -82,6 +82,7 @@
     "skills/omnistudio/omniscript-design-patterns/references/well-architected.md"
   ],
   "scripts": [
+    "skills/omnistudio/omniscript-design-patterns/scripts/__pycache__/check_omniscript_design_patterns.cpython-314.pyc",
     "skills/omnistudio/omniscript-design-patterns/scripts/check_omniscript_design_patterns.py"
   ],
   "tags": [

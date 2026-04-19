@@ -91,7 +91,7 @@
     "fe44b11feec5264e7a30",
     "fe711fb2cbe66c2010ba"
   ],
-  "content_hash": "b2610eeb392e60551d191be91878873f9db69d4b0091698855b2c3d34b5cf5fd",
+  "content_hash": "d1f80be76226b1f82bc48fe610324486599db421b0ef3fb266c5f976ca903c53",
   "dependencies": [],
   "description": "Use this skill when building Lightning Web Components that query, display, or accept feedback on Salesforce Knowledge articles \u2014 covering Knowledge__kav SOQL/SOSL retrieval via Apex, caching strategy, and Experience Cloud guest access. NOT for Knowledge admin setup (article types, data categories, channels), Einstein Article Recommendations configuration, or Flow-based article surfacing.",
   "file_location": "skills/lwc/knowledge-article-lwc",
@@ -126,6 +126,7 @@
     "skills/lwc/knowledge-article-lwc/references/well-architected.md"
   ],
   "scripts": [
+    "skills/lwc/knowledge-article-lwc/scripts/__pycache__/check_knowledge_article_lwc.cpython-314.pyc",
     "skills/lwc/knowledge-article-lwc/scripts/check_knowledge_article_lwc.py"
   ],
   "tags": [

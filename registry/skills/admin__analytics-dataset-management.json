@@ -83,7 +83,7 @@
     "f4cfc3aba27cbe1298d3",
     "fa1b4b5e7b69fc69abdb"
   ],
-  "content_hash": "d5386626b97dac71530e4df8f38415f9a886a23971191238044bcf152f886f4f",
+  "content_hash": "5970ee71bbcfce30f7aeba3e0f2413dbef77b82d3a5f2f0c252d8563e7abf2ed",
   "dependencies": [],
   "description": "Use when creating or managing CRM Analytics datasets: configuring dataflows, scheduling refreshes, selecting fields, handling date types, managing row-count growth, or troubleshooting stale or broken datasets. Triggers: 'dataset creation', 'dataflow schedule', 'dataflow quota', 'date field not filterable', 'dataset row limit', 'CRM Analytics data refresh', 'field type mismatch in dataset'. NOT for standard Salesforce report types or choosing between analytics tools.",
   "file_location": "skills/admin/analytics-dataset-management",
@@ -117,6 +117,7 @@
     "skills/admin/analytics-dataset-management/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/analytics-dataset-management/scripts/__pycache__/check_analytics_dataset_management.cpython-314.pyc",
     "skills/admin/analytics-dataset-management/scripts/check_analytics_dataset_management.py"
   ],
   "tags": [

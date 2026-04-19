@@ -74,7 +74,7 @@
     "f4e41da06614155eecb7",
     "fb353e00505c5b8bb15e"
   ],
-  "content_hash": "78c93babd46801e113022df5c4c9a2607569a07eba98ce39300701a7576be647",
+  "content_hash": "f60712c00f58b9b5af1b44f92474c70881310f33fced43818841db199ac81682",
   "dependencies": [],
   "description": "Distinguish the six real reasons a Salesforce query can 'fail', and the protocol for diagnosing before declaring. Covers: object doesn't exist, not queryable in edition, permission-denied, field-level errors, namespace prefix missing, API version mismatch. NOT for SOQL performance tuning (use soql-optimization-patterns). NOT for Bulk API payload issues (use bulk-api-2-patterns).",
   "file_location": "skills/admin/salesforce-object-queryability",
@@ -105,6 +105,7 @@
     "skills/admin/salesforce-object-queryability/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/salesforce-object-queryability/scripts/__pycache__/check_salesforce_object_queryability.cpython-314.pyc",
     "skills/admin/salesforce-object-queryability/scripts/check_salesforce_object_queryability.py"
   ],
   "tags": [

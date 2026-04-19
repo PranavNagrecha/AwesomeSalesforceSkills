@@ -81,7 +81,7 @@
     "f8edf616619935bca492",
     "fa62d21faa4658288acb"
   ],
-  "content_hash": "84ab677be80a96eac666b1499c7121fb9c591083c124d5759ff5cb09f5292b08",
+  "content_hash": "afa9efe02a53ce44c011d1c35a66a92d7946f0dac994140fa90e2460aa80bc68",
   "dependencies": [],
   "description": "Configure and manage Field Service Lightning work orders: work types, work order line items, service appointments, status flow, and auto-creation via maintenance plans. NOT for case management, resource scheduling optimization, or dispatcher console configuration.",
   "file_location": "skills/admin/fsl-work-order-management",
@@ -117,6 +117,7 @@
     "skills/admin/fsl-work-order-management/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/fsl-work-order-management/scripts/__pycache__/check_fsl_work_order_management.cpython-314.pyc",
     "skills/admin/fsl-work-order-management/scripts/check_fsl_work_order_management.py"
   ],
   "tags": [

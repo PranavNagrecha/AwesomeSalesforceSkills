@@ -54,7 +54,7 @@
     "fae30fc272c460a8783c",
     "ffb0d54d2d816ce534c7"
   ],
-  "content_hash": "e48681228cc784018efd3cd9f53b99f64fe5e60d730610cf5aaa52d98f25586c",
+  "content_hash": "d760175caea9af3b4664e0b738e8a4c59806a1060a453c3c094e0cee30e77b1a",
   "dependencies": [],
   "description": "Use this skill when preparing data for Salesforce Einstein ML features: Einstein Discovery story creation, Einstein Prediction Builder model setup, feature field selection, outcome definition, data quality thresholds, and leakage detection. Trigger keywords: Einstein Discovery data requirements, training data for Einstein, ML feature engineering, Einstein Prediction Builder data prep, AI model training data. NOT for generic CRM data quality management, Data Cloud ingestion pipeline setup, or standard CRM Analytics dashboard analytics.",
   "file_location": "skills/data/ai-training-data-preparation",
@@ -84,6 +84,7 @@
     "skills/data/ai-training-data-preparation/references/well-architected.md"
   ],
   "scripts": [
+    "skills/data/ai-training-data-preparation/scripts/__pycache__/check_ai_training_data_preparation.cpython-314.pyc",
     "skills/data/ai-training-data-preparation/scripts/check_ai_training_data_preparation.py"
   ],
   "tags": [

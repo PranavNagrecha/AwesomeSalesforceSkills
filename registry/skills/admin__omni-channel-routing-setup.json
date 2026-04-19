@@ -90,7 +90,7 @@
     "f07533722edb778df338",
     "f4530353d080f2f10ce7"
   ],
-  "content_hash": "f40a3505ac793722b60441ccc8bd4280f42667c2400c9b1c5b3d7fd53dbf41fd",
+  "content_hash": "f7718b7e56082b823e6988d88cee16452c13a27bfd5c96b2d0d052e85732c32b",
   "dependencies": [],
   "description": "Configuring Salesforce Omni-Channel routing from scratch or updating existing routing: enabling Omni-Channel, creating Service Channels, configuring Routing Configurations (queue-based and skills-based), setting up Presence Statuses and Presence Configurations, assigning skills to Service Resources, and defining Skills-Based Routing Rules. Trigger keywords: Omni-Channel setup, routing configuration, queue-based routing, skills-based routing, presence status, service channel, routing rules. NOT for capacity model design (use omni-channel-capacity-model). NOT for OmniStudio FlexCards or DataRaptors. NOT for Omni-Channel Supervisor dashboard analysis.",
   "file_location": "skills/admin/omni-channel-routing-setup",
@@ -130,6 +130,7 @@
     "skills/admin/omni-channel-routing-setup/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/omni-channel-routing-setup/scripts/__pycache__/check_omni_channel_routing_setup.cpython-314.pyc",
     "skills/admin/omni-channel-routing-setup/scripts/check_omni_channel_routing_setup.py"
   ],
   "tags": [

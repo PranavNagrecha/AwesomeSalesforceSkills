@@ -86,7 +86,7 @@
     "f621576851896caf9225",
     "fbd1a74431f827117da6"
   ],
-  "content_hash": "c246e26cf8d1c75a9985901def1bd06f0503745abfc88461d37d35196f01f850",
+  "content_hash": "6f9ee15b983b5690c1eb6897b08ad05dd5605ccdeb36140e321cdd6bdaf6c520",
   "dependencies": [],
   "description": "Use when conducting a formal Salesforce Well-Architected Framework (WAF) review of an org or solution design. Covers all three pillars: Trusted (security, compliance), Easy (user experience, adoption), and Adaptable (scalability, maintainability). Produces a structured assessment with findings and recommendations. Triggers: well-architected review, WAF assessment, org architecture review, architecture health check, trusted easy adaptable. NOT for deep-dives into individual pillars (use security-architecture-review, limits-and-scalability-planning, or technical-debt-assessment) or for implementation guidance.",
   "file_location": "skills/architect/well-architected-review",
@@ -116,6 +116,7 @@
     "skills/architect/well-architected-review/references/well-architected.md"
   ],
   "scripts": [
+    "skills/architect/well-architected-review/scripts/__pycache__/check_well_architected_review.cpython-314.pyc",
     "skills/architect/well-architected-review/scripts/check_well_architected_review.py"
   ],
   "tags": [

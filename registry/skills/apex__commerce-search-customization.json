@@ -102,7 +102,7 @@
     "fc9d6972e820a5e123f4",
     "ff6cce147744b0d01fbb"
   ],
-  "content_hash": "dd8893c6400d30da0787bbd3d9a1a1854ee88be26dcc4d8ae242eb1987fb2fa2",
+  "content_hash": "b587c127f9e9b2b7414bc26e57fb1fe6fbb99df7bfbd38f4d60f1578769d3a66",
   "dependencies": [],
   "description": "Use this skill to configure and tune search in B2B Commerce or D2C Commerce storefronts: searchable attributes, facetable attributes, sort rules, search index rebuilds, Einstein product recommendations, and BuyerGroup entitlement visibility. Trigger keywords: commerce search ranking, faceted navigation commerce, search index rebuild, Einstein recommendations storefront, product not appearing in search. NOT for SOSL query development, Experience Cloud federated search, Salesforce Search for non-commerce objects, or Einstein Search for Service Cloud.",
   "file_location": "skills/apex/commerce-search-customization",
@@ -136,6 +136,7 @@
     "skills/apex/commerce-search-customization/references/well-architected.md"
   ],
   "scripts": [
+    "skills/apex/commerce-search-customization/scripts/__pycache__/check_commerce_search_customization.cpython-314.pyc",
     "skills/apex/commerce-search-customization/scripts/check_commerce_search_customization.py"
   ],
   "tags": [

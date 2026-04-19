@@ -56,7 +56,7 @@
     "e8b5097a13ab316b404b",
     "f963735fe1a5aa346b9f"
   ],
-  "content_hash": "bfdbec8ec0812d49d3218e207287212f45e266171cd9a521e79f027043727e7e",
+  "content_hash": "39909cd384f72e61569751c36ebc3acbcc9e12e7342e45915347932c0e87a6b2",
   "dependencies": [
     "data/bulk-api-patterns",
     "integration/real-time-vs-batch-integration"
@@ -91,6 +91,7 @@
     "skills/integration/bulk-api-2-patterns/references/well-architected.md"
   ],
   "scripts": [
+    "skills/integration/bulk-api-2-patterns/scripts/__pycache__/check_bulk_api_2_patterns.cpython-314.pyc",
     "skills/integration/bulk-api-2-patterns/scripts/check_bulk_api_2_patterns.py"
   ],
   "tags": [

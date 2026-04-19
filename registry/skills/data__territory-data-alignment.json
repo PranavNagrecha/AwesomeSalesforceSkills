@@ -109,7 +109,7 @@
     "fabe8d3d19d652dd062d",
     "feb72b406de816aef764"
   ],
-  "content_hash": "61008a81ee322ff2509a2fc36fcc2554396141b2ea5a5352dcfa7aa3a7ba4f12",
+  "content_hash": "243cc1da871d8edb1cb6a0ab6c5f6dfd4dfb8652c56502eaae6c195f10dda0f4",
   "dependencies": [],
   "description": "Use this skill when querying, migrating, auditing, or maintaining account-to-territory and user-to-territory data in a Salesforce Enterprise Territory Management (ETM) org. Covers ObjectTerritory2Association DML via API, UserTerritory2Association data, Territory2ModelHistory audit queries, the Track Territory Assignment History feature (GA Spring '25), coverage analysis SOQL with AssociationCause filter, and data migration of territory associations between models. Trigger keywords: ObjectTerritory2Association, UserTerritory2Association, territory assignment data, territory coverage analysis, territory association bulk load, ETM data migration, track territory assignment history. NOT for ETM configuration or territory model setup \u2014 use territory-design-requirements for that. NOT for territory rule creation or activation \u2014 those are admin concerns.",
   "file_location": "skills/data/territory-data-alignment",
@@ -145,6 +145,7 @@
     "skills/data/territory-data-alignment/references/well-architected.md"
   ],
   "scripts": [
+    "skills/data/territory-data-alignment/scripts/__pycache__/check_territory_data_alignment.cpython-314.pyc",
     "skills/data/territory-data-alignment/scripts/check_territory_data_alignment.py"
   ],
   "tags": [

@@ -28,7 +28,7 @@
     "e89429df0eb33200d611",
     "fba142e9b0d018536827"
   ],
-  "content_hash": "adaaabc79e6e413bfdc8e411d3f7466a41ded1c40ee35e6ce3b7da9f89e5c9f2",
+  "content_hash": "21a7c96321413660ef2f7e4772d863de5b8ed521f0daeeb29d93cc5369b833e4",
   "dependencies": [],
   "description": "Use the Data Table screen component for selecting rows from collections in Screen Flows, including single/multi-select and inline actions. NOT for displaying read-only data outside flows.",
   "file_location": "skills/flow/flow-data-tables",
@@ -54,6 +54,7 @@
     "skills/flow/flow-data-tables/references/well-architected.md"
   ],
   "scripts": [
+    "skills/flow/flow-data-tables/scripts/__pycache__/check_flow_data_tables.cpython-314.pyc",
     "skills/flow/flow-data-tables/scripts/check_flow_data_tables.py"
   ],
   "tags": [

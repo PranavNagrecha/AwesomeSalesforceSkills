@@ -101,7 +101,7 @@
     "f7d27c5b63fe6e94baf1",
     "fe9e3debf86eaed9a415"
   ],
-  "content_hash": "72417961810c5d323d2d9b46c522146486cabeab4a34fa0f1cb0869e7b80fc81",
+  "content_hash": "26b35de7fcd0caf2580967e58a7fd80483e8428a0120ed848153708abc5d270d",
   "dependencies": [],
   "description": "Use this skill when designing API-led connectivity architecture for Salesforce integrations \u2014 covering System/Process/Experience layer separation, governance policy (catalog, versioning, deprecation, rate limits), multi-consumer strategy, and Agentforce Agent Fabric integration. Trigger keywords: API-led connectivity, MuleSoft three-tier, System API, Process API, Experience API, integration layer governance, API versioning policy, Agent Fabric. NOT for individual Apex callout implementation (use integration-pattern-selection), HTTP error response contracts (use api-error-handling-design), or retry backoff mechanics (use retry-and-backoff-patterns).",
   "file_location": "skills/architect/api-led-connectivity-architecture",
@@ -134,6 +134,7 @@
     "skills/architect/api-led-connectivity-architecture/references/well-architected.md"
   ],
   "scripts": [
+    "skills/architect/api-led-connectivity-architecture/scripts/__pycache__/check_api_led_connectivity_architecture.cpython-314.pyc",
     "skills/architect/api-led-connectivity-architecture/scripts/check_api_led_connectivity_architecture.py"
   ],
   "tags": [

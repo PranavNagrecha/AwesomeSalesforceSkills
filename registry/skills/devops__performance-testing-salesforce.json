@@ -72,7 +72,7 @@
     "fa48de52921d40fcf4e4",
     "fefe7cc3db070c05d158"
   ],
-  "content_hash": "0baad4f3e8cf2a5268e0567357d15cb725d3c334377157dbfbc92268ba5ed5e5",
+  "content_hash": "c2f4e266070bcbd79c38f5749c4c0d3bdb9864b46982807960f07465bd558ea5",
   "dependencies": [
     "architect/nfr-definition-for-salesforce",
     "devops/environment-strategy"
@@ -107,6 +107,7 @@
     "skills/devops/performance-testing-salesforce/references/well-architected.md"
   ],
   "scripts": [
+    "skills/devops/performance-testing-salesforce/scripts/__pycache__/check_performance_testing_salesforce.cpython-314.pyc",
     "skills/devops/performance-testing-salesforce/scripts/check_performance_testing_salesforce.py"
   ],
   "tags": [

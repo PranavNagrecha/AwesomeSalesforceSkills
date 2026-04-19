@@ -90,7 +90,7 @@
     "f461d5e6e8d7ee1960c8",
     "ffc102fcec9fd2df198e"
   ],
-  "content_hash": "64501de12be157425065d29a252b063ce613f462051a812eeeb89d47d9f1617e",
+  "content_hash": "8eb0a78780108b257c32e908267f1cf49abb38f8b3580cadb0f561fc50e53722",
   "dependencies": [],
   "description": "Use this skill to determine whether a Salesforce Commerce project should use B2B Commerce (account-gated, BuyerGroup-based, contract pricing) or D2C Commerce (consumer storefront, guest checkout, individual-based). Trigger keywords: B2B vs B2C, commerce platform selection, buyer journey, account-based purchasing, consumer storefront, licensing decision. NOT for implementation mechanics \u2014 use admin/b2b-commerce-store-setup or admin/b2c-commerce-store-setup for configuration work. NOT for Salesforce B2C Commerce (SFCC/Business Manager) setup.",
   "file_location": "skills/admin/b2b-vs-b2c-requirements",
@@ -122,6 +122,7 @@
     "skills/admin/b2b-vs-b2c-requirements/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/b2b-vs-b2c-requirements/scripts/__pycache__/check_b2b_vs_b2c_requirements.cpython-314.pyc",
     "skills/admin/b2b-vs-b2c-requirements/scripts/check_b2b_vs_b2c_requirements.py"
   ],
   "tags": [

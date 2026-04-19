@@ -1,0 +1,107 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "05363021af8de64d5068",
+    "0f2e1e10eefb260fb4f2",
+    "129f20ae87e345350b49",
+    "13185372518ccb6b1886",
+    "17b955b775d6a4a2b09b",
+    "198c0c0d38c0cc734dc1",
+    "3aefa7c7b2f2ffa8f722",
+    "3d2aad493aab9dc2fa82",
+    "461305138ac888e72a0d",
+    "4d657a8822f16a5d84f7",
+    "529518c82d5e32f08688",
+    "52d079d499cd854f0d8e",
+    "53b3687d3bee2ab50744",
+    "6387e14001f8573ff9d8",
+    "67a4a795a84b438ce827",
+    "6d7f62345032ab9f7a02",
+    "6ef5f1fe5e1b0c880d0e",
+    "73efa38e4620c1a47852",
+    "747282d65b0d8a79a5f8",
+    "779790a76a240f1ada5c",
+    "788f6e2ec3e8a3d8e83f",
+    "79cfc10ae13d717f085e",
+    "7bd709ef48e336e005fa",
+    "808bb11560ca7aca2084",
+    "835a4ee22e24f8cff085",
+    "88248bab9a0fc5b06d3d",
+    "88a23f89f86bd7a84deb",
+    "8aa70541eada8e981c7d",
+    "973c22a5ec8f28df0c37",
+    "98756c13e6c60de6d455",
+    "a83e7fab561a59b2c360",
+    "af5f9b5289535514bd09",
+    "b67d46d0c479b0ebcc9a",
+    "bb9d1e9a9dec2a206f5c",
+    "c01f34ee513933927880",
+    "c70ee108c938f69109cf",
+    "cd658c31b1e0fd055e99",
+    "cd8d60eda7fde589b80f",
+    "cdf1ca3fb268f1a29cbb",
+    "d32096bc229c70edd85e",
+    "d6a0615828c4a98f49d9",
+    "d9b22ccbcffa06c8915f",
+    "d9bef43a90c29add7abc",
+    "db31121b5c7dfad16766",
+    "dc5d95b07bc2626b2880",
+    "de53dd20f8c40d63f512",
+    "df2437d76fce92160597",
+    "e33e6f803cd99404baf0",
+    "e525c3fd6909ed876397",
+    "e871366701da08f92d36",
+    "e965cb3c8f05527fea0c",
+    "ec480e83cbea54655073",
+    "ef2be48edf371001d002",
+    "faf9eee8d7d8efe8de11",
+    "fcc14dd04ecc8c64b093",
+    "ff76529704b5f7fe2a8a"
+  ],
+  "content_hash": "ece26da765ce30f8fe26e3d41f715c72f9759c4e19b40776bd8eee05e1cebfcf",
+  "dependencies": [
+    "apex-queueable-patterns"
+  ],
+  "description": "Use this skill when you need guaranteed post-Queueable cleanup, retry, or failure-logging logic that must run even when the parent Queueable throws an unhandled exception. Trigger keywords: FinalizerContext, System.attachFinalizer, Queueable cleanup on failure, post-job compensation, guaranteed async cleanup. NOT for batch job completion callbacks \u2014 use apex-batch-chaining. NOT for platform event publishing on failure \u2014 use platform-events-apex.",
+  "file_location": "skills/apex/apex-transaction-finalizers",
+  "id": "apex/apex-transaction-finalizers",
+  "inputs": [
+    "The Queueable class that needs guaranteed post-execution behavior",
+    "The failure scenario: retry, compensate, or log",
+    "Retry count limit if implementing retry logic"
+  ],
+  "name": "apex-transaction-finalizers",
+  "official_sources": [
+    "Apex Developer Guide \u2014 Transaction Finalizers: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_transaction_finalizers.htm",
+    "Apex Developer Guide \u2014 Queueable Apex: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_queueing_jobs.htm",
+    "Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "A System.Finalizer implementation attached to the parent Queueable",
+    "Retry Queueable enqueue (one job max) or failure record DML",
+    "Review checklist confirming Finalizer constraints are respected"
+  ],
+  "references": [
+    "skills/apex/apex-transaction-finalizers/references/examples.md",
+    "skills/apex/apex-transaction-finalizers/references/gotchas.md",
+    "skills/apex/apex-transaction-finalizers/references/llm-anti-patterns.md",
+    "skills/apex/apex-transaction-finalizers/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/apex-transaction-finalizers/scripts/__pycache__/check_apex_transaction_finalizers.cpython-314.pyc",
+    "skills/apex/apex-transaction-finalizers/scripts/check_apex_transaction_finalizers.py"
+  ],
+  "tags": [
+    "apex-finalizer",
+    "queueable",
+    "error-handling",
+    "async-apex",
+    "cleanup"
+  ],
+  "templates": [
+    "skills/apex/apex-transaction-finalizers/templates/apex-transaction-finalizers-template.md"
+  ],
+  "updated": "2026-04-19",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

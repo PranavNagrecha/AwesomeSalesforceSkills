@@ -71,7 +71,7 @@
     "f2cb9dfd21c07f7a8be7",
     "f737c0cc5d531cfcd79b"
   ],
-  "content_hash": "29acf7d050be469637aa0c327244d765d352c5dbdb9633fde87793169e6eb5bb",
+  "content_hash": "4cab10c0c8dce356298e13934143cf2b1fa13b5c6ca52544ac1dc3e3cc88f0b8",
   "dependencies": [],
   "description": "Configuring and running Pipeline Inspection in Sales Cloud: enabling the feature, mapping forecast categories to the inspection view, configuring Days in Stage and other metrics, setting review cadence, and interpreting pipeline change signals for sales managers. Use when designing or improving how a team monitors deal health and pipeline movement. NOT for building custom dashboards or reports (use reports-and-dashboards skill). NOT for enabling Einstein Opportunity Scoring or AI insights (use einstein-copilot-for-sales skill). NOT for setting up Collaborative Forecasts or forecast types (use collaborative-forecasts skill).",
   "file_location": "skills/admin/pipeline-review-design",
@@ -105,6 +105,7 @@
     "skills/admin/pipeline-review-design/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/pipeline-review-design/scripts/__pycache__/check_pipeline_review_design.cpython-314.pyc",
     "skills/admin/pipeline-review-design/scripts/check_pipeline_review_design.py"
   ],
   "tags": [

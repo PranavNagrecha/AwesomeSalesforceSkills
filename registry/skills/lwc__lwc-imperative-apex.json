@@ -75,7 +75,7 @@
     "f68fa2f2397aad5610a8",
     "fff1b6d31a6f7f99201b"
   ],
-  "content_hash": "565b5e5a97e09e3784b7d4bc39940d3a6700fd6cb5638d8e802d128008fe30a2",
+  "content_hash": "aa17cd5afdfdd9d20cc6cfe3fa5321a2c1cb58c27c294f9cce812e20a610b379",
   "dependencies": [],
   "description": "Call Apex methods imperatively from LWC \u2014 on button click, lifecycle hooks, or conditional logic. Covers import syntax, cacheable vs non-cacheable, async/await patterns, error handling, loading states, and Promise.all. NOT for wire service (use wire-service-patterns) and NOT for testing Apex mocks (use lwc-testing).",
   "file_location": "skills/lwc/lwc-imperative-apex",
@@ -105,6 +105,7 @@
     "skills/lwc/lwc-imperative-apex/references/well-architected.md"
   ],
   "scripts": [
+    "skills/lwc/lwc-imperative-apex/scripts/__pycache__/check_lwc_imperative_apex.cpython-314.pyc",
     "skills/lwc/lwc-imperative-apex/scripts/check_lwc_imperative_apex.py"
   ],
   "tags": [

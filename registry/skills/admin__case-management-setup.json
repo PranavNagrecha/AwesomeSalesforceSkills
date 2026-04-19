@@ -97,7 +97,7 @@
     "fe06afd210fe1add5844",
     "fff173fc428279281dea"
   ],
-  "content_hash": "22ebe76c084c34d99974955c97a912f9236b14abbbab96507ce58c2f9e212051",
+  "content_hash": "8180d7af00e9a896e23d9639bf2c9321ce8cafd614a5b5b911aad5cdff71a9d4",
   "dependencies": [],
   "description": "Configuring Salesforce case management: case queues, assignment rules, escalation rules, auto-response rules, Email-to-Case, Web-to-Case, case teams, entitlements, and milestones. Use when setting up or troubleshooting the Service Cloud case handling layer. Trigger keywords: email-to-case, web-to-case, escalation rules, case teams, entitlements, milestones, auto-response, case queue. NOT for case assignment rule logic only (use assignment-rules skill). NOT for Omni-Channel routing (use omni-channel-routing-setup). NOT for CTI or telephony integration.",
   "file_location": "skills/admin/case-management-setup",
@@ -136,6 +136,7 @@
     "skills/admin/case-management-setup/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/case-management-setup/scripts/__pycache__/check_case_management_setup.cpython-314.pyc",
     "skills/admin/case-management-setup/scripts/check_case_management_setup.py"
   ],
   "tags": [

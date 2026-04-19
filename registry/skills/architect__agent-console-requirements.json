@@ -101,7 +101,7 @@
     "f62a8027be17a77f2611",
     "f8131fce56a32a9b0c02"
   ],
-  "content_hash": "902b4a5ea640d45163d78cc38899dc33e3f40946fce4971a30fcb5c8fe3eaaac",
+  "content_hash": "b95678bfd42d4d399f17e878fcd5a9641797a4301a91d3cb75ebe2ddebf028d8",
   "dependencies": [],
   "description": "Use when gathering and documenting requirements for a Lightning Service Console deployment: agent workspace layout, page template selection, utility bar composition, macro requirements, case handling workflows, split-view navigation design, and licensing requirements. Triggers: service console requirements, agent workspace design, console page layout, utility bar planning, console licensing. NOT for console configuration steps or click-by-click setup (use admin/case-management), NOT for Omni-Channel routing model design (use architect/service-cloud-architecture), NOT for CTI telephony integration details.",
   "file_location": "skills/architect/agent-console-requirements",
@@ -138,6 +138,7 @@
     "skills/architect/agent-console-requirements/references/well-architected.md"
   ],
   "scripts": [
+    "skills/architect/agent-console-requirements/scripts/__pycache__/check_agent_console_requirements.cpython-314.pyc",
     "skills/architect/agent-console-requirements/scripts/check_agent_console_requirements.py"
   ],
   "tags": [

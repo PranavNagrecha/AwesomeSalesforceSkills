@@ -55,7 +55,7 @@
     "f91bbef4bb186eae7656",
     "fe52ccf556621a6715f0"
   ],
-  "content_hash": "71b76ec84eaa8412028b03effb43c58fe4d0a41dfd4cd883f8f0882aa013e838",
+  "content_hash": "477940712bc458edd3fc4c808ee3e787d61aa4194352f71514c2de0e44d75451",
   "dependencies": [],
   "description": "Use when designing or reviewing OmniStudio DataRaptors, especially Extract versus Turbo Extract versus Transform versus Load, field mapping strategy, performance tradeoffs, and when to move work into Integration Procedures or Apex. Triggers: 'DataRaptor Extract', 'Turbo Extract', 'DataRaptor Load', 'DataRaptor Transform', 'OmniStudio data mapping'. NOT for overall OmniScript journey design or Integration Procedure sequencing when the main question is not the DataRaptor shape itself.",
   "file_location": "skills/omnistudio/dataraptor-patterns",
@@ -83,6 +83,7 @@
     "skills/omnistudio/dataraptor-patterns/references/well-architected.md"
   ],
   "scripts": [
+    "skills/omnistudio/dataraptor-patterns/scripts/__pycache__/check_dataraptor_patterns.cpython-314.pyc",
     "skills/omnistudio/dataraptor-patterns/scripts/check_dataraptor_patterns.py"
   ],
   "tags": [

@@ -57,7 +57,7 @@
     "f7b927201ad1d544468c",
     "fd8edbec327f82b1450d"
   ],
-  "content_hash": "b65836294816055e789e37f06146d302dcb7fad331c72c72526898c03afa3336",
+  "content_hash": "0f07e62f105db1e5e0a38fca9533bd63d877b87cf8fcb9bfe656ac8bd1d4ae29",
   "dependencies": [
     "admin/health-cloud-patient-setup",
     "admin/care-program-management"
@@ -92,6 +92,7 @@
     "skills/admin/health-cloud-consent-management/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/health-cloud-consent-management/scripts/__pycache__/check_health_cloud_consent_management.cpython-314.pyc",
     "skills/admin/health-cloud-consent-management/scripts/check_health_cloud_consent_management.py"
   ],
   "tags": [

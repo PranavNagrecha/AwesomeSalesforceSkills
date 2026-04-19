@@ -1,0 +1,102 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "06f74aaf361c54a36cc3",
+    "0704673cee095a4e6352",
+    "169c2583a960b9e18464",
+    "170d77658bfad5044adc",
+    "1cb22c90630bf7319c96",
+    "1df9fef0fde026b8a2da",
+    "235e72b8823872b0b446",
+    "2b0a0a0d6084c17f7f74",
+    "319aaa6ce384f7f37d7a",
+    "368fadf30ea4edece4c0",
+    "3a188900b8d3af3e625e",
+    "3b56431d3acde73d7d53",
+    "3ce7ae3352f83402886c",
+    "4258e0741c9c46ccdd60",
+    "4666f0b11d2b90cb721b",
+    "4683aae69a3676b9bffc",
+    "498c8140103430a87277",
+    "579a05cfda1adf91a411",
+    "6580080aac996bfe535a",
+    "66dcfd2f7f3b665be245",
+    "6a57cdf1000d66ad94a2",
+    "720dd810034714f95629",
+    "778f9fd43fa5382b2d60",
+    "7f201388e279b2ed9e05",
+    "81c67332b6af63d2ad96",
+    "98da49a2a67884c7ed79",
+    "9e8b119b1c0764a538af",
+    "9f17ebe8c601aca54d95",
+    "a3745c1332dbc5698e5b",
+    "a4a6aeef12237f29f66f",
+    "aac8e42000f1626709eb",
+    "b1381a7632e5632fd862",
+    "b23864fa690d19b65176",
+    "b27298a8092014317d05",
+    "b30dee780e3c716781ba",
+    "ba652d916ae53237f6d5",
+    "c112c21b88f255236d95",
+    "c35b3f6afe2770b8e4ac",
+    "ca82d284353315b0b3a7",
+    "d0e9b69545b91e4da2c6",
+    "d26eb7edc306feca3817",
+    "d68029bde6ea01002287",
+    "da80ddcd0048214fea85",
+    "db2565559c2fa3434cfb",
+    "f006f33d5e5a2ded37d3",
+    "f01c02f64332d024be91",
+    "f178ce76d9ed7cc6e765",
+    "f2cd6845beee2f27b99c",
+    "f97dd41a1276f216d059",
+    "ff19eb3f1dd38141ee58"
+  ],
+  "content_hash": "188e01982ee20007c0ecff5f90dd22e9e7ef55251db50742b9281f7081f2da81",
+  "dependencies": [],
+  "description": "Use when choosing between DML statements and Database class methods, handling partial success, managing savepoints, or using Database.DMLOptions for assignment rules and duplicate handling. Trigger keywords: 'Database.insert allOrNone false', 'partial DML success apex', 'SaveResult isSuccess', 'database merge apex', 'DML exception handling'. NOT for SOQL query patterns (use soql-fundamentals or apex-soql-relationship-queries), NOT for sharing model setup (use apex-managed-sharing-patterns).",
+  "file_location": "skills/apex/apex-dml-patterns",
+  "id": "apex/apex-dml-patterns",
+  "inputs": [
+    "List of SObjects to insert/update/delete/upsert",
+    "Whether partial success (allOrNone=false) is required",
+    "Whether assignment rules, email headers, or duplicate suppression are needed"
+  ],
+  "name": "apex-dml-patterns",
+  "official_sources": [
+    "Apex Developer Guide \u2014 DML Statements: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_dml.htm",
+    "Apex Developer Guide \u2014 Database Class Methods: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_dml_database.htm",
+    "Apex Reference Guide \u2014 Database Class: https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_database.htm",
+    "Apex Reference Guide \u2014 SaveResult: https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_database_saveresult.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "List of SaveResult/UpsertResult/DeleteResult with per-row success/failure details",
+    "Merged or converted record references for Database.merge/convertLead"
+  ],
+  "references": [
+    "skills/apex/apex-dml-patterns/references/examples.md",
+    "skills/apex/apex-dml-patterns/references/gotchas.md",
+    "skills/apex/apex-dml-patterns/references/llm-anti-patterns.md",
+    "skills/apex/apex-dml-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/apex-dml-patterns/scripts/__pycache__/check_apex_dml_patterns.cpython-314.pyc",
+    "skills/apex/apex-dml-patterns/scripts/check_apex_dml_patterns.py"
+  ],
+  "tags": [
+    "apex-dml",
+    "database-class",
+    "saveresult",
+    "partial-success",
+    "governor-limits",
+    "dml-options",
+    "savepoint"
+  ],
+  "templates": [
+    "skills/apex/apex-dml-patterns/templates/apex-dml-patterns-template.md"
+  ],
+  "updated": "2026-04-19",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

@@ -72,7 +72,7 @@
     "f46c232a213e8aeceb4c",
     "f4c0f883b700d95b47a9"
   ],
-  "content_hash": "2a59712f8548ffd172792a6a3dd9ca19ba9a8e875311ca6fb506409c98ea8d05",
+  "content_hash": "6262cfd6be38ce998fb4a4da4f7900c4ceefc3ef6cc86ab9cd52635e54cde287",
   "dependencies": [],
   "description": "Use when building, auditing, or troubleshooting Salesforce Reports and Dashboards. Triggers: 'report', 'dashboard', 'missing data in report', 'pipeline report', 'cross-filter', 'report subscription', 'dashboard refresh'. NOT for Einstein Analytics / CRM Analytics \u2014 separate skill needed for that.",
   "file_location": "skills/admin/reports-and-dashboards",
@@ -100,6 +100,7 @@
     "skills/admin/reports-and-dashboards/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/reports-and-dashboards/scripts/__pycache__/check_report_inventory.cpython-314.pyc",
     "skills/admin/reports-and-dashboards/scripts/check_report_inventory.py"
   ],
   "tags": [

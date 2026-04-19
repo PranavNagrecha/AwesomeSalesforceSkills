@@ -73,7 +73,7 @@
     "fbffdccd22e24dace85e",
     "fe7fca6d53e742cd28ce"
   ],
-  "content_hash": "6f7fc65a57166925197468e09738cd39692e41820d397f7de3b203d364b3b385",
+  "content_hash": "18c2955360bf826dc867e46fdb8a11a58f9762bfe02e39c1f7d20fec83861051",
   "dependencies": [
     "npsp-trigger-framework-extension"
   ],
@@ -106,6 +106,7 @@
     "skills/apex/npsp-api-and-integration/references/well-architected.md"
   ],
   "scripts": [
+    "skills/apex/npsp-api-and-integration/scripts/__pycache__/check_npsp_api_and_integration.cpython-314.pyc",
     "skills/apex/npsp-api-and-integration/scripts/check_npsp_api_and_integration.py"
   ],
   "tags": [

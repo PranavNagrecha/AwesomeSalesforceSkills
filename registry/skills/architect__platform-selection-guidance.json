@@ -117,7 +117,7 @@
     "fd1de01ba24ee2fc6efa",
     "fe2564f34500cdf8bf91"
   ],
-  "content_hash": "a1129b8611f4a323659848e4c7847f8b7f115937d6727a0c76fb0e324928591d",
+  "content_hash": "8c5b602858c921d161f73aaecb7696429e21c69ede207df4cc0b92d8316c3fa0",
   "dependencies": [],
   "description": "Use when choosing which Salesforce platform capability to use for a requirement \u2014 covering metadata storage (Custom Metadata vs Custom Settings vs Custom Objects), UI framework (LWC vs Aura), integration approach (Platform Events vs Change Data Capture vs Outbound Messaging), and data extension (OmniStudio vs standard automation). Triggers: custom metadata vs custom settings, LWC vs Aura, which salesforce feature to use, platform events vs change data capture, omnistudio vs flow. NOT for automation-specific tool selection between Flow / Apex / Workflow (use admin/process-automation-selection) or for implementing the chosen platform feature.",
   "file_location": "skills/architect/platform-selection-guidance",
@@ -151,6 +151,7 @@
     "skills/architect/platform-selection-guidance/references/well-architected.md"
   ],
   "scripts": [
+    "skills/architect/platform-selection-guidance/scripts/__pycache__/check_platform_selection_guidance.cpython-314.pyc",
     "skills/architect/platform-selection-guidance/scripts/check_platform_selection_guidance.py"
   ],
   "tags": [

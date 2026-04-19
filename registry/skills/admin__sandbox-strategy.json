@@ -52,7 +52,7 @@
     "f36f00c4644cdf7a9a66",
     "f937eba4855e8eac1cb4"
   ],
-  "content_hash": "4feb88c4a83aa84761dc1960379b661b098e8098b6efe5d728a7e1cc9a7016a3",
+  "content_hash": "e3ea139cf087fcbb828b399807a0aba137475149b768c82a8fcb24c3b4c59607",
   "dependencies": [],
   "description": "Use when designing or reviewing Salesforce sandbox topology, refresh cadence, masking, and environment purpose. Triggers: 'Developer sandbox', 'Developer Pro', 'Partial Copy', 'Full sandbox', 'sandbox refresh', 'data masking', 'test environment', 'Gov Cloud sandbox'. NOT for scratch-org package workflows unless they affect environment planning.",
   "file_location": "skills/admin/sandbox-strategy",
@@ -79,6 +79,7 @@
     "skills/admin/sandbox-strategy/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/sandbox-strategy/scripts/__pycache__/check_sandbox_plan.cpython-314.pyc",
     "skills/admin/sandbox-strategy/scripts/check_sandbox_plan.py"
   ],
   "tags": [

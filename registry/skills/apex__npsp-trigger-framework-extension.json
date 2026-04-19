@@ -83,7 +83,7 @@
     "f9ae1f90669e618910d3",
     "fb5c0938485d93f69654"
   ],
-  "content_hash": "646dd76f0d1b734281ce9719e7dca806cd47950d27620d8bfb1ffde03c843c84",
+  "content_hash": "d2b46ff1a57c3d837aa380bd0c14ed2dc0a6b926313b2f99a58bdba9b64932f6",
   "dependencies": [
     "apex/trigger-framework"
   ],
@@ -117,6 +117,7 @@
     "skills/apex/npsp-trigger-framework-extension/references/well-architected.md"
   ],
   "scripts": [
+    "skills/apex/npsp-trigger-framework-extension/scripts/__pycache__/check_npsp_trigger_framework_extension.cpython-314.pyc",
     "skills/apex/npsp-trigger-framework-extension/scripts/check_npsp_trigger_framework_extension.py"
   ],
   "tags": [

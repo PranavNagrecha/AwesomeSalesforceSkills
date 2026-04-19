@@ -60,7 +60,7 @@
     "eb4ebe11869e448141b7",
     "fc76fbfb7eee1d9f774b"
   ],
-  "content_hash": "0314396257f2a9c5e274f9f00a6149bcf1b11627a7516a50ccef3325f91aeb62",
+  "content_hash": "5b83d6874b3cc40db07f60c8ee4b7efc52b7461c77fe511823a0c6bea47f9448",
   "dependencies": [],
   "description": "Use this skill to create and configure Lightning apps in Salesforce Setup, add navigation items and tabs to apps, configure utility bar components, and control app visibility by profile or permission set. Trigger keywords: Lightning app, App Manager, custom tab, navigation bar, utility bar, app visibility. NOT for Experience Cloud site apps (use experience-cloud skills), NOT for configuring page layouts or record pages (use Lightning App Builder), NOT for permission set architecture (use permission-set-architecture).",
   "file_location": "skills/admin/app-and-tab-configuration",
@@ -92,6 +92,7 @@
     "skills/admin/app-and-tab-configuration/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/app-and-tab-configuration/scripts/__pycache__/check_app_and_tab_configuration.cpython-314.pyc",
     "skills/admin/app-and-tab-configuration/scripts/check_app_and_tab_configuration.py"
   ],
   "tags": [

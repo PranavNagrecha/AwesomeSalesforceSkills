@@ -54,7 +54,7 @@
     "f84aa13ca4b552630c8a",
     "f8b15689fdf9fae492c4"
   ],
-  "content_hash": "b1f145d434403516970646a3b4bdee0553a1ffa3801303c80be0c9b6176a9085",
+  "content_hash": "40f70c5652a51d59eec37b643a26b5575b9b16645ef6066f632d2ede8e1eace3",
   "dependencies": [],
   "description": "Use this skill when bulk loading FSL ServiceResource records, ServiceResourceSkill data, skill certifications, capacity-based resource setup, and availability patterns. Trigger keywords: FSL resource migration, ServiceResourceSkill bulk load, skill certification tracking FSL, capacity-based resource, service resource availability. NOT for user provisioning, ServiceResource creation via UI, or ServiceTerritoryMember setup (covered by fsl-territory-data-setup).",
   "file_location": "skills/data/fsl-resource-and-skill-data",
@@ -84,6 +84,7 @@
     "skills/data/fsl-resource-and-skill-data/references/well-architected.md"
   ],
   "scripts": [
+    "skills/data/fsl-resource-and-skill-data/scripts/__pycache__/check_fsl_resource_and_skill_data.cpython-314.pyc",
     "skills/data/fsl-resource-and-skill-data/scripts/check_fsl_resource_and_skill_data.py"
   ],
   "tags": [

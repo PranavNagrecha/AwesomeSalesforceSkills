@@ -54,7 +54,7 @@
     "f91202debc0526950d2a",
     "ff5c740323c6ff262c0e"
   ],
-  "content_hash": "574561630f3b85e963daae248b64e0d27842c51926b66388fc4d10a273187a2b",
+  "content_hash": "d2a53eaaaaae93f9d2cc3d0e23184a2cc3c21a2f21fa1a17365d4a899f386b88",
   "dependencies": [],
   "description": "Use when managing OmniScript versions: activating new versions, deactivating prior versions, testing a specific version before activation, rolling back to a previous version, or understanding version identity (Type/Subtype/Language triplet). NOT for OmniStudio deployment or DataPack migration (use omnistudio/omnistudio-deployment-datapacks).",
   "file_location": "skills/omnistudio/omniscript-versioning",
@@ -82,6 +82,7 @@
     "skills/omnistudio/omniscript-versioning/references/well-architected.md"
   ],
   "scripts": [
+    "skills/omnistudio/omniscript-versioning/scripts/__pycache__/check_omniscript_versioning.cpython-314.pyc",
     "skills/omnistudio/omniscript-versioning/scripts/check_omniscript_versioning.py"
   ],
   "tags": [

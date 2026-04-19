@@ -5327,6 +5327,48 @@
       "domain": "omnistudio",
       "expected_skill": "omnistudio/omnistudio-field-mapping-governance",
       "top_k": 3
+    },
+    {
+      "query": "soql relationship query child to parent subquery getSObjects polymorphic",
+      "domain": "apex",
+      "expected_skill": "apex/apex-soql-relationship-queries",
+      "top_k": 3
+    },
+    {
+      "query": "parent to child subquery apex iterate related records null getSObjects",
+      "domain": "apex",
+      "expected_skill": "apex/apex-soql-relationship-queries",
+      "top_k": 3
+    },
+    {
+      "query": "TYPEOF WhatId WhoId polymorphic lookup Task Event SOQL",
+      "domain": "apex",
+      "expected_skill": "apex/apex-soql-relationship-queries",
+      "top_k": 3
+    },
+    {
+      "query": "soql aggregate group by count sum aggregateresult apex",
+      "domain": "apex",
+      "expected_skill": "apex/apex-aggregate-queries",
+      "top_k": 3
+    },
+    {
+      "query": "json serialize deserialize apex null fields suppress",
+      "expected_skill": "apex/apex-json-serialization",
+      "domain": "apex",
+      "top_k": 3
+    },
+    {
+      "query": "apex dml database insert partial success saveresult allornone",
+      "expected_skill": "apex/apex-dml-patterns",
+      "domain": "apex",
+      "top_k": 3
+    },
+    {
+      "query": "apex collections map set list bulkification heap limit",
+      "expected_skill": "apex/apex-collections-patterns",
+      "domain": "apex",
+      "top_k": 3
     }
   ]
 }

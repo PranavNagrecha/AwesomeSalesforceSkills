@@ -110,7 +110,7 @@
     "ff5ef0b273ffd2744c8a",
     "ff8c3839debf9afbb6c6"
   ],
-  "content_hash": "f86c22852a86e357a760006509f18a44f5a985f5897ca344593ad0669fe61307",
+  "content_hash": "2f392ee2777b168fc6d66d21cf19550acaca7174db3c016bf5b87c92f5d85a27",
   "dependencies": [],
   "description": "Tracking the real-time and historical status of Salesforce metadata deployments via Metadata API checkDeployStatus, REST deployRequest polling, and the Deployment Status Setup page. Covers DeployResult field interpretation, component error triage, concurrent deployment queue behavior, and 30-day history limits. NOT for post-deployment functional smoke testing (use post-deployment-validation). NOT for CI/CD pipeline setup (use github-actions-for-salesforce). NOT for rollback execution.",
   "file_location": "skills/devops/deployment-monitoring",
@@ -143,6 +143,7 @@
     "skills/devops/deployment-monitoring/references/well-architected.md"
   ],
   "scripts": [
+    "skills/devops/deployment-monitoring/scripts/__pycache__/check_deployment_monitoring.cpython-314.pyc",
     "skills/devops/deployment-monitoring/scripts/check_deployment_monitoring.py"
   ],
   "tags": [

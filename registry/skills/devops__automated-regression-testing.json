@@ -80,7 +80,7 @@
     "fcedb498e1f78a7bfecf",
     "fdbe40c90e6ef0404a29"
   ],
-  "content_hash": "7d26ed8e892e8706749c8379286115093cd9c6e01e5c4bcef9ab0463aeffbe40",
+  "content_hash": "64766ba3e4c98f17da2a9826dc0f40277b2dffdd237ff43ca013b2ebc8a1679d",
   "dependencies": [],
   "description": "Use when building or maintaining automated end-to-end regression tests for Salesforce UI (Lightning, LWC, Aura, Flows), selecting a testing framework (UTAM, Provar, Selenium), handling Shadow DOM challenges, or scheduling regression suites against pre-release orgs. Triggers: 'UTAM page objects', 'Shadow DOM testing', 'Salesforce E2E regression', 'Provar test automation', 'pre-release regression window'. NOT for Apex unit testing, LWC Jest component testing, manual UAT planning, or Agentforce conversational testing.",
   "file_location": "skills/devops/automated-regression-testing",
@@ -113,6 +113,7 @@
     "skills/devops/automated-regression-testing/references/well-architected.md"
   ],
   "scripts": [
+    "skills/devops/automated-regression-testing/scripts/__pycache__/check_automated_regression_testing.cpython-314.pyc",
     "skills/devops/automated-regression-testing/scripts/check_automated_regression_testing.py"
   ],
   "tags": [

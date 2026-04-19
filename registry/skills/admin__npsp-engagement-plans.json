@@ -81,7 +81,7 @@
     "fe6d8580e3cc483755d2",
     "ffa35881e5442ecfb361"
   ],
-  "content_hash": "51e1cda8ace0914043dc37ec79ebc4509f42dcb7ec532aebc75b044fb7796d56",
+  "content_hash": "aa8f153f0321cf9d250282871e21abfc65fa086fe9fde184aac3d6dda96bcc00",
   "dependencies": [],
   "description": "Use this skill when configuring, applying, or troubleshooting NPSP Engagement Plans \u2014 the framework that automatically generates standard Salesforce Task records on a timed schedule to guide donor stewardship and constituent outreach. Trigger keywords: engagement plan, donor stewardship tasks, NPSP task automation, engagement template, major donor follow-up. NOT for marketing automation, email campaigns, or Flow-based automation.",
   "file_location": "skills/admin/npsp-engagement-plans",
@@ -112,6 +112,7 @@
     "skills/admin/npsp-engagement-plans/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/npsp-engagement-plans/scripts/__pycache__/check_npsp_engagement_plans.cpython-314.pyc",
     "skills/admin/npsp-engagement-plans/scripts/check_npsp_engagement_plans.py"
   ],
   "tags": [

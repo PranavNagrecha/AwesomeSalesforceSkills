@@ -100,7 +100,7 @@
     "fd2d9d7bf7f9e3f8660d",
     "fec0f4e2d6646936a77a"
   ],
-  "content_hash": "d9fad54014603fd877224d14407f49d321c1061aafbde24dffc1ea505d6eeb14",
+  "content_hash": "4b66e4b967891da3695ddca72d1294593e6c675ccc0762ea12bd26f86e4a769e",
   "dependencies": [
     "data/health-cloud-data-model",
     "data/clinical-data-quality",
@@ -140,6 +140,7 @@
     "skills/data/patient-data-migration/references/well-architected.md"
   ],
   "scripts": [
+    "skills/data/patient-data-migration/scripts/__pycache__/check_patient_data_migration.cpython-314.pyc",
     "skills/data/patient-data-migration/scripts/check_patient_data_migration.py"
   ],
   "tags": [

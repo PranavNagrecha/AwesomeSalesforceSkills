@@ -62,7 +62,7 @@
     "fba20fbb5fd06a8817d3",
     "fc0bf15147d6d6fae26f"
   ],
-  "content_hash": "cc0949ba447c9e94eabebc471b8f3d1b8d468cd22b081cae19a03dbd5de14a5e",
+  "content_hash": "6348d0151bf7d70950b0c5e1db3154b53f396a2a9472e921c5325f2ffa9582a9",
   "dependencies": [],
   "description": "Use when testing or validating OmniStudio components \u2014 OmniScript preview, Integration Procedure step debugging, DataRaptor field-mapping validation, and end-to-end UTAM-based automation. NOT for Apex unit testing or standard Flow debugging.",
   "file_location": "skills/omnistudio/omnistudio-testing-patterns",
@@ -95,6 +95,7 @@
     "skills/omnistudio/omnistudio-testing-patterns/references/well-architected.md"
   ],
   "scripts": [
+    "skills/omnistudio/omnistudio-testing-patterns/scripts/__pycache__/check_omnistudio_testing_patterns.cpython-314.pyc",
     "skills/omnistudio/omnistudio-testing-patterns/scripts/check_omnistudio_testing_patterns.py"
   ],
   "tags": [

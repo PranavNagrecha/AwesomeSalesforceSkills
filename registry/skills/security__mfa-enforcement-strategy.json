@@ -60,7 +60,7 @@
     "fbd50802164407e9cd99",
     "fdcf8746d1606640aba2"
   ],
-  "content_hash": "0b82c4c41e9ea0b861b149b5b3f722d479f84c5f2c4339b397db2c59190a231d",
+  "content_hash": "f6743bbf640c2b655368495bb031583926f05b0d741a16f9e3d80586fbab0c44",
   "dependencies": [],
   "description": "Plan and operate Salesforce org-wide multi-factor authentication (MFA) enforcement: verification methods, phased rollout, SSO and API-only considerations, exemptions, and operational readiness. NOT for designing Login Flow post-authentication logic, IP allowlists, or conditional step-up policies\u2014use ip-range-and-login-flow-strategy, network-security-and-trusted-ips, or transaction-security-policies instead.",
   "file_location": "skills/security/mfa-enforcement-strategy",
@@ -92,6 +92,7 @@
     "skills/security/mfa-enforcement-strategy/references/well-architected.md"
   ],
   "scripts": [
+    "skills/security/mfa-enforcement-strategy/scripts/__pycache__/check_mfa_enforcement_strategy.cpython-314.pyc",
     "skills/security/mfa-enforcement-strategy/scripts/check_mfa_enforcement_strategy.py"
   ],
   "tags": [

@@ -152,7 +152,7 @@
     "fda7919d9f4fbcbe2ee2",
     "ff5273cadad975251b94"
   ],
-  "content_hash": "f4891b577e68be784cce894eed0a9fba895027a43e44c48d95c7ba4bbc8b95db",
+  "content_hash": "d178a8003c4e2ff5bc3418a0cdcf529d6c4534956625f667a5280edd8ca2f4fa",
   "dependencies": [],
   "description": "Use when migrating historical Opportunity records into Salesforce \u2014 covering stage history recreation, amount and close date mapping, product line item load sequencing (Product2 \u2192 Price Book \u2192 OpportunityLineItem), team member (OpportunityTeamMember) and revenue split (OpportunitySplit) loading, and Pricebook2 assignment. NOT for generic multi-object data migration planning (use data-migration-planning). NOT for ongoing CRM sync or ETL pipeline architecture. NOT for opportunity record type or sales process configuration.",
   "file_location": "skills/data/opportunity-pipeline-migration",
@@ -192,6 +192,7 @@
     "skills/data/opportunity-pipeline-migration/references/well-architected.md"
   ],
   "scripts": [
+    "skills/data/opportunity-pipeline-migration/scripts/__pycache__/check_opportunity_pipeline_migration.cpython-314.pyc",
     "skills/data/opportunity-pipeline-migration/scripts/check_opportunity_pipeline_migration.py"
   ],
   "tags": [

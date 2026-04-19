@@ -72,7 +72,7 @@
     "fa5f98f8901ddb947842",
     "ff7b98f9135074f699f0"
   ],
-  "content_hash": "baa294b38875314526fdd8833a35382f4a08fdd4f47b517b6f80f3ea408c5818",
+  "content_hash": "3ef05e02c41e4da5b66d5268d817bc3343874041023b9dc7edc1a4b15214ffd2",
   "dependencies": [
     "mulesoft-salesforce-connector",
     "rest-api-patterns",
@@ -108,6 +108,7 @@
     "skills/integration/api-led-connectivity/references/well-architected.md"
   ],
   "scripts": [
+    "skills/integration/api-led-connectivity/scripts/__pycache__/check_api_led_connectivity.cpython-314.pyc",
     "skills/integration/api-led-connectivity/scripts/check_api_led_connectivity.py"
   ],
   "tags": [

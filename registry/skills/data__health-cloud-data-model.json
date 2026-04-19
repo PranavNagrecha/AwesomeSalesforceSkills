@@ -92,7 +92,7 @@
     "fa27ec3042ca40710c8e",
     "fc71ab37bd91d1dfdbcf"
   ],
-  "content_hash": "4d99062bd2eb8332285f50cede019f5ad5db89d9d45bc87437243ca94b5a6887",
+  "content_hash": "3c96b39642cccd3a3a82a480d478a098e0615004366a206f0cdfc9573ea4bce6",
   "dependencies": [],
   "description": "Use this skill when choosing, enabling, or querying Health Cloud clinical data objects \u2014 including the dual-layer architecture of legacy managed-package EHR objects (HC24__ namespace) and FHIR R4-aligned standard objects (ClinicalEncounter, HealthCondition, CarePlan, etc.). Covers setup prerequisites, object relationships, migration considerations, and integration strategy. NOT for standard Salesforce data model or generic CRM objects.",
   "file_location": "skills/data/health-cloud-data-model",
@@ -126,6 +126,7 @@
     "skills/data/health-cloud-data-model/references/well-architected.md"
   ],
   "scripts": [
+    "skills/data/health-cloud-data-model/scripts/__pycache__/check_health_cloud_data_model.cpython-314.pyc",
     "skills/data/health-cloud-data-model/scripts/check_health_cloud_data_model.py"
   ],
   "tags": [

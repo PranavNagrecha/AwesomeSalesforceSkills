@@ -71,7 +71,7 @@
     "f728ed7a07982207a530",
     "f8f59bc59d607e905a43"
   ],
-  "content_hash": "5f494c6b7ab458df1f616ea25db3f30044080b6f27d3821c512838772e5d4825",
+  "content_hash": "a8a9483fae864b0c465f11a9603555233050a427b6834e07193496114b565a05",
   "dependencies": [],
   "description": "Use when configuring OmniStudio at the org level: enabling Standard Runtime, selecting the Runtime Namespace, assigning Permission Set Licenses, toggling feature settings, and granting Experience Cloud community access. Trigger keywords: OmniStudio Settings, Standard OmniStudio Runtime, managed package runtime, runtime namespace, OmniStudio Permission Set, OmniStudio PSL. NOT for OmniScript design, DataRaptor authoring, or namespace migration away from Vlocity packages.",
   "file_location": "skills/admin/omnistudio-admin-configuration",
@@ -102,6 +102,7 @@
     "skills/admin/omnistudio-admin-configuration/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/omnistudio-admin-configuration/scripts/__pycache__/check_omnistudio_admin_configuration.cpython-314.pyc",
     "skills/admin/omnistudio-admin-configuration/scripts/check_omnistudio_admin_configuration.py"
   ],
   "tags": [

@@ -62,7 +62,7 @@
     "f968d4848399a9a0c5de",
     "f9c83c92ceb47815d4fe"
   ],
-  "content_hash": "bb23a1d35dc9a600d93a5fd38331efc07ea9c3259724ae5e12adee0514ed4482",
+  "content_hash": "a31b3346814771416b5e549a04c3f91e6774c11c037be9be5b6cb1b7c491f936",
   "dependencies": [],
   "description": "Use this skill to gather, document, and validate OmniScript flow design requirements before development begins \u2014 covering screen layout requirements, branching logic, data source requirements, and user journey mapping. Trigger keywords: OmniScript requirements, OmniScript BA, OmniScript screen design, OmniScript user journey, OmniScript branching requirements. NOT for OmniScript development implementation, DataRaptor mapping, Integration Procedure design, or standard Screen Flow requirements.",
   "file_location": "skills/admin/omniscript-flow-design-requirements",
@@ -93,6 +93,7 @@
     "skills/admin/omniscript-flow-design-requirements/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/omniscript-flow-design-requirements/scripts/__pycache__/check_omniscript_flow_design_requirements.cpython-314.pyc",
     "skills/admin/omniscript-flow-design-requirements/scripts/check_omniscript_flow_design_requirements.py"
   ],
   "tags": [

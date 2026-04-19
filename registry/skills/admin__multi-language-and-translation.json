@@ -53,7 +53,7 @@
     "f1bdc416c07ab0e68f37",
     "f570429348308bebec87"
   ],
-  "content_hash": "e948a6d65e44fef892122b311825121b7cd12a50250db1c5f7f4aff669ffc00f",
+  "content_hash": "b7451b7fa0799df305c49d947e2ac7a17f56a94a398e5fcac7b8b8e52b3c3aa7",
   "dependencies": [],
   "description": "Use when configuring Salesforce Translation Workbench, translating custom labels, picklist values, field labels, page layout sections, or Experience Cloud language switcher. Triggers: 'how to add a language to Salesforce', 'translate custom labels', 'Translation Workbench setup', 'picklist value translation', 'RTL language support'. NOT for Marketing Cloud email localization, NOT for Apex string formatting by locale (use formula fields or Apex String.format patterns), NOT for multi-currency (use currency management admin).",
   "file_location": "skills/admin/multi-language-and-translation",
@@ -84,6 +84,7 @@
     "skills/admin/multi-language-and-translation/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/multi-language-and-translation/scripts/__pycache__/check_multi_language_and_translation.cpython-314.pyc",
     "skills/admin/multi-language-and-translation/scripts/check_multi_language_and_translation.py"
   ],
   "tags": [

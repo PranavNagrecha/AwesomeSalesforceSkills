@@ -68,7 +68,7 @@
     "fd476d8c7601e17fc96d",
     "fe44266e112dd940293f"
   ],
-  "content_hash": "4951d90178084bc6ec6b275b6a404d17796aa11a11c9934b14d6af40f4aef085",
+  "content_hash": "1a8c6abb8fa481cd627ac3028c141e8453a076ec5cb1568b23d8a4494bf610db",
   "dependencies": [
     "apex/callouts-and-http-integrations",
     "apex/apex-design-patterns",
@@ -106,6 +106,7 @@
     "skills/architect/integration-framework-design/references/well-architected.md"
   ],
   "scripts": [
+    "skills/architect/integration-framework-design/scripts/__pycache__/check_integration_framework.cpython-314.pyc",
     "skills/architect/integration-framework-design/scripts/check_integration_framework.py"
   ],
   "tags": [

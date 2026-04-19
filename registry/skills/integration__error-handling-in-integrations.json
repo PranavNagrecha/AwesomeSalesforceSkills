@@ -81,7 +81,7 @@
     "fa32dba2e418278ac341",
     "ff2e70ae521084b356a6"
   ],
-  "content_hash": "b21208b254df30eda7fbe7199a01f7a1bfa1d2016f95de59d3572459077df086",
+  "content_hash": "2740065489f8b3ca596fd2ada948ba570562c08caaf631b040b4812666683bb3",
   "dependencies": [],
   "description": "Use this skill to design orchestration-layer error handling for Salesforce integrations \u2014 covering Platform Event replay recovery, dead-letter queue routing, cross-channel error notification patterns, circuit breaker design, and trigger suspension recovery. Trigger keywords: integration error handling, Platform Event retry, integration dead letter queue, EventBus RetryableException, integration circuit breaker, event bus trigger suspended. NOT for Apex exception handling (use apex-exception-handling skill), HTTP error response contracts (use api-error-handling-design), or retry backoff patterns (use retry-and-backoff-patterns).",
   "file_location": "skills/integration/error-handling-in-integrations",
@@ -111,6 +111,7 @@
     "skills/integration/error-handling-in-integrations/references/well-architected.md"
   ],
   "scripts": [
+    "skills/integration/error-handling-in-integrations/scripts/__pycache__/check_error_handling_in_integrations.cpython-314.pyc",
     "skills/integration/error-handling-in-integrations/scripts/check_error_handling_in_integrations.py"
   ],
   "tags": [

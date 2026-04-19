@@ -95,7 +95,7 @@
     "f9bffa9947e8eb088e58",
     "fce00e25db1c05fd4f05"
   ],
-  "content_hash": "5ac46e644c2c3b30694dfbd61328e1a0ca9cf55ba7c1ba6dd4cbc53706bb3aba",
+  "content_hash": "048650e00ae9b7bef2a940ee67e02ece013c556d3d22184e0134db73e772ef46",
   "dependencies": [],
   "description": "Use when writing or reviewing Apex, SOQL, or Flow logic that involves Date or Datetime fields: scheduling jobs, comparing dates across timezones, displaying Datetime values to users, filtering records by date literals, or persisting Datetime from external systems. NOT for calendar UI component layout, time-zone configuration in org settings, or Salesforce Connect external object date mapping.",
   "file_location": "skills/apex/timezone-and-datetime-pitfalls",
@@ -127,6 +127,7 @@
     "skills/apex/timezone-and-datetime-pitfalls/references/well-architected.md"
   ],
   "scripts": [
+    "skills/apex/timezone-and-datetime-pitfalls/scripts/__pycache__/check_timezone_and_datetime_pitfalls.cpython-314.pyc",
     "skills/apex/timezone-and-datetime-pitfalls/scripts/check_timezone_and_datetime_pitfalls.py"
   ],
   "tags": [

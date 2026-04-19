@@ -61,7 +61,7 @@
     "fca19ee622e0f3194855",
     "fe800092efeef0ae0b9e"
   ],
-  "content_hash": "898a13f82494a6437cf586f936e3812b220932e3da6839e6b75b70d8b53f8f3a",
+  "content_hash": "5fa1313a9e47b067d448ba8eb4f191013e7b18fe4b1f5432c640bb61e04a4a4c",
   "dependencies": [],
   "description": "Use when writing, reviewing, or troubleshooting Apex that risks hitting Salesforce governor limits. Triggers: 'too many SOQL queries', 'too many DML statements', 'CPU time limit', 'bulkification', 'Queueable vs Batch'. NOT for trigger architecture decisions unless the core problem is limit consumption.",
   "file_location": "skills/apex/governor-limits",
@@ -89,6 +89,7 @@
     "skills/apex/governor-limits/references/well-architected.md"
   ],
   "scripts": [
+    "skills/apex/governor-limits/scripts/__pycache__/check_limit_usage.cpython-314.pyc",
     "skills/apex/governor-limits/scripts/check_limit_usage.py"
   ],
   "tags": [

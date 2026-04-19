@@ -57,7 +57,7 @@
     "faa1f7782e9420320c19",
     "fc485e6d8e499486486e"
   ],
-  "content_hash": "3718a581c43cfc2c306692b43debec155e440e63ed3515ad5af9f48d76db2c0c",
+  "content_hash": "b2c77555e4ef71cc95f0ee7987a1e468e95233281fd654007b9cf001718feb64",
   "dependencies": [
     "flow/flow-bulkification"
   ],
@@ -90,6 +90,7 @@
     "skills/flow/flow-large-data-volume-patterns/references/well-architected.md"
   ],
   "scripts": [
+    "skills/flow/flow-large-data-volume-patterns/scripts/__pycache__/check_flow_large_data_volume_patterns.cpython-314.pyc",
     "skills/flow/flow-large-data-volume-patterns/scripts/check_flow_large_data_volume_patterns.py"
   ],
   "tags": [

@@ -91,7 +91,7 @@
     "f579322183bc9136b67b",
     "f64476fc38886d2fc0b9"
   ],
-  "content_hash": "8efe19e5e506a06e1898dcf0717b2dcf97975b9179c9f2d88a23e0850f4cdbd0",
+  "content_hash": "3a17e5f82662c8148eba25bd83644be0ad37b7889ab1078408c0706b7591b854",
   "dependencies": [
     "omnistudio/document-generation-omnistudio"
   ],
@@ -128,6 +128,7 @@
     "skills/apex/fsc-document-generation/references/well-architected.md"
   ],
   "scripts": [
+    "skills/apex/fsc-document-generation/scripts/__pycache__/check_fsc_document_generation.cpython-314.pyc",
     "skills/apex/fsc-document-generation/scripts/check_fsc_document_generation.py"
   ],
   "tags": [

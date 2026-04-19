@@ -105,7 +105,7 @@
     "fd3667764c78e2c60ffa",
     "fd558fed2d5e3316e3a7"
   ],
-  "content_hash": "b7354ad8b83f3ebf5252f796e55b7c3586db0c38b1233ef759798efa44d87ac8",
+  "content_hash": "81ab8a3a4addae4a5c0b15e82e949724b93ce19db2d5caf383156380736b0ed1",
   "dependencies": [
     "apex/apex-queueable-patterns",
     "apex/platform-events-apex"
@@ -143,6 +143,7 @@
     "skills/apex/long-running-process-orchestration/references/well-architected.md"
   ],
   "scripts": [
+    "skills/apex/long-running-process-orchestration/scripts/__pycache__/check_long_running_process_orchestration.cpython-314.pyc",
     "skills/apex/long-running-process-orchestration/scripts/check_long_running_process_orchestration.py"
   ],
   "tags": [

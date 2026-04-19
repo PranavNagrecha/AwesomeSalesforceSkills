@@ -48,7 +48,7 @@
     "fac80fac6f2fc88669e5",
     "fd8c2595381754e5d765"
   ],
-  "content_hash": "dabed823f1c9618f933f0df2faed1015691a3ff73c5b39b62723b5db02630fa1",
+  "content_hash": "3716e82a5f51bdf40f7ce05b63734328f2b4048bcd9cb9d21e69e6cd754c9491",
   "dependencies": [],
   "description": "Use this skill when working with CRM Analytics (Einstein Analytics) extended metadata (XMD) \u2014 the multi-layer metadata system that controls field display labels, aliases, number formatting, date formatting, measure/dimension classification, and color palettes on CRM Analytics datasets. Trigger keywords: XMD API, dataset field formatting CRM Analytics, wave dataset labels, main XMD update, dataset versioning Analytics. NOT for dataflow development, recipe node configuration, dataset ingestion setup, standard dashboard design, or SAQL query construction \u2014 those are covered by analytics-dataflow-development and analytics-recipe-design.",
   "file_location": "skills/data/einstein-analytics-data-model",
@@ -76,6 +76,7 @@
     "skills/data/einstein-analytics-data-model/references/well-architected.md"
   ],
   "scripts": [
+    "skills/data/einstein-analytics-data-model/scripts/__pycache__/check_einstein_analytics_data_model.cpython-314.pyc",
     "skills/data/einstein-analytics-data-model/scripts/check_einstein_analytics_data_model.py"
   ],
   "tags": [

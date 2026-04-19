@@ -118,7 +118,7 @@
     "f75753c64038f954e6c8",
     "fbd7651a81547ff22591"
   ],
-  "content_hash": "24ca7c0ad578db9359e1cb7b3ea6aa382c504f098a1fb9f5893b3ff2085b7c2b",
+  "content_hash": "3a2dad95132d2ed54d9d64b4543e53d507158d7fbb8dcf95a96f2f02b5d58f1d",
   "dependencies": [
     "lwc/experience-cloud-multi-idp-sso",
     "architect/security-architecture-review"
@@ -158,6 +158,7 @@
     "skills/architect/experience-cloud-integration-patterns/references/well-architected.md"
   ],
   "scripts": [
+    "skills/architect/experience-cloud-integration-patterns/scripts/__pycache__/check_experience_cloud_integration_patterns.cpython-314.pyc",
     "skills/architect/experience-cloud-integration-patterns/scripts/check_experience_cloud_integration_patterns.py"
   ],
   "tags": [

@@ -87,7 +87,7 @@
     "fb879a4200b4e9145411",
     "fcb28b27288e3dc97782"
   ],
-  "content_hash": "a3ba8cb42242a956e06794adb104eb1d35738c48f6f1592b8dc56d7505988d98",
+  "content_hash": "b891c5a650639696c980420681dd7f1e0a7c43d179ffd94dc8477bb973eaef17",
   "dependencies": [],
   "description": "Use this skill to run Salesforce Code Analyzer v5 for static analysis, CI quality gates, and AppExchange security review preparation. Trigger keywords: code analyzer, sca run, pmd apex, eslint lwc, graph engine, taint analysis, retire js, ci gate, severity threshold, AppExchange scan. NOT for manual code review workflows, runtime debugging, performance profiling, or Checkmarx/CodeScan third-party tools.",
   "file_location": "skills/devops/salesforce-code-analyzer",
@@ -117,6 +117,7 @@
     "skills/devops/salesforce-code-analyzer/references/well-architected.md"
   ],
   "scripts": [
+    "skills/devops/salesforce-code-analyzer/scripts/__pycache__/check_salesforce_code_analyzer.cpython-314.pyc",
     "skills/devops/salesforce-code-analyzer/scripts/check_salesforce_code_analyzer.py"
   ],
   "tags": [

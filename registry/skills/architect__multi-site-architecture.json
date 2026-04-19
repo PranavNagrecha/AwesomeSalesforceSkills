@@ -114,7 +114,7 @@
     "fca779248c04022c0097",
     "fe25b09e2f387c516092"
   ],
-  "content_hash": "6d1530b3cdb59e1aa1bc2fe1ff2a540a699c17da1ef9e82826d8172984c265ee",
+  "content_hash": "fd599f0ee387d0903fa12cf4317569b949347fa270a686d1ff99001948c42370",
   "dependencies": [],
   "description": "Use when designing a strategy for multiple Experience Cloud sites within one Salesforce org, selecting a domain and URL pattern, planning shared LWC component libraries, designing cross-site navigation, managing the org's 100-site quota, or deciding between multi-site vs multi-org for portal needs. Trigger phrases: 'multiple Experience Cloud sites architecture', 'multi-portal strategy Salesforce', 'cross-site navigation Experience Cloud', 'domain strategy community portals', 'shared components across sites', 'how many Experience Cloud sites can I have', 'customer and partner portal same org', 'regional sub-portals Salesforce'. NOT for single Experience Cloud site setup (use admin/experience-cloud-site-setup). NOT for Experience Cloud page layout or component development in isolation. NOT for multi-org strategy (use architect/multi-org-strategy).",
   "file_location": "skills/architect/multi-site-architecture",
@@ -152,6 +152,7 @@
     "skills/architect/multi-site-architecture/references/well-architected.md"
   ],
   "scripts": [
+    "skills/architect/multi-site-architecture/scripts/__pycache__/check_multi_site_architecture.cpython-314.pyc",
     "skills/architect/multi-site-architecture/scripts/check_multi_site_architecture.py"
   ],
   "tags": [

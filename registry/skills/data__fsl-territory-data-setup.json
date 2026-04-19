@@ -56,7 +56,7 @@
     "f0dce9ae569f537a5f71",
     "f60216548712c2fb4e06"
   ],
-  "content_hash": "b497fe66bad6192468940d6c7328827a325526dd56da8179349eaf1203057f68",
+  "content_hash": "691987e8742a9d54ab5c6c4dfac9dec9b8fc738ac6f5b3a71d3675c21978b5dc",
   "dependencies": [],
   "description": "Use this skill when bulk loading Service Territory data: boundary polygons, ServiceTerritoryMember assignments, OperatingHours, TimeSlots, and territory hierarchy setup. Trigger keywords: service territory bulk load, KML polygon import FSL, ServiceTerritoryMember migration, OperatingHours data setup, PolygonUtils Apex. NOT for Enterprise Territory Management (ETM/Account Territories), admin-level territory configuration UI, or scheduling policy setup.",
   "file_location": "skills/data/fsl-territory-data-setup",
@@ -86,6 +86,7 @@
     "skills/data/fsl-territory-data-setup/references/well-architected.md"
   ],
   "scripts": [
+    "skills/data/fsl-territory-data-setup/scripts/__pycache__/check_fsl_territory_data_setup.cpython-314.pyc",
     "skills/data/fsl-territory-data-setup/scripts/check_fsl_territory_data_setup.py"
   ],
   "tags": [

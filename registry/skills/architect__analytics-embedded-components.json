@@ -101,7 +101,7 @@
     "fad58826c7b19564844a",
     "fae61db3cf038c56150b"
   ],
-  "content_hash": "6876a33944996331b2bb6514c5aa7f996243e19f21c311938bd032679ada5d51",
+  "content_hash": "79ce493501ab8bf57f9329a0caec9cba1a9defa45f1fb01ee161711732342c7e",
   "dependencies": [],
   "description": "Use this skill when embedding a CRM Analytics dashboard into a Lightning App Builder page, Experience Cloud page, or when embedding a custom LWC inside an Analytics dashboard. Trigger keywords: wave-wave-dashboard-lwc, wave-community-dashboard, analytics__Dashboard target, embed dashboard, record-id context filtering, dashboard state JSON, analytics component. NOT for standard LWC development unrelated to Analytics dashboards, NOT for designing dashboard content or datasets, NOT for CRM Analytics app creation or dataset management.",
   "file_location": "skills/architect/analytics-embedded-components",
@@ -133,6 +133,7 @@
     "skills/architect/analytics-embedded-components/references/well-architected.md"
   ],
   "scripts": [
+    "skills/architect/analytics-embedded-components/scripts/__pycache__/check_analytics_embedded_components.cpython-314.pyc",
     "skills/architect/analytics-embedded-components/scripts/check_analytics_embedded_components.py"
   ],
   "tags": [

@@ -97,7 +97,7 @@
     "fe062968a680b36eaf3c",
     "ff59badda752d581873a"
   ],
-  "content_hash": "2706d8df9039b7181989d1635c981f26fa6bdf8a71d8b84aae33c22ae2fc5893",
+  "content_hash": "cccb02323b88dc111a7f8cea481e0614d89f26dfd148bf439498fced82c27503",
   "dependencies": [],
   "description": "Investigate Salesforce login activity using LoginHistory, IdentityVerificationHistory, and Login Forensics (Event Monitoring add-on): reconstruct per-user login timelines, identify failed logins, analyze source IPs, review identity verification events, and configure Login Flows for step-up authentication. NOT for MFA setup (use org-setup-and-configuration). NOT for downloading EventLogFile CSVs or configuring real-time threat detection (use event-monitoring).",
   "file_location": "skills/security/login-forensics",
@@ -131,6 +131,7 @@
     "skills/security/login-forensics/references/well-architected.md"
   ],
   "scripts": [
+    "skills/security/login-forensics/scripts/__pycache__/check_login_forensics.cpython-314.pyc",
     "skills/security/login-forensics/scripts/check_login_forensics.py"
   ],
   "tags": [

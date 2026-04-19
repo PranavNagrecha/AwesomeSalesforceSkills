@@ -90,7 +90,7 @@
     "f778685b7723c57f00b3",
     "f9fc0d824a8bd4c66829"
   ],
-  "content_hash": "e92cc7c22795a5af6eb2026d40d360d0fa275eed6d287e6a902c18980673d5b4",
+  "content_hash": "7fd39c6a3a95829bf1290ec2b6813a18bc9dcb5255a30e597d71f328e3a0e17b",
   "dependencies": [],
   "description": "Use this skill for Salesforce Order Management (OMS) tasks: order lifecycle, OrderSummary creation and status, FulfillmentOrder creation and routing, returns, exchanges, cancellations, and platform event subscriptions. Trigger keywords: order management, OrderSummary, FulfillmentOrder, ReturnOrder, ensure-funds, ensure-refunds, submit-cancel, submit-return, adjust-item-submit. NOT for CPQ quote-to-order workflows, standard Salesforce Orders without OMS, or B2B/B2C storefront setup.",
   "file_location": "skills/admin/commerce-order-management",
@@ -125,6 +125,7 @@
     "skills/admin/commerce-order-management/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/commerce-order-management/scripts/__pycache__/check_commerce_order_management.cpython-314.pyc",
     "skills/admin/commerce-order-management/scripts/check_commerce_order_management.py"
   ],
   "tags": [

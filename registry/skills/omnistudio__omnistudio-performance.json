@@ -101,7 +101,7 @@
     "f858482c30f20f0b33e9",
     "fcae3202955d2f471260"
   ],
-  "content_hash": "217f0ad6684fd26eb3edcf906d00fba4c3c542304b1cb460074f82fe10aed100",
+  "content_hash": "7122ff73c724f71aea76fd2dfd1a032ae1b59125629d6caa2c7416278220216f",
   "dependencies": [],
   "description": "Use when diagnosing or improving runtime performance in OmniStudio assets: slow OmniScripts, Integration Procedures with high latency, DataRaptor caching, excessive API call counts, FlexCard rendering delays, or async IP fire-and-forget patterns. Triggers: 'OmniScript slow', 'Integration Procedure timeout', 'DataRaptor cache', 'FlexCard loading too long', 'reduce API calls OmniStudio'. NOT for LWC performance outside of OmniScript runtime (use lwc-performance skill). NOT for OmniScript step design or journey UX (use omniscript-design-patterns skill).",
   "file_location": "skills/omnistudio/omnistudio-performance",
@@ -136,6 +136,7 @@
     "skills/omnistudio/omnistudio-performance/references/well-architected.md"
   ],
   "scripts": [
+    "skills/omnistudio/omnistudio-performance/scripts/__pycache__/check_omnistudio_performance.cpython-314.pyc",
     "skills/omnistudio/omnistudio-performance/scripts/check_omnistudio_performance.py"
   ],
   "tags": [

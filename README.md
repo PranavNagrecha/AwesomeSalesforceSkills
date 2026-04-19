@@ -4,8 +4,8 @@ The universal Salesforce knowledge layer for AI coding assistants.
 
 Drop this into Claude Code, Cursor, Aider, Windsurf, or any AI tool and get role-accurate, source-grounded Salesforce guidance — for every role, every cloud, every task.
 
-**753 skills · shared Apex/LWC/Flow templates · golden evals · live-org MCP server.**
-1119+ skills planned across 5 roles × 16 clouds.
+**763 skills · shared Apex/LWC/Flow templates · golden evals · live-org MCP server.**
+1097+ skills planned across 5 roles × 16 clouds.
 
 ---
 
@@ -156,7 +156,7 @@ and dependency order.
 | Domain | Skills |
 |--------|--------|
 | Admin | 200 — custom fields, objects, picklists, users, org setup, page layouts, permission sets, sharing, validation rules, flows, reports, data skew, requirements gathering, Experience Cloud site setup, member management, CMS content, guest access, moderation, SEO, portal requirements, self-service design, partner community, community engagement, CPQ product catalog and bundles, CPQ pricing rules, CPQ quote templates, FSL work orders, service territories, resource management, scheduling policies, mobile app setup, Health Cloud patient setup, care plan configuration, care program management, FSC financial accounts, household model configuration, FSC referral management, NPSP household accounts, gift entry and processing, soft credits and matching, recurring donations, Marketing Cloud Engagement setup, MCAE/Pardot setup, Email Studio, Journey Builder, Marketing Cloud Connect, MCAE lead scoring and grading, consent management, email deliverability, B2B Commerce store setup, CRM Analytics app creation, analytics dashboard design, integration-admin connected apps, remote site settings, outbound message setup, integration user management, change data capture admin... |
-| Apex | 97 — trigger framework, batch, async, security patterns, callouts, mocking, platform cache, SOQL fundamentals, sf CLI and SFDX essentials, Metadata API and package.xml, debug logs and Developer Console, apex managed sharing, scheduled jobs, email services, fflib enterprise patterns, mixed DML and setup objects, record locking, callout-DML transaction boundaries, trigger-flow coexistence, apex performance profiling... |
+| Apex | 107 — trigger framework, batch, async, security patterns, callouts, mocking, platform cache, SOQL fundamentals, sf CLI and SFDX essentials, Metadata API and package.xml, debug logs and Developer Console, apex managed sharing, scheduled jobs, email services, fflib enterprise patterns, mixed DML and setup objects, record locking, callout-DML transaction boundaries, trigger-flow coexistence, apex performance profiling, JSON serialization, DML patterns, collections patterns, aggregate queries, SOQL relationship queries, batch chaining, transaction finalizers, wrapper class patterns, limits monitoring, named credentials patterns... |
 | LWC | 32 — wire service, component communication, testing, accessibility, offline, performance, toast and notifications, dynamic components, imperative Apex, message channel patterns, LWR site development, Experience Cloud LWC components, authentication flows, headless CMS API, API access patterns, search customization, multi-IdP SSO... |
 | Flow | 23 — record-triggered, screen flows, fault handling, bulkification, subflows, governance, debugging, auto-launched flow patterns, collection processing, External Services callouts, Flow for Slack Core Actions, flow action framework, flow large-data-volume patterns, Process Builder to Flow migration, Workflow Rule to Flow migration... |
 | OmniStudio | 21 — OmniScript design, DataRaptor, Integration Procedures, security, FlexCard design patterns, calculation procedures, DataPack deployment, performance optimization, Industries CPQ vs Salesforce CPQ, OmniStudio testing patterns, OmniStudio CI/CD patterns... |

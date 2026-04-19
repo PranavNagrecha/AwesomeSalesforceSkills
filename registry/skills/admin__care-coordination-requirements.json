@@ -56,7 +56,7 @@
     "f9e6b0bea79fa2c33b2d",
     "fbfbf7845eb9abc7351c"
   ],
-  "content_hash": "298d7e745920305aa88ba78ba817d739fad830afa4529891753102be62f06eb8",
+  "content_hash": "d3e7141731fac062a0fe9fe8eb2c257844e1445b696bfbcc0af03038ed17f39e",
   "dependencies": [
     "admin/health-cloud-patient-setup",
     "admin/care-plan-configuration",
@@ -91,6 +91,7 @@
     "skills/admin/care-coordination-requirements/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/care-coordination-requirements/scripts/__pycache__/check_care_coordination_requirements.cpython-314.pyc",
     "skills/admin/care-coordination-requirements/scripts/check_care_coordination_requirements.py"
   ],
   "tags": [

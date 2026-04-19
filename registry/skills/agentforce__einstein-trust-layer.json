@@ -98,7 +98,7 @@
     "fcdcabaf2adca54b4fa5",
     "fd9fa995aa2060fe206d"
   ],
-  "content_hash": "07971a8b6a5923a0592ac3183f7b6019535513a46f3ceb2e759adae241d7a525",
+  "content_hash": "a889f78960e966b8037c8c7676c13a35514e8155afd05e095e15ecce4aad5dc3",
   "dependencies": [],
   "description": "Use this skill when configuring, auditing, or troubleshooting Salesforce Einstein Trust Layer security controls for generative AI features including Agentforce, Einstein Copilot, and Prompt Builder. Trigger keywords: trust layer, data masking, zero data retention, ZDR, toxicity detection, AI audit trail, grounding controls, PII masking LLM, Einstein generative AI security. NOT for agent action development, LWC component authoring, or non-AI data governance (see data-quality-and-governance skill for that).",
   "file_location": "skills/agentforce/einstein-trust-layer",
@@ -133,6 +133,7 @@
     "skills/agentforce/einstein-trust-layer/references/well-architected.md"
   ],
   "scripts": [
+    "skills/agentforce/einstein-trust-layer/scripts/__pycache__/check_einstein_trust_layer.cpython-314.pyc",
     "skills/agentforce/einstein-trust-layer/scripts/check_einstein_trust_layer.py"
   ],
   "tags": [

@@ -71,7 +71,7 @@
     "f9f0a35a067fa4083878",
     "fd563824cac8f7a1a8e9"
   ],
-  "content_hash": "9f788501a1d32d4b06d5c21138d59b95d963f27c7efe2a416540ed70c679b794",
+  "content_hash": "71af713b1d790186a02460ac52be549fe9d25f903a0416736b6f63d96c11a217",
   "dependencies": [],
   "description": "Use when implementing runtime feature toggles, emergency kill switches, or gradual rollout controls in Apex using Custom Metadata Types, Custom Permissions, or Hierarchical Custom Settings. NOT for Custom Metadata Type fundamentals \u2014 see custom-metadata-types skill for CMDT basics.",
   "file_location": "skills/apex/feature-flags-and-kill-switches",
@@ -103,6 +103,7 @@
     "skills/apex/feature-flags-and-kill-switches/references/well-architected.md"
   ],
   "scripts": [
+    "skills/apex/feature-flags-and-kill-switches/scripts/__pycache__/check_feature_flags_and_kill_switches.cpython-314.pyc",
     "skills/apex/feature-flags-and-kill-switches/scripts/check_feature_flags_and_kill_switches.py"
   ],
   "tags": [
