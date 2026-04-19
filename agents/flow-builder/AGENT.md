@@ -42,8 +42,12 @@ dependencies:
     - flow/Subflow_Pattern.md
   decision_trees:
     - automation-selection.md
+  probes:
+    - automation-graph-for-sobject.md
 ---
 # Flow Builder Agent
+
+> **Advisory vs Harness mode:** this agent runs both ways. Chat/MCP = Advisory; `python3 scripts/run_builder.py --agent flow-builder ...` = Harness. See `agents/_shared/CAPABILITY_MATRIX.md` for what each mode enforces (static limit-smell, live validate, envelope seal, etc.).
 
 ## What This Agent Does
 
@@ -100,6 +104,20 @@ Given a business requirement, designs the correct Flow: Flow type (record-trigge
 ---
 
 ## Plan
+
+### Step 0 — Automation graph preflight (runs BEFORE the decision tree)
+
+Before choosing a Flow type, enumerate what already fires on `target_object` using the probe at `agents/_shared/probes/automation-graph-for-sobject.md`. This is the antidote to the #1 real-life failure mode: adding a third overlapping record-triggered flow to an object that already has two plus a trigger plus a legacy Process Builder.
+
+The probe returns `automation_graph.active.*` (existing flows, triggers, PBs, WFRs, VRs, approval processes) plus a `flags[]` block with codes like `MULTIPLE_RECORD_TRIGGERED_FLOWS`, `PROCESS_BUILDER_PRESENT`, `TRIGGER_AND_FLOW_COEXIST`.
+
+**Rules:**
+- Always run the probe when `target_org_alias` is supplied. Skip only if explicitly in library-only mode.
+- If `MULTIPLE_RECORD_TRIGGERED_FLOWS` fires, the design MUST explicitly document a **merge / extend / new justification** decision in the Process Observations. Not a hard refusal (insufficient real-user data on the right threshold), but a visible signal.
+- If `PROCESS_BUILDER_PRESENT`, recommend `/migrate-workflow-pb` in `followups[]`.
+- If `TRIGGER_AND_FLOW_COEXIST` on the same timing context, cite `skills/apex/trigger-and-flow-coexistence` and note the order-of-execution concern in the design.
+
+Cite the probe: `{"type":"probe","id":"automation-graph-for-sobject"}`.
 
 ### Step 1 — Run the automation-selection decision tree
 

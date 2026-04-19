@@ -335,4 +335,99 @@ class FlowBuilderPlugin:
                 if fault is None:
                     errors.append(f"{path.name}: <{elem}> '{node_name}' has no <faultConnector> — unhandled failure path")
 
+        # --- Limit-smell detection (loops + bulkification hazards) --------
+        # Flow XML expresses control flow by elements naming each other in
+        # <connector> children; a DML inside a loop is detected by walking
+        # from a <loops> element's <nextValueConnector> target and seeing if
+        # the DML element's connector ever points back at the loop (cycle).
+        # We use a lighter heuristic that covers the common compiler-valid
+        # but production-dangerous cases: build a name → element-kind map,
+        # then for each <loops> walk its downstream connectors until we hit
+        # the loop's own `nextValueConnector` target (loop-back) — any DML,
+        # lookup, or subflow reachable on that path is flagged.
+        name_to_kind: dict[str, str] = {}
+        name_to_next: dict[str, str | None] = {}
+        all_elements: list[tuple[str, ET.Element]] = []
+        for kind in (
+            "loops", "recordLookups", "recordCreates", "recordUpdates",
+            "recordDeletes", "actionCalls", "subflows", "decisions",
+            "assignments", "screens",
+        ):
+            for node in findall(root, kind):
+                n = find(node, "name")
+                nm = (n.text if n is not None else "") or ""
+                if not nm:
+                    continue
+                name_to_kind[nm] = kind
+                all_elements.append((kind, node))
+                conn = find(node, "connector")
+                target = None
+                if conn is not None:
+                    t = find(conn, "targetReference")
+                    target = (t.text if t is not None else None)
+                name_to_next[nm] = target
+
+        # For each loop, collect the body path: elements reachable from
+        # <nextValueConnector> target, stopping when we reach the loop's
+        # <noMoreValuesConnector> target or revisit a node.
+        for kind, node in all_elements:
+            if kind != "loops":
+                continue
+            loop_name_el = find(node, "name")
+            loop_name = (loop_name_el.text if loop_name_el is not None else "(unnamed)") or "(unnamed)"
+            nvc = find(node, "nextValueConnector")
+            nmc = find(node, "noMoreValuesConnector")
+            start_target = None
+            exit_target = None
+            if nvc is not None:
+                t = find(nvc, "targetReference")
+                start_target = (t.text if t is not None else None)
+            if nmc is not None:
+                t = find(nmc, "targetReference")
+                exit_target = (t.text if t is not None else None)
+            if not start_target:
+                continue
+            visited: set[str] = set()
+            frontier = [start_target]
+            body: list[str] = []
+            while frontier:
+                cur = frontier.pop()
+                if not cur or cur in visited or cur == exit_target:
+                    continue
+                visited.add(cur)
+                body.append(cur)
+                nxt = name_to_next.get(cur)
+                if nxt and nxt != loop_name:
+                    frontier.append(nxt)
+            # Now classify what we found inside the loop body.
+            dml_inside = [n for n in body if name_to_kind.get(n) in {
+                "recordCreates", "recordUpdates", "recordDeletes"}]
+            lookup_inside = [n for n in body if name_to_kind.get(n) == "recordLookups"]
+            subflow_inside = [n for n in body if name_to_kind.get(n) == "subflows"]
+            nested_loops = [n for n in body if name_to_kind.get(n) == "loops"]
+            for d in dml_inside:
+                errors.append(
+                    f"{path.name}: [LIMIT_SMELL P0] DML element '{d}' "
+                    f"inside loop '{loop_name}' — bulkify outside the loop "
+                    f"(hits DML governor limit of 150 statements per tx)"
+                )
+            for q in lookup_inside:
+                errors.append(
+                    f"{path.name}: [LIMIT_SMELL P0] Get Records '{q}' "
+                    f"inside loop '{loop_name}' — pre-fetch into a map "
+                    f"before the loop (hits 100 SOQL per tx)"
+                )
+            for s in subflow_inside:
+                errors.append(
+                    f"{path.name}: [LIMIT_SMELL P1] Subflow call '{s}' "
+                    f"inside loop '{loop_name}' — N+1 subflow invocation; "
+                    f"pass the collection and iterate inside the subflow"
+                )
+            for l in nested_loops:
+                errors.append(
+                    f"{path.name}: [LIMIT_SMELL P1] Nested loop '{l}' "
+                    f"inside '{loop_name}' — O(n*m) path; refactor using a "
+                    f"Map keyed lookup"
+                )
+
         return errors
