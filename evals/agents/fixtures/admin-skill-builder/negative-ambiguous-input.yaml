@@ -1,0 +1,21 @@
+eval:
+  id: admin-skill-builder__negative-ambiguous-input
+  agent: admin-skill-builder
+  mode: single
+  priority: P0
+  last_verified: 2026-04-19
+  description: >
+    Gate A MUST refuse when feature_summary is under 10 words.
+
+inputs:
+  skill_slug: short-one
+  domain: admin
+  skill_category: admin
+  feature_summary: "admin skill"
+  api_version: "60.0"
+
+org_stub: {}
+
+expect:
+  refusal_code: REFUSAL_INPUT_AMBIGUOUS
+  gates_passed: []

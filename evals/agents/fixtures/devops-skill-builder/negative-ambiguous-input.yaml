@@ -1,0 +1,21 @@
+eval:
+  id: devops-skill-builder__negative-ambiguous-input
+  agent: devops-skill-builder
+  mode: single
+  priority: P0
+  last_verified: 2026-04-19
+  description: >
+    Gate A MUST refuse when feature_summary is under 10 words.
+
+inputs:
+  skill_slug: short-one
+  domain: devops
+  skill_category: devops
+  feature_summary: "devops skill"
+  api_version: "60.0"
+
+org_stub: {}
+
+expect:
+  refusal_code: REFUSAL_INPUT_AMBIGUOUS
+  gates_passed: []

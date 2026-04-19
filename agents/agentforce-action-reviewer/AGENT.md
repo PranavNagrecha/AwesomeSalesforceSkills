@@ -15,13 +15,21 @@ output_formats:
 dependencies:
   skills:
     - admin/agent-output-formats
+    - agentforce/agent-action-error-handling
+    - agentforce/agent-action-unit-tests
     - agentforce/agent-actions
+    - agentforce/agent-deployment-checklist
+    - agentforce/agent-metric-dashboards
+    - agentforce/agent-rate-limit-strategy
+    - agentforce/agent-security-review
     - agentforce/agent-testing-and-evaluation
     - agentforce/agent-topic-design
     - agentforce/agentforce-guardrails
     - agentforce/agentforce-observability
     - agentforce/agentforce-persona-design
     - agentforce/einstein-trust-layer
+    - agentforce/prompt-injection-defense
+    - agentforce/prompt-template-versioning
   shared:
     - AGENT_CONTRACT.md
     - AGENT_RULES.md

@@ -21,6 +21,7 @@ dependencies:
     - devops/sandbox-refresh-and-templates
     - devops/scratch-org-management
     - devops/scratch-org-pools
+    - devops/scratch-org-snapshots
   shared:
     - AGENT_CONTRACT.md
     - AGENT_RULES.md
