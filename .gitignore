@@ -36,3 +36,10 @@ _codex_drops/processed/
 # docs/reports/<agent>/<run_id>/. Transient CI/debug artifacts; regenerate via:
 #   python3 scripts/run_builder.py --agent <agent> --fixture <...> --emitted-dir <...>
 docs/reports/
+
+# scripts/execute_agent_fixture.py debug artifact — the assembled prompt sent
+# to the model. Reproducible from the fixture + agent source, ~37 KB per run,
+# noisy to diff. The raw.md (model response), envelope.json (extracted
+# envelope), and grade.txt (grader verdict) alongside it ARE committed as the
+# persistent record of each agent execution.
+docs/validation/agent_executions_*/*.prompt.txt
