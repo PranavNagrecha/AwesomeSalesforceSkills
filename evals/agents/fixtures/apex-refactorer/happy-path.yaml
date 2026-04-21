@@ -1,0 +1,36 @@
+eval:
+  id: apex-refactorer__happy-path
+  agent: apex-refactorer
+  mode: single
+  priority: P0
+  last_verified: 2026-04-21
+  description: >
+    Naive AccountTrigger embeds trigger-body logic, raw SOQL, raw DML, a
+    raw HTTP callout, and System.debug calls — five canonical refactor
+    triggers. Agent should classify the shape as a "trigger body" (or
+    "mixed"), emit a refactor plan that lifts logic into
+    templates/apex/TriggerHandler.cls, moves SOQL to a BaseSelector,
+    wraps the callout via HttpClient, and replaces System.debug with
+    ApplicationLogger. Must also produce a test class and cite the
+    templates/skills it applied.
+
+inputs:
+  source_path: evals/agents/fixtures/apex-refactorer/samples/AccountTrigger_Naive.cls
+
+org_stub: {}
+
+expect:
+  # MEDIUM is the honest ceiling when the fixture omits target_org_alias —
+  # per DELIVERABLE_CONTRACT, a load-bearing skipped dimension caps confidence.
+  confidence: MEDIUM
+  must_cite_any_of:
+    - { type: template, id: apex/TriggerHandler.cls }
+    - { type: skill, id: apex/trigger-framework }
+    - { type: skill, id: apex/apex-security-patterns }
+  process_observations:
+    min_count: 1
+    categories_present_any_of:
+      - healthy
+      - concerning
+      - ambiguous
+      - suggested_followup

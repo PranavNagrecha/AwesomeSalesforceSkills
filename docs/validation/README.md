@@ -83,6 +83,40 @@ python3 scripts/validate_skill_factuality.py --target-org <alias> --sample 200
 
 ---
 
+### Layer 4 — Agent Execution (end-to-end envelope grading)
+
+**What:** Layer 2 confirms AGENT.md is well-formed. This harness goes one step further — it actually invokes the model against a fixture, captures the output envelope, and grades it against `expect:` blocks via the deterministic rubric in `evals/agents/framework.md`. Without this layer, every runtime agent shipped unverified: the repo had specs (AGENT.md), fixtures (`evals/agents/fixtures/`), and a grader (`evals/agents/scripts/run_agent_evals.py`), but nothing invoking the model to produce the envelope the grader expects.
+
+**Script:** `scripts/execute_agent_fixture.py`
+
+**Run (full, requires `ANTHROPIC_API_KEY`):**
+```bash
+python3 scripts/execute_agent_fixture.py \
+  --fixture evals/agents/fixtures/apex-refactorer/happy-path.yaml
+```
+
+**Re-grade a prior envelope without calling the model:**
+```bash
+python3 scripts/execute_agent_fixture.py \
+  --fixture evals/agents/fixtures/apex-refactorer/happy-path.yaml \
+  --envelope-from docs/validation/agent_executions_YYYY-MM-DD/<agent>__<case>.raw.md
+```
+
+**Output:** `docs/validation/agent_executions_<YYYY-MM-DD>/<agent>__<case>.{raw.md,envelope.json,grade.txt}`
+
+Per-run files:
+
+| File | Meaning |
+|---|---|
+| `*.raw.md` | Full model response (committed) |
+| `*.envelope.json` | JSON envelope extracted from the response; what the grader scored (committed) |
+| `*.grade.txt` | Grader stdout/stderr + exit code (committed). `exit_code: 0` = fixture passed |
+| `*.prompt.txt` | Assembled prompt sent to the model (~37 KB) — reproducible, gitignored |
+
+**What the baseline run caught (2026-04-21, apex-refactorer happy path):** Agent correctly declined to claim `confidence: HIGH` when no org access was provided — lowered to `MEDIUM` with rationale "library-only grounding, no `target_org_alias`". The draft fixture had asserted `HIGH`; grader failed; fixture was corrected. This is exactly the signal Layer 4 is for — the agent's restraint is load-bearing and this layer verifies it.
+
+---
+
 ## Summary of results (baseline run — 2026-04-17)
 
 | Layer | Metric | Result |
