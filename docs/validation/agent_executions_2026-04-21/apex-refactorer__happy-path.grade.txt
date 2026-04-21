@@ -1,7 +1,6 @@
 exit_code: 0
 --- stdout ---
-WARN /Users/pranavnagrecha/VS Code/Personal/SfSkills/evals/agents/fixtures/apex-refactorer/happy-path.yaml: envelope schema validation skipped: Unresolvable: observation.schema.json
-Processed 1 fixture(s); 0 error(s), 1 warning(s).
+Processed 1 fixture(s); 0 error(s), 0 warning(s).
 
 --- stderr ---
 
