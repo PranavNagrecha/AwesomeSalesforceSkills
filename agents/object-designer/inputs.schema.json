@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/object-designer/inputs.schema.json",
+  "title": "object-designer inputs",
+  "description": "Typed inputs for the object-designer runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run.",
+  "type": "object",
+  "properties": {
+    "business_concept": {
+      "type": "string",
+      "description": "Example from AGENT.md: \"Track maintenance contracts linked to Accounts, with a primary technician and warranty expiration\" Required column: 'yes'.",
+      "example": "\"Track maintenance contracts linked to Accounts, with a primary technician and warranty expiration\""
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "Example from AGENT.md: live-org probe confirms existing model, prevents duplicate design Required column: 'yes'.",
+      "example": "live-org probe confirms existing model, prevents duplicate design"
+    },
+    "expected_row_volume": {
+      "type": "string",
+      "description": "Example from AGENT.md: `small` (< 100k), `medium` (100k\u201310M), `large` (> 10M). Defaults to `medium`. Drives LDV advice Required column: 'no'.",
+      "example": "small"
+    },
+    "integration_source": {
+      "type": "string",
+      "description": "Example from AGENT.md: external system name if rows will be sourced via integration \u2014 drives External ID + upsert recommendations Required column: 'no'.",
+      "example": "external system name if rows will be sourced via integration \u2014 drives External ID + upsert recommendations"
+    },
+    "sensitivity": {
+      "type": "string",
+      "description": "Example from AGENT.md: `standard` / `pii` / `phi` / `pci` \u2014 drives encryption + access recommendations Required column: 'no'.",
+      "example": "standard"
+    }
+  },
+  "required": [
+    "business_concept",
+    "target_org_alias"
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/business-hours-and-holidays-configurator/inputs.schema.json",
+  "title": "business-hours-and-holidays-configurator inputs",
+  "description": "Typed inputs for the business-hours-and-holidays-configurator runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run.",
+  "type": "object",
+  "properties": {
+    "target_org_alias": {
+      "type": "string",
+      "description": "Required column: 'yes'."
+    },
+    "coverage_summary": {
+      "type": "string",
+      "description": "Example from AGENT.md: \"Global 24x5 support M-F; APAC 8-20 local; EMEA 8-19 local; Americas 7-18 Central; country-specific holidays\" Required column: 'yes'.",
+      "example": "\"Global 24x5 support M-F; APAC 8-20 local; EMEA 8-19 local; Americas 7-18 Central; country-specific holidays\""
+    },
+    "regions": {
+      "type": "string",
+      "description": "Example from AGENT.md: list of regions to model; if omitted, derived from `coverage_summary` Required column: 'no'.",
+      "example": "list of regions to model; if omitted, derived from `coverage_summary`"
+    },
+    "audit_existing": {
+      "type": "boolean",
+      "description": "Example from AGENT.md: default `true` \u2014 inventory current BH/Holidays before proposing Required column: 'no'.",
+      "example": false
+    },
+    "holiday_source": {
+      "type": "string",
+      "description": "Example from AGENT.md: `manual` | `ics-file-path` | `country-standard` (agent lists country codes to use) Required column: 'no'.",
+      "enum": [
+        "manual",
+        "ics-file-path",
+        "country-standard"
+      ],
+      "example": "manual"
+    }
+  },
+  "required": [
+    "target_org_alias",
+    "coverage_summary"
+  ]
+}

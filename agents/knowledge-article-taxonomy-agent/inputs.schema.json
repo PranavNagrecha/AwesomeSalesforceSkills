@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/knowledge-article-taxonomy-agent/inputs.schema.json",
+  "title": "knowledge-article-taxonomy-agent inputs",
+  "description": "Typed inputs for the knowledge-article-taxonomy-agent runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run.",
+  "type": "object",
+  "properties": {
+    "mode": {
+      "type": "string",
+      "description": "Example from AGENT.md: `design` | `audit` Required column: 'yes'.",
+      "enum": [
+        "design",
+        "audit"
+      ],
+      "example": "design"
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "Example from AGENT.md: `prod` Required column: 'yes for audit'.",
+      "example": "prod"
+    },
+    "audiences": {
+      "type": "array",
+      "description": "Example from AGENT.md: `[\"internal agent\",\"customer\",\"partner\",\"public web\"]` Required column: 'yes for design'.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "languages": {
+      "type": "array",
+      "description": "Example from AGENT.md: `[\"en_US\",\"es\",\"fr\",\"ja\"]` Required column: 'yes for design'.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "article_types": {
+      "type": "array",
+      "description": "Example from AGENT.md: `[\"How-To\",\"Troubleshooting\",\"Policy\",\"Release Note\"]` Required column: 'no'.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "search_surface": {
+      "type": "array",
+      "description": "Example from AGENT.md: `[\"agent console\",\"experience cloud\",\"einstein-search\",\"ai-overviews\"]` Required column: 'no'.",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "mode",
+    "target_org_alias",
+    "audiences",
+    "languages"
+  ]
+}

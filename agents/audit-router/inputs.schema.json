@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/audit-router/inputs.schema.json",
+  "title": "audit-router inputs",
+  "description": "Typed inputs for the audit-router runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run.",
+  "type": "object",
+  "properties": {
+    "domain": {
+      "type": "string",
+      "description": "Example from AGENT.md: 15 values: `validation_rule`, `picklist`, `approval_process`, `record_type_layout`, `report_dashboard`, `case_escalation`, `lightning_record_page`, `list_view_search_layout`, `quick_action`, `reports_dashboards_folder_sharing`, `field_audit_trail_history_tracking`, `sharing`, `org_drift`, `my_domain_session_security`, `prompt_library` Required column: 'yes'.",
+      "example": "15 values: `validation_rule`, `picklist`, `approval_process`, `record_type_layout`, `report_dashboard`, `case_escalation`, `lightning_record_page`, `list_view_search_layout`, `quick_action`, `reports_dashboards_folder_sharing`, `field_audit_trail_history_tracking`, `sharing`, `org_drift`, `my_domain_session_security`, `prompt_library`"
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "Example from AGENT.md: `prod`, `uat` Required column: 'yes'.",
+      "example": "prod"
+    },
+    "object_name": {
+      "type": "string",
+      "description": "Example from AGENT.md: `Opportunity` Required column: 'conditional \u2014 required by `validation_rule` / `record_type_layout`; optional for `picklist` / `approval_process`'.",
+      "example": "Opportunity"
+    },
+    "audit_scope": {
+      "type": "string",
+      "description": "Example from AGENT.md: `org` | `object:<Name>` | `process:<Name>` Required column: 'conditional \u2014 for `approval_process`'.",
+      "example": "org"
+    },
+    "scope": {
+      "type": "string",
+      "description": "Example from AGENT.md: `object:<Name>` | `org` Required column: 'conditional \u2014 for `picklist`'.",
+      "example": "object:<Name>"
+    },
+    "folder_filter": {
+      "type": "string",
+      "description": "Example from AGENT.md: `Sales_Dashboards` Required column: 'optional \u2014 for `report_dashboard`'.",
+      "example": "Sales_Dashboards"
+    }
+  },
+  "required": [
+    "domain",
+    "target_org_alias"
+  ]
+}

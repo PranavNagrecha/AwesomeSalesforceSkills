@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/permission-set-architect/inputs.schema.json",
+  "title": "permission-set-architect inputs",
+  "description": "Typed inputs for the permission-set-architect runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run.",
+  "type": "object",
+  "properties": {
+    "mode": {
+      "type": "string",
+      "description": "Example from AGENT.md: `design` | `audit` Required column: 'yes'.",
+      "enum": [
+        "design",
+        "audit"
+      ],
+      "example": "design"
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "Example from AGENT.md: live-org probe is mandatory in both modes Required column: 'yes'.",
+      "example": "live-org probe is mandatory in both modes"
+    },
+    "persona": {
+      "type": "string",
+      "description": "Example from AGENT.md: \"SDR in North America, works Leads + Opportunities, cannot export, light reporting\" Required column: 'design-mode only'.",
+      "example": "\"SDR in North America, works Leads + Opportunities, cannot export, light reporting\""
+    },
+    "audit_scope": {
+      "type": "string",
+      "description": "Example from AGENT.md: `org` | `psg:<PSG_Name>` | `ps:<PS_Name>` | `user:<username>` Required column: 'audit-mode only'.",
+      "example": "org"
+    },
+    "existing_psg": {
+      "type": "string",
+      "description": "Example from AGENT.md: if extending an existing PSG, pass its name Required column: 'no (design)'.",
+      "example": "if extending an existing PSG, pass its name"
+    }
+  },
+  "required": [
+    "mode",
+    "target_org_alias"
+  ]
+}

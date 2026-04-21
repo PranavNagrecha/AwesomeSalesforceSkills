@@ -3,14 +3,51 @@
   "$id": "https://sfskills/agents/architect-skill-builder/inputs.schema.json",
   "title": "architect-skill-builder inputs",
   "type": "object",
-  "required": ["skill_slug", "domain", "feature_summary", "skill_category", "api_version"],
+  "required": [
+    "skill_slug",
+    "domain",
+    "feature_summary",
+    "skill_category",
+    "api_version"
+  ],
   "properties": {
-    "skill_slug": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
-    "domain": {"type": "string", "enum": ["architect"]},
-    "skill_category": {"type": "string", "enum": ["architect"]},
-    "feature_summary": {"type": "string", "minLength": 1},
-    "api_version": {"type": "string", "pattern": "^\\d{2}\\.0$"},
-    "target_org_alias": {"type": "string"},
-    "repo_path": {"type": "string", "default": "./"}
+    "skill_slug": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "description": "Kebab-case slug for the skill package directory. Must match pattern `^[a-z][a-z0-9-]*$`."
+    },
+    "domain": {
+      "type": "string",
+      "enum": [
+        "architect"
+      ],
+      "description": "Skill domain bucket. Must be one of: `architect`. Determines where under `skills/<domain>/` the builder scaffolds files."
+    },
+    "skill_category": {
+      "type": "string",
+      "enum": [
+        "architect"
+      ],
+      "description": "Top-level skill category used in frontmatter `category:`. One of: `architect`."
+    },
+    "feature_summary": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Plain-English one-paragraph description of what the artifact does. Must be at least 1 characters so the builder has enough signal to decompose the feature; shorter values trigger `REFUSAL_INPUT_AMBIGUOUS`."
+    },
+    "api_version": {
+      "type": "string",
+      "pattern": "^\\d{2}\\.0$",
+      "description": "Salesforce API version written into generated `*-meta.xml` files. Must match pattern `^\\d{2}\\.0$` (e.g., `60.0`)."
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "sf CLI alias of the org used for Gate B live-org grounding (`describe_org`, `describe_sobject`, SOQL probes). Optional — when omitted, the builder runs in library-only mode and confidence is capped at MEDIUM."
+    },
+    "repo_path": {
+      "type": "string",
+      "default": "./",
+      "description": "Repo-relative root of the caller's `force-app` source tree; the builder writes emitted artifacts underneath this path. Defaults to `./`."
+    }
   }
 }

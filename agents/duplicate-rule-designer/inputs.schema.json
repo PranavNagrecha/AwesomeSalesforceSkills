@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/duplicate-rule-designer/inputs.schema.json",
+  "title": "duplicate-rule-designer inputs",
+  "description": "Typed inputs for the duplicate-rule-designer runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run.",
+  "type": "object",
+  "properties": {
+    "object_name": {
+      "type": "string",
+      "description": "Example from AGENT.md: `Lead` Required column: 'yes'.",
+      "example": "Lead"
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "Required column: 'yes'."
+    },
+    "policy": {
+      "type": "string",
+      "description": "Example from AGENT.md: `block` (hard block on exact match) | `alert` (warn + allow) | `block-on-create-only` | `alert-on-create-only` Required column: 'yes'.",
+      "enum": [
+        "block",
+        "alert",
+        "block-on-create-only",
+        "alert-on-create-only"
+      ],
+      "example": "block"
+    },
+    "match_basis": {
+      "type": "string",
+      "description": "Example from AGENT.md: `email` | `phone` | `name+company` | custom: a comma-separated list of field API names Required column: 'yes'.",
+      "enum": [
+        "email",
+        "phone"
+      ],
+      "example": "email"
+    },
+    "fuzziness": {
+      "type": "string",
+      "description": "Example from AGENT.md: `exact` (default) | `fuzzy` (standard Salesforce match algo) \u2014 some match fields only support exact Required column: 'no'.",
+      "example": "exact"
+    },
+    "integration_exempt": {
+      "type": "boolean",
+      "description": "Example from AGENT.md: default `true` \u2014 integration-user identities are exempt via Custom Permission Required column: 'no'.",
+      "example": false
+    }
+  },
+  "required": [
+    "object_name",
+    "target_org_alias",
+    "policy",
+    "match_basis"
+  ]
+}

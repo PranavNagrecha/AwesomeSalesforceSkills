@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/agentforce-action-reviewer/inputs.schema.json",
+  "title": "agentforce-action-reviewer inputs",
+  "description": "Typed inputs for the agentforce-action-reviewer runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run. At least one of `agent_id`, `agent_developer_name` must be provided.",
+  "type": "object",
+  "properties": {
+    "agent_id": {
+      "type": "string",
+      "description": "Example from AGENT.md: `Service_Agent_v2` Required column: 'yes'. One of a mutually-exclusive group: agent_id, agent_developer_name.",
+      "example": "Service_Agent_v2"
+    },
+    "agent_developer_name": {
+      "type": "string",
+      "description": "Example from AGENT.md: `Service_Agent_v2` Required column: 'yes'. One of a mutually-exclusive group: agent_id, agent_developer_name.",
+      "example": "Service_Agent_v2"
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "Example from AGENT.md: `uat` Required column: 'yes'.",
+      "example": "uat"
+    },
+    "review_depth": {
+      "type": "string",
+      "description": "Example from AGENT.md: `topic_only` | `per_action` (default `per_action`) Required column: 'no'.",
+      "enum": [
+        "topic_only",
+        "per_action"
+      ],
+      "example": "topic_only"
+    }
+  },
+  "required": [
+    "target_org_alias"
+  ]
+}

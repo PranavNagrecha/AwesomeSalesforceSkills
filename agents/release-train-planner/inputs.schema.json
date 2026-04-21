@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/release-train-planner/inputs.schema.json",
+  "title": "release-train-planner inputs",
+  "description": "Typed inputs for the release-train-planner runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run.",
+  "type": "object",
+  "properties": {
+    "mode": {
+      "type": "string",
+      "description": "Example from AGENT.md: `design` | `audit` Required column: 'yes'.",
+      "enum": [
+        "design",
+        "audit"
+      ],
+      "example": "design"
+    },
+    "team_size": {
+      "type": "string",
+      "description": "Example from AGENT.md: `12 devs + 4 QA` Required column: 'yes'.",
+      "example": "12 devs + 4 QA"
+    },
+    "cadence": {
+      "type": "string",
+      "description": "Example from AGENT.md: `weekly`, `biweekly`, `monthly`, `quarterly` Required column: 'yes'.",
+      "example": "weekly"
+    },
+    "package_strategy": {
+      "type": "string",
+      "description": "Example from AGENT.md: `unlocked` | `2gp-managed` | `org-dependent` | `metadata-only` Required column: 'no'.",
+      "enum": [
+        "unlocked",
+        "2gp-managed",
+        "org-dependent",
+        "metadata-only"
+      ],
+      "example": "unlocked"
+    },
+    "customer_count": {
+      "type": "integer",
+      "description": "Example from AGENT.md: `1` (internal) | `N` (ISV-like) Required column: 'no'.",
+      "example": 1
+    },
+    "regions": {
+      "type": "array",
+      "description": "Example from AGENT.md: `[\"NA\",\"EMEA\",\"APAC\"]` \u2014 for rollout staging Required column: 'no'.",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "mode",
+    "team_size",
+    "cadence"
+  ]
+}

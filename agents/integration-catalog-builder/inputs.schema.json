@@ -4,18 +4,48 @@
   "title": "integration-catalog-builder inputs",
   "description": "Typed Gate-A input contract for the integration-catalog-builder.",
   "type": "object",
-  "required": ["catalog_name", "org_alias", "feature_summary", "api_version"],
+  "required": [
+    "catalog_name",
+    "org_alias",
+    "feature_summary",
+    "api_version"
+  ],
   "properties": {
-    "catalog_name": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"},
-    "org_alias": {"type": "string", "minLength": 1},
-    "feature_summary": {"type": "string", "minLength": 1, "description": "≥10 words"},
+    "catalog_name": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+      "description": "PascalCase name token for the generated integration catalog. Must match pattern `^[A-Za-z][A-Za-z0-9_-]*$`."
+    },
+    "org_alias": {
+      "type": "string",
+      "minLength": 1,
+      "description": "sf CLI alias of the target org used for grounding calls (describe / query). Minimum length `1`."
+    },
+    "feature_summary": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Plain-English one-paragraph description of the integration catalog being built. Should be at least ten words so the builder has enough signal to decompose the catalog; shorter values trigger REFUSAL_INPUT_AMBIGUOUS."
+    },
     "named_credentials": {
       "type": "array",
-      "items": {"type": "string"},
+      "items": {
+        "type": "string"
+      },
       "description": "API names of Named Credentials referenced in the catalog (used for Gate C live verification)."
     },
-    "api_version": {"type": "string", "pattern": "^\\d{2}\\.0$"},
-    "target_org_alias": {"type": "string"},
-    "repo_path": {"type": "string", "default": "./force-app"}
+    "api_version": {
+      "type": "string",
+      "pattern": "^\\d{2}\\.0$",
+      "description": "Salesforce API version written into generated `*-meta.xml` files. Must match pattern `^\\d{2}\\.0$` (e.g., `60.0`)."
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "sf CLI alias of the org used for Gate B live-org grounding (`describe_org`, `describe_sobject`, SOQL probes). Optional — when omitted, the builder runs in library-only mode and confidence is capped at MEDIUM."
+    },
+    "repo_path": {
+      "type": "string",
+      "default": "./force-app",
+      "description": "Repo-relative root of the caller's `force-app` source tree; the builder writes emitted artifacts underneath this path. Defaults to `./force-app`."
+    }
   }
 }

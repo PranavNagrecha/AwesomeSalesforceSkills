@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/trigger-consolidator/inputs.schema.json",
+  "title": "trigger-consolidator inputs",
+  "description": "Typed inputs for the trigger-consolidator runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run.",
+  "type": "object",
+  "properties": {
+    "object_api_name": {
+      "type": "string",
+      "description": "Example from AGENT.md: `Account`, `Opportunity`, `Custom_Object__c` Required column: 'yes'.",
+      "example": "Account"
+    },
+    "force_app_root": {
+      "type": "string",
+      "description": "Example from AGENT.md: `force-app/main/default` Required column: 'yes'.",
+      "example": "force-app/main/default"
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "Example from AGENT.md: if set, the agent also queries the org for additional triggers Required column: 'no'.",
+      "example": "if set, the agent also queries the org for additional triggers"
+    }
+  },
+  "required": [
+    "object_api_name",
+    "force_app_root"
+  ]
+}

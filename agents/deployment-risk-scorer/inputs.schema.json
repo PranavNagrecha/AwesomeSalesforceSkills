@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/deployment-risk-scorer/inputs.schema.json",
+  "title": "deployment-risk-scorer inputs",
+  "description": "Typed inputs for the deployment-risk-scorer runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run.",
+  "type": "object",
+  "properties": {
+    "change_path": {
+      "type": "string",
+      "description": "Example from AGENT.md: `force-app/main/default/` or path to a `package.xml`",
+      "example": "force-app/main/default/"
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "Example from AGENT.md: `uat`, `prod` (must be sf-CLI authenticated)",
+      "example": "uat"
+    },
+    "change_scope": {
+      "type": "string",
+      "description": "Example from AGENT.md: `full`, `delta` (since last successful deploy), or a commit range",
+      "example": "full"
+    }
+  },
+  "required": [
+    "change_path",
+    "target_org_alias",
+    "change_scope"
+  ]
+}

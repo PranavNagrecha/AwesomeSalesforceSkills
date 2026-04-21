@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/experience-cloud-admin-designer/inputs.schema.json",
+  "title": "experience-cloud-admin-designer inputs",
+  "description": "Typed inputs for the experience-cloud-admin-designer runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run.",
+  "type": "object",
+  "properties": {
+    "mode": {
+      "type": "string",
+      "description": "Example from AGENT.md: `design` | `audit` Required column: 'yes'.",
+      "enum": [
+        "design",
+        "audit"
+      ],
+      "example": "design"
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "Required column: 'yes'."
+    },
+    "site_template": {
+      "type": "string",
+      "description": "Example from AGENT.md: `customer-account-portal` | `customer-service` | `partner-central` | `help-center` | `build-your-own` | `lwr-build-your-own` | `b2b-commerce` Required column: 'design'.",
+      "enum": [
+        "customer-account-portal",
+        "customer-service",
+        "partner-central",
+        "help-center",
+        "build-your-own",
+        "lwr-build-your-own",
+        "b2b-commerce"
+      ],
+      "example": "customer-account-portal"
+    },
+    "audience_model": {
+      "type": "string",
+      "description": "Example from AGENT.md: `external-customers` | `external-partners` | `public-with-login` | `guest-only` | `multi-audience` Required column: 'design'.",
+      "enum": [
+        "external-customers",
+        "external-partners",
+        "public-with-login",
+        "guest-only",
+        "multi-audience"
+      ],
+      "example": "external-customers"
+    },
+    "expected_member_count": {
+      "type": "string",
+      "description": "Example from AGENT.md: integer Required column: 'design'.",
+      "example": "integer"
+    },
+    "license_type": {
+      "type": "string",
+      "description": "Example from AGENT.md: `customer-community` | `customer-community-plus` | `partner-community` | `external-apps` | `external-apps-plus` Required column: 'design'.",
+      "enum": [
+        "customer-community",
+        "customer-community-plus",
+        "partner-community",
+        "external-apps",
+        "external-apps-plus"
+      ],
+      "example": "customer-community"
+    },
+    "site_name": {
+      "type": "string",
+      "description": "Example from AGENT.md: the site's developer name Required column: 'audit'.",
+      "example": "the site's developer name"
+    },
+    "audit_scope": {
+      "type": "string",
+      "description": "Example from AGENT.md: `site:<name>` | `org` Required column: 'audit'.",
+      "example": "site:<name>"
+    }
+  },
+  "required": [
+    "mode",
+    "target_org_alias"
+  ]
+}

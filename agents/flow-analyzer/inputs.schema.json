@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/flow-analyzer/inputs.schema.json",
+  "title": "flow-analyzer inputs",
+  "description": "Typed inputs for the flow-analyzer runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run. At least one of `flow_path`, `object_api_name` must be provided.",
+  "type": "object",
+  "properties": {
+    "flow_path": {
+      "type": "string",
+      "description": "Example from AGENT.md: `force-app/main/default/flows/X.flow-meta.xml` OR `Lead` Required column: 'yes (one of)'. One of a mutually-exclusive group: flow_path, object_api_name.",
+      "example": "force-app/main/default/flows/X.flow-meta.xml"
+    },
+    "object_api_name": {
+      "type": "string",
+      "description": "Example from AGENT.md: `force-app/main/default/flows/X.flow-meta.xml` OR `Lead` Required column: 'yes (one of)'. One of a mutually-exclusive group: flow_path, object_api_name.",
+      "example": "force-app/main/default/flows/X.flow-meta.xml"
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "Example from AGENT.md: enables `list_flows_on_object` for org-side cross-check Required column: 'no'.",
+      "example": "enables `list_flows_on_object` for org-side cross-check"
+    }
+  }
+}

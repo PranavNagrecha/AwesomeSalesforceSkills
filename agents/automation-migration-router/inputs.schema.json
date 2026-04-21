@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/automation-migration-router/inputs.schema.json",
+  "title": "automation-migration-router inputs",
+  "description": "Typed inputs for the automation-migration-router runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run.",
+  "type": "object",
+  "properties": {
+    "source_type": {
+      "type": "string",
+      "description": "Example from AGENT.md: `wf_rule` | `process_builder` | `approval_process` | `auto` Required column: 'yes'.",
+      "enum": [
+        "wf_rule",
+        "process_builder",
+        "approval_process",
+        "auto"
+      ],
+      "example": "wf_rule"
+    },
+    "object_name": {
+      "type": "string",
+      "description": "Example from AGENT.md: `Opportunity` Required column: 'yes for `wf_rule` / `process_builder` / `auto`; optional for `approval_process` (org-wide sweep if omitted)'.",
+      "example": "Opportunity"
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "Example from AGENT.md: `prod`, `uat` Required column: 'yes'.",
+      "example": "prod"
+    },
+    "mode": {
+      "type": "string",
+      "description": "Example from AGENT.md: `analyze` (default \u2014 inventory + gate verdicts only) | `plan` (analyze + target design) | `migrate` (plan + parallel-run dates + rollback) Required column: 'no'.",
+      "example": "analyze"
+    },
+    "consolidation_mode": {
+      "type": "string",
+      "description": "Example from AGENT.md: `aggressive` | `conservative` | `auto` (default) \u2014 see `phase_gates.md` Required column: 'no'.",
+      "enum": [
+        "aggressive",
+        "conservative",
+        "auto",
+        "phase_gates.md"
+      ],
+      "example": "aggressive"
+    },
+    "include_inactive": {
+      "type": "boolean",
+      "description": "Example from AGENT.md: default `false` \u2014 inactive artifacts are cataloged, not migrated Required column: 'no'.",
+      "example": false
+    },
+    "time_dependent_handling": {
+      "type": "string",
+      "description": "Example from AGENT.md: `scheduled-path` (default) | `defer-to-scheduled-flow` | `refuse` Required column: 'no'.",
+      "enum": [
+        "scheduled-path",
+        "defer-to-scheduled-flow",
+        "refuse"
+      ],
+      "example": "scheduled-path"
+    },
+    "canary_percent": {
+      "type": "string",
+      "description": "Example from AGENT.md: `approval_process` only; default `10` \u2014 percentage of submissions routed to the new Orchestration during the canary window Required column: 'no'.",
+      "example": "approval_process"
+    },
+    "parallel_run_days": {
+      "type": "integer",
+      "description": "Example from AGENT.md: default `7` for field-updating sources; default `14` for `approval_process` Required column: 'no'."
+    }
+  },
+  "required": [
+    "source_type",
+    "object_name",
+    "target_org_alias"
+  ]
+}

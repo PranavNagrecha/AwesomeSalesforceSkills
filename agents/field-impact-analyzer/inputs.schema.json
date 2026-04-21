@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/field-impact-analyzer/inputs.schema.json",
+  "title": "field-impact-analyzer inputs",
+  "description": "Typed inputs for the field-impact-analyzer runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run.",
+  "type": "object",
+  "properties": {
+    "object_name": {
+      "type": "string",
+      "description": "Example from AGENT.md: `Account` Required column: 'yes'.",
+      "example": "Account"
+    },
+    "field_name": {
+      "type": "string",
+      "description": "Example from AGENT.md: `Industry` (or `Industry__c` for custom) Required column: 'yes'.",
+      "example": "Industry"
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "Example from AGENT.md: `prod`, `uat`, `mydevsandbox` Required column: 'yes'.",
+      "example": "prod"
+    },
+    "repo_path": {
+      "type": "string",
+      "description": "Example from AGENT.md: path to the sfdx project root; default `force-app/main/default` Required column: 'no'.",
+      "example": "path to the sfdx project root; default `force-app/main/default`"
+    },
+    "intent": {
+      "type": "string",
+      "description": "Example from AGENT.md: `rename` / `delete` / `audit` \u2014 changes severity thresholds Required column: 'no'.",
+      "example": "rename"
+    }
+  },
+  "required": [
+    "object_name",
+    "field_name",
+    "target_org_alias"
+  ]
+}

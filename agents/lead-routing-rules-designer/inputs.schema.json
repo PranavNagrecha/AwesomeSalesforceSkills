@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/lead-routing-rules-designer/inputs.schema.json",
+  "title": "lead-routing-rules-designer inputs",
+  "description": "Typed inputs for the lead-routing-rules-designer runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run.",
+  "type": "object",
+  "properties": {
+    "mode": {
+      "type": "string",
+      "description": "Example from AGENT.md: `design` | `audit` Required column: 'yes'.",
+      "enum": [
+        "design",
+        "audit"
+      ],
+      "example": "design"
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "Example from AGENT.md: `prod` Required column: 'yes for audit'.",
+      "example": "prod"
+    },
+    "lead_sources": {
+      "type": "array",
+      "description": "Example from AGENT.md: `[\"webform\",\"trade show\",\"partner\",\"outbound\"]` Required column: 'yes for design'.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "geographies": {
+      "type": "array",
+      "description": "Example from AGENT.md: `[\"NA\",\"EMEA\",\"APAC\",\"LATAM\"]` Required column: 'yes for design'.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "products": {
+      "type": "array",
+      "description": "Example from AGENT.md: `[\"core\",\"enterprise\",\"partner-sold\"]` Required column: 'no'.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "sla_minutes_by_source": {
+      "type": "string",
+      "description": "Example from AGENT.md: `{ \"webform\": 5, \"trade show\": 60 }` Required column: 'no'.",
+      "example": "{ \"webform\": 5, \"trade show\": 60 }"
+    }
+  },
+  "required": [
+    "mode",
+    "target_org_alias",
+    "lead_sources",
+    "geographies"
+  ]
+}

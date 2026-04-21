@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/omni-channel-routing-designer/inputs.schema.json",
+  "title": "omni-channel-routing-designer inputs",
+  "description": "Typed inputs for the omni-channel-routing-designer runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run. At least one of `business_hours_id`, `operating_hours_id` must be provided.",
+  "type": "object",
+  "properties": {
+    "mode": {
+      "type": "string",
+      "description": "Example from AGENT.md: `design` | `audit` Required column: 'yes'.",
+      "enum": [
+        "design",
+        "audit"
+      ],
+      "example": "design"
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "Example from AGENT.md: `uat` Required column: 'yes for audit; optional for design'.",
+      "example": "uat"
+    },
+    "channels": {
+      "type": "array",
+      "description": "Example from AGENT.md: `[\"case\",\"chat\",\"messaging\",\"lead\"]` Required column: 'yes for design'.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "business_hours_id": {
+      "type": "string",
+      "description": "Example from AGENT.md: used to bound routing windows Required column: 'no'. One of a mutually-exclusive group: business_hours_id, operating_hours_id.",
+      "example": "used to bound routing windows"
+    },
+    "operating_hours_id": {
+      "type": "string",
+      "description": "Example from AGENT.md: used to bound routing windows Required column: 'no'. One of a mutually-exclusive group: business_hours_id, operating_hours_id.",
+      "example": "used to bound routing windows"
+    },
+    "peak_volume": {
+      "type": "string",
+      "description": "Example from AGENT.md: interactions per channel per peak hour Required column: 'yes for design'.",
+      "example": "interactions per channel per peak hour"
+    },
+    "agent_count_and_skills": {
+      "type": "string",
+      "description": "Example from AGENT.md: e.g. `{ \"tier1\": 40, \"billing\": 12, \"spanish\": 6 }` Required column: 'yes for design'.",
+      "example": "e.g. `{ \"tier1\": 40, \"billing\": 12, \"spanish\": 6 }`"
+    }
+  },
+  "required": [
+    "mode",
+    "target_org_alias",
+    "channels",
+    "peak_volume",
+    "agent_count_and_skills"
+  ]
+}

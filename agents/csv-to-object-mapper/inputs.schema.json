@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/csv-to-object-mapper/inputs.schema.json",
+  "title": "csv-to-object-mapper inputs",
+  "description": "Typed inputs for the csv-to-object-mapper runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run.",
+  "type": "object",
+  "properties": {
+    "csv_header": {
+      "type": "string",
+      "description": "Example from AGENT.md: comma-separated header line, OR a bullet list of column names with 1-2 sample values Required column: 'yes'.",
+      "example": "comma-separated header line, OR a bullet list of column names with 1-2 sample values"
+    },
+    "target_object": {
+      "type": "string",
+      "description": "Example from AGENT.md: `Account` | `new:<ProposedName>` (if creating a new object) Required column: 'no'.",
+      "example": "Account"
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "Required column: 'yes'."
+    },
+    "mode": {
+      "type": "string",
+      "description": "Example from AGENT.md: `map` (default \u2014 map to existing fields, create missing ones) | `create-new-object` (design a new object from the CSV) Required column: 'no'.",
+      "example": "map"
+    }
+  },
+  "required": [
+    "csv_header",
+    "target_org_alias"
+  ]
+}

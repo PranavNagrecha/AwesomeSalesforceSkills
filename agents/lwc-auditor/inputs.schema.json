@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/lwc-auditor/inputs.schema.json",
+  "title": "lwc-auditor inputs",
+  "description": "Typed inputs for the lwc-auditor runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run.",
+  "type": "object",
+  "properties": {
+    "bundle_path": {
+      "type": "string",
+      "description": "Example from AGENT.md: `force-app/main/default/lwc/accountDetail` Required column: 'yes'.",
+      "example": "force-app/main/default/lwc/accountDetail"
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "Example from AGENT.md: future-proofing; not currently needed Required column: 'no'.",
+      "example": "future-proofing; not currently needed"
+    }
+  },
+  "required": [
+    "bundle_path"
+  ]
+}

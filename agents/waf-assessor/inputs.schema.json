@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/waf-assessor/inputs.schema.json",
+  "title": "waf-assessor inputs",
+  "description": "Typed inputs for the waf-assessor runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run.",
+  "type": "object",
+  "properties": {
+    "target_org_alias": {
+      "type": "string",
+      "description": "Example from AGENT.md: `prod` Required column: 'yes'.",
+      "example": "prod"
+    },
+    "workload": {
+      "type": "string",
+      "description": "Example from AGENT.md: `\"sales cloud + CPQ + agentforce\"` Required column: 'yes'.",
+      "example": "\"sales cloud + CPQ + agentforce\""
+    },
+    "nfrs": {
+      "type": "string",
+      "description": "Example from AGENT.md: JSON: `{ \"availability\": \"99.9%\", \"rpo_hours\": 4 }` Required column: 'no'.",
+      "example": "JSON: `{ \"availability\": \"99.9%\", \"rpo_hours\": 4 }`"
+    },
+    "scope_pillars": {
+      "type": "string",
+      "description": "Example from AGENT.md: default: all 5; subset allowed Required column: 'no'.",
+      "example": "default: all 5; subset allowed"
+    }
+  },
+  "required": [
+    "target_org_alias",
+    "workload"
+  ]
+}

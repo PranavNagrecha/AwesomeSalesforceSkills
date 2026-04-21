@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/entitlement-and-milestone-designer/inputs.schema.json",
+  "title": "entitlement-and-milestone-designer inputs",
+  "description": "Typed inputs for the entitlement-and-milestone-designer runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run.",
+  "type": "object",
+  "properties": {
+    "mode": {
+      "type": "string",
+      "description": "Example from AGENT.md: `design` | `audit` Required column: 'yes'.",
+      "enum": [
+        "design",
+        "audit"
+      ],
+      "example": "design"
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "Required column: 'yes'."
+    },
+    "sla_summary": {
+      "type": "string",
+      "description": "Example from AGENT.md: \"Gold tier: 2h response, 8h resolution, 24x7; Silver: 4h/24h, 9x5 business hours; renewal clock resets per-case\" Required column: 'design'.",
+      "example": "\"Gold tier: 2h response, 8h resolution, 24x7; Silver: 4h/24h, 9x5 business hours; renewal clock resets per-case\""
+    },
+    "tier_count": {
+      "type": "string",
+      "description": "Example from AGENT.md: integer \u2014 number of SLA tiers to model Required column: 'design'.",
+      "example": "integer \u2014 number of SLA tiers to model"
+    },
+    "business_hours_model": {
+      "type": "string",
+      "description": "Example from AGENT.md: `single-org-wide` | `per-tier` | `per-region` Required column: 'design'.",
+      "enum": [
+        "single-org-wide",
+        "per-tier",
+        "per-region"
+      ],
+      "example": "single-org-wide"
+    },
+    "audit_scope": {
+      "type": "string",
+      "description": "Example from AGENT.md: `org` | `entitlement_process:<DeveloperName>` Required column: 'audit'.",
+      "example": "org"
+    }
+  },
+  "required": [
+    "mode",
+    "target_org_alias"
+  ]
+}

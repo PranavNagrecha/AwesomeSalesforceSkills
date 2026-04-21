@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/apex-refactorer/inputs.schema.json",
+  "title": "apex-refactorer inputs",
+  "description": "Typed inputs for the apex-refactorer runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run.",
+  "type": "object",
+  "properties": {
+    "source_path": {
+      "type": "string",
+      "description": "Example from AGENT.md: `force-app/main/default/classes/AccountTrigger.cls` Required column: 'yes'.",
+      "example": "force-app/main/default/classes/AccountTrigger.cls"
+    },
+    "related_paths": {
+      "type": "array",
+      "description": "Example from AGENT.md: helper classes / existing test class paths Required column: 'no'.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "Example from AGENT.md: if set, the agent also calls `validate_against_org(\"apex/trigger-framework\", target_org=...)` Required column: 'no'.",
+      "example": "if set, the agent also calls `validate_against_org(\"apex/trigger-framework\", target_org=...)`"
+    }
+  },
+  "required": [
+    "source_path"
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/sandbox-strategy-designer/inputs.schema.json",
+  "title": "sandbox-strategy-designer inputs",
+  "description": "Typed inputs for the sandbox-strategy-designer runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run.",
+  "type": "object",
+  "properties": {
+    "mode": {
+      "type": "string",
+      "description": "Example from AGENT.md: `design` | `audit` Required column: 'yes'.",
+      "enum": [
+        "design",
+        "audit"
+      ],
+      "example": "design"
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "Example from AGENT.md: `prod` Required column: 'yes for audit (prod)'.",
+      "example": "prod"
+    },
+    "team_size": {
+      "type": "string",
+      "description": "Example from AGENT.md: `{ \"developers\": 12, \"admins\": 5, \"qa\": 4 }` Required column: 'yes for design'.",
+      "example": "{ \"developers\": 12, \"admins\": 5, \"qa\": 4 }"
+    },
+    "concurrent_workstreams": {
+      "type": "array",
+      "description": "Example from AGENT.md: `[\"core\",\"integrations\",\"agentforce\"]` Required column: 'yes for design'.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "release_cadence": {
+      "type": "string",
+      "description": "Example from AGENT.md: `biweekly` | `monthly` | `quarterly` Required column: 'yes for design'.",
+      "enum": [
+        "biweekly",
+        "monthly",
+        "quarterly"
+      ],
+      "example": "biweekly"
+    },
+    "data_sensitivity": {
+      "type": "array",
+      "description": "Example from AGENT.md: `[\"pii\",\"phi\",\"pci\",\"none\"]` Required column: 'yes for design'.",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "mode",
+    "target_org_alias",
+    "team_size",
+    "concurrent_workstreams",
+    "release_cadence",
+    "data_sensitivity"
+  ]
+}
