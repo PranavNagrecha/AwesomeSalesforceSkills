@@ -4,7 +4,14 @@
   "title": "process-builder-to-flow-migrator inputs",
   "description": "Typed Gate-A input contract for the process-builder-to-flow-migrator. Missing-required or under-constrained inputs trigger REFUSAL_INPUT_AMBIGUOUS.",
   "type": "object",
-  "required": ["source_process_name", "flow_developer_name", "feature_summary", "trigger_sobject", "flow_type", "api_version"],
+  "required": [
+    "source_process_name",
+    "flow_developer_name",
+    "feature_summary",
+    "trigger_sobject",
+    "flow_type",
+    "api_version"
+  ],
   "properties": {
     "source_process_name": {
       "type": "string",
@@ -27,27 +34,103 @@
     },
     "flow_type": {
       "type": "string",
-      "enum": ["record-triggered", "auto-launched", "scheduled", "platform-event-triggered"],
+      "enum": [
+        "record-triggered",
+        "auto-launched",
+        "scheduled",
+        "platform-event-triggered"
+      ],
       "description": "Migrators from Process Builder always land on an auto-launched family (typically record-triggered)."
     },
-    "trigger_sobject": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_]*$"},
-    "trigger_context": {"type": "string", "enum": ["before-save", "after-save"], "default": "after-save"},
-    "record_trigger_type": {"type": "string", "enum": ["Create", "Update", "CreateAndUpdate", "Delete"]},
-    "expected_volume": {"type": "string", "enum": ["low", "medium", "high"], "default": "medium"},
+    "trigger_sobject": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+      "description": "API name of the SObject the migrated record-triggered flow runs on. Must match pattern `^[A-Za-z][A-Za-z0-9_]*$` and resolve at Gate B."
+    },
+    "trigger_context": {
+      "type": "string",
+      "enum": [
+        "before-save",
+        "after-save"
+      ],
+      "default": "after-save",
+      "description": "When the record-triggered flow fires. One of: `before-save`, `after-save`. Defaults to `after-save`."
+    },
+    "record_trigger_type": {
+      "type": "string",
+      "enum": [
+        "Create",
+        "Update",
+        "CreateAndUpdate",
+        "Delete"
+      ],
+      "description": "Record-change condition that triggers the flow. One of: `Create`, `Update`, `CreateAndUpdate`, `Delete`."
+    },
+    "expected_volume": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "default": "medium",
+      "description": "Record-volume sizing hint that drives governor-limit and LDV recommendations. One of: `low`, `medium`, `high`. Defaults to `medium`."
+    },
     "referenced_fields": {
       "type": "array",
-      "items": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_]*\\.[A-Za-z][A-Za-z0-9_]*$"}
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9_]*\\.[A-Za-z][A-Za-z0-9_]*$"
+      },
+      "description": "Explicit list of `SObject.Field` API names the emitted flow reads or writes. Every entry MUST be grounded at Gate B via `describe_sobject`."
     },
-    "subflows": {"type": "array", "items": {"type": "string"}},
-    "parity_checklist": {"type": "array", "items": {"type": "string"}},
-    "api_version": {"type": "string", "pattern": "^\\d{2}\\.0$"},
-    "target_org_alias": {"type": "string"},
-    "repo_path": {"type": "string", "default": "./force-app"}
+    "subflows": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Names of subflows the migrated flow invokes. Each must exist in the target org (validated at Gate B) or be scheduled for concurrent build."
+    },
+    "parity_checklist": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of behaviors from the source Process Builder that the new flow must preserve. Used by Gate D to assert functional parity before emitting deploy artifacts."
+    },
+    "api_version": {
+      "type": "string",
+      "pattern": "^\\d{2}\\.0$",
+      "description": "Salesforce API version written into generated `*-meta.xml` files. Must match pattern `^\\d{2}\\.0$` (e.g., `60.0`)."
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "sf CLI alias of the org used for Gate B live-org grounding (`describe_org`, `describe_sobject`, SOQL probes). Optional — when omitted, the builder runs in library-only mode and confidence is capped at MEDIUM."
+    },
+    "repo_path": {
+      "type": "string",
+      "default": "./force-app",
+      "description": "Repo-relative root of the caller's `force-app` source tree; the builder writes emitted artifacts underneath this path. Defaults to `./force-app`."
+    }
   },
   "allOf": [
     {
-      "if": {"properties": {"flow_type": {"const": "record-triggered"}}, "required": ["flow_type"]},
-      "then": {"required": ["trigger_sobject", "record_trigger_type"]}
+      "if": {
+        "properties": {
+          "flow_type": {
+            "const": "record-triggered"
+          }
+        },
+        "required": [
+          "flow_type"
+        ]
+      },
+      "then": {
+        "required": [
+          "trigger_sobject",
+          "record_trigger_type"
+        ]
+      }
     }
   ]
 }

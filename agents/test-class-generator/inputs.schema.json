@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/test-class-generator/inputs.schema.json",
+  "title": "test-class-generator inputs",
+  "description": "Typed inputs for the test-class-generator runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run.",
+  "type": "object",
+  "properties": {
+    "source_path": {
+      "type": "string",
+      "description": "Example from AGENT.md: `force-app/main/default/classes/AccountService.cls` Required column: 'yes'.",
+      "example": "force-app/main/default/classes/AccountService.cls"
+    },
+    "target_coverage_pct": {
+      "type": "integer",
+      "description": "Example from AGENT.md: `90` Required column: 'no (default 85)'.",
+      "example": 90
+    },
+    "include_bulk_test": {
+      "type": "boolean",
+      "description": "Example from AGENT.md: `false` for utility classes Required column: 'no (default true)'.",
+      "example": false
+    }
+  },
+  "required": [
+    "source_path"
+  ]
+}

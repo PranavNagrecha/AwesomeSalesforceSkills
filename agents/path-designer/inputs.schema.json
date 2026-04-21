@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/path-designer/inputs.schema.json",
+  "title": "path-designer inputs",
+  "description": "Typed inputs for the path-designer runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run.",
+  "type": "object",
+  "properties": {
+    "mode": {
+      "type": "string",
+      "description": "Example from AGENT.md: `design` | `audit` Required column: 'yes'.",
+      "enum": [
+        "design",
+        "audit"
+      ],
+      "example": "design"
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "Required column: 'yes'."
+    },
+    "object_name": {
+      "type": "string",
+      "description": "Example from AGENT.md: `Opportunity` Required column: 'design'.",
+      "example": "Opportunity"
+    },
+    "record_type_developer_name": {
+      "type": "string",
+      "description": "Example from AGENT.md: `Renewal` (use `Master` if not record-typed) Required column: 'design'.",
+      "example": "Renewal"
+    },
+    "driver_picklist_field_api_name": {
+      "type": "string",
+      "description": "Example from AGENT.md: `StageName` (Opportunity), `Status` (Lead / Case), `Status` (custom) Required column: 'design'.",
+      "example": "StageName"
+    },
+    "key_fields_per_step": {
+      "type": "string",
+      "description": "Example from AGENT.md: default cap of 5 per Salesforce Path \u2014 agent enforces Required column: 'design'.",
+      "example": "default cap of 5 per Salesforce Path \u2014 agent enforces"
+    },
+    "guidance_style": {
+      "type": "string",
+      "description": "Example from AGENT.md: `concise` | `detailed` (bulleted checklist vs prose) Required column: 'design'.",
+      "enum": [
+        "concise",
+        "detailed"
+      ],
+      "example": "concise"
+    },
+    "celebration_trigger": {
+      "type": "string",
+      "description": "Example from AGENT.md: last step only (default), or any step matching a criterion Required column: 'design'.",
+      "example": "last step only (default), or any step matching a criterion"
+    },
+    "audit_scope": {
+      "type": "string",
+      "description": "Example from AGENT.md: defaults to all active Paths in the org Required column: 'audit'.",
+      "example": "defaults to all active Paths in the org"
+    }
+  },
+  "required": [
+    "mode",
+    "target_org_alias"
+  ]
+}

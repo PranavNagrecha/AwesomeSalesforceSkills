@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/bulk-migration-planner/inputs.schema.json",
+  "title": "bulk-migration-planner inputs",
+  "description": "Typed inputs for the bulk-migration-planner runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run.",
+  "type": "object",
+  "properties": {
+    "direction": {
+      "type": "string",
+      "description": "Example from AGENT.md: `inbound` (into SF) / `outbound` (out of SF) / `bidirectional`",
+      "example": "inbound"
+    },
+    "volume_per_run": {
+      "type": "string",
+      "description": "Example from AGENT.md: `8M records/week`, `50k/day`, `real-time`",
+      "example": "8M records/week"
+    },
+    "latency_tolerance": {
+      "type": "string",
+      "description": "Example from AGENT.md: `T+24h`, `T+1h`, `near-real-time`, `sub-second`",
+      "example": "T+24h"
+    },
+    "source_or_target": {
+      "type": "string",
+      "description": "Example from AGENT.md: `SAP S/4HANA`, `Snowflake`, `Salesforce Marketing Cloud`, `Kafka`",
+      "example": "SAP S/4HANA"
+    }
+  },
+  "required": [
+    "direction",
+    "volume_per_run",
+    "latency_tolerance",
+    "source_or_target"
+  ]
+}

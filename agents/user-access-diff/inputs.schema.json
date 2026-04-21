@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/user-access-diff/inputs.schema.json",
+  "title": "user-access-diff inputs",
+  "description": "Typed inputs for the user-access-diff runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run.",
+  "type": "object",
+  "properties": {
+    "user_a": {
+      "type": "string",
+      "description": "Example from AGENT.md: `alice@acme.com` OR `005XX0000012abc` Required column: 'yes'.",
+      "example": "alice@acme.com"
+    },
+    "user_b": {
+      "type": "string",
+      "description": "Example from AGENT.md: `bob@acme.com` OR `005XX0000034def` Required column: 'yes'.",
+      "example": "bob@acme.com"
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "Example from AGENT.md: `prod` Required column: 'yes'.",
+      "example": "prod"
+    },
+    "dimensions": {
+      "type": "array",
+      "description": "Example from AGENT.md: `[\"profile\", \"permission-sets\", \"object-crud\", \"system-perms\", \"groups\"]` Required column: 'no (default `all`)'.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "include_field_permissions": {
+      "type": "boolean",
+      "description": "Example from AGENT.md: `true` to include FLS-level diff (can be large) Required column: 'no (default `false`)'.",
+      "example": true
+    },
+    "purpose": {
+      "type": "string",
+      "description": "Example from AGENT.md: `\"new-hire-parity\"` | `\"access-review\"` | `\"incident-investigation\"` \u2014 shapes the Process Observations framing Required column: 'no'.",
+      "enum": [
+        "new-hire-parity",
+        "access-review",
+        "incident-investigation"
+      ],
+      "example": "\"new-hire-parity\""
+    }
+  },
+  "required": [
+    "user_a",
+    "user_b",
+    "target_org_alias"
+  ]
+}

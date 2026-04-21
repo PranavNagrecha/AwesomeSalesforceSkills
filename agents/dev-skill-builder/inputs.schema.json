@@ -4,7 +4,13 @@
   "title": "dev-skill-builder inputs",
   "description": "Typed Gate-A input contract for the dev-skill-builder. Shared schema used by all six skill-builder agents.",
   "type": "object",
-  "required": ["skill_slug", "domain", "feature_summary", "skill_category", "api_version"],
+  "required": [
+    "skill_slug",
+    "domain",
+    "feature_summary",
+    "skill_category",
+    "api_version"
+  ],
   "properties": {
     "skill_slug": {
       "type": "string",
@@ -13,16 +19,56 @@
     },
     "domain": {
       "type": "string",
-      "enum": ["apex", "lwc", "flow", "omnistudio", "integration", "agentforce", "admin", "architect", "data", "devops", "security"],
+      "enum": [
+        "apex",
+        "lwc",
+        "flow",
+        "omnistudio",
+        "integration",
+        "agentforce",
+        "admin",
+        "architect",
+        "data",
+        "devops",
+        "security"
+      ],
       "description": "skills/<domain>/ directory"
     },
     "skill_category": {
       "type": "string",
-      "enum": ["admin", "apex", "lwc", "flow", "omnistudio", "agentforce", "security", "integration", "data", "devops", "architect"]
+      "enum": [
+        "admin",
+        "apex",
+        "lwc",
+        "flow",
+        "omnistudio",
+        "agentforce",
+        "security",
+        "integration",
+        "data",
+        "devops",
+        "architect"
+      ],
+      "description": "Top-level skill category used in frontmatter `category:`. One of: `admin`, `apex`, `lwc`, `flow`, `omnistudio`, `agentforce`, `security`, `integration`, `data`, `devops`, `architect`."
     },
-    "feature_summary": {"type": "string", "minLength": 1, "description": "≥10 words"},
-    "api_version": {"type": "string", "pattern": "^\\d{2}\\.0$"},
-    "target_org_alias": {"type": "string"},
-    "repo_path": {"type": "string", "default": "./"}
+    "feature_summary": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Plain-English one-paragraph description of what the dev skill covers. Should be at least ten words so the builder has enough signal to decompose the feature; shorter values trigger REFUSAL_INPUT_AMBIGUOUS."
+    },
+    "api_version": {
+      "type": "string",
+      "pattern": "^\\d{2}\\.0$",
+      "description": "Salesforce API version written into generated `*-meta.xml` files. Must match pattern `^\\d{2}\\.0$` (e.g., `60.0`)."
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "sf CLI alias of the org used for Gate B live-org grounding (`describe_org`, `describe_sobject`, SOQL probes). Optional — when omitted, the builder runs in library-only mode and confidence is capped at MEDIUM."
+    },
+    "repo_path": {
+      "type": "string",
+      "default": "./",
+      "description": "Repo-relative root of the caller's `force-app` source tree; the builder writes emitted artifacts underneath this path. Defaults to `./`."
+    }
   }
 }

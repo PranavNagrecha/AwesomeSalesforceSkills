@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/assignment-and-auto-response-rules-designer/inputs.schema.json",
+  "title": "assignment-and-auto-response-rules-designer inputs",
+  "description": "Typed inputs for the assignment-and-auto-response-rules-designer runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run.",
+  "type": "object",
+  "properties": {
+    "mode": {
+      "type": "string",
+      "description": "Example from AGENT.md: `design` | `audit` Required column: 'yes'.",
+      "enum": [
+        "design",
+        "audit"
+      ],
+      "example": "design"
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "Required column: 'yes'."
+    },
+    "object_name": {
+      "type": "string",
+      "description": "Example from AGENT.md: `Lead` or `Case` Required column: 'yes'.",
+      "example": "Lead"
+    },
+    "routing_summary": {
+      "type": "string",
+      "description": "Example from AGENT.md: \"US Leads from Web route to Inside Sales by state; enterprise Leads (>$1M segment) to AE queue; all others to nurture\" Required column: 'design'.",
+      "example": "\"US Leads from Web route to Inside Sales by state; enterprise Leads (>$1M segment) to AE queue; all others to nurture\""
+    },
+    "response_summary": {
+      "type": "string",
+      "description": "Example from AGENT.md: \"Web leads get templated thanks email; enterprise leads get tailored template with sales rep intro\" Required column: 'design'.",
+      "example": "\"Web leads get templated thanks email; enterprise leads get tailored template with sales rep intro\""
+    },
+    "evaluation_pattern": {
+      "type": "string",
+      "description": "Example from AGENT.md: `first-match` (default) | `all-matches` (rare; typically only applies to Case sharing patterns, not ownership) Required column: 'design'.",
+      "example": "first-match"
+    },
+    "audit_scope": {
+      "type": "string",
+      "description": "Example from AGENT.md: defaults to the object's entire rule set Required column: 'audit'.",
+      "example": "defaults to the object's entire rule set"
+    }
+  },
+  "required": [
+    "mode",
+    "target_org_alias",
+    "object_name"
+  ]
+}

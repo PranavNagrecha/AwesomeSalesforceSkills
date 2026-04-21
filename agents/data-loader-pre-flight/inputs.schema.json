@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/data-loader-pre-flight/inputs.schema.json",
+  "title": "data-loader-pre-flight inputs",
+  "description": "Typed inputs for the data-loader-pre-flight runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run.",
+  "type": "object",
+  "properties": {
+    "object_name": {
+      "type": "string",
+      "description": "Example from AGENT.md: `Account` Required column: 'yes'.",
+      "example": "Account"
+    },
+    "operation": {
+      "type": "string",
+      "description": "Example from AGENT.md: `insert` | `upsert` | `update` | `delete` | `hard-delete` Required column: 'yes'.",
+      "enum": [
+        "insert",
+        "upsert",
+        "update",
+        "delete",
+        "hard-delete"
+      ],
+      "example": "insert"
+    },
+    "row_count": {
+      "type": "string",
+      "description": "Example from AGENT.md: integer Required column: 'yes'.",
+      "example": "integer"
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "Required column: 'yes'."
+    },
+    "source_description": {
+      "type": "string",
+      "description": "Example from AGENT.md: \"NetSuite customer export, one row per account, external-id = `netsuite_customer_id__c`\" Required column: 'yes'.",
+      "example": "\"NetSuite customer export, one row per account, external-id = `netsuite_customer_id__c`\""
+    },
+    "external_id_field": {
+      "type": "string",
+      "description": "Required column: 'upsert-only'."
+    },
+    "window": {
+      "type": "string",
+      "description": "Example from AGENT.md: business-hours boundary (\"this Saturday 2am-6am PT\"); drives async sizing Required column: 'no'.",
+      "example": "business-hours boundary (\"this Saturday 2am-6am PT\"); drives async sizing"
+    }
+  },
+  "required": [
+    "object_name",
+    "operation",
+    "row_count",
+    "target_org_alias",
+    "source_description"
+  ]
+}

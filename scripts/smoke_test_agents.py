@@ -236,15 +236,51 @@ def check_probes_executable(deps: dict, probe_validation_report: dict | None) ->
     return (len(issues) == 0), issues
 
 
+_INPUTS_META_SCHEMA_PATH = REPO_ROOT / "agents" / "_shared" / "schemas" / "inputs.schema.json"
+
+
 def check_inputs_schema_valid(agent_dir: Path) -> tuple[bool, list[str]]:
-    """If the agent declares a typed inputs schema, it must be valid JSON Schema."""
+    """If the agent declares a typed inputs schema, it must:
+
+    1. Parse as JSON.
+    2. Be a valid JSON Schema (Draft 2020-12) itself.
+    3. Conform to the repo's agents/_shared/schemas/inputs.schema.json
+       meta-schema (which pins the shape each per-agent inputs schema must
+       follow — `type: object`, `properties` populated, every property with
+       a `type` and a description of at least ten characters).
+    """
     schema_path = agent_dir / "inputs.schema.json"
     if not schema_path.exists():
         return True, []  # optional
     try:
-        json.loads(schema_path.read_text(encoding="utf-8"))
+        schema = json.loads(schema_path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as e:
         return False, [f"inputs.schema.json is not valid JSON: {e}"]
+
+    try:
+        from jsonschema import Draft202012Validator
+    except ImportError:
+        return True, ["jsonschema not installed; skipped meta-schema + self-schema checks"]
+
+    try:
+        Draft202012Validator.check_schema(schema)
+    except Exception as e:
+        return False, [f"inputs.schema.json is not a valid JSON Schema: {e}"]
+
+    try:
+        meta = json.loads(_INPUTS_META_SCHEMA_PATH.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return True, [f"meta-schema not found at {_INPUTS_META_SCHEMA_PATH}; skipped"]
+
+    errors = list(Draft202012Validator(meta).iter_errors(schema))
+    if errors:
+        msgs = []
+        for e in errors[:5]:
+            path = "/".join(str(p) for p in e.absolute_path) or "<root>"
+            msgs.append(f"meta-schema violation at {path}: {e.message}")
+        if len(errors) > 5:
+            msgs.append(f"... and {len(errors) - 5} more violations")
+        return False, msgs
     return True, []
 
 

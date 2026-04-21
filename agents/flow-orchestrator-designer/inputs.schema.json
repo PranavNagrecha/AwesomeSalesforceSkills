@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/flow-orchestrator-designer/inputs.schema.json",
+  "title": "flow-orchestrator-designer inputs",
+  "description": "Typed inputs for the flow-orchestrator-designer runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run.",
+  "type": "object",
+  "properties": {
+    "mode": {
+      "type": "string",
+      "description": "Example from AGENT.md: `design` | `audit` Required column: 'yes'.",
+      "enum": [
+        "design",
+        "audit"
+      ],
+      "example": "design"
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "Required column: 'yes'."
+    },
+    "scenario_summary": {
+      "type": "string",
+      "description": "Example from AGENT.md: \"3-stage contract review: legal, procurement, customer sign-off; SLA 5 business days; recallable by originator\" Required column: 'design-mode only'.",
+      "example": "\"3-stage contract review: legal, procurement, customer sign-off; SLA 5 business days; recallable by originator\""
+    },
+    "primary_object": {
+      "type": "string",
+      "description": "Example from AGENT.md: `Contract`, `Opportunity`, `Custom__c` Required column: 'design-mode'.",
+      "example": "Contract"
+    },
+    "audit_scope": {
+      "type": "string",
+      "description": "Example from AGENT.md: `org` | `orchestration:<DeveloperName>` Required column: 'audit-mode only'.",
+      "example": "org"
+    },
+    "license_confirmed": {
+      "type": "boolean",
+      "description": "Example from AGENT.md: `true` to skip the edition-check refusal; default `false` Required column: 'no'.",
+      "example": true
+    }
+  },
+  "required": [
+    "mode",
+    "target_org_alias"
+  ]
+}

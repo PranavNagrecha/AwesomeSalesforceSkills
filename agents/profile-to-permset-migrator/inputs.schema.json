@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/profile-to-permset-migrator/inputs.schema.json",
+  "title": "profile-to-permset-migrator inputs",
+  "description": "Typed inputs for the profile-to-permset-migrator runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run.",
+  "type": "object",
+  "properties": {
+    "profile_name": {
+      "type": "string",
+      "description": "Example from AGENT.md: `Sales User` Required column: 'yes (unless `profile_name_filter` is set)'.",
+      "example": "Sales User"
+    },
+    "profile_name_filter": {
+      "type": "string",
+      "description": "Example from AGENT.md: `Custom:*` \u2014 handle a batch of profiles matching a wildcard Required column: 'alt'.",
+      "example": "Custom:*"
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "Required column: 'yes'."
+    },
+    "reuse_psg": {
+      "type": "string",
+      "description": "Example from AGENT.md: name of an existing PSG to extend rather than create; if unset, the agent proposes a new PSG Required column: 'no'.",
+      "example": "name of an existing PSG to extend rather than create; if unset, the agent proposes a new PSG"
+    },
+    "minimum_access_shape": {
+      "type": "string",
+      "description": "Example from AGENT.md: `standard-user` (default) | `minimum-access` (leaner residue) | `custom-residue` \u2014 guides how aggressive the stripping is Required column: 'no'.",
+      "example": "standard-user"
+    },
+    "integration_mode": {
+      "type": "boolean",
+      "description": "Example from AGENT.md: `true` if the profile is an integration user profile; changes the decomposition (no PSG, single dedicated PS) Required column: 'no'.",
+      "example": true
+    }
+  },
+  "required": [
+    "profile_name",
+    "target_org_alias"
+  ]
+}

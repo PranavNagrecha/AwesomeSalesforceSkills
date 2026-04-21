@@ -4,7 +4,12 @@
   "title": "flow-builder inputs",
   "description": "Typed Gate-A input contract for the flow-builder agent. Missing-required or under-constrained inputs trigger REFUSAL_INPUT_AMBIGUOUS.",
   "type": "object",
-  "required": ["flow_developer_name", "feature_summary", "flow_type", "api_version"],
+  "required": [
+    "flow_developer_name",
+    "feature_summary",
+    "flow_type",
+    "api_version"
+  ],
   "properties": {
     "flow_developer_name": {
       "type": "string",
@@ -19,7 +24,14 @@
     },
     "flow_type": {
       "type": "string",
-      "enum": ["record-triggered", "scheduled", "auto-launched", "screen", "orchestration", "platform-event-triggered"],
+      "enum": [
+        "record-triggered",
+        "scheduled",
+        "auto-launched",
+        "screen",
+        "orchestration",
+        "platform-event-triggered"
+      ],
       "description": "The Flow processType family. Drives the <processType> tag + <start> block."
     },
     "trigger_sobject": {
@@ -29,44 +41,103 @@
     },
     "trigger_context": {
       "type": "string",
-      "enum": ["before-save", "after-save", "scheduled", "screen", "autolaunched"],
+      "enum": [
+        "before-save",
+        "after-save",
+        "scheduled",
+        "screen",
+        "autolaunched"
+      ],
       "description": "Trigger timing inside the flow. Inferred from flow_type when absent."
     },
     "record_trigger_type": {
       "type": "string",
-      "enum": ["Create", "Update", "CreateAndUpdate", "Delete"],
+      "enum": [
+        "Create",
+        "Update",
+        "CreateAndUpdate",
+        "Delete"
+      ],
       "description": "For record-triggered flows only. Drives <recordTriggerType>."
     },
     "expected_volume": {
       "type": "string",
-      "enum": ["small", "medium", "high"],
-      "default": "medium"
+      "enum": [
+        "small",
+        "medium",
+        "high"
+      ],
+      "default": "medium",
+      "description": "Record-volume sizing hint that drives governor-limit and LDV recommendations. One of: `small`, `medium`, `high`. Defaults to `medium`."
     },
     "referenced_fields": {
       "type": "array",
-      "items": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_]*\\.[A-Za-z][A-Za-z0-9_]*$"},
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9_]*\\.[A-Za-z][A-Za-z0-9_]*$"
+      },
       "description": "Fully-qualified Object.Field names the flow reads/writes. Gate B validates each against the org stub."
     },
     "subflows": {
       "type": "array",
-      "items": {"type": "string", "pattern": "^[A-Z][A-Za-z0-9_]+$"},
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Z][A-Za-z0-9_]+$"
+      },
       "description": "DeveloperNames of subflows this flow invokes. Each must exist at repo or org."
     },
-    "api_version": {"type": "string", "pattern": "^\\d{2}\\.0$"},
+    "api_version": {
+      "type": "string",
+      "pattern": "^\\d{2}\\.0$",
+      "description": "Salesforce API version written into generated `*-meta.xml` files. Must match pattern `^\\d{2}\\.0$` (e.g., `60.0`)."
+    },
     "target_org_alias": {
       "type": "string",
       "description": "sf CLI alias of a real org Gate C can deploy-validate against. When absent, Gate C runs static-only."
     },
-    "repo_path": {"type": "string", "default": "./force-app"}
+    "repo_path": {
+      "type": "string",
+      "default": "./force-app",
+      "description": "Repo-relative root of the caller's `force-app` source tree; the builder writes emitted artifacts underneath this path. Defaults to `./force-app`."
+    }
   },
   "allOf": [
     {
-      "if": {"properties": {"flow_type": {"enum": ["record-triggered", "platform-event-triggered"]}}, "required": ["flow_type"]},
-      "then": {"required": ["trigger_sobject"]}
+      "if": {
+        "properties": {
+          "flow_type": {
+            "enum": [
+              "record-triggered",
+              "platform-event-triggered"
+            ]
+          }
+        },
+        "required": [
+          "flow_type"
+        ]
+      },
+      "then": {
+        "required": [
+          "trigger_sobject"
+        ]
+      }
     },
     {
-      "if": {"properties": {"flow_type": {"const": "record-triggered"}}, "required": ["flow_type"]},
-      "then": {"required": ["record_trigger_type"]}
+      "if": {
+        "properties": {
+          "flow_type": {
+            "const": "record-triggered"
+          }
+        },
+        "required": [
+          "flow_type"
+        ]
+      },
+      "then": {
+        "required": [
+          "record_trigger_type"
+        ]
+      }
     }
   ]
 }

@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/custom-metadata-and-settings-designer/inputs.schema.json",
+  "title": "custom-metadata-and-settings-designer inputs",
+  "description": "Typed inputs for the custom-metadata-and-settings-designer runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run.",
+  "type": "object",
+  "properties": {
+    "mode": {
+      "type": "string",
+      "description": "Example from AGENT.md: `design` | `audit` Required column: 'yes'.",
+      "enum": [
+        "design",
+        "audit"
+      ],
+      "example": "design"
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "Required column: 'yes'."
+    },
+    "scenario_summary": {
+      "type": "string",
+      "description": "Example from AGENT.md: \"feature flag registry for 30 Apex classes; per-environment values; production reads must be fast\" Required column: 'design'.",
+      "example": "\"feature flag registry for 30 Apex classes; per-environment values; production reads must be fast\""
+    },
+    "expected_usage": {
+      "type": "string",
+      "description": "Example from AGENT.md: `apex` | `flow` | `formula` | `apex+flow` | `apex+flow+formula` Required column: 'design'.",
+      "enum": [
+        "apex",
+        "flow",
+        "formula"
+      ],
+      "example": "apex"
+    },
+    "expected_record_count": {
+      "type": "string",
+      "description": "Example from AGENT.md: integer \u2014 approximate live record count Required column: 'design'.",
+      "example": "integer \u2014 approximate live record count"
+    },
+    "environment_scoped": {
+      "type": "boolean",
+      "description": "Example from AGENT.md: `true` if values vary per sandbox/prod (tilts to CMT) Required column: 'design'.",
+      "example": true
+    },
+    "audit_scope": {
+      "type": "string",
+      "description": "Example from AGENT.md: `org` | `type:<DeveloperName>` Required column: 'audit'.",
+      "example": "org"
+    }
+  },
+  "required": [
+    "mode",
+    "target_org_alias"
+  ]
+}

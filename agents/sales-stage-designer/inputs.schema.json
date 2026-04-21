@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/sales-stage-designer/inputs.schema.json",
+  "title": "sales-stage-designer inputs",
+  "description": "Typed inputs for the sales-stage-designer runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run.",
+  "type": "object",
+  "properties": {
+    "mode": {
+      "type": "string",
+      "description": "Example from AGENT.md: `design` | `audit` Required column: 'yes'.",
+      "enum": [
+        "design",
+        "audit"
+      ],
+      "example": "design"
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "Example from AGENT.md: `prod` Required column: 'yes for audit'.",
+      "example": "prod"
+    },
+    "business_motion": {
+      "type": "string",
+      "description": "Example from AGENT.md: `\"new-logo enterprise SaaS\"` Required column: 'yes for design'.",
+      "example": "\"new-logo enterprise SaaS\""
+    },
+    "avg_cycle_length_days": {
+      "type": "integer",
+      "description": "Example from AGENT.md: `120` Required column: 'yes for design'.",
+      "example": 120
+    },
+    "deal_band_min_max_usd": {
+      "type": "array",
+      "description": "Example from AGENT.md: `[50k, 2M]` Required column: 'no'.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "record_type_name": {
+      "type": "string",
+      "description": "Example from AGENT.md: `Opportunity.NewBusiness` Required column: 'no'.",
+      "example": "Opportunity.NewBusiness"
+    }
+  },
+  "required": [
+    "mode",
+    "target_org_alias",
+    "business_motion",
+    "avg_cycle_length_days"
+  ]
+}

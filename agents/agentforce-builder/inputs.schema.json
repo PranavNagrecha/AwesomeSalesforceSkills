@@ -4,7 +4,13 @@
   "title": "agentforce-builder inputs",
   "description": "Typed Gate-A input contract for the agentforce-builder agent. Missing-required or under-constrained inputs trigger REFUSAL_INPUT_AMBIGUOUS.",
   "type": "object",
-  "required": ["action_class_name", "feature_summary", "primary_object", "actor", "api_version"],
+  "required": [
+    "action_class_name",
+    "feature_summary",
+    "primary_object",
+    "actor",
+    "api_version"
+  ],
   "properties": {
     "action_class_name": {
       "type": "string",
@@ -29,12 +35,17 @@
     },
     "referenced_fields": {
       "type": "array",
-      "items": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_]*\\.[A-Za-z][A-Za-z0-9_]*$"},
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9_]*\\.[A-Za-z][A-Za-z0-9_]*$"
+      },
       "description": "Fully-qualified Object.Field names the action reads. Gate B validates each against the org stub."
     },
     "trust_constraints": {
       "type": "array",
-      "items": {"type": "string"},
+      "items": {
+        "type": "string"
+      },
       "description": "Trust-layer constraints. E.g. no-pii-in-prompt, mask-email, no-external-callout.",
       "default": []
     },
@@ -53,18 +64,43 @@
       "default": false,
       "description": "Whether to emit a companion AgentSkeleton.json file. When true, agent_name is required."
     },
-    "api_version": {"type": "string", "pattern": "^\\d{2}\\.0$"},
-    "namespace": {"type": "string", "default": ""},
+    "api_version": {
+      "type": "string",
+      "pattern": "^\\d{2}\\.0$",
+      "description": "Salesforce API version written into generated `*-meta.xml` files. Must match pattern `^\\d{2}\\.0$` (e.g., `60.0`)."
+    },
+    "namespace": {
+      "type": "string",
+      "default": "",
+      "description": "Managed package namespace prefix stamped into generated metadata. Leave blank for non-packaged orgs. Defaults to an empty string."
+    },
     "target_org_alias": {
       "type": "string",
       "description": "sf CLI alias of a real org Gate C can deploy-validate against. When absent, Gate C runs static-only."
     },
-    "repo_path": {"type": "string", "default": "./force-app"}
+    "repo_path": {
+      "type": "string",
+      "default": "./force-app",
+      "description": "Repo-relative root of the caller's `force-app` source tree; the builder writes emitted artifacts underneath this path. Defaults to `./force-app`."
+    }
   },
   "allOf": [
     {
-      "if": {"properties": {"emit_agent_spec": {"const": true}}, "required": ["emit_agent_spec"]},
-      "then": {"required": ["agent_name"]}
+      "if": {
+        "properties": {
+          "emit_agent_spec": {
+            "const": true
+          }
+        },
+        "required": [
+          "emit_agent_spec"
+        ]
+      },
+      "then": {
+        "required": [
+          "agent_name"
+        ]
+      }
     }
   ]
 }

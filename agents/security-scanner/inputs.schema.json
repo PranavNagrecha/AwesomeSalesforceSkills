@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/security-scanner/inputs.schema.json",
+  "title": "security-scanner inputs",
+  "description": "Typed inputs for the security-scanner runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run.",
+  "type": "object",
+  "properties": {
+    "scope_path": {
+      "type": "string",
+      "description": "Example from AGENT.md: `force-app/main/default/` Required column: 'yes'.",
+      "example": "force-app/main/default/"
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "Example from AGENT.md: enables `validate_against_org` lookups Required column: 'no'.",
+      "example": "enables `validate_against_org` lookups"
+    },
+    "severity_threshold": {
+      "type": "string",
+      "description": "Example from AGENT.md: `P1` to hide low-severity findings Required column: 'no (default `p2`)'.",
+      "example": "P1"
+    }
+  },
+  "required": [
+    "scope_path"
+  ]
+}
