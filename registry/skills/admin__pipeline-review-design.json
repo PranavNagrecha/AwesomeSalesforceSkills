@@ -1,7 +1,9 @@
 {
   "category": "admin",
   "chunk_ids": [
+    "00354bc45d605f4a3f4f",
     "0664400e28e20db9cd87",
+    "07185da29fa99749559c",
     "08322b269a90b280d03d",
     "0e15f142e89bf60c4bcc",
     "0e664414aaf2d010d0c6",
@@ -27,6 +29,7 @@
     "54e7f9cb70d69f506314",
     "54fec7019fe42237ce75",
     "582ba07ad3c714567e05",
+    "5e921fdb43aa5ea4184f",
     "5f827f2c1c8062c4a8f3",
     "676136445c5e1e877e8b",
     "67cd6c30ca6f46ffeb6f",
@@ -69,9 +72,10 @@
     "e665d95ee138a59754c9",
     "e72065bff638ca0fd2ab",
     "f2cb9dfd21c07f7a8be7",
+    "f319bf9cc85a7691d455",
     "f737c0cc5d531cfcd79b"
   ],
-  "content_hash": "4cab10c0c8dce356298e13934143cf2b1fa13b5c6ca52544ac1dc3e3cc88f0b8",
+  "content_hash": "21bfccedda6f830ab689098df87507b6e7c93a805ccedf61fe1390567ef56c1d",
   "dependencies": [],
   "description": "Configuring and running Pipeline Inspection in Sales Cloud: enabling the feature, mapping forecast categories to the inspection view, configuring Days in Stage and other metrics, setting review cadence, and interpreting pipeline change signals for sales managers. Use when designing or improving how a team monitors deal health and pipeline movement. NOT for building custom dashboards or reports (use reports-and-dashboards skill). NOT for enabling Einstein Opportunity Scoring or AI insights (use einstein-copilot-for-sales skill). NOT for setting up Collaborative Forecasts or forecast types (use collaborative-forecasts skill).",
   "file_location": "skills/admin/pipeline-review-design",

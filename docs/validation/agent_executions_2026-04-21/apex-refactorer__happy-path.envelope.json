@@ -13,33 +13,58 @@
   "process_observations": [
     {
       "category": "concerning",
+      "severity": "high",
+      "domain": "apex-callouts",
       "observation": "Original trigger invokes Http.send() synchronously during after update. Salesforce disallows callouts from trigger context; this is a pre-existing runtime bug, not merely a pattern issue. Refactor moves it to a Queueable dispatched by the handler.",
-      "evidence": "Lines 17-22 of AccountTrigger_Naive.cls: Http http = new Http(); ... HttpResponse res = http.send(req);",
-      "impact": "HIGH"
+      "evidence": {
+        "source": "repo_scan",
+        "path": "evals/agents/fixtures/apex-refactorer/samples/AccountTrigger_Naive.cls",
+        "query": "Http http = new Http\\(\\); ... HttpResponse res = http.send\\(req\\);"
+      }
     },
     {
       "category": "concerning",
+      "severity": "medium",
+      "domain": "integration-security",
       "observation": "Raw endpoint literal 'https://erp.example.com/api/sync' hard-coded in Apex. Refactor routes through a Named Credential 'ERP_Sync' per apex-security-patterns.",
-      "evidence": "req.setEndpoint('https://erp.example.com/api/sync')",
-      "impact": "MEDIUM"
+      "evidence": {
+        "source": "repo_scan",
+        "path": "evals/agents/fixtures/apex-refactorer/samples/AccountTrigger_Naive.cls",
+        "query": "req.setEndpoint('https://erp.example.com/api/sync')"
+      }
     },
     {
       "category": "healthy",
+      "severity": "info",
+      "domain": "bulkification",
       "observation": "Source already bulk-safe on the Contact query (IN :Trigger.newMap.keySet()) \u2014 no N+1 SOQL to untangle, which simplifies the Selector lift.",
-      "evidence": "SELECT Id, AccountId, MailingCountry FROM Contact WHERE AccountId IN :Trigger.newMap.keySet()",
-      "impact": "LOW"
+      "evidence": {
+        "source": "repo_scan",
+        "path": "evals/agents/fixtures/apex-refactorer/samples/AccountTrigger_Naive.cls",
+        "query": "SELECT Id, AccountId, MailingCountry FROM Contact WHERE AccountId IN :Trigger.newMap.keySet()"
+      }
     },
     {
       "category": "ambiguous",
+      "severity": "medium",
+      "domain": "framework-collision",
       "observation": "Unknown whether the consumer org already has a TriggerHandler framework (kevinohara80 or similar). If it does, the user should reconcile naming before merging this refactor. No org alias supplied, so unable to validate.",
-      "evidence": "target_org_alias not provided in inputs",
-      "impact": "MEDIUM"
+      "evidence": {
+        "source": "input",
+        "path": "inputs.target_org_alias"
+      }
     },
     {
       "category": "suggested_followup",
+      "severity": "low",
+      "domain": "followup",
       "observation": "Recommend running /scan-security on the refactored classes to confirm SecurityUtils placement, and /gen-tests if coverage targets tighten beyond the included test class.",
-      "evidence": "AGENT.md 'What This Agent Does NOT Do' \u2014 does not auto-chain to security-scanner.",
-      "impact": "LOW"
+      "evidence": {
+        "source": "heuristic",
+        "path": "agents/apex-refactorer/AGENT.md"
+      },
+      "suggested_followup_agent": "scan-security",
+      "followup_reason": "Confirm SecurityUtils placement and validate FLS/CRUD posture on the refactored Contact update path."
     }
   ],
   "deliverables": [
@@ -72,72 +97,88 @@
     {
       "type": "skill",
       "id": "apex/trigger-framework",
-      "path": "skills/apex/trigger-framework/SKILL.md"
+      "path": "skills/apex/trigger-framework/SKILL.md",
+      "used_for": "Canonical trigger-body refactor shape \u2014 one trigger per object delegating to a Handler extending TriggerHandler."
     },
     {
       "type": "skill",
       "id": "apex/apex-security-patterns",
-      "path": "skills/apex/apex-security-patterns/SKILL.md"
+      "path": "skills/apex/apex-security-patterns/SKILL.md",
+      "used_for": "CRUD/FLS enforcement via SecurityUtils and Named-Credential rule that displaces hard-coded endpoints."
     },
     {
       "type": "skill",
       "id": "admin/agent-output-formats",
-      "path": "skills/admin/agent-output-formats/SKILL.md"
+      "path": "skills/admin/agent-output-formats/SKILL.md",
+      "used_for": "Envelope shape contract \u2014 confidence, process_observations, citations, followups."
     },
     {
       "type": "template",
       "id": "apex/TriggerHandler.cls",
-      "path": "templates/apex/TriggerHandler.cls"
+      "path": "templates/apex/TriggerHandler.cls",
+      "used_for": "Base class the emitted AccountTriggerHandler extends."
     },
     {
       "type": "template",
       "id": "apex/BaseSelector.cls",
-      "path": "templates/apex/BaseSelector.cls"
+      "path": "templates/apex/BaseSelector.cls",
+      "used_for": "Base class the emitted AccountSelector extends for the Contact-by-AccountIds query."
     },
     {
       "type": "template",
       "id": "apex/HttpClient.cls",
-      "path": "templates/apex/HttpClient.cls"
+      "path": "templates/apex/HttpClient.cls",
+      "used_for": "Wrapper used inside ErpAccountSyncQueueable to route the callout via Named Credential."
     },
     {
       "type": "template",
       "id": "apex/ApplicationLogger.cls",
-      "path": "templates/apex/ApplicationLogger.cls"
+      "path": "templates/apex/ApplicationLogger.cls",
+      "used_for": "Replaces System.debug() calls in the refactored handler."
     },
     {
       "type": "template",
       "id": "apex/SecurityUtils.cls",
-      "path": "templates/apex/SecurityUtils.cls"
+      "path": "templates/apex/SecurityUtils.cls",
+      "used_for": "requireUpdateable() guard on the Contact.MailingCountry update."
     },
     {
       "type": "template",
       "id": "apex/tests/BulkTestPattern.cls",
-      "path": "templates/apex/tests/BulkTestPattern.cls"
+      "path": "templates/apex/tests/BulkTestPattern.cls",
+      "used_for": "200-record bulk test shape for AccountTriggerHandler_Test.afterUpdate_syncsContactCountry_bulk."
     },
     {
       "type": "template",
       "id": "apex/tests/TestDataFactory.cls",
-      "path": "templates/apex/tests/TestDataFactory.cls"
+      "path": "templates/apex/tests/TestDataFactory.cls",
+      "used_for": "createAccounts() helper used to build the 200-Account bulk fixture."
     },
     {
       "type": "template",
       "id": "apex/tests/TestUserFactory.cls",
-      "path": "templates/apex/tests/TestUserFactory.cls"
+      "path": "templates/apex/tests/TestUserFactory.cls",
+      "used_for": "createStandardUser() for the non-admin runAs FLS test."
     },
     {
       "type": "template",
       "id": "apex/tests/MockHttpResponseGenerator.cls",
-      "path": "templates/apex/tests/MockHttpResponseGenerator.cls"
+      "path": "templates/apex/tests/MockHttpResponseGenerator.cls",
+      "used_for": "HttpCalloutMock implementation to satisfy Test.setMock during the Queueable path."
     },
     {
-      "type": "decision-tree",
+      "type": "decision_tree",
       "id": "automation-selection",
-      "path": "standards/decision-trees/automation-selection.md"
+      "path": "standards/decision-trees/automation-selection.md",
+      "branch": "Q1 \u2014 record-triggered automation: Apex trigger chosen (complex cross-object logic + callout)",
+      "used_for": "Confirmed Apex trigger remains the right tool vs. Flow for this shape."
     },
     {
-      "type": "decision-tree",
+      "type": "decision_tree",
       "id": "async-selection",
-      "path": "standards/decision-trees/async-selection.md"
+      "path": "standards/decision-trees/async-selection.md",
+      "branch": "Q3 \u2014 callout from trigger: Queueable chosen (needs AllowsCallouts + sequential ordering)",
+      "used_for": "Selected Queueable over @future for the ERP sync dispatch."
     }
   ],
   "followups": [

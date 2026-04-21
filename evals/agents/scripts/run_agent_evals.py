@@ -41,8 +41,13 @@ except ImportError:
 REPO_ROOT = Path(__file__).resolve().parents[3]
 FIXTURES_DIR = REPO_ROOT / "evals" / "agents" / "fixtures"
 AGENTS_DIR = REPO_ROOT / "agents"
-ENVELOPE_SCHEMA = REPO_ROOT / "agents" / "_shared" / "schemas" / "output-envelope.schema.json"
-FRONTMATTER_SCHEMA = REPO_ROOT / "agents" / "_shared" / "schemas" / "agent-frontmatter.schema.json"
+SCHEMAS_DIR = REPO_ROOT / "agents" / "_shared" / "schemas"
+ENVELOPE_SCHEMA = SCHEMAS_DIR / "output-envelope.schema.json"
+FRONTMATTER_SCHEMA = SCHEMAS_DIR / "agent-frontmatter.schema.json"
+# Relative $refs in output-envelope.schema.json resolve against the envelope's
+# $id base — i.e. the schemas all share `https://sfskills.local/schemas/`.
+# Preload the sibling schemas so the validator doesn't fall over on those refs.
+REFERENCED_SCHEMAS = ("observation.schema.json", "citation.schema.json")
 
 
 @dataclass
@@ -113,17 +118,37 @@ def grade_envelope(fixture_path: Path, fixture: dict, envelope: dict) -> list[Li
 
     if jsonschema and ENVELOPE_SCHEMA.exists():
         schema = json.loads(ENVELOPE_SCHEMA.read_text(encoding="utf-8"))
-        # Draft 2020-12 $ref resolution needs a registry for relative refs; this is a
-        # best-effort check — if resolver can't find the sub-schemas we downgrade to a
-        # shallow type check.
+        # Build a referencing.Registry so relative $refs in the envelope schema
+        # (observation.schema.json, citation.schema.json) resolve — without it
+        # jsonschema raises Unresolvable and the whole envelope check silently
+        # becomes a WARN. With it, observation/citation item validation actually
+        # runs against the real sub-schemas.
         try:
-            validator = jsonschema.Draft202012Validator(schema)
+            from referencing import Registry, Resource
+
+            resources = [(schema.get("$id"), Resource.from_contents(schema))]
+            for rel in REFERENCED_SCHEMAS:
+                sub_path = SCHEMAS_DIR / rel
+                if sub_path.exists():
+                    sub = json.loads(sub_path.read_text(encoding="utf-8"))
+                    resources.append((sub.get("$id"), Resource.from_contents(sub)))
+            registry = Registry().with_resources([(uri, res) for uri, res in resources if uri])
+            validator = jsonschema.Draft202012Validator(schema, registry=registry)
             errors = list(validator.iter_errors(envelope))
             for err in errors:
-                # suppress $ref-resolution-failed style errors — covered by deeper checks below
-                if "$ref" in str(err.message).lower():
-                    continue
-                issues.append(LintIssue("ERROR", str(fixture_path), f"envelope: {err.message}"))
+                path = "/".join(str(p) for p in err.absolute_path) or "<root>"
+                issues.append(LintIssue("ERROR", str(fixture_path), f"envelope at {path}: {err.message}"))
+        except ImportError:
+            # jsonschema < 4.18 had an older $ref system; fall back to a no-registry check.
+            try:
+                validator = jsonschema.Draft202012Validator(schema)
+                errors = list(validator.iter_errors(envelope))
+                for err in errors:
+                    if "$ref" in str(err.message).lower():
+                        continue
+                    issues.append(LintIssue("ERROR", str(fixture_path), f"envelope: {err.message}"))
+            except Exception as exc:
+                issues.append(LintIssue("WARN", str(fixture_path), f"envelope schema validation skipped: {exc}"))
         except Exception as exc:
             issues.append(LintIssue("WARN", str(fixture_path), f"envelope schema validation skipped: {exc}"))
 
