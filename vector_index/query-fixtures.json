@@ -97,7 +97,7 @@
       "top_k": 3
     },
     {
-      "query": "CRM analytics dashboard dataset",
+      "query": "Einstein Analytics basics fundamentals app dataset dashboard introduction",
       "domain": "admin",
       "expected_skill": "admin/einstein-analytics-basics",
       "top_k": 3
@@ -3097,7 +3097,7 @@
       "top_k": 3
     },
     {
-      "query": "set up B2B Commerce store Salesforce storefront configuration",
+      "query": "Salesforce B2B Commerce storefront setup buyer groups price books B2B store",
       "domain": "admin",
       "expected_skill": "admin/b2b-commerce-store-setup",
       "top_k": 3
@@ -3139,7 +3139,7 @@
       "top_k": 3
     },
     {
-      "query": "FSL scheduling optimization work rules service objectives travel time SLA",
+      "query": "FSL scheduling optimization design architecture service objectives travel time SLA",
       "domain": "admin",
       "expected_skill": "admin/fsl-scheduling-optimization-design",
       "top_k": 3
@@ -4941,7 +4941,7 @@
     {
       "query": "enable event monitoring",
       "domain": "security",
-      "expected_skill": "security/salesforce-shield-deployment",
+      "expected_skill": "security/event-monitoring",
       "top_k": 3
     },
     {
@@ -5017,7 +5017,7 @@
       "top_k": 3
     },
     {
-      "query": "pr template salesforce",
+      "query": "pull request template policy salesforce",
       "domain": "devops",
       "expected_skill": "devops/pr-policy-templates",
       "top_k": 3
@@ -5169,7 +5169,7 @@
     {
       "query": "lightning message service",
       "domain": "lwc",
-      "expected_skill": "lwc/lwc-state-management",
+      "expected_skill": "lwc/message-channel-patterns",
       "top_k": 3
     },
     {
@@ -5211,11 +5211,17 @@
     {
       "query": "flow error email",
       "domain": "flow",
-      "expected_skill": "flow/flow-interview-debugging",
+      "expected_skill": "flow/flow-runtime-error-diagnosis",
       "top_k": 3
     },
     {
       "query": "flow debug log",
+      "domain": "flow",
+      "expected_skill": "flow/flow-debugging",
+      "top_k": 3
+    },
+    {
+      "query": "flow interview debugging instrumentation triage production",
       "domain": "flow",
       "expected_skill": "flow/flow-interview-debugging",
       "top_k": 3
