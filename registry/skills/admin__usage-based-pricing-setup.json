@@ -1,0 +1,100 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "018842e2b735d40c6ece",
+    "0254a8925c1bfc011985",
+    "04c4332b72fc470a2623",
+    "057b211ea7eef17bf955",
+    "065a8cc083aeed547e5d",
+    "0a8b7fa953e3363c6272",
+    "0fdc25ea1f273f89d73c",
+    "156e6edd1c79c08f623f",
+    "174a4988c679e2d7b8f1",
+    "1767f3cb38569f313aca",
+    "193b3ce8009c54a6cbe6",
+    "1cd1d23dc9d64255227e",
+    "288d3fb25313146b8314",
+    "28b483036c837092190a",
+    "310057b0e2fc70ba13b7",
+    "39bbd54c20385300ebc9",
+    "3b6bca458312aec938f4",
+    "4b6395df1651adc9dbc2",
+    "4b90e720191d6046351f",
+    "4c2f34531d0549aadcf7",
+    "52887337fe45a7c6dda4",
+    "5c0b3edb1b32058d2ae7",
+    "5c7fc891b47bf1327951",
+    "5e1615454bfd7ed8e306",
+    "61e5e1ef504b4763b6a4",
+    "7221478a34e2f6a45398",
+    "73c10ad66b3a8b14531a",
+    "77b204f8de60f93a2aa2",
+    "90ad4e9e91fb5ec3b667",
+    "93b8b88a306ac9e68418",
+    "978d8d56ada2c8b76f06",
+    "9b79b17d63bfc522cd9b",
+    "9b79c79b81ddcbf48f46",
+    "a32ce54abfbca70dc51a",
+    "afc6e846d2749c82949b",
+    "b28b5bdc528a367efd23",
+    "b2fa6e133a2b53581522",
+    "b7271aadf8c11d92d424",
+    "bde6526135f2a6ac4f68",
+    "c6948fc44409b7d94bd0",
+    "c6e7f3d02968d65400f7",
+    "c9c95175de9cfeee5a87",
+    "e0306ae21212475df2bb",
+    "e462f739f287d8afe9f7",
+    "ec3ad925170c4c39088f",
+    "f20d5dfa2b2ea892c426",
+    "f2daabdafdc639cdcc9a",
+    "f5b56bdff3144e00325a"
+  ],
+  "content_hash": "8ea3e67cf9c7057f7e5b78dcf4994d09b158caafc06784587f5871c670530555",
+  "dependencies": [],
+  "description": "Usage-based pricing in Revenue Cloud: metered billing, usage records, rating, tiering, consumption schedules. NOT for CPQ flat-rate discounts (use revenue-cloud-cpq-setup). NOT for legacy Salesforce Billing-only implementations (use revenue-cloud-legacy-billing).",
+  "file_location": "skills/admin/usage-based-pricing-setup",
+  "id": "admin/usage-based-pricing-setup",
+  "inputs": [
+    "Revenue Cloud edition and usage-based pricing entitlement",
+    "Product catalog pricing model (tiered, volume, overage, prepaid pool)",
+    "Telemetry source (product platform, external meter, manual import)",
+    "Billing cadence and invoice consolidation requirements"
+  ],
+  "name": "usage-based-pricing-setup",
+  "official_sources": [
+    "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
+    "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Consumption schedule + price rule configuration",
+    "Usage record ingestion pipeline spec",
+    "Rating + invoice generation validation plan",
+    "Customer-facing usage visibility scaffold"
+  ],
+  "references": [
+    "skills/admin/usage-based-pricing-setup/references/examples.md",
+    "skills/admin/usage-based-pricing-setup/references/gotchas.md",
+    "skills/admin/usage-based-pricing-setup/references/llm-anti-patterns.md",
+    "skills/admin/usage-based-pricing-setup/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/usage-based-pricing-setup/scripts/check_usage_based_pricing_setup.py"
+  ],
+  "tags": [
+    "usage-based-pricing",
+    "metered-billing",
+    "consumption-schedule",
+    "revenue-cloud",
+    "rating",
+    "tiering",
+    "invoicing"
+  ],
+  "templates": [
+    "skills/admin/usage-based-pricing-setup/templates/usage-based-pricing-setup-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

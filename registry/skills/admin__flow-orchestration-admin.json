@@ -1,0 +1,100 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "03cb599e1d0a69ac9b97",
+    "054421cbec4a37f7f28a",
+    "109d808e1ef5470393a1",
+    "1cd03610d45e8b0c35ba",
+    "211aed9020185f545d1a",
+    "2937d5691093af62a5f7",
+    "2adbbc7a39971153812f",
+    "306e114e8833073d2771",
+    "3233817ead06519b0f53",
+    "323413f6159a2ef7dcbf",
+    "3563b82b2deb7a5bc30b",
+    "35c5899ee1d2e737ac1c",
+    "3923343b4d16829bdb5a",
+    "3a536b64efcc3285f9c4",
+    "40beaf98ebc5bb2e9156",
+    "422ce7d6d61233c24341",
+    "48a58f212aa16b3dcb0f",
+    "4d8e66d643adfff24d37",
+    "4ff8e4745cf58799abf0",
+    "501399bf55ec4479d95d",
+    "56272fae7c2192849df3",
+    "578b2d29d68d0811feaa",
+    "67ea80439fc1d8ce2d06",
+    "6b5f952f9e2010f9fd3c",
+    "6e35856bfe20cf65c349",
+    "6f5bf70a2c60d21dca25",
+    "73d9ce579cebe8e7d386",
+    "7c2b0ff539774e352027",
+    "7f0afa45c8dc007360e7",
+    "7ff505de92fbb847b28d",
+    "83bf891ee17ecb08c04b",
+    "8d657a4a3600883032e5",
+    "8dd2ef00f460f17330c5",
+    "9570716138ac3d677eaf",
+    "af792ab6a69c8292716e",
+    "c1ae21c540b6a1ca4a44",
+    "c27dff20c961ccc7d9dc",
+    "d23ee5db7fb3368bc91f",
+    "d2a4705f08ba85173f52",
+    "e46bb663d425aeba4694",
+    "e4b99dfe6fe61df0bdd3",
+    "e7fc65110a0baf2d6148",
+    "ecb03ec0ac707ec99155",
+    "f0da27d34e81927326d2",
+    "f45ab3583cc02052386a",
+    "f764d056fcc305d7023d",
+    "fa561a68571ab0e40cac",
+    "fc2489ed981f6d008478"
+  ],
+  "content_hash": "b12861dc7f6f946be78a93e43d2de714d21013f48d68b93faa7c82cd26274e49",
+  "dependencies": [],
+  "description": "Flow Orchestration admin: stage configuration, step assignment, background steps, interactive steps, evaluation flows, work items, pause/resume. NOT for Flow Orchestration development APIs (use flow-orchestration-development). NOT for Approval Processes (use approval-processes).",
+  "file_location": "skills/admin/flow-orchestration-admin",
+  "id": "admin/flow-orchestration-admin",
+  "inputs": [
+    "Process being orchestrated (steps, actors, decision points)",
+    "User assignment rules (queues, role hierarchy, explicit users)",
+    "SLA and timeout requirements per stage",
+    "Integration with external systems (waits for callback, etc.)"
+  ],
+  "name": "flow-orchestration-admin",
+  "official_sources": [
+    "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
+    "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Orchestration metadata (stages, steps, evaluation flows)",
+    "Work item assignment and notification configuration",
+    "Pause/resume and timeout handling plan",
+    "Monitoring view for in-flight orchestrations"
+  ],
+  "references": [
+    "skills/admin/flow-orchestration-admin/references/examples.md",
+    "skills/admin/flow-orchestration-admin/references/gotchas.md",
+    "skills/admin/flow-orchestration-admin/references/llm-anti-patterns.md",
+    "skills/admin/flow-orchestration-admin/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/flow-orchestration-admin/scripts/check_flow_orchestration_admin.py"
+  ],
+  "tags": [
+    "flow-orchestration",
+    "work-items",
+    "stages",
+    "interactive-steps",
+    "background-steps",
+    "workflow",
+    "admin"
+  ],
+  "templates": [
+    "skills/admin/flow-orchestration-admin/templates/flow-orchestration-admin-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

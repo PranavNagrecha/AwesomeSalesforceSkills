@@ -1,0 +1,98 @@
+{
+  "category": "architect",
+  "chunk_ids": [
+    "028eb1c5b90041971c8e",
+    "0428c664734e0dffc370",
+    "0961c6dbe7a2248e5b3e",
+    "1733357d784ca882637d",
+    "1c8581917ebd20d75e3c",
+    "2156631fa39df4f6c698",
+    "222088c138db15246b6e",
+    "2628ad449990da5fadcd",
+    "29e9e41fa6f534a9f5ba",
+    "2bde2963124488ee3b7b",
+    "34bad844afef4ac4550d",
+    "3c14eb92986c631ece12",
+    "41eae7c2695205594695",
+    "44d511ed0d4203cd5741",
+    "4cfeaf1da8e16de11b61",
+    "559168f85c54dee733e2",
+    "573f5eb346345857b6a0",
+    "57858c2aa26d4d64eef0",
+    "5c749af0d4dccf767eed",
+    "61cca634b21a0be8a379",
+    "6bdcec108ac94e28ef6f",
+    "7463324b43c110c0c5d1",
+    "798a6aac20e11997df5b",
+    "7f7608f17dcda1157a31",
+    "8068451fe79a8e2780ba",
+    "83527332ecef860ae07c",
+    "91021c565c92f236ce08",
+    "92518e165528b2a12c53",
+    "95a0e311b0f555ab7775",
+    "95b0819342f9c5e77fda",
+    "9c5b67a8769065ebc844",
+    "9f02a758feda82d9d70a",
+    "a20925c32a4f97b93048",
+    "a2e2951401ac171c9230",
+    "aa29824d742cf6efb6a6",
+    "aba1d79779c87944c802",
+    "b03e93ebbce037c95e3f",
+    "b5cfe0c174fa89493925",
+    "cb4fe884b1db5764a543",
+    "d486bfefaf291775d0a4",
+    "d4a6384069f294f9ef1a",
+    "d65cc0a46c36e3ec7e18",
+    "da2901ec2053131a5daa",
+    "e3b17b03cda5930dc32a",
+    "e4f88010f922cfccf1fd",
+    "f20f94a72195d86a7b76",
+    "f2139e6685ee8ab7da07",
+    "fcf1caeda3938f660274"
+  ],
+  "content_hash": "8bf1f05bcc9d2fdd4c4b32aaec5fd0987d681e1316692ac3a75b5b01dce8cdf5",
+  "dependencies": [],
+  "description": "Multi-tenant isolation patterns on Salesforce: custom metadata per-tenant, permission-based feature gating, data partitioning, namespace isolation, ISV managed-package patterns. NOT for multi-org strategy (use multi-org-architecture). NOT for data sharing design (use sharing-selection decision tree).",
+  "file_location": "skills/architect/tenant-isolation-patterns",
+  "id": "architect/tenant-isolation-patterns",
+  "inputs": [
+    "Tenant model (multi-brand single org, ISV managed package, multi-franchise)",
+    "Expected number of tenants and growth curve",
+    "Data isolation requirements (regulatory, contractual, business)",
+    "Tenant-specific customization requirements (fields, UI, automation)"
+  ],
+  "name": "tenant-isolation-patterns",
+  "official_sources": [
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Tenant identification strategy (field on records, account hierarchy, or namespace)",
+    "Sharing and security model ensuring isolation",
+    "Feature-gating mechanism (custom metadata, permission sets)",
+    "Customization strategy (configuration-driven, not code-branched)"
+  ],
+  "references": [
+    "skills/architect/tenant-isolation-patterns/references/examples.md",
+    "skills/architect/tenant-isolation-patterns/references/gotchas.md",
+    "skills/architect/tenant-isolation-patterns/references/llm-anti-patterns.md",
+    "skills/architect/tenant-isolation-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/architect/tenant-isolation-patterns/scripts/check_tenant_isolation_patterns.py"
+  ],
+  "tags": [
+    "multi-tenant",
+    "isv",
+    "managed-packages",
+    "feature-gating",
+    "data-partitioning",
+    "namespace",
+    "tenant-isolation"
+  ],
+  "templates": [
+    "skills/architect/tenant-isolation-patterns/templates/tenant-isolation-patterns-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

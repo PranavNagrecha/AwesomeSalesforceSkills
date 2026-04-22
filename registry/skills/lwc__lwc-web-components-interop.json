@@ -1,0 +1,99 @@
+{
+  "category": "lwc",
+  "chunk_ids": [
+    "0455e559883b176218f3",
+    "0b87bdd3e40de3b4ac90",
+    "0bbc1f84a3455a3969cc",
+    "128890ee1371b40bfb2b",
+    "153011f143f9e8465ab3",
+    "160750861f3cf7028a35",
+    "1679ee5590085bf72083",
+    "1e9145804f518a8a77c0",
+    "2f1cba45db6d2d8b11b1",
+    "38f331283bd3607fac0a",
+    "3f36d31ffcb1127bab70",
+    "417c63af2c19473fc33c",
+    "4aaf2b2aaa6ae282d877",
+    "4d6b5063f69138d8722d",
+    "55bc3f0fcd70726b0134",
+    "5d4f15f3c5af99b87e10",
+    "5d70dffea53a7986096b",
+    "60d068652c2e4c03b135",
+    "60d10aae34dfd9fdd2ec",
+    "644acbc0a1a47a6927ea",
+    "6a2fe644e8a795bf660e",
+    "6fe15ac1c660568ddac3",
+    "701e4cd1082a40c94ae2",
+    "76af63d9ac99ac9681c0",
+    "7cab4d7417c54f07c14a",
+    "83810b56dc960a42879b",
+    "8add42837e16cfa0daef",
+    "92439522d3cfe9a45de9",
+    "98aa31caf46478fbf577",
+    "98e9bd6a7d0c1d8234c9",
+    "a376c88eaf9a2785adf8",
+    "b0a2600a87cb8a2d5ca0",
+    "b57fac7aae3b8fefbe04",
+    "b6070d81e4e958100cf3",
+    "b7ea4ecc950b99d3167b",
+    "b9896c08dda8868c9a72",
+    "bb52b17421f9a8f1f803",
+    "c58ffbc52ae01b8aa679",
+    "c8c590aded9713ab28f1",
+    "ccbfb876e04dd9ac30bb",
+    "d050167ab695106e3902",
+    "d633dc698229c6747f2d",
+    "d65ab1610838f7633efe",
+    "e3f4634a0cbc699d9ae1",
+    "eb2bf440cad93d01a12b",
+    "eeff104b0b50f5495007",
+    "f88c44f94c1ac75d11f4",
+    "fa7587c7659a5f3b6bb0"
+  ],
+  "content_hash": "f7f4d96a7a665d81be19046122c2a6f4769ed011f33781bee0bcc70fa1823bf8",
+  "dependencies": [],
+  "description": "LWC interop with non-LWC web components: consuming third-party standard custom elements in LWC, exposing LWC as custom elements externally, Shadow DOM vs native web components, polyfills, and slotting patterns. NOT for LWC-to-LWC composition (use lwc-best-practices). NOT for Aura interop (use aura-to-lwc-migration).",
+  "file_location": "skills/lwc/lwc-web-components-interop",
+  "id": "lwc/lwc-web-components-interop",
+  "inputs": [
+    "Third-party web component library (Material, Shoelace, Vaadin, custom)",
+    "Target Salesforce surface (Lightning app, Experience Cloud, Embedded)",
+    "Styling requirements (SLDS vs custom theme)",
+    "Lifecycle and event-handling requirements"
+  ],
+  "name": "lwc-web-components-interop",
+  "official_sources": [
+    "LWC Best Practices \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/get-started-best-practices.html",
+    "Lightning Component Reference \u2014 https://developer.salesforce.com/docs/platform/lightning-component-reference/guide",
+    "LWC Data Guidelines \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-guidelines.html"
+  ],
+  "outputs": [
+    "Integration pattern (static resource, ES module, dynamic import)",
+    "Styling + SLDS compatibility plan",
+    "Event interop pattern (CustomEvent bridging)",
+    "LWC wrapper component template"
+  ],
+  "references": [
+    "skills/lwc/lwc-web-components-interop/references/examples.md",
+    "skills/lwc/lwc-web-components-interop/references/gotchas.md",
+    "skills/lwc/lwc-web-components-interop/references/llm-anti-patterns.md",
+    "skills/lwc/lwc-web-components-interop/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/lwc/lwc-web-components-interop/scripts/check_lwc_web_components_interop.py"
+  ],
+  "tags": [
+    "lwc",
+    "web-components",
+    "custom-elements",
+    "shadow-dom",
+    "interop",
+    "third-party"
+  ],
+  "templates": [
+    "skills/lwc/lwc-web-components-interop/templates/lwc-web-components-interop-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

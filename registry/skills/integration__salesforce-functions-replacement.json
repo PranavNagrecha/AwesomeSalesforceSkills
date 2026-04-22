@@ -1,0 +1,100 @@
+{
+  "category": "integration",
+  "chunk_ids": [
+    "011f93d691381d0931c0",
+    "0124b47bbd58ce10e1a3",
+    "07860f30fb2bc0f6f555",
+    "08197d99d6ac2eb7e53f",
+    "09310fb7be07c4ab9557",
+    "0ff85e25778eae8c7009",
+    "105119a7636cfd7f017d",
+    "18ad8dccd610a64c4f36",
+    "227140f1068a378dd9c3",
+    "24543be5aa7238f190d3",
+    "2619c50b6b5e7d696343",
+    "2a79153408b98e8f29ec",
+    "34801da8091b2033312e",
+    "385aed299fadce0d6fd8",
+    "3adddd272ed154d1ef3a",
+    "400907f39caf47b98959",
+    "427b190ea86ec48998a0",
+    "50b7c0b074ff5d403226",
+    "55f1b9c9cf34093d8197",
+    "58b2f14a9480b85a723a",
+    "610e145e1eb5c3640f57",
+    "6168df6c61322cd152ae",
+    "6244e94c210b4b814fde",
+    "71c3870b888794ab5f05",
+    "730639a86f85829fb09b",
+    "7cea06afda9a9b993dc4",
+    "7fc506d436bd6f21687a",
+    "80daa24759b65eee47f5",
+    "80fcf4901e91dab6cd41",
+    "8994ee90277f41a5cfb1",
+    "8bea6d2c426b4a300ef0",
+    "8e67f514077bcb756c69",
+    "8f9684366bf9053750b8",
+    "915e2c118e86e96caa24",
+    "958d48c0cee4f86e28b6",
+    "9f7b257b3a9cc79b2638",
+    "a97dc6867aac2290bc35",
+    "b980f327ee8d18c1f4f7",
+    "ba6fb526b3d8be150a30",
+    "bd28a50b8b26e2942240",
+    "c333904b6338f249899e",
+    "de0182b087f376783940",
+    "e516f3d8e24042653264",
+    "e5c32a5b8da527c5c89b",
+    "f63f4f74c932a653b6bb",
+    "f6dd09816aee3f934a74",
+    "f920f61bf7449cd6d2f6",
+    "fafdb7b0c4a17fd4d359",
+    "fe750db314cdb0b572b7"
+  ],
+  "content_hash": "cbba8dcc46129857d3ea8a59e3032a889f114cfeeca87b697ea376c61dfd0f37",
+  "dependencies": [],
+  "description": "Salesforce Functions is retired (EOL Jan 2025). This skill maps Functions workloads to replacements: Heroku (with Hyperforce), external containers, Apex (where viable), Agentforce Actions, external compute via Named Credentials. NOT for Lambda / Azure Functions tutorials. NOT for Apex @future replacement (use async-selection tree).",
+  "file_location": "skills/integration/salesforce-functions-replacement",
+  "id": "integration/salesforce-functions-replacement",
+  "inputs": [
+    "Current Functions workloads (Node.js, Java, Go, Python)",
+    "Invocation pattern (Apex `Function.get(...).invoke(...)`, process.platform events)",
+    "Performance + SLA expectations",
+    "Data access requirements (record data returned to caller)"
+  ],
+  "name": "salesforce-functions-replacement",
+  "official_sources": [
+    "REST API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_what_is_rest_api.htm",
+    "Integration Patterns \u2014 https://architect.salesforce.com/docs/architect/fundamentals/guide/integration-patterns.html",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Replacement target per workload (Heroku, container, Apex, Agentforce Action)",
+    "Integration pattern for each (Named Credential + callout, Pub/Sub, event-driven)",
+    "Migration runbook with cutover sequence",
+    "Cost + ops comparison"
+  ],
+  "references": [
+    "skills/integration/salesforce-functions-replacement/references/examples.md",
+    "skills/integration/salesforce-functions-replacement/references/gotchas.md",
+    "skills/integration/salesforce-functions-replacement/references/llm-anti-patterns.md",
+    "skills/integration/salesforce-functions-replacement/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/integration/salesforce-functions-replacement/scripts/check_salesforce_functions_replacement.py"
+  ],
+  "tags": [
+    "salesforce-functions",
+    "heroku",
+    "external-compute",
+    "migration",
+    "hyperforce",
+    "retirement"
+  ],
+  "templates": [
+    "skills/integration/salesforce-functions-replacement/templates/salesforce-functions-replacement-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

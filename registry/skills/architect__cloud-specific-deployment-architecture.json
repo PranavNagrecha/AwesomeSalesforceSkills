@@ -1,0 +1,99 @@
+{
+  "category": "architect",
+  "chunk_ids": [
+    "005237f29673ea63e6f5",
+    "03d51e3576ebc3fd5946",
+    "04e3057523b5e228f56f",
+    "1418abf25d6e5ba51e5b",
+    "18bb034bfbe38b78639c",
+    "219d354ee1113f19784c",
+    "2bd05d42e212227c0874",
+    "2fcf01e5b8a464b1e93b",
+    "30b641a98cf6156de274",
+    "329a65296f7e78755f72",
+    "3bb863524242a59513f1",
+    "3e03210e5692a1d97a77",
+    "4e17c5f2cd35b8072740",
+    "53ba02d703079462b6e1",
+    "6ae7f255a86b34afd787",
+    "6e9f2c883136b4d55b28",
+    "71a912fbb84dfec78e1b",
+    "7f1ad5393022c705d1be",
+    "80580355861d568181ef",
+    "86d4ac9c3627ab06e38d",
+    "8f43f7c75e1e3bcf3e30",
+    "92011186f59d434077a3",
+    "92a5365ccca24273eb70",
+    "9644a8021e5b209b5121",
+    "97f0b4201f85697d2d22",
+    "990b685d09cea82df1c8",
+    "9f77eff8eb3b7d62d9f4",
+    "a2c4a746c6b0cd1841c5",
+    "a3488c3942485e4d08b4",
+    "b43968fdde7509375131",
+    "b8cce22f87368de0b5b4",
+    "bef5b6576e1b5f09d408",
+    "c8645a324a47d265647c",
+    "c890ca6c8fa5726fa5c3",
+    "cb108e0030aedd4029f6",
+    "cc84595b6b708655889e",
+    "d0a5c0119be26cad4f42",
+    "d2ff7612ad231164c1c9",
+    "d590d63d229b8e95675a",
+    "dc844f8b6eae1e896f89",
+    "dd6e5aaa31a2abbcd3fc",
+    "e67a43a7ffddaea477b3",
+    "e7e7f68f64fab610fbb9",
+    "eadaafe34b2927aff77a",
+    "f0143fd1221de1c68bfc",
+    "f2f19c5358580c6938b9",
+    "f42f48b4829edc08a7a7",
+    "fdacd05d9e4a4a59a8db",
+    "ffc0f7e094f8ae27be96"
+  ],
+  "content_hash": "da64941f9894c9c58b17f5733907ff1f81fe11c147630d85feab97cf1f89d43a",
+  "dependencies": [],
+  "description": "Deployment architecture quirks per Salesforce cloud: Industries (OmniStudio), Marketing Cloud (MC packages), Commerce Cloud, Data Cloud, Agentforce. What ships via metadata API, what ships via cloud-specific tools, ordering, dependencies. NOT for generic DevOps (use devops skills). NOT for cross-cloud data flow (use cross-cloud-data-deployment).",
+  "file_location": "skills/architect/cloud-specific-deployment-architecture",
+  "id": "architect/cloud-specific-deployment-architecture",
+  "inputs": [
+    "Clouds in scope and their components",
+    "Source and target environments (sandbox, UAT, prod)",
+    "Tooling currently in use (SFDX, Copado, Flosum, Gearset, MC DevTools)",
+    "Deployment cadence and risk tolerance"
+  ],
+  "name": "cloud-specific-deployment-architecture",
+  "official_sources": [
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Per-cloud deployment pipeline map",
+    "Component ordering and dependency graph",
+    "Tool selection per cloud",
+    "Rollback strategy per cloud"
+  ],
+  "references": [
+    "skills/architect/cloud-specific-deployment-architecture/references/examples.md",
+    "skills/architect/cloud-specific-deployment-architecture/references/gotchas.md",
+    "skills/architect/cloud-specific-deployment-architecture/references/llm-anti-patterns.md",
+    "skills/architect/cloud-specific-deployment-architecture/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/architect/cloud-specific-deployment-architecture/scripts/check_cloud_specific_deployment_architecture.py"
+  ],
+  "tags": [
+    "deployment",
+    "industries",
+    "marketing-cloud",
+    "commerce-cloud",
+    "data-cloud",
+    "agentforce",
+    "omnistudio"
+  ],
+  "templates": [
+    "skills/architect/cloud-specific-deployment-architecture/templates/cloud-specific-deployment-architecture-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

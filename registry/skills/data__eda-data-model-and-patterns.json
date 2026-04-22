@@ -1,0 +1,101 @@
+{
+  "category": "data",
+  "chunk_ids": [
+    "01952eb69f25b878b217",
+    "04681988d642dfdc255b",
+    "096cefc50e8d8b780d94",
+    "0cddaabd567dc04d70c6",
+    "1229396869b40b4e5105",
+    "1701d2279373f164854d",
+    "1a9d3730ca3f3d8ba722",
+    "1dc8ec6ae13f3b237978",
+    "1e0bf3f7c91cb77ccedc",
+    "223eff712c062fbd0777",
+    "29d7262e177a4e1510a0",
+    "2cd91683bdad9eedc4f7",
+    "2e76da9b241ffba02248",
+    "3240751d8606e7953f38",
+    "32b39e3ab0c3c9ac5674",
+    "385eb41de6f9ff096f95",
+    "3bb80ec168a9f378abea",
+    "3c65028deb193a220bed",
+    "42e43e0c3f25d4557ec6",
+    "4304cf7a0e0406b7cb50",
+    "4d0d4ffe16416aa418a7",
+    "5bdb3b0f974d1b90db74",
+    "5e5d34b87cbac780d7b9",
+    "6b6247f97ce5ed33f528",
+    "72e173958ad994de10d0",
+    "75451184f615e8ccf1fe",
+    "75fd028fbcb7bc8183fa",
+    "7fe61d58994c578abe99",
+    "84e092243e91eb7692d1",
+    "851776141a33fe7f0278",
+    "89445bc5d4be0a64d3cc",
+    "8b6447f85d8cdee358dd",
+    "8d80e6c1023ccda3adef",
+    "90eeb4b0a834cc8cc3c5",
+    "96b9a851db32aedbc823",
+    "992c5e92fc241909b227",
+    "997a48d6d4dc7c216278",
+    "a11a97c7dd3ecff09884",
+    "a4a510e50706ff61e0a4",
+    "aaee24959afc48da177b",
+    "ad95fdb92a9bd03b5437",
+    "ada42b47d7890874f552",
+    "b9c9b4ae41a162ff0fd0",
+    "d31c5c23ee5ec5e50018",
+    "d489c5a53f4b633658be",
+    "de0d77963492497b61cc",
+    "e15ea93b9446240f73ed",
+    "f496492bd81028aa1c4e",
+    "fde290c5c58b249cebac"
+  ],
+  "content_hash": "fc7c1ba088e31bded8a5570944270fe54885915bb78e106ac2eca3524a951f92",
+  "dependencies": [],
+  "description": "Education Data Architecture (EDA) data model deep dive: Contact-centric, Affiliations, Relationships, Account record types (Academic Program, Educational Institution, Sports Organization), Course_Offering__c, Term__c, Course_Connection__c patterns. NOT for Education Cloud setup (use education-cloud-eda-setup). NOT for generic data modeling.",
+  "file_location": "skills/data/eda-data-model-and-patterns",
+  "id": "data/eda-data-model-and-patterns",
+  "inputs": [
+    "Education vertical (Higher Ed, K-12, continuing ed, global)",
+    "Existing EDA installation status",
+    "Data volume (students, courses, terms, enrollments)",
+    "Integrations (SIS, LMS, finance)"
+  ],
+  "name": "eda-data-model-and-patterns",
+  "official_sources": [
+    "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
+    "Bulk API 2.0 Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/asynch_api_intro.htm",
+    "Data Loader Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.data_loader.htm&type=5"
+  ],
+  "outputs": [
+    "EDA data-model documentation at object + field level",
+    "Recommended record types per use case",
+    "Pattern library for common education modeling questions",
+    "Integration field mapping (SIS / LMS \u2194 EDA)"
+  ],
+  "references": [
+    "skills/data/eda-data-model-and-patterns/references/examples.md",
+    "skills/data/eda-data-model-and-patterns/references/gotchas.md",
+    "skills/data/eda-data-model-and-patterns/references/llm-anti-patterns.md",
+    "skills/data/eda-data-model-and-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/data/eda-data-model-and-patterns/scripts/check_eda_data_model_and_patterns.py"
+  ],
+  "tags": [
+    "eda",
+    "education-cloud",
+    "data-model",
+    "higher-education",
+    "k12",
+    "contact-centric",
+    "affiliations"
+  ],
+  "templates": [
+    "skills/data/eda-data-model-and-patterns/templates/eda-data-model-and-patterns-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

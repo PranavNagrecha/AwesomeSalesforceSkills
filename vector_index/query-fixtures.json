@@ -5435,6 +5435,246 @@
       "domain": "apex",
       "expected_skill": "apex/apex-wrapper-class-patterns",
       "top_k": 3
+    },
+    {
+      "query": "how do i set up public sector solutions licensing permits benefits",
+      "domain": "admin",
+      "expected_skill": "admin/industries-public-sector-setup",
+      "top_k": 3
+    },
+    {
+      "query": "pss contact centric model programs and applications",
+      "domain": "admin",
+      "expected_skill": "admin/industries-public-sector-setup",
+      "top_k": 3
+    },
+    {
+      "query": "configure education cloud eda contact model affiliations",
+      "domain": "admin",
+      "expected_skill": "admin/education-cloud-eda-setup",
+      "top_k": 3
+    },
+    {
+      "query": "eda installation record types course connection course offering",
+      "domain": "admin",
+      "expected_skill": "admin/education-cloud-eda-setup",
+      "top_k": 3
+    },
+    {
+      "query": "configure consumer goods cloud retail visit execution",
+      "domain": "admin",
+      "expected_skill": "admin/consumer-goods-cloud-setup",
+      "top_k": 3
+    },
+    {
+      "query": "consumer goods cloud store audits visits route planning",
+      "domain": "admin",
+      "expected_skill": "admin/consumer-goods-cloud-setup",
+      "top_k": 3
+    },
+    {
+      "query": "media cloud advertising sales insertion order placement",
+      "domain": "admin",
+      "expected_skill": "admin/media-cloud-setup",
+      "top_k": 3
+    },
+    {
+      "query": "salesforce media cloud revenue recognition setup",
+      "domain": "admin",
+      "expected_skill": "admin/media-cloud-setup",
+      "top_k": 3
+    },
+    {
+      "query": "rebate management program accrual payout setup",
+      "domain": "admin",
+      "expected_skill": "admin/rebate-management-setup",
+      "top_k": 3
+    },
+    {
+      "query": "channel partner rebates tiered incentive payout",
+      "domain": "admin",
+      "expected_skill": "admin/rebate-management-setup",
+      "top_k": 3
+    },
+    {
+      "query": "pipeline inspection revenue intelligence setup",
+      "domain": "admin",
+      "expected_skill": "admin/revenue-intelligence-setup",
+      "top_k": 3
+    },
+    {
+      "query": "sales analytics einstein revenue insights install",
+      "domain": "admin",
+      "expected_skill": "admin/revenue-intelligence-setup",
+      "top_k": 3
+    },
+    {
+      "query": "consumption schedule usage based pricing salesforce revenue cloud",
+      "domain": "admin",
+      "expected_skill": "admin/usage-based-pricing-setup",
+      "top_k": 3
+    },
+    {
+      "query": "metered billing usage record rating salesforce",
+      "domain": "admin",
+      "expected_skill": "admin/usage-based-pricing-setup",
+      "top_k": 3
+    },
+    {
+      "query": "flow orchestration work item assignment stages",
+      "domain": "admin",
+      "expected_skill": "admin/flow-orchestration-admin",
+      "top_k": 3
+    },
+    {
+      "query": "orchestrator multi-step approval interactive work item",
+      "domain": "admin",
+      "expected_skill": "admin/flow-orchestration-admin",
+      "top_k": 3
+    },
+    {
+      "query": "salesforce erd diagram as code mermaid plantuml",
+      "domain": "architect",
+      "expected_skill": "architect/salesforce-erd-and-diagramming",
+      "top_k": 3
+    },
+    {
+      "query": "architecture diagram conventions executive vs physical erd",
+      "domain": "architect",
+      "expected_skill": "architect/salesforce-erd-and-diagramming",
+      "top_k": 3
+    },
+    {
+      "query": "multi tenant isolation pattern single salesforce org",
+      "domain": "architect",
+      "expected_skill": "architect/tenant-isolation-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "isv managed package tenant data isolation sharing",
+      "domain": "architect",
+      "expected_skill": "architect/tenant-isolation-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "headless composable commerce salesforce bff architecture",
+      "domain": "architect",
+      "expected_skill": "architect/composable-commerce-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "nextjs storefront mach scapi bff pattern",
+      "domain": "architect",
+      "expected_skill": "architect/composable-commerce-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "nonprofit cloud vs npsp migration decision",
+      "domain": "architect",
+      "expected_skill": "architect/nonprofit-cloud-vs-npsp-migration",
+      "top_k": 3
+    },
+    {
+      "query": "npsp to nonprofit cloud data model migration plan",
+      "domain": "architect",
+      "expected_skill": "architect/nonprofit-cloud-vs-npsp-migration",
+      "top_k": 3
+    },
+    {
+      "query": "share customer data across sales service marketing data cloud",
+      "domain": "architect",
+      "expected_skill": "architect/cross-cloud-data-deployment",
+      "top_k": 3
+    },
+    {
+      "query": "cross cloud identity resolution data cloud hub shared keys",
+      "domain": "architect",
+      "expected_skill": "architect/cross-cloud-data-deployment",
+      "top_k": 3
+    },
+    {
+      "query": "deploy omnistudio marketing cloud agentforce across orgs",
+      "domain": "architect",
+      "expected_skill": "architect/cloud-specific-deployment-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "multi cloud deployment architecture tool map salesforce",
+      "domain": "architect",
+      "expected_skill": "architect/cloud-specific-deployment-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "salesforce ci cd pipeline branch strategy enterprise",
+      "domain": "architect",
+      "expected_skill": "architect/deployment-automation-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "copado gearset flosum sfdx deployment tool selection",
+      "domain": "architect",
+      "expected_skill": "architect/deployment-automation-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "eda data model affiliations course connection term",
+      "domain": "data",
+      "expected_skill": "data/eda-data-model-and-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "education data architecture patterns higher ed contact centric",
+      "domain": "data",
+      "expected_skill": "data/eda-data-model-and-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "salesforce functions retired replacement heroku apex",
+      "domain": "integration",
+      "expected_skill": "integration/salesforce-functions-replacement",
+      "top_k": 3
+    },
+    {
+      "query": "migrate salesforce functions workload to heroku or agentforce",
+      "domain": "integration",
+      "expected_skill": "integration/salesforce-functions-replacement",
+      "top_k": 3
+    },
+    {
+      "query": "tableau salesforce connector live vs extract decision",
+      "domain": "integration",
+      "expected_skill": "integration/tableau-salesforce-connector",
+      "top_k": 3
+    },
+    {
+      "query": "embed tableau dashboard on salesforce record page lwc",
+      "domain": "integration",
+      "expected_skill": "integration/tableau-salesforce-connector",
+      "top_k": 3
+    },
+    {
+      "query": "lwc third party web component static resource loadscript",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-web-components-interop",
+      "top_k": 3
+    },
+    {
+      "query": "lightning web component consume shoelace material custom element",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-web-components-interop",
+      "top_k": 3
+    },
+    {
+      "query": "chart js d3 lwc lightning web component visualization",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-chart-and-visualization",
+      "top_k": 3
+    },
+    {
+      "query": "lwc chart large dataset canvas render performance",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-chart-and-visualization",
+      "top_k": 3
     }
   ]
 }

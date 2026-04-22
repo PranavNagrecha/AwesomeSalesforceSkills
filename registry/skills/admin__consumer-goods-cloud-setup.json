@@ -1,0 +1,99 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "049d0b378ba0d75d239f",
+    "24952da0c6a758acf9c2",
+    "2e302708301fd7794e57",
+    "2ef9d602ce3867d76f52",
+    "308bef40a346bf860f9a",
+    "353b920e7e9f52ca2e01",
+    "3a660e5b7c65a46283dd",
+    "4b2d8ac16d8daba65aab",
+    "4f94052e272bd4d0a9f9",
+    "515405ae86d57ebe7e57",
+    "5806c7dd54b9f74820da",
+    "5bb6e9a63ddc7af144e9",
+    "5e0d435b78a285e29862",
+    "5ef6c361898e6d23e9ca",
+    "63bd7125ad15aed4d4b0",
+    "66d77894d81f2441a1d9",
+    "685912877656bf250c38",
+    "6a3311574edec022ad61",
+    "6e3fc84af158f5b9c81f",
+    "74951fa9d7775033faea",
+    "789a5acc371c2d618754",
+    "7b8ee098a252bbb83e5b",
+    "7fbff899242207939498",
+    "7fecb46d80585e695d8b",
+    "8270f0ffc93288946ee8",
+    "88c7643ec6fae31b32b9",
+    "91a4591364010a68b64d",
+    "963b4cb9bf943fb3c8e5",
+    "9a4351990881c8d0ae36",
+    "9d1a774789609b7a8599",
+    "a1a9032f2d3436054cbb",
+    "a31b36009fb47244d954",
+    "a773c4650a8d0bcc0712",
+    "a853721e80a076fcc298",
+    "b6874f3ddbf383ebc712",
+    "b705ec8adfdb4059102f",
+    "c75991066588d88ea3cd",
+    "c897439b05bce7ae580b",
+    "cf3160e24ed9f17a71dd",
+    "d91fe2e7b8929a670a56",
+    "dd499e038ca04d91668e",
+    "dedf94af4ca54527c3ca",
+    "df475aeb8fbb156cd779",
+    "e2533f0e32633903fb9b",
+    "e2d4a56c45f3945541a0",
+    "f19ecd5443508c802330",
+    "f5c637fb75494f56c822"
+  ],
+  "content_hash": "8c4901a8d023916bcd03df39002e8950f03bde37fcd8de05e7e9f80d68c75676",
+  "dependencies": [],
+  "description": "Consumer Goods Cloud setup: visit execution, retail execution, route planning, in-store task management, compliance checks, off-shelf detection, and image recognition. NOT for Field Service dispatch (use field-service-core-setup). NOT for B2B Commerce storefronts (use b2b-commerce-store-setup).",
+  "file_location": "skills/admin/consumer-goods-cloud-setup",
+  "id": "admin/consumer-goods-cloud-setup",
+  "inputs": [
+    "CG Cloud edition and license assignment",
+    "Retail segmentation (store types, banners, territories)",
+    "Visit cadence and task list mix (merchandising, compliance, sales order)",
+    "Mobile offline and image-recognition requirements"
+  ],
+  "name": "consumer-goods-cloud-setup",
+  "official_sources": [
+    "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
+    "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "CG Cloud feature activation checklist",
+    "Visit templates with task mix configured",
+    "Route plan + territory assignment rules",
+    "Mobile offline and image-recognition setup notes"
+  ],
+  "references": [
+    "skills/admin/consumer-goods-cloud-setup/references/examples.md",
+    "skills/admin/consumer-goods-cloud-setup/references/gotchas.md",
+    "skills/admin/consumer-goods-cloud-setup/references/llm-anti-patterns.md",
+    "skills/admin/consumer-goods-cloud-setup/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/consumer-goods-cloud-setup/scripts/check_consumer_goods_cloud_setup.py"
+  ],
+  "tags": [
+    "consumer-goods",
+    "retail-execution",
+    "visit-execution",
+    "route-planning",
+    "compliance",
+    "industries",
+    "cg-cloud"
+  ],
+  "templates": [
+    "skills/admin/consumer-goods-cloud-setup/templates/consumer-goods-cloud-setup-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

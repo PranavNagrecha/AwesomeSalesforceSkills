@@ -1,0 +1,98 @@
+{
+  "category": "architect",
+  "chunk_ids": [
+    "181cf63f70a401b39530",
+    "236f6b21e419d63c6bc7",
+    "23d0fe3f563214dca1ae",
+    "24a6d267219c505db573",
+    "24ae193f21696e758473",
+    "28c10c8638534b0c8ad5",
+    "3483474088b912c4afe7",
+    "36603fe47fad84bef84a",
+    "375268297694c1bf30b2",
+    "3806761520b4255108af",
+    "3835b5bacefb87f2546f",
+    "3a76ab788b9422cac596",
+    "3be02f9afecf82a41a6d",
+    "3d74c18f92af0fbc01d4",
+    "43ed9291c456f803b86e",
+    "440b7029c13fc3c00ead",
+    "4bbc01184150029b32a2",
+    "52edb2d7700923c3250b",
+    "55bbaca7b11ba800085e",
+    "570bea96934aa5e07426",
+    "5b52635fead0359a12e8",
+    "5c74d8d45e426d3a1275",
+    "661dd50b33a32d11f569",
+    "6ab4822c6520b374a7a4",
+    "71a2805adbfc3ca60f0e",
+    "7c0ea1f382e202c704c8",
+    "894987fec24924d067f2",
+    "89cb2d2acf949dd6f678",
+    "97b7092f47d521f8360e",
+    "a4836b2155e75590c0be",
+    "a7e7b9d68871a641c6ff",
+    "adef9f73461b711d74c4",
+    "bb1abcb6a6dcaba74bf9",
+    "bd925adef777950343f6",
+    "c29b6385b678948d2244",
+    "c2c46f5c87541eb1d14d",
+    "c2de8b8cc6146c2a0153",
+    "c832980bf0175cc8738d",
+    "cb3acf08d726ce645fde",
+    "cb5653fd6c43e8f1d63e",
+    "cb7bbc84a6e783975ec0",
+    "cd8e71d78dd235942383",
+    "cf393b7b8a80880ede38",
+    "d107f25e73fcff46c61b",
+    "d620b0d1c8fdab3b380d",
+    "da1e0138a6699c89dd2b",
+    "f2a5e010ec2f791e081b",
+    "f2af967f45206ba53466"
+  ],
+  "content_hash": "966a4bbcf48da594c96e093c11f530f806cff709650cb1f1a75546aafc2abd5d",
+  "dependencies": [],
+  "description": "Salesforce ERD and architecture diagram generation: Mermaid/PlantUML data-model diagrams for Sales, Service, FSL, Commerce, Revenue Cloud; OAuth flow diagrams; integration architecture diagrams; object-relationship visualization. NOT for data model design decisions (use data-model-design-patterns). NOT for UI wireframing (use lightning-experience-design).",
+  "file_location": "skills/architect/salesforce-erd-and-diagramming",
+  "id": "architect/salesforce-erd-and-diagramming",
+  "inputs": [
+    "Scope (which cloud, which objects, which integrations)",
+    "Target diagram format (Mermaid, PlantUML, draw.io, Lucid)",
+    "Audience (architect peers, execs, developers, auditors)",
+    "Level of detail (logical vs physical, with fields vs object-only)"
+  ],
+  "name": "salesforce-erd-and-diagramming",
+  "official_sources": [
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "ERD in chosen format (Mermaid / PlantUML source)",
+    "Integration architecture diagram (OAuth, data flow, callouts)",
+    "Diagram stored in repo alongside code, regeneratable",
+    "README pointer to the diagram source"
+  ],
+  "references": [
+    "skills/architect/salesforce-erd-and-diagramming/references/examples.md",
+    "skills/architect/salesforce-erd-and-diagramming/references/gotchas.md",
+    "skills/architect/salesforce-erd-and-diagramming/references/llm-anti-patterns.md",
+    "skills/architect/salesforce-erd-and-diagramming/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/architect/salesforce-erd-and-diagramming/scripts/check_salesforce_erd_and_diagramming.py"
+  ],
+  "tags": [
+    "erd",
+    "diagramming",
+    "mermaid",
+    "plantuml",
+    "architecture-diagrams",
+    "data-model",
+    "documentation"
+  ],
+  "templates": [
+    "skills/architect/salesforce-erd-and-diagramming/templates/salesforce-erd-and-diagramming-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

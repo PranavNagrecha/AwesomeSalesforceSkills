@@ -1,0 +1,100 @@
+{
+  "category": "integration",
+  "chunk_ids": [
+    "215b601ec38f33836580",
+    "274eb77f21756080ceb5",
+    "2826d5cf96977dc4f599",
+    "2d72acde92ae186c6ed4",
+    "30ada0afc31a300ac388",
+    "365dd8544b86461ab5d5",
+    "3821cf9c123d053b319d",
+    "3a57c72e86ad7fd95041",
+    "3a9e1f662e0091fb69d1",
+    "460b6f2e4a78a6a4da1b",
+    "47130d61a3deab3bfbab",
+    "55fdcc436c5d9fe0c1c5",
+    "5a8c77e4ad4bd14da4a7",
+    "5e2276d555da68365294",
+    "5e34f3352a82fc197b9a",
+    "65e3a5ee31000a08c27a",
+    "6ca9ede17ce5e6e466fc",
+    "74d5ac18284be4b8a314",
+    "7b96aa0326330326c22f",
+    "8215632ecc172a68c7b0",
+    "8b2ee4bc5bd25c0e5aa9",
+    "919ff5015d21d2f5343c",
+    "9421cc59c58aa841f51c",
+    "9d495a53bb7861b5bbae",
+    "9f5818768224577d4891",
+    "a0599822c20fb9bb5a6d",
+    "a2490b7db4507dc53641",
+    "a25e8c2868e5b1c01b04",
+    "a3d77a6ea7e56ddd5774",
+    "aac03cd25faed51ac1af",
+    "acd1d1c6b152368fc190",
+    "adaa409d832da9ebab91",
+    "b1a7ec5265121c83d134",
+    "b6703c703f0f6e316938",
+    "b7a7f1272de1f936ce8c",
+    "b7c4ea6582a178188879",
+    "bc7428199994d2388027",
+    "c17098085e3ef3e0ebc6",
+    "c446f57fd7aa8973f669",
+    "c5e3cdb35c4955d275f2",
+    "c6310bfeed706ac0c6ed",
+    "cda0fb1554620e8f2c4c",
+    "ce2dd59a97053dbfa4b4",
+    "d37b2025bbeb3b9e2377",
+    "daaf972c0a18c2345e08",
+    "dcdb02a9edf606d1d319",
+    "f5c546ae438043b3aa5d",
+    "f637ed839dcc3a43c9d2"
+  ],
+  "content_hash": "cf01ef6c867472e517562596a2f7e26fa00987489a7acc8d1112505582a75889",
+  "dependencies": [],
+  "description": "Tableau \u2194 Salesforce integration patterns: Tableau Salesforce connector, Tableau for Salesforce, CRM Analytics alternative, Data Cloud + Tableau, embedded Tableau dashboards. Choose between connector modes (live, extract, direct-to-Data-Cloud). NOT for CRM Analytics Studio (use crm-analytics-foundation). NOT for generic Tableau Server setup.",
+  "file_location": "skills/integration/tableau-salesforce-connector",
+  "id": "integration/tableau-salesforce-connector",
+  "inputs": [
+    "Tableau edition (Tableau Cloud, Tableau Server, Tableau for Salesforce)",
+    "Reporting scope (operational, analytical, executive)",
+    "Data volume and refresh cadence needs",
+    "Embedding requirements (Salesforce record page, community, standalone)"
+  ],
+  "name": "tableau-salesforce-connector",
+  "official_sources": [
+    "REST API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_what_is_rest_api.htm",
+    "Integration Patterns \u2014 https://architect.salesforce.com/docs/architect/fundamentals/guide/integration-patterns.html",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Connector mode recommendation (live / extract / Data Cloud)",
+    "API usage forecast against Salesforce limits",
+    "Embedding architecture (Tableau Viz / iframe / Tableau for Salesforce)",
+    "Refresh and governance plan"
+  ],
+  "references": [
+    "skills/integration/tableau-salesforce-connector/references/examples.md",
+    "skills/integration/tableau-salesforce-connector/references/gotchas.md",
+    "skills/integration/tableau-salesforce-connector/references/llm-anti-patterns.md",
+    "skills/integration/tableau-salesforce-connector/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/integration/tableau-salesforce-connector/scripts/check_tableau_salesforce_connector.py"
+  ],
+  "tags": [
+    "tableau",
+    "tableau-cloud",
+    "connector",
+    "data-cloud",
+    "reporting",
+    "embedded-analytics",
+    "crm-analytics"
+  ],
+  "templates": [
+    "skills/integration/tableau-salesforce-connector/templates/tableau-salesforce-connector-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

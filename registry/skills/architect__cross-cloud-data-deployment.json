@@ -1,0 +1,97 @@
+{
+  "category": "architect",
+  "chunk_ids": [
+    "02be92c48b43ccd81a39",
+    "06842ad8bfe5b48c819a",
+    "0866f5dcbc20161dfc0e",
+    "0cf373fb4550b9fb3cb1",
+    "1045dfb19335250fead6",
+    "11674bb03ac8eca5ec40",
+    "1775328e87030e088617",
+    "1d720b21a699dfc3508d",
+    "2578cef80cf4eaec271f",
+    "2d48dea03477db2c0735",
+    "39ad760e1ee830da29e7",
+    "403f1dd395a10b0cfe9d",
+    "42fe6a20b8f579a2fd5d",
+    "45b8c2d9b9782e3ec6cb",
+    "45f8fdbf38a813de367e",
+    "4b3f834b1c19d5494474",
+    "52edf18a95587cf0d2d5",
+    "59c5813c1f20e9cc3af2",
+    "6040fdb302cbd7d16e95",
+    "652fbc2e1b8239bfb1e5",
+    "6b59b8c5a58a414c2cad",
+    "6da54a72f91225192600",
+    "6f44c7055c886c2cf583",
+    "7285be2650e4ec689e62",
+    "77d50c843e6f7fd59bb8",
+    "77f2637268dcaf3b81f9",
+    "7a656bfbe94b511e4b41",
+    "7af37f85d4f918ee8242",
+    "899e8db0cc61e95ac53f",
+    "8ec51c8c2146dd0437c5",
+    "970075ba17eed30b57ad",
+    "ae0a965ba5d495198e55",
+    "ae87f46087962bf3b0af",
+    "b512afcab5e203e8623f",
+    "b71f589d36a91ae5db3b",
+    "bce6bce14cc708c6d2e0",
+    "bf8b62e777a731c21cce",
+    "c3ce5dce3f30b2153fb8",
+    "c6df166a0821102f79f5",
+    "cc1b1f983afba3b3b079",
+    "ce2c882ba6e5030f606b",
+    "d56bd38a61a8cdf78fe6",
+    "dcd2164fb512cc08a357",
+    "e42e166721b78636c3f4",
+    "e47f1044bd7dc584fd87",
+    "ebac05a7f495452f8167",
+    "ffaf3ec2ff5a38e4834f"
+  ],
+  "content_hash": "f7ae25fc35ba914ea54b7a62550d85ad75227e4a77d07d0a72f060ca0b2a6ece",
+  "dependencies": [],
+  "description": "Cross-cloud data deployment: designing the data handoff when an implementation spans Sales Cloud, Service Cloud, Marketing Cloud, Data Cloud, Commerce Cloud. Shared keys, identity resolution, sync vs event, CDC, Data Cloud as hub. NOT for single-cloud data model design (use sales-cloud-core-setup or service-cloud-core-setup). NOT for integration pattern selection (use integration-pattern-selection decision tree).",
+  "file_location": "skills/architect/cross-cloud-data-deployment",
+  "id": "architect/cross-cloud-data-deployment",
+  "inputs": [
+    "Clouds in scope (Sales, Service, Marketing, Commerce, Data Cloud, Industries)",
+    "Shared entities (Customer, Account, Product, Order, Case)",
+    "Data flow direction (one-way, two-way, hub-and-spoke)",
+    "SLA and consistency requirements per flow"
+  ],
+  "name": "cross-cloud-data-deployment",
+  "official_sources": [
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Cross-cloud data topology diagram",
+    "Shared-key and identity-resolution strategy",
+    "Sync vs event decision per entity",
+    "Deployment ordering for shared metadata"
+  ],
+  "references": [
+    "skills/architect/cross-cloud-data-deployment/references/examples.md",
+    "skills/architect/cross-cloud-data-deployment/references/gotchas.md",
+    "skills/architect/cross-cloud-data-deployment/references/llm-anti-patterns.md",
+    "skills/architect/cross-cloud-data-deployment/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/architect/cross-cloud-data-deployment/scripts/check_cross_cloud_data_deployment.py"
+  ],
+  "tags": [
+    "cross-cloud",
+    "data-cloud",
+    "identity-resolution",
+    "cdc",
+    "marketing-cloud",
+    "data-model",
+    "deployment"
+  ],
+  "templates": [
+    "skills/architect/cross-cloud-data-deployment/templates/cross-cloud-data-deployment-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

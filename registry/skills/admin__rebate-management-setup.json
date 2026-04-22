@@ -1,0 +1,99 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "0227c84fb41272951758",
+    "0413b8a28566ac18dbfa",
+    "08fe4b375cac27975cef",
+    "099674c03d25d20b9302",
+    "13ffc8783898525c23f1",
+    "15479f424b691d3f32c1",
+    "19da51a82f294b5741c1",
+    "237f35b1c1bb54f6bf89",
+    "2633fcdb5abbc3da8da2",
+    "29fbd7ff379406ed87d6",
+    "309a1a17c0a391d262fc",
+    "4e97c2bf03338b35570a",
+    "51ed7ff08ab49ba3d7bd",
+    "55b039b24db9a496a592",
+    "56daef3a1a634357f47c",
+    "5c2695bc28ee1b7c7543",
+    "5e32e5a731b418811f20",
+    "61d8d14098f5905d0899",
+    "64d7961be9cfe1753b61",
+    "6a58e5f9bba5c786ea29",
+    "6b834e5e1b93b98915ab",
+    "6effb1c47f3b342f746b",
+    "72fcdef878bd2ec96696",
+    "7c3dac349cac25312967",
+    "7efa5f7194e19d5708e3",
+    "7fcc1306ed75d70fe6f2",
+    "800b9598db91ca3c570c",
+    "85b0dd25c62b330ebd42",
+    "895f42e45bf0523063c7",
+    "8b9fe58a409803ed26ce",
+    "9351ce9c781b5269ab9e",
+    "948a3361b2a6843a14aa",
+    "9bebe2da66fbea6c43c5",
+    "a8f0f0bef3ad98726ac4",
+    "aa1be229c2e2bdb978d3",
+    "afe8d90db12553f918f0",
+    "c056b197b78c640dd2a6",
+    "c65e2cc2c032f1f7e816",
+    "d79a978357f6084b443f",
+    "d917ce3cac97c9735a96",
+    "d9e996d1e19f68fb9fd3",
+    "dba19b9d245da000afe1",
+    "e1e88c02ee94889cc7f1",
+    "e5685350c42f9aefb4cd",
+    "ecd9635d6d9da8cb8400",
+    "f7e77b307a6f98acaa3b",
+    "fb939750eb765475a564"
+  ],
+  "content_hash": "f3148b0bf2e16d48c01cacc0e5a7ce3feb877aea919d28861d61886ff8ce5b9f",
+  "dependencies": [],
+  "description": "Rebate Management setup: rebate types, payout calculations, accruals, partner rebates, program setup, compliance reporting. NOT for CPQ discounts on quotes (use revenue-cloud-cpq-setup). NOT for channel loyalty programs (use partner-loyalty-programs).",
+  "file_location": "skills/admin/rebate-management-setup",
+  "id": "admin/rebate-management-setup",
+  "inputs": [
+    "Rebate Management license and edition",
+    "Program structure (volume tier, growth, co-op, SPIF, MDF)",
+    "Data sources for benefit-calculating transactions (orders, invoices, POS feeds)",
+    "Payout cadence and finance controls (approval, GL posting)"
+  ],
+  "name": "rebate-management-setup",
+  "official_sources": [
+    "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
+    "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Rebate program + benefit calculation setup plan",
+    "Accrual and payout schedule configuration",
+    "Partner visibility (Experience Cloud page wiring)",
+    "Compliance and audit reporting scaffold"
+  ],
+  "references": [
+    "skills/admin/rebate-management-setup/references/examples.md",
+    "skills/admin/rebate-management-setup/references/gotchas.md",
+    "skills/admin/rebate-management-setup/references/llm-anti-patterns.md",
+    "skills/admin/rebate-management-setup/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/rebate-management-setup/scripts/check_rebate_management_setup.py"
+  ],
+  "tags": [
+    "rebate-management",
+    "channel-incentives",
+    "payouts",
+    "accruals",
+    "partner-rebates",
+    "revenue-cloud",
+    "compliance"
+  ],
+  "templates": [
+    "skills/admin/rebate-management-setup/templates/rebate-management-setup-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

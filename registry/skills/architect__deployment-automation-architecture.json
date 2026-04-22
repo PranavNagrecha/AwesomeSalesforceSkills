@@ -1,0 +1,99 @@
+{
+  "category": "architect",
+  "chunk_ids": [
+    "082793fbe749e2662e86",
+    "097202bb42c1439e155f",
+    "0aff4761911f2beb173c",
+    "14edb46d4028094c20ce",
+    "16dcccae73f9ef347b22",
+    "1a711282376f21e5f327",
+    "1cf8e64a4d6a2c69fa5f",
+    "2dfbe970435877fa47ab",
+    "3275d4cc622751c7501a",
+    "337af1943de3397573b5",
+    "347b496c0404fa49adef",
+    "36c44d9199caa1002269",
+    "3c1aaa1c4f80ee24981e",
+    "44be1c2c5540cc212396",
+    "4e1d7797a8340f797c9f",
+    "573866749fd8c67f0d55",
+    "5ac260c5fa21df366842",
+    "6129da8f5e17b2dcf416",
+    "63ddf0a37a877ffc4a76",
+    "69a67d85eeceb48f8fdc",
+    "6bd7b967d779b53cfae3",
+    "6d16041576cf8e2ba987",
+    "6e280576891682722b4c",
+    "756caffd9e412829a541",
+    "7cfda873d60873144ad7",
+    "7d1fe4358b4143982b02",
+    "84d1cc90e90df4187fa7",
+    "891aad0acdcc06ba6c23",
+    "933ae9cb0704d738e5b3",
+    "960ccf26a9494e811b58",
+    "9a3a08e176819aeb5141",
+    "9a4d3e8fc8666cf103c0",
+    "9e4ec6aba827cacfbef8",
+    "9f711f28c4e80810928e",
+    "a6c8c73a11556ce3b222",
+    "a8b912930c9fe755630f",
+    "b215bcf44d441ce2a955",
+    "cc5392d7dea3dffb8373",
+    "d540785e41df24993bdf",
+    "d63c192691a4f356fa67",
+    "d9464a938fe08fcd708c",
+    "db8631804d32f69224cf",
+    "ec09f87324d12207d000",
+    "ee0b6367e80c8c6e62d9",
+    "f17893d060d826ec6192",
+    "f304e1bbb6c0af2953d6",
+    "f5cd22abfe38e5617928",
+    "fb21aed6084628211bf6",
+    "fffc41928ddc24e1258d"
+  ],
+  "content_hash": "c3b8515f178c802504776883d7c349d912551149f2a2d4365d3cf83ea9b45f63",
+  "dependencies": [],
+  "description": "Deployment automation architecture on Salesforce: pipeline orchestration, branch strategy, environment topology, quality gates, release trains. Selecting between Copado, Gearset, Flosum, and native SFDX + GitHub Actions. NOT for cloud-specific deploy mechanics (use cloud-specific-deployment-architecture). NOT for CI/CD tool tutorials.",
+  "file_location": "skills/architect/deployment-automation-architecture",
+  "id": "architect/deployment-automation-architecture",
+  "inputs": [
+    "Team size and developer count",
+    "Current tooling and pain points",
+    "Release cadence and risk profile",
+    "Regulatory / SOX / change-management requirements"
+  ],
+  "name": "deployment-automation-architecture",
+  "official_sources": [
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Pipeline topology (branches, environments, gates)",
+    "Tool-selection recommendation with rationale",
+    "Quality gate specification",
+    "Governance and rollback plan"
+  ],
+  "references": [
+    "skills/architect/deployment-automation-architecture/references/examples.md",
+    "skills/architect/deployment-automation-architecture/references/gotchas.md",
+    "skills/architect/deployment-automation-architecture/references/llm-anti-patterns.md",
+    "skills/architect/deployment-automation-architecture/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/architect/deployment-automation-architecture/scripts/check_deployment_automation_architecture.py"
+  ],
+  "tags": [
+    "deployment",
+    "cicd",
+    "pipeline",
+    "branch-strategy",
+    "environment-topology",
+    "release-train",
+    "governance"
+  ],
+  "templates": [
+    "skills/architect/deployment-automation-architecture/templates/deployment-automation-architecture-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}
