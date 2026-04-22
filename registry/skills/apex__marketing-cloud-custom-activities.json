@@ -95,7 +95,7 @@
     "fe005abf08988d2a30dc",
     "fe86ecfdf74f04c15b16"
   ],
-  "content_hash": "a6ca434a33251be0816997c9c23a239207dcc2d23b07140ec99b255787d92d9d",
+  "content_hash": "2abaa9a8771b27add85e8f1744fedb21d0450b95055ac0aa9dfd6a3fe34ddafb",
   "dependencies": [],
   "description": "Use when building, debugging, or architecting a custom activity, custom split activity, or custom entry source for Marketing Cloud Journey Builder. Trigger keywords: custom activity, Postmonger, config.json, Journey Builder execute endpoint, customActivity.js, custom split outcome, installed package app extension, Journey Builder REST API. NOT for standard Journey Builder canvas configuration, out-of-the-box activity settings, Email Studio send activities, or general Marketing Cloud automation.",
   "file_location": "skills/apex/marketing-cloud-custom-activities",
@@ -128,7 +128,6 @@
     "skills/apex/marketing-cloud-custom-activities/references/well-architected.md"
   ],
   "scripts": [
-    "skills/apex/marketing-cloud-custom-activities/scripts/__pycache__/check_marketing_cloud_custom_activities.cpython-314.pyc",
     "skills/apex/marketing-cloud-custom-activities/scripts/check_marketing_cloud_custom_activities.py"
   ],
   "tags": [

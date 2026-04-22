@@ -85,7 +85,7 @@
     "fa69b6fda5e014cf896f",
     "ff952d24c17b2e900f3d"
   ],
-  "content_hash": "5166bfdd161fdf339135c05619f045184345e17ad052f16eca2ca9afff56e75b",
+  "content_hash": "367d5f0b751927381dbbefecceb0a86bea385f34519d9abf61e4b16c5a66c594",
   "dependencies": [],
   "description": "Use when creating a new Experience Cloud site: selecting LWR vs Aura template, configuring branding and navigation, setting up a custom domain, and using Experience Builder. Trigger keywords: create new Experience Cloud site, LWR vs Aura template, set up community portal domain, Experience Builder page builder, branding sets, navigation menu configuration, Microsite LWR, Build Your Own LWR. NOT for internal Lightning apps, Lightning App Builder configuration, or Flow orchestration inside an existing site.",
   "file_location": "skills/admin/experience-cloud-site-setup",
@@ -117,7 +117,6 @@
     "skills/admin/experience-cloud-site-setup/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/experience-cloud-site-setup/scripts/__pycache__/check_experience_cloud_site_setup.cpython-314.pyc",
     "skills/admin/experience-cloud-site-setup/scripts/check_experience_cloud_site_setup.py"
   ],
   "tags": [

@@ -62,7 +62,7 @@
     "ef005d66712c28ab4673",
     "efe6562b4d4e9197c275"
   ],
-  "content_hash": "038a42621dc14ed58473ddc539368ebbf09d6c946d8217b808a51dc64107357b",
+  "content_hash": "0f9604b6f8004102879817d7cc260f57b3f4ea63755ab75ec6315bde42785e79",
   "dependencies": [],
   "description": "Use when designing or refactoring record types across objects with many profiles, business processes, or picklist variations. Covers layout assignment explosion, Dynamic Forms migration, and record type ID portability. NOT for basic record type setup or page layout assignment \u2014 see record-types-and-page-layouts for introductory guidance.",
   "file_location": "skills/admin/record-type-strategy-at-scale",
@@ -93,7 +93,6 @@
     "skills/admin/record-type-strategy-at-scale/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/record-type-strategy-at-scale/scripts/__pycache__/check_record_type_strategy_at_scale.cpython-314.pyc",
     "skills/admin/record-type-strategy-at-scale/scripts/check_record_type_strategy_at_scale.py"
   ],
   "tags": [

@@ -121,7 +121,7 @@
     "ff769a3ea1162182a0f6",
     "ffa3735fd9ed376b35fe"
   ],
-  "content_hash": "85e61ab7566de286fcac480338d95e32c257056b67f91edceb74b61718683b56",
+  "content_hash": "07c5338fdc13275bcc73ff72b79390033a8bfd6177da49cff4b75093db4a270a",
   "dependencies": [],
   "description": "Use when configuring Slack-specific Agentforce capabilities AFTER the basic Slack deployment is complete: enabling Slack-native actions, managing public vs. private action scope, mapping Salesforce-to-Slack user identity, or troubleshooting Slack action failures. Triggers: 'add General Slack Actions topic to agent', 'configure canvas creation for Agentforce in Slack', 'Agentforce private action requires user identity mapping', 'Slack agent cannot send DMs after deployment', 'Agentforce Look Up User action not working in Slack', 'how to map Slack users to Salesforce identities for private actions'. NOT for core Agentforce setup, NOT for basic Slack OAuth installation or DM vs channel-mention mode \u2014 those are covered by agentforce/agent-channel-deployment.",
   "file_location": "skills/agentforce/agentforce-in-slack",
@@ -157,7 +157,6 @@
     "skills/agentforce/agentforce-in-slack/references/well-architected.md"
   ],
   "scripts": [
-    "skills/agentforce/agentforce-in-slack/scripts/__pycache__/check_agentforce_in_slack.cpython-314.pyc",
     "skills/agentforce/agentforce-in-slack/scripts/check_agentforce_in_slack.py"
   ],
   "tags": [

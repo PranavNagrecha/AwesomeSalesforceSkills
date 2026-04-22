@@ -83,7 +83,7 @@
     "f2f616186f534b49abce",
     "fc3dba472a07decb6194"
   ],
-  "content_hash": "cee330fd64de4f90fa1d7aea29c9efbdf870911301e49d29296f9b5c5aba70f3",
+  "content_hash": "a7630d9212e2e952ff99ef6eb3d7f703b1c410dbf855ab98b1285138d893d7cb",
   "dependencies": [],
   "description": "Use this skill when working with NPSP (Nonprofit Success Pack) objects, namespace prefixes, GAU allocations, recurring donation objects, relationship and affiliation objects, or the NPSP data dictionary. Trigger keywords: npe01__, npe03__, npe4__, npe5__, npsp__, OppPayment__c, Recurring_Donation__c, Allocation__c, General_Accounting_Unit__c, NPSP data model. NOT for standard Salesforce data model, Financial Services Cloud data model, or Program Management Module (PMM) data model.",
   "file_location": "skills/data/npsp-data-model",
@@ -114,7 +114,6 @@
     "skills/data/npsp-data-model/references/well-architected.md"
   ],
   "scripts": [
-    "skills/data/npsp-data-model/scripts/__pycache__/check_npsp_data_model.cpython-314.pyc",
     "skills/data/npsp-data-model/scripts/check_npsp_data_model.py"
   ],
   "tags": [

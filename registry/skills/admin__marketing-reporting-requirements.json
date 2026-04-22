@@ -106,7 +106,7 @@
     "f81b366e9fb72c0ae136",
     "fd38dcb1a1fe68008837"
   ],
-  "content_hash": "980dd4c3d590119bd28bee380fc26d55904fc9a60b332dff071246aaf43d9fdb",
+  "content_hash": "0c93a49f2de4d5d4864fa3c5d4833f2687e7738ecbfcd5cffc753ddca5b56ba9",
   "dependencies": [],
   "description": "Use this skill when gathering and documenting Salesforce marketing reporting requirements: defining KPIs, choosing an attribution model (First Touch / Last Touch / Even Distribution / Multi-Touch), selecting the correct Campaign Influence configuration, and mapping business questions to Salesforce report types and dashboard features. NOT for building the dashboards themselves, configuring CRM Analytics datasets, writing SOQL for marketing reports, or setting up Marketing Cloud Engagement journeys.",
   "file_location": "skills/admin/marketing-reporting-requirements",
@@ -141,7 +141,6 @@
     "skills/admin/marketing-reporting-requirements/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/marketing-reporting-requirements/scripts/__pycache__/check_marketing_reporting_requirements.cpython-314.pyc",
     "skills/admin/marketing-reporting-requirements/scripts/check_marketing_reporting_requirements.py"
   ],
   "tags": [

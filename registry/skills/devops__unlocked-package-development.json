@@ -135,7 +135,7 @@
     "f7bf972485b983f74b15",
     "ffc9d377ce1bf5e9b9e5"
   ],
-  "content_hash": "6970f5ffb1fc726dfd1e1caf43e8f28156bcac77994a2cf820e77e5a305d9c31",
+  "content_hash": "252f68d728ec3f2d7b2073c3f210eb94cccb613e653d7dc9dc86f480456116a7",
   "dependencies": [],
   "description": "Use this skill when designing, creating, versioning, or installing unlocked packages: package directory configuration in sfdx-project.json, namespace management, package dependencies, version lifecycle (beta vs. released), ancestor versions, installation keys, and subscriber installation via sf CLI or Package Install UI. NOT for 2GP managed packages (ISV packaging with namespaces, push upgrades, or AppExchange listings), 1GP managed packages, change set deployments, or scratch org setup.",
   "file_location": "skills/devops/unlocked-package-development",
@@ -172,7 +172,6 @@
     "skills/devops/unlocked-package-development/references/well-architected.md"
   ],
   "scripts": [
-    "skills/devops/unlocked-package-development/scripts/__pycache__/check_unlocked_package_development.cpython-314.pyc",
     "skills/devops/unlocked-package-development/scripts/check_unlocked_package_development.py"
   ],
   "tags": [

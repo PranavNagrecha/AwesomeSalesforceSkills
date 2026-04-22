@@ -104,7 +104,7 @@
     "f959021859514e03ca82",
     "ff77813d56e71e944de4"
   ],
-  "content_hash": "71340aac094e8cd967fff693a4d09f315ac878dbbc895a1f14fff27c83d7cf4c",
+  "content_hash": "6b5280c0ea29c0769614a0caa94bc745c44e81da8b534de8d9f8b11bf3a1d499",
   "dependencies": [],
   "description": "Use this skill when configuring or troubleshooting Marketing Cloud Connect (MC Connect) \u2014 the managed package that links a Salesforce org to a Marketing Cloud account. Covers connector user setup, synchronized data sources, scope configuration, tracking sync, and triggered sends. NOT for MCAE (Marketing Cloud Account Engagement / Pardot) connector setup.",
   "file_location": "skills/admin/marketing-cloud-connect",
@@ -141,7 +141,6 @@
     "skills/admin/marketing-cloud-connect/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/marketing-cloud-connect/scripts/__pycache__/check_marketing_cloud_connect.cpython-314.pyc",
     "skills/admin/marketing-cloud-connect/scripts/check_marketing_cloud_connect.py"
   ],
   "tags": [

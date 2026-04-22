@@ -48,7 +48,7 @@
     "fa95fc19760fe6687682",
     "ff3cd4ffc61655aff949"
   ],
-  "content_hash": "b38882b7571f9da25f24146d6acbe2149f085da1c00427655d20278ddb7d5269",
+  "content_hash": "320f00d191668db1d5871b00d2d83b5b48c03881ec3618d9e5f6a55f4bb707a5",
   "dependencies": [],
   "description": "lightning-record-picker base component (Winter '24 GA): object/record filter, displayInfo/matchingInfo, graph-ql filters, accessibility. Replaces ad-hoc lookup inputs. NOT for multi-select custom pickers (use lwc-multi-select-lookup). NOT for external-object lookup (use lwc-external-lookup).",
   "file_location": "skills/lwc/lwc-record-picker",
@@ -77,7 +77,6 @@
     "skills/lwc/lwc-record-picker/references/well-architected.md"
   ],
   "scripts": [
-    "skills/lwc/lwc-record-picker/scripts/__pycache__/check_lwc_record_picker.cpython-314.pyc",
     "skills/lwc/lwc-record-picker/scripts/check_lwc_record_picker.py"
   ],
   "tags": [

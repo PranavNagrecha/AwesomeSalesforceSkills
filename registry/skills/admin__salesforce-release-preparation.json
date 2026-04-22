@@ -90,7 +90,7 @@
     "f43845abcb3725ec63db",
     "fc3a945e147b41648c36"
   ],
-  "content_hash": "5ce3f145f93f5fb866ace4d93e84ebd622608472e31850c52a839ac61476985a",
+  "content_hash": "fb5c8003cf73079b6649be7834bab2646f2f8d689e10b25438271aaa291ed09e",
   "dependencies": [],
   "description": "Use when preparing for a Salesforce seasonal release \u2014 triaging release notes, reviewing Release Updates, opting into Sandbox Preview, and communicating change impact to stakeholders. Triggers: 'upcoming Salesforce release', 'release notes triage', 'Release Updates', 'sandbox preview opt-in', 'release readiness checklist', 'production upgrade date', 'feature impact', 'critical update'. NOT for deploying org-specific changes between sandboxes (use change-management-and-deployment), nor for long-term sandbox environment design (use sandbox-strategy).",
   "file_location": "skills/admin/salesforce-release-preparation",
@@ -127,7 +127,6 @@
     "skills/admin/salesforce-release-preparation/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/salesforce-release-preparation/scripts/__pycache__/check_salesforce_release_preparation.cpython-314.pyc",
     "skills/admin/salesforce-release-preparation/scripts/check_salesforce_release_preparation.py"
   ],
   "tags": [

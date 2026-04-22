@@ -57,7 +57,7 @@
     "e058a0263c1a6a089764",
     "f5913c994c7642fa2da3"
   ],
-  "content_hash": "3f818162d0b07c829e5e45a8305a9980a1cef8c6596d273e6cbe039ff75afd87",
+  "content_hash": "86e1c4a9d830cc71da36d4c01f8decf889089f48bf37260888cc24de93e92a36",
   "dependencies": [
     "admin/health-cloud-patient-setup",
     "admin/health-cloud-timeline"
@@ -90,7 +90,6 @@
     "skills/apex/health-cloud-lwc-components/references/well-architected.md"
   ],
   "scripts": [
-    "skills/apex/health-cloud-lwc-components/scripts/__pycache__/check_health_cloud_lwc_components.cpython-314.pyc",
     "skills/apex/health-cloud-lwc-components/scripts/check_health_cloud_lwc_components.py"
   ],
   "tags": [

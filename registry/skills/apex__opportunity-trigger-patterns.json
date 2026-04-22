@@ -84,7 +84,7 @@
     "f7d3a545ae9c9b3b7f97",
     "ff3c52b8d5664de1bb29"
   ],
-  "content_hash": "835e5f9e629044c87f154d79e281725034f1a86c1bc128df3f28bc9bf0788af0",
+  "content_hash": "3deb713527e6b96471f9439398ffe1a8d0fd1e8f0113cffc567f215d40bab0ff",
   "dependencies": [],
   "description": "Use when building or reviewing Apex triggers on the Opportunity object \u2014 stage-change detection, amount rollups to Account, OpportunityTeamMember sync, or OpportunitySplit calculations. Trigger keywords: stage change automation, opportunity rollup, team member sync, split percentage, Trigger.oldMap stage comparison. NOT for generic trigger framework structure (use apex/trigger-framework) and NOT for Flow-based opportunity automation (use admin/flow-for-admins).",
   "file_location": "skills/apex/opportunity-trigger-patterns",
@@ -116,7 +116,6 @@
     "skills/apex/opportunity-trigger-patterns/references/well-architected.md"
   ],
   "scripts": [
-    "skills/apex/opportunity-trigger-patterns/scripts/__pycache__/check_opportunity_trigger_patterns.cpython-314.pyc",
     "skills/apex/opportunity-trigger-patterns/scripts/check_opportunity_trigger_patterns.py"
   ],
   "tags": [

@@ -28,7 +28,7 @@
     "e6943493bd5faaf9c356",
     "fc01f40af6026981e16a"
   ],
-  "content_hash": "09d3a0bb816c6aeb8dc59fa3c9081925a3532ab6802a5cb10209b9a7df86a90a",
+  "content_hash": "145d66b037a8774cb13ce56c7303a9a39ec9f41af2bdaa787cee25c90e8b72f6",
   "dependencies": [],
   "description": "Control LLM spend and Apex governor exposure for high-traffic Agentforce agents via per-user token budgets and graceful fallback. NOT for API rate-limiting of REST endpoints.",
   "file_location": "skills/agentforce/agent-rate-limit-strategy",
@@ -57,7 +57,6 @@
     "skills/agentforce/agent-rate-limit-strategy/references/well-architected.md"
   ],
   "scripts": [
-    "skills/agentforce/agent-rate-limit-strategy/scripts/__pycache__/check_agent_rate_limit_strategy.cpython-314.pyc",
     "skills/agentforce/agent-rate-limit-strategy/scripts/check_agent_rate_limit_strategy.py"
   ],
   "tags": [

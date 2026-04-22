@@ -81,7 +81,7 @@
     "fa858e31827b8a69624c",
     "fb3c1b74406e92d7f438"
   ],
-  "content_hash": "14278bc16c1a46e2baf4dd5994f328beba4a9ba6b3ababdb3e4f8c6dd6d812e2",
+  "content_hash": "8678aaac6af5c715ee13c952eaa8c2f82b37362e40dc913e49a19ec4b40bd022",
   "dependencies": [],
   "description": "Use this skill when configuring Marketing Cloud Engagement (formerly ExactTarget): business units, user roles, sender profiles, delivery profiles, send classifications, and account-level settings. NOT for MCAE/Pardot or Marketing Cloud Account Engagement configuration.",
   "file_location": "skills/admin/marketing-cloud-engagement-setup",
@@ -121,7 +121,6 @@
     "skills/admin/marketing-cloud-engagement-setup/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/marketing-cloud-engagement-setup/scripts/__pycache__/check_marketing_cloud_engagement_setup.cpython-314.pyc",
     "skills/admin/marketing-cloud-engagement-setup/scripts/check_marketing_cloud_engagement_setup.py"
   ],
   "tags": [

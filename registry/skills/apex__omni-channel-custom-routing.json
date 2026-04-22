@@ -89,7 +89,7 @@
     "f22afffaaa0b279d02d7",
     "fb91dec35e53bcfd6a12"
   ],
-  "content_hash": "cb5e5927ce63424d724c9e398f946e3a232dc75a649dd344c250f1fafd26d06e",
+  "content_hash": "b3959276dfde5c99d330d2cb7286512c21803bb3b96aa814cdf617a8201bbbb2",
   "dependencies": [],
   "description": "Use this skill to implement Apex-driven custom routing logic for Omni-Channel work items using PendingServiceRouting and SkillRequirement objects. Trigger keywords: PendingServiceRouting, SkillRequirement, IsReadyForRouting, skills-based routing, custom routing Apex. NOT for declarative Omni-Channel queue-based routing setup, routing configurations in Setup UI, or Einstein Classification routing rules.",
   "file_location": "skills/apex/omni-channel-custom-routing",
@@ -121,7 +121,6 @@
     "skills/apex/omni-channel-custom-routing/references/well-architected.md"
   ],
   "scripts": [
-    "skills/apex/omni-channel-custom-routing/scripts/__pycache__/check_omni_channel_custom_routing.cpython-314.pyc",
     "skills/apex/omni-channel-custom-routing/scripts/check_omni_channel_custom_routing.py"
   ],
   "tags": [

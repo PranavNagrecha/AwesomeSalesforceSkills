@@ -95,7 +95,7 @@
     "fdd1a6b106c421546312",
     "ff32c12cd052f8f5f421"
   ],
-  "content_hash": "8167dd25c3f3505426392a78c246cb0b7ebeaacb366ce60dc7f2439c1e34e52e",
+  "content_hash": "e9b670b87b9952fd12ee264fe9646c8889ff43c36fb813a8b50e9c260a039c62",
   "dependencies": [],
   "description": "Use this skill when configuring pricebooks, tiered pricing, promotions, coupon codes, or cart discounts for B2B or D2C Commerce stores. Trigger keywords: WebStorePricebook, BuyerGroupPricebook, PriceAdjustmentSchedule, PromotionsCartCalculator, commerce coupon, cart-level discount, tiered price, Commerce promotion. NOT for CPQ pricing, standard Sales Cloud Opportunity pricebooks, or Quote pricing.",
   "file_location": "skills/admin/commerce-pricing-and-promotions",
@@ -131,7 +131,6 @@
     "skills/admin/commerce-pricing-and-promotions/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/commerce-pricing-and-promotions/scripts/__pycache__/check_commerce_pricing_and_promotions.cpython-314.pyc",
     "skills/admin/commerce-pricing-and-promotions/scripts/check_commerce_pricing_and_promotions.py"
   ],
   "tags": [

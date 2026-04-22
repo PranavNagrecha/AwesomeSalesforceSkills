@@ -89,7 +89,7 @@
     "fbd327efff72ba54b0fd",
     "feabb43d44cc2de977e2"
   ],
-  "content_hash": "74f20f7b5948faa25df5ed1f3ce3790f2ed5b02e595f943aa185c944135e08db",
+  "content_hash": "79e3732989becdfa81f229b41444be4339d50381ef75822aa8158cb15e4d2141",
   "dependencies": [],
   "description": "Diagnosing and resolving common Apex runtime exceptions: NullPointerException, QueryException, DmlException, ListException, LimitException, TypeException. Use when debugging Apex runtime failures or writing defensive code. NOT for error handling framework design (use error-handling-framework). NOT for governor limit prevention strategies (use governor-limits). NOT for structuring try/catch blocks (use exception-handling).",
   "file_location": "skills/apex/common-apex-runtime-errors",
@@ -120,7 +120,6 @@
     "skills/apex/common-apex-runtime-errors/references/well-architected.md"
   ],
   "scripts": [
-    "skills/apex/common-apex-runtime-errors/scripts/__pycache__/check_common_apex_runtime_errors.cpython-314.pyc",
     "skills/apex/common-apex-runtime-errors/scripts/check_common_apex_runtime_errors.py"
   ],
   "tags": [

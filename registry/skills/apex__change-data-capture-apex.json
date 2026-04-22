@@ -84,7 +84,7 @@
     "fdd43e2e526c8a6d741f",
     "ff3c513088a5c20fb590"
   ],
-  "content_hash": "05cdc34c52b22bdb222073b91afb368b87269845552dd067082a6e0f5bf80546",
+  "content_hash": "56fc29ab6c600ecd6d2941352cdeb01a2876f64f874be0ed1b373cbf8a837d0e",
   "dependencies": [],
   "description": "Use this skill when writing or reviewing Apex change event triggers: trigger syntax on ChangeEvent objects, reading ChangeEventHeader fields (changeType, changedFields, recordIds, commitUser), handling CREATE/UPDATE/DELETE/UNDELETE and GAP events in Apex, and configuring entity tracking. NOT for platform events published by application code (use apex/platform-events-apex). NOT for external CDC subscribers via CometD or Pub/Sub API (use integration/change-data-capture-integration).",
   "file_location": "skills/apex/change-data-capture-apex",
@@ -116,7 +116,6 @@
     "skills/apex/change-data-capture-apex/references/well-architected.md"
   ],
   "scripts": [
-    "skills/apex/change-data-capture-apex/scripts/__pycache__/check_change_data_capture_apex.cpython-314.pyc",
     "skills/apex/change-data-capture-apex/scripts/check_change_data_capture_apex.py"
   ],
   "tags": [

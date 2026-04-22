@@ -58,7 +58,7 @@
     "f8cf2ac4f926b532fe10",
     "ff2aec9312459c364911"
   ],
-  "content_hash": "11c1e643323187f738fab56fc6857c63a4d998c79c6b6d0b9bfeec4565380791",
+  "content_hash": "05533644581f70e6141ed494616d7dfc95c61989128ceb8ec7c93754121b996f",
   "dependencies": [],
   "description": "Use when structuring Apex into service, selector, domain, factory, and dependency-injection layers for maintainability and testability. Triggers: 'service layer', 'selector pattern', 'domain layer', 'dependency injection', 'fat trigger/controller'. NOT for installing a specific third-party framework or debating package-level architecture outside Apex code structure.",
   "file_location": "skills/apex/apex-design-patterns",
@@ -85,7 +85,6 @@
     "skills/apex/apex-design-patterns/references/well-architected.md"
   ],
   "scripts": [
-    "skills/apex/apex-design-patterns/scripts/__pycache__/check_apex_design_patterns.cpython-314.pyc",
     "skills/apex/apex-design-patterns/scripts/check_apex_design_patterns.py"
   ],
   "tags": [

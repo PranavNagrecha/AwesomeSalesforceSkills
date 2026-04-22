@@ -108,7 +108,7 @@
     "febbe1c80a8aa1d2c0ed",
     "ff2407d7242ac7cab7db"
   ],
-  "content_hash": "620f44f8d41df408027c0ffac272725ea5fd9f566fbee36110903807efe7e837",
+  "content_hash": "8708e6b12bf542460b82ad3613598c7fbe9a519a0ecf97f0d7b63a404138b41c",
   "dependencies": [
     "retry-and-backoff-patterns",
     "apex-rest-services"
@@ -146,7 +146,6 @@
     "skills/integration/api-error-handling-design/references/well-architected.md"
   ],
   "scripts": [
-    "skills/integration/api-error-handling-design/scripts/__pycache__/check_api_error_handling_design.cpython-314.pyc",
     "skills/integration/api-error-handling-design/scripts/check_api_error_handling_design.py"
   ],
   "tags": [

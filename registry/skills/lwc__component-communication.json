@@ -53,7 +53,7 @@
     "f87f2ed928d0d41f0ca5",
     "fdb8e02a6789398f07bb"
   ],
-  "content_hash": "d4e5044cff9112f2560cecf7930114a2dd82a8089c8b25fe60ac53aa3f3f1d22",
+  "content_hash": "1445a5bba73780978a3bf0d7c9744b85902dce43929d9454b0b87f54bd812ee2",
   "dependencies": [],
   "description": "Use when designing or reviewing how Lightning Web Components pass data and intent between parent, child, sibling, utility, or workspace contexts using `@api`, public methods, custom events, and Lightning Message Service. Triggers: 'LWC communication pattern', 'custom event not reaching parent', 'should I use LMS or @api', 'child component API'. NOT for data provisioning decisions, wire-service strategy, or page navigation when communication is not the main problem.",
   "file_location": "skills/lwc/component-communication",
@@ -81,7 +81,6 @@
     "skills/lwc/component-communication/references/well-architected.md"
   ],
   "scripts": [
-    "skills/lwc/component-communication/scripts/__pycache__/check_component_communication.cpython-314.pyc",
     "skills/lwc/component-communication/scripts/check_component_communication.py"
   ],
   "tags": [

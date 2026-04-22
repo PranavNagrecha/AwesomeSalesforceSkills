@@ -64,7 +64,7 @@
     "fbebc6e3875c6c02c1e1",
     "fc367c5a79b3c23fd9e7"
   ],
-  "content_hash": "fc0577ffb9f00b2442280cdb18b86458f95f705e2d309d4db3fc9b71d4e474ea",
+  "content_hash": "f2dd14ff4f114391f1ee20e88843964f8c7e5b98ab8f94d2177a5402b4aadf63",
   "dependencies": [],
   "description": "Use when building, reviewing, or debugging OmniStudio Integration Procedures. Triggers: 'integration procedure', 'IP', 'HTTP action', 'DataRaptor', 'rollbackOnError', 'failureResponse'. NOT for Apex-only integrations unless the main design choice is whether OmniStudio is still appropriate.",
   "file_location": "skills/omnistudio/integration-procedures",
@@ -92,7 +92,6 @@
     "skills/omnistudio/integration-procedures/references/well-architected.md"
   ],
   "scripts": [
-    "skills/omnistudio/integration-procedures/scripts/__pycache__/check_integration_procedure.cpython-314.pyc",
     "skills/omnistudio/integration-procedures/scripts/check_integration_procedure.py"
   ],
   "tags": [

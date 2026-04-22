@@ -72,7 +72,7 @@
     "f4a9d3b4ff00e660020f",
     "ff949b07b85889f00b9f"
   ],
-  "content_hash": "2e27be8114ad6285eb45ba9b301abdaac031183a686e3e4b1de6c59b9bef81cd",
+  "content_hash": "0b1776fc751c715d391e9b71579661602467d47c4fdd1ab5208708a3a4864ddf",
   "dependencies": [],
   "description": "Use when setting up CMS workspaces, creating or publishing content types for Experience Cloud sites, managing content scheduling, or configuring audience targeting on content variants. Triggers: 'set up CMS workspace', 'publish content to Experience Cloud site', 'content scheduling community', 'audience targeting content', 'managed content vs unmanaged', 'custom content type metadata', 'CMS channel configuration'. NOT for Salesforce Knowledge articles, CMS Connect to external CMS platforms, or Experience Builder layout/theming work.",
   "file_location": "skills/admin/experience-cloud-cms-content",
@@ -106,7 +106,6 @@
     "skills/admin/experience-cloud-cms-content/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/experience-cloud-cms-content/scripts/__pycache__/check_experience_cloud_cms_content.cpython-314.pyc",
     "skills/admin/experience-cloud-cms-content/scripts/check_experience_cloud_cms_content.py"
   ],
   "tags": [

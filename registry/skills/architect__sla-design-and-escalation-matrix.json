@@ -104,7 +104,7 @@
     "fef2c27877abe1a3b373",
     "ff3be6e00eb8b35a95c2"
   ],
-  "content_hash": "59bb474c5a9dfeb558bc58eccf076830c555dc89f0c0187ac9992cada895fa78",
+  "content_hash": "29cf526d638e8b7332c03edca3386bc25a6ade48dfe762896cab564926d122a3",
   "dependencies": [],
   "description": "Use when designing the SLA tier definition table, escalation matrix document, and milestone threshold configuration for a Salesforce Service Cloud implementation. Covers designing the artifact layer \u2014 tier tiers (e.g., Enterprise/Professional/Basic), response and resolution time targets, business hours mapping, milestone percentage thresholds at 50/75/90/100%, and the escalation action matrix that maps thresholds to notification targets and automated actions. Triggers: SLA design, escalation matrix, milestone thresholds, tier definition, business hours alignment, SLA enforcement design. NOT for entitlement process configuration steps (use admin/case-management-setup), NOT for escalation rule setup (use admin/escalation-rules), NOT for CPQ quoting SLAs.",
   "file_location": "skills/architect/sla-design-and-escalation-matrix",
@@ -139,7 +139,6 @@
     "skills/architect/sla-design-and-escalation-matrix/references/well-architected.md"
   ],
   "scripts": [
-    "skills/architect/sla-design-and-escalation-matrix/scripts/__pycache__/check_sla_design_and_escalation_matrix.cpython-314.pyc",
     "skills/architect/sla-design-and-escalation-matrix/scripts/check_sla_design_and_escalation_matrix.py"
   ],
   "tags": [

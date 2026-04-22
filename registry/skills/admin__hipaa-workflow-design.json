@@ -54,7 +54,7 @@
     "f3135373ba49e789e2e0",
     "fa05d50a28338d04465a"
   ],
-  "content_hash": "6462b4c002bdb5aba58153a61295c28c922641f964d9b0001368662e35f65bfd",
+  "content_hash": "8a0a2d5827bb8dd51553ff68d441b2401e0b9b7e40a39ac5ccc42028c252686f",
   "dependencies": [
     "admin/health-cloud-patient-setup",
     "admin/health-cloud-consent-management"
@@ -90,7 +90,6 @@
     "skills/admin/hipaa-workflow-design/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/hipaa-workflow-design/scripts/__pycache__/check_hipaa_workflow_design.cpython-314.pyc",
     "skills/admin/hipaa-workflow-design/scripts/check_hipaa_workflow_design.py"
   ],
   "tags": [

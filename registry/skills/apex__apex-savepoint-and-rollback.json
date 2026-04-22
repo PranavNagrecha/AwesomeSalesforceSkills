@@ -49,7 +49,7 @@
     "fe4d6d9ff172239ca928",
     "fff7c9889491a7e3e202"
   ],
-  "content_hash": "5545c507b29717d32b44bb19e2b586f787cda4b4256edd240a2d68a13eb884c6",
+  "content_hash": "3ac0e6eee25d94eca6e80d105be507cf50fdddf267d3f13bc67851f4c05b774d",
   "dependencies": [],
   "description": "Database.Savepoint / Database.rollback for partial-transaction undo: placement rules, ID reset, limit counters, nested savepoints, rollback after callout. NOT for Database.allOrNone=false partial success semantics (use apex-partial-dml). NOT for Queueable chained rollback (use apex-queueable-patterns).",
   "file_location": "skills/apex/apex-savepoint-and-rollback",
@@ -78,7 +78,6 @@
     "skills/apex/apex-savepoint-and-rollback/references/well-architected.md"
   ],
   "scripts": [
-    "skills/apex/apex-savepoint-and-rollback/scripts/__pycache__/check_apex_savepoint_and_rollback.cpython-314.pyc",
     "skills/apex/apex-savepoint-and-rollback/scripts/check_apex_savepoint_and_rollback.py"
   ],
   "tags": [

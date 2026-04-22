@@ -96,7 +96,7 @@
     "fd3a8fa4d7ca01205d64",
     "fe184d8ec12002861385"
   ],
-  "content_hash": "76b5f7f8ed76282b7802a2be84828b92033a6a49eaf47df04553467a45482c39",
+  "content_hash": "2a711f82e3766e8c4c210590e020a9415cbe79da8b8be3923aa52ba8794e9ad1",
   "dependencies": [],
   "description": "Dynamic LWC component creation using the `lwc:component` directive, lazy-loaded dynamic imports (`import()`), and runtime component resolution for conditional rendering at scale. Triggers: 'render different components based on record type', 'dynamically load lwc at runtime', 'lwc:component lwc:is constructor', 'lazy load component only when needed', 'dynamic import lwc'. NOT for static component composition or `lwc:if` conditional rendering when the component set is fixed at build time (use lwc-conditional-rendering).",
   "file_location": "skills/lwc/lwc-dynamic-components",
@@ -129,8 +129,6 @@
     "skills/lwc/lwc-dynamic-components/references/well-architected.md"
   ],
   "scripts": [
-    "skills/lwc/lwc-dynamic-components/scripts/__pycache__/check_lwc_dynamic.cpython-314.pyc",
-    "skills/lwc/lwc-dynamic-components/scripts/__pycache__/check_lwc_dynamic_components.cpython-314.pyc",
     "skills/lwc/lwc-dynamic-components/scripts/check_lwc_dynamic.py",
     "skills/lwc/lwc-dynamic-components/scripts/check_lwc_dynamic_components.py"
   ],

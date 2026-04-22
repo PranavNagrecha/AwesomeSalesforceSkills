@@ -47,7 +47,7 @@
     "ebfc233fb0911269ee6d",
     "fedb6652005c792c4d70"
   ],
-  "content_hash": "820a395a631cbf42ab7fad0636f0526d2a0a220c7113e70c54e2dcc25028e496",
+  "content_hash": "d8de1f3e34afcad215ab916d4d57d809dc706e5f8fd9aa1d5e0ee0569e5123fe",
   "dependencies": [],
   "description": "Use this skill when designing or troubleshooting Slack Workflow Builder workflows that call Salesforce \u2014 especially the Salesforce connector step Run a Flow, mapping inputs/outputs, handling failures, and understanding limits. Triggers on: Slack Workflow Builder Salesforce, Run a Flow from Slack, autolaunched flow from Slack, Slack automation calling Salesforce. NOT for Salesforce Flow Builder tutorials unrelated to Slack (use flow skills), not for Flow Core Actions that send Slack messages from Salesforce (use flow-for-slack), not for initial org-to-workspace connection (use slack-salesforce-integration-setup), and not for building custom Slack apps outside Workflow Builder.",
   "file_location": "skills/integration/slack-workflow-builder",
@@ -78,7 +78,6 @@
     "skills/integration/slack-workflow-builder/references/well-architected.md"
   ],
   "scripts": [
-    "skills/integration/slack-workflow-builder/scripts/__pycache__/check_slack_workflow_builder.cpython-314.pyc",
     "skills/integration/slack-workflow-builder/scripts/check_slack_workflow_builder.py"
   ],
   "tags": [

@@ -113,7 +113,7 @@
     "fbfe3c87bfe151bcb1f5",
     "ff424d9b9fb68ace5ee3"
   ],
-  "content_hash": "72976a3a1377018bcbd5f71d8b088b3c536bf0f0f60d352ae1cbf07f2cd02834",
+  "content_hash": "23c88ba63c488db59610c83516a1817f15dcb53725a1b4457945b1bb8659ea8e",
   "dependencies": [],
   "description": "Use this skill when designing or evaluating a Health Cloud implementation to determine whether the org serves a payer (health insurer), a provider (care delivery organization), or both \u2014 and to derive the correct object model, PSL matrix, and feature activation accordingly. Triggers: 'should we use MemberPlan or ClinicalEncounter', 'payer vs provider Health Cloud', 'which Health Cloud objects does an insurer use', 'setting up a Health Cloud org for a hospital vs a health plan', 'Provider Relationship Management vs clinical provider'. NOT for individual feature implementation within an already-classified payer or provider org, and NOT for Salesforce Health Cloud implementations that are clearly a single deployment type with no cross-sector ambiguity.",
   "file_location": "skills/architect/payer-vs-provider-architecture",
@@ -142,7 +142,6 @@
     "skills/architect/payer-vs-provider-architecture/references/well-architected.md"
   ],
   "scripts": [
-    "skills/architect/payer-vs-provider-architecture/scripts/__pycache__/check_payer_vs_provider_architecture.cpython-314.pyc",
     "skills/architect/payer-vs-provider-architecture/scripts/check_payer_vs_provider_architecture.py"
   ],
   "tags": [

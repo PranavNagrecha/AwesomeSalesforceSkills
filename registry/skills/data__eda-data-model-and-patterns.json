@@ -51,7 +51,7 @@
     "f496492bd81028aa1c4e",
     "fde290c5c58b249cebac"
   ],
-  "content_hash": "c89b2decd782559343f9ee13972d841ba48df56c6877f133d9a0547d46bf708a",
+  "content_hash": "fc7c1ba088e31bded8a5570944270fe54885915bb78e106ac2eca3524a951f92",
   "dependencies": [],
   "description": "Education Data Architecture (EDA) data model deep dive: Contact-centric, Affiliations, Relationships, Account record types (Academic Program, Educational Institution, Sports Organization), Course_Offering__c, Term__c, Course_Connection__c patterns. NOT for Education Cloud setup (use education-cloud-eda-setup). NOT for generic data modeling.",
   "file_location": "skills/data/eda-data-model-and-patterns",
@@ -81,7 +81,6 @@
     "skills/data/eda-data-model-and-patterns/references/well-architected.md"
   ],
   "scripts": [
-    "skills/data/eda-data-model-and-patterns/scripts/__pycache__/check_eda_data_model_and_patterns.cpython-314.pyc",
     "skills/data/eda-data-model-and-patterns/scripts/check_eda_data_model_and_patterns.py"
   ],
   "tags": [

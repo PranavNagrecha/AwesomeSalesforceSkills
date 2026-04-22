@@ -124,7 +124,7 @@
     "fc09c088b06a076b1601",
     "ffe70d34711a259013ad"
   ],
-  "content_hash": "4cbce8112bce61cf725bdd93389bcc08b5107d62d783857e9e6bd5ce933a7b46",
+  "content_hash": "03822e4b8ef7ed0684420444a3a5d49725c9cbe2f13755dce297c1f1d2236e61",
   "dependencies": [
     "security/event-monitoring",
     "security/transaction-security-policies"
@@ -164,7 +164,6 @@
     "skills/security/security-incident-response/references/well-architected.md"
   ],
   "scripts": [
-    "skills/security/security-incident-response/scripts/__pycache__/check_security_incident_response.cpython-314.pyc",
     "skills/security/security-incident-response/scripts/check_security_incident_response.py"
   ],
   "tags": [

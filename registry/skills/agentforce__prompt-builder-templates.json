@@ -99,7 +99,7 @@
     "f7289e12b1a9550c3478",
     "fa4b47899ee9e43e44b8"
   ],
-  "content_hash": "ea239b7f380d3e2f0398065f08841c6e94e1168d8024b7eed361e34256484586",
+  "content_hash": "d03abaf10daa5aca3aebfbf6645adba6d33752f35d725124e8f3a0e07837c954",
   "dependencies": [],
   "description": "Use when creating, reviewing, or troubleshooting Prompt Builder templates (Field Generation, Record Summary, Sales Email, or Flex types), including grounding with merge fields, Flow, or Apex. Trigger keywords: prompt template, Prompt Builder, field generation, record summary, sales email template, flex template, grounding, merge fields, LLM template, Einstein generative AI. NOT for agent topic instructions, Copilot action configuration, or Data Cloud segment activation.",
   "file_location": "skills/agentforce/prompt-builder-templates",
@@ -135,7 +135,6 @@
     "skills/agentforce/prompt-builder-templates/references/well-architected.md"
   ],
   "scripts": [
-    "skills/agentforce/prompt-builder-templates/scripts/__pycache__/check_prompt_builder_templates.cpython-314.pyc",
     "skills/agentforce/prompt-builder-templates/scripts/check_prompt_builder_templates.py"
   ],
   "tags": [

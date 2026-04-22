@@ -137,7 +137,7 @@
     "fd1d2ba8c3dc3437ab12",
     "fe7157c7b70f683befef"
   ],
-  "content_hash": "eb89d7b2a65344685fcc2fe5440ef71e8e5e2f571f2136905bc86ea2d764478d",
+  "content_hash": "ce35ec518a4abcd3ed77e4bec3d3b383f2506caed2a8e4f858ae6d9158e05278",
   "dependencies": [],
   "description": "Use when diagnosing and resolving SFDX source-tracking conflicts between a local project and a Salesforce org \u2014 covering sf project pull/push/retrieve/deploy conflict errors, force overwrite decisions, tracking file corruption, and sandbox source-tracking enablement. Trigger keywords: source tracking, conflict, --force-overwrite, --ignore-conflicts, maxRevision.json, sf project retrieve, source:status. NOT for Git merge conflicts, DevOps Center pipeline conflicts, or change-set deployments.",
   "file_location": "skills/devops/source-tracking-and-conflict-resolution",
@@ -171,7 +171,6 @@
     "skills/devops/source-tracking-and-conflict-resolution/references/well-architected.md"
   ],
   "scripts": [
-    "skills/devops/source-tracking-and-conflict-resolution/scripts/__pycache__/check_source_tracking_and_conflict_resolution.cpython-314.pyc",
     "skills/devops/source-tracking-and-conflict-resolution/scripts/check_source_tracking_and_conflict_resolution.py"
   ],
   "tags": [

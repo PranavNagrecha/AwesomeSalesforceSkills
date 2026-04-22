@@ -49,7 +49,7 @@
     "f49cca3f0cd1e25f3183",
     "fc131cc2bd222a1c60c6"
   ],
-  "content_hash": "08a5b3e640f8dafc3ce6351a7829df792850277ce39e6a6dad8e6fd9aa0b08f2",
+  "content_hash": "466860b5812a2ba538ccfe494ffb584610ad6e6e50acdb887d8a9c7973dc3cb4",
   "dependencies": [],
   "description": "REST API pagination for inbound and outbound integrations: Salesforce QueryMore, cursor-based, offset-based, Link header, page-size tuning, rate limit interaction. NOT for Bulk API (use bulk-api-patterns). NOT for GraphQL connection pagination (use graphql-api-patterns).",
   "file_location": "skills/integration/rest-api-pagination-patterns",
@@ -79,7 +79,6 @@
     "skills/integration/rest-api-pagination-patterns/references/well-architected.md"
   ],
   "scripts": [
-    "skills/integration/rest-api-pagination-patterns/scripts/__pycache__/check_rest_api_pagination_patterns.cpython-314.pyc",
     "skills/integration/rest-api-pagination-patterns/scripts/check_rest_api_pagination_patterns.py"
   ],
   "tags": [

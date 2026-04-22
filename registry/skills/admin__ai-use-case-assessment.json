@@ -102,7 +102,7 @@
     "fd75611759191621a5cd",
     "ffe6e2c8659c0a396260"
   ],
-  "content_hash": "574014c05fb1b7bccb5c166fac6ee51549517e926e907245eaa19e0e383e0d49",
+  "content_hash": "018177877bb1c4caf3ebff3d959bd73b0d3b5476ae71ab4e250b1a3e5c28a890",
   "dependencies": [
     "ai-ready-data-architecture",
     "agentforce-service-ai-setup"
@@ -140,7 +140,6 @@
     "skills/admin/ai-use-case-assessment/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/ai-use-case-assessment/scripts/__pycache__/check_ai_use_case_assessment.cpython-314.pyc",
     "skills/admin/ai-use-case-assessment/scripts/check_ai_use_case_assessment.py"
   ],
   "tags": [

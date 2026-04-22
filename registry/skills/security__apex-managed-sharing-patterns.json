@@ -28,7 +28,7 @@
     "cc180d1e591424596b5b",
     "ef0bd69df51755a4f05c"
   ],
-  "content_hash": "add387b6bce8e875ab7d788a6b5e8f4485709a122a9d3117875354841b9ab252",
+  "content_hash": "50aa943827f5ff3ae7884fc35886d6d8c0d537b4ed384173c7df4237eacdf376",
   "dependencies": [],
   "description": "Grant row-level access programmatically via __Share records when declarative sharing rules cannot express the policy. NOT for OWD, role hierarchy, or criteria-based sharing rule design.",
   "file_location": "skills/security/apex-managed-sharing-patterns",
@@ -58,7 +58,6 @@
     "skills/security/apex-managed-sharing-patterns/references/well-architected.md"
   ],
   "scripts": [
-    "skills/security/apex-managed-sharing-patterns/scripts/__pycache__/check_apex_managed_sharing_patterns.cpython-314.pyc",
     "skills/security/apex-managed-sharing-patterns/scripts/check_apex_managed_sharing_patterns.py"
   ],
   "tags": [

@@ -28,7 +28,7 @@
     "e8a3e984e0bb72804234",
     "f2127ad24b8205401a01"
   ],
-  "content_hash": "4cb257f0af13bc75056694a0b8f573b6ffc6e76f079b800b26402f75eda2dd96",
+  "content_hash": "70cf1ce92ba3f71751a39252d8bfafa6626efdad7d084fdd89540a2f322b2e08",
   "dependencies": [],
   "description": "Build LWCs that support translation, locale-aware formatting, and RTL layouts. NOT for Translation Workbench setup.",
   "file_location": "skills/lwc/lwc-internationalization",
@@ -54,7 +54,6 @@
     "skills/lwc/lwc-internationalization/references/well-architected.md"
   ],
   "scripts": [
-    "skills/lwc/lwc-internationalization/scripts/__pycache__/check_lwc_internationalization.cpython-314.pyc",
     "skills/lwc/lwc-internationalization/scripts/check_lwc_internationalization.py"
   ],
   "tags": [

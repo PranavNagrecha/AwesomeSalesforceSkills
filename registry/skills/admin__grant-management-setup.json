@@ -90,7 +90,7 @@
     "fc30bbd4a3c89b1d827d",
     "fcf5683ea8a2f059e55b"
   ],
-  "content_hash": "3eb3efc7d9c97798268035bfd177dfdce446ad784052a39ed8240e266b9260c7",
+  "content_hash": "2cc10de2d8216df66aa43d14eae58dcb3e526d03555e69acb95be4a9b0108bcc",
   "dependencies": [],
   "description": "Use when configuring grant tracking in a Salesforce nonprofit org \u2014 covers both NPSP Outbound Funds Module (Opportunity-based, managed package path) and Nonprofit Cloud for Grantmaking (FundingAward, FundingDisbursement, FundingAwardRequirement objects, separate license). Trigger keywords: grant management, funding awards, disbursement tranches, grantmaking setup, OFM, FundingAward, FundingDisbursement, FundingAwardRequirement. NOT for standard Opportunity tracking or fundraising donor gifts.",
   "file_location": "skills/admin/grant-management-setup",
@@ -122,7 +122,6 @@
     "skills/admin/grant-management-setup/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/grant-management-setup/scripts/__pycache__/check_grant_management_setup.cpython-314.pyc",
     "skills/admin/grant-management-setup/scripts/check_grant_management_setup.py"
   ],
   "tags": [

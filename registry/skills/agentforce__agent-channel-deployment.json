@@ -119,7 +119,7 @@
     "fd67c414facd6bfee7e2",
     "fff0065d05f546be221e"
   ],
-  "content_hash": "e9dd8d1168b549d6a9bc3b647de8b06bb4b7f26acac1f001226ce6894b53d5ae",
+  "content_hash": "e979c2d83c8a32d1680577603132e346d0e87faacc9d142d730c417257f24ab6",
   "dependencies": [],
   "description": "Use when deploying an Agentforce agent to a channel surface: Embedded Service web chat, Slack, Experience Cloud, Agent REST API, or Salesforce Mobile. Triggers: 'deploy agent to website', 'add Agentforce to Slack', 'enable agent for mobile app', 'configure embedded service for agent', 'agent API for custom integration', 'multi-channel agent deployment'. NOT for agent logic design \u2014 use agentforce/agent-topic-design or agentforce/agent-actions for topics, instructions, and action contracts.",
   "file_location": "skills/agentforce/agent-channel-deployment",
@@ -154,7 +154,6 @@
     "skills/agentforce/agent-channel-deployment/references/well-architected.md"
   ],
   "scripts": [
-    "skills/agentforce/agent-channel-deployment/scripts/__pycache__/check_agent_channels.cpython-314.pyc",
     "skills/agentforce/agent-channel-deployment/scripts/check_agent_channels.py"
   ],
   "tags": [

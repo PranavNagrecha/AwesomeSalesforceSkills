@@ -99,7 +99,7 @@
     "fc9e41760ee066acb443",
     "fd752eaa3a622197c795"
   ],
-  "content_hash": "24f76625eebe45f544b1b27d54dcc09edec5ea087d7f97bbdad0a414a343607c",
+  "content_hash": "d2405266f3e0b6fb4e13bc50d3a6b6b7f018bda5c14dda2806a25dae6015498a",
   "dependencies": [
     "fsl-resource-management",
     "fsl-service-territory-setup"
@@ -137,7 +137,6 @@
     "skills/admin/fsl-shifts-and-crew/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/fsl-shifts-and-crew/scripts/__pycache__/check_fsl_shifts_and_crew.cpython-314.pyc",
     "skills/admin/fsl-shifts-and-crew/scripts/check_fsl_shifts_and_crew.py"
   ],
   "tags": [

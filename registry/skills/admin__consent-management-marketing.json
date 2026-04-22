@@ -95,7 +95,7 @@
     "f99fa17a5e36ef1a8888",
     "fd90d6e8b32346252d4d"
   ],
-  "content_hash": "3ddbd7838a7294b0af39d82df6384ad26f63a51198394d031da5e632ea4e7d25",
+  "content_hash": "1b916578a4e262c6db81ac3c0e462eba3041b9daf0c978fcb9cebc8671d72c5e",
   "dependencies": [],
   "description": "Email consent management in Marketing Cloud: configuring Subscription Centers, building Preference Centers on CloudPages, enforcing CAN-SPAM and GDPR requirements, and handling opt-out propagation. Trigger keywords: unsubscribe handling, CAN-SPAM compliance, GDPR consent tracking, publication lists, subscription center, preference center, opt-out, double opt-in, Privacy Center, MC consent. NOT for general GDPR compliance in Sales/Service Cloud, not for Salesforce CRM consent objects (ContactPointTypeConsent), not for Einstein consent scoring.",
   "file_location": "skills/admin/consent-management-marketing",
@@ -134,7 +134,6 @@
     "skills/admin/consent-management-marketing/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/consent-management-marketing/scripts/__pycache__/check_consent_management_marketing.cpython-314.pyc",
     "skills/admin/consent-management-marketing/scripts/check_consent_management_marketing.py"
   ],
   "tags": [

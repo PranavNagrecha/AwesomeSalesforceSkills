@@ -122,7 +122,7 @@
     "fd74b19c0633574459e6",
     "fe53f61eff08b8a8175f"
   ],
-  "content_hash": "d3548eee2254a6e32b2a36e7b2dc1c1ddbab3ac89a2ba02b361744f4a26313d8",
+  "content_hash": "ee82494bb37bd85cbbb00fda35e538ad6dbf7413fce9821a6d06480aaef6a828",
   "dependencies": [],
   "description": "Use when building custom LWC Quick Actions, Global Actions, deep links, or offline data extensions for the Salesforce Field Service (FSL) native mobile app. Trigger keywords: FSL mobile extension, LWC action FSL, field service deep link, offline custom action, FSL mobile toolkit. NOT for LWC in standard Salesforce mobile app or Lightning Experience.",
   "file_location": "skills/apex/fsl-mobile-app-extensions",
@@ -158,8 +158,6 @@
     "skills/apex/fsl-mobile-app-extensions/references/well-architected.md"
   ],
   "scripts": [
-    "skills/apex/fsl-mobile-app-extensions/scripts/__pycache__/check_fsl_mobile.cpython-314.pyc",
-    "skills/apex/fsl-mobile-app-extensions/scripts/__pycache__/check_fsl_mobile_app_extensions.cpython-314.pyc",
     "skills/apex/fsl-mobile-app-extensions/scripts/check_fsl_mobile.py",
     "skills/apex/fsl-mobile-app-extensions/scripts/check_fsl_mobile_app_extensions.py"
   ],

@@ -106,7 +106,7 @@
     "fe0a770523b798766fda",
     "fe2391e541d79e4bd730"
   ],
-  "content_hash": "8d47b7acca7642abbc6961ef4101c2bdb1ffe624e46811d4337486bea98f7a1d",
+  "content_hash": "33c602f7305220df1eb9fb2af4d3ce62529286a06e2085c4a21b98e1530a574b",
   "dependencies": [],
   "description": "Use when configuring or troubleshooting a Salesforce B2C Commerce (SFCC) storefront \u2014 including Business Manager site creation, SFRA cartridge path setup, customer groups, search index rebuilding, and key quota limits. Trigger keywords: SFCC, Commerce Cloud, Business Manager, storefront, cartridge, SFRA, site preferences, replication. NOT for B2B Commerce on Lightning platform (WebStore, BuyerGroup, CommerceEntitlementPolicy \u2014 see admin/b2b-commerce-store-setup for that).",
   "file_location": "skills/admin/b2c-commerce-store-setup",
@@ -140,7 +140,6 @@
     "skills/admin/b2c-commerce-store-setup/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/b2c-commerce-store-setup/scripts/__pycache__/check_b2c_commerce_store_setup.cpython-314.pyc",
     "skills/admin/b2c-commerce-store-setup/scripts/check_b2c_commerce_store_setup.py"
   ],
   "tags": [

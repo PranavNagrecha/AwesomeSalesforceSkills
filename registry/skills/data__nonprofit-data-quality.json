@@ -92,7 +92,7 @@
     "f926c077a0fd91003e93",
     "fe4425f03d2c13611180"
   ],
-  "content_hash": "66befe140645a9cbd7971be3a346cb62ef0a8135940f85a5173e47a534981394",
+  "content_hash": "234ce14916ad25554083cfcf1cc9d921b18effd9ca6025faa81c2f33069f948a",
   "dependencies": [],
   "description": "Use this skill when standardizing addresses, detecting duplicate household Contacts, running NCOA processing, or improving data hygiene in an NPSP org. Triggers: address verification NPSP, household duplicate detection, NCOA update nonprofit, data hygiene NPSP. NOT for generic Salesforce data quality, Nonprofit Cloud (NPC) data quality, or standard Account/Contact deduplication outside NPSP.",
   "file_location": "skills/data/nonprofit-data-quality",
@@ -126,7 +126,6 @@
     "skills/data/nonprofit-data-quality/references/well-architected.md"
   ],
   "scripts": [
-    "skills/data/nonprofit-data-quality/scripts/__pycache__/check_nonprofit_data_quality.cpython-314.pyc",
     "skills/data/nonprofit-data-quality/scripts/check_nonprofit_data_quality.py"
   ],
   "tags": [

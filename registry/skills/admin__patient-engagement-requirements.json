@@ -54,7 +54,7 @@
     "fa88f6a732ea3035adf3",
     "fbefd52e74e671d09478"
   ],
-  "content_hash": "28d4d1b477996a1f48142878ce51617643ab08767d6e570531efe23e2244a04e",
+  "content_hash": "79491680b29df6afbc582a9407de038e1098b81f2c443a9386c3f42c4b7dca04",
   "dependencies": [
     "admin/health-cloud-patient-setup",
     "admin/care-program-management"
@@ -90,7 +90,6 @@
     "skills/admin/patient-engagement-requirements/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/patient-engagement-requirements/scripts/__pycache__/check_patient_engagement_requirements.cpython-314.pyc",
     "skills/admin/patient-engagement-requirements/scripts/check_patient_engagement_requirements.py"
   ],
   "tags": [

@@ -28,7 +28,7 @@
     "e72ac5cdee45d09f4ddb",
     "f45db7fb7d281ac41ba2"
   ],
-  "content_hash": "7ad3290581516ca4b98cb3251257183ff76dd0e6e22fcbb4e13b4f270dd3484b",
+  "content_hash": "fe7b34bb405c2310fcd8ab16b7f96420a22a5e4475385d265a8d036d3bdc77fd",
   "dependencies": [],
   "description": "Build reactive Flow screens where one component updates another without navigation using reactive formulas and component outputs. NOT for Aura-based screens.",
   "file_location": "skills/flow/flow-reactive-screen-components",
@@ -54,7 +54,6 @@
     "skills/flow/flow-reactive-screen-components/references/well-architected.md"
   ],
   "scripts": [
-    "skills/flow/flow-reactive-screen-components/scripts/__pycache__/check_flow_reactive_screen_components.cpython-314.pyc",
     "skills/flow/flow-reactive-screen-components/scripts/check_flow_reactive_screen_components.py"
   ],
   "tags": [

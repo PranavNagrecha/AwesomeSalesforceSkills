@@ -110,7 +110,7 @@
     "fc6e3b8792c04eeef047",
     "fd9145b486860e30cd67"
   ],
-  "content_hash": "22306f09a75473eecabc73dee6720d884777b52b6fcc54033481527769e02fbc",
+  "content_hash": "b9124616a53781928033efb1f41701ba8227c10228b7af16e8e6e01fb35810d0",
   "dependencies": [],
   "description": "Use when authoring, reviewing, or maintaining Salesforce DevOps operational documents \u2014 runbooks, environment matrices, deployment guides, and post-deploy validation checklists. Triggers: 'runbook', 'environment matrix', 'deployment guide', 'pre-deploy checklist', 'post-deploy validation', 'how do I document a deployment', 'rollback procedure template'. NOT for release planning, project scheduling, CI/CD pipeline code, or change advisory board process governance.",
   "file_location": "skills/admin/devops-process-documentation",
@@ -140,7 +140,6 @@
     "skills/admin/devops-process-documentation/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/devops-process-documentation/scripts/__pycache__/check_devops_process_documentation.cpython-314.pyc",
     "skills/admin/devops-process-documentation/scripts/check_devops_process_documentation.py"
   ],
   "tags": [

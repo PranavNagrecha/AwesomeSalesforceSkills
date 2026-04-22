@@ -78,7 +78,7 @@
     "fec2495eb5139e4c0ed4",
     "fefc481914e8f08d7c81"
   ],
-  "content_hash": "3d5806829fce90b8b3c5834acbb4d1b6973b9293c9aad7b8081df83a3ca62b1b",
+  "content_hash": "a1a1c989d6764f8dbea4e1ee721c47fb7587d303e9373bb0e90f2f67efd3369b",
   "dependencies": [],
   "description": "Use when setting up, managing, or troubleshooting a Salesforce DevOps Center pipeline \u2014 including pipeline stages, work items, bundles, promotions, conflict resolution, and GitHub connectivity. Trigger keywords: DevOps Center, work item, pipeline stage, promote changes, bundle, release management. NOT for CLI-based deployment workflows, SFDX commands, unlocked packages, or change sets \u2014 those have separate skills.",
   "file_location": "skills/devops/devops-center-pipeline",
@@ -114,7 +114,6 @@
     "skills/devops/devops-center-pipeline/references/well-architected.md"
   ],
   "scripts": [
-    "skills/devops/devops-center-pipeline/scripts/__pycache__/check_devops_center_pipeline.cpython-314.pyc",
     "skills/devops/devops-center-pipeline/scripts/check_devops_center_pipeline.py"
   ],
   "tags": [

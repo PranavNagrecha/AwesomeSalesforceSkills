@@ -106,7 +106,7 @@
     "f80351472b68a8ca0e4c",
     "f85006188f85b2a8892e"
   ],
-  "content_hash": "007b56792ccf3fc088d68dec701d7cfa136ce58e8d87b1855f2ff7e648f3d1e2",
+  "content_hash": "8ce41fb95febd85043a029281293bccae53c4d327bdcab89b8fdb7b91c19112c",
   "dependencies": [],
   "description": "Use this skill when implementing GDPR or CCPA data privacy controls in Salesforce: Individual sObject linkage, consent tracking, Right to Be Forgotten (RTBF) requests, data subject request handling, and Privacy Center configuration. Trigger keywords: GDPR, data privacy, consent management, right to erasure, Individual object, ContactPointConsent, ShouldForget, data subject request, Privacy Center, data portability. NOT for general data quality cleanup, duplicate management, field-level encryption (see platform-encryption skill), or sandbox data masking (see sandbox-data-masking skill).",
   "file_location": "skills/security/gdpr-data-privacy",
@@ -144,7 +144,6 @@
     "skills/security/gdpr-data-privacy/references/well-architected.md"
   ],
   "scripts": [
-    "skills/security/gdpr-data-privacy/scripts/__pycache__/check_gdpr_data_privacy.cpython-314.pyc",
     "skills/security/gdpr-data-privacy/scripts/check_gdpr_data_privacy.py"
   ],
   "tags": [

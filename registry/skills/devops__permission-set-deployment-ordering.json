@@ -78,7 +78,7 @@
     "fc4d4b8b9c8dfa7230c3",
     "feddbd1935bc36c316f0"
   ],
-  "content_hash": "c0551b40770593f3156544425ef932b3dc7855386f59c68abc3dc6f72e200f39",
+  "content_hash": "ad2f0d5f765c2ceeb06bccbb70c7e2dbe862318b8ded842eaa07ef89eb5eafc3",
   "dependencies": [],
   "description": "Use when deploying permission sets, permission set groups, or profiles and encountering cross-reference errors, silent permission loss, or ordering failures. Triggers: 'permission set deployment fails', 'cross-reference id error during deploy', 'permissions disappear after deployment', 'permission set group deployment error'. NOT for permission set design or architecture decisions (use permission-set-architecture), NOT for creating permission sets from scratch (use admin/permission-set-architecture).",
   "file_location": "skills/devops/permission-set-deployment-ordering",
@@ -109,7 +109,6 @@
     "skills/devops/permission-set-deployment-ordering/references/well-architected.md"
   ],
   "scripts": [
-    "skills/devops/permission-set-deployment-ordering/scripts/__pycache__/check_permission_set_deployment_ordering.cpython-314.pyc",
     "skills/devops/permission-set-deployment-ordering/scripts/check_permission_set_deployment_ordering.py"
   ],
   "tags": [

@@ -117,7 +117,7 @@
     "f84a0bf5b5f0b008f228",
     "fb7732eb1f0491aede57"
   ],
-  "content_hash": "bd0117b19020daa034f58d9d038a84ab6144c2352d323cda1165d682173cce94",
+  "content_hash": "f038043aee900bfefdb3a987c9f0a7657f0a1c7be5cb8e4b09ff6b985cc0df9e",
   "dependencies": [],
   "description": "Use when making long-running HTTP callouts from Visualforce or LWC that exceed the synchronous callout timeout limit, using the Apex Continuation class for async callout execution. NOT for synchronous callouts (use callouts-and-http-integrations) or queueable async patterns.",
   "file_location": "skills/apex/continuation-callouts",
@@ -149,7 +149,6 @@
     "skills/apex/continuation-callouts/references/well-architected.md"
   ],
   "scripts": [
-    "skills/apex/continuation-callouts/scripts/__pycache__/check_continuation_callouts.cpython-314.pyc",
     "skills/apex/continuation-callouts/scripts/check_continuation_callouts.py"
   ],
   "tags": [

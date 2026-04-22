@@ -100,7 +100,7 @@
     "f5aa33d748a29403e826",
     "fd2dfe59822447a6667b"
   ],
-  "content_hash": "e4d329ed1c4f465cb73e92bca0b6924f485cce0b1b8e6e92048905f4983f08c2",
+  "content_hash": "edfefdb0093d24654676e8fc223ea805c34952807777414daffb06f372d2ae17",
   "dependencies": [],
   "description": "Use this skill when designing, creating, or troubleshooting Marketing Cloud Data Extensions \u2014 including sendable vs. non-sendable DE selection, primary key composition, data retention configuration, Send Relationship mapping, and performance indexing. Trigger keywords: data extension, sendable DE, send relationship, DE primary key, data retention, Marketing Cloud data model, DE columns, subscriber key mapping. NOT for CRM (Sales/Service Cloud) custom object design, Marketing Cloud Connect object sync configuration, or Contact Builder attribute group architecture beyond simple relationship type selection.",
   "file_location": "skills/data/data-extension-design",
@@ -136,7 +136,6 @@
     "skills/data/data-extension-design/references/well-architected.md"
   ],
   "scripts": [
-    "skills/data/data-extension-design/scripts/__pycache__/check_data_extension_design.cpython-314.pyc",
     "skills/data/data-extension-design/scripts/check_data_extension_design.py"
   ],
   "tags": [

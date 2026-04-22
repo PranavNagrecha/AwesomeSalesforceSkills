@@ -108,7 +108,7 @@
     "fc213a26b3cbc3df09c4",
     "ff4146f99a21aa226086"
   ],
-  "content_hash": "539c6af13440905b4d34b6464b8484207a74df53aaf29edf28498e6f5b99548c",
+  "content_hash": "2c29290045c8b58ad4defb59c9f04baf2ddfcb28542a0c24aa53a248f9b57fdc",
   "dependencies": [
     "omnistudio/omniscript-design-patterns",
     "omnistudio/omnistudio-lwc-integration",
@@ -147,7 +147,6 @@
     "skills/omnistudio/vlocity-to-native-omnistudio-migration/references/well-architected.md"
   ],
   "scripts": [
-    "skills/omnistudio/vlocity-to-native-omnistudio-migration/scripts/__pycache__/check_vlocity_to_native_omnistudio_migration.cpython-314.pyc",
     "skills/omnistudio/vlocity-to-native-omnistudio-migration/scripts/check_vlocity_to_native_omnistudio_migration.py"
   ],
   "tags": [

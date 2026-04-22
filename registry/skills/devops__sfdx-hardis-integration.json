@@ -28,7 +28,7 @@
     "f2804401eeae82fd71d4",
     "f9bc2875f5f4e734c354"
   ],
-  "content_hash": "016ada1a5dfc0b4dc909c84fa208f5160ebb4021c1f71e3e1e17a3dd2e535d44",
+  "content_hash": "a2f566a43cfad045632cea967334308923e64b16645cdf80ddc8757ff4e1c5e1",
   "dependencies": [],
   "description": "Adopt sfdx-hardis for org monitoring, CI pipelines, and release automation. NOT for writing plugins to sfdx-hardis itself.",
   "file_location": "skills/devops/sfdx-hardis-integration",
@@ -57,7 +57,6 @@
     "skills/devops/sfdx-hardis-integration/references/well-architected.md"
   ],
   "scripts": [
-    "skills/devops/sfdx-hardis-integration/scripts/__pycache__/check_sfdx_hardis_integration.cpython-314.pyc",
     "skills/devops/sfdx-hardis-integration/scripts/check_sfdx_hardis_integration.py"
   ],
   "tags": [

@@ -85,7 +85,7 @@
     "f8e49a9031663dd1e6f9",
     "f9f88f50bbb79209d904"
   ],
-  "content_hash": "d2db99f9cfca0978271cbb33617b2a92021675f5fd2be05c9ca90c47950f6021",
+  "content_hash": "61a0ce3c71ae8636916115cd617e95c3ce82790d06144b0b282a05dd1dd253d5",
   "dependencies": [],
   "description": "Use when scheduling automated deletion of temporary records, enforcing data retention policies, running nightly cleanup jobs, reclaiming org storage, managing recycle bin, or performing async bulk deletion of aged records. Trigger keywords: batch delete, retention policy, purge records, cleanup job, recycle bin, emptyRecycleBin, hard delete, nightly purge, storage optimization. NOT for data archival to external storage (use data-archival-strategies).",
   "file_location": "skills/data/batch-data-cleanup-patterns",
@@ -116,8 +116,6 @@
     "skills/data/batch-data-cleanup-patterns/references/well-architected.md"
   ],
   "scripts": [
-    "skills/data/batch-data-cleanup-patterns/scripts/__pycache__/check_batch_data_cleanup_patterns.cpython-314.pyc",
-    "skills/data/batch-data-cleanup-patterns/scripts/__pycache__/check_data_cleanup.cpython-314.pyc",
     "skills/data/batch-data-cleanup-patterns/scripts/check_batch_data_cleanup_patterns.py",
     "skills/data/batch-data-cleanup-patterns/scripts/check_data_cleanup.py"
   ],

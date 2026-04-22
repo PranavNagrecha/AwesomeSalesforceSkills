@@ -54,7 +54,7 @@
     "f590a15b7ceedd7f5acc",
     "f7e88134862429730aed"
   ],
-  "content_hash": "658151e109ee458b55422ace16af26cf03c3251c6ab98c577e37a7d00f1b29a0",
+  "content_hash": "a938d66e5a0bdd25b5547d5154aac8df70145b4b7cb92ca3f7a5390b784d45c2",
   "dependencies": [],
   "description": "Use when designing or reviewing Flow Orchestration for long-running, multi-user, or asynchronous business processes with stages, steps, work items, and monitoring needs. Triggers: 'flow orchestration', 'work item', 'stages and steps', 'multi-user process', 'long-running flow'. NOT for simple single-transaction record-triggered flows or lightweight approval routing that does not need orchestration.",
   "file_location": "skills/flow/orchestration-flows",
@@ -82,7 +82,6 @@
     "skills/flow/orchestration-flows/references/well-architected.md"
   ],
   "scripts": [
-    "skills/flow/orchestration-flows/scripts/__pycache__/check_orchestration_flows.cpython-314.pyc",
     "skills/flow/orchestration-flows/scripts/check_orchestration_flows.py"
   ],
   "tags": [

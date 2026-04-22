@@ -75,7 +75,7 @@
     "f421d048c4d0a12ccb71",
     "f99f4a71735e07a216c4"
   ],
-  "content_hash": "8b5eb3e4389c17319929ced53d8402d12c7df03336ad6d68df2066632d58a0db",
+  "content_hash": "25dddbc188246f142a0aa205637a3adb27124dfb87008b8aa4218e41f86b689a",
   "dependencies": [],
   "description": "Use when configuring reCAPTCHA on Web-to-Case, Web-to-Lead, Experience Cloud forms, or Headless Identity flows, or when designing bot-mitigation strategies for Salesforce public-facing surfaces. Triggers: 'enable reCAPTCHA on Web-to-Case', 'bot spam submissions on my Experience Site', 'Headless Identity reCAPTCHA v3 setup'. NOT for AppExchange security review (use secure-coding-review-checklist), NOT for session-level login security policies (use session-management-and-timeout), NOT for IP-range-based access controls (use network-security-and-trusted-ips).",
   "file_location": "skills/security/recaptcha-and-bot-prevention",
@@ -106,7 +106,6 @@
     "skills/security/recaptcha-and-bot-prevention/references/well-architected.md"
   ],
   "scripts": [
-    "skills/security/recaptcha-and-bot-prevention/scripts/__pycache__/check_recaptcha_and_bot_prevention.cpython-314.pyc",
     "skills/security/recaptcha-and-bot-prevention/scripts/check_recaptcha_and_bot_prevention.py"
   ],
   "tags": [

@@ -98,7 +98,7 @@
     "f886c3105b0663acecf8",
     "fd34f0832a4e95f80287"
   ],
-  "content_hash": "2155641c7b1f65769aef2ee0eacf7946139a82122fa1290c41e7ebfc84a86997",
+  "content_hash": "dd61fbcd31e99a21f6cfd76ff23952f065f51a740228bfa047ae65c9ea1929bc",
   "dependencies": [],
   "description": "Use when writing or auditing the conversational copy layer of a Salesforce bot or Agentforce agent: utterance authoring strategy, fallback message copy, escalation-criteria phrasing, and persona-consistent dialog scripting across channels. NOT for platform configuration (bot builder setup, topic metadata wiring, action mapping, or Agentforce deployment) \u2014 see architect/einstein-bot-architecture and agentforce/agentforce-persona-design for those concerns.",
   "file_location": "skills/admin/agent-conversation-design",
@@ -132,7 +132,6 @@
     "skills/admin/agent-conversation-design/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/agent-conversation-design/scripts/__pycache__/check_agent_conversation_design.cpython-314.pyc",
     "skills/admin/agent-conversation-design/scripts/check_agent_conversation_design.py"
   ],
   "tags": [

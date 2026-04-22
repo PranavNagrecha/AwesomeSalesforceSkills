@@ -89,7 +89,7 @@
     "fd56dcab9d1cd94c5cf7",
     "ffe1c5e4f7325a2510ec"
   ],
-  "content_hash": "26e1d08b704d7d7f275e91b28a7f1ef67a61189805d73ee59788c5036f8bc4c4",
+  "content_hash": "cf9b9bcea9e9b41916ca29a62540342fb4f0648566c25a0ee920e6f38d8d853c",
   "dependencies": [],
   "description": "Use when querying Einstein Activity Capture (EAC) activity metrics, accessing synced email and event data via Apex, reporting on captured activities, or understanding EAC's read-only API surface and SOQL limits. Triggers: 'ActivityMetric SOQL', 'EAC data not in reports', 'UnifiedActivity query', 'query synced emails from EAC', 'activity capture SOQL returns no rows'. NOT for email template design, email deliverability configuration, or enabling/disabling EAC through Setup UI.",
   "file_location": "skills/apex/einstein-activity-capture-api",
@@ -121,7 +121,6 @@
     "skills/apex/einstein-activity-capture-api/references/well-architected.md"
   ],
   "scripts": [
-    "skills/apex/einstein-activity-capture-api/scripts/__pycache__/check_einstein_activity_capture_api.cpython-314.pyc",
     "skills/apex/einstein-activity-capture-api/scripts/check_einstein_activity_capture_api.py"
   ],
   "tags": [

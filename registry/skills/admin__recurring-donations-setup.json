@@ -89,7 +89,7 @@
     "fec95320c84ae11cbbc2",
     "ff833f80bba450e3f912"
   ],
-  "content_hash": "224d1cd2039afc1dccdef7bab25899eaf195cc9c1d987a5b86b32f4c43839bf0",
+  "content_hash": "58404a7d58c36514ac0a5a4f1c8c3b9541bd5ccc8e0d665f11d4da148a87d6d6",
   "dependencies": [],
   "description": "Configure and manage NPSP Enhanced Recurring Donations (ERD): enable ERD mode, define schedule objects, configure installment behavior, set status automation thresholds, and interpret the Upcoming Installments UI. NOT for legacy recurring donations (pre-March 2021 model), one-time Opportunity creation, or custom payment gateway integrations beyond native NPSP.",
   "file_location": "skills/admin/recurring-donations-setup",
@@ -124,7 +124,6 @@
     "skills/admin/recurring-donations-setup/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/recurring-donations-setup/scripts/__pycache__/check_recurring_donations_setup.cpython-314.pyc",
     "skills/admin/recurring-donations-setup/scripts/check_recurring_donations_setup.py"
   ],
   "tags": [

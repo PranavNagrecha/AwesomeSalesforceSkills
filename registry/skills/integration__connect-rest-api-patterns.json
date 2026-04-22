@@ -28,7 +28,7 @@
     "d2faba80ac20113c6e54",
     "de37839eb06d00fc88a7"
   ],
-  "content_hash": "bc8538b2a0fcdf53f79561b2caa981bfab00ada88ff07cefa8f339f918073dc0",
+  "content_hash": "ec860ee0a131886201677b698b880912a99d73de3f2a0312bfdfb66618aa1353",
   "dependencies": [],
   "description": "Use Connect REST API for Chatter, feeds, communities, and CMS content instead of querying underlying SObjects. NOT for custom business object CRUD.",
   "file_location": "skills/integration/connect-rest-api-patterns",
@@ -56,7 +56,6 @@
     "skills/integration/connect-rest-api-patterns/references/well-architected.md"
   ],
   "scripts": [
-    "skills/integration/connect-rest-api-patterns/scripts/__pycache__/check_connect_rest_api_patterns.cpython-314.pyc",
     "skills/integration/connect-rest-api-patterns/scripts/check_connect_rest_api_patterns.py"
   ],
   "tags": [

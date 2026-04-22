@@ -28,7 +28,7 @@
     "fe6f48fa65d1b85df17f",
     "fffc6907a6f19d6f60e0"
   ],
-  "content_hash": "d32a0e28a37c6a59e143192bdd6a5f3f9102cc29818677f4378a0bf2adb81ae4",
+  "content_hash": "84e5718711d61caca41f1831c36688c4f549e95beb4ec1b748c120cf5c539eb0",
   "dependencies": [],
   "description": "Canonical go-live checklist for Agentforce deployments with rehearsed rollback and stakeholder sign-off records. NOT for general Salesforce release management (see release-management).",
   "file_location": "skills/agentforce/agent-deployment-checklist",
@@ -56,7 +56,6 @@
     "skills/agentforce/agent-deployment-checklist/references/well-architected.md"
   ],
   "scripts": [
-    "skills/agentforce/agent-deployment-checklist/scripts/__pycache__/check_agent_deployment_checklist.cpython-314.pyc",
     "skills/agentforce/agent-deployment-checklist/scripts/check_agent_deployment_checklist.py"
   ],
   "tags": [

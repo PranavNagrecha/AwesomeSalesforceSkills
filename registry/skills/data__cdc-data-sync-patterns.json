@@ -87,7 +87,7 @@
     "fd8f827087424b7a106c",
     "fec32e708fecaecbac7f"
   ],
-  "content_hash": "ca598f3f1d10432953f1cc827706fae254d30857f469dbf509defc742db8e7bb",
+  "content_hash": "bf47689749fbcd94e589f1f259148100a1f3b0a6f3f65b3feca3e5374a013910",
   "dependencies": [],
   "description": "Use this skill when designing or troubleshooting the replication lifecycle for CDC-based data synchronization: day-0 full load, incremental delta processing, replay ID management, gap event fallback, and ordering/deduplication using transactionKey and sequenceNumber. NOT for CDC admin setup (entity selection, channel configuration, edition limits \u2014 see integration/change-data-capture-integration). NOT for Apex CDC trigger subscribers.",
   "file_location": "skills/data/cdc-data-sync-patterns",
@@ -120,7 +120,6 @@
     "skills/data/cdc-data-sync-patterns/references/well-architected.md"
   ],
   "scripts": [
-    "skills/data/cdc-data-sync-patterns/scripts/__pycache__/check_cdc_data_sync_patterns.cpython-314.pyc",
     "skills/data/cdc-data-sync-patterns/scripts/check_cdc_data_sync_patterns.py"
   ],
   "tags": [

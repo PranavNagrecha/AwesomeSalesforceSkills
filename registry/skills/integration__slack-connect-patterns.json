@@ -70,7 +70,7 @@
     "fc808d96dd9d77d18272",
     "fece304814c7d04d6d49"
   ],
-  "content_hash": "97e614bf1c52d0987a5283481a24680bd0811139916eb50c6783fb340b000ab6",
+  "content_hash": "d915b4243c3483892a21814c3804b55ddb675ca848ecbc08ebca472f9ecf6bc0",
   "dependencies": [],
   "description": "Use when designing, governing, or troubleshooting Slack Connect channel sharing between two independent organizations. Trigger phrases: external Slack channel collaboration, cross-org Slack channel setup, Slack Connect DLP policy, Slack partner channel governance, regulated industry Slack Connect compliance. Does NOT cover Salesforce-to-Salesforce integration, Salesforce for Slack app setup, or internal single-workspace Slack channels. NOT for Salesforce-to-Salesforce integration.",
   "file_location": "skills/integration/slack-connect-patterns",
@@ -103,7 +103,6 @@
     "skills/integration/slack-connect-patterns/references/well-architected.md"
   ],
   "scripts": [
-    "skills/integration/slack-connect-patterns/scripts/__pycache__/check_slack_connect_patterns.cpython-314.pyc",
     "skills/integration/slack-connect-patterns/scripts/check_slack_connect_patterns.py"
   ],
   "tags": [

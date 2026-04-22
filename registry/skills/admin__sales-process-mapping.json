@@ -118,7 +118,7 @@
     "fb4435ad2066d85ddebc",
     "fda7f3cf3314ef0637c8"
   ],
-  "content_hash": "58fbcea0fdbb26203569db7043c22d28f28039e38d02fe2320fc5a7ffdc795af",
+  "content_hash": "eab52108173f7fe94ff301b4b7811cf5f98480206727ba571f111aff8c0810bc",
   "dependencies": [],
   "description": "Eliciting, documenting, and structuring a sales process before it is built in Salesforce: stage sequencing, entry/exit criteria per stage, win/loss analysis requirements, and stage transition rules. Use when a business needs to analyse or formalise its sales methodology before any Salesforce configuration begins. Trigger keywords: sales process design, stage discovery, entry criteria, exit criteria, stage gate, win/loss categorisation, sales methodology, pipeline stages, opportunity stage mapping. NOT for configuring OpportunityStage picklist values, Sales Processes, or record types in Setup (use opportunity-management skill). NOT for Path configuration. NOT for Collaborative Forecasts or quota alignment.",
   "file_location": "skills/admin/sales-process-mapping",
@@ -153,7 +153,6 @@
     "skills/admin/sales-process-mapping/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/sales-process-mapping/scripts/__pycache__/check_sales_process_mapping.cpython-314.pyc",
     "skills/admin/sales-process-mapping/scripts/check_sales_process_mapping.py"
   ],
   "tags": [

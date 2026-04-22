@@ -89,7 +89,7 @@
     "fe8bb22a1e04d0a03504",
     "fed8e7398561c30fe065"
   ],
-  "content_hash": "267c58c1ea82e4c5bbac7cafe1ce90c6cef86077dd8f37fa721c20d608011f3b",
+  "content_hash": "d2c012714679e9c7059c77913c5432a04c14091f0ebf457fe85359ca3d38910d",
   "dependencies": [],
   "description": "Use when sequencing a deployment that spans multiple Salesforce clouds \u2014 Sales Cloud, Service Cloud, and Experience Cloud \u2014 and encountering reference errors, cascading metadata failures, or DigitalExperienceBundle ordering problems. Triggers: 'ExperienceBundle deployment fails with no Network found', 'cross-cloud metadata dependency error', 'how do I deploy Experience Cloud with Sales Cloud together', 'DigitalExperienceBundle missing CustomSite reference', 'how to sequence multi-cloud deployment correctly'. NOT for single-cloud deployments (use pre-deployment-checklist), NOT for OmniStudio or Health Cloud deployment specifics (use health-cloud-deployment-patterns), NOT for package-based multi-cloud release strategy (use multi-package-development).",
   "file_location": "skills/devops/cross-cloud-deployment-patterns",
@@ -123,7 +123,6 @@
     "skills/devops/cross-cloud-deployment-patterns/references/well-architected.md"
   ],
   "scripts": [
-    "skills/devops/cross-cloud-deployment-patterns/scripts/__pycache__/check_cross_cloud_deployment_patterns.cpython-314.pyc",
     "skills/devops/cross-cloud-deployment-patterns/scripts/check_cross_cloud_deployment_patterns.py"
   ],
   "tags": [

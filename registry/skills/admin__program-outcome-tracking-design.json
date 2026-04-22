@@ -71,7 +71,7 @@
     "fb9c2838b374de87e11a",
     "fceb70dfb78eefe9d153"
   ],
-  "content_hash": "912610e64cc9f9b8001a456083a9a6b699d4319ca948e10321e25a1a6363f0f1",
+  "content_hash": "b68164e7cf82c01a4bfe54e0c5fcf90eea96ca2398932a71bf78ba8251170193",
   "dependencies": [
     "npsp-program-management"
   ],
@@ -103,7 +103,6 @@
     "skills/admin/program-outcome-tracking-design/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/program-outcome-tracking-design/scripts/__pycache__/check_program_outcome_tracking_design.cpython-314.pyc",
     "skills/admin/program-outcome-tracking-design/scripts/check_program_outcome_tracking_design.py"
   ],
   "tags": [

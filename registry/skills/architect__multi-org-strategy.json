@@ -131,7 +131,7 @@
     "ff8900d390a61792b678",
     "ffa43331767ecf88f788"
   ],
-  "content_hash": "337009d8002128fbc6bf9bfdf0fbbd0329f96ffc80e0b8d9439362467402ef58",
+  "content_hash": "842666eb8ba3f8113ea326a82e7bd3a4e170b8a3048f88b4e96f3b24be91b399",
   "dependencies": [],
   "description": "Use when deciding whether to use multiple Salesforce production orgs, designing a hub-and-spoke integration topology, reviewing an existing multi-org architecture for risk, or troubleshooting cross-org integration failures. Trigger phrases: 'should we have separate Salesforce orgs', 'how do we share data between two orgs', 'we acquired a company that uses Salesforce', 'our EU data must stay in Europe', 'cross-org integration keeps hitting API limits', 'Salesforce-to-Salesforce stopped working', 'how do we do SSO across multiple orgs'. NOT for sandbox strategy (use sandbox-strategy). NOT for individual integration callout implementation (use integration/ skills). NOT for Named Credential configuration in isolation (use integration/named-credentials-and-callouts).",
   "file_location": "skills/architect/multi-org-strategy",
@@ -169,7 +169,6 @@
     "skills/architect/multi-org-strategy/references/well-architected.md"
   ],
   "scripts": [
-    "skills/architect/multi-org-strategy/scripts/__pycache__/check_multi_org.cpython-314.pyc",
     "skills/architect/multi-org-strategy/scripts/check_multi_org.py"
   ],
   "tags": [

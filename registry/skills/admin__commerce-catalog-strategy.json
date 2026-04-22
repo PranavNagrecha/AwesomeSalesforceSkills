@@ -92,7 +92,7 @@
     "fb91b58c983b1406923a",
     "fd2066f85dfc94f9f128"
   ],
-  "content_hash": "231e92989ac6cd5eb6c3a070067fa549f21c81e3848b99c7afe385b0d8ab737e",
+  "content_hash": "b6449f1b5530ed57f5d1e190465d5f570950b3babd3c2a2cf043a15cec934f88",
   "dependencies": [],
   "description": "Use this skill when designing a product catalog taxonomy, planning attribute strategy, or determining search and navigation structure for a B2B or B2C/D2C Commerce store. Triggers on: taxonomy design questions, attribute planning, search index strategy, category navigation structure, or merchandising hierarchy decisions. NOT for catalog configuration \u2014 object creation, WebStoreCatalog wiring, entitlement policies, or product assignment steps are covered by admin/commerce-product-catalog.",
   "file_location": "skills/admin/commerce-catalog-strategy",
@@ -127,7 +127,6 @@
     "skills/admin/commerce-catalog-strategy/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/commerce-catalog-strategy/scripts/__pycache__/check_commerce_catalog_strategy.cpython-314.pyc",
     "skills/admin/commerce-catalog-strategy/scripts/check_commerce_catalog_strategy.py"
   ],
   "tags": [
