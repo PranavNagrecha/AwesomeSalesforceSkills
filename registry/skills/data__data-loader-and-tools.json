@@ -88,7 +88,7 @@
     "f9ae7fb7ebb1af59834e",
     "fa068bd2f4cf59ffed16"
   ],
-  "content_hash": "ac66fd32d874d34ceb375b76904b5a3a80cb6e63e7b821949659579a98b90f59",
+  "content_hash": "a06fdb5c2676a374f626f5603213daa14dbd913ce7a550d58f11fa82c4e09ed7",
   "dependencies": [],
   "description": "Use this skill when selecting or configuring Salesforce data load tools: Data Loader, Data Import Wizard, Workbench, Salesforce Inspector, or Salesforce CLI for import/export. Trigger keywords: data loader configuration, import wizard, bulk data load, workbench SOQL, salesforce inspector, data export, csv import salesforce, data migration tool selection. NOT for Bulk API development \u2014 use the integration or apex skills for Bulk API coding.",
   "file_location": "skills/data/data-loader-and-tools",
@@ -121,7 +121,6 @@
     "skills/data/data-loader-and-tools/references/well-architected.md"
   ],
   "scripts": [
-    "skills/data/data-loader-and-tools/scripts/__pycache__/check_data_loader_and_tools.cpython-314.pyc",
     "skills/data/data-loader-and-tools/scripts/check_data_loader_and_tools.py"
   ],
   "tags": [

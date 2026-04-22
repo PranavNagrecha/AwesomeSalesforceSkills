@@ -104,7 +104,7 @@
     "fd9264f0c3fe8d720c63",
     "fe27013b91900706fe8c"
   ],
-  "content_hash": "e6b761fb48ed7e5c7f1b5a2b3369f6a694455b7443bc59b25579c2479b45d0b9",
+  "content_hash": "7c54b80dbb5e8785b5e0b6d3ad6e425d8ece7b621cdabd29818ef2a3a9a10da8",
   "dependencies": [
     "npsp-household-accounts",
     "gift-entry-and-processing"
@@ -142,7 +142,6 @@
     "skills/admin/soft-credits-and-matching/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/soft-credits-and-matching/scripts/__pycache__/check_soft_credits_and_matching.cpython-314.pyc",
     "skills/admin/soft-credits-and-matching/scripts/check_soft_credits_and_matching.py"
   ],
   "tags": [

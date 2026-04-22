@@ -123,7 +123,7 @@
     "fbb66138f83d02956aa4",
     "ffa18f1b4eecc83e67d9"
   ],
-  "content_hash": "b3e98e9fb42f52e43853fad51e2289952c85eabffe17363101abd425b5db7bc5",
+  "content_hash": "11ab1c1e2671513df497a1b203d9d19e097bd215f204ae9f1d4aaf7de6e72403",
   "dependencies": [
     "devops/github-actions-for-salesforce",
     "devops/scratch-org-management"
@@ -159,7 +159,6 @@
     "skills/devops/gitlab-ci-for-salesforce/references/well-architected.md"
   ],
   "scripts": [
-    "skills/devops/gitlab-ci-for-salesforce/scripts/__pycache__/check_gitlab_ci_for_salesforce.cpython-314.pyc",
     "skills/devops/gitlab-ci-for-salesforce/scripts/check_gitlab_ci_for_salesforce.py"
   ],
   "tags": [

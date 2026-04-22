@@ -93,7 +93,7 @@
     "f921bd9f360b97194eab",
     "feb1c2d0cdde8d492dc7"
   ],
-  "content_hash": "d3d360e03ebc935711096a560fdc5d2996917630ca387abd1e051c867616fe13",
+  "content_hash": "ae0addf02c190063a25d5048ab9e82dd79b4f6f7fef6956b548df56881f5c6d4",
   "dependencies": [],
   "description": "Use this skill when configuring or troubleshooting API access for Experience Cloud external users and guest users: guest user Apex data access, Customer Community Plus or Partner Community REST/SOAP API access, external user OAuth scopes, and sharing enforcement on API responses. Trigger keywords: Experience Cloud API access external user, community user REST API, guest user API limits, Customer Community API permissions, external user OAuth. NOT for internal Salesforce API authentication, non-community OAuth flows, or internal user API security.",
   "file_location": "skills/lwc/experience-cloud-api-access",
@@ -128,7 +128,6 @@
     "skills/lwc/experience-cloud-api-access/references/well-architected.md"
   ],
   "scripts": [
-    "skills/lwc/experience-cloud-api-access/scripts/__pycache__/check_experience_cloud_api_access.cpython-314.pyc",
     "skills/lwc/experience-cloud-api-access/scripts/check_experience_cloud_api_access.py"
   ],
   "tags": [

@@ -55,7 +55,7 @@
     "fb68337501c16fc0dcf8",
     "ff80e7ca32754f5dfc61"
   ],
-  "content_hash": "83be3e2bfe2e4f46b4d5dd9312bfd1e15c4e2b7d7eb0131a95d93fe0386fbcb1",
+  "content_hash": "dda43f3335dc9a184ed8c70a9d7a665df3d3c629e38e7f313c948cb4c158c165",
   "dependencies": [],
   "description": "Set up monitoring + alerting for Flow runtime errors at org scale: routing fault emails, Flow runtime error reports, custom centralized logging (Integration_Log__c), escalation thresholds, and trend detection. NOT for diagnosing a specific flow error (use flow-runtime-error-diagnosis). NOT for debug-mode setup (use flow-debugging).",
   "file_location": "skills/flow/flow-error-monitoring",
@@ -87,7 +87,6 @@
     "skills/flow/flow-error-monitoring/references/well-architected.md"
   ],
   "scripts": [
-    "skills/flow/flow-error-monitoring/scripts/__pycache__/check_flow_error_monitoring.cpython-314.pyc",
     "skills/flow/flow-error-monitoring/scripts/check_flow_error_monitoring.py"
   ],
   "tags": [

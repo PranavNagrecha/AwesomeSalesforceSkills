@@ -62,7 +62,7 @@
     "e9231ffe3dc12bfc1a8c",
     "fad9f75558971a649dd5"
   ],
-  "content_hash": "153bd0d727633ef66dbe5da88e74952b03f2bbeba02a6cfdbb821e811f9b945c",
+  "content_hash": "215411bcb358aab9e6012014ed61d0b4dad5d9f3c6c35383e40a7e69756d9a63",
   "dependencies": [],
   "description": "Use when setting up or auditing dedicated Salesforce integration users \u2014 including the Salesforce Integration user license, API-only profile, permission set layering, MFA waiver configuration, and login monitoring. NOT for standard user management.",
   "file_location": "skills/admin/integration-user-management",
@@ -92,7 +92,6 @@
     "skills/admin/integration-user-management/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/integration-user-management/scripts/__pycache__/check_integration_user_management.cpython-314.pyc",
     "skills/admin/integration-user-management/scripts/check_integration_user_management.py"
   ],
   "tags": [

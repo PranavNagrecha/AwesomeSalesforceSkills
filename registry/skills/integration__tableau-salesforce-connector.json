@@ -50,7 +50,7 @@
     "f5c546ae438043b3aa5d",
     "f637ed839dcc3a43c9d2"
   ],
-  "content_hash": "8f87b0dbca96e303448a8896582620ae3e3da0f4f702a70e711af1cafe757be1",
+  "content_hash": "cf01ef6c867472e517562596a2f7e26fa00987489a7acc8d1112505582a75889",
   "dependencies": [],
   "description": "Tableau \u2194 Salesforce integration patterns: Tableau Salesforce connector, Tableau for Salesforce, CRM Analytics alternative, Data Cloud + Tableau, embedded Tableau dashboards. Choose between connector modes (live, extract, direct-to-Data-Cloud). NOT for CRM Analytics Studio (use crm-analytics-foundation). NOT for generic Tableau Server setup.",
   "file_location": "skills/integration/tableau-salesforce-connector",
@@ -80,7 +80,6 @@
     "skills/integration/tableau-salesforce-connector/references/well-architected.md"
   ],
   "scripts": [
-    "skills/integration/tableau-salesforce-connector/scripts/__pycache__/check_tableau_salesforce_connector.cpython-314.pyc",
     "skills/integration/tableau-salesforce-connector/scripts/check_tableau_salesforce_connector.py"
   ],
   "tags": [

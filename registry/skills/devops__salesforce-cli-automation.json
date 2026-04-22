@@ -58,7 +58,7 @@
     "ec83be8a59fc07fa6407",
     "f1637c8a8a490d193857"
   ],
-  "content_hash": "1882e02ba11ae63af418fa8eb208a60d5895cceccb8e3d3c39424d63abe400c7",
+  "content_hash": "a86e61a3d38610c0c6c700530f17201a5a369154ab5672f479a696c16d008184",
   "dependencies": [
     "apex/sf-cli-and-sfdx-essentials",
     "devops/continuous-integration-testing"
@@ -90,7 +90,6 @@
     "skills/devops/salesforce-cli-automation/references/well-architected.md"
   ],
   "scripts": [
-    "skills/devops/salesforce-cli-automation/scripts/__pycache__/check_salesforce_cli_automation.cpython-314.pyc",
     "skills/devops/salesforce-cli-automation/scripts/check_salesforce_cli_automation.py"
   ],
   "tags": [

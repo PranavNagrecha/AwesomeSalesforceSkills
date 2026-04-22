@@ -58,7 +58,7 @@
     "fae8cfe185ba2c522991",
     "fcb072375bc93783dbfd"
   ],
-  "content_hash": "19bdde0be8c01b6c394b192fc2970412ad74dfa87d8974aeced665b9353e9193",
+  "content_hash": "3b9779597c0e9d545b8a773f6fdc2be86d296bceebaa4f6906781ebae064f5d0",
   "dependencies": [],
   "description": "Use when designing or reviewing list views, compact layouts, highlights panels, and search-result presentation so users can scan, find, and act on records quickly across desktop and mobile. Triggers: 'too many list views', 'compact layout not showing the right fields', 'search layouts vs list views', 'mobile highlights panel'. NOT for page layout design, Dynamic Forms strategy, or record-type architecture.",
   "file_location": "skills/admin/list-views-and-compact-layouts",
@@ -86,7 +86,6 @@
     "skills/admin/list-views-and-compact-layouts/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/list-views-and-compact-layouts/scripts/__pycache__/check_list_views_and_compact_layouts.cpython-314.pyc",
     "skills/admin/list-views-and-compact-layouts/scripts/check_list_views_and_compact_layouts.py"
   ],
   "tags": [

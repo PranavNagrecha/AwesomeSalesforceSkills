@@ -28,7 +28,7 @@
     "e51b6bc7fc22920fdfc7",
     "ea6e94e494ca8901f1e2"
   ],
-  "content_hash": "8ec918094673b4f18ee9a5c0d64f88f382d9d661482f5c4d3d724ab8b63b3db3",
+  "content_hash": "34e3cf397ea8785d32fb4ecea1d3b426b95823136ec982b2d5c4acbff9e65b18",
   "dependencies": [],
   "description": "Design versioning for custom Apex REST endpoints: URI versioning, backward compatibility, deprecation sunset. NOT for consuming external APIs.",
   "file_location": "skills/integration/api-versioning-strategy",
@@ -56,7 +56,6 @@
     "skills/integration/api-versioning-strategy/references/well-architected.md"
   ],
   "scripts": [
-    "skills/integration/api-versioning-strategy/scripts/__pycache__/check_api_versioning_strategy.cpython-314.pyc",
     "skills/integration/api-versioning-strategy/scripts/check_api_versioning_strategy.py"
   ],
   "tags": [

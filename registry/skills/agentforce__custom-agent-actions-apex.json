@@ -62,7 +62,7 @@
     "e818d52704631a849adf",
     "f7516fe9fe9be46a50e5"
   ],
-  "content_hash": "874fdcc91c69d3151897677fea24be6c28e5cb88414db55ae5a6d7da3b92a65a",
+  "content_hash": "bb8209e41b1b3c9d1e6c085f663cfe7ee1d5c8481276aedf63a4d2c7c6a0bd3f",
   "dependencies": [],
   "description": "Use when building custom Apex-based actions for Agentforce agents: designing @InvocableMethod classes for Atlas Reasoning Engine invocation, defining input/output schema, handling errors, and managing security context. NOT for standard out-of-the-box agent actions, Flow-based actions, or general @InvocableMethod usage in Flow (use flow/* skills).",
   "file_location": "skills/agentforce/custom-agent-actions-apex",
@@ -92,7 +92,6 @@
     "skills/agentforce/custom-agent-actions-apex/references/well-architected.md"
   ],
   "scripts": [
-    "skills/agentforce/custom-agent-actions-apex/scripts/__pycache__/check_custom_agent_actions_apex.cpython-314.pyc",
     "skills/agentforce/custom-agent-actions-apex/scripts/check_custom_agent_actions_apex.py"
   ],
   "tags": [

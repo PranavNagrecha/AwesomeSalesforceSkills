@@ -61,7 +61,7 @@
     "f930795a93dc94a79148",
     "fc30af90e74bb526a641"
   ],
-  "content_hash": "71bcf62757319df8ffc27a424bce3f840a68670a9676292f4b57552516dfbe1f",
+  "content_hash": "97ff6f96e44412b8a00a3bc1f31558c5e876fa8ae858f1ed35fe559125b937fd",
   "dependencies": [],
   "description": "Use when diagnosing or preventing UNABLE_TO_LOCK_ROW errors, record lock contention in Apex or Bulk API loads, FOR UPDATE locking, parent-child lock escalation, and deadlock scenarios. Triggers: 'UNABLE_TO_LOCK_ROW', 'record lock contention', 'FOR UPDATE SOQL', 'deadlock', 'lock timeout'. NOT for approval-process record locking (admin/approval-processes) or optimistic concurrency via timestamps.",
   "file_location": "skills/apex/record-locking-and-contention",
@@ -91,7 +91,6 @@
     "skills/apex/record-locking-and-contention/references/well-architected.md"
   ],
   "scripts": [
-    "skills/apex/record-locking-and-contention/scripts/__pycache__/check_record_locking_and_contention.cpython-314.pyc",
     "skills/apex/record-locking-and-contention/scripts/check_record_locking_and_contention.py"
   ],
   "tags": [

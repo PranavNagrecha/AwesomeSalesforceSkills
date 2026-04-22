@@ -104,7 +104,7 @@
     "fe21d2f42f0e89a33417",
     "ffbaa4a61af18da03721"
   ],
-  "content_hash": "808fdab8bee4e2a2cbb6d838186aa7c96ca00222af1323b08de5a454f6c85892",
+  "content_hash": "c426eb37300328f9bae3e677fea03474235ecd7c38e16c428756669fa25257a3",
   "dependencies": [],
   "description": "Use when designing the architecture for AML/KYC compliance workflows on Salesforce \u2014 covering verification orchestration, third-party screening integration patterns, risk scoring design, and regulatory data flow. Triggers: AML architecture, KYC verification workflow design, sanctions screening integration, customer risk rating design, onboarding compliance workflow, watchlist screening Salesforce, FinCEN / FATF obligation data flow, BSA compliance architecture. NOT for implementing KYC data collection forms or FSC Action Plans (use admin/fsc-action-plans). NOT for configuring FSC Identity Verification for contact-center caller authentication. NOT for production screening vendor ISV configuration.",
   "file_location": "skills/architect/aml-kyc-process-architecture",
@@ -141,7 +141,6 @@
     "skills/architect/aml-kyc-process-architecture/references/well-architected.md"
   ],
   "scripts": [
-    "skills/architect/aml-kyc-process-architecture/scripts/__pycache__/check_aml_kyc_process_architecture.cpython-314.pyc",
     "skills/architect/aml-kyc-process-architecture/scripts/check_aml_kyc_process_architecture.py"
   ],
   "tags": [

@@ -100,7 +100,7 @@
     "f7d8498d73a22c1f82a8",
     "fc9ebf784ac5fabfc98d"
   ],
-  "content_hash": "ed56915397a3eb6d726d0bf6fbd116e2e75d28b84f58ffea553e9d277b00a74f",
+  "content_hash": "b1796a24fa926ef835002571eeebaa5dcd77eb1dda06e625429218fc09dc4aaa",
   "dependencies": [
     "admin/household-model-configuration",
     "admin/financial-account-setup",
@@ -142,7 +142,6 @@
     "skills/architect/fsc-architecture-patterns/references/well-architected.md"
   ],
   "scripts": [
-    "skills/architect/fsc-architecture-patterns/scripts/__pycache__/check_fsc_architecture_patterns.cpython-314.pyc",
     "skills/architect/fsc-architecture-patterns/scripts/check_fsc_architecture_patterns.py"
   ],
   "tags": [

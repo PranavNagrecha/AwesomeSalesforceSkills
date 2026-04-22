@@ -28,7 +28,7 @@
     "f46f9b9f3b1ff072f21c",
     "ff112f0d3296b7cef82d"
   ],
-  "content_hash": "2f5f3999177d65db421331b38d901dd1504d697750c52faee7bf99c5a855a5e2",
+  "content_hash": "1a723d963dcedc6b4b4e0b1e72efe64874cbffb798bbd9b3d6be65b35c21a023",
   "dependencies": [],
   "description": "Use DevOps Center for work item tracking, org-based release pipelines, and merging into existing SFDX workflows. NOT for first-time setup.",
   "file_location": "skills/devops/devops-center-advanced",
@@ -56,7 +56,6 @@
     "skills/devops/devops-center-advanced/references/well-architected.md"
   ],
   "scripts": [
-    "skills/devops/devops-center-advanced/scripts/__pycache__/check_devops_center_advanced.cpython-314.pyc",
     "skills/devops/devops-center-advanced/scripts/check_devops_center_advanced.py"
   ],
   "tags": [

@@ -83,7 +83,7 @@
     "fa831056af435c88bb6d",
     "fa9c4d17f969a841088c"
   ],
-  "content_hash": "ec2d424f6e0c71c509324b1ee501254c9e5dc8c7a239083b4930e2367fe519df",
+  "content_hash": "fb051648feb52cf63c3b839627a57d4d9d21ced4906b5e51f0bd7136068e99b9",
   "dependencies": [],
   "description": "Lead data import quality and deduplication strategy: matching rule design for Leads, Data Import Wizard dedup behavior, Web-to-Lead data quality controls, cross-object Lead-to-Contact fuzzy dedup, and enrichment patterns. Use when importing leads from CSV/list files, configuring duplicate detection for incoming leads, diagnosing why duplicate leads are bypassing rules, or designing web form data quality workflows. Triggers: leads from a trade show import are creating duplicates, web-to-lead form submissions are bypassing duplicate rules, deduplicating leads against existing contacts before conversion, setting up matching rules for lead imports. NOT for Data Loader mechanics or Bulk API setup (use data/bulk-api-patterns). NOT for large-scale merge execution across millions of records (use data/large-scale-deduplication). NOT for post-conversion record merge behavior (use data/record-merge-implications).",
   "file_location": "skills/data/lead-data-import-and-dedup",
@@ -121,7 +121,6 @@
     "skills/data/lead-data-import-and-dedup/references/well-architected.md"
   ],
   "scripts": [
-    "skills/data/lead-data-import-and-dedup/scripts/__pycache__/check_lead_data_import_and_dedup.cpython-314.pyc",
     "skills/data/lead-data-import-and-dedup/scripts/check_lead_data_import_and_dedup.py"
   ],
   "tags": [

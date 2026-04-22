@@ -108,7 +108,7 @@
     "fa7a20970376e7d39702",
     "fbbd9d00c3c8b20160ab"
   ],
-  "content_hash": "6b908256d723abee8e2249f204a78bcd96c9c546f6b1938f4dbf750bde0bfd64",
+  "content_hash": "08a121762a0969d9866bdd5b0da25118555d9d0e056f2643385af7dccf924cc0",
   "dependencies": [
     "product-catalog-data-model",
     "cpq-data-model"
@@ -147,7 +147,6 @@
     "skills/data/product-catalog-migration-cpq/references/well-architected.md"
   ],
   "scripts": [
-    "skills/data/product-catalog-migration-cpq/scripts/__pycache__/check_product_catalog_migration_cpq.cpython-314.pyc",
     "skills/data/product-catalog-migration-cpq/scripts/check_product_catalog_migration_cpq.py"
   ],
   "tags": [

@@ -55,7 +55,7 @@
     "fcf7013ec43a7e7e257f",
     "fdff5b2be31c66bfe588"
   ],
-  "content_hash": "1ccf671859ef1fd742e277a20807fef6d9aae1525340df3a1195db35ad6bbb5e",
+  "content_hash": "4c7106c4dd1b0d9dbb2e33edea8eaf92053cb3edaa21cf19649f502e2588a026",
   "dependencies": [],
   "description": "Use when migrating product catalog data into Salesforce B2B Commerce \u2014 covers category hierarchy, product attributes, images, pricing, and variant structure using the Commerce Import API. NOT for CPQ product catalog migration, post-migration catalog configuration, or commerce catalog taxonomy planning.",
   "file_location": "skills/data/product-catalog-migration-commerce",
@@ -83,7 +83,6 @@
     "skills/data/product-catalog-migration-commerce/references/well-architected.md"
   ],
   "scripts": [
-    "skills/data/product-catalog-migration-commerce/scripts/__pycache__/check_product_catalog_migration_commerce.cpython-314.pyc",
     "skills/data/product-catalog-migration-commerce/scripts/check_product_catalog_migration_commerce.py"
   ],
   "tags": [

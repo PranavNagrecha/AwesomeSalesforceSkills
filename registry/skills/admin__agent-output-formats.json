@@ -65,7 +65,7 @@
     "fcc7a714834ce9fe67e6",
     "ff8de89ccb44aeae2d0e"
   ],
-  "content_hash": "2bdbc0cb6a320f59c3568c5372811633cd97bf40796dc0b6e0205c6902690850",
+  "content_hash": "fd4a483ec2f2ddd6547b8eacbf426523c864f0897a4217448e5bdd5d768b8d66",
   "dependencies": [],
   "description": "Convert the canonical markdown+JSON deliverable of any SfSkills runtime agent into Excel, PDF, CSV, Notion card, ServiceNow ticket, or similar downstream format WITHOUT polluting the consumer's project with new dependencies or regenerating from the agent's source logic. NOT for authoring new agent output formats (use DELIVERABLE_CONTRACT.md). NOT for data-export SOQL (use bulk-api-2-patterns).",
   "file_location": "skills/admin/agent-output-formats",
@@ -94,7 +94,6 @@
     "skills/admin/agent-output-formats/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/agent-output-formats/scripts/__pycache__/check_agent_output_formats.cpython-314.pyc",
     "skills/admin/agent-output-formats/scripts/check_agent_output_formats.py"
   ],
   "tags": [

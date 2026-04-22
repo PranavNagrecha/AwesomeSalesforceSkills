@@ -79,7 +79,7 @@
     "ec2901ea9631d593b9cd",
     "f326008fcc75c944c0eb"
   ],
-  "content_hash": "4584bd5d004090626a27fa5bae8f20f9ad96ff73c56e61f7cef596c03319471b",
+  "content_hash": "7798035d6d3757ef7ae7185d35f94208f12eb3cc019056b87ea3ab06bdfad15f",
   "dependencies": [],
   "description": "Use when designing, implementing, reviewing, or debugging Queueable Apex jobs that chain, use the Finalizer interface, pass state across transactions, or need controlled async depth. Trigger keywords: 'Queueable', 'System.enqueueJob', 'Finalizer', 'QueueableContext', 'AsyncOptions', 'stack depth', 'chained queueable'. NOT for basic async Apex mechanism selection (use async-apex), NOT for large-volume record processing where Batch Apex is the right tool (use batch-apex-patterns).",
   "file_location": "skills/apex/apex-queueable-patterns",
@@ -109,7 +109,6 @@
     "skills/apex/apex-queueable-patterns/references/well-architected.md"
   ],
   "scripts": [
-    "skills/apex/apex-queueable-patterns/scripts/__pycache__/check_apex_queueable_patterns.cpython-314.pyc",
     "skills/apex/apex-queueable-patterns/scripts/check_apex_queueable_patterns.py"
   ],
   "tags": [

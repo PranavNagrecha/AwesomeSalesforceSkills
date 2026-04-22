@@ -97,7 +97,7 @@
     "ff760dd3259bf0b32935",
     "fff4d1bcb269a4e9156b"
   ],
-  "content_hash": "e390a0f0af80b5ecdeb39343ce1d31c2144047006baf9cea809118a2dc754955",
+  "content_hash": "9fa76573f6d7a723ceadb8c27a5b1b2c85cfd7f84c4679b4e29a19b03bc337d8",
   "dependencies": [],
   "description": "Salesforce storage management: monitoring data storage vs file storage usage, diagnosing storage alerts, optimizing large text fields, choosing between Attachment and ContentDocument (Files), and planning storage reclamation. NOT for external storage integration (S3, MuleSoft file offload, Heroku Connect).",
   "file_location": "skills/data/data-storage-management",
@@ -131,7 +131,6 @@
     "skills/data/data-storage-management/references/well-architected.md"
   ],
   "scripts": [
-    "skills/data/data-storage-management/scripts/__pycache__/check_data_storage_management.cpython-314.pyc",
     "skills/data/data-storage-management/scripts/check_data_storage_management.py"
   ],
   "tags": [

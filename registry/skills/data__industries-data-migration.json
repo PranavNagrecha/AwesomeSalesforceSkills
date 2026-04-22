@@ -113,7 +113,7 @@
     "fc4507061da57d8ba195",
     "fc5400b57084eb75b3d1"
   ],
-  "content_hash": "209d471b9eb7fa68fd580933790b06a93b9601bca7ea01b5399857f4df55abd7",
+  "content_hash": "3bba6f968d9607e4a53b3750f539dbe4bf284189310ba852e912f93dd7e33b0d",
   "dependencies": [
     "data/data-migration-planning",
     "data/industries-data-model"
@@ -149,7 +149,6 @@
     "skills/data/industries-data-migration/references/well-architected.md"
   ],
   "scripts": [
-    "skills/data/industries-data-migration/scripts/__pycache__/check_industries_data_migration.cpython-314.pyc",
     "skills/data/industries-data-migration/scripts/check_industries_data_migration.py"
   ],
   "tags": [

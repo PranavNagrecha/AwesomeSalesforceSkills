@@ -96,7 +96,7 @@
     "f9e769a4cccb3d79d3e2",
     "fcb3ad053b62a7b5233f"
   ],
-  "content_hash": "0ef34feefaa522706cc47686caf554a9805ecfd3d14fe233b8578bdc7d4c4ed0",
+  "content_hash": "e6849ab648bf6a6a5f44ae4a6071726c6c574f1b1bf12ba8d0083d951984736c",
   "dependencies": [
     "scheduled-flows",
     "auto-launched-flow-patterns",
@@ -140,7 +140,6 @@
     "skills/flow/pause-elements-and-wait-events/references/well-architected.md"
   ],
   "scripts": [
-    "skills/flow/pause-elements-and-wait-events/scripts/__pycache__/check_pause_elements_and_wait_events.cpython-314.pyc",
     "skills/flow/pause-elements-and-wait-events/scripts/check_pause_elements_and_wait_events.py"
   ],
   "tags": [

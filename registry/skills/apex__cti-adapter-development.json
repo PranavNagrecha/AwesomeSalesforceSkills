@@ -86,7 +86,7 @@
     "fa3575ac26fcbb428b8f",
     "fb7215433713cd4567c9"
   ],
-  "content_hash": "14e7445b1a53511e7b8b1214972174b142fe2d9eaebd84ae7c3efecb446bbddb",
+  "content_hash": "6e8d7ceffba107929a7bc76d43748426bcf059c75609201c16a5f5926bc2dbfa",
   "dependencies": [],
   "description": "Use when building or debugging a browser-based CTI softphone adapter using the Salesforce Open CTI JavaScript API \u2014 covers callcenter.xml definition, Lightning utility item registration, core API methods (enableClickToDial, onClickToDial, screenPop, setSoftphonePanelHeight, saveLog), call logging as Task, and the lightning-click-to-dial LWC component. NOT for Service Cloud Voice Amazon Connect setup, Omni-Channel routing configuration, or CTI adapter AppExchange package selection.",
   "file_location": "skills/apex/cti-adapter-development",
@@ -120,7 +120,6 @@
     "skills/apex/cti-adapter-development/references/well-architected.md"
   ],
   "scripts": [
-    "skills/apex/cti-adapter-development/scripts/__pycache__/check_cti_adapter_development.cpython-314.pyc",
     "skills/apex/cti-adapter-development/scripts/check_cti_adapter_development.py"
   ],
   "tags": [

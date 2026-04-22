@@ -112,7 +112,7 @@
     "fc0dfe1a6fe6ac15d0de",
     "fe8a56da69fe07b7e7c0"
   ],
-  "content_hash": "342fbc81b80ed4ad6033ca1875ea5d480f28f87ded6c68d5790194b2564b3d85",
+  "content_hash": "23eeacec04c906d3d11349eede74b0e14cf3c028f58a9ba17067316349fd7eaa",
   "dependencies": [
     "devops/scratch-org-management",
     "apex/sf-cli-and-sfdx-essentials"
@@ -149,7 +149,6 @@
     "skills/devops/github-actions-for-salesforce/references/well-architected.md"
   ],
   "scripts": [
-    "skills/devops/github-actions-for-salesforce/scripts/__pycache__/check_github_actions_for_salesforce.cpython-314.pyc",
     "skills/devops/github-actions-for-salesforce/scripts/check_github_actions_for_salesforce.py"
   ],
   "tags": [

@@ -75,7 +75,7 @@
     "fbd2240a14b08fc95afd",
     "fe8ecf78aec7abfabf77"
   ],
-  "content_hash": "51817928ca87267094bd59ad9be45ec6f9c310a9ed0ea7df36e5c7bb4023254b",
+  "content_hash": "fc148ccfa04dd202c486ea428dd96babbd72e9ea44fa92ec531c780cf92f971c",
   "dependencies": [],
   "description": "Configure record visibility for external users (Customer Community, Customer Community Plus, Partner Community) using External OWDs, Sharing Sets, and external sharing rules. Trigger keywords: sharing data with external users, portal user record visibility, Experience Cloud sharing model, sharing set configuration, external OWD setup, Customer Community data access, High-Volume Portal sharing. NOT for internal sharing model configuration. NOT for internal user roles and hierarchies. NOT for guest user profile hardening.",
   "file_location": "skills/data/external-user-data-sharing",
@@ -109,7 +109,6 @@
     "skills/data/external-user-data-sharing/references/well-architected.md"
   ],
   "scripts": [
-    "skills/data/external-user-data-sharing/scripts/__pycache__/check_external_user_data_sharing.cpython-314.pyc",
     "skills/data/external-user-data-sharing/scripts/check_external_user_data_sharing.py"
   ],
   "tags": [

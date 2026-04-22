@@ -89,7 +89,7 @@
     "ff14df361cb31e68a9e6",
     "ff929aeca19160bf8202"
   ],
-  "content_hash": "e9b7b7f4929e7a241f4b0efd27e63b7620f7dcbdc9c170b39211670fa06f520a",
+  "content_hash": "4a4f063fa1861f130496ec3a5c1d0a6366dcb56a4fdb72f5e0330b49656bc156",
   "dependencies": [],
   "description": "Use when designing conversational AI architecture on Salesforce: Einstein Bot dialog design, Agentforce Agent topic planning, intent models, NLU training strategy, bot-to-agent handoff, escalation paths, knowledge article surfacing, and bot analytics. Triggers: 'einstein bot architecture', 'agentforce dialog design', 'bot handoff to agent', 'intent model training'. NOT for bot implementation code, Apex action authoring, Flow screen design, or Omni-Channel routing rule configuration.",
   "file_location": "skills/architect/einstein-bot-architecture",
@@ -120,7 +120,6 @@
     "skills/architect/einstein-bot-architecture/references/well-architected.md"
   ],
   "scripts": [
-    "skills/architect/einstein-bot-architecture/scripts/__pycache__/check_einstein_bot_architecture.cpython-314.pyc",
     "skills/architect/einstein-bot-architecture/scripts/check_einstein_bot_architecture.py"
   ],
   "tags": [

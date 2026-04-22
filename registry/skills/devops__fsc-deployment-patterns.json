@@ -117,7 +117,7 @@
     "f781871b2d4eed69c0db",
     "f8faf5d1bf505607c10d"
   ],
-  "content_hash": "387a2328174afa7c2f1de59d0f6c6506f33bd1c3acfefc47c6be472de558c35b",
+  "content_hash": "c3f78fc67dbf782e4f4fa8fbe92a9c234e1df3921756f940356035d5e3def471",
   "dependencies": [],
   "description": "Use when planning or executing metadata deployments for Financial Services Cloud (FSC) \u2014 including Person Account enablement sequencing, Account record-type ordering, Compliant Data Sharing (CDS) activation, Participant Role custom metadata, and namespace-aware packaging. Triggers: 'FSC deployment fails', 'Person Accounts must be enabled before deploying household record types', 'CDS share table not populating after deploy', 'namespace mismatch FinServ__ vs standard objects', 'IndustriesSettings metadata not taking effect'. NOT for general Salesforce metadata deployment patterns (use pre-deployment-checklist or metadata-api-coverage-gaps), NOT for FSC data model design decisions (use fsc-data-model), NOT for FSC architecture planning (use fsc-architecture-patterns).",
   "file_location": "skills/devops/fsc-deployment-patterns",
@@ -153,7 +153,6 @@
     "skills/devops/fsc-deployment-patterns/references/well-architected.md"
   ],
   "scripts": [
-    "skills/devops/fsc-deployment-patterns/scripts/__pycache__/check_fsc_deployment_patterns.cpython-314.pyc",
     "skills/devops/fsc-deployment-patterns/scripts/check_fsc_deployment_patterns.py"
   ],
   "tags": [

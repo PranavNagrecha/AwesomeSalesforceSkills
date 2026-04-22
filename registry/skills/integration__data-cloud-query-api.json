@@ -58,7 +58,7 @@
     "e57fbd96d9cce9a9d627",
     "e8e9b7fddaac78922ceb"
   ],
-  "content_hash": "e83c9b927837a0c700b1019782e4a400408140c5ace1972ce2afe1fa2dce488a",
+  "content_hash": "5f5176f577b1db22c8975022fab61e2c7266e3170d68eae678cc790ecc337dc6",
   "dependencies": [],
   "description": "Use this skill when querying unified profile data, calculated insights, or Data Lake Objects from Data Cloud using ANSI SQL via the Query V2 or Query Connect APIs. Triggers on: SQL queries against Data Cloud, querying unified individuals, querying DMOs via API, paginating large Data Cloud result sets. NOT for SOQL queries against standard Salesforce objects, not for Data Cloud segment filtering in the UI, not for vector/semantic search (use data-cloud-vector-search-dev).",
   "file_location": "skills/integration/data-cloud-query-api",
@@ -88,7 +88,6 @@
     "skills/integration/data-cloud-query-api/references/well-architected.md"
   ],
   "scripts": [
-    "skills/integration/data-cloud-query-api/scripts/__pycache__/check_data_cloud_query_api.cpython-314.pyc",
     "skills/integration/data-cloud-query-api/scripts/check_data_cloud_query_api.py"
   ],
   "tags": [

@@ -64,7 +64,7 @@
     "f81add6ec1383deb8c38",
     "fce45be9210a35b2d0dc"
   ],
-  "content_hash": "768e234efc378cd85af3a9a63e2cb65a0e36013dc926480cc9e77c0f6926cbb1",
+  "content_hash": "d1026108797931d4768673fe413a69657402cd78f82bdce1098c17e8251b9b4e",
   "dependencies": [],
   "description": "Use when designing or reviewing Agentforce actions, including Flow actions, Apex invocable actions, prompt-template actions, action naming, input and output contracts, confirmation requirements, and safe error behavior. Triggers: 'agent actions', 'flow action for agent', 'agent invocable action', 'action schema design', 'agent action error handling'. NOT for topic boundary design or general Apex invocable guidance when the main concern is not an agent-facing action contract.",
   "file_location": "skills/agentforce/agent-actions",
@@ -92,7 +92,6 @@
     "skills/agentforce/agent-actions/references/well-architected.md"
   ],
   "scripts": [
-    "skills/agentforce/agent-actions/scripts/__pycache__/check_agent_actions.cpython-314.pyc",
     "skills/agentforce/agent-actions/scripts/check_agent_actions.py"
   ],
   "tags": [

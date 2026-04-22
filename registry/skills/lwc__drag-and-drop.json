@@ -28,7 +28,7 @@
     "db2dc24d14097954af47",
     "efb9e573ff9457eb271d"
   ],
-  "content_hash": "cdcd553af3fa9eb08a0cd32751d14ea150f4ab620326646a4a29dd87a7fbcfa7",
+  "content_hash": "738cdc5c73c27957630816b405fdbf585b2b0e1c2a7c043c5b8c3939d5aac8af",
   "dependencies": [],
   "description": "Implement drag-and-drop in LWC using HTML5 Drag and Drop API, keyboard alternatives, and accessible announcements. NOT for kanban migration from legacy Lightning.",
   "file_location": "skills/lwc/drag-and-drop",
@@ -54,7 +54,6 @@
     "skills/lwc/drag-and-drop/references/well-architected.md"
   ],
   "scripts": [
-    "skills/lwc/drag-and-drop/scripts/__pycache__/check_drag_and_drop.cpython-314.pyc",
     "skills/lwc/drag-and-drop/scripts/check_drag_and_drop.py"
   ],
   "tags": [

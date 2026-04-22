@@ -115,7 +115,7 @@
     "fb21b26949fd131df34b",
     "ff1ff537bd4e345ed305"
   ],
-  "content_hash": "12294d0af07a678595e63dbbfdb59ceaaff0546d1847e6d536967becbe630687",
+  "content_hash": "5fa526f23be693043c75b0d5b7577f74d2da87fd48202a9a06303ebe3a61392a",
   "dependencies": [],
   "description": "Use this skill when designing the license model, cloud topology, and org structure for a Salesforce Health Cloud implementation that involves more than one Salesforce cloud product (Experience Cloud patient portals, OmniStudio engagement flows, Marketing Cloud care campaigns, or Service Cloud case management). Trigger keywords: Health Cloud multi-cloud, patient portal licensing, Health Cloud Experience Cloud add-on, OmniStudio Health Cloud PSL, Marketing Cloud HIPAA BAA healthcare, multi-cloud healthcare org design. NOT for individual cloud configuration setup (e.g. configuring a single Health Cloud record page or a single Experience Cloud site), NOT for single-cloud Health Cloud implementations, and NOT for Health Cloud data model object definitions (see health-cloud-data-model skill).",
   "file_location": "skills/architect/health-cloud-multi-cloud-strategy",
@@ -149,7 +149,6 @@
     "skills/architect/health-cloud-multi-cloud-strategy/references/well-architected.md"
   ],
   "scripts": [
-    "skills/architect/health-cloud-multi-cloud-strategy/scripts/__pycache__/check_health_cloud_multi_cloud_strategy.cpython-314.pyc",
     "skills/architect/health-cloud-multi-cloud-strategy/scripts/check_health_cloud_multi_cloud_strategy.py"
   ],
   "tags": [

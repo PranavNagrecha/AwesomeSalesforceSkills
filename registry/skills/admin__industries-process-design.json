@@ -146,7 +146,7 @@
     "fcc619c8852502111e11",
     "fecc6493ef5907081e82"
   ],
-  "content_hash": "d93a3475ba6c957d6d6a19e253c343a9f05903c1efd8d1f3844d3dc9916caa20",
+  "content_hash": "6180cad5535bc416f76461b3f1e2b90c5ebd676f9081336674a21d929e2b8091",
   "dependencies": [
     "industries-insurance-setup",
     "industries-communications-setup",
@@ -189,7 +189,6 @@
     "skills/admin/industries-process-design/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/industries-process-design/scripts/__pycache__/check_industries_process_design.cpython-314.pyc",
     "skills/admin/industries-process-design/scripts/check_industries_process_design.py"
   ],
   "tags": [

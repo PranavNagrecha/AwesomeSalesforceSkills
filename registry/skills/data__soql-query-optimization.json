@@ -97,7 +97,7 @@
     "faf822ff3cc163cb6343",
     "fd0c7e8f9c043f87677a"
   ],
-  "content_hash": "3cceaf6e293d88e2eacaff1c4bee00a9282f51a546456db00a4465e02d70e104",
+  "content_hash": "6cf57b17be57e9ad950e2feddb5f7827d3fd51a10919c3e8b2875808db1e5baf",
   "dependencies": [],
   "description": "Use when a SOQL query is running slowly, causing timeouts, or returning UNABLE_TO_LOCK_ROW errors in large data volume orgs. Covers index-aware query writing, selectivity rules, the Query Plan tool, skinny tables, and dynamic field-set queries. Triggers: slow soql query, query timeout, non-selective query, query plan tool, index usage, soql optimization, large object performance. NOT for Apex CPU or heap governor limit issues (use apex-cpu-and-heap-optimization) or for writing basic SOQL (use soql-fundamentals).",
   "file_location": "skills/data/soql-query-optimization",
@@ -129,7 +129,6 @@
     "skills/data/soql-query-optimization/references/well-architected.md"
   ],
   "scripts": [
-    "skills/data/soql-query-optimization/scripts/__pycache__/check_soql_query_optimization.cpython-314.pyc",
     "skills/data/soql-query-optimization/scripts/check_soql_query_optimization.py"
   ],
   "tags": [

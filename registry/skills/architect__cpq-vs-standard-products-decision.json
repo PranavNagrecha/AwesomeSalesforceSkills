@@ -67,7 +67,7 @@
     "f62c314d0ead05eb64e1",
     "fb71fbb3f647ad09207b"
   ],
-  "content_hash": "b4c39c324c45a3ba7d7bfae260870210e1466e247491cf9fb5f75cc3ff9bcebb",
+  "content_hash": "f70869223bdafc23b2916ceda69f4f667313ffa72ef2a0325246dbe59a4262cf",
   "dependencies": [],
   "description": "Use when deciding whether to implement Salesforce CPQ or stay with standard Products and Pricebooks for quoting and pricing. Triggers: 'should we buy CPQ or use standard pricebooks', 'is CPQ worth the cost for our quoting process', 'product bundling without CPQ', 'guided selling vs manual product selection', 'complex pricing rules or multi-dimensional discounting'. NOT for CPQ implementation details, NOT for CPQ package installation or configuration, NOT for Revenue Cloud Advanced.",
   "file_location": "skills/architect/cpq-vs-standard-products-decision",
@@ -97,7 +97,6 @@
     "skills/architect/cpq-vs-standard-products-decision/references/well-architected.md"
   ],
   "scripts": [
-    "skills/architect/cpq-vs-standard-products-decision/scripts/__pycache__/check_cpq_vs_standard_products_decision.cpython-314.pyc",
     "skills/architect/cpq-vs-standard-products-decision/scripts/check_cpq_vs_standard_products_decision.py"
   ],
   "tags": [

@@ -79,7 +79,7 @@
     "f301978974434b3b3096",
     "f482b7f7db1243b90f99"
   ],
-  "content_hash": "86e27f047824fe131e9a06f7ae89ca140a467e48013a3125d5d2f6d75694569a",
+  "content_hash": "2499d7a827427d235bfc7b4a292a2fddd14256265e09b6711dc114a9280fb15a",
   "dependencies": [],
   "description": "Use when building custom login pages, social SSO flows, self-registration flows, or passwordless OTP login for Experience Cloud (community) sites. Trigger keywords: custom login page Experience Cloud, social SSO community portal, passwordless login Experience Cloud, self-registration custom flow, headless authentication community, auth provider OIDC SAML site. NOT for internal SSO configuration (use identity/sso skills). NOT for standard username/password authentication with no customization.",
   "file_location": "skills/lwc/experience-cloud-authentication",
@@ -114,7 +114,6 @@
     "skills/lwc/experience-cloud-authentication/references/well-architected.md"
   ],
   "scripts": [
-    "skills/lwc/experience-cloud-authentication/scripts/__pycache__/check_experience_cloud_authentication.cpython-314.pyc",
     "skills/lwc/experience-cloud-authentication/scripts/check_experience_cloud_authentication.py"
   ],
   "tags": [

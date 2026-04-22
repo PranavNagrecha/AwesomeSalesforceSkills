@@ -115,7 +115,7 @@
     "f9a07e1d0fcaf2a8f695",
     "f9b54442fdfe369c2691"
   ],
-  "content_hash": "f6e0d7a50749e70283c99d097aa6020368b84b459f19f6708261e13e58acb7ac",
+  "content_hash": "21bb2b78f08df74c7870a9caba891790d887b981e30281260b8e0fb478498fdc",
   "dependencies": [],
   "description": "Use this skill when Service Cloud orgs are consuming excessive data or file storage due to Case-related records, or when compliance requirements demand structured retention and deletion of case history. Trigger keywords: EmailMessage bloat, Email-to-Case storage, ContentDocument archival, case attachment cleanup, compliance retention policy, service storage optimization. NOT for generic data archival across non-Service objects \u2014 use data-archival-strategies instead. NOT for CPQ, Sales Cloud, or FSL record archival. NOT for purging custom object data unrelated to Cases.",
   "file_location": "skills/data/service-data-archival",
@@ -147,7 +147,6 @@
     "skills/data/service-data-archival/references/well-architected.md"
   ],
   "scripts": [
-    "skills/data/service-data-archival/scripts/__pycache__/check_service_data_archival.cpython-314.pyc",
     "skills/data/service-data-archival/scripts/check_service_data_archival.py"
   ],
   "tags": [

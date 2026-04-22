@@ -58,7 +58,7 @@
     "fb96618b56261d61dcc2",
     "fd3b7e04f3c0d2e08bcd"
   ],
-  "content_hash": "f3ea219c9e64165272a5c6d1210fc588c868ed81d554d03ac1b3d3d24509c7a9",
+  "content_hash": "65d65c29de059b10e52380aa343212fa2ab110cea0fe25e721d2d522d0c6feee",
   "dependencies": [],
   "description": "Use this skill to gather, document, and validate FlexCard layout requirements before development begins \u2014 covering data visualization needs, action requirements, embedded component specifications, and user context mapping. Trigger keywords: FlexCard requirements, FlexCard BA, FlexCard layout design, FlexCard data sources, FlexCard actions. NOT for FlexCard development implementation, Card Designer configuration, or standard Lightning component requirements.",
   "file_location": "skills/admin/flexcard-requirements",
@@ -89,7 +89,6 @@
     "skills/admin/flexcard-requirements/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/flexcard-requirements/scripts/__pycache__/check_flexcard_requirements.cpython-314.pyc",
     "skills/admin/flexcard-requirements/scripts/check_flexcard_requirements.py"
   ],
   "tags": [

@@ -72,7 +72,7 @@
     "f6815709d9681617a2ea",
     "f927b12851877ae8d18a"
   ],
-  "content_hash": "b482ecb6c22ec1a407810b72247c0ba4792eb471c7492861633feb0a95d3d84c",
+  "content_hash": "4f3495df3d8f833870ea9cf63ac5693241418d1f133923ecb507576b4f7d51ff",
   "dependencies": [],
   "description": "Use this skill when bulk-importing Knowledge articles into Salesforce from an external source using the ZIP-based import mechanism. Trigger keywords: knowledge import, article import, migrate help center, bulk upload articles, CSV article import, knowledge base migration. NOT for Knowledge admin setup (article types, data categories, permission sets), ongoing article management, or translation workflows once articles are live.",
   "file_location": "skills/data/knowledge-article-import",
@@ -104,7 +104,6 @@
     "skills/data/knowledge-article-import/references/well-architected.md"
   ],
   "scripts": [
-    "skills/data/knowledge-article-import/scripts/__pycache__/check_knowledge_article_import.cpython-314.pyc",
     "skills/data/knowledge-article-import/scripts/check_knowledge_article_import.py"
   ],
   "tags": [

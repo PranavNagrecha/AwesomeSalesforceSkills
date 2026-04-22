@@ -100,7 +100,7 @@
     "f6a4880bacaa164a8cb9",
     "ffed65ccd51e93af93dc"
   ],
-  "content_hash": "b6c70c92b06f8474f58fdce1e6cdd0e577acca23ceaf87dc3c16565b20467878",
+  "content_hash": "53006573504f1fead7f275d9953da1e2da81ef90730364e90b7297e354553b54",
   "dependencies": [],
   "description": "Use when diagnosing slow Experience Cloud site load times, planning CDN and caching strategy, optimizing page weight, or advising on component loading patterns for Aura and LWR-based sites. Trigger phrases: 'Experience Cloud site loads slowly', 'CDN cache not updating after publish', 'LWR site stale after deployment', 'too many Apex calls on Experience Cloud page', 'browser caching Experience Builder', 'CDN configuration Experience Cloud', 'how to reduce page load time community site', 'Experience Cloud performance audit'. NOT for LWC component-level JavaScript performance (use lwc/lwc-performance). NOT for initial site setup (use admin/experience-cloud-site-setup). NOT for multi-site topology decisions (use architect/multi-site-architecture).",
   "file_location": "skills/architect/experience-cloud-performance",
@@ -134,7 +134,6 @@
     "skills/architect/experience-cloud-performance/references/well-architected.md"
   ],
   "scripts": [
-    "skills/architect/experience-cloud-performance/scripts/__pycache__/check_experience_cloud_performance.cpython-314.pyc",
     "skills/architect/experience-cloud-performance/scripts/check_experience_cloud_performance.py"
   ],
   "tags": [

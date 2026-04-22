@@ -102,7 +102,7 @@
     "fc87de848678ae35a794",
     "fe5ae3862798f51f4582"
   ],
-  "content_hash": "60439a553842bbaecd380468298fc7d41b5c3b5ccad7427db99f19c500716e5a",
+  "content_hash": "caa69a905dba8796ba4fb6cb6a2556b441d103cb6dc723816a8280a9c2a8eb3f",
   "dependencies": [
     "cpq-data-model",
     "cpq-architecture-patterns"
@@ -143,7 +143,6 @@
     "skills/admin/quote-to-cash-process/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/quote-to-cash-process/scripts/__pycache__/check_quote_to_cash_process.cpython-314.pyc",
     "skills/admin/quote-to-cash-process/scripts/check_quote_to_cash_process.py"
   ],
   "tags": [

@@ -31,7 +31,7 @@
     "e09adb25032ede53a6a2",
     "f674caa60c1cbce70167"
   ],
-  "content_hash": "80b0e4f890c772bc597bb1ad8b0bc4745b5772078f9b06f6c740e58d1d58747f",
+  "content_hash": "638f09411523554e96d90642695528ebde644ab206224b8bb9d0993777faad96",
   "dependencies": [],
   "description": "Design Invocable Apex actions that return deterministic, agent-friendly errors instead of surfacing raw exceptions to the LLM. NOT for generic Apex exception handling or Flow fault paths.",
   "file_location": "skills/agentforce/agent-action-error-handling",
@@ -58,7 +58,6 @@
     "skills/agentforce/agent-action-error-handling/references/well-architected.md"
   ],
   "scripts": [
-    "skills/agentforce/agent-action-error-handling/scripts/__pycache__/check_agent_action_error_handling.cpython-314.pyc",
     "skills/agentforce/agent-action-error-handling/scripts/check_agent_action_error_handling.py"
   ],
   "tags": [

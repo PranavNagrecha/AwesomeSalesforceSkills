@@ -105,7 +105,7 @@
     "fe6c7e0fc22787cf47e8",
     "ffe5a7fe09256adf13ad"
   ],
-  "content_hash": "340953c62d59855e3e2c17c9001e6e99292d3c4a2c4245214b0156715e36e699",
+  "content_hash": "bdbf1f2e8a375d34725de6f88d7173c3da92aa9487df19348db44eb5df38c78d",
   "dependencies": [],
   "description": "Use this skill when tuning CRM Analytics dataset performance through field selection, date granularity choices, dataset splitting strategy, and run-budget optimization. Trigger keywords: dataset too many fields, SAQL timeseries slow, epoch vs date storage, dataset field count limit, dataset partition, split dataset by year, CRM Analytics performance tuning. NOT for SOQL optimization, Salesforce report tuning, Data Cloud segmentation performance, or choosing between analytics tools.",
   "file_location": "skills/data/analytics-dataset-optimization",
@@ -139,7 +139,6 @@
     "skills/data/analytics-dataset-optimization/references/well-architected.md"
   ],
   "scripts": [
-    "skills/data/analytics-dataset-optimization/scripts/__pycache__/check_analytics_dataset_optimization.cpython-314.pyc",
     "skills/data/analytics-dataset-optimization/scripts/check_analytics_dataset_optimization.py"
   ],
   "tags": [

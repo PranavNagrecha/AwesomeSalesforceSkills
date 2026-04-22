@@ -74,7 +74,7 @@
     "fee113e2cc873c9dd0f1",
     "fef2e3be4615ab72d010"
   ],
-  "content_hash": "3dadda4870214f21e36873d92623ed26f7ca1fdc24a2119112ca3bd20649e8ef",
+  "content_hash": "bfca3136b72e711f8eb34ea801a5f4e9514f271492ae9f80db6b3da6b8ed7a2f",
   "dependencies": [
     "dynamic-forms-and-actions",
     "record-types-and-page-layouts"
@@ -114,7 +114,6 @@
     "skills/admin/lightning-app-builder-advanced/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/lightning-app-builder-advanced/scripts/__pycache__/check_lightning_app_builder_advanced.cpython-314.pyc",
     "skills/admin/lightning-app-builder-advanced/scripts/check_lightning_app_builder_advanced.py"
   ],
   "tags": [

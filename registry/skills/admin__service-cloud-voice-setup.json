@@ -81,7 +81,7 @@
     "fa3cbea53d5e1be25b60",
     "fd57c5d8e0f241bbbed5"
   ],
-  "content_hash": "efe5f7ef55b7c7dbf990edb8f4cb810ac6e9ad5427f2463dd2d20c5a44c21fba",
+  "content_hash": "43474b2cf92c69b26ecb524a5c83926266f9d5a35351011fc1dc9879f2249e72",
   "dependencies": [
     "omni-channel-routing"
   ],
@@ -119,7 +119,6 @@
     "skills/admin/service-cloud-voice-setup/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/service-cloud-voice-setup/scripts/__pycache__/check_service_cloud_voice_setup.cpython-314.pyc",
     "skills/admin/service-cloud-voice-setup/scripts/check_service_cloud_voice_setup.py"
   ],
   "tags": [

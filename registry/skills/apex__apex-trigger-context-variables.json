@@ -48,7 +48,7 @@
     "f762409b920c4f26e6fd",
     "ff4ade392876e0e7f88d"
   ],
-  "content_hash": "9a0730894d28744ad193529e3b8d1ff83bcafb1d7e3d55bfa86c35ecb826bad1",
+  "content_hash": "4bbdb93994d96b1ef16e955785dc30b4fa26afc94a9561d99304c125ddea78c0",
   "dependencies": [],
   "description": "Apex Trigger.new / Trigger.old / Trigger.newMap / Trigger.oldMap / Trigger.isInsert etc.: when each is populated, null-safety, recursion depth, trigger event matrix. NOT for trigger framework architecture (use apex-trigger-handler-framework). NOT for bulk patterns (use apex-bulkification-patterns).",
   "file_location": "skills/apex/apex-trigger-context-variables",
@@ -76,7 +76,6 @@
     "skills/apex/apex-trigger-context-variables/references/well-architected.md"
   ],
   "scripts": [
-    "skills/apex/apex-trigger-context-variables/scripts/__pycache__/check_apex_trigger_context_variables.cpython-314.pyc",
     "skills/apex/apex-trigger-context-variables/scripts/check_apex_trigger_context_variables.py"
   ],
   "tags": [

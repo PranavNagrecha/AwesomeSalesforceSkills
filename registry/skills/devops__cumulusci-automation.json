@@ -92,7 +92,7 @@
     "fbb78579ec8fb0d85a57",
     "ffde434d0fc71752e7f6"
   ],
-  "content_hash": "7b2ccc341645b745ffe768d04013d61ef2c4219a82d5dd57626dd98567e2acc4",
+  "content_hash": "eb2e395fd8a3e647fa6c4d8a4bd0ed7b143aa266b3a3460b97e24d6b150d74f3",
   "dependencies": [],
   "description": "Use this skill when configuring CumulusCI (cci) for Salesforce project automation: authoring cumulusci.yml tasks and flows, customizing or composing standard flows, integrating Robot Framework acceptance tests, and running cci flows in CI pipelines with JWT-based authentication. Covers task class_path/options wiring, flow step ordering, org and source declarations, cross-project reuse via sources, and the standard flow library (dev_org, qa_org, ci_feature, install_beta). NOT for raw SFDX/sf CLI workflows without CumulusCI, scratch org pool management (use scratch-org-pools), unlocked or managed package versioning (use unlocked-package-development or second-generation-managed-packages), or Salesforce-native DevOps Center pipelines (use devops-center-pipeline).",
   "file_location": "skills/devops/cumulusci-automation",
@@ -128,7 +128,6 @@
     "skills/devops/cumulusci-automation/references/well-architected.md"
   ],
   "scripts": [
-    "skills/devops/cumulusci-automation/scripts/__pycache__/check_cumulusci_automation.cpython-314.pyc",
     "skills/devops/cumulusci-automation/scripts/check_cumulusci_automation.py"
   ],
   "tags": [

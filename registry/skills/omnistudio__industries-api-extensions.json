@@ -97,7 +97,7 @@
     "fd212d6e400e633e013a",
     "fd9398d3a174a16e328d"
   ],
-  "content_hash": "891066fd646d73359c7e2fde98b3ca06c8913140d70582c6d8be4a1aa3e9590e",
+  "content_hash": "527e362e62dcd2dea39e5b1074716db906938cf7fa2afcb84a2726ff1f8ddfa6",
   "dependencies": [],
   "description": "Use this skill when integrating with Salesforce Industries-specific API layers \u2014 Insurance Policy Business Connect API, Communications Cloud TM Forum Open APIs (TMF679, TMF680, etc.), Energy and Utilities Update Asset Status API, and Service Process Studio Connect APIs. Trigger keywords: Insurance policy issuance API, endorsement API, TMF679, Communications Cloud REST API, Update Asset Status, Service Process API, InsurancePolicy Connect API, sfiEnergy, industry-specific REST endpoint. NOT for standard Salesforce REST API, SOAP API, Bulk API, or platform event integration unrelated to an industry vertical.",
   "file_location": "skills/omnistudio/industries-api-extensions",
@@ -132,7 +132,6 @@
     "skills/omnistudio/industries-api-extensions/references/well-architected.md"
   ],
   "scripts": [
-    "skills/omnistudio/industries-api-extensions/scripts/__pycache__/check_industries_api_extensions.cpython-314.pyc",
     "skills/omnistudio/industries-api-extensions/scripts/check_industries_api_extensions.py"
   ],
   "tags": [

@@ -49,7 +49,7 @@
     "ebac05a7f495452f8167",
     "ffaf3ec2ff5a38e4834f"
   ],
-  "content_hash": "0493a79f5c0ddda9ab122b3c786e6e1621cd507da1ef99f3ea90223ef3e5b852",
+  "content_hash": "f7ae25fc35ba914ea54b7a62550d85ad75227e4a77d07d0a72f060ca0b2a6ece",
   "dependencies": [],
   "description": "Cross-cloud data deployment: designing the data handoff when an implementation spans Sales Cloud, Service Cloud, Marketing Cloud, Data Cloud, Commerce Cloud. Shared keys, identity resolution, sync vs event, CDC, Data Cloud as hub. NOT for single-cloud data model design (use sales-cloud-core-setup or service-cloud-core-setup). NOT for integration pattern selection (use integration-pattern-selection decision tree).",
   "file_location": "skills/architect/cross-cloud-data-deployment",
@@ -77,7 +77,6 @@
     "skills/architect/cross-cloud-data-deployment/references/well-architected.md"
   ],
   "scripts": [
-    "skills/architect/cross-cloud-data-deployment/scripts/__pycache__/check_cross_cloud_data_deployment.cpython-314.pyc",
     "skills/architect/cross-cloud-data-deployment/scripts/check_cross_cloud_data_deployment.py"
   ],
   "tags": [

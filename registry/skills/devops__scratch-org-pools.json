@@ -98,7 +98,7 @@
     "fb670aeb41874ff34766",
     "fda12b0938ea30322684"
   ],
-  "content_hash": "a574e4bfbf63a79efe98f1fac21a71fb3c86e60561f87cc1d01288190e7ed380",
+  "content_hash": "cadb0bdea9f55d48ade30036d4bb41725275e9404a1233df432386fcff23ce54",
   "dependencies": [],
   "description": "Use this skill when configuring pre-created scratch org pools for parallel CI testing, reducing pipeline wait times by claiming pre-warmed orgs instead of provisioning on demand. Covers CumulusCI pool commands, Dev Hub allocation planning for pools, pool sizing strategies, and CI matrix integration. NOT for basic scratch org lifecycle (use scratch-org-management), scratch org definition files (use org-shape-and-scratch-definition), or test data seeding (use data-seeding-for-testing).",
   "file_location": "skills/devops/scratch-org-pools",
@@ -130,7 +130,6 @@
     "skills/devops/scratch-org-pools/references/well-architected.md"
   ],
   "scripts": [
-    "skills/devops/scratch-org-pools/scripts/__pycache__/check_scratch_org_pools.cpython-314.pyc",
     "skills/devops/scratch-org-pools/scripts/check_scratch_org_pools.py"
   ],
   "tags": [

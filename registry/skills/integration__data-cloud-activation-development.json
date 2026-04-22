@@ -59,7 +59,7 @@
     "f59ffa6fc6148bc89ca4",
     "f70579ba06a8c0c7b93d"
   ],
-  "content_hash": "f4872a3fc70635a84ec4c83955596326e005fc24d611752bd13f43b46be0b319",
+  "content_hash": "1033ff542732fa5564ff053f2174ee3556b2dba878c67c221d840f50e6cd5a2a",
   "dependencies": [],
   "description": "Use this skill when building developer-driven Data Cloud activation surfaces: webhook Data Action Targets with HMAC-SHA256 signing, Salesforce Platform Event data actions, Data Cloud-Triggered Flows on DMO insert, or Marketing Cloud journey triggers. Triggers on: webhook data action target, Data Cloud triggered Flow not firing, HMAC secret key for data action, platform event from Data Cloud, DMO insert trigger. NOT for configuring standard admin-level Activation Targets (SFTP, ad platform segment publishing, CRM segment activation) \u2014 those require admin configuration skills, not this developer extensibility skill.",
   "file_location": "skills/integration/data-cloud-activation-development",
@@ -92,7 +92,6 @@
     "skills/integration/data-cloud-activation-development/references/well-architected.md"
   ],
   "scripts": [
-    "skills/integration/data-cloud-activation-development/scripts/__pycache__/check_data_cloud_activation_development.cpython-314.pyc",
     "skills/integration/data-cloud-activation-development/scripts/check_data_cloud_activation_development.py"
   ],
   "tags": [

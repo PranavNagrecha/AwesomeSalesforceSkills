@@ -101,7 +101,7 @@
     "fd30aa745a2523ad5a16",
     "ff5d3210aee297df33c2"
   ],
-  "content_hash": "8aedbce9bbdd7dbfb5f5030b5129e46c2866dc62aca3354b18ccee2289b72452",
+  "content_hash": "2be2500c2ffb899c041fe4b6b23703e18c04ecf166162a8b296d3ca0479a9bb2",
   "dependencies": [],
   "description": "Use this skill to design, configure, and troubleshoot Salesforce Entitlement Management: entitlement processes, milestone definitions, recurrence types, milestone actions (success/warning/violation), business hours assignment, and entitlement templates. NOT for case escalation rules, assignment rules, or omni-channel routing configuration.",
   "file_location": "skills/admin/entitlements-and-milestones",
@@ -134,7 +134,6 @@
     "skills/admin/entitlements-and-milestones/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/entitlements-and-milestones/scripts/__pycache__/check_entitlements_and_milestones.cpython-314.pyc",
     "skills/admin/entitlements-and-milestones/scripts/check_entitlements_and_milestones.py"
   ],
   "tags": [

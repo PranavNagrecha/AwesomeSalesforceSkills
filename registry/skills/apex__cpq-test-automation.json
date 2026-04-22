@@ -86,7 +86,7 @@
     "f5a59bb94171658825ac",
     "f82ef9a13ff1eb71c596"
   ],
-  "content_hash": "37fff1406caf19aae35a41409efb525f7723a8ea8816e4d994956d9a0b9b2846",
+  "content_hash": "117ee22b1304b3cd7529fdf7962fb4bede6b1679ac127b6b70b878f71333ed9e",
   "dependencies": [],
   "description": "Use when writing, reviewing, or debugging test classes for Salesforce CPQ (Steelbrick) functionality \u2014 including quote creation, price rules, contracting, ordering, and CPQ API integration. Trigger keywords: CPQ test class, SBQQ test, quote calculation test, price rule test, CPQ Apex test, ServiceRouter test, QuoteCalculator test. NOT for standard Apex testing patterns unrelated to CPQ, nor for UI/Selenium test authoring outside the CPQ context.",
   "file_location": "skills/apex/cpq-test-automation",
@@ -119,7 +119,6 @@
     "skills/apex/cpq-test-automation/references/well-architected.md"
   ],
   "scripts": [
-    "skills/apex/cpq-test-automation/scripts/__pycache__/check_cpq_test_automation.cpython-314.pyc",
     "skills/apex/cpq-test-automation/scripts/check_cpq_test_automation.py"
   ],
   "tags": [

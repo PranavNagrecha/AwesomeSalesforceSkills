@@ -91,7 +91,7 @@
     "fe389952e9baee4fef39",
     "fee3ee571c585b8bdae1"
   ],
-  "content_hash": "77c8fe797906acba062f9ee34186eab24d46121c1b8c95887703266917ac1aa8",
+  "content_hash": "0fe2394cb9ada4fd7ca3f412facdb0c02402f421cc1dd0b0af0d916eb703d33f",
   "dependencies": [],
   "description": "Use when migrating an existing Einstein Bot (legacy or Enhanced) to Agentforce: feature mapping, conversation design translation, cutover planning, hybrid bot/agent architecture, and context handoff. Triggers: 'migrate einstein bot to agentforce', 'convert legacy bot to agentforce', 'einstein bot retiring deadline', 'hybrid bot agentforce pattern', 'bot dialog to topic migration'. NOT for new Agentforce setup with no existing bot \u2014 use agentforce/agentforce-agent-creation instead.",
   "file_location": "skills/agentforce/einstein-bots-to-agentforce-migration",
@@ -126,7 +126,6 @@
     "skills/agentforce/einstein-bots-to-agentforce-migration/references/well-architected.md"
   ],
   "scripts": [
-    "skills/agentforce/einstein-bots-to-agentforce-migration/scripts/__pycache__/check_einstein_bots_to_agentforce_migration.cpython-314.pyc",
     "skills/agentforce/einstein-bots-to-agentforce-migration/scripts/check_einstein_bots_to_agentforce_migration.py"
   ],
   "tags": [

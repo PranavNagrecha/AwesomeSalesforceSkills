@@ -89,7 +89,7 @@
     "fc591b75eb67b193335b",
     "fff45c556b5f4d3f7932"
   ],
-  "content_hash": "96552ac788d8def645e4d34e459f91ecc58f43f9f624010ac1a56f835b15f872",
+  "content_hash": "653c018a07544f59c81797cc3ed1358b1eb11496a703cd2a44256b874491ef82",
   "dependencies": [],
   "description": "Use this skill when building or customizing sites on the Lightning Web Runtime (LWR) in Experience Cloud \u2014 including component authoring, custom theming with --dxp hooks, layout components, and publish lifecycle management. Trigger keywords: build LWR site Experience Cloud, Lightning Web Runtime custom theme, LWR component development community, Build Your Own LWR template, Microsite LWR, lightningCommunity__Theme_Layout, --dxp styling hooks. NOT for Aura-based communities (Build Your Own Aura template). NOT for standard Experience Builder drag-and-drop configuration without code.",
   "file_location": "skills/lwc/lwr-site-development",
@@ -120,7 +120,6 @@
     "skills/lwc/lwr-site-development/references/well-architected.md"
   ],
   "scripts": [
-    "skills/lwc/lwr-site-development/scripts/__pycache__/check_lwr_site_development.cpython-314.pyc",
     "skills/lwc/lwr-site-development/scripts/check_lwr_site_development.py"
   ],
   "tags": [

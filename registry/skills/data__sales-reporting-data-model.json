@@ -108,7 +108,7 @@
     "fe28f1a554e7c2cae5da",
     "ffc9da0efe8af4630f42"
   ],
-  "content_hash": "79b148c8bb4fdf33e8e16bb667b212ad7cad47458baa6e98a12d88b2f2aa0738",
+  "content_hash": "a30a1208111f04f4766ae95c2abbdce8e291be05fe538c506c26d7e10bdaaeb0",
   "dependencies": [],
   "description": "Use when designing or troubleshooting Salesforce sales reporting \u2014 covers Historical Trend Reporting, Reporting Snapshots, and Custom Report Types for pipeline and opportunity analysis. Trigger keywords: historical trending, opportunity snapshot, reporting snapshot, pipeline history, custom report type join, point-in-time reporting. NOT for CRM Analytics (Tableau CRM / Einstein Analytics) or Marketing Cloud reports. NOT for general SOQL optimization.",
   "file_location": "skills/data/sales-reporting-data-model",
@@ -145,7 +145,6 @@
     "skills/data/sales-reporting-data-model/references/well-architected.md"
   ],
   "scripts": [
-    "skills/data/sales-reporting-data-model/scripts/__pycache__/check_sales_reporting_data_model.cpython-314.pyc",
     "skills/data/sales-reporting-data-model/scripts/check_sales_reporting_data_model.py"
   ],
   "tags": [

@@ -101,7 +101,7 @@
     "f9638aacb1674952db66",
     "f97432576adbb5c78178"
   ],
-  "content_hash": "2186c24d2097a25657542dfebc1b6b7f9236d60123a21a6c7537f85bed119b9d",
+  "content_hash": "580c9d8cba4f22374773fec24ddf8be525a2d8c5c69d6d293c97ad81c75d79cc",
   "dependencies": [
     "devops/salesforce-devops-tooling-selection",
     "devops/copado-essentials"
@@ -138,7 +138,6 @@
     "skills/devops/cpq-deployment-administration/references/well-architected.md"
   ],
   "scripts": [
-    "skills/devops/cpq-deployment-administration/scripts/__pycache__/check_cpq_deployment_administration.cpython-314.pyc",
     "skills/devops/cpq-deployment-administration/scripts/check_cpq_deployment_administration.py"
   ],
   "tags": [

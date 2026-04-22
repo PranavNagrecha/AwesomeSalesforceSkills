@@ -28,7 +28,7 @@
     "e857ae46bbe50718309b",
     "fcdeabfc9104a61d9dfb"
   ],
-  "content_hash": "1ac01e51470a30f3657e4367ef131c4f913488a08d00a7fbdf2e1fbbe7519e40",
+  "content_hash": "2467743adb05fc4dbee62e4298ae10337ef9a6b9e4e7a8af4aeffc0e47e13105",
   "dependencies": [],
   "description": "Build picklists and choice sets in Flow Builder sourced from records, picklist fields, or collections, including dependent choices. NOT for static hard-coded choice sets.",
   "file_location": "skills/flow/flow-dynamic-choices",
@@ -54,7 +54,6 @@
     "skills/flow/flow-dynamic-choices/references/well-architected.md"
   ],
   "scripts": [
-    "skills/flow/flow-dynamic-choices/scripts/__pycache__/check_flow_dynamic_choices.cpython-314.pyc",
     "skills/flow/flow-dynamic-choices/scripts/check_flow_dynamic_choices.py"
   ],
   "tags": [

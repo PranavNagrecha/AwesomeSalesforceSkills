@@ -68,7 +68,7 @@
     "f75752a86a53800c3c0c",
     "f85eb60c1454f3ef237e"
   ],
-  "content_hash": "5d724d31d55fb71588ba091d25fe7a96f6a7afbec228305a1fcf0bbac73a44b6",
+  "content_hash": "c44de5bb154cf2b9216ecc66d1185038f033f492e3c81270d8372304f1f77174",
   "dependencies": [],
   "description": "Use this skill to audit Apex, Visualforce, LWC, and Aura code for Salesforce security review readiness \u2014 covering CRUD/FLS enforcement, SOQL injection, XSS, CSRF, and open redirects. NOT for network-level penetration testing, Shield Platform Encryption key management, or general org permission set design.",
   "file_location": "skills/security/secure-coding-review-checklist",
@@ -97,7 +97,6 @@
     "skills/security/secure-coding-review-checklist/references/well-architected.md"
   ],
   "scripts": [
-    "skills/security/secure-coding-review-checklist/scripts/__pycache__/check_secure_coding_review_checklist.cpython-314.pyc",
     "skills/security/secure-coding-review-checklist/scripts/check_secure_coding_review_checklist.py"
   ],
   "tags": [

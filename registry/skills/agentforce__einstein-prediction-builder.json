@@ -95,7 +95,7 @@
     "f48eb2be3d0071d6d4c9",
     "fb09c0f991672c104017"
   ],
-  "content_hash": "7bcb9012f92174f8f1415e71f4c58a4484d2d93492a57489ac69c98e9d21709e",
+  "content_hash": "8a03d6e891b660d9c5e497cf7b93be0995c77a0c72f916fdad9a68b8d9949eda",
   "dependencies": [],
   "description": "Einstein Prediction Builder for creating custom binary classification predictions on Salesforce objects: field selection, training data requirements, model activation, score embedding, and monitoring. NOT for Einstein Discovery (Tableau CRM Analytics) or Agentforce agent creation.",
   "file_location": "skills/agentforce/einstein-prediction-builder",
@@ -128,8 +128,6 @@
     "skills/agentforce/einstein-prediction-builder/references/well-architected.md"
   ],
   "scripts": [
-    "skills/agentforce/einstein-prediction-builder/scripts/__pycache__/check_einstein_prediction_builder.cpython-314.pyc",
-    "skills/agentforce/einstein-prediction-builder/scripts/__pycache__/check_prediction_builder.cpython-314.pyc",
     "skills/agentforce/einstein-prediction-builder/scripts/check_einstein_prediction_builder.py",
     "skills/agentforce/einstein-prediction-builder/scripts/check_prediction_builder.py"
   ],

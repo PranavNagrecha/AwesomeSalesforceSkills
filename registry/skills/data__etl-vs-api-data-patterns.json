@@ -48,7 +48,7 @@
     "f8dbad9a4422c5976c56",
     "f930fb5f67b194735cb3"
   ],
-  "content_hash": "7d32c98d9a60633e365ec10bb21e5a688a632b711023c45a54e087d402fb1c25",
+  "content_hash": "f0185f9f8eee22daa06607deef09f67b67333b4339e90b6f79e8af12a196c5b4",
   "dependencies": [],
   "description": "Use this skill when selecting between ETL/ELT tools and API-based integration for ongoing data pipelines between Salesforce and external systems: Informatica Cloud, MuleSoft Batch, Jitterbit, and direct Bulk API patterns. Trigger keywords: ETL vs API integration choice, Informatica vs MuleSoft data pipeline, should I use ETL or API for Salesforce, bulk data pipeline architecture, ongoing data sync tool selection. NOT for one-time data migration tool selection (use data-migration-planning), Data Loader usage, or real-time event-driven integration (use event-driven-architecture-patterns).",
   "file_location": "skills/data/etl-vs-api-data-patterns",
@@ -79,7 +79,6 @@
     "skills/data/etl-vs-api-data-patterns/references/well-architected.md"
   ],
   "scripts": [
-    "skills/data/etl-vs-api-data-patterns/scripts/__pycache__/check_etl_vs_api_data_patterns.cpython-314.pyc",
     "skills/data/etl-vs-api-data-patterns/scripts/check_etl_vs_api_data_patterns.py"
   ],
   "tags": [

@@ -93,7 +93,7 @@
     "fc32d3605e5940c74fa0",
     "fcf51f15d477a109705a"
   ],
-  "content_hash": "ede4fa7e144be0ff105942cfa2a3e030989d97cd39e1f400bedd11a9582cc124",
+  "content_hash": "9630e43f9b99eea4b674502c2d6426a8460f36a1b3dade3253c1923dfb40a8c0",
   "dependencies": [],
   "description": "Strategies and tooling for large-scale data deduplication in Salesforce: tuning matching rules for high-volume orgs, batch merge jobs, third-party dedup tools (DemandTools, Cloudingo), surviving record selection logic, and post-merge validation. Use when cleaning millions of duplicate records, automating merges beyond UI limits, or designing enterprise dedup workflows. NOT for duplicate rule configuration (use admin/duplicate-management). NOT for standard Duplicate Management UI setup. NOT for single-record field-resolution questions (use data/record-merge-implications).",
   "file_location": "skills/data/large-scale-deduplication",
@@ -127,7 +127,6 @@
     "skills/data/large-scale-deduplication/references/well-architected.md"
   ],
   "scripts": [
-    "skills/data/large-scale-deduplication/scripts/__pycache__/check_large_scale_deduplication.cpython-314.pyc",
     "skills/data/large-scale-deduplication/scripts/check_large_scale_deduplication.py"
   ],
   "tags": [
