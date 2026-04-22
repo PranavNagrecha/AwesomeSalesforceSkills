@@ -33,7 +33,13 @@ def read_official_sources(skill_dir: Path) -> list[str]:
 
 
 def list_relative_files(root: Path, directory: Path) -> list[str]:
-    return sorted(str(path.relative_to(root)).replace("\\", "/") for path in directory.rglob("*") if path.is_file())
+    return sorted(
+        str(path.relative_to(root)).replace("\\", "/")
+        for path in directory.rglob("*")
+        if path.is_file()
+        and "__pycache__" not in path.parts
+        and path.suffix not in {".pyc", ".pyo"}
+    )
 
 
 def build_skill_record(root: Path, skill_dir: Path, chunk_ids: list[str], vector_embedding: dict | None = None) -> dict:
