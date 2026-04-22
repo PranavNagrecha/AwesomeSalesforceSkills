@@ -1,0 +1,100 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "0af7165f20f85cbb4e43",
+    "10882a8a7854496eaea8",
+    "16bed02d0f1a380f084c",
+    "18995012117c0ff045f3",
+    "18f8ac37ff84cdbc0a91",
+    "1b786e7fc28eeac3a905",
+    "1cc20aaa216326d9da4f",
+    "267aa8c7ae2fad9cd0ba",
+    "26d40d8bdad6b33a3c78",
+    "270f994199af008dea9d",
+    "2904253c4a1a5c744824",
+    "2dea898364ff6a8a494c",
+    "2eb24c50fbde7af8c412",
+    "33416059ba21e8f40dae",
+    "37605166d4f69b3d7dc5",
+    "4adedc1672c0c0420c8f",
+    "56dc0225a128fa2bfc19",
+    "5ab71d6262b968416407",
+    "6821b9ddefcfa4ed9d86",
+    "688b2aef4cdac1a72b29",
+    "75709e858d878dbf2294",
+    "77d44423fb5395b48734",
+    "7a9db1178c76f406876f",
+    "8638e2de2d000fb55736",
+    "8904eb1f872476c89681",
+    "8c3a76db799162932d1a",
+    "8d5c5010de9763e93768",
+    "8da25b2bb392c199e4eb",
+    "9555a09250cc1153c992",
+    "9795126a07657bbfc714",
+    "9a117a8f31bcad324edd",
+    "9d3adb1b2c94ff694c72",
+    "9eb4f187d86df303a863",
+    "a0e1ce317fa7ada45851",
+    "a33d36ff29741cdaf85b",
+    "a949e9e874132c3e79d2",
+    "afc3f30680cbae579b3d",
+    "b4a6a2253ab50a60692e",
+    "baaaa4979e961360ec62",
+    "c75fb1066aad0526e045",
+    "cba02124fd29b35eddf6",
+    "d74dd1788c1c051ee1f6",
+    "de7c2b806861fd23eaab",
+    "e41cbe77e53cb2494e46",
+    "e5910f9156ad522f1800",
+    "e8a7e278ee08ae2ba93a",
+    "f43c88b5bb2f065f97cd",
+    "f9e42dcae312b184d29c",
+    "fbc7d92c22ceddc483dd"
+  ],
+  "content_hash": "1cfe0410dcb7c864275465c47ad2797380dc79b417b746e99bba116e04db5228",
+  "dependencies": [],
+  "description": "RecordType ID differences across orgs: dynamic lookup via Schema.SObjectType methods, DeveloperName for stable refs, hard-coded ID anti-patterns, record-type caching, deployment impact. NOT for record-type strategy or when to use record types (use admin-foundation or data-model-design).",
+  "file_location": "skills/admin/record-type-id-management",
+  "id": "admin/record-type-id-management",
+  "inputs": [
+    "Code or config referencing record types (Apex, Flow, LWC, Validation Rules, Formulas)",
+    "Target environments (sandbox set, packaging org, production)",
+    "Number of record types per object in scope",
+    "Deployment model (metadata API, managed package, unlocked package)"
+  ],
+  "name": "record-type-id-management",
+  "official_sources": [
+    "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
+    "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Resolution pattern per reference point (Apex / Flow / formula)",
+    "Cleanup plan for hard-coded record-type IDs",
+    "Caching strategy for hot paths",
+    "Deployment test matrix across envs"
+  ],
+  "references": [
+    "skills/admin/record-type-id-management/references/examples.md",
+    "skills/admin/record-type-id-management/references/gotchas.md",
+    "skills/admin/record-type-id-management/references/llm-anti-patterns.md",
+    "skills/admin/record-type-id-management/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/record-type-id-management/scripts/__pycache__/check_record_type_id_management.cpython-314.pyc",
+    "skills/admin/record-type-id-management/scripts/check_record_type_id_management.py"
+  ],
+  "tags": [
+    "record-type",
+    "developername",
+    "schema-describe",
+    "hardcoded-ids",
+    "deployment"
+  ],
+  "templates": [
+    "skills/admin/record-type-id-management/templates/record-type-id-management-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

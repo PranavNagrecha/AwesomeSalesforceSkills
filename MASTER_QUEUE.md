@@ -1,5 +1,7 @@
 # MASTER_QUEUE.md — Universal Salesforce Skill Build Queue
 
+<!-- batch-20-skills-2 @ 2026-04-22T03:05:17Z — 20 skills built across admin/apex/lwc/integration/devops/security; validate_repo.py --changed-only passes 0 errors. -->
+
 <!--
 PURPOSE:
   Single source of truth for the full Role × Domain × Cloud skill matrix.
@@ -1641,7 +1643,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | RESEARCHED | content-document-management | ContentVersion, ContentDocument, ContentDocumentLink: file creation, sharing, versioning, libraries, content delivery, rendition, file limits. NOT for file upload UI (use lwc-file-upload-patterns). | Researched 2026-04-18. Sources: [ContentVersion Object Reference (object_reference/sforce_api_objects_contentversion); ContentDocument Object Reference (object_reference/sforce_api_objects_contentdocument); ContentDocumentLink Object Reference (object_reference/sforce_api_objects_contentdocumentlink); ContentDistribution Object Reference (object_reference/sforce_api_objects_contentdistribution); Salesforce Files Size Limits (help.salesforce.com collab_files_size_limits)]. Key: Files created by inserting ContentVersion (requires VersionData and PathOnClient) -- Salesforce auto-creates ContentDocument; direct ContentDocument INSERT via DML is NOT allowed. Use FirstPublishLocationId on first ContentVersion insert to set owning record or library. ContentDocumentLink queries MUST filter by ContentDocumentId or LinkedEntityId -- unfiltered queries throw an exception. File size limit: 2 GB. Org hard limit: 30,000,000 ContentDocument records. Daily ContentVersion publish limit: 200,000 (Enterprise/Unlimited) or 2,500 (Developer). Orphaned ContentDocuments are NOT cascade-deleted. LLM anti-pattern: attempting INSERT on ContentDocument directly (throws DML error); omitting ContentDocumentLink creation after ContentVersion insert -- leaves file inaccessible from any record. Gaps: ContentVersion trigger addError() restriction; rendition FileType enumeration; ContentWorkspace membership management. |
 | TODO | chatter-and-feed-patterns | FeedItem, FeedComment, @mentions, feed tracking configuration, Chatter REST API, ConnectApi, publisher actions, group posts, file sharing via Chatter. NOT for Experience Cloud. | apex |
 | TODO | chatter-administration | Chatter setup: feed tracking, groups, topics, moderation, Chatter email notifications, Chatter settings, unlicensed users, Chatter Free. NOT for Chatter API development. | admin |
-| TODO | custom-notification-types | Custom notifications: notification type creation, send from Apex/Flow, bell notifications, push notifications, mobile push, bulk notifications, in-app messaging. NOT for email alerts. | admin |
+| DONE | custom-notification-types | Custom notifications: notification type creation, send from Apex/Flow, bell notifications, push notifications, mobile push, bulk notifications, in-app messaging. NOT for email alerts. | admin |
 | TODO | salesforce-files-architecture | Files architecture: storage limits, content library design, file sharing patterns, external file references, Files Connect, content delivery, CDN. NOT for file migration. | architect |
 
 ### 21e — Admin Tribal Knowledge (the stuff training data gets wrong)
@@ -1651,13 +1653,13 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
 | DUPLICATE | custom-settings-vs-metadata-types | Custom Settings vs Custom Metadata Types: decision criteria, hierarchy vs list, cache behavior, deployability, SOQL cost, when to use each, migration path. NOT for implementation (use custom-metadata-types). | Covered by skills/admin/custom-metadata-types-and-settings (search_skills score 10.607; exact scope overlap on decision criteria, hierarchy resolution, SOQL governor limit exemption for CMT, deployability, and Apex access patterns). Enhancement for existing skill: add 200-record-per-type and 10 MB total CMT storage limits; clarify that list-type Custom Settings queried via SOQL DO consume governor limits unlike hierarchy type accessed via getInstance(). |
-| TODO | record-type-id-management | RecordType ID differences across orgs: Schema.SObjectType methods, dynamic ID retrieval, hardcoding anti-patterns, RecordType DeveloperName usage. NOT for record type strategy. | admin |
-| TODO | activity-and-task-patterns | Task/Event data model: WhoId/WhatId polymorphism, shared activities, Activity object, ActivityHistory, OpenActivity, task automation patterns, activity settings. NOT for calendar integration. | admin |
-| TODO | custom-label-management | Custom labels: creation, translation, deployment, dynamic access from Apex/LWC/VF, label governance, namespace-awareness, label limits, bulk management. NOT for Translation Workbench. | admin |
+| DONE | record-type-id-management | RecordType ID differences across orgs: Schema.SObjectType methods, dynamic ID retrieval, hardcoding anti-patterns, RecordType DeveloperName usage. NOT for record type strategy. | admin |
+| DONE | activity-and-task-patterns | Task/Event data model: WhoId/WhatId polymorphism, shared activities, Activity object, ActivityHistory, OpenActivity, task automation patterns, activity settings. NOT for calendar integration. | admin |
+| DONE | custom-label-management | Custom labels: creation, translation, deployment, dynamic access from Apex/LWC/VF, label governance, namespace-awareness, label limits, bulk management. NOT for Translation Workbench. | admin |
 | TODO | related-list-configuration | Related lists: Enhanced Related Lists, related list components, quick related list, related list filters, related list actions, single-record components. NOT for page layouts. | admin |
-| TODO | lookup-and-relationship-design | Lookup vs Master-Detail decisions: cascade delete, roll-up availability, reparenting, junction objects, self-relationships, polymorphic lookups, external lookups. NOT for data model design. | admin |
+| DONE | lookup-and-relationship-design | Lookup vs Master-Detail decisions: cascade delete, roll-up availability, reparenting, junction objects, self-relationships, polymorphic lookups, external lookups. NOT for data model design. | admin |
 | TODO | salesforce-optimizer-usage | Salesforce Optimizer: running the report, interpreting recommendations, feature adoption, cleanup actions, custom object analysis, field usage audit. NOT for org cleanup scripts. | admin |
-| TODO | scheduled-path-patterns | Scheduled paths in record-triggered flows: timing behavior, re-evaluation, limitations with before-save, entry conditions, workarounds for complex scheduling. NOT for scheduled flows. | admin |
+| DONE | scheduled-path-patterns | Scheduled paths in record-triggered flows: timing behavior, re-evaluation, limitations with before-save, entry conditions, workarounds for complex scheduling. NOT for scheduled flows. | admin |
 | TODO | flow-error-notification-patterns | Flow fault email interpretation: common fault types, unhandled exceptions, fault paths best practices, admin notification patterns, monitoring. NOT for Flow debugging. | admin |
 | TODO | salesforce-mobile-app-customization | Salesforce Mobile app: compact layouts, mobile navigation, mobile cards, Quick Actions for mobile, publisher actions, offline briefcase, mobile-only customization. NOT for FSL mobile. | admin |
 
@@ -1668,11 +1670,11 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
 | TODO | tooling-api-patterns | Tooling API: metadata queries, ApexLog retrieval, code coverage queries, debug level management, compile requests, limit info from REST headers. NOT for Metadata API (use apex-metadata-api). | apex |
-| TODO | rest-api-pagination-patterns | REST API pagination: nextRecordsUrl for query results, queryMore, Composite API batching, OFFSET-based pagination, cursor-based patterns, batch size tuning. NOT for Bulk API. | integration |
+| DONE | rest-api-pagination-patterns | REST API pagination: nextRecordsUrl for query results, queryMore, Composite API batching, OFFSET-based pagination, cursor-based patterns, batch size tuning. NOT for Bulk API. | integration |
 | TODO | postman-for-salesforce | Postman for Salesforce API testing: OAuth setup, environment variables, collection organization, chaining requests, pre/post scripts, Salesforce collection templates. NOT for integration development. | devops |
 | TODO | salesforce-inspector-patterns | Salesforce Inspector Reloaded: data export/import, inline SOQL, field metadata, object info, API usage monitoring, data editing shortcuts. NOT for Data Loader. | devops |
 | TODO | data-loader-cli-patterns | Data Loader CLI mode: process-conf.xml, encrypted passwords, scheduled batch imports/exports, mapping files, error handling, automation scripts. NOT for Data Loader GUI. | devops |
-| TODO | metadata-api-retrieve-deploy | Metadata API retrieve/deploy cycles: package.xml construction, retrieve patterns, deploy options (checkOnly, testLevel), status polling, CI/CD scripting. NOT for Change Sets. | devops |
+| DONE | metadata-api-retrieve-deploy | Metadata API retrieve/deploy cycles: package.xml construction, retrieve patterns, deploy options (checkOnly, testLevel), status polling, CI/CD scripting. NOT for Change Sets. | devops |
 
 ### 21g — Cross-Cutting Patterns & Tribal Knowledge
 
@@ -1680,7 +1682,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| TODO | record-access-troubleshooting | "Insufficient Privileges" debugging: sharing debug, FLS audit, Permission Analyzer, CRUD checks, community user access, org-wide defaults walkthrough. NOT for sharing model design. | security |
+| DONE | record-access-troubleshooting | "Insufficient Privileges" debugging: sharing debug, FLS audit, Permission Analyzer, CRUD checks, community user access, org-wide defaults walkthrough. NOT for sharing model design. | security |
 | TODO | cross-org-data-sync-patterns | Salesforce-to-Salesforce data sync: ETL tools, Platform Events bridge, Heroku Connect, MuleSoft sync, conflict resolution, latency tradeoffs. NOT for multi-org strategy (use multi-org-strategy). | integration |
 | TODO | salesforce-api-version-strategy | API version selection: version-locking metadata, auto-upgrade risks, version-specific behavior changes, API retirement timeline, backward compatibility. NOT for API version in sfdx-project.json. | architect |
 | TODO | org-data-export-patterns | Scheduled data export, Data Export Service, Bulk API export, weekly export, export file formats, export scheduling, compliance archival. NOT for Bulk API development. | data |
@@ -1720,18 +1722,18 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| TODO | apex-trigger-context-variables | Trigger.new, Trigger.old, Trigger.newMap, Trigger.oldMap: when each is available, null in delete context, before vs after differences, isExecuting, operationType, size. NOT for trigger framework architecture. | apex |
+| DONE | apex-trigger-context-variables | Trigger.new, Trigger.old, Trigger.newMap, Trigger.oldMap: when each is available, null in delete context, before vs after differences, isExecuting, operationType, size. NOT for trigger framework architecture. | apex |
 | TODO | apex-test-setup-patterns | @TestSetup method: execution timing, isolation behavior, @TestVisible annotation, System.runAs in tests, Test.startTest/stopTest governor reset, test data visibility. NOT for test data factory (use test-data-factory-patterns). | apex |
 | TODO | apex-http-callout-mocking | HttpCalloutMock, MultiStaticResourceCalloutMock, StaticResourceCalloutMock, Test.setMock, mock chaining for multi-callout tests. NOT for actual callout implementation (use callouts-and-http-integrations). | apex |
-| TODO | apex-future-method-patterns | @future method: when to use vs Queueable, parameter restrictions (no SObject), mixed DML workaround, governor limits in future context, testing future methods. NOT for general async (use async-apex). | apex |
-| TODO | apex-savepoint-and-rollback | Database.setSavepoint, Database.rollback: transaction control, nested savepoints, savepoint in triggers, partial rollback patterns, try-catch-rollback. NOT for DML patterns. | apex |
+| DONE | apex-future-method-patterns | @future method: when to use vs Queueable, parameter restrictions (no SObject), mixed DML workaround, governor limits in future context, testing future methods. NOT for general async (use async-apex). | apex |
+| DONE | apex-savepoint-and-rollback | Database.setSavepoint, Database.rollback: transaction control, nested savepoints, savepoint in triggers, partial rollback patterns, try-catch-rollback. NOT for DML patterns. | apex |
 | TODO | apex-system-runas | System.runAs in test context: profile/permission testing, sharing rule verification, mixed DML workaround, limitations (does not enforce FLS), community user testing. NOT for test setup. | apex |
 | TODO | apex-execute-anonymous | Execute Anonymous: Developer Console, VS Code, sf apex run, variable scope, transaction behavior, governor limits, debugging output, common errors. NOT for debug logs. | apex |
-| TODO | apex-custom-permissions-check | FeatureManagement.checkPermission, Custom Permissions in Apex and Flow: feature gating, license checks, conditional logic, package-aware permission checks. NOT for Permission Sets admin. | apex |
+| DONE | apex-custom-permissions-check | FeatureManagement.checkPermission, Custom Permissions in Apex and Flow: feature gating, license checks, conditional logic, package-aware permission checks. NOT for Permission Sets admin. | apex |
 | TODO | apex-outbound-email-patterns | Messaging.SingleEmailMessage, MassEmailMessage, email templates in Apex, org-wide email address, setTargetObjectId vs setToAddresses, attachment handling. NOT for Email-to-Case or email alerts. | apex |
 | TODO | apex-wsdl2apex-patterns | WSDL-to-Apex generation: importing WSDL, generated class structure, callout from generated stubs, common WSDL parsing failures, testing WSDL callouts. NOT for REST callouts. | apex |
 | TODO | apex-record-clone-patterns | SObject.clone(preserveId, isDeepClone, preserveReadonly, preserveAutonumber): deep clone behavior, related record cloning, clone with modifications. NOT for data migration. | apex |
-| TODO | apex-polymorphic-soql | TYPEOF in SOQL: WhoId/WhatId polymorphism, Event.WhoId resolution, Task.WhatId querying, Name object, polymorphic lookup handling in triggers. NOT for relationship queries. | apex |
+| DONE | apex-polymorphic-soql | TYPEOF in SOQL: WhoId/WhatId polymorphism, Event.WhoId resolution, Task.WhatId querying, Name object, polymorphic lookup handling in triggers. NOT for relationship queries. | apex |
 
 ### 22b — LWC Dev Primitives (most-asked component patterns)
 
@@ -1739,11 +1741,11 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
-| TODO | lwc-navigation-mixin | NavigationMixin: navigate to record, list view, URL, related list, custom tab, web page, file download, replace vs push, generateUrl. NOT for Experience Cloud routing. | lwc |
-| TODO | lwc-wire-refresh-patterns | refreshApex, getRecordNotifyChange (deprecated → notifyRecordUpdateAvailable), wire error handling, stale wire data, provisioning lifecycle. NOT for wire basics (use wire-service-patterns). | lwc |
+| DONE | lwc-navigation-mixin | NavigationMixin: navigate to record, list view, URL, related list, custom tab, web page, file download, replace vs push, generateUrl. NOT for Experience Cloud routing. | lwc |
+| DONE | lwc-wire-refresh-patterns | refreshApex, getRecordNotifyChange (deprecated → notifyRecordUpdateAvailable), wire error handling, stale wire data, provisioning lifecycle. NOT for wire basics (use wire-service-patterns). | lwc |
 | TODO | lwc-show-toast-patterns | ShowToastEvent: variants, modes (dismissible/pester/sticky), message formatting, toasts in LWR sites (not supported), alternative notification patterns. NOT for custom notifications admin. | lwc |
-| TODO | lwc-lightning-modal | LightningModal: modal creation, passing data, returning results, sizing, nested modals, modal vs popup vs overlay, header/footer/body slots. NOT for lwc-modal-and-overlay (use for Aura overlay library). | lwc |
-| TODO | lwc-record-picker | lightning-record-picker component: filter configuration, matching criteria, display fields, default selection, multi-object search, custom filter logic. NOT for custom lookup (use lwc-custom-lookup). | lwc |
+| DONE | lwc-lightning-modal | LightningModal: modal creation, passing data, returning results, sizing, nested modals, modal vs popup vs overlay, header/footer/body slots. NOT for lwc-modal-and-overlay (use for Aura overlay library). | lwc |
+| DONE | lwc-record-picker | lightning-record-picker component: filter configuration, matching criteria, display fields, default selection, multi-object search, custom filter logic. NOT for custom lookup (use lwc-custom-lookup). | lwc |
 | TODO | lwc-async-patterns | Promise handling in LWC: imperative Apex with async/await, error boundaries, loading states, concurrent wire + imperative, AbortController patterns. NOT for wire service. | lwc |
 
 ### 22c — Flow Dev Primitives
@@ -1766,7 +1768,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | TODO | approval-process-apex-patterns | Approval process Apex: ProcessSubmitRequest, ProcessWorkitemRequest, approval recall, reassignment, approval history queries, Approval.process limitations. NOT for approval process UI setup. | admin |
 | TODO | report-and-dashboard-subscriptions | Report subscriptions: scheduling, conditions, notification channels, dashboard refresh scheduling, snapshot reporting, limits. NOT for report building. | admin |
 | TODO | global-value-sets-and-picklists | Global Value Sets: creation, field binding, restricted vs unrestricted picklists, deployment behavior, value deactivation impact on reports/views. NOT for picklist admin basics. | admin |
-| TODO | compound-field-patterns | Compound fields: Address (BillingAddress, ShippingAddress, MailingAddress), Name, Geolocation — component field access, SOQL behavior, formula references, API quirks. NOT for custom field creation. | admin |
+| DONE | compound-field-patterns | Compound fields: Address (BillingAddress, ShippingAddress, MailingAddress), Name, Geolocation — component field access, SOQL behavior, formula references, API quirks. NOT for custom field creation. | admin |
 | TODO | account-and-opportunity-teams | Account Teams and Opportunity Teams: team member roles, team-based sharing, trigger behavior, default teams, team template assignment, Splits integration. NOT for sharing rules. | admin |
 | TODO | sales-path-and-kanban | Path (Sales Path): key fields, guidance per stage, confetti, Kanban view configuration, Path on custom objects, Path vs business process. NOT for Opportunity management. | admin |
 | TODO | dynamic-forms-migration | Dynamic Forms migration: page layout to dynamic form conversion, field section creation, visibility rules, migration tool, Lightning App Builder, limitations by object. NOT for Dynamic Forms concepts (use dynamic-forms-and-actions). | admin |
@@ -1801,7 +1803,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | TODO | external-credentials-setup | External Credentials and Named Principals: legacy Named Credential migration, per-user vs named principal, custom headers, OAuth external credentials, permission set mapping. NOT for admin Named Credentials (use named-credentials-setup). | integration |
 | TODO | salesforce-connect-odata | Salesforce Connect OData: adapter configuration, external object creation, writable external objects, high-volume adapter, paging, filter pushdown, callout limits. NOT for generic external objects. | integration |
 | TODO | event-relay-patterns | Platform Event Relay: AWS EventBridge relay, event relay configuration, channel members, relay health monitoring, filtering relay events. NOT for Platform Events Apex. | integration |
-| TODO | platform-event-publish-patterns | Platform Event publish patterns: publish after commit (Transaction.commitWork), EventBus.publish, publish immediate vs deferred, publish callback, transaction boundaries. NOT for event subscription. | integration |
+| DONE | platform-event-publish-patterns | Platform Event publish patterns: publish after commit (Transaction.commitWork), EventBus.publish, publish immediate vs deferred, publish callback, transaction boundaries. NOT for event subscription. | integration |
 
 ### 22g — Architect Primitives
 

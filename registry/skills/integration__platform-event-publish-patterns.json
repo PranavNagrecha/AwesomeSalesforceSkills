@@ -1,0 +1,99 @@
+{
+  "category": "integration",
+  "chunk_ids": [
+    "007b80b70ad7b48f513a",
+    "08c48ef6819734658252",
+    "0c7de99005ec3e5b2673",
+    "0dc7f7961cc9138b5908",
+    "1034b657326357465681",
+    "1169f626cd3b0740add7",
+    "2594ae645a3bd78d4493",
+    "2a9ec34e60418f3faafe",
+    "318b88d4d9e0ede5c171",
+    "3ed5d1e37d5ec0ee0b2e",
+    "3f7d4a2dfcb552110095",
+    "45705df108d40d5a3d68",
+    "4908554470d09eefdb56",
+    "54c64c5a2232795ee430",
+    "587ca408c41451ae0faf",
+    "60d5c73adfce4b8a7975",
+    "637ae2c3df83203b6248",
+    "6ddf036e181f3bee42db",
+    "6fb18276d7d8ab287383",
+    "755c3efa537d682663e6",
+    "75e8dfb112db97f60aba",
+    "7c34fe1e42887fe1712b",
+    "8318957315daed2fbbeb",
+    "842636139e72bc493a8f",
+    "8520b750467f885fa73a",
+    "8fa6f44991c4619ef7d9",
+    "924b7698e2d5bb951d92",
+    "97a959127cab38b16238",
+    "9e328dc753b245084b86",
+    "a140f5de5ec0575deeae",
+    "a149ca416d942002a97b",
+    "a613b28b1fb0720a13f6",
+    "a683886c34469297be99",
+    "a755ae9fff4bb56a394e",
+    "a8abb22ede381e7bd0ce",
+    "baafb6299e5d443659fe",
+    "be84c5950ff83043d995",
+    "c0afab0c68f2df3413af",
+    "c304c0ed408e981b168d",
+    "c3f13aa45fd2f479d5a9",
+    "ccfcc037179096a1ee59",
+    "e383aa8039b96fd55e33",
+    "e91fa81aebb3a546cf57",
+    "f22cbcf0c14079f9b03e",
+    "f264691b069ff43dd2a7",
+    "f35137409e3a2cc9eb96",
+    "f56198c4f43cbc399ea6",
+    "f7f41c6ea446e4d7d8b6"
+  ],
+  "content_hash": "bc1dd30bd1a652aea9a298909c6033f6adb32e3d05cd870e3c53885c817e460f",
+  "dependencies": [],
+  "description": "Publishing Platform Events: EventBus.publish, PublishBehavior (PublishImmediately vs PublishAfterCommit), high-volume events, event allocation, publish failures, Change Data Capture comparison. NOT for subscribing/consuming (use platform-event-subscribe-patterns). NOT for CDC architecture (use cdc-patterns).",
+  "file_location": "skills/integration/platform-event-publish-patterns",
+  "id": "integration/platform-event-publish-patterns",
+  "inputs": [
+    "Event name and payload shape",
+    "Publish context (trigger, service, async)",
+    "Rollback semantics desired",
+    "Expected event volume per day"
+  ],
+  "name": "platform-event-publish-patterns",
+  "official_sources": [
+    "REST API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_what_is_rest_api.htm",
+    "Integration Patterns \u2014 https://architect.salesforce.com/docs/architect/fundamentals/guide/integration-patterns.html",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Publish code with correct PublishBehavior",
+    "Event allocation estimate",
+    "Error-handling and retry plan",
+    "Monitoring approach"
+  ],
+  "references": [
+    "skills/integration/platform-event-publish-patterns/references/examples.md",
+    "skills/integration/platform-event-publish-patterns/references/gotchas.md",
+    "skills/integration/platform-event-publish-patterns/references/llm-anti-patterns.md",
+    "skills/integration/platform-event-publish-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/integration/platform-event-publish-patterns/scripts/__pycache__/check_platform_event_publish_patterns.cpython-314.pyc",
+    "skills/integration/platform-event-publish-patterns/scripts/check_platform_event_publish_patterns.py"
+  ],
+  "tags": [
+    "platform-events",
+    "eventbus",
+    "publish",
+    "publishbehavior",
+    "async"
+  ],
+  "templates": [
+    "skills/integration/platform-event-publish-patterns/templates/platform-event-publish-patterns-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

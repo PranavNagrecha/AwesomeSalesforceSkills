@@ -2,6 +2,7 @@
   "schema_version": 1,
   "skills_by_domain": {
     "admin": [
+      "admin/activity-and-task-patterns",
       "admin/agent-conversation-design",
       "admin/agent-output-formats",
       "admin/ai-adoption-change-management",
@@ -47,6 +48,7 @@
       "admin/community-engagement-strategy",
       "admin/compliance-documentation-requirements",
       "admin/compliant-data-sharing-setup",
+      "admin/compound-field-patterns",
       "admin/connected-apps-and-auth",
       "admin/consent-management-marketing",
       "admin/consumer-goods-cloud-setup",
@@ -58,8 +60,10 @@
       "admin/cpq-quote-templates",
       "admin/crm-analytics-app-creation",
       "admin/custom-field-creation",
+      "admin/custom-label-management",
       "admin/custom-metadata-types",
       "admin/custom-metadata-types-and-settings",
+      "admin/custom-notification-types",
       "admin/custom-permissions",
       "admin/data-cloud-calculated-insights",
       "admin/data-cloud-identity-resolution",
@@ -140,6 +144,7 @@
       "admin/lightning-app-builder-advanced",
       "admin/lightning-page-performance-tuning",
       "admin/list-views-and-compact-layouts",
+      "admin/lookup-and-relationship-design",
       "admin/marketing-automation-requirements",
       "admin/marketing-cloud-connect",
       "admin/marketing-cloud-engagement-setup",
@@ -178,6 +183,7 @@
       "admin/quote-to-cash-requirements",
       "admin/quotes-and-quote-templates",
       "admin/rebate-management-setup",
+      "admin/record-type-id-management",
       "admin/record-type-strategy-at-scale",
       "admin/record-types-and-page-layouts",
       "admin/recurring-donations-setup",
@@ -197,6 +203,7 @@
       "admin/salesforce-surveys",
       "admin/sandbox-strategy",
       "admin/saql-query-development",
+      "admin/scheduled-path-patterns",
       "admin/self-service-design",
       "admin/service-cloud-voice-setup",
       "admin/service-console-configuration",
@@ -262,9 +269,11 @@
       "apex/apex-batch-chaining",
       "apex/apex-collections-patterns",
       "apex/apex-cpu-and-heap-optimization",
+      "apex/apex-custom-permissions-check",
       "apex/apex-design-patterns",
       "apex/apex-dml-patterns",
       "apex/apex-email-services",
+      "apex/apex-future-method-patterns",
       "apex/apex-json-serialization",
       "apex/apex-limits-monitoring",
       "apex/apex-managed-sharing",
@@ -272,12 +281,15 @@
       "apex/apex-mocking-and-stubs",
       "apex/apex-named-credentials-patterns",
       "apex/apex-performance-profiling",
+      "apex/apex-polymorphic-soql",
       "apex/apex-queueable-patterns",
       "apex/apex-rest-services",
+      "apex/apex-savepoint-and-rollback",
       "apex/apex-scheduled-jobs",
       "apex/apex-security-patterns",
       "apex/apex-soql-relationship-queries",
       "apex/apex-transaction-finalizers",
+      "apex/apex-trigger-context-variables",
       "apex/apex-wrapper-class-patterns",
       "apex/async-apex",
       "apex/batch-apex-patterns",
@@ -583,6 +595,7 @@
       "devops/health-cloud-deployment-patterns",
       "devops/managed-package-development",
       "devops/metadata-api-coverage-gaps",
+      "devops/metadata-api-retrieve-deploy",
       "devops/migration-from-change-sets-to-sfdx",
       "devops/multi-package-development",
       "devops/org-shape-and-scratch-definition",
@@ -677,10 +690,12 @@
       "integration/named-credentials-setup",
       "integration/oauth-flows-and-connected-apps",
       "integration/outbound-messages-and-callbacks",
+      "integration/platform-event-publish-patterns",
       "integration/platform-events-integration",
       "integration/private-connect-setup",
       "integration/pub-sub-api-patterns",
       "integration/real-time-vs-batch-integration",
+      "integration/rest-api-pagination-patterns",
       "integration/rest-api-patterns",
       "integration/retry-and-backoff-patterns",
       "integration/revenue-lifecycle-management",
@@ -725,14 +740,18 @@
       "lwc/lwc-imperative-apex",
       "lwc/lwc-in-flow-screens",
       "lwc/lwc-internationalization",
+      "lwc/lwc-lightning-modal",
       "lwc/lwc-modal-and-overlay",
+      "lwc/lwc-navigation-mixin",
       "lwc/lwc-offline-and-mobile",
       "lwc/lwc-performance",
+      "lwc/lwc-record-picker",
       "lwc/lwc-security",
       "lwc/lwc-state-management",
       "lwc/lwc-testing",
       "lwc/lwc-toast-and-notifications",
       "lwc/lwc-web-components-interop",
+      "lwc/lwc-wire-refresh-patterns",
       "lwc/lwr-site-development",
       "lwc/message-channel-patterns",
       "lwc/navigation-and-routing",
@@ -795,6 +814,7 @@
       "security/platform-encryption",
       "security/privileged-access-management",
       "security/recaptcha-and-bot-prevention",
+      "security/record-access-troubleshooting",
       "security/salesforce-shield-deployment",
       "security/sandbox-data-masking",
       "security/secure-coding-review-checklist",
@@ -1179,7 +1199,9 @@
     ],
     "accessibility": [
       "admin/digital-storefront-requirements",
-      "lwc/lwc-chart-and-visualization"
+      "lwc/lwc-chart-and-visualization",
+      "lwc/lwc-lightning-modal",
+      "lwc/lwc-record-picker"
     ],
     "accessibility-testing": [
       "lwc/lwc-testing"
@@ -1259,6 +1281,9 @@
     "activation-targets": [
       "admin/data-cloud-provisioning"
     ],
+    "activity": [
+      "admin/activity-and-task-patterns"
+    ],
     "activity-capture": [
       "agentforce/einstein-copilot-for-sales"
     ],
@@ -1279,6 +1304,9 @@
     ],
     "add-on": [
       "architect/org-edition-and-feature-licensing"
+    ],
+    "address": [
+      "admin/compound-field-patterns"
     ],
     "address-standardization": [
       "data/nonprofit-data-quality"
@@ -1581,10 +1609,16 @@
       "architect/mulesoft-anypoint-architecture"
     ],
     "apex": [
+      "admin/custom-label-management",
       "admin/custom-permissions",
       "agentforce/agent-action-error-handling",
       "agentforce/mcp-tool-definition-apex",
       "agentforce/salesforce-mcp-server-setup",
+      "apex/apex-custom-permissions-check",
+      "apex/apex-future-method-patterns",
+      "apex/apex-polymorphic-soql",
+      "apex/apex-savepoint-and-rollback",
+      "apex/apex-trigger-context-variables",
       "apex/commerce-payment-integration",
       "apex/custom-iterators-and-iterables",
       "apex/fsc-apex-extensions",
@@ -1900,10 +1934,13 @@
       "apex/case-trigger-patterns"
     ],
     "async": [
+      "admin/scheduled-path-patterns",
       "apex/apex-batch-chaining",
+      "apex/apex-future-method-patterns",
       "data/bulk-api-and-large-data-loads",
       "data/bulk-api-patterns",
       "flow/flow-and-platform-events",
+      "integration/platform-event-publish-patterns",
       "omnistudio/omnistudio-asynchronous-data-operations"
     ],
     "async-apex": [
@@ -2026,6 +2063,7 @@
       "lwc/experience-cloud-authentication"
     ],
     "authorization": [
+      "apex/apex-custom-permissions-check",
       "data/consent-data-model-health"
     ],
     "authorization-form": [
@@ -2560,6 +2598,7 @@
     ],
     "callouts": [
       "apex/ai-model-integration-apex",
+      "apex/apex-future-method-patterns",
       "apex/apex-json-serialization",
       "apex/apex-named-credentials-patterns",
       "integration/callout-limits-and-async-patterns"
@@ -3174,6 +3213,9 @@
     "composite-key": [
       "data/external-id-strategy"
     ],
+    "compound-fields": [
+      "admin/compound-field-patterns"
+    ],
     "concurrency": [
       "architect/omnistudio-scalability-patterns"
     ],
@@ -3374,6 +3416,9 @@
     ],
     "contention": [
       "apex/record-locking-and-contention"
+    ],
+    "context-variables": [
+      "apex/apex-trigger-context-variables"
     ],
     "continuation": [
       "apex/continuation-callouts",
@@ -3679,6 +3724,9 @@
     "currentpagereference": [
       "lwc/navigation-and-routing"
     ],
+    "cursor": [
+      "integration/rest-api-pagination-patterns"
+    ],
     "custodian-integration": [
       "apex/fsc-integration-patterns-dev"
     ],
@@ -3732,6 +3780,7 @@
       "data/custom-index-requests"
     ],
     "custom-labels": [
+      "admin/custom-label-management",
       "admin/multi-language-and-translation",
       "lwc/lwc-internationalization"
     ],
@@ -3750,11 +3799,15 @@
     "custom-notification": [
       "flow/flow-email-and-notifications"
     ],
+    "custom-notifications": [
+      "admin/custom-notification-types"
+    ],
     "custom-objects": [
       "admin/object-creation-and-design"
     ],
     "custom-permissions": [
       "admin/custom-permissions",
+      "apex/apex-custom-permissions-check",
       "apex/feature-flags-and-kill-switches"
     ],
     "custom-prediction": [
@@ -4017,6 +4070,7 @@
     ],
     "data-model": [
       "admin/data-model-documentation",
+      "admin/lookup-and-relationship-design",
       "architect/b2b-vs-b2c-architecture",
       "architect/cross-cloud-data-deployment",
       "architect/fsc-architecture-patterns",
@@ -4316,7 +4370,8 @@
     ],
     "deep-linking": [
       "admin/fsl-mobile-app-setup",
-      "apex/fsl-mobile-app-extensions"
+      "apex/fsl-mobile-app-extensions",
+      "lwc/lwc-navigation-mixin"
     ],
     "defect-management": [
       "admin/uat-and-acceptance-criteria"
@@ -4373,6 +4428,9 @@
     "dependent-picklist-bypass": [
       "admin/picklist-field-integrity-issues"
     ],
+    "deploy": [
+      "devops/metadata-api-retrieve-deploy"
+    ],
     "deploy-errors": [
       "devops/deployment-error-troubleshooting"
     ],
@@ -4388,6 +4446,7 @@
     ],
     "deployment": [
       "admin/change-management-and-deployment",
+      "admin/record-type-id-management",
       "agentforce/agent-deployment-checklist",
       "apex/metadata-api-and-package-xml",
       "apex/sf-cli-and-sfdx-essentials",
@@ -4454,7 +4513,8 @@
     ],
     "destructive-changes": [
       "apex/metadata-api-and-package-xml",
-      "devops/destructive-changes-deployment"
+      "devops/destructive-changes-deployment",
+      "devops/metadata-api-retrieve-deploy"
     ],
     "destructive-deploy": [
       "admin/org-cleanup-and-technical-debt"
@@ -4471,6 +4531,9 @@
     ],
     "developer-tooling": [
       "devops/vscode-salesforce-extensions"
+    ],
+    "developername": [
+      "admin/record-type-id-management"
     ],
     "device-apis": [
       "lwc/lwc-offline-and-mobile"
@@ -4520,6 +4583,9 @@
     ],
     "diagramming": [
       "architect/salesforce-erd-and-diagramming"
+    ],
+    "dialog": [
+      "lwc/lwc-lightning-modal"
     ],
     "dialog-scripting": [
       "admin/agent-conversation-design"
@@ -4608,6 +4674,7 @@
       "admin/email-deliverability-strategy"
     ],
     "dml": [
+      "apex/apex-savepoint-and-rollback",
       "flow/flow-governor-limits-deep-dive",
       "flow/flow-rollback-patterns"
     ],
@@ -4787,6 +4854,7 @@
       "data/ai-training-data-preparation"
     ],
     "einstein-activity-capture": [
+      "admin/activity-and-task-patterns",
       "admin/einstein-activity-capture-setup",
       "apex/einstein-activity-capture-api"
     ],
@@ -5151,6 +5219,9 @@
     "evaluation-metrics": [
       "agentforce/agent-testing-and-evaluation"
     ],
+    "event": [
+      "admin/activity-and-task-patterns"
+    ],
     "event-api": [
       "architect/marketing-integration-patterns"
     ],
@@ -5194,7 +5265,8 @@
       "apex/platform-events-apex"
     ],
     "eventbus": [
-      "apex/platform-events-apex"
+      "apex/platform-events-apex",
+      "integration/platform-event-publish-patterns"
     ],
     "evergreen-billing": [
       "admin/billing-schedule-setup"
@@ -5259,6 +5331,7 @@
       "lwc/experience-cloud-search-customization",
       "lwc/headless-experience-cloud",
       "lwc/knowledge-article-lwc",
+      "lwc/lwc-navigation-mixin",
       "lwc/lwr-site-development",
       "lwc/navigation-and-routing",
       "security/experience-cloud-security",
@@ -5403,6 +5476,9 @@
     ],
     "feature-store": [
       "architect/ai-ready-data-architecture"
+    ],
+    "featuremanagement": [
+      "apex/apex-custom-permissions-check"
     ],
     "federated-search": [
       "lwc/experience-cloud-search-customization"
@@ -5632,6 +5708,7 @@
     ],
     "flow": [
       "admin/flow-for-admins",
+      "admin/scheduled-path-patterns",
       "apex/cpq-custom-actions",
       "apex/order-of-execution-deep-dive",
       "architect/solution-design-patterns",
@@ -5661,6 +5738,7 @@
       "flow/flow-action-framework"
     ],
     "flow-actions": [
+      "admin/custom-notification-types",
       "agentforce/agentforce-tool-use-patterns"
     ],
     "flow-apex-action": [
@@ -5941,6 +6019,7 @@
       "apex/callout-and-dml-transaction-boundaries"
     ],
     "future-method": [
+      "apex/apex-future-method-patterns",
       "apex/async-apex",
       "apex/mixed-dml-and-setup-objects"
     ],
@@ -5988,11 +6067,17 @@
     "generic-streaming": [
       "integration/streaming-api-and-pushtopic"
     ],
+    "geolocation": [
+      "admin/compound-field-patterns"
+    ],
     "get-records": [
       "flow/flow-large-data-volume-patterns"
     ],
     "getSObjects": [
       "apex/apex-soql-relationship-queries"
+    ],
+    "getrecordnotifychange": [
+      "lwc/lwc-wire-refresh-patterns"
     ],
     "gift-entry": [
       "admin/gift-entry-and-processing"
@@ -6065,6 +6150,7 @@
     "governor-limits": [
       "admin/custom-metadata-types-and-settings",
       "apex/apex-dml-patterns",
+      "apex/apex-future-method-patterns",
       "apex/apex-limits-monitoring",
       "apex/formula-field-performance-and-limits",
       "apex/governor-limit-recovery-patterns",
@@ -6154,6 +6240,9 @@
     ],
     "hard-delete": [
       "data/batch-data-cleanup-patterns"
+    ],
+    "hardcoded-ids": [
+      "admin/record-type-id-management"
     ],
     "having": [
       "apex/apex-aggregate-queries"
@@ -6377,6 +6466,7 @@
       "integration/salesforce-functions-replacement"
     ],
     "i18n": [
+      "admin/custom-label-management",
       "lwc/lwc-internationalization",
       "omnistudio/omnistudio-multi-language"
     ],
@@ -7112,6 +7202,9 @@
       "admin/lightning-app-builder-advanced",
       "admin/lightning-page-performance-tuning"
     ],
+    "lightning-base-components": [
+      "lwc/lwc-record-picker"
+    ],
     "lightning-chart": [
       "lwc/lwc-chart-and-visualization"
     ],
@@ -7154,6 +7247,7 @@
       "lwc/message-channel-patterns"
     ],
     "lightning-modal": [
+      "lwc/lwc-lightning-modal",
       "lwc/lwc-modal-and-overlay"
     ],
     "lightning-navigation": [
@@ -7192,6 +7286,12 @@
     ],
     "line-columns": [
       "admin/cpq-quote-templates"
+    ],
+    "link-header": [
+      "integration/rest-api-pagination-patterns"
+    ],
+    "linkedentityid": [
+      "apex/apex-polymorphic-soql"
     ],
     "list-hygiene": [
       "admin/email-deliverability-strategy"
@@ -7268,7 +7368,9 @@
       "apex/continuation-callouts"
     ],
     "lookup": [
-      "data/data-model-design-patterns"
+      "admin/lookup-and-relationship-design",
+      "data/data-model-design-patterns",
+      "lwc/lwc-record-picker"
     ],
     "lookup-rollup": [
       "data/roll-up-summary-alternatives"
@@ -7283,6 +7385,7 @@
       "integration/loyalty-management-setup"
     ],
     "lwc": [
+      "admin/custom-label-management",
       "apex/continuation-callouts",
       "apex/fsl-custom-actions-mobile",
       "apex/health-cloud-lwc-components",
@@ -7301,8 +7404,12 @@
       "lwc/lwc-chart-and-visualization",
       "lwc/lwc-error-boundaries",
       "lwc/lwc-imperative-apex",
+      "lwc/lwc-lightning-modal",
+      "lwc/lwc-navigation-mixin",
+      "lwc/lwc-record-picker",
       "lwc/lwc-toast-and-notifications",
       "lwc/lwc-web-components-interop",
+      "lwc/lwc-wire-refresh-patterns",
       "lwc/lwr-site-development",
       "omnistudio/omnistudio-custom-lwc-elements",
       "omnistudio/omnistudio-lwc-integration"
@@ -7476,6 +7583,7 @@
       "admin/sandbox-strategy"
     ],
     "master-detail": [
+      "admin/lookup-and-relationship-design",
       "data/data-model-design-patterns"
     ],
     "match-rules": [
@@ -7562,6 +7670,9 @@
       "admin/messaging-and-chat-setup",
       "apex/apex-email-services"
     ],
+    "messaging-customnotification": [
+      "admin/custom-notification-types"
+    ],
     "messaging-for-in-app-web": [
       "architect/multi-channel-service-architecture"
     ],
@@ -7586,6 +7697,7 @@
       "devops/experience-cloud-deployment-dev",
       "devops/fsc-deployment-patterns",
       "devops/metadata-api-coverage-gaps",
+      "devops/metadata-api-retrieve-deploy",
       "devops/migration-from-change-sets-to-sfdx",
       "devops/permission-set-deployment-ordering",
       "devops/rollback-and-hotfix-strategy",
@@ -7683,6 +7795,7 @@
       "architect/ai-governance-architecture"
     ],
     "mobile": [
+      "admin/custom-notification-types",
       "admin/fsl-mobile-app-setup",
       "admin/global-actions-and-quick-actions",
       "apex/fsl-custom-actions-mobile",
@@ -7705,6 +7818,9 @@
     ],
     "mock-deployment": [
       "devops/go-live-cutover-planning"
+    ],
+    "modal": [
+      "lwc/lwc-lightning-modal"
     ],
     "model-alias": [
       "agentforce/model-builder-and-byollm"
@@ -7866,6 +7982,9 @@
     "my-domain": [
       "admin/org-setup-and-configuration"
     ],
+    "name": [
+      "admin/compound-field-patterns"
+    ],
     "named-credential": [
       "integration/mutual-tls-callouts"
     ],
@@ -7909,7 +8028,8 @@
     ],
     "navigation-mixin": [
       "lwc/aura-to-lwc-migration",
-      "lwc/common-lwc-runtime-errors"
+      "lwc/common-lwc-runtime-errors",
+      "lwc/lwc-navigation-mixin"
     ],
     "navigationmixin": [
       "lwc/lifecycle-hooks",
@@ -8105,6 +8225,9 @@
     ],
     "offline-workflow": [
       "admin/fsl-mobile-workflow-design"
+    ],
+    "offset": [
+      "integration/rest-api-pagination-patterns"
     ],
     "oidc": [
       "architect/experience-cloud-integration-patterns",
@@ -8448,7 +8571,8 @@
       "omnistudio/omnistudio-custom-lwc-elements"
     ],
     "owd": [
-      "admin/sharing-and-visibility"
+      "admin/sharing-and-visibility",
+      "security/record-access-troubleshooting"
     ],
     "owd-change": [
       "data/sharing-recalculation-performance"
@@ -8476,7 +8600,8 @@
     ],
     "package-xml": [
       "apex/metadata-api-and-package-xml",
-      "apex/sf-cli-and-sfdx-essentials"
+      "apex/sf-cli-and-sfdx-essentials",
+      "devops/metadata-api-retrieve-deploy"
     ],
     "packaging": [
       "apex/custom-metadata-in-apex",
@@ -8507,11 +8632,13 @@
       "apex/quote-pdf-customization"
     ],
     "pagereference": [
+      "lwc/lwc-navigation-mixin",
       "lwc/navigation-and-routing"
     ],
     "pagination": [
       "integration/data-cloud-query-api",
       "integration/graphql-api-patterns",
+      "integration/rest-api-pagination-patterns",
       "integration/rest-api-patterns"
     ],
     "pam": [
@@ -8626,6 +8753,9 @@
     "pause-element": [
       "flow/pause-elements-and-wait-events"
     ],
+    "paused-interviews": [
+      "admin/scheduled-path-patterns"
+    ],
     "payer": [
       "architect/payer-vs-provider-architecture"
     ],
@@ -8727,6 +8857,7 @@
       "admin/delegated-administration",
       "admin/permission-sets-vs-profiles",
       "admin/user-access-policies",
+      "apex/apex-custom-permissions-check",
       "devops/permission-set-deployment-ordering"
     ],
     "permits": [
@@ -8853,6 +8984,7 @@
       "integration/error-handling-in-integrations",
       "integration/event-driven-architecture-patterns",
       "integration/idempotent-integration-patterns",
+      "integration/platform-event-publish-patterns",
       "integration/platform-events-integration",
       "integration/pub-sub-api-patterns",
       "integration/real-time-vs-batch-integration",
@@ -8892,6 +9024,7 @@
       "data/fsl-territory-data-setup"
     ],
     "polymorphic": [
+      "apex/apex-polymorphic-soql",
       "apex/apex-soql-relationship-queries"
     ],
     "polymorphic-lookups": [
@@ -9263,8 +9396,14 @@
     "publication-lists": [
       "admin/consent-management-marketing"
     ],
+    "publish": [
+      "integration/platform-event-publish-patterns"
+    ],
     "publish-after-commit": [
       "flow/flow-platform-events-integration"
+    ],
+    "publishbehavior": [
+      "integration/platform-event-publish-patterns"
     ],
     "publishing-workflow": [
       "admin/knowledge-base-administration"
@@ -9277,6 +9416,9 @@
     ],
     "pull-requests": [
       "devops/copado-essentials"
+    ],
+    "push-notifications": [
+      "admin/custom-notification-types"
     ],
     "pushtopic": [
       "integration/streaming-api-and-pushtopic"
@@ -9310,6 +9452,9 @@
     ],
     "query-plan": [
       "apex/apex-performance-profiling"
+    ],
+    "querymore": [
+      "integration/rest-api-pagination-patterns"
     ],
     "queue-based-routing": [
       "admin/omni-channel-routing-setup"
@@ -9467,7 +9612,8 @@
       "admin/data-cloud-identity-resolution"
     ],
     "record-access": [
-      "admin/sharing-and-visibility"
+      "admin/sharing-and-visibility",
+      "security/record-access-troubleshooting"
     ],
     "record-locking": [
       "admin/approval-processes",
@@ -9477,8 +9623,14 @@
     "record-page": [
       "admin/dynamic-forms-and-actions"
     ],
+    "record-picker": [
+      "lwc/lwc-record-picker"
+    ],
     "record-sharing": [
       "integration/slack-salesforce-integration-setup"
+    ],
+    "record-triggered": [
+      "admin/scheduled-path-patterns"
     ],
     "record-triggered-flow": [
       "admin/flow-for-admins",
@@ -9488,6 +9640,9 @@
       "flow/process-builder-to-flow-migration",
       "flow/record-triggered-flow-patterns",
       "flow/workflow-rule-to-flow-migration"
+    ],
+    "record-type": [
+      "admin/record-type-id-management"
     ],
     "record-type-mapping-drift": [
       "admin/picklist-field-integrity-issues"
@@ -9551,7 +9706,11 @@
       "security/oauth-token-management"
     ],
     "refreshapex": [
+      "lwc/lwc-wire-refresh-patterns",
       "lwc/wire-service-patterns"
+    ],
+    "refreshview": [
+      "lwc/lwc-wire-refresh-patterns"
     ],
     "registration-handler": [
       "lwc/experience-cloud-multi-idp-sso"
@@ -9576,6 +9735,7 @@
       "apex/soql-fundamentals"
     ],
     "relationships": [
+      "admin/lookup-and-relationship-design",
       "data/data-model-design-patterns"
     ],
     "release": [
@@ -9726,7 +9886,8 @@
       "architect/ai-governance-architecture"
     ],
     "rest": [
-      "flow/flow-http-callout-action"
+      "flow/flow-http-callout-action",
+      "integration/rest-api-pagination-patterns"
     ],
     "rest-api": [
       "admin/api-contract-documentation",
@@ -9860,6 +10021,7 @@
     ],
     "rollback": [
       "admin/change-management-and-deployment",
+      "apex/apex-savepoint-and-rollback",
       "data/data-migration-planning",
       "devops/post-deployment-validation",
       "devops/release-management",
@@ -10112,7 +10274,8 @@
       "omnistudio/omniscript-design-patterns"
     ],
     "savepoint": [
-      "apex/apex-dml-patterns"
+      "apex/apex-dml-patterns",
+      "apex/apex-savepoint-and-rollback"
     ],
     "savepoints": [
       "apex/governor-limit-recovery-patterns"
@@ -10175,6 +10338,9 @@
     "scheduled-path": [
       "flow/flow-transactional-boundaries"
     ],
+    "scheduled-paths": [
+      "admin/scheduled-path-patterns"
+    ],
     "scheduler": [
       "data/batch-data-cleanup-patterns"
     ],
@@ -10197,6 +10363,7 @@
       "admin/fsl-scheduling-policies"
     ],
     "schema-describe": [
+      "admin/record-type-id-management",
       "apex/dynamic-apex"
     ],
     "schema-documentation": [
@@ -10567,6 +10734,7 @@
     "sf-cli": [
       "apex/sf-cli-and-sfdx-essentials",
       "devops/continuous-integration-testing",
+      "devops/metadata-api-retrieve-deploy",
       "devops/source-tracking-and-conflict-resolution"
     ],
     "sf-cli-v2": [
@@ -10639,12 +10807,14 @@
     ],
     "sharing": [
       "admin/crm-analytics-app-creation",
+      "admin/lookup-and-relationship-design",
       "admin/queues-and-public-groups",
       "admin/sharing-and-visibility",
       "lwc/experience-cloud-api-access",
       "security/apex-managed-sharing-patterns",
       "security/dynamic-sharing-recalculation",
-      "security/guest-user-security"
+      "security/guest-user-security",
+      "security/record-access-troubleshooting"
     ],
     "sharing-inheritance": [
       "admin/analytics-permission-and-sharing"
@@ -10852,8 +11022,10 @@
       "architect/solution-design-patterns"
     ],
     "soql": [
+      "admin/compound-field-patterns",
       "admin/salesforce-object-queryability",
       "apex/apex-aggregate-queries",
+      "apex/apex-polymorphic-soql",
       "apex/apex-soql-relationship-queries",
       "apex/einstein-activity-capture-api",
       "apex/formula-field-performance-and-limits",
@@ -11174,6 +11346,9 @@
     "tableau-cloud": [
       "integration/tableau-salesforce-connector"
     ],
+    "task": [
+      "admin/activity-and-task-patterns"
+    ],
     "task-sequence": [
       "admin/fsc-action-plans"
     ],
@@ -11379,6 +11554,9 @@
     "training": [
       "admin/change-management-and-training"
     ],
+    "transaction": [
+      "apex/apex-savepoint-and-rollback"
+    ],
     "transaction-api": [
       "apex/billing-integration-apex"
     ],
@@ -11414,6 +11592,7 @@
       "admin/care-coordination-requirements"
     ],
     "translation": [
+      "admin/custom-label-management",
       "admin/multi-language-and-translation",
       "omnistudio/omnistudio-multi-language"
     ],
@@ -11442,6 +11621,12 @@
     "trigger-management": [
       "apex/fsc-apex-extensions"
     ],
+    "trigger-new": [
+      "apex/apex-trigger-context-variables"
+    ],
+    "trigger-old": [
+      "apex/apex-trigger-context-variables"
+    ],
     "trigger-recursion": [
       "apex/recursive-trigger-prevention"
     ],
@@ -11457,12 +11642,14 @@
     ],
     "triggers": [
       "apex/apex-collections-patterns",
+      "apex/apex-trigger-context-variables",
       "apex/order-of-execution-deep-dive",
       "apex/trigger-framework"
     ],
     "troubleshooting": [
       "devops/deployment-error-troubleshooting",
-      "omnistudio/omnistudio-debugging"
+      "omnistudio/omnistudio-debugging",
+      "security/record-access-troubleshooting"
     ],
     "trunk-based-development": [
       "devops/git-branching-for-salesforce"
@@ -11494,6 +11681,7 @@
       "omnistudio/dataraptor-patterns"
     ],
     "typeof": [
+      "apex/apex-polymorphic-soql",
       "apex/apex-soql-relationship-queries"
     ],
     "uat": [
@@ -11606,6 +11794,9 @@
     ],
     "user-training": [
       "admin/ai-adoption-change-management"
+    ],
+    "userrecordaccess": [
+      "security/record-access-troubleshooting"
     ],
     "users": [
       "admin/user-management"
@@ -11812,6 +12003,13 @@
     "what-if-analysis": [
       "admin/einstein-discovery-setup"
     ],
+    "whatid": [
+      "admin/activity-and-task-patterns",
+      "apex/apex-polymorphic-soql"
+    ],
+    "whoid": [
+      "admin/activity-and-task-patterns"
+    ],
     "win-loss-analysis": [
       "admin/sales-process-mapping"
     ],
@@ -11820,7 +12018,8 @@
     ],
     "wire": [
       "lwc/knowledge-article-lwc",
-      "lwc/lwc-state-management"
+      "lwc/lwc-state-management",
+      "lwc/lwc-wire-refresh-patterns"
     ],
     "wire-adapter": [
       "lwc/common-lwc-runtime-errors"

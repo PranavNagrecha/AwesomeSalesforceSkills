@@ -1,0 +1,98 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "013b77ef8ffee0aa2861",
+    "0202f265259a1d891928",
+    "070a631d8503859676f5",
+    "07265c329ac506bba3af",
+    "0c539a9c1792daf820f3",
+    "0c981bc700bbed626d6f",
+    "108dd7d0dfc25d03d8c3",
+    "1b11b755ea3493c46b67",
+    "1dfa41e21879dabcba2a",
+    "1ea0aa0a40711c1b4023",
+    "1f4614ccee961517fc51",
+    "1f65f4048b3b6d93a1a0",
+    "2135e36788580dbe72d5",
+    "2a39c93c002c23453aaf",
+    "2c96914213bba6925927",
+    "33b6c0c14c103bc1ea84",
+    "35ff3bb6c1f18a1b8e06",
+    "3cb8c35e081fbcca9878",
+    "3f1f49610698b0cb31bd",
+    "429d861cbc29c5876b33",
+    "4df805ede5d468f39b6c",
+    "51fcc863a539e2f2a624",
+    "574edfef34253def756e",
+    "6b9e5c49a82022dbeb06",
+    "80c7a854ee42e0dee8ba",
+    "8202586038a35610edb6",
+    "8b6b3bcf0a49991e09a7",
+    "9b0b45be8140aba8cb7c",
+    "9ba1232771b5986c4a27",
+    "a00955af38a1eab55692",
+    "a1a535b7c6fc361faa3d",
+    "abbd1060d6a590c4807c",
+    "abf838f5900af04779aa",
+    "ba2f9de1229d9dd0569d",
+    "bd631beac13f5924b1c5",
+    "c0a2a8bab5f80842a9b4",
+    "c722b11790057c859b35",
+    "c96f113f27ce5f3e5161",
+    "ca0b5c1c70cc7820184f",
+    "ccd6d939e72aeeb08846",
+    "d1d4f004ffb0520c42f4",
+    "da1bc02e3211dbd955a6",
+    "f4c54b5a9dc2377d644f",
+    "f500c689c5cba9f717ea",
+    "f670e8efd186ea2a9538",
+    "faa974c676eb235b421a"
+  ],
+  "content_hash": "1ad4e45defa88181a8b8dff92487f00089c9f2d04269a144ad8c5b218db3e5c3",
+  "dependencies": [],
+  "description": "Task and Event objects: polymorphic WhatId/WhoId, Activity object model, ActivityHistory vs OpenActivity, activity timeline customization, bulk task creation, Einstein Activity Capture boundaries. NOT for Calendar sharing (use calendar-sharing-setup). NOT for Email-to-Case (use case-management-setup).",
+  "file_location": "skills/admin/activity-and-task-patterns",
+  "id": "admin/activity-and-task-patterns",
+  "inputs": [
+    "Objects requiring activity tracking",
+    "Volume of tasks/events generated per day",
+    "Einstein Activity Capture license status",
+    "Reporting requirements on activities"
+  ],
+  "name": "activity-and-task-patterns",
+  "official_sources": [
+    "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
+    "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Activity model decision (Task, Event, custom)",
+    "Polymorphic query patterns",
+    "Bulk creation pattern",
+    "Activity reporting approach"
+  ],
+  "references": [
+    "skills/admin/activity-and-task-patterns/references/examples.md",
+    "skills/admin/activity-and-task-patterns/references/gotchas.md",
+    "skills/admin/activity-and-task-patterns/references/llm-anti-patterns.md",
+    "skills/admin/activity-and-task-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/activity-and-task-patterns/scripts/__pycache__/check_activity_and_task_patterns.cpython-314.pyc",
+    "skills/admin/activity-and-task-patterns/scripts/check_activity_and_task_patterns.py"
+  ],
+  "tags": [
+    "task",
+    "event",
+    "activity",
+    "whatid",
+    "whoid",
+    "einstein-activity-capture"
+  ],
+  "templates": [
+    "skills/admin/activity-and-task-patterns/templates/activity-and-task-patterns-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

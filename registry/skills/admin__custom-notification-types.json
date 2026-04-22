@@ -1,0 +1,97 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "037a7b219c53a630d25b",
+    "03ac2edcfe6b352db57a",
+    "03ae849689c4912326f3",
+    "0a238f0cec81a5317cd3",
+    "0dafee2c27a140f91868",
+    "1158dccc1239df61d243",
+    "15cb9075549a0c45d7fa",
+    "28db0c441b4ddbca3885",
+    "30058271b614e38ee89c",
+    "35395e3fda08bbd94972",
+    "3b8484dc58b136e12f1b",
+    "3d2b6e09dab18d43cb9d",
+    "3e9d1d34bac3038656c7",
+    "43342a6ba81946cc6e22",
+    "462c27074f2c5671d73e",
+    "47be69e22e5092d7dab9",
+    "4ae3c183c3dcd88af711",
+    "54b29f36025d650c859c",
+    "5de819deec3cd9cd9961",
+    "5e2e4bf519d56d0023c0",
+    "5f0b442feb4513aa7b26",
+    "6c52b7775122751aa428",
+    "6ffc27cb2b85c752c0c0",
+    "830e8e991f71a4520038",
+    "8b41f29d518a05469092",
+    "8f20c46c176d982e38de",
+    "9113841a183f57639177",
+    "96b191c332c5a135f65e",
+    "99641c47c9c4ca6a1f94",
+    "9a94ec8cdd980deaedcc",
+    "a1cfc389c134af81b1ab",
+    "a88d8ff5f890e68ceaa7",
+    "b299ba03c7776dbb13e3",
+    "b52f26c0cffc44514a2e",
+    "b679918b746e6a153e5d",
+    "b93bdf80c1575a892d34",
+    "c4b27371b1a646a6e99d",
+    "c97f829a69b1d52041d8",
+    "dd16126387bcd61235f3",
+    "e7c5ea117725d1d2885c",
+    "e8dc614906970d62a5ac",
+    "eaea84d32d85ad7c7e3c",
+    "ee6219adc7148490456a",
+    "f61fd9fd6291eb357306",
+    "f8c02da209f4da34426a",
+    "f9c6dc4d7dc373c007a2"
+  ],
+  "content_hash": "f94df375e6e8a639f4f7d1b857e0520287e5906d53e8ab3ce6d744a8ea6867bb",
+  "dependencies": [],
+  "description": "Custom Notification Types for desktop/mobile push alerts from Flow or Apex: type creation, target channels, Messaging.CustomNotification invocation, recipient limits, bulk notification patterns. NOT for email alerts (use email-templates-and-alerts). NOT for in-app bell notifications alone (use chatter-feed-customization).",
+  "file_location": "skills/admin/custom-notification-types",
+  "id": "admin/custom-notification-types",
+  "inputs": [
+    "Event triggering the notification",
+    "Target recipients (users, queues, groups)",
+    "Channels desired (desktop, mobile push)",
+    "Volume per day"
+  ],
+  "name": "custom-notification-types",
+  "official_sources": [
+    "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
+    "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Custom Notification Type metadata",
+    "Flow action or Apex invocation pattern",
+    "Bulk send strategy",
+    "Monitoring and delivery verification plan"
+  ],
+  "references": [
+    "skills/admin/custom-notification-types/references/examples.md",
+    "skills/admin/custom-notification-types/references/gotchas.md",
+    "skills/admin/custom-notification-types/references/llm-anti-patterns.md",
+    "skills/admin/custom-notification-types/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/custom-notification-types/scripts/__pycache__/check_custom_notification_types.cpython-314.pyc",
+    "skills/admin/custom-notification-types/scripts/check_custom_notification_types.py"
+  ],
+  "tags": [
+    "custom-notifications",
+    "messaging-customnotification",
+    "flow-actions",
+    "push-notifications",
+    "mobile"
+  ],
+  "templates": [
+    "skills/admin/custom-notification-types/templates/custom-notification-types-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

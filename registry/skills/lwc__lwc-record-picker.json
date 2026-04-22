@@ -1,0 +1,96 @@
+{
+  "category": "lwc",
+  "chunk_ids": [
+    "0cf6430cec0825339e7e",
+    "0f6484f2b1f751ae33b6",
+    "11e0389c3dae79ec2d89",
+    "155312080110ce3db9ee",
+    "1630186ff1b6a33f727e",
+    "198b88a76a79c28cbea8",
+    "1d0593345341bfe272d5",
+    "244c14921377c40904a1",
+    "2c9fcf6111773958d622",
+    "39b1a4b418b53846a3ca",
+    "3cda438576ef0eec5487",
+    "43a95b02b29cb031dbfe",
+    "4530d61bbe632cfae99b",
+    "46fee74057897a3b4829",
+    "49979a8478ed9c1ec0be",
+    "507b6c6b1a521edc172f",
+    "5531952f958cfec39f86",
+    "5fdd58508986f156d47d",
+    "6c0474c4cb0fe089ff23",
+    "6e6c23c6f71ce12327f9",
+    "702edce65b7cd0cbae9c",
+    "75c92722c6efb590e624",
+    "7f7091affa8a00887c38",
+    "85ec72aececeee582263",
+    "864a40435bfb91e13ed9",
+    "871af62b62417c2be4c7",
+    "8b7dc6a5c44564e164ae",
+    "8cd9da6f8f067f8ce705",
+    "934df0993f0d43d91998",
+    "9e3cab87237345a4cd2e",
+    "a3239982430b15579c77",
+    "a6a2c6de24e42cddc009",
+    "ad5729417c527028a1da",
+    "b65d51c80691784d24c7",
+    "b8c5f9ec4dae42b24b9c",
+    "c0ee376c9f4f307c9dab",
+    "c7f9b05450a325645272",
+    "e26adfa21a7f1e196561",
+    "e71a56a6af35930d0cb3",
+    "eedc0a3d1c6577e12047",
+    "ef943d7438cfcc60e22a",
+    "f55b80efe923230c5415",
+    "f7b2b0d10b3d33f2fc7b",
+    "f85855a9d468d384ea0d",
+    "fa95fc19760fe6687682",
+    "ff3cd4ffc61655aff949"
+  ],
+  "content_hash": "b38882b7571f9da25f24146d6acbe2149f085da1c00427655d20278ddb7d5269",
+  "dependencies": [],
+  "description": "lightning-record-picker base component (Winter '24 GA): object/record filter, displayInfo/matchingInfo, graph-ql filters, accessibility. Replaces ad-hoc lookup inputs. NOT for multi-select custom pickers (use lwc-multi-select-lookup). NOT for external-object lookup (use lwc-external-lookup).",
+  "file_location": "skills/lwc/lwc-record-picker",
+  "id": "lwc/lwc-record-picker",
+  "inputs": [
+    "Target object API name",
+    "Fields to display / match",
+    "Filter criteria (graph-QL style)",
+    "Preselection value"
+  ],
+  "name": "lwc-record-picker",
+  "official_sources": [
+    "LWC Best Practices \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/get-started-best-practices.html",
+    "Lightning Component Reference \u2014 https://developer.salesforce.com/docs/platform/lightning-component-reference/guide",
+    "LWC Data Guidelines \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-guidelines.html"
+  ],
+  "outputs": [
+    "Configured lightning-record-picker usage",
+    "Migration plan from legacy custom lookup",
+    "Test coverage with jest"
+  ],
+  "references": [
+    "skills/lwc/lwc-record-picker/references/examples.md",
+    "skills/lwc/lwc-record-picker/references/gotchas.md",
+    "skills/lwc/lwc-record-picker/references/llm-anti-patterns.md",
+    "skills/lwc/lwc-record-picker/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/lwc/lwc-record-picker/scripts/__pycache__/check_lwc_record_picker.cpython-314.pyc",
+    "skills/lwc/lwc-record-picker/scripts/check_lwc_record_picker.py"
+  ],
+  "tags": [
+    "lwc",
+    "record-picker",
+    "lookup",
+    "lightning-base-components",
+    "accessibility"
+  ],
+  "templates": [
+    "skills/lwc/lwc-record-picker/templates/lwc-record-picker-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

@@ -50,7 +50,7 @@
     "f2daabdafdc639cdcc9a",
     "f5b56bdff3144e00325a"
   ],
-  "content_hash": "8ea3e67cf9c7057f7e5b78dcf4994d09b158caafc06784587f5871c670530555",
+  "content_hash": "54423f036ef5656f9fe819e5b564b2773fc4c33b364c438dc3dbb9ebf778b55f",
   "dependencies": [],
   "description": "Usage-based pricing in Revenue Cloud: metered billing, usage records, rating, tiering, consumption schedules. NOT for CPQ flat-rate discounts (use revenue-cloud-cpq-setup). NOT for legacy Salesforce Billing-only implementations (use revenue-cloud-legacy-billing).",
   "file_location": "skills/admin/usage-based-pricing-setup",
@@ -80,6 +80,7 @@
     "skills/admin/usage-based-pricing-setup/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/usage-based-pricing-setup/scripts/__pycache__/check_usage_based_pricing_setup.cpython-314.pyc",
     "skills/admin/usage-based-pricing-setup/scripts/check_usage_based_pricing_setup.py"
   ],
   "tags": [

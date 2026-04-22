@@ -1,0 +1,96 @@
+{
+  "category": "lwc",
+  "chunk_ids": [
+    "02b90a678c839f459922",
+    "07415203f317359053bc",
+    "0c7c80edf1f87cd166ea",
+    "0dfc9611ca0ab4b2baf8",
+    "165dd31e282ebda3aefa",
+    "236410b9ec60fbb8eefd",
+    "24c174bc649fb61b99d8",
+    "281fe130ab61e65e3171",
+    "2afb9b19b52f61bf5823",
+    "31460fcaa5a3980ee0d4",
+    "33fd83c588cd3aecd009",
+    "353d0fa4ab870635ded1",
+    "35c76c66de1ff9a1b7c4",
+    "3e80987e909ae341dca3",
+    "466902e8e2f3b52ef1d3",
+    "485e89fc9010a87f6e72",
+    "50f7c6ba4d5b943e39f9",
+    "5109abfbe3c47fb11de1",
+    "5158fb56f78aa068f74e",
+    "549cd52465c8da9bf3fa",
+    "5cc77e96e4740d29594e",
+    "5e771a5d9a928a1eafe1",
+    "63e6f2f96fed53c0bb1f",
+    "71a26c86521377a67a40",
+    "73f99a5756ed9713d4e6",
+    "7853029801e1177cd06c",
+    "78b86db0dcaf0b67b749",
+    "9b11be0bc490fd41394d",
+    "9bcb2aefba7319b27ce3",
+    "9f9bb15f6d1e7ed18df8",
+    "a82520baa50ed6ffd7a3",
+    "a935c69c6b664ae2c59b",
+    "aa9f5008673c6d8a70b7",
+    "b386ddbf610069962b18",
+    "b48de486ef351a690e14",
+    "b77480e4e911f0631da9",
+    "c3bbd736f1b2838b31c8",
+    "d5d32a0ce072d566e28f",
+    "d65de225dd36df586b1b",
+    "da39690ab9c85c4fe582",
+    "dba9e3fb8eeac69baeb4",
+    "df99819fb7ead6f85d1b",
+    "e0676581f70690de32c8",
+    "e851fc7863c83b1a6281",
+    "e8977729b30747de11e7",
+    "ee5bbd0172b73ae3def7",
+    "fea792aead6428345476"
+  ],
+  "content_hash": "a61919a39b867179a8450ee03626311515ec425de947e3bb7630ca38358598a4",
+  "dependencies": [],
+  "description": "refreshApex, getRecordNotifyChange, and RefreshView API for LWC data refresh: when wired data is stale, forcing re-fetch after imperative DML, cross-component refresh, 2024 RefreshView replacement of getRecordNotifyChange. NOT for wire basics (use lwc-wire-service). NOT for Lightning Data Service writes (use lwc-lds-writes).",
+  "file_location": "skills/lwc/lwc-wire-refresh-patterns",
+  "id": "lwc/lwc-wire-refresh-patterns",
+  "inputs": [
+    "Wire adapter in use (getRecord, custom Apex wire)",
+    "Trigger for refresh (imperative call, platform event, parent change)",
+    "Cross-component refresh requirement"
+  ],
+  "name": "lwc-wire-refresh-patterns",
+  "official_sources": [
+    "LWC Best Practices \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/get-started-best-practices.html",
+    "Lightning Component Reference \u2014 https://developer.salesforce.com/docs/platform/lightning-component-reference/guide",
+    "LWC Data Guidelines \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-guidelines.html"
+  ],
+  "outputs": [
+    "Refresh pattern (refreshApex, RefreshView, wire re-provision)",
+    "Cross-component messaging approach",
+    "Test strategy for refresh flows"
+  ],
+  "references": [
+    "skills/lwc/lwc-wire-refresh-patterns/references/examples.md",
+    "skills/lwc/lwc-wire-refresh-patterns/references/gotchas.md",
+    "skills/lwc/lwc-wire-refresh-patterns/references/llm-anti-patterns.md",
+    "skills/lwc/lwc-wire-refresh-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/lwc/lwc-wire-refresh-patterns/scripts/__pycache__/check_lwc_wire_refresh_patterns.cpython-314.pyc",
+    "skills/lwc/lwc-wire-refresh-patterns/scripts/check_lwc_wire_refresh_patterns.py"
+  ],
+  "tags": [
+    "lwc",
+    "refreshapex",
+    "getrecordnotifychange",
+    "refreshview",
+    "wire"
+  ],
+  "templates": [
+    "skills/lwc/lwc-wire-refresh-patterns/templates/lwc-wire-refresh-patterns-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

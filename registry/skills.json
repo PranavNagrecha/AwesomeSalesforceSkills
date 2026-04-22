@@ -1,21 +1,119 @@
 {
   "domain_counts": {
-    "admin": 210,
+    "admin": 217,
     "agentforce": 40,
-    "apex": 107,
+    "apex": 112,
     "architect": 97,
     "data": 87,
-    "devops": 58,
+    "devops": 59,
     "flow": 37,
-    "integration": 45,
-    "lwc": 40,
+    "integration": 47,
+    "lwc": 44,
     "omnistudio": 26,
-    "security": 36
+    "security": 37
   },
-  "generated_from_hash": "b1c9f88962aca608e3c4e7fa8be504dcc216a161f056c7c22d871ea4bce9219d",
+  "generated_from_hash": "fbe92d53227fa1e9f7802a177fefcda2cd61294f7a5c69eee505f0c64654df1f",
   "schema_version": 1,
-  "skill_count": 783,
+  "skill_count": 803,
   "skills": [
+    {
+      "category": "admin",
+      "chunk_ids": [
+        "013b77ef8ffee0aa2861",
+        "0202f265259a1d891928",
+        "070a631d8503859676f5",
+        "07265c329ac506bba3af",
+        "0c539a9c1792daf820f3",
+        "0c981bc700bbed626d6f",
+        "108dd7d0dfc25d03d8c3",
+        "1b11b755ea3493c46b67",
+        "1dfa41e21879dabcba2a",
+        "1ea0aa0a40711c1b4023",
+        "1f4614ccee961517fc51",
+        "1f65f4048b3b6d93a1a0",
+        "2135e36788580dbe72d5",
+        "2a39c93c002c23453aaf",
+        "2c96914213bba6925927",
+        "33b6c0c14c103bc1ea84",
+        "35ff3bb6c1f18a1b8e06",
+        "3cb8c35e081fbcca9878",
+        "3f1f49610698b0cb31bd",
+        "429d861cbc29c5876b33",
+        "4df805ede5d468f39b6c",
+        "51fcc863a539e2f2a624",
+        "574edfef34253def756e",
+        "6b9e5c49a82022dbeb06",
+        "80c7a854ee42e0dee8ba",
+        "8202586038a35610edb6",
+        "8b6b3bcf0a49991e09a7",
+        "9b0b45be8140aba8cb7c",
+        "9ba1232771b5986c4a27",
+        "a00955af38a1eab55692",
+        "a1a535b7c6fc361faa3d",
+        "abbd1060d6a590c4807c",
+        "abf838f5900af04779aa",
+        "ba2f9de1229d9dd0569d",
+        "bd631beac13f5924b1c5",
+        "c0a2a8bab5f80842a9b4",
+        "c722b11790057c859b35",
+        "c96f113f27ce5f3e5161",
+        "ca0b5c1c70cc7820184f",
+        "ccd6d939e72aeeb08846",
+        "d1d4f004ffb0520c42f4",
+        "da1bc02e3211dbd955a6",
+        "f4c54b5a9dc2377d644f",
+        "f500c689c5cba9f717ea",
+        "f670e8efd186ea2a9538",
+        "faa974c676eb235b421a"
+      ],
+      "content_hash": "1ad4e45defa88181a8b8dff92487f00089c9f2d04269a144ad8c5b218db3e5c3",
+      "dependencies": [],
+      "description": "Task and Event objects: polymorphic WhatId/WhoId, Activity object model, ActivityHistory vs OpenActivity, activity timeline customization, bulk task creation, Einstein Activity Capture boundaries. NOT for Calendar sharing (use calendar-sharing-setup). NOT for Email-to-Case (use case-management-setup).",
+      "file_location": "skills/admin/activity-and-task-patterns",
+      "id": "admin/activity-and-task-patterns",
+      "inputs": [
+        "Objects requiring activity tracking",
+        "Volume of tasks/events generated per day",
+        "Einstein Activity Capture license status",
+        "Reporting requirements on activities"
+      ],
+      "name": "activity-and-task-patterns",
+      "official_sources": [
+        "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
+        "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+        "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+      ],
+      "outputs": [
+        "Activity model decision (Task, Event, custom)",
+        "Polymorphic query patterns",
+        "Bulk creation pattern",
+        "Activity reporting approach"
+      ],
+      "references": [
+        "skills/admin/activity-and-task-patterns/references/examples.md",
+        "skills/admin/activity-and-task-patterns/references/gotchas.md",
+        "skills/admin/activity-and-task-patterns/references/llm-anti-patterns.md",
+        "skills/admin/activity-and-task-patterns/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/admin/activity-and-task-patterns/scripts/__pycache__/check_activity_and_task_patterns.cpython-314.pyc",
+        "skills/admin/activity-and-task-patterns/scripts/check_activity_and_task_patterns.py"
+      ],
+      "tags": [
+        "task",
+        "event",
+        "activity",
+        "whatid",
+        "whoid",
+        "einstein-activity-capture"
+      ],
+      "templates": [
+        "skills/admin/activity-and-task-patterns/templates/activity-and-task-patterns-template.md"
+      ],
+      "updated": "2026-04-21",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
     {
       "category": "admin",
       "chunk_ids": [
@@ -6228,6 +6326,104 @@
     {
       "category": "admin",
       "chunk_ids": [
+        "00b14117dd6371832060",
+        "0327f6c024b44cddb4eb",
+        "0bad6fa3767e1de4394c",
+        "12ed7c4ecc9190d67207",
+        "208f82f8967d99545b34",
+        "21312e6a642e8da7f855",
+        "254e6f10e85c63033fb6",
+        "2c75c544537a92e54b88",
+        "2da979b368cf51718d4b",
+        "2ded10fda8341560a6ef",
+        "3b372cebd3dbc6d19046",
+        "3ca7e8c34f2261f6b15d",
+        "4abcae9e497166dfce22",
+        "4ac50f37fb4b3d26ca92",
+        "4bcaa1687b0410d07371",
+        "4ce79a48125a2558488a",
+        "50064b5cc33cfd5d0786",
+        "6042f0925df7cb8d1ac0",
+        "62d776e3268136149287",
+        "6bc178c333f941d8128e",
+        "6e65ad56ea90931556f7",
+        "6e6d75054858ae82413b",
+        "70de467c8e2c027c5d28",
+        "7f2b823d16796ded4b90",
+        "7fa6545ca9fe8827802a",
+        "80814f0b41ab4f51b4bf",
+        "85c78e7c61aef3edf892",
+        "8946711a569ccd059af8",
+        "91cec73d30ebb52559b2",
+        "943a9656842cae0922aa",
+        "9cbd6cb880e9e66a9109",
+        "9d5463f3c72a50800dac",
+        "a462ea977f4246e5e284",
+        "a7c235fb9c9b24dec973",
+        "acc1b79e395e2553cc5a",
+        "ad6f62ebb13c7f06f922",
+        "b0327b56dfbf604f4d00",
+        "b81657d245de09b233fc",
+        "b995616cc4460b39b6ab",
+        "c031929df343091497db",
+        "c96acf327451461906fd",
+        "d44084c8fee5df9ce552",
+        "d4607941745ab3e4f09f",
+        "d769b73be48f45d00212",
+        "e824982400d09909e235",
+        "f69c4432a7300a98aab7",
+        "fe55aa4eec9831b052d2",
+        "fe8ed9c1bfce74bb9677"
+      ],
+      "content_hash": "c97c05918c04cef10b3c88b4920f11d9afc8e58c1998b3feea60a80b8c5fe139",
+      "dependencies": [],
+      "description": "Compound fields (Name, Address, Geolocation): SOQL access rules, DML semantics, component access in Apex/LWC, reporting column behavior, formula field restrictions. NOT for general field design (use custom-field-creation). NOT for address validation services (use address-validation-integration).",
+      "file_location": "skills/admin/compound-field-patterns",
+      "id": "admin/compound-field-patterns",
+      "inputs": [
+        "Fields in scope (Name, Address, Geolocation on standard or custom object)",
+        "Access context (SOQL, Apex DML, LWC wire, Report)",
+        "Custom Address or Geolocation field use case"
+      ],
+      "name": "compound-field-patterns",
+      "official_sources": [
+        "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
+        "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+        "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+      ],
+      "outputs": [
+        "SOQL selection pattern (components vs compound)",
+        "DML/update pattern with component fields",
+        "LWC/UI-API access pattern",
+        "Reporting and filtering plan"
+      ],
+      "references": [
+        "skills/admin/compound-field-patterns/references/examples.md",
+        "skills/admin/compound-field-patterns/references/gotchas.md",
+        "skills/admin/compound-field-patterns/references/llm-anti-patterns.md",
+        "skills/admin/compound-field-patterns/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/admin/compound-field-patterns/scripts/__pycache__/check_compound_field_patterns.cpython-314.pyc",
+        "skills/admin/compound-field-patterns/scripts/check_compound_field_patterns.py"
+      ],
+      "tags": [
+        "compound-fields",
+        "address",
+        "geolocation",
+        "name",
+        "soql"
+      ],
+      "templates": [
+        "skills/admin/compound-field-patterns/templates/compound-field-patterns-template.md"
+      ],
+      "updated": "2026-04-21",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "admin",
+      "chunk_ids": [
         "0dba23cb3c37860d827c",
         "0e62e2bc07c6e7309cfc",
         "1380e80daad3e8d798da",
@@ -6532,7 +6728,7 @@
         "f19ecd5443508c802330",
         "f5c637fb75494f56c822"
       ],
-      "content_hash": "8c4901a8d023916bcd03df39002e8950f03bde37fcd8de05e7e9f80d68c75676",
+      "content_hash": "9e63bbf780f82c4e5555e16a0d035b8745920302d8bfd1cb06521e504a845840",
       "dependencies": [],
       "description": "Consumer Goods Cloud setup: visit execution, retail execution, route planning, in-store task management, compliance checks, off-shelf detection, and image recognition. NOT for Field Service dispatch (use field-service-core-setup). NOT for B2B Commerce storefronts (use b2b-commerce-store-setup).",
       "file_location": "skills/admin/consumer-goods-cloud-setup",
@@ -6562,6 +6758,7 @@
         "skills/admin/consumer-goods-cloud-setup/references/well-architected.md"
       ],
       "scripts": [
+        "skills/admin/consumer-goods-cloud-setup/scripts/__pycache__/check_consumer_goods_cloud_setup.cpython-314.pyc",
         "skills/admin/consumer-goods-cloud-setup/scripts/check_consumer_goods_cloud_setup.py"
       ],
       "tags": [
@@ -7800,6 +7997,102 @@
     {
       "category": "admin",
       "chunk_ids": [
+        "01e8e6ebc27f7277d545",
+        "038d1fbd05c94852281d",
+        "07f8ad8f897dc287f37c",
+        "0bc2bc56c085a74cfc42",
+        "10d998457a0db5bd2f02",
+        "272f14ecabb29a2fa637",
+        "28ab3cf2bfd56f8a4c79",
+        "29f9f9beb16b01c06ddf",
+        "2b1dda06bed3969e0fac",
+        "2e9e9c10d7232a087487",
+        "33cbcd5623e049428421",
+        "36b7752d52f7841ff0f6",
+        "38bb4ec2b01f37a3f858",
+        "39b8d2f3ae5fb470af9b",
+        "3ff766035cf44c683d79",
+        "400963f9c6bbd9cc5d6a",
+        "452bd745b99041b22381",
+        "508cb0c6a4236db41691",
+        "5743d2b1a53ff49ec60b",
+        "583afe5c04c08d9bf8a2",
+        "58780bc0690f8031111f",
+        "69e5e297e6469c63678c",
+        "79f7c58528bf269c77f1",
+        "7c361315fb523703cb63",
+        "7e28dcfcf7a212c8b081",
+        "804722d838f17a86af0d",
+        "837dec0fed4fc6a0b5f9",
+        "8a023176661717e9f991",
+        "90050429df1b2ed36271",
+        "90a5ce23325e1d14f91a",
+        "a03652646c583714797f",
+        "a3343be1321e68c9254e",
+        "a3f9fec60fca860a611c",
+        "ab4adf23ba07a0f89d1d",
+        "aeb9b8ce8085efd4e094",
+        "b2b98a4528fc0962cbc7",
+        "b5a83b52133d5f2f3d23",
+        "b89942d51fe2cca616d1",
+        "be41441f33749c57f78a",
+        "c27756cadbc6859332c4",
+        "cc88ddec8801002af617",
+        "d559b6f78c43401105cb",
+        "f2ba623f5de83f5deaf5",
+        "f4562f6fbe1fa6ac56d0",
+        "f7d504014c62e05d594e",
+        "fe7bf0fa4ec80761fa1f"
+      ],
+      "content_hash": "d087ea19ffe1c925a539bd9be5d79ee3153617398106a4a4a3fa1c652757d5de",
+      "dependencies": [],
+      "description": "Custom Labels for i18n, configuration strings, and UI text: translation workbench, Apex System.Label, LWC @salesforce/label imports, 1,000-char limit. NOT for custom settings or custom metadata types (use custom-metadata-types). NOT for platform cache (use caching-strategies).",
+      "file_location": "skills/admin/custom-label-management",
+      "id": "admin/custom-label-management",
+      "inputs": [
+        "Text strings used in UI, Apex, or validation messages",
+        "Target languages and localization requirements",
+        "Packaging model (unlocked, managed, org-level)"
+      ],
+      "name": "custom-label-management",
+      "official_sources": [
+        "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
+        "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+        "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+      ],
+      "outputs": [
+        "Custom Label catalog with categories",
+        "Translation workflow and translator handoff",
+        "Apex/LWC reference patterns",
+        "Deployment and packaging plan"
+      ],
+      "references": [
+        "skills/admin/custom-label-management/references/examples.md",
+        "skills/admin/custom-label-management/references/gotchas.md",
+        "skills/admin/custom-label-management/references/llm-anti-patterns.md",
+        "skills/admin/custom-label-management/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/admin/custom-label-management/scripts/__pycache__/check_custom_label_management.cpython-314.pyc",
+        "skills/admin/custom-label-management/scripts/check_custom_label_management.py"
+      ],
+      "tags": [
+        "custom-labels",
+        "i18n",
+        "translation",
+        "lwc",
+        "apex"
+      ],
+      "templates": [
+        "skills/admin/custom-label-management/templates/custom-label-management-template.md"
+      ],
+      "updated": "2026-04-21",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "admin",
+      "chunk_ids": [
         "0a15a6653abc0f16ccc1",
         "0f9e7af79a59397f9285",
         "0fbcc77c02f863517b78",
@@ -8050,6 +8343,103 @@
         "skills/admin/custom-metadata-types-and-settings/templates/custom-metadata-types-and-settings-template.md"
       ],
       "updated": "2026-04-04",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "admin",
+      "chunk_ids": [
+        "037a7b219c53a630d25b",
+        "03ac2edcfe6b352db57a",
+        "03ae849689c4912326f3",
+        "0a238f0cec81a5317cd3",
+        "0dafee2c27a140f91868",
+        "1158dccc1239df61d243",
+        "15cb9075549a0c45d7fa",
+        "28db0c441b4ddbca3885",
+        "30058271b614e38ee89c",
+        "35395e3fda08bbd94972",
+        "3b8484dc58b136e12f1b",
+        "3d2b6e09dab18d43cb9d",
+        "3e9d1d34bac3038656c7",
+        "43342a6ba81946cc6e22",
+        "462c27074f2c5671d73e",
+        "47be69e22e5092d7dab9",
+        "4ae3c183c3dcd88af711",
+        "54b29f36025d650c859c",
+        "5de819deec3cd9cd9961",
+        "5e2e4bf519d56d0023c0",
+        "5f0b442feb4513aa7b26",
+        "6c52b7775122751aa428",
+        "6ffc27cb2b85c752c0c0",
+        "830e8e991f71a4520038",
+        "8b41f29d518a05469092",
+        "8f20c46c176d982e38de",
+        "9113841a183f57639177",
+        "96b191c332c5a135f65e",
+        "99641c47c9c4ca6a1f94",
+        "9a94ec8cdd980deaedcc",
+        "a1cfc389c134af81b1ab",
+        "a88d8ff5f890e68ceaa7",
+        "b299ba03c7776dbb13e3",
+        "b52f26c0cffc44514a2e",
+        "b679918b746e6a153e5d",
+        "b93bdf80c1575a892d34",
+        "c4b27371b1a646a6e99d",
+        "c97f829a69b1d52041d8",
+        "dd16126387bcd61235f3",
+        "e7c5ea117725d1d2885c",
+        "e8dc614906970d62a5ac",
+        "eaea84d32d85ad7c7e3c",
+        "ee6219adc7148490456a",
+        "f61fd9fd6291eb357306",
+        "f8c02da209f4da34426a",
+        "f9c6dc4d7dc373c007a2"
+      ],
+      "content_hash": "f94df375e6e8a639f4f7d1b857e0520287e5906d53e8ab3ce6d744a8ea6867bb",
+      "dependencies": [],
+      "description": "Custom Notification Types for desktop/mobile push alerts from Flow or Apex: type creation, target channels, Messaging.CustomNotification invocation, recipient limits, bulk notification patterns. NOT for email alerts (use email-templates-and-alerts). NOT for in-app bell notifications alone (use chatter-feed-customization).",
+      "file_location": "skills/admin/custom-notification-types",
+      "id": "admin/custom-notification-types",
+      "inputs": [
+        "Event triggering the notification",
+        "Target recipients (users, queues, groups)",
+        "Channels desired (desktop, mobile push)",
+        "Volume per day"
+      ],
+      "name": "custom-notification-types",
+      "official_sources": [
+        "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
+        "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+        "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+      ],
+      "outputs": [
+        "Custom Notification Type metadata",
+        "Flow action or Apex invocation pattern",
+        "Bulk send strategy",
+        "Monitoring and delivery verification plan"
+      ],
+      "references": [
+        "skills/admin/custom-notification-types/references/examples.md",
+        "skills/admin/custom-notification-types/references/gotchas.md",
+        "skills/admin/custom-notification-types/references/llm-anti-patterns.md",
+        "skills/admin/custom-notification-types/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/admin/custom-notification-types/scripts/__pycache__/check_custom_notification_types.cpython-314.pyc",
+        "skills/admin/custom-notification-types/scripts/check_custom_notification_types.py"
+      ],
+      "tags": [
+        "custom-notifications",
+        "messaging-customnotification",
+        "flow-actions",
+        "push-notifications",
+        "mobile"
+      ],
+      "templates": [
+        "skills/admin/custom-notification-types/templates/custom-notification-types-template.md"
+      ],
+      "updated": "2026-04-21",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -10223,7 +10613,7 @@
         "f895079999dbb6f9545f",
         "f8c13dd107174dcbd187"
       ],
-      "content_hash": "e0bc3555fcdb75ec8c27827b77972592b723f77d64c20bd6af09c6ea68bdd1c3",
+      "content_hash": "71e499c4dc730041b0fb31defb211263b8512097bbae73036acb0ee839fcf5e7",
       "dependencies": [],
       "description": "Education Cloud (EDA \u2014 Education Data Architecture) setup: student success hub, advisor workflows, enrollment management, academic data model. NOT for standard Service Cloud case management (use service-cloud-core-setup). NOT for Nonprofit Cloud data model (use nonprofit-cloud-vs-npsp-migration).",
       "file_location": "skills/admin/education-cloud-eda-setup",
@@ -10253,6 +10643,7 @@
         "skills/admin/education-cloud-eda-setup/references/well-architected.md"
       ],
       "scripts": [
+        "skills/admin/education-cloud-eda-setup/scripts/__pycache__/check_education_cloud_eda_setup.cpython-314.pyc",
         "skills/admin/education-cloud-eda-setup/scripts/check_education_cloud_eda_setup.py"
       ],
       "tags": [
@@ -13187,7 +13578,7 @@
         "fa561a68571ab0e40cac",
         "fc2489ed981f6d008478"
       ],
-      "content_hash": "b12861dc7f6f946be78a93e43d2de714d21013f48d68b93faa7c82cd26274e49",
+      "content_hash": "bca30eafb59a871a6b18d2e5baa50ab899ff35c4aacc7027a7014ffd16ac4ffc",
       "dependencies": [],
       "description": "Flow Orchestration admin: stage configuration, step assignment, background steps, interactive steps, evaluation flows, work items, pause/resume. NOT for Flow Orchestration development APIs (use flow-orchestration-development). NOT for Approval Processes (use approval-processes).",
       "file_location": "skills/admin/flow-orchestration-admin",
@@ -13217,6 +13608,7 @@
         "skills/admin/flow-orchestration-admin/references/well-architected.md"
       ],
       "scripts": [
+        "skills/admin/flow-orchestration-admin/scripts/__pycache__/check_flow_orchestration_admin.cpython-314.pyc",
         "skills/admin/flow-orchestration-admin/scripts/check_flow_orchestration_admin.py"
       ],
       "tags": [
@@ -17560,7 +17952,7 @@
         "ec93208ebfa8a72c8b89",
         "ed709e4ad0c9a64fa890"
       ],
-      "content_hash": "69d94db1642e00897d9faca538798931fd4df5ee32eff3e690810c6390c5925e",
+      "content_hash": "791910815a7ccf95c724e53dc044eae46a755cc814622f12d9dfc194ec61dfc6",
       "dependencies": [],
       "description": "Public Sector Solutions (PSS) setup: licensing, permits, inspections, benefits, case management for government, citizen portals, and grant management. NOT for standard Service Cloud case management (use service-cloud-core-setup). NOT for generic Experience Cloud portals (use experience-cloud-site-setup).",
       "file_location": "skills/admin/industries-public-sector-setup",
@@ -17590,6 +17982,7 @@
         "skills/admin/industries-public-sector-setup/references/well-architected.md"
       ],
       "scripts": [
+        "skills/admin/industries-public-sector-setup/scripts/__pycache__/check_industries_public_sector_setup.cpython-314.pyc",
         "skills/admin/industries-public-sector-setup/scripts/check_industries_public_sector_setup.py"
       ],
       "tags": [
@@ -19081,6 +19474,104 @@
     {
       "category": "admin",
       "chunk_ids": [
+        "08d7c026bfedf2ef7dda",
+        "0bcd78ffd51a21e66e46",
+        "193984f1c4b797defb9a",
+        "1a676c185d79cbba1ec0",
+        "1bc81db5b8c1706f58a6",
+        "1bcc0fa99e41161ee584",
+        "1d2a2e414256ef670857",
+        "20ca65517e879049127e",
+        "315adb363aeaac91831d",
+        "3561f16ac61b8296f327",
+        "36d65e12f8ab426e347b",
+        "377cdfc38fe42a6557ff",
+        "3ca61e14cc3670134358",
+        "3f39068719dfad90bba1",
+        "3fe5bfc9175350bcddd7",
+        "40d28e327b358c4e7913",
+        "57dcab5405bf8ceee35c",
+        "5ea75c6dd3e361032df8",
+        "708d0523b1dfa0dd21c1",
+        "7956f56804fbc02c0b21",
+        "7bcbef4f1357b8493e72",
+        "7e61fc12485e8a67f5ef",
+        "7f05bcef9f0d94aeb181",
+        "91a6851c206fb11a1008",
+        "9723a24d17b5fd4e9484",
+        "97a1a520352fce905997",
+        "981f1ecabaabd522a3f1",
+        "9c25c8c06a4fd4791e47",
+        "9d48b5e0f6ec46e3017a",
+        "aa8680a5553b17f15685",
+        "aa998e80254328eaf21d",
+        "ac3b1ef67ef1d7d9b167",
+        "b4c22f294100eea0eb44",
+        "b929498f081b1101e122",
+        "c18342252f776e99cda4",
+        "c51c87b912b7bb2bf065",
+        "c87be321dc075d2b5926",
+        "d39df0de85b67dd62d02",
+        "d7bffb1c9b10c0a661af",
+        "d958fa419f8c3d67521c",
+        "d982b1c6ce1f6fc39e28",
+        "e3d6f8c8d93a76a34894",
+        "eaaafce24d51bc2ef627",
+        "ec9d059d3ee8e3b050f1",
+        "f5b9ac54cca1b63e82af",
+        "fd86ed68e442da884f55",
+        "ffc0e6a3f9be31daafd0"
+      ],
+      "content_hash": "1e372349bede813205adcfd7b89cd746942cc68d76310468123c02e36eeb4408",
+      "dependencies": [],
+      "description": "Designing Lookup vs Master-Detail vs Hierarchical vs External relationships: cascade delete, roll-up summaries, ownership, sharing implications, polymorphic lookups, relationship depth limits. NOT for record-type strategy (use data-model-design-patterns). NOT for junction object patterns (use many-to-many-relationships).",
+      "file_location": "skills/admin/lookup-and-relationship-design",
+      "id": "admin/lookup-and-relationship-design",
+      "inputs": [
+        "Parent and child objects under design",
+        "Ownership and sharing requirements",
+        "Aggregation needs (sums, counts) from parent",
+        "Deletion semantics (cascade vs orphan)"
+      ],
+      "name": "lookup-and-relationship-design",
+      "official_sources": [
+        "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
+        "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+        "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+      ],
+      "outputs": [
+        "Relationship-type decision with rationale",
+        "Roll-up summary plan or Apex alternative",
+        "Sharing impact analysis",
+        "Relationship graph documentation"
+      ],
+      "references": [
+        "skills/admin/lookup-and-relationship-design/references/examples.md",
+        "skills/admin/lookup-and-relationship-design/references/gotchas.md",
+        "skills/admin/lookup-and-relationship-design/references/llm-anti-patterns.md",
+        "skills/admin/lookup-and-relationship-design/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/admin/lookup-and-relationship-design/scripts/__pycache__/check_lookup_and_relationship_design.cpython-314.pyc",
+        "skills/admin/lookup-and-relationship-design/scripts/check_lookup_and_relationship_design.py"
+      ],
+      "tags": [
+        "lookup",
+        "master-detail",
+        "relationships",
+        "data-model",
+        "sharing"
+      ],
+      "templates": [
+        "skills/admin/lookup-and-relationship-design/templates/lookup-and-relationship-design-template.md"
+      ],
+      "updated": "2026-04-21",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "admin",
+      "chunk_ids": [
         "02d198b59850cc799409",
         "02ed6dfef9596efb9792",
         "05c2072a6d92346eee43",
@@ -20135,7 +20626,7 @@
         "f131ed4cbca925d0931b",
         "f6b3f0aa45aa44c0e90c"
       ],
-      "content_hash": "dd1a395ad61acc56beda393bf31f9f7c5e2d15fa84ea4d56b5c094331bb97186",
+      "content_hash": "e130feef21a798468bb14b84030575670f882170a3380c50d305a2a2e818821d",
       "dependencies": [],
       "description": "Media Cloud setup for advertising sales management, audience segmentation, campaign management, revenue management, and cross-channel ad products. NOT for Salesforce Marketing Cloud (use marketing-cloud-account-setup). NOT for Data Cloud audience activation (use data-cloud-activation-patterns).",
       "file_location": "skills/admin/media-cloud-setup",
@@ -20165,6 +20656,7 @@
         "skills/admin/media-cloud-setup/references/well-architected.md"
       ],
       "scripts": [
+        "skills/admin/media-cloud-setup/scripts/__pycache__/check_media_cloud_setup.cpython-314.pyc",
         "skills/admin/media-cloud-setup/scripts/check_media_cloud_setup.py"
       ],
       "tags": [
@@ -24236,7 +24728,7 @@
         "f7e77b307a6f98acaa3b",
         "fb939750eb765475a564"
       ],
-      "content_hash": "f3148b0bf2e16d48c01cacc0e5a7ce3feb877aea919d28861d61886ff8ce5b9f",
+      "content_hash": "dd164eeb455a6f9053634b2a1435a3b3ab3a25f7d098597a4f8201842cd83e59",
       "dependencies": [],
       "description": "Rebate Management setup: rebate types, payout calculations, accruals, partner rebates, program setup, compliance reporting. NOT for CPQ discounts on quotes (use revenue-cloud-cpq-setup). NOT for channel loyalty programs (use partner-loyalty-programs).",
       "file_location": "skills/admin/rebate-management-setup",
@@ -24266,6 +24758,7 @@
         "skills/admin/rebate-management-setup/references/well-architected.md"
       ],
       "scripts": [
+        "skills/admin/rebate-management-setup/scripts/__pycache__/check_rebate_management_setup.cpython-314.pyc",
         "skills/admin/rebate-management-setup/scripts/check_rebate_management_setup.py"
       ],
       "tags": [
@@ -24279,6 +24772,106 @@
       ],
       "templates": [
         "skills/admin/rebate-management-setup/templates/rebate-management-setup-template.md"
+      ],
+      "updated": "2026-04-21",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "admin",
+      "chunk_ids": [
+        "0af7165f20f85cbb4e43",
+        "10882a8a7854496eaea8",
+        "16bed02d0f1a380f084c",
+        "18995012117c0ff045f3",
+        "18f8ac37ff84cdbc0a91",
+        "1b786e7fc28eeac3a905",
+        "1cc20aaa216326d9da4f",
+        "267aa8c7ae2fad9cd0ba",
+        "26d40d8bdad6b33a3c78",
+        "270f994199af008dea9d",
+        "2904253c4a1a5c744824",
+        "2dea898364ff6a8a494c",
+        "2eb24c50fbde7af8c412",
+        "33416059ba21e8f40dae",
+        "37605166d4f69b3d7dc5",
+        "4adedc1672c0c0420c8f",
+        "56dc0225a128fa2bfc19",
+        "5ab71d6262b968416407",
+        "6821b9ddefcfa4ed9d86",
+        "688b2aef4cdac1a72b29",
+        "75709e858d878dbf2294",
+        "77d44423fb5395b48734",
+        "7a9db1178c76f406876f",
+        "8638e2de2d000fb55736",
+        "8904eb1f872476c89681",
+        "8c3a76db799162932d1a",
+        "8d5c5010de9763e93768",
+        "8da25b2bb392c199e4eb",
+        "9555a09250cc1153c992",
+        "9795126a07657bbfc714",
+        "9a117a8f31bcad324edd",
+        "9d3adb1b2c94ff694c72",
+        "9eb4f187d86df303a863",
+        "a0e1ce317fa7ada45851",
+        "a33d36ff29741cdaf85b",
+        "a949e9e874132c3e79d2",
+        "afc3f30680cbae579b3d",
+        "b4a6a2253ab50a60692e",
+        "baaaa4979e961360ec62",
+        "c75fb1066aad0526e045",
+        "cba02124fd29b35eddf6",
+        "d74dd1788c1c051ee1f6",
+        "de7c2b806861fd23eaab",
+        "e41cbe77e53cb2494e46",
+        "e5910f9156ad522f1800",
+        "e8a7e278ee08ae2ba93a",
+        "f43c88b5bb2f065f97cd",
+        "f9e42dcae312b184d29c",
+        "fbc7d92c22ceddc483dd"
+      ],
+      "content_hash": "1cfe0410dcb7c864275465c47ad2797380dc79b417b746e99bba116e04db5228",
+      "dependencies": [],
+      "description": "RecordType ID differences across orgs: dynamic lookup via Schema.SObjectType methods, DeveloperName for stable refs, hard-coded ID anti-patterns, record-type caching, deployment impact. NOT for record-type strategy or when to use record types (use admin-foundation or data-model-design).",
+      "file_location": "skills/admin/record-type-id-management",
+      "id": "admin/record-type-id-management",
+      "inputs": [
+        "Code or config referencing record types (Apex, Flow, LWC, Validation Rules, Formulas)",
+        "Target environments (sandbox set, packaging org, production)",
+        "Number of record types per object in scope",
+        "Deployment model (metadata API, managed package, unlocked package)"
+      ],
+      "name": "record-type-id-management",
+      "official_sources": [
+        "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
+        "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+        "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+      ],
+      "outputs": [
+        "Resolution pattern per reference point (Apex / Flow / formula)",
+        "Cleanup plan for hard-coded record-type IDs",
+        "Caching strategy for hot paths",
+        "Deployment test matrix across envs"
+      ],
+      "references": [
+        "skills/admin/record-type-id-management/references/examples.md",
+        "skills/admin/record-type-id-management/references/gotchas.md",
+        "skills/admin/record-type-id-management/references/llm-anti-patterns.md",
+        "skills/admin/record-type-id-management/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/admin/record-type-id-management/scripts/__pycache__/check_record_type_id_management.cpython-314.pyc",
+        "skills/admin/record-type-id-management/scripts/check_record_type_id_management.py"
+      ],
+      "tags": [
+        "record-type",
+        "developername",
+        "schema-describe",
+        "hardcoded-ids",
+        "deployment"
+      ],
+      "templates": [
+        "skills/admin/record-type-id-management/templates/record-type-id-management-template.md"
       ],
       "updated": "2026-04-21",
       "vector_embedding": null,
@@ -25515,7 +26108,7 @@
         "fe39dbdbc470f78ef443",
         "fee43772f2fa4ede6c02"
       ],
-      "content_hash": "d70c193d111bc9e2cad65cb524adcdb06de15fd5e0408e03e9a18a4ef06d33ee",
+      "content_hash": "2241162a091d3c0e65a46bd8496a1d8cb2c106f03c74c85358923f8979f2385d",
       "dependencies": [],
       "description": "Revenue Intelligence setup: pipeline inspection, deal insights, forecast accuracy analytics, Einstein analytics for sales leaders. NOT for CRM Analytics platform admin (use analytics-studio-admin). NOT for forecasting category setup only (use forecasting-and-quotas).",
       "file_location": "skills/admin/revenue-intelligence-setup",
@@ -25545,6 +26138,7 @@
         "skills/admin/revenue-intelligence-setup/references/well-architected.md"
       ],
       "scripts": [
+        "skills/admin/revenue-intelligence-setup/scripts/__pycache__/check_revenue_intelligence_setup.cpython-314.pyc",
         "skills/admin/revenue-intelligence-setup/scripts/check_revenue_intelligence_setup.py"
       ],
       "tags": [
@@ -26781,6 +27375,102 @@
         "skills/admin/saql-query-development/templates/saql-query-development-template.md"
       ],
       "updated": "2026-04-13",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "admin",
+      "chunk_ids": [
+        "0cd64dd5ab74cf854da8",
+        "1a36600f32f5e788a5f9",
+        "1bc30d71782a5c176f90",
+        "20c1fb1ff047fe0b8d13",
+        "20f15ed3043c9a351ff7",
+        "22ea59a26ea3eb926a34",
+        "286d142765f505ab90df",
+        "2a2c87305f7de93ad123",
+        "33de5dac462bebac75a6",
+        "4ad6ea2718fced306430",
+        "51b08f507d7572cc8597",
+        "5744c2e7dc02e7e0af69",
+        "59829a911239df420282",
+        "5f8c5c1272f52305f378",
+        "6e719db980195c658e53",
+        "70b0f48e20f1f4912e1a",
+        "799932cf1dcdc110e11d",
+        "7d69b2f6d07e057316f3",
+        "7f818c7193224a640f1c",
+        "80a4759408a5552bb340",
+        "82afef0a1325b54ebc04",
+        "89563966f81765fded3d",
+        "8d8c05a87d7d44800845",
+        "94219b66aad9914ea979",
+        "953c8046bfab66da3527",
+        "997e3bf6a936bc7b37cc",
+        "9c54b8089cf511f185a9",
+        "a2a9012214f3792da4b7",
+        "abdd314f3b73cc442654",
+        "ada8804fb829158d5d8f",
+        "b32761930255f0b68839",
+        "ccfc97a3b40717e2a863",
+        "d23f1a6c4cf42988ace7",
+        "d63f55fbf766b4f78641",
+        "d6ee42f9a707fe7bd090",
+        "dabb44818ab55fbd3793",
+        "db39c3cfe94172865185",
+        "e03477cacbf0d10aead5",
+        "e092c02ce54db827f85d",
+        "e29d443d50e6416907f1",
+        "e4bec2c467dd82de9c63",
+        "e83278757ca4aa0795d4",
+        "ef7ad9d9c73479825593",
+        "f402299d26f0c7d17b1f",
+        "fdb99b06fa4074aee43b"
+      ],
+      "content_hash": "2c2da2b8ab06889bd0336cce00ebc4803dacc53962e4d4348624cddc58c34704",
+      "dependencies": [],
+      "description": "Scheduled Paths in record-triggered Flow: delayed execution, time-offset from field, batch size tuning, monitoring Paused Flow Interviews, async limits. NOT for Scheduled Flow (use scheduled-flow-patterns). NOT for time-based workflow rules (use migrate-workflow-pb).",
+      "file_location": "skills/admin/scheduled-path-patterns",
+      "id": "admin/scheduled-path-patterns",
+      "inputs": [
+        "Record-triggered Flow in scope",
+        "Offset requirement (after/before record create/update event)",
+        "Expected volume of records per path per hour",
+        "Time-sensitivity of execution"
+      ],
+      "name": "scheduled-path-patterns",
+      "official_sources": [
+        "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
+        "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+        "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+      ],
+      "outputs": [
+        "Scheduled Path design (offset, batch size, filter)",
+        "Monitoring plan for Paused Flow Interviews",
+        "Fallback strategy for failed paths",
+        "Bulk test plan"
+      ],
+      "references": [
+        "skills/admin/scheduled-path-patterns/references/examples.md",
+        "skills/admin/scheduled-path-patterns/references/gotchas.md",
+        "skills/admin/scheduled-path-patterns/references/llm-anti-patterns.md",
+        "skills/admin/scheduled-path-patterns/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/admin/scheduled-path-patterns/scripts/__pycache__/check_scheduled_path_patterns.cpython-314.pyc",
+        "skills/admin/scheduled-path-patterns/scripts/check_scheduled_path_patterns.py"
+      ],
+      "tags": [
+        "scheduled-paths",
+        "flow",
+        "record-triggered",
+        "async",
+        "paused-interviews"
+      ],
+      "templates": [
+        "skills/admin/scheduled-path-patterns/templates/scheduled-path-patterns-template.md"
+      ],
+      "updated": "2026-04-21",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -28221,7 +28911,7 @@
         "f2daabdafdc639cdcc9a",
         "f5b56bdff3144e00325a"
       ],
-      "content_hash": "8ea3e67cf9c7057f7e5b78dcf4994d09b158caafc06784587f5871c670530555",
+      "content_hash": "54423f036ef5656f9fe819e5b564b2773fc4c33b364c438dc3dbb9ebf778b55f",
       "dependencies": [],
       "description": "Usage-based pricing in Revenue Cloud: metered billing, usage records, rating, tiering, consumption schedules. NOT for CPQ flat-rate discounts (use revenue-cloud-cpq-setup). NOT for legacy Salesforce Billing-only implementations (use revenue-cloud-legacy-billing).",
       "file_location": "skills/admin/usage-based-pricing-setup",
@@ -28251,6 +28941,7 @@
         "skills/admin/usage-based-pricing-setup/references/well-architected.md"
       ],
       "scripts": [
+        "skills/admin/usage-based-pricing-setup/scripts/__pycache__/check_usage_based_pricing_setup.cpython-314.pyc",
         "skills/admin/usage-based-pricing-setup/scripts/check_usage_based_pricing_setup.py"
       ],
       "tags": [
@@ -34871,6 +35562,103 @@
     {
       "category": "apex",
       "chunk_ids": [
+        "00966a39cdd0e071af93",
+        "02413e156c5c1b57eec9",
+        "02a30c998489bbe22dea",
+        "053391a42c634d80a7ae",
+        "0922533a67addc5c7c27",
+        "0bbbec0828e73184b8f6",
+        "0ed5ed8685ac61d006a2",
+        "2aac9f0a00191ac3d5f4",
+        "2cbc464d1d48ab2113d1",
+        "3cb3a7dcfdd8dd2eb1af",
+        "426367d24dfc714f01c1",
+        "4398ab61960f42455d84",
+        "4fc079b238a79b7df042",
+        "5025e91203a099b78692",
+        "53e358145916d4dca07d",
+        "555bf9126f96c47d6487",
+        "560bf831343183adf4f2",
+        "56b23ffbab28907a1b18",
+        "5a586c2eeda7fd31a430",
+        "5ae3f76894c4eb02ebdf",
+        "613cf1da87b02786dc38",
+        "65b50103bb389727138c",
+        "67e10bb34c63ada17951",
+        "6de23c7fe4207056a578",
+        "6e7b0ec69761bfc7dfe0",
+        "6e9760f84fcc9237b9b1",
+        "6ff75b21cfa77c25bf6f",
+        "706035f34438cc84f291",
+        "71bcd53d70d89efe3a74",
+        "7452e2417742ffed7720",
+        "75654686348f049e4444",
+        "80d2a59a1b402261e284",
+        "98044ee166310e2e09b6",
+        "98ac78518fff16fe8989",
+        "9e10b1039949e46497ba",
+        "a3bf8c993e9f15efd521",
+        "ad3a3a9b338d3d2bd90c",
+        "affedcedc9d4768970a6",
+        "bcd02b228d7e3c01c708",
+        "c61081f210dba78d8131",
+        "d1af5536bc784d21eb29",
+        "d4c03b11a1ec58a4598c",
+        "d6b0cca09773c9838fdc",
+        "d8b15c216f14f030bb1a",
+        "de2579d22f6dafa291bc",
+        "e2807f06d2a2a4de4271",
+        "f8b8dae169a028cda8ef"
+      ],
+      "content_hash": "1540b351adf7a1c29c1d50a5520e5a9cdd4a5dc55bba8d366c6ccd04b7afb7eb",
+      "dependencies": [],
+      "description": "Custom Permissions in Apex: FeatureManagement.checkPermission, $Permission global variable, permission-set gating of feature code, Custom Permission metadata. NOT for CRUD/FLS enforcement (use security-apex-crud-fls). NOT for standard Salesforce permissions (use permission-set-architecture).",
+      "file_location": "skills/apex/apex-custom-permissions-check",
+      "id": "apex/apex-custom-permissions-check",
+      "inputs": [
+        "Feature or code path to gate",
+        "Target user populations (profiles / permission sets)",
+        "Test scenarios needing permission toggling"
+      ],
+      "name": "apex-custom-permissions-check",
+      "official_sources": [
+        "Apex Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm",
+        "Apex Reference Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm",
+        "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+      ],
+      "outputs": [
+        "Custom Permission metadata",
+        "Apex check pattern",
+        "Permission Set assignment plan",
+        "Test class using System.runAs with permission set"
+      ],
+      "references": [
+        "skills/apex/apex-custom-permissions-check/references/examples.md",
+        "skills/apex/apex-custom-permissions-check/references/gotchas.md",
+        "skills/apex/apex-custom-permissions-check/references/llm-anti-patterns.md",
+        "skills/apex/apex-custom-permissions-check/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/apex/apex-custom-permissions-check/scripts/__pycache__/check_apex_custom_permissions_check.cpython-314.pyc",
+        "skills/apex/apex-custom-permissions-check/scripts/check_apex_custom_permissions_check.py"
+      ],
+      "tags": [
+        "apex",
+        "custom-permissions",
+        "featuremanagement",
+        "permission-sets",
+        "authorization"
+      ],
+      "templates": [
+        "skills/apex/apex-custom-permissions-check/templates/apex-custom-permissions-check-template.md"
+      ],
+      "updated": "2026-04-21",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "apex",
+      "chunk_ids": [
         "013c678e8ab3e7dd45f5",
         "02a2ac11e314cb737011",
         "15820768cf2fe92f6081",
@@ -35202,6 +35990,105 @@
         "skills/apex/apex-email-services/templates/apex-email-services-template.md"
       ],
       "updated": "2026-04-04",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "apex",
+      "chunk_ids": [
+        "03e411531b7029d045ba",
+        "06ace3e0bfc44c6628e5",
+        "0a45f29c8b4d1a3f8f87",
+        "10da7147f6420a9b80fb",
+        "155d04e180f3ca2e03c0",
+        "18c915b0781c1d747d61",
+        "224ee1e16ce8e53afee0",
+        "26a9933ffadb2ac53f9c",
+        "27c58e0b3291a5872643",
+        "28da78182b51a461367f",
+        "30f61a2d2e60e51574c5",
+        "3db175a332c43c56e743",
+        "43a5c1dea76112221a4d",
+        "4f51452a493a8e644b60",
+        "508b5c057a3c43e82512",
+        "5cb5daa612ff45cf377b",
+        "660a3eb31b56e82b0b15",
+        "69e47ad7da7769d32501",
+        "6e65c49588de198f2fe0",
+        "74c3d71fa82ab785c6df",
+        "759944197c6c14b8da4c",
+        "78edcdc1c092ef2d4c75",
+        "78ff4540d6086a57a685",
+        "7a46847308170f77a2fe",
+        "7ff051a9ea0aa50a4302",
+        "942296fb393ba4c68e83",
+        "9fa6a379f0f109fbaa72",
+        "a0df3558567ead6d7732",
+        "a4b27e867110b6390f7b",
+        "a53c6b305ca3ef40d6e1",
+        "af95e3cb1e471d0c497f",
+        "b1305161a3c56cd65b6a",
+        "b2b5bfaa24e3e7e6a12c",
+        "b35b1bd1dc9b74ae1eb3",
+        "bff0ecbb031e5e758623",
+        "c4726d746605f031943e",
+        "cefd1e64d14722df7e51",
+        "d9f986e715a005128607",
+        "dc27ce0ba210d1d32331",
+        "e446cb90b265df6b4b2a",
+        "eb74bc70b876b7fcaf11",
+        "ed476d4437776b710690",
+        "eefc9d19f90f5da6fbc3",
+        "f08969510daf04997843",
+        "f1f479577bf67d40cbff",
+        "f768ed16133185205dab",
+        "fdd79edd9e9465e2e898",
+        "fe3758bb4f78b34ed6ca"
+      ],
+      "content_hash": "2e9044a90ccb97c391d69f0cae4133fb64d5a04b5aa91100c03b994f881257d0",
+      "dependencies": [],
+      "description": "@future methods: primitive-only parameters, callout=true, no chaining, 50 per transaction, error handling. When to prefer Queueable/Batch instead per async-selection decision tree. NOT for Queueable patterns (use apex-queueable-patterns). NOT for Batch Apex (use apex-batch-patterns).",
+      "file_location": "skills/apex/apex-future-method-patterns",
+      "id": "apex/apex-future-method-patterns",
+      "inputs": [
+        "Current sync code needing async offload",
+        "Operation type (callout, DML, computation)",
+        "Parameter shape (primitives vs SObjects)",
+        "Retry requirements"
+      ],
+      "name": "apex-future-method-patterns",
+      "official_sources": [
+        "Apex Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm",
+        "Apex Reference Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm",
+        "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+      ],
+      "outputs": [
+        "@future vs Queueable decision",
+        "Parameter-shape transformation (ids/json strings)",
+        "Callout configuration",
+        "Monitoring plan"
+      ],
+      "references": [
+        "skills/apex/apex-future-method-patterns/references/examples.md",
+        "skills/apex/apex-future-method-patterns/references/gotchas.md",
+        "skills/apex/apex-future-method-patterns/references/llm-anti-patterns.md",
+        "skills/apex/apex-future-method-patterns/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/apex/apex-future-method-patterns/scripts/__pycache__/check_apex_future_method_patterns.cpython-314.pyc",
+        "skills/apex/apex-future-method-patterns/scripts/check_apex_future_method_patterns.py"
+      ],
+      "tags": [
+        "apex",
+        "future-method",
+        "async",
+        "callouts",
+        "governor-limits"
+      ],
+      "templates": [
+        "skills/apex/apex-future-method-patterns/templates/apex-future-method-patterns-template.md"
+      ],
+      "updated": "2026-04-21",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -36068,6 +36955,102 @@
     {
       "category": "apex",
       "chunk_ids": [
+        "0323664505b4c65a0341",
+        "05c587b0a6deec4d279d",
+        "0a33fc3efdbbb1fabb81",
+        "1b49ed57773664737d89",
+        "1baa477ca72f82422167",
+        "1c515dc13a18a202b435",
+        "2a0e959d12b78c057646",
+        "2fed33af801fc890e379",
+        "30d03772270918a9a915",
+        "340ab22d45ad5cab0110",
+        "3f8f42c6af70a162f748",
+        "43a359c3aeef93c0a284",
+        "4557b4a902217ed4c438",
+        "5f03d7f18458571d772f",
+        "66d4220e5bc6131dfb24",
+        "6724bd562579a821f9d3",
+        "735ded9852210a9247fa",
+        "76a6ade467bc70f8fa7b",
+        "83aeebda800e792f920f",
+        "855a47935917c722a17a",
+        "88df996c6c8710c67f24",
+        "8e863d1f3dc238fa43ea",
+        "905cdfa417360bc2041d",
+        "966bb10c518f5181d021",
+        "98a0465638d5379812b5",
+        "9b8d6705cb5172d37df8",
+        "9cce69127253112ffd57",
+        "9cd4ba538c2214e7e3f8",
+        "a02c477ff13d20b1499f",
+        "a181d085dcc48803fad6",
+        "a76842b207580ee2d49f",
+        "a78d3e5f08e9e7dcd13b",
+        "afe71491f06627e27a92",
+        "b4067708a97542be93e4",
+        "b8f9fe25b762bb5e66d9",
+        "bbe2c14db8cb6d6c0ef8",
+        "c45e648b272b7bd81c22",
+        "c490d4c16868feed451e",
+        "d406d9fc1b677d45470b",
+        "d5000cc2d964ee203b87",
+        "dcf83dcecf5990676425",
+        "e55205aab88c92617977",
+        "e852f5f976ec0b871b18",
+        "f4ebf853986d69cd6e58",
+        "f7fd120e1adcaf4c3726",
+        "fc5661955c9dcbe8dc16"
+      ],
+      "content_hash": "3fa7420bde6dcb3ebb5c5a2a3a42277d52d8243a46c68ee454adbf8a30cdb9d0",
+      "dependencies": [],
+      "description": "Polymorphic SOQL with TYPEOF: querying Task.WhatId, Task.WhoId, ContentDocumentLink.LinkedEntityId, FeedItem.ParentId; fallback to Type filters; indexing and selectivity. NOT for Activity object model (use activity-and-task-patterns). NOT for general SOQL (use apex-soql-patterns).",
+      "file_location": "skills/apex/apex-polymorphic-soql",
+      "id": "apex/apex-polymorphic-soql",
+      "inputs": [
+        "Polymorphic field and its possible target objects",
+        "Fields needed per target type",
+        "Selectivity / index requirements"
+      ],
+      "name": "apex-polymorphic-soql",
+      "official_sources": [
+        "Apex Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm",
+        "Apex Reference Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm",
+        "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+      ],
+      "outputs": [
+        "TYPEOF query template",
+        "Type-filtered fallback queries",
+        "Indexing strategy for polymorphic filters"
+      ],
+      "references": [
+        "skills/apex/apex-polymorphic-soql/references/examples.md",
+        "skills/apex/apex-polymorphic-soql/references/gotchas.md",
+        "skills/apex/apex-polymorphic-soql/references/llm-anti-patterns.md",
+        "skills/apex/apex-polymorphic-soql/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/apex/apex-polymorphic-soql/scripts/__pycache__/check_apex_polymorphic_soql.cpython-314.pyc",
+        "skills/apex/apex-polymorphic-soql/scripts/check_apex_polymorphic_soql.py"
+      ],
+      "tags": [
+        "apex",
+        "soql",
+        "typeof",
+        "polymorphic",
+        "whatid",
+        "linkedentityid"
+      ],
+      "templates": [
+        "skills/apex/apex-polymorphic-soql/templates/apex-polymorphic-soql-template.md"
+      ],
+      "updated": "2026-04-21",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "apex",
+      "chunk_ids": [
         "00483aaba2394178779c",
         "0175406243eddbeb3bde",
         "075867beba1ed7e5fc1d",
@@ -36295,6 +37278,103 @@
         "skills/apex/apex-rest-services/templates/apex-rest-services-template.md"
       ],
       "updated": "2026-03-13",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "apex",
+      "chunk_ids": [
+        "0266a944419ef929c47d",
+        "085de5085f148d151cf6",
+        "110bcf2b0d052eb56e12",
+        "12c44300d3ddf3cb7762",
+        "263946e1101c59cba6ee",
+        "32a4cbef0b92c72ed44c",
+        "33a821812a110f03e7a8",
+        "37b847761e9976b5968e",
+        "3c4c3f943ea71b747821",
+        "3d24b3ff7bb409dad87a",
+        "46cb761d6591b4800413",
+        "6c643672868d4565ad15",
+        "6d8f7ca07b12729d63ea",
+        "7891a2dcf8802122890a",
+        "7a0d68be7d41f6cb0ab6",
+        "7ed1af96b3c95120c7dc",
+        "80fee36ed5e688c7a5ea",
+        "810629db6c3ccf4433d3",
+        "839be732b460455d5c37",
+        "84d1124bce0f9a1abf20",
+        "956f9c932a6f39bb1865",
+        "9ea1ae679ea04a258f3d",
+        "a4cd95bd689da3b58b4e",
+        "a75cd609db5733b29177",
+        "a97f176e50e66fe57a93",
+        "abc3937866472f914fd4",
+        "ac36c03d3d72c9ee5b5f",
+        "b68065aa6f102d2c0f5d",
+        "c164ea1fb1472664ab1a",
+        "cddd6bdbc25be6778256",
+        "cfa44596ae2d20b5414f",
+        "d1f5771f19755c70d8ac",
+        "d2e99fbcb07020cf0d66",
+        "d44b7434c7c6ca4307e4",
+        "d486fa7964f15fcf290a",
+        "d5a6c56f59289c92af79",
+        "d70ccfe0b4796567d368",
+        "d939d0a714848c87cfc3",
+        "dcea6c3a7b46d538166f",
+        "e2569de77be209c88171",
+        "ed5d08d7a0d1add50c67",
+        "eda0fe430378897129d6",
+        "f1e3d4563f4c4a839e06",
+        "f60679c999507c61eff5",
+        "fccdb6aa2a9e0da65bfc",
+        "fe4d6d9ff172239ca928",
+        "fff7c9889491a7e3e202"
+      ],
+      "content_hash": "5545c507b29717d32b44bb19e2b586f787cda4b4256edd240a2d68a13eb884c6",
+      "dependencies": [],
+      "description": "Database.Savepoint / Database.rollback for partial-transaction undo: placement rules, ID reset, limit counters, nested savepoints, rollback after callout. NOT for Database.allOrNone=false partial success semantics (use apex-partial-dml). NOT for Queueable chained rollback (use apex-queueable-patterns).",
+      "file_location": "skills/apex/apex-savepoint-and-rollback",
+      "id": "apex/apex-savepoint-and-rollback",
+      "inputs": [
+        "Transaction boundary where partial rollback needed",
+        "DML operations to potentially undo",
+        "Presence of callouts in the transaction",
+        "Error-handling strategy"
+      ],
+      "name": "apex-savepoint-and-rollback",
+      "official_sources": [
+        "Apex Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm",
+        "Apex Reference Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm",
+        "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+      ],
+      "outputs": [
+        "Savepoint/rollback placement pattern",
+        "Error-handling block with deterministic cleanup",
+        "Governor-limit impact analysis"
+      ],
+      "references": [
+        "skills/apex/apex-savepoint-and-rollback/references/examples.md",
+        "skills/apex/apex-savepoint-and-rollback/references/gotchas.md",
+        "skills/apex/apex-savepoint-and-rollback/references/llm-anti-patterns.md",
+        "skills/apex/apex-savepoint-and-rollback/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/apex/apex-savepoint-and-rollback/scripts/__pycache__/check_apex_savepoint_and_rollback.cpython-314.pyc",
+        "skills/apex/apex-savepoint-and-rollback/scripts/check_apex_savepoint_and_rollback.py"
+      ],
+      "tags": [
+        "apex",
+        "savepoint",
+        "rollback",
+        "transaction",
+        "dml"
+      ],
+      "templates": [
+        "skills/apex/apex-savepoint-and-rollback/templates/apex-savepoint-and-rollback-template.md"
+      ],
+      "updated": "2026-04-21",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -36799,6 +37879,101 @@
         "skills/apex/apex-transaction-finalizers/templates/apex-transaction-finalizers-template.md"
       ],
       "updated": "2026-04-19",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "apex",
+      "chunk_ids": [
+        "00de7e0df0edbd576f7d",
+        "0265e17f34044a87e2b7",
+        "0f3a8fa94c89e757bdb3",
+        "14197fa241fbe54a8d4c",
+        "16dfdc91e04a9803a809",
+        "1b9f86eb43597d133079",
+        "20747b8e341bd8c137a7",
+        "272ac7ff69c63e83c0a9",
+        "2d7267d77f6399ea335e",
+        "332537034fea0452e175",
+        "3444fb5e40f309ca7324",
+        "3d65d144836db3f5c29c",
+        "3f52bb2b25afd1536368",
+        "43cfd3bc526a5aabbc14",
+        "44a143bf9ef9a184c1cd",
+        "4aa2d642051a2f44918e",
+        "4ffead266989edd40acc",
+        "588536c86ae199e5375c",
+        "59511df7ad4bb091f89d",
+        "5ebf92358357f117eb26",
+        "686d55bcd2eaa39de197",
+        "68ce087396eeb64285e7",
+        "6b21254a64f0816eb13c",
+        "7a60944340a323d986f1",
+        "88c1f6b51b90b70a09c0",
+        "98b1656e0b45a4da3df1",
+        "98bcb1b0ea467932b8ae",
+        "9b157acddf59ef69e921",
+        "adac05eae6589af6cc1b",
+        "b67381699c26a362d8e4",
+        "b6e4f23f6b7be6e374ae",
+        "b70a3444e9951e303ec4",
+        "bf4963767d8a9ad3a447",
+        "bfa4d4a34a597765d1e8",
+        "c63024ce0d924ac2d5f6",
+        "ca4634acb4696748582a",
+        "ca632d2c4b0495f2a8a5",
+        "d17abd67c2b944e0b26d",
+        "d1bdd1945702ca757aa1",
+        "df5a5efc9cbae70a2a01",
+        "e23e44dfbed7935667a5",
+        "e97e2f54b1312cefeed2",
+        "ec64020380b745becdc8",
+        "f54f0452ee562759037b",
+        "f762409b920c4f26e6fd",
+        "ff4ade392876e0e7f88d"
+      ],
+      "content_hash": "9a0730894d28744ad193529e3b8d1ff83bcafb1d7e3d55bfa86c35ecb826bad1",
+      "dependencies": [],
+      "description": "Apex Trigger.new / Trigger.old / Trigger.newMap / Trigger.oldMap / Trigger.isInsert etc.: when each is populated, null-safety, recursion depth, trigger event matrix. NOT for trigger framework architecture (use apex-trigger-handler-framework). NOT for bulk patterns (use apex-bulkification-patterns).",
+      "file_location": "skills/apex/apex-trigger-context-variables",
+      "id": "apex/apex-trigger-context-variables",
+      "inputs": [
+        "Trigger events in scope (before/after \u00d7 insert/update/delete/undelete)",
+        "Whether Trigger.newMap/oldMap needed",
+        "Recursion-control requirement"
+      ],
+      "name": "apex-trigger-context-variables",
+      "official_sources": [
+        "Apex Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm",
+        "Apex Reference Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm",
+        "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+      ],
+      "outputs": [
+        "Correct context-variable usage per event",
+        "Null-safe access pattern",
+        "Event matrix documentation"
+      ],
+      "references": [
+        "skills/apex/apex-trigger-context-variables/references/examples.md",
+        "skills/apex/apex-trigger-context-variables/references/gotchas.md",
+        "skills/apex/apex-trigger-context-variables/references/llm-anti-patterns.md",
+        "skills/apex/apex-trigger-context-variables/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/apex/apex-trigger-context-variables/scripts/__pycache__/check_apex_trigger_context_variables.cpython-314.pyc",
+        "skills/apex/apex-trigger-context-variables/scripts/check_apex_trigger_context_variables.py"
+      ],
+      "tags": [
+        "apex",
+        "triggers",
+        "context-variables",
+        "trigger-new",
+        "trigger-old"
+      ],
+      "templates": [
+        "skills/apex/apex-trigger-context-variables/templates/apex-trigger-context-variables-template.md"
+      ],
+      "updated": "2026-04-21",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -50440,7 +51615,7 @@
         "fdacd05d9e4a4a59a8db",
         "ffc0f7e094f8ae27be96"
       ],
-      "content_hash": "da64941f9894c9c58b17f5733907ff1f81fe11c147630d85feab97cf1f89d43a",
+      "content_hash": "7310dd8e942863482229fd248e5e0749b51a1313d2f007fe6164000d19d59bad",
       "dependencies": [],
       "description": "Deployment architecture quirks per Salesforce cloud: Industries (OmniStudio), Marketing Cloud (MC packages), Commerce Cloud, Data Cloud, Agentforce. What ships via metadata API, what ships via cloud-specific tools, ordering, dependencies. NOT for generic DevOps (use devops skills). NOT for cross-cloud data flow (use cross-cloud-data-deployment).",
       "file_location": "skills/architect/cloud-specific-deployment-architecture",
@@ -50468,6 +51643,7 @@
         "skills/architect/cloud-specific-deployment-architecture/references/well-architected.md"
       ],
       "scripts": [
+        "skills/architect/cloud-specific-deployment-architecture/scripts/__pycache__/check_cloud_specific_deployment_architecture.cpython-314.pyc",
         "skills/architect/cloud-specific-deployment-architecture/scripts/check_cloud_specific_deployment_architecture.py"
       ],
       "tags": [
@@ -50718,7 +51894,7 @@
         "fb9da605939438e886c4",
         "fcd19e5e76865ac1eaef"
       ],
-      "content_hash": "5e4b4b586209885d2ee677ff23c8e39f38c08c6b00fd905764d3f56b4114ea6f",
+      "content_hash": "203cca240002a42ead2cd763ebc368641b2d936a1c50e6db7794dddc9169f752",
       "dependencies": [],
       "description": "Composable commerce on Salesforce: headless API layer, micro-frontends, BFF pattern, CDN strategy, third-party composability over B2C/B2B Commerce. NOT for the standard B2C Storefront UX (use b2c-commerce-storefront-setup). NOT for Salesforce Order Management basics (use salesforce-order-management-setup).",
       "file_location": "skills/architect/composable-commerce-architecture",
@@ -50746,6 +51922,7 @@
         "skills/architect/composable-commerce-architecture/references/well-architected.md"
       ],
       "scripts": [
+        "skills/architect/composable-commerce-architecture/scripts/__pycache__/check_composable_commerce_architecture.cpython-314.pyc",
         "skills/architect/composable-commerce-architecture/scripts/check_composable_commerce_architecture.py"
       ],
       "tags": [
@@ -51531,7 +52708,7 @@
         "ebac05a7f495452f8167",
         "ffaf3ec2ff5a38e4834f"
       ],
-      "content_hash": "f7ae25fc35ba914ea54b7a62550d85ad75227e4a77d07d0a72f060ca0b2a6ece",
+      "content_hash": "0493a79f5c0ddda9ab122b3c786e6e1621cd507da1ef99f3ea90223ef3e5b852",
       "dependencies": [],
       "description": "Cross-cloud data deployment: designing the data handoff when an implementation spans Sales Cloud, Service Cloud, Marketing Cloud, Data Cloud, Commerce Cloud. Shared keys, identity resolution, sync vs event, CDC, Data Cloud as hub. NOT for single-cloud data model design (use sales-cloud-core-setup or service-cloud-core-setup). NOT for integration pattern selection (use integration-pattern-selection decision tree).",
       "file_location": "skills/architect/cross-cloud-data-deployment",
@@ -51559,6 +52736,7 @@
         "skills/architect/cross-cloud-data-deployment/references/well-architected.md"
       ],
       "scripts": [
+        "skills/architect/cross-cloud-data-deployment/scripts/__pycache__/check_cross_cloud_data_deployment.cpython-314.pyc",
         "skills/architect/cross-cloud-data-deployment/scripts/check_cross_cloud_data_deployment.py"
       ],
       "tags": [
@@ -52062,7 +53240,7 @@
         "fb21aed6084628211bf6",
         "fffc41928ddc24e1258d"
       ],
-      "content_hash": "c3b8515f178c802504776883d7c349d912551149f2a2d4365d3cf83ea9b45f63",
+      "content_hash": "87ce8c5c51db29d65dffbd712c53c7ad39cb35b25e2500e590faf8038f9b76e3",
       "dependencies": [],
       "description": "Deployment automation architecture on Salesforce: pipeline orchestration, branch strategy, environment topology, quality gates, release trains. Selecting between Copado, Gearset, Flosum, and native SFDX + GitHub Actions. NOT for cloud-specific deploy mechanics (use cloud-specific-deployment-architecture). NOT for CI/CD tool tutorials.",
       "file_location": "skills/architect/deployment-automation-architecture",
@@ -52090,6 +53268,7 @@
         "skills/architect/deployment-automation-architecture/references/well-architected.md"
       ],
       "scripts": [
+        "skills/architect/deployment-automation-architecture/scripts/__pycache__/check_deployment_automation_architecture.cpython-314.pyc",
         "skills/architect/deployment-automation-architecture/scripts/check_deployment_automation_architecture.py"
       ],
       "tags": [
@@ -58946,7 +60125,7 @@
         "ecec5637ea2332855f88",
         "f4c8c21aa0e93b5aa5a5"
       ],
-      "content_hash": "6c0a0acf7cd7a21e0d7b7e1047bc3a2b56b0a2041955cf6a1458c237cecca5d4",
+      "content_hash": "a2c97066311d8214399e1f6b7f32c779f6921d5ebeb7f62bfd072b1edfa756fa",
       "dependencies": [],
       "description": "Nonprofit Cloud vs NPSP decision and migration: choose NPSP (managed package) or Nonprofit Cloud (native), plan data migration, Account Model differences, Program Management, fundraising. NOT for nonprofit accounting (use revenue-cloud-foundation). NOT for generic Sales Cloud setup (use sales-cloud-core-setup).",
       "file_location": "skills/architect/nonprofit-cloud-vs-npsp-migration",
@@ -58974,6 +60153,7 @@
         "skills/architect/nonprofit-cloud-vs-npsp-migration/references/well-architected.md"
       ],
       "scripts": [
+        "skills/architect/nonprofit-cloud-vs-npsp-migration/scripts/__pycache__/check_nonprofit_cloud_vs_npsp_migration.cpython-314.pyc",
         "skills/architect/nonprofit-cloud-vs-npsp-migration/scripts/check_nonprofit_cloud_vs_npsp_migration.py"
       ],
       "tags": [
@@ -60957,7 +62137,7 @@
         "f2a5e010ec2f791e081b",
         "f2af967f45206ba53466"
       ],
-      "content_hash": "966a4bbcf48da594c96e093c11f530f806cff709650cb1f1a75546aafc2abd5d",
+      "content_hash": "e8e2c00eb501bb01f0ca50cbfd2cfd2e49c94afe53e0b0c5d05afe26f7efc949",
       "dependencies": [],
       "description": "Salesforce ERD and architecture diagram generation: Mermaid/PlantUML data-model diagrams for Sales, Service, FSL, Commerce, Revenue Cloud; OAuth flow diagrams; integration architecture diagrams; object-relationship visualization. NOT for data model design decisions (use data-model-design-patterns). NOT for UI wireframing (use lightning-experience-design).",
       "file_location": "skills/architect/salesforce-erd-and-diagramming",
@@ -60985,6 +62165,7 @@
         "skills/architect/salesforce-erd-and-diagramming/references/well-architected.md"
       ],
       "scripts": [
+        "skills/architect/salesforce-erd-and-diagramming/scripts/__pycache__/check_salesforce_erd_and_diagramming.cpython-314.pyc",
         "skills/architect/salesforce-erd-and-diagramming/scripts/check_salesforce_erd_and_diagramming.py"
       ],
       "tags": [
@@ -62027,7 +63208,7 @@
         "f2139e6685ee8ab7da07",
         "fcf1caeda3938f660274"
       ],
-      "content_hash": "8bf1f05bcc9d2fdd4c4b32aaec5fd0987d681e1316692ac3a75b5b01dce8cdf5",
+      "content_hash": "740c218c9ec514253826e4c3edc1065992a3bec9aa48c4d7b2d5a3e2784dcaa3",
       "dependencies": [],
       "description": "Multi-tenant isolation patterns on Salesforce: custom metadata per-tenant, permission-based feature gating, data partitioning, namespace isolation, ISV managed-package patterns. NOT for multi-org strategy (use multi-org-architecture). NOT for data sharing design (use sharing-selection decision tree).",
       "file_location": "skills/architect/tenant-isolation-patterns",
@@ -62055,6 +63236,7 @@
         "skills/architect/tenant-isolation-patterns/references/well-architected.md"
       ],
       "scripts": [
+        "skills/architect/tenant-isolation-patterns/scripts/__pycache__/check_tenant_isolation_patterns.cpython-314.pyc",
         "skills/architect/tenant-isolation-patterns/scripts/check_tenant_isolation_patterns.py"
       ],
       "tags": [
@@ -67257,7 +68439,7 @@
         "f496492bd81028aa1c4e",
         "fde290c5c58b249cebac"
       ],
-      "content_hash": "fc7c1ba088e31bded8a5570944270fe54885915bb78e106ac2eca3524a951f92",
+      "content_hash": "c89b2decd782559343f9ee13972d841ba48df56c6877f133d9a0547d46bf708a",
       "dependencies": [],
       "description": "Education Data Architecture (EDA) data model deep dive: Contact-centric, Affiliations, Relationships, Account record types (Academic Program, Educational Institution, Sports Organization), Course_Offering__c, Term__c, Course_Connection__c patterns. NOT for Education Cloud setup (use education-cloud-eda-setup). NOT for generic data modeling.",
       "file_location": "skills/data/eda-data-model-and-patterns",
@@ -67287,6 +68469,7 @@
         "skills/data/eda-data-model-and-patterns/references/well-architected.md"
       ],
       "scripts": [
+        "skills/data/eda-data-model-and-patterns/scripts/__pycache__/check_eda_data_model_and_patterns.cpython-314.pyc",
         "skills/data/eda-data-model-and-patterns/scripts/check_eda_data_model_and_patterns.py"
       ],
       "tags": [
@@ -78666,6 +79849,107 @@
     {
       "category": "devops",
       "chunk_ids": [
+        "013de5cfc17b8b86a1ff",
+        "08c101bd1128395dd878",
+        "09abb133ea80adddd4ce",
+        "0bff0381e9741b26596d",
+        "0fabb8906940d5693623",
+        "22818fee6ecd8569f9e0",
+        "25af309eb12929286189",
+        "2fb677a2ca518bad684b",
+        "3793342f0f6bc54e3c60",
+        "3cca10523ed575cfa244",
+        "5362853398dde39a51ed",
+        "5a2b16e5299038913e9c",
+        "5a7a0fd8db39fa345661",
+        "5b250ef2cc9ed756bf40",
+        "5b3fd980928dccb35606",
+        "604da7ae34d9cbbd611b",
+        "651c96a520e2f85f84c4",
+        "664fad28c552dde8c5a0",
+        "6d37e0cec3401d0400bd",
+        "6efab2b1843783015a9e",
+        "7c999c082815d87c634b",
+        "7fe9e38f3ade89c6452a",
+        "8255c722afb839eb53ba",
+        "9078b087f1ef6fe4b73c",
+        "983e73292418c377d294",
+        "98fc59022fd365389383",
+        "9978c9f5784dbe1a32f4",
+        "9d5ed4a4543e427f1f4f",
+        "9f6151941ba0be8708ad",
+        "ad93eea3e2c86ad08fe7",
+        "b6d2a8a05e1a787aa61b",
+        "bf5997a8bb18d5fc2599",
+        "bf73bfd5e7ad18038798",
+        "c0f85195e13c67c30490",
+        "c203773cee1a98d37bd0",
+        "c38e5496ec08157135bb",
+        "c92bed50672744ff3714",
+        "cae7d74f8b6ec692c912",
+        "d37180d2cdede3602706",
+        "dcd1c311b275430dfead",
+        "e476a48c7004e1948e03",
+        "e51436ef6a6e7259db02",
+        "e71dde5ffbabfe00aa91",
+        "e9f3c1ef9055258ead8e",
+        "eb538892b496c85c07e1",
+        "ebf4113c9744599bc58f",
+        "eef3f6502ce8fc4e5588",
+        "f2e6e4438cc6b16d095d",
+        "f46bdc58e163a876f7c3",
+        "fb51f90258df70eba892"
+      ],
+      "content_hash": "ebe63250c7e071fec04bf09ef23dc7225452223c8778e90cb8186a243c74f15e",
+      "dependencies": [],
+      "description": "Metadata API retrieve/deploy via sf CLI and package.xml: manifest authoring, destructiveChanges, deploy options (checkOnly, testLevel, rollbackOnError), CI scripting. NOT for DX source format conversions (use salesforce-dx-source-tracking). NOT for unlocked packages (use unlocked-packages).",
+      "file_location": "skills/devops/metadata-api-retrieve-deploy",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "inputs": [
+        "Source org auth alias",
+        "Target org auth alias",
+        "Metadata scope (component types, names)",
+        "Deployment policy (check-only, test level)"
+      ],
+      "name": "metadata-api-retrieve-deploy",
+      "official_sources": [
+        "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+        "Salesforce CLI Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm",
+        "Salesforce DX Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm"
+      ],
+      "outputs": [
+        "package.xml manifest",
+        "destructiveChanges manifest (if removing)",
+        "sf CLI retrieve and deploy commands",
+        "CI pipeline stanza"
+      ],
+      "references": [
+        "skills/devops/metadata-api-retrieve-deploy/references/examples.md",
+        "skills/devops/metadata-api-retrieve-deploy/references/gotchas.md",
+        "skills/devops/metadata-api-retrieve-deploy/references/llm-anti-patterns.md",
+        "skills/devops/metadata-api-retrieve-deploy/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/devops/metadata-api-retrieve-deploy/scripts/__pycache__/check_metadata_api_retrieve_deploy.cpython-314.pyc",
+        "skills/devops/metadata-api-retrieve-deploy/scripts/check_metadata_api_retrieve_deploy.py"
+      ],
+      "tags": [
+        "metadata-api",
+        "sf-cli",
+        "package-xml",
+        "deploy",
+        "destructive-changes"
+      ],
+      "templates": [
+        "skills/devops/metadata-api-retrieve-deploy/templates/metadata-api-retrieve-deploy-template.md"
+      ],
+      "updated": "2026-04-21",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "devops",
+      "chunk_ids": [
         "0518736fa4755026d1ec",
         "081720b9218857d64641",
         "0a9d74b24da8208298ad",
@@ -89271,6 +90555,105 @@
     {
       "category": "integration",
       "chunk_ids": [
+        "007b80b70ad7b48f513a",
+        "08c48ef6819734658252",
+        "0c7de99005ec3e5b2673",
+        "0dc7f7961cc9138b5908",
+        "1034b657326357465681",
+        "1169f626cd3b0740add7",
+        "2594ae645a3bd78d4493",
+        "2a9ec34e60418f3faafe",
+        "318b88d4d9e0ede5c171",
+        "3ed5d1e37d5ec0ee0b2e",
+        "3f7d4a2dfcb552110095",
+        "45705df108d40d5a3d68",
+        "4908554470d09eefdb56",
+        "54c64c5a2232795ee430",
+        "587ca408c41451ae0faf",
+        "60d5c73adfce4b8a7975",
+        "637ae2c3df83203b6248",
+        "6ddf036e181f3bee42db",
+        "6fb18276d7d8ab287383",
+        "755c3efa537d682663e6",
+        "75e8dfb112db97f60aba",
+        "7c34fe1e42887fe1712b",
+        "8318957315daed2fbbeb",
+        "842636139e72bc493a8f",
+        "8520b750467f885fa73a",
+        "8fa6f44991c4619ef7d9",
+        "924b7698e2d5bb951d92",
+        "97a959127cab38b16238",
+        "9e328dc753b245084b86",
+        "a140f5de5ec0575deeae",
+        "a149ca416d942002a97b",
+        "a613b28b1fb0720a13f6",
+        "a683886c34469297be99",
+        "a755ae9fff4bb56a394e",
+        "a8abb22ede381e7bd0ce",
+        "baafb6299e5d443659fe",
+        "be84c5950ff83043d995",
+        "c0afab0c68f2df3413af",
+        "c304c0ed408e981b168d",
+        "c3f13aa45fd2f479d5a9",
+        "ccfcc037179096a1ee59",
+        "e383aa8039b96fd55e33",
+        "e91fa81aebb3a546cf57",
+        "f22cbcf0c14079f9b03e",
+        "f264691b069ff43dd2a7",
+        "f35137409e3a2cc9eb96",
+        "f56198c4f43cbc399ea6",
+        "f7f41c6ea446e4d7d8b6"
+      ],
+      "content_hash": "bc1dd30bd1a652aea9a298909c6033f6adb32e3d05cd870e3c53885c817e460f",
+      "dependencies": [],
+      "description": "Publishing Platform Events: EventBus.publish, PublishBehavior (PublishImmediately vs PublishAfterCommit), high-volume events, event allocation, publish failures, Change Data Capture comparison. NOT for subscribing/consuming (use platform-event-subscribe-patterns). NOT for CDC architecture (use cdc-patterns).",
+      "file_location": "skills/integration/platform-event-publish-patterns",
+      "id": "integration/platform-event-publish-patterns",
+      "inputs": [
+        "Event name and payload shape",
+        "Publish context (trigger, service, async)",
+        "Rollback semantics desired",
+        "Expected event volume per day"
+      ],
+      "name": "platform-event-publish-patterns",
+      "official_sources": [
+        "REST API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_what_is_rest_api.htm",
+        "Integration Patterns \u2014 https://architect.salesforce.com/docs/architect/fundamentals/guide/integration-patterns.html",
+        "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+      ],
+      "outputs": [
+        "Publish code with correct PublishBehavior",
+        "Event allocation estimate",
+        "Error-handling and retry plan",
+        "Monitoring approach"
+      ],
+      "references": [
+        "skills/integration/platform-event-publish-patterns/references/examples.md",
+        "skills/integration/platform-event-publish-patterns/references/gotchas.md",
+        "skills/integration/platform-event-publish-patterns/references/llm-anti-patterns.md",
+        "skills/integration/platform-event-publish-patterns/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/integration/platform-event-publish-patterns/scripts/__pycache__/check_platform_event_publish_patterns.cpython-314.pyc",
+        "skills/integration/platform-event-publish-patterns/scripts/check_platform_event_publish_patterns.py"
+      ],
+      "tags": [
+        "platform-events",
+        "eventbus",
+        "publish",
+        "publishbehavior",
+        "async"
+      ],
+      "templates": [
+        "skills/integration/platform-event-publish-patterns/templates/platform-event-publish-patterns-template.md"
+      ],
+      "updated": "2026-04-21",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "integration",
+      "chunk_ids": [
         "00f85a4fef8707d0f48d",
         "042e4bf9f31aef1df016",
         "04e699544f7c3925a117",
@@ -89747,6 +91130,105 @@
         "skills/integration/real-time-vs-batch-integration/templates/real-time-vs-batch-integration-template.md"
       ],
       "updated": "2026-04-15",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "integration",
+      "chunk_ids": [
+        "0d4608e06fc9984a9d90",
+        "0ead15626460c10db754",
+        "1787d2365cb3e2a0c420",
+        "1c755cb81741744e134b",
+        "264efc25be0f6e602444",
+        "2acbcfa80b8dd1f60f76",
+        "32672a9eb55f93352f70",
+        "35b8f77206b1b340997c",
+        "37ab04c921e615beb803",
+        "3d080c5a90cb34a8e6a1",
+        "3eed53cfa075604d26e3",
+        "44435249273c3343c3f9",
+        "45476c53ef502656ddac",
+        "523b17144a234f46f86b",
+        "5f4e7526bb04ae2f56b7",
+        "66534d7ac8b73cff36d0",
+        "6c43985b6ec5e93ca4a5",
+        "761ca4472a6943f9bf6e",
+        "764ca975df40d6e0a9cd",
+        "7934a161f2e01b0e454a",
+        "84393e707f6dbb3bc297",
+        "878c997683ccb18a2429",
+        "89a029f28db9b520db20",
+        "8a11efeac86989c8843f",
+        "8f31f8dd63dda8f85334",
+        "9069102d94a143d44c64",
+        "9454b4d3bfda150f13e5",
+        "a4e5534add1615d125b2",
+        "ad911026f0aaf3046dc0",
+        "b5cfb51f30fb5d583f50",
+        "b8a30900bd0ffbca4513",
+        "b9d97d68e2d8743b83d5",
+        "bac4f654c5d6bac76624",
+        "bc2fb369502763af9487",
+        "bd0f69ee715965a39b39",
+        "bedd8478276aaa2247b7",
+        "c36702057959dffca528",
+        "c4fb7cf210d717f2e18c",
+        "c5bef9e51d9df04cb31d",
+        "d2d1aaff320d7d8c198f",
+        "d924351c5c1baca73189",
+        "dbe89a17623dcfa9afbc",
+        "df2659b61b1d49bb7ef7",
+        "ee954fd98e81827c5e76",
+        "f33db16090a67a890481",
+        "f49cca3f0cd1e25f3183",
+        "fc131cc2bd222a1c60c6"
+      ],
+      "content_hash": "08a5b3e640f8dafc3ce6351a7829df792850277ce39e6a6dad8e6fd9aa0b08f2",
+      "dependencies": [],
+      "description": "REST API pagination for inbound and outbound integrations: Salesforce QueryMore, cursor-based, offset-based, Link header, page-size tuning, rate limit interaction. NOT for Bulk API (use bulk-api-patterns). NOT for GraphQL connection pagination (use graphql-api-patterns).",
+      "file_location": "skills/integration/rest-api-pagination-patterns",
+      "id": "integration/rest-api-pagination-patterns",
+      "inputs": [
+        "Integration direction (inbound to Salesforce, outbound from Salesforce)",
+        "API style (cursor, offset, Link header, custom)",
+        "Total result magnitude",
+        "Rate limit profile"
+      ],
+      "name": "rest-api-pagination-patterns",
+      "official_sources": [
+        "REST API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_what_is_rest_api.htm",
+        "Integration Patterns \u2014 https://architect.salesforce.com/docs/architect/fundamentals/guide/integration-patterns.html",
+        "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+      ],
+      "outputs": [
+        "Pagination loop pattern",
+        "Termination condition",
+        "Retry / rate-limit interaction",
+        "Volume test plan"
+      ],
+      "references": [
+        "skills/integration/rest-api-pagination-patterns/references/examples.md",
+        "skills/integration/rest-api-pagination-patterns/references/gotchas.md",
+        "skills/integration/rest-api-pagination-patterns/references/llm-anti-patterns.md",
+        "skills/integration/rest-api-pagination-patterns/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/integration/rest-api-pagination-patterns/scripts/__pycache__/check_rest_api_pagination_patterns.cpython-314.pyc",
+        "skills/integration/rest-api-pagination-patterns/scripts/check_rest_api_pagination_patterns.py"
+      ],
+      "tags": [
+        "rest",
+        "pagination",
+        "querymore",
+        "cursor",
+        "offset",
+        "link-header"
+      ],
+      "templates": [
+        "skills/integration/rest-api-pagination-patterns/templates/rest-api-pagination-patterns-template.md"
+      ],
+      "updated": "2026-04-21",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -90361,7 +91843,7 @@
         "fafdb7b0c4a17fd4d359",
         "fe750db314cdb0b572b7"
       ],
-      "content_hash": "cbba8dcc46129857d3ea8a59e3032a889f114cfeeca87b697ea376c61dfd0f37",
+      "content_hash": "cc7e938b651653214bd7e6f6db49073dd3065aed5623efbdda901167cfdf4809",
       "dependencies": [],
       "description": "Salesforce Functions is retired (EOL Jan 2025). This skill maps Functions workloads to replacements: Heroku (with Hyperforce), external containers, Apex (where viable), Agentforce Actions, external compute via Named Credentials. NOT for Lambda / Azure Functions tutorials. NOT for Apex @future replacement (use async-selection tree).",
       "file_location": "skills/integration/salesforce-functions-replacement",
@@ -90391,6 +91873,7 @@
         "skills/integration/salesforce-functions-replacement/references/well-architected.md"
       ],
       "scripts": [
+        "skills/integration/salesforce-functions-replacement/scripts/__pycache__/check_salesforce_functions_replacement.cpython-314.pyc",
         "skills/integration/salesforce-functions-replacement/scripts/check_salesforce_functions_replacement.py"
       ],
       "tags": [
@@ -91372,7 +92855,7 @@
         "f5c546ae438043b3aa5d",
         "f637ed839dcc3a43c9d2"
       ],
-      "content_hash": "cf01ef6c867472e517562596a2f7e26fa00987489a7acc8d1112505582a75889",
+      "content_hash": "8f87b0dbca96e303448a8896582620ae3e3da0f4f702a70e711af1cafe757be1",
       "dependencies": [],
       "description": "Tableau \u2194 Salesforce integration patterns: Tableau Salesforce connector, Tableau for Salesforce, CRM Analytics alternative, Data Cloud + Tableau, embedded Tableau dashboards. Choose between connector modes (live, extract, direct-to-Data-Cloud). NOT for CRM Analytics Studio (use crm-analytics-foundation). NOT for generic Tableau Server setup.",
       "file_location": "skills/integration/tableau-salesforce-connector",
@@ -91402,6 +92885,7 @@
         "skills/integration/tableau-salesforce-connector/references/well-architected.md"
       ],
       "scripts": [
+        "skills/integration/tableau-salesforce-connector/scripts/__pycache__/check_tableau_salesforce_connector.cpython-314.pyc",
         "skills/integration/tableau-salesforce-connector/scripts/check_tableau_salesforce_connector.py"
       ],
       "tags": [
@@ -93955,7 +95439,7 @@
         "f4a2ec60ed510bcfe247",
         "fcf1d1c52bae6f6df81c"
       ],
-      "content_hash": "6f02b0de2e0d00984988de86cdd1e92a227508e91cba7400ebd44888e0993d40",
+      "content_hash": "d5d47d338d730c6e79ff52e5d716c5b190c01bc957812c408f7e4bbd3d6cee79",
       "dependencies": [],
       "description": "Charts and visualization in LWC: Chart.js, D3, Plotly via Static Resources; Lightning chart components; performance patterns for 10k+ data points; accessibility; SLDS theming. NOT for CRM Analytics embedding (use crm-analytics-foundation). NOT for Tableau embedding (use tableau-salesforce-connector).",
       "file_location": "skills/lwc/lwc-chart-and-visualization",
@@ -93985,6 +95469,7 @@
         "skills/lwc/lwc-chart-and-visualization/references/well-architected.md"
       ],
       "scripts": [
+        "skills/lwc/lwc-chart-and-visualization/scripts/__pycache__/check_lwc_chart_and_visualization.cpython-314.pyc",
         "skills/lwc/lwc-chart-and-visualization/scripts/check_lwc_chart_and_visualization.py"
       ],
       "tags": [
@@ -94760,6 +96245,103 @@
     {
       "category": "lwc",
       "chunk_ids": [
+        "018934a0c1f7a91e8e43",
+        "0e1fba2b0827f73daa83",
+        "0e8ae440af56a3ec5153",
+        "193485a8ffc8e0c01996",
+        "1afd96048aa3193ec0c5",
+        "24026217b72cd711eb65",
+        "25af3db7597dfca1c78e",
+        "2693e4c6196f8020dd37",
+        "295ab6882d0bfe3e9f1c",
+        "2aa48303ebfc20a32ad1",
+        "35a28976139cfde82c26",
+        "36901e0d43e8756d9124",
+        "3a5678fbfade016e9e23",
+        "3ed51b9f362089f2bf91",
+        "4270bc31e30c54c2e661",
+        "4ceff6eef32634e87c0c",
+        "4f7845c7d4fcb4af846d",
+        "505fd0bbe8d588b2ee6f",
+        "54ffcbe6f153f251f93a",
+        "5b39cf08b400c3727f09",
+        "656f3b56760da54601c5",
+        "66b95d501596052b685f",
+        "6a1e160afd207cfeb930",
+        "6b326412a205153f769d",
+        "6e5f32b0b69e58c2f7fa",
+        "7639d1eaf46da5b30b6f",
+        "77e0fc09de36307e27ce",
+        "78f6969be3af9a8c237b",
+        "82f460abe279748cbb3d",
+        "83f2fc34f749cf9593c6",
+        "87643b245d73a37b900c",
+        "90b2b048763aa26553d0",
+        "940d68a6a4b0dce5476f",
+        "9f9e86e8f3e5975819b5",
+        "ba10deabe4f04b256ca3",
+        "c10e2557a196b81d3cfc",
+        "cac736ef6274bcdfc419",
+        "d25b3d015a938aa7c0be",
+        "d409f2c8a20bd1e6f67e",
+        "d437f7413c79e40ddf47",
+        "dbb1a7cd5628a0240df1",
+        "de1667ee6dfcad17afbf",
+        "dec03a936af686df2ecd",
+        "e790aa06d183a187baf3",
+        "e8ffa86b6b88fce5c944",
+        "f4e46371033dc64864b0",
+        "f7b4d8609b7e88411b9c",
+        "fe684d2fcef3186991cc"
+      ],
+      "content_hash": "fa4087ceea29cab8566800c9183e0b4b2fc8c0f23fd965bafb704ac4fec55302",
+      "dependencies": [],
+      "description": "LightningModal base class (Winter '23+): extending LightningModal, open() static method, modal headers/bodies/footers, close() with result, size variants, accessibility. NOT for lightning-dialog legacy patterns (deprecated). NOT for in-page overlays (use SLDS popover).",
+      "file_location": "skills/lwc/lwc-lightning-modal",
+      "id": "lwc/lwc-lightning-modal",
+      "inputs": [
+        "Modal use case (confirmation, form, wizard)",
+        "Required inputs/outputs of the modal",
+        "Size and surface (desktop, mobile)"
+      ],
+      "name": "lwc-lightning-modal",
+      "official_sources": [
+        "LWC Best Practices \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/get-started-best-practices.html",
+        "Lightning Component Reference \u2014 https://developer.salesforce.com/docs/platform/lightning-component-reference/guide",
+        "LWC Data Guidelines \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-guidelines.html"
+      ],
+      "outputs": [
+        "LightningModal subclass LWC",
+        "Parent invocation pattern with result handling",
+        "Accessibility checklist"
+      ],
+      "references": [
+        "skills/lwc/lwc-lightning-modal/references/examples.md",
+        "skills/lwc/lwc-lightning-modal/references/gotchas.md",
+        "skills/lwc/lwc-lightning-modal/references/llm-anti-patterns.md",
+        "skills/lwc/lwc-lightning-modal/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/lwc/lwc-lightning-modal/scripts/__pycache__/check_lwc_lightning_modal.cpython-314.pyc",
+        "skills/lwc/lwc-lightning-modal/scripts/check_lwc_lightning_modal.py"
+      ],
+      "tags": [
+        "lwc",
+        "lightning-modal",
+        "modal",
+        "dialog",
+        "accessibility"
+      ],
+      "templates": [
+        "skills/lwc/lwc-lightning-modal/templates/lwc-lightning-modal-template.md"
+      ],
+      "updated": "2026-04-21",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "lwc",
+      "chunk_ids": [
         "055e9692c933c3c16a3c",
         "0b7d64ebcdee40df1eea",
         "13502e15503c55f83d8d",
@@ -94854,6 +96436,102 @@
         "skills/lwc/lwc-modal-and-overlay/templates/lwc-modal-and-overlay-template.md"
       ],
       "updated": "2026-03-15",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "lwc",
+      "chunk_ids": [
+        "0a2eb4caf664fb42f65d",
+        "0b7308be6cb0b2f234f7",
+        "0f09a531649549026d9d",
+        "0fba0642fd5c40d474a3",
+        "13db6ff61c75ef9205e8",
+        "198442cfd58edef25576",
+        "19b6d1142c68735ce2bd",
+        "2fb6fcc68e0ab4e87ffe",
+        "32e0f2d3981bde272ae6",
+        "44af3155ec1f89c5c6e8",
+        "45d7bbbdf743953aeb42",
+        "46667c152556a1fa90a3",
+        "475bbdd8a925e9f53473",
+        "47a294f77e405c6ac25d",
+        "513985ab044ed42644f5",
+        "521dcc27363ac7817654",
+        "5e5cc525521dabd9f0a9",
+        "634fc67ff6ff0b5f12cb",
+        "63c4874da0cfb48c5ba9",
+        "655f7ad8e07748a9825e",
+        "69c72851b2e092e9cb56",
+        "79ee73ab94f899af2692",
+        "7d10a5302162a13b424f",
+        "84fc284171f6bc92e03b",
+        "8d7740170d980e128329",
+        "8e34c664e9355c928504",
+        "91dbcdce7e73835c7ab4",
+        "9ab9048dd45d954bd961",
+        "9bf78e02139fe2556b2b",
+        "9e24352f64a97fc19b61",
+        "9f1ade8dded148d139a3",
+        "a623a26f1fc2464e43ff",
+        "a8c83f21c5207a0788df",
+        "b2de3dd6e37a9cd1e2da",
+        "b5b5318d82e2281d7208",
+        "b80c98b5ad6a964d1c8d",
+        "bbc9437ad087abb1e86c",
+        "c2c1d32b2b4c75ca66e4",
+        "c72aa4a4d7c6e23b1f79",
+        "d53741f358ad73650f9f",
+        "e4d6775dd3da12c24297",
+        "f121410b67490728853c",
+        "f128aa1fc3951c5633fa",
+        "f417b885847630474075",
+        "fc9fb41871c2a894e5ad",
+        "fd9dfa81f3b1011bd468"
+      ],
+      "content_hash": "fa8a74c3adb4d5757760ca67b7bad0a11d36008b192856875e1cca3943aee112",
+      "dependencies": [],
+      "description": "NavigationMixin for LWC: PageReference types (recordPage, recordRelationship, namedPage, webPage, comm__namedPage), navigate vs generateUrl, state params, Experience Cloud variants. NOT for routing inside custom SPA (use lwc-state-management). NOT for cross-app deep-linking (use deep-linking-patterns).",
+      "file_location": "skills/lwc/lwc-navigation-mixin",
+      "id": "lwc/lwc-navigation-mixin",
+      "inputs": [
+        "Target page type (record, list, custom, external)",
+        "Context (internal app, Experience Cloud, mobile)",
+        "URL params / state to pass"
+      ],
+      "name": "lwc-navigation-mixin",
+      "official_sources": [
+        "LWC Best Practices \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/get-started-best-practices.html",
+        "Lightning Component Reference \u2014 https://developer.salesforce.com/docs/platform/lightning-component-reference/guide",
+        "LWC Data Guidelines \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-guidelines.html"
+      ],
+      "outputs": [
+        "PageReference configuration",
+        "navigate vs generateUrl usage",
+        "Experience Cloud variant",
+        "State-param pattern"
+      ],
+      "references": [
+        "skills/lwc/lwc-navigation-mixin/references/examples.md",
+        "skills/lwc/lwc-navigation-mixin/references/gotchas.md",
+        "skills/lwc/lwc-navigation-mixin/references/llm-anti-patterns.md",
+        "skills/lwc/lwc-navigation-mixin/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/lwc/lwc-navigation-mixin/scripts/__pycache__/check_lwc_navigation_mixin.cpython-314.pyc",
+        "skills/lwc/lwc-navigation-mixin/scripts/check_lwc_navigation_mixin.py"
+      ],
+      "tags": [
+        "lwc",
+        "navigation-mixin",
+        "pagereference",
+        "experience-cloud",
+        "deep-linking"
+      ],
+      "templates": [
+        "skills/lwc/lwc-navigation-mixin/templates/lwc-navigation-mixin-template.md"
+      ],
+      "updated": "2026-04-21",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -95064,6 +96742,102 @@
         "skills/lwc/lwc-performance/templates/lwc-performance-template.md"
       ],
       "updated": "2026-03-13",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "lwc",
+      "chunk_ids": [
+        "0cf6430cec0825339e7e",
+        "0f6484f2b1f751ae33b6",
+        "11e0389c3dae79ec2d89",
+        "155312080110ce3db9ee",
+        "1630186ff1b6a33f727e",
+        "198b88a76a79c28cbea8",
+        "1d0593345341bfe272d5",
+        "244c14921377c40904a1",
+        "2c9fcf6111773958d622",
+        "39b1a4b418b53846a3ca",
+        "3cda438576ef0eec5487",
+        "43a95b02b29cb031dbfe",
+        "4530d61bbe632cfae99b",
+        "46fee74057897a3b4829",
+        "49979a8478ed9c1ec0be",
+        "507b6c6b1a521edc172f",
+        "5531952f958cfec39f86",
+        "5fdd58508986f156d47d",
+        "6c0474c4cb0fe089ff23",
+        "6e6c23c6f71ce12327f9",
+        "702edce65b7cd0cbae9c",
+        "75c92722c6efb590e624",
+        "7f7091affa8a00887c38",
+        "85ec72aececeee582263",
+        "864a40435bfb91e13ed9",
+        "871af62b62417c2be4c7",
+        "8b7dc6a5c44564e164ae",
+        "8cd9da6f8f067f8ce705",
+        "934df0993f0d43d91998",
+        "9e3cab87237345a4cd2e",
+        "a3239982430b15579c77",
+        "a6a2c6de24e42cddc009",
+        "ad5729417c527028a1da",
+        "b65d51c80691784d24c7",
+        "b8c5f9ec4dae42b24b9c",
+        "c0ee376c9f4f307c9dab",
+        "c7f9b05450a325645272",
+        "e26adfa21a7f1e196561",
+        "e71a56a6af35930d0cb3",
+        "eedc0a3d1c6577e12047",
+        "ef943d7438cfcc60e22a",
+        "f55b80efe923230c5415",
+        "f7b2b0d10b3d33f2fc7b",
+        "f85855a9d468d384ea0d",
+        "fa95fc19760fe6687682",
+        "ff3cd4ffc61655aff949"
+      ],
+      "content_hash": "b38882b7571f9da25f24146d6acbe2149f085da1c00427655d20278ddb7d5269",
+      "dependencies": [],
+      "description": "lightning-record-picker base component (Winter '24 GA): object/record filter, displayInfo/matchingInfo, graph-ql filters, accessibility. Replaces ad-hoc lookup inputs. NOT for multi-select custom pickers (use lwc-multi-select-lookup). NOT for external-object lookup (use lwc-external-lookup).",
+      "file_location": "skills/lwc/lwc-record-picker",
+      "id": "lwc/lwc-record-picker",
+      "inputs": [
+        "Target object API name",
+        "Fields to display / match",
+        "Filter criteria (graph-QL style)",
+        "Preselection value"
+      ],
+      "name": "lwc-record-picker",
+      "official_sources": [
+        "LWC Best Practices \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/get-started-best-practices.html",
+        "Lightning Component Reference \u2014 https://developer.salesforce.com/docs/platform/lightning-component-reference/guide",
+        "LWC Data Guidelines \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-guidelines.html"
+      ],
+      "outputs": [
+        "Configured lightning-record-picker usage",
+        "Migration plan from legacy custom lookup",
+        "Test coverage with jest"
+      ],
+      "references": [
+        "skills/lwc/lwc-record-picker/references/examples.md",
+        "skills/lwc/lwc-record-picker/references/gotchas.md",
+        "skills/lwc/lwc-record-picker/references/llm-anti-patterns.md",
+        "skills/lwc/lwc-record-picker/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/lwc/lwc-record-picker/scripts/__pycache__/check_lwc_record_picker.cpython-314.pyc",
+        "skills/lwc/lwc-record-picker/scripts/check_lwc_record_picker.py"
+      ],
+      "tags": [
+        "lwc",
+        "record-picker",
+        "lookup",
+        "lightning-base-components",
+        "accessibility"
+      ],
+      "templates": [
+        "skills/lwc/lwc-record-picker/templates/lwc-record-picker-template.md"
+      ],
+      "updated": "2026-04-21",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -95544,7 +97318,7 @@
         "f88c44f94c1ac75d11f4",
         "fa7587c7659a5f3b6bb0"
       ],
-      "content_hash": "f7f4d96a7a665d81be19046122c2a6f4769ed011f33781bee0bcc70fa1823bf8",
+      "content_hash": "9cfc3e60aaf6fa7907ff2149e61f582e1a833b05d7ae48ffb5ef849e5503dc28",
       "dependencies": [],
       "description": "LWC interop with non-LWC web components: consuming third-party standard custom elements in LWC, exposing LWC as custom elements externally, Shadow DOM vs native web components, polyfills, and slotting patterns. NOT for LWC-to-LWC composition (use lwc-best-practices). NOT for Aura interop (use aura-to-lwc-migration).",
       "file_location": "skills/lwc/lwc-web-components-interop",
@@ -95574,6 +97348,7 @@
         "skills/lwc/lwc-web-components-interop/references/well-architected.md"
       ],
       "scripts": [
+        "skills/lwc/lwc-web-components-interop/scripts/__pycache__/check_lwc_web_components_interop.cpython-314.pyc",
         "skills/lwc/lwc-web-components-interop/scripts/check_lwc_web_components_interop.py"
       ],
       "tags": [
@@ -95586,6 +97361,102 @@
       ],
       "templates": [
         "skills/lwc/lwc-web-components-interop/templates/lwc-web-components-interop-template.md"
+      ],
+      "updated": "2026-04-21",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "lwc",
+      "chunk_ids": [
+        "02b90a678c839f459922",
+        "07415203f317359053bc",
+        "0c7c80edf1f87cd166ea",
+        "0dfc9611ca0ab4b2baf8",
+        "165dd31e282ebda3aefa",
+        "236410b9ec60fbb8eefd",
+        "24c174bc649fb61b99d8",
+        "281fe130ab61e65e3171",
+        "2afb9b19b52f61bf5823",
+        "31460fcaa5a3980ee0d4",
+        "33fd83c588cd3aecd009",
+        "353d0fa4ab870635ded1",
+        "35c76c66de1ff9a1b7c4",
+        "3e80987e909ae341dca3",
+        "466902e8e2f3b52ef1d3",
+        "485e89fc9010a87f6e72",
+        "50f7c6ba4d5b943e39f9",
+        "5109abfbe3c47fb11de1",
+        "5158fb56f78aa068f74e",
+        "549cd52465c8da9bf3fa",
+        "5cc77e96e4740d29594e",
+        "5e771a5d9a928a1eafe1",
+        "63e6f2f96fed53c0bb1f",
+        "71a26c86521377a67a40",
+        "73f99a5756ed9713d4e6",
+        "7853029801e1177cd06c",
+        "78b86db0dcaf0b67b749",
+        "9b11be0bc490fd41394d",
+        "9bcb2aefba7319b27ce3",
+        "9f9bb15f6d1e7ed18df8",
+        "a82520baa50ed6ffd7a3",
+        "a935c69c6b664ae2c59b",
+        "aa9f5008673c6d8a70b7",
+        "b386ddbf610069962b18",
+        "b48de486ef351a690e14",
+        "b77480e4e911f0631da9",
+        "c3bbd736f1b2838b31c8",
+        "d5d32a0ce072d566e28f",
+        "d65de225dd36df586b1b",
+        "da39690ab9c85c4fe582",
+        "dba9e3fb8eeac69baeb4",
+        "df99819fb7ead6f85d1b",
+        "e0676581f70690de32c8",
+        "e851fc7863c83b1a6281",
+        "e8977729b30747de11e7",
+        "ee5bbd0172b73ae3def7",
+        "fea792aead6428345476"
+      ],
+      "content_hash": "a61919a39b867179a8450ee03626311515ec425de947e3bb7630ca38358598a4",
+      "dependencies": [],
+      "description": "refreshApex, getRecordNotifyChange, and RefreshView API for LWC data refresh: when wired data is stale, forcing re-fetch after imperative DML, cross-component refresh, 2024 RefreshView replacement of getRecordNotifyChange. NOT for wire basics (use lwc-wire-service). NOT for Lightning Data Service writes (use lwc-lds-writes).",
+      "file_location": "skills/lwc/lwc-wire-refresh-patterns",
+      "id": "lwc/lwc-wire-refresh-patterns",
+      "inputs": [
+        "Wire adapter in use (getRecord, custom Apex wire)",
+        "Trigger for refresh (imperative call, platform event, parent change)",
+        "Cross-component refresh requirement"
+      ],
+      "name": "lwc-wire-refresh-patterns",
+      "official_sources": [
+        "LWC Best Practices \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/get-started-best-practices.html",
+        "Lightning Component Reference \u2014 https://developer.salesforce.com/docs/platform/lightning-component-reference/guide",
+        "LWC Data Guidelines \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-guidelines.html"
+      ],
+      "outputs": [
+        "Refresh pattern (refreshApex, RefreshView, wire re-provision)",
+        "Cross-component messaging approach",
+        "Test strategy for refresh flows"
+      ],
+      "references": [
+        "skills/lwc/lwc-wire-refresh-patterns/references/examples.md",
+        "skills/lwc/lwc-wire-refresh-patterns/references/gotchas.md",
+        "skills/lwc/lwc-wire-refresh-patterns/references/llm-anti-patterns.md",
+        "skills/lwc/lwc-wire-refresh-patterns/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/lwc/lwc-wire-refresh-patterns/scripts/__pycache__/check_lwc_wire_refresh_patterns.cpython-314.pyc",
+        "skills/lwc/lwc-wire-refresh-patterns/scripts/check_lwc_wire_refresh_patterns.py"
+      ],
+      "tags": [
+        "lwc",
+        "refreshapex",
+        "getrecordnotifychange",
+        "refreshview",
+        "wire"
+      ],
+      "templates": [
+        "skills/lwc/lwc-wire-refresh-patterns/templates/lwc-wire-refresh-patterns-template.md"
       ],
       "updated": "2026-04-21",
       "vector_embedding": null,
@@ -102452,6 +104323,102 @@
         "skills/security/recaptcha-and-bot-prevention/templates/recaptcha-and-bot-prevention-template.md"
       ],
       "updated": "2026-04-05",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "security",
+      "chunk_ids": [
+        "0b5f6ddf79f76374aaad",
+        "10971c605bc4d82d26ea",
+        "1264349aa0d788a59340",
+        "1a8b41d7b3503a481543",
+        "1cb00db3ef3b0f5a02d6",
+        "1e98bfd0c5933d46b7c0",
+        "2510c0cd29ea740c26bf",
+        "2f3b7c0f6bd237162045",
+        "3046a56e26be09538588",
+        "3696ff20e3287759d593",
+        "369c0a245b446294cdcd",
+        "4dc035a75962937ca99a",
+        "5007e22a498a49f9e5f3",
+        "51188b06d9f707f626e2",
+        "540364672618e6a6f697",
+        "670d12c318b91f3f1461",
+        "674c69df529fe63c5028",
+        "68d9b2c177f02e8b7ae7",
+        "6c0b737f721c8bf37d6e",
+        "73289d49e9b3b8ecf310",
+        "7496a10fd43cf1fad27b",
+        "77e1cf998b12edb5560a",
+        "78b77333f78f3bb0b081",
+        "79dbe2a4d7cab3c9fe74",
+        "7b76c7d4bbf26c9924b1",
+        "7d4af23f7c103b74cda3",
+        "863b2b182c920608902c",
+        "8be7a143ac8b3e06e6de",
+        "8f489e1ed7cfb4e6c195",
+        "90c5b6c8b6ecc7f65fe2",
+        "9b23b7e273a03f33df8a",
+        "a466e7e7eba5e0c2785c",
+        "ac8a0f6aebf95ec5e254",
+        "b65c1b34bf71f5acf501",
+        "b91c1f96dd7300e5c5a0",
+        "bb171b4847f86794ced7",
+        "ce297c1bdae7770936aa",
+        "d27d391e8473bf992da4",
+        "d42c03603bec386b3d1e",
+        "d7993f57221e6d3fa33e",
+        "d90978d710191eb3f6dd",
+        "dde9554ed09eb152f0fa",
+        "e7017148c8eeb1814ea7",
+        "e74e65432aa051e60b70",
+        "ef58ce1a51335e11a118",
+        "f07450cb1d602e87f667"
+      ],
+      "content_hash": "f4e3f959978b2532685cf2bed1d3436d5167c9e9e058690326d392d3f08472ef",
+      "dependencies": [],
+      "description": "Diagnose why a user can or cannot see/edit a record: UserRecordAccess SOQL, Why Can a User Access This Record debug log, OWD, role hierarchy, sharing rules, manual/team/apex shares, implicit parent share. NOT for field-level security (use field-level-security-audit). NOT for designing sharing (use sharing-selection decision tree).",
+      "file_location": "skills/security/record-access-troubleshooting",
+      "id": "security/record-access-troubleshooting",
+      "inputs": [
+        "User Id whose access is in question",
+        "Record Id in question",
+        "Expected access (view / edit / delete)",
+        "Object's OWD setting"
+      ],
+      "name": "record-access-troubleshooting",
+      "official_sources": [
+        "Shield Platform Encryption Implementation Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security_pe_overview.htm&type=5",
+        "Secure Apex Classes \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/apex-security",
+        "Salesforce Security Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security_overview.htm&type=5"
+      ],
+      "outputs": [
+        "UserRecordAccess diagnostic query",
+        "Sharing chain trace",
+        "Remediation recommendation"
+      ],
+      "references": [
+        "skills/security/record-access-troubleshooting/references/examples.md",
+        "skills/security/record-access-troubleshooting/references/gotchas.md",
+        "skills/security/record-access-troubleshooting/references/llm-anti-patterns.md",
+        "skills/security/record-access-troubleshooting/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/security/record-access-troubleshooting/scripts/__pycache__/check_record_access_troubleshooting.cpython-314.pyc",
+        "skills/security/record-access-troubleshooting/scripts/check_record_access_troubleshooting.py"
+      ],
+      "tags": [
+        "sharing",
+        "record-access",
+        "userrecordaccess",
+        "owd",
+        "troubleshooting"
+      ],
+      "templates": [
+        "skills/security/record-access-troubleshooting/templates/record-access-troubleshooting-template.md"
+      ],
+      "updated": "2026-04-21",
       "vector_embedding": null,
       "version": "1.0.0"
     },

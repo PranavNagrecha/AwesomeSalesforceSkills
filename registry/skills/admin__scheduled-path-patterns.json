@@ -1,0 +1,96 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "0cd64dd5ab74cf854da8",
+    "1a36600f32f5e788a5f9",
+    "1bc30d71782a5c176f90",
+    "20c1fb1ff047fe0b8d13",
+    "20f15ed3043c9a351ff7",
+    "22ea59a26ea3eb926a34",
+    "286d142765f505ab90df",
+    "2a2c87305f7de93ad123",
+    "33de5dac462bebac75a6",
+    "4ad6ea2718fced306430",
+    "51b08f507d7572cc8597",
+    "5744c2e7dc02e7e0af69",
+    "59829a911239df420282",
+    "5f8c5c1272f52305f378",
+    "6e719db980195c658e53",
+    "70b0f48e20f1f4912e1a",
+    "799932cf1dcdc110e11d",
+    "7d69b2f6d07e057316f3",
+    "7f818c7193224a640f1c",
+    "80a4759408a5552bb340",
+    "82afef0a1325b54ebc04",
+    "89563966f81765fded3d",
+    "8d8c05a87d7d44800845",
+    "94219b66aad9914ea979",
+    "953c8046bfab66da3527",
+    "997e3bf6a936bc7b37cc",
+    "9c54b8089cf511f185a9",
+    "a2a9012214f3792da4b7",
+    "abdd314f3b73cc442654",
+    "ada8804fb829158d5d8f",
+    "b32761930255f0b68839",
+    "ccfc97a3b40717e2a863",
+    "d23f1a6c4cf42988ace7",
+    "d63f55fbf766b4f78641",
+    "d6ee42f9a707fe7bd090",
+    "dabb44818ab55fbd3793",
+    "db39c3cfe94172865185",
+    "e03477cacbf0d10aead5",
+    "e092c02ce54db827f85d",
+    "e29d443d50e6416907f1",
+    "e4bec2c467dd82de9c63",
+    "e83278757ca4aa0795d4",
+    "ef7ad9d9c73479825593",
+    "f402299d26f0c7d17b1f",
+    "fdb99b06fa4074aee43b"
+  ],
+  "content_hash": "2c2da2b8ab06889bd0336cce00ebc4803dacc53962e4d4348624cddc58c34704",
+  "dependencies": [],
+  "description": "Scheduled Paths in record-triggered Flow: delayed execution, time-offset from field, batch size tuning, monitoring Paused Flow Interviews, async limits. NOT for Scheduled Flow (use scheduled-flow-patterns). NOT for time-based workflow rules (use migrate-workflow-pb).",
+  "file_location": "skills/admin/scheduled-path-patterns",
+  "id": "admin/scheduled-path-patterns",
+  "inputs": [
+    "Record-triggered Flow in scope",
+    "Offset requirement (after/before record create/update event)",
+    "Expected volume of records per path per hour",
+    "Time-sensitivity of execution"
+  ],
+  "name": "scheduled-path-patterns",
+  "official_sources": [
+    "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
+    "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Scheduled Path design (offset, batch size, filter)",
+    "Monitoring plan for Paused Flow Interviews",
+    "Fallback strategy for failed paths",
+    "Bulk test plan"
+  ],
+  "references": [
+    "skills/admin/scheduled-path-patterns/references/examples.md",
+    "skills/admin/scheduled-path-patterns/references/gotchas.md",
+    "skills/admin/scheduled-path-patterns/references/llm-anti-patterns.md",
+    "skills/admin/scheduled-path-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/scheduled-path-patterns/scripts/__pycache__/check_scheduled_path_patterns.cpython-314.pyc",
+    "skills/admin/scheduled-path-patterns/scripts/check_scheduled_path_patterns.py"
+  ],
+  "tags": [
+    "scheduled-paths",
+    "flow",
+    "record-triggered",
+    "async",
+    "paused-interviews"
+  ],
+  "templates": [
+    "skills/admin/scheduled-path-patterns/templates/scheduled-path-patterns-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

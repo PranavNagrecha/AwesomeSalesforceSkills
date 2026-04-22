@@ -1,0 +1,98 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "08d7c026bfedf2ef7dda",
+    "0bcd78ffd51a21e66e46",
+    "193984f1c4b797defb9a",
+    "1a676c185d79cbba1ec0",
+    "1bc81db5b8c1706f58a6",
+    "1bcc0fa99e41161ee584",
+    "1d2a2e414256ef670857",
+    "20ca65517e879049127e",
+    "315adb363aeaac91831d",
+    "3561f16ac61b8296f327",
+    "36d65e12f8ab426e347b",
+    "377cdfc38fe42a6557ff",
+    "3ca61e14cc3670134358",
+    "3f39068719dfad90bba1",
+    "3fe5bfc9175350bcddd7",
+    "40d28e327b358c4e7913",
+    "57dcab5405bf8ceee35c",
+    "5ea75c6dd3e361032df8",
+    "708d0523b1dfa0dd21c1",
+    "7956f56804fbc02c0b21",
+    "7bcbef4f1357b8493e72",
+    "7e61fc12485e8a67f5ef",
+    "7f05bcef9f0d94aeb181",
+    "91a6851c206fb11a1008",
+    "9723a24d17b5fd4e9484",
+    "97a1a520352fce905997",
+    "981f1ecabaabd522a3f1",
+    "9c25c8c06a4fd4791e47",
+    "9d48b5e0f6ec46e3017a",
+    "aa8680a5553b17f15685",
+    "aa998e80254328eaf21d",
+    "ac3b1ef67ef1d7d9b167",
+    "b4c22f294100eea0eb44",
+    "b929498f081b1101e122",
+    "c18342252f776e99cda4",
+    "c51c87b912b7bb2bf065",
+    "c87be321dc075d2b5926",
+    "d39df0de85b67dd62d02",
+    "d7bffb1c9b10c0a661af",
+    "d958fa419f8c3d67521c",
+    "d982b1c6ce1f6fc39e28",
+    "e3d6f8c8d93a76a34894",
+    "eaaafce24d51bc2ef627",
+    "ec9d059d3ee8e3b050f1",
+    "f5b9ac54cca1b63e82af",
+    "fd86ed68e442da884f55",
+    "ffc0e6a3f9be31daafd0"
+  ],
+  "content_hash": "1e372349bede813205adcfd7b89cd746942cc68d76310468123c02e36eeb4408",
+  "dependencies": [],
+  "description": "Designing Lookup vs Master-Detail vs Hierarchical vs External relationships: cascade delete, roll-up summaries, ownership, sharing implications, polymorphic lookups, relationship depth limits. NOT for record-type strategy (use data-model-design-patterns). NOT for junction object patterns (use many-to-many-relationships).",
+  "file_location": "skills/admin/lookup-and-relationship-design",
+  "id": "admin/lookup-and-relationship-design",
+  "inputs": [
+    "Parent and child objects under design",
+    "Ownership and sharing requirements",
+    "Aggregation needs (sums, counts) from parent",
+    "Deletion semantics (cascade vs orphan)"
+  ],
+  "name": "lookup-and-relationship-design",
+  "official_sources": [
+    "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
+    "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Relationship-type decision with rationale",
+    "Roll-up summary plan or Apex alternative",
+    "Sharing impact analysis",
+    "Relationship graph documentation"
+  ],
+  "references": [
+    "skills/admin/lookup-and-relationship-design/references/examples.md",
+    "skills/admin/lookup-and-relationship-design/references/gotchas.md",
+    "skills/admin/lookup-and-relationship-design/references/llm-anti-patterns.md",
+    "skills/admin/lookup-and-relationship-design/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/lookup-and-relationship-design/scripts/__pycache__/check_lookup_and_relationship_design.cpython-314.pyc",
+    "skills/admin/lookup-and-relationship-design/scripts/check_lookup_and_relationship_design.py"
+  ],
+  "tags": [
+    "lookup",
+    "master-detail",
+    "relationships",
+    "data-model",
+    "sharing"
+  ],
+  "templates": [
+    "skills/admin/lookup-and-relationship-design/templates/lookup-and-relationship-design-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}
