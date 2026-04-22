@@ -50,7 +50,7 @@
     "f2139e6685ee8ab7da07",
     "fcf1caeda3938f660274"
   ],
-  "content_hash": "8bf1f05bcc9d2fdd4c4b32aaec5fd0987d681e1316692ac3a75b5b01dce8cdf5",
+  "content_hash": "740c218c9ec514253826e4c3edc1065992a3bec9aa48c4d7b2d5a3e2784dcaa3",
   "dependencies": [],
   "description": "Multi-tenant isolation patterns on Salesforce: custom metadata per-tenant, permission-based feature gating, data partitioning, namespace isolation, ISV managed-package patterns. NOT for multi-org strategy (use multi-org-architecture). NOT for data sharing design (use sharing-selection decision tree).",
   "file_location": "skills/architect/tenant-isolation-patterns",
@@ -78,6 +78,7 @@
     "skills/architect/tenant-isolation-patterns/references/well-architected.md"
   ],
   "scripts": [
+    "skills/architect/tenant-isolation-patterns/scripts/__pycache__/check_tenant_isolation_patterns.cpython-314.pyc",
     "skills/architect/tenant-isolation-patterns/scripts/check_tenant_isolation_patterns.py"
   ],
   "tags": [

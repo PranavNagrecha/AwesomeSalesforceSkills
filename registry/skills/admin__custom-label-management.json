@@ -1,0 +1,96 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "01e8e6ebc27f7277d545",
+    "038d1fbd05c94852281d",
+    "07f8ad8f897dc287f37c",
+    "0bc2bc56c085a74cfc42",
+    "10d998457a0db5bd2f02",
+    "272f14ecabb29a2fa637",
+    "28ab3cf2bfd56f8a4c79",
+    "29f9f9beb16b01c06ddf",
+    "2b1dda06bed3969e0fac",
+    "2e9e9c10d7232a087487",
+    "33cbcd5623e049428421",
+    "36b7752d52f7841ff0f6",
+    "38bb4ec2b01f37a3f858",
+    "39b8d2f3ae5fb470af9b",
+    "3ff766035cf44c683d79",
+    "400963f9c6bbd9cc5d6a",
+    "452bd745b99041b22381",
+    "508cb0c6a4236db41691",
+    "5743d2b1a53ff49ec60b",
+    "583afe5c04c08d9bf8a2",
+    "58780bc0690f8031111f",
+    "69e5e297e6469c63678c",
+    "79f7c58528bf269c77f1",
+    "7c361315fb523703cb63",
+    "7e28dcfcf7a212c8b081",
+    "804722d838f17a86af0d",
+    "837dec0fed4fc6a0b5f9",
+    "8a023176661717e9f991",
+    "90050429df1b2ed36271",
+    "90a5ce23325e1d14f91a",
+    "a03652646c583714797f",
+    "a3343be1321e68c9254e",
+    "a3f9fec60fca860a611c",
+    "ab4adf23ba07a0f89d1d",
+    "aeb9b8ce8085efd4e094",
+    "b2b98a4528fc0962cbc7",
+    "b5a83b52133d5f2f3d23",
+    "b89942d51fe2cca616d1",
+    "be41441f33749c57f78a",
+    "c27756cadbc6859332c4",
+    "cc88ddec8801002af617",
+    "d559b6f78c43401105cb",
+    "f2ba623f5de83f5deaf5",
+    "f4562f6fbe1fa6ac56d0",
+    "f7d504014c62e05d594e",
+    "fe7bf0fa4ec80761fa1f"
+  ],
+  "content_hash": "d087ea19ffe1c925a539bd9be5d79ee3153617398106a4a4a3fa1c652757d5de",
+  "dependencies": [],
+  "description": "Custom Labels for i18n, configuration strings, and UI text: translation workbench, Apex System.Label, LWC @salesforce/label imports, 1,000-char limit. NOT for custom settings or custom metadata types (use custom-metadata-types). NOT for platform cache (use caching-strategies).",
+  "file_location": "skills/admin/custom-label-management",
+  "id": "admin/custom-label-management",
+  "inputs": [
+    "Text strings used in UI, Apex, or validation messages",
+    "Target languages and localization requirements",
+    "Packaging model (unlocked, managed, org-level)"
+  ],
+  "name": "custom-label-management",
+  "official_sources": [
+    "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
+    "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Custom Label catalog with categories",
+    "Translation workflow and translator handoff",
+    "Apex/LWC reference patterns",
+    "Deployment and packaging plan"
+  ],
+  "references": [
+    "skills/admin/custom-label-management/references/examples.md",
+    "skills/admin/custom-label-management/references/gotchas.md",
+    "skills/admin/custom-label-management/references/llm-anti-patterns.md",
+    "skills/admin/custom-label-management/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/custom-label-management/scripts/__pycache__/check_custom_label_management.cpython-314.pyc",
+    "skills/admin/custom-label-management/scripts/check_custom_label_management.py"
+  ],
+  "tags": [
+    "custom-labels",
+    "i18n",
+    "translation",
+    "lwc",
+    "apex"
+  ],
+  "templates": [
+    "skills/admin/custom-label-management/templates/custom-label-management-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

@@ -1,0 +1,96 @@
+{
+  "category": "lwc",
+  "chunk_ids": [
+    "0a2eb4caf664fb42f65d",
+    "0b7308be6cb0b2f234f7",
+    "0f09a531649549026d9d",
+    "0fba0642fd5c40d474a3",
+    "13db6ff61c75ef9205e8",
+    "198442cfd58edef25576",
+    "19b6d1142c68735ce2bd",
+    "2fb6fcc68e0ab4e87ffe",
+    "32e0f2d3981bde272ae6",
+    "44af3155ec1f89c5c6e8",
+    "45d7bbbdf743953aeb42",
+    "46667c152556a1fa90a3",
+    "475bbdd8a925e9f53473",
+    "47a294f77e405c6ac25d",
+    "513985ab044ed42644f5",
+    "521dcc27363ac7817654",
+    "5e5cc525521dabd9f0a9",
+    "634fc67ff6ff0b5f12cb",
+    "63c4874da0cfb48c5ba9",
+    "655f7ad8e07748a9825e",
+    "69c72851b2e092e9cb56",
+    "79ee73ab94f899af2692",
+    "7d10a5302162a13b424f",
+    "84fc284171f6bc92e03b",
+    "8d7740170d980e128329",
+    "8e34c664e9355c928504",
+    "91dbcdce7e73835c7ab4",
+    "9ab9048dd45d954bd961",
+    "9bf78e02139fe2556b2b",
+    "9e24352f64a97fc19b61",
+    "9f1ade8dded148d139a3",
+    "a623a26f1fc2464e43ff",
+    "a8c83f21c5207a0788df",
+    "b2de3dd6e37a9cd1e2da",
+    "b5b5318d82e2281d7208",
+    "b80c98b5ad6a964d1c8d",
+    "bbc9437ad087abb1e86c",
+    "c2c1d32b2b4c75ca66e4",
+    "c72aa4a4d7c6e23b1f79",
+    "d53741f358ad73650f9f",
+    "e4d6775dd3da12c24297",
+    "f121410b67490728853c",
+    "f128aa1fc3951c5633fa",
+    "f417b885847630474075",
+    "fc9fb41871c2a894e5ad",
+    "fd9dfa81f3b1011bd468"
+  ],
+  "content_hash": "fa8a74c3adb4d5757760ca67b7bad0a11d36008b192856875e1cca3943aee112",
+  "dependencies": [],
+  "description": "NavigationMixin for LWC: PageReference types (recordPage, recordRelationship, namedPage, webPage, comm__namedPage), navigate vs generateUrl, state params, Experience Cloud variants. NOT for routing inside custom SPA (use lwc-state-management). NOT for cross-app deep-linking (use deep-linking-patterns).",
+  "file_location": "skills/lwc/lwc-navigation-mixin",
+  "id": "lwc/lwc-navigation-mixin",
+  "inputs": [
+    "Target page type (record, list, custom, external)",
+    "Context (internal app, Experience Cloud, mobile)",
+    "URL params / state to pass"
+  ],
+  "name": "lwc-navigation-mixin",
+  "official_sources": [
+    "LWC Best Practices \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/get-started-best-practices.html",
+    "Lightning Component Reference \u2014 https://developer.salesforce.com/docs/platform/lightning-component-reference/guide",
+    "LWC Data Guidelines \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-guidelines.html"
+  ],
+  "outputs": [
+    "PageReference configuration",
+    "navigate vs generateUrl usage",
+    "Experience Cloud variant",
+    "State-param pattern"
+  ],
+  "references": [
+    "skills/lwc/lwc-navigation-mixin/references/examples.md",
+    "skills/lwc/lwc-navigation-mixin/references/gotchas.md",
+    "skills/lwc/lwc-navigation-mixin/references/llm-anti-patterns.md",
+    "skills/lwc/lwc-navigation-mixin/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/lwc/lwc-navigation-mixin/scripts/__pycache__/check_lwc_navigation_mixin.cpython-314.pyc",
+    "skills/lwc/lwc-navigation-mixin/scripts/check_lwc_navigation_mixin.py"
+  ],
+  "tags": [
+    "lwc",
+    "navigation-mixin",
+    "pagereference",
+    "experience-cloud",
+    "deep-linking"
+  ],
+  "templates": [
+    "skills/lwc/lwc-navigation-mixin/templates/lwc-navigation-mixin-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

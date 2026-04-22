@@ -1,0 +1,99 @@
+{
+  "category": "integration",
+  "chunk_ids": [
+    "0d4608e06fc9984a9d90",
+    "0ead15626460c10db754",
+    "1787d2365cb3e2a0c420",
+    "1c755cb81741744e134b",
+    "264efc25be0f6e602444",
+    "2acbcfa80b8dd1f60f76",
+    "32672a9eb55f93352f70",
+    "35b8f77206b1b340997c",
+    "37ab04c921e615beb803",
+    "3d080c5a90cb34a8e6a1",
+    "3eed53cfa075604d26e3",
+    "44435249273c3343c3f9",
+    "45476c53ef502656ddac",
+    "523b17144a234f46f86b",
+    "5f4e7526bb04ae2f56b7",
+    "66534d7ac8b73cff36d0",
+    "6c43985b6ec5e93ca4a5",
+    "761ca4472a6943f9bf6e",
+    "764ca975df40d6e0a9cd",
+    "7934a161f2e01b0e454a",
+    "84393e707f6dbb3bc297",
+    "878c997683ccb18a2429",
+    "89a029f28db9b520db20",
+    "8a11efeac86989c8843f",
+    "8f31f8dd63dda8f85334",
+    "9069102d94a143d44c64",
+    "9454b4d3bfda150f13e5",
+    "a4e5534add1615d125b2",
+    "ad911026f0aaf3046dc0",
+    "b5cfb51f30fb5d583f50",
+    "b8a30900bd0ffbca4513",
+    "b9d97d68e2d8743b83d5",
+    "bac4f654c5d6bac76624",
+    "bc2fb369502763af9487",
+    "bd0f69ee715965a39b39",
+    "bedd8478276aaa2247b7",
+    "c36702057959dffca528",
+    "c4fb7cf210d717f2e18c",
+    "c5bef9e51d9df04cb31d",
+    "d2d1aaff320d7d8c198f",
+    "d924351c5c1baca73189",
+    "dbe89a17623dcfa9afbc",
+    "df2659b61b1d49bb7ef7",
+    "ee954fd98e81827c5e76",
+    "f33db16090a67a890481",
+    "f49cca3f0cd1e25f3183",
+    "fc131cc2bd222a1c60c6"
+  ],
+  "content_hash": "08a5b3e640f8dafc3ce6351a7829df792850277ce39e6a6dad8e6fd9aa0b08f2",
+  "dependencies": [],
+  "description": "REST API pagination for inbound and outbound integrations: Salesforce QueryMore, cursor-based, offset-based, Link header, page-size tuning, rate limit interaction. NOT for Bulk API (use bulk-api-patterns). NOT for GraphQL connection pagination (use graphql-api-patterns).",
+  "file_location": "skills/integration/rest-api-pagination-patterns",
+  "id": "integration/rest-api-pagination-patterns",
+  "inputs": [
+    "Integration direction (inbound to Salesforce, outbound from Salesforce)",
+    "API style (cursor, offset, Link header, custom)",
+    "Total result magnitude",
+    "Rate limit profile"
+  ],
+  "name": "rest-api-pagination-patterns",
+  "official_sources": [
+    "REST API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_what_is_rest_api.htm",
+    "Integration Patterns \u2014 https://architect.salesforce.com/docs/architect/fundamentals/guide/integration-patterns.html",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Pagination loop pattern",
+    "Termination condition",
+    "Retry / rate-limit interaction",
+    "Volume test plan"
+  ],
+  "references": [
+    "skills/integration/rest-api-pagination-patterns/references/examples.md",
+    "skills/integration/rest-api-pagination-patterns/references/gotchas.md",
+    "skills/integration/rest-api-pagination-patterns/references/llm-anti-patterns.md",
+    "skills/integration/rest-api-pagination-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/integration/rest-api-pagination-patterns/scripts/__pycache__/check_rest_api_pagination_patterns.cpython-314.pyc",
+    "skills/integration/rest-api-pagination-patterns/scripts/check_rest_api_pagination_patterns.py"
+  ],
+  "tags": [
+    "rest",
+    "pagination",
+    "querymore",
+    "cursor",
+    "offset",
+    "link-header"
+  ],
+  "templates": [
+    "skills/integration/rest-api-pagination-patterns/templates/rest-api-pagination-patterns-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

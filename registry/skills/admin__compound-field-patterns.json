@@ -1,0 +1,98 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "00b14117dd6371832060",
+    "0327f6c024b44cddb4eb",
+    "0bad6fa3767e1de4394c",
+    "12ed7c4ecc9190d67207",
+    "208f82f8967d99545b34",
+    "21312e6a642e8da7f855",
+    "254e6f10e85c63033fb6",
+    "2c75c544537a92e54b88",
+    "2da979b368cf51718d4b",
+    "2ded10fda8341560a6ef",
+    "3b372cebd3dbc6d19046",
+    "3ca7e8c34f2261f6b15d",
+    "4abcae9e497166dfce22",
+    "4ac50f37fb4b3d26ca92",
+    "4bcaa1687b0410d07371",
+    "4ce79a48125a2558488a",
+    "50064b5cc33cfd5d0786",
+    "6042f0925df7cb8d1ac0",
+    "62d776e3268136149287",
+    "6bc178c333f941d8128e",
+    "6e65ad56ea90931556f7",
+    "6e6d75054858ae82413b",
+    "70de467c8e2c027c5d28",
+    "7f2b823d16796ded4b90",
+    "7fa6545ca9fe8827802a",
+    "80814f0b41ab4f51b4bf",
+    "85c78e7c61aef3edf892",
+    "8946711a569ccd059af8",
+    "91cec73d30ebb52559b2",
+    "943a9656842cae0922aa",
+    "9cbd6cb880e9e66a9109",
+    "9d5463f3c72a50800dac",
+    "a462ea977f4246e5e284",
+    "a7c235fb9c9b24dec973",
+    "acc1b79e395e2553cc5a",
+    "ad6f62ebb13c7f06f922",
+    "b0327b56dfbf604f4d00",
+    "b81657d245de09b233fc",
+    "b995616cc4460b39b6ab",
+    "c031929df343091497db",
+    "c96acf327451461906fd",
+    "d44084c8fee5df9ce552",
+    "d4607941745ab3e4f09f",
+    "d769b73be48f45d00212",
+    "e824982400d09909e235",
+    "f69c4432a7300a98aab7",
+    "fe55aa4eec9831b052d2",
+    "fe8ed9c1bfce74bb9677"
+  ],
+  "content_hash": "c97c05918c04cef10b3c88b4920f11d9afc8e58c1998b3feea60a80b8c5fe139",
+  "dependencies": [],
+  "description": "Compound fields (Name, Address, Geolocation): SOQL access rules, DML semantics, component access in Apex/LWC, reporting column behavior, formula field restrictions. NOT for general field design (use custom-field-creation). NOT for address validation services (use address-validation-integration).",
+  "file_location": "skills/admin/compound-field-patterns",
+  "id": "admin/compound-field-patterns",
+  "inputs": [
+    "Fields in scope (Name, Address, Geolocation on standard or custom object)",
+    "Access context (SOQL, Apex DML, LWC wire, Report)",
+    "Custom Address or Geolocation field use case"
+  ],
+  "name": "compound-field-patterns",
+  "official_sources": [
+    "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
+    "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "SOQL selection pattern (components vs compound)",
+    "DML/update pattern with component fields",
+    "LWC/UI-API access pattern",
+    "Reporting and filtering plan"
+  ],
+  "references": [
+    "skills/admin/compound-field-patterns/references/examples.md",
+    "skills/admin/compound-field-patterns/references/gotchas.md",
+    "skills/admin/compound-field-patterns/references/llm-anti-patterns.md",
+    "skills/admin/compound-field-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/compound-field-patterns/scripts/__pycache__/check_compound_field_patterns.cpython-314.pyc",
+    "skills/admin/compound-field-patterns/scripts/check_compound_field_patterns.py"
+  ],
+  "tags": [
+    "compound-fields",
+    "address",
+    "geolocation",
+    "name",
+    "soql"
+  ],
+  "templates": [
+    "skills/admin/compound-field-patterns/templates/compound-field-patterns-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

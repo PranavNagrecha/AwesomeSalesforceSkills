@@ -1,0 +1,99 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "03e411531b7029d045ba",
+    "06ace3e0bfc44c6628e5",
+    "0a45f29c8b4d1a3f8f87",
+    "10da7147f6420a9b80fb",
+    "155d04e180f3ca2e03c0",
+    "18c915b0781c1d747d61",
+    "224ee1e16ce8e53afee0",
+    "26a9933ffadb2ac53f9c",
+    "27c58e0b3291a5872643",
+    "28da78182b51a461367f",
+    "30f61a2d2e60e51574c5",
+    "3db175a332c43c56e743",
+    "43a5c1dea76112221a4d",
+    "4f51452a493a8e644b60",
+    "508b5c057a3c43e82512",
+    "5cb5daa612ff45cf377b",
+    "660a3eb31b56e82b0b15",
+    "69e47ad7da7769d32501",
+    "6e65c49588de198f2fe0",
+    "74c3d71fa82ab785c6df",
+    "759944197c6c14b8da4c",
+    "78edcdc1c092ef2d4c75",
+    "78ff4540d6086a57a685",
+    "7a46847308170f77a2fe",
+    "7ff051a9ea0aa50a4302",
+    "942296fb393ba4c68e83",
+    "9fa6a379f0f109fbaa72",
+    "a0df3558567ead6d7732",
+    "a4b27e867110b6390f7b",
+    "a53c6b305ca3ef40d6e1",
+    "af95e3cb1e471d0c497f",
+    "b1305161a3c56cd65b6a",
+    "b2b5bfaa24e3e7e6a12c",
+    "b35b1bd1dc9b74ae1eb3",
+    "bff0ecbb031e5e758623",
+    "c4726d746605f031943e",
+    "cefd1e64d14722df7e51",
+    "d9f986e715a005128607",
+    "dc27ce0ba210d1d32331",
+    "e446cb90b265df6b4b2a",
+    "eb74bc70b876b7fcaf11",
+    "ed476d4437776b710690",
+    "eefc9d19f90f5da6fbc3",
+    "f08969510daf04997843",
+    "f1f479577bf67d40cbff",
+    "f768ed16133185205dab",
+    "fdd79edd9e9465e2e898",
+    "fe3758bb4f78b34ed6ca"
+  ],
+  "content_hash": "2e9044a90ccb97c391d69f0cae4133fb64d5a04b5aa91100c03b994f881257d0",
+  "dependencies": [],
+  "description": "@future methods: primitive-only parameters, callout=true, no chaining, 50 per transaction, error handling. When to prefer Queueable/Batch instead per async-selection decision tree. NOT for Queueable patterns (use apex-queueable-patterns). NOT for Batch Apex (use apex-batch-patterns).",
+  "file_location": "skills/apex/apex-future-method-patterns",
+  "id": "apex/apex-future-method-patterns",
+  "inputs": [
+    "Current sync code needing async offload",
+    "Operation type (callout, DML, computation)",
+    "Parameter shape (primitives vs SObjects)",
+    "Retry requirements"
+  ],
+  "name": "apex-future-method-patterns",
+  "official_sources": [
+    "Apex Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm",
+    "Apex Reference Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "@future vs Queueable decision",
+    "Parameter-shape transformation (ids/json strings)",
+    "Callout configuration",
+    "Monitoring plan"
+  ],
+  "references": [
+    "skills/apex/apex-future-method-patterns/references/examples.md",
+    "skills/apex/apex-future-method-patterns/references/gotchas.md",
+    "skills/apex/apex-future-method-patterns/references/llm-anti-patterns.md",
+    "skills/apex/apex-future-method-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/apex-future-method-patterns/scripts/__pycache__/check_apex_future_method_patterns.cpython-314.pyc",
+    "skills/apex/apex-future-method-patterns/scripts/check_apex_future_method_patterns.py"
+  ],
+  "tags": [
+    "apex",
+    "future-method",
+    "async",
+    "callouts",
+    "governor-limits"
+  ],
+  "templates": [
+    "skills/apex/apex-future-method-patterns/templates/apex-future-method-patterns-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

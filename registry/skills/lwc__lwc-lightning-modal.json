@@ -1,0 +1,97 @@
+{
+  "category": "lwc",
+  "chunk_ids": [
+    "018934a0c1f7a91e8e43",
+    "0e1fba2b0827f73daa83",
+    "0e8ae440af56a3ec5153",
+    "193485a8ffc8e0c01996",
+    "1afd96048aa3193ec0c5",
+    "24026217b72cd711eb65",
+    "25af3db7597dfca1c78e",
+    "2693e4c6196f8020dd37",
+    "295ab6882d0bfe3e9f1c",
+    "2aa48303ebfc20a32ad1",
+    "35a28976139cfde82c26",
+    "36901e0d43e8756d9124",
+    "3a5678fbfade016e9e23",
+    "3ed51b9f362089f2bf91",
+    "4270bc31e30c54c2e661",
+    "4ceff6eef32634e87c0c",
+    "4f7845c7d4fcb4af846d",
+    "505fd0bbe8d588b2ee6f",
+    "54ffcbe6f153f251f93a",
+    "5b39cf08b400c3727f09",
+    "656f3b56760da54601c5",
+    "66b95d501596052b685f",
+    "6a1e160afd207cfeb930",
+    "6b326412a205153f769d",
+    "6e5f32b0b69e58c2f7fa",
+    "7639d1eaf46da5b30b6f",
+    "77e0fc09de36307e27ce",
+    "78f6969be3af9a8c237b",
+    "82f460abe279748cbb3d",
+    "83f2fc34f749cf9593c6",
+    "87643b245d73a37b900c",
+    "90b2b048763aa26553d0",
+    "940d68a6a4b0dce5476f",
+    "9f9e86e8f3e5975819b5",
+    "ba10deabe4f04b256ca3",
+    "c10e2557a196b81d3cfc",
+    "cac736ef6274bcdfc419",
+    "d25b3d015a938aa7c0be",
+    "d409f2c8a20bd1e6f67e",
+    "d437f7413c79e40ddf47",
+    "dbb1a7cd5628a0240df1",
+    "de1667ee6dfcad17afbf",
+    "dec03a936af686df2ecd",
+    "e790aa06d183a187baf3",
+    "e8ffa86b6b88fce5c944",
+    "f4e46371033dc64864b0",
+    "f7b4d8609b7e88411b9c",
+    "fe684d2fcef3186991cc"
+  ],
+  "content_hash": "fa4087ceea29cab8566800c9183e0b4b2fc8c0f23fd965bafb704ac4fec55302",
+  "dependencies": [],
+  "description": "LightningModal base class (Winter '23+): extending LightningModal, open() static method, modal headers/bodies/footers, close() with result, size variants, accessibility. NOT for lightning-dialog legacy patterns (deprecated). NOT for in-page overlays (use SLDS popover).",
+  "file_location": "skills/lwc/lwc-lightning-modal",
+  "id": "lwc/lwc-lightning-modal",
+  "inputs": [
+    "Modal use case (confirmation, form, wizard)",
+    "Required inputs/outputs of the modal",
+    "Size and surface (desktop, mobile)"
+  ],
+  "name": "lwc-lightning-modal",
+  "official_sources": [
+    "LWC Best Practices \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/get-started-best-practices.html",
+    "Lightning Component Reference \u2014 https://developer.salesforce.com/docs/platform/lightning-component-reference/guide",
+    "LWC Data Guidelines \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-guidelines.html"
+  ],
+  "outputs": [
+    "LightningModal subclass LWC",
+    "Parent invocation pattern with result handling",
+    "Accessibility checklist"
+  ],
+  "references": [
+    "skills/lwc/lwc-lightning-modal/references/examples.md",
+    "skills/lwc/lwc-lightning-modal/references/gotchas.md",
+    "skills/lwc/lwc-lightning-modal/references/llm-anti-patterns.md",
+    "skills/lwc/lwc-lightning-modal/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/lwc/lwc-lightning-modal/scripts/__pycache__/check_lwc_lightning_modal.cpython-314.pyc",
+    "skills/lwc/lwc-lightning-modal/scripts/check_lwc_lightning_modal.py"
+  ],
+  "tags": [
+    "lwc",
+    "lightning-modal",
+    "modal",
+    "dialog",
+    "accessibility"
+  ],
+  "templates": [
+    "skills/lwc/lwc-lightning-modal/templates/lwc-lightning-modal-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

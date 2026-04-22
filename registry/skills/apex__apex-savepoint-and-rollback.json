@@ -1,0 +1,97 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "0266a944419ef929c47d",
+    "085de5085f148d151cf6",
+    "110bcf2b0d052eb56e12",
+    "12c44300d3ddf3cb7762",
+    "263946e1101c59cba6ee",
+    "32a4cbef0b92c72ed44c",
+    "33a821812a110f03e7a8",
+    "37b847761e9976b5968e",
+    "3c4c3f943ea71b747821",
+    "3d24b3ff7bb409dad87a",
+    "46cb761d6591b4800413",
+    "6c643672868d4565ad15",
+    "6d8f7ca07b12729d63ea",
+    "7891a2dcf8802122890a",
+    "7a0d68be7d41f6cb0ab6",
+    "7ed1af96b3c95120c7dc",
+    "80fee36ed5e688c7a5ea",
+    "810629db6c3ccf4433d3",
+    "839be732b460455d5c37",
+    "84d1124bce0f9a1abf20",
+    "956f9c932a6f39bb1865",
+    "9ea1ae679ea04a258f3d",
+    "a4cd95bd689da3b58b4e",
+    "a75cd609db5733b29177",
+    "a97f176e50e66fe57a93",
+    "abc3937866472f914fd4",
+    "ac36c03d3d72c9ee5b5f",
+    "b68065aa6f102d2c0f5d",
+    "c164ea1fb1472664ab1a",
+    "cddd6bdbc25be6778256",
+    "cfa44596ae2d20b5414f",
+    "d1f5771f19755c70d8ac",
+    "d2e99fbcb07020cf0d66",
+    "d44b7434c7c6ca4307e4",
+    "d486fa7964f15fcf290a",
+    "d5a6c56f59289c92af79",
+    "d70ccfe0b4796567d368",
+    "d939d0a714848c87cfc3",
+    "dcea6c3a7b46d538166f",
+    "e2569de77be209c88171",
+    "ed5d08d7a0d1add50c67",
+    "eda0fe430378897129d6",
+    "f1e3d4563f4c4a839e06",
+    "f60679c999507c61eff5",
+    "fccdb6aa2a9e0da65bfc",
+    "fe4d6d9ff172239ca928",
+    "fff7c9889491a7e3e202"
+  ],
+  "content_hash": "5545c507b29717d32b44bb19e2b586f787cda4b4256edd240a2d68a13eb884c6",
+  "dependencies": [],
+  "description": "Database.Savepoint / Database.rollback for partial-transaction undo: placement rules, ID reset, limit counters, nested savepoints, rollback after callout. NOT for Database.allOrNone=false partial success semantics (use apex-partial-dml). NOT for Queueable chained rollback (use apex-queueable-patterns).",
+  "file_location": "skills/apex/apex-savepoint-and-rollback",
+  "id": "apex/apex-savepoint-and-rollback",
+  "inputs": [
+    "Transaction boundary where partial rollback needed",
+    "DML operations to potentially undo",
+    "Presence of callouts in the transaction",
+    "Error-handling strategy"
+  ],
+  "name": "apex-savepoint-and-rollback",
+  "official_sources": [
+    "Apex Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm",
+    "Apex Reference Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Savepoint/rollback placement pattern",
+    "Error-handling block with deterministic cleanup",
+    "Governor-limit impact analysis"
+  ],
+  "references": [
+    "skills/apex/apex-savepoint-and-rollback/references/examples.md",
+    "skills/apex/apex-savepoint-and-rollback/references/gotchas.md",
+    "skills/apex/apex-savepoint-and-rollback/references/llm-anti-patterns.md",
+    "skills/apex/apex-savepoint-and-rollback/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/apex-savepoint-and-rollback/scripts/__pycache__/check_apex_savepoint_and_rollback.cpython-314.pyc",
+    "skills/apex/apex-savepoint-and-rollback/scripts/check_apex_savepoint_and_rollback.py"
+  ],
+  "tags": [
+    "apex",
+    "savepoint",
+    "rollback",
+    "transaction",
+    "dml"
+  ],
+  "templates": [
+    "skills/apex/apex-savepoint-and-rollback/templates/apex-savepoint-and-rollback-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

@@ -48,7 +48,7 @@
     "f895079999dbb6f9545f",
     "f8c13dd107174dcbd187"
   ],
-  "content_hash": "e0bc3555fcdb75ec8c27827b77972592b723f77d64c20bd6af09c6ea68bdd1c3",
+  "content_hash": "71e499c4dc730041b0fb31defb211263b8512097bbae73036acb0ee839fcf5e7",
   "dependencies": [],
   "description": "Education Cloud (EDA \u2014 Education Data Architecture) setup: student success hub, advisor workflows, enrollment management, academic data model. NOT for standard Service Cloud case management (use service-cloud-core-setup). NOT for Nonprofit Cloud data model (use nonprofit-cloud-vs-npsp-migration).",
   "file_location": "skills/admin/education-cloud-eda-setup",
@@ -78,6 +78,7 @@
     "skills/admin/education-cloud-eda-setup/references/well-architected.md"
   ],
   "scripts": [
+    "skills/admin/education-cloud-eda-setup/scripts/__pycache__/check_education_cloud_eda_setup.cpython-314.pyc",
     "skills/admin/education-cloud-eda-setup/scripts/check_education_cloud_eda_setup.py"
   ],
   "tags": [

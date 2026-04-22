@@ -1,0 +1,95 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "00de7e0df0edbd576f7d",
+    "0265e17f34044a87e2b7",
+    "0f3a8fa94c89e757bdb3",
+    "14197fa241fbe54a8d4c",
+    "16dfdc91e04a9803a809",
+    "1b9f86eb43597d133079",
+    "20747b8e341bd8c137a7",
+    "272ac7ff69c63e83c0a9",
+    "2d7267d77f6399ea335e",
+    "332537034fea0452e175",
+    "3444fb5e40f309ca7324",
+    "3d65d144836db3f5c29c",
+    "3f52bb2b25afd1536368",
+    "43cfd3bc526a5aabbc14",
+    "44a143bf9ef9a184c1cd",
+    "4aa2d642051a2f44918e",
+    "4ffead266989edd40acc",
+    "588536c86ae199e5375c",
+    "59511df7ad4bb091f89d",
+    "5ebf92358357f117eb26",
+    "686d55bcd2eaa39de197",
+    "68ce087396eeb64285e7",
+    "6b21254a64f0816eb13c",
+    "7a60944340a323d986f1",
+    "88c1f6b51b90b70a09c0",
+    "98b1656e0b45a4da3df1",
+    "98bcb1b0ea467932b8ae",
+    "9b157acddf59ef69e921",
+    "adac05eae6589af6cc1b",
+    "b67381699c26a362d8e4",
+    "b6e4f23f6b7be6e374ae",
+    "b70a3444e9951e303ec4",
+    "bf4963767d8a9ad3a447",
+    "bfa4d4a34a597765d1e8",
+    "c63024ce0d924ac2d5f6",
+    "ca4634acb4696748582a",
+    "ca632d2c4b0495f2a8a5",
+    "d17abd67c2b944e0b26d",
+    "d1bdd1945702ca757aa1",
+    "df5a5efc9cbae70a2a01",
+    "e23e44dfbed7935667a5",
+    "e97e2f54b1312cefeed2",
+    "ec64020380b745becdc8",
+    "f54f0452ee562759037b",
+    "f762409b920c4f26e6fd",
+    "ff4ade392876e0e7f88d"
+  ],
+  "content_hash": "9a0730894d28744ad193529e3b8d1ff83bcafb1d7e3d55bfa86c35ecb826bad1",
+  "dependencies": [],
+  "description": "Apex Trigger.new / Trigger.old / Trigger.newMap / Trigger.oldMap / Trigger.isInsert etc.: when each is populated, null-safety, recursion depth, trigger event matrix. NOT for trigger framework architecture (use apex-trigger-handler-framework). NOT for bulk patterns (use apex-bulkification-patterns).",
+  "file_location": "skills/apex/apex-trigger-context-variables",
+  "id": "apex/apex-trigger-context-variables",
+  "inputs": [
+    "Trigger events in scope (before/after \u00d7 insert/update/delete/undelete)",
+    "Whether Trigger.newMap/oldMap needed",
+    "Recursion-control requirement"
+  ],
+  "name": "apex-trigger-context-variables",
+  "official_sources": [
+    "Apex Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm",
+    "Apex Reference Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Correct context-variable usage per event",
+    "Null-safe access pattern",
+    "Event matrix documentation"
+  ],
+  "references": [
+    "skills/apex/apex-trigger-context-variables/references/examples.md",
+    "skills/apex/apex-trigger-context-variables/references/gotchas.md",
+    "skills/apex/apex-trigger-context-variables/references/llm-anti-patterns.md",
+    "skills/apex/apex-trigger-context-variables/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/apex-trigger-context-variables/scripts/__pycache__/check_apex_trigger_context_variables.cpython-314.pyc",
+    "skills/apex/apex-trigger-context-variables/scripts/check_apex_trigger_context_variables.py"
+  ],
+  "tags": [
+    "apex",
+    "triggers",
+    "context-variables",
+    "trigger-new",
+    "trigger-old"
+  ],
+  "templates": [
+    "skills/apex/apex-trigger-context-variables/templates/apex-trigger-context-variables-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

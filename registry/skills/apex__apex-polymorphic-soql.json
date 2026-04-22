@@ -1,0 +1,96 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "0323664505b4c65a0341",
+    "05c587b0a6deec4d279d",
+    "0a33fc3efdbbb1fabb81",
+    "1b49ed57773664737d89",
+    "1baa477ca72f82422167",
+    "1c515dc13a18a202b435",
+    "2a0e959d12b78c057646",
+    "2fed33af801fc890e379",
+    "30d03772270918a9a915",
+    "340ab22d45ad5cab0110",
+    "3f8f42c6af70a162f748",
+    "43a359c3aeef93c0a284",
+    "4557b4a902217ed4c438",
+    "5f03d7f18458571d772f",
+    "66d4220e5bc6131dfb24",
+    "6724bd562579a821f9d3",
+    "735ded9852210a9247fa",
+    "76a6ade467bc70f8fa7b",
+    "83aeebda800e792f920f",
+    "855a47935917c722a17a",
+    "88df996c6c8710c67f24",
+    "8e863d1f3dc238fa43ea",
+    "905cdfa417360bc2041d",
+    "966bb10c518f5181d021",
+    "98a0465638d5379812b5",
+    "9b8d6705cb5172d37df8",
+    "9cce69127253112ffd57",
+    "9cd4ba538c2214e7e3f8",
+    "a02c477ff13d20b1499f",
+    "a181d085dcc48803fad6",
+    "a76842b207580ee2d49f",
+    "a78d3e5f08e9e7dcd13b",
+    "afe71491f06627e27a92",
+    "b4067708a97542be93e4",
+    "b8f9fe25b762bb5e66d9",
+    "bbe2c14db8cb6d6c0ef8",
+    "c45e648b272b7bd81c22",
+    "c490d4c16868feed451e",
+    "d406d9fc1b677d45470b",
+    "d5000cc2d964ee203b87",
+    "dcf83dcecf5990676425",
+    "e55205aab88c92617977",
+    "e852f5f976ec0b871b18",
+    "f4ebf853986d69cd6e58",
+    "f7fd120e1adcaf4c3726",
+    "fc5661955c9dcbe8dc16"
+  ],
+  "content_hash": "3fa7420bde6dcb3ebb5c5a2a3a42277d52d8243a46c68ee454adbf8a30cdb9d0",
+  "dependencies": [],
+  "description": "Polymorphic SOQL with TYPEOF: querying Task.WhatId, Task.WhoId, ContentDocumentLink.LinkedEntityId, FeedItem.ParentId; fallback to Type filters; indexing and selectivity. NOT for Activity object model (use activity-and-task-patterns). NOT for general SOQL (use apex-soql-patterns).",
+  "file_location": "skills/apex/apex-polymorphic-soql",
+  "id": "apex/apex-polymorphic-soql",
+  "inputs": [
+    "Polymorphic field and its possible target objects",
+    "Fields needed per target type",
+    "Selectivity / index requirements"
+  ],
+  "name": "apex-polymorphic-soql",
+  "official_sources": [
+    "Apex Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm",
+    "Apex Reference Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "TYPEOF query template",
+    "Type-filtered fallback queries",
+    "Indexing strategy for polymorphic filters"
+  ],
+  "references": [
+    "skills/apex/apex-polymorphic-soql/references/examples.md",
+    "skills/apex/apex-polymorphic-soql/references/gotchas.md",
+    "skills/apex/apex-polymorphic-soql/references/llm-anti-patterns.md",
+    "skills/apex/apex-polymorphic-soql/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/apex-polymorphic-soql/scripts/__pycache__/check_apex_polymorphic_soql.cpython-314.pyc",
+    "skills/apex/apex-polymorphic-soql/scripts/check_apex_polymorphic_soql.py"
+  ],
+  "tags": [
+    "apex",
+    "soql",
+    "typeof",
+    "polymorphic",
+    "whatid",
+    "linkedentityid"
+  ],
+  "templates": [
+    "skills/apex/apex-polymorphic-soql/templates/apex-polymorphic-soql-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

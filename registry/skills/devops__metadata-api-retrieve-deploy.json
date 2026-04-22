@@ -1,0 +1,101 @@
+{
+  "category": "devops",
+  "chunk_ids": [
+    "013de5cfc17b8b86a1ff",
+    "08c101bd1128395dd878",
+    "09abb133ea80adddd4ce",
+    "0bff0381e9741b26596d",
+    "0fabb8906940d5693623",
+    "22818fee6ecd8569f9e0",
+    "25af309eb12929286189",
+    "2fb677a2ca518bad684b",
+    "3793342f0f6bc54e3c60",
+    "3cca10523ed575cfa244",
+    "5362853398dde39a51ed",
+    "5a2b16e5299038913e9c",
+    "5a7a0fd8db39fa345661",
+    "5b250ef2cc9ed756bf40",
+    "5b3fd980928dccb35606",
+    "604da7ae34d9cbbd611b",
+    "651c96a520e2f85f84c4",
+    "664fad28c552dde8c5a0",
+    "6d37e0cec3401d0400bd",
+    "6efab2b1843783015a9e",
+    "7c999c082815d87c634b",
+    "7fe9e38f3ade89c6452a",
+    "8255c722afb839eb53ba",
+    "9078b087f1ef6fe4b73c",
+    "983e73292418c377d294",
+    "98fc59022fd365389383",
+    "9978c9f5784dbe1a32f4",
+    "9d5ed4a4543e427f1f4f",
+    "9f6151941ba0be8708ad",
+    "ad93eea3e2c86ad08fe7",
+    "b6d2a8a05e1a787aa61b",
+    "bf5997a8bb18d5fc2599",
+    "bf73bfd5e7ad18038798",
+    "c0f85195e13c67c30490",
+    "c203773cee1a98d37bd0",
+    "c38e5496ec08157135bb",
+    "c92bed50672744ff3714",
+    "cae7d74f8b6ec692c912",
+    "d37180d2cdede3602706",
+    "dcd1c311b275430dfead",
+    "e476a48c7004e1948e03",
+    "e51436ef6a6e7259db02",
+    "e71dde5ffbabfe00aa91",
+    "e9f3c1ef9055258ead8e",
+    "eb538892b496c85c07e1",
+    "ebf4113c9744599bc58f",
+    "eef3f6502ce8fc4e5588",
+    "f2e6e4438cc6b16d095d",
+    "f46bdc58e163a876f7c3",
+    "fb51f90258df70eba892"
+  ],
+  "content_hash": "ebe63250c7e071fec04bf09ef23dc7225452223c8778e90cb8186a243c74f15e",
+  "dependencies": [],
+  "description": "Metadata API retrieve/deploy via sf CLI and package.xml: manifest authoring, destructiveChanges, deploy options (checkOnly, testLevel, rollbackOnError), CI scripting. NOT for DX source format conversions (use salesforce-dx-source-tracking). NOT for unlocked packages (use unlocked-packages).",
+  "file_location": "skills/devops/metadata-api-retrieve-deploy",
+  "id": "devops/metadata-api-retrieve-deploy",
+  "inputs": [
+    "Source org auth alias",
+    "Target org auth alias",
+    "Metadata scope (component types, names)",
+    "Deployment policy (check-only, test level)"
+  ],
+  "name": "metadata-api-retrieve-deploy",
+  "official_sources": [
+    "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+    "Salesforce CLI Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm",
+    "Salesforce DX Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm"
+  ],
+  "outputs": [
+    "package.xml manifest",
+    "destructiveChanges manifest (if removing)",
+    "sf CLI retrieve and deploy commands",
+    "CI pipeline stanza"
+  ],
+  "references": [
+    "skills/devops/metadata-api-retrieve-deploy/references/examples.md",
+    "skills/devops/metadata-api-retrieve-deploy/references/gotchas.md",
+    "skills/devops/metadata-api-retrieve-deploy/references/llm-anti-patterns.md",
+    "skills/devops/metadata-api-retrieve-deploy/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/devops/metadata-api-retrieve-deploy/scripts/__pycache__/check_metadata_api_retrieve_deploy.cpython-314.pyc",
+    "skills/devops/metadata-api-retrieve-deploy/scripts/check_metadata_api_retrieve_deploy.py"
+  ],
+  "tags": [
+    "metadata-api",
+    "sf-cli",
+    "package-xml",
+    "deploy",
+    "destructive-changes"
+  ],
+  "templates": [
+    "skills/devops/metadata-api-retrieve-deploy/templates/metadata-api-retrieve-deploy-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

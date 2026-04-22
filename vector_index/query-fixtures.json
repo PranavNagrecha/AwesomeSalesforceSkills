@@ -5675,6 +5675,246 @@
       "domain": "lwc",
       "expected_skill": "lwc/lwc-chart-and-visualization",
       "top_k": 3
+    },
+    {
+      "query": "hard coded recordtypeid apex migration between orgs",
+      "domain": "admin",
+      "expected_skill": "admin/record-type-id-management",
+      "top_k": 3
+    },
+    {
+      "query": "record type developername lookup safer than id",
+      "domain": "admin",
+      "expected_skill": "admin/record-type-id-management",
+      "top_k": 3
+    },
+    {
+      "query": "custom labels salesforce translation workbench i18n",
+      "domain": "admin",
+      "expected_skill": "admin/custom-label-management",
+      "top_k": 3
+    },
+    {
+      "query": "system.label apex lwc @salesforce/label import",
+      "domain": "admin",
+      "expected_skill": "admin/custom-label-management",
+      "top_k": 3
+    },
+    {
+      "query": "master detail vs lookup relationship design tradeoffs",
+      "domain": "admin",
+      "expected_skill": "admin/lookup-and-relationship-design",
+      "top_k": 3
+    },
+    {
+      "query": "40 relationships per object limit salesforce",
+      "domain": "admin",
+      "expected_skill": "admin/lookup-and-relationship-design",
+      "top_k": 3
+    },
+    {
+      "query": "salesforce task whatid whoid polymorphic typeof",
+      "domain": "admin",
+      "expected_skill": "admin/activity-and-task-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "activityhistory query read only activity object",
+      "domain": "admin",
+      "expected_skill": "admin/activity-and-task-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "compound field address name geolocation soql update",
+      "domain": "admin",
+      "expected_skill": "admin/compound-field-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "billingaddress cannot be set directly compound field",
+      "domain": "admin",
+      "expected_skill": "admin/compound-field-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "messaging customnotification apex send mobile push",
+      "domain": "admin",
+      "expected_skill": "admin/custom-notification-types",
+      "top_k": 3
+    },
+    {
+      "query": "custom notification type 500 recipient limit apex",
+      "domain": "admin",
+      "expected_skill": "admin/custom-notification-types",
+      "top_k": 3
+    },
+    {
+      "query": "record triggered flow scheduled path salesforce",
+      "domain": "admin",
+      "expected_skill": "admin/scheduled-path-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "scheduled path offset from datetime field flow",
+      "domain": "admin",
+      "expected_skill": "admin/scheduled-path-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "apex trigger context variables trigger.new trigger.oldmap",
+      "domain": "apex",
+      "expected_skill": "apex/apex-trigger-context-variables",
+      "top_k": 3
+    },
+    {
+      "query": "trigger before insert vs after insert event matrix",
+      "domain": "apex",
+      "expected_skill": "apex/apex-trigger-context-variables",
+      "top_k": 3
+    },
+    {
+      "query": "apex future method callout parameters primitives",
+      "domain": "apex",
+      "expected_skill": "apex/apex-future-method-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "future method cannot chain no sobject parameter",
+      "domain": "apex",
+      "expected_skill": "apex/apex-future-method-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "database savepoint rollback partial dml apex",
+      "domain": "apex",
+      "expected_skill": "apex/apex-savepoint-and-rollback",
+      "top_k": 3
+    },
+    {
+      "query": "setSavepoint rollback after callout illegal",
+      "domain": "apex",
+      "expected_skill": "apex/apex-savepoint-and-rollback",
+      "top_k": 3
+    },
+    {
+      "query": "featuremanagement checkpermission custom permission apex",
+      "domain": "apex",
+      "expected_skill": "apex/apex-custom-permissions-check",
+      "top_k": 3
+    },
+    {
+      "query": "custom permission vs profile permission gate apex",
+      "domain": "apex",
+      "expected_skill": "apex/apex-custom-permissions-check",
+      "top_k": 3
+    },
+    {
+      "query": "soql typeof polymorphic what who task query",
+      "domain": "apex",
+      "expected_skill": "apex/apex-polymorphic-soql",
+      "top_k": 3
+    },
+    {
+      "query": "what.type filter polymorphic relationship soql",
+      "domain": "apex",
+      "expected_skill": "apex/apex-polymorphic-soql",
+      "top_k": 3
+    },
+    {
+      "query": "lwc navigation mixin page reference recordpage",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-navigation-mixin",
+      "top_k": 3
+    },
+    {
+      "query": "lwc navigate to url state c__ prefix required",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-navigation-mixin",
+      "top_k": 3
+    },
+    {
+      "query": "lightning modal lwc open dialog programmatic base class",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-lightning-modal",
+      "top_k": 3
+    },
+    {
+      "query": "lightningmodal size header label aria close",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-lightning-modal",
+      "top_k": 3
+    },
+    {
+      "query": "lwc refreshapex wire deprecated getrecordnotifychange",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-wire-refresh-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "refreshview api lwc refresh container records",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-wire-refresh-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "lightning record picker lwc lookup combobox",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-record-picker",
+      "top_k": 3
+    },
+    {
+      "query": "record-picker display-info matching-info filter sosl",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-record-picker",
+      "top_k": 3
+    },
+    {
+      "query": "salesforce querymore nextrecordsurl pagination apex callout",
+      "domain": "integration",
+      "expected_skill": "integration/rest-api-pagination-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "cursor vs offset rest api pagination drift duplicates",
+      "domain": "integration",
+      "expected_skill": "integration/rest-api-pagination-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "eventbus.publish platform event apex saveresult",
+      "domain": "integration",
+      "expected_skill": "integration/platform-event-publish-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "publishaftercommit vs publishimmediately rollback event",
+      "domain": "integration",
+      "expected_skill": "integration/platform-event-publish-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "metadata api retrieve deploy package.xml manifest destructivechanges pre post",
+      "domain": "devops",
+      "expected_skill": "devops/metadata-api-retrieve-deploy",
+      "top_k": 3
+    },
+    {
+      "query": "package.xml destructivechanges pre post salesforce",
+      "domain": "devops",
+      "expected_skill": "devops/metadata-api-retrieve-deploy",
+      "top_k": 3
+    },
+    {
+      "query": "userrecordaccess soql hasreadaccess why user see record",
+      "domain": "security",
+      "expected_skill": "security/record-access-troubleshooting",
+      "top_k": 3
+    },
+    {
+      "query": "why can this user access record salesforce explain sharing",
+      "domain": "security",
+      "expected_skill": "security/record-access-troubleshooting",
+      "top_k": 3
     }
   ]
 }

@@ -1,0 +1,97 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "00966a39cdd0e071af93",
+    "02413e156c5c1b57eec9",
+    "02a30c998489bbe22dea",
+    "053391a42c634d80a7ae",
+    "0922533a67addc5c7c27",
+    "0bbbec0828e73184b8f6",
+    "0ed5ed8685ac61d006a2",
+    "2aac9f0a00191ac3d5f4",
+    "2cbc464d1d48ab2113d1",
+    "3cb3a7dcfdd8dd2eb1af",
+    "426367d24dfc714f01c1",
+    "4398ab61960f42455d84",
+    "4fc079b238a79b7df042",
+    "5025e91203a099b78692",
+    "53e358145916d4dca07d",
+    "555bf9126f96c47d6487",
+    "560bf831343183adf4f2",
+    "56b23ffbab28907a1b18",
+    "5a586c2eeda7fd31a430",
+    "5ae3f76894c4eb02ebdf",
+    "613cf1da87b02786dc38",
+    "65b50103bb389727138c",
+    "67e10bb34c63ada17951",
+    "6de23c7fe4207056a578",
+    "6e7b0ec69761bfc7dfe0",
+    "6e9760f84fcc9237b9b1",
+    "6ff75b21cfa77c25bf6f",
+    "706035f34438cc84f291",
+    "71bcd53d70d89efe3a74",
+    "7452e2417742ffed7720",
+    "75654686348f049e4444",
+    "80d2a59a1b402261e284",
+    "98044ee166310e2e09b6",
+    "98ac78518fff16fe8989",
+    "9e10b1039949e46497ba",
+    "a3bf8c993e9f15efd521",
+    "ad3a3a9b338d3d2bd90c",
+    "affedcedc9d4768970a6",
+    "bcd02b228d7e3c01c708",
+    "c61081f210dba78d8131",
+    "d1af5536bc784d21eb29",
+    "d4c03b11a1ec58a4598c",
+    "d6b0cca09773c9838fdc",
+    "d8b15c216f14f030bb1a",
+    "de2579d22f6dafa291bc",
+    "e2807f06d2a2a4de4271",
+    "f8b8dae169a028cda8ef"
+  ],
+  "content_hash": "1540b351adf7a1c29c1d50a5520e5a9cdd4a5dc55bba8d366c6ccd04b7afb7eb",
+  "dependencies": [],
+  "description": "Custom Permissions in Apex: FeatureManagement.checkPermission, $Permission global variable, permission-set gating of feature code, Custom Permission metadata. NOT for CRUD/FLS enforcement (use security-apex-crud-fls). NOT for standard Salesforce permissions (use permission-set-architecture).",
+  "file_location": "skills/apex/apex-custom-permissions-check",
+  "id": "apex/apex-custom-permissions-check",
+  "inputs": [
+    "Feature or code path to gate",
+    "Target user populations (profiles / permission sets)",
+    "Test scenarios needing permission toggling"
+  ],
+  "name": "apex-custom-permissions-check",
+  "official_sources": [
+    "Apex Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm",
+    "Apex Reference Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Custom Permission metadata",
+    "Apex check pattern",
+    "Permission Set assignment plan",
+    "Test class using System.runAs with permission set"
+  ],
+  "references": [
+    "skills/apex/apex-custom-permissions-check/references/examples.md",
+    "skills/apex/apex-custom-permissions-check/references/gotchas.md",
+    "skills/apex/apex-custom-permissions-check/references/llm-anti-patterns.md",
+    "skills/apex/apex-custom-permissions-check/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/apex-custom-permissions-check/scripts/__pycache__/check_apex_custom_permissions_check.cpython-314.pyc",
+    "skills/apex/apex-custom-permissions-check/scripts/check_apex_custom_permissions_check.py"
+  ],
+  "tags": [
+    "apex",
+    "custom-permissions",
+    "featuremanagement",
+    "permission-sets",
+    "authorization"
+  ],
+  "templates": [
+    "skills/apex/apex-custom-permissions-check/templates/apex-custom-permissions-check-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}
