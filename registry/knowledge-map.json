@@ -98,6 +98,7 @@
       "admin/experience-cloud-moderation",
       "admin/experience-cloud-seo-settings",
       "admin/experience-cloud-site-setup",
+      "admin/field-dependency-and-controlling",
       "admin/financial-account-setup",
       "admin/financial-planning-process",
       "admin/flexcard-requirements",
@@ -273,7 +274,9 @@
       "apex/apex-design-patterns",
       "apex/apex-dml-patterns",
       "apex/apex-email-services",
+      "apex/apex-execute-anonymous",
       "apex/apex-future-method-patterns",
+      "apex/apex-http-callout-mocking",
       "apex/apex-json-serialization",
       "apex/apex-limits-monitoring",
       "apex/apex-managed-sharing",
@@ -283,11 +286,14 @@
       "apex/apex-performance-profiling",
       "apex/apex-polymorphic-soql",
       "apex/apex-queueable-patterns",
+      "apex/apex-record-clone-patterns",
       "apex/apex-rest-services",
       "apex/apex-savepoint-and-rollback",
       "apex/apex-scheduled-jobs",
       "apex/apex-security-patterns",
       "apex/apex-soql-relationship-queries",
+      "apex/apex-system-runas",
+      "apex/apex-test-setup-patterns",
       "apex/apex-transaction-finalizers",
       "apex/apex-trigger-context-variables",
       "apex/apex-wrapper-class-patterns",
@@ -632,6 +638,7 @@
       "flow/flow-and-platform-events",
       "flow/flow-bulkification",
       "flow/flow-collection-processing",
+      "flow/flow-cross-object-updates",
       "flow/flow-custom-property-editors",
       "flow/flow-data-tables",
       "flow/flow-debugging",
@@ -651,6 +658,7 @@
       "flow/flow-performance-optimization",
       "flow/flow-platform-events-integration",
       "flow/flow-reactive-screen-components",
+      "flow/flow-resource-patterns",
       "flow/flow-rollback-patterns",
       "flow/flow-runtime-error-diagnosis",
       "flow/flow-testing",
@@ -731,6 +739,7 @@
       "lwc/lifecycle-hooks",
       "lwc/lwc-accessibility",
       "lwc/lwc-accessibility-patterns",
+      "lwc/lwc-async-patterns",
       "lwc/lwc-base-component-recipes",
       "lwc/lwc-chart-and-visualization",
       "lwc/lwc-data-table",
@@ -747,6 +756,7 @@
       "lwc/lwc-performance",
       "lwc/lwc-record-picker",
       "lwc/lwc-security",
+      "lwc/lwc-show-toast-patterns",
       "lwc/lwc-state-management",
       "lwc/lwc-testing",
       "lwc/lwc-toast-and-notifications",
@@ -1176,6 +1186,9 @@
     "ab-testing": [
       "admin/email-studio-administration"
     ],
+    "abortcontroller": [
+      "lwc/lwc-async-patterns"
+    ],
     "abuse-prevention": [
       "agentforce/agentforce-guardrails"
     ],
@@ -1316,6 +1329,7 @@
       "admin/custom-field-creation",
       "admin/data-cloud-provisioning",
       "admin/einstein-discovery-deployment",
+      "admin/field-dependency-and-controlling",
       "admin/flow-orchestration-admin",
       "admin/health-cloud-timeline",
       "admin/object-creation-and-design",
@@ -1615,9 +1629,14 @@
       "agentforce/mcp-tool-definition-apex",
       "agentforce/salesforce-mcp-server-setup",
       "apex/apex-custom-permissions-check",
+      "apex/apex-execute-anonymous",
       "apex/apex-future-method-patterns",
+      "apex/apex-http-callout-mocking",
       "apex/apex-polymorphic-soql",
+      "apex/apex-record-clone-patterns",
       "apex/apex-savepoint-and-rollback",
+      "apex/apex-system-runas",
+      "apex/apex-test-setup-patterns",
       "apex/apex-trigger-context-variables",
       "apex/commerce-payment-integration",
       "apex/custom-iterators-and-iterables",
@@ -1941,6 +1960,7 @@
       "data/bulk-api-patterns",
       "flow/flow-and-platform-events",
       "integration/platform-event-publish-patterns",
+      "lwc/lwc-async-patterns",
       "omnistudio/omnistudio-asynchronous-data-operations"
     ],
     "async-apex": [
@@ -2119,6 +2139,9 @@
       "architect/marketing-data-architecture",
       "architect/marketing-integration-patterns",
       "data/marketing-cloud-sql-queries"
+    ],
+    "autonumber": [
+      "apex/apex-record-clone-patterns"
     ],
     "autorabit": [
       "devops/salesforce-devops-tooling-selection"
@@ -2445,6 +2468,7 @@
       "apex/trigger-framework",
       "devops/code-review-checklist-salesforce",
       "flow/auto-launched-flow-patterns",
+      "flow/flow-cross-object-updates",
       "flow/flow-invocable-from-apex"
     ],
     "bundle-design": [
@@ -2866,6 +2890,9 @@
     "child-to-parent": [
       "apex/apex-soql-relationship-queries"
     ],
+    "choice-sets": [
+      "flow/flow-resource-patterns"
+    ],
     "choices": [
       "flow/flow-dynamic-choices"
     ],
@@ -2971,6 +2998,9 @@
     ],
     "clinical-service-request": [
       "admin/referral-management-health"
+    ],
+    "clone": [
+      "apex/apex-record-clone-patterns"
     ],
     "cloud-pages": [
       "apex/ampscript-development",
@@ -3334,6 +3364,9 @@
     "console-navigation": [
       "admin/service-console-configuration"
     ],
+    "constants": [
+      "flow/flow-resource-patterns"
+    ],
     "constituent-360": [
       "data/nonprofit-data-architecture"
     ],
@@ -3453,6 +3486,7 @@
       "data/historical-order-migration"
     ],
     "controlling-field": [
+      "admin/field-dependency-and-controlling",
       "admin/picklist-and-value-sets"
     ],
     "conversation-design": [
@@ -3645,7 +3679,8 @@
       "lwc/message-channel-patterns"
     ],
     "cross-object": [
-      "admin/formula-fields"
+      "admin/formula-fields",
+      "flow/flow-cross-object-updates"
     ],
     "cross-object-formula": [
       "apex/cross-object-formula-and-rollup-performance"
@@ -4333,6 +4368,7 @@
       "flow/flow-debugging"
     ],
     "debugging": [
+      "apex/apex-execute-anonymous",
       "apex/common-apex-runtime-errors",
       "flow/flow-runtime-error-diagnosis",
       "omnistudio/omnistudio-debugging",
@@ -4367,6 +4403,9 @@
       "data/large-scale-deduplication",
       "data/lead-data-import-and-dedup",
       "data/subscriber-data-management"
+    ],
+    "deep-clone": [
+      "apex/apex-record-clone-patterns"
     ],
     "deep-linking": [
       "admin/fsl-mobile-app-setup",
@@ -4423,6 +4462,7 @@
       "devops/multi-package-development"
     ],
     "dependent-picklist": [
+      "admin/field-dependency-and-controlling",
       "admin/picklist-and-value-sets"
     ],
     "dependent-picklist-bypass": [
@@ -4527,6 +4567,7 @@
       "devops/unlocked-package-development"
     ],
     "developer-console": [
+      "apex/apex-execute-anonymous",
       "apex/debug-logs-and-developer-console"
     ],
     "developer-tooling": [
@@ -5280,6 +5321,9 @@
     "exception-handling": [
       "apex/exception-handling"
     ],
+    "execute-anonymous": [
+      "apex/apex-execute-anonymous"
+    ],
     "execution-timeline": [
       "apex/apex-performance-profiling"
     ],
@@ -5714,6 +5758,7 @@
       "architect/solution-design-patterns",
       "flow/auto-launched-flow-patterns",
       "flow/flow-and-platform-events",
+      "flow/flow-cross-object-updates",
       "flow/flow-data-tables",
       "flow/flow-dynamic-choices",
       "flow/flow-error-monitoring",
@@ -5727,6 +5772,7 @@
       "flow/flow-performance-optimization",
       "flow/flow-platform-events-integration",
       "flow/flow-reactive-screen-components",
+      "flow/flow-resource-patterns",
       "flow/flow-rollback-patterns",
       "flow/flow-runtime-error-diagnosis",
       "flow/flow-transactional-boundaries"
@@ -5889,7 +5935,8 @@
       "apex/formula-field-performance-and-limits"
     ],
     "formulas": [
-      "admin/validation-rules"
+      "admin/validation-rules",
+      "flow/flow-resource-patterns"
     ],
     "frame": [
       "security/clickjack-and-frame-protection"
@@ -6071,6 +6118,7 @@
       "admin/compound-field-patterns"
     ],
     "get-records": [
+      "flow/flow-cross-object-updates",
       "flow/flow-large-data-volume-patterns"
     ],
     "getSObjects": [
@@ -6152,6 +6200,7 @@
       "apex/apex-dml-patterns",
       "apex/apex-future-method-patterns",
       "apex/apex-limits-monitoring",
+      "apex/apex-test-setup-patterns",
       "apex/formula-field-performance-and-limits",
       "apex/governor-limit-recovery-patterns",
       "apex/governor-limits",
@@ -6423,6 +6472,7 @@
       "omnistudio/omnistudio-security"
     ],
     "http-callout": [
+      "apex/apex-http-callout-mocking",
       "apex/callouts-and-http-integrations",
       "flow/flow-external-services"
     ],
@@ -6517,6 +6567,9 @@
     ],
     "imperative": [
       "lwc/lwc-imperative-apex"
+    ],
+    "imperative-apex": [
+      "lwc/lwc-async-patterns"
     ],
     "in-advance": [
       "admin/billing-schedule-setup"
@@ -7257,6 +7310,9 @@
       "admin/lightning-page-performance-tuning",
       "architect/embedded-analytics-architecture"
     ],
+    "lightning-platform-show-toast-event": [
+      "lwc/lwc-show-toast-patterns"
+    ],
     "lightning-record-edit-form": [
       "lwc/lwc-forms-and-validation"
     ],
@@ -7400,6 +7456,7 @@
       "lwc/file-upload-patterns",
       "lwc/knowledge-article-lwc",
       "lwc/lifecycle-hooks",
+      "lwc/lwc-async-patterns",
       "lwc/lwc-base-component-recipes",
       "lwc/lwc-chart-and-visualization",
       "lwc/lwc-error-boundaries",
@@ -7407,6 +7464,7 @@
       "lwc/lwc-lightning-modal",
       "lwc/lwc-navigation-mixin",
       "lwc/lwc-record-picker",
+      "lwc/lwc-show-toast-patterns",
       "lwc/lwc-toast-and-notifications",
       "lwc/lwc-web-components-interop",
       "lwc/lwc-wire-refresh-patterns",
@@ -7789,6 +7847,7 @@
       "architect/sla-design-and-escalation-matrix"
     ],
     "mixed-dml": [
+      "apex/apex-system-runas",
       "apex/mixed-dml-and-setup-objects"
     ],
     "mlops": [
@@ -7818,6 +7877,9 @@
     ],
     "mock-deployment": [
       "devops/go-live-cutover-planning"
+    ],
+    "mocks": [
+      "apex/apex-http-callout-mocking"
     ],
     "modal": [
       "lwc/lwc-lightning-modal"
@@ -8896,6 +8958,7 @@
       "admin/hipaa-workflow-design"
     ],
     "picklist": [
+      "admin/field-dependency-and-controlling",
       "admin/path-and-guidance",
       "admin/picklist-and-value-sets"
     ],
@@ -9311,6 +9374,7 @@
       "devops/org-shape-and-scratch-definition"
     ],
     "promise": [
+      "lwc/lwc-async-patterns",
       "lwc/lwc-imperative-apex"
     ],
     "promoted-results": [
@@ -10094,6 +10158,9 @@
     "run-budget": [
       "data/analytics-dataset-optimization"
     ],
+    "runas": [
+      "apex/apex-test-setup-patterns"
+    ],
     "runbook": [
       "admin/devops-process-documentation"
     ],
@@ -10751,6 +10818,7 @@
       "architect/b2b-vs-b2c-architecture"
     ],
     "sfdx": [
+      "apex/apex-execute-anonymous",
       "apex/sf-cli-and-sfdx-essentials",
       "devops/bitbucket-pipelines-for-salesforce",
       "devops/destructive-changes-deployment",
@@ -10810,6 +10878,7 @@
       "admin/lookup-and-relationship-design",
       "admin/queues-and-public-groups",
       "admin/sharing-and-visibility",
+      "apex/apex-system-runas",
       "lwc/experience-cloud-api-access",
       "security/apex-managed-sharing-patterns",
       "security/dynamic-sharing-recalculation",
@@ -10886,6 +10955,9 @@
     ],
     "shopper-orders": [
       "apex/commerce-order-api"
+    ],
+    "showtoastevent": [
+      "lwc/lwc-show-toast-patterns"
     ],
     "signature": [
       "integration/webhook-signature-verification"
@@ -10991,7 +11063,8 @@
       "admin/outbound-message-setup"
     ],
     "sobject": [
-      "admin/salesforce-object-queryability"
+      "admin/salesforce-object-queryability",
+      "apex/apex-record-clone-patterns"
     ],
     "sobject-collection": [
       "integration/composite-api-patterns"
@@ -11330,6 +11403,7 @@
       "admin/system-field-behavior-and-audit"
     ],
     "system-runas": [
+      "apex/apex-system-runas",
       "apex/mixed-dml-and-setup-objects"
     ],
     "system-schedule": [
@@ -11432,6 +11506,7 @@
       "apex/mixed-dml-and-setup-objects"
     ],
     "test-setmock": [
+      "apex/apex-http-callout-mocking",
       "apex/apex-mocking-and-stubs"
     ],
     "test-setup": [
@@ -11441,10 +11516,19 @@
       "admin/sandbox-strategy",
       "admin/uat-and-acceptance-criteria",
       "agentforce/agentforce-eval-harness",
+      "apex/apex-http-callout-mocking",
+      "apex/apex-system-runas",
+      "apex/apex-test-setup-patterns",
       "omnistudio/omnistudio-testing-patterns"
     ],
     "testing-api": [
       "agentforce/agent-testing-and-evaluation"
+    ],
+    "testsetup": [
+      "apex/apex-test-setup-patterns"
+    ],
+    "text-template": [
+      "flow/flow-resource-patterns"
     ],
     "theming": [
       "lwc/lwr-site-development"
@@ -11503,6 +11587,7 @@
     ],
     "toast": [
       "lwc/lwc-modal-and-overlay",
+      "lwc/lwc-show-toast-patterns",
       "lwc/lwc-toast-and-notifications"
     ],
     "token-introspection": [
@@ -11737,6 +11822,9 @@
     "unused-fields": [
       "admin/org-cleanup-and-technical-debt"
     ],
+    "update-records": [
+      "flow/flow-cross-object-updates"
+    ],
     "upgrade": [
       "devops/api-version-management"
     ],
@@ -11837,8 +11925,14 @@
       "admin/validation-rules",
       "data/data-quality-and-governance"
     ],
+    "valuesettings": [
+      "admin/field-dependency-and-controlling"
+    ],
     "van-stock": [
       "admin/fsl-inventory-management"
+    ],
+    "variables": [
+      "flow/flow-resource-patterns"
     ],
     "vector-database-management": [
       "data/vector-database-management"

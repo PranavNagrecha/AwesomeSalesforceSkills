@@ -1,0 +1,96 @@
+{
+  "category": "lwc",
+  "chunk_ids": [
+    "029864d3fdf5c22a898f",
+    "08c99f163dd50f3adc6e",
+    "0ae97293660b618f1bd9",
+    "16612f66e4ead8f306ef",
+    "170c6a106b70425f63cc",
+    "1e6fa475a146b2858b27",
+    "207563d5930b4cedcc23",
+    "2315570c986723d8790a",
+    "27898da8d5fc9a84b2a6",
+    "29514d7f861b52e377bc",
+    "2a0e8ea8e0260c9715a0",
+    "3335a186653373096424",
+    "400d5052d5478737a0b3",
+    "4067f7b3387a512f5f59",
+    "4442455056ba79ee0099",
+    "453a0e73bd92aff8d566",
+    "5075392ca7c6db508776",
+    "5f4c93cd5f81cf157b5d",
+    "5fe38aa63f35c54f9ebb",
+    "6922322ebbfe22d1edb0",
+    "6cbf5a456c1e93234b52",
+    "6f30d9f49471155684e6",
+    "761c0c485abce180b388",
+    "7ba2f842ed2f8bc95b66",
+    "7ea746669895605ab0ca",
+    "87bb549daceb3b48e32a",
+    "8af250b1905daf78e5f5",
+    "9716bb71d543ed4be1e9",
+    "9e4db81d7f2f26b8c88d",
+    "a2db7765249cd4e0688c",
+    "a3cece9e33ee2d8da946",
+    "a631a5e090a010a418f9",
+    "a77f8beb39d756f0dee8",
+    "ae1e6e888111e0aee730",
+    "bf11f9ffbc4fef88dbb4",
+    "c1e40431f2632f2c20c3",
+    "cc678d8efa8bd2f92126",
+    "d214f64213fdf2808ea5",
+    "d72113dd600b0492ebff",
+    "dae62db107d006a3ddb7",
+    "dfa9453a3503586f35c5",
+    "dfdb213e049839fadb14",
+    "e2c29a724e67ca2a1167",
+    "e7bf935cf6f615ce8f1c",
+    "ec6f0b7aab7a7da4d22d",
+    "ed3f0e6ad17d314ca922",
+    "f17ae89ac58b52ac4e78",
+    "fc42f6b04d6fa2e315b5"
+  ],
+  "content_hash": "2c259d3610b7a86a3e8d1fd625213c3a3f28fc3b701ebb8210b49e0e00d0f7a1",
+  "dependencies": [],
+  "description": "Async/await and Promise patterns in LWC: imperative Apex, loading states, error handling, concurrent wire + imperative, AbortController for in-flight cancellation, Promise.all for parallel calls. NOT for wire service basics (use lwc-wire-refresh-patterns). NOT for Lightning Data Service.",
+  "file_location": "skills/lwc/lwc-async-patterns",
+  "id": "lwc/lwc-async-patterns",
+  "inputs": [
+    "Data needs (imperative vs wire)",
+    "Parallel vs serial requirements",
+    "Cancellation semantics"
+  ],
+  "name": "lwc-async-patterns",
+  "official_sources": [
+    "LWC Best Practices \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/get-started-best-practices.html",
+    "Lightning Component Reference \u2014 https://developer.salesforce.com/docs/platform/lightning-component-reference/guide",
+    "LWC Data Guidelines \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-guidelines.html"
+  ],
+  "outputs": [
+    "Async handler with try/catch + finally",
+    "Loading-state management",
+    "AbortController usage (where applicable)"
+  ],
+  "references": [
+    "skills/lwc/lwc-async-patterns/references/examples.md",
+    "skills/lwc/lwc-async-patterns/references/gotchas.md",
+    "skills/lwc/lwc-async-patterns/references/llm-anti-patterns.md",
+    "skills/lwc/lwc-async-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/lwc/lwc-async-patterns/scripts/check_lwc_async_patterns.py"
+  ],
+  "tags": [
+    "lwc",
+    "async",
+    "promise",
+    "imperative-apex",
+    "abortcontroller"
+  ],
+  "templates": [
+    "skills/lwc/lwc-async-patterns/templates/lwc-async-patterns-template.md"
+  ],
+  "updated": "2026-04-22",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

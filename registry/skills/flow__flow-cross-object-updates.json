@@ -1,0 +1,93 @@
+{
+  "category": "flow",
+  "chunk_ids": [
+    "0282ed1235c78fb844b6",
+    "053e3957b82ab12b341a",
+    "0a5660187f3466313846",
+    "177aaa40c6f52fb10b27",
+    "24b8920ca9885c7a368c",
+    "3139135e62a1018b6d63",
+    "373fefabc07560b86aa0",
+    "3892041738c0877c627e",
+    "44dae42a8c5b1e0ca1e1",
+    "489efa8ecbe0fb4f21c6",
+    "54949da5a1aff3af3d13",
+    "57796f8c230e2a12a97f",
+    "5aaaaf9286f5f330c0c5",
+    "5b9a13ba3f054b199791",
+    "61c1554e81fb367f3074",
+    "6955a1d97a496bec2749",
+    "6c6b830fe857dacd5b5d",
+    "721b6dee8d81484b3d98",
+    "73320c9de92d5ffa69af",
+    "73859ccec1b25d34bfa1",
+    "76a686c84a3a5b049383",
+    "79a6e4ff4417ec31d160",
+    "7a66db55aa70f4b5d7e1",
+    "7dad9496cac20cf4f685",
+    "7fd11a60472c48330f03",
+    "8374043d4e7803ed6f62",
+    "8b12f7e67aa4f38647c3",
+    "8cc56487dba8bc633a89",
+    "9443ac3e362cb2288140",
+    "9660d74503b55f44a817",
+    "978f5506e18e4a955cf3",
+    "9b7eae444c9faae1b419",
+    "9db9cd724bff456647a0",
+    "a39773d22ee6af06ebf4",
+    "ae600e9c38c42c72abe8",
+    "c37a01b585499d87d1c5",
+    "cb4d509751a2005a2464",
+    "d03032a6d3a037896ecc",
+    "db08c208f318bcdad0e7",
+    "db18d1eb26fb70bdefbc",
+    "f21c193f93844cdd43af",
+    "f3d376eaf07b3c1eb2d3",
+    "f488396e89d68222aa5b",
+    "f54cf7ade5f30cd7041a",
+    "f699347974094da93fa8",
+    "fe3eff3b3df73f2d2098"
+  ],
+  "content_hash": "1daa92c13d37272c800744e3a40eda629b8266f34bef9d02066068caab52af39",
+  "dependencies": [],
+  "description": "Cross-object DML in Flow: updating parent from child or child from parent via Get/Update Records, lookup traversal in formulas, and bulkification. NOT for Apex cross-object updates. NOT for Process Builder (migrate-workflow-pb covers migration). Use when building flows that must write to a related record.",
+  "file_location": "skills/flow/flow-cross-object-updates",
+  "id": "flow/flow-cross-object-updates",
+  "inputs": [
+    "Parent/child object relationship (lookup or master-detail)",
+    "Trigger context (record-triggered, scheduled, platform event)",
+    "Bulk volume expected"
+  ],
+  "name": "flow-cross-object-updates",
+  "official_sources": [
+    "Flow Reference \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_ref.htm&type=5",
+    "Flow Builder \u2014 https://help.salesforce.com/s/articleView?id=sf.flow.htm&type=5",
+    "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm"
+  ],
+  "outputs": [
+    "Flow design using Get Records + Update Records (no per-record loop DML)",
+    "Dot-notation traversal where a Get Records is unneeded"
+  ],
+  "references": [
+    "skills/flow/flow-cross-object-updates/references/examples.md",
+    "skills/flow/flow-cross-object-updates/references/gotchas.md",
+    "skills/flow/flow-cross-object-updates/references/llm-anti-patterns.md",
+    "skills/flow/flow-cross-object-updates/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/flow/flow-cross-object-updates/scripts/check_flow_cross_object_updates.py"
+  ],
+  "tags": [
+    "flow",
+    "cross-object",
+    "get-records",
+    "update-records",
+    "bulkification"
+  ],
+  "templates": [
+    "skills/flow/flow-cross-object-updates/templates/flow-cross-object-updates-template.md"
+  ],
+  "updated": "2026-04-22",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

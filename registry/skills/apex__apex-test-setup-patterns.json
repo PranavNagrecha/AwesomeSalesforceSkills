@@ -1,0 +1,95 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "057d01ef7db2646c3989",
+    "0f44d3b6f7977c4f2ed0",
+    "0f9cd20833c0a574051b",
+    "12751d164e807f866dee",
+    "18d8793e69581d9493a0",
+    "1a75498cc19ef4213ae4",
+    "1cb34fc758fa46fba919",
+    "2baa8902c12564087d91",
+    "2d28efca4b93b3150f00",
+    "2dd1b010242883a210e9",
+    "33c4a0a75983bb010b00",
+    "344c0e5f88e3e2a1d313",
+    "3e5b52e575d21de5f596",
+    "4035db8ffab04fca4f5e",
+    "43b84a941901edb8c40c",
+    "4a50ff22d96bdc47351c",
+    "5c432bb7eb065258229f",
+    "681862c2e9ebaefb9685",
+    "6cd375013066aa1a6bd6",
+    "6ea2e73222758ed2d70c",
+    "71c3650e59dde629aaaa",
+    "74fbd5fd8badea74651f",
+    "84851ec1667e895cace2",
+    "951cb933136588c67f8a",
+    "954f97104de76199094b",
+    "9e873a2e92be6a24d92a",
+    "a6e4aa6a18dd742c964d",
+    "a79596dc4f46ea9e49c2",
+    "a7a93b64ca009d799dcd",
+    "a7c37ca8dc17ae3422b2",
+    "a7ca853e9e28c37e2c94",
+    "acacf661ee89f513188f",
+    "b0d711fde6949c1b8e56",
+    "b308baa8212feebcc6ac",
+    "b3b49ea1a28942a0c15f",
+    "bd934e469d529a9a957d",
+    "c05466ea92d7ddc16be6",
+    "ce205ba24cd248bad4f1",
+    "d71af5b9a0e2b6222b45",
+    "d88cf55e7ab823e06733",
+    "e8676d77d1113d4eb970",
+    "e8950ce64402b5758aa1",
+    "e9d94f787e4c279d21e7",
+    "ea0c0f6eecb160f5381a",
+    "f5d927b08655c2296520",
+    "f990a54db3219360198d",
+    "fd504d7820f45b0120d0"
+  ],
+  "content_hash": "f108649fc84ebf8e0b2494fde816d7a4bf01d1e7c48e8dc25c2b8bd0c1b06c4e",
+  "dependencies": [],
+  "description": "@TestSetup method semantics: one-time creation per test class, isolation behavior, @TestVisible, System.runAs, Test.startTest/stopTest governor reset, mixed-DML boundaries. NOT for building a test data factory (use test-data-factory-patterns). NOT for mocking callouts (use apex-http-callout-mocking).",
+  "file_location": "skills/apex/apex-test-setup-patterns",
+  "id": "apex/apex-test-setup-patterns",
+  "inputs": [
+    "Test class objective",
+    "Shared data volume per test method",
+    "User-context test requirements"
+  ],
+  "name": "apex-test-setup-patterns",
+  "official_sources": [
+    "Apex Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm",
+    "Apex Reference Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "@TestSetup block with factory calls",
+    "runAs scope plan",
+    "startTest/stopTest governor reset placement"
+  ],
+  "references": [
+    "skills/apex/apex-test-setup-patterns/references/examples.md",
+    "skills/apex/apex-test-setup-patterns/references/gotchas.md",
+    "skills/apex/apex-test-setup-patterns/references/llm-anti-patterns.md",
+    "skills/apex/apex-test-setup-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/apex-test-setup-patterns/scripts/check_apex_test_setup_patterns.py"
+  ],
+  "tags": [
+    "apex",
+    "testing",
+    "testsetup",
+    "runas",
+    "governor-limits"
+  ],
+  "templates": [
+    "skills/apex/apex-test-setup-patterns/templates/apex-test-setup-patterns-template.md"
+  ],
+  "updated": "2026-04-22",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

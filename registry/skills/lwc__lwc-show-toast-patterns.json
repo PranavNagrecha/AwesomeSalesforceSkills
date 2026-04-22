@@ -1,0 +1,93 @@
+{
+  "category": "lwc",
+  "chunk_ids": [
+    "0334547f3d7c87ccdddf",
+    "0396da928ad902e2ab3f",
+    "09ce05fd8725f73023ba",
+    "0cbc73470f50e2eda29f",
+    "267dea2235c2249c2ece",
+    "3304f91462b94819d4b1",
+    "40933fe7cfe217e48151",
+    "452d688c6580a8668c21",
+    "49be6ca6a825c48c2285",
+    "4b4f0e552c89fe1214aa",
+    "52190df5600b1a9571d9",
+    "552b02c70047f06c8dbe",
+    "61f276c47c980b155f6d",
+    "62050a3c08a439d9faed",
+    "673a14622e29c61c4ad2",
+    "6af0c8ceddbd260311e3",
+    "6e35d7922405efc4f8db",
+    "7528f9abe736c9e95a1e",
+    "7b704004de8ab9d33342",
+    "7e1fc99f3b59a5609bba",
+    "810e393948a5e304c1ff",
+    "8a33c3767168bb86d71e",
+    "95a59edffc95bce80516",
+    "982af1cbbe869621d5bd",
+    "9a8e15251d309d37760f",
+    "9ec278d6acfa1658d654",
+    "a4372895c4c2ce1926bf",
+    "b606be1eab96b1130f0b",
+    "c197e78d053456ac6e31",
+    "c2c9d3a30712e0ea24c8",
+    "cbbd60b1ff1c8973b8dd",
+    "cd3244c75397c72874f7",
+    "d8af2b8061c282dc55a7",
+    "dd3cda94d1b61a75866c",
+    "e03d345048bb16e95a6b",
+    "e90316bc78a8399a6d23",
+    "e9eed1b78b888a4a6602",
+    "ed0f25a6cf813e86736e",
+    "f0e728d027ad8ad0a334",
+    "f4a66ba32d26baba10e3",
+    "f5c5160b646f1c3ec083",
+    "f674ff6fcd8badf54f9d",
+    "f6c67f55b9749596f059",
+    "f822f93480b293781cc4",
+    "f88b3bc55bc9baf15da0",
+    "f8c4708cfdcf85e25084",
+    "fa5bab55e12c78395252"
+  ],
+  "content_hash": "ff46e70eb6b0115d503991d52c97f43bf7fe4c758036e2e17c112041b420d980",
+  "dependencies": [],
+  "description": "ShowToastEvent in LWC: variants (success/warning/error/info), modes (dismissible/pester/sticky), message formatting, NOT supported in LWR Experience Cloud sites, alternatives (lightning-alert, inline banners). NOT for custom notification types (use admin/custom-notification-types). NOT for SLDS popovers.",
+  "file_location": "skills/lwc/lwc-show-toast-patterns",
+  "id": "lwc/lwc-show-toast-patterns",
+  "inputs": [
+    "Feedback intent (confirmation, warning, error, info)",
+    "Context (Lightning Experience, LWR, Mobile)",
+    "Dismiss behavior needed"
+  ],
+  "name": "lwc-show-toast-patterns",
+  "official_sources": [
+    "LWC Best Practices \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/get-started-best-practices.html",
+    "Lightning Component Reference \u2014 https://developer.salesforce.com/docs/platform/lightning-component-reference/guide",
+    "LWC Data Guidelines \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-guidelines.html"
+  ],
+  "outputs": [
+    "Dispatch code with correct variant + mode",
+    "Fallback plan for LWR sites"
+  ],
+  "references": [
+    "skills/lwc/lwc-show-toast-patterns/references/examples.md",
+    "skills/lwc/lwc-show-toast-patterns/references/gotchas.md",
+    "skills/lwc/lwc-show-toast-patterns/references/llm-anti-patterns.md",
+    "skills/lwc/lwc-show-toast-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/lwc/lwc-show-toast-patterns/scripts/check_lwc_show_toast_patterns.py"
+  ],
+  "tags": [
+    "lwc",
+    "showtoastevent",
+    "toast",
+    "lightning-platform-show-toast-event"
+  ],
+  "templates": [
+    "skills/lwc/lwc-show-toast-patterns/templates/lwc-show-toast-patterns-template.md"
+  ],
+  "updated": "2026-04-22",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

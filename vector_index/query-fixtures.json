@@ -5915,6 +5915,126 @@
       "domain": "security",
       "expected_skill": "security/record-access-troubleshooting",
       "top_k": 3
+    },
+    {
+      "query": "apex testsetup teststart stopteststart governor limits reset",
+      "domain": "apex",
+      "expected_skill": "apex/apex-test-setup-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "testvisible runas mixed dml workaround apex test",
+      "domain": "apex",
+      "expected_skill": "apex/apex-test-setup-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "apex httpcalloutmock test callout static resource multi",
+      "domain": "apex",
+      "expected_skill": "apex/apex-http-callout-mocking",
+      "top_k": 3
+    },
+    {
+      "query": "mock http response apex stateful pagination test",
+      "domain": "apex",
+      "expected_skill": "apex/apex-http-callout-mocking",
+      "top_k": 3
+    },
+    {
+      "query": "system runas impersonate user apex test sharing fls",
+      "domain": "apex",
+      "expected_skill": "apex/apex-system-runas",
+      "top_k": 3
+    },
+    {
+      "query": "mixed dml error user setup object runas workaround",
+      "domain": "apex",
+      "expected_skill": "apex/apex-system-runas",
+      "top_k": 3
+    },
+    {
+      "query": "sf apex run execute anonymous script savepoint rollback",
+      "domain": "apex",
+      "expected_skill": "apex/apex-execute-anonymous",
+      "top_k": 3
+    },
+    {
+      "query": "anonymous apex production dry run safeguard transaction",
+      "domain": "apex",
+      "expected_skill": "apex/apex-execute-anonymous",
+      "top_k": 3
+    },
+    {
+      "query": "sobject clone preserveid isdeepclone preservereadonly apex",
+      "domain": "apex",
+      "expected_skill": "apex/apex-record-clone-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "apex clone account with contacts opportunity line item pricebook",
+      "domain": "apex",
+      "expected_skill": "apex/apex-record-clone-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "showtoastevent lwc variant mode sticky pester error",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-show-toast-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "lwc toast not showing lwr experience cloud alternative",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-show-toast-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "lwc imperative apex async await try catch finally loading",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-async-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "lwc abortcontroller promise all stale response race condition",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-async-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "flow update parent from child bulkification cross object",
+      "domain": "flow",
+      "expected_skill": "flow/flow-cross-object-updates",
+      "top_k": 3
+    },
+    {
+      "query": "flow dml inside loop soql 101 rollup lookup",
+      "domain": "flow",
+      "expected_skill": "flow/flow-cross-object-updates",
+      "top_k": 3
+    },
+    {
+      "query": "flow variable constant formula text template choice resource",
+      "domain": "flow",
+      "expected_skill": "flow/flow-resource-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "flow record choice set dynamic picklist choice collection",
+      "domain": "flow",
+      "expected_skill": "flow/flow-resource-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "dependent picklist controlling field valuesettings salesforce",
+      "domain": "admin",
+      "expected_skill": "admin/field-dependency-and-controlling",
+      "top_k": 3
+    },
+    {
+      "query": "getpicklistvalues lwc dependent combobox validfor matrix",
+      "domain": "admin",
+      "expected_skill": "admin/field-dependency-and-controlling",
+      "top_k": 3
     }
   ]
 }

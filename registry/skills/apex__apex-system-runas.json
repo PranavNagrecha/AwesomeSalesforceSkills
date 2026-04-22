@@ -1,0 +1,94 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "0681cd672e88d34fa7e9",
+    "210c4751882256bba230",
+    "21760854d0fc364e370e",
+    "22108b7d1c91fcc206f7",
+    "2a18d5d560b0867e3717",
+    "2f37b4171b9ae066e904",
+    "37bbafa93e25741bc78b",
+    "3a448e6bc2b1269acb2f",
+    "3e950e800be714e1b833",
+    "46a427bd365d2b59cae7",
+    "48489e7a33fe221c29d8",
+    "48e6f815d376fe4db456",
+    "4e29c4a65ed5a86b0b72",
+    "536f568d1f40d75a046e",
+    "546cdb5da7e0cd07c9b7",
+    "5a4032125110de8e230f",
+    "6164a92b6d3eecddd5ff",
+    "64ed4a84861256035873",
+    "64f205b645a19debb296",
+    "70566ee023d0803b5b01",
+    "72181f890a73a8d73875",
+    "75207abaeb809c4815ec",
+    "7c21257abe768e45277d",
+    "82a819f89d1ce356b4f7",
+    "89d8b6826041e0fa4b01",
+    "8ec26bff0235b20ca30c",
+    "9445258accc7cddc5a5a",
+    "96ab6507b32c4cec98c0",
+    "97a90f8171c265775f5b",
+    "a13c9146607e0ebf2141",
+    "a6cdfe4a92808a1102b4",
+    "b935c8f10a9ab1b0d9fd",
+    "bfc2790fc5a3d46c0b93",
+    "c19608c1f5a2f24798b3",
+    "c8a8d7913bdf69f088f0",
+    "ca85c4d26ae63a86648b",
+    "d83b4ca9933d40279b4a",
+    "da6e4abc445983171584",
+    "dac2832d29aa78de40b9",
+    "dbacaa83b8886253964d",
+    "e26a14e4d2c52223c748",
+    "e9d5e372c269afa9a075",
+    "f16aab2d037bf24f5518",
+    "f249ad9538a83bb662fa",
+    "f5c12490b04675bebd6c",
+    "ff23ad2db37d6602f389"
+  ],
+  "content_hash": "009ba6833c4dc6ebd385cc3181701af68b7aa52c6881ef64a7d61ff6e4466d83",
+  "dependencies": [],
+  "description": "System.runAs in Apex tests: user-context impersonation, mixed-DML workaround, profile/permission testing, sharing verification, FLS NOT enforced, runAs nesting limits. NOT for general test setup (use apex-test-setup-patterns). NOT for WITH USER_MODE SOQL (use apex-user-mode-patterns).",
+  "file_location": "skills/apex/apex-system-runas",
+  "id": "apex/apex-system-runas",
+  "inputs": [
+    "Target user profile/permset",
+    "Permission/sharing scenario under test",
+    "Setup-DML requirements"
+  ],
+  "name": "apex-system-runas",
+  "official_sources": [
+    "Apex Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm",
+    "Apex Reference Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "runAs-wrapped test block",
+    "User fixture creation",
+    "FLS caveat notes"
+  ],
+  "references": [
+    "skills/apex/apex-system-runas/references/examples.md",
+    "skills/apex/apex-system-runas/references/gotchas.md",
+    "skills/apex/apex-system-runas/references/llm-anti-patterns.md",
+    "skills/apex/apex-system-runas/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/apex-system-runas/scripts/check_apex_system_runas.py"
+  ],
+  "tags": [
+    "apex",
+    "testing",
+    "system-runas",
+    "sharing",
+    "mixed-dml"
+  ],
+  "templates": [
+    "skills/apex/apex-system-runas/templates/apex-system-runas-template.md"
+  ],
+  "updated": "2026-04-22",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}
