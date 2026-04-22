@@ -1,20 +1,20 @@
 {
   "domain_counts": {
-    "admin": 217,
+    "admin": 218,
     "agentforce": 40,
-    "apex": 112,
+    "apex": 117,
     "architect": 97,
     "data": 87,
     "devops": 59,
-    "flow": 37,
+    "flow": 39,
     "integration": 47,
-    "lwc": 44,
+    "lwc": 46,
     "omnistudio": 26,
     "security": 37
   },
-  "generated_from_hash": "fbe92d53227fa1e9f7802a177fefcda2cd61294f7a5c69eee505f0c64654df1f",
+  "generated_from_hash": "3e673e120f38428683d7bf81cdbaa604deff8c1bdad11373805e03d6af7d820d",
   "schema_version": 1,
-  "skill_count": 803,
+  "skill_count": 813,
   "skills": [
     {
       "category": "admin",
@@ -12950,6 +12950,102 @@
         "skills/admin/experience-cloud-site-setup/templates/experience-cloud-site-setup-template.md"
       ],
       "updated": "2026-04-06",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "admin",
+      "chunk_ids": [
+        "0221ef8119d077cb94db",
+        "050e2c8a5a06989b5f63",
+        "06f8f0bfd164549ec605",
+        "072cdb528628ee1241f3",
+        "08d4bb8afe1060c04a0d",
+        "0a49ea5bb738385e9b4c",
+        "10d03aaa33e3c36f006e",
+        "19ff8f999701c55584f3",
+        "1a7e5cf69fcb25113d8b",
+        "235b96ec76f6b6756f02",
+        "2617b6ddb116836c2c03",
+        "27493de39d7c956fa1ad",
+        "28db41c21a33b154b95a",
+        "29f742ab6c4ca360faef",
+        "2af78983d95c43939939",
+        "31eeb6ab545a28b8d97b",
+        "349881b372f3e6069545",
+        "392c41bc17503902a517",
+        "3ac7c02984eef62dbbb3",
+        "41ff961fcd6fc95787d0",
+        "443ffafa1ac17bf28a41",
+        "456aac407663eef12c96",
+        "4f6532e727a56495d327",
+        "577251e651f35f9e93f8",
+        "58704e5e4c9fd654ee8d",
+        "635e31e14ddfa353184b",
+        "737cc1cc438bde150c61",
+        "8368ac531e7470485e0f",
+        "8a55940e89410d221ede",
+        "8bbbf4c61f1e5292c830",
+        "90d59f32cd88e01d7179",
+        "92a3f9804378b9a7edb5",
+        "936fcc6d0689ebfed9cf",
+        "93c4ac6abf025c82c8d2",
+        "95264da77b4d7f266f67",
+        "97f3c2da2e741880db90",
+        "9cabb9d5ff04a2cd4318",
+        "9d4379a2df606f187f00",
+        "9d8d758fc9ef44c1436c",
+        "9dfa02c4f49cd981da3e",
+        "a121ee0b99353aa26708",
+        "b94e18e5d5778d93b598",
+        "bd08c433e763932abea2",
+        "d136bb5c142bfa782c29",
+        "d18bb8d7d53b028989e9",
+        "df46f4f99d69212514c9",
+        "ec2900f5ee829abbfcb9",
+        "f8426ddcf2750204dd43"
+      ],
+      "content_hash": "e3c324f9843cb786c5f53ed1cd39e322926e91bdf9a4c29417928fc39b8722c8",
+      "dependencies": [],
+      "description": "Dependent picklists in Salesforce: controlling field (picklist or checkbox), dependent picklist, valueSettings matrix in metadata, API behavior via SOAP/REST, LWC lightning-combobox with dependency. NOT for record types (use admin/record-types). NOT for validation rules.",
+      "file_location": "skills/admin/field-dependency-and-controlling",
+      "id": "admin/field-dependency-and-controlling",
+      "inputs": [
+        "Controlling field (picklist or checkbox)",
+        "Dependent picklist",
+        "Mapping matrix (which dep values available for each controlling value)"
+      ],
+      "name": "field-dependency-and-controlling",
+      "official_sources": [
+        "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
+        "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+        "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+      ],
+      "outputs": [
+        "valueSettings metadata block",
+        "LWC / Aura pattern for dependent combobox",
+        "API insert behavior expectations"
+      ],
+      "references": [
+        "skills/admin/field-dependency-and-controlling/references/examples.md",
+        "skills/admin/field-dependency-and-controlling/references/gotchas.md",
+        "skills/admin/field-dependency-and-controlling/references/llm-anti-patterns.md",
+        "skills/admin/field-dependency-and-controlling/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/admin/field-dependency-and-controlling/scripts/check_field_dependency_and_controlling.py"
+      ],
+      "tags": [
+        "admin",
+        "picklist",
+        "dependent-picklist",
+        "controlling-field",
+        "valuesettings"
+      ],
+      "templates": [
+        "skills/admin/field-dependency-and-controlling/templates/field-dependency-and-controlling-template.md"
+      ],
+      "updated": "2026-04-22",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -35996,6 +36092,101 @@
     {
       "category": "apex",
       "chunk_ids": [
+        "026f6b1ca53edb3c6c0f",
+        "04caa9fdc50b5a2dffbe",
+        "05cf6a190f40ebe3f538",
+        "111afbe06c0bfb40aed8",
+        "1c2d8ad6b8117d3d5b5e",
+        "24b3906aea5204027f23",
+        "25f303c2192a662ec434",
+        "29ea0969a051d1262fb5",
+        "2ecd6c5f2d683012c5c8",
+        "35507845468bd46f7ea2",
+        "371fd6c63bfa678f1077",
+        "40293ce674c7cfa6df36",
+        "42e18a0ed702ec15902a",
+        "4771f847605f5a7d5b14",
+        "4b4bbfbb9a56d879fd5d",
+        "50d5aa3e61246639a325",
+        "51b21ea2a4c3fcb29884",
+        "5c92a2999ddf14822a55",
+        "5d428eb1f6d9f4dc67ea",
+        "63334dfc3b03364b8aa9",
+        "660b175cbee62a130c16",
+        "770e00cbf3984d21917f",
+        "7b76dc601d2d6d00701d",
+        "82d94fcaf3cdd6ed9a18",
+        "852fe4d088b87f9c7646",
+        "8f53ccf718c610a0fdb0",
+        "998ae314e4e7009a6231",
+        "9c5a76b3bed7de9e66f6",
+        "9fe092b5eb715e6acb6d",
+        "a0484653b934a42f406b",
+        "a9016505cbcab92a191b",
+        "af11ef379c9fa134d1c0",
+        "b55f2a981f6b95883873",
+        "bb004b34a9c7e2da30ca",
+        "bcdd87ce850b3bcd0070",
+        "c895e3722751853827e3",
+        "c94df44bad060d65d475",
+        "caac4ba0190f550ec593",
+        "d6588cbbbeaa344d5719",
+        "d8c2146a51de1614d920",
+        "e568f099d387d91476d8",
+        "eacb5059fa254d1a2b26",
+        "eb77e0c6f78f04ff2904",
+        "f908395c37b4b05454d6",
+        "f978269b1f2cdd76c9d7",
+        "fb48e1797a56a584e8c5",
+        "fef50f5c3cbe680898e7"
+      ],
+      "content_hash": "c31192ef49f71eee0fa9f08aef8b6f19b45c6d0e5c5b8ba9f7ea476f204daa1a",
+      "dependencies": [],
+      "description": "Execute Anonymous Apex: Developer Console, VS Code SFDX, `sf apex run`, variable scope, transaction semantics, governor limits, debugging output, common errors. NOT for scheduled/queueable async (use apex-async-patterns). NOT for debug log settings (use debug-log-management).",
+      "file_location": "skills/apex/apex-execute-anonymous",
+      "id": "apex/apex-execute-anonymous",
+      "inputs": [
+        "Script purpose (one-off data fix, investigation, etc.)",
+        "Target org",
+        "Data scope (records affected)"
+      ],
+      "name": "apex-execute-anonymous",
+      "official_sources": [
+        "Apex Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm",
+        "Apex Reference Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm",
+        "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+      ],
+      "outputs": [
+        "Anonymous Apex script (.apex file)",
+        "CLI invocation command",
+        "Rollback plan (if DML)"
+      ],
+      "references": [
+        "skills/apex/apex-execute-anonymous/references/examples.md",
+        "skills/apex/apex-execute-anonymous/references/gotchas.md",
+        "skills/apex/apex-execute-anonymous/references/llm-anti-patterns.md",
+        "skills/apex/apex-execute-anonymous/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/apex/apex-execute-anonymous/scripts/check_apex_execute_anonymous.py"
+      ],
+      "tags": [
+        "apex",
+        "execute-anonymous",
+        "sfdx",
+        "developer-console",
+        "debugging"
+      ],
+      "templates": [
+        "skills/apex/apex-execute-anonymous/templates/apex-execute-anonymous-template.md"
+      ],
+      "updated": "2026-04-22",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "apex",
+      "chunk_ids": [
         "03e411531b7029d045ba",
         "06ace3e0bfc44c6628e5",
         "0a45f29c8b4d1a3f8f87",
@@ -36089,6 +36280,101 @@
         "skills/apex/apex-future-method-patterns/templates/apex-future-method-patterns-template.md"
       ],
       "updated": "2026-04-21",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "apex",
+      "chunk_ids": [
+        "05498be03382fb902991",
+        "073c6d8081df37ad0ae6",
+        "0e0683654f06eaad4362",
+        "1dfc3148af317447986e",
+        "2c8e5c4fc2451e2d9c15",
+        "302a0c78fcd36ed88c95",
+        "33e09ef8dc5a2318ea0a",
+        "3a7c7286bf92a2eb1fe7",
+        "419ca7b07b7873476967",
+        "45a67072695c376c4b19",
+        "4a34bf1b9ee266e7b6ed",
+        "5075d4738058601f47c6",
+        "5816353410bac15214f8",
+        "5acf80bd9aac6b3c81f5",
+        "5dd21429b0fc3eb98f36",
+        "5f774fc3d327cbda67eb",
+        "642d9190a00bff9c4102",
+        "652fc6e8ffdccf7806a0",
+        "6ac7036ea6c73b1aabd4",
+        "6fc71e75fc97a59d3372",
+        "713533d029aeb24184ed",
+        "72f6adfef6246e914410",
+        "7c7c42d154b9b87efe23",
+        "7fbb2bcc80e8c90020bd",
+        "88f804791c174672e702",
+        "8dd908c69a6bfbbe10e6",
+        "91a00f3b04b20ed0855a",
+        "9f6439ae72a0cfafe2e9",
+        "9f8908fe7eb0aa9c5e75",
+        "a3929dad65da1c8dc7b1",
+        "a7cda57983d80067fd76",
+        "aea9d4f8cee9306c096f",
+        "b2da1178c53ba7670dca",
+        "bf0715354161bdc725e0",
+        "c99bd0eba87db8b38780",
+        "cb9e4f7ecaf76c9d74da",
+        "d9617ec4a89cd8fc366a",
+        "dc8e66b90dc94a02f05e",
+        "dcb4dbfa1501fdfd6856",
+        "e5a9a184efbcb80b7da3",
+        "ea6cc7913ccfa246064c",
+        "f1742b23f9965bbc1ef1",
+        "f19718351ffb0736b5f8",
+        "f5590fcba0a30ca22641",
+        "f894b52d15b2c07327ca",
+        "fdedf06a03b91d7a4d01",
+        "fe4e5f968d910fedc464"
+      ],
+      "content_hash": "f4de3482a9722c8542e678bdbe82477478d2a80997264055b69a7a42c679b6f0",
+      "dependencies": [],
+      "description": "HttpCalloutMock for Apex tests: HttpCalloutMock interface, StaticResourceCalloutMock, MultiStaticResourceCalloutMock, Test.setMock, multi-call mocks for pagination, error-path mocks. NOT for the callout code itself (use callouts-and-http-integrations). NOT for WSDL callouts (use apex-wsdl2apex-patterns).",
+      "file_location": "skills/apex/apex-http-callout-mocking",
+      "id": "apex/apex-http-callout-mocking",
+      "inputs": [
+        "Callout shape (endpoints, verbs, headers)",
+        "Number of calls per test",
+        "Error scenarios to exercise"
+      ],
+      "name": "apex-http-callout-mocking",
+      "official_sources": [
+        "Apex Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm",
+        "Apex Reference Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm",
+        "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+      ],
+      "outputs": [
+        "HttpCalloutMock implementation",
+        "Test method with Test.setMock",
+        "Multi-call routing logic"
+      ],
+      "references": [
+        "skills/apex/apex-http-callout-mocking/references/examples.md",
+        "skills/apex/apex-http-callout-mocking/references/gotchas.md",
+        "skills/apex/apex-http-callout-mocking/references/llm-anti-patterns.md",
+        "skills/apex/apex-http-callout-mocking/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/apex/apex-http-callout-mocking/scripts/check_apex_http_callout_mocking.py"
+      ],
+      "tags": [
+        "apex",
+        "testing",
+        "http-callout",
+        "mocks",
+        "test-setmock"
+      ],
+      "templates": [
+        "skills/apex/apex-http-callout-mocking/templates/apex-http-callout-mocking-template.md"
+      ],
+      "updated": "2026-04-22",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -37180,6 +37466,101 @@
     {
       "category": "apex",
       "chunk_ids": [
+        "019c68decad2ec1c09b4",
+        "0d0c0e462246485f2c75",
+        "11c5c465153cf729222b",
+        "191de77749d6c2f71170",
+        "1adff30049630c6c3a83",
+        "1c3a259f8ef24b770e23",
+        "1cdf5ab61fab0f5c18f0",
+        "20e1cd7d91e1557ede9e",
+        "22cf5483b0abd41976eb",
+        "3085da04085258c8cc6f",
+        "3654afbf1a0688375540",
+        "366164292fbbf8328e08",
+        "37a2b934bfdace9b459d",
+        "37b1376a764536511013",
+        "37c29389c3817e5338aa",
+        "43c7e89a14f1b4afc908",
+        "53f429c29381117f67c4",
+        "5900ac58df717e93073f",
+        "5a8f40e061ff99af443f",
+        "5c228196632210042bb3",
+        "5f9b48702a98d0af396e",
+        "6056423ce5f035e054fe",
+        "631d72ce30ed790c58eb",
+        "651fce4926e74ee21fef",
+        "6a6b1c73252af69a1397",
+        "6b6054856f480ca9a48d",
+        "6f8f901ceabab520e3e5",
+        "75865be0d3de4a26cfc1",
+        "7904f1ff9ed1f154557c",
+        "86dbd0f38fe14b18233f",
+        "a0b9148f61eb5b50833e",
+        "b3b3ac4bf63818735d8e",
+        "b5a357ce438fe530b40a",
+        "b5f1907f91bbe46ffb0a",
+        "cbe481336ab80edca059",
+        "ce3804e56193e9e88f38",
+        "d446b94a8cb085591e6d",
+        "dc077989c6e5ace59dcb",
+        "defc55d52d4fd7c3143d",
+        "df7e40e3ce896ccee480",
+        "dfd4a00dc7bf1278ed7b",
+        "e11e8b11afdcf1290f15",
+        "e158f56d2bd25519b1db",
+        "e24c2e12004254c779ac",
+        "e8b3a9c87760b45fd1f2",
+        "f19d0f3a2aab98d668b6",
+        "fe1a5064e9667e9b71a4"
+      ],
+      "content_hash": "a858199f34ffa151f7d08468aee58d5e0f0838448ee2557b999aeee8032ec1aa",
+      "dependencies": [],
+      "description": "SObject.clone(preserveId, isDeepClone, preserveReadonly, preserveAutonumber): shallow vs deep clone semantics, related-record replication, clone with parent repointing, autonumber preservation. NOT for data migration (use bulk-api-and-large-data-loads). NOT for record snapshots (use field-history-tracking).",
+      "file_location": "skills/apex/apex-record-clone-patterns",
+      "id": "apex/apex-record-clone-patterns",
+      "inputs": [
+        "Record(s) to clone",
+        "Whether children/related records must travel",
+        "Whether readonly/system fields must be preserved"
+      ],
+      "name": "apex-record-clone-patterns",
+      "official_sources": [
+        "Apex Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm",
+        "Apex Reference Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm",
+        "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+      ],
+      "outputs": [
+        "Clone invocation code",
+        "Relationship reparenting plan",
+        "Insert strategy"
+      ],
+      "references": [
+        "skills/apex/apex-record-clone-patterns/references/examples.md",
+        "skills/apex/apex-record-clone-patterns/references/gotchas.md",
+        "skills/apex/apex-record-clone-patterns/references/llm-anti-patterns.md",
+        "skills/apex/apex-record-clone-patterns/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/apex/apex-record-clone-patterns/scripts/check_apex_record_clone_patterns.py"
+      ],
+      "tags": [
+        "apex",
+        "clone",
+        "sobject",
+        "deep-clone",
+        "autonumber"
+      ],
+      "templates": [
+        "skills/apex/apex-record-clone-patterns/templates/apex-record-clone-patterns-template.md"
+      ],
+      "updated": "2026-04-22",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "apex",
+      "chunk_ids": [
         "04461b247f67a0d6ac5f",
         "04aabae0a12bcb383293",
         "073f7b645a81d00abcae",
@@ -37772,6 +38153,195 @@
         "skills/apex/apex-soql-relationship-queries/templates/apex-soql-relationship-queries-template.md"
       ],
       "updated": "2026-04-19",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "apex",
+      "chunk_ids": [
+        "0681cd672e88d34fa7e9",
+        "210c4751882256bba230",
+        "21760854d0fc364e370e",
+        "22108b7d1c91fcc206f7",
+        "2a18d5d560b0867e3717",
+        "2f37b4171b9ae066e904",
+        "37bbafa93e25741bc78b",
+        "3a448e6bc2b1269acb2f",
+        "3e950e800be714e1b833",
+        "46a427bd365d2b59cae7",
+        "48489e7a33fe221c29d8",
+        "48e6f815d376fe4db456",
+        "4e29c4a65ed5a86b0b72",
+        "536f568d1f40d75a046e",
+        "546cdb5da7e0cd07c9b7",
+        "5a4032125110de8e230f",
+        "6164a92b6d3eecddd5ff",
+        "64ed4a84861256035873",
+        "64f205b645a19debb296",
+        "70566ee023d0803b5b01",
+        "72181f890a73a8d73875",
+        "75207abaeb809c4815ec",
+        "7c21257abe768e45277d",
+        "82a819f89d1ce356b4f7",
+        "89d8b6826041e0fa4b01",
+        "8ec26bff0235b20ca30c",
+        "9445258accc7cddc5a5a",
+        "96ab6507b32c4cec98c0",
+        "97a90f8171c265775f5b",
+        "a13c9146607e0ebf2141",
+        "a6cdfe4a92808a1102b4",
+        "b935c8f10a9ab1b0d9fd",
+        "bfc2790fc5a3d46c0b93",
+        "c19608c1f5a2f24798b3",
+        "c8a8d7913bdf69f088f0",
+        "ca85c4d26ae63a86648b",
+        "d83b4ca9933d40279b4a",
+        "da6e4abc445983171584",
+        "dac2832d29aa78de40b9",
+        "dbacaa83b8886253964d",
+        "e26a14e4d2c52223c748",
+        "e9d5e372c269afa9a075",
+        "f16aab2d037bf24f5518",
+        "f249ad9538a83bb662fa",
+        "f5c12490b04675bebd6c",
+        "ff23ad2db37d6602f389"
+      ],
+      "content_hash": "009ba6833c4dc6ebd385cc3181701af68b7aa52c6881ef64a7d61ff6e4466d83",
+      "dependencies": [],
+      "description": "System.runAs in Apex tests: user-context impersonation, mixed-DML workaround, profile/permission testing, sharing verification, FLS NOT enforced, runAs nesting limits. NOT for general test setup (use apex-test-setup-patterns). NOT for WITH USER_MODE SOQL (use apex-user-mode-patterns).",
+      "file_location": "skills/apex/apex-system-runas",
+      "id": "apex/apex-system-runas",
+      "inputs": [
+        "Target user profile/permset",
+        "Permission/sharing scenario under test",
+        "Setup-DML requirements"
+      ],
+      "name": "apex-system-runas",
+      "official_sources": [
+        "Apex Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm",
+        "Apex Reference Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm",
+        "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+      ],
+      "outputs": [
+        "runAs-wrapped test block",
+        "User fixture creation",
+        "FLS caveat notes"
+      ],
+      "references": [
+        "skills/apex/apex-system-runas/references/examples.md",
+        "skills/apex/apex-system-runas/references/gotchas.md",
+        "skills/apex/apex-system-runas/references/llm-anti-patterns.md",
+        "skills/apex/apex-system-runas/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/apex/apex-system-runas/scripts/check_apex_system_runas.py"
+      ],
+      "tags": [
+        "apex",
+        "testing",
+        "system-runas",
+        "sharing",
+        "mixed-dml"
+      ],
+      "templates": [
+        "skills/apex/apex-system-runas/templates/apex-system-runas-template.md"
+      ],
+      "updated": "2026-04-22",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "apex",
+      "chunk_ids": [
+        "057d01ef7db2646c3989",
+        "0f44d3b6f7977c4f2ed0",
+        "0f9cd20833c0a574051b",
+        "12751d164e807f866dee",
+        "18d8793e69581d9493a0",
+        "1a75498cc19ef4213ae4",
+        "1cb34fc758fa46fba919",
+        "2baa8902c12564087d91",
+        "2d28efca4b93b3150f00",
+        "2dd1b010242883a210e9",
+        "33c4a0a75983bb010b00",
+        "344c0e5f88e3e2a1d313",
+        "3e5b52e575d21de5f596",
+        "4035db8ffab04fca4f5e",
+        "43b84a941901edb8c40c",
+        "4a50ff22d96bdc47351c",
+        "5c432bb7eb065258229f",
+        "681862c2e9ebaefb9685",
+        "6cd375013066aa1a6bd6",
+        "6ea2e73222758ed2d70c",
+        "71c3650e59dde629aaaa",
+        "74fbd5fd8badea74651f",
+        "84851ec1667e895cace2",
+        "951cb933136588c67f8a",
+        "954f97104de76199094b",
+        "9e873a2e92be6a24d92a",
+        "a6e4aa6a18dd742c964d",
+        "a79596dc4f46ea9e49c2",
+        "a7a93b64ca009d799dcd",
+        "a7c37ca8dc17ae3422b2",
+        "a7ca853e9e28c37e2c94",
+        "acacf661ee89f513188f",
+        "b0d711fde6949c1b8e56",
+        "b308baa8212feebcc6ac",
+        "b3b49ea1a28942a0c15f",
+        "bd934e469d529a9a957d",
+        "c05466ea92d7ddc16be6",
+        "ce205ba24cd248bad4f1",
+        "d71af5b9a0e2b6222b45",
+        "d88cf55e7ab823e06733",
+        "e8676d77d1113d4eb970",
+        "e8950ce64402b5758aa1",
+        "e9d94f787e4c279d21e7",
+        "ea0c0f6eecb160f5381a",
+        "f5d927b08655c2296520",
+        "f990a54db3219360198d",
+        "fd504d7820f45b0120d0"
+      ],
+      "content_hash": "f108649fc84ebf8e0b2494fde816d7a4bf01d1e7c48e8dc25c2b8bd0c1b06c4e",
+      "dependencies": [],
+      "description": "@TestSetup method semantics: one-time creation per test class, isolation behavior, @TestVisible, System.runAs, Test.startTest/stopTest governor reset, mixed-DML boundaries. NOT for building a test data factory (use test-data-factory-patterns). NOT for mocking callouts (use apex-http-callout-mocking).",
+      "file_location": "skills/apex/apex-test-setup-patterns",
+      "id": "apex/apex-test-setup-patterns",
+      "inputs": [
+        "Test class objective",
+        "Shared data volume per test method",
+        "User-context test requirements"
+      ],
+      "name": "apex-test-setup-patterns",
+      "official_sources": [
+        "Apex Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm",
+        "Apex Reference Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm",
+        "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+      ],
+      "outputs": [
+        "@TestSetup block with factory calls",
+        "runAs scope plan",
+        "startTest/stopTest governor reset placement"
+      ],
+      "references": [
+        "skills/apex/apex-test-setup-patterns/references/examples.md",
+        "skills/apex/apex-test-setup-patterns/references/gotchas.md",
+        "skills/apex/apex-test-setup-patterns/references/llm-anti-patterns.md",
+        "skills/apex/apex-test-setup-patterns/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/apex/apex-test-setup-patterns/scripts/check_apex_test_setup_patterns.py"
+      ],
+      "tags": [
+        "apex",
+        "testing",
+        "testsetup",
+        "runas",
+        "governor-limits"
+      ],
+      "templates": [
+        "skills/apex/apex-test-setup-patterns/templates/apex-test-setup-patterns-template.md"
+      ],
+      "updated": "2026-04-22",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -84170,6 +84740,99 @@
     {
       "category": "flow",
       "chunk_ids": [
+        "0282ed1235c78fb844b6",
+        "053e3957b82ab12b341a",
+        "0a5660187f3466313846",
+        "177aaa40c6f52fb10b27",
+        "24b8920ca9885c7a368c",
+        "3139135e62a1018b6d63",
+        "373fefabc07560b86aa0",
+        "3892041738c0877c627e",
+        "44dae42a8c5b1e0ca1e1",
+        "489efa8ecbe0fb4f21c6",
+        "54949da5a1aff3af3d13",
+        "57796f8c230e2a12a97f",
+        "5aaaaf9286f5f330c0c5",
+        "5b9a13ba3f054b199791",
+        "61c1554e81fb367f3074",
+        "6955a1d97a496bec2749",
+        "6c6b830fe857dacd5b5d",
+        "721b6dee8d81484b3d98",
+        "73320c9de92d5ffa69af",
+        "73859ccec1b25d34bfa1",
+        "76a686c84a3a5b049383",
+        "79a6e4ff4417ec31d160",
+        "7a66db55aa70f4b5d7e1",
+        "7dad9496cac20cf4f685",
+        "7fd11a60472c48330f03",
+        "8374043d4e7803ed6f62",
+        "8b12f7e67aa4f38647c3",
+        "8cc56487dba8bc633a89",
+        "9443ac3e362cb2288140",
+        "9660d74503b55f44a817",
+        "978f5506e18e4a955cf3",
+        "9b7eae444c9faae1b419",
+        "9db9cd724bff456647a0",
+        "a39773d22ee6af06ebf4",
+        "ae600e9c38c42c72abe8",
+        "c37a01b585499d87d1c5",
+        "cb4d509751a2005a2464",
+        "d03032a6d3a037896ecc",
+        "db08c208f318bcdad0e7",
+        "db18d1eb26fb70bdefbc",
+        "f21c193f93844cdd43af",
+        "f3d376eaf07b3c1eb2d3",
+        "f488396e89d68222aa5b",
+        "f54cf7ade5f30cd7041a",
+        "f699347974094da93fa8",
+        "fe3eff3b3df73f2d2098"
+      ],
+      "content_hash": "1daa92c13d37272c800744e3a40eda629b8266f34bef9d02066068caab52af39",
+      "dependencies": [],
+      "description": "Cross-object DML in Flow: updating parent from child or child from parent via Get/Update Records, lookup traversal in formulas, and bulkification. NOT for Apex cross-object updates. NOT for Process Builder (migrate-workflow-pb covers migration). Use when building flows that must write to a related record.",
+      "file_location": "skills/flow/flow-cross-object-updates",
+      "id": "flow/flow-cross-object-updates",
+      "inputs": [
+        "Parent/child object relationship (lookup or master-detail)",
+        "Trigger context (record-triggered, scheduled, platform event)",
+        "Bulk volume expected"
+      ],
+      "name": "flow-cross-object-updates",
+      "official_sources": [
+        "Flow Reference \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_ref.htm&type=5",
+        "Flow Builder \u2014 https://help.salesforce.com/s/articleView?id=sf.flow.htm&type=5",
+        "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm"
+      ],
+      "outputs": [
+        "Flow design using Get Records + Update Records (no per-record loop DML)",
+        "Dot-notation traversal where a Get Records is unneeded"
+      ],
+      "references": [
+        "skills/flow/flow-cross-object-updates/references/examples.md",
+        "skills/flow/flow-cross-object-updates/references/gotchas.md",
+        "skills/flow/flow-cross-object-updates/references/llm-anti-patterns.md",
+        "skills/flow/flow-cross-object-updates/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/flow/flow-cross-object-updates/scripts/check_flow_cross_object_updates.py"
+      ],
+      "tags": [
+        "flow",
+        "cross-object",
+        "get-records",
+        "update-records",
+        "bulkification"
+      ],
+      "templates": [
+        "skills/flow/flow-cross-object-updates/templates/flow-cross-object-updates-template.md"
+      ],
+      "updated": "2026-04-22",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "flow",
+      "chunk_ids": [
         "0256dcf493793764fd78",
         "025c5eabd830d108c955",
         "03f4aa555b5b0b7bf19e",
@@ -86153,6 +86816,101 @@
         "skills/flow/flow-reactive-screen-components/templates/flow-reactive-screen-components-template.md"
       ],
       "updated": "2026-04-17",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "flow",
+      "chunk_ids": [
+        "02cbf47a3029cde466b8",
+        "10e75b8128c63b0bb3b8",
+        "116b01b4e03d2f7f5849",
+        "13f46cd102b2051325a3",
+        "13f94fe1e1152ba86695",
+        "21cdb3a43b9f245e3911",
+        "266a002031374f44612e",
+        "28550ddc4b2ce6d052cb",
+        "28f32e475770ec920de4",
+        "2c5fab7e99bac1dda6af",
+        "315d7d6116be9fd62306",
+        "3632ec006837c2741dc1",
+        "36359694c4e57ed6663f",
+        "36813333f04da739f694",
+        "427f258f9be052188773",
+        "44618071bcff91052e28",
+        "460ffa6aba81aca79f98",
+        "49f7bb0478cce441306b",
+        "4cb62b38348e3b7c10fa",
+        "55793f269380d12e59c8",
+        "60a06a096a6c423e4d26",
+        "616e888ec987331c3268",
+        "697e325415129cb46ac5",
+        "6dadbc8251cade266b22",
+        "705b150fa3e51c557396",
+        "738dceeb5ab629b3d4aa",
+        "7e15687298fe773c3a8f",
+        "7fa2fd2c91de11c1d8b6",
+        "823700191c705e7de360",
+        "8406cef0a105e550f09a",
+        "92826d1429502b9b5056",
+        "9763725aeebaf73d865d",
+        "a4ab3bbfd18857dca7e5",
+        "aeca20bf45e3a76afd60",
+        "af909b352f9f2fb9b85c",
+        "b0f7ce0c1d283e5019a1",
+        "ba7ce34715b563a4ae29",
+        "bd66ff82dd16ed076ea9",
+        "be04344336d1878b70c3",
+        "bf050be56eba44590421",
+        "caa054e85095018b364f",
+        "cdb8c4ebb395d6f50c14",
+        "d39b46436655f6409ab4",
+        "e22252aebdd9a6cb0437",
+        "e9d7ff5ff84b5f06dd1f",
+        "efe54f3922592c9a20c4",
+        "f8579d135c56bc380433",
+        "f9e4f5c831bcf03e4e3c"
+      ],
+      "content_hash": "9d3ec2fb3b42707fec4d7bae1708135cbd385728ce3e2fd4211155d4afe45776",
+      "dependencies": [],
+      "description": "Flow resource types and when to use each: Variables, Collection Variables, Constants, Formulas, Text Templates, Choices, Stages, Picklist Choice Sets, Record Choice Sets. Covers scope, data types, and reuse patterns. NOT for decision elements. NOT for custom metadata (use admin/custom-metadata-types).",
+      "file_location": "skills/flow/flow-resource-patterns",
+      "id": "flow/flow-resource-patterns",
+      "inputs": [
+        "Flow type (screen, record-triggered, autolaunched)",
+        "Data you need to hold, compute, or render"
+      ],
+      "name": "flow-resource-patterns",
+      "official_sources": [
+        "Flow Reference \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_ref.htm&type=5",
+        "Flow Builder \u2014 https://help.salesforce.com/s/articleView?id=sf.flow.htm&type=5",
+        "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm"
+      ],
+      "outputs": [
+        "Correct resource choice per use case",
+        "Naming + scoping guidelines"
+      ],
+      "references": [
+        "skills/flow/flow-resource-patterns/references/examples.md",
+        "skills/flow/flow-resource-patterns/references/gotchas.md",
+        "skills/flow/flow-resource-patterns/references/llm-anti-patterns.md",
+        "skills/flow/flow-resource-patterns/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/flow/flow-resource-patterns/scripts/check_flow_resource_patterns.py"
+      ],
+      "tags": [
+        "flow",
+        "variables",
+        "formulas",
+        "constants",
+        "choice-sets",
+        "text-template"
+      ],
+      "templates": [
+        "skills/flow/flow-resource-patterns/templates/flow-resource-patterns-template.md"
+      ],
+      "updated": "2026-04-22",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -95259,6 +96017,102 @@
     {
       "category": "lwc",
       "chunk_ids": [
+        "029864d3fdf5c22a898f",
+        "08c99f163dd50f3adc6e",
+        "0ae97293660b618f1bd9",
+        "16612f66e4ead8f306ef",
+        "170c6a106b70425f63cc",
+        "1e6fa475a146b2858b27",
+        "207563d5930b4cedcc23",
+        "2315570c986723d8790a",
+        "27898da8d5fc9a84b2a6",
+        "29514d7f861b52e377bc",
+        "2a0e8ea8e0260c9715a0",
+        "3335a186653373096424",
+        "400d5052d5478737a0b3",
+        "4067f7b3387a512f5f59",
+        "4442455056ba79ee0099",
+        "453a0e73bd92aff8d566",
+        "5075392ca7c6db508776",
+        "5f4c93cd5f81cf157b5d",
+        "5fe38aa63f35c54f9ebb",
+        "6922322ebbfe22d1edb0",
+        "6cbf5a456c1e93234b52",
+        "6f30d9f49471155684e6",
+        "761c0c485abce180b388",
+        "7ba2f842ed2f8bc95b66",
+        "7ea746669895605ab0ca",
+        "87bb549daceb3b48e32a",
+        "8af250b1905daf78e5f5",
+        "9716bb71d543ed4be1e9",
+        "9e4db81d7f2f26b8c88d",
+        "a2db7765249cd4e0688c",
+        "a3cece9e33ee2d8da946",
+        "a631a5e090a010a418f9",
+        "a77f8beb39d756f0dee8",
+        "ae1e6e888111e0aee730",
+        "bf11f9ffbc4fef88dbb4",
+        "c1e40431f2632f2c20c3",
+        "cc678d8efa8bd2f92126",
+        "d214f64213fdf2808ea5",
+        "d72113dd600b0492ebff",
+        "dae62db107d006a3ddb7",
+        "dfa9453a3503586f35c5",
+        "dfdb213e049839fadb14",
+        "e2c29a724e67ca2a1167",
+        "e7bf935cf6f615ce8f1c",
+        "ec6f0b7aab7a7da4d22d",
+        "ed3f0e6ad17d314ca922",
+        "f17ae89ac58b52ac4e78",
+        "fc42f6b04d6fa2e315b5"
+      ],
+      "content_hash": "2c259d3610b7a86a3e8d1fd625213c3a3f28fc3b701ebb8210b49e0e00d0f7a1",
+      "dependencies": [],
+      "description": "Async/await and Promise patterns in LWC: imperative Apex, loading states, error handling, concurrent wire + imperative, AbortController for in-flight cancellation, Promise.all for parallel calls. NOT for wire service basics (use lwc-wire-refresh-patterns). NOT for Lightning Data Service.",
+      "file_location": "skills/lwc/lwc-async-patterns",
+      "id": "lwc/lwc-async-patterns",
+      "inputs": [
+        "Data needs (imperative vs wire)",
+        "Parallel vs serial requirements",
+        "Cancellation semantics"
+      ],
+      "name": "lwc-async-patterns",
+      "official_sources": [
+        "LWC Best Practices \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/get-started-best-practices.html",
+        "Lightning Component Reference \u2014 https://developer.salesforce.com/docs/platform/lightning-component-reference/guide",
+        "LWC Data Guidelines \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-guidelines.html"
+      ],
+      "outputs": [
+        "Async handler with try/catch + finally",
+        "Loading-state management",
+        "AbortController usage (where applicable)"
+      ],
+      "references": [
+        "skills/lwc/lwc-async-patterns/references/examples.md",
+        "skills/lwc/lwc-async-patterns/references/gotchas.md",
+        "skills/lwc/lwc-async-patterns/references/llm-anti-patterns.md",
+        "skills/lwc/lwc-async-patterns/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/lwc/lwc-async-patterns/scripts/check_lwc_async_patterns.py"
+      ],
+      "tags": [
+        "lwc",
+        "async",
+        "promise",
+        "imperative-apex",
+        "abortcontroller"
+      ],
+      "templates": [
+        "skills/lwc/lwc-async-patterns/templates/lwc-async-patterns-template.md"
+      ],
+      "updated": "2026-04-22",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "lwc",
+      "chunk_ids": [
         "0210c94d6dd2d8a1a8ab",
         "06f743580a486f6ccb7c",
         "0b3a1de774a235d3fa03",
@@ -96944,6 +97798,99 @@
         "skills/lwc/lwc-security/templates/lwc-security-template.md"
       ],
       "updated": "2026-03-13",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "lwc",
+      "chunk_ids": [
+        "0334547f3d7c87ccdddf",
+        "0396da928ad902e2ab3f",
+        "09ce05fd8725f73023ba",
+        "0cbc73470f50e2eda29f",
+        "267dea2235c2249c2ece",
+        "3304f91462b94819d4b1",
+        "40933fe7cfe217e48151",
+        "452d688c6580a8668c21",
+        "49be6ca6a825c48c2285",
+        "4b4f0e552c89fe1214aa",
+        "52190df5600b1a9571d9",
+        "552b02c70047f06c8dbe",
+        "61f276c47c980b155f6d",
+        "62050a3c08a439d9faed",
+        "673a14622e29c61c4ad2",
+        "6af0c8ceddbd260311e3",
+        "6e35d7922405efc4f8db",
+        "7528f9abe736c9e95a1e",
+        "7b704004de8ab9d33342",
+        "7e1fc99f3b59a5609bba",
+        "810e393948a5e304c1ff",
+        "8a33c3767168bb86d71e",
+        "95a59edffc95bce80516",
+        "982af1cbbe869621d5bd",
+        "9a8e15251d309d37760f",
+        "9ec278d6acfa1658d654",
+        "a4372895c4c2ce1926bf",
+        "b606be1eab96b1130f0b",
+        "c197e78d053456ac6e31",
+        "c2c9d3a30712e0ea24c8",
+        "cbbd60b1ff1c8973b8dd",
+        "cd3244c75397c72874f7",
+        "d8af2b8061c282dc55a7",
+        "dd3cda94d1b61a75866c",
+        "e03d345048bb16e95a6b",
+        "e90316bc78a8399a6d23",
+        "e9eed1b78b888a4a6602",
+        "ed0f25a6cf813e86736e",
+        "f0e728d027ad8ad0a334",
+        "f4a66ba32d26baba10e3",
+        "f5c5160b646f1c3ec083",
+        "f674ff6fcd8badf54f9d",
+        "f6c67f55b9749596f059",
+        "f822f93480b293781cc4",
+        "f88b3bc55bc9baf15da0",
+        "f8c4708cfdcf85e25084",
+        "fa5bab55e12c78395252"
+      ],
+      "content_hash": "ff46e70eb6b0115d503991d52c97f43bf7fe4c758036e2e17c112041b420d980",
+      "dependencies": [],
+      "description": "ShowToastEvent in LWC: variants (success/warning/error/info), modes (dismissible/pester/sticky), message formatting, NOT supported in LWR Experience Cloud sites, alternatives (lightning-alert, inline banners). NOT for custom notification types (use admin/custom-notification-types). NOT for SLDS popovers.",
+      "file_location": "skills/lwc/lwc-show-toast-patterns",
+      "id": "lwc/lwc-show-toast-patterns",
+      "inputs": [
+        "Feedback intent (confirmation, warning, error, info)",
+        "Context (Lightning Experience, LWR, Mobile)",
+        "Dismiss behavior needed"
+      ],
+      "name": "lwc-show-toast-patterns",
+      "official_sources": [
+        "LWC Best Practices \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/get-started-best-practices.html",
+        "Lightning Component Reference \u2014 https://developer.salesforce.com/docs/platform/lightning-component-reference/guide",
+        "LWC Data Guidelines \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-guidelines.html"
+      ],
+      "outputs": [
+        "Dispatch code with correct variant + mode",
+        "Fallback plan for LWR sites"
+      ],
+      "references": [
+        "skills/lwc/lwc-show-toast-patterns/references/examples.md",
+        "skills/lwc/lwc-show-toast-patterns/references/gotchas.md",
+        "skills/lwc/lwc-show-toast-patterns/references/llm-anti-patterns.md",
+        "skills/lwc/lwc-show-toast-patterns/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/lwc/lwc-show-toast-patterns/scripts/check_lwc_show_toast_patterns.py"
+      ],
+      "tags": [
+        "lwc",
+        "showtoastevent",
+        "toast",
+        "lightning-platform-show-toast-event"
+      ],
+      "templates": [
+        "skills/lwc/lwc-show-toast-patterns/templates/lwc-show-toast-patterns-template.md"
+      ],
+      "updated": "2026-04-22",
       "vector_embedding": null,
       "version": "1.0.0"
     },

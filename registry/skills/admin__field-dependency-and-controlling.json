@@ -1,0 +1,96 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "0221ef8119d077cb94db",
+    "050e2c8a5a06989b5f63",
+    "06f8f0bfd164549ec605",
+    "072cdb528628ee1241f3",
+    "08d4bb8afe1060c04a0d",
+    "0a49ea5bb738385e9b4c",
+    "10d03aaa33e3c36f006e",
+    "19ff8f999701c55584f3",
+    "1a7e5cf69fcb25113d8b",
+    "235b96ec76f6b6756f02",
+    "2617b6ddb116836c2c03",
+    "27493de39d7c956fa1ad",
+    "28db41c21a33b154b95a",
+    "29f742ab6c4ca360faef",
+    "2af78983d95c43939939",
+    "31eeb6ab545a28b8d97b",
+    "349881b372f3e6069545",
+    "392c41bc17503902a517",
+    "3ac7c02984eef62dbbb3",
+    "41ff961fcd6fc95787d0",
+    "443ffafa1ac17bf28a41",
+    "456aac407663eef12c96",
+    "4f6532e727a56495d327",
+    "577251e651f35f9e93f8",
+    "58704e5e4c9fd654ee8d",
+    "635e31e14ddfa353184b",
+    "737cc1cc438bde150c61",
+    "8368ac531e7470485e0f",
+    "8a55940e89410d221ede",
+    "8bbbf4c61f1e5292c830",
+    "90d59f32cd88e01d7179",
+    "92a3f9804378b9a7edb5",
+    "936fcc6d0689ebfed9cf",
+    "93c4ac6abf025c82c8d2",
+    "95264da77b4d7f266f67",
+    "97f3c2da2e741880db90",
+    "9cabb9d5ff04a2cd4318",
+    "9d4379a2df606f187f00",
+    "9d8d758fc9ef44c1436c",
+    "9dfa02c4f49cd981da3e",
+    "a121ee0b99353aa26708",
+    "b94e18e5d5778d93b598",
+    "bd08c433e763932abea2",
+    "d136bb5c142bfa782c29",
+    "d18bb8d7d53b028989e9",
+    "df46f4f99d69212514c9",
+    "ec2900f5ee829abbfcb9",
+    "f8426ddcf2750204dd43"
+  ],
+  "content_hash": "e3c324f9843cb786c5f53ed1cd39e322926e91bdf9a4c29417928fc39b8722c8",
+  "dependencies": [],
+  "description": "Dependent picklists in Salesforce: controlling field (picklist or checkbox), dependent picklist, valueSettings matrix in metadata, API behavior via SOAP/REST, LWC lightning-combobox with dependency. NOT for record types (use admin/record-types). NOT for validation rules.",
+  "file_location": "skills/admin/field-dependency-and-controlling",
+  "id": "admin/field-dependency-and-controlling",
+  "inputs": [
+    "Controlling field (picklist or checkbox)",
+    "Dependent picklist",
+    "Mapping matrix (which dep values available for each controlling value)"
+  ],
+  "name": "field-dependency-and-controlling",
+  "official_sources": [
+    "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
+    "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "valueSettings metadata block",
+    "LWC / Aura pattern for dependent combobox",
+    "API insert behavior expectations"
+  ],
+  "references": [
+    "skills/admin/field-dependency-and-controlling/references/examples.md",
+    "skills/admin/field-dependency-and-controlling/references/gotchas.md",
+    "skills/admin/field-dependency-and-controlling/references/llm-anti-patterns.md",
+    "skills/admin/field-dependency-and-controlling/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/field-dependency-and-controlling/scripts/check_field_dependency_and_controlling.py"
+  ],
+  "tags": [
+    "admin",
+    "picklist",
+    "dependent-picklist",
+    "controlling-field",
+    "valuesettings"
+  ],
+  "templates": [
+    "skills/admin/field-dependency-and-controlling/templates/field-dependency-and-controlling-template.md"
+  ],
+  "updated": "2026-04-22",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

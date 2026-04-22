@@ -1,0 +1,95 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "019c68decad2ec1c09b4",
+    "0d0c0e462246485f2c75",
+    "11c5c465153cf729222b",
+    "191de77749d6c2f71170",
+    "1adff30049630c6c3a83",
+    "1c3a259f8ef24b770e23",
+    "1cdf5ab61fab0f5c18f0",
+    "20e1cd7d91e1557ede9e",
+    "22cf5483b0abd41976eb",
+    "3085da04085258c8cc6f",
+    "3654afbf1a0688375540",
+    "366164292fbbf8328e08",
+    "37a2b934bfdace9b459d",
+    "37b1376a764536511013",
+    "37c29389c3817e5338aa",
+    "43c7e89a14f1b4afc908",
+    "53f429c29381117f67c4",
+    "5900ac58df717e93073f",
+    "5a8f40e061ff99af443f",
+    "5c228196632210042bb3",
+    "5f9b48702a98d0af396e",
+    "6056423ce5f035e054fe",
+    "631d72ce30ed790c58eb",
+    "651fce4926e74ee21fef",
+    "6a6b1c73252af69a1397",
+    "6b6054856f480ca9a48d",
+    "6f8f901ceabab520e3e5",
+    "75865be0d3de4a26cfc1",
+    "7904f1ff9ed1f154557c",
+    "86dbd0f38fe14b18233f",
+    "a0b9148f61eb5b50833e",
+    "b3b3ac4bf63818735d8e",
+    "b5a357ce438fe530b40a",
+    "b5f1907f91bbe46ffb0a",
+    "cbe481336ab80edca059",
+    "ce3804e56193e9e88f38",
+    "d446b94a8cb085591e6d",
+    "dc077989c6e5ace59dcb",
+    "defc55d52d4fd7c3143d",
+    "df7e40e3ce896ccee480",
+    "dfd4a00dc7bf1278ed7b",
+    "e11e8b11afdcf1290f15",
+    "e158f56d2bd25519b1db",
+    "e24c2e12004254c779ac",
+    "e8b3a9c87760b45fd1f2",
+    "f19d0f3a2aab98d668b6",
+    "fe1a5064e9667e9b71a4"
+  ],
+  "content_hash": "a858199f34ffa151f7d08468aee58d5e0f0838448ee2557b999aeee8032ec1aa",
+  "dependencies": [],
+  "description": "SObject.clone(preserveId, isDeepClone, preserveReadonly, preserveAutonumber): shallow vs deep clone semantics, related-record replication, clone with parent repointing, autonumber preservation. NOT for data migration (use bulk-api-and-large-data-loads). NOT for record snapshots (use field-history-tracking).",
+  "file_location": "skills/apex/apex-record-clone-patterns",
+  "id": "apex/apex-record-clone-patterns",
+  "inputs": [
+    "Record(s) to clone",
+    "Whether children/related records must travel",
+    "Whether readonly/system fields must be preserved"
+  ],
+  "name": "apex-record-clone-patterns",
+  "official_sources": [
+    "Apex Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm",
+    "Apex Reference Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Clone invocation code",
+    "Relationship reparenting plan",
+    "Insert strategy"
+  ],
+  "references": [
+    "skills/apex/apex-record-clone-patterns/references/examples.md",
+    "skills/apex/apex-record-clone-patterns/references/gotchas.md",
+    "skills/apex/apex-record-clone-patterns/references/llm-anti-patterns.md",
+    "skills/apex/apex-record-clone-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/apex-record-clone-patterns/scripts/check_apex_record_clone_patterns.py"
+  ],
+  "tags": [
+    "apex",
+    "clone",
+    "sobject",
+    "deep-clone",
+    "autonumber"
+  ],
+  "templates": [
+    "skills/apex/apex-record-clone-patterns/templates/apex-record-clone-patterns-template.md"
+  ],
+  "updated": "2026-04-22",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

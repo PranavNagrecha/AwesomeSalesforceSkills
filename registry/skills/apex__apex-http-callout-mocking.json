@@ -1,0 +1,95 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "05498be03382fb902991",
+    "073c6d8081df37ad0ae6",
+    "0e0683654f06eaad4362",
+    "1dfc3148af317447986e",
+    "2c8e5c4fc2451e2d9c15",
+    "302a0c78fcd36ed88c95",
+    "33e09ef8dc5a2318ea0a",
+    "3a7c7286bf92a2eb1fe7",
+    "419ca7b07b7873476967",
+    "45a67072695c376c4b19",
+    "4a34bf1b9ee266e7b6ed",
+    "5075d4738058601f47c6",
+    "5816353410bac15214f8",
+    "5acf80bd9aac6b3c81f5",
+    "5dd21429b0fc3eb98f36",
+    "5f774fc3d327cbda67eb",
+    "642d9190a00bff9c4102",
+    "652fc6e8ffdccf7806a0",
+    "6ac7036ea6c73b1aabd4",
+    "6fc71e75fc97a59d3372",
+    "713533d029aeb24184ed",
+    "72f6adfef6246e914410",
+    "7c7c42d154b9b87efe23",
+    "7fbb2bcc80e8c90020bd",
+    "88f804791c174672e702",
+    "8dd908c69a6bfbbe10e6",
+    "91a00f3b04b20ed0855a",
+    "9f6439ae72a0cfafe2e9",
+    "9f8908fe7eb0aa9c5e75",
+    "a3929dad65da1c8dc7b1",
+    "a7cda57983d80067fd76",
+    "aea9d4f8cee9306c096f",
+    "b2da1178c53ba7670dca",
+    "bf0715354161bdc725e0",
+    "c99bd0eba87db8b38780",
+    "cb9e4f7ecaf76c9d74da",
+    "d9617ec4a89cd8fc366a",
+    "dc8e66b90dc94a02f05e",
+    "dcb4dbfa1501fdfd6856",
+    "e5a9a184efbcb80b7da3",
+    "ea6cc7913ccfa246064c",
+    "f1742b23f9965bbc1ef1",
+    "f19718351ffb0736b5f8",
+    "f5590fcba0a30ca22641",
+    "f894b52d15b2c07327ca",
+    "fdedf06a03b91d7a4d01",
+    "fe4e5f968d910fedc464"
+  ],
+  "content_hash": "f4de3482a9722c8542e678bdbe82477478d2a80997264055b69a7a42c679b6f0",
+  "dependencies": [],
+  "description": "HttpCalloutMock for Apex tests: HttpCalloutMock interface, StaticResourceCalloutMock, MultiStaticResourceCalloutMock, Test.setMock, multi-call mocks for pagination, error-path mocks. NOT for the callout code itself (use callouts-and-http-integrations). NOT for WSDL callouts (use apex-wsdl2apex-patterns).",
+  "file_location": "skills/apex/apex-http-callout-mocking",
+  "id": "apex/apex-http-callout-mocking",
+  "inputs": [
+    "Callout shape (endpoints, verbs, headers)",
+    "Number of calls per test",
+    "Error scenarios to exercise"
+  ],
+  "name": "apex-http-callout-mocking",
+  "official_sources": [
+    "Apex Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm",
+    "Apex Reference Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "HttpCalloutMock implementation",
+    "Test method with Test.setMock",
+    "Multi-call routing logic"
+  ],
+  "references": [
+    "skills/apex/apex-http-callout-mocking/references/examples.md",
+    "skills/apex/apex-http-callout-mocking/references/gotchas.md",
+    "skills/apex/apex-http-callout-mocking/references/llm-anti-patterns.md",
+    "skills/apex/apex-http-callout-mocking/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/apex-http-callout-mocking/scripts/check_apex_http_callout_mocking.py"
+  ],
+  "tags": [
+    "apex",
+    "testing",
+    "http-callout",
+    "mocks",
+    "test-setmock"
+  ],
+  "templates": [
+    "skills/apex/apex-http-callout-mocking/templates/apex-http-callout-mocking-template.md"
+  ],
+  "updated": "2026-04-22",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

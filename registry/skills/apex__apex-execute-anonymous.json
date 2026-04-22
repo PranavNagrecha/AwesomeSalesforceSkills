@@ -1,0 +1,95 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "026f6b1ca53edb3c6c0f",
+    "04caa9fdc50b5a2dffbe",
+    "05cf6a190f40ebe3f538",
+    "111afbe06c0bfb40aed8",
+    "1c2d8ad6b8117d3d5b5e",
+    "24b3906aea5204027f23",
+    "25f303c2192a662ec434",
+    "29ea0969a051d1262fb5",
+    "2ecd6c5f2d683012c5c8",
+    "35507845468bd46f7ea2",
+    "371fd6c63bfa678f1077",
+    "40293ce674c7cfa6df36",
+    "42e18a0ed702ec15902a",
+    "4771f847605f5a7d5b14",
+    "4b4bbfbb9a56d879fd5d",
+    "50d5aa3e61246639a325",
+    "51b21ea2a4c3fcb29884",
+    "5c92a2999ddf14822a55",
+    "5d428eb1f6d9f4dc67ea",
+    "63334dfc3b03364b8aa9",
+    "660b175cbee62a130c16",
+    "770e00cbf3984d21917f",
+    "7b76dc601d2d6d00701d",
+    "82d94fcaf3cdd6ed9a18",
+    "852fe4d088b87f9c7646",
+    "8f53ccf718c610a0fdb0",
+    "998ae314e4e7009a6231",
+    "9c5a76b3bed7de9e66f6",
+    "9fe092b5eb715e6acb6d",
+    "a0484653b934a42f406b",
+    "a9016505cbcab92a191b",
+    "af11ef379c9fa134d1c0",
+    "b55f2a981f6b95883873",
+    "bb004b34a9c7e2da30ca",
+    "bcdd87ce850b3bcd0070",
+    "c895e3722751853827e3",
+    "c94df44bad060d65d475",
+    "caac4ba0190f550ec593",
+    "d6588cbbbeaa344d5719",
+    "d8c2146a51de1614d920",
+    "e568f099d387d91476d8",
+    "eacb5059fa254d1a2b26",
+    "eb77e0c6f78f04ff2904",
+    "f908395c37b4b05454d6",
+    "f978269b1f2cdd76c9d7",
+    "fb48e1797a56a584e8c5",
+    "fef50f5c3cbe680898e7"
+  ],
+  "content_hash": "c31192ef49f71eee0fa9f08aef8b6f19b45c6d0e5c5b8ba9f7ea476f204daa1a",
+  "dependencies": [],
+  "description": "Execute Anonymous Apex: Developer Console, VS Code SFDX, `sf apex run`, variable scope, transaction semantics, governor limits, debugging output, common errors. NOT for scheduled/queueable async (use apex-async-patterns). NOT for debug log settings (use debug-log-management).",
+  "file_location": "skills/apex/apex-execute-anonymous",
+  "id": "apex/apex-execute-anonymous",
+  "inputs": [
+    "Script purpose (one-off data fix, investigation, etc.)",
+    "Target org",
+    "Data scope (records affected)"
+  ],
+  "name": "apex-execute-anonymous",
+  "official_sources": [
+    "Apex Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm",
+    "Apex Reference Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Anonymous Apex script (.apex file)",
+    "CLI invocation command",
+    "Rollback plan (if DML)"
+  ],
+  "references": [
+    "skills/apex/apex-execute-anonymous/references/examples.md",
+    "skills/apex/apex-execute-anonymous/references/gotchas.md",
+    "skills/apex/apex-execute-anonymous/references/llm-anti-patterns.md",
+    "skills/apex/apex-execute-anonymous/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/apex-execute-anonymous/scripts/check_apex_execute_anonymous.py"
+  ],
+  "tags": [
+    "apex",
+    "execute-anonymous",
+    "sfdx",
+    "developer-console",
+    "debugging"
+  ],
+  "templates": [
+    "skills/apex/apex-execute-anonymous/templates/apex-execute-anonymous-template.md"
+  ],
+  "updated": "2026-04-22",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

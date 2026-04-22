@@ -1,5 +1,6 @@
 # MASTER_QUEUE.md — Universal Salesforce Skill Build Queue
 
+<!-- batch-10-skills-3 @ 2026-04-22T11:07:10Z — 10 skills across apex (test-setup, callout-mocking, runas, execute-anonymous, record-clone), lwc (show-toast, async-patterns), flow (cross-object-updates, resource-patterns), admin (field-dependency); validate_repo.py --changed-only passes 0 errors. -->
 <!-- batch-20-skills-2 @ 2026-04-22T03:05:17Z — 20 skills built across admin/apex/lwc/integration/devops/security; validate_repo.py --changed-only passes 0 errors. -->
 
 <!--
@@ -1688,7 +1689,7 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | TODO | org-data-export-patterns | Scheduled data export, Data Export Service, Bulk API export, weekly export, export file formats, export scheduling, compliance archival. NOT for Bulk API development. | data |
 | TODO | sandbox-post-refresh-automation | Post-copy Apex classes (SandboxPostCopy interface): user deactivation, email masking, data cleanup, integration endpoint swapping, test data seeding. NOT for sandbox admin (use sandbox-refresh-and-templates). | devops |
 | TODO | salesforce-release-impact-assessment | Reading release notes for org impact: critical updates, feature retirements, API changes, testing in preview sandboxes, release readiness checklist. NOT for general release management. | admin |
-| TODO | field-dependency-and-controlling | Dependent picklists: controlling/dependent field setup, multi-level dependencies, Record Type filtering, field dependency matrix, Flow handling of dependents. NOT for picklist admin. | admin |
+| DONE | field-dependency-and-controlling | Dependent picklists: controlling/dependent field setup, multi-level dependencies, Record Type filtering, field dependency matrix, Flow handling of dependents. NOT for picklist admin. | admin |
 | TODO | page-layout-assignment-strategy | Page layout assignment: Record Type × Profile matrix, layout assignment optimization, Business Profile patterns, layout assignment deployment. NOT for Dynamic Forms. | admin |
 | TODO | salesforce-search-configuration | Global search configuration: searchable objects, search layouts, SOSL search groups, search result weights, Einstein Search, search scope. NOT for Experience Cloud search. | admin |
 | TODO | workflow-field-update-patterns | Field update patterns across automation tools: before-save flow vs after-save trigger, cross-object updates, field update order, re-evaluation patterns. NOT for trigger order-of-execution. | admin |
@@ -1723,16 +1724,16 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
 | DONE | apex-trigger-context-variables | Trigger.new, Trigger.old, Trigger.newMap, Trigger.oldMap: when each is available, null in delete context, before vs after differences, isExecuting, operationType, size. NOT for trigger framework architecture. | apex |
-| TODO | apex-test-setup-patterns | @TestSetup method: execution timing, isolation behavior, @TestVisible annotation, System.runAs in tests, Test.startTest/stopTest governor reset, test data visibility. NOT for test data factory (use test-data-factory-patterns). | apex |
-| TODO | apex-http-callout-mocking | HttpCalloutMock, MultiStaticResourceCalloutMock, StaticResourceCalloutMock, Test.setMock, mock chaining for multi-callout tests. NOT for actual callout implementation (use callouts-and-http-integrations). | apex |
+| DONE | apex-test-setup-patterns | @TestSetup method: execution timing, isolation behavior, @TestVisible annotation, System.runAs in tests, Test.startTest/stopTest governor reset, test data visibility. NOT for test data factory (use test-data-factory-patterns). | apex |
+| DONE | apex-http-callout-mocking | HttpCalloutMock, MultiStaticResourceCalloutMock, StaticResourceCalloutMock, Test.setMock, mock chaining for multi-callout tests. NOT for actual callout implementation (use callouts-and-http-integrations). | apex |
 | DONE | apex-future-method-patterns | @future method: when to use vs Queueable, parameter restrictions (no SObject), mixed DML workaround, governor limits in future context, testing future methods. NOT for general async (use async-apex). | apex |
 | DONE | apex-savepoint-and-rollback | Database.setSavepoint, Database.rollback: transaction control, nested savepoints, savepoint in triggers, partial rollback patterns, try-catch-rollback. NOT for DML patterns. | apex |
-| TODO | apex-system-runas | System.runAs in test context: profile/permission testing, sharing rule verification, mixed DML workaround, limitations (does not enforce FLS), community user testing. NOT for test setup. | apex |
-| TODO | apex-execute-anonymous | Execute Anonymous: Developer Console, VS Code, sf apex run, variable scope, transaction behavior, governor limits, debugging output, common errors. NOT for debug logs. | apex |
+| DONE | apex-system-runas | System.runAs in test context: profile/permission testing, sharing rule verification, mixed DML workaround, limitations (does not enforce FLS), community user testing. NOT for test setup. | apex |
+| DONE | apex-execute-anonymous | Execute Anonymous: Developer Console, VS Code, sf apex run, variable scope, transaction behavior, governor limits, debugging output, common errors. NOT for debug logs. | apex |
 | DONE | apex-custom-permissions-check | FeatureManagement.checkPermission, Custom Permissions in Apex and Flow: feature gating, license checks, conditional logic, package-aware permission checks. NOT for Permission Sets admin. | apex |
 | TODO | apex-outbound-email-patterns | Messaging.SingleEmailMessage, MassEmailMessage, email templates in Apex, org-wide email address, setTargetObjectId vs setToAddresses, attachment handling. NOT for Email-to-Case or email alerts. | apex |
 | TODO | apex-wsdl2apex-patterns | WSDL-to-Apex generation: importing WSDL, generated class structure, callout from generated stubs, common WSDL parsing failures, testing WSDL callouts. NOT for REST callouts. | apex |
-| TODO | apex-record-clone-patterns | SObject.clone(preserveId, isDeepClone, preserveReadonly, preserveAutonumber): deep clone behavior, related record cloning, clone with modifications. NOT for data migration. | apex |
+| DONE | apex-record-clone-patterns | SObject.clone(preserveId, isDeepClone, preserveReadonly, preserveAutonumber): deep clone behavior, related record cloning, clone with modifications. NOT for data migration. | apex |
 | DONE | apex-polymorphic-soql | TYPEOF in SOQL: WhoId/WhatId polymorphism, Event.WhoId resolution, Task.WhatId querying, Name object, polymorphic lookup handling in triggers. NOT for relationship queries. | apex |
 
 ### 22b — LWC Dev Primitives (most-asked component patterns)
@@ -1743,10 +1744,10 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 |--------|------------|-------------|-------|
 | DONE | lwc-navigation-mixin | NavigationMixin: navigate to record, list view, URL, related list, custom tab, web page, file download, replace vs push, generateUrl. NOT for Experience Cloud routing. | lwc |
 | DONE | lwc-wire-refresh-patterns | refreshApex, getRecordNotifyChange (deprecated → notifyRecordUpdateAvailable), wire error handling, stale wire data, provisioning lifecycle. NOT for wire basics (use wire-service-patterns). | lwc |
-| TODO | lwc-show-toast-patterns | ShowToastEvent: variants, modes (dismissible/pester/sticky), message formatting, toasts in LWR sites (not supported), alternative notification patterns. NOT for custom notifications admin. | lwc |
+| DONE | lwc-show-toast-patterns | ShowToastEvent: variants, modes (dismissible/pester/sticky), message formatting, toasts in LWR sites (not supported), alternative notification patterns. NOT for custom notifications admin. | lwc |
 | DONE | lwc-lightning-modal | LightningModal: modal creation, passing data, returning results, sizing, nested modals, modal vs popup vs overlay, header/footer/body slots. NOT for lwc-modal-and-overlay (use for Aura overlay library). | lwc |
 | DONE | lwc-record-picker | lightning-record-picker component: filter configuration, matching criteria, display fields, default selection, multi-object search, custom filter logic. NOT for custom lookup (use lwc-custom-lookup). | lwc |
-| TODO | lwc-async-patterns | Promise handling in LWC: imperative Apex with async/await, error boundaries, loading states, concurrent wire + imperative, AbortController patterns. NOT for wire service. | lwc |
+| DONE | lwc-async-patterns | Promise handling in LWC: imperative Apex with async/await, error boundaries, loading states, concurrent wire + imperative, AbortController patterns. NOT for wire service. | lwc |
 
 ### 22c — Flow Dev Primitives
 
@@ -1755,8 +1756,8 @@ Every skill here should work regardless of which Salesforce cloud the org has li
 | Status | Skill Name | Description | Notes |
 |--------|------------|-------------|-------|
 | TODO | flow-screen-lwc-components | Custom LWC screen components for Flow: FlowAttributeChangeEvent, flow navigation events, validation, reactive inputs, FlowScreenComponentInterface. NOT for flow-custom-property-editors. | flow |
-| TODO | flow-resource-patterns | Flow resources: formulas, constants, text templates, choice sets, stages, picklist choice — when to use each, performance implications, limits. NOT for Flow building basics. | flow |
-| TODO | flow-cross-object-updates | Cross-object field updates in flows: Get Records → Loop → Update Records pattern, related record updates, avoiding recursion, bulk-safe patterns. NOT for trigger patterns. | flow |
+| DONE | flow-resource-patterns | Flow resources: formulas, constants, text templates, choice sets, stages, picklist choice — when to use each, performance implications, limits. NOT for Flow building basics. | flow |
+| DONE | flow-cross-object-updates | Cross-object field updates in flows: Get Records → Loop → Update Records pattern, related record updates, avoiding recursion, bulk-safe patterns. NOT for trigger patterns. | flow |
 | TODO | flow-time-based-patterns | Time-based flows: scheduled paths in record-triggered flows, Wait elements, time-based workflow replacement, time zone behavior, resume conditions. NOT for scheduled flows (use scheduled-flows). | flow |
 
 ### 22d — Admin Workflows (things admins do weekly that LLMs must get right)
