@@ -1,0 +1,101 @@
+{
+  "category": "lwc",
+  "chunk_ids": [
+    "145f9cb981fb21c22db3",
+    "1abd9764b074764b2688",
+    "2301d4ec4adb459e3cea",
+    "27efd26f5a32daa0b538",
+    "2d2df0d1b583dd01b69d",
+    "34130a90f7286f348eb3",
+    "3e23c9aa2de917cccbbc",
+    "4cab7a7524671c39f51c",
+    "4d273e06a25be9049c53",
+    "5223d61d5ad12a4a40fa",
+    "5c6ae409da8fc4c6909e",
+    "5dd483c23a97a29d4a51",
+    "620b457a72b9d1991ab2",
+    "67b3c2bea86af110ecef",
+    "6be6cd6ffd9c5a646dfa",
+    "6da5ba627d5e2c1696a8",
+    "71a48ba2ddccded86614",
+    "7d495096d6643d54dd18",
+    "84d3741d7e3a5e2b257c",
+    "8503fbdd07efc862b786",
+    "88b5086a704270b5d513",
+    "8c66fa1f6eaa2af563bc",
+    "8dd3a89d20be676921db",
+    "91262fb51f6cf541d1ef",
+    "9131332b13718e75a696",
+    "92cad2310ad63be0d38a",
+    "99c6c508d2f4b213cc94",
+    "9a0eeff60fe5b268ffeb",
+    "a198f87721e66290b25a",
+    "a527a0b621aa471b44bb",
+    "ac5eae8019fe71dac750",
+    "bdbf3a72c0240c13c74d",
+    "c06b8f46164e94aa2f0f",
+    "c0cd11c1d72e29814ede",
+    "c8188e6c6d332b59db73",
+    "c9d6f32a563af648f07c",
+    "d4cadbb5d83e5bbea79f",
+    "d5e29beebd9bdeb59be7",
+    "da7611174b904865f00c",
+    "dbb41b4440c556dd4154",
+    "e1f802270682674208ce",
+    "e3f3814b87e6c40baae1",
+    "e4e0531646e357acf7a6",
+    "e6061d6cb25be2fde3cc",
+    "e9dca77b2339b57cf33a",
+    "ee79e42657101a6955e6",
+    "f1f2c05f0fac743a57e6",
+    "f4a2ec60ed510bcfe247",
+    "fcf1d1c52bae6f6df81c"
+  ],
+  "content_hash": "6f02b0de2e0d00984988de86cdd1e92a227508e91cba7400ebd44888e0993d40",
+  "dependencies": [],
+  "description": "Charts and visualization in LWC: Chart.js, D3, Plotly via Static Resources; Lightning chart components; performance patterns for 10k+ data points; accessibility; SLDS theming. NOT for CRM Analytics embedding (use crm-analytics-foundation). NOT for Tableau embedding (use tableau-salesforce-connector).",
+  "file_location": "skills/lwc/lwc-chart-and-visualization",
+  "id": "lwc/lwc-chart-and-visualization",
+  "inputs": [
+    "Data source (Apex, UI API, Platform Events, Data Cloud)",
+    "Volume (dozens, hundreds, thousands, tens of thousands of points)",
+    "Chart type (bar, line, pie, scatter, map, custom)",
+    "Theming and accessibility requirements"
+  ],
+  "name": "lwc-chart-and-visualization",
+  "official_sources": [
+    "LWC Best Practices \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/get-started-best-practices.html",
+    "Lightning Component Reference \u2014 https://developer.salesforce.com/docs/platform/lightning-component-reference/guide",
+    "LWC Data Guidelines \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-guidelines.html"
+  ],
+  "outputs": [
+    "Library selection (Chart.js, D3, Plotly, Lightning Chart, custom)",
+    "Static Resource bundling plan",
+    "Data pipeline pattern (paginated, streamed, preaggregated)",
+    "Accessibility and SLDS theming checklist"
+  ],
+  "references": [
+    "skills/lwc/lwc-chart-and-visualization/references/examples.md",
+    "skills/lwc/lwc-chart-and-visualization/references/gotchas.md",
+    "skills/lwc/lwc-chart-and-visualization/references/llm-anti-patterns.md",
+    "skills/lwc/lwc-chart-and-visualization/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/lwc/lwc-chart-and-visualization/scripts/check_lwc_chart_and_visualization.py"
+  ],
+  "tags": [
+    "lwc",
+    "chart-js",
+    "d3",
+    "visualization",
+    "static-resource",
+    "lightning-chart",
+    "accessibility"
+  ],
+  "templates": [
+    "skills/lwc/lwc-chart-and-visualization/templates/lwc-chart-and-visualization-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

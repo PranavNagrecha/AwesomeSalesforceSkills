@@ -1,0 +1,97 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "06dc1afdb04295f86fbe",
+    "1b67bbe6b8f015b87dcf",
+    "20cfd9bd5b69caa8812b",
+    "230775a8b8c1b862d2cb",
+    "26283ffc86a0e08b1329",
+    "2c647d21745f4c53cf79",
+    "2d0432db7bd940c0b355",
+    "2df0e1f8ecc49d89780a",
+    "3bf397882f0be1d32ed9",
+    "44da5040c6dba34fbc3a",
+    "469f703379153fb72f4e",
+    "4b5c1a045f782873fbc0",
+    "4cb6763386d9145e84ee",
+    "5057b15fd6022c2102b0",
+    "51605032f0e7be18f757",
+    "5267c2bf4fa6d1a80379",
+    "550deea0cf2e1e7c7247",
+    "646df477edb73291e264",
+    "64f824cde8f130b4d662",
+    "728664f2622eabd02ca3",
+    "7aea633658f6595b7350",
+    "7f03d6117f925ec11f26",
+    "81287c07a17035793bac",
+    "888ce5f21940ad20243b",
+    "8af6ba2ce489ae72dff7",
+    "8d3ef472461f7361b7b0",
+    "935df8f2d7d41e4bf87d",
+    "98298032fb899df42445",
+    "9e8e6a150d77c033a24e",
+    "a1501d51e97cb510ebed",
+    "b451819fbae0f9862716",
+    "b8ad4832a021839640d4",
+    "c76186838f69ac7c8445",
+    "c8ecc3f942f0516f169a",
+    "ca2b4543d243a7ab20bc",
+    "cce706866ff0a67d76ac",
+    "d611b0cb35cc9261b88f",
+    "db1856b76a72da4d3ddc",
+    "dd645ed717003d2190f6",
+    "e25725b099f220e4016e",
+    "e315355ea1dea8ff08f0",
+    "e6693e96b0613ca46f29",
+    "eb30ce37d40548111ef8",
+    "f131ed4cbca925d0931b",
+    "f6b3f0aa45aa44c0e90c"
+  ],
+  "content_hash": "dd1a395ad61acc56beda393bf31f9f7c5e2d15fa84ea4d56b5c094331bb97186",
+  "dependencies": [],
+  "description": "Media Cloud setup for advertising sales management, audience segmentation, campaign management, revenue management, and cross-channel ad products. NOT for Salesforce Marketing Cloud (use marketing-cloud-account-setup). NOT for Data Cloud audience activation (use data-cloud-activation-patterns).",
+  "file_location": "skills/admin/media-cloud-setup",
+  "id": "admin/media-cloud-setup",
+  "inputs": [
+    "Media Cloud license and edition",
+    "Ad product catalog (digital, linear, print, OOH, streaming)",
+    "Order-to-cash scope (deal, contract, delivery, billing, recognition)",
+    "Integration points (ad server, billing system, audience platform)"
+  ],
+  "name": "media-cloud-setup",
+  "official_sources": [
+    "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
+    "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Media Cloud feature activation plan",
+    "Ad product catalog + rate card structure",
+    "Deal-to-contract-to-invoice flow configured",
+    "Audience segmentation and campaign reporting scaffold"
+  ],
+  "references": [
+    "skills/admin/media-cloud-setup/references/examples.md",
+    "skills/admin/media-cloud-setup/references/gotchas.md",
+    "skills/admin/media-cloud-setup/references/llm-anti-patterns.md",
+    "skills/admin/media-cloud-setup/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/media-cloud-setup/scripts/check_media_cloud_setup.py"
+  ],
+  "tags": [
+    "media-cloud",
+    "advertising-sales",
+    "ad-operations",
+    "industries",
+    "audience-segmentation",
+    "revenue-management",
+    "campaign-management"
+  ],
+  "templates": [
+    "skills/admin/media-cloud-setup/templates/media-cloud-setup-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

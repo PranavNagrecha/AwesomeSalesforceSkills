@@ -1,0 +1,98 @@
+{
+  "category": "architect",
+  "chunk_ids": [
+    "04e6fec4918b5bc1cb1e",
+    "12ec52a9dc5a4eb6b8ca",
+    "1c6fed066f32d511dd7b",
+    "2398b2880a83b8ecc89e",
+    "249572b2c1157e7aa4dd",
+    "24c259081a24e83f7c73",
+    "33d34ed5cac3da108f74",
+    "37bd7eb04b2d25c80f6a",
+    "3a3e57afcaba5305265c",
+    "46f5bef1b4ff448cb264",
+    "48433a890ef491c26cb5",
+    "4c8df729a9ff92b1020d",
+    "51847176cdd5b3f2f98a",
+    "54972fe3d6325c4570e5",
+    "5daa7bffeff3318f8a14",
+    "5f0d36f43b4bcef7be00",
+    "6008e8ca55bbf73eb141",
+    "6816d1facd0fbb7e08ca",
+    "6ae22651bfa3880a841c",
+    "6b11d82cf8234fc58cc8",
+    "8133dae22ea38a92602e",
+    "827e642a2e295d82fc13",
+    "8400556ea8f4022d73d6",
+    "8451b9cd976d2e52b2b3",
+    "86ca16d6e0d850efd68d",
+    "89ddaca086e26606a239",
+    "91cd4260cddadc746d00",
+    "93b3d131371edca0ee8b",
+    "a2efb6beb78a9532f342",
+    "a9b6f393f57e1b0f419e",
+    "ab6b296f15f1a8b17720",
+    "ae5c16ed609f942d54e9",
+    "af52d8bd7b02d2c52d22",
+    "cb303daa9755409372b4",
+    "d0d9743c879392b32a1a",
+    "d1d59a77d773421d19cb",
+    "d4ffdb443dcedccbf263",
+    "d5bceb0083bb481de402",
+    "d85a0d61405a62c75229",
+    "dc6399512e2aa30bb1da",
+    "e00e5ec62154c9fd9285",
+    "e34dbc00e63d80782177",
+    "e6e04a5486528b9bd314",
+    "e8986e135e3b20b1d5f2",
+    "f21f77c563f81676ba8e",
+    "f4b6a7116361071a5518",
+    "fb9da605939438e886c4",
+    "fcd19e5e76865ac1eaef"
+  ],
+  "content_hash": "5e4b4b586209885d2ee677ff23c8e39f38c08c6b00fd905764d3f56b4114ea6f",
+  "dependencies": [],
+  "description": "Composable commerce on Salesforce: headless API layer, micro-frontends, BFF pattern, CDN strategy, third-party composability over B2C/B2B Commerce. NOT for the standard B2C Storefront UX (use b2c-commerce-storefront-setup). NOT for Salesforce Order Management basics (use salesforce-order-management-setup).",
+  "file_location": "skills/architect/composable-commerce-architecture",
+  "id": "architect/composable-commerce-architecture",
+  "inputs": [
+    "Commerce Cloud edition (B2C / B2B / B2B2C) and planned scope",
+    "Storefront technology choice (Next.js, Remix, SvelteKit, Hydrogen-like)",
+    "Integration surface (OMS, PIM, CMS, search, payments)",
+    "Traffic profile (peak-to-average ratio, geography, seasonality)"
+  ],
+  "name": "composable-commerce-architecture",
+  "official_sources": [
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "API-layer topology (Commerce APIs, BFF, SCAPI coverage)",
+    "Storefront repo structure and deployment target",
+    "CDN, caching, and personalization strategy",
+    "Migration/decomposition plan from monolith storefront"
+  ],
+  "references": [
+    "skills/architect/composable-commerce-architecture/references/examples.md",
+    "skills/architect/composable-commerce-architecture/references/gotchas.md",
+    "skills/architect/composable-commerce-architecture/references/llm-anti-patterns.md",
+    "skills/architect/composable-commerce-architecture/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/architect/composable-commerce-architecture/scripts/check_composable_commerce_architecture.py"
+  ],
+  "tags": [
+    "composable-commerce",
+    "headless",
+    "bff",
+    "micro-frontend",
+    "mach",
+    "commerce-cloud",
+    "cdn"
+  ],
+  "templates": [
+    "skills/architect/composable-commerce-architecture/templates/composable-commerce-architecture-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

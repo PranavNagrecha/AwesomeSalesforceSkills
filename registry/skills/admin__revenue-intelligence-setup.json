@@ -1,0 +1,99 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "023bf13effc39a5de8f8",
+    "0f2161df7a68dfa00702",
+    "10484dce2e79a58cbdf5",
+    "137660ea063c46d78092",
+    "20aa65c01c0195fc361e",
+    "22c1bbe7a4a63ad268d2",
+    "288b3a07bf8cfdcc0d4c",
+    "28bafbd2e0508a90bd89",
+    "38384f4caae9c482c1b4",
+    "3dbd45233298d7efb378",
+    "3e8c3364e0ffdd601258",
+    "404914844407005daa97",
+    "44aecbfc0c66d2458d2f",
+    "47ea304069f8b1839618",
+    "494202f9d418fbe7097a",
+    "495e46fe1629915737d2",
+    "4cdd26a14bfbfe188e00",
+    "4ce9a207e9e8897e28a7",
+    "5335d21a1c2c72cdc1dd",
+    "56b1cf4edd58e8d2fce6",
+    "63d07fa3d182e93c769f",
+    "6b59ac9e4e055c911c56",
+    "6d22136f113bd4ec0c46",
+    "78e23a59f11e1754b783",
+    "82f9eab3a7c48c109695",
+    "85128f7295de410c73a5",
+    "8a47fc7c2ee91b187148",
+    "8adc025163768ba9a8ba",
+    "8df39ee015133624210c",
+    "9224d081a78557ba2f7e",
+    "9314ab234cf0dcd798c2",
+    "96109caf49e140506345",
+    "961c0313285547ddf94a",
+    "987873c36b9f6baa3015",
+    "9aa9a7dbddd6f83c6715",
+    "9f6e6deb4c143c4ba942",
+    "bfda3d9dc47ec4ae40c1",
+    "cb5e162e3f8e89287253",
+    "cd6454f02721db10b43d",
+    "cfbc89191760bf7ecb01",
+    "e018f5447773ffca8e25",
+    "e91722c4857ab860acc3",
+    "eee65c37113bb6af4880",
+    "f4407bdf19ca40b9805b",
+    "fd3264771a9a484f0b53",
+    "fe39dbdbc470f78ef443",
+    "fee43772f2fa4ede6c02"
+  ],
+  "content_hash": "d70c193d111bc9e2cad65cb524adcdb06de15fd5e0408e03e9a18a4ef06d33ee",
+  "dependencies": [],
+  "description": "Revenue Intelligence setup: pipeline inspection, deal insights, forecast accuracy analytics, Einstein analytics for sales leaders. NOT for CRM Analytics platform admin (use analytics-studio-admin). NOT for forecasting category setup only (use forecasting-and-quotas).",
+  "file_location": "skills/admin/revenue-intelligence-setup",
+  "id": "admin/revenue-intelligence-setup",
+  "inputs": [
+    "Sales Cloud edition and Revenue Intelligence license",
+    "Forecasting setup (categories, hierarchy, custom fiscal)",
+    "Opportunity field usage (amount, close date, stage, amount at risk)",
+    "Sales management hierarchy and coaching cadence"
+  ],
+  "name": "revenue-intelligence-setup",
+  "official_sources": [
+    "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
+    "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Revenue Intelligence app activation plan",
+    "Pipeline Inspection configuration (filters, kpis)",
+    "Dashboard deployment plan (leader, manager, rep views)",
+    "Adoption rollout and coaching-meeting integration"
+  ],
+  "references": [
+    "skills/admin/revenue-intelligence-setup/references/examples.md",
+    "skills/admin/revenue-intelligence-setup/references/gotchas.md",
+    "skills/admin/revenue-intelligence-setup/references/llm-anti-patterns.md",
+    "skills/admin/revenue-intelligence-setup/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/revenue-intelligence-setup/scripts/check_revenue_intelligence_setup.py"
+  ],
+  "tags": [
+    "revenue-intelligence",
+    "pipeline-inspection",
+    "einstein",
+    "forecasting",
+    "sales-analytics",
+    "sales-cloud",
+    "deal-insights"
+  ],
+  "templates": [
+    "skills/admin/revenue-intelligence-setup/templates/revenue-intelligence-setup-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

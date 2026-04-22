@@ -1,0 +1,98 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "070f43736df61c7f2fa3",
+    "08b3d51fb576973839ae",
+    "0cd06dabde2bcfa2832c",
+    "0cd1f9b541114e61dfd9",
+    "0ebecfe45335600da2b5",
+    "0f8c983fc0bf8822eab9",
+    "1134cab18c9cc7c8585b",
+    "16256e122e1e7c793738",
+    "23f931163915adfd575f",
+    "320e4239a63227d2ffc0",
+    "394aa9966d8f5ebbd291",
+    "474f0743708049d4f775",
+    "4b66bb3959a74352bee4",
+    "4c8f1e878f477f118e72",
+    "54c1c5dbcb670950b98b",
+    "5c9a58c3199c76b492e9",
+    "60058cad22fa137f3d0d",
+    "617df6056e01585111d7",
+    "654ba26810bf10e30a14",
+    "793a3491a45576dbec50",
+    "7cd3ed61fe6ca34763ca",
+    "86141b7b1d1db7cf4363",
+    "88308873bc6004a41cb0",
+    "894bd68a64da87e8a4d5",
+    "8a4b2230669d606d4a83",
+    "8c88e86e418c7995ccdc",
+    "915169fd4dcd601337bf",
+    "95981f86f18747120beb",
+    "997a95ee52348e3d75d0",
+    "9cef3915ab4872e81eb9",
+    "9f57cc329e8a589b0ccb",
+    "a06d7201ff66be90ec41",
+    "a4bdf603b59d2b908bf4",
+    "ad5b7e047c39d0cfc4e2",
+    "b858fb538af3031ac815",
+    "b94520188893c51bdccd",
+    "c4c12fa8062654be0e04",
+    "c6aea560b858d6335144",
+    "ca72ef8c63de0ad275e9",
+    "d06ad67cb9b847d48a1f",
+    "da6407e6cc4a8bab791e",
+    "e71297c39d69b4db7f1f",
+    "e7393cb7aa121388610b",
+    "e9ac7d3f74f5a161ed20",
+    "ec93208ebfa8a72c8b89",
+    "ed709e4ad0c9a64fa890"
+  ],
+  "content_hash": "69d94db1642e00897d9faca538798931fd4df5ee32eff3e690810c6390c5925e",
+  "dependencies": [],
+  "description": "Public Sector Solutions (PSS) setup: licensing, permits, inspections, benefits, case management for government, citizen portals, and grant management. NOT for standard Service Cloud case management (use service-cloud-core-setup). NOT for generic Experience Cloud portals (use experience-cloud-site-setup).",
+  "file_location": "skills/admin/industries-public-sector-setup",
+  "id": "admin/industries-public-sector-setup",
+  "inputs": [
+    "Target cloud/edition (PSS license assigned, base Service Cloud present)",
+    "Business process in scope (license, permit, inspection, benefit, grant)",
+    "Agency jurisdictional levels and record ownership model",
+    "Citizen channel list (portal, phone, paper, email)"
+  ],
+  "name": "industries-public-sector-setup",
+  "official_sources": [
+    "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
+    "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "PSS object model activation checklist",
+    "License/permit type and approval routing configuration",
+    "Omni-Channel and case queue setup for citizen intake",
+    "Citizen portal profile, sharing, and guest-user hardening notes"
+  ],
+  "references": [
+    "skills/admin/industries-public-sector-setup/references/examples.md",
+    "skills/admin/industries-public-sector-setup/references/gotchas.md",
+    "skills/admin/industries-public-sector-setup/references/llm-anti-patterns.md",
+    "skills/admin/industries-public-sector-setup/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/industries-public-sector-setup/scripts/check_industries_public_sector_setup.py"
+  ],
+  "tags": [
+    "public-sector",
+    "industries",
+    "licensing",
+    "permits",
+    "benefits",
+    "grants",
+    "omnistudio"
+  ],
+  "templates": [
+    "skills/admin/industries-public-sector-setup/templates/industries-public-sector-setup-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

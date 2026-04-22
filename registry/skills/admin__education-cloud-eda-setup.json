@@ -1,0 +1,98 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "0621faa2d8e1bd09da62",
+    "10271ff5fa07803db7cd",
+    "117ded742760bdf5c26e",
+    "128e54818f0ec1721cbe",
+    "13be4b94666d61b6ebf9",
+    "166b4765bab95fd8f33a",
+    "1a2fc13dc63633124755",
+    "2390636b24bba1baae6d",
+    "2467aefd0a926e2a237c",
+    "3014ae40f9e034d287af",
+    "4a32e13ea6da2d69f377",
+    "4aac1d27d13daed3f57c",
+    "4b73c0ac12ff0cb39cf7",
+    "4dcec97e20fbd1355a4f",
+    "5282624ed030050b7a52",
+    "580c265460015cf5334e",
+    "620392507d4be21de962",
+    "66c551297a04efdba597",
+    "6848dc58cae60f8ba448",
+    "6ddc87cfb44129bab747",
+    "6e1bea599db9c44364e8",
+    "72f921ed2fa82a3d7831",
+    "7bfa3d2215e15084f96c",
+    "851038be33facb05b8ee",
+    "871776b92c5386656b1c",
+    "8a36b19221d7c070f067",
+    "94362203fdbe65b2ebef",
+    "945514c0047d3e8a23de",
+    "948e88afe89eeeb8881f",
+    "a4d9496a146b7debeccc",
+    "a55b55989add76dd9ad3",
+    "a6380f16ce7b4d03f218",
+    "a8b8580a5d4e24405fb7",
+    "aea6aaf90ae3649da349",
+    "b661c403ab38a9e030a1",
+    "c408792aae97ee4063ee",
+    "cb0c66dc53464638186a",
+    "d0b2c493bd2902fb6fd3",
+    "d2185543daf40bb81fad",
+    "d3cca9045d5b50a491a6",
+    "d44dea8423eabf5206b0",
+    "d5c6a6f2c445fb34cc6b",
+    "dd4720432b35df162429",
+    "e4bdc3e93e617a8d44df",
+    "f895079999dbb6f9545f",
+    "f8c13dd107174dcbd187"
+  ],
+  "content_hash": "e0bc3555fcdb75ec8c27827b77972592b723f77d64c20bd6af09c6ea68bdd1c3",
+  "dependencies": [],
+  "description": "Education Cloud (EDA \u2014 Education Data Architecture) setup: student success hub, advisor workflows, enrollment management, academic data model. NOT for standard Service Cloud case management (use service-cloud-core-setup). NOT for Nonprofit Cloud data model (use nonprofit-cloud-vs-npsp-migration).",
+  "file_location": "skills/admin/education-cloud-eda-setup",
+  "id": "admin/education-cloud-eda-setup",
+  "inputs": [
+    "EDA managed package version and intended Education Cloud features",
+    "Institution type (K-12, higher-ed, continuing-ed, multi-campus)",
+    "Academic cadence (terms vs trimesters vs rolling enrollment)",
+    "Advising model (caseload, cohort, or appointment-based)"
+  ],
+  "name": "education-cloud-eda-setup",
+  "official_sources": [
+    "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
+    "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "EDA account record type activation plan (Academic / Household / Business / Administrative)",
+    "Affiliation and Program Plan configuration for target programs",
+    "Term, Course, Course Offering, Course Connection object wiring",
+    "Advisor caseload sharing and case-routing scaffold"
+  ],
+  "references": [
+    "skills/admin/education-cloud-eda-setup/references/examples.md",
+    "skills/admin/education-cloud-eda-setup/references/gotchas.md",
+    "skills/admin/education-cloud-eda-setup/references/llm-anti-patterns.md",
+    "skills/admin/education-cloud-eda-setup/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/education-cloud-eda-setup/scripts/check_education_cloud_eda_setup.py"
+  ],
+  "tags": [
+    "education-cloud",
+    "eda",
+    "student-success",
+    "enrollment",
+    "industries",
+    "affiliation",
+    "program-plan"
+  ],
+  "templates": [
+    "skills/admin/education-cloud-eda-setup/templates/education-cloud-eda-setup-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

@@ -49,6 +49,7 @@
       "admin/compliant-data-sharing-setup",
       "admin/connected-apps-and-auth",
       "admin/consent-management-marketing",
+      "admin/consumer-goods-cloud-setup",
       "admin/contract-and-renewal-management",
       "admin/cpq-approval-workflows",
       "admin/cpq-guided-selling",
@@ -75,6 +76,7 @@
       "admin/donor-lifecycle-requirements",
       "admin/duplicate-management",
       "admin/dynamic-forms-and-actions",
+      "admin/education-cloud-eda-setup",
       "admin/einstein-activity-capture-setup",
       "admin/einstein-analytics-basics",
       "admin/einstein-discovery-deployment",
@@ -96,6 +98,7 @@
       "admin/financial-planning-process",
       "admin/flexcard-requirements",
       "admin/flow-for-admins",
+      "admin/flow-orchestration-admin",
       "admin/formula-fields",
       "admin/fsc-action-plans",
       "admin/fsc-referral-management",
@@ -125,6 +128,7 @@
       "admin/industries-energy-utilities-setup",
       "admin/industries-insurance-setup",
       "admin/industries-process-design",
+      "admin/industries-public-sector-setup",
       "admin/integration-admin-connected-apps",
       "admin/integration-pattern-selection",
       "admin/integration-user-management",
@@ -142,6 +146,7 @@
       "admin/marketing-reporting-requirements",
       "admin/mcae-lead-scoring-and-grading",
       "admin/mcae-pardot-setup",
+      "admin/media-cloud-setup",
       "admin/messaging-and-chat-setup",
       "admin/multi-language-and-translation",
       "admin/npsp-engagement-plans",
@@ -172,6 +177,7 @@
       "admin/quote-to-cash-process",
       "admin/quote-to-cash-requirements",
       "admin/quotes-and-quote-templates",
+      "admin/rebate-management-setup",
       "admin/record-type-strategy-at-scale",
       "admin/record-types-and-page-layouts",
       "admin/recurring-donations-setup",
@@ -181,6 +187,7 @@
       "admin/reports-and-dashboards",
       "admin/reports-and-dashboards-fundamentals",
       "admin/requirements-gathering-for-sf",
+      "admin/revenue-intelligence-setup",
       "admin/revenue-recognition-requirements",
       "admin/sales-engagement-cadences",
       "admin/sales-process-mapping",
@@ -200,6 +207,7 @@
       "admin/system-field-behavior-and-audit",
       "admin/territory-design-requirements",
       "admin/uat-and-acceptance-criteria",
+      "admin/usage-based-pricing-setup",
       "admin/user-access-policies",
       "admin/user-management",
       "admin/validation-rules",
@@ -371,15 +379,19 @@
       "architect/banking-lending-architecture",
       "architect/case-deflection-strategy",
       "architect/ci-cd-pipeline-architecture",
+      "architect/cloud-specific-deployment-architecture",
       "architect/commerce-integration-patterns",
+      "architect/composable-commerce-architecture",
       "architect/conversational-ai-architecture",
       "architect/cpq-architecture-patterns",
       "architect/cpq-integration-with-erp",
       "architect/cpq-vs-standard-products-decision",
       "architect/crm-analytics-vs-tableau-decision",
+      "architect/cross-cloud-data-deployment",
       "architect/customer-effort-scoring",
       "architect/data-cloud-architecture",
       "architect/data-cloud-vs-analytics-decision",
+      "architect/deployment-automation-architecture",
       "architect/einstein-bot-architecture",
       "architect/embedded-analytics-architecture",
       "architect/event-driven-architecture",
@@ -426,6 +438,7 @@
       "architect/multi-site-architecture",
       "architect/multi-store-architecture",
       "architect/nfr-definition-for-salesforce",
+      "architect/nonprofit-cloud-vs-npsp-migration",
       "architect/nonprofit-platform-architecture",
       "architect/npsp-vs-nonprofit-cloud-decision",
       "architect/omni-channel-capacity-model",
@@ -439,12 +452,14 @@
       "architect/platform-selection-guidance",
       "architect/sales-cloud-architecture",
       "architect/sales-cloud-integration-patterns",
+      "architect/salesforce-erd-and-diagramming",
       "architect/security-architecture-review",
       "architect/service-cloud-architecture",
       "architect/sla-design-and-escalation-matrix",
       "architect/solution-design-patterns",
       "architect/subscription-management-architecture",
       "architect/technical-debt-assessment",
+      "architect/tenant-isolation-patterns",
       "architect/wealth-management-architecture",
       "architect/well-architected-review"
     ],
@@ -483,6 +498,7 @@
       "data/data-reconciliation-patterns",
       "data/data-storage-management",
       "data/deployment-data-dependencies",
+      "data/eda-data-model-and-patterns",
       "data/einstein-analytics-data-model",
       "data/etl-vs-api-data-patterns",
       "data/external-data-and-big-objects",
@@ -670,6 +686,7 @@
       "integration/revenue-lifecycle-management",
       "integration/salesforce-connect-external-objects",
       "integration/salesforce-data-pipeline-etl",
+      "integration/salesforce-functions-replacement",
       "integration/salesforce-to-salesforce-integration",
       "integration/sis-integration-patterns",
       "integration/slack-connect-patterns",
@@ -677,6 +694,7 @@
       "integration/slack-workflow-builder",
       "integration/soap-api-patterns",
       "integration/streaming-api-and-pushtopic",
+      "integration/tableau-salesforce-connector",
       "integration/webhook-inbound-patterns",
       "integration/webhook-signature-verification"
     ],
@@ -699,6 +717,7 @@
       "lwc/lwc-accessibility",
       "lwc/lwc-accessibility-patterns",
       "lwc/lwc-base-component-recipes",
+      "lwc/lwc-chart-and-visualization",
       "lwc/lwc-data-table",
       "lwc/lwc-dynamic-components",
       "lwc/lwc-error-boundaries",
@@ -713,6 +732,7 @@
       "lwc/lwc-state-management",
       "lwc/lwc-testing",
       "lwc/lwc-toast-and-notifications",
+      "lwc/lwc-web-components-interop",
       "lwc/lwr-site-development",
       "lwc/message-channel-patterns",
       "lwc/navigation-and-routing",
@@ -1158,7 +1178,8 @@
       "admin/permission-set-architecture"
     ],
     "accessibility": [
-      "admin/digital-storefront-requirements"
+      "admin/digital-storefront-requirements",
+      "lwc/lwc-chart-and-visualization"
     ],
     "accessibility-testing": [
       "lwc/lwc-testing"
@@ -1191,8 +1212,14 @@
       "apex/mcae-pardot-api",
       "architect/marketing-cloud-vs-mcae-selection"
     ],
+    "account-model": [
+      "architect/nonprofit-cloud-vs-npsp-migration"
+    ],
     "account-participant": [
       "apex/fsc-compliant-sharing-api"
+    ],
+    "accruals": [
+      "admin/rebate-management-setup"
     ],
     "action-cadence": [
       "apex/sales-engagement-api"
@@ -1244,6 +1271,9 @@
     "activity-timeline": [
       "admin/einstein-activity-capture-setup"
     ],
+    "ad-operations": [
+      "admin/media-cloud-setup"
+    ],
     "add-field": [
       "admin/custom-field-creation"
     ],
@@ -1258,6 +1288,7 @@
       "admin/custom-field-creation",
       "admin/data-cloud-provisioning",
       "admin/einstein-discovery-deployment",
+      "admin/flow-orchestration-admin",
       "admin/health-cloud-timeline",
       "admin/object-creation-and-design",
       "admin/sales-process-mapping",
@@ -1288,11 +1319,20 @@
       "architect/multi-currency-sales-architecture",
       "data/multi-currency-and-advanced-currency-management"
     ],
+    "advertising-sales": [
+      "admin/media-cloud-setup"
+    ],
     "advisor-tools": [
       "admin/wealth-management-requirements"
     ],
     "advisor-workspace": [
       "architect/wealth-management-architecture"
+    ],
+    "affiliation": [
+      "admin/education-cloud-eda-setup"
+    ],
+    "affiliations": [
+      "data/eda-data-model-and-patterns"
     ],
     "after-conversation-work": [
       "admin/service-cloud-voice-setup"
@@ -1399,6 +1439,7 @@
       "architect/ai-platform-architecture",
       "architect/ai-ready-data-architecture",
       "architect/api-led-connectivity-architecture",
+      "architect/cloud-specific-deployment-architecture",
       "architect/conversational-ai-architecture",
       "architect/einstein-bot-architecture",
       "data/vector-database-management"
@@ -1822,6 +1863,9 @@
       "architect/multi-site-architecture",
       "architect/solution-design-patterns"
     ],
+    "architecture-diagrams": [
+      "architect/salesforce-erd-and-diagramming"
+    ],
     "architecture-planning": [
       "architect/limits-and-scalability-planning"
     ],
@@ -1923,6 +1967,9 @@
     ],
     "audience-publishing": [
       "admin/data-cloud-segmentation"
+    ],
+    "audience-segmentation": [
+      "admin/media-cloud-setup"
     ],
     "audience-targeting": [
       "admin/experience-cloud-cms-content"
@@ -2078,6 +2125,9 @@
       "admin/hipaa-workflow-design",
       "architect/hipaa-compliance-architecture"
     ],
+    "background-steps": [
+      "admin/flow-orchestration-admin"
+    ],
     "backoff": [
       "integration/retry-and-backoff-patterns"
     ],
@@ -2143,6 +2193,12 @@
     ],
     "beneficiary": [
       "admin/npsp-program-management"
+    ],
+    "benefits": [
+      "admin/industries-public-sector-setup"
+    ],
+    "bff": [
+      "architect/composable-commerce-architecture"
     ],
     "bi": [
       "architect/crm-analytics-vs-tableau-decision"
@@ -2239,6 +2295,9 @@
     ],
     "branch-management": [
       "devops/copado-essentials"
+    ],
+    "branch-strategy": [
+      "architect/deployment-automation-architecture"
     ],
     "branching": [
       "omnistudio/omniscript-design-patterns"
@@ -2512,6 +2571,9 @@
       "admin/campaign-planning-and-attribution",
       "admin/marketing-reporting-requirements"
     ],
+    "campaign-management": [
+      "admin/media-cloud-setup"
+    ],
     "campaign-member-status": [
       "admin/campaign-planning-and-attribution"
     ],
@@ -2653,11 +2715,13 @@
       "apex/fsc-integration-patterns-dev",
       "apex/platform-events-apex",
       "apex/sales-engagement-api",
+      "architect/cross-cloud-data-deployment",
       "integration/pub-sub-api-patterns",
       "integration/real-time-vs-batch-integration",
       "integration/salesforce-data-pipeline-etl"
     ],
     "cdn": [
+      "architect/composable-commerce-architecture",
       "architect/experience-cloud-performance",
       "architect/multi-site-architecture",
       "architect/omnistudio-scalability-patterns"
@@ -2674,6 +2738,9 @@
     ],
     "certificate-rotation": [
       "security/certificate-and-key-management"
+    ],
+    "cg-cloud": [
+      "admin/consumer-goods-cloud-setup"
     ],
     "change-advisory-board": [
       "admin/change-advisory-board-process"
@@ -2716,11 +2783,17 @@
     "channel-enrichment": [
       "admin/change-data-capture-admin"
     ],
+    "channel-incentives": [
+      "admin/rebate-management-setup"
+    ],
     "channel-prioritization": [
       "architect/multi-channel-service-architecture"
     ],
     "channel-strategy": [
       "architect/service-cloud-architecture"
+    ],
+    "chart-js": [
+      "lwc/lwc-chart-and-visualization"
     ],
     "chart-types": [
       "admin/analytics-dashboard-design"
@@ -2786,6 +2859,7 @@
       "omnistudio/omnistudio-deployment-datapacks"
     ],
     "cicd": [
+      "architect/deployment-automation-architecture",
       "devops/sfdx-hardis-integration",
       "omnistudio/omnistudio-ci-cd-patterns"
     ],
@@ -2956,7 +3030,9 @@
       "admin/b2c-commerce-store-setup",
       "admin/digital-storefront-requirements",
       "architect/b2b-vs-b2c-architecture",
+      "architect/cloud-specific-deployment-architecture",
       "architect/commerce-integration-patterns",
+      "architect/composable-commerce-architecture",
       "architect/headless-commerce-architecture",
       "architect/multi-store-architecture"
     ],
@@ -3036,6 +3112,8 @@
     ],
     "compliance": [
       "admin/compliance-documentation-requirements",
+      "admin/consumer-goods-cloud-setup",
+      "admin/rebate-management-setup",
       "architect/ai-governance-architecture",
       "architect/aml-kyc-process-architecture",
       "architect/fsc-architecture-patterns",
@@ -3077,6 +3155,9 @@
     ],
     "component-count": [
       "admin/lightning-page-performance-tuning"
+    ],
+    "composable-commerce": [
+      "architect/composable-commerce-architecture"
     ],
     "composite": [
       "integration/rest-api-patterns"
@@ -3187,7 +3268,8 @@
       "lwc/lifecycle-hooks"
     ],
     "connector": [
-      "admin/mcae-pardot-setup"
+      "admin/mcae-pardot-setup",
+      "integration/tableau-salesforce-connector"
     ],
     "connector-user": [
       "admin/marketing-cloud-connect"
@@ -3216,6 +3298,12 @@
     "constituent-data-migration": [
       "data/constituent-data-migration"
     ],
+    "consumer-goods": [
+      "admin/consumer-goods-cloud-setup"
+    ],
+    "consumption-schedule": [
+      "admin/usage-based-pricing-setup"
+    ],
     "contact": [
       "data/record-merge-implications"
     ],
@@ -3225,6 +3313,9 @@
     "contact-center": [
       "admin/service-cloud-voice-setup",
       "architect/service-cloud-architecture"
+    ],
+    "contact-centric": [
+      "data/eda-data-model-and-patterns"
     ],
     "contact-key": [
       "architect/marketing-data-architecture",
@@ -3484,7 +3575,8 @@
       "data/analytics-data-preparation",
       "data/analytics-dataset-optimization",
       "data/analytics-external-data",
-      "data/einstein-analytics-data-model"
+      "data/einstein-analytics-data-model",
+      "integration/tableau-salesforce-connector"
     ],
     "crm-analytics-app-creation": [
       "admin/crm-analytics-app-creation"
@@ -3500,6 +3592,9 @@
     ],
     "cron": [
       "apex/apex-scheduled-jobs"
+    ],
+    "cross-cloud": [
+      "architect/cross-cloud-data-deployment"
     ],
     "cross-dom-communication": [
       "lwc/message-channel-patterns"
@@ -3611,6 +3706,9 @@
     "custom-element": [
       "omnistudio/omnistudio-lwc-integration"
     ],
+    "custom-elements": [
+      "lwc/lwc-web-components-interop"
+    ],
     "custom-events": [
       "lwc/component-communication"
     ],
@@ -3715,6 +3813,9 @@
       "apex/commerce-search-customization",
       "lwc/commerce-lwc-components"
     ],
+    "d3": [
+      "lwc/lwc-chart-and-visualization"
+    ],
     "dashboard": [
       "admin/analytics-dashboard-design",
       "admin/analytics-dashboard-json",
@@ -3787,6 +3888,8 @@
       "agentforce/agentforce-service-ai-setup",
       "agentforce/rag-patterns-in-salesforce",
       "architect/ai-ready-data-architecture",
+      "architect/cloud-specific-deployment-architecture",
+      "architect/cross-cloud-data-deployment",
       "architect/experience-cloud-integration-patterns",
       "data/data-cloud-consent-and-privacy",
       "data/data-cloud-data-model-objects",
@@ -3795,7 +3898,8 @@
       "integration/data-cloud-activation-development",
       "integration/data-cloud-ingestion-api",
       "integration/data-cloud-integration-strategy",
-      "integration/data-cloud-query-api"
+      "integration/data-cloud-query-api",
+      "integration/tableau-salesforce-connector"
     ],
     "data-cloud-metrics": [
       "admin/data-cloud-calculated-insights"
@@ -3914,15 +4018,18 @@
     "data-model": [
       "admin/data-model-documentation",
       "architect/b2b-vs-b2c-architecture",
+      "architect/cross-cloud-data-deployment",
       "architect/fsc-architecture-patterns",
       "architect/industries-data-model",
       "architect/npsp-vs-nonprofit-cloud-decision",
       "architect/payer-vs-provider-architecture",
       "architect/sales-cloud-architecture",
+      "architect/salesforce-erd-and-diagramming",
       "data/consent-data-model-health",
       "data/cpq-data-model",
       "data/data-cloud-data-model-objects",
       "data/data-model-design-patterns",
+      "data/eda-data-model-and-patterns",
       "data/fsc-data-model",
       "data/health-cloud-data-model",
       "data/npsp-data-model",
@@ -3932,6 +4039,9 @@
       "data/sales-reporting-data-model",
       "data/service-metrics-data-model",
       "data/volunteer-management-requirements"
+    ],
+    "data-partitioning": [
+      "architect/tenant-isolation-patterns"
     ],
     "data-prep": [
       "admin/analytics-recipe-design"
@@ -4142,6 +4252,9 @@
     "deadlock": [
       "apex/record-locking-and-contention"
     ],
+    "deal-insights": [
+      "admin/revenue-intelligence-setup"
+    ],
     "deal-management": [
       "admin/compliant-data-sharing-setup"
     ],
@@ -4278,6 +4391,9 @@
       "agentforce/agent-deployment-checklist",
       "apex/metadata-api-and-package-xml",
       "apex/sf-cli-and-sfdx-essentials",
+      "architect/cloud-specific-deployment-architecture",
+      "architect/cross-cloud-data-deployment",
+      "architect/deployment-automation-architecture",
       "data/deployment-data-dependencies",
       "data/omnistudio-datapack-migration",
       "devops/change-set-deployment",
@@ -4401,6 +4517,9 @@
     ],
     "diagnostics": [
       "admin/salesforce-object-queryability"
+    ],
+    "diagramming": [
+      "architect/salesforce-erd-and-diagramming"
     ],
     "dialog-scripting": [
       "admin/agent-conversation-design"
@@ -4529,6 +4648,9 @@
     "document-template": [
       "omnistudio/document-generation-omnistudio"
     ],
+    "documentation": [
+      "architect/salesforce-erd-and-diagramming"
+    ],
     "dod-il4": [
       "architect/government-cloud-compliance"
     ],
@@ -4631,6 +4753,10 @@
       "admin/einstein-activity-capture-setup",
       "apex/einstein-activity-capture-api"
     ],
+    "eda": [
+      "admin/education-cloud-eda-setup",
+      "data/eda-data-model-and-patterns"
+    ],
     "edition-limits": [
       "admin/salesforce-object-queryability"
     ],
@@ -4638,6 +4764,8 @@
       "architect/org-edition-and-feature-licensing"
     ],
     "education-cloud": [
+      "admin/education-cloud-eda-setup",
+      "data/eda-data-model-and-patterns",
       "integration/sis-integration-patterns",
       "security/ferpa-compliance-in-salesforce"
     ],
@@ -4651,6 +4779,7 @@
       "admin/ai-adoption-change-management",
       "admin/ai-ethics-and-governance-requirements",
       "admin/ai-use-case-assessment",
+      "admin/revenue-intelligence-setup",
       "agentforce/einstein-copilot-for-sales",
       "agentforce/einstein-copilot-for-service",
       "agentforce/prompt-builder-templates",
@@ -4787,7 +4916,8 @@
     ],
     "embedded-analytics": [
       "admin/analytics-adoption-strategy",
-      "architect/embedded-analytics-architecture"
+      "architect/embedded-analytics-architecture",
+      "integration/tableau-salesforce-connector"
     ],
     "embedded-analytics-architecture": [
       "architect/embedded-analytics-architecture"
@@ -4856,7 +4986,8 @@
       "apex/apex-metadata-api"
     ],
     "enrollment": [
-      "admin/care-program-management"
+      "admin/care-program-management",
+      "admin/education-cloud-eda-setup"
     ],
     "enterprise": [
       "architect/org-edition-and-feature-licensing"
@@ -4914,7 +5045,8 @@
       "devops/environment-strategy"
     ],
     "environment-topology": [
-      "architect/ci-cd-pipeline-architecture"
+      "architect/ci-cd-pipeline-architecture",
+      "architect/deployment-automation-architecture"
     ],
     "epc": [
       "admin/industries-communications-setup"
@@ -4926,7 +5058,8 @@
       "admin/data-model-documentation"
     ],
     "erd": [
-      "admin/recurring-donations-setup"
+      "admin/recurring-donations-setup",
+      "architect/salesforce-erd-and-diagramming"
     ],
     "erp": [
       "architect/cpq-integration-with-erp",
@@ -5152,6 +5285,9 @@
     "external-collaboration": [
       "integration/slack-connect-patterns"
     ],
+    "external-compute": [
+      "integration/salesforce-functions-replacement"
+    ],
     "external-credential": [
       "apex/apex-named-credentials-patterns"
     ],
@@ -5261,6 +5397,9 @@
     ],
     "feature-flags-and-kill-switches": [
       "apex/feature-flags-and-kill-switches"
+    ],
+    "feature-gating": [
+      "architect/tenant-isolation-patterns"
     ],
     "feature-store": [
       "architect/ai-ready-data-architecture"
@@ -5575,6 +5714,7 @@
       "lwc/lwc-in-flow-screens"
     ],
     "flow-orchestration": [
+      "admin/flow-orchestration-admin",
       "flow/flow-action-framework",
       "flow/orchestration-flows"
     ],
@@ -5650,7 +5790,8 @@
       "admin/collaborative-forecasts"
     ],
     "forecasting": [
-      "admin/opportunity-management"
+      "admin/opportunity-management",
+      "admin/revenue-intelligence-setup"
     ],
     "forecasting-ai": [
       "agentforce/agentforce-sales-ai-setup"
@@ -5787,6 +5928,7 @@
     "fundraising": [
       "admin/donor-lifecycle-requirements",
       "admin/fundraising-process-mapping",
+      "architect/nonprofit-cloud-vs-npsp-migration",
       "architect/nonprofit-platform-architecture"
     ],
     "fundraising-integration": [
@@ -5911,6 +6053,7 @@
     "governance": [
       "admin/change-advisory-board-process",
       "architect/api-led-connectivity-architecture",
+      "architect/deployment-automation-architecture",
       "architect/multi-bu-marketing-architecture",
       "devops/pr-policy-templates",
       "integration/api-governance-and-rate-limits",
@@ -5947,7 +6090,8 @@
       "architect/nonprofit-platform-architecture"
     ],
     "grants": [
-      "admin/grant-management-setup"
+      "admin/grant-management-setup",
+      "admin/industries-public-sector-setup"
     ],
     "graph-engine": [
       "devops/salesforce-code-analyzer"
@@ -6015,6 +6159,7 @@
       "apex/apex-aggregate-queries"
     ],
     "headless": [
+      "architect/composable-commerce-architecture",
       "architect/headless-commerce-architecture",
       "architect/headless-vs-standard-experience"
     ],
@@ -6091,6 +6236,9 @@
     "help-portal": [
       "admin/salesforce-support-escalation"
     ],
+    "heroku": [
+      "integration/salesforce-functions-replacement"
+    ],
     "hierarchical-custom-settings": [
       "apex/feature-flags-and-kill-switches"
     ],
@@ -6119,6 +6267,9 @@
     ],
     "high-volume-sales-data-architecture": [
       "architect/high-volume-sales-data-architecture"
+    ],
+    "higher-education": [
+      "data/eda-data-model-and-patterns"
     ],
     "highlights-panel": [
       "admin/list-views-and-compact-layouts"
@@ -6222,7 +6373,8 @@
       "architect/government-cloud-compliance",
       "architect/health-cloud-data-residency",
       "architect/integration-security-architecture",
-      "integration/private-connect-setup"
+      "integration/private-connect-setup",
+      "integration/salesforce-functions-replacement"
     ],
     "i18n": [
       "lwc/lwc-internationalization",
@@ -6251,6 +6403,7 @@
     ],
     "identity-resolution": [
       "admin/data-cloud-identity-resolution",
+      "architect/cross-cloud-data-deployment",
       "architect/data-cloud-architecture",
       "data/data-cloud-data-model-objects",
       "data/data-cloud-data-streams"
@@ -6328,10 +6481,15 @@
       "security/gdpr-data-privacy"
     ],
     "industries": [
+      "admin/consumer-goods-cloud-setup",
+      "admin/education-cloud-eda-setup",
       "admin/industries-communications-setup",
       "admin/industries-insurance-setup",
       "admin/industries-process-design",
+      "admin/industries-public-sector-setup",
+      "admin/media-cloud-setup",
       "apex/health-cloud-apex-extensions",
+      "architect/cloud-specific-deployment-architecture",
       "architect/industries-data-model",
       "architect/omnistudio-vs-standard-architecture",
       "architect/omnistudio-vs-standard-decision",
@@ -6532,6 +6690,12 @@
     "intent-model": [
       "architect/einstein-bot-architecture"
     ],
+    "interactive-steps": [
+      "admin/flow-orchestration-admin"
+    ],
+    "interop": [
+      "lwc/lwc-web-components-interop"
+    ],
     "interoperability": [
       "admin/clinical-data-requirements",
       "architect/fhir-integration-architecture",
@@ -6586,6 +6750,9 @@
     "invoice-run": [
       "admin/billing-schedule-setup"
     ],
+    "invoicing": [
+      "admin/usage-based-pricing-setup"
+    ],
     "iot": [
       "architect/fsl-integration-patterns"
     ],
@@ -6607,6 +6774,7 @@
     ],
     "isv": [
       "apex/apex-metadata-api",
+      "architect/tenant-isolation-patterns",
       "devops/package-development-strategy",
       "devops/second-generation-managed-packages"
     ],
@@ -6701,6 +6869,9 @@
       "devops/bitbucket-pipelines-for-salesforce",
       "devops/github-actions-for-salesforce",
       "devops/gitlab-ci-for-salesforce"
+    ],
+    "k12": [
+      "data/eda-data-model-and-patterns"
     ],
     "k6": [
       "devops/performance-testing-salesforce"
@@ -6905,6 +7076,7 @@
     "licensing": [
       "admin/b2b-vs-b2c-requirements",
       "admin/experience-cloud-member-management",
+      "admin/industries-public-sector-setup",
       "architect/cpq-vs-standard-products-decision",
       "architect/crm-analytics-vs-tableau-decision",
       "architect/experience-cloud-licensing-model",
@@ -6939,6 +7111,9 @@
       "admin/dynamic-forms-and-actions",
       "admin/lightning-app-builder-advanced",
       "admin/lightning-page-performance-tuning"
+    ],
+    "lightning-chart": [
+      "lwc/lwc-chart-and-visualization"
     ],
     "lightning-confirm": [
       "lwc/lwc-toast-and-notifications"
@@ -7123,9 +7298,11 @@
       "lwc/knowledge-article-lwc",
       "lwc/lifecycle-hooks",
       "lwc/lwc-base-component-recipes",
+      "lwc/lwc-chart-and-visualization",
       "lwc/lwc-error-boundaries",
       "lwc/lwc-imperative-apex",
       "lwc/lwc-toast-and-notifications",
+      "lwc/lwc-web-components-interop",
       "lwc/lwr-site-development",
       "omnistudio/omnistudio-custom-lwc-elements",
       "omnistudio/omnistudio-lwc-integration"
@@ -7195,6 +7372,9 @@
     "mTLS": [
       "security/certificate-and-key-management"
     ],
+    "mach": [
+      "architect/composable-commerce-architecture"
+    ],
     "machine-learning": [
       "architect/ai-ready-data-architecture",
       "data/ai-training-data-preparation"
@@ -7233,6 +7413,7 @@
       "omnistudio/vlocity-to-native-omnistudio-migration"
     ],
     "managed-packages": [
+      "architect/tenant-isolation-patterns",
       "devops/package-development-strategy"
     ],
     "managed-subscriptions": [
@@ -7260,6 +7441,8 @@
       "apex/marketing-cloud-custom-activities",
       "apex/marketing-cloud-data-views",
       "apex/ssjs-server-side-javascript",
+      "architect/cloud-specific-deployment-architecture",
+      "architect/cross-cloud-data-deployment",
       "architect/health-cloud-multi-cloud-strategy",
       "architect/marketing-cloud-vs-mcae-selection",
       "architect/marketing-consent-architecture",
@@ -7336,6 +7519,9 @@
     "mdf": [
       "admin/partner-community-requirements"
     ],
+    "media-cloud": [
+      "admin/media-cloud-setup"
+    ],
     "member-management": [
       "admin/experience-cloud-member-management"
     ],
@@ -7362,6 +7548,9 @@
     ],
     "merge-trigger": [
       "apex/case-trigger-patterns"
+    ],
+    "mermaid": [
+      "architect/salesforce-erd-and-diagramming"
     ],
     "message-channel": [
       "lwc/message-channel-patterns"
@@ -7424,6 +7613,9 @@
     "meter-management": [
       "admin/industries-energy-utilities-setup"
     ],
+    "metered-billing": [
+      "admin/usage-based-pricing-setup"
+    ],
     "metrics": [
       "admin/analytics-kpi-definition",
       "agentforce/agent-metric-dashboards"
@@ -7442,6 +7634,9 @@
     "miaw": [
       "apex/service-cloud-rest-api"
     ],
+    "micro-frontend": [
+      "architect/composable-commerce-architecture"
+    ],
     "middleware": [
       "integration/change-data-capture-integration",
       "integration/middleware-integration-patterns"
@@ -7452,6 +7647,7 @@
     "migration": [
       "admin/data-import-and-management",
       "agentforce/einstein-bots-to-agentforce-migration",
+      "architect/nonprofit-cloud-vs-npsp-migration",
       "architect/npsp-vs-nonprofit-cloud-decision",
       "data/omnistudio-datapack-migration",
       "data/person-accounts",
@@ -7460,6 +7656,7 @@
       "flow/flow-migration-from-trigger",
       "flow/process-builder-to-flow-migration",
       "flow/workflow-rule-to-flow-migration",
+      "integration/salesforce-functions-replacement",
       "omnistudio/industries-cpq-vs-salesforce-cpq",
       "omnistudio/vlocity-to-native-omnistudio-migration"
     ],
@@ -7645,6 +7842,9 @@
     "multi-store": [
       "architect/multi-store-architecture"
     ],
+    "multi-tenant": [
+      "architect/tenant-isolation-patterns"
+    ],
     "multi-touch-attribution": [
       "admin/campaign-planning-and-attribution"
     ],
@@ -7682,6 +7882,7 @@
       "omnistudio/integration-procedures"
     ],
     "namespace": [
+      "architect/tenant-isolation-patterns",
       "devops/managed-package-development",
       "devops/package-development-strategy",
       "omnistudio/vlocity-to-native-omnistudio-migration"
@@ -7773,6 +7974,7 @@
       "admin/donor-lifecycle-requirements",
       "admin/program-outcome-tracking-design",
       "architect/fundraising-integration-patterns",
+      "architect/nonprofit-cloud-vs-npsp-migration",
       "architect/nonprofit-platform-architecture",
       "architect/npsp-vs-nonprofit-cloud-decision",
       "data/volunteer-management-requirements"
@@ -7817,6 +8019,7 @@
       "apex/npsp-custom-rollups",
       "apex/npsp-trigger-framework-extension",
       "architect/fundraising-integration-patterns",
+      "architect/nonprofit-cloud-vs-npsp-migration",
       "architect/npsp-vs-nonprofit-cloud-decision",
       "data/constituent-data-migration",
       "data/gift-history-import",
@@ -7953,8 +8156,10 @@
       "admin/client-onboarding-design",
       "admin/flexcard-requirements",
       "admin/industries-insurance-setup",
+      "admin/industries-public-sector-setup",
       "admin/omniscript-flow-design-requirements",
       "admin/patient-engagement-requirements",
+      "architect/cloud-specific-deployment-architecture",
       "architect/omnistudio-scalability-patterns",
       "architect/omnistudio-vs-standard-architecture",
       "architect/omnistudio-vs-standard-decision",
@@ -8357,6 +8562,9 @@
     "partner-portal": [
       "architect/sales-cloud-integration-patterns"
     ],
+    "partner-rebates": [
+      "admin/rebate-management-setup"
+    ],
     "partner-role-hierarchy": [
       "data/partner-data-access-patterns"
     ],
@@ -8447,6 +8655,9 @@
     "payment-options": [
       "admin/commerce-checkout-flow-design"
     ],
+    "payouts": [
+      "admin/rebate-management-setup"
+    ],
     "pdf": [
       "admin/agent-output-formats",
       "omnistudio/document-generation-omnistudio"
@@ -8518,6 +8729,9 @@
       "admin/user-access-policies",
       "devops/permission-set-deployment-ordering"
     ],
+    "permits": [
+      "admin/industries-public-sector-setup"
+    ],
     "person-accounts": [
       "admin/fsc-relationship-groups",
       "admin/health-cloud-patient-setup",
@@ -8581,6 +8795,7 @@
       "agentforce/sf-to-llm-data-pipelines"
     ],
     "pipeline": [
+      "architect/deployment-automation-architecture",
       "data/sales-reporting-data-model",
       "devops/copado-essentials",
       "devops/devops-center-advanced",
@@ -8595,6 +8810,7 @@
     ],
     "pipeline-inspection": [
       "admin/pipeline-review-design",
+      "admin/revenue-intelligence-setup",
       "agentforce/agentforce-sales-ai-setup",
       "agentforce/einstein-copilot-for-sales"
     ],
@@ -8606,6 +8822,9 @@
     ],
     "pkce": [
       "security/connected-app-security-policies"
+    ],
+    "plantuml": [
+      "architect/salesforce-erd-and-diagramming"
     ],
     "platform-cache": [
       "apex/platform-cache"
@@ -8932,11 +9151,15 @@
     ],
     "program-management": [
       "admin/program-outcome-tracking-design",
+      "architect/nonprofit-cloud-vs-npsp-migration",
       "architect/nonprofit-platform-architecture",
       "data/nonprofit-data-architecture"
     ],
     "program-management-module": [
       "admin/npsp-program-management"
+    ],
+    "program-plan": [
+      "admin/education-cloud-eda-setup"
     ],
     "programmatic-metadata": [
       "apex/apex-metadata-api"
@@ -9030,6 +9253,9 @@
     ],
     "public-pages": [
       "admin/experience-cloud-guest-access"
+    ],
+    "public-sector": [
+      "admin/industries-public-sector-setup"
     ],
     "publication-list": [
       "data/subscriber-data-management"
@@ -9197,6 +9423,9 @@
     "rate-plan": [
       "admin/industries-energy-utilities-setup"
     ],
+    "rating": [
+      "admin/usage-based-pricing-setup"
+    ],
     "reactive": [
       "flow/flow-reactive-screen-components"
     ],
@@ -9215,6 +9444,9 @@
     ],
     "real-time-segmentation": [
       "admin/data-cloud-segmentation"
+    ],
+    "rebate-management": [
+      "admin/rebate-management-setup"
     ],
     "recalculation": [
       "security/dynamic-sharing-recalculation"
@@ -9373,6 +9605,9 @@
     "release-runbook": [
       "devops/metadata-api-coverage-gaps"
     ],
+    "release-train": [
+      "architect/deployment-automation-architecture"
+    ],
     "release-updates": [
       "admin/salesforce-release-preparation"
     ],
@@ -9438,7 +9673,8 @@
       "lwc/lwc-forms-and-validation"
     ],
     "reporting": [
-      "data/fsl-reporting-data-model"
+      "data/fsl-reporting-data-model",
+      "integration/tableau-salesforce-connector"
     ],
     "reporting-currency": [
       "architect/multi-currency-sales-architecture"
@@ -9518,6 +9754,9 @@
     "restricted-topics": [
       "agentforce/agentforce-guardrails"
     ],
+    "retail-execution": [
+      "admin/consumer-goods-cloud-setup"
+    ],
     "retention": [
       "apex/custom-logging-and-monitoring",
       "data/analytics-data-governance"
@@ -9530,6 +9769,9 @@
     ],
     "retire-workflow-rules": [
       "flow/workflow-rule-to-flow-migration"
+    ],
+    "retirement": [
+      "integration/salesforce-functions-replacement"
     ],
     "retrieve": [
       "apex/metadata-api-and-package-xml"
@@ -9547,12 +9789,18 @@
     ],
     "revenue-cloud": [
       "admin/quote-to-cash-process",
+      "admin/rebate-management-setup",
+      "admin/usage-based-pricing-setup",
       "data/revenue-cloud-data-model",
       "integration/revenue-lifecycle-management",
       "omnistudio/industries-cpq-vs-salesforce-cpq"
     ],
     "revenue-intelligence": [
-      "admin/pipeline-review-design"
+      "admin/pipeline-review-design",
+      "admin/revenue-intelligence-setup"
+    ],
+    "revenue-management": [
+      "admin/media-cloud-setup"
     ],
     "revenue-metrics": [
       "data/commerce-analytics-data"
@@ -9644,6 +9892,9 @@
       "admin/household-model-configuration",
       "data/fsc-data-model"
     ],
+    "route-planning": [
+      "admin/consumer-goods-cloud-setup"
+    ],
     "routing": [
       "admin/approval-processes",
       "admin/assignment-rules",
@@ -9708,6 +9959,9 @@
     "sales-ai": [
       "agentforce/einstein-copilot-for-sales"
     ],
+    "sales-analytics": [
+      "admin/revenue-intelligence-setup"
+    ],
     "sales-cloud": [
       "admin/einstein-activity-capture-setup",
       "admin/lead-management-and-conversion",
@@ -9716,6 +9970,7 @@
       "admin/pipeline-review-design",
       "admin/products-and-pricebooks",
       "admin/quote-to-cash-requirements",
+      "admin/revenue-intelligence-setup",
       "agentforce/agentforce-sales-ai-setup",
       "architect/multi-currency-sales-architecture",
       "architect/sales-cloud-architecture",
@@ -9776,6 +10031,9 @@
     "salesforce-for-slack": [
       "integration/slack-salesforce-integration-setup",
       "integration/slack-workflow-builder"
+    ],
+    "salesforce-functions": [
+      "integration/salesforce-functions-replacement"
     ],
     "salesforce-inspector": [
       "data/data-loader-and-tools"
@@ -10370,7 +10628,8 @@
     "shadow-dom": [
       "devops/automated-regression-testing",
       "lwc/common-lwc-runtime-errors",
-      "lwc/component-communication"
+      "lwc/component-communication",
+      "lwc/lwc-web-components-interop"
     ],
     "share-objects": [
       "apex/apex-managed-sharing"
@@ -10697,6 +10956,7 @@
       "data/opportunity-pipeline-migration"
     ],
     "stages": [
+      "admin/flow-orchestration-admin",
       "admin/opportunity-management",
       "flow/orchestration-flows"
     ],
@@ -10734,7 +10994,8 @@
       "apex/recursive-trigger-prevention"
     ],
     "static-resource": [
-      "apex/quote-pdf-customization"
+      "apex/quote-pdf-customization",
+      "lwc/lwc-chart-and-visualization"
     ],
     "static-resources": [
       "lwc/static-resources-in-lwc"
@@ -10807,6 +11068,9 @@
     ],
     "student-privacy": [
       "security/ferpa-compliance-in-salesforce"
+    ],
+    "student-success": [
+      "admin/education-cloud-eda-setup"
     ],
     "subflow": [
       "flow/flow-action-framework"
@@ -10904,7 +11168,11 @@
     ],
     "tableau": [
       "admin/data-storytelling-design",
-      "architect/crm-analytics-vs-tableau-decision"
+      "architect/crm-analytics-vs-tableau-decision",
+      "integration/tableau-salesforce-connector"
+    ],
+    "tableau-cloud": [
+      "integration/tableau-salesforce-connector"
     ],
     "task-sequence": [
       "admin/fsc-action-plans"
@@ -10936,6 +11204,9 @@
     "templates": [
       "admin/email-templates-and-alerts",
       "admin/npsp-engagement-plans"
+    ],
+    "tenant-isolation": [
+      "architect/tenant-isolation-patterns"
     ],
     "territories": [
       "architect/fsl-multi-region-architecture"
@@ -11003,6 +11274,9 @@
     "theming": [
       "lwc/lwr-site-development"
     ],
+    "third-party": [
+      "lwc/lwc-web-components-interop"
+    ],
     "third-party-library": [
       "lwc/static-resources-in-lwc"
     ],
@@ -11020,6 +11294,9 @@
     ],
     "tiered-pricing": [
       "admin/commerce-pricing-and-promotions"
+    ],
+    "tiering": [
+      "admin/usage-based-pricing-setup"
     ],
     "time-based-automation": [
       "admin/escalation-rules"
@@ -11290,6 +11567,9 @@
     "usability": [
       "architect/nfr-definition-for-salesforce"
     ],
+    "usage-based-pricing": [
+      "admin/usage-based-pricing-setup"
+    ],
     "user-access-policies": [
       "admin/user-access-policies"
     ],
@@ -11427,6 +11707,9 @@
     "visibility-rules": [
       "admin/dynamic-forms-and-actions"
     ],
+    "visit-execution": [
+      "admin/consumer-goods-cloud-setup"
+    ],
     "visitor-activity": [
       "apex/mcae-pardot-api"
     ],
@@ -11439,6 +11722,9 @@
       "apex/quote-pdf-customization",
       "apex/visualforce-fundamentals",
       "security/xss-and-injection-prevention"
+    ],
+    "visualization": [
+      "lwc/lwc-chart-and-visualization"
     ],
     "vlocity": [
       "architect/omnistudio-vs-standard-architecture",
@@ -11486,6 +11772,9 @@
     ],
     "wealth-screening": [
       "architect/fundraising-integration-patterns"
+    ],
+    "web-components": [
+      "lwc/lwc-web-components-interop"
     ],
     "web-to-case": [
       "admin/case-management-setup",
@@ -11549,6 +11838,7 @@
       "devops/devops-center-advanced"
     ],
     "work-items": [
+      "admin/flow-orchestration-admin",
       "devops/copado-essentials",
       "devops/devops-center-pipeline",
       "flow/orchestration-flows"
@@ -11582,6 +11872,7 @@
       "data/data-loader-and-tools"
     ],
     "workflow": [
+      "admin/flow-orchestration-admin",
       "admin/outbound-message-setup"
     ],
     "workflow-automation": [

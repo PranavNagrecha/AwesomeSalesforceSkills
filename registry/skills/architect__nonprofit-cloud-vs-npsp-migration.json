@@ -1,0 +1,96 @@
+{
+  "category": "architect",
+  "chunk_ids": [
+    "0bad11eab6ab2d5c18ee",
+    "12fb2290e18a140e1152",
+    "1501522a19ab5eadee3b",
+    "16e1c41036bd9409d55e",
+    "17e89968d533b360a312",
+    "1808b9d265ca2528826c",
+    "2254f38be7d910de4c79",
+    "244f2d011195e87729e8",
+    "258b2cd8617af2c506a7",
+    "26a84d59ab7f0b25e7a3",
+    "26d50cba2ed3848782e8",
+    "30dbd7dfb7ba5e1f1b44",
+    "3bcaa087e84e5e247643",
+    "3ddd884bc88da13c85f8",
+    "42ae4dc4aa56a775d292",
+    "45c2eb0d12bfc21b3140",
+    "4eb852b3642814c5d6d0",
+    "57f29976f7728b7e2c96",
+    "5d513d43bbc1509b915e",
+    "5ffc07e9e1f60b7b785c",
+    "6199f5157f25aa34641e",
+    "61ab3cc5e9238b6d58ad",
+    "67fc4180bf9eec06e8b2",
+    "6da28a1c371a6ba7b43f",
+    "74800d3d98418e87bfdb",
+    "7654f6f64d87a256dd0b",
+    "797f4eb6f1f10e36051b",
+    "79ed134af1d84ce7959c",
+    "83a324881ad99c324233",
+    "8a388efd7169a8367ccf",
+    "99411ed89e02ef573159",
+    "a22b32b21d161c465719",
+    "a2c059d1ec209345f7d2",
+    "a7d84fc6d583d28830d5",
+    "b3882ba3cd0f16de8cd8",
+    "b5d9f2097eccd959e60e",
+    "bd3427f241c12003481f",
+    "c8d1793ba60f56535012",
+    "d26407a90dc4b8cb9930",
+    "dba686ffd21dbd523ccb",
+    "e20737c7abebcb89f86d",
+    "e8e5eb1e9b0936aae335",
+    "e8ff19e52c6c55c451da",
+    "e9eb09a0c1c2da986531",
+    "ecbaa1b719fff2ce932e",
+    "ecec5637ea2332855f88",
+    "f4c8c21aa0e93b5aa5a5"
+  ],
+  "content_hash": "6c0a0acf7cd7a21e0d7b7e1047bc3a2b56b0a2041955cf6a1458c237cecca5d4",
+  "dependencies": [],
+  "description": "Nonprofit Cloud vs NPSP decision and migration: choose NPSP (managed package) or Nonprofit Cloud (native), plan data migration, Account Model differences, Program Management, fundraising. NOT for nonprofit accounting (use revenue-cloud-foundation). NOT for generic Sales Cloud setup (use sales-cloud-core-setup).",
+  "file_location": "skills/architect/nonprofit-cloud-vs-npsp-migration",
+  "id": "architect/nonprofit-cloud-vs-npsp-migration",
+  "inputs": [
+    "Current state (greenfield, on NPSP, or on legacy Nonprofit Success Pack)",
+    "Scope of nonprofit capability needed (fundraising, programs, grants, volunteers)",
+    "Integration footprint (payment processors, payroll, accounting)",
+    "Data volume (constituents, gifts, grants, households)"
+  ],
+  "name": "nonprofit-cloud-vs-npsp-migration",
+  "official_sources": [
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "Nonprofit Cloud vs NPSP recommendation with rationale",
+    "Data model mapping (NPSP objects \u2192 Nonprofit Cloud objects)",
+    "Migration phasing and data conversion plan",
+    "Readiness checklist and risk register"
+  ],
+  "references": [
+    "skills/architect/nonprofit-cloud-vs-npsp-migration/references/examples.md",
+    "skills/architect/nonprofit-cloud-vs-npsp-migration/references/gotchas.md",
+    "skills/architect/nonprofit-cloud-vs-npsp-migration/references/llm-anti-patterns.md",
+    "skills/architect/nonprofit-cloud-vs-npsp-migration/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/architect/nonprofit-cloud-vs-npsp-migration/scripts/check_nonprofit_cloud_vs_npsp_migration.py"
+  ],
+  "tags": [
+    "nonprofit-cloud",
+    "npsp",
+    "fundraising",
+    "program-management",
+    "account-model",
+    "migration"
+  ],
+  "templates": [
+    "skills/architect/nonprofit-cloud-vs-npsp-migration/templates/nonprofit-cloud-vs-npsp-migration-template.md"
+  ],
+  "updated": "2026-04-21",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}
