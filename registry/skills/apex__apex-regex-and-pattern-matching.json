@@ -68,7 +68,7 @@
     "f9a3d7a168bb2f444898",
     "fab4fb25e04ff3c7e50a"
   ],
-  "content_hash": "19a6de78e631c124231a6e3fa2e7270797e6574107cb2d00e72ae67932ef7f94",
+  "content_hash": "ef0a710395358d78d2630f2024af6268c3d0372016e02ef4f0da7c6fc2074cbc",
   "dependencies": [],
   "description": "Use when writing Apex that validates, extracts, or transforms strings with Pattern/Matcher or String regex methods. Covers catastrophic backtracking, 1M char input cap, anchored vs unanchored matching, and replaceAll reserved `$`/`\\` chars. NOT for SOQL LIKE queries, Flow formula REGEX, or client-side JavaScript regex.",
   "file_location": "skills/apex/apex-regex-and-pattern-matching",
@@ -98,7 +98,11 @@
     "skills/apex/apex-regex-and-pattern-matching/references/well-architected.md"
   ],
   "scripts": [
-    "skills/apex/apex-regex-and-pattern-matching/scripts/check_apex_regex_and_pattern_matching.py"
+    "skills/apex/apex-regex-and-pattern-matching/scripts/check_apex_regex_and_pattern_matching.py",
+    "skills/apex/apex-regex-and-pattern-matching/scripts/tests/clean-double-backslash/expected.json",
+    "skills/apex/apex-regex-and-pattern-matching/scripts/tests/clean-double-backslash/input.cls",
+    "skills/apex/apex-regex-and-pattern-matching/scripts/tests/single-backslash-literal/expected.json",
+    "skills/apex/apex-regex-and-pattern-matching/scripts/tests/single-backslash-literal/input.cls"
   ],
   "tags": [
     "apex-regex-and-pattern-matching",

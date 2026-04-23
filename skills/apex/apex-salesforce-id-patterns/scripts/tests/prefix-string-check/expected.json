@@ -1,0 +1,7 @@
+{
+  "expected": [
+    { "rule": "prefix-string-type-check", "severity": "HIGH" },
+    { "rule": "prefix-string-type-check", "severity": "HIGH" }
+  ],
+  "strict": false
+}

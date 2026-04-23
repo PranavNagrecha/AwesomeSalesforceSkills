@@ -1,0 +1,6 @@
+{
+  "expected": [
+    { "rule": "switch-on-action-no-default", "severity": "HIGH" }
+  ],
+  "strict": false
+}

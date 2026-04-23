@@ -31,8 +31,8 @@ IMPLEMENTS_CALLABLE = re.compile(
     r"class\s+(\w+)\s+implements\s+[^{]*\bCallable\b",
     re.IGNORECASE,
 )
-SWITCH_ON_ACTION = re.compile(r"switch\s+on\s+action\s*\{([^}]*)\}", re.DOTALL)
-WHEN_ELSE = re.compile(r"when\s+else\s*\{")
+SWITCH_ON_ACTION_HEADER = re.compile(r"switch\s+on\s+action\s*\{")
+WHEN_ELSE = re.compile(r"when\s+else\s*[\{:]")
 TYPE_FORNAME_NEWINSTANCE = re.compile(
     r"Type\.forName\s*\([^)]*\)\s*\.\s*newInstance\s*\("
 )
@@ -96,8 +96,18 @@ def check_file(path: Path) -> list[dict]:
                 }
             )
 
-    for m in SWITCH_ON_ACTION.finditer(text):
-        body = m.group(1)
+    for m in SWITCH_ON_ACTION_HEADER.finditer(text):
+        brace_start = m.end() - 1  # position of '{'
+        depth = 1
+        i = brace_start + 1
+        while i < len(text) and depth > 0:
+            c = text[i]
+            if c == "{":
+                depth += 1
+            elif c == "}":
+                depth -= 1
+            i += 1
+        body = text[brace_start + 1 : i - 1] if depth == 0 else text[brace_start + 1 :]
         if not WHEN_ELSE.search(body):
             issues.append(
                 {

@@ -1,0 +1,49 @@
+# Batch spec template — copy, fill, then run:
+#   python3 scripts/ship_skills.py --batch batches/my-batch.yaml
+#
+# The ship pipeline runs: forge → skill_sync --changed-only
+#                               → validate_repo --changed-only
+#                               → test_checkers --changed-only
+# and stops at the first failure.
+
+skills:
+  # ── Minimal spec (stub content — TODOs will FAIL validation, so fill them before sync) ──
+  - slug: apex-my-new-skill              # lowercase-hyphen-case
+    category: apex                       # one of: admin | apex | lwc | flow | omnistudio |
+                                         # agentforce | security | integration | data | devops |
+                                         # experience | servicecloud | architect
+    description: "Use when … NOT for …"  # triggers + explicit scope exclusion
+    pillars:                             # one or more of: Security | Performance | Scalability |
+      - Reliability                      #   Reliability | User Experience | Operational Excellence
+    tags:
+      - apex-my-new-skill                # first tag = slug
+      - another-tag
+    triggers:                            # 3+ natural-language phrases
+      - "user phrase 1"
+      - "user phrase 2"
+      - "user phrase 3"
+    inputs:
+      - "what this skill needs to work"
+    outputs:
+      - "what this skill produces"
+
+    # ── Optional: point at a staging dir holding pre-authored content ──
+    # Missing files fall back to TODO stubs (which fail validation).
+    # staging_dir: staging/apex-my-new-skill
+    #   Recognised filenames:
+    #     SKILL_body.md           — the markdown body after the frontmatter
+    #     examples.md             — references/examples.md verbatim
+    #     gotchas.md              — references/gotchas.md verbatim
+    #     llm-anti-patterns.md    — references/llm-anti-patterns.md verbatim
+    #     well-architected.md     — references/well-architected.md verbatim
+    #     template.md             — templates/<slug>-template.md verbatim
+    #     check.py                — scripts/check_<slug>.py verbatim
+
+    # ── Agent wiring: for each listed agent ──
+    #   1. adds "<category>/<slug>" to dependencies.skills (alphabetical)
+    #   2. appends a numbered line to Mandatory Reads with the descriptor
+    #   3. if `kind` is provided, adds it to inputs.schema.json enum
+    agents:
+      - name: apex-builder
+        descriptor: "short gloss shown in Mandatory Reads"
+        # kind: my_new_kind   # optional — adds to apex-builder kind enum
