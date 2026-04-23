@@ -70,7 +70,7 @@
     "f8b647bc3a0df428f23d",
     "fcfc91efcb529672280c"
   ],
-  "content_hash": "5cb0012e3759277ae8bf23f69a78d5e9e68fc1c2e6eef07d2a5e2c2f134e2f90",
+  "content_hash": "671cb37313cb89ca44bbabb2f4761ea5d7db6e5892d9ea8b3deeed173fe189a7",
   "dependencies": [],
   "description": "Use when building Apex classes meant to be invoked dynamically \u2014 from Flow, external packages, managed-package extensions, or loose-coupling code that cannot directly reference the concrete class. Trigger keywords: Callable, call method, dynamic Apex, action registry, plugin pattern, managed package extension point. NOT for: Invocable methods exposed to Flow (see apex-invocable-methods) or REST endpoints (see apex-rest-services).",
   "file_location": "skills/apex/apex-callable-interface",
@@ -99,7 +99,11 @@
     "skills/apex/apex-callable-interface/references/well-architected.md"
   ],
   "scripts": [
-    "skills/apex/apex-callable-interface/scripts/check_apex_callable_interface.py"
+    "skills/apex/apex-callable-interface/scripts/check_apex_callable_interface.py",
+    "skills/apex/apex-callable-interface/scripts/tests/clean-callable/expected.json",
+    "skills/apex/apex-callable-interface/scripts/tests/clean-callable/input.cls",
+    "skills/apex/apex-callable-interface/scripts/tests/missing-when-else/expected.json",
+    "skills/apex/apex-callable-interface/scripts/tests/missing-when-else/input.cls"
   ],
   "tags": [
     "apex-callable-interface",
