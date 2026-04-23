@@ -1,0 +1,94 @@
+{
+  "category": "omnistudio",
+  "chunk_ids": [
+    "04d42e9550249fa3bc03",
+    "06385dabc895005735db",
+    "0ab1e0cdb63ba10d54d9",
+    "0f1383cc58bf1f91902f",
+    "130e7f974163dc8f8889",
+    "19ae32c1386d3b3e4cee",
+    "1a4177c21fc59b24bda7",
+    "254401b804a42f192169",
+    "3b621e78be5cc3d5a86f",
+    "45ed90b2246724461760",
+    "48c3b30d19578451552d",
+    "4bad820f1a1e4daf8096",
+    "4bb863e6778ac4ef0a39",
+    "4ced9007c822fa11e46a",
+    "51ce0be82c2c62d7edb3",
+    "5ba193328278d2ce5a3c",
+    "5bdbbfa63f3037ad9512",
+    "5c2fe5f47af9085c0e4a",
+    "62c9affffda9920ed3f4",
+    "6b0fe74bd0e91c557629",
+    "76021596409ce57b9908",
+    "7c2de4053ebe7e23a316",
+    "7e40bb8aa97774926c73",
+    "821026bae6c350c28712",
+    "8fe30a1aeabec97ec5ae",
+    "94ee5c200e703f0947f0",
+    "95574adbdd9ef7d3a8f7",
+    "964152b7ecc51b6a43cf",
+    "a14a25881a9f4345a3f9",
+    "a2d86956e99793509045",
+    "a32cdd531c1ef97ed6fc",
+    "a4e2965eeed9d845b000",
+    "a781cb2f766c8754beec",
+    "b22a0351fef9a10135fe",
+    "bca175b25fe90cc49278",
+    "bffcdc444dcc8d02bbe3",
+    "cb03cd019d85e6d038b8",
+    "d0ea494718c8af9e0e55",
+    "d7ec70442d496acabcb6",
+    "da5c20af6cb7e7b5934e",
+    "ee57c3f4b40fbcac7883",
+    "f122e5ecc0447ea415cb",
+    "f3df975de29684f2dab5",
+    "f59b3b184aebbee37592",
+    "f720bd362f001807a10e"
+  ],
+  "content_hash": "954547c7c9f66c5e995b9b32074649d5e5a91c205e5e30deaded96e73b950798",
+  "dependencies": [],
+  "description": "Use when an OmniScript must persist mid-flow state across refresh, navigation, multi-device resume, or abandonment recovery. Covers session objects, staging data, OmniScript tracking, and resume URLs. Does NOT cover OmniScript UI step layout (see omniscript-design) or general Flow pause/resume (see flow-transaction-finalizer-patterns).",
+  "file_location": "skills/omnistudio/omniscript-session-state",
+  "id": "omnistudio/omniscript-session-state",
+  "inputs": [
+    "OmniScript that requires persistence",
+    "Abandonment tolerance",
+    "Cross-device resume requirement"
+  ],
+  "name": "omniscript-session-state",
+  "official_sources": [
+    "OmniScript Tracking \u2014 https://help.salesforce.com/s/articleView?id=sf.os_omniscript_tracking.htm",
+    "OmniScript Save/Resume \u2014 https://help.salesforce.com/s/articleView?id=sf.os_use_save_for_later.htm",
+    "Shield Platform Encryption \u2014 https://help.salesforce.com/s/articleView?id=sf.security_pe_overview.htm"
+  ],
+  "outputs": [
+    "Session object model",
+    "Save/resume trigger design",
+    "Resume URL strategy",
+    "Expiry + cleanup plan"
+  ],
+  "references": [
+    "skills/omnistudio/omniscript-session-state/references/examples.md",
+    "skills/omnistudio/omniscript-session-state/references/gotchas.md",
+    "skills/omnistudio/omniscript-session-state/references/llm-anti-patterns.md",
+    "skills/omnistudio/omniscript-session-state/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/omnistudio/omniscript-session-state/scripts/check_omniscript_session_state.py"
+  ],
+  "tags": [
+    "omnistudio",
+    "omniscript",
+    "session",
+    "resume",
+    "state"
+  ],
+  "templates": [
+    "skills/omnistudio/omniscript-session-state/templates/session-design.md"
+  ],
+  "updated": "2026-04-23",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

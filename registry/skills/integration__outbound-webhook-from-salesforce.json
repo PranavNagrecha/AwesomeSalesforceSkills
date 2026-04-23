@@ -49,7 +49,7 @@
     "f0141cd7e884c2e603de",
     "ffffcbc6abd303cf48ce"
   ],
-  "content_hash": "fba3c8b7b8b4a04cf32338384a16cad89e9cf70c6f56cfb1c60dd884d27f0b4f",
+  "content_hash": "d5de431ebe6ab787792931ad9b576bde97cdf607c31a0b4a913b319e66ddc29f",
   "dependencies": [],
   "description": "Use when Salesforce must POST a webhook to a third-party endpoint after a record change \u2014 with signed payloads, retries, dead-lettering, rate limits, and idempotency. Covers design choice between Outbound Message, Flow HTTP Callout, Apex Queueable callout, and Event Relay. Does NOT cover inbound webhooks into Salesforce (see inbound-webhook or apex-rest-webhook).",
   "file_location": "skills/integration/outbound-webhook-from-salesforce",

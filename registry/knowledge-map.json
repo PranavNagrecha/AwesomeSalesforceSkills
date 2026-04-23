@@ -783,17 +783,21 @@
     ],
     "omnistudio": [
       "omnistudio/business-rules-engine",
+      "omnistudio/calculation-procedure-design",
       "omnistudio/calculation-procedures",
       "omnistudio/dataraptor-load-and-extract",
       "omnistudio/dataraptor-patterns",
       "omnistudio/dataraptor-transform-optimization",
       "omnistudio/document-generation-omnistudio",
+      "omnistudio/flexcard-container-composition",
       "omnistudio/flexcard-design-patterns",
       "omnistudio/flexcard-state-management",
       "omnistudio/industries-api-extensions",
       "omnistudio/industries-cpq-vs-salesforce-cpq",
+      "omnistudio/integration-procedure-cacheable-patterns",
       "omnistudio/integration-procedures",
       "omnistudio/omniscript-design-patterns",
+      "omnistudio/omniscript-session-state",
       "omnistudio/omniscript-versioning",
       "omnistudio/omnistudio-asynchronous-data-operations",
       "omnistudio/omnistudio-cache-strategies",
@@ -824,6 +828,7 @@
       "security/customer-data-request-workflow",
       "security/data-classification-labels",
       "security/dynamic-sharing-recalculation",
+      "security/encrypted-field-query-patterns",
       "security/event-monitoring",
       "security/experience-cloud-security",
       "security/ferpa-compliance-in-salesforce",
@@ -832,9 +837,12 @@
       "security/gdpr-data-privacy",
       "security/guest-user-security",
       "security/ip-range-and-login-flow-strategy",
+      "security/ip-relaxation-and-restriction",
       "security/login-forensics",
+      "security/mfa-enforcement-patterns",
       "security/mfa-enforcement-strategy",
       "security/network-security-and-trusted-ips",
+      "security/oauth-redirect-and-domain-strategy",
       "security/oauth-token-management",
       "security/org-hardening-and-baseline-config",
       "security/permission-set-groups-and-muting",
@@ -1226,7 +1234,8 @@
       "admin/custom-permissions",
       "admin/hipaa-workflow-design",
       "admin/permission-sets-vs-profiles",
-      "admin/queues-and-public-groups"
+      "admin/queues-and-public-groups",
+      "security/ip-relaxation-and-restriction"
     ],
     "access-governance": [
       "admin/permission-set-architecture"
@@ -2110,7 +2119,8 @@
       "lwc/experience-cloud-multi-idp-sso"
     ],
     "authentication": [
-      "lwc/experience-cloud-authentication"
+      "lwc/experience-cloud-authentication",
+      "security/mfa-enforcement-patterns"
     ],
     "authorization": [
       "apex/apex-custom-permissions-check",
@@ -2580,6 +2590,7 @@
       "admin/change-advisory-board-process"
     ],
     "cache": [
+      "omnistudio/integration-procedure-cacheable-patterns",
       "omnistudio/omnistudio-cache-strategies"
     ],
     "cache-aside": [
@@ -2613,7 +2624,11 @@
       "integration/data-cloud-query-api"
     ],
     "calculation-matrix": [
+      "omnistudio/calculation-procedure-design",
       "omnistudio/calculation-procedures"
+    ],
+    "calculation-procedure": [
+      "omnistudio/calculation-procedure-design"
     ],
     "calculation-procedures": [
       "omnistudio/calculation-procedures"
@@ -3280,6 +3295,9 @@
     "composite-key": [
       "data/external-id-strategy"
     ],
+    "composition": [
+      "omnistudio/flexcard-container-composition"
+    ],
     "compound-fields": [
       "admin/compound-field-patterns"
     ],
@@ -3360,6 +3378,7 @@
       "security/api-security-and-rate-limiting",
       "security/certificate-and-key-management",
       "security/connected-app-security-policies",
+      "security/oauth-redirect-and-domain-strategy",
       "security/oauth-token-management",
       "security/session-management-and-timeout"
     ],
@@ -5103,6 +5122,7 @@
     ],
     "encryption": [
       "architect/hipaa-compliance-architecture",
+      "security/encrypted-field-query-patterns",
       "security/platform-encryption",
       "security/salesforce-shield-deployment",
       "security/shield-kms-byok-setup"
@@ -5808,6 +5828,7 @@
     "flexcard": [
       "admin/flexcard-requirements",
       "data/omnistudio-metadata-management",
+      "omnistudio/flexcard-container-composition",
       "omnistudio/flexcard-design-patterns",
       "omnistudio/flexcard-state-management",
       "omnistudio/omnistudio-performance",
@@ -6888,6 +6909,7 @@
       "data/omnistudio-metadata-management",
       "omnistudio/dataraptor-load-and-extract",
       "omnistudio/document-generation-omnistudio",
+      "omnistudio/integration-procedure-cacheable-patterns",
       "omnistudio/integration-procedures",
       "omnistudio/omnistudio-asynchronous-data-operations",
       "omnistudio/omnistudio-debugging",
@@ -6991,6 +7013,9 @@
     ],
     "iot": [
       "architect/fsl-integration-patterns"
+    ],
+    "ip": [
+      "security/ip-relaxation-and-restriction"
     ],
     "ip-based-branching": [
       "security/ip-range-and-login-flow-strategy"
@@ -7499,6 +7524,9 @@
     "logging-framework": [
       "apex/debug-and-logging"
     ],
+    "login": [
+      "security/ip-relaxation-and-restriction"
+    ],
     "login-anomaly": [
       "security/security-incident-response"
     ],
@@ -7896,6 +7924,7 @@
     ],
     "mfa": [
       "admin/org-setup-and-configuration",
+      "security/mfa-enforcement-patterns",
       "security/session-high-assurance-policies",
       "security/transaction-security-policies"
     ],
@@ -8149,7 +8178,8 @@
       "security/certificate-and-key-management"
     ],
     "my-domain": [
-      "admin/org-setup-and-configuration"
+      "admin/org-setup-and-configuration",
+      "security/oauth-redirect-and-domain-strategy"
     ],
     "name": [
       "admin/compound-field-patterns"
@@ -8341,7 +8371,8 @@
       "integration/rest-api-patterns",
       "integration/slack-salesforce-integration-setup",
       "lwc/experience-cloud-api-access",
-      "security/connected-app-security-policies"
+      "security/connected-app-security-policies",
+      "security/oauth-redirect-and-domain-strategy"
     ],
     "oauth-2": [
       "security/oauth-token-management"
@@ -8439,6 +8470,7 @@
       "data/omnistudio-metadata-management",
       "omnistudio/document-generation-omnistudio",
       "omnistudio/omniscript-design-patterns",
+      "omnistudio/omniscript-session-state",
       "omnistudio/omniscript-versioning",
       "omnistudio/omnistudio-custom-lwc-elements",
       "omnistudio/omnistudio-debugging",
@@ -8461,16 +8493,20 @@
       "data/omnistudio-datapack-migration",
       "data/omnistudio-metadata-management",
       "omnistudio/business-rules-engine",
+      "omnistudio/calculation-procedure-design",
       "omnistudio/calculation-procedures",
       "omnistudio/dataraptor-load-and-extract",
       "omnistudio/dataraptor-transform-optimization",
       "omnistudio/document-generation-omnistudio",
+      "omnistudio/flexcard-container-composition",
       "omnistudio/flexcard-design-patterns",
       "omnistudio/flexcard-state-management",
       "omnistudio/industries-api-extensions",
       "omnistudio/industries-cpq-vs-salesforce-cpq",
+      "omnistudio/integration-procedure-cacheable-patterns",
       "omnistudio/integration-procedures",
       "omnistudio/omniscript-design-patterns",
+      "omnistudio/omniscript-session-state",
       "omnistudio/omniscript-versioning",
       "omnistudio/omnistudio-asynchronous-data-operations",
       "omnistudio/omnistudio-cache-strategies",
@@ -9004,6 +9040,7 @@
       "flow/flow-performance-optimization",
       "lwc/virtualized-lists",
       "omnistudio/dataraptor-transform-optimization",
+      "omnistudio/integration-procedure-cacheable-patterns",
       "omnistudio/omnistudio-cache-strategies"
     ],
     "performance-obligation": [
@@ -9140,7 +9177,8 @@
       "architect/salesforce-erd-and-diagramming"
     ],
     "platform-cache": [
-      "apex/platform-cache"
+      "apex/platform-cache",
+      "omnistudio/integration-procedure-cacheable-patterns"
     ],
     "platform-event": [
       "integration/data-cloud-activation-development"
@@ -9316,6 +9354,7 @@
       "architect/cpq-integration-with-erp",
       "architect/cpq-vs-standard-products-decision",
       "data/cpq-data-model",
+      "omnistudio/calculation-procedure-design",
       "omnistudio/calculation-procedures"
     ],
     "pricing-design": [
@@ -10118,6 +10157,9 @@
     "restricted-topics": [
       "agentforce/agentforce-guardrails"
     ],
+    "resume": [
+      "omnistudio/omniscript-session-state"
+    ],
     "retail-execution": [
       "admin/consumer-goods-cloud-setup"
     ],
@@ -10301,6 +10343,9 @@
     ],
     "rubric": [
       "agentforce/agentforce-eval-harness"
+    ],
+    "rules": [
+      "omnistudio/calculation-procedure-design"
     ],
     "run-budget": [
       "data/analytics-dataset-optimization"
@@ -10703,7 +10748,11 @@
       "devops/salesforce-code-analyzer",
       "devops/sandbox-data-isolation-gotchas",
       "security/certificate-and-key-management",
+      "security/encrypted-field-query-patterns",
       "security/file-upload-virus-scanning",
+      "security/ip-relaxation-and-restriction",
+      "security/mfa-enforcement-patterns",
+      "security/oauth-redirect-and-domain-strategy",
       "security/platform-encryption",
       "security/scim-provisioning-integration",
       "security/service-account-credential-rotation",
@@ -10916,6 +10965,7 @@
       "admin/agent-output-formats"
     ],
     "session": [
+      "omnistudio/omniscript-session-state",
       "security/session-high-assurance-policies"
     ],
     "session-analytics": [
@@ -11084,6 +11134,7 @@
       "architect/security-architecture-review",
       "data/data-quality-and-governance",
       "security/data-classification-labels",
+      "security/encrypted-field-query-patterns",
       "security/event-monitoring",
       "security/field-audit-trail",
       "security/platform-encryption",
@@ -11273,7 +11324,8 @@
       "data/soql-query-optimization",
       "flow/flow-governor-limits-deep-dive",
       "integration/rest-api-patterns",
-      "lwc/knowledge-article-lwc"
+      "lwc/knowledge-article-lwc",
+      "security/encrypted-field-query-patterns"
     ],
     "soql-date-literals": [
       "apex/timezone-and-datetime-pitfalls"
@@ -11345,7 +11397,8 @@
       "architect/experience-cloud-integration-patterns",
       "architect/multi-org-strategy",
       "lwc/experience-cloud-authentication",
-      "lwc/experience-cloud-multi-idp-sso"
+      "lwc/experience-cloud-multi-idp-sso",
+      "security/mfa-enforcement-patterns"
     ],
     "sso-mfa": [
       "security/mfa-enforcement-strategy"
@@ -11389,7 +11442,8 @@
       "architect/omnistudio-vs-standard-architecture"
     ],
     "state": [
-      "lwc/lwc-state-management"
+      "lwc/lwc-state-management",
+      "omnistudio/omniscript-session-state"
     ],
     "state-machine": [
       "apex/long-running-process-orchestration"
@@ -11948,6 +12002,9 @@
     ],
     "uat": [
       "admin/uat-and-acceptance-criteria"
+    ],
+    "ui": [
+      "omnistudio/flexcard-container-composition"
     ],
     "ui-automation": [
       "devops/automated-regression-testing"
