@@ -28,6 +28,10 @@
         "cdc_subscriber",
         "continuation",
         "iterator",
+        "callable",
+        "chatter_poster",
+        "notification_sender",
+        "flow_invoker",
         "test_only"
       ],
       "description": "Which Apex surface the builder emits. Determines the class list in AGENT.md Plan Step 2.",

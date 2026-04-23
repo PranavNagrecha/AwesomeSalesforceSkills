@@ -15,11 +15,21 @@ output_formats:
 dependencies:
   skills:
     - admin/agent-output-formats
+    - apex/apex-blob-and-content-version
+    - apex/apex-callable-interface
+    - apex/apex-connect-api-chatter
+    - apex/apex-custom-notifications-from-apex
+    - apex/apex-custom-settings-hierarchy
     - apex/apex-design-patterns
+    - apex/apex-encoding-and-crypto
+    - apex/apex-flow-invocation-from-apex
     - apex/apex-queueable-patterns
+    - apex/apex-regex-and-pattern-matching
     - apex/apex-rest-services
+    - apex/apex-salesforce-id-patterns
     - apex/apex-scheduled-jobs
     - apex/apex-security-patterns
+    - apex/apex-user-and-permission-checks
     - apex/async-apex
     - apex/batch-apex-patterns
     - apex/change-data-capture-apex
@@ -89,16 +99,26 @@ Produces Apex scaffolds for every canonical Apex surface: trigger + handler, ser
 17. `skills/apex/test-class-standards`
 18. `skills/apex/test-data-factory-patterns`
 19. `skills/apex/error-handling-framework`
-20. `standards/decision-trees/async-selection.md`
-21. `templates/apex/TriggerHandler.cls`
-22. `templates/apex/TriggerControl.cls`
-23. `templates/apex/BaseService.cls`
-24. `templates/apex/BaseSelector.cls`
-25. `templates/apex/BaseDomain.cls`
-26. `templates/apex/ApplicationLogger.cls`
-27. `templates/apex/SecurityUtils.cls`
-28. `templates/apex/HttpClient.cls`
-29. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+20. `skills/apex/apex-encoding-and-crypto` — Base64 / hash / HMAC / symmetric crypto
+21. `skills/apex/apex-blob-and-content-version` — file ingestion and ContentVersion creation
+22. `skills/apex/apex-regex-and-pattern-matching` — Pattern/Matcher escapes, replacement reserved chars
+23. `skills/apex/apex-custom-settings-hierarchy` — Hierarchy vs List custom settings, getInstance semantics
+24. `skills/apex/apex-custom-notifications-from-apex` — `Messaging.CustomNotification` bell/mobile alerts
+25. `skills/apex/apex-flow-invocation-from-apex` — `Flow.Interview.createInterview` strict param types
+26. `skills/apex/apex-user-and-permission-checks` — `FeatureManagement.checkPermission` vs profile-name checks
+27. `skills/apex/apex-salesforce-id-patterns` — Id typing, 15/18-char, `getSobjectType`
+28. `skills/apex/apex-callable-interface` — dynamic-dispatch extension points
+29. `skills/apex/apex-connect-api-chatter` — ConnectApi posts, mentions, attachments
+30. `standards/decision-trees/async-selection.md`
+31. `templates/apex/TriggerHandler.cls`
+32. `templates/apex/TriggerControl.cls`
+33. `templates/apex/BaseService.cls`
+34. `templates/apex/BaseSelector.cls`
+35. `templates/apex/BaseDomain.cls`
+36. `templates/apex/ApplicationLogger.cls`
+37. `templates/apex/SecurityUtils.cls`
+38. `templates/apex/HttpClient.cls`
+39. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---
 
@@ -106,7 +126,7 @@ Produces Apex scaffolds for every canonical Apex surface: trigger + handler, ser
 
 | Input | Required | Example |
 |---|---|---|
-| `kind` | yes | `trigger` \| `service` \| `selector` \| `domain` \| `controller` \| `batch` \| `queueable` \| `schedulable` \| `invocable` \| `rest` \| `soap` \| `platform_event_subscriber` \| `cdc_subscriber` \| `continuation` \| `iterator` \| `test_only` |
+| `kind` | yes | `trigger` \| `service` \| `selector` \| `domain` \| `controller` \| `batch` \| `queueable` \| `schedulable` \| `invocable` \| `rest` \| `soap` \| `platform_event_subscriber` \| `cdc_subscriber` \| `continuation` \| `iterator` \| `callable` \| `chatter_poster` \| `notification_sender` \| `flow_invoker` \| `test_only` |
 | `feature_summary` | yes | "Nightly Account hierarchy rebuild triggered when Parent changes" |
 | `primary_sobject` | yes for trigger / selector / domain / batch | `Account`, `Opportunity` |
 | `api_version` | no | default `60.0` — the agent records the chosen API version in the meta XML |
@@ -150,6 +170,10 @@ A "feature" rarely maps to one class. Standard decomposition:
 | `continuation` | `<Feature>ContinuationController.cls` + test |
 | `iterator` | `<Feature>Iterator.cls implements Iterator<T>` + wrapper Iterable + test |
 | `controller` | `<Feature>Controller.cls` with `@AuraEnabled(cacheable=true)` where safe + test |
+| `callable` | `<Feature>Callable.cls implements Callable` with documented action vocabulary + test covering each action + unknown-action throw |
+| `chatter_poster` | `<Feature>ChatterService.cls` assembling `ConnectApi.FeedItemInput` with `MentionSegmentInput` segments + test using `Test.setMock(ConnectApi.ConnectApi.class, ...)` |
+| `notification_sender` | `<Feature>NotificationService.cls` using `Messaging.CustomNotification` with CustomNotificationType lookup by DeveloperName + test |
+| `flow_invoker` | `<Feature>FlowInvoker.cls` wrapping `Flow.Interview.createInterview(name, params).start()` with strict param typing + test |
 
 ### Step 3 — Emit each class against the template
 
