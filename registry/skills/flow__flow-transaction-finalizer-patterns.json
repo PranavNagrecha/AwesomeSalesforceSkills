@@ -1,0 +1,92 @@
+{
+  "category": "flow",
+  "chunk_ids": [
+    "0e3afbe531cfc26edf39",
+    "0fc7127e3e2ca65e463a",
+    "103ee7da3387c711221b",
+    "1360c46f851b4601535b",
+    "13769dad255b4bb705b0",
+    "17d7333e4016c1b45d3c",
+    "1f3a658edad17de23aff",
+    "20832b9efa274f76e377",
+    "32c95e9bedf7f5bbaf62",
+    "4db27cc900e05fabeab3",
+    "5b903d9694861e07d8cf",
+    "60fe4776782e77db6a91",
+    "61611784f2e0f0ae0078",
+    "663f3002bd4b270f4cf3",
+    "7055780cd5815468ca6f",
+    "736ff22ed847df86b980",
+    "7884c7ac94e6b86e7bf8",
+    "8678b9e78160021598e7",
+    "891ce256ef33e32a941c",
+    "8f8e48e945ea128abfb7",
+    "920c2c86260d99394731",
+    "92794b4bcea956080d45",
+    "9ce265e370ee1f401b4b",
+    "9d20144ce7ba6d736d2e",
+    "adc4021cbdd221b8741a",
+    "ade61cb0f49a9010df7d",
+    "b18662d026a43e9d1db7",
+    "b2cf9d7112a7c9d29ced",
+    "b77f4516f61a68a3c0d2",
+    "c7d3c3052078ebf6702e",
+    "ca77fa3f0c602d5ce867",
+    "cb2b01e688e6c71e2c71",
+    "cc46668f4da2f5f59a6f",
+    "cd1134beaa268170114a",
+    "d0bebe72b60f9e5eb6fc",
+    "d27c8444308f0b40dab2",
+    "e179e737cd62e1def397",
+    "e2ad7eb6b298b0dcb792",
+    "e6bccc7148bd218bf4de",
+    "ea8cec25ee2b60d9095f",
+    "ed57e81f60fd33df491f",
+    "ee8bb3dc4a94d74c9fae",
+    "f2e42bcefedda3b2101f",
+    "feb6288503e166b62239"
+  ],
+  "content_hash": "4140888097321a01c2264af5b5796b1f58c7c605fa6b8c7ee31493fbcc31fb34",
+  "dependencies": [],
+  "description": "Use when a Flow needs to do work that must survive the triggering transaction \u2014 post-commit notifications, callouts, audit rows, or compensating actions. Covers Flow Transaction Control element, scheduled paths, Platform Event + finalizer escalation, and Apex Queueable finalizer bridging. Does NOT cover general Flow async decisions (see async-selection).",
+  "file_location": "skills/flow/flow-transaction-finalizer-patterns",
+  "id": "flow/flow-transaction-finalizer-patterns",
+  "inputs": [
+    "Flow that currently does pre- or in-transaction work",
+    "Work that must happen post-commit (email, callout, event emit, compensating update)",
+    "Failure tolerance for the post-commit step"
+  ],
+  "name": "flow-transaction-finalizer-patterns",
+  "official_sources": [
+    "Flow Scheduled Paths \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_concepts_trigger_schedule.htm",
+    "Publish-After-Commit \u2014 https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_publish_after_commit.htm",
+    "Queueable Finalizer \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_queueable_finalizer.htm"
+  ],
+  "outputs": [
+    "Post-commit execution pattern (scheduled path, platform event, Apex Queueable finalizer)",
+    "Retry / durability story",
+    "Monitoring hook"
+  ],
+  "references": [
+    "skills/flow/flow-transaction-finalizer-patterns/references/examples.md",
+    "skills/flow/flow-transaction-finalizer-patterns/references/gotchas.md",
+    "skills/flow/flow-transaction-finalizer-patterns/references/llm-anti-patterns.md",
+    "skills/flow/flow-transaction-finalizer-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/flow/flow-transaction-finalizer-patterns/scripts/check_flow_transaction_finalizer_patterns.py"
+  ],
+  "tags": [
+    "flow",
+    "transaction",
+    "finalizer",
+    "reliability",
+    "post-commit"
+  ],
+  "templates": [
+    "skills/flow/flow-transaction-finalizer-patterns/templates/post-commit-plan.md"
+  ],
+  "updated": "2026-04-23",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

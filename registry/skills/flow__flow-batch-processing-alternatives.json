@@ -1,0 +1,90 @@
+{
+  "category": "flow",
+  "chunk_ids": [
+    "0168038f4adc0d1b4fae",
+    "06ce8bca57e2973d30a5",
+    "0ac3b9719126a8529da9",
+    "20e53bf2dd7646878b56",
+    "237c1fc33fcb0b0d8c02",
+    "2644cf1fdcc967a75886",
+    "26e040d99d18147b1ce6",
+    "2eb40994450ad0ef290e",
+    "36b94d7b38afee3a9f9d",
+    "3a8f0273cddf884ef90a",
+    "3c86852daef51992f960",
+    "4768376f52927027bd47",
+    "5153c044d55d9c0c4b02",
+    "52e396d213751cfa334e",
+    "55103e059f5b14222cfe",
+    "5acd82ca96323219f051",
+    "5f04de9e2bccbfb3fc1f",
+    "702735e8d1261c794ad2",
+    "760bd3fa92d832b7c4ed",
+    "7cfb5fd2c2cdddbf680a",
+    "7f211bfe7d2e24b97a4a",
+    "82f324d71893d5da741f",
+    "834d8c620488cd19dc1d",
+    "92990da4739df40f4065",
+    "958ec4449babb1cb4891",
+    "9620bc6b29975d8fade0",
+    "982ba8c132640f11dbc6",
+    "9b614ee718b2be86ba7e",
+    "9c2a4aaa4af4657975a3",
+    "a09c8b0f9c2e5f65dd05",
+    "a404c1619dba438c7890",
+    "a4e98e23271b9b6709d9",
+    "aff322dbdd0d7c7c37e8",
+    "b514f33e8a9f4b66752a",
+    "b558aa78aeec45b76f76",
+    "c2b971e4271849de2fc7",
+    "d1a9bbca90347f970687",
+    "d545c62b0a405909fbaa",
+    "d581e968c360a7d35c2b",
+    "dceab0c5ac2a7c7b0331",
+    "e3f68247022ff4b7dc28",
+    "e8a42752877baac2752e"
+  ],
+  "content_hash": "9f28461f817c81f6216001743bb779d3048209c0c76af706ddc702f9c962b600",
+  "dependencies": [],
+  "description": "Use when a Scheduled Flow or Record-Triggered Flow needs to process more records than Flow can safely handle in a single run. Covers Flow limit realities, scheduled-path chunking, Data Cloud batch transforms, and Apex Queueable/Batch escalation. Does NOT cover choosing async across a general workflow (see async-selection decision tree).",
+  "file_location": "skills/flow/flow-batch-processing-alternatives",
+  "id": "flow/flow-batch-processing-alternatives",
+  "inputs": [
+    "Current Scheduled Flow or Record-Triggered Flow",
+    "Volume of records per run (today and projected)",
+    "Governor / DML / CPU limits currently observed"
+  ],
+  "name": "flow-batch-processing-alternatives",
+  "official_sources": [
+    "Flow Limits \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_considerations_limit.htm",
+    "Apex Async \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_async_overview.htm",
+    "async-selection decision tree \u2014 `standards/decision-trees/async-selection.md`"
+  ],
+  "outputs": [
+    "Decision on continuing in Flow, chunking in Flow, or escalating to Apex",
+    "Implementation pattern (scheduled path, Platform Event, Queueable)",
+    "Monitoring and retry plan"
+  ],
+  "references": [
+    "skills/flow/flow-batch-processing-alternatives/references/examples.md",
+    "skills/flow/flow-batch-processing-alternatives/references/gotchas.md",
+    "skills/flow/flow-batch-processing-alternatives/references/llm-anti-patterns.md",
+    "skills/flow/flow-batch-processing-alternatives/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/flow/flow-batch-processing-alternatives/scripts/check_flow_batch_processing_alternatives.py"
+  ],
+  "tags": [
+    "flow",
+    "scale",
+    "batch",
+    "async",
+    "limits"
+  ],
+  "templates": [
+    "skills/flow/flow-batch-processing-alternatives/templates/batch-strategy.md"
+  ],
+  "updated": "2026-04-23",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}
