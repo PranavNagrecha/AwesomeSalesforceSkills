@@ -1,0 +1,91 @@
+{
+  "category": "security",
+  "chunk_ids": [
+    "0bc33511fc559e5ff518",
+    "106198e4541c4a85debb",
+    "1648109e04509931cf01",
+    "1782e7e97c3cc4d217f1",
+    "193c79fbd216e9654dee",
+    "1a28cbdfb7c87f4643be",
+    "22cb36f3e56c186cf786",
+    "253f19f259510be198ca",
+    "2b39bfc1123ae5910546",
+    "2dee9ec636d7d707ee90",
+    "372588cd3529e3bed89a",
+    "3ad130aa519a5fca8ae6",
+    "3b761c76b47f088e4c70",
+    "3db1794eb84f23d62ed0",
+    "4799dc547d05041d2398",
+    "4ec9acccfcf9da4f583c",
+    "5a785d8500a419342cb9",
+    "5e40d531a4500dbcebee",
+    "5f5ce870b8c18450f7cc",
+    "609cfc397beee918bdfd",
+    "657c645fecff677f19a9",
+    "65eb1aeba50fbfc99556",
+    "6bae51cb0b949c651c74",
+    "7ce20b120a56f66df90f",
+    "8e073aa22774e74ed897",
+    "9192b280c7cccc313fa1",
+    "9c4800a5cb16748e3eac",
+    "b4675d3fca00d248969f",
+    "befc9cb660a06d4216e1",
+    "bf151afe8e24a2f3697d",
+    "c93168a9b014fea42b68",
+    "c9d2bd87ee354ac308fe",
+    "cb558350aafee23ebeb3",
+    "ccf1870a5dd36df63278",
+    "d11e44cc778ba17b165f",
+    "df05a01017e8e401bf95",
+    "dfa5d78b4b4649a9e980",
+    "e19af1cac40f7f86469a",
+    "eaf7c82acceedf39e742",
+    "f3b783170a0924b5c1f0",
+    "f79253463b668b9cdefe",
+    "f7f42aed6e88b0c508c3",
+    "f956dec844ba59a55ef4",
+    "fd3f1beac0ef5d4fa395",
+    "fd8e9e12bbc720603520"
+  ],
+  "content_hash": "89a6568eae2b6f9789c12572a13b91c954d014c67a5240aaa5c2704f7a3304ce",
+  "dependencies": [],
+  "description": "Design MFA enforcement: auto-enablement, Salesforce Authenticator rollout, exceptions, service accounts, API-only users, SSO interop, and audit. Trigger keywords: MFA, multi-factor, two-factor, Salesforce Authenticator, MFA exception, MFA SSO, api-only MFA. Does NOT cover: end-user password policies, device-trust posture, or non-Salesforce IdP configuration.",
+  "file_location": "skills/security/mfa-enforcement-patterns",
+  "id": "security/mfa-enforcement-patterns",
+  "inputs": [
+    "User population breakdown (standard, SSO, integration, API-only)",
+    "SSO provider in use (if any)",
+    "Existing MFA exceptions (if any)"
+  ],
+  "name": "mfa-enforcement-patterns",
+  "official_sources": [
+    "MFA Overview \u2014",
+    "MFA with SSO \u2014"
+  ],
+  "outputs": [
+    "MFA enforcement plan",
+    "Exception register with expiry",
+    "Integration-user posture (connected apps / OAuth instead of MFA)"
+  ],
+  "references": [
+    "skills/security/mfa-enforcement-patterns/references/examples.md",
+    "skills/security/mfa-enforcement-patterns/references/gotchas.md",
+    "skills/security/mfa-enforcement-patterns/references/llm-anti-patterns.md",
+    "skills/security/mfa-enforcement-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/security/mfa-enforcement-patterns/scripts/check_mfa_enforcement_patterns.py"
+  ],
+  "tags": [
+    "security",
+    "mfa",
+    "authentication",
+    "sso"
+  ],
+  "templates": [
+    "skills/security/mfa-enforcement-patterns/templates/mfa-plan.md"
+  ],
+  "updated": "2026-04-23",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

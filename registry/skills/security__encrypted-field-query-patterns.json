@@ -1,0 +1,92 @@
+{
+  "category": "security",
+  "chunk_ids": [
+    "0079ff8dde3dd8ffd82a",
+    "037191d4e6d50d182f2e",
+    "0709e8f9dda5a6c33fc6",
+    "0796306aa35a835a8e64",
+    "09d2c626b727594e734e",
+    "0e59164bf902f9395652",
+    "15292040a7190f3c948e",
+    "15f327105d36eeb3877a",
+    "1613fef1588657130e35",
+    "188c6e453f3fff036198",
+    "1ff878b46dbf8a92498d",
+    "2738774b73b69eecf01c",
+    "2aa00a1b0cf226582b34",
+    "2dabf55eda388a8aa069",
+    "34d0d62ea4975661435d",
+    "3790feeebed7106ae5b1",
+    "39cebc597f6c15b19ff7",
+    "41da7f5453d91c415580",
+    "5346aad1253dd4fd07b6",
+    "53d0a6b23ccd0fdc8488",
+    "5439ab692ea7a091e454",
+    "6324ac2ff79892d0da66",
+    "662e1b878c43de80abb2",
+    "66634c3d1adfb9986540",
+    "6978fb3ba3c3ec5accc6",
+    "6f078c43cdb008718767",
+    "6f875f2f1816b18f2de4",
+    "748f82be9a5b192cac77",
+    "76894fcdea3fe2556921",
+    "788f2f0506670e8e9c0c",
+    "7db0a2f34af62c9dd5f2",
+    "829515364d56f4ddaa46",
+    "885557140d24be4506de",
+    "93f541eb45b2ddcf9bb7",
+    "9dd7f63bdd45c1bbb4e2",
+    "a3a578a8cd24c71fa5e2",
+    "a70993c0dc9ac4155ffc",
+    "a74c29716954137445e7",
+    "a8e9951bb71a06cbf30f",
+    "c9ea4639e62aeafb5648",
+    "c9fd02ae82275cff7ddc",
+    "d5c7eba05a955b916616",
+    "d8ea2949d70daabfa8c2",
+    "e62b0e597fdf41bd0355",
+    "fa7ebc88fe8d029baa58",
+    "fc1699fd93755b496642"
+  ],
+  "content_hash": "20a886f8a202676425e7b41b38d6dc1e98a74feab3cb30648d3a3718da2a3c75",
+  "dependencies": [],
+  "description": "Design SOQL, filters, reporting, and indexes against Shield Platform Encryption fields. Trigger keywords: Shield Platform Encryption, encrypted field query, probabilistic vs deterministic encryption, encrypted SOQL filter, encrypted field index. Does NOT cover: Classic Encryption (deprecated), field-level security policy, or tenant secret key rotation.",
+  "file_location": "skills/security/encrypted-field-query-patterns",
+  "id": "security/encrypted-field-query-patterns",
+  "inputs": [
+    "List of fields requiring encryption",
+    "Query patterns over those fields (exact, range, like, aggregate)",
+    "Reporting requirements"
+  ],
+  "name": "encrypted-field-query-patterns",
+  "official_sources": [
+    "Shield Platform Encryption Overview \u2014",
+    "Deterministic Encryption \u2014"
+  ],
+  "outputs": [
+    "Encryption scheme choice per field (probabilistic / deterministic / case-sensitive deterministic)",
+    "SOQL pattern guidance per field",
+    "Index and reporting plan"
+  ],
+  "references": [
+    "skills/security/encrypted-field-query-patterns/references/examples.md",
+    "skills/security/encrypted-field-query-patterns/references/gotchas.md",
+    "skills/security/encrypted-field-query-patterns/references/llm-anti-patterns.md",
+    "skills/security/encrypted-field-query-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/security/encrypted-field-query-patterns/scripts/check_encrypted_field_query_patterns.py"
+  ],
+  "tags": [
+    "security",
+    "shield",
+    "encryption",
+    "soql"
+  ],
+  "templates": [
+    "skills/security/encrypted-field-query-patterns/templates/encryption-plan.md"
+  ],
+  "updated": "2026-04-23",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

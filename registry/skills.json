@@ -9,12 +9,12 @@
     "flow": 42,
     "integration": 49,
     "lwc": 48,
-    "omnistudio": 30,
-    "security": 41
+    "omnistudio": 34,
+    "security": 45
   },
-  "generated_from_hash": "b8eaae392b28d53d71923369b6f98428ff2605a27ef57d1175f2d44de5ddb65c",
+  "generated_from_hash": "0d448b42352069f8a5c4e7379a8aba98436204de3ae9102624287e722036943c",
   "schema_version": 1,
-  "skill_count": 833,
+  "skill_count": 841,
   "skills": [
     {
       "category": "admin",
@@ -8338,7 +8338,7 @@
         "e3559280021a94a1e40d",
         "feb7b8432893e7aeef9a"
       ],
-      "content_hash": "8e1d62eb184726cb6d999820cbee6776c06c2a98c708abb5de151259daddfaf7",
+      "content_hash": "fb4a832f153aa31221289d1d64b823e7db2f340b20e242ace4ffa96f38cae4ff",
       "dependencies": [],
       "description": "Use when designing Custom Notification Types that fire via Flow, Apex, or Process Builder to Lightning bell, desktop, mobile (push), and Slack. Covers channel enablement, targeting, deliverability, consent, and anti-spam discipline. Does NOT cover email templates (see modernize-email-templates) or Salesforce Notifications API general reference.",
       "file_location": "skills/admin/custom-notification-type-design",
@@ -79047,7 +79047,7 @@
         "f5c0136f30f17c9474b9",
         "fab1fc455e0944661c66"
       ],
-      "content_hash": "b7e8f3d192651f13828672a4ec4b86f2d1bad75ea10f02c77746a8e8314f1feb",
+      "content_hash": "d035b6d5dc7fd4cb3c8f6779b131145f2c8c212b00b9a411566a30dc2355af36",
       "dependencies": [],
       "description": "Use when deploying Flow metadata across environments and worrying about activation order: which flow version becomes active, how paused interviews survive deploys, and how to avoid the 'two active versions for a moment' race. Covers SFDX / Metadata API deploy flags, 'Deploy as Active', rollback, and paused-interview safety. Does NOT cover Flow authoring best practices (see flow-bulkification) or general release management.",
       "file_location": "skills/devops/flow-deployment-activation-ordering",
@@ -90215,7 +90215,7 @@
         "f1d505a10af7cf0cf092",
         "f74e7185ab60ecaf193c"
       ],
-      "content_hash": "588d2fc5bd860738aaac72daf79fb993181dbb455d1407138cf62a5a7eb80548",
+      "content_hash": "9609daf62509ae23a44d55330409c241e78a90696c8ce8d613833c1220cb90ef",
       "dependencies": [],
       "description": "Use when forwarding Salesforce Platform Events or Change Data Capture to AWS EventBridge via Event Relay. Covers Named Credential + Connection setup, channel selection, event filter design, replay handling, retry/back-off, IAM, and monitoring. Does NOT cover consuming external events in Salesforce (see pub-sub-api or salesforce-connect).",
       "file_location": "skills/integration/event-relay-configuration",
@@ -91536,7 +91536,7 @@
         "f0141cd7e884c2e603de",
         "ffffcbc6abd303cf48ce"
       ],
-      "content_hash": "fba3c8b7b8b4a04cf32338384a16cad89e9cf70c6f56cfb1c60dd884d27f0b4f",
+      "content_hash": "d5de431ebe6ab787792931ad9b576bde97cdf607c31a0b4a913b319e66ddc29f",
       "dependencies": [],
       "description": "Use when Salesforce must POST a webhook to a third-party endpoint after a record change \u2014 with signed payloads, retries, dead-lettering, rate limits, and idempotency. Covers design choice between Outbound Message, Flow HTTP Callout, Apex Queueable callout, and Event Relay. Does NOT cover inbound webhooks into Salesforce (see inbound-webhook or apex-rest-webhook).",
       "file_location": "skills/integration/outbound-webhook-from-salesforce",
@@ -96938,7 +96938,7 @@
         "eabe153b1b3edd98d893",
         "f3f73766fb99140f6131"
       ],
-      "content_hash": "46abf1e427f1dc740ee580e98c964d4063496f86f8c1f53d55bf808e6178235b",
+      "content_hash": "adbd1d63dad2e3aba8894a7d8f7830c3edb95c7cebc4be93eec9d818ebde7d2e",
       "dependencies": [],
       "description": "Use when building LWCs that need to manage focus explicitly \u2014 modal dialogs, wizard flows, dynamic inserts, list updates, error summaries, and focus after async work. Covers focus restoration, focus traps, programmatic focus across shadow DOM, and patterns for announcing changes to assistive tech. Does NOT cover general LWC a11y audit (see lwc-accessibility).",
       "file_location": "skills/lwc/lwc-focus-management",
@@ -98158,7 +98158,7 @@
         "f5661d00cb726ee6d464",
         "fdd87d9e9a9f1230ce2f"
       ],
-      "content_hash": "e8fd96742f8c231c12e1b573e1ba62734639699e8c0cb3405977aee02d938a53",
+      "content_hash": "59a3f797ff41aeba7b33385ecf735068e5d44efeff81cde92d0349877f6f88d9",
       "dependencies": [],
       "description": "Use when building LWCs that must react to live server pushes \u2014 Platform Events, Change Data Capture, or streaming updates \u2014 via the lightning/empApi (CometD) subscription model. Covers lifecycle, replayId, error handling, reconnection, scale considerations, and multi-tab behavior. Does NOT cover publishing events (see platform-events or apex-platform-events).",
       "file_location": "skills/lwc/lwc-server-sent-events",
@@ -99592,6 +99592,100 @@
     {
       "category": "omnistudio",
       "chunk_ids": [
+        "03f2c984cc1817aa8223",
+        "096cd8102c461f07b63a",
+        "0d148da4c977c2814a85",
+        "13200eac135635e1e429",
+        "14c50fcfe39ca75e0203",
+        "1cdbce518cfcc7524ebd",
+        "2a851b6480ebfb3cac99",
+        "323dda0ab41ff9f47244",
+        "33460b8ea79c53c95ac6",
+        "33648e63d1b457a5fa1b",
+        "351d546c4c1a60ff8f2b",
+        "352f5272e30ceca7cf6d",
+        "36fa86627a19ce71ef0c",
+        "3a9392696ec67d46b756",
+        "40bc09f13a656be5b27e",
+        "456ee2014d367f99266f",
+        "4c98f7ed7c9a7f0a8f35",
+        "52ab1b701edfc10847a3",
+        "5a3d146a3046e19650b7",
+        "61b8c1b30002fbb62166",
+        "698f10d64420658caa34",
+        "6c3cc282df346d449871",
+        "6ce4245a385ba15bb2ed",
+        "778050d8c82df58ea5ee",
+        "800df9d6e222420f3bd8",
+        "8199c59aadddd5d1daad",
+        "8376086c7ba869125f6d",
+        "8603107f14f57e6c3c34",
+        "866e5e811377ed95d14d",
+        "87d2d02d803d5c69e14c",
+        "8852843d54183317c14f",
+        "906327619cced3f1b90d",
+        "9b7b92b57e2ceb69755e",
+        "a61fede5c2f79b4982d4",
+        "a7b16286665a93467841",
+        "ab47d68a0066ce445f2b",
+        "bc4ae7c76e410774dd08",
+        "c10f3f5492337f771120",
+        "c9bcf405633d2eb8ec66",
+        "cb1afc12e1788f8cc32d",
+        "cc1dcad91da90b79d71d",
+        "d12f48ff56c4a268246b",
+        "dd83fa3da3fa922b5d10",
+        "ed208bfab98126638bf8",
+        "edd5146a0d9e0bdcf927"
+      ],
+      "content_hash": "1475702778406c393632ad4a8fbdc6d4b63779c111914b35760b6ec7b804a0f2",
+      "dependencies": [
+        "omnistudio/integration-procedure-cacheable-patterns"
+      ],
+      "description": "Design OmniStudio Calculation Procedures and Calculation Matrices for pricing, rating, and rules-heavy scoring. Trigger keywords: calculation procedure, calculation matrix, rating engine, pricing matrix, expression set, decision matrix, OmniStudio rules. Does NOT cover: generic Apex-only pricing code, Salesforce CPQ price rules (different product), or Flow-based decision logic.",
+      "file_location": "skills/omnistudio/calculation-procedure-design",
+      "id": "omnistudio/calculation-procedure-design",
+      "inputs": [
+        "Business rules or rate tables in spreadsheet form",
+        "Input schema (line item, customer, product)",
+        "Output schema (price, score, eligibility)"
+      ],
+      "name": "calculation-procedure-design",
+      "official_sources": [
+        "Calculation Procedures \u2014",
+        "Calculation Matrices \u2014"
+      ],
+      "outputs": [
+        "Calculation Procedure design (steps, matrices, constants)",
+        "Matrix versioning and activation plan",
+        "Test mode dataset and expected outputs"
+      ],
+      "references": [
+        "skills/omnistudio/calculation-procedure-design/references/examples.md",
+        "skills/omnistudio/calculation-procedure-design/references/gotchas.md",
+        "skills/omnistudio/calculation-procedure-design/references/llm-anti-patterns.md",
+        "skills/omnistudio/calculation-procedure-design/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/omnistudio/calculation-procedure-design/scripts/check_calculation_procedure_design.py"
+      ],
+      "tags": [
+        "omnistudio",
+        "calculation-procedure",
+        "calculation-matrix",
+        "pricing",
+        "rules"
+      ],
+      "templates": [
+        "skills/omnistudio/calculation-procedure-design/templates/matrix-design.md"
+      ],
+      "updated": "2026-04-23",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "omnistudio",
+      "chunk_ids": [
         "074d27ac2d7632bab1c1",
         "089fc1df5a79171b84d0",
         "0b65bc594e18fef07390",
@@ -100159,6 +100253,100 @@
         "skills/omnistudio/document-generation-omnistudio/templates/document-generation-omnistudio-template.md"
       ],
       "updated": "2026-04-05",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "omnistudio",
+      "chunk_ids": [
+        "0147829fc5ff03bfaaaf",
+        "0a24b8b8b2a92462b16b",
+        "0cce359ab8e7f176cfe8",
+        "0d8e4b2af45f4f9d06ac",
+        "169d359cb96aa16b1a7a",
+        "2125d0166619afaac6c3",
+        "223f555f8ad846b94cb0",
+        "23474a2388c6c0f9429b",
+        "2c5cfaa262970c89a97b",
+        "3bf3fbd4cb54732da386",
+        "3e13cddeba0ff225474e",
+        "42d29791b9e330ca57f6",
+        "46b2b38072f47bdc826a",
+        "546ec6e57969d1a08a93",
+        "5a73b490c5cb9a8a34d4",
+        "5accfbeae5270238f03f",
+        "5b41082602f90e4506c8",
+        "5f60c5271f95a5c455e5",
+        "64539158aa026636235e",
+        "72119b2ad83cc5593798",
+        "737cfbddd4f767dd371e",
+        "7740df36bb18325b7f96",
+        "79787285a560a5055039",
+        "811df1fc9d90a2809379",
+        "8624930e0321678f4379",
+        "87e8c3ddb71e20c5aaf7",
+        "8a7f24469f59686f53a5",
+        "90f360fdbb9ba28c4501",
+        "955e3fc7d7600ac5a539",
+        "a16193c0e8599c5a1d82",
+        "a31cf15eaee45831b6b6",
+        "affec339142a4001ee45",
+        "b138f661d1a70ee24bff",
+        "b2863865cd689a58b57b",
+        "b9f9115d573df5ccc1f6",
+        "bb48a4b9c7203e61d38f",
+        "bfe2183c6d6a8631397b",
+        "c8c7f1903a015294430b",
+        "ca5c4b9ccbedf1f32170",
+        "ca8cf51f2cd008bd732d",
+        "cc2281c276989f387cea",
+        "d208567e098f6aae7dde",
+        "d6955384edcf6cfd9cfc",
+        "d824a1b0452fe8329e2e",
+        "ed97af3ef322fa07cb85",
+        "f030c8c2493451a9d212"
+      ],
+      "content_hash": "f614920f5afb54c25351495fa9bd8a4c9603bd6bcf51e6068a0e5b748b3cd8a5",
+      "dependencies": [
+        "omnistudio/integration-procedure-cacheable-patterns"
+      ],
+      "description": "Design FlexCard composition: parent/child state flow, layout modes, actions, event wiring, and data source selection. Trigger keywords: flexcard, flex card composition, parent child flexcard, flexcard state, flexcard events, flexcard datasource. Does NOT cover: the first-time FlexCard Hello-World (trailhead), LWC-native alternatives, or Experience Cloud theming.",
+      "file_location": "skills/omnistudio/flexcard-container-composition",
+      "id": "omnistudio/flexcard-container-composition",
+      "inputs": [
+        "UI mock or wireframe",
+        "Data sources available (IP, DataRaptor, REST, Apex)",
+        "Required actions (OmniScript launch, update record, fire event)"
+      ],
+      "name": "flexcard-container-composition",
+      "official_sources": [
+        "FlexCards Overview \u2014",
+        "FlexCard Events \u2014"
+      ],
+      "outputs": [
+        "FlexCard composition plan (parent / child / state map)",
+        "Datasource binding and action wiring decisions",
+        "Layout mode selection (card / list / table / none)"
+      ],
+      "references": [
+        "skills/omnistudio/flexcard-container-composition/references/examples.md",
+        "skills/omnistudio/flexcard-container-composition/references/gotchas.md",
+        "skills/omnistudio/flexcard-container-composition/references/llm-anti-patterns.md",
+        "skills/omnistudio/flexcard-container-composition/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/omnistudio/flexcard-container-composition/scripts/check_flexcard_container_composition.py"
+      ],
+      "tags": [
+        "omnistudio",
+        "flexcard",
+        "composition",
+        "ui"
+      ],
+      "templates": [
+        "skills/omnistudio/flexcard-container-composition/templates/composition-plan.md"
+      ],
+      "updated": "2026-04-23",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -100739,6 +100927,101 @@
     {
       "category": "omnistudio",
       "chunk_ids": [
+        "041b973fc133829bdaac",
+        "04efb6fd577c71fc731f",
+        "0aa90625570610352546",
+        "0b292dc9a7ebef7d0024",
+        "0bfdaf4957c5d78caee2",
+        "0dab19b5d948b524be64",
+        "18eb2ef4b5bc34e41b60",
+        "1dd286b0cdd30b546a74",
+        "4524612dad1d6176f229",
+        "4d02d0b3866e4dc5ed0b",
+        "4ea83d8b58ae6fdfcc7f",
+        "5575cec34173ceb65122",
+        "569e9782e9670914728e",
+        "603cb0dac12055f48b74",
+        "60827d5b25f43d19725e",
+        "609504cec42cd872b3d4",
+        "717836232f7a6b986a53",
+        "7237af522cfb672f74fa",
+        "7b4a7719382d863291de",
+        "7da15ad6d12ffa69400f",
+        "7e40f7eaed7ac6bf60ab",
+        "80e93352440468c214df",
+        "8b322b3c7bf6ad9c3386",
+        "9392b5d8b21726f0fac8",
+        "992514bf1493632cff6d",
+        "996bcc36835551d397d4",
+        "9d40d6b86b7ff8e76796",
+        "a86a59fe9ac87fa159e1",
+        "a8cadd4a1b88689dc7af",
+        "aec9912447c50fe86733",
+        "b4595976b3ca0c22f625",
+        "b5c8869cf85c35f007d1",
+        "b9022d94be04a2c592fa",
+        "c00c89d2e61faf446ca0",
+        "c036d07353ac0b907907",
+        "cf55314fd8e8f966d91b",
+        "e0dea7a0868b00e7414f",
+        "e6fd3fe8b8b32cbae7aa",
+        "f1f4e9db6cea28d93152",
+        "f2aee9a6b20e7de6568b",
+        "f2c57ac6f775a178d844",
+        "f77c1e2bf20e44b4e705",
+        "f9dfb549e551b52e9e4e",
+        "fe8bd331b10e443ca0bf",
+        "ff0ceebdd046ac3b090f",
+        "ff447b1cc8845222a853"
+      ],
+      "content_hash": "d46fcb70138d2269c38c387add163f064819b27cfef9267c3ceba1c5e7f0c6e2",
+      "dependencies": [],
+      "description": "Use when designing Integration Procedures (IPs) with platform cache to cut latency and callout load. Covers cache key design, TTL selection, per-user vs org-wide partitions, invalidation on data changes, and safe fallback on cache miss/stale. Does NOT cover general IP authoring (see omnistudio-error-handling-patterns) or LWC client-side caching.",
+      "file_location": "skills/omnistudio/integration-procedure-cacheable-patterns",
+      "id": "omnistudio/integration-procedure-cacheable-patterns",
+      "inputs": [
+        "IP whose result repeats across calls",
+        "Data volatility of the source",
+        "Audience scope (per-user, per-org, per-tenant)"
+      ],
+      "name": "integration-procedure-cacheable-patterns",
+      "official_sources": [
+        "OmniStudio Caching \u2014 https://help.salesforce.com/s/articleView?id=sf.os_use_platform_cache_to_improve_integration_procedure_performance.htm",
+        "Platform Cache \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_cache_namespace_overview.htm",
+        "Well-Architected Performant \u2014 https://architect.salesforce.com/docs/architect/well-architected/performant/performant"
+      ],
+      "outputs": [
+        "Cache key + TTL design",
+        "Partition selection (org-wide vs session)",
+        "Invalidation plan",
+        "Fallback behavior when cache is unavailable"
+      ],
+      "references": [
+        "skills/omnistudio/integration-procedure-cacheable-patterns/references/examples.md",
+        "skills/omnistudio/integration-procedure-cacheable-patterns/references/gotchas.md",
+        "skills/omnistudio/integration-procedure-cacheable-patterns/references/llm-anti-patterns.md",
+        "skills/omnistudio/integration-procedure-cacheable-patterns/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/omnistudio/integration-procedure-cacheable-patterns/scripts/check_integration_procedure_cacheable_patterns.py"
+      ],
+      "tags": [
+        "omnistudio",
+        "integration-procedure",
+        "cache",
+        "performance",
+        "platform-cache"
+      ],
+      "templates": [
+        "skills/omnistudio/integration-procedure-cacheable-patterns/templates/cache-design.md"
+      ],
+      "updated": "2026-04-23",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "omnistudio",
+      "chunk_ids": [
         "00e5bf9341dc0b953e16",
         "024641ac4bf48a6845f5",
         "035501a81298e764d8f5",
@@ -100943,6 +101226,100 @@
         "skills/omnistudio/omniscript-design-patterns/templates/omniscript-design-patterns-template.md"
       ],
       "updated": "2026-03-13",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "omnistudio",
+      "chunk_ids": [
+        "04d42e9550249fa3bc03",
+        "06385dabc895005735db",
+        "0ab1e0cdb63ba10d54d9",
+        "0f1383cc58bf1f91902f",
+        "130e7f974163dc8f8889",
+        "19ae32c1386d3b3e4cee",
+        "1a4177c21fc59b24bda7",
+        "254401b804a42f192169",
+        "3b621e78be5cc3d5a86f",
+        "45ed90b2246724461760",
+        "48c3b30d19578451552d",
+        "4bad820f1a1e4daf8096",
+        "4bb863e6778ac4ef0a39",
+        "4ced9007c822fa11e46a",
+        "51ce0be82c2c62d7edb3",
+        "5ba193328278d2ce5a3c",
+        "5bdbbfa63f3037ad9512",
+        "5c2fe5f47af9085c0e4a",
+        "62c9affffda9920ed3f4",
+        "6b0fe74bd0e91c557629",
+        "76021596409ce57b9908",
+        "7c2de4053ebe7e23a316",
+        "7e40bb8aa97774926c73",
+        "821026bae6c350c28712",
+        "8fe30a1aeabec97ec5ae",
+        "94ee5c200e703f0947f0",
+        "95574adbdd9ef7d3a8f7",
+        "964152b7ecc51b6a43cf",
+        "a14a25881a9f4345a3f9",
+        "a2d86956e99793509045",
+        "a32cdd531c1ef97ed6fc",
+        "a4e2965eeed9d845b000",
+        "a781cb2f766c8754beec",
+        "b22a0351fef9a10135fe",
+        "bca175b25fe90cc49278",
+        "bffcdc444dcc8d02bbe3",
+        "cb03cd019d85e6d038b8",
+        "d0ea494718c8af9e0e55",
+        "d7ec70442d496acabcb6",
+        "da5c20af6cb7e7b5934e",
+        "ee57c3f4b40fbcac7883",
+        "f122e5ecc0447ea415cb",
+        "f3df975de29684f2dab5",
+        "f59b3b184aebbee37592",
+        "f720bd362f001807a10e"
+      ],
+      "content_hash": "954547c7c9f66c5e995b9b32074649d5e5a91c205e5e30deaded96e73b950798",
+      "dependencies": [],
+      "description": "Use when an OmniScript must persist mid-flow state across refresh, navigation, multi-device resume, or abandonment recovery. Covers session objects, staging data, OmniScript tracking, and resume URLs. Does NOT cover OmniScript UI step layout (see omniscript-design) or general Flow pause/resume (see flow-transaction-finalizer-patterns).",
+      "file_location": "skills/omnistudio/omniscript-session-state",
+      "id": "omnistudio/omniscript-session-state",
+      "inputs": [
+        "OmniScript that requires persistence",
+        "Abandonment tolerance",
+        "Cross-device resume requirement"
+      ],
+      "name": "omniscript-session-state",
+      "official_sources": [
+        "OmniScript Tracking \u2014 https://help.salesforce.com/s/articleView?id=sf.os_omniscript_tracking.htm",
+        "OmniScript Save/Resume \u2014 https://help.salesforce.com/s/articleView?id=sf.os_use_save_for_later.htm",
+        "Shield Platform Encryption \u2014 https://help.salesforce.com/s/articleView?id=sf.security_pe_overview.htm"
+      ],
+      "outputs": [
+        "Session object model",
+        "Save/resume trigger design",
+        "Resume URL strategy",
+        "Expiry + cleanup plan"
+      ],
+      "references": [
+        "skills/omnistudio/omniscript-session-state/references/examples.md",
+        "skills/omnistudio/omniscript-session-state/references/gotchas.md",
+        "skills/omnistudio/omniscript-session-state/references/llm-anti-patterns.md",
+        "skills/omnistudio/omniscript-session-state/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/omnistudio/omniscript-session-state/scripts/check_omniscript_session_state.py"
+      ],
+      "tags": [
+        "omnistudio",
+        "omniscript",
+        "session",
+        "resume",
+        "state"
+      ],
+      "templates": [
+        "skills/omnistudio/omniscript-session-state/templates/session-design.md"
+      ],
+      "updated": "2026-04-23",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -104048,6 +104425,98 @@
     {
       "category": "security",
       "chunk_ids": [
+        "0079ff8dde3dd8ffd82a",
+        "037191d4e6d50d182f2e",
+        "0709e8f9dda5a6c33fc6",
+        "0796306aa35a835a8e64",
+        "09d2c626b727594e734e",
+        "0e59164bf902f9395652",
+        "15292040a7190f3c948e",
+        "15f327105d36eeb3877a",
+        "1613fef1588657130e35",
+        "188c6e453f3fff036198",
+        "1ff878b46dbf8a92498d",
+        "2738774b73b69eecf01c",
+        "2aa00a1b0cf226582b34",
+        "2dabf55eda388a8aa069",
+        "34d0d62ea4975661435d",
+        "3790feeebed7106ae5b1",
+        "39cebc597f6c15b19ff7",
+        "41da7f5453d91c415580",
+        "5346aad1253dd4fd07b6",
+        "53d0a6b23ccd0fdc8488",
+        "5439ab692ea7a091e454",
+        "6324ac2ff79892d0da66",
+        "662e1b878c43de80abb2",
+        "66634c3d1adfb9986540",
+        "6978fb3ba3c3ec5accc6",
+        "6f078c43cdb008718767",
+        "6f875f2f1816b18f2de4",
+        "748f82be9a5b192cac77",
+        "76894fcdea3fe2556921",
+        "788f2f0506670e8e9c0c",
+        "7db0a2f34af62c9dd5f2",
+        "829515364d56f4ddaa46",
+        "885557140d24be4506de",
+        "93f541eb45b2ddcf9bb7",
+        "9dd7f63bdd45c1bbb4e2",
+        "a3a578a8cd24c71fa5e2",
+        "a70993c0dc9ac4155ffc",
+        "a74c29716954137445e7",
+        "a8e9951bb71a06cbf30f",
+        "c9ea4639e62aeafb5648",
+        "c9fd02ae82275cff7ddc",
+        "d5c7eba05a955b916616",
+        "d8ea2949d70daabfa8c2",
+        "e62b0e597fdf41bd0355",
+        "fa7ebc88fe8d029baa58",
+        "fc1699fd93755b496642"
+      ],
+      "content_hash": "20a886f8a202676425e7b41b38d6dc1e98a74feab3cb30648d3a3718da2a3c75",
+      "dependencies": [],
+      "description": "Design SOQL, filters, reporting, and indexes against Shield Platform Encryption fields. Trigger keywords: Shield Platform Encryption, encrypted field query, probabilistic vs deterministic encryption, encrypted SOQL filter, encrypted field index. Does NOT cover: Classic Encryption (deprecated), field-level security policy, or tenant secret key rotation.",
+      "file_location": "skills/security/encrypted-field-query-patterns",
+      "id": "security/encrypted-field-query-patterns",
+      "inputs": [
+        "List of fields requiring encryption",
+        "Query patterns over those fields (exact, range, like, aggregate)",
+        "Reporting requirements"
+      ],
+      "name": "encrypted-field-query-patterns",
+      "official_sources": [
+        "Shield Platform Encryption Overview \u2014",
+        "Deterministic Encryption \u2014"
+      ],
+      "outputs": [
+        "Encryption scheme choice per field (probabilistic / deterministic / case-sensitive deterministic)",
+        "SOQL pattern guidance per field",
+        "Index and reporting plan"
+      ],
+      "references": [
+        "skills/security/encrypted-field-query-patterns/references/examples.md",
+        "skills/security/encrypted-field-query-patterns/references/gotchas.md",
+        "skills/security/encrypted-field-query-patterns/references/llm-anti-patterns.md",
+        "skills/security/encrypted-field-query-patterns/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/security/encrypted-field-query-patterns/scripts/check_encrypted_field_query_patterns.py"
+      ],
+      "tags": [
+        "security",
+        "shield",
+        "encryption",
+        "soql"
+      ],
+      "templates": [
+        "skills/security/encrypted-field-query-patterns/templates/encryption-plan.md"
+      ],
+      "updated": "2026-04-23",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "security",
+      "chunk_ids": [
         "06baa03da8d043f4a99d",
         "0e9f133aeb3e0a625a3d",
         "107215f1a0de9f3bbed4",
@@ -105059,6 +105528,99 @@
     {
       "category": "security",
       "chunk_ids": [
+        "23e9dcc754367b5d2263",
+        "2c4cf7cde9a6895931bf",
+        "2f3d001917a119817f30",
+        "32713fee966105b9ab0d",
+        "358672ed1779893bc78f",
+        "40bb8c460354e12836d2",
+        "45bf25791a0a33a5f05c",
+        "4acacbc82ce143771aa6",
+        "4c1c3b29c0082d7f44c8",
+        "55b51b3d9390947faa96",
+        "57383105503be3da6145",
+        "7a60e090c8bfd67145cd",
+        "7af025ce276d6bec4a86",
+        "7b41ff72777b029673b5",
+        "7ff1ac7d29955cb30849",
+        "862964a773df0a6c7590",
+        "89dbecb0cdef753906aa",
+        "8d50f2f3320e196de3ce",
+        "8f8d6179a7736e207586",
+        "94c0de8c07ab51d9c47c",
+        "9a6161a0abd4c9331f98",
+        "9b1ba08c5942dbd888bd",
+        "9c9feae1af935ac66583",
+        "a24ebed59e1c6e3e5f40",
+        "af8a6fa07101bd38db2e",
+        "b3360da81724b17fe773",
+        "b768dcd99aea31b2cc08",
+        "b8d462e04c0cc86586d5",
+        "ba1c2e6a6f51887b340f",
+        "bf37fc0d870002cd7c2f",
+        "c2c5db56cb29b268444d",
+        "c6ccc78564f4a884ef02",
+        "d1218554118bd294073e",
+        "d215171171faea492e1f",
+        "d24778ac95d0931e0181",
+        "d5d6fcaac0ad0889f78e",
+        "e3361077a35d612cb5d8",
+        "e433695b74fb55030c7e",
+        "e45eeeaf0dd88c07315f",
+        "e644b63d19d97f3f573e",
+        "ed8e7c5f8e466b21bc51",
+        "f06336f2ade1abe37a2b",
+        "f978ca7275ad2312095f",
+        "f9fdb952761ed810f119",
+        "fa606cd135992fc347df"
+      ],
+      "content_hash": "f2a1035349a853fd6e21136c128285e6e650776abcbd75f6e9bbad8a8ad6bb05",
+      "dependencies": [
+        "security/mfa-enforcement-patterns"
+      ],
+      "description": "Design IP-based access controls: profile login IP ranges, org-wide trusted IPs, IP relaxation per profile, and the interaction with MFA and SSO. Trigger keywords: login IP range, trusted IP, IP relaxation, restricted IP, IP allowlist, login hours. Does NOT cover: network-layer firewalling, corporate VPN design, or Shield Event Monitoring.",
+      "file_location": "skills/security/ip-relaxation-and-restriction",
+      "id": "security/ip-relaxation-and-restriction",
+      "inputs": [
+        "Profile-to-persona mapping",
+        "Known corporate egress IPs and VPN ranges",
+        "Integration partner source IPs (if static)"
+      ],
+      "name": "ip-relaxation-and-restriction",
+      "official_sources": [
+        "Login IP Ranges \u2014",
+        "Trusted IP Ranges \u2014"
+      ],
+      "outputs": [
+        "Profile login-IP range plan",
+        "Org-wide trusted IP ranges with justification",
+        "Runbook for breakglass when IPs change"
+      ],
+      "references": [
+        "skills/security/ip-relaxation-and-restriction/references/examples.md",
+        "skills/security/ip-relaxation-and-restriction/references/gotchas.md",
+        "skills/security/ip-relaxation-and-restriction/references/llm-anti-patterns.md",
+        "skills/security/ip-relaxation-and-restriction/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/security/ip-relaxation-and-restriction/scripts/check_ip_relaxation_and_restriction.py"
+      ],
+      "tags": [
+        "security",
+        "access-control",
+        "ip",
+        "login"
+      ],
+      "templates": [
+        "skills/security/ip-relaxation-and-restriction/templates/ip-plan.md"
+      ],
+      "updated": "2026-04-23",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "security",
+      "chunk_ids": [
         "0077cef044e875a51586",
         "00c21801fbb8084ba2a1",
         "08b7474d65817738a27d",
@@ -105203,6 +105765,97 @@
         "skills/security/login-forensics/templates/login-forensics-template.md"
       ],
       "updated": "2026-04-04",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "security",
+      "chunk_ids": [
+        "0bc33511fc559e5ff518",
+        "106198e4541c4a85debb",
+        "1648109e04509931cf01",
+        "1782e7e97c3cc4d217f1",
+        "193c79fbd216e9654dee",
+        "1a28cbdfb7c87f4643be",
+        "22cb36f3e56c186cf786",
+        "253f19f259510be198ca",
+        "2b39bfc1123ae5910546",
+        "2dee9ec636d7d707ee90",
+        "372588cd3529e3bed89a",
+        "3ad130aa519a5fca8ae6",
+        "3b761c76b47f088e4c70",
+        "3db1794eb84f23d62ed0",
+        "4799dc547d05041d2398",
+        "4ec9acccfcf9da4f583c",
+        "5a785d8500a419342cb9",
+        "5e40d531a4500dbcebee",
+        "5f5ce870b8c18450f7cc",
+        "609cfc397beee918bdfd",
+        "657c645fecff677f19a9",
+        "65eb1aeba50fbfc99556",
+        "6bae51cb0b949c651c74",
+        "7ce20b120a56f66df90f",
+        "8e073aa22774e74ed897",
+        "9192b280c7cccc313fa1",
+        "9c4800a5cb16748e3eac",
+        "b4675d3fca00d248969f",
+        "befc9cb660a06d4216e1",
+        "bf151afe8e24a2f3697d",
+        "c93168a9b014fea42b68",
+        "c9d2bd87ee354ac308fe",
+        "cb558350aafee23ebeb3",
+        "ccf1870a5dd36df63278",
+        "d11e44cc778ba17b165f",
+        "df05a01017e8e401bf95",
+        "dfa5d78b4b4649a9e980",
+        "e19af1cac40f7f86469a",
+        "eaf7c82acceedf39e742",
+        "f3b783170a0924b5c1f0",
+        "f79253463b668b9cdefe",
+        "f7f42aed6e88b0c508c3",
+        "f956dec844ba59a55ef4",
+        "fd3f1beac0ef5d4fa395",
+        "fd8e9e12bbc720603520"
+      ],
+      "content_hash": "89a6568eae2b6f9789c12572a13b91c954d014c67a5240aaa5c2704f7a3304ce",
+      "dependencies": [],
+      "description": "Design MFA enforcement: auto-enablement, Salesforce Authenticator rollout, exceptions, service accounts, API-only users, SSO interop, and audit. Trigger keywords: MFA, multi-factor, two-factor, Salesforce Authenticator, MFA exception, MFA SSO, api-only MFA. Does NOT cover: end-user password policies, device-trust posture, or non-Salesforce IdP configuration.",
+      "file_location": "skills/security/mfa-enforcement-patterns",
+      "id": "security/mfa-enforcement-patterns",
+      "inputs": [
+        "User population breakdown (standard, SSO, integration, API-only)",
+        "SSO provider in use (if any)",
+        "Existing MFA exceptions (if any)"
+      ],
+      "name": "mfa-enforcement-patterns",
+      "official_sources": [
+        "MFA Overview \u2014",
+        "MFA with SSO \u2014"
+      ],
+      "outputs": [
+        "MFA enforcement plan",
+        "Exception register with expiry",
+        "Integration-user posture (connected apps / OAuth instead of MFA)"
+      ],
+      "references": [
+        "skills/security/mfa-enforcement-patterns/references/examples.md",
+        "skills/security/mfa-enforcement-patterns/references/gotchas.md",
+        "skills/security/mfa-enforcement-patterns/references/llm-anti-patterns.md",
+        "skills/security/mfa-enforcement-patterns/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/security/mfa-enforcement-patterns/scripts/check_mfa_enforcement_patterns.py"
+      ],
+      "tags": [
+        "security",
+        "mfa",
+        "authentication",
+        "sso"
+      ],
+      "templates": [
+        "skills/security/mfa-enforcement-patterns/templates/mfa-plan.md"
+      ],
+      "updated": "2026-04-23",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -105460,6 +106113,97 @@
         "skills/security/network-security-and-trusted-ips/templates/network-security-and-trusted-ips-template.md"
       ],
       "updated": "2026-04-04",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "security",
+      "chunk_ids": [
+        "006546c939ab4e04dbb6",
+        "029e69caea70ca3394af",
+        "069a38bb39387e40afc0",
+        "06ee15383d3e46aa01c2",
+        "187b3140612c90f9d0ac",
+        "1c1df36cd85eff4e1036",
+        "1c35fd7d8fce1aa6bb89",
+        "1f85ac2f6cbe4d797441",
+        "1fbb126fc1b45cdf612c",
+        "4458795fd67a01f64f20",
+        "49e9d86555d93bf195e8",
+        "5c9bc327a17d647950c3",
+        "5cb82de9b0431251cc1d",
+        "5de6bfecc0f9f62557b0",
+        "617d078566f263e37882",
+        "64fc82466d34ac437a47",
+        "71eb43599bbb968de00b",
+        "73a15617e1181a28739e",
+        "751d95b0eaec43b65e2a",
+        "77908d6da5e497ffffbb",
+        "7f14399ee6a1c75afd20",
+        "80147e76a6e639aed4bd",
+        "92bda02c7b3da356fa13",
+        "9c5cd87b824c27b4c347",
+        "a0295e5ed6fd3dd64228",
+        "a04017daa63626b4c203",
+        "a345196a5defd14d968d",
+        "a5683a1d27e72df0f19a",
+        "aead13107851f6d02e02",
+        "b7d9e04fd0b7333a7b2b",
+        "b9d7123a21eadcb66098",
+        "ba01444ce576c4da763b",
+        "babf69ae694fe3059043",
+        "c0bb8fc4e494e5376cfe",
+        "d2c803406f25ab3e3c3f",
+        "d5f309ea6616c1685bfa",
+        "d8b7289b9919ee1eb08a",
+        "d9887e1de18e2b56c16a",
+        "e2d5412eaaee3c6621d5",
+        "e3780215872af814c4e1",
+        "f3c5ce65fa418ec229ff",
+        "f3d717bd962a7f3e505d",
+        "f71b0c639efd38603c8f",
+        "f818bb9871e8e1c0423c"
+      ],
+      "content_hash": "e381f4f49429c5bc184ec6d5f8f933645944ad02402ba8c79497fa4668c11e1f",
+      "dependencies": [],
+      "description": "Design Connected App OAuth callback URLs, My Domain naming, Enhanced Domains cutover, and cross-environment redirect handling. Trigger keywords: oauth redirect uri, connected app callback, my domain, enhanced domains, sandbox url change, oauth login host. Does NOT cover: end-user login flow UX, Experience Cloud branding, or SAML-only SSO configuration.",
+      "file_location": "skills/security/oauth-redirect-and-domain-strategy",
+      "id": "security/oauth-redirect-and-domain-strategy",
+      "inputs": [
+        "List of Connected Apps and their client redirect URIs",
+        "Environment inventory (prod, UAT, dev sandboxes)",
+        "Current My Domain / Enhanced Domains state"
+      ],
+      "name": "oauth-redirect-and-domain-strategy",
+      "official_sources": [
+        "Connected App OAuth \u2014",
+        "My Domain \u2014",
+        "Enhanced Domains \u2014"
+      ],
+      "outputs": [
+        "Redirect URI matrix per Connected App per environment",
+        "Enhanced Domains cutover plan",
+        "Login host strategy (login.salesforce.com vs My Domain)"
+      ],
+      "references": [
+        "skills/security/oauth-redirect-and-domain-strategy/references/examples.md",
+        "skills/security/oauth-redirect-and-domain-strategy/references/gotchas.md",
+        "skills/security/oauth-redirect-and-domain-strategy/references/llm-anti-patterns.md",
+        "skills/security/oauth-redirect-and-domain-strategy/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/security/oauth-redirect-and-domain-strategy/scripts/check_oauth_redirect_and_domain_strategy.py"
+      ],
+      "tags": [
+        "security",
+        "oauth",
+        "my-domain",
+        "connected-app"
+      ],
+      "templates": [
+        "skills/security/oauth-redirect-and-domain-strategy/templates/redirect-matrix.md"
+      ],
+      "updated": "2026-04-23",
       "vector_embedding": null,
       "version": "1.0.0"
     },

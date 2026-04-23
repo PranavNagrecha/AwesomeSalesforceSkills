@@ -51,7 +51,7 @@
     "e3559280021a94a1e40d",
     "feb7b8432893e7aeef9a"
   ],
-  "content_hash": "8e1d62eb184726cb6d999820cbee6776c06c2a98c708abb5de151259daddfaf7",
+  "content_hash": "fb4a832f153aa31221289d1d64b823e7db2f340b20e242ace4ffa96f38cae4ff",
   "dependencies": [],
   "description": "Use when designing Custom Notification Types that fire via Flow, Apex, or Process Builder to Lightning bell, desktop, mobile (push), and Slack. Covers channel enablement, targeting, deliverability, consent, and anti-spam discipline. Does NOT cover email templates (see modernize-email-templates) or Salesforce Notifications API general reference.",
   "file_location": "skills/admin/custom-notification-type-design",

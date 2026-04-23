@@ -46,7 +46,7 @@
     "f5661d00cb726ee6d464",
     "fdd87d9e9a9f1230ce2f"
   ],
-  "content_hash": "e8fd96742f8c231c12e1b573e1ba62734639699e8c0cb3405977aee02d938a53",
+  "content_hash": "59a3f797ff41aeba7b33385ecf735068e5d44efeff81cde92d0349877f6f88d9",
   "dependencies": [],
   "description": "Use when building LWCs that must react to live server pushes \u2014 Platform Events, Change Data Capture, or streaming updates \u2014 via the lightning/empApi (CometD) subscription model. Covers lifecycle, replayId, error handling, reconnection, scale considerations, and multi-tab behavior. Does NOT cover publishing events (see platform-events or apex-platform-events).",
   "file_location": "skills/lwc/lwc-server-sent-events",

@@ -1,0 +1,94 @@
+{
+  "category": "omnistudio",
+  "chunk_ids": [
+    "0147829fc5ff03bfaaaf",
+    "0a24b8b8b2a92462b16b",
+    "0cce359ab8e7f176cfe8",
+    "0d8e4b2af45f4f9d06ac",
+    "169d359cb96aa16b1a7a",
+    "2125d0166619afaac6c3",
+    "223f555f8ad846b94cb0",
+    "23474a2388c6c0f9429b",
+    "2c5cfaa262970c89a97b",
+    "3bf3fbd4cb54732da386",
+    "3e13cddeba0ff225474e",
+    "42d29791b9e330ca57f6",
+    "46b2b38072f47bdc826a",
+    "546ec6e57969d1a08a93",
+    "5a73b490c5cb9a8a34d4",
+    "5accfbeae5270238f03f",
+    "5b41082602f90e4506c8",
+    "5f60c5271f95a5c455e5",
+    "64539158aa026636235e",
+    "72119b2ad83cc5593798",
+    "737cfbddd4f767dd371e",
+    "7740df36bb18325b7f96",
+    "79787285a560a5055039",
+    "811df1fc9d90a2809379",
+    "8624930e0321678f4379",
+    "87e8c3ddb71e20c5aaf7",
+    "8a7f24469f59686f53a5",
+    "90f360fdbb9ba28c4501",
+    "955e3fc7d7600ac5a539",
+    "a16193c0e8599c5a1d82",
+    "a31cf15eaee45831b6b6",
+    "affec339142a4001ee45",
+    "b138f661d1a70ee24bff",
+    "b2863865cd689a58b57b",
+    "b9f9115d573df5ccc1f6",
+    "bb48a4b9c7203e61d38f",
+    "bfe2183c6d6a8631397b",
+    "c8c7f1903a015294430b",
+    "ca5c4b9ccbedf1f32170",
+    "ca8cf51f2cd008bd732d",
+    "cc2281c276989f387cea",
+    "d208567e098f6aae7dde",
+    "d6955384edcf6cfd9cfc",
+    "d824a1b0452fe8329e2e",
+    "ed97af3ef322fa07cb85",
+    "f030c8c2493451a9d212"
+  ],
+  "content_hash": "f614920f5afb54c25351495fa9bd8a4c9603bd6bcf51e6068a0e5b748b3cd8a5",
+  "dependencies": [
+    "omnistudio/integration-procedure-cacheable-patterns"
+  ],
+  "description": "Design FlexCard composition: parent/child state flow, layout modes, actions, event wiring, and data source selection. Trigger keywords: flexcard, flex card composition, parent child flexcard, flexcard state, flexcard events, flexcard datasource. Does NOT cover: the first-time FlexCard Hello-World (trailhead), LWC-native alternatives, or Experience Cloud theming.",
+  "file_location": "skills/omnistudio/flexcard-container-composition",
+  "id": "omnistudio/flexcard-container-composition",
+  "inputs": [
+    "UI mock or wireframe",
+    "Data sources available (IP, DataRaptor, REST, Apex)",
+    "Required actions (OmniScript launch, update record, fire event)"
+  ],
+  "name": "flexcard-container-composition",
+  "official_sources": [
+    "FlexCards Overview \u2014",
+    "FlexCard Events \u2014"
+  ],
+  "outputs": [
+    "FlexCard composition plan (parent / child / state map)",
+    "Datasource binding and action wiring decisions",
+    "Layout mode selection (card / list / table / none)"
+  ],
+  "references": [
+    "skills/omnistudio/flexcard-container-composition/references/examples.md",
+    "skills/omnistudio/flexcard-container-composition/references/gotchas.md",
+    "skills/omnistudio/flexcard-container-composition/references/llm-anti-patterns.md",
+    "skills/omnistudio/flexcard-container-composition/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/omnistudio/flexcard-container-composition/scripts/check_flexcard_container_composition.py"
+  ],
+  "tags": [
+    "omnistudio",
+    "flexcard",
+    "composition",
+    "ui"
+  ],
+  "templates": [
+    "skills/omnistudio/flexcard-container-composition/templates/composition-plan.md"
+  ],
+  "updated": "2026-04-23",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

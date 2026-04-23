@@ -6155,6 +6155,54 @@
       "domain": "admin",
       "expected_skill": "admin/custom-notification-type-design",
       "top_k": 3
+    },
+    {
+      "query": "integration procedure cache platform cache partition ttl invalidation",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/integration-procedure-cacheable-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "omniscript save for later resume session state token retention pii",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/omniscript-session-state",
+      "top_k": 3
+    },
+    {
+      "query": "calculation procedure matrix pricing rating decision range version",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/calculation-procedure-design",
+      "top_k": 3
+    },
+    {
+      "query": "flexcard composition parent child event datasource layout action",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/flexcard-container-composition",
+      "top_k": 3
+    },
+    {
+      "query": "mfa enforcement exception policy sso assertion integration user migration",
+      "domain": "security",
+      "expected_skill": "security/mfa-enforcement-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "login ip range profile trusted ip relaxation admin lockout partner",
+      "domain": "security",
+      "expected_skill": "security/ip-relaxation-and-restriction",
+      "top_k": 3
+    },
+    {
+      "query": "shield platform encryption deterministic probabilistic soql filter like range",
+      "domain": "security",
+      "expected_skill": "security/encrypted-field-query-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "connected app oauth callback redirect uri my domain enhanced domains sandbox",
+      "domain": "security",
+      "expected_skill": "security/oauth-redirect-and-domain-strategy",
+      "top_k": 3
     }
   ]
 }

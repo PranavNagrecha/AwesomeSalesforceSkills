@@ -1,0 +1,91 @@
+{
+  "category": "security",
+  "chunk_ids": [
+    "006546c939ab4e04dbb6",
+    "029e69caea70ca3394af",
+    "069a38bb39387e40afc0",
+    "06ee15383d3e46aa01c2",
+    "187b3140612c90f9d0ac",
+    "1c1df36cd85eff4e1036",
+    "1c35fd7d8fce1aa6bb89",
+    "1f85ac2f6cbe4d797441",
+    "1fbb126fc1b45cdf612c",
+    "4458795fd67a01f64f20",
+    "49e9d86555d93bf195e8",
+    "5c9bc327a17d647950c3",
+    "5cb82de9b0431251cc1d",
+    "5de6bfecc0f9f62557b0",
+    "617d078566f263e37882",
+    "64fc82466d34ac437a47",
+    "71eb43599bbb968de00b",
+    "73a15617e1181a28739e",
+    "751d95b0eaec43b65e2a",
+    "77908d6da5e497ffffbb",
+    "7f14399ee6a1c75afd20",
+    "80147e76a6e639aed4bd",
+    "92bda02c7b3da356fa13",
+    "9c5cd87b824c27b4c347",
+    "a0295e5ed6fd3dd64228",
+    "a04017daa63626b4c203",
+    "a345196a5defd14d968d",
+    "a5683a1d27e72df0f19a",
+    "aead13107851f6d02e02",
+    "b7d9e04fd0b7333a7b2b",
+    "b9d7123a21eadcb66098",
+    "ba01444ce576c4da763b",
+    "babf69ae694fe3059043",
+    "c0bb8fc4e494e5376cfe",
+    "d2c803406f25ab3e3c3f",
+    "d5f309ea6616c1685bfa",
+    "d8b7289b9919ee1eb08a",
+    "d9887e1de18e2b56c16a",
+    "e2d5412eaaee3c6621d5",
+    "e3780215872af814c4e1",
+    "f3c5ce65fa418ec229ff",
+    "f3d717bd962a7f3e505d",
+    "f71b0c639efd38603c8f",
+    "f818bb9871e8e1c0423c"
+  ],
+  "content_hash": "e381f4f49429c5bc184ec6d5f8f933645944ad02402ba8c79497fa4668c11e1f",
+  "dependencies": [],
+  "description": "Design Connected App OAuth callback URLs, My Domain naming, Enhanced Domains cutover, and cross-environment redirect handling. Trigger keywords: oauth redirect uri, connected app callback, my domain, enhanced domains, sandbox url change, oauth login host. Does NOT cover: end-user login flow UX, Experience Cloud branding, or SAML-only SSO configuration.",
+  "file_location": "skills/security/oauth-redirect-and-domain-strategy",
+  "id": "security/oauth-redirect-and-domain-strategy",
+  "inputs": [
+    "List of Connected Apps and their client redirect URIs",
+    "Environment inventory (prod, UAT, dev sandboxes)",
+    "Current My Domain / Enhanced Domains state"
+  ],
+  "name": "oauth-redirect-and-domain-strategy",
+  "official_sources": [
+    "Connected App OAuth \u2014",
+    "My Domain \u2014",
+    "Enhanced Domains \u2014"
+  ],
+  "outputs": [
+    "Redirect URI matrix per Connected App per environment",
+    "Enhanced Domains cutover plan",
+    "Login host strategy (login.salesforce.com vs My Domain)"
+  ],
+  "references": [
+    "skills/security/oauth-redirect-and-domain-strategy/references/examples.md",
+    "skills/security/oauth-redirect-and-domain-strategy/references/gotchas.md",
+    "skills/security/oauth-redirect-and-domain-strategy/references/llm-anti-patterns.md",
+    "skills/security/oauth-redirect-and-domain-strategy/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/security/oauth-redirect-and-domain-strategy/scripts/check_oauth_redirect_and_domain_strategy.py"
+  ],
+  "tags": [
+    "security",
+    "oauth",
+    "my-domain",
+    "connected-app"
+  ],
+  "templates": [
+    "skills/security/oauth-redirect-and-domain-strategy/templates/redirect-matrix.md"
+  ],
+  "updated": "2026-04-23",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}
