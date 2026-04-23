@@ -67,7 +67,7 @@
     "fd5abffb93673ec956d3",
     "ff3920d99b5e3eecf2a6"
   ],
-  "content_hash": "13877cd64ce2d8d6e6db72b7837be84c4cc0cf51f9c8044efd5bd550b043a5d3",
+  "content_hash": "51a8609c3aa210ca7cf2ff30ad3821a21c25b58e93d7f5e0004e9cec0fd295d1",
   "dependencies": [],
   "description": "Use when Apex needs to check what the running user is, can see, or can do \u2014 via UserInfo, FeatureManagement, FeatureManagement.checkPermission, or FeatureManagement.checkPermissionType. Covers custom permissions, permission sets, user licenses, and profile checks. NOT for FLS/CRUD (use Security.stripInaccessible or `with user_mode`), sharing rules, or external user license logic.",
   "file_location": "skills/apex/apex-user-and-permission-checks",

@@ -65,7 +65,7 @@
     "e629490606ed20a0d081",
     "ea511a54a6cf191623d4"
   ],
-  "content_hash": "f3ed18a1f8abcddcef7da6e3d5d1ed1d38bf6787d9639d0bbbbdecc98f70d448",
+  "content_hash": "4e74056f276a43530dce43ed2e8a736039c442a0cecb02daa21a08714a692833",
   "dependencies": [],
   "description": "Use when an LWC needs a stable, typed handle to a specific DOM element it owns \u2014 focusing inputs, imperatively validating a known form field, invoking a `@api` method on a child component, or migrating fragile `this.template.querySelector('.css-class')` code to the modern `lwc:ref` directive. Triggers: 'this.template.querySelector fragile', 'lwc:ref not working inside for:each', 'how to focus an input from lwc', 'refs undefined in connectedcallback', 'migrating querySelector to lwc:ref'. NOT for querying elements inside `for:each` iterators \u2014 refs do not work there \u2014 and NOT for cross-shadow queries of child custom elements' internals.",
   "file_location": "skills/lwc/lwc-template-refs",

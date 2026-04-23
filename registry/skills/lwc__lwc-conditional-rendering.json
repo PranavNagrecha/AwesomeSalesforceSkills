@@ -65,7 +65,7 @@
     "f62663ec66317b5246c4",
     "fb4e98608e691363befa"
   ],
-  "content_hash": "635fab7767ac28f4149c48e229e73bfc5ee7ebc8bbacfa51628d00227ca5d808",
+  "content_hash": "9979452794dc99a444571b293cadd66cc30cf10eddb100a9b126ae13f5766b8f",
   "dependencies": [],
   "description": "Use when writing, reviewing, or migrating Lightning Web Component templates that branch between UI states with `lwc:if`, `lwc:elseif`, and `lwc:else`, including getter-backed booleans, loading/error/ready state machines, keep-state vs reset-state toggles, and legacy `if:true` / `if:false` cleanup. Triggers: 'lwc:if vs if:true', 'lwc:elseif not working', 'conditional rendering in lwc', 'complex boolean in template'. NOT for choosing between component types at runtime \u2014 that is `lwc-dynamic-components` \u2014 and NOT for list rendering, which uses `for:each` or `iterator:it`.",
   "file_location": "skills/lwc/lwc-conditional-rendering",
