@@ -1,0 +1,85 @@
+{
+  "category": "flow",
+  "chunk_ids": [
+    "02f6501d18a4e250ee3f",
+    "08940f6997035a032cbe",
+    "1110740a7a273f8d3dbe",
+    "18b294ce6e1af65bbc74",
+    "262cec0aca331f0cd8cf",
+    "2fe4ecb8a860b81a1c3b",
+    "395130ee14832efd6966",
+    "3b7f60325e086a6b88c6",
+    "42d0c99270ddf2a339e3",
+    "4b778778e959aeb06ea2",
+    "5f24965c7d186785b671",
+    "6cfa2590c2437e816f0e",
+    "6d2b7cd22678cced924a",
+    "7d9369dfd3cb984296d3",
+    "85457a3497726f59c9ed",
+    "8a8cc1d6de872f68d7a2",
+    "924ea001c896fd2a680d",
+    "95c9c95dc890b5d9ae1b",
+    "975d1fb304237953457a",
+    "98787d06a4fe5407d2c7",
+    "a11acec14ce1040d98ff",
+    "a317bda9c29e143b098b",
+    "a37b8002ed266b495995",
+    "b16febe4f02dd806ac23",
+    "b1d7327e4b6e9db5fd9e",
+    "b32706976f63a40d9198",
+    "bb05fc6d537b692aeb00",
+    "c2bfba4c065c4039728f",
+    "d73c17a8b2a830b391f6",
+    "d94fb705eafc9f1b1871",
+    "e44f7bf1e2f992a2486d",
+    "e4641e907d00c0b5d9be",
+    "fa2dfc1e05d1335a97a4",
+    "fb9c48408da1312b98ad",
+    "fd265d60d57f03a331bf"
+  ],
+  "content_hash": "66a37426a2c6e8ec06c9d3e0072233050309b39afc5d51d7af189e0eb3887f42",
+  "dependencies": [
+    "flow/flow-http-callout-action",
+    "flow/flow-invocable-from-apex"
+  ],
+  "description": "Design and use Apex-Defined Types as Flow variables for structured non-sObject data (HTTP callout payloads, External Service responses, complex configuration). Trigger keywords: apex-defined type, flow variable, @AuraEnabled class, flow http callout response. Does NOT cover building HTTP Callout Actions themselves, External Services schema, or raw Apex invocable methods.",
+  "file_location": "skills/flow/flow-apex-defined-types",
+  "id": "flow/flow-apex-defined-types",
+  "inputs": [
+    "Proposed non-primitive Flow variable shape",
+    "Upstream source (HTTP Callout / External Service / Invocable Apex return)",
+    "Consumers (screen display, loop, sub-flow)"
+  ],
+  "name": "flow-apex-defined-types",
+  "official_sources": [
+    "Apex-Defined Types \u2014",
+    "Flow HTTP Callouts \u2014"
+  ],
+  "outputs": [
+    "Apex-Defined Type class stub with @AuraEnabled fields",
+    "Flow variable binding guidance",
+    "Caller-contract checklist"
+  ],
+  "references": [
+    "skills/flow/flow-apex-defined-types/references/examples.md",
+    "skills/flow/flow-apex-defined-types/references/gotchas.md",
+    "skills/flow/flow-apex-defined-types/references/llm-anti-patterns.md",
+    "skills/flow/flow-apex-defined-types/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/flow/flow-apex-defined-types/scripts/check_flow_apex_defined_types.py"
+  ],
+  "tags": [
+    "flow",
+    "apex-defined-type",
+    "http-callout",
+    "external-services",
+    "typed-variables"
+  ],
+  "templates": [
+    "skills/flow/flow-apex-defined-types/templates/apex-defined-type.cls"
+  ],
+  "updated": "2026-04-23",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

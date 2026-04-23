@@ -47,7 +47,7 @@
     "f7c7894025007b1449e2",
     "fb2719c9e94e1317baee"
   ],
-  "content_hash": "f6cd6ea6eee10716032d6e75968aca815c82eeb2b4d5c24c20998d47c5381648",
+  "content_hash": "619db44b60445bd673b3d673229da691c7c04a97f472766b845c760d10dd744d",
   "dependencies": [],
   "description": "Design Agentforce testing: topic coverage, action unit tests, deterministic golden sets, adversarial prompts, and regression harness. Trigger keywords: agentforce testing, agent eval, agent regression suite, prompt golden set, action unit test agentforce. Does NOT cover: generic LLM evaluation academia, human-labeled RLHF pipelines, or Einstein Classify accuracy.",
   "file_location": "skills/agentforce/agentforce-testing-strategy",

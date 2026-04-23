@@ -3,18 +3,18 @@
     "admin": 219,
     "agentforce": 46,
     "apex": 117,
-    "architect": 97,
+    "architect": 98,
     "data": 87,
     "devops": 60,
-    "flow": 43,
+    "flow": 47,
     "integration": 49,
-    "lwc": 48,
+    "lwc": 49,
     "omnistudio": 34,
     "security": 45
   },
-  "generated_from_hash": "20c4fdbbc2a2a444809cff13614114cace104300d2c0be758d2f8e877cbd5f74",
+  "generated_from_hash": "d80dbfb4c8dc91525ffdbfc283b5eb0af66cc00c96e0dc474afa495bfac7f7aa",
   "schema_version": 1,
-  "skill_count": 845,
+  "skill_count": 851,
   "skills": [
     {
       "category": "admin",
@@ -32014,7 +32014,7 @@
         "f7ad69334d651c9f7d52",
         "fb3d7a15682f47302deb"
       ],
-      "content_hash": "e88d4b2247db8a92b215f7252d375aacd0caaaea7a51008106bc6bcd84ea886a",
+      "content_hash": "6657ea5de141e1589e9b2cc5795ce7048a653fb9a5ad36f3955611e1b6a1e4ae",
       "dependencies": [
         "agentforce/agentforce-testing-strategy"
       ],
@@ -32116,7 +32116,7 @@
         "f54441522d809d40781c",
         "f9482a4b8baf2b2bf99a"
       ],
-      "content_hash": "636267c3fa31deca0b4dac941fb4f250d890a71d92638ac94ba1947fe2b7c725",
+      "content_hash": "352c9770e909630e3cacba0d318a7a56e495b6a92e6a4015a406aa9f5e456742",
       "dependencies": [
         "agentforce/agentforce-testing-strategy"
       ],
@@ -32524,7 +32524,7 @@
         "f7c7894025007b1449e2",
         "fb2719c9e94e1317baee"
       ],
-      "content_hash": "f6cd6ea6eee10716032d6e75968aca815c82eeb2b4d5c24c20998d47c5381648",
+      "content_hash": "619db44b60445bd673b3d673229da691c7c04a97f472766b845c760d10dd744d",
       "dependencies": [],
       "description": "Design Agentforce testing: topic coverage, action unit tests, deterministic golden sets, adversarial prompts, and regression harness. Trigger keywords: agentforce testing, agent eval, agent regression suite, prompt golden set, action unit test agentforce. Does NOT cover: generic LLM evaluation academia, human-labeled RLHF pipelines, or Einstein Classify accuracy.",
       "file_location": "skills/agentforce/agentforce-testing-strategy",
@@ -51859,6 +51859,115 @@
         "skills/architect/api-led-connectivity-architecture/templates/api-led-connectivity-architecture-template.md"
       ],
       "updated": "2026-04-14",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "architect",
+      "chunk_ids": [
+        "0083a35d47021ac3da21",
+        "0b2ed090bfea1bd2a1a9",
+        "0c7944182bac5c068b13",
+        "0dd6ee8cd003b7f394db",
+        "0ed4b26b65e9927c8d1a",
+        "15069f59196c636cac78",
+        "153e2f32ea6286add2b2",
+        "19c578ae99ffb3ed2f5f",
+        "22d967bd29e757bccb45",
+        "2be9d217b489ee222641",
+        "31efdafbca89f1da4f70",
+        "33d84b828a3aa2e2a25a",
+        "3819a68abc1fe7197c20",
+        "3a1f6ca3b332406e7687",
+        "3c2fbb02e174bf9a6013",
+        "3cb7f1234759f412a3f2",
+        "3e80bcb974ad34e21cf5",
+        "440ba9acc38fe3afcc1a",
+        "49f0409a10504211802d",
+        "4a290f1d13468dc566b9",
+        "4fb7e8be2a5f3254ab65",
+        "5003e835adab9124001f",
+        "5bf61133ebc198078fe6",
+        "68a91a3868d0fc6b4682",
+        "6b26d76aa3596ec0e036",
+        "6f6b5c318d63088a4afa",
+        "728bdec2d04fb416bd5b",
+        "738485ec62ea6f69b027",
+        "746481178da0837b072e",
+        "78db0ed427cc9780f15c",
+        "7a6923ef59083e1cf77c",
+        "80804ddf3b2728303504",
+        "867a36f3960afcf8f46f",
+        "8aae463d8e72152e5ba3",
+        "8be43b5d11f1917782c2",
+        "8f5351215f017520c10f",
+        "99af01528173e18d2de7",
+        "99e0c626b5edc789f3cf",
+        "9b26ded7ae115d78c317",
+        "a2f29a451fa5eb76af0e",
+        "a701bd00dbef99c876e0",
+        "afaed52bade0d8e0bcd5",
+        "b3fd3fb32b5b1d3c0e82",
+        "b5c965a7bfe1f2d51707",
+        "b5fbf56cfc74b798c949",
+        "b6597c1ebff4ffbe35dd",
+        "b6c28879e48de3d96b7b",
+        "b9fb397636641b436f79",
+        "c200bc9768f9cf01895a",
+        "cbbacf913c6af5d81fc3",
+        "cc15d774c1e57562ec49",
+        "cdcf17b6fe11c6e5c54a",
+        "d577b8ce82bbbdfb7279",
+        "dc531e90c935c42043f5",
+        "de03942b038a04b8e61d",
+        "e9894709225f9847cfa9",
+        "eaf7a40fca09aaccc39b",
+        "f46baef27bc80c418c56",
+        "f65a53baf9e472bf651d",
+        "fa717b20bd99fec5377f",
+        "fb5dfae6d4a868f6c556",
+        "fc7398868667701c0248"
+      ],
+      "content_hash": "740e077f1a4ffd733aa3100c5f0c9eef84c7816b904ac5aaca3c3cfc67fe9930",
+      "dependencies": [
+        "architect/solution-design-patterns"
+      ],
+      "description": "Author and maintain Architecture Decision Records (ADRs) for Salesforce implementations: capture chosen approach, rejected alternatives, constraints, and consequences. Trigger keywords: adr, architecture decision record, design decision log, technical decision. Does NOT cover project roadmap planning, release notes, or RFC workflow for features.",
+      "file_location": "skills/architect/architecture-decision-records",
+      "id": "architect/architecture-decision-records",
+      "inputs": [
+        "A non-trivial technical decision (platform choice, pattern adoption, org topology)",
+        "Alternatives considered and the evaluation criteria"
+      ],
+      "name": "architecture-decision-records",
+      "official_sources": [
+        "Nygard \u2014 Documenting Architecture Decisions \u2014",
+        "ThoughtWorks Technology Radar \u2014 ADRs \u2014"
+      ],
+      "outputs": [
+        "One ADR file per decision, numbered, dated, statused",
+        "Index updated with new entry + any superseded links"
+      ],
+      "references": [
+        "skills/architect/architecture-decision-records/references/examples.md",
+        "skills/architect/architecture-decision-records/references/gotchas.md",
+        "skills/architect/architecture-decision-records/references/llm-anti-patterns.md",
+        "skills/architect/architecture-decision-records/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/architect/architecture-decision-records/scripts/check_architecture_decision_records.py"
+      ],
+      "tags": [
+        "architect",
+        "adr",
+        "governance",
+        "documentation",
+        "decision-log"
+      ],
+      "templates": [
+        "skills/architect/architecture-decision-records/templates/adr-template.md"
+      ],
+      "updated": "2026-04-23",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -84651,6 +84760,91 @@
     {
       "category": "flow",
       "chunk_ids": [
+        "02f6501d18a4e250ee3f",
+        "08940f6997035a032cbe",
+        "1110740a7a273f8d3dbe",
+        "18b294ce6e1af65bbc74",
+        "262cec0aca331f0cd8cf",
+        "2fe4ecb8a860b81a1c3b",
+        "395130ee14832efd6966",
+        "3b7f60325e086a6b88c6",
+        "42d0c99270ddf2a339e3",
+        "4b778778e959aeb06ea2",
+        "5f24965c7d186785b671",
+        "6cfa2590c2437e816f0e",
+        "6d2b7cd22678cced924a",
+        "7d9369dfd3cb984296d3",
+        "85457a3497726f59c9ed",
+        "8a8cc1d6de872f68d7a2",
+        "924ea001c896fd2a680d",
+        "95c9c95dc890b5d9ae1b",
+        "975d1fb304237953457a",
+        "98787d06a4fe5407d2c7",
+        "a11acec14ce1040d98ff",
+        "a317bda9c29e143b098b",
+        "a37b8002ed266b495995",
+        "b16febe4f02dd806ac23",
+        "b1d7327e4b6e9db5fd9e",
+        "b32706976f63a40d9198",
+        "bb05fc6d537b692aeb00",
+        "c2bfba4c065c4039728f",
+        "d73c17a8b2a830b391f6",
+        "d94fb705eafc9f1b1871",
+        "e44f7bf1e2f992a2486d",
+        "e4641e907d00c0b5d9be",
+        "fa2dfc1e05d1335a97a4",
+        "fb9c48408da1312b98ad",
+        "fd265d60d57f03a331bf"
+      ],
+      "content_hash": "66a37426a2c6e8ec06c9d3e0072233050309b39afc5d51d7af189e0eb3887f42",
+      "dependencies": [
+        "flow/flow-http-callout-action",
+        "flow/flow-invocable-from-apex"
+      ],
+      "description": "Design and use Apex-Defined Types as Flow variables for structured non-sObject data (HTTP callout payloads, External Service responses, complex configuration). Trigger keywords: apex-defined type, flow variable, @AuraEnabled class, flow http callout response. Does NOT cover building HTTP Callout Actions themselves, External Services schema, or raw Apex invocable methods.",
+      "file_location": "skills/flow/flow-apex-defined-types",
+      "id": "flow/flow-apex-defined-types",
+      "inputs": [
+        "Proposed non-primitive Flow variable shape",
+        "Upstream source (HTTP Callout / External Service / Invocable Apex return)",
+        "Consumers (screen display, loop, sub-flow)"
+      ],
+      "name": "flow-apex-defined-types",
+      "official_sources": [
+        "Apex-Defined Types \u2014",
+        "Flow HTTP Callouts \u2014"
+      ],
+      "outputs": [
+        "Apex-Defined Type class stub with @AuraEnabled fields",
+        "Flow variable binding guidance",
+        "Caller-contract checklist"
+      ],
+      "references": [
+        "skills/flow/flow-apex-defined-types/references/examples.md",
+        "skills/flow/flow-apex-defined-types/references/gotchas.md",
+        "skills/flow/flow-apex-defined-types/references/llm-anti-patterns.md",
+        "skills/flow/flow-apex-defined-types/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/flow/flow-apex-defined-types/scripts/check_flow_apex_defined_types.py"
+      ],
+      "tags": [
+        "flow",
+        "apex-defined-type",
+        "http-callout",
+        "external-services",
+        "typed-variables"
+      ],
+      "templates": [
+        "skills/flow/flow-apex-defined-types/templates/apex-defined-type.cls"
+      ],
+      "updated": "2026-04-23",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "flow",
+      "chunk_ids": [
         "0168038f4adc0d1b4fae",
         "06ce8bca57e2973d30a5",
         "0ac3b9719126a8529da9",
@@ -85363,6 +85557,94 @@
     {
       "category": "flow",
       "chunk_ids": [
+        "01d45c4e4d8c974820bf",
+        "024be54b3421cc37af53",
+        "03f20ea080561ab134d1",
+        "0899e75fc587c6c17911",
+        "08d954be8f219e4352e3",
+        "0a21853f8d036cf7bef0",
+        "2267cce07c651603db05",
+        "237f7902383228675adf",
+        "25746457406f5783d99c",
+        "28e530a14775e78505ed",
+        "3465c7bf7a9a5983a923",
+        "370f26c9ad407c09cb30",
+        "44a57bf1b78b91bf92ed",
+        "5395b11d2c667db3d27b",
+        "56ad363c334daf61da54",
+        "60e1394993b300bae4b0",
+        "6c111b9f4566651d1e8a",
+        "6f4030bb1cb799bd6db3",
+        "70b4cc59c50b6bc59249",
+        "780bd868c1b5db4d4c5d",
+        "7b8ff5983a406a21b176",
+        "7bab8672f2364173f671",
+        "7fae6da5fd04082ba1fd",
+        "8448d8280ae76645fa61",
+        "94cdc531726dd046d885",
+        "9b26b79b0ed622887341",
+        "9e0b0571af66e9632777",
+        "a12e8bbf055db75bdcf3",
+        "a1426071f5a08f30fe26",
+        "a74bdc8b26e6d9a09a81",
+        "a7fce53047dd34f06af4",
+        "aa831d47eb6b6109d9d7",
+        "ac8e66054c2d07285bd0",
+        "af06b31922c17dce05e2",
+        "b3e22619747a0e5d3718",
+        "bad2308a01ebd6f3e86f",
+        "bc98f9ab8873ae9365fd",
+        "c28f710d962c445e67c7",
+        "c34dad4e00c853055537",
+        "cb5670101770747b6e49",
+        "e5ce963369c7d2a58403"
+      ],
+      "content_hash": "b306b9b1d44171a91302e8aef6837f5dee89a283866ecd007e999d71d274fcb5",
+      "dependencies": [
+        "flow/record-triggered-flow-patterns"
+      ],
+      "description": "Structure Decision elements in Flow: default outcome placement, outcome ordering, compound criteria, null-safe checks, Boolean vs Pick-list comparisons, and avoiding deep nested branching. Trigger keywords: decision element, flow branching, default outcome, condition logic, formula in decision. Does NOT cover loop or fault path design, or Screen Flow navigation.",
+      "file_location": "skills/flow/flow-decision-element-patterns",
+      "id": "flow/flow-decision-element-patterns",
+      "inputs": [
+        "Proposed Decision element or existing branching subgraph",
+        "Set of conditions with edge cases"
+      ],
+      "name": "flow-decision-element-patterns",
+      "official_sources": [
+        "Decision Element \u2014",
+        "Flow Operators \u2014"
+      ],
+      "outputs": [
+        "Normalised outcome list (ordered, null-safe, with default)",
+        "Suggested extraction into sub-flow where nesting is too deep"
+      ],
+      "references": [
+        "skills/flow/flow-decision-element-patterns/references/examples.md",
+        "skills/flow/flow-decision-element-patterns/references/gotchas.md",
+        "skills/flow/flow-decision-element-patterns/references/llm-anti-patterns.md",
+        "skills/flow/flow-decision-element-patterns/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/flow/flow-decision-element-patterns/scripts/check_flow_decision_element_patterns.py"
+      ],
+      "tags": [
+        "flow",
+        "decision",
+        "branching",
+        "conditions",
+        "null-safety"
+      ],
+      "templates": [
+        "skills/flow/flow-decision-element-patterns/templates/decision-review.md"
+      ],
+      "updated": "2026-04-23",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "flow",
+      "chunk_ids": [
         "0a56c6dfeeb681e538c2",
         "27a8f6b116571038c5db",
         "299d3889a5213fb1e1b7",
@@ -86022,6 +86304,95 @@
         "skills/flow/flow-for-slack/templates/flow-for-slack-template.md"
       ],
       "updated": "2026-04-16",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "flow",
+      "chunk_ids": [
+        "07264261e21d67712dea",
+        "1b3e17806bad0da1e2dc",
+        "22a97dd128a654028a96",
+        "2582fec3b72e9c70cf66",
+        "26c9a3273beca34e1f79",
+        "2a35a16b549dfa663994",
+        "3425578830b84cb0279e",
+        "3767217db123e22336ee",
+        "37e389eca8c3576d2022",
+        "3f75b07fcaaddb577bf8",
+        "4eb25c4afea9e1f54bc1",
+        "4fd99cc9a10ebdbd9886",
+        "5a98e4969610f67ed444",
+        "5ab05c4ee7f2847a00cc",
+        "5bf8892ed6e5d7ceb017",
+        "6297452acfbffbf1f1fd",
+        "63a42a72c6d2b8f15c15",
+        "699598aaa2b02afc9dcf",
+        "7490eb4283bcef2397f7",
+        "7daf1c406e893268ced0",
+        "7f951dbae7218a61ec66",
+        "82a1152bc5c44aa35d1c",
+        "889801be508062db4240",
+        "89addcbc4d4cdef4ae7f",
+        "8ba58d3e82e230eea5a9",
+        "9117a3783794a7478c5c",
+        "a6aa27a7597a6d92ee33",
+        "b1f8b567b32874a23382",
+        "b59ff47b0abc9459397b",
+        "bb87d7513fa5624d0e6b",
+        "d5fc2f7a29081d84d089",
+        "e239cf944af31af60a0c",
+        "e81a16487918ad6d3c22",
+        "ea78a835413d812a14dd",
+        "eaec03c0e7cb3e322b74",
+        "eba8bec1eef069af5d52",
+        "ecd31f324bbc769bbcab",
+        "f09aa284b5759a858da9",
+        "f384a1f59ccf32c733fb",
+        "f3f0231c9d09c30b732f",
+        "f5b0ba6d8f9450581023"
+      ],
+      "content_hash": "b3c35c2c7afcf08876e5d740fc81794865944f9afe1cef12b25bc7fd0107be17",
+      "dependencies": [
+        "flow/flow-governor-limits-deep-dive",
+        "flow/flow-performance-optimization"
+      ],
+      "description": "Optimize Get Records elements in Flow: filter sharpness, field selection, sort-and-limit placement, caching via formula resources, and avoiding repeated queries in loops. Trigger keywords: get records, flow soql, flow query limit, flow performance, record lookup. Does NOT cover Apex SOQL, Data Cloud queries, or external object lookups.",
+      "file_location": "skills/flow/flow-get-records-optimization",
+      "id": "flow/flow-get-records-optimization",
+      "inputs": [
+        "Existing Get Records elements with slow or limit-hitting behaviour",
+        "Proposed Flow design using record lookups"
+      ],
+      "name": "flow-get-records-optimization",
+      "official_sources": [
+        "Get Records \u2014",
+        "LDV Best Practices \u2014"
+      ],
+      "outputs": [
+        "Refactored Get Records with tight filters, specific fields, limit",
+        "Extraction to collection reuse / sub-flow input where possible"
+      ],
+      "references": [
+        "skills/flow/flow-get-records-optimization/references/examples.md",
+        "skills/flow/flow-get-records-optimization/references/gotchas.md",
+        "skills/flow/flow-get-records-optimization/references/llm-anti-patterns.md",
+        "skills/flow/flow-get-records-optimization/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/flow/flow-get-records-optimization/scripts/check_flow_get_records_optimization.py"
+      ],
+      "tags": [
+        "flow",
+        "get-records",
+        "soql",
+        "performance",
+        "governor-limits"
+      ],
+      "templates": [
+        "skills/flow/flow-get-records-optimization/templates/get-records-audit.md"
+      ],
+      "updated": "2026-04-23",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -87040,6 +87411,96 @@
     {
       "category": "flow",
       "chunk_ids": [
+        "00aebfcf1b1119c6c4d1",
+        "0aa681c7b9df86f6531e",
+        "0bc577db4b7408425af2",
+        "0e1a075b307b922a0669",
+        "13a96148f6618e845162",
+        "1b76e4907e50be4cc3f3",
+        "202fd577bf21fb25d81d",
+        "21da387b2523351e8ec0",
+        "26924bd5b7500cea1e84",
+        "2851c7df1f9068636b0b",
+        "2a75a1b5d341df6458db",
+        "346bbef3a9b1182f79f1",
+        "34b13e5214087c04350c",
+        "36543a55c33e26814e7e",
+        "3a456ba8d98b599318d9",
+        "42253f649e5fae73f71f",
+        "45b121f9585404d52ef5",
+        "49472cece06dfae23f8b",
+        "6595dc2e9b4222a2af63",
+        "6d8a0f6d22386713f3dd",
+        "8e221d599bca31fd9ce9",
+        "90464fcb8d4fe46e4ec4",
+        "9454eeb0ce8dfb9f659d",
+        "96835006df86d3ba7b5c",
+        "9ff246f1cdbae887bd1a",
+        "a090551b03967ab95429",
+        "a3cb6f6f6c048d6f7a45",
+        "b1773ee6284355078c84",
+        "b4bd8bcc2711184636c4",
+        "b9adca69a49a78ffdd61",
+        "bb24fa9f17a0452a6f98",
+        "bf55a7ac3ada123eacd6",
+        "c153778c511ab88e653e",
+        "d68e8042189f8520041b",
+        "e23bdac7934ae1c49922",
+        "ec4564e186c532ea58dd",
+        "f15695059fa531297634",
+        "f24c0b542e997f1217c2",
+        "f34540fcb01f5afeb286",
+        "f6ec18e1bf5295435be3",
+        "ff5b2335811cdd2251b6"
+      ],
+      "content_hash": "6f01976e45571fdcc08368e27135308aa0b9081b8a32085ffa6a2f740c135328",
+      "dependencies": [
+        "flow/record-triggered-flow-patterns",
+        "flow/flow-migration-from-trigger"
+      ],
+      "description": "Reason about how record-triggered flows interleave with the Salesforce Save Order (validation, before-save flows, before triggers, duplicate rules, after-save flows, workflow, after triggers, assignment, auto-response, escalation). Trigger keywords: save order, before-save flow, after-save flow, dml order, trigger vs flow order. Does NOT cover writing trigger handlers, approval process setup, or workflow rule migration.",
+      "file_location": "skills/flow/flow-record-save-order-interaction",
+      "id": "flow/flow-record-save-order-interaction",
+      "inputs": [
+        "Object with multiple automations firing on insert/update",
+        "Suspected ordering issue (recursion, stale value, double-save)"
+      ],
+      "name": "flow-record-save-order-interaction",
+      "official_sources": [
+        "Triggers and Order of Execution \u2014",
+        "Before-Save Flows \u2014"
+      ],
+      "outputs": [
+        "Save-order trace",
+        "Recommendation (move earlier, collapse, or relocate logic)",
+        "Recursion-guard plan"
+      ],
+      "references": [
+        "skills/flow/flow-record-save-order-interaction/references/examples.md",
+        "skills/flow/flow-record-save-order-interaction/references/gotchas.md",
+        "skills/flow/flow-record-save-order-interaction/references/llm-anti-patterns.md",
+        "skills/flow/flow-record-save-order-interaction/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/flow/flow-record-save-order-interaction/scripts/check_flow_record_save_order_interaction.py"
+      ],
+      "tags": [
+        "flow",
+        "save-order",
+        "record-triggered",
+        "triggers",
+        "automation-ordering"
+      ],
+      "templates": [
+        "skills/flow/flow-record-save-order-interaction/templates/save-order-map.md"
+      ],
+      "updated": "2026-04-23",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "flow",
+      "chunk_ids": [
         "02cbf47a3029cde466b8",
         "10e75b8128c63b0bb3b8",
         "116b01b4e03d2f7f5849",
@@ -87744,7 +88205,7 @@
         "fdb312c8c5d5145ace1e",
         "fe0b4c55285c8100da13"
       ],
-      "content_hash": "2c43cef0af1b21f769c734668a78a070155a18bf1711da11a5b37cacf3346728",
+      "content_hash": "83d4b5e14ac008d50ff73eff8af80a1bc592c23da97a34072ca94f2f231dc192",
       "dependencies": [
         "devops/flow-deployment-activation-ordering"
       ],
@@ -98290,6 +98751,95 @@
         "skills/lwc/lwc-performance/templates/lwc-performance-template.md"
       ],
       "updated": "2026-03-13",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "lwc",
+      "chunk_ids": [
+        "03a19df8bb7d847f8abc",
+        "0cb94ad333dbe71c1b3e",
+        "0ebbfac3761638b62667",
+        "11c9e3137ed5e6dc2cc2",
+        "1377db0e09775d680da0",
+        "153d12be77a45a7b5e2e",
+        "19f1d86fcad2d59ac54c",
+        "1ca28a991761bc62077e",
+        "207c629a826608776edc",
+        "26fd56905c557a989a74",
+        "2cad6a292f79c3e88493",
+        "2de326081cae29cf3512",
+        "2e33d97d2b1efc7287b1",
+        "326303de272fa1d2eae7",
+        "33c679abd3558873cc9a",
+        "36b6816e6058effe7a23",
+        "499e11ba6041871bc056",
+        "61a23fd9ac5b76a3317b",
+        "62fcbc8d90b740b424dc",
+        "7afab5de24f294f75512",
+        "89900dfd945f17c0f722",
+        "8ed50f4bd7029a5d0bf6",
+        "92d2f33de258c38712e0",
+        "9bc50034184b8c6b7ef9",
+        "9eeb0be0f6139b126035",
+        "a8381d1d3db97e1e9f53",
+        "aecb2bb90ef8c4c7ffb9",
+        "bc770fa8eb2f4ebdae6f",
+        "c71bfa90bc4f2f92e8cd",
+        "c8bb50fcaf6a9f11cd84",
+        "ce159266b66c14d0a019",
+        "d6251bf95c07ba01a0b6",
+        "d6b99dee5af01df1a76b",
+        "e04c7193c5492c809bb3",
+        "ed7af7b98076534c7ea7",
+        "ef1668e0cd8b75c9898e",
+        "f6929babb8cbf0fd47a2",
+        "ffbd185319c61d560bc2"
+      ],
+      "content_hash": "d48ffc47267ef457fe2ff471298cad66c4a96ec6f62ec596256ac2a8a6e15fc5",
+      "dependencies": [
+        "lwc/lwc-performance",
+        "devops/pipeline-secrets-management"
+      ],
+      "description": "Set and enforce performance budgets for Lightning Web Components: bundle-size limits per component, LCP/INP field targets, wire-adapter count caps, and CI-gate configuration using Lighthouse or webpagetest. Trigger keywords: lwc performance budget, bundle size limit, lcp budget, lighthouse ci, lwc size gate. Does NOT cover runtime optimization techniques, Lightning page tuning, or general LCP causes (see lwc-performance).",
+      "file_location": "skills/lwc/lwc-performance-budgets",
+      "id": "lwc/lwc-performance-budgets",
+      "inputs": [
+        "List of critical components and their pages",
+        "Current field-data LCP/INP (CrUX or monitoring)",
+        "CI pipeline that can fail on thresholds"
+      ],
+      "name": "lwc-performance-budgets",
+      "official_sources": [
+        "LWC Performance \u2014",
+        "Performance Budgets (web.dev) \u2014",
+        "Lighthouse CI \u2014"
+      ],
+      "outputs": [
+        "Budget manifest (per-component bundle cap + per-page field-data targets)",
+        "CI-gate wiring (Lighthouse CI config or equivalent)",
+        "Regression alert playbook"
+      ],
+      "references": [
+        "skills/lwc/lwc-performance-budgets/references/examples.md",
+        "skills/lwc/lwc-performance-budgets/references/gotchas.md",
+        "skills/lwc/lwc-performance-budgets/references/llm-anti-patterns.md",
+        "skills/lwc/lwc-performance-budgets/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/lwc/lwc-performance-budgets/scripts/check_lwc_performance_budgets.py"
+      ],
+      "tags": [
+        "lwc",
+        "performance",
+        "performance-budget",
+        "lighthouse-ci",
+        "ci-gate"
+      ],
+      "templates": [
+        "skills/lwc/lwc-performance-budgets/templates/budget-manifest.yaml"
+      ],
+      "updated": "2026-04-23",
       "vector_embedding": null,
       "version": "1.0.0"
     },

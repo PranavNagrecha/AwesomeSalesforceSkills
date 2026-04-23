@@ -1,0 +1,89 @@
+{
+  "category": "lwc",
+  "chunk_ids": [
+    "03a19df8bb7d847f8abc",
+    "0cb94ad333dbe71c1b3e",
+    "0ebbfac3761638b62667",
+    "11c9e3137ed5e6dc2cc2",
+    "1377db0e09775d680da0",
+    "153d12be77a45a7b5e2e",
+    "19f1d86fcad2d59ac54c",
+    "1ca28a991761bc62077e",
+    "207c629a826608776edc",
+    "26fd56905c557a989a74",
+    "2cad6a292f79c3e88493",
+    "2de326081cae29cf3512",
+    "2e33d97d2b1efc7287b1",
+    "326303de272fa1d2eae7",
+    "33c679abd3558873cc9a",
+    "36b6816e6058effe7a23",
+    "499e11ba6041871bc056",
+    "61a23fd9ac5b76a3317b",
+    "62fcbc8d90b740b424dc",
+    "7afab5de24f294f75512",
+    "89900dfd945f17c0f722",
+    "8ed50f4bd7029a5d0bf6",
+    "92d2f33de258c38712e0",
+    "9bc50034184b8c6b7ef9",
+    "9eeb0be0f6139b126035",
+    "a8381d1d3db97e1e9f53",
+    "aecb2bb90ef8c4c7ffb9",
+    "bc770fa8eb2f4ebdae6f",
+    "c71bfa90bc4f2f92e8cd",
+    "c8bb50fcaf6a9f11cd84",
+    "ce159266b66c14d0a019",
+    "d6251bf95c07ba01a0b6",
+    "d6b99dee5af01df1a76b",
+    "e04c7193c5492c809bb3",
+    "ed7af7b98076534c7ea7",
+    "ef1668e0cd8b75c9898e",
+    "f6929babb8cbf0fd47a2",
+    "ffbd185319c61d560bc2"
+  ],
+  "content_hash": "d48ffc47267ef457fe2ff471298cad66c4a96ec6f62ec596256ac2a8a6e15fc5",
+  "dependencies": [
+    "lwc/lwc-performance",
+    "devops/pipeline-secrets-management"
+  ],
+  "description": "Set and enforce performance budgets for Lightning Web Components: bundle-size limits per component, LCP/INP field targets, wire-adapter count caps, and CI-gate configuration using Lighthouse or webpagetest. Trigger keywords: lwc performance budget, bundle size limit, lcp budget, lighthouse ci, lwc size gate. Does NOT cover runtime optimization techniques, Lightning page tuning, or general LCP causes (see lwc-performance).",
+  "file_location": "skills/lwc/lwc-performance-budgets",
+  "id": "lwc/lwc-performance-budgets",
+  "inputs": [
+    "List of critical components and their pages",
+    "Current field-data LCP/INP (CrUX or monitoring)",
+    "CI pipeline that can fail on thresholds"
+  ],
+  "name": "lwc-performance-budgets",
+  "official_sources": [
+    "LWC Performance \u2014",
+    "Performance Budgets (web.dev) \u2014",
+    "Lighthouse CI \u2014"
+  ],
+  "outputs": [
+    "Budget manifest (per-component bundle cap + per-page field-data targets)",
+    "CI-gate wiring (Lighthouse CI config or equivalent)",
+    "Regression alert playbook"
+  ],
+  "references": [
+    "skills/lwc/lwc-performance-budgets/references/examples.md",
+    "skills/lwc/lwc-performance-budgets/references/gotchas.md",
+    "skills/lwc/lwc-performance-budgets/references/llm-anti-patterns.md",
+    "skills/lwc/lwc-performance-budgets/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/lwc/lwc-performance-budgets/scripts/check_lwc_performance_budgets.py"
+  ],
+  "tags": [
+    "lwc",
+    "performance",
+    "performance-budget",
+    "lighthouse-ci",
+    "ci-gate"
+  ],
+  "templates": [
+    "skills/lwc/lwc-performance-budgets/templates/budget-manifest.yaml"
+  ],
+  "updated": "2026-04-23",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}
