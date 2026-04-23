@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/lwc-debugger/inputs.schema.json",
+  "title": "lwc-debugger inputs",
+  "description": "Typed inputs for the lwc-debugger runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run.",
+  "type": "object",
+  "properties": {
+    "bundle_path": {
+      "type": "string",
+      "description": "Required. Absolute or repo-relative path to the failing LWC bundle directory.",
+      "example": "force-app/main/default/lwc/accountDetail"
+    },
+    "symptom": {
+      "type": "string",
+      "minLength": 10,
+      "description": "Required. Free-text description of the observed failure — what the user saw, when, and in which context.",
+      "example": "Record page tile renders blank with no console error, but wire payload logs correctly in handleRecord."
+    },
+    "error_text": {
+      "type": "string",
+      "description": "Optional. Stack trace, ShowToastEvent body, console.error line, Lightning Inspector event payload, or HAR excerpt that accompanied the symptom.",
+      "example": "TypeError: Cannot read properties of undefined (reading 'value') at accountDetail.js:42"
+    },
+    "reproduction_context": {
+      "type": "string",
+      "enum": [
+        "record-page",
+        "flow-screen",
+        "quick-action",
+        "experience-cloud",
+        "app-page",
+        "home-page",
+        "utility-bar",
+        "local-jest"
+      ],
+      "description": "Optional. Where the failure reproduces. Narrows hypothesis space.",
+      "example": "record-page"
+    },
+    "recently_changed": {
+      "type": "string",
+      "description": "Optional. Path(s) or commit SHA(s) of the most recent edits to the bundle — bias the hypothesis list toward files the user touched last.",
+      "example": "force-app/main/default/lwc/accountDetail/accountDetail.js (commit a1b2c3d)"
+    },
+    "allow_transient_edits": {
+      "type": "boolean",
+      "default": false,
+      "description": "Optional. If true, the agent may propose temporary console.log / debugger; instrumentation as a separate Diagnostic Probe block. Transient probes are always paste-and-revert — the agent never writes to disk."
+    }
+  },
+  "required": [
+    "bundle_path",
+    "symptom"
+  ]
+}
