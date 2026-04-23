@@ -60,10 +60,15 @@ staged-submission pattern:
 
 ## Phase 4 — Rollback
 
-Uniform across source types:
+Uniform across source types. Cite `skills/flow/flow-versioning-strategy`
+(rollback = activate prior inactive version, not redeploy) and
+`skills/flow/flow-record-save-order-interaction` (verify the new flow's
+save-order slot does not collide with the source it is replacing).
 
 1. Within N days of cutover, if divergence is found: deactivate the new
-   automation, reactivate the source.
+   automation, reactivate the source. For flow-side rollback specifically,
+   this is the "activate the prior inactive version" one-click path from
+   `skills/flow/flow-versioning-strategy` — never a redeploy.
 2. Any field changes made by the new automation during the divergence
    window need a data-fix. The agent lists the affected fields + suggests
    the fix shape; does NOT generate fix SOQL/DML. Route to a human via
