@@ -7,7 +7,7 @@ requires_org: false
 modes: [single]
 owner: sfskills-core
 created: 2026-04-16
-updated: 2026-04-16
+updated: 2026-04-23
 default_output_dir: "docs/reports/lwc-auditor/"
 output_formats:
   - markdown
@@ -16,8 +16,19 @@ dependencies:
   skills:
     - admin/agent-output-formats
     - lwc/lwc-accessibility
+    - lwc/lwc-app-builder-config
+    - lwc/lwc-conditional-rendering
+    - lwc/lwc-custom-datatable-types
+    - lwc/lwc-debugging-devtools
+    - lwc/lwc-graphql-wire
     - lwc/lwc-imperative-apex
+    - lwc/lwc-light-dom
     - lwc/lwc-performance
+    - lwc/lwc-quick-actions
+    - lwc/lwc-security
+    - lwc/lwc-slots-composition
+    - lwc/lwc-styling-hooks
+    - lwc/lwc-template-refs
     - lwc/wire-service-patterns
   shared:
     - AGENT_CONTRACT.md
@@ -52,10 +63,20 @@ Audits a Lightning Web Component bundle for accessibility, performance, security
 3. `skills/lwc/lwc-imperative-apex/SKILL.md`
 4. `skills/lwc/lwc-accessibility/SKILL.md` (or closest via `search_skill`)
 5. `skills/lwc/lwc-performance/SKILL.md` (or closest)
-6. `templates/lwc/component-skeleton/` (the whole folder)
-7. `templates/lwc/jest.config.js`
-8. `templates/lwc/patterns/`
-9. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+6. `skills/lwc/lwc-graphql-wire/SKILL.md` — if the bundle imports `lightning/uiGraphQLApi`
+7. `skills/lwc/lwc-slots-composition/SKILL.md` — if any template in the bundle contains `<slot`
+8. `skills/lwc/lwc-light-dom/SKILL.md` — if any JS declares `static renderMode = 'light'`
+9. `skills/lwc/lwc-template-refs/SKILL.md` — for every DOM-lookup path in the bundle
+10. `skills/lwc/lwc-quick-actions/SKILL.md` — if `.js-meta.xml` lists `lightning__RecordAction`
+11. `skills/lwc/lwc-styling-hooks/SKILL.md` — for every `.css` file in the bundle
+12. `skills/lwc/lwc-conditional-rendering/SKILL.md` — for every `.html` template
+13. `skills/lwc/lwc-debugging-devtools/SKILL.md` — for console / logging hygiene
+14. `skills/lwc/lwc-app-builder-config/SKILL.md` — for every `.js-meta.xml` file in the bundle
+15. `skills/lwc/lwc-custom-datatable-types/SKILL.md` — if any JS extends `LightningDatatable`
+16. `templates/lwc/component-skeleton/` (the whole folder)
+17. `templates/lwc/jest.config.js`
+18. `templates/lwc/patterns/`
+19. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---
 
@@ -81,6 +102,16 @@ Record:
 - Imperative Apex calls
 - Event dispatches / listeners
 - External resources / static assets
+
+When file-specific skill-local checkers exist, invoke them first and fold their findings in verbatim (they have the authoritative patterns). Always run:
+
+| Skill | Checker | Applies when |
+|---|---|---|
+| `lwc-graphql-wire` | `skills/lwc/lwc-graphql-wire/scripts/check_lwc_graphql_wire.py --manifest-dir <bundle_path>/..` | Any JS in the bundle imports from `lightning/uiGraphQLApi` |
+| `lwc-conditional-rendering` | `skills/lwc/lwc-conditional-rendering/scripts/check_lwc_conditional_rendering.py --manifest-dir <bundle_path>/..` | Any `.html` file in the bundle |
+| `lwc-custom-datatable-types` | `skills/lwc/lwc-custom-datatable-types/scripts/check_lwc_custom_datatable_types.py --manifest-dir <bundle_path>/..` | Any JS extends `LightningDatatable` |
+
+Skill-local checker stderr is copied into the findings list under its own severity bucket before the agent-native checks below fire, so the user sees authoritative results even if this agent's heuristics miss an edge case.
 
 ### Step 2 — Accessibility checks
 
@@ -126,7 +157,93 @@ For each public method / wire / event in the component, check `__tests__/*.test.
 | **wire-without-emit** | Wire adapter imported but no `emit` in tests | P1 |
 | **missing-jest-config** | `jest.config.js` absent at bundle or project level | P2 |
 
-### Step 6 — Recommendations
+### Step 6 — Modern-LWC idiom checks
+
+These fold signals from the 10 newer LWC skills into a single pass.
+
+**GraphQL wire — `skills/lwc/lwc-graphql-wire`**
+
+| Check | Signal | Severity |
+|---|---|---|
+| **graphql-interpolation** | `gql\`...\`` literal contains `${...}` (non-reactive; must use `variables: '$vars'`) | P0 |
+| **graphql-refresh-wrong-helper** | File imports `graphql` from `lightning/uiGraphQLApi` and calls `refreshApex` | P0 |
+| **graphql-mutation** | `gql\`...\`` block contains the `mutation` keyword (adapter is read-only) | P0 |
+| **graphql-edges-no-pageinfo** | `edges` selected without a sibling `pageInfo { endCursor hasNextPage }` on a paginated connection | P1 |
+| **graphql-bare-field** | Template binds `{record.<FieldName>}` without `.value` / `.displayValue` (UI API returns `{value, displayValue}` wrappers) | P1 |
+
+**Conditional rendering — `skills/lwc/lwc-conditional-rendering`**
+
+| Check | Signal | Severity |
+|---|---|---|
+| **legacy-if-directive** | `if:true` / `if:false` in any template | P1 |
+| **lwc-if-complex-expression** | `lwc:if="{expr}"` with `&&`, `\|\|`, `===`, `!==`, `>`, `<`, ternary, or `.length` — belongs in a getter | P2 |
+| **lwc-else-with-value** | `lwc:else="..."` (directive takes no value) | P1 |
+| **orphan-lwc-else** | `lwc:elseif` / `lwc:else` not an immediate sibling of a matching `lwc:if` / `lwc:elseif` | P0 |
+
+**Template refs — `skills/lwc/lwc-template-refs`**
+
+| Check | Signal | Severity |
+|---|---|---|
+| **querySelector-over-ref** | `this.template.querySelector(...)` in JS where the target element could carry `lwc:ref` | P2 |
+| **ref-without-declaration** | `this.refs.<name>` read with no matching `lwc:ref="<name>"` in any template in the bundle | P0 |
+
+**Slots & composition — `skills/lwc/lwc-slots-composition`**
+
+| Check | Signal | Severity |
+|---|---|---|
+| **named-slot-unreferenced** | `<slot name="x">` declared but no consumer passes `slot="x"` via the known callers (note as Process Observation, not a hard finding) | P2 |
+| **slotchange-on-default-slot-without-listener** | `<slot onslotchange={fn}>` declared but no `fn(event)` method on the class | P1 |
+
+**Light DOM — `skills/lwc/lwc-light-dom`**
+
+| Check | Signal | Severity |
+|---|---|---|
+| **light-dom-without-xss-note** | JS sets `static renderMode = 'light'` but template renders interpolated user input through a base-tag whitelist less than SLDS safe set | P1 |
+| **light-dom-css-leak** | `renderMode = 'light'` + `.css` uses broad selectors (e.g. `p {...}`, `a {...}`) that will leak to the surrounding page | P2 |
+
+**Quick actions — `skills/lwc/lwc-quick-actions`**
+
+| Check | Signal | Severity |
+|---|---|---|
+| **action-missing-close-event** | `.js-meta.xml` has `<target>lightning__RecordAction</target>` but the class never fires `CloseActionScreenEvent` | P0 |
+| **action-missing-invoke** | Headless action signature (`<actionType>Action</actionType>`) but no `@api invoke()` method | P0 |
+| **action-no-record-id** | Quick action bundle lacks `@api recordId` | P1 |
+
+**Styling hooks — `skills/lwc/lwc-styling-hooks`**
+
+| Check | Signal | Severity |
+|---|---|---|
+| **shadow-dom-piercer** | CSS uses `::part`, `>>>`, or descendant selectors on internal SLDS class names (`.slds-button__icon`, etc.) | P0 |
+| **hex-literal-over-token** | CSS contains raw hex / rgb color outside the SLDS palette | P2 |
+| **hardcoded-spacing** | `margin`, `padding`, `gap` set with raw `px` values rather than `--slds-g-spacing-*` tokens | P2 |
+
+**Debugging hygiene — `skills/lwc/lwc-debugging-devtools`**
+
+| Check | Signal | Severity |
+|---|---|---|
+| **proxy-dump** | `console.log(<wire-proxy>)` without `JSON.parse(JSON.stringify(...))` wrap — dumps unhelpful Proxy handler frames | P2 |
+| **debugger-left-in-source** | `debugger;` statement in a `.js` file under `__tests__/` exclusion | P1 |
+| **untagged-console** | Raw `console.log(...)` with no bundle tag / context prefix | P3 |
+
+**Meta XML — `skills/lwc/lwc-app-builder-config`**
+
+| Check | Signal | Severity |
+|---|---|---|
+| **exposed-false-with-targets** | `.js-meta.xml` has non-empty `<targets>` but `<isExposed>` is `false` or omitted | P0 |
+| **targets-without-targetconfigs** | Bundle description / SKILL mentions admin-configurable properties but `<targetConfigs>` is empty | P1 |
+| **form-factor-at-root** | `<supportedFormFactors>` is a direct child of `<LightningComponentBundle>` instead of a `<targetConfig>` | P0 |
+| **invalid-property-type** | `<property type="Picklist" \| Reference \| sObject"/>` anywhere (valid: `String`, `Integer`, `Boolean`, `Color`) | P0 |
+| **uncast-design-attribute** | `@api` prop backed by `type="Integer"` / `type="Boolean"` used in arithmetic / strict comparison without `Number(...)` / explicit cast | P2 |
+
+**Custom datatable types — `skills/lwc/lwc-custom-datatable-types`**
+
+| Check | Signal | Severity |
+|---|---|---|
+| **custom-type-missing-typeAttributes** | Entry in `static customTypes = { ... }` has no `typeAttributes: [...]` array (datatable silently drops unlisted attrs) | P0 |
+| **custom-type-template-missing** | `template: fooTpl` references a name that resolves to no sibling `.html` import in the bundle | P0 |
+| **custom-type-uses-this** | Custom-type template references `{this.something}` — custom-type templates have no `this` binding | P0 |
+
+### Step 7 — Recommendations
 
 Map each finding back to the skeleton file or pattern that prevents it. Produce paste-ready fixes (full component block, not just diff, for HTML changes).
 
@@ -169,6 +286,8 @@ Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
 
 - Bundle uses `@lwr` / LWR site-specific APIs not covered by standard LWC skills → flag `confidence: MEDIUM`, surface the skill gap.
 - Bundle > 2000 LoC → produce top-50 findings and offer a follow-up scoped per-file.
+- Skill-local checker fails to run (missing Python, permission error) → run the agent-native heuristics and annotate the finding with `checker_unavailable: true` so the consumer knows to re-run locally.
+- Bundle contains a live-at-runtime error (stack trace, "Unknown error", missing recordId) rather than a static-code smell → route to `lwc-debugger` instead of auditing statically.
 
 ---
 

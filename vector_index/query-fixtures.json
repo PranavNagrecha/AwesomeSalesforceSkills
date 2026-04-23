@@ -6263,6 +6263,126 @@
       "domain": "architect",
       "expected_skill": "architect/architecture-decision-records",
       "top_k": 3
+    },
+    {
+      "query": "lwc graphql wire multi entity read accounts contacts one request uiGraphQLApi",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-graphql-wire",
+      "top_k": 3
+    },
+    {
+      "query": "lwc named slot default slot composition slotchange event projected content",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-slots-composition",
+      "top_k": 3
+    },
+    {
+      "query": "lwc light dom render mode scoped css third party jquery seo indexing",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-light-dom",
+      "top_k": 3
+    },
+    {
+      "query": "lwc:ref directive replace template querySelector focus input child component",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-template-refs",
+      "top_k": 3
+    },
+    {
+      "query": "lwc quick action screen headless CloseActionScreenEvent recordId lightning__RecordAction",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-quick-actions",
+      "top_k": 3
+    },
+    {
+      "query": "slds styling hooks css custom properties theme token lightning button override",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-styling-hooks",
+      "top_k": 3
+    },
+    {
+      "query": "lwc:if lwc:elseif lwc:else vs if:true if:false legacy conditional migration",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-conditional-rendering",
+      "top_k": 3
+    },
+    {
+      "query": "lwc debug mode chrome devtools source maps lightning inspector proxy console",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-debugging-devtools",
+      "top_k": 3
+    },
+    {
+      "query": "lwc meta xml isExposed targets targetConfigs supportedFormFactors design attributes app builder",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-app-builder-config",
+      "top_k": 3
+    },
+    {
+      "query": "lightning datatable custom cell type typeAttributes edit template draft values customTypes",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-custom-datatable-types",
+      "top_k": 3
+    },
+    {
+      "query": "apex base64 encode HMAC SHA256 AES encrypt decrypt Crypto class",
+      "domain": "apex",
+      "expected_skill": "apex/apex-encoding-and-crypto",
+      "top_k": 3
+    },
+    {
+      "query": "apex upload file ContentVersion ContentDocumentLink attachment blob size limit",
+      "domain": "apex",
+      "expected_skill": "apex/apex-blob-and-content-version",
+      "top_k": 3
+    },
+    {
+      "query": "apex Pattern Matcher regex double escape replacement string matches find split ReDoS",
+      "domain": "apex",
+      "expected_skill": "apex/apex-regex-and-pattern-matching",
+      "top_k": 3
+    },
+    {
+      "query": "apex hierarchy custom settings getInstance getOrgDefaults SetupOwnerId override",
+      "domain": "apex",
+      "expected_skill": "apex/apex-custom-settings-hierarchy",
+      "top_k": 3
+    },
+    {
+      "query": "apex send bell notification Messaging CustomNotification CustomNotificationType target user",
+      "domain": "apex",
+      "expected_skill": "apex/apex-custom-notifications-from-apex",
+      "top_k": 3
+    },
+    {
+      "query": "apex launch autolaunched flow from class Flow.Interview createInterview parameters",
+      "domain": "apex",
+      "expected_skill": "apex/apex-flow-invocation-from-apex",
+      "top_k": 3
+    },
+    {
+      "query": "apex check user permission custom permission FeatureManagement checkPermission profile name",
+      "domain": "apex",
+      "expected_skill": "apex/apex-user-and-permission-checks",
+      "top_k": 3
+    },
+    {
+      "query": "apex validate Id format 15 character 18 character getSobjectType Id prefix",
+      "domain": "apex",
+      "expected_skill": "apex/apex-salesforce-id-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "apex Callable interface dynamic dispatch managed package extension point plugin",
+      "domain": "apex",
+      "expected_skill": "apex/apex-callable-interface",
+      "top_k": 3
+    },
+    {
+      "query": "apex chatter post feed item mention user ConnectApi FeedItemInput MentionSegmentInput attachment",
+      "domain": "apex",
+      "expected_skill": "apex/apex-connect-api-chatter",
+      "top_k": 3
     }
   ]
 }
