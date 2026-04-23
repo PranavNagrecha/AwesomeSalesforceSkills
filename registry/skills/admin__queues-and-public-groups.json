@@ -76,7 +76,7 @@
     "fdae0bb85fcdb3946e00",
     "ffcec4f4d5592dc886c0"
   ],
-  "content_hash": "dcd354ca69941d59b6ddc7a5324270e668f0fcd0136b42498ff1e5d2904bbaf3",
+  "content_hash": "c182e0dd69873bddb87d964aededd551d53513d7c139efe0084d6c4f602000f9",
   "dependencies": [],
   "description": "Use this skill when creating or managing queues, configuring queue membership, setting up case or lead queues, creating public groups, or using groups in sharing rules and manual sharing. Trigger keywords: queue, public group, queue membership, queue email, group sharing, case queue, lead queue. NOT for assignment rules that route records to queues automatically (use assignment-rules). NOT for Omni-Channel routing configuration (separate routing engine).",
   "file_location": "skills/admin/queues-and-public-groups",

@@ -114,7 +114,7 @@
     "fde37158a6c51a76c89c",
     "fe22aaccb78062a5d934"
   ],
-  "content_hash": "e310d9b51da3d9c1de427b40ec0c75b7aa9ff9952e589156fc724ebbb1b6cf07",
+  "content_hash": "ce481f4310eb7745ff9aa70e4b742cf535687934fa5ae3f0d038f68023c28ae8",
   "dependencies": [],
   "description": "Use when designing or reviewing the integration layer between Salesforce Industries clouds (Insurance, Communications, Energy & Utilities) and vertical backend systems such as policy administration systems, BSS/OSS platforms, or Customer Information Systems (CIS). NOT for generic Salesforce integration patterns unrelated to industry verticals, NOT for OmniStudio component design decisions (see omnistudio-vs-standard-architecture), NOT for FSC data model or module licensing (see insurance-cloud-architecture).",
   "file_location": "skills/architect/industries-integration-architecture",

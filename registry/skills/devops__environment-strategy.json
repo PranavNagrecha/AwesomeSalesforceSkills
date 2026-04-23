@@ -80,7 +80,7 @@
     "f8ac122aeca1fa7f352b",
     "fd4f3c32821fbd77c832"
   ],
-  "content_hash": "60f5183bf4288d1d0ba24b8a7c394ff98682ae9089d4ccb7ade14f04c19d6e6f",
+  "content_hash": "3fa70a9b32254c17e95a376e2f0c5fa78b7bef75ffdb43d62edcbbb9997e507a",
   "dependencies": [],
   "description": "Use when designing the full environment topology for a Salesforce program \u2014 selecting which org types to provision, how many, and how they map to your branching strategy and release pipeline. Trigger keywords: 'environment strategy', 'org topology', 'scratch org vs sandbox', 'how many environments do I need', 'environment planning', 'DevOps environment design'. NOT for sandbox-type-only decisions (use admin/sandbox-strategy), NOT for scratch org lifecycle or daily usage (use devops/scratch-org-management), NOT for release pipeline mechanics (use devops/release-management).",
   "file_location": "skills/devops/environment-strategy",

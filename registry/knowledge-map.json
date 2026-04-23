@@ -774,8 +774,10 @@
       "omnistudio/calculation-procedures",
       "omnistudio/dataraptor-load-and-extract",
       "omnistudio/dataraptor-patterns",
+      "omnistudio/dataraptor-transform-optimization",
       "omnistudio/document-generation-omnistudio",
       "omnistudio/flexcard-design-patterns",
+      "omnistudio/flexcard-state-management",
       "omnistudio/industries-api-extensions",
       "omnistudio/industries-cpq-vs-salesforce-cpq",
       "omnistudio/integration-procedures",
@@ -787,6 +789,7 @@
       "omnistudio/omnistudio-custom-lwc-elements",
       "omnistudio/omnistudio-debugging",
       "omnistudio/omnistudio-deployment-datapacks",
+      "omnistudio/omnistudio-error-handling-patterns",
       "omnistudio/omnistudio-field-mapping-governance",
       "omnistudio/omnistudio-lwc-integration",
       "omnistudio/omnistudio-lwc-omniscript-migration",
@@ -795,6 +798,7 @@
       "omnistudio/omnistudio-remote-actions",
       "omnistudio/omnistudio-security",
       "omnistudio/omnistudio-testing-patterns",
+      "omnistudio/omnistudio-vs-flow-decision",
       "omnistudio/vlocity-to-native-omnistudio-migration"
     ],
     "security": [
@@ -812,6 +816,7 @@
       "security/experience-cloud-security",
       "security/ferpa-compliance-in-salesforce",
       "security/field-audit-trail",
+      "security/file-upload-virus-scanning",
       "security/gdpr-data-privacy",
       "security/guest-user-security",
       "security/ip-range-and-login-flow-strategy",
@@ -827,11 +832,14 @@
       "security/record-access-troubleshooting",
       "security/salesforce-shield-deployment",
       "security/sandbox-data-masking",
+      "security/scim-provisioning-integration",
       "security/secure-coding-review-checklist",
       "security/security-health-check",
       "security/security-incident-response",
+      "security/service-account-credential-rotation",
       "security/session-high-assurance-policies",
       "security/session-management-and-timeout",
+      "security/shield-event-log-retention-strategy",
       "security/shield-kms-byok-setup",
       "security/transaction-security-policies",
       "security/xss-and-injection-prevention"
@@ -1907,7 +1915,8 @@
       "architect/omnistudio-vs-standard-decision",
       "architect/payer-vs-provider-architecture",
       "architect/sales-cloud-architecture",
-      "lwc/lwc-state-management"
+      "lwc/lwc-state-management",
+      "omnistudio/omnistudio-vs-flow-decision"
     ],
     "architecture-decision": [
       "architect/event-driven-architecture",
@@ -2469,7 +2478,8 @@
       "devops/code-review-checklist-salesforce",
       "flow/auto-launched-flow-patterns",
       "flow/flow-cross-object-updates",
-      "flow/flow-invocable-from-apex"
+      "flow/flow-invocable-from-apex",
+      "omnistudio/dataraptor-transform-optimization"
     ],
     "bundle-design": [
       "architect/cpq-architecture-patterns"
@@ -3265,7 +3275,8 @@
       "admin/cpq-quote-templates"
     ],
     "conditional-visibility": [
-      "omnistudio/flexcard-design-patterns"
+      "omnistudio/flexcard-design-patterns",
+      "omnistudio/flexcard-state-management"
     ],
     "confetti": [
       "admin/path-and-guidance"
@@ -3436,7 +3447,8 @@
     ],
     "content-version": [
       "data/case-history-migration",
-      "integration/file-and-document-integration"
+      "integration/file-and-document-integration",
+      "security/file-upload-virus-scanning"
     ],
     "contentDocumentLink": [
       "apex/pdf-generation-patterns"
@@ -3619,6 +3631,9 @@
     ],
     "create-slack-channel": [
       "flow/flow-for-slack"
+    ],
+    "credentials": [
+      "security/service-account-credential-rotation"
     ],
     "crew": [
       "admin/fsl-shifts-and-crew"
@@ -4269,6 +4284,7 @@
       "data/omnistudio-metadata-management",
       "omnistudio/dataraptor-load-and-extract",
       "omnistudio/dataraptor-patterns",
+      "omnistudio/dataraptor-transform-optimization",
       "omnistudio/omnistudio-debugging",
       "omnistudio/omnistudio-field-mapping-governance",
       "omnistudio/vlocity-to-native-omnistudio-migration"
@@ -4389,6 +4405,9 @@
     ],
     "decision-table": [
       "omnistudio/business-rules-engine"
+    ],
+    "decision-tree": [
+      "omnistudio/omnistudio-vs-flow-decision"
     ],
     "declarative-vs-programmatic": [
       "architect/solution-design-patterns"
@@ -5191,7 +5210,8 @@
       "apex/apex-transaction-finalizers",
       "flow/flow-interview-debugging",
       "integration/error-handling-in-integrations",
-      "lwc/lwc-error-boundaries"
+      "lwc/lwc-error-boundaries",
+      "omnistudio/omnistudio-error-handling-patterns"
     ],
     "error-handling-framework": [
       "apex/error-handling-framework"
@@ -5285,7 +5305,8 @@
       "security/api-security-and-rate-limiting",
       "security/event-monitoring",
       "security/salesforce-shield-deployment",
-      "security/security-incident-response"
+      "security/security-incident-response",
+      "security/shield-event-log-retention-strategy"
     ],
     "event-propagation": [
       "lwc/common-lwc-runtime-errors"
@@ -5633,6 +5654,9 @@
       "lwc/file-upload-patterns",
       "lwc/lwc-forms-and-validation"
     ],
+    "files": [
+      "security/file-upload-virus-scanning"
+    ],
     "files-connect": [
       "integration/file-and-document-integration"
     ],
@@ -5740,6 +5764,7 @@
       "admin/flexcard-requirements",
       "data/omnistudio-metadata-management",
       "omnistudio/flexcard-design-patterns",
+      "omnistudio/flexcard-state-management",
       "omnistudio/omnistudio-performance",
       "omnistudio/omnistudio-remote-actions",
       "omnistudio/vlocity-to-native-omnistudio-migration"
@@ -5775,7 +5800,8 @@
       "flow/flow-resource-patterns",
       "flow/flow-rollback-patterns",
       "flow/flow-runtime-error-diagnosis",
-      "flow/flow-transactional-boundaries"
+      "flow/flow-transactional-boundaries",
+      "omnistudio/omnistudio-vs-flow-decision"
     ],
     "flow-action": [
       "admin/einstein-discovery-deployment"
@@ -6530,13 +6556,17 @@
       "data/external-id-strategy",
       "flow/scheduled-flows",
       "integration/retry-and-backoff-patterns",
-      "integration/webhook-inbound-patterns"
+      "integration/webhook-inbound-patterns",
+      "omnistudio/omnistudio-error-handling-patterns"
     ],
     "idempotent": [
       "integration/idempotent-integration-patterns"
     ],
     "idempotent-integration-patterns": [
       "integration/idempotent-integration-patterns"
+    ],
+    "identity": [
+      "security/scim-provisioning-integration"
     ],
     "identity-mapping": [
       "agentforce/agentforce-in-slack"
@@ -6799,6 +6829,7 @@
       "omnistudio/integration-procedures",
       "omnistudio/omnistudio-asynchronous-data-operations",
       "omnistudio/omnistudio-debugging",
+      "omnistudio/omnistudio-error-handling-patterns",
       "omnistudio/omnistudio-lwc-integration",
       "omnistudio/omnistudio-remote-actions",
       "omnistudio/omnistudio-testing-patterns",
@@ -7560,6 +7591,9 @@
     "major-gifts": [
       "admin/fundraising-process-mapping"
     ],
+    "malware-scanning": [
+      "security/file-upload-virus-scanning"
+    ],
     "managed-checkout": [
       "admin/commerce-checkout-configuration",
       "admin/commerce-checkout-flow-design"
@@ -8060,7 +8094,8 @@
       "devops/environment-specific-value-injection",
       "flow/flow-external-services",
       "integration/named-credentials-setup",
-      "omnistudio/integration-procedures"
+      "omnistudio/integration-procedures",
+      "security/service-account-credential-rotation"
     ],
     "namespace": [
       "architect/tenant-isolation-patterns",
@@ -8353,8 +8388,10 @@
       "omnistudio/business-rules-engine",
       "omnistudio/calculation-procedures",
       "omnistudio/dataraptor-load-and-extract",
+      "omnistudio/dataraptor-transform-optimization",
       "omnistudio/document-generation-omnistudio",
       "omnistudio/flexcard-design-patterns",
+      "omnistudio/flexcard-state-management",
       "omnistudio/industries-api-extensions",
       "omnistudio/industries-cpq-vs-salesforce-cpq",
       "omnistudio/integration-procedures",
@@ -8366,11 +8403,13 @@
       "omnistudio/omnistudio-custom-lwc-elements",
       "omnistudio/omnistudio-debugging",
       "omnistudio/omnistudio-deployment-datapacks",
+      "omnistudio/omnistudio-error-handling-patterns",
       "omnistudio/omnistudio-lwc-integration",
       "omnistudio/omnistudio-lwc-omniscript-migration",
       "omnistudio/omnistudio-multi-language",
       "omnistudio/omnistudio-remote-actions",
       "omnistudio/omnistudio-testing-patterns",
+      "omnistudio/omnistudio-vs-flow-decision",
       "omnistudio/vlocity-to-native-omnistudio-migration"
     ],
     "omnistudio-admin-configuration": [
@@ -8886,6 +8925,7 @@
       "flow/flow-governor-limits-deep-dive",
       "flow/flow-performance-optimization",
       "lwc/virtualized-lists",
+      "omnistudio/dataraptor-transform-optimization",
       "omnistudio/omnistudio-cache-strategies"
     ],
     "performance-obligation": [
@@ -8920,7 +8960,8 @@
       "admin/permission-sets-vs-profiles",
       "admin/user-access-policies",
       "apex/apex-custom-permissions-check",
-      "devops/permission-set-deployment-ordering"
+      "devops/permission-set-deployment-ordering",
+      "security/scim-provisioning-integration"
     ],
     "permits": [
       "admin/industries-public-sector-setup"
@@ -9430,7 +9471,8 @@
       "admin/referral-management-health"
     ],
     "provisioning": [
-      "admin/user-access-policies"
+      "admin/user-access-policies",
+      "security/scim-provisioning-integration"
     ],
     "pub-sub": [
       "architect/event-driven-architecture",
@@ -9473,6 +9515,7 @@
       "admin/knowledge-base-administration"
     ],
     "pubsub": [
+      "omnistudio/flexcard-state-management",
       "omnistudio/omnistudio-custom-lwc-elements"
     ],
     "pull-request": [
@@ -9499,6 +9542,9 @@
     ],
     "quality-gates": [
       "architect/ci-cd-pipeline-architecture"
+    ],
+    "quarantine": [
+      "security/file-upload-virus-scanning"
     ],
     "query": [
       "admin/saql-query-development",
@@ -9984,7 +10030,8 @@
     ],
     "retention": [
       "apex/custom-logging-and-monitoring",
-      "data/analytics-data-governance"
+      "data/analytics-data-governance",
+      "security/shield-event-log-retention-strategy"
     ],
     "retention-policy": [
       "data/batch-data-cleanup-patterns"
@@ -10004,7 +10051,8 @@
     "retry": [
       "admin/outbound-message-setup",
       "integration/idempotent-integration-patterns",
-      "integration/retry-and-backoff-patterns"
+      "integration/retry-and-backoff-patterns",
+      "omnistudio/omnistudio-error-handling-patterns"
     ],
     "return-order": [
       "admin/commerce-order-management"
@@ -10117,6 +10165,9 @@
     "rollups": [
       "admin/household-model-configuration",
       "data/fsc-data-model"
+    ],
+    "rotation": [
+      "security/service-account-credential-rotation"
     ],
     "route-planning": [
       "admin/consumer-goods-cloud-setup"
@@ -10439,6 +10490,9 @@
     "schema-management": [
       "integration/data-cloud-ingestion-api"
     ],
+    "scim": [
+      "security/scim-provisioning-integration"
+    ],
     "score-decay": [
       "admin/mcae-lead-scoring-and-grading"
     ],
@@ -10549,7 +10603,11 @@
       "devops/salesforce-code-analyzer",
       "devops/sandbox-data-isolation-gotchas",
       "security/certificate-and-key-management",
-      "security/platform-encryption"
+      "security/file-upload-virus-scanning",
+      "security/platform-encryption",
+      "security/scim-provisioning-integration",
+      "security/service-account-credential-rotation",
+      "security/shield-event-log-retention-strategy"
     ],
     "security-audit": [
       "security/login-forensics"
@@ -10657,7 +10715,8 @@
       "apex/apex-json-serialization"
     ],
     "service-account": [
-      "security/api-only-user-hardening"
+      "security/api-only-user-hardening",
+      "security/service-account-credential-rotation"
     ],
     "service-appointment": [
       "data/fsl-reporting-data-model",
@@ -10929,6 +10988,7 @@
       "security/platform-encryption",
       "security/salesforce-shield-deployment",
       "security/security-incident-response",
+      "security/shield-event-log-retention-strategy",
       "security/shield-kms-byok-setup",
       "security/transaction-security-policies"
     ],
@@ -10958,6 +11018,9 @@
     ],
     "showtoastevent": [
       "lwc/lwc-show-toast-patterns"
+    ],
+    "siem": [
+      "security/shield-event-log-retention-strategy"
     ],
     "signature": [
       "integration/webhook-signature-verification"
@@ -11228,6 +11291,9 @@
     ],
     "state-machine": [
       "apex/long-running-process-orchestration"
+    ],
+    "state-management": [
+      "omnistudio/flexcard-state-management"
     ],
     "stateful": [
       "apex/batch-apex-patterns"
@@ -11605,7 +11671,8 @@
     "tool-selection": [
       "admin/einstein-analytics-basics",
       "data/data-loader-and-tools",
-      "devops/salesforce-devops-tooling-selection"
+      "devops/salesforce-devops-tooling-selection",
+      "omnistudio/omnistudio-vs-flow-decision"
     ],
     "tool-use": [
       "agentforce/agentforce-tool-use-patterns"
@@ -11665,6 +11732,9 @@
     "transactions": [
       "data/financial-account-migration",
       "flow/flow-transactional-boundaries"
+    ],
+    "transform": [
+      "omnistudio/dataraptor-transform-optimization"
     ],
     "transform-element": [
       "flow/flow-collection-processing"

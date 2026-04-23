@@ -85,7 +85,7 @@
     "f615419ec335d5a17107",
     "f7d902e9c7690d9d062f"
   ],
-  "content_hash": "84af01d90ed964c24374c1125205220ec9ac7e3ad699cbfd3f716e116053fbd1",
+  "content_hash": "23944847d2c6f93fb71faafc78c460d7b662209da61cc5430c6590f231feaf84",
   "dependencies": [],
   "description": "Guide practitioners through opening, classifying, and escalating support cases with Salesforce Technical Support via the Help portal, including choosing the correct severity level, engaging Premier Success resources, using the Escalate to Technical Support Management path, and tracking incidents on the Trust site. NOT for configuring Salesforce Case Escalation Rules (declarative platform automation), Entitlement Management or SLA milestones, or building customer-facing support processes inside an org.",
   "file_location": "skills/admin/salesforce-support-escalation",

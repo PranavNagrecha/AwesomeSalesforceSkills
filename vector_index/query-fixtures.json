@@ -6035,6 +6035,54 @@
       "domain": "admin",
       "expected_skill": "admin/field-dependency-and-controlling",
       "top_k": 3
+    },
+    {
+      "query": "flexcard state disappears after navigation pubsub sibling refresh",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/flexcard-state-management",
+      "top_k": 3
+    },
+    {
+      "query": "integration procedure silently swallowing errors fail on step",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/omnistudio-error-handling-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "dataraptor transform slow bulk vs row by row formula vs apex",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/dataraptor-transform-optimization",
+      "top_k": 3
+    },
+    {
+      "query": "should I use omniscript or screen flow for this admin form",
+      "domain": "omnistudio",
+      "expected_skill": "omnistudio/omnistudio-vs-flow-decision",
+      "top_k": 3
+    },
+    {
+      "query": "okta scim provisioning salesforce permission set group mapping deactivation",
+      "domain": "security",
+      "expected_skill": "security/scim-provisioning-integration",
+      "top_k": 3
+    },
+    {
+      "query": "virus scan uploaded files salesforce experience cloud contentversion",
+      "domain": "security",
+      "expected_skill": "security/file-upload-virus-scanning",
+      "top_k": 3
+    },
+    {
+      "query": "rotate integration user password connected app secret jwt cert zero downtime",
+      "domain": "security",
+      "expected_skill": "security/service-account-credential-rotation",
+      "top_k": 3
+    },
+    {
+      "query": "salesforce shield event monitoring retention splunk siem cold storage",
+      "domain": "security",
+      "expected_skill": "security/shield-event-log-retention-strategy",
+      "top_k": 3
     }
   ]
 }

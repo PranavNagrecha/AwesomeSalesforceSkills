@@ -127,7 +127,7 @@
     "f3d68887adcf184664a3",
     "fc854de9dc6cd507d049"
   ],
-  "content_hash": "f9225eb94b01693625481d0792de24142da066cd76012c63b1b5ea0b2136a481",
+  "content_hash": "81ffd1f1cded36da7c4c1e64dcfd0852a9493094c855c7342734fbbb6a2a600c",
   "dependencies": [],
   "description": "Service-specific AI features in Service Cloud: Case Classification setup and optimization, Article Recommendations configuration, Reply Recommendations, Work Summary (After-Visit Summary), Service Replies with Einstein, Auto-Routing, and Einstein Conversation Mining. NOT for core Agentforce setup, agent topic design, Agent Builder configuration, or Einstein Trust Layer setup.",
   "file_location": "skills/agentforce/einstein-copilot-for-service",

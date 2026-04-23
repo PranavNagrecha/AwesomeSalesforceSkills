@@ -74,7 +74,7 @@
     "fac9ad58a5d7810c9853",
     "fed5554651b6ef6df43d"
   ],
-  "content_hash": "7400ca162873c9a0ebb68bb12f837e78dc4a290d51918bec3adf883f2a7a6c4a",
+  "content_hash": "924524504d91d0fd11a2ac3b5610016794dad23936af9a685046d8f6b8e2a1c9",
   "dependencies": [],
   "description": "Use this skill when writing SOQL aggregate queries in Apex \u2014 GROUP BY, GROUP BY ROLLUP/CUBE, HAVING, COUNT/SUM/AVG/MIN/MAX, AggregateResult, and date grouping functions. Trigger keywords: soql aggregate groupby apex, count sum group by salesforce, aggregateresult get alias, having clause soql, rollup cube subtotals. NOT for relationship subqueries or inner queries (use apex-soql-relationship-queries), NOT for the Reporting API or Analytics Wave API.",
   "file_location": "skills/apex/apex-aggregate-queries",

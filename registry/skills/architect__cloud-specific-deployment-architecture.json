@@ -51,7 +51,7 @@
     "fdacd05d9e4a4a59a8db",
     "ffc0f7e094f8ae27be96"
   ],
-  "content_hash": "da64941f9894c9c58b17f5733907ff1f81fe11c147630d85feab97cf1f89d43a",
+  "content_hash": "7310dd8e942863482229fd248e5e0749b51a1313d2f007fe6164000d19d59bad",
   "dependencies": [],
   "description": "Deployment architecture quirks per Salesforce cloud: Industries (OmniStudio), Marketing Cloud (MC packages), Commerce Cloud, Data Cloud, Agentforce. What ships via metadata API, what ships via cloud-specific tools, ordering, dependencies. NOT for generic DevOps (use devops skills). NOT for cross-cloud data flow (use cross-cloud-data-deployment).",
   "file_location": "skills/architect/cloud-specific-deployment-architecture",

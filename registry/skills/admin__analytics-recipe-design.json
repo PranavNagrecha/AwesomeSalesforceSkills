@@ -100,7 +100,7 @@
     "fefded3d34f0b6910314",
     "ff244776506ed38e5930"
   ],
-  "content_hash": "744e5b164e19494f482f639acbb8da1986fca11ace2bef30038ab4067f40ca3c",
+  "content_hash": "e4d1adc358b2a88678006a420dceb4c9436bf2506dbe073f47222e90e3842bc4",
   "dependencies": [],
   "description": "Use this skill when designing or building CRM Analytics Data Prep recipes \u2014 including node selection, join patterns, bucket field configuration, formula expressions, and scheduling. Triggers: 'build a recipe', 'join datasets in analytics', 'bucket a measure field', 'schedule a recipe', 'data prep transformation'. NOT for SAQL queries, dashboard design, or dataflow JSON authoring.",
   "file_location": "skills/admin/analytics-recipe-design",

@@ -105,7 +105,7 @@
     "fe0b34eb39f08169ea19",
     "fffe5083f6ccd5243ca9"
   ],
-  "content_hash": "48508e1f4e8a47dc757e198414ec73e67eb233309c66c7f5ce46559aa4c4f62d",
+  "content_hash": "8ba8969e6d7d8092e16c9ef93d4d10b6b040593f86f8f21d70719ef28db804c7",
   "dependencies": [],
   "description": "Sales-specific AI features in Sales Cloud: Einstein Opportunity Scoring setup and optimization, Einstein Activity Capture configuration, AI email generation, Pipeline Inspection AI insights, and Einstein Relationship Insights. NOT for core Agentforce setup, agent topic design, or Einstein Trust Layer configuration.",
   "file_location": "skills/agentforce/einstein-copilot-for-sales",

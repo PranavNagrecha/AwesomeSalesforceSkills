@@ -49,7 +49,7 @@
     "f19d0f3a2aab98d668b6",
     "fe1a5064e9667e9b71a4"
   ],
-  "content_hash": "a858199f34ffa151f7d08468aee58d5e0f0838448ee2557b999aeee8032ec1aa",
+  "content_hash": "33d51f4b93fe65937222bd94184827102a5a57aae94fcd00f364b4b3d1145094",
   "dependencies": [],
   "description": "SObject.clone(preserveId, isDeepClone, preserveReadonly, preserveAutonumber): shallow vs deep clone semantics, related-record replication, clone with parent repointing, autonumber preservation. NOT for data migration (use bulk-api-and-large-data-loads). NOT for record snapshots (use field-history-tracking).",
   "file_location": "skills/apex/apex-record-clone-patterns",

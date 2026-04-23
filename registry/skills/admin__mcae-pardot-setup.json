@@ -130,7 +130,7 @@
     "f5f761f794993b974fbb",
     "fedf8ebba22df4fd90c4"
   ],
-  "content_hash": "0b56f4f8ccbb4886369447dd2e1832004eb8384d99b7ab112e0612f99fa543f1",
+  "content_hash": "f7a71914baa180ae5ad4964d77261d340d261746a17e5271d39df91f16dc0ea4",
   "dependencies": [],
   "description": "Use this skill when configuring a new or existing Marketing Cloud Account Engagement (MCAE, formerly Pardot) business unit: Salesforce v2 connector activation, connector user permissions, Salesforce User Sync, prospect field sync rules, tracking domain setup, and Account Engagement Lightning App installation. NOT for Marketing Cloud Engagement (email studio, journeys) or Einstein Marketing features.",
   "file_location": "skills/admin/mcae-pardot-setup",

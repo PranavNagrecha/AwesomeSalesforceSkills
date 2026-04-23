@@ -28,7 +28,7 @@
     "f4e3abe795804219c990",
     "f8cd41234b742e678e97"
   ],
-  "content_hash": "60e5ddb0565f49730b30f4750358d2a93a26335f3a7b68d6617af09cb1a9d6cd",
+  "content_hash": "dc76442db93a925855c17c8828b61c74db786c4b9e24a75238ebf2850ce53be1",
   "dependencies": [],
   "description": "Upload files in LWC: lightning-file-upload, manual multipart, large-file chunked upload, and ContentDocument associations. NOT for ContentDocument query patterns.",
   "file_location": "skills/lwc/file-upload-patterns",

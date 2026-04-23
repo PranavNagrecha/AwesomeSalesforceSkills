@@ -63,7 +63,7 @@
     "fbfe677021894dcc7715",
     "ff6b57b20c3c66f0a35b"
   ],
-  "content_hash": "b50da7258c43577cfd1b5de862f4e67035eedd5ac840b7717a87252cd17b604e",
+  "content_hash": "3f0c33de00bd4b83f492aeae5971bf4e270625ff17d835e8a747c23fd71dd452",
   "dependencies": [],
   "description": "Use when defining or refining the tone, voice, and behavioral personality of an Agentforce agent: system instruction encoding, brand voice alignment, adaptive response formats, multi-persona strategies. NOT for agent topic design (use agent-topic-design) or testing methodology (use agent-testing-and-evaluation).",
   "file_location": "skills/agentforce/agentforce-persona-design",

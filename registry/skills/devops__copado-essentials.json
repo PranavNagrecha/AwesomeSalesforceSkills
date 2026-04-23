@@ -88,7 +88,7 @@
     "fdd961c6828d12dc4f55",
     "fdef3323970846a36c56"
   ],
-  "content_hash": "72b8628e7b2396c57a120c2e0bae8919e42dbb1822f4dc4aeccf7a0ee77f9ef0",
+  "content_hash": "9c10646ce561a0f8eba339678f61496ae13cdea6e6d54f1bcd41279ddbf50dae",
   "dependencies": [],
   "description": "Use when configuring or operating Copado Essentials deployment pipelines \u2014 including user story creation, branch management, promotion paths, conflict resolution, and choosing between Work Items and Pull Request deployment modes. Trigger keywords: copado essentials pipeline, user story deployment copado, copado branch management, copado conflict resolution, copado promotion path. NOT for native Salesforce CLI or SFDX workflows without Copado, NOT for Copado Enterprise (full ALM) features beyond Essentials tier, NOT for DevOps tool selection (use devops/salesforce-devops-tooling-selection).",
   "file_location": "skills/devops/copado-essentials",

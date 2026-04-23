@@ -95,7 +95,7 @@
     "f2ab3d12b7efa316f3d4",
     "fd91067751e871f7f6da"
   ],
-  "content_hash": "53c9acf91b64840016d43b48112297ad4bb2e7770f8b51e6eb8e1da5b10589eb",
+  "content_hash": "b9b96055b54b8f0413f6cd9da818c2e47396c372bd83236f5dda4e471aae9668",
   "dependencies": [],
   "description": "Use when exporting, importing, or version-controlling OmniStudio components using DataPacks via the OmniStudio DataPacks tool or vlocity CLI. Covers DataPack export/import, Git version control integration, CI/CD for OmniStudio. NOT for SFDX-based metadata deployment of non-OmniStudio components.",
   "file_location": "skills/omnistudio/omnistudio-deployment-datapacks",

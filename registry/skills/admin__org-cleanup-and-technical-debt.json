@@ -75,7 +75,7 @@
     "fe4e02ac5f06405b93cb",
     "ff7c195b495415b54ed7"
   ],
-  "content_hash": "262563d1d1d470cde04b7d8f2bb8888bf8cde1d6283114e3d7386a0dc208a762",
+  "content_hash": "f919ece6b956198dc9431d65c36cbdf74d7a658d86b4add4a9f424559d1282ab",
   "dependencies": [],
   "description": "Use when executing admin-level cleanup in a Salesforce org: deleting unused fields, removing inactive Flow versions, deactivating legacy automation, running Salesforce Optimizer or Org Check, and performing destructive metadata deploys. Triggers: 'clean up unused fields', 'delete inactive flows', 'run Optimizer', 'org has too many custom fields', 'remove old workflow rules', 'Flow version limit'. NOT for assessing or reporting on technical debt (use architect/technical-debt-assessment). NOT for code-level refactoring or Apex cleanup (use apex/ skills).",
   "file_location": "skills/admin/org-cleanup-and-technical-debt",

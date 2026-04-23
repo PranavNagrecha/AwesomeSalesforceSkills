@@ -87,7 +87,7 @@
     "fc6c00319c48004b04ac",
     "fe991bb4ceb2dcf32a5f"
   ],
-  "content_hash": "65267b7357aac7dfc8375043897a55f04fc5fddadf7b75cc57acfb65c102a902",
+  "content_hash": "ab799506f33268082e042598fccb42ad75ae82b7a3ee3956b8be4419257a0910",
   "dependencies": [],
   "description": "Use when choosing between Bulk API 2.0 and REST/SOAP API for large-volume data operations, sizing batch jobs, monitoring bulk job status, and handling failed records in bulk pipelines. Triggers: bulk api, large data load, batch insert, bulk job, serial vs parallel mode. NOT for Data Loader UI steps (use data-import-and-management) or real-time single-record integrations (use apex/callouts-and-http-integrations).",
   "file_location": "skills/data/bulk-api-and-large-data-loads",

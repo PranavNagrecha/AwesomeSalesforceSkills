@@ -117,7 +117,7 @@
     "fcfe15f73780dc4e32b5",
     "fda84121fb37dd0b9dbd"
   ],
-  "content_hash": "87e1dd783e3e4e877530580018ef81713edeccda8ed57ca1dc373d915a95a87b",
+  "content_hash": "a10b308a6676f393ae2a1a894dbd358f4c0ace1d0702802a817c9ccc21e59c1b",
   "dependencies": [],
   "description": "Use this skill when scripting or automating the deployment of Experience Cloud sites between Salesforce orgs using the Metadata API, Salesforce CLI, or CI/CD pipelines. Covers ExperienceBundle (Aura-based sites), DigitalExperienceBundle (enhanced LWR sites), the ExperienceBundleSettings prerequisite, CMS content exclusion gaps, and required post-deployment manual steps for domain configuration, SSO, and CDN bindings. NOT for general Experience Cloud site building in Experience Builder, OmniStudio-based sites, CMS content authoring, or Salesforce Sites (Force.com Sites) deployments.",
   "file_location": "skills/devops/experience-cloud-deployment-dev",

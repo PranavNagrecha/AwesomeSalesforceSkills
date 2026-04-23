@@ -51,7 +51,7 @@
     "f32797705a130c0ec338",
     "f3ba858ff89353d4f321"
   ],
-  "content_hash": "9591889c761487ec67b88075e293162cfaf92ba7e26dae6332a4611d9b4b59c0",
+  "content_hash": "6f1a35cf2a1e9c613019c721cf679b51549d54312ace011195d2221304990e5d",
   "dependencies": [],
   "description": "Use this skill to implement Salesforce-to-Salesforce integration patterns \u2014 covering the native S2S feature, API-based cross-org sync, Platform Event bridging, and Salesforce Connect Cross-Org adapter. Trigger keywords: Salesforce to Salesforce integration, cross-org data sharing, S2S feature, cross-org Platform Events, Salesforce Connect cross-org. NOT for multi-org strategy or architecture decisions (use architect/multi-org-strategy), single-org data sharing, or external (non-Salesforce) system integration.",
   "file_location": "skills/integration/salesforce-to-salesforce-integration",

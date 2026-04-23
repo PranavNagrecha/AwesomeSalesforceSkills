@@ -78,7 +78,7 @@
     "fd0e84a24427b365720d",
     "ff9ab8a05f46bf2a2bb7"
   ],
-  "content_hash": "3ea80d59141ffc726c0cef1df39cc34586f7a9363b2727151e89462995d48a30",
+  "content_hash": "c9463455fa25a53063d271cd2b472af4d9c5fb8869db78b60ff7900d57bf2716",
   "dependencies": [],
   "description": "Use when creating or configuring a CRM Analytics (Einstein Analytics) app \u2014 including app containers, lenses, datasets, data source connections, and app sharing. NOT for standard Salesforce reports and dashboards or Tableau.",
   "file_location": "skills/admin/crm-analytics-app-creation",

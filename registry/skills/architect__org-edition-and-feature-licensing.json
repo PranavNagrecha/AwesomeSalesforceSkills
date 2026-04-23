@@ -53,7 +53,7 @@
     "f9c388d9e085bc9729bb",
     "ff973a34942381c3a2b0"
   ],
-  "content_hash": "b5c4e5525926d4b63e4c934a0c1e2c761c233fa5f08cc9023dfdcdd626578697",
+  "content_hash": "3a65a5514d7cbe5ae2d84a1e39bad9fc65e28d60eb10800522e21b29ce0fdf3f",
   "dependencies": [],
   "description": "Use when evaluating which Salesforce features are available in a given org edition, determining whether a planned solution requires an add-on license, or investigating why a feature is unavailable in the current org. Triggers: 'feature not available in our edition', 'does Enterprise include Einstein', 'Unlimited vs Performance edition differences', 'we need Flow Orchestration but do not have it', 'what license do we need for Agentforce'. NOT for user license seat count planning (use capacity-planning), NOT for AppExchange package licensing (use appexchange-management).",
   "file_location": "skills/architect/org-edition-and-feature-licensing",

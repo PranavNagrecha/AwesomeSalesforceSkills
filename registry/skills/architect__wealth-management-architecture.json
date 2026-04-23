@@ -84,7 +84,7 @@
     "f95df8d595538f50406b",
     "fa62311acaf5e6a3d9d6"
   ],
-  "content_hash": "3d5502500485e1ff4fabc8a527609d331b769e54a57cb47d2f359cd8a56f93bf",
+  "content_hash": "068f083db3f0623d07dc04de8c3f8a2cb5346c63e2702bb6c9bf010b1d8c93e6",
   "dependencies": [],
   "description": "Use this skill when designing or reviewing a Salesforce Financial Services Cloud (FSC) wealth management platform \u2014 covering advisor workspace configuration, client portal setup, portfolio data integration, Compliant Data Sharing, and FSC feature enablement decisions. NOT for investment product advice, financial planning calculations, or FSC Health Cloud configurations.",
   "file_location": "skills/architect/wealth-management-architecture",

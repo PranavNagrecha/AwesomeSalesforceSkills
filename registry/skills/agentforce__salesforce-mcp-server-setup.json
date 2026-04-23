@@ -72,7 +72,7 @@
     "fa62e02c295ba9d4e713",
     "fdcb5a5a8adfbaba1ca1"
   ],
-  "content_hash": "4d9f9c08f211c702bee960ba96f478a3d58f429ae93be029c00793ed897d8abc",
+  "content_hash": "7c573b3043f929ee025d2d25a96b165e00ad8209f3b0e9b6d0767b3b3f36e8c8",
   "dependencies": [],
   "description": "Use this skill to install and configure the salesforce-mcp-lib Apex package and npm stdio proxy so that an MCP client (Claude Desktop, Cursor, ChatGPT) can call Salesforce org data and logic via the Model Context Protocol. Trigger keywords: MCP server, salesforce-mcp-lib, Claude Desktop Salesforce, MCP proxy setup, Apex JSON-RPC, MCP Connected App. NOT for Salesforce Hosted MCP Servers (Agentforce-native hosted endpoints), NOT for Flow-based tool definitions, NOT for OmniStudio integrations.",
   "file_location": "skills/agentforce/salesforce-mcp-server-setup",

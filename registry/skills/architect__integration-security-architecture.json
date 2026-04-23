@@ -99,7 +99,7 @@
     "fe99ccc4984799ddc487",
     "ffbf9ac92d1d428725c7"
   ],
-  "content_hash": "094d4fdb2e2d0a99fe9685e27a236fd34c68fb3143c2b33bafe10267deefaf24",
+  "content_hash": "4bebc8bb84ad85b6bccfacc4b5231f4f7564ade67fe311ad742bcd65e2de08dd",
   "dependencies": [
     "integration/named-credentials-setup"
   ],

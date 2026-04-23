@@ -53,7 +53,7 @@
     "eb760ebc7da4be057a2f",
     "f64be4e76d014d748cc5"
   ],
-  "content_hash": "b616c17fca8ffc6f6fbdc868211f3d6b97db3b5240c6c35ee2b6fc79855af9e9",
+  "content_hash": "8fa084b550b6092a6cd65f64aed549f5c3f0a556e3b2c8b92517276f2490b4ad",
   "dependencies": [],
   "description": "Use when implementing an inbound webhook receiver in Salesforce: routing via Apex REST and Salesforce Sites, authenticating webhook payloads via HMAC, ensuring idempotent processing, and handling the 5-second response window. NOT for outbound callouts from Salesforce to external systems (use callouts-and-http-integrations), NOT for general Apex REST service design (use apex-rest-services), NOT for platform events as inbound triggers.",
   "file_location": "skills/integration/webhook-inbound-patterns",

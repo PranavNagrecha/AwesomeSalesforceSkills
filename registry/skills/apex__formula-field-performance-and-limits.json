@@ -92,7 +92,7 @@
     "f8bbfc42b7461c33d942",
     "f9824720fbf2724e3f5e"
   ],
-  "content_hash": "c9e34ca4f9e15554265e3cb209bcaaa9acc1929c1bb71a21c99b982acdf22ec1",
+  "content_hash": "2dcaf3ed40c7aa88587d0021e344c66392747346cfc06b9da866496737568664",
   "dependencies": [],
   "description": "Use when diagnosing SOQL performance problems caused by formula fields, hitting formula compile-size limits, or deciding whether to replace a formula field with a stored field for indexing. Triggers: 'formula field slowing SOQL', 'compile size limit', 'cross-object formula spanning limit', 'formula field not indexable', 'LDV query full table scan', 'SOQL WHERE on formula'. NOT for formula syntax help, building formula expressions, or authoring new formulas from scratch \u2014 use admin/formula-fields for that.",
   "file_location": "skills/apex/formula-field-performance-and-limits",

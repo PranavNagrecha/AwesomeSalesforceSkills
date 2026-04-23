@@ -90,7 +90,7 @@
     "fb27343568983253b25c",
     "fb72f1ac3c2dd2df3e5e"
   ],
-  "content_hash": "683e01f908e2ee339c0de7d6f1abb57bad339182efac691ca7158b408445104e",
+  "content_hash": "44b558ac550ff077349448d8142398c93851ec77bbcc48abb4e271612ee3d98b",
   "dependencies": [],
   "description": "Use when writing Apex triggers on the Case object \u2014 specifically for invoking assignment rules programmatically, auto-associating entitlements in a trigger, handling merge trigger behavior on losing records, or understanding why milestone completion does not fire automatically when a case closes. Trigger keywords: 'case trigger', 'case assignment rule apex', 'entitlement auto-association trigger', 'case merge trigger', 'MasterRecordId case', 'Database.DmlOptions AssignmentRuleHeader', 'milestone not completing on case close'. NOT for generic trigger framework architecture \u2014 use apex/trigger-framework for that. NOT for configuring assignment rules in Setup \u2014 use admin/assignment-rules. NOT for SLA configuration or entitlement process design \u2014 use admin/entitlements-and-milestones.",
   "file_location": "skills/apex/case-trigger-patterns",

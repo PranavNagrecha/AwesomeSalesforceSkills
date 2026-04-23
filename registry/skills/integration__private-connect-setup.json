@@ -28,7 +28,7 @@
     "ed659631af428791eaa3",
     "fd65427bf14d558d6e74"
   ],
-  "content_hash": "2e5351a5ba5797115e4a22be2511c71997eb962230a018eb79806318bd57b929",
+  "content_hash": "b28dade91483f08fbae6a4fc94e16cc2b2f517fe7d9334842bc63c49b1a5fa65",
   "dependencies": [],
   "description": "Configure Private Connect between Salesforce and AWS/Azure for traffic to stay on private networks. NOT for standard internet callouts.",
   "file_location": "skills/integration/private-connect-setup",

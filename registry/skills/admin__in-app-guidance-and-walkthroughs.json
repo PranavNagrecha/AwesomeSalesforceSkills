@@ -70,7 +70,7 @@
     "fbcc933a34fe76a88869",
     "fbd6f26dedca218e735e"
   ],
-  "content_hash": "1eec4f1d0bcbe8ce8a7b32c20d02ed712636fda635946f7cbba8741ddab2ee36",
+  "content_hash": "981a1b4a392745e40705919852ed44a1e4abd9a09edb3474cab1bd8e5135366f",
   "dependencies": [],
   "description": "Configuring Salesforce In-App Guidance: floating, docked, and targeted prompts, multi-step walkthroughs, audience targeting, scheduling, and adoption analytics. Use when designing user onboarding or feature adoption programs in Lightning Experience. NOT for change management planning (use change-management-and-training). NOT for Experience Cloud (requires separate PRM licensing and does not share the Lightning Experience guidance engine).",
   "file_location": "skills/admin/in-app-guidance-and-walkthroughs",

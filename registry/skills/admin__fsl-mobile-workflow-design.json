@@ -91,7 +91,7 @@
     "f781e10114d89f603450",
     "fadb1dc02424bf827a0d"
   ],
-  "content_hash": "b7095cbdd6846173b8e1e97eba6cf584523ec70130f241e7baf5f9bd32b7eb41",
+  "content_hash": "148559e971d3db42e6071ec41f46655c9d0ee9ed1520721092cc6509d1ca97a3",
   "dependencies": [],
   "description": "Use this skill when designing, troubleshooting, or reviewing FSL Mobile worker workflows \u2014 including job lifecycle management, offline data capture, customer signature collection, parts consumption, and geolocation-triggered status transitions. Trigger keywords: FSL mobile, field service mobile workflow, offline job lifecycle, technician mobile, service appointment status, briefcase priming, parts consumption mobile, signature capture FSL. NOT for mobile app installation/configuration, FSL scheduling optimization, Dispatcher Console setup, or Work Capacity management.",
   "file_location": "skills/admin/fsl-mobile-workflow-design",

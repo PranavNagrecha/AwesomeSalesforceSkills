@@ -1,0 +1,99 @@
+{
+  "category": "security",
+  "chunk_ids": [
+    "032517ed6bd7ce4c1e72",
+    "0c5adcf736b35de60271",
+    "100a1afbcccb7403762f",
+    "12a760264444fc040f0d",
+    "218817e503d116f3b799",
+    "23205886091ba60eea96",
+    "2d34d9b67e1a419baa0d",
+    "2f24d9bbb265d8442f1d",
+    "30e08c3de14c5a8d0ea4",
+    "395703f1870bb9d79008",
+    "3cd4417d782be53c4c21",
+    "3d5aa5f537b989d2f79a",
+    "3eda17f5c5660d123566",
+    "459e4bd7fa7bc1b9de7a",
+    "59ad989ece8961588d85",
+    "5b9cadccfba48e71ddd0",
+    "5bbcad56410b4c5d8f6b",
+    "5e634758727ff59afc94",
+    "5f8d667c664fba8143d1",
+    "63fcd8c75bcfc5366c34",
+    "65cf727828602d1ee191",
+    "68f634d3be73ef190746",
+    "6dd98212e89e8cf7b708",
+    "708a8ba86f64dd2e532e",
+    "71ea41218e0bc8111cd1",
+    "73f714e930e62bd72335",
+    "7e01fbbf362e2db8c96a",
+    "812c86b767963b6a8536",
+    "8974cf5039f887dbfef5",
+    "89a94939253187acf3a4",
+    "8b43d5eed34f5b2c1c8a",
+    "8d7b5c0217790fcd0c9c",
+    "90be14fdf6769834ebd9",
+    "943a58356a6603b95011",
+    "967fae2da7029df7ee45",
+    "96e0392324f26e0e0b55",
+    "975d33e1109680abb162",
+    "9a8b8fe14e6ffd17a64c",
+    "9c73e28ecfd7f7f36a93",
+    "9d15a71fb64d5a47ed8b",
+    "a3c4ec3b9d6f5fc58b99",
+    "aec971862c0d6fa61bcd",
+    "b6de7085cd5e1ff553bc",
+    "ba5b7375b29094727e03",
+    "ba66ca83bda5b7f6702e",
+    "c733fe2fcd02d50daf70",
+    "d3cd1fd18da9457d36f8",
+    "d426c111deb0b2aca342",
+    "ddb73d5d76545bb33d44",
+    "dfb6dbae345a1de0c563",
+    "e53cdd137be67f87b71e"
+  ],
+  "content_hash": "f991903a2992cb616d47a49d53c43f10c7e153dfac825bc7c04bf726e5ae1bfa",
+  "dependencies": [],
+  "description": "Use when designing malware and content scanning for files uploaded to Salesforce (Files, Attachments, ContentVersion) \u2014 external scanning service callouts, quarantine patterns, and user-facing messaging. Triggers: 'virus scan salesforce upload', 'malware scan content version', 'quarantine uploaded file', 'clamav salesforce', 'file upload security'. NOT for field-level data validation.",
+  "file_location": "skills/security/file-upload-virus-scanning",
+  "id": "security/file-upload-virus-scanning",
+  "inputs": [
+    "upload surfaces (LWC, Experience Cloud, Email-to-Case, API)",
+    "scanning service (ClamAV, Cloudmersive, third-party)",
+    "quarantine policy and user-facing behavior"
+  ],
+  "name": "file-upload-virus-scanning",
+  "official_sources": [
+    "Salesforce Files Connect / ContentVersion docs \u2014 https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_objects_contentversion.htm",
+    "Salesforce Well-Architected Security \u2014 https://architect.salesforce.com/docs/architect/well-architected/trusted/secure",
+    "Common scanning services: ClamAV, Cloudmersive, OPSWAT MetaDefender (vendor docs)"
+  ],
+  "outputs": [
+    "scan integration design",
+    "quarantine state machine",
+    "user-facing messaging for infected/pending states"
+  ],
+  "references": [
+    "skills/security/file-upload-virus-scanning/references/examples.md",
+    "skills/security/file-upload-virus-scanning/references/gotchas.md",
+    "skills/security/file-upload-virus-scanning/references/llm-anti-patterns.md",
+    "skills/security/file-upload-virus-scanning/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/security/file-upload-virus-scanning/scripts/check_file_upload_virus_scanning.py"
+  ],
+  "tags": [
+    "security",
+    "files",
+    "malware-scanning",
+    "quarantine",
+    "content-version"
+  ],
+  "templates": [
+    "skills/security/file-upload-virus-scanning/templates/scan-state-machine.md"
+  ],
+  "updated": "2026-04-23",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

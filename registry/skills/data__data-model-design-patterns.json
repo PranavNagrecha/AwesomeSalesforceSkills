@@ -115,7 +115,7 @@
     "fc64f790b030ef71a5eb",
     "fe6645c7ed6f9f8d5ec1"
   ],
-  "content_hash": "fc387245df31b87ed01ba43b60018c271142808bfd467696b9544d0ff4489e4e",
+  "content_hash": "a1198bc31aecf8e61c8425f8e087241e99bb0944204afa4592e8432e51074dce",
   "dependencies": [],
   "description": "Use when designing, reviewing, or troubleshooting Salesforce object relationships and field type choices \u2014 lookup vs master-detail, junction object modeling, indexing strategy, and data model anti-patterns. NOT for object creation steps (use object-creation-and-design). NOT for bulk data loading operations.",
   "file_location": "skills/data/data-model-design-patterns",

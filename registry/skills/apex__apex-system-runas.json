@@ -48,7 +48,7 @@
     "f5c12490b04675bebd6c",
     "ff23ad2db37d6602f389"
   ],
-  "content_hash": "009ba6833c4dc6ebd385cc3181701af68b7aa52c6881ef64a7d61ff6e4466d83",
+  "content_hash": "d28be0306579c513957ea3feb89b1fb47fd35813810fcc439238419ab148eaff",
   "dependencies": [],
   "description": "System.runAs in Apex tests: user-context impersonation, mixed-DML workaround, profile/permission testing, sharing verification, FLS NOT enforced, runAs nesting limits. NOT for general test setup (use apex-test-setup-patterns). NOT for WITH USER_MODE SOQL (use apex-user-mode-patterns).",
   "file_location": "skills/apex/apex-system-runas",

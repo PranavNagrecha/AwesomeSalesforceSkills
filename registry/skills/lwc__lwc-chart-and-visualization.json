@@ -51,7 +51,7 @@
     "f4a2ec60ed510bcfe247",
     "fcf1d1c52bae6f6df81c"
   ],
-  "content_hash": "6f02b0de2e0d00984988de86cdd1e92a227508e91cba7400ebd44888e0993d40",
+  "content_hash": "d5d47d338d730c6e79ff52e5d716c5b190c01bc957812c408f7e4bbd3d6cee79",
   "dependencies": [],
   "description": "Charts and visualization in LWC: Chart.js, D3, Plotly via Static Resources; Lightning chart components; performance patterns for 10k+ data points; accessibility; SLDS theming. NOT for CRM Analytics embedding (use crm-analytics-foundation). NOT for Tableau embedding (use tableau-salesforce-connector).",
   "file_location": "skills/lwc/lwc-chart-and-visualization",

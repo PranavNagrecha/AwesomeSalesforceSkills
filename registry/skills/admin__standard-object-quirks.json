@@ -70,7 +70,7 @@
     "fc13a4ac58f18dcd6799",
     "ff9cbf901b181628de33"
   ],
-  "content_hash": "8ec75fa55539ea9550ec20fa5317e90d576030237117aa3cecee157e17b824cc",
+  "content_hash": "e36759222166d8279dcfe6ff23376c86369e9c6412de54451fdb3b40833b8cd6",
   "dependencies": [],
   "description": "Guidance on non-obvious runtime behaviors of Salesforce standard objects \u2014 polymorphic lookups, lead conversion field loss, PersonAccount dual-nature, CaseComment trigger isolation, and Activity date fields. NOT for schema documentation or data modeling; NOT for custom object design; NOT for field-level security configuration.",
   "file_location": "skills/admin/standard-object-quirks",

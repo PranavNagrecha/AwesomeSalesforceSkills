@@ -90,7 +90,7 @@
     "fa898ace743f89b13032",
     "ffb0e6b406af034030fb"
   ],
-  "content_hash": "21d6f3baa8a0c97f1c02a965f3930b76b8b3e40f10588e69a89573c151d447a9",
+  "content_hash": "47595e98f34aebb0328dc7e9cdccdcf05f7ff002f8c4d8ae1bc24d64104eaa41",
   "dependencies": [],
   "description": "Use when gathering requirements for a customer portal, partner community, or self-service Experience Cloud site. Triggers: 'gathering requirements for customer portal', 'planning Experience Cloud site', 'what license for community portal', 'portal user journey mapping', 'self-service requirements'. NOT for Experience Cloud implementation or configuration. NOT for post-launch portal optimization or redesign.",
   "file_location": "skills/admin/portal-requirements-gathering",

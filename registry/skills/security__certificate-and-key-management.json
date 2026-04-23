@@ -99,7 +99,7 @@
     "f90db0221faba67edeec",
     "ffb01a309d9fa64edb44"
   ],
-  "content_hash": "8fa053643c317751cab2c70eabf43831e6f69d9b1cadd5b508e9e144e995fff7",
+  "content_hash": "6be15874f33894acf5314ea27b63cef7edbe8d59dad258f0a90dea85ea1daa6f",
   "dependencies": [],
   "description": "Use this skill when creating, uploading, or rotating certificates in Salesforce, configuring mutual TLS (mTLS) client authentication, managing the Java KeyStore for CA-signed certificates, diagnosing certificate expiry in JWT OAuth flows, or understanding which certificate types Salesforce supports and how to migrate them between orgs. NOT for Named Credential configuration (use named-credentials-setup skill), NOT for Shield Platform Encryption key management. Trigger keywords: Certificate and Key Management, self-signed certificate, CA-signed certificate, mutual TLS, mTLS, keystore, JKS, PKCS12, certificate rotation, certificate expiry, JWT certificate.",
   "file_location": "skills/security/certificate-and-key-management",

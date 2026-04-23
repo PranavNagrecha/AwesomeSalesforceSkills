@@ -54,7 +54,7 @@
     "eddf5a2281fc0300f968",
     "fb08fc103479cfe32133"
   ],
-  "content_hash": "dafa009233a8229dc90703cc8de0d8b7382935f72224d67e0979280134d2a970",
+  "content_hash": "b5498a6d46c4964c6207428743eedc176f0fddfd1c0024dd4a241d3eeefe6684",
   "dependencies": [],
   "description": "Use when deciding whether Salesforce Reports, CRM Analytics, or Tableau should be used for analytics, or when reviewing and troubleshooting basic CRM Analytics designs. Triggers: 'CRM Analytics', 'Einstein Analytics', 'Tableau CRM', 'lens', 'dataset', 'dataflow', 'analytics dashboard', 'license requirement'. NOT for standard report builder questions unless the decision is whether reports are still enough.",
   "file_location": "skills/admin/einstein-analytics-basics",

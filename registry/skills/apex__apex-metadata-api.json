@@ -68,7 +68,7 @@
     "fe2a3d334097915d7b54",
     "ffbf76f4e190fdfb4d1d"
   ],
-  "content_hash": "9a943b7464f894974f9c5a593f157afb89384de8aeed079bb55ea7b85782e190",
+  "content_hash": "4c7ad7e147682f4886c6a1a888f884ca687ff3c3c38306651e17f571fde44caf",
   "dependencies": [],
   "description": "Use when Apex code must create or update metadata programmatically at runtime \u2014 custom fields, objects, picklist values, labels, or other supported types \u2014 using the Metadata namespace (Metadata.Operations, Metadata.DeployCallback). Triggers: 'Metadata.Operations', 'Metadata.CustomField from Apex', 'deploy metadata from Apex', 'enqueueDeployment', 'create a custom field programmatically', 'post-install script metadata setup'. NOT for Metadata API REST/SOAP (use metadata-api-and-package-xml) and NOT for reading Custom Metadata Type configuration rows in Apex (use custom-metadata-in-apex).",
   "file_location": "skills/apex/apex-metadata-api",

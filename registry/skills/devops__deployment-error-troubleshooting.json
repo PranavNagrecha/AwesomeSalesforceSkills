@@ -75,7 +75,7 @@
     "ec0efb0e6131d9213032",
     "f9b2fdcc3f82a0a6b8a5"
   ],
-  "content_hash": "52c455aa874e9fa5d4cf9cd74247e1ad7e1999eeb1b157e57478ad4d12f8c3a3",
+  "content_hash": "393784e1eeaee7eaec2abec2b64e77812674c6ecaa26717b5ee8512637ef4446",
   "dependencies": [],
   "description": "Use when a Salesforce metadata deployment fails and you need to diagnose and fix the error. Trigger keywords: 'deployment failed', 'component failure', 'dependent class is invalid', 'code coverage failed', 'UNSUPPORTED_API_VERSION', 'deploy error', 'test failure blocking deploy', 'rollbackOnError', 'missing dependency deploy'. NOT for authoring destructive changes manifests (use destructive-changes-deployment). NOT for CI/CD pipeline setup (use github-actions-for-salesforce or gitlab-ci-for-salesforce). NOT for change set mechanics (use change-set-deployment).",
   "file_location": "skills/devops/deployment-error-troubleshooting",

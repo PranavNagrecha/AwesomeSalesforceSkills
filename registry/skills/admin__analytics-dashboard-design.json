@@ -60,7 +60,7 @@
     "f4a3fa44ecd0112b7ecb",
     "f52bf783a34d7c2fe931"
   ],
-  "content_hash": "07ebe082afee7d5edd9467fc203b2c1a95891147f0fc8652fe70de661dcd3682",
+  "content_hash": "6b3c450bafb896ec301fe0300a34b09c39894fc4c44558bfb443a0fb82569e2c",
   "dependencies": [],
   "description": "Use when designing or troubleshooting CRM Analytics dashboards \u2014 chart types, bindings, faceting, dashboard interactions, mobile layout, and filters. NOT for standard Salesforce reports and dashboards.",
   "file_location": "skills/admin/analytics-dashboard-design",

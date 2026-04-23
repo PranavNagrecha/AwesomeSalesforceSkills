@@ -81,7 +81,7 @@
     "f1671ae4e8cd8b7df6aa",
     "f93947f699314a97cbf0"
   ],
-  "content_hash": "1b2ef6c3875ecd4cd0383e6e7d17465f22514229df4625c7cf8d3a359a663ed6",
+  "content_hash": "325fe1417f24afb7f11acb3004f90d52dab548d38a3604730b5de4f448c578ee",
   "dependencies": [],
   "description": "Use this skill when a deployment, source push, or package version fails because a metadata type is unsupported, partially supported, or behaves differently across Metadata API, source tracking, unlocked packages, and 2GP managed packages. Covers identifying coverage gaps, building release runbooks for manual post-deployment steps, and choosing workarounds such as post-deploy scripts, Tooling API calls, or manual configuration. NOT for general deployment error troubleshooting, Metadata API usage tutorials, or architecture-level metadata dependency mapping.",
   "file_location": "skills/devops/metadata-api-coverage-gaps",
