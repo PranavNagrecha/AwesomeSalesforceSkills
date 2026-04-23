@@ -1,0 +1,98 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "02722a57fd9e97a50541",
+    "08bfb4be6e996d30b3bd",
+    "15937d4534133cf1f9af",
+    "16354cc990843acc0541",
+    "1d05605c0b8bac789163",
+    "2128929bc7fa9642f1c6",
+    "2e4dc329fd7f3da8b8aa",
+    "2eb90c49af1ae1e42741",
+    "2ffa8c8beb8b898b962c",
+    "307f6f066845193619f1",
+    "30a57cdd0238a568dabe",
+    "313c4adf80a520bade22",
+    "32f2600e48cdd29ad04a",
+    "36c28c82fa7f4723b671",
+    "384524c3de25b35bb347",
+    "3b5c79b398097aebd68f",
+    "4dca5593cdb4f6ee577e",
+    "508caffca66244997bc6",
+    "55e1f9da68d175fa55cc",
+    "5641658870e4f95b9617",
+    "5d1575657038e62d1e6e",
+    "5da370a0fa6ca397fece",
+    "67973f2c4611ac639dbf",
+    "7672e239da1e9e394914",
+    "7d961f842660d1ca515c",
+    "82c3ff7c85f56486eb3f",
+    "83d9a03317ab9d89e2e3",
+    "87acd321c3a7a06ad59a",
+    "8c541ea927828895f1c7",
+    "8e985483e96eed877bc3",
+    "93c1c1a844230cfdb92e",
+    "9581fa24abd3d37dab57",
+    "b07d01d095af363ff85a",
+    "bafd340d48be1f34a5c9",
+    "bbeffe381dcd9004dc98",
+    "bd95e170f51dad7d502f",
+    "c05ec279bf77683c55ce",
+    "c0c867db15c214211b71",
+    "c745985923c86f25ac1d",
+    "c9c5debab60d8030a21b",
+    "cc6752e301a13a5c103f",
+    "cc9bb3c22a2e9e712dd2",
+    "d17ce56b5d102d22a33b",
+    "d290ba6688957134c4ed",
+    "d2aedf6933257488d765",
+    "d72bcf2e53a8614e3165",
+    "da7ccc26fa8238bb1097",
+    "e3559280021a94a1e40d",
+    "feb7b8432893e7aeef9a"
+  ],
+  "content_hash": "8e1d62eb184726cb6d999820cbee6776c06c2a98c708abb5de151259daddfaf7",
+  "dependencies": [],
+  "description": "Use when designing Custom Notification Types that fire via Flow, Apex, or Process Builder to Lightning bell, desktop, mobile (push), and Slack. Covers channel enablement, targeting, deliverability, consent, and anti-spam discipline. Does NOT cover email templates (see modernize-email-templates) or Salesforce Notifications API general reference.",
+  "file_location": "skills/admin/custom-notification-type-design",
+  "id": "admin/custom-notification-type-design",
+  "inputs": [
+    "What triggers the notification",
+    "Target audience and channels (bell / desktop / mobile / Slack)",
+    "Frequency expectations"
+  ],
+  "name": "custom-notification-type-design",
+  "official_sources": [
+    "Custom Notifications \u2014 https://help.salesforce.com/s/articleView?id=sf.custom_notifications_overview.htm",
+    "Flow Send Custom Notification \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_action_core_custom_notification.htm",
+    "Salesforce Well-Architected User Experience \u2014 https://architect.salesforce.com/docs/architect/well-architected/adaptable/adaptable"
+  ],
+  "outputs": [
+    "Custom Notification Type setup (metadata)",
+    "Targeting and consent design",
+    "Throttling / de-duplication plan",
+    "Observability + governance"
+  ],
+  "references": [
+    "skills/admin/custom-notification-type-design/references/examples.md",
+    "skills/admin/custom-notification-type-design/references/gotchas.md",
+    "skills/admin/custom-notification-type-design/references/llm-anti-patterns.md",
+    "skills/admin/custom-notification-type-design/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/custom-notification-type-design/scripts/check_custom_notification_type_design.py"
+  ],
+  "tags": [
+    "admin",
+    "notifications",
+    "custom-notification-type",
+    "push",
+    "slack"
+  ],
+  "templates": [
+    "skills/admin/custom-notification-type-design/templates/cnt-design.md"
+  ],
+  "updated": "2026-04-23",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

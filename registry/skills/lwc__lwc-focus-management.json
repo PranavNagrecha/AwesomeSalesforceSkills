@@ -1,0 +1,94 @@
+{
+  "category": "lwc",
+  "chunk_ids": [
+    "025e105186ff9a8c5c42",
+    "05bbd840eccde0b7d222",
+    "0a6fae4a3e5890c412d6",
+    "0bf18188708215b45ae5",
+    "0df0045f42c183faa7c4",
+    "0e1f64d56f58da860845",
+    "1324c1c3a670d2d37904",
+    "17215ee909167febe47d",
+    "1fd88e16416ab80dca54",
+    "24cf8ad4c45a34123e6a",
+    "28d96debe2a967d2dd09",
+    "29e615d58596f4a68ed8",
+    "307c32d7b64fd8ae114f",
+    "3aaa66a78f04b610b327",
+    "3fb964b14dfe52a4c5e1",
+    "4219dc1af48db05945d2",
+    "47754c8669e29eef8ae1",
+    "4891cd8523b2e9f084d3",
+    "4947884a13f8dbdabc2f",
+    "597a5104ea59f49bf112",
+    "598bf5cca0350c028aa7",
+    "5d975c54e2c0b8c15e9b",
+    "62fb4a6843575b1019dc",
+    "67fbf84583860d2a81c3",
+    "74f478f1f08dfaa128a4",
+    "78420461efc8cf4dfae9",
+    "7d8fe907ea63bc18e606",
+    "95cf0ffa43295b338549",
+    "97b3e00f9f0a23e75247",
+    "aafe7f1ab39037f4e102",
+    "b8bd483c3f301af61cfb",
+    "b8f014d4c6235fb93be5",
+    "bdafd2848affb5f7fe68",
+    "c16b77992fdfdf46266c",
+    "c3fcef16a3a3dffffb20",
+    "d2ec393aa934495827f8",
+    "d74bf7adc708d8d97fd1",
+    "dcf6f4c4f26c935ae92c",
+    "dd3b70b50a05f31df5ad",
+    "dda2d268fb268014f342",
+    "dedcbc5b251a608f7a53",
+    "e3e253663e5a8c52c1b8",
+    "e4ce2fbdeb1b1477e7d1",
+    "e55d22a6affb8a4348ad",
+    "eabe153b1b3edd98d893",
+    "f3f73766fb99140f6131"
+  ],
+  "content_hash": "46abf1e427f1dc740ee580e98c964d4063496f86f8c1f53d55bf808e6178235b",
+  "dependencies": [],
+  "description": "Use when building LWCs that need to manage focus explicitly \u2014 modal dialogs, wizard flows, dynamic inserts, list updates, error summaries, and focus after async work. Covers focus restoration, focus traps, programmatic focus across shadow DOM, and patterns for announcing changes to assistive tech. Does NOT cover general LWC a11y audit (see lwc-accessibility).",
+  "file_location": "skills/lwc/lwc-focus-management",
+  "id": "lwc/lwc-focus-management",
+  "inputs": [
+    "Component or subtree that manipulates focus",
+    "Expected keyboard flows",
+    "Accessibility requirement (WCAG 2.1 AA or stricter)"
+  ],
+  "name": "lwc-focus-management",
+  "official_sources": [
+    "LWC Shadow DOM \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/create-shadow-dom.html",
+    "WCAG \u2014 Focus Visible \u2014 https://www.w3.org/TR/WCAG21/#focus-visible",
+    "Salesforce Accessibility \u2014 https://help.salesforce.com/s/articleView?id=sf.accessibility_overview.htm"
+  ],
+  "outputs": [
+    "Focus map per component state",
+    "Focus trap and restoration plan",
+    "Testing approach (keyboard + screen reader)"
+  ],
+  "references": [
+    "skills/lwc/lwc-focus-management/references/examples.md",
+    "skills/lwc/lwc-focus-management/references/gotchas.md",
+    "skills/lwc/lwc-focus-management/references/llm-anti-patterns.md",
+    "skills/lwc/lwc-focus-management/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/lwc/lwc-focus-management/scripts/check_lwc_focus_management.py"
+  ],
+  "tags": [
+    "lwc",
+    "focus",
+    "accessibility",
+    "shadow-dom",
+    "keyboard"
+  ],
+  "templates": [
+    "skills/lwc/lwc-focus-management/templates/focus-map.md"
+  ],
+  "updated": "2026-04-23",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

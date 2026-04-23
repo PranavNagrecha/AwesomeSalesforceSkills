@@ -1,20 +1,20 @@
 {
   "domain_counts": {
-    "admin": 218,
+    "admin": 219,
     "agentforce": 43,
     "apex": 117,
     "architect": 97,
     "data": 87,
-    "devops": 59,
+    "devops": 60,
     "flow": 42,
-    "integration": 47,
-    "lwc": 46,
+    "integration": 49,
+    "lwc": 48,
     "omnistudio": 30,
     "security": 41
   },
-  "generated_from_hash": "66b8a15e735576e3867b9511b1e88925c1129f21b6ddbf922bdb3d1461067c5e",
+  "generated_from_hash": "b8eaae392b28d53d71923369b6f98428ff2605a27ef57d1175f2d44de5ddb65c",
   "schema_version": 1,
-  "skill_count": 827,
+  "skill_count": 833,
   "skills": [
     {
       "category": "admin",
@@ -8282,6 +8282,104 @@
         "skills/admin/custom-metadata-types-and-settings/templates/custom-metadata-types-and-settings-template.md"
       ],
       "updated": "2026-04-04",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "admin",
+      "chunk_ids": [
+        "02722a57fd9e97a50541",
+        "08bfb4be6e996d30b3bd",
+        "15937d4534133cf1f9af",
+        "16354cc990843acc0541",
+        "1d05605c0b8bac789163",
+        "2128929bc7fa9642f1c6",
+        "2e4dc329fd7f3da8b8aa",
+        "2eb90c49af1ae1e42741",
+        "2ffa8c8beb8b898b962c",
+        "307f6f066845193619f1",
+        "30a57cdd0238a568dabe",
+        "313c4adf80a520bade22",
+        "32f2600e48cdd29ad04a",
+        "36c28c82fa7f4723b671",
+        "384524c3de25b35bb347",
+        "3b5c79b398097aebd68f",
+        "4dca5593cdb4f6ee577e",
+        "508caffca66244997bc6",
+        "55e1f9da68d175fa55cc",
+        "5641658870e4f95b9617",
+        "5d1575657038e62d1e6e",
+        "5da370a0fa6ca397fece",
+        "67973f2c4611ac639dbf",
+        "7672e239da1e9e394914",
+        "7d961f842660d1ca515c",
+        "82c3ff7c85f56486eb3f",
+        "83d9a03317ab9d89e2e3",
+        "87acd321c3a7a06ad59a",
+        "8c541ea927828895f1c7",
+        "8e985483e96eed877bc3",
+        "93c1c1a844230cfdb92e",
+        "9581fa24abd3d37dab57",
+        "b07d01d095af363ff85a",
+        "bafd340d48be1f34a5c9",
+        "bbeffe381dcd9004dc98",
+        "bd95e170f51dad7d502f",
+        "c05ec279bf77683c55ce",
+        "c0c867db15c214211b71",
+        "c745985923c86f25ac1d",
+        "c9c5debab60d8030a21b",
+        "cc6752e301a13a5c103f",
+        "cc9bb3c22a2e9e712dd2",
+        "d17ce56b5d102d22a33b",
+        "d290ba6688957134c4ed",
+        "d2aedf6933257488d765",
+        "d72bcf2e53a8614e3165",
+        "da7ccc26fa8238bb1097",
+        "e3559280021a94a1e40d",
+        "feb7b8432893e7aeef9a"
+      ],
+      "content_hash": "8e1d62eb184726cb6d999820cbee6776c06c2a98c708abb5de151259daddfaf7",
+      "dependencies": [],
+      "description": "Use when designing Custom Notification Types that fire via Flow, Apex, or Process Builder to Lightning bell, desktop, mobile (push), and Slack. Covers channel enablement, targeting, deliverability, consent, and anti-spam discipline. Does NOT cover email templates (see modernize-email-templates) or Salesforce Notifications API general reference.",
+      "file_location": "skills/admin/custom-notification-type-design",
+      "id": "admin/custom-notification-type-design",
+      "inputs": [
+        "What triggers the notification",
+        "Target audience and channels (bell / desktop / mobile / Slack)",
+        "Frequency expectations"
+      ],
+      "name": "custom-notification-type-design",
+      "official_sources": [
+        "Custom Notifications \u2014 https://help.salesforce.com/s/articleView?id=sf.custom_notifications_overview.htm",
+        "Flow Send Custom Notification \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_action_core_custom_notification.htm",
+        "Salesforce Well-Architected User Experience \u2014 https://architect.salesforce.com/docs/architect/well-architected/adaptable/adaptable"
+      ],
+      "outputs": [
+        "Custom Notification Type setup (metadata)",
+        "Targeting and consent design",
+        "Throttling / de-duplication plan",
+        "Observability + governance"
+      ],
+      "references": [
+        "skills/admin/custom-notification-type-design/references/examples.md",
+        "skills/admin/custom-notification-type-design/references/gotchas.md",
+        "skills/admin/custom-notification-type-design/references/llm-anti-patterns.md",
+        "skills/admin/custom-notification-type-design/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/admin/custom-notification-type-design/scripts/check_custom_notification_type_design.py"
+      ],
+      "tags": [
+        "admin",
+        "notifications",
+        "custom-notification-type",
+        "push",
+        "slack"
+      ],
+      "templates": [
+        "skills/admin/custom-notification-type-design/templates/cnt-design.md"
+      ],
+      "updated": "2026-04-23",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -30735,7 +30833,7 @@
         "f73cdb41af8d59ab4326",
         "fd8c197b1b13db51b8d6"
       ],
-      "content_hash": "7b15d1834f7a6c5a135fbaee1993704b416c71af01456401428268901bb8f7eb",
+      "content_hash": "f4b0f611b50ab40215ed2377fd313b72db7b349470f702252ad0d1f8cb9c3d51",
       "dependencies": [],
       "description": "Use when designing how an Agentforce agent transfers the conversation to a human agent (Omni-Channel), to another bot/agent, or to an alternate workflow \u2014 including context package, deflection, escalation triggers, and user messaging. Triggers: 'agent to human handoff', 'agentforce escalate to omni channel', 'agent to agent handoff', 'transfer conversation with context', 'agent deflection fallback'. NOT for topic selector design (see agent-topic-design).",
       "file_location": "skills/agentforce/agentforce-agent-handoff-patterns",
@@ -30840,7 +30938,7 @@
         "f8da9c76350fb131c848",
         "fd65a9daa1347f27c849"
       ],
-      "content_hash": "bad4fc7e3b5a70bb8a5c57d5d9068468cb91f782d685d39b2f810b2b2243b011",
+      "content_hash": "dbd2c42fa61f1d04703595df77d6fa9a788dd0f614db930cb6fb4c00b7797b1d",
       "dependencies": [],
       "description": "Use when Agentforce run costs are climbing, you need to forecast scale, or you want to reduce tokens per conversation without hurting quality. Covers topic design impact on cost, prompt/template reuse, grounding size discipline, caching, and model-tier selection. Triggers: 'agentforce cost', 'tokens per conversation too high', 'reduce agentforce runs spend', 'forecast agentforce scale cost', 'einstein trust layer tokens'. NOT for general LLM pricing strategy outside Salesforce.",
       "file_location": "skills/agentforce/agentforce-cost-optimization",
@@ -32462,7 +32560,7 @@
         "f6c7e0aca4f455a5a3fc",
         "f9d355bf0b05590c833a"
       ],
-      "content_hash": "2b7e0467894d5ff5adb21124a7e81b2ced8b94971ddd46edb63e06e673018a48",
+      "content_hash": "e9d2b65ab102954e8bf1702f2fece3fa311af0d2aaaefb3c09671edc1fcefba7",
       "dependencies": [],
       "description": "Use when grounding an Agentforce agent with Data Cloud retrievers, DMO selection, chunking, and freshness windows. Triggers: agent grounding, retriever, DMO, data graph, RAG, vector index, citations. Does NOT cover Data Cloud ingestion pipelines or Data Cloud identity resolution tuning.",
       "file_location": "skills/agentforce/data-cloud-grounding-for-agentforce",
@@ -78902,6 +79000,102 @@
     {
       "category": "devops",
       "chunk_ids": [
+        "240bdbc64a71292eb858",
+        "255384baa27cb23a0df9",
+        "2a4117e54cf56e91cbb1",
+        "3574354355a26ec2594b",
+        "39fdfd1b630c76a5222c",
+        "3a498f7cc526f53baeb4",
+        "41564dc6fdda3ec64089",
+        "4555bb8ea57a2336655e",
+        "49b9348ca3047b7bf4ad",
+        "4a40e50c2c1154cb09c8",
+        "4a9eca2c93c3a237fb6d",
+        "4b2d95b9302a9a0a9d94",
+        "4ce631684f229a9f9c22",
+        "4d059e7409378ecbb5d0",
+        "50f5a310b3caa9d3fbd7",
+        "559529cee180debc6566",
+        "58317fe42275098a0f40",
+        "5be5b8ea4d71c4af8b45",
+        "673550be1c1c07388f54",
+        "7429c12101295810b133",
+        "76a024eeb530f164cf80",
+        "87c3db3fb012a59089a7",
+        "9d5dbca8bbf500f99bf0",
+        "a0b6946f57ac668505c4",
+        "a1e9315377cc798be4dd",
+        "a20ef7dfef3da04910b9",
+        "b08daac0c222c7ce1ede",
+        "b37dcb7bd786bf3763a0",
+        "b5d7c7d157be373f03ef",
+        "b7c5a3328da27448b224",
+        "bba9658a453596ea02fd",
+        "bca89ae8ef91946538ce",
+        "cbe85156fa8e43830b5d",
+        "d183fae15d6f4afa42eb",
+        "d7be5963a5698f013c20",
+        "db4160003e0c01c69aa5",
+        "dd15dfcaa131c5e600ad",
+        "de159e32c0b04d9ca9f9",
+        "e29270028a4d938cde8f",
+        "e301885b9e3096dfd3fd",
+        "e5c43c9da9574a643a3c",
+        "e730b22231fa3796d64d",
+        "e86ce04d8864e9c3cdd2",
+        "ea600245f9dc3c5650d9",
+        "f5c0136f30f17c9474b9",
+        "fab1fc455e0944661c66"
+      ],
+      "content_hash": "b7e8f3d192651f13828672a4ec4b86f2d1bad75ea10f02c77746a8e8314f1feb",
+      "dependencies": [],
+      "description": "Use when deploying Flow metadata across environments and worrying about activation order: which flow version becomes active, how paused interviews survive deploys, and how to avoid the 'two active versions for a moment' race. Covers SFDX / Metadata API deploy flags, 'Deploy as Active', rollback, and paused-interview safety. Does NOT cover Flow authoring best practices (see flow-bulkification) or general release management.",
+      "file_location": "skills/devops/flow-deployment-activation-ordering",
+      "id": "devops/flow-deployment-activation-ordering",
+      "inputs": [
+        "Target environment + branching strategy",
+        "Flows changing in this release",
+        "Paused interviews / scheduled interviews in flight",
+        "Rollback SLA"
+      ],
+      "name": "flow-deployment-activation-ordering",
+      "official_sources": [
+        "Flow Metadata \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_flow.htm",
+        "Paused Interviews \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_admin_paused.htm",
+        "Salesforce Well-Architected Resilient \u2014 https://architect.salesforce.com/docs/architect/well-architected/resilient/resilient"
+      ],
+      "outputs": [
+        "Pre-deploy inspection (which flow versions, paused interviews)",
+        "Deploy procedure (activation order, guards)",
+        "Rollback plan",
+        "Post-deploy verification"
+      ],
+      "references": [
+        "skills/devops/flow-deployment-activation-ordering/references/examples.md",
+        "skills/devops/flow-deployment-activation-ordering/references/gotchas.md",
+        "skills/devops/flow-deployment-activation-ordering/references/llm-anti-patterns.md",
+        "skills/devops/flow-deployment-activation-ordering/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/devops/flow-deployment-activation-ordering/scripts/check_flow_deployment_activation_ordering.py"
+      ],
+      "tags": [
+        "devops",
+        "flow",
+        "deployment",
+        "activation",
+        "release"
+      ],
+      "templates": [
+        "skills/devops/flow-deployment-activation-ordering/templates/deploy-runbook.md"
+      ],
+      "updated": "2026-04-23",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "devops",
+      "chunk_ids": [
         "0156f2b6b58724c82e36",
         "01e0ccb2ad2866c8ce24",
         "026003acdfe97ff2d72f",
@@ -84214,7 +84408,7 @@
         "e3f68247022ff4b7dc28",
         "e8a42752877baac2752e"
       ],
-      "content_hash": "9f28461f817c81f6216001743bb779d3048209c0c76af706ddc702f9c962b600",
+      "content_hash": "022dc172a56fb81279bee92af787be62eea2e583ba4a59c139230724221a3d79",
       "dependencies": [],
       "description": "Use when a Scheduled Flow or Record-Triggered Flow needs to process more records than Flow can safely handle in a single run. Covers Flow limit realities, scheduled-path chunking, Data Cloud batch transforms, and Apex Queueable/Batch escalation. Does NOT cover choosing async across a general workflow (see async-selection decision tree).",
       "file_location": "skills/flow/flow-batch-processing-alternatives",
@@ -87026,7 +87220,7 @@
         "f2e42bcefedda3b2101f",
         "feb6288503e166b62239"
       ],
-      "content_hash": "4140888097321a01c2264af5b5796b1f58c7c605fa6b8c7ee31493fbcc31fb34",
+      "content_hash": "325d9cc28e087669883b381e688f11baac3c85dd6b28bd72629ac5c022c708f7",
       "dependencies": [],
       "description": "Use when a Flow needs to do work that must survive the triggering transaction \u2014 post-commit notifications, callouts, audit rows, or compensating actions. Covers Flow Transaction Control element, scheduled paths, Platform Event + finalizer escalation, and Apex Queueable finalizer bridging. Does NOT cover general Flow async decisions (see async-selection).",
       "file_location": "skills/flow/flow-transaction-finalizer-patterns",
@@ -87850,7 +88044,7 @@
         "edafdfaeb97871e1ccfd",
         "fac94a612cf6b483e37e"
       ],
-      "content_hash": "9ef4f7d5aabc08dd852892961562ae345fdea3cbb481b1396cafc313aa38477e",
+      "content_hash": "ddcee0c7308cfa20b28eb8f769048a4ace791e30a79be0d655a3c27ad011bf1f",
       "dependencies": [],
       "description": "Use when building Screen Flows that must meet accessibility standards (WCAG 2.1 AA, Salesforce accessibility guidelines). Covers keyboard navigation, focus order, labels, error messaging, color contrast, and screen reader compatibility. Does NOT cover LWC a11y (see lwc-accessibility) or general record-page a11y.",
       "file_location": "skills/flow/screen-flow-accessibility",
@@ -89974,6 +90168,102 @@
     {
       "category": "integration",
       "chunk_ids": [
+        "02f5f4708d4ae1788506",
+        "0408c75e4abb71b0a799",
+        "0b29bc1ba1f734f0bc0c",
+        "126aa290d50136e1f79c",
+        "15b5b0d7a54a9e2f018c",
+        "16588f25c887baa83417",
+        "1ed2eb9c64ef0d2b83e4",
+        "1f4bbb77537a5be2c437",
+        "2a75f61f4338be82935a",
+        "2c784a1059cab3982c92",
+        "33722cc10a0a1a435768",
+        "34ba40e389142385469d",
+        "38407d48aae524c14c82",
+        "3bdc4ffdd7fb193782a8",
+        "4901ecf399eb94596182",
+        "4b65c72897c33a940cf9",
+        "4e336fe6d0493f0b78aa",
+        "55e9bcff319a746ec7fe",
+        "5c4c76a8863eed7b05b7",
+        "6a6beac69f83985182e9",
+        "6dbffa19beac11b5a313",
+        "7c69898cfcf7ce6c722b",
+        "7c701b78ea8554d40df5",
+        "7cc68cee37d38a4cc84f",
+        "892ba9b3685a2d1538b1",
+        "90822e5f076683b93402",
+        "9251dc1dfea9ea75637a",
+        "98264efb3ce65364dedf",
+        "9a287d2835838af4f1c5",
+        "9aa36c6e3fc2da78cfe7",
+        "9b8b4edc23ff1919d107",
+        "a407604669d99091b38d",
+        "a47df1743cc2d5987eac",
+        "ab6c0d316e8c99664493",
+        "b4598d2a8620100a9f3a",
+        "bd0a5adf07c0caf1fcb4",
+        "beb8bf8d033965fb4609",
+        "bfd919daca0487310107",
+        "c7ec5d2d1c9426f2afa8",
+        "c8e0274ac9c458970c30",
+        "c9de0b5927b4e8526c62",
+        "cea93c8cab8c3f4c12c0",
+        "d69a2e021e17f87e3a4e",
+        "e323923b1bf19878106a",
+        "f1d505a10af7cf0cf092",
+        "f74e7185ab60ecaf193c"
+      ],
+      "content_hash": "588d2fc5bd860738aaac72daf79fb993181dbb455d1407138cf62a5a7eb80548",
+      "dependencies": [],
+      "description": "Use when forwarding Salesforce Platform Events or Change Data Capture to AWS EventBridge via Event Relay. Covers Named Credential + Connection setup, channel selection, event filter design, replay handling, retry/back-off, IAM, and monitoring. Does NOT cover consuming external events in Salesforce (see pub-sub-api or salesforce-connect).",
+      "file_location": "skills/integration/event-relay-configuration",
+      "id": "integration/event-relay-configuration",
+      "inputs": [
+        "Platform Events or CDC channel to forward",
+        "AWS account + region for EventBridge",
+        "Throughput and retry requirements"
+      ],
+      "name": "event-relay-configuration",
+      "official_sources": [
+        "Event Relay \u2014 https://help.salesforce.com/s/articleView?id=sf.event_relay.htm",
+        "Pub/Sub API \u2014 https://developer.salesforce.com/docs/platform/pub-sub-api/overview",
+        "AWS EventBridge \u2014 https://docs.aws.amazon.com/eventbridge/",
+        "integration-pattern-selection \u2014 `standards/decision-trees/integration-pattern-selection.md`"
+      ],
+      "outputs": [
+        "Event Relay configuration (Named Credential, Connection, Relay Config)",
+        "IAM / permission design",
+        "Filter strategy",
+        "Monitoring and replay runbook"
+      ],
+      "references": [
+        "skills/integration/event-relay-configuration/references/examples.md",
+        "skills/integration/event-relay-configuration/references/gotchas.md",
+        "skills/integration/event-relay-configuration/references/llm-anti-patterns.md",
+        "skills/integration/event-relay-configuration/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/integration/event-relay-configuration/scripts/check_event_relay_configuration.py"
+      ],
+      "tags": [
+        "integration",
+        "event-relay",
+        "pub-sub",
+        "aws",
+        "eventbridge"
+      ],
+      "templates": [
+        "skills/integration/event-relay-configuration/templates/relay-config.md"
+      ],
+      "updated": "2026-04-23",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "integration",
+      "chunk_ids": [
         "02cdb8caf848580365f6",
         "0423bb1a01a43a139d66",
         "090280cf2b39331644a1",
@@ -91192,6 +91482,103 @@
         "skills/integration/outbound-messages-and-callbacks/templates/outbound-messages-and-callbacks-template.md"
       ],
       "updated": "2026-04-04",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "integration",
+      "chunk_ids": [
+        "048b57421b91df8f3cf3",
+        "05e1dac875181b71f852",
+        "0cec181eb5f1889a00dc",
+        "0d566ef43a976c9fe312",
+        "1200507b8a42b5b550b1",
+        "1e207db88ab2be4ae327",
+        "2444812c4a67ef86a839",
+        "28aad0c8b77ba2eccb5a",
+        "3e38fb6443edcd84a042",
+        "3f14bc29ea0609d5c234",
+        "46e2838f6703fce0dea6",
+        "4729987f3cd310536794",
+        "4ce671d2123adf954974",
+        "503858b07f5af744e0c7",
+        "53aa36e43abe6fb287de",
+        "56846d7597e3c8040fb2",
+        "5743dad2ae7da18060a4",
+        "60c248ec1f531751022d",
+        "66578e4a28a33d696df4",
+        "66995628581d50c533af",
+        "69166d46d05ba168e943",
+        "6e8fee4c5b442d00b961",
+        "6ffe43132430493b9460",
+        "7051176aea42420428cb",
+        "77f62e3d566f3b4b4355",
+        "87458207328c25302391",
+        "8c57e8d590b232f9ff9a",
+        "99ad60d019350fa07c7b",
+        "9bb569591e793b541ef3",
+        "9f3f609ea2584f09a2e7",
+        "a8380107a91d7f0e70da",
+        "a8eb31af0bc84bd72b9d",
+        "ab37e5acf12f131b5ae5",
+        "abb0e577069712b6a5ff",
+        "b30ced80a252b510cd70",
+        "b46d4c9792d2907f0ab8",
+        "bdab296f8a9f654ce98d",
+        "c2c8757d669f7f33d473",
+        "c3a6ae5bbda7938afe39",
+        "c52a56836499b0787b97",
+        "d5ffee2bfa562cdbba16",
+        "d8b514e9f77eddb0efa9",
+        "e27403984ccbfbd0d094",
+        "e4e35d0fbde3dd786431",
+        "e8562d08cedc72ea8ac1",
+        "f0141cd7e884c2e603de",
+        "ffffcbc6abd303cf48ce"
+      ],
+      "content_hash": "fba3c8b7b8b4a04cf32338384a16cad89e9cf70c6f56cfb1c60dd884d27f0b4f",
+      "dependencies": [],
+      "description": "Use when Salesforce must POST a webhook to a third-party endpoint after a record change \u2014 with signed payloads, retries, dead-lettering, rate limits, and idempotency. Covers design choice between Outbound Message, Flow HTTP Callout, Apex Queueable callout, and Event Relay. Does NOT cover inbound webhooks into Salesforce (see inbound-webhook or apex-rest-webhook).",
+      "file_location": "skills/integration/outbound-webhook-from-salesforce",
+      "id": "integration/outbound-webhook-from-salesforce",
+      "inputs": [
+        "Triggering event (record change, platform event, scheduled)",
+        "Target endpoint + auth requirement",
+        "Volume and latency SLA",
+        "Failure tolerance + compliance requirements"
+      ],
+      "name": "outbound-webhook-from-salesforce",
+      "official_sources": [
+        "Apex HTTP Callouts \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts_http.htm",
+        "Flow HTTP Callout \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_action_http_callout.htm",
+        "Named Credentials \u2014 https://help.salesforce.com/s/articleView?id=sf.named_credentials_about.htm",
+        "Salesforce Well-Architected Resilient \u2014 https://architect.salesforce.com/docs/architect/well-architected/resilient/resilient"
+      ],
+      "outputs": [
+        "Webhook design (producer pattern, payload shape, signing, retry)",
+        "Failure handling + dead-letter",
+        "Observability plan"
+      ],
+      "references": [
+        "skills/integration/outbound-webhook-from-salesforce/references/examples.md",
+        "skills/integration/outbound-webhook-from-salesforce/references/gotchas.md",
+        "skills/integration/outbound-webhook-from-salesforce/references/llm-anti-patterns.md",
+        "skills/integration/outbound-webhook-from-salesforce/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/integration/outbound-webhook-from-salesforce/scripts/check_outbound_webhook_from_salesforce.py"
+      ],
+      "tags": [
+        "integration",
+        "webhook",
+        "callout",
+        "outbound",
+        "reliability"
+      ],
+      "templates": [
+        "skills/integration/outbound-webhook-from-salesforce/templates/webhook-design.md"
+      ],
+      "updated": "2026-04-23",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -96504,6 +96891,100 @@
     {
       "category": "lwc",
       "chunk_ids": [
+        "025e105186ff9a8c5c42",
+        "05bbd840eccde0b7d222",
+        "0a6fae4a3e5890c412d6",
+        "0bf18188708215b45ae5",
+        "0df0045f42c183faa7c4",
+        "0e1f64d56f58da860845",
+        "1324c1c3a670d2d37904",
+        "17215ee909167febe47d",
+        "1fd88e16416ab80dca54",
+        "24cf8ad4c45a34123e6a",
+        "28d96debe2a967d2dd09",
+        "29e615d58596f4a68ed8",
+        "307c32d7b64fd8ae114f",
+        "3aaa66a78f04b610b327",
+        "3fb964b14dfe52a4c5e1",
+        "4219dc1af48db05945d2",
+        "47754c8669e29eef8ae1",
+        "4891cd8523b2e9f084d3",
+        "4947884a13f8dbdabc2f",
+        "597a5104ea59f49bf112",
+        "598bf5cca0350c028aa7",
+        "5d975c54e2c0b8c15e9b",
+        "62fb4a6843575b1019dc",
+        "67fbf84583860d2a81c3",
+        "74f478f1f08dfaa128a4",
+        "78420461efc8cf4dfae9",
+        "7d8fe907ea63bc18e606",
+        "95cf0ffa43295b338549",
+        "97b3e00f9f0a23e75247",
+        "aafe7f1ab39037f4e102",
+        "b8bd483c3f301af61cfb",
+        "b8f014d4c6235fb93be5",
+        "bdafd2848affb5f7fe68",
+        "c16b77992fdfdf46266c",
+        "c3fcef16a3a3dffffb20",
+        "d2ec393aa934495827f8",
+        "d74bf7adc708d8d97fd1",
+        "dcf6f4c4f26c935ae92c",
+        "dd3b70b50a05f31df5ad",
+        "dda2d268fb268014f342",
+        "dedcbc5b251a608f7a53",
+        "e3e253663e5a8c52c1b8",
+        "e4ce2fbdeb1b1477e7d1",
+        "e55d22a6affb8a4348ad",
+        "eabe153b1b3edd98d893",
+        "f3f73766fb99140f6131"
+      ],
+      "content_hash": "46abf1e427f1dc740ee580e98c964d4063496f86f8c1f53d55bf808e6178235b",
+      "dependencies": [],
+      "description": "Use when building LWCs that need to manage focus explicitly \u2014 modal dialogs, wizard flows, dynamic inserts, list updates, error summaries, and focus after async work. Covers focus restoration, focus traps, programmatic focus across shadow DOM, and patterns for announcing changes to assistive tech. Does NOT cover general LWC a11y audit (see lwc-accessibility).",
+      "file_location": "skills/lwc/lwc-focus-management",
+      "id": "lwc/lwc-focus-management",
+      "inputs": [
+        "Component or subtree that manipulates focus",
+        "Expected keyboard flows",
+        "Accessibility requirement (WCAG 2.1 AA or stricter)"
+      ],
+      "name": "lwc-focus-management",
+      "official_sources": [
+        "LWC Shadow DOM \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/create-shadow-dom.html",
+        "WCAG \u2014 Focus Visible \u2014 https://www.w3.org/TR/WCAG21/#focus-visible",
+        "Salesforce Accessibility \u2014 https://help.salesforce.com/s/articleView?id=sf.accessibility_overview.htm"
+      ],
+      "outputs": [
+        "Focus map per component state",
+        "Focus trap and restoration plan",
+        "Testing approach (keyboard + screen reader)"
+      ],
+      "references": [
+        "skills/lwc/lwc-focus-management/references/examples.md",
+        "skills/lwc/lwc-focus-management/references/gotchas.md",
+        "skills/lwc/lwc-focus-management/references/llm-anti-patterns.md",
+        "skills/lwc/lwc-focus-management/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/lwc/lwc-focus-management/scripts/check_lwc_focus_management.py"
+      ],
+      "tags": [
+        "lwc",
+        "focus",
+        "accessibility",
+        "shadow-dom",
+        "keyboard"
+      ],
+      "templates": [
+        "skills/lwc/lwc-focus-management/templates/focus-map.md"
+      ],
+      "updated": "2026-04-23",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "lwc",
+      "chunk_ids": [
         "1343a5d7b7d6fff55394",
         "1350e24813c3f8ae026c",
         "172a5014b2f00164421f",
@@ -97626,6 +98107,101 @@
         "skills/lwc/lwc-security/templates/lwc-security-template.md"
       ],
       "updated": "2026-03-13",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "lwc",
+      "chunk_ids": [
+        "02fdbfe90cb4e5b15466",
+        "055ae9bcef4e69a9d7fb",
+        "0cb8be799b7b83e740d1",
+        "14f52dd423667cf5324a",
+        "18cf7d2b41e18caa4e3d",
+        "18f7fb6a378f2c535454",
+        "1e701f6c73b9831b1bd3",
+        "2313b903e525f5843d0f",
+        "24c6b325e204951d8b2c",
+        "30611ea1b87d6a2449f2",
+        "3482265523d3423a31d3",
+        "35a46fdc158e835aa2aa",
+        "4849259f968236e57564",
+        "49aaafae9217ba417030",
+        "561a1b761b1e37a35cd0",
+        "5fdbd76f5d1e15f921db",
+        "62334b6a71f24cd23c27",
+        "635429053aa8be3b2930",
+        "63e4eb9fa970e4017641",
+        "734c4d487832e1afc647",
+        "7804b2292a1abf3b44d1",
+        "7dfb175ce84007c9126e",
+        "7f13ebba202a604a9ef8",
+        "7f5357621eaa0b038809",
+        "8078e6e9d76e9e061d41",
+        "835c618102fdba37b343",
+        "8517d3d4712fa199047d",
+        "890de44db79939226ecc",
+        "8f21f251285838bf6d0e",
+        "9353d7703c0603977c0f",
+        "99d65c7fe7ccd6ee1f5d",
+        "abadd71d6128d07f6a7c",
+        "b5571ab2c9f8303468b9",
+        "be80829213f251597656",
+        "cdedf2449e68105a3c5d",
+        "d1d3c6d6c9bd423c06d5",
+        "d99f216e0cd75f9bbe72",
+        "deae22e50e91922a1dbb",
+        "e04d198adbc74d7826f2",
+        "e2b56f657725224c1a64",
+        "efa6c2dbe39772fd1091",
+        "f3773be5f197438de2f5",
+        "f5661d00cb726ee6d464",
+        "fdd87d9e9a9f1230ce2f"
+      ],
+      "content_hash": "e8fd96742f8c231c12e1b573e1ba62734639699e8c0cb3405977aee02d938a53",
+      "dependencies": [],
+      "description": "Use when building LWCs that must react to live server pushes \u2014 Platform Events, Change Data Capture, or streaming updates \u2014 via the lightning/empApi (CometD) subscription model. Covers lifecycle, replayId, error handling, reconnection, scale considerations, and multi-tab behavior. Does NOT cover publishing events (see platform-events or apex-platform-events).",
+      "file_location": "skills/lwc/lwc-server-sent-events",
+      "id": "lwc/lwc-server-sent-events",
+      "inputs": [
+        "Platform Event or CDC channel LWC must listen to",
+        "Expected event volume and latency tolerance",
+        "Concurrent tabs / components listening"
+      ],
+      "name": "lwc-server-sent-events",
+      "official_sources": [
+        "lightning/empApi \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/use-comm-empapi.html",
+        "Platform Events \u2014 https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_intro.htm",
+        "CDC \u2014 https://developer.salesforce.com/docs/atlas.en-us.change_data_capture.meta/change_data_capture/cdc_intro.htm",
+        "Streaming API replay \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_streaming.meta/api_streaming/replay_process.htm"
+      ],
+      "outputs": [
+        "Subscription lifecycle implementation",
+        "Replay strategy (MAX, -2, specific replayId)",
+        "Error / reconnect plan",
+        "Fan-out pattern across components and tabs"
+      ],
+      "references": [
+        "skills/lwc/lwc-server-sent-events/references/examples.md",
+        "skills/lwc/lwc-server-sent-events/references/gotchas.md",
+        "skills/lwc/lwc-server-sent-events/references/llm-anti-patterns.md",
+        "skills/lwc/lwc-server-sent-events/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/lwc/lwc-server-sent-events/scripts/check_lwc_server_sent_events.py"
+      ],
+      "tags": [
+        "lwc",
+        "streaming",
+        "empapi",
+        "platform-events",
+        "cdc",
+        "realtime"
+      ],
+      "templates": [
+        "skills/lwc/lwc-server-sent-events/templates/subscription-plan.md"
+      ],
+      "updated": "2026-04-23",
       "vector_embedding": null,
       "version": "1.0.0"
     },
