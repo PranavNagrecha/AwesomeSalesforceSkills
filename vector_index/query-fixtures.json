@@ -6119,6 +6119,42 @@
       "domain": "flow",
       "expected_skill": "flow/flow-transaction-finalizer-patterns",
       "top_k": 3
+    },
+    {
+      "query": "lwc focus management modal focus trap shadow dom restore after close",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-focus-management",
+      "top_k": 3
+    },
+    {
+      "query": "lwc subscribe platform event cdc empapi replay id realtime push",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-server-sent-events",
+      "top_k": 3
+    },
+    {
+      "query": "event relay aws eventbridge forward platform event cdc iam external id",
+      "domain": "integration",
+      "expected_skill": "integration/event-relay-configuration",
+      "top_k": 3
+    },
+    {
+      "query": "salesforce outbound webhook http callout retry hmac signature dead letter",
+      "domain": "integration",
+      "expected_skill": "integration/outbound-webhook-from-salesforce",
+      "top_k": 3
+    },
+    {
+      "query": "flow deploy activation order flowdefinition rollback paused interview subflow",
+      "domain": "devops",
+      "expected_skill": "devops/flow-deployment-activation-ordering",
+      "top_k": 3
+    },
+    {
+      "query": "custom notification type bell desktop push slack design fatigue throttle",
+      "domain": "admin",
+      "expected_skill": "admin/custom-notification-type-design",
+      "top_k": 3
     }
   ]
 }

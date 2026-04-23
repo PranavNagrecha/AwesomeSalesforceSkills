@@ -63,6 +63,7 @@
       "admin/custom-label-management",
       "admin/custom-metadata-types",
       "admin/custom-metadata-types-and-settings",
+      "admin/custom-notification-type-design",
       "admin/custom-notification-types",
       "admin/custom-permissions",
       "admin/data-cloud-calculated-insights",
@@ -596,6 +597,7 @@
       "devops/experience-cloud-deployment-admin",
       "devops/experience-cloud-deployment-dev",
       "devops/feature-flag-custom-metadata",
+      "devops/flow-deployment-activation-ordering",
       "devops/fsc-deployment-patterns",
       "devops/git-branching-for-salesforce",
       "devops/github-actions-for-salesforce",
@@ -694,6 +696,7 @@
       "integration/data-cloud-query-api",
       "integration/error-handling-in-integrations",
       "integration/event-driven-architecture-patterns",
+      "integration/event-relay-configuration",
       "integration/file-and-document-integration",
       "integration/graphql-api-patterns",
       "integration/idempotent-integration-patterns",
@@ -704,6 +707,7 @@
       "integration/named-credentials-setup",
       "integration/oauth-flows-and-connected-apps",
       "integration/outbound-messages-and-callbacks",
+      "integration/outbound-webhook-from-salesforce",
       "integration/platform-event-publish-patterns",
       "integration/platform-events-integration",
       "integration/private-connect-setup",
@@ -751,6 +755,7 @@
       "lwc/lwc-data-table",
       "lwc/lwc-dynamic-components",
       "lwc/lwc-error-boundaries",
+      "lwc/lwc-focus-management",
       "lwc/lwc-forms-and-validation",
       "lwc/lwc-imperative-apex",
       "lwc/lwc-in-flow-screens",
@@ -762,6 +767,7 @@
       "lwc/lwc-performance",
       "lwc/lwc-record-picker",
       "lwc/lwc-security",
+      "lwc/lwc-server-sent-events",
       "lwc/lwc-show-toast-patterns",
       "lwc/lwc-state-management",
       "lwc/lwc-testing",
@@ -1229,6 +1235,7 @@
       "admin/digital-storefront-requirements",
       "flow/screen-flow-accessibility",
       "lwc/lwc-chart-and-visualization",
+      "lwc/lwc-focus-management",
       "lwc/lwc-lightning-modal",
       "lwc/lwc-record-picker"
     ],
@@ -1301,6 +1308,7 @@
       "admin/data-cloud-segmentation",
       "architect/data-cloud-architecture",
       "data/data-cloud-data-streams",
+      "devops/flow-deployment-activation-ordering",
       "integration/data-cloud-activation-development",
       "omnistudio/omniscript-versioning"
     ],
@@ -1343,6 +1351,7 @@
     "admin": [
       "admin/analytics-permission-and-sharing",
       "admin/custom-field-creation",
+      "admin/custom-notification-type-design",
       "admin/data-cloud-provisioning",
       "admin/einstein-discovery-deployment",
       "admin/field-dependency-and-controlling",
@@ -2170,6 +2179,9 @@
     "availability": [
       "architect/nfr-definition-for-salesforce"
     ],
+    "aws": [
+      "integration/event-relay-configuration"
+    ],
     "b2b-commerce": [
       "admin/b2b-commerce-store-setup",
       "admin/b2b-vs-b2c-requirements",
@@ -2626,7 +2638,8 @@
     ],
     "callout": [
       "flow/flow-http-callout-action",
-      "integration/mutual-tls-callouts"
+      "integration/mutual-tls-callouts",
+      "integration/outbound-webhook-from-salesforce"
     ],
     "callout-auth": [
       "integration/named-credentials-setup"
@@ -2804,7 +2817,8 @@
       "architect/cross-cloud-data-deployment",
       "integration/pub-sub-api-patterns",
       "integration/real-time-vs-batch-integration",
-      "integration/salesforce-data-pipeline-etl"
+      "integration/salesforce-data-pipeline-etl",
+      "lwc/lwc-server-sent-events"
     ],
     "cdn": [
       "architect/composable-commerce-architecture",
@@ -3863,6 +3877,9 @@
     "custom-notification": [
       "flow/flow-email-and-notifications"
     ],
+    "custom-notification-type": [
+      "admin/custom-notification-type-design"
+    ],
     "custom-notifications": [
       "admin/custom-notification-types"
     ],
@@ -4537,6 +4554,7 @@
       "devops/destructive-changes-deployment",
       "devops/experience-cloud-deployment-admin",
       "devops/experience-cloud-deployment-dev",
+      "devops/flow-deployment-activation-ordering",
       "devops/fsc-deployment-patterns",
       "devops/health-cloud-deployment-patterns",
       "devops/metadata-api-coverage-gaps",
@@ -4625,6 +4643,7 @@
       "devops/deployment-monitoring",
       "devops/environment-strategy",
       "devops/experience-cloud-deployment-dev",
+      "devops/flow-deployment-activation-ordering",
       "devops/git-branching-for-salesforce",
       "devops/health-cloud-deployment-patterns",
       "devops/metadata-api-coverage-gaps",
@@ -5076,6 +5095,9 @@
       "agentforce/data-cloud-vector-search-dev",
       "data/vector-database-management"
     ],
+    "empapi": [
+      "lwc/lwc-server-sent-events"
+    ],
     "emr-sync": [
       "architect/fhir-integration-architecture"
     ],
@@ -5327,6 +5349,9 @@
     "event-propagation": [
       "lwc/common-lwc-runtime-errors"
     ],
+    "event-relay": [
+      "integration/event-relay-configuration"
+    ],
     "event-replay": [
       "integration/pub-sub-api-patterns"
     ],
@@ -5341,6 +5366,9 @@
     ],
     "event-trigger": [
       "apex/platform-events-apex"
+    ],
+    "eventbridge": [
+      "integration/event-relay-configuration"
     ],
     "eventbus": [
       "apex/platform-events-apex",
@@ -5798,6 +5826,7 @@
       "apex/cpq-custom-actions",
       "apex/order-of-execution-deep-dive",
       "architect/solution-design-patterns",
+      "devops/flow-deployment-activation-ordering",
       "flow/auto-launched-flow-patterns",
       "flow/flow-and-platform-events",
       "flow/flow-batch-processing-alternatives",
@@ -5939,6 +5968,9 @@
     ],
     "fnol": [
       "admin/industries-process-design"
+    ],
+    "focus": [
+      "lwc/lwc-focus-management"
     ],
     "focus-management": [
       "lwc/lwc-accessibility",
@@ -6806,7 +6838,9 @@
       "integration/bulk-api-2-patterns",
       "integration/composite-api-patterns",
       "integration/error-handling-in-integrations",
+      "integration/event-relay-configuration",
       "integration/outbound-messages-and-callbacks",
+      "integration/outbound-webhook-from-salesforce",
       "integration/real-time-vs-batch-integration",
       "integration/salesforce-to-salesforce-integration",
       "integration/slack-salesforce-integration-setup",
@@ -7086,6 +7120,9 @@
     ],
     "key-management": [
       "security/platform-encryption"
+    ],
+    "keyboard": [
+      "lwc/lwc-focus-management"
     ],
     "keyboard-navigation": [
       "lwc/lwc-accessibility",
@@ -7522,10 +7559,12 @@
       "lwc/lwc-base-component-recipes",
       "lwc/lwc-chart-and-visualization",
       "lwc/lwc-error-boundaries",
+      "lwc/lwc-focus-management",
       "lwc/lwc-imperative-apex",
       "lwc/lwc-lightning-modal",
       "lwc/lwc-navigation-mixin",
       "lwc/lwc-record-picker",
+      "lwc/lwc-server-sent-events",
       "lwc/lwc-show-toast-patterns",
       "lwc/lwc-toast-and-notifications",
       "lwc/lwc-web-components-interop",
@@ -8243,6 +8282,7 @@
       "flow/flow-for-slack"
     ],
     "notifications": [
+      "admin/custom-notification-type-design",
       "admin/email-templates-and-alerts",
       "lwc/lwc-toast-and-notifications"
     ],
@@ -8675,6 +8715,9 @@
     ],
     "org-wide-mfa": [
       "security/mfa-enforcement-strategy"
+    ],
+    "outbound": [
+      "integration/outbound-webhook-from-salesforce"
     ],
     "outbound-message": [
       "admin/outbound-message-setup",
@@ -9127,7 +9170,8 @@
       "integration/platform-events-integration",
       "integration/pub-sub-api-patterns",
       "integration/real-time-vs-batch-integration",
-      "integration/salesforce-to-salesforce-integration"
+      "integration/salesforce-to-salesforce-integration",
+      "lwc/lwc-server-sent-events"
     ],
     "platform-notifications": [
       "lwc/lwc-toast-and-notifications"
@@ -9514,7 +9558,8 @@
     ],
     "pub-sub": [
       "architect/event-driven-architecture",
-      "flow/flow-platform-events-integration"
+      "flow/flow-platform-events-integration",
+      "integration/event-relay-configuration"
     ],
     "pub-sub-api": [
       "integration/change-data-capture-integration",
@@ -9561,6 +9606,9 @@
     ],
     "pull-requests": [
       "devops/copado-essentials"
+    ],
+    "push": [
+      "admin/custom-notification-type-design"
     ],
     "push-notifications": [
       "admin/custom-notification-types"
@@ -9739,6 +9787,9 @@
     "real-time-segmentation": [
       "admin/data-cloud-segmentation"
     ],
+    "realtime": [
+      "lwc/lwc-server-sent-events"
+    ],
     "rebate-management": [
       "admin/rebate-management-setup"
     ],
@@ -9888,7 +9939,8 @@
       "data/data-model-design-patterns"
     ],
     "release": [
-      "devops/feature-flag-custom-metadata"
+      "devops/feature-flag-custom-metadata",
+      "devops/flow-deployment-activation-ordering"
     ],
     "release-communication": [
       "admin/change-management-and-training"
@@ -9923,7 +9975,8 @@
     "reliability": [
       "apex/governor-limit-recovery-patterns",
       "flow/flow-transaction-finalizer-patterns",
-      "integration/error-handling-in-integrations"
+      "integration/error-handling-in-integrations",
+      "integration/outbound-webhook-from-salesforce"
     ],
     "remote-action": [
       "omnistudio/omnistudio-remote-actions"
@@ -10971,6 +11024,7 @@
       "devops/automated-regression-testing",
       "lwc/common-lwc-runtime-errors",
       "lwc/component-communication",
+      "lwc/lwc-focus-management",
       "lwc/lwc-web-components-interop"
     ],
     "share-objects": [
@@ -11113,6 +11167,7 @@
       "architect/sla-design-and-escalation-matrix"
     ],
     "slack": [
+      "admin/custom-notification-type-design",
       "agentforce/agentforce-in-slack",
       "flow/flow-for-slack",
       "integration/slack-connect-patterns",
@@ -11393,7 +11448,8 @@
       "admin/einstein-discovery-setup"
     ],
     "streaming": [
-      "integration/pub-sub-api-patterns"
+      "integration/pub-sub-api-patterns",
+      "lwc/lwc-server-sent-events"
     ],
     "streaming-api": [
       "integration/event-driven-architecture-patterns",
@@ -12195,6 +12251,7 @@
     "webhook": [
       "agentforce/agentforce-custom-channel-dev",
       "integration/data-cloud-activation-development",
+      "integration/outbound-webhook-from-salesforce",
       "integration/webhook-inbound-patterns",
       "integration/webhook-signature-verification"
     ],
