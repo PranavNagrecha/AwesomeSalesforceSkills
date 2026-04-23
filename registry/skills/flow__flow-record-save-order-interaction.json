@@ -43,7 +43,7 @@
     "f6ec18e1bf5295435be3",
     "ff5b2335811cdd2251b6"
   ],
-  "content_hash": "6f01976e45571fdcc08368e27135308aa0b9081b8a32085ffa6a2f740c135328",
+  "content_hash": "fc15ce0f9116e4b9a730b509f7ab772a2342f157926815421ec4c654ba2fbbe0",
   "dependencies": [
     "flow/record-triggered-flow-patterns",
     "flow/flow-migration-from-trigger"

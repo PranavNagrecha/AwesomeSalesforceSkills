@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 45
   },
-  "generated_from_hash": "d80dbfb4c8dc91525ffdbfc283b5eb0af66cc00c96e0dc474afa495bfac7f7aa",
+  "generated_from_hash": "a2e2c9d47533abe53cc0004b4fca2f89f61e901b0b1bc86f24b68b599163a710",
   "schema_version": 1,
   "skill_count": 851,
   "skills": [
@@ -51928,7 +51928,7 @@
         "fb5dfae6d4a868f6c556",
         "fc7398868667701c0248"
       ],
-      "content_hash": "740e077f1a4ffd733aa3100c5f0c9eef84c7816b904ac5aaca3c3cfc67fe9930",
+      "content_hash": "cc8ffa967bfaee0105c18610830ce198aab8955c3b8900c0c2062b29777a5cdf",
       "dependencies": [
         "architect/solution-design-patterns"
       ],
@@ -84796,7 +84796,7 @@
         "fb9c48408da1312b98ad",
         "fd265d60d57f03a331bf"
       ],
-      "content_hash": "66a37426a2c6e8ec06c9d3e0072233050309b39afc5d51d7af189e0eb3887f42",
+      "content_hash": "45f12f91a9467fdc6c9747eb8679fde6e82860f0b6033122d80965df1ece00c3",
       "dependencies": [
         "flow/flow-http-callout-action",
         "flow/flow-invocable-from-apex"
@@ -85599,7 +85599,7 @@
         "cb5670101770747b6e49",
         "e5ce963369c7d2a58403"
       ],
-      "content_hash": "b306b9b1d44171a91302e8aef6837f5dee89a283866ecd007e999d71d274fcb5",
+      "content_hash": "5f9a0c0e2a8857e7a5e2a6b255b22bd5453d4657705fc80cd59505df9dd9b872",
       "dependencies": [
         "flow/record-triggered-flow-patterns"
       ],
@@ -86352,7 +86352,7 @@
         "f3f0231c9d09c30b732f",
         "f5b0ba6d8f9450581023"
       ],
-      "content_hash": "b3c35c2c7afcf08876e5d740fc81794865944f9afe1cef12b25bc7fd0107be17",
+      "content_hash": "fb2c73eb02a8efb753eb4ec30d26a465cd861eb13b0bcd457e7298585f7a72f5",
       "dependencies": [
         "flow/flow-governor-limits-deep-dive",
         "flow/flow-performance-optimization"
@@ -87453,7 +87453,7 @@
         "f6ec18e1bf5295435be3",
         "ff5b2335811cdd2251b6"
       ],
-      "content_hash": "6f01976e45571fdcc08368e27135308aa0b9081b8a32085ffa6a2f740c135328",
+      "content_hash": "fc15ce0f9116e4b9a730b509f7ab772a2342f157926815421ec4c654ba2fbbe0",
       "dependencies": [
         "flow/record-triggered-flow-patterns",
         "flow/flow-migration-from-trigger"
@@ -98796,7 +98796,7 @@
         "f6929babb8cbf0fd47a2",
         "ffbd185319c61d560bc2"
       ],
-      "content_hash": "d48ffc47267ef457fe2ff471298cad66c4a96ec6f62ec596256ac2a8a6e15fc5",
+      "content_hash": "cd420f33222a46e09373f745e4204f404faa3105ab480d5819a887cbdc2120a5",
       "dependencies": [
         "lwc/lwc-performance",
         "devops/pipeline-secrets-management"
