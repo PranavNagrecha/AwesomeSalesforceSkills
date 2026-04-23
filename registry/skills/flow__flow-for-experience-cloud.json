@@ -55,7 +55,7 @@
     "fcf514251a7d3e4645e2",
     "fd0bf40bf10166e42ee8"
   ],
-  "content_hash": "d7a76500cf4df2ea540483cda560dfbb368bcd2683ff0d29d15c283e92df6698",
+  "content_hash": "fea589ea3a98a1f99297c62d615a78b5b8442b5a63bc7ff24117dd3d8330ec43",
   "dependencies": [],
   "description": "Use when embedding or exposing Salesforce Flows in Experience Cloud, especially for guest or external users, `lightning-flow` usage, site runtime differences, and data-access safety. Triggers: 'flow in experience cloud', 'guest user flow', 'lightning-flow on community page', 'external user flow access', 'LWR flow limitations'. NOT for general Experience Cloud sharing architecture when Flow is not part of the problem.",
   "file_location": "skills/flow/flow-for-experience-cloud",

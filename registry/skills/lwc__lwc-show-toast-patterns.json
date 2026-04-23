@@ -49,7 +49,7 @@
     "f8c4708cfdcf85e25084",
     "fa5bab55e12c78395252"
   ],
-  "content_hash": "ff46e70eb6b0115d503991d52c97f43bf7fe4c758036e2e17c112041b420d980",
+  "content_hash": "9797ac0745e1af1582ae36ed4a6eeb8d21830d9df10902f47f819950795e36a5",
   "dependencies": [],
   "description": "ShowToastEvent in LWC: variants (success/warning/error/info), modes (dismissible/pester/sticky), message formatting, NOT supported in LWR Experience Cloud sites, alternatives (lightning-alert, inline banners). NOT for custom notification types (use admin/custom-notification-types). NOT for SLDS popovers.",
   "file_location": "skills/lwc/lwc-show-toast-patterns",

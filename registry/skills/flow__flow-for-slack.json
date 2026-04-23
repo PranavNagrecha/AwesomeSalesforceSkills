@@ -55,7 +55,7 @@
     "eee44623eeb2f51ed7b8",
     "ef4a73f08a53050653c0"
   ],
-  "content_hash": "9b52b8be8b4597d1c99d5a78b131e5c357809355284438add3b48e790703dd5d",
+  "content_hash": "d1dac39813ac6c18d4ff1ec1936357bfc1f2ded168fbaffbdddac7c6fa71324f",
   "dependencies": [],
   "description": "Use this skill when using Salesforce Flow Core Actions for Slack to send messages, create/archive channels, add users, check user connectivity, or launch flows from Slack \u2014 including prerequisite setup of the Salesforce for Slack managed package and required permission sets. Triggers on: Send Slack Message from Flow, Create Slack Channel action in Flow, Flow Core Actions for Slack not visible, Slack actions missing in Flow Builder, add users to Slack channel from Flow. NOT for Slack Workflow Builder (Slack-native tool that calls autolaunched Flows FROM Slack \u2014 use slack-workflow-builder skill), not for Agentforce Slack agent deployment (use agentforce-in-slack skill), not for initial Salesforce-Slack org connection (use slack-salesforce-integration-setup skill).",
   "file_location": "skills/flow/flow-for-slack",

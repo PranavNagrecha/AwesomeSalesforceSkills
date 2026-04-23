@@ -77,7 +77,7 @@
     "fa7980a5a8a0e808345f",
     "ff673da271a183fa59d6"
   ],
-  "content_hash": "7e42bbbd3bc9c37babb2b8019dbcf1fe1e03630d80b348c5d4ef8c328f5b9b33",
+  "content_hash": "5349a67b691bb16d9ee1cc72b63fc385e712713b75603ce0ab592adb7e300854",
   "dependencies": [],
   "description": "Use this skill when configuring multiple identity providers (OIDC and/or SAML) on a single Experience Cloud site or across tenant-specific portals in the same org \u2014 covering auth provider registration, Start SSO URL routing, Federation ID mapping, RegistrationHandler implementation, and simultaneous SP+IdP topology. Trigger keywords: multiple identity providers Experience Cloud, multi-tenant SSO community portal, vendor and citizen portal same site, OIDC SAML both on login page, tenant-specific login routing community. NOT for internal Salesforce employee SSO configuration. NOT for single auth provider setups \u2014 see experience-cloud-authentication for basic SSO.",
   "file_location": "skills/lwc/experience-cloud-multi-idp-sso",

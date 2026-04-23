@@ -104,7 +104,7 @@
     "fb3a7dfa378137b2eb92",
     "ffcec16d9e30a8ba60c8"
   ],
-  "content_hash": "b061eb1f179f92923e2b4fd7e6fa513a140bac10a9020ceff9dcd246a313a59a",
+  "content_hash": "7479b2e7a0c197ec5409fe6dd14c829448c3a4144314c65f63696ab545a8e069",
   "dependencies": [],
   "description": "Use this skill when designing the UX and content strategy for a Salesforce-powered self-service portal or help center \u2014 covering pre-deflection article surfacing, Help Center search UX, friction-calibrated case submission forms, community peer support layers, and deflection measurement. Trigger keywords: design self-service portal, case deflection strategy, help center UX design, reduce support volume with self-service, knowledge base search experience. NOT for Experience Cloud technical setup or component configuration. NOT for knowledge article authoring or article lifecycle management.",
   "file_location": "skills/admin/self-service-design",

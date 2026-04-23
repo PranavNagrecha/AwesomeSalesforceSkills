@@ -69,7 +69,7 @@
     "fc08f8c0c6c32c828fc8",
     "fda27cc960d544af642b"
   ],
-  "content_hash": "0e17e91acd14e121e577d462f266f9ce19c2717eb994f6167e2e661a26586555",
+  "content_hash": "27c9be4460573469eb4c69452f49599fbf3a0bae709353b555a38b30caaa1af3",
   "dependencies": [],
   "description": "Use when designing or evaluating MuleSoft Anypoint Platform deployment topology, runtime model selection, API governance with API Manager, or Anypoint Exchange strategy. Trigger keywords: CloudHub, Runtime Fabric, Anypoint Platform, API Manager, Anypoint Exchange, MuleSoft runtime model, private space, Anypoint Security. NOT for Salesforce-native integration patterns (use integration/api-led-connectivity), NOT for Salesforce Connector configuration in MuleSoft (use integration/mulesoft-salesforce-connector), NOT for MuleSoft flow implementation or DataWeave scripting.",
   "file_location": "skills/architect/mulesoft-anypoint-architecture",

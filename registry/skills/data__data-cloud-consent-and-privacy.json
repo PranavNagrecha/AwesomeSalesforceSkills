@@ -57,7 +57,7 @@
     "f545b39c06c84b10d2e8",
     "fc6f563368c0857329d2"
   ],
-  "content_hash": "b0577c8e9e0d93e8fb08a09dbe0c44be0b7d35f4cc95b2b20225f617ee48af8e",
+  "content_hash": "43be89828176f82f324054e956d3f54731d1b24f8d81302efdc08f080bfe899f",
   "dependencies": [],
   "description": "Use this skill when implementing consent management, data subject request processing, or data retention policies in Data Cloud \u2014 including the ssot__ContactPointConsent__dlm DMO, consent-aware segmentation filters, GDPR/CCPA data deletion requests via Privacy Center or Data Deletion API, and per-DLO retention policy configuration. Triggers on: consent-aware segmentation in Data Cloud, Data Cloud GDPR deletion request, right to be forgotten Data Cloud, ContactPointConsent DMO, Data Cloud data retention policy. NOT for CRM-layer consent management (ContactPointTypeConsent standard objects on Salesforce org \u2014 use gdpr-data-privacy skill), not for general GDPR implementation outside Data Cloud.",
   "file_location": "skills/data/data-cloud-consent-and-privacy",

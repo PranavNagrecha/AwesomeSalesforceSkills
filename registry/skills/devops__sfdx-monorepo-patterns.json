@@ -28,7 +28,7 @@
     "fe4133c9ffcf1ddec042",
     "ff3b96c77250b04115f2"
   ],
-  "content_hash": "064d8d548be1e40f84ee665cc8d5e379c41749389095d5e0957f8516c347fdc8",
+  "content_hash": "a8b11054de67866d0895c51a6f69269cd8c63304d779b409968faac508fe9114",
   "dependencies": [],
   "description": "Structure a single repo with multiple unlocked packages, shared templates, and cross-package test strategies. NOT for multi-repo org strategies.",
   "file_location": "skills/devops/sfdx-monorepo-patterns",

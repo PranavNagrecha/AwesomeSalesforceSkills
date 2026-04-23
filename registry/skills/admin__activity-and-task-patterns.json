@@ -48,7 +48,7 @@
     "f670e8efd186ea2a9538",
     "faa974c676eb235b421a"
   ],
-  "content_hash": "0b30a349c1b4c3e72cfce63d525a33895d7c16a8903caea41e3c24e410a35b04",
+  "content_hash": "1ad4e45defa88181a8b8dff92487f00089c9f2d04269a144ad8c5b218db3e5c3",
   "dependencies": [],
   "description": "Task and Event objects: polymorphic WhatId/WhoId, Activity object model, ActivityHistory vs OpenActivity, activity timeline customization, bulk task creation, Einstein Activity Capture boundaries. NOT for Calendar sharing (use calendar-sharing-setup). NOT for Email-to-Case (use case-management-setup).",
   "file_location": "skills/admin/activity-and-task-patterns",

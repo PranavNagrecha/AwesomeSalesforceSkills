@@ -55,7 +55,7 @@
     "f8c2fda1f6845c5b0c5b",
     "fe49c50ccd6eb38256ff"
   ],
-  "content_hash": "3be85f8e1ef72b8e46aba6781f9f8764e58cc5c703954b2bf65675fa1ff1b1b6",
+  "content_hash": "02888fc527199b34d3315fedc636a43cddd726ba1ee87bf5609800136c3d299d",
   "dependencies": [],
   "description": "Use when deciding which Salesforce automation tool should own a requirement, including before-save and after-save Flow, screen Flow, scheduled Flow, invocable Apex, Apex triggers, and migration off Workflow Rules or Process Builder. Triggers: 'Flow or Apex trigger', 'which automation tool should I use', 'Process Builder migration', 'Workflow Rule retirement', 'same-record update or trigger'. NOT for detailed implementation of a Flow or trigger after the automation boundary has already been chosen.",
   "file_location": "skills/admin/process-automation-selection",

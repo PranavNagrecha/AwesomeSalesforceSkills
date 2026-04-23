@@ -87,7 +87,7 @@
     "f468aea47fd9410fc133",
     "ffd7a448722a4ce98b08"
   ],
-  "content_hash": "ed117e247e93976729beeaa9d30ea1f80b6cc8830367ba9eebc2bd260da8d68d",
+  "content_hash": "a8a5d26c48b9d0f33b068064b26130d48a2dacab1ee44dfce2e2829835e203e3",
   "dependencies": [],
   "description": "Use when conducting a dedicated security architecture review of a Salesforce org \u2014 assessing sharing model completeness, FLS/CRUD enforcement, Apex security patterns, exposed API surface, Connected App policies, and Shield readiness. Produces a structured findings report with severity ratings (Critical/High/Medium/Low) and a 20+ point review checklist. Triggers: security architecture review, org security posture, sharing model audit, FLS coverage review, Connected App security, Shield assessment, org security health deep-dive, HIPAA or PCI security controls Salesforce. NOT for implementing security fixes (use security/* skills). NOT for the Salesforce Security Health Check UI (use security-health-check skill). NOT for a full WAF review across all pillars (use well-architected-review).",
   "file_location": "skills/architect/security-architecture-review",

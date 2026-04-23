@@ -92,7 +92,7 @@
     "f82576156305370eb06f",
     "f9ea6f1a442c28e544e0"
   ],
-  "content_hash": "35921ba4e297d4ba07635267c66daf9b1afc477034d4cab30d90127e110c2ac0",
+  "content_hash": "93f9696d81ecb99c008d9f46efef8add6c6cd0a235483e88a4f07a843fdef587",
   "dependencies": [],
   "description": "Use when Flow is a Platform Event publisher, subscriber, or both. Triggers: 'publish platform event from flow', 'platform-event-triggered flow', 'high-volume platform event', 'publish after commit vs immediate', 'PE subscriber error handling', 'integration fan-out from save'. NOT for Change Data Capture (see integration skills) or for generic async work that does not need pub/sub (see flow/scheduled-flows).",
   "file_location": "skills/flow/flow-platform-events-integration",

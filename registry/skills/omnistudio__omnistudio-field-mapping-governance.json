@@ -28,7 +28,7 @@
     "fdd027f0207a188833e4",
     "febaf6d6912708d3c44e"
   ],
-  "content_hash": "7d6684fa931e5fe117070d1eff803babe20f3dcb89d04886886df79920d48311",
+  "content_hash": "a60ac645d4906890c9b43d18aa6b087118e445854fab3c8ccce6517744255b7d",
   "dependencies": [],
   "description": "Govern DataRaptor field mappings to prevent runtime errors when source metadata changes: naming, versioning, and dependency tracking. NOT for DataRaptor authoring fundamentals.",
   "file_location": "skills/omnistudio/omnistudio-field-mapping-governance",

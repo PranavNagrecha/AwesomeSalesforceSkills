@@ -53,7 +53,7 @@
     "f52f5994e39de33f49e4",
     "f7f44c502e73fdde669b"
   ],
-  "content_hash": "723456f87d4018a12a6e6bf6fd6c61fd828d234a54441b1f91d42d1de01b48dc",
+  "content_hash": "3060fcc8bf018162d3b5fb58a70bb753e78eb102a410424a21ac2ca3d498eea7",
   "dependencies": [],
   "description": "Use when planning, reviewing, or troubleshooting Salesforce data imports, migrations, and bulk updates. Triggers: 'Data Loader', 'Data Import Wizard', 'Bulk API', 'upsert', 'cutover', 'load failed', 'reconcile data'. NOT for ongoing integration architecture - use integration/ skills for that.",
   "file_location": "skills/admin/data-import-and-management",

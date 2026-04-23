@@ -113,7 +113,7 @@
     "fc92f1336a8f0f95f580",
     "fde40fce4a5052e74f81"
   ],
-  "content_hash": "1768c580b5010b0f43fcf3e20292d424abad116b5df40993da31c8dec53971d1",
+  "content_hash": "b0d68fe89576e16ad3fdeb5f4456b56041cabd62be1a5441c06a2bdf70629a49",
   "dependencies": [
     "admin/financial-account-setup",
     "admin/person-accounts"

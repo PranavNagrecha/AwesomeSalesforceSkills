@@ -28,7 +28,7 @@
     "fc5584b44b58f823d438",
     "ff30335311739a2ae693"
   ],
-  "content_hash": "0aeb8816d6eb71b21da3227d4c8d185b6c9ef824438483769caa3cccee424589",
+  "content_hash": "f283bcef9730c1bf212313b4cb7a3174aed321989ec4eea26c16e1e5452b8c55",
   "dependencies": [],
   "description": "Roll out Shield (Platform Encryption + Event Monitoring + Field Audit Trail) end-to-end, sequencing feature enablement to avoid data lockout. NOT for Classic Encryption or general PE design.",
   "file_location": "skills/security/salesforce-shield-deployment",

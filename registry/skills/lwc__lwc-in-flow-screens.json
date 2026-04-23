@@ -81,7 +81,7 @@
     "fd6d96f2e06f5b7e3c26",
     "ff24a63fcc50557e086f"
   ],
-  "content_hash": "7a26db364b50914b936ec8f1a7e8b7d249248342594d6334dda087111bc06839",
+  "content_hash": "99b536f98c865bacdadce3ae8a919aec2dfe852cdd7cb44d228abc3e0fd5df00",
   "dependencies": [],
   "description": "Use when building, reviewing, or troubleshooting a custom Lightning Web Component that runs inside a Flow screen element, covering @api props exposed to Flow, FlowAttributeChangeEvent for output, validate() for user input validation, and flow navigation events. Triggers: 'lwc in flow screen', 'FlowAttributeChangeEvent', 'flow screen component not updating', 'flow validate method', 'flow navigation from lwc'. NOT for custom property editors (use custom-property-editor-for-flow), NOT for embedding a flow inside an LWC (use flow/screen-flows), NOT for auto-launched flows.",
   "file_location": "skills/lwc/lwc-in-flow-screens",

@@ -52,7 +52,7 @@
     "fc312adbd0fc24ccbf8a",
     "fea4272a1ed850f1deaf"
   ],
-  "content_hash": "286effbf9c2a30d11c893f71f54edb471d538a8c7411103952ea4b7319831f87",
+  "content_hash": "9d9b09361237cc84f496b5352a0e468a5af84ad94861b0dfedfc5b3ccc2b40b9",
   "dependencies": [],
   "description": "Use when designing or reviewing `lightning-datatable` usage in Lightning Web Components, including column configuration, stable `key-field` values, inline editing, row actions, infinite loading, and custom cell types. Triggers: 'lightning datatable inline edit', 'row actions in lwc datatable', 'key field missing', 'infinite loading in datatable'. NOT for highly custom virtualized grids or broad page-performance work outside the datatable boundary.",
   "file_location": "skills/lwc/lwc-data-table",

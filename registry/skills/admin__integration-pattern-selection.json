@@ -55,7 +55,7 @@
     "f02c7adf5f265684062f",
     "f67204b8183ed7e314ca"
   ],
-  "content_hash": "62a0a01e8deb9a84c46e9960d052303bffd5c20967eb1b08028f081420482815",
+  "content_hash": "f1584d08ec1503fca0300fe2606f7d722731e209a6cb85f305d2971f3590975f",
   "dependencies": [],
   "description": "Use this skill to select the right Salesforce integration pattern \u2014 from point-to-point to event-driven to hub-and-spoke \u2014 by applying the official Salesforce two-axis decision framework (integration type \u00d7 timing) to a business integration scenario. Trigger keywords: integration pattern decision, choose integration approach, Salesforce integration architecture, when to use platform events vs API, integration type selection. NOT for implementation of any specific integration pattern (use domain-specific integration skills), MuleSoft architecture (use architect/mulesoft-anypoint-architecture), or middleware vendor selection.",
   "file_location": "skills/admin/integration-pattern-selection",

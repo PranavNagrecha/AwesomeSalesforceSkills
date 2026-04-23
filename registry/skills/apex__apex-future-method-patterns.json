@@ -50,7 +50,7 @@
     "fdd79edd9e9465e2e898",
     "fe3758bb4f78b34ed6ca"
   ],
-  "content_hash": "5a526344c095a3c7eb50c2464c13b203b50a75f38243be482d878974ef8e197e",
+  "content_hash": "2e9044a90ccb97c391d69f0cae4133fb64d5a04b5aa91100c03b994f881257d0",
   "dependencies": [],
   "description": "@future methods: primitive-only parameters, callout=true, no chaining, 50 per transaction, error handling. When to prefer Queueable/Batch instead per async-selection decision tree. NOT for Queueable patterns (use apex-queueable-patterns). NOT for Batch Apex (use apex-batch-patterns).",
   "file_location": "skills/apex/apex-future-method-patterns",

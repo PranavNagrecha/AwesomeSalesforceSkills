@@ -56,7 +56,7 @@
     "f798793720b26b3ffc0b",
     "feda9cba3662589186de"
   ],
-  "content_hash": "2dad8601462b855d9eccda8351a877c489e96744d7b042a9807b11a623aaaa1e",
+  "content_hash": "5cdb6b4936ed92a623ed51255bfc411bd6030df193670e57be5eb6831fd9425c",
   "dependencies": [],
   "description": "Use this skill when deciding between Salesforce package development approaches \u2014 unmanaged, unlocked, 1GP managed, or 2GP managed \u2014 including namespace selection, ISV distribution requirements, upgrade path design, and AppExchange packaging strategy. Trigger keywords: should I use managed or unlocked package, Salesforce package type selection, 2GP vs 1GP managed package, namespace decision Salesforce, ISV AppExchange packaging, unlocked package strategy. NOT for individual package creation steps, scratch org setup, or day-to-day package version build commands.",
   "file_location": "skills/devops/package-development-strategy",

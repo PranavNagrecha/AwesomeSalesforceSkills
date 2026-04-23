@@ -98,7 +98,7 @@
     "fc46cefe3d68bbe71383",
     "fd7d2e17b0e18e274949"
   ],
-  "content_hash": "3f858cad75d34770648e9cccc2dc569fa42012b040f256a87e031dfe4a4de892",
+  "content_hash": "9351bbc6f8679c36d422fc420881995b87407bf79c32b7c306dc4217da03c37b",
   "dependencies": [],
   "description": "Use when importing or migrating prospect records into MCAE (Marketing Cloud Account Engagement / Pardot) via the CSV list import tool, including field mapping for default and custom fields and handling of cross-BU prospect moves. NOT for CRM (Lead/Contact) data migration, not for backfilling engagement history such as opens, clicks, form fills, or page view data, and not for bulk API prospect creation via Apex.",
   "file_location": "skills/data/mcae-prospect-data-migration",

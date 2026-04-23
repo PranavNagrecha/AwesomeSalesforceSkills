@@ -50,7 +50,7 @@
     "fe55aa4eec9831b052d2",
     "fe8ed9c1bfce74bb9677"
   ],
-  "content_hash": "82c83a3a36f3533921b09d6898041b19d8bc78d993460034e4953e979e98dddc",
+  "content_hash": "c97c05918c04cef10b3c88b4920f11d9afc8e58c1998b3feea60a80b8c5fe139",
   "dependencies": [],
   "description": "Compound fields (Name, Address, Geolocation): SOQL access rules, DML semantics, component access in Apex/LWC, reporting column behavior, formula field restrictions. NOT for general field design (use custom-field-creation). NOT for address validation services (use address-validation-integration).",
   "file_location": "skills/admin/compound-field-patterns",

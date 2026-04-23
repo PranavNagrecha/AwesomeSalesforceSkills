@@ -28,7 +28,7 @@
     "fd5022a69fa1a407be66",
     "fdf3cd6d196e36c4cd43"
   ],
-  "content_hash": "793041194eb3eb62d4f1ee6f9a5aeaff787c208ffe070e33435dc84420d2585e",
+  "content_hash": "e8554d16e8a3e1b24b5e1e79ab2d953274b805603e93365d382a1838ac905876",
   "dependencies": [],
   "description": "Lifecycle management for Prompt Builder templates: version, test, promote, roll back via CMDT-backed bindings. NOT for authoring initial templates or generic prompt engineering.",
   "file_location": "skills/agentforce/prompt-template-versioning",

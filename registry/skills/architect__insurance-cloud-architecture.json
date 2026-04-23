@@ -70,7 +70,7 @@
     "fde3a619a88c2880b2ce",
     "fe62710a205e102be986"
   ],
-  "content_hash": "6c67a48ff6c5f571bf3f4471e3ecefb7dbaa1c029df34db367271d4f9ac732f1",
+  "content_hash": "2ac3a1c37e5211e53ccafccdd1c8f1a64208bf25bbcab19a767c90b35f4a71b7",
   "dependencies": [
     "fsc-architecture-patterns",
     "industries-insurance-setup"

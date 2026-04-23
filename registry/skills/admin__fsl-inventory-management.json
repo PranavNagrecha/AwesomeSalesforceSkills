@@ -98,7 +98,7 @@
     "fbf07fcb8adea7309fd2",
     "fcd3eb6867d8aef0d124"
   ],
-  "content_hash": "6d054c231867a61c15b595295c66b33935bcdada1f5acd43774c15bd12cd6323",
+  "content_hash": "51b7bebd88b8f7f971470b3626429ed4733577ae447de5f1299bc650b134850d",
   "dependencies": [],
   "description": "Configure and manage Field Service Lightning inventory: ProductItem (stock at locations), ProductTransfer (stock movement), ProductConsumed (parts used on work orders), ProductRequest/ProductRequestLineItem (replenishment ordering), and ProductItemTransaction (audit trail). NOT for CPQ product catalog management, OCI (Omnichannel Inventory), or B2B Commerce warehouse integration.",
   "file_location": "skills/admin/fsl-inventory-management",

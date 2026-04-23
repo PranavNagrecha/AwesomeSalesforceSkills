@@ -94,7 +94,7 @@
     "fe9949b3898efba46624",
     "fffa1b30a4ab041ccd3d"
   ],
-  "content_hash": "50dfc0f40ab362172d8282f5c470a6e2c00de977da355e778e855da0b9907f39",
+  "content_hash": "2d92df3866a4b7d62b9b0c6a5856ca875be6c63cfcf223e5609db8f5aa6aeb16",
   "dependencies": [],
   "description": "Use when a practitioner needs to classify the risk level of an upcoming Salesforce deployment, define rollback trigger conditions, or assign decision authority before the release window opens. Triggers: 'how risky is this release', 'what needs rollback planning', 'classify deployment risk', 'pre-deployment risk checklist', 'rollback decision authority', 'high risk metadata types'. NOT for executing the deployment itself, writing CI/CD pipeline code, or troubleshooting failures after a deployment has already run \u2014 use change-management-and-deployment for execution planning and devops/deployment-error-troubleshooting for post-failure diagnosis.",
   "file_location": "skills/admin/deployment-risk-assessment",

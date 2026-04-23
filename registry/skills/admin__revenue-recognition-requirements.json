@@ -98,7 +98,7 @@
     "fbcb59835d1ad7a5e9c3",
     "fe1a28924d57db60016b"
   ],
-  "content_hash": "246628d60fc28e4fc27c66e87a99e5f2ebe74865a0baa79a39f79ec628dec301",
+  "content_hash": "0022bea61458081f1c156c71c7067c6974a606bde0b5e1226ec11d4809d0bcd8",
   "dependencies": [],
   "description": "Use this skill to configure and troubleshoot Salesforce Billing revenue recognition rules, schedules, and GL transaction generation in compliance with ASC 606. Triggers: 'revenue schedule not generated after order activation', 'blng__RevenueSchedule__c records missing', 'how to configure blng__RevenueRecognitionRule__c on a product', 'Finance Periods not set up before revenue schedule generation', 'revenue schedule did not update after contract amendment', 'performance obligation allocation for bundled products', 'distribution method for revenue spread', 'ASC 606 implementation in Salesforce Billing'. NOT for billing schedule setup (see billing-schedule-setup skill), NOT for standard Salesforce CPQ quoting, NOT for OpportunityLineItem native Revenue Schedules (standard platform feature unrelated to Salesforce Billing), NOT for Salesforce Revenue Cloud (Revenue Lifecycle Management).",
   "file_location": "skills/admin/revenue-recognition-requirements",

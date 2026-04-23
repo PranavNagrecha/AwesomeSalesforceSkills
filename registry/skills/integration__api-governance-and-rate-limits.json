@@ -28,7 +28,7 @@
     "ed9f37138a786a3d5c6f",
     "f496d72018651e8cb1cb"
   ],
-  "content_hash": "9284dc330000b010f19a93c5e7f6ce0622d6b74d1fce8369137c28717bfa5dd1",
+  "content_hash": "b0b5822b2cdf26519cf07f9df4b53f5dbe5bec496425af7537443d9a3d3ee319",
   "dependencies": [],
   "description": "Monitor and govern Salesforce API consumption: per-user limits, org allocation, lightning-rest limits, and backoff. NOT for designing new endpoints.",
   "file_location": "skills/integration/api-governance-and-rate-limits",

@@ -28,7 +28,7 @@
     "f15a86d81551bb6db3f3",
     "f84f9a8a1052a86e29ad"
   ],
-  "content_hash": "3aaea6a8ff0075013afb69f4ba3c59b471c8648afc36ce15f1393da491f726c6",
+  "content_hash": "30eebf6e011f5ad3fe3c3c43eecf7b45396af1fb68f57692ce571ca43fd58603",
   "dependencies": [],
   "description": "Apex test patterns for @InvocableMethod agent actions: per-branch coverage, bulk safety, deterministic assertions. NOT for UI/LWC testing or agent conversational quality scoring.",
   "file_location": "skills/agentforce/agent-action-unit-tests",

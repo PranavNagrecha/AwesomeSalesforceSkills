@@ -37,7 +37,7 @@
     "fa36f11ec1cec78a66bc",
     "fc8946230d087d540e37"
   ],
-  "content_hash": "b2af99711e2ff9bb7efef262cbda152c68fb76dcf5588ddf0361b03aa2a27496",
+  "content_hash": "c332aa39cbb00f525e96d96d307d30e274c6b2f60f52ca0baa6461d889b5a752",
   "dependencies": [],
   "description": "Omni-Channel analytics data: agent work records, queue metrics, capacity utilization, wait time reporting. NOT for admin routing setup.",
   "file_location": "skills/data/omni-channel-reporting-data",

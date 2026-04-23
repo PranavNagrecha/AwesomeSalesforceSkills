@@ -57,7 +57,7 @@
     "f65876cca02e68e66316",
     "ff0d24bdcc154c5c1fbe"
   ],
-  "content_hash": "42e83cccfbaf1aeabd3a655b7f49235de9489838af7a502f38e685c56ad3bbaa",
+  "content_hash": "c481bf29ef5dca32f0345b1764eb52e20b13e661a9ebc202ebd6c33680a1f485",
   "dependencies": [],
   "description": "Use when hardening the Experience Cloud guest user profile, controlling unauthenticated access to records and Apex, or investigating data exposure through guest SOQL. Covers object permissions, sharing model enforcement for unauthenticated users, and Apex execution context. NOT for Experience Cloud site creation (use Experience Cloud skills) or for authenticated external user security (use security/experience-cloud-security).",
   "file_location": "skills/security/guest-user-security",

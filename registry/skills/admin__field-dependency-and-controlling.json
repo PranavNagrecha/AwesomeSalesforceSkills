@@ -50,7 +50,7 @@
     "ec2900f5ee829abbfcb9",
     "f8426ddcf2750204dd43"
   ],
-  "content_hash": "e3c324f9843cb786c5f53ed1cd39e322926e91bdf9a4c29417928fc39b8722c8",
+  "content_hash": "1f9e3fa99f6a6af0ff13191a489b1c2fce30746af0d864214f9faa3c30ef8e43",
   "dependencies": [],
   "description": "Dependent picklists in Salesforce: controlling field (picklist or checkbox), dependent picklist, valueSettings matrix in metadata, API behavior via SOAP/REST, LWC lightning-combobox with dependency. NOT for record types (use admin/record-types). NOT for validation rules.",
   "file_location": "skills/admin/field-dependency-and-controlling",

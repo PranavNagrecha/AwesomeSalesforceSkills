@@ -97,7 +97,7 @@
     "fc7306acf5d038a85af0",
     "fdca207d63bea9f41b6f"
   ],
-  "content_hash": "f4dd2be3fefc70cf494316f146f165859b5d7c8af90801c43a828484f77bd7f2",
+  "content_hash": "5551c5ed4c095f76ec4766f5274c2ca52fc578875428093aa888d41aecbc1331",
   "dependencies": [],
   "description": "Designing and debugging Visualforce pages: standard/custom controllers, view state management, CSRF and SOQL injection security, PDF rendering, Visualforce email templates. Use when building custom UI pages or PDF outputs on the Salesforce platform. NOT for LWC development (use lwc/* skills). NOT for Visualforce email template syntax (use email-services).",
   "file_location": "skills/apex/visualforce-fundamentals",

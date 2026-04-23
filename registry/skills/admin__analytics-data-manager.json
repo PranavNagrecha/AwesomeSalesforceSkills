@@ -106,7 +106,7 @@
     "f459244a729313f31859",
     "f7a8cfdb9cb9de92a955"
   ],
-  "content_hash": "037a688542fd4db4a86294acf7756ab9be48afece8ccc52a453c73f1cfe64d8f",
+  "content_hash": "eb0cc4300a78488a15bee22a56ddb9b339f7e99b10d8d618d661ab548da23c05",
   "dependencies": [],
   "description": "Use this skill when configuring Data Manager in CRM Analytics: enabling objects for sync, scheduling data sync runs, setting up remote connections to external databases, monitoring sync status and error logs, or troubleshooting connected object issues. Trigger keywords: data sync, connected objects, Data Manager, sync schedule, remote connection, Snowflake connector, sync error, incremental sync, CRM Analytics data pipeline. NOT for dataflow or recipe authoring, dataset row-level security, or dashboard/lens design \u2014 those belong to the analytics-dataset-management or analytics-dashboard-design skills.",
   "file_location": "skills/admin/analytics-data-manager",

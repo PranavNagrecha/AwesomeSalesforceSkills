@@ -96,7 +96,7 @@
     "fe51079929ed6c28a340",
     "ffc3e45f878f83eda8fc"
   ],
-  "content_hash": "2351b7a4dc38acf1eee96514ca04f6afad0dbce3fd0afb4e19c25976fec7fc36",
+  "content_hash": "12b6c3cb5a49c6a52d9a2383a66f6d7489b50217df21c8b060cd0c290f98425e",
   "dependencies": [],
   "description": "Use this skill when configuring, diagnosing, or extending Marketing Cloud Connect Synchronized Data Sources \u2014 the mechanism that pulls Salesforce CRM object records into read-only Synchronized Data Extensions (SDEs) in Marketing Cloud. Triggers on: synced data extension not updating, contact or lead records missing from Marketing Cloud, sync failures in Contact Builder, 250-field limit questions, CRM-to-MC data latency concerns. NOT for manual imports via Import Activity, NOT for SFTP-based data loads, NOT for Data Cloud (CDP) real-time data streams, NOT for direct Apex callouts into Marketing Cloud.",
   "file_location": "skills/data/marketing-cloud-data-sync",

@@ -103,7 +103,7 @@
     "ff05dda921e845511a3a",
     "ffc3b5b921f683b7efdb"
   ],
-  "content_hash": "d57a103e43573d6865b7332109cd7f4f76b5153fb34eab68c4d7adc7556e2a8a",
+  "content_hash": "a0b5423571141655749c2169adedcd276dea833c6fe91ad1d57f00336bbacbae",
   "dependencies": [],
   "description": "Use when designing or reviewing the end-to-end stage sequence, promotion strategy, and quality gates for a Salesforce CI/CD pipeline. Trigger keywords: pipeline stages, promotion strategy, quality gate, deployment gate, CI validation sandbox, staging environment, pipeline design, release strategy, rollback strategy, environment topology. NOT for configuring an individual CI tool (GitHub Actions, GitLab CI, Jenkins) \u2014 use devops/github-actions-for-salesforce or devops/gitlab-ci-for-salesforce. NOT for Apex test configuration in CI \u2014 use devops/continuous-integration-testing. NOT for DevOps Center setup or work item promotion \u2014 use devops/devops-center-pipeline.",
   "file_location": "skills/architect/ci-cd-pipeline-architecture",

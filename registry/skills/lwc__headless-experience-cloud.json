@@ -77,7 +77,7 @@
     "f8fa1e02c4c17883c5c1",
     "fd650e731a7eb7ee06f3"
   ],
-  "content_hash": "ea6c10c1c90649eb30441c8bd6a68dedac7e66759f3eb58642a377c30e37cc6e",
+  "content_hash": "7bf7b05e1f41dbb91050ec4d0f4e7da6ccb3ddee2f289cf5a025ed1bdf0afc14",
   "dependencies": [],
   "description": "Use when building custom frontends (React, Vue, mobile, static sites) that consume Salesforce CMS content via the Connect REST API headless delivery endpoint. Triggers: 'headless Salesforce CMS', 'deliver CMS content to external frontend', 'React app Salesforce content API', 'custom frontend Experience Cloud data', 'CMS delivery channel API'. NOT for standard Experience Builder site development. NOT for CMS Connect (3rd-party CMS federation into Experience Builder). NOT for Experience Cloud LWC components rendered inside a site.",
   "file_location": "skills/lwc/headless-experience-cloud",

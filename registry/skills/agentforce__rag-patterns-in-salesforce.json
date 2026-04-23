@@ -104,7 +104,7 @@
     "fc488a923796e3f9d822",
     "fea6c73e8b163c517df0"
   ],
-  "content_hash": "087de6db766ee45a2a5760dc2746462aa100b7318bbe079466da4718a23b8ab7",
+  "content_hash": "9dc7ea7f7e29525d06cfc4557e03d02956d51c22d50744d8dbfd0a7f0aeb3b30",
   "dependencies": [
     "prompt-builder-templates",
     "einstein-trust-layer"

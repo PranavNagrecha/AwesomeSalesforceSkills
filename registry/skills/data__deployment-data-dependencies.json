@@ -54,7 +54,7 @@
     "f9c85d226332cd4039b3",
     "fbbe26339ac528f7516d"
   ],
-  "content_hash": "9a020dbb21d73b71408f1787a0cd7ee52dcea0ac154096c16b4f74c0dd828b97",
+  "content_hash": "b58bbada60208b68f2a90886612485220d45841f33c7e9799690383de3b77dc1",
   "dependencies": [],
   "description": "Use this skill when managing data record dependencies during deployments: resolving org-specific record type IDs that differ between source and target orgs, remapping queue IDs and user IDs in data plans, seeding Custom Settings values post-deployment, and using external IDs or DeveloperName references to avoid hardcoded org-specific IDs. Trigger keywords: INVALID_CROSS_REFERENCE_KEY Record Type ID, hardcoded record type IDs deployment, deployment data record org-specific IDs, Custom Settings not deployed, queue ID remap after sandbox refresh. NOT for metadata deployment (use metadata deployment guides), individual Apex test data setup, or FSC-specific deployment sequencing.",
   "file_location": "skills/data/deployment-data-dependencies",

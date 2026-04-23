@@ -28,7 +28,7 @@
     "f6eb72b645d33b38151f",
     "fbb383e6e940db6c39d7"
   ],
-  "content_hash": "6b6822d9ff2d59fbd98b4d4cd8984c107803bcbd49d3679f00cb3641fdce06b6",
+  "content_hash": "ddb8796021d4ce7445329d7ee4521be2f268ae15759ba85730a8a7972e2f91b7",
   "dependencies": [],
   "description": "Export large Salesforce datasets to a lakehouse via Bulk API 2.0, CDC streams, or Salesforce Data Pipelines. NOT for ad-hoc exports.",
   "file_location": "skills/integration/salesforce-data-pipeline-etl",

@@ -86,7 +86,7 @@
     "f56500db396365f29e5c",
     "f98fdd3331ade67d89d5"
   ],
-  "content_hash": "2a2116e092eeaef5611c30f7ee6d52294af87b11d2f77d1ce31d8abda98d1dc8",
+  "content_hash": "84b9b0faf852b6936ef3c9cf072ec57f5db0d5fa2640ac64fc143d6268bbf99a",
   "dependencies": [],
   "description": "Use when analyzing Experience Cloud site analytics including login metrics, member engagement, page view tracking, and content performance. Triggers: Experience Cloud site analytics, community member engagement data, portal login tracking, page view reports community, GA4 Experience Cloud integration. NOT for CRM Analytics or Tableau CRM. NOT for internal Salesforce reporting on standard CRM objects.",
   "file_location": "skills/data/community-analytics-data",

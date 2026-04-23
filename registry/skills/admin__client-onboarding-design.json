@@ -85,7 +85,7 @@
     "fd8239739cee91e5809a",
     "ffcb0ea84139cc411c3c"
   ],
-  "content_hash": "2c275981fdf40af4c2c71bd98a1ea1f15e5128c87c72002281fa7c8aa0c1bf6c",
+  "content_hash": "998af777a350fdab790058d5647552b6b3230a4e15f736d7c64009000a5df8df",
   "dependencies": [],
   "description": "Use this skill when designing the FSC client onboarding process \u2014 mapping document collection touchpoints, approval steps, compliance checkpoint sequencing, and welcome journey handoffs. Trigger keywords: client onboarding design, onboarding workflow requirements, document collection flow, compliance checkpoint, welcome journey, intake process design. NOT for Action Plan template configuration mechanics, OmniStudio component implementation, or Flow builder steps \u2014 use fsc-action-plans for template setup details.",
   "file_location": "skills/admin/client-onboarding-design",

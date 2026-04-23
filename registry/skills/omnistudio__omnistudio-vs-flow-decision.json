@@ -1,0 +1,102 @@
+{
+  "category": "omnistudio",
+  "chunk_ids": [
+    "037fd80fdd6123a94420",
+    "0e708ed4c4f224ef11a7",
+    "118cb50b0868d95dd802",
+    "1310f35724cd3284da13",
+    "138e0fbcbfaa1fd93cd2",
+    "1b5696b7032d69aebf7a",
+    "1eaeaf1b5a716a059bd0",
+    "222bae2fcc20678515e5",
+    "243a6050092c033fbc35",
+    "26619cd624b350775182",
+    "2f85f2e0a052b470bfde",
+    "329c783730d928164870",
+    "3938b696554a8795ba73",
+    "3e6194dbae6fc5cd0b06",
+    "446d163d03ef5a3145c9",
+    "4e81d5e02c1edccc8ca3",
+    "51958fd8db4560f63992",
+    "54acccd93a882d8c86d9",
+    "59a4e0ed446a49aa0eae",
+    "5a3eaf2b26d22e854d08",
+    "6809ca4947ac6f31d217",
+    "6ba295b1920ef5e73e9d",
+    "6e50abe9ca8b3ea31602",
+    "6f130991d57b063ede37",
+    "7358de18fe1d7e6c5e63",
+    "744efb4baadfc1c7b3a7",
+    "78a9548f3180f696b0ee",
+    "7d081eb36047115a2933",
+    "858f585088190775731b",
+    "8615553f016c3e1fe548",
+    "86ec3e5850d39417726d",
+    "8e97e579b78242f7ce4c",
+    "9163aff7c41583e00748",
+    "9921d1f34d4e2d00aaf0",
+    "9ab73e35ad8f0bc8f9e3",
+    "9d0fd894e5027ffc9a66",
+    "a820a450f65c697a6a62",
+    "a8c92621b930266d5e57",
+    "abe41adfd573eb2bf8eb",
+    "b358100ce0dd07990576",
+    "bd04728106fbe2a66e81",
+    "c3939c469b91c70d8041",
+    "ccc71f5bc7b2235c6746",
+    "d3d71853793ae9d5ea4a",
+    "d51c56b158821fcd319e",
+    "db434b9f41f02d6979b2",
+    "e1c27bf5bcc081524229",
+    "e4f280a434052224e272",
+    "f323d063b38d04483a5d",
+    "f3da3f22307e58233c50",
+    "f94aa6161c76e642c9da",
+    "f9e5a94fab464bd5dcf1",
+    "fe7fb72644813d782a8c"
+  ],
+  "content_hash": "07bbaa33747334d113a0a1d8a996377f851fb4452c4e844e10de6463af242d87",
+  "dependencies": [],
+  "description": "Use when choosing between OmniStudio (OmniScript / Integration Procedure / FlexCard / DataRaptor) and Flow / Screen Flow / Apex for a given capability. Triggers: 'omnistudio or flow', 'omniscript vs screen flow', 'integration procedure vs subflow', 'flexcard vs lightning page'. NOT for general automation selection across Workflow/Process Builder/Apex (see automation-selection tree).",
+  "file_location": "skills/omnistudio/omnistudio-vs-flow-decision",
+  "id": "omnistudio/omnistudio-vs-flow-decision",
+  "inputs": [
+    "capability description and user surface",
+    "licensing and product line context (Industry Cloud vs core)",
+    "team skills and operational model"
+  ],
+  "name": "omnistudio-vs-flow-decision",
+  "official_sources": [
+    "OmniStudio overview \u2014 https://help.salesforce.com/s/articleView?id=sf.omnistudio.htm",
+    "Flow Builder overview \u2014 https://help.salesforce.com/s/articleView?id=sf.flow.htm",
+    "Salesforce Architects \u2014 automation selection \u2014 https://architect.salesforce.com/decision-guides",
+    "Salesforce Well-Architected Operational Excellence \u2014 https://architect.salesforce.com/docs/architect/well-architected/trusted/operations"
+  ],
+  "outputs": [
+    "recommended tool per layer (UI, orchestration, data shaping)",
+    "risks and tradeoffs",
+    "migration notes if replacing existing implementation"
+  ],
+  "references": [
+    "skills/omnistudio/omnistudio-vs-flow-decision/references/examples.md",
+    "skills/omnistudio/omnistudio-vs-flow-decision/references/gotchas.md",
+    "skills/omnistudio/omnistudio-vs-flow-decision/references/llm-anti-patterns.md",
+    "skills/omnistudio/omnistudio-vs-flow-decision/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/omnistudio/omnistudio-vs-flow-decision/scripts/check_omnistudio_vs_flow_decision.py"
+  ],
+  "tags": [
+    "omnistudio",
+    "flow",
+    "tool-selection",
+    "decision-tree",
+    "architecture"
+  ],
+  "templates": [
+    "skills/omnistudio/omnistudio-vs-flow-decision/templates/per-layer-decision.md"
+  ],
+  "updated": "2026-04-23",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

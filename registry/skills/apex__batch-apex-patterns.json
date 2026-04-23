@@ -55,7 +55,7 @@
     "f0743759e896315fcd81",
     "feeb5df27ff7ec79500d"
   ],
-  "content_hash": "585e60038e72d4b845e8a5ea2773db9e6f563d3c908352c81a9d93aa58f5207c",
+  "content_hash": "ab7d6a21e6531952d72cb78663c082bf20d93cbdc5863c5ab4d52f7c62e92013",
   "dependencies": [],
   "description": "Use when designing, reviewing, or debugging Batch Apex contracts, scope sizing, stateful behavior, chaining, and AsyncApexJob monitoring. Triggers: 'Database.Batchable', 'Database.Stateful', 'executeBatch', 'batch scope', 'AsyncApexJob'. NOT for generic async choice discussions where Queueable or Future might still be the better tool.",
   "file_location": "skills/apex/batch-apex-patterns",

@@ -76,7 +76,7 @@
     "f2b9892cdcd884dd70c7",
     "ff6b9fee103de31e467d"
   ],
-  "content_hash": "2171cf461d7fc8dad6d411e91b992ff600efbe4b1c2ac360f40c26d12c0bf8c2",
+  "content_hash": "7f458d16d5a08628e3b67bb11bfaeef442a5a3ca850e6933d4548d1df6c7260b",
   "dependencies": [
     "admin/health-cloud-patient-setup"
   ],

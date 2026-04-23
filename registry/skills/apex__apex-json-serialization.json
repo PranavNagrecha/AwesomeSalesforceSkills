@@ -53,7 +53,7 @@
     "fe5c1cd5ba1a970d0667",
     "fe9a6a0727fee3ad26f4"
   ],
-  "content_hash": "6a51ee850ccb9ff4eeb94c1c31ea0ff85f208a1834a0208ca33ac0cadf3db2ff",
+  "content_hash": "bfc9fcd663003b9d529df7da2e9d9eda9ed24e132c65035baf320caae3941588",
   "dependencies": [],
   "description": "Use when serializing Apex objects to JSON strings or deserializing JSON responses into Apex types \u2014 especially for callout payloads, integration parsing, and controlling null field output. Trigger keywords: 'suppress null fields JSON Apex', 'deserialize JSON into Apex class', 'JSON parse unknown shape', 'TypeException JSON deserialize', 'JSONGenerator streaming'. NOT for REST endpoint response shaping (use apex-rest-services), NOT for Apex remote actions returning JSON to LWC.",
   "file_location": "skills/apex/apex-json-serialization",

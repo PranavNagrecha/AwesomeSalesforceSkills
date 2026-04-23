@@ -54,7 +54,7 @@
     "f2ed71dc748a07202a07",
     "f8d6aa2bd4edf6556c7a"
   ],
-  "content_hash": "13f7a28a9ba8bd608b656cea7ee83fb4ca9fb6369e3936b8560d878227e65700",
+  "content_hash": "6eb6e24a8d43eb394161265753386a7cedd9191d4d830a8e92140cbb62cd6785",
   "dependencies": [],
   "description": "Use when designing, reviewing, or debugging Apex code that relies on List, Set, or Map collections in triggers, batch classes, or service layers \u2014 especially for bulkification, heap management, and safe null handling. Trigger keywords: 'Map<Id, SObject>', 'containsKey', 'retainAll', 'putAll', 'Set intersection', 'heap limit', 'collection in loop', 'unbounded accumulation'. NOT for SOQL query optimization (use soql-fundamentals), NOT for async job design (use apex-queueable-patterns or batch-apex-patterns), NOT for platform cache strategies (use platform-cache).",
   "file_location": "skills/apex/apex-collections-patterns",

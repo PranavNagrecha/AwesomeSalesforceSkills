@@ -86,7 +86,7 @@
     "fe69e9d351cdadf1c69b",
     "ff86712414fdc0c9fc70"
   ],
-  "content_hash": "786926cf7a2ccdb16efc682e62ff98afd76e4a26dbc920279803d752a76c1094",
+  "content_hash": "ea31b722bb78ef8560c1367a8bcc7cc882616ac7743c0d9c9a3e615c77933249",
   "dependencies": [
     "architect/sales-cloud-integration-patterns",
     "architect/limits-and-scalability-planning",

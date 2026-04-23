@@ -80,7 +80,7 @@
     "f5cbe31974a7b490000b",
     "f8bf1f2551afd4e37e77"
   ],
-  "content_hash": "557170c38fff9f7f0f8e9f01c9c53cdb29197f3a32cb473703f10574c523ad6f",
+  "content_hash": "3569fd59fcac61d65902fe7ca4ce03d6618bed3158a34cc627b221ee9e993cfa",
   "dependencies": [],
   "description": "Use when configuring standard Salesforce Quotes, building or customizing quote templates for PDF generation, emailing quotes to customers, syncing quotes to opportunity products, or setting up discount approval processes on quotes. Triggers: 'create quote', 'quote template', 'quote PDF', 'email quote', 'quote sync', 'synced quote', 'discount approval', 'quote line items'. NOT for CPQ (Salesforce Revenue Cloud / SBQQ) quote configuration, quote line scheduling, or order management.",
   "file_location": "skills/admin/quotes-and-quote-templates",

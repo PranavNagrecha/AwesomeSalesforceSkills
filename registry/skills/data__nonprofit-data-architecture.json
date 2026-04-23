@@ -105,7 +105,7 @@
     "f7a30c07625e4490fc72",
     "f93967ab80bfe6185bcb"
   ],
-  "content_hash": "0067742e44897b14a13efa95e0fcb7ec1d1bae74fc76809eb55713b04c8b499c",
+  "content_hash": "3b4aefba11dff924740a408b2db71cdc2c5bd4768ba671d1a468b8c9ca751a4c",
   "dependencies": [],
   "description": "Use this skill when designing or querying the NPSP data model \u2014 constituent 360, household accounts, giving history rollups, and program participation. Trigger keywords: NPSP data model, household account, constituent record, giving rollups, CRLP, program engagement, ServiceDelivery, npo02__ fields. NOT for standard data model design, Nonprofit Cloud (NPC) data model, FSC household groups, or platform data modeling outside the NPSP context.",
   "file_location": "skills/data/nonprofit-data-architecture",

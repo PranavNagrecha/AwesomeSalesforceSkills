@@ -51,7 +51,7 @@
     "f9e42dcae312b184d29c",
     "fbc7d92c22ceddc483dd"
   ],
-  "content_hash": "a294788f3269e8b432f7459a0617230919e3a0074037b348902df6019615987f",
+  "content_hash": "1cfe0410dcb7c864275465c47ad2797380dc79b417b746e99bba116e04db5228",
   "dependencies": [],
   "description": "RecordType ID differences across orgs: dynamic lookup via Schema.SObjectType methods, DeveloperName for stable refs, hard-coded ID anti-patterns, record-type caching, deployment impact. NOT for record-type strategy or when to use record types (use admin-foundation or data-model-design).",
   "file_location": "skills/admin/record-type-id-management",

@@ -86,7 +86,7 @@
     "fc1fde010d6cb007ddcb",
     "fcdf0dd67111e4c60a9e"
   ],
-  "content_hash": "ab2500d1a13327322b3390dd3e943f457efea8f19ed6196e2747017cdf6d5c13",
+  "content_hash": "98d1a90f87e4bd33a1f181e8657bc16ab5d8f8625821204f6014674e6d720181",
   "dependencies": [
     "omnistudio/omniscript-design-patterns",
     "omnistudio/integration-procedures"
