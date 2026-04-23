@@ -6227,6 +6227,42 @@
       "domain": "flow",
       "expected_skill": "flow/flow-versioning-strategy",
       "top_k": 3
+    },
+    {
+      "query": "apex defined type flow variable auraenabled http callout response",
+      "domain": "flow",
+      "expected_skill": "flow/flow-apex-defined-types",
+      "top_k": 3
+    },
+    {
+      "query": "save order before save flow after save flow trigger duplicate rule validation",
+      "domain": "flow",
+      "expected_skill": "flow/flow-record-save-order-interaction",
+      "top_k": 3
+    },
+    {
+      "query": "flow decision element default outcome branching null safe picklist api value",
+      "domain": "flow",
+      "expected_skill": "flow/flow-decision-element-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "flow get records performance soql limit loop indexed filter field selection",
+      "domain": "flow",
+      "expected_skill": "flow/flow-get-records-optimization",
+      "top_k": 3
+    },
+    {
+      "query": "lwc performance budget bundle size lcp inp lighthouse ci gate",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-performance-budgets",
+      "top_k": 3
+    },
+    {
+      "query": "architecture decision record adr nygard template alternatives considered supersede",
+      "domain": "architect",
+      "expected_skill": "architect/architecture-decision-records",
+      "top_k": 3
     }
   ]
 }

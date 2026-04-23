@@ -1,0 +1,109 @@
+{
+  "category": "architect",
+  "chunk_ids": [
+    "0083a35d47021ac3da21",
+    "0b2ed090bfea1bd2a1a9",
+    "0c7944182bac5c068b13",
+    "0dd6ee8cd003b7f394db",
+    "0ed4b26b65e9927c8d1a",
+    "15069f59196c636cac78",
+    "153e2f32ea6286add2b2",
+    "19c578ae99ffb3ed2f5f",
+    "22d967bd29e757bccb45",
+    "2be9d217b489ee222641",
+    "31efdafbca89f1da4f70",
+    "33d84b828a3aa2e2a25a",
+    "3819a68abc1fe7197c20",
+    "3a1f6ca3b332406e7687",
+    "3c2fbb02e174bf9a6013",
+    "3cb7f1234759f412a3f2",
+    "3e80bcb974ad34e21cf5",
+    "440ba9acc38fe3afcc1a",
+    "49f0409a10504211802d",
+    "4a290f1d13468dc566b9",
+    "4fb7e8be2a5f3254ab65",
+    "5003e835adab9124001f",
+    "5bf61133ebc198078fe6",
+    "68a91a3868d0fc6b4682",
+    "6b26d76aa3596ec0e036",
+    "6f6b5c318d63088a4afa",
+    "728bdec2d04fb416bd5b",
+    "738485ec62ea6f69b027",
+    "746481178da0837b072e",
+    "78db0ed427cc9780f15c",
+    "7a6923ef59083e1cf77c",
+    "80804ddf3b2728303504",
+    "867a36f3960afcf8f46f",
+    "8aae463d8e72152e5ba3",
+    "8be43b5d11f1917782c2",
+    "8f5351215f017520c10f",
+    "99af01528173e18d2de7",
+    "99e0c626b5edc789f3cf",
+    "9b26ded7ae115d78c317",
+    "a2f29a451fa5eb76af0e",
+    "a701bd00dbef99c876e0",
+    "afaed52bade0d8e0bcd5",
+    "b3fd3fb32b5b1d3c0e82",
+    "b5c965a7bfe1f2d51707",
+    "b5fbf56cfc74b798c949",
+    "b6597c1ebff4ffbe35dd",
+    "b6c28879e48de3d96b7b",
+    "b9fb397636641b436f79",
+    "c200bc9768f9cf01895a",
+    "cbbacf913c6af5d81fc3",
+    "cc15d774c1e57562ec49",
+    "cdcf17b6fe11c6e5c54a",
+    "d577b8ce82bbbdfb7279",
+    "dc531e90c935c42043f5",
+    "de03942b038a04b8e61d",
+    "e9894709225f9847cfa9",
+    "eaf7a40fca09aaccc39b",
+    "f46baef27bc80c418c56",
+    "f65a53baf9e472bf651d",
+    "fa717b20bd99fec5377f",
+    "fb5dfae6d4a868f6c556",
+    "fc7398868667701c0248"
+  ],
+  "content_hash": "740e077f1a4ffd733aa3100c5f0c9eef84c7816b904ac5aaca3c3cfc67fe9930",
+  "dependencies": [
+    "architect/solution-design-patterns"
+  ],
+  "description": "Author and maintain Architecture Decision Records (ADRs) for Salesforce implementations: capture chosen approach, rejected alternatives, constraints, and consequences. Trigger keywords: adr, architecture decision record, design decision log, technical decision. Does NOT cover project roadmap planning, release notes, or RFC workflow for features.",
+  "file_location": "skills/architect/architecture-decision-records",
+  "id": "architect/architecture-decision-records",
+  "inputs": [
+    "A non-trivial technical decision (platform choice, pattern adoption, org topology)",
+    "Alternatives considered and the evaluation criteria"
+  ],
+  "name": "architecture-decision-records",
+  "official_sources": [
+    "Nygard \u2014 Documenting Architecture Decisions \u2014",
+    "ThoughtWorks Technology Radar \u2014 ADRs \u2014"
+  ],
+  "outputs": [
+    "One ADR file per decision, numbered, dated, statused",
+    "Index updated with new entry + any superseded links"
+  ],
+  "references": [
+    "skills/architect/architecture-decision-records/references/examples.md",
+    "skills/architect/architecture-decision-records/references/gotchas.md",
+    "skills/architect/architecture-decision-records/references/llm-anti-patterns.md",
+    "skills/architect/architecture-decision-records/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/architect/architecture-decision-records/scripts/check_architecture_decision_records.py"
+  ],
+  "tags": [
+    "architect",
+    "adr",
+    "governance",
+    "documentation",
+    "decision-log"
+  ],
+  "templates": [
+    "skills/architect/architecture-decision-records/templates/adr-template.md"
+  ],
+  "updated": "2026-04-23",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

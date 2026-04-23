@@ -400,6 +400,7 @@
       "architect/analytics-embedded-components",
       "architect/analytics-security-architecture",
       "architect/api-led-connectivity-architecture",
+      "architect/architecture-decision-records",
       "architect/b2b-vs-b2c-architecture",
       "architect/banking-lending-architecture",
       "architect/case-deflection-strategy",
@@ -644,6 +645,7 @@
       "flow/fault-handling",
       "flow/flow-action-framework",
       "flow/flow-and-platform-events",
+      "flow/flow-apex-defined-types",
       "flow/flow-batch-processing-alternatives",
       "flow/flow-bulkification",
       "flow/flow-collection-processing",
@@ -651,12 +653,14 @@
       "flow/flow-custom-property-editors",
       "flow/flow-data-tables",
       "flow/flow-debugging",
+      "flow/flow-decision-element-patterns",
       "flow/flow-dynamic-choices",
       "flow/flow-email-and-notifications",
       "flow/flow-error-monitoring",
       "flow/flow-external-services",
       "flow/flow-for-experience-cloud",
       "flow/flow-for-slack",
+      "flow/flow-get-records-optimization",
       "flow/flow-governance",
       "flow/flow-governor-limits-deep-dive",
       "flow/flow-http-callout-action",
@@ -667,6 +671,7 @@
       "flow/flow-performance-optimization",
       "flow/flow-platform-events-integration",
       "flow/flow-reactive-screen-components",
+      "flow/flow-record-save-order-interaction",
       "flow/flow-resource-patterns",
       "flow/flow-rollback-patterns",
       "flow/flow-runtime-error-diagnosis",
@@ -769,6 +774,7 @@
       "lwc/lwc-navigation-mixin",
       "lwc/lwc-offline-and-mobile",
       "lwc/lwc-performance",
+      "lwc/lwc-performance-budgets",
       "lwc/lwc-record-picker",
       "lwc/lwc-security",
       "lwc/lwc-server-sent-events",
@@ -1391,6 +1397,9 @@
     "adoption-metrics": [
       "admin/ai-adoption-change-management"
     ],
+    "adr": [
+      "architect/architecture-decision-records"
+    ],
     "advanced-approvals": [
       "admin/cpq-approval-workflows",
       "admin/quote-to-cash-process"
@@ -1722,6 +1731,9 @@
     "apex-debugger": [
       "devops/vscode-salesforce-extensions"
     ],
+    "apex-defined-type": [
+      "flow/flow-apex-defined-types"
+    ],
     "apex-dml": [
       "apex/apex-dml-patterns",
       "apex/territory-api-and-assignment"
@@ -1917,6 +1929,7 @@
       "architect/analytics-data-architecture",
       "architect/analytics-embedded-components",
       "architect/analytics-security-architecture",
+      "architect/architecture-decision-records",
       "architect/commerce-integration-patterns",
       "architect/crm-analytics-vs-tableau-decision",
       "architect/data-cloud-vs-analytics-decision",
@@ -2171,6 +2184,9 @@
       "flow/process-builder-to-flow-migration",
       "flow/workflow-rule-to-flow-migration"
     ],
+    "automation-ordering": [
+      "flow/flow-record-save-order-interaction"
+    ],
     "automation-overlap": [
       "architect/technical-debt-assessment"
     ],
@@ -2412,6 +2428,7 @@
       "architect/deployment-automation-architecture"
     ],
     "branching": [
+      "flow/flow-decision-element-patterns",
       "omnistudio/omniscript-design-patterns"
     ],
     "branching-strategy": [
@@ -2983,6 +3000,9 @@
       "devops/scratch-org-pools",
       "omnistudio/omnistudio-deployment-datapacks"
     ],
+    "ci-gate": [
+      "lwc/lwc-performance-budgets"
+    ],
     "cicd": [
       "architect/deployment-automation-architecture",
       "devops/sfdx-hardis-integration",
@@ -3329,6 +3349,9 @@
     "conditional-visibility": [
       "omnistudio/flexcard-design-patterns",
       "omnistudio/flexcard-state-management"
+    ],
+    "conditions": [
+      "flow/flow-decision-element-patterns"
     ],
     "confetti": [
       "admin/path-and-guidance"
@@ -4448,12 +4471,18 @@
       "omnistudio/omnistudio-debugging",
       "omnistudio/omnistudio-testing-patterns"
     ],
+    "decision": [
+      "flow/flow-decision-element-patterns"
+    ],
     "decision-framework": [
       "architect/crm-analytics-vs-tableau-decision",
       "architect/data-cloud-vs-analytics-decision",
       "architect/npsp-vs-nonprofit-cloud-decision",
       "architect/omnistudio-vs-standard-architecture",
       "architect/omnistudio-vs-standard-decision"
+    ],
+    "decision-log": [
+      "architect/architecture-decision-records"
     ],
     "decision-matrix": [
       "omnistudio/calculation-procedures"
@@ -4837,6 +4866,7 @@
       "omnistudio/document-generation-omnistudio"
     ],
     "documentation": [
+      "architect/architecture-decision-records",
       "architect/salesforce-erd-and-diagramming"
     ],
     "dod-il4": [
@@ -5542,6 +5572,7 @@
     ],
     "external-services": [
       "agentforce/agentforce-tool-use-patterns",
+      "flow/flow-apex-defined-types",
       "flow/flow-external-services"
     ],
     "external-sharing": [
@@ -5861,13 +5892,16 @@
       "devops/flow-deployment-activation-ordering",
       "flow/auto-launched-flow-patterns",
       "flow/flow-and-platform-events",
+      "flow/flow-apex-defined-types",
       "flow/flow-batch-processing-alternatives",
       "flow/flow-cross-object-updates",
       "flow/flow-data-tables",
+      "flow/flow-decision-element-patterns",
       "flow/flow-dynamic-choices",
       "flow/flow-error-monitoring",
       "flow/flow-external-services",
       "flow/flow-for-slack",
+      "flow/flow-get-records-optimization",
       "flow/flow-governor-limits-deep-dive",
       "flow/flow-http-callout-action",
       "flow/flow-interview-debugging",
@@ -5876,6 +5910,7 @@
       "flow/flow-performance-optimization",
       "flow/flow-platform-events-integration",
       "flow/flow-reactive-screen-components",
+      "flow/flow-record-save-order-interaction",
       "flow/flow-resource-patterns",
       "flow/flow-rollback-patterns",
       "flow/flow-runtime-error-diagnosis",
@@ -6230,6 +6265,7 @@
     ],
     "get-records": [
       "flow/flow-cross-object-updates",
+      "flow/flow-get-records-optimization",
       "flow/flow-large-data-volume-patterns"
     ],
     "getSObjects": [
@@ -6297,6 +6333,7 @@
     "governance": [
       "admin/change-advisory-board-process",
       "architect/api-led-connectivity-architecture",
+      "architect/architecture-decision-records",
       "architect/deployment-automation-architecture",
       "architect/multi-bu-marketing-architecture",
       "devops/pr-policy-templates",
@@ -6321,6 +6358,7 @@
       "data/cpq-performance-optimization",
       "devops/code-review-checklist-salesforce",
       "flow/flow-bulkification",
+      "flow/flow-get-records-optimization",
       "flow/flow-governor-limits-deep-dive",
       "flow/flow-large-data-volume-patterns",
       "flow/flow-transactional-boundaries",
@@ -6591,6 +6629,7 @@
     "http-callout": [
       "apex/apex-http-callout-mocking",
       "apex/callouts-and-http-integrations",
+      "flow/flow-apex-defined-types",
       "flow/flow-external-services"
     ],
     "http-functions": [
@@ -7376,6 +7415,9 @@
     "light-dom": [
       "lwc/lwc-security"
     ],
+    "lighthouse-ci": [
+      "lwc/lwc-performance-budgets"
+    ],
     "lightning": [
       "security/csp-and-trusted-urls"
     ],
@@ -7605,6 +7647,7 @@
       "lwc/lwc-imperative-apex",
       "lwc/lwc-lightning-modal",
       "lwc/lwc-navigation-mixin",
+      "lwc/lwc-performance-budgets",
       "lwc/lwc-record-picker",
       "lwc/lwc-server-sent-events",
       "lwc/lwc-show-toast-patterns",
@@ -8366,6 +8409,9 @@
     "null-handling": [
       "admin/formula-fields"
     ],
+    "null-safety": [
+      "flow/flow-decision-element-patterns"
+    ],
     "nurture-journey": [
       "admin/lead-nurture-journey-design"
     ],
@@ -9050,12 +9096,17 @@
       "architect/nfr-definition-for-salesforce",
       "architect/org-edition-and-feature-licensing",
       "data/soql-query-optimization",
+      "flow/flow-get-records-optimization",
       "flow/flow-governor-limits-deep-dive",
       "flow/flow-performance-optimization",
+      "lwc/lwc-performance-budgets",
       "lwc/virtualized-lists",
       "omnistudio/dataraptor-transform-optimization",
       "omnistudio/integration-procedure-cacheable-patterns",
       "omnistudio/omnistudio-cache-strategies"
+    ],
+    "performance-budget": [
+      "lwc/lwc-performance-budgets"
     ],
     "performance-obligation": [
       "admin/revenue-recognition-requirements"
@@ -9885,7 +9936,8 @@
       "integration/slack-salesforce-integration-setup"
     ],
     "record-triggered": [
-      "admin/scheduled-path-patterns"
+      "admin/scheduled-path-patterns",
+      "flow/flow-record-save-order-interaction"
     ],
     "record-triggered-flow": [
       "admin/flow-for-admins",
@@ -10548,6 +10600,9 @@
     ],
     "save-and-resume": [
       "omnistudio/omniscript-design-patterns"
+    ],
+    "save-order": [
+      "flow/flow-record-save-order-interaction"
     ],
     "savepoint": [
       "apex/apex-dml-patterns",
@@ -11340,6 +11395,7 @@
       "apex/soql-security",
       "data/field-history-tracking",
       "data/soql-query-optimization",
+      "flow/flow-get-records-optimization",
       "flow/flow-governor-limits-deep-dive",
       "integration/rest-api-patterns",
       "lwc/knowledge-article-lwc",
@@ -11979,7 +12035,8 @@
       "apex/apex-collections-patterns",
       "apex/apex-trigger-context-variables",
       "apex/order-of-execution-deep-dive",
-      "apex/trigger-framework"
+      "apex/trigger-framework",
+      "flow/flow-record-save-order-interaction"
     ],
     "troubleshooting": [
       "devops/deployment-error-troubleshooting",
@@ -12017,6 +12074,9 @@
     ],
     "turbo-extract": [
       "omnistudio/dataraptor-patterns"
+    ],
+    "typed-variables": [
+      "flow/flow-apex-defined-types"
     ],
     "typeof": [
       "apex/apex-polymorphic-soql",

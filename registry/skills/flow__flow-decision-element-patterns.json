@@ -1,0 +1,88 @@
+{
+  "category": "flow",
+  "chunk_ids": [
+    "01d45c4e4d8c974820bf",
+    "024be54b3421cc37af53",
+    "03f20ea080561ab134d1",
+    "0899e75fc587c6c17911",
+    "08d954be8f219e4352e3",
+    "0a21853f8d036cf7bef0",
+    "2267cce07c651603db05",
+    "237f7902383228675adf",
+    "25746457406f5783d99c",
+    "28e530a14775e78505ed",
+    "3465c7bf7a9a5983a923",
+    "370f26c9ad407c09cb30",
+    "44a57bf1b78b91bf92ed",
+    "5395b11d2c667db3d27b",
+    "56ad363c334daf61da54",
+    "60e1394993b300bae4b0",
+    "6c111b9f4566651d1e8a",
+    "6f4030bb1cb799bd6db3",
+    "70b4cc59c50b6bc59249",
+    "780bd868c1b5db4d4c5d",
+    "7b8ff5983a406a21b176",
+    "7bab8672f2364173f671",
+    "7fae6da5fd04082ba1fd",
+    "8448d8280ae76645fa61",
+    "94cdc531726dd046d885",
+    "9b26b79b0ed622887341",
+    "9e0b0571af66e9632777",
+    "a12e8bbf055db75bdcf3",
+    "a1426071f5a08f30fe26",
+    "a74bdc8b26e6d9a09a81",
+    "a7fce53047dd34f06af4",
+    "aa831d47eb6b6109d9d7",
+    "ac8e66054c2d07285bd0",
+    "af06b31922c17dce05e2",
+    "b3e22619747a0e5d3718",
+    "bad2308a01ebd6f3e86f",
+    "bc98f9ab8873ae9365fd",
+    "c28f710d962c445e67c7",
+    "c34dad4e00c853055537",
+    "cb5670101770747b6e49",
+    "e5ce963369c7d2a58403"
+  ],
+  "content_hash": "b306b9b1d44171a91302e8aef6837f5dee89a283866ecd007e999d71d274fcb5",
+  "dependencies": [
+    "flow/record-triggered-flow-patterns"
+  ],
+  "description": "Structure Decision elements in Flow: default outcome placement, outcome ordering, compound criteria, null-safe checks, Boolean vs Pick-list comparisons, and avoiding deep nested branching. Trigger keywords: decision element, flow branching, default outcome, condition logic, formula in decision. Does NOT cover loop or fault path design, or Screen Flow navigation.",
+  "file_location": "skills/flow/flow-decision-element-patterns",
+  "id": "flow/flow-decision-element-patterns",
+  "inputs": [
+    "Proposed Decision element or existing branching subgraph",
+    "Set of conditions with edge cases"
+  ],
+  "name": "flow-decision-element-patterns",
+  "official_sources": [
+    "Decision Element \u2014",
+    "Flow Operators \u2014"
+  ],
+  "outputs": [
+    "Normalised outcome list (ordered, null-safe, with default)",
+    "Suggested extraction into sub-flow where nesting is too deep"
+  ],
+  "references": [
+    "skills/flow/flow-decision-element-patterns/references/examples.md",
+    "skills/flow/flow-decision-element-patterns/references/gotchas.md",
+    "skills/flow/flow-decision-element-patterns/references/llm-anti-patterns.md",
+    "skills/flow/flow-decision-element-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/flow/flow-decision-element-patterns/scripts/check_flow_decision_element_patterns.py"
+  ],
+  "tags": [
+    "flow",
+    "decision",
+    "branching",
+    "conditions",
+    "null-safety"
+  ],
+  "templates": [
+    "skills/flow/flow-decision-element-patterns/templates/decision-review.md"
+  ],
+  "updated": "2026-04-23",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

@@ -1,0 +1,37 @@
+meta:
+  reviewCadence: quarterly
+  lastReviewed: 2026-04-23
+  owner: frontend-platform
+  waiverProcess: "Open issue in repo; approval from component owner + frontend-platform lead; expiry ≤ 30 days."
+
+components:
+  # Top-level LWCs
+  accountOverview:
+    maxMinifiedKb: 40
+    maxWireAdapters: 3
+    maxImperativeApexPerAction: 1
+    owner: accounts-team
+  productCatalog:
+    maxMinifiedKb: 60
+    maxWireAdapters: 2
+    maxImperativeApexPerAction: 1
+    owner: commerce-team
+
+pages:
+  # Field-data targets (CrUX p75)
+  accountRecordPage:
+    lcpMs: 2500
+    inpMs: 200
+    source: crux
+  productCatalogRoute:
+    lcpMs: 1800
+    inpMs: 150
+    source: crux
+
+waivers:
+  # Populated as exceptions are granted; each entry has an expiry
+  - component: accountOverview
+    reason: "Temporary bump for pending wire refactor"
+    expiry: 2026-05-15
+    cap:
+      maxMinifiedKb: 48

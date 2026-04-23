@@ -1,0 +1,90 @@
+{
+  "category": "flow",
+  "chunk_ids": [
+    "00aebfcf1b1119c6c4d1",
+    "0aa681c7b9df86f6531e",
+    "0bc577db4b7408425af2",
+    "0e1a075b307b922a0669",
+    "13a96148f6618e845162",
+    "1b76e4907e50be4cc3f3",
+    "202fd577bf21fb25d81d",
+    "21da387b2523351e8ec0",
+    "26924bd5b7500cea1e84",
+    "2851c7df1f9068636b0b",
+    "2a75a1b5d341df6458db",
+    "346bbef3a9b1182f79f1",
+    "34b13e5214087c04350c",
+    "36543a55c33e26814e7e",
+    "3a456ba8d98b599318d9",
+    "42253f649e5fae73f71f",
+    "45b121f9585404d52ef5",
+    "49472cece06dfae23f8b",
+    "6595dc2e9b4222a2af63",
+    "6d8a0f6d22386713f3dd",
+    "8e221d599bca31fd9ce9",
+    "90464fcb8d4fe46e4ec4",
+    "9454eeb0ce8dfb9f659d",
+    "96835006df86d3ba7b5c",
+    "9ff246f1cdbae887bd1a",
+    "a090551b03967ab95429",
+    "a3cb6f6f6c048d6f7a45",
+    "b1773ee6284355078c84",
+    "b4bd8bcc2711184636c4",
+    "b9adca69a49a78ffdd61",
+    "bb24fa9f17a0452a6f98",
+    "bf55a7ac3ada123eacd6",
+    "c153778c511ab88e653e",
+    "d68e8042189f8520041b",
+    "e23bdac7934ae1c49922",
+    "ec4564e186c532ea58dd",
+    "f15695059fa531297634",
+    "f24c0b542e997f1217c2",
+    "f34540fcb01f5afeb286",
+    "f6ec18e1bf5295435be3",
+    "ff5b2335811cdd2251b6"
+  ],
+  "content_hash": "6f01976e45571fdcc08368e27135308aa0b9081b8a32085ffa6a2f740c135328",
+  "dependencies": [
+    "flow/record-triggered-flow-patterns",
+    "flow/flow-migration-from-trigger"
+  ],
+  "description": "Reason about how record-triggered flows interleave with the Salesforce Save Order (validation, before-save flows, before triggers, duplicate rules, after-save flows, workflow, after triggers, assignment, auto-response, escalation). Trigger keywords: save order, before-save flow, after-save flow, dml order, trigger vs flow order. Does NOT cover writing trigger handlers, approval process setup, or workflow rule migration.",
+  "file_location": "skills/flow/flow-record-save-order-interaction",
+  "id": "flow/flow-record-save-order-interaction",
+  "inputs": [
+    "Object with multiple automations firing on insert/update",
+    "Suspected ordering issue (recursion, stale value, double-save)"
+  ],
+  "name": "flow-record-save-order-interaction",
+  "official_sources": [
+    "Triggers and Order of Execution \u2014",
+    "Before-Save Flows \u2014"
+  ],
+  "outputs": [
+    "Save-order trace",
+    "Recommendation (move earlier, collapse, or relocate logic)",
+    "Recursion-guard plan"
+  ],
+  "references": [
+    "skills/flow/flow-record-save-order-interaction/references/examples.md",
+    "skills/flow/flow-record-save-order-interaction/references/gotchas.md",
+    "skills/flow/flow-record-save-order-interaction/references/llm-anti-patterns.md",
+    "skills/flow/flow-record-save-order-interaction/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/flow/flow-record-save-order-interaction/scripts/check_flow_record_save_order_interaction.py"
+  ],
+  "tags": [
+    "flow",
+    "save-order",
+    "record-triggered",
+    "triggers",
+    "automation-ordering"
+  ],
+  "templates": [
+    "skills/flow/flow-record-save-order-interaction/templates/save-order-map.md"
+  ],
+  "updated": "2026-04-23",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

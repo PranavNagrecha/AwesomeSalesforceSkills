@@ -1,0 +1,89 @@
+{
+  "category": "flow",
+  "chunk_ids": [
+    "07264261e21d67712dea",
+    "1b3e17806bad0da1e2dc",
+    "22a97dd128a654028a96",
+    "2582fec3b72e9c70cf66",
+    "26c9a3273beca34e1f79",
+    "2a35a16b549dfa663994",
+    "3425578830b84cb0279e",
+    "3767217db123e22336ee",
+    "37e389eca8c3576d2022",
+    "3f75b07fcaaddb577bf8",
+    "4eb25c4afea9e1f54bc1",
+    "4fd99cc9a10ebdbd9886",
+    "5a98e4969610f67ed444",
+    "5ab05c4ee7f2847a00cc",
+    "5bf8892ed6e5d7ceb017",
+    "6297452acfbffbf1f1fd",
+    "63a42a72c6d2b8f15c15",
+    "699598aaa2b02afc9dcf",
+    "7490eb4283bcef2397f7",
+    "7daf1c406e893268ced0",
+    "7f951dbae7218a61ec66",
+    "82a1152bc5c44aa35d1c",
+    "889801be508062db4240",
+    "89addcbc4d4cdef4ae7f",
+    "8ba58d3e82e230eea5a9",
+    "9117a3783794a7478c5c",
+    "a6aa27a7597a6d92ee33",
+    "b1f8b567b32874a23382",
+    "b59ff47b0abc9459397b",
+    "bb87d7513fa5624d0e6b",
+    "d5fc2f7a29081d84d089",
+    "e239cf944af31af60a0c",
+    "e81a16487918ad6d3c22",
+    "ea78a835413d812a14dd",
+    "eaec03c0e7cb3e322b74",
+    "eba8bec1eef069af5d52",
+    "ecd31f324bbc769bbcab",
+    "f09aa284b5759a858da9",
+    "f384a1f59ccf32c733fb",
+    "f3f0231c9d09c30b732f",
+    "f5b0ba6d8f9450581023"
+  ],
+  "content_hash": "b3c35c2c7afcf08876e5d740fc81794865944f9afe1cef12b25bc7fd0107be17",
+  "dependencies": [
+    "flow/flow-governor-limits-deep-dive",
+    "flow/flow-performance-optimization"
+  ],
+  "description": "Optimize Get Records elements in Flow: filter sharpness, field selection, sort-and-limit placement, caching via formula resources, and avoiding repeated queries in loops. Trigger keywords: get records, flow soql, flow query limit, flow performance, record lookup. Does NOT cover Apex SOQL, Data Cloud queries, or external object lookups.",
+  "file_location": "skills/flow/flow-get-records-optimization",
+  "id": "flow/flow-get-records-optimization",
+  "inputs": [
+    "Existing Get Records elements with slow or limit-hitting behaviour",
+    "Proposed Flow design using record lookups"
+  ],
+  "name": "flow-get-records-optimization",
+  "official_sources": [
+    "Get Records \u2014",
+    "LDV Best Practices \u2014"
+  ],
+  "outputs": [
+    "Refactored Get Records with tight filters, specific fields, limit",
+    "Extraction to collection reuse / sub-flow input where possible"
+  ],
+  "references": [
+    "skills/flow/flow-get-records-optimization/references/examples.md",
+    "skills/flow/flow-get-records-optimization/references/gotchas.md",
+    "skills/flow/flow-get-records-optimization/references/llm-anti-patterns.md",
+    "skills/flow/flow-get-records-optimization/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/flow/flow-get-records-optimization/scripts/check_flow_get_records_optimization.py"
+  ],
+  "tags": [
+    "flow",
+    "get-records",
+    "soql",
+    "performance",
+    "governor-limits"
+  ],
+  "templates": [
+    "skills/flow/flow-get-records-optimization/templates/get-records-audit.md"
+  ],
+  "updated": "2026-04-23",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}
