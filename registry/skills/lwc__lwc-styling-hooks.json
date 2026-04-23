@@ -73,7 +73,7 @@
     "fa12fb43b59654620c64",
     "fef8b250345bda307ba2"
   ],
-  "content_hash": "8959faf6ed3c45f2c4e86d6c5893687baaa0f2d061c676d623e2f04334f46c30",
+  "content_hash": "c11467c15aab508f85d5eb97ace53e66cabb7072e4d225b174a27629014888c8",
   "dependencies": [],
   "description": "Use when theming Lightning base components or custom LWCs with SLDS Styling Hooks \u2014 CSS custom properties such as `--slds-c-button-color-background`, `--slds-g-color-brand-base-50`, and `--sds-c-*` \u2014 across app, page, component, or Experience Cloud scopes, including SLDS 2 (2e) migration via SLDS Validator / Linter and dark-mode surface work. Triggers: 'how to theme lightning-button', 'custom color without overriding slds classes', 'slds 2 migration for lwc', '--slds-c-button-color-background doesn't work', 'experience cloud brand color in lwc', 'dark mode lwc base components'. NOT for raw CSS overrides that target SLDS internal class names \u2014 those break on upgrade \u2014 and NOT for Experience Cloud theme designer work broader than styling hooks (palette pickers, custom CSS files, branding sets, theme layouts).",
   "file_location": "skills/lwc/lwc-styling-hooks",

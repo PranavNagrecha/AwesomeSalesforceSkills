@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 45
   },
-  "generated_from_hash": "6ac90b45308e8cc8407b7e9c9c170481bbc0ed9757d01e78e6ccda3d633ef4d2",
+  "generated_from_hash": "669621530d52fab05a4adf77a150faf55f320b89de3e711589806a3e5fef81ac",
   "schema_version": 1,
   "skill_count": 871,
   "skills": [
@@ -35954,7 +35954,7 @@
         "ff609cf292195edebc60",
         "ff8ec38e4d0280d90116"
       ],
-      "content_hash": "fae3ea40f19831af888b7503d8c0456f64470eb754fd188d4ca333f9843f6bf0",
+      "content_hash": "f86e237050f49cba3c10b920b3f53e6a673c46419c75a280b0b5247056346477",
       "dependencies": [],
       "description": "Use when Apex must create, persist, stream, or serve binary files \u2014 including uploading from LWC/REST, generating ContentVersion records, chunking large bodies, relating files to records via ContentDocumentLink, and handling the heap/payload limits that trip binary workflows. Triggers: 'ContentVersion VersionData Blob', 'upload file from LWC to Apex', 'large file heap limit Apex', 'ContentDocumentLink sharing'. NOT for generating PDFs (use pdf-generation-patterns); NOT for email attachment parsing (use apex-email-services).",
       "file_location": "skills/apex/apex-blob-and-content-version",
@@ -36072,7 +36072,7 @@
         "f8b647bc3a0df428f23d",
         "fcfc91efcb529672280c"
       ],
-      "content_hash": "ef2fc9684a511c0d3857b05f06001cefb482dee8484b97347ac3cdaf79fadd91",
+      "content_hash": "5cb0012e3759277ae8bf23f69a78d5e9e68fc1c2e6eef07d2a5e2c2f134e2f90",
       "dependencies": [],
       "description": "Use when building Apex classes meant to be invoked dynamically \u2014 from Flow, external packages, managed-package extensions, or loose-coupling code that cannot directly reference the concrete class. Trigger keywords: Callable, call method, dynamic Apex, action registry, plugin pattern, managed package extension point. NOT for: Invocable methods exposed to Flow (see apex-invocable-methods) or REST endpoints (see apex-rest-services).",
       "file_location": "skills/apex/apex-callable-interface",
@@ -36293,7 +36293,7 @@
         "f65db294404b0b541314",
         "fe2c3e3a736acafc1637"
       ],
-      "content_hash": "4e43378ca9730ee40bd7ba82f624ac3cd13c168fc622ebe3f27d53f725dba233",
+      "content_hash": "e173c247fe213fdabc3b8ff294b1108b823e3eff5ca5125f895927ee2b1bdc59",
       "dependencies": [],
       "description": "Use when posting to a Chatter feed, creating feed comments, @mentioning users or groups, or rendering rich-text posts from Apex via the ConnectApi namespace. Trigger keywords: ConnectApi, FeedItem, Chatter post, @mention, rich text post, FeedElementCapabilities, link post. NOT for: email notifications (see apex-email-messaging), custom bell notifications (see apex-custom-notifications-from-apex), or Experience Cloud feed embeds (see community-feed-components).",
       "file_location": "skills/apex/apex-connect-api-chatter",
@@ -36507,7 +36507,7 @@
         "f829e320003a86c1a018",
         "ffd836748e907b8a0864"
       ],
-      "content_hash": "155fcebb57e04ff37d3d25035b7188870939c2c15a1d26617b98c0ddb0dbd486",
+      "content_hash": "26798ce9673d9034d513e314524d01ae9af263909465efd4cb94d71c3e57539e",
       "dependencies": [],
       "description": "Use when sending Custom Notifications (bell icon / mobile push) from Apex via `Messaging.CustomNotification`. Covers target resolution, Notification Type discovery, recipient limits, and async-safe sending. NOT for email (Messaging.SingleEmailMessage), Chatter @mentions, Flow-triggered notifications, or Mobile Publisher push.",
       "file_location": "skills/apex/apex-custom-notifications-from-apex",
@@ -36713,7 +36713,7 @@
         "f6b50ed6b4d89ac14b88",
         "fc3fadf2062e78e90b94"
       ],
-      "content_hash": "3f89c761872a2b88f37b9726dd1e5bebf495c042f1ba88b6979a97f85e41b897",
+      "content_hash": "23e1795458afce03ca4ce97423fe0ee3acf80044be1ba994e952e237570d6d56",
       "dependencies": [],
       "description": "Use when reading or writing Hierarchy Custom Settings from Apex to resolve per-user/per-profile/org configuration. Covers `getInstance()` resolution order, DML cost, cache semantics, and when to prefer Custom Metadata Types instead. NOT for List Custom Settings, Custom Metadata Types deployment packaging, or the deprecated Setup UI for editing.",
       "file_location": "skills/apex/apex-custom-settings-hierarchy",
@@ -37172,7 +37172,7 @@
         "f9e25fb79b10ecdaa1a7",
         "fe625696fbe80c2ba948"
       ],
-      "content_hash": "0c365ad0bf7681f837c5d6e615bbf34ef3a9881b170a9eaa4b93293029747ffa",
+      "content_hash": "c01689cec6d117ab802c17bb070a8f3f9fa6be2730d366262f33d5e1ddb9abfe",
       "dependencies": [],
       "description": "Use when Apex must sign, verify, encrypt, hash, encode, or decode payloads \u2014 including HMAC for webhook signatures, RSA/ECDSA signing for JWT bearer flows, AES for stored secrets, base64/hex/URL encoding, and digest comparisons for integration integrity. Triggers: 'Crypto.sign', 'Crypto.generateMac', 'EncodingUtil.base64Encode', 'JWT signing in Apex', 'verify webhook signature'. NOT for setting up Named Credentials or OAuth flows end-to-end \u2014 use apex-named-credentials-patterns; NOT for SOQL injection defense \u2014 use soql-security.",
       "file_location": "skills/apex/apex-encoding-and-crypto",
@@ -37384,7 +37384,7 @@
         "fe927f406999cb33d6ee",
         "ff3dd5bec8b3a5e1a061"
       ],
-      "content_hash": "59f75d71b0fb48503387cec9626b586564c962e62298d6c4838eb25beb683ab8",
+      "content_hash": "188d8dc421ec0a3a90483a37ad6a3ff11e0c5fe79905bafd61e9df846f44b080",
       "dependencies": [],
       "description": "Use when invoking Autolaunched Flows from Apex via `Flow.Interview.createInterview`. Covers parameter typing, output retrieval, governor boundaries, and when to inline logic instead. NOT for Apex-from-Flow (`@InvocableMethod`), Process Builder, Screen Flow invocation, or Flow Orchestrator stages.",
       "file_location": "skills/apex/apex-flow-invocation-from-apex",
@@ -38863,7 +38863,7 @@
         "f9a3d7a168bb2f444898",
         "fab4fb25e04ff3c7e50a"
       ],
-      "content_hash": "14d2d67130852b6fc25db13eb3d44c6afec2592ccd08725ac739090b0194384a",
+      "content_hash": "19a6de78e631c124231a6e3fa2e7270797e6574107cb2d00e72ae67932ef7f94",
       "dependencies": [],
       "description": "Use when writing Apex that validates, extracts, or transforms strings with Pattern/Matcher or String regex methods. Covers catastrophic backtracking, 1M char input cap, anchored vs unanchored matching, and replaceAll reserved `$`/`\\` chars. NOT for SOQL LIKE queries, Flow formula REGEX, or client-side JavaScript regex.",
       "file_location": "skills/apex/apex-regex-and-pattern-matching",
@@ -39084,7 +39084,7 @@
         "fc86f6857197b910f8a2",
         "fe70a15901bf95b25535"
       ],
-      "content_hash": "d4c0aad8d7d325700a245e3816f10aa95e2097d3f8a4208fe3083071365aa49e",
+      "content_hash": "054323b7eb0bf66d82e57ea979feca66ce5351355c451658b599869197426fb8",
       "dependencies": [],
       "description": "Use when working with Salesforce Ids in Apex \u2014 validating Id format, detecting the target sObject type from a string Id, or safely handling 15 vs 18-character Ids. Trigger keywords: Id prefix, Id.valueOf, Id.getSobjectType, 15-char, 18-char, case-insensitive Id. NOT for: record access / sharing decisions (see apex-user-and-permission-checks), or bulk Id collection patterns (see apex-bulk-patterns).",
       "file_location": "skills/apex/apex-salesforce-id-patterns",
@@ -40074,7 +40074,7 @@
         "fd5abffb93673ec956d3",
         "ff3920d99b5e3eecf2a6"
       ],
-      "content_hash": "13877cd64ce2d8d6e6db72b7837be84c4cc0cf51f9c8044efd5bd550b043a5d3",
+      "content_hash": "51a8609c3aa210ca7cf2ff30ad3821a21c25b58e93d7f5e0004e9cec0fd295d1",
       "dependencies": [],
       "description": "Use when Apex needs to check what the running user is, can see, or can do \u2014 via UserInfo, FeatureManagement, FeatureManagement.checkPermission, or FeatureManagement.checkPermissionType. Covers custom permissions, permission sets, user licenses, and profile checks. NOT for FLS/CRUD (use Security.stripInaccessible or `with user_mode`), sharing rules, or external user license logic.",
       "file_location": "skills/apex/apex-user-and-permission-checks",
@@ -98326,7 +98326,7 @@
         "ff6002ac1cb40e02594a",
         "ffd09c7fa39772b80446"
       ],
-      "content_hash": "ddab441b6f7de9822bc59b876cd8346cd33e6f33a3398242a2dd25e872320f02",
+      "content_hash": "c7362d37e2a7a9b849d2cf3644f16fbd9701f0401b784e9509e51460660ffc7c",
       "dependencies": [],
       "description": "Use when an LWC needs to appear, be configured, and be constrained inside Lightning App Builder, Experience Builder, Home Page, or Flow screens via its js-meta.xml file \u2014 including isExposed, targets, targetConfigs, supportedFormFactors, objects scoping, and admin-facing design attributes. Triggers: 'lwc not appearing in app builder', 'expose lwc to record page', 'design attribute datasource picklist', 'supportedformfactors mobile small', 'targetconfigs for record page vs app page', 'masterlabel vs description'. NOT for custom property editors for Flow (see `custom-property-editor-for-flow`), and NOT for Experience Cloud theming at the page level.",
       "file_location": "skills/lwc/lwc-app-builder-config",
@@ -98772,7 +98772,7 @@
         "f62663ec66317b5246c4",
         "fb4e98608e691363befa"
       ],
-      "content_hash": "635fab7767ac28f4149c48e229e73bfc5ee7ebc8bbacfa51628d00227ca5d808",
+      "content_hash": "9979452794dc99a444571b293cadd66cc30cf10eddb100a9b126ae13f5766b8f",
       "dependencies": [],
       "description": "Use when writing, reviewing, or migrating Lightning Web Component templates that branch between UI states with `lwc:if`, `lwc:elseif`, and `lwc:else`, including getter-backed booleans, loading/error/ready state machines, keep-state vs reset-state toggles, and legacy `if:true` / `if:false` cleanup. Triggers: 'lwc:if vs if:true', 'lwc:elseif not working', 'conditional rendering in lwc', 'complex boolean in template'. NOT for choosing between component types at runtime \u2014 that is `lwc-dynamic-components` \u2014 and NOT for list rendering, which uses `for:each` or `iterator:it`.",
       "file_location": "skills/lwc/lwc-conditional-rendering",
@@ -98889,7 +98889,7 @@
         "f1d087b2c21680db7b90",
         "f695bd68a36743401322"
       ],
-      "content_hash": "881f877be52edf65c9379c2ca82d49039ed2abfc36a242e08d36a804630747bd",
+      "content_hash": "1ca6ae144186fe9990c5726415282a27722511c4f3bd9ef49caebb35a96fca3b",
       "dependencies": [],
       "description": "Use when you need to extend `lightning-datatable` with custom cell renderings: status pills, progress bars, image thumbnails, action cells, editable pickliststo, rich-text, or any column that `lightning-datatable` does not ship out of the box. Triggers: 'custom cell type lightning datatable', 'progress bar column', 'image column', 'inline edit picklist in datatable', 'rich text column'. NOT for basic datatable usage (see `lwc-data-table`) and NOT for tree-grid or large-dataset virtualization (see `virtualized-lists`).",
       "file_location": "skills/lwc/lwc-custom-datatable-types",
@@ -99118,7 +99118,7 @@
         "f8c39d16603845182d25",
         "f8ef9a6b97648006af55"
       ],
-      "content_hash": "b6baa496cf369458d82b4b5faf21d7ee9e6ae6bbbfa528090b7370644ee1e2d6",
+      "content_hash": "5831c645a875a45bc90d6077f4544903a542190fe3a6cd205d23ff084b681116",
       "dependencies": [],
       "description": "Use when you need to diagnose live Lightning Web Component behavior in the browser \u2014 setting breakpoints, stepping through @wire emits, inspecting component state with the Lightning Component Inspector, reading wire-adapter network traffic, and interpreting symptoms like silent render failures or 'works in dev but not in prod'. Triggers: 'how to set breakpoint in lwc', 'source maps missing', 'enable debug mode', 'lightning inspector chrome extension', 'lwc wire not emitting'. NOT for Jest test failures \u2014 use `lwc-testing` \u2014 and NOT for Apex debug logs, which are an Apex debugging concern. Specific runtime error messages (wire undefined, querySelector returns null, NavigationMixin errors) belong in `common-lwc-runtime-errors`; this skill covers the debug TOOLING itself.",
       "file_location": "skills/lwc/lwc-debugging-devtools",
@@ -99653,7 +99653,7 @@
         "f8a76d4c551872621e7c",
         "fe33ae7ebbf6cfb8068a"
       ],
-      "content_hash": "d5cf50743d8eb4e2f405c60ebd325fe5c46aa5cb7b86ef2fb90e4891a9a5a7d7",
+      "content_hash": "ec7541cba577a1a8d766c9d2ee45a0b9b3eb82ec8d38ca5f67aeee4d3f889d4d",
       "dependencies": [],
       "description": "Use when an LWC needs to read related records across multiple sObjects in one request, paginate a related list with cursors, or replace several overlapping `@wire(getRecord)` calls with a single shared-cache query. Triggers: 'read account and related contacts in one request', 'paginate a graphql wire', 'graphql wire not refreshing after apex mutation', 'too many @wire calls for related records', 'what fields does ui api graphql support'. NOT for single-record CRUD or write operations \u2014 the GraphQL wire adapter is read-only; use UI API (`updateRecord`, `createRecord`, `deleteRecord`) or imperative Apex for writes, and use `getRecord` when a single record with a known id is all you need.",
       "file_location": "skills/lwc/lwc-graphql-wire",
@@ -100107,7 +100107,7 @@
         "edbdb7c1ce0abe6ef588",
         "fc75b1fc08ccf5d5235f"
       ],
-      "content_hash": "0f1bf754a21230e4ae21028be2bad5c64956bc0f084cd0d665561313229b3478",
+      "content_hash": "30ba36aa990b4157430cb6c540b4a127253b5fe44b808f3f7002f0dea6aaeffb",
       "dependencies": [],
       "description": "Use when a Lightning Web Component needs to escape shadow DOM isolation so Experience Cloud / LWR sites can be SEO-indexed, a third-party library can walk the DOM, global styling has to reach inside the component, or accessibility tooling must see the rendered tree. NOT for the default shadow DOM behavior most LWCs should use \u2014 reach for light DOM only when SEO, third-party DOM access, or global styling requires it, and never for components distributed through managed packages.",
       "file_location": "skills/lwc/lwc-light-dom",
@@ -100809,7 +100809,7 @@
         "f9015fbd95be1754ffa5",
         "fe0d8762259dd984bde5"
       ],
-      "content_hash": "c53a55b470960acc5a3a31bba2dc558199381ca962462e5f8e9c86821ca3704a",
+      "content_hash": "30a7a23341b87fe603a1d01a3b9ac64061fbdba731ec2015bc27d7be2b702737",
       "dependencies": [],
       "description": "Use when building a Lightning Web Component that runs from a record page quick-action button \u2014 either a screen action that renders UI in a modal or a headless action that invokes logic with no UI. Triggers: 'lwc quick action on record page', 'headless quick action no ui', 'closeactionscreenevent not working', 'how to pass recordid into quick action lwc', 'quick action vs flow action', 'quick action modal size'. NOT for Flow screen components \u2014 use `lwc-in-flow-screens` \u2014 and NOT for global actions without a record context or for list-view bulk actions that do not receive a single `recordId`.",
       "file_location": "skills/lwc/lwc-quick-actions",
@@ -101319,7 +101319,7 @@
         "eccabb6a4e7ac4ecb4f3",
         "ed00f43bf171ffe14e7d"
       ],
-      "content_hash": "e0f4a9058ae964307a76efa05228391b832fe67b70c77e719736d73f3277fd1d",
+      "content_hash": "44634e55a981ac9291fac128992cc0525cb8aa78ab7dc4993bf0fdebe8622a22",
       "dependencies": [],
       "description": "Use when a Lightning Web Component needs to let a parent inject markup into predefined regions using `<slot>` \u2014 default and named slots, `slotchange` wiring, fallback content, and detecting slot emptiness. NOT for rendering a dynamic component whose tag name is chosen at runtime \u2014 that is `lwc-dynamic-components` \u2014 and NOT for cross-component messaging via Lightning Message Service.",
       "file_location": "skills/lwc/lwc-slots-composition",
@@ -101516,7 +101516,7 @@
         "fa12fb43b59654620c64",
         "fef8b250345bda307ba2"
       ],
-      "content_hash": "8959faf6ed3c45f2c4e86d6c5893687baaa0f2d061c676d623e2f04334f46c30",
+      "content_hash": "c11467c15aab508f85d5eb97ace53e66cabb7072e4d225b174a27629014888c8",
       "dependencies": [],
       "description": "Use when theming Lightning base components or custom LWCs with SLDS Styling Hooks \u2014 CSS custom properties such as `--slds-c-button-color-background`, `--slds-g-color-brand-base-50`, and `--sds-c-*` \u2014 across app, page, component, or Experience Cloud scopes, including SLDS 2 (2e) migration via SLDS Validator / Linter and dark-mode surface work. Triggers: 'how to theme lightning-button', 'custom color without overriding slds classes', 'slds 2 migration for lwc', '--slds-c-button-color-background doesn't work', 'experience cloud brand color in lwc', 'dark mode lwc base components'. NOT for raw CSS overrides that target SLDS internal class names \u2014 those break on upgrade \u2014 and NOT for Experience Cloud theme designer work broader than styling hooks (palette pickers, custom CSS files, branding sets, theme layouts).",
       "file_location": "skills/lwc/lwc-styling-hooks",
@@ -101634,7 +101634,7 @@
         "e629490606ed20a0d081",
         "ea511a54a6cf191623d4"
       ],
-      "content_hash": "f3ed18a1f8abcddcef7da6e3d5d1ed1d38bf6787d9639d0bbbbdecc98f70d448",
+      "content_hash": "4e74056f276a43530dce43ed2e8a736039c442a0cecb02daa21a08714a692833",
       "dependencies": [],
       "description": "Use when an LWC needs a stable, typed handle to a specific DOM element it owns \u2014 focusing inputs, imperatively validating a known form field, invoking a `@api` method on a child component, or migrating fragile `this.template.querySelector('.css-class')` code to the modern `lwc:ref` directive. Triggers: 'this.template.querySelector fragile', 'lwc:ref not working inside for:each', 'how to focus an input from lwc', 'refs undefined in connectedcallback', 'migrating querySelector to lwc:ref'. NOT for querying elements inside `for:each` iterators \u2014 refs do not work there \u2014 and NOT for cross-shadow queries of child custom elements' internals.",
       "file_location": "skills/lwc/lwc-template-refs",

@@ -68,7 +68,7 @@
     "f9a3d7a168bb2f444898",
     "fab4fb25e04ff3c7e50a"
   ],
-  "content_hash": "14d2d67130852b6fc25db13eb3d44c6afec2592ccd08725ac739090b0194384a",
+  "content_hash": "19a6de78e631c124231a6e3fa2e7270797e6574107cb2d00e72ae67932ef7f94",
   "dependencies": [],
   "description": "Use when writing Apex that validates, extracts, or transforms strings with Pattern/Matcher or String regex methods. Covers catastrophic backtracking, 1M char input cap, anchored vs unanchored matching, and replaceAll reserved `$`/`\\` chars. NOT for SOQL LIKE queries, Flow formula REGEX, or client-side JavaScript regex.",
   "file_location": "skills/apex/apex-regex-and-pattern-matching",

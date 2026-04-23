@@ -78,7 +78,7 @@
     "f9e25fb79b10ecdaa1a7",
     "fe625696fbe80c2ba948"
   ],
-  "content_hash": "0c365ad0bf7681f837c5d6e615bbf34ef3a9881b170a9eaa4b93293029747ffa",
+  "content_hash": "c01689cec6d117ab802c17bb070a8f3f9fa6be2730d366262f33d5e1ddb9abfe",
   "dependencies": [],
   "description": "Use when Apex must sign, verify, encrypt, hash, encode, or decode payloads \u2014 including HMAC for webhook signatures, RSA/ECDSA signing for JWT bearer flows, AES for stored secrets, base64/hex/URL encoding, and digest comparisons for integration integrity. Triggers: 'Crypto.sign', 'Crypto.generateMac', 'EncodingUtil.base64Encode', 'JWT signing in Apex', 'verify webhook signature'. NOT for setting up Named Credentials or OAuth flows end-to-end \u2014 use apex-named-credentials-patterns; NOT for SOQL injection defense \u2014 use soql-security.",
   "file_location": "skills/apex/apex-encoding-and-crypto",

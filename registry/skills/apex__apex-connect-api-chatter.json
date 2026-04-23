@@ -72,7 +72,7 @@
     "f65db294404b0b541314",
     "fe2c3e3a736acafc1637"
   ],
-  "content_hash": "4e43378ca9730ee40bd7ba82f624ac3cd13c168fc622ebe3f27d53f725dba233",
+  "content_hash": "e173c247fe213fdabc3b8ff294b1108b823e3eff5ca5125f895927ee2b1bdc59",
   "dependencies": [],
   "description": "Use when posting to a Chatter feed, creating feed comments, @mentioning users or groups, or rendering rich-text posts from Apex via the ConnectApi namespace. Trigger keywords: ConnectApi, FeedItem, Chatter post, @mention, rich text post, FeedElementCapabilities, link post. NOT for: email notifications (see apex-email-messaging), custom bell notifications (see apex-custom-notifications-from-apex), or Experience Cloud feed embeds (see community-feed-components).",
   "file_location": "skills/apex/apex-connect-api-chatter",

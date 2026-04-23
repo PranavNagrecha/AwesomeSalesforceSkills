@@ -70,7 +70,7 @@
     "fc86f6857197b910f8a2",
     "fe70a15901bf95b25535"
   ],
-  "content_hash": "d4c0aad8d7d325700a245e3816f10aa95e2097d3f8a4208fe3083071365aa49e",
+  "content_hash": "054323b7eb0bf66d82e57ea979feca66ce5351355c451658b599869197426fb8",
   "dependencies": [],
   "description": "Use when working with Salesforce Ids in Apex \u2014 validating Id format, detecting the target sObject type from a string Id, or safely handling 15 vs 18-character Ids. Trigger keywords: Id prefix, Id.valueOf, Id.getSobjectType, 15-char, 18-char, case-insensitive Id. NOT for: record access / sharing decisions (see apex-user-and-permission-checks), or bulk Id collection patterns (see apex-bulk-patterns).",
   "file_location": "skills/apex/apex-salesforce-id-patterns",

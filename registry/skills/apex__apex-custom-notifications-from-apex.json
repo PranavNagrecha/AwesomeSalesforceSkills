@@ -69,7 +69,7 @@
     "f829e320003a86c1a018",
     "ffd836748e907b8a0864"
   ],
-  "content_hash": "155fcebb57e04ff37d3d25035b7188870939c2c15a1d26617b98c0ddb0dbd486",
+  "content_hash": "26798ce9673d9034d513e314524d01ae9af263909465efd4cb94d71c3e57539e",
   "dependencies": [],
   "description": "Use when sending Custom Notifications (bell icon / mobile push) from Apex via `Messaging.CustomNotification`. Covers target resolution, Notification Type discovery, recipient limits, and async-safe sending. NOT for email (Messaging.SingleEmailMessage), Chatter @mentions, Flow-triggered notifications, or Mobile Publisher push.",
   "file_location": "skills/apex/apex-custom-notifications-from-apex",

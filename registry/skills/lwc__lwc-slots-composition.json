@@ -69,7 +69,7 @@
     "eccabb6a4e7ac4ecb4f3",
     "ed00f43bf171ffe14e7d"
   ],
-  "content_hash": "e0f4a9058ae964307a76efa05228391b832fe67b70c77e719736d73f3277fd1d",
+  "content_hash": "44634e55a981ac9291fac128992cc0525cb8aa78ab7dc4993bf0fdebe8622a22",
   "dependencies": [],
   "description": "Use when a Lightning Web Component needs to let a parent inject markup into predefined regions using `<slot>` \u2014 default and named slots, `slotchange` wiring, fallback content, and detecting slot emptiness. NOT for rendering a dynamic component whose tag name is chosen at runtime \u2014 that is `lwc-dynamic-components` \u2014 and NOT for cross-component messaging via Lightning Message Service.",
   "file_location": "skills/lwc/lwc-slots-composition",
