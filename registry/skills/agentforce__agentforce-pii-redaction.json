@@ -1,0 +1,93 @@
+{
+  "category": "agentforce",
+  "chunk_ids": [
+    "025e895eb92c8eaf35f6",
+    "0b67113b7f6dc124a578",
+    "11525e925a86d8b2ab7e",
+    "14fe59aa3484050a8a57",
+    "17643ffe344bd3ce28cd",
+    "1a04acdee6e667070cb8",
+    "22a527014d168da0c63a",
+    "2b9e8fdf3a2a2be5d175",
+    "2f4b32fd06a8fd9df8fb",
+    "3443d2041f1100427270",
+    "4473f139d61254da7489",
+    "4caae533712ac0de8d96",
+    "56f1514b69c0f7d280cb",
+    "61d33fa39a42716709d3",
+    "69a184af890d30e952db",
+    "6d1ce857356122aea79b",
+    "7ea5df19116f852f0fa0",
+    "8202fa095b31fa7f8aa3",
+    "8d28de03ccc60f79cd39",
+    "8ea473538f35b8aff8ca",
+    "976511b35101a83ce79c",
+    "9f207070632ce3eeb4c0",
+    "a13d6ecf9410b51cf169",
+    "a8e3dca970920aef9e81",
+    "a94896146e0d9ee4a2bb",
+    "abc71e42656b121588de",
+    "b9b19f10c3d3653980a7",
+    "bc6ac05f726587dc52b4",
+    "bfdee033f0bae255684f",
+    "c1cf97d5f63237a28bb1",
+    "c346c3dd5e92d4d06278",
+    "c84dacbae415492ebcaa",
+    "cc9c4f733e2ac379df2b",
+    "ccacf20bdbdf725c3a9e",
+    "d5e4c7b437a1f58a9a07",
+    "d6fa37c016da41837bc9",
+    "d748a7bc75d2bcd60a15",
+    "d7d210d13fba15be6f02",
+    "d7d36c3f505d964a04b9",
+    "e89c5c48793bdad1bd1d",
+    "ea214aebf099dd6dc7ca",
+    "eee89d323e36d1f89ee3",
+    "f33c05ad755419e3adb0",
+    "f7ad69334d651c9f7d52",
+    "fb3d7a15682f47302deb"
+  ],
+  "content_hash": "e88d4b2247db8a92b215f7252d375aacd0caaaea7a51008106bc6bcd84ea886a",
+  "dependencies": [
+    "agentforce/agentforce-testing-strategy"
+  ],
+  "description": "Redact PII before it reaches Agentforce prompts, models, and logs. Trigger keywords: agentforce pii, pii redaction, data masking llm, einstein trust layer, prompt pii filter, audit pii leakage. Does NOT cover: Shield Platform Encryption at-rest (separate skill), GDPR data subject requests, or classic field-level security policy.",
+  "file_location": "skills/agentforce/agentforce-pii-redaction",
+  "id": "agentforce/agentforce-pii-redaction",
+  "inputs": [
+    "Data sources feeding agent prompts (objects, fields)",
+    "PII taxonomy (what is sensitive in this domain)",
+    "Compliance requirements (HIPAA, GDPR, PCI, etc.)"
+  ],
+  "name": "agentforce-pii-redaction",
+  "official_sources": [
+    "Einstein Trust Layer \u2014",
+    "Data Masking For Generative AI \u2014"
+  ],
+  "outputs": [
+    "Field-level PII classification",
+    "Redaction strategy (mask / tokenize / drop / summarise)",
+    "Audit wiring for PII egress"
+  ],
+  "references": [
+    "skills/agentforce/agentforce-pii-redaction/references/examples.md",
+    "skills/agentforce/agentforce-pii-redaction/references/gotchas.md",
+    "skills/agentforce/agentforce-pii-redaction/references/llm-anti-patterns.md",
+    "skills/agentforce/agentforce-pii-redaction/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/agentforce/agentforce-pii-redaction/scripts/check_agentforce_pii_redaction.py"
+  ],
+  "tags": [
+    "agentforce",
+    "pii",
+    "security",
+    "trust-layer"
+  ],
+  "templates": [
+    "skills/agentforce/agentforce-pii-redaction/templates/redaction-register.md"
+  ],
+  "updated": "2026-04-23",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

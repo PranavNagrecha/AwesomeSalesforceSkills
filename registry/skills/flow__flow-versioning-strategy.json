@@ -1,0 +1,97 @@
+{
+  "category": "flow",
+  "chunk_ids": [
+    "03d5a31ed5c11c798f6e",
+    "0c32fdff5c5beaa3c331",
+    "102c5544756a0ee7ba65",
+    "159ba36eb7baf73bd5f8",
+    "1ae268c198fb8a4935e5",
+    "1c7c4e4cd3d16fd87649",
+    "23d24c38d50222c54053",
+    "28f95520903789dd07c1",
+    "2ae8913a00656602ac88",
+    "3319241aa544dcce8daa",
+    "3e39d2fd223dd4f30261",
+    "3ecd9659ab74217f0ba1",
+    "3f854768fddf04e9aca5",
+    "3fe406d79182a53a8056",
+    "426105b0f37ed0180fa7",
+    "494b1b5639f537e334df",
+    "4a59adca45174531d998",
+    "4cea533c47be84d25f4b",
+    "4db5b59bc7c6f459d9bc",
+    "532a0c28bb309f9f75ec",
+    "53875a55edb84ae13f11",
+    "58f68325fff5344f17f8",
+    "596deaad783a732346bb",
+    "601cda7f34d4546a0768",
+    "68fabbb243584691c9eb",
+    "692180ba3e5545cb66da",
+    "6a7fe5134f29a5737ee6",
+    "6d387744577c26ec2a23",
+    "6e831ab0b3d89d9c7ad5",
+    "75e84d83e74cdecbf7f8",
+    "769ee41e5b66b817fc82",
+    "7dc599fa8fcab27be083",
+    "7ec52b70526595a3d798",
+    "86d547bf3f3197050a35",
+    "8e84576e9efb0d634378",
+    "a411bd25379b5e0a2b3d",
+    "c2257aa58e18b1eaa841",
+    "c3dac6fa0b7e28b43db7",
+    "d2252a3951193483d434",
+    "d2a407513681f24677fd",
+    "d3edf3fc50fe892f1a5b",
+    "dfa2759e5729ff70f9d1",
+    "e316d7d1a944ef26fbdc",
+    "e4c4944fc3665beb77c9",
+    "ec3ed33dc783a8246c97",
+    "ee7db5b092d4b7aec12f",
+    "ee8e3a7b2d7c664275d8",
+    "fdb312c8c5d5145ace1e",
+    "fe0b4c55285c8100da13"
+  ],
+  "content_hash": "2c43cef0af1b21f769c734668a78a070155a18bf1711da11a5b37cacf3346728",
+  "dependencies": [
+    "devops/flow-deployment-activation-ordering"
+  ],
+  "description": "Manage Flow versions: activation policy, paused interview compatibility, cleanup cadence, and breaking-change detection. Trigger keywords: flow version management, activate flow version, paused interview, flow cleanup, flow breaking change, flow rollback. Does NOT cover: FlowDefinition metadata deploy order (see devops skill), Process Builder retirement, or Flow test coverage (separate skill).",
+  "file_location": "skills/flow/flow-versioning-strategy",
+  "id": "flow/flow-versioning-strategy",
+  "inputs": [
+    "Flow inventory with active/inactive version counts",
+    "Rate of paused interviews per flow",
+    "Change history of flow versions"
+  ],
+  "name": "flow-versioning-strategy",
+  "official_sources": [
+    "Flow Versioning \u2014",
+    "Paused Interviews \u2014"
+  ],
+  "outputs": [
+    "Flow versioning convention",
+    "Cleanup cadence rule",
+    "Breaking-change detection checklist"
+  ],
+  "references": [
+    "skills/flow/flow-versioning-strategy/references/examples.md",
+    "skills/flow/flow-versioning-strategy/references/gotchas.md",
+    "skills/flow/flow-versioning-strategy/references/llm-anti-patterns.md",
+    "skills/flow/flow-versioning-strategy/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/flow/flow-versioning-strategy/scripts/check_flow_versioning_strategy.py"
+  ],
+  "tags": [
+    "flow",
+    "versioning",
+    "governance",
+    "lifecycle"
+  ],
+  "templates": [
+    "skills/flow/flow-versioning-strategy/templates/activation-checklist.md"
+  ],
+  "updated": "2026-04-23",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

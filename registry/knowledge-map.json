@@ -244,8 +244,11 @@
       "agentforce/agentforce-multi-turn-patterns",
       "agentforce/agentforce-observability",
       "agentforce/agentforce-persona-design",
+      "agentforce/agentforce-pii-redaction",
+      "agentforce/agentforce-prompt-versioning",
       "agentforce/agentforce-sales-ai-setup",
       "agentforce/agentforce-service-ai-setup",
+      "agentforce/agentforce-testing-strategy",
       "agentforce/agentforce-tool-use-patterns",
       "agentforce/custom-agent-actions-apex",
       "agentforce/data-cloud-grounding-for-agentforce",
@@ -670,6 +673,7 @@
       "flow/flow-testing",
       "flow/flow-transaction-finalizer-patterns",
       "flow/flow-transactional-boundaries",
+      "flow/flow-versioning-strategy",
       "flow/orchestration-flows",
       "flow/pause-elements-and-wait-events",
       "flow/process-builder-to-flow-migration",
@@ -1502,6 +1506,9 @@
       "agentforce/agentforce-multi-turn-patterns",
       "agentforce/agentforce-observability",
       "agentforce/agentforce-persona-design",
+      "agentforce/agentforce-pii-redaction",
+      "agentforce/agentforce-prompt-versioning",
+      "agentforce/agentforce-testing-strategy",
       "agentforce/agentforce-tool-use-patterns",
       "agentforce/custom-agent-actions-apex",
       "agentforce/data-cloud-grounding-for-agentforce",
@@ -4653,6 +4660,7 @@
     "devops": [
       "admin/change-advisory-board-process",
       "admin/deployment-risk-assessment",
+      "agentforce/agentforce-prompt-versioning",
       "architect/ci-cd-pipeline-architecture",
       "devops/api-version-management",
       "devops/code-review-checklist-salesforce",
@@ -5332,6 +5340,9 @@
       "apex/territory-api-and-assignment",
       "data/territory-data-alignment"
     ],
+    "evals": [
+      "agentforce/agentforce-testing-strategy"
+    ],
     "evaluation": [
       "agentforce/agentforce-eval-harness"
     ],
@@ -5870,6 +5881,7 @@
       "flow/flow-runtime-error-diagnosis",
       "flow/flow-transaction-finalizer-patterns",
       "flow/flow-transactional-boundaries",
+      "flow/flow-versioning-strategy",
       "flow/screen-flow-accessibility",
       "omnistudio/omnistudio-vs-flow-decision"
     ],
@@ -6288,6 +6300,7 @@
       "architect/deployment-automation-architecture",
       "architect/multi-bu-marketing-architecture",
       "devops/pr-policy-templates",
+      "flow/flow-versioning-strategy",
       "integration/api-governance-and-rate-limits",
       "omnistudio/omnistudio-field-mapping-governance"
     ],
@@ -7354,7 +7367,8 @@
     ],
     "lifecycle": [
       "admin/donor-lifecycle-requirements",
-      "agentforce/prompt-template-versioning"
+      "agentforce/prompt-template-versioning",
+      "flow/flow-versioning-strategy"
     ],
     "lifecycle-stages": [
       "admin/marketing-automation-requirements"
@@ -9135,6 +9149,7 @@
       "admin/saql-query-development"
     ],
     "pii": [
+      "agentforce/agentforce-pii-redaction",
       "data/data-quality-and-governance",
       "security/data-classification-labels"
     ],
@@ -9565,7 +9580,8 @@
       "agentforce/agentforce-tool-use-patterns"
     ],
     "prompts": [
-      "admin/in-app-guidance-and-walkthroughs"
+      "admin/in-app-guidance-and-walkthroughs",
+      "agentforce/agentforce-prompt-versioning"
     ],
     "proration": [
       "admin/subscription-lifecycle-requirements"
@@ -9955,7 +9971,8 @@
       "lwc/experience-cloud-multi-idp-sso"
     ],
     "regression": [
-      "agentforce/agentforce-eval-harness"
+      "agentforce/agentforce-eval-harness",
+      "agentforce/agentforce-testing-strategy"
     ],
     "regression-testing": [
       "agentforce/agent-testing-and-evaluation"
@@ -10741,6 +10758,7 @@
     "security": [
       "admin/delegated-administration",
       "agentforce/agent-security-review",
+      "agentforce/agentforce-pii-redaction",
       "agentforce/prompt-injection-defense",
       "apex/soql-security",
       "architect/analytics-security-architecture",
@@ -11739,6 +11757,7 @@
       "admin/sandbox-strategy",
       "admin/uat-and-acceptance-criteria",
       "agentforce/agentforce-eval-harness",
+      "agentforce/agentforce-testing-strategy",
       "apex/apex-http-callout-mocking",
       "apex/apex-system-runas",
       "apex/apex-test-setup-patterns",
@@ -11974,6 +11993,9 @@
       "admin/ai-adoption-change-management",
       "admin/fsc-relationship-groups"
     ],
+    "trust-layer": [
+      "agentforce/agentforce-pii-redaction"
+    ],
     "trust-layer-design": [
       "architect/ai-platform-architecture"
     ],
@@ -12196,9 +12218,11 @@
       "flow/flow-governance"
     ],
     "versioning": [
+      "agentforce/agentforce-prompt-versioning",
       "agentforce/prompt-template-versioning",
       "apex/apex-rest-services",
       "devops/release-management",
+      "flow/flow-versioning-strategy",
       "integration/api-versioning-strategy",
       "omnistudio/omniscript-versioning"
     ],

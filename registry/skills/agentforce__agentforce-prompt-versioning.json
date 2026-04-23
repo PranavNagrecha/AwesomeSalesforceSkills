@@ -1,0 +1,102 @@
+{
+  "category": "agentforce",
+  "chunk_ids": [
+    "0010ec92d7edcaafd888",
+    "037fcd653db8eb4d6b85",
+    "0c414522710b5343e3d6",
+    "1488728d0b7c6bd787a3",
+    "1770167c0f1efcbeff1d",
+    "17ce157c73af4dd81944",
+    "20fa81a07a99bfe1290f",
+    "2237daaa6975e837f60b",
+    "377e743f27c278e06955",
+    "3aa6cc586e63b3bd9bee",
+    "3e66e57902b50c387aeb",
+    "55c9655db200b259bef7",
+    "599c5ba71d46ac3f3795",
+    "5c1eac0f4425a344fa9f",
+    "5ca3afa2532e12f31024",
+    "5cd16f3ac56d94aaae82",
+    "608f7afb319d9406a878",
+    "6c8940c23c7e75280dba",
+    "6cd5a798924f09101607",
+    "74af2ff553a7df606b62",
+    "7afdc189aa338b5f4121",
+    "82627cde4b26bdfc534f",
+    "82815e9e3b236503b06c",
+    "830290e6c85ba58ace07",
+    "8323db476f95278f468d",
+    "854653a42793a6424c5d",
+    "8804f21a60644655624c",
+    "8ecbc8a85273c90a795c",
+    "9372db2ec7c07f65f54e",
+    "9781386f60a60a392f55",
+    "9b412659647ebf3ae6e6",
+    "9bd365470769acd437e9",
+    "9fd57b5742eacf456c87",
+    "a078a2030780c7122d42",
+    "a81cc4cee9a1b57c257f",
+    "b061bc55c2581e05bea5",
+    "b7e10b5f6052ded6f8a6",
+    "b87dc6c46fea372023d0",
+    "c0d24a988f8a66f228e8",
+    "c31574c2ea50f0d724cc",
+    "c676f58ee1ce9894af0d",
+    "c91856cc1df506eac274",
+    "c95d965c90d38c01bff3",
+    "c9fcfb1246d02459a5bd",
+    "d90f1a07cee733c37ca6",
+    "e0ba8b23e626f290cc03",
+    "e458c724b98a2f8d49a7",
+    "f10e7cde88c384f903f1",
+    "f224ac972e5f6ca58bef",
+    "f4041def60134dedb2aa",
+    "f4791cae30041168dd11",
+    "f4adc69f733f41b34be7",
+    "f54441522d809d40781c",
+    "f9482a4b8baf2b2bf99a"
+  ],
+  "content_hash": "636267c3fa31deca0b4dac941fb4f250d890a71d92638ac94ba1947fe2b7c725",
+  "dependencies": [
+    "agentforce/agentforce-testing-strategy"
+  ],
+  "description": "Version Prompt Templates and agent topic prompts: source-control shape, change review, model-version pinning, A/B, and rollback. Trigger keywords: prompt template versioning, prompt changelog, prompt rollback, A/B prompt test, agentforce prompt release. Does NOT cover: prompt engineering tips, general LLM fine-tuning, or Classify / Einstein Generate studio UI walkthroughs.",
+  "file_location": "skills/agentforce/agentforce-prompt-versioning",
+  "id": "agentforce/agentforce-prompt-versioning",
+  "inputs": [
+    "Prompt template inventory",
+    "Agent topic prompts",
+    "Model-version strategy (auto / pinned)"
+  ],
+  "name": "agentforce-prompt-versioning",
+  "official_sources": [
+    "Prompt Templates \u2014",
+    "Model Configuration \u2014"
+  ],
+  "outputs": [
+    "Prompt versioning convention (naming, changelog)",
+    "Rollback plan per prompt",
+    "A/B harness for prompt variants"
+  ],
+  "references": [
+    "skills/agentforce/agentforce-prompt-versioning/references/examples.md",
+    "skills/agentforce/agentforce-prompt-versioning/references/gotchas.md",
+    "skills/agentforce/agentforce-prompt-versioning/references/llm-anti-patterns.md",
+    "skills/agentforce/agentforce-prompt-versioning/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/agentforce/agentforce-prompt-versioning/scripts/check_agentforce_prompt_versioning.py"
+  ],
+  "tags": [
+    "agentforce",
+    "prompts",
+    "versioning",
+    "devops"
+  ],
+  "templates": [
+    "skills/agentforce/agentforce-prompt-versioning/templates/prompt-change-entry.md"
+  ],
+  "updated": "2026-04-23",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}
