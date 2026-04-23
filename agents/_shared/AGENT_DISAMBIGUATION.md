@@ -35,10 +35,15 @@ Many agents have `design` and `audit` modes. A third class of agents compare two
 | `user-access-diff` | **Diff** | Two User Ids | Symmetric comparison of their effective access |
 | `object-designer` | **Design** | Business concept | Setup-ready object design |
 | `data-model-reviewer` | **Audit** | Object list / domain | Data model health report |
+| `lwc-builder` | **Design** | Feature summary + binding kind | Full LWC bundle (+ optional Apex controller) |
+| `lwc-auditor` | **Audit** | Existing bundle path | Static findings with severity + paste-ready fixes |
+| `lwc-debugger` | **Debug** | Bundle path + runtime symptom | Ranked hypotheses, read-only probes, proposed fix |
 
-**Rule of thumb:** design = "what should be", audit = "what exists and what's wrong", diff = "how do two principals differ."
+**Rule of thumb:** design = "what should be", audit = "what exists and what's wrong", diff = "how do two principals differ", debug = "what's failing **right now** and how do I confirm it."
 
 If the user says *"compare user A to user B"* → `user-access-diff`. If they say *"what should access look like for this role"* → `permission-set-architect --mode=design`. If they say *"audit permissions in prod"* → `permission-set-architect --mode=audit`.
+
+**LWC specifically:** if the user has a static quality question ("is this bundle accessible / performant / secure?") → `lwc-auditor`. If the user has a **live failure** ("this wire returns undefined after refresh" / "my quick action won't close") → `lwc-debugger`. `lwc-auditor` catches static code smells; `lwc-debugger` classifies a symptom axis and returns probes to confirm a root cause before proposing a fix. If the user wants net-new code, route to `lwc-builder` — neither the auditor nor the debugger authors new bundles.
 
 ---
 
