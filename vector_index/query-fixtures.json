@@ -6203,6 +6203,30 @@
       "domain": "security",
       "expected_skill": "security/oauth-redirect-and-domain-strategy",
       "top_k": 3
+    },
+    {
+      "query": "agentforce testing strategy golden set adversarial prompt regression",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/agentforce-testing-strategy",
+      "top_k": 3
+    },
+    {
+      "query": "agentforce prompt versioning template revision model pin rollout",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/agentforce-prompt-versioning",
+      "top_k": 3
+    },
+    {
+      "query": "agentforce pii redaction tokenize mask regulated field prompt input output",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/agentforce-pii-redaction",
+      "top_k": 3
+    },
+    {
+      "query": "flow versioning paused interview activate prior rollback cleanup retention",
+      "domain": "flow",
+      "expected_skill": "flow/flow-versioning-strategy",
+      "top_k": 3
     }
   ]
 }

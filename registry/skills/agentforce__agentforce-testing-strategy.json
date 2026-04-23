@@ -1,0 +1,91 @@
+{
+  "category": "agentforce",
+  "chunk_ids": [
+    "0010fe54617370e5e295",
+    "0052a53353acfa187ff6",
+    "005e42643dc10360c8b0",
+    "0cae47e3abfacb8fc684",
+    "0d899971cc1c442e4a1f",
+    "0f392c9bddf60d81d3cf",
+    "17bb13d3acb150cc9591",
+    "27808cd85bfb4afaa3b6",
+    "28d7da5628a1ca04a834",
+    "2d3ea36691aa7ac5b42d",
+    "30747ef4920d7a2c0b09",
+    "33d98a8eb2a3ab38680b",
+    "37fc03f87d040acf18c3",
+    "44457c834845ea421e56",
+    "4e2e8f0f9c9c38417e99",
+    "4ec0b9852b83ae203f3d",
+    "6e39e62b9460940b19fa",
+    "7277efbadddf5eb9a3fa",
+    "7422d61d0c4a48494b52",
+    "7506ff6784bdaf283afd",
+    "789598da77008a5c8a30",
+    "806332bbc3f2ad966531",
+    "86786bbb4cb753924e65",
+    "8b3bb1835c6ded9bf33f",
+    "8fd937e71b0683e6418d",
+    "a176fb6c63f58fba9ab2",
+    "a35c0857099d2f46d91a",
+    "a39b5ff66639dcb64eb8",
+    "a3e2177bf341c418e35a",
+    "af9ddc9cb94bb2da7f14",
+    "b0b9f34973cb3b3b1680",
+    "b65ef92bd5b3ccd5cd75",
+    "bbcbeaf8054e9a045456",
+    "bd3bfe1e26f0b7a8c8a7",
+    "c19caa4c23593dca86d4",
+    "cfb5467d077ac10aa80a",
+    "d3441128e7bc59027b57",
+    "d84e23c46dee9518bf56",
+    "d8850dee16cb31a687a1",
+    "dbf9c9be8ec17a237fd4",
+    "e6e9a89157567b933ee1",
+    "f1be335b2ebc6b70d3f0",
+    "f2cac43ed63f6676f51e",
+    "f7c7894025007b1449e2",
+    "fb2719c9e94e1317baee"
+  ],
+  "content_hash": "f6cd6ea6eee10716032d6e75968aca815c82eeb2b4d5c24c20998d47c5381648",
+  "dependencies": [],
+  "description": "Design Agentforce testing: topic coverage, action unit tests, deterministic golden sets, adversarial prompts, and regression harness. Trigger keywords: agentforce testing, agent eval, agent regression suite, prompt golden set, action unit test agentforce. Does NOT cover: generic LLM evaluation academia, human-labeled RLHF pipelines, or Einstein Classify accuracy.",
+  "file_location": "skills/agentforce/agentforce-testing-strategy",
+  "id": "agentforce/agentforce-testing-strategy",
+  "inputs": [
+    "Agent topic list",
+    "Action inventory (Apex actions, Flow actions, Prompt actions)",
+    "Production transcripts (sanitised)"
+  ],
+  "name": "agentforce-testing-strategy",
+  "official_sources": [
+    "Agentforce Overview \u2014",
+    "Testing Agents \u2014"
+  ],
+  "outputs": [
+    "Golden set (prompt \u2192 expected topic + action + tone)",
+    "Adversarial set (jailbreak, PII leak, off-scope)",
+    "Action unit test skeleton"
+  ],
+  "references": [
+    "skills/agentforce/agentforce-testing-strategy/references/examples.md",
+    "skills/agentforce/agentforce-testing-strategy/references/gotchas.md",
+    "skills/agentforce/agentforce-testing-strategy/references/llm-anti-patterns.md",
+    "skills/agentforce/agentforce-testing-strategy/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/agentforce/agentforce-testing-strategy/scripts/check_agentforce_testing_strategy.py"
+  ],
+  "tags": [
+    "agentforce",
+    "testing",
+    "evals",
+    "regression"
+  ],
+  "templates": [
+    "skills/agentforce/agentforce-testing-strategy/templates/test-plan.md"
+  ],
+  "updated": "2026-04-23",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}
