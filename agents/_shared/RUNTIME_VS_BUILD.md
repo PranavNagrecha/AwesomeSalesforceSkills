@@ -23,11 +23,11 @@ Entry points: `/run-queue`, `/new-skill`, `/request-skill`, scheduled task.
 
 ---
 
-## Run-time agents (39)
+## Run-time agents (41)
 
 These agents use the skill library to do real Salesforce work against a user's org or codebase. They are the primary value delivered to consumers of SfSkills. Every run-time agent follows [`AGENT_CONTRACT.md`](./AGENT_CONTRACT.md) — including the mandatory **Process Observations** section that analyzes the org itself while producing the deliverable — and cites every skill / template / decision-tree it consumed.
 
-### Developer + architecture tier (11)
+### Developer + architecture tier (13)
 
 | Agent | Domain | Primary output | Slash command |
 |---|---|---|---|
@@ -38,7 +38,9 @@ These agents use the skill library to do real Salesforce work against a user's o
 | `security-scanner` | Security | CRUD/FLS/sharing/secret findings report | `/scan-security` |
 | `flow-analyzer` | Flow | Flow-vs-Apex decision + bulkification findings | `/analyze-flow` |
 | `bulk-migration-planner` | Integration / Data | Bulk API 2.0 / PE / Pub-Sub migration plan | `/plan-bulk-migration` |
+| `lwc-builder` | LWC | Full LWC bundle (js/html/css/meta/tests) + optional Apex controller | `/build-lwc` |
 | `lwc-auditor` | LWC | A11y + perf + security findings per bundle | `/audit-lwc` |
+| `lwc-debugger` | LWC | Ranked hypotheses + diagnostic probes + proposed fix for a live LWC failure | `/debug-lwc` |
 | `deployment-risk-scorer` | DevOps | Risk score + breaking-change list for a change set | `/score-deployment` |
 | `agentforce-builder` | Agentforce | Full action scaffold: Apex + topic + eval | `/build-agentforce-action` |
 | `org-drift-detector` | Architect | Library ↔ org gap + bloat report | `/detect-drift` |
