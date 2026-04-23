@@ -1,0 +1,102 @@
+{
+  "category": "agentforce",
+  "chunk_ids": [
+    "01b32cf0d53cd9c9452a",
+    "05e7f0751923126e903e",
+    "099d92b350f9303b1030",
+    "0d94de12e432a3480a9e",
+    "0e38d3f8f4856f80f97e",
+    "1d3ba71c4abc0ac09b17",
+    "268c34521c43dd13af0a",
+    "2dc2674a45c5cd3083fd",
+    "311b84f51ae492c1d5ae",
+    "379573ef91915d104f8e",
+    "3d20d6cad0f1fa9e9e8d",
+    "3dfc858d55a4a300ea61",
+    "3f1b011ce0f51b51076c",
+    "3f7fbf3058b9f6ccc518",
+    "3fce3081fa163ab5c760",
+    "43be09c900ca3a2600ff",
+    "47f1b5dac0d6fa212f90",
+    "48020a476630dd7a0310",
+    "572bd6114af82df2231c",
+    "58d4bb2dbaaf7167dfb8",
+    "58e2272303299aa4abfd",
+    "5d1b3b7e8c0a5ff630f1",
+    "643d1143630ac6f921a5",
+    "663f9b66491ffba9560f",
+    "6c22fad79e0c4f73c267",
+    "6c8d317ebc0902b8e54e",
+    "72719ef8a978735c8071",
+    "790656d6073c8423d65b",
+    "7b3f615f7fddc37fac3c",
+    "867a90ff7ca82447020e",
+    "896f2050ae64fc9902cd",
+    "8c7bb03f0903b2416e2f",
+    "94bc8c83c405ae154adb",
+    "a36d47be332a160a1bb3",
+    "a8ce688879acca0239d9",
+    "ac349fbb00d0355b20ab",
+    "ae203b016d0438e750b5",
+    "b0ff85b14eac1b26b333",
+    "b2070c46e1f958bb3ceb",
+    "be94ea6e6733bf2f7dc2",
+    "c2ea5792e7a48dbde9cf",
+    "c99a3c7f1864565bbcd3",
+    "cb7dc563326634d3e53e",
+    "d0425cf367437e6f3f44",
+    "d195e60d9df6a8f322da",
+    "d1e321c99b1407264eaa",
+    "d2157d1766bb50952b02",
+    "e1c95245953a1ed3fff9",
+    "e6f34ce85e476196b472",
+    "ead267198bd9026db282",
+    "f455b1989bac23f98e83",
+    "f62f36347fd510c69739",
+    "f73cdb41af8d59ab4326",
+    "fd8c197b1b13db51b8d6"
+  ],
+  "content_hash": "7b15d1834f7a6c5a135fbaee1993704b416c71af01456401428268901bb8f7eb",
+  "dependencies": [],
+  "description": "Use when designing how an Agentforce agent transfers the conversation to a human agent (Omni-Channel), to another bot/agent, or to an alternate workflow \u2014 including context package, deflection, escalation triggers, and user messaging. Triggers: 'agent to human handoff', 'agentforce escalate to omni channel', 'agent to agent handoff', 'transfer conversation with context', 'agent deflection fallback'. NOT for topic selector design (see agent-topic-design).",
+  "file_location": "skills/agentforce/agentforce-agent-handoff-patterns",
+  "id": "agentforce/agentforce-agent-handoff-patterns",
+  "inputs": [
+    "conditions that trigger handoff",
+    "destination (human queue, alternate agent, workflow)",
+    "context to package for the receiver"
+  ],
+  "name": "agentforce-agent-handoff-patterns",
+  "official_sources": [
+    "Agentforce Service AI \u2014 https://help.salesforce.com/s/articleView?id=sf.agentforce_service_agent.htm",
+    "Omni-Channel \u2014 https://help.salesforce.com/s/articleView?id=sf.service_presence_intro.htm",
+    "Salesforce Well-Architected User Experience \u2014 https://architect.salesforce.com/docs/architect/well-architected/adaptable/adaptable"
+  ],
+  "outputs": [
+    "handoff trigger catalog",
+    "context package schema",
+    "user-facing messaging per handoff type"
+  ],
+  "references": [
+    "skills/agentforce/agentforce-agent-handoff-patterns/references/examples.md",
+    "skills/agentforce/agentforce-agent-handoff-patterns/references/gotchas.md",
+    "skills/agentforce/agentforce-agent-handoff-patterns/references/llm-anti-patterns.md",
+    "skills/agentforce/agentforce-agent-handoff-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/agentforce/agentforce-agent-handoff-patterns/scripts/check_agentforce_agent_handoff_patterns.py"
+  ],
+  "tags": [
+    "agentforce",
+    "handoff",
+    "escalation",
+    "omni-channel",
+    "human-in-the-loop"
+  ],
+  "templates": [
+    "skills/agentforce/agentforce-agent-handoff-patterns/templates/handoff-design.md"
+  ],
+  "updated": "2026-04-23",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

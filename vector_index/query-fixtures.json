@@ -6083,6 +6083,42 @@
       "domain": "security",
       "expected_skill": "security/shield-event-log-retention-strategy",
       "top_k": 3
+    },
+    {
+      "query": "reduce agentforce token cost topic instruction trim retriever rerank",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/agentforce-cost-optimization",
+      "top_k": 3
+    },
+    {
+      "query": "agentforce hand off to human omni channel context package escalation",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/agentforce-agent-handoff-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "ground agentforce with data cloud retriever dmo citations freshness",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/data-cloud-grounding-for-agentforce",
+      "top_k": 3
+    },
+    {
+      "query": "accessible screen flow wcag keyboard screen reader labels error announcement",
+      "domain": "flow",
+      "expected_skill": "flow/screen-flow-accessibility",
+      "top_k": 3
+    },
+    {
+      "query": "scheduled flow hitting limits chunk platform event queueable escalation batch",
+      "domain": "flow",
+      "expected_skill": "flow/flow-batch-processing-alternatives",
+      "top_k": 3
+    },
+    {
+      "query": "flow post commit callout email safe after save transaction finalizer queueable",
+      "domain": "flow",
+      "expected_skill": "flow/flow-transaction-finalizer-patterns",
+      "top_k": 3
     }
   ]
 }

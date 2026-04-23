@@ -234,6 +234,8 @@
       "agentforce/agent-testing-and-evaluation",
       "agentforce/agent-topic-design",
       "agentforce/agentforce-agent-creation",
+      "agentforce/agentforce-agent-handoff-patterns",
+      "agentforce/agentforce-cost-optimization",
       "agentforce/agentforce-custom-channel-dev",
       "agentforce/agentforce-eval-harness",
       "agentforce/agentforce-guardrails",
@@ -245,6 +247,7 @@
       "agentforce/agentforce-service-ai-setup",
       "agentforce/agentforce-tool-use-patterns",
       "agentforce/custom-agent-actions-apex",
+      "agentforce/data-cloud-grounding-for-agentforce",
       "agentforce/data-cloud-vector-search-dev",
       "agentforce/einstein-bots-to-agentforce-migration",
       "agentforce/einstein-copilot-for-sales",
@@ -636,6 +639,7 @@
       "flow/fault-handling",
       "flow/flow-action-framework",
       "flow/flow-and-platform-events",
+      "flow/flow-batch-processing-alternatives",
       "flow/flow-bulkification",
       "flow/flow-collection-processing",
       "flow/flow-cross-object-updates",
@@ -662,12 +666,14 @@
       "flow/flow-rollback-patterns",
       "flow/flow-runtime-error-diagnosis",
       "flow/flow-testing",
+      "flow/flow-transaction-finalizer-patterns",
       "flow/flow-transactional-boundaries",
       "flow/orchestration-flows",
       "flow/pause-elements-and-wait-events",
       "flow/process-builder-to-flow-migration",
       "flow/record-triggered-flow-patterns",
       "flow/scheduled-flows",
+      "flow/screen-flow-accessibility",
       "flow/screen-flows",
       "flow/subflows-and-reusability",
       "flow/workflow-rule-to-flow-migration"
@@ -1189,6 +1195,7 @@
       "apex/custom-metadata-in-apex"
     ],
     "a11y": [
+      "flow/screen-flow-accessibility",
       "lwc/drag-and-drop"
     ],
     "ab-testing": [
@@ -1220,6 +1227,7 @@
     ],
     "accessibility": [
       "admin/digital-storefront-requirements",
+      "flow/screen-flow-accessibility",
       "lwc/lwc-chart-and-visualization",
       "lwc/lwc-lightning-modal",
       "lwc/lwc-record-picker"
@@ -1467,6 +1475,8 @@
       "agentforce/agent-testing-and-evaluation",
       "agentforce/agent-topic-design",
       "agentforce/agentforce-agent-creation",
+      "agentforce/agentforce-agent-handoff-patterns",
+      "agentforce/agentforce-cost-optimization",
       "agentforce/agentforce-custom-channel-dev",
       "agentforce/agentforce-eval-harness",
       "agentforce/agentforce-guardrails",
@@ -1476,6 +1486,7 @@
       "agentforce/agentforce-persona-design",
       "agentforce/agentforce-tool-use-patterns",
       "agentforce/custom-agent-actions-apex",
+      "agentforce/data-cloud-grounding-for-agentforce",
       "agentforce/einstein-bots-to-agentforce-migration",
       "agentforce/mcp-tool-definition-apex",
       "agentforce/model-builder-and-byollm",
@@ -1968,6 +1979,7 @@
       "data/bulk-api-and-large-data-loads",
       "data/bulk-api-patterns",
       "flow/flow-and-platform-events",
+      "flow/flow-batch-processing-alternatives",
       "integration/platform-event-publish-patterns",
       "lwc/lwc-async-patterns",
       "omnistudio/omnistudio-asynchronous-data-operations"
@@ -2216,6 +2228,7 @@
     "batch": [
       "apex/governor-limits",
       "data/bulk-api-and-large-data-loads",
+      "flow/flow-batch-processing-alternatives",
       "integration/real-time-vs-batch-integration"
     ],
     "batch-apex": [
@@ -3559,6 +3572,7 @@
       "architect/cpq-vs-standard-products-decision"
     ],
     "cost-optimization": [
+      "agentforce/agentforce-cost-optimization",
       "architect/license-optimization-strategy"
     ],
     "cost-plus-markup": [
@@ -3989,6 +4003,7 @@
       "admin/data-cloud-segmentation",
       "agentforce/agentforce-observability",
       "agentforce/agentforce-service-ai-setup",
+      "agentforce/data-cloud-grounding-for-agentforce",
       "agentforce/rag-patterns-in-salesforce",
       "architect/ai-ready-data-architecture",
       "architect/cloud-specific-deployment-architecture",
@@ -5238,7 +5253,8 @@
       "lwc/lwc-error-boundaries"
     ],
     "escalation": [
-      "admin/approval-processes"
+      "admin/approval-processes",
+      "agentforce/agentforce-agent-handoff-patterns"
     ],
     "escalation-criteria": [
       "admin/agent-conversation-design"
@@ -5665,7 +5681,8 @@
     ],
     "finalizer": [
       "apex/apex-queueable-patterns",
-      "apex/long-running-process-orchestration"
+      "apex/long-running-process-orchestration",
+      "flow/flow-transaction-finalizer-patterns"
     ],
     "finance-periods": [
       "admin/revenue-recognition-requirements"
@@ -5783,6 +5800,7 @@
       "architect/solution-design-patterns",
       "flow/auto-launched-flow-patterns",
       "flow/flow-and-platform-events",
+      "flow/flow-batch-processing-alternatives",
       "flow/flow-cross-object-updates",
       "flow/flow-data-tables",
       "flow/flow-dynamic-choices",
@@ -5800,7 +5818,9 @@
       "flow/flow-resource-patterns",
       "flow/flow-rollback-patterns",
       "flow/flow-runtime-error-diagnosis",
+      "flow/flow-transaction-finalizer-patterns",
       "flow/flow-transactional-boundaries",
+      "flow/screen-flow-accessibility",
       "omnistudio/omnistudio-vs-flow-decision"
     ],
     "flow-action": [
@@ -6264,6 +6284,8 @@
       "lwc/wire-service-patterns"
     ],
     "grounding": [
+      "agentforce/agentforce-cost-optimization",
+      "agentforce/data-cloud-grounding-for-agentforce",
       "agentforce/data-cloud-vector-search-dev",
       "agentforce/prompt-builder-templates"
     ],
@@ -6305,6 +6327,9 @@
     ],
     "handler-pattern": [
       "apex/trigger-framework"
+    ],
+    "handoff": [
+      "agentforce/agentforce-agent-handoff-patterns"
     ],
     "handoff-rules": [
       "agentforce/agent-topic-design"
@@ -6521,6 +6546,9 @@
     ],
     "hub-and-spoke": [
       "architect/multi-org-strategy"
+    ],
+    "human-in-the-loop": [
+      "agentforce/agentforce-agent-handoff-patterns"
     ],
     "human-oversight": [
       "admin/ai-ethics-and-governance-requirements"
@@ -7361,6 +7389,9 @@
       "lwc/lwc-security",
       "lwc/lwr-site-development"
     ],
+    "limits": [
+      "flow/flow-batch-processing-alternatives"
+    ],
     "limits-api": [
       "architect/org-limits-monitoring"
     ],
@@ -7939,6 +7970,9 @@
     "model-selection": [
       "architect/ai-platform-architecture"
     ],
+    "model-tier": [
+      "agentforce/agentforce-cost-optimization"
+    ],
     "moderation": [
       "admin/experience-cloud-moderation"
     ],
@@ -8335,6 +8369,7 @@
       "admin/omni-channel-routing-setup",
       "admin/service-cloud-voice-setup",
       "admin/service-console-configuration",
+      "agentforce/agentforce-agent-handoff-patterns",
       "agentforce/einstein-copilot-for-service",
       "apex/omni-channel-custom-routing",
       "architect/conversational-ai-architecture",
@@ -9157,6 +9192,9 @@
     "post-authentication": [
       "security/ip-range-and-login-flow-strategy"
     ],
+    "post-commit": [
+      "flow/flow-transaction-finalizer-patterns"
+    ],
     "post-deployment-validation": [
       "devops/post-deployment-validation"
     ],
@@ -9659,6 +9697,7 @@
       "architect/cpq-vs-standard-products-decision"
     ],
     "rag": [
+      "agentforce/data-cloud-grounding-for-agentforce",
       "agentforce/rag-patterns-in-salesforce",
       "architect/ai-ready-data-architecture"
     ],
@@ -9883,6 +9922,7 @@
     ],
     "reliability": [
       "apex/governor-limit-recovery-patterns",
+      "flow/flow-transaction-finalizer-patterns",
       "integration/error-handling-in-integrations"
     ],
     "remote-action": [
@@ -10044,6 +10084,9 @@
     ],
     "retirement": [
       "integration/salesforce-functions-replacement"
+    ],
+    "retrieval": [
+      "agentforce/data-cloud-grounding-for-agentforce"
     ],
     "retrieve": [
       "apex/metadata-api-and-package-xml"
@@ -10429,6 +10472,9 @@
       "architect/sales-cloud-architecture",
       "flow/flow-bulkification"
     ],
+    "scale": [
+      "flow/flow-batch-processing-alternatives"
+    ],
     "scale-test": [
       "devops/performance-testing-salesforce"
     ],
@@ -10529,6 +10575,7 @@
       "flow/fault-handling",
       "flow/flow-dynamic-choices",
       "flow/flow-for-experience-cloud",
+      "flow/screen-flow-accessibility",
       "lwc/lwc-in-flow-screens",
       "security/ip-range-and-login-flow-strategy"
     ],
@@ -11665,6 +11712,9 @@
     "tokenization": [
       "apex/commerce-payment-integration"
     ],
+    "tokens": [
+      "agentforce/agentforce-cost-optimization"
+    ],
     "tool-definition": [
       "agentforce/mcp-tool-definition-apex"
     ],
@@ -11707,7 +11757,8 @@
       "admin/change-management-and-training"
     ],
     "transaction": [
-      "apex/apex-savepoint-and-rollback"
+      "apex/apex-savepoint-and-rollback",
+      "flow/flow-transaction-finalizer-patterns"
     ],
     "transaction-api": [
       "apex/billing-integration-apex"
@@ -12114,6 +12165,7 @@
       "data/einstein-analytics-data-model"
     ],
     "wcag": [
+      "flow/screen-flow-accessibility",
       "lwc/lwc-accessibility-patterns"
     ],
     "wealth-aggregation": [

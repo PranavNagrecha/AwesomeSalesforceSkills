@@ -1,20 +1,20 @@
 {
   "domain_counts": {
     "admin": 218,
-    "agentforce": 40,
+    "agentforce": 43,
     "apex": 117,
     "architect": 97,
     "data": 87,
     "devops": 59,
-    "flow": 39,
+    "flow": 42,
     "integration": 47,
     "lwc": 46,
     "omnistudio": 30,
     "security": 41
   },
-  "generated_from_hash": "328238a145e3ada9f25e335ad42cdc80f93ca3ba5b5288e97801a35e88a693d1",
+  "generated_from_hash": "66b8a15e735576e3867b9511b1e88925c1129f21b6ddbf922bdb3d1461067c5e",
   "schema_version": 1,
-  "skill_count": 821,
+  "skill_count": 827,
   "skills": [
     {
       "category": "admin",
@@ -30680,6 +30680,214 @@
     {
       "category": "agentforce",
       "chunk_ids": [
+        "01b32cf0d53cd9c9452a",
+        "05e7f0751923126e903e",
+        "099d92b350f9303b1030",
+        "0d94de12e432a3480a9e",
+        "0e38d3f8f4856f80f97e",
+        "1d3ba71c4abc0ac09b17",
+        "268c34521c43dd13af0a",
+        "2dc2674a45c5cd3083fd",
+        "311b84f51ae492c1d5ae",
+        "379573ef91915d104f8e",
+        "3d20d6cad0f1fa9e9e8d",
+        "3dfc858d55a4a300ea61",
+        "3f1b011ce0f51b51076c",
+        "3f7fbf3058b9f6ccc518",
+        "3fce3081fa163ab5c760",
+        "43be09c900ca3a2600ff",
+        "47f1b5dac0d6fa212f90",
+        "48020a476630dd7a0310",
+        "572bd6114af82df2231c",
+        "58d4bb2dbaaf7167dfb8",
+        "58e2272303299aa4abfd",
+        "5d1b3b7e8c0a5ff630f1",
+        "643d1143630ac6f921a5",
+        "663f9b66491ffba9560f",
+        "6c22fad79e0c4f73c267",
+        "6c8d317ebc0902b8e54e",
+        "72719ef8a978735c8071",
+        "790656d6073c8423d65b",
+        "7b3f615f7fddc37fac3c",
+        "867a90ff7ca82447020e",
+        "896f2050ae64fc9902cd",
+        "8c7bb03f0903b2416e2f",
+        "94bc8c83c405ae154adb",
+        "a36d47be332a160a1bb3",
+        "a8ce688879acca0239d9",
+        "ac349fbb00d0355b20ab",
+        "ae203b016d0438e750b5",
+        "b0ff85b14eac1b26b333",
+        "b2070c46e1f958bb3ceb",
+        "be94ea6e6733bf2f7dc2",
+        "c2ea5792e7a48dbde9cf",
+        "c99a3c7f1864565bbcd3",
+        "cb7dc563326634d3e53e",
+        "d0425cf367437e6f3f44",
+        "d195e60d9df6a8f322da",
+        "d1e321c99b1407264eaa",
+        "d2157d1766bb50952b02",
+        "e1c95245953a1ed3fff9",
+        "e6f34ce85e476196b472",
+        "ead267198bd9026db282",
+        "f455b1989bac23f98e83",
+        "f62f36347fd510c69739",
+        "f73cdb41af8d59ab4326",
+        "fd8c197b1b13db51b8d6"
+      ],
+      "content_hash": "7b15d1834f7a6c5a135fbaee1993704b416c71af01456401428268901bb8f7eb",
+      "dependencies": [],
+      "description": "Use when designing how an Agentforce agent transfers the conversation to a human agent (Omni-Channel), to another bot/agent, or to an alternate workflow \u2014 including context package, deflection, escalation triggers, and user messaging. Triggers: 'agent to human handoff', 'agentforce escalate to omni channel', 'agent to agent handoff', 'transfer conversation with context', 'agent deflection fallback'. NOT for topic selector design (see agent-topic-design).",
+      "file_location": "skills/agentforce/agentforce-agent-handoff-patterns",
+      "id": "agentforce/agentforce-agent-handoff-patterns",
+      "inputs": [
+        "conditions that trigger handoff",
+        "destination (human queue, alternate agent, workflow)",
+        "context to package for the receiver"
+      ],
+      "name": "agentforce-agent-handoff-patterns",
+      "official_sources": [
+        "Agentforce Service AI \u2014 https://help.salesforce.com/s/articleView?id=sf.agentforce_service_agent.htm",
+        "Omni-Channel \u2014 https://help.salesforce.com/s/articleView?id=sf.service_presence_intro.htm",
+        "Salesforce Well-Architected User Experience \u2014 https://architect.salesforce.com/docs/architect/well-architected/adaptable/adaptable"
+      ],
+      "outputs": [
+        "handoff trigger catalog",
+        "context package schema",
+        "user-facing messaging per handoff type"
+      ],
+      "references": [
+        "skills/agentforce/agentforce-agent-handoff-patterns/references/examples.md",
+        "skills/agentforce/agentforce-agent-handoff-patterns/references/gotchas.md",
+        "skills/agentforce/agentforce-agent-handoff-patterns/references/llm-anti-patterns.md",
+        "skills/agentforce/agentforce-agent-handoff-patterns/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/agentforce/agentforce-agent-handoff-patterns/scripts/check_agentforce_agent_handoff_patterns.py"
+      ],
+      "tags": [
+        "agentforce",
+        "handoff",
+        "escalation",
+        "omni-channel",
+        "human-in-the-loop"
+      ],
+      "templates": [
+        "skills/agentforce/agentforce-agent-handoff-patterns/templates/handoff-design.md"
+      ],
+      "updated": "2026-04-23",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "agentforce",
+      "chunk_ids": [
+        "04514aafb4b43d768733",
+        "04f094f579a30e346196",
+        "076dc85c6889c07d847d",
+        "1b27eb7fb3bb46c830f6",
+        "1bc5a068a7a3fad831da",
+        "1eef71d7c24c6f2b6dc9",
+        "21e42fd9de2830380257",
+        "220ca0de8a2c50d04edc",
+        "22e5fdbfec4dfabe1045",
+        "265d1539fec31569e868",
+        "2b9739d4f25736ac1eea",
+        "2dd2b38d0c73ac51938f",
+        "3d5bf7690b246fc85bac",
+        "471d492f044a59fc0362",
+        "4984885829f7e34fe8fc",
+        "498a2775bbb6eeb0fade",
+        "4c391ec961a6c7742a6a",
+        "4d1934817c85297bb199",
+        "51589bb1770da1bf847b",
+        "5359fd6cf6cbc1a7e779",
+        "53d6c48a4c196c4774fc",
+        "53e882e401b5c2d773b2",
+        "640492be9681da1adb5a",
+        "6d8304eadb376e01ac2c",
+        "73eed43e8ad057490ac1",
+        "7544590f6b97a5b3e80b",
+        "75e5f16e08913c4cea1c",
+        "771a2a1e1e9bb4a5c77a",
+        "8031588d735423b23b3e",
+        "804f9800ff2d3827b6bf",
+        "8742b7f2a38a7cf6bd82",
+        "90cf43983a821b9b647c",
+        "9c68c9050726bf4f98a2",
+        "a0db419de0372fcc01c6",
+        "a7d7ae04db2f85cfa661",
+        "aa4e91a2252d9863d549",
+        "b335b53223f53f193728",
+        "b41742aea3f6526e2e93",
+        "b629c97e3030e30858e4",
+        "bce9b6aa4698cc10a936",
+        "bf9904408d81fafa1b4b",
+        "c0fb4c705be0320f653e",
+        "c6f2a6d17d3fe841cea6",
+        "c9642b630d27d407f9d4",
+        "d1e6651c9327a4d1dc40",
+        "d7d70a9cdedf9e02f20d",
+        "d939c5421f113388b9dc",
+        "d9f13fd79906a5ad9407",
+        "dc70cf43e3cd8d7bffb7",
+        "e2d3b42ac5faa2946e1b",
+        "e3d3a58ef279436cb55f",
+        "ef195abeddf6ae46af64",
+        "f2c322466ac52ffcfbe7",
+        "f65b61ea4f48edf13577",
+        "f65e9ee48a69275e74de",
+        "f8da9c76350fb131c848",
+        "fd65a9daa1347f27c849"
+      ],
+      "content_hash": "bad4fc7e3b5a70bb8a5c57d5d9068468cb91f782d685d39b2f810b2b2243b011",
+      "dependencies": [],
+      "description": "Use when Agentforce run costs are climbing, you need to forecast scale, or you want to reduce tokens per conversation without hurting quality. Covers topic design impact on cost, prompt/template reuse, grounding size discipline, caching, and model-tier selection. Triggers: 'agentforce cost', 'tokens per conversation too high', 'reduce agentforce runs spend', 'forecast agentforce scale cost', 'einstein trust layer tokens'. NOT for general LLM pricing strategy outside Salesforce.",
+      "file_location": "skills/agentforce/agentforce-cost-optimization",
+      "id": "agentforce/agentforce-cost-optimization",
+      "inputs": [
+        "current token usage per conversation",
+        "topic and prompt template inventory",
+        "grounding source sizes"
+      ],
+      "name": "agentforce-cost-optimization",
+      "official_sources": [
+        "Agentforce overview \u2014 https://help.salesforce.com/s/articleView?id=sf.agentforce_overview.htm",
+        "Einstein Trust Layer \u2014 https://help.salesforce.com/s/articleView?id=sf.einstein_trust_layer.htm",
+        "Data Cloud retrievers \u2014 https://help.salesforce.com/s/articleView?id=sf.data_cloud_retrievers.htm",
+        "Salesforce Well-Architected Performance \u2014 https://architect.salesforce.com/docs/architect/well-architected/trusted/performant"
+      ],
+      "outputs": [
+        "cost-per-conversation model",
+        "token-reduction plan",
+        "model-tier recommendation"
+      ],
+      "references": [
+        "skills/agentforce/agentforce-cost-optimization/references/examples.md",
+        "skills/agentforce/agentforce-cost-optimization/references/gotchas.md",
+        "skills/agentforce/agentforce-cost-optimization/references/llm-anti-patterns.md",
+        "skills/agentforce/agentforce-cost-optimization/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/agentforce/agentforce-cost-optimization/scripts/check_agentforce_cost_optimization.py"
+      ],
+      "tags": [
+        "agentforce",
+        "cost-optimization",
+        "tokens",
+        "grounding",
+        "model-tier"
+      ],
+      "templates": [
+        "skills/agentforce/agentforce-cost-optimization/templates/cost-model.md"
+      ],
+      "updated": "2026-04-23",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "agentforce",
+      "chunk_ids": [
         "0513daa6ca6c0c748272",
         "0603b6d243378ff85316",
         "0a42d5f02d0aa67879af",
@@ -32200,6 +32408,102 @@
         "skills/agentforce/custom-agent-actions-apex/templates/custom-agent-actions-apex-template.md"
       ],
       "updated": "2026-04-04",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "agentforce",
+      "chunk_ids": [
+        "021c29fc5c0a444df9d2",
+        "0fb1109576600651990a",
+        "11e69147e7a3c90dbaa8",
+        "20ca8861942794167a09",
+        "25c4a8b00ca1a1cc13e7",
+        "265d39f82836bed5c891",
+        "27bdda6f702973b01bd4",
+        "2879faa10648e89d36fd",
+        "2a7ee1d916e20a383d55",
+        "2dfc9b999969bd0f8875",
+        "2e5703c24a86c01531d6",
+        "3228f42f0f7f0320a6dc",
+        "370ee7015464e655449c",
+        "431d104a8e8e6759b267",
+        "4ca6543b2a4aaa0ddae2",
+        "4d379eaa2a44965b161a",
+        "52dd0fa974614c2a0edc",
+        "573ef7c73aa85504d6ca",
+        "57ecd4e774ed3a9ce299",
+        "5d5e47ddd2d80e02bcd2",
+        "62168eca2f268976514a",
+        "63ec54fbab673f993777",
+        "68e679aba23ed595be59",
+        "80060112a335b07cefa0",
+        "831224698ff61137355d",
+        "84f861cd356c3aba08ab",
+        "8701debfdef969a688bc",
+        "8c4e38ec2a333c5952c7",
+        "8da3551a470f68bd4cee",
+        "90db21aa4f87267b22c7",
+        "9e7e7002ed2e19d313b3",
+        "a3165f56f7c5081ec5da",
+        "a40f8c0a91d0256aa657",
+        "a5b8aa18999ef3ac6103",
+        "a646197ec5382a834dad",
+        "b7b904688bed249355da",
+        "b8f8343ea8194c1131a4",
+        "b9fc4b5b8876b3022880",
+        "bf717fb4664373c2df96",
+        "cb37d1436d47a88a2721",
+        "e0d9ba22f20254552e59",
+        "e1923a6871f51101e665",
+        "e6bdddc34840762657e4",
+        "ef203d2c91883c154125",
+        "f04891c2c4ab431d400b",
+        "f6c7e0aca4f455a5a3fc",
+        "f9d355bf0b05590c833a"
+      ],
+      "content_hash": "2b7e0467894d5ff5adb21124a7e81b2ced8b94971ddd46edb63e06e673018a48",
+      "dependencies": [],
+      "description": "Use when grounding an Agentforce agent with Data Cloud retrievers, DMO selection, chunking, and freshness windows. Triggers: agent grounding, retriever, DMO, data graph, RAG, vector index, citations. Does NOT cover Data Cloud ingestion pipelines or Data Cloud identity resolution tuning.",
+      "file_location": "skills/agentforce/data-cloud-grounding-for-agentforce",
+      "id": "agentforce/data-cloud-grounding-for-agentforce",
+      "inputs": [
+        "Use case + expected user questions",
+        "Data Cloud DMOs and data graphs already in place",
+        "Field-level sharing requirements"
+      ],
+      "name": "data-cloud-grounding-for-agentforce",
+      "official_sources": [
+        "Agentforce Grounding \u2014 https://help.salesforce.com/s/articleView?id=sf.agentforce_grounding.htm",
+        "Data Cloud Retriever \u2014 https://help.salesforce.com/s/articleView?id=sf.c360_a_data_cloud_retriever.htm",
+        "Salesforce Well-Architected \u2014 Trusted \u2014 https://architect.salesforce.com/docs/architect/well-architected/trusted"
+      ],
+      "outputs": [
+        "Retriever design (DMO selection, filters, chunking)",
+        "Grounding strategy per topic (what retrieves, what is instructional)",
+        "Freshness SLA and refresh plan",
+        "Citation / transparency pattern"
+      ],
+      "references": [
+        "skills/agentforce/data-cloud-grounding-for-agentforce/references/examples.md",
+        "skills/agentforce/data-cloud-grounding-for-agentforce/references/gotchas.md",
+        "skills/agentforce/data-cloud-grounding-for-agentforce/references/llm-anti-patterns.md",
+        "skills/agentforce/data-cloud-grounding-for-agentforce/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/agentforce/data-cloud-grounding-for-agentforce/scripts/check_data_cloud_grounding_for_agentforce.py"
+      ],
+      "tags": [
+        "agentforce",
+        "data-cloud",
+        "grounding",
+        "retrieval",
+        "rag"
+      ],
+      "templates": [
+        "skills/agentforce/data-cloud-grounding-for-agentforce/templates/retriever-design.md"
+      ],
+      "updated": "2026-04-23",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -83867,6 +84171,96 @@
     {
       "category": "flow",
       "chunk_ids": [
+        "0168038f4adc0d1b4fae",
+        "06ce8bca57e2973d30a5",
+        "0ac3b9719126a8529da9",
+        "20e53bf2dd7646878b56",
+        "237c1fc33fcb0b0d8c02",
+        "2644cf1fdcc967a75886",
+        "26e040d99d18147b1ce6",
+        "2eb40994450ad0ef290e",
+        "36b94d7b38afee3a9f9d",
+        "3a8f0273cddf884ef90a",
+        "3c86852daef51992f960",
+        "4768376f52927027bd47",
+        "5153c044d55d9c0c4b02",
+        "52e396d213751cfa334e",
+        "55103e059f5b14222cfe",
+        "5acd82ca96323219f051",
+        "5f04de9e2bccbfb3fc1f",
+        "702735e8d1261c794ad2",
+        "760bd3fa92d832b7c4ed",
+        "7cfb5fd2c2cdddbf680a",
+        "7f211bfe7d2e24b97a4a",
+        "82f324d71893d5da741f",
+        "834d8c620488cd19dc1d",
+        "92990da4739df40f4065",
+        "958ec4449babb1cb4891",
+        "9620bc6b29975d8fade0",
+        "982ba8c132640f11dbc6",
+        "9b614ee718b2be86ba7e",
+        "9c2a4aaa4af4657975a3",
+        "a09c8b0f9c2e5f65dd05",
+        "a404c1619dba438c7890",
+        "a4e98e23271b9b6709d9",
+        "aff322dbdd0d7c7c37e8",
+        "b514f33e8a9f4b66752a",
+        "b558aa78aeec45b76f76",
+        "c2b971e4271849de2fc7",
+        "d1a9bbca90347f970687",
+        "d545c62b0a405909fbaa",
+        "d581e968c360a7d35c2b",
+        "dceab0c5ac2a7c7b0331",
+        "e3f68247022ff4b7dc28",
+        "e8a42752877baac2752e"
+      ],
+      "content_hash": "9f28461f817c81f6216001743bb779d3048209c0c76af706ddc702f9c962b600",
+      "dependencies": [],
+      "description": "Use when a Scheduled Flow or Record-Triggered Flow needs to process more records than Flow can safely handle in a single run. Covers Flow limit realities, scheduled-path chunking, Data Cloud batch transforms, and Apex Queueable/Batch escalation. Does NOT cover choosing async across a general workflow (see async-selection decision tree).",
+      "file_location": "skills/flow/flow-batch-processing-alternatives",
+      "id": "flow/flow-batch-processing-alternatives",
+      "inputs": [
+        "Current Scheduled Flow or Record-Triggered Flow",
+        "Volume of records per run (today and projected)",
+        "Governor / DML / CPU limits currently observed"
+      ],
+      "name": "flow-batch-processing-alternatives",
+      "official_sources": [
+        "Flow Limits \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_considerations_limit.htm",
+        "Apex Async \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_async_overview.htm",
+        "async-selection decision tree \u2014 `standards/decision-trees/async-selection.md`"
+      ],
+      "outputs": [
+        "Decision on continuing in Flow, chunking in Flow, or escalating to Apex",
+        "Implementation pattern (scheduled path, Platform Event, Queueable)",
+        "Monitoring and retry plan"
+      ],
+      "references": [
+        "skills/flow/flow-batch-processing-alternatives/references/examples.md",
+        "skills/flow/flow-batch-processing-alternatives/references/gotchas.md",
+        "skills/flow/flow-batch-processing-alternatives/references/llm-anti-patterns.md",
+        "skills/flow/flow-batch-processing-alternatives/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/flow/flow-batch-processing-alternatives/scripts/check_flow_batch_processing_alternatives.py"
+      ],
+      "tags": [
+        "flow",
+        "scale",
+        "batch",
+        "async",
+        "limits"
+      ],
+      "templates": [
+        "skills/flow/flow-batch-processing-alternatives/templates/batch-strategy.md"
+      ],
+      "updated": "2026-04-23",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "flow",
+      "chunk_ids": [
         "0a795272bf0c1fa18a96",
         "0ec681f0247282f02f43",
         "1203d3d8c8631126d6de",
@@ -86587,6 +86981,98 @@
     {
       "category": "flow",
       "chunk_ids": [
+        "0e3afbe531cfc26edf39",
+        "0fc7127e3e2ca65e463a",
+        "103ee7da3387c711221b",
+        "1360c46f851b4601535b",
+        "13769dad255b4bb705b0",
+        "17d7333e4016c1b45d3c",
+        "1f3a658edad17de23aff",
+        "20832b9efa274f76e377",
+        "32c95e9bedf7f5bbaf62",
+        "4db27cc900e05fabeab3",
+        "5b903d9694861e07d8cf",
+        "60fe4776782e77db6a91",
+        "61611784f2e0f0ae0078",
+        "663f3002bd4b270f4cf3",
+        "7055780cd5815468ca6f",
+        "736ff22ed847df86b980",
+        "7884c7ac94e6b86e7bf8",
+        "8678b9e78160021598e7",
+        "891ce256ef33e32a941c",
+        "8f8e48e945ea128abfb7",
+        "920c2c86260d99394731",
+        "92794b4bcea956080d45",
+        "9ce265e370ee1f401b4b",
+        "9d20144ce7ba6d736d2e",
+        "adc4021cbdd221b8741a",
+        "ade61cb0f49a9010df7d",
+        "b18662d026a43e9d1db7",
+        "b2cf9d7112a7c9d29ced",
+        "b77f4516f61a68a3c0d2",
+        "c7d3c3052078ebf6702e",
+        "ca77fa3f0c602d5ce867",
+        "cb2b01e688e6c71e2c71",
+        "cc46668f4da2f5f59a6f",
+        "cd1134beaa268170114a",
+        "d0bebe72b60f9e5eb6fc",
+        "d27c8444308f0b40dab2",
+        "e179e737cd62e1def397",
+        "e2ad7eb6b298b0dcb792",
+        "e6bccc7148bd218bf4de",
+        "ea8cec25ee2b60d9095f",
+        "ed57e81f60fd33df491f",
+        "ee8bb3dc4a94d74c9fae",
+        "f2e42bcefedda3b2101f",
+        "feb6288503e166b62239"
+      ],
+      "content_hash": "4140888097321a01c2264af5b5796b1f58c7c605fa6b8c7ee31493fbcc31fb34",
+      "dependencies": [],
+      "description": "Use when a Flow needs to do work that must survive the triggering transaction \u2014 post-commit notifications, callouts, audit rows, or compensating actions. Covers Flow Transaction Control element, scheduled paths, Platform Event + finalizer escalation, and Apex Queueable finalizer bridging. Does NOT cover general Flow async decisions (see async-selection).",
+      "file_location": "skills/flow/flow-transaction-finalizer-patterns",
+      "id": "flow/flow-transaction-finalizer-patterns",
+      "inputs": [
+        "Flow that currently does pre- or in-transaction work",
+        "Work that must happen post-commit (email, callout, event emit, compensating update)",
+        "Failure tolerance for the post-commit step"
+      ],
+      "name": "flow-transaction-finalizer-patterns",
+      "official_sources": [
+        "Flow Scheduled Paths \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_concepts_trigger_schedule.htm",
+        "Publish-After-Commit \u2014 https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_publish_after_commit.htm",
+        "Queueable Finalizer \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_queueable_finalizer.htm"
+      ],
+      "outputs": [
+        "Post-commit execution pattern (scheduled path, platform event, Apex Queueable finalizer)",
+        "Retry / durability story",
+        "Monitoring hook"
+      ],
+      "references": [
+        "skills/flow/flow-transaction-finalizer-patterns/references/examples.md",
+        "skills/flow/flow-transaction-finalizer-patterns/references/gotchas.md",
+        "skills/flow/flow-transaction-finalizer-patterns/references/llm-anti-patterns.md",
+        "skills/flow/flow-transaction-finalizer-patterns/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/flow/flow-transaction-finalizer-patterns/scripts/check_flow_transaction_finalizer_patterns.py"
+      ],
+      "tags": [
+        "flow",
+        "transaction",
+        "finalizer",
+        "reliability",
+        "post-commit"
+      ],
+      "templates": [
+        "skills/flow/flow-transaction-finalizer-patterns/templates/post-commit-plan.md"
+      ],
+      "updated": "2026-04-23",
+      "vector_embedding": null,
+      "version": "1.0.0"
+    },
+    {
+      "category": "flow",
+      "chunk_ids": [
         "01da5910aa6a3f5a2d9a",
         "041bc6a0bb10905a14d5",
         "0c852c04356e511927bf",
@@ -87314,6 +87800,99 @@
       "updated": "2026-04-17",
       "vector_embedding": null,
       "version": "2.0.0"
+    },
+    {
+      "category": "flow",
+      "chunk_ids": [
+        "056de358e2282f24e060",
+        "08af586b7f3adb5d8b82",
+        "0a0e018339d62ba019df",
+        "18b5e0590a50e6726f2a",
+        "1f12ca04cf791fff57ee",
+        "2748e31b90c45b2bc4f2",
+        "2b8594cce6b0ea772db3",
+        "2e4689733f76da9a08b3",
+        "3139aa9d452da7ca5512",
+        "34c0f39bb2db03d43bcc",
+        "3ee523ba4db9b7007190",
+        "463aa9cf12a10aa8b720",
+        "4b4bd63dffaa63955a20",
+        "5b5c5581e36de9fa17c3",
+        "5c344c79911f95b3163d",
+        "60f98862fb5e45cacc23",
+        "651a9d26da228dda62ed",
+        "6e8c32d151068026dced",
+        "6e9ad63507cf78856c63",
+        "7e3ad685b765bc32192c",
+        "7f830a039d03eb3b5941",
+        "81abe60f045e8f2693fc",
+        "8bd3454b692ff110e693",
+        "927a8c4c7920e21911b2",
+        "93a43b4b70f26f5cf414",
+        "9a5d2387bed93ebc1641",
+        "a0117a0163ffde016bdf",
+        "a9bb4f42c4cbf0e00652",
+        "ad5226fb632d84223b24",
+        "b729cd463a1240f26534",
+        "ba643fb30be052534a03",
+        "bc2778bf85ee6b5c182f",
+        "bc3ea07f6c5a1aeda180",
+        "c6e33a3d8c338413b7d0",
+        "cd6c6bc2b9f75fa8c659",
+        "d44cbe4ad274fc2e3b5a",
+        "dab0ae1111bd27f84ce1",
+        "db35749baaeee1f24d03",
+        "e32b8607cf4208c10e85",
+        "e4518bd30f1240bee617",
+        "e8e96d7723794db36e62",
+        "ea696bfd759862b21d1b",
+        "eb69802b8c0d0b7e0ff6",
+        "edafdfaeb97871e1ccfd",
+        "fac94a612cf6b483e37e"
+      ],
+      "content_hash": "9ef4f7d5aabc08dd852892961562ae345fdea3cbb481b1396cafc313aa38477e",
+      "dependencies": [],
+      "description": "Use when building Screen Flows that must meet accessibility standards (WCAG 2.1 AA, Salesforce accessibility guidelines). Covers keyboard navigation, focus order, labels, error messaging, color contrast, and screen reader compatibility. Does NOT cover LWC a11y (see lwc-accessibility) or general record-page a11y.",
+      "file_location": "skills/flow/screen-flow-accessibility",
+      "id": "flow/screen-flow-accessibility",
+      "inputs": [
+        "Screen Flow under design or review",
+        "Users' assistive technology profile (if known)",
+        "Legal / procurement accessibility requirements"
+      ],
+      "name": "screen-flow-accessibility",
+      "official_sources": [
+        "Salesforce Accessibility \u2014 https://help.salesforce.com/s/articleView?id=sf.accessibility_overview.htm",
+        "WCAG 2.1 AA \u2014 https://www.w3.org/TR/WCAG21/",
+        "Salesforce Well-Architected User Experience \u2014 https://architect.salesforce.com/docs/architect/well-architected/adaptable/adaptable"
+      ],
+      "outputs": [
+        "Accessibility audit of the flow",
+        "Remediation list mapped to WCAG 2.1 success criteria",
+        "Updated screens with accessible labels, grouping, and error handling"
+      ],
+      "references": [
+        "skills/flow/screen-flow-accessibility/references/examples.md",
+        "skills/flow/screen-flow-accessibility/references/gotchas.md",
+        "skills/flow/screen-flow-accessibility/references/llm-anti-patterns.md",
+        "skills/flow/screen-flow-accessibility/references/well-architected.md"
+      ],
+      "scripts": [
+        "skills/flow/screen-flow-accessibility/scripts/check_screen_flow_accessibility.py"
+      ],
+      "tags": [
+        "flow",
+        "screen-flow",
+        "accessibility",
+        "wcag",
+        "a11y"
+      ],
+      "templates": [
+        "skills/flow/screen-flow-accessibility/templates/a11y-audit.md"
+      ],
+      "updated": "2026-04-23",
+      "vector_embedding": null,
+      "version": "1.0.0"
     },
     {
       "category": "flow",
@@ -98832,7 +99411,7 @@
         "f9ea8c6b7f8c2fd1e0c0",
         "fc721160b58776a3b9e1"
       ],
-      "content_hash": "315fc385d023c7fd16839e22676355e2a07aa42de053bab078152aa8a0abd270",
+      "content_hash": "a1a20392936a3158d6ea2ae4693eef28122de6237e514a392cbbac982b060170",
       "dependencies": [],
       "description": "Use when DataRaptor Transform operations are slow, hit governor limits, or use Apex where formula fields would suffice. Covers formula vs Apex expressions, bulk transform sizing, and chained transform composition. Triggers: 'dataraptor transform slow', 'dataraptor formula vs apex', 'dataraptor bulk transform', 'dr governor limit'. NOT for DataRaptor Extract or Load performance.",
       "file_location": "skills/omnistudio/dataraptor-transform-optimization",
@@ -99242,7 +99821,7 @@
         "fe392306b422ee85ed40",
         "fed38f1e30f289d1ad6a"
       ],
-      "content_hash": "8d583b354a9302962b6e1a1e718c169ecf6b56c4ea7bc97e17a240e5ea800690",
+      "content_hash": "0bc7c70a75644029cfb8f00c4188457136c1056d4bb0ee96ad22d80ead32dc48",
       "dependencies": [],
       "description": "Use when designing FlexCard actions, conditional visibility, and state that must survive navigation, refresh, or parent/child card transitions. Triggers: 'flexcard state', 'flexcard conditional visibility', 'flexcard actions', 'flexcard refresh', 'child flexcard state'. NOT for raw LWC state or for OmniScript step state.",
       "file_location": "skills/omnistudio/flexcard-state-management",
@@ -100660,7 +101239,7 @@
         "fac28af1d1357344f90e",
         "ff79676dce670d37a3dc"
       ],
-      "content_hash": "f52c9dea42f08adb94be8dbe5cea846b6dc6a6c7d8feccaf9388d60d32e8d95b",
+      "content_hash": "00b7b09ebb5cf8dc4a397d7d876b8065372fa8f3809e58addcbe35d7fbdc3cf4",
       "dependencies": [],
       "description": "Use when designing fault behavior across Integration Procedures, DataRaptors, OmniScripts, and FlexCards \u2014 error routing, user-facing messaging, retry semantics, and idempotency. Triggers: 'omnistudio error', 'integration procedure fault', 'dataraptor error handling', 'omniscript retry', 'flexcard action failure'. NOT for general Apex exception design or Flow fault paths.",
       "file_location": "skills/omnistudio/omnistudio-error-handling-patterns",
@@ -101608,7 +102187,7 @@
         "f9e5a94fab464bd5dcf1",
         "fe7fb72644813d782a8c"
       ],
-      "content_hash": "07bbaa33747334d113a0a1d8a996377f851fb4452c4e844e10de6463af242d87",
+      "content_hash": "034a458d6b9f706f06b65d4677d83660951641dbbcfdbca04265efbf875818fb",
       "dependencies": [],
       "description": "Use when choosing between OmniStudio (OmniScript / Integration Procedure / FlexCard / DataRaptor) and Flow / Screen Flow / Apex for a given capability. Triggers: 'omnistudio or flow', 'omniscript vs screen flow', 'integration procedure vs subflow', 'flexcard vs lightning page'. NOT for general automation selection across Workflow/Process Builder/Apex (see automation-selection tree).",
       "file_location": "skills/omnistudio/omnistudio-vs-flow-decision",
@@ -103454,7 +104033,7 @@
         "dfb6dbae345a1de0c563",
         "e53cdd137be67f87b71e"
       ],
-      "content_hash": "f991903a2992cb616d47a49d53c43f10c7e153dfac825bc7c04bf726e5ae1bfa",
+      "content_hash": "3bab3b90680c29d2351555aa049f60d5be61f01135cd988b3e8d852952e47265",
       "dependencies": [],
       "description": "Use when designing malware and content scanning for files uploaded to Salesforce (Files, Attachments, ContentVersion) \u2014 external scanning service callouts, quarantine patterns, and user-facing messaging. Triggers: 'virus scan salesforce upload', 'malware scan content version', 'quarantine uploaded file', 'clamav salesforce', 'file upload security'. NOT for field-level data validation.",
       "file_location": "skills/security/file-upload-virus-scanning",
@@ -105305,7 +105884,7 @@
         "f4b85783e4ec0533914d",
         "f8374da5b24a652b5f76"
       ],
-      "content_hash": "b20d466637fba58d04376326a64d3079dd200fc2beae08c3f3b960efd978482b",
+      "content_hash": "d8354982df77e87d15769b13cf61c3bff1c21bdd691fd000bb159a7ead0ec657",
       "dependencies": [],
       "description": "Use when designing or reviewing SCIM-based user lifecycle provisioning into Salesforce from Okta, Azure AD / Entra, or another IdP \u2014 create/update/deactivate, group-to-permission-set mapping, attribute mapping, and deprovisioning semantics. Triggers: 'scim provisioning', 'okta scim salesforce', 'entra salesforce provisioning', 'user deactivation automation', 'group to permission set mapping'. NOT for SSO/authentication setup (see single-sign-on skills).",
       "file_location": "skills/security/scim-provisioning-integration",
@@ -105851,7 +106430,7 @@
         "f516e4d15e8b5c95a8ae",
         "fc9bee9aa458e737ebc4"
       ],
-      "content_hash": "3e745287554dec76a76744f6b5fd1c660611d6f0c1a498d97f636bb2d7924615",
+      "content_hash": "48e44ac2eec65f6e87e33ea0e3b10f95890edc8ff65ecb8bb660e282107f1a2a",
       "dependencies": [],
       "description": "Use when designing credential rotation for integration users, connected apps, named credentials, and OAuth client secrets in Salesforce. Covers rotation cadence, zero-downtime handover, secret storage, and detection of stale credentials. Triggers: 'rotate integration user password', 'connected app secret rotation', 'named credential rotation', 'stale service account', 'zero downtime secret rotation'. NOT for end-user password policies.",
       "file_location": "skills/security/service-account-credential-rotation",
@@ -106141,7 +106720,7 @@
         "f69863ed202496a8be43",
         "fa11d46b199d0a3b5526"
       ],
-      "content_hash": "a04f1c68b6598e6e45378bd32c530ff2506a45abe31423ab5e3a9f18c09a393c",
+      "content_hash": "09d540cc97699fd023867809fb879fb78b1bdc37aeab4c37bd59e4b9174094a9",
       "dependencies": [],
       "description": "Use when designing Salesforce Shield Event Monitoring retention, SIEM routing, and storage-tier strategy \u2014 which event types to keep, for how long, where, and how to answer audit queries across hot/warm/cold tiers. Triggers: 'shield event log retention', 'route event monitoring to splunk', 'how long to keep login history', 'siem salesforce integration', 'event monitoring storage tier'. NOT for enabling Shield (see salesforce-shield-deployment).",
       "file_location": "skills/security/shield-event-log-retention-strategy",
