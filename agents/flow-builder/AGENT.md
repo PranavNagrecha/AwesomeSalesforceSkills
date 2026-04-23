@@ -87,7 +87,12 @@ Given a business requirement, designs the correct Flow: Flow type (record-trigge
 18. `skills/flow/flow-reactive-screen-components` — reactive screens (Winter '24+)
 19. `skills/flow/flow-data-tables` — Data Table screen selection
 20. `skills/flow/flow-http-callout-action` — declarative HTTP callouts
-21. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+21. `skills/flow/flow-decision-element-patterns` — default outcome, null-safe branching, ordering
+22. `skills/flow/flow-get-records-optimization` — indexed filters, loop lift, field trim
+23. `skills/flow/flow-record-save-order-interaction` — before-save vs after-save placement + recursion
+24. `skills/flow/flow-versioning-strategy` — activation, paused-interview pinning, rollback = activate prior
+25. `skills/flow/flow-apex-defined-types` — if HTTP callout / External Service / invocable returns a structured payload
+26. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---
 

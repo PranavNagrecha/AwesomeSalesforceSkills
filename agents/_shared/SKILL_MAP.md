@@ -231,6 +231,14 @@ New skills landed in 2026-04 and are available for citation. Existing agents can
 - `flow/flow-dynamic-choices`, `flow/flow-interview-debugging`, `flow/flow-and-platform-events`
 - `flow/flow-reactive-screen-components`, `flow/flow-data-tables`, `flow/flow-http-callout-action`
 
+### Flow (5 Wave E additions — 2026-04)
+`flow-builder` and `automation-migration-router` additionally cite:
+- `flow/flow-decision-element-patterns` — default outcome, null-safe branching, ordering
+- `flow/flow-get-records-optimization` — indexed filters, loop lift, field trim
+- `flow/flow-record-save-order-interaction` — before-save vs after-save placement + recursion
+- `flow/flow-versioning-strategy` — activation policy, paused-interview pinning, rollback-by-activate-prior (migration router Phase 4)
+- `flow/flow-apex-defined-types` — structured Flow variables for HTTP callout / External Service / invocable payloads
+
 ### OmniStudio (5 new)
 No existing dedicated agent; skills are available for new agents and ad-hoc queries:
 - `omnistudio/omnistudio-lwc-omniscript-migration`, `omnistudio/omnistudio-asynchronous-data-operations`
