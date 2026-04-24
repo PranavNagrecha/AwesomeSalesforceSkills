@@ -6383,6 +6383,12 @@
       "domain": "apex",
       "expected_skill": "apex/apex-connect-api-chatter",
       "top_k": 3
+    },
+    {
+      "query": "analyze salesforce debug log file apex log trigger cascade flip flop field flow interview governor limit UNABLE_TO_LOCK_ROW",
+      "domain": "apex",
+      "expected_skill": "apex/salesforce-debug-log-analysis",
+      "top_k": 3
     }
   ]
 }

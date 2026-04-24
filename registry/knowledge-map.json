@@ -386,6 +386,7 @@
       "apex/record-locking-and-contention",
       "apex/recursive-trigger-prevention",
       "apex/sales-engagement-api",
+      "apex/salesforce-debug-log-analysis",
       "apex/service-cloud-rest-api",
       "apex/sf-cli-and-sfdx-essentials",
       "apex/soql-fundamentals",
@@ -3420,6 +3421,7 @@
       "admin/compound-field-patterns"
     ],
     "concurrency": [
+      "apex/salesforce-debug-log-analysis",
       "architect/omnistudio-scalability-patterns"
     ],
     "concurrent-limits": [
@@ -4568,6 +4570,9 @@
     ],
     "debug-interview": [
       "flow/flow-testing"
+    ],
+    "debug-log-analysis": [
+      "apex/salesforce-debug-log-analysis"
     ],
     "debug-logs": [
       "apex/debug-and-logging",
@@ -6020,6 +6025,9 @@
     "flexipage": [
       "admin/lightning-app-builder-advanced"
     ],
+    "flip-flop": [
+      "apex/salesforce-debug-log-analysis"
+    ],
     "flosum": [
       "devops/salesforce-devops-tooling-selection"
     ],
@@ -6109,7 +6117,8 @@
       "flow/flow-governance"
     ],
     "flow-interview": [
-      "apex/apex-flow-invocation-from-apex"
+      "apex/apex-flow-invocation-from-apex",
+      "apex/salesforce-debug-log-analysis"
     ],
     "flow-interview-log": [
       "flow/flow-debugging"
@@ -6209,6 +6218,9 @@
     ],
     "forecasting-ai": [
       "agentforce/agentforce-sales-ai-setup"
+    ],
+    "forensic-diagnostics": [
+      "apex/salesforce-debug-log-analysis"
     ],
     "forensics": [
       "security/security-incident-response"
@@ -6500,6 +6512,7 @@
       "apex/formula-field-performance-and-limits",
       "apex/governor-limit-recovery-patterns",
       "apex/governor-limits",
+      "apex/salesforce-debug-log-analysis",
       "architect/limits-and-scalability-planning",
       "architect/omnistudio-scalability-patterns",
       "data/cpq-performance-optimization",
@@ -7976,6 +7989,7 @@
       "omnistudio/vlocity-to-native-omnistudio-migration"
     ],
     "managed-packages": [
+      "apex/salesforce-debug-log-analysis",
       "architect/tenant-isolation-patterns",
       "devops/package-development-strategy"
     ],
@@ -11424,6 +11438,9 @@
       "security/guest-user-security",
       "security/record-access-troubleshooting"
     ],
+    "sharing-errors": [
+      "apex/salesforce-debug-log-analysis"
+    ],
     "sharing-inheritance": [
       "admin/analytics-permission-and-sharing"
     ],
@@ -12286,6 +12303,9 @@
     ],
     "trigger-and-flow-coexistence": [
       "apex/trigger-and-flow-coexistence"
+    ],
+    "trigger-cascade": [
+      "apex/salesforce-debug-log-analysis"
     ],
     "trigger-decision": [
       "admin/process-automation-selection"
