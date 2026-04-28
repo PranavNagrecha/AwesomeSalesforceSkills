@@ -34,7 +34,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-05
+updated: 2026-04-28
 ---
 
 # Multi Channel Service Architecture
@@ -57,7 +57,15 @@ Gather this context before working on anything in this domain:
 
 ### Channel-to-Feature Mapping
 
-Every service channel maps to a specific Salesforce feature with its own setup path, licensing, and routing mechanism. Phone maps to Service Cloud Voice (powered by Amazon Connect). Email maps to Email-to-Case, available in two variants: on-demand (no software installation, emails forwarded to a Salesforce-generated address) and org-wide (email relay through your email server). Chat maps to Messaging for In-App/Web, which replaced the legacy Live Agent feature. Social maps to Social Customer Service (Social Studio is retiring). SMS maps to Messaging with a provisioned phone number. All of these channels can create or attach to Case records, and all can route through Omni-Channel for unified agent assignment.
+Every service channel maps to a specific Salesforce feature with its own setup path, licensing, and routing object. All can create or attach to `Case` records, and all can route through Omni-Channel for unified agent assignment.
+
+| Channel | Salesforce feature | Routing object | Licensing notes |
+|---|---|---|---|
+| Phone | Service Cloud Voice (Amazon Connect–powered) | `VoiceCall` | Voice license + Amazon Connect instance |
+| Email | Email-to-Case (on-demand or org-wide) | `Case` (created directly) | On-demand needs no install; org-wide relays through your mail server |
+| Chat | Messaging for In-App/Web (Spring '24 GA — replaces legacy Live Agent) | `MessagingSession` | Digital Engagement license |
+| Social | Social Customer Service (Social Studio is retiring) | `SocialPost` → `Case` | Social Customer Service entitlement |
+| SMS | Messaging | `MessagingSession` | Digital Engagement license + provisioned phone number |
 
 ### Omni-Channel as the Unified Routing Layer
 

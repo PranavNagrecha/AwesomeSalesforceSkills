@@ -69,7 +69,7 @@
     "f4937fdfebd77e7799d4",
     "f846181a5caf0aaac060"
   ],
-  "content_hash": "86a496add01fe4dc50833e5b79b6e97330795825f24187cf7b0e4fc089574253",
+  "content_hash": "81dadd14cfc383d449f605f90f9abde69e9eddf9d296a2215d1b718aec885adc",
   "dependencies": [],
   "description": "Choosing the correct sharing keyword on an Apex class: with sharing vs without sharing vs inherited sharing, how the choice flows through called methods, and when WITH USER_MODE overrides class-level behavior. NOT for org-level sharing design (use standards/decision-trees/sharing-selection.md). NOT for FLS / CRUD enforcement (use apex-fls-crud-enforcement). NOT for Apex Managed Sharing (use apex-managed-sharing).",
   "file_location": "skills/apex/apex-with-without-sharing-decision",

@@ -73,21 +73,13 @@ Gather this context before deciding:
 
 ### The three keyword choices
 
-- **`with sharing`** — the runtime enforces the running user's sharing
-  rules on every SOQL query made directly inside this class. Records the
-  user cannot see are filtered out of query results. Field-Level Security
-  and CRUD are **not** automatically enforced — that is a separate concern
-  (`Security.stripInaccessible`, `WITH SECURITY_ENFORCED`, or
-  `WITH USER_MODE`).
-- **`without sharing`** — sharing rules are **ignored** for queries in
-  this class. The class runs in system context for record visibility.
-  Use deliberately, never as a default.
-- **`inherited sharing`** — the class adopts the sharing mode of the
-  **caller**. If the entry point is `with sharing`, this class behaves
-  the same way. If the entry point has no keyword, an `inherited sharing`
-  class **defaults to `with sharing`** when called directly from
-  Lightning, REST, or Aura entry points (this is the safe default for
-  reusable utilities).
+`with sharing` / `without sharing` / `inherited sharing` differ on **whose** sharing rules apply to direct SOQL queries. Field-Level Security and CRUD are a separate enforcement concern (`Security.stripInaccessible`, `WITH SECURITY_ENFORCED`, `WITH USER_MODE`) and are **not** controlled by these keywords.
+
+| Keyword | Sharing applied to direct SOQL | Default for what entry points | When to use |
+|---|---|---|---|
+| `with sharing` | Running user's sharing rules enforced; invisible records filtered out | `@AuraEnabled`, `@RemoteAction`, `@RestResource` (must default here) | Any user-facing entry point unless you have a documented elevation reason |
+| `without sharing` | Sharing ignored; class runs in system context | None — never a safe default | Audit aggregation, approval routing, compliance scrubbing — deliberate elevation only |
+| `inherited sharing` | Adopts the **caller's** mode; **defaults to `with sharing`** when called directly from Lightning/REST/Aura | Reusable utilities, selectors, base service classes | Shared service/selector code that should respect whatever the entry point demanded |
 
 ### Sharing is inherited through method calls
 
