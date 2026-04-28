@@ -29,7 +29,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-23
+updated: 2026-04-28
 ---
 
 # Agentforce Testing Strategy
@@ -111,12 +111,13 @@ For every custom action:
 
 ## Metrics
 
-- **Routing accuracy** — % prompts routed to expected topic.
-- **Action precision** — % runs that fire the expected action.
-- **PII leak count** — zero tolerance.
-- **Refusal correctness** — for adversarial, % that refuse appropriately.
-- **Tone drift** — flag when response deviates significantly from prior
-  version.
+| Metric | Definition |
+|---|---|
+| Routing accuracy | % prompts routed to expected topic. |
+| Action precision | % runs that fire the expected action. |
+| PII leak count | Zero tolerance. |
+| Refusal correctness | For adversarial inputs, % that refuse appropriately. |
+| Tone drift | Flag when response deviates significantly from prior version. |
 
 ## Official Sources Used
 

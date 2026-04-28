@@ -47,7 +47,7 @@
     "f7ad69334d651c9f7d52",
     "fb3d7a15682f47302deb"
   ],
-  "content_hash": "e88d4b2247db8a92b215f7252d375aacd0caaaea7a51008106bc6bcd84ea886a",
+  "content_hash": "1ddb91380041fbf2d16f20aaad0d1c8878d54fce07d9469058f0dc3943d6fd03",
   "dependencies": [
     "agentforce/agentforce-testing-strategy"
   ],
@@ -87,7 +87,7 @@
   "templates": [
     "skills/agentforce/agentforce-pii-redaction/templates/redaction-register.md"
   ],
-  "updated": "2026-04-23",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

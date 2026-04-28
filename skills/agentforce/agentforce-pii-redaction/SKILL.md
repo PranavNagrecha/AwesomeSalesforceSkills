@@ -30,7 +30,7 @@ dependencies:
   - agentforce/agentforce-testing-strategy
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-23
+updated: 2026-04-28
 ---
 
 # Agentforce PII Redaction
@@ -45,10 +45,12 @@ Redact **before** the trust layer where you can.
 
 Every field referenced in a prompt needs a classification:
 
-- **Public** — send as-is.
-- **Internal** — send if necessary.
-- **Confidential** — redact unless explicit business need.
-- **Regulated** — mask / tokenize / summarise; never raw.
+| Class | Default handling |
+|---|---|
+| Public | Send as-is. |
+| Internal | Send if necessary. |
+| Confidential | Redact unless explicit business need. |
+| Regulated | Mask / tokenize / summarise; never raw. |
 
 Examples (typical, adjust to your compliance):
 

@@ -40,7 +40,7 @@ dependencies:
   - einstein-trust-layer
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-12
+updated: 2026-04-28
 ---
 
 # Data Cloud Vector Search Dev
@@ -69,10 +69,12 @@ Data Cloud's vector search capability is underpinned by the **Data 360 vector da
 
 The index is created from a source DMO or Unstructured Data Lake Object. Configuration decisions made at index creation time include:
 
-- **Source object and text field** — the field whose content will be chunked and embedded.
-- **Embedding model** — the Salesforce-managed model (no additional license or configuration required) or a custom model registered via Model Builder.
-- **Chunking strategy** — only exposed in Advanced Setup. Options include fixed-size (by token count), paragraph-based, and sentence-based. Easy Setup auto-selects the strategy.
-- **Index refresh cadence** — batch (scheduled) or near-real-time, depending on the underlying Data Stream configuration.
+| Decision | Notes |
+|---|---|
+| Source object and text field | The field whose content will be chunked and embedded. |
+| Embedding model | The Salesforce-managed model (no additional license or configuration required) or a custom model registered via Model Builder. |
+| Chunking strategy | Only exposed in Advanced Setup. Options: fixed-size (by token count), paragraph-based, sentence-based. Easy Setup auto-selects. |
+| Index refresh cadence | Batch (scheduled) or near-real-time, depending on the underlying Data Stream configuration. |
 
 Source: [Data Cloud Vector Search (Salesforce Help)](https://help.salesforce.com/s/articleView?id=sf.data_cloud_vector_search.htm)
 

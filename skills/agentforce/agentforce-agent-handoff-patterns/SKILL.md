@@ -70,10 +70,12 @@ The handoff receiver needs:
 
 ### Destinations
 
-- **Omni-Channel queue** — human agent, with pre-populated case or conversation.
-- **Another Agentforce agent** — specialized persona or different domain.
-- **Workflow** — async case, Flow, Queue, scheduled callback.
-- **No handoff (refuse + recommend)** — sometimes the right answer is "I can't help; here's how."
+| Destination | Use |
+|---|---|
+| Omni-Channel queue | Human agent, with pre-populated case or conversation. |
+| Another Agentforce agent | Specialized persona or different domain. |
+| Workflow | Async case, Flow, Queue, scheduled callback. |
+| No handoff (refuse + recommend) | Sometimes the right answer is "I can't help; here's how." |
 
 ### User Messaging
 

@@ -39,7 +39,7 @@ dependencies:
   - einstein-trust-layer
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-04-28
 ---
 
 # RAG Patterns in Salesforce
@@ -66,10 +66,13 @@ Gather this context before working on anything in this domain:
 A **vector search index** in Data Cloud stores dense embedding vectors alongside source text chunks. When a retrieval query arrives, Data Cloud computes the query embedding, runs approximate nearest-neighbor (ANN) search against the index, and returns the top-K most semantically similar chunks.
 
 Configuration options (set at index creation):
-- **Embedding model** — Salesforce provides a built-in embedding model; custom models can be registered via Model Builder.
-- **Chunk size** — the maximum token length of each chunk written to the index. Smaller chunks improve precision but increase total vector count and search latency.
-- **Chunk overlap** — the number of tokens shared between adjacent chunks to preserve context across boundaries. Typical production values are 10–20% of chunk size.
-- **Index refresh cadence** — batch (scheduled) or near-real-time, depending on the underlying Data Stream configuration.
+
+| Option | Notes |
+|---|---|
+| Embedding model | Salesforce provides a built-in embedding model; custom models can be registered via Model Builder. |
+| Chunk size | Max token length of each chunk written to the index. Smaller chunks improve precision but increase total vector count and search latency. |
+| Chunk overlap | Tokens shared between adjacent chunks to preserve context across boundaries. Typical production values: 10–20% of chunk size. |
+| Index refresh cadence | Batch (scheduled) or near-real-time, depending on the underlying Data Stream configuration. |
 
 Source: [Data Cloud Vector Search](https://help.salesforce.com/s/articleView?id=sf.data_cloud_vector_search.htm)
 
