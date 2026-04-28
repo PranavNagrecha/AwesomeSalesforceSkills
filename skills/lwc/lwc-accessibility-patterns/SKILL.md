@@ -34,7 +34,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-04-28
 ---
 
 Use this skill when a Lightning Web Component requires precise ARIA attribute usage, keyboard interaction models, screen reader live regions, or accessible data table structure. The companion skill `lwc/lwc-accessibility` covers posture and design decisions; this skill covers the concrete implementation patterns that practitioners get wrong in LWC's shadow DOM environment.
@@ -63,11 +63,13 @@ The practical implication: custom comboboxes, disclosure buttons, or tabpanels t
 
 Salesforce requires WCAG 2.1 Level AA compliance for all AppExchange-listed apps. Key criteria that LWC patterns directly affect:
 
-- **1.3.1 Info and Relationships** — roles, labels, and structure must be programmatic, not only visual
-- **1.4.1 Use of Color** — error states cannot be communicated by color alone
-- **2.1.1 Keyboard** — all functionality must be reachable via keyboard
-- **2.4.3 Focus Order** — focus sequence must be logical relative to content order
-- **4.1.2 Name, Role, Value** — interactive elements must expose name, role, and state to assistive technology
+| Criterion | LWC implication |
+|---|---|
+| 1.3.1 Info and Relationships | Roles, labels, and structure must be programmatic, not only visual. |
+| 1.4.1 Use of Color | Error states cannot be communicated by color alone. |
+| 2.1.1 Keyboard | All functionality must be reachable via keyboard. |
+| 2.4.3 Focus Order | Focus sequence must be logical relative to content order. |
+| 4.1.2 Name, Role, Value | Interactive elements must expose name, role, and state to assistive technology. |
 
 ### Keyboard Interaction Models For Custom Widgets
 
