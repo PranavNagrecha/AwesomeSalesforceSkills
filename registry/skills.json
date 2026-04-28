@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 45
   },
-  "generated_from_hash": "c20f6a7e042e9a4707950908f6ec0e37e2688a13d00c2941f262ba55a3c7cacf",
+  "generated_from_hash": "7da347019078d9797bcbadac632cd4bd58ea8768340f9de3f8f104c010a9a2ed",
   "schema_version": 1,
   "skill_count": 907,
   "skills": [
@@ -71763,7 +71763,7 @@
         "ff9a99374989fb310568",
         "ffce86e1384584c0ccb4"
       ],
-      "content_hash": "d2c06156261a44402a9df7a8836ef70fce398438eea0bfd3eb6a2d4e7f3a8642",
+      "content_hash": "c9f4b7821869b02f3265788451bc92ab4dde2b541e2c4014790838adac4f8384",
       "dependencies": [],
       "description": "Use this skill when migrating constituent records (Contacts, Household Accounts, relationships, addresses, donations) into an NPSP org using the NPSP Data Importer. Triggers: importing contacts into NPSP, migrating nonprofit constituents, loading household data, bulk contact upload NPSP, constituent ETL. NOT for standard contact import, Nonprofit Cloud (NPC) migration, or generic Data Loader bulk loads.",
       "file_location": "skills/data/constituent-data-migration",
@@ -71806,7 +71806,7 @@
       "templates": [
         "skills/data/constituent-data-migration/templates/constituent-data-migration-template.md"
       ],
-      "updated": "2026-04-11",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -72302,7 +72302,7 @@
         "f5608bfb80dc6c74c97f",
         "f899a6ea280e27f5fde6"
       ],
-      "content_hash": "8a56aa95499708549a2b79338f661a94d7d7cedb9643b0f807cffd57cd905f22",
+      "content_hash": "cee71fefca73028fda86b0e8574ff2d07faef8acbee7dd81ad97c2464188ff5d",
       "dependencies": [],
       "description": "Use when planning how to archive aging Salesforce records to reduce storage costs, maintain query performance, and meet retention policies. Covers Big Object archival, external storage via Heroku or S3, field history truncation, recycle bin behavior, and soft-delete patterns. Triggers: storage limit reached, archive old records, Big Objects, field history too large, recycle bin overflow, data retention policy. NOT for migrating data to a new org (use data-migration-planning) or cleaning up duplicate records (use duplicate-management).",
       "file_location": "skills/data/data-archival-strategies",
@@ -72345,7 +72345,7 @@
       "templates": [
         "skills/data/data-archival-strategies/templates/data-archival-strategies-template.md"
       ],
-      "updated": "2026-04-04",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -73117,7 +73117,6 @@
         "d22697279a55ac37d7e8",
         "d6c1a216d398c3678c5f",
         "d95bdec9d9fe73f5303e",
-        "dde5b93baea2f981064e",
         "de850dc4f8870ac30c8f",
         "df2e62667bbdd29cdd5e",
         "dfedd4e2b54ae3c9d284",
@@ -73141,7 +73140,7 @@
         "fd5c46e74a0b44a0ed17",
         "fdcd439b8404a9b0bd2f"
       ],
-      "content_hash": "afc69d53d004a9fa0800bf428539b8e302a527b3046b321e60dcda67744f572f",
+      "content_hash": "7b40e30c2c8a2d9c9a7c24cac065dbbd6aa39003a46789d9a5eeec459e110582",
       "dependencies": [],
       "description": "Choose the right batch size, parallel/serial mode, and load window for Data Loader, Bulk API V1/V2, and custom Database.executeBatch jobs against a given object volume and complexity profile. Covers tradeoffs between batch size, trigger CPU cost, sharing recalculation cost, and row-skew lock contention. NOT for CSV column mapping (see data/data-loader-csv-column-mapping). NOT for picklist validation pre-load (see data/data-loader-picklist-validation-pre-load). NOT for sharing-recalc tuning after the load lands (see data/sharing-recalculation-performance).",
       "file_location": "skills/data/data-loader-batch-window-sizing",
@@ -73675,7 +73674,6 @@
         "8a71dcdeffc14d085e3e",
         "91085f6b41f6adecbc44",
         "93d345c6d2d93b9c369f",
-        "94163bcb1bfa16135426",
         "94c2671b7b6fd9f0f56e",
         "9859eb38bcc71914881d",
         "98868e2d2c7cc7d7b394",
@@ -73732,7 +73730,7 @@
         "fc3c356145a9adcad4a2",
         "fe52537d59e5ec3298b3"
       ],
-      "content_hash": "ed70030181ab7d04edf48b3fd7aca4f16cced2feac55820f2cab242deae43fdd",
+      "content_hash": "cd95392faa88e488c32949d92fdcdc93ae651395c225f1bc36d2e05bff269bee",
       "dependencies": [],
       "description": "Use when planning, reviewing, or troubleshooting a Salesforce data migration \u2014 covering tool selection (Data Loader, Bulk API 2.0, MuleSoft, Informatica, Jitterbit), migration sequencing for parent-child objects, external ID strategy for upsert idempotency, validation rule bypass, trigger and flow suppression, rollback planning, and post-migration reconciliation. NOT for Data Loader step-by-step mechanics (use data-import-and-management). NOT for schema or data model design (use data-model-design-patterns). NOT for ongoing ETL pipeline architecture.",
       "file_location": "skills/data/data-migration-planning",
@@ -73786,7 +73784,7 @@
       "templates": [
         "skills/data/data-migration-planning/templates/data-migration-planning-template.md"
       ],
-      "updated": "2026-04-04",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -73907,7 +73905,7 @@
         "fc64f790b030ef71a5eb",
         "fe6645c7ed6f9f8d5ec1"
       ],
-      "content_hash": "fc387245df31b87ed01ba43b60018c271142808bfd467696b9544d0ff4489e4e",
+      "content_hash": "2d08ded38a65a79a53f99ea5ed5e3a8fdf5536e2b6e12952bd0bc55a3e3246a0",
       "dependencies": [],
       "description": "Use when designing, reviewing, or troubleshooting Salesforce object relationships and field type choices \u2014 lookup vs master-detail, junction object modeling, indexing strategy, and data model anti-patterns. NOT for object creation steps (use object-creation-and-design). NOT for bulk data loading operations.",
       "file_location": "skills/data/data-model-design-patterns",
@@ -73959,7 +73957,7 @@
       "templates": [
         "skills/data/data-model-design-patterns/templates/data-model-design-patterns-template.md"
       ],
-      "updated": "2026-04-04",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -77424,7 +77422,7 @@
         "fc32d3605e5940c74fa0",
         "fcf51f15d477a109705a"
       ],
-      "content_hash": "9630e43f9b99eea4b674502c2d6426a8460f36a1b3dade3253c1923dfb40a8c0",
+      "content_hash": "7b943efbe70907379379188d3cc52b524a29e8eaf6676f714c0fdcff62ab293d",
       "dependencies": [],
       "description": "Strategies and tooling for large-scale data deduplication in Salesforce: tuning matching rules for high-volume orgs, batch merge jobs, third-party dedup tools (DemandTools, Cloudingo), surviving record selection logic, and post-merge validation. Use when cleaning millions of duplicate records, automating merges beyond UI limits, or designing enterprise dedup workflows. NOT for duplicate rule configuration (use admin/duplicate-management). NOT for standard Duplicate Management UI setup. NOT for single-record field-resolution questions (use data/record-merge-implications).",
       "file_location": "skills/data/large-scale-deduplication",
@@ -77470,7 +77468,7 @@
       "templates": [
         "skills/data/large-scale-deduplication/templates/large-scale-deduplication-template.md"
       ],
-      "updated": "2026-04-05",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -79264,7 +79262,7 @@
         "fb702794cd01f43729e3",
         "ffd0982b7b09bcf4f8c9"
       ],
-      "content_hash": "075bb4344c1589af519d03943a1735b33c7b0ead183a19eb261dd40cc31bb00b",
+      "content_hash": "bd9d6f12dcfc7a596bf289d863d46f624b10a9be0d0c10e45f2ee261f27632bf",
       "dependencies": [],
       "description": "Use this skill when designing or troubleshooting data visibility for partner (channel) users in a Salesforce Experience Cloud Partner Community. Triggers: partner user data visibility, PRM data access model, partner role hierarchy sharing, deal registration data access partner, channel partner analytics. NOT for internal data access patterns. NOT for customer community data sharing (see admin/sharing-and-visibility or external-user-data-sharing for customer portal scenarios).",
       "file_location": "skills/data/partner-data-access-patterns",
@@ -79308,7 +79306,7 @@
       "templates": [
         "skills/data/partner-data-access-patterns/templates/partner-data-access-patterns-template.md"
       ],
-      "updated": "2026-04-06",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -79570,7 +79568,7 @@
         "f5287777cd60950a0ef6",
         "f60bf404915d2a707ec1"
       ],
-      "content_hash": "7a407b4c7d76c0d2b5bc0804f58e9db59768a9d805b4ad3d4267ca316e4616e4",
+      "content_hash": "d4b0e761140a0c2a8f31db24041c0ce10acb34dd7772346828bfc4748ea650b3",
       "dependencies": [],
       "description": "Use when enabling, configuring, or troubleshooting Person Accounts in a Salesforce org \u2014 includes B2C data model design, IsPersonAccount flag handling, Account-Contact behavior differences, reporting impact, migration planning, and integration requirements. NOT for standard B2B Account/Contact modeling. NOT for managing business accounts that share an org with Person Accounts.",
       "file_location": "skills/data/person-accounts",
@@ -79619,7 +79617,7 @@
       "templates": [
         "skills/data/person-accounts/templates/person-accounts-template.md"
       ],
-      "updated": "2026-04-04",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -81444,7 +81442,7 @@
         "fe6a150200bb2b3fa4c9",
         "ff6dd78d6d41670613bd"
       ],
-      "content_hash": "8444e60a748de910cab38dd652e5286443aa680bba3ecd10cb522afd9cd42a89",
+      "content_hash": "8208f873ff56f5348dd17133ee7f1e4e54d67fee5d38a27c035aeb89fc7097e5",
       "dependencies": [],
       "description": "Use this skill when configuring or troubleshooting Marketing Cloud subscriber identity, opt-in/opt-out status, list membership, suppression, or deduplication behavior. Triggers include: setting up Subscriber Key, diagnosing duplicate sends, handling global unsubscribes, configuring Auto-Suppression Lists, or auditing subscriber status across Business Units. NOT for CRM contact management in Sales/Service Cloud, not for SFMC audience segmentation via Data Extensions alone, and not for Email Studio content authoring.",
       "file_location": "skills/data/subscriber-data-management",
@@ -81494,7 +81492,7 @@
       "templates": [
         "skills/data/subscriber-data-management/templates/subscriber-data-management-template.md"
       ],
-      "updated": "2026-04-07",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },

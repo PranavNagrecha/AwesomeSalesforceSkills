@@ -38,7 +38,7 @@ triggers:
   - "auditing subscriber status for Held or Bounced subscribers"
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-07
+updated: 2026-04-28
 ---
 
 # Subscriber Data Management
@@ -75,10 +75,13 @@ The All Subscribers list is the master unsubscribe authority for every Business 
 This hierarchy is absolute: a subscriber who globally unsubscribes cannot be re-opted-in by adding them to an active publication list. The global unsubscribe can only be cleared by manually reactivating the subscriber record in the All Subscribers list, a process that must be accompanied by documented proof of fresh opt-in consent to satisfy compliance requirements.
 
 Status values and their meanings:
-- **Active** — subscriber can receive sends
-- **Unsubscribed** — opted out from a specific publication list (does not block other lists)
-- **Bounced** — soft bounce; system retries are possible depending on send classification
-- **Held** — hard bounce; subscriber is permanently suppressed until manually reactivated or cleared via API after bounce investigation
+
+| Status | Meaning |
+|---|---|
+| Active | Subscriber can receive sends |
+| Unsubscribed | Opted out from a specific publication list (does not block other lists) |
+| Bounced | Soft bounce; system retries are possible depending on send classification |
+| Held | Hard bounce; permanently suppressed until manually reactivated or cleared via API after bounce investigation |
 
 ### Deduplication at Send Time
 

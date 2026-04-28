@@ -34,7 +34,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-05
+updated: 2026-04-28
 ---
 
 # Large Scale Deduplication
@@ -47,11 +47,13 @@ Use this skill when an org has tens of thousands to millions of duplicate record
 
 Gather this context before designing or executing any large-scale dedup project:
 
-- **Volume estimate** — how many total records on the target object, and how many are estimated duplicates? Volume determines whether Apex batches, third-party tools, or a hybrid approach is appropriate.
-- **Survivorship rules** — who or what decides which record survives? Without explicit survivorship criteria, merges feel arbitrary and destroy user trust.
-- **Downstream ID dependencies** — which external systems, integrations, or data warehouses hold Salesforce record IDs? Merging records deletes losing-record IDs. Systems that stored those IDs will receive redirects on subsequent API calls only if they follow HTTPS redirects correctly.
-- **Apex `Database.merge()` limit** — each call accepts exactly one master record and up to two losing records (max 3 records total per call). This is a hard governor limit. Plan your batch logic accordingly.
-- **Automation exposure** — Flows, Apex triggers, and workflow rules fire on the master record update and on the losing record delete during a merge. Disable or gate automation that would cause unintended side effects at volume.
+| Context | What to confirm |
+|---|---|
+| Volume estimate | Total records on target + estimated duplicate count. Determines Apex batches vs third-party tools vs hybrid. |
+| Survivorship rules | Who/what decides which record survives. Without explicit criteria, merges feel arbitrary and destroy user trust. |
+| Downstream ID dependencies | External systems, integrations, or warehouses holding losing-record IDs will receive redirects on API calls only if they follow HTTPS redirects correctly. |
+| Apex `Database.merge()` limit | Each call accepts exactly 1 master + up to 2 losers (max 3 records/call). Hard governor limit; plan batch logic accordingly. |
+| Automation exposure | Flows, Apex triggers, and workflow rules fire on master update and losing-record delete. Disable or gate at volume. |
 
 ---
 

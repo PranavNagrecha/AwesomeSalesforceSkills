@@ -30,7 +30,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-11
+updated: 2026-04-28
 ---
 
 # Constituent Data Migration
@@ -57,12 +57,14 @@ Gather this context before working on anything in this domain:
 
 The `npsp__DataImport__c` object is the canonical entry point for all constituent data loading in NPSP. It is not a final destination — it is a staging area. Each row on this object can represent:
 
-- **Contact1** — the primary contact in a household (required fields: `npsp__Contact1_Firstname__c`, `npsp__Contact1_Lastname__c`)
-- **Contact2** — a second contact sharing the same household (optional; placed on the same row as Contact1)
-- **Household Account** — auto-created or matched to an existing Account with Record Type = Household
-- **Home Address** — a single address mapped to both contacts in the row
-- **Org Account** — a separate non-household Account (employer) linked to Contact1 or Contact2
-- **Donation** — an Opportunity linked to the household, created during the same import run
+| Role | Notes |
+|---|---|
+| Contact1 | Primary contact in a household (required: `npsp__Contact1_Firstname__c`, `npsp__Contact1_Lastname__c`) |
+| Contact2 | Second contact sharing the same household (optional; placed on the same row as Contact1) |
+| Household Account | Auto-created or matched to an existing Account with Record Type = Household |
+| Home Address | A single address mapped to both contacts in the row |
+| Org Account | Separate non-household Account (employer) linked to Contact1 or Contact2 |
+| Donation | Opportunity linked to the household, created during the same import run |
 
 Populating a single `npsp__DataImport__c` row correctly avoids the need for multiple linked imports and ensures NPSP's processing logic handles relationship creation atomically.
 

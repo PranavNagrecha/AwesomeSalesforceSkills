@@ -57,12 +57,14 @@ This skill is NOT about CSV column mapping (see `data/data-loader-csv-column-map
 
 Gather this context before recommending a batch size:
 
-- **Object profile** — does the target SObject have triggers, process builder/flow record-triggered automation, validation rules, duplicate rules, sharing rules, role hierarchy, criteria-based sharing, territory management, or field history tracking enabled? Each one changes the per-record cost.
-- **Volume tier** — under 10K, 10K–1M, 1M–10M, or 10M+? The right answer flips between tiers.
-- **OWD setting** — Public Read/Write objects skip implicit-share recalculation; Private objects with role hierarchy do not. Loading 100K rows of a Public R/W object is a different physics problem than 100K rows of a Private object with role hierarchy.
-- **Parent–child shape** — are parent records already present, or are they part of the same load? If they are part of the load, External Id deferred linkage is usually safer than a strict parent-first ordering.
-- **API call budget** — Enterprise base is ~100K calls/day; Bulk API jobs consume calls per batch (Bulk V1) or per job state poll (Bulk V2). Confirm headroom before sizing.
-- **Time budget** — is there a maintenance window, or must this run during business hours? The latter forces smaller batches and serial mode for sensitive objects.
+| Context | What to confirm |
+|---|---|
+| Object profile | Triggers, process builder/flow record-triggered automation, validation rules, duplicate rules, sharing rules, role hierarchy, criteria-based sharing, territory management, field history tracking — each changes per-record cost. |
+| Volume tier | Under 10K, 10K–1M, 1M–10M, or 10M+? The right answer flips between tiers. |
+| OWD setting | Public R/W skips implicit-share recalc; Private + role hierarchy does not. Loading 100K rows of one is a different physics problem from the other. |
+| Parent–child shape | Are parents already present or part of the same load? If part of the load, External Id deferred linkage is usually safer than strict parent-first ordering. |
+| API call budget | Enterprise base ~100K calls/day; Bulk V1 consumes per batch, Bulk V2 per job state poll. Confirm headroom before sizing. |
+| Time budget | Maintenance window vs business hours. Business hours forces smaller batches and serial mode for sensitive objects. |
 
 The single most common wrong assumption: "200 is the safe default for everything." Data Loader's UI default of 200 is not a recommendation — it is a starting point. For complex Account loads it is often too high; for simple Lead inserts it is wastefully low.
 
