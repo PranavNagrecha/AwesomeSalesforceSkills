@@ -34,24 +34,10 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Flow Performance Optimization
-
-## When to use this skill
-
-Activate when:
-
-- A specific flow is reported as slow or causing UI lag.
-- You're pre-validating a flow before deploying to a high-volume org.
-- A record save that used to take 1 second now takes 5 seconds; you need to attribute which flow is responsible.
-- You're choosing between two flow designs and want the cheaper one at scale.
-
-Do NOT use this skill for:
-- Governor-limit budgeting math (use `skills/flow/flow-governor-limits-deep-dive`).
-- Large-data-volume strategy (use `skills/flow/flow-large-data-volume-patterns`).
-- General flow architecture decisions (use `standards/decision-trees/flow-pattern-selector.md`).
 
 ## Core concept — the performance hierarchy
 

@@ -30,7 +30,7 @@ outputs:
 dependencies: []
 version: 2.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 Use this skill when the business process spans time, people, and system boundaries in a way that normal record-triggered or screen flows do not handle cleanly. Flow Orchestration is the right tool when a process needs explicit stage progression, work assignment, and observability across days or weeks — instead of pretending the whole journey happens in one synchronous transaction.
@@ -155,12 +155,6 @@ Not every approval should migrate: single-step, single-assignee approvals are be
 | Need SLA-tracked human work items | Flow Orchestration | Native SLA + due-date + escalation tooling |
 | Process fits in < 5 minutes and 1 user | Screen Flow or record-triggered Flow | Orchestration's lifecycle machinery is wasted |
 
-## Well-Architected Pillar Mapping
-
-- **Reliability** — orchestration's recovery semantics (resume stuck instance, reassign work item, rerun failed stage) are core reliability affordances. Findings in this area are P0 when observability is missing.
-- **Scalability** — Orchestration has per-org usage limits (in-flight instances, work items per day). Designs that assume unlimited concurrency will break at scale.
-- **Operational Excellence** — the monitoring surface IS the OpsEx surface. Orchestration without custom work-item list views, dashboards, or stuck-instance alerts is an OpsEx debt.
-
 ## Review Checklist
 
 - [ ] The use case genuinely requires long-running or multi-user process control.
@@ -172,7 +166,6 @@ Not every approval should migrate: single-step, single-assignee approvals are be
 - [ ] Orchestration Error Email recipient is a monitored mailbox.
 - [ ] The team considered whether standard Flow or Apex would be simpler.
 - [ ] Per-org Orchestration usage limits have been checked against expected load.
-
 
 ## Recommended Workflow
 

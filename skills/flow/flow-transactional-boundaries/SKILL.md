@@ -36,22 +36,10 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Flow Transactional Boundaries
-
-## When to use this skill
-
-Activate this skill when:
-
-- You need to decide whether a piece of Flow work should run **inline** (Before-Save / After-Save) or be pushed to a **new transaction** (Scheduled Path, Platform Event, pause, subflow-after-callout).
-- You're debugging a governor-limit exception in a flow that fires mid-transaction.
-- You're building a flow that calls a callout or does heavy DML and need to know which pattern is safe.
-- You're composing record-triggered flows with Apex triggers and need to predict the shared limit footprint.
-- You're deciding between a Screen Flow pause and an Orchestration stage for a multi-day workflow.
-
-Do NOT use this skill to pick Flow vs Apex (that's `standards/decision-trees/automation-selection.md`), or to pick a Flow subtype (that's `standards/decision-trees/flow-pattern-selector.md` — this skill is activated AFTER that tree).
 
 ## Core concept — what is a "transaction" in Flow?
 

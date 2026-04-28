@@ -22,18 +22,12 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # DevOps Center Advanced Workflows
 
 DevOps Center provides a point-and-click UI over source-tracked pipelines. For teams already on SFDX it can coexist if you treat DOC work items as promotion units and keep local dev via `sf org create scratch`. This skill documents the hybrid pattern, escalation paths, and the bypass rules for emergency hot-fixes.
-
-## When to Use
-
-Admin-heavy teams that want no-code pipeline management, or mixed dev/admin teams.
-
-Typical trigger phrases that should route to this skill: `devops center pipeline`, `work item salesforce`, `devops center merge conflict`, `bypass devops center`.
 
 ## Recommended Workflow
 

@@ -35,24 +35,10 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Salesforce Object Queryability
-
-## When to use this skill
-
-Activate when:
-
-- A SOQL or Tooling-API query returned an error and you need to know why.
-- An agent or script is about to declare "object not queryable in this org" — and you need to verify the claim before trusting it.
-- A multi-dimension agent (`user-access-diff`, `org-drift-detector`) is deciding whether to skip a dimension OR retry with a corrected query.
-- A reviewer is auditing an agent's output envelope for silently-dropped dimensions.
-
-Do NOT use this skill for:
-- SOQL performance / selectivity tuning (use `skills/apex/soql-optimization-patterns`).
-- Bulk API 2.0 payload issues (use `skills/data/bulk-api-2-patterns`).
-- Authentication / session issues (use `skills/integration/authentication-patterns`).
 
 ## Why this skill exists
 

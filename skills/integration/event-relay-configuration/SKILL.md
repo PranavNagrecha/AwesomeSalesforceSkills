@@ -31,7 +31,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-23
+updated: 2026-04-28
 ---
 
 # Event Relay Configuration (Salesforce → AWS EventBridge)
@@ -44,13 +44,6 @@ in an after-insert trigger on a Platform Event" with a no-code, reliable,
 at-least-once pipe. Teams that pick Event Relay without understanding IAM,
 filters, replayId handling, and channel selection typically under-spec
 reliability and over-spec cost. This skill codifies the decisions.
-
-## When To Use
-
-- Forwarding a Platform Event or CDC stream to AWS EventBridge for
-  downstream consumers (Lambda, Step Functions, SQS, partners).
-- Replacing Apex-to-SQS shims.
-- Hybrid event bus where Salesforce is one producer among many.
 
 ## Recommended Workflow
 

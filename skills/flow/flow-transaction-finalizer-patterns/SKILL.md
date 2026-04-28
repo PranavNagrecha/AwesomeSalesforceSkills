@@ -30,7 +30,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-23
+updated: 2026-04-28
 ---
 
 # Flow Transaction Finalizer Patterns
@@ -45,15 +45,6 @@ two common failures: "email sent but record rolled back," or "record saved
 but downstream never notified." This skill codifies the patterns Flow
 designers should use for reliable post-transaction behavior, and when to
 escalate to Apex Queueable with a Finalizer.
-
-## When To Use
-
-- Flow fires an email, platform event, or callout and you want it to only
-  happen if the DML commits.
-- Compliance requires an audit log for every committed change, guaranteed.
-- Integration needs an outbound notification after commit.
-- You see "email sent on failed record" or "webhook fired on rolled-back
-  save" incidents.
 
 ## Recommended Workflow
 

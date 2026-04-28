@@ -25,18 +25,12 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Pipeline Secrets Management
 
 Salesforce CI pipelines need to authenticate to orgs (sandboxes, UAT, prod). The safest pattern is a JWT bearer flow with a Connected App per pipeline stage and the private key stored as a base64 secret in the CI provider's vault. This skill defines naming, rotation, and leak-detection procedures.
-
-## When to Use
-
-Any CI pipeline that authenticates to Salesforce. Also for one-off deploy automation.
-
-Typical trigger phrases that should route to this skill: `jwt auth ci salesforce`, `leak sfdx auth url`, `github actions salesforce secret`, `rotate pipeline credential`.
 
 ## Recommended Workflow
 

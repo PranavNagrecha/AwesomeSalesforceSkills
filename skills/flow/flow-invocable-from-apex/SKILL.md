@@ -31,24 +31,10 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Flow ↔ Apex — Invocable Methods
-
-## When to use this skill
-
-Activate when:
-
-- Flow needs a step that can only be done in Apex (complex formula, encryption, external callout, protected CMT lookup, recursive math).
-- You're exposing a reusable business function to admins via the Flow Builder action library.
-- You're debugging an `@InvocableMethod` that throws under bulk load or misbehaves when Flow passes a null collection.
-- You need the opposite direction — Apex calling a flow — and want the correct contract.
-
-Do NOT use this skill for:
-- Choosing Flow vs Apex in the first place (use `standards/decision-trees/automation-selection.md`).
-- General Apex trigger or service authoring (use `skills/apex/apex-service-selector-domain`).
-- Exposing Apex to external REST (use `skills/apex/apex-rest-resource-patterns`).
 
 ## Core concept — Flow-to-Apex is a bulk contract
 

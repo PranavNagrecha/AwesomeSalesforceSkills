@@ -23,18 +23,12 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Dynamic Sharing Recalculation
 
 Sharing recalculation is a platform-managed process that rebuilds __Share rows after rule or hierarchy changes. For orgs above 1M records it can take hours; bulk loads can temporarily leave users without access. This skill prescribes a deferred-sharing pattern (Defer Sharing Calculations permission) and a verification checklist.
-
-## When to Use
-
-Before a data migration of >100k records into a Private OWD object, a sharing-rule edit on a multi-million-row object, or a role-hierarchy reorg. Not for small day-to-day edits.
-
-Typical trigger phrases that should route to this skill: `after data load users cant see records`, `added sharing rule recalculation is still running`, `role hierarchy change access not updated`, `recalculate sharing apex`.
 
 ## Recommended Workflow
 

@@ -34,24 +34,12 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 Use this skill when Platform Events are the coordination mechanism between Flow and another component — another Flow, Apex, or an external system. Flow can BOTH publish (by creating records on the event sObject) AND subscribe (via a Platform-Event-Triggered Flow). Both sides have transaction-context, delivery-semantics, and error-handling rules that teams commonly get wrong, producing three recurring defect classes: lost events (publisher succeeded, subscriber never ran), replayed events (subscriber ran twice for one logical message), and out-of-order events (two events delivered in the opposite order from publish).
 
 The objective of this skill is to design loosely-coupled, bulk-safe, fault-tolerant Flow-based pub/sub. If the team cannot answer "what happens if the subscriber fails?" and "what happens if the publisher retries?", the design is incomplete.
-
-## When to use this skill
-
-- Publishing a Platform Event from a record-triggered flow, screen flow, or autolaunched flow.
-- Designing a Platform-Event-Triggered flow that subscribes to a specific event definition.
-- Choosing between Standard-Volume and High-Volume Platform Events.
-- Choosing `Publish After Commit` vs `Publish Immediately` semantics.
-- Debugging a subscriber flow that "ran but didn't do anything" or "didn't run at all".
-- Coordinating Flow subscribers with Apex subscribers (`@Triggered` on `__e`).
-- Designing integration fan-out from a save event to multiple downstream systems.
-
-NOT for: Change Data Capture (use the CDC skills), or basic async work that does not need pub/sub topology (use `flow/scheduled-flows` or `flow/flow-transactional-boundaries`).
 
 ## Before Starting
 

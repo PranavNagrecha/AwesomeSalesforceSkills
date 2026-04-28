@@ -30,7 +30,7 @@ outputs:
 dependencies: []
 version: 2.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Agent Topic Design
@@ -188,12 +188,6 @@ Selector topic: identifies intent → routes to `Appointment_Issues` → specifi
 | Cross-cutting concerns (greeting, small talk) | Utility topic (Pattern 5) with strict scope | Avoid "general help" anti-pattern |
 | Domain has > 15 candidate topics | Topic selector mandatory (Pattern 2) | Flat lists don't scale |
 
-## Well-Architected Pillar Mapping
-
-- **User Experience** — topic clarity IS the UX. A confused agent that activates the wrong topic is a UX failure.
-- **Reliability** — handoff rules, explicit exclusions, and scope discipline produce reliable routing. Vague topics fail unpredictably.
-- **Operational Excellence** — topic count discipline; instruction quality; monitoring which topics the agent selects most + least.
-
 ## Review Checklist
 
 - [ ] Every topic maps to a clear business capability.
@@ -206,7 +200,6 @@ Selector topic: identifies intent → routes to `Appointment_Issues` → specifi
 - [ ] Direct topic count ≤ 15; selector used above that.
 - [ ] Persona-scoped agents used instead of conditional topic instructions.
 - [ ] Single-active-topic semantics explicitly designed (no cross-topic action assumptions).
-
 
 ## Recommended Workflow
 

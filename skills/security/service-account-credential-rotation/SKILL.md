@@ -30,7 +30,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-23
+updated: 2026-04-28
 ---
 
 # Service Account Credential Rotation
@@ -121,12 +121,6 @@ Consumer systems never store Salesforce credentials; they retrieve from a vault 
 | JWT cert renewal | Dual cert handover | Zero downtime |
 | Named credential (OAuth) | Auto-refresh; schedule re-auth if refresh-token-grant lifecycle requires | Platform handles |
 | Consumer stores credential in code | Move to vault before rotating | Eliminates hardcoded credentials |
-
-## Well-Architected Pillar Mapping
-
-- **Security** — rotation limits the value of a leaked credential.
-- **Reliability** — zero-downtime patterns prevent rotation-induced outages.
-- **Operational Excellence** — inventory + cadence + detector make rotation a process, not a fire drill.
 
 ## Review Checklist
 

@@ -23,18 +23,12 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Clickjack and Frame Protection
 
 Clickjacking embeds a target page in an invisible iframe and tricks users into clicking hidden controls. Salesforce offers per-page clickjack settings and site-level frame-ancestor allow-lists.
-
-## When to Use
-
-When building or auditing a custom VF page, LWR site, or Experience Cloud page. Also for orgs going through SOC 2 or pen-test remediation.
-
-Typical trigger phrases that should route to this skill: `clickjack protection salesforce`, `x frame options visualforce`, `lwr site embedded in iframe`, `frame ancestors experience cloud`.
 
 ## Recommended Workflow
 

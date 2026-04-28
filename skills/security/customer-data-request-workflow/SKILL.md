@@ -27,18 +27,12 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Customer Data Subject Request (DSR) Workflow
 
 A Data Subject Request (DSR) is a regulatory workflow with strict SLAs (30–45 days depending on jurisdiction). Salesforce offers Privacy Center as a managed capability with pre-built Right to Be Forgotten, Data Portability, and Retention policies; for orgs without Privacy Center, this skill defines the equivalent Apex-based workflow and audit schema.
-
-## When to Use
-
-A privacy regulator or legal team hands in a request. Also for proactive rehearsals. Not for general B2B contact cleanup.
-
-Typical trigger phrases that should route to this skill: `gdpr deletion request from a customer`, `right to be forgotten in salesforce`, `data subject access request workflow`, `ccpa opt out implementation`.
 
 ## Recommended Workflow
 

@@ -30,7 +30,7 @@ outputs:
 dependencies: []
 version: 2.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Agent Actions
@@ -195,12 +195,6 @@ Read-only actions should be plentiful; mutation actions should be scarce. The as
 
 ---
 
-## Well-Architected Pillar Mapping
-
-- **Reliability** — action contract stability; predictable error shapes; confirmation discipline. An unreliable action erodes user trust in the agent.
-- **Security** — actions execute with the agent's running user context; CRUD/FLS apply. Destructive actions without confirmation = security failure.
-- **Operational Excellence** — action count discipline (fewer, clearer actions beat many vague ones); observability of which actions the agent invokes most.
-
 ## Review Checklist
 
 - [ ] Each action performs one business capability clearly.
@@ -213,7 +207,6 @@ Read-only actions should be plentiful; mutation actions should be scarce. The as
 - [ ] `@InvocableVariable` descriptions are informative (LLM reads them).
 - [ ] Apex invocable actions are bulk-safe (`List<T>` signature).
 - [ ] Fault handling designed for each action (per `flow/fault-handling` if Flow-based).
-
 
 ## Recommended Workflow
 

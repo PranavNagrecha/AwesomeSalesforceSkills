@@ -32,7 +32,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-23
+updated: 2026-04-28
 ---
 
 # LWC Server-Sent / Streaming Events
@@ -47,13 +47,6 @@ stream progress to the user. The shape is simple but the failure modes
 (disconnection, missed events, replay storms, memory leaks) are not. This
 skill codifies subscription lifecycle, replayId strategy, error handling,
 and coordination across components and tabs.
-
-## When To Use
-
-- LWC must react to a Platform Event published from Apex / Flow / external.
-- LWC must show CDC-driven updates without polling.
-- Long-running backend job needs to stream progress.
-- You are replacing a `setInterval` poll with a push.
 
 ## Recommended Workflow
 

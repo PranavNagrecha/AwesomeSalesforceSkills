@@ -23,18 +23,12 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Agent Action Unit Tests
 
 Agent actions are Apex classes with `@InvocableMethod`. They need the same testing rigor as any deployed Apex — plus two extras: every reason_code branch must be asserted, and the bulk-size contract (≤200 per invocation) must be verified.
-
-## When to Use
-
-Every @InvocableMethod class before Gate C review. Mandatory for Agentforce production deployment.
-
-Typical trigger phrases that should route to this skill: `my invocable action has low coverage`, `how do I test every reason_code branch`, `bulk test for agent action`, `flaky test on invocable class`.
 
 ## Recommended Workflow
 

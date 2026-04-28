@@ -27,18 +27,12 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Agent Rate Limit Strategy
 
 Agentforce exposes internal LLM quotas indirectly — you hit them as platform 503s with no forward signal. This skill builds a client-side budget gate in front of the agent: per-user token ledger, CMDT-driven thresholds, and a graceful fallback when the budget is exhausted.
-
-## When to Use
-
-Agents exposed to unauthenticated Experience Cloud users, high-traffic Service deflection, or any use case where one user can drive thousands of turns.
-
-Typical trigger phrases that should route to this skill: `agent token budget blown`, `one user drives the whole agent quota`, `graceful fallback when agent is over limit`, `rate-limit agentforce per user`.
 
 ## Recommended Workflow
 

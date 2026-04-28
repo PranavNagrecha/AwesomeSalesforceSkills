@@ -1,34 +1,33 @@
 {
   "category": "security",
   "chunk_ids": [
+    "0047ac0c037edc0db46f",
     "083f9376de90d161129c",
-    "0ad2385618e6b0e8dbf2",
     "0b07fc374b455b8bd432",
-    "16d5472cc8af846157fc",
-    "23a6cd3656b7273fc585",
+    "1e3b7c02017ac0391cef",
+    "2ac7c6f3dc676425acdb",
     "3082a2c6086852bf64dc",
     "4338d8b82d922d41f7d2",
     "4342b130de1977ec17ae",
     "450f3f27281761be1c02",
-    "5cadf567934f6f202c98",
-    "5dacd54569c397c7f64c",
     "62175e39c1669bb06de5",
     "7678bfe60bbe59a4be23",
     "827762554f7593d2310a",
+    "8605fc1c34738ca09bed",
     "8950503753886ec10300",
     "963e09d7cb7c8462cc82",
     "9749021d1bd7341364b2",
-    "9f8d7af9fe27faf10e94",
+    "9db8054bd9b5b65c2101",
     "a035efa2e2d9aab88cec",
+    "a14643ed3deca8bfffea",
     "ab45c153e9fd5c3e1b02",
     "bd6f6f1f9fc68e69cd07",
     "c68ad2bc7729c1c0b922",
     "c6c2d739fd08c97f0911",
-    "d006849587e67f79ff28",
-    "edd2de84df6f3bfdb778",
-    "fd826ef75e59e3df20a6"
+    "cafcba949488abdb85f7",
+    "d006849587e67f79ff28"
   ],
-  "content_hash": "fa072f39bebc33f57ce9ebe41555a8cbdd9cd21cdca0e88f78279181346a983d",
+  "content_hash": "d6372e019f3baf1ef78127ff7b33da1dcd2ea3942659547391b45cf430608cb3",
   "dependencies": [],
   "description": "Implement GDPR/CCPA data subject rights (access, deletion, rectification) using Salesforce Privacy Center and/or custom workflow. NOT for general backup or org-level data retention policy.",
   "file_location": "skills/security/customer-data-request-workflow",
@@ -71,7 +70,7 @@
   "templates": [
     "skills/security/customer-data-request-workflow/templates/customer-data-request-workflow-template.md"
   ],
-  "updated": "2026-04-17",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

@@ -30,7 +30,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-23
+updated: 2026-04-28
 ---
 
 # Flow Batch Processing Alternatives
@@ -42,13 +42,6 @@ Scheduled Flow expecting it to handle "whatever comes," then hit a CPU or DML
 limit silently, with no retry. This skill lays out the real limits,
 chunking patterns that extend Flow's reach, and the clean escalation path to
 Apex Queueable or Batch when the workload outgrows Flow.
-
-## When To Use
-
-- A Scheduled Flow has started failing at high volume.
-- Record-Triggered Flow fires in bulk (data loads, mass updates) and breaks.
-- Stakeholders want a nightly job that scans > 50,000 records.
-- Evaluating whether to keep a Flow or rewrite.
 
 ## Recommended Workflow
 

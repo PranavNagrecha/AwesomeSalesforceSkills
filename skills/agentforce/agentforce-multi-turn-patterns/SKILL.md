@@ -34,25 +34,10 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Agentforce Multi-Turn Conversation Patterns
-
-## When to use this skill
-
-Activate when:
-
-- You're designing an agent that needs to remember what the user said in a prior turn (order number, account context, preferences).
-- The agent has more than one topic and conversations routinely cross topic boundaries mid-session.
-- You're seeing "the agent forgot what I just said" or "it asked me the same question twice" in test transcripts.
-- You need to decide between storing state in session variables vs a scratch Data Cloud record vs a conversation log object.
-- You're modeling a guided task (multi-step form fill, troubleshooting tree, return authorization) in Agentforce.
-
-Do NOT use this skill for:
-- Single-turn transactional actions (use `skills/agentforce/agent-actions`).
-- Channel-specific rendering (use `skills/agentforce/agent-channel-deployment`).
-- Initial agent bootstrapping (use `skills/agentforce/agentforce-agent-creation`).
 
 ## Core concept — conversation state lives in three places
 

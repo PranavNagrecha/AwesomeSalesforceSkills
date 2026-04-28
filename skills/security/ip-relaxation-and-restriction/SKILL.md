@@ -29,7 +29,7 @@ dependencies:
   - security/mfa-enforcement-patterns
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-23
+updated: 2026-04-28
 ---
 
 # IP Relaxation And Restriction
@@ -43,15 +43,6 @@ updated: 2026-04-23
   still allowed (subject to profile rule) but challenged.
 
 Using "Trusted IPs" as a hard control is the most common misconfiguration.
-
-## When To Use Which
-
-| Goal | Control |
-|---|---|
-| Block all logins outside corporate network | Profile Login IP Ranges |
-| Reduce MFA / device challenge for office users | Trusted IPs |
-| Restrict integration user to partner's egress | Profile Login IP Ranges on integration user's profile |
-| Allow travelling user flexibility | Do not use Login IP Ranges; rely on MFA |
 
 ## Profile Login IP Ranges — Design
 

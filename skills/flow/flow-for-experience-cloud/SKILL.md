@@ -30,7 +30,7 @@ outputs:
 dependencies: []
 version: 2.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 Use this skill when the question is not merely how to build a Flow, but how to expose that Flow safely and predictably inside Experience Cloud. The design has to account for who the user is, what the site runtime supports, and whether Flow is the right mechanism for a public or external-facing interaction at all.
@@ -149,12 +149,6 @@ Guest users are the highest-risk audience for Flow exposure. Public flows should
 | Custom finish behavior or navigation | LWC wrapper pattern (Pattern 3) | Standard component too limited |
 | Identity bridging to external system | Pattern 4 + Named Credentials | Don't embed credentials in Flow |
 
-## Well-Architected Pillar Mapping
-
-- **Security** — Guest profile access, public-endpoint hardening, Sharing Set configuration, Apex-class Guest-accessibility. Most findings fall here.
-- **User Experience** — finish behavior, LWR compatibility, mobile rendering on Experience Cloud.
-- **Reliability** — "works in sandbox as admin, fails as Guest in production" (Pattern 1 discipline), LWR-incompat failures, managed-package component upgrades.
-
 ## Review Checklist
 
 - [ ] Site runtime and `lightning-flow` compatibility confirmed before implementation.
@@ -166,7 +160,6 @@ Guest users are the highest-risk audience for Flow exposure. Public flows should
 - [ ] For Guest flows: audit of Guest User profile object/field permissions done.
 - [ ] For Guest flows: Apex classes invoked are `with sharing` AND Guest-accessible.
 - [ ] Flow tested under ACTUAL external user profile (not System Admin) in sandbox.
-
 
 ## Recommended Workflow
 

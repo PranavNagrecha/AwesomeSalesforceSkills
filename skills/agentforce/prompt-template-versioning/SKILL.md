@@ -26,18 +26,12 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Prompt Template Versioning
 
 Prompt Builder templates drift because authors iterate in Setup without a change-log or rollback plan. This skill defines a three-stage lifecycle (Draft → Candidate → Active) stored as custom-metadata pointers, promoted with a signed-off checklist, and rolled back via the same CMDT.
-
-## When to Use
-
-Any Prompt Builder template that (a) is referenced by a production Flow/Agent or (b) has user-visible output. Not needed for ad-hoc developer experiments.
-
-Typical trigger phrases that should route to this skill: `how do I version a prompt builder template`, `rollback a prompt in production`, `a/b test a prompt variant`, `audit which prompt was live last week`.
 
 ## Recommended Workflow
 

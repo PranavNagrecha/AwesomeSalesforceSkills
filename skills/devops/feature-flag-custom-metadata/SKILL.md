@@ -24,18 +24,12 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Feature Flags via Custom Metadata
 
 Feature flags decouple deploy from release. Custom Metadata Types deploy with the codebase, are queryable from Apex/LWC/Flow without SOQL limits, and can be toggled per environment via the Metadata API or Setup UI. This skill defines a canonical Feature_Flag__mdt layout (Name, Is_Enabled__c, Percent_Rollout__c, Allowed_Users__c, Allowed_Profiles__c) plus a singleton FeatureFlags Apex accessor.
-
-## When to Use
-
-Every non-trivial release that needs a kill switch, a percentage rollout, or a user-population cohort. Not for permanent configuration.
-
-Typical trigger phrases that should route to this skill: `feature flag salesforce`, `custom metadata toggle`, `gradual rollout apex`, `kill switch feature`.
 
 ## Recommended Workflow
 

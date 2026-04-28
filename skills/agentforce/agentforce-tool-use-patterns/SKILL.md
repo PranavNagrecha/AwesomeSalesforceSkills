@@ -36,25 +36,10 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Agentforce Tool Use Patterns
-
-## When to use this skill
-
-Activate when:
-
-- You're deciding how to expose a business capability to an agent (look up an order, calculate shipping, check inventory, cancel a subscription).
-- You're seeing the agent pick the wrong tool or pass malformed arguments to a tool it does pick.
-- Tool descriptions aren't discriminating well — the LLM confuses two actions with overlapping semantic space.
-- You need to decide between one monolithic action and multiple smaller actions.
-- You're evaluating whether a workflow should live in Agentforce actions at all vs a separate pre-processing pipeline.
-
-Do NOT use this skill for:
-- Authoring the Apex/Flow action itself (use `skills/agentforce/custom-agent-actions-apex`).
-- Designing the agent's topic catalog (use `skills/agentforce/agent-topic-design`).
-- Prompt Builder template authoring (use `skills/agentforce/prompt-builder-templates`).
 
 ## Core concept — five tool shapes, five purposes
 

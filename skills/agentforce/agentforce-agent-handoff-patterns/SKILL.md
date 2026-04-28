@@ -30,7 +30,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-23
+updated: 2026-04-28
 ---
 
 # Agentforce Agent Handoff Patterns
@@ -119,12 +119,6 @@ If no suitable human is available or the query is out-of-scope with no sensible 
 | Refund > threshold | Authorization-gated handoff | Compliance |
 | Specialized domain (e.g. claims vs billing) | Agent-to-agent handoff | Persona clarity |
 | Queue overloaded | Callback scheduling, not queue dump | Respect wait-time expectations |
-
-## Well-Architected Pillar Mapping
-
-- **User Experience** — explicit transfers and expected-wait messaging reduce frustration.
-- **Reliability** — loops and dead ends are the top agent failure modes; handoff design prevents them.
-- **Operational Excellence** — structured context packages reduce human-agent ramp time.
 
 ## Review Checklist
 

@@ -32,23 +32,10 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Agent Output Formats
-
-## When to use this skill
-
-Activate when:
-
-- A consumer has run a SfSkills runtime agent and needs the result in a format beyond the canonical markdown+JSON (e.g. Excel for a security review meeting, PDF for a compliance audit, Notion card for a team wiki, ServiceNow ticket for tracking remediation).
-- A request comes in to "export the agent's output as X" where X is not markdown or JSON.
-- You want to avoid the pattern where the consuming AI regenerates the report from scratch in the new format, OR installs new libraries into the user's project.
-
-Do NOT use this skill for:
-- Authoring a new agent's primary output format (use `agents/_shared/DELIVERABLE_CONTRACT.md`).
-- Designing a new agent's native output shape (use `agents/_shared/schemas/output-envelope.schema.json`).
-- Large-scale data exports from Salesforce orgs (use `skills/data/bulk-api-2-patterns`).
 
 ## Core principle — convert, don't regenerate
 

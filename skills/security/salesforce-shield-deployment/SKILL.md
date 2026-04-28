@@ -26,18 +26,12 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Salesforce Shield Deployment
 
 Shield bundles Platform Encryption, Event Monitoring (RTEM + log files), and Field Audit Trail. Deployment order matters: encrypt fields first (with key) → turn on audit trail → onboard log consumers. This skill lays out the sequence, the gotchas for SOQL filters, and retention policy targets.
-
-## When to Use
-
-Initial Shield enablement, or expanding coverage to a new object. Not for day-2 tweaks (see encryption-key-rotation).
-
-Typical trigger phrases that should route to this skill: `shield rollout plan`, `enable event monitoring`, `field audit trail retention`, `shield encryption field by field`.
 
 ## Recommended Workflow
 

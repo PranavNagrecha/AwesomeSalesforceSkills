@@ -26,18 +26,12 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Privileged Access Management (PAM)
 
 Salesforce System Administrators hold the highest-risk permission in the platform. PAM narrows standing admin count to two (break-glass), grants temporary elevation via time-boxed Permission Set Groups with expiration, and mirrors all admin-scoped actions to a SIEM via Event Monitoring.
-
-## When to Use
-
-Orgs with >5 named System Administrators, regulated industries, or SOC 2 readiness. Not for small sandboxes without production data.
-
-Typical trigger phrases that should route to this skill: `system admin break glass account`, `too many modify all data users`, `just in time admin elevation`, `root account security salesforce`.
 
 ## Recommended Workflow
 

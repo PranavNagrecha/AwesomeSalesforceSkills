@@ -29,7 +29,7 @@ outputs:
 dependencies: []
 version: 2.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Agentforce Persona Design
@@ -188,11 +188,6 @@ Kept SHORT — long prohibition lists are modal-verb chains and cause reasoning 
 
 ---
 
-## Well-Architected Pillar Mapping
-
-- **User Experience** — persona IS the UX of a conversational agent. Adjective-based tone, drift mitigation, brand alignment are all UX concerns.
-- **Operational Excellence** — AI Assist discipline, conversation-preview test plan, instruction-length budget management. These prevent "persona worked in demo, degraded in prod" failures.
-
 ## Recommended Workflow
 
 Step-by-step instructions for an AI agent or practitioner working on this task:
@@ -219,7 +214,6 @@ Step-by-step instructions for an AI agent or practitioner working on this task:
 - [ ] Multi-persona requirements routed to separate agents (not one agent with conditional instructions).
 - [ ] Prohibited-pattern list (if any) is short and specific.
 - [ ] Long-conversation drift mitigation in place if applicable.
-
 
 ## Recommended Workflow
 

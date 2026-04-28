@@ -28,7 +28,7 @@ outputs:
 dependencies: []
 version: 2.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 Use this skill when the problem is no longer one flow, but the portfolio of flows in the org. Governance matters once teams start asking which flow is active, who owns it, why two versions exist, or whether a copied automation can be retired safely. Good governance turns Flow from a sprawl risk into an operable platform capability.
@@ -165,10 +165,6 @@ Enables: dashboard-driven governance, cross-flow owner lookup, bulk-retirement p
 
 ---
 
-## Well-Architected Pillar Mapping
-
-This skill is wholly in the **Operational Excellence** pillar. Governance findings are OpsEx findings; governance wins are OpsEx wins. No Reliability/Security/Scalability overlap — those concerns belong to other flow/* skills.
-
 ## Review Checklist
 
 - [ ] Flow label and API name describe purpose clearly.
@@ -180,7 +176,6 @@ This skill is wholly in the **Operational Excellence** pillar. Governance findin
 - [ ] Version count is bounded (≤ 2 historical inactive versions per flow).
 - [ ] Periodic retirement review (Pattern 3) cadence established.
 - [ ] Ownership source-of-truth is ONE system, not several.
-
 
 ## Recommended Workflow
 

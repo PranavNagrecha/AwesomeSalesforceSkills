@@ -34,25 +34,10 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Flow Governor Limits Deep Dive
-
-## When to use this skill
-
-Activate when:
-
-- A flow throws `System.LimitException: Too many SOQL queries: 101` or similar.
-- You're architecting a flow that will run in a high-volume context (data loader imports, bulk API writes, batch recalcs).
-- You need to estimate the limit footprint of adding a flow to an already-busy object trigger stack.
-- You're tuning a flow that runs close to the limit ceiling in production.
-- You're investigating CPU timeouts on record-triggered flows.
-
-Do NOT use this skill for:
-- General Flow bulkification patterns (use `skills/flow/flow-bulkification`).
-- Apex-only limit math (use `skills/apex/apex-governor-limits` if it exists).
-- Schema-design decisions driven by record volume (use `skills/architect/large-data-volume-design`).
 
 ## Core concept — limits are per-transaction, not per-flow
 

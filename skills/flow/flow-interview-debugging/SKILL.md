@@ -23,18 +23,12 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Flow Interview Debugging
 
 Flow failures can be invisible. Error emails go to the flow owner by default, not a shared alias. This skill sets up centralized error routing, Debug panel usage, fault-path patterns, and the Log__c instrumentation that turns production flow failures from silent into triageable.
-
-## When to Use
-
-Any flow running in production, and before go-live for mission-critical flows.
-
-Typical trigger phrases that should route to this skill: `flow error email`, `flow debug log`, `flow failing in production`, `flow interview paused`.
 
 ## Recommended Workflow
 

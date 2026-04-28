@@ -30,7 +30,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-23
+updated: 2026-04-28
 ---
 
 # DataRaptor Transform Optimization
@@ -110,12 +110,6 @@ When the same Apex expression fires per row, consider replacing the Transform wi
 | Chained transforms with no consumer between them | Merge | Saves materialization cost |
 | Large input, few fields used | Pre-project then transform | Reduces payload size |
 | JavaScript function for non-trivial logic | Reconsider — Apex or formula usually better | JS is harder to test and slower |
-
-## Well-Architected Pillar Mapping
-
-- **Performance** — formula-first and bulk mode dominate the optimization return.
-- **Reliability** — fewer chained transforms means fewer intermediate states to reason about.
-- **Operational Excellence** — consistent evaluator choices make transforms easier to review.
 
 ## Review Checklist
 

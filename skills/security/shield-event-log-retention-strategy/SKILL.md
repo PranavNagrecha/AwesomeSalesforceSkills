@@ -30,7 +30,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-23
+updated: 2026-04-28
 ---
 
 # Shield Event Log Retention Strategy
@@ -111,12 +111,6 @@ Keep a 10% sample of LightningInteraction for UX debugging; drop the rest. Usefu
 | Cost-sensitive org | Split by event value + sample low-value | Largest SIEM savings |
 | In-platform audit preferred | Big Objects for high-value events | Simpler auditor experience |
 | Multi-region / sovereignty | Regional SIEM indices | Data residency |
-
-## Well-Architected Pillar Mapping
-
-- **Security** — right retention for the right events; evidence available when needed.
-- **Operational Excellence** — query runbook turns retention from theoretical to usable.
-- **Reliability** — tiered storage survives SIEM outages; cold tier is append-only.
 
 ## Review Checklist
 

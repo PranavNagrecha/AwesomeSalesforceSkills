@@ -23,18 +23,12 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Session High Assurance Policies
 
 Salesforce sessions have a Security Level: Standard or High Assurance. A High Assurance Session Policy forces re-authentication with MFA when a user accesses a flagged object, report, or page. This skill configures the policy and tests it against the sensitive records.
-
-## When to Use
-
-Records with regulated or high-value data (SSN, bank account, salary) that should not be readable with a stolen cookie. Not for everything — user experience will suffer.
-
-Typical trigger phrases that should route to this skill: `step up auth for sensitive record`, `high assurance session salesforce`, `require mfa to view ssn field`, `session level policy`.
 
 ## Recommended Workflow
 

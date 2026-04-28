@@ -29,7 +29,7 @@ outputs:
 dependencies: []
 version: 2.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Flow Runtime Error Diagnosis
@@ -212,13 +212,6 @@ For bulk-specific failures, Debug won't reproduce — use sandbox bulk load + Fl
 - [ ] Flow version confirmed — ensure the active version is the fixed version
 - [ ] Post-mortem recorded (root cause + fix + prevention)
 - [ ] Cross-agent lookup done (`field-impact-analyzer` for schema errors; `flow-analyzer` for pattern issues)
-
----
-
-## Well-Architected Pillar Mapping
-
-- **Reliability** — every runtime error is a Reliability finding; the fix produces Reliability. Missing fault paths escalate Reliability concerns to P0.
-- **Operational Excellence** — fault email routing, running-user context discipline, version-management clarity, post-mortem culture. OpsEx determines whether this skill is used once or whether the diagnosis cycle is fast.
 
 ---
 

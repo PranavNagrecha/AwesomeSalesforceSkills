@@ -31,26 +31,10 @@ dependencies:
   - omnistudio/integration-procedure-cacheable-patterns
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-23
+updated: 2026-04-28
 ---
 
 # Calculation Procedure Design
-
-## When To Use
-
-Use a Calculation Procedure when:
-
-- The rules are **tabular** (rate cards, tier bands, region matrices).
-- Business owners want to **edit the rates**, not the code.
-- You need **versioning and activation** of rule sets.
-- Output is a calculated numeric or classification, not a workflow.
-
-Do not use a Calculation Procedure when:
-
-- The logic is truly procedural and not tabular — use Apex.
-- You need DML side effects — Apex or Flow is the right tool.
-- The matrix has millions of rows — that is a data model problem, not a
-  rules problem.
 
 ## Core Building Blocks
 

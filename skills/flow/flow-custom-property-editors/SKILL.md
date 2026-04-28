@@ -29,7 +29,7 @@ outputs:
 dependencies: []
 version: 2.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 Use this skill when the Flow-side question is "should this component or action have a custom configuration experience in Flow Builder, and if so, what should that builder contract look like?" The purpose is to keep Flow Builder configuration clear for admins while preventing the runtime component contract and the design-time editor contract from drifting apart.
@@ -137,11 +137,6 @@ The `configurationEditor` attribute points to the EDITOR LWC (which is a separat
 | Cross-Flow reuse at scale | Contract pairing (Pattern 4) with versioning | Reuse + governance |
 | The real problem is runtime LWC implementation | Use `lwc/custom-property-editor-for-flow` | Builder and runtime are separate concerns |
 
-## Well-Architected Pillar Mapping
-
-- **User Experience** — the CPE IS the admin UX. Poor CPEs produce bad Flow Builder experiences that lead to configuration errors.
-- **Operational Excellence** — CPE-runtime contract drift is the #1 OpsEx failure mode. Governance of both sides together is the OpsEx win.
-
 ## Review Checklist
 
 - [ ] The team proved a custom editor is needed instead of default Flow properties.
@@ -152,7 +147,6 @@ The `configurationEditor` attribute points to the EDITOR LWC (which is a separat
 - [ ] Generic or context-aware behavior stays builder-only and does not leak runtime assumptions.
 - [ ] CPE and runtime component versioned together.
 - [ ] `configurationEditor` attribute points to the correct editor LWC.
-
 
 ## Recommended Workflow
 
