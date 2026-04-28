@@ -115,7 +115,7 @@
     "f5b6fbdbcb20dd19caa0",
     "fbc892c4845550955699"
   ],
-  "content_hash": "6a74f7b750951f3f4357cdd09d9f211d5cae1b67f87c1e2258590911a3c98503",
+  "content_hash": "7b680a1a01352be439b561a033be6be13ef4c87dc0a197c9846804ece7e31250",
   "dependencies": [],
   "description": "Use this skill when building custom headless storefronts that call Salesforce Commerce API (SCAPI) \u2014 including Shopper API authentication with SLAS OAuth2 JWT tokens, integrating Commerce SDK React hooks, wiring Shopper Basket/Checkout APIs, and handling SCAPI-specific load-shedding and caching behavior. NOT for standard LWR storefront configuration, declarative Experience Builder layouts, legacy OCAPI integrations, or architecture-level headless decisions \u2014 use admin/headless-commerce-architecture for pattern selection.",
   "file_location": "skills/apex/headless-commerce-api",

@@ -90,7 +90,7 @@
     "f5fd41d0bb6c1735ed16",
     "f82f59517c550660a207"
   ],
-  "content_hash": "1bee2e29147c8fe3b6c8ee72ebc92ea6e2002044c3c91d63604eb2fe8b444427",
+  "content_hash": "0681f76450d0debb79112c9691436f8882b5e4c457c1aa6c437633cc9698a1e5",
   "dependencies": [],
   "description": "Configure and operate NPSP Gift Entry: gift entry templates, batch gift entry, payment processing, donation allocation, and receipting workflows. NOT for standard opportunity creation or direct GiftTransaction DML outside the Gift Entry framework.",
   "file_location": "skills/admin/gift-entry-and-processing",

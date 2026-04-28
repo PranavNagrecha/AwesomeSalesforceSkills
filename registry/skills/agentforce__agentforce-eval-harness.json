@@ -72,7 +72,7 @@
     "fbd33501a2b9cd6ca101",
     "fcd3c231c7a404363909"
   ],
-  "content_hash": "c1ed7e37bb0c5ca3141050c9e4ca511b509505fb6ea28ff753abec50509ba72c",
+  "content_hash": "dd2ca6c3d0347e188cc878fa5ce828e460fd5c577ed8824db575cf8101c8600a",
   "dependencies": [],
   "description": "Author and run offline evals for Agentforce agents: fixture format, scoring rubrics, regression baselines, CI integration, prompt-change safety. Use BEFORE every prompt or tool change. Covers multi-turn transcripts, refusal checks, tool-call correctness, grounding accuracy. NOT for online A/B testing (use observability). NOT for general Salesforce test-class patterns (use apex-testing-patterns).",
   "file_location": "skills/agentforce/agentforce-eval-harness",

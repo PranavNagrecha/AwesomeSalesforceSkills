@@ -119,7 +119,7 @@
     "fd141ae46c89828a3f53",
     "fee70dfa7f2002fd7ee2"
   ],
-  "content_hash": "669f849471e48c7c3b2d2e6a9db1e80ccda460a9af4a5fb25d0a890b9f71f90b",
+  "content_hash": "f2cf43c8ab21cb70b2472a68b5a354581d2758c122b13dc98012ade85f26bccf",
   "dependencies": [],
   "description": "Use when configuring Financial Services Cloud (FSC) financial accounts \u2014 including account types, FinancialHolding positions, FinancialGoal records, FinancialAccountRole assignments (Primary Owner, Joint Owner, Beneficiary), and household balance rollup behavior. Triggers: configure financial accounts in FSC, set up financial account roles Financial Services Cloud, FSC household balance rollup not working, add holdings to financial account, FinancialAccountType picklist setup, FSC brokerage or retirement account configuration. NOT for standard Account objects, NOT for Salesforce standard financial-services industry templates unrelated to FinancialAccount, NOT for Accounting Subledger or Revenue Cloud.",
   "file_location": "skills/admin/financial-account-setup",

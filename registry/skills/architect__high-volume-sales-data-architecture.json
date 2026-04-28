@@ -71,7 +71,7 @@
     "f48f6deaf76b88d02e85",
     "f4a11921e78c2e11237c"
   ],
-  "content_hash": "0e39b5614344e4466647775c755a3133a872727db8e6ce2e513e335b1aa1ab11",
+  "content_hash": "5295e7b6d98c413547ab7ac49e1cac924acc5327bab8b2ad741f11ca1d271a9a",
   "dependencies": [],
   "description": "Use when designing or reviewing Salesforce orgs with large Opportunity and Account volumes, including archival strategy, report performance, data skew prevention, SOQL tuning for sales queries, and index planning. Triggers: 'opportunity table is slow', 'account ownership skew', 'sales report timing out', 'archive old opportunities'. NOT for generic large data volume planning across arbitrary custom objects, non-sales data models, or Marketing Cloud data extensions.",
   "file_location": "skills/architect/high-volume-sales-data-architecture",

@@ -132,7 +132,7 @@
     "f9ccc57bf300ce568e3a",
     "fdbce9da4cac62e6b85b"
   ],
-  "content_hash": "1e5c791339309530257eb6c87189197339214e3daf0cc86779c219df56a91a93",
+  "content_hash": "1f8b2e48b738beb9d8c5d1ca3053ee5ec2909bcd6155bf32653aa390ef90d8ce",
   "dependencies": [],
   "description": "Diagnose and fix runtime errors in Lightning Web Components including wire adapter failures, shadow DOM boundary violations, event propagation mistakes, async rendering timing bugs, NavigationMixin errors, Lightning Locker vs Lightning Web Security conflicts, and slot projection problems. Triggers: 'wire adapter returns undefined', 'querySelector returns null in LWC', 'custom event not received by parent', 'LWC component not rendering after connected callback', 'NavigationMixin page reference error'. NOT for LWC fundamentals, build/deployment errors, or Aura component debugging.",
   "file_location": "skills/lwc/common-lwc-runtime-errors",

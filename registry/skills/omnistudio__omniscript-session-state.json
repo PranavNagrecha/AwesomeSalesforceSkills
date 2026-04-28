@@ -47,7 +47,7 @@
     "f59b3b184aebbee37592",
     "f720bd362f001807a10e"
   ],
-  "content_hash": "82816373486ead0da24e1f3c886dacfb5c0814940148a452d42016d6080300dc",
+  "content_hash": "954547c7c9f66c5e995b9b32074649d5e5a91c205e5e30deaded96e73b950798",
   "dependencies": [],
   "description": "Use when an OmniScript must persist mid-flow state across refresh, navigation, multi-device resume, or abandonment recovery. Covers session objects, staging data, OmniScript tracking, and resume URLs. Does NOT cover OmniScript UI step layout (see omniscript-design) or general Flow pause/resume (see flow-transaction-finalizer-patterns).",
   "file_location": "skills/omnistudio/omniscript-session-state",

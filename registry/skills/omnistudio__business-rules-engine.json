@@ -102,7 +102,7 @@
     "f8af2366dac500597dcf",
     "fc05641fd4fb1196124b"
   ],
-  "content_hash": "01a1c6240bf6e95f4febf221d75a6b17bf9a448e6f4ead5a3a607f253587665b",
+  "content_hash": "7869238533a28944206ceacc9c54b38489d508ec8888d30d066ed72e69a4222c",
   "dependencies": [],
   "description": "Use when designing, building, or troubleshooting OmniStudio Business Rules Engine (BRE) artifacts: Decision Tables, Decision Matrices (rule matrices), and Expression Sets used for eligibility determination, pricing, discounting, or any complex multi-attribute rule evaluation. Trigger keywords: 'business rules engine', 'BRE', 'decision table', 'rule matrix', 'eligibility determination', 'ExpressionSetService', 'expression set evaluate'. NOT for Flow decision elements or Flow-based branching logic (use flow/* skills). NOT for Calculation Procedures that do not involve multi-condition rule lookup (use omnistudio/calculation-procedures). Requires Industries Cloud license.",
   "file_location": "skills/omnistudio/business-rules-engine",

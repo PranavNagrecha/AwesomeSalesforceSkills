@@ -51,7 +51,7 @@
     "f1570acaa4f865218f36",
     "fdb6bed32b8d769e5f97"
   ],
-  "content_hash": "2785afea02d1d3f62d1783393f9d35138892715fe0db25fdadb2171dedce5904",
+  "content_hash": "32723cc903986c2a6436d6a67d519f9621bd01df094e1d6e5000ee14dc530fee",
   "dependencies": [],
   "description": "Use when planning, coordinating, or governing Salesforce releases: version numbering, rollback strategy, release notes, go/no-go criteria, release calendar, and sandbox preview alignment. NOT for deployment mechanics (use devops/post-deployment-validation or devops/change-set-deployment).",
   "file_location": "skills/devops/release-management",

@@ -75,7 +75,7 @@
     "fe3b776d0bc93568b175",
     "feb73337885a1e14d034"
   ],
-  "content_hash": "0ac409dcb3266b1659407453ccc05e4c91124fc474da4171eec7a260265d81c2",
+  "content_hash": "62c438b107954cfeb69bed59fae71a490802363929bc29cfd352aaf616a727c7",
   "dependencies": [],
   "description": "Use when implementing Lightning Message Service (LMS) to enable cross-DOM communication between LWC, Aura, and Visualforce components on the same Lightning page, using message channels. Triggers: 'communicate between unrelated LWC components', 'send data between Visualforce and LWC', 'lightning message service not working', 'APPLICATION_SCOPE vs default scope', 'message channel metadata deployment'. NOT for parent-child component communication (use component-communication) or server-side events.",
   "file_location": "skills/lwc/message-channel-patterns",

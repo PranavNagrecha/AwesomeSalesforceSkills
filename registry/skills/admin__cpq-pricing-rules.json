@@ -95,7 +95,7 @@
     "fe1470ee12ef44dd0e4c",
     "fe5aa3b637b4cb621e32"
   ],
-  "content_hash": "1e356908b58ac31ecec92e6d0cce3843b47ad65e6ed2d46d60621e3dfaf37aea",
+  "content_hash": "a3006d57b65c1079c6a3a47eec348cf220788957b37fad905eb92c63b081e9e9",
   "dependencies": [
     "cpq-product-catalog-setup",
     "products-and-pricebooks"

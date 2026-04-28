@@ -81,7 +81,7 @@
     "fb3fe1c87fea002ab03b",
     "fc22cbe5d028698146f9"
   ],
-  "content_hash": "f4195f186c144d657d0525a746bc77f62b5f2d55afe57ce4fbe0e1487f09b913",
+  "content_hash": "d36e8ed2e87966eb1f66c391b6851c9c9fc3efacf42b4ec04b4fc2ef17c167e1",
   "dependencies": [],
   "description": "Use this skill when building record forms or data tables with Salesforce standard base components: lightning-record-form, lightning-record-edit-form, lightning-record-view-form, and lightning-datatable. Covers component selection, attribute configuration, inline editing, row actions, and the decision matrix for choosing between form components. NOT for custom forms backed by Apex wire methods or @wire(getRecord) with fully manual field rendering (use lwc-forms-and-validation). NOT for LWC fundamentals such as data binding, event handling, or the component lifecycle (use lifecycle-hooks or wire-service-patterns).",
   "file_location": "skills/lwc/lwc-base-component-recipes",

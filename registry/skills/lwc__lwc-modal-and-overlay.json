@@ -53,7 +53,7 @@
     "f7a17a973d59b9c3eeee",
     "feb015aa161f13fe89c3"
   ],
-  "content_hash": "ff1b19439a7a369bc902aa961fee30f1416b54f1f5985a433cb526eb82013044",
+  "content_hash": "084b5b05488c77eb97c5a51f77691f5da0977eb672ade4ef4afacf3b4dab9720",
   "dependencies": [],
   "description": "Use when choosing or reviewing overlay patterns in Lightning Web Components, especially `LightningModal`, confirmation dialogs, toasts, focus handling, and overlay dismissal behavior. Triggers: 'lightning modal in lwc', 'toast or modal decision', 'focus trap in modal', 'overlay close result'. NOT for full Flow screen UX design or record-edit processes that should stay on-page.",
   "file_location": "skills/lwc/lwc-modal-and-overlay",

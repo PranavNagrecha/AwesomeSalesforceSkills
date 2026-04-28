@@ -49,7 +49,7 @@
     "f77718d16404e7f820b5",
     "fa489ff0d73a09e21772"
   ],
-  "content_hash": "58b008c59a9e28d5a6a345e07ecfc712d93fbc1ad383a2f6420461ada9d235c8",
+  "content_hash": "31b067dda679c84d72195d1fffae332f164a085cecfb990d7937486c8e42ea83",
   "dependencies": [],
   "description": "Use this skill when producing or reviewing API contract documentation for Salesforce integrations: versioning policy artifacts, request/response schema specs, error code catalogs, rate limit documentation, and OpenAPI generation for sObjects. Trigger keywords: Salesforce API versioning policy, API end-of-life policy, document API endpoints, REST API rate limits, OpenAPI sObjects. NOT for API implementation (building the API endpoint), Apex REST service coding, or Connected App setup \u2014 those are covered by apex-rest-services and connected-app-security.",
   "file_location": "skills/admin/api-contract-documentation",

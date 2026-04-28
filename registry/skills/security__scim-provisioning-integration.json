@@ -53,7 +53,7 @@
     "f4b85783e4ec0533914d",
     "f8374da5b24a652b5f76"
   ],
-  "content_hash": "d8354982df77e87d15769b13cf61c3bff1c21bdd691fd000bb159a7ead0ec657",
+  "content_hash": "b20d466637fba58d04376326a64d3079dd200fc2beae08c3f3b960efd978482b",
   "dependencies": [],
   "description": "Use when designing or reviewing SCIM-based user lifecycle provisioning into Salesforce from Okta, Azure AD / Entra, or another IdP \u2014 create/update/deactivate, group-to-permission-set mapping, attribute mapping, and deprovisioning semantics. Triggers: 'scim provisioning', 'okta scim salesforce', 'entra salesforce provisioning', 'user deactivation automation', 'group to permission set mapping'. NOT for SSO/authentication setup (see single-sign-on skills).",
   "file_location": "skills/security/scim-provisioning-integration",

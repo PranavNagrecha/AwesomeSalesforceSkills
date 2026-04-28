@@ -89,7 +89,7 @@
     "f90adc40744be5e13464",
     "fe9dd8ee087687dd2886"
   ],
-  "content_hash": "2401e823782c1f8eb44a0b852401745e64c92a329b3b24ad47ddbe6466fd6ada",
+  "content_hash": "d112977aaf36240d986e5ce4c895191b48c6dc93b34909e6dfb15e2688373b13",
   "dependencies": [],
   "description": "Use this skill when designing or implementing FSC-specific integration: core banking data sync, custodian feeds (Schwab/Fidelity), market data pipelines, or payment processing wired to FSC Financial objects. Triggers: syncing FinancialAccount or FinancialHolding records from a core banking system, integrating a custodian data feed into FSC Wealth Management, market data prices updating CurrentValue on FinancialHolding, payment transactions flowing into FSC from an external ledger. NOT for generic Salesforce integration, non-FSC object sync, or MuleSoft platform configuration unrelated to FSC financial objects.",
   "file_location": "skills/apex/fsc-integration-patterns-dev",

@@ -83,7 +83,7 @@
     "f94f5c05878ac787a575",
     "ff68f4b3f591e7ae74ac"
   ],
-  "content_hash": "2a9b760402c149cd9e3aaf2e29e27cc27c162cc2d646c0137942a666b805495c",
+  "content_hash": "a8ed2ecc4607fb59cd81e83f21bad38df6128e62b4ad998ccb96829f170144a6",
   "dependencies": [],
   "description": "Use this skill when writing, debugging, or optimizing SAQL queries in CRM Analytics \u2014 covering pipeline syntax, aggregation, windowing functions (rank, dense_rank, moving_average), cogroup joins, rollup subtotals, piggyback queries, and REST API execution. NOT for SOQL, standard Salesforce reports, SQL databases, or any non-CRM Analytics query language.",
   "file_location": "skills/admin/saql-query-development",

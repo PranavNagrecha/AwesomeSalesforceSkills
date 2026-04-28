@@ -28,7 +28,7 @@
     "f2cf4c736a4e1f3624c9",
     "f4b341322f2ce3e2303e"
   ],
-  "content_hash": "f2179f789f826677d3049a59b0482e5a1bad03c8bd4733947e4172cdccef3a9b",
+  "content_hash": "54705415b63c48512b3925ff8c8034f8afd181be5b10d068f4e906e240413796",
   "dependencies": [],
   "description": "Publish and subscribe to Platform Events from Flow for async decoupling, high-volume triggers, and cross-org signaling. NOT for regular DML-triggered flows.",
   "file_location": "skills/flow/flow-and-platform-events",

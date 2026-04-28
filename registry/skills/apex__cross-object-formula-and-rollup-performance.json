@@ -74,7 +74,7 @@
     "fd23948af82934d87d43",
     "fd5894e0abaaab15ac8f"
   ],
-  "content_hash": "a38d57036fc0702500efb806a23879d728a57e3724546ac326932544f2c1f94a",
+  "content_hash": "6d33b1c241dde480d3f1269980047d81f27eec67c699f4ae039bc412167a2189",
   "dependencies": [],
   "description": "Use when diagnosing or preventing performance problems caused by cross-object formula spanning relationships and roll-up summary field recalculations \u2014 especially in LDV orgs. Triggers: 'roll-up summary timing stale in trigger', 'Maximum 15 object references error', 'rollup recalculation timeout on large child set'. NOT for formula syntax authoring (use admin/formula-fields), formula compile-size limits (use apex/formula-field-performance-and-limits), or general governor-limit troubleshooting.",
   "file_location": "skills/apex/cross-object-formula-and-rollup-performance",

@@ -59,7 +59,7 @@
     "f8da9c76350fb131c848",
     "fd65a9daa1347f27c849"
   ],
-  "content_hash": "dbd2c42fa61f1d04703595df77d6fa9a788dd0f614db930cb6fb4c00b7797b1d",
+  "content_hash": "bad4fc7e3b5a70bb8a5c57d5d9068468cb91f782d685d39b2f810b2b2243b011",
   "dependencies": [],
   "description": "Use when Agentforce run costs are climbing, you need to forecast scale, or you want to reduce tokens per conversation without hurting quality. Covers topic design impact on cost, prompt/template reuse, grounding size discipline, caching, and model-tier selection. Triggers: 'agentforce cost', 'tokens per conversation too high', 'reduce agentforce runs spend', 'forecast agentforce scale cost', 'einstein trust layer tokens'. NOT for general LLM pricing strategy outside Salesforce.",
   "file_location": "skills/agentforce/agentforce-cost-optimization",

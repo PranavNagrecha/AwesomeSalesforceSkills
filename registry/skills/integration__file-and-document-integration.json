@@ -74,7 +74,7 @@
     "fcf90efe9d3d4413af51",
     "ff0a4e6952dbb26bedce"
   ],
-  "content_hash": "95037fe2c856acefbe526980755a74415d4f35f4e3d2c32688ad9b21840d9bd5",
+  "content_hash": "a6f653ea5607245319c8a2d910aa859a758bb480628063b51a47ae4bc6972911",
   "dependencies": [],
   "description": "Use when uploading, downloading, managing, or integrating files and documents with Salesforce \u2014 covering ContentVersion/ContentDocument, REST multipart uploads, base64 inserts, Files Connect for external storage reads, and virus scanning callout patterns. Triggers: 'upload file to Salesforce', 'ContentVersion REST API', 'Files Connect external storage', 'multipart file upload', 'document integration pattern', 'virus scan uploaded file'. NOT for Bulk API data loads, Chatter feed post content, email attachment handling via EmailMessage, or CRM Content classic libraries.",
   "file_location": "skills/integration/file-and-document-integration",

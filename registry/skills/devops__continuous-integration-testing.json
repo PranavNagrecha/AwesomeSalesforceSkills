@@ -92,7 +92,7 @@
     "fd286301ac6ad425ba77",
     "fd34f56377314c3729ef"
   ],
-  "content_hash": "e85ae13ac183428cbc3733837f9e59795c82aae131fa21af3fb7edc8a5b67bf4",
+  "content_hash": "3fbc281e2770a5a73852ea4542193cb6acc397fb6ecb9a94cceae715d2896230",
   "dependencies": [],
   "description": "Use when configuring Apex test execution in CI/CD pipelines, choosing test levels for deployments, parsing test results, or troubleshooting code coverage in automated builds. Triggers: 'RunLocalTests', 'RunSpecifiedTests', 'sf project deploy', 'code coverage CI', 'JUnit test results'. NOT for Apex test class design patterns, test data factory architecture, or LWC Jest testing.",
   "file_location": "skills/devops/continuous-integration-testing",

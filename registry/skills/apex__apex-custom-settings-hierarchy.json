@@ -63,7 +63,7 @@
     "f6b50ed6b4d89ac14b88",
     "fc3fadf2062e78e90b94"
   ],
-  "content_hash": "23e1795458afce03ca4ce97423fe0ee3acf80044be1ba994e952e237570d6d56",
+  "content_hash": "3f89c761872a2b88f37b9726dd1e5bebf495c042f1ba88b6979a97f85e41b897",
   "dependencies": [],
   "description": "Use when reading or writing Hierarchy Custom Settings from Apex to resolve per-user/per-profile/org configuration. Covers `getInstance()` resolution order, DML cost, cache semantics, and when to prefer Custom Metadata Types instead. NOT for List Custom Settings, Custom Metadata Types deployment packaging, or the deprecated Setup UI for editing.",
   "file_location": "skills/apex/apex-custom-settings-hierarchy",

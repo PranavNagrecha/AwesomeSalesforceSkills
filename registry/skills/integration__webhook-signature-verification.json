@@ -28,7 +28,7 @@
     "d3970969868c3b120e90",
     "f338ad45248b9c725ca1"
   ],
-  "content_hash": "86c1bcf883e0f15eea7a5a98ffe8c606ecea143d33110e21691d57fe7b428043",
+  "content_hash": "499d953dece297015e7b2cc759cbcdac08d5b99c9bc38042d8f873ad927be1d6",
   "dependencies": [],
   "description": "Accept inbound webhooks (Stripe, GitHub, Slack, partner) and verify HMAC signatures in Apex REST. NOT for outbound webhooks.",
   "file_location": "skills/integration/webhook-signature-verification",

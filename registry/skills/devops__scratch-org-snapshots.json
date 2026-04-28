@@ -28,7 +28,7 @@
     "f62836efc48f0e1b35c0",
     "fab836e38e0f23bd5dfe"
   ],
-  "content_hash": "4903ca5407f018b72d6f168874c87f9c8db41a57f623c6343618e613a9415702",
+  "content_hash": "e456a7dff9acf07b1ef91ea001145ca54e0ded17bd5dde0051e63d81ea17d211",
   "dependencies": [],
   "description": "Use Scratch Org Snapshots to reduce CI bring-up time from 10\u201320 minutes to under 2. NOT for persistent sandbox provisioning.",
   "file_location": "skills/devops/scratch-org-snapshots",

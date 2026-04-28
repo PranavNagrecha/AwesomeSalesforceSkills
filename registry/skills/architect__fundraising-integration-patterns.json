@@ -87,7 +87,7 @@
     "f2fbb0f10db6cae93877",
     "ff6f95a1323eb0333394"
   ],
-  "content_hash": "1e4a060f5fdfb1227227cb3b35966d3ede767dce6a1dd5b23ca01d9002de1b06",
+  "content_hash": "3de4ad654cbc24b20d998215eded43342fb8d4878b5b68c01dac24a3c5125b4b",
   "dependencies": [],
   "description": "Use this skill when connecting a Salesforce Nonprofit Cloud or NPSP org to fundraising-adjacent systems: payment gateways via Salesforce.org Elevate, wealth screening tools (iWave, DonorSearch), email marketing platforms (Marketing Cloud, Pardot), and event management platforms. Trigger keywords: payment gateway nonprofit, Elevate payment services, GiftTransaction API, wealth screening integration, iWave Salesforce, DonorSearch scores, donor email marketing sync, event registration fundraising. NOT for generic integration patterns, Salesforce Billing payment gateways (blng.PaymentGateway), or non-fundraising CRM integrations.",
   "file_location": "skills/architect/fundraising-integration-patterns",

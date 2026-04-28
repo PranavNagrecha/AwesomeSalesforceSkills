@@ -94,7 +94,7 @@
     "fb19620a203bdc0fa838",
     "fc49bce8f25e90e5879e"
   ],
-  "content_hash": "bc9b99447f26050d55c9dc560f15cdf9670cf7210533c82919b0aba53affdd9a",
+  "content_hash": "92fff18f164f663e77b0f37b9c12d09b8155df6365bc43ab13e0d7866ce63632",
   "dependencies": [],
   "description": "Use this skill when configuring, extending, or troubleshooting the Salesforce Field Service (FSL) Mobile app for field technicians \u2014 including offline priming strategy, app extensions, deep linking, and custom branding. Trigger keywords: FSL mobile, Field Service mobile app, offline priming, mobile extension toolkit, app extensions for field service. NOT for standard Salesforce Mobile app configuration, Lightning App Builder layouts for desktop, or Field Service Lightning dispatcher console setup.",
   "file_location": "skills/admin/fsl-mobile-app-setup",

@@ -59,7 +59,7 @@
     "f659a8524b7ae454f1cc",
     "fc5c666fc9b887a9435d"
   ],
-  "content_hash": "db44878d6d16c87ffb6fc39b169401ae1227a576e7765517a5001da6693e266f",
+  "content_hash": "f8c4b8ac39da36ec919cb24e83835bf52e4f6b3363224af45615b03b46778874",
   "dependencies": [],
   "description": "Use when implementing or troubleshooting the Salesforce Data Cloud Ingestion API \u2014 covers streaming ingestion (near-real-time micro-batches), bulk ingestion (CSV-based full-replace jobs), schema management in OpenAPI 3.0.x YAML, Connected App setup with cdp_ingest_api scope, and error handling for both modes. NOT for standard Salesforce Bulk API, CRM Analytics data import, or Data Cloud data streams from CRM objects.",
   "file_location": "skills/integration/data-cloud-ingestion-api",

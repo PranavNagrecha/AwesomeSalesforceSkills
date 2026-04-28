@@ -80,7 +80,7 @@
     "fed4be57e2e12f91ba2e",
     "ff72b4d14913478a1b57"
   ],
-  "content_hash": "a852aa1eb49dfb1475a02464285d94e71946442473394e667519c7d406de9727",
+  "content_hash": "57ddc6df9e65e62f21ddbc37a938270301be77e89c8c1573f6629e5456c41f68",
   "dependencies": [],
   "description": "Use when building or reviewing Flow logic that processes lists of records using Loop, Assignment, Collection Filter, Collection Sort, or Transform elements. Triggers: 'iterate over collection in flow', 'flow loop add to collection', 'collection filter element', 'transform element flow', 'update records from collection variable', 'collection sort flow'. NOT for individual single-record retrieval (use Get Records alone), NOT for Apex-based collection manipulation, NOT for flow bulkification performance analysis (see flow-bulkification).",
   "file_location": "skills/flow/flow-collection-processing",

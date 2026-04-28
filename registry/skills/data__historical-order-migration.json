@@ -106,7 +106,7 @@
     "fa636e7e4a5fc6029284",
     "fc6ccb61199fc1c1e78b"
   ],
-  "content_hash": "591cfec919ac5ce63084c05c782eafc4c877b938639af5bbbc47ce7a0b8daa98",
+  "content_hash": "01f03f335f6773b84361eeac778daa819186b973fd9fcc61f2edfff5a6940fcd",
   "dependencies": [],
   "description": "Use when loading historical CPQ orders, contracts, subscriptions, and assets into Salesforce CPQ so that future renewals and amendments work correctly \u2014 covering the CPQ Legacy Data Upload mechanism, strict object load sequencing, required field values, and pre/post-load configuration. NOT for opportunity migration (use opportunity-pipeline-migration). NOT for standard Salesforce Orders without CPQ. NOT for asset-based renewal model orgs. NOT for quoting net-new business.",
   "file_location": "skills/data/historical-order-migration",

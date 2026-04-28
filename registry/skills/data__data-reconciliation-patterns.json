@@ -86,7 +86,7 @@
     "f665f451a1ee066c5aea",
     "f9776819bd215652625c"
   ],
-  "content_hash": "4c5364e8eb06c9b739e464326689e3a24f1f0f8ea59341790c6bc1b79780a77d",
+  "content_hash": "61db27dffcd27a09b2215656aea521655a78df2760bf064ff39950880af08e11",
   "dependencies": [],
   "description": "Patterns for reconciling Salesforce data with external systems: count-level, field-level, and record-level reconciliation, external ID upsert patterns, Change Data Capture for delta detection, and soft-delete tombstone strategies. Use when validating ongoing data sync or diagnosing discrepancies between Salesforce and external data sources. NOT for one-time data migration planning (use data-migration-planning). NOT for initial CDC topic configuration (use change-data-capture skill). NOT for deduplication within Salesforce (use large-scale-deduplication).",
   "file_location": "skills/data/data-reconciliation-patterns",

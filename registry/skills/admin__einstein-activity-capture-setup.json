@@ -98,7 +98,7 @@
     "fa61cb6a2745631645d0",
     "ff79ef38189284f26b80"
   ],
-  "content_hash": "8dc562298bedb45c479d9e129cef2078db9cd4c95140412112461f8d6f1b8dcf",
+  "content_hash": "856b999a613449fd46433a84eeb85ebf0bb32c502199d7d5fae930e27b8867e6",
   "dependencies": [],
   "description": "Configure Einstein Activity Capture (EAC) for an org: enable the feature, create Configuration profiles, set auth type (User-Level or Org-Level OAuth), define email and calendar sync scope, configure excluded domains and privacy settings, assign users, and verify sync health. NOT for manual activity logging, Einstein Opportunity Scoring setup, Pipeline Inspection, or troubleshooting email deliverability outside EAC.",
   "file_location": "skills/admin/einstein-activity-capture-setup",

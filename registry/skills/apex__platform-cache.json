@@ -52,7 +52,7 @@
     "fe5f53a1a55f202b7bd0",
     "ff80cb1a58c7a1170705"
   ],
-  "content_hash": "8efb3db91fce68a5505996afcec13fe46b063374b8c421b1a4a0ffdc0de68764",
+  "content_hash": "f3cf873ec24fa8bdf60e4305b1312447cf61b5c5bdee75d5ae2bc6ef85c45b2f",
   "dependencies": [],
   "description": "Use when designing or reviewing Salesforce Platform Cache usage in Apex, including org cache versus session cache, cache-aside patterns, invalidation, and safe key design. Triggers: 'Platform Cache', 'Cache.Org', 'Cache.Session', 'cache-aside', 'cache invalidation'. NOT for durable configuration storage or for caching user-specific sensitive data.",
   "file_location": "skills/apex/platform-cache",

@@ -104,7 +104,7 @@
     "fceb8aab91929512ecf5",
     "ff385b46e0f220a674fe"
   ],
-  "content_hash": "55c237d50647a93eb58ec35025cb82cfbdea55a20c2fcf99a259e4f87b3ddfee",
+  "content_hash": "023f10630532fb6874211d0791514a563de4dea308f7aaa849593d9e6f3dc09f",
   "dependencies": [],
   "description": "Use this skill when building, debugging, or optimizing CRM Analytics dataflows \u2014 defining node types (sfdcDigest, Append, Augment, computeExpression, computeRelative, Flatten, dim2mea, sfdcRegister), scheduling runs, handling run failures, and tuning performance. NOT for standard data processing outside CRM Analytics, for recipe-based data prep, or for SAQL dashboard query tuning.",
   "file_location": "skills/admin/analytics-dataflow-development",

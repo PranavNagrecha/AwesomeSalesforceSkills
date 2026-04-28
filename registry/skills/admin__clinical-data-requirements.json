@@ -58,7 +58,7 @@
     "f794cd5d42539d6ee5b2",
     "fb6d2d0de379ab512f6e"
   ],
-  "content_hash": "6bbf8e16a806ff4e79cd3b673a761db7ab68223f50237926a0aba0608f62b95a",
+  "content_hash": "ebe44e62dcfeb7915bcb83b1a4a9fb15de500b765dd7f0a41dee47a14e201b26",
   "dependencies": [
     "admin/health-cloud-patient-setup",
     "admin/health-cloud-data-model"

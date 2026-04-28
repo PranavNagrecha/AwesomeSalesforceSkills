@@ -72,7 +72,7 @@
     "fefa4d1d95d5b034db7a",
     "ffd1bd2df04477aeb52f"
   ],
-  "content_hash": "a5b88337126e6293d8b5fad3b2b4b51e26ef10f6bb5fb851b39efcaa71afe8ba",
+  "content_hash": "4c528aae6f76ff9c16b39cf84c36a1f855a46c8a2deb6da7a30b180fcfb37047",
   "dependencies": [],
   "description": "Use this skill when migrating OmniStudio components (OmniScript, Integration Procedures, DataRaptors, FlexCards) between Salesforce orgs using the DataPack export/import mechanism \u2014 covering version management, environment-specific data resolution, conflict handling, and silent-skip gotchas. Trigger keywords: DataPack migration, OmniStudio org-to-org migration, packExport packDeploy, DataPack versioning, DataPack conflict. NOT for OmniStudio CI/CD pipeline automation (use omnistudio/omnistudio-ci-cd-patterns), managed-package-to-standard-runtime migration (use OmniStudio Migration Assistant), or standard Salesforce metadata migration.",
   "file_location": "skills/data/omnistudio-datapack-migration",

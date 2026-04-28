@@ -49,7 +49,7 @@
     "e2807f06d2a2a4de4271",
     "f8b8dae169a028cda8ef"
   ],
-  "content_hash": "1540b351adf7a1c29c1d50a5520e5a9cdd4a5dc55bba8d366c6ccd04b7afb7eb",
+  "content_hash": "7e4030393f193a58b1bc0be3232c273710f1a8209332a449f00a032c64be7f98",
   "dependencies": [],
   "description": "Custom Permissions in Apex: FeatureManagement.checkPermission, $Permission global variable, permission-set gating of feature code, Custom Permission metadata. NOT for CRUD/FLS enforcement (use security-apex-crud-fls). NOT for standard Salesforce permissions (use permission-set-architecture).",
   "file_location": "skills/apex/apex-custom-permissions-check",

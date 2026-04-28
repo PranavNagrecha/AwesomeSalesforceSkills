@@ -56,7 +56,7 @@
     "f73cdb41af8d59ab4326",
     "fd8c197b1b13db51b8d6"
   ],
-  "content_hash": "f4b0f611b50ab40215ed2377fd313b72db7b349470f702252ad0d1f8cb9c3d51",
+  "content_hash": "7b15d1834f7a6c5a135fbaee1993704b416c71af01456401428268901bb8f7eb",
   "dependencies": [],
   "description": "Use when designing how an Agentforce agent transfers the conversation to a human agent (Omni-Channel), to another bot/agent, or to an alternate workflow \u2014 including context package, deflection, escalation triggers, and user messaging. Triggers: 'agent to human handoff', 'agentforce escalate to omni channel', 'agent to agent handoff', 'transfer conversation with context', 'agent deflection fallback'. NOT for topic selector design (see agent-topic-design).",
   "file_location": "skills/agentforce/agentforce-agent-handoff-patterns",

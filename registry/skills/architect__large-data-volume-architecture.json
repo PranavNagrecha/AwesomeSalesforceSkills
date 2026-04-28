@@ -50,7 +50,7 @@
     "f670278d82062e825462",
     "fa1c3314146168873896"
   ],
-  "content_hash": "3c264034856bd233617ffd2fbf36c75fe39dda57f59ed3f4772cb4576dbfabd8",
+  "content_hash": "e367530586b5c022408ec5fa07f7e5baaeaff48cefe54cd82c86327d2a8073ce",
   "dependencies": [],
   "description": "Use when designing or reviewing org-wide large data volume (LDV) concerns: query optimizer behavior and selectivity, custom indexes and skinny tables, sharing and ownership skew, bulk data loads, archival to Big Objects, and divisions. Triggers: LDV architecture review, skinny table request, ownership skew hurting sharing, millions of records on custom object, bulk load performance. NOT for rewriting individual SOQL statements or interpreting Query Plan output in isolation (use data/soql-query-optimization), sales-only Opportunity and Account skew playbooks (use architect/high-volume-sales-data-architecture), or Marketing Cloud data extensions.",
   "file_location": "skills/architect/large-data-volume-architecture",

@@ -56,7 +56,7 @@
     "f7bb52e3d137f809effa",
     "fcb94c6717e82e7ee70c"
   ],
-  "content_hash": "0e5c50d3240094922820511be243fb7fa77c77a5e42122aba54d0787ab1cc64b",
+  "content_hash": "bb905cbf4d6d41279982c5374cfe4fc42dc22f686bd6c897ab1d2d39681e3063",
   "dependencies": [],
   "description": "Use when designing or refactoring Salesforce access architecture around minimal profiles, permission sets, permission set groups, muting, and assignment governance. Triggers: 'profile sprawl', 'permission set strategy', 'PSG architecture', 'access bundle design', 'least privilege'. NOT for record-sharing model design or CRUD/FLS enforcement inside Apex.",
   "file_location": "skills/admin/permission-set-architecture",

@@ -49,7 +49,7 @@
     "fd86ed68e442da884f55",
     "ffc0e6a3f9be31daafd0"
   ],
-  "content_hash": "1e372349bede813205adcfd7b89cd746942cc68d76310468123c02e36eeb4408",
+  "content_hash": "3e59aea7283c21d4b950ba88fdb076c10aba8a97884ef2600acfa9ba5ee0be9c",
   "dependencies": [],
   "description": "Designing Lookup vs Master-Detail vs Hierarchical vs External relationships: cascade delete, roll-up summaries, ownership, sharing implications, polymorphic lookups, relationship depth limits. NOT for record-type strategy (use data-model-design-patterns). NOT for junction object patterns (use many-to-many-relationships).",
   "file_location": "skills/admin/lookup-and-relationship-design",

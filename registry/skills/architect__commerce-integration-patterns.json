@@ -119,7 +119,7 @@
     "fdca68df0b4b2d738b87",
     "fe1479c577db832c321c"
   ],
-  "content_hash": "1f739c3b6c231517f60ee4feb65954af2ee7adaac9f19b2e770ab8b9a56c8b1a",
+  "content_hash": "8d69546793632a71d1394307b0a5cfb2cbc2cffd9e9f5dfa08b8354414f2cf80",
   "dependencies": [
     "apex/commerce-payment-integration",
     "admin/commerce-checkout-configuration"

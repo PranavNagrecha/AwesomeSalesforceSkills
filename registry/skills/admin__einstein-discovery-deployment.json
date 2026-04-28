@@ -80,7 +80,7 @@
     "fdb9fbbc19fd730a691b",
     "ff0e9c2b73ee20655391"
   ],
-  "content_hash": "da5b83a51a946f2c352989442f1326baf2edd15ef2fdcb636142f18f91815001",
+  "content_hash": "43983a9be62b6b78686bf7dc1f7d6b278a895ac569a6a46690e45ab20926854f",
   "dependencies": [],
   "description": "Use this skill when deploying a trained Einstein Discovery model to production records declaratively \u2014 activating a prediction definition, mapping output fields to page layouts, adding the Einstein Discovery Action to a Flow, running bulk predict jobs, and monitoring model health via Model Manager UI. Trigger keywords: prediction definition activation, bulk predict job, Einstein Discovery Flow action, Model Manager, prediction field mapping, model refresh activation, scoring job, Einstein Discovery recommendations on record. NOT for Einstein Discovery setup or story authoring. NOT for developer API integration (see agentforce/einstein-discovery-development).",
   "file_location": "skills/admin/einstein-discovery-deployment",

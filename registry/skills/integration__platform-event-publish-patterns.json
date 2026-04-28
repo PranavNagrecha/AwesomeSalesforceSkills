@@ -50,7 +50,7 @@
     "f56198c4f43cbc399ea6",
     "f7f41c6ea446e4d7d8b6"
   ],
-  "content_hash": "bc1dd30bd1a652aea9a298909c6033f6adb32e3d05cd870e3c53885c817e460f",
+  "content_hash": "c3989448d29ce2f12b1910b4efea4c60b6c4e1dfd7a41ab4a8e8f3b20351113c",
   "dependencies": [],
   "description": "Publishing Platform Events: EventBus.publish, PublishBehavior (PublishImmediately vs PublishAfterCommit), high-volume events, event allocation, publish failures, Change Data Capture comparison. NOT for subscribing/consuming (use platform-event-subscribe-patterns). NOT for CDC architecture (use cdc-patterns).",
   "file_location": "skills/integration/platform-event-publish-patterns",

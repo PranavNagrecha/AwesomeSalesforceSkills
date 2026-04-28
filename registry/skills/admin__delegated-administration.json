@@ -82,7 +82,7 @@
     "fb5f08cabf6a25bbf2cf",
     "fde821be69b772c91849"
   ],
-  "content_hash": "fbf17a94b815d9f09de31139b1e238b3a03f2c175e679da4198106ce462a897b",
+  "content_hash": "7349cf8c3101b24b3c601c41bc109fa5ea4b8dbf2f8514d4c336d4c4a2944cfe",
   "dependencies": [],
   "description": "Use when configuring delegated administration to allow non-system-admin users to manage specific user groups, reset passwords, assign permission sets, or administer custom objects. NOT for user management (use user-management) or full system admin setup.",
   "file_location": "skills/admin/delegated-administration",

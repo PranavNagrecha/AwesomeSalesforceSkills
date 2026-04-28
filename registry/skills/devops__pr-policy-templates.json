@@ -28,7 +28,7 @@
     "e70011c9b516cc19310f",
     "eb8dc28c14f21a54ab95"
   ],
-  "content_hash": "7fb19ab551943f12f76e7955359a297dee6978310b3939f71cd094e1a19f6336",
+  "content_hash": "6ec6bb54561895fca63570e3c90f43cf3961ed819f90f9969b9dcb16a8da14f0",
   "dependencies": [],
   "description": "Enforce change quality via PR templates, required reviews, metadata ownership, and automated checks. NOT for branching model selection.",
   "file_location": "skills/devops/pr-policy-templates",

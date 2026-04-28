@@ -52,7 +52,7 @@
     "f97dd41a1276f216d059",
     "ff19eb3f1dd38141ee58"
   ],
-  "content_hash": "1a9e62462a092f49b02e5bc10ed7ddfc64fefa82497827eea07d581f943bad00",
+  "content_hash": "d8d34cf7c102def10cb86361038bf6c37d529400ac83a2811a37ceca406e4a04",
   "dependencies": [],
   "description": "Use when choosing between DML statements and Database class methods, handling partial success, managing savepoints, or using Database.DMLOptions for assignment rules and duplicate handling. Trigger keywords: 'Database.insert allOrNone false', 'partial DML success apex', 'SaveResult isSuccess', 'database merge apex', 'DML exception handling'. NOT for SOQL query patterns (use soql-fundamentals or apex-soql-relationship-queries), NOT for sharing model setup (use apex-managed-sharing-patterns).",
   "file_location": "skills/apex/apex-dml-patterns",

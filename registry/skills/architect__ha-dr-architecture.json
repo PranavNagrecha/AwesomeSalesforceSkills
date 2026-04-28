@@ -74,7 +74,7 @@
     "f017f3425ca43734b69e",
     "f9ac079ff57cae897259"
   ],
-  "content_hash": "02742f99afe56bb281af5714d32e8aaaaaf318fd8009c56f3cb48ec7a067b354",
+  "content_hash": "b753fb33b9a830406bc05ef521547fbad800590519318ed30322cbbb48779f68",
   "dependencies": [],
   "description": "Designing high availability and disaster recovery strategies for Salesforce: Trust site monitoring, backup strategies, cross-region considerations, business continuity planning, RTO/RPO target definition, and failover patterns for integrations. Use when designing org resilience architecture, planning for outages, or defining recovery objectives. NOT for data backup mechanics (use salesforce-backup-and-restore). NOT for general security architecture (use security-architecture-review).",
   "file_location": "skills/architect/ha-dr-architecture",

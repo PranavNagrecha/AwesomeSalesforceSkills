@@ -49,7 +49,7 @@
     "ecec5637ea2332855f88",
     "f4c8c21aa0e93b5aa5a5"
   ],
-  "content_hash": "a2c97066311d8214399e1f6b7f32c779f6921d5ebeb7f62bfd072b1edfa756fa",
+  "content_hash": "6c0a0acf7cd7a21e0d7b7e1047bc3a2b56b0a2041955cf6a1458c237cecca5d4",
   "dependencies": [],
   "description": "Nonprofit Cloud vs NPSP decision and migration: choose NPSP (managed package) or Nonprofit Cloud (native), plan data migration, Account Model differences, Program Management, fundraising. NOT for nonprofit accounting (use revenue-cloud-foundation). NOT for generic Sales Cloud setup (use sales-cloud-core-setup).",
   "file_location": "skills/architect/nonprofit-cloud-vs-npsp-migration",

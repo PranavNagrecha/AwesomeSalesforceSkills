@@ -89,7 +89,7 @@
     "fcb37a828f84591516f0",
     "fd61e70c2283a53d044c"
   ],
-  "content_hash": "4fd9ce84ba41ce3709b10f927e2879646f5885801074ddf91106e3b0752475ad",
+  "content_hash": "e18038ad681cc33fbc2707ae9ecb987abdba4ca826b6041b0277167f1c554b2b",
   "dependencies": [],
   "description": "Use this skill to configure Salesforce Billing billing schedules, invoice plans, billing policies, and billing treatments on activated Orders. Triggers: 'billing schedule not generating invoices', 'blng__BillingSchedule__c records missing after order activation', 'how to set up in-advance vs in-arrears billing', 'configure milestone billing in Salesforce Billing', 'invoice run not picking up order products', 'evergreen billing setup', 'billing treatment configuration'. NOT for CPQ quoting, not for standard revenue schedules (OpportunityLineItem revenue schedule splits), not for Salesforce Revenue Cloud (Revenue Lifecycle Management), not for native Salesforce subscription billing without the Salesforce Billing managed package.",
   "file_location": "skills/admin/billing-schedule-setup",

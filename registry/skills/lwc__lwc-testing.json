@@ -54,7 +54,7 @@
     "fda69e5a851ccb8e44d9",
     "fdb625c3de0e1860a0d0"
   ],
-  "content_hash": "ae673339a4715a7e46ac33dcefae5a0ef9d237766dcee480b49cd7f63cd3f93c",
+  "content_hash": "860229ba919c2f34e8cb626fe12cf7317e89627b6287ed87d0c149b1b1d348fb",
   "dependencies": [],
   "description": "Use when setting up or reviewing Lightning Web Component unit tests with Jest, including `@salesforce/sfdx-lwc-jest`, wire adapter mocks, imperative Apex mocks, async rerender handling, and accessibility smoke checks. Triggers: 'how do I test @wire in LWC', 'Jest test is flaky', 'mock Apex in LWC test', 'flushPromises pattern'. NOT for Apex unit tests, browser end-to-end automation, or performance testing.",
   "file_location": "skills/lwc/lwc-testing",

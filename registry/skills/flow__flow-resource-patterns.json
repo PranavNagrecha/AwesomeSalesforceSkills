@@ -50,7 +50,7 @@
     "f8579d135c56bc380433",
     "f9e4f5c831bcf03e4e3c"
   ],
-  "content_hash": "1b728a76236fa8f53eeea393efe9042debfb4681237f5772ecf30467eaec7391",
+  "content_hash": "9d3ec2fb3b42707fec4d7bae1708135cbd385728ce3e2fd4211155d4afe45776",
   "dependencies": [],
   "description": "Flow resource types and when to use each: Variables, Collection Variables, Constants, Formulas, Text Templates, Choices, Stages, Picklist Choice Sets, Record Choice Sets. Covers scope, data types, and reuse patterns. NOT for decision elements. NOT for custom metadata (use admin/custom-metadata-types).",
   "file_location": "skills/flow/flow-resource-patterns",

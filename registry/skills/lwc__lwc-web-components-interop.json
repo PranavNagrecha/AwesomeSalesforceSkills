@@ -50,7 +50,7 @@
     "f88c44f94c1ac75d11f4",
     "fa7587c7659a5f3b6bb0"
   ],
-  "content_hash": "9cfc3e60aaf6fa7907ff2149e61f582e1a833b05d7ae48ffb5ef849e5503dc28",
+  "content_hash": "f7f4d96a7a665d81be19046122c2a6f4769ed011f33781bee0bcc70fa1823bf8",
   "dependencies": [],
   "description": "LWC interop with non-LWC web components: consuming third-party standard custom elements in LWC, exposing LWC as custom elements externally, Shadow DOM vs native web components, polyfills, and slotting patterns. NOT for LWC-to-LWC composition (use lwc-best-practices). NOT for Aura interop (use aura-to-lwc-migration).",
   "file_location": "skills/lwc/lwc-web-components-interop",

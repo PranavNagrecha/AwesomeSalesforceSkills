@@ -101,7 +101,7 @@
     "f57dbbb5c8f899402603",
     "fa02be5f21fff4a6a911"
   ],
-  "content_hash": "e16f167a369dc992c23d105fbe51ed12dbb7ef234d68d8999bc1dd68904c614a",
+  "content_hash": "b9e1947f498f446c90be4771f950541267b68fb0e8d81c9c01978bea916dab1a",
   "dependencies": [
     "mulesoft-salesforce-connector",
     "api-led-connectivity",

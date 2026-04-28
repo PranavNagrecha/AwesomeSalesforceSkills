@@ -99,7 +99,7 @@
     "fb04a260b2ed2b97262e",
     "fd1e9cf082ebf0e15d0b"
   ],
-  "content_hash": "03f4c1522e4cb292b5e817da844e8e8f12b9b5724ce479327213fafcf81dd46b",
+  "content_hash": "045b389a80fd439489f1401c2f846ba998ac6e1f87ccc261fb329596a87bd1c4",
   "dependencies": [],
   "description": "Use this skill when designing or documenting nonprofit fundraising lifecycle stages, donor pipeline workflows, cultivation-to-stewardship cycles, major gift solicitation sequences, or Salesforce Opportunity sales process configuration for NPSP or Nonprofit Cloud. Trigger keywords: fundraising lifecycle, donor pipeline, cultivation stage, solicitation workflow, major gift process, moves management, NPSP Opportunity stages, stewardship cycle, NPC fundraising stages. NOT for implementation of Engagement Plans, gift entry processing, payment integration, or recurring donation configuration.",
   "file_location": "skills/admin/fundraising-process-mapping",

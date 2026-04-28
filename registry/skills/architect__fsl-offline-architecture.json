@@ -56,7 +56,7 @@
     "fc9e5fb2b7b365c30eb6",
     "fd42d84b0ff51cb9e7c0"
   ],
-  "content_hash": "749a318ff2e0f118e5aecdd801cf34289ff6382919f3b878b3fb9ae45c3af0bc",
+  "content_hash": "68d7025d138b911aae201fb18702f247a2dca341b24baf59462c107b0d59ec39",
   "dependencies": [],
   "description": "Use this skill when designing FSL Mobile offline-first architecture: data priming strategy, priming limits, conflict resolution patterns, and sync failure handling. Trigger keywords: FSL offline priming, briefcase sync FSL, offline data limits, conflict resolution MERGE_ACCEPT_YOURS, ghost records FSL. NOT for LWC offline-and-mobile (generic LWC offline, covered by lwc/lwc-offline-and-mobile), standard Salesforce Mobile App offline, or Experience Cloud offline.",
   "file_location": "skills/architect/fsl-offline-architecture",

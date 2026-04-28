@@ -28,7 +28,7 @@
     "d4cbd986b1898d6cbdbf",
     "f439d84be95e6c2480bf"
   ],
-  "content_hash": "20bc4055d1c493865bd5e067bef44ccd9f55f003d2205a6a428a7e50b63c0111",
+  "content_hash": "86a3208938570583de747cfdd074382eb5a79fbbf0dea4aebf2a884d5a435bdc",
   "dependencies": [],
   "description": "Call external HTTP APIs directly from Flow using HTTP Callout actions (no Apex), handling auth, schema, and errors. NOT for complex Apex-based integration logic.",
   "file_location": "skills/flow/flow-http-callout-action",

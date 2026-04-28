@@ -28,7 +28,7 @@
     "fb5f831f7fef60986e0a",
     "fddc82e858f991127db0"
   ],
-  "content_hash": "00c5ab81872f9010e8ca9d115fb66009dd773095b6c23d7d028146ac73b7520f",
+  "content_hash": "f239ccc5fcf07680ef34c181642487390693a3dea0defcb666450cce0375da3f",
   "dependencies": [],
   "description": "Observability for Agentforce: adoption, deflection, latency, cost, quality. NOT for agent evaluation/testing (see agentforce-eval-harness) or raw platform-event monitoring.",
   "file_location": "skills/agentforce/agent-metric-dashboards",

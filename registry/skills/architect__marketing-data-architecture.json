@@ -105,7 +105,7 @@
     "f549d1b1217bc3f5702f",
     "f823eef67ef4711890a3"
   ],
-  "content_hash": "acb1db132d8945c0be6405c675e1a1357da08b796e561dcba1e74f8e25541c53",
+  "content_hash": "2efa6ed5943ac6c37464ba8a2205826c7448b9571a258fe4079170e8116e42e8",
   "dependencies": [],
   "description": "Use this skill when designing or evaluating the overall Marketing Cloud data architecture \u2014 covering Data Extension schema design (sendable vs. non-sendable), Contact Key/SubscriberKey linkage across All Subscribers and attribute DEs, Data Relationship definitions for AMPscript Lookup and Query Activity joins, and CRM-to-MC data flow patterns (MC Connect Synchronized DEs vs. SFTP file imports). Trigger keywords: MC data model, relational data extensions, CRM to Marketing Cloud data flow, Contact Key linkage, data architecture, sendable DE design, normalized DE model, SFTP import strategy, synchronized data extension architecture. NOT for CRM (Sales/Service Cloud) custom object or data model design, NOT for individual DE field-level troubleshooting, NOT for Marketing Cloud Connect sync failure diagnosis.",
   "file_location": "skills/architect/marketing-data-architecture",

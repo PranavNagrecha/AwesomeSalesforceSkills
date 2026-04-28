@@ -111,7 +111,7 @@
     "fc0081095a3753c3353f",
     "ffc13ee29d21c95f73b4"
   ],
-  "content_hash": "3e552bfd41fe4d0e9edd2c7bb422517d431b482179678c3caf34e2a103ecc4a1",
+  "content_hash": "04a397d417fe4c0cfa264c7711e09897ecbb21a60465028a1cbdfc61b92dc94d",
   "dependencies": [],
   "description": "Use when planning a new org build for scale, auditing an existing org for governor limit exposure, or investigating a limit-related incident. Trigger phrases: 'org is hitting governor limits', 'how many custom objects can we have', 'will our data volume cause performance issues', 'batch job keeps failing with limit errors', 'planning for 10 million records', 'platform event throughput limits', 'SOQL limit exceeded in production'. NOT for code-level optimization (use apex-cpu-and-heap-optimization), NOT for individual SOQL query tuning (use apex/soql-optimization), NOT for Batch Apex authoring mechanics (use apex/batch-apex).",
   "file_location": "skills/architect/limits-and-scalability-planning",

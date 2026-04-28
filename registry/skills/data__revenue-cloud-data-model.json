@@ -58,7 +58,7 @@
     "f915a8f0b34f8d85398e",
     "fc1ecd872bbdd9936fec"
   ],
-  "content_hash": "4904d663203535196c936d3b48acccd5c9cd3fb5b3d44e4c44694c58057d6c29",
+  "content_hash": "cadd27c4a430fc6c1ebccf8c67f0b17618025d449b6cff1578ded726d28f86d6",
   "dependencies": [],
   "description": "Use this skill when querying, integrating with, or troubleshooting the native Salesforce Revenue Cloud (RLM) data model \u2014 including BillingSchedule, BillingScheduleGroup, Invoice, InvoiceLine, Payment, PaymentLineInvoice, and FinanceTransaction standard objects and their relationships. Triggers on: Revenue Cloud object relationships, BillingSchedule data model, native Revenue Cloud SOQL, FinanceTransaction object, Invoice object Revenue Cloud, PaymentLineInvoice relationship. NOT for the legacy Salesforce Billing managed package data model (blng__BillingSchedule__c, blng__Invoice__c \u2014 use billing-data-reconciliation skill for that), not for CPQ data model (SBQQ__* objects).",
   "file_location": "skills/data/revenue-cloud-data-model",

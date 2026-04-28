@@ -54,7 +54,7 @@
     "f05cf2f396a33fabe2fb",
     "fc0f3f8beda8ccfcf9fb"
   ],
-  "content_hash": "cb46ba657cc62ccb7d7c7ed620ca55e15039ca56e78c6c35fa5dc60fb19b7785",
+  "content_hash": "30e94290bbab78094afb113491be642dd8f740f3a7184c7205c6a034987bd2de",
   "dependencies": [],
   "description": "Use this skill when building Salesforce reports and dashboards on FSL operational data: job completion metrics, travel time analytics, first-time fix rate, utilization, and service performance. Trigger keywords: FSL reporting, ServiceAppointment reports, ActualDuration ActualTravelTime, first-time fix rate custom field, FSL utilization metrics. NOT for CRM Analytics / Field Service Intelligence (Einstein Analytics), ServiceReport PDF generation, or non-FSL service reporting.",
   "file_location": "skills/data/fsl-reporting-data-model",
