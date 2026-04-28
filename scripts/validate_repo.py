@@ -45,6 +45,7 @@ from pipelines.validators import (
     ValidationIssue,
     validate_frontmatter,
     validate_knowledge_source,
+    validate_skill_authoring_style,
     validate_skill_registry_record,
     validate_skill_structure,
 )
@@ -111,6 +112,7 @@ def validate_one_skill(skill_dir: Path, root: Path) -> SkillRecord:
     issues: list[ValidationIssue] = []
     issues.extend(validate_skill_structure(skill_dir))
     issues.extend(validate_frontmatter(root, skill_path))
+    issues.extend(validate_skill_authoring_style(skill_dir))
 
     skill_id = ""
     name = ""
