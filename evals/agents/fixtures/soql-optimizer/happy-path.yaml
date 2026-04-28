@@ -1,0 +1,38 @@
+eval:
+  id: soql-optimizer__happy-path
+  agent: soql-optimizer
+  mode: single
+  priority: P0
+  last_verified: 2026-04-28
+  description: >
+    Scan a single Apex class with four canonical SOQL anti-patterns:
+    query-in-loop on Contact, select-star on Account, no-security on
+    both queries, missing-limit on the top-level Account query. Agent
+    should rank query-in-loop as P0, propose lifting it out into a
+    bulkified Set<Id>+Map lookup, and cite data/soql-query-optimization
+    plus the BaseSelector template. With expected_record_count well into
+    LDV territory, severities should escalate.
+
+inputs:
+  scope_path: evals/agents/fixtures/soql-optimizer/samples/ContactRollupService_Naive.cls
+  source_path: evals/agents/fixtures/soql-optimizer/samples/ContactRollupService_Naive.cls
+  expected_record_count: 2000000
+
+org_stub: {}
+
+expect:
+  confidence: MEDIUM
+  must_cite_any_of:
+    - { type: skill, id: data/soql-query-optimization }
+    - { type: template, id: apex/BaseSelector.cls }
+    - { type: skill, id: apex/apex-security-patterns }
+  process_observations:
+    min_count: 0
+    categories_present_any_of:
+      - healthy
+      - concerning
+      - ambiguous
+      - suggested_followup
+  followups_include_any_of:
+    - apex-refactorer
+    - security-scanner

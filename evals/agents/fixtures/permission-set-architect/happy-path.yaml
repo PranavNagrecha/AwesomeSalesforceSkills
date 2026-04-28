@@ -1,0 +1,55 @@
+eval:
+  id: permission-set-architect__happy-path
+  agent: permission-set-architect
+  mode: design
+  priority: P0
+  last_verified: 2026-04-28
+  description: >
+    Design a Permission Set Group for an SDR persona. Persona is unambiguous
+    (job + objects + features + sensitivity), no near-match Feature PSes
+    exist in the org, and no admin-grade perms are implied. Agent should
+    return a clean PSG composition (App + Object + Feature PSes), emit
+    metadata stubs per templates/admin/permission-set-patterns.md, name
+    everything per templates/admin/naming-conventions.md, and produce a
+    deployment order. Confidence ceiling MEDIUM — fixture omits a real
+    org probe so the "near-match Feature PS" check is library-only.
+
+inputs:
+  mode: design
+  target_org_alias: uat-fixture
+  persona: >
+    SDR in North America, owns Leads + Opportunities, uses Sales Console,
+    needs Reports/Dashboards (read-only on non-personal data), cannot
+    export reports, no access to Cases or Knowledge.
+
+org_stub:
+  org_metadata:
+    org_id: 00Dxxx
+    edition: Enterprise
+    api_version: "63.0"
+    sandbox: true
+  permission_sets:
+    feature_ps_matches: []
+    object_ps_matches: []
+  user_metrics:
+    active_users: 240
+    integration_users: 4
+    psg_count: 6
+
+expect:
+  confidence: MEDIUM
+  must_cite_any_of:
+    - { type: skill, id: admin/permission-set-architecture }
+    - { type: skill, id: security/permission-set-groups-and-muting }
+    - { type: template, id: admin/permission-set-patterns.md }
+  process_observations:
+    min_count: 1
+    categories_present_any_of:
+      - healthy
+      - concerning
+      - ambiguous
+      - suggested_followup
+  followups_include_any_of:
+    - sharing-audit-agent
+    - integration-catalog-builder
+    - field-impact-analyzer

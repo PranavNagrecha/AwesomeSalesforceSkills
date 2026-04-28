@@ -1,0 +1,35 @@
+eval:
+  id: security-scanner__happy-path
+  agent: security-scanner
+  mode: single
+  priority: P0
+  last_verified: 2026-04-28
+  description: >
+    Scan a single Apex class carrying five canonical violations:
+    no-sharing-keyword, callout-without-named-credential,
+    hardcoded-secret, no-flsd-on-dml, soql-no-security. Agent should
+    enumerate each finding with severity P0/P1, redact the secret value
+    in output, cite apex/apex-security-patterns and SecurityUtils, and
+    populate dimensions_compared with at least apex-crud-fls,
+    callout-auth, sharing-posture, and secret-leakage.
+
+inputs:
+  scope_path: evals/agents/fixtures/security-scanner/samples/AccountSyncService_Insecure.cls
+  source_path: evals/agents/fixtures/security-scanner/samples/AccountSyncService_Insecure.cls
+  severity_threshold: P2
+
+org_stub: {}
+
+expect:
+  confidence: MEDIUM
+  must_cite_any_of:
+    - { type: skill, id: apex/apex-security-patterns }
+    - { type: template, id: apex/SecurityUtils.cls }
+    - { type: skill, id: integration/named-credentials-setup }
+  process_observations:
+    min_count: 0
+    categories_present_any_of:
+      - healthy
+      - concerning
+      - ambiguous
+      - suggested_followup
