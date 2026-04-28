@@ -308,6 +308,14 @@ def validate_skill_authoring_style(path: Path) -> list[ValidationIssue]:
       `references/well-architected.md` exists
     - § 6.6 — verbatim paragraph appearing in both SKILL.md and
       `references/gotchas.md`
+
+    Also emits WARN-level findings for:
+
+    - § 6.2 — runs of 4+ consecutive `- **X** — text` bullets that
+      should be tabularized. Mirrors `scripts/_migrations/detect_parallel_prose.py`
+      (MIN_RUN=4, MAX_MEDIAN_BULLET_CHARS=220, exempts `## Related Skills`).
+      WARN today; promotion to ERROR is a separate follow-up after the
+      corpus stays clean for a few weeks.
     """
     issues: list[ValidationIssue] = []
     skill_md = path / "SKILL.md"
@@ -405,6 +413,96 @@ def validate_skill_authoring_style(path: Path) -> list[ValidationIssue]:
                     "(see standards/skill-authoring-style.md § 6.6)",
                 )
             )
+
+    issues.extend(_validate_parallel_prose(skill_md, skill_text))
+
+    return issues
+
+
+# § 6.2 detector — mirrors scripts/_migrations/detect_parallel_prose.py.
+# 4 is the threshold where a table starts paying off visually; bullets
+# longer than 220 chars are paragraph-prose, not parallel-list items.
+_PARALLEL_BULLET_RE = re.compile(r"^\s*[-*]\s+\*\*([^*]+)\*\*\s*[:\u2014\-]")
+_HEADING_RE = re.compile(r"^(#{1,6})\s+(.+?)\s*$")
+_FENCE_RE = re.compile(r"^\s*```")
+_EXEMPT_HEADING_RE = re.compile(r"^#{2,6}\s+Related Skills\b", re.IGNORECASE)
+_PARALLEL_MIN_RUN = 4
+_PARALLEL_MAX_MEDIAN_CHARS = 220
+
+
+def _median_int(values: list[int]) -> float:
+    if not values:
+        return 0.0
+    s = sorted(values)
+    mid = len(s) // 2
+    if len(s) % 2:
+        return float(s[mid])
+    return (s[mid - 1] + s[mid]) / 2
+
+
+def _validate_parallel_prose(skill_md: Path, text: str) -> list[ValidationIssue]:
+    """Find runs of 4+ consecutive bold-prefix bullets and warn — § 6.2."""
+    lines = text.split("\n")
+    body_start = 0
+    if lines and lines[0].strip() == "---":
+        for i in range(1, len(lines)):
+            if lines[i].strip() == "---":
+                body_start = i + 1
+                break
+
+    issues: list[ValidationIssue] = []
+    in_fence = False
+    current_heading = ""
+    run_start = -1
+    run_lengths: list[int] = []
+
+    def flush(end_line: int) -> None:
+        if (
+            len(run_lengths) >= _PARALLEL_MIN_RUN
+            and not _EXEMPT_HEADING_RE.match(current_heading)
+            and _median_int(run_lengths) <= _PARALLEL_MAX_MEDIAN_CHARS
+        ):
+            issues.append(
+                ValidationIssue(
+                    "WARN",
+                    str(skill_md),
+                    f"L{run_start + 1}\u2013L{end_line + 1}: {len(run_lengths)} consecutive "
+                    "`- **X** \u2014 ...` bullets should be a table "
+                    "(see standards/skill-authoring-style.md \u00a7 6.2)",
+                )
+            )
+        run_lengths.clear()
+
+    for idx in range(body_start, len(lines)):
+        line = lines[idx]
+        if _FENCE_RE.match(line):
+            if run_lengths:
+                flush(idx - 1)
+                run_start = -1
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            if run_lengths:
+                flush(idx - 1)
+                run_start = -1
+            continue
+        if _HEADING_RE.match(line):
+            if run_lengths:
+                flush(idx - 1)
+                run_start = -1
+            current_heading = line.strip()
+            continue
+        if _PARALLEL_BULLET_RE.match(line):
+            if not run_lengths:
+                run_start = idx
+            run_lengths.append(len(line.rstrip()))
+        else:
+            if run_lengths:
+                flush(idx - 1)
+                run_start = -1
+
+    if run_lengths:
+        flush(len(lines) - 1)
 
     return issues
 
