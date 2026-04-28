@@ -23,18 +23,16 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # API Versioning Strategy
 
 Custom Apex REST endpoints should be versioned from day one. Two accepted patterns: URI versioning (`/services/apexrest/v1/orders`) or header versioning (`Accept: application/vnd.myco.v1+json`). URI is simpler and more debuggable. This skill defines the class structure, the deprecation sunset policy, and the monitoring required to deprecate safely.
 
-## When to Use
+## Adoption Signals
 
 Before publishing a new endpoint or when breaking changes are needed on an existing one. Not for internal-only endpoints with known single consumer.
-
-Typical trigger phrases that should route to this skill: `apex rest versioning`, `deprecate salesforce api endpoint`, `backward compatible api`, `/services/apexrest version`.
 
 ## Recommended Workflow
 

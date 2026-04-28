@@ -22,18 +22,19 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # OmniStudio Multi-Language
 
 OmniStudio stores UI labels inside its JSON; translation happens via a Language Data file per script. FlexCards similarly support labels via the DataRaptor data source. This skill describes the label-extraction workflow, the process for re-exporting Language Data JSONs after every script edit, layout checks for longer translated strings, RTL preview steps, and verifies that number/date formatting respects user locale so a single OmniScript works for every active language without hard-coded English leaking through.
 
-## When to Use
+## Adoption Signals
 
 Any OmniStudio deployment for a multi-locale business.
 
-Typical trigger phrases that should route to this skill: `translate omniscript`, `omnistudio multilingual`, `flexcard language`, `translate dataraptor labels`.
+- Required when OmniScript step labels, FlexCard text blocks, or DataRaptor field labels must render per-user locale.
+- Required when translation review is governed and translators need exportable artifacts rather than in-org editing.
 
 ## Recommended Workflow
 

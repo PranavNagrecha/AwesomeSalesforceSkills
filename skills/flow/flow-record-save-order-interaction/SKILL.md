@@ -35,7 +35,7 @@ updated: 2026-04-23
 
 # Flow & Save Order Interaction
 
-## When To Use
+## Diagnostic Symptoms
 
 - Multiple automations fire on the same object and you need to predict
   outcome.
@@ -44,7 +44,7 @@ updated: 2026-04-23
   trigger vs an after-save Flow.
 - Diagnosing a recursion loop crossing triggers and flows.
 
-## When NOT To Use
+## Out of Scope
 
 - Plain CRUD with a single automation — there is nothing to order.
 - Platform-event-triggered or schedule-triggered flows — they are not

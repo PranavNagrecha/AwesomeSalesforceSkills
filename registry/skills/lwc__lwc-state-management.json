@@ -3,6 +3,7 @@
   "chunk_ids": [
     "08fed2861398706058e5",
     "0e6e1722405d88edef98",
+    "0f48ab8de3cc0eea879e",
     "13d7ebddf5e22d55ad0d",
     "2362a2c9148854a649dc",
     "30afe07fe0aee7f3c56b",
@@ -16,7 +17,6 @@
     "7218d4ec0a3180f84e67",
     "7cbfbe35ca35a19df2f2",
     "a774b9c9631bc4aabe79",
-    "b0a4d7faba70607bc08a",
     "c3cb137eae1001f32250",
     "c477568070ee629970be",
     "d2ae7790d523c45dddaf",
@@ -28,7 +28,7 @@
     "eb07ff015d8d9a4748c8",
     "ee138321efa00b806ab1"
   ],
-  "content_hash": "93b5eb6f984dd8fe60c304b47ca5be9c93b64bbd9455df35f22e991120594f85",
+  "content_hash": "fa842dbaee99a5f95f9faf07d450a5e00de6019710085ee95f363e12037c18c8",
   "dependencies": [],
   "description": "Share state across LWCs using pub/sub, Lightning Message Service, @wire, and reactive stores. NOT for in-component reactivity.",
   "file_location": "skills/lwc/lwc-state-management",
@@ -65,7 +65,7 @@
   "templates": [
     "skills/lwc/lwc-state-management/templates/lwc-state-management-template.md"
   ],
-  "updated": "2026-04-17",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

@@ -26,18 +26,19 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Agent Deployment Checklist
 
 A single checklist is the artifact that prevents post-deployment incidents. Organized into five blocks: functional tests green, adversarial tests green, observability live, rollback rehearsed, stakeholders signed-off.
 
-## When to Use
+## Adoption Signals
 
-Every production activation; every material config change (new Invocable, new channel, new persona).
+Every production activation; every material config change (new Invocable, new channel, new persona). Use this skill any time someone asks whether the agent is ready for production.
 
-Typical trigger phrases that should route to this skill: `is my agent ready for production`, `agentforce go-live checklist`, `what sign-offs does agent deploy need`, `agent rollback rehearsal`.
+- Required for any change that adds a new tool to the agent's toolbox or expands record-access scope.
+- Run before enabling a new channel (Service Cloud, Slack, Experience Cloud) — channel context changes the prompt-injection threat model.
 
 ## Recommended Workflow
 

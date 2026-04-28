@@ -23,18 +23,19 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # LWC Virtualized Lists
 
 Rendering 10,000 DOM nodes crashes mobile and lags desktop. Virtualization renders only ~2 screens worth of rows and swaps them as the viewport scrolls. `lightning-datatable` has built-in infinite scroll; for custom layouts use an IntersectionObserver-based pattern with fixed row height. This skill covers both paths plus the accessibility requirements (aria-rowcount, keyboard reachability) that are easy to miss when optimizing for performance.
 
-## When to Use
+## Adoption Signals
 
 Lists beyond 500 rows or tables beyond 1000. Not for simple short lists.
 
-Typical trigger phrases that should route to this skill: `lwc slow list 10000 rows`, `virtualize lwc`, `lightning datatable performance`, `infinite scroll lwc`.
+- Required when initial render time exceeds 500ms or the user reports janky scroll on lower-end devices.
+- Required for tables with computed columns (formulas, joins) where each row's render cost compounds.
 
 ## Recommended Workflow
 

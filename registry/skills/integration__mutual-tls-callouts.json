@@ -6,7 +6,6 @@
     "17416e4bad7d7e46d23d",
     "22c45ab3dde8c19e87e0",
     "39aeeb20b76482c9b0a0",
-    "40643e1e14e1d12cc554",
     "42df230c77ce289a002b",
     "48c622ecbaa3313f473e",
     "4b25bc2284f2f47a8945",
@@ -21,6 +20,7 @@
     "958052bfd182e7c0934f",
     "99f1c979f68d5af195b0",
     "b50dc6afea4946884eec",
+    "bc5c6eff05e0c5caff0e",
     "c58cac9adb6486daadf7",
     "ca4dc4cec5e3fbce1e9a",
     "cb23d7c195a75fe69129",
@@ -28,7 +28,7 @@
     "d50d6e0acc40304faeff",
     "d8325a5c192caa73e701"
   ],
-  "content_hash": "375992af606da86bd14fc89ea12d43a03b7db17b1313bea955723b66bb8bbca7",
+  "content_hash": "acfc6374d65ae5cca00c30a99760f579ab4ff2066cf443735cd036aa93d035d5",
   "dependencies": [],
   "description": "Configure mTLS for Apex callouts using Named Credentials with client certificate authentication. NOT for standard TLS or API key auth.",
   "file_location": "skills/integration/mutual-tls-callouts",
@@ -66,7 +66,7 @@
   "templates": [
     "skills/integration/mutual-tls-callouts/templates/mutual-tls-callouts-template.md"
   ],
-  "updated": "2026-04-17",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

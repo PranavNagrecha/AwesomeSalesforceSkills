@@ -9,6 +9,7 @@
     "30d009e643c62448a765",
     "499f6ec30481713ab94a",
     "4ecf8457a2e5a4ae9933",
+    "5325e2df04ecf8f84409",
     "5da5cdf4389a65ecc90c",
     "60a172420221ac6bce5d",
     "732ef821a8d11ac4e75f",
@@ -22,13 +23,12 @@
     "b851ad0a0ccc917ee971",
     "b9448d2d930620002aa2",
     "ccaa7981dadf65cbf15a",
-    "d129761530caa766d5be",
     "d40a4d57eabbb100f1f5",
     "e180c76d5da8fa419943",
     "e70011c9b516cc19310f",
     "eb8dc28c14f21a54ab95"
   ],
-  "content_hash": "6ec6bb54561895fca63570e3c90f43cf3961ed819f90f9969b9dcb16a8da14f0",
+  "content_hash": "51ed91484188184b027580e03c66c7c0ac3f98a76c1fd18d8123b105b0d19a04",
   "dependencies": [],
   "description": "Enforce change quality via PR templates, required reviews, metadata ownership, and automated checks. NOT for branching model selection.",
   "file_location": "skills/devops/pr-policy-templates",
@@ -67,7 +67,7 @@
   "templates": [
     "skills/devops/pr-policy-templates/templates/pr-policy-templates-template.md"
   ],
-  "updated": "2026-04-17",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

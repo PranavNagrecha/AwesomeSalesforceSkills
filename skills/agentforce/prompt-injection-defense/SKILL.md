@@ -26,18 +26,19 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Prompt Injection Defense
 
 Agentforce uses the Einstein Trust Layer for dynamic grounding, masking, and toxicity filtering — but topic instructions and Invocable action scopes still need explicit hardening. Injection attempts include: instruction override, role-reversal, system-prompt leaks, tool-use coercion, and data exfiltration via crafted record content. This skill builds a reusable adversarial test suite and maps findings to concrete guardrails.
 
-## When to Use
+## Adoption Signals
 
 Pre-production review for any Agentforce agent that (a) ingests user-controlled text, (b) has write access via Invocables, or (c) is exposed to external/Experience Cloud users. Required for Service agents, Sales agents with Data Cloud grounding, and any custom channel.
 
-Typical trigger phrases that should route to this skill: `red-team my Agentforce agent`, `can my agent be jailbroken`, `how do I prevent prompt injection`, `agent revealed data from another case`.
+- Required when stakeholders ask whether the agent can be jailbroken — produce a documented adversarial-test pass before exposure.
+- Required for any agent that exposes Invocable actions with side effects (DML, callouts, record sharing).
 
 ## Recommended Workflow
 

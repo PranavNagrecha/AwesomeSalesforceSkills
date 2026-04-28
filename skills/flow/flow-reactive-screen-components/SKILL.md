@@ -22,18 +22,19 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Flow Reactive Screen Components
 
 Reactive screens let one component's output drive another without navigating to a new screen. Use `{!Component_API_Name.value}` as a reference in any downstream component's attribute — Flow re-renders dependents on change. This skill shows reactive formulas, dependent picklists, and common pitfalls.
 
-## When to Use
+## Adoption Signals
 
 Any screen flow that currently uses multiple Next clicks to update displayed values.
 
-Typical trigger phrases that should route to this skill: `reactive screen flow`, `flow screen update without next`, `dependent picklist reactive`, `flow live formula`.
+- Reactive when a downstream picklist must filter on the current value of an upstream input.
+- Reactive when conditional visibility, formula recalculation, or running totals must update without page navigation.
 
 ## Recommended Workflow
 

@@ -22,18 +22,16 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # OmniStudio Field Mapping Governance
 
 A DataRaptor breaks silently when a source field is renamed or removed. This skill sets up a dependency report (custom metadata + Tooling API) that lists every field each DR/IP references and runs a CI check on every metadata change, plus a naming standard, a monthly orphan-DR cleanup, and a versioning discipline that keeps prior DR versions active while consumers migrate so governance is a living process, not a one-off audit.
 
-## When to Use
+## Adoption Signals
 
 Orgs with >20 DataRaptors; required for governance maturity.
-
-Typical trigger phrases that should route to this skill: `dataraptor field mapping broken`, `omnistudio dependency tracking`, `dataraptor field renamed`, `omnistudio governance`.
 
 ## Recommended Workflow
 

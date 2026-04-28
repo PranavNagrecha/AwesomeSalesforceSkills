@@ -23,18 +23,19 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # API Governance and Rate Limits
 
 Salesforce orgs have a 24-hour API allocation (varies by license). Hitting it halts all integrations. This skill builds a governance dashboard (API usage by consumer), a throttling pattern for heavy consumers, and an escalation runbook when usage trends toward limits.
 
-## When to Use
+## Adoption Signals
 
 Orgs with 10+ integrations or periodic '24-hour limit exceeded' incidents.
 
-Typical trigger phrases that should route to this skill: `salesforce api limit exceeded`, `request limit exceeded 24 hour`, `rate limit integration user`, `api allocation dashboard`.
+- Required when a single integration consumes more than 30% of the daily API allocation.
+- Required before contracting a new integration partner — establishes per-consumer quotas and the alerting baseline.
 
 ## Recommended Workflow
 

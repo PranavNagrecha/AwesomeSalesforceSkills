@@ -23,18 +23,19 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Flow HTTP Callout Action
 
 Flow HTTP Callouts (GA) let admins call GET/POST/PATCH endpoints without Apex. You define the action against a Named Credential, supply a sample response for schema, and map inputs/outputs in flow variables. This skill covers auth, schema inference, pagination, and error handling.
 
-## When to Use
+## Adoption Signals
 
 Low-volume admin-driven integrations (weather lookup, address verification, single-record enrichment). Not for high-volume or complex transactions.
 
-Typical trigger phrases that should route to this skill: `flow http callout`, `call rest api from flow`, `flow without apex integration`, `named credential flow callout`.
+- Prefer **<200 calls/day**; switch to Apex callouts above that threshold to escape per-Flow concurrency limits.
+- Required when the integration must run inside a screen flow without an admin-coded Apex dependency.
 
 ## Recommended Workflow
 

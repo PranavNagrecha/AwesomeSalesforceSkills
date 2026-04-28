@@ -24,18 +24,19 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # LWC State Management
 
 LWC has four state-sharing mechanisms: (1) parent→child via public @api properties, (2) @wire for server-synced data, (3) Lightning Message Service for sibling LWCs/Aura, (4) custom events for child→parent. This skill picks the right mechanism based on component distance and persistence requirements, and shows why legacy pubsub and heavy external stores (Redux, MobX) should be avoided in favor of these native primitives plus tiny singleton signals.
 
-## When to Use
+## Adoption Signals
 
 Any time two non-parent/child LWCs must stay in sync. Not for tiny local state.
 
-Typical trigger phrases that should route to this skill: `lwc shared state`, `lightning message service`, `pubsub lwc`, `lwc global store`.
+- Lightning Message Service (LMS) when sibling components on the same record page must coordinate selection.
+- Pubsub when components live across the page hierarchy and an event must traverse Aura/LWC boundaries.
 
 ## Recommended Workflow
 

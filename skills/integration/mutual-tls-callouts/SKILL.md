@@ -23,18 +23,16 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Mutual TLS Callouts
 
 Mutual TLS requires both sides to present certificates. Salesforce supports mTLS callouts via a client certificate stored in Setup → Certificate and Key Management, referenced from a Named Credential. This skill sets up the cert, the Named Credential, and a minimal Apex caller that proves the connection before shipping.
 
-## When to Use
+## Adoption Signals
 
 Partner APIs that mandate mTLS (banks, healthcare EDI, some government systems).
-
-Typical trigger phrases that should route to this skill: `mtls salesforce callout`, `client certificate apex`, `mutual tls named credential`, `jks keystore apex`.
 
 ## Recommended Workflow
 

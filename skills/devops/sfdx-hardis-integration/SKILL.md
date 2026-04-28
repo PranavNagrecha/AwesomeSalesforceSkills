@@ -23,18 +23,19 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # sfdx-hardis Integration
 
 sfdx-hardis is an open-source sfdx plugin that wraps org monitoring, deploy validation, and simpler CLI ergonomics. It includes prebuilt GitHub Actions / GitLab CI templates, a daily monitoring job that diffs metadata, and a 'smart deploy' flow.
 
-## When to Use
+## Adoption Signals
 
 Teams without Copado / Gearset budget who want a battle-tested open-source stack. Not for teams already deeply invested in DevOps Center.
 
-Typical trigger phrases that should route to this skill: `sfdx hardis setup`, `salesforce monitoring open source`, `cicd for salesforce free`, `hardis commands`.
+- Required when org monitoring (license drift, security baselines, metadata diffs) must run on a self-hosted CI runner.
+- Required when the team needs scriptable hooks (pre-deploy data backup, post-deploy smoke tests) that hosted vendors don't expose.
 
 ## Recommended Workflow
 

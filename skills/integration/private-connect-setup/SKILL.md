@@ -23,18 +23,19 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Private Connect Setup
 
 Private Connect (Hyperforce only) peers your Salesforce org with your AWS VPC or Azure VNet so callouts and incoming traffic never traverse the public internet. It is configured via Setup → Private Connect with a peering ID from your cloud provider.
 
-## When to Use
+## Adoption Signals
 
 Hyperforce orgs where compliance/latency requires private networking to partner endpoints.
 
-Typical trigger phrases that should route to this skill: `private connect aws salesforce`, `privatelink salesforce`, `private network callout`, `hyperforce private connect`.
+- Required when partner traffic cannot transit the public internet for HIPAA, PCI, or sovereign-cloud reasons.
+- Required when callout latency from public egress exceeds SLA and the partner exposes a PrivateLink endpoint.
 
 ## Recommended Workflow
 

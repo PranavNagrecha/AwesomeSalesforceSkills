@@ -4,7 +4,7 @@
     "01b3810954c7cb9c3e58",
     "05ed790254fcc1c65835",
     "11de1fe7ca8bac3cb668",
-    "132faaa3f31ff03daef1",
+    "1429f229882838b1696e",
     "19e4c25c298824a23cab",
     "1bd33cb35024c774da27",
     "1c3da7d3abb20c0f9ec1",
@@ -28,7 +28,7 @@
     "e51b6bc7fc22920fdfc7",
     "ea6e94e494ca8901f1e2"
   ],
-  "content_hash": "34e3cf397ea8785d32fb4ecea1d3b426b95823136ec982b2d5c4acbff9e65b18",
+  "content_hash": "289e75128ccd12fd6cc884a1e580f6e61aa06865019a91bf11e0c791c1bd7966",
   "dependencies": [],
   "description": "Design versioning for custom Apex REST endpoints: URI versioning, backward compatibility, deprecation sunset. NOT for consuming external APIs.",
   "file_location": "skills/integration/api-versioning-strategy",
@@ -66,7 +66,7 @@
   "templates": [
     "skills/integration/api-versioning-strategy/templates/api-versioning-strategy-template.md"
   ],
-  "updated": "2026-04-17",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

@@ -24,18 +24,16 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Webhook Signature Verification
 
 Inbound webhooks are unauthenticated by default — anyone with your endpoint URL can POST. HMAC signature verification with a shared secret is the industry-standard defense. This skill implements Stripe-style HMAC SHA-256 verification with timing-safe comparison in Apex and uses Protected Custom Metadata for the secret.
 
-## When to Use
+## Adoption Signals
 
 Any inbound webhook from an external SaaS (Stripe, GitHub, Twilio, Slack, Zapier).
-
-Typical trigger phrases that should route to this skill: `webhook hmac verification apex`, `stripe webhook salesforce`, `verify signature inbound callout`, `hmac sha256 apex`.
 
 ## Recommended Workflow
 

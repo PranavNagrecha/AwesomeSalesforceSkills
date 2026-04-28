@@ -5229,7 +5229,7 @@
     {
       "query": "flow publish platform event",
       "domain": "flow",
-      "expected_skill": "flow/flow-and-platform-events",
+      "expected_skill": "flow/flow-platform-events-integration",
       "top_k": 3
     },
     {
@@ -5295,7 +5295,7 @@
     {
       "query": "dataraptor chain",
       "domain": "omnistudio",
-      "expected_skill": "omnistudio/omnistudio-asynchronous-data-operations",
+      "expected_skill": "omnistudio/dataraptor-transform-optimization",
       "top_k": 3
     },
     {
@@ -5307,7 +5307,7 @@
     {
       "query": "integration procedure cache",
       "domain": "omnistudio",
-      "expected_skill": "omnistudio/omnistudio-cache-strategies",
+      "expected_skill": "omnistudio/integration-procedure-cacheable-patterns",
       "top_k": 3
     },
     {

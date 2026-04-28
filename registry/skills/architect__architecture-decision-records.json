@@ -9,13 +9,13 @@
     "15069f59196c636cac78",
     "153e2f32ea6286add2b2",
     "19c578ae99ffb3ed2f5f",
+    "1c8d45b55315870897f3",
     "22d967bd29e757bccb45",
     "2be9d217b489ee222641",
     "31efdafbca89f1da4f70",
     "33d84b828a3aa2e2a25a",
     "3819a68abc1fe7197c20",
     "3a1f6ca3b332406e7687",
-    "3c2fbb02e174bf9a6013",
     "3cb7f1234759f412a3f2",
     "3e80bcb974ad34e21cf5",
     "440ba9acc38fe3afcc1a",
@@ -54,7 +54,7 @@
     "cc15d774c1e57562ec49",
     "cdcf17b6fe11c6e5c54a",
     "d577b8ce82bbbdfb7279",
-    "dc531e90c935c42043f5",
+    "dc3312759881fa219044",
     "de03942b038a04b8e61d",
     "e9894709225f9847cfa9",
     "eaf7a40fca09aaccc39b",
@@ -64,7 +64,7 @@
     "fb5dfae6d4a868f6c556",
     "fc7398868667701c0248"
   ],
-  "content_hash": "740e077f1a4ffd733aa3100c5f0c9eef84c7816b904ac5aaca3c3cfc67fe9930",
+  "content_hash": "614408dd15f71fcba76bfea45b2c5788551aa6793caf444ee4f63f5c95b2fd4f",
   "dependencies": [
     "architect/solution-design-patterns"
   ],

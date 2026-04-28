@@ -15,8 +15,8 @@
     "444ed50f8b674fda3fda",
     "44ff47f14ed54ef87449",
     "5069de71bdc2d7b8d442",
-    "5c291521f3b3f123a7a6",
     "679fb9b3876e8f42946e",
+    "7b14e527c01006abba73",
     "85bf866d5f21b5f31826",
     "8e9c978c101157a81e23",
     "8f318dc746dd7011c1a6",
@@ -28,7 +28,7 @@
     "c6f804a6461fa748128d",
     "d1e4c83546276f9df12a"
   ],
-  "content_hash": "e27d7170a35777d8bf2499a7e6847d96387d9f00f025f051287caaece55a8fc6",
+  "content_hash": "8d7ee63f93c0fd990849438f315b0ff94a88db7aaf30fb0a5088429f6f63c90c",
   "dependencies": [],
   "description": "Red-team an Agentforce agent against prompt-injection and jailbreak attacks; codify test cases and guardrails. NOT for general application-security reviews outside the agent boundary.",
   "file_location": "skills/agentforce/prompt-injection-defense",
@@ -67,7 +67,7 @@
   "templates": [
     "skills/agentforce/prompt-injection-defense/templates/prompt-injection-defense-template.md"
   ],
-  "updated": "2026-04-17",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

@@ -18,6 +18,7 @@
     "95ca3f77f868c4829545",
     "a08b1045f9b8edbba79a",
     "be30efb0a58568e799cc",
+    "ca2854bd9d769a5b001d",
     "ca9e69f829c201138cf5",
     "ccc6f1357fa1dc21d4a1",
     "d4f3df47f4b7b56f22ab",
@@ -25,10 +26,9 @@
     "de544e43355a3e343930",
     "e45d2aca90c91fe6307f",
     "e760750d8edba3b26f35",
-    "f2804401eeae82fd71d4",
-    "f9bc2875f5f4e734c354"
+    "f2804401eeae82fd71d4"
   ],
-  "content_hash": "a2f566a43cfad045632cea967334308923e64b16645cdf80ddc8757ff4e1c5e1",
+  "content_hash": "26125b12b71127cffe974afa1f545e08a675eab5512e7a4ee85f11f2aa9f38f3",
   "dependencies": [],
   "description": "Adopt sfdx-hardis for org monitoring, CI pipelines, and release automation. NOT for writing plugins to sfdx-hardis itself.",
   "file_location": "skills/devops/sfdx-hardis-integration",
@@ -67,7 +67,7 @@
   "templates": [
     "skills/devops/sfdx-hardis-integration/templates/sfdx-hardis-integration-template.md"
   ],
-  "updated": "2026-04-17",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

@@ -5,9 +5,9 @@
     "0714f97150ed3d6ca582",
     "18ba67b7b2fa80a5a85a",
     "2676e8e771cdc2585cb9",
-    "372ba607314417d743dc",
     "3925f92b596882e71700",
     "4bb26e2911ce8b0729cd",
+    "5d5100ed45e44643eb06",
     "668bc2e92d21ad77bab8",
     "6d7d4b92e7adf7a09de6",
     "6df61f9fe4553cb81f33",
@@ -28,7 +28,7 @@
     "db2dc24d14097954af47",
     "efb9e573ff9457eb271d"
   ],
-  "content_hash": "738cdc5c73c27957630816b405fdbf585b2b0e1c2a7c043c5b8c3939d5aac8af",
+  "content_hash": "d00fa0b7d96f45b7c3c00a0548dba0f441ea3089744f5e627f68c6c2190a839f",
   "dependencies": [],
   "description": "Implement drag-and-drop in LWC using HTML5 Drag and Drop API, keyboard alternatives, and accessible announcements. NOT for kanban migration from legacy Lightning.",
   "file_location": "skills/lwc/drag-and-drop",
@@ -64,7 +64,7 @@
   "templates": [
     "skills/lwc/drag-and-drop/templates/drag-and-drop-template.md"
   ],
-  "updated": "2026-04-17",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

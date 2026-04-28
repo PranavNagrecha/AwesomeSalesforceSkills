@@ -12,6 +12,7 @@
     "5405ba76b79fccf14637",
     "69e10d5759b9c3611468",
     "6ac1861df978e3ea3c7c",
+    "6f43775eaaf088b8cf8e",
     "75499791da3fa37aa51d",
     "75c396499e61b2f7c6a8",
     "785ed6f48e84c38e68ab",
@@ -25,10 +26,9 @@
     "a7b73161f440e7abec66",
     "b4e8cc3b75732ed3e697",
     "c05ec37c900d9841a55d",
-    "ed9f37138a786a3d5c6f",
     "f496d72018651e8cb1cb"
   ],
-  "content_hash": "9284dc330000b010f19a93c5e7f6ce0622d6b74d1fce8369137c28717bfa5dd1",
+  "content_hash": "b2c38e8c1be2a8f2d586e70ed53e7738ad6066cb63865c20e76f259def0a6a79",
   "dependencies": [],
   "description": "Monitor and govern Salesforce API consumption: per-user limits, org allocation, lightning-rest limits, and backoff. NOT for designing new endpoints.",
   "file_location": "skills/integration/api-governance-and-rate-limits",
@@ -66,7 +66,7 @@
   "templates": [
     "skills/integration/api-governance-and-rate-limits/templates/api-governance-and-rate-limits-template.md"
   ],
-  "updated": "2026-04-17",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

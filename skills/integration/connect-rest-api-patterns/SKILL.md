@@ -23,18 +23,19 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Connect REST API Patterns
 
 Connect REST API exposes Chatter feeds, CMS content, Experience Cloud, and moderation APIs with richer shapes and side-effects than raw SObject access. Use it when the business operation is 'post a feed item with mentions' or 'publish CMS content' rather than 'insert FeedItem row'.
 
-## When to Use
+## Adoption Signals
 
 Chatter posts with mentions / rich text, CMS content authoring, community moderation, reports filters at scale.
 
-Typical trigger phrases that should route to this skill: `connect rest api chatter`, `post feed item api`, `experience cloud cms api`, `connect api salesforce`.
+- Required when the standard REST/SOAP APIs would force the consumer to assemble Chatter feed elements by hand.
+- Required for Experience Cloud surfaces where the same payload feeds both UI rendering and external clients.
 
 ## Recommended Workflow
 

@@ -1,7 +1,6 @@
 {
   "category": "lwc",
   "chunk_ids": [
-    "08c2ddce8082df169421",
     "0da84891ff0e4be4a52e",
     "28d003c44253e562eca2",
     "2ff98f6a704b2abceec0",
@@ -12,6 +11,7 @@
     "604155523af1bf0e36f1",
     "6464ce869c87d235f394",
     "750759762080a7c8b2da",
+    "751b9330ade4d26cdb01",
     "79e63a4750cc11ff46e4",
     "7e4193d4df1791e253d9",
     "86d64c04640813b83c55",
@@ -28,7 +28,7 @@
     "e8a3e984e0bb72804234",
     "f2127ad24b8205401a01"
   ],
-  "content_hash": "70cf1ce92ba3f71751a39252d8bfafa6626efdad7d084fdd89540a2f322b2e08",
+  "content_hash": "c326c1f886f9a78d481b0cba4078a2276beb370acd86602257623205cba6523c",
   "dependencies": [],
   "description": "Build LWCs that support translation, locale-aware formatting, and RTL layouts. NOT for Translation Workbench setup.",
   "file_location": "skills/lwc/lwc-internationalization",
@@ -64,7 +64,7 @@
   "templates": [
     "skills/lwc/lwc-internationalization/templates/lwc-internationalization-template.md"
   ],
-  "updated": "2026-04-17",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

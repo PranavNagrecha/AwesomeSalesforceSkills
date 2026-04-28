@@ -16,9 +16,9 @@
     "9083d1d918328210740c",
     "90acdcfd6c1403b89424",
     "94b5bf1977f1bf26144b",
-    "9c4359d022a058971b88",
     "9f0dcbe7888ac50b5c98",
     "a1919fdb6c02f761957e",
+    "a383d380eb5611a4ab76",
     "a73fde9f0e3f19102282",
     "b1f58ec4dd61827cdd9f",
     "b4ad8ee3e931bf836697",
@@ -28,7 +28,7 @@
     "ec4af10c8b829d3b9a2e",
     "ff4ca98b50cb45925d4b"
   ],
-  "content_hash": "de7e27617f6c08deb0c1d89b06c90791954daf007519b05466bf577263676eec",
+  "content_hash": "d72b18d5619d2be7fe967ed441b74d74d35e64154103c232b2b43cb64fad09d3",
   "dependencies": [],
   "description": "Isolate component errors so one failure does not blank an entire page using errorCallback and graceful fallbacks. NOT for server-side Apex exception design.",
   "file_location": "skills/lwc/lwc-error-boundaries",
@@ -64,7 +64,7 @@
   "templates": [
     "skills/lwc/lwc-error-boundaries/templates/lwc-error-boundaries-template.md"
   ],
-  "updated": "2026-04-17",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

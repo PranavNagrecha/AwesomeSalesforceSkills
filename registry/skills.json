@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 45
   },
-  "generated_from_hash": "ec0d91cc70f1c517f7d5624c72d57cee929e15bde569c2993a075605f0bb416f",
+  "generated_from_hash": "610bd511315371f22bbff730b018d961c67de73b9ca80b77331d32684f07de7f",
   "schema_version": 1,
   "skill_count": 907,
   "skills": [
@@ -31582,6 +31582,7 @@
       "category": "agentforce",
       "chunk_ids": [
         "108caaf39ae774d92c02",
+        "1276be2c3284ba2da89d",
         "1d2ab2f761158b172b96",
         "2281e1169fb0a766cb5f",
         "506698fd5c2d55a6e836",
@@ -31602,13 +31603,12 @@
         "cc093feaf03725e2b128",
         "d14f1e728eaac0767887",
         "d4b179cce7f6b42ffd3a",
-        "d81e9c5c71f59c76662d",
         "eb5dab9e2ee1c17b8d11",
         "fb6b62b21b28dbe6f9ef",
         "fe6f48fa65d1b85df17f",
         "fffc6907a6f19d6f60e0"
       ],
-      "content_hash": "84e5718711d61caca41f1831c36688c4f549e95beb4ec1b748c120cf5c539eb0",
+      "content_hash": "631a4352cb370ef215a0ee535c4eb38f77a37037427389ed0f28ec723b76b0d6",
       "dependencies": [],
       "description": "Canonical go-live checklist for Agentforce deployments with rehearsed rollback and stakeholder sign-off records. NOT for general Salesforce release management (see release-management).",
       "file_location": "skills/agentforce/agent-deployment-checklist",
@@ -31647,14 +31647,13 @@
       "templates": [
         "skills/agentforce/agent-deployment-checklist/templates/agent-deployment-checklist-template.md"
       ],
-      "updated": "2026-04-17",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
     {
       "category": "agentforce",
       "chunk_ids": [
-        "002b31012ad47bd01783",
         "0b11b90423e680dd628b",
         "1f8ddbf48950e3e239f7",
         "235ff75427e00e0e6abc",
@@ -31667,6 +31666,7 @@
         "7985a99f7060f6c11e47",
         "7d6cb81a45431de1915c",
         "868615c27cbb4f27a9a0",
+        "8f4b437e34531145c32d",
         "8fcfded0675891a05a5a",
         "963d432aecd1f4484afb",
         "9e909b71bb4a4253cfef",
@@ -31681,7 +31681,7 @@
         "fb5f831f7fef60986e0a",
         "fddc82e858f991127db0"
       ],
-      "content_hash": "f239ccc5fcf07680ef34c181642487390693a3dea0defcb666450cce0375da3f",
+      "content_hash": "b9f8914370be4190173a4b3f72f78eefac53fe6d8bcb42a85980d0e1fa93df2b",
       "dependencies": [],
       "description": "Observability for Agentforce: adoption, deflection, latency, cost, quality. NOT for agent evaluation/testing (see agentforce-eval-harness) or raw platform-event monitoring.",
       "file_location": "skills/agentforce/agent-metric-dashboards",
@@ -31719,7 +31719,7 @@
       "templates": [
         "skills/agentforce/agent-metric-dashboards/templates/agent-metric-dashboards-template.md"
       ],
-      "updated": "2026-04-17",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -36392,8 +36392,8 @@
         "444ed50f8b674fda3fda",
         "44ff47f14ed54ef87449",
         "5069de71bdc2d7b8d442",
-        "5c291521f3b3f123a7a6",
         "679fb9b3876e8f42946e",
+        "7b14e527c01006abba73",
         "85bf866d5f21b5f31826",
         "8e9c978c101157a81e23",
         "8f318dc746dd7011c1a6",
@@ -36405,7 +36405,7 @@
         "c6f804a6461fa748128d",
         "d1e4c83546276f9df12a"
       ],
-      "content_hash": "e27d7170a35777d8bf2499a7e6847d96387d9f00f025f051287caaece55a8fc6",
+      "content_hash": "8d7ee63f93c0fd990849438f315b0ff94a88db7aaf30fb0a5088429f6f63c90c",
       "dependencies": [],
       "description": "Red-team an Agentforce agent against prompt-injection and jailbreak attacks; codify test cases and guardrails. NOT for general application-security reviews outside the agent boundary.",
       "file_location": "skills/agentforce/prompt-injection-defense",
@@ -36444,7 +36444,7 @@
       "templates": [
         "skills/agentforce/prompt-injection-defense/templates/prompt-injection-defense-template.md"
       ],
-      "updated": "2026-04-17",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -56588,13 +56588,13 @@
         "15069f59196c636cac78",
         "153e2f32ea6286add2b2",
         "19c578ae99ffb3ed2f5f",
+        "1c8d45b55315870897f3",
         "22d967bd29e757bccb45",
         "2be9d217b489ee222641",
         "31efdafbca89f1da4f70",
         "33d84b828a3aa2e2a25a",
         "3819a68abc1fe7197c20",
         "3a1f6ca3b332406e7687",
-        "3c2fbb02e174bf9a6013",
         "3cb7f1234759f412a3f2",
         "3e80bcb974ad34e21cf5",
         "440ba9acc38fe3afcc1a",
@@ -56633,7 +56633,7 @@
         "cc15d774c1e57562ec49",
         "cdcf17b6fe11c6e5c54a",
         "d577b8ce82bbbdfb7279",
-        "dc531e90c935c42043f5",
+        "dc3312759881fa219044",
         "de03942b038a04b8e61d",
         "e9894709225f9847cfa9",
         "eaf7a40fca09aaccc39b",
@@ -56643,7 +56643,7 @@
         "fb5dfae6d4a868f6c556",
         "fc7398868667701c0248"
       ],
-      "content_hash": "740e077f1a4ffd733aa3100c5f0c9eef84c7816b904ac5aaca3c3cfc67fe9930",
+      "content_hash": "614408dd15f71fcba76bfea45b2c5788551aa6793caf444ee4f63f5c95b2fd4f",
       "dependencies": [
         "architect/solution-design-patterns"
       ],
@@ -87341,6 +87341,7 @@
         "30d009e643c62448a765",
         "499f6ec30481713ab94a",
         "4ecf8457a2e5a4ae9933",
+        "5325e2df04ecf8f84409",
         "5da5cdf4389a65ecc90c",
         "60a172420221ac6bce5d",
         "732ef821a8d11ac4e75f",
@@ -87354,13 +87355,12 @@
         "b851ad0a0ccc917ee971",
         "b9448d2d930620002aa2",
         "ccaa7981dadf65cbf15a",
-        "d129761530caa766d5be",
         "d40a4d57eabbb100f1f5",
         "e180c76d5da8fa419943",
         "e70011c9b516cc19310f",
         "eb8dc28c14f21a54ab95"
       ],
-      "content_hash": "6ec6bb54561895fca63570e3c90f43cf3961ed819f90f9969b9dcb16a8da14f0",
+      "content_hash": "51ed91484188184b027580e03c66c7c0ac3f98a76c1fd18d8123b105b0d19a04",
       "dependencies": [],
       "description": "Enforce change quality via PR templates, required reviews, metadata ownership, and automated checks. NOT for branching model selection.",
       "file_location": "skills/devops/pr-policy-templates",
@@ -87399,7 +87399,7 @@
       "templates": [
         "skills/devops/pr-policy-templates/templates/pr-policy-templates-template.md"
       ],
-      "updated": "2026-04-17",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -88896,7 +88896,6 @@
         "4bb553959f39a204537e",
         "4c1132ed45339521a21f",
         "4c67bd9d12ad59c94281",
-        "51fac64fe358e7915b17",
         "576f1d6925a49b11a17e",
         "638746587abda4d4fc24",
         "6ab15250b55eaff2b525",
@@ -88907,12 +88906,13 @@
         "909bf7d144a458224139",
         "b5eb7474f90ad93f49e5",
         "ba484326a7ed2608866b",
+        "c92ff61a39abb822f329",
         "c9cb6711da317097482c",
         "e353f21f7a10bc0365d7",
         "f62836efc48f0e1b35c0",
         "fab836e38e0f23bd5dfe"
       ],
-      "content_hash": "e456a7dff9acf07b1ef91ea001145ca54e0ded17bd5dde0051e63d81ea17d211",
+      "content_hash": "a8cd11725ea1e6d1181a5b557f802e99f9dc7b17d5dce53641f353823af661d1",
       "dependencies": [],
       "description": "Use Scratch Org Snapshots to reduce CI bring-up time from 10\u201320 minutes to under 2. NOT for persistent sandbox provisioning.",
       "file_location": "skills/devops/scratch-org-snapshots",
@@ -88951,7 +88951,7 @@
       "templates": [
         "skills/devops/scratch-org-snapshots/templates/scratch-org-snapshots-template.md"
       ],
-      "updated": "2026-04-17",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -89135,6 +89135,7 @@
         "95ca3f77f868c4829545",
         "a08b1045f9b8edbba79a",
         "be30efb0a58568e799cc",
+        "ca2854bd9d769a5b001d",
         "ca9e69f829c201138cf5",
         "ccc6f1357fa1dc21d4a1",
         "d4f3df47f4b7b56f22ab",
@@ -89142,10 +89143,9 @@
         "de544e43355a3e343930",
         "e45d2aca90c91fe6307f",
         "e760750d8edba3b26f35",
-        "f2804401eeae82fd71d4",
-        "f9bc2875f5f4e734c354"
+        "f2804401eeae82fd71d4"
       ],
-      "content_hash": "a2f566a43cfad045632cea967334308923e64b16645cdf80ddc8757ff4e1c5e1",
+      "content_hash": "26125b12b71127cffe974afa1f545e08a675eab5512e7a4ee85f11f2aa9f38f3",
       "dependencies": [],
       "description": "Adopt sfdx-hardis for org monitoring, CI pipelines, and release automation. NOT for writing plugins to sfdx-hardis itself.",
       "file_location": "skills/devops/sfdx-hardis-integration",
@@ -89184,7 +89184,7 @@
       "templates": [
         "skills/devops/sfdx-hardis-integration/templates/sfdx-hardis-integration-template.md"
       ],
-      "updated": "2026-04-17",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -89203,13 +89203,13 @@
         "6f61dd1ef070aa052207",
         "74262d2f373e6c110c37",
         "7a63ebbec1571a028777",
+        "7ad1d3c603db1dbb6bac",
         "7cd9e46574c2db12ac24",
         "85faa40b33cf9487570b",
         "8917871ca1818d7247de",
         "946d40ce4e117dd2cfbc",
         "961008a6b8a57b75d9f2",
         "9876a4a34ff4b2bfeae5",
-        "a671ae8250b757fe94a7",
         "a7994a7a0c484d2854d2",
         "b782b89760085b7a540e",
         "dc33eecaf7b611dc6abb",
@@ -89218,7 +89218,7 @@
         "fe4133c9ffcf1ddec042",
         "ff3b96c77250b04115f2"
       ],
-      "content_hash": "064d8d548be1e40f84ee665cc8d5e379c41749389095d5e0957f8516c347fdc8",
+      "content_hash": "22fb6a9496200cc91e9709320f24a58b843f0a07ea5a5a5c07a543e7be13d68c",
       "dependencies": [],
       "description": "Structure a single repo with multiple unlocked packages, shared templates, and cross-package test strategies. NOT for multi-repo org strategies.",
       "file_location": "skills/devops/sfdx-monorepo-patterns",
@@ -89256,7 +89256,7 @@
       "templates": [
         "skills/devops/sfdx-monorepo-patterns/templates/sfdx-monorepo-patterns-template.md"
       ],
-      "updated": "2026-04-17",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -90162,6 +90162,7 @@
     {
       "category": "flow",
       "chunk_ids": [
+        "0322dfd0c4332b4ca6d2",
         "1da8d9c9b189f874a574",
         "20f3564f01cc0cabf92f",
         "221798a908a5ca2c9fe1",
@@ -90181,7 +90182,6 @@
         "97749da605a7eb1cd91e",
         "a98358090f73e53683b8",
         "acc99ebe4be5639e0743",
-        "aff201cdb3289b82f122",
         "ba098457ffff9c7a4220",
         "c9b74d732d5df3193123",
         "e2a51b6d3110d7bc796e",
@@ -90189,7 +90189,7 @@
         "f2cf4c736a4e1f3624c9",
         "f4b341322f2ce3e2303e"
       ],
-      "content_hash": "54705415b63c48512b3925ff8c8034f8afd181be5b10d068f4e906e240413796",
+      "content_hash": "8aa8cae230f6db6925f572685011d035f0427074ed68dc78d2eef1a3063150a0",
       "dependencies": [],
       "description": "Publish and subscribe to Platform Events from Flow for async decoupling, high-volume triggers, and cross-org signaling. NOT for regular DML-triggered flows.",
       "file_location": "skills/flow/flow-and-platform-events",
@@ -90225,7 +90225,7 @@
       "templates": [
         "skills/flow/flow-and-platform-events/templates/flow-and-platform-events-template.md"
       ],
-      "updated": "2026-04-17",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -90233,6 +90233,7 @@
       "category": "flow",
       "chunk_ids": [
         "02f6501d18a4e250ee3f",
+        "034e957390813ddb0594",
         "08940f6997035a032cbe",
         "1110740a7a273f8d3dbe",
         "18b294ce6e1af65bbc74",
@@ -90245,7 +90246,6 @@
         "5f24965c7d186785b671",
         "6cfa2590c2437e816f0e",
         "6d2b7cd22678cced924a",
-        "7d9369dfd3cb984296d3",
         "85457a3497726f59c9ed",
         "8a8cc1d6de872f68d7a2",
         "924ea001c896fd2a680d",
@@ -90268,7 +90268,7 @@
         "fb9c48408da1312b98ad",
         "fd265d60d57f03a331bf"
       ],
-      "content_hash": "66a37426a2c6e8ec06c9d3e0072233050309b39afc5d51d7af189e0eb3887f42",
+      "content_hash": "101749881e8464bfaec64b316301f4ad5c3a2403a4c936905e4b69ec2ec45e5b",
       "dependencies": [
         "flow/flow-http-callout-action",
         "flow/flow-invocable-from-apex"
@@ -90846,7 +90846,6 @@
         "3d7dc14e154900dd524f",
         "4216f0d82aaf2c1eb027",
         "4c7b113523bbb7673c9c",
-        "5282fa0e926102b989c6",
         "5e21f76cad0b4772b4db",
         "718a7f9ddeade3f9adaa",
         "76db5ebb8e7905ed3093",
@@ -90858,9 +90857,10 @@
         "c1ea3d3095abe2d5c6c9",
         "dbe2c075d5e8fa474c96",
         "e89429df0eb33200d611",
-        "fba142e9b0d018536827"
+        "fba142e9b0d018536827",
+        "ff733cff7fb461451c04"
       ],
-      "content_hash": "adaaabc79e6e413bfdc8e411d3f7466a41ded1c40ee35e6ce3b7da9f89e5c9f2",
+      "content_hash": "5eaab5ee903fa6d173fea8a66c38f27de1cd513efd79f8c4072d99d41f2d8030",
       "dependencies": [],
       "description": "Use the Data Table screen component for selecting rows from collections in Screen Flows, including single/multi-select and inline actions. NOT for displaying read-only data outside flows.",
       "file_location": "skills/flow/flow-data-tables",
@@ -90896,7 +90896,7 @@
       "templates": [
         "skills/flow/flow-data-tables/templates/flow-data-tables-template.md"
       ],
-      "updated": "2026-04-17",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -91026,7 +91026,6 @@
     {
       "category": "flow",
       "chunk_ids": [
-        "01d45c4e4d8c974820bf",
         "024be54b3421cc37af53",
         "03f20ea080561ab134d1",
         "0899e75fc587c6c17911",
@@ -91055,6 +91054,7 @@
         "9e0b0571af66e9632777",
         "a12e8bbf055db75bdcf3",
         "a1426071f5a08f30fe26",
+        "a2f39d8d5b371ae7a5d2",
         "a74bdc8b26e6d9a09a81",
         "a7fce53047dd34f06af4",
         "aa831d47eb6b6109d9d7",
@@ -91063,12 +91063,12 @@
         "b3e22619747a0e5d3718",
         "bad2308a01ebd6f3e86f",
         "bc98f9ab8873ae9365fd",
+        "c0d6a1d684c484358222",
         "c28f710d962c445e67c7",
         "c34dad4e00c853055537",
-        "cb5670101770747b6e49",
-        "e5ce963369c7d2a58403"
+        "cb5670101770747b6e49"
       ],
-      "content_hash": "b306b9b1d44171a91302e8aef6837f5dee89a283866ecd007e999d71d274fcb5",
+      "content_hash": "c43a227d52a1ed24a4d470ac4894955527d70d6f38c41dfef211debe753a655e",
       "dependencies": [
         "flow/record-triggered-flow-patterns"
       ],
@@ -92327,7 +92327,6 @@
         "1b3e17806bad0da1e2dc",
         "22a97dd128a654028a96",
         "2582fec3b72e9c70cf66",
-        "26c9a3273beca34e1f79",
         "2a35a16b549dfa663994",
         "3425578830b84cb0279e",
         "3767217db123e22336ee",
@@ -92337,6 +92336,7 @@
         "4fd99cc9a10ebdbd9886",
         "5a98e4969610f67ed444",
         "5ab05c4ee7f2847a00cc",
+        "5be47751be5785335a06",
         "5bf8892ed6e5d7ceb017",
         "6297452acfbffbf1f1fd",
         "63a42a72c6d2b8f15c15",
@@ -92352,20 +92352,20 @@
         "a6aa27a7597a6d92ee33",
         "b1f8b567b32874a23382",
         "b59ff47b0abc9459397b",
+        "b7d5ccab459a58ba76b2",
         "bb87d7513fa5624d0e6b",
         "d5fc2f7a29081d84d089",
         "e239cf944af31af60a0c",
         "e81a16487918ad6d3c22",
         "ea78a835413d812a14dd",
         "eaec03c0e7cb3e322b74",
-        "eba8bec1eef069af5d52",
         "ecd31f324bbc769bbcab",
         "f09aa284b5759a858da9",
         "f384a1f59ccf32c733fb",
         "f3f0231c9d09c30b732f",
         "f5b0ba6d8f9450581023"
       ],
-      "content_hash": "b3c35c2c7afcf08876e5d740fc81794865944f9afe1cef12b25bc7fd0107be17",
+      "content_hash": "a388c0944e348daf2a82a7de82d8ff7fb12175ce004c876c4c71899750311170",
       "dependencies": [
         "flow/flow-governor-limits-deep-dive",
         "flow/flow-performance-optimization"
@@ -92640,16 +92640,16 @@
         "7976a78dd30d858d591b",
         "805ef573f586d5d7ac49",
         "9318a0cf8084ec7b53b6",
-        "9933e099abaf47baf460",
         "a0fae23454a4f7f92a13",
         "ad1499c01d86073ed515",
+        "aee70b42c478b785f30c",
         "b9f5a75c8aa2069a3c7a",
         "cb839b0d640126004828",
         "cdfb6137ce20fc97a4ba",
         "d4cbd986b1898d6cbdbf",
         "f439d84be95e6c2480bf"
       ],
-      "content_hash": "86a3208938570583de747cfdd074382eb5a79fbbf0dea4aebf2a884d5a435bdc",
+      "content_hash": "d9d607c80fe26231f973ea71c4bc6a90527ba613b50c857121644db8d5c9dbd7",
       "dependencies": [],
       "description": "Call external HTTP APIs directly from Flow using HTTP Callout actions (no Apex), handling auth, schema, and errors. NOT for complex Apex-based integration logic.",
       "file_location": "skills/flow/flow-http-callout-action",
@@ -92685,7 +92685,7 @@
       "templates": [
         "skills/flow/flow-http-callout-action/templates/flow-http-callout-action-template.md"
       ],
-      "updated": "2026-04-17",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -93496,13 +93496,13 @@
         "ba9b16b180a234c1ad2b",
         "d06ef0854c82888709a5",
         "d127350c825834345094",
-        "d6af17d111bc0654e403",
         "dba00a7cf1634fefe611",
         "e4f2c4043f5ef9e91041",
         "e72ac5cdee45d09f4ddb",
+        "ed9cedb031e235689121",
         "f45db7fb7d281ac41ba2"
       ],
-      "content_hash": "fe7b34bb405c2310fcd8ab16b7f96420a22a5e4475385d265a8d036d3bdc77fd",
+      "content_hash": "142a78f657ee8889bbb23366458c712bd4ec731903183fd57bed88e5575a8864",
       "dependencies": [],
       "description": "Build reactive Flow screens where one component updates another without navigation using reactive formulas and component outputs. NOT for Aura-based screens.",
       "file_location": "skills/flow/flow-reactive-screen-components",
@@ -93538,7 +93538,7 @@
       "templates": [
         "skills/flow/flow-reactive-screen-components/templates/flow-reactive-screen-components-template.md"
       ],
-      "updated": "2026-04-17",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -93708,10 +93708,10 @@
         "34b13e5214087c04350c",
         "36543a55c33e26814e7e",
         "3a456ba8d98b599318d9",
+        "3e93872df804f7034ed5",
         "42253f649e5fae73f71f",
         "45b121f9585404d52ef5",
         "49472cece06dfae23f8b",
-        "6595dc2e9b4222a2af63",
         "6d8a0f6d22386713f3dd",
         "8e221d599bca31fd9ce9",
         "90464fcb8d4fe46e4ec4",
@@ -93726,16 +93726,16 @@
         "bb24fa9f17a0452a6f98",
         "bf55a7ac3ada123eacd6",
         "c153778c511ab88e653e",
+        "d2f280466822df37092e",
         "d68e8042189f8520041b",
         "e23bdac7934ae1c49922",
         "ec4564e186c532ea58dd",
         "f15695059fa531297634",
-        "f24c0b542e997f1217c2",
         "f34540fcb01f5afeb286",
         "f6ec18e1bf5295435be3",
         "ff5b2335811cdd2251b6"
       ],
-      "content_hash": "6f01976e45571fdcc08368e27135308aa0b9081b8a32085ffa6a2f740c135328",
+      "content_hash": "ae54f13da9a877576b2b21b5c17cc37cba0747893d7dd52a44187c0c74f1b458",
       "dependencies": [
         "flow/record-triggered-flow-patterns",
         "flow/flow-migration-from-trigger"
@@ -96175,6 +96175,7 @@
         "5405ba76b79fccf14637",
         "69e10d5759b9c3611468",
         "6ac1861df978e3ea3c7c",
+        "6f43775eaaf088b8cf8e",
         "75499791da3fa37aa51d",
         "75c396499e61b2f7c6a8",
         "785ed6f48e84c38e68ab",
@@ -96188,10 +96189,9 @@
         "a7b73161f440e7abec66",
         "b4e8cc3b75732ed3e697",
         "c05ec37c900d9841a55d",
-        "ed9f37138a786a3d5c6f",
         "f496d72018651e8cb1cb"
       ],
-      "content_hash": "9284dc330000b010f19a93c5e7f6ce0622d6b74d1fce8369137c28717bfa5dd1",
+      "content_hash": "b2c38e8c1be2a8f2d586e70ed53e7738ad6066cb63865c20e76f259def0a6a79",
       "dependencies": [],
       "description": "Monitor and govern Salesforce API consumption: per-user limits, org allocation, lightning-rest limits, and backoff. NOT for designing new endpoints.",
       "file_location": "skills/integration/api-governance-and-rate-limits",
@@ -96229,7 +96229,7 @@
       "templates": [
         "skills/integration/api-governance-and-rate-limits/templates/api-governance-and-rate-limits-template.md"
       ],
-      "updated": "2026-04-17",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -96368,7 +96368,7 @@
         "01b3810954c7cb9c3e58",
         "05ed790254fcc1c65835",
         "11de1fe7ca8bac3cb668",
-        "132faaa3f31ff03daef1",
+        "1429f229882838b1696e",
         "19e4c25c298824a23cab",
         "1bd33cb35024c774da27",
         "1c3da7d3abb20c0f9ec1",
@@ -96392,7 +96392,7 @@
         "e51b6bc7fc22920fdfc7",
         "ea6e94e494ca8901f1e2"
       ],
-      "content_hash": "34e3cf397ea8785d32fb4ecea1d3b426b95823136ec982b2d5c4acbff9e65b18",
+      "content_hash": "289e75128ccd12fd6cc884a1e580f6e61aa06865019a91bf11e0c791c1bd7966",
       "dependencies": [],
       "description": "Design versioning for custom Apex REST endpoints: URI versioning, backward compatibility, deprecation sunset. NOT for consuming external APIs.",
       "file_location": "skills/integration/api-versioning-strategy",
@@ -96430,7 +96430,7 @@
       "templates": [
         "skills/integration/api-versioning-strategy/templates/api-versioning-strategy-template.md"
       ],
-      "updated": "2026-04-17",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -96951,10 +96951,10 @@
         "14ffa54fa84700c994c0",
         "1d3cb5648bd81a6db945",
         "2553ace7986832988aff",
-        "26b0ea604398fa84a0ca",
         "2dcf4c92038f1e991e3f",
         "31a47bc7cfb8270c2a71",
         "42601f13e5d6602afa41",
+        "4dd1dfc547afdbb1367b",
         "4e27d49e86ab292f379a",
         "52c17f50f125cfa3a02a",
         "561ba2168b9e43835ced",
@@ -96973,7 +96973,7 @@
         "d2faba80ac20113c6e54",
         "de37839eb06d00fc88a7"
       ],
-      "content_hash": "ec860ee0a131886201677b698b880912a99d73de3f2a0312bfdfb66618aa1353",
+      "content_hash": "e6c329f4707ac5623f2c6b09e1e5fe0d0b33c9aebfb86b02ee1211da35eb81b8",
       "dependencies": [],
       "description": "Use Connect REST API for Chatter, feeds, communities, and CMS content instead of querying underlying SObjects. NOT for custom business object CRUD.",
       "file_location": "skills/integration/connect-rest-api-patterns",
@@ -97011,7 +97011,7 @@
       "templates": [
         "skills/integration/connect-rest-api-patterns/templates/connect-rest-api-patterns-template.md"
       ],
-      "updated": "2026-04-17",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -98603,7 +98603,6 @@
         "17416e4bad7d7e46d23d",
         "22c45ab3dde8c19e87e0",
         "39aeeb20b76482c9b0a0",
-        "40643e1e14e1d12cc554",
         "42df230c77ce289a002b",
         "48c622ecbaa3313f473e",
         "4b25bc2284f2f47a8945",
@@ -98618,6 +98617,7 @@
         "958052bfd182e7c0934f",
         "99f1c979f68d5af195b0",
         "b50dc6afea4946884eec",
+        "bc5c6eff05e0c5caff0e",
         "c58cac9adb6486daadf7",
         "ca4dc4cec5e3fbce1e9a",
         "cb23d7c195a75fe69129",
@@ -98625,7 +98625,7 @@
         "d50d6e0acc40304faeff",
         "d8325a5c192caa73e701"
       ],
-      "content_hash": "375992af606da86bd14fc89ea12d43a03b7db17b1313bea955723b66bb8bbca7",
+      "content_hash": "acfc6374d65ae5cca00c30a99760f579ab4ff2066cf443735cd036aa93d035d5",
       "dependencies": [],
       "description": "Configure mTLS for Apex callouts using Named Credentials with client certificate authentication. NOT for standard TLS or API key auth.",
       "file_location": "skills/integration/mutual-tls-callouts",
@@ -98663,7 +98663,7 @@
       "templates": [
         "skills/integration/mutual-tls-callouts/templates/mutual-tls-callouts-template.md"
       ],
-      "updated": "2026-04-17",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -99405,10 +99405,10 @@
         "80df61d90484b748fad1",
         "82e82b196bf7584c1480",
         "87dd29015ecdc9114aae",
+        "93d2e05a9444c24e35ea",
         "9e3e8dc130415bdae61b",
         "a88b23182722e6efcf82",
         "a8dbca1a4a92b89c4752",
-        "ac458a72fd391e79a128",
         "ac78390edb8fadd46d11",
         "bb614e04e380e3e310b8",
         "ccaaf5bfe899c1c69687",
@@ -99420,7 +99420,7 @@
         "ed659631af428791eaa3",
         "fd65427bf14d558d6e74"
       ],
-      "content_hash": "2e5351a5ba5797115e4a22be2511c71997eb962230a018eb79806318bd57b929",
+      "content_hash": "68438ebb27bfc8210d17b4a3521c723477b491c6b09b06fc1fb0ffe6794de03c",
       "dependencies": [],
       "description": "Configure Private Connect between Salesforce and AWS/Azure for traffic to stay on private networks. NOT for standard internet callouts.",
       "file_location": "skills/integration/private-connect-setup",
@@ -99458,7 +99458,7 @@
       "templates": [
         "skills/integration/private-connect-setup/templates/private-connect-setup-template.md"
       ],
-      "updated": "2026-04-17",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -100318,7 +100318,6 @@
     {
       "category": "integration",
       "chunk_ids": [
-        "01211bdb06643b074c17",
         "12a7a4502b52e3efb05c",
         "2b02a6ab7855c4ef0827",
         "300a6a0b983047bb5f5b",
@@ -100337,6 +100336,7 @@
         "83a36a3c5e83426f5fa0",
         "8869170b17cba963ce84",
         "8b91c1924432c079650d",
+        "9e7be02024cb6021b0cf",
         "a98ac14344c5f7a14212",
         "aa953d89eb4ecc9bd6ca",
         "aed4fca74e14aa9c1c30",
@@ -100345,7 +100345,7 @@
         "f6eb72b645d33b38151f",
         "fbb383e6e940db6c39d7"
       ],
-      "content_hash": "6b6822d9ff2d59fbd98b4d4cd8984c107803bcbd49d3679f00cb3641fdce06b6",
+      "content_hash": "cda2e6be3ce91a881b44e8b8c26d34ba1e7a7e0aeb57064f29cfc7ff8abe4382",
       "dependencies": [],
       "description": "Export large Salesforce datasets to a lakehouse via Bulk API 2.0, CDC streams, or Salesforce Data Pipelines. NOT for ad-hoc exports.",
       "file_location": "skills/integration/salesforce-data-pipeline-etl",
@@ -100384,7 +100384,7 @@
       "templates": [
         "skills/integration/salesforce-data-pipeline-etl/templates/salesforce-data-pipeline-etl-template.md"
       ],
-      "updated": "2026-04-17",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -101602,7 +101602,6 @@
         "04dcbbdd1a933db1adf5",
         "0a946758296de9dbf6e7",
         "0cdd9d67447385f41502",
-        "151958a82028bc356d85",
         "177c0152038893ffafb8",
         "1a09e6db209b2dd39d49",
         "1dcf72ba47d44fc133f5",
@@ -101618,6 +101617,7 @@
         "7517ab9a47f4392eaf9b",
         "758ad4b10523802c1872",
         "9899563ce08bcddd709f",
+        "a136caf3ff528a932ab8",
         "aad38893029aa1c30d2d",
         "ab10d4fc8054cb94854c",
         "afe3647b6f5280169817",
@@ -101626,7 +101626,7 @@
         "d3970969868c3b120e90",
         "f338ad45248b9c725ca1"
       ],
-      "content_hash": "499d953dece297015e7b2cc759cbcdac08d5b99c9bc38042d8f873ad927be1d6",
+      "content_hash": "2fbd9322b871f960e0dedf226a4bbde89e026320755da14608b7b0fcfb808d90",
       "dependencies": [],
       "description": "Accept inbound webhooks (Stripe, GitHub, Slack, partner) and verify HMAC signatures in Apex REST. NOT for outbound webhooks.",
       "file_location": "skills/integration/webhook-signature-verification",
@@ -101665,7 +101665,7 @@
       "templates": [
         "skills/integration/webhook-signature-verification/templates/webhook-signature-verification-template.md"
       ],
-      "updated": "2026-04-17",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -102358,9 +102358,9 @@
         "0714f97150ed3d6ca582",
         "18ba67b7b2fa80a5a85a",
         "2676e8e771cdc2585cb9",
-        "372ba607314417d743dc",
         "3925f92b596882e71700",
         "4bb26e2911ce8b0729cd",
+        "5d5100ed45e44643eb06",
         "668bc2e92d21ad77bab8",
         "6d7d4b92e7adf7a09de6",
         "6df61f9fe4553cb81f33",
@@ -102381,7 +102381,7 @@
         "db2dc24d14097954af47",
         "efb9e573ff9457eb271d"
       ],
-      "content_hash": "738cdc5c73c27957630816b405fdbf585b2b0e1c2a7c043c5b8c3939d5aac8af",
+      "content_hash": "d00fa0b7d96f45b7c3c00a0548dba0f441ea3089744f5e627f68c6c2190a839f",
       "dependencies": [],
       "description": "Implement drag-and-drop in LWC using HTML5 Drag and Drop API, keyboard alternatives, and accessible announcements. NOT for kanban migration from legacy Lightning.",
       "file_location": "skills/lwc/drag-and-drop",
@@ -102417,7 +102417,7 @@
       "templates": [
         "skills/lwc/drag-and-drop/templates/drag-and-drop-template.md"
       ],
-      "updated": "2026-04-17",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -103139,7 +103139,6 @@
         "0bdb94117b3e09ac2df6",
         "1ddda3191b064bfac5a8",
         "2b817145b623cb928c83",
-        "3306e36148ef31771f95",
         "3498987196404c87afab",
         "3deddd8816a8cd7430d4",
         "3e04cf9c3a067dd93211",
@@ -103148,6 +103147,7 @@
         "5825a933d8cb0652d48c",
         "61b94c9f0561624580ee",
         "8c12342f70f136e056dc",
+        "8f6d587f26ec0c53b19a",
         "987c97b84fc265dfa218",
         "9fe41c3c6a6421d7bf82",
         "b7772439f83d43a456aa",
@@ -103160,7 +103160,7 @@
         "f4e3abe795804219c990",
         "f8cd41234b742e678e97"
       ],
-      "content_hash": "60e5ddb0565f49730b30f4750358d2a93a26335f3a7b68d6617af09cb1a9d6cd",
+      "content_hash": "5d412b156f2de8778d92e3dcd2c6a98f90cba4d10b8d9c92dd8e400ff2cd668b",
       "dependencies": [],
       "description": "Upload files in LWC: lightning-file-upload, manual multipart, large-file chunked upload, and ContentDocument associations. NOT for ContentDocument query patterns.",
       "file_location": "skills/lwc/file-upload-patterns",
@@ -103196,7 +103196,7 @@
       "templates": [
         "skills/lwc/file-upload-patterns/templates/file-upload-patterns-template.md"
       ],
-      "updated": "2026-04-17",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -105076,9 +105076,9 @@
         "9083d1d918328210740c",
         "90acdcfd6c1403b89424",
         "94b5bf1977f1bf26144b",
-        "9c4359d022a058971b88",
         "9f0dcbe7888ac50b5c98",
         "a1919fdb6c02f761957e",
+        "a383d380eb5611a4ab76",
         "a73fde9f0e3f19102282",
         "b1f58ec4dd61827cdd9f",
         "b4ad8ee3e931bf836697",
@@ -105088,7 +105088,7 @@
         "ec4af10c8b829d3b9a2e",
         "ff4ca98b50cb45925d4b"
       ],
-      "content_hash": "de7e27617f6c08deb0c1d89b06c90791954daf007519b05466bf577263676eec",
+      "content_hash": "d72b18d5619d2be7fe967ed441b74d74d35e64154103c232b2b43cb64fad09d3",
       "dependencies": [],
       "description": "Isolate component errors so one failure does not blank an entire page using errorCallback and graceful fallbacks. NOT for server-side Apex exception design.",
       "file_location": "skills/lwc/lwc-error-boundaries",
@@ -105124,7 +105124,7 @@
       "templates": [
         "skills/lwc/lwc-error-boundaries/templates/lwc-error-boundaries-template.md"
       ],
-      "updated": "2026-04-17",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -105708,7 +105708,6 @@
     {
       "category": "lwc",
       "chunk_ids": [
-        "08c2ddce8082df169421",
         "0da84891ff0e4be4a52e",
         "28d003c44253e562eca2",
         "2ff98f6a704b2abceec0",
@@ -105719,6 +105718,7 @@
         "604155523af1bf0e36f1",
         "6464ce869c87d235f394",
         "750759762080a7c8b2da",
+        "751b9330ade4d26cdb01",
         "79e63a4750cc11ff46e4",
         "7e4193d4df1791e253d9",
         "86d64c04640813b83c55",
@@ -105735,7 +105735,7 @@
         "e8a3e984e0bb72804234",
         "f2127ad24b8205401a01"
       ],
-      "content_hash": "70cf1ce92ba3f71751a39252d8bfafa6626efdad7d084fdd89540a2f322b2e08",
+      "content_hash": "c326c1f886f9a78d481b0cba4078a2276beb370acd86602257623205cba6523c",
       "dependencies": [],
       "description": "Build LWCs that support translation, locale-aware formatting, and RTL layouts. NOT for Translation Workbench setup.",
       "file_location": "skills/lwc/lwc-internationalization",
@@ -105771,7 +105771,7 @@
       "templates": [
         "skills/lwc/lwc-internationalization/templates/lwc-internationalization-template.md"
       ],
-      "updated": "2026-04-17",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -106571,7 +106571,6 @@
         "207c629a826608776edc",
         "26fd56905c557a989a74",
         "2cad6a292f79c3e88493",
-        "2de326081cae29cf3512",
         "2e33d97d2b1efc7287b1",
         "326303de272fa1d2eae7",
         "33c679abd3558873cc9a",
@@ -106588,6 +106587,7 @@
         "a8381d1d3db97e1e9f53",
         "aecb2bb90ef8c4c7ffb9",
         "bc770fa8eb2f4ebdae6f",
+        "c091d8f0cfa83c6eb3d4",
         "c71bfa90bc4f2f92e8cd",
         "c8bb50fcaf6a9f11cd84",
         "ce159266b66c14d0a019",
@@ -106599,7 +106599,7 @@
         "f6929babb8cbf0fd47a2",
         "ffbd185319c61d560bc2"
       ],
-      "content_hash": "d48ffc47267ef457fe2ff471298cad66c4a96ec6f62ec596256ac2a8a6e15fc5",
+      "content_hash": "4b59b119ce8aa81b1585133fcf8dd9ac0c37461c42f4b9b0a2ec4060a70dcf16",
       "dependencies": [
         "lwc/lwc-performance",
         "devops/pipeline-secrets-management"
@@ -107641,6 +107641,7 @@
       "chunk_ids": [
         "08fed2861398706058e5",
         "0e6e1722405d88edef98",
+        "0f48ab8de3cc0eea879e",
         "13d7ebddf5e22d55ad0d",
         "2362a2c9148854a649dc",
         "30afe07fe0aee7f3c56b",
@@ -107654,7 +107655,6 @@
         "7218d4ec0a3180f84e67",
         "7cbfbe35ca35a19df2f2",
         "a774b9c9631bc4aabe79",
-        "b0a4d7faba70607bc08a",
         "c3cb137eae1001f32250",
         "c477568070ee629970be",
         "d2ae7790d523c45dddaf",
@@ -107666,7 +107666,7 @@
         "eb07ff015d8d9a4748c8",
         "ee138321efa00b806ab1"
       ],
-      "content_hash": "93b5eb6f984dd8fe60c304b47ca5be9c93b64bbd9455df35f22e991120594f85",
+      "content_hash": "fa842dbaee99a5f95f9faf07d450a5e00de6019710085ee95f363e12037c18c8",
       "dependencies": [],
       "description": "Share state across LWCs using pub/sub, Lightning Message Service, @wire, and reactive stores. NOT for in-component reactivity.",
       "file_location": "skills/lwc/lwc-state-management",
@@ -107703,7 +107703,7 @@
       "templates": [
         "skills/lwc/lwc-state-management/templates/lwc-state-management-template.md"
       ],
-      "updated": "2026-04-17",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -108855,10 +108855,10 @@
       "category": "lwc",
       "chunk_ids": [
         "18971adc1d5de76d4aff",
-        "23f075f1363a4fdadfcd",
         "3ffd9652b3c1a0424474",
         "6233a30704704fe373ad",
         "6d0270e726af0d58f27b",
+        "7b174bc17c1b40747774",
         "8846aa807f79e7f16ed3",
         "88fafad4b571afc22105",
         "99318396f2ebae049ba1",
@@ -108881,7 +108881,7 @@
         "f09dadb7d10dd4b180ab",
         "f832b67235af6c0c3f1d"
       ],
-      "content_hash": "f738e70565955e75ea2d43a253642dc9a0f6085d30e54419825d21a8f9f5141f",
+      "content_hash": "76e3962c676257961fe31871177c5cbcf28901e4daad6f52315077027064a88e",
       "dependencies": [],
       "description": "Render only visible rows for long lists (1k+ rows) using intersection observer or lightning-datatable virtual scroll. NOT for simple lists under 100 rows.",
       "file_location": "skills/lwc/virtualized-lists",
@@ -108917,7 +108917,7 @@
       "templates": [
         "skills/lwc/virtualized-lists/templates/virtualized-lists-template.md"
       ],
-      "updated": "2026-04-17",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -111004,6 +111004,7 @@
         "0c868d51640ab5858387",
         "1522d8a25c818b6630ab",
         "15c0977221fa1714191d",
+        "1d23b4d53b0b3ade072c",
         "2aab05feb8b73968828c",
         "312195e9bb775ae77fcf",
         "3e074912dbb1bc69a6d6",
@@ -111018,7 +111019,6 @@
         "8f6bc1f896386b1b44df",
         "9fd32b03a1fafa11e331",
         "a054d81df4d8ad697362",
-        "a0b470320bdef2dfda6b",
         "b7e09560db122245e660",
         "bfe9738b1245ae757515",
         "d2d1b264b70abde9277a",
@@ -111027,7 +111027,7 @@
         "f49a66c143bfa9b11f96",
         "f578e5f8556b7ad30330"
       ],
-      "content_hash": "f7af49d91644ccd14892e0fb0aba5fee21719ff26b90080c7fe3fb5e4dc51c3b",
+      "content_hash": "063b74862a18e5c1ae90b872e55a7bb458ebd3d1919033bbce50e2396fa18bd4",
       "dependencies": [],
       "description": "Use Integration Procedures queues, DataRaptor Chain, and Remote Actions with async patterns for long-running OmniStudio flows. NOT for simple DataRaptor reads.",
       "file_location": "skills/omnistudio/omnistudio-asynchronous-data-operations",
@@ -111061,7 +111061,7 @@
       "templates": [
         "skills/omnistudio/omnistudio-asynchronous-data-operations/templates/omnistudio-asynchronous-data-operations-template.md"
       ],
-      "updated": "2026-04-17",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -111071,10 +111071,10 @@
         "120f0ad6b7cc00c16e21",
         "1e64c2f3a1f7a9a3f0b6",
         "1ed17a73454fe470ca02",
-        "2bae16804380ffbe222d",
         "3c1b601b64239a2ff4b9",
         "493d642cc7a69faa5cbd",
         "4940077bfdc4a48d191f",
+        "494705cdacc3f8ff07be",
         "4fdaf54edf122c2935b6",
         "6f53cb0ae6c16c76299e",
         "81b53169d6cc8817fd9f",
@@ -111095,7 +111095,7 @@
         "f26b259b55478e6b175c",
         "f98091ed2c2b72a1f54d"
       ],
-      "content_hash": "9b6bad68b88f4a8858b02aa5c26602e1e40e0e4cf2c2506d9b63a44e40aa4a6c",
+      "content_hash": "7fef8301f89c6cc90ad7901abedf45d4bf3580c23579bb30f75ee8a97c381a85",
       "dependencies": [],
       "description": "Configure caching on DataRaptors and Integration Procedures to cut response times, with cache-bust and freshness guarantees. NOT for platform-level org cache.",
       "file_location": "skills/omnistudio/omnistudio-cache-strategies",
@@ -111130,7 +111130,7 @@
       "templates": [
         "skills/omnistudio/omnistudio-cache-strategies/templates/omnistudio-cache-strategies-template.md"
       ],
-      "updated": "2026-04-17",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -111816,7 +111816,6 @@
         "143e74c5a9348b647f87",
         "18df40ce4ee2f1784603",
         "256898c388bc24885041",
-        "2f135b4845d914822810",
         "42e9213ae152a307edec",
         "4452b81e803aa986ff17",
         "5233e4e35091723a9864",
@@ -111827,6 +111826,7 @@
         "70b2dd98ba50b07b559c",
         "762cee0b91be84e49983",
         "7df9ff9d35be03741dd3",
+        "836ceb5a0b1ff638260c",
         "a76e86ffbbffe6e98f07",
         "b4a9af2f652090fa8120",
         "b5372faafdeda578b20f",
@@ -111839,7 +111839,7 @@
         "fdd027f0207a188833e4",
         "febaf6d6912708d3c44e"
       ],
-      "content_hash": "7d6684fa931e5fe117070d1eff803babe20f3dcb89d04886886df79920d48311",
+      "content_hash": "7a03a5291ab6cf267be63855744870f928cedeaad13a9c0adf07d127e00c7082",
       "dependencies": [],
       "description": "Govern DataRaptor field mappings to prevent runtime errors when source metadata changes: naming, versioning, and dependency tracking. NOT for DataRaptor authoring fundamentals.",
       "file_location": "skills/omnistudio/omnistudio-field-mapping-governance",
@@ -111873,7 +111873,7 @@
       "templates": [
         "skills/omnistudio/omnistudio-field-mapping-governance/templates/omnistudio-field-mapping-governance-template.md"
       ],
-      "updated": "2026-04-17",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -112028,6 +112028,7 @@
       "category": "omnistudio",
       "chunk_ids": [
         "078d79102800c6764fbb",
+        "0aa16bf5f5519b29e245",
         "16dc414c31b649785f10",
         "285739d7b394204d0223",
         "2a12ffac819496e4c278",
@@ -112051,10 +112052,9 @@
         "bdc418fe80229b29e55e",
         "c73dc59f076373dc6f30",
         "cd9836a0e65f0889891b",
-        "dd9559eecee54a80347b",
         "e19a7a866a1b7406b445"
       ],
-      "content_hash": "9d12e78f31a3abe4b6f7bb972e5072b38ecd29f96636db8c9e5a9da1f11d7a9d",
+      "content_hash": "030c234f820aaa3b163bd778fecd5412fc641ef3b33ee9847d512cb7484c37e6",
       "dependencies": [],
       "description": "Migrate classic Visualforce-based OmniScripts to LWC-based runtime with feature parity and regression testing. NOT for new OmniScript design.",
       "file_location": "skills/omnistudio/omnistudio-lwc-omniscript-migration",
@@ -112089,7 +112089,7 @@
       "templates": [
         "skills/omnistudio/omnistudio-lwc-omniscript-migration/templates/omnistudio-lwc-omniscript-migration-template.md"
       ],
-      "updated": "2026-04-17",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -112102,6 +112102,7 @@
         "13fe7fb8a93c6ac92739",
         "210ef86d5d7277fdc5d0",
         "3f27a475e83713b9d973",
+        "42db8b18c03d946d5d75",
         "43ead215015cc671834d",
         "52d2a7047cde580db82c",
         "69e26758c89d0ce9ec3c",
@@ -112120,10 +112121,9 @@
         "e5188fae44976bbc03db",
         "eda1783b56dbe841cc89",
         "f06c030107e99474fee3",
-        "f2638b11e389c35933ce",
-        "fb6196b5553a67bad33f"
+        "f2638b11e389c35933ce"
       ],
-      "content_hash": "659436a7ae62d1476a837d65e022d2db8c4e223f6409fbd99d05f2d7a37a2e03",
+      "content_hash": "f108ddedf8b87a6cf33a5b9ac7fdf951f719ebcf6c0581a643ff7051de6396cf",
       "dependencies": [],
       "description": "Localize OmniScripts, FlexCards, and DataRaptors using Label-based translation, multi-language JSON, and locale-aware number/date formatting. NOT for Salesforce Translation Workbench alone.",
       "file_location": "skills/omnistudio/omnistudio-multi-language",
@@ -112158,7 +112158,7 @@
       "templates": [
         "skills/omnistudio/omnistudio-multi-language/templates/omnistudio-multi-language-template.md"
       ],
-      "updated": "2026-04-17",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },

@@ -33,7 +33,7 @@ updated: 2026-04-23
 
 # Flow Get Records Optimization
 
-## When To Use
+## Performance Symptoms
 
 - A Flow hits the 100-SOQL governor limit or times out.
 - Get Records inside a Loop.
@@ -41,7 +41,7 @@ updated: 2026-04-23
 - Large-collection filter returning tens of thousands of records when
   only a few are needed.
 
-## When NOT To Use
+## Out of Scope
 
 - One-record, one-lookup flows. Leave them alone.
 - Platform event triggers where SOQL is not the bottleneck.

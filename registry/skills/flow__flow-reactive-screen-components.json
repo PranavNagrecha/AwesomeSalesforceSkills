@@ -22,13 +22,13 @@
     "ba9b16b180a234c1ad2b",
     "d06ef0854c82888709a5",
     "d127350c825834345094",
-    "d6af17d111bc0654e403",
     "dba00a7cf1634fefe611",
     "e4f2c4043f5ef9e91041",
     "e72ac5cdee45d09f4ddb",
+    "ed9cedb031e235689121",
     "f45db7fb7d281ac41ba2"
   ],
-  "content_hash": "fe7b34bb405c2310fcd8ab16b7f96420a22a5e4475385d265a8d036d3bdc77fd",
+  "content_hash": "142a78f657ee8889bbb23366458c712bd4ec731903183fd57bed88e5575a8864",
   "dependencies": [],
   "description": "Build reactive Flow screens where one component updates another without navigation using reactive formulas and component outputs. NOT for Aura-based screens.",
   "file_location": "skills/flow/flow-reactive-screen-components",
@@ -64,7 +64,7 @@
   "templates": [
     "skills/flow/flow-reactive-screen-components/templates/flow-reactive-screen-components-template.md"
   ],
-  "updated": "2026-04-17",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

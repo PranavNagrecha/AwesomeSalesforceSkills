@@ -239,16 +239,16 @@ For deployable-metadata skills, add:
 - This guide is referenced from `AGENT_RULES.md` and `AGENTS.md`. Every skill-builder agent (`agents/*-skill-builder/AGENT.md`) lists it in Mandatory Reads. Every PR review and `/review` agent run applies it.
 - The `/new-skill` command (`commands/new-skill.md`) instructs authors to satisfy the checklist in § 7 before sync.
 
-### 8.2 Automated (implemented, WARN-level)
-`validate_skill_authoring_style()` in [`pipelines/validators.py`](../pipelines/validators.py) is called from `validate_one_skill()` in [`scripts/validate_repo.py`](../scripts/validate_repo.py) and emits **WARN-level** findings for the high-confidence duplication anti-patterns from § 6:
+### 8.2 Automated (implemented, ERROR-level)
+`validate_skill_authoring_style()` in [`pipelines/validators.py`](../pipelines/validators.py) is called from `validate_one_skill()` in [`scripts/validate_repo.py`](../scripts/validate_repo.py) and emits **ERROR-level** findings for the high-confidence duplication anti-patterns from § 6:
 
 | Check | Anti-pattern | Detection |
 |---|---|---|
-| `## When To Use` body section | § 6.1 — duplicates frontmatter `description` | Substring match on case variants |
-| `## Well-Architected Pillars` body section | § 6.4 — duplicates `references/well-architected.md` | Body marker + non-empty WAF reference |
-| Verbatim ≥120-char paragraph in both files | § 6.6 — same gotcha in two places | Set intersection of normalized paragraphs |
+| `## When To Use` body section | § 6.1 — duplicates frontmatter `description` | Line-prefix regex on H2 headings (case-insensitive) — H3 sub-headings exempt |
+| `## Well-Architected Pillars` body section | § 6.4 — duplicates `references/well-architected.md` | Line-prefix regex + non-empty WAF reference |
+| Verbatim ≥120-char prose paragraph in both files | § 6.6 — same gotcha in two places | Set intersection of normalized paragraphs; code fences and URL-citation bullets exempt |
 
-These are **WARN-only** — they do not block CI. Per-category shape rules (Apex/LWC needing fenced code, action skills needing field-mapping tables) are deliberately not implemented yet because the heuristics are fuzzier and false-positives across 900+ skills are expensive to triage. Promote to ERROR only after rules are tuned against the corpus.
+These checks **block CI**. The corpus was retrofitted to clear every flagged warning before the WARN→ERROR promotion, so a hit now means a real regression — a new skill (or an edit) reintroduced one of the three duplication anti-patterns. Per-category shape rules (Apex/LWC needing fenced code, action skills needing field-mapping tables) are deliberately not implemented yet because the heuristics are fuzzier and false-positives across 900+ skills are expensive to triage.
 
 ### 8.3 Retrofit policy
 Existing skills are **not retroactively in violation**. The guide is forward-looking — applied to:
@@ -282,4 +282,4 @@ Mass mechanical retrofit across all 800+ skills is explicitly out of scope. The 
 - This guide is human-maintained. Do not auto-generate.
 - When a new exemplar emerges (a skill that demonstrates a technique exceptionally well), add it to § 9 and link it from the relevant § 3 subsection.
 - When a category's expectations shift (e.g., a new domain folder is added under `skills/`), update the § 4 matrix.
-- The validator rules in § 8.2 are the riskiest part — tune them against the real corpus before promoting from WARN to ERROR.
+- The validator rules in § 8.2 were promoted to ERROR after the corpus was retrofitted clean. If a future rule expansion needs calibration, ship it as WARN first and promote only after the warning count reaches zero.

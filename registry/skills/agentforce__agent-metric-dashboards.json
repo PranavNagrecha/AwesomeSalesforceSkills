@@ -1,7 +1,6 @@
 {
   "category": "agentforce",
   "chunk_ids": [
-    "002b31012ad47bd01783",
     "0b11b90423e680dd628b",
     "1f8ddbf48950e3e239f7",
     "235ff75427e00e0e6abc",
@@ -14,6 +13,7 @@
     "7985a99f7060f6c11e47",
     "7d6cb81a45431de1915c",
     "868615c27cbb4f27a9a0",
+    "8f4b437e34531145c32d",
     "8fcfded0675891a05a5a",
     "963d432aecd1f4484afb",
     "9e909b71bb4a4253cfef",
@@ -28,7 +28,7 @@
     "fb5f831f7fef60986e0a",
     "fddc82e858f991127db0"
   ],
-  "content_hash": "f239ccc5fcf07680ef34c181642487390693a3dea0defcb666450cce0375da3f",
+  "content_hash": "b9f8914370be4190173a4b3f72f78eefac53fe6d8bcb42a85980d0e1fa93df2b",
   "dependencies": [],
   "description": "Observability for Agentforce: adoption, deflection, latency, cost, quality. NOT for agent evaluation/testing (see agentforce-eval-harness) or raw platform-event monitoring.",
   "file_location": "skills/agentforce/agent-metric-dashboards",
@@ -66,7 +66,7 @@
   "templates": [
     "skills/agentforce/agent-metric-dashboards/templates/agent-metric-dashboards-template.md"
   ],
-  "updated": "2026-04-17",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

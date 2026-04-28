@@ -23,18 +23,16 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # LWC Error Boundaries
 
 LWC has a lifecycle hook `errorCallback(error, stack)` on any parent that catches errors from child lifecycle hooks and renders. Wrapping tiles/widgets in a reusable boundary component keeps one failure from blanking the whole dashboard. This skill shows the canonical `c-error-boundary` implementation with a slot, a hasError reactive flag, a fallback UI, and a telemetry wire so production LWC failures are observable instead of invisible, while keeping boundaries shallow enough that only the offending widget degrades rather than the entire page.
 
-## When to Use
+## Adoption Signals
 
 Dashboards with multiple independent widgets; record home pages with many components.
-
-Typical trigger phrases that should route to this skill: `lwc errorcallback`, `lwc component blank page`, `error boundary lwc`, `lwc graceful fallback`.
 
 ## Recommended Workflow
 

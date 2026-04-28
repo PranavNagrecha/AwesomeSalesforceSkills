@@ -23,18 +23,19 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # LWC File Upload Patterns
 
 LWC file upload has three tiers: (1) `<lightning-file-upload>` for ≤2GB files associated with a record; (2) custom input + fetch for more control; (3) chunked upload for very large files using ContentVersion.VersionData. This skill picks the right tier and shows the minimal implementation.
 
-## When to Use
+## Adoption Signals
 
 Any file intake UI. Choose tier by max size, auth model, and UX requirements.
 
-Typical trigger phrases that should route to this skill: `lightning file upload lwc`, `chunked upload salesforce lwc`, `large file upload apex`, `contentdocumentlink lwc`.
+- `lightning-file-upload` when files are <2 GB and the user already has CRUD on the parent record.
+- Chunked upload via Apex when files exceed the platform single-call limit and progress feedback matters.
 
 ## Recommended Workflow
 

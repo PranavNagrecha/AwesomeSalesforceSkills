@@ -32,14 +32,14 @@ updated: 2026-04-23
 
 # Flow Decision Element Patterns
 
-## When To Use
+## Adoption Signals
 
 - A Decision element has 3+ outcomes.
 - Conditions reference nullable fields, formulas, or pick-list values.
 - Nested Decision after Decision in a record-triggered or screen flow.
 - Performance concern: large collection filtered per-element.
 
-## When NOT To Use
+## Out of Scope
 
 - Single-outcome, single-condition gate — use a Get Records filter or
   entry criteria instead.

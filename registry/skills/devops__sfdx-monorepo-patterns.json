@@ -13,13 +13,13 @@
     "6f61dd1ef070aa052207",
     "74262d2f373e6c110c37",
     "7a63ebbec1571a028777",
+    "7ad1d3c603db1dbb6bac",
     "7cd9e46574c2db12ac24",
     "85faa40b33cf9487570b",
     "8917871ca1818d7247de",
     "946d40ce4e117dd2cfbc",
     "961008a6b8a57b75d9f2",
     "9876a4a34ff4b2bfeae5",
-    "a671ae8250b757fe94a7",
     "a7994a7a0c484d2854d2",
     "b782b89760085b7a540e",
     "dc33eecaf7b611dc6abb",
@@ -28,7 +28,7 @@
     "fe4133c9ffcf1ddec042",
     "ff3b96c77250b04115f2"
   ],
-  "content_hash": "064d8d548be1e40f84ee665cc8d5e379c41749389095d5e0957f8516c347fdc8",
+  "content_hash": "22fb6a9496200cc91e9709320f24a58b843f0a07ea5a5a5c07a543e7be13d68c",
   "dependencies": [],
   "description": "Structure a single repo with multiple unlocked packages, shared templates, and cross-package test strategies. NOT for multi-repo org strategies.",
   "file_location": "skills/devops/sfdx-monorepo-patterns",
@@ -66,7 +66,7 @@
   "templates": [
     "skills/devops/sfdx-monorepo-patterns/templates/sfdx-monorepo-patterns-template.md"
   ],
-  "updated": "2026-04-17",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }
