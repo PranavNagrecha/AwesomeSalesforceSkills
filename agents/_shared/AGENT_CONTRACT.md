@@ -158,6 +158,7 @@ Citations are data, not prose. Every output ends with a `citations[]` block wher
 - Running `sf project deploy`, `sf data upsert`, or any write operation against the org.
 - Inlining SOQL that already exists as a probe recipe.
 - Returning Process Observations that restate the deliverable instead of adding peripheral signal.
+- **Restating canonical content across AGENT.md files.** When two or more AGENT.md files contain the same prose paragraph word-for-word, the canonical version belongs in `agents/_shared/` (linked) rather than copy-pasted. Enforced as ERROR by `pipelines/agent_validators.py:_validate_no_cross_agent_duplication` — the analog of skills' style guide § 6.6 (verbatim duplication between SKILL.md and references/gotchas.md). Exemptions: paragraphs inside the deliberately-templated Wave 10 sub-sections `### Persistence (Wave 10 contract)` and `### Scope Guardrails (Wave 10 contract)` (per `DELIVERABLE_CONTRACT.md`), and AGENT.md files with `status: deprecated` (their stub language is intentional).
 
 ---
 

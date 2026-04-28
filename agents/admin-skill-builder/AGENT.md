@@ -7,7 +7,7 @@ requires_org: false
 modes: [single]
 owner: sfskills-core
 created: 2026-04-16
-updated: 2026-04-16
+updated: 2026-04-28
 dependencies:
   shared:
     - AGENT_RULES.md
@@ -57,8 +57,7 @@ Read from MASTER_QUEUE.md or from calling agent:
 python3 scripts/search_knowledge.py "<skill-name>" --domain admin
 ```
 
-If `has_coverage: true` → surface the existing skill. Ask if this is an extension or a new skill. Do not duplicate.
-If `has_coverage: false` → proceed.
+Apply the coverage rule from `agents/_shared/SKILL_BUILDER_CORE.md` Step 2.
 
 ### Step 3 — Call Content Researcher
 
