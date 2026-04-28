@@ -37,7 +37,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-04-28
 ---
 
 # SLA Design and Escalation Matrix
@@ -68,10 +68,12 @@ Each tier typically maps to an Entitlement Process in Salesforce, and each prior
 
 Milestones in Salesforce Entitlement Processes support time-based actions at configurable percentage thresholds — most commonly 50%, 75%, 90%, and 100% (violation). Each threshold can trigger an email alert, a field update, an outbound message, or an Apex action. The escalation matrix document maps each threshold percentage to the specific notification target and automated action:
 
-- **50%** — Informational: notify the assigned agent that the clock is running. No escalation yet.
-- **75%** — Warning: notify the team lead or supervisor. Case may need help.
-- **90%** — Pre-breach: notify the support manager. Ownership transfer or escalation path should start.
-- **100% (violation)** — Breach: notify executive stakeholder and/or create a follow-up task. Trigger field update to mark the milestone as violated on the case record.
+| Threshold | Action |
+|---|---|
+| 50% | Informational: notify the assigned agent that the clock is running. No escalation yet. |
+| 75% | Warning: notify the team lead or supervisor. Case may need help. |
+| 90% | Pre-breach: notify the support manager. Ownership transfer or escalation path should start. |
+| 100% (violation) | Breach: notify executive stakeholder and/or create a follow-up task. Trigger field update to mark the milestone as violated on the case record. |
 
 The escalation matrix is a grid of tier x priority x threshold, with columns for notification target, automated action, and SLA clock basis. Designing this artifact before Salesforce configuration ensures consistent, reviewable coverage and makes the design auditable by business stakeholders.
 

@@ -45,7 +45,7 @@ dependencies:
   - apex/callouts-and-http-integrations
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-05
+updated: 2026-04-28
 ---
 
 # Sales Cloud Integration Patterns
@@ -76,10 +76,12 @@ Every integration between Sales Cloud and an external system must establish iden
 
 Not every object flows the same direction. A well-designed Sales Cloud integration defines directionality at the object level:
 
-- **Account / Product**: Typically bidirectional. ERP may master the legal entity name and billing address; Salesforce may master sales-specific fields like account owner and territory.
-- **Order**: Typically unidirectional from Salesforce to ERP. Once an order is placed in Salesforce (via Quote-to-Order or CPQ), it flows outbound. ERP returns status updates but does not create orders in Salesforce.
-- **Lead / Campaign**: Marketing automation pushes leads into Salesforce; campaign membership and response data flow bidirectional. Lead scoring may originate externally.
-- **Opportunity / OpportunityLineItem**: Usually Salesforce-mastered with summary data pushed to ERP for forecasting or pre-order visibility.
+| Object | Typical directionality |
+|---|---|
+| Account / Product | Typically bidirectional. ERP may master the legal entity name and billing address; Salesforce may master sales-specific fields like account owner and territory. |
+| Order | Typically unidirectional from Salesforce to ERP. Once an order is placed in Salesforce (via Quote-to-Order or CPQ), it flows outbound. ERP returns status updates but does not create orders in Salesforce. |
+| Lead / Campaign | Marketing automation pushes leads into Salesforce; campaign membership and response data flow bidirectional. Lead scoring may originate externally. |
+| Opportunity / OpportunityLineItem | Usually Salesforce-mastered with summary data pushed to ERP for forecasting or pre-order visibility. |
 
 Documenting this matrix up front prevents field-level conflict and duplicate-record issues.
 

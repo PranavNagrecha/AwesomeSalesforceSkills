@@ -34,7 +34,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-04-28
 ---
 
 # Org Edition and Feature Licensing
@@ -89,10 +89,12 @@ Many features are not included in any base edition and require separate add-on l
 
 Some features are **available** in an edition but must be **enabled** before they can be used:
 
-- **Flow Orchestration**: Available in Enterprise+ but must be enabled in Setup > Process Automation Settings.
-- **Einstein Activity Capture**: Available in certain editions but must be enabled per user.
-- **Territory Management**: Available in Enterprise+ but requires Setup > Territory Management > Enable.
-- **High Velocity Sales / Sales Engagement**: Available as a feature but requires explicit enablement.
+| Feature | Enablement requirement |
+|---|---|
+| Flow Orchestration | Available in Enterprise+ but must be enabled in Setup > Process Automation Settings. |
+| Einstein Activity Capture | Available in certain editions but must be enabled per user. |
+| Territory Management | Available in Enterprise+ but requires Setup > Territory Management > Enable. |
+| High Velocity Sales / Sales Engagement | Available as a feature but requires explicit enablement. |
 
 When a feature is "missing," always check whether it is an edition/licensing issue (feature not available) or an enablement issue (feature available but not turned on) before concluding that an upgrade is needed.
 

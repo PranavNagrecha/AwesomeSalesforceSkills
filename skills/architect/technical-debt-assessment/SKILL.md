@@ -30,7 +30,7 @@ triggers:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-04-28
 ---
 
 Use this skill when auditing a Salesforce org to identify and document technical debt across automation, code, data model, security configuration, and integrations. This skill produces a structured findings report with severity ratings and a prioritized remediation backlog. It does not implement fixes — use domain-specific skills (apex/, flow/, security/, integration/) for remediation work.
@@ -77,10 +77,12 @@ Use a consistent four-tier model for all findings:
 
 Pair each finding with the recommended owner role:
 
-- **Admin** — Configuration-level changes (deactivating flows, cleaning up permission sets, removing unused fields).
-- **Developer** — Code changes (deleting dead Apex, refactoring complex triggers, resolving automation overlap).
-- **Architect** — Structural decisions (consolidating duplicate objects, redesigning automation strategy, planning migration from Workflow Rules to Flow).
-- **Release Manager** — Deployment-related debt (hardcoded IDs, broken metadata dependencies, stale package versions).
+| Owner | Remediation type |
+|---|---|
+| Admin | Configuration-level changes (deactivating flows, cleaning up permission sets, removing unused fields). |
+| Developer | Code changes (deleting dead Apex, refactoring complex triggers, resolving automation overlap). |
+| Architect | Structural decisions (consolidating duplicate objects, redesigning automation strategy, planning migration from Workflow Rules to Flow). |
+| Release Manager | Deployment-related debt (hardcoded IDs, broken metadata dependencies, stale package versions). |
 
 ---
 
@@ -160,11 +162,13 @@ A before-save Flow writing a field and an Apex after trigger reading that same f
 
 Flag the following as complexity hotspots:
 
-- **Apex classes with cyclomatic complexity > 20** — Use a static analysis tool (PMD, CodeScan) or review manually for method-level branching density. High complexity = high maintenance cost and high bug introduction risk.
-- **Flows with more than 50 elements** — The 2,000-element interview limit is rarely approached, but 50+ element Flows are difficult to read, debug, and test. Candidates for subflow decomposition.
-- **Nested subflows more than 3 levels deep** — Subflow chains that go 4+ levels deep become effectively unreadable in the Flow Builder canvas. Refactor using Invocable Actions backed by Apex, or flatten the logic.
-- **Apex trigger files that contain business logic directly** — Logic embedded directly in trigger files (not delegated to handler classes) cannot be unit tested in isolation. This is both a debt and a test coverage risk.
-- **Formula fields referencing fields that no longer exist** — These produce runtime errors or display `#Error!` in the UI. Identifiable via Setup → Schema Builder or a metadata scan for broken references.
+| Hotspot | Why it matters |
+|---|---|
+| Apex classes with cyclomatic complexity > 20 | Use a static analysis tool (PMD, CodeScan) or review manually for method-level branching density. High complexity = high maintenance cost and high bug introduction risk. |
+| Flows with more than 50 elements | The 2,000-element interview limit is rarely approached, but 50+ element Flows are difficult to read, debug, and test. Candidates for subflow decomposition. |
+| Nested subflows more than 3 levels deep | Subflow chains that go 4+ levels deep become effectively unreadable in the Flow Builder canvas. Refactor using Invocable Actions backed by Apex, or flatten the logic. |
+| Apex trigger files that contain business logic directly | Logic embedded in trigger files (not delegated to handler classes) cannot be unit tested in isolation. This is both a debt and a test coverage risk. |
+| Formula fields referencing fields that no longer exist | These produce runtime errors or display `#Error!` in the UI. Identifiable via Setup → Schema Builder or a metadata scan for broken references. |
 
 ### Step 6 — Security Debt Indicators
 

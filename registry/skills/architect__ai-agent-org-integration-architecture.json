@@ -76,7 +76,7 @@
     "fb4e9dcb9c3464b04195",
     "fdcb059d750fcaa5719a"
   ],
-  "content_hash": "9337817eddc0c6b7eb3e05b98ed29f78438f88a64fd2c5552c184463f087f233",
+  "content_hash": "c0937da9eb4bb32bac64d4518d80d69f8612751e68f179192c9fe8b624f3e580",
   "dependencies": [],
   "description": "Use this skill to design and review the architecture for integrating external AI agents (Claude, ChatGPT, LangChain, custom LLM pipelines) with a Salesforce org \u2014 covering integration pattern selection (MCP vs. REST vs. Platform Events), auth model design, data exposure scope, org governor limit planning, and Well-Architected tradeoffs. Trigger keywords: AI agent Salesforce integration, agent-to-org architecture, LLM Salesforce access pattern, external AI org connectivity, agentic system org design. NOT for native Agentforce Agent creation inside Salesforce (use agent-topic-design), NOT for implementation-level Apex tool code (use mcp-tool-definition-apex), NOT for ETL or data pipeline design (use sf-to-llm-data-pipelines).",
   "file_location": "skills/architect/ai-agent-org-integration-architecture",
@@ -132,7 +132,7 @@
   "templates": [
     "skills/architect/ai-agent-org-integration-architecture/templates/ai-agent-org-integration-architecture-template.md"
   ],
-  "updated": "2026-04-07",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

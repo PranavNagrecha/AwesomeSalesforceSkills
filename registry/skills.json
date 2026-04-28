@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 45
   },
-  "generated_from_hash": "a1a7ff55e72fdb6ff19eb08953ba785f1bdfedeb9c347acce8251f099c60e48e",
+  "generated_from_hash": "9dce736ea72bd980a03f78343f826992f9b5600e398af0b0ffea50a0fcb3cf99",
   "schema_version": 1,
   "skill_count": 907,
   "skills": [
@@ -55282,7 +55282,7 @@
         "fb4e9dcb9c3464b04195",
         "fdcb059d750fcaa5719a"
       ],
-      "content_hash": "9337817eddc0c6b7eb3e05b98ed29f78438f88a64fd2c5552c184463f087f233",
+      "content_hash": "c0937da9eb4bb32bac64d4518d80d69f8612751e68f179192c9fe8b624f3e580",
       "dependencies": [],
       "description": "Use this skill to design and review the architecture for integrating external AI agents (Claude, ChatGPT, LangChain, custom LLM pipelines) with a Salesforce org \u2014 covering integration pattern selection (MCP vs. REST vs. Platform Events), auth model design, data exposure scope, org governor limit planning, and Well-Architected tradeoffs. Trigger keywords: AI agent Salesforce integration, agent-to-org architecture, LLM Salesforce access pattern, external AI org connectivity, agentic system org design. NOT for native Agentforce Agent creation inside Salesforce (use agent-topic-design), NOT for implementation-level Apex tool code (use mcp-tool-definition-apex), NOT for ETL or data pipeline design (use sf-to-llm-data-pipelines).",
       "file_location": "skills/architect/ai-agent-org-integration-architecture",
@@ -55338,7 +55338,7 @@
       "templates": [
         "skills/architect/ai-agent-org-integration-architecture/templates/ai-agent-org-integration-architecture-template.md"
       ],
-      "updated": "2026-04-07",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -56220,7 +56220,7 @@
         "fad58826c7b19564844a",
         "fae61db3cf038c56150b"
       ],
-      "content_hash": "6876a33944996331b2bb6514c5aa7f996243e19f21c311938bd032679ada5d51",
+      "content_hash": "5727273691bbd5480c274703f583ce90ef17cbe73c70d74bcf8283d9b47ba597",
       "dependencies": [],
       "description": "Use this skill when embedding a CRM Analytics dashboard into a Lightning App Builder page, Experience Cloud page, or when embedding a custom LWC inside an Analytics dashboard. Trigger keywords: wave-wave-dashboard-lwc, wave-community-dashboard, analytics__Dashboard target, embed dashboard, record-id context filtering, dashboard state JSON, analytics component. NOT for standard LWC development unrelated to Analytics dashboards, NOT for designing dashboard content or datasets, NOT for CRM Analytics app creation or dataset management.",
       "file_location": "skills/architect/analytics-embedded-components",
@@ -56264,7 +56264,7 @@
       "templates": [
         "skills/architect/analytics-embedded-components/templates/analytics-embedded-components-template.md"
       ],
-      "updated": "2026-04-13",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -56790,7 +56790,7 @@
         "fcc80ec7fe1431d81642",
         "fd04907c8c6879798f4d"
       ],
-      "content_hash": "c295afc0badc3e0ccc0a7ee5b89a414831e2b2032d872c7106361eb19e9a2180",
+      "content_hash": "d59046bf5afec25f001b3898f8893a0cb29fea13300960d085d95d010a10f83e",
       "dependencies": [],
       "description": "Use this skill when designing or evaluating the architecture of a Salesforce Commerce implementation that involves choosing between B2B Commerce (on Core, Lightning platform) and B2C Commerce (Salesforce Commerce Cloud / SFCC). Trigger keywords: B2B vs B2C architecture, SFCC vs B2B Commerce, Commerce Cloud platform decision, B2B data model architecture, B2C storefront architecture, commerce infrastructure comparison, platform selection architecture. NOT for implementation mechanics \u2014 use admin/b2b-commerce-store-setup or admin/b2c-commerce-store-setup for configuration work. NOT for requirements gathering \u2014 use admin/b2b-vs-b2c-requirements for pre-build platform selection based on buyer journey. NOT for D2C vs B2B feature comparisons within Lightning-based Commerce.",
       "file_location": "skills/architect/b2b-vs-b2c-architecture",
@@ -56840,7 +56840,7 @@
       "templates": [
         "skills/architect/b2b-vs-b2c-architecture/templates/b2b-vs-b2c-architecture-template.md"
       ],
-      "updated": "2026-04-12",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -56913,7 +56913,7 @@
         "fcca3cbae91fc59d3109",
         "fe1de896d1498eaa029b"
       ],
-      "content_hash": "a41324d5a192fe31b7b18641b5f09670285d61d57513e6b424a248186717fe08",
+      "content_hash": "3eecf7bf6ed74ee6ca6e1334fd73f604372034ccc0904c59494a92637e71ead7",
       "dependencies": [
         "fsc-architecture-patterns"
       ],
@@ -56960,7 +56960,7 @@
       "templates": [
         "skills/architect/banking-lending-architecture/templates/banking-lending-architecture-template.md"
       ],
-      "updated": "2026-04-13",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -58249,7 +58249,6 @@
         "8c658972545714c62cf9",
         "994e97ccef23c61097dc",
         "9dc6c5028d78f357641b",
-        "a05252ecc9c9f54be28d",
         "a83f31c38b8f501b7d83",
         "ad07cddc04cd15524517",
         "b0bdd6cacfd582ae27a1",
@@ -58285,7 +58284,7 @@
         "fe27078b4a664a88404b",
         "fffc0d1a9ae33d233bc9"
       ],
-      "content_hash": "889265d467a2ad250320d05e1ee3db814a5f816a2d2b654ab73eba2d46376656",
+      "content_hash": "17e550b0fa0d5484c6d77cc4a3eabb4c008055d29094a14814465e828a842156",
       "dependencies": [],
       "description": "Use when deciding between CRM Analytics (formerly Einstein Analytics / Tableau CRM) and Tableau Desktop, Tableau Server, or Tableau Cloud for a Salesforce-centric analytics requirement. Triggers: 'CRM Analytics vs Tableau', 'which BI tool for Salesforce', 'Tableau for Salesforce data', 'Einstein Analytics vs Tableau', 'analytics platform decision', 'licensing comparison CRM Analytics Tableau', 'Tableau Next', 'Tableau+ for Salesforce'. NOT for implementation guidance on configuring CRM Analytics datasets, recipes, or Tableau workbooks \u2014 use admin/einstein-analytics-basics for that.",
       "file_location": "skills/architect/crm-analytics-vs-tableau-decision",
@@ -58333,7 +58332,7 @@
       "templates": [
         "skills/architect/crm-analytics-vs-tableau-decision/templates/crm-analytics-vs-tableau-decision-template.md"
       ],
-      "updated": "2026-04-13",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -61520,7 +61519,7 @@
         "fbbbead74fb4bd97e794",
         "fc573574b21a3190029e"
       ],
-      "content_hash": "1bd768b6982dad612220c232a3feea95871c990f1704714bcd88754f19a19e31",
+      "content_hash": "a797fc04e13cca259d4b866926ca32d62cddaa43b2e557b9d841c6eb8dfb535c",
       "dependencies": [],
       "description": "Use this skill when architecting Health Cloud orgs that must satisfy geographic data residency, HIPAA, GDPR, or national health-data regulations on Hyperforce \u2014 including scoping the HIPAA BAA, mapping transient processing exceptions, and documenting which features require separate compliance addenda. NOT for generic multi-region Salesforce architecture unrelated to healthcare data, and NOT for non-healthcare data residency requirements (use a general Hyperforce architecture skill for those).",
       "file_location": "skills/architect/health-cloud-data-residency",
@@ -61569,7 +61568,7 @@
       "templates": [
         "skills/architect/health-cloud-data-residency/templates/health-cloud-data-residency-template.md"
       ],
-      "updated": "2026-04-11",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -61990,7 +61989,7 @@
         "fbd513f9546f00e47f6a",
         "fe4f1710330673cd993e"
       ],
-      "content_hash": "47e73eb51abecfc0652a6b172a82e26629b4864f5a5adeb1a6f50e5b69ea7667",
+      "content_hash": "af96ad82d2083d41a3a3a32728a56f48fa11eeaf0c02d7ed1bb302736c428ce0",
       "dependencies": [],
       "description": "Use this skill to design HIPAA-compliant Salesforce org architectures for healthcare organizations storing or processing Protected Health Information (PHI). Trigger keywords: HIPAA BAA, PHI storage, Shield encryption, Health Cloud compliance, HIPAA technical safeguards, covered entity Salesforce architecture. NOT for general security architecture or non-healthcare compliance.",
       "file_location": "skills/architect/hipaa-compliance-architecture",
@@ -62040,7 +62039,7 @@
       "templates": [
         "skills/architect/hipaa-compliance-architecture/templates/hipaa-compliance-architecture-template.md"
       ],
-      "updated": "2026-04-11",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -62712,7 +62711,7 @@
         "fde3a619a88c2880b2ce",
         "fe62710a205e102be986"
       ],
-      "content_hash": "6c67a48ff6c5f571bf3f4471e3ecefb7dbaa1c029df34db367271d4f9ac732f1",
+      "content_hash": "3a59501112239365307716aaad0f7563749d67d5b20ed9de67e676fad39f1e77",
       "dependencies": [
         "fsc-architecture-patterns",
         "industries-insurance-setup"
@@ -62760,7 +62759,7 @@
       "templates": [
         "skills/architect/insurance-cloud-architecture/templates/insurance-cloud-architecture-template.md"
       ],
-      "updated": "2026-04-13",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -64482,7 +64481,7 @@
         "fbfb98490f6b66052bfb",
         "fc7012d1b453e1242f8c"
       ],
-      "content_hash": "5851baecef23eb725a445ff98e60896badf81926e0cdff87d3224f46f30bf555",
+      "content_hash": "205a99eaf758d3c41c1e3d43c631c2efb70b37fe00fb016b57910d65b3b90d4f",
       "dependencies": [],
       "description": "Assessing metadata type coverage across Salesforce deployment channels (Metadata API, SFDX, unlocked packages, managed packages) and mapping component dependency graphs using Tooling API MetadataComponentDependency. Use when planning packaging strategies, evaluating deployment risk, performing impact analysis before component deletion, or mapping tightly coupled metadata for modular architecture. Trigger keywords: metadata coverage report, dependency graph, MetadataComponentDependency, impact analysis, unsupported metadata types, packaging eligibility. NOT for deployment mechanics (use destructive-changes-deployment). NOT for CI/CD pipeline design (use continuous-integration-testing).",
       "file_location": "skills/architect/metadata-coverage-and-dependencies",
@@ -64531,7 +64530,7 @@
       "templates": [
         "skills/architect/metadata-coverage-and-dependencies/templates/metadata-coverage-and-dependencies-template.md"
       ],
-      "updated": "2026-04-05",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -64747,7 +64746,7 @@
         "f7700e3117824c01af6a",
         "fe39346528fb8ef0b2e0"
       ],
-      "content_hash": "d066d686cd02bb055a5536033af714c1b9e9764908a9816c1eb86b08b59c780d",
+      "content_hash": "a720793b3d8da423ad0edc1b48632b16d285b6a11d4e7b912f3ce9b3f82afce5",
       "dependencies": [],
       "description": "Use this skill when designing or evaluating a Marketing Cloud Engagement multi-Business-Unit hierarchy \u2014 covering Enterprise 2.0 parent/child BU structure, Shared Data Extensions, cross-BU user provisioning, and data segregation governance. NOT for single-BU setup, Marketing Cloud Account Engagement (Pardot) standalone configuration, or CRM-side campaign hierarchy design.",
       "file_location": "skills/architect/multi-bu-marketing-architecture",
@@ -64796,7 +64795,7 @@
       "templates": [
         "skills/architect/multi-bu-marketing-architecture/templates/multi-bu-marketing-architecture-template.md"
       ],
-      "updated": "2026-04-10",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -66895,7 +66894,7 @@
         "f9c388d9e085bc9729bb",
         "ff973a34942381c3a2b0"
       ],
-      "content_hash": "b5c4e5525926d4b63e4c934a0c1e2c761c233fa5f08cc9023dfdcdd626578697",
+      "content_hash": "4d13231cd6b3d0d6ef0c6d73b6aeb2b7ec1c0857fd738eedbd1676846dc692e2",
       "dependencies": [],
       "description": "Use when evaluating which Salesforce features are available in a given org edition, determining whether a planned solution requires an add-on license, or investigating why a feature is unavailable in the current org. Triggers: 'feature not available in our edition', 'does Enterprise include Einstein', 'Unlimited vs Performance edition differences', 'we need Flow Orchestration but do not have it', 'what license do we need for Agentforce'. NOT for user license seat count planning (use capacity-planning), NOT for AppExchange package licensing (use appexchange-management).",
       "file_location": "skills/architect/org-edition-and-feature-licensing",
@@ -66941,7 +66940,7 @@
       "templates": [
         "skills/architect/org-edition-and-feature-licensing/templates/org-edition-and-feature-licensing-template.md"
       ],
-      "updated": "2026-04-04",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -67642,7 +67641,7 @@
         "efde3be138afe80779d3",
         "f561fa4f80a9590a3218"
       ],
-      "content_hash": "685661c016ce7fe26b336a74ecc104bb91dc7764fe34e7c0e9d9523660a2c9a3",
+      "content_hash": "90700b56fdc2a3abfb210354949bcc5158ab674610f802004c6c3fd7f42de127",
       "dependencies": [
         "architect/integration-framework-design",
         "apex/callouts-and-http-integrations"
@@ -67695,7 +67694,7 @@
       "templates": [
         "skills/architect/sales-cloud-integration-patterns/templates/sales-cloud-integration-patterns-template.md"
       ],
-      "updated": "2026-04-05",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -68165,6 +68164,7 @@
         "b38e6aad7972f7cd140f",
         "b4035629da396fda436e",
         "ba02519cbbe2686ac5a1",
+        "be1c88e35b55626d11e9",
         "be8afc5db9209215d656",
         "beefcdb5999ce9f28098",
         "c3ef4210ac86286d1cfe",
@@ -68194,7 +68194,7 @@
         "fef2c27877abe1a3b373",
         "ff3be6e00eb8b35a95c2"
       ],
-      "content_hash": "29cf526d638e8b7332c03edca3386bc25a6ade48dfe762896cab564926d122a3",
+      "content_hash": "11969571cf6b2fd165658836c1c7dab3a3c122538a41978673e9d5a7ee755b61",
       "dependencies": [],
       "description": "Use when designing the SLA tier definition table, escalation matrix document, and milestone threshold configuration for a Salesforce Service Cloud implementation. Covers designing the artifact layer \u2014 tier tiers (e.g., Enterprise/Professional/Basic), response and resolution time targets, business hours mapping, milestone percentage thresholds at 50/75/90/100%, and the escalation action matrix that maps thresholds to notification targets and automated actions. Triggers: SLA design, escalation matrix, milestone thresholds, tier definition, business hours alignment, SLA enforcement design. NOT for entitlement process configuration steps (use admin/case-management-setup), NOT for escalation rule setup (use admin/escalation-rules), NOT for CPQ quoting SLAs.",
       "file_location": "skills/architect/sla-design-and-escalation-matrix",
@@ -68243,7 +68243,7 @@
       "templates": [
         "skills/architect/sla-design-and-escalation-matrix/templates/sla-design-and-escalation-matrix-template.md"
       ],
-      "updated": "2026-04-06",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -68717,7 +68717,7 @@
         "f7b5f1fa0eefac5a406c",
         "fe131b84a96afae713d9"
       ],
-      "content_hash": "32293f17f5d15f3227cfe49a34955330b3c93471635853edf973bc08c27f8bcb",
+      "content_hash": "0a368b433674374fd2949c137f02a20e03e2564dbedb02d683f113e761ffd2d9",
       "dependencies": [],
       "description": "Use when auditing a Salesforce org for technical debt: dead code, unused automations, overlapping Flow and Apex triggers, deprecated features, configuration complexity, and legacy patterns. Triggers: technical debt review, org health check, dead code analysis, automation overlap, deprecated features, complexity audit. NOT for implementing the fixes identified (use role-specific skills) or for security-specific reviews (use security-architecture-review).",
       "file_location": "skills/architect/technical-debt-assessment",
@@ -68758,7 +68758,7 @@
       "templates": [
         "skills/architect/technical-debt-assessment/templates/technical-debt-assessment-template.md"
       ],
-      "updated": "2026-04-04",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },

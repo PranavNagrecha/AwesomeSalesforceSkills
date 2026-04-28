@@ -64,7 +64,6 @@
     "8c658972545714c62cf9",
     "994e97ccef23c61097dc",
     "9dc6c5028d78f357641b",
-    "a05252ecc9c9f54be28d",
     "a83f31c38b8f501b7d83",
     "ad07cddc04cd15524517",
     "b0bdd6cacfd582ae27a1",
@@ -100,7 +99,7 @@
     "fe27078b4a664a88404b",
     "fffc0d1a9ae33d233bc9"
   ],
-  "content_hash": "889265d467a2ad250320d05e1ee3db814a5f816a2d2b654ab73eba2d46376656",
+  "content_hash": "17e550b0fa0d5484c6d77cc4a3eabb4c008055d29094a14814465e828a842156",
   "dependencies": [],
   "description": "Use when deciding between CRM Analytics (formerly Einstein Analytics / Tableau CRM) and Tableau Desktop, Tableau Server, or Tableau Cloud for a Salesforce-centric analytics requirement. Triggers: 'CRM Analytics vs Tableau', 'which BI tool for Salesforce', 'Tableau for Salesforce data', 'Einstein Analytics vs Tableau', 'analytics platform decision', 'licensing comparison CRM Analytics Tableau', 'Tableau Next', 'Tableau+ for Salesforce'. NOT for implementation guidance on configuring CRM Analytics datasets, recipes, or Tableau workbooks \u2014 use admin/einstein-analytics-basics for that.",
   "file_location": "skills/architect/crm-analytics-vs-tableau-decision",
@@ -148,7 +147,7 @@
   "templates": [
     "skills/architect/crm-analytics-vs-tableau-decision/templates/crm-analytics-vs-tableau-decision-template.md"
   ],
-  "updated": "2026-04-13",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

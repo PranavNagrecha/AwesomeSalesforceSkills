@@ -37,7 +37,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-10
+updated: 2026-04-28
 ---
 
 # Multi-BU Marketing Architecture
@@ -99,11 +99,13 @@ For organizations with strict regulatory requirements (GDPR data residency, cont
 
 Successful multi-BU implementations establish explicit governance early:
 
-- **Naming conventions**: BU names, DE folder names, and sender profile names should follow a consistent taxonomy that identifies the owning brand and region at a glance.
-- **Shared asset register**: Maintain documentation (or a dedicated Parent BU folder) of which DEs are shared, which Child BUs have access, and who is the data steward.
-- **Centralized suppression management**: Global unsubscribe and suppression lists belong in the Parent BU and should be shared to all Child BUs that send to the same subscriber population.
-- **BU creation checklist**: Each new Child BU should go through a provisioning runbook covering: sender authentication (SAP, DKIM, Reply Mail Management), reply mail setup, role assignment for the local team, and initial shared DE permissions.
-- **Hierarchy depth limit**: Keep hierarchies flat — ideally a single Parent + one tier of Child BUs. A second tier (grandchild BUs) multiplies admin surface area and complicates send attribution in Analytics Builder reports, which aggregate by BU and do not automatically roll up grandchild sends to the grandparent.
+| Pattern | What it enforces |
+|---|---|
+| Naming conventions | BU names, DE folder names, and sender profile names should follow a consistent taxonomy that identifies the owning brand and region at a glance. |
+| Shared asset register | Maintain documentation (or a dedicated Parent BU folder) of which DEs are shared, which Child BUs have access, and who is the data steward. |
+| Centralized suppression management | Global unsubscribe and suppression lists belong in the Parent BU and should be shared to all Child BUs that send to the same subscriber population. |
+| BU creation checklist | Each new Child BU should go through a provisioning runbook covering: sender authentication (SAP, DKIM, Reply Mail Management), reply mail setup, role assignment for the local team, and initial shared DE permissions. |
+| Hierarchy depth limit | Keep hierarchies flat — ideally a single Parent + one tier of Child BUs. A second tier (grandchild BUs) multiplies admin surface area and complicates send attribution in Analytics Builder reports, which aggregate by BU and do not automatically roll up grandchild sends to the grandparent. |
 
 ---
 

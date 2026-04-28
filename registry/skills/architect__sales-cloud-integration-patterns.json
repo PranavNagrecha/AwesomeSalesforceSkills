@@ -78,7 +78,7 @@
     "efde3be138afe80779d3",
     "f561fa4f80a9590a3218"
   ],
-  "content_hash": "685661c016ce7fe26b336a74ecc104bb91dc7764fe34e7c0e9d9523660a2c9a3",
+  "content_hash": "90700b56fdc2a3abfb210354949bcc5158ab674610f802004c6c3fd7f42de127",
   "dependencies": [
     "architect/integration-framework-design",
     "apex/callouts-and-http-integrations"
@@ -131,7 +131,7 @@
   "templates": [
     "skills/architect/sales-cloud-integration-patterns/templates/sales-cloud-integration-patterns-template.md"
   ],
-  "updated": "2026-04-05",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

@@ -36,7 +36,7 @@ triggers:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-05
+updated: 2026-04-28
 ---
 
 # Metadata Coverage and Dependencies
@@ -54,11 +54,14 @@ The Metadata Coverage Report answers the first question. The Tooling API Metadat
 The Metadata Coverage Report is the canonical source of truth for which metadata types are supported across Salesforce deployment channels. It is published by Salesforce at `https://developer.salesforce.com/docs/metadata-coverage` and is versioned by API release.
 
 The report covers support status across these channels:
-- **Metadata API** — retrieve and deploy via `sf project retrieve/deploy` or the SOAP/REST deploy endpoints.
-- **Source Tracking** — whether changes to the type are tracked in scratch orgs and sandboxes for incremental pull/push.
-- **Unlocked Packages** — whether the type can be included in an unlocked package.
-- **2GP Managed Packages** — second-generation managed package support.
-- **1GP Managed Packages** — classic (first-generation) managed package support.
+
+| Channel | What it indicates |
+|---|---|
+| Metadata API | Retrieve and deploy via `sf project retrieve/deploy` or the SOAP/REST deploy endpoints. |
+| Source Tracking | Whether changes to the type are tracked in scratch orgs and sandboxes for incremental pull/push. |
+| Unlocked Packages | Whether the type can be included in an unlocked package. |
+| 2GP Managed Packages | Second-generation managed package support. |
+| 1GP Managed Packages | Classic (first-generation) managed package support. |
 
 Each metadata type has one of three statuses per channel: **Supported**, **Not Supported**, or **Beta**. Beta types may work but carry no forward-compatibility guarantee.
 
@@ -73,11 +76,13 @@ Each metadata type has one of three statuses per channel: **Supported**, **Not S
 
 Not all metadata is created equal. Some frequently encountered types with coverage gaps include:
 
-- **Knowledge Settings** — often unsupported in packages; requires post-deploy configuration.
-- **Territory Management** — Enterprise Territory Management metadata has partial Metadata API support; packaging support varies by type and version.
-- **Certain Standard Value Sets** — some picklist standard value sets are not retrievable or deployable.
-- **Einstein/AI Configuration** — prediction builders, recommendation strategies, and some AI features have limited or no Metadata API coverage.
-- **Shield Platform Encryption** — encryption policies and tenant secrets are not deployable via Metadata API.
+| Type | Coverage gap |
+|---|---|
+| Knowledge Settings | Often unsupported in packages; requires post-deploy configuration. |
+| Territory Management | Enterprise Territory Management metadata has partial Metadata API support; packaging support varies by type and version. |
+| Certain Standard Value Sets | Some picklist standard value sets are not retrievable or deployable. |
+| Einstein/AI Configuration | Prediction builders, recommendation strategies, and some AI features have limited or no Metadata API coverage. |
+| Shield Platform Encryption | Encryption policies and tenant secrets are not deployable via Metadata API. |
 
 Always verify against the current API version. Coverage improves with each release.
 
