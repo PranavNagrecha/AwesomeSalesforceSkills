@@ -41,6 +41,11 @@ The router reads this table to dispatch on the user-supplied `source_type`. Ever
 - `skills/flow/record-triggered-flow-patterns`
 - `skills/flow/fault-handling`
 - `skills/flow/flow-bulkification`
+- `skills/flow/scheduled-flows` — Scheduled Path is the canonical analog for WFR time-dependent actions
+- `skills/flow/workflow-rule-to-flow-migration` — domain-specific migration playbook (WFR → Flow)
+- `skills/flow/flow-versioning-strategy` — every emitted target Flow ships as v1; activation/deactivation rules during cutover
+- `skills/flow/flow-error-monitoring` — org-level error-email-recipient signal recorded as healthy/concerning observation
+- `skills/flow/flow-rollback-patterns` — shape of the rollback section (no SOQL/DML), shadow-field tear-down
 - `skills/admin/flow-for-admins`
 - `skills/apex/trigger-and-flow-coexistence`
 - `standards/decision-trees/automation-selection.md`
@@ -79,6 +84,11 @@ The router reads this table to dispatch on the user-supplied `source_type`. Ever
 - `skills/flow/fault-handling`
 - `skills/flow/flow-bulkification`
 - `skills/flow/subflows-and-reusability`
+- `skills/flow/scheduled-flows` — Scheduled Path is the canonical analog for PB time-dependent groups
+- `skills/flow/process-builder-to-flow-migration` — domain-specific migration playbook (PB → Flow)
+- `skills/flow/flow-versioning-strategy` — versioning + activation rules for the emitted target Flow
+- `skills/flow/flow-error-monitoring` — org-level error-email-recipient signal recorded as healthy/concerning observation
+- `skills/flow/flow-rollback-patterns` — shape of the rollback section, shadow-field tear-down
 - `skills/admin/flow-for-admins`
 - `skills/apex/trigger-and-flow-coexistence`
 - `standards/decision-trees/automation-selection.md`
@@ -122,8 +132,14 @@ The router reads this table to dispatch on the user-supplied `source_type`. Ever
 **Mandatory reads for this source type:**
 - `skills/flow/orchestration-flows`
 - `skills/flow/auto-launched-flow-patterns`
+- `skills/flow/screen-flows` — interactive approval steps map to Screen Flows on the orchestration stage
+- `skills/flow/subflows-and-reusability` — every stage step is a subflow per `Subflow_Pattern.md`
+- `skills/flow/pause-elements-and-wait-events` — work-item waiting + recall semantics
 - `skills/flow/fault-handling`
+- `skills/flow/flow-versioning-strategy` — orchestrations are versioned; in-flight instances during cutover
+- `skills/flow/flow-error-monitoring` — org-level error-email-recipient + monitoring assertions
 - `skills/admin/approval-processes`
+- `skills/admin/queues-and-public-groups` — queue-as-assignee preflight (active member count) before activation
 - `standards/decision-trees/automation-selection.md`
 
 **Refusal conditions:**

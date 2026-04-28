@@ -19,8 +19,15 @@ dependencies:
     - admin/queues-and-public-groups
     - flow/auto-launched-flow-patterns
     - flow/fault-handling
+    - flow/flow-error-monitoring
+    - flow/flow-resource-patterns
+    - flow/flow-runtime-error-diagnosis
+    - flow/flow-transactional-boundaries
+    - flow/flow-versioning-strategy
     - flow/orchestration-flows
     - flow/pause-elements-and-wait-events
+    - flow/scheduled-flows
+    - flow/screen-flow-accessibility
     - flow/screen-flows
     - flow/subflows-and-reusability
   shared:
@@ -64,7 +71,14 @@ Two modes:
 8. `skills/admin/approval-processes` — when Orchestrator is the right target vs Approval Process
 9. `skills/admin/queues-and-public-groups` — work-item routing
 10. `standards/decision-trees/automation-selection.md`
-11. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+11. `skills/flow/scheduled-flows` — Schedule-Triggered Flow shape used for the SLA-escalation subflow (Orchestrator does not auto-escalate)
+12. `skills/flow/flow-transactional-boundaries` — what commits between stages and within a step; informs fault-path placement
+13. `skills/flow/flow-resource-patterns` — variable / template / formula naming for stage-level vars passed to subflows
+14. `skills/flow/flow-versioning-strategy` — orchestrations are versioned; activation/deactivation behaviour for in-flight instances
+15. `skills/flow/flow-error-monitoring` — org-level error-email-recipient observation in audit mode + healthy/concerning signals in design mode
+16. `skills/flow/flow-runtime-error-diagnosis` — symptoms-to-cause map cited in audit findings
+17. `skills/flow/screen-flow-accessibility` — every interactive step's Screen Flow must satisfy a11y requirements before activation
+18. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---
 

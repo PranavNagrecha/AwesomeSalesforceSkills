@@ -17,7 +17,17 @@ dependencies:
     - admin/agent-output-formats
     - apex/trigger-and-flow-coexistence
     - flow/flow-bulkification
+    - flow/flow-collection-processing
+    - flow/flow-cross-object-updates
+    - flow/flow-debugging
+    - flow/flow-decision-element-patterns
+    - flow/flow-error-monitoring
+    - flow/flow-get-records-optimization
     - flow/flow-large-data-volume-patterns
+    - flow/flow-record-save-order-interaction
+    - flow/flow-resource-patterns
+    - flow/flow-runtime-error-diagnosis
+    - flow/flow-transactional-boundaries
   shared:
     - AGENT_CONTRACT.md
     - DELIVERABLE_CONTRACT.md
@@ -54,7 +64,17 @@ For a given Flow or sObject, decides whether the automation is in the right tool
 5. `templates/flow/FaultPath_Template.md`
 6. `templates/flow/Subflow_Pattern.md`
 7. `skills/apex/trigger-and-flow-coexistence/SKILL.md`
-8. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+8. `skills/flow/flow-collection-processing/SKILL.md` — collection bulkification + map-vs-loop signal for Step 3
+9. `skills/flow/flow-cross-object-updates/SKILL.md` — Update-Records-via-related-list footguns flagged in Step 3
+10. `skills/flow/flow-get-records-optimization/SKILL.md` — Get-Records-in-loop and selective-filter signals
+11. `skills/flow/flow-decision-element-patterns/SKILL.md` — decision branching anti-patterns and isChanged()/isNew() pitfalls
+12. `skills/flow/flow-resource-patterns/SKILL.md` — variable / formula / template usage signals
+13. `skills/flow/flow-record-save-order-interaction/SKILL.md` — before-save vs after-save ordering vs Apex triggers (Step 4 co-existence)
+14. `skills/flow/flow-transactional-boundaries/SKILL.md` — when an action commits / when DML rolls back, drives the fault-path verdict
+15. `skills/flow/flow-error-monitoring/SKILL.md` — org-level error-email-recipient + fault sink Healthy/Concerning observations
+16. `skills/flow/flow-runtime-error-diagnosis/SKILL.md` — symptoms-to-cause map cited in `MIGRATE_TO_APEX` and `FIX_IN_PLACE` rationale
+17. `skills/flow/flow-debugging/SKILL.md` — Flow Debug Logs / Interview Logs interpretation when target_org_alias is set
+18. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---
 
