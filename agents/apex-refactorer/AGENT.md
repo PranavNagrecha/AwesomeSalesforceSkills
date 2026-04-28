@@ -1,13 +1,13 @@
 ---
 id: apex-refactorer
 class: runtime
-version: 1.0.0
+version: 1.1.0
 status: stable
 requires_org: false
 modes: [single]
 owner: sfskills-core
 created: 2026-04-16
-updated: 2026-04-16
+updated: 2026-04-28
 default_output_dir: "docs/reports/apex-refactorer/"
 output_formats:
   - markdown
@@ -15,20 +15,89 @@ output_formats:
 dependencies:
   skills:
     - admin/agent-output-formats
+    - apex/apex-aggregate-queries
+    - apex/apex-callout-retry-and-resilience
+    - apex/apex-class-decomposition-pattern
+    - apex/apex-collections-patterns
+    - apex/apex-cpu-and-heap-optimization
+    - apex/apex-design-patterns
+    - apex/apex-dml-patterns
+    - apex/apex-dynamic-soql-binding-safety
+    - apex/apex-flow-invocation-from-apex
+    - apex/apex-future-method-patterns
+    - apex/apex-hardcoded-id-elimination
+    - apex/apex-http-callout-mocking
+    - apex/apex-limits-monitoring
+    - apex/apex-mocking-and-stubs
+    - apex/apex-named-credentials-patterns
+    - apex/apex-polymorphic-soql
+    - apex/apex-queueable-patterns
+    - apex/apex-rest-services
+    - apex/apex-savepoint-and-rollback
+    - apex/apex-secrets-and-protected-cmdt
     - apex/apex-security-patterns
+    - apex/apex-soql-relationship-queries
+    - apex/apex-stripinaccessible-and-fls-enforcement
+    - apex/apex-system-runas
+    - apex/apex-test-setup-patterns
+    - apex/apex-transaction-finalizers
+    - apex/apex-trigger-bypass-and-killswitch-patterns
+    - apex/apex-trigger-context-variables
+    - apex/apex-user-and-permission-checks
+    - apex/apex-with-without-sharing-decision
+    - apex/async-apex
+    - apex/batch-apex-patterns
+    - apex/callout-and-dml-transaction-boundaries
+    - apex/callouts-and-http-integrations
+    - apex/change-data-capture-apex
+    - apex/common-apex-runtime-errors
+    - apex/continuation-callouts
+    - apex/dynamic-apex
+    - apex/error-handling-framework
+    - apex/exception-handling
+    - apex/fflib-enterprise-patterns
+    - apex/governor-limit-recovery-patterns
+    - apex/governor-limits
+    - apex/invocable-methods
+    - apex/mixed-dml-and-setup-objects
+    - apex/order-of-execution-deep-dive
+    - apex/platform-events-apex
+    - apex/recursive-trigger-prevention
+    - apex/record-locking-and-contention
+    - apex/soql-fundamentals
+    - apex/soql-security
+    - apex/test-class-standards
+    - apex/test-data-factory-patterns
+    - apex/trigger-and-flow-coexistence
     - apex/trigger-framework
+    - apex/visualforce-fundamentals
   shared:
     - AGENT_CONTRACT.md
     - AGENT_RULES.md
     - DELIVERABLE_CONTRACT.md
+    - REFUSAL_CODES.md
+  probes:
+    - apex-references-to-field.md
   templates:
     - apex/
+    - apex/ApplicationLogger.cls
+    - apex/BaseDomain.cls
+    - apex/BaseSelector.cls
+    - apex/BaseService.cls
+    - apex/HttpClient.cls
     - apex/README.md
+    - apex/SecurityUtils.cls
+    - apex/TriggerControl.cls
     - apex/TriggerHandler.cls
     - apex/tests/BulkTestPattern.cls
+    - apex/tests/MockHttpResponseGenerator.cls
     - apex/tests/TestDataFactory.cls
+    - apex/tests/TestRecordBuilder.cls
+    - apex/tests/TestUserFactory.cls
   decision_trees:
     - automation-selection.md
+    - async-selection.md
+    - sharing-selection.md
 ---
 # Apex Refactorer Agent
 
@@ -50,13 +119,113 @@ Takes an existing Apex class the user points at, compares it against the canonic
 
 ## Mandatory Reads Before Starting
 
-1. `agents/_shared/AGENT_CONTRACT.md` — the agent contract
-2. `AGENT_RULES.md` — repo rules
-3. `skills/apex/trigger-framework/SKILL.md` — via `get_skill("apex/trigger-framework")`
-4. `skills/apex/apex-security-patterns/SKILL.md` — via `get_skill("apex/apex-security-patterns")`
-5. `templates/apex/README.md` — what each template does and its dependency order
-6. `standards/decision-trees/automation-selection.md` — in case the class should really be a Flow
-7. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+### Contract layer
+1. `agents/_shared/AGENT_CONTRACT.md`
+2. `AGENT_RULES.md`
+3. `agents/_shared/DELIVERABLE_CONTRACT.md`
+4. `agents/_shared/REFUSAL_CODES.md`
+
+### Architecture / decomposition
+5. `skills/apex/apex-design-patterns`
+6. `skills/apex/apex-class-decomposition-pattern` — Domain/Service/Selector split decision
+7. `skills/apex/fflib-enterprise-patterns` — recognize fflib-shaped code; do NOT auto-migrate
+8. `templates/apex/README.md` — template dependency order
+
+### Triggers & order
+9. `skills/apex/trigger-framework`
+10. `skills/apex/apex-trigger-context-variables`
+11. `skills/apex/recursive-trigger-prevention`
+12. `skills/apex/apex-trigger-bypass-and-killswitch-patterns`
+13. `skills/apex/order-of-execution-deep-dive`
+14. `skills/apex/trigger-and-flow-coexistence`
+
+### Async surfaces (refactor target candidates)
+15. `skills/apex/async-apex`
+16. `skills/apex/apex-queueable-patterns`
+17. `skills/apex/apex-future-method-patterns`
+18. `skills/apex/batch-apex-patterns`
+19. `skills/apex/apex-transaction-finalizers`
+20. `standards/decision-trees/async-selection.md`
+
+### Callouts (refactor to HttpClient + Named Credentials)
+21. `skills/apex/callouts-and-http-integrations`
+22. `skills/apex/apex-named-credentials-patterns`
+23. `skills/apex/apex-callout-retry-and-resilience`
+24. `skills/apex/callout-and-dml-transaction-boundaries`
+25. `skills/apex/continuation-callouts`
+26. `skills/apex/apex-rest-services`
+
+### SOQL refactor targets
+27. `skills/apex/soql-fundamentals`
+28. `skills/apex/soql-security`
+29. `skills/apex/apex-soql-relationship-queries`
+30. `skills/apex/apex-aggregate-queries`
+31. `skills/apex/apex-polymorphic-soql`
+32. `skills/apex/dynamic-apex`
+33. `skills/apex/apex-dynamic-soql-binding-safety`
+34. `skills/apex/apex-collections-patterns`
+
+### DML / transactions
+35. `skills/apex/apex-dml-patterns`
+36. `skills/apex/apex-savepoint-and-rollback`
+37. `skills/apex/mixed-dml-and-setup-objects`
+38. `skills/apex/record-locking-and-contention`
+
+### Governor / performance
+39. `skills/apex/governor-limits`
+40. `skills/apex/governor-limit-recovery-patterns`
+41. `skills/apex/apex-cpu-and-heap-optimization`
+42. `skills/apex/apex-limits-monitoring`
+
+### Security (refactor → SecurityUtils)
+43. `skills/apex/apex-security-patterns`
+44. `skills/apex/apex-with-without-sharing-decision`
+45. `skills/apex/apex-stripinaccessible-and-fls-enforcement`
+46. `skills/apex/apex-user-and-permission-checks`
+47. `skills/apex/apex-system-runas`
+48. `skills/apex/apex-secrets-and-protected-cmdt`
+49. `skills/apex/apex-hardcoded-id-elimination`
+50. `standards/decision-trees/sharing-selection.md`
+
+### Error handling
+51. `skills/apex/error-handling-framework`
+52. `skills/apex/exception-handling`
+53. `skills/apex/common-apex-runtime-errors`
+
+### Test rebuild after refactor
+54. `skills/apex/test-class-standards`
+55. `skills/apex/test-data-factory-patterns`
+56. `skills/apex/apex-test-setup-patterns`
+57. `skills/apex/apex-mocking-and-stubs`
+58. `skills/apex/apex-http-callout-mocking`
+
+### Other targets
+59. `skills/apex/visualforce-fundamentals` — when refactoring a VF controller
+60. `skills/apex/invocable-methods`
+61. `skills/apex/apex-flow-invocation-from-apex`
+62. `skills/apex/platform-events-apex`
+63. `skills/apex/change-data-capture-apex`
+
+### Templates
+64. `templates/apex/TriggerHandler.cls`
+65. `templates/apex/TriggerControl.cls`
+66. `templates/apex/BaseService.cls`
+67. `templates/apex/BaseSelector.cls`
+68. `templates/apex/BaseDomain.cls`
+69. `templates/apex/ApplicationLogger.cls`
+70. `templates/apex/SecurityUtils.cls`
+71. `templates/apex/HttpClient.cls`
+72. `templates/apex/tests/BulkTestPattern.cls`
+73. `templates/apex/tests/TestDataFactory.cls`
+74. `templates/apex/tests/MockHttpResponseGenerator.cls`
+75. `templates/apex/tests/TestRecordBuilder.cls`
+76. `templates/apex/tests/TestUserFactory.cls`
+
+### Probes
+77. `agents/_shared/probes/apex-references-to-field.md` — for understanding field-impact before lifting selector queries
+
+### Decision trees
+78. `standards/decision-trees/automation-selection.md`
 
 ---
 
@@ -135,7 +304,12 @@ Return one markdown document with these sections:
    - The test class
 3. **Diff summary** — bullet list of every transformation applied, each citing the skill / template the transformation came from.
 4. **Risk notes** — ambiguities, pre-existing bugs, bulkification concerns, assumptions.
-5. **Citations** — ids of every skill, template, and decision-tree branch consulted.
+5. **Process Observations** — peripheral signal noticed during the refactor, separate from the direct diff.
+   - **What was healthy** — base-class / framework already partially adopted; existing test class covers > 80% before refactor; existing Selector-equivalents in the codebase that the new shape can extend; consistent naming convention.
+   - **What was concerning** — sharing keyword inferred but ambiguous (cite `apex-with-without-sharing-decision`); hardcoded IDs / secrets discovered (cite the matching skill); SOQL inside loops the agent could not safely rewrite; dynamic SOQL with string concatenation requiring `apex-dynamic-soql-binding-safety` follow-up; recursion guard absent on a multi-event handler.
+   - **What was ambiguous** — whether `WITHOUT SHARING` is justified; whether existing Selector should be extended or a new one introduced; whether a Service/Domain/Selector split is warranted given current size.
+   - **Suggested follow-up agents** — `security-scanner` (post-refactor FLS/CRUD verification); `soql-optimizer` (when new Selector emitted); `test-class-generator` (when test-class generation deferred); `trigger-consolidator` (when refactor reveals additional triggers on the same SObject); `score-deployment` (pre-deploy gate).
+6. **Citations** — ids of every skill, template, and decision-tree branch consulted.
 
 ---
 
@@ -155,15 +329,22 @@ Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
 
 - **Canonical data surface:** this agent's declared probes + the MCP tool set. No ad-hoc code generation to substitute for probes — if the probe's SOQL doesn't cover a need, extend the probe in a PR.
 - **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
-- **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only.
+- **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only. Dimensions for this agent: `class-shape` (trigger / handler / service / selector / callout / mixed), `templates-applied` (which canonical templates wired in), `crud-fls-enforcement`, `sharing-keyword`, `id-handling`, `secret-handling`, `dynamic-soql-safety`, `bulk-safety`, `transaction-boundaries`, `test-class-generation`. When the source file doesn't exercise a dimension, record it in `dimensions_skipped[]` with `state: not-run` and a one-line reason.
 
 ## Escalation / Refusal Rules
 
-- Source file does not exist → STOP, ask for the path.
-- File is > 2000 lines → suggest splitting into logical parts first; do not attempt a single-pass refactor.
-- File references missing types the agent cannot resolve → refuse with `confidence: LOW`, list the missing types.
-- Class implements a framework not covered by templates (e.g. `fflib`) → do NOT try to migrate; output a report explaining the mismatch and recommend manual review.
-- Existing test class is green and covers > 90% → flag that refactoring carries regression risk; require user confirmation before proceeding.
+Canonical refusal codes per `agents/_shared/REFUSAL_CODES.md`:
+
+| Code | Trigger |
+|---|---|
+| `REFUSAL_MISSING_INPUT` | `source_path` not provided. |
+| `REFUSAL_INPUT_AMBIGUOUS` | `source_path` exists but file is empty / non-Apex / unreadable. |
+| `REFUSAL_OVER_SCOPE_LIMIT` | File > 2000 lines — recommend pre-splitting; or refactor introduces > 6 new files in one pass. |
+| `REFUSAL_NEEDS_HUMAN_REVIEW` | (a) File references missing types the agent cannot resolve from `related_paths`; (b) class implements `fflib` or another framework outside the canonical templates — do NOT auto-migrate; (c) existing test class is green and covers > 90% — refactor risks regression. |
+| `REFUSAL_OUT_OF_SCOPE` | Request to refactor managed-package class, request to deploy, request to refactor more than one class per invocation. |
+| `REFUSAL_MANAGED_PACKAGE` | Source class is in a managed-package namespace. Recommend extension/wrapping pattern instead. |
+| `REFUSAL_SECURITY_GUARD` | Refactor would silently drop an existing `with sharing` keyword, bypass an existing `SecurityUtils` call, or expose a previously-hidden secret. |
+| `REFUSAL_POLICY_MISMATCH` | Decision-tree consultation shows the class should be a Flow / Platform Event / external service — recommend the appropriate agent (cite `automation-selection.md` branch). |
 
 ---
 
