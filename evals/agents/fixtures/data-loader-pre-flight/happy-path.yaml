@@ -1,0 +1,75 @@
+eval:
+  id: data-loader-pre-flight__happy-path
+  agent: data-loader-pre-flight
+  mode: single
+  priority: P0
+  last_verified: 2026-04-28
+  description: >
+    Pre-flight an 800k Account upsert from a NetSuite export keyed on
+    netsuite_customer_id__c. Org has one bulk-safe trigger via the
+    canonical handler, two active validation rules (one with bypass
+    permission already provisioned, one without), no active duplicate
+    rules on Account, two record types with a clear default for the
+    integration user, OWD Public Read/Write (no sharing-recalc cost),
+    storage at 35% utilization. Agent should return GO=true with one
+    P1 finding (the VR missing bypass) and recommend Bulk API 2.0 via
+    `sf data upsert bulk`. Must cite admin/duplicate-management,
+    data/bulk-api-and-large-data-loads, and the validation-rule-patterns
+    template.
+
+inputs:
+  object_name: Account
+  operation: upsert
+  row_count: "800000"
+  target_org_alias: uat-fixture
+  source_description: >
+    NetSuite customer export, one row per Account,
+    external-id = netsuite_customer_id__c.
+  external_id_field: netsuite_customer_id__c
+  window: "this Saturday 2am-6am PT"
+
+org_stub:
+  org_metadata:
+    org_id: 00Dxxx
+    edition: Enterprise
+    api_version: "63.0"
+    sandbox: true
+    data_storage_percent_used: 35
+  apex_triggers:
+    - {name: AccountTrigger, status: Active, uses_canonical_handler: true}
+  flows_on_object: []
+  validation_rules:
+    - {name: Account_Industry_Required, active: true, bypass_permission: Bypass_Validation_Account, integration_user_has_bypass: true}
+    - {name: Account_BillingCountry_Format, active: true, bypass_permission: null, integration_user_has_bypass: false}
+  duplicate_rules: []
+  matching_rules: []
+  record_types:
+    - {name: Customer, active: true, is_integration_user_default: true}
+    - {name: Partner, active: true, is_integration_user_default: false}
+  required_fields:
+    - {name: Name, in_source_mapping: true}
+    - {name: Industry, in_source_mapping: true}
+  owd:
+    object: Account
+    sharing_model: ReadWrite
+  custom_permissions_on_integration_user:
+    - Bypass_Validation_Account
+
+expect:
+  confidence: MEDIUM
+  must_cite_any_of:
+    - { type: skill, id: admin/duplicate-management }
+    - { type: skill, id: data/bulk-api-and-large-data-loads }
+    - { type: skill, id: data/external-id-strategy }
+    - { type: template, id: admin/validation-rule-patterns.md }
+  process_observations:
+    min_count: 1
+    categories_present_any_of:
+      - healthy
+      - concerning
+      - ambiguous
+      - suggested_followup
+  followups_include_any_of:
+    - permission-set-architect
+    - duplicate-rule-designer
+    - sharing-audit-agent
