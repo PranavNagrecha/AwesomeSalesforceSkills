@@ -121,7 +121,7 @@
     "fddfc5f1298ddbb86b03",
     "ffcc741afb4ab2a645fa"
   ],
-  "content_hash": "8fbb8bbbe82fd28f78a2c5b9d20b630136de7676f5e44eae796dfb0b25d266b1",
+  "content_hash": "1d8e908fb956f1179c745b06c7d8aab9bf065fbe4c9c047060fc6218d24a649e",
   "dependencies": [],
   "description": "Use when testing, evaluating, or building regression suites for Agentforce agents: conversation testing in Agent Builder, topic coverage and utterance testing, Testing API and AiEvaluationDefinition metadata, evaluation metrics (containment rate, escalation rate, CSAT, topic activation accuracy), and post-deploy analytics via Enhanced Event Logs. Triggers: 'how do I test my Agentforce agent', 'agent routes to wrong topic', 'write utterance tests', 'regression test after topic change', 'measure agent quality', 'agent containment rate'. NOT for agent creation, topic design, or action contract design \u2014 use agentforce/agentforce-agent-creation, agentforce/agent-topic-design, or agentforce/agent-actions respectively.",
   "file_location": "skills/agentforce/agent-testing-and-evaluation",
@@ -172,7 +172,7 @@
   "templates": [
     "skills/agentforce/agent-testing-and-evaluation/templates/agent-testing-and-evaluation-template.md"
   ],
-  "updated": "2026-04-04",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

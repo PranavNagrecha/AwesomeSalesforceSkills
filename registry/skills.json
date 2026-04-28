@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 45
   },
-  "generated_from_hash": "53b51a75b530cd55e8d82f93b6c8a59af37a1912138ebb54b0e0b7113d11e85c",
+  "generated_from_hash": "c20f6a7e042e9a4707950908f6ec0e37e2688a13d00c2941f262ba55a3c7cacf",
   "schema_version": 1,
   "skill_count": 907,
   "skills": [
@@ -32149,7 +32149,7 @@
         "fddfc5f1298ddbb86b03",
         "ffcc741afb4ab2a645fa"
       ],
-      "content_hash": "8fbb8bbbe82fd28f78a2c5b9d20b630136de7676f5e44eae796dfb0b25d266b1",
+      "content_hash": "1d8e908fb956f1179c745b06c7d8aab9bf065fbe4c9c047060fc6218d24a649e",
       "dependencies": [],
       "description": "Use when testing, evaluating, or building regression suites for Agentforce agents: conversation testing in Agent Builder, topic coverage and utterance testing, Testing API and AiEvaluationDefinition metadata, evaluation metrics (containment rate, escalation rate, CSAT, topic activation accuracy), and post-deploy analytics via Enhanced Event Logs. Triggers: 'how do I test my Agentforce agent', 'agent routes to wrong topic', 'write utterance tests', 'regression test after topic change', 'measure agent quality', 'agent containment rate'. NOT for agent creation, topic design, or action contract design \u2014 use agentforce/agentforce-agent-creation, agentforce/agent-topic-design, or agentforce/agent-actions respectively.",
       "file_location": "skills/agentforce/agent-testing-and-evaluation",
@@ -32200,7 +32200,7 @@
       "templates": [
         "skills/agentforce/agent-testing-and-evaluation/templates/agent-testing-and-evaluation-template.md"
       ],
-      "updated": "2026-04-04",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -32413,7 +32413,7 @@
         "fdb3e1fde54baa5e41fe",
         "fe32092f6248d306beb5"
       ],
-      "content_hash": "0b393a7f7238409ed32af1afdf670bd9cff8a590c59424324fb3a6eb6a1c2750",
+      "content_hash": "fd6f03824640f95945c7704738dc90121191a2492c4b1550a8ce6322669d2e07",
       "dependencies": [],
       "description": "Use when creating, configuring, auditing, or troubleshooting an Agentforce agent end-to-end: agent definition, agent user setup, channel assignment, system instructions, activation, and lifecycle management. Triggers: 'create agentforce agent', 'agent not appearing to users', 'how to activate agent', 'agent channel setup', 'agent lifecycle', 'deploy agent to production'. NOT for topic design or action contract design \u2014 use agentforce/agent-topic-design and agentforce/agent-actions respectively.",
       "file_location": "skills/agentforce/agentforce-agent-creation",
@@ -32459,7 +32459,7 @@
       "templates": [
         "skills/agentforce/agentforce-agent-creation/templates/agentforce-agent-creation-template.md"
       ],
-      "updated": "2026-04-04",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -32520,7 +32520,7 @@
         "f9a599d25b5b60b83c31",
         "fd8c197b1b13db51b8d6"
       ],
-      "content_hash": "def6af9acc0b8a457f19a4f5db0e346392660428c74d34b581bd66532bb34123",
+      "content_hash": "08229f1c30f1954e0c14ec6ace57980885854051f0ad57c6fbd26831b7bcd790",
       "dependencies": [],
       "description": "Use when designing how an Agentforce agent transfers the conversation to a human agent (Omni-Channel), to another bot/agent, or to an alternate workflow \u2014 including context package, deflection, escalation triggers, and user messaging. Triggers: 'agent to human handoff', 'agentforce escalate to omni channel', 'agent to agent handoff', 'transfer conversation with context', 'agent deflection fallback'. NOT for topic selector design (see agent-topic-design).",
       "file_location": "skills/agentforce/agentforce-agent-handoff-patterns",
@@ -33697,7 +33697,7 @@
         "f7ad69334d651c9f7d52",
         "fb3d7a15682f47302deb"
       ],
-      "content_hash": "e88d4b2247db8a92b215f7252d375aacd0caaaea7a51008106bc6bcd84ea886a",
+      "content_hash": "1ddb91380041fbf2d16f20aaad0d1c8878d54fce07d9469058f0dc3943d6fd03",
       "dependencies": [
         "agentforce/agentforce-testing-strategy"
       ],
@@ -33737,7 +33737,7 @@
       "templates": [
         "skills/agentforce/agentforce-pii-redaction/templates/redaction-register.md"
       ],
-      "updated": "2026-04-23",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -34207,7 +34207,7 @@
         "f7c7894025007b1449e2",
         "fb2719c9e94e1317baee"
       ],
-      "content_hash": "f6cd6ea6eee10716032d6e75968aca815c82eeb2b4d5c24c20998d47c5381648",
+      "content_hash": "6472b9ded0940d95739cbfe8d40fe9a6e987781014078d01895b6fac1a22e6f1",
       "dependencies": [],
       "description": "Design Agentforce testing: topic coverage, action unit tests, deterministic golden sets, adversarial prompts, and regression harness. Trigger keywords: agentforce testing, agent eval, agent regression suite, prompt golden set, action unit test agentforce. Does NOT cover: generic LLM evaluation academia, human-labeled RLHF pipelines, or Einstein Classify accuracy.",
       "file_location": "skills/agentforce/agentforce-testing-strategy",
@@ -34245,7 +34245,7 @@
       "templates": [
         "skills/agentforce/agentforce-testing-strategy/templates/test-plan.md"
       ],
-      "updated": "2026-04-23",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -34696,7 +34696,7 @@
         "fc529bcc70aa3e1bec4b",
         "fd4012b51d79967dab66"
       ],
-      "content_hash": "1eeda7e7db9fe59acea9dd220acabd1c8b81946330f0f23b73a4601ada1bc452",
+      "content_hash": "d32f3069d239d8cf72e96143c41b7b3380d7aae4b7d35e7ffcd62e6be9059a6a",
       "dependencies": [
         "rag-patterns-in-salesforce",
         "einstein-trust-layer"
@@ -34753,7 +34753,7 @@
       "templates": [
         "skills/agentforce/data-cloud-vector-search-dev/templates/data-cloud-vector-search-dev-template.md"
       ],
-      "updated": "2026-04-12",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -36008,7 +36008,7 @@
         "fc666b44dd419e18d72d",
         "fe90436c31c8c7bdf427"
       ],
-      "content_hash": "a1f9aa31480f2c46f8f8c5c8313e23225dbb86364b2f7bb379b8303698e8161d",
+      "content_hash": "9ee1d4498f785eb74982b080c016901141576e85c41f5c96dfcd256696e1729e",
       "dependencies": [
         "salesforce-mcp-server-setup"
       ],
@@ -36058,7 +36058,7 @@
       "templates": [
         "skills/agentforce/mcp-tool-definition-apex/templates/mcp-tool-definition-apex-template.md"
       ],
-      "updated": "2026-04-07",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -36626,7 +36626,7 @@
         "fc488a923796e3f9d822",
         "fea6c73e8b163c517df0"
       ],
-      "content_hash": "087de6db766ee45a2a5760dc2746462aa100b7318bbe079466da4718a23b8ab7",
+      "content_hash": "b2e9713c0fcc1973226cdb06491a630fc8e848259126f6b9db8e6f553d2c31a6",
       "dependencies": [
         "prompt-builder-templates",
         "einstein-trust-layer"
@@ -36678,7 +36678,7 @@
       "templates": [
         "skills/agentforce/rag-patterns-in-salesforce/templates/rag-patterns-in-salesforce-template.md"
       ],
-      "updated": "2026-04-04",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -36756,7 +36756,7 @@
         "fa62e02c295ba9d4e713",
         "fdcb5a5a8adfbaba1ca1"
       ],
-      "content_hash": "4d9f9c08f211c702bee960ba96f478a3d58f429ae93be029c00793ed897d8abc",
+      "content_hash": "6e4f6dc76bbec3a262ac0601a230c813c7ec17d85aa43c051c3f776e722eb5db",
       "dependencies": [],
       "description": "Use this skill to install and configure the salesforce-mcp-lib Apex package and npm stdio proxy so that an MCP client (Claude Desktop, Cursor, ChatGPT) can call Salesforce org data and logic via the Model Context Protocol. Trigger keywords: MCP server, salesforce-mcp-lib, Claude Desktop Salesforce, MCP proxy setup, Apex JSON-RPC, MCP Connected App. NOT for Salesforce Hosted MCP Servers (Agentforce-native hosted endpoints), NOT for Flow-based tool definitions, NOT for OmniStudio integrations.",
       "file_location": "skills/agentforce/salesforce-mcp-server-setup",
@@ -36804,7 +36804,7 @@
       "templates": [
         "skills/agentforce/salesforce-mcp-server-setup/templates/salesforce-mcp-server-setup-template.md"
       ],
-      "updated": "2026-04-07",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },

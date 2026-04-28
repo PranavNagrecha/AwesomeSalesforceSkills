@@ -34,7 +34,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-04-28
 ---
 
 # Agentforce Agent Creation
@@ -104,11 +104,14 @@ Each channel type has its own prerequisites. Embedded Service requires a publish
 1. Confirm prerequisites: Einstein On, Agentforce toggle On, Trust Layer reviewed.
 2. Setup > Agentforce Agents > **+ New Agent**. Select the appropriate template (Agentforce Service Agent for Service Cloud; custom agent for other use cases).
 3. Fill in the required fields:
-   - **Label** and **API Name** — the API Name is immutable after creation; choose it with the same deliberateness as a custom object API Name.
-   - **Role** — natural-language description of the agent's job and persona (e.g., "customer service representative for a hospitality company, helping guests with reservations and experiences"). This becomes part of the system context fed to the reasoning engine.
-   - **Company** — organizational context included in system instructions.
-   - **Agent User** — select the EinsteinServiceAgent User from the dropdown; do not type manually.
-   - **Enhanced Event Logs** — enable for conversation tracing during testing and audit.
+
+   | Field | Notes |
+   |---|---|
+   | Label and API Name | The API Name is immutable after creation; choose it with the same deliberateness as a custom object API Name. |
+   | Role | Natural-language description of the agent's job and persona (e.g., "customer service representative for a hospitality company"). Becomes part of the system context fed to the reasoning engine. |
+   | Company | Organizational context included in system instructions. |
+   | Agent User | Select the EinsteinServiceAgent User from the dropdown; do not type manually. |
+   | Enhanced Event Logs | Enable for conversation tracing during testing and audit. |
 4. Add topics and actions via Agentforce Builder (see `agentforce/agent-topic-design` and `agentforce/agent-actions`).
 5. Review **Agent Instructions** — the system-prompt persona block that shapes tone, constraints, and fallback behavior. Specific, deterministic instructions produce more predictable agent behavior than vague persona statements.
 6. Click **Activate** in Agentforce Builder (upper-right corner). The agent transitions from Draft to Active.

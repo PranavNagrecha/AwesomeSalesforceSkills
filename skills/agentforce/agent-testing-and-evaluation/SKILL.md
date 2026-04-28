@@ -36,7 +36,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-04-28
 ---
 
 # Agent Testing and Evaluation
@@ -69,10 +69,13 @@ Agentforce provides two testing surfaces that share the same underlying evaluati
 - **Testing API** — programmatic interface combining `AiEvaluationDefinition` Metadata API types (for test definition) and Connect API endpoints (for test execution and result retrieval). Best for CI/CD pipeline integration and regression automation.
 
 `AiEvaluationDefinition` is the canonical metadata type for a test suite. It defines the agent under test and a set of test cases. Each test case specifies:
-- **utterance** — the user message sent to the agent
-- **context variables** — optional session context (e.g., authenticated user, case ID) to simulate realistic scenarios
-- **conversation history** — optional prior turns for multi-turn conversation tests
-- **expectations** — one or more assertions: expected topic classification, expected action(s) invoked, instruction adherence score threshold, or response content criteria
+
+| Field | Purpose |
+|---|---|
+| utterance | The user message sent to the agent |
+| context variables | Optional session context (e.g., authenticated user, case ID) to simulate realistic scenarios |
+| conversation history | Optional prior turns for multi-turn conversation tests |
+| expectations | One or more assertions: expected topic classification, expected action(s) invoked, instruction adherence score threshold, or response content criteria |
 
 Test definitions deploy alongside the agent metadata, so test suites are version-controlled and environment-promotable.
 
@@ -90,10 +93,12 @@ You can combine all three expectations on a single test case or use them indepen
 
 A topic is not proven to work from a single utterance. Adequate coverage requires:
 
-- **Happy path** — canonical utterances that clearly belong to the topic
-- **Edge-case utterances** — paraphrases, non-native English, abbreviations, typos
-- **Boundary utterances** — phrasings that sit near the edge of an adjacent topic's scope, used to verify the agent picks the right topic and not a neighbor
-- **Out-of-scope utterances** — deliberately off-topic statements to verify the agent escalates or declines gracefully rather than hallucinating a topic match
+| Utterance class | Purpose |
+|---|---|
+| Happy path | Canonical utterances that clearly belong to the topic |
+| Edge-case utterances | Paraphrases, non-native English, abbreviations, typos |
+| Boundary utterances | Phrasings near the edge of an adjacent topic's scope; verify the agent picks the right topic and not a neighbor |
+| Out-of-scope utterances | Deliberately off-topic statements; verify the agent escalates or declines gracefully rather than hallucinating a topic match |
 
 A coverage matrix (topic × utterance type) makes gaps visible. Without this, teams discover routing failures in production from real customer sessions.
 

@@ -36,7 +36,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-07
+updated: 2026-04-28
 ---
 
 # Salesforce MCP Server Setup
@@ -51,11 +51,13 @@ This is not a hosted Salesforce feature. It is a developer-operated, self-hosted
 
 Gather this context before working on anything in this domain:
 
-- **Org API version**: salesforce-mcp-lib requires API 65.0+ (Spring '25+). Confirm with `sf org display --target-org YOUR_ORG`.
-- **Node.js version**: The npm proxy requires Node.js >= 20. Run `node --version` to confirm.
-- **Connected App**: You need a Connected App with OAuth 2.0 Client Credentials Flow enabled. The proxy authenticates as a service account — not as a named user — so no user interaction or browser login is involved.
-- **Endpoint URL**: You must write one Apex REST class that serves as the MCP entry point. The URL mapping you choose (e.g. `/mcp/v1`) becomes the `--endpoint` flag value.
-- **Package ID**: The current installable 2GP Apex package ID is `04tdL000000So9xQAC`. Always verify against the GitHub release page before installing in production.
+| Context | What to confirm |
+|---|---|
+| Org API version | salesforce-mcp-lib requires API 65.0+ (Spring '25+). Confirm with `sf org display --target-org YOUR_ORG`. |
+| Node.js version | The npm proxy requires Node.js >= 20. Run `node --version` to confirm. |
+| Connected App | OAuth 2.0 Client Credentials Flow enabled. The proxy authenticates as a service account — no named user, browser, or interaction. |
+| Endpoint URL | One Apex REST class serves as the MCP entry point. The URL mapping you choose (e.g. `/mcp/v1`) becomes the `--endpoint` flag value. |
+| Package ID | Current installable 2GP Apex package ID: `04tdL000000So9xQAC`. Always verify against the GitHub release page before installing in production. |
 
 ---
 

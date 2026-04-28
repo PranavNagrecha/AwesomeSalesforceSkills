@@ -34,7 +34,7 @@ dependencies:
   - salesforce-mcp-server-setup
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-07
+updated: 2026-04-28
 ---
 
 # MCP Tool Definition in Apex
@@ -49,10 +49,12 @@ The salesforce-mcp-lib package defines three overrideable methods that together 
 
 Gather this context before working on anything in this domain:
 
-- **Package installed**: Confirm `sf package installed list --target-org YOUR_ORG` shows salesforce-mcp-lib. The McpToolDefinition class will not exist without it.
-- **Tool contract**: Before writing code, define: (1) the tool name (snake_case, used by the MCP client to invoke the tool), (2) every required and optional parameter with its JSON Schema type, (3) what the tool returns and in what shape.
-- **Governor limits**: Each MCP tool invocation is a single Apex transaction. SOQL limits (100 queries per transaction), DML limits (150 statements), CPU time (10s synchronous), and heap size (6MB synchronous) all apply. Tools that need more resources must use asynchronous Apex patterns, but the `execute()` method is synchronous — async results must be polled in a subsequent tool call.
-- **Sharing context**: The tool runs as the Connected App's run-as user. Understand whether the tool should use that user's sharing context or bypass it.
+| Context | What to confirm |
+|---|---|
+| Package installed | `sf package installed list --target-org YOUR_ORG` shows salesforce-mcp-lib. The McpToolDefinition class will not exist without it. |
+| Tool contract | Define before coding: (1) tool name (snake_case, used by the MCP client to invoke), (2) every required and optional parameter with its JSON Schema type, (3) return shape. |
+| Governor limits | Each MCP tool invocation is one Apex transaction: SOQL (100/txn), DML (150 stmts), CPU (10s sync), heap (6MB sync). Async patterns must poll async results in a subsequent tool call. |
+| Sharing context | The tool runs as the Connected App's run-as user. Decide whether to use that user's sharing context or bypass it. |
 
 ---
 
