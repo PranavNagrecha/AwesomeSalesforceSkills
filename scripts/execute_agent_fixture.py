@@ -224,6 +224,17 @@ def main() -> int:
     parser.add_argument("--max-tokens", type=int, default=DEFAULT_MAX_TOKENS)
     parser.add_argument("--out-dir", default=None, help="Override output directory")
     parser.add_argument("--no-grade", action="store_true", help="Skip running the grader after execution")
+    parser.add_argument(
+        "--baseline",
+        choices=["off", "auto", "check", "create", "create-force"],
+        default="auto",
+        help=(
+            "Drift detection vs evals/agents/baselines/<agent>/<case>.baseline.json. "
+            "'auto' (default) checks if a baseline exists and silently skips otherwise. "
+            "'check' fails if no baseline exists. 'create' seeds a missing baseline. "
+            "'create-force' overwrites. 'off' disables baselines entirely."
+        ),
+    )
     parser.add_argument("--dry-run", action="store_true", help="Assemble the prompt and stop — no API call")
     parser.add_argument(
         "--envelope-from",
@@ -341,7 +352,56 @@ def main() -> int:
     print(result.stdout)
     if result.stderr.strip():
         print(result.stderr, file=sys.stderr)
-    return result.returncode
+
+    baseline_exit = run_baseline_step(
+        mode=args.baseline,
+        fixture_path=fixture_path,
+        envelope_path=envelope_path,
+        agent_slug=agent_slug,
+        model=args.model,
+    )
+    return result.returncode or baseline_exit
+
+
+def run_baseline_step(
+    *,
+    mode: str,
+    fixture_path: Path,
+    envelope_path: Path,
+    agent_slug: str,
+    model: str,
+) -> int:
+    if mode == "off":
+        return 0
+
+    baseline_tool = REPO_ROOT / "scripts" / "baseline_agent_envelope.py"
+    if not baseline_tool.exists():
+        print(f"[{agent_slug}] baseline tool missing — skipping baseline step", file=sys.stderr)
+        return 0
+
+    baselines_dir = REPO_ROOT / "evals" / "agents" / "baselines"
+    baseline_file = baselines_dir / agent_slug / f"{fixture_path.stem}.baseline.json"
+
+    if mode == "auto":
+        if not baseline_file.exists():
+            print(f"[{agent_slug}] no baseline yet at {baseline_file.relative_to(REPO_ROOT)} — skipping (use --baseline=create to seed)")
+            return 0
+        sub_args = ["check", "--fixture", str(fixture_path), "--envelope", str(envelope_path)]
+    elif mode == "check":
+        sub_args = ["check", "--fixture", str(fixture_path), "--envelope", str(envelope_path)]
+    elif mode == "create":
+        sub_args = ["create", "--fixture", str(fixture_path), "--envelope", str(envelope_path), "--model", model]
+    elif mode == "create-force":
+        sub_args = ["create", "--fixture", str(fixture_path), "--envelope", str(envelope_path), "--model", model, "--force"]
+    else:
+        return 0
+
+    res = subprocess.run([sys.executable, str(baseline_tool), *sub_args], capture_output=True, text=True)
+    if res.stdout:
+        print(res.stdout, end="")
+    if res.stderr.strip():
+        print(res.stderr, file=sys.stderr, end="")
+    return res.returncode
 
 
 if __name__ == "__main__":
