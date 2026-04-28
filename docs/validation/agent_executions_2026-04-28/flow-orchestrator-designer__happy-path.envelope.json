@@ -1,0 +1,131 @@
+{
+  "agent": "flow-orchestrator-designer",
+  "mode": "single",
+  "run_id": "20260428T024500Z",
+  "report_path": "docs/reports/flow-orchestrator-designer/20260428T024500Z.md",
+  "envelope_path": "docs/reports/flow-orchestrator-designer/20260428T024500Z.json",
+  "inputs_received": {
+    "mode": "design",
+    "target_org_alias": "sfskills-dev",
+    "scenario_summary": "3-stage contract review: legal, procurement, customer sign-off; SLA 5 business days per stage; recallable by originator",
+    "primary_object": "Contract",
+    "license_confirmed": true
+  },
+  "summary": "Three-stage Flow Orchestration on Contract: Legal_Review -> Procurement_Review -> Customer_Acceptance. Each stage runs a single interactive Screen Flow step assigned to a queue (Legal_Approvers, Procurement_Approvers, Customer_Success_Owners), with a 5-business-day SLA encoded as a relative-offset Due Date on the work item. Stage transitions are conditional on the prior stage completing with a positive outcome, and a fault-routed escalation subflow scheduled at SLA + 1 business day reassigns the work item to the queue's escalation manager (Orchestrator does not natively auto-escalate; the scheduled subflow is the supported pattern). Recall is permitted from any stage by the originator and resets the in-flight work item back to the previous stage. Each stage's Screen Flow needs to be designed and emitted by flow-builder.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Scenario decomposes cleanly to a linear 3-stage orchestration with no cycles, and all participants map to public groups (no inactive-user risk in design). MEDIUM (not HIGH) because target_org_alias is supplied but no probe ran in fixture mode to confirm that Legal_Approvers / Procurement_Approvers / Customer_Success_Owners queues actually exist with active members, and the orchestration license entitlement was asserted via license_confirmed=true rather than verified via describe_org.",
+  "deliverables": [
+    {
+      "kind": "markdown",
+      "title": "Contract Review Orchestration design",
+      "target_path": "docs/reports/flow-orchestrator-designer/20260428T024500Z.md",
+      "content": "# Contract Review Orchestration\n\n**Object:** Contract\n**Stages:** 3 (linear, recallable)\n**SLA per stage:** 5 business days, escalation at SLA + 1 business day via scheduled subflow.\n\n## Stage / step / transition table\n\n| Stage | Step (Screen Flow) | Assignee (queue) | SLA | Transition out |\n|---|---|---|---|---|\n| 1. Legal_Review | `Contract_LegalReview_Screen` | Legal_Approvers | +5 BD | Stage 1 outcome = Approve -> Stage 2 |\n| 2. Procurement_Review | `Contract_ProcurementReview_Screen` | Procurement_Approvers | +5 BD | Stage 2 outcome = Approve -> Stage 3 |\n| 3. Customer_Acceptance | `Contract_CustomerAccept_Screen` | Customer_Success_Owners | +5 BD | Stage 3 outcome = Accept -> Orchestration Complete (Status__c = 'Signed') |\n\nReject at any stage routes to a Background step (`Contract_RejectionFinalize_AutoLaunched`) that flips Contract.Status__c to 'Rejected' and ends the orchestration.\n\n## Work-item assignment matrix\n\n| Step | Persona | Queue | Due | Escalation |\n|---|---|---|---|---|\n| Contract_LegalReview_Screen | Legal counsel | Legal_Approvers | NOW + 5 BD | Scheduled subflow `Contract_EscalateWorkItem` reassigns at NOW + 6 BD to queue's escalation manager (LRA). |\n| Contract_ProcurementReview_Screen | Procurement specialist | Procurement_Approvers | NOW + 5 BD | Same scheduled subflow. |\n| Contract_CustomerAccept_Screen | Customer Success owner | Customer_Success_Owners | NOW + 5 BD | Same scheduled subflow. |\n\n## Subflow specs (one paragraph each)\n\n- **Contract_LegalReview_Screen** \u2014 Inputs: `recordId`, `orchestrationContext`. Outputs: `outcome` (Approve|Reject|RequestChanges), `legalNotes`. Elements: Display Contract summary -> Decision (outcome) -> Assignment of stage-level vars. Fault path: any update fault routes to `LogFault` subflow per `templates/flow/FaultPath_Template.md`. Hand to flow-builder for emission.\n- **Contract_ProcurementReview_Screen** \u2014 same shape, outputs `outcome`, `procurementNotes`. Fault path identical.\n- **Contract_CustomerAccept_Screen** \u2014 same shape, outputs `outcome` (Accept|Reject), `customerSignature`. Fault path identical.\n- **Contract_RejectionFinalize_AutoLaunched** \u2014 Inputs: `recordId`, `rejectingStage`. Updates Contract.Status__c to 'Rejected', writes a Contract_History__c row. Fault path: route to `LogFault` subflow.\n- **Contract_EscalateWorkItem** \u2014 Scheduled (Schedule-Triggered Flow at NOW + 1 BD past SLA). Reads open `FlowOrchestrationWorkItem` for the orchestration, calls Reassign action targeting the queue's escalation manager. Fault path: route to `LogFault`.\n\n## Recall + restart semantics\n\n- **Recall:** Originator (Contract.OwnerId) can recall from Stage 1 or Stage 2; recall from Stage 3 disabled (customer-facing). Recall resets the in-flight work item and removes any partial outputs from the orchestration record.\n- **Restart:** A rejected orchestration can be restarted from Stage 1 by the originator after edits to the Contract record; orchestration uses a new run id.\n- **No arbitrary jumps:** stage navigation is linear-with-recall per Orchestrator semantics.\n\n## Deployment order\n\n1. `LogFault` subflow (already in repo, confirm version).\n2. `Contract_LegalReview_Screen` (flow-builder).\n3. `Contract_ProcurementReview_Screen` (flow-builder).\n4. `Contract_CustomerAccept_Screen` (flow-builder).\n5. `Contract_RejectionFinalize_AutoLaunched` (flow-builder).\n6. `Contract_EscalateWorkItem` (flow-builder).\n7. `Contract_Review` orchestration referencing all five.\n\n## Activation checklist\n\n- Confirm Legal_Approvers, Procurement_Approvers, Customer_Success_Owners exist with >= 1 active member each (use `tooling_query` on `QueueSobject` + `Group`).\n- Confirm running users have the `RunFlow` + `FlowOrchestratorRuntime` system permissions (PSG via `permission-set-architect`).\n- Confirm `LogFault` subflow is Active.\n- Confirm `FlowOrchestrationInstance` and `FlowOrchestrationWorkItem` are surfaced on the Contract Lightning record page so progress is observable.\n"
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "All step assignees are queues, not specific users; this avoids the inactive-user single-point-of-failure that would surface as a P0 in audit mode.",
+      "domain": "orchestration-assignment",
+      "evidence": {
+        "source": "input"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Orchestrator does not natively auto-escalate stalled work items. The escalation requires a Schedule-Triggered Flow (`Contract_EscalateWorkItem`) keyed to a query on `FlowOrchestrationWorkItem`; if that subflow is forgotten or paused, the SLA target is silently never enforced.",
+      "domain": "orchestration-escalation",
+      "evidence": {
+        "source": "heuristic"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "Scenario does not specify whether a recall from Stage 2 should reset Stage 1's outcome (likely yes, by Orchestrator default) or carry it forward. Confirm with the business before activation.",
+      "domain": "orchestration-recall-semantics",
+      "evidence": {
+        "source": "input"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "Each of the five subflows needs a concrete Flow design + Flow XML; hand each spec to flow-builder.",
+      "domain": "subflow-implementation",
+      "evidence": {
+        "source": "heuristic"
+      },
+      "suggested_followup_agent": "flow-builder",
+      "followup_reason": "because flow-orchestrator-designer emits subflow specs but never the Flow XML itself; flow-builder owns the per-subflow 5-gate run."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "The `FlowOrchestratorRuntime` system permission and per-queue membership need to be designed before orchestration activation.",
+      "domain": "permissions",
+      "evidence": {
+        "source": "heuristic"
+      },
+      "suggested_followup_agent": "permission-set-architect",
+      "followup_reason": "because the orchestration runtime permission must be on the right Permission Set Group for each persona before any work item can be claimed."
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "flow/orchestration-flows",
+      "path": "skills/flow/orchestration-flows/SKILL.md",
+      "used_for": "Orchestration model: stages, steps, work items, transition conditions, recall behavior, and the Orchestrator-does-not-auto-escalate boundary."
+    },
+    {
+      "type": "skill",
+      "id": "flow/screen-flows",
+      "path": "skills/flow/screen-flows/SKILL.md",
+      "used_for": "Interactive step shape for Legal/Procurement/Customer review screens (inputs, outputs, decision branching, finish behavior)."
+    },
+    {
+      "type": "skill",
+      "id": "flow/fault-handling",
+      "path": "skills/flow/fault-handling/SKILL.md",
+      "used_for": "Mandatory fault path on every subflow's Update / Create element; routes to LogFault per the canonical template."
+    },
+    {
+      "type": "skill",
+      "id": "flow/auto-launched-flow-patterns",
+      "path": "skills/flow/auto-launched-flow-patterns/SKILL.md",
+      "used_for": "Background step shape for Contract_RejectionFinalize_AutoLaunched and the scheduled escalation subflow."
+    },
+    {
+      "type": "skill",
+      "id": "admin/queues-and-public-groups",
+      "path": "skills/admin/queues-and-public-groups/SKILL.md",
+      "used_for": "Queue-as-assignee pattern: Legal_Approvers, Procurement_Approvers, Customer_Success_Owners; queue membership preflight."
+    },
+    {
+      "type": "decision_tree",
+      "id": "automation-selection",
+      "path": "standards/decision-trees/automation-selection.md",
+      "branch": "Multi-stage human handoff with cross-persona routing -> Flow Orchestrator (over plain Approval Process or background flow).",
+      "used_for": "Confirming Orchestrator is the right target vs Approval Process or auto-launched flow."
+    },
+    {
+      "type": "template",
+      "id": "flow/FaultPath_Template.md",
+      "path": "templates/flow/FaultPath_Template.md",
+      "used_for": "Standard fault-connector -> LogFault subflow scaffold cited in every subflow spec."
+    }
+  ],
+  "followups": [
+    {
+      "agent": "flow-builder",
+      "because": "because each of the five subflows in the deployment order needs a concrete Flow XML emission via the 5-gate builder protocol."
+    },
+    {
+      "agent": "permission-set-architect",
+      "because": "because the FlowOrchestratorRuntime system permission and queue-member assignment must be designed via PSG per persona before activation."
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "case_id": "flow-orchestrator-designer__happy-path",
+  "agent": "flow-orchestrator-designer",
+  "fixture_path": "evals/agents/fixtures/flow-orchestrator-designer/happy-path.yaml",
+  "fixture_sha256": "ea39d589f386932ad13cea30bf5c298da940f0cb14098c31fcc91a16825f3805",
+  "agent_md_path": "agents/flow-orchestrator-designer/AGENT.md",
+  "agent_md_sha256": "6332b7cfb984bc4a06daf995b9090f888a9376276e7e65296623e268cad9e658",
+  "envelope_path": "docs/validation/agent_executions_2026-04-28/flow-orchestrator-designer__happy-path.envelope.json",
+  "captured_at": "2026-04-28T02:36:07Z",
+  "model": "claude-sonnet-4-5",
+  "fingerprint": {
+    "schema_version": 1,
+    "agent": "flow-orchestrator-designer",
+    "mode": "single",
+    "confidence": "MEDIUM",
+    "refusal_code": null,
+    "finding_ids": [],
+    "finding_severities": [],
+    "citations": [
+      [
+        "decision_tree",
+        "automation-selection"
+      ],
+      [
+        "skill",
+        "admin/queues-and-public-groups"
+      ],
+      [
+        "skill",
+        "flow/auto-launched-flow-patterns"
+      ],
+      [
+        "skill",
+        "flow/fault-handling"
+      ],
+      [
+        "skill",
+        "flow/orchestration-flows"
+      ],
+      [
+        "skill",
+        "flow/screen-flows"
+      ],
+      [
+        "template",
+        "flow/FaultPath_Template.md"
+      ]
+    ],
+    "followup_agents": [
+      "flow-builder",
+      "permission-set-architect"
+    ],
+    "observation_categories": [
+      [
+        "ambiguous",
+        1
+      ],
+      [
+        "concerning",
+        1
+      ],
+      [
+        "healthy",
+        1
+      ],
+      [
+        "suggested_followup",
+        2
+      ]
+    ],
+    "deliverable_kinds": [
+      [
+        "markdown",
+        1
+      ]
+    ],
+    "dimensions_compared": [],
+    "dimensions_skipped": []
+  }
+}
