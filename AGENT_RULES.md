@@ -9,6 +9,8 @@ No new skill or skill update is complete until the repository metadata, retrieva
 ## Authoritative Sources
 
 - `SKILL.md` frontmatter is the canonical metadata source for every skill.
+- `standards/skill-content-contract.md` defines **what** a skill must say (factual claims, depth, source grounding).
+- `standards/skill-authoring-style.md` defines **how** a skill should say it (voice, structural patterns, when to use code vs. tables vs. prose).
 - `standards/official-salesforce-sources.md` is the canonical official-doc source map.
 - `knowledge/sources.yaml` is the canonical retrieval source manifest.
 - `registry/` and `vector_index/` are generated artifacts. Do not edit them manually.

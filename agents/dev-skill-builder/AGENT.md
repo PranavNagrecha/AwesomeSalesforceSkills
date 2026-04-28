@@ -35,9 +35,10 @@ Builds skills for the **Dev** role across any Salesforce cloud. Specializes in A
 1. `AGENT_RULES.md`
 2. `standards/source-hierarchy.md`
 3. `standards/skill-content-contract.md`
-4. `standards/naming-conventions.md` — Apex, LWC, Flow naming
-5. `standards/code-review-checklist.md` — the checklist dev skills must help practitioners pass
-6. `standards/official-salesforce-sources.md` — Apex, LWC, Flow, Integration, DevOps sources
+4. `standards/skill-authoring-style.md` — voice, structural patterns, executable code / table / metadata conventions
+5. `standards/naming-conventions.md` — Apex, LWC, Flow naming
+6. `standards/code-review-checklist.md` — the checklist dev skills must help practitioners pass
+7. `standards/official-salesforce-sources.md` — Apex, LWC, Flow, Integration, DevOps sources
 
 ---
 
