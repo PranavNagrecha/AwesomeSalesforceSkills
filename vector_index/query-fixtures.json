@@ -6593,6 +6593,78 @@
       "domain": "data",
       "expected_skill": "data/duplicate-rule-person-account-edge-cases",
       "top_k": 3
+    },
+    {
+      "query": "fit gap analysis salesforce capability matrix standard config custom",
+      "domain": "admin",
+      "expected_skill": "admin/fit-gap-analysis-against-org",
+      "top_k": 3
+    },
+    {
+      "query": "MoSCoW prioritization must should could salesforce backlog WSJF",
+      "domain": "admin",
+      "expected_skill": "admin/moscow-prioritization-for-sf-backlog",
+      "top_k": 3
+    },
+    {
+      "query": "requirements traceability matrix RTM salesforce audit forward backward traceability",
+      "domain": "admin",
+      "expected_skill": "admin/requirements-traceability-matrix",
+      "top_k": 3
+    },
+    {
+      "query": "as is to be process map swim lane automation candidate salesforce",
+      "domain": "admin",
+      "expected_skill": "admin/process-flow-as-is-to-be",
+      "top_k": 3
+    },
+    {
+      "query": "configuration workbook salesforce admin handoff implementation",
+      "domain": "admin",
+      "expected_skill": "admin/configuration-workbook-authoring",
+      "top_k": 3
+    },
+    {
+      "query": "persona journey map salesforce PSG record type mobile",
+      "domain": "admin",
+      "expected_skill": "admin/persona-and-journey-mapping-sf",
+      "top_k": 3
+    },
+    {
+      "query": "RACI matrix salesforce stakeholder authority decisions",
+      "domain": "admin",
+      "expected_skill": "admin/stakeholder-raci-for-sf-projects",
+      "top_k": 3
+    },
+    {
+      "query": "UAT test case design salesforce script persona precondition",
+      "domain": "admin",
+      "expected_skill": "admin/uat-test-case-design",
+      "top_k": 3
+    },
+    {
+      "query": "INVEST user story given when then handoff salesforce",
+      "domain": "admin",
+      "expected_skill": "admin/user-story-writing-for-salesforce",
+      "top_k": 3
+    },
+    {
+      "query": "split salesforce user story persona acceptance criteria sizing complexity",
+      "domain": "admin",
+      "expected_skill": "admin/user-story-writing-for-salesforce",
+      "top_k": 3
+    },
+    {
+      "query": "given when then behavior driven acceptance criteria salesforce",
+      "domain": "admin",
+      "expected_skill": "admin/acceptance-criteria-given-when-then",
+      "top_k": 3
+    },
+    {
+      "query": "scenario outline negative path acceptance criteria salesforce permission precondition",
+      "domain": "admin",
+      "expected_skill": "admin/acceptance-criteria-given-when-then",
+      "top_k": 3
     }
   ]
 }
