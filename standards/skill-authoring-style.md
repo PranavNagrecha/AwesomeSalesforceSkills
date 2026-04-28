@@ -248,7 +248,15 @@ For deployable-metadata skills, add:
 | `## Well-Architected Pillars` body section | § 6.4 — duplicates `references/well-architected.md` | Line-prefix regex + non-empty WAF reference |
 | Verbatim ≥120-char prose paragraph in both files | § 6.6 — same gotcha in two places | Set intersection of normalized paragraphs; code fences and URL-citation bullets exempt |
 
-These checks **block CI**. The corpus was retrofitted to clear every flagged warning before the WARN→ERROR promotion, so a hit now means a real regression — a new skill (or an edit) reintroduced one of the three duplication anti-patterns. Per-category shape rules (Apex/LWC needing fenced code, action skills needing field-mapping tables) are deliberately not implemented yet because the heuristics are fuzzier and false-positives across 900+ skills are expensive to triage.
+These checks **block CI**. The corpus was retrofitted to clear every flagged warning before the WARN→ERROR promotion, so a hit now means a real regression — a new skill (or an edit) reintroduced one of the three duplication anti-patterns.
+
+The validator also emits **WARN-level** findings for one § 6.2 fuzzy rule:
+
+| Check | Anti-pattern | Detection |
+|---|---|---|
+| Run of 4+ `- **X** — text` bullets | § 6.2 — parallel prose that should be a table | Frontmatter-skipped, fence-aware regex; median bullet length ≤ 220 chars; `## Related Skills` exempt |
+
+Promotion to ERROR is a separate follow-up after the corpus stays clean for a few weeks. Per-category shape rules (Apex/LWC needing fenced code, action skills needing field-mapping tables) are deliberately not implemented yet because the heuristics are fuzzier and false-positives across 900+ skills are expensive to triage.
 
 ### 8.3 Retrofit policy
 Existing skills are **not retroactively in violation**. The guide is forward-looking — applied to:
