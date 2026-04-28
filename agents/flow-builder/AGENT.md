@@ -26,13 +26,21 @@ dependencies:
     - flow/flow-cross-object-updates
     - flow/flow-data-tables
     - flow/flow-decision-element-patterns
+    - flow/flow-deployment-and-packaging
     - flow/flow-dynamic-choices
+    - flow/flow-element-naming-conventions
     - flow/flow-error-monitoring
+    - flow/flow-formula-and-expression-patterns
     - flow/flow-get-records-optimization
     - flow/flow-http-callout-action
     - flow/flow-interview-debugging
+    - flow/flow-loop-element-patterns
     - flow/flow-reactive-screen-components
+    - flow/flow-record-locking-and-contention
     - flow/flow-record-save-order-interaction
+    - flow/flow-runtime-context-and-sharing
+    - flow/flow-screen-input-validation-patterns
+    - flow/flow-screen-lwc-components
     - flow/flow-testing
     - flow/flow-versioning-strategy
     - flow/orchestration-flows
@@ -105,7 +113,15 @@ Given a business requirement, designs the correct Flow: Flow type (record-trigge
 27. `skills/flow/flow-cross-object-updates` — related-record updates without spawning a second flow
 28. `skills/flow/flow-error-monitoring` — fault-path target sink (Application_Log__c, Platform Event, EmailAlert) — every emitted fault path must point at a canonical sink
 29. `skills/flow/screen-flow-accessibility` — WCAG-conformant screen flow design for any Screen Flow output
-30. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+30. `skills/flow/flow-loop-element-patterns` — collect-then-DML idiom; nested-loop and DML/SOQL-in-loop are P0; cited in Step 5 bulkification
+31. `skills/flow/flow-runtime-context-and-sharing` — System Context vs User Context; mandatory for every emitted flow's run-mode decision
+32. `skills/flow/flow-element-naming-conventions` — VerbObject element names + prefix-based variable names; cited in Step 3 element decomposition
+33. `skills/flow/flow-formula-and-expression-patterns` — NULL-safe formulas, ISPICKVAL, lazy re-evaluation cost in loops
+34. `skills/flow/flow-record-locking-and-contention` — UNABLE_TO_LOCK_ROW, child-then-parent lock chain, decouple via Platform Event / Queueable
+35. `skills/flow/flow-screen-input-validation-patterns` — component-level validationRule for any Screen Flow input
+36. `skills/flow/flow-screen-lwc-components` — when stock screen components don't suffice, the LWC contract (`lightning__FlowScreen`, `@api validate()`, FlowAttributeChangeEvent)
+37. `skills/flow/flow-deployment-and-packaging` — validate-then-quick-deploy, dependency bundling, FlowAccessPermission delivery (cited in Output Contract follow-up)
+38. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---
 

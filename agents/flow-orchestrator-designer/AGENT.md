@@ -19,9 +19,15 @@ dependencies:
     - admin/queues-and-public-groups
     - flow/auto-launched-flow-patterns
     - flow/fault-handling
+    - flow/flow-deployment-and-packaging
+    - flow/flow-element-naming-conventions
     - flow/flow-error-monitoring
+    - flow/flow-record-locking-and-contention
     - flow/flow-resource-patterns
+    - flow/flow-runtime-context-and-sharing
     - flow/flow-runtime-error-diagnosis
+    - flow/flow-screen-input-validation-patterns
+    - flow/flow-screen-lwc-components
     - flow/flow-transactional-boundaries
     - flow/flow-versioning-strategy
     - flow/orchestration-flows
@@ -78,7 +84,13 @@ Two modes:
 15. `skills/flow/flow-error-monitoring` — org-level error-email-recipient observation in audit mode + healthy/concerning signals in design mode
 16. `skills/flow/flow-runtime-error-diagnosis` — symptoms-to-cause map cited in audit findings
 17. `skills/flow/screen-flow-accessibility` — every interactive step's Screen Flow must satisfy a11y requirements before activation
-18. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+18. `skills/flow/flow-element-naming-conventions` — Stage / Step / Subflow naming policy applied to every emitted orchestration design
+19. `skills/flow/flow-runtime-context-and-sharing` — orchestration runs as the work-item assignee; per-stage run-mode decision required
+20. `skills/flow/flow-record-locking-and-contention` — long-running stages can hold parent-record locks; cited in design-mode Process Observations
+21. `skills/flow/flow-screen-input-validation-patterns` — every interactive step's Screen Flow must validate inputs before completing the work item
+22. `skills/flow/flow-screen-lwc-components` — when a stage's interactive step needs an LWC the screen-flow contract applies (`@api validate()`, FlowAttributeChangeEvent)
+23. `skills/flow/flow-deployment-and-packaging` — orchestration + 5 subflows must deploy together with FlowAccessPermission for each persona
+24. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---
 

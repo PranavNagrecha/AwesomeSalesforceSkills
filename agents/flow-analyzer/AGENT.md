@@ -21,12 +21,18 @@ dependencies:
     - flow/flow-cross-object-updates
     - flow/flow-debugging
     - flow/flow-decision-element-patterns
+    - flow/flow-element-naming-conventions
     - flow/flow-error-monitoring
+    - flow/flow-formula-and-expression-patterns
     - flow/flow-get-records-optimization
     - flow/flow-large-data-volume-patterns
+    - flow/flow-loop-element-patterns
+    - flow/flow-record-locking-and-contention
     - flow/flow-record-save-order-interaction
     - flow/flow-resource-patterns
+    - flow/flow-runtime-context-and-sharing
     - flow/flow-runtime-error-diagnosis
+    - flow/flow-screen-input-validation-patterns
     - flow/flow-transactional-boundaries
   shared:
     - AGENT_CONTRACT.md
@@ -74,7 +80,13 @@ For a given Flow or sObject, decides whether the automation is in the right tool
 15. `skills/flow/flow-error-monitoring/SKILL.md` — org-level error-email-recipient + fault sink Healthy/Concerning observations
 16. `skills/flow/flow-runtime-error-diagnosis/SKILL.md` — symptoms-to-cause map cited in `MIGRATE_TO_APEX` and `FIX_IN_PLACE` rationale
 17. `skills/flow/flow-debugging/SKILL.md` — Flow Debug Logs / Interview Logs interpretation when target_org_alias is set
-18. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+18. `skills/flow/flow-loop-element-patterns/SKILL.md` — `dml-in-loop` / `soql-in-loop` / `subflow-with-DML-in-loop` signal definitions for Step 3 bulkification check
+19. `skills/flow/flow-record-locking-and-contention/SKILL.md` — `COEXISTENCE_RISK` / parent-lock signal for Step 4 + Process Observations under load
+20. `skills/flow/flow-runtime-context-and-sharing/SKILL.md` — without-sharing audit signal in Process Observations (FLS-bypass risk)
+21. `skills/flow/flow-formula-and-expression-patterns/SKILL.md` — picklist `=` vs ISPICKVAL bugs, NULL-propagation, lazy-re-eval-in-loop performance findings
+22. `skills/flow/flow-element-naming-conventions/SKILL.md` — naming-quality observation in Process Observations (Decision_1 / Get_Records_2 → maintainability concern)
+23. `skills/flow/flow-screen-input-validation-patterns/SKILL.md` — Screen Flows missing input validation = junk-data-in audit finding
+24. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---
 

@@ -6389,6 +6389,54 @@
       "domain": "apex",
       "expected_skill": "apex/salesforce-debug-log-analysis",
       "top_k": 3
+    },
+    {
+      "query": "DML inside flow loop element collect then update bulkification governor limit",
+      "domain": "flow",
+      "expected_skill": "flow/flow-loop-element-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "flow element naming convention API name VerbObject variable prefix Decision branch outcome",
+      "domain": "flow",
+      "expected_skill": "flow/flow-element-naming-conventions",
+      "top_k": 3
+    },
+    {
+      "query": "flow runs as system context without sharing user context FLS run mode default Spring 21",
+      "domain": "flow",
+      "expected_skill": "flow/flow-runtime-context-and-sharing",
+      "top_k": 3
+    },
+    {
+      "query": "UNABLE_TO_LOCK_ROW flow contention parent record account opportunity update bulk lock chain",
+      "domain": "flow",
+      "expected_skill": "flow/flow-record-locking-and-contention",
+      "top_k": 3
+    },
+    {
+      "query": "deploy flow sandbox to prod sf project deploy validate quick FlowAccessPermission unlocked package version conflict",
+      "domain": "flow",
+      "expected_skill": "flow/flow-deployment-and-packaging",
+      "top_k": 3
+    },
+    {
+      "query": "screen flow input validation rule formula required field block next button cross field",
+      "domain": "flow",
+      "expected_skill": "flow/flow-screen-input-validation-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "build LWC component for flow screen FlowAttributeChangeEvent validate hook FlowNavigationNextEvent lightning__FlowScreen target",
+      "domain": "flow",
+      "expected_skill": "flow/flow-screen-lwc-components",
+      "top_k": 3
+    },
+    {
+      "query": "flow formula returns null ISPICKVAL picklist comparison BLANKVALUE 5000 character limit lazy reevaluation TODAY NOW",
+      "domain": "flow",
+      "expected_skill": "flow/flow-formula-and-expression-patterns",
+      "top_k": 3
     }
   ]
 }
