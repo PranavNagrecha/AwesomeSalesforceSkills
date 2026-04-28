@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 45
   },
-  "generated_from_hash": "74dced163928ba6236c3118cc968b3096bdbc59b765f33494bf2f1fc0d78c42e",
+  "generated_from_hash": "7b7feaa48760fb4e792bf334c941539d776089123358aa5111b8ace1d2288c4e",
   "schema_version": 1,
   "skill_count": 907,
   "skills": [
@@ -82701,7 +82701,7 @@
         "fd286301ac6ad425ba77",
         "fd34f56377314c3729ef"
       ],
-      "content_hash": "3fbc281e2770a5a73852ea4542193cb6acc397fb6ecb9a94cceae715d2896230",
+      "content_hash": "1954da59c7e8be86bdac044d87880bf2b4e4a604a56792826e6c410bbe1c756c",
       "dependencies": [],
       "description": "Use when configuring Apex test execution in CI/CD pipelines, choosing test levels for deployments, parsing test results, or troubleshooting code coverage in automated builds. Triggers: 'RunLocalTests', 'RunSpecifiedTests', 'sf project deploy', 'code coverage CI', 'JUnit test results'. NOT for Apex test class design patterns, test data factory architecture, or LWC Jest testing.",
       "file_location": "skills/devops/continuous-integration-testing",
@@ -82744,7 +82744,7 @@
       "templates": [
         "skills/devops/continuous-integration-testing/templates/continuous-integration-testing-template.md"
       ],
-      "updated": "2026-04-05",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -83398,7 +83398,7 @@
         "fbb78579ec8fb0d85a57",
         "ffde434d0fc71752e7f6"
       ],
-      "content_hash": "eb2e395fd8a3e647fa6c4d8a4bd0ed7b143aa266b3a3460b97e24d6b150d74f3",
+      "content_hash": "11857237543efbac1a91847d4b00a2cccf4b9efe1858d378ccc7b2e5ab732bda",
       "dependencies": [],
       "description": "Use this skill when configuring CumulusCI (cci) for Salesforce project automation: authoring cumulusci.yml tasks and flows, customizing or composing standard flows, integrating Robot Framework acceptance tests, and running cci flows in CI pipelines with JWT-based authentication. Covers task class_path/options wiring, flow step ordering, org and source declarations, cross-project reuse via sources, and the standard flow library (dev_org, qa_org, ci_feature, install_beta). NOT for raw SFDX/sf CLI workflows without CumulusCI, scratch org pool management (use scratch-org-pools), unlocked or managed package versioning (use unlocked-package-development or second-generation-managed-packages), or Salesforce-native DevOps Center pipelines (use devops-center-pipeline).",
       "file_location": "skills/devops/cumulusci-automation",
@@ -83449,7 +83449,7 @@
       "templates": [
         "skills/devops/cumulusci-automation/templates/cumulusci-automation-template.md"
       ],
-      "updated": "2026-04-06",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -83792,7 +83792,7 @@
         "ff5ef0b273ffd2744c8a",
         "ff8c3839debf9afbb6c6"
       ],
-      "content_hash": "f86c22852a86e357a760006509f18a44f5a985f5897ca344593ad0669fe61307",
+      "content_hash": "0d98b2bb5f36853153f3a61ff7771950eac80245ce907aa8762c307caeb9f39c",
       "dependencies": [],
       "description": "Tracking the real-time and historical status of Salesforce metadata deployments via Metadata API checkDeployStatus, REST deployRequest polling, and the Deployment Status Setup page. Covers DeployResult field interpretation, component error triage, concurrent deployment queue behavior, and 30-day history limits. NOT for post-deployment functional smoke testing (use post-deployment-validation). NOT for CI/CD pipeline setup (use github-actions-for-salesforce). NOT for rollback execution.",
       "file_location": "skills/devops/deployment-monitoring",
@@ -83839,7 +83839,7 @@
       "templates": [
         "skills/devops/deployment-monitoring/templates/deployment-monitoring-template.md"
       ],
-      "updated": "2026-04-13",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -87709,7 +87709,7 @@
         "fbc7a95a0094c6c74044",
         "ffc3be023a5c751cd829"
       ],
-      "content_hash": "99eb719241835a0449d2fc7561b85b3e909a8190f1a71957e37a2df8be1a1923",
+      "content_hash": "68814ca9fcda543e254d3e03767a7e871f5118156e8d4f66ad898b6c1aa0dc55",
       "dependencies": [],
       "description": "Planning and executing metadata rollbacks and emergency hotfixes in Salesforce orgs. Use when a production deployment causes regression and needs to be reverted, or when an urgent fix must bypass the normal release pipeline. Covers pre-deploy archive bundles, quick deploy for hotfixes, non-rollbackable component handling, and hotfix branch isolation. NOT for routine CI/CD pipeline setup (use continuous-integration-testing). NOT for destructive changes authoring (use destructive-changes-deployment).",
       "file_location": "skills/devops/rollback-and-hotfix-strategy",
@@ -87753,7 +87753,7 @@
       "templates": [
         "skills/devops/rollback-and-hotfix-strategy/templates/rollback-and-hotfix-strategy-template.md"
       ],
-      "updated": "2026-04-05",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -88833,7 +88833,7 @@
         "fb670aeb41874ff34766",
         "fda12b0938ea30322684"
       ],
-      "content_hash": "cadb0bdea9f55d48ade30036d4bb41725275e9404a1233df432386fcff23ce54",
+      "content_hash": "6cf1ad727f3dffb24151ccbb1047bda8037d359de391ac0e4ba828810e25f38f",
       "dependencies": [],
       "description": "Use this skill when configuring pre-created scratch org pools for parallel CI testing, reducing pipeline wait times by claiming pre-warmed orgs instead of provisioning on demand. Covers CumulusCI pool commands, Dev Hub allocation planning for pools, pool sizing strategies, and CI matrix integration. NOT for basic scratch org lifecycle (use scratch-org-management), scratch org definition files (use org-shape-and-scratch-definition), or test data seeding (use data-seeding-for-testing).",
       "file_location": "skills/devops/scratch-org-pools",
@@ -88878,7 +88878,7 @@
       "templates": [
         "skills/devops/scratch-org-pools/templates/scratch-org-pools-template.md"
       ],
-      "updated": "2026-04-06",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
