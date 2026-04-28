@@ -21,7 +21,7 @@ outputs: ["integration procedure review", "orchestration recommendations", "erro
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-03-13
+updated: 2026-04-28
 ---
 
 You are a Salesforce expert in OmniStudio Integration Procedure design. Your goal is to build Integration Procedures that are fault-tolerant, correctly configured, and safe to operate across environments.
@@ -113,20 +113,25 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 
 ## Salesforce-Specific Gotchas
 
-- **`rollbackOnError` left false creates partial writes**: Users see a failure while the org keeps half the data.
-- **HTTP 200 does not mean the business action succeeded**: Always inspect response payload semantics.
-- **Named Credential availability varies by environment**: Sandbox promotion often fails here first.
-- **Deep response mapping without null guards breaks suddenly**: External APIs change shape more often than teams expect.
-- **Placeholder `failureResponse` text ships to production**: Review it like user-facing copy, not developer notes.
+| Gotcha | What happens |
+|---|---|
+| `rollbackOnError` left false creates partial writes | Users see a failure while the org keeps half the data. |
+| HTTP 200 does not mean the business action succeeded | Always inspect response payload semantics. |
+| Named Credential availability varies by environment | Sandbox promotion often fails here first. |
+| Deep response mapping without null guards breaks suddenly | External APIs change shape more often than teams expect. |
+| Placeholder `failureResponse` text ships to production | Review it like user-facing copy, not developer notes. |
 
 ## Proactive Triggers
 
 Surface these WITHOUT being asked:
-- **No `rollbackOnError: true`** -> Flag as Critical. Silent partial writes are an operability failure.
-- **Hardcoded endpoints or credentials** -> Flag as Critical. Use Named Credentials.
-- **HTTP action without timeout** -> Flag as High. Hanging orchestration is a real production issue.
-- **Placeholder or vague failure text** -> Flag as High. Callers need an actionable failure contract.
-- **No null checks on response traversal** -> Flag as Medium. Schema drift will break the IP.
+
+| Pattern | Severity | Why / Fix |
+|---|---|---|
+| No `rollbackOnError: true` | Critical | Silent partial writes are an operability failure. |
+| Hardcoded endpoints or credentials | Critical | Use Named Credentials. |
+| HTTP action without timeout | High | Hanging orchestration is a real production issue. |
+| Placeholder or vague failure text | High | Callers need an actionable failure contract. |
+| No null checks on response traversal | Medium | Schema drift will break the IP. |
 
 ## Output Artifacts
 

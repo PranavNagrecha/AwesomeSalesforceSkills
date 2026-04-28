@@ -30,7 +30,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-04-28
 ---
 
 # Industries CPQ vs Salesforce CPQ
@@ -56,11 +56,13 @@ Gather this context before advising on CPQ selection or migration:
 
 Industries CPQ is Salesforce's industry-specific configuration, pricing, and quoting product, built natively on OmniStudio primitives. Its core components are:
 
-- **Calculation Procedures**: declarative pricing-engine rules that replace custom Apex pricing logic. They execute server-side and support complex, attribute-driven pricing trees.
-- **DataRaptors**: data transformation components that read and write Salesforce data. DataRaptors handle catalog lookups, product attribute hydration, and cart data preparation.
-- **OmniScripts**: guided-selling UI flows that walk the sales representative step by step through product selection, configuration, and quoting. OmniScripts replace the Salesforce CPQ Quote Line Editor for industry catalog scenarios.
-- **Vlocity Cards / FlexCards**: responsive product and cart display components embedded inside OmniScripts or standalone pages.
-- **Product Catalog**: products modeled as catalog items with attributes (not standard Pricebook Entries). Bundles can be multi-level with cardinality rules, exclusion rules, and compatibility constraints.
+| Component | Role |
+|---|---|
+| Calculation Procedures | Declarative pricing-engine rules that replace custom Apex pricing logic. Execute server-side and support complex, attribute-driven pricing trees. |
+| DataRaptors | Data transformation components that read and write Salesforce data. Handle catalog lookups, product attribute hydration, and cart data prep. |
+| OmniScripts | Guided-selling UI flows for product selection, configuration, and quoting. Replace the Salesforce CPQ Quote Line Editor for industry catalog scenarios. |
+| Vlocity Cards / FlexCards | Responsive product and cart display components embedded inside OmniScripts or standalone pages. |
+| Product Catalog | Products modeled as catalog items with attributes (not standard Pricebook Entries). Bundles can be multi-level with cardinality, exclusion, and compatibility rules. |
 
 Industries CPQ is the required CPQ engine for Communications Cloud, Energy and Utilities Cloud, Media Cloud, and Insurance/Financial Services product-selling use cases. It is deployed via DataPacks and managed through OmniStudio's own deployment tooling.
 
@@ -68,12 +70,14 @@ Industries CPQ is the required CPQ engine for Communications Cloud, Energy and U
 
 Salesforce CPQ is a managed package (`SBQQ__`) that installs on top of Sales Cloud. Its core components are:
 
-- **Products and Price Books**: standard Salesforce products with price book entries. Bundles are configured through parent-child product relationships and product options.
-- **Quote Line Editor (QLE)**: the native CPQ UI for adding products, applying discounts, and configuring bundles. It operates inside a standard Salesforce page.
-- **Pricing Rules**: Apex-based or declarative rules that fire on the QLE to apply discounts, fees, and price adjustments.
-- **Approval Rules and Approval Chains**: multi-level discount approval workflows with automated routing.
-- **Contracts and Amendments**: structured contract lifecycle with amendment quoting, renewal quoting, and subscription management.
-- **Salesforce Billing (add-on)**: invoicing, payment, and revenue recognition built on top of CPQ contracts.
+| Component | Role |
+|---|---|
+| Products and Price Books | Standard Salesforce products with price book entries. Bundles are configured through parent-child product relationships and product options. |
+| Quote Line Editor (QLE) | The native CPQ UI for adding products, applying discounts, and configuring bundles. Operates inside a standard Salesforce page. |
+| Pricing Rules | Apex-based or declarative rules that fire on the QLE to apply discounts, fees, and price adjustments. |
+| Approval Rules and Approval Chains | Multi-level discount approval workflows with automated routing. |
+| Contracts and Amendments | Structured contract lifecycle with amendment quoting, renewal quoting, and subscription management. |
+| Salesforce Billing (add-on) | Invoicing, payment, and revenue recognition built on top of CPQ contracts. |
 
 As of March 2025, Salesforce CPQ is in end-of-sale. Existing customers can renew and continue using the product. Salesforce is no longer selling Salesforce CPQ to new customers. The strategic successor is **Revenue Cloud** (formerly Revenue Lifecycle Management / RLM), which is built natively on the Salesforce platform (no managed package) and includes CPQ, Billing, and Contract Lifecycle Management as first-party objects.
 
