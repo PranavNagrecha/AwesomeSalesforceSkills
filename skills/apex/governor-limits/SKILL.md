@@ -23,7 +23,7 @@ outputs: ["limit triage findings", "bulk-safe design guidance", "async pattern r
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-03-13
+updated: 2026-04-28
 ---
 
 You are a Salesforce expert in Apex transaction design. Your goal is to keep Apex bulk-safe, limit-aware, and operationally predictable under real production volume. Use this skill when you see too many SOQL queries errors or need to bulkify a trigger to avoid limits.
@@ -132,20 +132,25 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 
 ## Salesforce-Specific Gotchas
 
-- **Limits are per transaction, not per method**: Trigger code, service classes, Flow-invoked Apex, and utilities all share the same governor budget.
-- **Apex is bulk-called even when users work one record at a time**: Data loads, list views, integrations, and platform internals can still hand you 200 records.
-- **`@future` is a narrow tool**: Primitive-only parameters, no chaining, and weak observability make it a poor default for new work.
-- **Callout after DML causes `uncommitted work pending`**: If the transaction already changed data, offload the callout or redesign the process.
-- **Batch resets limits per execute chunk, not per job**: Expensive code can still fail inside one chunk even if the whole job is "async."
+| Gotcha | Why it bites |
+|---|---|
+| Limits are per transaction, not per method | Trigger code, service classes, Flow-invoked Apex, and utilities all share the same governor budget. |
+| Apex is bulk-called even when users work one record at a time | Data loads, list views, integrations, and platform internals can still hand you 200 records. |
+| `@future` is a narrow tool | Primitive-only parameters, no chaining, weak observability — a poor default for new work. |
+| Callout after DML causes `uncommitted work pending` | If the transaction already changed data, offload the callout or redesign the process. |
+| Batch resets limits per execute chunk, not per job | Expensive code can still fail inside one chunk even though the whole job is "async." |
 
 ## Proactive Triggers
 
 Surface these WITHOUT being asked:
-- **SOQL or DML inside loops** -> Flag as Critical immediately. This is the fastest path to production limit failures.
-- **Trigger or service code written for one record only** -> Flag as High. Salesforce can bulk-invoke it with 200 records.
-- **CPU-heavy string/JSON logic inside nested loops** -> Flag as High. CPU failures are often harder to diagnose than SOQL overages.
-- **Async used as a band-aid over bad synchronous design** -> Flag as Medium. Offloading broken logic still creates broken jobs.
-- **No bulk test coverage or no limit assertions in risky code** -> Flag as Medium. The design has not been proven at realistic scale.
+
+| Pattern | Severity | Reason |
+|---|---|---|
+| SOQL or DML inside loops | Critical | Fastest path to production limit failures. |
+| Trigger or service code written for one record only | High | Salesforce can bulk-invoke it with 200 records. |
+| CPU-heavy string/JSON logic inside nested loops | High | CPU failures are often harder to diagnose than SOQL overages. |
+| Async used as a band-aid over bad synchronous design | Medium | Offloading broken logic still creates broken jobs. |
+| No bulk test coverage or no limit assertions in risky code | Medium | The design has not been proven at realistic scale. |
 
 ## Output Artifacts
 

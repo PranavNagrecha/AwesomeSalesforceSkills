@@ -60,12 +60,14 @@ Gather this context before working on anything in this domain:
 
 CPQ custom actions are standard Salesforce object records of type `SBQQ__CustomAction__c` in the SBQQ managed package. Each record represents one button. Fields that control behavior:
 
-- **`SBQQ__Type__c`** — The action type. Valid values: `URL` (opens a URL in a new tab or same tab), `Flow` (launches a Screen Flow or Autolaunched Flow), `Calculate` (triggers CPQ price recalculation), `Save` (triggers CPQ quote save), `Add Group` (adds a new quote line group). Only these values are recognized; arbitrary strings fail silently.
-- **`SBQQ__Location__c`** — Controls which CPQ screen and position renders the button. Values include `Line Item` (appears in each quote line row), `Group` (appears at the group header level), `Global` (appears once per quote, above the line grid). The configurator and amendment screens have their own location values.
-- **`SBQQ__DisplayOrder__c`** — Integer controlling the left-to-right display order of buttons when multiple custom actions share the same location.
-- **`SBQQ__Active__c`** — Boolean; only active records are rendered in the UI.
-- **`SBQQ__FlowName__c`** — API name of the Flow to invoke when type is `Flow`.
-- **`SBQQ__URL__c`** — The URL to navigate to when type is `URL`. Supports merge field syntax for passing CPQ record IDs.
+| Field | Behavior |
+|---|---|
+| `SBQQ__Type__c` | The action type. Valid values: `URL` (opens a URL in a new tab or same tab), `Flow` (launches a Screen Flow or Autolaunched Flow), `Calculate` (triggers CPQ price recalculation), `Save` (triggers CPQ quote save), `Add Group` (adds a new quote line group). Only these values are recognized; arbitrary strings fail silently. |
+| `SBQQ__Location__c` | Controls which CPQ screen and position renders the button. Values include `Line Item` (in each quote line row), `Group` (at the group header level), `Global` (once per quote, above the line grid). The configurator and amendment screens have their own location values. |
+| `SBQQ__DisplayOrder__c` | Integer controlling the left-to-right display order of buttons when multiple custom actions share the same location. |
+| `SBQQ__Active__c` | Boolean; only active records are rendered in the UI. |
+| `SBQQ__FlowName__c` | API name of the Flow to invoke when type is `Flow`. |
+| `SBQQ__URL__c` | The URL to navigate to when type is `URL`. Supports merge field syntax for passing CPQ record IDs. |
 
 ### The Five-Action Hard Limit Per Context
 

@@ -79,7 +79,7 @@
     "fe8f59f995adb4bf253f",
     "fee43a8936b243dbc188"
   ],
-  "content_hash": "748154e5b7db878211fb45aaf7fca80cebd26cf5f6901f5bc0b90ff73e856c4a",
+  "content_hash": "caab4a829a0fe8358b8638741c348e499ffff2fb9189df70d597b631e183eb71",
   "dependencies": [],
   "description": "Use when adding, configuring, or troubleshooting custom action buttons in the Salesforce CPQ Quote Line Editor (QLE), product configurator, or amendment/renewal screens. Trigger keywords: CPQ custom action, QLE button, SBQQ__CustomAction__c, CPQ Flow button, CPQ URL action. NOT for standard Salesforce quick actions on non-CPQ objects, Lightning Experience action bars outside the QLE, or CPQ Price Rules and Product Rules.",
   "file_location": "skills/apex/cpq-custom-actions",

@@ -64,7 +64,7 @@
     "f570e6819dcace2b3831",
     "f6f2f333e026c1e312cb"
   ],
-  "content_hash": "defaa1b402561d1e6152937cdac46757df8804ec2582dba218987a3aa521225e",
+  "content_hash": "03a97e1b8fecc5900c0bad185aca505639a45b24b7b94f10a763836848c4bf49",
   "dependencies": [],
   "description": "Use Security.stripInaccessible to enforce CRUD/FLS on user-supplied records before DML, and to scrub query results before returning them to clients. Covers AccessType.READABLE/CREATABLE/UPDATABLE/UPSERTABLE, the SObjectAccessDecision API, when to prefer WITH USER_MODE on the SOQL itself, and integration with the SecurityUtils template. NOT for class-level sharing keyword choice (with sharing / without sharing / inherited sharing \u2014 see apex-sharing-keywords). NOT for managed sharing or Apex managed sharing recalculations (see sharing-selection decision tree).",
   "file_location": "skills/apex/apex-stripinaccessible-and-fls-enforcement",

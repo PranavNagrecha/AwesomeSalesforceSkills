@@ -38,7 +38,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-12
+updated: 2026-04-28
 ---
 
 # Commerce Order API (SCAPI / OCAPI — Headless Storefront)
@@ -65,11 +65,13 @@ Gather this context before working on anything in this domain:
 
 The Salesforce Commerce API (SCAPI) ShopAPI Orders resource is the current standard for headless order submission:
 
-- **Endpoint**: `POST /checkout/shopper-orders/v1/organizations/{organizationId}/orders`
-- **Auth**: SLAS Bearer token in the `Authorization` header. Guest shoppers use a SLAS guest token; registered shoppers use a SLAS registered (JWT) token obtained via PKCE or client credentials flow.
-- **Input state**: The request body contains only `{"basketId": "<uuid>"}`. The shopper must have previously built a basket via the Shopper Baskets API. All product, price, shipping, and payment data is read from the basket at submit time.
-- **Output**: A full Order representation including `orderNo`, `status` (`created`), `payment_status`, `confirmation_status`, line items, shipments, and applied promotions. The basket is atomically deleted.
-- **Idempotency**: SCAPI orders are NOT idempotent. Retrying a `POST /orders` after a network timeout can create a duplicate order if the first call succeeded. Implement client-side order submission deduplication using a client-generated basket ID check before retrying.
+| Aspect | Details |
+|---|---|
+| Endpoint | `POST /checkout/shopper-orders/v1/organizations/{organizationId}/orders` |
+| Auth | SLAS Bearer token in the `Authorization` header. Guest shoppers use a SLAS guest token; registered shoppers use a SLAS registered (JWT) token obtained via PKCE or client credentials flow. |
+| Input state | The request body contains only `{"basketId": "<uuid>"}`. The shopper must have previously built a basket via the Shopper Baskets API. All product, price, shipping, and payment data is read from the basket at submit time. |
+| Output | A full Order representation including `orderNo`, `status` (`created`), `payment_status`, `confirmation_status`, line items, shipments, and applied promotions. The basket is atomically deleted. |
+| Idempotency | NOT idempotent. Retrying a `POST /orders` after a network timeout can create a duplicate order if the first call succeeded. Implement client-side dedup using a client-generated basket ID check before retrying. |
 
 **SLAS Scopes for Orders**:
 
