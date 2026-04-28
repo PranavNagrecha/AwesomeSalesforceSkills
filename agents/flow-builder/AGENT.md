@@ -20,16 +20,25 @@ dependencies:
     - flow/auto-launched-flow-patterns
     - flow/fault-handling
     - flow/flow-and-platform-events
+    - flow/flow-apex-defined-types
     - flow/flow-bulkification
+    - flow/flow-collection-processing
+    - flow/flow-cross-object-updates
     - flow/flow-data-tables
+    - flow/flow-decision-element-patterns
     - flow/flow-dynamic-choices
+    - flow/flow-error-monitoring
+    - flow/flow-get-records-optimization
     - flow/flow-http-callout-action
     - flow/flow-interview-debugging
     - flow/flow-reactive-screen-components
+    - flow/flow-record-save-order-interaction
     - flow/flow-testing
+    - flow/flow-versioning-strategy
     - flow/orchestration-flows
     - flow/record-triggered-flow-patterns
     - flow/scheduled-flows
+    - flow/screen-flow-accessibility
     - flow/screen-flows
     - flow/subflows-and-reusability
   shared:
@@ -92,7 +101,11 @@ Given a business requirement, designs the correct Flow: Flow type (record-trigge
 23. `skills/flow/flow-record-save-order-interaction` — before-save vs after-save placement + recursion
 24. `skills/flow/flow-versioning-strategy` — activation, paused-interview pinning, rollback = activate prior
 25. `skills/flow/flow-apex-defined-types` — if HTTP callout / External Service / invocable returns a structured payload
-26. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+26. `skills/flow/flow-collection-processing` — assign-to-collection idiom inside loops; map-shaped outputs
+27. `skills/flow/flow-cross-object-updates` — related-record updates without spawning a second flow
+28. `skills/flow/flow-error-monitoring` — fault-path target sink (Application_Log__c, Platform Event, EmailAlert) — every emitted fault path must point at a canonical sink
+29. `skills/flow/screen-flow-accessibility` — WCAG-conformant screen flow design for any Screen Flow output
+30. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---
 
