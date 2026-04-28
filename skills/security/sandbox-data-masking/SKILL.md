@@ -33,7 +33,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-04-28
 ---
 
 # Sandbox Data Masking
@@ -46,11 +46,13 @@ This skill activates when a team needs to configure Salesforce Data Mask to prot
 
 Gather this context before working on anything in this domain:
 
-- **Sandbox type**: Data Mask requires a partial copy or full copy sandbox. It is not available for Developer or Developer Pro sandboxes. Confirm the sandbox tier before scoping the work.
-- **Licensing**: Data Mask is a paid add-on. Confirm the org has the Data Mask permission set license assigned before attempting configuration.
-- **Encrypted fields**: Fields protected by Shield Platform Encryption cannot be masked by Data Mask. Attempting to configure masking on an encrypted field will silently skip the field; the real value remains. This is the most common wrong assumption.
-- **Big Objects and External Objects**: Data Mask does not support these. Plan separately for any PII stored there.
-- **Field type support**: Data Mask supports Text, Email, Phone, TextArea, URL, and certain custom field types. Formula fields, Roll-up Summaries, and encrypted fields are not maskable.
+| Context | What to confirm |
+|---|---|
+| Sandbox type | Data Mask requires a partial copy or full copy sandbox. Not available for Developer or Developer Pro sandboxes. |
+| Licensing | Data Mask is a paid add-on. Confirm the org has the Data Mask permission set license assigned before attempting configuration. |
+| Encrypted fields | Shield Platform Encryption-protected fields cannot be masked. Configuration silently skips them; the real value remains. Most common wrong assumption. |
+| Big Objects and External Objects | Not supported by Data Mask. Plan separately for any PII stored there. |
+| Field type support | Supports Text, Email, Phone, TextArea, URL, and certain custom types. Formula fields, Roll-up Summaries, and encrypted fields are not maskable. |
 
 ---
 

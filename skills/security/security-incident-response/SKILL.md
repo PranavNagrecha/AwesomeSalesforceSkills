@@ -41,7 +41,7 @@ dependencies:
   - security/transaction-security-policies
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Security Incident Response — Salesforce
@@ -75,10 +75,13 @@ The cardinal rule: **preserve evidence before containment**. In free-tier orgs, 
 ### Transaction Security Policy Enforcement Actions
 
 Policies can enforce one of four actions when a matching platform event fires:
-- **Block** — prevents the operation from completing
-- **Two-Factor Authentication (MFA challenge)** — requires step-up auth
-- **Notification** — emails the org admin; no blocking
-- **End Session** — terminates the user's current session
+
+| Action | Effect |
+|---|---|
+| Block | Prevents the operation from completing |
+| Two-Factor Authentication (MFA challenge) | Requires step-up auth |
+| Notification | Emails the org admin; no blocking |
+| End Session | Terminates the user's current session |
 
 Policy configuration: Enhanced Condition Builder (no-code, available Spring '21+) or legacy Apex `PolicyCondition` class. Policies only apply to events fired **after** activation — they are not retroactive.
 

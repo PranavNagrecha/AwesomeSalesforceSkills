@@ -33,7 +33,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-04-28
 ---
 
 # Security Health Check
@@ -67,19 +67,23 @@ The score formula is approximately: `Score = 100% − Σ(deviation weight × ris
 
 Every setting in Health Check belongs to exactly one risk category:
 
-- **High Risk** — settings whose misconfiguration represents the most serious security exposure. Examples include minimum password length below 8 characters, no password complexity requirement, session timeout set to longer than 12 hours, and permitting all IP ranges without restriction. These must be addressed first.
-- **Medium Risk** — settings with meaningful but less immediate exposure. Examples include password expiration set to "never" and maximum invalid login attempts set above 10.
-- **Low Risk** — minor configuration gaps that represent incremental hardening. Examples include not requiring a password change on first login and not enforcing password history.
-- **Informational** — settings tracked for awareness only. They do not affect the score. Informational items are useful for auditing but remediating them does not improve the numeric score.
+| Category | Score impact | Examples |
+|---|---|---|
+| High Risk | Largest weight; address first | Minimum password length below 8 characters, no password complexity requirement, session timeout > 12 hours, all IP ranges permitted without restriction |
+| Medium Risk | Meaningful but less immediate exposure | Password expiration set to "never", maximum invalid login attempts above 10 |
+| Low Risk | Incremental hardening | Not requiring password change on first login, no password history enforcement |
+| Informational | Does not affect the score | Awareness-only settings useful for auditing but not scoring |
 
 ### What Settings Are Evaluated
 
 Health Check evaluates settings in the following areas (against the Salesforce standard baseline):
 
-- **Password Policies**: minimum length, complexity requirements (alpha/numeric/special characters), maximum age, history enforcement, first-time login change, lockout effective period, maximum invalid attempts.
-- **Session Settings**: session timeout value, session security level required at login, require secure connections (HTTPS), lock sessions to the IP from which they originated, require HttpOnly attribute on session cookies.
-- **Network Access**: login IP range restrictions, trusted IP ranges.
-- **Authentication Settings**: multi-factor authentication enforcement flags, identity confirmation behavior.
+| Area | Settings evaluated |
+|---|---|
+| Password Policies | Minimum length, complexity requirements (alpha/numeric/special), maximum age, history enforcement, first-time login change, lockout effective period, maximum invalid attempts |
+| Session Settings | Session timeout, session security level at login, require HTTPS, lock sessions to login IP, require HttpOnly cookies |
+| Network Access | Login IP range restrictions, trusted IP ranges |
+| Authentication Settings | MFA enforcement flags, identity confirmation behavior |
 
 The exact set of settings checked can expand with Salesforce releases. Check the current baseline via Setup → Security → Health Check after any major release.
 

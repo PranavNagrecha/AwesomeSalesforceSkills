@@ -67,10 +67,12 @@ A working strategy assigns each event type to a retention tier (hot for recent i
 
 ### Routing Paths
 
-- **Event Monitoring Analytics App** — built-in dashboards, short retention.
-- **Pull via Event Log File API** — hourly batch pull into SIEM; standard path.
-- **Push via Streaming** — real-time event bus subscription; higher cost.
-- **Big Objects** — in-platform archive for long-retention data.
+| Path | When to use |
+|---|---|
+| Event Monitoring Analytics App | Built-in dashboards, short retention. |
+| Pull via Event Log File API | Hourly batch pull into SIEM; standard path. |
+| Push via Streaming | Real-time event bus subscription; higher cost. |
+| Big Objects | In-platform archive for long-retention data. |
 
 ### The Query Runbook
 

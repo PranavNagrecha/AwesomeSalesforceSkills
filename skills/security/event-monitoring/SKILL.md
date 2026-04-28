@@ -34,7 +34,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-04-28
 ---
 
 # Event Monitoring
@@ -47,11 +47,13 @@ This skill activates when a practitioner needs to audit user activity, download 
 
 Gather this context before working on anything in this domain:
 
-- **License check**: Event Monitoring requires either a Salesforce Shield subscription or the Event Monitoring add-on. Without one of these, only five basic event types (Login, Logout, URI, API Total Usage, Apex Unexpected Exception) are available with 1-day retention.
-- **Real-Time vs. Batch**: Event Log Files (batch, next-day) and Real-Time Event Monitoring (streaming, immediate) are distinct access patterns. Confirm which the request requires.
-- **Permissions**: "View Event Log Files" permission is needed for EventLogFile access. "View Real-Time Event Monitoring Data" permission is required for RTEM streaming events.
-- **Log delay**: Standard Event Log Files are generated once per day with a 24-hour delay. Hourly log files are available for Shield customers only.
-- **CSV delivery**: EventLogFile content is a gzip-compressed CSV retrieved via a separate REST call — not returned inline in the SOQL query result.
+| Context | What to confirm |
+|---|---|
+| License check | Event Monitoring requires Salesforce Shield or the Event Monitoring add-on. Without one, only 5 basic event types (Login, Logout, URI, API Total Usage, Apex Unexpected Exception) are available with 1-day retention. |
+| Real-Time vs. Batch | Event Log Files (batch, next-day) and Real-Time Event Monitoring (streaming, immediate) are distinct access patterns. Confirm which the request requires. |
+| Permissions | "View Event Log Files" is needed for EventLogFile access; "View Real-Time Event Monitoring Data" is required for RTEM streaming events. |
+| Log delay | Standard Event Log Files are generated once per day with a 24-hour delay. Hourly log files are Shield-only. |
+| CSV delivery | EventLogFile content is a gzip-compressed CSV retrieved via a separate REST call — not returned inline in the SOQL query result. |
 
 ---
 

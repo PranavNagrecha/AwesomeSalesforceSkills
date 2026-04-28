@@ -124,7 +124,7 @@
     "fc09c088b06a076b1601",
     "ffe70d34711a259013ad"
   ],
-  "content_hash": "03822e4b8ef7ed0684420444a3a5d49725c9cbe2f13755dce297c1f1d2236e61",
+  "content_hash": "1174d755796d539e3133786a7373c847b1c12e1aa79a90e72f2b12b70add15e2",
   "dependencies": [
     "security/event-monitoring",
     "security/transaction-security-policies"
@@ -180,7 +180,7 @@
   "templates": [
     "skills/security/security-incident-response/templates/security-incident-response-template.md"
   ],
-  "updated": "2026-04-17",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

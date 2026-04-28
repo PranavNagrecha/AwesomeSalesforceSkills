@@ -87,7 +87,7 @@
     "f85b805ba5f784ded4e8",
     "fba8adb8879f657797fe"
   ],
-  "content_hash": "5e4bfea5b5821bce68e2002abcf93f5754c7b0022127154ec8305965f564ce22",
+  "content_hash": "624a3204aa8fd798d12a84f3821d91acc8239dd47e3f3ff82df961c374638568",
   "dependencies": [],
   "description": "Use when running, interpreting, or acting on Salesforce Security Health Check results \u2014 reading the score, understanding risk categories, evaluating specific settings, creating or importing a custom baseline, querying the Tooling API programmatically, or planning remediation from findings. Triggers: 'security health check score', 'health check failing settings', 'custom baseline', 'remediate health check findings', 'fix risk'. NOT for org hardening implementation, permission model design, or broad baseline config beyond what Health Check directly measures.",
   "file_location": "skills/security/security-health-check",
@@ -136,7 +136,7 @@
   "templates": [
     "skills/security/security-health-check/templates/security-health-check-template.md"
   ],
-  "updated": "2026-04-04",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }
