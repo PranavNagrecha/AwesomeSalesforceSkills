@@ -40,7 +40,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-07
+updated: 2026-04-28
 ---
 
 # AI Agent to Salesforce Org Integration Architecture
@@ -87,10 +87,12 @@ All three patterns require a Connected App. The key design decisions are:
 
 The most common architectural failure in AI-to-org integrations is over-broad data exposure. An agent that can query any object with any SOQL is a data exfiltration risk. Design the exposure scope before implementation:
 
-- **Object-level**: Which objects can the agent read? Which can it write?
-- **Field-level**: Within each object, which fields are visible? PII fields (SSN, bank account, health data) require explicit justification.
-- **Record-level**: Can the agent see all records of a type, or only records related to a specific context (e.g., only Cases assigned to the agent's service account user)?
-- **Operation-level**: Read-only vs. read-write vs. delete. Most AI agents should be read-only by default.
+| Scope | Question to answer |
+|---|---|
+| Object-level | Which objects can the agent read? Which can it write? |
+| Field-level | Within each object, which fields are visible? PII fields (SSN, bank account, health data) require explicit justification. |
+| Record-level | Can the agent see all records of a type, or only records related to a specific context (e.g., only Cases assigned to the agent's service account user)? |
+| Operation-level | Read-only vs. read-write vs. delete. Most AI agents should be read-only by default. |
 
 ---
 

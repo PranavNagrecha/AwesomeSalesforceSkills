@@ -88,7 +88,7 @@
     "f7700e3117824c01af6a",
     "fe39346528fb8ef0b2e0"
   ],
-  "content_hash": "d066d686cd02bb055a5536033af714c1b9e9764908a9816c1eb86b08b59c780d",
+  "content_hash": "a720793b3d8da423ad0edc1b48632b16d285b6a11d4e7b912f3ce9b3f82afce5",
   "dependencies": [],
   "description": "Use this skill when designing or evaluating a Marketing Cloud Engagement multi-Business-Unit hierarchy \u2014 covering Enterprise 2.0 parent/child BU structure, Shared Data Extensions, cross-BU user provisioning, and data segregation governance. NOT for single-BU setup, Marketing Cloud Account Engagement (Pardot) standalone configuration, or CRM-side campaign hierarchy design.",
   "file_location": "skills/architect/multi-bu-marketing-architecture",
@@ -137,7 +137,7 @@
   "templates": [
     "skills/architect/multi-bu-marketing-architecture/templates/multi-bu-marketing-architecture-template.md"
   ],
-  "updated": "2026-04-10",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

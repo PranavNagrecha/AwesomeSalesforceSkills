@@ -35,7 +35,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-13
+updated: 2026-04-28
 ---
 
 # CRM Analytics vs Tableau — Decision Framework
@@ -70,10 +70,13 @@ CRM Analytics is the right primary choice when: the data is predominantly Salesf
 Tableau (Desktop, Server, Cloud, and Tableau Next) is a separate Salesforce product with its own license model (Creator, Explorer, Viewer roles, or Tableau+ capacity model). The native Salesforce connector for Tableau operates as an **extract connector** — it pulls data from Salesforce into a Tableau extract on a scheduled refresh cadence. It does not provide a live query connection to Salesforce objects.
 
 Key connector constraints that architects must know:
-- **Extract-only**: Tableau's Salesforce connector does not support live/direct query against Salesforce. Every dashboard reflects the most recent extract, not current record state.
-- **30-day lookback cap on incremental refresh**: Incremental extract refreshes using the connector are capped at a 30-day lookback window. Rows modified beyond that window are not re-fetched unless a full extract runs.
-- **No Custom SQL**: The Salesforce connector does not support Custom SQL queries, unlike most database connectors in Tableau. Data shaping must happen before Tableau or through Tableau Prep.
-- **10,000-character API query limit**: The connector enforces a 10,000-character limit on the underlying Salesforce API query string, which constrains complex multi-field SOQL expressions passed through the connector.
+
+| Constraint | Implication |
+|---|---|
+| Extract-only | Tableau's Salesforce connector does not support live/direct query against Salesforce. Every dashboard reflects the most recent extract, not current record state. |
+| 30-day lookback cap on incremental refresh | Incremental extract refreshes using the connector are capped at a 30-day lookback window. Rows modified beyond that window are not re-fetched unless a full extract runs. |
+| No Custom SQL | The Salesforce connector does not support Custom SQL queries, unlike most database connectors in Tableau. Data shaping must happen before Tableau or through Tableau Prep. |
+| 10,000-character API query limit | The connector enforces a 10,000-character limit on the underlying Salesforce API query string, constraining complex multi-field SOQL expressions passed through the connector. |
 
 These constraints mean that Tableau is not a suitable replacement for real-time Salesforce operational analytics or use cases requiring immediate record-level visibility. It is the right choice when the requirement is cross-system BI across Salesforce and non-Salesforce data sources, or when a large existing Tableau investment is already in place.
 

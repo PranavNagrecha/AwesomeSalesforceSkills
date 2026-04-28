@@ -35,7 +35,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-11
+updated: 2026-04-28
 ---
 
 # Health Cloud Data Residency
@@ -95,10 +95,12 @@ The correct architectural response is to document these exceptions in the Data P
 
 For EU-deployed Health Cloud orgs, health data is classified as special-category personal data under GDPR Article 9. This imposes stricter requirements beyond standard GDPR:
 
-- **Explicit consent or alternative legal basis**: Processing special-category health data requires explicit consent from the data subject, or reliance on another Article 9(2) exemption (e.g., healthcare treatment, public health necessity). Standard GDPR legitimate interest does NOT apply.
-- **Data Protection Impact Assessment (DPIA)**: Mandatory before deploying Health Cloud in EU if processing health data at scale.
-- **Data minimisation and purpose limitation**: Fields storing health data should be restricted to the minimum necessary; Health Cloud's default data model is expansive and may need field-level security tightening.
-- **DPO involvement**: If the healthcare organisation processes health data at large scale, a Data Protection Officer (DPO) appointment is mandatory and must be involved in architecture sign-off.
+| Requirement | Implication |
+|---|---|
+| Explicit consent or alternative legal basis | Processing special-category health data requires explicit consent from the data subject, or reliance on another Article 9(2) exemption (e.g., healthcare treatment, public health necessity). Standard GDPR legitimate interest does NOT apply. |
+| Data Protection Impact Assessment (DPIA) | Mandatory before deploying Health Cloud in EU if processing health data at scale. |
+| Data minimisation and purpose limitation | Fields storing health data should be restricted to the minimum necessary; Health Cloud's default data model is expansive and may need field-level security tightening. |
+| DPO involvement | If the healthcare organisation processes health data at large scale, a Data Protection Officer (DPO) appointment is mandatory and must be involved in architecture sign-off. |
 
 ---
 

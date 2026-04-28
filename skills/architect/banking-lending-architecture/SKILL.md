@@ -35,7 +35,7 @@ dependencies:
   - fsc-architecture-patterns
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-13
+updated: 2026-04-28
 ---
 
 # Banking and Lending Architecture
@@ -72,11 +72,13 @@ If any prerequisite is missing, the Digital Lending UI does not render and APIs 
 
 The `ResidentialLoanApplication` object anchors the FSC lending data model:
 
-- **LoanApplicant** — child of ResidentialLoanApplication, linked to a Person Account. The `loanApplicantAutoCreation` flag controls automatic Account creation.
-- **LoanApplicantAsset** — declared assets (real estate, vehicles, savings)
-- **LoanApplicantLiability** — declared liabilities (mortgages, auto loans, credit cards)
-- **LoanApplicantIncome** — income sources
-- **LoanApplicantAddress** — address history
+| Object | Role |
+|---|---|
+| LoanApplicant | Child of ResidentialLoanApplication, linked to a Person Account. The `loanApplicantAutoCreation` flag controls automatic Account creation. |
+| LoanApplicantAsset | Declared assets (real estate, vehicles, savings). |
+| LoanApplicantLiability | Declared liabilities (mortgages, auto loans, credit cards). |
+| LoanApplicantIncome | Income sources. |
+| LoanApplicantAddress | Address history. |
 
 This hierarchy is separate from FSC's Financial Account objects. Loan origination lives in ResidentialLoanApplication; serviced loans (post-close) are represented as FinancialAccount records (Liability type).
 

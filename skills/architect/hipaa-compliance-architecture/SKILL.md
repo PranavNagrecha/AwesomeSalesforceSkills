@@ -37,7 +37,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-11
+updated: 2026-04-28
 ---
 
 # HIPAA Compliance Architecture
@@ -50,11 +50,13 @@ This skill activates when designing or reviewing a Salesforce org that must comp
 
 Gather this context before working on anything in this domain:
 
-- **BAA status**: Has a Business Associate Agreement been signed with Salesforce? Until it is signed, no PHI may be stored in any Salesforce service regardless of encryption or access controls.
-- **Product inventory**: Compile every Salesforce product in use — core platform, Health Cloud, Experience Cloud, Shield add-ons, and all AppExchange products. BAA coverage is product-specific; products not listed in the executed BAA are not covered even if they run on covered infrastructure.
-- **Shield licensing**: Confirm whether the org has Shield Platform Encryption, Field Audit Trail, and/or Event Monitoring enabled. Shield is a paid add-on not included in any Salesforce edition. Verify through `Setup > Company Information > Licenses`.
-- **PHI categories**: Identify the 18 HIPAA-defined PHI identifiers the org will handle. This determines which object fields require SPE and which audit retention periods apply.
-- **Third-party integrations**: Any connected system that receives PHI must also operate under a BAA or equivalent data processing agreement.
+| Context | What to confirm |
+|---|---|
+| BAA status | Has a Business Associate Agreement been signed with Salesforce? Until it is signed, no PHI may be stored in any Salesforce service regardless of encryption or access controls. |
+| Product inventory | Compile every Salesforce product in use — core platform, Health Cloud, Experience Cloud, Shield add-ons, and all AppExchange products. BAA coverage is product-specific; products not listed in the executed BAA are not covered even if they run on covered infrastructure. |
+| Shield licensing | Confirm whether the org has Shield Platform Encryption, Field Audit Trail, and/or Event Monitoring enabled. Shield is a paid add-on not included in any Salesforce edition. Verify through `Setup > Company Information > Licenses`. |
+| PHI categories | Identify the 18 HIPAA-defined PHI identifiers the org will handle. This determines which object fields require SPE and which audit retention periods apply. |
+| Third-party integrations | Any connected system that receives PHI must also operate under a BAA or equivalent data processing agreement. |
 
 ---
 

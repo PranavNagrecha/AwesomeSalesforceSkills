@@ -36,7 +36,7 @@ dependencies:
   - industries-insurance-setup
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-13
+updated: 2026-04-28
 ---
 
 # Insurance Cloud Architecture
@@ -75,11 +75,13 @@ Failure to confirm licensing before design leads to architecture documents that 
 
 The Insurance Cloud data model is additive on top of core Account/Contact:
 
-- **InsurancePolicy** — the central object, linked to a policyholder Account (not Contact directly).
-- **InsurancePolicyCoverage** — child of InsurancePolicy, representing individual coverage lines (auto, home, liability).
-- **InsurancePolicyParticipant** — junction object linking InsurancePolicy to Account records as policyholder, beneficiary, or named insured. This links to Account — NOT Contact. Architects designing for FSC Person Account orgs must remember that the Person Account IS an Account record; SOQL must reflect this.
-- **InsurancePolicyAsset** — insured assets (vehicles, properties) linked to InsurancePolicy.
-- **InsurancePolicyTransaction** — endorsements, renewals, cancellations as transactional records on a policy.
+| Object | Role |
+|---|---|
+| InsurancePolicy | The central object, linked to a policyholder Account (not Contact directly). |
+| InsurancePolicyCoverage | Child of InsurancePolicy, representing individual coverage lines (auto, home, liability). |
+| InsurancePolicyParticipant | Junction object linking InsurancePolicy to Account records as policyholder, beneficiary, or named insured. This links to Account — NOT Contact. Architects designing for FSC Person Account orgs must remember that the Person Account IS an Account record; SOQL must reflect this. |
+| InsurancePolicyAsset | Insured assets (vehicles, properties) linked to InsurancePolicy. |
+| InsurancePolicyTransaction | Endorsements, renewals, cancellations as transactional records on a policy. |
 
 ### Underwriting Rules and the Policy Administration API
 

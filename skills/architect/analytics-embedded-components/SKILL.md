@@ -33,7 +33,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-13
+updated: 2026-04-28
 ---
 
 # Analytics Embedded Components
@@ -46,11 +46,13 @@ This skill activates when a practitioner needs to embed a CRM Analytics dashboar
 
 Gather this context before working on anything in this domain:
 
-- **Target surface**: Is the dashboard going on a Lightning record/app page (use `wave-wave-dashboard-lwc`) or an Experience Cloud page (use `wave-community-dashboard`)? Or are you embedding a custom LWC inside an Analytics dashboard (use `analytics__Dashboard` target in js-meta.xml)? These are entirely different setups.
-- **Dashboard identifier**: You must use either the 18-character dashboard ID (starts with `0FK`) as the `dashboard` attribute, OR the developer API name as `developer-name`. Never both — they are mutually exclusive.
-- **Context record**: If the dashboard should filter on the page's current record, you need the 18-character Salesforce record ID available (usually `{!recordId}` in App Builder). The `record-id` attribute passes this to the dashboard for dynamic filtering.
-- **State requirement**: If you need to pre-populate filters or selections, the `state` attribute accepts a JSON string. Invalid JSON causes silent failure — the dashboard loads without the intended filter state.
-- **CRM Analytics license**: The org must have CRM Analytics (formerly Einstein Analytics / Tableau CRM) licensed. `wave-wave-dashboard-lwc` is part of the Analytics component library, not a standard platform component.
+| Context | What to confirm |
+|---|---|
+| Target surface | Is the dashboard going on a Lightning record/app page (use `wave-wave-dashboard-lwc`) or an Experience Cloud page (use `wave-community-dashboard`)? Or are you embedding a custom LWC inside an Analytics dashboard (use `analytics__Dashboard` target in js-meta.xml)? These are entirely different setups. |
+| Dashboard identifier | You must use either the 18-character dashboard ID (starts with `0FK`) as the `dashboard` attribute, OR the developer API name as `developer-name`. Never both — they are mutually exclusive. |
+| Context record | If the dashboard should filter on the page's current record, you need the 18-character Salesforce record ID available (usually `{!recordId}` in App Builder). The `record-id` attribute passes this to the dashboard for dynamic filtering. |
+| State requirement | If you need to pre-populate filters or selections, the `state` attribute accepts a JSON string. Invalid JSON causes silent failure — the dashboard loads without the intended filter state. |
+| CRM Analytics license | The org must have CRM Analytics (formerly Einstein Analytics / Tableau CRM) licensed. `wave-wave-dashboard-lwc` is part of the Analytics component library, not a standard platform component. |
 
 ---
 

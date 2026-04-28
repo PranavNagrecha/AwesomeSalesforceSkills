@@ -40,7 +40,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-12
+updated: 2026-04-28
 ---
 
 # B2B vs B2C Commerce Architecture
@@ -92,17 +92,23 @@ Because these objects live in the Salesforce org, they are queryable via SOQL, a
 ### 3. Extensibility Model: Flow/Apex/LWC vs. SFRA Cartridges and Commerce Extensions
 
 **B2B Commerce on Core — extensibility paths:**
-- **Checkout Flow** — the entire checkout process is a Salesforce Flow (`CheckoutFlow` type). Each step (address, delivery, payment) is a flow element that can be overridden with custom screen components. No code required for standard paths.
-- **Commerce Extensions (Winter '24+)** — custom Apex classes registered as commerce service implementations for pricing, inventory, shipping, and tax. These run synchronously within the checkout flow and replace the default platform behavior. Applies to B2B Commerce and D2C Commerce on Core only.
-- **LWC** — all storefront UI components are LWC components, reusable from the org's component library.
-- **Apex** — all business logic, trigger handlers, and service implementations are Apex, subject to governor limits.
+
+| Path | Role |
+|---|---|
+| Checkout Flow | The entire checkout process is a Salesforce Flow (`CheckoutFlow` type). Each step (address, delivery, payment) is a flow element that can be overridden with custom screen components. No code required for standard paths. |
+| Commerce Extensions (Winter '24+) | Custom Apex classes registered as commerce service implementations for pricing, inventory, shipping, and tax. They run synchronously within the checkout flow and replace the default platform behavior. Applies to B2B Commerce and D2C Commerce on Core only. |
+| LWC | All storefront UI components are LWC components, reusable from the org's component library. |
+| Apex | All business logic, trigger handlers, and service implementations are Apex, subject to governor limits. |
 
 **SFCC — extensibility paths:**
-- **SFRA cartridges** — the primary customization unit. A cartridge is a Node.js module that extends or overrides storefront behavior. Cartridges are layered in a path (`cartridgePathOverride`); the first matching controller or template wins. Custom cartridges override SFRA base cartridge behavior without modifying the base.
-- **Business Manager extensions** — custom UI modules for back-office admin workflows.
-- **Pipelines (legacy) / Controllers (current)** — server-side rendering controllers that handle HTTP requests, call service layers, and render ISML templates.
-- **Hooks** — declarative extension points within SFCC's system that allow code injection at defined pipeline steps (e.g., `app.payment.handle`, `app.order.calculate`).
-- **SCAPI / OCAPI** — REST APIs that allow external systems (headless front ends, mobile apps) to interact with SFCC as a commerce engine without the SFRA rendering layer.
+
+| Path | Role |
+|---|---|
+| SFRA cartridges | The primary customization unit. A cartridge is a Node.js module that extends or overrides storefront behavior. Cartridges are layered in a path (`cartridgePathOverride`); the first matching controller or template wins. Custom cartridges override SFRA base cartridge behavior without modifying the base. |
+| Business Manager extensions | Custom UI modules for back-office admin workflows. |
+| Pipelines (legacy) / Controllers (current) | Server-side rendering controllers that handle HTTP requests, call service layers, and render ISML templates. |
+| Hooks | Declarative extension points within SFCC's system that allow code injection at defined pipeline steps (e.g., `app.payment.handle`, `app.order.calculate`). |
+| SCAPI / OCAPI | REST APIs that allow external systems (headless front ends, mobile apps) to interact with SFCC as a commerce engine without the SFRA rendering layer. |
 
 **Architectural implication:** B2B Commerce customization requires Salesforce platform skills (Apex, Flow, LWC). SFCC customization requires Node.js, SFRA cartridge architecture, and Business Manager knowledge. These are separate skill sets; team capability is a first-class architectural constraint.
 

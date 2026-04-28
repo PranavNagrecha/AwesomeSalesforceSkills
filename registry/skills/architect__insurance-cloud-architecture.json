@@ -70,7 +70,7 @@
     "fde3a619a88c2880b2ce",
     "fe62710a205e102be986"
   ],
-  "content_hash": "6c67a48ff6c5f571bf3f4471e3ecefb7dbaa1c029df34db367271d4f9ac732f1",
+  "content_hash": "3a59501112239365307716aaad0f7563749d67d5b20ed9de67e676fad39f1e77",
   "dependencies": [
     "fsc-architecture-patterns",
     "industries-insurance-setup"
@@ -118,7 +118,7 @@
   "templates": [
     "skills/architect/insurance-cloud-architecture/templates/insurance-cloud-architecture-template.md"
   ],
-  "updated": "2026-04-13",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }
