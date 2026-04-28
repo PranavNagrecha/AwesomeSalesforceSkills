@@ -1,0 +1,31 @@
+<!--
+  accountTile.html — synthetic sample for lwc-auditor eval.
+  Carries the canonical findings the auditor must catch:
+    P0 missing-alt           — <img> without alt
+    P0 missing-key-in-for-each — for:each without key
+    P1 legacy-if-directive   — uses if:true instead of lwc:if
+    P0 button-vs-div         — interactive <div> with onclick
+    P0 icon-only-button      — <lightning-button-icon> without alternative-text
+-->
+<template>
+    <div class="slds-box">
+        <img src={logoUrl} />
+
+        <div onclick={handleSelect}>Select this account</div>
+
+        <lightning-button-icon
+            icon-name="utility:edit"
+            onclick={handleEdit}>
+        </lightning-button-icon>
+
+        <template if:true={hasOpps}>
+            <ul>
+                <template for:each={opps} for:item="opp">
+                    <li>{opp.Name} — {opp.StageName}</li>
+                </template>
+            </ul>
+        </template>
+
+        <div lwc:dom="manual" class="raw-html"></div>
+    </div>
+</template>

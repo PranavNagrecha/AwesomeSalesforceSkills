@@ -1,0 +1,50 @@
+eval:
+  id: lwc-auditor__happy-path
+  agent: lwc-auditor
+  mode: single
+  priority: P0
+  last_verified: 2026-04-28
+  description: >
+    Audit a 4-file LWC bundle (accountTile) carrying canonical
+    accessibility, performance, security, meta-XML, and styling
+    findings: missing-alt on <img>, button-vs-div with onclick,
+    icon-only-button without alternative-text, missing-key-in-for-each,
+    legacy if:true directive, innerHTML without sanitize, imperative
+    Apex in connectedCallback with no caching, exposed-false-with-targets
+    in .js-meta.xml, hex-literal-over-token in CSS, no __tests__ folder.
+    Agent must enumerate at least 3 P0 findings, recommend skeleton
+    alignment against templates/lwc/component-skeleton, and cite
+    lwc/lwc-accessibility plus at least one of lwc/lwc-conditional-rendering
+    or lwc/lwc-app-builder-config. Must NOT modify bundle files.
+
+inputs:
+  bundle_path: evals/agents/fixtures/lwc-auditor/samples/accountTile
+  source_path: evals/agents/fixtures/lwc-auditor/samples/accountTile/accountTile.html
+  related_paths:
+    - evals/agents/fixtures/lwc-auditor/samples/accountTile/accountTile.js
+    - evals/agents/fixtures/lwc-auditor/samples/accountTile/accountTile.js-meta.xml
+    - evals/agents/fixtures/lwc-auditor/samples/accountTile/accountTile.css
+
+org_stub: {}
+
+expect:
+  confidence: MEDIUM
+  must_cite_any_of:
+    - { type: skill, id: lwc/lwc-accessibility }
+    - { type: skill, id: lwc/lwc-conditional-rendering }
+    - { type: skill, id: lwc/lwc-app-builder-config }
+    - { type: skill, id: lwc/lwc-security }
+    - { type: skill, id: lwc/lwc-styling-hooks }
+    - { type: template, id: lwc/component-skeleton }
+  process_observations:
+    min_count: 1
+    categories_present_any_of:
+      - healthy
+      - concerning
+      - ambiguous
+      - suggested_followup
+  followups_include_any_of:
+    - security-scanner
+    - apex-refactorer
+    - lwc-debugger
+    - flow-analyzer

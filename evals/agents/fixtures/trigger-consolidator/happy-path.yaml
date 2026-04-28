@@ -1,0 +1,48 @@
+eval:
+  id: trigger-consolidator__happy-path
+  agent: trigger-consolidator
+  mode: single
+  priority: P0
+  last_verified: 2026-04-28
+  description: >
+    Consolidate three Account triggers — two with inline logic
+    (before-insert validation, after-insert child-Task DML) and one
+    that delegates to a non-framework handler (after-update warehouse
+    sync) — into a single canonical AccountTriggerHandler that extends
+    TriggerHandler. Agent must produce: a new handler class with
+    beforeInsert/afterInsert/afterUpdate overrides preserving each
+    trigger's logic verbatim, a single replacement trigger file, a
+    Trigger_Setting__mdt CMDT record, and an explicit deactivation
+    sequence ending with the CMDT Is_Active__c flip last. Must cite
+    apex/trigger-framework + the TriggerHandler/TriggerControl templates.
+    Must NOT refactor business logic and must NOT deploy.
+
+inputs:
+  object_api_name: Account
+  force_app_root: evals/agents/fixtures/trigger-consolidator/samples
+  source_path: evals/agents/fixtures/trigger-consolidator/samples/AccountBeforeInsert.trigger
+  related_paths:
+    - evals/agents/fixtures/trigger-consolidator/samples/AccountAfterInsert.trigger
+    - evals/agents/fixtures/trigger-consolidator/samples/AccountAfterUpdate.trigger
+
+org_stub: {}
+
+expect:
+  confidence: MEDIUM
+  must_cite_any_of:
+    - { type: skill, id: apex/trigger-framework }
+    - { type: skill, id: apex/recursive-trigger-prevention }
+    - { type: template, id: apex/TriggerHandler.cls }
+    - { type: template, id: apex/TriggerControl.cls }
+  process_observations:
+    min_count: 0
+    categories_present_any_of:
+      - healthy
+      - concerning
+      - ambiguous
+      - suggested_followup
+  followups_include_any_of:
+    - apex-refactorer
+    - security-scanner
+    - soql-optimizer
+    - flow-analyzer
