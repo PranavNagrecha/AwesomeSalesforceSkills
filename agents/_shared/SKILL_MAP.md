@@ -15,7 +15,7 @@ Shared convention documents under `agents/_shared/harnesses/` that consolidate c
 
 ---
 
-## Wave A — Tier 1 (8 admin accelerators)
+## Wave A — Tier 1 (7 admin accelerators)
 
 ### `field-impact-analyzer`
 - `admin/custom-field-creation`, `admin/formula-fields`, `admin/picklist-and-value-sets`
@@ -48,9 +48,8 @@ Shared convention documents under `agents/_shared/harnesses/` that consolidate c
 
 ### `automation-migration-router` (Wave 3a)
 
-Replaces `workflow-rule-to-flow-migrator`, `process-builder-to-flow-migrator`,
-`approval-to-flow-orchestrator-migrator`, and `workflow-and-pb-migrator`
-(all now deprecated stubs). Skills cited per `source_type` dispatch in
+Single canonical migrator for legacy automation (Workflow Rules, Process
+Builder, Approval Processes). Skills cited per `source_type` dispatch in
 [`agents/_shared/harnesses/migration_router/decision_table.md`](./harnesses/migration_router/decision_table.md).
 
 - `flow/record-triggered-flow-patterns`, `flow/fault-handling`, `flow/flow-bulkification`
@@ -61,14 +60,11 @@ Replaces `workflow-rule-to-flow-migrator`, `process-builder-to-flow-migrator`,
 - `standards/decision-trees/automation-selection.md`
 - `templates/flow/RecordTriggered_Skeleton.flow-meta.xml`, `templates/flow/FaultPath_Template.md`, `templates/flow/Subflow_Pattern.md`
 
-### `workflow-and-pb-migrator` (deprecated — use `automation-migration-router`)
-
 ### `audit-router` (Wave 3b-1)
 
-Replaces `validation-rule-auditor`, `picklist-governor`,
-`approval-process-auditor`, `record-type-and-layout-auditor`, and
-`report-and-dashboard-auditor` (all now deprecation stubs). Wave 3b-2
-will add 10 more domains. Per-domain skill citations live in each
+Single canonical auditor for admin domains (validation rules, picklists,
+record types, reports, etc.). Wave 3b-2 will add 10 more domains.
+Per-domain skill citations live in each
 [`classifiers/<domain>.md`](./harnesses/audit_harness/classifiers/)
 under the classifier's `Mandatory Reads` section.
 
@@ -111,11 +107,6 @@ under the classifier's `Mandatory Reads` section.
 - `admin/lightning-page-performance-tuning`
 - `admin/record-types-and-page-layouts`, `admin/path-and-guidance`
 - `lwc/lwc-performance`
-
-### `approval-to-flow-orchestrator-migrator` (deprecated — use `automation-migration-router`)
-
-Replaced by the router with `--source-type=approval_process`. Citations
-migrated into the router's consolidated entry above.
 
 ### `record-type-and-layout-auditor` (deprecated — use `audit-router --domain record_type_layout`)
 

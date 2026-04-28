@@ -14,7 +14,7 @@ Invoke the [audit-router](../agents/audit-router/AGENT.md) agent. Wave 3b-1 of t
 |---|---|---|
 | `validation_rule` | `validation-rule-auditor` | [validation_rule.md](../agents/_shared/harnesses/audit_harness/classifiers/validation_rule.md) |
 | `picklist` | `picklist-governor` | [picklist.md](../agents/_shared/harnesses/audit_harness/classifiers/picklist.md) |
-| `approval_process` | `approval-process-auditor` | [approval_process.md](../agents/_shared/harnesses/audit_harness/classifiers/approval_process.md) |
+| `approval_process` | (consolidated; stub removed) | [approval_process.md](../agents/_shared/harnesses/audit_harness/classifiers/approval_process.md) |
 | `record_type_layout` | `record-type-and-layout-auditor` | [record_type_layout.md](../agents/_shared/harnesses/audit_harness/classifiers/record_type_layout.md) |
 | `report_dashboard` | `report-and-dashboard-auditor` | [report_dashboard.md](../agents/_shared/harnesses/audit_harness/classifiers/report_dashboard.md) |
 | `case_escalation` | `case-escalation-auditor` | [case_escalation.md](../agents/_shared/harnesses/audit_harness/classifiers/case_escalation.md) |

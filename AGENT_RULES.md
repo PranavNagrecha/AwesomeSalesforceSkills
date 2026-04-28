@@ -216,12 +216,12 @@ Two classes of agents live in `agents/`:
      `test-class-generator`, `soql-optimizer`, `security-scanner`,
      `flow-analyzer`, `bulk-migration-planner`, `lwc-auditor`,
      `deployment-risk-scorer`, `agentforce-builder`, `org-drift-detector`.
-   - **Admin accelerators — Tier 1 (8):** `field-impact-analyzer`,
+   - **Admin accelerators — Tier 1 (7):** `field-impact-analyzer`,
      `object-designer`, `permission-set-architect`, `flow-builder`,
-     `workflow-and-pb-migrator`, `validation-rule-auditor`,
-     `data-loader-pre-flight`, `duplicate-rule-designer`.
-   - **Strategic — Tier 2 (10):** `sharing-audit-agent`,
-     `lightning-record-page-auditor`, `approval-to-flow-orchestrator-migrator`,
+     `validation-rule-auditor`, `data-loader-pre-flight`,
+     `duplicate-rule-designer`.
+   - **Strategic — Tier 2 (9):** `sharing-audit-agent`,
+     `lightning-record-page-auditor`,
      `record-type-and-layout-auditor`, `picklist-governor`,
      `data-model-reviewer`, `integration-catalog-builder`,
      `report-and-dashboard-auditor`, `csv-to-object-mapper`,

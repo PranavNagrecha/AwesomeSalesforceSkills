@@ -77,7 +77,7 @@ Developer + architecture tier (11):
 | `agentforce-builder`       | Full Agentforce action scaffold: Apex + topic + test + eval |
 | `org-drift-detector`       | Library ↔ live-org gap and bloat report |
 
-Admin accelerators — Tier 1 (8):
+Admin accelerators — Tier 1 (7):
 
 | Agent name                   | What it returns |
 | ---------------------------- | --------------- |
@@ -85,18 +85,16 @@ Admin accelerators — Tier 1 (8):
 | `object-designer`            | Setup-ready sObject design from a business concept |
 | `permission-set-architect`   | Profile-less PS / PSG / Muting design per persona |
 | `flow-builder`               | Flow design from requirements + automation-tree routing |
-| `workflow-and-pb-migrator`   | Migration plan: Workflow Rules / Process Builders → Flow |
 | `validation-rule-auditor`    | VR audit (bypass, bulk safety, Flow coexistence) |
 | `data-loader-pre-flight`     | Go/no-go checklist for a Data Loader / Bulk API load |
 | `duplicate-rule-designer`    | Matching + Duplicate Rules + post-load hygiene |
 
-Strategic — Tier 2 (10):
+Strategic — Tier 2 (9):
 
 | Agent name                                 | What it returns |
 | ------------------------------------------ | --------------- |
 | `sharing-audit-agent`                      | OWD + sharing + data-skew + guest-user findings |
 | `lightning-record-page-auditor`            | Dynamic Forms + render-cost + Path scorecard |
-| `approval-to-flow-orchestrator-migrator`   | Approval → Flow Orchestrator migration plan |
 | `record-type-and-layout-auditor`           | RT + layout + LRP mapping audit |
 | `picklist-governor`                        | GVS adoption + drift + dependency audit |
 | `data-model-reviewer`                      | Data-model domain review (rollups, XID, growth) |

@@ -11,18 +11,18 @@ This document records every agent deprecated during the Wave 3 consolidation (se
 
 ## Wave 3a — Automation Migration Router
 
-4 retired migrators → 1 canonical router.
+4 retired migrators → 1 canonical router. **Stubs and aliases removed early** (see Removal note below).
 
-| Retired agent | Replacement | Slash-command alias | Canonical form |
+| Retired agent (deleted) | Replacement | Old slash-command (deleted) | Canonical form |
 |---|---|---|---|
-| `workflow-rule-to-flow-migrator` | `automation-migration-router` | `/migrate-wfr-to-flow` | `/migrate-automation --source-type=wf_rule` |
-| `process-builder-to-flow-migrator` | `automation-migration-router` | `/migrate-pb-to-flow` | `/migrate-automation --source-type=process_builder` |
-| `approval-to-flow-orchestrator-migrator` | `automation-migration-router` | `/migrate-approval-to-orchestrator` | `/migrate-automation --source-type=approval_process` |
-| `workflow-and-pb-migrator` (pre-Wave-3 deprecated) | `automation-migration-router` | `/migrate-workflow-pb` | `/migrate-automation --source-type=auto` |
+| `workflow-rule-to-flow-migrator` | `automation-migration-router` | `/migrate-wfr-to-flow` | `/automation-migration-router --source-type=wf_rule` |
+| `process-builder-to-flow-migrator` | `automation-migration-router` | `/migrate-pb-to-flow` | `/automation-migration-router --source-type=process_builder` |
+| `approval-to-flow-orchestrator-migrator` | `automation-migration-router` | `/migrate-approval-to-orchestrator` | `/automation-migration-router --source-type=approval_process` |
+| `workflow-and-pb-migrator` (pre-Wave-3 deprecated) | `automation-migration-router` | `/migrate-workflow-pb` | `/automation-migration-router --source-type=auto` |
 
 **Where the rule set lives now:** [`agents/_shared/harnesses/migration_router/decision_table.md`](../agents/_shared/harnesses/migration_router/decision_table.md). Each retired agent's classification tables, refusal conditions, and mandatory-reads are preserved verbatim in the corresponding `source_type` row.
 
-**Removal target:** two minor versions after commit `cf0c481` (Wave 3a ship). When this doc is next updated in CHANGELOG.md, the removal version will be pinned.
+**Removal:** Originally targeted two minor versions after commit `cf0c481`. The deprecation stubs (`AGENT.md` redirects) and slash-command aliases were **removed in 2026-04-27** — early — because no consumers remained on the legacy invocations. Anyone still attempting the old paths will get a not-found error pointing at this guide.
 
 ## Wave 3b — Audit Router
 
@@ -34,7 +34,7 @@ This document records every agent deprecated during the Wave 3 consolidation (se
 |---|---|---|---|
 | `validation-rule-auditor` | `validation_rule` | `/audit-validation-rules` | `/audit-router --domain=validation_rule` |
 | `picklist-governor` | `picklist` | `/govern-picklists` | `/audit-router --domain=picklist` |
-| `approval-process-auditor` | `approval_process` | `/audit-approvals` | `/audit-router --domain=approval_process` |
+| `approval-process-auditor` *(deleted 2026-04-27)* | `approval_process` | `/audit-approvals` *(deleted)* | `/audit-router --domain=approval_process` |
 | `record-type-and-layout-auditor` | `record_type_layout` | `/audit-record-types` | `/audit-router --domain=record_type_layout` |
 | `report-and-dashboard-auditor` | `report_dashboard` | `/audit-reports` | `/audit-router --domain=report_dashboard` |
 

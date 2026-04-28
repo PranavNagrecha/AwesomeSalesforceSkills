@@ -14,12 +14,12 @@ The router reads this table to dispatch on the user-supplied `source_type`. Ever
 
 ## Source types supported in Wave 3a
 
-| `source_type`      | Legacy agent replaced                          | Target shape                      |
-|---                 |---                                             |---                                |
-| `wf_rule`          | `workflow-rule-to-flow-migrator`               | Record-triggered Flow             |
-| `process_builder`  | `process-builder-to-flow-migrator`             | Record-triggered Flow             |
-| `approval_process` | `approval-to-flow-orchestrator-migrator`       | Flow Orchestrator (conditional)   |
-| `auto`             | `workflow-and-pb-migrator` (deprecated union)  | Dispatched to `wf_rule` then `process_builder` on the same object, merged output |
+| `source_type`      | Replaces (now-deleted legacy agent)              | Target shape                      |
+|---                 |---                                               |---                                |
+| `wf_rule`          | `workflow-rule-to-flow-migrator` *(removed)*     | Record-triggered Flow             |
+| `process_builder`  | `process-builder-to-flow-migrator` *(removed)*   | Record-triggered Flow             |
+| `approval_process` | `approval-to-flow-orchestrator-migrator` *(removed)* | Flow Orchestrator (conditional)   |
+| `auto`             | `workflow-and-pb-migrator` *(removed; union)*    | Dispatched to `wf_rule` then `process_builder` on the same object, merged output |
 
 ## `wf_rule` — Workflow Rule → Flow
 

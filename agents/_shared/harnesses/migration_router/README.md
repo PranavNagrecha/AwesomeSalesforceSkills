@@ -2,7 +2,7 @@
 
 **Status:** Wave 3a shared harness.
 **Consumed by:** [`agents/automation-migration-router/AGENT.md`](../../../automation-migration-router/AGENT.md).
-**Replaces:** the duplicated backbone in (deprecated) `workflow-rule-to-flow-migrator`, `process-builder-to-flow-migrator`, `approval-to-flow-orchestrator-migrator`, `workflow-and-pb-migrator`.
+**Replaces:** the duplicated backbone in `workflow-rule-to-flow-migrator`, `process-builder-to-flow-migrator`, `approval-to-flow-orchestrator-migrator`, `workflow-and-pb-migrator` (all deleted; behavior consolidated here).
 
 ## Why this exists
 
