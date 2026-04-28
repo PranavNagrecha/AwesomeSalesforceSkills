@@ -1,0 +1,117 @@
+{
+  "agent": "test-class-generator",
+  "mode": "single",
+  "run_id": "20260428T013105Z",
+  "report_path": "docs/reports/test-class-generator/20260428T013105Z.md",
+  "envelope_path": "docs/reports/test-class-generator/20260428T013105Z.json",
+  "inputs_received": {
+    "source_path": "evals/agents/fixtures/test-class-generator/samples/AccountUpdateService.cls",
+    "target_coverage_pct": 90,
+    "include_bulk_test": true
+  },
+  "summary": "Generated AccountUpdateService_Test.cls hitting all four canonical scenarios for the source's surface area: (1) single-record happy path through refreshTier exercising the Tier__c branch logic; (2) 200-record bulk path via TestDataFactory + BulkTestPattern that confirms one DML and one SOQL regardless of input size; (3) System.runAs with TestUserFactory.standardUser() to validate the with-sharing posture; (4) HTTP callout test using MockHttpResponseGenerator stubbed against the Risk_Scoring_API Named Credential, with a 200-OK happy path and a non-200 negative path that asserts AccountUpdateException is thrown. Test class is @IsTest, never SeeAllData, no source-class refactor proposed.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Source is fully inlined and the four-scenario matrix is unambiguous; MEDIUM (not HIGH) because the harness has no live org probe to confirm the shape of Account.Tier__c (custom picklist? text?) \u2014 the test asserts on the string literals 'Enterprise'/'SMB' but cannot verify those are valid picklist values in the target org.",
+  "findings": [
+    {
+      "id": "test-coverage-target-met",
+      "severity": "INFO",
+      "title": "Generated test class targets 100% of public method surface",
+      "detail": "Both public static methods (refreshTier and fetchExternalScore) are exercised. The branching inside refreshTier (>=1M revenue \u2192 Enterprise, else SMB) is hit by both bulk and single tests, putting line coverage above the 90% target.",
+      "evidence": {
+        "source_methods": [
+          "refreshTier",
+          "fetchExternalScore"
+        ],
+        "test_methods": [
+          "happy_refreshTier_setsEnterpriseTier",
+          "bulk_refreshTier_200Accounts_oneSoqlOneDml",
+          "runAs_standardUser_respectsSharing",
+          "callout_200OK_returnsBody",
+          "callout_non200_throws",
+          "negative_emptyIds_throws",
+          "negative_nullId_throws"
+        ]
+      },
+      "recommendation": "No action."
+    }
+  ],
+  "deliverables": [
+    {
+      "kind": "apex",
+      "title": "AccountUpdateService_Test.cls \u2014 four canonical scenarios + negative paths",
+      "target_path": "force-app/main/default/classes/AccountUpdateService_Test.cls",
+      "content": "@IsTest(IsParallel=true)\nprivate class AccountUpdateService_Test {\n\n    private static final String NAMED_CRED_BODY = '{\"score\": 87}';\n\n    @TestSetup\n    static void setupData() {\n        // One Account at the bulk-tier threshold so the happy-path branch flips to Enterprise.\n        Account a = TestDataFactory.account('Acme Enterprise');\n        a.AnnualRevenue = 5000000;\n        insert a;\n    }\n\n    @IsTest\n    static void happy_refreshTier_setsEnterpriseTier() {\n        Account seeded = [SELECT Id FROM Account LIMIT 1];\n        Test.startTest();\n        List<Account> result = AccountUpdateService.refreshTier(new Set<Id>{ seeded.Id });\n        Test.stopTest();\n\n        System.assertEquals(1, result.size(), 'refreshTier should return the touched record');\n        System.assertEquals('Enterprise', result[0].Tier__c, 'AnnualRevenue >= 1M should map to Enterprise');\n    }\n\n    @IsTest\n    static void bulk_refreshTier_200Accounts_oneSoqlOneDml() {\n        // BulkTestPattern: 200 records, half above the threshold, half below.\n        List<Account> accounts = TestDataFactory.accounts(200);\n        for (Integer i = 0; i < accounts.size(); i++) {\n            accounts[i].AnnualRevenue = (i < 100) ? 2000000 : 50000;\n        }\n        insert accounts;\n        Set<Id> ids = (new Map<Id, Account>(accounts)).keySet();\n\n        Integer soqlBefore = Limits.getQueries();\n        Integer dmlBefore = Limits.getDmlStatements();\n        Test.startTest();\n        AccountUpdateService.refreshTier(ids);\n        Test.stopTest();\n        Integer soqlAfter = Limits.getQueries();\n        Integer dmlAfter = Limits.getDmlStatements();\n\n        System.assertEquals(1, soqlAfter - soqlBefore, 'Bulk path must execute exactly one SOQL');\n        System.assertEquals(1, dmlAfter - dmlBefore, 'Bulk path must execute exactly one DML');\n\n        // Spot-check both branches.\n        Map<Id, Account> updated = new Map<Id, Account>([SELECT Id, Tier__c FROM Account WHERE Id IN :ids]);\n        System.assertEquals('Enterprise', updated.get(accounts[0].Id).Tier__c);\n        System.assertEquals('SMB', updated.get(accounts[150].Id).Tier__c);\n    }\n\n    @IsTest\n    static void runAs_standardUser_respectsSharing() {\n        // with-sharing posture \u2014 ensure a standard user without record access cannot widen the result set.\n        User standardUser = TestUserFactory.standardUser();\n        Account other;\n        System.runAs(new User(Id = UserInfo.getUserId())) {\n            other = TestDataFactory.account('Out-of-share');\n            insert other;\n        }\n\n        System.runAs(standardUser) {\n            List<Account> result = AccountUpdateService.refreshTier(new Set<Id>{ other.Id });\n            // with-sharing + WITH SECURITY_ENFORCED: the SOQL returns zero rows, refreshTier returns an empty list, NOT throws.\n            System.assertEquals(0, result.size(), 'Standard user should not see the out-of-share Account');\n        }\n    }\n\n    @IsTest\n    static void callout_200OK_returnsBody() {\n        Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator(200, NAMED_CRED_BODY));\n        Account seeded = [SELECT Id FROM Account LIMIT 1];\n        Test.startTest();\n        String body = AccountUpdateService.fetchExternalScore(seeded.Id);\n        Test.stopTest();\n        System.assertEquals(NAMED_CRED_BODY, body);\n    }\n\n    @IsTest\n    static void callout_non200_throws() {\n        Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator(503, 'unavailable'));\n        Account seeded = [SELECT Id FROM Account LIMIT 1];\n        try {\n            Test.startTest();\n            AccountUpdateService.fetchExternalScore(seeded.Id);\n            Test.stopTest();\n            System.assert(false, 'Expected AccountUpdateException');\n        } catch (AccountUpdateService.AccountUpdateException e) {\n            System.assert(e.getMessage().contains('503'), 'Exception should surface the upstream status');\n        }\n    }\n\n    @IsTest\n    static void negative_emptyIds_throws() {\n        try {\n            AccountUpdateService.refreshTier(new Set<Id>());\n            System.assert(false, 'Expected AccountUpdateException');\n        } catch (AccountUpdateService.AccountUpdateException e) {\n            System.assert(e.getMessage().contains('accountIds'));\n        }\n    }\n\n    @IsTest\n    static void negative_nullId_throws() {\n        try {\n            AccountUpdateService.fetchExternalScore(null);\n            System.assert(false, 'Expected AccountUpdateException');\n        } catch (AccountUpdateService.AccountUpdateException e) {\n            System.assert(e.getMessage().contains('accountId'));\n        }\n    }\n}\n"
+    },
+    {
+      "kind": "markdown",
+      "title": "Coverage matrix + design notes",
+      "target_path": "docs/reports/test-class-generator/20260428T013105Z.md",
+      "content": "# AccountUpdateService_Test.cls \u2014 generation report\n\n## Scenario matrix\n| Method under test | Single | Bulk (200) | runAs(std user) | Callout mock | Negative |\n|---|---|---|---|---|---|\n| refreshTier | \u2713 | \u2713 (1 SOQL / 1 DML asserted) | \u2713 (sharing-respect) | n/a | \u2713 (empty Set) |\n| fetchExternalScore | n/a | n/a | n/a | \u2713 (200 + 503) | \u2713 (null Id) |\n\n## Why these specific assertions\n- `Limits.getQueries()` / `Limits.getDmlStatements()` deltas in the bulk test prove the implementation is bulk-safe; this is the BulkTestPattern signature assertion, not a side-effect check.\n- The runAs test asserts the empty-result behavior of WITH SECURITY_ENFORCED \u2014 it does NOT assert an exception, because WITH SECURITY_ENFORCED on a SOQL with zero accessible rows returns zero rows (it only throws if the projection contains an inaccessible field, not when records are out of share).\n- The callout test uses MockHttpResponseGenerator from `templates/apex/tests/MockHttpResponseGenerator.cls` rather than a hand-rolled mock so it remains aligned with the canonical pattern.\n\n## What this generator did NOT do\n- Did NOT modify `AccountUpdateService.cls` \u2014 source is in scope only as a read.\n- Did NOT add `@IsTest(SeeAllData=true)` \u2014 the @TestSetup pattern + TestDataFactory makes data-isolation safe.\n- Did NOT generate a stub for the Tier__c custom field \u2014 the test assumes the field already exists in the deployment target.\n"
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "Source asserts on string literals 'Enterprise' / 'SMB' on Account.Tier__c. If Tier__c is a Picklist with restricted values, the assertions hold; if it is a text field, the assertions still hold but a future picklist tightening would break the test silently \u2014 worth a note in the test class header.",
+      "domain": "testing",
+      "evidence": {
+        "source": "input"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "medium",
+      "observation": "Once this test class lands, run security-scanner on AccountUpdateService.cls to confirm no other security smells (sharing keyword, FLS, callout endpoint) need patching before promotion.",
+      "domain": "security",
+      "evidence": {
+        "source": "heuristic"
+      },
+      "suggested_followup_agent": "security-scanner",
+      "followup_reason": "because the source uses a Named Credential and a with-sharing posture; security-scanner should confirm no untested security drift before promotion."
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "apex/test-class-standards",
+      "path": "skills/apex/test-class-standards/SKILL.md",
+      "used_for": "Four-scenario matrix (single/bulk/runAs/callout), the no-SeeAllData rule, and the @IsTest(IsParallel=true) annotation default."
+    },
+    {
+      "type": "template",
+      "id": "apex/tests/TestDataFactory.cls",
+      "path": "templates/apex/tests/TestDataFactory.cls",
+      "used_for": "TestDataFactory.account / TestDataFactory.accounts(N) helpers used in setup and bulk."
+    },
+    {
+      "type": "template",
+      "id": "apex/tests/BulkTestPattern.cls",
+      "path": "templates/apex/tests/BulkTestPattern.cls",
+      "used_for": "200-record bulk pattern with Limits.getQueries()/getDmlStatements() deltas as the canonical bulk-safety assertion."
+    },
+    {
+      "type": "template",
+      "id": "apex/tests/MockHttpResponseGenerator.cls",
+      "path": "templates/apex/tests/MockHttpResponseGenerator.cls",
+      "used_for": "HTTP callout stubbing for the Risk_Scoring_API Named Credential, both 200 happy and non-200 negative paths."
+    },
+    {
+      "type": "template",
+      "id": "apex/tests/TestUserFactory.cls",
+      "path": "templates/apex/tests/TestUserFactory.cls",
+      "used_for": "TestUserFactory.standardUser() seed for the System.runAs sharing-posture test."
+    }
+  ],
+  "followups": [
+    {
+      "agent": "security-scanner",
+      "because": "because the source uses a Named Credential callout and a with-sharing posture; security-scanner should confirm no untested security drift before promotion."
+    },
+    {
+      "agent": "deployment-risk-scorer",
+      "because": "because the new test class closes the test-coverage-delta finding the deployment-risk-scorer would raise on this change set; re-score after this lands."
+    }
+  ]
+}

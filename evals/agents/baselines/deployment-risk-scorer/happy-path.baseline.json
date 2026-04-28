@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "case_id": "deployment-risk-scorer__happy-path",
+  "agent": "deployment-risk-scorer",
+  "fixture_path": "evals/agents/fixtures/deployment-risk-scorer/happy-path.yaml",
+  "fixture_sha256": "6c6878335961b355ba22008a6ee2cd09df9211e22aece9d156b3a81d2f51f7e6",
+  "agent_md_path": "agents/deployment-risk-scorer/AGENT.md",
+  "agent_md_sha256": "74d230be1049c7f4d143edd2d92aeec1dd74286f1368d729f20d71dfb67b2c4b",
+  "envelope_path": "docs/validation/agent_executions_2026-04-28/deployment-risk-scorer__happy-path.envelope.json",
+  "captured_at": "2026-04-28T01:48:59Z",
+  "model": "claude-sonnet-4-5",
+  "fingerprint": {
+    "schema_version": 1,
+    "agent": "deployment-risk-scorer",
+    "mode": "single",
+    "confidence": "MEDIUM",
+    "refusal_code": null,
+    "finding_ids": [
+      "no-test-coverage-delta",
+      "production-target-no-sandbox",
+      "required-field-added-no-backfill"
+    ],
+    "finding_severities": [
+      [
+        "P0",
+        2
+      ],
+      [
+        "P1",
+        1
+      ]
+    ],
+    "citations": [
+      [
+        "skill",
+        "devops/code-review-checklist-salesforce"
+      ],
+      [
+        "skill",
+        "devops/pre-deployment-checklist"
+      ]
+    ],
+    "followup_agents": [
+      "code-reviewer",
+      "security-scanner",
+      "test-class-generator"
+    ],
+    "observation_categories": [
+      [
+        "ambiguous",
+        1
+      ],
+      [
+        "concerning",
+        1
+      ],
+      [
+        "suggested_followup",
+        1
+      ]
+    ],
+    "deliverable_kinds": [
+      [
+        "markdown",
+        1
+      ]
+    ],
+    "dimensions_compared": [
+      "data-impact",
+      "metadata-surface",
+      "security-surface",
+      "test-coverage-delta"
+    ],
+    "dimensions_skipped": [
+      "flow-fan-out",
+      "permission-set-delta"
+    ]
+  }
+}

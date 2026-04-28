@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "case_id": "trigger-consolidator__happy-path",
+  "agent": "trigger-consolidator",
+  "fixture_path": "evals/agents/fixtures/trigger-consolidator/happy-path.yaml",
+  "fixture_sha256": "e2e7c0c33090e3c2dc3ba5d5a42d76d8720f76f3fc520c545d12f66f09c6f568",
+  "agent_md_path": "agents/trigger-consolidator/AGENT.md",
+  "agent_md_sha256": "4400f41b46d475b4e98f95f6b6dec8ef6f82f0f0b31a84cc901d9e4d0440a599",
+  "envelope_path": "docs/validation/agent_executions_2026-04-28/trigger-consolidator__happy-path.envelope.json",
+  "captured_at": "2026-04-28T01:53:30Z",
+  "model": "claude-sonnet-4-5",
+  "fingerprint": {
+    "schema_version": 1,
+    "agent": "trigger-consolidator",
+    "mode": "single",
+    "confidence": "MEDIUM",
+    "refusal_code": null,
+    "finding_ids": [
+      "ad-hoc-handler-not-on-framework",
+      "multi-trigger-on-object",
+      "no-recursion-guard"
+    ],
+    "finding_severities": [
+      [
+        "P1",
+        2
+      ],
+      [
+        "P2",
+        1
+      ]
+    ],
+    "citations": [
+      [
+        "skill",
+        "apex/recursive-trigger-prevention"
+      ],
+      [
+        "skill",
+        "apex/trigger-framework"
+      ],
+      [
+        "template",
+        "apex/TriggerControl.cls"
+      ],
+      [
+        "template",
+        "apex/TriggerHandler.cls"
+      ]
+    ],
+    "followup_agents": [
+      "apex-refactorer",
+      "flow-analyzer",
+      "test-class-generator"
+    ],
+    "observation_categories": [
+      [
+        "ambiguous",
+        1
+      ],
+      [
+        "concerning",
+        1
+      ],
+      [
+        "suggested_followup",
+        1
+      ]
+    ],
+    "deliverable_kinds": [
+      [
+        "apex",
+        2
+      ],
+      [
+        "markdown",
+        1
+      ],
+      [
+        "xml",
+        1
+      ]
+    ],
+    "dimensions_compared": [],
+    "dimensions_skipped": []
+  }
+}

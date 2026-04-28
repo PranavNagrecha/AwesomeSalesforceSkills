@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "case_id": "test-class-generator__happy-path",
+  "agent": "test-class-generator",
+  "fixture_path": "evals/agents/fixtures/test-class-generator/happy-path.yaml",
+  "fixture_sha256": "6147c45ad97e6eb0a2df4968443e791cccab760f4ba37c60909a6cb91ef28ad4",
+  "agent_md_path": "agents/test-class-generator/AGENT.md",
+  "agent_md_sha256": "2c65cd04767e157274675d21cd231eb8d66ccd216ef3dd2f801cc8b0a0232dc4",
+  "envelope_path": "docs/validation/agent_executions_2026-04-28/test-class-generator__happy-path.envelope.json",
+  "captured_at": "2026-04-28T01:50:31Z",
+  "model": "claude-sonnet-4-5",
+  "fingerprint": {
+    "schema_version": 1,
+    "agent": "test-class-generator",
+    "mode": "single",
+    "confidence": "MEDIUM",
+    "refusal_code": null,
+    "finding_ids": [
+      "test-coverage-target-met"
+    ],
+    "finding_severities": [
+      [
+        "INFO",
+        1
+      ]
+    ],
+    "citations": [
+      [
+        "skill",
+        "apex/test-class-standards"
+      ],
+      [
+        "template",
+        "apex/tests/BulkTestPattern.cls"
+      ],
+      [
+        "template",
+        "apex/tests/MockHttpResponseGenerator.cls"
+      ],
+      [
+        "template",
+        "apex/tests/TestDataFactory.cls"
+      ],
+      [
+        "template",
+        "apex/tests/TestUserFactory.cls"
+      ]
+    ],
+    "followup_agents": [
+      "deployment-risk-scorer",
+      "security-scanner"
+    ],
+    "observation_categories": [
+      [
+        "ambiguous",
+        1
+      ],
+      [
+        "suggested_followup",
+        1
+      ]
+    ],
+    "deliverable_kinds": [
+      [
+        "apex",
+        1
+      ],
+      [
+        "markdown",
+        1
+      ]
+    ],
+    "dimensions_compared": [],
+    "dimensions_skipped": []
+  }
+}

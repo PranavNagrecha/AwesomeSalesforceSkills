@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "case_id": "data-loader-pre-flight__happy-path",
+  "agent": "data-loader-pre-flight",
+  "fixture_path": "evals/agents/fixtures/data-loader-pre-flight/happy-path.yaml",
+  "fixture_sha256": "d619f55ffcfd69a8d31d84cea63cfc67951976271171f728eb0f58d8f47e55cb",
+  "agent_md_path": "agents/data-loader-pre-flight/AGENT.md",
+  "agent_md_sha256": "5cb1daf9744253679f0c297f04ff4b65586aec28c75e230b506f8591e50636e8",
+  "envelope_path": "docs/validation/agent_executions_2026-04-28/data-loader-pre-flight__happy-path.envelope.json",
+  "captured_at": "2026-04-28T01:46:44Z",
+  "model": "claude-sonnet-4-5",
+  "fingerprint": {
+    "schema_version": 1,
+    "agent": "data-loader-pre-flight",
+    "mode": "single",
+    "confidence": "MEDIUM",
+    "refusal_code": null,
+    "finding_ids": [
+      "no-duplicate-rules",
+      "owd-public-rw",
+      "record-type-default-clear",
+      "trigger-bulk-safety-confirmed",
+      "vr-without-bypass"
+    ],
+    "finding_severities": [
+      [
+        "INFO",
+        4
+      ],
+      [
+        "P1",
+        1
+      ]
+    ],
+    "citations": [
+      [
+        "skill",
+        "admin/duplicate-management"
+      ],
+      [
+        "skill",
+        "data/bulk-api-and-large-data-loads"
+      ],
+      [
+        "skill",
+        "data/external-id-strategy"
+      ],
+      [
+        "template",
+        "admin/validation-rule-patterns.md"
+      ]
+    ],
+    "followup_agents": [
+      "duplicate-rule-designer",
+      "permission-set-architect",
+      "sharing-audit-agent"
+    ],
+    "observation_categories": [
+      [
+        "ambiguous",
+        1
+      ],
+      [
+        "concerning",
+        1
+      ],
+      [
+        "healthy",
+        1
+      ],
+      [
+        "suggested_followup",
+        1
+      ]
+    ],
+    "deliverable_kinds": [
+      [
+        "markdown",
+        1
+      ],
+      [
+        "other",
+        1
+      ]
+    ],
+    "dimensions_compared": [],
+    "dimensions_skipped": []
+  }
+}

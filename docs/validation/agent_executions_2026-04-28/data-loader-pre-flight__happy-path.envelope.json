@@ -1,0 +1,180 @@
+{
+  "agent": "data-loader-pre-flight",
+  "mode": "single",
+  "run_id": "20260428T012224Z",
+  "report_path": "docs/reports/data-loader-pre-flight/20260428T012224Z.md",
+  "envelope_path": "docs/reports/data-loader-pre-flight/20260428T012224Z.json",
+  "inputs_received": {
+    "object_name": "Account",
+    "operation": "upsert",
+    "row_count": "800000",
+    "target_org_alias": "uat-fixture",
+    "external_id_field": "netsuite_customer_id__c",
+    "window": "this Saturday 2am-6am PT"
+  },
+  "summary": "GO. Pre-flight on the 800k Account upsert from NetSuite is green with one P1 caveat: validation rule Account_BillingCountry_Format has no bypass permission and no exemption for the integration user, so any source row whose BillingCountry violates the rule's format will fail row-by-row. Recommended path: Bulk API 2.0 via `sf data upsert bulk` keyed on netsuite_customer_id__c, parallel mode, batches of 10k. The org's other risk surfaces are clean \u2014 one canonical-handler trigger, no flows on Account, no active Duplicate/Matching rules, OWD is Public Read/Write so no sharing-recalc cost, and storage at 35% leaves headroom for 800k inserts. The integration user already holds Bypass_Validation_Account, so the first VR is a no-op for this load. Recommended fix order: pre-clean BillingCountry in source OR provision Bypass_Validation_BillingCountry custom permission and grant it to the integration user before kickoff.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Org stub is fully inlined and the load profile is unambiguous; MEDIUM (not HIGH) because the harness lacks a live org probe to confirm the integration user's actual permission set assignments and because the source-data BillingCountry distribution is undisclosed \u2014 the worst case (every row fails) cannot be ruled out from the inputs alone.",
+  "findings": [
+    {
+      "id": "vr-without-bypass",
+      "severity": "P1",
+      "title": "Account_BillingCountry_Format VR has no bypass permission",
+      "detail": "Validation rule fires on every upsert and the integration user has no exemption. If a NetSuite row's BillingCountry violates the rule's format check, the upsert fails for that row and lands in the Bulk API 2.0 failedResults file. At 800k rows even a 1% noncompliance rate is 8k row-level failures.",
+      "evidence": {
+        "validation_rule": "Account_BillingCountry_Format",
+        "bypass_permission": null,
+        "integration_user_has_bypass": false
+      },
+      "recommendation": "Pick one of two paths before kickoff: (a) pre-clean BillingCountry in the source CSV against the rule's regex/picklist; or (b) create a Bypass_Validation_BillingCountry custom permission, gate the VR on `$Permission.Bypass_Validation_BillingCountry = false`, and grant it to the integration user via the same permission set that already holds Bypass_Validation_Account. Pattern is in templates/admin/validation-rule-patterns.md."
+    },
+    {
+      "id": "trigger-bulk-safety-confirmed",
+      "severity": "INFO",
+      "title": "AccountTrigger uses canonical handler \u2014 bulk-safe",
+      "detail": "Single Active trigger on Account, routed through the canonical handler pattern. No SOQL/DML-in-loop risk at the trigger layer, and no flow fan-out (zero flows on Account).",
+      "evidence": {
+        "trigger": "AccountTrigger",
+        "uses_canonical_handler": true,
+        "flows_on_object": 0
+      },
+      "recommendation": "No action. Confirm in monitor that trigger CPU stays under 8s per batch in the first chunk and abort if it does not."
+    },
+    {
+      "id": "no-duplicate-rules",
+      "severity": "INFO",
+      "title": "No active Duplicate/Matching rules on Account",
+      "detail": "Org stub reports zero active duplicate rules and zero matching rules on Account. The upsert will not trip any block-on-insert behavior \u2014 but this also means the load itself cannot rely on dedup; the external-id (netsuite_customer_id__c) is the sole uniqueness key.",
+      "evidence": {
+        "duplicate_rules": [],
+        "matching_rules": []
+      },
+      "recommendation": "Confirm the source CSV has no duplicate netsuite_customer_id__c values before kickoff \u2014 `sort | uniq -d` on the column. Bulk API 2.0 will reject the second occurrence with DUPLICATE_VALUE if any slip through."
+    },
+    {
+      "id": "record-type-default-clear",
+      "severity": "INFO",
+      "title": "Customer record type is the integration user's default",
+      "detail": "Two active record types (Customer, Partner) but the integration user defaults to Customer. Upserts that omit RecordTypeId will land on Customer \u2014 confirm that matches the source-data semantics.",
+      "evidence": {
+        "record_types": [
+          {
+            "name": "Customer",
+            "is_integration_user_default": true
+          },
+          {
+            "name": "Partner",
+            "is_integration_user_default": false
+          }
+        ]
+      },
+      "recommendation": "If any NetSuite rows represent Partner accounts, add an explicit RecordTypeId column to the upsert mapping. Otherwise no action."
+    },
+    {
+      "id": "owd-public-rw",
+      "severity": "INFO",
+      "title": "OWD is Public Read/Write \u2014 no sharing-recalc cost",
+      "detail": "Account OWD is ReadWrite, so the upsert will not trigger sharing recalculation. This removes a major variable from load-time projections.",
+      "evidence": {
+        "owd": "ReadWrite"
+      },
+      "recommendation": "No action. Re-check this assumption if the org tightens OWD before the load window."
+    }
+  ],
+  "deliverables": [
+    {
+      "kind": "other",
+      "title": "Bulk API 2.0 upsert command (shell)",
+      "target_path": "scripts/load/account_upsert_20260502.sh",
+      "content": "#!/usr/bin/env bash\nset -euo pipefail\n\n# Pre-flight: confirm integration user holds the bypass for the in-scope VR.\n# (The ungated VR Account_BillingCountry_Format will surface failures row-by-row.)\nsf org assign permset --name Bypass_Validation_BillingCountry --target-org uat-fixture --on-behalf-of integration.user@example.com.uat || true\n\n# Bulk API 2.0 upsert keyed on the external id.\nsf data upsert bulk \\\n    --sobject Account \\\n    --file ./netsuite_account_export.csv \\\n    --external-id netsuite_customer_id__c \\\n    --target-org uat-fixture \\\n    --wait 240 \\\n    --line-ending LF\n\n# Pull failed rows for triage (BillingCountry-format-only failures expected).\nsf data resume bulk --job-id <job-id-from-above> --target-org uat-fixture\n"
+    },
+    {
+      "kind": "markdown",
+      "title": "Pre-flight checklist + load plan",
+      "target_path": "docs/reports/data-loader-pre-flight/20260428T012224Z.md",
+      "content": "# 800k Account upsert \u2014 pre-flight verdict: GO\n\n**Window:** this Saturday 02:00\u201306:00 PT\n**Source:** NetSuite customer export, external-id `netsuite_customer_id__c`\n**Org:** uat-fixture (Enterprise sandbox, API 63.0, 35% storage)\n\n## Decision\n- Verdict: **GO** with one P1 to address before kickoff.\n- Tool: **Bulk API 2.0** via `sf data upsert bulk` (per `data/bulk-api-and-large-data-loads`). Reasons: 800k rows \u226b the 10k REST batch ceiling; upsert with external id is natively supported; parallel mode is safe because OWD = Public Read/Write removes sharing recalc cost.\n- Batch size: **10,000 rows/chunk** (Bulk 2.0 default; the platform chunks internally \u2014 do not pre-chunk the CSV).\n\n## Pre-flight checklist\n1. **VR bypass** \u2014 provision `Bypass_Validation_BillingCountry` Custom Permission, gate the VR on it, and grant it to the integration user via permission set. **OR** pre-clean the source data against the VR's format check. (P1)\n2. **External-id uniqueness** \u2014 `awk -F, 'NR>1 {print $N}' export.csv | sort | uniq -d` must be empty.\n3. **Record-type semantics** \u2014 confirm all source rows are Customer-type, or add a RecordTypeId column.\n4. **Storage headroom** \u2014 35% used \u2192 ~65% free. 800k Accounts at ~2KB each = ~1.6GB. Confirm under cap before kickoff.\n5. **Trigger CPU** \u2014 abort the load if the first chunk's trigger CPU exceeds 8s/batch.\n\n## Why Bulk 2.0 over Bulk 1.0 / REST / Data Loader\n- Bulk 2.0 hides batch sizing; Bulk 1.0 forces you to tune it.\n- REST `composite/sobjects` caps at 200/request \u2192 4,000 round-trips for this load.\n- Data Loader supports Bulk 2.0 but the CLI is reproducible and audit-loggable.\n\n## What this pre-flight does NOT cover\n- Source-data quality scan (out of scope; runs in CSV-mapping agent).\n- Post-load reconciliation against NetSuite source counts.\n"
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Trigger layer is single-trigger + canonical handler and there are zero flows on Account \u2014 the most common cause of bulk-load CPU blowouts is absent here.",
+      "domain": "automation-architecture",
+      "evidence": {
+        "source": "input",
+        "count": 1
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "One active VR has no bypass mechanism for the integration user. At 800k rows, even a small percentage of source rows that fail the BillingCountry format check will surface as a noisy failedResults CSV \u2014 this is a triage burden, not a load failure, but it should be addressed before kickoff.",
+      "domain": "data-quality",
+      "evidence": {
+        "source": "org_stub",
+        "validation_rule": "Account_BillingCountry_Format"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "Org stub does not show whether the integration user's permission set assignment includes scope for both the existing Bypass_Validation_Account permission and a future Bypass_Validation_BillingCountry permission \u2014 the assumption is yes, but verify before kickoff.",
+      "domain": "permission-architecture",
+      "evidence": {
+        "source": "input"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "medium",
+      "observation": "Provisioning the new bypass Custom Permission and adding it to the integration user's permission set is permission-set-architect's job \u2014 it should be done in the same change as the VR retrofit, not as a hand-edit to a profile.",
+      "domain": "permission-architecture",
+      "evidence": {
+        "source": "heuristic"
+      },
+      "suggested_followup_agent": "permission-set-architect",
+      "followup_reason": "because the new Bypass_Validation_BillingCountry custom permission must be granted via a scoped permission set assigned to the integration user, not added to a Profile."
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "data/bulk-api-and-large-data-loads",
+      "path": "skills/data/bulk-api-and-large-data-loads/SKILL.md",
+      "used_for": "Tool selection (Bulk 2.0 over Bulk 1.0/REST), batch-sizing posture, and the failedResults triage pattern."
+    },
+    {
+      "type": "skill",
+      "id": "admin/duplicate-management",
+      "path": "skills/admin/duplicate-management/SKILL.md",
+      "used_for": "Confirming that no active Duplicate/Matching rules on Account means the load will not trip block-on-insert behavior; load-time uniqueness rests on the external id."
+    },
+    {
+      "type": "skill",
+      "id": "data/external-id-strategy",
+      "path": "skills/data/external-id-strategy/SKILL.md",
+      "used_for": "Upsert keyed on netsuite_customer_id__c \u2014 external-id uniqueness pre-check and the case for an indexed external-id field on a 800k load."
+    },
+    {
+      "type": "template",
+      "id": "admin/validation-rule-patterns.md",
+      "path": "templates/admin/validation-rule-patterns.md",
+      "used_for": "Bypass-via-Custom-Permission idiom (`$Permission.Bypass_*`) used in the recommended fix for Account_BillingCountry_Format."
+    }
+  ],
+  "followups": [
+    {
+      "agent": "permission-set-architect",
+      "because": "because the new Bypass_Validation_BillingCountry custom permission must be granted via a scoped permission set assigned to the integration user."
+    },
+    {
+      "agent": "duplicate-rule-designer",
+      "because": "because the absence of any Duplicate rule on Account is itself a finding \u2014 once the canonical key is netsuite_customer_id__c, an org-side dedup rule keyed on that field would catch out-of-band inserts that bypass the integration."
+    },
+    {
+      "agent": "sharing-audit-agent",
+      "because": "because if OWD on Account ever tightens from Public Read/Write the cost profile of this load changes materially \u2014 a sharing audit ahead of the next load window will catch the regression."
+    }
+  ]
+}

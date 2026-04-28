@@ -1,0 +1,152 @@
+{
+  "agent": "bulk-migration-planner",
+  "mode": "single",
+  "run_id": "20260428T012223Z",
+  "report_path": "docs/reports/bulk-migration-planner/20260428T012223Z.md",
+  "envelope_path": "docs/reports/bulk-migration-planner/20260428T012223Z.json",
+  "inputs_received": {
+    "direction": "inbound",
+    "volume_per_run": "8M records/week",
+    "latency_tolerance": "T+24h",
+    "source_or_target": "SAP S/4HANA"
+  },
+  "summary": "Inbound, 8M Account records/week from SAP S/4HANA at T+24h latency routes cleanly to Bulk API 2.0 per the integration-pattern-selection decision tree (high-volume, latency >> T+1h, batch-friendly). Plan covers an ingest job spec with 10k-record CSV chunks parallelized via /batches, an OAuth 2.0 client-credentials Named Credential, idempotency via upsert on netsuite_customer_id__c, and observability via Application_Log__c through ApplicationLogger. MuleSoft and Pub/Sub API are explicitly rejected as overkill at this volume/latency profile.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Inputs are unambiguous and the decision-tree branch is uncontested; MEDIUM (not HIGH) because the SAP-side delta strategy and credential rotation cadence were not specified by the caller.",
+  "findings": [
+    {
+      "id": "pattern-selected-bulk-api-2",
+      "severity": "INFO",
+      "title": "Bulk API 2.0 selected per integration-pattern-selection decision tree",
+      "detail": "Inbound, 8M records/week (\u22481.14M/day average), T+24h latency tolerance. Decision-tree branch: inbound + high-volume + T+24h \u2192 Bulk API 2.0. Alternatives considered: REST Composite (rejected \u2014 sub-second/transactional only), Pub/Sub API (rejected \u2014 adds streaming complexity for no latency win), MuleSoft (rejected \u2014 volume + complexity do not justify per the tree).",
+      "recommendation": "Implement the Bulk API 2.0 plan in deliverables[]; do not introduce middleware."
+    },
+    {
+      "id": "named-credential-oauth-client-credentials",
+      "severity": "INFO",
+      "title": "Auth via OAuth 2.0 client credentials, fronted by a Named Credential",
+      "detail": "SAP S/4HANA \u2192 Salesforce direction; SAP holds the OAuth client. Named Credential carries the auth header, so HttpClient never sees the secret. Rotation cadence: every 90 days minimum.",
+      "recommendation": "Provision Named Credential 'SAP_S4_BulkIngest' before the first cutover; do NOT embed credentials in CMDT or Apex."
+    },
+    {
+      "id": "idempotency-via-external-id-upsert",
+      "severity": "INFO",
+      "title": "Idempotency: upsert on netsuite_customer_id__c (or SAP equivalent)",
+      "detail": "Bulk API 2.0 ingest job uses upsert with the SAP customer id as External Id. This makes retries safe and lets SAP re-emit a chunk after a transport error without creating duplicates.",
+      "recommendation": "Confirm the SAP-side stable customer key with the SAP team; create the External Id field as Required + Unique + Case-Sensitive on Account before the first load."
+    }
+  ],
+  "deliverables": [
+    {
+      "kind": "json",
+      "title": "Bulk API 2.0 ingest job request body",
+      "target_path": "docs/reports/bulk-migration-planner/20260428T012223Z/bulk-job.json",
+      "content": "{\n  \"object\": \"Account\",\n  \"contentType\": \"CSV\",\n  \"operation\": \"upsert\",\n  \"externalIdFieldName\": \"netsuite_customer_id__c\",\n  \"lineEnding\": \"LF\",\n  \"columnDelimiter\": \"COMMA\"\n}\n"
+    },
+    {
+      "kind": "markdown",
+      "title": "Bulk API 2.0 runtime plan \u2014 chunking, polling, retry",
+      "target_path": "docs/reports/bulk-migration-planner/20260428T012223Z.md",
+      "content": "# Bulk API 2.0 \u2014 SAP S/4HANA \u2192 Salesforce Account ingest\n\n## Chunking\n- **Job-level cap:** 150 MB total payload per `POST /jobs/ingest/{id}/batches` upload.\n- **Per-chunk target:** 10,000 rows / ~10 MB CSV (well under the cap, leaves headroom for wide records).\n- **Weekly volume:** 8M rows / 10k = 800 batches; submit in parallel groups of 5 to keep concurrent-job count under the org's Bulk API 2.0 limit.\n\n## Polling\n- **Cadence:** poll `GET /jobs/ingest/{id}` every 30s for the first 5 minutes, then every 2 minutes.\n- **Terminal states:** `JobComplete`, `Failed`, `Aborted`. Pull `failedResults` and `unprocessedrecords` on `JobComplete` even if the count is non-zero.\n\n## Retry ladder\n1. Per-chunk transport error (5xx, timeout) \u2192 exponential backoff (1s, 4s, 16s, 64s) up to 4 attempts.\n2. Permanent per-row failure \u2192 write to `Application_Log__c` with the original CSV line and the SAP row key; do NOT retry automatically.\n3. Whole-job failure (`Failed` state) \u2192 page the integration owner and freeze the next scheduled run until the operator clears.\n\n## Failure routing\n- `failedResults` rows \u2192 `Application_Log__c` via `ApplicationLogger.logIntegrationFailure(...)`.\n- Per-row failure pattern stays in line with `skills/integration/idempotent-integration-patterns` \u2014 do not insert a side-effect row that subsequent retries would duplicate.\n"
+    },
+    {
+      "kind": "xml",
+      "title": "Named Credential metadata stub (SAP_S4_BulkIngest)",
+      "target_path": "force-app/main/default/namedCredentials/SAP_S4_BulkIngest.namedCredential-meta.xml",
+      "content": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<NamedCredential xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n    <label>SAP S/4HANA Bulk Ingest</label>\n    <endpoint>https://s4hana.example.com</endpoint>\n    <generateAuthorizationHeader>true</generateAuthorizationHeader>\n    <principalType>NamedUser</principalType>\n    <protocol>NoAuthentication</protocol>\n</NamedCredential>\n"
+    },
+    {
+      "kind": "markdown",
+      "title": "Observability + rollout plan",
+      "target_path": "docs/reports/bulk-migration-planner/20260428T012223Z/observability.md",
+      "content": "# Observability\n- **Per-job rows in `Application_Log__c`:** `JobStart`, `BatchSubmitted`, `BatchComplete`, `BatchFailed`, `JobComplete`. Use `ApplicationLogger.logBulkEvent(jobId, batchId, state, recordCount, message)`.\n- **Setup Audit Trail:** monitor for changes to the `SAP_S4_BulkIngest` Named Credential; any change implies a credential rotation that should re-run the dry-run job.\n- **Event Monitoring:** subscribe to `BulkApiResultEventStream` to catch failed chunks the polling loop missed.\n- **Alerting threshold:** error_rate > 1% per job \u2192 Slack page. Backlog depth > 2 unprocessed jobs \u2192 escalate to integration owner.\n\n# Rollout\n1. Dev \u2192 upload a 1k-row sample, validate every row lands.\n2. Partial sandbox \u2192 100k rows; validate end-to-end and that retries are safe.\n3. Full sandbox \u2192 one full weekly cut (8M rows); measure wall-clock + log volume.\n4. Staging \u2192 run alongside the existing path for one week; compare row counts.\n5. Prod \u2192 cut over; keep the legacy path as fallback for 30 days behind a Custom Permission flag.\n"
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "Caller did not specify whether SAP emits full snapshots or row-level deltas; full-snapshot semantics would push the chunk count higher and warrant a different polling cadence.",
+      "domain": "integration-design",
+      "evidence": {
+        "source": "input",
+        "query": "no delta/snapshot field in inputs"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "medium",
+      "observation": "Once the External Id strategy lands, run a security review of the inbound payload's PII surface \u2014 SAP customer records routinely carry email, phone, and tax id.",
+      "domain": "security",
+      "evidence": {
+        "source": "heuristic"
+      },
+      "suggested_followup_agent": "security-scanner",
+      "followup_reason": "because the SAP S/4HANA payload is likely to carry PII fields that need FLS/CRUD verification on Account before the first load."
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Latency tolerance (T+24h) sits well clear of every near-real-time pattern's threshold, so the decision-tree branch is uncontested.",
+      "domain": "integration-design",
+      "evidence": {
+        "source": "input"
+      }
+    }
+  ],
+  "citations": [
+    {
+      "type": "decision_tree",
+      "id": "integration-pattern-selection",
+      "path": "standards/decision-trees/integration-pattern-selection.md",
+      "branch": "Inbound + high-volume + latency >= T+1h \u2192 Bulk API 2.0",
+      "used_for": "Selecting Bulk API 2.0 over Pub/Sub, REST Composite, and MuleSoft."
+    },
+    {
+      "type": "skill",
+      "id": "integration/bulk-api-2-patterns",
+      "path": "skills/integration/bulk-api-2-patterns/SKILL.md",
+      "used_for": "Job spec, chunking limits, polling cadence, and failure-routing pattern."
+    },
+    {
+      "type": "skill",
+      "id": "integration/named-credentials-setup",
+      "path": "skills/integration/named-credentials-setup/SKILL.md",
+      "used_for": "OAuth 2.0 client-credentials Named Credential design and rotation cadence."
+    },
+    {
+      "type": "skill",
+      "id": "integration/idempotent-integration-patterns",
+      "path": "skills/integration/idempotent-integration-patterns/SKILL.md",
+      "used_for": "Upsert-on-External-Id idempotency strategy + retry-safe failure logging."
+    },
+    {
+      "type": "skill",
+      "id": "architect/large-data-volume-architecture",
+      "path": "skills/architect/large-data-volume-architecture/SKILL.md",
+      "used_for": "Confirming 8M weekly is not a 'needs-architect-review' threshold under the LDV guidance."
+    },
+    {
+      "type": "skill",
+      "id": "apex/callouts-and-http-integrations",
+      "path": "skills/apex/callouts-and-http-integrations/SKILL.md",
+      "used_for": "Establishing that any Apex-side helper for poll/result fetching must use the Named Credential rather than a hardcoded endpoint."
+    },
+    {
+      "type": "template",
+      "id": "apex/HttpClient.cls",
+      "path": "templates/apex/HttpClient.cls",
+      "used_for": "Reference scaffold for any Apex polling helper the integration owner adds; not generated here because Bulk API 2.0 is fully managed by the platform."
+    }
+  ],
+  "followups": [
+    {
+      "agent": "security-scanner",
+      "because": "because the inbound SAP payload is likely to contain PII fields (email, phone, tax id) that need FLS/CRUD verification on Account before the first production load."
+    },
+    {
+      "agent": "permission-set-architect",
+      "because": "because the integration user needs a tightly scoped permission set covering Bulk API access plus CRUD on Account and the netsuite_customer_id__c External Id."
+    }
+  ]
+}

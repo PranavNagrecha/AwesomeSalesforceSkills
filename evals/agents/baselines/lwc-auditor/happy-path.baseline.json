@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "case_id": "lwc-auditor__happy-path",
+  "agent": "lwc-auditor",
+  "fixture_path": "evals/agents/fixtures/lwc-auditor/happy-path.yaml",
+  "fixture_sha256": "17d98a60dd8ce2dcb9122e3df57c5b5e99c1d1b3a2113d2267c4324aa71bb609",
+  "agent_md_path": "agents/lwc-auditor/AGENT.md",
+  "agent_md_sha256": "0ce2c72bd494fd8e31dbdf6cab46fb9cb0198c07476b0a53a4a24138eab88564",
+  "envelope_path": "docs/validation/agent_executions_2026-04-28/lwc-auditor__happy-path.envelope.json",
+  "captured_at": "2026-04-28T01:55:10Z",
+  "model": "claude-sonnet-4-5",
+  "fingerprint": {
+    "schema_version": 1,
+    "agent": "lwc-auditor",
+    "mode": "single",
+    "confidence": "MEDIUM",
+    "refusal_code": null,
+    "finding_ids": [
+      "div-onclick-vs-button",
+      "exposed-false-with-targets",
+      "hardcoded-spacing",
+      "hex-literal-over-token",
+      "icon-only-button-no-alt-text",
+      "img-missing-alt",
+      "imperative-in-connectedcallback",
+      "innerhtml-without-sanitize",
+      "legacy-if-true-directive",
+      "missing-key-in-for-each",
+      "no-tests-folder",
+      "targets-without-targetconfigs"
+    ],
+    "finding_severities": [
+      [
+        "P0",
+        6
+      ],
+      [
+        "P1",
+        3
+      ],
+      [
+        "P2",
+        3
+      ]
+    ],
+    "citations": [
+      [
+        "skill",
+        "lwc/lwc-accessibility"
+      ],
+      [
+        "skill",
+        "lwc/lwc-app-builder-config"
+      ],
+      [
+        "skill",
+        "lwc/lwc-conditional-rendering"
+      ],
+      [
+        "skill",
+        "lwc/lwc-styling-hooks"
+      ],
+      [
+        "template",
+        "lwc/component-skeleton"
+      ]
+    ],
+    "followup_agents": [
+      "apex-refactorer",
+      "lwc-debugger",
+      "security-scanner"
+    ],
+    "observation_categories": [
+      [
+        "ambiguous",
+        1
+      ],
+      [
+        "concerning",
+        1
+      ],
+      [
+        "suggested_followup",
+        1
+      ]
+    ],
+    "deliverable_kinds": [
+      [
+        "markdown",
+        1
+      ]
+    ],
+    "dimensions_compared": [],
+    "dimensions_skipped": []
+  }
+}

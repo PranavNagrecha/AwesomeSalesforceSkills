@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "case_id": "bulk-migration-planner__happy-path",
+  "agent": "bulk-migration-planner",
+  "fixture_path": "evals/agents/fixtures/bulk-migration-planner/happy-path.yaml",
+  "fixture_sha256": "9aab6a052c5d2078a3cab3eff5482dc7863d445183cc83b750c755d248c75b2d",
+  "agent_md_path": "agents/bulk-migration-planner/AGENT.md",
+  "agent_md_sha256": "c9ee91d4713b1d8bbb4edc30baa4448af18702bc2bc3351976c1cba9c0058128",
+  "envelope_path": "docs/validation/agent_executions_2026-04-28/bulk-migration-planner__happy-path.envelope.json",
+  "captured_at": "2026-04-28T01:37:02Z",
+  "model": "claude-sonnet-4-5",
+  "fingerprint": {
+    "schema_version": 1,
+    "agent": "bulk-migration-planner",
+    "mode": "single",
+    "confidence": "MEDIUM",
+    "refusal_code": null,
+    "finding_ids": [
+      "idempotency-via-external-id-upsert",
+      "named-credential-oauth-client-credentials",
+      "pattern-selected-bulk-api-2"
+    ],
+    "finding_severities": [
+      [
+        "INFO",
+        3
+      ]
+    ],
+    "citations": [
+      [
+        "decision_tree",
+        "integration-pattern-selection"
+      ],
+      [
+        "skill",
+        "apex/callouts-and-http-integrations"
+      ],
+      [
+        "skill",
+        "architect/large-data-volume-architecture"
+      ],
+      [
+        "skill",
+        "integration/bulk-api-2-patterns"
+      ],
+      [
+        "skill",
+        "integration/idempotent-integration-patterns"
+      ],
+      [
+        "skill",
+        "integration/named-credentials-setup"
+      ],
+      [
+        "template",
+        "apex/HttpClient.cls"
+      ]
+    ],
+    "followup_agents": [
+      "permission-set-architect",
+      "security-scanner"
+    ],
+    "observation_categories": [
+      [
+        "ambiguous",
+        1
+      ],
+      [
+        "healthy",
+        1
+      ],
+      [
+        "suggested_followup",
+        1
+      ]
+    ],
+    "deliverable_kinds": [
+      [
+        "json",
+        1
+      ],
+      [
+        "markdown",
+        2
+      ],
+      [
+        "xml",
+        1
+      ]
+    ],
+    "dimensions_compared": [],
+    "dimensions_skipped": []
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "case_id": "soql-optimizer__happy-path",
+  "agent": "soql-optimizer",
+  "fixture_path": "evals/agents/fixtures/soql-optimizer/happy-path.yaml",
+  "fixture_sha256": "c51a817f67f5fb3f6b0ecb03d03e93391a7f811b9484a70c904fc8c93fab1bcb",
+  "agent_md_path": "agents/soql-optimizer/AGENT.md",
+  "agent_md_sha256": "e47c69194e4defc45062ffbe0953d86ae04ad449f3c0a95f4175a57c923c3a5b",
+  "envelope_path": "docs/validation/agent_executions_2026-04-28/soql-optimizer__happy-path.envelope.json",
+  "captured_at": "2026-04-28T01:41:48Z",
+  "model": "claude-sonnet-4-5",
+  "fingerprint": {
+    "schema_version": 1,
+    "agent": "soql-optimizer",
+    "mode": "single",
+    "confidence": "MEDIUM",
+    "refusal_code": null,
+    "finding_ids": [
+      "missing-limit",
+      "no-security",
+      "query-in-loop",
+      "select-star"
+    ],
+    "finding_severities": [
+      [
+        "P0",
+        1
+      ],
+      [
+        "P1",
+        3
+      ]
+    ],
+    "citations": [
+      [
+        "skill",
+        "apex/apex-security-patterns"
+      ],
+      [
+        "skill",
+        "data/soql-query-optimization"
+      ],
+      [
+        "template",
+        "apex/BaseSelector.cls"
+      ]
+    ],
+    "followup_agents": [
+      "apex-refactorer",
+      "security-scanner"
+    ],
+    "observation_categories": [
+      [
+        "concerning",
+        1
+      ],
+      [
+        "suggested_followup",
+        1
+      ]
+    ],
+    "deliverable_kinds": [
+      [
+        "apex",
+        1
+      ],
+      [
+        "markdown",
+        1
+      ]
+    ],
+    "dimensions_compared": [],
+    "dimensions_skipped": []
+  }
+}

@@ -1,0 +1,158 @@
+{
+  "agent": "deployment-risk-scorer",
+  "mode": "single",
+  "run_id": "20260428T012224Z",
+  "report_path": "docs/reports/deployment-risk-scorer/20260428T012224Z.md",
+  "envelope_path": "docs/reports/deployment-risk-scorer/20260428T012224Z.json",
+  "inputs_received": {
+    "change_path": "evals/agents/fixtures/deployment-risk-scorer/samples/",
+    "target_org_alias": "uat-fixture",
+    "change_scope": "full",
+    "source_path": "evals/agents/fixtures/deployment-risk-scorer/samples/CaseEscalationService.cls",
+    "related_paths": [
+      "evals/agents/fixtures/deployment-risk-scorer/samples/Account.UrgentEscalation__c.field-meta.xml"
+    ]
+  },
+  "summary": "HIGH risk. Two independent HIGH-severity findings on this small change set: (1) Account.UrgentEscalation__c is a required Checkbox added to a populated 4.2M-row table with no backfill plan in the change set \u2014 every existing Account row will fail validation on next save until backfilled; (2) CaseEscalationService.cls is a new Apex class with no corresponding test class in the change set, so the deployment to a production-equivalent target either falls below 75% org-wide coverage or relies on incidental coverage from unrelated tests. Either alone justifies HIGH; together they require a code-reviewer pass and a security-scanner pass before promotion. Recommended hold: do NOT promote until backfill-script + companion test class land in the same change set.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Change set is fully inlined and both HIGH signals are unambiguous in the static text; MEDIUM (not HIGH) because the harness has no live org probe to confirm the actual org-wide coverage post-deploy or to inspect the production org's data quality on Account before the required-field flip.",
+  "dimensions_compared": [
+    "metadata-surface",
+    "test-coverage-delta",
+    "data-impact",
+    "security-surface"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "permission-set-delta",
+      "state": "not-run",
+      "reason": "permission_set_delta is empty in the org stub \u2014 no permission-side risk to score.",
+      "confidence_impact": "NONE"
+    },
+    {
+      "dimension": "flow-fan-out",
+      "state": "not-run",
+      "reason": "active_flows_on_case is empty \u2014 no flow-side fan-out risk on the touched object.",
+      "confidence_impact": "NONE"
+    }
+  ],
+  "findings": [
+    {
+      "id": "required-field-added-no-backfill",
+      "severity": "P0",
+      "title": "Account.UrgentEscalation__c is required with no backfill plan",
+      "detail": "The new field is a required Checkbox with defaultValue=false on a 4.2M-row Account table. While the defaultValue=false saves the strict NULL-on-existing-rows blowup, the `required=true` flag means any save by a user without FLS-edit on the field will throw on existing rows that have not been touched since the field was added. More acutely, any integration upsert that omits the field will fail on existing rows that re-render through field-level required enforcement.",
+      "evidence": {
+        "path": "evals/agents/fixtures/deployment-risk-scorer/samples/Account.UrgentEscalation__c.field-meta.xml",
+        "field_required": true,
+        "default_value": "false",
+        "account_record_count": 4200000
+      },
+      "recommendation": "Either (a) deploy as required=false, run a backfill script (Bulk API 2.0 update setting UrgentEscalation__c=false on every existing row), THEN flip required=true in a follow-up deployment; OR (b) ship a Pre-Deploy Apex script that performs the backfill in the same deployment via a Post-Deploy step in the package. Pattern: see devops/pre-deployment-checklist."
+    },
+    {
+      "id": "no-test-coverage-delta",
+      "severity": "P0",
+      "title": "New Apex class CaseEscalationService has no companion test class in the change set",
+      "detail": "test_classes_in_change is empty while existing_apex_classes_in_change includes CaseEscalationService. This either drops the org-wide coverage below the 75% gate or relies on incidental coverage from unrelated tests \u2014 both are deployment-risk red flags and the second is a maintenance trap.",
+      "evidence": {
+        "existing_apex_classes_in_change": [
+          "CaseEscalationService"
+        ],
+        "test_classes_in_change": [],
+        "existing_tests": [
+          {
+            "name": "AccountTriggerHandler_Test",
+            "covers": "AccountTriggerHandler"
+          },
+          {
+            "name": "ContactServiceTest",
+            "covers": "ContactService"
+          }
+        ]
+      },
+      "recommendation": "Block promotion until a CaseEscalationServiceTest class lands in the same change set with at least 80% coverage of the new methods. Hand the work to test-class-generator with the source path above."
+    },
+    {
+      "id": "production-target-no-sandbox",
+      "severity": "P1",
+      "title": "Target org is non-sandbox \u2014 promotion is irreversible without rollback metadata",
+      "detail": "org_metadata.sandbox=false. The two HIGH findings would be P1 in a sandbox; in production they escalate because the required-field flip on a 4.2M-row table cannot be undone without a separate destructive change.",
+      "evidence": {
+        "org_metadata": {
+          "sandbox": false,
+          "edition": "Enterprise"
+        }
+      },
+      "recommendation": "If this change must ship to a non-sandbox target, attach a rollback package (destructiveChangesPre.xml that drops the field) and a backfill validation Apex test that fails the deploy if any Account row remains UrgentEscalation__c=null."
+    }
+  ],
+  "deliverables": [
+    {
+      "kind": "markdown",
+      "title": "Deployment risk scorecard + go/no-go writeup",
+      "target_path": "docs/reports/deployment-risk-scorer/20260428T012224Z.md",
+      "content": "# Deployment risk scorecard \u2014 CaseEscalationService change set\n\n**Verdict:** HIGH RISK. Do not promote.\n\n## Risk dimensions scored\n| Dimension | Score | Driver |\n|---|---|---|\n| metadata-surface | HIGH | Required field on 4.2M-row Account, no backfill |\n| test-coverage-delta | HIGH | New Apex class, no test class in change set |\n| data-impact | HIGH | 4.2M Account rows touched implicitly by required-field flip |\n| security-surface | MEDIUM | New Apex class not yet scanned; security-scanner follow-up required |\n| permission-set-delta | N/A | empty |\n| flow-fan-out | N/A | no flows on Case |\n\n## Required to promote\n1. Add `CaseEscalationServiceTest` to the change set (test-class-generator).\n2. Either drop `required=true` from UrgentEscalation__c OR ship a Pre-Deploy backfill that sets UrgentEscalation__c=false on every existing Account.\n3. Run security-scanner against `CaseEscalationService.cls` before merging.\n4. Run code-reviewer for a holistic check that no other smells slipped in.\n\n## What this scorer does NOT do\n- Does NOT execute the deploy (read-only).\n- Does NOT compute live org-wide coverage \u2014 the test-coverage-delta is a structural finding (\"no companion test in the change set\"), not a quantitative gap measurement.\n- Does NOT inspect the destination org's existing data quality on the touched fields \u2014 see follow-up `data-loader-pre-flight` if a backfill is needed.\n"
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "concerning",
+      "severity": "high",
+      "observation": "Two independent HIGH-severity findings on a small change set is a structural smell \u2014 the change set was likely assembled from a feature branch without a pre-merge review pass. A code-reviewer follow-up is mandatory.",
+      "domain": "devops",
+      "evidence": {
+        "source": "input",
+        "high_finding_count": 2
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The change set inlines a new Apex class but the org stub does not show whether that class is invoked from a trigger, flow, scheduled job, or external integration \u2014 the blast radius depends on the call surface and cannot be assessed from the change set alone.",
+      "domain": "devops",
+      "evidence": {
+        "source": "input"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "high",
+      "observation": "Per AGENT.md, any HIGH-risk verdict should fan out to code-reviewer and security-scanner before the change ships. Both are flagged in the followups list.",
+      "domain": "devops",
+      "evidence": {
+        "source": "heuristic"
+      },
+      "suggested_followup_agent": "code-reviewer",
+      "followup_reason": "because the AGENT.md HIGH-risk fan-out rule requires a holistic code-reviewer pass before promotion of any change set scored HIGH."
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "devops/pre-deployment-checklist",
+      "path": "skills/devops/pre-deployment-checklist/SKILL.md",
+      "used_for": "Required-field-added gate, the backfill-before-required-flip pattern, and the rollback-package guidance for non-sandbox targets."
+    },
+    {
+      "type": "skill",
+      "id": "devops/code-review-checklist-salesforce",
+      "path": "skills/devops/code-review-checklist-salesforce/SKILL.md",
+      "used_for": "Test-coverage-delta gate (companion test class must land in the same change set, not be derived from incidental coverage)."
+    }
+  ],
+  "followups": [
+    {
+      "agent": "code-reviewer",
+      "because": "because two HIGH findings on a small change set warrant a holistic review pass before promotion."
+    },
+    {
+      "agent": "security-scanner",
+      "because": "because new Apex must clear the security-scanner gates (sharing keyword, FLS, callout posture) before it can ship to a non-sandbox target."
+    },
+    {
+      "agent": "test-class-generator",
+      "because": "because the test-coverage-delta finding is unblockable without a CaseEscalationServiceTest class generated against the new source."
+    }
+  ]
+}
