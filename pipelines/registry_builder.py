@@ -64,7 +64,13 @@ def build_skill_record(root: Path, skill_dir: Path, chunk_ids: list[str], vector
         "chunk_ids": chunk_ids,
         "vector_embedding": vector_embedding,
         "content_hash": stable_hash_for_files(
-            [path for path in skill_dir.rglob("*") if path.is_file()],
+            [
+                path
+                for path in skill_dir.rglob("*")
+                if path.is_file()
+                and "__pycache__" not in path.parts
+                and path.suffix not in {".pyc", ".pyo"}
+            ],
             root=root,
         ),
     }
