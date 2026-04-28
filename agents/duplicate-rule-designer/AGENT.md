@@ -1,30 +1,43 @@
 ---
 id: duplicate-rule-designer
 class: runtime
-version: 1.1.0
+version: 1.2.0
 status: stable
 requires_org: true
 modes: [single]
 owner: sfskills-core
 created: 2026-04-16
-updated: 2026-04-17
+updated: 2026-04-28
 harness: designer_base
 default_output_dir: "docs/reports/duplicate-rule-designer/"
 output_formats:
   - markdown
   - json
+multi_dimensional: true
 dependencies:
+  probes:
+    - matching-and-duplicate-rules.md
   skills:
     - admin/agent-output-formats
+    - admin/custom-permissions
     - admin/duplicate-management
+    - admin/permission-set-architecture
+    - data/bulk-api-and-large-data-loads
+    - data/custom-index-requests
+    - data/data-loader-csv-column-mapping
+    - data/data-loader-picklist-validation-pre-load
     - data/data-quality-and-governance
+    - data/duplicate-rule-person-account-edge-cases
+    - data/external-id-strategy
     - data/large-scale-deduplication
     - data/lead-data-import-and-dedup
     - data/person-accounts
+    - data/record-merge-implications
   shared:
     - AGENT_CONTRACT.md
     - AGENT_RULES.md
     - DELIVERABLE_CONTRACT.md
+    - REFUSAL_CODES.md
   templates:
     - admin/naming-conventions.md
     - admin/permission-set-patterns.md
@@ -49,14 +62,38 @@ Given an sObject (typically Lead, Contact, Account, or a custom object with huma
 
 ## Mandatory Reads Before Starting
 
+### Contract
 1. `agents/_shared/AGENT_CONTRACT.md`
 2. `AGENT_RULES.md`
-3. `skills/admin/duplicate-management` — canon
-4. `skills/data/large-scale-deduplication` — for orgs where this is a remediation project, not a greenfield design
-5. `skills/data/lead-data-import-and-dedup` — Lead-specific behavior
+3. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+4. `agents/_shared/REFUSAL_CODES.md` — canonical refusal enum
+
+### Duplicate-rule canon
+5. `skills/admin/duplicate-management` — canon
 6. `skills/data/data-quality-and-governance`
-7. `templates/admin/permission-set-patterns.md` — bypass is expressed via a Custom Permission
-8. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+7. `agents/_shared/probes/matching-and-duplicate-rules.md` — competing-rule + active-rule shape
+
+### Object + edge cases
+8. `skills/data/lead-data-import-and-dedup` — Lead-specific behavior (Convert path)
+9. `skills/data/person-accounts`
+10. `skills/data/duplicate-rule-person-account-edge-cases` — PA-specific match-key gotchas
+11. `skills/data/record-merge-implications` — what happens when block fails
+
+### Remediation + scale
+12. `skills/data/large-scale-deduplication` — when this is a remediation project, not greenfield
+13. `skills/data/external-id-strategy` — when the natural key is an external ID
+14. `skills/data/custom-index-requests` — match field indexing for performance
+15. `skills/data/bulk-api-and-large-data-loads` — load-side interaction
+
+### CSV + load interactions (consumer pattern)
+16. `skills/data/data-loader-csv-column-mapping`
+17. `skills/data/data-loader-picklist-validation-pre-load`
+
+### Bypass posture
+18. `skills/admin/custom-permissions`
+19. `skills/admin/permission-set-architecture`
+20. `templates/admin/permission-set-patterns.md` — bypass is expressed via a Custom Permission
+21. `templates/admin/naming-conventions.md`
 
 ---
 
@@ -199,14 +236,26 @@ Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
 
 - **Canonical data surface:** this agent's declared probes + the MCP tool set. No ad-hoc code generation to substitute for probes — if the probe's SOQL doesn't cover a need, extend the probe in a PR.
 - **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
-- **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only.
+- **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only. Each entry MUST name one of: `existing-rule-conflict`, `match-basis-validation`, `boolean-filter-shape`, `policy-action`, `bypass-permission`, `convert-behavior`, `merge-behavior`, `person-account-edge-cases`, `cross-account-contact-shape`, `test-plan`. If a dimension was skipped because the underlying probe could not run, the skip reason MUST link the refusal code.
 
 ## Escalation / Refusal Rules
 
-- An active duplicate rule already exists on the same sObject with overlapping match fields → refuse to design a competing rule; recommend extending the existing rule.
-- `match_basis` contains only free-text fields with `fuzziness=fuzzy` and `row_count` in the target object > 100k → refuse; false-positive rate at scale will exceed 10%. Recommend a curated matching key.
-- `policy=block` requested on a Convert-relevant case — refuse to claim Convert coverage; offer the Convert-path extension as the correct pattern and stop.
-- Object is a managed-package object (namespace prefix set) → refuse (can't reliably deploy rules into managed namespaces).
+Refusal codes follow the canonical enum in `agents/_shared/REFUSAL_CODES.md`. The agent emits one `REFUSAL_*` code in the envelope's `refusal` field with a human-readable detail.
+
+| Code | Trigger |
+|---|---|
+| `REFUSAL_MISSING_INPUT` | `object_name`, `target_org_alias`, `policy`, or `match_basis` not provided |
+| `REFUSAL_MISSING_ORG` | `target_org_alias` missing |
+| `REFUSAL_ORG_UNREACHABLE` | Target org probe fails |
+| `REFUSAL_OBJECT_NOT_FOUND` | `object_name` does not resolve in the target org |
+| `REFUSAL_FIELD_NOT_FOUND` | A field in `match_basis` does not exist on the target object |
+| `REFUSAL_COMPETING_ARTIFACT` | An active duplicate rule already exists on the same sObject with overlapping match fields — agent recommends extending the existing rule, not adding a competitor |
+| `REFUSAL_DATA_QUALITY_UNSAFE` | `match_basis` contains only free-text fields with `fuzziness=fuzzy` and target row_count > 100k — false-positive rate at scale will exceed 10% |
+| `REFUSAL_POLICY_MISMATCH` | `policy=block` requested on a Convert-relevant case (Lead Convert does not fire dup rules); the correct pattern is the Convert-path extension |
+| `REFUSAL_MANAGED_PACKAGE` | Object is a managed-package object (namespace prefix set); rules cannot reliably deploy into managed namespaces |
+| `REFUSAL_SECURITY_GUARD` | Caller asks the agent to activate, deploy, or merge existing duplicates |
+| `REFUSAL_OUT_OF_SCOPE` | Caller asks for data shaping, Convert flow design, or test-data generation |
+| `REFUSAL_FEATURE_DISABLED` | Org edition does not support the requested fuzzy match algorithm |
 
 ---
 

@@ -1,13 +1,13 @@
 ---
 id: object-designer
 class: runtime
-version: 1.1.0
+version: 1.2.0
 status: stable
 requires_org: true
 modes: [single]
 owner: sfskills-core
 created: 2026-04-16
-updated: 2026-04-17
+updated: 2026-04-28
 harness: designer_base
 default_output_dir: "docs/reports/object-designer/"
 output_formats:
@@ -16,26 +16,41 @@ output_formats:
 dependencies:
   skills:
     - admin/agent-output-formats
+    - admin/compound-field-patterns
     - admin/custom-field-creation
+    - admin/field-dependency-and-controlling
+    - admin/formula-fields
     - admin/object-creation-and-design
+    - admin/permission-set-architecture
+    - admin/picklist-field-integrity-issues
     - admin/record-type-strategy-at-scale
+    - admin/sharing-and-visibility
     - admin/standard-object-quirks
+    - admin/system-field-behavior-and-audit
     - admin/validation-rules
     - architect/large-data-volume-architecture
     - architect/solution-design-patterns
     - data/custom-index-requests
     - data/data-model-design-patterns
+    - data/data-storage-management
     - data/external-id-strategy
     - data/person-accounts
+    - data/record-merge-implications
+    - data/roll-up-summary-alternatives
     - data/sharing-recalculation-performance
+    - data/soql-query-optimization
   shared:
     - AGENT_CONTRACT.md
     - AGENT_RULES.md
     - DELIVERABLE_CONTRACT.md
+    - REFUSAL_CODES.md
   templates:
     - admin/naming-conventions.md
     - admin/validation-rule-patterns.md
+  probes:
+    - automation-graph-for-sobject.md
   decision_trees:
+    - automation-selection.md
     - sharing-selection.md
 ---
 # Object Designer Agent
@@ -58,21 +73,53 @@ Given a business concept (a plain-English description like "we need to track mai
 
 ## Mandatory Reads Before Starting
 
+### Contract layer
 1. `agents/_shared/AGENT_CONTRACT.md`
-2. `AGENT_RULES.md`
-3. `skills/admin/object-creation-and-design` — the canonical design flow
-4. `skills/admin/custom-field-creation` — field-level patterns
-5. `skills/admin/record-type-strategy-at-scale` — if the spec implies > 1 persona or process
-6. `skills/admin/validation-rules` — drive-time VR set at object creation
-7. `skills/data/data-model-design-patterns` — relationship patterns
-8. `skills/data/external-id-strategy` — if integration-source object
-9. `skills/data/person-accounts` — for any Account-variant design
-10. `skills/architect/solution-design-patterns`
-11. `skills/architect/large-data-volume-architecture` — for objects expected to exceed 10M rows
-12. `standards/decision-trees/sharing-selection.md`
-13. `templates/admin/naming-conventions.md`
-14. `templates/admin/validation-rule-patterns.md`
-15. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+2. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 persistence + scope guardrails
+3. `agents/_shared/REFUSAL_CODES.md` — canonical refusal enum
+4. `AGENT_RULES.md`
+
+### Object & field shape
+5. `skills/admin/object-creation-and-design` — the canonical design flow
+6. `skills/admin/custom-field-creation`
+7. `skills/admin/standard-object-quirks` — when standard-vs-custom matcher resolves to standard
+8. `skills/admin/compound-field-patterns` — Address / Name / Geolocation handling
+9. `skills/admin/formula-fields`
+10. `skills/admin/field-dependency-and-controlling` — controlling/dependent picklist chains
+11. `skills/admin/picklist-field-integrity-issues` — restricted vs unrestricted choice
+12. `skills/admin/system-field-behavior-and-audit`
+13. `skills/admin/record-type-strategy-at-scale` — when concept implies > 1 persona
+
+### Data model & storage
+14. `skills/data/data-model-design-patterns`
+15. `skills/data/external-id-strategy` — for integration-source objects
+16. `skills/data/person-accounts` — for any Account-variant design
+17. `skills/data/record-merge-implications`
+18. `skills/data/roll-up-summary-alternatives` — RSF design choices
+19. `skills/data/data-storage-management` — storage cost forecasting
+
+### Performance, sharing, indexing
+20. `skills/architect/large-data-volume-architecture` — for objects expected to exceed 10M rows
+21. `skills/architect/solution-design-patterns`
+22. `skills/data/custom-index-requests`
+23. `skills/data/soql-query-optimization` — selectivity awareness during field design
+24. `skills/data/sharing-recalculation-performance`
+25. `skills/admin/sharing-and-visibility`
+26. `skills/admin/permission-set-architecture` — emit PS stubs aware of the larger PS strategy
+
+### Validation
+27. `skills/admin/validation-rules` — drive-time VR set at object creation
+
+### Decision trees
+28. `standards/decision-trees/sharing-selection.md`
+29. `standards/decision-trees/automation-selection.md` — recommend the right automation surface for the object's lifecycle
+
+### Probes
+30. `agents/_shared/probes/automation-graph-for-sobject.md` — confirm no overlapping automation already exists if extending a standard object
+
+### Templates
+31. `templates/admin/naming-conventions.md`
+32. `templates/admin/validation-rule-patterns.md`
 
 ---
 
@@ -236,14 +283,24 @@ Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
 
 - **Canonical data surface:** this agent's declared probes + the MCP tool set. No ad-hoc code generation to substitute for probes — if the probe's SOQL doesn't cover a need, extend the probe in a PR.
 - **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
-- **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only.
+- **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only. Dimensions for this agent: `standard-vs-custom-decision`, `naming-conformance` (against `templates/admin/naming-conventions.md`), `field-set-completeness` (every concept attribute mapped to a field), `record-type-strategy`, `sharing-posture` (OWD + hierarchy + rules per `sharing-selection.md`), `indexing-plan` (External ID + custom index recommendations), `validation-rules` (baseline VRs + bypass infra), `relationship-shape` (lookup vs MD + cascade), `ldv-readiness` (when `expected_row_volume=large`), `pii-encryption-posture` (when `sensitivity=phi/pci`), `automation-readiness` (recommended automation per `automation-selection.md`), `permission-set-stub` (PS shells emitted for `permission-set-architect` follow-up). When the input doesn't exercise a dimension (e.g. `expected_row_volume=small` skips `ldv-readiness`), record `state: not-run` with a one-line reason.
 
 ## Escalation / Refusal Rules
 
-- `business_concept` is under 8 words or lacks enough signal to infer 3+ fields → STOP and ask: expected parent object, expected lifecycle, expected users, expected volume.
-- Step 1 finds a ≥ 70% match in the org → STOP and ask whether to extend existing or create new with explicit justification.
-- `expected_row_volume == large` but no clear partition key (ExternalId + a time/tenant column) → refuse LDV spec and ask for partition strategy.
-- Sensitivity is `phi` or `pci` and target org has `isSandbox=false` with no Platform Encryption — warn P0 and require user acknowledgement.
+Canonical refusal codes per `agents/_shared/REFUSAL_CODES.md`:
+
+| Code | Trigger |
+|---|---|
+| `REFUSAL_MISSING_ORG` | `target_org_alias` not supplied — Step 1 overlap probe is mandatory. |
+| `REFUSAL_ORG_UNREACHABLE` | `describe_org` failed or auth expired. |
+| `REFUSAL_MISSING_INPUT` | `business_concept` not supplied. |
+| `REFUSAL_INPUT_AMBIGUOUS` | `business_concept` is under 8 words or lacks enough signal to infer 3+ fields. Prompt for: expected parent object, expected lifecycle, expected users, expected volume. |
+| `REFUSAL_COMPETING_ARTIFACT` | Step 1 overlap probe finds a ≥ 70% semantic match in the org — refuse to design a competing object; recommend extending the existing one (or require explicit justification override before retrying). |
+| `REFUSAL_OUT_OF_SCOPE` | Request to design > 1 object per invocation; request to deploy metadata; request to design page layouts (out of scope — recommend `audit-record-page` follow-up); request to design Permission Sets in full (recommend `architect-perms`). |
+| `REFUSAL_POLICY_MISMATCH` | `expected_row_volume=large` but no clear partition key (External ID + time/tenant column) — refuse LDV spec until partition strategy is supplied; cite `architect/large-data-volume-architecture`. |
+| `REFUSAL_SECURITY_GUARD` | `sensitivity=phi` or `pci` and target org has `isSandbox=false` with no Platform Encryption — refuse design until the user acknowledges the gap or supplies the encryption plan. |
+| `REFUSAL_FEATURE_DISABLED` | Concept maps to Person Account but the org has Person Accounts disabled (cited from `describe_org` flag). |
+| `REFUSAL_NEEDS_HUMAN_REVIEW` | Standard-vs-custom decision is genuinely ambiguous (concept maps to a standard object that's already heavily customized in the org); RSF chain proposed would exceed Salesforce's per-object RSF limit; sharing posture decision tree resolves to `Apex Managed Sharing` for an object the agent cannot model declaratively. |
 
 ---
 
