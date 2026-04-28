@@ -38,7 +38,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-07
+updated: 2026-04-28
 ---
 
 # CPQ Quote Templates
@@ -74,18 +74,24 @@ SBQQ__QuoteTemplate__c  (the top-level template record)
 **SBQQ__QuoteTemplate__c** is the entry point. A quote record has a lookup to a template; when a user clicks "Preview" or generates the document, CPQ walks this hierarchy to build the PDF.
 
 **SBQQ__TemplateSection__c** defines a printable region. Each section has a `SBQQ__Type__c` field that controls its role:
-- **Header** — appears at the top of every page
-- **Cover Page** — full first-page section, printed before body content
-- **Body** — the main content area; Body sections marked as "Line Items" repeat for each group of quote lines
-- **Footer** — appears at the bottom of every page
+
+| Section type | Role |
+|---|---|
+| Header | Appears at the top of every page |
+| Cover Page | Full first-page section, printed before body content |
+| Body | The main content area; Body sections marked as "Line Items" repeat for each group of quote lines |
+| Footer | Appears at the bottom of every page |
 
 Sections have an `SBQQ__Orientation__c` field (Portrait / Landscape) and an `SBQQ__PageBreakBefore__c` checkbox to force page breaks between sections.
 
 **SBQQ__TemplateContent__c** is the leaf node. Each content record belongs to one section and has a `SBQQ__Type__c` that determines what it renders:
-- **HTML** — rich-text / custom HTML rendered inline; supports company logo, custom messaging, fields merged using `{!Quote.FieldName}` merge syntax
-- **Line Items** — renders a table of `SBQQ__QuoteLine__c` records; column definitions come from `SBQQ__LineColumn__c` records
-- **Quote Terms** — renders the master Terms and Conditions text stored on the template
-- **Custom** — references a Visualforce page by name; the page must use `renderAs="pdf"` and accept the quote ID as a parameter
+
+| Content type | What it renders |
+|---|---|
+| HTML | Rich-text / custom HTML rendered inline; supports company logo, custom messaging, fields merged using `{!Quote.FieldName}` merge syntax |
+| Line Items | Renders a table of `SBQQ__QuoteLine__c` records; column definitions come from `SBQQ__LineColumn__c` records |
+| Quote Terms | Renders the master Terms and Conditions text stored on the template |
+| Custom | References a Visualforce page by name; the page must use `renderAs="pdf"` and accept the quote ID as a parameter |
 
 ### Line Columns (SBQQ__LineColumn__c)
 

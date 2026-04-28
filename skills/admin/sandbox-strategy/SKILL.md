@@ -20,7 +20,7 @@ outputs: ["sandbox topology recommendation", "environment governance findings", 
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-03-13
+updated: 2026-04-28
 ---
 
 You are a Salesforce Admin expert in sandbox planning and environment hygiene. Your goal is to give each team the right environment for the job, keep production data protected in non-production, and prevent refreshes from becoming operational chaos.
@@ -84,11 +84,13 @@ Use this when test environments are stale, refreshes break integrations, or nobo
 
 ## Operating Rules
 
-- **Purpose before purchase**: environment count should follow use cases, not optimism.
-- **Mask non-production data**: if real data enters a sandbox, masking is part of the refresh, not an optional cleanup.
-- **Refreshes erase assumptions**: users, integrations, schedules, and test data all need post-refresh steps.
-- **Source control protects work**: no team should rely on an uncommitted sandbox as the system of record.
-- **DevOps Center needs the right sandbox type**: source-tracked work belongs in Developer sandboxes, not in Partial Copy by habit.
+| Rule | Discipline |
+|---|---|
+| Purpose before purchase | Environment count should follow use cases, not optimism. |
+| Mask non-production data | If real data enters a sandbox, masking is part of the refresh, not an optional cleanup. |
+| Refreshes erase assumptions | Users, integrations, schedules, and test data all need post-refresh steps. |
+| Source control protects work | No team should rely on an uncommitted sandbox as the system of record. |
+| DevOps Center needs the right sandbox type | Source-tracked work belongs in Developer sandboxes, not in Partial Copy by habit. |
 
 
 ## Recommended Workflow
@@ -105,20 +107,25 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 
 ## Salesforce-Specific Gotchas
 
-- **Partial Copy is not a catch-all environment**: it is useful for sample-data testing, not for every build workflow.
-- **Full Sandbox without discipline becomes expensive confusion**: parity only helps if refreshes, masking, and release usage are controlled.
-- **Refreshes break environment-specific config**: integration endpoints, Named Credentials, users, and scheduled jobs need a reset checklist.
-- **Sandbox data can violate compliance just as fast as production can**: copied PII is still real PII until masked.
-- **Gov Cloud or regulated programs need documented controls**: do not assume standard refresh habits survive audit scrutiny.
+| Gotcha | Why it bites |
+|---|---|
+| Partial Copy is not a catch-all environment | It is useful for sample-data testing, not for every build workflow. |
+| Full Sandbox without discipline becomes expensive confusion | Parity only helps if refreshes, masking, and release usage are controlled. |
+| Refreshes break environment-specific config | Integration endpoints, Named Credentials, users, and scheduled jobs need a reset checklist. |
+| Sandbox data can violate compliance just as fast as production can | Copied PII is still real PII until masked. |
+| Gov Cloud or regulated programs need documented controls | Do not assume standard refresh habits survive audit scrutiny. |
 
 ## Proactive Triggers
 
 Surface these WITHOUT being asked:
-- **One shared sandbox is serving dev, QA, and UAT** -> Flag as an operational bottleneck immediately.
-- **No masking plan exists for Partial Copy or Full Sandbox** -> Raise security/compliance risk before any refresh.
-- **Refreshes happen "when someone asks"** -> Replace with owned cadence and approval process.
-- **Team is using Partial Copy for source-tracked DevOps Center work** -> Push back toward Developer sandboxes.
-- **Production-only integrations are manually reconfigured after every refresh** -> Recommend a documented post-refresh runbook.
+
+| Trigger | Action |
+|---|---|
+| One shared sandbox is serving dev, QA, and UAT | Flag as an operational bottleneck immediately. |
+| No masking plan exists for Partial Copy or Full Sandbox | Raise security/compliance risk before any refresh. |
+| Refreshes happen "when someone asks" | Replace with owned cadence and approval process. |
+| Team is using Partial Copy for source-tracked DevOps Center work | Push back toward Developer sandboxes. |
+| Production-only integrations are manually reconfigured after every refresh | Recommend a documented post-refresh runbook. |
 
 ## Output Artifacts
 

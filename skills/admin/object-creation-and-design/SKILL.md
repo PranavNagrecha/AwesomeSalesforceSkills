@@ -36,7 +36,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-03
+updated: 2026-04-28
 ---
 
 # Object Creation and Design
@@ -49,11 +49,13 @@ Use this skill when a practitioner needs to create a new custom object in Salesf
 
 Gather this context before creating the object:
 
-- **Business purpose**: What real-world entity does this object represent? Is it a transaction, a relationship, a configuration record, or an event log?
-- **Record ownership model**: Will records be owned by individual users, or shared across a team or queue? This determines the OWD.
-- **Volume expectations**: How many records will exist over three to five years? High-volume objects (millions of records) need index strategy and OWD decisions made early.
-- **Integration surface**: Will external systems create or update records? If yes, plan an External ID field immediately after object creation.
-- **Edition limits**: How many custom objects already exist in the org? Approaching the edition limit blocks object creation entirely.
+| Question | What it determines |
+|---|---|
+| Business purpose | What real-world entity does this object represent? Is it a transaction, a relationship, a configuration record, or an event log? |
+| Record ownership model | Will records be owned by individual users, or shared across a team or queue? This determines the OWD. |
+| Volume expectations | How many records will exist over three to five years? High-volume objects (millions of records) need index strategy and OWD decisions made early. |
+| Integration surface | Will external systems create or update records? If yes, plan an External ID field immediately after object creation. |
+| Edition limits | How many custom objects already exist in the org? Approaching the edition limit blocks object creation entirely. |
 
 The most common wrong assumption: "I can change the sharing model later." Changing OWD from Private to Public (or the reverse) after significant data exists triggers a full sharing recalculation that can take hours in large orgs and may briefly degrade performance.
 

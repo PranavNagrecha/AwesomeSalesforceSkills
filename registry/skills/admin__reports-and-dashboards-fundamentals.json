@@ -26,6 +26,7 @@
     "38b5ef64de6112751487",
     "3a30ed2d60638500d424",
     "3af39f92be87480a5613",
+    "3c697ec57bc84ac31a59",
     "40f5a9534fef09bb9400",
     "41fc50ecac92156b766b",
     "440f7b79e3203dbe4447",
@@ -62,6 +63,7 @@
     "7fd2f93b7727a80630e4",
     "83b9fa809cb9dcd57ffb",
     "8418026ee835f52c3816",
+    "8a5e64d28e6474edc969",
     "8c8d6cbd7be5b7fd3cb1",
     "8d8c45719e2574eabc62",
     "906d646c7c82c2836d98",
@@ -88,6 +90,7 @@
     "b76a71d536aaf3ae6f49",
     "b9b8de631a064c706ae9",
     "bdc49d927e011b01a0f4",
+    "c26373a683ba483ea9fd",
     "c46dc3fa11ce82670d71",
     "c5a6c5661d3eceac52b2",
     "c8745a179052b6266c84",
@@ -114,7 +117,7 @@
     "fd315f4b1dc3ab6016e8",
     "ff6b3081f317a7ef462c"
   ],
-  "content_hash": "a2242811f870c42c05837f63af94c3d158ed244a14dfca0836261aac46bf07b2",
+  "content_hash": "cc73982f366374cf113ee854c59d1abcad84a8f3942cf99714ba22ef88592b34",
   "dependencies": [],
   "description": "Use when learning, designing, or explaining Salesforce Reports and Dashboards from first principles \u2014 report types, custom report types, groupings, bucket fields, summary formulas, charts, dashboard components, dynamic dashboards, report subscriptions, and folder permissions. Triggers: 'how do I build a report', 'what report type should I use', 'set up a dashboard', 'joined report limits', 'bucket field vs formula', 'dynamic dashboard running user'. NOT for CRM Analytics (use crm-analytics-* skills). NOT for Einstein Discovery predictive analytics. NOT for troubleshooting missing report data caused by sharing model issues (use admin/reports-and-dashboards for that).",
   "file_location": "skills/admin/reports-and-dashboards-fundamentals",
@@ -168,7 +171,7 @@
   "templates": [
     "skills/admin/reports-and-dashboards-fundamentals/templates/reports-and-dashboards-fundamentals-template.md"
   ],
-  "updated": "2026-04-04",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

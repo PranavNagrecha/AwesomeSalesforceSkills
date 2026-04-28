@@ -40,7 +40,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-10
+updated: 2026-04-28
 ---
 
 # Campaign Planning And Attribution
@@ -78,10 +78,12 @@ ROI is surfaced as a formula: `(AmountWonOpportunities - ActualCost) / ActualCos
 
 CCI allows multiple campaigns to receive attribution credit on a single Opportunity via CampaignInfluence junction records. It must be explicitly enabled in Setup. Once enabled, you configure one or more Campaign Influence Models. Built-in model types:
 
-- **First Touch** — 100% credit to the first campaign that touched the contact associated with the opportunity.
-- **Last Touch** — 100% credit to the most recent campaign before opportunity close.
-- **Even Distribution** — credit split equally across all influencing campaigns.
-- **Custom** — you define a scoring algorithm via Apex or configuration rules.
+| Model | Attribution rule |
+|---|---|
+| First Touch | 100% credit to the first campaign that touched the contact associated with the opportunity. |
+| Last Touch | 100% credit to the most recent campaign before opportunity close. |
+| Even Distribution | Credit split equally across all influencing campaigns. |
+| Custom | You define a scoring algorithm via Apex or configuration rules. |
 
 Each CampaignInfluence record links one Campaign, one Opportunity, and optionally one Contact. The `Influence` field (percentage) sums to 100% across all records for a given model on a given Opportunity.
 

@@ -31,7 +31,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-03
+updated: 2026-04-28
 ---
 
 # Org Setup And Configuration
@@ -83,11 +83,14 @@ Session settings define how long an authenticated session lasts, whether session
 Navigate to: **Setup > Security > Session Settings**
 
 Key settings:
-- **Timeout value**: Ranges from 15 minutes to 24 hours. The default is 2 hours. For regulated orgs, 15–30 minutes is recommended.
-- **Lock sessions to the IP address from which they originated**: Prevents session hijacking by invalidating the session if requests arrive from a different IP. Has a side effect for users on mobile networks or DHCP-assigned IPs — sessions can break unexpectedly.
-- **Force logout on session timeout**: On timeout, the user is logged out rather than silently having their session invalidated. Improves user experience when combined with short timeouts.
-- **Require secure connections (HTTPS)**: Should always be enabled. Prevents plain-HTTP access.
-- **Clickjack protection for non-setup Salesforce pages**: Prevents the org pages from being embedded in iframes on external sites. Should be set to **Allow framing by same origin only** unless there is a specific requirement to embed.
+
+| Setting | Behavior |
+|---|---|
+| Timeout value | Ranges from 15 minutes to 24 hours. The default is 2 hours. For regulated orgs, 15–30 minutes is recommended. |
+| Lock sessions to the IP address from which they originated | Prevents session hijacking by invalidating the session if requests arrive from a different IP. Has a side effect for users on mobile networks or DHCP-assigned IPs — sessions can break unexpectedly. |
+| Force logout on session timeout | On timeout, the user is logged out rather than silently having their session invalidated. Improves user experience when combined with short timeouts. |
+| Require secure connections (HTTPS) | Should always be enabled. Prevents plain-HTTP access. |
+| Clickjack protection for non-setup Salesforce pages | Prevents the org pages from being embedded in iframes on external sites. Should be set to **Allow framing by same origin only** unless there is a specific requirement to embed. |
 
 ### Password Policies Are Org-Wide By Default But Can Be Overridden Per Profile
 
@@ -113,12 +116,15 @@ Trusted IP ranges do not bypass MFA. They only bypass the email verification ste
 Lightning Experience uses a Content Security Policy that blocks external resources by default. If a Lightning page, LWC, or Visualforce page must load resources from an external domain, that domain must be added to **Setup > Security > CSP Trusted Sites** (also labeled **Trusted URLs** in newer API versions).
 
 For each entry you specify the directive context:
-- **connect-src**: Allows `fetch()` / `XHR` / WebSocket calls to the domain (API calls from LWC)
-- **style-src**: Allows CSS stylesheets from the domain
-- **img-src**: Allows images from the domain
-- **font-src**: Allows font files from the domain
-- **frame-src**: Allows iframes embedding content from the domain
-- **media-src**: Allows audio/video content from the domain
+
+| Directive | Allows |
+|---|---|
+| connect-src | `fetch()` / `XHR` / WebSocket calls to the domain (API calls from LWC) |
+| style-src | CSS stylesheets from the domain |
+| img-src | Images from the domain |
+| font-src | Font files from the domain |
+| frame-src | Iframes embedding content from the domain |
+| media-src | Audio/video content from the domain |
 
 **Important:** `script-src` cannot be relaxed via CSP Trusted Sites. Salesforce does not allow external JavaScript execution via this control — `unsafe-inline` and external script hosts are blocked by platform design. Loading JavaScript from an external domain requires a different approach (e.g., static resources).
 

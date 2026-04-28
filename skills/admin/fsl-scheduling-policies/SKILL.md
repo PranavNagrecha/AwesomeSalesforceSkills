@@ -39,7 +39,7 @@ dependencies:
   - fsl-service-territory-setup
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-07
+updated: 2026-04-28
 ---
 
 # FSL Scheduling Policies
@@ -96,12 +96,14 @@ Work rules can be added, removed, or duplicated within a policy. A policy with n
 
 Service objectives score the candidate slots that survive work rule filtering. Each objective has a weight (a percentage between 0 and 100) set using a slider in the Scheduling Policy setup UI. Available objectives include:
 
-- **ASAP** — Scores earlier start times higher. Prioritizes the soonest available appointment.
-- **Minimize Travel** — Scores lower travel distances and times higher. Reduces fleet cost.
-- **Minimize Overtime** — Penalizes slots that push a resource into overtime hours.
-- **Preferred Resource** — Scores resources marked as preferred on the service appointment higher.
-- **Skill Level** — Scores resources with a higher skill proficiency rating higher.
-- **Minimize Unscheduled** — Used during bulk optimization; rewards assignments that reduce the total unscheduled appointment count.
+| Objective | Scoring behavior |
+|---|---|
+| ASAP | Scores earlier start times higher. Prioritizes the soonest available appointment. |
+| Minimize Travel | Scores lower travel distances and times higher. Reduces fleet cost. |
+| Minimize Overtime | Penalizes slots that push a resource into overtime hours. |
+| Preferred Resource | Scores resources marked as preferred on the service appointment higher. |
+| Skill Level | Scores resources with a higher skill proficiency rating higher. |
+| Minimize Unscheduled | Used during bulk optimization; rewards assignments that reduce the total unscheduled appointment count. |
 
 A typical customer-focused policy weights ASAP and Preferred Resource heavily. A cost-focused policy weights Minimize Travel and Minimize Overtime heavily.
 

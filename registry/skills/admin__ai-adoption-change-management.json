@@ -98,7 +98,7 @@
     "fc530bb702b7aaee1373",
     "fe3817d7486e836ece16"
   ],
-  "content_hash": "cccd14badad68aac206d3d4083d0eaa435b35695eb4cfd3167e8ade18a9e7854",
+  "content_hash": "219a2d697a28cb18a54a5b38f0a154c746fccccc77b096a4997da4311708a789",
   "dependencies": [
     "admin/change-management-and-training"
   ],
@@ -149,7 +149,7 @@
   "templates": [
     "skills/admin/ai-adoption-change-management/templates/ai-adoption-change-management-template.md"
   ],
-  "updated": "2026-04-15",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

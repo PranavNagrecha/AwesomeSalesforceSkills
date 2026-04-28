@@ -71,7 +71,7 @@
     "fb9c2838b374de87e11a",
     "fceb70dfb78eefe9d153"
   ],
-  "content_hash": "b68164e7cf82c01a4bfe54e0c5fcf90eea96ca2398932a71bf78ba8251170193",
+  "content_hash": "536a99b63343daf3c4d6ed37b576cbfe3f4957dfa1b38ef5e4e328f2d01edab5",
   "dependencies": [
     "npsp-program-management"
   ],
@@ -117,7 +117,7 @@
   "templates": [
     "skills/admin/program-outcome-tracking-design/templates/program-outcome-tracking-design-template.md"
   ],
-  "updated": "2026-04-13",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

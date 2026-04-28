@@ -31,7 +31,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-14
+updated: 2026-04-28
 ---
 
 # Analytics Requirements Gathering
@@ -56,10 +56,13 @@ Gather this context before working on anything in this domain:
 ### Data Source Types
 
 CRM Analytics has four distinct data source types with different setup requirements:
-- **Salesforce object sync** — Direct connection to Salesforce standard and custom objects; configured in Data Manager; requires a dataflow or recipe to create a dataset
-- **External connector** — Snowflake, AWS S3, Google BigQuery, etc.; requires Named Credential and Connector setup; data pulled via recipe
-- **Data Cloud Direct** — Real-time query of Data Cloud Data Model Objects (DMOs) without dataset creation; available in Spring '25+ for specific query patterns; does not support all SAQL operations
-- **CSV/External Data API** — Static file upload; creates a dataset directly; requires manual or API-driven refresh
+
+| Source type | Setup |
+|---|---|
+| Salesforce object sync | Direct connection to Salesforce standard and custom objects; configured in Data Manager; requires a dataflow or recipe to create a dataset |
+| External connector | Snowflake, AWS S3, Google BigQuery, etc.; requires Named Credential and Connector setup; data pulled via recipe |
+| Data Cloud Direct | Real-time query of Data Cloud Data Model Objects (DMOs) without dataset creation; available in Spring '25+ for specific query patterns; does not support all SAQL operations |
+| CSV/External Data API | Static file upload; creates a dataset directly; requires manual or API-driven refresh |
 
 Requirements must specify which type each data source is — the implementation path differs significantly.
 

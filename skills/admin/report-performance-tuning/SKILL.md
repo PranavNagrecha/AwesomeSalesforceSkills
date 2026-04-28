@@ -40,7 +40,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-04-28
 ---
 
 # Report Performance Tuning
@@ -53,11 +53,13 @@ Use this skill when a Salesforce report or dashboard is slow, timing out, or ret
 
 Gather this context before working in this domain:
 
-- **Primary object record count**: Reports on objects with millions of records will time out or degrade unless at least one selective filter limits the query scan. Ask for an estimate; even "hundreds of thousands" vs "tens of millions" changes the recommendation.
-- **Current filters**: Reports with no date range, no owner, and no record type filter will perform a full table scan. This is the most common root cause of timeouts.
-- **Report type and object span**: Standard report types (pre-joined by Salesforce) are faster than custom report types spanning 4+ objects. A custom report type spanning 4 objects triggers extra join processing for every row.
-- **Execution context**: Interactive (UI), scheduled subscription, dashboard component, or Analytics API — each has different timeout thresholds and row limits.
-- **Org edition**: Async report execution via Analytics API requires API access. Dynamic dashboard running-user count caps vary by edition.
+| Context | Why it matters |
+|---|---|
+| Primary object record count | Reports on objects with millions of records will time out or degrade unless at least one selective filter limits the query scan. Ask for an estimate; even "hundreds of thousands" vs "tens of millions" changes the recommendation. |
+| Current filters | Reports with no date range, no owner, and no record type filter will perform a full table scan. This is the most common root cause of timeouts. |
+| Report type and object span | Standard report types (pre-joined by Salesforce) are faster than custom report types spanning 4+ objects. A custom report type spanning 4 objects triggers extra join processing for every row. |
+| Execution context | Interactive (UI), scheduled subscription, dashboard component, or Analytics API — each has different timeout thresholds and row limits. |
+| Org edition | Async report execution via Analytics API requires API access. Dynamic dashboard running-user count caps vary by edition. |
 
 ---
 

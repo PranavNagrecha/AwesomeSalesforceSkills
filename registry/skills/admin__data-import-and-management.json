@@ -53,7 +53,7 @@
     "f52f5994e39de33f49e4",
     "f7f44c502e73fdde669b"
   ],
-  "content_hash": "723456f87d4018a12a6e6bf6fd6c61fd828d234a54441b1f91d42d1de01b48dc",
+  "content_hash": "d5fe56491b428a46510c3151ae3350d7fa86c2b61c3cf00f674788d542472404",
   "dependencies": [],
   "description": "Use when planning, reviewing, or troubleshooting Salesforce data imports, migrations, and bulk updates. Triggers: 'Data Loader', 'Data Import Wizard', 'Bulk API', 'upsert', 'cutover', 'load failed', 'reconcile data'. NOT for ongoing integration architecture - use integration/ skills for that.",
   "file_location": "skills/admin/data-import-and-management",
@@ -93,7 +93,7 @@
   "templates": [
     "skills/admin/data-import-and-management/templates/data-load-plan-template.md"
   ],
-  "updated": "2026-03-13",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

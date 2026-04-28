@@ -52,7 +52,7 @@
     "f5f0ced5cabd194af763",
     "fdab38f020fb03a1ccc2"
   ],
-  "content_hash": "c5f6e237b37714a9dd805c3936bc0cefdc600959cae46a38179c375455d520db",
+  "content_hash": "6b7467449ce58b13c349759f75cb847b9647f3322aaae2273d7e2a622a00535c",
   "dependencies": [],
   "description": "Use when designing, reviewing, or troubleshooting Salesforce connected apps, Named Credentials, External Credentials, and OAuth-based integration access. Triggers: 'connected app', 'OAuth flow', 'client credentials', 'JWT bearer', 'Named Credential', 'External Credential', 'integration user', 'IP restrictions'. NOT for business-user sharing or field permissions unless the auth design depends on them.",
   "file_location": "skills/admin/connected-apps-and-auth",
@@ -92,7 +92,7 @@
   "templates": [
     "skills/admin/connected-apps-and-auth/templates/auth-integration-template.md"
   ],
-  "updated": "2026-03-13",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

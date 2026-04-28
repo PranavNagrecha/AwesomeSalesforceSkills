@@ -32,7 +32,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-04-28
 ---
 
 # Change Management and Training
@@ -73,10 +73,13 @@ Salesforce defines adoption across three dimensions: breadth (are people logging
 **Six Levers of Change (Salesforce official framework):** Salesforce training explicitly teaches that communications and technical training alone are insufficient for sustained adoption. Six levers must be addressed simultaneously: Leadership (executives visibly use and champion the system), Ecosystem (peer pressure and social norms reinforce usage), Values (the change connects to what users personally care about), Enablement (users have the skills and tools to change their behavior), Rewards (incentives align with the new behavior, not the old), and Structure (the new way is easier than the old way by design). Assess which levers are missing when adoption is lagging.
 
 Adoption levers available natively in Salesforce:
-- **In-App Guidance (Walkthroughs)** — step-by-step prompts shown inside the Salesforce UI, configurable without code. Navigate to Setup > In-App Guidance. Target specific pages and user profiles. Use for new features and process changes.
-- **Path** — visual stage guidance on records (Opportunity, Lead, Case). Shows key fields and coaching text per stage. Configured per object and record type in Setup > Path Settings.
-- **Chatter** — announcements, group updates, polls to surface process changes inside the platform users already use.
-- **Adoption Dashboards** — the Salesforce Adoption Dashboards package (available on AppExchange, free from Salesforce Labs) provides prebuilt reports on login frequency, record creation, and feature usage by profile.
+
+| Lever | Description |
+|---|---|
+| In-App Guidance (Walkthroughs) | Step-by-step prompts shown inside the Salesforce UI, configurable without code. Navigate to Setup > In-App Guidance. Target specific pages and user profiles. Use for new features and process changes. |
+| Path | Visual stage guidance on records (Opportunity, Lead, Case). Shows key fields and coaching text per stage. Configured per object and record type in Setup > Path Settings. |
+| Chatter | Announcements, group updates, polls to surface process changes inside the platform users already use. |
+| Adoption Dashboards | The Salesforce Adoption Dashboards package (available on AppExchange, free from Salesforce Labs) provides prebuilt reports on login frequency, record creation, and feature usage by profile. |
 
 ### Role-Based Training Structure
 

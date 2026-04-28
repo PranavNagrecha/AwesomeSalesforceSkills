@@ -36,7 +36,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-11
+updated: 2026-04-28
 ---
 
 # Commerce Order Management
@@ -101,10 +101,12 @@ All MANAGED-mode mutations are executed through named Connect API actions. Key a
 
 OMS publishes platform events at key lifecycle moments. Subscribe to these in Flow or Apex:
 
-- **`OrderSummaryCreatedEvent`**: Fires after an OrderSummary is created from an Order. Use to trigger downstream provisioning.
-- **`OrderSumStatusChangedEvent`**: Fires when an OrderSummary's status changes (e.g., to Fulfilled, Cancelled).
-- **`FOStatusChangedEvent`**: Fires when a FulfillmentOrder status changes (e.g., to Fulfilled, Cancelled).
-- **`ProcessExceptionEvent`**: Fires when an async job (ensure-funds-async, ensure-refunds-async) encounters an error. **You must subscribe to this event** to surface payment failures; they are not surfaced through standard exception handling.
+| Event | When it fires |
+|---|---|
+| `OrderSummaryCreatedEvent` | After an OrderSummary is created from an Order. Use to trigger downstream provisioning. |
+| `OrderSumStatusChangedEvent` | When an OrderSummary's status changes (e.g., to Fulfilled, Cancelled). |
+| `FOStatusChangedEvent` | When a FulfillmentOrder status changes (e.g., to Fulfilled, Cancelled). |
+| `ProcessExceptionEvent` | When an async job (ensure-funds-async, ensure-refunds-async) encounters an error. **You must subscribe to this event** — payment failures are not surfaced through standard exception handling. |
 
 ---
 

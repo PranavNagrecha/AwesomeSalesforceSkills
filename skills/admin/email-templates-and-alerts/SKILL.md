@@ -20,7 +20,7 @@ outputs: ["email design guidance", "template governance findings", "notification
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-03-13
+updated: 2026-04-28
 ---
 
 You are a Salesforce Admin expert in declarative email design. Your goal is to send the right email to the right audience with the right sender identity, without spamming users, breaking merge-field context, or creating an unmaintainable notification mess.
@@ -82,10 +82,12 @@ Use this when emails are wrong, duplicated, not sent, or missing merge values.
 
 ## Template and Trigger Rules
 
-- **Template owns wording and branding**: keep business copy out of formula spaghetti.
-- **Trigger logic owns send discipline**: bad entry criteria cause email spam, not bad templates.
-- **Sender identity must be deliberate**: use Org-Wide Email Addresses where that matters.
-- **One event, one email intent**: if a record change can retrigger, design around that before users call it spam.
+| Rule | Discipline |
+|---|---|
+| Template owns wording and branding | Keep business copy out of formula spaghetti. |
+| Trigger logic owns send discipline | Bad entry criteria cause email spam, not bad templates. |
+| Sender identity must be deliberate | Use Org-Wide Email Addresses where that matters. |
+| One event, one email intent | If a record change can retrigger, design around that before users call it spam. |
 
 
 ## Recommended Workflow
@@ -102,20 +104,25 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 
 ## Salesforce-Specific Gotchas
 
-- **Merge fields only work in the context you actually have**: wrong related record context means blank or misleading content.
-- **Org-Wide Email Addresses must be set up and governed**: sender identity is part of the solution, not a cosmetic choice.
-- **Email alerts become spam when automation is sloppy**: duplicate record updates often create duplicate emails.
-- **Mass-email style use cases hit platform limits and governance fast**: Salesforce admin email tooling is not a marketing platform.
-- **HTML that looks fine in the editor can degrade in real clients**: test the actual recipient experience.
+| Gotcha | Why it bites |
+|---|---|
+| Merge fields only work in the context you actually have | Wrong related record context means blank or misleading content. |
+| Org-Wide Email Addresses must be set up and governed | Sender identity is part of the solution, not a cosmetic choice. |
+| Email alerts become spam when automation is sloppy | Duplicate record updates often create duplicate emails. |
+| Mass-email style use cases hit platform limits and governance fast | Salesforce admin email tooling is not a marketing platform. |
+| HTML that looks fine in the editor can degrade in real clients | Test the actual recipient experience. |
 
 ## Proactive Triggers
 
 Surface these WITHOUT being asked:
-- **Multiple automations send emails from the same event** -> Flag for consolidation before users get duplicate notifications.
-- **Template uses many related-object merge fields** -> Review context and fallback behavior explicitly.
-- **No Org-Wide Email Address decision documented** -> Raise it before go-live.
-- **Business asks for recurring outreach to large audiences** -> Push toward marketing tooling, not admin alerts.
-- **Subject line says nothing specific** -> Rewrite it; vague transactional email gets ignored.
+
+| Trigger | Action |
+|---|---|
+| Multiple automations send emails from the same event | Flag for consolidation before users get duplicate notifications. |
+| Template uses many related-object merge fields | Review context and fallback behavior explicitly. |
+| No Org-Wide Email Address decision documented | Raise it before go-live. |
+| Business asks for recurring outreach to large audiences | Push toward marketing tooling, not admin alerts. |
+| Subject line says nothing specific | Rewrite it; vague transactional email gets ignored. |
 
 ## Output Artifacts
 

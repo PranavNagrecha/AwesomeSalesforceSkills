@@ -33,7 +33,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-03
+updated: 2026-04-28
 ---
 
 # UAT and Acceptance Criteria
@@ -46,10 +46,12 @@ This skill activates when a Business Analyst, admin, or QA lead needs to transla
 
 Gather this context before beginning UAT work:
 
-- **What sandbox type is being used?** Full sandboxes have production data copies and reflect real user volume. Partial sandboxes have a data subset. Developer sandboxes have no production data — test data must be created manually. UAT should ideally run in a Full or Partial sandbox so that data volume, sharing rules, and record types match production behavior.
-- **Which user personas are in scope?** Testing one profile may not reveal a field-level security (FLS) gap visible to a different profile. Identify every profile or permission set that will use the feature and ensure test execution covers each.
-- **Is time-based automation in scope?** Time-based workflow rules and scheduled flows cannot be advanced manually in sandbox. If a feature includes time-triggered automation, plan for either manual triggering via Developer Console or a separate automation testing environment.
-- **Have all acceptance criteria been confirmed as testable?** Acceptance criteria must be boolean (observable pass/fail) before test scripts are written. Criteria like "the page should be fast" or "the form should be intuitive" cannot be tested — they must be rewritten before UAT begins.
+| Question | Why it matters |
+|---|---|
+| What sandbox type is being used? | Full sandboxes have production data copies and reflect real user volume. Partial sandboxes have a data subset. Developer sandboxes have no production data — test data must be created manually. UAT should ideally run in a Full or Partial sandbox so that data volume, sharing rules, and record types match production behavior. |
+| Which user personas are in scope? | Testing one profile may not reveal a field-level security (FLS) gap visible to a different profile. Identify every profile or permission set that will use the feature and ensure test execution covers each. |
+| Is time-based automation in scope? | Time-based workflow rules and scheduled flows cannot be advanced manually in sandbox. If a feature includes time-triggered automation, plan for either manual triggering via Developer Console or a separate automation testing environment. |
+| Have all acceptance criteria been confirmed as testable? | Acceptance criteria must be boolean (observable pass/fail) before test scripts are written. Criteria like "the page should be fast" or "the form should be intuitive" cannot be tested — they must be rewritten before UAT begins. |
 
 ---
 
@@ -104,11 +106,14 @@ Not every defect found in UAT has the same impact. A Salesforce-specific severit
 | P4 — Cosmetic | No functional impact. | Capitalization inconsistency; extra space in field label; non-breaking UI misalignment |
 
 In addition to severity, classify defects by Salesforce component type for faster routing:
-- **Configuration defect** — field, page layout, record type, picklist value (admin fixes)
-- **Automation defect** — Flow, Workflow Rule, Approval Process logic error (admin or dev fixes)
-- **Security defect** — FLS, sharing rule, OWD, profile permission error (admin fixes — prioritize P1/P2 immediately)
-- **Data defect** — existing records in bad state due to migration or earlier defect (data team fixes)
-- **Integration defect** — callout, external ID, sync error (dev team fixes)
+
+| Component type | Description and routing |
+|---|---|
+| Configuration defect | Field, page layout, record type, picklist value (admin fixes) |
+| Automation defect | Flow, Workflow Rule, Approval Process logic error (admin or dev fixes) |
+| Security defect | FLS, sharing rule, OWD, profile permission error (admin fixes — prioritize P1/P2 immediately) |
+| Data defect | Existing records in bad state due to migration or earlier defect (data team fixes) |
+| Integration defect | Callout, external ID, sync error (dev team fixes) |
 
 A defect log is maintained per release. Each entry includes: Defect ID, Test Case ID, Component type, Severity, Description of actual vs expected behavior, Steps to reproduce, Assignee, Status (Open/In Progress/Fixed/Closed), and Retest result.
 

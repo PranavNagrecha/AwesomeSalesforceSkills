@@ -65,11 +65,13 @@
     "bf01304777c273190c6d",
     "c1bc0afdb656c4ce2881",
     "c4e4f0a7e86bca353fa4",
+    "c594c1e7512c5433e5ac",
     "c600db9f4209177da9ec",
     "ca3d57b46b4365b0f6ea",
     "cb3dcbd3a830050cee81",
     "ce2ac6b5448e99bf29a6",
     "d01749319bf11f2ab842",
+    "d511dfaa5dac7fca0141",
     "dd5f7eb897dcf30060bf",
     "df8a5c68163de9112908",
     "e0f5716bfceaa8646aa4",
@@ -82,7 +84,7 @@
     "fb42b9dfb8ab1e2533e6",
     "fed03edda792fb3ef2bd"
   ],
-  "content_hash": "5af50ba34d9042a3e3b17fa8b9c0dd07e9d679e6b7ac9798d697f165d3ef2de4",
+  "content_hash": "e9d33fc59aa424597810bb90bf3324d288f1e5fd31e0f9524c375f1bd3dac225",
   "dependencies": [],
   "description": "Use this skill when writing acceptance criteria for Salesforce features, structuring UAT test scripts from user stories, classifying defects found during UAT, or planning regression testing before a Salesforce release. Trigger keywords: UAT, user acceptance testing, test script, acceptance criteria, defect classification, regression testing, test plan, test case. NOT for automated testing (use flow-testing or apex-test-class-standards). NOT for writing user stories or eliciting requirements (use requirements-gathering-for-sf). NOT for setting up sandboxes or environment strategy (use sandbox-strategy).",
   "file_location": "skills/admin/uat-and-acceptance-criteria",
@@ -125,7 +127,7 @@
   "templates": [
     "skills/admin/uat-and-acceptance-criteria/templates/uat-and-acceptance-criteria-template.md"
   ],
-  "updated": "2026-04-03",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

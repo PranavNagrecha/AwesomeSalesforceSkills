@@ -93,7 +93,7 @@
     "fad3462914f96580113e",
     "ff2a04a8e7db226060b4"
   ],
-  "content_hash": "4d05de1460560bbd289aecd0b4caab77adee57a2cd60931ed52aa12129c4e392",
+  "content_hash": "e882ea6c0a69ec3ebe022fab473227efbbde1b7b6064c565dd45a54b3057ea74",
   "dependencies": [],
   "description": "Use when designing or troubleshooting Salesforce CPQ (SBQQ) quote templates: building template sections, configuring line columns, conditionally showing sections, generating branded PDFs, or handling multi-language output. Triggers: 'CPQ quote template', 'SBQQ template', 'CPQ PDF', 'line columns', 'quote template sections', 'conditional section', 'CPQ quote document'. NOT for standard Salesforce quote templates (Setup > Quote Templates), Visualforce-only PDF customization, or CPQ pricing rules and price books.",
   "file_location": "skills/admin/cpq-quote-templates",
@@ -143,7 +143,7 @@
   "templates": [
     "skills/admin/cpq-quote-templates/templates/cpq-quote-templates-template.md"
   ],
-  "updated": "2026-04-07",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

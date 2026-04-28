@@ -41,7 +41,7 @@ dependencies:
   - admin/change-management-and-training
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-15
+updated: 2026-04-28
 ---
 
 # AI Adoption Change Management
@@ -72,12 +72,14 @@ Salesforce's official AI change management framework organizes the organizationa
 
 The six levers are:
 
-- **Leadership** — Visible executive and manager sponsorship. Leaders must publicly use the AI themselves and communicate the "why" beyond efficiency gains.
-- **Ecosystem** — AI champions, peer networks, and community of practice. Frontline champions who demo the tool to colleagues drive adoption faster than top-down mandates.
-- **Values** — Connecting AI use to the organization's stated values and mission (e.g., "AI frees reps to spend more time building relationships" rather than "AI replaces manual work").
-- **Enablement** — Role-specific, AI-specific training that covers not just how to use the feature but when to trust it, when to override it, and how to give feedback. Generic CRM training is insufficient.
-- **Rewards** — Recognition and incentive structures that celebrate AI-assisted work, not just output volume. Leaderboards, certifications, or shoutouts for adoption champions.
-- **Structure** — Org design and workflow integration. AI features embedded in the primary workflow (inside the rep's daily Salesforce record screen) outperform features that require users to context-switch.
+| Lever | What it covers |
+|---|---|
+| Leadership | Visible executive and manager sponsorship. Leaders must publicly use the AI themselves and communicate the "why" beyond efficiency gains. |
+| Ecosystem | AI champions, peer networks, and community of practice. Frontline champions who demo the tool to colleagues drive adoption faster than top-down mandates. |
+| Values | Connecting AI use to the organization's stated values and mission (e.g., "AI frees reps to spend more time building relationships" rather than "AI replaces manual work"). |
+| Enablement | Role-specific, AI-specific training that covers not just how to use the feature but when to trust it, when to override it, and how to give feedback. Generic CRM training is insufficient. |
+| Rewards | Recognition and incentive structures that celebrate AI-assisted work, not just output volume. Leaderboards, certifications, or shoutouts for adoption champions. |
+| Structure | Org design and workflow integration. AI features embedded in the primary workflow (inside the rep's daily Salesforce record screen) outperform features that require users to context-switch. |
 
 When building an adoption plan, score the org against each lever and identify gaps. Aim for four or more levers actively engaged before go-live.
 

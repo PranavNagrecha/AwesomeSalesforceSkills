@@ -94,10 +94,12 @@ Keep architects split across **Security architect** and **Integration architect*
 
 ### R / A / C / I — and the One-A Rule
 
-- **R (Responsible)** — does the work. There can be many Rs per row.
-- **A (Accountable)** — owns the outcome and is the single decision-maker. **Exactly one A per row.** This is the load-bearing rule of any RACI; multiple As mean nobody is accountable.
-- **C (Consulted)** — two-way conversation before the decision is made. Their input is required, not optional.
-- **I (Informed)** — one-way notification after the decision is made.
+| Letter | Meaning |
+|---|---|
+| R (Responsible) | Does the work. There can be many Rs per row. |
+| A (Accountable) | Owns the outcome and is the single decision-maker. **Exactly one A per row.** This is the load-bearing rule of any RACI; multiple As mean nobody is accountable. |
+| C (Consulted) | Two-way conversation before the decision is made. Their input is required, not optional. |
+| I (Informed) | One-way notification after the decision is made. |
 
 Additional rules specific to Salesforce projects:
 

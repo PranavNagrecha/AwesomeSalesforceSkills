@@ -73,17 +73,24 @@ The most common MoSCoW failure mode is everything-is-Must. If the backlog has mo
 
 MoSCoW alone is a coarse signal. Pair every item with two orthogonal scales so the team can sort within a bucket and detect cheap wins:
 
-- **Effort tier (S/M/L/XL):**
-  - **S** — half a day or less (a field, a list view, a permission set tweak)
-  - **M** — one to three days (a record-triggered flow, a small report bundle, a validation rule pack)
-  - **L** — three to ten days (a multi-object flow, a Lightning page redesign, an Apex trigger refactor)
-  - **XL** — more than ten days (a new object model, an integration, a Lightning component suite). XL items in a sprint are a smell — split.
-- **Value tier (1–5):** business value as judged by the sponsor.
-  - **5** — strategic; tied to a board-level OKR or a regulatory deadline
-  - **4** — high; closes a meaningful pain point or unlocks revenue
-  - **3** — solid; clear ROI but not strategic
-  - **2** — incremental; small productivity gain
-  - **1** — cosmetic; gold-plating
+**Effort tier (S/M/L/XL):**
+
+| Tier | Indicative scope |
+|---|---|
+| S | Half a day or less (a field, a list view, a permission set tweak) |
+| M | One to three days (a record-triggered flow, a small report bundle, a validation rule pack) |
+| L | Three to ten days (a multi-object flow, a Lightning page redesign, an Apex trigger refactor) |
+| XL | More than ten days (a new object model, an integration, a Lightning component suite). XL items in a sprint are a smell — split. |
+
+**Value tier (1–5):** business value as judged by the sponsor.
+
+| Tier | Indicative business value |
+|---|---|
+| 5 | Strategic; tied to a board-level OKR or a regulatory deadline |
+| 4 | High; closes a meaningful pain point or unlocks revenue |
+| 3 | Solid; clear ROI but not strategic |
+| 2 | Incremental; small productivity gain |
+| 1 | Cosmetic; gold-plating |
 
 The (effort, value) pair is the crucial second signal. A "Must, XL, value 2" row is almost certainly miscategorized and should be challenged.
 

@@ -40,7 +40,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-03
+updated: 2026-04-28
 ---
 
 # Custom Field Creation
@@ -53,12 +53,14 @@ Use this skill when a practitioner needs to add a new custom field to any Salesf
 
 Gather this context before working on field creation:
 
-- **Target object**: Standard object (Account, Contact, Opportunity, Case, Lead) or custom object?
-- **Data type**: What kind of data is being stored? Text, number, date, a relationship to another object, a yes/no flag?
-- **Cardinality**: Is there a fixed set of valid values (use Picklist) or free-form text?
-- **Who needs access**: Which profiles or permission sets need read vs. edit access?
-- **Required?**: Does every record need this field? If yes, existing records and integrations must be able to provide the value.
-- **Deployment target**: Is this going to production? Change set or SFDX/sf CLI?
+| Context | What to confirm |
+|---|---|
+| Target object | Standard object (Account, Contact, Opportunity, Case, Lead) or custom object? |
+| Data type | What kind of data is being stored? Text, number, date, a relationship to another object, a yes/no flag? |
+| Cardinality | Is there a fixed set of valid values (use Picklist) or free-form text? |
+| Who needs access | Which profiles or permission sets need read vs. edit access? |
+| Required? | Does every record need this field? If yes, existing records and integrations must be able to provide the value. |
+| Deployment target | Is this going to production? Change set or SFDX/sf CLI? |
 
 The most common wrong assumption: creating a field is enough to make it visible to users. It is not. FLS and page layout must also be configured.
 
@@ -104,12 +106,15 @@ Choose a clear, unambiguous name. "Billing_Region__c" is better than "BR__c". Yo
 | Developer | 500 |
 
 Key type-level limits:
-- **Text**: max 255 characters
-- **Text Area**: max 255 characters (multi-line display)
-- **Long Text Area**: 256 to 131,072 characters (configurable)
-- **Rich Text Area**: up to 131,072 characters
-- **Number**: max 18 digits, max 17 decimal places
-- **Classic Encrypted Text**: max 175 characters; cannot be used in formulas, reports, or workflow criteria
+
+| Field type | Limit |
+|---|---|
+| Text | Max 255 characters |
+| Text Area | Max 255 characters (multi-line display) |
+| Long Text Area | 256 to 131,072 characters (configurable) |
+| Rich Text Area | Up to 131,072 characters |
+| Number | Max 18 digits, max 17 decimal places |
+| Classic Encrypted Text | Max 175 characters; cannot be used in formulas, reports, or workflow criteria |
 
 ---
 

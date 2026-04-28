@@ -35,7 +35,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-04-28
 ---
 
 # Portal Requirements Gathering
@@ -80,10 +80,12 @@ This decision must be locked before any other design work begins. It governs the
 
 Experience Cloud user licenses determine which standard and custom objects users can access and what features are available. The primary license types for portal use are:
 
-- **Customer Community** — suitable for B2C self-service portals. Provides access to standard Case, Contact, and Knowledge objects. Does not support Leads or Opportunities.
-- **Customer Community Plus** — adds advanced sharing (criteria-based and manual sharing on custom objects), reports, and dashboards. Required when customers need to view or manage complex data sets.
-- **Partner Community** — designed for indirect sales and PRM. Includes access to Leads, Opportunities, and partner-specific features. Required for deal registration and pipeline visibility use cases.
-- **External Apps** — the most flexible license for custom portal experiences; provides object access comparable to internal users at higher cost. Use when none of the community licenses cover the required object set.
+| License | Use case |
+|---|---|
+| Customer Community | Suitable for B2C self-service portals. Provides access to standard Case, Contact, and Knowledge objects. Does not support Leads or Opportunities. |
+| Customer Community Plus | Adds advanced sharing (criteria-based and manual sharing on custom objects), reports, and dashboards. Required when customers need to view or manage complex data sets. |
+| Partner Community | Designed for indirect sales and PRM. Includes access to Leads, Opportunities, and partner-specific features. Required for deal registration and pipeline visibility use cases. |
+| External Apps | The most flexible license for custom portal experiences; provides object access comparable to internal users at higher cost. Use when none of the community licenses cover the required object set. |
 
 License selection is difficult and costly to change after user records are provisioned at scale. It must be locked during requirements, not during build.
 
