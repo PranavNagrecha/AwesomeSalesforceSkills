@@ -1,13 +1,13 @@
 ---
 id: lwc-debugger
 class: runtime
-version: 1.0.0
+version: 1.1.0
 status: stable
 requires_org: false
 modes: [single]
 owner: sfskills-core
 created: 2026-04-23
-updated: 2026-04-23
+updated: 2026-04-28
 default_output_dir: "docs/reports/lwc-debugger/"
 output_formats:
   - markdown
@@ -15,24 +15,50 @@ output_formats:
 dependencies:
   skills:
     - admin/agent-output-formats
+    - lwc/common-lwc-runtime-errors
+    - lwc/component-communication
+    - lwc/lifecycle-hooks
+    - lwc/lwc-accessibility
     - lwc/lwc-app-builder-config
+    - lwc/lwc-async-patterns
     - lwc/lwc-conditional-rendering
     - lwc/lwc-custom-datatable-types
+    - lwc/lwc-custom-event-patterns
+    - lwc/lwc-data-table
     - lwc/lwc-debugging-devtools
+    - lwc/lwc-dynamic-components
+    - lwc/lwc-error-boundaries
+    - lwc/lwc-focus-management
+    - lwc/lwc-forms-and-validation
     - lwc/lwc-graphql-wire
     - lwc/lwc-imperative-apex
+    - lwc/lwc-internationalization
     - lwc/lwc-light-dom
+    - lwc/lwc-locker-to-lws-migration
     - lwc/lwc-performance
+    - lwc/lwc-performance-budgets
+    - lwc/lwc-public-api-hardening
     - lwc/lwc-quick-actions
+    - lwc/lwc-record-picker
     - lwc/lwc-security
+    - lwc/lwc-shadow-vs-light-dom-decision
     - lwc/lwc-slots-composition
+    - lwc/lwc-state-management
     - lwc/lwc-styling-hooks
     - lwc/lwc-template-refs
     - lwc/lwc-testing
+    - lwc/lwc-toast-and-notifications
+    - lwc/lwc-web-components-interop
+    - lwc/lwc-wire-refresh-patterns
+    - lwc/message-channel-patterns
+    - lwc/navigation-and-routing
+    - lwc/static-resources-in-lwc
+    - lwc/virtualized-lists
     - lwc/wire-service-patterns
   shared:
     - AGENT_CONTRACT.md
     - DELIVERABLE_CONTRACT.md
+    - REFUSAL_CODES.md
   templates:
     - lwc/component-skeleton/
     - lwc/patterns/
@@ -60,23 +86,73 @@ Diagnoses a live LWC failure — a stack trace, "Unknown error", a wire that nev
 
 ## Mandatory Reads Before Starting
 
+### Contract layer
 1. `agents/_shared/AGENT_CONTRACT.md`
-2. `skills/lwc/lwc-debugging-devtools` — console-first workflow, Lightning Inspector, source maps, proxy-dump wrap
-3. `skills/lwc/wire-service-patterns` — reactive-param / `$` prefix gotchas
-4. `skills/lwc/lwc-graphql-wire` — refresh helper mismatch, non-reactive interpolation, `pageInfo` loss
-5. `skills/lwc/lwc-imperative-apex` — unhandled rejection, cacheable violation
-6. `skills/lwc/lwc-conditional-rendering` — `lwc:elseif` / `lwc:else` sibling rules, complex-expression silent-false
-7. `skills/lwc/lwc-template-refs` — `this.refs.<name>` returns `undefined` when the element is in a `template:if` branch not currently rendered
-8. `skills/lwc/lwc-slots-composition` — empty-slot fallback / default-content shadowing
-9. `skills/lwc/lwc-light-dom` — shadow vs light DOM lookup boundaries
-10. `skills/lwc/lwc-quick-actions` — missing `@api invoke()`, missing `CloseActionScreenEvent`, screen-vs-headless mix-up
-11. `skills/lwc/lwc-app-builder-config` — `isExposed=false` hiding the component; string-typed design attributes breaking arithmetic
-12. `skills/lwc/lwc-custom-datatable-types` — missing `typeAttributes` array, template name not importable, no-`this` binding
-13. `skills/lwc/lwc-styling-hooks` — styles that "don't apply" because they pierce shadow DOM
-14. `skills/lwc/lwc-security` — CSP / Locker blocking a library / API
-15. `skills/lwc/lwc-performance` — "slow" that is actually re-render storms
-16. `templates/lwc/component-skeleton/`
-17. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+2. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 persistence + scope guardrails
+3. `agents/_shared/REFUSAL_CODES.md` — canonical refusal enum
+
+### Diagnosis methodology
+4. `skills/lwc/lwc-debugging-devtools` — console-first workflow, Lightning Inspector, source maps, proxy-dump wrap
+5. `skills/lwc/common-lwc-runtime-errors` — symptom-to-root-cause map for the top runtime crashes
+
+### Data axis
+6. `skills/lwc/wire-service-patterns` — reactive-param / `$` prefix gotchas
+7. `skills/lwc/lwc-wire-refresh-patterns` — `refreshApex` vs `refreshGraphQL` vs `notifyRecordUpdateAvailable` mismatch
+8. `skills/lwc/lwc-graphql-wire` — refresh helper mismatch, non-reactive interpolation, `pageInfo` loss
+9. `skills/lwc/lwc-imperative-apex` — unhandled rejection, cacheable violation
+10. `skills/lwc/lwc-async-patterns` — Promise rejection silently swallowed in lifecycle hooks
+11. `skills/lwc/lwc-state-management` — stale state across re-renders
+
+### Render axis
+12. `skills/lwc/lifecycle-hooks` — `connectedCallback` vs `renderedCallback` race
+13. `skills/lwc/lwc-conditional-rendering` — `lwc:elseif` / `lwc:else` sibling rules, complex-expression silent-false
+14. `skills/lwc/lwc-template-refs` — `this.refs.<name>` returns `undefined` when the element is in a `template:if` branch not currently rendered
+15. `skills/lwc/lwc-dynamic-components` — `<lwc:component>` resolution failure
+16. `skills/lwc/lwc-slots-composition` — empty-slot fallback / default-content shadowing
+17. `skills/lwc/lwc-error-boundaries` — uncaught errors in nested children
+18. `skills/lwc/lwc-public-api-hardening` — design-attribute string-vs-number coercion bug
+
+### Event axis
+19. `skills/lwc/lwc-custom-event-patterns` — bubbles/composed flag wrong → event lost across shadow boundary
+20. `skills/lwc/component-communication` — parent never sees child event
+21. `skills/lwc/message-channel-patterns` — LMS subscriber not unsubscribed on disconnect
+22. `skills/lwc/lwc-quick-actions` — missing `@api invoke()`, missing `CloseActionScreenEvent`, screen-vs-headless mix-up
+23. `skills/lwc/lwc-toast-and-notifications` — toast fires but is never visible
+
+### Style / DOM mode axis
+24. `skills/lwc/lwc-styling-hooks` — styles that "don't apply" because they pierce shadow DOM
+25. `skills/lwc/lwc-light-dom` — shadow vs light DOM lookup boundaries
+26. `skills/lwc/lwc-shadow-vs-light-dom-decision` — render-mode mismatch with consumer
+27. `skills/lwc/lwc-web-components-interop`
+28. `skills/lwc/static-resources-in-lwc` — load order / 404 / CSP
+
+### Surface / exposure axis
+29. `skills/lwc/lwc-app-builder-config` — `isExposed=false` hiding the component; string-typed design attributes breaking arithmetic
+30. `skills/lwc/navigation-and-routing` — `NavigationMixin.Navigate` opening blank page
+31. `skills/lwc/lwc-record-picker` — `lookup` not returning expected sObject
+
+### Datatable / forms / files axis
+32. `skills/lwc/lwc-data-table` — datatable smells (lazy-load misfire, blank rows)
+33. `skills/lwc/lwc-custom-datatable-types` — missing `typeAttributes` array, template name not importable, no-`this` binding
+34. `skills/lwc/lwc-forms-and-validation` — `reportValidity()` returns false silently
+
+### Performance axis
+35. `skills/lwc/lwc-performance` — "slow" that is actually re-render storms
+36. `skills/lwc/lwc-performance-budgets` — render budget exceeded for declared surface
+37. `skills/lwc/virtualized-lists` — > 500-row scroll perf
+
+### A11y / i18n axis
+38. `skills/lwc/lwc-accessibility` — focus trap regressions / keyboard activation lost
+39. `skills/lwc/lwc-focus-management` — focus jumps on async re-render
+40. `skills/lwc/lwc-internationalization` — locale-format edge cases
+
+### Security axis
+41. `skills/lwc/lwc-security` — CSP / Locker blocking a library / API
+42. `skills/lwc/lwc-locker-to-lws-migration` — code that worked on Locker now fails on LWS
+
+### Templates
+43. `templates/lwc/component-skeleton/`
+44. `templates/lwc/patterns/`
 
 ---
 
@@ -191,15 +267,21 @@ Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
 - **Canonical data surface:** the bundle on disk + the user-supplied `symptom` / `error_text` / `reproduction_context`. The agent does not fetch live org state; any hypothesis requiring org introspection is labeled as a probe for the user to run.
 - **No new project dependencies:** diagnostic probes are grep + stdlib Python + browser console. Never instructs the user to `npm install` / `pip install` anything.
 - **No destructive suggestions:** the agent may propose diffs but never writes to the bundle. Transient instrumentation is allowed only when `allow_transient_edits=true` and is explicitly labeled as a paste-and-revert probe.
-- **No silent dimension drops:** if the symptom straddles multiple axes (e.g. "slow **and** blank"), the envelope records each axis with `state: primary | secondary` rather than dropping one.
+- **No silent dimension drops:** if the symptom straddles multiple axes (e.g. "slow **and** blank"), the envelope records each axis with `state: primary | secondary` rather than dropping one. Dimensions for this agent: `data-axis` (wire / refresh / Apex), `render-axis` (`lwc:if` / refs / slots), `event-axis` (CustomEvent flags / LMS / quick-action close), `style-axis` (shadow vs light / SLDS hooks), `surface-axis` (App Builder exposure / nav / record-picker), `datatable-axis`, `performance-axis` (render budget / re-render storms), `a11y-axis` (focus / keyboard), `security-axis` (CSP / LWS), `runtime-error-axis` (uncaught Proxy / Cannot read properties of undefined). Every triaged symptom must record at least one axis as `primary`; secondary axes are `state: secondary`. Axes the symptom touches but the agent could not confirm via the supplied evidence are recorded with `state: not-run` and a one-line reason (e.g. "no console output supplied").
 
 ## Escalation / Refusal Rules
 
-- `symptom` under 10 words or contains no concrete signal ("it's broken") → `REFUSAL_INPUT_AMBIGUOUS`; prompt the user for at least one of: the exact console message, the failing expression, or steps to reproduce.
-- Symptom is a pure build / deploy failure (Apex compilation error, sfdx CLI error, `sf project deploy start` metadata error) → `REFUSAL_OUT_OF_SCOPE`; the bundle isn't running yet. Route to `apex-refactorer` or a plain deploy debug flow.
-- Symptom describes a regression across **multiple unrelated bundles** → `REFUSAL_OUT_OF_SCOPE`; scope to one bundle per invocation.
-- Symptom requires modifying platform / managed-package code to fix → flag `confidence: LOW` + surface as a platform gap rather than proposing an in-bundle patch.
-- Request to commit / push / deploy the fix → `REFUSAL_OUT_OF_SCOPE`; this agent proposes diffs only.
+Canonical refusal codes per `agents/_shared/REFUSAL_CODES.md`:
+
+| Code | Trigger |
+|---|---|
+| `REFUSAL_MISSING_INPUT` | `bundle_path` or `symptom` not supplied. |
+| `REFUSAL_INPUT_AMBIGUOUS` | `symptom` under 10 words or contains no concrete signal ("it's broken"). Prompt for at least one of: exact console message, failing expression, or reproduction steps. |
+| `REFUSAL_OBJECT_NOT_FOUND` | `bundle_path` does not exist on disk. |
+| `REFUSAL_OUT_OF_SCOPE` | Symptom is a pure build / deploy failure (Apex compile error, sfdx CLI error, metadata deploy error) — bundle isn't running yet, route to a deploy-debug flow. Symptom describes a regression across multiple unrelated bundles — one bundle per invocation. Request to commit / push / deploy the fix — agent proposes diffs only. |
+| `REFUSAL_MANAGED_PACKAGE` | Symptom requires modifying platform / managed-package code to fix — flag as platform gap rather than propose an in-bundle patch. |
+| `REFUSAL_NEEDS_HUMAN_REVIEW` | Symptom is "intermittent" with no reproduction steps; transient instrumentation has been requested without `allow_transient_edits=true`; top-3 hypotheses each match the symptom equally and require live-org probes the agent cannot run. |
+| `REFUSAL_OVER_SCOPE_LIMIT` | Bundle exceeds 2000 LoC and the symptom is not localised to a specific file — return top-5 hypotheses keyed to file paths and recommend a follow-up invocation per file. |
 
 ---
 
