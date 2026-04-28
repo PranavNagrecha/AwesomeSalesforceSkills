@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 45
   },
-  "generated_from_hash": "9dce736ea72bd980a03f78343f826992f9b5600e398af0b0ffea50a0fcb3cf99",
+  "generated_from_hash": "20a196f407cbaddd0d6867f723d582cc7ce0bd3659ca376bb0ff590c1b627ccc",
   "schema_version": 1,
   "skill_count": 907,
   "skills": [
@@ -638,7 +638,7 @@
         "fc530bb702b7aaee1373",
         "fe3817d7486e836ece16"
       ],
-      "content_hash": "cccd14badad68aac206d3d4083d0eaa435b35695eb4cfd3167e8ade18a9e7854",
+      "content_hash": "219a2d697a28cb18a54a5b38f0a154c746fccccc77b096a4997da4311708a789",
       "dependencies": [
         "admin/change-management-and-training"
       ],
@@ -689,7 +689,7 @@
       "templates": [
         "skills/admin/ai-adoption-change-management/templates/ai-adoption-change-management-template.md"
       ],
-      "updated": "2026-04-15",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -2307,7 +2307,7 @@
         "fec967f9e50e76cd584a",
         "ff479e45d6d368808dbf"
       ],
-      "content_hash": "20bf45033ef2becb52bb332a5cf34ab88911a3d5787afaac5f225999453685a7",
+      "content_hash": "86100f951a60922e67574b0aef460676f8cf24ea530480658b116ad425ea7295",
       "dependencies": [],
       "description": "Use this skill to elicit, document, and validate CRM Analytics requirements \u2014 covering data source mapping (Salesforce object sync vs external connector vs Data Cloud), transformation needs, audience-specific lens or dashboard views, and drill-down path specifications \u2014 before any dataset or dashboard is built. Trigger keywords: CRM Analytics requirements, analytics data source mapping, CRM Analytics audience requirements, analytics visualization requirements. NOT for standard Salesforce Reports and Dashboards requirements, CRM Analytics implementation, SAQL query development, or KPI formula definition (use analytics-kpi-definition).",
       "file_location": "skills/admin/analytics-requirements-gathering",
@@ -2349,7 +2349,7 @@
       "templates": [
         "skills/admin/analytics-requirements-gathering/templates/analytics-requirements-gathering-template.md"
       ],
-      "updated": "2026-04-14",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -2515,7 +2515,7 @@
         "eb4ebe11869e448141b7",
         "fc76fbfb7eee1d9f774b"
       ],
-      "content_hash": "0314396257f2a9c5e274f9f00a6149bcf1b11627a7516a50ccef3325f91aeb62",
+      "content_hash": "b97229ca1549c7ae81ee4bd26460dbfcb619ae3722c204b77564bd001974cb97",
       "dependencies": [],
       "description": "Use this skill to create and configure Lightning apps in Salesforce Setup, add navigation items and tabs to apps, configure utility bar components, and control app visibility by profile or permission set. Trigger keywords: Lightning app, App Manager, custom tab, navigation bar, utility bar, app visibility. NOT for Experience Cloud site apps (use experience-cloud skills), NOT for configuring page layouts or record pages (use Lightning App Builder), NOT for permission set architecture (use permission-set-architecture).",
       "file_location": "skills/admin/app-and-tab-configuration",
@@ -2559,7 +2559,7 @@
       "templates": [
         "skills/admin/app-and-tab-configuration/templates/app-and-tab-configuration-template.md"
       ],
-      "updated": "2026-04-03",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -2613,7 +2613,7 @@
         "f5ee64682ca75a1cbee9",
         "ffbd07ff13bbc7cb298c"
       ],
-      "content_hash": "5cc8e99c462a569bb12d62c87152a99146147707b2d51e4de9c0a511247a1f09",
+      "content_hash": "9018b31d9aea0906e93c76f21b5f24e20a82e7a7c05d38c6ec730ccf4030324f",
       "dependencies": [],
       "description": "Use when designing, reviewing, or troubleshooting Salesforce Approval Processes. Triggers: 'submit for approval', 'approver', 'record locked', 'recall approval', 'approval step', 'discount approval'. NOT for complex orchestration across many objects - use Flow or custom approval patterns for that.",
       "file_location": "skills/admin/approval-processes",
@@ -2652,7 +2652,7 @@
       "templates": [
         "skills/admin/approval-processes/templates/approval-design-template.md"
       ],
-      "updated": "2026-03-13",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -3569,7 +3569,7 @@
         "f768fc3977b3871fb274",
         "f7a0ed044c9b3c3cacc7"
       ],
-      "content_hash": "54de05d09803bf0b9374534fcb6dddf318d1c8c6853b69ba75c1074fba3700c7",
+      "content_hash": "e4d6d394caa39c0c83dd98e377deaa4a91a0f205ea343d981a6e4623d90a8f02",
       "dependencies": [],
       "description": "Use this skill when designing Campaign Hierarchy structures for program-level ROI tracking, configuring Customizable Campaign Influence (CCI) attribution models, or interpreting multi-touch attribution data from MCAE B2B Marketing Analytics. Trigger keywords: campaign ROI, attribution model, campaign hierarchy, first-touch, last-touch, multi-touch, CCI, campaign influence, revenue attribution, campaign member status. NOT for campaign record creation, campaign member import, email send execution, or MCAE connector provisioning (use mcae-pardot-setup instead).",
       "file_location": "skills/admin/campaign-planning-and-attribution",
@@ -3618,7 +3618,7 @@
       "templates": [
         "skills/admin/campaign-planning-and-attribution/templates/campaign-planning-and-attribution-template.md"
       ],
-      "updated": "2026-04-10",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -4509,7 +4509,7 @@
         "eda0d02f0b42a2e1d18c",
         "f81055c8f20b19e5ae1b"
       ],
-      "content_hash": "98822342cdb9b9fccc906fc85f8e9c7ebe5406f05065503273683a18f7af9a68",
+      "content_hash": "0cc54e5640940c0bda473b59a5306bfe525e4d3cab2478fc5359482e8355e4e8",
       "dependencies": [],
       "description": "Use when planning, reviewing, or troubleshooting Salesforce metadata releases and admin deployment processes. Triggers: 'change set', 'deployment plan', 'rollback', 'DevOps Center', 'SFDX deploy', 'release checklist', 'production deployment'. NOT for writing CI pipeline code unless the key problem is release method and governance.",
       "file_location": "skills/admin/change-management-and-deployment",
@@ -4548,7 +4548,7 @@
       "templates": [
         "skills/admin/change-management-and-deployment/templates/release-plan-template.md"
       ],
-      "updated": "2026-03-13",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -4624,7 +4624,7 @@
         "f9a5982faed71944b7c8",
         "fc23ed7777c3578b58a4"
       ],
-      "content_hash": "bfba4dbea6d326dfc35f08e58142d1e1d37f328a3535cddd32f47915c6a8eda4",
+      "content_hash": "f7a19dcae071ef67995fb2e324639c62c409798cb774e76df86971f6243abd95",
       "dependencies": [],
       "description": "Use this skill when planning user adoption, structuring Salesforce training materials, drafting release communications, or running a change impact assessment for a Salesforce rollout or update. Triggers: user adoption plan, training materials, release announcement, change impact, go-live communication. NOT for org deployment mechanics or sandbox promotion (use change-management-and-deployment).",
       "file_location": "skills/admin/change-management-and-training",
@@ -4674,7 +4674,7 @@
       "templates": [
         "skills/admin/change-management-and-training/templates/change-management-and-training-template.md"
       ],
-      "updated": "2026-04-04",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -5029,7 +5029,7 @@
         "fa47fbb2e72fcbd673ab",
         "fc595c41e0d7b00823cf"
       ],
-      "content_hash": "2911f69a69930198d55193dfacc7c67f93fc667543a58354a9bcb99f9f23e003",
+      "content_hash": "8969564fd273ba1e73fe1d8e87fb9c01c1af112403e33ead7dcffff10ed3e6e1",
       "dependencies": [],
       "description": "Use this skill when setting up, configuring, or troubleshooting Salesforce Collaborative Forecasts: forecast types, forecast categories, rollup methods, quota management, forecast hierarchy, manager adjustments, and pipeline inspection integration. Trigger keywords: forecast type, forecast category, cumulative rollup, individual rollup, quota, forecast adjustment, forecast hierarchy, opportunity splits forecasting, pipeline forecast. NOT for custom report-based forecasting. NOT for Classic Forecasts (Customizable Forecasting). NOT for Territory Management setup (use enterprise-territory-management skill).",
       "file_location": "skills/admin/collaborative-forecasts",
@@ -5082,7 +5082,7 @@
       "templates": [
         "skills/admin/collaborative-forecasts/templates/collaborative-forecasts-template.md"
       ],
-      "updated": "2026-04-06",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -5660,7 +5660,7 @@
         "f778685b7723c57f00b3",
         "f9fc0d824a8bd4c66829"
       ],
-      "content_hash": "e92cc7c22795a5af6eb2026d40d360d0fa275eed6d287e6a902c18980673d5b4",
+      "content_hash": "826d25fa636a4231238df49f360e9c65a7b2f941004a5bf7a42adc6708d739f2",
       "dependencies": [],
       "description": "Use this skill for Salesforce Order Management (OMS) tasks: order lifecycle, OrderSummary creation and status, FulfillmentOrder creation and routing, returns, exchanges, cancellations, and platform event subscriptions. Trigger keywords: order management, OrderSummary, FulfillmentOrder, ReturnOrder, ensure-funds, ensure-refunds, submit-cancel, submit-return, adjust-item-submit. NOT for CPQ quote-to-order workflows, standard Salesforce Orders without OMS, or B2B/B2C storefront setup.",
       "file_location": "skills/admin/commerce-order-management",
@@ -5709,7 +5709,7 @@
       "templates": [
         "skills/admin/commerce-order-management/templates/commerce-order-management-template.md"
       ],
-      "updated": "2026-04-11",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -6752,7 +6752,7 @@
         "f5f0ced5cabd194af763",
         "fdab38f020fb03a1ccc2"
       ],
-      "content_hash": "c5f6e237b37714a9dd805c3936bc0cefdc600959cae46a38179c375455d520db",
+      "content_hash": "6b7467449ce58b13c349759f75cb847b9647f3322aaae2273d7e2a622a00535c",
       "dependencies": [],
       "description": "Use when designing, reviewing, or troubleshooting Salesforce connected apps, Named Credentials, External Credentials, and OAuth-based integration access. Triggers: 'connected app', 'OAuth flow', 'client credentials', 'JWT bearer', 'Named Credential', 'External Credential', 'integration user', 'IP restrictions'. NOT for business-user sharing or field permissions unless the auth design depends on them.",
       "file_location": "skills/admin/connected-apps-and-auth",
@@ -6792,7 +6792,7 @@
       "templates": [
         "skills/admin/connected-apps-and-auth/templates/auth-integration-template.md"
       ],
-      "updated": "2026-03-13",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -7937,7 +7937,7 @@
         "fad3462914f96580113e",
         "ff2a04a8e7db226060b4"
       ],
-      "content_hash": "4d05de1460560bbd289aecd0b4caab77adee57a2cd60931ed52aa12129c4e392",
+      "content_hash": "e882ea6c0a69ec3ebe022fab473227efbbde1b7b6064c565dd45a54b3057ea74",
       "dependencies": [],
       "description": "Use when designing or troubleshooting Salesforce CPQ (SBQQ) quote templates: building template sections, configuring line columns, conditionally showing sections, generating branded PDFs, or handling multi-language output. Triggers: 'CPQ quote template', 'SBQQ template', 'CPQ PDF', 'line columns', 'quote template sections', 'conditional section', 'CPQ quote document'. NOT for standard Salesforce quote templates (Setup > Quote Templates), Visualforce-only PDF customization, or CPQ pricing rules and price books.",
       "file_location": "skills/admin/cpq-quote-templates",
@@ -7987,7 +7987,7 @@
       "templates": [
         "skills/admin/cpq-quote-templates/templates/cpq-quote-templates-template.md"
       ],
-      "updated": "2026-04-07",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -8207,7 +8207,7 @@
         "f7ff60e003a1e1264dc9",
         "fcbe0b4caa29349419d8"
       ],
-      "content_hash": "7d2e7dbd964dafe7a01311243ee775d7ec10d2e4a36db8926bba998ef2055384",
+      "content_hash": "4592316a274a54be8b12c46b15fa925c3a47d2f0d9e851fff1d2600f30af036a",
       "dependencies": [],
       "description": "Use when creating a new custom field on any Salesforce object: choosing field type, setting API name, configuring Field-Level Security, adding to page layouts, and deploying. Triggers: 'add a field', 'new custom field', 'what field type should I use', 'FLS not working', 'field not showing on page layout'. NOT for formula field logic (use formula-fields skill), picklist value set management (use picklist-and-value-sets skill), or object creation decisions (use object-creation-and-design skill).",
       "file_location": "skills/admin/custom-field-creation",
@@ -8256,7 +8256,7 @@
       "templates": [
         "skills/admin/custom-field-creation/templates/custom-field-creation-template.md"
       ],
-      "updated": "2026-04-03",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -8559,7 +8559,7 @@
         "f7ee6dc3218a7582b7c6",
         "ff379c96f5f1312ccb9a"
       ],
-      "content_hash": "6d9ef1af0755a2d41bcde8afb3139f7e2e5d0e926c3c806b9c53617c241bb795",
+      "content_hash": "5d6edcf63a8cedc03cf2bb0ca424102caa2ccd4e4e73ab088e1048ad472c85e2",
       "dependencies": [],
       "description": "Use when choosing between Custom Metadata Types and Custom Settings, understanding hierarchical vs list settings, deployment behavior, governor limit implications, or accessing either from Apex and Flow. Trigger keywords: 'custom metadata vs custom settings', 'hierarchical settings per user profile', 'deployable config vs runtime settings', 'getValues getInstance in apex', 'flow get records custom settings'. NOT for custom objects (use object-creation-and-design), NOT for Named Credentials (use named-credentials-setup), NOT for general CMT field design in isolation (use custom-metadata-types).",
       "file_location": "skills/admin/custom-metadata-types-and-settings",
@@ -8605,7 +8605,7 @@
       "templates": [
         "skills/admin/custom-metadata-types-and-settings/templates/custom-metadata-types-and-settings-template.md"
       ],
-      "updated": "2026-04-04",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -9579,7 +9579,7 @@
         "f52f5994e39de33f49e4",
         "f7f44c502e73fdde669b"
       ],
-      "content_hash": "723456f87d4018a12a6e6bf6fd6c61fd828d234a54441b1f91d42d1de01b48dc",
+      "content_hash": "d5fe56491b428a46510c3151ae3350d7fa86c2b61c3cf00f674788d542472404",
       "dependencies": [],
       "description": "Use when planning, reviewing, or troubleshooting Salesforce data imports, migrations, and bulk updates. Triggers: 'Data Loader', 'Data Import Wizard', 'Bulk API', 'upsert', 'cutover', 'load failed', 'reconcile data'. NOT for ongoing integration architecture - use integration/ skills for that.",
       "file_location": "skills/admin/data-import-and-management",
@@ -9619,7 +9619,7 @@
       "templates": [
         "skills/admin/data-import-and-management/templates/data-load-plan-template.md"
       ],
-      "updated": "2026-03-13",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -10024,7 +10024,7 @@
         "fb5f08cabf6a25bbf2cf",
         "fde821be69b772c91849"
       ],
-      "content_hash": "7349cf8c3101b24b3c601c41bc109fa5ea4b8dbf2f8514d4c336d4c4a2944cfe",
+      "content_hash": "30712031bf5118c5c3c55900f22515788b3b641c5809d9cd864b05d0611758a6",
       "dependencies": [],
       "description": "Use when configuring delegated administration to allow non-system-admin users to manage specific user groups, reset passwords, assign permission sets, or administer custom objects. NOT for user management (use user-management) or full system admin setup.",
       "file_location": "skills/admin/delegated-administration",
@@ -10068,7 +10068,7 @@
       "templates": [
         "skills/admin/delegated-administration/templates/delegated-administration-template.md"
       ],
-      "updated": "2026-04-04",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -10721,7 +10721,7 @@
         "fcae4775c8186cc351fb",
         "ff6e50ee61a4c07c4e15"
       ],
-      "content_hash": "882ca0dd2fa1e015d1b025967f3914092a57eb32e9461498471953e4d39e9417",
+      "content_hash": "63e511431fd522c577df92c69568b4e0c66d5e0db0de60057b5db35e1e3d3b3a",
       "dependencies": [],
       "description": "Use when designing, reviewing, or troubleshooting Salesforce duplicate prevention, matching rules, duplicate rules, and merge governance. Triggers: 'duplicate rule', 'matching rule', 'merge strategy', 'dedupe', 'survivorship', 'D&B', 'same contact twice'. NOT for choosing data-load tooling unless duplicate control is the main problem.",
       "file_location": "skills/admin/duplicate-management",
@@ -10761,7 +10761,7 @@
       "templates": [
         "skills/admin/duplicate-management/templates/duplicate-governance-template.md"
       ],
-      "updated": "2026-03-13",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -11215,7 +11215,7 @@
         "eddf5a2281fc0300f968",
         "fb08fc103479cfe32133"
       ],
-      "content_hash": "dafa009233a8229dc90703cc8de0d8b7382935f72224d67e0979280134d2a970",
+      "content_hash": "f8cd363bb938a5ac08d7fa8f701c2d56544b99f91bfdacb0d8e335371b74781c",
       "dependencies": [],
       "description": "Use when deciding whether Salesforce Reports, CRM Analytics, or Tableau should be used for analytics, or when reviewing and troubleshooting basic CRM Analytics designs. Triggers: 'CRM Analytics', 'Einstein Analytics', 'Tableau CRM', 'lens', 'dataset', 'dataflow', 'analytics dashboard', 'license requirement'. NOT for standard report builder questions unless the decision is whether reports are still enough.",
       "file_location": "skills/admin/einstein-analytics-basics",
@@ -11255,7 +11255,7 @@
       "templates": [
         "skills/admin/einstein-analytics-basics/templates/analytics-evaluation-template.md"
       ],
-      "updated": "2026-03-13",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -11785,7 +11785,7 @@
         "f90dad7a006f518dff9a",
         "f9cbc03eaf6c551866ba"
       ],
-      "content_hash": "927a7a0940a2e51382c1c82497a96f285bb84d636840af789b702099486a3103",
+      "content_hash": "189002daaf9bbbbd97af4c7af58251d829fdb361fecc13ab50be5233c573f3f7",
       "dependencies": [],
       "description": "Use when building, configuring, or troubleshooting email sends in Marketing Cloud Email Studio and Content Builder. Triggers: 'dynamic content', 'send classification', 'A/B test email', 'Content Builder template', 'triggered send', 'suppression list', 'Commercial vs Transactional'. NOT for MCAE (Pardot) email, SMS/push channel setup, or Journey Builder orchestration design.",
       "file_location": "skills/admin/email-studio-administration",
@@ -11837,7 +11837,7 @@
       "templates": [
         "skills/admin/email-studio-administration/templates/email-studio-administration-template.md"
       ],
-      "updated": "2026-04-07",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -11894,7 +11894,7 @@
         "fad5c02c4194313e8171",
         "fb004e8bbf77c42b5dd3"
       ],
-      "content_hash": "eb6fbb2fe11fba2224835d5117a9e56b0fca450de03a22ee1fa4207fc7438d84",
+      "content_hash": "0872b3d003ab303f1e0a6cead7c6c1b6cf20c4839a457e35f7f99177e532f19b",
       "dependencies": [],
       "description": "Use when designing, reviewing, or troubleshooting Salesforce email templates, email alerts, and declarative notification design. Triggers: 'Lightning Email Template', 'email alert', 'merge field', 'org-wide email', 'too many emails', 'mass email limit'. NOT for marketing automation or custom Apex email services.",
       "file_location": "skills/admin/email-templates-and-alerts",
@@ -11933,7 +11933,7 @@
       "templates": [
         "skills/admin/email-templates-and-alerts/templates/email-template-plan.md"
       ],
-      "updated": "2026-03-13",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -13921,7 +13921,7 @@
         "fb96618b56261d61dcc2",
         "fd3b7e04f3c0d2e08bcd"
       ],
-      "content_hash": "65d65c29de059b10e52380aa343212fa2ab110cea0fe25e721d2d522d0c6feee",
+      "content_hash": "4711e4b3b70d6432085ea58cbd4584936e71ab331a167c0a3bf95f32c214fdb9",
       "dependencies": [],
       "description": "Use this skill to gather, document, and validate FlexCard layout requirements before development begins \u2014 covering data visualization needs, action requirements, embedded component specifications, and user context mapping. Trigger keywords: FlexCard requirements, FlexCard BA, FlexCard layout design, FlexCard data sources, FlexCard actions. NOT for FlexCard development implementation, Card Designer configuration, or standard Lightning component requirements.",
       "file_location": "skills/admin/flexcard-requirements",
@@ -13964,7 +13964,7 @@
       "templates": [
         "skills/admin/flexcard-requirements/templates/flexcard-requirements-template.md"
       ],
-      "updated": "2026-04-14",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -14240,7 +14240,7 @@
         "f4c1621fd996bc0c3282",
         "fa3d02d377f6afefae1b"
       ],
-      "content_hash": "26d215b6897aa0af677181b050db04986170dceaf1310d8dead1d776eec1a10e",
+      "content_hash": "9b037eacd851e05b747d7d8380d28334533dbc1f1e7143eb6b4b6ee0b515253d",
       "dependencies": [],
       "description": "Use when designing, reviewing, or troubleshooting Salesforce formula fields. Triggers: 'formula field', 'cross-object formula', 'null handling', 'compile size', 'HYPERLINK', 'IMAGE', 'why is formula slow'. NOT for save-time validation or persisted values - use validation rules, Flow, or real fields for that.",
       "file_location": "skills/admin/formula-fields",
@@ -14280,7 +14280,7 @@
       "templates": [
         "skills/admin/formula-fields/templates/formula-field-design-template.md"
       ],
-      "updated": "2026-03-13",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -15754,7 +15754,7 @@
         "f436cac44d78fc7cc1a9",
         "fa4f49fe409c4e4e3163"
       ],
-      "content_hash": "697c4a578afe4ee93de331d72434980c3bf7e90b6b90d77d420d7cd57001fb98",
+      "content_hash": "9752740fbfba5583f17bea3159f89aafa54b8791391f27f17db4d4d51e57e894",
       "dependencies": [
         "fsl-service-territory-setup"
       ],
@@ -15805,7 +15805,7 @@
       "templates": [
         "skills/admin/fsl-scheduling-policies/templates/fsl-scheduling-policies-template.md"
       ],
-      "updated": "2026-04-07",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -17299,7 +17299,7 @@
         "fcd861d1bc5f48dd1bf4",
         "fd9102aca38c31106616"
       ],
-      "content_hash": "eff9b84e8059466e57bc1de259f818333f9275ec6946699948da2cb06043c475",
+      "content_hash": "c963352211c234195986cd2617705af848dc031996dc278c9c605e41c0543138",
       "dependencies": [
         "health-cloud-patient-setup"
       ],
@@ -17348,7 +17348,7 @@
       "templates": [
         "skills/admin/health-cloud-timeline/templates/health-cloud-timeline-template.md"
       ],
-      "updated": "2026-04-10",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -18159,7 +18159,7 @@
         "f9287a9de4fb0ebda77f",
         "f95be09f9aa25dc12a65"
       ],
-      "content_hash": "dc4ef7b17b807bac5366b8d85b5eda0228f001408ccea8b6528defd620506e47",
+      "content_hash": "74f826cea11d9fb38b83fd194a5ab98ea04a4ee8a9ba0516323acb2cdee57dda",
       "dependencies": [],
       "description": "Use this skill to configure Salesforce Industries Insurance (Financial Services Cloud Insurance) including permission set licenses, irreversible org settings, core insurance objects, coverage types, claim configuration, and OmniScript-based quoting using the Insurance Product Administration API. Trigger keywords: insurance setup, FSC Insurance, InsurancePolicy object, InsurancePolicyCoverage, policy quoting OmniScript, claim type configuration, InsProductService, Digital Insurance Platform, many-to-many policy, multiple producers. NOT for generic OmniStudio setup, standard CPQ/Pricebook quoting, Health Cloud enrollment, or general FSC configuration unrelated to insurance line-of-business.",
       "file_location": "skills/admin/industries-insurance-setup",
@@ -18214,7 +18214,7 @@
       "templates": [
         "skills/admin/industries-insurance-setup/templates/industries-insurance-setup-template.md"
       ],
-      "updated": "2026-04-11",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -19553,7 +19553,7 @@
         "fb2247a53f92d65e9926",
         "fd91c2a21a6e31500e28"
       ],
-      "content_hash": "2ff9dffcd2026bc5aef0babe642531a0d18f98d522ba63e8565204d2c506de99",
+      "content_hash": "f41cd9db21d9710c02d58a9e8e59438a84a475646273e339a728ca8edbfa6d53",
       "dependencies": [],
       "description": "Use this skill when designing or documenting a lead scoring model in Salesforce Sales Cloud or Account Engagement: qualifying criteria, MQL/SQL threshold definitions, scoring dimensions (demographic, firmographic, behavioral), and sales handoff SLA. NOT for Einstein Lead Scoring (AI-based predictive scoring) or Account Engagement (Pardot) automation rule configuration.",
       "file_location": "skills/admin/lead-scoring-requirements",
@@ -19604,7 +19604,7 @@
       "templates": [
         "skills/admin/lead-scoring-requirements/templates/lead-scoring-requirements-template.md"
       ],
-      "updated": "2026-04-06",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -21398,7 +21398,7 @@
         "fcd903e8262c21c81395",
         "fe45eb8677c2ce90219b"
       ],
-      "content_hash": "576a8ee9057044c851afe6ea47fba9f314406d26e7dbf6da0959b651f84a396a",
+      "content_hash": "7aa2aae9dfe5710cee1abd219df7062266103171a00d13761f909f7e273542e3",
       "dependencies": [],
       "description": "Use this skill when prioritizing a Salesforce backlog with the MoSCoW method (Must / Should / Could / Won't) plus an effort + value lens, deciding what fits in the next sprint or release, and using WSJF as a tie-break when MoSCoW alone produces ties. Trigger keywords: MoSCoW prioritization, must should could won't, WSJF salesforce, prioritize salesforce stories, sprint commit, backlog grooming. NOT for story writing or splitting (use admin/user-story-writing-for-salesforce). NOT for release train planning (use agents/release-train-planner). NOT for sizing/estimation method debates \u2014 this skill assumes a sizing convention is already in place.",
       "file_location": "skills/admin/moscow-prioritization-for-sf-backlog",
@@ -22049,7 +22049,7 @@
         "f4e35a28c0ac94f7b697",
         "fc6fcd3056670a65e4c5"
       ],
-      "content_hash": "79f3a5694ad958800401d1dbe7f4eb2aceba9adaddb8e3a50d06aabfc01b1e01",
+      "content_hash": "ae25870f39668d75dc95eeea2463f74ecc93753153c28ace6e027f1b4ef167ee",
       "dependencies": [],
       "description": "Use when creating a new Salesforce custom object: naming the object and setting its API name, selecting optional features (Activities, Chatter, History Tracking), choosing an org-wide default sharing model, and creating a tab. Triggers: 'create a custom object', 'new custom object setup', 'what sharing model should I choose', 'how do I create a tab for my object', 'object features like activities and history tracking'. NOT for custom field design on the object (use custom-field-creation), sharing rule or role hierarchy configuration (use sharing-and-visibility), or object relationship design decisions (use data-model-design-patterns).",
       "file_location": "skills/admin/object-creation-and-design",
@@ -22098,7 +22098,7 @@
       "templates": [
         "skills/admin/object-creation-and-design/templates/object-creation-and-design-template.md"
       ],
-      "updated": "2026-04-03",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -22841,7 +22841,7 @@
         "f962c9d0592a1c3755eb",
         "f9d8b7b1beffc04657d4"
       ],
-      "content_hash": "215be3f8f79fab1dd860f40a975c22fdbaefb47d01fa19c611d1c77d60a73f66",
+      "content_hash": "80498eb27daab4cf7ac6c150126bcc33fde462cbb221877de03d3262ad2e3ac4",
       "dependencies": [],
       "description": "Use when configuring org-wide platform settings: MFA enforcement, My Domain setup and deployment, session timeout and security settings, password policies, trusted IP ranges (Network Access), and CSP Trusted Sites. Trigger keywords: 'MFA setup', 'My Domain', 'session settings', 'password policy', 'trusted IP ranges', 'CSP trusted sites'. NOT for user-level login restrictions (use user-management), NOT for permission model design (use permission-sets-vs-profiles), NOT for security audit and hardening review (use security/org-hardening-and-baseline-config).",
       "file_location": "skills/admin/org-setup-and-configuration",
@@ -22885,7 +22885,7 @@
       "templates": [
         "skills/admin/org-setup-and-configuration/templates/org-setup-and-configuration-template.md"
       ],
-      "updated": "2026-04-03",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -24230,6 +24230,7 @@
         "c0594331d806f19339fe",
         "c201348edea0ea777c1d",
         "c590d67c689ca884c012",
+        "c76cbc1f562cbbf8e0fc",
         "c8ccdeebb0851efd0f95",
         "cd0d41463872a8edb7fe",
         "cd15066d8a7ab0bcd6ac",
@@ -24248,7 +24249,7 @@
         "f319bf9cc85a7691d455",
         "f737c0cc5d531cfcd79b"
       ],
-      "content_hash": "e61ae8270e89f0a202de9d07ed3479262144e92839d01f8917f049e953af3159",
+      "content_hash": "aa98e091575cae02a1385c21a429c9600e82bb7e710ee16b8876f442b2fa5734",
       "dependencies": [],
       "description": "Configuring and running Pipeline Inspection in Sales Cloud: enabling the feature, mapping forecast categories to the inspection view, configuring Days in Stage and other metrics, setting review cadence, and interpreting pipeline change signals for sales managers. Use when designing or improving how a team monitors deal health and pipeline movement. NOT for building custom dashboards or reports (use reports-and-dashboards skill). NOT for enabling Einstein Opportunity Scoring or AI insights (use einstein-copilot-for-sales skill). NOT for setting up Collaborative Forecasts or forecast types (use collaborative-forecasts skill).",
       "file_location": "skills/admin/pipeline-review-design",
@@ -24297,7 +24298,7 @@
       "templates": [
         "skills/admin/pipeline-review-design/templates/.gitkeep"
       ],
-      "updated": "2026-04-06",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -24393,7 +24394,7 @@
         "fa898ace743f89b13032",
         "ffb0e6b406af034030fb"
       ],
-      "content_hash": "21d6f3baa8a0c97f1c02a965f3930b76b8b3e40f10588e69a89573c151d447a9",
+      "content_hash": "d1bd9b613076f0eec1b0ffcb883926fb65cd0c0c375fb2887dc6e788ef6ace0d",
       "dependencies": [],
       "description": "Use when gathering requirements for a customer portal, partner community, or self-service Experience Cloud site. Triggers: 'gathering requirements for customer portal', 'planning Experience Cloud site', 'what license for community portal', 'portal user journey mapping', 'self-service requirements'. NOT for Experience Cloud implementation or configuration. NOT for post-launch portal optimization or redesign.",
       "file_location": "skills/admin/portal-requirements-gathering",
@@ -24438,7 +24439,7 @@
       "templates": [
         "skills/admin/portal-requirements-gathering/templates/portal-requirements-gathering-template.md"
       ],
-      "updated": "2026-04-06",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -24838,7 +24839,7 @@
         "f9abfe83e2c10ff29768",
         "fb049a24dcc38cbcbf44"
       ],
-      "content_hash": "23ec7b42f1b636ff609f833f6973f3a516c7aa63d5d7ad5682d3463e8f5efe4a",
+      "content_hash": "841acf97c2f6c842eba96eb2cc9e21f2f24d38cffe7bfa2472232161687a1212",
       "dependencies": [],
       "description": "Documenting As-Is and To-Be business processes for a Salesforce project as swim-lane diagrams with one lane per actor (user, system, integration, customer), explicit decision points, parallel paths, exception/sad-path handling, and per-step automation-tier annotations (Flow / Apex / Approval / Platform Event / Manual / Integration) that drive downstream build decisions. Use when discovery has named a business process and the team needs a structured map before any Flow, Apex, or Approval Process is built. Trigger keywords: As-Is To-Be salesforce process, swim lane salesforce, business process map, automation candidate identification, sad path documentation, process actor mapping, manual residue. NOT for Sales-specific stage design (use sales-process-mapping). NOT for fundraising stewardship process mapping (use fundraising-process-mapping). NOT for FSL appointment scheduling flows (use fsl-scheduling-policies). NOT for actually building the Flow (use skills/flow/* and agents/flow-builder/AGENT.md). NOT for pure UI-side user journeys (use persona-and-journey-mapping-sf).",
       "file_location": "skills/admin/process-flow-as-is-to-be",
@@ -25120,7 +25121,7 @@
         "fb9c2838b374de87e11a",
         "fceb70dfb78eefe9d153"
       ],
-      "content_hash": "b68164e7cf82c01a4bfe54e0c5fcf90eea96ca2398932a71bf78ba8251170193",
+      "content_hash": "536a99b63343daf3c4d6ed37b576cbfe3f4957dfa1b38ef5e4e328f2d01edab5",
       "dependencies": [
         "npsp-program-management"
       ],
@@ -25166,7 +25167,7 @@
       "templates": [
         "skills/admin/program-outcome-tracking-design/templates/program-outcome-tracking-design-template.md"
       ],
-      "updated": "2026-04-13",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -26261,7 +26262,7 @@
         "fec95320c84ae11cbbc2",
         "ff833f80bba450e3f912"
       ],
-      "content_hash": "58404a7d58c36514ac0a5a4f1c8c3b9541bd5ccc8e0d665f11d4da148a87d6d6",
+      "content_hash": "9d54b696645dcb6807f665c11dfc1148d91f6db3d3dd8dd32113ee5a67085d77",
       "dependencies": [],
       "description": "Configure and manage NPSP Enhanced Recurring Donations (ERD): enable ERD mode, define schedule objects, configure installment behavior, set status automation thresholds, and interpret the Upcoming Installments UI. NOT for legacy recurring donations (pre-March 2021 model), one-time Opportunity creation, or custom payment gateway integrations beyond native NPSP.",
       "file_location": "skills/admin/recurring-donations-setup",
@@ -26309,7 +26310,7 @@
       "templates": [
         "skills/admin/recurring-donations-setup/templates/recurring-donations-setup-template.md"
       ],
-      "updated": "2026-04-07",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -26629,7 +26630,7 @@
         "fc581e45b6e04325f1be",
         "fe7739483f81de201390"
       ],
-      "content_hash": "a056798f3dd2e8445550a4223b866e2ec51b3dd05792c08e4fe33e98623e8fd4",
+      "content_hash": "3e2c1ebdac895a7701b161537d9cbd7e46f3f88677a1d608abee7f78cbe449f9",
       "dependencies": [],
       "description": "Use when a report or dashboard is slow, timing out, hitting row limits, or consuming excessive system resources on large-volume objects \u2014 covers selective filter strategy, custom report type optimization, async report execution via Analytics API, dashboard refresh scheduling, and grouping/aggregation tuning. Triggers: 'report times out', 'report is slow', 'dashboard not refreshing', 'report row limit hit', 'too many report results'. NOT for CRM Analytics / Tableau CRM performance (separate skill). NOT for sharing-model or visibility issues causing missing rows (use admin/sharing-and-visibility). NOT for building or designing reports from scratch (use admin/reports-and-dashboards-fundamentals).",
       "file_location": "skills/admin/report-performance-tuning",
@@ -26681,7 +26682,7 @@
       "templates": [
         "skills/admin/report-performance-tuning/templates/report-performance-tuning-template.md"
       ],
-      "updated": "2026-04-06",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -26831,6 +26832,7 @@
         "38b5ef64de6112751487",
         "3a30ed2d60638500d424",
         "3af39f92be87480a5613",
+        "3c697ec57bc84ac31a59",
         "40f5a9534fef09bb9400",
         "41fc50ecac92156b766b",
         "440f7b79e3203dbe4447",
@@ -26867,6 +26869,7 @@
         "7fd2f93b7727a80630e4",
         "83b9fa809cb9dcd57ffb",
         "8418026ee835f52c3816",
+        "8a5e64d28e6474edc969",
         "8c8d6cbd7be5b7fd3cb1",
         "8d8c45719e2574eabc62",
         "906d646c7c82c2836d98",
@@ -26893,6 +26896,7 @@
         "b76a71d536aaf3ae6f49",
         "b9b8de631a064c706ae9",
         "bdc49d927e011b01a0f4",
+        "c26373a683ba483ea9fd",
         "c46dc3fa11ce82670d71",
         "c5a6c5661d3eceac52b2",
         "c8745a179052b6266c84",
@@ -26919,7 +26923,7 @@
         "fd315f4b1dc3ab6016e8",
         "ff6b3081f317a7ef462c"
       ],
-      "content_hash": "a2242811f870c42c05837f63af94c3d158ed244a14dfca0836261aac46bf07b2",
+      "content_hash": "cc73982f366374cf113ee854c59d1abcad84a8f3942cf99714ba22ef88592b34",
       "dependencies": [],
       "description": "Use when learning, designing, or explaining Salesforce Reports and Dashboards from first principles \u2014 report types, custom report types, groupings, bucket fields, summary formulas, charts, dashboard components, dynamic dashboards, report subscriptions, and folder permissions. Triggers: 'how do I build a report', 'what report type should I use', 'set up a dashboard', 'joined report limits', 'bucket field vs formula', 'dynamic dashboard running user'. NOT for CRM Analytics (use crm-analytics-* skills). NOT for Einstein Discovery predictive analytics. NOT for troubleshooting missing report data caused by sharing model issues (use admin/reports-and-dashboards for that).",
       "file_location": "skills/admin/reports-and-dashboards-fundamentals",
@@ -26973,7 +26977,7 @@
       "templates": [
         "skills/admin/reports-and-dashboards-fundamentals/templates/reports-and-dashboards-fundamentals-template.md"
       ],
-      "updated": "2026-04-04",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -27460,7 +27464,7 @@
         "fbcb59835d1ad7a5e9c3",
         "fe1a28924d57db60016b"
       ],
-      "content_hash": "246628d60fc28e4fc27c66e87a99e5f2ebe74865a0baa79a39f79ec628dec301",
+      "content_hash": "01f7955905bc51828be945bd2a4ef58264141db21ec08e490defcb4d461f51d3",
       "dependencies": [],
       "description": "Use this skill to configure and troubleshoot Salesforce Billing revenue recognition rules, schedules, and GL transaction generation in compliance with ASC 606. Triggers: 'revenue schedule not generated after order activation', 'blng__RevenueSchedule__c records missing', 'how to configure blng__RevenueRecognitionRule__c on a product', 'Finance Periods not set up before revenue schedule generation', 'revenue schedule did not update after contract amendment', 'performance obligation allocation for bundled products', 'distribution method for revenue spread', 'ASC 606 implementation in Salesforce Billing'. NOT for billing schedule setup (see billing-schedule-setup skill), NOT for standard Salesforce CPQ quoting, NOT for OpportunityLineItem native Revenue Schedules (standard platform feature unrelated to Salesforce Billing), NOT for Salesforce Revenue Cloud (Revenue Lifecycle Management).",
       "file_location": "skills/admin/revenue-recognition-requirements",
@@ -27516,7 +27520,7 @@
       "templates": [
         "skills/admin/revenue-recognition-requirements/templates/revenue-recognition-requirements-template.md"
       ],
-      "updated": "2026-04-10",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -27764,7 +27768,7 @@
         "fb4435ad2066d85ddebc",
         "fda7f3cf3314ef0637c8"
       ],
-      "content_hash": "eab52108173f7fe94ff301b4b7811cf5f98480206727ba571f111aff8c0810bc",
+      "content_hash": "15a178833db8cbfa6e0776e07f0eb716a9785333325d1c06633d92bffcae3361",
       "dependencies": [],
       "description": "Eliciting, documenting, and structuring a sales process before it is built in Salesforce: stage sequencing, entry/exit criteria per stage, win/loss analysis requirements, and stage transition rules. Use when a business needs to analyse or formalise its sales methodology before any Salesforce configuration begins. Trigger keywords: sales process design, stage discovery, entry criteria, exit criteria, stage gate, win/loss categorisation, sales methodology, pipeline stages, opportunity stage mapping. NOT for configuring OpportunityStage picklist values, Sales Processes, or record types in Setup (use opportunity-management skill). NOT for Path configuration. NOT for Collaborative Forecasts or quota alignment.",
       "file_location": "skills/admin/sales-process-mapping",
@@ -27815,7 +27819,7 @@
       "templates": [
         "skills/admin/sales-process-mapping/templates/sales-process-mapping-template.md"
       ],
-      "updated": "2026-04-06",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -28391,7 +28395,7 @@
         "f36f00c4644cdf7a9a66",
         "f937eba4855e8eac1cb4"
       ],
-      "content_hash": "4feb88c4a83aa84761dc1960379b661b098e8098b6efe5d728a7e1cc9a7016a3",
+      "content_hash": "9ee2c5bb4729bc11af8b7085ae6bd853916556e48cacf257eb88800237e93f9d",
       "dependencies": [],
       "description": "Use when designing or reviewing Salesforce sandbox topology, refresh cadence, masking, and environment purpose. Triggers: 'Developer sandbox', 'Developer Pro', 'Partial Copy', 'Full sandbox', 'sandbox refresh', 'data masking', 'test environment', 'Gov Cloud sandbox'. NOT for scratch-org package workflows unless they affect environment planning.",
       "file_location": "skills/admin/sandbox-strategy",
@@ -28430,7 +28434,7 @@
       "templates": [
         "skills/admin/sandbox-strategy/templates/sandbox-strategy-template.md"
       ],
-      "updated": "2026-03-13",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -29041,7 +29045,7 @@
         "fcfc3e9caa33458ebae5",
         "ffa0e719a06b3b82d463"
       ],
-      "content_hash": "b5413b0f50c687b4c48c5ba962d08f797c740d848895a7916c6d0c0d4b07cf56",
+      "content_hash": "cfc72e6c24427c5b99767d0655a3e96939fed6bea3837f83c458c4302e8c9988",
       "dependencies": [],
       "description": "Use this skill to configure a Lightning Service Console app in Salesforce \u2014 setting Console Navigation (split view), defining workspace tabs and subtabs, configuring the utility bar with Omni-Channel, Macros, and History, creating Quick Text entries, setting up keyboard shortcuts, and defining navigation rules per object. Trigger keywords: Service Console, console app, workspace tabs, subtabs, utility bar macros, Omni-Channel utility, split view, Quick Text, console navigation rules, keyboard shortcuts service console. NOT for generic Lightning app creation (use app-and-tab-configuration), NOT for Omni-Channel routing configuration (use omni-channel-routing), NOT for CTI adapter installation (use open-cti-setup), NOT for Einstein Bot or Messaging setup.",
       "file_location": "skills/admin/service-console-configuration",
@@ -29092,7 +29096,7 @@
       "templates": [
         "skills/admin/service-console-configuration/templates/service-console-configuration-template.md"
       ],
-      "updated": "2026-04-06",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -29151,7 +29155,7 @@
         "fcec81050d354a8d99bf",
         "fdd7afc42b46d703cd7a"
       ],
-      "content_hash": "e00bf0999a7581646bf61ffcbd10217e89c1057116907e2331ff2f06b075979b",
+      "content_hash": "308763a2aadce8265c628f6f9863bf799f24b76b6f0f6943dea63c62076539ad",
       "dependencies": [],
       "description": "Use when designing, auditing, or troubleshooting Salesforce record access. Triggers: 'OWD', 'role hierarchy', 'sharing rule', 'manual sharing', 'why can't user see record', 'why can user see too much'. NOT for object or field permissions - use permission and FLS skills for that.",
       "file_location": "skills/admin/sharing-and-visibility",
@@ -29191,7 +29195,7 @@
       "templates": [
         "skills/admin/sharing-and-visibility/templates/sharing-model-template.md"
       ],
-      "updated": "2026-03-13",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -29466,7 +29470,7 @@
         "f33bdf9f6da542bf7b2b",
         "f57e4c5ef1cc11d48829"
       ],
-      "content_hash": "c67f85929e369d57474ae70ec3c4a510de5bcade4d5c6e8de1e66eb32c9b1120",
+      "content_hash": "25a1fa46ae11e7b78fc2cb8e395a7cc78a9d2314b4eae93ff0e6e120d6776c8c",
       "dependencies": [],
       "description": "Use this skill when building, reviewing, or refreshing a RACI (Responsible / Accountable / Consulted / Informed) matrix for a Salesforce project so that every Salesforce-specific decision \u2014 data model change, automation tier choice, security model, integration boundary, deployment, license/edition \u2014 has exactly one accountable owner and a documented escalation path that downstream agents can route to. Trigger keywords: RACI matrix salesforce project, stakeholder authority salesforce, escalation path salesforce decisions, who approves data model change, salesforce decision rights, REFUSAL_NEEDS_HUMAN_REVIEW routing. NOT for the change advisory board operating model itself (use admin/change-management-and-deployment). NOT for end-user training rollout plans (use admin/change-management-and-training). NOT for the technical mechanics of permission set assignment authority (use admin/permission-set-architecture). NOT for pure stakeholder requirements elicitation (use admin/requirements-gathering-for-sf).",
       "file_location": "skills/admin/stakeholder-raci-for-sf-projects",
@@ -30141,11 +30145,13 @@
         "bf01304777c273190c6d",
         "c1bc0afdb656c4ce2881",
         "c4e4f0a7e86bca353fa4",
+        "c594c1e7512c5433e5ac",
         "c600db9f4209177da9ec",
         "ca3d57b46b4365b0f6ea",
         "cb3dcbd3a830050cee81",
         "ce2ac6b5448e99bf29a6",
         "d01749319bf11f2ab842",
+        "d511dfaa5dac7fca0141",
         "dd5f7eb897dcf30060bf",
         "df8a5c68163de9112908",
         "e0f5716bfceaa8646aa4",
@@ -30158,7 +30164,7 @@
         "fb42b9dfb8ab1e2533e6",
         "fed03edda792fb3ef2bd"
       ],
-      "content_hash": "5af50ba34d9042a3e3b17fa8b9c0dd07e9d679e6b7ac9798d697f165d3ef2de4",
+      "content_hash": "e9d33fc59aa424597810bb90bf3324d288f1e5fd31e0f9524c375f1bd3dac225",
       "dependencies": [],
       "description": "Use this skill when writing acceptance criteria for Salesforce features, structuring UAT test scripts from user stories, classifying defects found during UAT, or planning regression testing before a Salesforce release. Trigger keywords: UAT, user acceptance testing, test script, acceptance criteria, defect classification, regression testing, test plan, test case. NOT for automated testing (use flow-testing or apex-test-class-standards). NOT for writing user stories or eliciting requirements (use requirements-gathering-for-sf). NOT for setting up sandboxes or environment strategy (use sandbox-strategy).",
       "file_location": "skills/admin/uat-and-acceptance-criteria",
@@ -30201,7 +30207,7 @@
       "templates": [
         "skills/admin/uat-and-acceptance-criteria/templates/uat-and-acceptance-criteria-template.md"
       ],
-      "updated": "2026-04-03",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -30670,7 +30676,7 @@
         "fdc181a2c2e9fb3de7af",
         "ff1e7ae9628ea5d7d607"
       ],
-      "content_hash": "52b6ab7ea2e5bd9d7673adffd1fbd51fef394f6c0294508e47a9bfb2bafe299a",
+      "content_hash": "d10e7d9e3fa55c15b74dc819c67c33b83c63fca55e10c7bd270542b507746e92",
       "dependencies": [],
       "description": "Use this skill to create, deactivate, freeze, or manage Salesforce users, assign user licenses and feature licenses, configure profiles and roles, set login hours and IP restrictions, and set up delegated administration. Triggers: adding a new user, deactivating a departing employee, license assignment, freezing a user account, delegated admin setup. NOT for permission sets (use permission-set-architecture) or sharing model design (use sharing-and-visibility).",
       "file_location": "skills/admin/user-management",
@@ -30715,7 +30721,7 @@
       "templates": [
         "skills/admin/user-management/templates/user-management-template.md"
       ],
-      "updated": "2026-04-03",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -30939,7 +30945,7 @@
         "f72ce657c520fa80c4d6",
         "fa1227e7a34c59ed6bcb"
       ],
-      "content_hash": "1e77835cbce0117dfac6f6f34e6b7beedfe22f6cccb9c9745143b15ba2f6d81e",
+      "content_hash": "3ac87b8df2d91b9ccd14664318bc03da1cdf28da000812c0879b1ce1c6c66e2a",
       "dependencies": [],
       "description": "Use when writing, auditing, or troubleshooting Salesforce Validation Rules. Triggers: 'validation rule', 'required field formula', 'rule fires unexpectedly', 'integration failing validation', 'data quality'. NOT for Flow-based validation \u2014 use admin/flow-for-admins for that.",
       "file_location": "skills/admin/validation-rules",
@@ -30978,7 +30984,7 @@
       "templates": [
         "skills/admin/validation-rules/templates/validation-rule-template.md"
       ],
-      "updated": "2026-03-13",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },

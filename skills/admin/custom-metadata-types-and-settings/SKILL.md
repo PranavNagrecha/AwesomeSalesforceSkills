@@ -35,7 +35,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-04-28
 ---
 
 Use this skill when a requirement involves choosing between Custom Metadata Types and Custom Settings, understanding how hierarchical settings resolve per user or profile, whether the data can be deployed, or how to access configuration from Apex and Flow without hitting governor limits. The key decision driver is whether the configuration must travel with releases or must override at runtime per user.
@@ -59,13 +59,15 @@ Gather this context before recommending a storage model:
 
 Custom Metadata Type (CMT) records are metadata, not data. They move through change sets, unlocked packages, managed packages, and source-control-driven deployments exactly like Apex classes or field definitions. The key facts:
 
-- **SOQL is free**: querying CMT from Apex does not consume the 100 SOQL query governor limit. The platform caches the metadata and serves it without a database round trip.
-- **Flow Get Records is also free**: accessing CMT through the Flow Get Records element costs no SOQL queries.
-- **Storage cap**: 200 records per type, 10 MB total custom metadata storage per org.
-- **Deployment**: included automatically in change sets, scratch org source pushes, and packaging. Records and type definition both move together.
-- **Editable in production**: an admin can edit CMT records directly in a production org through Setup. This is unlike Apex, which requires a sandbox round trip, but still treats the record as metadata that should be tracked in source control.
-- **No per-user override**: CMT has no built-in hierarchy. All users see the same values for a given record.
-- **Relationships**: CMT fields can hold a Metadata Relationship to another CMT type, enabling lookup-style joins entirely within metadata.
+| Fact | Detail |
+|---|---|
+| SOQL is free | Querying CMT from Apex does not consume the 100 SOQL query governor limit. The platform caches the metadata and serves it without a database round trip. |
+| Flow Get Records is also free | Accessing CMT through the Flow Get Records element costs no SOQL queries. |
+| Storage cap | 200 records per type, 10 MB total custom metadata storage per org. |
+| Deployment | Included automatically in change sets, scratch org source pushes, and packaging. Records and type definition both move together. |
+| Editable in production | An admin can edit CMT records directly in a production org through Setup. This is unlike Apex, which requires a sandbox round trip, but still treats the record as metadata that should be tracked in source control. |
+| No per-user override | CMT has no built-in hierarchy. All users see the same values for a given record. |
+| Relationships | CMT fields can hold a Metadata Relationship to another CMT type, enabling lookup-style joins entirely within metadata. |
 
 ### Custom Settings: Two Very Different Types
 

@@ -32,7 +32,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-14
+updated: 2026-04-28
 ---
 
 # FlexCard Requirements
@@ -58,22 +58,28 @@ Gather this context before working on anything in this domain:
 ### Five Data Source Types
 
 Every FlexCard pulls data from exactly one of these sources:
-- **SOQL** — direct query against Salesforce objects; fastest for simple record display
-- **Apex** — Apex class method for computed or aggregated data
-- **DataRaptor** — declarative field mapping for single-object reads
-- **Integration Procedure** — orchestrated multi-source or external API data
-- **Streaming** — Platform Event subscription for real-time updates
+
+| Source | When to use |
+|---|---|
+| SOQL | Direct query against Salesforce objects; fastest for simple record display |
+| Apex | Apex class method for computed or aggregated data |
+| DataRaptor | Declarative field mapping for single-object reads |
+| Integration Procedure | Orchestrated multi-source or external API data |
+| Streaming | Platform Event subscription for real-time updates |
 
 Requirements must specify which type per card (and per child card if nested). SOQL is sufficient for single-object record display; Integration Procedure is required for multi-object or external API data.
 
 ### Five Action Types
 
 Users interact with FlexCards through one of these action types:
-- **Navigation** — routes the user to a record page, URL, or tab
-- **OmniScript Launch** — opens an OmniScript in a modal or inline
-- **Apex** — calls an Apex method (typically for record updates or processing)
-- **DataRaptor** — runs a DataRaptor directly (typically for simple field updates)
-- **Custom LWC** — launches a custom Lightning Web Component for complex UI interactions
+
+| Action type | Behavior |
+|---|---|
+| Navigation | Routes the user to a record page, URL, or tab |
+| OmniScript Launch | Opens an OmniScript in a modal or inline |
+| Apex | Calls an Apex method (typically for record updates or processing) |
+| DataRaptor | Runs a DataRaptor directly (typically for simple field updates) |
+| Custom LWC | Launches a custom Lightning Web Component for complex UI interactions |
 
 Requirements must list every action, its type, its triggering condition, and the expected outcome.
 

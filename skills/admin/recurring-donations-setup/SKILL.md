@@ -36,7 +36,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-07
+updated: 2026-04-28
 ---
 
 # Recurring Donations Setup
@@ -68,12 +68,14 @@ ERD became the default for all new NPSP installs in March 2021. Existing orgs mu
 
 In ERD, the installment calendar is stored as one or more `npe03__RecurringDonationSchedule__c` child records on the Recurring Donation. Each schedule record defines:
 
-- **Installment Amount** — the amount to use for each installment Opportunity
-- **Installment Frequency** — how many periods between installments (e.g., 1 = every period, 3 = every third)
-- **Installment Period** — the time unit: Monthly, Quarterly, Yearly, Weekly, or Custom
-- **Day of Month** — for monthly installments, which day of the month to use
-- **Effective Date** — when this schedule becomes active (used for future-dated changes)
-- **Status** — Active or Inactive
+| Field | Purpose |
+|---|---|
+| Installment Amount | The amount to use for each installment Opportunity |
+| Installment Frequency | How many periods between installments (e.g., 1 = every period, 3 = every third) |
+| Installment Period | The time unit: Monthly, Quarterly, Yearly, Weekly, or Custom |
+| Day of Month | For monthly installments, which day of the month to use |
+| Effective Date | When this schedule becomes active (used for future-dated changes) |
+| Status | Active or Inactive |
 
 When an amount or schedule change is applied to a Recurring Donation, NPSP creates a new `npe03__RecurringDonationSchedule__c` record with the updated values and an Effective Date, rather than modifying the existing schedule. The old schedule record is then set to Inactive. This preserves a full audit trail of all schedule history.
 

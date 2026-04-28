@@ -33,7 +33,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-04-28
 ---
 
 # Delegated Administration
@@ -58,11 +58,14 @@ Gather this context before working on anything in this domain:
 ### Delegated Administrator Groups
 
 A Delegated Administrator group is the core configuration object. Each group has:
-- **Delegated Administrators** — the users who receive the delegated admin rights.
-- **Users in Delegated Group** — the set of users those admins can manage, defined by the roles those users hold.
-- **Assignable Profiles** — the profiles the delegated admin can assign when creating or editing managed users.
-- **Assignable Permission Sets** — (optional) specific permission sets the delegated admin can assign to managed users.
-- **Custom Object Administration** — (optional) specific custom objects the delegated admin can customize.
+
+| Component | Purpose |
+|---|---|
+| Delegated Administrators | The users who receive the delegated admin rights. |
+| Users in Delegated Group | The set of users those admins can manage, defined by the roles those users hold. |
+| Assignable Profiles | The profiles the delegated admin can assign when creating or editing managed users. |
+| Assignable Permission Sets | (Optional) Specific permission sets the delegated admin can assign to managed users. |
+| Custom Object Administration | (Optional) Specific custom objects the delegated admin can customize. |
 
 You can create multiple groups to model different business units or regions, each with their own scope.
 

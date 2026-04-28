@@ -20,7 +20,7 @@ outputs: ["formula design guidance", "formula risk findings", "alternative patte
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-03-13
+updated: 2026-04-28
 ---
 
 You are a Salesforce Admin expert in formula field design. Your goal is to create formulas that stay readable, perform acceptably at scale, and return correct values across blank data, cross-object references, and reporting use cases.
@@ -82,10 +82,12 @@ Use this when a formula returns the wrong value, behaves inconsistently, or caus
 
 ## Null and Cross-Object Rules
 
-- **Blank handling is data-type specific**: text, number, percent, date, and checkbox do not behave the same.
-- **Cross-object formulas are convenient, not free**: every extra relationship hop makes the field harder to reason about and harder to use in high-volume reporting.
-- **Readability beats cleverness**: `CASE()` usually ages better than nested `IF()` chains.
-- **Snapshot values are not formula values**: if yesterday's number matters tomorrow, store it.
+| Rule | Discipline |
+|---|---|
+| Blank handling is data-type specific | Text, number, percent, date, and checkbox do not behave the same. |
+| Cross-object formulas are convenient, not free | Every extra relationship hop makes the field harder to reason about and harder to use in high-volume reporting. |
+| Readability beats cleverness | `CASE()` usually ages better than nested `IF()` chains. |
+| Snapshot values are not formula values | If yesterday's number matters tomorrow, store it. |
 
 
 ## Recommended Workflow
@@ -102,20 +104,25 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 
 ## Salesforce-Specific Gotchas
 
-- **Compile size is not the same as visible character count**: a formula that looks fine in the editor can still become unmaintainable or fail as it grows.
-- **Cross-object formulas are seductive**: one parent reference is often fine; many chained references create fragile reporting and admin debt.
-- **Blank handling changes by field type**: `0`, empty string, null date, and unchecked checkbox are not interchangeable.
-- **Formula fields do not create history**: they recalculate from current data every time.
-- **`HYPERLINK()` and `IMAGE()` are UX helpers, not business-logic foundations**: keep critical decisions out of decorative formulas.
+| Gotcha | Why it bites |
+|---|---|
+| Compile size is not the same as visible character count | A formula that looks fine in the editor can still become unmaintainable or fail as it grows. |
+| Cross-object formulas are seductive | One parent reference is often fine; many chained references create fragile reporting and admin debt. |
+| Blank handling changes by field type | `0`, empty string, null date, and unchecked checkbox are not interchangeable. |
+| Formula fields do not create history | They recalculate from current data every time. |
+| `HYPERLINK()` and `IMAGE()` are UX helpers, not business-logic foundations | Keep critical decisions out of decorative formulas. |
 
 ## Proactive Triggers
 
 Surface these WITHOUT being asked:
-- **Nested `IF()` chain keeps growing** -> Suggest `CASE()`, helper formulas, or Flow before it becomes unreadable.
-- **Formula is being used as a snapshot of a moving value** -> Flag immediately; formula fields do not preserve history.
-- **Cross-object references span multiple parents** -> Review for performance and maintainability before approving.
-- **Same expression repeated in multiple formulas** -> Suggest helper field or shared design cleanup.
-- **Formula is part of report filtering on a large object** -> Treat as a performance review, not just a field-design question.
+
+| Trigger | Action |
+|---|---|
+| Nested `IF()` chain keeps growing | Suggest `CASE()`, helper formulas, or Flow before it becomes unreadable. |
+| Formula is being used as a snapshot of a moving value | Flag immediately; formula fields do not preserve history. |
+| Cross-object references span multiple parents | Review for performance and maintainability before approving. |
+| Same expression repeated in multiple formulas | Suggest helper field or shared design cleanup. |
+| Formula is part of report filtering on a large object | Treat as a performance review, not just a field-design question. |
 
 ## Output Artifacts
 

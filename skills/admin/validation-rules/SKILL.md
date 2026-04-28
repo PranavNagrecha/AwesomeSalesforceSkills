@@ -19,7 +19,7 @@ outputs: ["validation design guidance", "rule review findings", "bypass recommen
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-03-13
+updated: 2026-04-28
 ---
 
 You are a Salesforce Admin expert in data quality enforcement. Your goal is to write validation rules that enforce the right business rules, fail gracefully for legitimate edge cases, and never block integrations or data migrations unexpectedly.
@@ -149,21 +149,26 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 
 ## Salesforce-Specific Gotchas
 
-- **PRIORVALUE does not work on insert**: `PRIORVALUE(Field__c)` returns null on insert. A rule using PRIORVALUE without a `NOT(ISNEW())` guard will evaluate with null prior value, causing unexpected behaviour on new records.
-- **Rules fire on REST API by default**: Integration users calling the REST or SOAP API will hit validation rules unless they have a bypass mechanism. "Our Mulesoft integration is failing" is almost always a missing bypass.
-- **ISPICKVAL without blank guard**: If a picklist field can be blank, `ISPICKVAL(Status__c, "Active")` evaluates to FALSE for blank — which may not be the intention. Guard explicitly.
-- **Rule order is undefined**: Multiple validation rules on the same object can fire in any order. Don't write rules that depend on another rule's outcome. They're evaluated independently.
-- **Blank vs null in formula fields**: `ISBLANK(Field__c)` returns TRUE for both blank and null text fields. For number/currency fields, a field with value 0 is NOT blank. `ISNULL(NumberField__c)` catches nulls but not 0. This distinction causes bugs.
-- **Rules fire during data loads**: Whether using Data Loader, Data Import Wizard, or API bulk jobs, validation rules fire. Always have a bypass for data migration users.
+| Gotcha | Detail |
+|---|---|
+| PRIORVALUE does not work on insert | `PRIORVALUE(Field__c)` returns null on insert. A rule using PRIORVALUE without a `NOT(ISNEW())` guard will evaluate with null prior value, causing unexpected behaviour on new records. |
+| Rules fire on REST API by default | Integration users calling the REST or SOAP API will hit validation rules unless they have a bypass mechanism. "Our Mulesoft integration is failing" is almost always a missing bypass. |
+| ISPICKVAL without blank guard | If a picklist field can be blank, `ISPICKVAL(Status__c, "Active")` evaluates to FALSE for blank — which may not be the intention. Guard explicitly. |
+| Rule order is undefined | Multiple validation rules on the same object can fire in any order. Don't write rules that depend on another rule's outcome. They're evaluated independently. |
+| Blank vs null in formula fields | `ISBLANK(Field__c)` returns TRUE for both blank and null text fields. For number/currency fields, a field with value 0 is NOT blank. `ISNULL(NumberField__c)` catches nulls but not 0. This distinction causes bugs. |
+| Rules fire during data loads | Whether using Data Loader, Data Import Wizard, or API bulk jobs, validation rules fire. Always have a bypass for data migration users. |
 
 ## Proactive Triggers
 
 Surface these WITHOUT being asked:
-- **Rule uses ISPICKVAL without a blank/null guard** → Flag: will evaluate unexpectedly when the picklist field is empty. Add `NOT(ISBLANK(PicklistField__c))` guard.
-- **Rule fires on all Record Types when it should be scoped** → Ask: does this business rule apply to all record types? A "Close Date required" rule probably shouldn't fire on "Draft" record types.
-- **No bypass mechanism for integration or admin user** → Flag: this will block every data migration and every API call that doesn't meet the condition. Add a Custom Permission bypass before go-live.
-- **Error message is a single word or generic phrase** → Rewrite it. A bad error message is a support ticket waiting to happen.
-- **PRIORVALUE used without `NOT(ISNEW())` guard** → Flag immediately: this formula will behave unexpectedly on record creation.
+
+| Trigger | Action |
+|---|---|
+| Rule uses ISPICKVAL without a blank/null guard | Flag: will evaluate unexpectedly when the picklist field is empty. Add `NOT(ISBLANK(PicklistField__c))` guard. |
+| Rule fires on all Record Types when it should be scoped | Ask: does this business rule apply to all record types? A "Close Date required" rule probably shouldn't fire on "Draft" record types. |
+| No bypass mechanism for integration or admin user | Flag: this will block every data migration and every API call that doesn't meet the condition. Add a Custom Permission bypass before go-live. |
+| Error message is a single word or generic phrase | Rewrite it. A bad error message is a support ticket waiting to happen. |
+| PRIORVALUE used without `NOT(ISNEW())` guard | Flag immediately: this formula will behave unexpectedly on record creation. |
 
 ## Output Artifacts
 

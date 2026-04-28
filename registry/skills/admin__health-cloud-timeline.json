@@ -80,7 +80,7 @@
     "fcd861d1bc5f48dd1bf4",
     "fd9102aca38c31106616"
   ],
-  "content_hash": "eff9b84e8059466e57bc1de259f818333f9275ec6946699948da2cb06043c475",
+  "content_hash": "c963352211c234195986cd2617705af848dc031996dc278c9c605e41c0543138",
   "dependencies": [
     "health-cloud-patient-setup"
   ],
@@ -129,7 +129,7 @@
   "templates": [
     "skills/admin/health-cloud-timeline/templates/health-cloud-timeline-template.md"
   ],
-  "updated": "2026-04-10",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

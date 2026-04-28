@@ -108,7 +108,7 @@
     "f33bdf9f6da542bf7b2b",
     "f57e4c5ef1cc11d48829"
   ],
-  "content_hash": "c67f85929e369d57474ae70ec3c4a510de5bcade4d5c6e8de1e66eb32c9b1120",
+  "content_hash": "25a1fa46ae11e7b78fc2cb8e395a7cc78a9d2314b4eae93ff0e6e120d6776c8c",
   "dependencies": [],
   "description": "Use this skill when building, reviewing, or refreshing a RACI (Responsible / Accountable / Consulted / Informed) matrix for a Salesforce project so that every Salesforce-specific decision \u2014 data model change, automation tier choice, security model, integration boundary, deployment, license/edition \u2014 has exactly one accountable owner and a documented escalation path that downstream agents can route to. Trigger keywords: RACI matrix salesforce project, stakeholder authority salesforce, escalation path salesforce decisions, who approves data model change, salesforce decision rights, REFUSAL_NEEDS_HUMAN_REVIEW routing. NOT for the change advisory board operating model itself (use admin/change-management-and-deployment). NOT for end-user training rollout plans (use admin/change-management-and-training). NOT for the technical mechanics of permission set assignment authority (use admin/permission-set-architecture). NOT for pure stakeholder requirements elicitation (use admin/requirements-gathering-for-sf).",
   "file_location": "skills/admin/stakeholder-raci-for-sf-projects",

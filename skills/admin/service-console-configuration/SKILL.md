@@ -38,7 +38,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-04-28
 ---
 
 # Service Console Configuration
@@ -87,11 +87,13 @@ Default navigation rule is workspace tab for every object. To configure: in App 
 
 The utility bar is a persistent footer toolbar visible at the bottom of the screen throughout the console session. In a Service Console context, the following utility items are most common:
 
-- **History** — list of recently visited records within the current session; console apps only, not available in standard-navigation apps.
-- **Omni-Channel** — displays the agent's Omni-Channel status and incoming work requests; requires Omni-Channel to be enabled and the user to be a Service Cloud user with a routing configuration.
-- **Macros** — provides a macros panel so agents can run macros without leaving the active workspace; macros automate multi-step repetitive actions (update fields, send emails, post to chatter) with a single click.
-- **Open CTI Softphone** — requires a CTI adapter package to be installed; the utility item renders the adapter's phone panel.
-- **Quick Text** — surfaces Quick Text snippets for insertion into emails, chats, or feed posts. Quick Text entries are text templates stored as `QuickText` records, organized by channels (Email, Chat, Phone, etc.) and accessible via the utility or inline in editors.
+| Utility item | Purpose |
+|---|---|
+| History | List of recently visited records within the current session; console apps only, not available in standard-navigation apps. |
+| Omni-Channel | Displays the agent's Omni-Channel status and incoming work requests; requires Omni-Channel to be enabled and the user to be a Service Cloud user with a routing configuration. |
+| Macros | Provides a macros panel so agents can run macros without leaving the active workspace; macros automate multi-step repetitive actions (update fields, send emails, post to chatter) with a single click. |
+| Open CTI Softphone | Requires a CTI adapter package to be installed; the utility item renders the adapter's phone panel. |
+| Quick Text | Surfaces Quick Text snippets for insertion into emails, chats, or feed posts. Quick Text entries are text templates stored as `QuickText` records, organized by channels (Email, Chat, Phone, etc.) and accessible via the utility or inline in editors. |
 
 Utility items are configured per app. Each item can have default panel width, height, and whether it auto-opens when the app loads.
 

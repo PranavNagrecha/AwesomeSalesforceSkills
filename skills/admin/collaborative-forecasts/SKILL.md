@@ -39,7 +39,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-04-28
 ---
 
 # Collaborative Forecasts
@@ -66,15 +66,21 @@ Gather this context before working on anything in this domain:
 A Forecast Type defines what a forecast measures and how it is organized. Each Forecast Type has three independent configuration dimensions:
 
 1. **Source object** — what data the forecast rolls up:
-   - **Opportunity** — rolls up the Amount field (or a custom currency field) from opportunities
-   - **Opportunity Product (Product Family)** — rolls up revenue by product family from opportunity line items
-   - **Opportunity Splits** — rolls up split percentages credited to each rep from Opportunity Revenue Splits
-   - **Product Splits** — rolls up product-level overlay splits from Opportunity Product Splits
-   - **Line Item Schedule (Schedule Date)** — rolls up revenue by schedule date from opportunity product schedules
+
+| Source object | What it rolls up |
+|---|---|
+| Opportunity | The Amount field (or a custom currency field) from opportunities |
+| Opportunity Product (Product Family) | Revenue by product family from opportunity line items |
+| Opportunity Splits | Split percentages credited to each rep from Opportunity Revenue Splits |
+| Product Splits | Product-level overlay splits from Opportunity Product Splits |
+| Line Item Schedule (Schedule Date) | Revenue by schedule date from opportunity product schedules |
 
 2. **Forecast hierarchy** — the organizational dimension:
-   - **Role hierarchy** — the standard Salesforce role tree; most orgs use this
-   - **Territory hierarchy** — uses the active Enterprise Territory Management model; requires ETM to be active
+
+| Hierarchy | Notes |
+|---|---|
+| Role hierarchy | The standard Salesforce role tree; most orgs use this |
+| Territory hierarchy | Uses the active Enterprise Territory Management model; requires ETM to be active |
 
 3. **Measurement field** — the currency field used for rollup (Amount, Expected Revenue, or a custom field).
 

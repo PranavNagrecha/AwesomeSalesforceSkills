@@ -37,7 +37,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-04-28
 ---
 
 # Sales Process Mapping
@@ -80,10 +80,12 @@ In Salesforce, win/loss reasons are typically implemented as a required dependen
 
 A stage transition rule defines which movements are valid, which require field completion, and which require an additional approval or review. Common transition rules include:
 
-- **Linear progression only**: the opportunity must move through stages in order (no skipping).
-- **Backward movement restricted**: once past a stage, the opportunity cannot return without manager approval.
-- **Required fields per stage**: certain fields must be populated before an opportunity can be saved at or past a given stage.
-- **Stage-triggered notifications**: advancing to a specific stage sends an alert to legal, finance, or deal desk.
+| Rule | Behavior |
+|---|---|
+| Linear progression only | The opportunity must move through stages in order (no skipping). |
+| Backward movement restricted | Once past a stage, the opportunity cannot return without manager approval. |
+| Required fields per stage | Certain fields must be populated before an opportunity can be saved at or past a given stage. |
+| Stage-triggered notifications | Advancing to a specific stage sends an alert to legal, finance, or deal desk. |
 
 Documenting these rules in the mapping artefact is critical because Salesforce does not enforce stage order natively — Path is visual only. Enforcement requires validation rules, and those rules are only as good as the transition requirements that were documented during the mapping exercise.
 

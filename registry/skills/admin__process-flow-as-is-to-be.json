@@ -107,7 +107,7 @@
     "f9abfe83e2c10ff29768",
     "fb049a24dcc38cbcbf44"
   ],
-  "content_hash": "23ec7b42f1b636ff609f833f6973f3a516c7aa63d5d7ad5682d3463e8f5efe4a",
+  "content_hash": "841acf97c2f6c842eba96eb2cc9e21f2f24d38cffe7bfa2472232161687a1212",
   "dependencies": [],
   "description": "Documenting As-Is and To-Be business processes for a Salesforce project as swim-lane diagrams with one lane per actor (user, system, integration, customer), explicit decision points, parallel paths, exception/sad-path handling, and per-step automation-tier annotations (Flow / Apex / Approval / Platform Event / Manual / Integration) that drive downstream build decisions. Use when discovery has named a business process and the team needs a structured map before any Flow, Apex, or Approval Process is built. Trigger keywords: As-Is To-Be salesforce process, swim lane salesforce, business process map, automation candidate identification, sad path documentation, process actor mapping, manual residue. NOT for Sales-specific stage design (use sales-process-mapping). NOT for fundraising stewardship process mapping (use fundraising-process-mapping). NOT for FSL appointment scheduling flows (use fsl-scheduling-policies). NOT for actually building the Flow (use skills/flow/* and agents/flow-builder/AGENT.md). NOT for pure UI-side user journeys (use persona-and-journey-mapping-sf).",
   "file_location": "skills/admin/process-flow-as-is-to-be",

@@ -32,7 +32,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-03
+updated: 2026-04-28
 ---
 
 # App and Tab Configuration
@@ -91,12 +91,14 @@ The order of items in the list determines the order in the navigation bar. The f
 ### Utility Bar
 
 The utility bar is a persistent toolbar at the bottom of the screen, available only in Lightning Experience on desktop — it does NOT appear in the Salesforce mobile app. Each utility item is a standard or custom Lightning component. Common built-in utilities include:
-- **History** — recently visited records; **console apps only** — this utility does not appear in the Setup picker for standard-navigation apps
-- **Recent Items** — quick access to recently accessed records (available in all app types)
-- **Open CTI Softphone** — requires CTI adapter
-- **Notes** — quick note capture
-- **Macros** — for Service Console users
-- **Omni-Channel** — for agents using Service Cloud routing; requires Service Cloud console app
+| Utility | Notes |
+|---|---|
+| History | Recently visited records; **console apps only** — this utility does not appear in the Setup picker for standard-navigation apps |
+| Recent Items | Quick access to recently accessed records (available in all app types) |
+| Open CTI Softphone | Requires CTI adapter |
+| Notes | Quick note capture |
+| Macros | For Service Console users |
+| Omni-Channel | For agents using Service Cloud routing; requires Service Cloud console app |
 
 Utility items can have default width, height, and open-on-load behavior configured per item. Custom LWC components can be added as utilities if they implement the correct interface.
 

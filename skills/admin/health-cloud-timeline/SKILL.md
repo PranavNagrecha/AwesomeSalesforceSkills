@@ -37,7 +37,7 @@ dependencies:
   - health-cloud-patient-setup
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-10
+updated: 2026-04-28
 ---
 
 # Health Cloud Timeline
@@ -63,12 +63,14 @@ Gather this context before working on anything in this domain:
 
 `TimelineObjectDefinition` is the metadata type that tells the Industries Enhanced Timeline which objects to query and how to display their records. Each definition maps one object to the timeline and configures:
 
-- **Object API name** — the Salesforce object whose records appear as timeline entries
-- **Date field** — which date/datetime field determines where the record appears on the timeline axis
-- **Title field** — field shown as the entry headline
-- **Description field** — optional secondary text
-- **Timeline category** — the filter group label (appears in the filter picklist on the timeline component)
-- **Icon** — SLDS utility icon name to display alongside entries
+| Field | Purpose |
+|---|---|
+| Object API name | The Salesforce object whose records appear as timeline entries |
+| Date field | Which date/datetime field determines where the record appears on the timeline axis |
+| Title field | Field shown as the entry headline |
+| Description field | Optional secondary text |
+| Timeline category | The filter group label (appears in the filter picklist on the timeline component) |
+| Icon | SLDS utility icon name to display alongside entries |
 
 `TimelineObjectDefinition` records are org-wide metadata; they are not record-type-specific. Once deployed, all instances of the Industries Timeline component in the org will include records from that object definition unless filtered by category at the component level.
 

@@ -20,7 +20,7 @@ outputs: ["deployment plan", "release risk findings", "rollback checklist"]
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-03-13
+updated: 2026-04-28
 ---
 
 You are a Salesforce Admin expert in metadata release planning. Your goal is to move changes safely between environments, choose the right deployment method for the team's maturity, and make rollback a real plan instead of a hopeful sentence in the release notes.
@@ -84,11 +84,13 @@ Use this when a deployment failed, caused regressions, or exposed process debt.
 
 ## Release Guardrails
 
-- **Validate before production**: if the first realistic test is production, the process is broken.
-- **Deploy intentionally ordered scope**: sensitive permissions, sharing, flows, and integrations deserve explicit sequencing.
-- **Profiles are release debt**: avoid dragging broad profile changes through every deployment if permission sets can isolate the change.
-- **Rollback must be concrete**: previous metadata version, data reversal, feature toggle, or hotfix path. Pick one before go-live.
-- **Manual steps count as risk**: document them, time them, and assign owners.
+| Guardrail | Discipline |
+|---|---|
+| Validate before production | If the first realistic test is production, the process is broken. |
+| Deploy intentionally ordered scope | Sensitive permissions, sharing, flows, and integrations deserve explicit sequencing. |
+| Profiles are release debt | Avoid dragging broad profile changes through every deployment if permission sets can isolate the change. |
+| Rollback must be concrete | Previous metadata version, data reversal, feature toggle, or hotfix path. Pick one before go-live. |
+| Manual steps count as risk | Document them, time them, and assign owners. |
 
 
 ## Recommended Workflow
@@ -105,20 +107,25 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 
 ## Salesforce-Specific Gotchas
 
-- **Change Sets hide dependency mistakes until late**: they feel easy right up to the failure window.
-- **Flow activation is part of the release**: deploying a Flow is not the same as safely turning it on.
-- **Permission and sharing changes can create the loudest user-impact regressions**: treat them as high-risk even when technically small.
-- **Metadata-only rollback does not undo data side effects**: if a release changed records, metadata restore is only half the story.
-- **DevOps Center still depends on Git hygiene**: a workflow tool does not rescue undisciplined branching or review habits.
+| Gotcha | Why it bites |
+|---|---|
+| Change Sets hide dependency mistakes until late | They feel easy right up to the failure window. |
+| Flow activation is part of the release | Deploying a Flow is not the same as safely turning it on. |
+| Permission and sharing changes can create the loudest user-impact regressions | Treat them as high-risk even when technically small. |
+| Metadata-only rollback does not undo data side effects | If a release changed records, metadata restore is only half the story. |
+| DevOps Center still depends on Git hygiene | A workflow tool does not rescue undisciplined branching or review habits. |
 
 ## Proactive Triggers
 
 Surface these WITHOUT being asked:
-- **No rollback plan is documented** -> Flag as critical release risk.
-- **Release includes sharing, permissions, connected apps, or external credentials** -> Require explicit review and smoke tests.
-- **Production hotfix is planned with no back-merge step** -> Raise source-of-truth risk immediately.
-- **Same release mixes large data load and metadata cutover** -> Demand sequencing and coordinated rollback.
-- **Change Sets are used for frequent team releases** -> Recommend DevOps Center or CLI-based promotion path.
+
+| Trigger | Action |
+|---|---|
+| No rollback plan is documented | Flag as critical release risk. |
+| Release includes sharing, permissions, connected apps, or external credentials | Require explicit review and smoke tests. |
+| Production hotfix is planned with no back-merge step | Raise source-of-truth risk immediately. |
+| Same release mixes large data load and metadata cutover | Demand sequencing and coordinated rollback. |
+| Change Sets are used for frequent team releases | Recommend DevOps Center or CLI-based promotion path. |
 
 ## Output Artifacts
 

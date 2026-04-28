@@ -74,10 +74,12 @@ A swim lane represents an actor: who or what is performing each step. The most c
 
 The canonical actor categories are:
 
-- **Human user** — by role, not by name. "Account Executive" not "Jane".
-- **Salesforce platform** — for automated steps the platform performs (validation, sharing, record creation, notification).
-- **Integration** — one lane per named external system. NetSuite is one lane; MuleSoft is another; Stripe is a third. Lumping integrations into a single "External" lane hides handshake steps.
-- **Customer or external counterparty** — when the process includes a step the customer performs (signs a document, fills out a portal form, replies to an email). In B2C contexts this lane is mandatory; B2B teams forget it constantly.
+| Actor | Lane convention |
+|---|---|
+| Human user | By role, not by name. "Account Executive" not "Jane". |
+| Salesforce platform | For automated steps the platform performs (validation, sharing, record creation, notification). |
+| Integration | One lane per named external system. NetSuite is one lane; MuleSoft is another; Stripe is a third. Lumping integrations into a single "External" lane hides handshake steps. |
+| Customer or external counterparty | When the process includes a step the customer performs (signs a document, fills out a portal form, replies to an email). In B2C contexts this lane is mandatory; B2B teams forget it constantly. |
 
 A well-formed As-Is map has 4–7 lanes. More than 7 indicates the process scope is too broad and should be split.
 
@@ -102,10 +104,12 @@ When two or more steps run concurrently after a fork (e.g., legal review and fin
 
 Every external integration handshake, every approval, and every decision diamond must have an exception path documented. The four canonical exception classes are:
 
-- **Timeout** — the upstream system did not respond within the SLA.
-- **Validation rejection** — the data submitted did not pass downstream validation.
-- **Authorization failure** — the actor performing the step lacks permission.
-- **Manual override** — a human consciously bypassed the automated step.
+| Class | Meaning |
+|---|---|
+| Timeout | The upstream system did not respond within the SLA. |
+| Validation rejection | The data submitted did not pass downstream validation. |
+| Authorization failure | The actor performing the step lacks permission. |
+| Manual override | A human consciously bypassed the automated step. |
 
 A To-Be map that documents only happy paths is incomplete. The build team will invent exception handling on the fly, and the resulting Flows or Apex services will not be auditable.
 

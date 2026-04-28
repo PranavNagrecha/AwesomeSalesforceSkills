@@ -33,7 +33,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-03
+updated: 2026-04-28
 ---
 
 # User Management
@@ -46,10 +46,12 @@ Use this skill when creating, modifying, deactivating, or freezing Salesforce us
 
 Gather this context before working on any user management task:
 
-- **License availability**: Confirm the org has unused licenses of the required type (Setup → Company Information → User Licenses / Feature Licenses / Permission Set Licenses).
-- **Profile selection**: Identify the right profile. Profile controls object permissions, FLS, page layouts, tab visibility, login hours, and IP restrictions.
-- **Role hierarchy**: Determine if the user needs a role. Roles affect record access through hierarchy — a user without a role sees only records they own if OWD is Private.
-- **Offboarding status**: When deactivating, determine whether to reassign open records, reassign approval processes, and whether to freeze first.
+| Context | What to confirm |
+|---|---|
+| License availability | Confirm the org has unused licenses of the required type (Setup → Company Information → User Licenses / Feature Licenses / Permission Set Licenses). |
+| Profile selection | Identify the right profile. Profile controls object permissions, FLS, page layouts, tab visibility, login hours, and IP restrictions. |
+| Role hierarchy | Determine if the user needs a role. Roles affect record access through hierarchy — a user without a role sees only records they own if OWD is Private. |
+| Offboarding status | When deactivating, determine whether to reassign open records, reassign approval processes, and whether to freeze first. |
 
 ---
 
@@ -59,12 +61,14 @@ Gather this context before working on any user management task:
 
 Every Salesforce user must have exactly one user license. The license type determines which features and apps are available to that user.
 
-- **Salesforce**: Full CRM access to Sales Cloud, Service Cloud, and related apps. The most capable and most expensive license.
-- **Salesforce Platform**: Access to custom apps, Chatter, and core platform features. Does NOT include standard Sales or Service Cloud objects (Leads, Opportunities, Cases, Forecasts).
-- **Force.com (App Subscription)**: Legacy license for a single custom app. Limited standard object access.
-- **Chatter Free**: No CRM data access. Can use Chatter, groups, files. Does not consume a paid license. Cannot be converted to a standard license without deleting and recreating the user.
-- **Chatter External**: For external collaborators outside the org. No internal data access.
-- **Identity**: Authentication and SSO only. No Salesforce data access.
+| License | Access |
+|---|---|
+| Salesforce | Full CRM access to Sales Cloud, Service Cloud, and related apps. The most capable and most expensive license. |
+| Salesforce Platform | Access to custom apps, Chatter, and core platform features. Does NOT include standard Sales or Service Cloud objects (Leads, Opportunities, Cases, Forecasts). |
+| Force.com (App Subscription) | Legacy license for a single custom app. Limited standard object access. |
+| Chatter Free | No CRM data access. Can use Chatter, groups, files. Does not consume a paid license. Cannot be converted to a standard license without deleting and recreating the user. |
+| Chatter External | For external collaborators outside the org. No internal data access. |
+| Identity | Authentication and SSO only. No Salesforce data access. |
 
 Feature licenses layer additional capabilities on top of the user license (e.g., Marketing User, Service Cloud User, Knowledge User, Mobile User). Permission set licenses (PSLs) enable specific feature-level entitlements (e.g., Einstein Prediction Builder) assigned via permission sets rather than the profile.
 
@@ -80,12 +84,14 @@ Best practice: Freeze first → reassign records and approvals → then deactiva
 
 Every user has exactly one profile. Profiles cannot be removed — only replaced. Profile settings that directly affect user behavior include:
 
-- **Object permissions**: CRUD + View All + Modify All per object
-- **Field-level security**: Read/Edit per field (overrides page layout)
-- **App and tab visibility**: Which Lightning apps and tabs are shown
-- **Page layout assignment**: Which layouts are seen per object and record type
-- **Login hours**: Time windows during which users may log in
-- **Login IP ranges**: Whitelisted IP ranges; login from outside this range triggers verification email or blocks access depending on org settings
+| Setting | Effect |
+|---|---|
+| Object permissions | CRUD + View All + Modify All per object |
+| Field-level security | Read/Edit per field (overrides page layout) |
+| App and tab visibility | Which Lightning apps and tabs are shown |
+| Page layout assignment | Which layouts are seen per object and record type |
+| Login hours | Time windows during which users may log in |
+| Login IP ranges | Whitelisted IP ranges; login from outside this range triggers verification email or blocks access depending on org settings |
 
 ### Role Hierarchy and Record Visibility
 

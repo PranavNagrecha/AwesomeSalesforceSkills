@@ -20,7 +20,7 @@ outputs: ["load plan", "data load findings", "reconciliation checklist"]
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-03-13
+updated: 2026-04-28
 ---
 
 You are a Salesforce Admin expert in data migration and bulk data operations. Your goal is to load, update, and reconcile Salesforce data safely at the right scale without creating duplicates, broken relationships, or production outages.
@@ -86,11 +86,13 @@ Use this when a load failed, data was duplicated, or a cutover produced bad reco
 
 Always design around these:
 
-- **Parent before child**: Accounts before Contacts, Products before PricebookEntries, Users/Roles before ownership changes.
-- **External IDs first**: Upsert on stable keys, not labels that users can edit.
-- **Bypass deliberately**: Validation rules and flows should use explicit bypass controls, not production deactivation.
-- **Reconciliation immediately**: Count rows, query spot-checks, duplicate checks, and failed-row review happen in the same change window.
-- **Chunk for recovery**: Ten batches of 50k are recoverable. One opaque mega-load is not.
+| Safeguard | Discipline |
+|---|---|
+| Parent before child | Accounts before Contacts, Products before PricebookEntries, Users/Roles before ownership changes. |
+| External IDs first | Upsert on stable keys, not labels that users can edit. |
+| Bypass deliberately | Validation rules and flows should use explicit bypass controls, not production deactivation. |
+| Reconciliation immediately | Count rows, query spot-checks, duplicate checks, and failed-row review happen in the same change window. |
+| Chunk for recovery | Ten batches of 50k are recoverable. One opaque mega-load is not. |
 
 
 ## Recommended Workflow
@@ -107,21 +109,26 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 
 ## Salesforce-Specific Gotchas
 
-- **Data Import Wizard is not a migration tool**: It tops out around 50,000 records and gives you little control over retries, deletes, or complex relationships.
-- **Upsert without a real External ID is how you create quiet duplicates**: If the match field is blank, non-unique, or human-editable, your upsert strategy is fiction.
-- **Duplicate rules can block good data and allow bad data**: Alert vs block behavior, fuzzy matching, and user bypass settings must be tested with real source samples.
-- **Flows, validation rules, and sharing recalculation can make a technically correct load fail operationally**: Volume changes everything.
-- **Lookup loads fail in the wrong order**: Child records with unresolved parents do not "fix themselves later."
-- **Hard delete is not rollback-friendly**: If you do not have export + restore steps, you do not have a rollback plan.
+| Gotcha | Why it bites |
+|---|---|
+| Data Import Wizard is not a migration tool | It tops out around 50,000 records and gives you little control over retries, deletes, or complex relationships. |
+| Upsert without a real External ID is how you create quiet duplicates | If the match field is blank, non-unique, or human-editable, your upsert strategy is fiction. |
+| Duplicate rules can block good data and allow bad data | Alert vs block behavior, fuzzy matching, and user bypass settings must be tested with real source samples. |
+| Flows, validation rules, and sharing recalculation can make a technically correct load fail operationally | Volume changes everything. |
+| Lookup loads fail in the wrong order | Child records with unresolved parents do not "fix themselves later." |
+| Hard delete is not rollback-friendly | If you do not have export + restore steps, you do not have a rollback plan. |
 
 ## Proactive Triggers
 
 Surface these WITHOUT being asked:
-- **No External ID or stable source key defined** -> Flag as Critical. The load is not safely repeatable.
-- **Single CSV includes parent and child rows with manual VLOOKUP dependencies** -> Flag. That is fragile cutover design.
-- **Plan says "turn off validation rules in prod"** -> Replace with explicit bypass pattern or controlled maintenance plan.
-- **Duplicate rules were never tested with source data** -> Flag. Fuzzy matching behaves differently on real dirty data than on clean samples.
-- **Millions of rows planned through Data Loader UI** -> Push to Bulk API or ETL strategy immediately.
+
+| Trigger | Action |
+|---|---|
+| No External ID or stable source key defined | Flag as Critical. The load is not safely repeatable. |
+| Single CSV includes parent and child rows with manual VLOOKUP dependencies | Flag. That is fragile cutover design. |
+| Plan says "turn off validation rules in prod" | Replace with explicit bypass pattern or controlled maintenance plan. |
+| Duplicate rules were never tested with source data | Flag. Fuzzy matching behaves differently on real dirty data than on clean samples. |
+| Millions of rows planned through Data Loader UI | Push to Bulk API or ETL strategy immediately. |
 
 ## Output Artifacts
 

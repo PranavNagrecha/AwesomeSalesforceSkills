@@ -34,7 +34,7 @@ dependencies:
   - npsp-program-management
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-13
+updated: 2026-04-28
 ---
 
 # Program Outcome Tracking Design
@@ -70,10 +70,13 @@ Structured logic model outcome tracking (indicators, targets, actuals, baseline 
 ### NPC Outcome Management (NPC Only)
 
 Nonprofit Cloud has a distinct Outcome Management feature with native objects:
-- **Outcome** — represents a program result statement
-- **Indicator** — a measurable proxy for an Outcome
-- **Indicator Result** — the actual measured value at a point in time
-- **Participant Goal** — an individual-level outcome target
+
+| Object | Role |
+|---|---|
+| Outcome | Represents a program result statement |
+| Indicator | A measurable proxy for an Outcome |
+| Indicator Result | The actual measured value at a point in time |
+| Participant Goal | An individual-level outcome target |
 
 This feature is NOT available in NPSP/PMM orgs. Designs using Outcome or Indicator objects require NPC licensing.
 

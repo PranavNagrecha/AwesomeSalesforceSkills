@@ -39,7 +39,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-07
+updated: 2026-04-28
 ---
 
 # Email Studio Administration
@@ -52,11 +52,13 @@ This skill activates when a practitioner is creating, configuring, or troublesho
 
 Gather this context before working on anything in this domain:
 
-- **Business unit setup**: Which Marketing Cloud Business Unit owns this send? Send classifications, suppression lists, and SAP IP addresses are scoped to a business unit.
-- **Data Extension or List structure**: Dynamic content rules and subscriber segmentation depend on which subscriber attributes or DE fields are populated and typed correctly.
-- **Legal classification of the email**: Determine early whether the email is Commercial (marketing offer, newsletter) or Transactional (order confirmation, password reset). This drives which Send Classification to use and whether CAN-SPAM footer + global unsubscribe handling is required.
-- **Most common wrong assumption**: Teams assume that building multiple email versions is required to support different subscriber segments — dynamic content blocks eliminate this need entirely.
-- **Platform constraints**: Content Builder has no hard limit on the number of dynamic content blocks per email, but extremely complex rule trees (20+ conditions) slow template rendering in the preview pane and should be tested.
+| Context | What to confirm |
+|---|---|
+| Business unit setup | Which Marketing Cloud Business Unit owns this send? Send classifications, suppression lists, and SAP IP addresses are scoped to a business unit. |
+| Data Extension or List structure | Dynamic content rules and subscriber segmentation depend on which subscriber attributes or DE fields are populated and typed correctly. |
+| Legal classification of the email | Determine early whether the email is Commercial (marketing offer, newsletter) or Transactional (order confirmation, password reset). This drives which Send Classification to use and whether CAN-SPAM footer + global unsubscribe handling is required. |
+| Most common wrong assumption | Teams assume that building multiple email versions is required to support different subscriber segments — dynamic content blocks eliminate this need entirely. |
+| Platform constraints | Content Builder has no hard limit on the number of dynamic content blocks per email, but extremely complex rule trees (20+ conditions) slow template rendering in the preview pane and should be tested. |
 
 ---
 
@@ -100,10 +102,13 @@ A Send Classification is the configuration object that controls the legal and de
 Email Studio A/B testing allows controlled comparison of two email variants on a portion of the audience before sending the winner to the remainder.
 
 Supported test dimensions:
-- **Subject line**: Test two subject lines; winner selected by open rate.
-- **From name**: Test two sender identities; winner selected by open rate.
-- **Content**: Test two distinct email bodies; winner selected by click rate or open rate.
-- **Send time**: Test two delivery times; winner selected by open rate.
+
+| Dimension | Winner criterion |
+|---|---|
+| Subject line | Test two subject lines; winner selected by open rate. |
+| From name | Test two sender identities; winner selected by open rate. |
+| Content | Test two distinct email bodies; winner selected by click rate or open rate. |
+| Send time | Test two delivery times; winner selected by open rate. |
 
 Test configuration:
 - Define the test audience split (e.g., 10% receives version A, 10% receives version B, 80% is the holdout for the winner).

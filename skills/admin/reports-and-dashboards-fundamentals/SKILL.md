@@ -42,7 +42,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-04-28
 ---
 
 # Reports and Dashboards Fundamentals
@@ -55,12 +55,14 @@ Use this skill when designing or explaining Salesforce Reports and Dashboards fr
 
 Gather this context before working in this domain:
 
-- **Org edition**: Some features (joined reports, dynamic dashboards with more than 5 running users, scheduled dashboard refresh) require Enterprise edition or above.
-- **Primary objects**: Identify the parent object and any related objects needed. The object relationship determines which standard or custom report type to use.
-- **Audience and access model**: Who will view this report or dashboard? Their sharing access determines what rows they will see. "Run as logged-in user" is secure but shows different data per viewer; "run as specified user" shows the same slice to everyone.
-- **Delivery mode**: One-time analysis, ongoing dashboard, or scheduled subscription email?
-- **Most common wrong assumption**: Practitioners assume a report query scans all records in the org. It does not. Reports run as the running user and respect record-level sharing. Always confirm sharing access before concluding data is missing.
-- **Hard platform limits**: 2,000 rows displayed in the report builder UI (no row limit on export); 20 source reports per dashboard; 5 blocks per joined report; maximum 5 dynamic dashboard running users on Enterprise, 10 on Unlimited.
+| Context | Why it matters |
+|---|---|
+| Org edition | Some features (joined reports, dynamic dashboards with more than 5 running users, scheduled dashboard refresh) require Enterprise edition or above. |
+| Primary objects | Identify the parent object and any related objects needed. The object relationship determines which standard or custom report type to use. |
+| Audience and access model | Who will view this report or dashboard? Their sharing access determines what rows they will see. "Run as logged-in user" is secure but shows different data per viewer; "run as specified user" shows the same slice to everyone. |
+| Delivery mode | One-time analysis, ongoing dashboard, or scheduled subscription email? |
+| Most common wrong assumption | Practitioners assume a report query scans all records in the org. It does not. Reports run as the running user and respect record-level sharing. Always confirm sharing access before concluding data is missing. |
+| Hard platform limits | 2,000 rows displayed in the report builder UI (no row limit on export); 20 source reports per dashboard; 5 blocks per joined report; maximum 5 dynamic dashboard running users on Enterprise, 10 on Unlimited. |
 
 ---
 
@@ -98,31 +100,26 @@ Joined reports have strict limits: maximum 5 blocks, 2,000 rows per block, no bu
 
 ### 3. Filters, Bucket Fields, and Summary Formulas
 
-**Standard filters**: date range (relative dates like "This Quarter" are preferred over absolute dates for ongoing reports), record type, owner, and custom field filters. Up to 20 filter conditions per report.
-
-**Cross-filters**: Show parent records WITH or WITHOUT matching child records without adding columns from the child. Example: "Accounts WITHOUT open Opportunities in the last 90 days." Cross-filters are powerful but add query time; use them deliberately.
-
-**Row limits with sort**: Available only on Tabular and Summary reports. Limits the rows returned (e.g., Top 10 Opportunities by Amount). Required for dashboard components that show a list from a tabular report.
-
-**Bucket fields**: Group field values into named categories inline without creating a formula field on the object. Example: bucket Amount into "Small" (under 10,000), "Mid" (10,000–100,000), "Enterprise" (above 100,000). Bucket fields are report-local; they do not persist as fields on the object. Maximum 5 bucket columns per report, 20 bucket values per bucket column.
-
-**Summary formulas**: Custom calculations across grouped rows. Example: Win Rate = CLOSED_WON_COUNT / TOTAL_COUNT. Summary formulas can reference other summary fields but not individual row fields. They appear only in grouped (Summary or Matrix) reports.
-
-**Report formula columns** (row-level formulas): Added via "Add Formula Column" — these calculate per row, like field formulas, and appear as a column in Tabular or Summary reports.
+| Element | Behavior |
+|---|---|
+| Standard filters | Date range (relative dates like "This Quarter" are preferred over absolute dates for ongoing reports), record type, owner, and custom field filters. Up to 20 filter conditions per report. |
+| Cross-filters | Show parent records WITH or WITHOUT matching child records without adding columns from the child. Example: "Accounts WITHOUT open Opportunities in the last 90 days." Cross-filters are powerful but add query time; use them deliberately. |
+| Row limits with sort | Available only on Tabular and Summary reports. Limits the rows returned (e.g., Top 10 Opportunities by Amount). Required for dashboard components that show a list from a tabular report. |
+| Bucket fields | Group field values into named categories inline without creating a formula field on the object. Example: bucket Amount into "Small" (under 10,000), "Mid" (10,000–100,000), "Enterprise" (above 100,000). Bucket fields are report-local; they do not persist as fields on the object. Maximum 5 bucket columns per report, 20 bucket values per bucket column. |
+| Summary formulas | Custom calculations across grouped rows. Example: Win Rate = CLOSED_WON_COUNT / TOTAL_COUNT. Summary formulas can reference other summary fields but not individual row fields. They appear only in grouped (Summary or Matrix) reports. |
+| Report formula columns | Row-level formulas added via "Add Formula Column" — these calculate per row, like field formulas, and appear as a column in Tabular or Summary reports. |
 
 ### 4. Dashboards and Dynamic Dashboards
 
 A dashboard is a visual display of up to 20 source reports shown as components (charts, metrics, tables, gauges, funnels).
 
-**Static dashboards**: All viewers see the same data — the data visible to the designated running user. The running user must be a valid, active Salesforce user. If a viewer has less access than the running user, they still see the running user's data. This is a security concern.
-
-**Dynamic dashboards**: Each viewer sees data filtered to their own access — the dashboard runs "as the logged-in user." Enterprise edition supports up to 5 dynamic dashboard running users per org; Unlimited edition supports up to 10. Dynamic dashboards cannot be subscribed to or scheduled for delivery.
-
-**Dashboard components**: Chart (bar, line, donut, funnel, scatter), Metric (single number), Gauge, Table (list from a source report), and Visualforce/Lightning Component (custom). Each component maps to one source report.
-
-**Dashboard filters**: Up to 3 filters per dashboard. A filter maps to a field in the source reports; when applied, it overwrites that field's filter in each report. Filters only affect components whose source report contains the field. Test each component after adding a filter — some may be unaffected.
-
-**Refresh scheduling**: Dashboards can be set to auto-refresh every 24 hours (minimum interval). Dynamic dashboards refresh on demand only; they cannot be scheduled.
+| Element | Behavior |
+|---|---|
+| Static dashboards | All viewers see the same data — the data visible to the designated running user. The running user must be a valid, active Salesforce user. If a viewer has less access than the running user, they still see the running user's data. This is a security concern. |
+| Dynamic dashboards | Each viewer sees data filtered to their own access — the dashboard runs "as the logged-in user." Enterprise edition supports up to 5 dynamic dashboard running users per org; Unlimited edition supports up to 10. Dynamic dashboards cannot be subscribed to or scheduled for delivery. |
+| Dashboard components | Chart (bar, line, donut, funnel, scatter), Metric (single number), Gauge, Table (list from a source report), and Visualforce/Lightning Component (custom). Each component maps to one source report. |
+| Dashboard filters | Up to 3 filters per dashboard. A filter maps to a field in the source reports; when applied, it overwrites that field's filter in each report. Filters only affect components whose source report contains the field. Test each component after adding a filter — some may be unaffected. |
+| Refresh scheduling | Dashboards can be set to auto-refresh every 24 hours (minimum interval). Dynamic dashboards refresh on demand only; they cannot be scheduled. |
 
 ---
 

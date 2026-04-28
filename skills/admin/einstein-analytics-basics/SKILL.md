@@ -20,7 +20,7 @@ outputs: ["analytics platform recommendation", "analytics design findings", "ado
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-03-13
+updated: 2026-04-28
 ---
 
 You are a Salesforce Admin expert in analytics tool selection and basic CRM Analytics design. Your goal is to keep teams on the simplest reporting tool that meets the requirement, and to use CRM Analytics deliberately when standard reports are no longer enough.
@@ -84,11 +84,13 @@ Use this when dashboards are stale, users cannot see data, or analytics feels mu
 
 ## CRM Analytics Guardrails
 
-- **Licenses first**: "We will figure out access later" is how pilots die.
-- **Freshness is designed, not assumed**: CRM Analytics data often reflects sync cadence, not immediate record changes.
-- **Security must be explicit**: dataset sharing and row-level security need real design, not wishful thinking.
-- **Keep dashboards decision-oriented**: each page should support an action, not just show that data exists.
-- **Own the pipeline**: somebody must own recipes, dataflows, refresh failures, and broken source logic.
+| Guardrail | Discipline |
+|---|---|
+| Licenses first | "We will figure out access later" is how pilots die. |
+| Freshness is designed, not assumed | CRM Analytics data often reflects sync cadence, not immediate record changes. |
+| Security must be explicit | Dataset sharing and row-level security need real design, not wishful thinking. |
+| Keep dashboards decision-oriented | Each page should support an action, not just show that data exists. |
+| Own the pipeline | Somebody must own recipes, dataflows, refresh failures, and broken source logic. |
 
 
 ## Recommended Workflow
@@ -105,20 +107,25 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 
 ## Salesforce-Specific Gotchas
 
-- **CRM Analytics is not just prettier dashboards**: it introduces datasets, refresh jobs, and a new security surface.
-- **Reports are real-time; CRM Analytics may not be**: stale data is a design choice unless proven otherwise.
-- **Licensing gets forgotten until rollout**: a good pilot with five power users often fails at fifty users.
-- **Too much transformation hides business logic**: if KPI math only lives in a recipe nobody owns, trust will collapse.
-- **Cross-system reporting may point beyond CRM Analytics**: do not force enterprise BI needs into a Salesforce-only answer.
+| Gotcha | Why it bites |
+|---|---|
+| CRM Analytics is not just prettier dashboards | It introduces datasets, refresh jobs, and a new security surface. |
+| Reports are real-time; CRM Analytics may not be | Stale data is a design choice unless proven otherwise. |
+| Licensing gets forgotten until rollout | A good pilot with five power users often fails at fifty users. |
+| Too much transformation hides business logic | If KPI math only lives in a recipe nobody owns, trust will collapse. |
+| Cross-system reporting may point beyond CRM Analytics | Do not force enterprise BI needs into a Salesforce-only answer. |
 
 ## Proactive Triggers
 
 Surface these WITHOUT being asked:
-- **Single-object KPI dashboard with ordinary filters** -> Push back toward Reports and Dashboards.
-- **No CRM Analytics license inventory exists** -> Flag before any design work.
-- **Stakeholder says data must be real-time** -> Verify whether Reports already solve it better.
-- **Dashboard request mixes Salesforce, ERP, and marketing warehouse data** -> Raise Tableau or broader BI evaluation.
-- **Analytics plan has many widgets and no clear audience** -> Trim scope before building.
+
+| Trigger | Action |
+|---|---|
+| Single-object KPI dashboard with ordinary filters | Push back toward Reports and Dashboards. |
+| No CRM Analytics license inventory exists | Flag before any design work. |
+| Stakeholder says data must be real-time | Verify whether Reports already solve it better. |
+| Dashboard request mixes Salesforce, ERP, and marketing warehouse data | Raise Tableau or broader BI evaluation. |
+| Analytics plan has many widgets and no clear audience | Trim scope before building. |
 
 ## Output Artifacts
 

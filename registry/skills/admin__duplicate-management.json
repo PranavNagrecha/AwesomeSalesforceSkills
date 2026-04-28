@@ -53,7 +53,7 @@
     "fcae4775c8186cc351fb",
     "ff6e50ee61a4c07c4e15"
   ],
-  "content_hash": "882ca0dd2fa1e015d1b025967f3914092a57eb32e9461498471953e4d39e9417",
+  "content_hash": "63e511431fd522c577df92c69568b4e0c66d5e0db0de60057b5db35e1e3d3b3a",
   "dependencies": [],
   "description": "Use when designing, reviewing, or troubleshooting Salesforce duplicate prevention, matching rules, duplicate rules, and merge governance. Triggers: 'duplicate rule', 'matching rule', 'merge strategy', 'dedupe', 'survivorship', 'D&B', 'same contact twice'. NOT for choosing data-load tooling unless duplicate control is the main problem.",
   "file_location": "skills/admin/duplicate-management",
@@ -93,7 +93,7 @@
   "templates": [
     "skills/admin/duplicate-management/templates/duplicate-governance-template.md"
   ],
-  "updated": "2026-03-13",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

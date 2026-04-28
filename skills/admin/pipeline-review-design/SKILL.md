@@ -36,7 +36,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-04-28
 ---
 
 # Pipeline Review Design
@@ -69,11 +69,13 @@ The feature is not a report or dashboard — it is a specialized list view layer
 
 Pipeline Inspection groups and filters opportunities by Forecast Category, which maps directly to the `ForecastCategoryName` field on each Stage picklist value. The five default categories available in Pipeline Inspection are:
 
-- **Commit** — high-confidence deals the rep is committing to close
-- **Best Case** — deals the rep expects to close with additional effort
-- **Most Likely** — deals that are probable but not fully committed (available when Most Likely forecast type is active)
-- **Open Pipeline** — earlier-stage deals in active consideration
-- **Omitted** — excluded from all forecast rollups; these are hidden from Pipeline Inspection totals unless specifically filtered for
+| Category | Meaning |
+|---|---|
+| Commit | High-confidence deals the rep is committing to close |
+| Best Case | Deals the rep expects to close with additional effort |
+| Most Likely | Deals that are probable but not fully committed (available when Most Likely forecast type is active) |
+| Open Pipeline | Earlier-stage deals in active consideration |
+| Omitted | Excluded from all forecast rollups; these are hidden from Pipeline Inspection totals unless specifically filtered for |
 
 Starting Spring '24, admins can create custom forecast categories in addition to or as replacements for some of the defaults. Custom categories appear in Pipeline Inspection once the underlying forecast type is associated with Pipeline Inspection via Setup > Pipeline Inspection > Forecast Types.
 
@@ -83,10 +85,12 @@ Stages mapped to `Closed` (IsClosed=true) appear in the Closed Won / Closed Lost
 
 Pipeline Inspection exposes a set of configurable metric columns that highlight deal movement. The core metrics available are:
 
-- **Amount Changed** — net change in Opportunity Amount over the lookback window
-- **Close Date Changed** — flag when the Close Date has been pushed out
-- **Stage Changed** — flag when the Stage has moved (forward or backward)
-- **Days in Stage** — how many days the opportunity has been in its current stage without advancing; this is a native metric calculated by the platform and does not require a formula field
+| Metric | Meaning |
+|---|---|
+| Amount Changed | Net change in Opportunity Amount over the lookback window |
+| Close Date Changed | Flag when the Close Date has been pushed out |
+| Stage Changed | Flag when the Stage has moved (forward or backward) |
+| Days in Stage | How many days the opportunity has been in its current stage without advancing; this is a native metric calculated by the platform and does not require a formula field |
 
 Days in Stage is configured in Setup > Manage Pipeline Inspection Metrics. It is not derived from a custom field — the platform calculates it from the stage transition event log. Admins can configure the threshold that triggers a visual highlight (e.g., flag deals that have been in the same stage for more than 14 days).
 

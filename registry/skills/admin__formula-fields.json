@@ -53,7 +53,7 @@
     "f4c1621fd996bc0c3282",
     "fa3d02d377f6afefae1b"
   ],
-  "content_hash": "26d215b6897aa0af677181b050db04986170dceaf1310d8dead1d776eec1a10e",
+  "content_hash": "9b037eacd851e05b747d7d8380d28334533dbc1f1e7143eb6b4b6ee0b515253d",
   "dependencies": [],
   "description": "Use when designing, reviewing, or troubleshooting Salesforce formula fields. Triggers: 'formula field', 'cross-object formula', 'null handling', 'compile size', 'HYPERLINK', 'IMAGE', 'why is formula slow'. NOT for save-time validation or persisted values - use validation rules, Flow, or real fields for that.",
   "file_location": "skills/admin/formula-fields",
@@ -93,7 +93,7 @@
   "templates": [
     "skills/admin/formula-fields/templates/formula-field-design-template.md"
   ],
-  "updated": "2026-03-13",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

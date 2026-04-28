@@ -78,7 +78,7 @@
     "f436cac44d78fc7cc1a9",
     "fa4f49fe409c4e4e3163"
   ],
-  "content_hash": "697c4a578afe4ee93de331d72434980c3bf7e90b6b90d77d420d7cd57001fb98",
+  "content_hash": "9752740fbfba5583f17bea3159f89aafa54b8791391f27f17db4d4d51e57e894",
   "dependencies": [
     "fsl-service-territory-setup"
   ],
@@ -129,7 +129,7 @@
   "templates": [
     "skills/admin/fsl-scheduling-policies/templates/fsl-scheduling-policies-template.md"
   ],
-  "updated": "2026-04-07",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

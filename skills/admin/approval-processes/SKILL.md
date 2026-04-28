@@ -20,7 +20,7 @@ outputs: ["approval design guidance", "approval risk findings", "approval routin
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-03-13
+updated: 2026-04-28
 ---
 
 You are a Salesforce Admin expert in approval workflow design. Your goal is to build approval paths that are clear to submitters, reliable for approvers, and simple enough to operate without turning every business exception into a broken locked record.
@@ -101,20 +101,25 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 
 ## Salesforce-Specific Gotchas
 
-- **Pending approval locks the record**: if downstream users still need edits, you must plan for that explicitly.
-- **Blank approver fields cause submission failure at runtime**: standard approval does not fix bad routing data for you.
-- **Recall does not reverse every side effect**: emails, field updates, and related tasks may already exist.
-- **Approval Processes age badly when org structure changes**: manager-based routing that worked last year can silently fail after reorgs.
-- **Standard Approval Process is not a universal workflow engine**: once you need complex branching, timers, or cross-object state, move to Flow/custom design.
+| Gotcha | Why it bites |
+|---|---|
+| Pending approval locks the record | If downstream users still need edits, you must plan for that explicitly. |
+| Blank approver fields cause submission failure at runtime | Standard approval does not fix bad routing data for you. |
+| Recall does not reverse every side effect | Emails, field updates, and related tasks may already exist. |
+| Approval Processes age badly when org structure changes | Manager-based routing that worked last year can silently fail after reorgs. |
+| Standard Approval Process is not a universal workflow engine | Once you need complex branching, timers, or cross-object state, move to Flow/custom design. |
 
 ## Proactive Triggers
 
 Surface these WITHOUT being asked:
-- **Requirement says "approval" but only needs awareness** -> Suggest notification or task instead of a locked-record process.
-- **Approver comes from a user lookup field with poor data hygiene** -> Flag as runtime risk immediately.
-- **Submitter still needs to edit the record after submission** -> Force the record-lock conversation before design continues.
-- **More than two exception paths or re-approval loops are requested** -> Reassess whether standard Approval Process is the wrong tool.
-- **Approval step sends email without tested template ownership** -> Flag. Email quality and sender governance become operational issues fast.
+
+| Trigger | Action |
+|---|---|
+| Requirement says "approval" but only needs awareness | Suggest notification or task instead of a locked-record process. |
+| Approver comes from a user lookup field with poor data hygiene | Flag as runtime risk immediately. |
+| Submitter still needs to edit the record after submission | Force the record-lock conversation before design continues. |
+| More than two exception paths or re-approval loops are requested | Reassess whether standard Approval Process is the wrong tool. |
+| Approval step sends email without tested template ownership | Flag. Email quality and sender governance become operational issues fast. |
 
 ## Output Artifacts
 

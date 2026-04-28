@@ -40,7 +40,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-11
+updated: 2026-04-28
 ---
 
 # Industries Insurance Setup
@@ -76,12 +76,14 @@ Enabling these settings without understanding the downstream data model implicat
 
 The insurance data model centers on these standard objects:
 
-- **InsurancePolicy** — the master policy record. Linked to Account via NameInsuredId. Supports policy number, effective/expiration dates, status, and line-of-business picklist.
-- **InsurancePolicyCoverage** — child of InsurancePolicy. Represents a single coverage line (e.g., collision, liability). Linked to CoverageType.
-- **CoverageType** — lookup object defining the type of coverage, used across policies and claims.
-- **Claim** — represents an insurance claim. Linked to InsurancePolicy. Has ClaimType picklist and supports ClaimParticipant child records.
-- **InsurancePolicyParticipant** — junction between InsurancePolicy and Account/Contact. Role picklist controls named insured, producer, driver, beneficiary, and others.
-- **InsurancePolicyProductClause** — stores product clause details attached to a policy, used in clause-driven commercial policies.
+| Object | Role |
+|---|---|
+| InsurancePolicy | The master policy record. Linked to Account via NameInsuredId. Supports policy number, effective/expiration dates, status, and line-of-business picklist. |
+| InsurancePolicyCoverage | Child of InsurancePolicy. Represents a single coverage line (e.g., collision, liability). Linked to CoverageType. |
+| CoverageType | Lookup object defining the type of coverage, used across policies and claims. |
+| Claim | Represents an insurance claim. Linked to InsurancePolicy. Has ClaimType picklist and supports ClaimParticipant child records. |
+| InsurancePolicyParticipant | Junction between InsurancePolicy and Account/Contact. Role picklist controls named insured, producer, driver, beneficiary, and others. |
+| InsurancePolicyProductClause | Stores product clause details attached to a policy, used in clause-driven commercial policies. |
 
 These are platform-native standard objects introduced with FSC Insurance. They are not custom objects and cannot be replaced with generic custom schema.
 

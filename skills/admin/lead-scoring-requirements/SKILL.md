@@ -38,7 +38,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-04-28
 ---
 
 # Lead Scoring Requirements
@@ -81,10 +81,12 @@ The boundary between MQL and SQL must be documented with explicit criteria, not 
 
 The handoff SLA governs what happens at each transition:
 
-- **Score threshold** — the minimum composite score for automatic MQL flag
-- **Required field completeness** — minimum set of fields that must be populated before handoff (e.g., `Company`, `Title`, `Phone` or `Email`, `LeadSource`)
-- **Max response time** — how long a rep has to accept or recycle an MQL (common: 1 business day for hot MQLs, 3 days for warm)
-- **Recycle criteria** — conditions under which a lead is returned to marketing nurture: no response, wrong timing, not a decision-maker
+| SLA element | What it specifies |
+|---|---|
+| Score threshold | The minimum composite score for automatic MQL flag |
+| Required field completeness | Minimum set of fields that must be populated before handoff (e.g., `Company`, `Title`, `Phone` or `Email`, `LeadSource`) |
+| Max response time | How long a rep has to accept or recycle an MQL (common: 1 business day for hot MQLs, 3 days for warm) |
+| Recycle criteria | Conditions under which a lead is returned to marketing nurture: no response, wrong timing, not a decision-maker |
 
 Without a documented SLA, leads fall into a "black hole" and attribution data becomes meaningless.
 
@@ -92,10 +94,12 @@ Without a documented SLA, leads fall into a "black hole" and attribution data be
 
 Lead scoring in native Sales Cloud uses:
 
-- One or more **numeric custom fields** (e.g., `Fit_Score__c`, `Engagement_Score__c`) maintained by Flow or Apex
-- One **formula field** (e.g., `Composite_Score__c`) that sums or weights the dimension fields: `Fit_Score__c + Engagement_Score__c`
-- A **picklist or checkbox field** for lead status flags: `Is_MQL__c` (checkbox), `MQL_Date__c` (date/time), `SQL_Date__c`
-- Optional: a **Lead Stage** custom picklist: `Raw → Nurture → MQL → Accepted → SQL → Converted/Recycled`
+| Field type | Purpose |
+|---|---|
+| Numeric custom fields | One or more (e.g., `Fit_Score__c`, `Engagement_Score__c`) maintained by Flow or Apex |
+| Formula field | One (e.g., `Composite_Score__c`) that sums or weights the dimension fields: `Fit_Score__c + Engagement_Score__c` |
+| Picklist or checkbox field | Lead status flags: `Is_MQL__c` (checkbox), `MQL_Date__c` (date/time), `SQL_Date__c` |
+| Lead Stage custom picklist (optional) | `Raw → Nurture → MQL → Accepted → SQL → Converted/Recycled` |
 
 Formula fields cannot be filtered in reports unless you also maintain a mirror numeric field. If MQL routing via Assignment Rules or Flow depends on the score, the score must live in a stored numeric field, not a formula field. Source: [Salesforce Help — Customize Scoring Rules](https://help.salesforce.com/s/articleView?id=sf.leads_scoring.htm).
 

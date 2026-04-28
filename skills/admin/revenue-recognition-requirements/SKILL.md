@@ -45,7 +45,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-10
+updated: 2026-04-28
 ---
 
 # Revenue Recognition Requirements
@@ -111,10 +111,12 @@ For SaaS annual subscriptions, Daily Proration is the most common choice because
 
 The `blng__RecognitionTreatment__c` field on `blng__RevenueRecognitionRule__c` defines the trigger for recognition:
 
-- **Immediate** — Revenue is recognized at Order activation. Used for one-time products delivered at point of sale.
-- **Rateable** — Revenue is spread ratably over the service period. The most common treatment for subscription SaaS products (ASC 606 §606-10-25-27 performance obligation satisfied over time).
-- **Event-Based** — Revenue is recognized when a specified event occurs (e.g., delivery confirmation, milestone completion). Requires an event record to trigger the recognition.
-- **Custom** — Admin-defined schedule; rarely used.
+| Treatment | Behavior |
+|---|---|
+| Immediate | Revenue is recognized at Order activation. Used for one-time products delivered at point of sale. |
+| Rateable | Revenue is spread ratably over the service period. The most common treatment for subscription SaaS products (ASC 606 §606-10-25-27 performance obligation satisfied over time). |
+| Event-Based | Revenue is recognized when a specified event occurs (e.g., delivery confirmation, milestone completion). Requires an event record to trigger the recognition. |
+| Custom | Admin-defined schedule; rarely used. |
 
 ### Contract Amendments Do Not Auto-Update Revenue Schedules
 
