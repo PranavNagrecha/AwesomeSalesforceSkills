@@ -277,6 +277,8 @@
       "apex/apex-batch-chaining",
       "apex/apex-blob-and-content-version",
       "apex/apex-callable-interface",
+      "apex/apex-callout-retry-and-resilience",
+      "apex/apex-class-decomposition-pattern",
       "apex/apex-collections-patterns",
       "apex/apex-connect-api-chatter",
       "apex/apex-cpu-and-heap-optimization",
@@ -285,11 +287,13 @@
       "apex/apex-custom-settings-hierarchy",
       "apex/apex-design-patterns",
       "apex/apex-dml-patterns",
+      "apex/apex-dynamic-soql-binding-safety",
       "apex/apex-email-services",
       "apex/apex-encoding-and-crypto",
       "apex/apex-execute-anonymous",
       "apex/apex-flow-invocation-from-apex",
       "apex/apex-future-method-patterns",
+      "apex/apex-hardcoded-id-elimination",
       "apex/apex-http-callout-mocking",
       "apex/apex-json-serialization",
       "apex/apex-limits-monitoring",
@@ -306,13 +310,17 @@
       "apex/apex-salesforce-id-patterns",
       "apex/apex-savepoint-and-rollback",
       "apex/apex-scheduled-jobs",
+      "apex/apex-secrets-and-protected-cmdt",
       "apex/apex-security-patterns",
       "apex/apex-soql-relationship-queries",
+      "apex/apex-stripinaccessible-and-fls-enforcement",
       "apex/apex-system-runas",
       "apex/apex-test-setup-patterns",
       "apex/apex-transaction-finalizers",
+      "apex/apex-trigger-bypass-and-killswitch-patterns",
       "apex/apex-trigger-context-variables",
       "apex/apex-user-and-permission-checks",
+      "apex/apex-with-without-sharing-decision",
       "apex/apex-wrapper-class-patterns",
       "apex/async-apex",
       "apex/batch-apex-patterns",
@@ -1711,16 +1719,24 @@
       "agentforce/agent-action-error-handling",
       "agentforce/mcp-tool-definition-apex",
       "agentforce/salesforce-mcp-server-setup",
+      "apex/apex-callout-retry-and-resilience",
+      "apex/apex-class-decomposition-pattern",
       "apex/apex-custom-permissions-check",
+      "apex/apex-dynamic-soql-binding-safety",
       "apex/apex-execute-anonymous",
       "apex/apex-future-method-patterns",
+      "apex/apex-hardcoded-id-elimination",
       "apex/apex-http-callout-mocking",
       "apex/apex-polymorphic-soql",
       "apex/apex-record-clone-patterns",
       "apex/apex-savepoint-and-rollback",
+      "apex/apex-secrets-and-protected-cmdt",
+      "apex/apex-stripinaccessible-and-fls-enforcement",
       "apex/apex-system-runas",
       "apex/apex-test-setup-patterns",
+      "apex/apex-trigger-bypass-and-killswitch-patterns",
       "apex/apex-trigger-context-variables",
+      "apex/apex-with-without-sharing-decision",
       "apex/commerce-payment-integration",
       "apex/custom-iterators-and-iterables",
       "apex/fsc-apex-extensions",
@@ -2039,6 +2055,7 @@
     ],
     "architecture": [
       "admin/integration-pattern-selection",
+      "apex/apex-class-decomposition-pattern",
       "architect/ai-agent-org-integration-architecture",
       "architect/ai-governance-architecture",
       "architect/analytics-data-architecture",
@@ -2473,6 +2490,9 @@
     "binary-classification": [
       "agentforce/einstein-prediction-builder"
     ],
+    "binding": [
+      "apex/apex-dynamic-soql-binding-safety"
+    ],
     "bindings": [
       "admin/analytics-dashboard-design",
       "admin/analytics-dashboard-json"
@@ -2707,7 +2727,8 @@
       "architect/ai-platform-architecture"
     ],
     "bypass": [
-      "admin/validation-rules"
+      "admin/validation-rules",
+      "apex/apex-trigger-bypass-and-killswitch-patterns"
     ],
     "cab-process": [
       "admin/change-advisory-board-process"
@@ -2775,6 +2796,7 @@
       "apex/cti-adapter-development"
     ],
     "callout": [
+      "apex/apex-callout-retry-and-resilience",
       "flow/flow-http-callout-action",
       "integration/mutual-tls-callouts",
       "integration/outbound-webhook-from-salesforce"
@@ -3112,6 +3134,7 @@
       "omnistudio/omnistudio-ci-cd-patterns"
     ],
     "circuit-breaker": [
+      "apex/apex-callout-retry-and-resilience",
       "integration/retry-and-backoff-patterns"
     ],
     "cis-integration": [
@@ -3193,6 +3216,9 @@
     ],
     "cloudhub": [
       "architect/mulesoft-anypoint-architecture"
+    ],
+    "cmdt": [
+      "apex/apex-secrets-and-protected-cmdt"
     ],
     "cms": [
       "integration/connect-rest-api-patterns"
@@ -3689,6 +3715,9 @@
       "admin/contract-and-renewal-management",
       "data/historical-order-migration"
     ],
+    "controller": [
+      "apex/apex-with-without-sharing-decision"
+    ],
     "controlling-field": [
       "admin/field-dependency-and-controlling",
       "admin/picklist-and-value-sets"
@@ -3910,6 +3939,7 @@
       "apex/long-running-process-orchestration"
     ],
     "crud": [
+      "apex/apex-stripinaccessible-and-fls-enforcement",
       "apex/soql-security",
       "flow/flow-runtime-context-and-sharing"
     ],
@@ -4042,6 +4072,8 @@
     ],
     "custom-metadata": [
       "apex/apex-custom-settings-hierarchy",
+      "apex/apex-hardcoded-id-elimination",
+      "apex/apex-trigger-bypass-and-killswitch-patterns",
       "apex/custom-metadata-in-apex",
       "architect/integration-framework-design",
       "architect/platform-selection-guidance",
@@ -4566,6 +4598,9 @@
     "dead-code": [
       "architect/technical-debt-assessment"
     ],
+    "dead-letter-queue": [
+      "apex/apex-callout-retry-and-resilience"
+    ],
     "deadlock": [
       "apex/record-locking-and-contention"
     ],
@@ -4633,6 +4668,9 @@
     ],
     "declarative-vs-programmatic": [
       "architect/solution-design-patterns"
+    ],
+    "decomposition": [
+      "apex/apex-class-decomposition-pattern"
     ],
     "decoupling": [
       "flow/flow-platform-events-integration"
@@ -5023,6 +5061,9 @@
     "dom-queries": [
       "lwc/lwc-template-refs"
     ],
+    "domain": [
+      "apex/apex-class-decomposition-pattern"
+    ],
     "domain-layer": [
       "apex/apex-design-patterns",
       "apex/fflib-enterprise-patterns"
@@ -5083,6 +5124,9 @@
     ],
     "dxp": [
       "lwc/lwr-site-development"
+    ],
+    "dynamic": [
+      "apex/apex-dynamic-soql-binding-safety"
     ],
     "dynamic-actions": [
       "admin/dynamic-forms-and-actions",
@@ -5316,6 +5360,7 @@
       "apex/apex-encoding-and-crypto"
     ],
     "encryption": [
+      "apex/apex-secrets-and-protected-cmdt",
       "architect/hipaa-compliance-architecture",
       "security/encrypted-field-query-patterns",
       "security/platform-encryption",
@@ -5809,6 +5854,7 @@
       "architect/tenant-isolation-patterns"
     ],
     "feature-management": [
+      "apex/apex-trigger-bypass-and-killswitch-patterns",
       "apex/apex-user-and-permission-checks"
     ],
     "feature-store": [
@@ -6227,6 +6273,7 @@
       "devops/cumulusci-automation"
     ],
     "fls": [
+      "apex/apex-stripinaccessible-and-fls-enforcement",
       "apex/dynamic-apex",
       "apex/soql-security",
       "architect/security-architecture-review",
@@ -6660,6 +6707,9 @@
     "hard-delete": [
       "data/batch-data-cleanup-patterns"
     ],
+    "hardcoded-id": [
+      "apex/apex-hardcoded-id-elimination"
+    ],
     "hardcoded-ids": [
       "admin/record-type-id-management"
     ],
@@ -6908,6 +6958,7 @@
       "admin/community-engagement-strategy"
     ],
     "idempotency": [
+      "apex/apex-callout-retry-and-resilience",
       "data/external-id-strategy",
       "flow/scheduled-flows",
       "integration/retry-and-backoff-patterns",
@@ -7061,6 +7112,7 @@
       "apex/apex-security-patterns"
     ],
     "injection": [
+      "apex/apex-dynamic-soql-binding-safety",
       "apex/soql-security",
       "data/sosl-search-patterns"
     ],
@@ -7440,6 +7492,7 @@
       "security/certificate-and-key-management"
     ],
     "kill-switch": [
+      "apex/apex-trigger-bypass-and-killswitch-patterns",
       "apex/feature-flags-and-kill-switches"
     ],
     "kms": [
@@ -8537,6 +8590,7 @@
       "admin/connected-apps-and-auth",
       "agentforce/model-builder-and-byollm",
       "apex/apex-named-credentials-patterns",
+      "apex/apex-secrets-and-protected-cmdt",
       "apex/callouts-and-http-integrations",
       "architect/integration-security-architecture",
       "architect/multi-org-strategy",
@@ -8946,7 +9000,8 @@
     ],
     "operational-excellence": [
       "admin/batch-job-scheduling-and-monitoring",
-      "admin/devops-process-documentation"
+      "admin/devops-process-documentation",
+      "apex/apex-trigger-bypass-and-killswitch-patterns"
     ],
     "opportunities": [
       "admin/opportunity-management"
@@ -9871,6 +9926,9 @@
     "professional-group": [
       "admin/fsc-relationship-groups"
     ],
+    "profile": [
+      "apex/apex-hardcoded-id-elimination"
+    ],
     "profiles": [
       "admin/delegated-administration",
       "admin/mcae-lead-scoring-and-grading",
@@ -9955,6 +10013,9 @@
     ],
     "prospects": [
       "apex/mcae-pardot-api"
+    ],
+    "protected": [
+      "apex/apex-secrets-and-protected-cmdt"
     ],
     "protocol-compliance": [
       "apex/clinical-decision-support"
@@ -10245,6 +10306,7 @@
     ],
     "record-access": [
       "admin/sharing-and-visibility",
+      "apex/apex-with-without-sharing-decision",
       "security/record-access-troubleshooting"
     ],
     "record-action": [
@@ -10280,7 +10342,8 @@
       "flow/workflow-rule-to-flow-migration"
     ],
     "record-type": [
-      "admin/record-type-id-management"
+      "admin/record-type-id-management",
+      "apex/apex-hardcoded-id-elimination"
     ],
     "record-type-mapping-drift": [
       "admin/picklist-field-integrity-issues"
@@ -10323,6 +10386,9 @@
     ],
     "redshift": [
       "data/analytics-external-data"
+    ],
+    "refactoring": [
+      "apex/apex-class-decomposition-pattern"
     ],
     "reference-data": [
       "data/sandbox-refresh-data-strategies"
@@ -10520,6 +10586,9 @@
       "admin/requirements-gathering-for-sf",
       "admin/wealth-management-requirements"
     ],
+    "resilience": [
+      "apex/apex-callout-retry-and-resilience"
+    ],
     "resource-preference": [
       "admin/fsl-resource-management"
     ],
@@ -10597,6 +10666,7 @@
     ],
     "retry": [
       "admin/outbound-message-setup",
+      "apex/apex-callout-retry-and-resilience",
       "integration/idempotent-integration-patterns",
       "integration/retry-and-backoff-patterns",
       "omnistudio/omnistudio-error-handling-patterns"
@@ -11045,6 +11115,7 @@
     ],
     "schema-describe": [
       "admin/record-type-id-management",
+      "apex/apex-hardcoded-id-elimination",
       "apex/dynamic-apex"
     ],
     "schema-documentation": [
@@ -11144,6 +11215,7 @@
       "devops/unlocked-package-development"
     ],
     "secrets": [
+      "apex/apex-secrets-and-protected-cmdt",
       "devops/pipeline-secrets-management"
     ],
     "secrets-management": [
@@ -11164,6 +11236,10 @@
       "agentforce/agent-security-review",
       "agentforce/agentforce-pii-redaction",
       "agentforce/prompt-injection-defense",
+      "apex/apex-dynamic-soql-binding-safety",
+      "apex/apex-secrets-and-protected-cmdt",
+      "apex/apex-stripinaccessible-and-fls-enforcement",
+      "apex/apex-with-without-sharing-decision",
       "apex/soql-security",
       "architect/analytics-security-architecture",
       "architect/security-architecture-review",
@@ -11223,6 +11299,9 @@
     ],
     "selectivity": [
       "architect/large-data-volume-architecture"
+    ],
+    "selector": [
+      "apex/apex-class-decomposition-pattern"
     ],
     "selector-layer": [
       "apex/fflib-enterprise-patterns"
@@ -11287,6 +11366,9 @@
     "serialization": [
       "apex/apex-json-serialization"
     ],
+    "service": [
+      "apex/apex-class-decomposition-pattern"
+    ],
     "service-account": [
       "security/api-only-user-hardening",
       "security/service-account-credential-rotation"
@@ -11344,6 +11426,7 @@
     ],
     "service-layer": [
       "apex/apex-design-patterns",
+      "apex/apex-with-without-sharing-decision",
       "apex/fflib-enterprise-patterns"
     ],
     "service-metrics": [
@@ -11516,6 +11599,7 @@
       "admin/queues-and-public-groups",
       "admin/sharing-and-visibility",
       "apex/apex-system-runas",
+      "apex/apex-with-without-sharing-decision",
       "flow/flow-runtime-context-and-sharing",
       "lwc/experience-cloud-api-access",
       "security/apex-managed-sharing-patterns",
@@ -11731,6 +11815,9 @@
     "sobject-tree": [
       "integration/composite-api-patterns"
     ],
+    "sobjectaccessdecision": [
+      "apex/apex-stripinaccessible-and-fls-enforcement"
+    ],
     "sobjetype": [
       "apex/dynamic-apex"
     ],
@@ -11757,6 +11844,7 @@
       "admin/compound-field-patterns",
       "admin/salesforce-object-queryability",
       "apex/apex-aggregate-queries",
+      "apex/apex-dynamic-soql-binding-safety",
       "apex/apex-polymorphic-soql",
       "apex/apex-soql-relationship-queries",
       "apex/einstein-activity-capture-api",
@@ -11979,7 +12067,8 @@
       "apex/apex-regex-and-pattern-matching"
     ],
     "stripinaccessible": [
-      "apex/apex-security-patterns"
+      "apex/apex-security-patterns",
+      "apex/apex-stripinaccessible-and-fls-enforcement"
     ],
     "structured-logging": [
       "apex/error-handling-framework"
@@ -12392,6 +12481,7 @@
       "admin/fsl-scheduling-optimization-design"
     ],
     "trigger": [
+      "apex/apex-trigger-bypass-and-killswitch-patterns",
       "apex/opportunity-trigger-patterns",
       "flow/flow-migration-from-trigger"
     ],
@@ -12597,7 +12687,9 @@
       "architect/license-optimization-strategy"
     ],
     "user-mode": [
-      "apex/apex-security-patterns"
+      "apex/apex-security-patterns",
+      "apex/apex-stripinaccessible-and-fls-enforcement",
+      "apex/apex-with-without-sharing-decision"
     ],
     "user-provisioning": [
       "architect/multi-bu-marketing-architecture"
