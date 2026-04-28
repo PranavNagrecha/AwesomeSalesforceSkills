@@ -62,44 +62,16 @@ Gather if not available:
 
 ## Core Concepts
 
-### Send Email Action vs Email Alert
+| Action | Template Source | Recipient Type | License Needed | Key Limit |
+|---|---|---|---|---|
+| **Send Email** | Text Template resource or inline text (NOT Classic Email Templates) | Email address string or User ID | Standard | 1,000 mass emails/day; 5 MB per message |
+| **Send Custom Notification** | Plain-text body with `{!variable}` merge fields (no HTML) | Collection of User IDs (15/18-char) | Standard | 1,000/hour per org |
+| **Send SMS** | Message body text | Phone number (E.164: `+15551234567`) | Digital Engagement add-on | Per messaging channel limits |
+| **Post Message to Slack** | Message text | Slack Channel ID or name | Salesforce for Slack integration | ~40k chars per message |
 
-Flow's **Send Email** core action is a standalone action element distinct from the **Email Alert** used in Workflow Rules and Process Builder. Key differences:
+**Critical distinctions:** Send Email does NOT use Classic Email Templates from Setup — use a Flow Text Template resource instead. Email Alerts (legacy, from Workflow Rules) DO use Classic Templates but are a different action. Custom Notification `recipientIds` accepts ONLY User IDs, never email addresses or Contact IDs.
 
-- Send Email in Flow supports a plain text body written inline or via a Text Template resource. It does NOT reference Classic Email Templates from Setup.
-- Send Email supports recipients as either a literal email address string or a User record ID.
-- Email Alerts (legacy) reference a Classic Email Template and are configured in Setup under Workflow. They can be invoked from Flow as an action but that is a different pattern.
-- Single outbound email size limit is 5 MB. Daily org limit for standard orgs is 1,000 mass emails per day; individual transactional sends are higher but still subject to SendEmailException limits.
-
-### Custom Notifications (Bell Icon)
-
-**Send Custom Notification** is a Flow core action that delivers a message to the in-app notification bell and, if the user has the Salesforce mobile app installed, as a push notification.
-
-Requirements and constraints:
-- A **Custom Notification Type** metadata record must exist before the action can be configured. Create it in Setup under Notification Builder → Custom Notifications.
-- The `recipientIds` input must be a **collection of User IDs** (15-char or 18-char Salesforce User IDs). It does not accept email addresses or Contact IDs.
-- The notification `body` supports `{!variable}` merge fields from the Flow. HTML is NOT rendered — the body is plain text.
-- The `targetId` field (optional) links the notification to a specific record, so tapping the bell icon on mobile navigates to that record.
-- Org limit: **1,000 custom notifications per hour** per org. Exceeding this causes the action to fail and the Flow will follow its fault path.
-
-### SMS via Flow
-
-Flow does not include a native SMS action. Sending SMS requires:
-
-1. **Digital Engagement** (also called Messaging) add-on license.
-2. With the add-on, a **Send SMS** action becomes available in Flow Builder.
-3. The recipient must be a phone number in the format the messaging channel supports (typically E.164 format: `+15551234567`).
-4. Without this license, the Send SMS action is absent from the action palette. Do not attempt workarounds using Apex callouts inside Flow without understanding callout limits and async requirements.
-
-### Slack Notifications via Flow
-
-Flow can post messages to Slack when the **Salesforce for Slack** integration is installed and a Slack workspace is connected:
-
-1. Connect a Slack workspace in Setup under Slack → Connected Slack Apps.
-2. The **Post Message to Slack** action becomes available in Flow Builder.
-3. The action requires a Slack Channel ID or channel name, and the message text.
-4. The integration uses OAuth-based Slack app authentication; the connected workspace must be active.
-5. Without the integration, the action is not available.
+> For detailed comparisons, prerequisites, and architectural tradeoffs see `references/well-architected.md`.
 
 ---
 
@@ -109,27 +81,53 @@ Flow can post messages to Slack when the **Salesforce for Slack** integration is
 
 **When to use:** A record-triggered or autolaunched Flow needs to alert a specific Salesforce user immediately (e.g., escalation to owner, approval request follow-up).
 
-**Structure:**
-1. Create a Custom Notification Type in Setup (e.g., "Case Escalation Alert").
-2. In the Flow, use **Get Records** to retrieve the User record associated with the target (e.g., Case Owner).
-3. Create a Text Collection variable and assign the User ID (`{!caseOwner.Id}`) to it.
-4. Add a **Send Custom Notification** action. Set `Notification Type` to the Custom Notification Type API name, `recipientIds` to the User ID collection, `title` to a short label, `body` to a Text Template or formula with merge fields.
-5. Add a fault connector on the action — if the hourly limit is reached, it will fault.
+**Prerequisite — Custom Notification Type metadata (deploy via SFDX or create in Setup):**
+
+```xml
+<!-- force-app/main/default/notificationtypes/Case_Escalation_Alert.notiftype-meta.xml -->
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomNotificationType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customNotifTypeName>Case_Escalation_Alert</customNotifTypeName>
+    <desktop>true</desktop>
+    <masterLabel>Case Escalation Alert</masterLabel>
+    <mobile>true</mobile>
+    <slack>false</slack>
+</CustomNotificationType>
+```
+
+**Flow action field mappings (Send Custom Notification):**
+
+| Input Field | Value | Notes |
+|---|---|---|
+| `Custom Notification Type ID` | `{!customNotifTypeId}` | Query `CustomNotificationType` where `DeveloperName = 'Case_Escalation_Alert'` |
+| `Recipient IDs` | `{!recipientCollection}` | Text Collection of 15/18-char User IDs |
+| `Title` | `"Case Escalation — Action Required"` | Max 75 characters (silently truncates) |
+| `Body` | `{!notificationBody}` | Text Template with merge fields; plain text only |
+| `Target ID` | `{!$Record.Id}` | Tapping the notification navigates to this record |
 
 **Why not email:** Bell notifications are synchronous with the transaction, appear immediately in the app, and do not require an email address. Email adds latency and inbox noise for internal user alerts.
+
+> Full step-by-step walkthrough: `references/examples.md` — Example 1.
 
 ### Pattern 2: Confirmation Email to External Contact
 
 **When to use:** A Flow needs to email a non-Salesforce user (customer, partner, applicant) with dynamic content after a record creation or form submission.
 
-**Structure:**
-1. In the Flow, retrieve the email address from the record (e.g., `{!contact.Email}`) or from a screen Flow input variable.
-2. Create a **Text Template** resource in Flow to compose the body with merge fields.
-3. Add a **Send Email** core action. Set `To` to the email address string, `Subject` to a formula or text, and `Body` to the Text Template resource.
-4. Keep the sender as the org-wide email address or default sender — do not use a user's personal email unless configured.
-5. Add a fault connector — SendEmailException will fault the action if limits are exceeded or the address is invalid.
+**Flow action field mappings (Send Email):**
 
-**Why not Email Alert:** Send Email in Flow is more flexible for dynamic recipient and dynamic body. Email Alerts require a template fixed at design time in Setup.
+| Input Field | Value | Notes |
+|---|---|---|
+| `Email Addresses (To)` | `{!$Record.Applicant_Email__c}` | Single email string or comma-separated list |
+| `Subject` | `"Application Received — {!jobTitle}"` | Supports merge fields via formula or text |
+| `Body` | `{!applicantEmailBody}` | Use a Text Template resource — NOT a Classic Email Template ID |
+| `Email Template ID` | *(leave blank)* | Send Email does not accept Classic Template IDs |
+| `Sender Address` | Org-Wide Email Address | Configure in Setup; do not use personal email |
+
+Always add a fault connector — `SendEmailException` faults when limits are exceeded or the address is invalid.
+
+**Why not Email Alert:** Send Email is more flexible for dynamic recipients and body. Email Alerts require a template fixed at design time in Setup.
+
+> Full step-by-step walkthrough: `references/examples.md` — Example 2.
 
 ### Pattern 3: Bulk Internal Alert With Rate-Limit Awareness
 
@@ -165,12 +163,6 @@ Flow can post messages to Slack when the **Salesforce for Slack** integration is
 | HTML-rich email to external | Email Alert with Classic Template | Flow's Send Email is plain-text / text-template only |
 
 ---
-
-## Well-Architected Pillar Mapping
-
-- **Reliability** — notifications that don't have fault connectors become silent failures. Every pattern in this skill is fault-path aware.
-- **Operational Excellence** — volume tracking (Pattern 3's `Notification_Log__c`), channel selection discipline, pre-deployment license verification.
-- **Security** — Slack integration OAuth hygiene, external-email recipient verification (is the email field actually validated?), not leaking internal data to Slack channels without approval.
 
 ## Recommended Workflow
 
