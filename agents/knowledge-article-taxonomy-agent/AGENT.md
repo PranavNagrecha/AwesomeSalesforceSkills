@@ -90,7 +90,7 @@ Per audience:
 
 ### Step 4 — Lifecycle & approvals
 
-- Draft → Review → Published → Archived lifecycle. Approvals via Approval Processes or Flow Orchestrator (recommend Orchestrator for multi-role workflows; suggest `approval-to-flow-orchestrator-migrator` if legacy approval is in use).
+- Draft → Review → Published → Archived lifecycle. Approvals via Approval Processes or Flow Orchestrator (recommend Orchestrator for multi-role workflows; suggest `automation-migration-router --source-type=approval_process` if legacy approval is in use).
 - Stale-content review cadence per article type (e.g., Policy = quarterly; Troubleshooting = annual).
 
 ### Step 5 — Search & AI surface fit
@@ -120,7 +120,7 @@ Produce a list of articles (or at minimum counts per bucket) whose:
    - **Healthy** — category depth ≤ 3; language fallback documented; Einstein Article Recommendations enabled.
    - **Concerning** — single "Knowledge" catch-all article type; missing category visibility on Experience Cloud; duplicate categories across groups.
    - **Ambiguous** — articles without audiences mapped; SEO metadata empty.
-   - **Suggested follow-ups** — `approval-to-flow-orchestrator-migrator` for authoring workflows; `agentforce-action-reviewer` if agents cite Knowledge.
+   - **Suggested follow-ups** — `automation-migration-router --source-type=approval_process` for authoring workflows; `agentforce-action-reviewer` if agents cite Knowledge.
 8. **Citations**.
 
 ---

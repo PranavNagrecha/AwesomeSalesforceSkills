@@ -194,7 +194,7 @@ Design mode:
    - **What was healthy** — clean queue setup, existing Screen Flows reusable as steps, documented SLA targets.
    - **What was concerning** — proposed assignees that map to inactive queues, steps that should really be background but were specified as interactive (or vice versa), SLAs that no one owns operationally.
    - **What was ambiguous** — recall semantics the business hasn't decided on; whether a stage is truly linear or actually has parallel branches.
-   - **Suggested follow-up agents** — `flow-builder` (for each subflow), `permission-set-architect` (orchestrator runtime permission), `approval-to-flow-orchestrator-migrator` (if this orchestration replaces a legacy approval process).
+   - **Suggested follow-up agents** — `flow-builder` (for each subflow), `permission-set-architect` (orchestrator runtime permission), `automation-migration-router` with `--source-type=approval_process` (if this orchestration replaces a legacy approval process).
 7. **Citations**.
 
 Audit mode:
@@ -242,5 +242,5 @@ Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
 - Does not emit full subflow XML — hand each subflow spec to `flow-builder`.
 - Does not deploy orchestrations.
 - Does not reassign or cancel in-flight work items.
-- Does not migrate from Approval Process — use `approval-to-flow-orchestrator-migrator`.
+- Does not migrate from Approval Process — use `automation-migration-router --source-type=approval_process`.
 - Does not auto-chain.

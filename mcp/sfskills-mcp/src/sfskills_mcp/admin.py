@@ -343,8 +343,8 @@ def list_approval_processes(
     """List Approval ``ProcessDefinition`` records, optionally filtered by object.
 
     Approval Processes are stored as ``ProcessDefinition`` rows with
-    ``Type = 'Approval'``. This is what ``approval-to-flow-orchestrator-migrator``
-    reads to plan a migration to Flow Orchestrator.
+    ``Type = 'Approval'``. This is what ``automation-migration-router``
+    reads (with ``--source-type=approval_process``) to plan a migration to Flow Orchestrator.
     """
     if object_name is not None:
         err = _validate_api_name(object_name, kind="object_name")

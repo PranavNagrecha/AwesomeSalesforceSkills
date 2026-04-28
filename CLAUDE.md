@@ -179,14 +179,14 @@ Must:
 - prefer skill-local validators where they exist
 - avoid referencing nonexistent repo-level analysis scripts
 
-### Run-time agents (41)
+### Run-time agents (39)
 
 These are user-facing agents that USE the library to do real Salesforce work — they do not build the library. The full roster is documented in [`agents/_shared/RUNTIME_VS_BUILD.md`](./agents/_shared/RUNTIME_VS_BUILD.md) and source-mapped in [`agents/_shared/SKILL_MAP.md`](./agents/_shared/SKILL_MAP.md).
 
 The roster:
 - **Developer + architecture (13)** — `/refactor-apex`, `/consolidate-triggers`, `/gen-tests`, `/optimize-soql`, `/scan-security`, `/analyze-flow`, `/plan-bulk-migration`, `/build-lwc`, `/audit-lwc`, `/debug-lwc`, `/score-deployment`, `/build-agentforce-action`, `/detect-drift`.
-- **Admin accelerators — Tier 1 (8)** — `/analyze-field-impact`, `/design-object`, `/architect-perms`, `/build-flow`, `/migrate-workflow-pb`, `/audit-validation-rules`, `/preflight-load`, `/design-duplicate-rule`.
-- **Strategic — Tier 2 (10)** — `/audit-sharing`, `/audit-record-page`, `/migrate-approval-to-orchestrator`, `/audit-record-types`, `/govern-picklists`, `/review-data-model`, `/catalog-integrations`, `/audit-reports`, `/map-csv-to-object`, `/modernize-email-templates`.
+- **Admin accelerators — Tier 1 (7)** — `/analyze-field-impact`, `/design-object`, `/architect-perms`, `/build-flow`, `/audit-validation-rules`, `/preflight-load`, `/design-duplicate-rule`.
+- **Strategic — Tier 2 (9)** — `/audit-sharing`, `/audit-record-page`, `/audit-record-types`, `/govern-picklists`, `/review-data-model`, `/catalog-integrations`, `/audit-reports`, `/map-csv-to-object`, `/modernize-email-templates`.
 - **Vertical + governance — Tier 3 (10)** — `/design-omni-channel`, `/design-knowledge-taxonomy`, `/design-sales-stages`, `/design-lead-routing`, `/audit-case-escalation`, `/design-sandbox-strategy`, `/plan-release-train`, `/assess-waf`, `/review-agentforce-action`, `/govern-prompt-library`.
 
 Must:

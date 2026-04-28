@@ -37,15 +37,6 @@ def get_plugin(agent: str) -> BuilderPlugin:
     if agent == "agentforce-builder":
         from .agentforce import AgentforceBuilderPlugin
         return AgentforceBuilderPlugin()
-    if agent == "process-builder-to-flow-migrator":
-        from .pb_to_flow import PbToFlowMigratorPlugin
-        return PbToFlowMigratorPlugin()
-    if agent == "workflow-rule-to-flow-migrator":
-        from .pb_to_flow import PbToFlowMigratorPlugin
-        # Same gated shape — migrating WF rules produces Flow XML too.
-        p = PbToFlowMigratorPlugin()
-        p.agent = "workflow-rule-to-flow-migrator"
-        return p
     if agent == "changeset-builder":
         from .changeset import ChangesetBuilderPlugin
         return ChangesetBuilderPlugin()

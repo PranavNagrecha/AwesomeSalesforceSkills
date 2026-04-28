@@ -87,4 +87,4 @@ Array of records:
 - `field-impact-analyzer`
 - `validation-rule-auditor` — VRs that fire on fields changed by flows
 - `picklist-governor` — picklist rename impact
-- `workflow-and-pb-migrator` — understanding what automation already references the field
+- `automation-migration-router` — understanding what automation already references the field

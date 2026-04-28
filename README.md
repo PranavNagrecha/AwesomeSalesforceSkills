@@ -325,7 +325,7 @@ Every run-time agent follows the same 8-section contract (including a mandatory 
 | `agentforce-builder` | [`/build-agentforce-action`](./commands/build-agentforce-action.md) | Scaffold Agentforce action: Apex `@InvocableMethod` + topic YAML + test + golden eval |
 | `org-drift-detector` | [`/detect-drift`](./commands/detect-drift.md) | Library ↔ live-org gap and bloat report across every flagship prescription |
 
-#### Admin accelerators — Tier 1 (8)
+#### Admin accelerators — Tier 1 (7)
 
 | Agent | Slash command | What it does |
 |---|---|---|
@@ -333,18 +333,18 @@ Every run-time agent follows the same 8-section contract (including a mandatory 
 | `object-designer` | [`/design-object`](./commands/design-object.md) | Setup-ready sObject design from a concept (fields, RTs, VRs, layouts) |
 | `permission-set-architect` | [`/architect-perms`](./commands/architect-perms.md) | Profile-less PS / PSG / Muting design per persona |
 | `flow-builder` | [`/build-flow`](./commands/build-flow.md) | Design a Flow from requirements, route to Apex when the tree says so |
-| `workflow-and-pb-migrator` | [`/migrate-workflow-pb`](./commands/migrate-workflow-pb.md) | Migrate legacy Workflow Rules + Process Builders to Flow |
 | `validation-rule-auditor` | [`/audit-validation-rules`](./commands/audit-validation-rules.md) | Audit VRs for bypass, bulk safety, and Flow coexistence |
 | `data-loader-pre-flight` | [`/preflight-load`](./commands/preflight-load.md) | Go/no-go checklist for a Data Loader / Bulk API load |
 | `duplicate-rule-designer` | [`/design-duplicate-rule`](./commands/design-duplicate-rule.md) | Matching + Duplicate Rules scoped to the load and post-load hygiene |
 
-#### Strategic — Tier 2 (10)
+> Workflow Rule / Process Builder / Approval Process migration is now handled by the consolidated [`automation-migration-router`](./agents/automation-migration-router/AGENT.md) — see [`/automation-migration-router`](./commands/automation-migration-router.md).
+
+#### Strategic — Tier 2 (9)
 
 | Agent | Slash command | What it does |
 |---|---|---|
 | `sharing-audit-agent` | [`/audit-sharing`](./commands/audit-sharing.md) | OWD + sharing-rule findings, data-skew hot-list, guest-user exposure |
 | `lightning-record-page-auditor` | [`/audit-record-page`](./commands/audit-record-page.md) | Dynamic Forms, render cost, related-list strategy, Path, LWC weight |
-| `approval-to-flow-orchestrator-migrator` | [`/migrate-approval-to-orchestrator`](./commands/migrate-approval-to-orchestrator.md) | Migrate Approval Processes to Flow Orchestrator with parallel-run plan |
 | `record-type-and-layout-auditor` | [`/audit-record-types`](./commands/audit-record-types.md) | Flag RT proliferation, Master Layout issues, LRP mapping gaps |
 | `picklist-governor` | [`/govern-picklists`](./commands/govern-picklists.md) | GVS adoption, inactive-value drift, dependent-chain probe |
 | `data-model-reviewer` | [`/review-data-model`](./commands/review-data-model.md) | Review relationships, rollups, External IDs, growth forecast, indexes |

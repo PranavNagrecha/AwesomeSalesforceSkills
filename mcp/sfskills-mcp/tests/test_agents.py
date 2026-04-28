@@ -36,19 +36,17 @@ EXPECTED_RUNTIME = {
     "deployment-risk-scorer",
     "agentforce-builder",
     "org-drift-detector",
-    # Wave A — Tier-1 admin accelerators (8)
+    # Wave A — Tier-1 admin accelerators (7)
     "field-impact-analyzer",
     "object-designer",
     "permission-set-architect",
     "flow-builder",
-    "workflow-and-pb-migrator",
     "validation-rule-auditor",
     "data-loader-pre-flight",
     "duplicate-rule-designer",
-    # Wave B — Tier-2 strategic (10)
+    # Wave B — Tier-2 strategic (9)
     "sharing-audit-agent",
     "lightning-record-page-auditor",
-    "approval-to-flow-orchestrator-migrator",
     "record-type-and-layout-auditor",
     "picklist-governor",
     "data-model-reviewer",

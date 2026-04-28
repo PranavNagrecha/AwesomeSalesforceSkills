@@ -285,7 +285,7 @@ def build_server() -> FastMCP:
         description=(
             "List Approval ProcessDefinitions, optionally filtered by object. "
             "By default returns only active approvals. Source of truth for "
-            "approval-to-flow-orchestrator-migrator."
+            "automation-migration-router --source-type=approval_process."
         ),
     )
     def list_approval_processes(

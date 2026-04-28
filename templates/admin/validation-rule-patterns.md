@@ -1,6 +1,6 @@
 # Validation Rule Patterns — canonical patterns
 
-Used by `validation-rule-auditor`, `data-loader-pre-flight`, and consulted by `object-designer` and `approval-to-flow-orchestrator-migrator`.
+Used by `validation-rule-auditor`, `data-loader-pre-flight`, and consulted by `object-designer` and `automation-migration-router` (when source-type is `approval_process`).
 
 Validation Rules are the most overloaded automation surface in Salesforce orgs. They accidentally become "trigger lite" ("fire an error message if the contact has no email during an integration sync") and are responsible for a large share of integration fault tickets. The patterns below are what a senior architect expects a VR to look like.
 

@@ -23,7 +23,7 @@ Entry points: `/run-queue`, `/new-skill`, `/request-skill`, scheduled task.
 
 ---
 
-## Run-time agents (41)
+## Run-time agents (39)
 
 These agents use the skill library to do real Salesforce work against a user's org or codebase. They are the primary value delivered to consumers of SfSkills. Every run-time agent follows [`AGENT_CONTRACT.md`](./AGENT_CONTRACT.md) — including the mandatory **Process Observations** section that analyzes the org itself while producing the deliverable — and cites every skill / template / decision-tree it consumed.
 
@@ -45,7 +45,7 @@ These agents use the skill library to do real Salesforce work against a user's o
 | `agentforce-builder` | Agentforce | Full action scaffold: Apex + topic + eval | `/build-agentforce-action` |
 | `org-drift-detector` | Architect | Library ↔ org gap + bloat report | `/detect-drift` |
 
-### Admin accelerators — Tier 1 (8)
+### Admin accelerators — Tier 1 (7)
 
 | Agent | Domain | Primary output | Slash command |
 |---|---|---|---|
@@ -53,18 +53,16 @@ These agents use the skill library to do real Salesforce work against a user's o
 | `object-designer` | Admin / Architecture | Setup-ready sObject design | `/design-object` |
 | `permission-set-architect` | Admin / Security | PS / PSG / Muting design per persona | `/architect-perms` |
 | `flow-builder` | Flow / Admin | Flow design from requirements + tree-based routing | `/build-flow` |
-| `workflow-and-pb-migrator` | Automation | Migration plan: WFR / PB → Flow | `/migrate-workflow-pb` |
 | `validation-rule-auditor` | Admin | VR audit (bypass, bulk safety, Flow coexistence) | `/audit-validation-rules` |
 | `data-loader-pre-flight` | Data | Go/no-go checklist for a data load | `/preflight-load` |
 | `duplicate-rule-designer` | Data / Admin | Matching + Duplicate Rules + post-load hygiene | `/design-duplicate-rule` |
 
-### Strategic — Tier 2 (10)
+### Strategic — Tier 2 (9)
 
 | Agent | Domain | Primary output | Slash command |
 |---|---|---|---|
 | `sharing-audit-agent` | Security / Architecture | OWD + sharing + data-skew findings | `/audit-sharing` |
 | `lightning-record-page-auditor` | Admin / UX | Record-page + Dynamic Forms scorecard | `/audit-record-page` |
-| `approval-to-flow-orchestrator-migrator` | Automation | Approval → Orchestrator migration plan | `/migrate-approval-to-orchestrator` |
 | `record-type-and-layout-auditor` | Admin | RT + layout + LRP mapping audit | `/audit-record-types` |
 | `picklist-governor` | Admin | GVS adoption + drift + dependency audit | `/govern-picklists` |
 | `data-model-reviewer` | Data / Architecture | Data-model domain review | `/review-data-model` |

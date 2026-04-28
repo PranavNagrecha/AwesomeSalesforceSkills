@@ -43,7 +43,6 @@ _DEPRECATED_REDIRECTS: dict[str, dict[str, str]] = {
     "report-and-dashboard-auditor":   {"router": "audit-router",                "flag": "--domain=report_dashboard"},
     "reports-and-dashboards-folder-sharing-auditor":
                                       {"router": "audit-router",                "flag": "--domain=reports_dashboards_folder_sharing"},
-    "approval-process-auditor":       {"router": "audit-router",                "flag": "--domain=approval_process"},
     "case-escalation-auditor":        {"router": "audit-router",                "flag": "--domain=case_escalation"},
     "lightning-record-page-auditor":  {"router": "audit-router",                "flag": "--domain=lightning_record_page"},
     "list-view-and-search-layout-auditor":
@@ -57,12 +56,6 @@ _DEPRECATED_REDIRECTS: dict[str, dict[str, str]] = {
     "sharing-audit-agent":            {"router": "audit-router",                "flag": "--domain=sharing"},
     "field-audit-trail-and-history-tracking-governor":
                                       {"router": "audit-router",                "flag": "--domain=field_audit_trail_history_tracking"},
-    "workflow-rule-to-flow-migrator": {"router": "automation-migration-router", "flag": "--source-type=wf_rule"},
-    "process-builder-to-flow-migrator":
-                                      {"router": "automation-migration-router", "flag": "--source-type=process_builder"},
-    "approval-to-flow-orchestrator-migrator":
-                                      {"router": "automation-migration-router", "flag": "--source-type=approval_process"},
-    "workflow-and-pb-migrator":       {"router": "automation-migration-router", "flag": "--source-type=auto"},
 }
 
 

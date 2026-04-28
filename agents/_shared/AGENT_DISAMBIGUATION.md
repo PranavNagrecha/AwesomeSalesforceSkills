@@ -102,7 +102,6 @@ Typing `@<old-agent>` lands on a deprecation stub. **Redirect immediately**; do 
 | `record-type-and-layout-auditor` | `audit-router --domain=record_type_layout` |
 | `report-and-dashboard-auditor` | `audit-router --domain=report_dashboard` |
 | `reports-and-dashboards-folder-sharing-auditor` | `audit-router --domain=reports_dashboards_folder_sharing` |
-| `approval-process-auditor` | `audit-router --domain=approval_process` |
 | `case-escalation-auditor` | `audit-router --domain=case_escalation` |
 | `lightning-record-page-auditor` | `audit-router --domain=lightning_record_page` |
 | `list-view-and-search-layout-auditor` | `audit-router --domain=list_view_search_layout` |
@@ -112,11 +111,6 @@ Typing `@<old-agent>` lands on a deprecation stub. **Redirect immediately**; do 
 | `quick-action-and-global-action-auditor` | `audit-router --domain=quick_action` |
 | `sharing-audit-agent` | `audit-router --domain=sharing` |
 | `field-audit-trail-and-history-tracking-governor` | `audit-router --domain=field_audit_trail_history_tracking` |
-| `workflow-rule-to-flow-migrator` | `automation-migration-router --source-type=wf_rule` |
-| `process-builder-to-flow-migrator` | `automation-migration-router --source-type=process_builder` |
-| `approval-to-flow-orchestrator-migrator` | `automation-migration-router --source-type=approval_process` |
-| `workflow-and-pb-migrator` | `automation-migration-router --source-type=auto` |
-
 Full migration map with preserved rule-by-rule equivalence: `docs/MIGRATION.md`.
 
 ---
