@@ -138,10 +138,12 @@ Screen 3: Review + commit (Pattern 1 from here)
 
 Screen flows behave differently by surface:
 
-- **Quick Action modal** — appears as a dialog; Cancel = close without committing; tight screen-count budget (3–4 max); limited width. Use for focused tasks.
-- **Lightning Record Page component** — embedded in the record view; persistent while user navigates; stateful across record refreshes. Use for ongoing data entry.
-- **Standalone URL** — full-page flow; Cancel navigates away; widest width; good for wizards. Use for one-off journeys.
-- **Utility bar flow** — persistent access; shared state across records. Use for tools.
+| Surface | Behavior | Use for |
+|---|---|---|
+| Quick Action modal | Dialog; Cancel closes without committing; tight screen-count budget (3–4 max); limited width | Focused tasks |
+| Lightning Record Page component | Embedded in the record view; persistent while user navigates; stateful across record refreshes | Ongoing data entry |
+| Standalone URL | Full-page flow; Cancel navigates away; widest width | Wizards and one-off journeys |
+| Utility bar flow | Persistent access; shared state across records | Tools |
 
 The commit-timing rules change per surface: modal Cancel is a strong "undo" signal; full-page Cancel is a "leave the page" signal. Align UX to surface.
 

@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 45
   },
-  "generated_from_hash": "482bfbdbe780360ab2a5bcc3cfd7b4ea71cdc2a65485ac20c26a090bf256221e",
+  "generated_from_hash": "53b51a75b530cd55e8d82f93b6c8a59af37a1912138ebb54b0e0b7113d11e85c",
   "schema_version": 1,
   "skill_count": 907,
   "skills": [
@@ -89993,7 +89993,7 @@
         "ff0c5e489f7ba5b386ec",
         "ff520aa69c68d4e683ed"
       ],
-      "content_hash": "5456d3592f711fb6713816b39865d9d3c7712a810c305d7a3757f32ae93588a2",
+      "content_hash": "790d8edbb6888c6f95edf8504d1d503ab3942bbe1b47989a2524c52e731f1eef",
       "dependencies": [],
       "description": "Use when designing, reviewing, or troubleshooting Salesforce Flow fault handling, error logging, and bulk-safe automation paths. Triggers: 'fault connector', '$Flow.FaultMessage', 'flow failed', 'record-triggered flow rollback', 'screen flow error'. NOT for generic Flow type selection unless the main risk is failure handling; NOT for Apex exception handling (see apex/exception-handling-patterns).",
       "file_location": "skills/flow/fault-handling",
@@ -90462,7 +90462,7 @@
         "f9d23f0ade7253c8960d",
         "fc5c8ec9b3605dccd0bd"
       ],
-      "content_hash": "d91a48acdeb838ce2b0d580c96186568af8ed21c123195d772d537d5c2a14409",
+      "content_hash": "9f22868519517ab7a8ba4ca422a22fedc44fa289182ea762079b75664ad7ad82",
       "dependencies": [],
       "description": "Use when designing, reviewing, or troubleshooting Salesforce Flows that must survive data loads, integrations, or high-volume record changes without hitting transaction limits. Triggers: 'Get Records in loop', 'Flow bulkification', 'data loader causing flow errors', 'DML in loop', 'record-triggered flow scale'. NOT for general screen-flow UX or Flow type selection when scale is not the main risk.",
       "file_location": "skills/flow/flow-bulkification",
@@ -90502,7 +90502,7 @@
       "templates": [
         "skills/flow/flow-bulkification/templates/flow-bulkification-template.md"
       ],
-      "updated": "2026-04-17",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "2.0.0"
     },
@@ -90975,7 +90975,7 @@
         "fe236161d1063a4d7ae2",
         "ff854a256e8341901b7d"
       ],
-      "content_hash": "e06bdf861d9ff54dcb8dd0a7d24959c32c59e58ecbe15798aeebe0a1ac7b55f1",
+      "content_hash": "ac5d5edc7d988d99ee1239dbba36ff6a2a4af8d64199dd6c495c23d52d66e723",
       "dependencies": [],
       "description": "Use when diagnosing a Flow that does not run, runs but produces wrong results, fails silently, or shows an unexpected fault email. Triggers: 'flow debug mode', 'flow not running', 'flow interview log', 'fault email', 'record-triggered flow not firing', 'debug run as user', 'flow test suite'. NOT for Apex debugging (use debug-and-logging), NOT for designing fault connectors (use fault-handling), NOT for fixing governor-limit failures caused by bulk volume (use flow-bulkification).",
       "file_location": "skills/flow/flow-debugging",
@@ -91019,7 +91019,7 @@
       "templates": [
         "skills/flow/flow-debugging/templates/flow-debugging-template.md"
       ],
-      "updated": "2026-04-04",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -92465,7 +92465,7 @@
         "f89c798766d93876d31f",
         "fdf5653add0503ea1c86"
       ],
-      "content_hash": "d690c0561c6d943856a54552824e0fcbf4d11fd348727c7ddf5c57a71db73129",
+      "content_hash": "e5b7984eea6aea3440eb48c2bec95943e306b221de5611f60a8df6f8ccfd4541",
       "dependencies": [],
       "description": "Use when establishing operational standards for a Salesforce Flow portfolio, including naming conventions, ownership, version discipline, retirement of stale flows, and release readiness checks. Triggers: 'flow naming convention', 'too many old flows', 'who owns this flow', 'flow version governance'. NOT for element-by-element flow logic design or dedicated fault-handling review.",
       "file_location": "skills/flow/flow-governance",
@@ -94218,7 +94218,7 @@
         "fc221e5b8c25bd56ee3a",
         "feff36a6068d4b6b9763"
       ],
-      "content_hash": "5e5cfa21a03af0b604b0786fa094a292fcad67df689b7f128581a9d55cf44ce0",
+      "content_hash": "545805329a9fc603bd3ac0ff0221b2faa2989975eba68568df98b643adf6c8c5",
       "dependencies": [],
       "description": "Use when a Salesforce Flow throws a runtime error, sends an unhandled fault email, or produces unexpected results in production or sandbox. Triggers: 'Flow error email', 'Flow failed at element', 'null reference in Flow', 'Flow SOQL limit error', 'Flow DML in loop error'. NOT for Flow design or building new flows (use record-triggered-flow-patterns or other flow/* skills), NOT for Flow debug log setup (use flow-debugging).",
       "file_location": "skills/flow/flow-runtime-error-diagnosis",
@@ -95047,7 +95047,7 @@
         "f590a15b7ceedd7f5acc",
         "f7e88134862429730aed"
       ],
-      "content_hash": "e50f272fdbe729ab6909624a406a56a0f5c8a8961625f19d4c9f0de3a5d12cec",
+      "content_hash": "8c6bf82315023cbf599a41dfd3d91e9e14407b522cbbc9e569de101b260dae1a",
       "dependencies": [],
       "description": "Use when designing or reviewing Flow Orchestration for long-running, multi-user, or asynchronous business processes with stages, steps, work items, and monitoring needs. Triggers: 'flow orchestration', 'work item', 'stages and steps', 'multi-user process', 'long-running flow'. NOT for simple single-transaction record-triggered flows or lightweight approval routing that does not need orchestration.",
       "file_location": "skills/flow/orchestration-flows",
@@ -95731,7 +95731,7 @@
         "f68db1c3f03adcc611e1",
         "ffd4c765c3bd88d22bdd"
       ],
-      "content_hash": "7652d56c0a8430689ae904d0ab7c6df9ca60ef682f339b973f6b3abbd08fff7d",
+      "content_hash": "0c79a7161f1ffa950817b1d849162c1a704dc97a4b253b5cd51786ce5246062b",
       "dependencies": [],
       "description": "Use when designing or reviewing interactive Flow screen experiences, including navigation, validation, screen component choice, custom LWC screen components, and user-safe commit timing. Triggers: 'screen flow validation', 'back button behavior in flow', 'custom flow screen component', 'screen flow UX'. NOT for Experience Cloud guest exposure or custom property editor design-time tooling.",
       "file_location": "skills/flow/screen-flows",

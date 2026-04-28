@@ -58,12 +58,14 @@ Gather this context before working on anything in this domain:
 
 When a Flow encounters an unhandled error, it sends a fault email (if configured in Setup → Process Automation Settings → Send Flow Error Emails). The email contains:
 
-- **Flow label and API name**: identifies which flow
-- **Flow version**: the version that ran (important — multiple versions may be active via flow version management)
-- **Element API name where the error occurred**: e.g., `Get_Account_Records` or `Create_Case_0`
-- **Error message**: the platform-specific error, e.g., `INVALID_FIELD: Account.NonExistentField__c`
-- **Stack trace of element execution order**: shows which elements ran before the failure
-- **Context variable values**: input variables and selected `$Record` field values at the time of failure
+| Field | Contents |
+|---|---|
+| Flow label and API name | Identifies which flow |
+| Flow version | The version that ran (important — multiple versions may be active via flow version management) |
+| Element API name where the error occurred | E.g., `Get_Account_Records` or `Create_Case_0` |
+| Error message | Platform-specific error, e.g., `INVALID_FIELD: Account.NonExistentField__c` |
+| Stack trace of element execution order | Shows which elements ran before the failure |
+| Context variable values | Input variables and selected `$Record` field values at the time of failure |
 
 Reading the element name from the email is the fastest way to navigate directly to the failing element in Flow Builder.
 

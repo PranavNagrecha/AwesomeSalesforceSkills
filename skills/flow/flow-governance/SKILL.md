@@ -71,20 +71,26 @@ Examples:
 - `Global_Autolaunched_EmailDomainCheck_v2`
 
 Parts:
-- **Object** — the sObject the flow fires on (or `Global` if object-agnostic).
-- **TriggerType** — `BeforeSave` / `AfterSave` / `Scheduled` / `Autolaunched` / `Screen` / `Orchestration`.
-- **PurposeVerbPhrase** — what the flow DOES, in UpperCamelCase.
-- **Version suffix (optional)** — explicit version when the flow has iterated.
+
+| Part | Meaning |
+|---|---|
+| Object | The sObject the flow fires on (or `Global` if object-agnostic). |
+| TriggerType | `BeforeSave` / `AfterSave` / `Scheduled` / `Autolaunched` / `Screen` / `Orchestration`. |
+| PurposeVerbPhrase | What the flow DOES, in UpperCamelCase. |
+| Version suffix (optional) | Explicit version when the flow has iterated. |
 
 ### Ownership Must Be Visible
 
 Every production flow should have an accountable owner or owning team, even if several contributors edit it over time. When a failure, deployment question, or retirement opportunity appears, support should not need archaeology to find the right decision-maker.
 
 **Ownership metadata surfaces:**
-- **Description field** — "Owner: sales-ops team. Escalate to: @alice.johnson. Purpose: …"
-- **Custom metadata type** — `Flow_Ownership__mdt` keyed by flow DeveloperName; supports bulk reporting.
-- **Git commit history** — LastModifiedBy surfaces the latest editor, not the long-term owner.
-- **Team's team-by-team wiki** — external to Salesforce but often the pragmatic answer.
+
+| Surface | Notes |
+|---|---|
+| Description field | "Owner: sales-ops team. Escalate to: @alice.johnson. Purpose: …" |
+| Custom metadata type | `Flow_Ownership__mdt` keyed by flow DeveloperName; supports bulk reporting. |
+| Git commit history | LastModifiedBy surfaces the latest editor, not the long-term owner. |
+| Team-by-team wiki | External to Salesforce but often the pragmatic answer. |
 
 Pick ONE canonical source and enforce it. Multiple sources of truth = no source of truth.
 
@@ -102,10 +108,13 @@ Flow versions accumulate easily. Without activation standards and retirement rev
 Descriptions, interview labels, release notes, and test intent should make logs and deployment review more understandable. Operational documentation is not a separate project from the flow. It is part of the flow's maintainability.
 
 Required documentation per flow:
-- **Description** — 2-3 sentences on purpose, owner, escalation.
-- **Element labels** — readable enough to make Flow Interview Log entries interpretable.
-- **Fault-path routing** — documented via `flow/fault-handling`.
-- **Version-change notes** — when bumping the `_vN` suffix, explain why in the description.
+
+| Item | Standard |
+|---|---|
+| Description | 2-3 sentences on purpose, owner, escalation. |
+| Element labels | Readable enough to make Flow Interview Log entries interpretable. |
+| Fault-path routing | Documented via `flow/fault-handling`. |
+| Version-change notes | When bumping the `_vN` suffix, explain why in the description. |
 
 ---
 

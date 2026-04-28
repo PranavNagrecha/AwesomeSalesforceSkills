@@ -30,7 +30,7 @@ outputs:
 dependencies: []
 version: 2.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 Use this skill when a Flow works for one record in a sandbox but becomes dangerous when data arrives in volume. A Flow that a user triggers with a button click may run ONCE with 100 SOQL queries available. The same Flow triggered by a 200-record Bulk API insert runs 200 times in the SAME transaction — with the SAME 100 SOQL budget. A `Get Records` inside a loop that worked fine during UI testing will exhaust the budget on row 50 of the bulk insert and roll back the remaining 150.
@@ -141,10 +141,13 @@ Loop over triggering records:
 **Signal:** DML count after Pattern 2 still > 150, OR the Flow's fan-out creates > 50 records per source record, OR the Flow needs an external callout per record.
 
 **Approach:**
-- **Scheduled Path on the after-save Flow** — delay work by 1+ hours, giving it its own async transaction context.
-- **Platform Event + Platform-Event-Triggered Flow** — fire-and-forget; decouples the work from the save transaction.
-- **Invocable Apex dispatching to Queueable/Batch** — when the async work is complex enough to need Apex.
-- **Change Data Capture + external system** — for genuine integration-heavy fan-out, CDC offloads to external middleware.
+
+| Mechanism | When to use |
+|---|---|
+| Scheduled Path on the after-save Flow | Delay work by 1+ hours, giving it its own async transaction context. |
+| Platform Event + Platform-Event-Triggered Flow | Fire-and-forget; decouples work from the save transaction. |
+| Invocable Apex dispatching to Queueable/Batch | When the async work is complex enough to need Apex. |
+| Change Data Capture + external system | Integration-heavy fan-out; CDC offloads to external middleware. |
 
 See `standards/decision-trees/async-selection.md` for the full async-target decision.
 
