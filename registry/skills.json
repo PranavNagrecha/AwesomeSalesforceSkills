@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 45
   },
-  "generated_from_hash": "66b61680b2bdbd0c8d64424b518a30fd284fa44eb05bb2cfbfbd2976663728f9",
+  "generated_from_hash": "482bfbdbe780360ab2a5bcc3cfd7b4ea71cdc2a65485ac20c26a090bf256221e",
   "schema_version": 1,
   "skill_count": 907,
   "skills": [
@@ -114166,7 +114166,7 @@
         "fadcb86095f76edd96e9",
         "fe59d2f1a1a642f4fad0"
       ],
-      "content_hash": "43419a252dbf19fe172ca62d57ac4aa6e4a82aa67afd2383aa942b7298fe6f29",
+      "content_hash": "b2383c59d374f3b8d1b970b8b523d0dc29b851fd4a8843ab047d98294760d7cf",
       "dependencies": [],
       "description": "Shield Event Monitoring: event log types, downloading logs via REST API and SOQL, real-time event monitoring with streaming API, and threat detection policies. NOT for debug logs (use debug-logs-and-developer-console). NOT for custom platform event publishing/subscribing (use platform-events-apex).",
       "file_location": "skills/security/event-monitoring",
@@ -114211,7 +114211,7 @@
       "templates": [
         "skills/security/event-monitoring/templates/event-monitoring-template.md"
       ],
-      "updated": "2026-04-04",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -116660,7 +116660,7 @@
         "f51da6a34464bfa81893",
         "fed86dd81616d3c55aea"
       ],
-      "content_hash": "bafaaeff51ec30aff6f2eb596f9bc12c7962dfc061f32e684fa021d8be9a7c99",
+      "content_hash": "eae64c10a94c406023fe81fb0e3cd57820c730d430932518b76d5538d6d86c6c",
       "dependencies": [],
       "description": "Use this skill when configuring or reviewing Salesforce Data Mask to protect PII/PHI in partial or full copy sandboxes after a refresh. Trigger keywords: data mask, sandbox masking, PII in sandbox, GDPR sandbox, HIPAA non-production, mask contacts, obfuscate fields non-production. NOT for sandbox refresh mechanics (use sandbox-refresh-and-templates), NOT for production data anonymization, NOT for Shield Platform Encryption at rest.",
       "file_location": "skills/security/sandbox-data-masking",
@@ -116706,7 +116706,7 @@
       "templates": [
         "skills/security/sandbox-data-masking/templates/sandbox-data-masking-template.md"
       ],
-      "updated": "2026-04-04",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -116764,7 +116764,7 @@
         "f4b85783e4ec0533914d",
         "f8374da5b24a652b5f76"
       ],
-      "content_hash": "f809c5cc265da44399308b5afac7d49ac49822e68fc42053200e089c9ef0e9f9",
+      "content_hash": "f5a0f59483c49eb0d3944977bf7b034c455c5385b85699e4540047a09a537653",
       "dependencies": [],
       "description": "Use when designing or reviewing SCIM-based user lifecycle provisioning into Salesforce from Okta, Azure AD / Entra, or another IdP \u2014 create/update/deactivate, group-to-permission-set mapping, attribute mapping, and deprovisioning semantics. Triggers: 'scim provisioning', 'okta scim salesforce', 'entra salesforce provisioning', 'user deactivation automation', 'group to permission set mapping'. NOT for SSO/authentication setup (see single-sign-on skills).",
       "file_location": "skills/security/scim-provisioning-integration",
@@ -117015,7 +117015,7 @@
         "f85b805ba5f784ded4e8",
         "fba8adb8879f657797fe"
       ],
-      "content_hash": "5e4bfea5b5821bce68e2002abcf93f5754c7b0022127154ec8305965f564ce22",
+      "content_hash": "624a3204aa8fd798d12a84f3821d91acc8239dd47e3f3ff82df961c374638568",
       "dependencies": [],
       "description": "Use when running, interpreting, or acting on Salesforce Security Health Check results \u2014 reading the score, understanding risk categories, evaluating specific settings, creating or importing a custom baseline, querying the Tooling API programmatically, or planning remediation from findings. Triggers: 'security health check score', 'health check failing settings', 'custom baseline', 'remediate health check findings', 'fix risk'. NOT for org hardening implementation, permission model design, or broad baseline config beyond what Health Check directly measures.",
       "file_location": "skills/security/security-health-check",
@@ -117064,7 +117064,7 @@
       "templates": [
         "skills/security/security-health-check/templates/security-health-check-template.md"
       ],
-      "updated": "2026-04-04",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -117194,7 +117194,7 @@
         "fc09c088b06a076b1601",
         "ffe70d34711a259013ad"
       ],
-      "content_hash": "03822e4b8ef7ed0684420444a3a5d49725c9cbe2f13755dce297c1f1d2236e61",
+      "content_hash": "1174d755796d539e3133786a7373c847b1c12e1aa79a90e72f2b12b70add15e2",
       "dependencies": [
         "security/event-monitoring",
         "security/transaction-security-policies"
@@ -117250,7 +117250,7 @@
       "templates": [
         "skills/security/security-incident-response/templates/security-incident-response-template.md"
       ],
-      "updated": "2026-04-17",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -117597,7 +117597,7 @@
         "f69863ed202496a8be43",
         "fa11d46b199d0a3b5526"
       ],
-      "content_hash": "c64b6608b58b570c00002be1fe7968c49afc5f3baefabc6433dc22c65c568729",
+      "content_hash": "a008dab3c6477f042d224b2dd562121b03b1f0bc3f6ba6381e79b2beb0bcbbf8",
       "dependencies": [],
       "description": "Use when designing Salesforce Shield Event Monitoring retention, SIEM routing, and storage-tier strategy \u2014 which event types to keep, for how long, where, and how to answer audit queries across hot/warm/cold tiers. Triggers: 'shield event log retention', 'route event monitoring to splunk', 'how long to keep login history', 'siem salesforce integration', 'event monitoring storage tier'. NOT for enabling Shield (see salesforce-shield-deployment).",
       "file_location": "skills/security/shield-event-log-retention-strategy",
@@ -117824,7 +117824,7 @@
         "fb83d9a5d4f27e0bf163",
         "fd19470bba19ecbc790a"
       ],
-      "content_hash": "41a3c202327d0cffa0a487760ca54b0ca0a122aba1946cb820f7b7b3544b0501",
+      "content_hash": "f1f8e2bef9a32b4dd900aaacb43b01f76c455a2f255d408292d45dc202612221",
       "dependencies": [],
       "description": "Transaction Security policy creation and configuration: condition builder, enhanced policies, enforcement actions (block, MFA, notification, end session), real-time monitoring mode, and policy troubleshooting. NOT for Event Monitoring log analysis or Shield Event Monitoring setup (use event-monitoring). NOT for Apex testing or debug-log analysis.",
       "file_location": "skills/security/transaction-security-policies",
@@ -117871,7 +117871,7 @@
       "templates": [
         "skills/security/transaction-security-policies/templates/transaction-security-policies-template.md"
       ],
-      "updated": "2026-04-04",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },

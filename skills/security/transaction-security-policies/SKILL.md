@@ -35,7 +35,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-04-28
 ---
 
 # Transaction Security Policies
@@ -83,10 +83,13 @@ Creating a new Transaction Security Policy involves five decisions: which event 
    - Field: `Operation` | Operator: `Equals` | Value: `Export`
 
 3. **Choose the enforcement action:**
-   - **Block** — prevents the operation and displays a custom message to the user. The message is configurable in the policy record. Use this for hard stops.
-   - **Multi-Factor Authentication** — challenges the user with an MFA step-up before allowing the action to proceed. Use this for sensitive operations where you want friction rather than a hard block.
-   - **Notification** — sends an email or in-app notification to specified recipients. Does not block the action. Use this for monitoring scenarios or alerting on-call staff.
-   - **End Session** — terminates the user's current session immediately. Use for severe threats (e.g., `SessionHijackingEvent` match).
+
+   | Action | Effect | When to use |
+   |---|---|---|
+   | Block | Prevents the operation and displays a configurable custom message | Hard stops |
+   | Multi-Factor Authentication | Challenges the user with MFA step-up before allowing the action | Sensitive operations where friction is preferred over a hard block |
+   | Notification | Emails or in-app-notifies specified recipients; does not block | Monitoring scenarios or alerting on-call staff |
+   | End Session | Terminates the user's current session immediately | Severe threats (e.g., `SessionHijackingEvent` match) |
 
 4. **Set notification recipients** (if applicable): policy owner, specific named users, or the user who triggered the event.
 

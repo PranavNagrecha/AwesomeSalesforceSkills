@@ -54,10 +54,12 @@ The job is to decide: what's the source of truth, which attributes flow, which g
 
 ### What SCIM Covers
 
-- **Create** — IdP triggers user creation when a user is added to an assigned group.
-- **Update** — profile attribute changes flow from the IdP on change.
-- **Deactivate** — user is set to `active = false` when removed from the assigned scope.
-- **Group-to-entitlement** — IdP groups map to Salesforce Permission Sets, Permission Set Groups, or Public Groups.
+| Lifecycle event | Behavior |
+|---|---|
+| Create | IdP triggers user creation when a user is added to an assigned group. |
+| Update | Profile attribute changes flow from the IdP on change. |
+| Deactivate | User is set to `active = false` when removed from the assigned scope. |
+| Group-to-entitlement | IdP groups map to Salesforce Permission Sets, Permission Set Groups, or Public Groups. |
 
 ### What SCIM Does Not Cover
 
