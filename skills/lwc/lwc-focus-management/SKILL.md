@@ -36,20 +36,7 @@ updated: 2026-04-23
 
 ## Purpose
 
-Most accessibility bugs in LWC are not missing labels — they are lost or
-stolen focus. A modal opens and focus stays on the button behind it. A
-validation error appears and focus stays on the submit button. Re-rendering
-a list erases the user's position. Shadow DOM makes it worse because naive
-`querySelector` calls fail silently. This skill gives deterministic patterns
-for focus management across the common LWC cases.
-
-## When To Use
-
-- Building a modal, dialog, or sheet.
-- Rendering a multi-step wizard in a single component.
-- Asynchronously loading data and needing to direct attention afterwards.
-- A validation flow where errors must be announced and actionable.
-- Any component where a keyboard-only user can currently get stuck.
+Deterministic patterns for LWC focus management — focus restoration, traps, shadow-DOM traversal, and assistive-tech announcements — so keyboard and screen-reader users never get stranded.
 
 ## Recommended Workflow
 
@@ -72,19 +59,100 @@ for focus management across the common LWC cases.
 
 ## Common Patterns
 
-### Pattern 1: Modal Open / Close
+### Pattern 1: Modal Focus Trap With Restore
 
-- On open: save `document.activeElement`, move focus to the first focusable
-  element in the modal (or a wrapping `dialog` heading).
-- While open: trap Tab within the modal.
-- On close: restore focus to the saved element if still in the DOM, else a
-  sensible fallback.
+Save the opener, trap Tab between first and last focusable elements, restore on close:
 
-### Pattern 2: Error Summary
+```js
+import { LightningElement, api } from 'lwc';
 
-- On submit with errors: render an error summary with a role="alert" and
-  focus it.
-- Each error item links to its field; clicking focuses the field.
+const FOCUSABLE = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
+export default class FocusTrapModal extends LightningElement {
+  _opener;
+  _isOpen = false;
+  _focused = false;
+
+  @api open() {
+    this._opener = document.activeElement;
+    this._isOpen = true;
+  }
+
+  renderedCallback() {
+    if (this._isOpen && !this._focused) {
+      this.template.querySelector('[data-focus="first"]')?.focus();
+      this._focused = true;
+    }
+  }
+
+  handleKeyDown(event) {
+    if (event.key !== 'Tab' || !this._isOpen) return;
+    const focusable = [...this.template.querySelectorAll(FOCUSABLE)];
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
+  handleClose() {
+    this._isOpen = false;
+    this._focused = false;
+    Promise.resolve().then(() => this._opener?.focus?.());
+  }
+}
+```
+
+### Pattern 2: Error Summary With Field Links
+
+Render a focusable error summary (`role="alert"`) after validation; each item focuses its field on click:
+
+```html
+<!-- errorSummary.html -->
+<template>
+  <template if:true={hasErrors}>
+    <div role="alert" tabindex="-1" data-focus="error-summary"
+         class="slds-notify slds-notify_alert slds-theme_error">
+      <h2>Fix {errorCount} errors before saving</h2>
+      <ul>
+        <template for:each={errors} for:item="err">
+          <li key={err.fieldName}>
+            <a href="#" data-field={err.fieldName}
+               onclick={handleErrorClick}>{err.message}</a>
+          </li>
+        </template>
+      </ul>
+    </div>
+  </template>
+</template>
+```
+
+```js
+handleSubmit() {
+  this.errors = this.validate();
+  if (this.errors.length) {
+    this._pendingFocus = true;   // triggers renderedCallback guard
+  }
+}
+
+renderedCallback() {
+  if (this._pendingFocus) {
+    this._pendingFocus = false;
+    this.template.querySelector('[data-focus="error-summary"]')?.focus();
+  }
+}
+
+handleErrorClick(event) {
+  event.preventDefault();
+  const fieldName = event.currentTarget.dataset.field;
+  this.template.querySelector(`[data-field-input="${fieldName}"]`)?.focus();
+}
+```
 
 ### Pattern 3: Async Load Complete
 
