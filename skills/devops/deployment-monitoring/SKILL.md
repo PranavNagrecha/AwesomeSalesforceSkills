@@ -33,7 +33,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-13
+updated: 2026-04-28
 ---
 
 # Deployment Monitoring
@@ -58,11 +58,13 @@ Gather this context before working on anything in this domain:
 
 Every deployment passes through a predictable status progression exposed on the `DeployResult.status` field:
 
-- **Pending** — The deployment is queued. Another deployment is currently running in the org.
-- **InProgress** — The metadata is being compiled and deployed. `numberComponentsDeployed` increments as components succeed.
-- **Succeeded** — All components deployed successfully and all Apex tests passed (if a test level was specified).
-- **Failed** — One or more components failed or required Apex tests did not pass. The `componentFailures` and `runTestsResult` arrays contain detail.
-- **Canceled** — The deployment was explicitly canceled via the Metadata API `cancelDeploy()` call or from the Deployment Status page in Setup.
+| Status | Meaning |
+|---|---|
+| Pending | The deployment is queued. Another deployment is currently running in the org. |
+| InProgress | The metadata is being compiled and deployed. `numberComponentsDeployed` increments as components succeed. |
+| Succeeded | All components deployed successfully and all Apex tests passed (if a test level was specified). |
+| Failed | One or more components failed or required Apex tests did not pass. The `componentFailures` and `runTestsResult` arrays contain detail. |
+| Canceled | The deployment was explicitly canceled via the Metadata API `cancelDeploy()` call or from the Deployment Status page in Setup. |
 
 Polling on `status` and treating any non-Succeeded terminal state as a failure is the correct pattern. Do not treat `InProgress` as success.
 

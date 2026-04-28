@@ -38,7 +38,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-04-28
 ---
 
 # CumulusCI Automation
@@ -61,13 +61,15 @@ Gather this context before working on anything in this domain:
 
 ### 1. The cumulusci.yml Anatomy
 
-`cumulusci.yml` is the single configuration file that governs the entire CumulusCI project. It has four top-level sections relevant to automation authoring:
+`cumulusci.yml` is the single configuration file that governs the entire CumulusCI project. The top-level sections relevant to automation authoring:
 
-- **`project:`** — Project name, package type (managed/unlocked/none), git branching config, and the default org alias.
-- **`tasks:`** — Task declarations. Each entry names a task, gives it a `class_path` pointing to a Python class (built-in or custom), and sets `options` key-value pairs.
-- **`flows:`** — Flow declarations. Each entry names a flow and lists numbered `steps`, where each step references a task or a sub-flow.
-- **`orgs:`** — Scratch org shape configuration (which scratch org definition file to use, additional namespaces, etc.).
-- **`sources:`** — Cross-project task/flow reuse by referencing another GitHub repo or local path.
+| Section | Purpose |
+|---|---|
+| `project:` | Project name, package type (managed/unlocked/none), git branching config, and the default org alias. |
+| `tasks:` | Task declarations. Each entry names a task, gives it a `class_path` pointing to a Python class (built-in or custom), and sets `options` key-value pairs. |
+| `flows:` | Flow declarations. Each entry names a flow and lists numbered `steps`, where each step references a task or a sub-flow. |
+| `orgs:` | Scratch org shape configuration (which scratch org definition file to use, additional namespaces, etc.). |
+| `sources:` | Cross-project task/flow reuse by referencing another GitHub repo or local path. |
 
 CumulusCI ships with an extensive standard library of tasks and flows. Every entry in `cumulusci.yml` either declares a new task/flow from scratch or **extends** a standard one. Extending is done by declaring a task or flow with the same name and using the `options:` block or `steps:` block to override only what changes.
 

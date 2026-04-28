@@ -31,7 +31,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-05
+updated: 2026-04-28
 ---
 
 # Continuous Integration Testing
@@ -56,10 +56,12 @@ Gather this context before working on anything in this domain:
 
 The `sf project deploy start` and `sf apex run test` commands accept a `--test-level` flag with four values:
 
-- **NoTestRun** -- skip tests entirely. Only valid for non-production targets or metadata-only changes.
-- **RunSpecifiedTests** -- run only the named test classes. Salesforce enforces 75% coverage per class and per trigger in the deployment package, which is stricter than org-wide.
-- **RunLocalTests** -- run all tests in the org except managed package tests. Coverage is calculated org-wide at 75%.
-- **RunAllTestsInOrg** -- run everything including managed package tests. Rarely appropriate in CI because managed package test failures block your deployment.
+| Level | Behavior |
+|---|---|
+| NoTestRun | Skip tests entirely. Only valid for non-production targets or metadata-only changes. |
+| RunSpecifiedTests | Run only the named test classes. Salesforce enforces 75% coverage per class and per trigger in the deployment package — stricter than org-wide. |
+| RunLocalTests | Run all tests in the org except managed package tests. Coverage is calculated org-wide at 75%. |
+| RunAllTestsInOrg | Run everything including managed package tests. Rarely appropriate in CI because managed package test failures block your deployment. |
 
 The critical nuance: `RunSpecifiedTests` applies coverage requirements per-component in the package, not org-wide. A single under-covered class in your changeset will fail deployment even if the org is at 90% overall.
 

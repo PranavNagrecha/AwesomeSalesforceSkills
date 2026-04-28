@@ -32,7 +32,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-05
+updated: 2026-04-28
 ---
 
 # Rollback And Hotfix Strategy
@@ -69,10 +69,12 @@ For hotfixes, this means you can validate the fix during business hours and then
 
 Several Salesforce metadata types cannot be fully rolled back through the Metadata API:
 
-- **Record Types** — Once created and assigned to page layout assignments or used in data, they cannot be deleted via deployment. Rollback requires manual deactivation in Setup.
-- **Picklist values** — Values added to a picklist field cannot be removed via Metadata API. Use the Replace Picklist Values feature in Setup or manual editing.
-- **Active Flow versions** — An active Flow version cannot be deleted or deactivated via deployment. You must deactivate it manually in Setup before the previous version can be activated.
-- **Custom metadata records** — While the type definition can be deployed, individual records (CustomMetadata) behave like data and may not revert cleanly.
+| Component | Why rollback is constrained |
+|---|---|
+| Record Types | Once created and assigned to page-layout assignments or used in data, they cannot be deleted via deployment. Rollback requires manual deactivation in Setup. |
+| Picklist values | Values added to a picklist field cannot be removed via Metadata API. Use the Replace Picklist Values feature in Setup or manual editing. |
+| Active Flow versions | An active Flow version cannot be deleted or deactivated via deployment. Deactivate it manually in Setup before the previous version can be activated. |
+| Custom metadata records | The type definition can be deployed, but individual records (CustomMetadata) behave like data and may not revert cleanly. |
 
 A rollback plan must identify these components upfront and include manual remediation steps.
 

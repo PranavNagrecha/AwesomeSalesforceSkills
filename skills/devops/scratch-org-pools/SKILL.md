@@ -35,7 +35,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-04-28
 ---
 
 # Scratch Org Pools
@@ -66,10 +66,12 @@ Each pooled org is a standard scratch org. There is no special "pooled" org type
 
 CumulusCI manages pools through a set of commands that interact with the Dev Hub:
 
-- **`cci org pool create`** — Creates a batch of scratch orgs and stores them in the CumulusCI keychain. Each org is created from the project's scratch org definition file.
-- **`cci org pool list`** — Shows all available pooled orgs with their expiration dates.
-- **`cci org pool get`** — Claims one org from the pool for use. The org is removed from the pool and becomes a regular CumulusCI org.
-- **`cci org pool prune`** — Removes expired or failed orgs from the pool.
+| Command | Effect |
+|---|---|
+| `cci org pool create` | Creates a batch of scratch orgs and stores them in the CumulusCI keychain. Each org is created from the project's scratch org definition file. |
+| `cci org pool list` | Shows all available pooled orgs with their expiration dates. |
+| `cci org pool get` | Claims one org from the pool for use. The org is removed from the pool and becomes a regular CumulusCI org. |
+| `cci org pool prune` | Removes expired or failed orgs from the pool. |
 
 Pooled orgs are **not initialized** until claimed. When a job runs `cci org pool get`, CumulusCI initializes the org (runs flows like `dev_org` or `ci_org`) on first use. This means the pool stores bare scratch orgs with no metadata deployed — initialization happens at claim time.
 
