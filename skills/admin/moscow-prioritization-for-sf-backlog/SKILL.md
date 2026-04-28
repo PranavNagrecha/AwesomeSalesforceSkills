@@ -57,14 +57,15 @@ Gather this context before running a prioritization session:
 
 ### The MoSCoW Rubric
 
-MoSCoW comes from DSDM/Agile Project Framework and forces every backlog item into one of four named buckets. The discipline of the method is in the definitions — not in the act of labelling.
+MoSCoW comes from DSDM/Agile Project Framework and forces every backlog item into one of four named buckets. The discipline is in the definitions, not in the act of labelling.
 
-- **Must have (M)** — The release fails its objective if this item is not delivered. "Must" is reserved for items that are non-negotiable: a regulator requires it, a contractual deadline depends on it, the org will not function without it. The DSDM canon recommends that **Must items account for no more than ~60% of total effort** in a release; if Musts exceed this, the release is overcommitted and at risk.
-- **Should have (S)** — Important and high-value, but not release-breaking. The release ships even if a Should slips, though stakeholders will be unhappy. Should items are the natural overflow when capacity is tight.
-- **Could have (C)** — Nice to have. Delivered only if Musts and Shoulds finish ahead of capacity. Most "polish", reporting refinements, and minor UX upgrades land here. Could items are the buffer that absorbs estimate misses.
-- **Won't have (W)** — Explicitly out of scope. Critical: Won't comes in two flavours that must never be conflated.
-  - **Won't this release** — agreed-out for the current horizon, but a candidate for a future release. Goes back to the backlog tagged for re-grooming.
-  - **Won't ever** — agreed-out permanently. Document the rationale (regulatory, architectural, strategic). Archive the item — do not let it ferment in the backlog.
+| Bucket | Meaning | Effort cap | What happens if it slips |
+|---|---|---|---|
+| **Must have (M)** | Release fails its objective if not delivered: regulator requires it, contractual deadline depends on it, org won't function without it | DSDM canon: ≤ ~60% of total release effort. Above 60% → overcommitted, at risk | Release fails — escalate, re-tag, or extend horizon |
+| **Should have (S)** | Important and high-value, but not release-breaking | None, but commit cap: Must + Should ≤ ~80% of capacity | Release ships; stakeholders unhappy. Natural overflow when capacity is tight |
+| **Could have (C)** | Nice to have. Polish, reporting refinements, minor UX upgrades | Stretch goals only — fill slack, never commit | Buffer that absorbs estimate misses on Musts/Shoulds |
+| **Won't have — this release (W)** | Agreed-out for current horizon; candidate for a future release | n/a | Goes back to backlog tagged for re-grooming |
+| **Won't have — ever (W)** | Permanently out of scope (regulatory, architectural, strategic) | n/a | Archive with documented rationale — do not let it ferment |
 
 The most common MoSCoW failure mode is everything-is-Must. If the backlog has more than ~60% Must by effort, the rubric has degraded into a wishlist and the prioritization session has not actually happened.
 

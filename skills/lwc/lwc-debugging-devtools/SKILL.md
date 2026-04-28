@@ -42,7 +42,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-23
+updated: 2026-04-28
 ---
 
 # LWC Debugging DevTools
@@ -74,7 +74,7 @@ With Debug Mode on and a hard refresh, Chrome DevTools' Sources panel shows the 
 
 ### The Lightning Component Inspector
 
-The Lightning Component Inspector is an Anthropic-era Chromium extension that adds a panel to DevTools. It shows the component tree for the current page, the `@api` property values on any selected component, and the current state of each `@wire` on that component (loading, data, error). It is the fastest way to answer "is the wire emitting at all, and what is it returning?" without writing logging code. It is Chromium-only; there is no Firefox equivalent.
+The Lightning Component Inspector is a Salesforce-published Chromium extension that adds a panel to DevTools. It shows the component tree for the current page, the `@api` property values on any selected component, and the current state of each `@wire` on that component (loading, data, error). It is the fastest way to answer "is the wire emitting at all, and what is it returning?" without writing logging code. It is Chromium-only; there is no Firefox equivalent.
 
 ### Logging Under Lightning Web Security
 

@@ -29,7 +29,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-03-15
+updated: 2026-04-28
 ---
 
 Use this skill when a component is reaching for an overlay and the team needs to choose the lightest interaction that still protects the workflow. A modal is appropriate when the user must complete, confirm, or cancel a focused task. It is a poor default for simple success messages, non-blocking feedback, or page-state that would be clearer inline.
@@ -48,23 +48,14 @@ Gather this context before working on anything in this domain:
 
 ## Core Concepts
 
-Overlay design is mainly about choosing the right interruption level. The more blocking the UI becomes, the stronger the justification must be. In LWC, `LightningModal` gives a supported modal contract, but good design still depends on focus behavior, dismissal rules, and resisting the urge to use a modal for every secondary interaction.
+Overlay design is mainly about choosing the right interruption level. The more blocking the UI becomes, the stronger the justification must be.
 
-### Choose The Smallest Necessary Overlay
-
-Use a toast for lightweight success or informational feedback, a confirmation dialog for short irreversible actions, and a modal when the user truly needs a dedicated task container. Many weak modal experiences are really status messages or one-line confirmations wearing the wrong component.
-
-### `LightningModal` Is A Component Contract
-
-`LightningModal` is not opened by inserting markup into the parent template. The modal component extends `LightningModal`, is opened through the static `open()` API, and returns control back to the caller when `close(result)` runs. That contract is what makes result-passing and lifecycle handling predictable.
-
-### Focus And Dismissal Are Product Decisions
-
-Every overlay needs a plan for initial focus, keyboard dismissal, and focus return. If closing is temporarily unsafe during a save, that should be brief and explicit, not the permanent state of the modal. A user should always understand how to exit and where they land after doing so.
-
-### Avoid Stacking And UI Drift
-
-Multiple nested overlays, page navigation behind modals, and custom SLDS dialog markup all increase failure risk. If a modal needs to host a complex multi-step workflow, it may be a sign the task belongs on a page or screen flow instead.
+| Principle | Default | Anti-pattern | Why it matters |
+|---|---|---|---|
+| Smallest viable overlay | Toast for status; confirm dialog for short irreversible actions; modal only for a dedicated task | Wrapping every secondary interaction in a modal | Most weak modal UX is really a toast or one-line confirm wearing the wrong component |
+| `LightningModal` is a contract | Component extends `LightningModal`, opened via static `open()`, returns via `close(result)` | Inlining `<lightning-modal>` markup or hand-rolled SLDS dialog HTML | The static-open + `close(result)` contract is what makes result-passing and lifecycle predictable |
+| Focus and dismissal are product decisions | Define initial focus, escape behavior, and focus return on every overlay | Leaving focus wherever the browser parked it; permanently undismissable modals | A user must always know how to exit and where they land after closing |
+| No stacking or workflow drift | Single overlay at a time; multi-step work goes to a page or screen Flow | Nested modals, navigation behind modals, multi-step workflows in a single dialog | Stacking compounds focus, escape, and accessibility bugs |
 
 ---
 

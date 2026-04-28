@@ -29,7 +29,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-03-15
+updated: 2026-04-28
 ---
 
 Use this skill when a Lightning Web Component looks correct visually but may fail for keyboard users or assistive technology. The highest-value move in LWC accessibility work is usually to remove custom interaction code and return to accessible base components, then handle the few remaining focus and labeling gaps deliberately.
@@ -48,23 +48,14 @@ Gather this context before working on anything in this domain:
 
 ## Core Concepts
 
-Accessibility in LWC is easiest when the component stays close to platform primitives. Salesforce base components already carry keyboard behavior, labeling support, and SLDS-aligned semantics. The farther a team moves toward clickable `div` elements, custom focus logic, and manual ARIA, the more likely it is to recreate a solved problem badly.
+Accessibility in LWC is easiest when the component stays close to platform primitives. The farther a team moves toward clickable `div` elements, custom focus logic, and manual ARIA, the more likely it is to recreate a solved problem badly.
 
-### Base Components First
-
-Start with a base component whenever one exists. The LWC accessibility guidance explicitly points teams toward accessible base components and SLDS blueprints because they provide tested interaction and assistive-tech support out of the box. A custom menu button or faux toggle should be a last resort, not a default pattern.
-
-### Accessible Name Beats Visual Guesswork
-
-Interactive elements need a clear accessible name. In practice that means real button text, a visible or hidden label on inputs, and `alternative-text` on icons that communicate meaning. ARIA should sharpen semantics where needed, but it should not be used to patch over structurally wrong markup such as a clickable `span`.
-
-### Focus Is Part Of The Contract
-
-Dialogs, drawers, popovers, and error states need an intentional focus plan. Users must land on the first actionable or context-setting element, remain inside a modal interaction while it is open, and return to the launcher when it closes. If focus disappears after rerender or save, the component is functionally broken for keyboard users.
-
-### Validation Must Be Programmatic
-
-Error text cannot live only in color or layout. Inputs need programmatic error association and clear state changes. In Salesforce UI, this usually means using the built-in validation behavior of base form components where possible, and reserving custom validation wiring for truly custom input experiences.
+| Principle | Default | Anti-pattern | Why it matters |
+|---|---|---|---|
+| Base components first | Use `lightning-*` base components or SLDS blueprints | Custom menu/button/toggle in raw HTML | Base components ship tested keyboard, label, and AT support |
+| Accessible name | Real button text, label on inputs, `alternative-text` on meaningful icons | ARIA-patching a clickable `span` or `div` | ARIA cannot repair structurally wrong markup |
+| Focus contract | Land on first actionable element, trap inside modals, return to launcher on close | Letting focus stay wherever the browser last placed it after rerender/save | Lost focus = component is broken for keyboard users |
+| Programmatic validation | Use base-component validation; programmatic error association on custom inputs | Error state shown only in color or layout text | Color-only errors fail screen readers and color-blind users |
 
 ---
 
