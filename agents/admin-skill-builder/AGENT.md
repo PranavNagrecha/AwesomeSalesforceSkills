@@ -35,8 +35,9 @@ Builds skills for the **Admin** and **BA** roles across any Salesforce cloud. Sp
 1. `AGENT_RULES.md`
 2. `standards/source-hierarchy.md`
 3. `standards/skill-content-contract.md`
-4. `standards/naming-conventions.md` — Admin naming conventions
-5. `standards/official-salesforce-sources.md` — Admin domain sources
+4. `standards/skill-authoring-style.md` — voice, structural patterns, executable code / table / metadata conventions
+5. `standards/naming-conventions.md` — Admin naming conventions
+6. `standards/official-salesforce-sources.md` — Admin domain sources
 
 ---
 

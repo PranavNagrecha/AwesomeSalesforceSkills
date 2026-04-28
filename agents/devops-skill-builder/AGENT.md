@@ -35,8 +35,9 @@ Builds skills for the **DevOps / Release Engineering** role across any Salesforc
 1. `AGENT_RULES.md`
 2. `standards/source-hierarchy.md`
 3. `standards/skill-content-contract.md`
-4. `standards/naming-conventions.md` — DevOps naming conventions
-5. `standards/official-salesforce-sources.md` — DevOps / Release Engineering domain sources
+4. `standards/skill-authoring-style.md` — voice, structural patterns, executable code / table / metadata conventions
+5. `standards/naming-conventions.md` — DevOps naming conventions
+6. `standards/official-salesforce-sources.md` — DevOps / Release Engineering domain sources
 
 ---
 

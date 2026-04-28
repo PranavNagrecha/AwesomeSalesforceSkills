@@ -35,7 +35,8 @@ Builds skills for the **Data** role across any Salesforce cloud. Specializes in 
 1. `AGENT_RULES.md`
 2. `standards/source-hierarchy.md`
 3. `standards/skill-content-contract.md`
-4. `standards/official-salesforce-sources.md` — Data domain sources (Bulk API, SOQL ref, Object ref)
+4. `standards/skill-authoring-style.md` — voice, structural patterns, executable code / table / metadata conventions
+5. `standards/official-salesforce-sources.md` — Data domain sources (Bulk API, SOQL ref, Object ref)
 
 ---
 

@@ -53,6 +53,8 @@ Every file created by the scaffold has `TODO:` markers. Fill them all:
 - `references/llm-anti-patterns.md` — 5+ mistakes AI assistants make in this domain: wrong output, why it happens, correct pattern, detection hint
 - `scripts/check_<noun>.py` — implement the actual checks (stdlib only)
 
+**Apply the authoring style guide:** read `standards/skill-authoring-style.md` before filling SKILL.md. The guide defines voice (trust the model on Salesforce primitives, lead with the executable artifact), structural patterns (executable code, comparison tables, field-mapping tables, copy-paste metadata snippets), per-category expectations, and a 5-question pre-submit checklist. The 6 anti-patterns in § 6 of the guide are the most common shape mistakes to avoid.
+
 ### Step 4 — Sync (validates first, then writes)
 
 ```bash

@@ -35,8 +35,9 @@ Builds skills for the **Architect** role across any Salesforce cloud. Specialize
 1. `AGENT_RULES.md`
 2. `standards/source-hierarchy.md`
 3. `standards/skill-content-contract.md`
-4. `standards/well-architected-mapping.md` — the 6 WAF pillars with scoring model
-5. `standards/official-salesforce-sources.md` — Architects domain sources
+4. `standards/skill-authoring-style.md` — voice, structural patterns, executable code / table / metadata conventions
+5. `standards/well-architected-mapping.md` — the 6 WAF pillars with scoring model
+6. `standards/official-salesforce-sources.md` — Architects domain sources
 
 ---
 
