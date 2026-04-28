@@ -6437,6 +6437,54 @@
       "domain": "flow",
       "expected_skill": "flow/flow-formula-and-expression-patterns",
       "top_k": 3
+    },
+    {
+      "query": "should this Apex class be with sharing without sharing or inherited sharing keyword decision",
+      "domain": "apex",
+      "expected_skill": "apex/apex-with-without-sharing-decision",
+      "top_k": 3
+    },
+    {
+      "query": "Security stripInaccessible FLS enforcement USER_MODE on DML",
+      "domain": "apex",
+      "expected_skill": "apex/apex-stripinaccessible-and-fls-enforcement",
+      "top_k": 3
+    },
+    {
+      "query": "trigger bypass killswitch custom metadata Trigger_Setting__mdt disable handler",
+      "domain": "apex",
+      "expected_skill": "apex/apex-trigger-bypass-and-killswitch-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "store API secret in Salesforce protected custom metadata Named Credential",
+      "domain": "apex",
+      "expected_skill": "apex/apex-secrets-and-protected-cmdt",
+      "top_k": 3
+    },
+    {
+      "query": "remove hardcoded Salesforce record ID 18 character literal from Apex class",
+      "domain": "apex",
+      "expected_skill": "apex/apex-hardcoded-id-elimination",
+      "top_k": 3
+    },
+    {
+      "query": "BaseDomain BaseService BaseSelector lightweight Apex class decomposition split monolithic handler without fflib",
+      "domain": "apex",
+      "expected_skill": "apex/apex-class-decomposition-pattern",
+      "top_k": 3
+    },
+    {
+      "query": "Apex callout retry exponential backoff resilience HTTP 5xx transient failure",
+      "domain": "apex",
+      "expected_skill": "apex/apex-callout-retry-and-resilience",
+      "top_k": 3
+    },
+    {
+      "query": "Database.query bind variable queryWithBinds dynamic SOQL injection safe",
+      "domain": "apex",
+      "expected_skill": "apex/apex-dynamic-soql-binding-safety",
+      "top_k": 3
     }
   ]
 }
