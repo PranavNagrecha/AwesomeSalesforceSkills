@@ -52,6 +52,10 @@ The router reads this table to dispatch on the user-supplied `source_type`. Ever
 - `skills/flow/flow-versioning-strategy` — every emitted target Flow ships as v1; activation/deactivation rules during cutover
 - `skills/flow/flow-error-monitoring` — org-level error-email-recipient signal recorded as healthy/concerning observation
 - `skills/flow/flow-rollback-patterns` — shape of the rollback section (no SOQL/DML), shadow-field tear-down
+- `skills/flow/flow-transactional-boundaries` — every emitted target Flow's commit-boundary decision (before-save vs after-save) must cite this skill
+- `skills/flow/flow-large-data-volume-patterns` — when the WFR fires on an LDV object (> 100k rows), the migrated Flow needs the LDV guardrails
+- `skills/flow/flow-action-framework` — when a WFR's flow-trigger invocable becomes an Apex action element on the target Flow, the Flow–Apex invocable contract applies
+- `skills/flow/flow-runtime-error-diagnosis` — symptom-to-cause map cited in the parallel-run validation section
 - `skills/admin/flow-for-admins`
 - `skills/apex/trigger-and-flow-coexistence`
 - `standards/decision-trees/automation-selection.md`
@@ -101,6 +105,11 @@ The router reads this table to dispatch on the user-supplied `source_type`. Ever
 - `skills/flow/flow-versioning-strategy` — versioning + activation rules for the emitted target Flow
 - `skills/flow/flow-error-monitoring` — org-level error-email-recipient signal recorded as healthy/concerning observation
 - `skills/flow/flow-rollback-patterns` — shape of the rollback section, shadow-field tear-down
+- `skills/flow/flow-transactional-boundaries` — every emitted target Flow's commit-boundary decision (before-save vs after-save) must cite this skill; PB's serial behavior masked transaction concerns the Flow makes explicit
+- `skills/flow/flow-large-data-volume-patterns` — when the PB fires on an LDV object, the migrated Flow needs LDV guardrails
+- `skills/flow/flow-action-framework` — PB Apex Action / Quick Action / Launch-a-Flow → Flow Apex action / invocable / Subflow contract
+- `skills/flow/flow-decision-element-patterns` — PB criteria nodes translate to Decision elements; default outcome + null-safe branching rules apply
+- `skills/flow/flow-runtime-error-diagnosis` — symptom-to-cause map cited in the parallel-run validation section
 - `skills/admin/flow-for-admins`
 - `skills/apex/trigger-and-flow-coexistence`
 - `standards/decision-trees/automation-selection.md`
@@ -155,6 +164,11 @@ The router reads this table to dispatch on the user-supplied `source_type`. Ever
 - `skills/flow/flow-deployment-and-packaging` — orchestration + dependent subflows + FlowAccessPermission for each persona must deploy together
 - `skills/flow/flow-versioning-strategy` — orchestrations are versioned; in-flight instances during cutover
 - `skills/flow/flow-error-monitoring` — org-level error-email-recipient + monitoring assertions
+- `skills/flow/flow-transactional-boundaries` — orchestration commits at stage boundaries; recall behavior depends on which stages have committed
+- `skills/flow/flow-rollback-patterns` — Rollback Records inside a stage subflow only undoes that subflow's DML; previous stages' commits are NOT reverted (cite when designing the rejection branch)
+- `skills/flow/flow-runtime-error-diagnosis` — symptom-to-cause map cited in parallel-run validation + canary observations
+- `skills/flow/flow-decision-element-patterns` — approval routing translates to Decision elements + transition conditions
+- `skills/flow/flow-formula-and-expression-patterns` — approver-formula expressions translate to Flow formula resources, but NULL semantics differ
 - `skills/admin/approval-processes`
 - `skills/admin/queues-and-public-groups` — queue-as-assignee preflight (active member count) before activation
 - `standards/decision-trees/automation-selection.md`

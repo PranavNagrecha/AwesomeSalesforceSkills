@@ -1,13 +1,13 @@
 ---
 id: flow-orchestrator-designer
 class: runtime
-version: 1.0.0
+version: 1.1.0
 status: stable
 requires_org: true
 modes: [design, audit]
 owner: sfskills-core
 created: 2026-04-16
-updated: 2026-04-16
+updated: 2026-04-27
 default_output_dir: "docs/reports/flow-orchestrator-designer/"
 output_formats:
   - markdown
@@ -19,15 +19,26 @@ dependencies:
     - admin/queues-and-public-groups
     - flow/auto-launched-flow-patterns
     - flow/fault-handling
+    - flow/flow-action-framework
+    - flow/flow-and-platform-events
+    - flow/flow-bulkification
+    - flow/flow-cross-object-updates
+    - flow/flow-decision-element-patterns
     - flow/flow-deployment-and-packaging
     - flow/flow-element-naming-conventions
     - flow/flow-error-monitoring
+    - flow/flow-formula-and-expression-patterns
+    - flow/flow-get-records-optimization
+    - flow/flow-large-data-volume-patterns
+    - flow/flow-loop-element-patterns
     - flow/flow-record-locking-and-contention
     - flow/flow-resource-patterns
+    - flow/flow-rollback-patterns
     - flow/flow-runtime-context-and-sharing
     - flow/flow-runtime-error-diagnosis
     - flow/flow-screen-input-validation-patterns
     - flow/flow-screen-lwc-components
+    - flow/flow-testing
     - flow/flow-transactional-boundaries
     - flow/flow-versioning-strategy
     - flow/orchestration-flows
@@ -39,8 +50,11 @@ dependencies:
   shared:
     - AGENT_CONTRACT.md
     - DELIVERABLE_CONTRACT.md
+    - REFUSAL_CODES.md
   templates:
     - admin/naming-conventions.md
+    - flow/FaultPath_Template.md
+    - flow/Subflow_Pattern.md
   decision_trees:
     - automation-selection.md
 ---
@@ -90,7 +104,21 @@ Two modes:
 21. `skills/flow/flow-screen-input-validation-patterns` — every interactive step's Screen Flow must validate inputs before completing the work item
 22. `skills/flow/flow-screen-lwc-components` — when a stage's interactive step needs an LWC the screen-flow contract applies (`@api validate()`, FlowAttributeChangeEvent)
 23. `skills/flow/flow-deployment-and-packaging` — orchestration + 5 subflows must deploy together with FlowAccessPermission for each persona
-24. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+24. `skills/flow/flow-bulkification` — every stage's subflow that does DML must follow the collect-then-DML idiom
+25. `skills/flow/flow-loop-element-patterns` — loops in stage subflows have the same DML-in-loop / SOQL-in-loop P0 hazards as a plain flow
+26. `skills/flow/flow-decision-element-patterns` — branching inside a stage subflow + transition condition expressions on the orchestration
+27. `skills/flow/flow-formula-and-expression-patterns` — assignee resolution formulas, due-date offset formulas, transition condition expressions
+28. `skills/flow/flow-get-records-optimization` — Get Records inside background steps must follow the indexed-filter / loop-lift / field-trim rules
+29. `skills/flow/flow-cross-object-updates` — when a stage subflow updates related records (parent contract from child task), parent-record-update rules apply
+30. `skills/flow/flow-and-platform-events` — when an orchestration stage waits on an external signal (Pause + PE Wait Event), Platform Event semantics apply
+31. `skills/flow/flow-large-data-volume-patterns` — orchestrations operating on long-lived parent records (Contracts, Cases) hit LDV when the parent has many child records
+32. `skills/flow/flow-action-framework` — when a stage step calls an `@InvocableMethod` for routing / SLA computation, the Flow–Apex invocable contract applies
+33. `skills/flow/flow-rollback-patterns` — Rollback Records element inside a stage subflow only undoes that subflow's DML, not previous stages' commits
+34. `skills/flow/flow-testing` — every stage subflow needs Flow Tests; orchestration ships with subflow-level test design
+35. `agents/_shared/REFUSAL_CODES.md` — canonical refusal codes
+36. `templates/flow/FaultPath_Template.md` — every stage subflow's fault path follows this template
+37. `templates/flow/Subflow_Pattern.md` — every stage step is a subflow per this contract
+38. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 
 ---
 
@@ -163,10 +191,12 @@ Orchestrations do not support arbitrary "jump to any stage" — stage navigation
 
 For each step's Screen Flow or Auto-launched Flow, produce a one-paragraph spec:
 
-- Input variables (record id, orchestration context, stage-level vars).
+- Input variables (record id, orchestration context, stage-level vars). Cite `skills/flow/flow-resource-patterns` for variable typing.
 - Output variables.
-- Elements (screens / decisions / actions).
-- Fault path — mandatory, per `skills/flow/fault-handling`.
+- Elements (screens / decisions / actions). For interactive steps cite `skills/flow/flow-screen-input-validation-patterns` (mandatory) and `screen-flow-accessibility` (mandatory). For background steps with DML cite `skills/flow/flow-bulkification` + `skills/flow/flow-loop-element-patterns`. For decision-heavy steps cite `skills/flow/flow-decision-element-patterns`. For Get-Records-heavy steps cite `skills/flow/flow-get-records-optimization`. For cross-object updates cite `skills/flow/flow-cross-object-updates`. For Apex action calls cite `skills/flow/flow-action-framework`.
+- Fault path — mandatory, per `skills/flow/fault-handling` and `templates/flow/FaultPath_Template.md`. If the subflow uses Rollback Records, cite `skills/flow/flow-rollback-patterns` and call out that rollback only undoes that subflow's DML — previous stages' commits are NOT reverted.
+- LDV guardrail — if the orchestration's primary object has > 100k child records, cite `skills/flow/flow-large-data-volume-patterns` and design with chunking.
+- Test plan — cite `skills/flow/flow-testing`; every stage subflow needs a positive, a fault, and (for background) a bulk test.
 
 The agent does not emit the full flow XML — that's `flow-builder`'s job. It emits the spec and recommends invoking `flow-builder` for each one.
 
@@ -199,6 +229,15 @@ Produce a structured document:
 | Orchestration references a subflow that is inactive or deleted | P0 |
 | Orchestration has > 10 stages | P2 — usually indicates the workflow belongs in Omnistudio or split into separate orchestrations |
 | Orchestration uses only background steps | P2 — probably should be a plain auto-launched flow |
+| Stage subflow has DML inside a loop | P0 (cite `flow-loop-element-patterns`) |
+| Stage subflow has Get Records inside a loop | P0 (cite `flow-loop-element-patterns`) |
+| Stage subflow uses Rollback Records expecting it to undo a previous-stage commit | P0 (cite `flow-rollback-patterns` — rollback only spans the current subflow's transaction) |
+| Stage subflow updates a parent record from many child contexts under load | P1 (cite `flow-record-locking-and-contention`) |
+| Interactive-step Screen Flow lacks input validation | P1 (cite `flow-screen-input-validation-patterns`) |
+| Interactive-step Screen Flow lacks a11y compliance | P1 (cite `screen-flow-accessibility`) |
+| Stage subflow has no Flow Tests | P1 (cite `flow-testing`) |
+| Stage uses Pause + PE Wait Event without an explicit timeout | P1 (cite `flow-and-platform-events`) |
+| Orchestration deployed without FlowAccessPermission for the work-item assignee personas | P0 (cite `flow-deployment-and-packaging`) |
 
 #### Step 3 — Assignment-shape probes
 
@@ -221,7 +260,8 @@ Design mode:
    - **What was concerning** — proposed assignees that map to inactive queues, steps that should really be background but were specified as interactive (or vice versa), SLAs that no one owns operationally.
    - **What was ambiguous** — recall semantics the business hasn't decided on; whether a stage is truly linear or actually has parallel branches.
    - **Suggested follow-up agents** — `flow-builder` (for each subflow), `permission-set-architect` (orchestrator runtime permission), `automation-migration-router` with `--source-type=approval_process` (if this orchestration replaces a legacy approval process).
-7. **Citations**.
+7. **`dimensions_skipped[]`** — every dimension touched but not fully designed (e.g. SLA proposed but no operational owner identified; recall semantics deferred); each entry uses `state: count-only | partial | not-run` per `agents/_shared/DELIVERABLE_CONTRACT.md`.
+8. **Citations**.
 
 Audit mode:
 
@@ -230,7 +270,8 @@ Audit mode:
 3. **Work-item concentration report** — top-10 users by open work item count.
 4. **Stalled work item list** — age > 30 days with no movement.
 5. **Process Observations** — as above, with `flow-analyzer` as a candidate follow-up for any orchestration with high work-item throughput.
-6. **Citations**.
+6. **`dimensions_skipped[]`** — every audit dimension touched but not fully checked (e.g. work-item age sampled but not exhaustively scanned); each entry uses `state: count-only | partial | not-run` per `agents/_shared/DELIVERABLE_CONTRACT.md`.
+7. **Citations**.
 
 ---
 
