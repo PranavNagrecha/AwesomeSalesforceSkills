@@ -30,7 +30,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-04-28
 ---
 
 # Metadata API and Package.xml
@@ -43,10 +43,12 @@ Use this skill when you need to retrieve metadata from a Salesforce org, deploy 
 
 Gather this context before working on anything in this domain:
 
-- **User permissions**: The deploying user needs either the "Modify Metadata Through Metadata API Functions" permission OR "Modify All Data" permission, plus "API Enabled". Without these, deploy() and retrieve() calls will fail.
-- **Edition requirement**: Metadata API requires Enterprise, Unlimited, Performance, or Developer Edition. Professional Edition orgs require ISV partner API token access.
-- **API version alignment**: The `<version>` tag in package.xml must match the version your CLI or client targets. Mismatches cause unexpected behavior. Current supported range: v31.0–v66.0 (Spring '26). Versions 7.0–30.0 are retired.
-- **Asynchronous model**: Both deploy() and retrieve() are asynchronous. They return an AsyncResult ID immediately; you must poll checkDeployStatus() or checkRetrieveStatus() to know when they complete.
+| Context | What to confirm |
+|---|---|
+| User permissions | The deploying user needs either "Modify Metadata Through Metadata API Functions" OR "Modify All Data" permission, plus "API Enabled". Without these, deploy() and retrieve() calls will fail. |
+| Edition requirement | Metadata API requires Enterprise, Unlimited, Performance, or Developer Edition. Professional Edition orgs require ISV partner API token access. |
+| API version alignment | The `<version>` tag in package.xml must match the version your CLI or client targets. Mismatches cause unexpected behavior. Current supported range: v31.0–v66.0 (Spring '26). Versions 7.0–30.0 are retired. |
+| Asynchronous model | Both deploy() and retrieve() are asynchronous. They return an AsyncResult ID immediately; you must poll checkDeployStatus() or checkRetrieveStatus() to know when they complete. |
 
 ---
 

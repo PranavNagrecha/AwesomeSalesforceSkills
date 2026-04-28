@@ -35,7 +35,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-04-28
 ---
 
 # Lead Conversion Customization
@@ -86,10 +86,12 @@ The correct pattern is to perform a post-conversion DML update: after calling `D
 
 A single `Database.convertLead()` call fires triggers on:
 
-- **Lead**: `before update` and `after update` (with `IsConverted` flipping from `false` to `true`)
-- **Account**: `before insert` / `after insert` (if a new Account is created) or `before update` / `after update` (if merged into existing)
-- **Contact**: `before insert` / `after insert` (if a new Contact is created) or `before update` / `after update` (if merged)
-- **Opportunity**: `before insert` / `after insert` (if Opportunity creation is not suppressed)
+| Object | Trigger contexts |
+|---|---|
+| Lead | `before update` and `after update` (with `IsConverted` flipping from `false` to `true`). |
+| Account | `before insert` / `after insert` (if a new Account is created) or `before update` / `after update` (if merged into existing). |
+| Contact | `before insert` / `after insert` (if a new Contact is created) or `before update` / `after update` (if merged). |
+| Opportunity | `before insert` / `after insert` (if Opportunity creation is not suppressed). |
 
 All of this happens in a single transaction. Governor limits are shared across all trigger fires. SOQL queries and DML operations performed in any one trigger count against the same transaction limits.
 

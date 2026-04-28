@@ -32,7 +32,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-04-28
 ---
 
 # Apex Email Services
@@ -82,11 +82,13 @@ The `InboundEnvelope` carries transport-level metadata: `toAddress`, `fromAddres
 
 Each Apex handler class is associated with one or more **Email Service** configurations in Setup > Email Services. Each configuration generates a unique `@[instance].salesforce.com` address. Key settings:
 
-- **Active**: must be checked or all mail is dropped
-- **Accept Email From**: restrict to specific sender domains or addresses; leave blank to accept all
-- **Error Action**: controls what happens when `success = false` — Bounce, Discard, or Requeue
-- **Apex Class**: points to your `InboundEmailHandler` implementation
-- **Over Email Rate Limit**: action when the daily limit is reached — Bounce, Discard, or Requeue
+| Setting | Purpose |
+|---|---|
+| Active | Must be checked or all mail is dropped. |
+| Accept Email From | Restrict to specific sender domains or addresses; leave blank to accept all. |
+| Error Action | Controls what happens when `success = false` — Bounce, Discard, or Requeue. |
+| Apex Class | Points to your `InboundEmailHandler` implementation. |
+| Over Email Rate Limit | Action when the daily limit is reached — Bounce, Discard, or Requeue. |
 
 You can create multiple Email Service addresses (each with a different configuration) backed by the same Apex class to support different routing scenarios (e.g., separate addresses per product line, each stamping a different record type on created Cases).
 

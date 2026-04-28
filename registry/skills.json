@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 45
   },
-  "generated_from_hash": "7da347019078d9797bcbadac632cd4bd58ea8768340f9de3f8f104c010a9a2ed",
+  "generated_from_hash": "a1a7ff55e72fdb6ff19eb08953ba785f1bdfedeb9c347acce8251f099c60e48e",
   "schema_version": 1,
   "skill_count": 907,
   "skills": [
@@ -39110,7 +39110,7 @@
         "fc51ad6edd84b434a25f",
         "fcac573e0cb643eec44b"
       ],
-      "content_hash": "fb538cd435fd79a604297ba78bb0a1a3a5979b0134539766c638627c0834a115",
+      "content_hash": "33a15b9a6265b285437ce11a6a388b1f206239e35bd2ca4384bfd9570f6cc8fe",
       "dependencies": [],
       "description": "Use this skill when implementing inbound email processing via Apex: parsing emails sent to a Salesforce-hosted address, creating or updating records from email content, handling attachments, or configuring Email Service routing. Trigger keywords: InboundEmailHandler, email service address, handleInboundEmail, Messaging.InboundEmail, Email-to-Case alternative, process email in Apex. NOT for outbound email templates, Messaging.SingleEmailMessage, workflow email alerts, or Email-to-Case declarative setup.",
       "file_location": "skills/apex/apex-email-services",
@@ -39154,7 +39154,7 @@
       "templates": [
         "skills/apex/apex-email-services/templates/apex-email-services-template.md"
       ],
-      "updated": "2026-04-04",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -42006,7 +42006,7 @@
         "f570e6819dcace2b3831",
         "f6f2f333e026c1e312cb"
       ],
-      "content_hash": "defaa1b402561d1e6152937cdac46757df8804ec2582dba218987a3aa521225e",
+      "content_hash": "03a97e1b8fecc5900c0bad185aca505639a45b24b7b94f10a763836848c4bf49",
       "dependencies": [],
       "description": "Use Security.stripInaccessible to enforce CRUD/FLS on user-supplied records before DML, and to scrub query results before returning them to clients. Covers AccessType.READABLE/CREATABLE/UPDATABLE/UPSERTABLE, the SObjectAccessDecision API, when to prefer WITH USER_MODE on the SOQL itself, and integration with the SecurityUtils template. NOT for class-level sharing keyword choice (with sharing / without sharing / inherited sharing \u2014 see apex-sharing-keywords). NOT for managed sharing or Apex managed sharing recalculations (see sharing-selection decision tree).",
       "file_location": "skills/apex/apex-stripinaccessible-and-fls-enforcement",
@@ -44168,7 +44168,7 @@
         "fcf6879104b83e529f34",
         "fee9abb380dad6b6b39b"
       ],
-      "content_hash": "5471085c49abe0c636c662de3a85adb9d817f96e6eee4e394b5d486f5643d30e",
+      "content_hash": "f6ba4adcd3598e7936096cd0b0343d550477bd288c0d2401f71b035caa00664a",
       "dependencies": [],
       "description": "Use this skill when building or debugging headless B2C Commerce storefront order submission using the Salesforce Commerce API (SCAPI) ShopAPI Orders endpoint or the legacy OCAPI /orders resource. Covers SCAPI order creation, SLAS authentication for shopper order access, OCAPI order placement and amendment, order status retrieval from the storefront layer, and notification/webhook configuration for order events. NOT for standard REST API (no generic CRUD against Order SObject). NOT for OMS Connect API (no OrderSummary, FulfillmentOrder, submit-cancel, or ensure-funds-async \u2014 those are covered by admin/commerce-order-management). NOT for CPQ order workflows.",
       "file_location": "skills/apex/commerce-order-api",
@@ -44217,7 +44217,7 @@
       "templates": [
         "skills/apex/commerce-order-api/templates/commerce-order-api-template.md"
       ],
-      "updated": "2026-04-12",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -45245,7 +45245,7 @@
         "fe8f59f995adb4bf253f",
         "fee43a8936b243dbc188"
       ],
-      "content_hash": "748154e5b7db878211fb45aaf7fca80cebd26cf5f6901f5bc0b90ff73e856c4a",
+      "content_hash": "caab4a829a0fe8358b8638741c348e499ffff2fb9189df70d597b631e183eb71",
       "dependencies": [],
       "description": "Use when adding, configuring, or troubleshooting custom action buttons in the Salesforce CPQ Quote Line Editor (QLE), product configurator, or amendment/renewal screens. Trigger keywords: CPQ custom action, QLE button, SBQQ__CustomAction__c, CPQ Flow button, CPQ URL action. NOT for standard Salesforce quick actions on non-CPQ objects, Lightning Experience action bars outside the QLE, or CPQ Price Rules and Product Rules.",
       "file_location": "skills/apex/cpq-custom-actions",
@@ -49171,7 +49171,7 @@
         "fca19ee622e0f3194855",
         "fe800092efeef0ae0b9e"
       ],
-      "content_hash": "898a13f82494a6437cf586f936e3812b220932e3da6839e6b75b70d8b53f8f3a",
+      "content_hash": "3cf7877896ea28a2b613cd8bc2be51e8816057c8c1298d41ff0a5f4bbcc90588",
       "dependencies": [],
       "description": "Use when writing, reviewing, or troubleshooting Apex that risks hitting Salesforce governor limits. Triggers: 'too many SOQL queries', 'too many DML statements', 'CPU time limit', 'bulkification', 'Queueable vs Batch'. NOT for trigger architecture decisions unless the core problem is limit consumption.",
       "file_location": "skills/apex/governor-limits",
@@ -49211,7 +49211,7 @@
       "templates": [
         "skills/apex/governor-limits/templates/bulk-safe-service.cls"
       ],
-      "updated": "2026-03-13",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -49929,7 +49929,7 @@
         "f94c61bfc64ede18cb50",
         "fb6124a7abeb49f10ba4"
       ],
-      "content_hash": "02487460f624aaab2d6c9915a46cbeb5b6c02818832fb7ef292e1bece6997c91",
+      "content_hash": "f6616dfd01bbb92d6b2548c6d5b026b681ba380f5da527e85c0f9066d4535219",
       "dependencies": [],
       "description": "Use when writing Apex to customize lead conversion: controlling which records are created, copying custom field values post-conversion, firing related record logic on convert, or structuring LeadConvert calls. Triggers: 'lead conversion apex', 'Database.LeadConvert', 'custom field mapping conversion', 'convert lead trigger', 'lead convert opportunity', 'LeadConvertResult'. NOT for configuring lead conversion field mapping in Setup UI, managing lead assignment rules, or building web-to-lead forms \u2014 use admin/lead-management-and-conversion for those.",
       "file_location": "skills/apex/lead-conversion-customization",
@@ -49975,7 +49975,7 @@
       "templates": [
         "skills/apex/lead-conversion-customization/templates/lead-conversion-customization-template.md"
       ],
-      "updated": "2026-04-06",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -50801,7 +50801,7 @@
         "f8f0ca16501bb167185d",
         "fbc39952b30f03f4e796"
       ],
-      "content_hash": "3aa84b04c14d602c7ae59dfaad2eae15f33b891be5291bede40865081a21219c",
+      "content_hash": "811f98caa622bcff1d05ad3b845d8e6740ec97636f0b98c5551237fa2f1d3ee2",
       "dependencies": [],
       "description": "Metadata API concepts, package.xml manifest structure, retrieve and deploy workflows, what metadata types can and cannot be retrieved, deployment order dependencies, and destructiveChanges.xml for deletions. NOT for SFDX source-format details or sf CLI command syntax (use sf-cli-and-sfdx-essentials), and NOT for CI/CD pipeline automation (use devops skills).",
       "file_location": "skills/apex/metadata-api-and-package-xml",
@@ -50841,7 +50841,7 @@
       "templates": [
         "skills/apex/metadata-api-and-package-xml/templates/metadata-api-and-package-xml-template.md"
       ],
-      "updated": "2026-04-04",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -51171,7 +51171,7 @@
         "fcb80c94298f12c7dd1b",
         "fcd1bedfbeae2ba25e94"
       ],
-      "content_hash": "7c78d35ffd1f1e8d2f9a753cf2b81d109755f8377b1ed54f83b0057b533c1385",
+      "content_hash": "47be989ebb821a4a5de6fad7052478c7ce1fe1535d8b59f9215a55ccaadec77f",
       "dependencies": [],
       "description": "Use this skill when configuring, troubleshooting, or extending NPSP Customizable Rollups (CRLP) \u2014 including rollup definitions, filter groups, batch job modes, and the one-way migration from legacy NPSP rollups. Trigger keywords: CRLP, customizable rollups, rollup definition, filter group, rollup batch job, NPSP gift totals, NPSP recalculate rollups. NOT for standard Salesforce roll-up summary fields, Nonprofit Cloud (NPC) native aggregation, or Rollup Helper third-party solutions.",
       "file_location": "skills/apex/npsp-custom-rollups",
@@ -51219,7 +51219,7 @@
       "templates": [
         "skills/apex/npsp-custom-rollups/templates/npsp-custom-rollups-template.md"
       ],
-      "updated": "2026-04-11",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -54854,7 +54854,7 @@
         "f0318c16599e802b70e0",
         "fad230e06c1914a41405"
       ],
-      "content_hash": "25b3b956a06b8a45a27eb8c2fc3bb6a46c5801f7a4877e99d3e85d3ec2b81e08",
+      "content_hash": "9d2a11f3e7b77494f2468d3325ffd24f9bd7de119611ad672ea984bcfde9c9d6",
       "dependencies": [],
       "description": "Use when writing, reviewing, or designing Apex triggers. Triggers: 'trigger', 'trigger handler', 'trigger framework', 'recursion', 'before insert', 'after update', 'one trigger per object'. NOT for Flow-based automation \u2014 use admin/flow-for-admins for declarative automation decisions.",
       "file_location": "skills/apex/trigger-framework",
@@ -54895,7 +54895,7 @@
         "skills/apex/trigger-framework/templates/trigger_body.trigger",
         "skills/apex/trigger-framework/templates/trigger_handler.cls"
       ],
-      "updated": "2026-03-13",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },

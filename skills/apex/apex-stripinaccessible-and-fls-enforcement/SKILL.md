@@ -57,10 +57,12 @@ Activate when Apex code accepts records from a less-privileged context (LWC, Aur
 
 `AccessType` is the first argument to `Security.stripInaccessible`. Each value evaluates a different permission:
 
-- **`AccessType.READABLE`** — strips fields the user cannot read. Use AFTER a SOQL query whose results you'll return to a less-privileged caller.
-- **`AccessType.CREATABLE`** — strips fields the user cannot create. Use BEFORE `insert`.
-- **`AccessType.UPDATABLE`** — strips fields the user cannot update. Use BEFORE `update`.
-- **`AccessType.UPSERTABLE`** — strips fields the user cannot create OR update. Use BEFORE `upsert`. This is the strict intersection: a field must be both creatable AND updatable to survive.
+| Enum | What it strips | When to use |
+|---|---|---|
+| `AccessType.READABLE` | Fields the user cannot read. | AFTER a SOQL query whose results you'll return to a less-privileged caller. |
+| `AccessType.CREATABLE` | Fields the user cannot create. | BEFORE `insert`. |
+| `AccessType.UPDATABLE` | Fields the user cannot update. | BEFORE `update`. |
+| `AccessType.UPSERTABLE` | Fields the user cannot create OR update (strict intersection — a field must be both creatable AND updatable to survive). | BEFORE `upsert`. |
 
 Picking the wrong AccessType is a real bug. `READABLE` before an `update` will leave create-only or update-only fields in the payload that the user could not have set themselves.
 

@@ -20,7 +20,7 @@ outputs: ["trigger design guidance", "trigger review findings", "framework recom
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-03-13
+updated: 2026-04-28
 ---
 
 You are a Salesforce expert in Apex trigger design. Your goal is to ensure triggers are bulkified, recursion-safe, testable, and follow a single-trigger-per-object handler pattern — and that they can be disabled without a deployment.
@@ -131,20 +131,25 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 
 ## Salesforce-Specific Gotchas
 
-- **Static recursion guards affect tests too**: Clear static state between tests or expose a reset helper.
-- **`Trigger.new` is read-only in after contexts**: Field mutation there causes runtime failures.
-- **DML on the triggering object in after-save re-enters the same trigger**: The recursion guard must run before any such DML.
-- **Handler sharing matters**: `without sharing` changes visibility compared with the initiating user's context.
-- **`Trigger.old` and `Trigger.oldMap` are null on insert**: Delta logic must guard for context correctly.
+| Gotcha | Why it bites |
+|---|---|
+| Static recursion guards affect tests too | Clear static state between tests or expose a reset helper. |
+| `Trigger.new` is read-only in after contexts | Field mutation there causes runtime failures. |
+| DML on the triggering object in after-save re-enters the same trigger | The recursion guard must run before any such DML. |
+| Handler sharing matters | `without sharing` changes visibility compared with the initiating user's context. |
+| `Trigger.old` and `Trigger.oldMap` are null on insert | Delta logic must guard for context correctly. |
 
 ## Proactive Triggers
 
 Surface these WITHOUT being asked:
-- **Multiple triggers on the same SObject** -> Flag as Critical. Undefined ordering is a design failure, not a style issue.
-- **Logic directly in trigger body** -> Flag as High. Move it to a handler immediately.
-- **No activation bypass mechanism** -> Flag as High. Every migration or incident response becomes harder.
-- **After-save self-DML with no recursion guard** -> Flag as High. This is an infinite-loop risk.
-- **Handler declared `without sharing` with no comment** -> Flag as High. Treat it as a security finding until justified.
+
+| Pattern | Severity | Reason |
+|---|---|---|
+| Multiple triggers on the same SObject | Critical | Undefined ordering is a design failure, not a style issue. |
+| Logic directly in trigger body | High | Move it to a handler immediately. |
+| No activation bypass mechanism | High | Every migration or incident response becomes harder. |
+| After-save self-DML with no recursion guard | High | Infinite-loop risk. |
+| Handler declared `without sharing` with no comment | High | Treat as a security finding until justified. |
 
 ## Output Artifacts
 

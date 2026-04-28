@@ -79,7 +79,7 @@
     "fcb80c94298f12c7dd1b",
     "fcd1bedfbeae2ba25e94"
   ],
-  "content_hash": "7c78d35ffd1f1e8d2f9a753cf2b81d109755f8377b1ed54f83b0057b533c1385",
+  "content_hash": "47be989ebb821a4a5de6fad7052478c7ce1fe1535d8b59f9215a55ccaadec77f",
   "dependencies": [],
   "description": "Use this skill when configuring, troubleshooting, or extending NPSP Customizable Rollups (CRLP) \u2014 including rollup definitions, filter groups, batch job modes, and the one-way migration from legacy NPSP rollups. Trigger keywords: CRLP, customizable rollups, rollup definition, filter group, rollup batch job, NPSP gift totals, NPSP recalculate rollups. NOT for standard Salesforce roll-up summary fields, Nonprofit Cloud (NPC) native aggregation, or Rollup Helper third-party solutions.",
   "file_location": "skills/apex/npsp-custom-rollups",
@@ -127,7 +127,7 @@
   "templates": [
     "skills/apex/npsp-custom-rollups/templates/npsp-custom-rollups-template.md"
   ],
-  "updated": "2026-04-11",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

@@ -35,7 +35,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-11
+updated: 2026-04-28
 ---
 
 # NPSP Custom Rollups (CRLP)
@@ -60,12 +60,14 @@ Gather this context before working on anything in this domain:
 
 A Rollup Definition is a custom metadata record (type: `Customizable_Rollup__mdt`) that describes a single aggregation operation. Each definition specifies:
 
-- **Summary Object** — the parent record that receives the rollup value (Contact, Account, or Opportunity for hard credits; also supports GAU Allocations and Partial Soft Credits).
-- **Detail Object** — the child records being rolled up (Opportunity, Payment, or related objects).
-- **Field to Aggregate** — the field on the detail object used for the calculation.
-- **Field to Store** — the target field on the summary object where the result is written.
-- **Aggregate Operation** — Sum, Count, Largest, Smallest, Average, First, Last, Days Ago, or Years Ago.
-- **Amount/Date Field** and **Fiscal vs. Calendar Year** — controls how time-based filters are applied.
+| Field | Purpose |
+|---|---|
+| Summary Object | The parent record that receives the rollup value (Contact, Account, or Opportunity for hard credits; also supports GAU Allocations and Partial Soft Credits). |
+| Detail Object | The child records being rolled up (Opportunity, Payment, or related objects). |
+| Field to Aggregate | The field on the detail object used for the calculation. |
+| Field to Store | The target field on the summary object where the result is written. |
+| Aggregate Operation | Sum, Count, Largest, Smallest, Average, First, Last, Days Ago, or Years Ago. |
+| Amount/Date Field, Fiscal vs. Calendar Year | Controls how time-based filters are applied. |
 
 CRLP ships with a set of default Rollup Definitions that replicate the standard NPSP rollup fields. Practitioners can clone these defaults or create entirely new definitions for custom fields.
 
