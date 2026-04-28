@@ -251,8 +251,6 @@ Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
 
 ## Escalation / Refusal Rules
 
-Refusal codes follow the canonical enum in `agents/_shared/REFUSAL_CODES.md`. The agent emits one `REFUSAL_*` code in the envelope's `refusal` field with a human-readable detail.
-
 | Code | Trigger |
 |---|---|
 | `REFUSAL_MISSING_INPUT` | `object_name`, `operation`, `row_count`, `target_org_alias`, or `source_description` not provided; OR `operation=upsert` without `external_id_field` |

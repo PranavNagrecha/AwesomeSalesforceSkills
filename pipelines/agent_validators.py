@@ -473,6 +473,99 @@ def _validate_harness(root: Path, parse: AgentParse) -> list[ValidationIssue]:
     return issues
 
 
+_WAVE10_TEMPLATED_HEADINGS = {
+    "### Persistence (Wave 10 contract)",
+    "### Scope Guardrails (Wave 10 contract)",
+}
+
+
+def _agent_prose_paragraphs(body: str) -> list[str]:
+    """Return body paragraphs that are prose (≥120 chars, not code/list/heading/Wave10).
+
+    Mirrors `_is_prose_paragraph` from validators.py § 6.6 — verbatim cross-AGENT.md
+    duplications below this length are likely to be coincidental phrasing rather
+    than copy-paste, so we set the same 120-char floor.
+
+    The Wave 10 deliverable contract (DELIVERABLE_CONTRACT.md) explicitly requires
+    every runtime agent to copy a Persistence sub-section and a Scope Guardrails
+    sub-section into its Output Contract. That copying is mandated, not an
+    anti-pattern, so we strip those two sub-sections from each AGENT.md before
+    scanning.
+    """
+    # Strip Wave 10 sub-sections (heading line + content until next heading).
+    kept: list[str] = []
+    skip = False
+    for line in body.splitlines():
+        if line.strip() in _WAVE10_TEMPLATED_HEADINGS:
+            skip = True
+            continue
+        if skip and re.match(r"^(##|###)\s+", line):
+            skip = False
+        if not skip:
+            kept.append(line)
+    cleaned = "\n".join(kept)
+
+    paragraphs: list[str] = []
+    for raw in re.split(r"\n\s*\n", cleaned):
+        p = raw.strip()
+        if len(p) < 120:
+            continue
+        if "```" in p:
+            continue
+        lines = [l.strip() for l in p.splitlines() if l.strip()]
+        if not lines:
+            continue
+        # Pure list / numbered list / table / heading → not prose.
+        if all(
+            l.startswith(("#", "- ", "* ", "| ")) or re.match(r"^\d+\.", l)
+            for l in lines
+        ):
+            continue
+        paragraphs.append(p)
+    return paragraphs
+
+
+def _validate_no_cross_agent_duplication(
+    parses: list[AgentParse],
+) -> list[ValidationIssue]:
+    """Flag prose paragraphs that appear verbatim across ≥2 non-deprecated AGENT.md files.
+
+    Analog of skill-style § 6.6: when an agent restates content that another agent
+    also restates, the canonical version belongs in `agents/_shared/` (linked) rather
+    than copy-pasted across N AGENT.md files. The Wave 10 templated sub-sections
+    are exempt (see `_agent_prose_paragraphs`). Deprecated stubs share boilerplate
+    by design and are also exempt.
+    """
+    by_paragraph: dict[str, list[AgentParse]] = {}
+    for parse in parses:
+        if parse.frontmatter.get("status") == "deprecated":
+            continue
+        for paragraph in _agent_prose_paragraphs(parse.body):
+            by_paragraph.setdefault(paragraph, []).append(parse)
+
+    issues: list[ValidationIssue] = []
+    for paragraph, owners in by_paragraph.items():
+        if len(owners) < 2:
+            continue
+        preview = paragraph.splitlines()[0][:80]
+        peers = sorted(p.slug for p in owners)
+        for parse in owners:
+            others = [s for s in peers if s != parse.slug]
+            issues.append(
+                ValidationIssue(
+                    "ERROR",
+                    str(parse.path),
+                    (
+                        f"prose paragraph appears verbatim in {len(others)} other AGENT.md "
+                        f"file(s) ({', '.join(others)}). Move the canonical version into "
+                        f"agents/_shared/ and link to it instead of restating. "
+                        f"Preview: {preview!r}"
+                    ),
+                )
+            )
+    return issues
+
+
 def validate_agents(root: Path) -> list[ValidationIssue]:
     """Run every agent check against the repo.
 
@@ -486,12 +579,14 @@ def validate_agents(root: Path) -> list[ValidationIssue]:
         root / "mcp" / "sfskills-mcp" / "src" / "sfskills_mcp" / "server.py"
     )
 
+    parses: list[AgentParse] = []
     seen_ids: dict[str, Path] = {}
     for md_path in agent_md_paths:
         parse, parse_issues = _parse_agent(md_path)
         issues.extend(parse_issues)
         if parse is None:
             continue
+        parses.append(parse)
 
         issues.extend(_validate_frontmatter(root, parse))
         issues.extend(_validate_sections(parse))
@@ -511,6 +606,12 @@ def validate_agents(root: Path) -> list[ValidationIssue]:
                 )
             else:
                 seen_ids[declared_id] = md_path
+
+    # Cross-AGENT.md duplication gate — analog of skills' § 6.6 (verbatim prose
+    # paragraph appearing in both SKILL.md and references/gotchas.md). For agents
+    # the analogous case is a paragraph that appears in two or more AGENT.md files:
+    # the canonical version belongs in agents/_shared/ (linked) instead.
+    issues.extend(_validate_no_cross_agent_duplication(parses))
 
     # Every run-time agent in the MCP roster must have a matching AGENT.md. We read the
     # roster from the agents module by regex to avoid importing it (and its MCP deps).

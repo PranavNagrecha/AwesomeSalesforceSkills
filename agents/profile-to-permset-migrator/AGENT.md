@@ -265,8 +265,6 @@ The agent's envelope MUST place every permission category below in either `dimen
 
 ## Escalation / Refusal Rules
 
-Refusal codes follow the canonical enum in `agents/_shared/REFUSAL_CODES.md`. The agent emits one `REFUSAL_*` code in the envelope's `refusal` field with a human-readable detail.
-
 | Code | Trigger |
 |---|---|
 | `REFUSAL_MISSING_INPUT` | `profile_name` and `profile_name_filter` both unset |
