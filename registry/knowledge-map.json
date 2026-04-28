@@ -2,6 +2,7 @@
   "schema_version": 1,
   "skills_by_domain": {
     "admin": [
+      "admin/acceptance-criteria-given-when-then",
       "admin/activity-and-task-patterns",
       "admin/agent-conversation-design",
       "admin/agent-output-formats",
@@ -49,6 +50,7 @@
       "admin/compliance-documentation-requirements",
       "admin/compliant-data-sharing-setup",
       "admin/compound-field-patterns",
+      "admin/configuration-workbook-authoring",
       "admin/connected-apps-and-auth",
       "admin/consent-management-marketing",
       "admin/consumer-goods-cloud-setup",
@@ -102,6 +104,7 @@
       "admin/field-dependency-and-controlling",
       "admin/financial-account-setup",
       "admin/financial-planning-process",
+      "admin/fit-gap-analysis-against-org",
       "admin/flexcard-requirements",
       "admin/flow-for-admins",
       "admin/flow-orchestration-admin",
@@ -155,6 +158,7 @@
       "admin/mcae-pardot-setup",
       "admin/media-cloud-setup",
       "admin/messaging-and-chat-setup",
+      "admin/moscow-prioritization-for-sf-backlog",
       "admin/multi-language-and-translation",
       "admin/npsp-engagement-plans",
       "admin/npsp-household-accounts",
@@ -173,12 +177,14 @@
       "admin/permission-set-architecture",
       "admin/permission-set-group-composition",
       "admin/permission-sets-vs-profiles",
+      "admin/persona-and-journey-mapping-sf",
       "admin/picklist-and-value-sets",
       "admin/picklist-field-integrity-issues",
       "admin/pipeline-review-design",
       "admin/portal-requirements-gathering",
       "admin/pricing-model-design",
       "admin/process-automation-selection",
+      "admin/process-flow-as-is-to-be",
       "admin/products-and-pricebooks",
       "admin/program-outcome-tracking-design",
       "admin/queues-and-public-groups",
@@ -196,6 +202,7 @@
       "admin/reports-and-dashboards",
       "admin/reports-and-dashboards-fundamentals",
       "admin/requirements-gathering-for-sf",
+      "admin/requirements-traceability-matrix",
       "admin/revenue-intelligence-setup",
       "admin/revenue-recognition-requirements",
       "admin/sales-engagement-cadences",
@@ -212,14 +219,17 @@
       "admin/service-console-configuration",
       "admin/sharing-and-visibility",
       "admin/soft-credits-and-matching",
+      "admin/stakeholder-raci-for-sf-projects",
       "admin/standard-object-quirks",
       "admin/subscription-lifecycle-requirements",
       "admin/system-field-behavior-and-audit",
       "admin/territory-design-requirements",
       "admin/uat-and-acceptance-criteria",
+      "admin/uat-test-case-design",
       "admin/usage-based-pricing-setup",
       "admin/user-access-policies",
       "admin/user-management",
+      "admin/user-story-writing-for-salesforce",
       "admin/validation-rules",
       "admin/wealth-management-requirements"
     ],
@@ -1281,7 +1291,9 @@
       "integration/sis-integration-patterns"
     ],
     "acceptance-criteria": [
-      "admin/uat-and-acceptance-criteria"
+      "admin/acceptance-criteria-given-when-then",
+      "admin/uat-and-acceptance-criteria",
+      "admin/user-story-writing-for-salesforce"
     ],
     "access-architecture": [
       "security/permission-set-groups-and-muting"
@@ -1423,15 +1435,20 @@
       "admin/data-cloud-provisioning",
       "admin/einstein-discovery-deployment",
       "admin/field-dependency-and-controlling",
+      "admin/fit-gap-analysis-against-org",
       "admin/flow-orchestration-admin",
       "admin/health-cloud-timeline",
       "admin/object-creation-and-design",
+      "admin/process-flow-as-is-to-be",
       "admin/sales-process-mapping",
       "admin/user-access-policies",
       "security/privileged-access-management"
     ],
     "admin-declarative": [
       "admin/dynamic-forms-and-actions"
+    ],
+    "admin-handoff": [
+      "admin/configuration-workbook-authoring"
     ],
     "admin-maintainability": [
       "flow/flow-migration-from-trigger"
@@ -1532,6 +1549,9 @@
     "agent-permissions": [
       "agentforce/agentforce-agent-creation"
     ],
+    "agent-routing": [
+      "admin/configuration-workbook-authoring"
+    ],
     "agent-testing": [
       "agentforce/agent-testing-and-evaluation"
     ],
@@ -1605,6 +1625,9 @@
     ],
     "aggregateresult": [
       "apex/apex-aggregate-queries"
+    ],
+    "agile-handoff": [
+      "admin/user-story-writing-for-salesforce"
     ],
     "ai": [
       "architect/ai-ready-data-architecture",
@@ -2016,6 +2039,9 @@
       "devops/second-generation-managed-packages",
       "security/secure-coding-review-checklist"
     ],
+    "appexchange-evaluation": [
+      "admin/fit-gap-analysis-against-org"
+    ],
     "application-network": [
       "integration/api-led-connectivity"
     ],
@@ -2120,6 +2146,9 @@
       "agentforce/agentforce-service-ai-setup",
       "agentforce/einstein-copilot-for-service"
     ],
+    "as-is-to-be": [
+      "admin/process-flow-as-is-to-be"
+    ],
     "asc-606": [
       "admin/revenue-recognition-requirements"
     ],
@@ -2215,6 +2244,7 @@
       "admin/experience-cloud-cms-content"
     ],
     "audit": [
+      "admin/requirements-traceability-matrix",
       "data/field-history-tracking",
       "data/territory-data-alignment",
       "flow/flow-runtime-context-and-sharing",
@@ -2300,6 +2330,9 @@
       "apex/order-of-execution-deep-dive",
       "flow/flow-for-slack"
     ],
+    "automation-candidate": [
+      "admin/process-flow-as-is-to-be"
+    ],
     "automation-governance": [
       "apex/trigger-and-flow-coexistence"
     ],
@@ -2384,6 +2417,12 @@
     "background-steps": [
       "admin/flow-orchestration-admin"
     ],
+    "backlog-management": [
+      "admin/moscow-prioritization-for-sf-backlog"
+    ],
+    "backlog-shape": [
+      "admin/user-story-writing-for-salesforce"
+    ],
     "backoff": [
       "integration/retry-and-backoff-patterns"
     ],
@@ -2439,6 +2478,9 @@
     ],
     "batch-size": [
       "data/data-loader-batch-window-sizing"
+    ],
+    "bdd": [
+      "admin/acceptance-criteria-given-when-then"
     ],
     "bdi": [
       "apex/npsp-api-and-integration"
@@ -2561,6 +2603,9 @@
     ],
     "bot-version": [
       "agentforce/agent-script-dsl"
+    ],
+    "bpmn": [
+      "admin/process-flow-as-is-to-be"
     ],
     "branch-management": [
       "devops/copado-essentials"
@@ -2705,8 +2750,13 @@
       "architect/cpq-vs-standard-products-decision"
     ],
     "business-analysis": [
+      "admin/moscow-prioritization-for-sf-backlog",
+      "admin/process-flow-as-is-to-be",
       "admin/requirements-gathering-for-sf",
-      "admin/uat-and-acceptance-criteria"
+      "admin/requirements-traceability-matrix",
+      "admin/stakeholder-raci-for-sf-projects",
+      "admin/uat-and-acceptance-criteria",
+      "admin/uat-test-case-design"
     ],
     "business-continuity": [
       "architect/ha-dr-architecture"
@@ -2873,6 +2923,9 @@
     ],
     "can-spam": [
       "admin/consent-management-marketing"
+    ],
+    "capability-matrix": [
+      "admin/fit-gap-analysis-against-org"
     ],
     "capacity": [
       "admin/fsl-resource-management"
@@ -3543,6 +3596,9 @@
     ],
     "configuration-profile": [
       "admin/einstein-activity-capture-setup"
+    ],
+    "configuration-workbook-authoring": [
+      "admin/configuration-workbook-authoring"
     ],
     "configurationeditor": [
       "flow/flow-custom-property-editors",
@@ -4707,6 +4763,9 @@
     "decision-matrix": [
       "omnistudio/calculation-procedures"
     ],
+    "decision-rights": [
+      "admin/stakeholder-raci-for-sf-projects"
+    ],
     "decision-splits": [
       "admin/journey-builder-administration"
     ],
@@ -4764,6 +4823,9 @@
     ],
     "deliverable-contract": [
       "admin/agent-output-formats"
+    ],
+    "delivery-governance": [
+      "admin/requirements-traceability-matrix"
     ],
     "delivery-profiles": [
       "admin/marketing-cloud-engagement-setup"
@@ -5031,6 +5093,7 @@
       "admin/cpq-pricing-rules"
     ],
     "discovery": [
+      "admin/process-flow-as-is-to-be",
       "admin/sales-process-mapping"
     ],
     "discovery-framework": [
@@ -5240,6 +5303,9 @@
     ],
     "education-data-architecture": [
       "security/ferpa-compliance-in-salesforce"
+    ],
+    "effort-estimation": [
+      "admin/fit-gap-analysis-against-org"
     ],
     "ehr-integration": [
       "architect/fhir-integration-architecture"
@@ -5589,6 +5655,7 @@
     ],
     "escalation": [
       "admin/approval-processes",
+      "admin/stakeholder-raci-for-sf-projects",
       "agentforce/agentforce-agent-handoff-patterns"
     ],
     "escalation-criteria": [
@@ -5704,6 +5771,9 @@
     ],
     "exception-handling": [
       "apex/exception-handling"
+    ],
+    "exception-paths": [
+      "admin/process-flow-as-is-to-be"
     ],
     "execute-anonymous": [
       "apex/apex-execute-anonymous"
@@ -6125,6 +6195,9 @@
     "fisma": [
       "architect/government-cloud-compliance"
     ],
+    "fit-gap-analysis": [
+      "admin/fit-gap-analysis-against-org"
+    ],
     "fixtures": [
       "agentforce/agentforce-eval-harness"
     ],
@@ -6405,6 +6478,9 @@
     "frame": [
       "security/clickjack-and-frame-protection"
     ],
+    "friction-analysis": [
+      "admin/persona-and-journey-mapping-sf"
+    ],
     "fsc": [
       "admin/compliance-documentation-requirements",
       "admin/compliant-data-sharing-setup",
@@ -6595,6 +6671,9 @@
     "getter-setter": [
       "lwc/lwc-public-api-hardening"
     ],
+    "gherkin": [
+      "admin/acceptance-criteria-given-when-then"
+    ],
     "gift-entry": [
       "admin/gift-entry-and-processing"
     ],
@@ -6622,6 +6701,9 @@
     ],
     "gitlab-ci": [
       "devops/gitlab-ci-for-salesforce"
+    ],
+    "given-when-then": [
+      "admin/acceptance-criteria-given-when-then"
     ],
     "giving-history": [
       "data/nonprofit-data-architecture"
@@ -6654,6 +6736,7 @@
     ],
     "governance": [
       "admin/change-advisory-board-process",
+      "admin/stakeholder-raci-for-sf-projects",
       "architect/api-led-connectivity-architecture",
       "architect/architecture-decision-records",
       "architect/deployment-automation-architecture",
@@ -6758,6 +6841,9 @@
     ],
     "handoff": [
       "agentforce/agentforce-agent-handoff-patterns"
+    ],
+    "handoff-routing": [
+      "admin/fit-gap-analysis-against-org"
     ],
     "handoff-rules": [
       "agentforce/agent-topic-design"
@@ -7072,6 +7158,9 @@
     "imperative-apex": [
       "lwc/lwc-async-patterns"
     ],
+    "implementation-spec": [
+      "admin/configuration-workbook-authoring"
+    ],
     "in-advance": [
       "admin/billing-schedule-setup"
     ],
@@ -7363,6 +7452,9 @@
     "inventory-management": [
       "data/commerce-inventory-data"
     ],
+    "invest": [
+      "admin/user-story-writing-for-salesforce"
+    ],
     "invocable": [
       "agentforce/agent-action-unit-tests",
       "flow/flow-invocable-from-apex"
@@ -7474,6 +7566,9 @@
     ],
     "journey-injection": [
       "architect/marketing-integration-patterns"
+    ],
+    "journey-map": [
+      "admin/persona-and-journey-mapping-sf"
     ],
     "journey-versions": [
       "admin/journey-builder-administration"
@@ -8188,6 +8283,9 @@
     "managed-subscriptions": [
       "integration/pub-sub-api-patterns"
     ],
+    "manual-residue": [
+      "admin/process-flow-as-is-to-be"
+    ],
     "maps-and-sets": [
       "apex/apex-collections-patterns"
     ],
@@ -8484,6 +8582,9 @@
     "mobile-ux": [
       "admin/list-views-and-compact-layouts"
     ],
+    "mobile-vs-desktop": [
+      "admin/persona-and-journey-mapping-sf"
+    ],
     "mobilecapabilities": [
       "lwc/lwc-offline-and-mobile"
     ],
@@ -8545,6 +8646,9 @@
     ],
     "month-end-close": [
       "data/billing-data-reconciliation"
+    ],
+    "moscow-prioritization": [
+      "admin/moscow-prioritization-for-sf-backlog"
     ],
     "moves-management": [
       "admin/donor-lifecycle-requirements",
@@ -9576,6 +9680,9 @@
     "permission-set-architecture": [
       "admin/permission-set-architecture"
     ],
+    "permission-set-group": [
+      "admin/persona-and-journey-mapping-sf"
+    ],
     "permission-set-groups": [
       "admin/permission-set-architecture",
       "admin/permission-set-group-composition",
@@ -9615,7 +9722,11 @@
       "data/person-accounts",
       "devops/fsc-deployment-patterns"
     ],
+    "persona-and-journey-mapping-sf": [
+      "admin/persona-and-journey-mapping-sf"
+    ],
     "persona-design": [
+      "admin/persona-and-journey-mapping-sf",
       "agentforce/agentforce-persona-design"
     ],
     "personalization": [
@@ -9956,6 +10067,7 @@
       "admin/cpq-guided-selling"
     ],
     "process-mapping": [
+      "admin/process-flow-as-is-to-be",
       "admin/requirements-gathering-for-sf"
     ],
     "product-attributes": [
@@ -10338,6 +10450,9 @@
       "admin/industries-insurance-setup",
       "architect/cpq-vs-standard-products-decision"
     ],
+    "raci": [
+      "admin/stakeholder-raci-for-sf-projects"
+    ],
     "rag": [
       "agentforce/data-cloud-grounding-for-agentforce",
       "agentforce/rag-patterns-in-salesforce",
@@ -10684,6 +10799,9 @@
       "admin/community-engagement-strategy",
       "admin/experience-cloud-moderation"
     ],
+    "requirement-scoring": [
+      "admin/fit-gap-analysis-against-org"
+    ],
     "requirements": [
       "admin/commerce-checkout-flow-design",
       "admin/subscription-lifecycle-requirements",
@@ -10697,6 +10815,9 @@
       "admin/portal-requirements-gathering",
       "admin/requirements-gathering-for-sf",
       "admin/wealth-management-requirements"
+    ],
+    "requirements-traceability": [
+      "admin/requirements-traceability-matrix"
     ],
     "resilience": [
       "apex/apex-callout-retry-and-resilience"
@@ -10837,6 +10958,9 @@
     "risk-scoring": [
       "architect/aml-kyc-process-architecture"
     ],
+    "risk-tagging": [
+      "admin/fit-gap-analysis-against-org"
+    ],
     "risk-tolerance": [
       "admin/financial-planning-process"
     ],
@@ -10932,6 +11056,12 @@
     ],
     "row-skew": [
       "data/data-loader-batch-window-sizing"
+    ],
+    "rtm": [
+      "admin/requirements-traceability-matrix"
+    ],
+    "rtm-traceability": [
+      "admin/configuration-workbook-authoring"
     ],
     "rto-rpo": [
       "architect/ha-dr-architecture"
@@ -12045,6 +12175,9 @@
     "split-orders": [
       "architect/order-management-architecture"
     ],
+    "sprint-planning": [
+      "admin/moscow-prioritization-for-sf-backlog"
+    ],
     "sql": [
       "admin/data-cloud-calculated-insights",
       "admin/lead-scoring-requirements",
@@ -12090,6 +12223,9 @@
     ],
     "stakeholder-communication": [
       "admin/salesforce-release-preparation"
+    ],
+    "stakeholder-management": [
+      "admin/stakeholder-raci-for-sf-projects"
     ],
     "standard-industry-data-model": [
       "architect/nonprofit-platform-architecture"
@@ -12165,6 +12301,12 @@
     ],
     "story-creation": [
       "admin/einstein-discovery-setup"
+    ],
+    "story-sizing": [
+      "admin/user-story-writing-for-salesforce"
+    ],
+    "story-splitting": [
+      "admin/user-story-writing-for-salesforce"
     ],
     "streaming": [
       "integration/pub-sub-api-patterns",
@@ -12270,6 +12412,9 @@
     ],
     "survivorship": [
       "admin/duplicate-management"
+    ],
+    "swim-lane": [
+      "admin/process-flow-as-is-to-be"
     ],
     "sync": [
       "architect/fsl-offline-architecture",
@@ -12399,6 +12544,9 @@
     "territory2": [
       "apex/territory-api-and-assignment"
     ],
+    "test-case": [
+      "admin/uat-test-case-design"
+    ],
     "test-data": [
       "devops/data-seeding-for-testing",
       "flow/flow-testing"
@@ -12409,6 +12557,9 @@
     ],
     "test-doubles": [
       "apex/apex-mocking-and-stubs"
+    ],
+    "test-first": [
+      "admin/acceptance-criteria-given-when-then"
     ],
     "test-isolation": [
       "apex/mixed-dml-and-setup-objects"
@@ -12423,6 +12574,7 @@
     "testing": [
       "admin/sandbox-strategy",
       "admin/uat-and-acceptance-criteria",
+      "admin/uat-test-case-design",
       "agentforce/agentforce-eval-harness",
       "agentforce/agentforce-testing-strategy",
       "apex/apex-http-callout-mocking",
@@ -12552,6 +12704,9 @@
     ],
     "trace-flags": [
       "apex/debug-logs-and-developer-console"
+    ],
+    "traceability": [
+      "admin/uat-test-case-design"
     ],
     "training": [
       "admin/change-management-and-training"
@@ -12709,7 +12864,8 @@
       "apex/apex-soql-relationship-queries"
     ],
     "uat": [
-      "admin/uat-and-acceptance-criteria"
+      "admin/uat-and-acceptance-criteria",
+      "admin/uat-test-case-design"
     ],
     "ui": [
       "omnistudio/flexcard-container-composition"
@@ -12809,7 +12965,8 @@
       "apex/apex-user-and-permission-checks"
     ],
     "user-experience": [
-      "admin/path-and-guidance"
+      "admin/path-and-guidance",
+      "admin/persona-and-journey-mapping-sf"
     ],
     "user-journey": [
       "admin/omniscript-flow-design-requirements"
@@ -12831,7 +12988,9 @@
       "admin/marketing-cloud-engagement-setup"
     ],
     "user-stories": [
+      "admin/acceptance-criteria-given-when-then",
       "admin/requirements-gathering-for-sf",
+      "admin/user-story-writing-for-salesforce",
       "devops/copado-essentials"
     ],
     "user-sync": [
@@ -13159,6 +13318,9 @@
     ],
     "writeback-field": [
       "admin/einstein-discovery-setup"
+    ],
+    "wsjf": [
+      "admin/moscow-prioritization-for-sf-backlog"
     ],
     "wsproxy": [
       "apex/ssjs-server-side-javascript"
