@@ -246,15 +246,17 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 
 ## Salesforce-Specific Gotchas
 
-- **Missing fault connectors roll back more than one record**: In record-triggered automation, one unhandled error can fail the whole batch save. This is the highest-impact fault-handling gap.
-- **`$Flow.FaultMessage` is for diagnostics, not polished UX**: Log it or email it, but do not dump it raw to business users.
-- **Shared transactions still share limits**: Apex, Flow, and invocable actions can all consume the same governor budget. A Flow that works fine when triggered by UI edits may fail when triggered by a Bulk API load because Apex triggers on the same object consumed the SOQL budget first.
-- **Screen flows and record-triggered flows need different failure design**: One is user-guided UX (must have a next step for the user); the other is transaction safety (must not roll back good records).
-- **Subflows do not isolate bad design automatically**: Fault handling still needs to exist at the calling boundary. A subflow's fault connector handles failures THROWN by the subflow; it does not retroactively fix a parent Flow missing its own fault routing.
-- **Fault connectors on non-DML elements are easy to forget**: `Assignment`, `Decision`, and `Loop` elements don't have fault connectors because they can't fail in the transactional sense — but the elements AROUND them (like the `Action` being assigned from) do.
-- **Screen flow back-button can skip fault paths**: If a user clicks back from a screen AFTER a fault occurred, they can re-enter the flow with state that doesn't match the fault branch's assumptions. Test explicitly.
-- **Error emails go to the Process Automation user**: If that user is inactive or reassigned, fault notifications disappear silently until discovered during an outage. Audit this annually.
-- **Orchestration flows have their own fault semantics**: Stage-level faults in Orchestrator are handled by stage transitions, NOT fault connectors inside the invoked flows. Don't mix the paradigms.
+| Gotcha | Why it bites |
+|---|---|
+| Missing fault connectors roll back more than one record | In record-triggered automation, one unhandled error can fail the whole batch save. Highest-impact fault-handling gap. |
+| `$Flow.FaultMessage` is for diagnostics, not polished UX | Log it or email it — do not dump it raw to business users. |
+| Shared transactions still share limits | Apex, Flow, and invocable actions consume the same governor budget. A Flow that works on UI edits may fail under Bulk API load when same-object triggers consumed SOQL budget first. |
+| Screen flows and record-triggered flows need different failure design | One is user-guided UX (must have a next step); the other is transaction safety (must not roll back good records). |
+| Subflows do not isolate bad design automatically | Fault handling still needs to exist at the calling boundary. A subflow fault connector handles failures THROWN by the subflow; it does not retroactively fix the parent. |
+| Fault connectors on non-DML elements are easy to forget | `Assignment`, `Decision`, and `Loop` elements don't have fault connectors — but the `Action` elements around them do. |
+| Screen flow back-button can skip fault paths | A user clicking back AFTER a fault can re-enter with state that doesn't match the fault branch's assumptions. Test explicitly. |
+| Error emails go to the Process Automation user | If that user is inactive or reassigned, fault notifications disappear silently until an outage exposes the gap. Audit annually. |
+| Orchestration flows have their own fault semantics | Stage-level faults are handled by stage transitions, NOT fault connectors inside the invoked flows. Don't mix paradigms. |
 
 ## Proactive Triggers
 

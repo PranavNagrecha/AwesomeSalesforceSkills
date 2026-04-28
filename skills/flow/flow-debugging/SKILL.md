@@ -35,7 +35,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-04-28
 ---
 
 # Flow Debugging
@@ -48,11 +48,13 @@ This skill activates when a practitioner needs to diagnose why a Salesforce Flow
 
 Gather this context before working on anything in this domain:
 
-- **Flow type**: Record-triggered (before/after save), screen, scheduled, or autolaunched. Each type has distinct debugging entry points.
-- **Symptom category**: The flow is not firing at all, it fires but takes the wrong path, it fails with a fault email, or its output is incorrect.
-- **Environment**: Is the issue in sandbox (where you can run Debug directly in Flow Builder) or production (where you must rely on Interview Logs and fault emails)?
-- **Recent changes**: Was the flow recently activated, versioned, or had entry criteria changed? Flow activation creates a new version — an inactive version or wrong active version is a frequent hidden cause.
-- **Invocation context**: Is the flow called from Apex, a process, a subflow, or directly from a record trigger? Each path requires a different diagnostic starting point.
+| Context | Why it matters |
+|---|---|
+| Flow type | Record-triggered (before/after save), screen, scheduled, or autolaunched. Each type has distinct debugging entry points. |
+| Symptom category | Flow is not firing at all, fires but takes the wrong path, fails with a fault email, or produces wrong output. |
+| Environment | Sandbox (Debug runs directly in Flow Builder) vs production (rely on Interview Logs and fault emails). |
+| Recent changes | Was the flow recently activated, versioned, or had entry criteria changed? An inactive or wrong active version is a frequent hidden cause. |
+| Invocation context | Called from Apex, a process, a subflow, or directly from a record trigger? Each path requires a different diagnostic starting point. |
 
 ---
 

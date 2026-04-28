@@ -78,10 +78,12 @@ Human work items need assignment, visibility, escalation, and reassignment. Back
 
 A long-running process is incomplete unless operations teams can see where instances are stuck, who owns the next action, and how to resume or intervene. Orchestration surfaces include:
 
-- **Work Items tab** — all pending human work items, with filters by assignee, stage, and age.
-- **Flow Orchestration Work Items List View** — customizable per-persona views of pending work.
-- **Orchestration Error Email** — delivered to the Process Automation user when a stage fails.
-- **Custom dashboards** — built on `FlowOrchestrationInstance` + `FlowOrchestrationWorkItem` sObjects.
+| Surface | Use |
+|---|---|
+| Work Items tab | All pending human work items, with filters by assignee, stage, and age. |
+| Flow Orchestration Work Items List View | Customizable per-persona views of pending work. |
+| Orchestration Error Email | Delivered to the Process Automation user when a stage fails. |
+| Custom dashboards | Built on `FlowOrchestrationInstance` + `FlowOrchestrationWorkItem` sObjects. |
 
 If operations isn't going to look at any of these, the Orchestration was probably wrong — a standard Flow with good fault handling would have served. Design the monitoring surface BEFORE building the Orchestration, not after.
 

@@ -57,7 +57,7 @@
     "f68db1c3f03adcc611e1",
     "ffd4c765c3bd88d22bdd"
   ],
-  "content_hash": "7652d56c0a8430689ae904d0ab7c6df9ca60ef682f339b973f6b3abbd08fff7d",
+  "content_hash": "0c79a7161f1ffa950817b1d849162c1a704dc97a4b253b5cd51786ce5246062b",
   "dependencies": [],
   "description": "Use when designing or reviewing interactive Flow screen experiences, including navigation, validation, screen component choice, custom LWC screen components, and user-safe commit timing. Triggers: 'screen flow validation', 'back button behavior in flow', 'custom flow screen component', 'screen flow UX'. NOT for Experience Cloud guest exposure or custom property editor design-time tooling.",
   "file_location": "skills/flow/screen-flows",
