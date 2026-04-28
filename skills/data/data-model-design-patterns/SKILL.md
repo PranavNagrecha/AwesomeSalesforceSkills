@@ -39,7 +39,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-04-28
 ---
 
 # Data Model Design Patterns
@@ -52,12 +52,14 @@ This skill activates when a practitioner needs to choose or review Salesforce ob
 
 Gather this context before working on anything in this domain:
 
-- **Object list and volumes**: Which objects are involved? How many records exist or are projected (now, 1 year, 3 years)?
-- **Query patterns**: What fields appear in WHERE, ORDER BY, or GROUP BY clauses in the most frequent SOQL queries?
-- **Relationship requirements**: Is cascade delete acceptable? Are rollup summaries needed? Can a child record exist without a parent?
-- **Integration requirements**: Does any external system upsert records? If so, what is the natural key?
-- **Common wrong assumption**: Practitioners assume lookup relationships support rollup summary fields — they do not. Only master-detail children support rollup summaries on the parent.
-- **Key limits in play**: Max 2 master-detail relationships per child object; max 40 lookup relationships per object; max 25 external ID fields per object; custom indexes are requested via a Salesforce Support case, not self-serve.
+| Context | What to confirm |
+|---|---|
+| Object list and volumes | Which objects are involved? Record counts now, in 1 year, in 3 years? |
+| Query patterns | What fields appear in WHERE, ORDER BY, or GROUP BY in the most frequent SOQL queries? |
+| Relationship requirements | Is cascade delete acceptable? Are rollup summaries needed? Can a child exist without a parent? |
+| Integration requirements | Does any external system upsert records? If so, what is the natural key? |
+| Common wrong assumption | Lookup relationships do NOT support rollup summary fields; only master-detail children do. |
+| Key limits in play | 2 master-detail per child object; 40 lookup per object; 25 external ID fields per object; custom indexes via Salesforce Support case (not self-serve). |
 
 ---
 
@@ -207,12 +209,14 @@ Use this mode when auditing an org's data model for quality or before a major in
 
 Use this mode when a production issue traces back to the data model.
 
-- **Unexpected record deletion**: Check for MDR cascade delete chains. A deleted grandparent may have silently removed grandchildren.
-- **Rollup summary not available**: The relationship is likely a lookup, not a master-detail. You cannot add rollup summaries to a lookup relationship.
-- **SOQL timeout or governor limit on large object**: Check query execution plan. If a full table scan is occurring, identify the filter field and request a custom index if eligible.
-- **Upsert matching not working**: Confirm the target field is marked as External ID. Upsert will not match on non-External-ID fields.
-- **Missing data after parent delete**: Lookup relationship delete behavior may be set to "Clear" instead of "Cascade" — clarify expected behavior and update.
-- **Text field values getting truncated**: The field is likely Text(255). Migrate to Long Text Area.
+| Symptom | Likely cause / next step |
+|---|---|
+| Unexpected record deletion | Check for MDR cascade delete chains. A deleted grandparent may have silently removed grandchildren. |
+| Rollup summary not available | Relationship is likely a lookup, not a master-detail. Rollups require master-detail. |
+| SOQL timeout or governor limit on large object | Check query execution plan. If full table scan, identify filter field and request a custom index if eligible. |
+| Upsert matching not working | Confirm the target field is marked External ID. Upsert won't match on non-External-ID fields. |
+| Missing data after parent delete | Lookup delete behavior may be "Clear" instead of "Cascade" — clarify expected behavior and update. |
+| Text field values getting truncated | Field is likely Text(255). Migrate to Long Text Area. |
 
 ---
 

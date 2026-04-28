@@ -34,7 +34,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-04-28
 ---
 
 # Partner Data Access Patterns
@@ -47,11 +47,13 @@ Use this skill when you need to design or debug how channel partner users see da
 
 Gather this context before working on anything in this domain:
 
-- **License type**: Confirm whether users hold a Partner Community license, Customer Community Plus license, or basic Customer Community license. The license type determines which sharing mechanisms are available.
-- **Account ownership**: Identify who owns the partner Account record in Salesforce. Account ownership is the root of the auto-generated role hierarchy for each partner account; changing ownership restructures the hierarchy.
-- **PRM object requirements**: Determine whether Leads, Opportunities, Deal Registration, or other PRM-specific objects must be visible. These are only accessible to Partner Community licensees.
-- **Cross-account scenarios**: Identify whether partner users from different accounts need to see each other's records (co-sell, alliance partners). The hierarchy alone does not provide this; sharing rules or manual sharing are required.
-- **Org-wide defaults (OWDs)**: Check the OWD for every object in scope, especially the External OWD. The external OWD controls visibility for all external (community) users independent of the internal OWD.
+| Context | What to confirm |
+|---|---|
+| License type | Partner Community, Customer Community Plus, or basic Customer Community. License determines available sharing mechanisms. |
+| Account ownership | Owner of the partner Account is the root of the auto-generated role hierarchy; changing it restructures the hierarchy. |
+| PRM object requirements | Whether Leads, Opportunities, Deal Registration, or other PRM-specific objects must be visible. PRM objects are Partner-Community-only. |
+| Cross-account scenarios | Whether partner users from different accounts need to see each other (co-sell, alliances). Hierarchy alone won't do this — sharing rules or manual sharing are required. |
+| Org-wide defaults (OWDs) | Check OWD for every in-scope object, especially the External OWD. External OWD controls visibility for community users independent of the internal OWD. |
 
 ---
 

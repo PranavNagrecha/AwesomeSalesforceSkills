@@ -32,7 +32,7 @@ triggers:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-04-28
 ---
 
 # Data Archival Strategies
@@ -70,14 +70,16 @@ Salesforce Big Objects (`__b` suffix) are a separate, horizontally scalable data
 
 Key behavioral constraints:
 
-- **Immutable after write** — standard DML (`insert`, `update`, `delete`) does not apply. Use `Database.insertImmediate()` for writes. Updates are achieved by reinserting with the same index values (upsert semantics). Deletion uses `Database.deleteImmediate()` or SOAP `deleteByExample()`.
-- **Index-only queries** — SOQL on Big Objects must use fields that are part of the defined composite index, in order, without gaps. Arbitrary filter queries are not supported.
-- **No triggers, flows, or processes** — automations do not fire on Big Object writes. Use asynchronous Apex (Queueable or Batch) for any post-write processing.
-- **No aggregate functions in SOQL** — `COUNT()` and similar aggregates are not supported. Use Batch Apex to iterate and count manually.
-- **No standard UI** — Big Objects do not appear in standard list views, reports, or dashboards. To surface Big Object data in reports, extract a representative subset into a custom object via Bulk API query, then report on the custom object.
-- **Idempotent writes** — reinserting a record with identical index values results in a single record, making retry-on-failure safe.
-- **No encryption support for custom Big Objects** — data archived to a custom Big Object from an encrypted standard/custom object is stored as clear text. The standard `FieldHistoryArchive` Big Object does respect Shield Platform Encryption.
-- **Mixed DML restriction in Apex tests** — tests cannot mix DML on sObjects and Big Objects in the same transaction. Use a mocking framework or manually roll back test data.
+| Constraint | Detail |
+|---|---|
+| Immutable after write | Standard DML (`insert`, `update`, `delete`) does not apply. Use `Database.insertImmediate()` for writes. Updates = reinsert with same index values (upsert semantics). Deletion uses `Database.deleteImmediate()` or SOAP `deleteByExample()`. |
+| Index-only queries | SOQL must use fields that are part of the defined composite index, in order, without gaps. Arbitrary filter queries are not supported. |
+| No triggers, flows, or processes | Automations do not fire on Big Object writes. Use Queueable or Batch Apex for any post-write processing. |
+| No aggregate functions in SOQL | `COUNT()` and similar aggregates are not supported. Use Batch Apex to iterate and count manually. |
+| No standard UI | Big Objects do not appear in standard list views, reports, or dashboards. To report, extract a subset into a custom object via Bulk API query and report on that. |
+| Idempotent writes | Reinserting a record with identical index values yields a single record, making retry-on-failure safe. |
+| No encryption support for custom Big Objects | Data archived from an encrypted standard/custom object is stored as clear text. The standard `FieldHistoryArchive` Big Object DOES respect Shield Platform Encryption. |
+| Mixed DML restriction in Apex tests | Tests cannot mix DML on sObjects and Big Objects in the same transaction. Use a mocking framework or manually roll back test data. |
 
 ### Field History and Field History Truncation
 

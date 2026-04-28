@@ -41,7 +41,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-04-28
 ---
 
 # Person Accounts
@@ -110,11 +110,13 @@ Separate Record Type sets are required for Person Accounts and Business Accounts
 
 ### Limitations of Person Accounts
 
-- **No child Contacts**: You cannot create a Contact with its AccountId pointing to a Person Account. Person Accounts are individuals — they do not have child contacts.
-- **No Contact Roles on Opportunities through the PersonContact**: Standard Opportunity Contact Role behavior works, but the PersonContactId (not a new Contact record) is used.
-- **AppExchange compatibility**: Many AppExchange packages were built assuming standard Account+Contact structure and do not handle `IsPersonAccount = true` correctly. Always verify package compatibility before enabling.
-- **Merge behavior**: When merging Person Accounts, Salesforce applies different merge rules than for Business Accounts. Person Accounts can only be merged with other Person Accounts.
-- **SOQL contact queries**: Any code that queries `SELECT Id FROM Contact` without awareness of Person Accounts will return PersonContact records mixed in with regular Contacts.
+| Limitation | Detail |
+|---|---|
+| No child Contacts | Cannot create a Contact with AccountId pointing to a Person Account. Person Accounts are individuals. |
+| No Contact Roles on Opportunities through PersonContact | Standard OCR works, but the PersonContactId (not a new Contact) is used. |
+| AppExchange compatibility | Many packages assume standard Account+Contact structure and don't handle `IsPersonAccount = true`. Verify before enabling. |
+| Merge behavior | Different merge rules than Business Accounts. Person Accounts can only merge with other Person Accounts. |
+| SOQL contact queries | `SELECT Id FROM Contact` returns PersonContact records mixed with regular Contacts unless filtered. |
 
 ### Reporting Impact
 

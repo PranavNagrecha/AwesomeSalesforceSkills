@@ -42,7 +42,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-04-28
 ---
 
 # Data Migration Planning
@@ -55,12 +55,14 @@ This skill activates when a practitioner needs to plan or review a Salesforce da
 
 Gather this context before working on anything in this domain:
 
-- **Object inventory and volumes**: Which objects are being migrated? How many records per object? Are there lookup or master-detail relationships between them?
-- **Source system key**: What is the natural identifier in the source system? This becomes the external ID in Salesforce.
-- **Automation landscape**: Which validation rules, triggers, workflow rules, and flows exist on each target object? All of them will fire during migration unless you suppress them.
-- **User and queue inventory**: Who are the record owners? Are those Salesforce users active and licensed? Assigning ownership to an inactive or unlicensed user causes insert failures.
-- **Most common wrong assumption**: Practitioners assume that loading as a System Administrator bypasses validation rules. It does not. Validation rules fire for all users including admins unless a bypass mechanism is explicitly in place.
-- **Key limits in play**: Bulk API 2.0 supports up to 150 million rows per 24-hour period and processes up to 10,000 records per batch. Data Loader supports up to 5 million records per operation (configurable). External ID fields are limited to 25 per object, all indexed by default.
+| Context | What to confirm |
+|---|---|
+| Object inventory and volumes | Which objects? How many records per object? Lookup or master-detail relationships between them? |
+| Source system key | Natural identifier in the source system — this becomes the external ID in Salesforce. |
+| Automation landscape | Validation rules, triggers, workflow rules, flows on each target object. All fire during migration unless suppressed. |
+| User and queue inventory | Record owners — active and licensed? Inactive or unlicensed owners cause insert failures. |
+| Common wrong assumption | Loading as a System Administrator does NOT bypass validation rules; they fire for everyone unless an explicit bypass mechanism is in place. |
+| Key limits in play | Bulk API 2.0: 150M rows/24h, 10K records/batch. Data Loader: 5M records/op (configurable). External ID fields: 25/object, all indexed. |
 
 ---
 

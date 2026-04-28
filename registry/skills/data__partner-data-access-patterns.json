@@ -94,7 +94,7 @@
     "fb702794cd01f43729e3",
     "ffd0982b7b09bcf4f8c9"
   ],
-  "content_hash": "075bb4344c1589af519d03943a1735b33c7b0ead183a19eb261dd40cc31bb00b",
+  "content_hash": "bd9d6f12dcfc7a596bf289d863d46f624b10a9be0d0c10e45f2ee261f27632bf",
   "dependencies": [],
   "description": "Use this skill when designing or troubleshooting data visibility for partner (channel) users in a Salesforce Experience Cloud Partner Community. Triggers: partner user data visibility, PRM data access model, partner role hierarchy sharing, deal registration data access partner, channel partner analytics. NOT for internal data access patterns. NOT for customer community data sharing (see admin/sharing-and-visibility or external-user-data-sharing for customer portal scenarios).",
   "file_location": "skills/data/partner-data-access-patterns",
@@ -138,7 +138,7 @@
   "templates": [
     "skills/data/partner-data-access-patterns/templates/partner-data-access-patterns-template.md"
   ],
-  "updated": "2026-04-06",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }
