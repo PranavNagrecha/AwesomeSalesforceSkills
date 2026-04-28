@@ -1,0 +1,49 @@
+eval:
+  id: flow-orchestrator-designer__happy-path
+  agent: flow-orchestrator-designer
+  mode: single
+  priority: P0
+  last_verified: 2026-04-28
+  description: >
+    Design-mode invocation for a 3-stage Contract Review orchestration:
+    Legal Review -> Procurement -> Customer Sign-off. SLA 5 business days
+    per stage, recallable by originator, all stages assigned to public
+    groups (no single-user assignees). Agent should produce 3 stages,
+    interactive Screen Flow steps with SLAs, transition conditions,
+    explicit recall semantics, fault-path notes per subflow, and a
+    deployment order ending with the orchestration. Confidence MEDIUM
+    (cannot prove queue membership without org probe in fixture mode).
+    Must cite orchestration-flows + screen-flows + fault-handling +
+    automation-selection decision tree.
+
+inputs:
+  mode: design
+  target_org_alias: sfskills-dev
+  scenario_summary: "3-stage contract review: legal, procurement, customer sign-off; SLA 5 business days per stage; recallable by originator"
+  primary_object: Contract
+  license_confirmed: true
+
+org_stub:
+  org_metadata:
+    org_id: 00Dxxx
+    edition: Enterprise
+    api_version: "60.0"
+    sandbox: true
+
+expect:
+  confidence: MEDIUM
+  must_cite_any_of:
+    - { type: skill, id: flow/orchestration-flows }
+    - { type: skill, id: flow/screen-flows }
+    - { type: skill, id: flow/fault-handling }
+    - { type: decision_tree, id: automation-selection }
+  process_observations:
+    min_count: 1
+    categories_present_any_of:
+      - healthy
+      - concerning
+      - ambiguous
+      - suggested_followup
+  followups_include_any_of:
+    - flow-builder
+    - permission-set-architect

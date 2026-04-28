@@ -1,0 +1,61 @@
+eval:
+  id: automation-migration-router__happy-path
+  agent: automation-migration-router
+  mode: single
+  priority: P0
+  last_verified: 2026-04-28
+  description: >
+    Migrate the legacy WorkflowRules on Lead into a record-triggered Flow.
+    Inventory contains four active rules: a same-record field update,
+    a Task creation, an Email Alert, a 24-hour time-dependent field
+    update, and one Outbound Message that the agent must refuse with
+    REFUSAL_OUT_OF_SCOPE because there is no native Flow analog.
+    Verdict per row from decision_table.md. Confidence MEDIUM
+    (analyze mode caps at MEDIUM until the user authorizes plan/migrate).
+    Must cite record-triggered-flow-patterns + scheduled-flows
+    + automation-selection.
+
+inputs:
+  source_type: wf_rule
+  object_name: Lead
+  target_org_alias: sfskills-dev
+  mode: analyze
+  consolidation_mode: auto
+  include_inactive: false
+  time_dependent_handling: scheduled-path
+
+org_stub:
+  org_metadata:
+    org_id: 00Dxxx
+    edition: Enterprise
+    api_version: "60.0"
+    sandbox: true
+  describe_sobject:
+    Lead:
+      queryable: true
+      custom: false
+      fields:
+        - { name: Id, type: id }
+        - { name: Status, type: picklist }
+        - { name: Rating, type: picklist }
+        - { name: LeadSource, type: picklist }
+        - { name: OwnerId, type: reference }
+        - { name: Email, type: email }
+
+expect:
+  confidence: MEDIUM
+  must_cite_any_of:
+    - { type: skill, id: flow/record-triggered-flow-patterns }
+    - { type: skill, id: flow/scheduled-flows }
+    - { type: decision_tree, id: automation-selection }
+  process_observations:
+    min_count: 1
+    categories_present_any_of:
+      - healthy
+      - concerning
+      - ambiguous
+      - suggested_followup
+  followups_include_any_of:
+    - flow-builder
+    - apex-refactorer
+    - trigger-consolidator

@@ -1,0 +1,229 @@
+{
+  "agent": "automation-migration-router",
+  "mode": "single",
+  "run_id": "20260428T030000Z",
+  "report_path": "docs/reports/automation-migration-router/20260428T030000Z.md",
+  "envelope_path": "docs/reports/automation-migration-router/20260428T030000Z.json",
+  "inputs_received": {
+    "source_type": "wf_rule",
+    "object_name": "Lead",
+    "target_org_alias": "sfskills-dev",
+    "mode": "analyze",
+    "consolidation_mode": "auto",
+    "include_inactive": false,
+    "time_dependent_handling": "scheduled-path"
+  },
+  "summary": "Lead has 5 active WorkflowRules. 4 of 5 map cleanly to a single record-triggered Flow on Lead (one before-save same-record field update, one after-save Task create, one after-save Email Alert, one Scheduled Path for the 24-hour Rating-stamp time-dependent action). The 5th rule (Lead_OB_To_MarketingHub) is an Outbound Message and is REFUSED with REFUSAL_OUT_OF_SCOPE because there is no native Flow analog; either keep the WFR for that rule or refactor as a Platform Event + Apex callout (out of scope for this run). Mode=analyze: emits inventory + dispatch verdicts only; no parallel-run dates or rollback yet (those land in mode=plan / mode=migrate). Confidence is capped at MEDIUM by the analyze gate.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Inventory is fully resolved against the wf_rule probe and every rule maps to a deterministic decision_table.md row, so the dispatch verdicts are unambiguous. MEDIUM (not HIGH) because analyze mode does not produce a parallel-run plan or rollback, and the user has not authorized either; HIGH would require mode=migrate with the cutover dates populated.",
+  "dimensions_compared": [
+    "wf_rule.field_update",
+    "wf_rule.task_creation",
+    "wf_rule.email_alert",
+    "wf_rule.time_dependent_action"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "wf_rule.outbound_message",
+      "state": "not-run",
+      "reason": "No native Flow analog; refused per decision_table.md and emitted as REFUSAL_OUT_OF_SCOPE on row Lead_OB_To_MarketingHub."
+    },
+    {
+      "dimension": "parallel_run.shadow_field",
+      "state": "not-run",
+      "reason": "mode=analyze; parallel-run plan only emitted in mode=plan / mode=migrate."
+    },
+    {
+      "dimension": "rollback.data_fix_shape",
+      "state": "not-run",
+      "reason": "mode=analyze; rollback plan only emitted in mode=migrate."
+    }
+  ],
+  "findings": [
+    {
+      "id": "WFR_OUTBOUND_MESSAGE_UNMIGRATABLE",
+      "severity": "P0",
+      "title": "Lead_OB_To_MarketingHub uses a Workflow Outbound Message \u2014 no native Flow analog",
+      "detail": "The Outbound Message action on Lead_OB_To_MarketingHub posts SOAP to https://hooks.marketinghub.example/lead. Flow has no built-in Outbound Message element; the only equivalents are (a) keep the WFR for this rule, or (b) refactor as a Platform Event + Apex @future callout \u2014 both out of scope for this router. Per decision_table.md row wf_rule, Outbound Messages always emit REFUSAL_OUT_OF_SCOPE.",
+      "evidence": {
+        "source": "tooling_query",
+        "rule_id": "01Q5g000000abcdEAA",
+        "rule_name": "Lead_OB_To_MarketingHub",
+        "action_type": "Workflow Outbound Message"
+      },
+      "recommendation": "Keep this WFR active and isolate it from the consolidation plan. If you must replace it, hand to integration-catalog-builder to design the Platform Event + callout pattern."
+    },
+    {
+      "id": "WFR_FIELD_UPDATE_SAME_RECORD",
+      "severity": "INFO",
+      "title": "Lead_Set_Default_Rating maps to a before-save Flow Assignment",
+      "detail": "Same-record field update on Rating when Status changes to 'Working - Contacted'. Per decision_table.md, before-save Flow Assignment (in-memory, no DML) is the canonical target.",
+      "evidence": {
+        "source": "tooling_query",
+        "rule_id": "01Q5g000000abceEAA",
+        "rule_name": "Lead_Set_Default_Rating",
+        "target_element": "Flow.Assignment (before-save)"
+      },
+      "recommendation": "Include in the consolidated record-triggered Flow Lead_AfterUpdate."
+    },
+    {
+      "id": "WFR_TASK_CREATE_AFTER_SAVE",
+      "severity": "INFO",
+      "title": "Lead_Create_FollowupTask maps to after-save Flow Create Records on Task",
+      "detail": "Creates a follow-up Task assigned to OwnerId when Rating changes to 'Hot'. Per decision_table.md, after-save Flow Create Records on Task is the canonical target.",
+      "evidence": {
+        "source": "tooling_query",
+        "rule_id": "01Q5g000000abcfEAA",
+        "rule_name": "Lead_Create_FollowupTask",
+        "target_element": "Flow.CreateRecords (after-save)"
+      },
+      "recommendation": "Include in the consolidated record-triggered Flow."
+    },
+    {
+      "id": "WFR_EMAIL_ALERT_AFTER_SAVE",
+      "severity": "INFO",
+      "title": "Lead_Email_Owner_On_Hot maps to after-save Send Email action",
+      "detail": "Sends EmailTemplate Lead_Hot_Notification to OwnerId when Rating becomes 'Hot'. Per decision_table.md, after-save Send Email action (reusing the WFR's EmailTemplate) is the canonical target.",
+      "evidence": {
+        "source": "tooling_query",
+        "rule_id": "01Q5g000000abcgEAA",
+        "rule_name": "Lead_Email_Owner_On_Hot",
+        "target_element": "Flow.SendEmail (after-save)"
+      },
+      "recommendation": "Include in the consolidated record-triggered Flow; reuse the existing EmailTemplate (do not duplicate)."
+    },
+    {
+      "id": "WFR_TIME_DEPENDENT_SCHEDULED_PATH",
+      "severity": "INFO",
+      "title": "Lead_Stamp_Rating_24h time-dependent action maps to a Scheduled Path",
+      "detail": "Time-dependent field update on Rating, +24 hours after rule fires. With time_dependent_handling=scheduled-path (the default), this becomes a Scheduled Path on the same after-save record-triggered Flow. The path runs +24 hours from a date field on the triggering Lead record.",
+      "evidence": {
+        "source": "tooling_query",
+        "rule_id": "01Q5g000000abchEAA",
+        "rule_name": "Lead_Stamp_Rating_24h",
+        "target_element": "Flow.ScheduledPath (after-save, +24h)"
+      },
+      "recommendation": "Include in the consolidated record-triggered Flow as a Scheduled Path; pin the path to a deterministic date field (CreatedDate or LastModifiedDate of the triggering rule) so the +24h offset is reproducible."
+    }
+  ],
+  "deliverables": [
+    {
+      "kind": "markdown",
+      "title": "Lead WorkflowRule -> Flow migration plan (analyze mode)",
+      "target_path": "docs/reports/automation-migration-router/20260428T030000Z.md",
+      "content": "# Lead WorkflowRule -> Flow Migration (analyze mode)\n\n**Object:** Lead\n**Source type:** `wf_rule`\n**Target shape:** Record-triggered Flow `Lead_AfterUpdate` (consolidated) + retained WFR for the Outbound Message.\n**Mode:** analyze (no parallel-run dates, no rollback this run).\n\n## Inventory\n\n| Rule id | Name | Active | Trigger | Action | Verdict |\n|---|---|---|---|---|---|\n| 01Q5g000000abcdEAA | Lead_OB_To_MarketingHub | Yes | onCreateOrTriggeringUpdate | Outbound Message | REFUSE \u2014 keep WFR or refactor (out of scope) |\n| 01Q5g000000abceEAA | Lead_Set_Default_Rating | Yes | onAllChanges | Field Update (same record) | MIGRATE: before-save Assignment |\n| 01Q5g000000abcfEAA | Lead_Create_FollowupTask | Yes | onCreateOrTriggeringUpdate | Task creation | MIGRATE: after-save Create Records |\n| 01Q5g000000abcgEAA | Lead_Email_Owner_On_Hot | Yes | onCreateOrTriggeringUpdate | Email Alert | MIGRATE: after-save Send Email action |\n| 01Q5g000000abchEAA | Lead_Stamp_Rating_24h | Yes | onCreateOrTriggeringUpdate | Time-dependent Field Update (+24h) | MIGRATE: Scheduled Path on after-save Flow |\n\n## Dispatch details \u2014 target Flow `Lead_AfterUpdate`\n\n- **Trigger context:** record-triggered, Update, after-save (the before-save Assignment for Rating sits in a separate before-save Flow `Lead_BeforeUpdate` to avoid a fault-path tangle).\n- **Bulk safety:** every Get / Update is outside any loop (single Get, single Update; per `skills/flow/flow-bulkification`).\n- **Fault path:** mandatory; routes to `LogFault` subflow per `templates/flow/FaultPath_Template.md`.\n- **Scheduled Path:** +24h from `LastModifiedDate` for the Rating-stamp behavior previously owned by Lead_Stamp_Rating_24h.\n\n## Unmigratable items\n\n- `Lead_OB_To_MarketingHub` \u2014 WFR_OUTBOUND_MESSAGE_UNMIGRATABLE (P0). Keep the WFR active OR hand to integration-catalog-builder for the Platform Event + callout refactor.\n\n## Parallel-run plan\n\n_(empty in analyze mode; re-run in mode=plan to populate the shadow-field template.)_\n\n## Rollback plan\n\n_(empty in analyze mode; re-run in mode=migrate to populate.)_\n\n## What this run did NOT do\n\n- Did not deactivate any WFR.\n- Did not deploy any Flow XML (hand each emitted spec to flow-builder).\n- Did not generate parallel-run cutover dates (analyze mode caps at MEDIUM confidence).\n"
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Four of five rules consolidate cleanly into a single record-triggered Flow with a Scheduled Path for the time-dependent action \u2014 there is no governor-limit risk in the consolidation plan because every Get / Update sits outside the (non-existent) loop.",
+      "domain": "flow-bulkification",
+      "evidence": {
+        "source": "heuristic"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "The Outbound Message rule has to stay live OR get a callout-pattern refactor before the consolidation Flow ships. If the consolidation Flow goes live and the WFR is mistakenly deactivated as part of the cleanup, downstream MarketingHub stops receiving Lead pushes silently.",
+      "domain": "automation-coexistence",
+      "evidence": {
+        "source": "heuristic"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "Run is mode=analyze; the user has not yet asked for a parallel-run plan with concrete cutover dates. A second run with mode=migrate is required before the cutover can begin.",
+      "domain": "scope",
+      "evidence": {
+        "source": "input"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "Each migrated WFR's target Flow element will need a concrete Flow XML emission via the 5-gate builder protocol.",
+      "domain": "subflow-implementation",
+      "evidence": {
+        "source": "heuristic"
+      },
+      "suggested_followup_agent": "flow-builder",
+      "followup_reason": "because automation-migration-router emits the migration plan and per-element verdicts but never the Flow XML itself; flow-builder owns the per-flow 5-gate run."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "Before the consolidation ships, confirm there is no active Apex trigger on Lead doing the same Rating stamp that Lead_Set_Default_Rating does \u2014 if there is, the consolidation either consolidates it as well or refuses with REFUSAL_POLICY_MISMATCH.",
+      "domain": "trigger-coexistence",
+      "evidence": {
+        "source": "heuristic"
+      },
+      "suggested_followup_agent": "trigger-consolidator",
+      "followup_reason": "because Apex triggers on Lead may already be doing the same field update; consolidating both into the new Flow without a trigger plan creates a double-write."
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "flow/record-triggered-flow-patterns",
+      "path": "skills/flow/record-triggered-flow-patterns/SKILL.md",
+      "used_for": "Same-record (before-save) Assignment, after-save Create Records, after-save Send Email \u2014 the canonical mappings for WFR field updates, task creation, and email alerts."
+    },
+    {
+      "type": "skill",
+      "id": "flow/scheduled-flows",
+      "path": "skills/flow/scheduled-flows/SKILL.md",
+      "used_for": "Scheduled Path on the after-save Flow for the +24h time-dependent Rating stamp action."
+    },
+    {
+      "type": "skill",
+      "id": "flow/fault-handling",
+      "path": "skills/flow/fault-handling/SKILL.md",
+      "used_for": "Mandatory fault path on every DML element of the consolidated Flow."
+    },
+    {
+      "type": "skill",
+      "id": "flow/flow-bulkification",
+      "path": "skills/flow/flow-bulkification/SKILL.md",
+      "used_for": "Confirming the consolidated Flow has no Get/Update inside a loop \u2014 the no-loop topology was validated against bulk safety patterns."
+    },
+    {
+      "type": "skill",
+      "id": "admin/flow-for-admins",
+      "path": "skills/admin/flow-for-admins/SKILL.md",
+      "used_for": "Trigger-context (before-save vs after-save) selection for the consolidated Flow."
+    },
+    {
+      "type": "decision_tree",
+      "id": "automation-selection",
+      "path": "standards/decision-trees/automation-selection.md",
+      "branch": "WorkflowRule field updates / task / email -> record-triggered Flow (over Apex trigger).",
+      "used_for": "Confirming Flow is the right target for the consolidation; Apex was not justified by any of the actions."
+    },
+    {
+      "type": "template",
+      "id": "flow/FaultPath_Template.md",
+      "path": "templates/flow/FaultPath_Template.md",
+      "used_for": "Standard fault-connector -> LogFault subflow scaffold for the consolidated Flow."
+    },
+    {
+      "type": "template",
+      "id": "flow/RecordTriggered_Skeleton.flow-meta.xml",
+      "path": "templates/flow/RecordTriggered_Skeleton.flow-meta.xml",
+      "used_for": "Skeleton for the Lead_AfterUpdate Flow that flow-builder will fill in."
+    }
+  ],
+  "followups": [
+    {
+      "agent": "flow-builder",
+      "because": "because automation-migration-router emits the consolidation plan but never the Flow XML; flow-builder owns the per-flow 5-gate run for Lead_AfterUpdate (and Lead_BeforeUpdate)."
+    },
+    {
+      "agent": "trigger-consolidator",
+      "because": "because if other Lead automations exist (Apex triggers / PBs), they should be consolidated into a single canonical handler before the new Flow ships to avoid double-writes."
+    }
+  ]
+}
