@@ -36,7 +36,7 @@ outputs:
 dependencies: []
 version: 2.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Flow Email and Notifications
