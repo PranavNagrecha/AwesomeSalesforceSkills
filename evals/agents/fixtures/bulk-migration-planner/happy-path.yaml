@@ -1,0 +1,36 @@
+eval:
+  id: bulk-migration-planner__happy-path
+  agent: bulk-migration-planner
+  mode: single
+  priority: P0
+  last_verified: 2026-04-28
+  description: >
+    Plan a high-volume inbound load — 8M Account records weekly from SAP
+    S/4HANA at T+24h latency. Decision tree should resolve to Bulk API
+    2.0. Agent should produce a Bulk API 2.0 job spec with chunking, an
+    OAuth-via-Named-Credential auth plan, an idempotency strategy keyed
+    on an External Id, an observability plan citing ApplicationLogger,
+    and reject MuleSoft as overkill at this volume/latency.
+
+inputs:
+  direction: inbound
+  volume_per_run: "8M records/week"
+  latency_tolerance: "T+24h"
+  source_or_target: "SAP S/4HANA"
+
+org_stub: {}
+
+expect:
+  confidence: MEDIUM
+  must_cite_any_of:
+    - { type: skill, id: integration/bulk-api-2-patterns }
+    - { type: skill, id: integration/named-credentials-setup }
+    - { type: decision_tree, id: integration-pattern-selection }
+    - { type: template, id: apex/HttpClient.cls }
+  process_observations:
+    min_count: 0
+    categories_present_any_of:
+      - healthy
+      - concerning
+      - ambiguous
+      - suggested_followup

@@ -1,0 +1,58 @@
+eval:
+  id: deployment-risk-scorer__happy-path
+  agent: deployment-risk-scorer
+  mode: single
+  priority: P0
+  last_verified: 2026-04-28
+  description: >
+    Score a small change set carrying two HIGH-risk patterns:
+    (1) a new required custom field on a populated Account table with
+    no backfill plan, and (2) a new Apex class with no corresponding
+    test delta. Agent should return overall HIGH-RISK, enumerate both
+    findings, populate dimensions_compared with at minimum
+    metadata-surface and test-coverage-delta, and recommend
+    code-reviewer + security-scanner per the AGENT.md HIGH-risk
+    follow-up rule.
+
+inputs:
+  change_path: evals/agents/fixtures/deployment-risk-scorer/samples/
+  target_org_alias: uat-fixture
+  change_scope: full
+  source_path: evals/agents/fixtures/deployment-risk-scorer/samples/CaseEscalationService.cls
+  related_paths:
+    - evals/agents/fixtures/deployment-risk-scorer/samples/Account.UrgentEscalation__c.field-meta.xml
+
+org_stub:
+  org_metadata:
+    org_id: 00Dxxx
+    edition: Enterprise
+    api_version: "63.0"
+    sandbox: false
+  account_record_count: 4_200_000
+  case_record_count: 950_000
+  existing_apex_tests:
+    - {name: AccountTriggerHandler_Test, covers: AccountTriggerHandler}
+    - {name: ContactServiceTest, covers: ContactService}
+  existing_apex_classes_in_change:
+    - CaseEscalationService
+  test_classes_in_change: []
+  active_flows_on_case: []
+  permission_set_delta: []
+
+expect:
+  confidence: MEDIUM
+  must_cite_any_of:
+    - { type: skill, id: devops/code-review-checklist-salesforce }
+    - { type: skill, id: devops/pre-deployment-checklist }
+  process_observations:
+    min_count: 1
+    categories_present_any_of:
+      - healthy
+      - concerning
+      - ambiguous
+      - suggested_followup
+  followups_include_any_of:
+    - code-reviewer
+    - security-scanner
+    - soql-optimizer
+    - trigger-consolidator

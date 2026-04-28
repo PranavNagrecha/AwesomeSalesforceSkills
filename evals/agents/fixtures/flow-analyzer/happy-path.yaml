@@ -1,0 +1,37 @@
+eval:
+  id: flow-analyzer__happy-path
+  agent: flow-analyzer
+  mode: single
+  priority: P0
+  last_verified: 2026-04-28
+  description: >
+    Analyze a record-triggered flow that loops over a triggering-records
+    collection, performs Get Records and Update Records inside the loop,
+    and provides no fault path on the Update element. Agent should flag
+    soql-in-loop and dml-in-loop as P0, no-fault-path as P1, return a
+    FIX_IN_PLACE or MIGRATE_TO_APEX verdict via the automation-selection
+    decision tree, and cite flow-bulkification + the FaultPath template.
+
+inputs:
+  flow_path: evals/agents/fixtures/flow-analyzer/samples/Lead_AutoConvert_BadBulk.flow-meta.xml
+  source_path: evals/agents/fixtures/flow-analyzer/samples/Lead_AutoConvert_BadBulk.flow-meta.xml
+
+org_stub: {}
+
+expect:
+  confidence: MEDIUM
+  must_cite_any_of:
+    - { type: skill, id: flow/flow-bulkification }
+    - { type: template, id: flow/FaultPath_Template.md }
+    - { type: decision_tree, id: automation-selection }
+  process_observations:
+    min_count: 0
+    categories_present_any_of:
+      - healthy
+      - concerning
+      - ambiguous
+      - suggested_followup
+  followups_include_any_of:
+    - apex-refactorer
+    - trigger-consolidator
+    - test-class-generator

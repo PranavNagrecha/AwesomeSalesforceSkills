@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Account.UrgentEscalation__c — synthetic sample for deployment-risk-scorer.
+    A new required custom checkbox on Account. The scorer should flag this as
+    required-field-added HIGH risk because the org has Accounts but the
+    fixture's org_stub indicates no backfill plan.
+-->
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>UrgentEscalation__c</fullName>
+    <defaultValue>false</defaultValue>
+    <externalId>false</externalId>
+    <label>Urgent Escalation</label>
+    <required>true</required>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

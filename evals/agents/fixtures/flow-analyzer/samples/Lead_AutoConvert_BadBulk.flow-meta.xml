@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Lead_AutoConvert_BadBulk.flow-meta.xml
+    Synthetic sample for the flow-analyzer agent eval. Intentionally bad.
+
+    Carries three canonical findings the analyzer should catch:
+      1. soql-in-loop  (P0) — Get Records inside a loop over Trigger.new equivalent
+      2. dml-in-loop   (P0) — Update Records inside the same loop
+      3. no-fault-path (P1) — Update_MatchingContact element has no fault edge
+-->
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>61.0</apiVersion>
+    <interviewLabel>Lead AutoConvert BadBulk {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Lead AutoConvert BadBulk</label>
+    <processType>AutoLaunchedFlow</processType>
+    <runInMode>SystemModeWithoutSharing</runInMode>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Loop_Over_Leads</targetReference>
+        </connector>
+        <object>Lead</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+
+    <loops>
+        <name>Loop_Over_Leads</name>
+        <label>Loop Over Leads</label>
+        <locationX>176</locationX>
+        <locationY>120</locationY>
+        <collectionReference>$Record.Triggering_Records__c</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Get_Matching_Contact</targetReference>
+        </nextValueConnector>
+    </loops>
+
+    <recordLookups>
+        <name>Get_Matching_Contact</name>
+        <label>Get Matching Contact</label>
+        <locationX>176</locationX>
+        <locationY>240</locationY>
+        <connector>
+            <targetReference>Update_Matching_Contact</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Email</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Loop_Over_Leads.Email</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Contact</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+
+    <recordUpdates>
+        <name>Update_Matching_Contact</name>
+        <label>Update Matching Contact</label>
+        <locationX>176</locationX>
+        <locationY>360</locationY>
+        <inputAssignments>
+            <field>Description</field>
+            <value>
+                <stringValue>Touched by Lead AutoConvert</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>Get_Matching_Contact</inputReference>
+        <connector>
+            <targetReference>Loop_Over_Leads</targetReference>
+        </connector>
+    </recordUpdates>
+</Flow>
