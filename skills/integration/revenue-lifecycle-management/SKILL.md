@@ -35,7 +35,7 @@ triggers:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-16
+updated: 2026-04-28
 ---
 
 # Revenue Lifecycle Management
@@ -73,11 +73,14 @@ These are not interchangeable. Code, SOQL, flows, and automation built for one p
 DRO is the fulfillment engine in RLM. When a commercial order is activated, DRO creates a **fulfillment plan** that decomposes the order into technical fulfillment orders. Each fulfillment order is routed across configurable **swimlanes** (e.g., billing, provisioning, shipping).
 
 Swimlane steps can include:
-- **Auto-tasks** — automated Apex or integration callouts
-- **Manual tasks** — human review steps
-- **Callouts** — external system notifications
-- **Milestones** — synchronization points across swimlanes
-- **Pauses** — wait states pending external completion signals
+
+| Step type | Role |
+|---|---|
+| Auto-tasks | Automated Apex or integration callouts. |
+| Manual tasks | Human review steps. |
+| Callouts | External system notifications. |
+| Milestones | Synchronization points across swimlanes. |
+| Pauses | Wait states pending external completion signals. |
 
 DRO enables parallel processing of fulfillment activities that can proceed independently while maintaining synchronization at milestones.
 

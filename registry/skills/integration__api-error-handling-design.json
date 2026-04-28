@@ -108,7 +108,7 @@
     "febbe1c80a8aa1d2c0ed",
     "ff2407d7242ac7cab7db"
   ],
-  "content_hash": "8708e6b12bf542460b82ad3613598c7fbe9a519a0ecf97f0d7b63a404138b41c",
+  "content_hash": "e5aa93340b80027cd23613aca6c6966c94aecae6cf8d137577a16809ba10d8a7",
   "dependencies": [
     "retry-and-backoff-patterns",
     "apex-rest-services"
@@ -160,7 +160,7 @@
   "templates": [
     "skills/integration/api-error-handling-design/templates/api-error-handling-design-template.md"
   ],
-  "updated": "2026-04-06",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

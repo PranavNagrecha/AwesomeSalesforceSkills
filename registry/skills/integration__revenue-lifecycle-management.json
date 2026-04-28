@@ -57,7 +57,7 @@
     "ef0f31c326b06f8c7515",
     "f0aba0ccff3f5a54bf06"
   ],
-  "content_hash": "58160d234fc2a1892048faa4dca57fab86bc61f7b423ab30ef0d09ca8217e22f",
+  "content_hash": "c900ba3e000bec56ad321c4691f89dfbcef8b95e1df9c5afda3f31af1a116072",
   "dependencies": [],
   "description": "Use this skill when implementing or troubleshooting Salesforce Revenue Lifecycle Management (RLM) \u2014 the native Revenue Cloud product covering order-to-cash lifecycle, Dynamic Revenue Orchestrator (DRO) fulfillment plan design, asset amendments, billing schedule creation via Connect API, and invoice management. Triggers on: Dynamic Revenue Orchestrator, RLM order decomposition, DRO fulfillment swimlanes, native Revenue Cloud billing schedule, asset lifecycle management Salesforce. NOT for CPQ quoting or pricing rules (use cpq-* skills), not for the legacy Salesforce Billing managed package with blng__* objects (different product entirely), not for standard Order objects without Revenue Cloud features.",
   "file_location": "skills/integration/revenue-lifecycle-management",
@@ -104,7 +104,7 @@
   "templates": [
     "skills/integration/revenue-lifecycle-management/templates/revenue-lifecycle-management-template.md"
   ],
-  "updated": "2026-04-16",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }
