@@ -1,13 +1,13 @@
 ---
 id: lwc-builder
 class: runtime
-version: 1.0.0
+version: 1.1.0
 status: stable
 requires_org: false
 modes: [single]
 owner: sfskills-core
 created: 2026-04-16
-updated: 2026-04-23
+updated: 2026-04-28
 default_output_dir: "docs/reports/lwc-builder/"
 output_formats:
   - markdown
@@ -15,31 +15,64 @@ output_formats:
 dependencies:
   skills:
     - admin/agent-output-formats
+    - lwc/aura-to-lwc-migration
+    - lwc/common-lwc-runtime-errors
     - lwc/component-communication
+    - lwc/custom-property-editor-for-flow
+    - lwc/drag-and-drop
+    - lwc/file-upload-patterns
     - lwc/lifecycle-hooks
+    - lwc/lwc-accessibility
     - lwc/lwc-accessibility-patterns
     - lwc/lwc-app-builder-config
+    - lwc/lwc-async-patterns
     - lwc/lwc-base-component-recipes
+    - lwc/lwc-chart-and-visualization
     - lwc/lwc-conditional-rendering
     - lwc/lwc-custom-datatable-types
+    - lwc/lwc-custom-event-patterns
+    - lwc/lwc-data-table
     - lwc/lwc-debugging-devtools
+    - lwc/lwc-dynamic-components
+    - lwc/lwc-error-boundaries
+    - lwc/lwc-focus-management
     - lwc/lwc-forms-and-validation
     - lwc/lwc-graphql-wire
     - lwc/lwc-imperative-apex
     - lwc/lwc-in-flow-screens
+    - lwc/lwc-internationalization
     - lwc/lwc-light-dom
+    - lwc/lwc-lightning-modal
+    - lwc/lwc-locker-to-lws-migration
+    - lwc/lwc-modal-and-overlay
+    - lwc/lwc-navigation-mixin
+    - lwc/lwc-offline-and-mobile
     - lwc/lwc-performance
+    - lwc/lwc-performance-budgets
+    - lwc/lwc-public-api-hardening
     - lwc/lwc-quick-actions
+    - lwc/lwc-record-picker
     - lwc/lwc-security
+    - lwc/lwc-server-sent-events
+    - lwc/lwc-shadow-vs-light-dom-decision
+    - lwc/lwc-show-toast-patterns
     - lwc/lwc-slots-composition
+    - lwc/lwc-state-management
     - lwc/lwc-styling-hooks
     - lwc/lwc-template-refs
     - lwc/lwc-testing
+    - lwc/lwc-toast-and-notifications
+    - lwc/lwc-web-components-interop
+    - lwc/lwc-wire-refresh-patterns
     - lwc/message-channel-patterns
+    - lwc/navigation-and-routing
+    - lwc/static-resources-in-lwc
+    - lwc/virtualized-lists
     - lwc/wire-service-patterns
   shared:
     - AGENT_CONTRACT.md
     - DELIVERABLE_CONTRACT.md
+    - REFUSAL_CODES.md
   templates:
     - apex/BaseService.cls
     - apex/SecurityUtils.cls
@@ -67,35 +100,91 @@ Produces a full Lightning Web Component bundle for a described feature: `.js`, `
 
 ## Mandatory Reads Before Starting
 
+### Contract layer
 1. `agents/_shared/AGENT_CONTRACT.md`
-2. `skills/lwc/wire-service-patterns`
-3. `skills/lwc/lwc-imperative-apex`
-4. `skills/lwc/lwc-accessibility-patterns`
-5. `skills/lwc/lwc-performance`
-6. `skills/lwc/lwc-security`
-7. `skills/lwc/lwc-testing`
-8. `skills/lwc/lwc-forms-and-validation`
-9. `skills/lwc/component-communication`
-10. `skills/lwc/lifecycle-hooks`
-11. `skills/lwc/message-channel-patterns`
-12. `skills/lwc/lwc-base-component-recipes`
-13. `skills/lwc/lwc-in-flow-screens` — if the component exposes to Flow screens
-14. `skills/lwc/lwc-graphql-wire` — if the data shape needs multi-entity reads in one request
-15. `skills/lwc/lwc-slots-composition` — if the bundle is a container / layout / wrapper component
-16. `skills/lwc/lwc-light-dom` — if the bundle embeds third-party DOM libraries or needs SEO-indexable markup
-17. `skills/lwc/lwc-template-refs` — any new bundle that queries its own DOM must use `lwc:ref`, not `this.template.querySelector`
-18. `skills/lwc/lwc-quick-actions` — if `binding_kind` resolves to `lightning__RecordAction`
-19. `skills/lwc/lwc-styling-hooks` — any time the component restyles a base-component's internals
-20. `skills/lwc/lwc-conditional-rendering` — every template with conditional branches (modern `lwc:if`/`lwc:elseif`/`lwc:else` only)
-21. `skills/lwc/lwc-app-builder-config` — every non-standalone bundle emits a `.js-meta.xml` and must honor this skill's exposure / targets / targetConfigs rules
-22. `skills/lwc/lwc-custom-datatable-types` — if the bundle subclasses `LightningDatatable`
-23. `skills/lwc/lwc-debugging-devtools` — emit a diagnosability note (console-first logging, no proxy-dumping) per this skill
-24. `templates/lwc/component-skeleton/`
-25. `templates/lwc/patterns/`
-26. `templates/lwc/jest.config.js`
-27. `templates/apex/BaseService.cls` — if a controller class is emitted
-28. `templates/apex/SecurityUtils.cls`
-29. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+2. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 persistence + scope guardrails
+3. `agents/_shared/REFUSAL_CODES.md` — canonical refusal enum
+
+### Component shape & lifecycle
+4. `skills/lwc/component-communication`
+5. `skills/lwc/lifecycle-hooks` — never implement empty hooks
+6. `skills/lwc/lwc-base-component-recipes`
+7. `skills/lwc/lwc-public-api-hardening` — `@api` type-coercion, design-attribute typing, `targetConfig` rules
+8. `skills/lwc/lwc-template-refs` — `lwc:ref` over `this.template.querySelector` in new bundles
+9. `skills/lwc/lwc-conditional-rendering` — modern `lwc:if`/`lwc:elseif`/`lwc:else` only
+10. `skills/lwc/lwc-dynamic-components` — `<lwc:component lwc:is>` for runtime-resolved children
+11. `skills/lwc/lwc-slots-composition` — for container / layout / wrapper bundles
+12. `skills/lwc/lwc-app-builder-config` — `.js-meta.xml` exposure / targets / targetConfigs
+
+### Data binding (UI API / GraphQL / Apex)
+13. `skills/lwc/wire-service-patterns`
+14. `skills/lwc/lwc-wire-refresh-patterns` — `refreshApex` vs `refreshGraphQL` vs `notifyRecordUpdateAvailable`
+15. `skills/lwc/lwc-graphql-wire` — multi-entity reads in one round-trip
+16. `skills/lwc/lwc-imperative-apex`
+17. `skills/lwc/lwc-async-patterns` — async work outside `connectedCallback`
+18. `skills/lwc/lwc-state-management`
+
+### Events, messaging, navigation
+19. `skills/lwc/lwc-custom-event-patterns` — bubbles / composed / cancelable choices
+20. `skills/lwc/message-channel-patterns` — Lightning Message Service for cross-tree fan-out
+21. `skills/lwc/lwc-navigation-mixin` — programmatic page transitions
+22. `skills/lwc/navigation-and-routing`
+
+### Forms, datatables, modals, files, charts
+23. `skills/lwc/lwc-forms-and-validation`
+24. `skills/lwc/lwc-record-picker` — `lightning-record-picker` over hand-rolled lookup
+25. `skills/lwc/lwc-data-table`
+26. `skills/lwc/lwc-custom-datatable-types` — when the bundle subclasses `LightningDatatable`
+27. `skills/lwc/lwc-modal-and-overlay`
+28. `skills/lwc/lwc-lightning-modal` — `LightningModal` over hand-rolled overlay backdrops
+29. `skills/lwc/file-upload-patterns`
+30. `skills/lwc/lwc-chart-and-visualization`
+31. `skills/lwc/drag-and-drop`
+32. `skills/lwc/virtualized-lists` — render budgets for >500 visible rows
+
+### Accessibility, i18n, focus, toasts
+33. `skills/lwc/lwc-accessibility-patterns`
+34. `skills/lwc/lwc-accessibility`
+35. `skills/lwc/lwc-focus-management`
+36. `skills/lwc/lwc-internationalization`
+37. `skills/lwc/lwc-show-toast-patterns`
+38. `skills/lwc/lwc-toast-and-notifications`
+
+### Styling, DOM mode, interop
+39. `skills/lwc/lwc-styling-hooks` — restyling base-component interiors via documented hooks only
+40. `skills/lwc/lwc-light-dom` — third-party DOM libs / SEO-indexable markup
+41. `skills/lwc/lwc-shadow-vs-light-dom-decision` — `static renderMode` decision
+42. `skills/lwc/lwc-web-components-interop`
+43. `skills/lwc/static-resources-in-lwc`
+
+### Performance, errors, debugging
+44. `skills/lwc/lwc-performance`
+45. `skills/lwc/lwc-performance-budgets`
+46. `skills/lwc/lwc-error-boundaries`
+47. `skills/lwc/common-lwc-runtime-errors`
+48. `skills/lwc/lwc-debugging-devtools` — diagnosability notes; no `console.log` of `@wire` proxies
+
+### Security
+49. `skills/lwc/lwc-security`
+50. `skills/lwc/lwc-locker-to-lws-migration` — when org has migrated to LWS, drop Locker workarounds
+
+### Specialized surfaces
+51. `skills/lwc/lwc-quick-actions` — when `binding_kind=record-action`
+52. `skills/lwc/lwc-in-flow-screens` — when `binding_kind=flow-screen`
+53. `skills/lwc/custom-property-editor-for-flow` — Flow CPE LWC builds
+54. `skills/lwc/lwc-server-sent-events` — long-running server push channels
+55. `skills/lwc/lwc-offline-and-mobile`
+56. `skills/lwc/aura-to-lwc-migration` — when porting an Aura precursor
+
+### Testing
+57. `skills/lwc/lwc-testing`
+
+### Templates (canonical building blocks)
+58. `templates/lwc/component-skeleton/`
+59. `templates/lwc/patterns/` — incl. `graphqlWirePattern.js`, `quickActionPattern.js`, `slotsCompositionPattern.html`, `datatableCustomTypePattern.html`
+60. `templates/lwc/jest.config.js`
+61. `templates/apex/BaseService.cls` — if a controller class is emitted
+62. `templates/apex/SecurityUtils.cls`
 
 ---
 
@@ -293,18 +382,22 @@ Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
 
 - **Canonical data surface:** this agent's declared probes + the MCP tool set. No ad-hoc code generation to substitute for probes — if the probe's SOQL doesn't cover a need, extend the probe in a PR.
 - **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
-- **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only.
+- **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only. Dimensions for this agent: `data-strategy` (UI API / GraphQL / imperative Apex chosen + why), `accessibility` (WCAG-AA defaults + tier-specific extras), `public-api-shape` (`@api` typing + design-attribute coercion), `event-shape` (CustomEvent bubbles/composed/detail), `dom-mode` (shadow vs light decision), `styling-isolation` (SLDS hooks vs piercing), `meta-xml-targets` (binding_kind targets + `<targetConfig>`), `test-coverage` (rendering / public-api / wire / negative paths), `controller-security` (CRUD/FLS via `SecurityUtils`), `lws-readiness` (Locker workarounds removed). When the binding_kind doesn't exercise a dimension (e.g. `standalone` skips `meta-xml-targets`), record it in `dimensions_skipped[]` with `state: not-run` and a one-line reason.
 
 ## Escalation / Refusal Rules
 
-- `feature_summary` under 10 words → `REFUSAL_INPUT_AMBIGUOUS`.
-- `binding_kind=flow-screen` without a specification of screen input/output vars → `REFUSAL_INPUT_AMBIGUOUS`.
-- `binding_kind=experience-cloud` on an Experience Cloud site the org doesn't have enabled (checked via `describe_org` if an org alias is provided) → `REFUSAL_FEATURE_DISABLED`.
-- Request to write directly to a protected sObject (Org Shape: no mention of FLS/CRUD in the feature summary) → emit bundle with FLS/CRUD wired but flag the absence of explicit user intent.
-- Request to emit inline HTML / `innerHTML` usage → `REFUSAL_SECURITY_GUARD`.
-- Request to emit a GraphQL `mutation {}` block → `REFUSAL_OUT_OF_SCOPE`; the UI API GraphQL adapter is read-only. Route writes through `updateRecord` / `createRecord` / `deleteRecord` / imperative Apex and refresh the wired result with `refreshGraphQL`.
-- Request to pierce a base component's shadow DOM (`::part`, `>>>`, descendant selectors on internal SLDS class names) → `REFUSAL_OUT_OF_SCOPE`; redesign via documented SLDS styling hooks or wrap-and-own.
-- Request to modify an existing bundle in place → `REFUSAL_OUT_OF_SCOPE`; route to `lwc-auditor` + manual edit.
+Canonical refusal codes per `agents/_shared/REFUSAL_CODES.md`:
+
+| Code | Trigger |
+|---|---|
+| `REFUSAL_MISSING_INPUT` | `component_name`, `feature_summary`, `binding_kind`, or `data_shape` is missing. |
+| `REFUSAL_INPUT_AMBIGUOUS` | `feature_summary` under 10 words; `binding_kind=flow-screen` without screen input/output vars; `data_shape` cannot be unambiguously matched (e.g. `record-form` declared but no `target_objects`). |
+| `REFUSAL_FEATURE_DISABLED` | `binding_kind=experience-cloud` on an org without Experience Cloud enabled (checked via `describe_org` if alias supplied); `binding_kind=record-action` on an sObject without quick-action support. |
+| `REFUSAL_OUT_OF_SCOPE` | Request to modify an existing bundle in place (route to `lwc-auditor` + manual edit); request for >1 bundle per invocation; request to emit a GraphQL `mutation {}` block (adapter is read-only); request to pierce a base component's shadow DOM via `::part` / `>>>` / descendant selectors on internal SLDS classes; request to emit Aura. |
+| `REFUSAL_SECURITY_GUARD` | Request to emit inline HTML / `innerHTML` / `lwc:dom="manual"` injection without a sanitization wrapper; request to emit a controller `WITHOUT SHARING` without an explicit business justification; request to ship secrets/tokens as design-attribute defaults. |
+| `REFUSAL_POLICY_MISMATCH` | `data_shape=record-form` with `binding_kind=experience-cloud` on an unauthenticated guest profile (UI API write paths refuse on guest sessions); `binding_kind=utility-bar` with persistent state assumed across page refresh (utility bar lifecycle is per-tab). |
+| `REFUSAL_OVER_SCOPE_LIMIT` | Bundle would exceed 8 declared `@api` properties or 12 design attributes — split into composing components first. |
+| `REFUSAL_NEEDS_HUMAN_REVIEW` | Conflicting decision tree branches (e.g. `data_shape` would naturally pick UI API but the user requested GraphQL with no relationship reads); contradictory design-attribute typing; request to subclass `LightningDatatable` AND reach into `lightning-tree-grid` internals (unsupported composition). |
 
 ---
 
