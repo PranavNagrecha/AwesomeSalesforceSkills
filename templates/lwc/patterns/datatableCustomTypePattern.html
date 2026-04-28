@@ -1,0 +1,32 @@
+<!--
+  datatableCustomTypePattern — canonical Lightning Datatable custom type.
+  Use when the standard cell types (text, number, currency, url, button) are
+  not enough — for example, an inline status badge or a record-aware action.
+
+  This file is the cell template for the custom type. It pairs with a JS
+  module that extends `lightning/datatable`, registers the type, and points
+  to this template via the `customTypes` getter.
+
+  Three slots are exposed by the runtime to the cell template via @api:
+    - value           : the field value for this cell (the column's `fieldName`)
+    - typeAttributes  : the per-column `typeAttributes` object you configured
+    - context         : { rowKey, columnLabel } for accessibility
+-->
+
+<template>
+    <template lwc:if={isHealthy}>
+        <lightning-badge label={value} class="slds-theme_success" alternative-text={typeAttributes.alt}></lightning-badge>
+    </template>
+
+    <template lwc:elseif={isAtRisk}>
+        <lightning-badge label={value} class="slds-theme_warning" alternative-text={typeAttributes.alt}></lightning-badge>
+    </template>
+
+    <template lwc:elseif={isFailing}>
+        <lightning-badge label={value} class="slds-theme_error" alternative-text={typeAttributes.alt}></lightning-badge>
+    </template>
+
+    <template lwc:else>
+        <span class="slds-text-color_weak">{value}</span>
+    </template>
+</template>

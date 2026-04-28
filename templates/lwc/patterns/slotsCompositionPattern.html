@@ -1,0 +1,52 @@
+<!--
+  slotsCompositionPattern — canonical LWC composition via named + default slots.
+
+  Use when:
+    - A component is a layout shell (card, modal, panel) and consumers
+      should fill specific regions (header / body / footer).
+    - You want a single component to support several call shapes without
+      a `variant` enum exploding into branches.
+
+  Slot semantics:
+    - <slot></slot>           : default slot — content the consumer puts inside
+                                <c-shell> with no `slot=` attribute lands here.
+    - <slot name="x"></slot>  : named slot — only matches consumer content
+                                marked `<x slot="x">`.
+    - Slotted content stays in the LIGHT DOM of the consumer; lifecycle
+      hooks fire on the consumer, not the shell. The shell cannot read
+      slotted children's properties — communicate via events.
+    - Default values inside <slot>...</slot> are shown only when no
+      consumer content is supplied.
+
+  Anti-patterns:
+    - Treating slotted children as `this.template.querySelector` targets —
+      use `this.querySelector` instead, slotted nodes live on the host.
+    - Adding lifecycle code that depends on slotted DOM existing during
+      `connectedCallback` — slotted content mounts on the consumer's clock.
+-->
+
+<template>
+    <article class="slds-card">
+        <header class="slds-card__header">
+            <slot name="header">
+                <h2 class="slds-card__header-title slds-text-heading_small">
+                    Default header
+                </h2>
+            </slot>
+        </header>
+
+        <div class="slds-card__body slds-card__body_inner">
+            <slot>
+                <p class="slds-text-color_weak slds-text-align_center">
+                    No content provided.
+                </p>
+            </slot>
+        </div>
+
+        <footer class="slds-card__footer">
+            <slot name="actions">
+                <!-- Empty by default — most consumers will provide actions. -->
+            </slot>
+        </footer>
+    </article>
+</template>

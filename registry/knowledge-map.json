@@ -171,6 +171,7 @@
       "admin/path-and-guidance",
       "admin/patient-engagement-requirements",
       "admin/permission-set-architecture",
+      "admin/permission-set-group-composition",
       "admin/permission-sets-vs-profiles",
       "admin/picklist-and-value-sets",
       "admin/picklist-field-integrity-issues",
@@ -537,12 +538,16 @@
       "data/data-cloud-data-streams",
       "data/data-extension-design",
       "data/data-loader-and-tools",
+      "data/data-loader-batch-window-sizing",
+      "data/data-loader-csv-column-mapping",
+      "data/data-loader-picklist-validation-pre-load",
       "data/data-migration-planning",
       "data/data-model-design-patterns",
       "data/data-quality-and-governance",
       "data/data-reconciliation-patterns",
       "data/data-storage-management",
       "data/deployment-data-dependencies",
+      "data/duplicate-rule-person-account-edge-cases",
       "data/eda-data-model-and-patterns",
       "data/einstein-analytics-data-model",
       "data/etl-vs-api-data-patterns",
@@ -791,6 +796,7 @@
       "lwc/lwc-chart-and-visualization",
       "lwc/lwc-conditional-rendering",
       "lwc/lwc-custom-datatable-types",
+      "lwc/lwc-custom-event-patterns",
       "lwc/lwc-data-table",
       "lwc/lwc-debugging-devtools",
       "lwc/lwc-dynamic-components",
@@ -803,15 +809,18 @@
       "lwc/lwc-internationalization",
       "lwc/lwc-light-dom",
       "lwc/lwc-lightning-modal",
+      "lwc/lwc-locker-to-lws-migration",
       "lwc/lwc-modal-and-overlay",
       "lwc/lwc-navigation-mixin",
       "lwc/lwc-offline-and-mobile",
       "lwc/lwc-performance",
       "lwc/lwc-performance-budgets",
+      "lwc/lwc-public-api-hardening",
       "lwc/lwc-quick-actions",
       "lwc/lwc-record-picker",
       "lwc/lwc-security",
       "lwc/lwc-server-sent-events",
+      "lwc/lwc-shadow-vs-light-dom-decision",
       "lwc/lwc-show-toast-patterns",
       "lwc/lwc-slots-composition",
       "lwc/lwc-state-management",
@@ -1285,7 +1294,8 @@
       "security/ip-relaxation-and-restriction"
     ],
     "access-governance": [
-      "admin/permission-set-architecture"
+      "admin/permission-set-architecture",
+      "admin/permission-set-group-composition"
     ],
     "accessibility": [
       "admin/digital-storefront-requirements",
@@ -1294,7 +1304,8 @@
       "lwc/lwc-chart-and-visualization",
       "lwc/lwc-focus-management",
       "lwc/lwc-lightning-modal",
-      "lwc/lwc-record-picker"
+      "lwc/lwc-record-picker",
+      "lwc/lwc-shadow-vs-light-dom-decision"
     ],
     "accessibility-testing": [
       "lwc/lwc-testing"
@@ -1933,6 +1944,9 @@
     "api-access": [
       "lwc/experience-cloud-api-access"
     ],
+    "api-decorator": [
+      "lwc/lwc-public-api-hardening"
+    ],
     "api-design": [
       "integration/graphql-api-patterns"
     ],
@@ -2111,6 +2125,9 @@
     ],
     "asset-lifecycle": [
       "integration/revenue-lifecycle-management"
+    ],
+    "assignment-lifecycle": [
+      "admin/permission-set-group-composition"
     ],
     "assignment-rules": [
       "admin/assignment-rules",
@@ -2343,6 +2360,9 @@
     "b2b-marketing-analytics": [
       "admin/marketing-reporting-requirements"
     ],
+    "b2c": [
+      "data/duplicate-rule-person-account-edge-cases"
+    ],
     "b2c-commerce": [
       "admin/b2c-commerce-store-setup",
       "admin/commerce-catalog-strategy",
@@ -2416,6 +2436,9 @@
     ],
     "batch-scope": [
       "apex/batch-apex-patterns"
+    ],
+    "batch-size": [
+      "data/data-loader-batch-window-sizing"
     ],
     "bdi": [
       "apex/npsp-api-and-integration"
@@ -2572,6 +2595,9 @@
     "bss-oss": [
       "architect/industries-integration-architecture"
     ],
+    "bubbles": [
+      "lwc/lwc-custom-event-patterns"
+    ],
     "bucket-fields": [
       "admin/reports-and-dashboards-fundamentals"
     ],
@@ -2590,6 +2616,9 @@
       "data/case-history-migration",
       "data/cdc-data-sync-patterns",
       "data/data-loader-and-tools",
+      "data/data-loader-batch-window-sizing",
+      "data/data-loader-csv-column-mapping",
+      "data/data-loader-picklist-validation-pre-load",
       "data/data-migration-planning",
       "data/data-reconciliation-patterns",
       "data/etl-vs-api-data-patterns",
@@ -3286,6 +3315,9 @@
       "flow/flow-bulkification",
       "flow/flow-large-data-volume-patterns"
     ],
+    "column-mapping": [
+      "data/data-loader-csv-column-mapping"
+    ],
     "cometd": [
       "integration/platform-events-integration",
       "integration/streaming-api-and-pushtopic"
@@ -3438,6 +3470,9 @@
     ],
     "composable-commerce": [
       "architect/composable-commerce-architecture"
+    ],
+    "composed": [
+      "lwc/lwc-custom-event-patterns"
     ],
     "composite": [
       "integration/rest-api-patterns"
@@ -3952,6 +3987,7 @@
       "apex/apex-encoding-and-crypto"
     ],
     "csp": [
+      "lwc/lwc-locker-to-lws-migration",
       "lwc/static-resources-in-lwc",
       "security/clickjack-and-frame-protection",
       "security/csp-and-trusted-urls",
@@ -3968,9 +4004,14 @@
     "css-custom-properties": [
       "lwc/lwc-styling-hooks"
     ],
+    "css-scoping": [
+      "lwc/lwc-shadow-vs-light-dom-decision"
+    ],
     "csv": [
       "admin/agent-output-formats",
-      "data/bulk-api-patterns"
+      "data/bulk-api-patterns",
+      "data/data-loader-csv-column-mapping",
+      "data/data-loader-picklist-validation-pre-load"
     ],
     "csv-import": [
       "data/data-loader-and-tools",
@@ -4044,7 +4085,8 @@
       "lwc/lwc-web-components-interop"
     ],
     "custom-events": [
-      "lwc/component-communication"
+      "lwc/component-communication",
+      "lwc/lwc-custom-event-patterns"
     ],
     "custom-exceptions": [
       "apex/error-handling-framework"
@@ -4325,6 +4367,9 @@
     "data-loader": [
       "data/community-user-data-migration",
       "data/data-loader-and-tools",
+      "data/data-loader-batch-window-sizing",
+      "data/data-loader-csv-column-mapping",
+      "data/data-loader-picklist-validation-pre-load",
       "data/data-migration-planning"
     ],
     "data-loading": [
@@ -4414,6 +4459,7 @@
       "data/clinical-data-quality",
       "data/data-quality-and-governance",
       "data/data-reconciliation-patterns",
+      "data/duplicate-rule-person-account-edge-cases",
       "data/large-scale-deduplication",
       "data/lead-data-import-and-dedup"
     ],
@@ -4512,6 +4558,9 @@
     ],
     "dataflow-scheduling": [
       "admin/analytics-dataset-management"
+    ],
+    "dataloader-io": [
+      "data/data-loader-csv-column-mapping"
     ],
     "datapack": [
       "data/omnistudio-datapack-migration",
@@ -4642,7 +4691,8 @@
       "omnistudio/omnistudio-testing-patterns"
     ],
     "decision": [
-      "flow/flow-decision-element-patterns"
+      "flow/flow-decision-element-patterns",
+      "lwc/lwc-shadow-vs-light-dom-decision"
     ],
     "decision-framework": [
       "architect/crm-analytics-vs-tableau-decision",
@@ -4742,7 +4792,8 @@
     ],
     "dependent-picklist": [
       "admin/field-dependency-and-controlling",
-      "admin/picklist-and-value-sets"
+      "admin/picklist-and-value-sets",
+      "data/data-loader-picklist-validation-pre-load"
     ],
     "dependent-picklist-bypass": [
       "admin/picklist-field-integrity-issues"
@@ -4829,7 +4880,8 @@
       "devops/api-version-management"
     ],
     "design-attributes": [
-      "lwc/lwc-app-builder-config"
+      "lwc/lwc-app-builder-config",
+      "lwc/lwc-public-api-hardening"
     ],
     "design-patterns": [
       "architect/solution-design-patterns"
@@ -5114,6 +5166,7 @@
     ],
     "duplicate-rules": [
       "admin/duplicate-management",
+      "data/duplicate-rule-person-account-edge-cases",
       "data/lead-data-import-and-dedup"
     ],
     "duplicates": [
@@ -5609,6 +5662,9 @@
       "security/security-incident-response",
       "security/shield-event-log-retention-strategy"
     ],
+    "event-naming": [
+      "lwc/lwc-custom-event-patterns"
+    ],
     "event-propagation": [
       "lwc/common-lwc-runtime-errors"
     ],
@@ -5706,6 +5762,7 @@
       "lwc/knowledge-article-lwc",
       "lwc/lwc-light-dom",
       "lwc/lwc-navigation-mixin",
+      "lwc/lwc-shadow-vs-light-dom-decision",
       "lwc/lwr-site-development",
       "lwc/navigation-and-routing",
       "security/experience-cloud-security",
@@ -5754,6 +5811,7 @@
     "external-id": [
       "admin/data-import-and-management",
       "architect/sales-cloud-integration-patterns",
+      "data/data-loader-csv-column-mapping",
       "data/data-migration-planning",
       "data/data-model-design-patterns",
       "data/data-reconciliation-patterns",
@@ -6534,6 +6592,9 @@
     "getrecordnotifychange": [
       "lwc/lwc-wire-refresh-patterns"
     ],
+    "getter-setter": [
+      "lwc/lwc-public-api-hardening"
+    ],
     "gift-entry": [
       "admin/gift-entry-and-processing"
     ],
@@ -6575,7 +6636,8 @@
       "admin/fsl-scheduling-optimization-design"
     ],
     "global-value-set": [
-      "admin/picklist-and-value-sets"
+      "admin/picklist-and-value-sets",
+      "data/data-loader-picklist-validation-pre-load"
     ],
     "go-live": [
       "admin/change-management-and-training",
@@ -6712,6 +6774,9 @@
     ],
     "hardcoded-ids": [
       "admin/record-type-id-management"
+    ],
+    "hardening": [
+      "lwc/lwc-public-api-hardening"
     ],
     "having": [
       "apex/apex-aggregate-queries"
@@ -7587,7 +7652,8 @@
     "lead-conversion": [
       "admin/lead-management-and-conversion",
       "admin/standard-object-quirks",
-      "apex/lead-conversion-customization"
+      "apex/lead-conversion-customization",
+      "data/duplicate-rule-person-account-edge-cases"
     ],
     "lead-distribution": [
       "admin/partner-community-requirements"
@@ -7695,7 +7761,8 @@
     ],
     "light-dom": [
       "lwc/lwc-light-dom",
-      "lwc/lwc-security"
+      "lwc/lwc-security",
+      "lwc/lwc-shadow-vs-light-dom-decision"
     ],
     "lighthouse-ci": [
       "lwc/lwc-performance-budgets"
@@ -7860,6 +7927,12 @@
       "admin/multi-language-and-translation",
       "architect/multi-store-architecture"
     ],
+    "lock-contention": [
+      "data/data-loader-batch-window-sizing"
+    ],
+    "locker": [
+      "lwc/lwc-locker-to-lws-migration"
+    ],
     "log-levels": [
       "apex/custom-logging-and-monitoring"
     ],
@@ -7934,14 +8007,18 @@
       "lwc/lwc-async-patterns",
       "lwc/lwc-base-component-recipes",
       "lwc/lwc-chart-and-visualization",
+      "lwc/lwc-custom-event-patterns",
       "lwc/lwc-error-boundaries",
       "lwc/lwc-focus-management",
       "lwc/lwc-imperative-apex",
       "lwc/lwc-lightning-modal",
+      "lwc/lwc-locker-to-lws-migration",
       "lwc/lwc-navigation-mixin",
       "lwc/lwc-performance-budgets",
+      "lwc/lwc-public-api-hardening",
       "lwc/lwc-record-picker",
       "lwc/lwc-server-sent-events",
+      "lwc/lwc-shadow-vs-light-dom-decision",
       "lwc/lwc-show-toast-patterns",
       "lwc/lwc-toast-and-notifications",
       "lwc/lwc-web-components-interop",
@@ -8053,6 +8130,9 @@
     ],
     "lwr-storefront": [
       "lwc/commerce-lwc-components"
+    ],
+    "lws": [
+      "lwc/lwc-locker-to-lws-migration"
     ],
     "mTLS": [
       "security/certificate-and-key-management"
@@ -8176,6 +8256,7 @@
     ],
     "matching-rules": [
       "admin/duplicate-management",
+      "data/duplicate-rule-person-account-edge-cases",
       "data/large-scale-deduplication",
       "data/lead-data-import-and-dedup"
     ],
@@ -8348,6 +8429,7 @@
       "agentforce/einstein-bots-to-agentforce-migration",
       "architect/nonprofit-cloud-vs-npsp-migration",
       "architect/npsp-vs-nonprofit-cloud-decision",
+      "data/data-loader-batch-window-sizing",
       "data/omnistudio-datapack-migration",
       "data/person-accounts",
       "data/product-catalog-migration-commerce",
@@ -8356,6 +8438,7 @@
       "flow/process-builder-to-flow-migration",
       "flow/workflow-rule-to-flow-migration",
       "integration/salesforce-functions-replacement",
+      "lwc/lwc-locker-to-lws-migration",
       "omnistudio/industries-cpq-vs-salesforce-cpq",
       "omnistudio/vlocity-to-native-omnistudio-migration"
     ],
@@ -8572,6 +8655,9 @@
     ],
     "muting": [
       "security/permission-set-groups-and-muting"
+    ],
+    "muting-permission-sets": [
+      "admin/permission-set-group-composition"
     ],
     "mutual-tls": [
       "security/certificate-and-key-management"
@@ -9277,6 +9363,9 @@
     "parallel-testing": [
       "devops/scratch-org-pools"
     ],
+    "parallel-vs-serial": [
+      "data/data-loader-batch-window-sizing"
+    ],
     "pardot": [
       "admin/lead-nurture-journey-design",
       "admin/marketing-automation-requirements",
@@ -9489,6 +9578,7 @@
     ],
     "permission-set-groups": [
       "admin/permission-set-architecture",
+      "admin/permission-set-group-composition",
       "admin/permission-sets-vs-profiles",
       "devops/permission-set-deployment-ordering",
       "security/permission-set-groups-and-muting"
@@ -9508,6 +9598,9 @@
     ],
     "permits": [
       "admin/industries-public-sector-setup"
+    ],
+    "person-account": [
+      "data/duplicate-rule-person-account-edge-cases"
     ],
     "person-accounts": [
       "admin/fsc-relationship-groups",
@@ -9545,6 +9638,7 @@
       "admin/field-dependency-and-controlling",
       "admin/path-and-guidance",
       "admin/picklist-and-value-sets",
+      "data/data-loader-picklist-validation-pre-load",
       "flow/flow-formula-and-expression-patterns"
     ],
     "picklist-audit": [
@@ -9566,6 +9660,7 @@
     "pii": [
       "agentforce/agentforce-pii-redaction",
       "data/data-quality-and-governance",
+      "data/duplicate-rule-person-account-edge-cases",
       "security/data-classification-labels"
     ],
     "pii-protection": [
@@ -9678,6 +9773,9 @@
     "polymorphic": [
       "apex/apex-polymorphic-soql",
       "apex/apex-soql-relationship-queries"
+    ],
+    "polymorphic-lookup": [
+      "data/data-loader-csv-column-mapping"
     ],
     "polymorphic-lookups": [
       "admin/standard-object-quirks"
@@ -10002,6 +10100,9 @@
       "admin/in-app-guidance-and-walkthroughs",
       "agentforce/agentforce-prompt-versioning"
     ],
+    "propagation": [
+      "lwc/lwc-custom-event-patterns"
+    ],
     "proration": [
       "admin/subscription-lifecycle-requirements"
     ],
@@ -10033,6 +10134,12 @@
       "admin/user-access-policies",
       "security/scim-provisioning-integration"
     ],
+    "psg-composition": [
+      "admin/permission-set-group-composition"
+    ],
+    "psg-recalculation": [
+      "admin/permission-set-group-composition"
+    ],
     "pub-sub": [
       "architect/event-driven-architecture",
       "flow/flow-platform-events-integration",
@@ -10046,6 +10153,9 @@
     ],
     "public-actions": [
       "agentforce/agentforce-in-slack"
+    ],
+    "public-api": [
+      "lwc/lwc-public-api-hardening"
     ],
     "public-groups": [
       "admin/queues-and-public-groups"
@@ -10343,7 +10453,8 @@
     ],
     "record-type": [
       "admin/record-type-id-management",
-      "apex/apex-hardcoded-id-elimination"
+      "apex/apex-hardcoded-id-elimination",
+      "data/data-loader-picklist-validation-pre-load"
     ],
     "record-type-mapping-drift": [
       "admin/picklist-field-integrity-issues"
@@ -10499,7 +10610,8 @@
       "admin/remote-site-settings"
     ],
     "render-mode": [
-      "lwc/lwc-light-dom"
+      "lwc/lwc-light-dom",
+      "lwc/lwc-shadow-vs-light-dom-decision"
     ],
     "render-optimization": [
       "lwc/lwc-performance"
@@ -10818,6 +10930,9 @@
       "architect/analytics-security-architecture",
       "security/apex-managed-sharing-patterns"
     ],
+    "row-skew": [
+      "data/data-loader-batch-window-sizing"
+    ],
     "rto-rpo": [
       "architect/ha-dr-architecture"
     ],
@@ -11006,6 +11121,9 @@
       "admin/sandbox-strategy",
       "devops/environment-strategy"
     ],
+    "sandboxing": [
+      "lwc/lwc-locker-to-lws-migration"
+    ],
     "sandboxpostcopy": [
       "data/sandbox-refresh-data-strategies",
       "devops/sandbox-data-isolation-gotchas",
@@ -11179,6 +11297,9 @@
     "script-activity": [
       "apex/ssjs-server-side-javascript"
     ],
+    "sdl": [
+      "data/data-loader-csv-column-mapping"
+    ],
     "sdoh": [
       "admin/care-coordination-requirements"
     ],
@@ -11246,6 +11367,7 @@
       "devops/salesforce-code-analyzer",
       "devops/sandbox-data-isolation-gotchas",
       "flow/flow-runtime-context-and-sharing",
+      "lwc/lwc-locker-to-lws-migration",
       "security/certificate-and-key-management",
       "security/encrypted-field-query-patterns",
       "security/file-upload-virus-scanning",
@@ -11582,8 +11704,10 @@
       "devops/automated-regression-testing",
       "lwc/common-lwc-runtime-errors",
       "lwc/component-communication",
+      "lwc/lwc-custom-event-patterns",
       "lwc/lwc-focus-management",
       "lwc/lwc-light-dom",
+      "lwc/lwc-shadow-vs-light-dom-decision",
       "lwc/lwc-slots-composition",
       "lwc/lwc-web-components-interop"
     ],
@@ -11622,6 +11746,9 @@
     ],
     "sharing-performance": [
       "architect/large-data-volume-architecture"
+    ],
+    "sharing-recalc": [
+      "data/data-loader-batch-window-sizing"
     ],
     "sharing-recalculation": [
       "admin/data-skew-and-sharing-performance",
@@ -12189,7 +12316,8 @@
       "integration/tableau-salesforce-connector"
     ],
     "target-config": [
-      "flow/flow-screen-lwc-components"
+      "flow/flow-screen-lwc-components",
+      "lwc/lwc-public-api-hardening"
     ],
     "target-configs": [
       "lwc/lwc-app-builder-config"
@@ -12317,6 +12445,9 @@
     ],
     "third-party": [
       "lwc/lwc-web-components-interop"
+    ],
+    "third-party-libraries": [
+      "lwc/lwc-locker-to-lws-migration"
     ],
     "third-party-library": [
       "lwc/static-resources-in-lwc"
@@ -12567,7 +12698,8 @@
       "lwc/lwc-custom-datatable-types"
     ],
     "type-coercion": [
-      "flow/flow-formula-and-expression-patterns"
+      "flow/flow-formula-and-expression-patterns",
+      "lwc/lwc-public-api-hardening"
     ],
     "typed-variables": [
       "flow/flow-apex-defined-types"
@@ -12650,6 +12782,7 @@
     "upsert": [
       "admin/data-import-and-management",
       "architect/sales-cloud-integration-patterns",
+      "data/data-loader-csv-column-mapping",
       "data/data-migration-planning",
       "data/external-id-strategy",
       "integration/idempotent-integration-patterns",
@@ -12738,6 +12871,7 @@
       "flow/flow-screen-lwc-components"
     ],
     "validation": [
+      "data/data-loader-picklist-validation-pre-load",
       "flow/flow-screen-input-validation-patterns",
       "lwc/lwc-forms-and-validation"
     ],
@@ -12994,7 +13128,8 @@
       "integration/middleware-integration-patterns"
     ],
     "workbench": [
-      "data/data-loader-and-tools"
+      "data/data-loader-and-tools",
+      "data/data-loader-csv-column-mapping"
     ],
     "workflow": [
       "admin/flow-orchestration-admin",

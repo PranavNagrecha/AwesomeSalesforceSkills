@@ -6485,6 +6485,114 @@
       "domain": "apex",
       "expected_skill": "apex/apex-dynamic-soql-binding-safety",
       "top_k": 3
+    },
+    {
+      "query": "Lightning Locker to Lightning Web Security migration enable LWS org switch SecureWindow proxies third-party library",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-locker-to-lws-migration",
+      "top_k": 3
+    },
+    {
+      "query": "Locker Service to LWS migration audit components break SecureElement removal",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-locker-to-lws-migration",
+      "top_k": 3
+    },
+    {
+      "query": "@api decorator type coercion recordId string design attributes targetConfig propertyType getter setter normalisation",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-public-api-hardening",
+      "top_k": 3
+    },
+    {
+      "query": "harden public api LWC kebab-case design attributes datasource picker required validation connectedCallback",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-public-api-hardening",
+      "top_k": 3
+    },
+    {
+      "query": "CustomEvent bubbles composed cancelable detail payload stopPropagation shadow DOM event not reaching parent",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-custom-event-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "LWC custom event naming dispatchEvent detail mutation propagation control",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-custom-event-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "static renderMode light DOM vs shadow DOM decision CSS scoping Experience Cloud LWR managed package",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-shadow-vs-light-dom-decision",
+      "top_k": 3
+    },
+    {
+      "query": "should LWC use light DOM or shadow DOM third-party CSS framework accessibility",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-shadow-vs-light-dom-decision",
+      "top_k": 3
+    },
+    {
+      "query": "Data Loader CSV header normalization missing column polymorphic lookup prefix External ID upsert binding case-sensitivity",
+      "domain": "data",
+      "expected_skill": "data/data-loader-csv-column-mapping",
+      "top_k": 3
+    },
+    {
+      "query": "map CSV columns to Salesforce field API names dataloader.io Workbench Bulk API V2",
+      "domain": "data",
+      "expected_skill": "data/data-loader-csv-column-mapping",
+      "top_k": 3
+    },
+    {
+      "query": "Data Loader batch size parallel serial mode row-skew lock contention sharing recalculation tradeoff",
+      "domain": "data",
+      "expected_skill": "data/data-loader-batch-window-sizing",
+      "top_k": 3
+    },
+    {
+      "query": "choose batch window Bulk API V2 Database.executeBatch trigger CPU cost UNABLE_TO_LOCK_ROW",
+      "domain": "data",
+      "expected_skill": "data/data-loader-batch-window-sizing",
+      "top_k": 3
+    },
+    {
+      "query": "validate CSV against picklist values restricted record-type-scoped Global Value Set dependent picklist multi-select delimiter pre-load",
+      "domain": "data",
+      "expected_skill": "data/data-loader-picklist-validation-pre-load",
+      "top_k": 3
+    },
+    {
+      "query": "pre-flight picklist validation Data Loader inactive value 255 char limit API name vs label",
+      "domain": "data",
+      "expected_skill": "data/data-loader-picklist-validation-pre-load",
+      "top_k": 3
+    },
+    {
+      "query": "Permission Set Group composition Mute Permission Set recalculation lifecycle deletion order PSG explosion expired assignment",
+      "domain": "admin",
+      "expected_skill": "admin/permission-set-group-composition",
+      "top_k": 3
+    },
+    {
+      "query": "compose PSG layering muting permission sets subtract narrow capabilities assignment-vs-activation",
+      "domain": "admin",
+      "expected_skill": "admin/permission-set-group-composition",
+      "top_k": 3
+    },
+    {
+      "query": "Person Account duplicate rule matching rule PersonEmail Contact.Email IsPersonAccount Lead-to-PA convert",
+      "domain": "data",
+      "expected_skill": "data/duplicate-rule-person-account-edge-cases",
+      "top_k": 3
+    },
+    {
+      "query": "B2C duplicate rule Person Account 001 003 dual record RecordType filter PA edge cases",
+      "domain": "data",
+      "expected_skill": "data/duplicate-rule-person-account-edge-cases",
+      "top_k": 3
     }
   ]
 }
