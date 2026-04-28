@@ -1,0 +1,42 @@
+eval:
+  id: test-class-generator__happy-path
+  agent: test-class-generator
+  mode: single
+  priority: P0
+  last_verified: 2026-04-28
+  description: >
+    Generate a bulk-safe Apex test class for AccountUpdateService.cls,
+    a `with sharing` class with DML, SOQL, a Named Credential callout,
+    and a custom exception. Agent must produce the four canonical
+    scenarios — single-record happy path, 200-record bulk via the
+    canonical TestDataFactory/BulkTestPattern, System.runAs with a
+    standard user via TestUserFactory, and a callout test stubbed by
+    MockHttpResponseGenerator — and emit a deliverable matching the
+    target path force-app/main/default/classes/AccountUpdateService_Test.cls.
+    Must cite apex/test-class-standards plus at least one of the test
+    factory templates. Must NOT add SeeAllData=true and must NOT
+    refactor the source class.
+
+inputs:
+  source_path: evals/agents/fixtures/test-class-generator/samples/AccountUpdateService.cls
+  target_coverage_pct: 90
+  include_bulk_test: true
+
+org_stub: {}
+
+expect:
+  confidence: MEDIUM
+  must_cite_any_of:
+    - { type: skill, id: apex/test-class-standards }
+    - { type: skill, id: apex/test-data-factory-patterns }
+    - { type: template, id: apex/tests/TestDataFactory.cls }
+    - { type: template, id: apex/tests/BulkTestPattern.cls }
+    - { type: template, id: apex/tests/MockHttpResponseGenerator.cls }
+    - { type: template, id: apex/tests/TestUserFactory.cls }
+  process_observations:
+    min_count: 0
+    categories_present_any_of:
+      - healthy
+      - concerning
+      - ambiguous
+      - suggested_followup

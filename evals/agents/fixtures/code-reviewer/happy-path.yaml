@@ -1,0 +1,41 @@
+eval:
+  id: code-reviewer__happy-path
+  agent: code-reviewer
+  mode: single
+  priority: P0
+  last_verified: 2026-04-28
+  description: >
+    Review an Apex class carrying six canonical anti-patterns:
+    SOQL-in-loop, DML-in-loop, hardcoded-endpoint (instead of Named
+    Credential), without-sharing on a class touching Opportunity/Contact,
+    swallowed exception with no logging, and a hardcoded record-type id.
+    Agent should produce at least 2 Critical findings and at least 1
+    High finding, emit per-pillar WAF scores, recommend fixes that route
+    through Named Credentials and a bulk-safe rewrite, and cite the
+    code-review-checklist standard. Must NOT modify the source code.
+
+inputs:
+  source_path: evals/agents/fixtures/code-reviewer/samples/OpportunityNotifierTrigger.cls
+  component_type: apex_class
+
+org_stub: {}
+
+expect:
+  confidence: MEDIUM
+  must_cite_any_of:
+    - { type: standard, id: code-review-checklist }
+    - { type: skill, id: apex/apex-security-patterns }
+    - { type: skill, id: apex/bulkification }
+    - { type: skill, id: integration/named-credentials-setup }
+  process_observations:
+    min_count: 0
+    categories_present_any_of:
+      - healthy
+      - concerning
+      - ambiguous
+      - suggested_followup
+  followups_include_any_of:
+    - security-scanner
+    - soql-optimizer
+    - apex-refactorer
+    - trigger-consolidator

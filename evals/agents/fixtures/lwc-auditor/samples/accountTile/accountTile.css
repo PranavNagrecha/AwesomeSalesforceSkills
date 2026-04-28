@@ -1,0 +1,15 @@
+/*
+ * accountTile.css — synthetic sample for lwc-auditor eval.
+ * Carries:
+ *   P2 hex-literal-over-token  — raw hex outside SLDS palette
+ *   P2 hardcoded-spacing       — margin/padding in raw px instead of SLDS spacing tokens
+ */
+.slds-box {
+    background-color: #f3a847;
+    margin: 12px;
+    padding: 8px 16px;
+}
+
+.raw-html {
+    color: #313131;
+}
