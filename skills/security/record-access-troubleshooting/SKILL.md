@@ -35,13 +35,12 @@ updated: 2026-04-21
 
 # Record Access Troubleshooting
 
-Activate when a user reports "I can't see this record" or "Why can this user edit this record?" Troubleshooting record access means tracing the sharing chain: OWD → role hierarchy → ownership → sharing rules → teams → manual shares → Apex shares → implicit parent share. This skill gives a deterministic diagnostic flow using `UserRecordAccess` SOQL and the "Sharing" access debug tool, not guesswork.
+Activate when a user reports "I can't see this record" or "Why can this user edit this record?" Deterministic diagnostic flow using `UserRecordAccess` SOQL and the Sharing debug tool to trace the full sharing chain.
 
 ## Before Starting
 
-- **Gather specifics.** User Id, Record Id, expected access (view/edit/delete), object OWD.
-- **Identify the object's OWD.** Setup → Sharing Settings. Private / Public Read Only / Public Read/Write / Controlled by Parent.
-- **Check profile/permset modify-all.** "Modify All Data" and "View All Data" bypass sharing entirely.
+- Collect: User Id, Record Id, expected access level, object OWD (Setup → Sharing Settings).
+- Check profile/permset for "Modify All Data" / "View All Data" — these bypass sharing entirely.
 
 ## Core Concepts
 
@@ -54,37 +53,33 @@ FROM UserRecordAccess
 WHERE UserId = '005...' AND RecordId = '001...'
 ```
 
-Returns the effective access result but not the reason. Run this first.
+Returns effective access but not the reason. Run this first.
 
-### Explain Access button
+### Explain Access
 
-On any record's Sharing detail page: "Why can this user access this record?" — lists the reason (Owner, Role Hierarchy, Sharing Rule X, Manual Share, Apex Managed Share, Implicit Parent). Available in Classic UI; Lightning has "Sharing Hierarchy."
+Record Sharing detail → "Why can this user access this record?" — surfaces the grant reason. Classic UI has explicit button; Lightning uses "Sharing Hierarchy."
 
-### Sharing reason chain (order Salesforce evaluates)
+### Sharing evaluation order
 
-1. **Admin bypass.** "View All Data" / "Modify All Data" / "View All" / "Modify All" on an object.
-2. **Ownership.** The record owner has full access (unless the role says otherwise).
-3. **Role hierarchy.** If enabled on the object, users above the owner's role inherit access.
-4. **Sharing rules.** Ownership- and criteria-based rules grant read or read/write.
-5. **Teams.** Account, Opportunity, Case teams.
-6. **Manual shares.** UI "Share" button.
-7. **Apex managed shares.** `__Share` rows with RowCause.
-8. **Implicit parent share.** Child records on master-detail inherit parent access.
-9. **Restriction rules.** Filter DOWN access — user might have access via the above but restriction rule denies.
+1. Admin bypass (View/Modify All Data, object-level View/Modify All)
+2. Ownership
+3. Role hierarchy (if "Grant Access Using Hierarchies" enabled on object)
+4. Sharing rules (ownership- and criteria-based)
+5. Teams (Account, Opportunity, Case)
+6. Manual shares
+7. Apex managed shares (`__Share` rows with RowCause)
+8. Implicit parent share (master-detail)
+9. Restriction rules (filter DOWN — may deny despite grants above)
 
 ### __Share objects
 
-For every object with non-Public OWD, there's a `<Object>__Share` sharing table. Query it to see grants:
+Query `<Object>__Share` for non-Public OWD objects:
 
 ```
 SELECT UserOrGroupId, AccessLevel, RowCause FROM Account__Share WHERE ParentId = '001...'
 ```
 
-`RowCause`: Owner, Manual, Rule, Team, Implicit, <ApexRowCause>, etc.
-
-### Restriction Rules
-
-New-style restrictive filter on top of OWD. A user might have share access but see 0 rows because a restriction rule filters the query.
+`RowCause` values: Owner, Manual, Rule, Team, Implicit, `<ApexRowCause>`.
 
 ## Common Patterns
 

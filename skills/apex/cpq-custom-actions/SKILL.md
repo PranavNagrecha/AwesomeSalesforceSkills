@@ -49,7 +49,7 @@ Gather this context before working on anything in this domain:
 
 - Confirm the CPQ managed package (`SBQQ__`) is installed and the user has the "Salesforce CPQ Admin" or appropriate permission set to create and edit `SBQQ__CustomAction__c` records.
 - Identify the target screen: QLE (Quote Line Editor), product configurator, or amendment/renewal flow. Each is a separate `Location` value on the `SBQQ__CustomAction__c` object.
-- Count the existing custom actions for the target context. The platform enforces a hard limit of five (5) custom actions per context (e.g., five for Line Item location, five for Group location). Exceeding this silently drops actions or causes unpredictable rendering.
+- Count the existing custom actions for the target context — CPQ enforces a hard limit of five per location (see **The Five-Action Hard Limit Per Context** below).
 - Determine whether Apex logic is required. Custom actions cannot invoke Apex directly — only URL navigation, Screen/Autolaunched Flow execution, or standard CPQ operations (Save, Calculate, Add Group) are supported action types.
 
 ---
@@ -157,13 +157,13 @@ Run through these before marking work in this area complete:
 
 ## Salesforce-Specific Gotchas
 
-Non-obvious platform behaviors that cause real production problems:
+See [`references/gotchas.md`](references/gotchas.md) for detailed write-ups with avoidance strategies. Key gotchas at a glance:
 
-1. **Five-action limit is silent, not an error** — When more than five active custom actions exist for a location, CPQ does not throw an error. It silently drops actions beyond the limit. Reps report "missing buttons" with no error in the logs. Always query the count before adding.
-2. **Flow must be Activated before the action fires** — A Flow in Draft status will cause the custom action to fail at runtime with a generic error. CPQ does not validate the Flow status when the `SBQQ__CustomAction__c` record is saved — the failure only surfaces when a rep clicks the button.
-3. **Conditional visibility is evaluated at page load, not on field edit** — CPQ reads custom action conditions when the QLE renders. If a rep changes a quote field that would meet a condition, the button does not appear until the page reloads. This surprises stakeholders who expect real-time button visibility toggling.
-4. **URL merge fields only resolve for the record type matching the Location** — The `{!Id}` token in a URL action resolves to the line item ID when `Location__c = Line Item`, and to the quote ID when `Location__c = Global`. Mixing up location and expected merge field values produces broken URLs.
-5. **Custom actions do not appear on the Lightning record page — only in the CPQ screens** — Practitioners sometimes create `SBQQ__CustomAction__c` records and then look for the button on the Quote object's Lightning record page. Custom actions only render inside the QLE, configurator, and amendment screens launched by the CPQ package — not on standard Lightning record pages.
+1. **Five-action limit is silent, not an error** — exceeding 5 active actions per location silently drops buttons with no log entry.
+2. **Flow must be Activated before the action fires** — Draft Flows cause a generic runtime error when the rep clicks the button.
+3. **Conditional visibility evaluates at page load only** — field changes inside the QLE do not toggle button visibility until reload.
+4. **URL merge fields resolve based on Location context** — `{!Id}` means line ID at `Line Item` location but quote ID at `Global`.
+5. **Custom actions render only in CPQ screens** — buttons do not appear on the standard Lightning record page.
 
 ---
 
