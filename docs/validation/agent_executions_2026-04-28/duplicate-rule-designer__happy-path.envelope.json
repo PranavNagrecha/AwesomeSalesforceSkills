@@ -1,0 +1,100 @@
+{
+  "agent": "duplicate-rule-designer",
+  "mode": "single",
+  "run_id": "20260428T011711Z",
+  "report_path": "docs/reports/duplicate-rule-designer/20260428T011711Z.md",
+  "envelope_path": "docs/reports/duplicate-rule-designer/20260428T011711Z.json",
+  "inputs_received": {
+    "object_name": "Lead",
+    "target_org_alias": "uat-fixture",
+    "policy": "block",
+    "match_basis": "email",
+    "fuzziness": "exact",
+    "integration_exempt": true
+  },
+  "summary": "Design a single-criterion Block duplicate rule on Lead.Email (exact match) with an integration bypass via Custom Permission. The Matching Rule fires on exact equality of normalized Email; the Duplicate Rule wires actionOnInsert=Block + actionOnUpdate=Block, with conditionsConjunction logic that exempts the Bypass_Duplicate_Rule_Lead custom permission. The org has no competing Matching or Duplicate rules on Lead so the rule is the canonical entry point. Note: this rule does NOT cover Lead.Convert \u2014 the convert path uses Account/Contact dedup, which is a separate rule.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Inputs are unambiguous and the org-stub probe confirms no competing rules; MEDIUM (not HIGH) because the harness lacks a live org probe and Lead.Email is not currently marked unique at the field level \u2014 the data-loader-pre-flight follow-up is needed before bulk loads.",
+  "deliverables": [
+    {
+      "kind": "xml",
+      "title": "MatchingRule \u2014 MR_Lead_Email (exact)",
+      "target_path": "force-app/main/default/matchingRules/Lead.matchingRule-meta.xml",
+      "content": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<MatchingRules xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n    <matchingRules>\n        <fullName>MR_Lead_Email</fullName>\n        <label>MR Lead Email Exact</label>\n        <description>Exact-match matching rule on Lead.Email; powers the block-on-email duplicate rule.</description>\n        <matchingRuleItems>\n            <fieldName>Email</fieldName>\n            <matchingMethod>Exact</matchingMethod>\n            <blankValueBehavior>NullNotAllowed</blankValueBehavior>\n        </matchingRuleItems>\n        <ruleStatus>Active</ruleStatus>\n        <booleanFilter></booleanFilter>\n    </matchingRules>\n</MatchingRules>\n"
+    },
+    {
+      "kind": "xml",
+      "title": "DuplicateRule \u2014 DR_Lead_Block_On_Email",
+      "target_path": "force-app/main/default/duplicateRules/Lead.DR_Lead_Block_On_Email.duplicateRule-meta.xml",
+      "content": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<DuplicateRule xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n    <masterLabel>DR Lead Block On Email</masterLabel>\n    <description>Blocks insert + update when MR_Lead_Email finds an existing match. Bypassed for users that hold the Bypass_Duplicate_Rule_Lead custom permission (integration users).</description>\n    <isActive>true</isActive>\n    <actionOnInsert>Block</actionOnInsert>\n    <actionOnUpdate>Block</actionOnUpdate>\n    <alertText>A Lead with this Email already exists.</alertText>\n    <duplicateRuleFilter>\n        <booleanFilter>1</booleanFilter>\n        <duplicateRuleFilterItems>\n            <sortOrder>1</sortOrder>\n            <field>$Permission.Bypass_Duplicate_Rule_Lead</field>\n            <operation>equals</operation>\n            <value>false</value>\n        </duplicateRuleFilterItems>\n    </duplicateRuleFilter>\n    <duplicateRuleMatchRules>\n        <matchingRule>MR_Lead_Email</matchingRule>\n        <objectMapping>\n            <inputObject>Lead</inputObject>\n            <outputObject>Lead</outputObject>\n        </objectMapping>\n    </duplicateRuleMatchRules>\n    <operationsOnInsert>Allow</operationsOnInsert>\n    <operationsOnUpdate>Allow</operationsOnUpdate>\n    <securityOption>EnforceSharingRules</securityOption>\n</DuplicateRule>\n"
+    },
+    {
+      "kind": "xml",
+      "title": "CustomPermission \u2014 Bypass_Duplicate_Rule_Lead",
+      "target_path": "force-app/main/default/customPermissions/Bypass_Duplicate_Rule_Lead.customPermission-meta.xml",
+      "content": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<CustomPermission xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n    <isLicensed>false</isLicensed>\n    <label>Bypass Duplicate Rule \u2014 Lead</label>\n    <description>Holders of this Custom Permission bypass DR_Lead_Block_On_Email. Grant only to integration users via a tightly scoped permission set; never via a Profile.</description>\n</CustomPermission>\n"
+    },
+    {
+      "kind": "markdown",
+      "title": "Convert/Merge interaction + test plan",
+      "target_path": "docs/reports/duplicate-rule-designer/20260428T011711Z.md",
+      "content": "# DR_Lead_Block_On_Email \u2014 interaction notes + test plan\n\n## Convert/Merge\n- **Lead.Convert does NOT fire this rule.** Convert resolves dedup against Account/Contact; design a separate `DR_Account_Block_On_Website` (or equivalent) if convert-time dedup is required.\n- **Lead.Merge** fires the rule on the surviving record's update; this is intentional and prevents the merge from re-introducing a conflicting Email.\n- **Web-to-Lead** is subject to the rule. Failed inserts surface in Setup \u2192 Duplicate Record Sets, not as web errors visible to the lead-form submitter \u2014 flag this to the marketing team before activation.\n\n## Test plan (Step 7 \u2014 minimum viable)\n1. **Positive \u2014 block on insert.** As a user without Bypass_Duplicate_Rule_Lead: create Lead A with email a@x.com; attempt to create Lead B with the same email. Expect a block + the alertText.\n2. **Positive \u2014 block on update.** Create Lead A (a@x.com) and Lead C (c@x.com). Attempt to update Lead C's email to a@x.com. Expect a block.\n3. **Negative \u2014 bypass works.** Assign Bypass_Duplicate_Rule_Lead to a test integration user via a permission set; repeat test (1) as that user. Expect success + a Duplicate Record Set log row.\n4. **Negative \u2014 null email.** Insert Lead D with Email=null. Expect success (NullNotAllowed means the rule abstains, not blocks).\n5. **Convert path.** Convert Lead A to an Account/Contact whose Email matches an existing Contact. Expect convert to succeed (rule does not apply); then verify any Account/Contact dedup rule fires as expected.\n\n## Activation order\n1. Deploy CustomPermission first.\n2. Deploy MatchingRule (will be Inactive until the duplicate rule references it).\n3. Activate MatchingRule via metadata or Setup UI.\n4. Deploy DuplicateRule with isActive=true.\n5. Run the test plan above before opening the rule to all users.\n"
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Lead.Email is not marked unique at the field level \u2014 the duplicate rule will catch most duplicates but a concurrent insert race or a bypass-permission-holding integration user can still create duplicates that this rule cannot retroactively block.",
+      "domain": "data-quality",
+      "evidence": {
+        "source": "input",
+        "path": "org_stub.field_definitions[Lead.Email].unique=false"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "Caller did not specify the lead-form (Web-to-Lead) UX expectation when the rule blocks a submission; current design surfaces it via Duplicate Record Sets which is admin-visible only.",
+      "domain": "data-quality",
+      "evidence": {
+        "source": "input"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "medium",
+      "observation": "Before any bulk Lead load, run a pre-flight to confirm the source data does not collide with the new rule and that the loader's user holds Bypass_Duplicate_Rule_Lead.",
+      "domain": "data-loading",
+      "evidence": {
+        "source": "heuristic"
+      },
+      "suggested_followup_agent": "data-loader-pre-flight",
+      "followup_reason": "because activating a Block rule without pre-flighting an inbound load is the canonical way to brick a marketing import."
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/duplicate-management",
+      "path": "skills/admin/duplicate-management/SKILL.md",
+      "used_for": "MatchingRule + DuplicateRule pairing pattern, actionOnInsert/Update semantics, and the bypass-via-Custom-Permission idiom."
+    },
+    {
+      "type": "skill",
+      "id": "data/lead-data-import-and-dedup",
+      "path": "skills/data/lead-data-import-and-dedup/SKILL.md",
+      "used_for": "Lead-specific dedup considerations including the Convert path exception and Web-to-Lead UX surface."
+    }
+  ],
+  "followups": [
+    {
+      "agent": "permission-set-architect",
+      "because": "because the Bypass_Duplicate_Rule_Lead Custom Permission must be granted via a scoped permission set assigned only to integration users, not added to a Profile."
+    },
+    {
+      "agent": "data-loader-pre-flight",
+      "because": "because the next bulk Lead load against this org must verify the loader user holds the bypass permission and that the source data does not collide with existing Leads."
+    }
+  ]
+}

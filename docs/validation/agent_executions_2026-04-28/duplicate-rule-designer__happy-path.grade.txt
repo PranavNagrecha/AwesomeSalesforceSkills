@@ -1,0 +1,6 @@
+exit_code: 0
+--- stdout ---
+Processed 1 fixture(s); 0 error(s), 0 warning(s).
+
+--- stderr ---
+

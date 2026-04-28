@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "case_id": "code-reviewer__happy-path",
+  "agent": "code-reviewer",
+  "fixture_path": "evals/agents/fixtures/code-reviewer/happy-path.yaml",
+  "fixture_sha256": "d1bdf8fbffb0d42c3da12ee2c2e7f394626bbf3789d50b5f98f3a3de80040434",
+  "agent_md_path": "agents/code-reviewer/AGENT.md",
+  "agent_md_sha256": "543439b6927b3926d05afc2b5250c2fdbcc8666c5e8fdca8af0c404482247439",
+  "envelope_path": "docs/validation/agent_executions_2026-04-28/code-reviewer__happy-path.envelope.json",
+  "captured_at": "2026-04-28T01:52:02Z",
+  "model": "claude-sonnet-4-5",
+  "fingerprint": {
+    "schema_version": 1,
+    "agent": "code-reviewer",
+    "mode": "single",
+    "confidence": "MEDIUM",
+    "refusal_code": null,
+    "finding_ids": [
+      "dml-in-loop",
+      "hardcoded-endpoint-no-named-credential",
+      "hardcoded-record-type-id",
+      "soql-in-loop",
+      "swallowed-exception",
+      "without-sharing-on-touched-data"
+    ],
+    "finding_severities": [
+      [
+        "P0",
+        2
+      ],
+      [
+        "P1",
+        2
+      ],
+      [
+        "P2",
+        2
+      ]
+    ],
+    "citations": [
+      [
+        "skill",
+        "apex/apex-security-patterns"
+      ],
+      [
+        "skill",
+        "apex/bulkification"
+      ],
+      [
+        "skill",
+        "integration/named-credentials-setup"
+      ],
+      [
+        "standard",
+        "code-review-checklist"
+      ]
+    ],
+    "followup_agents": [
+      "apex-refactorer",
+      "security-scanner",
+      "soql-optimizer",
+      "trigger-consolidator"
+    ],
+    "observation_categories": [
+      [
+        "ambiguous",
+        1
+      ],
+      [
+        "concerning",
+        1
+      ],
+      [
+        "suggested_followup",
+        1
+      ]
+    ],
+    "deliverable_kinds": [
+      [
+        "markdown",
+        1
+      ]
+    ],
+    "dimensions_compared": [],
+    "dimensions_skipped": []
+  }
+}

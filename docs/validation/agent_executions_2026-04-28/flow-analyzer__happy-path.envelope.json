@@ -1,0 +1,120 @@
+{
+  "agent": "flow-analyzer",
+  "mode": "single",
+  "run_id": "20260428T012223Z",
+  "report_path": "docs/reports/flow-analyzer/20260428T012223Z.md",
+  "envelope_path": "docs/reports/flow-analyzer/20260428T012223Z.json",
+  "inputs_received": {
+    "flow_path": "evals/agents/fixtures/flow-analyzer/samples/Lead_AutoConvert_BadBulk.flow-meta.xml",
+    "source_path": "evals/agents/fixtures/flow-analyzer/samples/Lead_AutoConvert_BadBulk.flow-meta.xml"
+  },
+  "summary": "Lead_AutoConvert_BadBulk is a record-triggered flow that loops over the triggering Lead collection, runs a Get Records on Account and an Update Records on Lead inside the loop, and provides no fault path on the Update. SOQL-in-loop and DML-in-loop both escalate to P0 because record-triggered flows fire in batches of 200, multiplying the per-element cost into governor-limit territory. Per the automation-selection decision tree, the recommended verdict is FIX_IN_PLACE: the logic is well within Flow's expressive surface; the failure mode is the loop topology, not the platform choice. Migration to Apex is not justified.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Flow XML was fully inlined and the loop/SOQL/DML topology is unambiguous; MEDIUM (not HIGH) because the fixture lacks a live org probe to confirm whether downstream automations (PB, triggers) compound the cost.",
+  "findings": [
+    {
+      "id": "soql-in-loop",
+      "severity": "P0",
+      "title": "Get Records inside a loop on the triggering Lead collection",
+      "detail": "Get Records (Account by Lead.Company) sits inside a Loop iterating $Record collection. At a 200-record bulk insert, this fires 200 SOQL queries \u2014 2\u00d7 the 100-SOQL governor limit before the loop completes.",
+      "evidence": {
+        "path": "evals/agents/fixtures/flow-analyzer/samples/Lead_AutoConvert_BadBulk.flow-meta.xml",
+        "anti_pattern": "soql-in-loop"
+      },
+      "recommendation": "Lift the Get Records OUT of the loop. Build a Collection Variable of all Lead.Company values first, then run a single Get Records WHERE Account.Name IN {!collectionVar}. Use an Assignment + Map-style lookup inside the loop instead of a fresh query."
+    },
+    {
+      "id": "dml-in-loop",
+      "severity": "P0",
+      "title": "Update Records inside the loop",
+      "detail": "Update Records on Lead fires once per loop iteration. At 200 records this is 200 DML statements vs the 150 governor cap.",
+      "evidence": {
+        "path": "evals/agents/fixtures/flow-analyzer/samples/Lead_AutoConvert_BadBulk.flow-meta.xml",
+        "anti_pattern": "dml-in-loop"
+      },
+      "recommendation": "Inside the loop, Assign the per-Lead changes to a Collection Variable. After the loop ends, run a single Update Records on the collection. This collapses the work to one DML statement."
+    },
+    {
+      "id": "no-fault-path",
+      "severity": "P1",
+      "title": "Update Records has no fault connector",
+      "detail": "If the Update fails (validation rule, FLS, locking), the flow halts with a generic error. No fault path means no recoverable behavior, no audit row, and no admin notification.",
+      "evidence": {
+        "path": "evals/agents/fixtures/flow-analyzer/samples/Lead_AutoConvert_BadBulk.flow-meta.xml",
+        "anti_pattern": "no-fault-path"
+      },
+      "recommendation": "Wire a Fault connector from Update Records to a subflow that writes to Application_Log__c (see templates/flow/FaultPath_Template.md). For record-triggered flows specifically, route the fault to a Platform Event so the failure is visible without blocking the trigger."
+    }
+  ],
+  "deliverables": [
+    {
+      "kind": "markdown",
+      "title": "Recommended fix-in-place rewrite outline",
+      "target_path": "docs/reports/flow-analyzer/20260428T012223Z.md",
+      "content": "# Lead_AutoConvert_BadBulk \u2014 fix-in-place rewrite outline\n\n**Verdict:** FIX_IN_PLACE per `standards/decision-trees/automation-selection.md` (record-triggered, declarative-friendly logic, no callout/heap pressure that would force Apex).\n\n## Topology rewrite\n1. **Outside the loop** \u2014 `Get Records` Account WHERE Name IN `{!Lead.Company}` collected from `$Record` triggering rows. Output: `accountsByName` map-shaped output.\n2. **Loop** over `$Record`. Inside the loop:\n   - `Decision`: does `accountsByName` contain `loop.Lead.Company`?\n   - `Assignment`: set `loop.Lead.AccountId` from the matched Account.\n   - `Assignment`: append the modified Lead to `leadsToUpdate` collection variable.\n3. **After the loop** \u2014 single `Update Records` on `leadsToUpdate` with a **Fault connector** wired to a `LogFault` subflow (see template).\n\n## Why FIX_IN_PLACE, not MIGRATE_TO_APEX\n- Logic is conditional + assignment + DML; no Apex-only feature is in play (no callout, no recursion, no fan-out > 200).\n- Maintenance cost in Flow is lower than the equivalent trigger-handler.\n- The bulk-safety bug is the loop topology, not the platform.\n\n## What MIGRATE_TO_APEX would buy you\n- Easier unit testing (`@IsTest` is more expressive than Flow Tests).\n- Better debugger ergonomics.\n- If Lead auto-conversion grows to integrate with a queueable callout, revisit.\n"
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "concerning",
+      "severity": "high",
+      "observation": "Two P0 governor-limit bugs sit in the same flow path; either alone would brick a 200-record bulk insert and either fix without the other still leaves the flow brittle.",
+      "domain": "flow-bulkification",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "evals/agents/fixtures/flow-analyzer/samples/Lead_AutoConvert_BadBulk.flow-meta.xml"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "Fixture does not show whether other automations on Lead (Apex triggers, Process Builders) also fire on insert \u2014 if any do, the recommended consolidation may need to align with trigger-consolidator's plan.",
+      "domain": "automation-architecture",
+      "evidence": {
+        "source": "input"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "Once the flow is rewritten, generate a Flow Test covering the bulk path (200 Leads) so regressions show up at design time.",
+      "domain": "testing",
+      "evidence": {
+        "source": "heuristic"
+      },
+      "suggested_followup_agent": "test-class-generator",
+      "followup_reason": "because Flow Tests cover the happy path but a paired Apex test on the surrounding service still needs the canonical 200-record bulk pattern."
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "flow/flow-bulkification",
+      "path": "skills/flow/flow-bulkification/SKILL.md",
+      "used_for": "Loop-vs-bulk topology, the lift-the-Get-out-of-the-loop pattern, and the after-loop single Update Records idiom."
+    },
+    {
+      "type": "decision_tree",
+      "id": "automation-selection",
+      "path": "standards/decision-trees/automation-selection.md",
+      "branch": "Record-triggered + declarative-friendly + no callout/recursion \u2192 FIX_IN_PLACE in Flow",
+      "used_for": "Choosing FIX_IN_PLACE over MIGRATE_TO_APEX."
+    },
+    {
+      "type": "template",
+      "id": "flow/FaultPath_Template.md",
+      "path": "templates/flow/FaultPath_Template.md",
+      "used_for": "Standard fault-connector \u2192 Application_Log__c subflow scaffold."
+    }
+  ],
+  "followups": [
+    {
+      "agent": "trigger-consolidator",
+      "because": "because if other Lead automations exist (Apex triggers / PBs), they should be consolidated into a single canonical handler to avoid order-of-execution conflicts with the rewritten flow."
+    },
+    {
+      "agent": "test-class-generator",
+      "because": "because the Apex side that downstream services use to consume converted Leads needs a 200-record bulk test to confirm the rewrite did not regress capacity."
+    }
+  ]
+}

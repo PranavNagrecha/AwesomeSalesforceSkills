@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "case_id": "duplicate-rule-designer__happy-path",
+  "agent": "duplicate-rule-designer",
+  "fixture_path": "evals/agents/fixtures/duplicate-rule-designer/happy-path.yaml",
+  "fixture_sha256": "a63097658f8386bac33094dc239ef94b360275a3ad9aeb8d47d8d58c309cc785",
+  "agent_md_path": "agents/duplicate-rule-designer/AGENT.md",
+  "agent_md_sha256": "458291ba3a701dc530353cadbfe495d8b5a9102b09bafa59bf51bb7d966d0bfc",
+  "envelope_path": "docs/validation/agent_executions_2026-04-28/duplicate-rule-designer__happy-path.envelope.json",
+  "captured_at": "2026-04-28T01:39:34Z",
+  "model": "claude-sonnet-4-5",
+  "fingerprint": {
+    "schema_version": 1,
+    "agent": "duplicate-rule-designer",
+    "mode": "single",
+    "confidence": "MEDIUM",
+    "refusal_code": null,
+    "finding_ids": [],
+    "finding_severities": [],
+    "citations": [
+      [
+        "skill",
+        "admin/duplicate-management"
+      ],
+      [
+        "skill",
+        "data/lead-data-import-and-dedup"
+      ]
+    ],
+    "followup_agents": [
+      "data-loader-pre-flight",
+      "permission-set-architect"
+    ],
+    "observation_categories": [
+      [
+        "ambiguous",
+        1
+      ],
+      [
+        "concerning",
+        1
+      ],
+      [
+        "suggested_followup",
+        1
+      ]
+    ],
+    "deliverable_kinds": [
+      [
+        "markdown",
+        1
+      ],
+      [
+        "xml",
+        3
+      ]
+    ],
+    "dimensions_compared": [],
+    "dimensions_skipped": []
+  }
+}

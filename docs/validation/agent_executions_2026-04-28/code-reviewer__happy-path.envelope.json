@@ -1,0 +1,173 @@
+{
+  "agent": "code-reviewer",
+  "mode": "single",
+  "run_id": "20260428T013105Z",
+  "report_path": "docs/reports/code-reviewer/20260428T013105Z.md",
+  "envelope_path": "docs/reports/code-reviewer/20260428T013105Z.json",
+  "inputs_received": {
+    "source_path": "evals/agents/fixtures/code-reviewer/samples/OpportunityNotifierTrigger.cls",
+    "component_type": "apex_class"
+  },
+  "summary": "OpportunityNotifier carries six canonical anti-patterns and is not promotable in its current shape. Two are P0/Critical: SOQL inside a for-loop on Opportunity (governor-limit time bomb at any bulk size > ~100 Opps with > 1 Contact each) and an HTTP callout to a hardcoded HTTPS endpoint instead of a Named Credential (operational + secrets risk). Two are P1/High: DML inside a nested for-loop (the inner Task insert) and `without sharing` on a class touching Opportunity/Contact (sharing-bypass risk for unprivileged callers). Two are P2/Medium: a swallowed Exception with no logging on the callout failure path, and a hardcoded RecordTypeId. Recommended remediation order: Named Credential first (unblocks the rewrite), then bulkify SOQL+DML, then flip to with-sharing, then add ApplicationLogger on the catch, then resolve RecordType by Developer Name via Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName(). Do NOT modify the source in this pass \u2014 hand to apex-refactorer with this finding set.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Source is fully inlined and all six canonical signals are unambiguous in the static text; MEDIUM (not HIGH) because the harness has no live org probe to confirm whether the hardcoded RecordTypeId still resolves in the target org or whether the without-sharing keyword is intentional for a known internal caller.",
+  "findings": [
+    {
+      "id": "soql-in-loop",
+      "severity": "P0",
+      "title": "SOQL inside a for-loop on Opportunity",
+      "detail": "Inner Contact query runs once per Opportunity in the input list. At the 200-record trigger batch size that is 200 SOQL queries \u2014 2x the 100-SOQL governor cap before the loop completes. The bug surfaces only at bulk and will not appear in single-record dev sandbox testing.",
+      "evidence": {
+        "path": "evals/agents/fixtures/code-reviewer/samples/OpportunityNotifierTrigger.cls",
+        "line_hint": "16-20",
+        "anti_pattern": "soql-in-loop"
+      },
+      "recommendation": "Lift the Contact query out of the loop. Build a Set<Id> accountIds from opps, run one bulk SOQL `SELECT Id, Email, AccountId FROM Contact WHERE AccountId IN :accountIds`, and key the result into a Map<Id, List<Contact>> for in-loop lookup. See `apex/bulkification` skill."
+    },
+    {
+      "id": "hardcoded-endpoint-no-named-credential",
+      "severity": "P0",
+      "title": "Callout uses a hardcoded HTTPS endpoint",
+      "detail": "Apex constructs the endpoint inline and bypasses the Remote Site Settings/Named Credential governance surface. Credentials cannot be rotated without a code change, the endpoint is not subject to the org's auth-provider posture, and the URL contains a PII-leaking query parameter (`?email=`).",
+      "evidence": {
+        "path": "evals/agents/fixtures/code-reviewer/samples/OpportunityNotifierTrigger.cls",
+        "line_hint": "33-35",
+        "anti_pattern": "hardcoded-endpoint"
+      },
+      "recommendation": "Provision a Named Credential (e.g. Notify_Webhook), move the path/query into the body or a path-only suffix, and change the request to `req.setEndpoint('callout:Notify_Webhook/notify')`. See `integration/named-credentials-setup` skill."
+    },
+    {
+      "id": "dml-in-loop",
+      "severity": "P1",
+      "title": "Task insert inside the nested for-loop",
+      "detail": "Inner `insert t` fires once per (Opportunity \u00d7 Contact) pair. At 200 Opps \u00d7 5 Contacts each that is 1000 DML statements vs the 150 governor cap.",
+      "evidence": {
+        "path": "evals/agents/fixtures/code-reviewer/samples/OpportunityNotifierTrigger.cls",
+        "line_hint": "24-30",
+        "anti_pattern": "dml-in-loop"
+      },
+      "recommendation": "Build a `List<Task> toInsert` inside the loop and run a single `insert toInsert;` after the loop ends. Combined with the SOQL bulkification this collapses the work to one SOQL + one DML."
+    },
+    {
+      "id": "without-sharing-on-touched-data",
+      "severity": "P1",
+      "title": "Class is `without sharing` while touching Opportunity / Contact",
+      "detail": "When invoked from an unprivileged context, the class will read Contact records the caller could not see directly and will write Tasks against records they could not own. This is a sharing-bypass surface.",
+      "evidence": {
+        "path": "evals/agents/fixtures/code-reviewer/samples/OpportunityNotifierTrigger.cls",
+        "line_hint": "12",
+        "anti_pattern": "without-sharing"
+      },
+      "recommendation": "Default to `with sharing`. If a system-mode pass is genuinely required (e.g. a queueable that runs as the integration user), isolate it in a single `without sharing` selector method and document the reason in the class header."
+    },
+    {
+      "id": "swallowed-exception",
+      "severity": "P2",
+      "title": "Callout catch block swallows the exception with no logging",
+      "detail": "An empty catch on the HTTP send call means callout failures are invisible to ops \u2014 no Application_Log__c row, no debug log smell, no platform event. Production failures will look like silent success.",
+      "evidence": {
+        "path": "evals/agents/fixtures/code-reviewer/samples/OpportunityNotifierTrigger.cls",
+        "line_hint": "38-40",
+        "anti_pattern": "swallowed-exception"
+      },
+      "recommendation": "Replace the empty catch with a call to `ApplicationLogger.logException(e, 'OpportunityNotifier.notify', JSON.serialize(o))`. See `templates/apex/ApplicationLogger.cls`."
+    },
+    {
+      "id": "hardcoded-record-type-id",
+      "severity": "P2",
+      "title": "Hardcoded RecordTypeId on Task",
+      "detail": "Hardcoded 18-char Id `0125g000000abcdAAA` will not resolve across orgs (it is per-org per-record-type) and silently breaks on sandbox refresh or org migration.",
+      "evidence": {
+        "path": "evals/agents/fixtures/code-reviewer/samples/OpportunityNotifierTrigger.cls",
+        "line_hint": "28",
+        "anti_pattern": "hardcoded-record-type-id"
+      },
+      "recommendation": "Resolve by Developer Name: `Id rtId = Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get('Follow_Up').getRecordTypeId();`. Cache it in a static initializer if the class is hot."
+    }
+  ],
+  "deliverables": [
+    {
+      "kind": "markdown",
+      "title": "Code review \u2014 OpportunityNotifier with WAF pillar scores",
+      "target_path": "docs/reports/code-reviewer/20260428T013105Z.md",
+      "content": "# Code review \u2014 OpportunityNotifier.cls\n\n**Verdict:** NOT PROMOTABLE. Two P0 + two P1 + two P2.\n\n## Findings density\n6 anti-patterns in 33 lines of source. The class is a portfolio of canonical Apex smells \u2014 prioritize remediation in the order below.\n\n## Per-pillar Well-Architected scores\n| Pillar | Score (1-5) | Driver |\n|---|---|---|\n| Reliable | 1 | SOQL/DML in loop = governor-limit time bomb at any bulk size; no fault path on the callout. |\n| Secure | 1 | `without sharing` + hardcoded endpoint + PII in URL + no FLS. |\n| Performant | 1 | O(N\u00d7M) SOQL + O(N\u00d7M) DML; will not survive the 200-row trigger batch. |\n| Resilient | 2 | Swallowed exception means failures are invisible; no retry surface. |\n| Cost-effective | 3 | No callout fan-out cost issue at single-record scale; degrades sharply at bulk. |\n| Composable | 2 | No selector / service split; logic lives in one entrypoint that mixes I/O + business rules + side effects. |\n\n## Remediation order (route to apex-refactorer)\n1. **Named Credential first** \u2014 unblocks the rewrite without touching business logic.\n2. **Bulkify SOQL** \u2014 single Contact query keyed on a Set<Id>.\n3. **Bulkify DML** \u2014 collect Tasks, insert once after both loops collapse.\n4. **Flip to `with sharing`** \u2014 remove the sharing-bypass surface.\n5. **Add ApplicationLogger** \u2014 replace the empty catch.\n6. **Resolve RecordType by Developer Name** \u2014 remove the hardcoded id.\n\n## What this review did NOT do\n- Did NOT modify the source code (read-only review).\n- Did NOT generate the rewrite \u2014 see follow-up apex-refactorer.\n- Did NOT generate tests \u2014 the rewrite must land first; then test-class-generator.\n"
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "concerning",
+      "severity": "high",
+      "observation": "Two P0 findings co-located with two P1 findings in 33 lines of source is a smell about the upstream review process \u2014 either no PR review fired on this class, or the review missed the canonical anti-patterns. Worth flagging to the reviewing team.",
+      "domain": "devops",
+      "evidence": {
+        "source": "input",
+        "p0_count": 2,
+        "p1_count": 2
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The `without sharing` keyword may be intentional for a known internal callsite (e.g. a queueable run as the integration user). Without org context the reviewer cannot tell if the recommendation is correct or premature. Lowered confidence accordingly.",
+      "domain": "security",
+      "evidence": {
+        "source": "input"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "medium",
+      "observation": "After remediation, regenerate the test class so callout tests stub through MockHttpResponseGenerator and the bulk path is asserted via Limits.getQueries() / getDmlStatements() deltas.",
+      "domain": "testing",
+      "evidence": {
+        "source": "heuristic"
+      },
+      "suggested_followup_agent": "test-class-generator",
+      "followup_reason": "because the rewritten class needs new tests covering the Named Credential mock, the bulk-safety assertion, and the with-sharing posture."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "code-review-checklist",
+      "path": "standards/code-review-checklist.md",
+      "used_for": "Per-pillar Well-Architected scoring rubric and the canonical anti-pattern list (SOQL-in-loop, DML-in-loop, hardcoded endpoint, without-sharing, swallowed exception, hardcoded RecordTypeId)."
+    },
+    {
+      "type": "skill",
+      "id": "apex/bulkification",
+      "path": "skills/apex/bulkification/SKILL.md",
+      "used_for": "Lift-SOQL-out-of-loop and collect-then-DML recommendations."
+    },
+    {
+      "type": "skill",
+      "id": "integration/named-credentials-setup",
+      "path": "skills/integration/named-credentials-setup/SKILL.md",
+      "used_for": "callout:<NamedCredential> idiom for the hardcoded-endpoint remediation."
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-security-patterns",
+      "path": "skills/apex/apex-security-patterns/SKILL.md",
+      "used_for": "with-sharing default rubric and the FLS/CRUD posture for the SOQL/DML."
+    }
+  ],
+  "followups": [
+    {
+      "agent": "apex-refactorer",
+      "because": "because this review is read-only; the rewrite (Named Credential, bulk SOQL/DML, with-sharing flip, ApplicationLogger, RecordType-by-name) belongs in apex-refactorer."
+    },
+    {
+      "agent": "security-scanner",
+      "because": "because two of the findings are P0 security signals (hardcoded endpoint, without-sharing); a focused security-scanner pass should run before promotion to confirm no other security smells slipped through."
+    },
+    {
+      "agent": "soql-optimizer",
+      "because": "because the SOQL bulkification belongs behind a Selector layer with WITH USER_MODE; soql-optimizer owns the selector extraction."
+    },
+    {
+      "agent": "trigger-consolidator",
+      "because": "because the class name suggests trigger-adjacent code; if this is invoked from a Task or Opportunity trigger, it should be consolidated into the canonical TriggerHandler pattern."
+    }
+  ]
+}

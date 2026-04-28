@@ -1,0 +1,234 @@
+{
+  "agent": "lwc-auditor",
+  "mode": "single",
+  "run_id": "20260428T013105Z",
+  "report_path": "docs/reports/lwc-auditor/20260428T013105Z.md",
+  "envelope_path": "docs/reports/lwc-auditor/20260428T013105Z.json",
+  "inputs_received": {
+    "bundle_path": "evals/agents/fixtures/lwc-auditor/samples/accountTile",
+    "source_path": "evals/agents/fixtures/lwc-auditor/samples/accountTile/accountTile.html",
+    "related_paths": [
+      "evals/agents/fixtures/lwc-auditor/samples/accountTile/accountTile.js",
+      "evals/agents/fixtures/lwc-auditor/samples/accountTile/accountTile.js-meta.xml",
+      "evals/agents/fixtures/lwc-auditor/samples/accountTile/accountTile.css"
+    ]
+  },
+  "summary": "accountTile carries 5 P0 findings, 3 P1, and 3 P2 across the four-file bundle. The P0 set is dominated by accessibility + security: <img> with no alt, interactive <div onclick> instead of <button>, icon-only <lightning-button-icon> with no alternative-text, missing key on the for:each iteration, innerHTML written from a server string with no sanitize, and a metadata bug where <targets> is populated while <isExposed> is false (the component will not appear in App Builder). P1 surfaces are imperative Apex in connectedCallback with no @wire caching, the legacy `if:true` directive instead of `lwc:if`, and `<targets>` without a matching `<targetConfigs>`. P2 is hex-literal-over-token in CSS, hardcoded spacing, and a querySelector that should be lwc:ref. No __tests__ folder is present \u2014 a Jest spec must accompany the rewrite. Hand to lwc-debugger for the rewrite; do not modify the bundle in this pass.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "All four bundle files are fully inlined and every signal is unambiguous in the static text; MEDIUM (not HIGH) because the harness has no live App Builder probe to confirm whether isExposed=false is intentional (e.g., the component is consumed only by another LWC) or whether an admin needs the App Builder targets to take effect.",
+  "findings": [
+    {
+      "id": "img-missing-alt",
+      "severity": "P0",
+      "title": "<img> has no alt attribute",
+      "detail": "The `<img src={logoUrl} />` has no alt attribute and no role=presentation. Screen readers will announce the file URL or skip silently. WCAG 1.1.1 violation.",
+      "evidence": {
+        "path": "evals/agents/fixtures/lwc-auditor/samples/accountTile/accountTile.html",
+        "line_hint": "12"
+      },
+      "recommendation": "Add `alt={accountName}` (or `alt=\"\"` if the image is decorative). Per `lwc/lwc-accessibility`."
+    },
+    {
+      "id": "div-onclick-vs-button",
+      "severity": "P0",
+      "title": "Interactive <div> uses onclick instead of <button>",
+      "detail": "`<div onclick={handleSelect}>` is keyboard-inaccessible and not announced as interactive. WCAG 2.1.1 + 4.1.2 violations.",
+      "evidence": {
+        "path": "evals/agents/fixtures/lwc-auditor/samples/accountTile/accountTile.html",
+        "line_hint": "14"
+      },
+      "recommendation": "Replace with `<lightning-button label=\"Select this account\" onclick={handleSelect}></lightning-button>` or `<button type=\"button\" onclick={handleSelect}>...</button>` with explicit class styling."
+    },
+    {
+      "id": "icon-only-button-no-alt-text",
+      "severity": "P0",
+      "title": "<lightning-button-icon> has no alternative-text",
+      "detail": "Icon-only buttons MUST set `alternative-text` so screen readers announce the action. Without it the button is announced as 'edit button' or 'graphic' depending on the AT.",
+      "evidence": {
+        "path": "evals/agents/fixtures/lwc-auditor/samples/accountTile/accountTile.html",
+        "line_hint": "16-19"
+      },
+      "recommendation": "Add `alternative-text=\"Edit account\"` (and a matching `title` for tooltip). Per `lwc/lwc-accessibility`."
+    },
+    {
+      "id": "missing-key-in-for-each",
+      "severity": "P0",
+      "title": "for:each iterator missing the key attribute",
+      "detail": "`<template for:each={opps} for:item=\"opp\">` does not declare `key`. LWC requires a stable key for each iterated child or rendering is undefined.",
+      "evidence": {
+        "path": "evals/agents/fixtures/lwc-auditor/samples/accountTile/accountTile.html",
+        "line_hint": "22"
+      },
+      "recommendation": "Add `key={opp.Id}` on the `<li>`. Per `lwc/lwc-conditional-rendering`."
+    },
+    {
+      "id": "innerhtml-without-sanitize",
+      "severity": "P0",
+      "title": "innerHTML set from a server-supplied string with no sanitize",
+      "detail": "`host.innerHTML = '<b>' + result[0].Description + '</b>'` writes a server string straight into the DOM. If Description contains user-supplied HTML (Rich Text fields commonly do), this is a stored XSS surface inside the LWC sandbox \u2014 even though Locker/Lightning Web Security limits blast radius, the pattern is still flagged by every CSP-aware reviewer.",
+      "evidence": {
+        "path": "evals/agents/fixtures/lwc-auditor/samples/accountTile/accountTile.js",
+        "line_hint": "20-22"
+      },
+      "recommendation": "Replace with `lightning-formatted-rich-text` if the Description is intended as HTML, OR run through `@salesforce/apex` server-side sanitization before render, OR drop to plain text via `host.textContent = ...`."
+    },
+    {
+      "id": "exposed-false-with-targets",
+      "severity": "P0",
+      "title": ".js-meta.xml has <targets> populated while isExposed is false",
+      "detail": "When `<isExposed>false</isExposed>`, the `<targets>` block is ignored and the component will NOT appear in App Builder. This is a metadata contradiction \u2014 either the developer wants it on a Record/App Page (set isExposed=true) or it is a child-of-another-component (drop the <targets> block entirely).",
+      "evidence": {
+        "path": "evals/agents/fixtures/lwc-auditor/samples/accountTile/accountTile.js-meta.xml"
+      },
+      "recommendation": "Set `<isExposed>true</isExposed>` AND add a matching `<targetConfigs>` block declaring the recordId/objects context for `lightning__RecordPage`. Per `lwc/lwc-app-builder-config`."
+    },
+    {
+      "id": "imperative-in-connectedcallback",
+      "severity": "P1",
+      "title": "Imperative Apex in connectedCallback with no caching",
+      "detail": "`connectedCallback` calls `getOpps()` imperatively on every component mount. `@wire` with a cacheable=true Apex method would cache the response across navigations and component instances; the imperative path bypasses that cache and re-hits the server every render.",
+      "evidence": {
+        "path": "evals/agents/fixtures/lwc-auditor/samples/accountTile/accountTile.js",
+        "line_hint": "14-22"
+      },
+      "recommendation": "Switch to `@wire(getOpps, { accountId: '$recordId' })` and let LDS cache the response. Reserve imperative Apex for cases where the call has side effects (DML)."
+    },
+    {
+      "id": "legacy-if-true-directive",
+      "severity": "P1",
+      "title": "Legacy `if:true` directive used instead of `lwc:if`",
+      "detail": "`<template if:true={hasOpps}>` is the legacy directive; the modern equivalent `<template lwc:if={hasOpps}>` (with `lwc:elseif` / `lwc:else`) supersedes it as of API 60+ and is the only directive supported under modern LWS.",
+      "evidence": {
+        "path": "evals/agents/fixtures/lwc-auditor/samples/accountTile/accountTile.html",
+        "line_hint": "21"
+      },
+      "recommendation": "Replace with `<template lwc:if={hasOpps}>`. Per `lwc/lwc-conditional-rendering`."
+    },
+    {
+      "id": "targets-without-targetconfigs",
+      "severity": "P1",
+      "title": "<targets> declared without a <targetConfigs> block",
+      "detail": "Even after the isExposed fix, the `<targets>` block has no `<targetConfigs>` to declare per-target properties (objects, recordIdContext, etc). Without it, the App Builder UI will not surface the recordId-context property the JS expects via @api.",
+      "evidence": {
+        "path": "evals/agents/fixtures/lwc-auditor/samples/accountTile/accountTile.js-meta.xml"
+      },
+      "recommendation": "Add a `<targetConfigs>` block per target with the appropriate `<objects>` / property declarations. See `templates/lwc/component-skeleton`."
+    },
+    {
+      "id": "hex-literal-over-token",
+      "severity": "P2",
+      "title": "Raw hex colors instead of SLDS styling hooks",
+      "detail": "`background-color: #f3a847;` and `color: #313131;` will not respond to dark-mode/theme changes and break SLDS palette consistency.",
+      "evidence": {
+        "path": "evals/agents/fixtures/lwc-auditor/samples/accountTile/accountTile.css"
+      },
+      "recommendation": "Use SLDS styling hooks: `--slds-c-card-color-background` (or token equivalents). Per `lwc/lwc-styling-hooks`."
+    },
+    {
+      "id": "hardcoded-spacing",
+      "severity": "P2",
+      "title": "Raw px spacing instead of SLDS spacing tokens",
+      "detail": "`margin: 12px; padding: 8px 16px;` ignores the SLDS spacing scale and breaks across density modes (compact/comfortable).",
+      "evidence": {
+        "path": "evals/agents/fixtures/lwc-auditor/samples/accountTile/accountTile.css"
+      },
+      "recommendation": "Use SLDS spacing tokens (e.g. `--slds-spacing-medium`) or the SLDS utility classes (`slds-m-around_medium`)."
+    },
+    {
+      "id": "no-tests-folder",
+      "severity": "P2",
+      "title": "Bundle has no __tests__ folder",
+      "detail": "There is no Jest spec for accountTile. Even with the rewrite, the imperative-Apex / @wire migration is risky without a regression net.",
+      "evidence": {
+        "path": "evals/agents/fixtures/lwc-auditor/samples/accountTile"
+      },
+      "recommendation": "Generate `__tests__/accountTile.test.js` with at least: (a) renders with no opps (hasOpps=false branch), (b) renders with opps (assert key + count), (c) handleSelect dispatches a CustomEvent. See `templates/lwc/jest.config.js`."
+    }
+  ],
+  "deliverables": [
+    {
+      "kind": "markdown",
+      "title": "Audit report \u2014 accountTile (5 P0, 3 P1, 3 P2)",
+      "target_path": "docs/reports/lwc-auditor/20260428T013105Z.md",
+      "content": "# Audit \u2014 accountTile bundle\n\n**Verdict:** NOT shippable. 5 P0, 3 P1, 3 P2 plus a missing __tests__ folder.\n\n## Findings density by file\n| File | P0 | P1 | P2 |\n|---|---|---|---|\n| accountTile.html | 4 | 1 | 0 |\n| accountTile.js | 1 | 1 | 0 |\n| accountTile.js-meta.xml | 1 | 1 | 0 |\n| accountTile.css | 0 | 0 | 2 |\n| (bundle root) | 0 | 0 | 1 (no __tests__) |\n\n## Per-pillar Well-Architected scores\n| Pillar | Score (1-5) | Driver |\n|---|---|---|\n| Accessible | 1 | 3 P0 a11y findings (alt, button-vs-div, icon-only) |\n| Secure | 2 | innerHTML-from-server is the headline; metadata contradiction is a soft second |\n| Performant | 3 | imperative-in-connectedCallback hits server per mount; cacheable @wire would fix |\n| Resilient | 2 | no Jest spec; no error handling on the .then() |\n| Composable | 3 | @api inputs are clean (recordId/logoUrl); CSS uses raw values that will fight a parent theme |\n\n## Recommended remediation order (route to lwc-debugger)\n1. Fix the meta-XML so the component is actually deployable to a Record Page (or drop the targets).\n2. Replace the 4 a11y P0s in accountTile.html.\n3. Replace innerHTML with `lightning-formatted-rich-text`.\n4. Migrate connectedCallback to `@wire` with cacheable Apex.\n5. Switch `if:true` \u2192 `lwc:if`.\n6. Replace raw hex/px with SLDS hooks/tokens.\n7. Add `__tests__/accountTile.test.js`.\n\n## What this audit did NOT do\n- Did NOT modify the bundle (read-only audit per the AGENT.md scope).\n- Did NOT generate the rewrite \u2014 see follow-up lwc-debugger.\n- Did NOT review the `getOpps` Apex \u2014 see follow-up apex-refactorer.\n"
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "concerning",
+      "severity": "high",
+      "observation": "5 P0 findings in a 4-file bundle is a sign that the component was not run through any lint or accessibility check before commit. Recommend wiring the project's eslint-plugin-lwc + sa11y rules into pre-commit before the next bundle ships.",
+      "domain": "devops",
+      "evidence": {
+        "source": "input",
+        "p0_count": 5
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The .js-meta.xml metadata contradiction (isExposed=false + populated targets) might be intentional if the component is consumed only by another LWC and the targets block was left in place by accident. Without an App Builder probe the auditor cannot tell which fix is correct. Lowered confidence accordingly.",
+      "domain": "metadata",
+      "evidence": {
+        "source": "input"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "medium",
+      "observation": "After the rewrite, run lwc-debugger end-to-end against the recordId scenario in App Builder to confirm the @wire path actually caches and the targetConfigs surface the recordId binding correctly.",
+      "domain": "testing",
+      "evidence": {
+        "source": "heuristic"
+      },
+      "suggested_followup_agent": "lwc-debugger",
+      "followup_reason": "because the rewrite involves a meta-XML change + an imperative-to-@wire migration; lwc-debugger should validate the App Builder binding before promotion."
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "lwc/lwc-accessibility",
+      "path": "skills/lwc/lwc-accessibility/SKILL.md",
+      "used_for": "All four a11y P0/P1 findings (img alt, button-vs-div, icon-only-button, focus management)."
+    },
+    {
+      "type": "skill",
+      "id": "lwc/lwc-conditional-rendering",
+      "path": "skills/lwc/lwc-conditional-rendering/SKILL.md",
+      "used_for": "lwc:if migration from legacy if:true and the missing-key-in-for-each finding."
+    },
+    {
+      "type": "skill",
+      "id": "lwc/lwc-app-builder-config",
+      "path": "skills/lwc/lwc-app-builder-config/SKILL.md",
+      "used_for": "isExposed/targets/targetConfigs metadata invariants."
+    },
+    {
+      "type": "skill",
+      "id": "lwc/lwc-styling-hooks",
+      "path": "skills/lwc/lwc-styling-hooks/SKILL.md",
+      "used_for": "Hex-literal-over-token and hardcoded-spacing CSS findings."
+    },
+    {
+      "type": "template",
+      "id": "lwc/component-skeleton",
+      "path": "templates/lwc/component-skeleton",
+      "used_for": "Reference shape for the .js-meta.xml + .js + .html + __tests__ structure."
+    }
+  ],
+  "followups": [
+    {
+      "agent": "lwc-debugger",
+      "because": "because the rewrite touches the meta-XML binding surface and the @wire migration; lwc-debugger should validate the App Builder targetConfigs end-to-end after rewrite."
+    },
+    {
+      "agent": "security-scanner",
+      "because": "because the innerHTML-from-server pattern warrants a focused security pass to confirm no other client-side trust boundaries are violated."
+    },
+    {
+      "agent": "apex-refactorer",
+      "because": "because the imperative-to-@wire migration requires the Apex method to be `@AuraEnabled(cacheable=true)`; apex-refactorer should confirm the AccountController.getOpps signature is cacheable-safe."
+    }
+  ]
+}

@@ -1,0 +1,115 @@
+{
+  "agent": "permission-set-architect",
+  "mode": "design",
+  "run_id": "20260428T011711Z",
+  "report_path": "docs/reports/permission-set-architect/20260428T011711Z.md",
+  "envelope_path": "docs/reports/permission-set-architect/20260428T011711Z.json",
+  "inputs_received": {
+    "mode": "design",
+    "target_org_alias": "uat-fixture",
+    "persona": "SDR in North America, owns Leads + Opportunities, uses Sales Console, needs Reports/Dashboards (read-only on non-personal data), cannot export reports, no access to Cases or Knowledge."
+  },
+  "summary": "SDR persona resolves to a four-permission-set PSG: one App PS (Sales Console + UI), one Object PS (Lead + Opportunity CRUD with no Delete on Opp), one Feature PS (Reports/Dashboards run-only, no Export), and one explicit deny PS (no Cases / no Knowledge / no Modify All Data). No near-match Feature PSes exist in the org per the probe stub, so a fresh PS is justified. Naming follows the App_/Obj_/Feat_/Deny_ prefix convention and the PSG composition order is Object \u2192 Feature \u2192 App \u2192 Deny so the deny set wins on conflict.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Persona is unambiguous and the fixture-supplied probe shows no near-match Feature PSes, but the harness lacks a live org probe \u2014 the 'no near-match' claim is library-only, capping confidence at MEDIUM per AGENT.md.",
+  "deliverables": [
+    {
+      "kind": "xml",
+      "title": "App PS \u2014 SDR Sales Console",
+      "target_path": "force-app/main/default/permissionsets/App_SDR_SalesConsole.permissionset-meta.xml",
+      "content": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<PermissionSet xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n    <label>App: SDR Sales Console</label>\n    <description>Grants the LightningSales console app and the Sales Console UI surface for the SDR persona. Composition unit only \u2014 never assigned directly.</description>\n    <hasActivationRequired>false</hasActivationRequired>\n    <license>Salesforce</license>\n    <applicationVisibilities>\n        <application>standard__LightningSales</application>\n        <visible>true</visible>\n    </applicationVisibilities>\n</PermissionSet>\n"
+    },
+    {
+      "kind": "xml",
+      "title": "Object PS \u2014 SDR Lead + Opportunity CRUD",
+      "target_path": "force-app/main/default/permissionsets/Obj_SDR_LeadOpportunity.permissionset-meta.xml",
+      "content": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<PermissionSet xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n    <label>Obj: SDR Lead + Opportunity</label>\n    <description>Object/FLS surface for the SDR persona \u2014 full CRUD on Lead, CRU (no Delete) on Opportunity. Composition unit only.</description>\n    <hasActivationRequired>false</hasActivationRequired>\n    <license>Salesforce</license>\n    <objectPermissions>\n        <object>Lead</object>\n        <allowCreate>true</allowCreate>\n        <allowRead>true</allowRead>\n        <allowEdit>true</allowEdit>\n        <allowDelete>true</allowDelete>\n        <viewAllRecords>false</viewAllRecords>\n        <modifyAllRecords>false</modifyAllRecords>\n    </objectPermissions>\n    <objectPermissions>\n        <object>Opportunity</object>\n        <allowCreate>true</allowCreate>\n        <allowRead>true</allowRead>\n        <allowEdit>true</allowEdit>\n        <allowDelete>false</allowDelete>\n        <viewAllRecords>false</viewAllRecords>\n        <modifyAllRecords>false</modifyAllRecords>\n    </objectPermissions>\n</PermissionSet>\n"
+    },
+    {
+      "kind": "xml",
+      "title": "Feature PS \u2014 Reports + Dashboards run, no export",
+      "target_path": "force-app/main/default/permissionsets/Feat_Reports_RunNoExport.permissionset-meta.xml",
+      "content": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<PermissionSet xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n    <label>Feat: Reports Run No Export</label>\n    <description>Run-only Reports + Dashboards. Explicitly omits Export Reports and Manage Reports.</description>\n    <hasActivationRequired>false</hasActivationRequired>\n    <license>Salesforce</license>\n    <userPermissions>\n        <name>RunReports</name>\n        <enabled>true</enabled>\n    </userPermissions>\n</PermissionSet>\n"
+    },
+    {
+      "kind": "xml",
+      "title": "Deny PS (muting) \u2014 SDR boundaries",
+      "target_path": "force-app/main/default/mutingPermissionsets/Deny_SDR_Boundaries.mutingPermissionSet-meta.xml",
+      "content": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<MutingPermissionSet xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n    <label>Deny: SDR Boundaries</label>\n    <description>Removes Cases, Knowledge, and dangerous system perms even if a future PS in the SDR PSG adds them by accident.</description>\n    <objectPermissions>\n        <object>Case</object>\n        <allowRead>false</allowRead>\n        <allowCreate>false</allowCreate>\n        <allowEdit>false</allowEdit>\n        <allowDelete>false</allowDelete>\n    </objectPermissions>\n    <objectPermissions>\n        <object>Knowledge__kav</object>\n        <allowRead>false</allowRead>\n    </objectPermissions>\n    <userPermissions>\n        <name>ExportReport</name>\n        <enabled>false</enabled>\n    </userPermissions>\n    <userPermissions>\n        <name>ModifyAllData</name>\n        <enabled>false</enabled>\n    </userPermissions>\n</MutingPermissionSet>\n"
+    },
+    {
+      "kind": "xml",
+      "title": "PSG \u2014 SDR (composition + ordering)",
+      "target_path": "force-app/main/default/permissionsetgroups/PSG_SDR.permissionsetgroup-meta.xml",
+      "content": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<PermissionSetGroup xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n    <label>PSG: SDR</label>\n    <description>Composes the four SDR-persona permission sets. Muting set runs last so deny wins on conflict. Assign this PSG to SDR users instead of any of its members directly.</description>\n    <permissionSets>Obj_SDR_LeadOpportunity</permissionSets>\n    <permissionSets>Feat_Reports_RunNoExport</permissionSets>\n    <permissionSets>App_SDR_SalesConsole</permissionSets>\n    <mutingPermissionSets>Deny_SDR_Boundaries</mutingPermissionSets>\n    <status>Updated</status>\n</PermissionSetGroup>\n"
+    },
+    {
+      "kind": "markdown",
+      "title": "Deployment order",
+      "target_path": "docs/reports/permission-set-architect/20260428T011711Z.md",
+      "content": "# SDR Permission Set Group \u2014 deployment order\n\n1. Deploy the four base permission sets in any order: `Obj_SDR_LeadOpportunity`, `Feat_Reports_RunNoExport`, `App_SDR_SalesConsole`, `Deny_SDR_Boundaries`.\n2. Deploy `PSG_SDR` referencing all four (the last is the muting set).\n3. Trigger PSG recalculation in the org (Setup \u2192 Permission Set Groups \u2192 Recalculate).\n4. Assign `PSG_SDR` to a single canary SDR user. Verify in the UI that Cases is not visible and that the Export Report button is hidden in the Reports tab.\n5. Bulk-assign to the SDR pod via `assign_perm_set_group` (or the Setup UI).\n\n## Why one App PS, one Object PS, one Feature PS, one Deny PS\nThis is the canonical four-tile composition from `templates/admin/permission-set-patterns.md`: keep object/FLS, feature, app-launcher, and deny concerns in separate PSes so future personas can reuse units (e.g. an AE persona will reuse `Feat_Reports_RunNoExport` verbatim).\n"
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Org currently has 6 PSGs against 240 active users \u2014 well under the typical complexity threshold where Profile/PSG sprawl starts to bite.",
+      "domain": "permission-architecture",
+      "evidence": {
+        "source": "input",
+        "count": 6
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "Persona says 'no access to Cases or Knowledge' but does not say whether SDRs ever click into a Case from a converted Lead's account; if they do, an Object-level Read on Case may be needed and the deny set adjusted.",
+      "domain": "permission-architecture",
+      "evidence": {
+        "source": "input"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "medium",
+      "observation": "Once PSG_SDR is assigned to a real SDR pod, run a sharing audit to confirm record-level access matches the persona's North America scope (role hierarchy + sharing rules, not the PS).",
+      "domain": "sharing",
+      "evidence": {
+        "source": "heuristic"
+      },
+      "suggested_followup_agent": "sharing-audit-agent",
+      "followup_reason": "because permission sets grant object/field access but record-level scoping (NA-only) lives in the role hierarchy and sharing rules \u2014 out of scope for this agent."
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/permission-set-architecture",
+      "path": "skills/admin/permission-set-architecture/SKILL.md",
+      "used_for": "Four-tile PSG composition pattern (App + Object + Feature + Deny) and the rule that PSGs are the assignment unit, never raw PSes."
+    },
+    {
+      "type": "skill",
+      "id": "security/permission-set-groups-and-muting",
+      "path": "skills/security/permission-set-groups-and-muting/SKILL.md",
+      "used_for": "Muting permission set semantics \u2014 the deny set runs last and overrides additive grants."
+    },
+    {
+      "type": "template",
+      "id": "admin/permission-set-patterns.md",
+      "path": "templates/admin/permission-set-patterns.md",
+      "used_for": "Permission set XML scaffolds and the App_/Obj_/Feat_/Deny_ prefix convention."
+    }
+  ],
+  "followups": [
+    {
+      "agent": "sharing-audit-agent",
+      "because": "because permission sets grant object/field access but the persona's North America scoping must be enforced via role hierarchy + sharing rules."
+    },
+    {
+      "agent": "field-impact-analyzer",
+      "because": "because if a future field is added to Lead or Opportunity, the SDR PSG's FLS surface needs to be re-checked rather than assumed."
+    }
+  ]
+}

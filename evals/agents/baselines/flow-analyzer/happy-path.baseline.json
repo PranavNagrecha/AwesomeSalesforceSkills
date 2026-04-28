@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "case_id": "flow-analyzer__happy-path",
+  "agent": "flow-analyzer",
+  "fixture_path": "evals/agents/fixtures/flow-analyzer/happy-path.yaml",
+  "fixture_sha256": "7dbe081af9a3ea810c452762472a10a22e3670beafe487b8367a2aab5b946fa0",
+  "agent_md_path": "agents/flow-analyzer/AGENT.md",
+  "agent_md_sha256": "b3630098081af3ed2c2f8a0579d9b68ee768e6f666fc72bb04c99cd915f138ce",
+  "envelope_path": "docs/validation/agent_executions_2026-04-28/flow-analyzer__happy-path.envelope.json",
+  "captured_at": "2026-04-28T01:42:46Z",
+  "model": "claude-sonnet-4-5",
+  "fingerprint": {
+    "schema_version": 1,
+    "agent": "flow-analyzer",
+    "mode": "single",
+    "confidence": "MEDIUM",
+    "refusal_code": null,
+    "finding_ids": [
+      "dml-in-loop",
+      "no-fault-path",
+      "soql-in-loop"
+    ],
+    "finding_severities": [
+      [
+        "P0",
+        2
+      ],
+      [
+        "P1",
+        1
+      ]
+    ],
+    "citations": [
+      [
+        "decision_tree",
+        "automation-selection"
+      ],
+      [
+        "skill",
+        "flow/flow-bulkification"
+      ],
+      [
+        "template",
+        "flow/FaultPath_Template.md"
+      ]
+    ],
+    "followup_agents": [
+      "test-class-generator",
+      "trigger-consolidator"
+    ],
+    "observation_categories": [
+      [
+        "ambiguous",
+        1
+      ],
+      [
+        "concerning",
+        1
+      ],
+      [
+        "suggested_followup",
+        1
+      ]
+    ],
+    "deliverable_kinds": [
+      [
+        "markdown",
+        1
+      ]
+    ],
+    "dimensions_compared": [],
+    "dimensions_skipped": []
+  }
+}

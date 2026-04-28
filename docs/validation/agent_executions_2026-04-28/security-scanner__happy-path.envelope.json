@@ -1,0 +1,136 @@
+{
+  "agent": "security-scanner",
+  "mode": "single",
+  "run_id": "20260428T011711Z",
+  "report_path": "docs/reports/security-scanner/20260428T011711Z.md",
+  "envelope_path": "docs/reports/security-scanner/20260428T011711Z.json",
+  "inputs_received": {
+    "scope_path": "evals/agents/fixtures/security-scanner/samples/AccountSyncService_Insecure.cls",
+    "source_path": "evals/agents/fixtures/security-scanner/samples/AccountSyncService_Insecure.cls",
+    "severity_threshold": "P2"
+  },
+  "summary": "Scan of AccountSyncService_Insecure.cls surfaces five canonical violations: the class lacks a sharing keyword (defaults to without sharing in trigger context), a callout uses a hardcoded HTTPS endpoint instead of a Named Credential, an API token is hardcoded in source, an Account update fires without prior FLS/CRUD enforcement, and a SOQL query lacks WITH SECURITY_ENFORCED / WITH USER_MODE. Two findings are P0 (hardcoded secret, callout-without-named-credential) and three are P1. Secret value is redacted in this report. Recommendation: rewrite via SecurityUtils + a Named Credential before this class touches a production org.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Source was fully inlined and all five canonical signals are unambiguous in the static text; MEDIUM (not HIGH) because the harness has no live org probe to confirm whether the hardcoded endpoint is already aliased to a Named Credential domain.",
+  "dimensions_compared": [
+    "apex-crud-fls",
+    "callout-auth",
+    "sharing-posture",
+    "secret-leakage",
+    "soql-security-mode"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "package-manifest-scope",
+      "state": "not-run",
+      "reason": "Single-file scope; no package.xml supplied so the cross-class blast radius could not be estimated.",
+      "confidence_impact": "NONE"
+    }
+  ],
+  "findings": [
+    {
+      "id": "hardcoded-secret",
+      "severity": "P0",
+      "title": "Hardcoded API token in source",
+      "detail": "AccountSyncService_Insecure.cls hardcodes a bearer token used for the Risk Scoring API callout. Secrets in source land in version control, sandbox refreshes, and any debug log that prints the variable.",
+      "evidence": {
+        "path": "evals/agents/fixtures/security-scanner/samples/AccountSyncService_Insecure.cls",
+        "secret_value": "[REDACTED]"
+      },
+      "recommendation": "Move the credential to a Named Credential. Reference it via `callout:Risk_Scoring_API` and let the platform inject the Authorization header \u2014 the Apex never sees the token."
+    },
+    {
+      "id": "callout-without-named-credential",
+      "severity": "P0",
+      "title": "Callout uses a hardcoded HTTPS endpoint",
+      "detail": "Apex constructs the endpoint inline rather than referencing `callout:<NamedCredential>`. This bypasses the Remote Site Settings/Named Credential governance surface and means the credential cannot be rotated without a code change.",
+      "evidence": {
+        "path": "evals/agents/fixtures/security-scanner/samples/AccountSyncService_Insecure.cls"
+      },
+      "recommendation": "Provision a Named Credential `Risk_Scoring_API` with the endpoint and OAuth/Basic auth, then change the request to `req.setEndpoint('callout:Risk_Scoring_API/score')`."
+    },
+    {
+      "id": "no-sharing-keyword",
+      "severity": "P1",
+      "title": "Class is missing an explicit sharing keyword",
+      "detail": "When invoked from a trigger or anonymous context, the class will run without sharing \u2014 exposing records the caller could not see directly.",
+      "evidence": {
+        "path": "evals/agents/fixtures/security-scanner/samples/AccountSyncService_Insecure.cls"
+      },
+      "recommendation": "Declare `with sharing` (default) or `inherited sharing` if the class is intentionally invoked from both trusted and untrusted callers. Document the choice."
+    },
+    {
+      "id": "no-flsd-on-dml",
+      "severity": "P1",
+      "title": "Account update fires without FLS/CRUD enforcement",
+      "detail": "DML on Account proceeds without `Schema.sObjectType.Account.fields.<Field>.isUpdateable()` or `Security.stripInaccessible(...)`. A user without FLS on a touched field will silently succeed at writes that bypass their FLS surface.",
+      "evidence": {
+        "path": "evals/agents/fixtures/security-scanner/samples/AccountSyncService_Insecure.cls"
+      },
+      "recommendation": "Wrap the records in `SecurityUtils.stripInaccessibleForUpdate(Account.SObjectType, records)` (see template) before the `update` statement."
+    },
+    {
+      "id": "soql-no-security",
+      "severity": "P1",
+      "title": "SOQL lacks WITH SECURITY_ENFORCED / WITH USER_MODE",
+      "detail": "The Account query reads fields without enforcing the running user's FLS. Returned data may include fields the user cannot legally see.",
+      "evidence": {
+        "path": "evals/agents/fixtures/security-scanner/samples/AccountSyncService_Insecure.cls"
+      },
+      "recommendation": "Add `WITH USER_MODE` (preferred on API 60+) or `WITH SECURITY_ENFORCED` to the query. If the query intentionally needs to bypass FLS, use `WITH SYSTEM_MODE` and document why."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "concerning",
+      "severity": "high",
+      "observation": "Two P0 issues land on the same code path (callout without Named Credential AND hardcoded secret). The class likely cannot be deployed to prod until both are remediated together \u2014 a partial fix that only adds the Named Credential while leaving the token in source still leaks the secret.",
+      "domain": "security",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "evals/agents/fixtures/security-scanner/samples/AccountSyncService_Insecure.cls"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "medium",
+      "observation": "After remediation, regenerate the Apex test class so callout tests stub through MockHttpResponseGenerator and FLS tests run via TestUserFactory.standardUser().",
+      "domain": "testing",
+      "evidence": {
+        "source": "heuristic"
+      },
+      "suggested_followup_agent": "test-class-generator",
+      "followup_reason": "because the rewritten class needs new tests covering Named Credential mock, FLS-enforced SOQL, and the with-sharing posture."
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "apex/apex-security-patterns",
+      "path": "skills/apex/apex-security-patterns/SKILL.md",
+      "used_for": "FLS/CRUD enforcement pattern, with-sharing decision rubric, and the WITH USER_MODE preference."
+    },
+    {
+      "type": "skill",
+      "id": "integration/named-credentials-setup",
+      "path": "skills/integration/named-credentials-setup/SKILL.md",
+      "used_for": "Confirming the callout:<NamedCredential> idiom and the rotation/governance benefits over inline endpoints."
+    },
+    {
+      "type": "template",
+      "id": "apex/SecurityUtils.cls",
+      "path": "templates/apex/SecurityUtils.cls",
+      "used_for": "Reference scaffold for the stripInaccessibleForUpdate helper called out in the no-flsd-on-dml remediation."
+    }
+  ],
+  "followups": [
+    {
+      "agent": "test-class-generator",
+      "because": "because the remediated class needs a fresh test class with Named Credential mocking, FLS-enforced SOQL coverage, and a System.runAs path."
+    },
+    {
+      "agent": "code-reviewer",
+      "because": "because two P0 findings land on the same callout code path and a holistic review should confirm no other security smells remain after the remediation."
+    }
+  ]
+}

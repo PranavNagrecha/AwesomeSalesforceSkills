@@ -1,0 +1,128 @@
+{
+  "agent": "soql-optimizer",
+  "mode": "single",
+  "run_id": "20260428T011711Z",
+  "report_path": "docs/reports/soql-optimizer/20260428T011711Z.md",
+  "envelope_path": "docs/reports/soql-optimizer/20260428T011711Z.json",
+  "inputs_received": {
+    "scope_path": "evals/agents/fixtures/soql-optimizer/samples/ContactRollupService_Naive.cls",
+    "source_path": "evals/agents/fixtures/soql-optimizer/samples/ContactRollupService_Naive.cls",
+    "expected_record_count": 2000000
+  },
+  "summary": "ContactRollupService_Naive.cls hits four canonical SOQL anti-patterns at LDV scale (expected ~2M Account rows). The query-in-loop on Contact escalates to P0 because it executes once per Account row and will hit the 100-SOQL limit before the 101st parent. The select-* on Account, missing-LIMIT on the top-level query, and missing security mode each compound the cost. Recommended rewrite lifts the inner query out into a single bulk SOQL call keyed on a Set<AccountId>, projects only the fields actually used downstream, adds WITH USER_MODE, and routes the call through a ContactSelector that extends BaseSelector.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Source is fully inlined and the four anti-patterns are unambiguous; MEDIUM (not HIGH) because the harness lacks a live Query Plan Tool probe to confirm the rewrite hits a custom index on Contact.AccountId.",
+  "findings": [
+    {
+      "id": "query-in-loop",
+      "severity": "P0",
+      "title": "SOQL inside a for-loop on Account",
+      "detail": "Inner Contact query runs once per Account; at the expected 2M-record scale this will exhaust the 100-SOQL governor limit before the 101st parent. The query also re-fetches data already keyed by AccountId.",
+      "evidence": {
+        "path": "evals/agents/fixtures/soql-optimizer/samples/ContactRollupService_Naive.cls",
+        "anti_pattern": "query-in-loop"
+      },
+      "recommendation": "Lift the query out: `Map<Id, List<Contact>> contactsByAccount = new Map<Id, List<Contact>>(); for (Contact c : [SELECT Id, AccountId, Email FROM Contact WHERE AccountId IN :accountIds WITH USER_MODE]) { contactsByAccount.computeIfAbsent(c.AccountId, k -> new List<Contact>()).add(c); }` \u2014 then iterate the parent list once."
+    },
+    {
+      "id": "select-star",
+      "severity": "P1",
+      "title": "Select-* on Account",
+      "detail": "Query reads every field on Account. At 2M rows this fetches ~25\u00d7 more bytes than needed, increases heap pressure, and slows the query plan.",
+      "evidence": {
+        "path": "evals/agents/fixtures/soql-optimizer/samples/ContactRollupService_Naive.cls",
+        "anti_pattern": "select-star"
+      },
+      "recommendation": "Project only the fields used downstream: `SELECT Id, Name, AnnualRevenue FROM Account WHERE ...`. Codify via an `AccountSelector` that exposes one method per use case."
+    },
+    {
+      "id": "missing-limit",
+      "severity": "P1",
+      "title": "Top-level Account query has no LIMIT",
+      "detail": "At LDV scale a query without a LIMIT can return up to 50,000 rows in a single SOQL or, if invoked from a Queueable, time out. Even with the rewrite above, the agent must not unconditionally pull every Account.",
+      "evidence": {
+        "path": "evals/agents/fixtures/soql-optimizer/samples/ContactRollupService_Naive.cls",
+        "anti_pattern": "missing-limit"
+      },
+      "recommendation": "Either add a WHERE clause that bounds the set (e.g. `LastModifiedDate = LAST_N_DAYS:1`), wrap the work in a Batch Apex job sized to chunks of 200, or add an explicit `LIMIT 50000` and document the rationale."
+    },
+    {
+      "id": "no-security",
+      "severity": "P1",
+      "title": "Both queries lack WITH SECURITY_ENFORCED / WITH USER_MODE",
+      "detail": "Account and Contact queries read fields without enforcing the running user's FLS \u2014 the rollup may include fields the running user cannot legally see and surface them downstream.",
+      "evidence": {
+        "path": "evals/agents/fixtures/soql-optimizer/samples/ContactRollupService_Naive.cls",
+        "anti_pattern": "no-security"
+      },
+      "recommendation": "Add `WITH USER_MODE` (preferred on API 60+) to both queries. If a system-mode pass is required, isolate it in a `without sharing` selector method and document the reason."
+    }
+  ],
+  "deliverables": [
+    {
+      "kind": "apex",
+      "title": "Rewrite \u2014 bulkified ContactRollupService",
+      "target_path": "force-app/main/default/classes/ContactRollupService.cls",
+      "content": "public with sharing class ContactRollupService {\n    public static Map<Id, Integer> rollupContactsByAccount(Set<Id> accountIds) {\n        if (accountIds == null || accountIds.isEmpty()) {\n            return new Map<Id, Integer>();\n        }\n        // Single bulk query \u2014 replaces the per-Account inner SOQL.\n        Map<Id, Integer> counts = new Map<Id, Integer>();\n        for (Account a : [\n            SELECT Id, Name, AnnualRevenue\n            FROM Account\n            WHERE Id IN :accountIds\n            WITH USER_MODE\n        ]) {\n            counts.put(a.Id, 0);\n        }\n        for (AggregateResult ar : [\n            SELECT AccountId, COUNT(Id) cnt\n            FROM Contact\n            WHERE AccountId IN :accountIds\n            WITH USER_MODE\n            GROUP BY AccountId\n        ]) {\n            counts.put((Id) ar.get('AccountId'), (Integer) ar.get('cnt'));\n        }\n        return counts;\n    }\n}\n"
+    },
+    {
+      "kind": "markdown",
+      "title": "Why the rewrite is bulkification, not a micro-optimization",
+      "target_path": "docs/reports/soql-optimizer/20260428T011711Z.md",
+      "content": "# ContactRollupService rewrite \u2014 rationale\n\n**Before** (anti-pattern composite): N+1 SOQL queries, select-*, no LIMIT, no FLS.\n**After**: 2 bulk queries (bounded by the input Set), narrow projection, USER_MODE, AggregateResult for the count instead of materializing rows.\n\n## What the rewrite buys\n- **SOQL count**: O(N) \u2192 2 (regardless of input size).\n- **Heap**: O(N \u00d7 Contact-row-size) \u2192 O(N \u00d7 16 bytes) for the count map.\n- **FLS posture**: bypasses \u2192 enforces.\n\n## What it does NOT buy\n- The rewrite still depends on `Contact.AccountId` being a custom-indexed FK (it is, by default). At 2M Accounts \u00d7 an average of 5 Contacts each, the second query reads ~10M Contact rows \u2014 confirm the org's index posture via the Query Plan Tool before scheduling this in a Batch.\n\n## Follow-up\n- **`apex-refactorer`** \u2014 the rewrite belongs in a `ContactSelector` extending `templates/apex/BaseSelector.cls`; this class should consume the selector, not own the query.\n- **`security-scanner`** \u2014 re-scan after the rewrite to confirm no other security smells (sharing keyword, etc.) remain.\n"
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "concerning",
+      "severity": "high",
+      "observation": "At the stated scale (~2M Accounts), the original code will hit the SOQL governor limit on the 101st loop iteration \u2014 the bug surfaces as a runtime exception only at the volume reported in inputs, not in dev sandbox testing.",
+      "domain": "performance",
+      "evidence": {
+        "source": "input",
+        "count": 2000000
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "medium",
+      "observation": "Rewrite belongs behind a Selector that extends BaseSelector so other classes can reuse the same FLS-aware query.",
+      "domain": "architecture",
+      "evidence": {
+        "source": "heuristic"
+      },
+      "suggested_followup_agent": "apex-refactorer",
+      "followup_reason": "because the bulk query and the Account/Contact projection are reusable across multiple call sites and belong in a selector layer, not in this service class."
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "data/soql-query-optimization",
+      "path": "skills/data/soql-query-optimization/SKILL.md",
+      "used_for": "Bulkification rewrite, AggregateResult substitution for count work, and the LIMIT/projection guidance at LDV."
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-security-patterns",
+      "path": "skills/apex/apex-security-patterns/SKILL.md",
+      "used_for": "WITH USER_MODE preference over WITH SECURITY_ENFORCED on API 60+."
+    },
+    {
+      "type": "template",
+      "id": "apex/BaseSelector.cls",
+      "path": "templates/apex/BaseSelector.cls",
+      "used_for": "Reference scaffold for the recommended ContactSelector extraction."
+    }
+  ],
+  "followups": [
+    {
+      "agent": "apex-refactorer",
+      "because": "because the bulk query belongs in a ContactSelector extending BaseSelector; refactoring is out of scope for this agent."
+    },
+    {
+      "agent": "security-scanner",
+      "because": "because the rewrite changes the SOQL security mode and a follow-up scan should confirm no new sharing-keyword or CRUD/FLS gap was introduced."
+    }
+  ]
+}

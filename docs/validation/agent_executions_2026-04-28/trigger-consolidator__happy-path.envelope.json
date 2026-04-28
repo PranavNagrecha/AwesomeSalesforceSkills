@@ -1,0 +1,153 @@
+{
+  "agent": "trigger-consolidator",
+  "mode": "single",
+  "run_id": "20260428T013105Z",
+  "report_path": "docs/reports/trigger-consolidator/20260428T013105Z.md",
+  "envelope_path": "docs/reports/trigger-consolidator/20260428T013105Z.json",
+  "inputs_received": {
+    "object_api_name": "Account",
+    "force_app_root": "evals/agents/fixtures/trigger-consolidator/samples",
+    "source_path": "evals/agents/fixtures/trigger-consolidator/samples/AccountBeforeInsert.trigger",
+    "related_paths": [
+      "evals/agents/fixtures/trigger-consolidator/samples/AccountAfterInsert.trigger",
+      "evals/agents/fixtures/trigger-consolidator/samples/AccountAfterUpdate.trigger"
+    ]
+  },
+  "summary": "Three Account triggers consolidate into a single canonical AccountTrigger + AccountTriggerHandler that extends TriggerHandler. Two are inline-logic triggers (before-insert validation, after-insert child-Task DML) folded verbatim into beforeInsert/afterInsert overrides. The third delegates to a non-framework AccountAfterUpdateService and is folded into afterUpdate by calling that service through the handler \u2014 the service itself is left in place as out-of-scope for this agent (apex-refactorer should extract it into the canonical service layer in a follow-up). A Trigger_Setting__mdt CMDT row gates the new handler via TriggerControl. Deactivation sequence flips the three legacy triggers inactive in metadata FIRST, then activates the new trigger, then last enables the CMDT Is_Active__c flag \u2014 so the cutover window has zero double-firing and a one-flag rollback path.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "All three trigger sources are fully inlined and the consolidation topology is unambiguous; MEDIUM (not HIGH) because the harness lacks a live org probe to confirm whether AccountAfterUpdateService is the only external dependency or whether other Apex/Flow automations on Account compete for order-of-execution.",
+  "findings": [
+    {
+      "id": "multi-trigger-on-object",
+      "severity": "P1",
+      "title": "Three triggers on Account violate the one-trigger-per-object rule",
+      "detail": "Account currently has three separate triggers (AccountBeforeInsert, AccountAfterInsert, AccountAfterUpdate). Salesforce does not guarantee the firing order across multiple triggers on the same object, which makes order-of-execution bugs latent and difficult to reproduce.",
+      "evidence": {
+        "trigger_count": 3,
+        "trigger_names": [
+          "AccountBeforeInsert",
+          "AccountAfterInsert",
+          "AccountAfterUpdate"
+        ]
+      },
+      "recommendation": "Replace with a single AccountTrigger that delegates all events to AccountTriggerHandler (extends TriggerHandler). See `apex/trigger-framework` skill and the `templates/apex/TriggerHandler.cls` template."
+    },
+    {
+      "id": "ad-hoc-handler-not-on-framework",
+      "severity": "P1",
+      "title": "AccountAfterUpdateService is an ad-hoc handler outside the canonical framework",
+      "detail": "AccountAfterUpdate.trigger calls `AccountAfterUpdateService.syncToWarehouse(Trigger.newMap, Trigger.oldMap)` directly. The service is not on TriggerHandler and is not gated by TriggerControl, so there is no kill-switch and no recursion guard.",
+      "evidence": {
+        "external_call": "AccountAfterUpdateService.syncToWarehouse"
+      },
+      "recommendation": "Wrap the call inside the new AccountTriggerHandler.afterUpdate override. Leave AccountAfterUpdateService.cls in place \u2014 extracting its internals into the canonical service layer is apex-refactorer's job, not trigger-consolidator's."
+    },
+    {
+      "id": "no-recursion-guard",
+      "severity": "P2",
+      "title": "Existing triggers have no recursion guard",
+      "detail": "If any of the existing logic produces a recursive Account update (e.g., the welcome-Task DML touches Account.LastModifiedDate via cross-object workflow), there is no static-set guard to prevent the trigger re-firing.",
+      "evidence": {
+        "recursion_guard_present": false
+      },
+      "recommendation": "Use the bypass mechanism on TriggerHandler (`AccountTriggerHandler.bypass()` / `clearBypass()`) when calling the handler from inside Apex that may itself trip the trigger. See `apex/recursive-trigger-prevention` skill."
+    }
+  ],
+  "deliverables": [
+    {
+      "kind": "apex",
+      "title": "AccountTrigger.trigger \u2014 single replacement trigger",
+      "target_path": "force-app/main/default/triggers/AccountTrigger.trigger",
+      "content": "/**\n * AccountTrigger \u2014 the only trigger on Account.\n * All event routing lives in AccountTriggerHandler.\n */\ntrigger AccountTrigger on Account (\n    before insert, before update, before delete,\n    after insert, after update, after delete, after undelete\n) {\n    new AccountTriggerHandler().run();\n}\n"
+    },
+    {
+      "kind": "apex",
+      "title": "AccountTriggerHandler.cls \u2014 extends TriggerHandler, preserves logic verbatim",
+      "target_path": "force-app/main/default/classes/AccountTriggerHandler.cls",
+      "content": "public with sharing class AccountTriggerHandler extends TriggerHandler {\n\n    public AccountTriggerHandler() {\n        super('AccountTriggerHandler');\n    }\n\n    // ---- folded from AccountBeforeInsert.trigger (verbatim logic) ----\n    public override void beforeInsert() {\n        for (Account a : (List<Account>) Trigger.new) {\n            if (String.isBlank(a.Name)) {\n                a.addError('Name is required');\n            }\n            if (a.Industry == null) {\n                a.Industry = 'Other';\n            }\n        }\n    }\n\n    // ---- folded from AccountAfterInsert.trigger (verbatim logic) ----\n    public override void afterInsert() {\n        List<Task> welcomeTasks = new List<Task>();\n        for (Account a : (List<Account>) Trigger.new) {\n            welcomeTasks.add(new Task(\n                Subject = 'Welcome ' + a.Name,\n                WhatId = a.Id\n            ));\n        }\n        if (!welcomeTasks.isEmpty()) {\n            insert welcomeTasks;\n        }\n    }\n\n    // ---- folded from AccountAfterUpdate.trigger (verbatim call site) ----\n    public override void afterUpdate() {\n        AccountAfterUpdateService.syncToWarehouse(\n            (Map<Id, Account>) Trigger.newMap,\n            (Map<Id, Account>) Trigger.oldMap\n        );\n    }\n}\n"
+    },
+    {
+      "kind": "xml",
+      "title": "Trigger_Setting__mdt \u2014 AccountTriggerHandler kill-switch row",
+      "target_path": "force-app/main/default/customMetadata/Trigger_Setting.AccountTriggerHandler.md-meta.xml",
+      "content": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<CustomMetadata xmlns=\"http://soap.sforce.com/2006/04/metadata\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n    <label>AccountTriggerHandler</label>\n    <protected>false</protected>\n    <values>\n        <field>Handler_Name__c</field>\n        <value xsi:type=\"xsd:string\">AccountTriggerHandler</value>\n    </values>\n    <values>\n        <field>Is_Active__c</field>\n        <value xsi:type=\"xsd:boolean\">false</value>\n    </values>\n    <values>\n        <field>Bypass_Profiles__c</field>\n        <value xsi:type=\"xsd:string\">Integration User</value>\n    </values>\n</CustomMetadata>\n"
+    },
+    {
+      "kind": "markdown",
+      "title": "Deactivation + cutover sequence",
+      "target_path": "docs/reports/trigger-consolidator/20260428T013105Z.md",
+      "content": "# Account trigger consolidation \u2014 cutover plan\n\n**Goal:** replace 3 legacy triggers with 1 framework-routed trigger. Zero double-firing during cutover, one-flag rollback.\n\n## Pre-flight\n- Confirm AccountAfterUpdateService.cls is the only external Apex dependency. If others exist, surface them via apex-refactorer before this cutover.\n- Confirm no Process Builder or active record-triggered Flow on Account is co-located with the legacy triggers \u2014 if so, route through flow-analyzer first.\n- Trigger_Setting__mdt.Is_Active__c starts FALSE so the new handler is dormant on first deploy.\n\n## Deployment order (strict)\n1. Deploy `templates/apex/TriggerHandler.cls` and `templates/apex/TriggerControl.cls` if not already in the org.\n2. Deploy `AccountTriggerHandler.cls`.\n3. Deploy `Trigger_Setting.AccountTriggerHandler.md-meta.xml` (Is_Active__c=false).\n4. Deploy `AccountTrigger.trigger` (active, but no-op because the CMDT flag is false).\n5. Mark the three legacy triggers Inactive via metadata in the SAME deployment as step 4 (or a chained deploy). They MUST NOT remain Active alongside AccountTrigger.\n6. **Last:** flip Trigger_Setting.AccountTriggerHandler.Is_Active__c to true via a metadata update or Setup UI. This is the cutover moment.\n\n## Rollback\n- Single flag: set Trigger_Setting.AccountTriggerHandler.Is_Active__c=false. AccountTrigger fires but the handler short-circuits in TriggerHandler.run() based on TriggerControl. Re-activate the legacy triggers if a hard rollback is required.\n\n## What this consolidation did NOT do\n- Did NOT touch business logic inside the three trigger bodies (verbatim folds).\n- Did NOT extract AccountAfterUpdateService.syncToWarehouse into the canonical service layer \u2014 apex-refactorer follow-up.\n- Did NOT generate tests \u2014 hand to test-class-generator with AccountTriggerHandler.cls as the source.\n"
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "One of the three triggers calls into a non-framework service class (AccountAfterUpdateService). Folding the call into the new handler is the correct minimum, but the underlying service class still bypasses TriggerHandler-level guards \u2014 a follow-up refactor should put the service behind the canonical service layer.",
+      "domain": "automation-architecture",
+      "evidence": {
+        "source": "input"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "Fixture does not show whether other automations on Account (Process Builders, record-triggered Flows) compete with these triggers. If any do, the cutover order needs to consider Salesforce's documented order of execution, not just trigger-vs-trigger.",
+      "domain": "automation-architecture",
+      "evidence": {
+        "source": "input"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "medium",
+      "observation": "Once consolidated, generate a test class for AccountTriggerHandler covering bulk insert (200 records) and bulk update (200 records) plus a TriggerControl bypass test that confirms the kill-switch works.",
+      "domain": "testing",
+      "evidence": {
+        "source": "heuristic"
+      },
+      "suggested_followup_agent": "test-class-generator",
+      "followup_reason": "because the new handler needs bulk + kill-switch tests before it can ship; consolidator does not generate tests."
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "apex/trigger-framework",
+      "path": "skills/apex/trigger-framework/SKILL.md",
+      "used_for": "One-trigger-per-object rule, the run() entrypoint pattern, and the override-per-event handler shape."
+    },
+    {
+      "type": "skill",
+      "id": "apex/recursive-trigger-prevention",
+      "path": "skills/apex/recursive-trigger-prevention/SKILL.md",
+      "used_for": "Bypass mechanism on TriggerHandler / TriggerControl as the canonical recursion guard."
+    },
+    {
+      "type": "template",
+      "id": "apex/TriggerHandler.cls",
+      "path": "templates/apex/TriggerHandler.cls",
+      "used_for": "Base class extended by AccountTriggerHandler \u2014 supplies the run() router and the per-event override hooks."
+    },
+    {
+      "type": "template",
+      "id": "apex/TriggerControl.cls",
+      "path": "templates/apex/TriggerControl.cls",
+      "used_for": "CMDT-driven kill switch consumed by TriggerHandler.run() to short-circuit the handler when Is_Active__c is false."
+    }
+  ],
+  "followups": [
+    {
+      "agent": "apex-refactorer",
+      "because": "because AccountAfterUpdateService.syncToWarehouse is still an ad-hoc service \u2014 it should be extracted into the canonical service layer in a follow-up pass."
+    },
+    {
+      "agent": "test-class-generator",
+      "because": "because the new AccountTriggerHandler needs a fresh test class with bulk-insert (200), bulk-update (200), and a TriggerControl kill-switch assertion."
+    },
+    {
+      "agent": "flow-analyzer",
+      "because": "because if there are co-located record-triggered Flows on Account, the cutover order must align with the platform order of execution, not just trigger sequencing."
+    }
+  ]
+}

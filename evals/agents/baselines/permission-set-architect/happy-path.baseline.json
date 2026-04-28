@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "case_id": "permission-set-architect__happy-path",
+  "agent": "permission-set-architect",
+  "fixture_path": "evals/agents/fixtures/permission-set-architect/happy-path.yaml",
+  "fixture_sha256": "661679ef75f6e5f227d0db7f75c803e9b44cce580cb789074fece987c8a9ce52",
+  "agent_md_path": "agents/permission-set-architect/AGENT.md",
+  "agent_md_sha256": "5adcc42a275341d8fcc40984d018467e49a5410a8d513999f0e2d9eb3d2cc79e",
+  "envelope_path": "docs/validation/agent_executions_2026-04-28/permission-set-architect__happy-path.envelope.json",
+  "captured_at": "2026-04-28T01:38:24Z",
+  "model": "claude-sonnet-4-5",
+  "fingerprint": {
+    "schema_version": 1,
+    "agent": "permission-set-architect",
+    "mode": "design",
+    "confidence": "MEDIUM",
+    "refusal_code": null,
+    "finding_ids": [],
+    "finding_severities": [],
+    "citations": [
+      [
+        "skill",
+        "admin/permission-set-architecture"
+      ],
+      [
+        "skill",
+        "security/permission-set-groups-and-muting"
+      ],
+      [
+        "template",
+        "admin/permission-set-patterns.md"
+      ]
+    ],
+    "followup_agents": [
+      "field-impact-analyzer",
+      "sharing-audit-agent"
+    ],
+    "observation_categories": [
+      [
+        "ambiguous",
+        1
+      ],
+      [
+        "healthy",
+        1
+      ],
+      [
+        "suggested_followup",
+        1
+      ]
+    ],
+    "deliverable_kinds": [
+      [
+        "markdown",
+        1
+      ],
+      [
+        "xml",
+        5
+      ]
+    ],
+    "dimensions_compared": [],
+    "dimensions_skipped": []
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "case_id": "security-scanner__happy-path",
+  "agent": "security-scanner",
+  "fixture_path": "evals/agents/fixtures/security-scanner/happy-path.yaml",
+  "fixture_sha256": "e9717ada5b0259c0ae746491e64fbb54b5421f33d9d1679a7eb22d414c6e04f2",
+  "agent_md_path": "agents/security-scanner/AGENT.md",
+  "agent_md_sha256": "ffeea7971e0fc0e67eb9c69c0f363e7cf44232c5f2bdf41c0d2fc0cd93b47b08",
+  "envelope_path": "docs/validation/agent_executions_2026-04-28/security-scanner__happy-path.envelope.json",
+  "captured_at": "2026-04-28T01:40:32Z",
+  "model": "claude-sonnet-4-5",
+  "fingerprint": {
+    "schema_version": 1,
+    "agent": "security-scanner",
+    "mode": "single",
+    "confidence": "MEDIUM",
+    "refusal_code": null,
+    "finding_ids": [
+      "callout-without-named-credential",
+      "hardcoded-secret",
+      "no-flsd-on-dml",
+      "no-sharing-keyword",
+      "soql-no-security"
+    ],
+    "finding_severities": [
+      [
+        "P0",
+        2
+      ],
+      [
+        "P1",
+        3
+      ]
+    ],
+    "citations": [
+      [
+        "skill",
+        "apex/apex-security-patterns"
+      ],
+      [
+        "skill",
+        "integration/named-credentials-setup"
+      ],
+      [
+        "template",
+        "apex/SecurityUtils.cls"
+      ]
+    ],
+    "followup_agents": [
+      "code-reviewer",
+      "test-class-generator"
+    ],
+    "observation_categories": [
+      [
+        "concerning",
+        1
+      ],
+      [
+        "suggested_followup",
+        1
+      ]
+    ],
+    "deliverable_kinds": [],
+    "dimensions_compared": [
+      "apex-crud-fls",
+      "callout-auth",
+      "secret-leakage",
+      "sharing-posture",
+      "soql-security-mode"
+    ],
+    "dimensions_skipped": [
+      "package-manifest-scope"
+    ]
+  }
+}
