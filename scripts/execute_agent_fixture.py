@@ -55,7 +55,10 @@ except ImportError:
 REPO_ROOT = Path(__file__).resolve().parents[1]
 AGENTS_DIR = REPO_ROOT / "agents"
 SHARED_DIR = AGENTS_DIR / "_shared"
-ENVELOPE_SCHEMA_PATH = SHARED_DIR / "schemas" / "output-envelope.schema.json"
+SCHEMAS_DIR = SHARED_DIR / "schemas"
+ENVELOPE_SCHEMA_PATH = SCHEMAS_DIR / "output-envelope.schema.json"
+OBSERVATION_SCHEMA_PATH = SCHEMAS_DIR / "observation.schema.json"
+CITATION_SCHEMA_PATH = SCHEMAS_DIR / "citation.schema.json"
 REFUSAL_CODES_PATH = SHARED_DIR / "REFUSAL_CODES.md"
 DELIVERABLE_CONTRACT_PATH = SHARED_DIR / "DELIVERABLE_CONTRACT.md"
 
@@ -120,6 +123,111 @@ def read_source_references(inputs: dict) -> dict[str, str]:
     return files
 
 
+def _resolve_refs_inline(node: Any, sub_schemas: dict[str, dict]) -> Any:
+    """Walk a schema and replace `{"$ref": "X.schema.json"}` with the loaded sub-schema dict.
+
+    Only handles the simple case used by output-envelope.schema.json: bare-filename refs
+    to sibling schemas. Anything else passes through unchanged.
+    """
+    if isinstance(node, dict):
+        if set(node.keys()) == {"$ref"} and isinstance(node["$ref"], str):
+            ref = node["$ref"]
+            if ref in sub_schemas:
+                return _resolve_refs_inline(sub_schemas[ref], sub_schemas)
+        return {k: _resolve_refs_inline(v, sub_schemas) for k, v in node.items()}
+    if isinstance(node, list):
+        return [_resolve_refs_inline(item, sub_schemas) for item in node]
+    return node
+
+
+def _walk_enums(node: Any, path: str, out: list[tuple[str, list]]) -> None:
+    """Collect (json_path, allowed_values) for every `enum` constraint in a schema."""
+    if isinstance(node, dict):
+        if "enum" in node and isinstance(node["enum"], list):
+            out.append((path or "<root>", list(node["enum"])))
+        for k, v in node.items():
+            if k == "properties" and isinstance(v, dict):
+                for prop_name, prop_schema in v.items():
+                    _walk_enums(prop_schema, f"{path}.{prop_name}" if path else prop_name, out)
+            elif k == "items":
+                _walk_enums(v, f"{path}[]" if path else "[]", out)
+            elif k in ("allOf", "anyOf", "oneOf") and isinstance(v, list):
+                for branch in v:
+                    _walk_enums(branch, path, out)
+            elif k == "then" and isinstance(v, dict):
+                _walk_enums(v, path, out)
+            elif k not in ("enum", "if", "description", "examples", "default"):
+                _walk_enums(v, path, out)
+    elif isinstance(node, list):
+        for item in node:
+            _walk_enums(item, path, out)
+
+
+def collect_enum_cheat_sheet(resolved_envelope_schema: dict) -> str:
+    """Render an LLM-facing cheat sheet of every enum-constrained field.
+
+    The schema is canonical, but enum values are buried in 159 lines of JSON.
+    This block surfaces them at the same scroll-position as the agent's task,
+    so a model can't ship `severity: HIGH` when the schema demands `P0`.
+    """
+    enums: list[tuple[str, list]] = []
+    _walk_enums(resolved_envelope_schema, "", enums)
+    # Dedupe — the same path/values can appear via inlined sub-schemas.
+    seen = set()
+    unique: list[tuple[str, list]] = []
+    for path, values in enums:
+        key = (path, tuple(values))
+        if key in seen:
+            continue
+        seen.add(key)
+        unique.append((path, values))
+    unique.sort()
+    if not unique:
+        return ""
+    lines = [
+        "=== ENVELOPE ENUM CHEAT SHEET (extracted from the schema above) ===",
+        "Every field below is constrained to EXACTLY one of the listed values.",
+        "Common mistakes: severity uses P0/P1/P2/INFO (not HIGH/MEDIUM); state uses count-only/not-run/partial (not 'not-applicable'); deliverable kind has no 'shell' (use 'other').",
+        "",
+    ]
+    for path, values in unique:
+        lines.append(f"  {path}: {' | '.join(repr(v) for v in values)}")
+    return "\n".join(lines)
+
+
+def validate_envelope_against_schema(envelope: dict) -> list[str]:
+    """Pre-flight schema check. Returns a list of human-readable error strings (empty = pass).
+
+    Loads envelope + sibling sub-schemas, inlines $refs, runs Draft202012Validator,
+    and formats each ValidationError as "<json-path>: <message>" so the operator
+    can fix the envelope without grepping the schema.
+    """
+    if jsonschema is None:
+        return ["[WARN] jsonschema not installed — pre-flight skipped"]
+    envelope_schema = json.loads(ENVELOPE_SCHEMA_PATH.read_text(encoding="utf-8"))
+    sub_schemas: dict[str, dict] = {}
+    if OBSERVATION_SCHEMA_PATH.exists():
+        sub_schemas["observation.schema.json"] = json.loads(
+            OBSERVATION_SCHEMA_PATH.read_text(encoding="utf-8")
+        )
+    if CITATION_SCHEMA_PATH.exists():
+        sub_schemas["citation.schema.json"] = json.loads(
+            CITATION_SCHEMA_PATH.read_text(encoding="utf-8")
+        )
+    resolved = _resolve_refs_inline(envelope_schema, sub_schemas)
+    validator = jsonschema.Draft202012Validator(resolved)
+    errors = []
+    for err in sorted(validator.iter_errors(envelope), key=lambda e: list(e.absolute_path)):
+        path = "$" + "".join(f"[{p!r}]" if isinstance(p, str) else f"[{p}]" for p in err.absolute_path)
+        msg = err.message
+        # Surface allowed enum values inline when the failure is an enum mismatch.
+        schema_enum = err.schema.get("enum") if isinstance(err.schema, dict) else None
+        if schema_enum:
+            msg = f"{msg}  -- allowed: {' | '.join(repr(v) for v in schema_enum)}"
+        errors.append(f"{path}: {msg}")
+    return errors
+
+
 def assemble_prompt(
     *,
     agent_slug: str,
@@ -128,6 +236,7 @@ def assemble_prompt(
     org_stub: dict,
     source_files: dict[str, str],
     envelope_schema: dict,
+    enum_cheat_sheet: str,
     refusal_codes_md: str,
     deliverable_contract_md: str,
     run_id: str,
@@ -147,6 +256,8 @@ def assemble_prompt(
 
 === output-envelope.schema.json (agents/_shared/schemas/output-envelope.schema.json) ===
 {json.dumps(envelope_schema, indent=2)}
+
+{enum_cheat_sheet}
 
 === HARNESS CONSTRAINTS ===
 You are being executed inside a batch grading harness, not a live session. You have no tool access. The caller has pre-fetched every file and org probe you would otherwise call — they appear inline in the user message. Do NOT ask follow-up questions. Do NOT claim you need to fetch a file — if a file is relevant and not shown, treat it as unavailable and lower confidence. You MUST return exactly one fenced JSON block matching the envelope schema. No prose outside the fence. The `run_id` MUST be `{run_id}`. The `report_path` MUST be `docs/reports/{agent_slug}/{run_id}.md`. The `envelope_path` MUST be `docs/reports/{agent_slug}/{run_id}.json`. Include the full refactored Apex + test class in `deliverables[]` — do NOT truncate."""
@@ -259,6 +370,16 @@ def main() -> int:
     source_files = read_source_references(inputs)
 
     envelope_schema = json.loads(ENVELOPE_SCHEMA_PATH.read_text(encoding="utf-8"))
+    sub_schemas: dict[str, dict] = {}
+    if OBSERVATION_SCHEMA_PATH.exists():
+        sub_schemas["observation.schema.json"] = json.loads(
+            OBSERVATION_SCHEMA_PATH.read_text(encoding="utf-8")
+        )
+    if CITATION_SCHEMA_PATH.exists():
+        sub_schemas["citation.schema.json"] = json.loads(
+            CITATION_SCHEMA_PATH.read_text(encoding="utf-8")
+        )
+    enum_cheat_sheet = collect_enum_cheat_sheet(_resolve_refs_inline(envelope_schema, sub_schemas))
     refusal_md = REFUSAL_CODES_PATH.read_text(encoding="utf-8") if REFUSAL_CODES_PATH.exists() else ""
     deliverable_md = DELIVERABLE_CONTRACT_PATH.read_text(encoding="utf-8") if DELIVERABLE_CONTRACT_PATH.exists() else ""
 
@@ -275,6 +396,7 @@ def main() -> int:
         org_stub=org_stub,
         source_files=source_files,
         envelope_schema=envelope_schema,
+        enum_cheat_sheet=enum_cheat_sheet,
         refusal_codes_md=refusal_md,
         deliverable_contract_md=deliverable_md,
         run_id=run_id,
@@ -322,6 +444,22 @@ def main() -> int:
         raw_path.write_text(raw_text, encoding="utf-8")
 
     envelope = extract_envelope(raw_text)
+
+    # Pre-flight schema check BEFORE writing the canonical envelope_path —
+    # otherwise a bad envelope (severity=HIGH, kind=shell, etc.) clobbers
+    # the previous good envelope on disk.
+    schema_errors = validate_envelope_against_schema(envelope)
+    if schema_errors:
+        print(f"[{agent_slug}] PRE-FLIGHT SCHEMA FAIL ({len(schema_errors)} error(s)):", file=sys.stderr)
+        for line in schema_errors:
+            print(f"  - {line}", file=sys.stderr)
+        print(
+            f"[{agent_slug}] refusing to grade or baseline a schema-invalid envelope. "
+            f"Fix the source envelope and rerun.",
+            file=sys.stderr,
+        )
+        return 2
+
     envelope_path = out_dir / f"{stem}.envelope.json"
     envelope_path.write_text(json.dumps(envelope, indent=2), encoding="utf-8")
     print(f"[{agent_slug}] envelope -> {envelope_path.relative_to(REPO_ROOT)}")
@@ -359,6 +497,7 @@ def main() -> int:
         envelope_path=envelope_path,
         agent_slug=agent_slug,
         model=args.model,
+        grader_exit=result.returncode,
     )
     return result.returncode or baseline_exit
 
@@ -370,6 +509,7 @@ def run_baseline_step(
     envelope_path: Path,
     agent_slug: str,
     model: str,
+    grader_exit: int = 0,
 ) -> int:
     if mode == "off":
         return 0
@@ -381,6 +521,17 @@ def run_baseline_step(
 
     baselines_dir = REPO_ROOT / "evals" / "agents" / "baselines"
     baseline_file = baselines_dir / agent_slug / f"{fixture_path.stem}.baseline.json"
+
+    # Refuse to seed a baseline from a grader-failed envelope. Earlier in this
+    # session two bad envelopes (severity=HIGH, kind=shell) silently became
+    # baselines because `create` ran regardless of the grader's verdict.
+    if mode == "create" and grader_exit != 0:
+        print(
+            f"[{agent_slug}] refusing to write baseline because grader exited {grader_exit}; "
+            f"pass --baseline=create-force to override",
+            file=sys.stderr,
+        )
+        return 1
 
     if mode == "auto":
         if not baseline_file.exists():
