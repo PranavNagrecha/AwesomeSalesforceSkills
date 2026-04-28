@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 45
   },
-  "generated_from_hash": "610bd511315371f22bbff730b018d961c67de73b9ca80b77331d32684f07de7f",
+  "generated_from_hash": "4ca0ab4417b5580f8904ffa6c2b19a22ba26b7396cc8229c03d433d58851f0a3",
   "schema_version": 1,
   "skill_count": 907,
   "skills": [
@@ -102100,7 +102100,7 @@
         "f9ccc57bf300ce568e3a",
         "fdbce9da4cac62e6b85b"
       ],
-      "content_hash": "1f8b2e48b738beb9d8c5d1ca3053ee5ec2909bcd6155bf32653aa390ef90d8ce",
+      "content_hash": "e4502f83147b66c98b0e6626e7d1e2f2937be42ff2a11ba780600e0622d43590",
       "dependencies": [],
       "description": "Diagnose and fix runtime errors in Lightning Web Components including wire adapter failures, shadow DOM boundary violations, event propagation mistakes, async rendering timing bugs, NavigationMixin errors, Lightning Locker vs Lightning Web Security conflicts, and slot projection problems. Triggers: 'wire adapter returns undefined', 'querySelector returns null in LWC', 'custom event not received by parent', 'LWC component not rendering after connected callback', 'NavigationMixin page reference error'. NOT for LWC fundamentals, build/deployment errors, or Aura component debugging.",
       "file_location": "skills/lwc/common-lwc-runtime-errors",
@@ -102153,7 +102153,7 @@
       "templates": [
         "skills/lwc/common-lwc-runtime-errors/templates/common-lwc-runtime-errors-template.md"
       ],
-      "updated": "2026-04-04",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -103532,7 +103532,7 @@
         "f880d823e0a03194bc49",
         "fbd6c319bfaa084ef82f"
       ],
-      "content_hash": "000422725582122eb861893d4677aee19e204c802e8a572b563457e638a70280",
+      "content_hash": "78db9f97c3d77749ce5e8615a9a59b9cd866a8dd18652168633211e68638a971",
       "dependencies": [],
       "description": "Use when building or reviewing Lightning Web Components \u2014 specifically lifecycle management, wire service, memory leak prevention, navigation, and Lightning Locker Service constraints. Triggers: 'LWC', 'connectedCallback', 'renderedCallback', 'memory leak', 'NavigationMixin', 'wire'. NOT for Aura components.",
       "file_location": "skills/lwc/lifecycle-hooks",
@@ -103575,7 +103575,7 @@
         "skills/lwc/lifecycle-hooks/templates/lwc-component-scaffold.html",
         "skills/lwc/lifecycle-hooks/templates/lwc-component-scaffold.js"
       ],
-      "updated": "2026-03-13",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -103772,7 +103772,7 @@
         "fb1baaf92707d6329e93",
         "fe7f867496b201e79c39"
       ],
-      "content_hash": "ed9627b7b2a8a0eb52dde9f98ca5427f1eb3ed748f8969bf069590c5eff67bc5",
+      "content_hash": "92ff9a761a493973ab6921517770d27c78b712f8fa34eace508fa37b0f684e43",
       "dependencies": [],
       "description": "Use when implementing specific ARIA attributes, keyboard navigation patterns, screen reader live regions, WCAG 2.1 compliance, focus management, or accessible data tables in Lightning Web Components. Trigger keywords: ARIA, aria-live, aria-label, aria-labelledby, role=grid, tabindex, keydown handler, WCAG AA, focus trap, accessible datatable, shadow DOM ARIA boundary. NOT for general LWC styling, visual design, SLDS theming, or CSS that does not affect assistive-technology behavior.",
       "file_location": "skills/lwc/lwc-accessibility-patterns",
@@ -103818,7 +103818,7 @@
       "templates": [
         "skills/lwc/lwc-accessibility-patterns/templates/lwc-accessibility-patterns-template.md"
       ],
-      "updated": "2026-04-04",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -108477,7 +108477,7 @@
         "fc591b75eb67b193335b",
         "fff45c556b5f4d3f7932"
       ],
-      "content_hash": "653c018a07544f59c81797cc3ed1358b1eb11496a703cd2a44256b874491ef82",
+      "content_hash": "c345593724e804b8d0a2bda45511a9d68f208b8f2a739707b7d96537eb396fea",
       "dependencies": [],
       "description": "Use this skill when building or customizing sites on the Lightning Web Runtime (LWR) in Experience Cloud \u2014 including component authoring, custom theming with --dxp hooks, layout components, and publish lifecycle management. Trigger keywords: build LWR site Experience Cloud, Lightning Web Runtime custom theme, LWR component development community, Build Your Own LWR template, Microsite LWR, lightningCommunity__Theme_Layout, --dxp styling hooks. NOT for Aura-based communities (Build Your Own Aura template). NOT for standard Experience Builder drag-and-drop configuration without code.",
       "file_location": "skills/lwc/lwr-site-development",
@@ -108522,7 +108522,7 @@
       "templates": [
         "skills/lwc/lwr-site-development/templates/lwr-site-development-template.md"
       ],
-      "updated": "2026-04-06",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },

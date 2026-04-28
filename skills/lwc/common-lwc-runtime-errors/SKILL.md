@@ -45,7 +45,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-04-28
 ---
 
 # Common LWC Runtime Errors
@@ -58,11 +58,13 @@ Use this skill when a Lightning Web Component compiles and deploys successfully 
 
 Gather this context before working on anything in this domain:
 
-- **Enable debug mode** — Setup > Lightning Components > Enable Debug Mode. Without it, minified stack traces make root-cause analysis impractical. Debug mode also surfaces additional LWC framework warnings in the console.
-- **Identify the security model** — Is the org using Lightning Web Security (LWS) or legacy Locker Service? LWS allows more permissive DOM operations and broader third-party library compatibility. Locker Service blocks many native DOM APIs. Check Setup > Session Settings.
-- **Identify the lifecycle phase** — Most runtime errors occur in a specific hook: `connectedCallback`, `renderedCallback`, a `@wire` handler, or an event handler. Knowing the phase narrows the cause immediately.
-- **Collect the full console error** — LWC runtime errors from the framework often include a component stack alongside the JS stack. Both are needed to locate the failing component boundary.
-- **Check if a wire adapter is involved** — Wire errors surface as `undefined` data rather than thrown exceptions. The `error` property of the wire object is the primary diagnostic signal.
+| Context | What to gather and why |
+|---|---|
+| Debug mode | Enable via Setup > Lightning Components. Without it, minified stacks make root-cause analysis impractical; it also surfaces LWC framework warnings in the console. |
+| Security model | LWS vs legacy Locker Service. LWS allows broader DOM and third-party-lib compatibility; Locker blocks many native DOM APIs. Check Setup > Session Settings. |
+| Lifecycle phase | Most runtime errors occur in a specific hook: `connectedCallback`, `renderedCallback`, a `@wire` handler, or an event handler. Identifying the phase narrows the cause immediately. |
+| Full console error | LWC framework errors often include a component stack alongside the JS stack — capture both to locate the failing component boundary. |
+| Wire-adapter involvement | Wire errors surface as `undefined` data rather than thrown exceptions. The `error` property of the wire object is the primary diagnostic signal. |
 
 ---
 

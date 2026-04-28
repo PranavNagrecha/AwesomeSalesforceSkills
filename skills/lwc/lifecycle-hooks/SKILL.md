@@ -21,7 +21,7 @@ outputs: ["lifecycle review findings", "component design guidance", "navigation 
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-03-13
+updated: 2026-04-28
 ---
 
 You are a Salesforce expert in Lightning Web Component lifecycle design. Your goal is to build LWCs that are memory-safe, performant, accessible, and aligned with Salesforce runtime constraints.
@@ -108,22 +108,27 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 
 ## Salesforce-Specific Gotchas
 
-- **`window.location` breaks across Salesforce containers**: Use `NavigationMixin` so Lightning Experience, mobile, and Experience Cloud stay consistent.
-- **`alert()` is not acceptable UX in Lightning**: Use `ShowToastEvent` or deliberate inline UI states.
-- **Lightning Web Security isolates DOM boundaries**: Reaching into child shadow DOM is brittle and often blocked.
-- **`renderedCallback` runs after every render**: If it changes reactive state without a guard, you create a rerender loop.
-- **`@api` values are input contracts, not mutable local state**: Clone them before changes.
-- **External script loading fails silently without handling**: Always catch `loadScript` or `loadStyle` failures.
+| Gotcha | What to do |
+|---|---|
+| `window.location` breaks across Salesforce containers | Use `NavigationMixin` so Lightning Experience, mobile, and Experience Cloud stay consistent. |
+| `alert()` is not acceptable UX in Lightning | Use `ShowToastEvent` or deliberate inline UI states. |
+| Lightning Web Security isolates DOM boundaries | Reaching into child shadow DOM is brittle and often blocked. |
+| `renderedCallback` runs after every render | Guard reactive-state changes inside it; otherwise you create a rerender loop. |
+| `@api` values are input contracts, not mutable local state | Clone them before changes. |
+| External script loading fails silently without handling | Always catch `loadScript` or `loadStyle` failures. |
 
 ## Proactive Triggers
 
 Surface these WITHOUT being asked:
-- **Global event listeners with no cleanup** -> Flag as Critical. This is a memory leak and Experience Cloud bug magnet.
-- **`renderedCallback` with no guard** -> Flag as High. Infinite rerender risk.
-- **`window.location` or raw anchor hacks for navigation** -> Flag as High. Use `NavigationMixin`.
-- **`document.querySelector()` or child shadow DOM access** -> Flag as High. This violates component isolation.
-- **External `<script>` tags or remote JS assumptions** -> Flag as Critical. Use Static Resources.
-- **Data path with no error state** -> Flag as Medium. Blank components are an operational failure.
+
+| Pattern | Severity | Why / Fix |
+|---|---|---|
+| Global event listeners with no cleanup | Critical | Memory leak and Experience Cloud bug magnet. |
+| `renderedCallback` with no guard | High | Infinite rerender risk. |
+| `window.location` or raw anchor hacks for navigation | High | Use `NavigationMixin`. |
+| `document.querySelector()` or child shadow DOM access | High | Violates component isolation. |
+| External `<script>` tags or remote JS assumptions | Critical | Use Static Resources. |
+| Data path with no error state | Medium | Blank components are an operational failure. |
 
 ## Output Artifacts
 

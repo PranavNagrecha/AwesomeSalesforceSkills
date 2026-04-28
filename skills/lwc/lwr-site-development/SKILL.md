@@ -34,7 +34,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-04-28
 ---
 
 # LWR Site Development
@@ -80,11 +80,14 @@ Practical consequences:
 
 LWR sites use Lightning Web Security (LWS) instead of Lightning Locker. LWS is stricter in some dimensions and more permissive in others:
 
-- **Cross-namespace component imports are supported** — LWC components can import from other namespaces via composition or extension.
-- **Global objects are exposed directly** — `document`, `window`, and `element` globals are no longer wrapped in secure proxies, so standard DOM APIs work as expected within a namespace.
-- **Third-party library integration is easier** — analytics and charting libraries can interact with DOM elements more naturally.
-- **Some DOM properties are still restricted** — `document.domain`, `document.location`, `window.location`, and `window.top` are unsupported in LWS on LWR sites.
-- The org-level `Use Lightning Web Security` setting in Session Settings has **no effect** on LWR sites. LWS is always active at the site level, regardless of the org setting.
+| Behavior | LWS on LWR sites |
+|---|---|
+| Cross-namespace component imports | Supported — LWC components can import from other namespaces via composition or extension. |
+| Global objects (`document`, `window`, `element`) | Exposed directly — no longer wrapped in secure proxies, so standard DOM APIs work within a namespace. |
+| Third-party library integration | Easier — analytics and charting libraries can interact with DOM elements more naturally. |
+| Restricted DOM properties | `document.domain`, `document.location`, `window.location`, and `window.top` are unsupported. |
+
+The org-level `Use Lightning Web Security` setting in Session Settings has **no effect** on LWR sites. LWS is always active at the site level, regardless of the org setting.
 
 Existing components built for Aura sites or Lightning Experience may rely on Locker-specific patterns. Test them in an LWR site context before deploying.
 
