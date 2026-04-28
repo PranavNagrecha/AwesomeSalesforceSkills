@@ -665,12 +665,15 @@
       "flow/flow-data-tables",
       "flow/flow-debugging",
       "flow/flow-decision-element-patterns",
+      "flow/flow-deployment-and-packaging",
       "flow/flow-dynamic-choices",
+      "flow/flow-element-naming-conventions",
       "flow/flow-email-and-notifications",
       "flow/flow-error-monitoring",
       "flow/flow-external-services",
       "flow/flow-for-experience-cloud",
       "flow/flow-for-slack",
+      "flow/flow-formula-and-expression-patterns",
       "flow/flow-get-records-optimization",
       "flow/flow-governance",
       "flow/flow-governor-limits-deep-dive",
@@ -678,14 +681,19 @@
       "flow/flow-interview-debugging",
       "flow/flow-invocable-from-apex",
       "flow/flow-large-data-volume-patterns",
+      "flow/flow-loop-element-patterns",
       "flow/flow-migration-from-trigger",
       "flow/flow-performance-optimization",
       "flow/flow-platform-events-integration",
       "flow/flow-reactive-screen-components",
+      "flow/flow-record-locking-and-contention",
       "flow/flow-record-save-order-interaction",
       "flow/flow-resource-patterns",
       "flow/flow-rollback-patterns",
+      "flow/flow-runtime-context-and-sharing",
       "flow/flow-runtime-error-diagnosis",
+      "flow/flow-screen-input-validation-patterns",
+      "flow/flow-screen-lwc-components",
       "flow/flow-testing",
       "flow/flow-transaction-finalizer-patterns",
       "flow/flow-transactional-boundaries",
@@ -1273,6 +1281,7 @@
     ],
     "accessibility": [
       "admin/digital-storefront-requirements",
+      "flow/flow-screen-input-validation-patterns",
       "flow/screen-flow-accessibility",
       "lwc/lwc-chart-and-visualization",
       "lwc/lwc-focus-management",
@@ -1937,6 +1946,9 @@
     "api-monitoring": [
       "security/api-security-and-rate-limiting"
     ],
+    "api-name": [
+      "flow/flow-element-naming-conventions"
+    ],
     "api-only": [
       "admin/integration-user-management"
     ],
@@ -2171,6 +2183,7 @@
     "audit": [
       "data/field-history-tracking",
       "data/territory-data-alignment",
+      "flow/flow-runtime-context-and-sharing",
       "security/event-monitoring",
       "security/privileged-access-management"
     ],
@@ -2623,6 +2636,7 @@
       "flow/auto-launched-flow-patterns",
       "flow/flow-cross-object-updates",
       "flow/flow-invocable-from-apex",
+      "flow/flow-loop-element-patterns",
       "omnistudio/dataraptor-transform-optimization"
     ],
     "bundle-design": [
@@ -2991,7 +3005,8 @@
       "admin/deployment-risk-assessment"
     ],
     "change-set": [
-      "devops/experience-cloud-deployment-admin"
+      "devops/experience-cloud-deployment-admin",
+      "flow/flow-deployment-and-packaging"
     ],
     "change-sets": [
       "admin/change-management-and-deployment",
@@ -3422,7 +3437,8 @@
     ],
     "concurrency": [
       "apex/salesforce-debug-log-analysis",
-      "architect/omnistudio-scalability-patterns"
+      "architect/omnistudio-scalability-patterns",
+      "flow/flow-record-locking-and-contention"
     ],
     "concurrent-limits": [
       "security/api-security-and-rate-limiting"
@@ -3894,7 +3910,8 @@
       "apex/long-running-process-orchestration"
     ],
     "crud": [
-      "apex/soql-security"
+      "apex/soql-security",
+      "flow/flow-runtime-context-and-sharing"
     ],
     "crud-fls": [
       "apex/apex-security-patterns",
@@ -4839,6 +4856,7 @@
       "devops/scratch-org-pools",
       "devops/source-tracking-and-conflict-resolution",
       "devops/unlocked-package-development",
+      "flow/flow-deployment-and-packaging",
       "omnistudio/omnistudio-ci-cd-patterns"
     ],
     "devops-center": [
@@ -4957,6 +4975,9 @@
     ],
     "dml-exception": [
       "apex/exception-handling"
+    ],
+    "dml-in-loop": [
+      "flow/flow-loop-element-patterns"
     ],
     "dml-limits": [
       "architect/limits-and-scalability-planning"
@@ -6045,10 +6066,13 @@
       "flow/flow-cross-object-updates",
       "flow/flow-data-tables",
       "flow/flow-decision-element-patterns",
+      "flow/flow-deployment-and-packaging",
       "flow/flow-dynamic-choices",
+      "flow/flow-element-naming-conventions",
       "flow/flow-error-monitoring",
       "flow/flow-external-services",
       "flow/flow-for-slack",
+      "flow/flow-formula-and-expression-patterns",
       "flow/flow-get-records-optimization",
       "flow/flow-governor-limits-deep-dive",
       "flow/flow-http-callout-action",
@@ -6061,6 +6085,7 @@
       "flow/flow-record-save-order-interaction",
       "flow/flow-resource-patterns",
       "flow/flow-rollback-patterns",
+      "flow/flow-runtime-context-and-sharing",
       "flow/flow-runtime-error-diagnosis",
       "flow/flow-transaction-finalizer-patterns",
       "flow/flow-transactional-boundaries",
@@ -6082,12 +6107,14 @@
       "apex/invocable-methods"
     ],
     "flow-attribute-change-event": [
+      "flow/flow-screen-lwc-components",
       "lwc/lwc-in-flow-screens"
     ],
     "flow-builder": [
       "agentforce/einstein-next-best-action",
       "flow/flow-action-framework",
       "flow/flow-custom-property-editors",
+      "flow/flow-screen-lwc-components",
       "flow/process-builder-to-flow-migration",
       "flow/workflow-rule-to-flow-migration",
       "lwc/custom-property-editor-for-flow"
@@ -6107,11 +6134,20 @@
     "flow-debugging": [
       "flow/flow-debugging"
     ],
+    "flow-deployment-and-packaging": [
+      "flow/flow-deployment-and-packaging"
+    ],
+    "flow-element-naming-conventions": [
+      "flow/flow-element-naming-conventions"
+    ],
     "flow-email": [
       "flow/flow-email-and-notifications"
     ],
     "flow-faults": [
       "flow/fault-handling"
+    ],
+    "flow-formula-and-expression-patterns": [
+      "flow/flow-formula-and-expression-patterns"
     ],
     "flow-governance": [
       "flow/flow-governance"
@@ -6129,7 +6165,11 @@
     "flow-large-data-volume-patterns": [
       "flow/flow-large-data-volume-patterns"
     ],
+    "flow-loop-element-patterns": [
+      "flow/flow-loop-element-patterns"
+    ],
     "flow-navigation": [
+      "flow/flow-screen-lwc-components",
       "lwc/lwc-in-flow-screens"
     ],
     "flow-orchestration": [
@@ -6137,11 +6177,23 @@
       "flow/flow-action-framework",
       "flow/orchestration-flows"
     ],
+    "flow-record-locking-and-contention": [
+      "flow/flow-record-locking-and-contention"
+    ],
     "flow-reuse": [
       "flow/subflows-and-reusability"
     ],
+    "flow-runtime-context-and-sharing": [
+      "flow/flow-runtime-context-and-sharing"
+    ],
     "flow-screen": [
       "lwc/lwc-in-flow-screens"
+    ],
+    "flow-screen-input-validation-patterns": [
+      "flow/flow-screen-input-validation-patterns"
+    ],
+    "flow-screen-lwc-components": [
+      "flow/flow-screen-lwc-components"
     ],
     "flow-standards": [
       "flow/flow-governance"
@@ -6178,6 +6230,7 @@
       "apex/dynamic-apex",
       "apex/soql-security",
       "architect/security-architecture-review",
+      "flow/flow-runtime-context-and-sharing",
       "lwc/experience-cloud-api-access"
     ],
     "flying-saucer": [
@@ -6241,6 +6294,7 @@
     ],
     "formulas": [
       "admin/validation-rules",
+      "flow/flow-formula-and-expression-patterns",
       "flow/flow-resource-patterns"
     ],
     "frame": [
@@ -7022,6 +7076,9 @@
     "inner-class": [
       "apex/apex-wrapper-class-patterns"
     ],
+    "input-components": [
+      "flow/flow-screen-input-validation-patterns"
+    ],
     "input-output-variables": [
       "flow/subflows-and-reusability"
     ],
@@ -7795,7 +7852,8 @@
       "data/roll-up-summary-alternatives"
     ],
     "loop-element": [
-      "flow/flow-collection-processing"
+      "flow/flow-collection-processing",
+      "flow/flow-loop-element-patterns"
     ],
     "loyalty-management": [
       "integration/loyalty-management-setup"
@@ -7813,6 +7871,7 @@
       "architect/omnistudio-vs-standard-decision",
       "architect/platform-selection-guidance",
       "architect/solution-design-patterns",
+      "flow/flow-screen-lwc-components",
       "lwc/drag-and-drop",
       "lwc/experience-cloud-authentication",
       "lwc/experience-cloud-lwc-components",
@@ -8506,6 +8565,7 @@
       "admin/npsp-household-accounts"
     ],
     "naming-conventions": [
+      "flow/flow-element-naming-conventions",
       "flow/flow-governance"
     ],
     "native-omnistudio": [
@@ -8646,7 +8706,8 @@
       "admin/formula-fields"
     ],
     "null-safety": [
-      "flow/flow-decision-element-patterns"
+      "flow/flow-decision-element-patterns",
+      "flow/flow-formula-and-expression-patterns"
     ],
     "nurture-journey": [
       "admin/lead-nurture-journey-design"
@@ -8964,6 +9025,7 @@
       "apex/apex-flow-invocation-from-apex",
       "apex/long-running-process-orchestration",
       "architect/event-driven-architecture",
+      "flow/flow-element-naming-conventions",
       "flow/flow-transactional-boundaries",
       "integration/middleware-integration-patterns"
     ],
@@ -9120,7 +9182,8 @@
       "architect/metadata-coverage-and-dependencies",
       "devops/package-development-strategy",
       "devops/packaging-dependency-graph",
-      "devops/sfdx-monorepo-patterns"
+      "devops/sfdx-monorepo-patterns",
+      "flow/flow-deployment-and-packaging"
     ],
     "packaging-org": [
       "devops/managed-package-development"
@@ -9170,6 +9233,9 @@
     ],
     "parent-child-summary": [
       "data/roll-up-summary-alternatives"
+    ],
+    "parent-lock": [
+      "flow/flow-record-locking-and-contention"
     ],
     "parent-to-child": [
       "apex/apex-soql-relationship-queries"
@@ -9337,6 +9403,7 @@
       "architect/nfr-definition-for-salesforce",
       "architect/org-edition-and-feature-licensing",
       "data/soql-query-optimization",
+      "flow/flow-formula-and-expression-patterns",
       "flow/flow-get-records-optimization",
       "flow/flow-governor-limits-deep-dive",
       "flow/flow-performance-optimization",
@@ -9422,7 +9489,8 @@
     "picklist": [
       "admin/field-dependency-and-controlling",
       "admin/path-and-guidance",
-      "admin/picklist-and-value-sets"
+      "admin/picklist-and-value-sets",
+      "flow/flow-formula-and-expression-patterns"
     ],
     "picklist-audit": [
       "admin/picklist-field-integrity-issues"
@@ -9508,6 +9576,7 @@
       "flow/auto-launched-flow-patterns",
       "flow/flow-and-platform-events",
       "flow/flow-platform-events-integration",
+      "flow/flow-record-locking-and-contention",
       "integration/error-handling-in-integrations",
       "integration/event-driven-architecture-patterns",
       "integration/idempotent-integration-patterns",
@@ -10128,8 +10197,14 @@
     "reactive-parameters": [
       "lwc/wire-service-patterns"
     ],
+    "reactive-screens": [
+      "flow/flow-screen-input-validation-patterns"
+    ],
     "reactive-variables": [
       "lwc/lwc-graphql-wire"
+    ],
+    "readability": [
+      "flow/flow-element-naming-conventions"
     ],
     "real-time": [
       "integration/real-time-vs-batch-integration"
@@ -10178,7 +10253,8 @@
     "record-locking": [
       "admin/approval-processes",
       "apex/cross-object-formula-and-rollup-performance",
-      "apex/record-locking-and-contention"
+      "apex/record-locking-and-contention",
+      "flow/flow-record-locking-and-contention"
     ],
     "record-page": [
       "admin/dynamic-forms-and-actions",
@@ -10609,6 +10685,7 @@
       "devops/post-deployment-validation",
       "devops/release-management",
       "devops/rollback-and-hotfix-strategy",
+      "flow/flow-deployment-and-packaging",
       "flow/flow-rollback-patterns",
       "omnistudio/omniscript-versioning"
     ],
@@ -10682,6 +10759,9 @@
     ],
     "run-budget": [
       "data/analytics-dataset-optimization"
+    ],
+    "run-mode": [
+      "flow/flow-runtime-context-and-sharing"
     ],
     "runas": [
       "apex/apex-test-setup-patterns"
@@ -11012,6 +11092,8 @@
       "flow/fault-handling",
       "flow/flow-dynamic-choices",
       "flow/flow-for-experience-cloud",
+      "flow/flow-screen-input-validation-patterns",
+      "flow/flow-screen-lwc-components",
       "flow/screen-flow-accessibility",
       "lwc/lwc-in-flow-screens",
       "security/ip-range-and-login-flow-strategy"
@@ -11087,6 +11169,7 @@
       "architect/security-architecture-review",
       "devops/salesforce-code-analyzer",
       "devops/sandbox-data-isolation-gotchas",
+      "flow/flow-runtime-context-and-sharing",
       "security/certificate-and-key-management",
       "security/encrypted-field-query-patterns",
       "security/file-upload-virus-scanning",
@@ -11381,7 +11464,8 @@
       "devops/scratch-org-management",
       "devops/sfdx-monorepo-patterns",
       "devops/source-tracking-and-conflict-resolution",
-      "devops/unlocked-package-development"
+      "devops/unlocked-package-development",
+      "flow/flow-deployment-and-packaging"
     ],
     "sfdx-auth": [
       "devops/pipeline-secrets-management"
@@ -11432,6 +11516,7 @@
       "admin/queues-and-public-groups",
       "admin/sharing-and-visibility",
       "apex/apex-system-runas",
+      "flow/flow-runtime-context-and-sharing",
       "lwc/experience-cloud-api-access",
       "security/apex-managed-sharing-patterns",
       "security/dynamic-sharing-recalculation",
@@ -11689,6 +11774,9 @@
     "soql-date-literals": [
       "apex/timezone-and-datetime-pitfalls"
     ],
+    "soql-in-loop": [
+      "flow/flow-loop-element-patterns"
+    ],
     "soql-injection": [
       "security/secure-coding-review-checklist",
       "security/xss-and-injection-prevention"
@@ -11908,6 +11996,9 @@
     "subflow": [
       "flow/flow-action-framework"
     ],
+    "subflow-contract": [
+      "flow/flow-element-naming-conventions"
+    ],
     "subflows": [
       "flow/subflows-and-reusability"
     ],
@@ -12007,6 +12098,9 @@
     ],
     "tableau-cloud": [
       "integration/tableau-salesforce-connector"
+    ],
+    "target-config": [
+      "flow/flow-screen-lwc-components"
     ],
     "target-configs": [
       "lwc/lwc-app-builder-config"
@@ -12382,6 +12476,9 @@
     "type-attributes": [
       "lwc/lwc-custom-datatable-types"
     ],
+    "type-coercion": [
+      "flow/flow-formula-and-expression-patterns"
+    ],
     "typed-variables": [
       "flow/flow-apex-defined-types"
     ],
@@ -12406,6 +12503,9 @@
     ],
     "uiGraphQLApi": [
       "integration/graphql-api-patterns"
+    ],
+    "unable-to-lock-row": [
+      "flow/flow-record-locking-and-contention"
     ],
     "unauthenticated-access": [
       "admin/experience-cloud-guest-access",
@@ -12436,6 +12536,9 @@
     ],
     "unlimited": [
       "architect/org-edition-and-feature-licensing"
+    ],
+    "unlocked-package": [
+      "flow/flow-deployment-and-packaging"
     ],
     "unlocked-packages": [
       "devops/git-branching-for-salesforce",
@@ -12539,7 +12642,11 @@
     "ux-design": [
       "admin/commerce-checkout-flow-design"
     ],
+    "validate-hook": [
+      "flow/flow-screen-lwc-components"
+    ],
     "validation": [
+      "flow/flow-screen-input-validation-patterns",
       "lwc/lwc-forms-and-validation"
     ],
     "validation-bypass": [

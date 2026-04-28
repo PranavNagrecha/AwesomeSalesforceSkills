@@ -41,6 +41,12 @@ The router reads this table to dispatch on the user-supplied `source_type`. Ever
 - `skills/flow/record-triggered-flow-patterns`
 - `skills/flow/fault-handling`
 - `skills/flow/flow-bulkification`
+- `skills/flow/flow-loop-element-patterns` — collect-then-DML idiom; the WFR's per-rule action shape often translates to a Loop-with-Update if migrated naively
+- `skills/flow/flow-formula-and-expression-patterns` — WFR formulas translate 1:1 to Flow formula resources but NULL-handling and ISPICKVAL semantics differ from WFR
+- `skills/flow/flow-record-locking-and-contention` — record-triggered Flow reuses the WFR's parent-update pattern; lock-contention surfaces under bulk
+- `skills/flow/flow-runtime-context-and-sharing` — Spring '21 default change shifted record-triggered Flows to System-Without-Sharing; document the shift per migrated rule
+- `skills/flow/flow-element-naming-conventions` — every migrated WFR action gets an explicit element name (no `Update_Records_2` auto-names)
+- `skills/flow/flow-deployment-and-packaging` — bundle the target Flow + FlowAccessPermission + dependent fields in a single deploy
 - `skills/flow/scheduled-flows` — Scheduled Path is the canonical analog for WFR time-dependent actions
 - `skills/flow/workflow-rule-to-flow-migration` — domain-specific migration playbook (WFR → Flow)
 - `skills/flow/flow-versioning-strategy` — every emitted target Flow ships as v1; activation/deactivation rules during cutover
@@ -83,6 +89,12 @@ The router reads this table to dispatch on the user-supplied `source_type`. Ever
 - `skills/flow/record-triggered-flow-patterns`
 - `skills/flow/fault-handling`
 - `skills/flow/flow-bulkification`
+- `skills/flow/flow-loop-element-patterns` — PB's "Update Related Records" can balloon into a Loop+Update when migrated; collect-then-DML is mandatory
+- `skills/flow/flow-formula-and-expression-patterns` — PB criteria expressions translate to Flow Decision conditions but NULL/ISPICKVAL semantics differ
+- `skills/flow/flow-record-locking-and-contention` — PB's serial action execution masked contention that the Flow surfaces; design must decouple
+- `skills/flow/flow-runtime-context-and-sharing` — record-triggered Flows default to System-Without-Sharing; document the shift from PB's User Context default per migrated process
+- `skills/flow/flow-element-naming-conventions` — replace `myWaitEvent_4` style auto-names from PB conversion with VerbObject names
+- `skills/flow/flow-deployment-and-packaging` — bundle target Flow + FlowAccessPermission + referenced subflows in a single deploy
 - `skills/flow/subflows-and-reusability`
 - `skills/flow/scheduled-flows` — Scheduled Path is the canonical analog for PB time-dependent groups
 - `skills/flow/process-builder-to-flow-migration` — domain-specific migration playbook (PB → Flow)
@@ -133,9 +145,14 @@ The router reads this table to dispatch on the user-supplied `source_type`. Ever
 - `skills/flow/orchestration-flows`
 - `skills/flow/auto-launched-flow-patterns`
 - `skills/flow/screen-flows` — interactive approval steps map to Screen Flows on the orchestration stage
+- `skills/flow/flow-screen-input-validation-patterns` — every approval-step Screen Flow validates approver inputs before completing the work item
+- `skills/flow/flow-screen-lwc-components` — when a stage's approval UI requires an LWC (signature capture, custom matrix), the screen-flow contract applies
 - `skills/flow/subflows-and-reusability` — every stage step is a subflow per `Subflow_Pattern.md`
 - `skills/flow/pause-elements-and-wait-events` — work-item waiting + recall semantics
 - `skills/flow/fault-handling`
+- `skills/flow/flow-runtime-context-and-sharing` — orchestration runs as the work-item assignee; per-stage run-mode decision required for `$User`/`$Permission` resolution
+- `skills/flow/flow-element-naming-conventions` — Stage_LegalReview > S1; Stage / Step / Subflow naming policy applied to every emitted orchestration
+- `skills/flow/flow-deployment-and-packaging` — orchestration + dependent subflows + FlowAccessPermission for each persona must deploy together
 - `skills/flow/flow-versioning-strategy` — orchestrations are versioned; in-flight instances during cutover
 - `skills/flow/flow-error-monitoring` — org-level error-email-recipient + monitoring assertions
 - `skills/admin/approval-processes`
