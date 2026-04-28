@@ -23,18 +23,12 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Packaging Dependency Graph
 
 Unlocked package dependencies pin a package to a specific version of another. Without a graph, you can accidentally ship a service-core change that depends on an unreleased sales-core version, breaking prod deploy. This skill walks through extracting the dependency graph with the SF CLI, pinning versions explicitly in sfdx-project.json, and enforcing promotion order with a RELEASE.md checklist plus a fresh-scratch install validation step in CI. Correctly modeled dependencies prevent the most common 'works in staging, fails in prod' failure mode for multi-package monorepos.
-
-## When to Use
-
-Monorepos with >2 packages; any package with inter-dependencies.
-
-Typical trigger phrases that should route to this skill: `unlocked package dependency`, `package version pinning`, `promote package released`, `dependency graph salesforce`.
 
 ## Recommended Workflow
 

@@ -1,34 +1,33 @@
 {
   "category": "security",
   "chunk_ids": [
-    "14caa7dc871b5b6aafd2",
+    "1648704abde601cbc709",
     "1846fbc05369a783b023",
-    "21aa26a1fd641475c433",
     "2253f8cfa487ad97c979",
-    "2ec8aa5a9e9f1b617877",
-    "325c768e0d923a0c7428",
-    "32ff8569c96acd1ea51d",
     "4840db7d23c07cbe7181",
     "4daaecf26ead77214d57",
     "52c6967781fbd1841883",
     "5886c7fa09235ab326be",
+    "5c3650cb63592dd70318",
     "5d4b1984f1e103767ce4",
     "623b8ebbe4cc278c4375",
     "63bc37652ef91c6cc25a",
     "6b3ed11efe70eb8436c1",
     "6ce28e0fb7fa35418a35",
     "6d5b5528b6498a517cb5",
-    "7c836da9884c5731fc8f",
+    "718e6d6d932f10dfb9c3",
+    "77fd53965e41a6e32197",
     "8a7275ceb3132d82f3d3",
     "8e34ac8abece7601c67f",
     "9ba0500cbcc4d303fd40",
-    "b2566cb069fbbf6ec3d5",
+    "adfd799fb325bfc9377e",
     "c5203bb12d55ccf2708c",
+    "e230fb298e500ea42757",
     "e55304b194501e473106",
     "e61a8b0b4b2fe8d3a312",
-    "ec173dabb4d4626a0a08"
+    "e62e082e499accefb8ce"
   ],
-  "content_hash": "bf09d75ea1f2784d01d8dd6d4ec9b761dcb28ee3e30addf5362571c03cb23a88",
+  "content_hash": "8ff9cfe02fbc0c50b0e576244b4911ef0e46d391df8928e208c356ced05fc07a",
   "dependencies": [],
   "description": "Force or orchestrate sharing recalculation after bulk data loads, rule changes, or user/role reorgs so row access catches up with policy. NOT for designing new sharing rules \u2014 use sharing-selection tree.",
   "file_location": "skills/security/dynamic-sharing-recalculation",
@@ -67,7 +66,7 @@
   "templates": [
     "skills/security/dynamic-sharing-recalculation/templates/dynamic-sharing-recalculation-template.md"
   ],
-  "updated": "2026-04-17",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

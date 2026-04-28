@@ -30,7 +30,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-23
+updated: 2026-04-28
 ---
 
 # SCIM Provisioning Integration
@@ -108,12 +108,6 @@ One IdP provisions employees, another provisions contractors. Clear boundary —
 | Regulated industry, strict deprov SLA | Freeze-first (Pattern 4) | Legally defensible |
 | Mixed workforce (employee / contractor) | Two-IdP topology (Pattern 5) | Ownership clarity |
 | Salesforce license constraints | Combine with JIT provisioning on login | Avoids pre-allocating licenses |
-
-## Well-Architected Pillar Mapping
-
-- **Security** — correct deprovisioning semantics close the window on departed-user access.
-- **Reliability** — attribute drift between IdP and Salesforce is avoided by SCIM push rather than manual sync.
-- **Operational Excellence** — group-to-entitlement mapping is auditable and version-controlled.
 
 ## Review Checklist
 

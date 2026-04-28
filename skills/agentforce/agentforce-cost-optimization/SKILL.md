@@ -30,7 +30,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-23
+updated: 2026-04-28
 ---
 
 # Agentforce Cost Optimization
@@ -132,12 +132,6 @@ When a tool returns a large payload (e.g. SOQL result), project the fields the a
 | Long conversations | Summarize (Pattern 3) | Linear savings per turn |
 | Classification step using largest model | Switch to smaller tier (Pattern 4) | Cheap wins |
 | Tool returns wide records | Project fields (Pattern 5) | Eliminates silent waste |
-
-## Well-Architected Pillar Mapping
-
-- **Performance** — smaller contexts are lower latency, which compounds at scale.
-- **Operational Excellence** — cost model + monitoring turns cost from surprise to dial.
-- **Reliability** — tight contexts reduce distraction and improve routing quality.
 
 ## Review Checklist
 

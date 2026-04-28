@@ -22,18 +22,12 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # CSP and Trusted URLs
 
 Salesforce enforces strict CSP for Lightning and LWR. External scripts, connect-src targets, and frame-src must be allow-listed via Trusted URLs (Setup → Security → Trusted URLs). This skill maps each context (Lightning Experience, Experience Cloud LWR, Lightning Communities) to the right directive.
-
-## When to Use
-
-Before adding an LWC or Aura component that calls a non-Salesforce endpoint, pulls a third-party library, or frames a partner site. Not for server-side callouts — use Named Credentials + Remote Site Settings.
-
-Typical trigger phrases that should route to this skill: `script refused to load salesforce csp`, `add trusted url for external api`, `lwc fetch third party blocked`, `csp trusted sites lightning`.
 
 ## Recommended Workflow
 

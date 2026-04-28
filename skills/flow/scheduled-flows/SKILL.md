@@ -30,7 +30,7 @@ outputs:
 dependencies: []
 version: 2.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 Use this skill when automation needs to run on a recurring cadence rather than directly from a record event. Schedule-triggered flows work well for bounded recurring tasks such as reminders, renewals, or cleanup logic. They become risky when teams treat them like a general-purpose batch engine and let the record scope or side effects grow without discipline.
@@ -173,12 +173,6 @@ A Scheduled_Flow_Run__c object (or equivalent) gives operations:
 | Job needs to run multiple times per day | Consider sub-hourly schedule (flow limits) or move to Batch Apex | Flow scheduling granularity may not fit |
 | Requires external callout per record | HTTP Action inline for small sets; async via Platform Events for large | Per-record callouts exhaust callout limits |
 
-## Well-Architected Pillar Mapping
-
-- **Scalability** — findings about unbounded scope, linear-in-records DML, cross-transaction budget contention land here. Bad scheduled flows scale linearly into incidents.
-- **Reliability** — missing idempotency and missing fault handling produce "we didn't know it failed" and "it ran twice and double-processed" — both reliability failures.
-- **Operational Excellence** — run-log observability, error-email monitoring, and "did last night's job finish" dashboards.
-
 ## Review Checklist
 
 - [ ] Schedule primitive is correct (scheduled flow vs scheduled path vs Batch Apex).
@@ -189,7 +183,6 @@ A Scheduled_Flow_Run__c object (or equivalent) gives operations:
 - [ ] Heavy work was escalated out of Flow when appropriate.
 - [ ] Run log exists (custom object or equivalent) for operational monitoring.
 - [ ] Error-email recipient is a monitored mailbox, not a single inactive admin.
-
 
 ## Recommended Workflow
 

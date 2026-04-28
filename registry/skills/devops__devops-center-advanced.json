@@ -1,34 +1,33 @@
 {
   "category": "devops",
   "chunk_ids": [
-    "05fa74f99d41dff86f9b",
     "064aeef27ac27272a5c2",
-    "2a4bf1f465d68fbf78ef",
+    "12c282cff73edb1d2358",
+    "19b2a6e70e15e35f2593",
     "325aa7a2dd6e601154b9",
     "4f2a53ee263b4beedd6b",
+    "53e2fd559b94a4a3239c",
     "5561f985d887f33fda90",
-    "578e3c8bdfcbe5773bbc",
     "6a00eb899b9ff087d739",
     "744d546a4389c1c1ce0f",
+    "7f6286df0cc177ff24f9",
     "88d7513a80f5ec29bd58",
     "8910eaee8de71a029105",
     "89bc855b91ed226c6bcb",
+    "9031626b9ef7959ef7bd",
     "90a311bb2435169e8ac8",
-    "953b8869988c20eabb1d",
     "a4f63636ab8dd537cf97",
     "a6a2ea877038bfd1074c",
     "b24e3e86fca14178d322",
     "b57f97004d53b10d778d",
     "b8bd16732bb7e6d56407",
+    "bcf87d1233cc5ebffef6",
     "be3873ba92f88bdd0d25",
     "c28b2750fcc12d8fe73b",
     "c782e94c93ffd0a77846",
-    "e914391761d19f32e64c",
-    "eae9d5ac40e46def1fd6",
-    "f46f9b9f3b1ff072f21c",
-    "ff112f0d3296b7cef82d"
+    "f0c7727abe05fa4b5717"
   ],
-  "content_hash": "1a723d963dcedc6b4b4e0b1e72efe64874cbffb798bbd9b3d6be65b35c21a023",
+  "content_hash": "1140f6592890c5eba4fc1bfa131d257c090a99f2e266622f8c980230e1d55c84",
   "dependencies": [],
   "description": "Use DevOps Center for work item tracking, org-based release pipelines, and merging into existing SFDX workflows. NOT for first-time setup.",
   "file_location": "skills/devops/devops-center-advanced",
@@ -66,7 +65,7 @@
   "templates": [
     "skills/devops/devops-center-advanced/templates/devops-center-advanced-template.md"
   ],
-  "updated": "2026-04-17",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

@@ -31,7 +31,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-23
+updated: 2026-04-28
 ---
 
 # Data Cloud Grounding For Agentforce
@@ -50,14 +50,6 @@ This skill covers picking the right DMOs and data graphs, chunking and
 filtering for relevance, enforcing field-level and record-level visibility at
 query time, setting a freshness SLA that fits the use case, and returning
 answers that cite their sources.
-
-## When To Use
-
-- Designing a new Agentforce topic that must reference customer data.
-- Replacing a static instruction dump with a retriever for scale.
-- Moving from a Knowledge-only retriever to a blended retriever that also hits
-  engagement and transactional data.
-- Troubleshooting ungrounded or stale answers.
 
 ## Recommended Workflow
 

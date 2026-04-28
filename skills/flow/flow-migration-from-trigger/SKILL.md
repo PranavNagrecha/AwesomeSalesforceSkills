@@ -34,24 +34,10 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Flow Migration from Trigger
-
-## When to use this skill
-
-Activate when:
-
-- An existing Apex trigger could plausibly be expressed as a Flow — typically a simple "when X changes, update Y" pattern.
-- Admin team wants to own the automation going forward; Apex ownership is friction.
-- A trigger handler has grown unwieldy and specific pieces of it would benefit from declarative maintenance.
-- You're evaluating a legacy org where triggers predate Flow-recommended patterns.
-
-Do NOT use this skill for:
-- Migrating Process Builder or Workflow Rules to Flow (use `skills/flow/process-builder-to-flow-migration` / `workflow-rule-to-flow-migration`).
-- Deciding automation tech for a brand-new requirement (use `standards/decision-trees/automation-selection.md`).
-- Full-blown replatforming where everything moves to Agentforce or external middleware (out of scope).
 
 ## Core concept — not every trigger should migrate
 

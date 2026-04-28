@@ -31,7 +31,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-23
+updated: 2026-04-28
 ---
 
 # Outbound Webhook From Salesforce
@@ -46,12 +46,6 @@ wrong one — Outbound Messages for systems that care about auth modernity,
 Flow HTTP Callout for volume it cannot handle, Apex when a lower-code
 option exists. This skill gives a deterministic choice and a reference
 pattern per option, including signing, retries, and dead-lettering.
-
-## When To Use
-
-- A record change must notify an external system.
-- Rebuilding a brittle Outbound Message integration.
-- Standardizing webhook behavior across a portfolio of integrations.
 
 ## Recommended Workflow
 

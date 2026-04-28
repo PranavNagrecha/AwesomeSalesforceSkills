@@ -30,25 +30,10 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Flow Rollback Patterns
-
-## When to use this skill
-
-Activate when:
-
-- A flow performs multiple DML operations and you need all-or-nothing semantics.
-- A fault path should undo work done earlier in the same flow run.
-- You're debugging a "half-completed" record state where some inserts succeeded and others failed.
-- You're combining Platform Event publishing with DML and need to know how rollback affects event delivery.
-- A screen flow needs to undo changes if the user clicks "Cancel" on a late screen.
-
-Do NOT use this skill for:
-- Undoing work in an external system (use compensation patterns, not rollback).
-- Database.SavePoint in Apex (use `skills/apex/apex-transaction-control` if it exists).
-- Rolling back approved approvals or completed orchestration stages — those live in their own transactions.
 
 ## Core concept — rollback is transaction-scoped
 

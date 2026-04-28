@@ -29,7 +29,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-23
+updated: 2026-04-28
 ---
 
 # Screen Flow Accessibility
@@ -42,16 +42,6 @@ groups, help text hidden from screen readers, validation errors that do not
 announce, and custom LWCs dropped into screens without focus management. This
 skill gives a deterministic checklist to design and audit Screen Flows
 against WCAG 2.1 AA and Salesforce accessibility expectations.
-
-## When To Use
-
-- Designing any Screen Flow that faces an external user or a broad internal
-  audience.
-- Procurement or legal is asking for a VPAT / accessibility attestation.
-- Users on assistive tech (screen readers, switch control, keyboard-only)
-  report problems.
-- Replacing a Visualforce or legacy JS page with a Screen Flow — accessibility
-  debts typically transfer.
 
 ## Recommended Workflow
 

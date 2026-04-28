@@ -1,10 +1,8 @@
 {
   "category": "flow",
   "chunk_ids": [
-    "019df0951765a1877169",
     "0332dbc6e3078993b8cf",
     "0d949121c6b1c98ff7dc",
-    "109c99ab04a7bf014b54",
     "15522eb711c73587ecd4",
     "251bbea746317e3866bc",
     "25d49d1253f18bb8e29c",
@@ -12,8 +10,10 @@
     "36343b5c577c483368b6",
     "389e5412e933567a636a",
     "3be84d948fb403f0eb57",
-    "52c79ad36382b16ddd70",
+    "44db4c27599df3cea8c0",
+    "4f418dd8f6c89d064443",
     "530b2f47fcff12d2ccd0",
+    "54752da6aad6d25bfcf7",
     "5818c3ad08cae145f020",
     "58ea41dae709515244d6",
     "59032de761432419ab43",
@@ -25,10 +25,11 @@
     "6ad46b1f188850fe3817",
     "6c64af8ae8ebc781ef5d",
     "6fbf9fbc5edc63b84e25",
+    "703b900afb1422948bea",
     "70a3910c6c476921b71e",
     "712e452c1e1a894c851b",
+    "724841ee21bdd1b79e33",
     "7f252c5d011fd3465303",
-    "85e9702ba9de56f50562",
     "87a643363396b1438718",
     "8d56637de97cd9f71fae",
     "8d8708576ca3c1413219",
@@ -38,26 +39,24 @@
     "916a120f738ac410abda",
     "93c1b39e0f1e878d999d",
     "95623118b5772a308520",
-    "9683e036f6ed41fb22d0",
     "99909255a3c7135a6219",
-    "9cd352e0d8c8efaadd35",
-    "9dec2613f7aca7ef0282",
-    "9fc1a9c037ea3955978a",
     "a0abc58a052e0ccce238",
     "a911b00a965facee3d92",
     "b57a6297b7d8303c6eb3",
     "bd095173439b72177ea3",
     "bea57b29caf58641d4b9",
+    "c14b9aa04e6810267271",
     "d30ea36be398e7731955",
     "d3efdfe5105bcb17ae5e",
-    "d7834c9cc612eef1bb5b",
     "d8a40ceab840a43ad021",
     "da550c607baa073c313d",
-    "e8c6caf95e568c0b9e73",
+    "da7ae88cbb37d8744138",
+    "ecb0d7d28b0b25d43b6f",
+    "f7a0ee33fcd970aadcb5",
     "faa1f7782e9420320c19",
-    "fc485e6d8e499486486e"
+    "fb2afdeb96ae0e4b0dff"
   ],
-  "content_hash": "3718a581c43cfc2c306692b43debec155e440e63ed3515ad5af9f48d76db2c0c",
+  "content_hash": "b65f678f99ecb49fff775625e7a18e0fa565443359306927a918a21f937d12ed",
   "dependencies": [
     "flow/flow-bulkification"
   ],
@@ -103,7 +102,7 @@
   "templates": [
     "skills/flow/flow-large-data-volume-patterns/templates/flow-large-data-volume-patterns-template.md"
   ],
-  "updated": "2026-04-17",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "2.0.0"
 }

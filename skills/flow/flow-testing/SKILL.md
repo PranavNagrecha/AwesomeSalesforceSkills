@@ -29,7 +29,7 @@ outputs:
 dependencies: []
 version: 2.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 Use this skill when a Flow works in a demo but nobody can yet prove it is safe to change. Flow testing is not one tool — it is a test STRATEGY that combines declarative Flow Tests where they fit, focused debug runs for diagnosis, deliberate test data, and extra coverage at custom component or Apex boundaries when the Flow itself is not the whole system.
@@ -174,11 +174,6 @@ Alternative: a scratch-org seed script (SFDX tree export/import) that loads a ca
 | Test needs complex multi-object setup | Use an Apex TestDataFactory (Pattern 4) | Repeatable, CI-friendly, version-controlled |
 | Flow has thousands of expected records at bulk | Apex `@IsTest` with 200-record insert | Flow Tests don't stress-test bulk limits |
 
-## Well-Architected Pillar Mapping
-
-- **Reliability** — every missing fault-path test is a reliability risk; every missing bulk test is a scalability-failure-as-reliability risk.
-- **Operational Excellence** — test assets as regression safety nets; debug runs confused for coverage; lack of test-data discipline. OpsEx dominates this skill.
-
 ## Review Checklist
 
 - [ ] A path matrix exists for success, branch, and failure scenarios.
@@ -189,7 +184,6 @@ Alternative: a scratch-org seed script (SFDX tree export/import) that loads a ca
 - [ ] The chosen test assets align with the flow type and production risk.
 - [ ] Bulk behavior tested via Apex `@IsTest` if the flow fires on high-volume objects.
 - [ ] Test-data factory or scratch-org seed script exists for the org's common test setups.
-
 
 ## Recommended Workflow
 

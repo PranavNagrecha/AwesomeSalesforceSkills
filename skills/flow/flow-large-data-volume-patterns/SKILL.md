@@ -33,7 +33,7 @@ dependencies:
   - flow/flow-bulkification
 version: 2.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 Large data volume (LDV) problems in Flow usually show up as sudden production failures while sandbox tests look fine. The platform still applies the same transactional ceilings as Apex, including the total count of rows returned by SOQL across the whole transaction. A single `Get Records` element that asks for "all" matching rows can return up to the platform query-rows ceiling for that transaction; when related data grows, the same element crosses the line and the interview fails with a query-rows error. This skill focuses on those volume ceilings, how to cap and narrow retrieval, how collections participate in memory pressure, and when Flow should hand off to asynchronous or code-based processing. Pair it with `flow-bulkification` for loop and per-iteration query patterns.
@@ -160,13 +160,6 @@ Design approvers MUST see this math before sign-off.
 | Design review on LDV-prone flow | Require Pattern 4 worksheet | Math before sign-off |
 | Flow works in sandbox, fails in prod | Run worst-case volume test in full-copy sandbox | Dev sandboxes hide LDV failures |
 
-## Well-Architected Pillar Mapping
-
-- **Performance** — worst-case query latency; field-selection discipline; selective filters on indexed fields.
-- **Scalability** — total-row math; combined-transaction budget; async escalation.
-- **Reliability** — "works in sandbox, fails in prod" prevention; row-budget worksheet discipline.
-- **Operational Excellence** — documenting worst-case cardinality assumptions in Flow description; full-copy sandbox testing.
-
 ## Recommended Workflow
 
 1. **Inventory retrieval** — List every `Get Records`, subflow, and invocable Apex in the path; estimate worst-case rows per element and the sum across the transaction.
@@ -188,7 +181,6 @@ Design approvers MUST see this math before sign-off.
 - [ ] Row-budget worksheet (Pattern 4) attached to change-management artifacts.
 - [ ] Full-copy sandbox test done (not just dev sandbox).
 - [ ] Field selection narrowed to what the Flow actually uses (heap discipline).
-
 
 ## Recommended Workflow
 

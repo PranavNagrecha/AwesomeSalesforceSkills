@@ -24,18 +24,12 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # API-Only User Hardening
 
 Integration users are the most common compromise vector because they have long-lived credentials and broad permissions. The hardened template is: API-Only profile (no UI), minimum permission set, IP range restriction, OAuth client-credential flow, 15-minute session, and Event Monitoring watchlist.
-
-## When to Use
-
-Any new external system-to-Salesforce connector. Also to retrofit existing integration users (one sweep per release).
-
-Typical trigger phrases that should route to this skill: `integration user setup salesforce`, `api only user profile`, `harden service account salesforce`, `restrict integration user ip`.
 
 ## Recommended Workflow
 

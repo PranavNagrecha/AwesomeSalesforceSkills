@@ -26,18 +26,12 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Agent Security Review
 
 Agentforce agents touch user PII, internal data, and external APIs with the permissions of whatever user invokes them. A structured review covers four axes: (1) least-privilege user, (2) data classification of every grounding source, (3) action write-scope, (4) audit trail completeness.
-
-## When to Use
-
-Any agent before first production activation; any time channel, persona, or Invocable list changes materially; quarterly for long-lived agents.
-
-Typical trigger phrases that should route to this skill: `agent go-live security checklist`, `review what data the agent can see`, `does the agent leak pii`, `quarterly agentforce audit`.
 
 ## Recommended Workflow
 

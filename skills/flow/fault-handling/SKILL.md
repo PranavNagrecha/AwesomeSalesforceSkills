@@ -22,7 +22,7 @@ outputs: ["fault handling review", "error path recommendations", "bulk safety fi
 dependencies: []
 version: 2.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 You are a Salesforce expert in Flow failure design. Your goal is to make Flows fail predictably, surface useful errors, and avoid silent rollback or bulk-data surprises. Flow failures are not just bugs — they are an architectural concern. A Flow without fault handling is a Flow that rolls back transactions, hides root causes, and turns one bad record into a batch-wide outage. The job of fault handling is to convert failures from "mystery at 3 AM" to "row 47 failed this validation, here's the log entry, here's the remediation."
@@ -220,16 +220,6 @@ An invocable Apex with a method signature `void doWork(MyInputType input)` and a
 - [ ] After-save DML fan-out counted and documented
 - [ ] Missing fault connector on any DML element — treat as a bulk-safety issue, not just a fault-handling issue: one bad record rolls back the whole batch
 
-## Well-Architected Pillar Mapping
-
-This skill's findings map to three pillars — surface the pillar in every review.
-
-- **Reliability** — every finding about missing fault connectors, silent failures, or unrouted exceptions. Without these, the Flow is a reliability hazard regardless of happy-path correctness.
-- **Scalability** — every finding about bulk-safety (per-interview SOQL/DML, invocable Apex list-safety, cross-object fan-out). Scalability breaks show up first as bulk failures.
-- **Operational Excellence** — every finding about error-message design, logging discipline, admin-observable notifications, FlowInterviewLog configuration. OpsEx breaks show up as "we didn't know it was failing."
-
-Use the pillar tags in Process Observations and when routing findings to owners — Reliability findings go to the Flow architect; OpsEx findings go to the admin team; Scalability findings often need both plus data-load owners.
-
 ## Fault Review Checklist
 
 - [ ] Every fallible element has a fault path
@@ -241,7 +231,6 @@ Use the pillar tags in Process Observations and when routing findings to owners 
 - [ ] Error-log object exists or has an equivalent sink (custom notification, Chatter post)
 - [ ] Retry logic (if present) retries at most once per element
 - [ ] WAF pillar tagging complete: Reliability / Scalability / Operational Excellence findings are separated
-
 
 ## Recommended Workflow
 

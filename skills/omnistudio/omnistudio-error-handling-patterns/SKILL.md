@@ -30,7 +30,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-23
+updated: 2026-04-28
 ---
 
 # OmniStudio Error Handling Patterns
@@ -110,12 +110,6 @@ Every recoverable failure maps to a business-readable message and an action the 
 | Downstream system is idempotent-by-external-id | Retry enabled, correlation ID in payload | Safe user-initiated retry |
 | Write spans multiple systems | Compensating DataRaptor or async cleanup | Partial success is the default |
 | User reaches unrecoverable state | Fault screen + support escalation | Do not strand the user |
-
-## Well-Architected Pillar Mapping
-
-- **Reliability** — explicit boundaries turn "undefined behavior" into "named failure modes."
-- **User Experience** — business-readable messages and retry paths reduce abandon rates.
-- **Operational Excellence** — correlation IDs make incidents traceable across layers.
 
 ## Review Checklist
 

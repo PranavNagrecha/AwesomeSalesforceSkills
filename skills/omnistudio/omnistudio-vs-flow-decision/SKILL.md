@@ -30,7 +30,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-23
+updated: 2026-04-28
 ---
 
 # OmniStudio vs Flow Decision
@@ -114,12 +114,6 @@ If the capability needs to ship monthly and the owners are admins, pick Screen F
 | Reusable capability across LWC and Experience Cloud | OmniScript | Surface parity |
 | Lightning Record Page replacement | Lightning Record Page (not FlexCard) unless FlexCard features specifically needed | Simpler ops |
 | Industry Cloud capability already modeled in OmniStudio | OmniStudio | Match the platform |
-
-## Well-Architected Pillar Mapping
-
-- **Operational Excellence** — match the tool to the owning team's skill; wrong-tool decisions pay ongoing cost.
-- **Reliability** — each tool has well-understood failure modes; mixing them adds boundary complexity.
-- **Performance** — Integration Procedures can outperform Flow for multi-callout orchestration; Flow can outperform OmniStudio for record-centric logic.
 
 ## Review Checklist
 

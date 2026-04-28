@@ -31,7 +31,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-23
+updated: 2026-04-28
 ---
 
 # Integration Procedure Cacheable Patterns
@@ -46,14 +46,6 @@ volume by orders of magnitude, but only if the cache key, TTL, partition,
 and invalidation are designed together. Teams either skip caching (slow)
 or cache too aggressively (stale data, cross-user leakage). This skill
 codifies the decisions.
-
-## When To Use
-
-- IP response is largely stable within minutes / hours and is fetched
-  repeatedly.
-- IP triggers external callouts that bill per-call or have quotas.
-- User-page TTFB is dominated by an IP hop.
-- Multiple components / flows call the same IP with the same inputs.
 
 ## Recommended Workflow
 

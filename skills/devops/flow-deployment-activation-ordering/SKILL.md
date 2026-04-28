@@ -32,7 +32,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-23
+updated: 2026-04-28
 ---
 
 # Flow Deployment & Activation Ordering
@@ -47,14 +47,6 @@ version. The team hits production incidents: "the approval flow stopped
 triggering," "paused interviews threw after deploy," "rollback just
 deactivated everything." This skill codifies the sequence, guards, and
 verification to make Flow deploys boring.
-
-## When To Use
-
-- Planning a release that changes any Record-Triggered, Screen, or
-  Scheduled Flow.
-- Debugging paused interview failures after a deploy.
-- Writing a Flow rollback runbook.
-- Standardizing Flow CI/CD.
 
 ## Recommended Workflow
 

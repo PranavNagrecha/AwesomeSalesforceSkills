@@ -33,7 +33,7 @@ outputs:
 dependencies: []
 version: 2.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Flow Collection Processing
@@ -174,12 +174,6 @@ The Transform element maps fields from one SObject Collection to a different SOb
 
 ---
 
-## Well-Architected Pillar Mapping
-
-- **Performance** — using Collection Filter/Sort/Transform instead of Loop saves Flow CPU time (fewer elements executed).
-- **Scalability** — DML-inside-Loop is the canonical scalability failure in this domain. Eliminating it is the primary Scalability win.
-- **Reliability** — empty-collection safety (Pattern 5) prevents silent no-op failures that confuse users.
-
 ## Review Checklist
 
 - [ ] No `Create Records`, `Update Records`, or `Delete Records` element sits inside a Loop without an explicit justified exception documented in the flow description.
@@ -191,7 +185,6 @@ The Transform element maps fields from one SObject Collection to a different SOb
 - [ ] DML elements reference collection variables (not single-record variables) when operating on multiple records.
 - [ ] Flow tested with an empty collection input to confirm it does not fault on the Loop's "After Last" path.
 - [ ] Pattern 5 empty-collection gate in place for any pipeline that can process zero records.
-
 
 ## Recommended Workflow
 

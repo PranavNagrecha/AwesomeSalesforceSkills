@@ -30,7 +30,7 @@ outputs:
 dependencies: []
 version: 2.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 Use this skill when the same Flow logic keeps appearing in more than one place or when one parent flow is becoming too long to reason about safely. A good subflow is a reusable contract with a narrow purpose, explicit inputs, explicit outputs, and predictable side effects. A bad subflow is just a pile of hidden assumptions moved out of sight.
@@ -188,12 +188,6 @@ Callers share the same fault-routing without duplicating the Create-Log-then-Not
 | Same fault-handling macro repeated across flows | Build Pattern-3 subflow | One place to update when notification rules change |
 | Reused from both Flow and Apex | Build invocable Apex, NOT subflow | Dual-callable unit belongs in code |
 
-## Well-Architected Pillar Mapping
-
-- **Operational Excellence** — wide contracts, missing version discipline, undocumented "callers of this subflow" lists. OpsEx findings dominate this skill; bad subflows are OpsEx debt.
-- **Scalability** — subflow transaction-budget sharing. A subflow that does per-record SOQL is a bulk-safety time bomb no matter how well it's named.
-- **Reliability** — subflow fault-handling contract. If the subflow can fail but the parent doesn't handle the failure, the parent's fault posture is a lie.
-
 ## Review Checklist
 
 - [ ] The subflow solves a repeated problem (3+ callers), not a one-off decomposition habit.
@@ -204,7 +198,6 @@ Callers share the same fault-routing without duplicating the Create-Log-then-Not
 - [ ] Contract changes are regression-tested across all callers.
 - [ ] Subflow description field lists current callers.
 - [ ] Version history documented for contract changes.
-
 
 ## Recommended Workflow
 

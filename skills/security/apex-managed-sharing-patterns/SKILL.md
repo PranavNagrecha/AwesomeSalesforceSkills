@@ -24,18 +24,12 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Apex Managed Sharing Patterns
 
 Apex Managed Sharing inserts rows into the <Object>__Share table with a custom Apex RowCause so that other sharing mechanisms do not reclaim them. Use it only when OWD + sharing rules + teams cannot express the policy — the sharing-selection decision tree covers the ordering. The skill documents the canonical upsert pattern, the RowCause metadata, and the revocation logic required to keep access consistent with the driving data.
-
-## When to Use
-
-When a record must be shared based on a computed condition (e.g., a user listed in a related junction object) and the relationship is too dynamic for criteria-based sharing. Not for simple owner-based sharing or for one-time manual adjustments (use manual share).
-
-Typical trigger phrases that should route to this skill: `need to share records based on data from another object`, `grant access when a custom field flips to a value`, `reciprocal sharing between two users on a record`, `manual share using apex`.
 
 ## Recommended Workflow
 

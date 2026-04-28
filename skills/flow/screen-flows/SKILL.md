@@ -30,7 +30,7 @@ outputs:
 dependencies: []
 version: 2.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 Use this skill when the Flow is interactive and the quality of the user journey matters as much as the automation logic. Screen flows succeed when they guide the user through a deliberate sequence, validate at the right moments, and commit data only where the consequences are clear. They become fragile when navigation, validation, and side effects are all mixed together casually.
@@ -156,12 +156,6 @@ The commit-timing rules change per surface: modal Cancel is a strong "undo" sign
 | Public or external-site embedding | Use `flow/flow-for-experience-cloud` | Guest-user semantics add security concerns |
 | Flow must share state across multiple record views | LWC-backed state persistence or full-page flow | Quick Action modal loses state on close |
 
-## Well-Architected Pillar Mapping
-
-- **User Experience** — commit timing, screen count, validation clarity, Back/Cancel behavior. UX findings dominate this skill.
-- **Reliability** — custom LWC validation contract gaps; flows that commit partially and cannot undo on Cancel; fault-handling on the DML at commit step (see `flow/fault-handling`).
-- **Operational Excellence** — the custom-LWC maintenance burden over time; the risk of "one admin built it, nobody else understands it."
-
 ## Review Checklist
 
 - [ ] Each screen has one clear purpose and does not overload the user.
@@ -172,7 +166,6 @@ The commit-timing rules change per surface: modal Cancel is a strong "undo" sign
 - [ ] Mobile or smaller-screen behavior was considered when layout matters.
 - [ ] Screen count is within the "form / wizard / maze" heuristic range.
 - [ ] Fault handling exists on the commit step (Pattern A from `flow/fault-handling`).
-
 
 ## Recommended Workflow
 

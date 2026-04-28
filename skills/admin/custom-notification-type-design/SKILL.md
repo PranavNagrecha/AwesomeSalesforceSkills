@@ -31,7 +31,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-23
+updated: 2026-04-28
 ---
 
 # Custom Notification Type Design
@@ -44,12 +44,6 @@ abuse. Teams ship a new CNT per feature without a global view, which
 turns into notification fatigue — users silence the bell, disable mobile
 push, and ignore Slack. This skill frames CNT design as a product and
 governance problem, not a Setup click-through.
-
-## When To Use
-
-- Any new internal notification beyond email.
-- Redesigning a flow that emails on every change into a bell ping.
-- Standardizing notification governance across an org.
 
 ## Recommended Workflow
 

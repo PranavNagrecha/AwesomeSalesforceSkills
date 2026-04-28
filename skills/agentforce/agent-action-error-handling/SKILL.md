@@ -25,18 +25,12 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Agent Action Error Handling
 
 Agentforce agents receive the return value of an Invocable action as-is and feed it back into the LLM loop. An unhandled exception becomes a Flow or framework error — the agent cannot reason about it, often re-invokes the action with the same inputs, and occasionally confabulates success. This skill defines a Response type that always returns (status, reason_code, user_message) so the topic instructions can route deterministically.
-
-## When to Use
-
-Any custom Apex action exposed as an Invocable for Agentforce — callouts, DML, SOQL with user-supplied filters, Experience Cloud actions. Not for pure read-only actions whose failure is acceptable silence (rare).
-
-Typical trigger phrases that should route to this skill: `my agent action throws and the agent loops`, `invocable action leaks stack trace to user`, `how should I classify errors for an agent`, `agent retries after a validation rule failure`.
 
 ## Recommended Workflow
 

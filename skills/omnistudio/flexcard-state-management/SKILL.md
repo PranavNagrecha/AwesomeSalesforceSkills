@@ -30,7 +30,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-23
+updated: 2026-04-28
 ---
 
 # FlexCard State Management
@@ -106,12 +106,6 @@ For "show after save" UX, bind visibility to a derived field that the action wri
 | Sibling card must refresh after a save | Pubsub event | No shared parent-owned state needed |
 | Button should disable during action | Element-level state + action completion event | Avoid full-card refresh churn |
 | Visibility depends on derived/computed state | Compute in data source or action, store in cache | Conditional visibility is not a function engine |
-
-## Well-Architected Pillar Mapping
-
-- **User Experience** — predictable refresh feels faster than aggressive full refresh; explicit targets avoid flicker.
-- **Reliability** — explicit coupling contracts prevent cross-card bugs when one card is rewritten.
-- **Performance** — element-level refresh avoids unnecessary data source calls.
 
 ## Review Checklist
 

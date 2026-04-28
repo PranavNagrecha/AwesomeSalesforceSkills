@@ -23,18 +23,12 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Flow Dynamic Choices
 
 Screen Flows often need choices that reflect current data — active Accounts, open Cases, active picklist values. Record Choice Sets pull from SOQL; Picklist Choice Sets pull from field metadata; Collection Choice Sets iterate a variable. This skill covers each plus dependent-picklist patterns and empty-state handling.
-
-## When to Use
-
-Any screen flow choice that should reflect org data at runtime.
-
-Typical trigger phrases that should route to this skill: `dynamic choice flow`, `record choice set flow`, `dependent picklist flow`, `flow picklist from records`.
 
 ## Recommended Workflow
 

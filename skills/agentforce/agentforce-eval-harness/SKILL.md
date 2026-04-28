@@ -33,25 +33,10 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Agentforce Eval Harness
-
-## When to use this skill
-
-Activate when:
-
-- You're about to change an agent's prompt, tool descriptions, or topic structure and want to avoid regressions.
-- An agent has shipped to production and you want ongoing quality tracking.
-- You're debugging a user-reported issue and need to reproduce it deterministically.
-- You're comparing two model versions (Agentforce model upgrade, BYOLLM swap) and need an apples-to-apples quality score.
-- You're authoring a new agent and want to establish quality gates before launch.
-
-Do NOT use this skill for:
-- Online A/B testing with real users (use observability skills).
-- LLM-provider-level model evals — that's upstream of Salesforce's layer.
-- Apex unit tests for the action implementations (use `skills/apex/apex-testing-patterns`).
 
 ## Core concept — three eval dimensions
 

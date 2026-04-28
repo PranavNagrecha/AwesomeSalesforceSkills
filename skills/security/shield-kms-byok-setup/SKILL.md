@@ -26,18 +26,12 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Shield Platform Encryption — BYOK / KMS Setup
 
 Shield BYOK lets you upload your own 256-bit tenant secret; Cache-Only Key Service keeps the key in your own KMS, fetched by Salesforce on demand. Both require Shield Platform Encryption and careful operational processes: rotation, destroy tests, and KMS availability SLOs.
-
-## When to Use
-
-Regulated data (HIPAA, PCI, regulated financial records) where compliance mandates customer-controlled keys. Not for general PII that Classic Encryption or field-level security already protects.
-
-Typical trigger phrases that should route to this skill: `shield byok setup`, `cache only key service`, `rotate tenant secret`, `customer managed keys salesforce`.
 
 ## Recommended Workflow
 

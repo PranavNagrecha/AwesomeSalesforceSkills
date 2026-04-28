@@ -35,25 +35,10 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Flow Error Monitoring
-
-## When to use this skill
-
-Activate when:
-
-- An org has > 50 active flows and fault emails are flooding one inbox.
-- You need org-wide visibility into flow-failure trends.
-- A specific flow is failing intermittently and you want to establish a baseline before tuning.
-- You're setting up ops rotations and need a paging policy for flow failures.
-- You're integrating Salesforce with an external observability platform (Splunk, Datadog).
-
-Do NOT use this skill for:
-- Diagnosing a specific flow error in isolation (use `skills/flow/flow-runtime-error-diagnosis`).
-- Enabling debug mode for step-by-step tracing (use `skills/flow/flow-debugging`).
-- Post-mortem root-cause analysis for a critical flow failure (diagnosis + `skills/devops/incident-response`).
 
 ## Core concept — three error surfaces
 

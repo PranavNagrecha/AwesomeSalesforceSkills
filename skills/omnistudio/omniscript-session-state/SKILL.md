@@ -31,7 +31,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-23
+updated: 2026-04-28
 ---
 
 # OmniScript Session State
@@ -45,13 +45,6 @@ too little (UI state only, not answers) or too much (including PII that
 should not be stored in plain object fields). This skill codifies the
 session-state model: what to persist, where, with what retention, and
 how to resume across devices without re-authenticating mid-flow.
-
-## When To Use
-
-- OmniScript has more than ~5 steps or takes > 2 minutes typical.
-- External users (Experience Cloud) where connection loss is common.
-- Regulated flows requiring audit of progression.
-- Multi-device resume (start on desktop, finish on mobile).
 
 ## Recommended Workflow
 

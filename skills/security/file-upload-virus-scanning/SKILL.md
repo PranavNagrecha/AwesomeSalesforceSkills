@@ -30,7 +30,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-23
+updated: 2026-04-28
 ---
 
 # File Upload Virus Scanning
@@ -113,12 +113,6 @@ All files rescanned on a cadence against updated signature databases. Critical f
 | Files > 50 MB | Signed URL + webhook (Pattern 2) | Avoid callout timeouts |
 | Highly regulated industry | Pre-save block + scheduled rescan (Pattern 5) | Defense in depth |
 | Public-facing file downloads | Always `Clean`-gated | Do not serve unscanned bytes |
-
-## Well-Architected Pillar Mapping
-
-- **Security** — scan is a primary defense for any multi-tenant upload surface.
-- **Reliability** — explicit state and rescan strategy prevent silent failures.
-- **User Experience** — scan-pending messaging must be honest; users should know a file is not yet shareable.
 
 ## Review Checklist
 
