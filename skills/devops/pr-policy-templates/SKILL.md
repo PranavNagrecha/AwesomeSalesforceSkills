@@ -23,18 +23,19 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Pull Request Policy Templates
 
 A consistent PR template + CODEOWNERS + required checks shifts quality left. This skill defines a template with sections for scope, test evidence, deploy plan, and risk; a CODEOWNERS matching metadata types to owning teams; and branch-protection rules requiring status checks (validation deploy, test run, scan).
 
-## When to Use
+## Adoption Signals
 
 Teams >3 people; regulated or production-critical repos.
 
-Typical trigger phrases that should route to this skill: `pr template salesforce`, `codeowners metadata`, `required pr checks salesforce`, `enforce test coverage pr`.
+- Required when audit evidence (who reviewed, when, against what checklist) must be derivable from PR history.
+- Required when a CODEOWNERS rule must enforce architect sign-off for irreversible metadata changes.
 
 ## Recommended Workflow
 

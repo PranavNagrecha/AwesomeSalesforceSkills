@@ -7,7 +7,6 @@
     "0bdb94117b3e09ac2df6",
     "1ddda3191b064bfac5a8",
     "2b817145b623cb928c83",
-    "3306e36148ef31771f95",
     "3498987196404c87afab",
     "3deddd8816a8cd7430d4",
     "3e04cf9c3a067dd93211",
@@ -16,6 +15,7 @@
     "5825a933d8cb0652d48c",
     "61b94c9f0561624580ee",
     "8c12342f70f136e056dc",
+    "8f6d587f26ec0c53b19a",
     "987c97b84fc265dfa218",
     "9fe41c3c6a6421d7bf82",
     "b7772439f83d43a456aa",
@@ -28,7 +28,7 @@
     "f4e3abe795804219c990",
     "f8cd41234b742e678e97"
   ],
-  "content_hash": "60e5ddb0565f49730b30f4750358d2a93a26335f3a7b68d6617af09cb1a9d6cd",
+  "content_hash": "5d412b156f2de8778d92e3dcd2c6a98f90cba4d10b8d9c92dd8e400ff2cd668b",
   "dependencies": [],
   "description": "Upload files in LWC: lightning-file-upload, manual multipart, large-file chunked upload, and ContentDocument associations. NOT for ContentDocument query patterns.",
   "file_location": "skills/lwc/file-upload-patterns",
@@ -64,7 +64,7 @@
   "templates": [
     "skills/lwc/file-upload-patterns/templates/file-upload-patterns-template.md"
   ],
-  "updated": "2026-04-17",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

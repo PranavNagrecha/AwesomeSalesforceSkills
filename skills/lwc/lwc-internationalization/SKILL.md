@@ -22,18 +22,19 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # LWC Internationalization
 
 LWC internationalization uses `@salesforce/label/c.MyLabel` to import translated strings from Custom Labels and `@salesforce/i18n/locale` + `lightning-formatted-*` for locale-aware formatting. RTL is supported via the platform's dir attribute; most SLDS styles already mirror correctly. This skill walks through label extraction, locale-aware number/date/currency formatting, pluralization patterns, and RTL audit checklist that together ensure a component works the same for users in every active language and locale without string concatenation pitfalls.
 
-## When to Use
+## Adoption Signals
 
 Any LWC used in an org with multiple active locales.
 
-Typical trigger phrases that should route to this skill: `lwc translate label`, `custom labels lwc`, `lwc internationalization rtl`, `rtl layout lwc`.
+- Required when string concatenation, plural forms, or relative-time formatting hard-codes English in the template.
+- Required when the layout must support RTL languages (Arabic, Hebrew) — bidirectional CSS is non-trivial.
 
 ## Recommended Workflow
 

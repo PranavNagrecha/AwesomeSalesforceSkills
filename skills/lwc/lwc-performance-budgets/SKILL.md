@@ -36,7 +36,7 @@ updated: 2026-04-23
 
 # LWC Performance Budgets
 
-## When To Use
+## Budget Enforcement Triggers
 
 - Shipping any LWC rendered above-the-fold on a high-traffic record page
   or Experience Cloud route.

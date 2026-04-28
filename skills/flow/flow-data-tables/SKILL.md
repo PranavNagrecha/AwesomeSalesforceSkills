@@ -23,18 +23,19 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Flow Data Tables
 
 The Data Table screen component (GA) displays a record collection and lets users select rows. It is the replacement for custom LWC datatables inside flows for 80% of cases. This skill configures columns, selection mode, and downstream consumption of the selected rows, and documents the row-count soft limit beyond which you should switch back to a custom LWC table with server-side paging rather than stretch the screen component into a role it wasn't designed for.
 
-## When to Use
+## Adoption Signals
 
 Screen flows that need row selection from a list. Not for inline edit use cases — use lightning-datatable LWC.
 
-Typical trigger phrases that should route to this skill: `flow data table`, `flow collection screen selection`, `datatable in flow`, `flow select record from list`.
+- Use Data Table when the user must pick one or many rows that drive a downstream Flow path.
+- Avoid when row count exceeds a few hundred — pagination and search aren't first-class in the standard component.
 
 ## Recommended Workflow
 

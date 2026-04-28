@@ -23,18 +23,19 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # SFDX Monorepo Patterns
 
 A monorepo lets multiple unlocked packages share a single git history, shared templates (test factory, TriggerHandler), and a coordinated CI pipeline. This skill formalizes the sfdx-project.json layout, the dependency graph (`"dependencies"` per package), and a change-detection strategy so CI only validates what changed.
 
-## When to Use
+## Adoption Signals
 
 Orgs with 3+ logical domains (sales, service, custom agentforce actions). Not for single-package projects.
 
-Typical trigger phrases that should route to this skill: `monorepo salesforce`, `multiple unlocked packages one repo`, `sfdx project multiple packages`, `package dependency order`.
+- Required when one repo holds multiple unlocked packages with shared dependencies and ordered install requirements.
+- Required when CI must build only the packages whose source changed — full-repo rebuilds become uneconomic.
 
 ## Recommended Workflow
 

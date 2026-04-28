@@ -22,18 +22,19 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # OmniStudio Asynchronous Data Operations
 
 OmniStudio Integration Procedures (IPs) can chain DataRaptors, HTTP calls, Apex, and Business Rules into a single orchestration. For operations that exceed the 5-second browser wait or need parallel calls, queue the IP (invoke from Platform Event or Queueable) instead of running synchronously.
 
-## When to Use
+## Adoption Signals
 
 Multi-system orchestrations >5s or bulk data transformations driven from an OmniScript.
 
-Typical trigger phrases that should route to this skill: `integration procedure queue`, `dataraptor chain`, `omnistudio async`, `omniscript long running`.
+- Any IP that exceeds the synchronous CPU limit when run against production-volume data.
+- DataRaptor chains (sometimes called a dataraptor chain) where each step depends on the prior output and total runtime exceeds user-tolerable latency.
 
 ## Recommended Workflow
 

@@ -23,18 +23,19 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Flow and Platform Events
 
 Platform Events are the canonical async bus for Salesforce. Flow supports both publish (Create Records on the PE SObject) and subscribe (Platform Event-Triggered Flow). This skill covers high-volume PE vs standard-volume, replay, and the failure modes when a PE-triggered flow errors.
 
-## When to Use
+## Adoption Signals
 
 Decouple producer from consumer (reduce transaction size), fan-out to N subscribers, or cross-org signaling.
 
-Typical trigger phrases that should route to this skill: `flow publish platform event`, `platform event triggered flow`, `async flow notification`, `flow publish high volume event`.
+- Publish from Flow when a downstream system needs notification but should not delay the user transaction — `Create Records` on the Platform Event object is the publish primitive.
+- Subscribe via record-triggered Flow when an external publisher signals an event the org must react to asynchronously.
 
 ## Recommended Workflow
 

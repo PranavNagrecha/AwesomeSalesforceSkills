@@ -2,10 +2,10 @@
   "category": "lwc",
   "chunk_ids": [
     "18971adc1d5de76d4aff",
-    "23f075f1363a4fdadfcd",
     "3ffd9652b3c1a0424474",
     "6233a30704704fe373ad",
     "6d0270e726af0d58f27b",
+    "7b174bc17c1b40747774",
     "8846aa807f79e7f16ed3",
     "88fafad4b571afc22105",
     "99318396f2ebae049ba1",
@@ -28,7 +28,7 @@
     "f09dadb7d10dd4b180ab",
     "f832b67235af6c0c3f1d"
   ],
-  "content_hash": "f738e70565955e75ea2d43a253642dc9a0f6085d30e54419825d21a8f9f5141f",
+  "content_hash": "76e3962c676257961fe31871177c5cbcf28901e4daad6f52315077027064a88e",
   "dependencies": [],
   "description": "Render only visible rows for long lists (1k+ rows) using intersection observer or lightning-datatable virtual scroll. NOT for simple lists under 100 rows.",
   "file_location": "skills/lwc/virtualized-lists",
@@ -64,7 +64,7 @@
   "templates": [
     "skills/lwc/virtualized-lists/templates/virtualized-lists-template.md"
   ],
-  "updated": "2026-04-17",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

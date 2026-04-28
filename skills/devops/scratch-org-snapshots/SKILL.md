@@ -24,18 +24,19 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Scratch Org Snapshots
 
 Scratch Org Snapshots (GA) capture a fully configured scratch org so new ones can be created from the snapshot in seconds. For orgs with multiple managed package installs and large metadata pushes, this cuts CI bring-up from 15 minutes to under 2.
 
-## When to Use
+## Adoption Signals
 
 CI bring-up >5 minutes, especially with 3+ managed package installs or heavy data seed.
 
-Typical trigger phrases that should route to this skill: `slow scratch org creation`, `snapshot scratch org`, `speed up ci salesforce`, `source push is slow`.
+- Slow scratch org creation that bottlenecks PR feedback — snapshots cut bring-up from minutes to seconds.
+- Heavy package install graphs (3+ managed deps) where each `sfdx force:package:install` adds linear setup time.
 
 ## Recommended Workflow
 

@@ -2,6 +2,7 @@
   "category": "omnistudio",
   "chunk_ids": [
     "078d79102800c6764fbb",
+    "0aa16bf5f5519b29e245",
     "16dc414c31b649785f10",
     "285739d7b394204d0223",
     "2a12ffac819496e4c278",
@@ -25,10 +26,9 @@
     "bdc418fe80229b29e55e",
     "c73dc59f076373dc6f30",
     "cd9836a0e65f0889891b",
-    "dd9559eecee54a80347b",
     "e19a7a866a1b7406b445"
   ],
-  "content_hash": "9d12e78f31a3abe4b6f7bb972e5072b38ecd29f96636db8c9e5a9da1f11d7a9d",
+  "content_hash": "030c234f820aaa3b163bd778fecd5412fc641ef3b33ee9847d512cb7484c37e6",
   "dependencies": [],
   "description": "Migrate classic Visualforce-based OmniScripts to LWC-based runtime with feature parity and regression testing. NOT for new OmniScript design.",
   "file_location": "skills/omnistudio/omnistudio-lwc-omniscript-migration",
@@ -63,7 +63,7 @@
   "templates": [
     "skills/omnistudio/omnistudio-lwc-omniscript-migration/templates/omnistudio-lwc-omniscript-migration-template.md"
   ],
-  "updated": "2026-04-17",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

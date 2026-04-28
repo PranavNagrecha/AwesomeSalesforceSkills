@@ -6,10 +6,10 @@
     "14ffa54fa84700c994c0",
     "1d3cb5648bd81a6db945",
     "2553ace7986832988aff",
-    "26b0ea604398fa84a0ca",
     "2dcf4c92038f1e991e3f",
     "31a47bc7cfb8270c2a71",
     "42601f13e5d6602afa41",
+    "4dd1dfc547afdbb1367b",
     "4e27d49e86ab292f379a",
     "52c17f50f125cfa3a02a",
     "561ba2168b9e43835ced",
@@ -28,7 +28,7 @@
     "d2faba80ac20113c6e54",
     "de37839eb06d00fc88a7"
   ],
-  "content_hash": "ec860ee0a131886201677b698b880912a99d73de3f2a0312bfdfb66618aa1353",
+  "content_hash": "e6c329f4707ac5623f2c6b09e1e5fe0d0b33c9aebfb86b02ee1211da35eb81b8",
   "dependencies": [],
   "description": "Use Connect REST API for Chatter, feeds, communities, and CMS content instead of querying underlying SObjects. NOT for custom business object CRUD.",
   "file_location": "skills/integration/connect-rest-api-patterns",
@@ -66,7 +66,7 @@
   "templates": [
     "skills/integration/connect-rest-api-patterns/templates/connect-rest-api-patterns-template.md"
   ],
-  "updated": "2026-04-17",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

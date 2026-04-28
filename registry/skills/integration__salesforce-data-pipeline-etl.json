@@ -1,7 +1,6 @@
 {
   "category": "integration",
   "chunk_ids": [
-    "01211bdb06643b074c17",
     "12a7a4502b52e3efb05c",
     "2b02a6ab7855c4ef0827",
     "300a6a0b983047bb5f5b",
@@ -20,6 +19,7 @@
     "83a36a3c5e83426f5fa0",
     "8869170b17cba963ce84",
     "8b91c1924432c079650d",
+    "9e7be02024cb6021b0cf",
     "a98ac14344c5f7a14212",
     "aa953d89eb4ecc9bd6ca",
     "aed4fca74e14aa9c1c30",
@@ -28,7 +28,7 @@
     "f6eb72b645d33b38151f",
     "fbb383e6e940db6c39d7"
   ],
-  "content_hash": "6b6822d9ff2d59fbd98b4d4cd8984c107803bcbd49d3679f00cb3641fdce06b6",
+  "content_hash": "cda2e6be3ce91a881b44e8b8c26d34ba1e7a7e0aeb57064f29cfc7ff8abe4382",
   "dependencies": [],
   "description": "Export large Salesforce datasets to a lakehouse via Bulk API 2.0, CDC streams, or Salesforce Data Pipelines. NOT for ad-hoc exports.",
   "file_location": "skills/integration/salesforce-data-pipeline-etl",
@@ -67,7 +67,7 @@
   "templates": [
     "skills/integration/salesforce-data-pipeline-etl/templates/salesforce-data-pipeline-etl-template.md"
   ],
-  "updated": "2026-04-17",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

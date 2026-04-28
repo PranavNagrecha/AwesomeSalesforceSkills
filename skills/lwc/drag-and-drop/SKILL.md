@@ -23,18 +23,19 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # LWC Drag and Drop
 
 Native HTML5 Drag and Drop works in LWC — no library needed. The tricky parts are (1) preventing default on dragover, (2) carrying item identity via dataTransfer, and (3) providing a keyboard-accessible alternative (focus + arrow keys). This skill lays out the template, the JS handlers, and the ARIA live-region announcements.
 
-## When to Use
+## Adoption Signals
 
 Any reordering UI (priority list, board columns, file drop zones). Not for complex trees (use a specialized library behind an LWC wrapper).
 
-Typical trigger phrases that should route to this skill: `lwc drag drop`, `reorder list lwc`, `drag file into lwc`, `kanban drag and drop lwc`.
+- HTML5 Drag and Drop API for in-component reordering — no third-party library required.
+- Custom drag handles when the list rows contain interactive controls that must keep their own click semantics.
 
 ## Recommended Workflow
 

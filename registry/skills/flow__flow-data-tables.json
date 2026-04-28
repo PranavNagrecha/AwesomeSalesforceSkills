@@ -14,7 +14,6 @@
     "3d7dc14e154900dd524f",
     "4216f0d82aaf2c1eb027",
     "4c7b113523bbb7673c9c",
-    "5282fa0e926102b989c6",
     "5e21f76cad0b4772b4db",
     "718a7f9ddeade3f9adaa",
     "76db5ebb8e7905ed3093",
@@ -26,9 +25,10 @@
     "c1ea3d3095abe2d5c6c9",
     "dbe2c075d5e8fa474c96",
     "e89429df0eb33200d611",
-    "fba142e9b0d018536827"
+    "fba142e9b0d018536827",
+    "ff733cff7fb461451c04"
   ],
-  "content_hash": "adaaabc79e6e413bfdc8e411d3f7466a41ded1c40ee35e6ce3b7da9f89e5c9f2",
+  "content_hash": "5eaab5ee903fa6d173fea8a66c38f27de1cd513efd79f8c4072d99d41f2d8030",
   "dependencies": [],
   "description": "Use the Data Table screen component for selecting rows from collections in Screen Flows, including single/multi-select and inline actions. NOT for displaying read-only data outside flows.",
   "file_location": "skills/flow/flow-data-tables",
@@ -64,7 +64,7 @@
   "templates": [
     "skills/flow/flow-data-tables/templates/flow-data-tables-template.md"
   ],
-  "updated": "2026-04-17",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

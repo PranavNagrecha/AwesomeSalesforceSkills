@@ -23,18 +23,19 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # OmniStudio LWC OmniScript Migration
 
 Salesforce is deprecating the Visualforce OmniScript runtime. Orgs must switch each OmniScript to the LWC runtime via the 'Run OmniScripts in LWC' setting and retest. Third-party templates and embedded custom VFs need replacement LWCs. This skill covers inventory, parity testing, and the rollout sequence.
 
-## When to Use
+## Adoption Signals
 
 Any org still using VF-mode OmniScripts; required by the deprecation timeline.
 
-Typical trigger phrases that should route to this skill: `omniscript lwc migration`, `visualforce omniscript deprecated`, `switch omniscript to lwc`, `omni run lwc mode`.
+- Pre-migration audit when an OmniScript embeds custom Visualforce in a step or footer template.
+- Required when LWC OmniScript runtime parity gaps (e.g., specific Action types) must be evaluated before the cutover.
 
 ## Recommended Workflow
 

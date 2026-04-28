@@ -35,7 +35,7 @@ updated: 2026-04-23
 
 # Flow Apex-Defined Types
 
-## When To Use
+## Adoption Signals
 
 - Flow needs a typed, structured, non-sObject value (nested JSON, complex
   response, config object).

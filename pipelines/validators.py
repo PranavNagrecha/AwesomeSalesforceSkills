@@ -293,10 +293,10 @@ def validate_skill_structure(path: Path) -> list[ValidationIssue]:
 def validate_skill_authoring_style(path: Path) -> list[ValidationIssue]:
     """Style-level checks against `standards/skill-authoring-style.md`.
 
-    All findings are WARN-level. The style guide is forward-leverage
-    guidance; we don't want false positives on 807 existing skills to
-    block PRs. ERROR-level promotion happens only after the rules have
-    been calibrated against real skills (see § 8.2 of the style guide).
+    All findings are ERROR-level. The corpus was retrofitted to clear
+    every flagged warning before promotion, so a hit now means a real
+    regression — a new skill (or an edit) reintroduced one of the three
+    duplication anti-patterns. The validator should fail the PR.
 
     Targets the three highest-confidence anti-patterns from § 6 of the
     guide — the ones that are objective duplication checks rather than
@@ -327,7 +327,7 @@ def validate_skill_authoring_style(path: Path) -> list[ValidationIssue]:
         marker = when_match.group(0).strip()
         issues.append(
             ValidationIssue(
-                "WARN",
+                "ERROR",
                 str(skill_md),
                 f"body has `{marker}` section — frontmatter `description` is the canonical trigger surface; "
                 "remove the body section or fold it into the description "
@@ -352,7 +352,7 @@ def validate_skill_authoring_style(path: Path) -> list[ValidationIssue]:
             marker = pillar_match.group(0).strip()
             issues.append(
                 ValidationIssue(
-                    "WARN",
+                    "ERROR",
                     str(skill_md),
                     f"body has `{marker}` section while `references/well-architected.md` already covers it — "
                     "keep pillar mapping in references/well-architected.md only "
@@ -397,7 +397,7 @@ def validate_skill_authoring_style(path: Path) -> list[ValidationIssue]:
             sample = next(iter(shared))[:80].replace("\n", " ")
             issues.append(
                 ValidationIssue(
-                    "WARN",
+                    "ERROR",
                     str(skill_md),
                     f"{len(shared)} paragraph(s) appear verbatim in both SKILL.md and references/gotchas.md "
                     f"(e.g. \"{sample}…\") — keep the deep version in references/gotchas.md, "

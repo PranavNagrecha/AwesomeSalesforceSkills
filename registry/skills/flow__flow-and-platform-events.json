@@ -1,6 +1,7 @@
 {
   "category": "flow",
   "chunk_ids": [
+    "0322dfd0c4332b4ca6d2",
     "1da8d9c9b189f874a574",
     "20f3564f01cc0cabf92f",
     "221798a908a5ca2c9fe1",
@@ -20,7 +21,6 @@
     "97749da605a7eb1cd91e",
     "a98358090f73e53683b8",
     "acc99ebe4be5639e0743",
-    "aff201cdb3289b82f122",
     "ba098457ffff9c7a4220",
     "c9b74d732d5df3193123",
     "e2a51b6d3110d7bc796e",
@@ -28,7 +28,7 @@
     "f2cf4c736a4e1f3624c9",
     "f4b341322f2ce3e2303e"
   ],
-  "content_hash": "54705415b63c48512b3925ff8c8034f8afd181be5b10d068f4e906e240413796",
+  "content_hash": "8aa8cae230f6db6925f572685011d035f0427074ed68dc78d2eef1a3063150a0",
   "dependencies": [],
   "description": "Publish and subscribe to Platform Events from Flow for async decoupling, high-volume triggers, and cross-org signaling. NOT for regular DML-triggered flows.",
   "file_location": "skills/flow/flow-and-platform-events",
@@ -64,7 +64,7 @@
   "templates": [
     "skills/flow/flow-and-platform-events/templates/flow-and-platform-events-template.md"
   ],
-  "updated": "2026-04-17",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

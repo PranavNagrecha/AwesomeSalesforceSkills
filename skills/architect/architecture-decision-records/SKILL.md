@@ -32,18 +32,19 @@ updated: 2026-04-23
 
 # Architecture Decision Records
 
-## When To Use
+## ADR Candidacy Criteria
 
-- A decision with multi-quarter impact: platform choice (e.g. Flow vs
-  Apex vs Agentforce), pattern adoption (Trigger Handler, Selector
-  Layer), org topology (single-org vs multi-org), integration approach
-  (Pub/Sub vs REST).
-- A decision reversing an earlier one — always writes a new ADR that
-  supersedes the old.
-- A decision you expect someone in 6 months to ask "why did we do
-  this."
+Promote a decision to ADR when **any** of these hold:
 
-## When NOT To Use
+- **Multi-quarter impact**: platform choice (Flow vs Apex vs Agentforce),
+  pattern adoption (Trigger Handler, Selector Layer), org topology
+  (single-org vs multi-org), integration approach (Pub/Sub vs REST).
+- **Reversal of an earlier choice** — always write a new ADR that
+  supersedes the old; never delete the original.
+- **The 6-month test** — someone joining the team will ask "why did we
+  do this?" without an ADR they can read.
+
+## Out-of-Scope Decisions
 
 - Day-to-day implementation choices covered by existing patterns.
 - Task-level tradeoffs that belong in a PR description.

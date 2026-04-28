@@ -24,18 +24,19 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Salesforce Data Pipeline / ETL
 
 Production Salesforce → lake pipelines combine a one-time Bulk API 2.0 snapshot with an ongoing CDC or Platform Event stream. Naive incremental loads on LastModifiedDate lose updates during the query window; CDC guarantees ordered delta capture.
 
-## When to Use
+## Adoption Signals
 
 Analytics workloads that need <1h freshness on Salesforce data in a warehouse.
 
-Typical trigger phrases that should route to this skill: `salesforce to snowflake`, `etl from salesforce`, `bulk api 2 export`, `change data capture to lake`.
+- Bulk API 2.0 export when the source is full-table and the warehouse handles deduplication.
+- Change Data Capture (CDC) export when downstream consumers need ordered events with primary-key delta semantics.
 
 ## Recommended Workflow
 

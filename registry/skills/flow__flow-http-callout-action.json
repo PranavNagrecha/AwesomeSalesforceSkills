@@ -19,16 +19,16 @@
     "7976a78dd30d858d591b",
     "805ef573f586d5d7ac49",
     "9318a0cf8084ec7b53b6",
-    "9933e099abaf47baf460",
     "a0fae23454a4f7f92a13",
     "ad1499c01d86073ed515",
+    "aee70b42c478b785f30c",
     "b9f5a75c8aa2069a3c7a",
     "cb839b0d640126004828",
     "cdfb6137ce20fc97a4ba",
     "d4cbd986b1898d6cbdbf",
     "f439d84be95e6c2480bf"
   ],
-  "content_hash": "86a3208938570583de747cfdd074382eb5a79fbbf0dea4aebf2a884d5a435bdc",
+  "content_hash": "d9d607c80fe26231f973ea71c4bc6a90527ba613b50c857121644db8d5c9dbd7",
   "dependencies": [],
   "description": "Call external HTTP APIs directly from Flow using HTTP Callout actions (no Apex), handling auth, schema, and errors. NOT for complex Apex-based integration logic.",
   "file_location": "skills/flow/flow-http-callout-action",
@@ -64,7 +64,7 @@
   "templates": [
     "skills/flow/flow-http-callout-action/templates/flow-http-callout-action-template.md"
   ],
-  "updated": "2026-04-17",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

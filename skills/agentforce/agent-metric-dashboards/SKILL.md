@@ -25,18 +25,16 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # Agent Metric Dashboards
 
 The five agent KPIs: turns/conversation, deflection rate, mean latency, tokens/conversation (cost proxy), and quality score. This skill wires each KPI to a source and lays out the single-pane dashboard the executive reviewer needs.
 
-## When to Use
+## Adoption Signals
 
 Every production agent after the first week; monthly executive review.
-
-Typical trigger phrases that should route to this skill: `what is my agent deflection rate`, `how much does each agent conversation cost`, `agent latency p95`, `agentforce roi dashboard`.
 
 ## Recommended Workflow
 

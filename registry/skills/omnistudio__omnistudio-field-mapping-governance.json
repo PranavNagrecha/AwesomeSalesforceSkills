@@ -5,7 +5,6 @@
     "143e74c5a9348b647f87",
     "18df40ce4ee2f1784603",
     "256898c388bc24885041",
-    "2f135b4845d914822810",
     "42e9213ae152a307edec",
     "4452b81e803aa986ff17",
     "5233e4e35091723a9864",
@@ -16,6 +15,7 @@
     "70b2dd98ba50b07b559c",
     "762cee0b91be84e49983",
     "7df9ff9d35be03741dd3",
+    "836ceb5a0b1ff638260c",
     "a76e86ffbbffe6e98f07",
     "b4a9af2f652090fa8120",
     "b5372faafdeda578b20f",
@@ -28,7 +28,7 @@
     "fdd027f0207a188833e4",
     "febaf6d6912708d3c44e"
   ],
-  "content_hash": "7d6684fa931e5fe117070d1eff803babe20f3dcb89d04886886df79920d48311",
+  "content_hash": "7a03a5291ab6cf267be63855744870f928cedeaad13a9c0adf07d127e00c7082",
   "dependencies": [],
   "description": "Govern DataRaptor field mappings to prevent runtime errors when source metadata changes: naming, versioning, and dependency tracking. NOT for DataRaptor authoring fundamentals.",
   "file_location": "skills/omnistudio/omnistudio-field-mapping-governance",
@@ -62,7 +62,7 @@
   "templates": [
     "skills/omnistudio/omnistudio-field-mapping-governance/templates/omnistudio-field-mapping-governance-template.md"
   ],
-  "updated": "2026-04-17",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

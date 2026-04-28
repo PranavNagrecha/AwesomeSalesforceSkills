@@ -23,18 +23,19 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-17
+updated: 2026-04-28
 ---
 
 # OmniStudio Cache Strategies
 
 OmniStudio supports caching per-record on DataRaptors (cache duration in minutes) and Integration Procedures (cache-enabled flag with TTL). Used correctly, cache cuts 50–90% of repeated calls; used wrong it serves stale data. This skill walks through identifying read-heavy paths, choosing a TTL aligned to business freshness tolerance, implementing a deterministic cache-bust on mutation, and monitoring hit ratio so the cache's contribution is observable.
 
-## When to Use
+## Adoption Signals
 
 Read-heavy IPs/DRs where source data changes infrequently (product catalog, reference data).
 
-Typical trigger phrases that should route to this skill: `dataraptor cache`, `integration procedure cache`, `omnistudio cache ttl`, `cache bust omniscript`.
+- Tune the Integration Procedure cache for any IP whose response shape is stable for hours and whose source touch is expensive.
+- DataRaptor cache when transform output (label translation, code-table lookup) is identical across users.
 
 ## Recommended Workflow
 
