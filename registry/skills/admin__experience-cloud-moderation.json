@@ -68,7 +68,7 @@
     "f7e622588f5a3e5310a8",
     "fc7528b38399c927f3cd"
   ],
-  "content_hash": "9202a845b9ad428bb59ed31e8f0e120260e373f13709e00b4baffb8397984b36",
+  "content_hash": "4c87ef4ffc3bea70aca76dcf5199b06d668736a3c82a5e4028a398bc57ff4ca5",
   "dependencies": [],
   "description": "Use when setting up or tuning Experience Cloud community content moderation: keyword/criteria-based rules, member reputation system, and moderation queue management. Triggers: 'set up community content moderation', 'configure reputation levels', 'flagging rules Experience Cloud', 'moderation queue setup', 'keyword blocking community', 'approve community posts before publishing'. NOT for CMS content publishing workflows or Digital Experiences page publishing.",
   "file_location": "skills/admin/experience-cloud-moderation",

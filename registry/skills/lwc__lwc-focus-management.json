@@ -48,7 +48,7 @@
     "eabe153b1b3edd98d893",
     "f3f73766fb99140f6131"
   ],
-  "content_hash": "adbd1d63dad2e3aba8894a7d8f7830c3edb95c7cebc4be93eec9d818ebde7d2e",
+  "content_hash": "46abf1e427f1dc740ee580e98c964d4063496f86f8c1f53d55bf808e6178235b",
   "dependencies": [],
   "description": "Use when building LWCs that need to manage focus explicitly \u2014 modal dialogs, wizard flows, dynamic inserts, list updates, error summaries, and focus after async work. Covers focus restoration, focus traps, programmatic focus across shadow DOM, and patterns for announcing changes to assistive tech. Does NOT cover general LWC a11y audit (see lwc-accessibility).",
   "file_location": "skills/lwc/lwc-focus-management",

@@ -103,7 +103,7 @@
     "fd81065edd5d27f8cd27",
     "fe3148a7cd5b3a5812fd"
   ],
-  "content_hash": "98887975da8a6943720b14a8264202f45b555cc05b07d05489ba0d85f3ec60d1",
+  "content_hash": "36b278fba20163d3eb7e76a0900728678b6a9813cd0bcfa1f9d59ba741f546c0",
   "dependencies": [],
   "description": "Use this skill to configure Field Service Lightning service resources \u2014 including ServiceResource types, skill assignments via ServiceResourceSkill, capacity-based resource setup, and ResourcePreference rules. NOT for service territory setup (see fsl-service-territory-setup), NOT for scheduling policy configuration, and NOT for FSL mobile app setup.",
   "file_location": "skills/admin/fsl-resource-management",

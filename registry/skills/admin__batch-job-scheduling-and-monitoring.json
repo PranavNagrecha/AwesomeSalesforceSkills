@@ -61,7 +61,7 @@
     "fc70dd6b6694f67578df",
     "ffdfb99abb368c9c4126"
   ],
-  "content_hash": "3b937bd9e25d2b54de4d45b8867f7100e12f1ee6e37ed11d2a39c925dc60bd93",
+  "content_hash": "e2343c3f7d2f596aee3bbc2d437f258132c4974d2fd01ab5b84326e779280370",
   "dependencies": [],
   "description": "Use when monitoring, diagnosing, or managing Batch Apex, Scheduled Apex, Queueable, and Flow scheduled jobs: Setup > Apex Jobs, AsyncApexJob queries, concurrent limits, failure detection, and notification patterns. NOT for writing batch Apex code (use batch-apex-patterns) or writing Schedulable implementations (use apex-scheduled-jobs).",
   "file_location": "skills/admin/batch-job-scheduling-and-monitoring",

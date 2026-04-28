@@ -60,7 +60,7 @@
     "fd080512382136187b91",
     "ff3f65f40a0e5bf226e7"
   ],
-  "content_hash": "ee9ba521d044c12f0ce54a30e3056b34b738bbb9c52e48fc29ca914298f58398",
+  "content_hash": "b27bd5aae96eaadafc24dc0664a0c4f7ab174755fbadd4f7c6c2cef72daaaf36",
   "dependencies": [],
   "description": "Use when standard Salesforce indexes are insufficient for query performance on high-volume objects: requesting custom indexes via Salesforce Support for standard fields, deploying custom field indexes via Metadata API, requesting skinny tables, or designing two-column composite indexes. NOT for SOQL query optimization techniques (use data/soql-query-optimization) or general large data volume design (use architect skills).",
   "file_location": "skills/data/custom-index-requests",

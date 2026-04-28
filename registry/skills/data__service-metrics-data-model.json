@@ -106,7 +106,7 @@
     "f2b9bcb900c916d53d89",
     "f3bb7368e8f7c6fba0f6"
   ],
-  "content_hash": "421527d9367386ccd9b6c84b2b916e8cf39a364ed4b32b4fc69d852976aeecf0",
+  "content_hash": "3801a58b7c9997e4f9fcb90b0e9360714ad7a845d672ed50b42fe901e14b372e",
   "dependencies": [],
   "description": "Use when designing or reporting on Salesforce Service Cloud service metrics \u2014 covers the Case, Entitlement, and CaseMilestone object model, MTTR derivation via BusinessHours.diff(), IsViolated semantics, and ElapsedTimeInMins field usage for SLA reporting. Trigger keywords: MTTR, mean time to resolve, case milestone, entitlement SLA, IsViolated, CaseMilestone, first response time, resolution time, service KPI. NOT for CRM Analytics (Tableau CRM / Einstein Analytics) dashboards or Field Service Lightning work order metrics.",
   "file_location": "skills/data/service-metrics-data-model",

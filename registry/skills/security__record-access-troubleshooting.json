@@ -48,7 +48,7 @@
     "ef58ce1a51335e11a118",
     "f07450cb1d602e87f667"
   ],
-  "content_hash": "f4e3f959978b2532685cf2bed1d3436d5167c9e9e058690326d392d3f08472ef",
+  "content_hash": "04830f9f3892b0f4f46c6e7eb78234c3f1b9cd45ce3122930b5f3d9a29fcb356",
   "dependencies": [],
   "description": "Diagnose why a user can or cannot see/edit a record: UserRecordAccess SOQL, Why Can a User Access This Record debug log, OWD, role hierarchy, sharing rules, manual/team/apex shares, implicit parent share. NOT for field-level security (use field-level-security-audit). NOT for designing sharing (use sharing-selection decision tree).",
   "file_location": "skills/security/record-access-troubleshooting",

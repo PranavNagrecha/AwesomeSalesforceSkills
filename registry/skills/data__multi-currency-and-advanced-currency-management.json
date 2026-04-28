@@ -51,7 +51,7 @@
     "fc4fd29ac169c722c510",
     "fc7fd7c2e9ba4dc1441c"
   ],
-  "content_hash": "e964cf2b7e7bc5a09dfc1db17ff0ff0af41cad4faa40981ee6646a188601afae",
+  "content_hash": "cbf5a262677c53f84d754f03383312f4094e332dbcb682eadd4095bdb63d5c65",
   "dependencies": [],
   "description": "Use when designing or reviewing Salesforce multi-currency behavior, especially irreversible activation, `CurrencyIsoCode`, `convertCurrency()`, dated exchange rates, and Advanced Currency Management tradeoffs. Triggers: 'multi currency', 'advanced currency management', 'CurrencyIsoCode', 'dated exchange rate', 'convertCurrency'. NOT for ordinary numeric field calculations with no currency conversion or reporting concern.",
   "file_location": "skills/data/multi-currency-and-advanced-currency-management",

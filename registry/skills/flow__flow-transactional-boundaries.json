@@ -86,7 +86,7 @@
     "f9884fe26e100faf8472",
     "fb4a38250d0f89a8a926"
   ],
-  "content_hash": "70fc10a3a77e83e1e6616f4c204ea2b1a330ce215675c41c50d721ed71130884",
+  "content_hash": "09ece86bb2d469ed2d1a6d1e7c492f085e51223ed2c9d18571682b5e4d3740e2",
   "dependencies": [],
   "description": "Reason about when a Flow is inside the caller's transaction vs starts its own. Pick Before-Save vs After-Save vs Async Path vs Pause + Resume when transaction boundaries matter. Covers governor-limit sharing, DML sequencing, recoverability, and the exact semantics of each Flow entry point. NOT for choosing Flow vs Apex (use automation-selection.md). NOT for Flow-to-Flow invocation contracts (use subflows-and-reusability).",
   "file_location": "skills/flow/flow-transactional-boundaries",

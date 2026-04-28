@@ -105,7 +105,7 @@
     "fb83d9a5d4f27e0bf163",
     "fd19470bba19ecbc790a"
   ],
-  "content_hash": "387291366c6c8f9f1863031195561c31853fbf982d44e6cf93dea41670ab6a9b",
+  "content_hash": "41a3c202327d0cffa0a487760ca54b0ca0a122aba1946cb820f7b7b3544b0501",
   "dependencies": [],
   "description": "Transaction Security policy creation and configuration: condition builder, enhanced policies, enforcement actions (block, MFA, notification, end session), real-time monitoring mode, and policy troubleshooting. NOT for Event Monitoring log analysis or Shield Event Monitoring setup (use event-monitoring). NOT for Apex testing or debug-log analysis.",
   "file_location": "skills/security/transaction-security-policies",

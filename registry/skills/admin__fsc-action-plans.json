@@ -88,7 +88,7 @@
     "f9e55e72ea09bd68c401",
     "ff4922091e5dc12e65b8"
   ],
-  "content_hash": "e15373d73b2e9a0a79a64e9e26fb89c0639d4c40bb87ebc976178ee2fadeeebb",
+  "content_hash": "d4a600b61feb17c49e369ff73590b453617208e133ba908d8e7230abaa511cb2",
   "dependencies": [],
   "description": "Use this skill when designing, building, or troubleshooting FSC Action Plan templates for client-facing task sequences such as client onboarding, account opening, annual review preparation, and compliance tasks. Trigger keywords: Action Plan template, ActionPlanTemplate, ActionPlan object, FSC task sequence, onboarding checklist, review prep tasks. NOT for standard Salesforce Tasks, Flow automation, or general task management outside of FSC Action Plan objects.",
   "file_location": "skills/admin/fsc-action-plans",

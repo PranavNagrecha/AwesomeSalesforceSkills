@@ -102,7 +102,7 @@
     "fcc80ec7fe1431d81642",
     "fd04907c8c6879798f4d"
   ],
-  "content_hash": "2ad874d00acaf832c764b786dab1415434d1866fb38ad156c2c81c03fe1274a5",
+  "content_hash": "c295afc0badc3e0ccc0a7ee5b89a414831e2b2032d872c7106361eb19e9a2180",
   "dependencies": [],
   "description": "Use this skill when designing or evaluating the architecture of a Salesforce Commerce implementation that involves choosing between B2B Commerce (on Core, Lightning platform) and B2C Commerce (Salesforce Commerce Cloud / SFCC). Trigger keywords: B2B vs B2C architecture, SFCC vs B2B Commerce, Commerce Cloud platform decision, B2B data model architecture, B2C storefront architecture, commerce infrastructure comparison, platform selection architecture. NOT for implementation mechanics \u2014 use admin/b2b-commerce-store-setup or admin/b2c-commerce-store-setup for configuration work. NOT for requirements gathering \u2014 use admin/b2b-vs-b2c-requirements for pre-build platform selection based on buyer journey. NOT for D2C vs B2B feature comparisons within Lightning-based Commerce.",
   "file_location": "skills/architect/b2b-vs-b2c-architecture",

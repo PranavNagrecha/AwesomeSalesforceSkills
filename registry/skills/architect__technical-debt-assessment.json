@@ -116,7 +116,7 @@
     "f7b5f1fa0eefac5a406c",
     "fe131b84a96afae713d9"
   ],
-  "content_hash": "959a42019a053bb5e36956b28fab737965f0d859cd784655371cb2f7821ced54",
+  "content_hash": "32293f17f5d15f3227cfe49a34955330b3c93471635853edf973bc08c27f8bcb",
   "dependencies": [],
   "description": "Use when auditing a Salesforce org for technical debt: dead code, unused automations, overlapping Flow and Apex triggers, deprecated features, configuration complexity, and legacy patterns. Triggers: technical debt review, org health check, dead code analysis, automation overlap, deprecated features, complexity audit. NOT for implementing the fixes identified (use role-specific skills) or for security-specific reviews (use security-architecture-review).",
   "file_location": "skills/architect/technical-debt-assessment",

@@ -68,7 +68,7 @@
     "edbdb7c1ce0abe6ef588",
     "fc75b1fc08ccf5d5235f"
   ],
-  "content_hash": "30ba36aa990b4157430cb6c540b4a127253b5fe44b808f3f7002f0dea6aaeffb",
+  "content_hash": "0f1bf754a21230e4ae21028be2bad5c64956bc0f084cd0d665561313229b3478",
   "dependencies": [],
   "description": "Use when a Lightning Web Component needs to escape shadow DOM isolation so Experience Cloud / LWR sites can be SEO-indexed, a third-party library can walk the DOM, global styling has to reach inside the component, or accessibility tooling must see the rendered tree. NOT for the default shadow DOM behavior most LWCs should use \u2014 reach for light DOM only when SEO, third-party DOM access, or global styling requires it, and never for components distributed through managed packages.",
   "file_location": "skills/lwc/lwc-light-dom",

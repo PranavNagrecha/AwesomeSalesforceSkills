@@ -96,7 +96,7 @@
     "fb792c91e7f436b79e6b",
     "fbcdeacf21f3c8ac3282"
   ],
-  "content_hash": "856b73efa3ac8e934f11700a2ad778ad76c64cc48aa0389374ce6685b59e5de5",
+  "content_hash": "bba66ccfaa55b8356de0fa947db21eec4281bd16f0a8941a622ad4d3a22ba95a",
   "dependencies": [],
   "description": "Programmatic record access management in Financial Services Cloud using Compliant Data Sharing (CDS): inserting AccountParticipant/OpportunityParticipant records, working with ParticipantRole and ParticipantGroup objects, verifying sharing coverage, and understanding CDS recalculation behavior. NOT for admin setup of CDS via IndustriesSettings metadata, declarative sharing rules, or standard Apex managed sharing on non-FSC objects.",
   "file_location": "skills/apex/fsc-compliant-sharing-api",

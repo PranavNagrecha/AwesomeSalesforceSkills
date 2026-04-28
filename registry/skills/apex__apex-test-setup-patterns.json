@@ -49,7 +49,7 @@
     "f990a54db3219360198d",
     "fd504d7820f45b0120d0"
   ],
-  "content_hash": "0e460d3105818354f2434839f5b52fd6b9562a0b2289b38ab3ccab03cf90d7db",
+  "content_hash": "f108649fc84ebf8e0b2494fde816d7a4bf01d1e7c48e8dc25c2b8bd0c1b06c4e",
   "dependencies": [],
   "description": "@TestSetup method semantics: one-time creation per test class, isolation behavior, @TestVisible, System.runAs, Test.startTest/stopTest governor reset, mixed-DML boundaries. NOT for building a test data factory (use test-data-factory-patterns). NOT for mocking callouts (use apex-http-callout-mocking).",
   "file_location": "skills/apex/apex-test-setup-patterns",

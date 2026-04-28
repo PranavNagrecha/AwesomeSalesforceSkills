@@ -90,7 +90,7 @@
     "f0640196aada125e2e36",
     "f368fd1383577ee6b989"
   ],
-  "content_hash": "52364c95c0e6df6b47a9cff7127a6a4a870a96daae726fa0bdcc31c9bbec05eb",
+  "content_hash": "93207e18359155d5968d458d17c08ad8cf30f1a4384740736f39e535692d5e9c",
   "dependencies": [],
   "description": "Configure and audit Salesforce network security controls \u2014 trusted IP ranges (org-wide Network Access), login IP ranges on profiles, CSP Trusted Sites for Lightning components, CORS allowlists for external JavaScript, and TLS requirements \u2014 and troubleshoot login-blocked-by-IP or CSP violation errors. NOT for org-wide session settings, MFA configuration, or real-time Transaction Security Policies.",
   "file_location": "skills/security/network-security-and-trusted-ips",

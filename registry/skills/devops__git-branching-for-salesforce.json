@@ -76,7 +76,7 @@
     "fa25f2616e3801ed456d",
     "fc0ec14e134a404e888e"
   ],
-  "content_hash": "e6074b6c546471fbede26e75ef7a1c1ddf2d4a62b5f5493dfce351a14277641e",
+  "content_hash": "8f9c47e7e45d408826304246fbfc3a7795169bb76b1f487c78fcb9e9903ab6c1",
   "dependencies": [],
   "description": "Use when selecting or reviewing a Git branching strategy for a Salesforce project \u2014 choosing between trunk-based development, GitFlow, or environment branching, and mapping branches to orgs, packages, and CI pipelines. Trigger keywords: 'git branching strategy Salesforce', 'trunk-based vs GitFlow', 'branch per package', 'feature branch model SFDX', 'branching for unlocked packages', 'git workflow Salesforce DX'. NOT for CI/CD pipeline implementation (use devops/github-actions-for-salesforce or devops/gitlab-ci-for-salesforce), NOT for environment topology decisions (use devops/environment-strategy), NOT for scratch org lifecycle management.",
   "file_location": "skills/devops/git-branching-for-salesforce",

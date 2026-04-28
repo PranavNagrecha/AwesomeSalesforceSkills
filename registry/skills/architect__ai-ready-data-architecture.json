@@ -86,7 +86,7 @@
     "fee47188da7204f2ce73",
     "ff037dc26d2b75e1b52a"
   ],
-  "content_hash": "147bfb6d5111159c4fff9f6ab8e65610636dfa80653ff8692530f8b09ac6d03b",
+  "content_hash": "9ad2f17e39302f519b9c153c1d95d8a8cd914cdbf2d257a1b4dd2a62bc813142",
   "dependencies": [],
   "description": "Use when designing or auditing a Salesforce data architecture to support AI features \u2014 Einstein, Agentforce, Data Cloud, or custom ML models. Covers field-level data quality requirements, structured vs unstructured data placement, embedding-ready text field design, knowledge article structure for RAG grounding, Data Cloud harmonized data model, Einstein Feature Store patterns, grounding data for Agentforce actions, AI-ready field naming conventions, and data freshness requirements for model retraining. Trigger phrases: design data model for AI, make Salesforce data AI-ready, data quality for Einstein, grounding data for Agentforce, Data Cloud for AI, RAG data architecture Salesforce. NOT for Data Cloud initial setup and licensing, not for LWC or Flow implementation, not for general data migration, not for Einstein Analytics dashboard design.",
   "file_location": "skills/architect/ai-ready-data-architecture",

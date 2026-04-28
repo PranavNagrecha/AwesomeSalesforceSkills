@@ -49,7 +49,7 @@
     "fdedf06a03b91d7a4d01",
     "fe4e5f968d910fedc464"
   ],
-  "content_hash": "1af1be76c5289d4225db32176ad35c5d6611eb921a6dd7082fdaaa4fb2cfd03e",
+  "content_hash": "f4de3482a9722c8542e678bdbe82477478d2a80997264055b69a7a42c679b6f0",
   "dependencies": [],
   "description": "HttpCalloutMock for Apex tests: HttpCalloutMock interface, StaticResourceCalloutMock, MultiStaticResourceCalloutMock, Test.setMock, multi-call mocks for pagination, error-path mocks. NOT for the callout code itself (use callouts-and-http-integrations). NOT for WSDL callouts (use apex-wsdl2apex-patterns).",
   "file_location": "skills/apex/apex-http-callout-mocking",

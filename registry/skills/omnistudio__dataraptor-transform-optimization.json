@@ -55,7 +55,7 @@
     "f9ea8c6b7f8c2fd1e0c0",
     "fc721160b58776a3b9e1"
   ],
-  "content_hash": "a1a20392936a3158d6ea2ae4693eef28122de6237e514a392cbbac982b060170",
+  "content_hash": "315fc385d023c7fd16839e22676355e2a07aa42de053bab078152aa8a0abd270",
   "dependencies": [],
   "description": "Use when DataRaptor Transform operations are slow, hit governor limits, or use Apex where formula fields would suffice. Covers formula vs Apex expressions, bulk transform sizing, and chained transform composition. Triggers: 'dataraptor transform slow', 'dataraptor formula vs apex', 'dataraptor bulk transform', 'dr governor limit'. NOT for DataRaptor Extract or Load performance.",
   "file_location": "skills/omnistudio/dataraptor-transform-optimization",

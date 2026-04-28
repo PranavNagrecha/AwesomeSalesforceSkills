@@ -86,7 +86,7 @@
     "fa5bb3ebb4c42a3f0541",
     "fd7bb5df3998bb251577"
   ],
-  "content_hash": "0b6ead944533982b96c3c2d9dbd17dc4bfe6bddf37f59fb2fa30774badd6ccee",
+  "content_hash": "4c2023aa27fb64e7b76c8e4e9852322bc2f831b15242b5e78c9b985a4c645daa",
   "dependencies": [],
   "description": "Use when designing or evaluating a Salesforce conversational AI deployment that involves Agentforce agents, Einstein Bots, or a combination of both. Triggers: Agentforce topic design, Einstein Bot handoff to Agentforce, multi-agent orchestration, conversational channel routing, Atlas Reasoning Engine behavior. Does NOT cover Einstein Bot standalone implementation (see einstein-bot-architecture), Omni-Channel routing for human agents, or Flow-only automation without a conversational surface.",
   "file_location": "skills/architect/conversational-ai-architecture",

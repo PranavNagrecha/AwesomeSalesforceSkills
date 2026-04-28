@@ -49,7 +49,7 @@
     "f19ecd5443508c802330",
     "f5c637fb75494f56c822"
   ],
-  "content_hash": "9e63bbf780f82c4e5555e16a0d035b8745920302d8bfd1cb06521e504a845840",
+  "content_hash": "8c4901a8d023916bcd03df39002e8950f03bde37fcd8de05e7e9f80d68c75676",
   "dependencies": [],
   "description": "Consumer Goods Cloud setup: visit execution, retail execution, route planning, in-store task management, compliance checks, off-shelf detection, and image recognition. NOT for Field Service dispatch (use field-service-core-setup). NOT for B2B Commerce storefronts (use b2b-commerce-store-setup).",
   "file_location": "skills/admin/consumer-goods-cloud-setup",

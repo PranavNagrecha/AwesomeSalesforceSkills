@@ -28,7 +28,7 @@
     "dd9559eecee54a80347b",
     "e19a7a866a1b7406b445"
   ],
-  "content_hash": "edfefa59f8b0d63f000648098f0c59ec7f07a62078a22b5b3aa0069784e5df54",
+  "content_hash": "9d12e78f31a3abe4b6f7bb972e5072b38ecd29f96636db8c9e5a9da1f11d7a9d",
   "dependencies": [],
   "description": "Migrate classic Visualforce-based OmniScripts to LWC-based runtime with feature parity and regression testing. NOT for new OmniScript design.",
   "file_location": "skills/omnistudio/omnistudio-lwc-omniscript-migration",

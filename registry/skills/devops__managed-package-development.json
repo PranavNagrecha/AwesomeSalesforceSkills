@@ -57,7 +57,7 @@
     "fb9e57f41c2a89b6d2ff",
     "fef3bc01acbe43c8d9de"
   ],
-  "content_hash": "1589c9f9c3bd5a270b2a41b90a6b12a9c7226aba6ac772f018a25fc5e39de33d",
+  "content_hash": "6f34be0ce9c54306c591a40f37113ba1411fde37db662b78d448175c5cd4b071",
   "dependencies": [],
   "description": "Use when building or maintaining Salesforce first-generation managed packages (1GP) for ISV distribution \u2014 covers namespace registration, packaging org structure, PostInstall/UninstallHandler Apex interface, push upgrades, Flow version management, and subscriber org considerations. NOT for second-generation managed packages (2GP), unlocked packages, or AppExchange listing setup.",
   "file_location": "skills/devops/managed-package-development",

@@ -47,7 +47,7 @@
     "fd3f1beac0ef5d4fa395",
     "fd8e9e12bbc720603520"
   ],
-  "content_hash": "827385fdf012e3102623259419e56b2db8335836988524a69cdb239943254631",
+  "content_hash": "89a6568eae2b6f9789c12572a13b91c954d014c67a5240aaa5c2704f7a3304ce",
   "dependencies": [],
   "description": "Design MFA enforcement: auto-enablement, Salesforce Authenticator rollout, exceptions, service accounts, API-only users, SSO interop, and audit. Trigger keywords: MFA, multi-factor, two-factor, Salesforce Authenticator, MFA exception, MFA SSO, api-only MFA. Does NOT cover: end-user password policies, device-trust posture, or non-Salesforce IdP configuration.",
   "file_location": "skills/security/mfa-enforcement-patterns",

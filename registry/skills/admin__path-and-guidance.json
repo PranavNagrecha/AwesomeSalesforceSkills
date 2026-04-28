@@ -93,7 +93,7 @@
     "fc79e9e6080edf19639c",
     "feb87f2e362c1afde7b2"
   ],
-  "content_hash": "a009e01435dd11cef5a254328c60e41fb96702c141f4c82201b066dd41491264",
+  "content_hash": "4970a534de1608a526c2eedc55e1a82e4d256bd251bf0672fc5c5abe52487e58",
   "dependencies": [],
   "description": "Use when setting up, customizing, or troubleshooting the Salesforce Path component on Opportunity, Lead, Case, or custom objects. Triggers: 'add guidance to stages', 'key fields on path', 'celebrate closed won', 'path not showing', 'configure path steps', 'confetti on stage change'. NOT for Sales Process configuration, validation rules that enforce required fields, or Kanban board setup.",
   "file_location": "skills/admin/path-and-guidance",

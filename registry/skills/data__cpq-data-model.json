@@ -90,7 +90,7 @@
     "fca46718437b924fcde7",
     "fd4252f878f9b595d9df"
   ],
-  "content_hash": "4d5e4881c417dd844347841dada68325dd770291610e6da14e4cc4bc798f34f0",
+  "content_hash": "5821368b370852b6f188321d2f77255545680e56297f809133fa9f156b15c9f6",
   "dependencies": [],
   "description": "Use when querying, mapping, or building against Salesforce CPQ managed-package objects (SBQQ__ namespace): Quote, QuoteLine, QuoteLineGroup, DiscountSchedule, PriceRule, Subscription. Trigger keywords: SBQQ__Quote__c, QuoteLineModel, CPQ object graph, CPQ subscription, CPQ price rule. NOT for standard Quote/QuoteLineItem, Industries CPQ (Vlocity), or standard Product/Pricebook data model.",
   "file_location": "skills/data/cpq-data-model",

@@ -49,7 +49,7 @@
     "f6c7e0aca4f455a5a3fc",
     "f9d355bf0b05590c833a"
   ],
-  "content_hash": "e9d2b65ab102954e8bf1702f2fece3fa311af0d2aaaefb3c09671edc1fcefba7",
+  "content_hash": "2b7e0467894d5ff5adb21124a7e81b2ced8b94971ddd46edb63e06e673018a48",
   "dependencies": [],
   "description": "Use when grounding an Agentforce agent with Data Cloud retrievers, DMO selection, chunking, and freshness windows. Triggers: agent grounding, retriever, DMO, data graph, RAG, vector index, citations. Does NOT cover Data Cloud ingestion pipelines or Data Cloud identity resolution tuning.",
   "file_location": "skills/agentforce/data-cloud-grounding-for-agentforce",

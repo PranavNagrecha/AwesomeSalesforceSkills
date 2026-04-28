@@ -28,7 +28,7 @@
     "e6769c776bb3c70931d4",
     "ef94ddd5a648221a5026"
   ],
-  "content_hash": "febf72356762b88d9ddc2354ea39b6d104e18a3f3cd3b8b05956ef6bc3447eb2",
+  "content_hash": "6365b870c37cfa823e4630352b7af5999c9b0ee8807174a39de4f6dbe9fc7c27",
   "dependencies": [],
   "description": "Design just-in-time elevation, break-glass accounts, and audit trails for Modify All Data / System Admin / Customize Application permissions. NOT for regular permission set design.",
   "file_location": "skills/security/privileged-access-management",

@@ -96,7 +96,7 @@
     "f5287777cd60950a0ef6",
     "f60bf404915d2a707ec1"
   ],
-  "content_hash": "b7e989aa274151ef60c355ab7cb14ec0bf709c5e7182aac5e4781666cee75a3a",
+  "content_hash": "7a407b4c7d76c0d2b5bc0804f58e9db59768a9d805b4ad3d4267ca316e4616e4",
   "dependencies": [],
   "description": "Use when enabling, configuring, or troubleshooting Person Accounts in a Salesforce org \u2014 includes B2C data model design, IsPersonAccount flag handling, Account-Contact behavior differences, reporting impact, migration planning, and integration requirements. NOT for standard B2B Account/Contact modeling. NOT for managing business accounts that share an org with Person Accounts.",
   "file_location": "skills/data/person-accounts",

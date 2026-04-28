@@ -83,7 +83,7 @@
     "f2de1ab219da8375c98f",
     "f9da2fde5876327da8a9"
   ],
-  "content_hash": "36fe3d6460ea5335c699509da835c5b13c316ca4aca6ddc21b0e52935e74b5d7",
+  "content_hash": "80b8154a65d310883372daf5dd892176c3795f6a34ccaa0dba74dbe1385ffffb",
   "dependencies": [],
   "description": "Customizing Salesforce Quote PDFs using Visualforce: custom VF-based quote templates, dynamic section rendering, multi-language layouts, logo placement via static resources, and programmatic PDF generation with PageReference.getContentAsPDF(). Use when standard declarative quote templates are insufficient or when CPQ/OmniStudio is not licensed. NOT for LWC-based document generation (use omnistudio/document-generation-omnistudio). NOT for OmniStudio DocGen templates. NOT for standard quote template drag-and-drop editor.",
   "file_location": "skills/apex/quote-pdf-customization",

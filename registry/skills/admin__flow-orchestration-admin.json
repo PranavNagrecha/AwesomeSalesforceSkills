@@ -50,7 +50,7 @@
     "fa561a68571ab0e40cac",
     "fc2489ed981f6d008478"
   ],
-  "content_hash": "bca30eafb59a871a6b18d2e5baa50ab899ff35c4aacc7027a7014ffd16ac4ffc",
+  "content_hash": "b12861dc7f6f946be78a93e43d2de714d21013f48d68b93faa7c82cd26274e49",
   "dependencies": [],
   "description": "Flow Orchestration admin: stage configuration, step assignment, background steps, interactive steps, evaluation flows, work items, pause/resume. NOT for Flow Orchestration development APIs (use flow-orchestration-development). NOT for Approval Processes (use approval-processes).",
   "file_location": "skills/admin/flow-orchestration-admin",

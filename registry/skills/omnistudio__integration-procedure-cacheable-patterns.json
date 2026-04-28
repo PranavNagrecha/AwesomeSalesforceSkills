@@ -48,7 +48,7 @@
     "ff0ceebdd046ac3b090f",
     "ff447b1cc8845222a853"
   ],
-  "content_hash": "72bd213351c932a5d900a97876dcb2ab2bcc9e154b81933f2f9518415ea31296",
+  "content_hash": "d46fcb70138d2269c38c387add163f064819b27cfef9267c3ceba1c5e7f0c6e2",
   "dependencies": [],
   "description": "Use when designing Integration Procedures (IPs) with platform cache to cut latency and callout load. Covers cache key design, TTL selection, per-user vs org-wide partitions, invalidation on data changes, and safe fallback on cache miss/stale. Does NOT cover general IP authoring (see omnistudio-error-handling-patterns) or LWC client-side caching.",
   "file_location": "skills/omnistudio/integration-procedure-cacheable-patterns",

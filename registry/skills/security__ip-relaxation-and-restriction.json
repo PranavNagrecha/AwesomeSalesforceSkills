@@ -47,7 +47,7 @@
     "f9fdb952761ed810f119",
     "fa606cd135992fc347df"
   ],
-  "content_hash": "ed96defbda037954a08d305c0740aa83ac7fc78b4619e6065aa62c26254d5ef9",
+  "content_hash": "f2a1035349a853fd6e21136c128285e6e650776abcbd75f6e9bbad8a8ad6bb05",
   "dependencies": [
     "security/mfa-enforcement-patterns"
   ],

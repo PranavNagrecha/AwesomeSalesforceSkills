@@ -50,7 +50,7 @@
     "fb9da605939438e886c4",
     "fcd19e5e76865ac1eaef"
   ],
-  "content_hash": "203cca240002a42ead2cd763ebc368641b2d936a1c50e6db7794dddc9169f752",
+  "content_hash": "5e4b4b586209885d2ee677ff23c8e39f38c08c6b00fd905764d3f56b4114ea6f",
   "dependencies": [],
   "description": "Composable commerce on Salesforce: headless API layer, micro-frontends, BFF pattern, CDN strategy, third-party composability over B2C/B2B Commerce. NOT for the standard B2C Storefront UX (use b2c-commerce-storefront-setup). NOT for Salesforce Order Management basics (use salesforce-order-management-setup).",
   "file_location": "skills/architect/composable-commerce-architecture",

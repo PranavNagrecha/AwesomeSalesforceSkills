@@ -47,7 +47,7 @@
     "edafdfaeb97871e1ccfd",
     "fac94a612cf6b483e37e"
   ],
-  "content_hash": "ddcee0c7308cfa20b28eb8f769048a4ace791e30a79be0d655a3c27ad011bf1f",
+  "content_hash": "9ef4f7d5aabc08dd852892961562ae345fdea3cbb481b1396cafc313aa38477e",
   "dependencies": [],
   "description": "Use when building Screen Flows that must meet accessibility standards (WCAG 2.1 AA, Salesforce accessibility guidelines). Covers keyboard navigation, focus order, labels, error messaging, color contrast, and screen reader compatibility. Does NOT cover LWC a11y (see lwc-accessibility) or general record-page a11y.",
   "file_location": "skills/flow/screen-flow-accessibility",

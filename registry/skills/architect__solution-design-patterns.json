@@ -109,7 +109,7 @@
     "fd0f02710b93cbe15160",
     "fdadcdf1e6cca9bd515b"
   ],
-  "content_hash": "e82cac2f718d91d8dc91ea0d424c63e0f4c23395d03839e19ee7551f16a1e0da",
+  "content_hash": "8e246de1a4773071568a616ee34c6c2d501faa7d9bb515f9435e101ece83e5b2",
   "dependencies": [],
   "description": "Use when selecting the right automation layer (Flow, Apex, LWC) for a new feature, reviewing an existing design for technical debt, or troubleshooting a mismatched automation architecture. Triggers: 'should I use Flow or Apex', 'declarative vs programmatic', 'which layer should handle this', 'automation design review', 'should I use LWC or standard components', 'is this over-engineered'. NOT for individual feature design (use role-specific skills), NOT for detailed Apex implementation (use apex/ skills), NOT for LWC component authoring (use lwc/ skills), NOT for Flow-specific build steps (use flow/ skills).",
   "file_location": "skills/architect/solution-design-patterns",

@@ -55,7 +55,7 @@
     "fc2fdb39ee16e2d1a548",
     "fe66d6c3e18a13119391"
   ],
-  "content_hash": "5f2359f54cc4f75ea9d3dd3da738b5fdc1299a71c1f94ddb0819ab2498114fa6",
+  "content_hash": "10535ce1a422e4f5fb078d0bfc4dd4e6e91233847067dc9e36e489b64482d5e2",
   "dependencies": [],
   "description": "Use when configuring access controls, sharing, or site security for authenticated or guest Experience Cloud (community) users: external OWD, Sharing Sets, Share Groups, CSP, clickjack protection, guest user record access. NOT for internal sharing model configuration (use sharing-and-visibility).",
   "file_location": "skills/security/experience-cloud-security",

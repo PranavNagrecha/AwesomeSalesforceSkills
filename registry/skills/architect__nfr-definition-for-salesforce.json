@@ -84,7 +84,7 @@
     "f7910d658918feac8ae1",
     "f8fdbc2bce3f1c3c7cff"
   ],
-  "content_hash": "da6005eb59b0f45b08de0ec15be24066c5df0882d1dbac187a95b1d7b8c41a70",
+  "content_hash": "3e4a0bca70b45c9e809db1aa852d03f074aa7668421532834402e29889a67486",
   "dependencies": [],
   "description": "Defining measurable non-functional requirements for Salesforce implementations: performance SLIs, scalability targets, availability SLAs, security and compliance requirements, usability benchmarks. Use when starting architecture design or preparing for go-live sign-off. NOT for technical implementation of those requirements. NOT for HA/DR planning (use ha-dr-architecture). NOT for individual governor limit investigation (use limits-and-scalability-planning). NOT for security controls implementation (use security-architecture-review).",
   "file_location": "skills/architect/nfr-definition-for-salesforce",

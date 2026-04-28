@@ -90,7 +90,7 @@
     "f9178a54d53f5bddafd9",
     "fe0b51bc906107f71810"
   ],
-  "content_hash": "cbf6c8039ec332c4b77fd80e4b0a51099d392fd1640e0eb5c45246f9577fdf24",
+  "content_hash": "213675c401a39de5af0f67f9f8246282e9bcd16a42b9ea7cb1b8d49179e5e28b",
   "dependencies": [],
   "description": "Use when setting up real-time data streaming from Salesforce to external systems using the Streaming API (PushTopic, Generic Streaming), CometD client configuration, replay, and channel management. NOT for Platform Events (use platform-events-apex or platform-events-integration).",
   "file_location": "skills/integration/streaming-api-and-pushtopic",

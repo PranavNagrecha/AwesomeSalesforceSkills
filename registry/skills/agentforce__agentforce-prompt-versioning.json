@@ -56,7 +56,7 @@
     "f54441522d809d40781c",
     "f9482a4b8baf2b2bf99a"
   ],
-  "content_hash": "352c9770e909630e3cacba0d318a7a56e495b6a92e6a4015a406aa9f5e456742",
+  "content_hash": "636267c3fa31deca0b4dac941fb4f250d890a71d92638ac94ba1947fe2b7c725",
   "dependencies": [
     "agentforce/agentforce-testing-strategy"
   ],

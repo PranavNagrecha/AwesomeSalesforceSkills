@@ -75,7 +75,7 @@
     "fe20531d962d39ab5418",
     "fea011af178775e4559d"
   ],
-  "content_hash": "dacf3c804b9380dbed40e5015020861fea8f4b1559902e11640c867eea3e57d0",
+  "content_hash": "b4cde98481e3e90739ab0cef21d8944c89005a276fbb3f5244d3d4e7358a51c1",
   "dependencies": [],
   "description": "Use this skill when setting up, configuring, or troubleshooting the Salesforce Extensions for VS Code: Apex Language Server activation, deploy-on-save behavior, Apex debugging, org authorization, and workspace project structure. NOT for Salesforce CLI command reference (use sf-cli-and-sfdx-essentials), scratch org definition files (use scratch-org-management), or CI/CD pipeline configuration.",
   "file_location": "skills/devops/vscode-salesforce-extensions",

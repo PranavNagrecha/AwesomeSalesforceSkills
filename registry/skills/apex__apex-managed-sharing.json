@@ -100,7 +100,7 @@
     "fda5c39c30a8bb653c0d",
     "fe594e4d4b097cfd64e2"
   ],
-  "content_hash": "7f5352e9f8d8380bd5fcc6654f430dd67c3d597f638aa17a7c434ae6c629d1c3",
+  "content_hash": "1a1ca5a91e78db142617a9923c32c25657f240d8585f4454789bd1bcc543ddc7",
   "dependencies": [],
   "description": "Sharing records programmatically via Apex: Share objects, row cause, sharing recalculation, with/without sharing patterns. NOT for declarative sharing rules (use sharing-and-visibility).",
   "file_location": "skills/apex/apex-managed-sharing",

@@ -99,7 +99,7 @@
     "fae79f8a3dd69e94b169",
     "fd0d0a2abe9a8045797d"
   ],
-  "content_hash": "788b34e36d42737af967bef2680f6dcd5b2de496f13359c9b09e01311474739b",
+  "content_hash": "7a570f5cbd1649659bd4738b92ecea4770ead7ec05da6faf15ac2b907442fa94",
   "dependencies": [],
   "description": "Use when enabling Data Cloud (Data 360) in an org, creating data spaces, assigning permission sets, registering ingestion API sources, or configuring activation targets. Triggers: 'enable data cloud', 'data spaces setup', 'data cloud permission sets', 'ingestion API connected app', 'activation target setup', 'data cloud licensing', 'dedicated home org vs existing org'. NOT for CRM Analytics configuration, SAQL/recipe authoring, or Data Cloud data model design after provisioning is complete.",
   "file_location": "skills/admin/data-cloud-provisioning",

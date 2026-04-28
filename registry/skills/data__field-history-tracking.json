@@ -77,7 +77,7 @@
     "f74bc9b05a8a96f0eeb6",
     "fec2e79bc467177d0d8a"
   ],
-  "content_hash": "6d520b96ca97914604c337ed470ddf86b3288b90b85cfebea0f08a56a294a9ee",
+  "content_hash": "942b78193f92bf76bbec6d6527a8bdc0885c62c800288440a6244876e1fb2937",
   "dependencies": [],
   "description": "Use when enabling, configuring, or querying Salesforce field history tracking to audit changes to field values over time. Covers enabling tracking on objects and fields, the 20-field-per-object limit, 18-month data retention, querying standard History sObjects (AccountHistory, OpportunityHistory, custom __History), and troubleshooting missing records. NOT for Event Monitoring (use security skills), NOT for Shield Field Audit Trail or FieldHistoryArchive (use field-audit-trail).",
   "file_location": "skills/data/field-history-tracking",

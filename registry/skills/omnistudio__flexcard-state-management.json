@@ -54,7 +54,7 @@
     "fe392306b422ee85ed40",
     "fed38f1e30f289d1ad6a"
   ],
-  "content_hash": "0bc7c70a75644029cfb8f00c4188457136c1056d4bb0ee96ad22d80ead32dc48",
+  "content_hash": "8d583b354a9302962b6e1a1e718c169ecf6b56c4ea7bc97e17a240e5ea800690",
   "dependencies": [],
   "description": "Use when designing FlexCard actions, conditional visibility, and state that must survive navigation, refresh, or parent/child card transitions. Triggers: 'flexcard state', 'flexcard conditional visibility', 'flexcard actions', 'flexcard refresh', 'child flexcard state'. NOT for raw LWC state or for OmniScript step state.",
   "file_location": "skills/omnistudio/flexcard-state-management",

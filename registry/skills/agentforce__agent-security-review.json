@@ -28,7 +28,7 @@
     "e51e37ac6169e797d71e",
     "fe1ca7ebb62600907d04"
   ],
-  "content_hash": "0fc435adec40100bbd3fbcbd51b1d354cd56e4580c782f4eed355e5be63b04c2",
+  "content_hash": "09fb7dd2b39c81e434f85e3e9e377fd03546bf3f57e08989047d6bdd2178d510",
   "dependencies": [],
   "description": "Pre-production security checklist for Agentforce deployments: permission scope, data exposure, authentication, logging. NOT for general Salesforce security review (see security-health-check).",
   "file_location": "skills/agentforce/agent-security-review",

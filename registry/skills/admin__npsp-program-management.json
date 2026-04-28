@@ -89,7 +89,7 @@
     "fdebeff99cf5d62a97fc",
     "ffceca0a15a269e05e3d"
   ],
-  "content_hash": "7790a889b769e2247ec52566450f57a233530357c44c93b98c90bd91e4769e02",
+  "content_hash": "8a1bcf898304457f792566511827ae6a6152dc41a2db93f703123518b93a9940",
   "dependencies": [],
   "description": "Use this skill when configuring or troubleshooting the Nonprofit Success Pack Program Management Module (PMM) \u2014 a separate managed package for program delivery, cohort setup, service scheduling, service delivery recording, and outcome/attendance tracking for beneficiaries. Trigger keywords: program management module, PMM, Program__c, ProgramEngagement__c, ServiceDelivery__c, cohort setup, bulk service delivery, service schedule, service participant. NOT for NPSP core donor management, gift entry, recurring donations, soft credits, or Health Cloud care programs.",
   "file_location": "skills/admin/npsp-program-management",

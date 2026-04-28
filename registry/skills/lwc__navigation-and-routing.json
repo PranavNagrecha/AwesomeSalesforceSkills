@@ -53,7 +53,7 @@
     "f610e8b348293078fdeb",
     "f81459e18ada34a6dc50"
   ],
-  "content_hash": "349ce9f619c5c83e16eb3a45d5bff6fdd09ab41ed2709ff1176131be3f7b909a",
+  "content_hash": "e209b97e61d5826c36b1ad3aead882d6e6c8c23b292a0cc8b82ee20e3214a544",
   "dependencies": [],
   "description": "Use when implementing or reviewing Lightning Web Component navigation with `NavigationMixin`, PageReference objects, URL state, and `CurrentPageReference` across Lightning Experience, mobile, and Experience Cloud. Triggers: 'navigate to record page from LWC', 'PageReference state not working', 'should I use window.location', 'Experience Cloud navigation issue'. NOT for component-to-component messaging or data-loading strategy when navigation is only a side effect.",
   "file_location": "skills/lwc/navigation-and-routing",

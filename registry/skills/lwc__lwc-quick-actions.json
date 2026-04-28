@@ -64,7 +64,7 @@
     "f9015fbd95be1754ffa5",
     "fe0d8762259dd984bde5"
   ],
-  "content_hash": "30a7a23341b87fe603a1d01a3b9ac64061fbdba731ec2015bc27d7be2b702737",
+  "content_hash": "c53a55b470960acc5a3a31bba2dc558199381ca962462e5f8e9c86821ca3704a",
   "dependencies": [],
   "description": "Use when building a Lightning Web Component that runs from a record page quick-action button \u2014 either a screen action that renders UI in a modal or a headless action that invokes logic with no UI. Triggers: 'lwc quick action on record page', 'headless quick action no ui', 'closeactionscreenevent not working', 'how to pass recordid into quick action lwc', 'quick action vs flow action', 'quick action modal size'. NOT for Flow screen components \u2014 use `lwc-in-flow-screens` \u2014 and NOT for global actions without a record context or for list-view bulk actions that do not receive a single `recordId`.",
   "file_location": "skills/lwc/lwc-quick-actions",

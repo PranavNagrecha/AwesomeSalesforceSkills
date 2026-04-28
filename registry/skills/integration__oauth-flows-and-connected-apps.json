@@ -52,7 +52,7 @@
     "fdffd3c139eb8841644f",
     "fe81c869bff4abdc3003"
   ],
-  "content_hash": "9d287bc42fdc00ba1547c17205fd21c44ae75d49dd581683b486b184a6ace285",
+  "content_hash": "78c93c9555fbe8d569374a7bc820bcf21ddddad3ec7d1882ce9749bb8fba06cc",
   "dependencies": [],
   "description": "Use when choosing or reviewing Salesforce OAuth flows and connected-app policy for integrations, including client credentials, JWT bearer, authorization code, device flow, scopes, and token lifecycle controls. Triggers: 'OAuth flow', 'connected app', 'client credentials', 'JWT bearer', 'refresh token', 'integration user'. NOT for record-level sharing design or for simple Named Credential usage when the auth-flow decision is already settled.",
   "file_location": "skills/integration/oauth-flows-and-connected-apps",

@@ -103,7 +103,7 @@
     "f9f87207ec601799bd3a",
     "fdc427fd13566e1cb95c"
   ],
-  "content_hash": "8cc76f442cc3627c922003d5bcd7547c6af0c62bdb117a2eea057cf01e56e172",
+  "content_hash": "5d232ad6a4f8b4da3a5a66048e65cd793756886241283c617e003970e3654310",
   "dependencies": [],
   "description": "Use this skill when extending Financial Services Cloud (FSC) behavior through Apex: customizing financial rollup recalculation, disabling built-in FSC triggers to write custom trigger logic, implementing Compliant Data Sharing (CDS) participant/role integrations, or building custom FSC action handlers. NOT for standard Apex unrelated to the FSC managed package, standard Salesforce sharing rules, or configuring FSC rollups through the Admin UI \u2014 use the admin/financial-account-setup skill for declarative rollup setup.",
   "file_location": "skills/apex/fsc-apex-extensions",

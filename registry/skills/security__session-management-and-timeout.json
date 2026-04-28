@@ -66,7 +66,7 @@
     "ffc9706679f6ebbb8e2c",
     "ffc9fa1099521d56192b"
   ],
-  "content_hash": "e87e9525942f67bc06e0ac42d5c2b92ab764afeef8943ea6165290039574ff7f",
+  "content_hash": "cae44486ee857ac1db7a4b3b5b3ad276d2b250551a48bc24b9bd3c47e5513588",
   "dependencies": [],
   "description": "Use this skill when configuring session timeout values, concurrent session limits, session IP locking, or logout behavior in Salesforce. Covers org-wide session settings, profile-level overrides, Connected App session policies, and Metadata API SecuritySettings deployment. NOT for OAuth token refresh flows, login IP ranges, or MFA/identity-provider configuration.",
   "file_location": "skills/security/session-management-and-timeout",

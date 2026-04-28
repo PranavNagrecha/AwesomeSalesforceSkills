@@ -84,7 +84,7 @@
     "fa29f83646192d880830",
     "fbe26fd02ede97632530"
   ],
-  "content_hash": "a3dafec130a20871c62b4fc78e3fff2d03f1b14e4de00bfbaa5163d782e7b7bf",
+  "content_hash": "63ee26e7148a8f3d28866eb0e6f46344c3d301a984599be26af971e5e32d8744",
   "dependencies": [],
   "description": "Use when designing, implementing, or reviewing Salesforce REST API integration \u2014 covering CRUD operations on sObjects, SOQL-based queries, paginated result sets, Composite requests, Composite Batch, and sObject Tree. Triggers: 'Salesforce REST API', 'composite API', 'nextRecordsUrl', 'sObject Tree', 'REST CRUD', 'REST pagination', 'API limits', 'OAuth Bearer token'. NOT for GraphQL API queries, Bulk API 2.0 large-data-load jobs, Metadata API deployments, or custom Apex REST endpoints.",
   "file_location": "skills/integration/rest-api-patterns",

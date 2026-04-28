@@ -94,7 +94,7 @@
     "fdfe937ce8f42ced1783",
     "ffbf707b3a976271ed4d"
   ],
-  "content_hash": "bccdd75c0875f0473b49b02c01363910fa6dece8daeef0ae6ab30a3298afcd37",
+  "content_hash": "d4c27de85698de229311b2910aa7edb96819a86428867afdf71d47174e535391",
   "dependencies": [
     "admin/commerce-order-management"
   ],

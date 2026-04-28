@@ -48,7 +48,7 @@
     "f7fd120e1adcaf4c3726",
     "fc5661955c9dcbe8dc16"
   ],
-  "content_hash": "3fa7420bde6dcb3ebb5c5a2a3a42277d52d8243a46c68ee454adbf8a30cdb9d0",
+  "content_hash": "e62e38a184fd6c81c21ac8217bae45930737a6de95396a32ec23b341828b64fd",
   "dependencies": [],
   "description": "Polymorphic SOQL with TYPEOF: querying Task.WhatId, Task.WhoId, ContentDocumentLink.LinkedEntityId, FeedItem.ParentId; fallback to Type filters; indexing and selectivity. NOT for Activity object model (use activity-and-task-patterns). NOT for general SOQL (use apex-soql-patterns).",
   "file_location": "skills/apex/apex-polymorphic-soql",

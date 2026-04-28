@@ -48,7 +48,7 @@
     "fa7ebc88fe8d029baa58",
     "fc1699fd93755b496642"
   ],
-  "content_hash": "e75eb184929fde738505fa553f5f0d275eed3a51c378b0ac56d95d9a1bcaee0c",
+  "content_hash": "20a886f8a202676425e7b41b38d6dc1e98a74feab3cb30648d3a3718da2a3c75",
   "dependencies": [],
   "description": "Design SOQL, filters, reporting, and indexes against Shield Platform Encryption fields. Trigger keywords: Shield Platform Encryption, encrypted field query, probabilistic vs deterministic encryption, encrypted SOQL filter, encrypted field index. Does NOT cover: Classic Encryption (deprecated), field-level security policy, or tenant secret key rotation.",
   "file_location": "skills/security/encrypted-field-query-patterns",

@@ -67,7 +67,7 @@
     "fd8c24d547a273f738ba",
     "ff24fe03ea985255cf5f"
   ],
-  "content_hash": "f235c3f02f13054314c0c3084be68dd7d765a11479baee0f80f6e336ff7052e9",
+  "content_hash": "044275b116a80c000245c14e70414a169f5d2c128b90a30644752134a1b7ef4f",
   "dependencies": [],
   "description": "Guide practitioners through building Einstein Next Best Action strategies using Flow Builder, configuring Recommendation records, and surfacing recommendations via the Actions & Recommendations Lightning component. Trigger keywords: next best action, NBA strategy, surface recommendations. NOT for Einstein Prediction Builder model training, Einstein Bots conversation design, or Agentforce agent topic routing.",
   "file_location": "skills/agentforce/einstein-next-best-action",

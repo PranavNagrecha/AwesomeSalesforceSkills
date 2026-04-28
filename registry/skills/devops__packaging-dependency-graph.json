@@ -28,7 +28,7 @@
     "de1d83df15f717ce1569",
     "f9d50a5a1b960a878be6"
   ],
-  "content_hash": "2867a4edc102beb331972f6b76519c0a6c8d01f09429907295af316f332b36c0",
+  "content_hash": "9f85c267f94a97f51b67ce4cf98c22ce8ea00317e2fe578f53fd117ad0e6a56d",
   "dependencies": [],
   "description": "Model and verify unlocked package dependencies, version pinning, and promotion. NOT for 1GP managed packages.",
   "file_location": "skills/devops/packaging-dependency-graph",

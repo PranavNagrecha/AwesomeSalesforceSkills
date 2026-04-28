@@ -89,7 +89,7 @@
     "ee2dd7e7de797ce027f1",
     "fd9fbc503fa2b8f4b565"
   ],
-  "content_hash": "86eab7268e893ce7465e4698ce72d05585545e29fa7292442a7996bd7a4d65e2",
+  "content_hash": "3fc41028196bea99f61be90d825a11462560b996168747ad501a003c3b22afa9",
   "dependencies": [],
   "description": "Use this skill to configure a Salesforce B2B Commerce storefront: creating the WebStore, linking BuyerGroups, assigning CommerceEntitlementPolicies, and granting buyer contacts transactional access. Trigger keywords: B2B Commerce, WebStore, BuyerGroup, entitlement policy, buyer account, storefront access. NOT for B2C Commerce (LWR storefronts using Individual/Person Account models), CPQ quote configuration, or Order Management fulfillment flows.",
   "file_location": "skills/admin/b2b-commerce-store-setup",

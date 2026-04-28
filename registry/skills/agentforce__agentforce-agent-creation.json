@@ -94,7 +94,7 @@
     "fdb3e1fde54baa5e41fe",
     "fe32092f6248d306beb5"
   ],
-  "content_hash": "02e6ff3eb501f899bb70477e9d358bc98e98a20e201647667205ff8abb640622",
+  "content_hash": "0b393a7f7238409ed32af1afdf670bd9cff8a590c59424324fb3a6eb6a1c2750",
   "dependencies": [],
   "description": "Use when creating, configuring, auditing, or troubleshooting an Agentforce agent end-to-end: agent definition, agent user setup, channel assignment, system instructions, activation, and lifecycle management. Triggers: 'create agentforce agent', 'agent not appearing to users', 'how to activate agent', 'agent channel setup', 'agent lifecycle', 'deploy agent to production'. NOT for topic design or action contract design \u2014 use agentforce/agent-topic-design and agentforce/agent-actions respectively.",
   "file_location": "skills/agentforce/agentforce-agent-creation",

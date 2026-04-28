@@ -73,7 +73,7 @@
     "f89b8df74db34945e3df",
     "fa0d87facd4afd554415"
   ],
-  "content_hash": "6143aa0e404bcf6409f43962530c11da322304b8cbe9deb0f3ee978ed5967468",
+  "content_hash": "383b11a213ace50835012c1dd2c8c0ecf1262707aa1f5df13dd50eb8b25bc124",
   "dependencies": [],
   "description": "Use this skill when setting up, configuring, or troubleshooting sfdx-project.json, organizing packageDirectories for mono-repo or multi-package projects, managing sourceApiVersion alignment, and structuring the force-app directory tree for source-driven development. NOT for scratch org definition files (use scratch-org-management), CLI command usage (use sf-cli-and-sfdx-essentials), or CI/CD pipeline configuration (use github-actions-for-salesforce or bitbucket-pipelines-for-salesforce).",
   "file_location": "skills/devops/salesforce-dx-project-structure",

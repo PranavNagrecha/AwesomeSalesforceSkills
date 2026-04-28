@@ -64,7 +64,7 @@
     "f90d6f843b6acbcd1b15",
     "fa33283f3d0929156157"
   ],
-  "content_hash": "e56c4c94d5ddaefa39a2bfdf3b260831c1fc22767332f615c386dcad20d5ec68",
+  "content_hash": "b5fb13cb2cec1994e37ef687f7599de9b9e8c51b655e321c15c13463dd0dd043",
   "dependencies": [],
   "description": "Use when managing Connected Apps for integration purposes \u2014 configuring OAuth policies, IP restrictions, refresh token expiry, and monitoring connected app usage. NOT for OAuth flows implementation (use oauth-flows-and-connected-apps).",
   "file_location": "skills/admin/integration-admin-connected-apps",

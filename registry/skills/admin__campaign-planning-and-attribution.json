@@ -90,7 +90,7 @@
     "f768fc3977b3871fb274",
     "f7a0ed044c9b3c3cacc7"
   ],
-  "content_hash": "f2b9f647d93c31f1cc09af150b0327b6c752496fa0566ef9a585119434d11f43",
+  "content_hash": "54de05d09803bf0b9374534fcb6dddf318d1c8c6853b69ba75c1074fba3700c7",
   "dependencies": [],
   "description": "Use this skill when designing Campaign Hierarchy structures for program-level ROI tracking, configuring Customizable Campaign Influence (CCI) attribution models, or interpreting multi-touch attribution data from MCAE B2B Marketing Analytics. Trigger keywords: campaign ROI, attribution model, campaign hierarchy, first-touch, last-touch, multi-touch, CCI, campaign influence, revenue attribution, campaign member status. NOT for campaign record creation, campaign member import, email send execution, or MCAE connector provisioning (use mcae-pardot-setup instead).",
   "file_location": "skills/admin/campaign-planning-and-attribution",

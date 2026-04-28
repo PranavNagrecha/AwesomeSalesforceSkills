@@ -92,7 +92,7 @@
     "f9287a9de4fb0ebda77f",
     "f95be09f9aa25dc12a65"
   ],
-  "content_hash": "b310ac2258bbf0868dc300d250953d3e10aa8a5830a8e37d5e326653b99ed1b8",
+  "content_hash": "dc4ef7b17b807bac5366b8d85b5eda0228f001408ccea8b6528defd620506e47",
   "dependencies": [],
   "description": "Use this skill to configure Salesforce Industries Insurance (Financial Services Cloud Insurance) including permission set licenses, irreversible org settings, core insurance objects, coverage types, claim configuration, and OmniScript-based quoting using the Insurance Product Administration API. Trigger keywords: insurance setup, FSC Insurance, InsurancePolicy object, InsurancePolicyCoverage, policy quoting OmniScript, claim type configuration, InsProductService, Digital Insurance Platform, many-to-many policy, multiple producers. NOT for generic OmniStudio setup, standard CPQ/Pricebook quoting, Health Cloud enrollment, or general FSC configuration unrelated to insurance line-of-business.",
   "file_location": "skills/admin/industries-insurance-setup",

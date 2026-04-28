@@ -113,7 +113,7 @@
     "f48b368861df424a6c3d",
     "fe7ef0445700a88f3183"
   ],
-  "content_hash": "ea2f9eeca77d4f6a2170719631fa29ef6d304c45582144f0d93d11d97477a94b",
+  "content_hash": "508f40525cd73f671f756a64df22562597cc578adf2acb6218802b189578b415",
   "dependencies": [],
   "description": "Use when gathering or evaluating requirements for a Salesforce Commerce Cloud digital storefront \u2014 including branding strategy, content management approach, personalization, mobile experience, and accessibility compliance. Trigger keywords: SFRA branding, PWA Kit storefront, composable storefront, storefront accessibility, WCAG Commerce Cloud, overlay cartridge branding, mobile storefront, storefront personalization, content slots. NOT for Experience Cloud (Lightning Web Runtime portals, Digital Experiences) requirements \u2014 those are covered separately.",
   "file_location": "skills/admin/digital-storefront-requirements",
