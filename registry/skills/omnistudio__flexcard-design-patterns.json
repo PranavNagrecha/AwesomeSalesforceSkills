@@ -128,7 +128,7 @@
     "fe67692a1ead0623a9d4",
     "ffdb717a627c8bf07195"
   ],
-  "content_hash": "877f4ee1ab33b1893e9dbd0b514e2cf45ece2f17299aea317c6b6d3a9dc90f3b",
+  "content_hash": "13b89851e52e63a785cb44b6f1f4a9b27e2eac8a4307b8d154f427a6e794108a",
   "dependencies": [],
   "description": "Use when designing, building, or reviewing OmniStudio FlexCards \u2014 including data source selection, card states, actions, conditional visibility, flyout configuration, and child card iteration. Triggers: 'FlexCard', 'card template', 'flyout', 'card action', 'card state', 'data source', 'child card', 'conditional visibility'. NOT for OmniScript design, standalone LWC development, or Apex controller architecture outside the FlexCard context.",
   "file_location": "skills/omnistudio/flexcard-design-patterns",
@@ -173,7 +173,7 @@
   "templates": [
     "skills/omnistudio/flexcard-design-patterns/templates/flexcard-design-patterns-template.md"
   ],
-  "updated": "2026-04-04",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

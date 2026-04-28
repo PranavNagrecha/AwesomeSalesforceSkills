@@ -30,7 +30,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-04-28
 ---
 
 # DataRaptor Load and Extract
@@ -56,10 +56,12 @@ Gather this context before working on anything in this domain:
 
 DataRaptor Extract is an OmniStudio data retrieval tool that executes SOQL queries and maps results to output JSON. Key behaviors:
 
-- **SOQL base object**: The primary FROM object. Cross-object fields use dot notation (e.g., `Account.Name`).
-- **Parent-to-child relationships**: Use SOQL sub-selects to retrieve child records.
-- **Output mapping**: Maps SOQL field paths to JSON keys in the output, using dot-notation to define nested JSON structure.
-- **Preview tab**: Always test your extract in the Preview tab before embedding in an Integration Procedure.
+| Setting | Behavior |
+|---|---|
+| SOQL base object | The primary FROM object. Cross-object fields use dot notation (e.g., `Account.Name`). |
+| Parent-to-child relationships | Use SOQL sub-selects to retrieve child records. |
+| Output mapping | Maps SOQL field paths to JSON keys in the output, using dot-notation to define nested JSON structure. |
+| Preview tab | Always test your extract in the Preview tab before embedding in an Integration Procedure. |
 
 ### Turbo Extract vs Standard Extract
 
@@ -75,12 +77,14 @@ Standard Extract supports relationship queries, sub-selects, and complex output 
 
 DataRaptor Load is an OmniStudio DML tool for writing records to Salesforce sObjects. Key behaviors:
 
-- **Supported operations**: Insert, Update, Upsert, Delete
-- **Upsert key**: For upsert operations, specify the External ID field for matching. Must be designated as External ID on the field definition.
-- **Multi-object support**: A single Load can write to multiple objects in sequence.
-- **Error handling**: Load returns an `iferror` node in output JSON when DML fails. Check this node downstream in your Integration Procedure.
-- **No Bulk API**: Uses standard DML — row-at-a-time. Not suitable for high-volume operations.
-- **No rollback on partial failure**: Records written to early objects in a multi-object Load are not rolled back if a later object fails.
+| Setting | Behavior |
+|---|---|
+| Supported operations | Insert, Update, Upsert, Delete. |
+| Upsert key | For upsert operations, specify the External ID field for matching. Must be designated as External ID on the field definition. |
+| Multi-object support | A single Load can write to multiple objects in sequence. |
+| Error handling | Load returns an `iferror` node in output JSON when DML fails. Check this node downstream in your Integration Procedure. |
+| No Bulk API | Uses standard DML — row-at-a-time. Not suitable for high-volume operations. |
+| No rollback on partial failure | Records written to early objects in a multi-object Load are not rolled back if a later object fails. |
 
 ---
 

@@ -48,7 +48,7 @@
     "ed97af3ef322fa07cb85",
     "f030c8c2493451a9d212"
   ],
-  "content_hash": "f614920f5afb54c25351495fa9bd8a4c9603bd6bcf51e6068a0e5b748b3cd8a5",
+  "content_hash": "3c823a19dcf6b2fb4d8d4534a9c185f45b497597a2d028049df7c8455bb8bc5a",
   "dependencies": [
     "omnistudio/integration-procedure-cacheable-patterns"
   ],
@@ -88,7 +88,7 @@
   "templates": [
     "skills/omnistudio/flexcard-container-composition/templates/composition-plan.md"
   ],
-  "updated": "2026-04-23",
+  "updated": "2026-04-28",
   "vector_embedding": null,
   "version": "1.0.0"
 }

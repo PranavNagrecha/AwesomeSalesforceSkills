@@ -30,7 +30,7 @@ dependencies:
   - omnistudio/integration-procedure-cacheable-patterns
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-23
+updated: 2026-04-28
 ---
 
 # FlexCard Container Composition
@@ -83,10 +83,12 @@ subscribes and reloads.
 
 ## Layout Modes
 
-- **Card** — single-record detail.
-- **List** — collection of card-shaped items, client-side pagination.
-- **Table** — tabular view. Avoid when mobile is a primary target.
-- **None** — purely a state/event container (rare).
+| Mode | When to use |
+|---|---|
+| Card | Single-record detail. |
+| List | Collection of card-shaped items, client-side pagination. |
+| Table | Tabular view. Avoid when mobile is a primary target. |
+| None | Purely a state/event container (rare). |
 
 ## Recommended Workflow
 

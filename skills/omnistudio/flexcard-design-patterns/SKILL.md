@@ -34,7 +34,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-04-28
 ---
 
 # FlexCard Design Patterns
@@ -84,11 +84,13 @@ Each state has its own template, so a card can show a spinner, a success message
 
 FlexCard actions are interactive triggers that a user can invoke from the card surface. Supported action types:
 
-- **Navigation** — Route to a record page, app page, or external URL.
-- **OmniScript Launch** — Open an OmniScript in a modal or new tab. The card passes context data as input variables to the OmniScript.
-- **Apex** — Call an `@AuraEnabled` Apex method directly. Use sparingly; prefer Integration Procedures for testability.
-- **DataRaptor** — Execute a DataRaptor Turbo Action to save or update records without an OmniScript.
-- **Custom LWC** — Invoke a handler method on a custom Lightning Web Component embedded in the card.
+| Action type | Behavior |
+|---|---|
+| Navigation | Route to a record page, app page, or external URL. |
+| OmniScript Launch | Open an OmniScript in a modal or new tab. The card passes context data as input variables to the OmniScript. |
+| Apex | Call an `@AuraEnabled` Apex method directly. Use sparingly; prefer Integration Procedures for testability. |
+| DataRaptor | Execute a DataRaptor Turbo Action to save or update records without an OmniScript. |
+| Custom LWC | Invoke a handler method on a custom Lightning Web Component embedded in the card. |
 
 Actions are bound to card template elements (buttons, icons, menu items). Each action can define a `success` and `error` follow-on behavior such as a state transition, a refresh, or navigation.
 

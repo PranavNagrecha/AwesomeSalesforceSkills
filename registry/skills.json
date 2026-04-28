@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 45
   },
-  "generated_from_hash": "4ca0ab4417b5580f8904ffa6c2b19a22ba26b7396cc8229c03d433d58851f0a3",
+  "generated_from_hash": "74dced163928ba6236c3118cc968b3096bdbc59b765f33494bf2f1fc0d78c42e",
   "schema_version": 1,
   "skill_count": 907,
   "skills": [
@@ -109455,7 +109455,7 @@
         "fe0cd2b061f03e938bd3",
         "ff710d930c81c41141f3"
       ],
-      "content_hash": "34eacb09c24dd07c5181f2a37c69801ed71b0f29bf28b2705851f1facde5eda0",
+      "content_hash": "3f87651a3bbe2f9c1b5966edbba41fa3b95299895ddafe689b9b477a4a5c7ae4",
       "dependencies": [],
       "description": "Use when building or debugging DataRaptor Extract or DataRaptor Load operations in OmniStudio: designing multi-object extracts, configuring load upserts, handling iferror responses, or mapping output fields. NOT for DataRaptor Transform operations (use dataraptor-patterns), NOT for Integration Procedure design (use integration-procedures), NOT for bulk data loading outside OmniStudio.",
       "file_location": "skills/omnistudio/dataraptor-load-and-extract",
@@ -109497,7 +109497,7 @@
       "templates": [
         "skills/omnistudio/dataraptor-load-and-extract/templates/dataraptor-load-and-extract-template.md"
       ],
-      "updated": "2026-04-04",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -109883,7 +109883,7 @@
         "ed97af3ef322fa07cb85",
         "f030c8c2493451a9d212"
       ],
-      "content_hash": "f614920f5afb54c25351495fa9bd8a4c9603bd6bcf51e6068a0e5b748b3cd8a5",
+      "content_hash": "3c823a19dcf6b2fb4d8d4534a9c185f45b497597a2d028049df7c8455bb8bc5a",
       "dependencies": [
         "omnistudio/integration-procedure-cacheable-patterns"
       ],
@@ -109923,7 +109923,7 @@
       "templates": [
         "skills/omnistudio/flexcard-container-composition/templates/composition-plan.md"
       ],
-      "updated": "2026-04-23",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -110057,7 +110057,7 @@
         "fe67692a1ead0623a9d4",
         "ffdb717a627c8bf07195"
       ],
-      "content_hash": "877f4ee1ab33b1893e9dbd0b514e2cf45ece2f17299aea317c6b6d3a9dc90f3b",
+      "content_hash": "13b89851e52e63a785cb44b6f1f4a9b27e2eac8a4307b8d154f427a6e794108a",
       "dependencies": [],
       "description": "Use when designing, building, or reviewing OmniStudio FlexCards \u2014 including data source selection, card states, actions, conditional visibility, flyout configuration, and child card iteration. Triggers: 'FlexCard', 'card template', 'flyout', 'card action', 'card state', 'data source', 'child card', 'conditional visibility'. NOT for OmniScript design, standalone LWC development, or Apex controller architecture outside the FlexCard context.",
       "file_location": "skills/omnistudio/flexcard-design-patterns",
@@ -110102,7 +110102,7 @@
       "templates": [
         "skills/omnistudio/flexcard-design-patterns/templates/flexcard-design-patterns-template.md"
       ],
-      "updated": "2026-04-04",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -110450,7 +110450,7 @@
         "f8003a17b063ac766e58",
         "fdb4367e43eba12397c6"
       ],
-      "content_hash": "823288edb06dcd6b783e22cd53bf17b00e79ccb83eb5dbf6a042353d14041c4f",
+      "content_hash": "239841f57faa9b8b54064a977afd7d5a4d2e6e77828e60b2795f3fad27fea02a",
       "dependencies": [],
       "description": "Use this skill when comparing Industries CPQ (formerly Vlocity CPQ) with Salesforce CPQ (Revenue Cloud managed package) \u2014 covering feature parity, decision criteria, migration paths, and coexistence patterns. Trigger keywords: Vlocity CPQ, Industries CPQ, Salesforce CPQ comparison, Revenue Cloud migration, CPQ selection, which CPQ to use. NOT for implementing, configuring, or debugging either CPQ product.",
       "file_location": "skills/omnistudio/industries-cpq-vs-salesforce-cpq",
@@ -110496,7 +110496,7 @@
       "templates": [
         "skills/omnistudio/industries-cpq-vs-salesforce-cpq/templates/industries-cpq-vs-salesforce-cpq-template.md"
       ],
-      "updated": "2026-04-04",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -110660,7 +110660,7 @@
         "fbebc6e3875c6c02c1e1",
         "fc367c5a79b3c23fd9e7"
       ],
-      "content_hash": "f2dd14ff4f114391f1ee20e88843964f8c7e5b98ab8f94d2177a5402b4aadf63",
+      "content_hash": "62b070e5d723b2c392e212e09bbd9175f992990dca89ffb27fc9f96b01e8d64d",
       "dependencies": [],
       "description": "Use when building, reviewing, or debugging OmniStudio Integration Procedures. Triggers: 'integration procedure', 'IP', 'HTTP action', 'DataRaptor', 'rollbackOnError', 'failureResponse'. NOT for Apex-only integrations unless the main design choice is whether OmniStudio is still appropriate.",
       "file_location": "skills/omnistudio/integration-procedures",
@@ -110700,7 +110700,7 @@
       "templates": [
         "skills/omnistudio/integration-procedures/templates/ip-design-template.md"
       ],
-      "updated": "2026-03-13",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
