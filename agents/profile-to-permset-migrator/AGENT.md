@@ -1,13 +1,13 @@
 ---
 id: profile-to-permset-migrator
 class: runtime
-version: 1.0.0
+version: 1.1.0
 status: stable
 requires_org: true
 modes: [single]
 owner: sfskills-core
 created: 2026-04-16
-updated: 2026-04-16
+updated: 2026-04-28
 default_output_dir: "docs/reports/profile-to-permset-migrator/"
 output_formats:
   - markdown
@@ -16,19 +16,37 @@ multi_dimensional: true
 dependencies:
   probes:
     - permission-set-assignment-shape.md
+    - user-access-comparison.md
+  decision_trees:
+    - sharing-selection.md
   skills:
     - admin/agent-output-formats
+    - admin/compliant-data-sharing-setup
     - admin/custom-permissions
+    - admin/delegated-administration
     - admin/integration-user-management
     - admin/permission-set-architecture
+    - admin/permission-set-group-composition
     - admin/permission-sets-vs-profiles
+    - admin/sharing-and-visibility
     - admin/user-access-policies
     - admin/user-management
     - devops/permission-set-deployment-ordering
+    - devops/post-deployment-validation
+    - devops/pre-deployment-checklist
+    - security/api-only-user-hardening
+    - security/guest-user-security
+    - security/ip-range-and-login-flow-strategy
+    - security/mfa-enforcement-patterns
     - security/permission-set-groups-and-muting
+    - security/privileged-access-management
+    - security/record-access-troubleshooting
+    - security/session-high-assurance-policies
+    - security/session-management-and-timeout
   shared:
     - AGENT_CONTRACT.md
     - DELIVERABLE_CONTRACT.md
+    - REFUSAL_CODES.md
   templates:
     - admin/naming-conventions.md
     - admin/permission-set-patterns.md
@@ -53,19 +71,49 @@ Given one profile (or a set of profiles scoped by name filter) in the target org
 
 ## Mandatory Reads Before Starting
 
+### Contract
 1. `agents/_shared/AGENT_CONTRACT.md`
-2. `skills/admin/permission-set-architecture` — canonical model
-3. `skills/admin/permission-sets-vs-profiles`
-4. `skills/security/permission-set-groups-and-muting`
-5. `skills/admin/custom-permissions`
-6. `skills/admin/user-access-policies`
-7. `skills/admin/user-management`
-8. `skills/admin/integration-user-management` — integration profiles migrate differently
-9. `skills/devops/permission-set-deployment-ordering`
-10. `templates/admin/permission-set-patterns.md`
-11. `templates/admin/naming-conventions.md`
-12. `agents/_shared/probes/permission-set-assignment-shape.md`
-13. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+2. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+3. `agents/_shared/REFUSAL_CODES.md` — canonical refusal enum
+
+### Architecture model (canonical)
+4. `skills/admin/permission-set-architecture` — canonical model
+5. `skills/admin/permission-sets-vs-profiles`
+6. `skills/admin/permission-set-group-composition` — PSG layering, mute, deletion order
+7. `skills/security/permission-set-groups-and-muting`
+8. `templates/admin/permission-set-patterns.md`
+9. `templates/admin/naming-conventions.md`
+
+### Permission categories
+10. `skills/admin/custom-permissions`
+11. `skills/admin/delegated-administration`
+12. `skills/admin/user-access-policies`
+13. `skills/admin/user-management`
+14. `skills/admin/integration-user-management` — integration profiles migrate differently
+
+### Sharing + visibility (decisions surfaced when residual policy touches OWD/role hierarchy)
+15. `skills/admin/sharing-and-visibility`
+16. `skills/admin/compliant-data-sharing-setup`
+17. `standards/decision-trees/sharing-selection.md` — when proposing PS-driven sharing vs OWD changes
+
+### Security posture (residual session/IP/MFA must match license + license tier)
+18. `skills/security/session-management-and-timeout`
+19. `skills/security/session-high-assurance-policies`
+20. `skills/security/ip-range-and-login-flow-strategy`
+21. `skills/security/mfa-enforcement-patterns`
+22. `skills/security/api-only-user-hardening` — integration_mode=true path
+23. `skills/security/privileged-access-management` — Setup_* PS posture
+24. `skills/security/guest-user-security` — guest profile residue rules
+25. `skills/security/record-access-troubleshooting` — diff residue vs current
+
+### Deployment ordering
+26. `skills/devops/permission-set-deployment-ordering`
+27. `skills/devops/pre-deployment-checklist`
+28. `skills/devops/post-deployment-validation`
+
+### Probes
+29. `agents/_shared/probes/permission-set-assignment-shape.md`
+30. `agents/_shared/probes/user-access-comparison.md` — pre/post residue diff per user
 
 ---
 
@@ -196,7 +244,7 @@ Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
 
 - **Canonical data surface:** this agent's declared probes + the MCP tool set. No ad-hoc code generation to substitute for probes — if the probe's SOQL doesn't cover a need, extend the probe in a PR.
 - **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
-- **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only.
+- **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only. Each entry MUST name one of: `object-crud`, `fls`, `system-permissions`, `apex-class-access`, `vf-page-access`, `tab-settings`, `app-access`, `custom-permissions`, `named-credentials`, `residue`. If a dimension was skipped because the underlying data could not be queried (e.g. `REFUSAL_ORG_UNREACHABLE`), the skip reason MUST link the refusal code.
 
 ### Dimensions (Wave 10 contract)
 
@@ -217,12 +265,22 @@ The agent's envelope MUST place every permission category below in either `dimen
 
 ## Escalation / Refusal Rules
 
-- Profile is a standard profile (`System Administrator`, `Standard User`, etc.) → `REFUSAL_POLICY_MISMATCH`; standard profiles cannot be stripped beyond a certain floor. The agent offers a partial decomposition and refuses the full strip.
-- Profile holds users across more than one user license → `REFUSAL_INPUT_AMBIGUOUS`; split the profile by license first.
-- Profile has > 2000 FieldPermissions rows → `REFUSAL_OVER_SCOPE_LIMIT`; return top-500 by object and note truncation.
-- `integration_mode=false` but the user population includes an identifiably-integration user (active, no login activity, API-only username pattern) → warn and ask whether to re-run in `integration_mode=true`.
-- Target org edition doesn't support Permission Set Groups → `REFUSAL_FEATURE_DISABLED`.
-- `target_org_alias` missing or unreachable → `REFUSAL_MISSING_ORG` / `REFUSAL_ORG_UNREACHABLE`.
+Refusal codes follow the canonical enum in `agents/_shared/REFUSAL_CODES.md`. The agent emits one `REFUSAL_*` code in the envelope's `refusal` field with a human-readable detail.
+
+| Code | Trigger |
+|---|---|
+| `REFUSAL_MISSING_INPUT` | `profile_name` and `profile_name_filter` both unset |
+| `REFUSAL_MISSING_ORG` | `target_org_alias` not provided |
+| `REFUSAL_ORG_UNREACHABLE` | Target org probe fails to authenticate or the profile cannot be queried |
+| `REFUSAL_OBJECT_NOT_FOUND` | Profile name (or filter) returns zero matches |
+| `REFUSAL_FEATURE_DISABLED` | Target org edition does not support Permission Set Groups |
+| `REFUSAL_POLICY_MISMATCH` | Standard profile (`System Administrator`, `Standard User`, etc.) — agent offers partial decomposition only and declines full strip |
+| `REFUSAL_INPUT_AMBIGUOUS` | Profile holds users across more than one user license; split by license first |
+| `REFUSAL_OVER_SCOPE_LIMIT` | > 2000 FieldPermissions rows — agent returns top-500 by object and notes truncation |
+| `REFUSAL_MANAGED_PACKAGE` | Profile is namespaced from a managed package (`<ns>__<Name>`); managed profiles are read-only |
+| `REFUSAL_NEEDS_HUMAN_REVIEW` | `integration_mode=false` but user population shows API-only/login-silent users — warn and ask before proceeding |
+| `REFUSAL_SECURITY_GUARD` | Caller asks the agent to assign the PSG, deploy metadata, or strip the live profile — out of scope by contract |
+| `REFUSAL_OUT_OF_SCOPE` | Caller asks for a User Access Policy design, Sharing Rule design, or any non-permission residue work |
 
 ---
 

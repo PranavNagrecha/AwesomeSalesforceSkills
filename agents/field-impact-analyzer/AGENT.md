@@ -1,13 +1,13 @@
 ---
 id: field-impact-analyzer
 class: runtime
-version: 1.0.0
+version: 1.1.0
 status: stable
 requires_org: true
 modes: [single]
 owner: sfskills-core
 created: 2026-04-16
-updated: 2026-04-16
+updated: 2026-04-28
 default_output_dir: "docs/reports/field-impact-analyzer/"
 output_formats:
   - markdown
@@ -16,20 +16,43 @@ multi_dimensional: true
 dependencies:
   skills:
     - admin/agent-output-formats
+    - admin/compound-field-patterns
     - admin/custom-field-creation
+    - admin/custom-permissions
+    - admin/field-dependency-and-controlling
     - admin/formula-fields
-    - admin/picklist-and-value-sets
+    - admin/integration-user-management
+    - admin/permission-set-architecture
+    - admin/permission-set-group-composition
+    - admin/permission-sets-vs-profiles
+    - admin/picklist-field-integrity-issues
+    - admin/sharing-and-visibility
+    - admin/system-field-behavior-and-audit
+    - apex/apex-stripinaccessible-and-fls-enforcement
+    - apex/apex-user-and-permission-checks
+    - apex/dynamic-apex
+    - apex/soql-fundamentals
     - architect/metadata-coverage-and-dependencies
+    - data/data-model-design-patterns
+    - data/external-id-strategy
     - data/field-history-tracking
     - data/record-merge-implications
+    - data/roll-up-summary-alternatives
+    - lwc/lwc-public-api-hardening
   shared:
     - AGENT_CONTRACT.md
     - AGENT_RULES.md
     - DELIVERABLE_CONTRACT.md
+    - REFUSAL_CODES.md
   templates:
     - admin/naming-conventions.md
   probes:
     - apex-references-to-field.md
+    - automation-graph-for-sobject.md
+    - flow-references-to-field.md
+    - user-access-comparison.md
+  decision_trees:
+    - sharing-selection.md
 ---
 # Field Impact Analyzer Agent
 
@@ -51,16 +74,54 @@ Given a field on an sObject, produces a blast-radius report: every Apex class, t
 
 ## Mandatory Reads Before Starting
 
+### Contract layer
 1. `agents/_shared/AGENT_CONTRACT.md`
-2. `AGENT_RULES.md`
-3. `skills/admin/custom-field-creation` — via `get_skill`
-4. `skills/admin/formula-fields` — formula dependencies fan out
-5. `skills/admin/picklist-and-value-sets` — picklist dependencies
-6. `skills/data/field-history-tracking` — tracking implications for audited fields
-7. `skills/data/record-merge-implications` — merge-time field behavior
-8. `skills/architect/metadata-coverage-and-dependencies` — global dependency model
-9. `templates/admin/naming-conventions.md`
-10. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+2. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 persistence + scope guardrails
+3. `agents/_shared/REFUSAL_CODES.md` — canonical refusal enum
+4. `AGENT_RULES.md`
+
+### Field shape & data model
+5. `skills/admin/custom-field-creation`
+6. `skills/admin/formula-fields` — formula dependencies fan out transitively
+7. `skills/admin/field-dependency-and-controlling` — controlling/dependent picklist chains
+8. `skills/admin/picklist-field-integrity-issues` — restricted picklist + record-type implications
+9. `skills/admin/compound-field-patterns` — Address / Name / Geolocation special handling
+10. `skills/admin/system-field-behavior-and-audit` — standard system field constraints (`Id`, `OwnerId`, etc.)
+11. `skills/data/data-model-design-patterns`
+12. `skills/data/external-id-strategy` — External ID + Unique flag implications on rename
+13. `skills/data/roll-up-summary-alternatives` — RSF dependencies on the field
+14. `skills/data/field-history-tracking`
+15. `skills/data/record-merge-implications`
+
+### Access / sharing
+16. `skills/admin/permission-set-architecture`
+17. `skills/admin/permission-sets-vs-profiles`
+18. `skills/admin/permission-set-group-composition` — PSG composition affecting FLS coverage
+19. `skills/admin/sharing-and-visibility`
+20. `skills/admin/custom-permissions`
+21. `skills/admin/integration-user-management` — integration-user FLS surface
+22. `standards/decision-trees/sharing-selection.md`
+
+### Apex / SOQL impact
+23. `skills/apex/soql-fundamentals`
+24. `skills/apex/dynamic-apex` — dynamic SOQL = rename-brittle
+25. `skills/apex/apex-stripinaccessible-and-fls-enforcement`
+26. `skills/apex/apex-user-and-permission-checks`
+
+### LWC impact
+27. `skills/lwc/lwc-public-api-hardening` — `@api recordId` + design-attribute coercion
+
+### Architecture
+28. `skills/architect/metadata-coverage-and-dependencies` — global dependency model
+
+### Probes
+29. `agents/_shared/probes/apex-references-to-field.md`
+30. `agents/_shared/probes/flow-references-to-field.md`
+31. `agents/_shared/probes/automation-graph-for-sobject.md`
+32. `agents/_shared/probes/user-access-comparison.md`
+
+### Templates
+33. `templates/admin/naming-conventions.md`
 
 ---
 
@@ -178,7 +239,7 @@ Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
 
 - **Canonical data surface:** this agent's declared probes + the MCP tool set. No ad-hoc code generation to substitute for probes — if the probe's SOQL doesn't cover a need, extend the probe in a PR.
 - **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
-- **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only.
+- **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only. Dimensions for this agent: `apex-references` (ApexClass/Trigger Body via `apex-references-to-field` probe), `flow-references` (Flow Metadata via `flow-references-to-field` probe), `automation-graph` (full Flow/PB/WF/Approval graph via `automation-graph-for-sobject` probe), `validation-rules` (VR formulas), `formula-fields` (transitive formula chains on same object), `lwc-aura-references` (`AuraDefinition` / `LightningComponentResource` body scan), `reports-dashboards` (report column references — LOW confidence on Tooling), `layouts` (page / compact / Lightning record-page references — metadata-only), `permission-sets-profiles` (FLS grants via `user-access-comparison` probe), `roll-up-summary-deps`, `external-integrations` (CDC / PE / REST mappings), `field-history-tracking`, `data-export-jobs`. When a probe paginates short or the org refuses a Tooling query, record `state: partial | not-run` with the reason.
 
 ### Dimensions (Wave 10 contract)
 
@@ -197,11 +258,20 @@ The agent's envelope MUST place every dimension below in either `dimensions_comp
 
 ## Escalation / Refusal Rules
 
-- No `target_org_alias` → refuse.
-- Field does not exist in the target org → refuse with the queried payload.
-- Over 100 referencing Apex classes → return partial results with a clear "truncated at 100" note and recommend running `org-drift-detector` first to scope the blast.
-- Field is a standard system field (`Id`, `Name`, `OwnerId`, etc.) → refuse. Standard system fields cannot be renamed or deleted; report the fact and stop.
-- Field is on a managed-package object (`NamespacePrefix` is non-null) → refuse rename/delete analysis; audit is still allowed but warn that package upgrades may add references.
+Canonical refusal codes per `agents/_shared/REFUSAL_CODES.md`:
+
+| Code | Trigger |
+|---|---|
+| `REFUSAL_MISSING_ORG` | `target_org_alias` not supplied — live-org metadata is required for an honest score. |
+| `REFUSAL_ORG_UNREACHABLE` | `target_org_alias` supplied but `describe_org` failed or auth expired. |
+| `REFUSAL_MISSING_INPUT` | `object_name` or `field_name` not supplied. |
+| `REFUSAL_FIELD_NOT_FOUND` | `FieldDefinition` query returned zero rows for `<object_name>.<field_name>` in the target org. Never fabricate the field. |
+| `REFUSAL_OBJECT_NOT_FOUND` | `EntityDefinition` query returned zero rows for `<object_name>`. |
+| `REFUSAL_STANDARD_SYSTEM_FIELD` | Field is a standard system field (`Id`, `Name`, `OwnerId`, `CreatedById`, `CreatedDate`, `LastModifiedById`, `LastModifiedDate`, `SystemModstamp`, `IsDeleted`, `MasterRecordId`) and `intent` is `rename` or `delete` — these cannot be renamed or deleted. Report the fact and stop. |
+| `REFUSAL_MANAGED_PACKAGE` | Field is on a managed-package object (`NamespacePrefix` non-null) AND `intent` is `rename` or `delete` — refuse the structural change; `audit` is still allowed but warn that package upgrades may add references. |
+| `REFUSAL_OVER_SCOPE_LIMIT` | Over 100 referencing Apex classes detected by the probe — return partial results with `dimensions_skipped[apex-references].state=partial` and recommend running `detect-drift` first to scope the blast. |
+| `REFUSAL_OUT_OF_SCOPE` | Request to rename/delete the field on the agent's behalf — agent produces an evidence pack, never modifies repo or org. |
+| `REFUSAL_NEEDS_HUMAN_REVIEW` | Risk score lands as P0 with `intent=delete` AND any active integration user has `PermissionsEdit` on the field — escalate to a human approver before any downstream action. |
 
 ---
 

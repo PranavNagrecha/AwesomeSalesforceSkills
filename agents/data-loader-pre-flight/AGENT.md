@@ -1,26 +1,42 @@
 ---
 id: data-loader-pre-flight
 class: runtime
-version: 1.0.0
+version: 1.1.0
 status: stable
 requires_org: true
 modes: [single]
 owner: sfskills-core
 created: 2026-04-16
-updated: 2026-04-16
+updated: 2026-04-28
 default_output_dir: "docs/reports/data-loader-pre-flight/"
 output_formats:
   - markdown
   - json
+multi_dimensional: true
 dependencies:
+  probes:
+    - automation-graph-for-sobject.md
+  decision_trees:
+    - integration-pattern-selection.md
+    - automation-selection.md
   skills:
     - admin/agent-output-formats
     - admin/data-import-and-management
     - admin/data-skew-and-sharing-performance
     - admin/duplicate-management
+    - data/batch-data-cleanup-patterns
     - data/bulk-api-and-large-data-loads
+    - data/bulk-api-patterns
+    - data/custom-index-requests
+    - data/data-loader-and-tools
+    - data/data-loader-batch-window-sizing
+    - data/data-loader-csv-column-mapping
+    - data/data-loader-picklist-validation-pre-load
+    - data/data-migration-planning
+    - data/data-storage-management
     - data/external-id-strategy
     - data/field-history-tracking
+    - data/large-scale-deduplication
     - data/lead-data-import-and-dedup
     - data/record-merge-implications
     - data/sharing-recalculation-performance
@@ -29,6 +45,7 @@ dependencies:
     - AGENT_CONTRACT.md
     - AGENT_RULES.md
     - DELIVERABLE_CONTRACT.md
+    - REFUSAL_CODES.md
   templates:
     - admin/validation-rule-patterns.md
 ---
@@ -52,17 +69,51 @@ Given a planned data load — sObject, volume, source CSV or mapping, intent (in
 
 ## Mandatory Reads Before Starting
 
+### Contract
 1. `agents/_shared/AGENT_CONTRACT.md`
 2. `AGENT_RULES.md`
-3. `skills/admin/data-import-and-management`
-4. `skills/admin/duplicate-management`
-5. `skills/data/bulk-api-and-large-data-loads`
-6. `skills/data/external-id-strategy`
-7. `skills/data/record-merge-implications` — for loads that can create dup-merge situations
-8. `skills/data/field-history-tracking`
-9. `skills/data/lead-data-import-and-dedup` — Lead-specific behavior
-10. `templates/admin/validation-rule-patterns.md` — bypass expectations
-11. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+3. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+4. `agents/_shared/REFUSAL_CODES.md` — canonical refusal enum
+
+### Loader-tool selection (Step 8 + ongoing)
+5. `skills/admin/data-import-and-management`
+6. `skills/data/data-loader-and-tools`
+7. `skills/data/bulk-api-and-large-data-loads`
+8. `skills/data/bulk-api-patterns`
+9. `skills/data/data-loader-batch-window-sizing` — batch size vs API limits vs sharing recalc
+10. `standards/decision-trees/integration-pattern-selection.md` — escalates when load is the wrong pattern (e.g. CDC/PE alternative)
+
+### Source CSV + mapping (Step 5)
+11. `skills/data/data-loader-csv-column-mapping` — header normalization, missing-column failure modes
+12. `skills/data/data-loader-picklist-validation-pre-load` — restricted picklist + record-type rules
+
+### Automation interaction (Steps 1–2)
+13. `skills/flow/flow-bulkification`
+14. `agents/_shared/probes/automation-graph-for-sobject.md` — flows + triggers + VRs in one pass
+15. `templates/admin/validation-rule-patterns.md` — bypass expectations
+16. `standards/decision-trees/automation-selection.md` — when load surfaces automation that should move tier
+
+### Duplicates + merge (Step 3)
+17. `skills/admin/duplicate-management`
+18. `skills/data/lead-data-import-and-dedup` — Lead-specific behavior
+19. `skills/data/large-scale-deduplication`
+20. `skills/data/record-merge-implications` — for loads that can create dup-merge situations
+
+### Keys + indexing (Steps 3 + 8)
+21. `skills/data/external-id-strategy`
+22. `skills/data/custom-index-requests`
+
+### Sharing recalc (Step 6)
+23. `skills/admin/data-skew-and-sharing-performance`
+24. `skills/data/sharing-recalculation-performance`
+
+### Storage + cleanup (Step 7 + post-load)
+25. `skills/data/data-storage-management`
+26. `skills/data/batch-data-cleanup-patterns`
+27. `skills/data/data-migration-planning` — multi-load cutover
+
+### Field history
+28. `skills/data/field-history-tracking`
 
 ---
 
@@ -196,14 +247,25 @@ Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
 
 - **Canonical data surface:** this agent's declared probes + the MCP tool set. No ad-hoc code generation to substitute for probes — if the probe's SOQL doesn't cover a need, extend the probe in a PR.
 - **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
-- **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only.
+- **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only. Each entry MUST name one of: `automation-stack`, `validation-rules`, `duplicate-rules`, `record-types`, `required-fields`, `csv-column-mapping`, `picklist-validation`, `sharing-recalc`, `storage-quota`, `loader-selection`, `rollback-plan`. If a dimension was skipped because the underlying probe could not run, the skip reason MUST link the refusal code.
 
 ## Escalation / Refusal Rules
 
-- No `external_id_field` on an upsert → STOP, ask.
-- `operation = hard-delete` → require the caller to confirm the specific compliance driver; refuse if no driver is provided.
-- P0 findings in Steps 2 / 3 / 5 / 6 / 7 → return **GO = false** and list the blockers. Do not offer a "partial go" path.
-- Estimated sharing recalc cost > 4 hours at the chosen row_count → refuse until the user commits to deferred sharing calc or to a chunking plan.
+Refusal codes follow the canonical enum in `agents/_shared/REFUSAL_CODES.md`. The agent emits one `REFUSAL_*` code in the envelope's `refusal` field with a human-readable detail.
+
+| Code | Trigger |
+|---|---|
+| `REFUSAL_MISSING_INPUT` | `object_name`, `operation`, `row_count`, `target_org_alias`, or `source_description` not provided; OR `operation=upsert` without `external_id_field` |
+| `REFUSAL_MISSING_ORG` | `target_org_alias` missing |
+| `REFUSAL_ORG_UNREACHABLE` | Target org probe fails |
+| `REFUSAL_OBJECT_NOT_FOUND` | `object_name` does not resolve in the target org |
+| `REFUSAL_FEATURE_DISABLED` | Bulk API 2.0 / deferred sharing calc requested but unsupported on the org's edition |
+| `REFUSAL_SECURITY_GUARD` | Caller asks the agent to execute the load, deactivate flows/triggers/VRs/dup rules, or provision the integration PSG — out of scope by contract |
+| `REFUSAL_OUT_OF_SCOPE` | Caller asks for source-CSV generation, data enrichment, or load orchestration |
+| `REFUSAL_DATA_QUALITY_UNSAFE` | P0 findings in Steps 2 / 3 / 5 / 6 / 7 — agent returns `GO = false`. No "partial go" path |
+| `REFUSAL_OVER_SCOPE_LIMIT` | Estimated sharing recalc > 4 hours at chosen `row_count` and caller has not committed to deferred sharing calc OR a chunking plan |
+| `REFUSAL_NEEDS_HUMAN_REVIEW` | `operation=hard-delete` without a stated compliance driver; OR record-merge implications detected and `merge_safe` not confirmed |
+| `REFUSAL_POLICY_MISMATCH` | Loader user lacks the bypass posture (Custom Permission OR Custom Setting) AND loader user is not the owner of the run-window decision |
 
 ---
 
