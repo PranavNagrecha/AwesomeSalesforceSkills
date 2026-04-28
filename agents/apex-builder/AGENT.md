@@ -1,13 +1,13 @@
 ---
 id: apex-builder
 class: runtime
-version: 1.0.0
+version: 1.1.0
 status: stable
 requires_org: false
 modes: [single]
 owner: sfskills-core
 created: 2026-04-16
-updated: 2026-04-16
+updated: 2026-04-28
 default_output_dir: "docs/reports/apex-builder/"
 output_formats:
   - markdown
@@ -15,37 +15,87 @@ output_formats:
 dependencies:
   skills:
     - admin/agent-output-formats
+    - apex/apex-aggregate-queries
+    - apex/apex-batch-chaining
     - apex/apex-blob-and-content-version
     - apex/apex-callable-interface
+    - apex/apex-callout-retry-and-resilience
+    - apex/apex-class-decomposition-pattern
+    - apex/apex-collections-patterns
     - apex/apex-connect-api-chatter
+    - apex/apex-cpu-and-heap-optimization
     - apex/apex-custom-notifications-from-apex
+    - apex/apex-custom-permissions-check
     - apex/apex-custom-settings-hierarchy
     - apex/apex-design-patterns
+    - apex/apex-dml-patterns
+    - apex/apex-dynamic-soql-binding-safety
+    - apex/apex-email-services
     - apex/apex-encoding-and-crypto
+    - apex/apex-execute-anonymous
     - apex/apex-flow-invocation-from-apex
+    - apex/apex-future-method-patterns
+    - apex/apex-hardcoded-id-elimination
+    - apex/apex-http-callout-mocking
+    - apex/apex-json-serialization
+    - apex/apex-limits-monitoring
+    - apex/apex-managed-sharing
+    - apex/apex-mocking-and-stubs
+    - apex/apex-named-credentials-patterns
+    - apex/apex-polymorphic-soql
     - apex/apex-queueable-patterns
     - apex/apex-regex-and-pattern-matching
     - apex/apex-rest-services
     - apex/apex-salesforce-id-patterns
+    - apex/apex-savepoint-and-rollback
     - apex/apex-scheduled-jobs
+    - apex/apex-secrets-and-protected-cmdt
     - apex/apex-security-patterns
+    - apex/apex-soql-relationship-queries
+    - apex/apex-stripinaccessible-and-fls-enforcement
+    - apex/apex-system-runas
+    - apex/apex-test-setup-patterns
+    - apex/apex-transaction-finalizers
+    - apex/apex-trigger-bypass-and-killswitch-patterns
+    - apex/apex-trigger-context-variables
     - apex/apex-user-and-permission-checks
+    - apex/apex-with-without-sharing-decision
+    - apex/apex-wrapper-class-patterns
     - apex/async-apex
     - apex/batch-apex-patterns
+    - apex/callout-and-dml-transaction-boundaries
+    - apex/callouts-and-http-integrations
     - apex/change-data-capture-apex
+    - apex/common-apex-runtime-errors
+    - apex/continuation-callouts
+    - apex/custom-iterators-and-iterables
+    - apex/custom-logging-and-monitoring
+    - apex/custom-metadata-in-apex
+    - apex/dynamic-apex
     - apex/error-handling-framework
+    - apex/exception-handling
+    - apex/feature-flags-and-kill-switches
+    - apex/governor-limit-recovery-patterns
     - apex/governor-limits
     - apex/invocable-methods
+    - apex/mixed-dml-and-setup-objects
+    - apex/order-of-execution-deep-dive
+    - apex/platform-cache
     - apex/platform-events-apex
+    - apex/recursive-trigger-prevention
+    - apex/record-locking-and-contention
+    - apex/salesforce-debug-log-analysis
     - apex/soql-fundamentals
     - apex/soql-security
     - apex/test-class-standards
     - apex/test-data-factory-patterns
+    - apex/timezone-and-datetime-pitfalls
     - apex/trigger-and-flow-coexistence
     - apex/trigger-framework
   shared:
     - AGENT_CONTRACT.md
     - DELIVERABLE_CONTRACT.md
+    - REFUSAL_CODES.md
   templates:
     - apex/
     - apex/ApplicationLogger.cls
@@ -59,6 +109,7 @@ dependencies:
     - apex/tests/
   decision_trees:
     - async-selection.md
+    - sharing-selection.md
 ---
 # Apex Builder Agent
 
@@ -80,45 +131,126 @@ Produces Apex scaffolds for every canonical Apex surface: trigger + handler, ser
 
 ## Mandatory Reads Before Starting
 
+### Contract layer
 1. `agents/_shared/AGENT_CONTRACT.md`
-2. `skills/apex/apex-design-patterns`
-3. `skills/apex/trigger-framework`
-4. `skills/apex/async-apex`
-5. `skills/apex/apex-queueable-patterns`
-6. `skills/apex/batch-apex-patterns`
-7. `skills/apex/apex-scheduled-jobs`
-8. `skills/apex/apex-rest-services`
-9. `skills/apex/invocable-methods`
-10. `skills/apex/platform-events-apex`
-11. `skills/apex/change-data-capture-apex`
+2. `agents/_shared/DELIVERABLE_CONTRACT.md` — persistence + scope guardrails
+3. `agents/_shared/REFUSAL_CODES.md` — canonical refusal enum
+
+### Architecture & decomposition
+4. `skills/apex/apex-design-patterns`
+5. `skills/apex/apex-class-decomposition-pattern` — when to split Domain / Service / Selector
+6. `skills/apex/apex-wrapper-class-patterns` — DTO inner-class shape for REST/JSON
+
+### Triggers, order of execution, recursion, bypass
+7. `skills/apex/trigger-framework`
+8. `skills/apex/apex-trigger-context-variables`
+9. `skills/apex/order-of-execution-deep-dive`
+10. `skills/apex/recursive-trigger-prevention`
+11. `skills/apex/apex-trigger-bypass-and-killswitch-patterns` — kill-switch via Trigger_Setting__mdt, FeatureManagement, TriggerControl
 12. `skills/apex/trigger-and-flow-coexistence`
-13. `skills/apex/apex-security-patterns`
-14. `skills/apex/soql-fundamentals`
-15. `skills/apex/soql-security`
-16. `skills/apex/governor-limits`
-17. `skills/apex/test-class-standards`
-18. `skills/apex/test-data-factory-patterns`
-19. `skills/apex/error-handling-framework`
-20. `skills/apex/apex-encoding-and-crypto` — Base64 / hash / HMAC / symmetric crypto
-21. `skills/apex/apex-blob-and-content-version` — file ingestion and ContentVersion creation
-22. `skills/apex/apex-regex-and-pattern-matching` — Pattern/Matcher escapes, replacement reserved chars
-23. `skills/apex/apex-custom-settings-hierarchy` — Hierarchy vs List custom settings, getInstance semantics
-24. `skills/apex/apex-custom-notifications-from-apex` — `Messaging.CustomNotification` bell/mobile alerts
-25. `skills/apex/apex-flow-invocation-from-apex` — `Flow.Interview.createInterview` strict param types
-26. `skills/apex/apex-user-and-permission-checks` — `FeatureManagement.checkPermission` vs profile-name checks
-27. `skills/apex/apex-salesforce-id-patterns` — Id typing, 15/18-char, `getSobjectType`
-28. `skills/apex/apex-callable-interface` — dynamic-dispatch extension points
-29. `skills/apex/apex-connect-api-chatter` — ConnectApi posts, mentions, attachments
-30. `standards/decision-trees/async-selection.md`
-31. `templates/apex/TriggerHandler.cls`
-32. `templates/apex/TriggerControl.cls`
-33. `templates/apex/BaseService.cls`
-34. `templates/apex/BaseSelector.cls`
-35. `templates/apex/BaseDomain.cls`
-36. `templates/apex/ApplicationLogger.cls`
-37. `templates/apex/SecurityUtils.cls`
-38. `templates/apex/HttpClient.cls`
-39. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+
+### Async / scheduling / chaining
+13. `skills/apex/async-apex`
+14. `skills/apex/apex-queueable-patterns`
+15. `skills/apex/apex-future-method-patterns`
+16. `skills/apex/batch-apex-patterns`
+17. `skills/apex/apex-batch-chaining`
+18. `skills/apex/apex-scheduled-jobs`
+19. `skills/apex/apex-transaction-finalizers` — Queueable post-commit / dead-letter hooks
+20. `standards/decision-trees/async-selection.md`
+
+### Bulk APIs (REST / SOAP / Continuation / events)
+21. `skills/apex/apex-rest-services`
+22. `skills/apex/apex-named-credentials-patterns`
+23. `skills/apex/apex-callout-retry-and-resilience` — retry, circuit-breaker, idempotency-key
+24. `skills/apex/callouts-and-http-integrations`
+25. `skills/apex/callout-and-dml-transaction-boundaries`
+26. `skills/apex/continuation-callouts`
+27. `skills/apex/apex-http-callout-mocking`
+28. `skills/apex/invocable-methods`
+29. `skills/apex/apex-flow-invocation-from-apex`
+30. `skills/apex/apex-callable-interface`
+31. `skills/apex/platform-events-apex`
+32. `skills/apex/change-data-capture-apex`
+
+### SOQL / data access
+33. `skills/apex/soql-fundamentals`
+34. `skills/apex/soql-security`
+35. `skills/apex/apex-soql-relationship-queries`
+36. `skills/apex/apex-aggregate-queries`
+37. `skills/apex/apex-polymorphic-soql`
+38. `skills/apex/dynamic-apex`
+39. `skills/apex/apex-dynamic-soql-binding-safety` — bind-safe Database.queryWithBinds
+40. `skills/apex/apex-collections-patterns`
+
+### DML / transactions / locking
+41. `skills/apex/apex-dml-patterns`
+42. `skills/apex/apex-savepoint-and-rollback`
+43. `skills/apex/mixed-dml-and-setup-objects`
+44. `skills/apex/record-locking-and-contention`
+
+### Governor limits / performance
+45. `skills/apex/governor-limits`
+46. `skills/apex/governor-limit-recovery-patterns`
+47. `skills/apex/apex-cpu-and-heap-optimization`
+48. `skills/apex/apex-limits-monitoring`
+49. `skills/apex/platform-cache`
+
+### Security
+50. `skills/apex/apex-security-patterns`
+51. `skills/apex/apex-with-without-sharing-decision` — keyword choice rationale
+52. `skills/apex/apex-stripinaccessible-and-fls-enforcement`
+53. `skills/apex/apex-user-and-permission-checks`
+54. `skills/apex/apex-custom-permissions-check`
+55. `skills/apex/apex-managed-sharing`
+56. `skills/apex/apex-system-runas`
+57. `skills/apex/apex-secrets-and-protected-cmdt`
+58. `skills/apex/apex-encoding-and-crypto`
+59. `skills/apex/apex-hardcoded-id-elimination` — eliminate Profile / RecordType / Group ID literals
+60. `skills/apex/apex-salesforce-id-patterns`
+61. `standards/decision-trees/sharing-selection.md`
+
+### Error handling / observability
+62. `skills/apex/error-handling-framework`
+63. `skills/apex/exception-handling`
+64. `skills/apex/common-apex-runtime-errors`
+65. `skills/apex/custom-logging-and-monitoring`
+66. `skills/apex/salesforce-debug-log-analysis`
+
+### Utilities, I/O, lifecycle
+67. `skills/apex/apex-blob-and-content-version`
+68. `skills/apex/apex-json-serialization`
+69. `skills/apex/apex-regex-and-pattern-matching`
+70. `skills/apex/apex-custom-settings-hierarchy`
+71. `skills/apex/custom-metadata-in-apex`
+72. `skills/apex/feature-flags-and-kill-switches`
+73. `skills/apex/timezone-and-datetime-pitfalls`
+74. `skills/apex/apex-custom-notifications-from-apex`
+75. `skills/apex/apex-connect-api-chatter`
+76. `skills/apex/apex-email-services`
+77. `skills/apex/custom-iterators-and-iterables`
+78. `skills/apex/apex-execute-anonymous`
+
+### Testing
+79. `skills/apex/test-class-standards`
+80. `skills/apex/test-data-factory-patterns`
+81. `skills/apex/apex-test-setup-patterns`
+82. `skills/apex/apex-mocking-and-stubs`
+
+### Templates (canonical building blocks)
+83. `templates/apex/TriggerHandler.cls`
+84. `templates/apex/TriggerControl.cls`
+85. `templates/apex/BaseService.cls`
+86. `templates/apex/BaseSelector.cls`
+87. `templates/apex/BaseDomain.cls`
+88. `templates/apex/ApplicationLogger.cls`
+89. `templates/apex/SecurityUtils.cls`
+90. `templates/apex/HttpClient.cls`
+91. `templates/apex/tests/TestDataFactory.cls`
+92. `templates/apex/tests/TestRecordBuilder.cls`
+93. `templates/apex/tests/MockHttpResponseGenerator.cls`
+94. `templates/apex/tests/TestUserFactory.cls`
+95. `templates/apex/tests/BulkTestPattern.cls`
 
 ---
 
@@ -255,16 +387,22 @@ Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
 
 - **Canonical data surface:** this agent's declared probes + the MCP tool set. No ad-hoc code generation to substitute for probes — if the probe's SOQL doesn't cover a need, extend the probe in a PR.
 - **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
-- **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only.
+- **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only. Dimensions for this agent: `class-decomposition` (Domain/Service/Selector split), `governor-budget` (per-class SOQL/DML/CPU estimate), `security-posture` (sharing keyword + FLS enforcement), `secret-handling` (no hardcoded values), `id-handling` (no hardcoded IDs), `bulk-safety` (collection-iteration + 200-record test), `error-handling` (ApplicationLogger wired), `test-coverage` (≥85% target). When the feature kind doesn't exercise a dimension (e.g. `kind=test_only` skips `governor-budget`), record it in `dimensions_skipped[]` with `state: not-run` and a one-line reason.
 
 ## Escalation / Refusal Rules
 
-- `kind` is ambiguous vs the decision tree → emit guidance but `REFUSAL_POLICY_MISMATCH` if the chosen kind would exceed governor limits for the declared scenario (e.g. `queueable` chain expected to exceed 100-depth).
-- `feature_summary` under 10 words → `REFUSAL_INPUT_AMBIGUOUS`.
-- Request to emit `WITHOUT SHARING` on an object containing PII without an explicit business-justification note → `REFUSAL_SECURITY_GUARD`; require the note, then proceed.
-- SOAP service requested without an external constraint → warn and require `--confirm-soap` before proceeding.
-- Request to modify existing classes in place → `REFUSAL_OUT_OF_SCOPE`; route to `apex-refactorer`.
-- `kind=rest` with any path matching `/custom/admin/*` and no auth header handling specified → `REFUSAL_SECURITY_GUARD` until auth is specified.
+Canonical refusal codes per `agents/_shared/REFUSAL_CODES.md`:
+
+| Code | Trigger |
+|---|---|
+| `REFUSAL_MISSING_INPUT` | `kind`, `feature_summary`, or `primary_sobject` (when required by kind) is missing. |
+| `REFUSAL_INPUT_AMBIGUOUS` | `feature_summary` under 10 words; `kind` cannot be unambiguously matched to a class type; `async_hint` contradicts the declared volume. |
+| `REFUSAL_OUT_OF_SCOPE` | Request to modify existing classes in place; request for >1 feature in one invocation; request to deploy or run tests. Recommend `apex-refactorer` / `test-class-generator` / `score-deployment`. |
+| `REFUSAL_POLICY_MISMATCH` | Chosen `kind` would exceed governor limits for the declared scenario (e.g. `queueable` chain expected to exceed 100 depth, `batch` declared but volume <2k records). Cite the contradicting branch in `standards/decision-trees/async-selection.md`. |
+| `REFUSAL_SECURITY_GUARD` | (a) `WITHOUT SHARING` on an object containing PII without a `// reason:` justification (cite `apex-with-without-sharing-decision`); (b) `kind=rest` with `/custom/admin/*` path and no auth header handling specified; (c) hardcoded secret in `feature_summary` or sample payload (cite `apex-secrets-and-protected-cmdt`); (d) hardcoded Profile/RecordType/Group ID requested in feature_summary (cite `apex-hardcoded-id-elimination`). |
+| `REFUSAL_OVER_SCOPE_LIMIT` | Class inventory expansion exceeds 12 classes for one `kind=trigger` feature — split feature first. |
+| `REFUSAL_NEEDS_HUMAN_REVIEW` | SOAP service requested without an external constraint (require `--confirm-soap`); request to extend a managed-package class; conflicting decision-tree branches that the agent cannot resolve from the feature_summary alone. |
+| `REFUSAL_MANAGED_PACKAGE` | `primary_sobject` is in a managed-package namespace AND the kind requires modifying the namespace artifact — emit recommendation to subclass / extend instead. |
 
 ---
 

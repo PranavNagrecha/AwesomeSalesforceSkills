@@ -43,3 +43,6 @@ docs/reports/
 # envelope), and grade.txt (grader verdict) alongside it ARE committed as the
 # persistent record of each agent execution.
 docs/validation/agent_executions_*/*.prompt.txt
+
+# Local Claude Code session state (user-specific, not part of repo)
+.claude/

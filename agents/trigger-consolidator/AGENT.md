@@ -1,13 +1,13 @@
 ---
 id: trigger-consolidator
 class: runtime
-version: 1.0.0
+version: 1.1.0
 status: stable
 requires_org: false
 modes: [single]
 owner: sfskills-core
 created: 2026-04-16
-updated: 2026-04-16
+updated: 2026-04-28
 default_output_dir: "docs/reports/trigger-consolidator/"
 output_formats:
   - markdown
@@ -15,15 +15,52 @@ output_formats:
 dependencies:
   skills:
     - admin/agent-output-formats
+    - apex/apex-aggregate-queries
+    - apex/apex-collections-patterns
+    - apex/apex-design-patterns
+    - apex/apex-dml-patterns
+    - apex/apex-future-method-patterns
+    - apex/apex-queueable-patterns
+    - apex/apex-savepoint-and-rollback
+    - apex/apex-test-setup-patterns
+    - apex/apex-trigger-bypass-and-killswitch-patterns
+    - apex/apex-trigger-context-variables
+    - apex/async-apex
+    - apex/case-trigger-patterns
+    - apex/change-data-capture-apex
+    - apex/common-apex-runtime-errors
+    - apex/custom-logging-and-monitoring
+    - apex/custom-metadata-in-apex
+    - apex/entitlement-apex-hooks
+    - apex/error-handling-framework
+    - apex/exception-handling
+    - apex/feature-flags-and-kill-switches
+    - apex/governor-limits
+    - apex/lead-conversion-customization
+    - apex/mixed-dml-and-setup-objects
+    - apex/npsp-trigger-framework-extension
+    - apex/opportunity-trigger-patterns
+    - apex/order-of-execution-deep-dive
+    - apex/platform-events-apex
+    - apex/record-locking-and-contention
     - apex/recursive-trigger-prevention
+    - apex/soql-fundamentals
+    - apex/test-class-standards
+    - apex/test-data-factory-patterns
+    - apex/trigger-and-flow-coexistence
     - apex/trigger-framework
   shared:
     - AGENT_CONTRACT.md
     - DELIVERABLE_CONTRACT.md
+    - REFUSAL_CODES.md
+  probes:
+    - automation-graph-for-sobject.md
   templates:
     - apex/TriggerControl.cls
     - apex/TriggerHandler.cls
     - apex/cmdt/Trigger_Setting__mdt.object-meta.xml
+  decision_trees:
+    - automation-selection.md
 ---
 # Trigger Consolidator Agent
 
@@ -45,12 +82,69 @@ Finds every Apex trigger on a given sObject across the user's `force-app` tree, 
 
 ## Mandatory Reads Before Starting
 
+### Contract layer
 1. `agents/_shared/AGENT_CONTRACT.md`
-2. `skills/apex/trigger-framework/SKILL.md` — via `get_skill`
-3. `templates/apex/TriggerHandler.cls` + `templates/apex/TriggerControl.cls`
-4. `templates/apex/cmdt/Trigger_Setting__mdt.object-meta.xml` — the metadata record schema the framework uses
-5. `skills/apex/recursive-trigger-prevention/SKILL.md` — recursion-prevention patterns baked into the framework
-6. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+2. `agents/_shared/DELIVERABLE_CONTRACT.md`
+3. `agents/_shared/REFUSAL_CODES.md`
+
+### Trigger framework canon
+4. `skills/apex/trigger-framework`
+5. `skills/apex/recursive-trigger-prevention`
+6. `skills/apex/apex-trigger-context-variables`
+7. `skills/apex/apex-trigger-bypass-and-killswitch-patterns`
+8. `skills/apex/order-of-execution-deep-dive`
+9. `skills/apex/trigger-and-flow-coexistence`
+
+### Architecture
+10. `skills/apex/apex-design-patterns`
+11. `skills/apex/apex-collections-patterns`
+
+### Cross-automation visibility
+12. `agents/_shared/probes/automation-graph-for-sobject.md` — finds Flows / PB / WF on the same SObject
+13. `standards/decision-trees/automation-selection.md` — when consolidating reveals the wrong tier of automation
+
+### Vertical-specific trigger patterns (object-aware mode)
+14. `skills/apex/case-trigger-patterns` — Case-specific
+15. `skills/apex/opportunity-trigger-patterns` — Opportunity-specific
+16. `skills/apex/lead-conversion-customization` — Lead-specific
+17. `skills/apex/entitlement-apex-hooks` — Case milestone hooks
+18. `skills/apex/npsp-trigger-framework-extension` — NPSP TDTM-specific (managed-package coexistence)
+
+### Async offload (when triggers should defer work)
+19. `skills/apex/async-apex`
+20. `skills/apex/apex-future-method-patterns`
+21. `skills/apex/apex-queueable-patterns`
+22. `skills/apex/platform-events-apex`
+23. `skills/apex/change-data-capture-apex`
+
+### DML / locking under consolidated triggers
+24. `skills/apex/apex-dml-patterns`
+25. `skills/apex/apex-savepoint-and-rollback`
+26. `skills/apex/mixed-dml-and-setup-objects`
+27. `skills/apex/record-locking-and-contention`
+
+### Error handling / governance
+28. `skills/apex/error-handling-framework`
+29. `skills/apex/exception-handling`
+30. `skills/apex/common-apex-runtime-errors`
+31. `skills/apex/custom-logging-and-monitoring` — Application_Log__c
+32. `skills/apex/custom-metadata-in-apex` — Trigger_Setting__mdt access pattern
+33. `skills/apex/feature-flags-and-kill-switches`
+34. `skills/apex/governor-limits`
+
+### SOQL inside trigger handlers
+35. `skills/apex/soql-fundamentals`
+36. `skills/apex/apex-aggregate-queries`
+
+### Tests after consolidation
+37. `skills/apex/test-class-standards`
+38. `skills/apex/test-data-factory-patterns`
+39. `skills/apex/apex-test-setup-patterns`
+
+### Templates
+40. `templates/apex/TriggerHandler.cls`
+41. `templates/apex/TriggerControl.cls`
+42. `templates/apex/cmdt/Trigger_Setting__mdt.object-meta.xml`
 
 ---
 
@@ -66,12 +160,14 @@ Finds every Apex trigger on a given sObject across the user's `force-app` tree, 
 
 ## Plan
 
-### Step 1 — Discover triggers
+### Step 1 — Discover triggers AND adjacent automation
 
 Grep `<force_app_root>/triggers/` for files matching `trigger\s+\w+\s+on\s+<object_api_name>`. Record:
 - Trigger file path
 - Events handled (before insert, after update, etc.)
 - Whether logic is inline or delegated to a handler class
+
+ALSO run the `automation-graph-for-sobject` probe (`agents/_shared/probes/automation-graph-for-sobject.md`) to enumerate Flows, Process Builders, Workflow Rules, Approval Processes, Validation Rules, Duplicate Rules, and Assignment Rules on the same SObject. Consolidating triggers WITHOUT visibility into the rest of the automation graph is dangerous — events fire against all of them, and order matters.
 
 If `target_org_alias` is set, call `validate_against_org(skill_id="apex/trigger-framework", target_org=..., object_name=<object_api_name>)` and merge its findings with the local scan.
 
@@ -123,10 +219,33 @@ Emphasize: the CMDT switch must come LAST so the rollback is "flip `Is_Active__c
 One markdown document:
 
 1. **Discovery** — every trigger found (local + org), with event matrix.
-2. **Proposed consolidation** — the new handler class + new trigger file, fenced by target path.
-3. **Migration steps** — numbered deployment sequence.
-4. **Risk notes** — triggers that touch the same event in conflicting ways, order-of-execution concerns, any handler that uses `Trigger.isExecuting` gymnastics the framework handles differently.
-5. **Citations** — skill ids + template paths.
+2. **Adjacent automation** — Flows, PB, WF, Approval, VR, DR, AR enumerated via `automation-graph-for-sobject` probe. Order of execution implications called out.
+3. **Audit signals** (12 catalog rows — flag any present):
+
+| Signal | Severity |
+|---|---|
+| Multiple triggers on same SObject | P0 (consolidate) |
+| Trigger with inline business logic (no handler) | P0 |
+| Trigger using `Trigger.isExecuting` recursion guard instead of framework | P1 |
+| Trigger missing kill-switch wiring (cite `apex-trigger-bypass-and-killswitch-patterns`) | P1 |
+| Trigger handler not extending `TriggerHandler` template | P1 |
+| Trigger calls `@future` mid-handler (cite `apex-future-method-patterns`) | P2 |
+| Trigger does DML on same SObject (mixed-DML / recursion risk) | P1 |
+| Trigger does DML on Setup objects (cite `mixed-dml-and-setup-objects`) | P1 |
+| Process Builder / WF Rule on same SObject + events | P1 (cite `automation-selection.md`) |
+| Record-Triggered Flow on same events (cite `trigger-and-flow-coexistence`) | P1 |
+| Trigger uses `try {} catch (Exception e) {}` empty-swallow | P0 |
+| Managed-package trigger present | flag, exclude |
+
+4. **Proposed consolidation** — the new handler class + new trigger file, fenced by target path.
+5. **Migration steps** — numbered deployment sequence.
+6. **Risk notes** — triggers that touch the same event in conflicting ways, order-of-execution concerns, any handler that uses `Trigger.isExecuting` gymnastics the framework handles differently.
+7. **Process Observations**.
+   - **Healthy** — only one trigger on the SObject already; framework already partially adopted; logging via `Application_Log__c` already in place; tests use `TestDataFactory`.
+   - **Concerning** — Flow/PB/WF Rule + trigger overlap on same events (cite probe output); managed-package trigger present (excluded but flagged); kill-switch missing on a high-traffic handler.
+   - **Ambiguous** — whether to consolidate the new handler with NPSP TDTM (cite `npsp-trigger-framework-extension`); whether async-offload should be inserted as part of consolidation.
+   - **Suggested follow-ups** — `flow-analyzer` (when adjacent Flows discovered); `apex-refactorer` (after consolidation, to lift business logic in handler bodies); `test-class-generator` (for the new handler); `security-scanner` (post-consolidation FLS check); `score-deployment` (pre-deploy gate).
+8. **Citations** — skill ids + template paths + probe id.
 
 ---
 
@@ -146,14 +265,21 @@ Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
 
 - **Canonical data surface:** this agent's declared probes + the MCP tool set. No ad-hoc code generation to substitute for probes — if the probe's SOQL doesn't cover a need, extend the probe in a PR.
 - **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
-- **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only.
+- **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only. Dimensions: `local-trigger-inventory`, `org-trigger-inventory`, `adjacent-automation-graph`, `framework-adoption`, `kill-switch-wiring`, `recursion-guard`, `dml-side-effects`, `event-matrix`, `vertical-pattern-fit`, `test-coverage-impact`. When `target_org_alias` not provided, record `org-trigger-inventory` as `not-run`.
 
 ## Escalation / Refusal Rules
 
-- Zero triggers found → STOP with note "no consolidation needed".
-- One trigger found AND it already extends the framework → STOP with `confidence: HIGH, no change required`.
-- Triggers use Process Builder or Record-Triggered Flow that fires on the same events → flag as `confidence: MEDIUM` and recommend running `flow-analyzer` before consolidating.
-- Managed-package triggers exist on the same object → DO NOT touch them. Flag and exclude.
+Canonical refusal codes per `agents/_shared/REFUSAL_CODES.md`:
+
+| Code | Trigger |
+|---|---|
+| `REFUSAL_MISSING_INPUT` | `object_api_name` or `force_app_root` missing. |
+| `REFUSAL_OBJECT_NOT_FOUND` | `object_api_name` does not match any trigger file path AND target org (when supplied) returns no SObject by that API name. |
+| `REFUSAL_OUT_OF_SCOPE` | Zero triggers found — STOP with note "no consolidation needed". One trigger found AND it already extends the framework → STOP with `confidence: HIGH, no change required`. |
+| `REFUSAL_COMPETING_ARTIFACT` | Process Builder or Record-Triggered Flow fires on the same events — flag with `confidence: MEDIUM`, recommend `flow-analyzer` before consolidating. |
+| `REFUSAL_MANAGED_PACKAGE` | Managed-package trigger exists on the same object — flag, exclude, do NOT touch. |
+| `REFUSAL_NEEDS_HUMAN_REVIEW` | Triggers touch the same event in conflicting ways the agent cannot deterministically merge (e.g. opposite-direction field updates); NPSP TDTM coexistence ambiguity. |
+| `REFUSAL_OVER_SCOPE_LIMIT` | More than 12 distinct triggers on the SObject — emit a partial plan covering the top 8 by event-count and flag the rest for a follow-up run. |
 
 ---
 

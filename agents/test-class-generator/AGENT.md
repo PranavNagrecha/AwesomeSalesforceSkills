@@ -1,13 +1,13 @@
 ---
 id: test-class-generator
 class: runtime
-version: 1.0.0
+version: 1.1.0
 status: stable
 requires_org: false
 modes: [single]
 owner: sfskills-core
 created: 2026-04-16
-updated: 2026-04-16
+updated: 2026-04-28
 default_output_dir: "docs/reports/test-class-generator/"
 output_formats:
   - markdown
@@ -15,11 +15,52 @@ output_formats:
 dependencies:
   skills:
     - admin/agent-output-formats
+    - apex/apex-collections-patterns
+    - apex/apex-dml-patterns
+    - apex/apex-flow-invocation-from-apex
+    - apex/apex-future-method-patterns
+    - apex/apex-http-callout-mocking
+    - apex/apex-limits-monitoring
+    - apex/apex-mocking-and-stubs
+    - apex/apex-polymorphic-soql
+    - apex/apex-queueable-patterns
+    - apex/apex-rest-services
+    - apex/apex-savepoint-and-rollback
+    - apex/apex-scheduled-jobs
+    - apex/apex-system-runas
+    - apex/apex-test-setup-patterns
+    - apex/apex-trigger-bypass-and-killswitch-patterns
+    - apex/apex-trigger-context-variables
+    - apex/apex-user-and-permission-checks
+    - apex/apex-with-without-sharing-decision
+    - apex/async-apex
+    - apex/batch-apex-patterns
+    - apex/callouts-and-http-integrations
+    - apex/change-data-capture-apex
+    - apex/common-apex-runtime-errors
+    - apex/continuation-callouts
+    - apex/custom-metadata-in-apex
+    - apex/dynamic-apex
+    - apex/error-handling-framework
+    - apex/exception-handling
+    - apex/feature-flags-and-kill-switches
+    - apex/governor-limits
+    - apex/invocable-methods
+    - apex/mixed-dml-and-setup-objects
+    - apex/platform-events-apex
+    - apex/record-locking-and-contention
+    - apex/recursive-trigger-prevention
+    - apex/soql-fundamentals
+    - apex/soql-security
     - apex/test-class-standards
     - apex/test-data-factory-patterns
+    - apex/timezone-and-datetime-pitfalls
+    - apex/trigger-framework
+    - apex/visualforce-fundamentals
   shared:
     - AGENT_CONTRACT.md
     - DELIVERABLE_CONTRACT.md
+    - REFUSAL_CODES.md
   templates:
     - apex/tests/
     - apex/tests/BulkTestPattern.cls
@@ -48,14 +89,73 @@ Generates a bulk-safe Apex test class for a target class, targeting ≥ 85% code
 
 ## Mandatory Reads Before Starting
 
+### Contract layer
 1. `agents/_shared/AGENT_CONTRACT.md`
-2. `skills/apex/test-class-standards/SKILL.md` + `skills/apex/test-data-factory-patterns/SKILL.md`
-3. `templates/apex/tests/TestDataFactory.cls`
-4. `templates/apex/tests/TestRecordBuilder.cls`
-5. `templates/apex/tests/MockHttpResponseGenerator.cls`
-6. `templates/apex/tests/TestUserFactory.cls`
-7. `templates/apex/tests/BulkTestPattern.cls`
-8. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+2. `agents/_shared/DELIVERABLE_CONTRACT.md`
+3. `agents/_shared/REFUSAL_CODES.md`
+
+### Test standards & factories
+4. `skills/apex/test-class-standards`
+5. `skills/apex/test-data-factory-patterns`
+6. `skills/apex/apex-test-setup-patterns`
+7. `skills/apex/apex-mocking-and-stubs`
+8. `skills/apex/apex-http-callout-mocking`
+
+### Sharing / permissions / runAs
+9. `skills/apex/apex-system-runas`
+10. `skills/apex/apex-user-and-permission-checks`
+11. `skills/apex/apex-with-without-sharing-decision`
+
+### Surface-specific test patterns
+12. `skills/apex/trigger-framework` — for trigger-class targets
+13. `skills/apex/recursive-trigger-prevention`
+14. `skills/apex/apex-trigger-context-variables`
+15. `skills/apex/apex-trigger-bypass-and-killswitch-patterns` — explicit-bypass test scenario
+16. `skills/apex/async-apex` — `Test.startTest`/`stopTest` semantics
+17. `skills/apex/apex-queueable-patterns`
+18. `skills/apex/apex-future-method-patterns`
+19. `skills/apex/batch-apex-patterns`
+20. `skills/apex/apex-scheduled-jobs`
+21. `skills/apex/platform-events-apex` — `Test.getEventBus`
+22. `skills/apex/change-data-capture-apex`
+23. `skills/apex/invocable-methods`
+24. `skills/apex/apex-rest-services` — `RestRequest`/`RestResponse` mocks
+25. `skills/apex/continuation-callouts`
+26. `skills/apex/apex-flow-invocation-from-apex`
+27. `skills/apex/callouts-and-http-integrations`
+28. `skills/apex/visualforce-fundamentals`
+
+### DML / data / locking gotchas
+29. `skills/apex/apex-dml-patterns`
+30. `skills/apex/apex-savepoint-and-rollback`
+31. `skills/apex/mixed-dml-and-setup-objects`
+32. `skills/apex/record-locking-and-contention`
+
+### SOQL semantics
+33. `skills/apex/soql-fundamentals`
+34. `skills/apex/soql-security`
+35. `skills/apex/apex-polymorphic-soql`
+36. `skills/apex/dynamic-apex`
+37. `skills/apex/apex-collections-patterns`
+
+### Errors / governor limits
+38. `skills/apex/governor-limits`
+39. `skills/apex/apex-limits-monitoring`
+40. `skills/apex/exception-handling`
+41. `skills/apex/common-apex-runtime-errors`
+42. `skills/apex/error-handling-framework`
+
+### Stable test fixtures
+43. `skills/apex/timezone-and-datetime-pitfalls`
+44. `skills/apex/custom-metadata-in-apex`
+45. `skills/apex/feature-flags-and-kill-switches`
+
+### Templates
+46. `templates/apex/tests/TestDataFactory.cls`
+47. `templates/apex/tests/TestRecordBuilder.cls`
+48. `templates/apex/tests/MockHttpResponseGenerator.cls`
+49. `templates/apex/tests/TestUserFactory.cls`
+50. `templates/apex/tests/BulkTestPattern.cls`
 
 ---
 
@@ -148,7 +248,12 @@ Verify:
 2. **Test class** — fenced code block labelled with the target path `force-app/main/default/classes/<Source>_Test.cls` + its `-meta.xml`.
 3. **Coverage gaps** — methods not covered + why.
 4. **Dependencies to deploy** — template files the test depends on (`TestDataFactory`, etc.) that the user must have already deployed.
-5. **Citations** — skill + template ids.
+5. **Process Observations** — peripheral signal noticed while reading the source.
+   - **Healthy** — target uses `with sharing` correctly; existing `<Object>_Test` already exists as scaffold; clean separation between data construction and assertions; method signatures are simple/test-friendly.
+   - **Concerning** — target invokes `Database.executeBatch(this)` from a method (recursion in test risk); target performs DML on Setup objects + non-Setup objects in same method (cite `mixed-dml-and-setup-objects`); target uses `Datetime.now()` inline (cite `timezone-and-datetime-pitfalls`); target hits `@AuraEnabled` and `WITHOUT SHARING` together — flag for security re-check.
+   - **Ambiguous** — runAs persona unclear (no obvious permission-set constraints); whether bulk path triggers governor-limit assertions; whether mock callouts need a sequence of failures-then-success.
+   - **Suggested follow-up agents** — `apex-refactorer` if untestable code shape (private methods used as DUT); `security-scanner` if FLS/CRUD gaps appeared; `score-deployment` pre-deploy.
+6. **Citations** — skill + template ids.
 
 ---
 
@@ -168,13 +273,21 @@ Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
 
 - **Canonical data surface:** this agent's declared probes + the MCP tool set. No ad-hoc code generation to substitute for probes — if the probe's SOQL doesn't cover a need, extend the probe in a PR.
 - **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
-- **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only.
+- **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only. Dimensions: `happy-path`, `bulk-200`, `runAs-non-admin`, `negative-path`, `callout-mock`, `governor-stress`, `recursion-guard`, `setup-vs-data-dml`. Record each in `dimensions_compared[]` (with the test method name) or `dimensions_skipped[]` with reason.
 
 ## Escalation / Refusal Rules
 
-- Source uses `SeeAllData` anywhere → refuse until user removes it.
-- Source class is a managed-package global method → STOP; cannot write meaningful tests against a global surface.
-- Source has > 30 public methods → produce tests for the 10 most critical (those involving DML, callouts, or governor-sensitive loops) and flag the rest for a follow-up run.
+Canonical refusal codes per `agents/_shared/REFUSAL_CODES.md`:
+
+| Code | Trigger |
+|---|---|
+| `REFUSAL_MISSING_INPUT` | `source_path` not provided. |
+| `REFUSAL_INPUT_AMBIGUOUS` | Source is empty / non-Apex / unparseable. |
+| `REFUSAL_SECURITY_GUARD` | Source uses `SeeAllData=true` — refuse until user removes it. |
+| `REFUSAL_MANAGED_PACKAGE` | Source is a managed-package `global` method — cannot write meaningful tests against a global surface; recommend extension class instead. |
+| `REFUSAL_OVER_SCOPE_LIMIT` | Source has > 30 public methods — produce tests for the 10 most critical (DML / callout / governor-sensitive loops) and flag the rest for a follow-up run. |
+| `REFUSAL_OUT_OF_SCOPE` | Request to refactor source class (route to `apex-refactorer`) or to run tests against a real org (route to `score-deployment`). |
+| `REFUSAL_NEEDS_HUMAN_REVIEW` | Source instantiates `Test.setMock` for a type the agent cannot resolve; mocking strategy ambiguous. |
 
 ---
 
