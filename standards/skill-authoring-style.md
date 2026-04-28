@@ -239,13 +239,16 @@ For deployable-metadata skills, add:
 - This guide is referenced from `AGENT_RULES.md` and `AGENTS.md`. Every skill-builder agent (`agents/*-skill-builder/AGENT.md`) lists it in Mandatory Reads. Every PR review and `/review` agent run applies it.
 - The `/new-skill` command (`commands/new-skill.md`) instructs authors to satisfy the checklist in § 7 before sync.
 
-### 8.2 Automated (planned, not yet implemented)
-A future validator function `validate_skill_authoring_style()` in [`pipelines/validators.py`](../pipelines/validators.py) called from `validate_one_skill()` at [`scripts/validate_repo.py:113`](../scripts/validate_repo.py) would emit per-category warnings for:
-- Apex/LWC/Integration skills with no fenced code block
-- Action-style skills with named-parameter prose but no field-mapping table
-- Skills where SKILL.md and `references/gotchas.md` share a gotcha title
+### 8.2 Automated (implemented, WARN-level)
+`validate_skill_authoring_style()` in [`pipelines/validators.py`](../pipelines/validators.py) is called from `validate_one_skill()` in [`scripts/validate_repo.py`](../scripts/validate_repo.py) and emits **WARN-level** findings for the high-confidence duplication anti-patterns from § 6:
 
-These rules need tuning against real skills before enforcement; a false-positive sweep across 800+ skills is expensive to triage. Expect WARN-level emission first, ERROR-level later.
+| Check | Anti-pattern | Detection |
+|---|---|---|
+| `## When To Use` body section | § 6.1 — duplicates frontmatter `description` | Substring match on case variants |
+| `## Well-Architected Pillars` body section | § 6.4 — duplicates `references/well-architected.md` | Body marker + non-empty WAF reference |
+| Verbatim ≥120-char paragraph in both files | § 6.6 — same gotcha in two places | Set intersection of normalized paragraphs |
+
+These are **WARN-only** — they do not block CI. Per-category shape rules (Apex/LWC needing fenced code, action skills needing field-mapping tables) are deliberately not implemented yet because the heuristics are fuzzier and false-positives across 900+ skills are expensive to triage. Promote to ERROR only after rules are tuned against the corpus.
 
 ### 8.3 Retrofit policy
 Existing skills are **not retroactively in violation**. The guide is forward-looking — applied to:

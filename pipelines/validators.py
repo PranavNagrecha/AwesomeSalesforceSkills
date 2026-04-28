@@ -289,6 +289,106 @@ def validate_skill_structure(path: Path) -> list[ValidationIssue]:
     return issues
 
 
+def validate_skill_authoring_style(path: Path) -> list[ValidationIssue]:
+    """Style-level checks against `standards/skill-authoring-style.md`.
+
+    All findings are WARN-level. The style guide is forward-leverage
+    guidance; we don't want false positives on 807 existing skills to
+    block PRs. ERROR-level promotion happens only after the rules have
+    been calibrated against real skills (see § 8.2 of the style guide).
+
+    Targets the three highest-confidence anti-patterns from § 6 of the
+    guide — the ones that are objective duplication checks rather than
+    subjective shape calls:
+
+    - § 6.1 — `## When To Use` body section duplicating frontmatter
+      `description:` (the description IS the trigger surface)
+    - § 6.4 — pillar mapping inline in SKILL.md when
+      `references/well-architected.md` exists
+    - § 6.6 — verbatim paragraph appearing in both SKILL.md and
+      `references/gotchas.md`
+    """
+    issues: list[ValidationIssue] = []
+    skill_md = path / "SKILL.md"
+    if not skill_md.exists():
+        return issues
+    skill_text = skill_md.read_text(encoding="utf-8")
+
+    # § 6.1 — duplicate "When To Use" section. Frontmatter `description:`
+    # is already the canonical trigger surface; a body section repeats it.
+    for marker in ("## When To Use", "## When to Use", "## When to use"):
+        if marker in skill_text:
+            issues.append(
+                ValidationIssue(
+                    "WARN",
+                    str(skill_md),
+                    f"body has `{marker}` section — frontmatter `description` is the canonical trigger surface; "
+                    "remove the body section or fold it into the description "
+                    "(see standards/skill-authoring-style.md § 6.1)",
+                )
+            )
+            break
+
+    # § 6.4 — pillar mapping inline in SKILL.md when a dedicated
+    # references/well-architected.md exists with content. Map once, in
+    # one place.
+    waf_ref = path / "references" / "well-architected.md"
+    has_waf_ref_content = (
+        waf_ref.exists() and len(waf_ref.read_text(encoding="utf-8").strip()) > 200
+    )
+    pillar_section_markers = (
+        "## Well-Architected Pillars",
+        "## Well-Architected Pillar Mapping",
+        "## Architecture Pillars",
+        "## Pillar Mapping",
+    )
+    if has_waf_ref_content:
+        for marker in pillar_section_markers:
+            if marker in skill_text:
+                issues.append(
+                    ValidationIssue(
+                        "WARN",
+                        str(skill_md),
+                        f"body has `{marker}` section while `references/well-architected.md` already covers it — "
+                        "keep pillar mapping in references/well-architected.md only "
+                        "(see standards/skill-authoring-style.md § 6.4)",
+                    )
+                )
+                break
+
+    # § 6.6 — verbatim paragraph duplication between SKILL.md and
+    # references/gotchas.md. Hash paragraphs >= ~120 chars to avoid
+    # false-positives on short shared phrasing.
+    gotchas_ref = path / "references" / "gotchas.md"
+    if gotchas_ref.exists():
+        gotchas_text = gotchas_ref.read_text(encoding="utf-8")
+        skill_paragraphs = {
+            p.strip()
+            for p in skill_text.split("\n\n")
+            if len(p.strip()) >= 120
+        }
+        gotchas_paragraphs = {
+            p.strip()
+            for p in gotchas_text.split("\n\n")
+            if len(p.strip()) >= 120
+        }
+        shared = skill_paragraphs & gotchas_paragraphs
+        if shared:
+            sample = next(iter(shared))[:80].replace("\n", " ")
+            issues.append(
+                ValidationIssue(
+                    "WARN",
+                    str(skill_md),
+                    f"{len(shared)} paragraph(s) appear verbatim in both SKILL.md and references/gotchas.md "
+                    f"(e.g. \"{sample}…\") — keep the deep version in references/gotchas.md, "
+                    "leave a one-line summary + link in SKILL.md "
+                    "(see standards/skill-authoring-style.md § 6.6)",
+                )
+            )
+
+    return issues
+
+
 def validate_skill_registry_record(root: Path, record: dict) -> list[ValidationIssue]:
     schema = load_schema(root, "config/skill-record.schema.json")
     return [
