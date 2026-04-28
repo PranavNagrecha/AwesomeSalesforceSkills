@@ -39,7 +39,7 @@ dependencies:
   - integration/real-time-vs-batch-integration
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-16
+updated: 2026-04-28
 ---
 
 # Bulk API 2.0 Patterns (Integration)
@@ -60,11 +60,13 @@ Use **`data/bulk-api-patterns`** when the primary need is call-level request/res
 
 Gather this context before working on anything in this domain:
 
-- **Auth and instance URL**: OAuth access token, API version segment (for example `v66.0`), and the correct My Domain base URL for all subsequent job URLs returned by `contentUrl`.
-- **Upload path**: single-part CSV `PUT` sequence versus multipart `POST` create—multipart skips manual `UploadComplete` by design.
-- **Failure semantics**: whether downstream systems can tolerate partial success; if not, compensating transactions must live **outside** Salesforce because bulk commits are not all-or-nothing.
-- **Most common wrong assumption**: that creating a job and streaming CSV is enough for processing to start. Without `UploadComplete` (non-multipart), nothing enters `InProgress`.
-- **Limits in play**: daily processed-record ceiling, per-upload payload size, and query page sizing via `maxRecords` where supported—always cross-check the current *Limits and Allocations* topic for the API version in use.
+| Context | What to gather |
+|---|---|
+| Auth and instance URL | OAuth access token, API version segment (e.g. `v66.0`), and the correct My Domain base URL for all subsequent job URLs returned by `contentUrl`. |
+| Upload path | Single-part CSV `PUT` sequence vs. multipart `POST` create — multipart skips manual `UploadComplete` by design. |
+| Failure semantics | Whether downstream systems can tolerate partial success; if not, compensating transactions must live **outside** Salesforce because bulk commits are not all-or-nothing. |
+| Most common wrong assumption | That creating a job and streaming CSV is enough for processing to start. Without `UploadComplete` (non-multipart), nothing enters `InProgress`. |
+| Limits in play | Daily processed-record ceiling, per-upload payload size, and query page sizing via `maxRecords` where supported — cross-check the current *Limits and Allocations* topic for the API version in use. |
 
 ---
 

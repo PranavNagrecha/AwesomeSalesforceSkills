@@ -37,7 +37,7 @@ dependencies:
   - retry-and-backoff-patterns
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-05
+updated: 2026-04-28
 ---
 
 # MuleSoft Salesforce Connector
@@ -62,10 +62,12 @@ Gather this context before working on anything in this domain:
 
 The Salesforce Connector (version 11.x) exposes operations backed by four distinct Salesforce APIs. Choosing the wrong one causes limit exhaustion, timeouts, or data loss:
 
-- **SOAP API** — Default for single-record CRUD. Best for real-time request-reply with < 200 records. Counts against the org's daily API call limit (one call per operation invocation).
-- **REST API** — Used for Composite and SObject Tree operations. Enables creating up to 200 records in a single API call via Composite, reducing limit consumption.
-- **Bulk API 2.0** — Required for high-volume loads (> 10,000 records). Operates asynchronously via jobs. Does not count against the standard API call limit but has its own daily rolling limit (150,000,000 records or 15,000 batches, whichever is hit first).
-- **Streaming API / Pub/Sub API** — Used for Subscribe Topic and Replay Topic operations. Consumes CometD long-polling or gRPC streams. Requires Push Topic or Platform Event configuration in Salesforce.
+| API | When to use | Limit posture |
+|---|---|---|
+| SOAP API | Default for single-record CRUD; real-time request-reply with < 200 records. | One daily API call per operation invocation. |
+| REST API | Composite and SObject Tree operations; up to 200 records in a single API call via Composite. | Reduces daily-API-call consumption vs. SOAP. |
+| Bulk API 2.0 | High-volume loads (> 10,000 records); asynchronous via jobs. | Does not count against the standard API call limit; has its own daily rolling limit (150M records or 15K batches, whichever is hit first). |
+| Streaming API / Pub/Sub API | Subscribe Topic and Replay Topic operations; CometD long-polling or gRPC streams. | Requires Push Topic or Platform Event configuration in Salesforce. |
 
 ### Watermark-Based Incremental Sync (Mule 4 + Object Store)
 

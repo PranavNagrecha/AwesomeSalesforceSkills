@@ -37,7 +37,7 @@ dependencies:
   - apex-rest-services
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-04-28
 ---
 
 # API Error Handling Design
@@ -62,16 +62,18 @@ Gather this context before working on anything in this domain:
 
 Salesforce's REST API uses HTTP status codes per RFC 7231 conventions. Key mappings for Apex REST endpoint design:
 
-- **200 OK / 201 Created / 204 No Content** — success states; use 201 for resource creation, 204 when no body is returned.
-- **400 Bad Request** — malformed input: missing required fields, type mismatch, invalid enumeration value. The error is in the client's payload. Retrying the same payload will always fail.
-- **401 Unauthorized** — authentication failure (expired OAuth token, invalid session). The client must re-authenticate before retrying.
-- **403 Forbidden** — the authenticated user lacks the permission to perform the operation. Retrying with the same credentials will always fail.
-- **404 Not Found** — the referenced record or resource does not exist. Treat as permanent unless the resource creation is expected to race.
-- **409 Conflict** — state conflict, such as an attempt to create a duplicate record that violates an external-id uniqueness constraint. Requires application-level resolution, not a retry.
-- **422 Unprocessable Entity** — syntactically valid payload that fails business-rule validation (e.g., a closed Opportunity cannot be re-opened via this endpoint). Distinct from 400 in that the request was well-formed.
-- **429 Too Many Requests** — rate limit exceeded. Retry-safe after the `Retry-After` interval.
-- **500 Internal Server Error** — unhandled server-side exception. May be transient; one retry is reasonable.
-- **503 Service Unavailable** — server temporarily unable to handle the request (overload or maintenance). Retry-safe with backoff.
+| Code | Meaning and retry semantics |
+|---|---|
+| 200 / 201 / 204 | Success states; use 201 for resource creation, 204 when no body is returned. |
+| 400 Bad Request | Malformed input: missing required fields, type mismatch, invalid enumeration value. Retrying the same payload will always fail. |
+| 401 Unauthorized | Authentication failure (expired OAuth token, invalid session). The client must re-authenticate before retrying. |
+| 403 Forbidden | The authenticated user lacks the permission to perform the operation. Retrying with the same credentials will always fail. |
+| 404 Not Found | The referenced record or resource does not exist. Treat as permanent unless the resource creation is expected to race. |
+| 409 Conflict | State conflict, e.g. duplicate record violating an external-id uniqueness constraint. Requires application-level resolution, not a retry. |
+| 422 Unprocessable Entity | Syntactically valid payload that fails business-rule validation (e.g., closed Opportunity cannot be re-opened). Distinct from 400 in that the request was well-formed. |
+| 429 Too Many Requests | Rate limit exceeded. Retry-safe after the `Retry-After` interval. |
+| 500 Internal Server Error | Unhandled server-side exception. May be transient; one retry is reasonable. |
+| 503 Service Unavailable | Server temporarily unable to handle the request (overload or maintenance). Retry-safe with backoff. |
 
 When designing a custom Apex REST endpoint, return the narrowest applicable code — never collapse all failures into 500 or 400.
 

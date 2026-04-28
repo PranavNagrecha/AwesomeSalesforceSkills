@@ -37,7 +37,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-15
+updated: 2026-04-28
 ---
 
 # Real-Time vs Batch Integration
@@ -50,10 +50,12 @@ This skill activates when a practitioner must choose between real-time and batch
 
 Gather this context before working on anything in this domain:
 
-- **Volume**: how many records change per hour at peak? Anything above roughly 2,000 records per transaction window is outside Apex callout capacity and requires an async or bulk mechanism.
-- **Latency tolerance**: does the business need sub-second acknowledgement, near-real-time (seconds to minutes), or is a nightly window acceptable?
-- **Transactionality requirement**: synchronous callouts participate in the Salesforce DML transaction and can be rolled back; CDC events and Platform Events are fire-and-forget once published — they cannot be recalled.
-- **Most common wrong assumption**: practitioners frequently treat Platform Events and synchronous Apex callouts as equivalent "real-time" options. They are not — callouts are synchronous and bound by a 120-second timeout and 100 callouts/transaction limit; Platform Events are asynchronous with up to 72-hour replay but no rollback guarantee.
+| Context | What to gather |
+|---|---|
+| Volume | Records changing per hour at peak. Above ~2,000 records per transaction window is outside Apex callout capacity and requires an async or bulk mechanism. |
+| Latency tolerance | Sub-second acknowledgement, near-real-time (seconds to minutes), or nightly window acceptable? |
+| Transactionality requirement | Synchronous callouts participate in the Salesforce DML transaction and can be rolled back; CDC events and Platform Events are fire-and-forget once published. |
+| Most common wrong assumption | Treating Platform Events and synchronous Apex callouts as equivalent "real-time" options — callouts are synchronous (120s timeout, 100/tx limit); Platform Events are async with up to 72-hour replay but no rollback guarantee. |
 
 ---
 

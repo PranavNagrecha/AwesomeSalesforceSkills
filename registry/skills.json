@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 45
   },
-  "generated_from_hash": "7b7feaa48760fb4e792bf334c941539d776089123358aa5111b8ace1d2288c4e",
+  "generated_from_hash": "66b61680b2bdbd0c8d64424b518a30fd284fa44eb05bb2cfbfbd2976663728f9",
   "schema_version": 1,
   "skill_count": 907,
   "skills": [
@@ -96105,7 +96105,7 @@
         "febbe1c80a8aa1d2c0ed",
         "ff2407d7242ac7cab7db"
       ],
-      "content_hash": "8708e6b12bf542460b82ad3613598c7fbe9a519a0ecf97f0d7b63a404138b41c",
+      "content_hash": "e5aa93340b80027cd23613aca6c6966c94aecae6cf8d137577a16809ba10d8a7",
       "dependencies": [
         "retry-and-backoff-patterns",
         "apex-rest-services"
@@ -96157,7 +96157,7 @@
       "templates": [
         "skills/integration/api-error-handling-design/templates/api-error-handling-design-template.md"
       ],
-      "updated": "2026-04-06",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -96492,7 +96492,7 @@
         "e8b5097a13ab316b404b",
         "f963735fe1a5aa346b9f"
       ],
-      "content_hash": "bfdbec8ec0812d49d3218e207287212f45e266171cd9a521e79f027043727e7e",
+      "content_hash": "c5e2023148ace50dfca462204484d2cef9cc99fc1a8d06d9978feb7b3ce5e515",
       "dependencies": [
         "data/bulk-api-patterns",
         "integration/real-time-vs-batch-integration"
@@ -96542,7 +96542,7 @@
       "templates": [
         "skills/integration/bulk-api-2-patterns/templates/bulk-api-2-patterns-template.md"
       ],
-      "updated": "2026-04-16",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -98539,7 +98539,7 @@
         "fa1e5646784e9bcfa7b2",
         "fc6393536de91142fb90"
       ],
-      "content_hash": "e2e9e3f434f6ee44e37a8b182e014b4aa7f6812237c5d1ffcba8e7ae998cc89f",
+      "content_hash": "b224a872e062d2b9e7309be9809dcb49ee99bfa95ce01d19856a26f6ac429811",
       "dependencies": [
         "oauth-flows-and-connected-apps",
         "rest-api-patterns",
@@ -98591,7 +98591,7 @@
       "templates": [
         "skills/integration/mulesoft-salesforce-connector/templates/mulesoft-salesforce-connector-template.md"
       ],
-      "updated": "2026-04-05",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -99682,7 +99682,7 @@
         "fccf601cad61ee8b430c",
         "fee1fcdfd2439398ab3b"
       ],
-      "content_hash": "219968bdefbaffdf71f748a5a296e51f8de53e6ebec59d6224e7d07f9d543d41",
+      "content_hash": "6a4a82333895a793a0a5e48bfe94756c10792200efd9761b0a902f4de9eafdb3",
       "dependencies": [],
       "description": "When to use this skill: choosing between real-time (synchronous callouts, Platform Events, CDC, Pub/Sub API) and batch (Bulk API 2.0, scheduled ETL) integration patterns. Trigger keywords: should I use real-time or batch, how to sync high-volume data, when to use Platform Events vs Bulk API, integration latency vs volume tradeoff. NOT for Batch Apex internals (use batch-apex-patterns), NOT for MuleSoft middleware design (use middleware-integration-patterns), NOT for CDC field tracking configuration.",
       "file_location": "skills/integration/real-time-vs-batch-integration",
@@ -99734,7 +99734,7 @@
       "templates": [
         "skills/integration/real-time-vs-batch-integration/templates/real-time-vs-batch-integration-template.md"
       ],
-      "updated": "2026-04-15",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
@@ -100165,7 +100165,7 @@
         "ef0f31c326b06f8c7515",
         "f0aba0ccff3f5a54bf06"
       ],
-      "content_hash": "58160d234fc2a1892048faa4dca57fab86bc61f7b423ab30ef0d09ca8217e22f",
+      "content_hash": "c900ba3e000bec56ad321c4691f89dfbcef8b95e1df9c5afda3f31af1a116072",
       "dependencies": [],
       "description": "Use this skill when implementing or troubleshooting Salesforce Revenue Lifecycle Management (RLM) \u2014 the native Revenue Cloud product covering order-to-cash lifecycle, Dynamic Revenue Orchestrator (DRO) fulfillment plan design, asset amendments, billing schedule creation via Connect API, and invoice management. Triggers on: Dynamic Revenue Orchestrator, RLM order decomposition, DRO fulfillment swimlanes, native Revenue Cloud billing schedule, asset lifecycle management Salesforce. NOT for CPQ quoting or pricing rules (use cpq-* skills), not for the legacy Salesforce Billing managed package with blng__* objects (different product entirely), not for standard Order objects without Revenue Cloud features.",
       "file_location": "skills/integration/revenue-lifecycle-management",
@@ -100212,7 +100212,7 @@
       "templates": [
         "skills/integration/revenue-lifecycle-management/templates/revenue-lifecycle-management-template.md"
       ],
-      "updated": "2026-04-16",
+      "updated": "2026-04-28",
       "vector_embedding": null,
       "version": "1.0.0"
     },
