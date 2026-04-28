@@ -1,0 +1,53 @@
+eval:
+  id: duplicate-rule-designer__happy-path
+  agent: duplicate-rule-designer
+  mode: single
+  priority: P0
+  last_verified: 2026-04-28
+  description: >
+    Design a Lead block-on-email duplicate rule with integration exemption
+    via Custom Permission. Org has no competing active Matching/Duplicate
+    rules on Lead. Agent should emit a MatchingRule XML stub
+    (MR_Lead_Email), a DuplicateRule XML stub with actionOnInsert=Block /
+    actionOnUpdate=Block, the Bypass_Duplicate_Rule_Lead Custom Permission
+    stub, the Convert/Merge interaction notes, and the test plan from
+    Step 7. Must NOT pretend the rule covers Lead.Convert.
+
+inputs:
+  object_name: Lead
+  target_org_alias: uat-fixture
+  policy: block
+  match_basis: email
+  fuzziness: exact
+  integration_exempt: true
+
+org_stub:
+  org_metadata:
+    org_id: 00Dxxx
+    edition: Enterprise
+    api_version: "63.0"
+    sandbox: true
+    person_accounts_enabled: false
+  matching_rule_hits: []
+  duplicate_rule_hits: []
+  field_definitions:
+    - {object: Lead, field: Email, data_type: Email, length: 80, unique: false, external_id: false}
+  custom_permissions:
+    existing: []
+
+expect:
+  confidence: MEDIUM
+  must_cite_any_of:
+    - { type: skill, id: admin/duplicate-management }
+    - { type: skill, id: data/lead-data-import-and-dedup }
+  process_observations:
+    min_count: 1
+    categories_present_any_of:
+      - healthy
+      - concerning
+      - ambiguous
+      - suggested_followup
+  followups_include_any_of:
+    - permission-set-architect
+    - data-loader-pre-flight
+    - field-impact-analyzer
