@@ -91,7 +91,7 @@
     "fd5022cac51b80e1ef7f",
     "fe589693dc467f9d367f"
   ],
-  "content_hash": "003e53c598c9543950546d9b36b4d08649b2d02d8b5545d91a6c527afc81f4b9",
+  "content_hash": "4df6f2c0a17f28d44b478f9e576660ff6b286d51f46dd62b322886d7570f0081",
   "dependencies": [],
   "description": "Migrating Classic Knowledge (KnowledgeArticleVersion / Article Types) to Lightning Knowledge (Knowledge__kav with record types): article-type-to-record-type mapping, multi-language translation preservation, data category re-architecture, file attachment porting, version and publication-state retention, channel visibility translation, and downstream Case Feed / Community / Bot rewiring. NOT for new Lightning Knowledge setup (use admin/knowledge-base-administration) or for editorial workflow design (use admin/knowledge-publishing-workflow).",
   "file_location": "skills/admin/knowledge-classic-to-lightning",

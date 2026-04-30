@@ -84,7 +84,7 @@
     "fd0dcca6398348245384",
     "fdd6fd6e64925925d35a"
   ],
-  "content_hash": "d65eb1051c8e6d0fb7d1d9b0a32b7ad230c116ec7fdaf445175aad94105852d7",
+  "content_hash": "82fdd04df19d21fb6738e72139335aa6dab37e546e119a1d6ca1db0a7b500b42",
   "dependencies": [],
   "description": "Migrating Classic email templates (Text, HTML with Letterhead, Custom HTML, Visualforce email) to Lightning Email Templates (LET) and the Email Template Builder. Covers merge-field translation, Letterhead-to-Enhanced-Letterhead conversion, Visualforce email retention strategy, folder reorganization, sender-context (OrgWideEmailAddress) preservation, and downstream Email Alert / Process Builder / Flow rewiring. NOT for transactional Apex email sending (use apex/apex-outbound-email-patterns) or marketing email broadcasts (use Marketing Cloud / Account Engagement).",
   "file_location": "skills/admin/classic-email-template-migration",

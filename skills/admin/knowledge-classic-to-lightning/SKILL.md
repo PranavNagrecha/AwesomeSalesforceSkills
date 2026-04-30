@@ -203,16 +203,13 @@ Verify: pre-migration, run "as user X, list visible articles." Post-migration, r
 
 Step-by-step instructions for an AI agent or practitioner working on this task:
 
-1. **Sandbox first — always.** Spin up a Full Copy or Partial sandbox. Never test the Migration Tool's first run in production. Reasons: the Tool changes object model permanently; some changes cannot be reversed without re-disabling Knowledge entirely (which deletes articles).
-2. **Inventory and decision matrix.** Enumerate Article Types, custom fields, data categories, languages, channels, downstream consumers. For each Article Type, decide: keep as own record type, consolidate with another, or drop.
-3. **Pre-process if consolidating fields or types.** Run Apex scripts in Classic to normalize fields BEFORE invoking the Migration Tool. Add unified fields, populate, and validate.
-4. **Run the Migration Tool in sandbox.** Configure mappings carefully — this is the high-cognitive-load step. Submit, monitor.
-5. **Validate exhaustively.** Counts per Article Type → record type. Counts per language. Publication state distribution. Data category visibility (impersonate users). Sample articles open and render correctly.
-6. **Update downstream consumers in sandbox.** Service Console pages, Communities, Einstein Bots, Apex code. Test end-to-end (Case Feed shows articles; Community search returns expected results).
-7. **Sign off and replicate in production.** Run the Migration Tool with identical configuration. Validate identically.
-8. **Phased channel cutover (Pattern 4).** Internal → Communities → Public, with stability windows between each.
-9. **Post-cutover audit.** After 30 days, run a last-known-good comparison: same article query in Lightning matches the pre-migration Classic baseline (article count per category, per language, per channel).
-10. **Decommission Classic Article Types.** After signoff, decide retain (read-only audit) or drop. Dropping requires disabling Classic Knowledge cohorts which is irreversible — be deliberate.
+1. **Sandbox-first inventory and decision matrix.** Spin up a Full Copy or Partial sandbox (production enablement is irreversible without article deletion). Enumerate Article Types, custom fields, data categories, languages, channels, downstream consumers. For each Article Type, decide: keep as own record type, consolidate with another, or drop.
+2. **Pre-process if consolidating fields or types.** Run Apex scripts in Classic to normalize fields BEFORE invoking the Migration Tool. Add unified fields, populate, and validate.
+3. **Run the Migration Tool in sandbox.** Configure mappings carefully — this is the high-cognitive-load step. Submit, monitor via the Migration Tool log.
+4. **Validate exhaustively.** Counts per Article Type → record type. Counts per language. Publication state distribution. Data category visibility (impersonate users via `System.runAs`). Sample articles open and render correctly.
+5. **Update downstream consumers in sandbox.** Service Console pages, Communities, Einstein Bots, Apex code. Test end-to-end (Case Feed shows articles; Community search returns expected results).
+6. **Sign off; replicate in production with phased channel cutover.** Run the Migration Tool with identical configuration in production. Cut over channels Internal → Communities → Public Knowledge Base with stability windows between each — never simultaneously.
+7. **Post-cutover audit and decommission.** After a 30-day soak, run a last-known-good comparison (article count per category, per language, per channel matches the pre-migration baseline). Then decide retain (read-only audit) or drop the Classic Article Types — dropping is irreversible, so be deliberate.
 
 ---
 

@@ -3,6 +3,7 @@
   "chunk_ids": [
     "06fafd3311c66d278720",
     "074a5793f860da491f55",
+    "0a1ab2b68bdf64fb0590",
     "0a3442897af2e8780032",
     "0a9370209c167aa6c835",
     "0cb27850bca844a271cc",
@@ -83,13 +84,14 @@
     "e44f6003a7b55f1a181e",
     "e6f34993e8f872adbc8a",
     "e9cc5d3e28247ec9aa15",
+    "eaca8d4016ccd1ae3e6e",
     "eb1af6fd83d6663f9da8",
     "eb98ec4042fa4b899baa",
     "eec36815402697798505",
     "f2bd3097e57dab973277",
     "f8f0a75a3c2937f025ea"
   ],
-  "content_hash": "365cc1d1f041cf60d6018229aa5609c6e6844797e8ace25cd2a5ba39cdad13f2",
+  "content_hash": "d6d53a69ec6de265574558f0f75327c206f0fa9eb695be45924af2dc40cedb95",
   "dependencies": [],
   "description": "Migrating Classic Notes & Attachments to Salesforce Files (ContentDocument / ContentVersion / ContentDocumentLink): bulk extraction, owner and parent preservation, sharing translation, idempotent re-runs, and post-migration cleanup. Triggers: 'attachments to files', 'notes and attachments migration', 'ContentDocument from Attachment', 'enable Files for Salesforce'. NOT for general file storage strategy (use data/file-and-document-integration) or for ContentVersion API patterns in new code (use integration/file-and-document-integration).",
   "file_location": "skills/data/attachment-to-files-migration",

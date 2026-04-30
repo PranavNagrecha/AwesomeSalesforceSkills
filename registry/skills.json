@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 45
   },
-  "generated_from_hash": "1de4a3cc20fcb0869f507547f736720ab4a2ba7e25b5548a17588238052e83c9",
+  "generated_from_hash": "fbab4df0e54759c4bfc0f540c786d44896202f1388f22abe2df1fe22dc8e3e1d",
   "schema_version": 1,
   "skill_count": 913,
   "skills": [
@@ -4764,7 +4764,7 @@
         "fd0dcca6398348245384",
         "fdd6fd6e64925925d35a"
       ],
-      "content_hash": "d65eb1051c8e6d0fb7d1d9b0a32b7ad230c116ec7fdaf445175aad94105852d7",
+      "content_hash": "82fdd04df19d21fb6738e72139335aa6dab37e546e119a1d6ca1db0a7b500b42",
       "dependencies": [],
       "description": "Migrating Classic email templates (Text, HTML with Letterhead, Custom HTML, Visualforce email) to Lightning Email Templates (LET) and the Email Template Builder. Covers merge-field translation, Letterhead-to-Enhanced-Letterhead conversion, Visualforce email retention strategy, folder reorganization, sender-context (OrgWideEmailAddress) preservation, and downstream Email Alert / Process Builder / Flow rewiring. NOT for transactional Apex email sending (use apex/apex-outbound-email-patterns) or marketing email broadcasts (use Marketing Cloud / Account Engagement).",
       "file_location": "skills/admin/classic-email-template-migration",
@@ -8362,7 +8362,7 @@
         "fe3c25ab1b3347149a9e",
         "fe70f5d06aa93ac23e82"
       ],
-      "content_hash": "d1941521694f728047381d236cf381e23bd2bb522ce503a18afbd1f242412fff",
+      "content_hash": "aa9d48ea7d633f58d9f38f9bd7052d470c2e9c90fe0774542303c201d2e923ab",
       "dependencies": [],
       "description": "Migrating Classic Custom Buttons (Detail Page Buttons, List Buttons, Mass Action Buttons) and JavaScript Buttons to Lightning Quick Actions, Screen Flow Actions, LWC Quick Actions, and headless Quick Actions. Covers JavaScript-button-to-action translation patterns (sforce.apex.execute \u2192 Apex action, navigation alerts \u2192 toast events, MassAction.update \u2192 record-collection processing), URL button translation, and the irreversible loss of Classic JavaScript button capability in Lightning. NOT for new Quick Action design (use admin/quick-actions-and-flow-actions) or Lightning record page composition (use admin/lightning-app-builder-advanced).",
       "file_location": "skills/admin/custom-button-to-action-migration",
@@ -11293,7 +11293,7 @@
         "f9e03d21cff1766eedf0",
         "fee652979b181f30b691"
       ],
-      "content_hash": "29920f41b55bceaf23deab7120dd9ef8c2bddf9ab943407accfd1189768666e6",
+      "content_hash": "4db729c93652c03170bf3b0458a98e70dba1c444ed7bb42e8e436478508e18e0",
       "dependencies": [],
       "description": "Migrating standard Lightning Record Page layouts (Page Layouts on the Record Detail component) to Dynamic Forms \u2014 converting fields and sections to component-level placement, replacing record-type-driven layouts with field-visibility filters, retaining or replacing Quick Action layouts, planning custom-object vs standard-object rollout, and verifying field-level security and Reading View parity. NOT for Dynamic Forms initial setup (use admin/dynamic-forms-and-actions) or Lightning Record Page design from scratch (use admin/lightning-app-builder-advanced).",
       "file_location": "skills/admin/dynamic-forms-migration",
@@ -19686,7 +19686,7 @@
         "fd5022cac51b80e1ef7f",
         "fe589693dc467f9d367f"
       ],
-      "content_hash": "003e53c598c9543950546d9b36b4d08649b2d02d8b5545d91a6c527afc81f4b9",
+      "content_hash": "4df6f2c0a17f28d44b478f9e576660ff6b286d51f46dd62b322886d7570f0081",
       "dependencies": [],
       "description": "Migrating Classic Knowledge (KnowledgeArticleVersion / Article Types) to Lightning Knowledge (Knowledge__kav with record types): article-type-to-record-type mapping, multi-language translation preservation, data category re-architecture, file attachment porting, version and publication-state retention, channel visibility translation, and downstream Case Feed / Community / Bot rewiring. NOT for new Lightning Knowledge setup (use admin/knowledge-base-administration) or for editorial workflow design (use admin/knowledge-publishing-workflow).",
       "file_location": "skills/admin/knowledge-classic-to-lightning",
@@ -70431,6 +70431,7 @@
       "chunk_ids": [
         "06fafd3311c66d278720",
         "074a5793f860da491f55",
+        "0a1ab2b68bdf64fb0590",
         "0a3442897af2e8780032",
         "0a9370209c167aa6c835",
         "0cb27850bca844a271cc",
@@ -70511,13 +70512,14 @@
         "e44f6003a7b55f1a181e",
         "e6f34993e8f872adbc8a",
         "e9cc5d3e28247ec9aa15",
+        "eaca8d4016ccd1ae3e6e",
         "eb1af6fd83d6663f9da8",
         "eb98ec4042fa4b899baa",
         "eec36815402697798505",
         "f2bd3097e57dab973277",
         "f8f0a75a3c2937f025ea"
       ],
-      "content_hash": "365cc1d1f041cf60d6018229aa5609c6e6844797e8ace25cd2a5ba39cdad13f2",
+      "content_hash": "d6d53a69ec6de265574558f0f75327c206f0fa9eb695be45924af2dc40cedb95",
       "dependencies": [],
       "description": "Migrating Classic Notes & Attachments to Salesforce Files (ContentDocument / ContentVersion / ContentDocumentLink): bulk extraction, owner and parent preservation, sharing translation, idempotent re-runs, and post-migration cleanup. Triggers: 'attachments to files', 'notes and attachments migration', 'ContentDocument from Attachment', 'enable Files for Salesforce'. NOT for general file storage strategy (use data/file-and-document-integration) or for ContentVersion API patterns in new code (use integration/file-and-document-integration).",
       "file_location": "skills/data/attachment-to-files-migration",

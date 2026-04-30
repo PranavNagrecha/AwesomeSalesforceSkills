@@ -197,16 +197,13 @@ FLS is the security layer. Dynamic Forms visibility is a UX layer on top. Hiding
 
 Step-by-step instructions for an AI agent or practitioner working on this task:
 
-1. **Inventory page layouts and assignments.** For the target object: list all Page Layouts, all Record Type assignments, all profile assignments, all Lightning Record Page assignments. Identify the dominant layout (most-assigned) — this becomes the conversion source.
-2. **Audit Field-Level Security.** Pre-migration, run a per-profile FLS report. Note any fields where FLS doesn't match what users actually see (rare but exists). Fix FLS to match expected access BEFORE adding Dynamic Forms visibility rules.
-3. **Convert via "Upgrade Now" in sandbox.** Open the Lightning Record Page; click Record Detail → "Upgrade Now." The auto-generated components mirror the source Page Layout's structure.
-4. **Add visibility rules for record-type and profile differentiation.** Replace the per-record-type / per-profile page layouts with visibility filters. Prefer Custom Permissions over profile-name strings.
-5. **Compose with non-field components.** Dynamic Forms is not just about fields — interleave related lists, custom LWCs, Quick Actions, and Path components in the same canvas to create a richer record page.
-6. **Test exhaustively in sandbox.** Open sample records of each record type. Impersonate each affected profile (`Setup → Users → Login as User`). Verify field visibility matches expectations. Test on mobile.
-7. **Activate in sandbox; collect user feedback.** Run a 1–2 week sandbox preview with selected users before production cutover.
-8. **Production rollout.** Activate the Dynamic Forms record page in production. Keep the original Page Layouts in place initially (they govern Classic users and any record pages NOT using Dynamic Forms).
-9. **Decommission original Page Layouts (selectively).** After sign-off, the original Page Layouts can be retired IF they're no longer assigned to any active surface. Keep at least one minimal layout per object — Salesforce requires it for Quick Actions, Print View, and Classic.
-10. **Document the architecture.** Per-component visibility rules and the underlying field-permission model are not self-documenting. Maintain a runbook of "field X visible when Y" per object.
+1. **Inventory page layouts and audit FLS.** List all Page Layouts, Record Type assignments, profile assignments, and Lightning Record Page assignments for the target object — identify the dominant layout (becomes conversion source). Run a per-profile FLS report; fix discrepancies BEFORE adding Dynamic Forms visibility rules so the data layer is correct first.
+2. **Convert via "Upgrade Now" in sandbox.** Open the Lightning Record Page; click Record Detail → "Upgrade Now." The auto-generated components mirror the source Page Layout's structure.
+3. **Add visibility rules for record-type and profile differentiation.** Replace the per-record-type / per-profile page layouts with visibility filters. Prefer Custom Permissions over profile-name strings.
+4. **Compose with non-field components.** Dynamic Forms is not just about fields — interleave related lists, custom LWCs, Quick Actions, and Path components in the same canvas to create a richer record page.
+5. **Test exhaustively and run a user preview.** Impersonate each affected profile per record type (`Setup → Users → Login as User`); verify field visibility on desktop and on real mobile devices. Activate in sandbox and run a 1–2 week preview with selected users.
+6. **Production rollout.** Activate the Dynamic Forms record page in production. Keep at least one minimal Page Layout per object — Salesforce requires it for Quick Actions, Print View, and Classic users.
+7. **Decommission selectively and document.** Retire only Page Layouts no longer assigned to any active surface. Maintain a per-component runbook ("field X visible when Y") in source — visibility rules are not self-documenting.
 
 ---
 

@@ -94,7 +94,7 @@
     "f9e03d21cff1766eedf0",
     "fee652979b181f30b691"
   ],
-  "content_hash": "29920f41b55bceaf23deab7120dd9ef8c2bddf9ab943407accfd1189768666e6",
+  "content_hash": "4db729c93652c03170bf3b0458a98e70dba1c444ed7bb42e8e436478508e18e0",
   "dependencies": [],
   "description": "Migrating standard Lightning Record Page layouts (Page Layouts on the Record Detail component) to Dynamic Forms \u2014 converting fields and sections to component-level placement, replacing record-type-driven layouts with field-visibility filters, retaining or replacing Quick Action layouts, planning custom-object vs standard-object rollout, and verifying field-level security and Reading View parity. NOT for Dynamic Forms initial setup (use admin/dynamic-forms-and-actions) or Lightning Record Page design from scratch (use admin/lightning-app-builder-advanced).",
   "file_location": "skills/admin/dynamic-forms-migration",
