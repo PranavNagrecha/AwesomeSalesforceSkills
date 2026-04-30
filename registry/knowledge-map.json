@@ -373,6 +373,7 @@
       "apex/feature-flags-and-kill-switches",
       "apex/fflib-enterprise-patterns",
       "apex/fhir-integration-patterns",
+      "apex/field-level-security-in-async-contexts",
       "apex/formula-field-performance-and-limits",
       "apex/fsc-apex-extensions",
       "apex/fsc-compliant-sharing-api",
@@ -737,6 +738,7 @@
       "flow/pause-elements-and-wait-events",
       "flow/process-builder-to-flow-migration",
       "flow/record-triggered-flow-patterns",
+      "flow/recursion-and-re-entry-prevention",
       "flow/scheduled-flows",
       "flow/screen-flow-accessibility",
       "flow/screen-flows",
@@ -1795,6 +1797,7 @@
       "apex/apex-with-without-sharing-decision",
       "apex/commerce-payment-integration",
       "apex/custom-iterators-and-iterables",
+      "apex/field-level-security-in-async-contexts",
       "apex/fsc-apex-extensions",
       "apex/fsl-apex-extensions",
       "apex/fsl-scheduling-api",
@@ -2194,6 +2197,7 @@
       "admin/scheduled-path-patterns",
       "apex/apex-batch-chaining",
       "apex/apex-future-method-patterns",
+      "apex/field-level-security-in-async-contexts",
       "data/bulk-api-and-large-data-loads",
       "data/bulk-api-patterns",
       "flow/flow-and-platform-events",
@@ -2473,6 +2477,7 @@
       "apex/apex-encoding-and-crypto"
     ],
     "batch": [
+      "apex/field-level-security-in-async-contexts",
       "apex/governor-limits",
       "data/bulk-api-and-large-data-loads",
       "flow/flow-batch-processing-alternatives",
@@ -2765,6 +2770,7 @@
       "flow/flow-cross-object-updates",
       "flow/flow-invocable-from-apex",
       "flow/flow-loop-element-patterns",
+      "flow/recursion-and-re-entry-prevention",
       "omnistudio/dataraptor-transform-optimization"
     ],
     "bundle-design": [
@@ -6122,7 +6128,8 @@
       "admin/data-model-documentation"
     ],
     "field-level-security": [
-      "admin/custom-field-creation"
+      "admin/custom-field-creation",
+      "apex/field-level-security-in-async-contexts"
     ],
     "field-metadata": [
       "security/data-classification-labels"
@@ -6341,6 +6348,7 @@
       "flow/flow-transaction-finalizer-patterns",
       "flow/flow-transactional-boundaries",
       "flow/flow-versioning-strategy",
+      "flow/recursion-and-re-entry-prevention",
       "flow/screen-flow-accessibility",
       "omnistudio/omnistudio-vs-flow-decision"
     ],
@@ -7325,6 +7333,9 @@
     ],
     "infinite-loading": [
       "lwc/lwc-data-table"
+    ],
+    "infinite-loop": [
+      "flow/recursion-and-re-entry-prevention"
     ],
     "informatica": [
       "data/etl-vs-api-data-patterns",
@@ -10490,6 +10501,7 @@
       "apex/apex-queueable-patterns",
       "apex/apex-transaction-finalizers",
       "apex/async-apex",
+      "apex/field-level-security-in-async-contexts",
       "apex/governor-limits",
       "apex/long-running-process-orchestration",
       "integration/callout-limits-and-async-patterns"
@@ -10606,6 +10618,9 @@
     "rating": [
       "admin/usage-based-pricing-setup"
     ],
+    "re-entry": [
+      "flow/recursion-and-re-entry-prevention"
+    ],
     "reactive": [
       "flow/flow-reactive-screen-components"
     ],
@@ -10696,6 +10711,7 @@
       "flow/flow-debugging",
       "flow/process-builder-to-flow-migration",
       "flow/record-triggered-flow-patterns",
+      "flow/recursion-and-re-entry-prevention",
       "flow/workflow-rule-to-flow-migration"
     ],
     "record-type": [
@@ -10729,7 +10745,8 @@
       "apex/order-of-execution-deep-dive",
       "apex/trigger-and-flow-coexistence",
       "apex/trigger-framework",
-      "flow/record-triggered-flow-patterns"
+      "flow/record-triggered-flow-patterns",
+      "flow/recursion-and-re-entry-prevention"
     ],
     "recursion-guard": [
       "apex/recursive-trigger-prevention"
@@ -11452,7 +11469,8 @@
     ],
     "schedulable": [
       "apex/apex-scheduled-jobs",
-      "apex/async-apex"
+      "apex/async-apex",
+      "apex/field-level-security-in-async-contexts"
     ],
     "schedule-triggered": [
       "flow/scheduled-flows"
@@ -11631,6 +11649,7 @@
       "apex/apex-secrets-and-protected-cmdt",
       "apex/apex-stripinaccessible-and-fls-enforcement",
       "apex/apex-with-without-sharing-decision",
+      "apex/field-level-security-in-async-contexts",
       "apex/soql-security",
       "architect/analytics-security-architecture",
       "architect/security-architecture-review",

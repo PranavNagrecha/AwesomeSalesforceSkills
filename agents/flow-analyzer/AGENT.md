@@ -55,6 +55,7 @@ dependencies:
     - flow/flow-transaction-finalizer-patterns
     - flow/flow-transactional-boundaries
     - flow/flow-versioning-strategy
+    - flow/recursion-and-re-entry-prevention
     - flow/screen-flow-accessibility
   shared:
     - AGENT_CONTRACT.md
@@ -140,6 +141,7 @@ For a given Flow or sObject, decides whether the automation is in the right tool
 48. `agents/_shared/probes/automation-graph-for-sobject.md` — analyzer also runs the automation-graph probe to detect coexistence
 49. `agents/_shared/probes/flow-references-to-field.md` — used to map flow → field references in cross-object audits
 50. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+51. `skills/flow/recursion-and-re-entry-prevention` — Diagnose Flow loops via state-guard, hash, or lock pattern; tighten over-broad entry criteria
 
 ---
 

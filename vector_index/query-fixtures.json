@@ -6797,6 +6797,42 @@
       "domain": "apex",
       "expected_skill": "apex/soql-null-ordering-patterns",
       "top_k": 3
+    },
+    {
+      "query": "fls bypassed in batch apex queueable scheduled execute",
+      "domain": "apex",
+      "expected_skill": "apex/field-level-security-in-async-contexts",
+      "top_k": 3
+    },
+    {
+      "query": "WITH USER_MODE evaluating against wrong user in async",
+      "domain": "apex",
+      "expected_skill": "apex/field-level-security-in-async-contexts",
+      "top_k": 3
+    },
+    {
+      "query": "platform event subscriber automated process FLS",
+      "domain": "apex",
+      "expected_skill": "apex/field-level-security-in-async-contexts",
+      "top_k": 3
+    },
+    {
+      "query": "flow infinite loop record triggered self update recursion",
+      "domain": "flow",
+      "expected_skill": "flow/recursion-and-re-entry-prevention",
+      "top_k": 3
+    },
+    {
+      "query": "maximum trigger depth exceeded record triggered flow",
+      "domain": "flow",
+      "expected_skill": "flow/recursion-and-re-entry-prevention",
+      "top_k": 3
+    },
+    {
+      "query": "flow A flow B mutually triggering each other cascade",
+      "domain": "flow",
+      "expected_skill": "flow/recursion-and-re-entry-prevention",
+      "top_k": 3
     }
   ]
 }
