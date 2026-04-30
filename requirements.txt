@@ -1,2 +1,13 @@
 PyYAML>=6.0,<7.0
 jsonschema>=4.0,<5.0
+
+# Optional — only needed when config/retrieval-config.yaml has
+# `backend: fastembed`. pipelines/embedding_backends.py imports fastembed
+# lazily, so the package is unused when the default `hash` backend is set.
+# Install with:
+#   python3 -m pip install --break-system-packages 'fastembed>=0.4,<1.0'
+# Heads-up before enabling: per-query latency goes from <1s to ~5-6s
+# (model + index reload on every search_knowledge.py invocation), and the
+# initial encode of the full corpus takes ~3h on CPU. See
+# config/retrieval-config.yaml for the full enable checklist.
+# fastembed>=0.4,<1.0
