@@ -16,6 +16,7 @@ even opens.
 | [`async-selection.md`](./async-selection.md) | `@future`, Queueable, Batch, Schedulable, Platform Events, Scheduled Flow | Any skill in `apex/async-*`, `apex/batch-*`, `apex/queueable-*`, `apex/scheduled-*` |
 | [`integration-pattern-selection.md`](./integration-pattern-selection.md) | REST, Bulk API, Platform Events, CDC, Pub/Sub, Salesforce Connect, Named Credentials, MuleSoft | Any skill in `integration/` |
 | [`sharing-selection.md`](./sharing-selection.md) | OWD, Role Hierarchy, Sharing Rules, Teams, Manual, Apex Managed, Restriction, Scoping | Any skill in `security/*sharing*`, `apex/apex-managed-sharing`, or when designing a new object's access model |
+| [`performance-tuning.md`](./performance-tuning.md) | Apex CPU/heap, SOQL/index, sharing recalc, LDV, LWC render, Experience Cloud, OmniStudio, Platform Cache | Any "slow", "timeout", "limit hit" symptom — and any `*performance*` / `*optimization*` skill in `apex/`, `data/`, `lwc/`, `omnistudio/`, or `architect/` |
 
 ## How decision trees fit into the agent workflow
 
