@@ -2,7 +2,7 @@
 
 This is the authoring reference for the run-time agent roster. Every skill id listed below has been verified to exist in `skills/<domain>/<slug>/SKILL.md` at the time of writing. When adding a new agent, cite only skills from this map (or verify a new citation before committing).
 
-The existing 11 run-time agents are documented in their own `AGENT.md`. This file focuses on the 28 admin-land agents shipped in Waves A–C.
+All 56 active run-time agents are documented in their own `AGENT.md`. This file maps every agent to the skills, templates, and decision trees it depends on.
 
 ## Harnesses (Wave 3)
 
