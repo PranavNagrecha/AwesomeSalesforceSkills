@@ -75,6 +75,7 @@ dependencies:
     - apex/error-handling-framework
     - apex/exception-handling
     - apex/feature-flags-and-kill-switches
+    - apex/field-level-security-in-async-contexts
     - apex/governor-limit-recovery-patterns
     - apex/governor-limits
     - apex/invocable-methods
@@ -159,100 +160,101 @@ Produces Apex scaffolds for every canonical Apex surface: trigger + handler, ser
 18. `skills/apex/apex-scheduled-jobs`
 19. `skills/apex/apex-transaction-finalizers` — Queueable post-commit / dead-letter hooks
 20. `standards/decision-trees/async-selection.md`
+21. `skills/apex/field-level-security-in-async-contexts` — FLS evaluation in Queueable/Batch/Schedulable runs as the running user, not the originating user — capture and assert
 
 ### Bulk APIs (REST / SOAP / Continuation / events)
-21. `skills/apex/apex-rest-services`
-22. `skills/apex/apex-named-credentials-patterns`
-23. `skills/apex/apex-callout-retry-and-resilience` — retry, circuit-breaker, idempotency-key
-24. `skills/apex/callouts-and-http-integrations`
-25. `skills/apex/callout-and-dml-transaction-boundaries`
-26. `skills/apex/continuation-callouts`
-27. `skills/apex/apex-http-callout-mocking`
-28. `skills/apex/invocable-methods`
-29. `skills/apex/apex-flow-invocation-from-apex`
-30. `skills/apex/apex-callable-interface`
-31. `skills/apex/platform-events-apex`
-32. `skills/apex/change-data-capture-apex`
-33. `skills/integration/platform-event-schema-evolution` — evolve event fields without breaking subscribers
+22. `skills/apex/apex-rest-services`
+23. `skills/apex/apex-named-credentials-patterns`
+24. `skills/apex/apex-callout-retry-and-resilience` — retry, circuit-breaker, idempotency-key
+25. `skills/apex/callouts-and-http-integrations`
+26. `skills/apex/callout-and-dml-transaction-boundaries`
+27. `skills/apex/continuation-callouts`
+28. `skills/apex/apex-http-callout-mocking`
+29. `skills/apex/invocable-methods`
+30. `skills/apex/apex-flow-invocation-from-apex`
+31. `skills/apex/apex-callable-interface`
+32. `skills/apex/platform-events-apex`
+33. `skills/apex/change-data-capture-apex`
+34. `skills/integration/platform-event-schema-evolution` — evolve event fields without breaking subscribers
 
 ### SOQL / data access
-34. `skills/apex/soql-fundamentals`
-35. `skills/apex/soql-security`
-36. `skills/apex/apex-soql-relationship-queries`
-37. `skills/apex/apex-aggregate-queries`
-38. `skills/apex/apex-polymorphic-soql`
-39. `skills/apex/dynamic-apex`
-40. `skills/apex/apex-dynamic-soql-binding-safety` — bind-safe Database.queryWithBinds
-41. `skills/apex/apex-collections-patterns`
+35. `skills/apex/soql-fundamentals`
+36. `skills/apex/soql-security`
+37. `skills/apex/apex-soql-relationship-queries`
+38. `skills/apex/apex-aggregate-queries`
+39. `skills/apex/apex-polymorphic-soql`
+40. `skills/apex/dynamic-apex`
+41. `skills/apex/apex-dynamic-soql-binding-safety` — bind-safe Database.queryWithBinds
+42. `skills/apex/apex-collections-patterns`
 
 ### DML / transactions / locking
-42. `skills/apex/apex-dml-patterns`
-43. `skills/apex/apex-savepoint-and-rollback`
-44. `skills/apex/mixed-dml-and-setup-objects`
-45. `skills/apex/record-locking-and-contention`
+43. `skills/apex/apex-dml-patterns`
+44. `skills/apex/apex-savepoint-and-rollback`
+45. `skills/apex/mixed-dml-and-setup-objects`
+46. `skills/apex/record-locking-and-contention`
 
 ### Governor limits / performance
-46. `skills/apex/governor-limits`
-47. `skills/apex/governor-limit-recovery-patterns`
-48. `skills/apex/apex-cpu-and-heap-optimization`
-49. `skills/apex/apex-limits-monitoring`
-50. `skills/apex/platform-cache`
+47. `skills/apex/governor-limits`
+48. `skills/apex/governor-limit-recovery-patterns`
+49. `skills/apex/apex-cpu-and-heap-optimization`
+50. `skills/apex/apex-limits-monitoring`
+51. `skills/apex/platform-cache`
 
 ### Security
-51. `skills/apex/apex-security-patterns`
-52. `skills/apex/apex-with-without-sharing-decision` — keyword choice rationale
-53. `skills/apex/apex-stripinaccessible-and-fls-enforcement`
-54. `skills/apex/apex-user-and-permission-checks`
-55. `skills/apex/apex-custom-permissions-check`
-56. `skills/apex/apex-managed-sharing`
-57. `skills/apex/apex-system-runas`
-58. `skills/apex/apex-secrets-and-protected-cmdt`
-59. `skills/apex/apex-encoding-and-crypto`
-60. `skills/apex/apex-hardcoded-id-elimination` — eliminate Profile / RecordType / Group ID literals
-61. `skills/apex/apex-salesforce-id-patterns`
-62. `standards/decision-trees/sharing-selection.md`
+52. `skills/apex/apex-security-patterns`
+53. `skills/apex/apex-with-without-sharing-decision` — keyword choice rationale
+54. `skills/apex/apex-stripinaccessible-and-fls-enforcement`
+55. `skills/apex/apex-user-and-permission-checks`
+56. `skills/apex/apex-custom-permissions-check`
+57. `skills/apex/apex-managed-sharing`
+58. `skills/apex/apex-system-runas`
+59. `skills/apex/apex-secrets-and-protected-cmdt`
+60. `skills/apex/apex-encoding-and-crypto`
+61. `skills/apex/apex-hardcoded-id-elimination` — eliminate Profile / RecordType / Group ID literals
+62. `skills/apex/apex-salesforce-id-patterns`
+63. `standards/decision-trees/sharing-selection.md`
 
 ### Error handling / observability
-63. `skills/apex/error-handling-framework`
-64. `skills/apex/exception-handling`
-65. `skills/apex/common-apex-runtime-errors`
-66. `skills/apex/custom-logging-and-monitoring`
-67. `skills/apex/salesforce-debug-log-analysis`
+64. `skills/apex/error-handling-framework`
+65. `skills/apex/exception-handling`
+66. `skills/apex/common-apex-runtime-errors`
+67. `skills/apex/custom-logging-and-monitoring`
+68. `skills/apex/salesforce-debug-log-analysis`
 
 ### Utilities, I/O, lifecycle
-68. `skills/apex/apex-blob-and-content-version`
-69. `skills/apex/apex-json-serialization`
-70. `skills/apex/apex-regex-and-pattern-matching`
-71. `skills/apex/apex-custom-settings-hierarchy`
-72. `skills/apex/custom-metadata-in-apex`
-73. `skills/apex/feature-flags-and-kill-switches`
-74. `skills/apex/timezone-and-datetime-pitfalls`
-75. `skills/apex/apex-custom-notifications-from-apex`
-76. `skills/apex/apex-connect-api-chatter`
-77. `skills/apex/apex-email-services`
-78. `skills/apex/custom-iterators-and-iterables`
-79. `skills/apex/apex-execute-anonymous`
+69. `skills/apex/apex-blob-and-content-version`
+70. `skills/apex/apex-json-serialization`
+71. `skills/apex/apex-regex-and-pattern-matching`
+72. `skills/apex/apex-custom-settings-hierarchy`
+73. `skills/apex/custom-metadata-in-apex`
+74. `skills/apex/feature-flags-and-kill-switches`
+75. `skills/apex/timezone-and-datetime-pitfalls`
+76. `skills/apex/apex-custom-notifications-from-apex`
+77. `skills/apex/apex-connect-api-chatter`
+78. `skills/apex/apex-email-services`
+79. `skills/apex/custom-iterators-and-iterables`
+80. `skills/apex/apex-execute-anonymous`
 
 ### Testing
-80. `skills/apex/test-class-standards`
-81. `skills/apex/test-data-factory-patterns`
-82. `skills/apex/apex-test-setup-patterns`
-83. `skills/apex/apex-mocking-and-stubs`
+81. `skills/apex/test-class-standards`
+82. `skills/apex/test-data-factory-patterns`
+83. `skills/apex/apex-test-setup-patterns`
+84. `skills/apex/apex-mocking-and-stubs`
 
 ### Templates (canonical building blocks)
-84. `templates/apex/TriggerHandler.cls`
-85. `templates/apex/TriggerControl.cls`
-86. `templates/apex/BaseService.cls`
-87. `templates/apex/BaseSelector.cls`
-88. `templates/apex/BaseDomain.cls`
-89. `templates/apex/ApplicationLogger.cls`
-90. `templates/apex/SecurityUtils.cls`
-91. `templates/apex/HttpClient.cls`
-92. `templates/apex/tests/TestDataFactory.cls`
-93. `templates/apex/tests/TestRecordBuilder.cls`
-94. `templates/apex/tests/MockHttpResponseGenerator.cls`
-95. `templates/apex/tests/TestUserFactory.cls`
-96. `templates/apex/tests/BulkTestPattern.cls`
+85. `templates/apex/TriggerHandler.cls`
+86. `templates/apex/TriggerControl.cls`
+87. `templates/apex/BaseService.cls`
+88. `templates/apex/BaseSelector.cls`
+89. `templates/apex/BaseDomain.cls`
+90. `templates/apex/ApplicationLogger.cls`
+91. `templates/apex/SecurityUtils.cls`
+92. `templates/apex/HttpClient.cls`
+93. `templates/apex/tests/TestDataFactory.cls`
+94. `templates/apex/tests/TestRecordBuilder.cls`
+95. `templates/apex/tests/MockHttpResponseGenerator.cls`
+96. `templates/apex/tests/TestUserFactory.cls`
+97. `templates/apex/tests/BulkTestPattern.cls`
 
 ---
 

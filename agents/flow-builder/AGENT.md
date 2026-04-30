@@ -63,6 +63,7 @@ dependencies:
     - flow/flow-versioning-strategy
     - flow/orchestration-flows
     - flow/record-triggered-flow-patterns
+    - flow/recursion-and-re-entry-prevention
     - flow/scheduled-flows
     - flow/screen-flow-accessibility
     - flow/screen-flows
@@ -170,6 +171,7 @@ Given a business requirement, designs the correct Flow: Flow type (record-trigge
 59. `agents/_shared/REFUSAL_CODES.md` — canonical refusal codes used in the Escalation section
 60. `agents/_shared/probes/flow-references-to-field.md` — when the design touches a field that may already be referenced by other flows (blast-radius preflight)
 61. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+62. `skills/flow/recursion-and-re-entry-prevention` — Record-triggered Flow recursion guards: state-tracking field, hash idempotency, or shared lock — not Apex static flags
 
 ---
 
