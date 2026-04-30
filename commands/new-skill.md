@@ -84,9 +84,28 @@ python3 scripts/validate_repo.py
 
 All fixture queries must pass retrieval. Skills without a fixture produce a WARN that fails CI.
 
+### Step 6 — Wire the skill into the run-time agents that need it
+
+Decide which run-time agents should cite this skill. A skill that no agent reads is only available to humans + lexical search. Read `agents/_shared/SKILL_MAP.md` and `agents/_shared/RUNTIME_VS_BUILD.md` to pick targets — usually 1–3 agents, rarely more.
+
+Then patch each:
+
+```bash
+python3 scripts/patch_agent_skill.py <agent-id> <domain>/<skill-name> "<section-heading>" "<short description>"
+```
+
+The helper updates both the agent's YAML `dependencies.skills:` and its `## Mandatory Reads Before Starting` section, renumbering the bullet list correctly. Use `*end*` as the section heading when the agent's Mandatory Reads is a flat numbered list (no `### subsection` headings).
+
+If the target agent has an entry in `agents/_shared/SKILL_MAP.md` (Wave A/B/C agents), add the skill to that entry too.
+
+Skills authored as pure human reference (rare) may opt out by setting `runtime_orphan: true` in frontmatter — everything else is expected to be cited by at least one agent. `validate_repo.py` emits a WARN for orphan skills.
+
 ## Quality Gate
 
-A skill is not complete unless `python3 scripts/validate_repo.py` exits 0 with no errors.
+A skill is not complete unless:
+
+- `python3 scripts/validate_repo.py` exits 0 with no errors.
+- The skill is cited by at least one run-time agent (or marked `runtime_orphan: true`).
 
 ## Agent
 

@@ -24,6 +24,7 @@ dependencies:
     - devops/pipeline-secrets-management
     - devops/pr-policy-templates
     - devops/release-management
+    - devops/release-notes-automation
     - devops/second-generation-managed-packages
     - devops/sfdx-hardis-integration
     - devops/sfdx-monorepo-patterns
@@ -69,6 +70,7 @@ Plans a Salesforce release train: branch model, package strategy (unlocked vs 2G
 14. `skills/devops/pr-policy-templates` — CODEOWNERS + branch protection
 15. `skills/devops/devops-center-advanced` — DOC hybrid workflow
 16. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+17. `skills/devops/release-notes-automation` — auto-generated release notes per cadence
 
 ---
 

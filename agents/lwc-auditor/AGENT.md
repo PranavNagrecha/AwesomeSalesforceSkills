@@ -18,12 +18,14 @@ dependencies:
     - lwc/common-lwc-runtime-errors
     - lwc/component-communication
     - lwc/lifecycle-hooks
+    - lwc/lightning-navigation-dead-link-handling
     - lwc/lwc-accessibility
     - lwc/lwc-accessibility-patterns
     - lwc/lwc-app-builder-config
     - lwc/lwc-async-patterns
     - lwc/lwc-base-component-recipes
     - lwc/lwc-conditional-rendering
+    - lwc/lwc-cross-tab-state-sync
     - lwc/lwc-custom-datatable-types
     - lwc/lwc-custom-event-patterns
     - lwc/lwc-data-table
@@ -114,47 +116,49 @@ Audits a Lightning Web Component bundle for accessibility, performance, security
 19. `skills/lwc/lwc-custom-event-patterns` — event bubbling/composed audit
 20. `skills/lwc/message-channel-patterns`
 21. `skills/lwc/navigation-and-routing`
+22. `skills/lwc/lwc-cross-tab-state-sync` — subscribe/unsubscribe pairing audit for cross-tab listeners
+23. `skills/lwc/lightning-navigation-dead-link-handling` — audit Navigate calls for pre-check + fallback
 
 ### Forms, datatables, surfaces
-22. `skills/lwc/lwc-forms-and-validation`
-23. `skills/lwc/lwc-record-picker`
-24. `skills/lwc/lwc-data-table`
-25. `skills/lwc/lwc-custom-datatable-types` — when JS extends `LightningDatatable`
-26. `skills/lwc/lwc-quick-actions` — when `.js-meta.xml` lists `lightning__RecordAction`
-27. `skills/lwc/virtualized-lists` — render budget for >500-row lists
+24. `skills/lwc/lwc-forms-and-validation`
+25. `skills/lwc/lwc-record-picker`
+26. `skills/lwc/lwc-data-table`
+27. `skills/lwc/lwc-custom-datatable-types` — when JS extends `LightningDatatable`
+28. `skills/lwc/lwc-quick-actions` — when `.js-meta.xml` lists `lightning__RecordAction`
+29. `skills/lwc/virtualized-lists` — render budget for >500-row lists
 
 ### Accessibility, i18n, focus
-28. `skills/lwc/lwc-accessibility`
-29. `skills/lwc/lwc-accessibility-patterns`
-30. `skills/lwc/lwc-focus-management`
-31. `skills/lwc/lwc-internationalization`
-32. `skills/lwc/lwc-toast-and-notifications`
+30. `skills/lwc/lwc-accessibility`
+31. `skills/lwc/lwc-accessibility-patterns`
+32. `skills/lwc/lwc-focus-management`
+33. `skills/lwc/lwc-internationalization`
+34. `skills/lwc/lwc-toast-and-notifications`
 
 ### Styling, DOM mode, interop
-33. `skills/lwc/lwc-styling-hooks` — for every `.css` file
-34. `skills/lwc/lwc-light-dom` — when JS declares `static renderMode = 'light'`
-35. `skills/lwc/lwc-shadow-vs-light-dom-decision` — render-mode rationale audit
-36. `skills/lwc/lwc-web-components-interop`
-37. `skills/lwc/static-resources-in-lwc`
+35. `skills/lwc/lwc-styling-hooks` — for every `.css` file
+36. `skills/lwc/lwc-light-dom` — when JS declares `static renderMode = 'light'`
+37. `skills/lwc/lwc-shadow-vs-light-dom-decision` — render-mode rationale audit
+38. `skills/lwc/lwc-web-components-interop`
+39. `skills/lwc/static-resources-in-lwc`
 
 ### Performance, errors, debugging
-38. `skills/lwc/lwc-performance`
-39. `skills/lwc/lwc-performance-budgets`
-40. `skills/lwc/lwc-error-boundaries`
-41. `skills/lwc/common-lwc-runtime-errors`
-42. `skills/lwc/lwc-debugging-devtools` — console / logging hygiene
+40. `skills/lwc/lwc-performance`
+41. `skills/lwc/lwc-performance-budgets`
+42. `skills/lwc/lwc-error-boundaries`
+43. `skills/lwc/common-lwc-runtime-errors`
+44. `skills/lwc/lwc-debugging-devtools` — console / logging hygiene
 
 ### Security
-43. `skills/lwc/lwc-security`
-44. `skills/lwc/lwc-locker-to-lws-migration` — flag stale Locker workarounds in LWS-enabled orgs
+45. `skills/lwc/lwc-security`
+46. `skills/lwc/lwc-locker-to-lws-migration` — flag stale Locker workarounds in LWS-enabled orgs
 
 ### Testing
-45. `skills/lwc/lwc-testing`
+47. `skills/lwc/lwc-testing`
 
 ### Templates (for skeleton-alignment audit)
-46. `templates/lwc/component-skeleton/`
-47. `templates/lwc/jest.config.js`
-48. `templates/lwc/patterns/`
+48. `templates/lwc/component-skeleton/`
+49. `templates/lwc/jest.config.js`
+50. `templates/lwc/patterns/`
 
 ---
 

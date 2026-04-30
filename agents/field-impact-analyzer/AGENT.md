@@ -22,6 +22,7 @@ dependencies:
     - admin/field-dependency-and-controlling
     - admin/formula-fields
     - admin/integration-user-management
+    - admin/lookup-filter-cross-object-patterns
     - admin/permission-set-architecture
     - admin/permission-set-group-composition
     - admin/permission-sets-vs-profiles
@@ -86,42 +87,43 @@ Given a field on an sObject, produces a blast-radius report: every Apex class, t
 7. `skills/admin/field-dependency-and-controlling` — controlling/dependent picklist chains
 8. `skills/admin/picklist-field-integrity-issues` — restricted picklist + record-type implications
 9. `skills/admin/compound-field-patterns` — Address / Name / Geolocation special handling
-10. `skills/admin/system-field-behavior-and-audit` — standard system field constraints (`Id`, `OwnerId`, etc.)
-11. `skills/data/data-model-design-patterns`
-12. `skills/data/external-id-strategy` — External ID + Unique flag implications on rename
-13. `skills/data/roll-up-summary-alternatives` — RSF dependencies on the field
-14. `skills/data/field-history-tracking`
-15. `skills/data/record-merge-implications`
+10. `skills/admin/lookup-filter-cross-object-patterns` — fields cited in lookup filters; deletion silently breaks the picker
+11. `skills/admin/system-field-behavior-and-audit` — standard system field constraints (`Id`, `OwnerId`, etc.)
+12. `skills/data/data-model-design-patterns`
+13. `skills/data/external-id-strategy` — External ID + Unique flag implications on rename
+14. `skills/data/roll-up-summary-alternatives` — RSF dependencies on the field
+15. `skills/data/field-history-tracking`
+16. `skills/data/record-merge-implications`
 
 ### Access / sharing
-16. `skills/admin/permission-set-architecture`
-17. `skills/admin/permission-sets-vs-profiles`
-18. `skills/admin/permission-set-group-composition` — PSG composition affecting FLS coverage
-19. `skills/admin/sharing-and-visibility`
-20. `skills/admin/custom-permissions`
-21. `skills/admin/integration-user-management` — integration-user FLS surface
-22. `standards/decision-trees/sharing-selection.md`
+17. `skills/admin/permission-set-architecture`
+18. `skills/admin/permission-sets-vs-profiles`
+19. `skills/admin/permission-set-group-composition` — PSG composition affecting FLS coverage
+20. `skills/admin/sharing-and-visibility`
+21. `skills/admin/custom-permissions`
+22. `skills/admin/integration-user-management` — integration-user FLS surface
+23. `standards/decision-trees/sharing-selection.md`
 
 ### Apex / SOQL impact
-23. `skills/apex/soql-fundamentals`
-24. `skills/apex/dynamic-apex` — dynamic SOQL = rename-brittle
-25. `skills/apex/apex-stripinaccessible-and-fls-enforcement`
-26. `skills/apex/apex-user-and-permission-checks`
+24. `skills/apex/soql-fundamentals`
+25. `skills/apex/dynamic-apex` — dynamic SOQL = rename-brittle
+26. `skills/apex/apex-stripinaccessible-and-fls-enforcement`
+27. `skills/apex/apex-user-and-permission-checks`
 
 ### LWC impact
-27. `skills/lwc/lwc-public-api-hardening` — `@api recordId` + design-attribute coercion
+28. `skills/lwc/lwc-public-api-hardening` — `@api recordId` + design-attribute coercion
 
 ### Architecture
-28. `skills/architect/metadata-coverage-and-dependencies` — global dependency model
+29. `skills/architect/metadata-coverage-and-dependencies` — global dependency model
 
 ### Probes
-29. `agents/_shared/probes/apex-references-to-field.md`
-30. `agents/_shared/probes/flow-references-to-field.md`
-31. `agents/_shared/probes/automation-graph-for-sobject.md`
-32. `agents/_shared/probes/user-access-comparison.md`
+30. `agents/_shared/probes/apex-references-to-field.md`
+31. `agents/_shared/probes/flow-references-to-field.md`
+32. `agents/_shared/probes/automation-graph-for-sobject.md`
+33. `agents/_shared/probes/user-access-comparison.md`
 
 ### Templates
-33. `templates/admin/naming-conventions.md`
+34. `templates/admin/naming-conventions.md`
 
 ---
 

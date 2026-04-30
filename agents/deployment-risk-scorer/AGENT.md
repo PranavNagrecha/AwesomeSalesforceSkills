@@ -16,8 +16,10 @@ multi_dimensional: true
 dependencies:
   skills:
     - admin/agent-output-formats
+    - devops/code-coverage-orphan-class-cleanup
     - devops/code-review-checklist-salesforce
     - devops/deployment-error-troubleshooting
+    - devops/metadata-diff-between-sandboxes
     - devops/pre-deployment-checklist
   shared:
     - AGENT_CONTRACT.md
@@ -51,6 +53,8 @@ Before a user deploys a change set / package / SFDX delta, this agent compares w
 4. `skills/devops/deployment-error-troubleshooting/SKILL.md` (or closest)
 5. `standards/decision-trees/sharing-selection.md` — for profile/permission-set delta analysis
 6. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+7. `skills/devops/metadata-diff-between-sandboxes` — diff source vs target metadata to inventory deployment scope
+8. `skills/devops/code-coverage-orphan-class-cleanup` — orphan-class cleanup as alternative to stub-test coverage rescue
 
 ---
 

@@ -15,6 +15,7 @@ output_formats:
 dependencies:
   skills:
     - admin/agent-output-formats
+    - agentforce/agent-action-input-slot-extraction
     - agentforce/agent-actions
     - agentforce/agent-topic-design
     - agentforce/einstein-trust-layer
@@ -55,6 +56,7 @@ Takes a requirements statement — what the agent action should do, for whom, on
 7. `templates/agentforce/AgentSkeleton.json`
 8. `evals/framework.md`
 9. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+10. `skills/agentforce/agent-action-input-slot-extraction` — tune invocable input descriptions for slot extraction quality
 
 ---
 

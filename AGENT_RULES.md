@@ -85,7 +85,27 @@ This must exit 0. Fix all errors before committing.
 
 **Benchmarking the validator:** `python3 scripts/validate_repo_bench.py --count 500` spins up a throwaway temp repo with 500 synthetic skills and asserts validation stays under a 30-second threshold. Run this before merging changes to `scripts/validate_repo.py` or `pipelines/agent_validators.py` to catch orchestration regressions.
 
-### Step 6 — Commit
+### Step 6 — Wire the skill into the run-time agents that need it
+
+A skill that is not cited by any run-time agent only serves human authors and lexical retrieval. To make it part of an agent's `Mandatory Reads`, identify the target agents and patch each.
+
+1. **Pick the target agents.** Read `agents/_shared/SKILL_MAP.md` and the run-time agent roster in `agents/_shared/RUNTIME_VS_BUILD.md`. A new skill typically maps to 1–3 agents; more than 3 is a smell that the skill is too broad. Treat the mapping as a deliberate decision — log it in the skill's PR description.
+
+2. **Patch each agent.** Use the helper:
+
+   ```bash
+   python3 scripts/patch_agent_skill.py <agent-id> <skill-id> "<section-heading>" "<short description>"
+   ```
+
+   The helper inserts the skill into the agent's YAML `dependencies.skills:` (alphabetically) and appends a numbered bullet under the named Mandatory Reads section, renumbering subsequent items. Use `*end*` as the section heading for agents whose Mandatory Reads is a flat numbered list. The script is idempotent — re-running with the same args is a no-op.
+
+3. **Update `agents/_shared/SKILL_MAP.md`** if the agent has a documented entry there (Wave A / B / C tier agents). Developer-tier agents (apex-refactorer, lwc-builder, soql-optimizer, etc.) are tracked only in their own AGENT.md.
+
+4. **Run validation.** `python3 scripts/validate_repo.py` emits a WARN for any skill that no agent cites — the *orphan-skill* check. Skills authored as pure human-reference can opt out by adding `runtime_orphan: true` to frontmatter; everything else should be wired.
+
+A skill is not done until it is cited by at least one agent (or explicitly marked `runtime_orphan: true`).
+
+### Step 7 — Commit
 
 Commit all of:
 
@@ -93,6 +113,7 @@ Commit all of:
 - generated files in `registry/`
 - generated files in `vector_index/`
 - generated `docs/SKILLS.md`
+- modified files under `agents/` and `agents/_shared/SKILL_MAP.md` from Step 6
 
 ---
 
