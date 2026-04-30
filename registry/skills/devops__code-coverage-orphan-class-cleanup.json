@@ -1,0 +1,99 @@
+{
+  "category": "devops",
+  "chunk_ids": [
+    "011dfba1ce1c3a01f93f",
+    "061d5bbd6c7486a2cda3",
+    "0b85c3c60621b7c33a6e",
+    "0c908b67b50e87ddf349",
+    "0f708e86b91cb30a21ff",
+    "1a8ef5c638105edbfc86",
+    "1ae7e09d6a6a5a7f6296",
+    "2034095dd60e445cca66",
+    "21da057a687c35ab86ed",
+    "25f79162ea39dbf6fd50",
+    "293e9ede5ee07788659b",
+    "2f395a62be5060a2f784",
+    "3d116bebc59525daa9fc",
+    "41fb3e518e20279338cb",
+    "48d9240e63bd7d84842b",
+    "4bf596bfacf835b37755",
+    "516cc8a86e48a20024b2",
+    "521907c49008e5a6e774",
+    "55c15f93ec8cbbe1bfa2",
+    "59588afc3ab7ce3320d6",
+    "6e35896e0a008f77a514",
+    "744bd3b5fee000441529",
+    "768e1013ba39fee7cb2e",
+    "7d9ec375a27313749a27",
+    "804120bfbc652f99b673",
+    "86b75868c15b8f384fa5",
+    "8bd85a890503d85b07a2",
+    "91d9e9d3ccf56d3017a3",
+    "924085b9cfb670988802",
+    "9c63598394c72c0777cd",
+    "9d1ce8b70623fbaba626",
+    "a73b60362b4b2946d56d",
+    "af5be276711009666c28",
+    "b41a05065f54bd12f807",
+    "bf11afc5fe1d8e6c0138",
+    "c02f8e83511d162de011",
+    "c118f52a78c7dba8cd54",
+    "c9c02a7cd27169bba119",
+    "cb8a52012396960041a6",
+    "cdeff2c92c93505737d6",
+    "d31b16bfe4abb59f119d",
+    "deec1347a74323b529ee",
+    "e46048339ab54d809bde",
+    "eb72508672b49bd46381",
+    "ee86fa3095065494f0e6",
+    "f51c156d0d5a386a237f",
+    "f58c88653c2886bfc2e9",
+    "f9422be5c6b5e7485f3f",
+    "f94ac329ea25d9e401c0"
+  ],
+  "content_hash": "9595d8155a435f915fc99e7692720fcbf0adfacb11d0b192d442cdaa3cd07d3b",
+  "dependencies": [],
+  "description": "Use when an org's overall Apex coverage is sliding toward 75% because of orphaned (uncovered, unreferenced) classes inflating the denominator. Triggers: 'production deploy blocked at 74% coverage', 'find apex classes with 0% coverage', 'orphan apex class report', 'org coverage dropping despite green test runs'. NOT for writing tests on actively used classes (use apex/test-class-standards) or for raising coverage on partially-covered classes.",
+  "file_location": "skills/devops/code-coverage-orphan-class-cleanup",
+  "id": "devops/code-coverage-orphan-class-cleanup",
+  "inputs": [
+    "ApexCodeCoverage / ApexCodeCoverageAggregate snapshot from the org",
+    "list of installed packages (managed code coverage rules differ)",
+    "git history for last-modified dates"
+  ],
+  "name": "code-coverage-orphan-class-cleanup",
+  "official_sources": [
+    "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+    "Salesforce CLI Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm",
+    "Salesforce DX Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm",
+    "Apex Code Coverage Tooling API \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/tooling_api_objects_apexcodecoverageaggregate.htm",
+    "Apex Developer Guide (Test Coverage) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_code_coverage_intro.htm"
+  ],
+  "outputs": [
+    "ranked list of orphan classes (zero coverage + zero references)",
+    "destructive-changes manifest for safe-to-delete classes",
+    "test-required list for classes that must stay"
+  ],
+  "references": [
+    "skills/devops/code-coverage-orphan-class-cleanup/references/examples.md",
+    "skills/devops/code-coverage-orphan-class-cleanup/references/gotchas.md",
+    "skills/devops/code-coverage-orphan-class-cleanup/references/llm-anti-patterns.md",
+    "skills/devops/code-coverage-orphan-class-cleanup/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/devops/code-coverage-orphan-class-cleanup/scripts/check_code_coverage_orphan_class_cleanup.py"
+  ],
+  "tags": [
+    "apex",
+    "coverage",
+    "tech-debt",
+    "cleanup",
+    "deployment"
+  ],
+  "templates": [
+    "skills/devops/code-coverage-orphan-class-cleanup/templates/code-coverage-orphan-class-cleanup-template.md"
+  ],
+  "updated": "2026-04-30",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

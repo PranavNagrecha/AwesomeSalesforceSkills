@@ -1,0 +1,99 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "016cad5bc2e712ee406c",
+    "020bd653d06ec117cf90",
+    "0847505b32c7af733539",
+    "17a5441b692528daebee",
+    "1cb86c38bf2597fb1540",
+    "364ecc6517a4a8a118f7",
+    "372841d031efb1f5d689",
+    "3bf1f2e43092298ccff0",
+    "3c4580075750978abd17",
+    "42b0ca3e0a3c4c3f9a81",
+    "433a54a7b9cc18d05609",
+    "466ad429348d6d88c25c",
+    "515782d8b899d90770b0",
+    "57723cd87bf5315e07f0",
+    "5f6121b779bd29feafe0",
+    "629f75e8def0607da361",
+    "64d45c59ebe18c825e12",
+    "6b7c8aaacac49bbd761c",
+    "76fafbb5b534ce725fbd",
+    "78dc54ab69d05a9b4f89",
+    "7bd4b0d92036e294f7d9",
+    "7c3d1952bfa65a32d103",
+    "7ff5b924a2cf6113a276",
+    "80d280267ddc3efd0afb",
+    "8465b002d1422dbdc369",
+    "8de52f891e586352a6b1",
+    "909f45bfc6e05982b196",
+    "977d06d00c2cfd8ead24",
+    "a4b158f53f14acf16b3b",
+    "abd3e409c56a3ae7ddfe",
+    "b01927e565fba94b98b9",
+    "b4c0436183710cb08bad",
+    "b5093c9f894c9286923d",
+    "b551db11c25f96a00232",
+    "bfac300be291ebc666a5",
+    "c114791cda47b5427277",
+    "c2f0bd9b018360767833",
+    "c926512fe3deb0eaf1f2",
+    "cdc3b39a1022c14f5801",
+    "d31a0a55f8dc5f0afa1c",
+    "d9f2955e40ee31cbccac",
+    "de3c66b6db787877af72",
+    "defad7d3b7c10cc5c942",
+    "dfcf5a338ac330f42588",
+    "f474efef59e7248823db",
+    "f4e51e37c1d15d100632",
+    "f544da914bf8ad23dc98",
+    "f66849ebcd3a47d6e704",
+    "fa8ecbb57c227219050b"
+  ],
+  "content_hash": "2cc5cdced42125d6699fc3cbc39391f5b3949880b293ca65305352ad3dfa5d5a",
+  "dependencies": [],
+  "description": "Use when SOQL ORDER BY behavior with NULL values surprises a query \u2014 null records sorting before non-null, paginated results inconsistent across pages, NULLS FIRST/LAST clauses needed. Triggers: 'soql nulls first', 'soql null sort order', 'pagination missing records with null fields', 'order by skipping null records', 'consistent ordering with optional fields'. NOT for general SOQL optimization (use data/soql-query-optimization) or for ordering of relationship-traversed fields.",
+  "file_location": "skills/apex/soql-null-ordering-patterns",
+  "id": "apex/soql-null-ordering-patterns",
+  "inputs": [
+    "the SOQL query and its ORDER BY clause",
+    "how the result is consumed (UI list, pagination, batch processing)",
+    "the percentage of records with null values in the sort field"
+  ],
+  "name": "soql-null-ordering-patterns",
+  "official_sources": [
+    "Apex Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm",
+    "Apex Reference Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
+    "SOQL ORDER BY Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_orderby.htm",
+    "SOQL OFFSET Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_offset.htm"
+  ],
+  "outputs": [
+    "corrected ORDER BY with NULLS FIRST/LAST or composite tiebreaker",
+    "pagination key strategy for stable cursors",
+    "test data covering null-and-non-null mix"
+  ],
+  "references": [
+    "skills/apex/soql-null-ordering-patterns/references/examples.md",
+    "skills/apex/soql-null-ordering-patterns/references/gotchas.md",
+    "skills/apex/soql-null-ordering-patterns/references/llm-anti-patterns.md",
+    "skills/apex/soql-null-ordering-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/soql-null-ordering-patterns/scripts/check_soql_null_ordering_patterns.py"
+  ],
+  "tags": [
+    "soql",
+    "apex",
+    "ordering",
+    "null-handling",
+    "pagination"
+  ],
+  "templates": [
+    "skills/apex/soql-null-ordering-patterns/templates/soql-null-ordering-patterns-template.md"
+  ],
+  "updated": "2026-04-30",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

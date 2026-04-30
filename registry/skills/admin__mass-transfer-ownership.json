@@ -1,0 +1,97 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "039f5c1766632a4a1a18",
+    "0b6d5f782e6fa396ecf6",
+    "0c6dd6f446d67050aa9c",
+    "10481b65f4f76acdaebe",
+    "10cba6df1c22cc3873d2",
+    "18e96576eacf6130d41e",
+    "19b21d14b24347f66c29",
+    "201a8beee76d6e43460d",
+    "233d5eecc5768badc28e",
+    "270262767f53b7042ea7",
+    "2b961dd956e3cf8a4f69",
+    "3167d08f880e487c9d19",
+    "3b16095010e7831188e3",
+    "3c07f170429b3d8beebf",
+    "3f0b937593961a19b1ae",
+    "431b6ee08dc700764fa0",
+    "4b9e2fc9ba5598061b85",
+    "5449c1c94018ef17ef90",
+    "62a0a0a6c9d2aa50b05d",
+    "64268356ca401dfe8602",
+    "7bfd88d4c411396d1d24",
+    "8354183a6fd431bc67a0",
+    "8959e810eb1cc4483fa2",
+    "916a7991316ec8ce10e1",
+    "9b188c486a234b36920f",
+    "9f4562339a16d1ed0a8b",
+    "9f782107954559c3eafb",
+    "a5fbcfdd7aa983ad96e6",
+    "ae608cf4b1714814cdac",
+    "b42fd180a78131c8a92d",
+    "b5d24f30028884b5993c",
+    "c12f1ae06bfacffd54af",
+    "c9e60291b65db4e38cf1",
+    "ca717a1653fc5a024944",
+    "cd846566ae2e93ca8cdf",
+    "d1885a89d8444535894d",
+    "d657abf792c36d32a3f4",
+    "d86666a0baae1f3e09ad",
+    "e3c0eaa9df2eff454487",
+    "e6c9916469e0134001d9",
+    "e899a95efb1f45b0db3e",
+    "ee7c46d5b91bdc596bc0",
+    "ee98af7a52efb1abb59e",
+    "fbfb9c3233c54736c1f4",
+    "fc13f07a6c39a48ccb68",
+    "fc769afa1eaac8e5680d",
+    "fe95b1e32d280ccf0c99",
+    "ffa560938172b22252ce"
+  ],
+  "content_hash": "c0f1c3155600cb369cea97e1d5e947d41ab9a6cd6f12f45c14ee9d414a62d165",
+  "dependencies": [],
+  "description": "Use when re-assigning record OwnerId across many records \u2014 territory realignment, employee departure, region split, integration cleanup. Triggers: 'mass transfer accounts', 'reassign opportunities to new owner', 'transfer all records on user deactivation', 'OwnerId migration'. NOT for assignment rules, queue routing, or single-record manual transfer.",
+  "file_location": "skills/admin/mass-transfer-ownership",
+  "id": "admin/mass-transfer-ownership",
+  "inputs": [
+    "source criteria (owner, territory, region, queue) for the records to transfer",
+    "target OwnerId or user-mapping CSV",
+    "objects in scope and whether children should follow the parent"
+  ],
+  "name": "mass-transfer-ownership",
+  "official_sources": [
+    "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
+    "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
+    "Mass Transfer Records help \u2014 https://help.salesforce.com/s/articleView?id=sf.admin_transfer.htm&type=5",
+    "Defer Sharing Calculations help \u2014 https://help.salesforce.com/s/articleView?id=sf.security_sharing_defer_sharing_calc.htm&type=5"
+  ],
+  "outputs": [
+    "transfer plan covering ownership cascade, sharing recalc, and integration impact",
+    "rollback / audit log strategy",
+    "executed transfer (Mass Transfer tool, Data Loader update, or Apex)"
+  ],
+  "references": [
+    "skills/admin/mass-transfer-ownership/references/examples.md",
+    "skills/admin/mass-transfer-ownership/references/gotchas.md",
+    "skills/admin/mass-transfer-ownership/references/llm-anti-patterns.md",
+    "skills/admin/mass-transfer-ownership/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/mass-transfer-ownership/scripts/check_mass_transfer_ownership.py"
+  ],
+  "tags": [
+    "ownership",
+    "data-management",
+    "migration",
+    "admin"
+  ],
+  "templates": [
+    "skills/admin/mass-transfer-ownership/templates/mass-transfer-ownership-template.md"
+  ],
+  "updated": "2026-04-30",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

@@ -1,0 +1,98 @@
+{
+  "category": "agentforce",
+  "chunk_ids": [
+    "01a4f945b102410f39d7",
+    "03acff6840c18d3b3153",
+    "051966fc6dbdbfcfa3bf",
+    "0bd8410c9c75c61e3dc0",
+    "105b7d16f58d98ca6da4",
+    "143662f33ed043131edd",
+    "192a38722642c2f2fff6",
+    "1ccd26117242b6fe8e3e",
+    "20eaca987a91fbeeec69",
+    "2125dd9fadd992a29d67",
+    "2edf8cc41bdd60ec63f5",
+    "418cf7f957e32b6185e5",
+    "4209d4a47010fc675e5f",
+    "42dbfb54386214c34c72",
+    "4c0642bd11772fe20e83",
+    "57b10ee602b9bb16302b",
+    "5b82313048e00c61c14a",
+    "5d5eb5092ad375ccdbd4",
+    "66fab0a9f7b914074f40",
+    "81b44602e59e1f61e1f0",
+    "849f8bd3283f17e5f7dd",
+    "896588c6dd8034110859",
+    "8d7c9a9f45aea5e525f1",
+    "9348f3c6c4da4b3e738f",
+    "96e7469046ba5c9d5adf",
+    "a23d851b8902dd9446be",
+    "a5e4a81dd9d3f811736b",
+    "a6216d92f5461035c726",
+    "a8675f41e9fc88abe5f0",
+    "aaf196f843731c659176",
+    "abb53b4dff27f4d78ef0",
+    "b60fb9d3989e19bb5124",
+    "b76306e03f7f248c6b2f",
+    "b7b19e2588334d5d31a2",
+    "c3a9c5fe88348e3fea34",
+    "d120706dca3ce7c928ff",
+    "d1a72bfd1ad67fd33ca6",
+    "d25065f22af86099ee0e",
+    "d40849c514a517da2812",
+    "dcda010cd0a07d716372",
+    "e349f306d704f370de03",
+    "e3f9f33fbb8e4e116946",
+    "e61f311acfb9725936cc",
+    "e6a76f4e469928b0ecf8",
+    "e8239bf173b659f3e5f5",
+    "f473aad63cb66ede8cbb",
+    "f493903eb6dd0f92e9e1",
+    "f81a6f2ffe26213c1be1",
+    "ff6ec63546bef6ee35fb"
+  ],
+  "content_hash": "9a5052e047183239ffbdce681135f383df5cd614777626fb3fffd0403d850608",
+  "dependencies": [],
+  "description": "Use when designing how an Agentforce agent extracts structured input parameters (slots) from a user's natural-language utterance to invoke an action. Triggers: 'agent extract date from user', 'agent action argument extraction', 'agentforce slot filling', 'agent invocable input mapping', 'agent fails to fill required parameter'. NOT for action authoring (use agentforce/agent-actions) or for prompt-template variable binding (use agentforce/prompt-builder-templates).",
+  "file_location": "skills/agentforce/agent-action-input-slot-extraction",
+  "id": "agentforce/agent-action-input-slot-extraction",
+  "inputs": [
+    "the action's invocable input variables (name, type, description, required)",
+    "sample user utterances and the slot values that should be extracted",
+    "policy for missing/ambiguous slots (re-prompt vs. default vs. abort)"
+  ],
+  "name": "agent-action-input-slot-extraction",
+  "official_sources": [
+    "Agentforce Developer Guide \u2014 https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html",
+    "Einstein Platform Services \u2014 https://developer.salesforce.com/docs/einstein/genai/guide/overview.html",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
+    "Apex `@InvocableMethod` Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_annotation_InvocableMethod.htm",
+    "Apex `@InvocableVariable` Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_annotation_InvocableVariable.htm"
+  ],
+  "outputs": [
+    "input variable descriptions tuned for slot extraction",
+    "utterance \u2192 slot test cases",
+    "re-prompt strategy for missing required inputs"
+  ],
+  "references": [
+    "skills/agentforce/agent-action-input-slot-extraction/references/examples.md",
+    "skills/agentforce/agent-action-input-slot-extraction/references/gotchas.md",
+    "skills/agentforce/agent-action-input-slot-extraction/references/llm-anti-patterns.md",
+    "skills/agentforce/agent-action-input-slot-extraction/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/agentforce/agent-action-input-slot-extraction/scripts/check_agent_action_input_slot_extraction.py"
+  ],
+  "tags": [
+    "agentforce",
+    "actions",
+    "slot-filling",
+    "prompt-design"
+  ],
+  "templates": [
+    "skills/agentforce/agent-action-input-slot-extraction/templates/agent-action-input-slot-extraction-template.md"
+  ],
+  "updated": "2026-04-30",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

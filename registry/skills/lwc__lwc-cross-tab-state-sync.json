@@ -1,0 +1,96 @@
+{
+  "category": "lwc",
+  "chunk_ids": [
+    "0417ea4a07909384115d",
+    "09f508c233dd57e7407c",
+    "0ef2f15b1c0767b54d1b",
+    "11defaa84907e78ad40a",
+    "1f7a2918fbfb62c650ce",
+    "20f8caef02d0c7e4e427",
+    "2a3fb5d43ffef5739a54",
+    "2cfb68523a0eaaf48465",
+    "365a896fff89ffbed01e",
+    "3725b98d79c1372a5b8d",
+    "3869c7791ffdd8f51be9",
+    "3fe64202cbeed4eaf6cc",
+    "44a34587048d3f3c85ab",
+    "48064cc21870838c45c0",
+    "4d59a3dbf3a7c03ea695",
+    "557887afc005d2f1c421",
+    "5a08db5dbc6a0c2068cd",
+    "5a7ce4930363193a172b",
+    "62f715476f8f675d0bcc",
+    "663b5e4f4c6422d68f64",
+    "76b11f0221e44ed8703e",
+    "7a37916c3571db76f350",
+    "847fa5542b393c1d8cf4",
+    "85e78c7c9e3a5779aa4e",
+    "956d9947776450b63110",
+    "980f3a11fb8abfceca6a",
+    "9815c7b522f66e7d1326",
+    "9b0149385253f5d2ae7b",
+    "a564c7d7d3cc571c7ad2",
+    "a9f53f04cb314c717fac",
+    "b5f343b5b5056041fb28",
+    "b7e646ee9503758d689f",
+    "bfcca1e6164147cb5678",
+    "c4187a69e7c5f80d6fc3",
+    "c69f866077aaf5f30a82",
+    "cf8ff7e26698b119702e",
+    "d48809724c5f17a833f5",
+    "d8ee00fab20a06cb9d95",
+    "d90973b08fe9701c738b",
+    "e4050ba19c2060471670",
+    "e4d8305bf521a8014d04",
+    "e532dc882d96da572707",
+    "e6faf6afcfecdf5b24a9",
+    "e76a59a1b65e23e6e32f",
+    "efd147289a2ea4daa7bf",
+    "fcb411b194aa90218501",
+    "fda57ce45844df5d39ab"
+  ],
+  "content_hash": "c4a516a3d2a4f5e7b2ea4a51fed8982fe62ad3234db4a52de0bef60b649fe11c",
+  "dependencies": [],
+  "description": "Use when an LWC needs to react to events that happen in another browser tab \u2014 record updates, login state, draft autosave, console-tab navigation. Triggers: 'sync data across tabs', 'BroadcastChannel LWC', 'storage event LWC', 'one tab updates the other', 'console workspace tab close detection'. NOT for state sync within the same Lightning page (use Lightning Message Service) or for server-pushed updates (use CometD or refreshApex).",
+  "file_location": "skills/lwc/lwc-cross-tab-state-sync",
+  "id": "lwc/lwc-cross-tab-state-sync",
+  "inputs": [
+    "the event triggering the sync (record save, logout, draft change)",
+    "scope (same origin always, single user always, console workspace boundaries)",
+    "fallback behavior when the browser API is unavailable"
+  ],
+  "name": "lwc-cross-tab-state-sync",
+  "official_sources": [
+    "LWC Best Practices \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/get-started-best-practices.html",
+    "Lightning Component Reference \u2014 https://developer.salesforce.com/docs/platform/lightning-component-reference/guide",
+    "LWC Data Guidelines \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-guidelines.html",
+    "Lightning Web Security \u2014 https://developer.salesforce.com/docs/platform/lightning-components-security/guide/intro-lws.html",
+    "MDN BroadcastChannel \u2014 https://developer.mozilla.org/en-US/docs/Web/API/BroadcastChannel"
+  ],
+  "outputs": [
+    "BroadcastChannel or storage-event implementation",
+    "subscription / cleanup pattern wired to LWC lifecycle",
+    "platform-cache-aware refresh strategy when applicable"
+  ],
+  "references": [
+    "skills/lwc/lwc-cross-tab-state-sync/references/examples.md",
+    "skills/lwc/lwc-cross-tab-state-sync/references/gotchas.md",
+    "skills/lwc/lwc-cross-tab-state-sync/references/llm-anti-patterns.md",
+    "skills/lwc/lwc-cross-tab-state-sync/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/lwc/lwc-cross-tab-state-sync/scripts/check_lwc_cross_tab_state_sync.py"
+  ],
+  "tags": [
+    "lwc",
+    "cross-tab",
+    "browser-api",
+    "state-sync"
+  ],
+  "templates": [
+    "skills/lwc/lwc-cross-tab-state-sync/templates/lwc-cross-tab-state-sync-template.md"
+  ],
+  "updated": "2026-04-30",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

@@ -1,0 +1,97 @@
+{
+  "category": "devops",
+  "chunk_ids": [
+    "007da9a37b0b683f44c1",
+    "0892d46623da70babc3c",
+    "0c615b31e4eaf49d918d",
+    "11df18b0d4475c187be1",
+    "144a5bb0f1152596b206",
+    "18704428f29a7190271d",
+    "1af42750341d1f8041d8",
+    "1ebf5710cdb4a4f7ec16",
+    "22b5a0c6f0ca859d279e",
+    "277e9b676418951c7b82",
+    "2ceff4cf78ff3fabd094",
+    "30854eac679aa1b6da27",
+    "35b9b98b8862b8256e9f",
+    "3d24a3b1cd3224337fb5",
+    "3e21d67ea8586cf57536",
+    "471800c888a2b9c93364",
+    "47a72a19382cb121ffba",
+    "4f6eefab80f0f09efb9e",
+    "510053ac6ff3293b25d5",
+    "53dc0a0c98b63bf1471b",
+    "56358bc0fcc1e2110789",
+    "5b0e3db9f2a21ef71dac",
+    "65f93c0f4551054f913e",
+    "67e6a1f29f9dac528a97",
+    "732ca1ebbfa89f5b6bf4",
+    "791dd0b566c8faa72c95",
+    "7b059d516e4d56994540",
+    "83ee696423e826236558",
+    "85d20128a8c485677b24",
+    "86d9e7c86ea6c99bc99d",
+    "8e52459a007022a9ef28",
+    "8f89c5d86ddc79bb98e5",
+    "9abf392e8f247733c15d",
+    "9f0f24d1a3da4b130992",
+    "a0f75574f7582fae8180",
+    "a355ad23abb0daad653f",
+    "a4db702aab90d3ba4dbe",
+    "ab2ce5b0f9fe6529d2f0",
+    "ac195b0c1cb698fce733",
+    "b0ac1d5b8540dad085c4",
+    "c417a816e139a55a7b76",
+    "c763b07a7cbd1ef82ee5",
+    "c9ae3bf849f8e3ffee6a",
+    "cc683787fe73a7027fdc",
+    "d281631eb652282747f1",
+    "da8953308ffcb9c99dd0",
+    "e310b3abfeffdbebb577",
+    "f8d80b0aa1d2b28f66d9"
+  ],
+  "content_hash": "3abf03b3a73d7b155ca65569802c9dc5cb559fd1fade67d0bbc8c5721b705c88",
+  "dependencies": [],
+  "description": "Use when generating customer- or stakeholder-facing release notes from git history, Jira/ADO ticket links, and Salesforce metadata diffs at deploy time. Triggers: 'auto-generate release notes', 'changelog from commits', 'release notes from PR titles', 'what changed in this deployment'. NOT for managed-package version creation, push upgrades, or org assessment.",
+  "file_location": "skills/devops/release-notes-automation",
+  "id": "devops/release-notes-automation",
+  "inputs": [
+    "git repository with conventional or PR-based commits",
+    "previous release tag and the head ref to compare",
+    "ticket-tracker integration (Jira/ADO/GitHub Issues) credentials, optional"
+  ],
+  "name": "release-notes-automation",
+  "official_sources": [
+    "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+    "Salesforce CLI Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm",
+    "Salesforce DX Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm",
+    "Conventional Commits \u2014 https://www.conventionalcommits.org/",
+    "Keep a Changelog \u2014 https://keepachangelog.com/"
+  ],
+  "outputs": [
+    "ordered, deduplicated release notes (Markdown)",
+    "metadata-diff summary attached to the release",
+    "release tag or GitHub Release entry"
+  ],
+  "references": [
+    "skills/devops/release-notes-automation/references/examples.md",
+    "skills/devops/release-notes-automation/references/gotchas.md",
+    "skills/devops/release-notes-automation/references/llm-anti-patterns.md",
+    "skills/devops/release-notes-automation/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/devops/release-notes-automation/scripts/check_release_notes_automation.py"
+  ],
+  "tags": [
+    "release",
+    "changelog",
+    "ci-cd",
+    "automation"
+  ],
+  "templates": [
+    "skills/devops/release-notes-automation/templates/release-notes-automation-template.md"
+  ],
+  "updated": "2026-04-30",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

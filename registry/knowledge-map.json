@@ -154,10 +154,12 @@
       "admin/lightning-page-performance-tuning",
       "admin/list-views-and-compact-layouts",
       "admin/lookup-and-relationship-design",
+      "admin/lookup-filter-cross-object-patterns",
       "admin/marketing-automation-requirements",
       "admin/marketing-cloud-connect",
       "admin/marketing-cloud-engagement-setup",
       "admin/marketing-reporting-requirements",
+      "admin/mass-transfer-ownership",
       "admin/mcae-lead-scoring-and-grading",
       "admin/mcae-pardot-setup",
       "admin/media-cloud-setup",
@@ -239,6 +241,7 @@
     ],
     "agentforce": [
       "agentforce/agent-action-error-handling",
+      "agentforce/agent-action-input-slot-extraction",
       "agentforce/agent-action-unit-tests",
       "agentforce/agent-actions",
       "agentforce/agent-channel-deployment",
@@ -413,6 +416,7 @@
       "apex/service-cloud-rest-api",
       "apex/sf-cli-and-sfdx-essentials",
       "apex/soql-fundamentals",
+      "apex/soql-null-ordering-patterns",
       "apex/soql-security",
       "apex/ssjs-server-side-javascript",
       "apex/territory-api-and-assignment",
@@ -622,6 +626,7 @@
       "devops/automated-regression-testing",
       "devops/bitbucket-pipelines-for-salesforce",
       "devops/change-set-deployment",
+      "devops/code-coverage-orphan-class-cleanup",
       "devops/code-review-checklist-salesforce",
       "devops/continuous-integration-testing",
       "devops/copado-essentials",
@@ -650,6 +655,7 @@
       "devops/managed-package-development",
       "devops/metadata-api-coverage-gaps",
       "devops/metadata-api-retrieve-deploy",
+      "devops/metadata-diff-between-sandboxes",
       "devops/migration-from-change-sets-to-sfdx",
       "devops/multi-package-development",
       "devops/org-shape-and-scratch-definition",
@@ -662,6 +668,7 @@
       "devops/pr-policy-templates",
       "devops/pre-deployment-checklist",
       "devops/release-management",
+      "devops/release-notes-automation",
       "devops/rollback-and-hotfix-strategy",
       "devops/salesforce-cli-automation",
       "devops/salesforce-code-analyzer",
@@ -765,6 +772,7 @@
       "integration/outbound-messages-and-callbacks",
       "integration/outbound-webhook-from-salesforce",
       "integration/platform-event-publish-patterns",
+      "integration/platform-event-schema-evolution",
       "integration/platform-events-integration",
       "integration/private-connect-setup",
       "integration/pub-sub-api-patterns",
@@ -803,6 +811,7 @@
       "lwc/headless-experience-cloud",
       "lwc/knowledge-article-lwc",
       "lwc/lifecycle-hooks",
+      "lwc/lightning-navigation-dead-link-handling",
       "lwc/lwc-accessibility",
       "lwc/lwc-accessibility-patterns",
       "lwc/lwc-app-builder-config",
@@ -810,6 +819,7 @@
       "lwc/lwc-base-component-recipes",
       "lwc/lwc-chart-and-visualization",
       "lwc/lwc-conditional-rendering",
+      "lwc/lwc-cross-tab-state-sync",
       "lwc/lwc-custom-datatable-types",
       "lwc/lwc-custom-event-patterns",
       "lwc/lwc-data-table",
@@ -1387,6 +1397,9 @@
     "action-plan-templates": [
       "admin/client-onboarding-design"
     ],
+    "actions": [
+      "agentforce/agent-action-input-slot-extraction"
+    ],
     "actions-and-recommendations": [
       "agentforce/einstein-next-best-action"
     ],
@@ -1444,6 +1457,8 @@
       "admin/fit-gap-analysis-against-org",
       "admin/flow-orchestration-admin",
       "admin/health-cloud-timeline",
+      "admin/lookup-filter-cross-object-patterns",
+      "admin/mass-transfer-ownership",
       "admin/object-creation-and-design",
       "admin/process-flow-as-is-to-be",
       "admin/sales-process-mapping",
@@ -1570,6 +1585,7 @@
       "admin/ai-ethics-and-governance-requirements",
       "admin/ai-use-case-assessment",
       "agentforce/agent-action-error-handling",
+      "agentforce/agent-action-input-slot-extraction",
       "agentforce/agent-action-unit-tests",
       "agentforce/agent-actions",
       "agentforce/agent-channel-deployment",
@@ -1788,7 +1804,9 @@
       "apex/npsp-trigger-framework-extension",
       "apex/pdf-generation-patterns",
       "apex/soql-fundamentals",
+      "apex/soql-null-ordering-patterns",
       "architect/solution-design-patterns",
+      "devops/code-coverage-orphan-class-cleanup",
       "devops/code-review-checklist-salesforce",
       "flow/flow-invocable-from-apex",
       "flow/flow-migration-from-trigger",
@@ -2340,6 +2358,7 @@
       "admin/journey-builder-administration",
       "admin/user-access-policies",
       "apex/order-of-execution-deep-dive",
+      "devops/release-notes-automation",
       "flow/flow-for-slack"
     ],
     "automation-candidate": [
@@ -2645,6 +2664,9 @@
     ],
     "briefcase-priming": [
       "admin/fsl-mobile-workflow-design"
+    ],
+    "browser-api": [
+      "lwc/lwc-cross-tab-state-sync"
     ],
     "browser-caching": [
       "architect/experience-cloud-performance"
@@ -3129,6 +3151,9 @@
       "devops/change-set-deployment",
       "devops/migration-from-change-sets-to-sfdx"
     ],
+    "changelog": [
+      "devops/release-notes-automation"
+    ],
     "channel-analytics": [
       "data/partner-data-access-patterns"
     ],
@@ -3212,6 +3237,7 @@
       "devops/environment-specific-value-injection",
       "devops/github-actions-for-salesforce",
       "devops/gitlab-ci-for-salesforce",
+      "devops/release-notes-automation",
       "devops/salesforce-cli-automation",
       "devops/salesforce-code-analyzer",
       "devops/salesforce-devops-tooling-selection",
@@ -3249,7 +3275,8 @@
       "agentforce/salesforce-mcp-server-setup"
     ],
     "cleanup": [
-      "apex/apex-transaction-finalizers"
+      "apex/apex-transaction-finalizers",
+      "devops/code-coverage-orphan-class-cleanup"
     ],
     "cli-automation": [
       "devops/salesforce-cli-automation"
@@ -3899,7 +3926,8 @@
       "admin/commerce-pricing-and-promotions"
     ],
     "coverage": [
-      "agentforce/agent-action-unit-tests"
+      "agentforce/agent-action-unit-tests",
+      "devops/code-coverage-orphan-class-cleanup"
     ],
     "coverage-analysis": [
       "data/territory-data-alignment"
@@ -4026,6 +4054,7 @@
     ],
     "cross-object": [
       "admin/formula-fields",
+      "admin/lookup-filter-cross-object-patterns",
       "flow/flow-cross-object-updates"
     ],
     "cross-object-formula": [
@@ -4040,6 +4069,9 @@
     ],
     "cross-system": [
       "data/external-id-strategy"
+    ],
+    "cross-tab": [
+      "lwc/lwc-cross-tab-state-sync"
     ],
     "cross-territory": [
       "architect/fsl-multi-region-architecture"
@@ -4426,6 +4458,7 @@
       "data/external-id-strategy"
     ],
     "data-integrity": [
+      "admin/lookup-filter-cross-object-patterns",
       "data/financial-data-quality"
     ],
     "data-isolation": [
@@ -4457,6 +4490,7 @@
       "data/product-catalog-migration-cpq"
     ],
     "data-management": [
+      "admin/mass-transfer-ownership",
       "data/sandbox-refresh-data-strategies"
     ],
     "data-manager": [
@@ -4910,6 +4944,7 @@
       "data/deployment-data-dependencies",
       "data/omnistudio-datapack-migration",
       "devops/change-set-deployment",
+      "devops/code-coverage-orphan-class-cleanup",
       "devops/cpq-deployment-administration",
       "devops/cpq-deployment-patterns",
       "devops/cross-cloud-deployment-patterns",
@@ -4921,6 +4956,7 @@
       "devops/fsc-deployment-patterns",
       "devops/health-cloud-deployment-patterns",
       "devops/metadata-api-coverage-gaps",
+      "devops/metadata-diff-between-sandboxes",
       "devops/permission-set-deployment-ordering",
       "devops/rollback-and-hotfix-strategy",
       "omnistudio/omnistudio-ci-cd-patterns",
@@ -5228,6 +5264,9 @@
     ],
     "drag-drop": [
       "lwc/drag-and-drop"
+    ],
+    "drift": [
+      "devops/metadata-diff-between-sandboxes"
     ],
     "drip-program": [
       "admin/lead-nurture-journey-design"
@@ -5656,6 +5695,7 @@
       "apex/apex-transaction-finalizers",
       "flow/flow-interview-debugging",
       "integration/error-handling-in-integrations",
+      "lwc/lightning-navigation-dead-link-handling",
       "lwc/lwc-error-boundaries",
       "omnistudio/omnistudio-error-handling-patterns"
     ],
@@ -7379,6 +7419,7 @@
       "integration/event-relay-configuration",
       "integration/outbound-messages-and-callbacks",
       "integration/outbound-webhook-from-salesforce",
+      "integration/platform-event-schema-evolution",
       "integration/real-time-vs-batch-integration",
       "integration/salesforce-to-salesforce-integration",
       "integration/slack-salesforce-integration-setup",
@@ -8118,6 +8159,9 @@
       "data/data-model-design-patterns",
       "lwc/lwc-record-picker"
     ],
+    "lookup-filter": [
+      "admin/lookup-filter-cross-object-patterns"
+    ],
     "lookup-rollup": [
       "data/roll-up-summary-alternatives"
     ],
@@ -8148,9 +8192,11 @@
       "lwc/file-upload-patterns",
       "lwc/knowledge-article-lwc",
       "lwc/lifecycle-hooks",
+      "lwc/lightning-navigation-dead-link-handling",
       "lwc/lwc-async-patterns",
       "lwc/lwc-base-component-recipes",
       "lwc/lwc-chart-and-visualization",
+      "lwc/lwc-cross-tab-state-sync",
       "lwc/lwc-custom-event-patterns",
       "lwc/lwc-error-boundaries",
       "lwc/lwc-focus-management",
@@ -8505,6 +8551,7 @@
       "data/omnistudio-metadata-management",
       "devops/api-version-management",
       "devops/change-set-deployment",
+      "devops/metadata-diff-between-sandboxes",
       "omnistudio/omnistudio-field-mapping-governance"
     ],
     "metadata-api": [
@@ -8582,6 +8629,7 @@
       "admin/data-import-and-management",
       "admin/dynamic-forms-migration",
       "admin/knowledge-classic-to-lightning",
+      "admin/mass-transfer-ownership",
       "agentforce/einstein-bots-to-agentforce-migration",
       "architect/nonprofit-cloud-vs-npsp-migration",
       "architect/npsp-vs-nonprofit-cloud-decision",
@@ -8880,7 +8928,8 @@
     ],
     "navigation": [
       "admin/app-and-tab-configuration",
-      "flow/screen-flows"
+      "flow/screen-flows",
+      "lwc/lightning-navigation-dead-link-handling"
     ],
     "navigation-mixin": [
       "lwc/aura-to-lwc-migration",
@@ -9013,7 +9062,8 @@
       "data/volunteer-management-requirements"
     ],
     "null-handling": [
-      "admin/formula-fields"
+      "admin/formula-fields",
+      "apex/soql-null-ordering-patterns"
     ],
     "null-safety": [
       "flow/flow-decision-element-patterns",
@@ -9378,13 +9428,17 @@
       "integration/revenue-lifecycle-management"
     ],
     "ordering": [
-      "apex/cpq-test-automation"
+      "apex/cpq-test-automation",
+      "apex/soql-null-ordering-patterns"
     ],
     "org-assessment": [
       "architect/well-architected-review"
     ],
     "org-cleanup": [
       "admin/org-cleanup-and-technical-debt"
+    ],
+    "org-diff": [
+      "devops/metadata-diff-between-sandboxes"
     ],
     "org-hardening": [
       "security/org-hardening-and-baseline-config"
@@ -9463,6 +9517,7 @@
       "data/sharing-recalculation-performance"
     ],
     "ownership": [
+      "admin/mass-transfer-ownership",
       "flow/flow-governance"
     ],
     "ownership-skew": [
@@ -9524,6 +9579,7 @@
       "lwc/visualforce-to-lwc-migration"
     ],
     "pagination": [
+      "apex/soql-null-ordering-patterns",
       "integration/data-cloud-query-api",
       "integration/graphql-api-patterns",
       "integration/rest-api-pagination-patterns",
@@ -9910,6 +9966,7 @@
       "integration/event-driven-architecture-patterns",
       "integration/idempotent-integration-patterns",
       "integration/platform-event-publish-patterns",
+      "integration/platform-event-schema-evolution",
       "integration/platform-events-integration",
       "integration/pub-sub-api-patterns",
       "integration/real-time-vs-batch-integration",
@@ -10266,6 +10323,9 @@
     "prompt-builder": [
       "agentforce/prompt-builder-templates",
       "agentforce/prompt-template-versioning"
+    ],
+    "prompt-design": [
+      "agentforce/agent-action-input-slot-extraction"
     ],
     "prompt-grounding": [
       "agentforce/rag-patterns-in-salesforce"
@@ -10750,7 +10810,8 @@
     ],
     "release": [
       "devops/feature-flag-custom-metadata",
-      "devops/flow-deployment-activation-ordering"
+      "devops/flow-deployment-activation-ordering",
+      "devops/release-notes-automation"
     ],
     "release-communication": [
       "admin/change-management-and-training"
@@ -11442,6 +11503,9 @@
     "schema-documentation": [
       "admin/data-model-documentation"
     ],
+    "schema-evolution": [
+      "integration/platform-event-schema-evolution"
+    ],
     "schema-management": [
       "integration/data-cloud-ingestion-api"
     ],
@@ -12106,6 +12170,9 @@
     "slot": [
       "lwc/lwc-slots-composition"
     ],
+    "slot-filling": [
+      "agentforce/agent-action-input-slot-extraction"
+    ],
     "slot-projection": [
       "lwc/common-lwc-runtime-errors"
     ],
@@ -12183,6 +12250,7 @@
       "apex/einstein-activity-capture-api",
       "apex/formula-field-performance-and-limits",
       "apex/soql-fundamentals",
+      "apex/soql-null-ordering-patterns",
       "apex/soql-security",
       "data/field-history-tracking",
       "data/soql-query-optimization",
@@ -12327,6 +12395,9 @@
     ],
     "state-management": [
       "omnistudio/flexcard-state-management"
+    ],
+    "state-sync": [
+      "lwc/lwc-cross-tab-state-sync"
     ],
     "stateful": [
       "apex/batch-apex-patterns"
@@ -12568,6 +12639,9 @@
     ],
     "team-members": [
       "apex/opportunity-trigger-patterns"
+    ],
+    "tech-debt": [
+      "devops/code-coverage-orphan-class-cleanup"
     ],
     "technical-debt": [
       "admin/org-cleanup-and-technical-debt",
@@ -13099,6 +13173,9 @@
     "utterance-testing": [
       "agentforce/agent-testing-and-evaluation"
     ],
+    "ux": [
+      "lwc/lightning-navigation-dead-link-handling"
+    ],
     "ux-design": [
       "admin/commerce-checkout-flow-design"
     ],
@@ -13165,6 +13242,7 @@
       "devops/release-management",
       "flow/flow-versioning-strategy",
       "integration/api-versioning-strategy",
+      "integration/platform-event-schema-evolution",
       "omnistudio/omniscript-versioning"
     ],
     "vertical-cloud": [
