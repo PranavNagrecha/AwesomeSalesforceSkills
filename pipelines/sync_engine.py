@@ -152,7 +152,11 @@ def build_state(root: Path) -> SyncState:
 
     config = load_retrieval_config(root)
     embedding_config = parse_embedding_config(config)
-    embeddings = build_embeddings(chunks, embedding_config)
+    embeddings = build_embeddings(
+        chunks,
+        embedding_config,
+        existing_path=root / "vector_index" / "embeddings.jsonl",
+    )
     embedding_lookup = {item["chunk_id"]: item for item in embeddings}
 
     records = []

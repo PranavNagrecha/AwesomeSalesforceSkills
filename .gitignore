@@ -13,6 +13,12 @@ vector_index/lexical.sqlite
 # so CI can verify reproducibility without the raw bytes.
 vector_index/chunks.jsonl
 
+# embeddings.jsonl holds 384-dim fastembed vectors for every chunk
+# (~500 MB at 120K chunks). Same pattern as chunks.jsonl — regenerate via
+# `python3 scripts/skill_sync.py --all`. The content_hash on each record
+# enables incremental re-encode of only changed chunks on subsequent runs.
+vector_index/embeddings.jsonl
+
 # Export tree is a generated artifact (~130 MB for claude+mcp+cursor+windsurf+
 # aider+augment at 684 skills). Consumers regenerate via:
 #   python3 scripts/export_skills.py --all

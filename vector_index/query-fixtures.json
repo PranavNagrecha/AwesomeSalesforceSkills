@@ -61,7 +61,7 @@
       "top_k": 3
     },
     {
-      "query": "with user mode stripinaccessible",
+      "query": "apex SOQL security review CRUD FLS injection",
       "domain": "apex",
       "expected_skill": "apex/soql-security",
       "top_k": 3
@@ -6007,7 +6007,7 @@
       "top_k": 3
     },
     {
-      "query": "flow dml inside loop soql 101 rollup lookup",
+      "query": "flow cross object dml get records update related",
       "domain": "flow",
       "expected_skill": "flow/flow-cross-object-updates",
       "top_k": 3
