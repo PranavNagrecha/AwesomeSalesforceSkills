@@ -10,7 +10,7 @@ three things at once:
    `list_permission_sets`, `describe_permission_set`, `list_record_types`,
    `list_named_credentials`, `list_approval_processes`, `tooling_query`, and
    `validate_against_org`.
-3. **Run-time agents** (39 total across developer, admin, strategic, and
+3. **Run-time agents** (56 total across developer, admin, strategic, and
    vertical/governance tiers) that compose the skill library + live-org tools
    into concrete deliverables — via `list_agents` and `get_agent`.
 
@@ -59,9 +59,9 @@ This MCP server closes both gaps using the Salesforce CLI for org access
 | `list_approval_processes` | Approval processes + steps + next approver rules for an sObject.                                          |
 | `tooling_query`           | Generic read-only Tooling API SOQL with a DML/mutation blocklist (escape hatch for admin-land agents).    |
 
-### Run-time agents reachable via `get_agent` (39)
+### Run-time agents reachable via `get_agent` (56)
 
-Developer + architecture tier (11):
+Developer + architecture tier (17):
 
 | Agent name                 | What it returns |
 | -------------------------- | --------------- |
@@ -76,8 +76,14 @@ Developer + architecture tier (11):
 | `deployment-risk-scorer`   | HIGH/MEDIUM/LOW risk score + breaking-change list |
 | `agentforce-builder`       | Full Agentforce action scaffold: Apex + topic + test + eval |
 | `org-drift-detector`       | Library ↔ live-org gap and bloat report |
+| `lwc-builder`              | Full LWC bundle (js/html/css/meta/tests) + optional Apex controller |
+| `lwc-debugger`             | Ranked hypotheses + diagnostic probes + proposed fix for a live LWC failure |
+| `apex-builder`             | Apex class(es) built from requirements + test class |
+| `changeset-builder`        | Change set manifest + deployment checklist |
+| `flow-orchestrator-designer` | Flow Orchestrator design + stage / step map |
+| `automation-migration-router` | WFR/PB automation inventory → Flow migration plan |
 
-Admin accelerators — Tier 1 (7):
+Admin accelerators — Tier 1 (15):
 
 | Agent name                   | What it returns |
 | ---------------------------- | --------------- |
@@ -88,8 +94,16 @@ Admin accelerators — Tier 1 (7):
 | `validation-rule-auditor`    | VR audit (bypass, bulk safety, Flow coexistence) |
 | `data-loader-pre-flight`     | Go/no-go checklist for a Data Loader / Bulk API load |
 | `duplicate-rule-designer`    | Matching + Duplicate Rules + post-load hygiene |
+| `assignment-and-auto-response-rules-designer` | Assignment rule + auto-response rule design |
+| `business-hours-and-holidays-configurator` | Business hours + holiday set configuration plan |
+| `config-workbook-author`     | Configuration workbook (object / field / automation inventory) |
+| `custom-metadata-and-settings-designer` | CMDT / Custom Settings design + Apex usage patterns |
+| `entitlement-and-milestone-designer` | Entitlement process + milestone design |
+| `experience-cloud-admin-designer` | Experience Cloud site design (member, guest, CMS) |
+| `path-designer`              | Path + guidance + key fields design per object / stage |
+| `process-flow-mapper`        | Business process → Salesforce automation map |
 
-Strategic — Tier 2 (9):
+Strategic — Tier 2 (12):
 
 | Agent name                                 | What it returns |
 | ------------------------------------------ | --------------- |
@@ -102,8 +116,11 @@ Strategic — Tier 2 (9):
 | `report-and-dashboard-auditor`             | Report + dashboard hygiene audit |
 | `csv-to-object-mapper`                     | CSV → sObject mapping + VR collision report |
 | `email-template-modernizer`                | Template classification + migration plan |
+| `audit-router`                             | Routes to appropriate single-mode auditor or runs multi-mode audit |
+| `fit-gap-analyzer`                         | Fit / gap analysis: requirements vs org configuration |
+| `story-drafter`                            | User stories with Given/When/Then acceptance criteria |
 
-Vertical + governance — Tier 3 (10):
+Vertical + governance — Tier 3 (12):
 
 | Agent name                            | What it returns |
 | ------------------------------------- | --------------- |
@@ -117,6 +134,8 @@ Vertical + governance — Tier 3 (10):
 | `waf-assessor`                        | Well-Architected scorecard + remediation backlog |
 | `agentforce-action-reviewer`          | Per-action A–F scorecard + guardrails gap list |
 | `prompt-library-governor`             | Prompt template inventory + consolidation plan |
+| `profile-to-permset-migrator`         | Profile → Permission Set migration plan + PS / PSG design |
+| `user-access-diff`                    | Side-by-side access comparison report between users |
 
 ### `validate_against_org` routing
 

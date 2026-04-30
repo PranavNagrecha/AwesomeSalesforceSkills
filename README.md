@@ -291,8 +291,8 @@ This repo ships **two classes of agents**, both as instruction files (`agents/<n
 
 | Class | Purpose | Who invokes |
 |---|---|---|
-| **Build-time (12)** | Produce and maintain the skill library itself | Repo maintainers, `/run-queue` |
-| **Run-time (39)** | Use the library to do real Salesforce work in your codebase / org | You — via slash commands, direct AGENT.md reads, or MCP `get_agent` |
+| **Build-time (14)** | Produce and maintain the skill library itself | Repo maintainers, `/run-queue` |
+| **Run-time (56)** | Use the library to do real Salesforce work in your codebase / org | You — via slash commands, direct AGENT.md reads, or MCP `get_agent` |
 
 The contract every agent follows: [`agents/_shared/AGENT_CONTRACT.md`](./agents/_shared/AGENT_CONTRACT.md).
 The full roster: [`agents/_shared/RUNTIME_VS_BUILD.md`](./agents/_shared/RUNTIME_VS_BUILD.md).

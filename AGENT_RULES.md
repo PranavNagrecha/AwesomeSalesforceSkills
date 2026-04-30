@@ -209,30 +209,38 @@ handles. Retrieval fixtures (which skill gets picked) live separately in
 
 Two classes of agents live in `agents/`:
 
-1. **Build-time (12)** — orchestrator, task-mapper, content-researcher, the 4
-   skill-builders, code-reviewer, validator, currency-monitor, org-assessor,
+1. **Build-time (14)** — orchestrator, task-mapper, content-researcher, the 6
+   skill-builders (admin, dev, devops, data, architect, security),
+   code-reviewer, validator, currency-monitor, org-assessor,
    release-planner. These produce the library. Invoked by `/run-queue`.
 
-2. **Run-time (39)** — grouped in four tiers:
-   - **Developer + architecture (11):** `apex-refactorer`, `trigger-consolidator`,
+2. **Run-time (56)** — grouped in four tiers:
+   - **Developer + architecture (17):** `apex-refactorer`, `trigger-consolidator`,
      `test-class-generator`, `soql-optimizer`, `security-scanner`,
-     `flow-analyzer`, `bulk-migration-planner`, `lwc-auditor`,
-     `deployment-risk-scorer`, `agentforce-builder`, `org-drift-detector`.
-   - **Admin accelerators — Tier 1 (7):** `field-impact-analyzer`,
+     `flow-analyzer`, `bulk-migration-planner`, `lwc-builder`, `lwc-auditor`,
+     `lwc-debugger`, `deployment-risk-scorer`, `agentforce-builder`,
+     `org-drift-detector`, `apex-builder`, `changeset-builder`,
+     `flow-orchestrator-designer`, `automation-migration-router`.
+   - **Admin accelerators — Tier 1 (15):** `field-impact-analyzer`,
      `object-designer`, `permission-set-architect`, `flow-builder`,
      `validation-rule-auditor`, `data-loader-pre-flight`,
-     `duplicate-rule-designer`.
-   - **Strategic — Tier 2 (9):** `sharing-audit-agent`,
+     `duplicate-rule-designer`, `assignment-and-auto-response-rules-designer`,
+     `business-hours-and-holidays-configurator`, `config-workbook-author`,
+     `custom-metadata-and-settings-designer`, `entitlement-and-milestone-designer`,
+     `experience-cloud-admin-designer`, `path-designer`, `process-flow-mapper`.
+   - **Strategic — Tier 2 (12):** `sharing-audit-agent`,
      `lightning-record-page-auditor`,
      `record-type-and-layout-auditor`, `picklist-governor`,
      `data-model-reviewer`, `integration-catalog-builder`,
      `report-and-dashboard-auditor`, `csv-to-object-mapper`,
-     `email-template-modernizer`.
-   - **Vertical + governance — Tier 3 (10):** `omni-channel-routing-designer`,
+     `email-template-modernizer`, `audit-router`, `fit-gap-analyzer`,
+     `story-drafter`.
+   - **Vertical + governance — Tier 3 (12):** `omni-channel-routing-designer`,
      `knowledge-article-taxonomy-agent`, `sales-stage-designer`,
      `lead-routing-rules-designer`, `case-escalation-auditor`,
      `sandbox-strategy-designer`, `release-train-planner`, `waf-assessor`,
-     `agentforce-action-reviewer`, `prompt-library-governor`.
+     `agentforce-action-reviewer`, `prompt-library-governor`,
+     `profile-to-permset-migrator`, `user-access-diff`.
 
    These USE the library to do real Salesforce work. Invoked via the matching
    `commands/<name>.md`, direct AGENT.md read, or the MCP `get_agent` tool.

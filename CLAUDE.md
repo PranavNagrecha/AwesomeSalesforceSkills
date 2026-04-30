@@ -179,15 +179,15 @@ Must:
 - prefer skill-local validators where they exist
 - avoid referencing nonexistent repo-level analysis scripts
 
-### Run-time agents (39)
+### Run-time agents (56)
 
 These are user-facing agents that USE the library to do real Salesforce work — they do not build the library. The full roster is documented in [`agents/_shared/RUNTIME_VS_BUILD.md`](./agents/_shared/RUNTIME_VS_BUILD.md) and source-mapped in [`agents/_shared/SKILL_MAP.md`](./agents/_shared/SKILL_MAP.md).
 
 The roster:
-- **Developer + architecture (13)** — `/refactor-apex`, `/consolidate-triggers`, `/gen-tests`, `/optimize-soql`, `/scan-security`, `/analyze-flow`, `/plan-bulk-migration`, `/build-lwc`, `/audit-lwc`, `/debug-lwc`, `/score-deployment`, `/build-agentforce-action`, `/detect-drift`.
-- **Admin accelerators — Tier 1 (7)** — `/analyze-field-impact`, `/design-object`, `/architect-perms`, `/build-flow`, `/audit-validation-rules`, `/preflight-load`, `/design-duplicate-rule`.
-- **Strategic — Tier 2 (9)** — `/audit-sharing`, `/audit-record-page`, `/audit-record-types`, `/govern-picklists`, `/review-data-model`, `/catalog-integrations`, `/audit-reports`, `/map-csv-to-object`, `/modernize-email-templates`.
-- **Vertical + governance — Tier 3 (10)** — `/design-omni-channel`, `/design-knowledge-taxonomy`, `/design-sales-stages`, `/design-lead-routing`, `/audit-case-escalation`, `/design-sandbox-strategy`, `/plan-release-train`, `/assess-waf`, `/review-agentforce-action`, `/govern-prompt-library`.
+- **Developer + architecture (17)** — `/refactor-apex`, `/consolidate-triggers`, `/gen-tests`, `/optimize-soql`, `/scan-security`, `/analyze-flow`, `/plan-bulk-migration`, `/build-lwc`, `/audit-lwc`, `/debug-lwc`, `/score-deployment`, `/build-agentforce-action`, `/detect-drift`, `/build-apex`, `/build-changeset`, `/design-flow-orchestrator`, `/automation-migration-router`.
+- **Admin accelerators — Tier 1 (15)** — `/analyze-field-impact`, `/design-object`, `/architect-perms`, `/build-flow`, `/audit-validation-rules`, `/preflight-load`, `/design-duplicate-rule`, `/design-assignment-rules`, `/configure-business-hours`, `/author-config-workbook`, `/design-custom-metadata`, `/design-entitlements`, `/design-experience-cloud`, `/design-path`, `/map-process-flow`.
+- **Strategic — Tier 2 (12)** — `/audit-sharing`, `/audit-record-page`, `/audit-record-types`, `/govern-picklists`, `/review-data-model`, `/catalog-integrations`, `/audit-reports`, `/map-csv-to-object`, `/modernize-email-templates`, `/audit-router`, `/run-fit-gap`, `/draft-stories`.
+- **Vertical + governance — Tier 3 (12)** — `/design-omni-channel`, `/design-knowledge-taxonomy`, `/design-sales-stages`, `/design-lead-routing`, `/audit-case-escalation`, `/design-sandbox-strategy`, `/plan-release-train`, `/assess-waf`, `/review-agentforce-action`, `/govern-prompt-library`, `/migrate-profile-to-permset`, `/diff-users`.
 
 Must:
 - follow `agents/_shared/AGENT_CONTRACT.md` — the 8-section AGENT.md shape, including the mandatory **Process Observations** block that flags healthy / concerning / ambiguous patterns seen while executing
