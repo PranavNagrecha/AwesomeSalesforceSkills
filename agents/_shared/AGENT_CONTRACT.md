@@ -162,6 +162,17 @@ Citations are data, not prose. Every output ends with a `citations[]` block wher
 
 ---
 
+## Creating a new agent — and adding skills to existing ones
+
+Two workflows govern the agent ↔ skill relationship; both treat the wiring as a judgment step, not a sweep:
+
+- **New skill** → see [`commands/new-skill.md`](../../commands/new-skill.md), Step 6. After scaffolding the skill, walk the agent roster and decide whether any agent meaningfully needs it. Zero is a valid answer; orphan WARNs are advisory.
+- **New run-time agent** → see [`commands/new-agent.md`](../../commands/new-agent.md). After scaffolding the agent, walk the skill library and cite the skills that genuinely change the agent's output. Don't dilute `Mandatory Reads` with adjacent-but-unused skills, and don't fabricate citations to non-existent skills.
+
+The bar in both directions is the same: a citation should answer "the agent's output would be wrong without this skill in this scenario." If you can't name the scenario, drop the citation.
+
+---
+
 ## Testing an agent
 
 Before a new AGENT.md is merged, it must pass:
