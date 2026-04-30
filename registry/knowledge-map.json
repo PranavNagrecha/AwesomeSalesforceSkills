@@ -37,6 +37,7 @@
       "admin/change-data-capture-admin",
       "admin/change-management-and-deployment",
       "admin/change-management-and-training",
+      "admin/classic-email-template-migration",
       "admin/client-onboarding-design",
       "admin/clinical-data-requirements",
       "admin/collaborative-forecasts",
@@ -61,6 +62,7 @@
       "admin/cpq-product-catalog-setup",
       "admin/cpq-quote-templates",
       "admin/crm-analytics-app-creation",
+      "admin/custom-button-to-action-migration",
       "admin/custom-field-creation",
       "admin/custom-label-management",
       "admin/custom-metadata-types",
@@ -83,6 +85,7 @@
       "admin/donor-lifecycle-requirements",
       "admin/duplicate-management",
       "admin/dynamic-forms-and-actions",
+      "admin/dynamic-forms-migration",
       "admin/education-cloud-eda-setup",
       "admin/einstein-activity-capture-setup",
       "admin/einstein-analytics-basics",
@@ -143,6 +146,7 @@
       "admin/integration-user-management",
       "admin/journey-builder-administration",
       "admin/knowledge-base-administration",
+      "admin/knowledge-classic-to-lightning",
       "admin/lead-management-and-conversion",
       "admin/lead-nurture-journey-design",
       "admin/lead-scoring-requirements",
@@ -525,6 +529,7 @@
       "data/analytics-data-preparation",
       "data/analytics-dataset-optimization",
       "data/analytics-external-data",
+      "data/attachment-to-files-migration",
       "data/batch-data-cleanup-patterns",
       "data/billing-data-reconciliation",
       "data/bulk-api-and-large-data-loads",
@@ -845,6 +850,7 @@
       "lwc/navigation-and-routing",
       "lwc/static-resources-in-lwc",
       "lwc/virtualized-lists",
+      "lwc/visualforce-to-lwc-migration",
       "lwc/wire-service-patterns"
     ],
     "omnistudio": [
@@ -2146,6 +2152,9 @@
       "agentforce/agentforce-service-ai-setup",
       "agentforce/einstein-copilot-for-service"
     ],
+    "article-types": [
+      "admin/knowledge-classic-to-lightning"
+    ],
     "as-is-to-be": [
       "admin/process-flow-as-is-to-be"
     ],
@@ -2226,6 +2235,9 @@
     ],
     "ato": [
       "architect/government-cloud-compliance"
+    ],
+    "attachments": [
+      "data/attachment-to-files-migration"
     ],
     "attendance": [
       "admin/npsp-program-management"
@@ -3760,16 +3772,19 @@
       "apex/pdf-generation-patterns"
     ],
     "contentdocument": [
+      "data/attachment-to-files-migration",
       "data/data-storage-management"
     ],
     "contentdocumentlink": [
-      "apex/apex-blob-and-content-version"
+      "apex/apex-blob-and-content-version",
+      "data/attachment-to-files-migration"
     ],
     "contention": [
       "apex/record-locking-and-contention"
     ],
     "contentversion": [
-      "apex/apex-blob-and-content-version"
+      "apex/apex-blob-and-content-version",
+      "data/attachment-to-files-migration"
     ],
     "context-variables": [
       "apex/apex-trigger-context-variables"
@@ -3808,6 +3823,9 @@
     ],
     "controller": [
       "apex/apex-with-without-sharing-decision"
+    ],
+    "controller-translation": [
+      "lwc/visualforce-to-lwc-migration"
     ],
     "controlling-field": [
       "admin/field-dependency-and-controlling",
@@ -4119,6 +4137,9 @@
     "custom-baseline": [
       "security/security-health-check"
     ],
+    "custom-buttons": [
+      "admin/custom-button-to-action-migration"
+    ],
     "custom-cell-type": [
       "lwc/lwc-custom-datatable-types"
     ],
@@ -4312,6 +4333,7 @@
     ],
     "data-categories": [
       "admin/knowledge-base-administration",
+      "admin/knowledge-classic-to-lightning",
       "apex/service-cloud-rest-api",
       "architect/knowledge-taxonomy-design"
     ],
@@ -5259,6 +5281,7 @@
     ],
     "dynamic-forms": [
       "admin/dynamic-forms-and-actions",
+      "admin/dynamic-forms-migration",
       "admin/lightning-app-builder-advanced",
       "admin/record-type-strategy-at-scale",
       "admin/record-types-and-page-layouts"
@@ -5404,6 +5427,9 @@
     "eligibility": [
       "omnistudio/business-rules-engine"
     ],
+    "email-alert": [
+      "admin/classic-email-template-migration"
+    ],
     "email-alerts": [
       "admin/email-templates-and-alerts"
     ],
@@ -5434,6 +5460,7 @@
       "apex/einstein-activity-capture-api"
     ],
     "email-templates": [
+      "admin/classic-email-template-migration",
       "admin/sales-engagement-cadences"
     ],
     "email-threading": [
@@ -5519,6 +5546,9 @@
     ],
     "enhanced-chat": [
       "apex/service-cloud-rest-api"
+    ],
+    "enhanced-letterhead": [
+      "admin/classic-email-template-migration"
     ],
     "enhanced-recurring-donations": [
       "admin/recurring-donations-setup"
@@ -6092,6 +6122,9 @@
     "field-types": [
       "data/data-model-design-patterns"
     ],
+    "field-visibility": [
+      "admin/dynamic-forms-migration"
+    ],
     "file-storage": [
       "data/data-storage-management"
     ],
@@ -6101,6 +6134,7 @@
       "lwc/lwc-forms-and-validation"
     ],
     "files": [
+      "data/attachment-to-files-migration",
       "security/file-upload-virus-scanning"
     ],
     "files-connect": [
@@ -7534,6 +7568,9 @@
     "itil": [
       "admin/change-advisory-board-process"
     ],
+    "javascript-buttons": [
+      "admin/custom-button-to-action-migration"
+    ],
     "jest": [
       "lwc/lwc-testing"
     ],
@@ -7660,6 +7697,7 @@
     ],
     "knowledge": [
       "admin/knowledge-base-administration",
+      "admin/knowledge-classic-to-lightning",
       "admin/self-service-design",
       "apex/service-cloud-rest-api",
       "architect/knowledge-taxonomy-design",
@@ -7818,6 +7856,9 @@
     "lenses": [
       "admin/crm-analytics-app-creation"
     ],
+    "letterhead": [
+      "admin/classic-email-template-migration"
+    ],
     "license-audit": [
       "architect/license-optimization-strategy"
     ],
@@ -7873,6 +7914,7 @@
     ],
     "lightning-app-builder": [
       "admin/dynamic-forms-and-actions",
+      "admin/dynamic-forms-migration",
       "admin/lightning-app-builder-advanced",
       "admin/lightning-page-performance-tuning"
     ],
@@ -7896,6 +7938,9 @@
       "lwc/lwc-custom-datatable-types",
       "lwc/lwc-data-table"
     ],
+    "lightning-email-template": [
+      "admin/classic-email-template-migration"
+    ],
     "lightning-experience": [
       "admin/in-app-guidance-and-walkthroughs",
       "agentforce/einstein-search-personalization"
@@ -7914,6 +7959,7 @@
     ],
     "lightning-knowledge": [
       "admin/knowledge-base-administration",
+      "admin/knowledge-classic-to-lightning",
       "data/knowledge-article-import"
     ],
     "lightning-locker": [
@@ -7930,6 +7976,9 @@
     ],
     "lightning-navigation": [
       "lwc/experience-cloud-lwc-components"
+    ],
+    "lightning-out": [
+      "lwc/visualforce-to-lwc-migration"
     ],
     "lightning-pages": [
       "admin/lightning-page-performance-tuning",
@@ -8177,12 +8226,14 @@
       "lwc/lwc-light-dom"
     ],
     "lwc-migration": [
+      "lwc/visualforce-to-lwc-migration",
       "omnistudio/omnistudio-lwc-omniscript-migration"
     ],
     "lwc-performance": [
       "lwc/lwc-performance"
     ],
     "lwc-quick-actions": [
+      "admin/custom-button-to-action-migration",
       "lwc/lwc-quick-actions"
     ],
     "lwc-ref": [
@@ -8342,6 +8393,9 @@
     "masking": [
       "admin/sandbox-strategy"
     ],
+    "mass-action": [
+      "admin/custom-button-to-action-migration"
+    ],
     "master-detail": [
       "admin/lookup-and-relationship-design",
       "data/data-model-design-patterns"
@@ -8412,6 +8466,7 @@
       "data/record-merge-implications"
     ],
     "merge-fields": [
+      "admin/classic-email-template-migration",
       "admin/email-templates-and-alerts",
       "agentforce/prompt-builder-templates"
     ],
@@ -8523,10 +8578,14 @@
       "flow/process-builder-to-flow-migration"
     ],
     "migration": [
+      "admin/custom-button-to-action-migration",
       "admin/data-import-and-management",
+      "admin/dynamic-forms-migration",
+      "admin/knowledge-classic-to-lightning",
       "agentforce/einstein-bots-to-agentforce-migration",
       "architect/nonprofit-cloud-vs-npsp-migration",
       "architect/npsp-vs-nonprofit-cloud-decision",
+      "data/attachment-to-files-migration",
       "data/data-loader-batch-window-sizing",
       "data/omnistudio-datapack-migration",
       "data/person-accounts",
@@ -8754,6 +8813,9 @@
     "multi-user": [
       "flow/orchestration-flows"
     ],
+    "multilingual": [
+      "admin/knowledge-classic-to-lightning"
+    ],
     "multipart": [
       "integration/file-and-document-integration"
     ],
@@ -8827,7 +8889,8 @@
     ],
     "navigationmixin": [
       "lwc/lifecycle-hooks",
-      "lwc/navigation-and-routing"
+      "lwc/navigation-and-routing",
+      "lwc/visualforce-to-lwc-migration"
     ],
     "nba-strategy": [
       "agentforce/einstein-next-best-action"
@@ -8901,6 +8964,9 @@
     ],
     "nonprofit-platform": [
       "architect/nonprofit-platform-architecture"
+    ],
+    "notes": [
+      "data/attachment-to-files-migration"
     ],
     "notification": [
       "flow/flow-for-slack"
@@ -9437,6 +9503,7 @@
       "admin/custom-field-creation"
     ],
     "page-layouts": [
+      "admin/dynamic-forms-migration",
       "admin/record-type-strategy-at-scale",
       "admin/record-types-and-page-layouts"
     ],
@@ -9453,7 +9520,8 @@
     ],
     "pagereference": [
       "lwc/lwc-navigation-mixin",
-      "lwc/navigation-and-routing"
+      "lwc/navigation-and-routing",
+      "lwc/visualforce-to-lwc-migration"
     ],
     "pagination": [
       "integration/data-cloud-query-api",
@@ -10380,6 +10448,7 @@
       "lwc/lwc-quick-actions"
     ],
     "quick-actions": [
+      "admin/custom-button-to-action-migration",
       "admin/global-actions-and-quick-actions"
     ],
     "quick-deploy": [
@@ -10547,6 +10616,9 @@
       "admin/dynamic-forms-and-actions",
       "lwc/lwc-app-builder-config"
     ],
+    "record-pages": [
+      "admin/dynamic-forms-migration"
+    ],
     "record-picker": [
       "lwc/lwc-record-picker"
     ],
@@ -10579,6 +10651,7 @@
     ],
     "record-types": [
       "admin/knowledge-base-administration",
+      "admin/knowledge-classic-to-lightning",
       "admin/opportunity-management",
       "admin/record-type-strategy-at-scale",
       "admin/record-types-and-page-layouts",
@@ -11416,6 +11489,9 @@
       "flow/screen-flow-accessibility",
       "lwc/lwc-in-flow-screens",
       "security/ip-range-and-login-flow-strategy"
+    ],
+    "screen-flow-actions": [
+      "admin/custom-button-to-action-migration"
     ],
     "screen-flows": [
       "flow/screen-flows"
@@ -13129,7 +13205,11 @@
       "apex/pdf-generation-patterns",
       "apex/quote-pdf-customization",
       "apex/visualforce-fundamentals",
+      "lwc/visualforce-to-lwc-migration",
       "security/xss-and-injection-prevention"
+    ],
+    "visualforce-email": [
+      "admin/classic-email-template-migration"
     ],
     "visualization": [
       "lwc/lwc-chart-and-visualization"

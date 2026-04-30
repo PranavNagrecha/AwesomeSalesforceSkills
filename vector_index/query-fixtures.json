@@ -6665,6 +6665,78 @@
       "domain": "admin",
       "expected_skill": "admin/acceptance-criteria-given-when-then",
       "top_k": 3
+    },
+    {
+      "query": "migrate Visualforce page to LWC controller viewstate translation",
+      "domain": "lwc",
+      "expected_skill": "lwc/visualforce-to-lwc-migration",
+      "top_k": 3
+    },
+    {
+      "query": "convert apex:inputField to lightning-record-edit-form",
+      "domain": "lwc",
+      "expected_skill": "lwc/visualforce-to-lwc-migration",
+      "top_k": 3
+    },
+    {
+      "query": "migrate Classic Attachments to Salesforce Files ContentDocument",
+      "domain": "data",
+      "expected_skill": "data/attachment-to-files-migration",
+      "top_k": 3
+    },
+    {
+      "query": "convert Note to ContentNote idempotent batch",
+      "domain": "data",
+      "expected_skill": "data/attachment-to-files-migration",
+      "top_k": 3
+    },
+    {
+      "query": "migrate Classic email templates to Lightning Email Template Letterhead",
+      "domain": "admin",
+      "expected_skill": "admin/classic-email-template-migration",
+      "top_k": 3
+    },
+    {
+      "query": "convert Visualforce email template to Lightning Email Template",
+      "domain": "admin",
+      "expected_skill": "admin/classic-email-template-migration",
+      "top_k": 3
+    },
+    {
+      "query": "migrate Classic Knowledge to Lightning Knowledge article types record types",
+      "domain": "admin",
+      "expected_skill": "admin/knowledge-classic-to-lightning",
+      "top_k": 3
+    },
+    {
+      "query": "Lightning Knowledge Migration Tool translations data categories",
+      "domain": "admin",
+      "expected_skill": "admin/knowledge-classic-to-lightning",
+      "top_k": 3
+    },
+    {
+      "query": "migrate page layouts to Dynamic Forms field visibility rules",
+      "domain": "admin",
+      "expected_skill": "admin/dynamic-forms-migration",
+      "top_k": 3
+    },
+    {
+      "query": "convert record type page layouts to Dynamic Forms one record page",
+      "domain": "admin",
+      "expected_skill": "admin/dynamic-forms-migration",
+      "top_k": 3
+    },
+    {
+      "query": "migrate JavaScript custom button to Lightning Quick Action LWC",
+      "domain": "admin",
+      "expected_skill": "admin/custom-button-to-action-migration",
+      "top_k": 3
+    },
+    {
+      "query": "convert classic JS button sforce.apex.execute to LWC headless action",
+      "domain": "admin",
+      "expected_skill": "admin/custom-button-to-action-migration",
+      "top_k": 3
     }
   ]
 }
