@@ -195,8 +195,39 @@ public class MirrorAttachmentToFilesQueueable implements Queueable {
             SELECT Id, ParentId, OwnerId, Name, Body, IsPrivate, Description
             FROM Attachment WHERE Id IN :attachmentIds
         ];
-        // Same pattern as the batch — insert ContentVersion + ContentDocumentLink
-        // ...
+
+        // Insert ContentVersions
+        List<ContentVersion> versions = new List<ContentVersion>();
+        for (Attachment a : atts) {
+            versions.add(new ContentVersion(
+                Title = a.Name,
+                PathOnClient = a.Name,
+                VersionData = a.Body,
+                OwnerId = a.OwnerId,
+                Description = a.Description,
+                Source_Attachment_Id__c = a.Id
+            ));
+        }
+        Database.insert(versions, false);
+
+        // Re-query for ContentDocumentId, then build ContentDocumentLinks
+        Map<Id, ContentVersion> byId = new Map<Id, ContentVersion>(
+            [SELECT Id, ContentDocumentId, Source_Attachment_Id__c
+             FROM ContentVersion WHERE Id IN :versions]
+        );
+        Map<Id, Attachment> srcById = new Map<Id, Attachment>(atts);
+        List<ContentDocumentLink> links = new List<ContentDocumentLink>();
+        for (ContentVersion cv : byId.values()) {
+            Attachment src = srcById.get((Id) cv.Source_Attachment_Id__c);
+            if (src == null) continue;
+            links.add(new ContentDocumentLink(
+                ContentDocumentId = cv.ContentDocumentId,
+                LinkedEntityId = src.ParentId,
+                ShareType = 'V',
+                Visibility = src.IsPrivate ? 'InternalUsers' : 'AllUsers'
+            ));
+        }
+        Database.insert(links, false);
     }
 }
 ```

@@ -221,8 +221,7 @@ Step-by-step instructions for an AI agent or practitioner working on this task:
 4. **Build the Lightning replacements.** Implement per-pattern. Test each against the same scenarios the original button served.
 5. **Configure on page layouts and list views.** Each Lightning Action must be added to relevant page layouts (Lightning Actions section) or list view button bars.
 6. **Test in sandbox with users from each affected profile.** Specifically: do users find the new action where they expect it? Does the action's UX match the original's intent?
-7. **Phased production rollout.** Coexistence first (keep Classic, add Lightning). Monitor usage. Once Lightning replacement adoption is confirmed, retire Classic buttons (or schedule retirement after a soak period).
-8. **Document the mapping.** Maintain an audit log: Classic button name → Lightning replacement type → status (Active, Retained for Classic only, Retired).
+7. **Phased production rollout with audit log.** Coexistence first (keep Classic, add Lightning); monitor adoption via the `Last_Action_Source__c` field. Maintain a `Custom_Button_Migration_Log__c` mapping (Classic name → Lightning replacement → status). Retire Classic buttons when adoption hits the agreed threshold (typically ≥95% Lightning over 30 days).
 
 ---
 

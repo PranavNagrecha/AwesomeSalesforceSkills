@@ -201,12 +201,11 @@ Step-by-step instructions for an AI agent or practitioner working on this task:
 
 1. **Inventory and categorize.** Run the `WHERE UiType='Aloha'` SOQL. Group by `TemplateType`. Generate a CSV with columns: ID, Name, Type, Folder, downstream consumers (count of Email Alerts, Flows, Apex references). This drives the migration plan.
 2. **Build Enhanced Letterhead(s).** For each unique brand layout in Classic Letterheads, create an Enhanced Letterhead. Keep the count low (1–3 per org); resist per-department variants that fragment brand.
-3. **Migrate Text and Custom HTML first.** These are the lowest-risk, highest-volume cohort. Paste body, translate merge fields, send test, capture new ID.
-4. **Migrate HTML-with-Letterhead.** Apply Pattern 2: each new Lightning template references the Enhanced Letterhead; body content ports directly.
-5. **Triage Visualforce templates.** Categorize each per Pattern 3. Most simple ones become Lightning; complex ones stay as VF with a documented retention rationale.
-6. **Build the old → new ID mapping table.** Persist as a custom object (`Email_Template_Migration_Map__c`) for ongoing reference and audit.
-7. **Rewire downstream consumers.** Email Alerts via Metadata API (Pattern 4), Flows via Flow XML edit, Apex via code change. Verify zero references to old template IDs remain.
-8. **Verify and deactivate Classic templates.** Send test emails through every Email Alert and Flow path. Once confirmed, set Classic template `IsActive=false` (don't delete — keep as audit trail). Schedule deletion after a soak window if storage is a concern.
+3. **Migrate templates by type.** Start with Text and Custom HTML (lowest risk, highest volume) — paste body, translate merge fields, send test, capture new ID. Then HTML-with-Letterhead per Pattern 2: each new Lightning template references the Enhanced Letterhead; body content ports directly.
+4. **Triage Visualforce templates.** Categorize each per Pattern 3. Most simple ones become Lightning; complex ones stay as VF with a documented retention rationale.
+5. **Build the old → new ID mapping table.** Persist as a custom object (`Email_Template_Migration_Map__c`) for ongoing reference and audit.
+6. **Rewire downstream consumers.** Email Alerts via Metadata API (Pattern 4), Flows via Flow XML edit, Apex via code change. Verify zero references to old template IDs remain.
+7. **Verify and deactivate Classic templates.** Send test emails through every Email Alert and Flow path. Once confirmed, set Classic template `IsActive=false` (don't delete — keep as audit trail). Schedule deletion after a soak window if storage is a concern.
 
 ---
 
