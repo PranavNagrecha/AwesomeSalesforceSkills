@@ -1,0 +1,94 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "09d9d85749f541d2611a",
+    "137b38a271a31fadb06d",
+    "241c3b4279d110057347",
+    "26813b25af584114eb18",
+    "2863210683b042694bd3",
+    "30e12fa0f3f4fb111cef",
+    "31f70243c913eaacc064",
+    "39c8d9fca064b05cefef",
+    "4097b94540c8662c6de0",
+    "43feb31b79b734d289a2",
+    "46b054f12e0a4e75fb27",
+    "4cc32069b32e76a4ef54",
+    "536c8d2d5424437d5a77",
+    "57fe18b402776bf7811f",
+    "6ac0e67159aea27c9841",
+    "70dc45da144978129264",
+    "7380f905864c45549573",
+    "75a27189ade78cbb2caf",
+    "7c4121a90dec624bc718",
+    "7cc3b71c1cd7c5928c6f",
+    "7dc2d01cdeb745e60992",
+    "8340e48ebe1fcc95d09d",
+    "8ac2187bde9a2aa00760",
+    "8bd1c909f7d7c9f0cfe3",
+    "9173e3b141d53c0d1301",
+    "9a8488fdb4979646ddcf",
+    "9c2843bc72fcf6a100e9",
+    "9e1bbf888d25d20d68a5",
+    "9f10fc1540a6e469f533",
+    "a8e7a6b11e3be441c5cc",
+    "af53f39ca47534b91cb2",
+    "b0250d71efbb591ce53b",
+    "b329a1ba0dcaa24b84df",
+    "b98377134a4a68820e6a",
+    "c364b1d9a814f063aa04",
+    "c5b38c978f241bfa565e",
+    "d4a8662dc86f03af2fe0",
+    "d7cc8ddfa391504dbd59",
+    "d9df29b00add188052d7",
+    "df69eb5aad008e41ab32",
+    "e143842f032a532775ae",
+    "e96fd092835bc7765f20",
+    "ebcce05f463d7ed82478",
+    "f06667a963e5056e070c",
+    "f62fce4fea102d6b1a11",
+    "fdd4779fb9f806ce00b5"
+  ],
+  "content_hash": "6a4fb256ba590f3a8cfe6a9dbb0d890f643a004eacf63056d887b4ed23026b96",
+  "dependencies": [],
+  "description": "Use when designing or repairing lookup filters that constrain a child lookup using fields from the parent record (or a sibling record on the same object). Triggers: 'limit lookup based on another field', 'cross-object lookup filter', 'lookup filter $Source vs $User'. NOT for filter logic on report types, list views, or duplicate matching rules.",
+  "file_location": "skills/admin/lookup-filter-cross-object-patterns",
+  "id": "admin/lookup-filter-cross-object-patterns",
+  "inputs": [
+    "object and field names of the lookup, the parent (or related) object, and the constraint expression",
+    "whether the filter is required (block save) or optional (informational)",
+    "user profiles that should be exempt"
+  ],
+  "name": "lookup-filter-cross-object-patterns",
+  "official_sources": [
+    "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
+    "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
+    "Lookup Filters help \u2014 https://help.salesforce.com/s/articleView?id=sf.fields_about_lookup_filters.htm&type=5"
+  ],
+  "outputs": [
+    "lookup filter definition snippet",
+    "rollout plan covering existing records that may now violate the filter",
+    "list of field-level visibility prerequisites"
+  ],
+  "references": [
+    "skills/admin/lookup-filter-cross-object-patterns/references/examples.md",
+    "skills/admin/lookup-filter-cross-object-patterns/references/gotchas.md",
+    "skills/admin/lookup-filter-cross-object-patterns/references/llm-anti-patterns.md",
+    "skills/admin/lookup-filter-cross-object-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/lookup-filter-cross-object-patterns/scripts/check_lookup_filter_cross_object_patterns.py"
+  ],
+  "tags": [
+    "lookup-filter",
+    "data-integrity",
+    "admin",
+    "cross-object"
+  ],
+  "templates": [
+    "skills/admin/lookup-filter-cross-object-patterns/templates/lookup-filter-cross-object-patterns-template.md"
+  ],
+  "updated": "2026-04-30",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

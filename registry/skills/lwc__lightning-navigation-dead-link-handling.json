@@ -1,0 +1,98 @@
+{
+  "category": "lwc",
+  "chunk_ids": [
+    "018d28bd337d9e610f78",
+    "08166b8c073b5d56e527",
+    "0fa7653374769c8f69bc",
+    "14aae92788992fe7d908",
+    "1613c78b955599260f74",
+    "17bde8cf62501a4d5a5a",
+    "18dbdb0805b9946c0621",
+    "1cc36c22f98109920348",
+    "1faf2e973c9e6bf46de5",
+    "2146d69f4586a34d28a1",
+    "2679b43f9c1358c8657a",
+    "2cefd323031137366c98",
+    "320d33e666b93ff00963",
+    "3884893673f7160f51ae",
+    "409d409a31736e38838e",
+    "48b5656d2d8f414c0985",
+    "575d9a9d782ca8b6f645",
+    "578dc68a702df928bb82",
+    "6a48f888adbb4e157afd",
+    "6fb1ffd88e4c2034f513",
+    "73eaee8987f37331a0f8",
+    "780441eed07c51246e32",
+    "79ddf8bd036110bd7a76",
+    "7b2b18f5d583c5cc8506",
+    "7d1b33ca5fabd78bec24",
+    "7fdb00cc6d15c533d5be",
+    "7fecc35117b7aae1b6e9",
+    "837b36381b442f965e6d",
+    "87b880b76d9fc7f567ab",
+    "8c3e210f7948ee2602d1",
+    "8c5a68b0690010c3a072",
+    "a2671b0256b889136aca",
+    "a4d42a5cb0799024d5d1",
+    "aa530258f1e744fad6af",
+    "aeb0cc067d34d8d6c932",
+    "af83a1c41c42c9c8b8bb",
+    "b25de96cf190f9352d56",
+    "b57de84a6dc5e9271059",
+    "bfeb282dc41ea445d7f4",
+    "c25d98460c89671b3852",
+    "c68618058dc786b3bcda",
+    "c6d07266356c80efa5c4",
+    "d0ae38a10af6f2ca8978",
+    "d3c53aa43ae6f89d255a",
+    "dbd0bb603df28c5c3a08",
+    "dc0ac78bf8575ca45ab1",
+    "e8d2885a8251ce978675",
+    "f1ee68ea1b355bae61b5",
+    "facce9be9f2494f5c8bc"
+  ],
+  "content_hash": "9531ebede9b9ab12f24acd8ce55dcc65a9f63cafe62461fdc3f4471c2f12778b",
+  "dependencies": [],
+  "description": "Use when an LWC navigates via NavigationMixin to records or pages that may no longer exist, lack the user's access, or be permanently moved. Triggers: 'lightning navigation 404', 'navigate to deleted record', 'NavigationMixin error toast', 'graceful fallback when target page missing', 'permission denied on navigation'. NOT for general routing within an SPA or for Experience Cloud public-facing routing.",
+  "file_location": "skills/lwc/lightning-navigation-dead-link-handling",
+  "id": "lwc/lightning-navigation-dead-link-handling",
+  "inputs": [
+    "the navigation target (recordId, pageReference, named page, URL)",
+    "expected failure modes (deleted, no access, missing component)",
+    "fallback behavior \u2014 toast, redirect, in-place message"
+  ],
+  "name": "lightning-navigation-dead-link-handling",
+  "official_sources": [
+    "LWC Best Practices \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/get-started-best-practices.html",
+    "Lightning Component Reference \u2014 https://developer.salesforce.com/docs/platform/lightning-component-reference/guide",
+    "LWC Data Guidelines \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-guidelines.html",
+    "NavigationMixin Reference \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/use-navigate.html",
+    "Workspace API Reference \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/use-workspace-api.html"
+  ],
+  "outputs": [
+    "pre-navigation existence/access check",
+    "navigation handler with explicit failure path",
+    "user-facing fallback (toast, alternative target, contact-admin message)"
+  ],
+  "references": [
+    "skills/lwc/lightning-navigation-dead-link-handling/references/examples.md",
+    "skills/lwc/lightning-navigation-dead-link-handling/references/gotchas.md",
+    "skills/lwc/lightning-navigation-dead-link-handling/references/llm-anti-patterns.md",
+    "skills/lwc/lightning-navigation-dead-link-handling/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/lwc/lightning-navigation-dead-link-handling/scripts/check_lightning_navigation_dead_link_handling.py"
+  ],
+  "tags": [
+    "lwc",
+    "navigation",
+    "error-handling",
+    "ux"
+  ],
+  "templates": [
+    "skills/lwc/lightning-navigation-dead-link-handling/templates/lightning-navigation-dead-link-handling-template.md"
+  ],
+  "updated": "2026-04-30",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

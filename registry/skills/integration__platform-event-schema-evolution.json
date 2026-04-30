@@ -1,0 +1,96 @@
+{
+  "category": "integration",
+  "chunk_ids": [
+    "0d08018c71b8c41348c6",
+    "1060f435bab35844722a",
+    "120205a1d849eb133fb0",
+    "132a9ec88b392e5c0f3f",
+    "1d139a8a2f5914c11850",
+    "1ecacd8c8c8c3736f963",
+    "202dedb4b324b8c89018",
+    "237c0b1ad1f862783f24",
+    "251137fd94b4883016bb",
+    "28e566978b8dc6c7e27c",
+    "2c2ff62d3f88521fb9e4",
+    "2f61612be17358d942ed",
+    "3018930bd0b9ba8790c4",
+    "32e7f35a8f516e9cd207",
+    "3b2403d996eaa0374c91",
+    "583803b18e97633a2288",
+    "5f085f3a65a15ed140e3",
+    "6433e6912fde71f5afd4",
+    "6784b18eb55c8e51105c",
+    "7b416bcce2d721aa8c27",
+    "7c2bc4c32b1bceaa6a96",
+    "7e91b67b13268617cd75",
+    "84373096bbf3e30d8b43",
+    "882b09caae5039ccce79",
+    "8eb345c883833870d5a1",
+    "971e471ae8958f16f840",
+    "986e3aced1dc78a39672",
+    "9a7e427b169ca9504056",
+    "9e96b414ef2d55105fb2",
+    "a9665d157d5c0b77fdf0",
+    "b3de85251d4b4a422cf1",
+    "b960a6576aafa3144363",
+    "bcb9db1adf97c2dc3018",
+    "ca445871404331d631ec",
+    "cfc4d49f9f372e67384b",
+    "d0c5dd3714d5589171c0",
+    "d39ebe9edd8a5efa4b1f",
+    "d75c0f1831b9970481ae",
+    "dfbdd77bc523a49affb2",
+    "e116d8b3279124d585f1",
+    "e3b737314cb86b928047",
+    "e67e5226b827b50dbbc8",
+    "f442fbbf9a96bd5ff978",
+    "f452b6c4119488285e93",
+    "fbfdb32862e1fc98495b",
+    "fbfe77f726330d7cf300",
+    "fe7feb3dccbf3b194e13"
+  ],
+  "content_hash": "bf826a7731e420c5400d210de42dbe9ab1d470a29fdc5b2c2a39621a621db7d0",
+  "dependencies": [],
+  "description": "Use when modifying the schema of a Platform Event that already has live publishers and subscribers \u2014 adding fields, deprecating fields, or splitting events. Triggers: 'add field to platform event without breaking subscribers', 'platform event versioning', 'evolve event schema safely', 'rename a field on a published event'. NOT for initial event design (use integration/platform-events-integration) or for Change Data Capture event schemas.",
+  "file_location": "skills/integration/platform-event-schema-evolution",
+  "id": "integration/platform-event-schema-evolution",
+  "inputs": [
+    "current event definition (event name, fields, publishers, subscribers)",
+    "proposed change (add / remove / rename / type-change)",
+    "list of subscribers (Apex triggers, Flow, external CometD/Pub-Sub clients)"
+  ],
+  "name": "platform-event-schema-evolution",
+  "official_sources": [
+    "REST API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_what_is_rest_api.htm",
+    "Integration Patterns \u2014 https://architect.salesforce.com/docs/architect/fundamentals/guide/integration-patterns.html",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
+    "Platform Events Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_intro.htm",
+    "Pub/Sub API Developer Guide \u2014 https://developer.salesforce.com/docs/platform/pub-sub-api/guide/intro.html"
+  ],
+  "outputs": [
+    "compatibility classification (safe / risky / breaking)",
+    "rollout plan covering subscriber update order",
+    "fallback / dual-publish strategy when needed"
+  ],
+  "references": [
+    "skills/integration/platform-event-schema-evolution/references/examples.md",
+    "skills/integration/platform-event-schema-evolution/references/gotchas.md",
+    "skills/integration/platform-event-schema-evolution/references/llm-anti-patterns.md",
+    "skills/integration/platform-event-schema-evolution/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/integration/platform-event-schema-evolution/scripts/check_platform_event_schema_evolution.py"
+  ],
+  "tags": [
+    "platform-events",
+    "schema-evolution",
+    "versioning",
+    "integration"
+  ],
+  "templates": [
+    "skills/integration/platform-event-schema-evolution/templates/platform-event-schema-evolution-template.md"
+  ],
+  "updated": "2026-04-30",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

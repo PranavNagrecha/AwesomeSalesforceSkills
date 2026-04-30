@@ -6737,6 +6737,66 @@
       "domain": "admin",
       "expected_skill": "admin/custom-button-to-action-migration",
       "top_k": 3
+    },
+    {
+      "query": "limit lookup picker to contacts on the case's account",
+      "domain": "admin",
+      "expected_skill": "admin/lookup-filter-cross-object-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "mass transfer ownership records bulk reassign",
+      "domain": "admin",
+      "expected_skill": "admin/mass-transfer-ownership",
+      "top_k": 3
+    },
+    {
+      "query": "auto generate release notes from git tags and jira keys",
+      "domain": "devops",
+      "expected_skill": "devops/release-notes-automation",
+      "top_k": 3
+    },
+    {
+      "query": "compare metadata between UAT sandbox and production org",
+      "domain": "devops",
+      "expected_skill": "devops/metadata-diff-between-sandboxes",
+      "top_k": 3
+    },
+    {
+      "query": "production deploy blocked at 74 percent code coverage",
+      "domain": "devops",
+      "expected_skill": "devops/code-coverage-orphan-class-cleanup",
+      "top_k": 3
+    },
+    {
+      "query": "add field to platform event without breaking subscribers",
+      "domain": "integration",
+      "expected_skill": "integration/platform-event-schema-evolution",
+      "top_k": 3
+    },
+    {
+      "query": "sync data across two browser tabs in lwc",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-cross-tab-state-sync",
+      "top_k": 3
+    },
+    {
+      "query": "navigation to deleted record gives ugly toast",
+      "domain": "lwc",
+      "expected_skill": "lwc/lightning-navigation-dead-link-handling",
+      "top_k": 3
+    },
+    {
+      "query": "agent action not extracting the right date from user utterance",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/agent-action-input-slot-extraction",
+      "top_k": 3
+    },
+    {
+      "query": "soql nulls last with id tiebreaker for stable pagination",
+      "domain": "apex",
+      "expected_skill": "apex/soql-null-ordering-patterns",
+      "top_k": 3
     }
   ]
 }

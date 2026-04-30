@@ -1,0 +1,102 @@
+{
+  "category": "devops",
+  "chunk_ids": [
+    "06b4dc286628e7229b9b",
+    "10d55d288a24b1b114f3",
+    "1bd35f11a86ccf5ef8a9",
+    "1bdb2de1a1941c18135c",
+    "262df37a7b0cbbc8e286",
+    "286ed65505b0b3cfa032",
+    "2cad87f773e89d06bb66",
+    "3694aa3dde40d98fa0b3",
+    "431df520e1a1bd341b84",
+    "5a18d798ddeae9995c72",
+    "5a95dff98e62eab85a8f",
+    "5ebadc82d6623352e728",
+    "5fb246a79faf3ec2a87e",
+    "69d90adcbdf3a0c86112",
+    "6de0bfb1e1f4ba6c972d",
+    "71d3b8076e0ac9e3eab7",
+    "741041d90c1bbe3b2b44",
+    "7496b3faf7e69dcecb98",
+    "76689d1d372065c8e867",
+    "767a71e23bd62cf50dd7",
+    "89a7eb5699201d064c1c",
+    "8baedfe0035513643dde",
+    "8e3d643d439f9d8eacbc",
+    "9a6ca2b969b033e7a5e1",
+    "9c907f3b6e04112a8785",
+    "a1a63c057ddc881d7c80",
+    "a1b2d0509547067f739a",
+    "a3db3dee62d7426a1cbd",
+    "a6bb444445f81ec84c4c",
+    "a77722f201a1ce1aaaab",
+    "a89742a361019c330c56",
+    "ab57a512e884beec4b80",
+    "ae5e034df848b4663e72",
+    "b2a0c07360a263b18c39",
+    "b863d128b31a74e2d41f",
+    "b86bb5ec54048f22d0d4",
+    "bc918971c6a263dd2485",
+    "bf185d8bd632e71bfd1b",
+    "c9aa3aefa9e58f8f5ccb",
+    "ce12bed21f2b93d5d325",
+    "cf29a09542896656783e",
+    "d124bd288fc7c4af3c71",
+    "de7971745b296f933528",
+    "e3370e0e5c4189414698",
+    "e57d4768e0967bfd3e37",
+    "f0b6fcb5ad71a1ea1efd",
+    "f14b3f86693ce658d30b",
+    "f69b49c2437ac955b913",
+    "f88410866cc2937d9f13",
+    "f9821cc78da917b40d94",
+    "fad05a56cd92e6503815",
+    "fdb341f99febf85a1642",
+    "ff33e5535d6d902c4897"
+  ],
+  "content_hash": "635e1f0c272884804703bfd56e4d3284ccb432490937435d1ec6a8000f64b8f4",
+  "dependencies": [],
+  "description": "Use when comparing metadata between two Salesforce orgs (UAT vs Prod, dev sandbox vs full copy, fork sandbox vs source) to surface drift, identify items needing deployment, or build a destructive-changes manifest. Triggers: 'compare two sandboxes', 'org diff tool', 'metadata drift between UAT and prod', 'find missing metadata in target org'. NOT for code-level diffs in version control or for deploying packages.",
+  "file_location": "skills/devops/metadata-diff-between-sandboxes",
+  "id": "devops/metadata-diff-between-sandboxes",
+  "inputs": [
+    "two Salesforce org connections (DX auth aliases or username/password)",
+    "metadata types in scope (or default-all)",
+    "ignore list (.forceignore equivalent for diff)"
+  ],
+  "name": "metadata-diff-between-sandboxes",
+  "official_sources": [
+    "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
+    "Salesforce CLI Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm",
+    "Salesforce DX Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm",
+    "Metadata Coverage Report \u2014 https://developer.salesforce.com/docs/metadata-coverage",
+    "sfdx-hardis \u2014 https://sfdx-hardis.cloudity.com/"
+  ],
+  "outputs": [
+    "categorized diff report (in source not target / in target not source / different)",
+    "deployable package.xml + (optional) destructiveChanges.xml",
+    "drift inventory for the org-drift-detector agent"
+  ],
+  "references": [
+    "skills/devops/metadata-diff-between-sandboxes/references/examples.md",
+    "skills/devops/metadata-diff-between-sandboxes/references/gotchas.md",
+    "skills/devops/metadata-diff-between-sandboxes/references/llm-anti-patterns.md",
+    "skills/devops/metadata-diff-between-sandboxes/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/devops/metadata-diff-between-sandboxes/scripts/check_metadata_diff_between_sandboxes.py"
+  ],
+  "tags": [
+    "org-diff",
+    "drift",
+    "deployment",
+    "metadata"
+  ],
+  "templates": [
+    "skills/devops/metadata-diff-between-sandboxes/templates/metadata-diff-between-sandboxes-template.md"
+  ],
+  "updated": "2026-04-30",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}
