@@ -28,9 +28,9 @@ outputs:
   - "stage-and-step review findings"
   - "decision on orchestration vs standard flow or apex"
 dependencies: []
-version: 2.0.0
+version: 2.1.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-04-30
 ---
 
 Use this skill when the business process spans time, people, and system boundaries in a way that normal record-triggered or screen flows do not handle cleanly. Flow Orchestration is the right tool when a process needs explicit stage progression, work assignment, and observability across days or weeks — instead of pretending the whole journey happens in one synchronous transaction.
@@ -136,6 +136,43 @@ Stage: Human_Review (interactive)
 **Signals:** Orchestration's background steps are full of `@future` / Queueable invocations; the stage boundaries are really Apex transaction boundaries; the operations team is monitoring Apex job status more than the Orchestration surface.
 
 **Approach:** Keep Orchestration for human lifecycle management only. Move heavy system-work stages to standalone Apex (Batch, Queueable, Platform Events) that reports back to Orchestration via custom events or Flow invocations. Orchestration becomes a thin coordinator; Apex does the work.
+
+### Pattern 5: Migrate A Chain Of Async Record-Triggered Flows
+
+**When to use:** You have multiple `AsyncAfterCommit` record-triggered flows on the same object and trigger event. They are functionally correct but operationally invisible — you cannot tell from a record what ran, what was skipped, or where something failed. The team is spending time reconstructing execution from debug logs.
+
+**Key facts before designing:**
+- Each orchestration background step runs in its own async transaction with its own governor limits — identical to `AsyncAfterCommit` behavior. Migrating to orchestration does not change DML or SOQL budgets per step.
+- Each background step invokes an Auto-Launched flow. The existing record-triggered flows must be refactored: remove the trigger, add a `recordId` input variable, replace `$Record` references with a Get Records query.
+- `$Profile.Name` does not work in background steps. Replace with a User/Profile query using `LastModifiedById`.
+- Multi-status flows (flows that handle Submitted AND Withdrawn AND Expired, for example) must be split: orchestration owns one status, the original flow stays active for the others with a restricted entry condition.
+
+**Structure:**
+```text
+Orchestration: Record_Submit_Processing
+├── Stage 1: Universal  (always runs — updates that apply to every record)
+│   └── Step: Core_Field_Update  [AL_Core_Update]
+│
+├── Stage 2: Program Type A  (entry: condition for type A)
+│   ├── Step A: Create dependent records  [AL_Create_Records_A]
+│   └── Step B: Send communication        [AL_Send_Communication]
+│              Entry condition: Status = Active  ← status gate
+│
+├── Stage 3: Program Type B  (entry: condition for type B)
+│   └── Step: Deny + create task          [AL_Deny_And_Task]  ← same AL flow reused
+│
+└── Stage 4: Cross-cutting concerns  (partner, DE, TRAA, etc.)
+    ├── Step: Partner setup               [AL_Partner_Setup]
+    └── Step: Supplemental sync           [AL_Supplemental_Sync]
+```
+
+**Design principles:**
+- **Stage = pathway or condition type.** Each stage answers "what kind of record is this?" Steps inside the stage answer "what does this kind of record need?" This is more readable and maintainable than organizing stages by function category (Core, Communications, Supplemental).
+- **Reuse AL flows across stages.** A deny + task flow, a communication flow, or a field-update flow invoked by multiple stages should be one AL flow, not duplicated per stage.
+- **Gate communication steps on current record status.** Step entry conditions are evaluated against the live record at step start. A `Status = Active` gate on an email step prevents sending to records that were denied by an upstream step.
+- **Future-proof stage entry conditions.** Use `field != excluded_value` rather than `field IN (known_list)` where possible so new record types are automatically included without a code change.
+
+**Why not the alternative:** A single coordinator subflow (one async flow calling all logic as subflows) seems simpler but collapses all step DML into one transaction, eliminating the per-step governor limit isolation that `AsyncAfterCommit` provides. Orchestration preserves the isolation while adding the observability.
 
 ### Pattern 4: Replace Legacy Approval Process
 

@@ -160,3 +160,56 @@ Set up monitoring:
 4. Assign an admin or team to review and recover stuck orchestrations weekly
 
 **Detection hint:** Orchestration advice that does not mention post-deployment monitoring, alerts, or instance review.
+
+---
+
+## Anti-Pattern 7: Dismissing Orchestration Because There Are No Human Work Items
+
+**What the LLM generates:**
+
+```
+"Since all your steps are background automation with no human handoffs,
+Flow Orchestration adds unnecessary overhead. Use AsyncAfterCommit flows instead."
+```
+
+**Why it happens:** LLMs apply the Orchestration litmus test too strictly. The official guidance correctly states that Orchestration is designed for long-running multi-user processes — but this does not mean it has no value for all-background automation. When a team has many async flows that are hard to manage, debug, and trace per record, the operational visibility Orchestration provides is a legitimate justification even without human work items.
+
+**Correct pattern:**
+
+Evaluate orchestration for all-background automation when:
+- Multiple async flows fire on the same trigger and teams cannot easily determine what ran for a specific record
+- Debugging requires reconstructing execution from debug logs across multiple flows
+- The team needs per-record visibility into which steps succeeded, which were skipped, and where a failure occurred
+
+`FlowOrchestrationInstance` and `FlowOrchestrationStepInstance` records give queryable, per-record execution history that debug logs cannot. This observability value is real even when no human is in the loop.
+
+**Detection hint:** LLM flags "all background steps = anti-pattern" without checking whether the team's stated problem is manageability and observability rather than human workflow.
+
+---
+
+## Anti-Pattern 8: Placing Communication Steps In The Same Stage As The Records They Reference
+
+**What the LLM generates:**
+
+```
+Stage 2: Program Processing
+  Step A: Create required document records
+  Step B: Send confirmation email   ← same stage, runs immediately after Step A
+```
+
+**Why it happens:** LLMs group logically related steps together. But within a stage, steps run sequentially in the same async context. A communication step (email, notification) placed immediately after a record-creation step may fire even if a later stage denies or reverses the record, because the stage-level status check happens at stage entry — not before each step.
+
+**Correct pattern:**
+
+```
+Stage 2: Program Processing
+  Step A: Create required document records
+
+Stage 3: Communications
+  Step B: Send confirmation email
+  Entry condition: Record.Status = "Active"   ← evaluated at step start against current record
+```
+
+Move communication steps to a later stage and gate them on the current record status. Because step entry conditions are evaluated at the time the step starts — against the live record state — a status gate prevents the email from firing if any upstream step or stage changed the record to a denied or inactive state.
+
+**Detection hint:** Email or notification steps in the same stage as the records they reference, with no status gate on the communication step entry condition.
