@@ -84,28 +84,32 @@ python3 scripts/validate_repo.py
 
 All fixture queries must pass retrieval. Skills without a fixture produce a WARN that fails CI.
 
-### Step 6 — Wire the skill into the run-time agents that need it
+### Step 6 — Check whether any existing agent should cite this skill
 
-Decide which run-time agents should cite this skill. A skill that no agent reads is only available to humans + lexical search. Read `agents/_shared/SKILL_MAP.md` and `agents/_shared/RUNTIME_VS_BUILD.md` to pick targets — usually 1–3 agents, rarely more.
+This is a **judgment** step, not a sweep. Walk the existing run-time agent roster and decide, for each plausible candidate, whether this skill genuinely belongs in its `Mandatory Reads`. The bar is high: an agent should cite a skill only when reading it would meaningfully change the agent's output for a real invocation. If you cannot answer "in which scenario would this agent's output be wrong without reading this skill?", the skill does not belong in that agent.
 
-Then patch each:
+How to walk the roster:
+
+1. Read `agents/_shared/RUNTIME_VS_BUILD.md` (full roster) and `agents/_shared/SKILL_MAP.md` (Wave A/B/C citations).
+2. Generate a shortlist of 3–6 candidate agents whose domain overlaps the skill.
+3. For each candidate, ask: would an agent ignoring this skill produce a worse answer in a real scenario? Be specific — name the scenario.
+4. Wire only the candidates that pass. Zero is a valid outcome — some skills are pure human / lexical-retrieval reference and don't fit any current agent. Don't dilute an agent's `Mandatory Reads` with skills it would never reach for.
+
+Wire the agents that pass:
 
 ```bash
 python3 scripts/patch_agent_skill.py <agent-id> <domain>/<skill-name> "<section-heading>" "<short description>"
 ```
 
-The helper updates both the agent's YAML `dependencies.skills:` and its `## Mandatory Reads Before Starting` section, renumbering the bullet list correctly. Use `*end*` as the section heading when the agent's Mandatory Reads is a flat numbered list (no `### subsection` headings).
+The helper updates both the agent's YAML `dependencies.skills:` and its `## Mandatory Reads Before Starting` section, renumbering correctly. Use `*end*` for flat numbered lists.
 
-If the target agent has an entry in `agents/_shared/SKILL_MAP.md` (Wave A/B/C agents), add the skill to that entry too.
+If a wired agent has an entry in `agents/_shared/SKILL_MAP.md` (Wave A/B/C agents), update that entry too.
 
-Skills authored as pure human reference (rare) may opt out by setting `runtime_orphan: true` in frontmatter — everything else is expected to be cited by at least one agent. `validate_repo.py` emits a WARN for orphan skills.
+If you found zero fits, do nothing. Future agents may pick the skill up. The orphan WARN is a flag, not a gate — `validate_repo.py` still passes. If the skill is *intentionally* human-reference (rare), set `runtime_orphan: true` in frontmatter to silence the WARN with explicit intent.
 
 ## Quality Gate
 
-A skill is not complete unless:
-
-- `python3 scripts/validate_repo.py` exits 0 with no errors.
-- The skill is cited by at least one run-time agent (or marked `runtime_orphan: true`).
+A skill is not complete unless `python3 scripts/validate_repo.py` exits 0 with no errors. Orphan-skill warnings are advisory, not blocking — they signal "consider wiring," not "must wire."
 
 ## Agent
 

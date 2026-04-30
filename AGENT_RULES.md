@@ -85,25 +85,27 @@ This must exit 0. Fix all errors before committing.
 
 **Benchmarking the validator:** `python3 scripts/validate_repo_bench.py --count 500` spins up a throwaway temp repo with 500 synthetic skills and asserts validation stays under a 30-second threshold. Run this before merging changes to `scripts/validate_repo.py` or `pipelines/agent_validators.py` to catch orchestration regressions.
 
-### Step 6 — Wire the skill into the run-time agents that need it
+### Step 6 — Check whether any existing agent should cite this skill
 
-A skill that is not cited by any run-time agent only serves human authors and lexical retrieval. To make it part of an agent's `Mandatory Reads`, identify the target agents and patch each.
+This is a **judgment** step, not a sweep. Walk the run-time agent roster and decide which agents — if any — would meaningfully use this skill. Forcing a skill into an agent that doesn't naturally need it dilutes the agent's `Mandatory Reads` with noise; that is worse than leaving the skill un-cited.
 
-1. **Pick the target agents.** Read `agents/_shared/SKILL_MAP.md` and the run-time agent roster in `agents/_shared/RUNTIME_VS_BUILD.md`. A new skill typically maps to 1–3 agents; more than 3 is a smell that the skill is too broad. Treat the mapping as a deliberate decision — log it in the skill's PR description.
+The bar: an agent should cite a skill only when reading it would change the agent's output for a real invocation. If you can't name the scenario in which the agent would be wrong without this skill, the skill does not belong in that agent.
 
-2. **Patch each agent.** Use the helper:
+1. **Walk the roster.** Read `agents/_shared/RUNTIME_VS_BUILD.md` (full list) and `agents/_shared/SKILL_MAP.md` (existing citations). Generate 3–6 candidate agents whose domain overlaps. For each, name the concrete scenario where citing this skill would matter. Drop any candidate without one.
+
+2. **Patch only the candidates that pass.** Zero is a valid outcome.
 
    ```bash
    python3 scripts/patch_agent_skill.py <agent-id> <skill-id> "<section-heading>" "<short description>"
    ```
 
-   The helper inserts the skill into the agent's YAML `dependencies.skills:` (alphabetically) and appends a numbered bullet under the named Mandatory Reads section, renumbering subsequent items. Use `*end*` as the section heading for agents whose Mandatory Reads is a flat numbered list. The script is idempotent — re-running with the same args is a no-op.
+   The helper inserts the skill into YAML `dependencies.skills:` alphabetically and appends a numbered bullet under the named Mandatory Reads section, renumbering subsequent items. Use `*end*` for flat numbered lists. Idempotent.
 
-3. **Update `agents/_shared/SKILL_MAP.md`** if the agent has a documented entry there (Wave A / B / C tier agents). Developer-tier agents (apex-refactorer, lwc-builder, soql-optimizer, etc.) are tracked only in their own AGENT.md.
+3. **Update `agents/_shared/SKILL_MAP.md`** when the wired agent has an entry there (Wave A/B/C tier agents). Developer-tier agents (apex-refactorer, lwc-builder, soql-optimizer, etc.) are tracked only in their own AGENT.md.
 
-4. **Run validation.** `python3 scripts/validate_repo.py` emits a WARN for any skill that no agent cites — the *orphan-skill* check. Skills authored as pure human-reference can opt out by adding `runtime_orphan: true` to frontmatter; everything else should be wired.
+4. **Validate.** `python3 scripts/validate_repo.py` emits a WARN for skills cited by no agent. The WARN is a flag, not a gate — orphan skills are accepted state. They may be picked up by a future agent. Skills authored deliberately as human / lexical-retrieval reference can mark `runtime_orphan: true` in frontmatter to silence the WARN with explicit intent.
 
-A skill is not done until it is cited by at least one agent (or explicitly marked `runtime_orphan: true`).
+A skill ships when validation has 0 errors. Orphan WARNs do not block the commit.
 
 ### Step 7 — Commit
 
