@@ -16,6 +16,7 @@ dependencies:
   skills:
     - admin/agent-output-formats
     - agentforce/agent-action-error-handling
+    - agentforce/agent-action-input-slot-extraction
     - agentforce/agent-action-unit-tests
     - agentforce/agent-actions
     - agentforce/agent-deployment-checklist
@@ -73,6 +74,7 @@ Reviews an Agentforce agent (Topics + Actions + Persona + Guardrails) against be
 16. `skills/agentforce/agent-deployment-checklist` — deploy gates
 17. `skills/agentforce/prompt-template-versioning` — prompt rev management
 18. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+19. `skills/agentforce/agent-action-input-slot-extraction` — scoring rubric for input description quality
 
 ---
 

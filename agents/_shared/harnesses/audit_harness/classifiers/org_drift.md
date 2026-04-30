@@ -48,6 +48,7 @@ None. Drift findings are pointers to the skill + the matching run-time agent (`a
 ## Mandatory Reads
 
 - `registry/skills.json` — via `search_skill` / `get_skill`
+- `skills/devops/metadata-diff-between-sandboxes` — when drift question is "what differs between two specific orgs"
 - `templates/README.md`
 - `standards/decision-trees/` — all four files
 - `evals/framework.md`

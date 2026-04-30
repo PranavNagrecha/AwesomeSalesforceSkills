@@ -30,6 +30,7 @@ import hashlib
 import json
 import os
 import py_compile
+import re
 import subprocess
 import sys
 from dataclasses import dataclass
@@ -364,7 +365,57 @@ def run_skill_validation(
                 ValidationIssue("ERROR", path, "generated artifact is stale; run `python3 scripts/skill_sync.py --all`")
             )
 
+    # Step 7 — orphan-skill check: WARN if a skill is not cited by any agent.
+    # Skills can opt out by setting `runtime_orphan: true` in frontmatter.
+    issues.extend(_check_orphan_skills(filtered_dirs))
+
     return issues, len(filtered_dirs)
+
+
+def _check_orphan_skills(filtered_dirs: list[Path]) -> list[ValidationIssue]:
+    """Emit a WARN for each filtered skill that no run-time agent cites.
+
+    Scans `agents/*/AGENT.md` YAML frontmatter for `dependencies.skills:`
+    entries and treats the union as the set of cited skills. Skills with
+    `runtime_orphan: true` in their own frontmatter are skipped.
+    """
+    cited: set[str] = set()
+    skill_block_re = re.compile(
+        r"^dependencies:\s*\n(?:[ \t]+\S.*\n)*?[ \t]+skills:\s*\n((?:[ \t]+-\s+\S.*\n)+)",
+        re.MULTILINE,
+    )
+    skill_item_re = re.compile(r"^[ \t]+-\s+(\S+)\s*$", re.MULTILINE)
+    for agent_md in (ROOT / "agents").glob("*/AGENT.md"):
+        try:
+            text = agent_md.read_text(encoding="utf-8")
+        except OSError:
+            continue
+        m = skill_block_re.search(text)
+        if not m:
+            continue
+        for it in skill_item_re.finditer(m.group(1)):
+            cited.add(it.group(1))
+
+    out: list[ValidationIssue] = []
+    for skill_dir in filtered_dirs:
+        skill_md = skill_dir / "SKILL.md"
+        try:
+            parsed = parse_markdown_with_frontmatter(skill_md)
+            meta = parsed.metadata
+        except Exception:
+            continue
+        if meta.get("runtime_orphan") is True:
+            continue
+        skill_id = f"{meta.get('category')}/{meta.get('name')}"
+        if skill_id not in cited:
+            out.append(
+                ValidationIssue(
+                    "WARN", str(skill_md),
+                    f"skill `{skill_id}` is not cited by any run-time agent — wire it via "
+                    f"`scripts/patch_agent_skill.py` or set `runtime_orphan: true` in frontmatter",
+                )
+            )
+    return out
 
 
 def run_agent_validation() -> list[ValidationIssue]:

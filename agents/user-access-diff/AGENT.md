@@ -20,6 +20,7 @@ dependencies:
   skills:
     - admin/agent-output-formats
     - admin/custom-permissions
+    - admin/mass-transfer-ownership
     - admin/permission-set-architecture
     - admin/permission-sets-vs-profiles
     - admin/user-access-policies
@@ -62,6 +63,7 @@ Given two Users in the same org, produces a symmetric, dimension-by-dimension co
 9. `skills/admin/custom-permissions`
 10. `skills/admin/user-access-policies`
 11. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+12. `skills/admin/mass-transfer-ownership` — transfer records before deactivating either user
 
 ---
 

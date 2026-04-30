@@ -19,12 +19,14 @@ Shared convention documents under `agents/_shared/harnesses/` that consolidate c
 
 ### `field-impact-analyzer`
 - `admin/custom-field-creation`, `admin/formula-fields`, `admin/picklist-and-value-sets`
+- `admin/lookup-filter-cross-object-patterns`
 - `data/field-history-tracking`, `data/record-merge-implications`
 - `architect/metadata-coverage-and-dependencies`, `devops/metadata-api-coverage-gaps`
 - `templates/admin/naming-conventions.md`
 
 ### `object-designer`
 - `admin/object-creation-and-design`, `admin/custom-field-creation`
+- `admin/lookup-filter-cross-object-patterns`
 - `data/data-model-design-patterns`, `data/external-id-strategy`, `data/person-accounts`
 - `architect/solution-design-patterns`, `architect/large-data-volume-architecture`
 - `admin/record-type-strategy-at-scale`, `admin/validation-rules`
@@ -76,6 +78,7 @@ under the classifier's `Mandatory Reads` section.
 - `admin/report-performance-tuning`, `admin/analytics-permission-and-sharing`
 - `flow/orchestration-flows`
 - `data/data-quality-and-governance`
+- `devops/metadata-diff-between-sandboxes` (org_drift classifier)
 - `standards/decision-trees/automation-selection.md`
 - `templates/admin/validation-rule-patterns.md`, `templates/admin/naming-conventions.md`
 
@@ -121,6 +124,7 @@ under the classifier's `Mandatory Reads` section.
 - `admin/integration-admin-connected-apps`, `admin/connected-apps-and-auth`
 - `admin/remote-site-settings`, `admin/integration-user-management`
 - `integration/named-credentials-setup`, `integration/oauth-flows-and-connected-apps`
+- `integration/platform-event-schema-evolution`
 - `security/connected-app-security-policies`, `security/certificate-and-key-management`
 - `architect/integration-framework-design`, `architect/integration-security-architecture`
 
@@ -165,7 +169,7 @@ under the classifier's `Mandatory Reads` section.
 ### `release-train-planner`
 - `devops/release-management`, `devops/environment-strategy`, `devops/package-development-strategy`
 - `devops/unlocked-package-development`, `devops/second-generation-managed-packages`
-- `devops/git-branching-for-salesforce`
+- `devops/git-branching-for-salesforce`, `devops/release-notes-automation`
 
 ### `waf-assessor`
 - `architect/well-architected-review`, `architect/security-architecture-review`
@@ -174,6 +178,7 @@ under the classifier's `Mandatory Reads` section.
 
 ### `agentforce-action-reviewer`
 - `agentforce/agent-actions`, `agentforce/agent-topic-design`, `agentforce/agent-testing-and-evaluation`
+- `agentforce/agent-action-input-slot-extraction`
 - `agentforce/agentforce-guardrails`, `agentforce/agentforce-observability`
 - `agentforce/einstein-trust-layer`, `agentforce/agentforce-persona-design`
 

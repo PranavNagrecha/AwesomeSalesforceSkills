@@ -27,6 +27,7 @@ dependencies:
     - integration/mutual-tls-callouts
     - integration/named-credentials-setup
     - integration/oauth-flows-and-connected-apps
+    - integration/platform-event-schema-evolution
     - integration/private-connect-setup
     - integration/salesforce-data-pipeline-etl
     - integration/webhook-signature-verification
@@ -77,6 +78,7 @@ Builds a catalog of every live integration endpoint reachable from the org: Name
 18. `skills/integration/salesforce-data-pipeline-etl` — Bulk + CDC lake pipelines
 19. `skills/integration/api-governance-and-rate-limits` — 24h allocation governance
 20. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+21. `skills/integration/platform-event-schema-evolution` — schema evolution rules for live published events
 
 ---
 

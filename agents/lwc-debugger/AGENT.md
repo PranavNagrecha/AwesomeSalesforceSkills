@@ -18,6 +18,7 @@ dependencies:
     - lwc/common-lwc-runtime-errors
     - lwc/component-communication
     - lwc/lifecycle-hooks
+    - lwc/lightning-navigation-dead-link-handling
     - lwc/lwc-accessibility
     - lwc/lwc-app-builder-config
     - lwc/lwc-async-patterns
@@ -130,29 +131,30 @@ Diagnoses a live LWC failure — a stack trace, "Unknown error", a wire that nev
 29. `skills/lwc/lwc-app-builder-config` — `isExposed=false` hiding the component; string-typed design attributes breaking arithmetic
 30. `skills/lwc/navigation-and-routing` — `NavigationMixin.Navigate` opening blank page
 31. `skills/lwc/lwc-record-picker` — `lookup` not returning expected sObject
+32. `skills/lwc/lightning-navigation-dead-link-handling` — blank-tab-after-navigation diagnosis
 
 ### Datatable / forms / files axis
-32. `skills/lwc/lwc-data-table` — datatable smells (lazy-load misfire, blank rows)
-33. `skills/lwc/lwc-custom-datatable-types` — missing `typeAttributes` array, template name not importable, no-`this` binding
-34. `skills/lwc/lwc-forms-and-validation` — `reportValidity()` returns false silently
+33. `skills/lwc/lwc-data-table` — datatable smells (lazy-load misfire, blank rows)
+34. `skills/lwc/lwc-custom-datatable-types` — missing `typeAttributes` array, template name not importable, no-`this` binding
+35. `skills/lwc/lwc-forms-and-validation` — `reportValidity()` returns false silently
 
 ### Performance axis
-35. `skills/lwc/lwc-performance` — "slow" that is actually re-render storms
-36. `skills/lwc/lwc-performance-budgets` — render budget exceeded for declared surface
-37. `skills/lwc/virtualized-lists` — > 500-row scroll perf
+36. `skills/lwc/lwc-performance` — "slow" that is actually re-render storms
+37. `skills/lwc/lwc-performance-budgets` — render budget exceeded for declared surface
+38. `skills/lwc/virtualized-lists` — > 500-row scroll perf
 
 ### A11y / i18n axis
-38. `skills/lwc/lwc-accessibility` — focus trap regressions / keyboard activation lost
-39. `skills/lwc/lwc-focus-management` — focus jumps on async re-render
-40. `skills/lwc/lwc-internationalization` — locale-format edge cases
+39. `skills/lwc/lwc-accessibility` — focus trap regressions / keyboard activation lost
+40. `skills/lwc/lwc-focus-management` — focus jumps on async re-render
+41. `skills/lwc/lwc-internationalization` — locale-format edge cases
 
 ### Security axis
-41. `skills/lwc/lwc-security` — CSP / Locker blocking a library / API
-42. `skills/lwc/lwc-locker-to-lws-migration` — code that worked on Locker now fails on LWS
+42. `skills/lwc/lwc-security` — CSP / Locker blocking a library / API
+43. `skills/lwc/lwc-locker-to-lws-migration` — code that worked on Locker now fails on LWS
 
 ### Templates
-43. `templates/lwc/component-skeleton/`
-44. `templates/lwc/patterns/`
+44. `templates/lwc/component-skeleton/`
+45. `templates/lwc/patterns/`
 
 ---
 

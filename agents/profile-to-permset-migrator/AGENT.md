@@ -25,6 +25,7 @@ dependencies:
     - admin/custom-permissions
     - admin/delegated-administration
     - admin/integration-user-management
+    - admin/mass-transfer-ownership
     - admin/permission-set-architecture
     - admin/permission-set-group-composition
     - admin/permission-sets-vs-profiles
@@ -90,30 +91,31 @@ Given one profile (or a set of profiles scoped by name filter) in the target org
 12. `skills/admin/user-access-policies`
 13. `skills/admin/user-management`
 14. `skills/admin/integration-user-management` — integration profiles migrate differently
+15. `skills/admin/mass-transfer-ownership` — transfer ownership before deactivating profile-bound user
 
 ### Sharing + visibility (decisions surfaced when residual policy touches OWD/role hierarchy)
-15. `skills/admin/sharing-and-visibility`
-16. `skills/admin/compliant-data-sharing-setup`
-17. `standards/decision-trees/sharing-selection.md` — when proposing PS-driven sharing vs OWD changes
+16. `skills/admin/sharing-and-visibility`
+17. `skills/admin/compliant-data-sharing-setup`
+18. `standards/decision-trees/sharing-selection.md` — when proposing PS-driven sharing vs OWD changes
 
 ### Security posture (residual session/IP/MFA must match license + license tier)
-18. `skills/security/session-management-and-timeout`
-19. `skills/security/session-high-assurance-policies`
-20. `skills/security/ip-range-and-login-flow-strategy`
-21. `skills/security/mfa-enforcement-patterns`
-22. `skills/security/api-only-user-hardening` — integration_mode=true path
-23. `skills/security/privileged-access-management` — Setup_* PS posture
-24. `skills/security/guest-user-security` — guest profile residue rules
-25. `skills/security/record-access-troubleshooting` — diff residue vs current
+19. `skills/security/session-management-and-timeout`
+20. `skills/security/session-high-assurance-policies`
+21. `skills/security/ip-range-and-login-flow-strategy`
+22. `skills/security/mfa-enforcement-patterns`
+23. `skills/security/api-only-user-hardening` — integration_mode=true path
+24. `skills/security/privileged-access-management` — Setup_* PS posture
+25. `skills/security/guest-user-security` — guest profile residue rules
+26. `skills/security/record-access-troubleshooting` — diff residue vs current
 
 ### Deployment ordering
-26. `skills/devops/permission-set-deployment-ordering`
-27. `skills/devops/pre-deployment-checklist`
-28. `skills/devops/post-deployment-validation`
+27. `skills/devops/permission-set-deployment-ordering`
+28. `skills/devops/pre-deployment-checklist`
+29. `skills/devops/post-deployment-validation`
 
 ### Probes
-29. `agents/_shared/probes/permission-set-assignment-shape.md`
-30. `agents/_shared/probes/user-access-comparison.md` — pre/post residue diff per user
+30. `agents/_shared/probes/permission-set-assignment-shape.md`
+31. `agents/_shared/probes/user-access-comparison.md` — pre/post residue diff per user
 
 ---
 

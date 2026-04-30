@@ -57,6 +57,7 @@ dependencies:
     - apex/timezone-and-datetime-pitfalls
     - apex/trigger-framework
     - apex/visualforce-fundamentals
+    - devops/code-coverage-orphan-class-cleanup
   shared:
     - AGENT_CONTRACT.md
     - DELIVERABLE_CONTRACT.md
@@ -100,62 +101,63 @@ Generates a bulk-safe Apex test class for a target class, targeting ≥ 85% code
 6. `skills/apex/apex-test-setup-patterns`
 7. `skills/apex/apex-mocking-and-stubs`
 8. `skills/apex/apex-http-callout-mocking`
+9. `skills/devops/code-coverage-orphan-class-cleanup` — if a class is orphan, delete is preferred over a stub test
 
 ### Sharing / permissions / runAs
-9. `skills/apex/apex-system-runas`
-10. `skills/apex/apex-user-and-permission-checks`
-11. `skills/apex/apex-with-without-sharing-decision`
+10. `skills/apex/apex-system-runas`
+11. `skills/apex/apex-user-and-permission-checks`
+12. `skills/apex/apex-with-without-sharing-decision`
 
 ### Surface-specific test patterns
-12. `skills/apex/trigger-framework` — for trigger-class targets
-13. `skills/apex/recursive-trigger-prevention`
-14. `skills/apex/apex-trigger-context-variables`
-15. `skills/apex/apex-trigger-bypass-and-killswitch-patterns` — explicit-bypass test scenario
-16. `skills/apex/async-apex` — `Test.startTest`/`stopTest` semantics
-17. `skills/apex/apex-queueable-patterns`
-18. `skills/apex/apex-future-method-patterns`
-19. `skills/apex/batch-apex-patterns`
-20. `skills/apex/apex-scheduled-jobs`
-21. `skills/apex/platform-events-apex` — `Test.getEventBus`
-22. `skills/apex/change-data-capture-apex`
-23. `skills/apex/invocable-methods`
-24. `skills/apex/apex-rest-services` — `RestRequest`/`RestResponse` mocks
-25. `skills/apex/continuation-callouts`
-26. `skills/apex/apex-flow-invocation-from-apex`
-27. `skills/apex/callouts-and-http-integrations`
-28. `skills/apex/visualforce-fundamentals`
+13. `skills/apex/trigger-framework` — for trigger-class targets
+14. `skills/apex/recursive-trigger-prevention`
+15. `skills/apex/apex-trigger-context-variables`
+16. `skills/apex/apex-trigger-bypass-and-killswitch-patterns` — explicit-bypass test scenario
+17. `skills/apex/async-apex` — `Test.startTest`/`stopTest` semantics
+18. `skills/apex/apex-queueable-patterns`
+19. `skills/apex/apex-future-method-patterns`
+20. `skills/apex/batch-apex-patterns`
+21. `skills/apex/apex-scheduled-jobs`
+22. `skills/apex/platform-events-apex` — `Test.getEventBus`
+23. `skills/apex/change-data-capture-apex`
+24. `skills/apex/invocable-methods`
+25. `skills/apex/apex-rest-services` — `RestRequest`/`RestResponse` mocks
+26. `skills/apex/continuation-callouts`
+27. `skills/apex/apex-flow-invocation-from-apex`
+28. `skills/apex/callouts-and-http-integrations`
+29. `skills/apex/visualforce-fundamentals`
 
 ### DML / data / locking gotchas
-29. `skills/apex/apex-dml-patterns`
-30. `skills/apex/apex-savepoint-and-rollback`
-31. `skills/apex/mixed-dml-and-setup-objects`
-32. `skills/apex/record-locking-and-contention`
+30. `skills/apex/apex-dml-patterns`
+31. `skills/apex/apex-savepoint-and-rollback`
+32. `skills/apex/mixed-dml-and-setup-objects`
+33. `skills/apex/record-locking-and-contention`
 
 ### SOQL semantics
-33. `skills/apex/soql-fundamentals`
-34. `skills/apex/soql-security`
-35. `skills/apex/apex-polymorphic-soql`
-36. `skills/apex/dynamic-apex`
-37. `skills/apex/apex-collections-patterns`
+34. `skills/apex/soql-fundamentals`
+35. `skills/apex/soql-security`
+36. `skills/apex/apex-polymorphic-soql`
+37. `skills/apex/dynamic-apex`
+38. `skills/apex/apex-collections-patterns`
 
 ### Errors / governor limits
-38. `skills/apex/governor-limits`
-39. `skills/apex/apex-limits-monitoring`
-40. `skills/apex/exception-handling`
-41. `skills/apex/common-apex-runtime-errors`
-42. `skills/apex/error-handling-framework`
+39. `skills/apex/governor-limits`
+40. `skills/apex/apex-limits-monitoring`
+41. `skills/apex/exception-handling`
+42. `skills/apex/common-apex-runtime-errors`
+43. `skills/apex/error-handling-framework`
 
 ### Stable test fixtures
-43. `skills/apex/timezone-and-datetime-pitfalls`
-44. `skills/apex/custom-metadata-in-apex`
-45. `skills/apex/feature-flags-and-kill-switches`
+44. `skills/apex/timezone-and-datetime-pitfalls`
+45. `skills/apex/custom-metadata-in-apex`
+46. `skills/apex/feature-flags-and-kill-switches`
 
 ### Templates
-46. `templates/apex/tests/TestDataFactory.cls`
-47. `templates/apex/tests/TestRecordBuilder.cls`
-48. `templates/apex/tests/MockHttpResponseGenerator.cls`
-49. `templates/apex/tests/TestUserFactory.cls`
-50. `templates/apex/tests/BulkTestPattern.cls`
+47. `templates/apex/tests/TestDataFactory.cls`
+48. `templates/apex/tests/TestRecordBuilder.cls`
+49. `templates/apex/tests/MockHttpResponseGenerator.cls`
+50. `templates/apex/tests/TestUserFactory.cls`
+51. `templates/apex/tests/BulkTestPattern.cls`
 
 ---
 

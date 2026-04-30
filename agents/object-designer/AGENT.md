@@ -20,6 +20,7 @@ dependencies:
     - admin/custom-field-creation
     - admin/field-dependency-and-controlling
     - admin/formula-fields
+    - admin/lookup-filter-cross-object-patterns
     - admin/object-creation-and-design
     - admin/permission-set-architecture
     - admin/picklist-field-integrity-issues
@@ -89,37 +90,38 @@ Given a business concept (a plain-English description like "we need to track mai
 11. `skills/admin/picklist-field-integrity-issues` — restricted vs unrestricted choice
 12. `skills/admin/system-field-behavior-and-audit`
 13. `skills/admin/record-type-strategy-at-scale` — when concept implies > 1 persona
+14. `skills/admin/lookup-filter-cross-object-patterns` — lookup filter design + required vs optional staging
 
 ### Data model & storage
-14. `skills/data/data-model-design-patterns`
-15. `skills/data/external-id-strategy` — for integration-source objects
-16. `skills/data/person-accounts` — for any Account-variant design
-17. `skills/data/record-merge-implications`
-18. `skills/data/roll-up-summary-alternatives` — RSF design choices
-19. `skills/data/data-storage-management` — storage cost forecasting
+15. `skills/data/data-model-design-patterns`
+16. `skills/data/external-id-strategy` — for integration-source objects
+17. `skills/data/person-accounts` — for any Account-variant design
+18. `skills/data/record-merge-implications`
+19. `skills/data/roll-up-summary-alternatives` — RSF design choices
+20. `skills/data/data-storage-management` — storage cost forecasting
 
 ### Performance, sharing, indexing
-20. `skills/architect/large-data-volume-architecture` — for objects expected to exceed 10M rows
-21. `skills/architect/solution-design-patterns`
-22. `skills/data/custom-index-requests`
-23. `skills/data/soql-query-optimization` — selectivity awareness during field design
-24. `skills/data/sharing-recalculation-performance`
-25. `skills/admin/sharing-and-visibility`
-26. `skills/admin/permission-set-architecture` — emit PS stubs aware of the larger PS strategy
+21. `skills/architect/large-data-volume-architecture` — for objects expected to exceed 10M rows
+22. `skills/architect/solution-design-patterns`
+23. `skills/data/custom-index-requests`
+24. `skills/data/soql-query-optimization` — selectivity awareness during field design
+25. `skills/data/sharing-recalculation-performance`
+26. `skills/admin/sharing-and-visibility`
+27. `skills/admin/permission-set-architecture` — emit PS stubs aware of the larger PS strategy
 
 ### Validation
-27. `skills/admin/validation-rules` — drive-time VR set at object creation
+28. `skills/admin/validation-rules` — drive-time VR set at object creation
 
 ### Decision trees
-28. `standards/decision-trees/sharing-selection.md`
-29. `standards/decision-trees/automation-selection.md` — recommend the right automation surface for the object's lifecycle
+29. `standards/decision-trees/sharing-selection.md`
+30. `standards/decision-trees/automation-selection.md` — recommend the right automation surface for the object's lifecycle
 
 ### Probes
-30. `agents/_shared/probes/automation-graph-for-sobject.md` — confirm no overlapping automation already exists if extending a standard object
+31. `agents/_shared/probes/automation-graph-for-sobject.md` — confirm no overlapping automation already exists if extending a standard object
 
 ### Templates
-31. `templates/admin/naming-conventions.md`
-32. `templates/admin/validation-rule-patterns.md`
+32. `templates/admin/naming-conventions.md`
+33. `templates/admin/validation-rule-patterns.md`
 
 ---
 

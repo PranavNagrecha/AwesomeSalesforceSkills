@@ -38,6 +38,7 @@ dependencies:
     - apex/platform-cache
     - apex/recursive-trigger-prevention
     - apex/soql-fundamentals
+    - apex/soql-null-ordering-patterns
     - apex/soql-security
     - apex/trigger-framework
     - data/custom-index-requests
@@ -83,38 +84,39 @@ Scans a user-specified scope (file, folder, or entire `force-app/`) for SOQL ant
 9. `skills/apex/apex-soql-relationship-queries`
 10. `skills/apex/apex-aggregate-queries`
 11. `skills/apex/apex-polymorphic-soql`
+12. `skills/apex/soql-null-ordering-patterns` — explicit NULLS clause + Id tiebreaker for stable + paginated results
 
 ### Dynamic SOQL safety (concatenation rewrites)
-12. `skills/apex/dynamic-apex`
-13. `skills/apex/apex-dynamic-soql-binding-safety`
+13. `skills/apex/dynamic-apex`
+14. `skills/apex/apex-dynamic-soql-binding-safety`
 
 ### Centralization pattern (when to recommend a Selector)
-14. `skills/apex/apex-design-patterns`
-15. `skills/apex/apex-class-decomposition-pattern`
-16. `templates/apex/BaseSelector.cls`
+15. `skills/apex/apex-design-patterns`
+16. `skills/apex/apex-class-decomposition-pattern`
+17. `templates/apex/BaseSelector.cls`
 
 ### Bulk-out-of-loop refactor target
-17. `skills/apex/apex-collections-patterns`
-18. `skills/apex/trigger-framework` — one-query-per-context discipline
-19. `skills/apex/recursive-trigger-prevention` — re-query on re-entry
-20. `skills/apex/batch-apex-patterns` — Database.getQueryLocator usage
+18. `skills/apex/apex-collections-patterns`
+19. `skills/apex/trigger-framework` — one-query-per-context discipline
+20. `skills/apex/recursive-trigger-prevention` — re-query on re-entry
+21. `skills/apex/batch-apex-patterns` — Database.getQueryLocator usage
 
 ### Governor / performance context
-21. `skills/apex/governor-limits`
-22. `skills/apex/governor-limit-recovery-patterns`
-23. `skills/apex/apex-limits-monitoring`
-24. `skills/apex/apex-cpu-and-heap-optimization`
-25. `skills/apex/apex-performance-profiling`
-26. `skills/apex/platform-cache` — cache vs query trade-off
+22. `skills/apex/governor-limits`
+23. `skills/apex/governor-limit-recovery-patterns`
+24. `skills/apex/apex-limits-monitoring`
+25. `skills/apex/apex-cpu-and-heap-optimization`
+26. `skills/apex/apex-performance-profiling`
+27. `skills/apex/platform-cache` — cache vs query trade-off
 
 ### Security wrap on SOQL fixes
-27. `skills/apex/apex-security-patterns` — for `WITH USER_MODE` / `WITH SECURITY_ENFORCED` enforcement
-28. `skills/apex/apex-stripinaccessible-and-fls-enforcement`
+28. `skills/apex/apex-security-patterns` — for `WITH USER_MODE` / `WITH SECURITY_ENFORCED` enforcement
+29. `skills/apex/apex-stripinaccessible-and-fls-enforcement`
 
 ### Edge cases
-29. `skills/apex/formula-field-performance-and-limits` — when WHERE references formula fields
-30. `skills/apex/cross-object-formula-and-rollup-performance` — cross-object formula query cost
-31. `skills/apex/apex-execute-anonymous` — manual query verification helpers
+30. `skills/apex/formula-field-performance-and-limits` — when WHERE references formula fields
+31. `skills/apex/cross-object-formula-and-rollup-performance` — cross-object formula query cost
+32. `skills/apex/apex-execute-anonymous` — manual query verification helpers
 
 ---
 

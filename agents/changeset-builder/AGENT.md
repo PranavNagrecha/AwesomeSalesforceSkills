@@ -23,6 +23,7 @@ dependencies:
     - devops/migration-from-change-sets-to-sfdx
     - devops/permission-set-deployment-ordering
     - devops/pre-deployment-checklist
+    - devops/release-notes-automation
   shared:
     - AGENT_CONTRACT.md
     - DELIVERABLE_CONTRACT.md
@@ -63,6 +64,7 @@ Two modes:
 9. `skills/admin/change-management-and-deployment`
 10. `templates/admin/naming-conventions.md`
 11. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+12. `skills/devops/release-notes-automation` — post-deploy notes generated from change-set scope
 
 ---
 
