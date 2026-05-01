@@ -22,6 +22,7 @@ dependencies:
     - architect/nfr-definition-for-salesforce
     - architect/security-architecture-review
     - architect/well-architected-review
+    - architect/zero-trust-salesforce-patterns
     - devops/metadata-api-coverage-gaps
     - devops/pipeline-secrets-management
     - security/customer-data-request-workflow
@@ -68,6 +69,7 @@ Runs a Well-Architected Framework (WAF) assessment against a Salesforce implemen
 12. `skills/security/session-high-assurance-policies` — step-up auth
 13. `skills/devops/pipeline-secrets-management` — pipeline auth hardening
 14. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+15. `skills/architect/zero-trust-salesforce-patterns` — zero-trust composition pattern: four-leg coverage; RTEM TSP-supported event matrix; CAEP gap
 
 ---
 

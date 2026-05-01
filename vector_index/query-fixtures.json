@@ -6863,6 +6863,60 @@
       "domain": "integration",
       "expected_skill": "integration/aws-salesforce-patterns",
       "top_k": 3
+    },
+    {
+      "query": "azure service bus connector salesforce setup",
+      "domain": "integration",
+      "expected_skill": "integration/azure-salesforce-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "power platform connector salesforce limits",
+      "domain": "integration",
+      "expected_skill": "integration/azure-salesforce-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "salesforce to azure integration which service should I use",
+      "domain": "integration",
+      "expected_skill": "integration/azure-salesforce-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "do I still need @track in modern lwc",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-reactive-state-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "lwc renderedCallback infinite rerender loop",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-reactive-state-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "lwc Set Map Date mutation not reactive",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-reactive-state-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "how do we implement zero trust in salesforce",
+      "domain": "architect",
+      "expected_skill": "architect/zero-trust-salesforce-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "transaction security policy event types not supported",
+      "domain": "architect",
+      "expected_skill": "architect/zero-trust-salesforce-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "salesforce continuous verification beyond mfa",
+      "domain": "architect",
+      "expected_skill": "architect/zero-trust-salesforce-patterns",
+      "top_k": 3
     }
   ]
 }
