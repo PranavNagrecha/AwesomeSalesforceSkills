@@ -759,6 +759,7 @@
       "integration/data-cloud-ingestion-api",
       "integration/data-cloud-integration-strategy",
       "integration/data-cloud-query-api",
+      "integration/data-cloud-zero-copy-federation",
       "integration/error-handling-in-integrations",
       "integration/event-driven-architecture-patterns",
       "integration/event-relay-configuration",
@@ -2557,7 +2558,8 @@
       "data/external-data-and-big-objects"
     ],
     "bigquery": [
-      "data/analytics-external-data"
+      "data/analytics-external-data",
+      "integration/data-cloud-zero-copy-federation"
     ],
     "billing": [
       "admin/quote-to-cash-process"
@@ -4404,6 +4406,7 @@
       "integration/data-cloud-ingestion-api",
       "integration/data-cloud-integration-strategy",
       "integration/data-cloud-query-api",
+      "integration/data-cloud-zero-copy-federation",
       "integration/tableau-salesforce-connector"
     ],
     "data-cloud-metrics": [
@@ -4439,6 +4442,9 @@
     ],
     "data-extraction": [
       "agentforce/sf-to-llm-data-pipelines"
+    ],
+    "data-federation": [
+      "integration/data-cloud-zero-copy-federation"
     ],
     "data-governance": [
       "data/analytics-data-governance",
@@ -4670,6 +4676,9 @@
     ],
     "database-class": [
       "apex/apex-dml-patterns"
+    ],
+    "databricks": [
+      "integration/data-cloud-zero-copy-federation"
     ],
     "dataflow": [
       "admin/analytics-dataflow-development"
@@ -5950,6 +5959,9 @@
     ],
     "external-data": [
       "data/analytics-external-data"
+    ],
+    "external-dlo": [
+      "integration/data-cloud-zero-copy-federation"
     ],
     "external-frontend": [
       "lwc/headless-experience-cloud"
@@ -7786,6 +7798,9 @@
     "lakehouse": [
       "architect/data-cloud-architecture",
       "integration/data-cloud-integration-strategy"
+    ],
+    "lakehouse-federation": [
+      "integration/data-cloud-zero-copy-federation"
     ],
     "large-data-volume-architecture": [
       "architect/large-data-volume-architecture"
@@ -10475,6 +10490,9 @@
       "admin/saql-query-development",
       "apex/soql-fundamentals"
     ],
+    "query-acceleration": [
+      "integration/data-cloud-zero-copy-federation"
+    ],
     "query-api": [
       "integration/data-cloud-query-api"
     ],
@@ -10761,7 +10779,8 @@
       "apex/apex-regex-and-pattern-matching"
     ],
     "redshift": [
-      "data/analytics-external-data"
+      "data/analytics-external-data",
+      "integration/data-cloud-zero-copy-federation"
     ],
     "refactoring": [
       "apex/apex-class-decomposition-pattern"
@@ -12212,6 +12231,7 @@
     ],
     "snowflake": [
       "data/analytics-external-data",
+      "integration/data-cloud-zero-copy-federation",
       "integration/salesforce-data-pipeline-etl"
     ],
     "soap": [
@@ -13510,6 +13530,9 @@
       "lwc/lwc-security",
       "security/secure-coding-review-checklist",
       "security/xss-and-injection-prevention"
+    ],
+    "zero-copy": [
+      "integration/data-cloud-zero-copy-federation"
     ],
     "zero-data-retention": [
       "agentforce/einstein-trust-layer"

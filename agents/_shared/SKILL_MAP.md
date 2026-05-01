@@ -216,6 +216,7 @@ New skills landed in 2026-04 and are available for citation. Existing agents can
 - `integration/api-versioning-strategy`, `integration/mutual-tls-callouts`, `integration/webhook-signature-verification`
 - `integration/connect-rest-api-patterns`, `integration/private-connect-setup`
 - `integration/salesforce-data-pipeline-etl`, `integration/api-governance-and-rate-limits`
+- `integration/data-cloud-zero-copy-federation` — Lakehouse Federation auth surface (Snowflake/Databricks/BigQuery/Redshift) and rotation hazards
 
 ### LWC (6 new)
 `lightning-record-page-auditor` additionally cites:
