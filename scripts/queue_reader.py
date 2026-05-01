@@ -1,22 +1,29 @@
 #!/usr/bin/env python3
-"""Structured reader for MASTER_QUEUE.md.
+"""Structured reader/writer for ``BACKLOG.yaml``.
 
-MASTER_QUEUE.md is authoritative. The orchestrator previously used ``grep`` and
-``sed`` to find the next task and mutate status. That's fragile — a stray pipe
-character, a renamed column, or a trailing whitespace breaks everything.
+BACKLOG.yaml is the machine-readable queue. It replaces the row tables that
+used to live inside ``MASTER_QUEUE.md``; the markdown file is now a short
+prose intro that points here.
 
-This script parses the markdown table into typed rows and exposes:
+CLI surface preserved from the previous (markdown-backed) version so any
+caller that automated against the old commands keeps working:
 
-- ``--list``           print every parsed row as JSONL (piping friendly)
-- ``--next``           print the first row whose status is in --status (default TODO,RESEARCHED,RESEARCH)
-- ``--status``         comma-separated list of eligible statuses for --next
-- ``--set-status``     atomically update one row's status (matched by row id)
-- ``--id``             row id (the "#" column) required for --set-status
-- ``--actor``          actor label to record in the Notes column (required for --set-status)
-- ``--summary``        if set, print aggregate status counts and exit
+  - ``--list``           print every entry as JSONL
+  - ``--next``           print the first entry whose status is in ``--status``
+  - ``--status``         comma-separated eligible statuses for ``--next``
+  - ``--set-status``     atomically update one entry's status and append to
+                         its history (matched by ``--id``)
+  - ``--id``             entry id (required for ``--set-status``)
+  - ``--actor``          actor label recorded in history (required for ``--set-status``)
+  - ``--summary``        aggregate status counts
 
-The file is still the single source of truth — this script edits it in place,
-preserving whitespace and row order. No migration to YAML is performed.
+Behavior changes vs. the old markdown reader:
+  - Updates write to BACKLOG.yaml, not MASTER_QUEUE.md.
+  - DONE state is no longer recorded here — the filesystem under ``skills/``
+    is authoritative for "is this skill built?". The dashboard at
+    ``docs/queue-progress.md`` reconciles the two.
+  - The Notes column is replaced by a structured ``history`` list per entry;
+    every ``--set-status`` appends ``{actor, status, at}`` to it.
 """
 
 from __future__ import annotations
@@ -24,187 +31,202 @@ from __future__ import annotations
 import argparse
 import datetime
 import json
-import re
 import sys
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
+
+import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
-QUEUE = ROOT / "MASTER_QUEUE.md"
+BACKLOG = ROOT / "BACKLOG.yaml"
 
-# Recognized status keywords in the Status column.
-STATUSES = {"TODO", "RESEARCHED", "RESEARCH", "IN_PROGRESS", "DONE", "DUPLICATE", "BLOCKED", "UPDATE", "SHIPPABLE"}
+# Recognized statuses. Same set as before; DONE is allowed for transitional
+# updates but the dashboard ignores it (filesystem is authoritative).
+STATUSES = {
+    "TODO", "RESEARCHED", "RESEARCH", "IN_PROGRESS",
+    "DONE", "DUPLICATE", "BLOCKED", "UPDATE", "SHIPPABLE",
+}
 
 
 @dataclass
-class QueueRow:
-    line_no: int
-    raw_line: str
-    cells: list[str]
-    id: str | None
-    status: str | None
-    skill_name: str | None
-    domain: str | None
-    col_index: dict[str, int]  # column name -> position, for the owning table
+class BacklogEntry:
+    id: str
+    status: str
+    skill: str = ""
+    domain: str | None = None
+    role: str | None = None
+    cloud: str | None = None
+    summary: str | None = None
+    notes: str | None = None
+    source_line: int | None = None
+    history: list[dict[str, str]] = field(default_factory=list)
+    extra: dict[str, Any] = field(default_factory=dict)  # forward-compat
 
-    def to_dict(self) -> dict:
-        return {
-            "line_no": self.line_no,
-            "id": self.id,
-            "status": self.status,
-            "skill_name": self.skill_name,
-            "domain": self.domain,
-            "cells": self.cells,
+    @classmethod
+    def from_dict(cls, raw: dict[str, Any]) -> BacklogEntry:
+        known = {
+            "id", "status", "skill", "domain", "role", "cloud",
+            "summary", "notes", "source_line", "history",
         }
-
-
-def _split_row(line: str) -> list[str]:
-    """Split a markdown table row into cell strings.
-
-    Handles escaped pipes (``\\|``) so values like `design \\| audit` don't split.
-    """
-    placeholder = "\x00"
-    text = line.replace("\\|", placeholder)
-    parts = [cell.strip().replace(placeholder, "|") for cell in text.split("|")]
-    # A markdown row has empty strings at both ends (leading and trailing pipe).
-    if parts and parts[0] == "":
-        parts = parts[1:]
-    if parts and parts[-1] == "":
-        parts = parts[:-1]
-    return parts
-
-
-def _parse_queue(text: str) -> list[QueueRow]:
-    rows: list[QueueRow] = []
-    in_table = False
-    header_cells: list[str] | None = None
-    col_index: dict[str, int] = {}
-
-    for line_no, line in enumerate(text.splitlines(), start=1):
-        stripped = line.strip()
-        if not stripped.startswith("|"):
-            in_table = False
-            header_cells = None
-            col_index = {}
-            continue
-
-        cells = _split_row(line)
-
-        # Detect header row (first table row with named columns) + separator (---|---).
-        if all(re.fullmatch(r":?-+:?", cell) for cell in cells if cell):
-            # separator row — skip but stay in_table
-            continue
-
-        if header_cells is None:
-            header_cells = [c.lower() for c in cells]
-            col_index = {name: i for i, name in enumerate(header_cells)}
-            in_table = True
-            continue
-
-        # Data row.
-        def get(col_names: list[str]) -> str | None:
-            for name in col_names:
-                if name in col_index and col_index[name] < len(cells):
-                    value = cells[col_index[name]].strip()
-                    if value:
-                        return value
-            return None
-
-        status_value = get(["status"])
-        status_normalized: str | None = None
-        if status_value:
-            upper = status_value.upper()
-            for known in sorted(STATUSES, key=len, reverse=True):
-                if known in upper:
-                    status_normalized = known
-                    break
-
-        rows.append(
-            QueueRow(
-                line_no=line_no,
-                raw_line=line,
-                cells=cells,
-                id=get(["#", "id"]),
-                status=status_normalized,
-                skill_name=get(["skill", "skill name", "name"]),
-                domain=get(["domain"]),
-                col_index=dict(col_index),
-            )
+        extra = {k: v for k, v in raw.items() if k not in known}
+        return cls(
+            id=str(raw.get("id", "")),
+            status=str(raw.get("status", "")),
+            skill=str(raw.get("skill", "") or ""),
+            domain=raw.get("domain"),
+            role=raw.get("role"),
+            cloud=raw.get("cloud"),
+            summary=raw.get("summary"),
+            notes=raw.get("notes"),
+            source_line=raw.get("source_line"),
+            history=list(raw.get("history") or []),
+            extra=extra,
         )
-    return rows
+
+    def to_dict(self) -> dict[str, Any]:
+        out: dict[str, Any] = {"id": self.id, "status": self.status, "skill": self.skill}
+        if self.domain is not None:
+            out["domain"] = self.domain
+        if self.role is not None:
+            out["role"] = self.role
+        if self.cloud is not None:
+            out["cloud"] = self.cloud
+        if self.summary is not None:
+            out["summary"] = self.summary
+        if self.notes is not None:
+            out["notes"] = self.notes
+        if self.source_line is not None:
+            out["source_line"] = self.source_line
+        out["history"] = list(self.history)
+        out.update(self.extra)
+        return out
 
 
-def list_cmd(rows: list[QueueRow]) -> int:
-    for row in rows:
-        print(json.dumps(row.to_dict(), ensure_ascii=False))
+def load_backlog(path: Path = BACKLOG) -> list[BacklogEntry]:
+    if not path.exists():
+        raise SystemExit(
+            f"ERROR: {path} not found. "
+            "Run scripts/_migrations/migrate_queue_to_yaml.py to create it."
+        )
+    raw = yaml.safe_load(path.read_text(encoding="utf-8")) or []
+    if not isinstance(raw, list):
+        raise SystemExit(f"ERROR: {path} top level must be a list, got {type(raw).__name__}")
+    return [BacklogEntry.from_dict(item) for item in raw if isinstance(item, dict)]
+
+
+def _yaml_quote(value: str) -> str:
+    text = str(value).replace("\\", "\\\\").replace('"', '\\"')
+    return f'"{text}"'
+
+
+def render_backlog(entries: list[BacklogEntry]) -> str:
+    """Render entries as the same hand-written YAML format the migration uses
+    so the file's diff stays minimal across writes. We don't use
+    ``yaml.safe_dump`` because its default style varies across PyYAML versions
+    and we want the file format to be stable for git diffs."""
+    out: list[str] = []
+    out.append("# Generated by scripts/_migrations/migrate_queue_to_yaml.py.")
+    out.append("# Re-run the migration to rebuild from MASTER_QUEUE.md, OR edit this")
+    out.append("# file directly via scripts/queue_reader.py.")
+    out.append("# See docs/QUEUE_FORMAT_PROPOSAL.md for the field shape.")
+    out.append("")
+    if not entries:
+        out.append("[]")
+        return "\n".join(out) + "\n"
+
+    field_order = ["id", "status", "skill", "domain", "role", "cloud",
+                   "summary", "notes", "source_line", "history"]
+
+    for entry in entries:
+        d = entry.to_dict()
+        first = True
+        for key in field_order:
+            if key not in d:
+                continue
+            value = d[key]
+            prefix = "- " if first else "  "
+            first = False
+            if isinstance(value, list):
+                if not value:
+                    out.append(f"{prefix}{key}: []")
+                else:
+                    out.append(f"{prefix}{key}:")
+                    for item in value:
+                        if isinstance(item, dict):
+                            # Inline-style dict for history entries: keeps the
+                            # file compact and grep-friendly.
+                            inner = ", ".join(
+                                f"{k}: {_yaml_quote(v)}" for k, v in item.items()
+                            )
+                            out.append(f"    - {{ {inner} }}")
+                        else:
+                            out.append(f"    - {_yaml_quote(item)}")
+            elif isinstance(value, int):
+                out.append(f"{prefix}{key}: {value}")
+            else:
+                out.append(f"{prefix}{key}: {_yaml_quote(value)}")
+        # Forward-compat: emit any unrecognized keys at the bottom.
+        for key, value in entry.extra.items():
+            out.append(f"  {key}: {_yaml_quote(value)}")
+    return "\n".join(out) + "\n"
+
+
+def list_cmd(entries: list[BacklogEntry]) -> int:
+    for entry in entries:
+        print(json.dumps(entry.to_dict(), ensure_ascii=False, sort_keys=True))
     return 0
 
 
-def next_cmd(rows: list[QueueRow], wanted: set[str]) -> int:
-    for row in rows:
-        if row.status in wanted:
-            print(json.dumps(row.to_dict(), ensure_ascii=False))
+def next_cmd(entries: list[BacklogEntry], wanted: set[str]) -> int:
+    for entry in entries:
+        if entry.status in wanted:
+            print(json.dumps(entry.to_dict(), ensure_ascii=False, sort_keys=True))
             return 0
-    print(json.dumps({"error": "no row matches", "wanted": sorted(wanted)}))
+    print(json.dumps({"error": "no entry matches", "wanted": sorted(wanted)}))
     return 1
 
 
-def summary_cmd(rows: list[QueueRow]) -> int:
+def summary_cmd(entries: list[BacklogEntry]) -> int:
     counts: dict[str, int] = {}
-    for row in rows:
-        key = row.status or "(unparsed)"
-        counts[key] = counts.get(key, 0) + 1
-    total = len(rows)
-    print(f"Queue rows: {total}")
+    for entry in entries:
+        counts[entry.status or "(unset)"] = counts.get(entry.status or "(unset)", 0) + 1
+    print(f"Backlog entries: {len(entries)}")
     for status in sorted(counts):
         print(f"  {status:<14} {counts[status]}")
     return 0
 
 
-def set_status_cmd(text: str, rows: list[QueueRow], row_id: str, new_status: str, actor: str) -> int:
+def set_status_cmd(
+    entries: list[BacklogEntry],
+    entry_id: str,
+    new_status: str,
+    actor: str,
+    *,
+    backlog_path: Path = BACKLOG,
+) -> int:
     if new_status not in STATUSES:
         print(f"ERROR: unknown status `{new_status}` — must be one of {sorted(STATUSES)}", file=sys.stderr)
         return 3
-    # Match by id first; fall back to skill_name for tables without an id column.
-    candidates = [r for r in rows if r.id == row_id]
+    candidates = [e for e in entries if e.id == entry_id]
     if not candidates:
-        candidates = [r for r in rows if r.skill_name == row_id]
+        candidates = [e for e in entries if e.skill == entry_id]
     if not candidates:
-        print(f"ERROR: no row with id or skill_name `{row_id}`", file=sys.stderr)
+        print(f"ERROR: no entry with id or skill `{entry_id}`", file=sys.stderr)
         return 2
     if len(candidates) > 1:
         print(
-            f"ERROR: `{row_id}` matches {len(candidates)} rows; pass a unique id",
+            f"ERROR: `{entry_id}` matches {len(candidates)} entries; pass a unique id",
             file=sys.stderr,
         )
         return 2
     target = candidates[0]
-
-    status_col = target.col_index.get("status")
-    notes_col = target.col_index.get("notes") or target.col_index.get("note")
-    if status_col is None:
-        print(
-            f"ERROR: row on line {target.line_no} has no Status column",
-            file=sys.stderr,
-        )
-        return 2
-
     now = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds")
-    lines = text.splitlines(keepends=False)
-    raw = lines[target.line_no - 1]
-    cells = _split_row(raw)
-    while len(cells) <= max(status_col, notes_col or 0):
-        cells.append("")
-    cells[status_col] = new_status
-    if notes_col is not None:
-        stamp = f"{actor} @ {now}"
-        existing = cells[notes_col]
-        cells[notes_col] = f"{stamp}; {existing}" if existing else stamp
+    target.history.append({"actor": actor, "status": new_status, "at": now})
+    target.status = new_status
 
-    new_line = "| " + " | ".join(cells) + " |"
-    lines[target.line_no - 1] = new_line
-    QUEUE.write_text("\n".join(lines) + ("\n" if text.endswith("\n") else ""), encoding="utf-8")
-    print(json.dumps({"id": row_id, "status": new_status, "line_no": target.line_no, "actor": actor}))
+    backlog_path.write_text(render_backlog(entries), encoding="utf-8")
+    print(json.dumps({"id": entry_id, "status": new_status, "actor": actor, "at": now}))
     return 0
 
 
@@ -224,25 +246,20 @@ def main() -> int:
     parser.add_argument("--actor", type=str, default=None)
     args = parser.parse_args()
 
-    if not QUEUE.exists():
-        print(f"ERROR: {QUEUE} not found", file=sys.stderr)
-        return 2
-
-    text = QUEUE.read_text(encoding="utf-8")
-    rows = _parse_queue(text)
+    entries = load_backlog()
 
     if args.summary:
-        return summary_cmd(rows)
+        return summary_cmd(entries)
     if args.list:
-        return list_cmd(rows)
+        return list_cmd(entries)
     if args.next:
         wanted = {s.strip().upper() for s in args.status.split(",") if s.strip()}
-        return next_cmd(rows, wanted)
+        return next_cmd(entries, wanted)
     if args.set_status:
         if not args.id or not args.actor:
             print("ERROR: --set-status requires --id and --actor", file=sys.stderr)
             return 3
-        return set_status_cmd(text=text, rows=rows, row_id=args.id, new_status=args.set_status, actor=args.actor)
+        return set_status_cmd(entries, args.id, args.set_status, args.actor)
 
     parser.print_help()
     return 3

@@ -49,6 +49,7 @@ After any skill add or skill update:
    - generated files in `vector_index/`
    - generated `docs/SKILLS.md`
    - generated `standards/validation-gates.md` (if validator source changed)
+   - generated `docs/queue-progress.md` (if `BACKLOG.yaml` changed)
 
 The full list of validator gates with file:line citations lives in
 `standards/validation-gates.md` — read it instead of grepping validator code.
@@ -83,6 +84,8 @@ The full list of validator gates with file:line citations lives in
 - `scripts/`: top-level CLI entrypoints used by agents and contributors
 - `docs/reports/duplicate-candidates.md`: generated report of near-duplicate skills — regenerate with `python3 scripts/audit_duplicates.py`
 - `standards/validation-gates.md`: generated index of every gate the validators enforce — read this when you want to know what `validate_repo.py` will check
+- `BACKLOG.yaml`: machine-readable queue of pending / researched / blocked / duplicate skill entries (the row data formerly inside `MASTER_QUEUE.md`)
+- `docs/queue-progress.md`: generated dashboard for `BACKLOG.yaml` — status counts, drift, next-pick
 
 ## Bootstrap
 
