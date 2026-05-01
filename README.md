@@ -4,8 +4,8 @@ The universal Salesforce knowledge layer for AI coding assistants.
 
 Drop this into Claude Code, Cursor, Aider, Windsurf, or any AI tool and get role-accurate, source-grounded Salesforce guidance — for every role, every cloud, every task.
 
-**763 skills · shared Apex/LWC/Flow templates · golden evals · live-org MCP server.**
-1097+ skills planned across 5 roles × 16 clouds.
+**926 skills · shared Apex/LWC/Flow templates · golden evals · live-org MCP server.**
+1097+ skills planned across 5 roles × 16 clouds. Live progress: [`docs/queue-progress.md`](./docs/queue-progress.md).
 
 ---
 
@@ -13,7 +13,7 @@ Drop this into Claude Code, Cursor, Aider, Windsurf, or any AI tool and get role
 
 Three layers that turn generic LLMs into Salesforce-literate agents:
 
-1. **Skills** (`skills/<domain>/<skill>/`) — 763 structured guides. Every skill carries source-grounded instructions, code examples, gotchas, WAF mapping, and a per-skill list of **LLM anti-patterns** the model must refuse to produce.
+1. **Skills** (`skills/<domain>/<skill>/`) — 926 structured guides. Every skill carries source-grounded instructions, code examples, gotchas, WAF mapping, and a per-skill list of **LLM anti-patterns** the model must refuse to produce.
 2. **Shared canon** — One set of reusable building blocks the skills all point at, so the AI never reinvents them:
    - `templates/` → TriggerHandler, ApplicationLogger, SecurityUtils, HttpClient, TestDataFactory, LWC skeleton, Flow fault paths, Agentforce actions.
    - `standards/decision-trees/` → Routing for automation, async, integration, and sharing decisions — agents consult these **before** writing code.
@@ -202,11 +202,16 @@ python3 scripts/search_knowledge.py "data skew performance" --domain data
 
 Three ways:
 
-**Run the `/request-skill` command** — Ask the AI to follow [`commands/request-skill.md`](./commands/request-skill.md). It asks 4 questions, checks existing coverage, and adds a TODO row to `MASTER_QUEUE.md` automatically.
+**Run the `/request-skill` command** — Ask the AI to follow [`commands/request-skill.md`](./commands/request-skill.md). It asks 4 questions, checks existing coverage, and adds an entry to [`BACKLOG.yaml`](./BACKLOG.yaml).
 
-**Add directly to the queue** — Open `MASTER_QUEUE.md` and append a row:
-```markdown
-| TODO | your-skill-name | What it does. NOT for what it doesn't cover. | |
+**Add directly to the queue** — Append an entry to [`BACKLOG.yaml`](./BACKLOG.yaml):
+```yaml
+- id: your-skill-name
+  status: TODO
+  skill: your-skill-name
+  domain: <domain>
+  summary: "What it does. NOT for what it doesn't cover."
+  history: []
 ```
 
 **Open a GitHub issue** — Title: `[Skill Request] <domain>: <skill-name>`. Describe the use case, the role, and which cloud it applies to.
@@ -219,11 +224,12 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full workflow.
 
 The short version:
 ```bash
-# 1. Check it doesn't already exist
+# 1. Check it doesn't already exist (lexical + semantic)
 python3 scripts/search_knowledge.py "<your topic>"
+python3 scripts/audit_duplicates.py --domain <domain>     # full pairwise
 
-# 2. Scaffold it
-python3 scripts/new_skill.py <domain> <skill-name>
+# 2. Scaffold it (--strict refuses to create near-duplicates)
+python3 scripts/new_skill.py <domain> <skill-name> --strict
 
 # 3. Fill every TODO in the generated files
 #    — Reference templates/ for any Apex/LWC/Flow scaffolds (don't inline your own)
@@ -238,9 +244,9 @@ python3 evals/scripts/run_evals.py --structure          # if you added a golden 
 ```
 
 Every skill must pass three gates before merging:
-- **Structural gate** — `validate_repo.py` exits 0
+- **Structural gate** — `validate_repo.py` exits 0. The full list of gates with file:line links lives in [`standards/validation-gates.md`](./standards/validation-gates.md) (generated).
 - **Canon gate** — scaffolds reference `templates/`; technology choices cite `standards/decision-trees/`; any `@InvocableMethod` or agent action uses `templates/agentforce/AgentActionSkeleton.cls` as the base shape
-- **Quality gate** — `standards/skill-content-contract.md` (source grounding, content depth, agent usability, contradiction check, freshness) plus `references/llm-anti-patterns.md` populated with real failure modes for that skill
+- **Quality gate** — `standards/skill-content-contract.md` (source grounding, content depth, agent usability, contradiction check, freshness) plus `references/llm-anti-patterns.md` populated with real failure modes for that skill. The semantic-duplicate check fires as a WARN; review [`docs/reports/duplicate-candidates.md`](./docs/reports/duplicate-candidates.md) before merging if the WARN names your new skill.
 
 Flagship skills additionally carry a golden eval under `evals/golden/` with 3+ P0 cases.
 
@@ -377,7 +383,7 @@ Full list + source-skill map: [`agents/_shared/SKILL_MAP.md`](./agents/_shared/S
 The build-time agents live in the same `agents/` tree. They're the skill factory:
 
 ```
-MASTER_QUEUE.md                  what needs to be built
+BACKLOG.yaml                     what needs to be built (machine-readable)
       │
       ▼
 agents/orchestrator/             routes TODOs to the right builder
@@ -401,7 +407,7 @@ Operators drive the system via slash commands under `commands/` (invoke by askin
 |---|---|
 | [`/run-queue`](./commands/run-queue.md) | Autonomous loop: claim → research → build → validate → commit |
 | [`/new-skill`](./commands/new-skill.md) | Scaffold one skill through the full contract |
-| [`/request-skill`](./commands/request-skill.md) | 4-question flow to append a TODO to `MASTER_QUEUE.md` |
+| [`/request-skill`](./commands/request-skill.md) | 4-question flow to append a TODO to `BACKLOG.yaml` |
 | [`/assess-org`](./commands/assess-org.md) | Run `agents/org-assessor` against a live org via the MCP server |
 | [`/review`](./commands/review.md) | Run `agents/code-reviewer` against a PR or local change |
 | [`/release-notes`](./commands/release-notes.md) | Generate release notes from recent skill deltas |
@@ -421,7 +427,7 @@ Every claim in every skill is grounded against a 4-tier trust ladder. When sourc
 
 **Shipped in v1:**
 
-- [x] 753 skills across Admin, Apex, LWC, Flow, OmniStudio, Agentforce, Security, Integration, Data, Architect, DevOps
+- [x] 926 skills across Admin, Apex, LWC, Flow, OmniStudio, Agentforce, Security, Integration, Data, Architect, DevOps
 - [x] Shared templates (Apex handler framework, logger, security utils, HTTP client, test factories, LWC skeleton, Flow fault paths, Agentforce action shell)
 - [x] Decision trees for automation, async, integration, and sharing selection
 - [x] Golden evals for 10 flagship skills (30 P0 cases)
@@ -435,7 +441,7 @@ Every claim in every skill is grounded against a 4-tier trust ladder. When sourc
 - [ ] Deeper cloud coverage: Sales, Service, Experience, Marketing, Revenue (CPQ), Field Service, Health, FSC, Nonprofit, Commerce, CRM Analytics, MuleSoft
 - [ ] Currency monitor — automated staleness flagging after each Salesforce release
 
-Live queue: [MASTER_QUEUE.md](./MASTER_QUEUE.md)
+Live queue: [`BACKLOG.yaml`](./BACKLOG.yaml) (machine-readable) · [`docs/queue-progress.md`](./docs/queue-progress.md) (generated dashboard) · [`MASTER_QUEUE.md`](./MASTER_QUEUE.md) (intro + agent workflow)
 
 ---
 
