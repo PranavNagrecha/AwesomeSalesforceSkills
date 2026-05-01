@@ -250,6 +250,7 @@ def run_skill_validation(
     changed_only: bool = False,
     skip_drift: bool = False,
     skip_fixture_retrieval: bool = False,
+    skip_similarity: bool = False,
 ) -> tuple[list[ValidationIssue], int]:
     """Validate skills with optional partitioning. Returns (issues, count).
 
@@ -374,8 +375,12 @@ def run_skill_validation(
     # filtered set against the FULL corpus (not just the filtered set) so a
     # newly added skill near-duplicating an existing one gets flagged in
     # --changed-only mode. Threshold + weights from config/retrieval-config.yaml.
-    skill_md_paths = [p / "SKILL.md" for p in filtered_dirs]
-    issues.extend(validate_skill_similarity(ROOT, skill_md_paths))
+    # Skipped by validate_repo_bench (synthetic skills share tags + triggers,
+    # which defeats the prefilter and doubles the orchestration runtime
+    # without testing the gate's actual correctness).
+    if not skip_similarity:
+        skill_md_paths = [p / "SKILL.md" for p in filtered_dirs]
+        issues.extend(validate_skill_similarity(ROOT, skill_md_paths))
 
     return issues, len(filtered_dirs)
 
@@ -477,6 +482,13 @@ def main() -> int:
              "is intentionally absent. Coverage check — every skill has a "
              "fixture — still runs.",
     )
+    parser.add_argument(
+        "--skip-similarity", action="store_true",
+        help="Skip the semantic-duplicate WARN gate. Used by the orchestration "
+             "bench (synthetic skills share tags + triggers, which defeats "
+             "the prefilter and inflates wall-clock without testing the gate). "
+             "Real-corpus runs should leave this enabled.",
+    )
     args = parser.parse_args()
 
     # Default behavior (no flags) preserves pre-existing CI: run skill validation only.
@@ -496,6 +508,7 @@ def main() -> int:
             changed_only=args.changed_only,
             skip_drift=args.skip_drift,
             skip_fixture_retrieval=args.skip_fixture_retrieval,
+            skip_similarity=args.skip_similarity,
         )
         issues.extend(skill_issues)
 
