@@ -159,8 +159,8 @@ def _seed_minimal_repo(repo: Path, count: int) -> None:
 
 def _run_bench(count: int, threshold: float) -> tuple[bool, float, str]:
     """Seed ``count`` skills in a throwaway repo, run the validator with
-    ``--skills-only --skip-drift --skip-fixture-retrieval``, and return
-    ``(passed, wall_clock, output)``.
+    ``--skills-only --skip-drift --skip-fixture-retrieval --skip-similarity``,
+    and return ``(passed, wall_clock, output)``.
 
     ``passed`` is based SOLELY on wall-clock vs threshold. We expect
     the validator to report errors against our deliberately-minimal
@@ -168,6 +168,12 @@ def _run_bench(count: int, threshold: float) -> tuple[bool, float, str]:
     like 300-word minimum body, scope-exclusion in description, etc.).
     Correctness of those rules is tested by the real-repo validation
     run — this bench only measures orchestration throughput.
+
+    ``--skip-similarity`` is required because every synthetic skill
+    shares the same tags + triggers, which defeats the similarity
+    gate's tag/domain prefilter and inflates the wall-clock without
+    testing the gate's behavior. The similarity gate is exercised by
+    the real-corpus validation run instead.
     """
     with tempfile.TemporaryDirectory(prefix="sfskills-bench-") as tmpdir:
         repo = Path(tmpdir)
@@ -175,7 +181,8 @@ def _run_bench(count: int, threshold: float) -> tuple[bool, float, str]:
         start = time.perf_counter()
         proc = subprocess.run(
             [sys.executable, str(repo / "scripts" / "validate_repo.py"),
-             "--skills-only", "--skip-drift", "--skip-fixture-retrieval"],
+             "--skills-only", "--skip-drift", "--skip-fixture-retrieval",
+             "--skip-similarity"],
             cwd=repo, capture_output=True, text=True,
         )
         elapsed = time.perf_counter() - start
