@@ -25,13 +25,37 @@ python3 scripts/search_knowledge.py "<topic>" --domain <domain>
 
 If `has_coverage: true` is returned, a skill already exists. Extend it — do not create a duplicate.
 
+For a stronger check that compares against every skill's description, tags,
+and triggers (not just lexical retrieval), run:
+
+```bash
+python3 scripts/audit_duplicates.py --domain <domain>
+```
+
+This writes `docs/reports/duplicate-candidates.md` with every pair above the
+configured similarity threshold (see `config/retrieval-config.yaml` →
+`duplicate_threshold`). Review the report before adding a skill that scores
+near an existing one.
+
 ### Step 2 — Scaffold (never write from scratch)
 
 ```bash
 python3 scripts/new_skill.py <domain> <skill-name>
 ```
 
-This creates the full package with pre-filled TODO markers and pre-seeded official sources. You fill the TODOs — you do not design the structure.
+This creates the full package with pre-filled TODO markers and pre-seeded
+official sources. You fill the TODOs — you do not design the structure.
+
+The scaffold automatically scores the proposed name against the corpus and
+warns on near-duplicates. To make the warning a hard block (so an agent
+cannot silently create overlapping skills), pass `--strict`:
+
+```bash
+python3 scripts/new_skill.py <domain> <skill-name> --strict
+```
+
+`--strict` exits non-zero if the proposed name produces a similarity score
+≥ the configured threshold against any existing skill.
 
 ### Step 3 — Fill All TODOs
 

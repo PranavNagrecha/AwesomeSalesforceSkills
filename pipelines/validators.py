@@ -518,3 +518,93 @@ def validate_skill_registry_record(root: Path, record: dict) -> list[ValidationI
 def validate_knowledge_source(root: Path, source: dict) -> list[ValidationIssue]:
     schema = load_schema(root, "config/knowledge-source.schema.json")
     return [ValidationIssue("ERROR", source.get("id", "knowledge"), error) for error in validate_with_jsonschema(source, schema)]
+
+
+def validate_skill_similarity(
+    root: Path,
+    skill_paths: list[Path],
+    *,
+    full_corpus: list | None = None,
+    threshold: float | None = None,
+    weights: dict[str, float] | None = None,
+) -> list[ValidationIssue]:
+    """Flag near-duplicate skills as WARN.
+
+    For each skill in ``skill_paths`` (typically the changed-only set during a
+    commit), score it against the small set of corpus neighbours that share a
+    tag OR same domain + at least one trigger word. The prefilter cuts ~99 %
+    of the heavy ``SequenceMatcher.ratio()`` calls — wall-clock for a
+    1-skill commit is well under a second, and the full-repo run finishes in
+    a few seconds even on the 926-skill corpus.
+
+    WARN-level by design: the existing corpus has known intentional parallels
+    (e.g. bitbucket-pipelines vs gitlab-ci vs github-actions for Salesforce)
+    that score above the threshold. A future PR can promote this to ERROR
+    after a corpus cleanup pass.
+    """
+    from .similarity import (
+        compute_similarity,
+        fingerprint_corpus,
+        fingerprint_skill,
+        load_threshold_from_config,
+    )
+
+    if not skill_paths:
+        return []
+
+    cfg_threshold, cfg_weights = load_threshold_from_config(root)
+    threshold = threshold if threshold is not None else cfg_threshold
+    weights = weights if weights is not None else cfg_weights
+
+    corpus = full_corpus if full_corpus is not None else fingerprint_corpus(root)
+
+    # Build the same indexes the audit script uses, so per-skill lookup is
+    # O(unique candidates) instead of O(corpus). On the 926-skill corpus
+    # this drops a 1-skill check from ~2 s to ~50 ms.
+    by_tag: dict[str, list[int]] = {}
+    by_domain: dict[str, list[int]] = {}
+    for i, fp in enumerate(corpus):
+        for tag in fp.tags:
+            by_tag.setdefault(tag, []).append(i)
+        by_domain.setdefault(fp.domain, []).append(i)
+
+    issues: list[ValidationIssue] = []
+    seen_pairs: set[tuple[str, str]] = set()
+
+    for skill_md in skill_paths:
+        target = fingerprint_skill(skill_md, root)
+        if target is None:
+            continue
+
+        # Candidate set for this target: union of corpus skills that share a
+        # tag, plus those in same domain that share a trigger word.
+        candidate_indices: set[int] = set()
+        for tag in target.tags:
+            candidate_indices.update(by_tag.get(tag, []))
+        for idx in by_domain.get(target.domain, []):
+            other = corpus[idx]
+            if target.trigger_words & other.trigger_words:
+                candidate_indices.add(idx)
+
+        for idx in candidate_indices:
+            other = corpus[idx]
+            if other.skill_id == target.skill_id:
+                continue
+            score = compute_similarity(target, other, weights)
+            if score.total < threshold:
+                continue
+            pair_key = tuple(sorted((target.skill_id, other.skill_id)))
+            if pair_key in seen_pairs:
+                continue
+            seen_pairs.add(pair_key)
+            issues.append(
+                ValidationIssue(
+                    "WARN",
+                    str(skill_md),
+                    f"near-duplicate of `{other.skill_id}` (score {score.total:.2f}, "
+                    f"description {score.description:.2f}, tags {score.tags:.2f}, "
+                    f"triggers {score.triggers:.2f}); review with "
+                    "`python3 scripts/audit_duplicates.py` or merge/rename one",
+                )
+            )
+    return issues

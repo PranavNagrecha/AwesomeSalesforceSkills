@@ -116,6 +116,45 @@ def _check_coverage(query: str, domain: str) -> bool:
         return False
 
 
+def _check_similarity_neighbours(skill_name: str, domain: str) -> list[tuple[str, float, str]]:
+    """Build a stub fingerprint for the proposed skill and return its top-5
+    neighbours in the existing corpus. Description is the slug-as-prose since
+    we don't have a real description yet — coarse, but enough to catch the
+    "you're about to scaffold a near-duplicate" case.
+
+    Returns ``[(neighbour_skill_id, total_score, description), ...]``."""
+    from pipelines.similarity import (
+        SkillFingerprint,
+        compute_similarity,
+        fingerprint_corpus,
+        load_threshold_from_config,
+        normalize_tags,
+        tokenize_triggers,
+    )
+    threshold, weights = load_threshold_from_config(ROOT)
+
+    pseudo_description = skill_name.replace("-", " ").lower()
+    pseudo = SkillFingerprint(
+        skill_id=f"{domain}/{skill_name}",
+        domain=domain,
+        description=pseudo_description,
+        tags=normalize_tags([]),
+        trigger_words=tokenize_triggers([pseudo_description]),
+        path=ROOT / "skills" / domain / skill_name / "SKILL.md",
+    )
+
+    corpus = fingerprint_corpus(ROOT)
+    scored: list[tuple[str, float, str]] = []
+    for other in corpus:
+        if other.skill_id == pseudo.skill_id:
+            continue
+        score = compute_similarity(pseudo, other, weights)
+        if score.total >= threshold:
+            scored.append((other.skill_id, score.total, other.description))
+    scored.sort(key=lambda t: t[1], reverse=True)
+    return scored[:5]
+
+
 def _scaffold_skill_md(template_path: Path, skill_name: str, domain: str) -> str:
     title = skill_name.replace("-", " ").title()
     today = date.today().isoformat()
@@ -461,6 +500,13 @@ After scaffolding:
         metavar="skill-name",
         help="Skill name (lowercase, hyphenated, e.g. bulkification-patterns).",
     )
+    parser.add_argument(
+        "--strict", action="store_true",
+        help="Block scaffolding when the proposed skill name produces a "
+             "near-duplicate (similarity >= configured threshold) against any "
+             "existing skill. Default behavior warns only — strict turns the "
+             "warning into a hard exit so agents can't silently create overlaps.",
+    )
     args = parser.parse_args()
 
     domain: str = args.domain
@@ -491,6 +537,32 @@ After scaffolding:
             f"   If this skill is genuinely distinct, proceed. Otherwise extend the existing skill.\n"
         )
         response = input("Continue scaffolding? [y/N] ").strip().lower()
+        if response != "y":
+            print("Aborted.")
+            return 0
+
+    # Similarity check — surface near-duplicates in the existing corpus.
+    print(f"Checking pairwise similarity against {domain} corpus…")
+    neighbours = _check_similarity_neighbours(skill_name, domain)
+    if neighbours:
+        print(
+            f"\n⚠  Near-duplicate candidates (similarity ≥ configured threshold):\n"
+        )
+        for sid, score, desc in neighbours:
+            print(f"   {score:.2f}  {sid}")
+            if desc:
+                print(f"          {desc[:140]}{'…' if len(desc) > 140 else ''}")
+        print(
+            f"\n   If this skill is genuinely distinct, proceed. Otherwise "
+            f"extend an existing skill or rename to clarify scope.\n"
+        )
+        if args.strict:
+            raise SystemExit(
+                "✘ --strict: refusing to scaffold a near-duplicate. "
+                "Drop --strict to override (you'll still see this warning), "
+                "or pick a more distinct name / scope."
+            )
+        response = input("Continue scaffolding anyway? [y/N] ").strip().lower()
         if response != "y":
             print("Aborted.")
             return 0
