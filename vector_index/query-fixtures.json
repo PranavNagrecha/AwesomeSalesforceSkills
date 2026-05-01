@@ -6833,6 +6833,24 @@
       "domain": "flow",
       "expected_skill": "flow/recursion-and-re-entry-prevention",
       "top_k": 3
+    },
+    {
+      "query": "configure Data Cloud zero copy federation to Snowflake or Databricks",
+      "domain": "integration",
+      "expected_skill": "integration/data-cloud-zero-copy-federation",
+      "top_k": 3
+    },
+    {
+      "query": "data cloud zero copy snowflake databricks",
+      "domain": "integration",
+      "expected_skill": "integration/data-cloud-zero-copy-federation",
+      "top_k": 3
+    },
+    {
+      "query": "lakehouse federation BigQuery external DLO setup",
+      "domain": "integration",
+      "expected_skill": "integration/data-cloud-zero-copy-federation",
+      "top_k": 3
     }
   ]
 }

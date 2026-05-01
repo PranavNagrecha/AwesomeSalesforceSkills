@@ -24,6 +24,7 @@ dependencies:
     - integration/api-governance-and-rate-limits
     - integration/api-versioning-strategy
     - integration/connect-rest-api-patterns
+    - integration/data-cloud-zero-copy-federation
     - integration/mutual-tls-callouts
     - integration/named-credentials-setup
     - integration/oauth-flows-and-connected-apps
@@ -79,6 +80,7 @@ Builds a catalog of every live integration endpoint reachable from the org: Name
 19. `skills/integration/api-governance-and-rate-limits` — 24h allocation governance
 20. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 21. `skills/integration/platform-event-schema-evolution` — schema evolution rules for live published events
+22. `skills/integration/data-cloud-zero-copy-federation` — Lakehouse Federation connectors (Snowflake/Databricks/BigQuery/Redshift) — auth surface, rotation hazards, governance inheritance
 
 ---
 
