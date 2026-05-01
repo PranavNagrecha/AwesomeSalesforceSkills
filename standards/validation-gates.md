@@ -82,9 +82,9 @@ not just what it checks.
 | [94](scripts/validate_repo.py#L94) | **ERROR** | `_check_skill_local_script` | py_compile + ``--help`` smoke for a single skill-local helper script. | py_compile failed: {…} |
 | [104](scripts/validate_repo.py#L104) | **ERROR** | `_check_skill_local_script` | py_compile + ``--help`` smoke for a single skill-local helper script. | --help exited non-zero |
 | [128](scripts/validate_repo.py#L128) | **ERROR** | `validate_one_skill` | Validate a single skill's structure + frontmatter. Does NOT run the | unable to parse frontmatter: {…} |
-| [286](scripts/validate_repo.py#L286) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | duplicate skill id `{…}` also seen in {…} |
-| [295](scripts/validate_repo.py#L295) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | duplicate skill name `{…}` also seen in {…} |
-| [335](scripts/validate_repo.py#L335) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | skill `{…}` has no query fixture — add at least one entry |
-| [355](scripts/validate_repo.py#L355) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | query `{…}` did not return `{…}` in top {…} |
-| [366](scripts/validate_repo.py#L366) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | generated artifact is stale; run `python3 scripts/skill_sync.py --all` |
-| [420](scripts/validate_repo.py#L420) | _WARN_ | `_check_orphan_skills` | Emit a WARN for each filtered skill that no run-time agent cites. | skill `{…}` is not cited by any run-time agent — wire it via `scripts/patch_agent_skill.py` or set `runtime_orphan: true` in frontmatter |
+| [287](scripts/validate_repo.py#L287) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | duplicate skill id `{…}` also seen in {…} |
+| [296](scripts/validate_repo.py#L296) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | duplicate skill name `{…}` also seen in {…} |
+| [336](scripts/validate_repo.py#L336) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | skill `{…}` has no query fixture — add at least one entry |
+| [356](scripts/validate_repo.py#L356) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | query `{…}` did not return `{…}` in top {…} |
+| [367](scripts/validate_repo.py#L367) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | generated artifact is stale; run `python3 scripts/skill_sync.py --all` |
+| [425](scripts/validate_repo.py#L425) | _WARN_ | `_check_orphan_skills` | Emit a WARN for each filtered skill that no run-time agent cites. | skill `{…}` is not cited by any run-time agent — wire it via `scripts/patch_agent_skill.py` or set `runtime_orphan: true` in frontmatter |
