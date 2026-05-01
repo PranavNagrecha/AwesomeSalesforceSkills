@@ -28,6 +28,7 @@ class SyncState:
     embeddings: list[dict]
     manifest: dict
     source_entries: list[dict]
+    validation_gates_index: str  # rendered markdown for standards/validation-gates.md
 
 
 def load_retrieval_config(root: Path) -> dict:
@@ -185,6 +186,12 @@ def build_state(root: Path) -> SyncState:
     knowledge_map = build_knowledge_map(records, source_entries)
     docs_catalog = generate_skills_catalog(registry_payload)
     manifest = build_manifest(registry_payload, knowledge_map, chunks, embedding_config, embeddings)
+    # Late import — generate_validation_index lives in scripts/ to keep CLI
+    # entrypoints together; importing it here would create a pipelines→scripts
+    # dependency for every sync. Import inside the function instead.
+    from scripts.generate_validation_index import collect_gates, render_markdown as render_gates
+    validation_gates_index = render_gates(collect_gates(), root=root)
+
     return SyncState(
         registry_payload=registry_payload,
         registry_records=records,
@@ -194,6 +201,7 @@ def build_state(root: Path) -> SyncState:
         embeddings=embeddings,
         manifest=manifest,
         source_entries=source_entries,
+        validation_gates_index=validation_gates_index,
     )
 
 
@@ -225,6 +233,7 @@ def expected_files(root: Path) -> list[Path]:
         root / "vector_index" / "chunks.jsonl",
         root / "vector_index" / "manifest.json",
         root / "vector_index" / "lexical.sqlite",
+        root / "standards" / "validation-gates.md",
     ]
 
 
@@ -238,6 +247,7 @@ def write_state(root: Path, state: SyncState) -> list[str]:
     changed.extend(write_text_if_changed(root, root / "docs" / "SKILLS.md", state.docs_catalog))
     changed.extend(write_text_if_changed(root, root / "vector_index" / "chunks.jsonl", build_chunks_jsonl(state.chunks)))
     changed.extend(write_text_if_changed(root, root / "vector_index" / "manifest.json", json.dumps(state.manifest, indent=2, sort_keys=True) + "\n"))
+    changed.extend(write_text_if_changed(root, root / "standards" / "validation-gates.md", state.validation_gates_index))
 
     for record in state.registry_records:
         filename = f"{record['category']}__{record['name']}.json"
@@ -275,6 +285,7 @@ def diff_state(root: Path, state: SyncState) -> list[str]:
         root / "docs" / "SKILLS.md": state.docs_catalog,
         root / "vector_index" / "chunks.jsonl": build_chunks_jsonl(state.chunks),
         root / "vector_index" / "manifest.json": json.dumps(state.manifest, indent=2, sort_keys=True) + "\n",
+        root / "standards" / "validation-gates.md": state.validation_gates_index,
     }
     for path, expected in expected_texts.items():
         if not path.exists() or path.read_text(encoding="utf-8") != expected:
