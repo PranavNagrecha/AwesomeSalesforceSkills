@@ -29,6 +29,7 @@ class SyncState:
     manifest: dict
     source_entries: list[dict]
     validation_gates_index: str  # rendered markdown for standards/validation-gates.md
+    queue_dashboard: str         # rendered markdown for docs/queue-progress.md
 
 
 def load_retrieval_config(root: Path) -> dict:
@@ -186,11 +187,29 @@ def build_state(root: Path) -> SyncState:
     knowledge_map = build_knowledge_map(records, source_entries)
     docs_catalog = generate_skills_catalog(registry_payload)
     manifest = build_manifest(registry_payload, knowledge_map, chunks, embedding_config, embeddings)
-    # Late import — generate_validation_index lives in scripts/ to keep CLI
-    # entrypoints together; importing it here would create a pipelines→scripts
-    # dependency for every sync. Import inside the function instead.
+    # Late imports — these live under scripts/ for CLI ergonomics; importing
+    # them here would create a pipelines→scripts dependency for every sync,
+    # so do it inside the function instead.
     from scripts.generate_validation_index import collect_gates, render_markdown as render_gates
     validation_gates_index = render_gates(collect_gates(), root=root)
+
+    queue_dashboard = ""
+    if (root / "BACKLOG.yaml").exists():
+        from datetime import date as _date
+        from scripts.generate_queue_dashboard import (
+            _filesystem_skill_names, _filesystem_skills, render_dashboard,
+        )
+        from scripts.queue_reader import load_backlog
+        try:
+            entries = load_backlog(root / "BACKLOG.yaml")
+            queue_dashboard = render_dashboard(
+                entries,
+                _filesystem_skills(root),
+                _filesystem_skill_names(root),
+                today=_date.today().isoformat(),
+            )
+        except SystemExit:
+            queue_dashboard = ""
 
     return SyncState(
         registry_payload=registry_payload,
@@ -202,6 +221,7 @@ def build_state(root: Path) -> SyncState:
         manifest=manifest,
         source_entries=source_entries,
         validation_gates_index=validation_gates_index,
+        queue_dashboard=queue_dashboard,
     )
 
 
@@ -226,7 +246,7 @@ def build_chunks_jsonl(chunks: list[dict]) -> str:
 
 
 def expected_files(root: Path) -> list[Path]:
-    return [
+    files = [
         root / "registry" / "skills.json",
         root / "registry" / "knowledge-map.json",
         root / "docs" / "SKILLS.md",
@@ -235,6 +255,9 @@ def expected_files(root: Path) -> list[Path]:
         root / "vector_index" / "lexical.sqlite",
         root / "standards" / "validation-gates.md",
     ]
+    if (root / "BACKLOG.yaml").exists():
+        files.append(root / "docs" / "queue-progress.md")
+    return files
 
 
 def write_state(root: Path, state: SyncState) -> list[str]:
@@ -248,6 +271,8 @@ def write_state(root: Path, state: SyncState) -> list[str]:
     changed.extend(write_text_if_changed(root, root / "vector_index" / "chunks.jsonl", build_chunks_jsonl(state.chunks)))
     changed.extend(write_text_if_changed(root, root / "vector_index" / "manifest.json", json.dumps(state.manifest, indent=2, sort_keys=True) + "\n"))
     changed.extend(write_text_if_changed(root, root / "standards" / "validation-gates.md", state.validation_gates_index))
+    if state.queue_dashboard:
+        changed.extend(write_text_if_changed(root, root / "docs" / "queue-progress.md", state.queue_dashboard))
 
     for record in state.registry_records:
         filename = f"{record['category']}__{record['name']}.json"
@@ -287,6 +312,8 @@ def diff_state(root: Path, state: SyncState) -> list[str]:
         root / "vector_index" / "manifest.json": json.dumps(state.manifest, indent=2, sort_keys=True) + "\n",
         root / "standards" / "validation-gates.md": state.validation_gates_index,
     }
+    if state.queue_dashboard:
+        expected_texts[root / "docs" / "queue-progress.md"] = state.queue_dashboard
     for path, expected in expected_texts.items():
         if not path.exists() or path.read_text(encoding="utf-8") != expected:
             diffs.append(str(path.relative_to(root)).replace("\\", "/"))

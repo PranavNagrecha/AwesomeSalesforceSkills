@@ -49,17 +49,23 @@ Bypass for WIP: `git commit --no-verify` / `git push --no-verify`. CI still gate
 
 ## Reading / updating the skill queue
 
-`MASTER_QUEUE.md` is the authoritative queue. Do not `grep`/`sed` it — use:
+`BACKLOG.yaml` is the authoritative machine-readable queue (the row data formerly
+inside `MASTER_QUEUE.md`, migrated 2026-05-01). Do not hand-edit it — use:
 
 ```bash
 python3 scripts/queue_reader.py --summary
 python3 scripts/queue_reader.py --next --status TODO,RESEARCHED
 python3 scripts/queue_reader.py --set-status IN_PROGRESS \
-  --id <skill-name-or-row-id> --actor "<agent-name>@<host>"
+  --id <entry-id> --actor "<agent-name>@<host>"
 ```
 
-See `docs/QUEUE_FORMAT_PROPOSAL.md` for the reader contract and the deferred
-YAML migration plan.
+The generated dashboard at `docs/queue-progress.md` shows status counts, drift
+between queue and disk, oldest TODO, and the next 10 picks. It regenerates on
+every `skill_sync.py` run.
+
+`MASTER_QUEUE.md` is now a short prose intro + agent workflow doc. The
+historical row data is preserved in git history and reproducible from a
+pre-migration `MASTER_QUEUE.md` via `scripts/_migrations/migrate_queue_to_yaml.py`.
 
 ## Running agent evals
 
