@@ -48,6 +48,10 @@ After any skill add or skill update:
    - generated files in `registry/`
    - generated files in `vector_index/`
    - generated `docs/SKILLS.md`
+   - generated `standards/validation-gates.md` (if validator source changed)
+
+The full list of validator gates with file:line citations lives in
+`standards/validation-gates.md` — read it instead of grepping validator code.
 
 ## Repository Structure
 
@@ -78,6 +82,7 @@ After any skill add or skill update:
 - `vector_index/`: generated retrieval chunks, lexical index, optional embeddings
 - `scripts/`: top-level CLI entrypoints used by agents and contributors
 - `docs/reports/duplicate-candidates.md`: generated report of near-duplicate skills — regenerate with `python3 scripts/audit_duplicates.py`
+- `standards/validation-gates.md`: generated index of every gate the validators enforce — read this when you want to know what `validate_repo.py` will check
 
 ## Bootstrap
 

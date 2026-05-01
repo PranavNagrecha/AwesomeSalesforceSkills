@@ -109,6 +109,8 @@ This must exit 0. Fix all errors before committing.
 
 **Benchmarking the validator:** `python3 scripts/validate_repo_bench.py --count 500` spins up a throwaway temp repo with 500 synthetic skills and asserts validation stays under a 30-second threshold. Run this before merging changes to `scripts/validate_repo.py` or `pipelines/agent_validators.py` to catch orchestration regressions.
 
+**The full list of gates** (every `ValidationIssue(...)` the validators can emit, with file:line links and the function-docstring rationale) is generated at [`standards/validation-gates.md`](./standards/validation-gates.md). Read it when you need to know what a specific WARN or ERROR means without grepping the validator source.
+
 ### Step 6 — Check whether any existing agent should cite this skill
 
 This is a **judgment** step, not a sweep. Walk the run-time agent roster and decide which agents — if any — would meaningfully use this skill. Forcing a skill into an agent that doesn't naturally need it dilutes the agent's `Mandatory Reads` with noise; that is worse than leaving the skill un-cited.
