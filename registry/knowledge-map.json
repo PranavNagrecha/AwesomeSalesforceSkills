@@ -750,6 +750,7 @@
       "integration/api-governance-and-rate-limits",
       "integration/api-led-connectivity",
       "integration/api-versioning-strategy",
+      "integration/aws-salesforce-patterns",
       "integration/bulk-api-2-patterns",
       "integration/callout-limits-and-async-patterns",
       "integration/change-data-capture-integration",
@@ -1699,8 +1700,15 @@
     "allOrNone": [
       "integration/composite-api-patterns"
     ],
+    "amazon-appflow": [
+      "integration/aws-salesforce-patterns"
+    ],
     "amazon-connect": [
-      "admin/service-cloud-voice-setup"
+      "admin/service-cloud-voice-setup",
+      "integration/aws-salesforce-patterns"
+    ],
+    "amazon-s3": [
+      "integration/aws-salesforce-patterns"
     ],
     "amendment": [
       "architect/cpq-integration-with-erp"
@@ -2408,6 +2416,7 @@
       "architect/nfr-definition-for-salesforce"
     ],
     "aws": [
+      "integration/aws-salesforce-patterns",
       "integration/event-relay-configuration"
     ],
     "b2b-commerce": [
@@ -4832,6 +4841,7 @@
       "architect/architecture-decision-records"
     ],
     "decision-matrix": [
+      "integration/aws-salesforce-patterns",
       "omnistudio/calculation-procedures"
     ],
     "decision-rights": [
@@ -7472,6 +7482,9 @@
     ],
     "integration-log": [
       "flow/flow-error-monitoring"
+    ],
+    "integration-pattern": [
+      "integration/aws-salesforce-patterns"
     ],
     "integration-pattern-selection": [
       "admin/integration-pattern-selection"

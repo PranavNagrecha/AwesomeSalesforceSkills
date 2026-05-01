@@ -6851,6 +6851,18 @@
       "domain": "integration",
       "expected_skill": "integration/data-cloud-zero-copy-federation",
       "top_k": 3
+    },
+    {
+      "query": "salesforce to aws integration which service should I use",
+      "domain": "integration",
+      "expected_skill": "integration/aws-salesforce-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "amazon appflow salesforce connector setup",
+      "domain": "integration",
+      "expected_skill": "integration/aws-salesforce-patterns",
+      "top_k": 3
     }
   ]
 }
