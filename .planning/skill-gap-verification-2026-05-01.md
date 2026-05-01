@@ -47,6 +47,99 @@ Delta is clear: a dedicated skill on Data Cloud Lakehouse Federation / Zero Copy
 
 None added — surplus candidates were rejected, not deferred.
 
-## Outcome
+## Outcome (run 1)
 
-1 skill accepted: `integration/data-cloud-zero-copy-federation`.
+1 skill accepted: `integration/data-cloud-zero-copy-federation` (shipped in commit 8815d5b2).
+
+---
+
+# Run 2 — second pass on the same date
+
+Catalog now at 927 (after run 1's data-cloud-zero-copy-federation and the
+later aws-salesforce-patterns). Run 2 mines the BACKLOG `RESEARCHED` pool
+(40 entries) for items that are still gaps.
+
+## Candidate evaluation (run 2)
+
+Threshold rules (from scheduled-task brief):
+- Top hit > 4.0 in same domain → REJECT auto.
+- Top hit 2.5–4.0 → require articulated delta against existing skill.
+- Top hit < 2.5 across both phrasings → ACCEPT.
+
+### Verified gaps (ACCEPT)
+
+#### A. integration/azure-salesforce-patterns
+
+| Phrasing | Top hit | Score |
+|---|---|---|
+| `Azure Functions callouts Salesforce` | integration/salesforce-functions-replacement | 2.99 |
+| `Power Platform connector Salesforce` | integration/mulesoft-salesforce-connector | 2.04 |
+
+Both phrasings below the 2.5 floor on the second phrasing; the 2.99 hit
+is a deprecated-Functions migration skill, semantically distant. No
+Azure-specific skill exists. Symmetric to the just-shipped
+`integration/aws-salesforce-patterns`. BACKLOG notes from 2026-04-18
+ground the build (Azure Service Bus Connector article 001121997, Azure
+AD SSO via SAML/OIDC, Data 360 Azure Blob ingestion).
+
+#### B. lwc/lwc-reactive-state-patterns
+
+| Phrasing | Top hit | Score |
+|---|---|---|
+| `LWC reactive properties post @track` | (none) | — |
+| `LWC reactive field behavior modern reactivity` | flow/flow-reactive-screen-components | 1.85 |
+
+Both below 2.5. The Flow-side hit is unrelated. No skill teaches the
+post–Spring '20 LWC reactivity contract: all class fields reactive, but
+@track still required for in-place object/array mutation; Date / Set /
+Map mutations silently unobserved; renderedCallback infinite-loop trap.
+BACKLOG notes ground the build (LWC Decorators reference,
+reactivity-fields docs).
+
+#### C. architect/zero-trust-salesforce-patterns
+
+| Phrasing | Top hit | Score |
+|---|---|---|
+| `zero trust salesforce continuous verification` | agentforce/einstein-trust-layer | 1.77 |
+| `device trust conditional access salesforce` | security/ip-relaxation-and-restriction | 2.26 |
+
+Both below 2.5. einstein-trust-layer is LLM trust (different concept).
+ip-relaxation is a single control. The architecture-level composition
+of high-assurance sessions + RTEM Transaction Security Policies + Login
+Flows + Event Monitoring + Device Compliance is missing. Domain
+`architect` per peer architecture-pattern skills.
+
+### Rejected candidates (run 2)
+
+| Candidate | Top hit | Score | Reason |
+|---|---|---|---|
+| data-cloud-vs-analytics-decision | architect/data-cloud-vs-analytics-decision | 4.85 | Already shipped |
+| oauth-token-management | security/oauth-token-management | 6.44 | Already shipped |
+| lwc-virtualized-lists | lwc/virtualized-lists | 3.52 | Already shipped (mid-range only because of phrasing) |
+| lwc-drag-and-drop | lwc/drag-and-drop | 6.45 | Already shipped |
+| flow-dynamic-choices | flow/flow-dynamic-choices | 5.90 | Already shipped |
+| private-connect-setup | integration/private-connect-setup | 4.30 | Already shipped |
+| flow-action-framework | flow/flow-action-framework | 6.86 | Already shipped |
+| apex-string-and-regex | apex/apex-regex-and-pattern-matching | 6.99 | Covered |
+| apex-event-bus-subscriber | apex/platform-events-apex | 4.28 | Same-domain top >4 |
+| apex-schema-describe | apex/dynamic-apex | 4.72 | Same-domain top >4 |
+| lwc-custom-lookup | lwc/lwc-record-picker | 5.41 | Same-domain top >4 |
+| salesforce-shield-architecture | security/salesforce-shield-deployment | 2.90/3.24 | Mid-range; existing security/salesforce-shield-deployment already covers the bundle. No clean delta. |
+| loyalty-program-architecture | integration/loyalty-management-setup | 6.99 | Already shipped |
+| automotive-cloud-setup | admin/partner-community-requirements | 5.58 | Reject auto on second-phrasing rule |
+| slack-workflow-builder | integration/slack-workflow-builder | 6.44 | Already shipped |
+| apex-jwt-bearer-flow | (none / 2.29) | — | Below threshold but JWT bearer is an explicit sub-topic of integration/oauth-flows-and-connected-apps; clean delta unclear. Defer. |
+| apex-switch-on-sobject | apex/apex-trigger-bypass-and-killswitch-patterns | 2.71 | Mid-range; trigger-framework + dynamic-apex partially cover. Defer. |
+| apex-enum-patterns | (none / 2.13) | — | Narrow language-feature scope; defer pending real demand. |
+| net-zero-cloud-setup | (none) | — | Confirmed gap but niche industries product; defer to a focused industries-cloud run. |
+| migration-architecture-patterns | architect/multi-org-strategy | 2.70 | Mid-range; partial overlap. Defer. |
+| report-type-strategy | admin/reports-and-dashboards | 2.84 | Mid-range; reports-and-dashboards covers fundamentals. Defer. |
+
+## Outcome (run 2)
+
+3 skills accepted (cap reached):
+1. `integration/azure-salesforce-patterns`
+2. `lwc/lwc-reactive-state-patterns`
+3. `architect/zero-trust-salesforce-patterns`
+
+Surplus deferred candidates listed above for future runs.

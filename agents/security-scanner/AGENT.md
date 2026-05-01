@@ -49,6 +49,7 @@ dependencies:
     - apex/soql-security
     - apex/trigger-framework
     - apex/visualforce-fundamentals
+    - architect/zero-trust-salesforce-patterns
     - integration/named-credentials-setup
   shared:
     - AGENT_CONTRACT.md
@@ -144,6 +145,7 @@ Walks a `force-app/` tree and flags CRUD/FLS violations, sharing leaks, hardcode
 ### Templates
 41. `templates/apex/SecurityUtils.cls`
 42. `templates/apex/HttpClient.cls`
+43. `skills/architect/zero-trust-salesforce-patterns` — frame TSP/RTEM/HA-Session findings as zero-trust composition (which leg the finding belongs to); flag IdentityVerificationEvent / MobileEmailEvent as detect-only
 
 ---
 

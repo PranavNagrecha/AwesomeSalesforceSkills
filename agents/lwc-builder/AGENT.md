@@ -53,6 +53,7 @@ dependencies:
     - lwc/lwc-performance-budgets
     - lwc/lwc-public-api-hardening
     - lwc/lwc-quick-actions
+    - lwc/lwc-reactive-state-patterns
     - lwc/lwc-record-picker
     - lwc/lwc-security
     - lwc/lwc-server-sent-events
@@ -189,6 +190,7 @@ Produces a full Lightning Web Component bundle for a described feature: `.js`, `
 62. `templates/lwc/jest.config.js`
 63. `templates/apex/BaseService.cls` — if a controller class is emitted
 64. `templates/apex/SecurityUtils.cls`
+65. `skills/lwc/lwc-reactive-state-patterns` — use post–Spring '20 reactivity rules when generating components; never @track primitives; guard renderedCallback writes
 
 ---
 

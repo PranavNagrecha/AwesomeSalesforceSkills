@@ -23,6 +23,7 @@ dependencies:
     - architect/integration-security-architecture
     - integration/api-governance-and-rate-limits
     - integration/api-versioning-strategy
+    - integration/azure-salesforce-patterns
     - integration/connect-rest-api-patterns
     - integration/data-cloud-zero-copy-federation
     - integration/mutual-tls-callouts
@@ -81,6 +82,7 @@ Builds a catalog of every live integration endpoint reachable from the org: Name
 20. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 21. `skills/integration/platform-event-schema-evolution` — schema evolution rules for live published events
 22. `skills/integration/data-cloud-zero-copy-federation` — Lakehouse Federation connectors (Snowflake/Databricks/BigQuery/Redshift) — auth surface, rotation hazards, governance inheritance
+23. `skills/integration/azure-salesforce-patterns` — Azure decision matrix — Service Bus Connector vs Apex→Function vs Data Cloud Blob ingestion vs Power Platform; auth model selection
 
 ---
 

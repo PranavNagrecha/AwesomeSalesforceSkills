@@ -43,6 +43,7 @@ dependencies:
     - lwc/lwc-performance-budgets
     - lwc/lwc-public-api-hardening
     - lwc/lwc-quick-actions
+    - lwc/lwc-reactive-state-patterns
     - lwc/lwc-record-picker
     - lwc/lwc-security
     - lwc/lwc-shadow-vs-light-dom-decision
@@ -159,6 +160,7 @@ Audits a Lightning Web Component bundle for accessibility, performance, security
 48. `templates/lwc/component-skeleton/`
 49. `templates/lwc/jest.config.js`
 50. `templates/lwc/patterns/`
+51. `skills/lwc/lwc-reactive-state-patterns` — post–Spring '20 reactivity contract: when @track is needed; renderedCallback infinite-loop trap; Date/Set/Map non-reactivity
 
 ---
 

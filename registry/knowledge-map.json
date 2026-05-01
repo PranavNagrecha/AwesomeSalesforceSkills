@@ -526,7 +526,8 @@
       "architect/technical-debt-assessment",
       "architect/tenant-isolation-patterns",
       "architect/wealth-management-architecture",
-      "architect/well-architected-review"
+      "architect/well-architected-review",
+      "architect/zero-trust-salesforce-patterns"
     ],
     "data": [
       "data/ai-training-data-preparation",
@@ -751,6 +752,7 @@
       "integration/api-led-connectivity",
       "integration/api-versioning-strategy",
       "integration/aws-salesforce-patterns",
+      "integration/azure-salesforce-patterns",
       "integration/bulk-api-2-patterns",
       "integration/callout-limits-and-async-patterns",
       "integration/change-data-capture-integration",
@@ -846,6 +848,7 @@
       "lwc/lwc-performance-budgets",
       "lwc/lwc-public-api-hardening",
       "lwc/lwc-quick-actions",
+      "lwc/lwc-reactive-state-patterns",
       "lwc/lwc-record-picker",
       "lwc/lwc-security",
       "lwc/lwc-server-sent-events",
@@ -2053,6 +2056,9 @@
     "api-usage": [
       "architect/org-limits-monitoring"
     ],
+    "api-v48": [
+      "lwc/lwc-reactive-state-patterns"
+    ],
     "api-v5": [
       "apex/mcae-pardot-api"
     ],
@@ -2418,6 +2424,18 @@
     "aws": [
       "integration/aws-salesforce-patterns",
       "integration/event-relay-configuration"
+    ],
+    "azure": [
+      "integration/azure-salesforce-patterns"
+    ],
+    "azure-ad": [
+      "integration/azure-salesforce-patterns"
+    ],
+    "azure-blob-storage": [
+      "integration/azure-salesforce-patterns"
+    ],
+    "azure-service-bus": [
+      "integration/azure-salesforce-patterns"
     ],
     "b2b-commerce": [
       "admin/b2b-commerce-store-setup",
@@ -4842,6 +4860,7 @@
     ],
     "decision-matrix": [
       "integration/aws-salesforce-patterns",
+      "integration/azure-salesforce-patterns",
       "omnistudio/calculation-procedures"
     ],
     "decision-rights": [
@@ -5061,6 +5080,9 @@
     ],
     "device-apis": [
       "lwc/lwc-offline-and-mobile"
+    ],
+    "device-compliance": [
+      "architect/zero-trust-salesforce-patterns"
     ],
     "devops": [
       "admin/change-advisory-board-process",
@@ -5817,6 +5839,7 @@
     ],
     "event-monitoring": [
       "admin/integration-admin-connected-apps",
+      "architect/zero-trust-salesforce-patterns",
       "data/analytics-data-governance",
       "security/api-security-and-rate-limiting",
       "security/event-monitoring",
@@ -7068,6 +7091,7 @@
       "security/session-high-assurance-policies"
     ],
     "high-assurance-session": [
+      "architect/zero-trust-salesforce-patterns",
       "security/connected-app-security-policies"
     ],
     "high-availability": [
@@ -7484,7 +7508,8 @@
       "flow/flow-error-monitoring"
     ],
     "integration-pattern": [
-      "integration/aws-salesforce-patterns"
+      "integration/aws-salesforce-patterns",
+      "integration/azure-salesforce-patterns"
     ],
     "integration-pattern-selection": [
       "admin/integration-pattern-selection"
@@ -8177,6 +8202,7 @@
       "architect/license-optimization-strategy"
     ],
     "login-flow": [
+      "architect/zero-trust-salesforce-patterns",
       "security/ip-range-and-login-flow-strategy",
       "security/login-forensics"
     ],
@@ -8245,6 +8271,7 @@
       "lwc/lwc-navigation-mixin",
       "lwc/lwc-performance-budgets",
       "lwc/lwc-public-api-hardening",
+      "lwc/lwc-reactive-state-patterns",
       "lwc/lwc-record-picker",
       "lwc/lwc-server-sent-events",
       "lwc/lwc-shadow-vs-light-dom-decision",
@@ -10090,6 +10117,9 @@
     "postmonger": [
       "apex/marketing-cloud-custom-activities"
     ],
+    "power-platform": [
+      "integration/azure-salesforce-patterns"
+    ],
     "pr": [
       "devops/pr-policy-templates"
     ],
@@ -10664,6 +10694,9 @@
     "reactive-variables": [
       "lwc/lwc-graphql-wire"
     ],
+    "reactivity": [
+      "lwc/lwc-reactive-state-patterns"
+    ],
     "readability": [
       "flow/flow-element-naming-conventions"
     ],
@@ -10917,6 +10950,9 @@
     "renderAs-pdf": [
       "apex/pdf-generation-patterns",
       "apex/quote-pdf-customization"
+    ],
+    "rendered-callback": [
+      "lwc/lwc-reactive-state-patterns"
     ],
     "renderedcallback": [
       "lwc/lifecycle-hooks"
@@ -11239,6 +11275,9 @@
     ],
     "row-skew": [
       "data/data-loader-batch-window-sizing"
+    ],
+    "rtem": [
+      "architect/zero-trust-salesforce-patterns"
     ],
     "rtm": [
       "admin/requirements-traceability-matrix"
@@ -12446,6 +12485,7 @@
       "apex/long-running-process-orchestration"
     ],
     "state-management": [
+      "lwc/lwc-reactive-state-patterns",
       "omnistudio/flexcard-state-management"
     ],
     "state-sync": [
@@ -12910,6 +12950,9 @@
     "traceability": [
       "admin/uat-test-case-design"
     ],
+    "track": [
+      "lwc/lwc-reactive-state-patterns"
+    ],
     "training": [
       "admin/change-management-and-training"
     ],
@@ -12928,6 +12971,7 @@
       "apex/callout-and-dml-transaction-boundaries"
     ],
     "transaction-security": [
+      "architect/zero-trust-salesforce-patterns",
       "security/security-incident-response",
       "security/transaction-security-policies"
     ],
@@ -13549,6 +13593,9 @@
     ],
     "zero-data-retention": [
       "agentforce/einstein-trust-layer"
+    ],
+    "zero-trust": [
+      "architect/zero-trust-salesforce-patterns"
     ]
   },
   "sources": [
