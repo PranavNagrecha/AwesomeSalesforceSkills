@@ -48,6 +48,7 @@ from pipelines.validators import (
     validate_knowledge_source,
     validate_skill_authoring_style,
     validate_skill_registry_record,
+    validate_skill_similarity,
     validate_skill_structure,
 )
 from pipelines.knowledge_builder import load_sources_manifest
@@ -368,6 +369,13 @@ def run_skill_validation(
     # Step 7 — orphan-skill check: WARN if a skill is not cited by any agent.
     # Skills can opt out by setting `runtime_orphan: true` in frontmatter.
     issues.extend(_check_orphan_skills(filtered_dirs))
+
+    # Step 8 — semantic-duplicate check (WARN). Compares each skill in the
+    # filtered set against the FULL corpus (not just the filtered set) so a
+    # newly added skill near-duplicating an existing one gets flagged in
+    # --changed-only mode. Threshold + weights from config/retrieval-config.yaml.
+    skill_md_paths = [p / "SKILL.md" for p in filtered_dirs]
+    issues.extend(validate_skill_similarity(ROOT, skill_md_paths))
 
     return issues, len(filtered_dirs)
 

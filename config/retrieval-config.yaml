@@ -42,3 +42,24 @@ retrieval:
   # has_coverage is set to false. Consumers should fall back to official_sources
   # only when has_coverage is false rather than presenting a low-confidence skill.
   min_skill_score: 1.5
+
+# Pairwise duplicate detection — used by:
+#   - scripts/audit_duplicates.py        (on-demand top-N report)
+#   - pipelines/validators.py            (WARN gate inside validate_repo.py)
+#   - scripts/new_skill.py --strict      (blocks scaffolding of near-duplicates)
+#
+# `score` is the minimum combined weighted similarity for a pair to surface.
+# `weights` blend three signals — each is a [0, 1] sub-score, weights sum to 1.
+#
+# Tuned on the 926-skill corpus on 2026-05-01:
+#   0.65 → 0 pairs flagged (too aggressive — misses real cases)
+#   0.50 → 4 pairs (recommended default — catches genuine overlaps without
+#                   flooding on intentional cross-vendor parallels like
+#                   bitbucket-pipelines vs gitlab-ci vs github-actions)
+#   0.45 → 8 pairs (includes intentional parallels — too noisy as a gate)
+duplicate_threshold:
+  score: 0.50
+  weights:
+    description: 0.5  # SequenceMatcher.ratio() on normalized descriptions
+    tags: 0.25        # Jaccard over normalized tag sets
+    triggers: 0.25    # Jaccard over tokenized trigger words (>= 5 chars)

@@ -30,8 +30,11 @@ Before creating or materially revising a skill:
 
 1. Search local coverage first:
    - `python3 scripts/search_knowledge.py "<topic>"`
-2. Read the relevant official Salesforce docs from `standards/official-salesforce-sources.md`.
-3. Confirm the skill does not already exist or overlap too heavily.
+2. Run the semantic-duplicate audit so you don't ship the 927th near-clone:
+   - `python3 scripts/audit_duplicates.py --domain <domain>`
+   - Review the top of `docs/reports/duplicate-candidates.md`.
+3. Read the relevant official Salesforce docs from `standards/official-salesforce-sources.md`.
+4. Scaffold with `python3 scripts/new_skill.py <domain> <name> --strict` — `--strict` blocks scaffolding when the proposed name produces a near-duplicate.
 
 After any skill add or skill update:
 
@@ -74,6 +77,7 @@ After any skill add or skill update:
 - `registry/`: generated normalized skill records
 - `vector_index/`: generated retrieval chunks, lexical index, optional embeddings
 - `scripts/`: top-level CLI entrypoints used by agents and contributors
+- `docs/reports/duplicate-candidates.md`: generated report of near-duplicate skills — regenerate with `python3 scripts/audit_duplicates.py`
 
 ## Bootstrap
 
