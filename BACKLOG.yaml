@@ -418,13 +418,6 @@
   notes: "apex"
   source_line: 1581
   history: []
-- id: "apex-event-bus-subscriber"
-  status: "RESEARCHED"
-  skill: "apex-event-bus-subscriber"
-  summary: "EventBus.subscribe patterns: async event processing, position tracking, event replay, batch event handling, error handling. NOT for Platform Events triggers."
-  notes: "Researched 2026-04-18. Sources: [Subscribe to Platform Event Notifications with Apex Triggers (platform_events/platform_events_subscribe_apex); Retry Event Triggers with EventBus.RetryableException (platform_events/platform_events_subscribe_apex_refire); TriggerContext Class (apexref/apex_class_eventbus_TriggerContext); PlatformEventSubscriberConfig Metadata (api_meta/meta_platformeventsubscriberconfig)]. Key: Apex platform event triggers are the ONLY supported Apex subscriber mechanism -- NO programmatic EventBus.subscribe() API exists. Default batch size is 2,000 events per trigger invocation (configurable 1-2,000 via PlatformEventSubscriberConfig -- 10x standard DML trigger batch; greatly increases governor limit pressure). EventBus.TriggerContext.currentContext().setResumeCheckpoint(replayId) controls position -- on uncaught exception trigger resumes from checkpoint. RetryableException triggers full-batch re-fire -- max 9 retries (10 total) before trigger stops. LLM anti-pattern: omitting setResumeCheckpoint and relying only on RetryableException -- causes 2,000-event batch to re-fire until 9-retry cap. Gaps: EventBusSubscriber sObject query patterns; Test.EventBus.deliver() reset semantics."
-  source_line: 1582
-  history: []
 - id: "apex-schema-describe"
   status: "RESEARCHED"
   skill: "apex-schema-describe"
