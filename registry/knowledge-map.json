@@ -332,6 +332,7 @@
       "apex/apex-secrets-and-protected-cmdt",
       "apex/apex-security-patterns",
       "apex/apex-soql-relationship-queries",
+      "apex/apex-string-and-regex",
       "apex/apex-stripinaccessible-and-fls-enforcement",
       "apex/apex-switch-on-sobject",
       "apex/apex-system-runas",
@@ -8601,6 +8602,9 @@
     "match-rules": [
       "admin/data-cloud-identity-resolution"
     ],
+    "matcher": [
+      "apex/apex-string-and-regex"
+    ],
     "matching-gifts": [
       "admin/soft-credits-and-matching"
     ],
@@ -9224,6 +9228,7 @@
       "apex/soql-null-ordering-patterns"
     ],
     "null-safety": [
+      "apex/apex-string-and-regex",
       "flow/flow-decision-element-patterns",
       "flow/flow-formula-and-expression-patterns"
     ],
@@ -9852,6 +9857,9 @@
     ],
     "patient-records": [
       "data/clinical-data-quality"
+    ],
+    "pattern": [
+      "apex/apex-string-and-regex"
     ],
     "pattern-matcher": [
       "apex/apex-regex-and-pattern-matching"
@@ -10975,6 +10983,9 @@
     ],
     "refreshview": [
       "lwc/lwc-wire-refresh-patterns"
+    ],
+    "regex": [
+      "apex/apex-string-and-regex"
     ],
     "registration-handler": [
       "lwc/experience-cloud-multi-idp-sso"
@@ -12702,6 +12713,9 @@
     "street-level-routing": [
       "admin/fsl-scheduling-optimization-design"
     ],
+    "string": [
+      "apex/apex-string-and-regex"
+    ],
     "string-optimization": [
       "apex/apex-cpu-and-heap-optimization"
     ],
@@ -12978,6 +12992,9 @@
     ],
     "testsetup": [
       "apex/apex-test-setup-patterns"
+    ],
+    "text-parsing": [
+      "apex/apex-string-and-regex"
     ],
     "text-template": [
       "flow/flow-resource-patterns"
