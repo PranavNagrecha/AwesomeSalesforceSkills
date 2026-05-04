@@ -7109,6 +7109,18 @@
       "domain": "architect",
       "expected_skill": "architect/migration-architecture-patterns",
       "top_k": 3
+    },
+    {
+      "query": "experience cloud cicd github actions pipeline",
+      "domain": "devops",
+      "expected_skill": "devops/cicd-for-experience-cloud",
+      "top_k": 3
+    },
+    {
+      "query": "experience cloud guest user permission set automation",
+      "domain": "devops",
+      "expected_skill": "devops/cicd-for-experience-cloud",
+      "top_k": 3
     }
   ]
 }

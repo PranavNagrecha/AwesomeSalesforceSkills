@@ -355,13 +355,6 @@
   notes: "Covered by skills/devops/salesforce-code-analyzer. PMD engine selection (sf code-analyzer run --engine pmd), @SuppressWarnings suppression patterns (rule-specific vs blanket), CI gate configuration (--severity-threshold), and custom rule authoring in code-analyzer.yml already covered. v4 to v5 migration guidance (--pmdconfig retirement) is the only gap and should be added to existing skill."
   source_line: 1548
   history: []
-- id: "cicd-for-experience-cloud"
-  status: "RESEARCHED"
-  skill: "cicd-for-experience-cloud"
-  summary: "CI/CD for Experience Cloud: site metadata deployment, CMS content promotion, theme deployment, guest user config, URL management. NOT for generic SFDX CI/CD."
-  notes: "Researched 2026-04-17. Sources: [ExperienceBundle - Metadata API Developer Guide; DigitalExperienceBundle - Metadata API Developer Guide (API v58+)]. Key: Near-duplicate scope with existing devops/experience-cloud-deployment-dev skill (ExperienceBundle/DigitalExperienceBundle, ExperienceBundleSettings prerequisite, CMS Managed Content exclusion from sf CLI, Network metadata ordering, CI/CD pipeline pattern); distinct delta: pipeline-tooling specifics (GitHub Actions/Jenkins job definitions), theme-file promotion scripts (BrandingSet/ExperiencePropertyTypeBundle metadata types), guest-user profile permission-set automation in pipelines, and custom URL/CDN automation not in existing skill. Gaps: BrandingSet/ExperiencePropertyTypeBundle metadata type coverage; guest user profile permission-set automation; URL management via Site.com domain binding APIs."
-  source_line: 1549
-  history: []
 - id: "devops-center-advanced"
   status: "RESEARCHED"
   skill: "devops-center-advanced"
