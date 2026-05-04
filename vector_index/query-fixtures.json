@@ -7121,6 +7121,18 @@
       "domain": "devops",
       "expected_skill": "devops/cicd-for-experience-cloud",
       "top_k": 3
+    },
+    {
+      "query": "crm analytics security predicate dataset row level security",
+      "domain": "data",
+      "expected_skill": "data/crm-analytics-security-predicates",
+      "top_k": 3
+    },
+    {
+      "query": "saql predicate user role hierarchy dataset",
+      "domain": "data",
+      "expected_skill": "data/crm-analytics-security-predicates",
+      "top_k": 3
     }
   ]
 }
