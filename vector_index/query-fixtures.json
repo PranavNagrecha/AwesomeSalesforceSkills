@@ -6971,6 +6971,60 @@
       "domain": "integration",
       "expected_skill": "integration/net-zero-cloud-setup",
       "top_k": 3
+    },
+    {
+      "query": "lightning experience transition project assessment org wide migration",
+      "domain": "admin",
+      "expected_skill": "admin/lightning-experience-transition",
+      "top_k": 3
+    },
+    {
+      "query": "users keep switching back to Classic from Lightning Experience",
+      "domain": "admin",
+      "expected_skill": "admin/lightning-experience-transition",
+      "top_k": 3
+    },
+    {
+      "query": "wave based rollout LEX permission set readiness check",
+      "domain": "admin",
+      "expected_skill": "admin/lightning-experience-transition",
+      "top_k": 3
+    },
+    {
+      "query": "salesforce maps live tracking driving directions visit planner",
+      "domain": "integration",
+      "expected_skill": "integration/salesforce-maps-setup",
+      "top_k": 3
+    },
+    {
+      "query": "salesforce maps territory route optimization geolocation",
+      "domain": "integration",
+      "expected_skill": "integration/salesforce-maps-setup",
+      "top_k": 3
+    },
+    {
+      "query": "MapAnything migration to modern Salesforce Maps polygon import",
+      "domain": "integration",
+      "expected_skill": "integration/salesforce-maps-setup",
+      "top_k": 3
+    },
+    {
+      "query": "loyalty program architecture tier ladder partner integration",
+      "domain": "architect",
+      "expected_skill": "architect/loyalty-program-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "loyalty program design point economy fraud prevention tier descalation",
+      "domain": "architect",
+      "expected_skill": "architect/loyalty-program-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "qualifying versus non qualifying currency ratio tier threshold derivation",
+      "domain": "architect",
+      "expected_skill": "architect/loyalty-program-architecture",
+      "top_k": 3
     }
   ]
 }

@@ -151,6 +151,7 @@
       "admin/lead-nurture-journey-design",
       "admin/lead-scoring-requirements",
       "admin/lightning-app-builder-advanced",
+      "admin/lightning-experience-transition",
       "admin/lightning-page-performance-tuning",
       "admin/list-views-and-compact-layouts",
       "admin/lookup-and-relationship-design",
@@ -490,6 +491,7 @@
       "architect/large-data-volume-architecture",
       "architect/license-optimization-strategy",
       "architect/limits-and-scalability-planning",
+      "architect/loyalty-program-architecture",
       "architect/marketing-cloud-vs-mcae-selection",
       "architect/marketing-consent-architecture",
       "architect/marketing-data-architecture",
@@ -793,6 +795,7 @@
       "integration/salesforce-connect-external-objects",
       "integration/salesforce-data-pipeline-etl",
       "integration/salesforce-functions-replacement",
+      "integration/salesforce-maps-setup",
       "integration/salesforce-to-salesforce-integration",
       "integration/sis-integration-patterns",
       "integration/slack-connect-patterns",
@@ -1497,6 +1500,9 @@
       "admin/industries-energy-utilities-setup",
       "integration/slack-salesforce-integration-setup"
     ],
+    "adoption": [
+      "admin/lightning-experience-transition"
+    ],
     "adoption-analytics-app": [
       "admin/analytics-adoption-strategy"
     ],
@@ -2171,6 +2177,7 @@
     "architecture-decision": [
       "architect/event-driven-architecture",
       "architect/headless-vs-standard-experience",
+      "architect/loyalty-program-architecture",
       "architect/multi-org-strategy",
       "architect/multi-site-architecture",
       "architect/solution-design-patterns"
@@ -3193,7 +3200,8 @@
       "admin/ai-adoption-change-management",
       "admin/change-advisory-board-process",
       "admin/change-management-and-training",
-      "admin/deployment-risk-assessment"
+      "admin/deployment-risk-assessment",
+      "admin/lightning-experience-transition"
     ],
     "change-set": [
       "devops/experience-cloud-deployment-admin",
@@ -3242,6 +3250,9 @@
     ],
     "chatter": [
       "integration/connect-rest-api-patterns"
+    ],
+    "check-in": [
+      "integration/salesforce-maps-setup"
     ],
     "checkDeployStatus": [
       "devops/deployment-monitoring"
@@ -3326,6 +3337,9 @@
     ],
     "clarifying-questions": [
       "agentforce/agentforce-multi-turn-patterns"
+    ],
+    "classic-migration": [
+      "admin/lightning-experience-transition"
     ],
     "claude-desktop": [
       "agentforce/salesforce-mcp-server-setup"
@@ -6220,6 +6234,9 @@
     "field-resolution": [
       "data/record-merge-implications"
     ],
+    "field-sales": [
+      "integration/salesforce-maps-setup"
+    ],
     "field-selection": [
       "data/analytics-dataset-optimization"
     ],
@@ -6644,6 +6661,9 @@
     "frame": [
       "security/clickjack-and-frame-protection"
     ],
+    "fraud-prevention": [
+      "architect/loyalty-program-architecture"
+    ],
     "friction-analysis": [
       "admin/persona-and-journey-mapping-sf"
     ],
@@ -6820,8 +6840,12 @@
     "generic-streaming": [
       "integration/streaming-api-and-pushtopic"
     ],
+    "geocoding": [
+      "integration/salesforce-maps-setup"
+    ],
     "geolocation": [
-      "admin/compound-field-patterns"
+      "admin/compound-field-patterns",
+      "integration/salesforce-maps-setup"
     ],
     "get-records": [
       "flow/flow-cross-object-updates",
@@ -8008,6 +8032,9 @@
     "letterhead": [
       "admin/classic-email-template-migration"
     ],
+    "lex-transition": [
+      "admin/lightning-experience-transition"
+    ],
     "license-audit": [
       "architect/license-optimization-strategy"
     ],
@@ -8092,6 +8119,7 @@
     ],
     "lightning-experience": [
       "admin/in-app-guidance-and-walkthroughs",
+      "admin/lightning-experience-transition",
       "agentforce/einstein-search-personalization"
     ],
     "lightning-experience-insights": [
@@ -8197,6 +8225,9 @@
     "live-dataset": [
       "data/analytics-external-data"
     ],
+    "live-tracking": [
+      "integration/salesforce-maps-setup"
+    ],
     "llm": [
       "architect/ai-agent-org-integration-architecture"
     ],
@@ -8278,7 +8309,11 @@
       "flow/flow-collection-processing",
       "flow/flow-loop-element-patterns"
     ],
+    "loyalty-architecture": [
+      "architect/loyalty-program-architecture"
+    ],
     "loyalty-management": [
+      "architect/loyalty-program-architecture",
       "integration/loyalty-management-setup"
     ],
     "loyalty-program": [
@@ -8495,6 +8530,9 @@
     ],
     "manufacturing-cloud": [
       "integration/manufacturing-cloud-setup"
+    ],
+    "mapanything": [
+      "integration/salesforce-maps-setup"
     ],
     "maps-and-sets": [
       "apex/apex-collections-patterns"
@@ -8955,6 +8993,9 @@
     ],
     "multi-region": [
       "architect/fsl-multi-region-architecture"
+    ],
+    "multi-region-loyalty": [
+      "architect/loyalty-program-architecture"
     ],
     "multi-site": [
       "architect/multi-site-architecture"
@@ -9750,6 +9791,7 @@
       "data/partner-data-access-patterns"
     ],
     "partner-loyalty": [
+      "architect/loyalty-program-architecture",
       "integration/loyalty-management-setup"
     ],
     "partner-portal": [
@@ -9915,7 +9957,8 @@
     ],
     "permission-set": [
       "admin/custom-permissions",
-      "admin/integration-user-management"
+      "admin/integration-user-management",
+      "admin/lightning-experience-transition"
     ],
     "permission-set-architecture": [
       "admin/permission-set-architecture"
@@ -10114,6 +10157,9 @@
       "admin/npsp-program-management",
       "admin/program-outcome-tracking-design",
       "data/nonprofit-data-architecture"
+    ],
+    "point-economy": [
+      "architect/loyalty-program-architecture"
     ],
     "point-in-time": [
       "data/sales-reporting-data-model"
@@ -10397,6 +10443,9 @@
     "profiling": [
       "apex/apex-performance-profiling",
       "flow/flow-performance-optimization"
+    ],
+    "program-design": [
+      "architect/loyalty-program-architecture"
     ],
     "program-management": [
       "admin/program-outcome-tracking-design",
@@ -10752,6 +10801,9 @@
     ],
     "readability": [
       "flow/flow-element-naming-conventions"
+    ],
+    "readiness-check": [
+      "admin/lightning-experience-transition"
     ],
     "real-time": [
       "integration/real-time-vs-batch-integration"
@@ -11299,6 +11351,9 @@
     "rotation": [
       "security/service-account-credential-rotation"
     ],
+    "route-optimization": [
+      "integration/salesforce-maps-setup"
+    ],
     "route-planning": [
       "admin/consumer-goods-cloud-setup"
     ],
@@ -11477,6 +11532,9 @@
     ],
     "salesforce-knowledge": [
       "architect/knowledge-vs-external-cms"
+    ],
+    "salesforce-maps": [
+      "integration/salesforce-maps-setup"
     ],
     "salesforce-mcp-lib": [
       "agentforce/mcp-tool-definition-apex",
@@ -12861,6 +12919,9 @@
     "territory-model": [
       "admin/enterprise-territory-management"
     ],
+    "territory-planning": [
+      "integration/salesforce-maps-setup"
+    ],
     "territory2": [
       "apex/territory-api-and-assignment"
     ],
@@ -12931,6 +12992,7 @@
       "security/event-monitoring"
     ],
     "tier-design": [
+      "architect/loyalty-program-architecture",
       "architect/sla-design-and-escalation-matrix"
     ],
     "tier-management": [
@@ -13072,6 +13134,9 @@
     "transformation": [
       "admin/analytics-dataflow-development",
       "admin/analytics-recipe-design"
+    ],
+    "transition-assistant": [
+      "admin/lightning-experience-transition"
     ],
     "transition-of-care": [
       "admin/care-coordination-requirements"
@@ -13459,6 +13524,7 @@
       "apex/mcae-pardot-api"
     ],
     "visualforce": [
+      "admin/lightning-experience-transition",
       "apex/continuation-callouts",
       "apex/pdf-generation-patterns",
       "apex/quote-pdf-customization",

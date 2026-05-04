@@ -16,6 +16,7 @@ multi_dimensional: true
 dependencies:
   skills:
     - admin/agent-output-formats
+    - admin/lightning-experience-transition
     - devops/metadata-diff-between-sandboxes
   shared:
     - AGENT_CONTRACT.md
@@ -51,6 +52,7 @@ Dispatches one of the audit domains in the [`audit_harness`](../_shared/harnesse
 7. The **Mandatory Reads** block inside that classifier — every skill / template listed there is a hard requirement for this run.
 8. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 9. `skills/devops/metadata-diff-between-sandboxes` — two-org metadata diff for org_drift classifier
+10. `skills/admin/lightning-experience-transition` — Lightning Experience Transition program orchestration — when an LE-Transition or readiness-check audit is requested, route to this skill for asset triage and wave planning instead of a single-page LRP audit
 
 ---
 
