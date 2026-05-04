@@ -425,12 +425,6 @@
   notes: "Researched 2026-04-17. Sources: [Enable Email Bounce Handling (sales.emailadmin_bounce_enable); Compliance BCC Emails (sales.admin_compliancebcc); Set Up Email Relay (sales.email_relay); Salesforce SPF and DKIM FAQ (000389240); Deliverability Settings Guidelines (sales.emailadmin_deliverability)]. Key: Distinct from existing email-deliverability-strategy skill (Marketing Cloud only) - this covers Salesforce Core org monitoring; bounce management is opt-in and populates EmailBouncedDate/EmailBouncedReason on Lead/Contact but does NOT auto-suppress records (orgs must build flow/list filter automation); email log files at Setup > Email > Email Log Files have 30-day retention and 7-day max per request; SPF requires adding include:_spf.salesforce.com to DNS TXT record; DKIM keys generated at Setup > Email > DKIM Keys (2048-bit recommended); relay requires TLS Required-Verifying + bounce management disabled to avoid Return-Path conflicts. Gaps: Compliance BCC for Flow/Apex-sent emails; relay interaction with DMARC alignment; whether Summer 25/Spring 26 changed the 30-day log retention cap."
   source_line: 1569
   history: []
-- id: "apex-switch-on-sobject"
-  status: "RESEARCHED"
-  skill: "apex-switch-on-sobject"
-  summary: "Switch-on-SObjectType patterns: type dispatching, dynamic trigger handlers, polymorphic processing, Type.forName. NOT for basic Apex syntax."
-  notes: "Researched 2026-04-18. Sources: [Switch Statements (langCon_apex_switch); sObject Types (langCon_apex_SObject_types); SObjectType Class Reference (apex_class_Schema_SObjectType)]. Key: Apex switch on accepts SObject expressions; when SObjectType varName binds a typed variable in scope with only one SObject type per when block; null input matches when null block; NO fall-through; Type.forName() returns Type not SObjectType and cannot be used in a switch expression. Omitting when else on non-exhaustive switch silently skips unmatched cases. No overlap with dynamic-apex skill (which covers Schema.getGlobalDescribe and dynamic field access). Gaps: confirm switch on works with custom SObject types in managed packages; confirm Summer 18 as the release introducing sObject switch."
-  source_line: 1580
   history: []
 - id: "apex-data-cloud-sdk"
   status: "TODO"

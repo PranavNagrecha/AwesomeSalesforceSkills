@@ -7025,6 +7025,18 @@
       "domain": "architect",
       "expected_skill": "architect/loyalty-program-architecture",
       "top_k": 3
+    },
+    {
+      "query": "switch on sobject type apex polymorphic dispatch",
+      "domain": "apex",
+      "expected_skill": "apex/apex-switch-on-sobject",
+      "top_k": 3
+    },
+    {
+      "query": "when SObjectType varName typed binding",
+      "domain": "apex",
+      "expected_skill": "apex/apex-switch-on-sobject",
+      "top_k": 3
     }
   ]
 }
