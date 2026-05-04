@@ -333,6 +333,7 @@
       "apex/apex-security-patterns",
       "apex/apex-soql-relationship-queries",
       "apex/apex-stripinaccessible-and-fls-enforcement",
+      "apex/apex-switch-on-sobject",
       "apex/apex-system-runas",
       "apex/apex-test-setup-patterns",
       "apex/apex-transaction-finalizers",
@@ -10181,6 +10182,9 @@
     "polymorphic-lookups": [
       "admin/standard-object-quirks"
     ],
+    "polymorphism": [
+      "apex/apex-switch-on-sobject"
+    ],
     "portal": [
       "admin/portal-requirements-gathering",
       "data/external-user-data-sharing"
@@ -12436,6 +12440,9 @@
     "sobject-tree": [
       "integration/composite-api-patterns"
     ],
+    "sobject-type": [
+      "apex/apex-switch-on-sobject"
+    ],
     "sobjectaccessdecision": [
       "apex/apex-stripinaccessible-and-fls-enforcement"
     ],
@@ -12787,6 +12794,9 @@
     ],
     "swim-lane": [
       "admin/process-flow-as-is-to-be"
+    ],
+    "switch-statement": [
+      "apex/apex-switch-on-sobject"
     ],
     "sync": [
       "architect/fsl-offline-architecture",
@@ -13172,6 +13182,9 @@
     "trigger-framework": [
       "apex/npsp-trigger-framework-extension"
     ],
+    "trigger-handler": [
+      "apex/apex-switch-on-sobject"
+    ],
     "trigger-management": [
       "apex/fsc-apex-extensions"
     ],
@@ -13244,6 +13257,9 @@
     "type-coercion": [
       "flow/flow-formula-and-expression-patterns",
       "lwc/lwc-public-api-hardening"
+    ],
+    "type-dispatch": [
+      "apex/apex-switch-on-sobject"
     ],
     "typed-variables": [
       "flow/flow-apex-defined-types"
