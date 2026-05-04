@@ -500,6 +500,7 @@
       "architect/marketing-data-architecture",
       "architect/marketing-integration-patterns",
       "architect/metadata-coverage-and-dependencies",
+      "architect/migration-architecture-patterns",
       "architect/mulesoft-anypoint-architecture",
       "architect/multi-bu-marketing-architecture",
       "architect/multi-channel-service-architecture",
@@ -3474,6 +3475,9 @@
     "codeowners": [
       "devops/pr-policy-templates"
     ],
+    "coexistence": [
+      "architect/migration-architecture-patterns"
+    ],
     "cogroup": [
       "admin/saql-query-development"
     ],
@@ -4384,6 +4388,9 @@
     ],
     "customizable-rollups": [
       "apex/npsp-custom-rollups"
+    ],
+    "cutover": [
+      "architect/migration-architecture-patterns"
     ],
     "cutover-runbook": [
       "devops/go-live-cutover-planning"
@@ -7343,6 +7350,9 @@
     "identity": [
       "security/scim-provisioning-integration"
     ],
+    "identity-bridging": [
+      "architect/migration-architecture-patterns"
+    ],
     "identity-mapping": [
       "agentforce/agentforce-in-slack"
     ],
@@ -8758,6 +8768,9 @@
       "devops/rollback-and-hotfix-strategy",
       "integration/soap-api-patterns"
     ],
+    "metadata-audit": [
+      "architect/migration-architecture-patterns"
+    ],
     "metadata-backup": [
       "devops/pre-deployment-checklist"
     ],
@@ -9645,6 +9658,12 @@
       "architect/limits-and-scalability-planning",
       "architect/org-limits-monitoring"
     ],
+    "org-merge": [
+      "architect/migration-architecture-patterns"
+    ],
+    "org-migration": [
+      "architect/migration-architecture-patterns"
+    ],
     "org-setup": [
       "admin/org-setup-and-configuration"
     ],
@@ -9654,6 +9673,9 @@
     ],
     "org-specific-ids": [
       "data/deployment-data-dependencies"
+    ],
+    "org-split": [
+      "architect/migration-architecture-patterns"
     ],
     "org-strategy": [
       "architect/multi-org-strategy"
