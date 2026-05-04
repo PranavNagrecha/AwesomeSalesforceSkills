@@ -7097,6 +7097,18 @@
       "domain": "lwc",
       "expected_skill": "lwc/lwc-virtualized-lists",
       "top_k": 3
+    },
+    {
+      "query": "salesforce org merge consolidate two orgs",
+      "domain": "architect",
+      "expected_skill": "architect/migration-architecture-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "salesforce org split regulatory isolation",
+      "domain": "architect",
+      "expected_skill": "architect/migration-architecture-patterns",
+      "top_k": 3
     }
   ]
 }

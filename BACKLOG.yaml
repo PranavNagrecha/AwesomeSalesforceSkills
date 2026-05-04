@@ -376,13 +376,6 @@
   notes: "Covered by skills/architect/event-driven-architecture AND skills/integration/event-driven-architecture-patterns. Together these cover Platform Events vs CDC vs Pub/Sub API use cases, event bus pattern selection (Pub/Sub/Fanout/Passed Messages/Streaming/Queuing), choreography vs orchestration decision, and eventual consistency tradeoffs. Saga pattern gap (no official Salesforce doc) can be added to existing skills."
   source_line: 1561
   history: []
-- id: "migration-architecture-patterns"
-  status: "RESEARCHED"
-  skill: "migration-architecture-patterns"
-  summary: "Org migration architecture: org merge, org split, data migration strategy, metadata migration, cutover planning, coexistence patterns. NOT for go-live cutover."
-  notes: "Researched 2026-04-17. Sources: [Enterprise Architecture: Multi-org Strategy (developer.salesforce.com/blogs); How to Prepare for a Salesforce Org Migration (help.salesforce.com/s/articleView?id=000386897); Data 360 Provisioning Decision Guide (architect.salesforce.com/decision-guides)]. Key: Org merge requires pre-migration metadata audit (objects/fields/picklists/validation rules/automation) before any data movement - skipping this is the most common LLM anti-pattern (also in skills/architect/multi-org-strategy llm-anti-patterns.md Anti-Pattern 5); org split must distinguish 'why' (regulatory isolation, M&A, limits relief) from 'how' (metadata fork point, data partitioning, coexistence via Salesforce Connect External Objects or Platform Events); coexistence requires identity/SSO continuity, duplicate detection, and rollback-safe metadata deployment windows; distinct from skills/architect/multi-org-strategy (decision only). Gaps: official architect.salesforce.com guide for CRM org merge/split execution lifecycle; cutover sequencing patterns (freeze window, parallel-run, hard-cutover); record ID remapping when external systems reference org-specific 15/18-digit IDs; Hyperforce region constraints."
-  source_line: 1562
-  history: []
 - id: "formula-field-performance"
   status: "DUPLICATE"
   skill: "formula-field-performance"
