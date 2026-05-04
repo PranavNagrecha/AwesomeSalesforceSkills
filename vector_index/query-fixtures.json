@@ -7085,6 +7085,18 @@
       "domain": "apex",
       "expected_skill": "apex/apex-event-bus-subscriber",
       "top_k": 3
+    },
+    {
+      "query": "lwc large dataset rendering performance virtualization",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-virtualized-lists",
+      "top_k": 3
+    },
+    {
+      "query": "lwc infinite scroll intersection observer pattern",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-virtualized-lists",
+      "top_k": 3
     }
   ]
 }
