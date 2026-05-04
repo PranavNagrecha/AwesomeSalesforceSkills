@@ -19,6 +19,7 @@ dependencies:
     - admin/configuration-workbook-authoring
     - admin/custom-field-creation
     - admin/fit-gap-analysis-against-org
+    - admin/lightning-experience-transition
     - admin/object-creation-and-design
     - admin/permission-set-architecture
     - admin/record-type-strategy-at-scale
@@ -29,6 +30,7 @@ dependencies:
     - admin/user-story-writing-for-salesforce
     - architect/architecture-decision-records
     - architect/license-optimization-strategy
+    - architect/loyalty-program-architecture
     - architect/metadata-coverage-and-dependencies
     - architect/nfr-definition-for-salesforce
     - architect/solution-design-patterns
@@ -37,6 +39,7 @@ dependencies:
     - integration/automotive-cloud-setup
     - integration/manufacturing-cloud-setup
     - integration/net-zero-cloud-setup
+    - integration/salesforce-maps-setup
   shared:
     - AGENT_CONTRACT.md
     - AGENT_RULES.md
@@ -103,21 +106,24 @@ The deliverable is what an architect or BA hands to a steering committee BEFORE 
 19. `skills/integration/automotive-cloud-setup` — industry-cloud setup pattern recognition for stories scoped to Automotive Cloud (Vehicle / VehicleDefinition / dealer hierarchy)
 20. `skills/integration/manufacturing-cloud-setup` — industry-cloud setup pattern recognition for stories scoped to Manufacturing Cloud (Sales Agreement / ABF / Rebate)
 21. `skills/integration/net-zero-cloud-setup` — industry-cloud setup pattern recognition for ESG / sustainability stories scoped to Net Zero Cloud (Scope 1/2/3 inventory)
+22. `skills/integration/salesforce-maps-setup` — Salesforce Maps license tier and product-boundary recognition (Maps vs FSL vs Consumer Goods Cloud) for stories scoped to territory planning, route optimization, or live tracking
+23. `skills/architect/loyalty-program-architecture` — Loyalty program architecture (tier ladder, qualifying-vs-non-qualifying split, partner topology, multi-region federation) — flag stories that conflict with the program's architectural decisions before treating them as fits
+24. `skills/admin/lightning-experience-transition` — Lightning Experience Transition program state — flag backlog stories that depend on LEX-only features (Dynamic Forms, LWC actions) when org has Classic users still in scope
 
 ### Data model fit
-22. `skills/data/data-model-design-patterns` — anti-patterns to flag (parallel object hierarchies, etc.)
-23. `skills/data/external-id-strategy` — fit signal for any integration-shaped story
+25. `skills/data/data-model-design-patterns` — anti-patterns to flag (parallel object hierarchies, etc.)
+26. `skills/data/external-id-strategy` — fit signal for any integration-shaped story
 
 ### Decision trees
-24. `standards/decision-trees/automation-selection.md` — drives "Config (Flow) vs Custom (Apex)" tier separation
-25. `standards/decision-trees/sharing-selection.md` — drives sharing-fit decisions
+27. `standards/decision-trees/automation-selection.md` — drives "Config (Flow) vs Custom (Apex)" tier separation
+28. `standards/decision-trees/sharing-selection.md` — drives sharing-fit decisions
 
 ### Probes
-26. `agents/_shared/probes/automation-graph-for-sobject.md` — find the existing automation an org already has on the target object
+29. `agents/_shared/probes/automation-graph-for-sobject.md` — find the existing automation an org already has on the target object
 
 ### Output handoff
-27. `skills/admin/configuration-workbook-authoring` — output rows must align with workbook section names so `config-workbook-author` consumes cleanly
-28. `skills/admin/requirements-traceability-matrix` — emit RTM rows so the gap shows up in traceability
+30. `skills/admin/configuration-workbook-authoring` — output rows must align with workbook section names so `config-workbook-author` consumes cleanly
+31. `skills/admin/requirements-traceability-matrix` — emit RTM rows so the gap shows up in traceability
 
 ---
 

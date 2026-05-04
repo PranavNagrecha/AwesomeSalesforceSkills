@@ -19,6 +19,7 @@ dependencies:
     - apex/trigger-and-flow-coexistence
     - architect/ha-dr-architecture
     - architect/limits-and-scalability-planning
+    - architect/loyalty-program-architecture
     - architect/nfr-definition-for-salesforce
     - architect/security-architecture-review
     - architect/well-architected-review
@@ -70,6 +71,7 @@ Runs a Well-Architected Framework (WAF) assessment against a Salesforce implemen
 13. `skills/devops/pipeline-secrets-management` — pipeline auth hardening
 14. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 15. `skills/architect/zero-trust-salesforce-patterns` — zero-trust composition pattern: four-leg coverage; RTEM TSP-supported event matrix; CAEP gap
+16. `skills/architect/loyalty-program-architecture` — Loyalty program architecture pillar review (Reliability tier-credit reversal, Scalability lifetime-ledger summary, Security fraud-prevention controls)
 
 ---
 

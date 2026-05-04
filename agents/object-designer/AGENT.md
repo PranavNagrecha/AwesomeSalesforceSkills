@@ -43,6 +43,7 @@ dependencies:
     - integration/automotive-cloud-setup
     - integration/manufacturing-cloud-setup
     - integration/net-zero-cloud-setup
+    - integration/salesforce-maps-setup
   shared:
     - AGENT_CONTRACT.md
     - AGENT_RULES.md
@@ -97,37 +98,38 @@ Given a business concept (a plain-English description like "we need to track mai
 15. `skills/integration/automotive-cloud-setup` — Automotive Cloud standard objects (Vehicle vs VehicleDefinition split, AccountAccountRelation for dealer hierarchy) — flag custom-object proposals that shadow standards
 16. `skills/integration/manufacturing-cloud-setup` — Manufacturing Cloud standard objects (SalesAgreement / SalesAgreementProduct / AccountProductForecast) — flag multi-period Opportunity Term__c models that should be SalesAgreement
 17. `skills/integration/net-zero-cloud-setup` — Net Zero Cloud standard objects (StnryAssetCrbnFtprnt, Scope3CrbnFtprnt, EmssnFctr) — flag custom Carbon_Footprint__c proposals when license is active
+18. `skills/integration/salesforce-maps-setup` — Salesforce Maps standard objects (MapsTerritoryPlan, MapsTerritory, MapsLayer, MapsAdvancedRoute) — flag custom MapTerritory__c / Geo__c proposals when Maps is licensed
 
 ### Data model & storage
-18. `skills/data/data-model-design-patterns`
-19. `skills/data/external-id-strategy` — for integration-source objects
-20. `skills/data/person-accounts` — for any Account-variant design
-21. `skills/data/record-merge-implications`
-22. `skills/data/roll-up-summary-alternatives` — RSF design choices
-23. `skills/data/data-storage-management` — storage cost forecasting
+19. `skills/data/data-model-design-patterns`
+20. `skills/data/external-id-strategy` — for integration-source objects
+21. `skills/data/person-accounts` — for any Account-variant design
+22. `skills/data/record-merge-implications`
+23. `skills/data/roll-up-summary-alternatives` — RSF design choices
+24. `skills/data/data-storage-management` — storage cost forecasting
 
 ### Performance, sharing, indexing
-24. `skills/architect/large-data-volume-architecture` — for objects expected to exceed 10M rows
-25. `skills/architect/solution-design-patterns`
-26. `skills/data/custom-index-requests`
-27. `skills/data/soql-query-optimization` — selectivity awareness during field design
-28. `skills/data/sharing-recalculation-performance`
-29. `skills/admin/sharing-and-visibility`
-30. `skills/admin/permission-set-architecture` — emit PS stubs aware of the larger PS strategy
+25. `skills/architect/large-data-volume-architecture` — for objects expected to exceed 10M rows
+26. `skills/architect/solution-design-patterns`
+27. `skills/data/custom-index-requests`
+28. `skills/data/soql-query-optimization` — selectivity awareness during field design
+29. `skills/data/sharing-recalculation-performance`
+30. `skills/admin/sharing-and-visibility`
+31. `skills/admin/permission-set-architecture` — emit PS stubs aware of the larger PS strategy
 
 ### Validation
-31. `skills/admin/validation-rules` — drive-time VR set at object creation
+32. `skills/admin/validation-rules` — drive-time VR set at object creation
 
 ### Decision trees
-32. `standards/decision-trees/sharing-selection.md`
-33. `standards/decision-trees/automation-selection.md` — recommend the right automation surface for the object's lifecycle
+33. `standards/decision-trees/sharing-selection.md`
+34. `standards/decision-trees/automation-selection.md` — recommend the right automation surface for the object's lifecycle
 
 ### Probes
-34. `agents/_shared/probes/automation-graph-for-sobject.md` — confirm no overlapping automation already exists if extending a standard object
+35. `agents/_shared/probes/automation-graph-for-sobject.md` — confirm no overlapping automation already exists if extending a standard object
 
 ### Templates
-35. `templates/admin/naming-conventions.md`
-36. `templates/admin/validation-rule-patterns.md`
+36. `templates/admin/naming-conventions.md`
+37. `templates/admin/validation-rule-patterns.md`
 
 ---
 
