@@ -635,6 +635,7 @@
       "devops/automated-regression-testing",
       "devops/bitbucket-pipelines-for-salesforce",
       "devops/change-set-deployment",
+      "devops/cicd-for-experience-cloud",
       "devops/code-coverage-orphan-class-cleanup",
       "devops/code-review-checklist-salesforce",
       "devops/continuous-integration-testing",
@@ -2722,6 +2723,9 @@
       "admin/digital-storefront-requirements",
       "admin/experience-cloud-site-setup"
     ],
+    "branding-set": [
+      "devops/cicd-for-experience-cloud"
+    ],
     "breach-response": [
       "security/security-incident-response"
     ],
@@ -3334,6 +3338,7 @@
     ],
     "cicd": [
       "architect/deployment-automation-architecture",
+      "devops/cicd-for-experience-cloud",
       "devops/sfdx-hardis-integration",
       "omnistudio/omnistudio-ci-cd-patterns"
     ],
@@ -4279,7 +4284,8 @@
       "apex/visualforce-fundamentals"
     ],
     "custom-domain": [
-      "admin/experience-cloud-site-setup"
+      "admin/experience-cloud-site-setup",
+      "devops/cicd-for-experience-cloud"
     ],
     "custom-element": [
       "omnistudio/omnistudio-lwc-integration"
@@ -6013,6 +6019,7 @@
       "data/community-user-data-migration",
       "data/external-user-data-sharing",
       "data/partner-data-access-patterns",
+      "devops/cicd-for-experience-cloud",
       "devops/cross-cloud-deployment-patterns",
       "devops/experience-cloud-deployment-admin",
       "devops/experience-cloud-deployment-dev",
@@ -6914,6 +6921,7 @@
       "devops/pr-policy-templates"
     ],
     "github-actions": [
+      "devops/cicd-for-experience-cloud",
       "devops/github-actions-for-salesforce"
     ],
     "gitlab-ci": [
@@ -7033,6 +7041,7 @@
     "guest-user": [
       "admin/experience-cloud-guest-access",
       "admin/salesforce-surveys",
+      "devops/cicd-for-experience-cloud",
       "flow/flow-for-experience-cloud",
       "lwc/experience-cloud-api-access",
       "lwc/experience-cloud-lwc-components",
@@ -7784,6 +7793,9 @@
     ],
     "javascript-buttons": [
       "admin/custom-button-to-action-migration"
+    ],
+    "jenkins": [
+      "devops/cicd-for-experience-cloud"
     ],
     "jest": [
       "lwc/lwc-testing"
