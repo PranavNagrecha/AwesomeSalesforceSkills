@@ -341,13 +341,6 @@
   notes: "lwc"
   source_line: 1539
   history: []
-- id: "crm-analytics-security-predicates"
-  status: "RESEARCHED"
-  skill: "crm-analytics-security-predicates"
-  summary: "CRM Analytics security predicates: row-level security, predicate syntax, multi-level predicates, team-based access, performance impact. NOT for standard sharing rules."
-  notes: "Researched 2026-04-16. Sources: [Analytics Security Implementation Guide Spring '26 (sf.bi_security_implementation_guide.htm); Add Row-Level Security with a Security Predicate (analytics.bi_security_datasets_predicate_considerations.htm); Predicate Expression Syntax for Datasets (analytics.bi_security_datasets_predicate_syntax.htm); Sample Predicate Expressions (analytics.bi_security_datasets_predicate_sampleexpressions.htm); Values in a Predicate Expression (sf.bi_security_datasets_predicate_values.htm)]. Key: Security predicates are SAQL filter strings stored at dataset level (NOT dashboard/lens level) using syntax 'DatasetColumn' operator value with comparison operators (==, !=, <, <=, >, >=), logical operators (&&"
-  source_line: 1540
-  history: []
 - id: "pmd-and-static-analysis"
   status: "DUPLICATE"
   skill: "pmd-and-static-analysis"

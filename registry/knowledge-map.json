@@ -559,6 +559,7 @@
       "data/constituent-data-migration",
       "data/cpq-data-model",
       "data/cpq-performance-optimization",
+      "data/crm-analytics-security-predicates",
       "data/custom-index-requests",
       "data/data-archival-strategies",
       "data/data-cloud-consent-and-privacy",
@@ -4124,6 +4125,7 @@
       "data/analytics-data-preparation",
       "data/analytics-dataset-optimization",
       "data/analytics-external-data",
+      "data/crm-analytics-security-predicates",
       "data/einstein-analytics-data-model",
       "integration/tableau-salesforce-connector"
     ],
@@ -4819,7 +4821,8 @@
       "omnistudio/dataraptor-patterns"
     ],
     "dataset": [
-      "admin/crm-analytics-app-creation"
+      "admin/crm-analytics-app-creation",
+      "data/crm-analytics-security-predicates"
     ],
     "dataset-design": [
       "architect/analytics-data-architecture"
@@ -11475,6 +11478,7 @@
     "row-level-security": [
       "admin/analytics-permission-and-sharing",
       "architect/analytics-security-architecture",
+      "data/crm-analytics-security-predicates",
       "security/apex-managed-sharing-patterns"
     ],
     "row-skew": [
@@ -11697,7 +11701,8 @@
     ],
     "saql": [
       "admin/saql-query-development",
-      "data/analytics-dataset-optimization"
+      "data/analytics-dataset-optimization",
+      "data/crm-analytics-security-predicates"
     ],
     "save-and-resume": [
       "omnistudio/omniscript-design-patterns"
@@ -11976,7 +11981,8 @@
       "security/security-health-check"
     ],
     "security-predicate": [
-      "admin/analytics-permission-and-sharing"
+      "admin/analytics-permission-and-sharing",
+      "data/crm-analytics-security-predicates"
     ],
     "security-review": [
       "security/secure-coding-review-checklist"
@@ -13468,7 +13474,8 @@
       "admin/in-app-guidance-and-walkthroughs"
     ],
     "user-context": [
-      "apex/apex-user-and-permission-checks"
+      "apex/apex-user-and-permission-checks",
+      "data/crm-analytics-security-predicates"
     ],
     "user-experience": [
       "admin/path-and-guidance",
