@@ -34,6 +34,9 @@ dependencies:
     - architect/solution-design-patterns
     - data/data-model-design-patterns
     - data/external-id-strategy
+    - integration/automotive-cloud-setup
+    - integration/manufacturing-cloud-setup
+    - integration/net-zero-cloud-setup
   shared:
     - AGENT_CONTRACT.md
     - AGENT_RULES.md
@@ -97,21 +100,24 @@ The deliverable is what an architect or BA hands to a steering committee BEFORE 
 16. `skills/architect/solution-design-patterns` — pattern recognition for "build vs configure" decisions
 17. `skills/architect/metadata-coverage-and-dependencies` — closest-existing-feature search across the org's metadata
 18. `skills/architect/nfr-definition-for-salesforce` — NFR-class fit (some "stories" are really NFRs disguised as stories)
+19. `skills/integration/automotive-cloud-setup` — industry-cloud setup pattern recognition for stories scoped to Automotive Cloud (Vehicle / VehicleDefinition / dealer hierarchy)
+20. `skills/integration/manufacturing-cloud-setup` — industry-cloud setup pattern recognition for stories scoped to Manufacturing Cloud (Sales Agreement / ABF / Rebate)
+21. `skills/integration/net-zero-cloud-setup` — industry-cloud setup pattern recognition for ESG / sustainability stories scoped to Net Zero Cloud (Scope 1/2/3 inventory)
 
 ### Data model fit
-19. `skills/data/data-model-design-patterns` — anti-patterns to flag (parallel object hierarchies, etc.)
-20. `skills/data/external-id-strategy` — fit signal for any integration-shaped story
+22. `skills/data/data-model-design-patterns` — anti-patterns to flag (parallel object hierarchies, etc.)
+23. `skills/data/external-id-strategy` — fit signal for any integration-shaped story
 
 ### Decision trees
-21. `standards/decision-trees/automation-selection.md` — drives "Config (Flow) vs Custom (Apex)" tier separation
-22. `standards/decision-trees/sharing-selection.md` — drives sharing-fit decisions
+24. `standards/decision-trees/automation-selection.md` — drives "Config (Flow) vs Custom (Apex)" tier separation
+25. `standards/decision-trees/sharing-selection.md` — drives sharing-fit decisions
 
 ### Probes
-23. `agents/_shared/probes/automation-graph-for-sobject.md` — find the existing automation an org already has on the target object
+26. `agents/_shared/probes/automation-graph-for-sobject.md` — find the existing automation an org already has on the target object
 
 ### Output handoff
-24. `skills/admin/configuration-workbook-authoring` — output rows must align with workbook section names so `config-workbook-author` consumes cleanly
-25. `skills/admin/requirements-traceability-matrix` — emit RTM rows so the gap shows up in traceability
+27. `skills/admin/configuration-workbook-authoring` — output rows must align with workbook section names so `config-workbook-author` consumes cleanly
+28. `skills/admin/requirements-traceability-matrix` — emit RTM rows so the gap shows up in traceability
 
 ---
 

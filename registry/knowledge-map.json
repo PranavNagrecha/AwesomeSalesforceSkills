@@ -751,6 +751,7 @@
       "integration/api-governance-and-rate-limits",
       "integration/api-led-connectivity",
       "integration/api-versioning-strategy",
+      "integration/automotive-cloud-setup",
       "integration/aws-salesforce-patterns",
       "integration/azure-salesforce-patterns",
       "integration/bulk-api-2-patterns",
@@ -770,10 +771,12 @@
       "integration/graphql-api-patterns",
       "integration/idempotent-integration-patterns",
       "integration/loyalty-management-setup",
+      "integration/manufacturing-cloud-setup",
       "integration/middleware-integration-patterns",
       "integration/mulesoft-salesforce-connector",
       "integration/mutual-tls-callouts",
       "integration/named-credentials-setup",
+      "integration/net-zero-cloud-setup",
       "integration/oauth-flows-and-connected-apps",
       "integration/outbound-messages-and-callbacks",
       "integration/outbound-webhook-from-salesforce",
@@ -1357,6 +1360,9 @@
     "account-based-commerce": [
       "admin/b2b-vs-b2c-requirements"
     ],
+    "account-based-forecasting": [
+      "integration/manufacturing-cloud-setup"
+    ],
     "account-contact": [
       "data/person-accounts"
     ],
@@ -1404,6 +1410,9 @@
     "action-plan-templates": [
       "admin/client-onboarding-design"
     ],
+    "actionable-events": [
+      "integration/automotive-cloud-setup"
+    ],
     "actions": [
       "agentforce/agent-action-input-slot-extraction"
     ],
@@ -1438,6 +1447,9 @@
     ],
     "activity-timeline": [
       "admin/einstein-activity-capture-setup"
+    ],
+    "actual-orders": [
+      "integration/manufacturing-cloud-setup"
     ],
     "ad-operations": [
       "admin/media-cloud-setup"
@@ -2412,6 +2424,9 @@
       "architect/marketing-integration-patterns",
       "data/marketing-cloud-sql-queries"
     ],
+    "automotive-cloud": [
+      "integration/automotive-cloud-setup"
+    ],
     "autonumber": [
       "apex/apex-record-clone-patterns"
     ],
@@ -3008,6 +3023,9 @@
     "capacity-utilization": [
       "data/omni-channel-reporting-data"
     ],
+    "carbon-accounting": [
+      "integration/net-zero-cloud-setup"
+    ],
     "card-actions": [
       "omnistudio/flexcard-design-patterns"
     ],
@@ -3203,6 +3221,9 @@
     ],
     "channel-prioritization": [
       "architect/multi-channel-service-architecture"
+    ],
+    "channel-revenue-management": [
+      "integration/manufacturing-cloud-setup"
     ],
     "channel-strategy": [
       "architect/service-cloud-architecture"
@@ -4139,6 +4160,9 @@
       "admin/remote-site-settings",
       "security/network-security-and-trusted-ips"
     ],
+    "csrd": [
+      "integration/net-zero-cloud-setup"
+    ],
     "csrf": [
       "apex/visualforce-fundamentals"
     ],
@@ -4599,7 +4623,9 @@
     ],
     "data-processing-engine": [
       "apex/fsc-financial-calculations",
-      "integration/loyalty-management-setup"
+      "integration/loyalty-management-setup",
+      "integration/manufacturing-cloud-setup",
+      "integration/net-zero-cloud-setup"
     ],
     "data-quality": [
       "admin/duplicate-management",
@@ -4819,6 +4845,9 @@
     ],
     "deal-velocity": [
       "admin/pipeline-review-design"
+    ],
+    "dealer-management": [
+      "integration/automotive-cloud-setup"
     ],
     "debug": [
       "flow/flow-interview-debugging"
@@ -5318,6 +5347,9 @@
     "drip-program": [
       "admin/lead-nurture-journey-design"
     ],
+    "driver-qualification": [
+      "integration/automotive-cloud-setup"
+    ],
     "dro": [
       "integration/revenue-lifecycle-management"
     ],
@@ -5582,6 +5614,9 @@
       "agentforce/data-cloud-vector-search-dev",
       "data/vector-database-management"
     ],
+    "emission-factors": [
+      "integration/net-zero-cloud-setup"
+    ],
     "empapi": [
       "lwc/lwc-server-sent-events"
     ],
@@ -5793,6 +5828,9 @@
     ],
     "eso": [
       "architect/fsl-optimization-architecture"
+    ],
+    "esrs": [
+      "integration/net-zero-cloud-setup"
     ],
     "ethical-walls": [
       "admin/compliant-data-sharing-setup"
@@ -6248,7 +6286,8 @@
     ],
     "financial-account": [
       "apex/fsc-integration-patterns-dev",
-      "data/financial-data-quality"
+      "data/financial-data-quality",
+      "integration/automotive-cloud-setup"
     ],
     "financial-account-roles": [
       "admin/financial-account-setup"
@@ -7377,6 +7416,11 @@
     "industries-timeline": [
       "admin/health-cloud-timeline"
     ],
+    "industry-cloud": [
+      "integration/automotive-cloud-setup",
+      "integration/manufacturing-cloud-setup",
+      "integration/net-zero-cloud-setup"
+    ],
     "infinite-loading": [
       "lwc/lwc-data-table"
     ],
@@ -8449,6 +8493,9 @@
     "manual-residue": [
       "admin/process-flow-as-is-to-be"
     ],
+    "manufacturing-cloud": [
+      "integration/manufacturing-cloud-setup"
+    ],
     "maps-and-sets": [
       "apex/apex-collections-patterns"
     ],
@@ -9015,6 +9062,9 @@
     ],
     "near-real-time": [
       "integration/data-cloud-activation-development"
+    ],
+    "net-zero-cloud": [
+      "integration/net-zero-cloud-setup"
     ],
     "network-access": [
       "security/network-security-and-trusted-ips"
@@ -9999,6 +10049,9 @@
     "pkce": [
       "security/connected-app-security-policies"
     ],
+    "planning": [
+      "integration/manufacturing-cloud-setup"
+    ],
     "plantuml": [
       "architect/salesforce-erd-and-diagramming"
     ],
@@ -10717,10 +10770,14 @@
       "lwc/lwc-server-sent-events"
     ],
     "rebate-management": [
-      "admin/rebate-management-setup"
+      "admin/rebate-management-setup",
+      "integration/manufacturing-cloud-setup"
     ],
     "recalculation": [
       "security/dynamic-sharing-recalculation"
+    ],
+    "recall-campaign": [
+      "integration/automotive-cloud-setup"
     ],
     "recaptcha": [
       "security/recaptcha-and-bot-prevention"
@@ -11300,6 +11357,9 @@
     "run-mode": [
       "flow/flow-runtime-context-and-sharing"
     ],
+    "run-rate": [
+      "integration/manufacturing-cloud-setup"
+    ],
     "runas": [
       "apex/apex-test-setup-patterns"
     ],
@@ -11329,6 +11389,9 @@
     ],
     "runtime-type-inspection": [
       "apex/dynamic-apex"
+    ],
+    "sales-agreement": [
+      "integration/manufacturing-cloud-setup"
     ],
     "sales-ai": [
       "agentforce/einstein-copilot-for-sales"
@@ -11600,6 +11663,15 @@
     ],
     "scim": [
       "security/scim-provisioning-integration"
+    ],
+    "scope-1": [
+      "integration/net-zero-cloud-setup"
+    ],
+    "scope-2": [
+      "integration/net-zero-cloud-setup"
+    ],
+    "scope-3": [
+      "integration/net-zero-cloud-setup"
     ],
     "score-decay": [
       "admin/mcae-lead-scoring-and-grading"
@@ -12652,6 +12724,9 @@
     "survivorship": [
       "admin/duplicate-management"
     ],
+    "sustainability-cloud": [
+      "integration/net-zero-cloud-setup"
+    ],
     "swim-lane": [
       "admin/process-flow-as-is-to-be"
     ],
@@ -12725,6 +12800,9 @@
     "taxonomy": [
       "admin/commerce-catalog-strategy",
       "architect/knowledge-taxonomy-design"
+    ],
+    "tcfd": [
+      "integration/net-zero-cloud-setup"
     ],
     "tdtm": [
       "apex/npsp-trigger-framework-extension"
@@ -13316,6 +13394,12 @@
     "vector-store": [
       "agentforce/sf-to-llm-data-pipelines"
     ],
+    "vehicle": [
+      "integration/automotive-cloud-setup"
+    ],
+    "vehicle-definition": [
+      "integration/automotive-cloud-setup"
+    ],
     "vendor-selection": [
       "integration/middleware-integration-patterns"
     ],
@@ -13413,6 +13497,9 @@
     ],
     "walkthroughs": [
       "admin/in-app-guidance-and-walkthroughs"
+    ],
+    "warranty": [
+      "integration/automotive-cloud-setup"
     ],
     "watermark": [
       "integration/mulesoft-salesforce-connector"

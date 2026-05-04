@@ -40,6 +40,9 @@ dependencies:
     - data/roll-up-summary-alternatives
     - data/sharing-recalculation-performance
     - data/soql-query-optimization
+    - integration/automotive-cloud-setup
+    - integration/manufacturing-cloud-setup
+    - integration/net-zero-cloud-setup
   shared:
     - AGENT_CONTRACT.md
     - AGENT_RULES.md
@@ -91,37 +94,40 @@ Given a business concept (a plain-English description like "we need to track mai
 12. `skills/admin/system-field-behavior-and-audit`
 13. `skills/admin/record-type-strategy-at-scale` — when concept implies > 1 persona
 14. `skills/admin/lookup-filter-cross-object-patterns` — lookup filter design + required vs optional staging
+15. `skills/integration/automotive-cloud-setup` — Automotive Cloud standard objects (Vehicle vs VehicleDefinition split, AccountAccountRelation for dealer hierarchy) — flag custom-object proposals that shadow standards
+16. `skills/integration/manufacturing-cloud-setup` — Manufacturing Cloud standard objects (SalesAgreement / SalesAgreementProduct / AccountProductForecast) — flag multi-period Opportunity Term__c models that should be SalesAgreement
+17. `skills/integration/net-zero-cloud-setup` — Net Zero Cloud standard objects (StnryAssetCrbnFtprnt, Scope3CrbnFtprnt, EmssnFctr) — flag custom Carbon_Footprint__c proposals when license is active
 
 ### Data model & storage
-15. `skills/data/data-model-design-patterns`
-16. `skills/data/external-id-strategy` — for integration-source objects
-17. `skills/data/person-accounts` — for any Account-variant design
-18. `skills/data/record-merge-implications`
-19. `skills/data/roll-up-summary-alternatives` — RSF design choices
-20. `skills/data/data-storage-management` — storage cost forecasting
+18. `skills/data/data-model-design-patterns`
+19. `skills/data/external-id-strategy` — for integration-source objects
+20. `skills/data/person-accounts` — for any Account-variant design
+21. `skills/data/record-merge-implications`
+22. `skills/data/roll-up-summary-alternatives` — RSF design choices
+23. `skills/data/data-storage-management` — storage cost forecasting
 
 ### Performance, sharing, indexing
-21. `skills/architect/large-data-volume-architecture` — for objects expected to exceed 10M rows
-22. `skills/architect/solution-design-patterns`
-23. `skills/data/custom-index-requests`
-24. `skills/data/soql-query-optimization` — selectivity awareness during field design
-25. `skills/data/sharing-recalculation-performance`
-26. `skills/admin/sharing-and-visibility`
-27. `skills/admin/permission-set-architecture` — emit PS stubs aware of the larger PS strategy
+24. `skills/architect/large-data-volume-architecture` — for objects expected to exceed 10M rows
+25. `skills/architect/solution-design-patterns`
+26. `skills/data/custom-index-requests`
+27. `skills/data/soql-query-optimization` — selectivity awareness during field design
+28. `skills/data/sharing-recalculation-performance`
+29. `skills/admin/sharing-and-visibility`
+30. `skills/admin/permission-set-architecture` — emit PS stubs aware of the larger PS strategy
 
 ### Validation
-28. `skills/admin/validation-rules` — drive-time VR set at object creation
+31. `skills/admin/validation-rules` — drive-time VR set at object creation
 
 ### Decision trees
-29. `standards/decision-trees/sharing-selection.md`
-30. `standards/decision-trees/automation-selection.md` — recommend the right automation surface for the object's lifecycle
+32. `standards/decision-trees/sharing-selection.md`
+33. `standards/decision-trees/automation-selection.md` — recommend the right automation surface for the object's lifecycle
 
 ### Probes
-31. `agents/_shared/probes/automation-graph-for-sobject.md` — confirm no overlapping automation already exists if extending a standard object
+34. `agents/_shared/probes/automation-graph-for-sobject.md` — confirm no overlapping automation already exists if extending a standard object
 
 ### Templates
-32. `templates/admin/naming-conventions.md`
-33. `templates/admin/validation-rule-patterns.md`
+35. `templates/admin/naming-conventions.md`
+36. `templates/admin/validation-rule-patterns.md`
 
 ---
 
