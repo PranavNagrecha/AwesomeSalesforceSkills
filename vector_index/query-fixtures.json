@@ -7049,6 +7049,18 @@
       "domain": "apex",
       "expected_skill": "apex/apex-string-and-regex",
       "top_k": 3
+    },
+    {
+      "query": "heroku salesforce integration which path should I use",
+      "domain": "integration",
+      "expected_skill": "integration/heroku-salesforce-integration",
+      "top_k": 3
+    },
+    {
+      "query": "heroku connect postgres bidirectional sync setup",
+      "domain": "integration",
+      "expected_skill": "integration/heroku-salesforce-integration",
+      "top_k": 3
     }
   ]
 }

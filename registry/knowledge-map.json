@@ -773,6 +773,7 @@
       "integration/event-relay-configuration",
       "integration/file-and-document-integration",
       "integration/graphql-api-patterns",
+      "integration/heroku-salesforce-integration",
       "integration/idempotent-integration-patterns",
       "integration/loyalty-management-setup",
       "integration/manufacturing-cloud-setup",
@@ -3016,6 +3017,9 @@
     ],
     "can-spam": [
       "admin/consent-management-marketing"
+    ],
+    "canvas": [
+      "integration/heroku-salesforce-integration"
     ],
     "capability-matrix": [
       "admin/fit-gap-analysis-against-org"
@@ -7144,7 +7148,14 @@
       "admin/salesforce-support-escalation"
     ],
     "heroku": [
+      "integration/heroku-salesforce-integration",
       "integration/salesforce-functions-replacement"
+    ],
+    "heroku-applink": [
+      "integration/heroku-salesforce-integration"
+    ],
+    "heroku-connect": [
+      "integration/heroku-salesforce-integration"
     ],
     "hierarchical-custom-settings": [
       "apex/feature-flags-and-kill-switches"
@@ -7579,7 +7590,8 @@
     ],
     "integration-pattern": [
       "integration/aws-salesforce-patterns",
-      "integration/azure-salesforce-patterns"
+      "integration/azure-salesforce-patterns",
+      "integration/heroku-salesforce-integration"
     ],
     "integration-pattern-selection": [
       "admin/integration-pattern-selection"
@@ -10225,6 +10237,9 @@
     "post-refresh-automation": [
       "devops/sandbox-refresh-and-templates"
     ],
+    "postgres": [
+      "integration/heroku-salesforce-integration"
+    ],
     "postmonger": [
       "apex/marketing-cloud-custom-activities"
     ],
@@ -11515,6 +11530,7 @@
     ],
     "salesforce-connect": [
       "architect/multi-org-strategy",
+      "integration/heroku-salesforce-integration",
       "integration/salesforce-connect-external-objects"
     ],
     "salesforce-connector": [
