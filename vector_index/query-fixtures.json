@@ -7061,6 +7061,18 @@
       "domain": "integration",
       "expected_skill": "integration/heroku-salesforce-integration",
       "top_k": 3
+    },
+    {
+      "query": "salesforce shield license required which components",
+      "domain": "architect",
+      "expected_skill": "architect/salesforce-shield-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "platform encryption probabilistic vs deterministic decision",
+      "domain": "architect",
+      "expected_skill": "architect/salesforce-shield-architecture",
+      "top_k": 3
     }
   ]
 }

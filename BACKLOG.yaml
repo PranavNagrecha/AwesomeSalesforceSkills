@@ -278,13 +278,6 @@
   notes: "Researched 2026-04-17. Sources: [Secure Cross-Cloud Integrations with Private Connect (sf.private_connect_overview.htm); Considerations for Private Connect with AWS (sf.private_connect_considerations.htm); Establish Inbound/Outbound Connections with AWS (sf.private_connect_inbound_aws.htm; sf.private_connect_outbound_aws.htm)]. Key: Private Connect is add-on licensed (one license per AWS region = one inbound + one outbound connection + 5 GB/day data transfer); inbound = AWS-to-Salesforce via PrivateLink VPC endpoint with customer-managed DNS; outbound = Salesforce Apex/Flow/External Services calling into customer VPC via NLB-backed endpoint service; hard 56.48 GB/hour traffic limit; only Full Copy and Partial Copy sandboxes supported (Developer/Developer Pro excluded); requires Hyperforce in target region; NOT supported for Tableau, Marketing Cloud, Commerce Cloud, or Apex Continuations. Gaps: Azure Private Link equivalent; Government Cloud Plus constraints; External Services integration pattern with outbound Private Connect."
   source_line: 1500
   history: []
-- id: "salesforce-shield-architecture"
-  status: "RESEARCHED"
-  skill: "salesforce-shield-architecture"
-  summary: "Shield architecture: Platform Encryption + Event Monitoring + Field Audit Trail as unified compliance strategy, key management strategy, BYOK, cost planning. NOT for individual Shield feature setup."
-  notes: "Researched 2026-04-18. Sources: [Salesforce Shield overview (help.salesforce.com sf.salesforce_shield.htm); Shield Platform Encryption concepts (help.salesforce.com security_pe_concepts.htm); BYOK overview (securityImplGuide security_pe_byok.htm); Field Audit Trail (help.salesforce.com xcloud.field_audit_trail.htm)]. Key: Shield is a PAID add-on with SEPARATE licenses for each component (Platform Encryption; Event Monitoring; Field Audit Trail) -- none included in any standard edition; must confirm all three licenses in Setup > Company Information > Permission Set Licenses before planning. BYOK has two modes: tenant-secret BYOK (customer uploads key material) and Cache-Only Key Service (Salesforce fetches from customer HSM on demand -- strongest posture; KMS outage causes encryption operations to fail). Field Audit Trail retention configurable up to 10 years. LLM anti-pattern: instructing users to enable Shield Platform Encryption in Setup as if it were a free feature -- must assert that a Shield license must be confirmed first. Gaps: Shield Event Monitoring retention pricing tiers; confirmed list of field types that cannot be encrypted (Formula; Roll-Up Summary; indexed external ID fields)."
-  source_line: 1502
-  history: []
 - id: "oauth-token-management"
   status: "RESEARCHED"
   skill: "oauth-token-management"

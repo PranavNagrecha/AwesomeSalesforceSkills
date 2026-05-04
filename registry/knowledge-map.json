@@ -522,6 +522,7 @@
       "architect/sales-cloud-architecture",
       "architect/sales-cloud-integration-patterns",
       "architect/salesforce-erd-and-diagramming",
+      "architect/salesforce-shield-architecture",
       "architect/security-architecture-review",
       "architect/service-cloud-architecture",
       "architect/sla-design-and-escalation-matrix",
@@ -2893,6 +2894,7 @@
       "agentforce/agentforce-custom-channel-dev"
     ],
     "byok": [
+      "architect/salesforce-shield-architecture",
       "security/shield-kms-byok-setup"
     ],
     "byollm": [
@@ -2912,6 +2914,9 @@
     ],
     "cache-aside": [
       "apex/platform-cache"
+    ],
+    "cache-only-keys": [
+      "architect/salesforce-shield-architecture"
     ],
     "cache-org": [
       "apex/platform-cache"
@@ -3611,7 +3616,8 @@
       "security/sandbox-data-masking"
     ],
     "compliance-architecture": [
-      "architect/marketing-consent-architecture"
+      "architect/marketing-consent-architecture",
+      "architect/salesforce-shield-architecture"
     ],
     "compliance-automation": [
       "architect/government-cloud-compliance"
@@ -5897,6 +5903,7 @@
     ],
     "event-monitoring": [
       "admin/integration-admin-connected-apps",
+      "architect/salesforce-shield-architecture",
       "architect/zero-trust-salesforce-patterns",
       "data/analytics-data-governance",
       "security/api-security-and-rate-limiting",
@@ -6213,6 +6220,7 @@
     ],
     "field-audit-trail": [
       "admin/compliance-documentation-requirements",
+      "architect/salesforce-shield-architecture",
       "security/field-audit-trail"
     ],
     "field-conflict": [
@@ -10123,6 +10131,9 @@
       "apex/platform-cache",
       "omnistudio/integration-procedure-cacheable-patterns"
     ],
+    "platform-encryption": [
+      "architect/salesforce-shield-architecture"
+    ],
     "platform-event": [
       "integration/data-cloud-activation-development"
     ],
@@ -12294,6 +12305,7 @@
     "shield": [
       "admin/hipaa-workflow-design",
       "architect/hipaa-compliance-architecture",
+      "architect/salesforce-shield-architecture",
       "architect/security-architecture-review",
       "data/data-quality-and-governance",
       "security/data-classification-labels",
