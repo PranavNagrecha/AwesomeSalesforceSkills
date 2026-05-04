@@ -6917,6 +6917,60 @@
       "domain": "architect",
       "expected_skill": "architect/zero-trust-salesforce-patterns",
       "top_k": 3
+    },
+    {
+      "query": "automotive cloud setup vehicle lifecycle",
+      "domain": "integration",
+      "expected_skill": "integration/automotive-cloud-setup",
+      "top_k": 3
+    },
+    {
+      "query": "automotive cloud lead distribution dealer",
+      "domain": "integration",
+      "expected_skill": "integration/automotive-cloud-setup",
+      "top_k": 3
+    },
+    {
+      "query": "modeling dealer to OEM hierarchy in Automotive Cloud",
+      "domain": "integration",
+      "expected_skill": "integration/automotive-cloud-setup",
+      "top_k": 3
+    },
+    {
+      "query": "manufacturing cloud sales agreement rebate",
+      "domain": "integration",
+      "expected_skill": "integration/manufacturing-cloud-setup",
+      "top_k": 3
+    },
+    {
+      "query": "manufacturing cloud account based forecasting",
+      "domain": "integration",
+      "expected_skill": "integration/manufacturing-cloud-setup",
+      "top_k": 3
+    },
+    {
+      "query": "Account Based Forecasting recalculation never running stale",
+      "domain": "integration",
+      "expected_skill": "integration/manufacturing-cloud-setup",
+      "top_k": 3
+    },
+    {
+      "query": "net zero cloud carbon emission factor",
+      "domain": "integration",
+      "expected_skill": "integration/net-zero-cloud-setup",
+      "top_k": 3
+    },
+    {
+      "query": "net zero cloud sustainability scope 1 2 3",
+      "domain": "integration",
+      "expected_skill": "integration/net-zero-cloud-setup",
+      "top_k": 3
+    },
+    {
+      "query": "supplier engagement scoring CSRD ESRS disclosure",
+      "domain": "integration",
+      "expected_skill": "integration/net-zero-cloud-setup",
+      "top_k": 3
     }
   ]
 }
