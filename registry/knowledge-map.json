@@ -871,6 +871,7 @@
       "lwc/lwc-template-refs",
       "lwc/lwc-testing",
       "lwc/lwc-toast-and-notifications",
+      "lwc/lwc-virtualized-lists",
       "lwc/lwc-web-components-interop",
       "lwc/lwc-wire-refresh-patterns",
       "lwc/lwr-site-development",
@@ -7477,6 +7478,9 @@
     "infinite-loop": [
       "flow/recursion-and-re-entry-prevention"
     ],
+    "infinite-scroll": [
+      "lwc/lwc-virtualized-lists"
+    ],
     "informatica": [
       "data/etl-vs-api-data-patterns",
       "integration/middleware-integration-patterns"
@@ -7672,6 +7676,9 @@
       "admin/clinical-data-requirements",
       "architect/fhir-integration-architecture",
       "lwc/aura-to-lwc-migration"
+    ],
+    "intersection-observer": [
+      "lwc/lwc-virtualized-lists"
     ],
     "invalidation": [
       "apex/platform-cache"
@@ -9771,7 +9778,8 @@
       "integration/data-cloud-query-api",
       "integration/graphql-api-patterns",
       "integration/rest-api-pagination-patterns",
-      "integration/rest-api-patterns"
+      "integration/rest-api-patterns",
+      "lwc/lwc-virtualized-lists"
     ],
     "pam": [
       "security/privileged-access-management"
@@ -9972,6 +9980,7 @@
       "flow/flow-governor-limits-deep-dive",
       "flow/flow-performance-optimization",
       "lwc/lwc-performance-budgets",
+      "lwc/lwc-virtualized-lists",
       "lwc/virtualized-lists",
       "omnistudio/dataraptor-transform-optimization",
       "omnistudio/integration-procedure-cacheable-patterns",
@@ -12249,6 +12258,7 @@
       "lwc/lwc-light-dom",
       "lwc/lwc-shadow-vs-light-dom-decision",
       "lwc/lwc-slots-composition",
+      "lwc/lwc-virtualized-lists",
       "lwc/lwc-web-components-interop"
     ],
     "share-objects": [
@@ -13576,6 +13586,7 @@
       "integration/salesforce-connect-external-objects"
     ],
     "virtualization": [
+      "lwc/lwc-virtualized-lists",
       "lwc/virtualized-lists"
     ],
     "virus-scanning": [

@@ -320,13 +320,6 @@
   notes: "Researched 2026-04-17. Sources: [LWC Developer Guide - Shadow DOM (create-dom.html); LWC Developer Guide - DOM Access Containment (locker-dom.html); LWC Developer Guide - Event Propagation (events-propagation.html)]. Key: HTML5 drag events work in LWC within single component shadow root but cross-component drag hits shadow DOM event re-targeting - event.target resolves to host element; use event.composedPath() to walk real path; Lightning Web Security (default Spring 22+) enforces DOM containment so document.querySelector is blocked - use this.template.querySelector; DataTransfer string payloads are safest cross-boundary channel; file drop zones via lightning-input type='file' cap at 3.5 MB per file. Gaps: touch-drag support on mobile - HTML5 drag API does not fire on touch; pointer-events polyfill needed for Salesforce Mobile App and Experience Cloud mobile."
   source_line: 1526
   history: []
-- id: "lwc-virtualized-lists"
-  status: "RESEARCHED"
-  skill: "lwc-virtualized-lists"
-  summary: "Virtualized/windowed lists in LWC: rendering large datasets, lazy loading, infinite scroll, virtual DOM patterns, dataset pagination. NOT for standard lightning-datatable."
-  notes: "Researched 2026-04-17. Sources: [Improve Datatable Performance - LWC Guide (data-table-performance.html); LWC Performance Best Practices - developer.salesforce.com/blogs]. Key: No first-party virtual-windowing API in LWC - must hand-build: track render window of N items in JS state, use IntersectionObserver or scroll sentinel to shift window, recycle DOM nodes (official guidance: 'don't support creation of infinite list items'); items need stable unique key; for SOQL-backed lazy loading use LIMIT/OFFSET or GraphQL cursor pagination capped at 50 rows per page; 1000 rows/5 columns is benchmark before datatable performance degrades; lightning-datatable enable-infinite-loading is out of scope for this skill. Gaps: IntersectionObserver nuances inside Lightning shadow DOM; whether any first-party virtual-list base component added in recent releases."
-  source_line: 1527
-  history: []
 - id: "lwc-service-worker-patterns"
   status: "TODO"
   skill: "lwc-service-worker-patterns"
