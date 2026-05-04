@@ -7037,6 +7037,18 @@
       "domain": "apex",
       "expected_skill": "apex/apex-switch-on-sobject",
       "top_k": 3
+    },
+    {
+      "query": "apex split string drops trailing empty values",
+      "domain": "apex",
+      "expected_skill": "apex/apex-string-and-regex",
+      "top_k": 3
+    },
+    {
+      "query": "pattern matcher regex compile per record performance",
+      "domain": "apex",
+      "expected_skill": "apex/apex-string-and-regex",
+      "top_k": 3
     }
   ]
 }
