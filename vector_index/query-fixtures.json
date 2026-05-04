@@ -7073,6 +7073,18 @@
       "domain": "architect",
       "expected_skill": "architect/salesforce-shield-architecture",
       "top_k": 3
+    },
+    {
+      "query": "platform event apex trigger checkpoint resume replayid",
+      "domain": "apex",
+      "expected_skill": "apex/apex-event-bus-subscriber",
+      "top_k": 3
+    },
+    {
+      "query": "eventbus retryableexception batch retry limit",
+      "domain": "apex",
+      "expected_skill": "apex/apex-event-bus-subscriber",
+      "top_k": 3
     }
   ]
 }

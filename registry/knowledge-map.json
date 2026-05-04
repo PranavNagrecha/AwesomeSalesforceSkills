@@ -309,6 +309,7 @@
       "apex/apex-dynamic-soql-binding-safety",
       "apex/apex-email-services",
       "apex/apex-encoding-and-crypto",
+      "apex/apex-event-bus-subscriber",
       "apex/apex-execute-anonymous",
       "apex/apex-flow-invocation-from-apex",
       "apex/apex-future-method-patterns",
@@ -3282,6 +3283,9 @@
     "checkout-extension": [
       "apex/commerce-extension-points"
     ],
+    "checkpoint": [
+      "apex/apex-event-bus-subscriber"
+    ],
     "child-to-parent": [
       "apex/apex-soql-relationship-queries"
     ],
@@ -5940,6 +5944,7 @@
       "integration/event-relay-configuration"
     ],
     "eventbus": [
+      "apex/apex-event-bus-subscriber",
       "apex/platform-events-apex",
       "integration/platform-event-publish-patterns"
     ],
@@ -10144,6 +10149,7 @@
       "admin/change-data-capture-admin",
       "admin/commerce-order-management",
       "agentforce/agent-rate-limit-strategy",
+      "apex/apex-event-bus-subscriber",
       "apex/custom-logging-and-monitoring",
       "apex/error-handling-framework",
       "apex/fsc-integration-patterns-dev",
@@ -11114,6 +11120,7 @@
       "data/historical-order-migration"
     ],
     "replay": [
+      "apex/apex-event-bus-subscriber",
       "integration/streaming-api-and-pushtopic"
     ],
     "replay-id": [
@@ -11269,6 +11276,7 @@
     "retry": [
       "admin/outbound-message-setup",
       "apex/apex-callout-retry-and-resilience",
+      "apex/apex-event-bus-subscriber",
       "integration/idempotent-integration-patterns",
       "integration/retry-and-backoff-patterns",
       "omnistudio/omnistudio-error-handling-patterns"
@@ -12784,6 +12792,9 @@
     "subrequest": [
       "integration/composite-api-patterns"
     ],
+    "subscriber": [
+      "apex/apex-event-bus-subscriber"
+    ],
     "subscriber-data-management": [
       "data/subscriber-data-management"
     ],
@@ -13211,6 +13222,7 @@
       "admin/fsl-scheduling-optimization-design"
     ],
     "trigger": [
+      "apex/apex-event-bus-subscriber",
       "apex/apex-trigger-bypass-and-killswitch-patterns",
       "apex/opportunity-trigger-patterns",
       "flow/flow-migration-from-trigger"
