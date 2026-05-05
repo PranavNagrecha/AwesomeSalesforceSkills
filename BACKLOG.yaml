@@ -754,13 +754,6 @@
   notes: "security"
   source_line: 1788
   history: []
-- id: "connected-app-troubleshooting"
-  status: "TODO"
-  skill: "connected-app-troubleshooting"
-  summary: "Connected App troubleshooting: IP relaxation, refresh token policy, OAuth error codes, session revocation, user assignment vs admin approval, CORS. NOT for Connected App creation."
-  notes: "security"
-  source_line: 1789
-  history: []
 - id: "guest-user-security-audit"
   status: "TODO"
   skill: "guest-user-security-audit"
