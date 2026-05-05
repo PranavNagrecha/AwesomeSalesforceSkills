@@ -712,13 +712,6 @@
   notes: "flow"
   source_line: 1758
   history: []
-- id: "flow-time-based-patterns"
-  status: "TODO"
-  skill: "flow-time-based-patterns"
-  summary: "Time-based flows: scheduled paths in record-triggered flows, Wait elements, time-based workflow replacement, time zone behavior, resume conditions. NOT for scheduled flows (use scheduled-flows)."
-  notes: "flow"
-  source_line: 1761
-  history: []
 - id: "approval-process-apex-patterns"
   status: "TODO"
   skill: "approval-process-apex-patterns"
