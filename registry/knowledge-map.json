@@ -730,6 +730,7 @@
       "flow/flow-large-data-volume-patterns",
       "flow/flow-loop-element-patterns",
       "flow/flow-migration-from-trigger",
+      "flow/flow-orchestration-patterns",
       "flow/flow-performance-optimization",
       "flow/flow-platform-events-integration",
       "flow/flow-reactive-screen-components",
@@ -5906,6 +5907,9 @@
     "evaluation": [
       "agentforce/agentforce-eval-harness"
     ],
+    "evaluation-flow": [
+      "flow/flow-orchestration-patterns"
+    ],
     "evaluation-metrics": [
       "agentforce/agent-testing-and-evaluation"
     ],
@@ -6483,6 +6487,7 @@
       "flow/flow-interview-debugging",
       "flow/flow-invocable-from-apex",
       "flow/flow-migration-from-trigger",
+      "flow/flow-orchestration-patterns",
       "flow/flow-performance-optimization",
       "flow/flow-platform-events-integration",
       "flow/flow-reactive-screen-components",
@@ -9620,6 +9625,7 @@
       "apex/long-running-process-orchestration",
       "architect/event-driven-architecture",
       "flow/flow-element-naming-conventions",
+      "flow/flow-orchestration-patterns",
       "flow/flow-transactional-boundaries",
       "integration/middleware-integration-patterns"
     ],
@@ -12688,6 +12694,9 @@
     "stack-depth": [
       "apex/apex-queueable-patterns"
     ],
+    "stage": [
+      "flow/flow-orchestration-patterns"
+    ],
     "stage-change": [
       "apex/opportunity-trigger-patterns"
     ],
@@ -12758,6 +12767,9 @@
     ],
     "staticresourcecalloutmock": [
       "apex/apex-mocking-and-stubs"
+    ],
+    "step": [
+      "flow/flow-orchestration-patterns"
     ],
     "stewardship": [
       "admin/fundraising-process-mapping"
@@ -13804,7 +13816,8 @@
       "lwc/wire-service-patterns"
     ],
     "work-item": [
-      "devops/devops-center-advanced"
+      "devops/devops-center-advanced",
+      "flow/flow-orchestration-patterns"
     ],
     "work-items": [
       "admin/flow-orchestration-admin",

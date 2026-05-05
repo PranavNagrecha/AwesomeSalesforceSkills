@@ -7157,6 +7157,18 @@
       "domain": "flow",
       "expected_skill": "flow/flow-time-based-patterns",
       "top_k": 3
+    },
+    {
+      "query": "flow orchestration multi-stage approval workflow",
+      "domain": "flow",
+      "expected_skill": "flow/flow-orchestration-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "orchestration work item assigned user queue",
+      "domain": "flow",
+      "expected_skill": "flow/flow-orchestration-patterns",
+      "top_k": 3
     }
   ]
 }
