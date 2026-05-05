@@ -186,6 +186,7 @@
       "admin/permission-sets-vs-profiles",
       "admin/persona-and-journey-mapping-sf",
       "admin/picklist-and-value-sets",
+      "admin/picklist-data-integrity",
       "admin/picklist-field-integrity-issues",
       "admin/pipeline-review-design",
       "admin/portal-requirements-gathering",
@@ -4571,6 +4572,7 @@
     ],
     "data-integrity": [
       "admin/lookup-filter-cross-object-patterns",
+      "admin/picklist-data-integrity",
       "data/financial-data-quality"
     ],
     "data-isolation": [
@@ -5034,6 +5036,7 @@
     "dependent-picklist": [
       "admin/field-dependency-and-controlling",
       "admin/picklist-and-value-sets",
+      "admin/picklist-data-integrity",
       "data/data-loader-picklist-validation-pre-load"
     ],
     "dependent-picklist-bypass": [
@@ -6961,6 +6964,7 @@
     ],
     "global-value-set": [
       "admin/picklist-and-value-sets",
+      "admin/picklist-data-integrity",
       "data/data-loader-picklist-validation-pre-load"
     ],
     "go-live": [
@@ -10128,6 +10132,7 @@
       "admin/field-dependency-and-controlling",
       "admin/path-and-guidance",
       "admin/picklist-and-value-sets",
+      "admin/picklist-data-integrity",
       "data/data-loader-picklist-validation-pre-load",
       "flow/flow-formula-and-expression-patterns"
     ],
@@ -10995,6 +11000,7 @@
       "flow/workflow-rule-to-flow-migration"
     ],
     "record-type": [
+      "admin/picklist-data-integrity",
       "admin/record-type-id-management",
       "apex/apex-hardcoded-id-elimination",
       "data/data-loader-picklist-validation-pre-load"

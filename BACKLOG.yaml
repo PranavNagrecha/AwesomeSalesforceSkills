@@ -684,13 +684,6 @@
   notes: "data"
   source_line: 1710
   history: []
-- id: "picklist-data-integrity"
-  status: "TODO"
-  skill: "picklist-data-integrity"
-  summary: "Picklist data integrity: restricted vs unrestricted, global value sets, value dependencies, inactive values in reports, picklist migration, field history with picklists. NOT for picklist admin (use picklist-and-value-sets)."
-  notes: "data"
-  source_line: 1711
-  history: []
 - id: "apex-outbound-email-patterns"
   status: "TODO"
   skill: "apex-outbound-email-patterns"
