@@ -221,6 +221,7 @@
       "admin/salesforce-release-preparation",
       "admin/salesforce-support-escalation",
       "admin/salesforce-surveys",
+      "admin/sandbox-post-refresh-automation",
       "admin/sandbox-strategy",
       "admin/saql-query-development",
       "admin/scheduled-path-patterns",
@@ -5651,6 +5652,9 @@
     "email-generation": [
       "agentforce/einstein-copilot-for-sales"
     ],
+    "email-masking": [
+      "admin/sandbox-post-refresh-automation"
+    ],
     "email-message": [
       "data/case-history-migration",
       "data/service-data-archival"
@@ -7682,6 +7686,9 @@
     ],
     "integration-auth": [
       "admin/connected-apps-and-auth"
+    ],
+    "integration-endpoint-scrub": [
+      "admin/sandbox-post-refresh-automation"
     ],
     "integration-endpoints": [
       "devops/sandbox-data-isolation-gotchas"
@@ -11136,6 +11143,9 @@
     "refresh": [
       "admin/sandbox-strategy"
     ],
+    "refresh-automation": [
+      "admin/sandbox-post-refresh-automation"
+    ],
     "refresh-graphql": [
       "lwc/lwc-graphql-wire"
     ],
@@ -11756,6 +11766,7 @@
       "architect/aml-kyc-process-architecture"
     ],
     "sandbox": [
+      "admin/sandbox-post-refresh-automation",
       "data/sandbox-refresh-data-strategies",
       "devops/sandbox-data-isolation-gotchas",
       "devops/source-tracking-and-conflict-resolution"
@@ -11786,6 +11797,7 @@
       "lwc/lwc-locker-to-lws-migration"
     ],
     "sandboxpostcopy": [
+      "admin/sandbox-post-refresh-automation",
       "data/sandbox-refresh-data-strategies",
       "devops/sandbox-data-isolation-gotchas",
       "devops/sandbox-refresh-and-templates"
