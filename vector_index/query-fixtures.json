@@ -7283,6 +7283,18 @@
       "domain": "admin",
       "expected_skill": "admin/email-service-inbound",
       "top_k": 3
+    },
+    {
+      "query": "salesforce deployment cannot change type field error",
+      "domain": "devops",
+      "expected_skill": "devops/deployment-error-diagnosis",
+      "top_k": 3
+    },
+    {
+      "query": "metadata deploy missing reference dependency order",
+      "domain": "devops",
+      "expected_skill": "devops/deployment-error-diagnosis",
+      "top_k": 3
     }
   ]
 }
