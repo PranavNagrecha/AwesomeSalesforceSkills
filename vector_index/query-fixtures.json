@@ -7259,6 +7259,18 @@
       "domain": "admin",
       "expected_skill": "admin/workflow-field-update-patterns",
       "top_k": 3
+    },
+    {
+      "query": "sandbox post copy apex class refresh automation",
+      "domain": "admin",
+      "expected_skill": "admin/sandbox-post-refresh-automation",
+      "top_k": 3
+    },
+    {
+      "query": "sandboxpostcopy interface implement runapexclass",
+      "domain": "admin",
+      "expected_skill": "admin/sandbox-post-refresh-automation",
+      "top_k": 3
     }
   ]
 }

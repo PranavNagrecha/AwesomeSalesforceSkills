@@ -593,13 +593,6 @@
   notes: "data"
   source_line: 1689
   history: []
-- id: "sandbox-post-refresh-automation"
-  status: "TODO"
-  skill: "sandbox-post-refresh-automation"
-  summary: "Post-copy Apex classes (SandboxPostCopy interface): user deactivation, email masking, data cleanup, integration endpoint swapping, test data seeding. NOT for sandbox admin (use sandbox-refresh-and-templates)."
-  notes: "devops"
-  source_line: 1690
-  history: []
 - id: "salesforce-release-impact-assessment"
   status: "TODO"
   skill: "salesforce-release-impact-assessment"
