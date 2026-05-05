@@ -740,13 +740,6 @@
   notes: "admin"
   source_line: 1778
   history: []
-- id: "email-service-inbound"
-  status: "TODO"
-  skill: "email-service-inbound"
-  summary: "Inbound Email Services: email handler Apex class, InboundEmail object, binary attachments, routing addresses, email-to-case vs custom handler, error replies. NOT for Email-to-Case admin."
-  notes: "admin"
-  source_line: 1779
-  history: []
 - id: "messaging-for-in-app-and-web"
   status: "TODO"
   skill: "messaging-for-in-app-and-web"

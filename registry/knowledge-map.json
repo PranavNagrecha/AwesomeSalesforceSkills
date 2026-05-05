@@ -94,6 +94,7 @@
       "admin/einstein-discovery-deployment",
       "admin/einstein-discovery-setup",
       "admin/email-deliverability-strategy",
+      "admin/email-service-inbound",
       "admin/email-studio-administration",
       "admin/email-templates-and-alerts",
       "admin/email-to-case-configuration",
@@ -5662,6 +5663,9 @@
     "email-message-relation": [
       "data/case-history-migration"
     ],
+    "email-service": [
+      "admin/email-service-inbound"
+    ],
     "email-studio": [
       "admin/email-studio-administration",
       "admin/marketing-cloud-connect",
@@ -5680,8 +5684,12 @@
     ],
     "email-to-case": [
       "admin/case-management-setup",
+      "admin/email-service-inbound",
       "admin/email-to-case-configuration",
       "architect/multi-channel-service-architecture"
+    ],
+    "emailservicesaddress": [
+      "admin/email-service-inbound"
     ],
     "embed": [
       "omnistudio/omnistudio-lwc-integration"
@@ -7483,10 +7491,14 @@
       "architect/license-optimization-strategy"
     ],
     "inbound-email": [
+      "admin/email-service-inbound",
       "apex/apex-email-services"
     ],
     "inbound-integration": [
       "integration/webhook-inbound-patterns"
+    ],
+    "inboundemailhandler": [
+      "admin/email-service-inbound"
     ],
     "incident-management": [
       "admin/salesforce-support-escalation"

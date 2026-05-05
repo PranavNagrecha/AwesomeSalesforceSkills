@@ -7271,6 +7271,18 @@
       "domain": "admin",
       "expected_skill": "admin/sandbox-post-refresh-automation",
       "top_k": 3
+    },
+    {
+      "query": "messaging inboundemailhandler apex class email service",
+      "domain": "admin",
+      "expected_skill": "admin/email-service-inbound",
+      "top_k": 3
+    },
+    {
+      "query": "salesforce email service routing address EmailServicesAddress",
+      "domain": "admin",
+      "expected_skill": "admin/email-service-inbound",
+      "top_k": 3
     }
   ]
 }
