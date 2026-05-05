@@ -716,6 +716,7 @@
       "flow/flow-element-naming-conventions",
       "flow/flow-email-and-notifications",
       "flow/flow-error-monitoring",
+      "flow/flow-error-notification-patterns",
       "flow/flow-external-services",
       "flow/flow-for-experience-cloud",
       "flow/flow-for-slack",
@@ -5822,6 +5823,7 @@
     "error-handling": [
       "agentforce/agent-action-error-handling",
       "apex/apex-transaction-finalizers",
+      "flow/flow-error-notification-patterns",
       "flow/flow-interview-debugging",
       "integration/error-handling-in-integrations",
       "lwc/lightning-navigation-dead-link-handling",
@@ -5833,6 +5835,9 @@
     ],
     "error-handling-in-integrations": [
       "integration/error-handling-in-integrations"
+    ],
+    "error-log": [
+      "flow/flow-error-notification-patterns"
     ],
     "error-logging": [
       "flow/fault-handling"
@@ -6168,6 +6173,7 @@
       "flow/flow-rollback-patterns"
     ],
     "fault-path": [
+      "flow/flow-error-notification-patterns",
       "flow/flow-runtime-error-diagnosis"
     ],
     "feasibility": [
@@ -6466,6 +6472,7 @@
       "flow/flow-dynamic-choices",
       "flow/flow-element-naming-conventions",
       "flow/flow-error-monitoring",
+      "flow/flow-error-notification-patterns",
       "flow/flow-external-services",
       "flow/flow-for-slack",
       "flow/flow-formula-and-expression-patterns",
@@ -9240,6 +9247,7 @@
       "data/attachment-to-files-migration"
     ],
     "notification": [
+      "flow/flow-error-notification-patterns",
       "flow/flow-for-slack"
     ],
     "notification-type": [
@@ -10186,6 +10194,7 @@
       "architect/salesforce-shield-architecture"
     ],
     "platform-event": [
+      "flow/flow-error-notification-patterns",
       "integration/data-cloud-activation-development"
     ],
     "platform-event-resume": [

@@ -7133,6 +7133,18 @@
       "domain": "data",
       "expected_skill": "data/crm-analytics-security-predicates",
       "top_k": 3
+    },
+    {
+      "query": "flow fault path email recipient configuration",
+      "domain": "flow",
+      "expected_skill": "flow/flow-error-notification-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "flow.faultmessage screen flow display",
+      "domain": "flow",
+      "expected_skill": "flow/flow-error-notification-patterns",
+      "top_k": 3
     }
   ]
 }

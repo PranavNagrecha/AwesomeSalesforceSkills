@@ -537,13 +537,6 @@
   notes: "admin"
   source_line: 1662
   history: []
-- id: "flow-error-notification-patterns"
-  status: "TODO"
-  skill: "flow-error-notification-patterns"
-  summary: "Flow fault email interpretation: common fault types, unhandled exceptions, fault paths best practices, admin notification patterns, monitoring. NOT for Flow debugging."
-  notes: "admin"
-  source_line: 1664
-  history: []
 - id: "salesforce-mobile-app-customization"
   status: "TODO"
   skill: "salesforce-mobile-app-customization"
