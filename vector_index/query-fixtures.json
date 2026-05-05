@@ -7169,6 +7169,18 @@
       "domain": "flow",
       "expected_skill": "flow/flow-orchestration-patterns",
       "top_k": 3
+    },
+    {
+      "query": "picklist restricted vs unrestricted decision",
+      "domain": "admin",
+      "expected_skill": "admin/picklist-data-integrity",
+      "top_k": 3
+    },
+    {
+      "query": "global value set vs local picklist field",
+      "domain": "admin",
+      "expected_skill": "admin/picklist-data-integrity",
+      "top_k": 3
     }
   ]
 }
