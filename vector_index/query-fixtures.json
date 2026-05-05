@@ -7247,6 +7247,18 @@
       "domain": "architect",
       "expected_skill": "architect/hyperforce-architecture",
       "top_k": 3
+    },
+    {
+      "query": "before save flow vs trigger field update performance",
+      "domain": "admin",
+      "expected_skill": "admin/workflow-field-update-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "workflow rule field update migrate to flow",
+      "domain": "admin",
+      "expected_skill": "admin/workflow-field-update-patterns",
+      "top_k": 3
     }
   ]
 }

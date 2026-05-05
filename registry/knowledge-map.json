@@ -241,7 +241,8 @@
       "admin/user-management",
       "admin/user-story-writing-for-salesforce",
       "admin/validation-rules",
-      "admin/wealth-management-requirements"
+      "admin/wealth-management-requirements",
+      "admin/workflow-field-update-patterns"
     ],
     "agentforce": [
       "agentforce/agent-action-error-handling",
@@ -1562,6 +1563,9 @@
       "flow/flow-transactional-boundaries",
       "flow/record-triggered-flow-patterns"
     ],
+    "after-save-flow": [
+      "admin/workflow-field-update-patterns"
+    ],
     "agent-actions": [
       "agentforce/agent-actions",
       "agentforce/agentforce-tool-use-patterns",
@@ -2020,6 +2024,7 @@
       "agentforce/agent-action-unit-tests"
     ],
     "apex-trigger": [
+      "admin/workflow-field-update-patterns",
       "apex/change-data-capture-apex",
       "apex/entitlement-apex-hooks"
     ],
@@ -2441,7 +2446,8 @@
       "admin/mcae-lead-scoring-and-grading"
     ],
     "automation-selection": [
-      "admin/process-automation-selection"
+      "admin/process-automation-selection",
+      "admin/workflow-field-update-patterns"
     ],
     "automation-studio": [
       "apex/marketing-cloud-data-views",
@@ -2597,6 +2603,9 @@
       "flow/flow-performance-optimization",
       "flow/flow-transactional-boundaries",
       "flow/record-triggered-flow-patterns"
+    ],
+    "before-save-flow": [
+      "admin/workflow-field-update-patterns"
     ],
     "behavioral-triggers": [
       "admin/lead-nurture-journey-design"
@@ -6347,6 +6356,9 @@
     ],
     "field-types": [
       "data/data-model-design-patterns"
+    ],
+    "field-update": [
+      "admin/workflow-field-update-patterns"
     ],
     "field-visibility": [
       "admin/dynamic-forms-migration"
@@ -13934,6 +13946,9 @@
     ],
     "workflow-replacement": [
       "flow/flow-time-based-patterns"
+    ],
+    "workflow-rule-migration": [
+      "admin/workflow-field-update-patterns"
     ],
     "workflow-rule-retirement": [
       "admin/process-automation-selection"
