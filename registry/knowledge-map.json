@@ -75,6 +75,7 @@
       "admin/data-cloud-identity-resolution",
       "admin/data-cloud-provisioning",
       "admin/data-cloud-segmentation",
+      "admin/data-export-service",
       "admin/data-import-and-management",
       "admin/data-model-documentation",
       "admin/data-skew-and-sharing-performance",
@@ -485,6 +486,7 @@
       "architect/high-volume-sales-data-architecture",
       "architect/hipaa-compliance-architecture",
       "architect/hybrid-integration-architecture",
+      "architect/hyperforce-architecture",
       "architect/industries-cloud-selection",
       "architect/industries-data-model",
       "architect/industries-integration-architecture",
@@ -857,6 +859,7 @@
       "lwc/lwc-imperative-apex",
       "lwc/lwc-in-flow-screens",
       "lwc/lwc-internationalization",
+      "lwc/lwc-lds-writes",
       "lwc/lwc-light-dom",
       "lwc/lwc-lightning-modal",
       "lwc/lwc-locker-to-lws-migration",
@@ -2527,6 +2530,9 @@
     "backoff": [
       "integration/retry-and-backoff-patterns"
     ],
+    "backup-strategy": [
+      "admin/data-export-service"
+    ],
     "banking": [
       "architect/banking-lending-architecture"
     ],
@@ -2932,6 +2938,9 @@
     ],
     "cache-aside": [
       "apex/platform-cache"
+    ],
+    "cache-invalidation": [
+      "lwc/lwc-lds-writes"
     ],
     "cache-only-keys": [
       "architect/salesforce-shield-architecture"
@@ -4098,6 +4107,9 @@
     "create-slack-channel": [
       "flow/flow-for-slack"
     ],
+    "createRecord": [
+      "lwc/lwc-lds-writes"
+    ],
     "credentials": [
       "security/service-account-credential-rotation"
     ],
@@ -4229,6 +4241,9 @@
       "data/bulk-api-patterns",
       "data/data-loader-csv-column-mapping",
       "data/data-loader-picklist-validation-pre-load"
+    ],
+    "csv-export": [
+      "admin/data-export-service"
     ],
     "csv-import": [
       "data/data-loader-and-tools",
@@ -4534,6 +4549,9 @@
     "data-export": [
       "data/data-loader-and-tools"
     ],
+    "data-export-service": [
+      "admin/data-export-service"
+    ],
     "data-extension": [
       "apex/ampscript-development",
       "data/data-extension-design",
@@ -4718,6 +4736,7 @@
       "architect/government-cloud-compliance",
       "architect/health-cloud-data-residency",
       "architect/hybrid-integration-architecture",
+      "architect/hyperforce-architecture",
       "architect/multi-org-strategy"
     ],
     "data-retention": [
@@ -5001,6 +5020,9 @@
     ],
     "delegated-administration": [
       "admin/delegated-administration"
+    ],
+    "deleteRecord": [
+      "lwc/lwc-lds-writes"
     ],
     "deletion": [
       "data/batch-data-cleanup-patterns"
@@ -7354,6 +7376,7 @@
     "hyperforce": [
       "architect/government-cloud-compliance",
       "architect/health-cloud-data-residency",
+      "architect/hyperforce-architecture",
       "architect/integration-security-architecture",
       "integration/private-connect-setup",
       "integration/salesforce-functions-replacement"
@@ -7530,6 +7553,9 @@
     "informatica": [
       "data/etl-vs-api-data-patterns",
       "integration/middleware-integration-patterns"
+    ],
+    "infrastructure": [
+      "architect/hyperforce-architecture"
     ],
     "ingestion-api": [
       "admin/data-cloud-provisioning",
@@ -7787,6 +7813,9 @@
     "ip": [
       "security/ip-relaxation-and-restriction"
     ],
+    "ip-allowlisting": [
+      "architect/hyperforce-architecture"
+    ],
     "ip-based-branching": [
       "security/ip-range-and-login-flow-strategy"
     ],
@@ -8025,6 +8054,9 @@
       "lwc/lwc-dynamic-components",
       "omnistudio/omnistudio-performance"
     ],
+    "lds-writes": [
+      "lwc/lwc-lds-writes"
+    ],
     "ldv": [
       "apex/cross-object-formula-and-rollup-performance",
       "apex/formula-field-performance-and-limits",
@@ -8251,7 +8283,8 @@
       "lwc/lwc-quick-actions"
     ],
     "lightning-record-edit-form": [
-      "lwc/lwc-forms-and-validation"
+      "lwc/lwc-forms-and-validation",
+      "lwc/lwc-lds-writes"
     ],
     "lightning-record-form": [
       "lwc/lwc-base-component-recipes"
@@ -8871,6 +8904,7 @@
       "admin/knowledge-classic-to-lightning",
       "admin/mass-transfer-ownership",
       "agentforce/einstein-bots-to-agentforce-migration",
+      "architect/hyperforce-architecture",
       "architect/nonprofit-cloud-vs-npsp-migration",
       "architect/npsp-vs-nonprofit-cloud-decision",
       "data/attachment-to-files-migration",
@@ -8993,6 +9027,9 @@
     ],
     "month-end-close": [
       "data/billing-data-reconciliation"
+    ],
+    "monthly-export": [
+      "admin/data-export-service"
     ],
     "moscow-prioritization": [
       "admin/moscow-prioritization-for-sf-backlog"
@@ -9554,6 +9591,7 @@
     ],
     "operational-excellence": [
       "admin/batch-job-scheduling-and-monitoring",
+      "admin/data-export-service",
       "admin/devops-process-documentation",
       "apex/apex-trigger-bypass-and-killswitch-patterns"
     ],
@@ -11102,6 +11140,9 @@
     ],
     "regex": [
       "apex/apex-string-and-regex"
+    ],
+    "region-selection": [
+      "architect/hyperforce-architecture"
     ],
     "registration-handler": [
       "lwc/experience-cloud-multi-idp-sso"
@@ -13445,6 +13486,9 @@
     "uiGraphQLApi": [
       "integration/graphql-api-patterns"
     ],
+    "uiRecordApi": [
+      "lwc/lwc-lds-writes"
+    ],
     "unable-to-lock-row": [
       "flow/flow-record-locking-and-contention"
     ],
@@ -13494,6 +13538,9 @@
     ],
     "update-records": [
       "flow/flow-cross-object-updates"
+    ],
+    "updateRecord": [
+      "lwc/lwc-lds-writes"
     ],
     "upgrade": [
       "devops/api-version-management"
@@ -13792,6 +13839,9 @@
     ],
     "webstore-catalog": [
       "admin/commerce-product-catalog"
+    ],
+    "weekly-export": [
+      "admin/data-export-service"
     ],
     "welcome-journey": [
       "admin/client-onboarding-design"

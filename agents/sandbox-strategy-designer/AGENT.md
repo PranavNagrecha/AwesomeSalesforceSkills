@@ -16,7 +16,9 @@ output_formats:
 dependencies:
   skills:
     - admin/agent-output-formats
+    - admin/data-export-service
     - admin/sandbox-strategy
+    - architect/hyperforce-architecture
     - devops/environment-strategy
     - devops/sandbox-refresh-and-templates
     - devops/scratch-org-management
@@ -58,6 +60,8 @@ Designs or audits the sandbox + scratch-org strategy for a Salesforce program: w
 7. `skills/devops/scratch-org-pools`
 8. `skills/devops/scratch-org-snapshots` — GA snapshot-based fast bring-up
 9. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+10. `skills/admin/data-export-service` — Data Export role and limits in sandbox-seeding workflows; honest framing of what it does and doesn't cover
+11. `skills/architect/hyperforce-architecture` — Hyperforce migration cadence for production vs sandboxes; refresh window shifts post-migration
 
 ---
 

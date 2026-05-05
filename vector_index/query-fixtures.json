@@ -7193,6 +7193,60 @@
       "domain": "admin",
       "expected_skill": "admin/approval-process-apex-patterns",
       "top_k": 3
+    },
+    {
+      "query": "lwc updateRecord createRecord deleteRecord lightning uiRecordApi",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-lds-writes",
+      "top_k": 3
+    },
+    {
+      "query": "lightning data service write update create delete record lwc",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-lds-writes",
+      "top_k": 3
+    },
+    {
+      "query": "lightning-record-edit-form submit not committing field errors mapping",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-lds-writes",
+      "top_k": 3
+    },
+    {
+      "query": "salesforce data export service weekly export csv schedule limit",
+      "domain": "admin",
+      "expected_skill": "admin/data-export-service",
+      "top_k": 3
+    },
+    {
+      "query": "data export service 48 hour download window expired backup",
+      "domain": "admin",
+      "expected_skill": "admin/data-export-service",
+      "top_k": 3
+    },
+    {
+      "query": "is weekly data export a backup salesforce native restore",
+      "domain": "admin",
+      "expected_skill": "admin/data-export-service",
+      "top_k": 3
+    },
+    {
+      "query": "hyperforce migration first generation infrastructure customer migration",
+      "domain": "architect",
+      "expected_skill": "architect/hyperforce-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "hyperforce region selection data residency ip allowlist update",
+      "domain": "architect",
+      "expected_skill": "architect/hyperforce-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "salesforce hyperforce migration runbook validation test cutover",
+      "domain": "architect",
+      "expected_skill": "architect/hyperforce-architecture",
+      "top_k": 3
     }
   ]
 }

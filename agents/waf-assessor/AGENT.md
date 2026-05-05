@@ -18,6 +18,7 @@ dependencies:
     - admin/agent-output-formats
     - apex/trigger-and-flow-coexistence
     - architect/ha-dr-architecture
+    - architect/hyperforce-architecture
     - architect/limits-and-scalability-planning
     - architect/loyalty-program-architecture
     - architect/nfr-definition-for-salesforce
@@ -72,6 +73,7 @@ Runs a Well-Architected Framework (WAF) assessment against a Salesforce implemen
 14. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 15. `skills/architect/zero-trust-salesforce-patterns` — zero-trust composition pattern: four-leg coverage; RTEM TSP-supported event matrix; CAEP gap
 16. `skills/architect/loyalty-program-architecture` — Loyalty program architecture pillar review (Reliability tier-credit reversal, Scalability lifetime-ledger summary, Security fraud-prevention controls)
+17. `skills/architect/hyperforce-architecture` — Hyperforce-aware reliability and security: region selection, customer-managed-failover assumptions, IP allowlisting
 
 ---
 

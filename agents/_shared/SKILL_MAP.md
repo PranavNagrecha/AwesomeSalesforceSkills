@@ -76,6 +76,7 @@ under the classifier's `Mandatory Reads` section.
 - `admin/record-type-strategy-at-scale`, `admin/record-types-and-page-layouts`
 - `admin/reports-and-dashboards`, `admin/reports-and-dashboards-fundamentals`
 - `admin/report-performance-tuning`, `admin/analytics-permission-and-sharing`
+- `admin/data-export-service` (real-backup-vs-evidence-archive disambiguation)
 - `flow/orchestration-flows`
 - `data/data-quality-and-governance`
 - `devops/metadata-diff-between-sandboxes` (org_drift classifier)
@@ -165,6 +166,7 @@ under the classifier's `Mandatory Reads` section.
 ### `sandbox-strategy-designer`
 - `admin/sandbox-strategy`, `devops/environment-strategy`, `devops/sandbox-refresh-and-templates`
 - `devops/scratch-org-management`, `devops/scratch-org-pools`
+- `admin/data-export-service`, `architect/hyperforce-architecture` (sandbox-vs-prod migration cadence, refresh windows)
 
 ### `release-train-planner`
 - `devops/release-management`, `devops/environment-strategy`, `devops/package-development-strategy`
@@ -174,7 +176,7 @@ under the classifier's `Mandatory Reads` section.
 ### `waf-assessor`
 - `architect/well-architected-review`, `architect/security-architecture-review`
 - `architect/limits-and-scalability-planning`, `architect/nfr-definition-for-salesforce`
-- `architect/ha-dr-architecture`
+- `architect/ha-dr-architecture`, `architect/hyperforce-architecture`
 
 ### `agentforce-action-reviewer`
 - `agentforce/agent-actions`, `agentforce/agent-topic-design`, `agentforce/agent-testing-and-evaluation`
