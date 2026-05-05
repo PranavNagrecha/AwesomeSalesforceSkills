@@ -7295,6 +7295,18 @@
       "domain": "devops",
       "expected_skill": "devops/deployment-error-diagnosis",
       "top_k": 3
+    },
+    {
+      "query": "connected app refresh token revoked first use",
+      "domain": "admin",
+      "expected_skill": "admin/connected-app-troubleshooting",
+      "top_k": 3
+    },
+    {
+      "query": "oauth invalid_grant connected app salesforce",
+      "domain": "admin",
+      "expected_skill": "admin/connected-app-troubleshooting",
+      "top_k": 3
     }
   ]
 }

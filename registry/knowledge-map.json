@@ -53,6 +53,7 @@
       "admin/compliant-data-sharing-setup",
       "admin/compound-field-patterns",
       "admin/configuration-workbook-authoring",
+      "admin/connected-app-troubleshooting",
       "admin/connected-apps-and-auth",
       "admin/consent-management-marketing",
       "admin/consumer-goods-cloud-setup",
@@ -3796,6 +3797,7 @@
       "apex/fsl-service-report-templates"
     ],
     "connected-app": [
+      "admin/connected-app-troubleshooting",
       "admin/integration-admin-connected-apps",
       "agentforce/salesforce-mcp-server-setup",
       "architect/multi-org-strategy",
@@ -7860,6 +7862,7 @@
       "architect/omnistudio-scalability-patterns"
     ],
     "ip-relaxation": [
+      "admin/connected-app-troubleshooting",
       "admin/integration-admin-connected-apps",
       "security/connected-app-security-policies"
     ],
@@ -8438,6 +8441,7 @@
       "security/login-forensics"
     ],
     "login-history": [
+      "admin/connected-app-troubleshooting",
       "admin/integration-user-management",
       "security/login-forensics"
     ],
@@ -9396,6 +9400,7 @@
       "admin/lead-nurture-journey-design"
     ],
     "oauth": [
+      "admin/connected-app-troubleshooting",
       "admin/connected-apps-and-auth",
       "admin/einstein-activity-capture-setup",
       "admin/integration-admin-connected-apps",
@@ -11169,6 +11174,7 @@
       "lwc/lwc-graphql-wire"
     ],
     "refresh-token": [
+      "admin/connected-app-troubleshooting",
       "admin/integration-admin-connected-apps",
       "security/oauth-token-management"
     ],
@@ -12324,6 +12330,9 @@
     ],
     "session-management-and-timeout": [
       "security/session-management-and-timeout"
+    ],
+    "session-revocation": [
+      "admin/connected-app-troubleshooting"
     ],
     "session-security": [
       "security/session-management-and-timeout"
