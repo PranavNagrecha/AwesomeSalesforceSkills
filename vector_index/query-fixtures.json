@@ -7181,6 +7181,18 @@
       "domain": "admin",
       "expected_skill": "admin/picklist-data-integrity",
       "top_k": 3
+    },
+    {
+      "query": "apex submit approval process processsubmitrequest bulk",
+      "domain": "admin",
+      "expected_skill": "admin/approval-process-apex-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "processworkitemrequest approve reject reassign apex",
+      "domain": "admin",
+      "expected_skill": "admin/approval-process-apex-patterns",
+      "top_k": 3
     }
   ]
 }

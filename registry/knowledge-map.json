@@ -21,6 +21,7 @@
       "admin/analytics-requirements-gathering",
       "admin/api-contract-documentation",
       "admin/app-and-tab-configuration",
+      "admin/approval-process-apex-patterns",
       "admin/approval-processes",
       "admin/assignment-rules",
       "admin/b2b-commerce-store-setup",
@@ -1815,6 +1816,7 @@
       "architect/mulesoft-anypoint-architecture"
     ],
     "apex": [
+      "admin/approval-process-apex-patterns",
       "admin/custom-label-management",
       "admin/custom-permissions",
       "agentforce/agent-action-error-handling",
@@ -2132,6 +2134,7 @@
       "admin/cpq-approval-workflows"
     ],
     "approval-process": [
+      "admin/approval-process-apex-patterns",
       "admin/approval-processes",
       "admin/quote-to-cash-requirements"
     ],
@@ -2787,6 +2790,9 @@
     ],
     "bulk-api-v2": [
       "agentforce/sf-to-llm-data-pipelines"
+    ],
+    "bulk-approval": [
+      "admin/approval-process-apex-patterns"
     ],
     "bulk-data-import": [
       "apex/npsp-api-and-integration"
@@ -10471,9 +10477,18 @@
     "process-input": [
       "admin/cpq-guided-selling"
     ],
+    "process-instance": [
+      "admin/approval-process-apex-patterns"
+    ],
     "process-mapping": [
       "admin/process-flow-as-is-to-be",
       "admin/requirements-gathering-for-sf"
+    ],
+    "process-submit-request": [
+      "admin/approval-process-apex-patterns"
+    ],
+    "process-workitem-request": [
+      "admin/approval-process-apex-patterns"
     ],
     "product-attributes": [
       "admin/commerce-catalog-strategy",
