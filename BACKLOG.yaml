@@ -621,13 +621,6 @@
   notes: "admin"
   source_line: 1694
   history: []
-- id: "workflow-field-update-patterns"
-  status: "TODO"
-  skill: "workflow-field-update-patterns"
-  summary: "Field update patterns across automation tools: before-save flow vs after-save trigger, cross-object updates, field update order, re-evaluation patterns. NOT for trigger order-of-execution."
-  notes: "admin"
-  source_line: 1695
-  history: []
 - id: "apex-webservice-annotation"
   status: "TODO"
   skill: "apex-webservice-annotation"
