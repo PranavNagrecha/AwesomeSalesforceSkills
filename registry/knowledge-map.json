@@ -742,6 +742,7 @@
       "flow/flow-screen-input-validation-patterns",
       "flow/flow-screen-lwc-components",
       "flow/flow-testing",
+      "flow/flow-time-based-patterns",
       "flow/flow-transaction-finalizer-patterns",
       "flow/flow-transactional-boundaries",
       "flow/flow-versioning-strategy",
@@ -6490,6 +6491,7 @@
       "flow/flow-rollback-patterns",
       "flow/flow-runtime-context-and-sharing",
       "flow/flow-runtime-error-diagnosis",
+      "flow/flow-time-based-patterns",
       "flow/flow-transaction-finalizer-patterns",
       "flow/flow-transactional-boundaries",
       "flow/flow-versioning-strategy",
@@ -11778,6 +11780,9 @@
       "apex/apex-scheduled-jobs",
       "architect/org-limits-monitoring"
     ],
+    "scheduled-flow": [
+      "flow/flow-time-based-patterns"
+    ],
     "scheduled-flows": [
       "flow/scheduled-flows"
     ],
@@ -11786,6 +11791,7 @@
       "devops/sandbox-data-isolation-gotchas"
     ],
     "scheduled-path": [
+      "flow/flow-time-based-patterns",
       "flow/flow-transactional-boundaries"
     ],
     "scheduled-paths": [
@@ -13129,6 +13135,9 @@
     "tiering": [
       "admin/usage-based-pricing-setup"
     ],
+    "time-based": [
+      "flow/flow-time-based-patterns"
+    ],
     "time-based-automation": [
       "admin/escalation-rules"
     ],
@@ -13690,6 +13699,7 @@
       "devops/vscode-salesforce-extensions"
     ],
     "wait-element": [
+      "flow/flow-time-based-patterns",
       "flow/pause-elements-and-wait-events"
     ],
     "wait-events": [
@@ -13837,6 +13847,9 @@
     ],
     "workflow-automation": [
       "integration/slack-workflow-builder"
+    ],
+    "workflow-replacement": [
+      "flow/flow-time-based-patterns"
     ],
     "workflow-rule-retirement": [
       "admin/process-automation-selection"

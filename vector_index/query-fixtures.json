@@ -7145,6 +7145,18 @@
       "domain": "flow",
       "expected_skill": "flow/flow-error-notification-patterns",
       "top_k": 3
+    },
+    {
+      "query": "flow scheduled path record triggered delay reminder",
+      "domain": "flow",
+      "expected_skill": "flow/flow-time-based-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "flow scheduled path recheck entry condition",
+      "domain": "flow",
+      "expected_skill": "flow/flow-time-based-patterns",
+      "top_k": 3
     }
   ]
 }
