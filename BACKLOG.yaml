@@ -782,13 +782,6 @@
   notes: "security"
   source_line: 1792
   history: []
-- id: "deployment-error-diagnosis"
-  status: "TODO"
-  skill: "deployment-error-diagnosis"
-  summary: "Common deployment error patterns: \"Cannot change type\", dependent metadata ordering, profile delta issues, missing references, flow version conflicts, test class failures. NOT for deployment process."
-  notes: "devops"
-  source_line: 1793
-  history: []
 - id: "change-set-dependency-patterns"
   status: "TODO"
   skill: "change-set-dependency-patterns"

@@ -653,6 +653,7 @@
       "devops/cross-cloud-deployment-patterns",
       "devops/cumulusci-automation",
       "devops/data-seeding-for-testing",
+      "devops/deployment-error-diagnosis",
       "devops/deployment-error-troubleshooting",
       "devops/deployment-monitoring",
       "devops/destructive-changes-deployment",
@@ -5072,6 +5073,9 @@
     "dependency-management": [
       "devops/multi-package-development"
     ],
+    "dependency-order": [
+      "devops/deployment-error-diagnosis"
+    ],
     "dependent-picklist": [
       "admin/field-dependency-and-controlling",
       "admin/picklist-and-value-sets",
@@ -5113,6 +5117,7 @@
       "devops/cpq-deployment-administration",
       "devops/cpq-deployment-patterns",
       "devops/cross-cloud-deployment-patterns",
+      "devops/deployment-error-diagnosis",
       "devops/deployment-error-troubleshooting",
       "devops/destructive-changes-deployment",
       "devops/experience-cloud-deployment-admin",
@@ -5872,6 +5877,7 @@
       "integration/api-error-handling-design"
     ],
     "error-diagnosis": [
+      "devops/deployment-error-diagnosis",
       "flow/flow-runtime-error-diagnosis"
     ],
     "error-handling": [
@@ -8859,6 +8865,7 @@
       "apex/metadata-api-and-package-xml",
       "architect/metadata-coverage-and-dependencies",
       "devops/cross-cloud-deployment-patterns",
+      "devops/deployment-error-diagnosis",
       "devops/deployment-error-troubleshooting",
       "devops/deployment-monitoring",
       "devops/experience-cloud-deployment-admin",
@@ -12367,6 +12374,7 @@
       "apex/apex-execute-anonymous",
       "apex/sf-cli-and-sfdx-essentials",
       "devops/bitbucket-pipelines-for-salesforce",
+      "devops/deployment-error-diagnosis",
       "devops/destructive-changes-deployment",
       "devops/environment-specific-value-injection",
       "devops/git-branching-for-salesforce",
@@ -13165,6 +13173,9 @@
     ],
     "test-case": [
       "admin/uat-test-case-design"
+    ],
+    "test-coverage": [
+      "devops/deployment-error-diagnosis"
     ],
     "test-data": [
       "devops/data-seeding-for-testing",
