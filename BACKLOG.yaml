@@ -705,13 +705,6 @@
   notes: "flow"
   source_line: 1758
   history: []
-- id: "approval-process-apex-patterns"
-  status: "TODO"
-  skill: "approval-process-apex-patterns"
-  summary: "Approval process Apex: ProcessSubmitRequest, ProcessWorkitemRequest, approval recall, reassignment, approval history queries, Approval.process limitations. NOT for approval process UI setup."
-  notes: "admin"
-  source_line: 1769
-  history: []
 - id: "report-and-dashboard-subscriptions"
   status: "TODO"
   skill: "report-and-dashboard-subscriptions"
