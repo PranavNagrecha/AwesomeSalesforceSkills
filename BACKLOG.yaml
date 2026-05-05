@@ -761,13 +761,6 @@
   notes: "admin"
   source_line: 1776
   history: []
-- id: "flow-orchestration-patterns"
-  status: "TODO"
-  skill: "flow-orchestration-patterns"
-  summary: "Flow Orchestration: stages, steps, interactive vs background, work items, assigned user determination, evaluation flows, orchestration monitoring. NOT for basic flow building."
-  notes: "admin"
-  source_line: 1777
-  history: []
 - id: "feedback-management-setup"
   status: "TODO"
   skill: "feedback-management-setup"
