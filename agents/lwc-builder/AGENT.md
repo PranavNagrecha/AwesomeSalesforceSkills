@@ -43,6 +43,7 @@ dependencies:
     - lwc/lwc-imperative-apex
     - lwc/lwc-in-flow-screens
     - lwc/lwc-internationalization
+    - lwc/lwc-lds-writes
     - lwc/lwc-light-dom
     - lwc/lwc-lightning-modal
     - lwc/lwc-locker-to-lws-migration
@@ -126,71 +127,72 @@ Produces a full Lightning Web Component bundle for a described feature: `.js`, `
 16. `skills/lwc/lwc-imperative-apex`
 17. `skills/lwc/lwc-async-patterns` — async work outside `connectedCallback`
 18. `skills/lwc/lwc-state-management`
+19. `skills/lwc/lwc-lds-writes` — writes via lightning/uiRecordApi (createRecord, updateRecord, deleteRecord) and lightning-record-edit-form: recordInput shape, error envelope, refresh strategy
 
 ### Events, messaging, navigation
-19. `skills/lwc/lwc-custom-event-patterns` — bubbles / composed / cancelable choices
-20. `skills/lwc/message-channel-patterns` — Lightning Message Service for cross-tree fan-out
-21. `skills/lwc/lwc-navigation-mixin` — programmatic page transitions
-22. `skills/lwc/navigation-and-routing`
-23. `skills/lwc/lwc-cross-tab-state-sync` — BroadcastChannel / storage event for cross-window sync
-24. `skills/lwc/lightning-navigation-dead-link-handling` — pre-check + fallback for inaccessible navigation targets
+20. `skills/lwc/lwc-custom-event-patterns` — bubbles / composed / cancelable choices
+21. `skills/lwc/message-channel-patterns` — Lightning Message Service for cross-tree fan-out
+22. `skills/lwc/lwc-navigation-mixin` — programmatic page transitions
+23. `skills/lwc/navigation-and-routing`
+24. `skills/lwc/lwc-cross-tab-state-sync` — BroadcastChannel / storage event for cross-window sync
+25. `skills/lwc/lightning-navigation-dead-link-handling` — pre-check + fallback for inaccessible navigation targets
 
 ### Forms, datatables, modals, files, charts
-25. `skills/lwc/lwc-forms-and-validation`
-26. `skills/lwc/lwc-record-picker` — `lightning-record-picker` over hand-rolled lookup
-27. `skills/lwc/lwc-data-table`
-28. `skills/lwc/lwc-custom-datatable-types` — when the bundle subclasses `LightningDatatable`
-29. `skills/lwc/lwc-modal-and-overlay`
-30. `skills/lwc/lwc-lightning-modal` — `LightningModal` over hand-rolled overlay backdrops
-31. `skills/lwc/file-upload-patterns`
-32. `skills/lwc/lwc-chart-and-visualization`
-33. `skills/lwc/drag-and-drop`
-34. `skills/lwc/virtualized-lists` — render budgets for >500 visible rows
+26. `skills/lwc/lwc-forms-and-validation`
+27. `skills/lwc/lwc-record-picker` — `lightning-record-picker` over hand-rolled lookup
+28. `skills/lwc/lwc-data-table`
+29. `skills/lwc/lwc-custom-datatable-types` — when the bundle subclasses `LightningDatatable`
+30. `skills/lwc/lwc-modal-and-overlay`
+31. `skills/lwc/lwc-lightning-modal` — `LightningModal` over hand-rolled overlay backdrops
+32. `skills/lwc/file-upload-patterns`
+33. `skills/lwc/lwc-chart-and-visualization`
+34. `skills/lwc/drag-and-drop`
+35. `skills/lwc/virtualized-lists` — render budgets for >500 visible rows
 
 ### Accessibility, i18n, focus, toasts
-35. `skills/lwc/lwc-accessibility-patterns`
-36. `skills/lwc/lwc-accessibility`
-37. `skills/lwc/lwc-focus-management`
-38. `skills/lwc/lwc-internationalization`
-39. `skills/lwc/lwc-show-toast-patterns`
-40. `skills/lwc/lwc-toast-and-notifications`
+36. `skills/lwc/lwc-accessibility-patterns`
+37. `skills/lwc/lwc-accessibility`
+38. `skills/lwc/lwc-focus-management`
+39. `skills/lwc/lwc-internationalization`
+40. `skills/lwc/lwc-show-toast-patterns`
+41. `skills/lwc/lwc-toast-and-notifications`
 
 ### Styling, DOM mode, interop
-41. `skills/lwc/lwc-styling-hooks` — restyling base-component interiors via documented hooks only
-42. `skills/lwc/lwc-light-dom` — third-party DOM libs / SEO-indexable markup
-43. `skills/lwc/lwc-shadow-vs-light-dom-decision` — `static renderMode` decision
-44. `skills/lwc/lwc-web-components-interop`
-45. `skills/lwc/static-resources-in-lwc`
+42. `skills/lwc/lwc-styling-hooks` — restyling base-component interiors via documented hooks only
+43. `skills/lwc/lwc-light-dom` — third-party DOM libs / SEO-indexable markup
+44. `skills/lwc/lwc-shadow-vs-light-dom-decision` — `static renderMode` decision
+45. `skills/lwc/lwc-web-components-interop`
+46. `skills/lwc/static-resources-in-lwc`
 
 ### Performance, errors, debugging
-46. `skills/lwc/lwc-performance`
-47. `skills/lwc/lwc-performance-budgets`
-48. `skills/lwc/lwc-error-boundaries`
-49. `skills/lwc/common-lwc-runtime-errors`
-50. `skills/lwc/lwc-debugging-devtools` — diagnosability notes; no `console.log` of `@wire` proxies
+47. `skills/lwc/lwc-performance`
+48. `skills/lwc/lwc-performance-budgets`
+49. `skills/lwc/lwc-error-boundaries`
+50. `skills/lwc/common-lwc-runtime-errors`
+51. `skills/lwc/lwc-debugging-devtools` — diagnosability notes; no `console.log` of `@wire` proxies
 
 ### Security
-51. `skills/lwc/lwc-security`
-52. `skills/lwc/lwc-locker-to-lws-migration` — when org has migrated to LWS, drop Locker workarounds
+52. `skills/lwc/lwc-security`
+53. `skills/lwc/lwc-locker-to-lws-migration` — when org has migrated to LWS, drop Locker workarounds
 
 ### Specialized surfaces
-53. `skills/lwc/lwc-quick-actions` — when `binding_kind=record-action`
-54. `skills/lwc/lwc-in-flow-screens` — when `binding_kind=flow-screen`
-55. `skills/lwc/custom-property-editor-for-flow` — Flow CPE LWC builds
-56. `skills/lwc/lwc-server-sent-events` — long-running server push channels
-57. `skills/lwc/lwc-offline-and-mobile`
-58. `skills/lwc/aura-to-lwc-migration` — when porting an Aura precursor
+54. `skills/lwc/lwc-quick-actions` — when `binding_kind=record-action`
+55. `skills/lwc/lwc-in-flow-screens` — when `binding_kind=flow-screen`
+56. `skills/lwc/custom-property-editor-for-flow` — Flow CPE LWC builds
+57. `skills/lwc/lwc-server-sent-events` — long-running server push channels
+58. `skills/lwc/lwc-offline-and-mobile`
+59. `skills/lwc/aura-to-lwc-migration` — when porting an Aura precursor
 
 ### Testing
-59. `skills/lwc/lwc-testing`
+60. `skills/lwc/lwc-testing`
 
 ### Templates (canonical building blocks)
-60. `templates/lwc/component-skeleton/`
-61. `templates/lwc/patterns/` — incl. `graphqlWirePattern.js`, `quickActionPattern.js`, `slotsCompositionPattern.html`, `datatableCustomTypePattern.html`
-62. `templates/lwc/jest.config.js`
-63. `templates/apex/BaseService.cls` — if a controller class is emitted
-64. `templates/apex/SecurityUtils.cls`
-65. `skills/lwc/lwc-reactive-state-patterns` — use post–Spring '20 reactivity rules when generating components; never @track primitives; guard renderedCallback writes
+61. `templates/lwc/component-skeleton/`
+62. `templates/lwc/patterns/` — incl. `graphqlWirePattern.js`, `quickActionPattern.js`, `slotsCompositionPattern.html`, `datatableCustomTypePattern.html`
+63. `templates/lwc/jest.config.js`
+64. `templates/apex/BaseService.cls` — if a controller class is emitted
+65. `templates/apex/SecurityUtils.cls`
+66. `skills/lwc/lwc-reactive-state-patterns` — use post–Spring '20 reactivity rules when generating components; never @track primitives; guard renderedCallback writes
 
 ---
 
