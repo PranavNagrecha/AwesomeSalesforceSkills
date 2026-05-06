@@ -7307,6 +7307,18 @@
       "domain": "admin",
       "expected_skill": "admin/connected-app-troubleshooting",
       "top_k": 3
+    },
+    {
+      "query": "schema getGlobalDescribe loop hot path CPU describe",
+      "domain": "apex",
+      "expected_skill": "apex/apex-schema-describe",
+      "top_k": 3
+    },
+    {
+      "query": "getPicklistValues isActive filter inactive picklist apex describe",
+      "domain": "apex",
+      "expected_skill": "apex/apex-schema-describe",
+      "top_k": 3
     }
   ]
 }

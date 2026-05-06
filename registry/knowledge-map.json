@@ -337,6 +337,7 @@
       "apex/apex-salesforce-id-patterns",
       "apex/apex-savepoint-and-rollback",
       "apex/apex-scheduled-jobs",
+      "apex/apex-schema-describe",
       "apex/apex-secrets-and-protected-cmdt",
       "apex/apex-security-patterns",
       "apex/apex-soql-relationship-queries",
@@ -5171,6 +5172,9 @@
     "deprecation": [
       "devops/api-version-management"
     ],
+    "describe": [
+      "apex/apex-schema-describe"
+    ],
     "design-attributes": [
       "lwc/lwc-app-builder-config",
       "lwc/lwc-public-api-hardening"
@@ -5486,6 +5490,9 @@
     "dynamic-actions": [
       "admin/dynamic-forms-and-actions",
       "admin/lightning-app-builder-advanced"
+    ],
+    "dynamic-apex": [
+      "apex/apex-schema-describe"
     ],
     "dynamic-components": [
       "lwc/lwc-performance"
@@ -6334,6 +6341,7 @@
     ],
     "field-level-security": [
       "admin/custom-field-creation",
+      "apex/apex-schema-describe",
       "apex/field-level-security-in-async-contexts"
     ],
     "field-metadata": [
@@ -11935,6 +11943,9 @@
     "scheduling-policy": [
       "admin/fsl-scheduling-policies"
     ],
+    "schema": [
+      "apex/apex-schema-describe"
+    ],
     "schema-describe": [
       "admin/record-type-id-management",
       "apex/apex-hardcoded-id-elimination",
@@ -12674,6 +12685,7 @@
       "integration/composite-api-patterns"
     ],
     "sobject-type": [
+      "apex/apex-schema-describe",
       "apex/apex-switch-on-sobject"
     ],
     "sobjectaccessdecision": [
