@@ -31,6 +31,7 @@ outputs:
   - "UTAM test scaffold for end-to-end automation (if required)"
   - "Checklist of Preview-mode gaps that require environment-level verification"
 dependencies: []
+runtime_orphan: true
 version: 1.0.0
 author: Pranav Nagrecha
 updated: 2026-04-12

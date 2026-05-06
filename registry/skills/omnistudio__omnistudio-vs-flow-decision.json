@@ -54,7 +54,7 @@
     "f9e5a94fab464bd5dcf1",
     "fe7fb72644813d782a8c"
   ],
-  "content_hash": "29fdbe1f88d029df60f155befe60bb5b5ffa9457deec948fca6b7d44e69f08e4",
+  "content_hash": "dbf3cdc6e135313621ef5c93522d2a8f78b4a05727179dfc61120a628a281a35",
   "dependencies": [],
   "description": "Use when choosing between OmniStudio (OmniScript / Integration Procedure / FlexCard / DataRaptor) and Flow / Screen Flow / Apex for a given capability. Triggers: 'omnistudio or flow', 'omniscript vs screen flow', 'integration procedure vs subflow', 'flexcard vs lightning page'. NOT for general automation selection across Workflow/Process Builder/Apex (see automation-selection tree).",
   "file_location": "skills/omnistudio/omnistudio-vs-flow-decision",

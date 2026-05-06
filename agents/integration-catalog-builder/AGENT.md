@@ -23,18 +23,58 @@ dependencies:
     - architect/integration-framework-design
     - architect/integration-security-architecture
     - data/data-virtualization-patterns
+    - integration/api-error-handling-design
     - integration/api-governance-and-rate-limits
+    - integration/api-led-connectivity
     - integration/api-versioning-strategy
+    - integration/aws-salesforce-patterns
     - integration/azure-salesforce-patterns
+    - integration/callout-limits-and-async-patterns
+    - integration/change-data-capture-integration
+    - integration/composite-api-patterns
     - integration/connect-rest-api-patterns
+    - integration/data-cloud-activation-development
+    - integration/data-cloud-ingestion-api
+    - integration/data-cloud-integration-strategy
+    - integration/data-cloud-query-api
     - integration/data-cloud-zero-copy-federation
+    - integration/error-handling-in-integrations
+    - integration/event-driven-architecture-patterns
+    - integration/event-relay-configuration
+    - integration/file-and-document-integration
+    - integration/graphql-api-patterns
+    - integration/heroku-salesforce-integration
+    - integration/loyalty-management-setup
+    - integration/middleware-integration-patterns
+    - integration/mulesoft-salesforce-connector
     - integration/mutual-tls-callouts
     - integration/named-credentials-setup
     - integration/oauth-flows-and-connected-apps
+    - integration/outbound-messages-and-callbacks
+    - integration/outbound-webhook-from-salesforce
+    - integration/platform-event-publish-patterns
     - integration/platform-event-schema-evolution
+    - integration/platform-events-integration
     - integration/private-connect-setup
+    - integration/pub-sub-api-patterns
+    - integration/real-time-vs-batch-integration
+    - integration/rest-api-pagination-patterns
+    - integration/rest-api-patterns
+    - integration/retry-and-backoff-patterns
+    - integration/revenue-lifecycle-management
+    - integration/salesforce-connect-external-objects
     - integration/salesforce-data-pipeline-etl
+    - integration/salesforce-functions-replacement
+    - integration/salesforce-to-salesforce-integration
+    - integration/sis-integration-patterns
+    - integration/slack-connect-patterns
+    - integration/slack-salesforce-integration-setup
+    - integration/slack-workflow-builder
+    - integration/soap-api-patterns
+    - integration/streaming-api-and-pushtopic
     - integration/sustainability-reporting
+    - integration/tableau-salesforce-connector
+    - integration/webhook-inbound-patterns
     - integration/webhook-signature-verification
     - security/certificate-and-key-management
     - security/connected-app-security-policies
@@ -89,6 +129,46 @@ Builds a catalog of every live integration endpoint reachable from the org: Name
 24. `skills/apex/apex-jwt-bearer-flow` — JWT bearer flow for server-to-server auth, signed assertions
 25. `skills/data/data-virtualization-patterns` — Salesforce Connect, External Objects, OData adapter
 26. `skills/integration/sustainability-reporting` — Net Zero Cloud / sustainability data integration
+27. `skills/integration/api-error-handling-design` — Api error handling design
+28. `skills/integration/api-led-connectivity` — Api led connectivity
+29. `skills/integration/aws-salesforce-patterns` — Aws salesforce patterns
+30. `skills/integration/callout-limits-and-async-patterns` — Callout limits and async patterns
+31. `skills/integration/change-data-capture-integration` — Change data capture integration
+32. `skills/integration/composite-api-patterns` — Composite api patterns
+33. `skills/integration/data-cloud-activation-development` — Data cloud activation development
+34. `skills/integration/data-cloud-ingestion-api` — Data cloud ingestion api
+35. `skills/integration/data-cloud-integration-strategy` — Data cloud integration strategy
+36. `skills/integration/data-cloud-query-api` — Data cloud query api
+37. `skills/integration/error-handling-in-integrations` — Error handling in integrations
+38. `skills/integration/event-driven-architecture-patterns` — Event driven architecture patterns
+39. `skills/integration/event-relay-configuration` — Event relay configuration
+40. `skills/integration/file-and-document-integration` — File and document integration
+41. `skills/integration/graphql-api-patterns` — Graphql api patterns
+42. `skills/integration/heroku-salesforce-integration` — Heroku salesforce integration
+43. `skills/integration/loyalty-management-setup` — Loyalty management setup
+44. `skills/integration/middleware-integration-patterns` — Middleware integration patterns
+45. `skills/integration/mulesoft-salesforce-connector` — Mulesoft salesforce connector
+46. `skills/integration/outbound-messages-and-callbacks` — Outbound messages and callbacks
+47. `skills/integration/outbound-webhook-from-salesforce` — Outbound webhook from salesforce
+48. `skills/integration/platform-event-publish-patterns` — Platform event publish patterns
+49. `skills/integration/platform-events-integration` — Platform events integration
+50. `skills/integration/pub-sub-api-patterns` — Pub sub api patterns
+51. `skills/integration/real-time-vs-batch-integration` — Real time vs batch integration
+52. `skills/integration/rest-api-pagination-patterns` — Rest api pagination patterns
+53. `skills/integration/rest-api-patterns` — Rest api patterns
+54. `skills/integration/retry-and-backoff-patterns` — Retry and backoff patterns
+55. `skills/integration/revenue-lifecycle-management` — Revenue lifecycle management
+56. `skills/integration/salesforce-connect-external-objects` — Salesforce connect external objects
+57. `skills/integration/salesforce-functions-replacement` — Salesforce functions replacement
+58. `skills/integration/salesforce-to-salesforce-integration` — Salesforce to salesforce integration
+59. `skills/integration/sis-integration-patterns` — Sis integration patterns
+60. `skills/integration/slack-connect-patterns` — Slack connect patterns
+61. `skills/integration/slack-salesforce-integration-setup` — Slack salesforce integration setup
+62. `skills/integration/slack-workflow-builder` — Slack workflow builder
+63. `skills/integration/soap-api-patterns` — Soap api patterns
+64. `skills/integration/streaming-api-and-pushtopic` — Streaming api and pushtopic
+65. `skills/integration/tableau-salesforce-connector` — Tableau salesforce connector
+66. `skills/integration/webhook-inbound-patterns` — Webhook inbound patterns
 
 ---
 

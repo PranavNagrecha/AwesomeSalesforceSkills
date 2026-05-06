@@ -20,13 +20,66 @@ dependencies:
     - admin/object-creation-and-design
     - architect/high-volume-sales-data-architecture
     - architect/solution-design-patterns
+    - data/ai-training-data-preparation
+    - data/analytics-data-governance
+    - data/analytics-data-preparation
+    - data/analytics-dataset-optimization
+    - data/analytics-external-data
+    - data/billing-data-reconciliation
+    - data/cdc-data-sync-patterns
+    - data/clinical-data-quality
+    - data/commerce-analytics-data
+    - data/commerce-inventory-data
+    - data/community-analytics-data
+    - data/consent-data-model-health
+    - data/cpq-data-model
+    - data/cpq-performance-optimization
+    - data/crm-analytics-security-predicates
     - data/currency-management-patterns
+    - data/data-archival-strategies
+    - data/data-cloud-consent-and-privacy
+    - data/data-cloud-data-model-objects
+    - data/data-cloud-data-streams
+    - data/data-extension-design
     - data/data-model-design-patterns
+    - data/data-reconciliation-patterns
     - data/data-virtualization-patterns
+    - data/deployment-data-dependencies
+    - data/eda-data-model-and-patterns
+    - data/einstein-analytics-data-model
+    - data/external-data-and-big-objects
     - data/external-id-strategy
+    - data/external-user-data-sharing
+    - data/financial-data-quality
+    - data/fsc-data-model
+    - data/fsl-reporting-data-model
+    - data/fsl-resource-and-skill-data
+    - data/fsl-territory-data-setup
+    - data/gift-history-import
+    - data/health-cloud-data-model
+    - data/marketing-cloud-data-sync
+    - data/marketing-cloud-sql-queries
+    - data/multi-currency-and-advanced-currency-management
+    - data/nonprofit-data-architecture
+    - data/nonprofit-data-quality
+    - data/npsp-data-model
+    - data/omni-channel-reporting-data
+    - data/omnistudio-metadata-management
+    - data/partner-data-access-patterns
+    - data/product-catalog-data-model
+    - data/revenue-cloud-data-model
     - data/roll-up-summary-alternatives
+    - data/sales-reporting-data-model
     - data/salesforce-backup-and-restore
     - data/salesforce-files-architecture
+    - data/sandbox-refresh-data-strategies
+    - data/service-data-archival
+    - data/service-metrics-data-model
+    - data/sosl-search-patterns
+    - data/subscriber-data-management
+    - data/territory-data-alignment
+    - data/vector-database-management
+    - data/volunteer-management-requirements
   shared:
     - AGENT_CONTRACT.md
     - AGENT_RULES.md
@@ -66,6 +119,59 @@ Reviews the data model of a target domain (a parent object + its descendants, or
 12. `skills/data/data-virtualization-patterns` — Salesforce Connect, External Objects, OData adapter
 13. `skills/data/currency-management-patterns` — Multi-currency, dated exchange rates
 14. `skills/data/salesforce-files-architecture` — ContentVersion, ContentDocument, ContentDocumentLink architecture
+15. `skills/data/ai-training-data-preparation` — Ai training data preparation
+16. `skills/data/analytics-data-governance` — Analytics data governance
+17. `skills/data/analytics-data-preparation` — Analytics data preparation
+18. `skills/data/analytics-dataset-optimization` — Analytics dataset optimization
+19. `skills/data/analytics-external-data` — Analytics external data
+20. `skills/data/billing-data-reconciliation` — Billing data reconciliation
+21. `skills/data/cdc-data-sync-patterns` — Cdc data sync patterns
+22. `skills/data/clinical-data-quality` — Clinical data quality
+23. `skills/data/commerce-analytics-data` — Commerce analytics data
+24. `skills/data/commerce-inventory-data` — Commerce inventory data
+25. `skills/data/community-analytics-data` — Community analytics data
+26. `skills/data/consent-data-model-health` — Consent data model health
+27. `skills/data/cpq-data-model` — Cpq data model
+28. `skills/data/cpq-performance-optimization` — Cpq performance optimization
+29. `skills/data/crm-analytics-security-predicates` — Crm analytics security predicates
+30. `skills/data/data-archival-strategies` — Data archival strategies
+31. `skills/data/data-cloud-consent-and-privacy` — Data cloud consent and privacy
+32. `skills/data/data-cloud-data-model-objects` — Data cloud data model objects
+33. `skills/data/data-cloud-data-streams` — Data cloud data streams
+34. `skills/data/data-extension-design` — Data extension design
+35. `skills/data/data-reconciliation-patterns` — Data reconciliation patterns
+36. `skills/data/deployment-data-dependencies` — Deployment data dependencies
+37. `skills/data/eda-data-model-and-patterns` — Eda data model and patterns
+38. `skills/data/einstein-analytics-data-model` — Einstein analytics data model
+39. `skills/data/external-data-and-big-objects` — External data and big objects
+40. `skills/data/external-user-data-sharing` — External user data sharing
+41. `skills/data/financial-data-quality` — Financial data quality
+42. `skills/data/fsc-data-model` — Fsc data model
+43. `skills/data/fsl-reporting-data-model` — Fsl reporting data model
+44. `skills/data/fsl-resource-and-skill-data` — Fsl resource and skill data
+45. `skills/data/fsl-territory-data-setup` — Fsl territory data setup
+46. `skills/data/gift-history-import` — Gift history import
+47. `skills/data/health-cloud-data-model` — Health cloud data model
+48. `skills/data/marketing-cloud-data-sync` — Marketing cloud data sync
+49. `skills/data/marketing-cloud-sql-queries` — Marketing cloud sql queries
+50. `skills/data/multi-currency-and-advanced-currency-management` — Multi currency and advanced currency management
+51. `skills/data/nonprofit-data-architecture` — Nonprofit data architecture
+52. `skills/data/nonprofit-data-quality` — Nonprofit data quality
+53. `skills/data/npsp-data-model` — Npsp data model
+54. `skills/data/omni-channel-reporting-data` — Omni channel reporting data
+55. `skills/data/omnistudio-metadata-management` — Omnistudio metadata management
+56. `skills/data/partner-data-access-patterns` — Partner data access patterns
+57. `skills/data/product-catalog-data-model` — Product catalog data model
+58. `skills/data/revenue-cloud-data-model` — Revenue cloud data model
+59. `skills/data/sales-reporting-data-model` — Sales reporting data model
+60. `skills/data/sandbox-refresh-data-strategies` — Sandbox refresh data strategies
+61. `skills/data/service-data-archival` — Service data archival
+62. `skills/data/service-metrics-data-model` — Service metrics data model
+63. `skills/data/sosl-search-patterns` — Sosl search patterns
+64. `skills/data/subscriber-data-management` — Subscriber data management
+65. `skills/data/territory-data-alignment` — Territory data alignment
+66. `skills/data/vector-database-management` — Vector database management
+67. `skills/data/volunteer-management-requirements` — Volunteer management requirements
 
 ---
 

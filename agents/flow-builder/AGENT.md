@@ -35,8 +35,10 @@ dependencies:
     - flow/flow-element-naming-conventions
     - flow/flow-email-and-notifications
     - flow/flow-error-monitoring
+    - flow/flow-error-notification-patterns
     - flow/flow-external-services
     - flow/flow-for-experience-cloud
+    - flow/flow-for-slack
     - flow/flow-formula-and-expression-patterns
     - flow/flow-get-records-optimization
     - flow/flow-governance
@@ -46,6 +48,7 @@ dependencies:
     - flow/flow-invocable-from-apex
     - flow/flow-large-data-volume-patterns
     - flow/flow-loop-element-patterns
+    - flow/flow-migration-from-trigger
     - flow/flow-performance-optimization
     - flow/flow-platform-events-integration
     - flow/flow-reactive-screen-components
@@ -58,16 +61,19 @@ dependencies:
     - flow/flow-screen-input-validation-patterns
     - flow/flow-screen-lwc-components
     - flow/flow-testing
+    - flow/flow-time-based-patterns
     - flow/flow-transaction-finalizer-patterns
     - flow/flow-transactional-boundaries
     - flow/flow-versioning-strategy
     - flow/orchestration-flows
+    - flow/process-builder-to-flow-migration
     - flow/record-triggered-flow-patterns
     - flow/recursion-and-re-entry-prevention
     - flow/scheduled-flows
     - flow/screen-flow-accessibility
     - flow/screen-flows
     - flow/subflows-and-reusability
+    - flow/workflow-rule-to-flow-migration
   shared:
     - AGENT_CONTRACT.md
     - AGENT_RULES.md
@@ -172,6 +178,12 @@ Given a business requirement, designs the correct Flow: Flow type (record-trigge
 60. `agents/_shared/probes/flow-references-to-field.md` — when the design touches a field that may already be referenced by other flows (blast-radius preflight)
 61. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 62. `skills/flow/recursion-and-re-entry-prevention` — Record-triggered Flow recursion guards: state-tracking field, hash idempotency, or shared lock — not Apex static flags
+63. `skills/flow/flow-error-notification-patterns` — Flow error notification patterns
+64. `skills/flow/flow-for-slack` — Flow for slack
+65. `skills/flow/flow-migration-from-trigger` — Flow migration from trigger
+66. `skills/flow/flow-time-based-patterns` — Flow time based patterns
+67. `skills/flow/process-builder-to-flow-migration` — Process builder to flow migration
+68. `skills/flow/workflow-rule-to-flow-migration` — Workflow rule to flow migration
 
 ---
 

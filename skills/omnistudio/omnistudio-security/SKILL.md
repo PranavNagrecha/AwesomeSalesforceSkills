@@ -28,6 +28,7 @@ outputs:
   - "guest and external-user hardening guidance"
   - "data exposure and secure-boundary recommendations"
 dependencies: []
+runtime_orphan: true
 version: 1.0.0
 author: Pranav Nagrecha
 updated: 2026-03-13

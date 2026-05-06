@@ -24,9 +24,14 @@ dependencies:
     - admin/data-import-and-management
     - admin/data-skew-and-sharing-performance
     - admin/duplicate-management
+    - data/attachment-to-files-migration
     - data/batch-data-cleanup-patterns
     - data/bulk-api-and-large-data-loads
     - data/bulk-api-patterns
+    - data/case-history-migration
+    - data/commerce-order-history-migration
+    - data/community-user-data-migration
+    - data/constituent-data-migration
     - data/custom-index-requests
     - data/data-loader-and-tools
     - data/data-loader-batch-window-sizing
@@ -36,8 +41,18 @@ dependencies:
     - data/data-storage-management
     - data/external-id-strategy
     - data/field-history-tracking
+    - data/financial-account-migration
+    - data/fsl-work-order-migration
+    - data/historical-order-migration
+    - data/industries-data-migration
     - data/large-scale-deduplication
     - data/lead-data-import-and-dedup
+    - data/mcae-prospect-data-migration
+    - data/omnistudio-datapack-migration
+    - data/opportunity-pipeline-migration
+    - data/patient-data-migration
+    - data/product-catalog-migration-commerce
+    - data/product-catalog-migration-cpq
     - data/record-merge-implications
     - data/sharing-recalculation-performance
     - flow/flow-bulkification
@@ -69,51 +84,67 @@ Given a planned data load — sObject, volume, source CSV or mapping, intent (in
 
 ## Mandatory Reads Before Starting
 
+2. `skills/data/attachment-to-files-migration` — Attachment to files migration
+3. `skills/data/case-history-migration` — Case history migration
+4. `skills/data/commerce-order-history-migration` — Commerce order history migration
+5. `skills/data/community-user-data-migration` — Community user data migration
+6. `skills/data/constituent-data-migration` — Constituent data migration
+7. `skills/data/financial-account-migration` — Financial account migration
+8. `skills/data/fsl-work-order-migration` — Fsl work order migration
+9. `skills/data/historical-order-migration` — Historical order migration
+10. `skills/data/industries-data-migration` — Industries data migration
+11. `skills/data/mcae-prospect-data-migration` — Mcae prospect data migration
+12. `skills/data/omnistudio-datapack-migration` — Omnistudio datapack migration
+13. `skills/data/opportunity-pipeline-migration` — Opportunity pipeline migration
+14. `skills/data/patient-data-migration` — Patient data migration
+15. `skills/data/product-catalog-migration-commerce` — Product catalog migration commerce
+16. `skills/data/product-catalog-migration-cpq` — Product catalog migration cpq
+
 ### Contract
-1. `agents/_shared/AGENT_CONTRACT.md`
-2. `AGENT_RULES.md`
-3. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
-4. `agents/_shared/REFUSAL_CODES.md` — canonical refusal enum
+16. `agents/_shared/AGENT_CONTRACT.md`
+17. `AGENT_RULES.md`
+18. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+19. `agents/_shared/REFUSAL_CODES.md` — canonical refusal enum
 
 ### Loader-tool selection (Step 8 + ongoing)
-5. `skills/admin/data-import-and-management`
-6. `skills/data/data-loader-and-tools`
-7. `skills/data/bulk-api-and-large-data-loads`
-8. `skills/data/bulk-api-patterns`
-9. `skills/data/data-loader-batch-window-sizing` — batch size vs API limits vs sharing recalc
-10. `standards/decision-trees/integration-pattern-selection.md` — escalates when load is the wrong pattern (e.g. CDC/PE alternative)
+20. `skills/admin/data-import-and-management`
+21. `skills/data/data-loader-and-tools`
+22. `skills/data/bulk-api-and-large-data-loads`
+23. `skills/data/bulk-api-patterns`
+24. `skills/data/data-loader-batch-window-sizing` — batch size vs API limits vs sharing recalc
+25. `standards/decision-trees/integration-pattern-selection.md` — escalates when load is the wrong pattern (e.g. CDC/PE alternative)
 
 ### Source CSV + mapping (Step 5)
-11. `skills/data/data-loader-csv-column-mapping` — header normalization, missing-column failure modes
-12. `skills/data/data-loader-picklist-validation-pre-load` — restricted picklist + record-type rules
+26. `skills/data/data-loader-csv-column-mapping` — header normalization, missing-column failure modes
+27. `skills/data/data-loader-picklist-validation-pre-load` — restricted picklist + record-type rules
 
 ### Automation interaction (Steps 1–2)
-13. `skills/flow/flow-bulkification`
-14. `agents/_shared/probes/automation-graph-for-sobject.md` — flows + triggers + VRs in one pass
-15. `templates/admin/validation-rule-patterns.md` — bypass expectations
-16. `standards/decision-trees/automation-selection.md` — when load surfaces automation that should move tier
+28. `skills/flow/flow-bulkification`
+29. `agents/_shared/probes/automation-graph-for-sobject.md` — flows + triggers + VRs in one pass
+30. `templates/admin/validation-rule-patterns.md` — bypass expectations
+31. `standards/decision-trees/automation-selection.md` — when load surfaces automation that should move tier
 
 ### Duplicates + merge (Step 3)
-17. `skills/admin/duplicate-management`
-18. `skills/data/lead-data-import-and-dedup` — Lead-specific behavior
-19. `skills/data/large-scale-deduplication`
-20. `skills/data/record-merge-implications` — for loads that can create dup-merge situations
+32. `skills/admin/duplicate-management`
+33. `skills/data/lead-data-import-and-dedup` — Lead-specific behavior
+34. `skills/data/large-scale-deduplication`
+35. `skills/data/record-merge-implications` — for loads that can create dup-merge situations
 
 ### Keys + indexing (Steps 3 + 8)
-21. `skills/data/external-id-strategy`
-22. `skills/data/custom-index-requests`
+36. `skills/data/external-id-strategy`
+37. `skills/data/custom-index-requests`
 
 ### Sharing recalc (Step 6)
-23. `skills/admin/data-skew-and-sharing-performance`
-24. `skills/data/sharing-recalculation-performance`
+38. `skills/admin/data-skew-and-sharing-performance`
+39. `skills/data/sharing-recalculation-performance`
 
 ### Storage + cleanup (Step 7 + post-load)
-25. `skills/data/data-storage-management`
-26. `skills/data/batch-data-cleanup-patterns`
-27. `skills/data/data-migration-planning` — multi-load cutover
+40. `skills/data/data-storage-management`
+41. `skills/data/batch-data-cleanup-patterns`
+42. `skills/data/data-migration-planning` — multi-load cutover
 
 ### Field history
-28. `skills/data/field-history-tracking`
+43. `skills/data/field-history-tracking`
 
 ---
 

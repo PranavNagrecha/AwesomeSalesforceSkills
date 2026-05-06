@@ -28,6 +28,7 @@ outputs:
   - "retry and idempotency strategy"
   - "user-message catalog for error states"
 dependencies: []
+runtime_orphan: true
 version: 1.0.0
 author: Pranav Nagrecha
 updated: 2026-04-28

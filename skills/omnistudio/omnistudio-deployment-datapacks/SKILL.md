@@ -31,6 +31,7 @@ outputs:
   - "CI/CD pipeline configuration for automated OmniStudio promotion"
   - "Troubleshooting guidance for failed imports with dependency errors, version conflicts, or activation failures"
 dependencies: []
+runtime_orphan: true
 version: 1.0.0
 author: Pranav Nagrecha
 updated: 2026-04-04

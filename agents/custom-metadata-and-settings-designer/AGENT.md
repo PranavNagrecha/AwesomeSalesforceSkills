@@ -15,6 +15,7 @@ output_formats:
 dependencies:
   skills:
     - admin/agent-output-formats
+    - admin/custom-label-management
     - admin/custom-metadata-types
     - admin/custom-metadata-types-and-settings
     - admin/picklist-and-value-sets
@@ -61,6 +62,7 @@ Two modes:
 8. `templates/apex/cmdt/` — if CMT query patterns are emitted
 9. `templates/admin/naming-conventions.md`
 10. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+11. `skills/admin/custom-label-management` — Custom label management
 
 ---
 

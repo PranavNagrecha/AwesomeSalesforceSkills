@@ -62,7 +62,7 @@
     "fba20fbb5fd06a8817d3",
     "fc0bf15147d6d6fae26f"
   ],
-  "content_hash": "cc0949ba447c9e94eabebc471b8f3d1b8d468cd22b081cae19a03dbd5de14a5e",
+  "content_hash": "406023e5f427ece3d077307aeb1de02d2b80c781f0b10fa57a4bb85170d6ffa0",
   "dependencies": [],
   "description": "Use when testing or validating OmniStudio components \u2014 OmniScript preview, Integration Procedure step debugging, DataRaptor field-mapping validation, and end-to-end UTAM-based automation. NOT for Apex unit testing or standard Flow debugging.",
   "file_location": "skills/omnistudio/omnistudio-testing-patterns",

@@ -32,6 +32,7 @@ outputs:
   - "deployment approach for versioned FlexCard promotion"
   - "performance review findings for data source consolidation"
 dependencies: []
+runtime_orphan: true
 version: 1.0.0
 author: Pranav Nagrecha
 updated: 2026-04-28

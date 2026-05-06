@@ -35,6 +35,7 @@ outputs:
   - "FlexCard data source optimization guidance"
   - "LWC runtime versus Managed Package runtime performance comparison"
 dependencies: []
+runtime_orphan: true
 version: 1.0.0
 author: Pranav Nagrecha
 updated: 2026-04-04

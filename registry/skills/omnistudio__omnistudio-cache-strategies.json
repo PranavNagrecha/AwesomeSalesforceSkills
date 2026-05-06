@@ -28,7 +28,7 @@
     "f26b259b55478e6b175c",
     "f98091ed2c2b72a1f54d"
   ],
-  "content_hash": "7fef8301f89c6cc90ad7901abedf45d4bf3580c23579bb30f75ee8a97c381a85",
+  "content_hash": "ec1dea031cf437ff5c98b58889c68a15e1d99bbc2ef61bf3d83e9de29c2e3fd4",
   "dependencies": [],
   "description": "Configure caching on DataRaptors and Integration Procedures to cut response times, with cache-bust and freshness guarantees. NOT for platform-level org cache.",
   "file_location": "skills/omnistudio/omnistudio-cache-strategies",

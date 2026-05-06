@@ -32,6 +32,7 @@ dependencies:
 version: 1.0.0
 author: Pranav Nagrecha
 updated: 2026-04-28
+runtime_orphan: true
 ---
 
 # Calculation Procedure Design

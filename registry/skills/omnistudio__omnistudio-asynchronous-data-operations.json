@@ -28,7 +28,7 @@
     "f49a66c143bfa9b11f96",
     "f578e5f8556b7ad30330"
   ],
-  "content_hash": "063b74862a18e5c1ae90b872e55a7bb458ebd3d1919033bbce50e2396fa18bd4",
+  "content_hash": "3bec39c70e1d1c42addab413c08f7f6feb070e3bfce3f8879c9c2da27b172101",
   "dependencies": [],
   "description": "Use Integration Procedures queues, DataRaptor Chain, and Remote Actions with async patterns for long-running OmniStudio flows. NOT for simple DataRaptor reads.",
   "file_location": "skills/omnistudio/omnistudio-asynchronous-data-operations",

@@ -15,12 +15,14 @@ output_formats:
 dependencies:
   skills:
     - admin/agent-output-formats
+    - admin/community-engagement-strategy
     - admin/experience-cloud-cms-content
     - admin/experience-cloud-guest-access
     - admin/experience-cloud-member-management
     - admin/experience-cloud-moderation
     - admin/experience-cloud-seo-settings
     - admin/experience-cloud-site-setup
+    - admin/partner-community-requirements
     - admin/permission-set-architecture
     - admin/queues-and-public-groups
     - admin/sharing-and-visibility
@@ -74,6 +76,8 @@ Two modes:
 14. `templates/admin/permission-set-patterns.md`
 15. `templates/admin/naming-conventions.md`
 16. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+17. `skills/admin/community-engagement-strategy` — Community engagement strategy
+18. `skills/admin/partner-community-requirements` — Partner community requirements
 
 ---
 

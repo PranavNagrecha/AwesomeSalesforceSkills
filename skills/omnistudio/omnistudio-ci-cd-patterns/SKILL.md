@@ -30,6 +30,7 @@ outputs:
   - "Pipeline steps for DataPack export, import, and activation"
   - "Post-deployment verification checklist"
 dependencies: []
+runtime_orphan: true
 version: 1.0.0
 author: Pranav Nagrecha
 updated: 2026-04-12

@@ -46,7 +46,7 @@
     "ed208bfab98126638bf8",
     "edd5146a0d9e0bdcf927"
   ],
-  "content_hash": "79835fb2efa22a2ee6edd2e876933134d6159e9b90d22507da8738b7f9e1d3e7",
+  "content_hash": "0a474650c1dfcf7678cddd6567aaa5e18993870ec82d13b8e568b034edd47dcb",
   "dependencies": [
     "omnistudio/integration-procedure-cacheable-patterns"
   ],

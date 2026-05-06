@@ -50,7 +50,7 @@
     "fe0cd2b061f03e938bd3",
     "ff710d930c81c41141f3"
   ],
-  "content_hash": "3f87651a3bbe2f9c1b5966edbba41fa3b95299895ddafe689b9b477a4a5c7ae4",
+  "content_hash": "12da4f9649ebed5b248bd5b817bab2dc27c2ca1959a86243808241834ac56ce1",
   "dependencies": [],
   "description": "Use when building or debugging DataRaptor Extract or DataRaptor Load operations in OmniStudio: designing multi-object extracts, configuring load upserts, handling iferror responses, or mapping output fields. NOT for DataRaptor Transform operations (use dataraptor-patterns), NOT for Integration Procedure design (use integration-procedures), NOT for bulk data loading outside OmniStudio.",
   "file_location": "skills/omnistudio/dataraptor-load-and-extract",

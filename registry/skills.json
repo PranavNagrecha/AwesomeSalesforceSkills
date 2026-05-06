@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 47
   },
-  "generated_from_hash": "fced5b24e85c3610e3f86f332fa3ff15cca283790d1b108e21a7c9781a94d672",
+  "generated_from_hash": "c9cce1f17f7962211f0d06358752f00cced614c2e36b6930b3dd13c84b315a92",
   "schema_version": 1,
   "skill_count": 978,
   "skills": [
@@ -117253,7 +117253,7 @@
         "f8af2366dac500597dcf",
         "fc05641fd4fb1196124b"
       ],
-      "content_hash": "7869238533a28944206ceacc9c54b38489d508ec8888d30d066ed72e69a4222c",
+      "content_hash": "cec9ab1c7034a70a68711fa656998aacbe01dfd55bcba858168ab49771dcb5ea",
       "dependencies": [],
       "description": "Use when designing, building, or troubleshooting OmniStudio Business Rules Engine (BRE) artifacts: Decision Tables, Decision Matrices (rule matrices), and Expression Sets used for eligibility determination, pricing, discounting, or any complex multi-attribute rule evaluation. Trigger keywords: 'business rules engine', 'BRE', 'decision table', 'rule matrix', 'eligibility determination', 'ExpressionSetService', 'expression set evaluate'. NOT for Flow decision elements or Flow-based branching logic (use flow/* skills). NOT for Calculation Procedures that do not involve multi-condition rule lookup (use omnistudio/calculation-procedures). Requires Industries Cloud license.",
       "file_location": "skills/omnistudio/business-rules-engine",
@@ -117349,7 +117349,7 @@
         "ed208bfab98126638bf8",
         "edd5146a0d9e0bdcf927"
       ],
-      "content_hash": "79835fb2efa22a2ee6edd2e876933134d6159e9b90d22507da8738b7f9e1d3e7",
+      "content_hash": "0a474650c1dfcf7678cddd6567aaa5e18993870ec82d13b8e568b034edd47dcb",
       "dependencies": [
         "omnistudio/integration-procedure-cacheable-patterns"
       ],
@@ -117491,7 +117491,7 @@
         "f3e51630fde2360bdbea",
         "f408ab8dc1b939655e48"
       ],
-      "content_hash": "2fc393da0e9b42681584e18a8c440b8e136a524d6cd1e663e4292fa5617d4280",
+      "content_hash": "6a9ce193e44330eeb849c01bdff44f549e561e792746f1189c21ac868ffc0f85",
       "dependencies": [],
       "description": "Use when building, reviewing, or troubleshooting OmniStudio Calculation Procedures (also called Expression Sets) and Calculation Matrices (also called Decision Matrices). Triggers: 'calculation procedure', 'expression set', 'calculation matrix', 'decision matrix', 'pricing calculation', 'lookup step', 'matrix versioning'. NOT for DataRaptor transforms or DataRaptor-based field mapping.",
       "file_location": "skills/omnistudio/calculation-procedures",
@@ -117588,7 +117588,7 @@
         "fe0cd2b061f03e938bd3",
         "ff710d930c81c41141f3"
       ],
-      "content_hash": "3f87651a3bbe2f9c1b5966edbba41fa3b95299895ddafe689b9b477a4a5c7ae4",
+      "content_hash": "12da4f9649ebed5b248bd5b817bab2dc27c2ca1959a86243808241834ac56ce1",
       "dependencies": [],
       "description": "Use when building or debugging DataRaptor Extract or DataRaptor Load operations in OmniStudio: designing multi-object extracts, configuring load upserts, handling iferror responses, or mapping output fields. NOT for DataRaptor Transform operations (use dataraptor-patterns), NOT for Integration Procedure design (use integration-procedures), NOT for bulk data loading outside OmniStudio.",
       "file_location": "skills/omnistudio/dataraptor-load-and-extract",
@@ -117691,7 +117691,7 @@
         "f91bbef4bb186eae7656",
         "fe52ccf556621a6715f0"
       ],
-      "content_hash": "71b76ec84eaa8412028b03effb43c58fe4d0a41dfd4cd883f8f0882aa013e838",
+      "content_hash": "8482b495be7c703ac0445c633765fda5fc110987b6b040b8df950bad753f6e93",
       "dependencies": [],
       "description": "Use when designing or reviewing OmniStudio DataRaptors, especially Extract versus Turbo Extract versus Transform versus Load, field mapping strategy, performance tradeoffs, and when to move work into Integration Procedures or Apex. Triggers: 'DataRaptor Extract', 'Turbo Extract', 'DataRaptor Load', 'DataRaptor Transform', 'OmniStudio data mapping'. NOT for overall OmniScript journey design or Integration Procedure sequencing when the main question is not the DataRaptor shape itself.",
       "file_location": "skills/omnistudio/dataraptor-patterns",
@@ -117791,7 +117791,7 @@
         "f9c86546d6fc50753572",
         "f9ea8c6b7f8c2fd1e0c0"
       ],
-      "content_hash": "78b125eb8fe36b211fba69d0a898468f3652f8a61fca5f137b32839289db0d9c",
+      "content_hash": "8fdda43fda8579c4ffb87bdbfebd1f07f77b0c5b11764d6e14d62862b936e9ac",
       "dependencies": [],
       "description": "Use when DataRaptor Transform operations are slow, hit governor limits, or use Apex where formula fields would suffice. Covers formula vs Apex expressions, bulk transform sizing, and chained transform composition. Triggers: 'dataraptor transform slow', 'dataraptor formula vs apex', 'dataraptor bulk transform', 'dr governor limit'. NOT for DataRaptor Extract or Load performance.",
       "file_location": "skills/omnistudio/dataraptor-transform-optimization",
@@ -117909,7 +117909,7 @@
         "fb54d4cdbc6cd7fea94e",
         "ff98e94643cc0667a96c"
       ],
-      "content_hash": "63be3374cf9c79f3ac2b818b5e8a406f793d444d201a698e811b59011055272c",
+      "content_hash": "5a021653ceb56567fecfd3b9f5e53c05f75a5d4ae88828c77aefc88bdba4d3f6",
       "dependencies": [
         "omnistudio/omniscript-design-patterns"
       ],
@@ -118016,7 +118016,7 @@
         "ed97af3ef322fa07cb85",
         "f030c8c2493451a9d212"
       ],
-      "content_hash": "3c823a19dcf6b2fb4d8d4534a9c185f45b497597a2d028049df7c8455bb8bc5a",
+      "content_hash": "8de89d2aab5cdbfe4b10a6a22bbecdc023658617065e7cc55228cbf4bbea9a5d",
       "dependencies": [
         "omnistudio/integration-procedure-cacheable-patterns"
       ],
@@ -118190,7 +118190,7 @@
         "fe67692a1ead0623a9d4",
         "ffdb717a627c8bf07195"
       ],
-      "content_hash": "13b89851e52e63a785cb44b6f1f4a9b27e2eac8a4307b8d154f427a6e794108a",
+      "content_hash": "7519b0e9dde664b347b7bede6ed1d490ee202429eb8a9b83d73b521fb6aed224",
       "dependencies": [],
       "description": "Use when designing, building, or reviewing OmniStudio FlexCards \u2014 including data source selection, card states, actions, conditional visibility, flyout configuration, and child card iteration. Triggers: 'FlexCard', 'card template', 'flyout', 'card action', 'card state', 'data source', 'child card', 'conditional visibility'. NOT for OmniScript design, standalone LWC development, or Apex controller architecture outside the FlexCard context.",
       "file_location": "skills/omnistudio/flexcard-design-patterns",
@@ -118294,7 +118294,7 @@
         "fb7fb7824404ba2490cf",
         "fed38f1e30f289d1ad6a"
       ],
-      "content_hash": "25f9078c86b540349be9eb83cbbba5442ef4ec844cbaec202c1f4bd90cb8abdc",
+      "content_hash": "312c66994be140ca4ba3c052aa154ec0559f7758451600e718d671939cc83917",
       "dependencies": [],
       "description": "Use when designing FlexCard actions, conditional visibility, and state that must survive navigation, refresh, or parent/child card transitions. Triggers: 'flexcard state', 'flexcard conditional visibility', 'flexcard actions', 'flexcard refresh', 'child flexcard state'. NOT for raw LWC state or for OmniScript step state.",
       "file_location": "skills/omnistudio/flexcard-state-management",
@@ -118437,7 +118437,7 @@
         "fd212d6e400e633e013a",
         "fd9398d3a174a16e328d"
       ],
-      "content_hash": "527e362e62dcd2dea39e5b1074716db906938cf7fa2afcb84a2726ff1f8ddfa6",
+      "content_hash": "00a06b6e71ad307f4c40fdab26615942bd6aeefa204502a26bfc67a9cf33895e",
       "dependencies": [],
       "description": "Use this skill when integrating with Salesforce Industries-specific API layers \u2014 Insurance Policy Business Connect API, Communications Cloud TM Forum Open APIs (TMF679, TMF680, etc.), Energy and Utilities Update Asset Status API, and Service Process Studio Connect APIs. Trigger keywords: Insurance policy issuance API, endorsement API, TMF679, Communications Cloud REST API, Update Asset Status, Service Process API, InsurancePolicy Connect API, sfiEnergy, industry-specific REST endpoint. NOT for standard Salesforce REST API, SOAP API, Bulk API, or platform event integration unrelated to an industry vertical.",
       "file_location": "skills/omnistudio/industries-api-extensions",
@@ -118583,7 +118583,7 @@
         "f8003a17b063ac766e58",
         "fdb4367e43eba12397c6"
       ],
-      "content_hash": "239841f57faa9b8b54064a977afd7d5a4d2e6e77828e60b2795f3fad27fea02a",
+      "content_hash": "9476e4d0210afe7e6c7672dc773efe6cce13d3e4a9968bec9d9aaf0d5bb25b18",
       "dependencies": [],
       "description": "Use this skill when comparing Industries CPQ (formerly Vlocity CPQ) with Salesforce CPQ (Revenue Cloud managed package) \u2014 covering feature parity, decision criteria, migration paths, and coexistence patterns. Trigger keywords: Vlocity CPQ, Industries CPQ, Salesforce CPQ comparison, Revenue Cloud migration, CPQ selection, which CPQ to use. NOT for implementing, configuring, or debugging either CPQ product.",
       "file_location": "skills/omnistudio/industries-cpq-vs-salesforce-cpq",
@@ -118682,7 +118682,7 @@
         "fe8bd331b10e443ca0bf",
         "ff447b1cc8845222a853"
       ],
-      "content_hash": "adb5c426fb5485368383a8663dcfa706fea03539b5d3a0f3a3a110dc20f15fa2",
+      "content_hash": "6dd660d59c1756e0052192f9ed86dfa90bfae8da5164e5c03801e5eeca71f1f2",
       "dependencies": [],
       "description": "Use when designing Integration Procedures (IPs) with platform cache to cut latency and callout load. Covers cache key design, TTL selection, per-user vs org-wide partitions, invalidation on data changes, and safe fallback on cache miss/stale. Does NOT cover general IP authoring (see omnistudio-error-handling-patterns) or LWC client-side caching.",
       "file_location": "skills/omnistudio/integration-procedure-cacheable-patterns",
@@ -118793,7 +118793,7 @@
         "fbebc6e3875c6c02c1e1",
         "fc367c5a79b3c23fd9e7"
       ],
-      "content_hash": "62b070e5d723b2c392e212e09bbd9175f992990dca89ffb27fc9f96b01e8d64d",
+      "content_hash": "561a3774be16f9939a8ee414019016c02c5402c865c4c4b3a9c176276b7f2c83",
       "dependencies": [],
       "description": "Use when building, reviewing, or debugging OmniStudio Integration Procedures. Triggers: 'integration procedure', 'IP', 'HTTP action', 'DataRaptor', 'rollbackOnError', 'failureResponse'. NOT for Apex-only integrations unless the main design choice is whether OmniStudio is still appropriate.",
       "file_location": "skills/omnistudio/integration-procedures",
@@ -118893,7 +118893,7 @@
         "f27eefec50e6efb5f2a8",
         "fd591329354e7172379f"
       ],
-      "content_hash": "b79deb85165b27eb18d83c503c074f45941a536d0530a87be97b8f14ecc35e7e",
+      "content_hash": "a3fd50a5b0563c533c8ba514bb64df7d4d97f055e9117fb7e81ea9a326668020",
       "dependencies": [],
       "description": "Use when designing or reviewing OmniScripts for guided experiences, step structure, branching, save/resume, and the boundary between OmniScript, Integration Procedures, DataRaptors, and custom LWCs. Triggers: 'omniscript design', 'too many steps in omniscript', 'save and resume omniscript', 'branching in omniscript', 'when should this be an integration procedure'. NOT for deep Integration Procedure or DataRaptor design when the guided interaction layer is not the main concern.",
       "file_location": "skills/omnistudio/omniscript-design-patterns",
@@ -118985,7 +118985,7 @@
         "f59b3b184aebbee37592",
         "f720bd362f001807a10e"
       ],
-      "content_hash": "06249911ce87010ad43f500ce1bbd8889e9e4be729f98f0f3f1b9a0859cec0a4",
+      "content_hash": "c8e537029513922cd9079e25a78bd19e2681570d28b221b7e9ad8f91a277f5d0",
       "dependencies": [],
       "description": "Use when an OmniScript must persist mid-flow state across refresh, navigation, multi-device resume, or abandonment recovery. Covers session objects, staging data, OmniScript tracking, and resume URLs. Does NOT cover OmniScript UI step layout (see omniscript-design) or general Flow pause/resume (see flow-transaction-finalizer-patterns).",
       "file_location": "skills/omnistudio/omniscript-session-state",
@@ -119086,7 +119086,7 @@
         "f91202debc0526950d2a",
         "ff5c740323c6ff262c0e"
       ],
-      "content_hash": "574561630f3b85e963daae248b64e0d27842c51926b66388fc4d10a273187a2b",
+      "content_hash": "66386d3f6c4b14c5e332c145f3cc1a260b4cb8641ff49dea55b810a17c5d6448",
       "dependencies": [],
       "description": "Use when managing OmniScript versions: activating new versions, deactivating prior versions, testing a specific version before activation, rolling back to a previous version, or understanding version identity (Type/Subtype/Language triplet). NOT for OmniStudio deployment or DataPack migration (use omnistudio/omnistudio-deployment-datapacks).",
       "file_location": "skills/omnistudio/omniscript-versioning",
@@ -119160,7 +119160,7 @@
         "f49a66c143bfa9b11f96",
         "f578e5f8556b7ad30330"
       ],
-      "content_hash": "063b74862a18e5c1ae90b872e55a7bb458ebd3d1919033bbce50e2396fa18bd4",
+      "content_hash": "3bec39c70e1d1c42addab413c08f7f6feb070e3bfce3f8879c9c2da27b172101",
       "dependencies": [],
       "description": "Use Integration Procedures queues, DataRaptor Chain, and Remote Actions with async patterns for long-running OmniStudio flows. NOT for simple DataRaptor reads.",
       "file_location": "skills/omnistudio/omnistudio-asynchronous-data-operations",
@@ -119228,7 +119228,7 @@
         "f26b259b55478e6b175c",
         "f98091ed2c2b72a1f54d"
       ],
-      "content_hash": "7fef8301f89c6cc90ad7901abedf45d4bf3580c23579bb30f75ee8a97c381a85",
+      "content_hash": "ec1dea031cf437ff5c98b58889c68a15e1d99bbc2ef61bf3d83e9de29c2e3fd4",
       "dependencies": [],
       "description": "Configure caching on DataRaptors and Integration Procedures to cut response times, with cache-bust and freshness guarantees. NOT for platform-level org cache.",
       "file_location": "skills/omnistudio/omnistudio-cache-strategies",
@@ -119341,7 +119341,7 @@
         "fc7872f31b513dcaf08f",
         "ff0990850a030e8a5cf7"
       ],
-      "content_hash": "b4c09cdad96a77240fe50ff08287dbc86e46c705b012d406ff2076c794989b01",
+      "content_hash": "74408a52bfb8a83b0249ea10537a25fb4ca00cae8e0d17bff5773719c4adc561",
       "dependencies": [],
       "description": "Use when designing or implementing CI/CD pipelines for OmniStudio components \u2014 DataPack export/import, versioning, environment promotion, and automated deployment. NOT for standard Salesforce metadata CI/CD or Apex-only pipelines.",
       "file_location": "skills/omnistudio/omnistudio-ci-cd-patterns",
@@ -119496,7 +119496,7 @@
         "facd4eb34fadf5f5d6f2",
         "fb1125a28c6536f896b5"
       ],
-      "content_hash": "fa12d63914ce4d57da6cce9f80797929b73ffaafaa47777530f053e14561ce99",
+      "content_hash": "b3b0842908790a14af8383b252aa5dfdd75aeaadb74d606857a091729e62e18f",
       "dependencies": [
         "omnistudio/omnistudio-lwc-integration",
         "omnistudio/omniscript-design-patterns"
@@ -119647,7 +119647,7 @@
         "f879d5b834693a2d92b6",
         "ffdca14213a530f6811b"
       ],
-      "content_hash": "65ab52098b9441bae83b41b6040d4f26cab1d46ad82ca0c37fbd071b8c398206",
+      "content_hash": "04debf3934778da06cc93a0957b0b7ca64b8cfe3214bb048c3d715884ac27dd3",
       "dependencies": [],
       "description": "Use when diagnosing failures, unexpected output, or silent errors in OmniScript, DataRaptor, or Integration Procedure assets. Triggers: 'omniscript not working', 'dataraptor returns empty', 'integration procedure failing', 'debug mode', 'action debugger', 'preview not running'. NOT for Apex debugging, LWC console errors unrelated to OmniStudio, or Flow fault path debugging.",
       "file_location": "skills/omnistudio/omnistudio-debugging",
@@ -119793,7 +119793,7 @@
         "f2ab3d12b7efa316f3d4",
         "fd91067751e871f7f6da"
       ],
-      "content_hash": "53c9acf91b64840016d43b48112297ad4bb2e7770f8b51e6eb8e1da5b10589eb",
+      "content_hash": "fd0315195a466292600d7e3a280a940739a34c4f6790b05ba20ddc5952f6a5ff",
       "dependencies": [],
       "description": "Use when exporting, importing, or version-controlling OmniStudio components using DataPacks via the OmniStudio DataPacks tool or vlocity CLI. Covers DataPack export/import, Git version control integration, CI/CD for OmniStudio. NOT for SFDX-based metadata deployment of non-OmniStudio components.",
       "file_location": "skills/omnistudio/omnistudio-deployment-datapacks",
@@ -119898,7 +119898,7 @@
         "f698b9cead68b130167e",
         "fac28af1d1357344f90e"
       ],
-      "content_hash": "fd81afe12487b46fe817544345e7a664021874c87142d96102a548ccb8c80a7e",
+      "content_hash": "2a8880935f1317eefae5c8e73dee787727147ca382bc61758a0571d48b62e99f",
       "dependencies": [],
       "description": "Use when designing fault behavior across Integration Procedures, DataRaptors, OmniScripts, and FlexCards \u2014 error routing, user-facing messaging, retry semantics, and idempotency. Triggers: 'omnistudio error', 'integration procedure fault', 'dataraptor error handling', 'omniscript retry', 'flexcard action failure'. NOT for general Apex exception design or Flow fault paths.",
       "file_location": "skills/omnistudio/omnistudio-error-handling-patterns",
@@ -119972,7 +119972,7 @@
         "fdd027f0207a188833e4",
         "febaf6d6912708d3c44e"
       ],
-      "content_hash": "7a03a5291ab6cf267be63855744870f928cedeaad13a9c0adf07d127e00c7082",
+      "content_hash": "27c0106980b666161a5ab07d01e92d206b03216672bd5f12933b36e06a604654",
       "dependencies": [],
       "description": "Govern DataRaptor field mappings to prevent runtime errors when source metadata changes: naming, versioning, and dependency tracking. NOT for DataRaptor authoring fundamentals.",
       "file_location": "skills/omnistudio/omnistudio-field-mapping-governance",
@@ -120098,7 +120098,7 @@
         "fc1fde010d6cb007ddcb",
         "fcdf0dd67111e4c60a9e"
       ],
-      "content_hash": "ab2500d1a13327322b3390dd3e943f457efea8f19ed6196e2747017cdf6d5c13",
+      "content_hash": "715418f5ff4486f989902b4ac184f87f86eda6b48c73db9cd46d5fe9f325ba15",
       "dependencies": [
         "omnistudio/omniscript-design-patterns",
         "omnistudio/integration-procedures"
@@ -120187,7 +120187,7 @@
         "cd9836a0e65f0889891b",
         "e19a7a866a1b7406b445"
       ],
-      "content_hash": "030c234f820aaa3b163bd778fecd5412fc641ef3b33ee9847d512cb7484c37e6",
+      "content_hash": "63c83b0000f0229138b626db1e5f5e7dcafda8a3f0f8a1e28270d7a2c948d955",
       "dependencies": [],
       "description": "Migrate classic Visualforce-based OmniScripts to LWC-based runtime with feature parity and regression testing. NOT for new OmniScript design.",
       "file_location": "skills/omnistudio/omnistudio-lwc-omniscript-migration",
@@ -120256,7 +120256,7 @@
         "f06c030107e99474fee3",
         "f2638b11e389c35933ce"
       ],
-      "content_hash": "f108ddedf8b87a6cf33a5b9ac7fdf951f719ebcf6c0581a643ff7051de6396cf",
+      "content_hash": "769643b6e809bbab9e2abc0bf727219e8503891843fa4d5967bdb658d1004f4d",
       "dependencies": [],
       "description": "Localize OmniScripts, FlexCards, and DataRaptors using Label-based translation, multi-language JSON, and locale-aware number/date formatting. NOT for Salesforce Translation Workbench alone.",
       "file_location": "skills/omnistudio/omnistudio-multi-language",
@@ -120398,7 +120398,7 @@
         "f858482c30f20f0b33e9",
         "fcae3202955d2f471260"
       ],
-      "content_hash": "217f0ad6684fd26eb3edcf906d00fba4c3c542304b1cb460074f82fe10aed100",
+      "content_hash": "8689d4a93d9f264f6ff9d8e65ab00eaf7a365e96cf45b416defdf06b8c92e442",
       "dependencies": [],
       "description": "Use when diagnosing or improving runtime performance in OmniStudio assets: slow OmniScripts, Integration Procedures with high latency, DataRaptor caching, excessive API call counts, FlexCard rendering delays, or async IP fire-and-forget patterns. Triggers: 'OmniScript slow', 'Integration Procedure timeout', 'DataRaptor cache', 'FlexCard loading too long', 'reduce API calls OmniStudio'. NOT for LWC performance outside of OmniScript runtime (use lwc-performance skill). NOT for OmniScript step design or journey UX (use omniscript-design-patterns skill).",
       "file_location": "skills/omnistudio/omnistudio-performance",
@@ -120522,7 +120522,7 @@
         "fd494b360286be5f34eb",
         "ff4da42314e823cc357b"
       ],
-      "content_hash": "ce6823e8648ceda1eb6ef56208c74872a937d8264359800b06ea2a6de1670519",
+      "content_hash": "2e99d83299afab43bd2d21b2816218e441eff0832f8292dea3f2a09ff9ef345e",
       "dependencies": [
         "integration-procedures"
       ],
@@ -120630,7 +120630,7 @@
         "f4d362a8b6a0a4451123",
         "f7763591cb145ade3580"
       ],
-      "content_hash": "72041bdff17a0cf6b8a29728e94c19481a188aba8479b87328a97af83bb6e239",
+      "content_hash": "8eee60949820b4e72a69690261fd2ebce566d0017327ade033efdb4153c09631",
       "dependencies": [],
       "description": "Use when designing or reviewing OmniStudio security across OmniScripts, Integration Procedures, DataRaptors, custom LWCs, Apex actions, guest-user exposure, and outbound HTTP actions. Triggers: 'OmniStudio security', 'guest user omniscript', 'DataRaptor CRUD FLS', 'OmniStudio Apex security', 'HTTP action data exposure'. NOT for general portal identity architecture or generic Apex security reviews when OmniStudio is not the main surface.",
       "file_location": "skills/omnistudio/omnistudio-security",
@@ -120738,7 +120738,7 @@
         "fba20fbb5fd06a8817d3",
         "fc0bf15147d6d6fae26f"
       ],
-      "content_hash": "cc0949ba447c9e94eabebc471b8f3d1b8d468cd22b081cae19a03dbd5de14a5e",
+      "content_hash": "406023e5f427ece3d077307aeb1de02d2b80c781f0b10fa57a4bb85170d6ffa0",
       "dependencies": [],
       "description": "Use when testing or validating OmniStudio components \u2014 OmniScript preview, Integration Procedure step debugging, DataRaptor field-mapping validation, and end-to-end UTAM-based automation. NOT for Apex unit testing or standard Flow debugging.",
       "file_location": "skills/omnistudio/omnistudio-testing-patterns",
@@ -120845,7 +120845,7 @@
         "f9e5a94fab464bd5dcf1",
         "fe7fb72644813d782a8c"
       ],
-      "content_hash": "29fdbe1f88d029df60f155befe60bb5b5ffa9457deec948fca6b7d44e69f08e4",
+      "content_hash": "dbf3cdc6e135313621ef5c93522d2a8f78b4a05727179dfc61120a628a281a35",
       "dependencies": [],
       "description": "Use when choosing between OmniStudio (OmniScript / Integration Procedure / FlexCard / DataRaptor) and Flow / Screen Flow / Apex for a given capability. Triggers: 'omnistudio or flow', 'omniscript vs screen flow', 'integration procedure vs subflow', 'flexcard vs lightning page'. NOT for general automation selection across Workflow/Process Builder/Apex (see automation-selection tree).",
       "file_location": "skills/omnistudio/omnistudio-vs-flow-decision",
@@ -121000,7 +121000,7 @@
         "fc213a26b3cbc3df09c4",
         "ff4146f99a21aa226086"
       ],
-      "content_hash": "2c29290045c8b58ad4defb59c9f04baf2ddfcb28542a0c24aa53a248f9b57fdc",
+      "content_hash": "686e525cf465cb194902910ea91cd2b35e3e3e589b2e8d5002358aa42e32f2ab",
       "dependencies": [
         "omnistudio/omniscript-design-patterns",
         "omnistudio/omnistudio-lwc-integration",

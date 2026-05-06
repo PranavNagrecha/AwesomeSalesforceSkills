@@ -54,7 +54,7 @@
     "f698b9cead68b130167e",
     "fac28af1d1357344f90e"
   ],
-  "content_hash": "fd81afe12487b46fe817544345e7a664021874c87142d96102a548ccb8c80a7e",
+  "content_hash": "2a8880935f1317eefae5c8e73dee787727147ca382bc61758a0571d48b62e99f",
   "dependencies": [],
   "description": "Use when designing fault behavior across Integration Procedures, DataRaptors, OmniScripts, and FlexCards \u2014 error routing, user-facing messaging, retry semantics, and idempotency. Triggers: 'omnistudio error', 'integration procedure fault', 'dataraptor error handling', 'omniscript retry', 'flexcard action failure'. NOT for general Apex exception design or Flow fault paths.",
   "file_location": "skills/omnistudio/omnistudio-error-handling-patterns",

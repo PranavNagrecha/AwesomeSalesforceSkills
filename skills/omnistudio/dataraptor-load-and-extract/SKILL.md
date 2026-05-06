@@ -28,6 +28,7 @@ outputs:
   - "DataRaptor Load configuration with input mappings and upsert key"
   - "Diagnosis of iferror behavior and recommended error handling"
 dependencies: []
+runtime_orphan: true
 version: 1.0.0
 author: Pranav Nagrecha
 updated: 2026-04-28
