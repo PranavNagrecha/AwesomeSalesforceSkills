@@ -1,0 +1,103 @@
+{
+  "category": "lwc",
+  "chunk_ids": [
+    "026bed496d89623a66b7",
+    "0ad0972e55a29fa3356d",
+    "0e6a2a8dd868d1815bb4",
+    "1bdc549b20b8f8d23d8f",
+    "2169809d11849a062e99",
+    "23afc0c237c984bdd01a",
+    "25d85d38d104611bcf84",
+    "2811cd91a92297550544",
+    "2b4507db1c7c2ca933ef",
+    "37cfc74d61aac4e8fe41",
+    "38e24c81fd6c47a0cb79",
+    "3931ea4a38b8654d11e3",
+    "410bb63267b78a81170e",
+    "411c3376e65cc85374b3",
+    "4492f559f3a64413d8e4",
+    "44a6a2e9a86ab3508325",
+    "45ddeb52497ba137173c",
+    "46aecb3c2a30ff7b8809",
+    "4741ff777127272bbfba",
+    "579806a96699f90b2f4a",
+    "5b29088ab400174dfe82",
+    "5e079bbe6b22df92702f",
+    "691ca4e0d23c244d1d8a",
+    "6de967048bcd13e20b1e",
+    "6e6a40040e95b273b5d9",
+    "709ea7e1a69582fb7c08",
+    "71693f4bd1181554c961",
+    "746abf055d05777338c5",
+    "768b083bc43c2f7c5f7a",
+    "76cb6960bb14561469ce",
+    "81bd68deb53c257bf64b",
+    "88c85200481c1e3ccf4a",
+    "904c9964914d3e85aa4d",
+    "9280ee5639db660c704b",
+    "93873a484c0c371cabc1",
+    "939968e1d210e569a19d",
+    "9798f36181887fc70b0c",
+    "a13a0b7dc25b8c28c48e",
+    "a23201676e5210bf6861",
+    "a441a544f8ca5bf3ab73",
+    "a4aee8982ed38b970d80",
+    "b0a4f50fafe273c2ce56",
+    "bb3e6518b7d62c307214",
+    "c891f994560595ef5185",
+    "d9332df987565acd60df",
+    "d9993d9e10b60a2497e7",
+    "daeeb69a23639a0c07b9",
+    "dbb785e159ffb110a320",
+    "f193bb7b9375422562f5",
+    "f2062ccd0d6cb272246f",
+    "f569469a6191a1800288",
+    "f9d2b5413774522d5527"
+  ],
+  "content_hash": "8e24109930418c93f12927e3df1affffc0afd0d1db6a5c6d9ee1d2e611c5eeaa",
+  "dependencies": [],
+  "description": "HTML5 drag-and-drop API in LWC \u2014 draggable=\"true\", dataTransfer.setData / getData, ondragover preventDefault, drop zones, visual hover state, accessibility (keyboard alternatives, aria-grabbed deprecation), and shadow DOM event leakage. NOT for sortable lists where a UI library (Sortable.js) is already in use, or for file-upload drops (use lwc/lwc-file-upload-drop).",
+  "file_location": "skills/lwc/lwc-drag-and-drop",
+  "id": "lwc/lwc-drag-and-drop",
+  "inputs": [
+    "Source: list of draggable items, each with a stable id",
+    "Target: drop zones and the action that fires on drop",
+    "Whether keyboard users need an alternative (almost always: yes)"
+  ],
+  "name": "lwc-drag-and-drop",
+  "official_sources": [
+    "HTML Living Standard: Drag and Drop \u2014 https://html.spec.whatwg.org/multipage/dnd.html",
+    "DataTransfer (MDN) \u2014 https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer",
+    "LWC: HTML Templates \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/create-components-html-templates.html",
+    "WCAG 2.1 SC 2.1.1 Keyboard \u2014 https://www.w3.org/WAI/WCAG21/Understanding/keyboard.html",
+    "Lightning Web Security (LWS) Migration Guide \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/security-lws.html",
+    "Salesforce Well-Architected: Trusted (Accessible) \u2014 https://architect.salesforce.com/well-architected/trusted/inclusive"
+  ],
+  "outputs": [
+    "Component template with draggable items + drop zones",
+    "Drag-state machine (idle / dragging / over-target) with visual feedback",
+    "Keyboard-accessible alternative path (move up/down buttons, kbd shortcuts)"
+  ],
+  "references": [
+    "skills/lwc/lwc-drag-and-drop/references/examples.md",
+    "skills/lwc/lwc-drag-and-drop/references/gotchas.md",
+    "skills/lwc/lwc-drag-and-drop/references/llm-anti-patterns.md",
+    "skills/lwc/lwc-drag-and-drop/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/lwc/lwc-drag-and-drop/scripts/check_lwc_drag_and_drop.py"
+  ],
+  "tags": [
+    "drag-and-drop",
+    "dataTransfer",
+    "accessibility",
+    "kanban",
+    "dom-events"
+  ],
+  "templates": [
+    "skills/lwc/lwc-drag-and-drop/templates/lwc-drag-and-drop-template.md"
+  ],
+  "updated": "2026-05-05",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

@@ -7319,6 +7319,114 @@
       "domain": "apex",
       "expected_skill": "apex/apex-schema-describe",
       "top_k": 3
+    },
+    {
+      "query": "apex enum dispatch switch on when else exhaustive",
+      "domain": "apex",
+      "expected_skill": "apex/apex-enum-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "enum valueOf NoSuchElementException string conversion safe",
+      "domain": "apex",
+      "expected_skill": "apex/apex-enum-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "apex jwt bearer flow server to server authentication",
+      "domain": "apex",
+      "expected_skill": "apex/apex-jwt-bearer-flow",
+      "top_k": 3
+    },
+    {
+      "query": "auth jwt sign assertion connected app salesforce",
+      "domain": "apex",
+      "expected_skill": "apex/apex-jwt-bearer-flow",
+      "top_k": 3
+    },
+    {
+      "query": "apex send email org wide email address reply to",
+      "domain": "apex",
+      "expected_skill": "apex/apex-outbound-email-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "messaging singleemailmessage daily limit governor",
+      "domain": "apex",
+      "expected_skill": "apex/apex-outbound-email-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "lightning-record-form vs record-edit-form lwc",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-lightning-record-forms",
+      "top_k": 3
+    },
+    {
+      "query": "lwc form input field schema import field-name fls",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-lightning-record-forms",
+      "top_k": 3
+    },
+    {
+      "query": "lwc custom typeahead lookup component apex search",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-custom-lookup",
+      "top_k": 3
+    },
+    {
+      "query": "lwc autocomplete debounce search keyboard navigation",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-custom-lookup",
+      "top_k": 3
+    },
+    {
+      "query": "lightning-datatable inline edit draft values bulk save",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-datatable-advanced",
+      "top_k": 3
+    },
+    {
+      "query": "lwc datatable infinite scroll custom cell type",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-datatable-advanced",
+      "top_k": 3
+    },
+    {
+      "query": "lwc style base component slds styling hooks",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-css-and-styling",
+      "top_k": 3
+    },
+    {
+      "query": "lwc shadow dom css does not pierce part light dom",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-css-and-styling",
+      "top_k": 3
+    },
+    {
+      "query": "lwc html5 drag and drop datatransfer kanban",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-drag-and-drop",
+      "top_k": 3
+    },
+    {
+      "query": "lwc draggable drop zone preventDefault accessibility",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-drag-and-drop",
+      "top_k": 3
+    },
+    {
+      "query": "custom report type vs standard report type salesforce",
+      "domain": "admin",
+      "expected_skill": "admin/report-type-strategy",
+      "top_k": 3
+    },
+    {
+      "query": "report type a with b without join semantics 60 field",
+      "domain": "admin",
+      "expected_skill": "admin/report-type-strategy",
+      "top_k": 3
     }
   ]
 }

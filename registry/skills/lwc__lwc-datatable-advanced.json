@@ -1,0 +1,98 @@
+{
+  "category": "lwc",
+  "chunk_ids": [
+    "05e1929eefe75f7507b8",
+    "05f91f0cf6564b07db8d",
+    "08dc45c18b509497fbfa",
+    "098554c49baad4c971b4",
+    "11c52a53806480e453e5",
+    "138b468ac2e5467dc5ec",
+    "1c5b5eb98333fc0f372e",
+    "24f6481493d5a5c93106",
+    "254b530f3f63e56a0cd0",
+    "2957270306bb004bec07",
+    "3633ac3769f08d9ad850",
+    "3b73191765d964421c5e",
+    "3ffe36513fbe8d66b5d1",
+    "45c8db9f4a98b106621b",
+    "4c56391c48370317fedb",
+    "4de0268ea4e9563f3886",
+    "5315fda7c339c137cf28",
+    "5cd06db230a2b963203c",
+    "5ffe9222f9ac0f39e5cc",
+    "6c1cc572320d4e585da9",
+    "6cb3204bc40d8405e966",
+    "7235e78fb78480c6b6b8",
+    "73727bb7071ae4f5eb5f",
+    "77015797f3bda58c5984",
+    "78e7dda2941d4aece2ad",
+    "7ab6b7477c8643fa92d2",
+    "800c6cd924271800661f",
+    "84d1261fa31dbeec4b21",
+    "85e4fd522a2536e32e07",
+    "8dac8fcefd7075c2a6f4",
+    "91a54054dc47fa5dcaca",
+    "94533fe35fa041f25095",
+    "abfea208999f64a7ac78",
+    "ad0996f46528d619fed6",
+    "ae29568926a0c510ee08",
+    "afb738983b34d4f2aae2",
+    "b832b3faa3aa90609ee8",
+    "ba22f7aa856cc915b895",
+    "d1f9c1d09b643ceda405",
+    "d8ee452c30f527bcb23a",
+    "dced00389b508fe13012",
+    "de5cd777379ad490043d",
+    "e423ac51d12e1f05a1c7",
+    "eee2008b7963dd83e08f",
+    "f8a6f6fee7c32d2d4018",
+    "f8d40186a0e030c6b822",
+    "fa14006c74624eab951e",
+    "fba93b2f2eb22c76e240"
+  ],
+  "content_hash": "7d6bcaa7e60ac917951cdd61c5531806bbaa5ff6c93fbec0dbb4d89fdba73de3",
+  "dependencies": [],
+  "description": "Advanced lightning-datatable patterns \u2014 inline edit + draftValues, custom cell types via extending LightningDatatable, sortable columns, infinite scroll with onloadmore, row-level errors, and the cost of large data sets. NOT for read-only display of small lists (plain lightning-datatable suffices) or fully custom grids (use a third-party library).",
+  "file_location": "skills/lwc/lwc-datatable-advanced",
+  "id": "lwc/lwc-datatable-advanced",
+  "inputs": [
+    "Data shape: column metadata (label, fieldName, type, editable, sortable)",
+    "Edit semantics: row-by-row updateRecord vs bulk updateRecords",
+    "Page size and total row count (drives infinite scroll vs server-paged choice)"
+  ],
+  "name": "lwc-datatable-advanced",
+  "official_sources": [
+    "lightning-datatable (LWC Component Reference) \u2014 https://developer.salesforce.com/docs/component-library/bundle/lightning-datatable/documentation",
+    "Custom Data Types \u2014 https://developer.salesforce.com/docs/component-library/bundle/lightning-datatable/documentation",
+    "updateRecord (uiRecordApi) \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/reference-lightning-ui-api-record.html",
+    "Inline Edit (Lightning Data Service) \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-ui-api.html",
+    "Salesforce Well-Architected: Performant \u2014 https://architect.salesforce.com/well-architected/performant/efficient"
+  ],
+  "outputs": [
+    "lightning-datatable template with onsave and draftValues handling",
+    "Custom cell type module (LightningDatatable extension)",
+    "Decision: inline edit + LDS save vs custom save endpoint"
+  ],
+  "references": [
+    "skills/lwc/lwc-datatable-advanced/references/examples.md",
+    "skills/lwc/lwc-datatable-advanced/references/gotchas.md",
+    "skills/lwc/lwc-datatable-advanced/references/llm-anti-patterns.md",
+    "skills/lwc/lwc-datatable-advanced/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/lwc/lwc-datatable-advanced/scripts/check_lwc_datatable_advanced.py"
+  ],
+  "tags": [
+    "datatable",
+    "inline-edit",
+    "infinite-scroll",
+    "performance",
+    "custom-cell-type"
+  ],
+  "templates": [
+    "skills/lwc/lwc-datatable-advanced/templates/lwc-datatable-advanced-template.md"
+  ],
+  "updated": "2026-05-05",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}
