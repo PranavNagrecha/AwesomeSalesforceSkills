@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import subprocess
 import sys
 from datetime import date
@@ -97,6 +98,161 @@ DOMAIN_OFFICIAL_SOURCES: dict[str, list[str]] = {
         "REST API Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_what_is_rest_api.htm",
     ],
 }
+
+
+def _list_runtime_agents() -> list[tuple[str, str]]:
+    """Return [(agent_id, primary-output-blurb)] for every agent dir.
+
+    Build-time and deprecated agents are filtered out. The primary-output
+    blurb is read from the agent's AGENT.md frontmatter ``primary_output``
+    or ``role`` field; falls back to the first paragraph of the body.
+    """
+    out: list[tuple[str, str]] = []
+    agents_dir = ROOT / "agents"
+    if not agents_dir.exists():
+        return out
+    for agent_dir in sorted(agents_dir.iterdir()):
+        if not agent_dir.is_dir() or agent_dir.name == "_shared":
+            continue
+        agent_md = agent_dir / "AGENT.md"
+        if not agent_md.exists():
+            continue
+        try:
+            text = agent_md.read_text(encoding="utf-8")
+        except OSError:
+            continue
+        if "deprecated: true" in text.lower() or "lifecycle: build-time" in text.lower():
+            continue
+        # Pull a short blurb. Look for `primary_output:` or first non-empty body line.
+        m = re.search(r"^primary_output:\s*[\"']?([^\n\"']+)", text, re.MULTILINE)
+        if not m:
+            m = re.search(r"^role:\s*[\"']?([^\n\"']+)", text, re.MULTILINE)
+        blurb = m.group(1).strip() if m else ""
+        if not blurb:
+            # First non-empty line after frontmatter
+            after = text.split("---", 2)[-1] if text.startswith("---") else text
+            for line in after.splitlines():
+                s = line.strip()
+                if s and not s.startswith("#"):
+                    blurb = s[:80]
+                    break
+        out.append((agent_dir.name, blurb))
+    return out
+
+
+def _suggest_agents_for(domain: str) -> list[str]:
+    """Cheap default mapping from skill domain → likely agents."""
+    return {
+        "admin": ["object-designer", "field-impact-analyzer", "audit-router"],
+        "apex": ["apex-builder", "apex-refactorer", "code-reviewer"],
+        "lwc": ["lwc-builder", "lwc-auditor"],
+        "flow": ["flow-builder", "flow-analyzer"],
+        "agentforce": ["agentforce-builder", "agentforce-action-reviewer"],
+        "security": ["security-scanner", "audit-router"],
+        "integration": ["integration-catalog-builder", "bulk-migration-planner"],
+        "data": ["data-model-reviewer", "data-loader-pre-flight"],
+        "devops": ["deployment-risk-scorer", "changeset-builder"],
+        "architect": ["waf-assessor", "fit-gap-analyzer"],
+        "omnistudio": [],  # no agent owns this domain yet
+    }.get(domain, [])
+
+
+def _prompt_agent_decision(
+    domain: str, skill_name: str
+) -> tuple[list[str], bool, str | None]:
+    """Interactive prompt for the agent-wiring decision.
+
+    Returns (agent_ids, runtime_orphan, orphan_reason). Exits on abort.
+    """
+    agents = _list_runtime_agents()
+    suggested = _suggest_agents_for(domain)
+    print("\n┌─ Agent wiring decision ─────────────────────────────────────────────┐")
+    print("│  Every skill must record a decision: which run-time agent(s) cite   │")
+    print("│  it, OR mark it as a deliberate runtime_orphan.                     │")
+    print("└─────────────────────────────────────────────────────────────────────┘")
+    if suggested:
+        print(f"\nSuggested agents for domain '{domain}':")
+        for a in suggested:
+            blurb = next((b for aid, b in agents if aid == a), "")
+            print(f"  • {a:40s}  {blurb[:70]}")
+    print("\nOptions:")
+    print("  [1] Cite this skill from one or more run-time agents (recommended)")
+    print("  [2] Mark as runtime_orphan (no agent owns this topic)")
+    print("  [?] List all run-time agents")
+    print("  [q] Abort scaffolding")
+    while True:
+        choice = input("\nChoice [1/2/?/q]: ").strip().lower()
+        if choice in ("q", "quit", "abort"):
+            raise SystemExit("Aborted.")
+        if choice == "?":
+            print("\nRun-time agents:")
+            for aid, blurb in agents:
+                print(f"  {aid:40s}  {blurb[:70]}")
+            continue
+        if choice == "1":
+            raw = input(
+                "\nAgent id(s), comma-separated "
+                f"[default: {','.join(suggested) or 'none'}]: "
+            ).strip()
+            if not raw and suggested:
+                raw = ",".join(suggested)
+            ids = [a.strip() for a in raw.split(",") if a.strip()]
+            if not ids:
+                print("⚠  Empty list. Try again or pick option 2.")
+                continue
+            valid = {a for a, _ in agents}
+            bad = [a for a in ids if a not in valid]
+            if bad:
+                print(f"⚠  Unknown agent(s): {', '.join(bad)}. Try again.")
+                continue
+            return ids, False, None
+        if choice == "2":
+            reason = input(
+                "Reason this skill has no run-time agent owner "
+                "(one sentence): "
+            ).strip()
+            if not reason:
+                print("⚠  A reason is required. Try again.")
+                continue
+            return [], True, reason
+        print("⚠  Invalid choice. Pick 1, 2, ?, or q.")
+
+
+def _patch_agent_with_skill(agent_id: str, skill_id: str, description: str) -> None:
+    """Run scripts/patch_agent_skill.py to add this skill to an agent."""
+    import subprocess
+    cmd = [
+        sys.executable, str(ROOT / "scripts" / "patch_agent_skill.py"),
+        agent_id, skill_id, "### Mandatory Reads", description,
+    ]
+    r = subprocess.run(cmd, capture_output=True, text=True)
+    if r.returncode != 0:
+        # Common fallback: the agent may use a different section heading
+        for fallback in ("### Skills", "### Skills consulted", "*end*"):
+            cmd2 = cmd[:-2] + [fallback, description]
+            r2 = subprocess.run(cmd2, capture_output=True, text=True)
+            if r2.returncode == 0:
+                print(f"  ✔  wired into {agent_id} (under {fallback})")
+                return
+        raise SystemExit(
+            f"✘ could not wire skill into {agent_id}.\n"
+            f"   stdout: {r.stdout}\n   stderr: {r.stderr}\n"
+            f"   Fix the agent's AGENT.md or pick a different agent and re-run."
+        )
+    print(f"  ✔  wired into {agent_id}")
+
+
+def _add_orphan_marker(skill_md_path: Path, reason: str) -> None:
+    """Insert `runtime_orphan: true` and `runtime_orphan_reason:` into frontmatter."""
+    text = skill_md_path.read_text(encoding="utf-8")
+    # Insert just before the closing `---` of the frontmatter
+    parts = text.split("---", 2)
+    if len(parts) < 3:
+        raise SystemExit(f"✘ could not find frontmatter in {skill_md_path}")
+    fm = parts[1]
+    inject = f"\nruntime_orphan: true\nruntime_orphan_reason: {json.dumps(reason)}\n"
+    new_fm = fm.rstrip("\n") + inject
+    skill_md_path.write_text(f"---{new_fm}---{parts[2]}", encoding="utf-8")
 
 
 def _check_coverage(query: str, domain: str) -> bool:
@@ -507,13 +663,44 @@ After scaffolding:
              "existing skill. Default behavior warns only — strict turns the "
              "warning into a hard exit so agents can't silently create overlaps.",
     )
+    parser.add_argument(
+        "--agent", metavar="AGENT_ID", action="append",
+        help="Run-time agent that should cite this skill. May be repeated for "
+             "multiple agents. The skill is added to the agent's "
+             "`dependencies.skills:` block and to its `## Mandatory Reads` "
+             "section. Either --agent or --runtime-orphan is required (in TTY "
+             "mode the scaffolder will prompt instead).",
+    )
+    parser.add_argument(
+        "--runtime-orphan", action="store_true",
+        help="Mark this skill as deliberately unowned by any run-time agent "
+             "(adds `runtime_orphan: true` to the frontmatter). Use only when "
+             "no agent reasonably owns this topic. Pair with --orphan-reason "
+             "to record why.",
+    )
+    parser.add_argument(
+        "--orphan-reason", metavar="TEXT",
+        help="One-sentence explanation written to `runtime_orphan_reason:` in "
+             "the frontmatter. Required (and only valid) with --runtime-orphan.",
+    )
     args = parser.parse_args()
+
+    # --agent and --runtime-orphan are mutually exclusive
+    if args.agent and args.runtime_orphan:
+        raise SystemExit(
+            "✘ --agent and --runtime-orphan are mutually exclusive. "
+            "Pick one: either wire the skill to one or more agents, or "
+            "mark it as a deliberate orphan."
+        )
+    if args.orphan_reason and not args.runtime_orphan:
+        raise SystemExit(
+            "✘ --orphan-reason is only valid with --runtime-orphan."
+        )
 
     domain: str = args.domain
     skill_name: str = args.skill_name
 
     # Enforce naming convention
-    import re
     if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", skill_name):
         raise SystemExit(
             f"Invalid skill name '{skill_name}'. Use lowercase letters, digits, and hyphens only.\n"
@@ -567,6 +754,40 @@ After scaffolding:
             print("Aborted.")
             return 0
 
+    # ── Agent-wiring decision (mandatory; happens BEFORE scaffolding) ──
+    agents_to_wire: list[str] = []
+    is_orphan = False
+    orphan_reason: str | None = None
+    if args.agent:
+        # Validate every supplied agent id exists.
+        valid_ids = {a for a, _ in _list_runtime_agents()}
+        bad = [a for a in args.agent if a not in valid_ids]
+        if bad:
+            raise SystemExit(
+                f"✘ unknown agent id(s): {', '.join(bad)}. "
+                f"Run with --help or list with `ls agents/`."
+            )
+        agents_to_wire = list(args.agent)
+    elif args.runtime_orphan:
+        is_orphan = True
+        orphan_reason = args.orphan_reason or (
+            f"No run-time agent currently owns the {domain} topic."
+        )
+    else:
+        # No flags → require interactive decision. Fail loudly in non-TTY.
+        if not sys.stdin.isatty():
+            raise SystemExit(
+                "✘ Agent-wiring decision is mandatory.\n"
+                "   Pass --agent <id> [--agent <id> ...] to cite this skill from "
+                "one or more run-time agents,\n"
+                "   OR pass --runtime-orphan --orphan-reason \"<why>\" to "
+                "deliberately leave it unowned.\n"
+                "   See `python3 scripts/new_skill.py --help`."
+            )
+        agents_to_wire, is_orphan, orphan_reason = _prompt_agent_decision(
+            domain, skill_name
+        )
+
     # Read scaffold template
     scaffold_template = ROOT / "config" / "skill-scaffold.md"
     if not scaffold_template.exists():
@@ -600,6 +821,30 @@ After scaffolding:
     print("\nFiles created:")
     for f in files_created:
         print(f"  {f}")
+
+    # ── Apply the agent-wiring decision ──────────────────────────────────
+    skill_id = f"{domain}/{skill_name}"
+    if is_orphan:
+        _add_orphan_marker(skill_dir / "SKILL.md", orphan_reason or "")
+        print(
+            f"\n📌 Marked runtime_orphan: true (reason: {orphan_reason}).\n"
+            f"   The validator will accept this skill without an agent citation."
+        )
+    elif agents_to_wire:
+        # Use the first sentence of the description as the wiring blurb.
+        # If the description is still TODO at this point, fall back to the skill name.
+        try:
+            from pipelines.frontmatter_io import parse_markdown_with_frontmatter
+            parsed = parse_markdown_with_frontmatter(skill_dir / "SKILL.md")
+            desc = (parsed.metadata.get("description") or "").strip()
+            blurb = desc.split(". ")[0].strip(' "\'.')[:120] if desc else ""
+        except Exception:
+            blurb = ""
+        if not blurb or blurb.upper().startswith("TODO"):
+            blurb = skill_name.replace("-", " ")
+        print(f"\n🔌 Wiring '{skill_id}' into {len(agents_to_wire)} agent(s):")
+        for aid in agents_to_wire:
+            _patch_agent_with_skill(aid, skill_id, blurb)
 
     # Print official sources prominently — MUST read before writing any content
     official_sources = DOMAIN_OFFICIAL_SOURCES.get(domain, [

@@ -34,7 +34,7 @@ Before creating or materially revising a skill:
    - `python3 scripts/audit_duplicates.py --domain <domain>`
    - Review the top of `docs/reports/duplicate-candidates.md`.
 3. Read the relevant official Salesforce docs from `standards/official-salesforce-sources.md`.
-4. Scaffold with `python3 scripts/new_skill.py <domain> <name> --strict` — `--strict` blocks scaffolding when the proposed name produces a near-duplicate.
+4. Scaffold with `python3 scripts/new_skill.py <domain> <name> --strict --agent <agent_id>` — `--strict` blocks scaffolding when the proposed name produces a near-duplicate; `--agent` records which run-time agent will cite the new skill (repeat for multiple). If genuinely no agent owns the topic, use `--runtime-orphan --orphan-reason "<why>"` instead. **The agent-wiring decision is mandatory** — `validate_repo.py` errors on any skill that's neither cited by an agent nor explicitly orphaned.
 
 After any skill add or skill update:
 

@@ -5,7 +5,7 @@ by `scripts/generate_validation_index.py`. **Do not hand-edit.** The
 drift check in `scripts/validate_repo.py` catches stale copies.
 
 
-- total gates: **63**  ·  errors: **56**  ·  warnings: **7**
+- total gates: **63**  ·  errors: **57**  ·  warnings: **6**
 
 Each gate links to its source line. The intent line is the first line of
 the enclosing function's docstring — read it for *why* the gate exists,
@@ -87,4 +87,4 @@ not just what it checks.
 | [336](scripts/validate_repo.py#L336) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | skill `{…}` has no query fixture — add at least one entry |
 | [356](scripts/validate_repo.py#L356) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | query `{…}` did not return `{…}` in top {…} |
 | [367](scripts/validate_repo.py#L367) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | generated artifact is stale; run `python3 scripts/skill_sync.py --all` |
-| [425](scripts/validate_repo.py#L425) | _WARN_ | `_check_orphan_skills` | Emit a WARN for each filtered skill that no run-time agent cites. | skill `{…}` is not cited by any run-time agent — wire it via `scripts/patch_agent_skill.py` or set `runtime_orphan: true` in frontmatter |
+| [430](scripts/validate_repo.py#L430) | **ERROR** | `_check_orphan_skills` | Emit an ERROR for each filtered skill with no agent decision recorded. | skill `{…}` has no agent decision — wire it to a run-time agent via `python3 scripts/patch_agent_skill.py <agent_id> {…} "### Mandatory Rea… |
