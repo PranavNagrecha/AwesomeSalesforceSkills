@@ -7427,6 +7427,126 @@
       "domain": "admin",
       "expected_skill": "admin/report-type-strategy",
       "top_k": 3
+    },
+    {
+      "query": "salesforce backup and restore native product RPO RTO",
+      "domain": "data",
+      "expected_skill": "data/salesforce-backup-and-restore",
+      "top_k": 3
+    },
+    {
+      "query": "weekly data export deprecated ownbackup druva third-party",
+      "domain": "data",
+      "expected_skill": "data/salesforce-backup-and-restore",
+      "top_k": 3
+    },
+    {
+      "query": "salesforce connect external object odata virtualize replicate",
+      "domain": "data",
+      "expected_skill": "data/data-virtualization-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "external object trigger validation rule not supported __x",
+      "domain": "data",
+      "expected_skill": "data/data-virtualization-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "multi-currency salesforce datedconversionrate convertcurrency",
+      "domain": "data",
+      "expected_skill": "data/currency-management-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "currencyisocode datedconversionrate currencytype multi-currency salesforce",
+      "domain": "data",
+      "expected_skill": "data/currency-management-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "revenue cloud rlm architecture five domains data model",
+      "domain": "architect",
+      "expected_skill": "architect/revenue-cloud-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "rlm billing legalentity invoice ERP integration platform events",
+      "domain": "architect",
+      "expected_skill": "architect/revenue-cloud-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "contentversion contentdocument contentdocumentlink salesforce files",
+      "domain": "data",
+      "expected_skill": "data/salesforce-files-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "attachment deprecated migrate to files content document size limit",
+      "domain": "data",
+      "expected_skill": "data/salesforce-files-architecture",
+      "top_k": 3
+    },
+    {
+      "query": "saml sso debug login error nameid certificate audience mismatch",
+      "domain": "security",
+      "expected_skill": "security/sso-saml-troubleshooting",
+      "top_k": 3
+    },
+    {
+      "query": "idp initiated sp initiated saml relay state assertion validator",
+      "domain": "security",
+      "expected_skill": "security/sso-saml-troubleshooting",
+      "top_k": 3
+    },
+    {
+      "query": "experience cloud guest user audit secure by default sharing",
+      "domain": "security",
+      "expected_skill": "security/guest-user-security-audit",
+      "top_k": 3
+    },
+    {
+      "query": "guest user without sharing apex auraenabled rest exposed public",
+      "domain": "security",
+      "expected_skill": "security/guest-user-security-audit",
+      "top_k": 3
+    },
+    {
+      "query": "net zero cloud sustainability reporting esrs csrd report builder",
+      "domain": "integration",
+      "expected_skill": "integration/sustainability-reporting",
+      "top_k": 3
+    },
+    {
+      "query": "carbon accounting scope 1 2 3 emissions sasb gri cdp salesforce",
+      "domain": "integration",
+      "expected_skill": "integration/sustainability-reporting",
+      "top_k": 3
+    },
+    {
+      "query": "embed tableau dashboard lightning record page lwc jwt sso",
+      "domain": "lwc",
+      "expected_skill": "lwc/tableau-embedding-in-lightning",
+      "top_k": 3
+    },
+    {
+      "query": "tableau pulse row level security username trusted sites csp",
+      "domain": "lwc",
+      "expected_skill": "lwc/tableau-embedding-in-lightning",
+      "top_k": 3
+    },
+    {
+      "query": "lwc sibling component message channel lightning message service",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-pubsub-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "pubsub legacy lwc subscribe unsubscribe disconnectedcallback",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-pubsub-patterns",
+      "top_k": 3
     }
   ]
 }

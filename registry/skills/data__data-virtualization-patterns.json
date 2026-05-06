@@ -1,0 +1,102 @@
+{
+  "category": "data",
+  "chunk_ids": [
+    "01b35ae5e6872a9b834e",
+    "03f344d4b22549590bc7",
+    "06c567484fd08f05a456",
+    "079e6c6ffcf80c127cee",
+    "08d586b6840027a9b6df",
+    "0c88a211dbb31cb07d45",
+    "0e9fef7f25c5ee04ee80",
+    "14fa02c9494f22c07b6f",
+    "1dc4b5f182f764431f0d",
+    "1ea9809a0ebe29b942cc",
+    "26fe829cbb84c26885b1",
+    "320dd159da5a7d951290",
+    "43bff810d0f977e6bbd6",
+    "43ea19689a6f5bf60b9e",
+    "440e04d37ba38728874d",
+    "44be6a4b905e1c302343",
+    "4547de529ac2178e3782",
+    "5067243d5deab1e2137f",
+    "5132ac6f27e60f30663b",
+    "524b8a34312557b15fcb",
+    "52b1bf1ffca53bf633b4",
+    "57001a123b2e2a982f86",
+    "601718f9efacb8cfe57c",
+    "661d9f054ac6a9f60f34",
+    "696fd12f06de91b85705",
+    "6a21f5fe36a940c04794",
+    "753b666dc00738e3c5b6",
+    "8604941c371053367c00",
+    "91e8c7d02f2ed3dc363f",
+    "970f2ea7a274441c2848",
+    "9d71689d3653c7fd1ee3",
+    "a6455c08dbb35e53138a",
+    "a7185b7276bdd37bf1a2",
+    "a79616cdfe5303e87681",
+    "ab761b66d33079efc1ea",
+    "acc11aac39dc0ec322f6",
+    "b67e313565d707582d96",
+    "ba8d9d739fc2a7136ba3",
+    "bd84746ccb8edc7b1db5",
+    "c02618b30a4481831a0a",
+    "c3ea6fb4919f9e077ad9",
+    "c7956058e2ab2a596744",
+    "ceadbed1ac2a942aa542",
+    "d5e4c60ae5ba8dcae70e",
+    "da16ada8ae228f9680cf",
+    "e0d92853165b6cbf6e8e",
+    "e1abab3610b69fb92549",
+    "e99bc0a7fa00c86bc9c8",
+    "ead5293275e0b92287dd",
+    "efc851b9051bc0062e75",
+    "fa56ef4107b93cfe18ba"
+  ],
+  "content_hash": "ee1b36212d196f3e0d4d59cd78cf013aea3581e44e6a753abae38746eaf5d07c",
+  "dependencies": [],
+  "description": "Choosing between virtualizing external data into Salesforce (External Objects via Salesforce Connect / OData / cross-org adapter) and replicating it (Bulk API ingest into a custom object). Covers OData 2.0 / 4.0 adapter mechanics, indirect lookup keys, the per-callout limits and the per-transaction callout cap, what External Objects cannot do (no triggers, no validation rules, no workflow / flow record-triggers, no reports beyond joined-style limits, limited search), and the Salesforce-to-Salesforce cross-org variant. NOT for plain REST callouts (see integration/named-credential-patterns), NOT for ETL / one-time data migration (see data/data-migration-strategy).",
+  "file_location": "skills/data/data-virtualization-patterns",
+  "id": "data/data-virtualization-patterns",
+  "inputs": [
+    "Source system (the data lives where) and protocol it speaks (OData, REST, cross-org)",
+    "Read / write requirements (read-only virtualization is much simpler)",
+    "Latency tolerance (virtualization adds round-trip latency on every page render)"
+  ],
+  "name": "data-virtualization-patterns",
+  "official_sources": [
+    "Salesforce Connect Overview \u2014 https://help.salesforce.com/s/articleView?id=sf.platform_connect_about.htm&type=5",
+    "External Objects \u2014 https://help.salesforce.com/s/articleView?id=sf.platform_connect_about_external_objects.htm&type=5",
+    "OData Adapter for Salesforce Connect \u2014 https://help.salesforce.com/s/articleView?id=sf.platform_connect_odata_about.htm&type=5",
+    "Cross-Org Adapter for Salesforce Connect \u2014 https://help.salesforce.com/s/articleView?id=sf.platform_connect_xorg_about.htm&type=5",
+    "Salesforce Connect Apex Custom Adapter \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_connect_api_intro.htm",
+    "Salesforce Well-Architected Composable \u2014 https://architect.salesforce.com/well-architected/adaptable/composable"
+  ],
+  "outputs": [
+    "Virtualize-vs-replicate decision with cited tradeoff",
+    "External Object configuration (adapter type, indirect lookup, name field, scope)",
+    "Limit budget (callouts per transaction, page size, per-row constraints)"
+  ],
+  "references": [
+    "skills/data/data-virtualization-patterns/references/examples.md",
+    "skills/data/data-virtualization-patterns/references/gotchas.md",
+    "skills/data/data-virtualization-patterns/references/llm-anti-patterns.md",
+    "skills/data/data-virtualization-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/data/data-virtualization-patterns/scripts/check_data_virtualization_patterns.py"
+  ],
+  "tags": [
+    "salesforce-connect",
+    "external-objects",
+    "odata",
+    "virtualization",
+    "cross-org"
+  ],
+  "templates": [
+    "skills/data/data-virtualization-patterns/templates/data-virtualization-patterns-template.md"
+  ],
+  "updated": "2026-05-05",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

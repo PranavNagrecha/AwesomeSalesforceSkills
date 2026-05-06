@@ -534,6 +534,7 @@
       "architect/org-limits-monitoring",
       "architect/payer-vs-provider-architecture",
       "architect/platform-selection-guidance",
+      "architect/revenue-cloud-architecture",
       "architect/sales-cloud-architecture",
       "architect/sales-cloud-integration-patterns",
       "architect/salesforce-erd-and-diagramming",
@@ -573,6 +574,7 @@
       "data/cpq-data-model",
       "data/cpq-performance-optimization",
       "data/crm-analytics-security-predicates",
+      "data/currency-management-patterns",
       "data/custom-index-requests",
       "data/data-archival-strategies",
       "data/data-cloud-consent-and-privacy",
@@ -588,6 +590,7 @@
       "data/data-quality-and-governance",
       "data/data-reconciliation-patterns",
       "data/data-storage-management",
+      "data/data-virtualization-patterns",
       "data/deployment-data-dependencies",
       "data/duplicate-rule-person-account-edge-cases",
       "data/eda-data-model-and-patterns",
@@ -633,6 +636,8 @@
       "data/revenue-cloud-data-model",
       "data/roll-up-summary-alternatives",
       "data/sales-reporting-data-model",
+      "data/salesforce-backup-and-restore",
+      "data/salesforce-files-architecture",
       "data/sandbox-refresh-data-strategies",
       "data/service-data-archival",
       "data/service-metrics-data-model",
@@ -828,6 +833,7 @@
       "integration/slack-workflow-builder",
       "integration/soap-api-patterns",
       "integration/streaming-api-and-pushtopic",
+      "integration/sustainability-reporting",
       "integration/tableau-salesforce-connector",
       "integration/webhook-inbound-patterns",
       "integration/webhook-signature-verification"
@@ -884,6 +890,7 @@
       "lwc/lwc-performance",
       "lwc/lwc-performance-budgets",
       "lwc/lwc-public-api-hardening",
+      "lwc/lwc-pubsub-patterns",
       "lwc/lwc-quick-actions",
       "lwc/lwc-reactive-state-patterns",
       "lwc/lwc-record-picker",
@@ -904,6 +911,7 @@
       "lwc/message-channel-patterns",
       "lwc/navigation-and-routing",
       "lwc/static-resources-in-lwc",
+      "lwc/tableau-embedding-in-lightning",
       "lwc/virtualized-lists",
       "lwc/visualforce-to-lwc-migration",
       "lwc/wire-service-patterns"
@@ -963,6 +971,7 @@
       "security/file-upload-virus-scanning",
       "security/gdpr-data-privacy",
       "security/guest-user-security",
+      "security/guest-user-security-audit",
       "security/ip-range-and-login-flow-strategy",
       "security/ip-relaxation-and-restriction",
       "security/login-forensics",
@@ -988,6 +997,7 @@
       "security/session-management-and-timeout",
       "security/shield-event-log-retention-strategy",
       "security/shield-kms-byok-setup",
+      "security/sso-saml-troubleshooting",
       "security/transaction-security-policies",
       "security/xss-and-injection-prevention"
     ]
@@ -1364,6 +1374,7 @@
       "admin/hipaa-workflow-design",
       "admin/permission-sets-vs-profiles",
       "admin/queues-and-public-groups",
+      "security/guest-user-security-audit",
       "security/ip-relaxation-and-restriction"
     ],
     "access-governance": [
@@ -1423,6 +1434,9 @@
     ],
     "accruals": [
       "admin/rebate-management-setup"
+    ],
+    "acm": [
+      "data/currency-management-patterns"
     ],
     "action-cadence": [
       "apex/sales-engagement-api"
@@ -2334,6 +2348,9 @@
     "attachments": [
       "data/attachment-to-files-migration"
     ],
+    "attachments-legacy": [
+      "data/salesforce-files-architecture"
+    ],
     "attendance": [
       "admin/npsp-program-management"
     ],
@@ -2552,6 +2569,9 @@
     "backoff": [
       "integration/retry-and-backoff-patterns"
     ],
+    "backup": [
+      "data/salesforce-backup-and-restore"
+    ],
     "backup-strategy": [
       "admin/data-export-service"
     ],
@@ -2658,7 +2678,8 @@
       "integration/data-cloud-zero-copy-federation"
     ],
     "billing": [
-      "admin/quote-to-cash-process"
+      "admin/quote-to-cash-process",
+      "architect/revenue-cloud-architecture"
     ],
     "billing-data-reconciliation": [
       "data/billing-data-reconciliation"
@@ -3908,6 +3929,7 @@
       "admin/email-studio-administration"
     ],
     "content-document": [
+      "data/salesforce-files-architecture",
       "data/service-data-archival",
       "integration/file-and-document-integration",
       "lwc/file-upload-patterns"
@@ -3932,6 +3954,7 @@
     ],
     "content-version": [
       "data/case-history-migration",
+      "data/salesforce-files-architecture",
       "integration/file-and-document-integration",
       "security/file-upload-virus-scanning"
     ],
@@ -4026,6 +4049,9 @@
     ],
     "conversion-funnel": [
       "data/commerce-analytics-data"
+    ],
+    "convert-currency": [
+      "data/currency-management-patterns"
     ],
     "convertcurrency": [
       "data/multi-currency-and-advanced-currency-management"
@@ -4208,6 +4234,7 @@
       "apex/cross-object-formula-and-rollup-performance"
     ],
     "cross-org": [
+      "data/data-virtualization-patterns",
       "integration/salesforce-to-salesforce-integration",
       "integration/slack-connect-patterns"
     ],
@@ -4252,7 +4279,8 @@
       "security/network-security-and-trusted-ips"
     ],
     "csrd": [
-      "integration/net-zero-cloud-setup"
+      "integration/net-zero-cloud-setup",
+      "integration/sustainability-reporting"
     ],
     "csrf": [
       "apex/visualforce-fundamentals"
@@ -4300,6 +4328,9 @@
     ],
     "currency-conversion": [
       "architect/multi-currency-sales-architecture"
+    ],
+    "currency-iso-code": [
+      "data/currency-management-patterns"
     ],
     "currencyisocode": [
       "data/multi-currency-and-advanced-currency-management"
@@ -4583,7 +4614,8 @@
       "lwc/lwc-base-component-recipes"
     ],
     "data-export": [
-      "data/data-loader-and-tools"
+      "data/data-loader-and-tools",
+      "data/salesforce-backup-and-restore"
     ],
     "data-export-service": [
       "admin/data-export-service"
@@ -4930,6 +4962,9 @@
     "date-handling": [
       "admin/analytics-dataset-management",
       "apex/timezone-and-datetime-pitfalls"
+    ],
+    "dated-conversion-rate": [
+      "data/currency-management-patterns"
     ],
     "dated-exchange-rates": [
       "architect/multi-currency-sales-architecture",
@@ -5336,7 +5371,8 @@
       "security/ferpa-compliance-in-salesforce"
     ],
     "disaster-recovery": [
-      "architect/ha-dr-architecture"
+      "architect/ha-dr-architecture",
+      "data/salesforce-backup-and-restore"
     ],
     "disbursements": [
       "admin/grant-management-setup"
@@ -5764,6 +5800,9 @@
       "admin/messaging-and-chat-setup",
       "agentforce/agent-channel-deployment"
     ],
+    "embedding": [
+      "lwc/tableau-embedding-in-lightning"
+    ],
     "embedding-pipeline": [
       "agentforce/sf-to-llm-data-pipelines"
     ],
@@ -5773,6 +5812,9 @@
     ],
     "emission-factors": [
       "integration/net-zero-cloud-setup"
+    ],
+    "emissions": [
+      "integration/sustainability-reporting"
     ],
     "empapi": [
       "lwc/lwc-server-sent-events"
@@ -5995,7 +6037,8 @@
       "architect/fsl-optimization-architecture"
     ],
     "esrs": [
-      "integration/net-zero-cloud-setup"
+      "integration/net-zero-cloud-setup",
+      "integration/sustainability-reporting"
     ],
     "ethical-walls": [
       "admin/compliant-data-sharing-setup"
@@ -6164,6 +6207,7 @@
       "lwc/navigation-and-routing",
       "security/experience-cloud-security",
       "security/guest-user-security",
+      "security/guest-user-security-audit",
       "security/recaptcha-and-bot-prevention"
     ],
     "experience-cloud-cms-content": [
@@ -6229,6 +6273,7 @@
     ],
     "external-objects": [
       "architect/multi-org-strategy",
+      "data/data-virtualization-patterns",
       "data/external-data-and-big-objects",
       "integration/salesforce-connect-external-objects"
     ],
@@ -6449,9 +6494,11 @@
     ],
     "files": [
       "data/attachment-to-files-migration",
+      "data/salesforce-files-architecture",
       "security/file-upload-virus-scanning"
     ],
     "files-connect": [
+      "data/salesforce-files-architecture",
       "integration/file-and-document-integration"
     ],
     "filter-groups": [
@@ -7185,7 +7232,8 @@
       "lwc/experience-cloud-lwc-components",
       "lwc/experience-cloud-search-customization",
       "security/experience-cloud-security",
-      "security/guest-user-security"
+      "security/guest-user-security",
+      "security/guest-user-security-audit"
     ],
     "guest-users": [
       "omnistudio/omnistudio-security"
@@ -7514,6 +7562,9 @@
     "identity-verification": [
       "admin/compliance-documentation-requirements",
       "security/login-forensics"
+    ],
+    "idp": [
+      "security/sso-saml-troubleshooting"
     ],
     "iframe": [
       "architect/experience-cloud-integration-patterns"
@@ -8043,6 +8094,9 @@
     "jwt-signing": [
       "apex/apex-encoding-and-crypto"
     ],
+    "jwt-sso": [
+      "lwc/tableau-embedding-in-lightning"
+    ],
     "k12": [
       "data/eda-data-model-and-patterns"
     ],
@@ -8248,6 +8302,9 @@
     "legacy-integration": [
       "integration/soap-api-patterns"
     ],
+    "legal-entity": [
+      "architect/revenue-cloud-architecture"
+    ],
     "lending": [
       "architect/banking-lending-architecture"
     ],
@@ -8373,6 +8430,7 @@
     "lightning-message-service": [
       "lwc/aura-to-lwc-migration",
       "lwc/component-communication",
+      "lwc/lwc-pubsub-patterns",
       "lwc/message-channel-patterns"
     ],
     "lightning-modal": [
@@ -8461,6 +8519,7 @@
       "architect/ai-agent-org-integration-architecture"
     ],
     "lms": [
+      "lwc/lwc-pubsub-patterns",
       "lwc/lwc-state-management",
       "lwc/message-channel-patterns"
     ],
@@ -8590,6 +8649,7 @@
       "lwc/lwc-web-components-interop",
       "lwc/lwc-wire-refresh-patterns",
       "lwc/lwr-site-development",
+      "lwc/tableau-embedding-in-lightning",
       "omnistudio/omnistudio-custom-lwc-elements",
       "omnistudio/omnistudio-lwc-integration"
     ],
@@ -8909,6 +8969,7 @@
       "architect/salesforce-erd-and-diagramming"
     ],
     "message-channel": [
+      "lwc/lwc-pubsub-patterns",
       "lwc/message-channel-patterns"
     ],
     "message-transformation": [
@@ -9211,6 +9272,7 @@
       "admin/products-and-pricebooks",
       "architect/cpq-architecture-patterns",
       "architect/multi-store-architecture",
+      "data/currency-management-patterns",
       "data/multi-currency-and-advanced-currency-management"
     ],
     "multi-currency-sales-architecture": [
@@ -9276,7 +9338,8 @@
     ],
     "my-domain": [
       "admin/org-setup-and-configuration",
-      "security/oauth-redirect-and-domain-strategy"
+      "security/oauth-redirect-and-domain-strategy",
+      "security/sso-saml-troubleshooting"
     ],
     "name": [
       "admin/compound-field-patterns"
@@ -9349,7 +9412,8 @@
       "integration/data-cloud-activation-development"
     ],
     "net-zero-cloud": [
-      "integration/net-zero-cloud-setup"
+      "integration/net-zero-cloud-setup",
+      "integration/sustainability-reporting"
     ],
     "network-access": [
       "security/network-security-and-trusted-ips"
@@ -9534,6 +9598,7 @@
       "apex/commerce-order-api"
     ],
     "odata": [
+      "data/data-virtualization-patterns",
       "integration/salesforce-connect-external-objects"
     ],
     "offline": [
@@ -9925,6 +9990,9 @@
     ],
     "override": [
       "omnistudio/omnistudio-custom-lwc-elements"
+    ],
+    "owasp-a01": [
+      "security/guest-user-security-audit"
     ],
     "owd": [
       "admin/sharing-and-visibility",
@@ -10884,6 +10952,7 @@
       "admin/knowledge-base-administration"
     ],
     "pubsub": [
+      "lwc/lwc-pubsub-patterns",
       "omnistudio/flexcard-state-management",
       "omnistudio/omnistudio-custom-lwc-elements"
     ],
@@ -11027,7 +11096,8 @@
     "quote-to-cash": [
       "admin/quote-to-cash-process",
       "admin/quote-to-cash-requirements",
-      "architect/cpq-integration-with-erp"
+      "architect/cpq-integration-with-erp",
+      "architect/revenue-cloud-architecture"
     ],
     "quote-to-order": [
       "architect/sales-cloud-integration-patterns"
@@ -11547,6 +11617,7 @@
       "admin/quote-to-cash-process",
       "admin/rebate-management-setup",
       "admin/usage-based-pricing-setup",
+      "architect/revenue-cloud-architecture",
       "data/revenue-cloud-data-model",
       "integration/revenue-lifecycle-management",
       "omnistudio/industries-cpq-vs-salesforce-cpq"
@@ -11598,6 +11669,7 @@
       "admin/financial-planning-process"
     ],
     "rlm": [
+      "architect/revenue-cloud-architecture",
       "data/revenue-cloud-data-model",
       "integration/revenue-lifecycle-management"
     ],
@@ -11689,10 +11761,14 @@
       "admin/analytics-permission-and-sharing",
       "architect/analytics-security-architecture",
       "data/crm-analytics-security-predicates",
+      "lwc/tableau-embedding-in-lightning",
       "security/apex-managed-sharing-patterns"
     ],
     "row-skew": [
       "data/data-loader-batch-window-sizing"
+    ],
+    "rpo-rto": [
+      "data/salesforce-backup-and-restore"
     ],
     "rtem": [
       "architect/zero-trust-salesforce-patterns"
@@ -11806,6 +11882,7 @@
     ],
     "salesforce-connect": [
       "architect/multi-org-strategy",
+      "data/data-virtualization-patterns",
       "integration/heroku-salesforce-integration",
       "integration/salesforce-connect-external-objects"
     ],
@@ -11869,7 +11946,8 @@
     ],
     "saml": [
       "architect/experience-cloud-integration-patterns",
-      "lwc/experience-cloud-multi-idp-sso"
+      "lwc/experience-cloud-multi-idp-sso",
+      "security/sso-saml-troubleshooting"
     ],
     "sanctions-screening": [
       "architect/aml-kyc-process-architecture"
@@ -12155,6 +12233,9 @@
     "secure-apex": [
       "lwc/lwc-security",
       "omnistudio/omnistudio-security"
+    ],
+    "secure-by-default": [
+      "security/guest-user-security-audit"
     ],
     "secure-coding-review-checklist": [
       "security/secure-coding-review-checklist"
@@ -12629,6 +12710,9 @@
     "showtoastevent": [
       "lwc/lwc-show-toast-patterns"
     ],
+    "sibling-communication": [
+      "lwc/lwc-pubsub-patterns"
+    ],
     "siem": [
       "security/shield-event-log-retention-strategy"
     ],
@@ -12893,7 +12977,8 @@
       "architect/multi-org-strategy",
       "lwc/experience-cloud-authentication",
       "lwc/experience-cloud-multi-idp-sso",
-      "security/mfa-enforcement-patterns"
+      "security/mfa-enforcement-patterns",
+      "security/sso-saml-troubleshooting"
     ],
     "sso-mfa": [
       "security/mfa-enforcement-strategy"
@@ -13129,6 +13214,9 @@
     "survivorship": [
       "admin/duplicate-management"
     ],
+    "sustainability": [
+      "integration/sustainability-reporting"
+    ],
     "sustainability-cloud": [
       "integration/net-zero-cloud-setup"
     ],
@@ -13177,7 +13265,8 @@
     "tableau": [
       "admin/data-storytelling-design",
       "architect/crm-analytics-vs-tableau-decision",
-      "integration/tableau-salesforce-connector"
+      "integration/tableau-salesforce-connector",
+      "lwc/tableau-embedding-in-lightning"
     ],
     "tableau-cloud": [
       "integration/tableau-salesforce-connector"
@@ -13341,6 +13430,9 @@
     ],
     "third-party-library": [
       "lwc/static-resources-in-lwc"
+    ],
+    "third-party-tools": [
+      "data/salesforce-backup-and-restore"
     ],
     "third-party-widgets": [
       "architect/experience-cloud-integration-patterns"
@@ -13568,7 +13660,8 @@
     "troubleshooting": [
       "devops/deployment-error-troubleshooting",
       "omnistudio/omnistudio-debugging",
-      "security/record-access-troubleshooting"
+      "security/record-access-troubleshooting",
+      "security/sso-saml-troubleshooting"
     ],
     "trunk-based-development": [
       "devops/git-branching-for-salesforce"
@@ -13883,6 +13976,7 @@
       "integration/salesforce-connect-external-objects"
     ],
     "virtualization": [
+      "data/data-virtualization-patterns",
       "lwc/lwc-virtualized-lists",
       "lwc/virtualized-lists"
     ],

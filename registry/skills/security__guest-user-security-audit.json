@@ -1,0 +1,103 @@
+{
+  "category": "security",
+  "chunk_ids": [
+    "0082d37673227dda6d15",
+    "012ee72033469f89aef2",
+    "06edce393db1d964c253",
+    "080862af7321ee5928ba",
+    "0a734b45ef503dc9683d",
+    "0e68f76b8f0fa0a313d2",
+    "1503680310085ed4673e",
+    "1d3ed09c1d355493b2c5",
+    "23716788d2ec6183a283",
+    "2a216b308314e1c1cb5a",
+    "2cebd57ff42ecfa257f7",
+    "32c0e5c2dd46b4ed1c13",
+    "32efe829cb6a253aae15",
+    "36c9cfa95fa018007c28",
+    "3f04aea3b3db15ffaa00",
+    "3f802bd48c12f62eb807",
+    "415308e58ef453841d16",
+    "4c73eec737db03cfe238",
+    "50097a42fa044e75c111",
+    "528a83bd706e6771ddea",
+    "54c665fec440a2787956",
+    "56662d537cb280b5c8e7",
+    "56bf6e835396c064c668",
+    "59d66c2c9ef2fe5bef70",
+    "68fefe53b9fe6068f009",
+    "6e1dc0ea5f4789170ad0",
+    "6ec161d5b09f3090cb8a",
+    "758330b6af70faa25b00",
+    "781f153aabe606cc18db",
+    "7a4eae50eec2f738612b",
+    "7a5305d3c3eed21656a5",
+    "7bc97cd9c1a7c0a9c487",
+    "7fed4be486bb763eedd3",
+    "8d46c54c4d43f0757c32",
+    "910035f9a6d87b1395e9",
+    "9c8f0e1cb5b3f3369208",
+    "a04c6885ae438b6e5c64",
+    "a260ad24a7b10a0cdc16",
+    "a42f35867cc7c8dfeb92",
+    "a5e89d6dfb4d0068b220",
+    "a95490073b8008d1feb3",
+    "ad79af5d13b6b69b6e70",
+    "b3e0d668f58bc031941d",
+    "bb6a04b02755b2f739f1",
+    "bbe47ae49d89ff702590",
+    "c72e5c0ec333bf283fa3",
+    "c984c194eaa87ac5e39f",
+    "ca99cb2a471d271e5137",
+    "e452c85f6667465f8a1d",
+    "e8bfb6defd5d6428926f",
+    "ea2dc508eb8e7993ae39"
+  ],
+  "content_hash": "c6d14de81585c9c6adee2c1db93b8648729b17cbf033655b31f5665a21027f5c",
+  "dependencies": [],
+  "description": "Auditing the security posture of an Experience Cloud (Community) site's Guest User. Covers the post-Spring '21 secure-by-default lockdown (object permissions removed, sharing rule grants required for any access), the Guest User profile permissions to remove (View All Data, Modify All Data, Manage Users, etc.), guest sharing rules, the Run-As-Guest test, OWASP A01 (Broken Access Control) mapping, and the standard set of leakage vectors (Apex with `without sharing`, Aura / LWC `@AuraEnabled` methods, public-site Visualforce, REST endpoints under `/services/apexrest`). NOT for Experience Cloud authenticated user setup (see experience/experience-cloud-user-management), NOT for general Salesforce profile design (see admin/profile-permset-design).",
+  "file_location": "skills/security/guest-user-security-audit",
+  "id": "security/guest-user-security-audit",
+  "inputs": [
+    "Experience Cloud site (or all sites) in scope",
+    "Whether the org has Apex / LWC custom code or REST endpoints exposed to guest",
+    "Risk tolerance (regulated data demands stricter posture)"
+  ],
+  "name": "guest-user-security-audit",
+  "official_sources": [
+    "Secure Your Experience Cloud Site (Spring '21 Secure-by-Default) \u2014 https://help.salesforce.com/s/articleView?id=sf.networks_security_overview.htm&type=5",
+    "Best Practices and Considerations When Configuring the Guest User Profile \u2014 https://help.salesforce.com/s/articleView?id=sf.guest_users_best_practice.htm&type=5",
+    "Apex Sharing Modes \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_keywords_sharing.htm",
+    "Field-Level Security via WITH SECURITY_ENFORCED \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_with_security_enforced.htm",
+    "OWASP Top 10 \u2014 https://owasp.org/www-project-top-ten/",
+    "Salesforce Well-Architected Trustworthy \u2014 https://architect.salesforce.com/well-architected/trusted/secure"
+  ],
+  "outputs": [
+    "Guest User profile audit (which permissions are still on)",
+    "Apex / LWC / REST endpoint leakage audit",
+    "Sharing-rule audit for guest grants",
+    "Prioritized remediation list mapped to OWASP A01"
+  ],
+  "references": [
+    "skills/security/guest-user-security-audit/references/examples.md",
+    "skills/security/guest-user-security-audit/references/gotchas.md",
+    "skills/security/guest-user-security-audit/references/llm-anti-patterns.md",
+    "skills/security/guest-user-security-audit/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/security/guest-user-security-audit/scripts/check_guest_user_security_audit.py"
+  ],
+  "tags": [
+    "guest-user",
+    "experience-cloud",
+    "secure-by-default",
+    "owasp-a01",
+    "access-control"
+  ],
+  "templates": [
+    "skills/security/guest-user-security-audit/templates/guest-user-security-audit-template.md"
+  ],
+  "updated": "2026-05-05",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}
