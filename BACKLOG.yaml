@@ -390,13 +390,6 @@
   notes: "apex"
   source_line: 1581
   history: []
-- id: "apex-schema-describe"
-  status: "RESEARCHED"
-  skill: "apex-schema-describe"
-  summary: "Schema.SObjectType, Schema.DescribeFieldResult, dynamic field describe, RecordType ID retrieval, picklist values, field-level metadata at runtime. NOT for Metadata API."
-  notes: "Researched 2026-04-18. Sources: [Understanding Apex Describe Information (apex_dynamic_describe_objects_understanding); DescribeFieldResult Class (apex_methods_system_fields_describe); DescribeSObjectResult Class (apex_methods_system_sobject_describe); PicklistEntry Class (apex_class_Schema_PicklistEntry)]. Key: Governor limit is 100 describe calls per transaction; Schema.getGlobalDescribe() fetches metadata for every accessible sObject and must be cached in static final; DescribeSObjectResult.getRecordTypeInfosByDeveloperName() retrieves RecordType ID without a SOQL query -- LLM anti-pattern is querying [SELECT Id FROM RecordType WHERE DeveloperName = :name] inside a loop; DescribeFieldResult.getPicklistValues() returns only active entries by default. Gaps: confirm Schema.describeSObjects(List) count against the 100-limit; DescribeFieldResult.isNillable() and isDefaultedOnCreate() behaviors."
-  source_line: 1603
-  history: []
 - id: "apex-enum-patterns"
   status: "RESEARCHED"
   skill: "apex-enum-patterns"
