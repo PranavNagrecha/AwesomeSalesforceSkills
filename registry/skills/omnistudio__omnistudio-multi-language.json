@@ -28,7 +28,7 @@
     "f06c030107e99474fee3",
     "f2638b11e389c35933ce"
   ],
-  "content_hash": "f108ddedf8b87a6cf33a5b9ac7fdf951f719ebcf6c0581a643ff7051de6396cf",
+  "content_hash": "769643b6e809bbab9e2abc0bf727219e8503891843fa4d5967bdb658d1004f4d",
   "dependencies": [],
   "description": "Localize OmniScripts, FlexCards, and DataRaptors using Label-based translation, multi-language JSON, and locale-aware number/date formatting. NOT for Salesforce Translation Workbench alone.",
   "file_location": "skills/omnistudio/omnistudio-multi-language",

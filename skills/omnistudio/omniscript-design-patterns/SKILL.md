@@ -28,6 +28,7 @@ outputs:
   - "review findings for step structure, branching, and handoff boundaries"
   - "decision on what should stay in omniscript vs move to integration procedures or lwc"
 dependencies: []
+runtime_orphan: true
 version: 1.0.0
 author: Pranav Nagrecha
 updated: 2026-03-13

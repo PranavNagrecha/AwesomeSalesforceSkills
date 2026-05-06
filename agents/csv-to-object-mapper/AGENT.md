@@ -18,7 +18,9 @@ dependencies:
     - admin/custom-field-creation
     - admin/data-import-and-management
     - admin/object-creation-and-design
+    - data/etl-vs-api-data-patterns
     - data/external-id-strategy
+    - data/fhir-data-mapping
   shared:
     - AGENT_CONTRACT.md
     - AGENT_RULES.md
@@ -54,6 +56,8 @@ Given a CSV file header (or a schema description), produces a mapping to an exis
 6. `skills/data/external-id-strategy`
 7. `templates/admin/naming-conventions.md`
 8. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+9. `skills/data/etl-vs-api-data-patterns` — Etl vs api data patterns
+10. `skills/data/fhir-data-mapping` — Fhir data mapping
 
 ---
 

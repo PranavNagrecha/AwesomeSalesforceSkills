@@ -17,10 +17,12 @@ dependencies:
   skills:
     - admin/agent-output-formats
     - admin/data-export-service
+    - admin/sandbox-post-refresh-automation
     - admin/sandbox-strategy
     - architect/hyperforce-architecture
     - data/salesforce-backup-and-restore
     - devops/environment-strategy
+    - devops/sandbox-data-isolation-gotchas
     - devops/sandbox-refresh-and-templates
     - devops/scratch-org-management
     - devops/scratch-org-pools
@@ -64,6 +66,8 @@ Designs or audits the sandbox + scratch-org strategy for a Salesforce program: w
 10. `skills/admin/data-export-service` — Data Export role and limits in sandbox-seeding workflows; honest framing of what it does and doesn't cover
 11. `skills/architect/hyperforce-architecture` — Hyperforce migration cadence for production vs sandboxes; refresh window shifts post-migration
 12. `skills/data/salesforce-backup-and-restore` — Backup strategy, RPO/RTO; sandbox vs backup distinction
+13. `skills/admin/sandbox-post-refresh-automation` — Sandbox post refresh automation
+14. `skills/devops/sandbox-data-isolation-gotchas` — Sandbox data isolation gotchas
 
 ---
 

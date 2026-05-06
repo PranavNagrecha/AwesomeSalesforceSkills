@@ -14,11 +14,51 @@ output_formats:
   - json
 dependencies:
   skills:
+    - admin/agent-conversation-design
     - admin/agent-output-formats
+    - admin/ai-adoption-change-management
+    - admin/ai-ethics-and-governance-requirements
+    - admin/data-cloud-calculated-insights
+    - admin/data-cloud-identity-resolution
+    - admin/data-cloud-provisioning
+    - admin/data-cloud-segmentation
+    - admin/einstein-activity-capture-setup
+    - admin/einstein-analytics-basics
     - agentforce/agent-action-input-slot-extraction
     - agentforce/agent-actions
+    - agentforce/agent-channel-deployment
+    - agentforce/agent-script-dsl
     - agentforce/agent-topic-design
+    - agentforce/agentforce-agent-creation
+    - agentforce/agentforce-agent-handoff-patterns
+    - agentforce/agentforce-cost-optimization
+    - agentforce/agentforce-custom-channel-dev
+    - agentforce/agentforce-eval-harness
+    - agentforce/agentforce-in-slack
+    - agentforce/agentforce-multi-turn-patterns
+    - agentforce/agentforce-pii-redaction
+    - agentforce/agentforce-prompt-versioning
+    - agentforce/agentforce-sales-ai-setup
+    - agentforce/agentforce-service-ai-setup
+    - agentforce/agentforce-testing-strategy
+    - agentforce/agentforce-tool-use-patterns
+    - agentforce/custom-agent-actions-apex
+    - agentforce/data-cloud-grounding-for-agentforce
+    - agentforce/data-cloud-vector-search-dev
+    - agentforce/einstein-bots-to-agentforce-migration
+    - agentforce/einstein-copilot-for-sales
+    - agentforce/einstein-copilot-for-service
+    - agentforce/einstein-discovery-development
+    - agentforce/einstein-next-best-action
+    - agentforce/einstein-prediction-builder
+    - agentforce/einstein-search-personalization
     - agentforce/einstein-trust-layer
+    - agentforce/mcp-tool-definition-apex
+    - agentforce/model-builder-and-byollm
+    - agentforce/prompt-builder-templates
+    - agentforce/rag-patterns-in-salesforce
+    - agentforce/salesforce-mcp-server-setup
+    - agentforce/sf-to-llm-data-pipelines
   shared:
     - AGENT_CONTRACT.md
     - DELIVERABLE_CONTRACT.md
@@ -57,6 +97,46 @@ Takes a requirements statement — what the agent action should do, for whom, on
 8. `evals/framework.md`
 9. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 10. `skills/agentforce/agent-action-input-slot-extraction` — tune invocable input descriptions for slot extraction quality
+11. `skills/admin/agent-conversation-design` — Agent conversation design
+12. `skills/admin/ai-adoption-change-management` — Ai adoption change management
+13. `skills/admin/ai-ethics-and-governance-requirements` — Ai ethics and governance requirements
+14. `skills/admin/data-cloud-calculated-insights` — Data cloud calculated insights
+15. `skills/admin/data-cloud-identity-resolution` — Data cloud identity resolution
+16. `skills/admin/data-cloud-provisioning` — Data cloud provisioning
+17. `skills/admin/data-cloud-segmentation` — Data cloud segmentation
+18. `skills/admin/einstein-activity-capture-setup` — Einstein activity capture setup
+19. `skills/admin/einstein-analytics-basics` — Einstein analytics basics
+20. `skills/agentforce/agent-channel-deployment` — Agent channel deployment
+21. `skills/agentforce/agent-script-dsl` — Agent script dsl
+22. `skills/agentforce/agentforce-agent-creation` — Agentforce agent creation
+23. `skills/agentforce/agentforce-agent-handoff-patterns` — Agentforce agent handoff patterns
+24. `skills/agentforce/agentforce-cost-optimization` — Agentforce cost optimization
+25. `skills/agentforce/agentforce-custom-channel-dev` — Agentforce custom channel dev
+26. `skills/agentforce/agentforce-eval-harness` — Agentforce eval harness
+27. `skills/agentforce/agentforce-in-slack` — Agentforce in slack
+28. `skills/agentforce/agentforce-multi-turn-patterns` — Agentforce multi turn patterns
+29. `skills/agentforce/agentforce-pii-redaction` — Agentforce pii redaction
+30. `skills/agentforce/agentforce-prompt-versioning` — Agentforce prompt versioning
+31. `skills/agentforce/agentforce-sales-ai-setup` — Agentforce sales ai setup
+32. `skills/agentforce/agentforce-service-ai-setup` — Agentforce service ai setup
+33. `skills/agentforce/agentforce-testing-strategy` — Agentforce testing strategy
+34. `skills/agentforce/agentforce-tool-use-patterns` — Agentforce tool use patterns
+35. `skills/agentforce/custom-agent-actions-apex` — Custom agent actions apex
+36. `skills/agentforce/data-cloud-grounding-for-agentforce` — Data cloud grounding for agentforce
+37. `skills/agentforce/data-cloud-vector-search-dev` — Data cloud vector search dev
+38. `skills/agentforce/einstein-bots-to-agentforce-migration` — Einstein bots to agentforce migration
+39. `skills/agentforce/einstein-copilot-for-sales` — Einstein copilot for sales
+40. `skills/agentforce/einstein-copilot-for-service` — Einstein copilot for service
+41. `skills/agentforce/einstein-discovery-development` — Einstein discovery development
+42. `skills/agentforce/einstein-next-best-action` — Einstein next best action
+43. `skills/agentforce/einstein-prediction-builder` — Einstein prediction builder
+44. `skills/agentforce/einstein-search-personalization` — Einstein search personalization
+45. `skills/agentforce/mcp-tool-definition-apex` — Mcp tool definition apex
+46. `skills/agentforce/model-builder-and-byollm` — Model builder and byollm
+47. `skills/agentforce/prompt-builder-templates` — Prompt builder templates
+48. `skills/agentforce/rag-patterns-in-salesforce` — Rag patterns in salesforce
+49. `skills/agentforce/salesforce-mcp-server-setup` — Salesforce mcp server setup
+50. `skills/agentforce/sf-to-llm-data-pipelines` — Sf to llm data pipelines
 
 ---
 

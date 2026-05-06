@@ -31,6 +31,7 @@ outputs:
   - "Review findings covering activation status, version gaps, and input-attribute mismatches"
   - "Runtime invocation pattern for Integration Procedure callout or Apex ExpressionSetService"
 dependencies: []
+runtime_orphan: true
 version: 1.0.0
 author: Pranav Nagrecha
 updated: 2026-04-04

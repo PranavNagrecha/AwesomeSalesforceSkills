@@ -16,6 +16,7 @@ dependencies:
   skills:
     - admin/agent-output-formats
     - admin/knowledge-base-administration
+    - admin/knowledge-classic-to-lightning
     - architect/knowledge-taxonomy-design
     - architect/knowledge-vs-external-cms
     - data/knowledge-article-import
@@ -51,6 +52,7 @@ Designs or audits the taxonomy behind a Salesforce Knowledge implementation — 
 5. `skills/architect/knowledge-vs-external-cms`
 6. `skills/data/knowledge-article-import`
 7. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+8. `skills/admin/knowledge-classic-to-lightning` — Knowledge classic to lightning
 
 ---
 

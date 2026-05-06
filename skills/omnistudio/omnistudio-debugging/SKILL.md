@@ -30,6 +30,7 @@ outputs:
   - "Step-by-step debug procedure appropriate to the asset type"
   - "Recommendations to make future failures observable"
 dependencies: []
+runtime_orphan: true
 version: 1.0.0
 author: Pranav Nagrecha
 updated: 2026-04-04

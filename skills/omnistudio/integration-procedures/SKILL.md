@@ -19,6 +19,7 @@ triggers:
 inputs: ["caller contract", "external systems", "named credential setup"]
 outputs: ["integration procedure review", "orchestration recommendations", "error-handling findings"]
 dependencies: []
+runtime_orphan: true
 version: 1.0.0
 author: Pranav Nagrecha
 updated: 2026-04-28

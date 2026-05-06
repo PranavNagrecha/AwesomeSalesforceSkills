@@ -28,6 +28,7 @@ triggers:
   - expression set not returning the expected value
   - how do I call a calculation procedure from an OmniScript
 dependencies: []
+runtime_orphan: true
 version: 1.0.0
 author: Pranav Nagrecha
 updated: 2026-04-04

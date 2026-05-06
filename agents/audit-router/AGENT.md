@@ -16,10 +16,35 @@ multi_dimensional: true
 dependencies:
   skills:
     - admin/agent-output-formats
+    - admin/analytics-adoption-strategy
+    - admin/analytics-dashboard-design
+    - admin/analytics-dashboard-json
+    - admin/analytics-data-manager
+    - admin/analytics-dataflow-development
+    - admin/analytics-dataset-management
+    - admin/analytics-kpi-definition
+    - admin/analytics-permission-and-sharing
+    - admin/analytics-recipe-design
+    - admin/analytics-requirements-gathering
+    - admin/approval-process-apex-patterns
+    - admin/cpq-approval-workflows
+    - admin/crm-analytics-app-creation
+    - admin/custom-button-to-action-migration
     - admin/data-export-service
+    - admin/einstein-discovery-deployment
+    - admin/einstein-discovery-setup
+    - admin/global-actions-and-quick-actions
     - admin/lightning-experience-transition
+    - admin/list-views-and-compact-layouts
+    - admin/marketing-reporting-requirements
+    - admin/picklist-data-integrity
+    - admin/record-type-id-management
+    - admin/report-performance-tuning
     - admin/report-type-strategy
+    - admin/reports-and-dashboards
+    - admin/reports-and-dashboards-fundamentals
     - devops/metadata-diff-between-sandboxes
+    - security/dynamic-sharing-recalculation
     - security/guest-user-security-audit
     - security/sso-saml-troubleshooting
   shared:
@@ -61,6 +86,31 @@ Dispatches one of the audit domains in the [`audit_harness`](../_shared/harnesse
 12. `skills/admin/report-type-strategy` — Custom report types, with/without joins, report type strategy
 13. `skills/security/guest-user-security-audit` — Experience Cloud guest user 2021 changes audit
 14. `skills/security/sso-saml-troubleshooting` — SAML response inspection, SSO debugging (my_domain_session_security)
+15. `skills/admin/analytics-adoption-strategy` — Analytics/reporting: Analytics adoption strategy
+16. `skills/admin/analytics-dashboard-design` — Analytics/reporting: Analytics dashboard design
+17. `skills/admin/analytics-dashboard-json` — Analytics/reporting: Analytics dashboard json
+18. `skills/admin/analytics-data-manager` — Analytics/reporting: Analytics data manager
+19. `skills/admin/analytics-dataflow-development` — Analytics/reporting: Analytics dataflow development
+20. `skills/admin/analytics-dataset-management` — Analytics/reporting: Analytics dataset management
+21. `skills/admin/analytics-kpi-definition` — Analytics/reporting: Analytics kpi definition
+22. `skills/admin/analytics-permission-and-sharing` — Analytics/reporting: Analytics permission and sharing
+23. `skills/admin/analytics-recipe-design` — Analytics/reporting: Analytics recipe design
+24. `skills/admin/analytics-requirements-gathering` — Analytics/reporting: Analytics requirements gathering
+25. `skills/admin/approval-process-apex-patterns` — Approval process: Approval process apex patterns
+26. `skills/admin/cpq-approval-workflows` — Approval process: Cpq approval workflows
+27. `skills/admin/crm-analytics-app-creation` — Analytics/reporting: Crm analytics app creation
+28. `skills/admin/custom-button-to-action-migration` — Action button/quick action: Custom button to action migration
+29. `skills/admin/einstein-discovery-deployment` — Analytics/reporting: Einstein discovery deployment
+30. `skills/admin/einstein-discovery-setup` — Analytics/reporting: Einstein discovery setup
+31. `skills/admin/global-actions-and-quick-actions` — Action button/quick action: Global actions and quick actions
+32. `skills/admin/list-views-and-compact-layouts` — Record type/layout: List views and compact layouts
+33. `skills/admin/marketing-reporting-requirements` — Analytics/reporting: Marketing reporting requirements
+34. `skills/admin/picklist-data-integrity` — Picklist: Picklist data integrity
+35. `skills/admin/record-type-id-management` — Record type/layout: Record type id management
+36. `skills/admin/report-performance-tuning` — Analytics/reporting: Report performance tuning
+37. `skills/admin/reports-and-dashboards` — Analytics/reporting: Reports and dashboards
+38. `skills/admin/reports-and-dashboards-fundamentals` — Analytics/reporting: Reports and dashboards fundamentals
+39. `skills/security/dynamic-sharing-recalculation` — Sharing/security: Dynamic sharing recalculation
 
 ---
 

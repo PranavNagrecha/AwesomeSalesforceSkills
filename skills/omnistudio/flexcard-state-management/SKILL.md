@@ -28,6 +28,7 @@ outputs:
   - "refresh strategy (element, card, data source) per action"
   - "conditional visibility and pubsub recommendations"
 dependencies: []
+runtime_orphan: true
 version: 1.0.0
 author: Pranav Nagrecha
 updated: 2026-04-28

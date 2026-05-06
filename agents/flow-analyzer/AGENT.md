@@ -15,6 +15,8 @@ output_formats:
 dependencies:
   skills:
     - admin/agent-output-formats
+    - admin/flow-for-admins
+    - admin/flow-orchestration-admin
     - apex/trigger-and-flow-coexistence
     - flow/flow-action-framework
     - flow/flow-and-platform-events
@@ -142,6 +144,8 @@ For a given Flow or sObject, decides whether the automation is in the right tool
 49. `agents/_shared/probes/flow-references-to-field.md` — used to map flow → field references in cross-object audits
 50. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 51. `skills/flow/recursion-and-re-entry-prevention` — Diagnose Flow loops via state-guard, hash, or lock pattern; tighten over-broad entry criteria
+52. `skills/admin/flow-for-admins` — Flow for admins
+53. `skills/admin/flow-orchestration-admin` — Flow orchestration admin
 
 ---
 

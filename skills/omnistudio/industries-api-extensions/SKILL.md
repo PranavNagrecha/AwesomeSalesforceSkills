@@ -34,6 +34,7 @@ outputs:
   - "Pattern recommendations for error handling and consistency guarantees"
   - "Migration guidance away from deprecated gateway patterns (Comms Cloud)"
 dependencies: []
+runtime_orphan: true
 version: 1.0.0
 author: Pranav Nagrecha
 updated: 2026-04-15

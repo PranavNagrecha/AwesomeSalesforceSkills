@@ -28,6 +28,7 @@ outputs:
   - "mapping and performance review findings"
   - "boundary guidance for DataRaptor versus IP versus Apex"
 dependencies: []
+runtime_orphan: true
 version: 1.0.0
 author: Pranav Nagrecha
 updated: 2026-03-13

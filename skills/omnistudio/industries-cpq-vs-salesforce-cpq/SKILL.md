@@ -28,6 +28,7 @@ outputs:
   - "Migration path summary from current CPQ state to target state"
   - "Risk register of top switching costs and platform constraints"
 dependencies: []
+runtime_orphan: true
 version: 1.0.0
 author: Pranav Nagrecha
 updated: 2026-04-28

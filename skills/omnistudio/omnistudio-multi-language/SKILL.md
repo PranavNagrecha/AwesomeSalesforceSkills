@@ -20,6 +20,7 @@ inputs:
 outputs:
   - "language data JSON + label extraction plan"
 dependencies: []
+runtime_orphan: true
 version: 1.0.0
 author: Pranav Nagrecha
 updated: 2026-04-28

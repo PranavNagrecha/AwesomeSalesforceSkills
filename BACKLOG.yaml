@@ -188,96 +188,12 @@
   notes: "Covered by skills/architect/data-cloud-architecture — that skill covers DSO/DLO/DMO/Unified Individual layer design, identity resolution match and reconciliation rule design, activation target pre-flight, and batch vs streaming segmentation strategy."
   source_line: 1419
   history: []
-- id: "data-cloud-vs-analytics-decision"
-  status: "RESEARCHED"
-  skill: "data-cloud-vs-analytics-decision"
-  summary: "Data Cloud vs CRM Analytics: when to use each, complementary patterns, data flow design, overlapping capabilities. NOT for implementation."
-  notes: "Researched 2026-04-14. Sources: [Data 360 Architecture (architect.salesforce.com/docs/architect/fundamentals/guide/data-360-architecture); Data 360 Integration Patterns (architect.salesforce.com/docs/architect/fundamentals/guide/data360_integration_patterns_and_practices); Unlock CRM Analytics Insights on Data Cloud (sf.bi_direct_data_for_cdp.htm)]. Key: Data Cloud (Data 360) is the foundational unification and identity resolution layer — it ingests, harmonizes, and profiles cross-source data using a lakehouse + real-time NVMe architecture, with identity resolution running as frequently as every 15 minutes; CRM Analytics is an analytics/visualization consumer that connects to Data Cloud via the native Direct Data connector, querying Data Model Objects (DMOs) rather than raw Salesforce objects, making them complementary rather than competing platforms. The primary decision dimension is which analytics layer to use ON TOP of Data Cloud — CRM Analytics, Tableau (JDBC/Direct Query), or direct API access (Data Graph API) — not whether to use Data Cloud OR CRM Analytics. Hard limits: Data Cloud batch ingestion caps at 100M rows or 50 GB per object; zero-copy federation available to Snowflake/Databricks/BigQuery/Redshift. No overlap with existing crm-analytics-vs-tableau-decision skill (that skill covers CRM Analytics vs Tableau only). Gaps: help.salesforce.com Analyze Data from Data 360 page (c360_a_business_intelligence_analytics.htm) returned 403 — fetch during build; confirm whether Data Cloud license is required to use Direct Data connector from CRM Analytics. LLM anti-pattern: conflating Data Cloud as an analytics tool with CRM Analytics — Data Cloud produces no dashboards; also watch for Tableau CRM (deprecated name for CRM Analytics) vs Tableau name confusion."
-  source_line: 1421
-  history: []
-- id: "slack-workflow-builder"
-  status: "RESEARCHED"
-  skill: "slack-workflow-builder"
-  summary: "Slack Workflow Builder with Salesforce: triggers, steps, data actions, automated notifications, approval flows. NOT for Salesforce Flow."
-  notes: "Researched 2026-04-13. Sources: [Guide to Slack Workflow Builder (slack.com/help/articles/360035692513); Build No-Code Slack and Salesforce Automations With Flow (admin.salesforce.com/blog/2025); Slack Flow Core Actions (id=sf.flow_ref_elements_actions_slack.htm)]. Key: Slack Workflow Builder connects to Salesforce via the Salesforce connector step Run a Flow which can ONLY invoke active autolaunched Flows not record-triggered or screen Flows; record-triggered Flows can push Slack messages via Send a Slack Message action but only in asynchronous paths. Hard async limit of 250,000 calls per 24-hour period and configurable trigger record limit to prevent bulk notification floods. Gotcha: LLMs commonly confuse Slack Workflow Builder (Slack-native, invokes autolaunched Flows from Slack) with Salesforce Flow (Salesforce-native, can post to Slack as side-effect) -- separate authoring surfaces with different owners, trigger models, and failure modes; no declarative way to look up a user's Slack ID from Salesforce without a custom field, which LLMs routinely omit. Gaps: approval flow patterns within Slack Workflow Builder (buttons-based pause-and-resume); Slack Workflow Builder admin governance controls; behavior when Salesforce connector step auth user lacks field-level access."
-  source_line: 1433
-  history: []
-- id: "loyalty-program-architecture"
-  status: "RESEARCHED"
-  skill: "loyalty-program-architecture"
-  summary: "Loyalty Management architecture: tier design, point economy, partner integration, fraud prevention, scaling. NOT for implementation."
-  notes: "Researched 2026-04-15. Sources: [Loyalty Management Solution Architecture (architect.salesforce.com/diagrams/template-gallery/loyalty-management-solution-architecture); Loyalty Management Capability Map (architect.salesforce.com/diagrams/reference-architectures/loyalty-management-capability-map); Loyalty Programs Data Model (architect.salesforce.com/diagrams/data-models/loyalty-cloud/loyalty-programs); Loyalty Management Data Model Developer Guide (developer.salesforce.com/docs/atlas.en-us.loyalty.meta/loyalty/loyalty_management_data_model.htm); LoyaltyMemberCurrency object (loyalty/sforce_api_objects_loyaltymembercurrency.htm); LoyaltyProgramPartner object (loyalty/sforce_api_objects_loyaltyprogrampartner.htm)]. Key: The canonical two-currency architecture is qualifying points (determine tier eligibility, LoyaltyMemberCurrency, API v51.0+) vs. non-qualifying points (redeemable for products/services) — conflating the two in point economy design is the single most common architecture mistake. Escrow points are the native fraud-prevention mechanism: points earned on a purchase are held in escrow until the return window closes, preventing redemption on subsequently returned items — a first-class data model concept, not a custom workaround. Partner integration uses LoyaltyProgramPartner with LoyaltyPgmPartnerCurrency junction (API v55.0+); architecture runs on three interoperable platforms (Salesforce Platform, Commerce, Marketing). Distinct from loyalty-management-setup (implementation mechanics, not yet built as a skill); this skill targets architect-level decisions (tier economy design rationale, partner integration topology, fraud strategy, scaling choices). LLM anti-pattern: conflating qualifying and non-qualifying points — they serve different functions and using non-qualifying for tier assessment breaks the tier calculation engine. Gaps: no official concurrency/throughput limits for Loyalty Business APIs or batch tier-processing jobs found in search results; developer guide deep-dive needed during build."
-  source_line: 1447
-  history: []
-- id: "net-zero-cloud-setup"
-  status: "RESEARCHED"
-  skill: "net-zero-cloud-setup"
-  summary: "Net Zero Cloud (Sustainability Cloud): carbon accounting, emission factors, sustainability reporting, targets. NOT for standard reporting."
-  notes: "Researched 2026-04-14. Sources: [Net Zero Cloud Developer Guide v66.0 Spring '26 (netzero_cloud_dev_guide); Net Zero Cloud Data Model Overview (net-zero-cloud-overview); Configure a Net Zero Cloud Org — Trailhead (configure-a-net-zero-cloud-org); Emissions Factor Records Developer Guide (netzero_calc_emissions_factor_records); Net Zero Cloud IndustriesSettings API Reference (salesforce-industries-dev-guide)]. Key: Net Zero Cloud is a separately licensed Industry Cloud (Starter ~$48k/org/year; Growth ~$210k/org/year) requiring a dedicated permission set model — Net Zero Cloud Admin, Manager, and Auditor — plus Data Pipelines Base User and Use Data Processing Engine permission sets assigned in the correct order before any feature toggle is touched; skipping Data Pipelines setup before enabling carbon accounting features breaks automation silently. Feature enablement is granular: each capability (Carbon Accounting, Building Energy Intensity, Data Gaps, Scope 3 Hub, Target Setting, Waste, Water, Supplier Data, Carbon Credit Allocation) is a separate boolean toggle in SustainabilitySettings metadata (API v54.0+), and several features — Scope 3 Hub, Waste Management Category 5/12, Extended Organizational Boundaries — are Growth-license-only. Emission factors are versioned reference datasets (EPA, BEIS, IPCC sources preconfigured; custom fuel types supported) that must be loaded before carbon footprint auto-creation will calculate correctly; both Assign Carbon Footprint to Energy Use Records AND Auto-Create Carbon Footprints must be enabled — enabling one without the other leaves records uncalculated with no error. The data model exceeds 200 objects covering scope 1/2/3, stationary assets, vehicles, travel, procurement, waste, water, and ESG/materiality. Gaps: per-feature API version minimum table and CSRD/ESRS reporting output configuration need deeper doc review; Scope 3 Hub spend-based matching algorithm limits need confirmation. LLM anti-pattern: do not conflate Net Zero Cloud with standard Salesforce Reports — carbon footprint records are auto-generated by Data Processing Engine flows, not written directly by users or Apex."
-  source_line: 1448
-  history: []
-- id: "automotive-cloud-setup"
-  status: "RESEARCHED"
-  skill: "automotive-cloud-setup"
-  summary: "Automotive Cloud: vehicle lifecycle, dealer management, lead distribution, inventory management, test drives. NOT for standard Sales Cloud."
-  notes: "Researched 2026-04-14. Sources: [Automotive Cloud Developer Guide v66.0 Spring '26 (developer.salesforce.com/docs/atlas.en-us.automotive_cloud); Automotive Cloud Standard Objects (help.salesforce.com — ind.auto_cloud.htm); Set Up Vehicle Inventory Search (ind.auto_search_configure_parent.htm); Automotive Cloud Integrations API — Vehicle Inventory Resource Mapping (industries/automotive/guide/vehicle-inventory-resource-mapping.html)]. Key: Automotive Cloud is available only in Enterprise, Unlimited, and Developer Editions and requires an Industries Automotive permission set license per user — without it, core objects (Vehicle, VehicleDefinition, LeadLineItem, LeadPreferredSeller, DealerVehDefSearchableField, Fleet, Appraisal, WarrantyTerm) are inaccessible even on eligible orgs. The data model spans 100+ domain-specific objects covering vehicle lifecycle, dealer group and OEM management, lead distribution via LeadPreferredSeller, inventory search via VehicleSearchableField, test drive scheduling, financial accounts, appraisals, claims, and telematics — all Lightning Experience only. A hard boundary exists with Manufacturing Cloud: sales agreements, advanced account forecasting, and program-based business are NOT in Automotive Cloud. MuleSoft Direct integration assets are provided for vehicle inventory BOD flows and require separate MuleSoft licensing; Name is the only mandatory field across most vehicle inventory resource mappings. Gaps: permission set license details, test drive scheduler config, vehicle inventory search setup steps return 403 from help.salesforce.com — needs Salesforce docs browser session during build; pricing tiers and Automotive Cloud Data Kit basic settings also need direct Salesforce Help access."
-  source_line: 1450
-  history: []
-- id: "manufacturing-cloud-setup"
-  status: "RESEARCHED"
-  skill: "manufacturing-cloud-setup"
-  summary: "Manufacturing Cloud: account-based forecasting, rebate management, sales agreements, partner performance. NOT for standard forecasting."
-  notes: "Researched 2026-04-16. Sources: [Employ Sales Agreement and Account-Based Forecasts (sf.c360guide_mfg_scenario_sales_agreements_forecasts.htm); Configure Account Forecasts (sf.af_admin_settings_concept.htm); Advanced Account Forecasting Setup (ind.aaf_admin_customize_task.htm); Manufacturing Cloud Admin Essentials — Trailhead; Rebate Management Essentials — Trailhead; Set Up Rebate Management (xcloud.admin_rebates_set_up_rebate_management.htm)]. Key: Manufacturing Cloud is a separately licensed product (~$250/user/month, Enterprise/Unlimited) layered on Sales Cloud; key objects: Sales Agreement (run-rate committed business with period-level planned vs. actual quantity/revenue on SalesAgreementProductSchedule), Account Forecast (merges opportunities, orders, sales agreements, historical order data), and Run Rate metrics. Admin setup: enable Sales Agreements in Setup, select actuals-calculation mode (direct orders, orders-through-contracts, or manual API upload), configure Advanced Account Forecasting via Data Processing Engine (DPE). Standard Salesforce Collaborative Forecasting is a DIFFERENT feature with NO overlap with these objects. Rebate Management requires Manufacturing Cloud enabled + minimum 10 Manufacturing Cloud licenses; is under Channel Revenue Management umbrella with separate pricing — treat rebate-management-setup as a related-but-separate skill. Gaps: Experience Cloud partner performance portal setup; Account Manager Targets configuration; DPE job configuration details for Advanced Account Forecasting."
-  source_line: 1453
-  history: []
 - id: "public-sector-solutions-setup"
   status: "TODO"
   skill: "public-sector-solutions-setup"
   summary: "Public Sector Solutions: licensing, permits, inspections, case management for government, citizen engagement. NOT for standard case management."
   notes: "admin"
   source_line: 1454
-  history: []
-- id: "salesforce-maps-setup"
-  status: "RESEARCHED"
-  skill: "salesforce-maps-setup"
-  summary: "Salesforce Maps: route optimization, territory planning, live tracking, geolocation visualization, proximity search, drive-time analysis. NOT for Field Service scheduling."
-  notes: "Researched 2026-04-16. Sources: [Maps Permission Set Licenses (id=000380787); Give Users Access to Salesforce Maps (sales.salesforce_maps_setup_permissions_sets_assign.htm); Implementing Salesforce Maps Advanced Routing (sf.salesforce_maps_adv_implementation.htm); Configure Territory Planning (id=000389064); Best Practices for Marker Layers (id=000395535)]. Key: Salesforce Maps requires a separate Maps Permission Set License assigned before matching Permission Set — not included in any core Salesforce edition (starting ~$75/user/month). Core features: Marker Layers (record geo-pins from address fields), Shape Layers (drawn boundary polygons for proximity/territory aggregation), Live Tracking (real-time location, geo-fencing, auto-logged visits), Route Optimization and Scheduling (multi-stop routes), Territory Planning (GIS-based territory design with rep skills/seniority), and proximity/drive-time analysis (Travel Time boundaries with traffic). Targets field sales reps (pipeline visualization + visit route optimization) — NOT Field Service Lightning which handles work orders, case-severity dispatch, inventory, and technician scheduling (completely different personas and scheduling engines). Gaps: per-feature permission set breakdown (Maps Live vs. Maps Territory Planning vs. core Maps); geocoding credit limits; exact Spring '25 Territory Planning changes."
-  source_line: 1456
-  history: []
-- id: "private-connect-setup"
-  status: "RESEARCHED"
-  skill: "private-connect-setup"
-  summary: "Private Connect: AWS PrivateLink for Salesforce, inbound/outbound connections, VPC endpoint setup, DNS config. NOT for standard Named Credentials."
-  notes: "Researched 2026-04-17. Sources: [Secure Cross-Cloud Integrations with Private Connect (sf.private_connect_overview.htm); Considerations for Private Connect with AWS (sf.private_connect_considerations.htm); Establish Inbound/Outbound Connections with AWS (sf.private_connect_inbound_aws.htm; sf.private_connect_outbound_aws.htm)]. Key: Private Connect is add-on licensed (one license per AWS region = one inbound + one outbound connection + 5 GB/day data transfer); inbound = AWS-to-Salesforce via PrivateLink VPC endpoint with customer-managed DNS; outbound = Salesforce Apex/Flow/External Services calling into customer VPC via NLB-backed endpoint service; hard 56.48 GB/hour traffic limit; only Full Copy and Partial Copy sandboxes supported (Developer/Developer Pro excluded); requires Hyperforce in target region; NOT supported for Tableau, Marketing Cloud, Commerce Cloud, or Apex Continuations. Gaps: Azure Private Link equivalent; Government Cloud Plus constraints; External Services integration pattern with outbound Private Connect."
-  source_line: 1500
-  history: []
-- id: "oauth-token-management"
-  status: "RESEARCHED"
-  skill: "oauth-token-management"
-  summary: "OAuth token lifecycle: refresh token rotation, token revocation, connected app policies, session management, token introspection. NOT for OAuth flow selection (use oauth-flows-and-connected-apps)."
-  notes: "Researched 2026-04-16. Sources: [Manage OAuth Access Policies for a Connected App (xcloud.connected_app_manage_oauth.htm); Revoke OAuth Tokens Programmatically (xcloud.remoteaccess_revoke_token.htm); OAuth 2.0 Refresh Token Flow (xcloud.remoteaccess_oauth_refresh_token_flow.htm); Rotate Refresh Tokens (rn_security_refresh_token_rotation.htm release=248); OpenID Connect Token Introspection (xcloud.remoteaccess_oidc_token_introspection_endpoint.htm)]. Key: Access token lifetime = min(Connected App Session Timeout, org-wide Session Settings timeout) ranging 15 min to 24 hrs; revoking access token via POST /services/oauth2/revoke terminates that session only; revoking refresh token simultaneously invalidates all outstanding access tokens issued against it. Refresh token rotation (release=248/Winter '24, enabled per Connected App) issues a new refresh token on every use and immediately invalidates consumed token — bug fix landed in release 250. Refresh token policy options: valid until revoked, valid for N days, expires after N days of inactivity (configured under App Manager > OAuth Policies). Distinct from oauth-flows-and-connected-apps (which covers flow selection, not token lifecycle). Gaps: retry semantics when client fails to receive new refresh token during rotation; whether introspection requires specific OAuth scope; refreshTokenPolicy=zero metadata value behavior."
-  source_line: 1503
-  history: []
-- id: "flow-large-data-volume-patterns"
-  status: "RESEARCHED"
-  skill: "flow-large-data-volume-patterns"
-  summary: "Flow patterns for large data volumes: collection variable limits, loop optimization, Get Records performance, batch-like patterns, async invocable. NOT for Batch Apex."
-  notes: "Researched 2026-04-16. Sources: [General Flow Limits (sf.flow_considerations_limit.htm); Flow Considerations (platform.flow_considerations.htm); Spring '25 release note: Enhance Flow Performance Controlling Number of Records Retrieved (release=254)]. Key: Hard SOQL governor limit for Flow is 50,000 rows per transaction — unbounded Get Records throws 'Too many query rows: 50001' in production while sandbox tests with small data pass. Spring '25 added 'All records, up to a specified limit' option on Get Records element to cap retrieval safely. Classic loop+DML anti-pattern consumes shared transaction budget — correct design: query outside loop into collection, accumulate mutations in Assignment inside loop, commit single Update Records after loop. DML cap: 150 statements and 10,000 rows modified; CPU: 10 seconds; all shared across automation in one transaction. For workloads exceeding safe Flow scope, use @InvocableMethod wrapping Queueable/Batch Apex or use record-triggered flow's async path. Gaps: Spring '25 cap behavior when underlying SOQL exceeds 50K; async path budget vs Queueable; whether 2,000-record community cap is platform-enforced or recommended only."
-  source_line: 1514
-  history: []
-- id: "flow-dynamic-choices"
-  status: "RESEARCHED"
-  skill: "flow-dynamic-choices"
-  summary: "Dynamic choice sets in flows: picklist sources, record choice sets, dependent choices, multi-select patterns, choice performance. NOT for screen flow design."
-  notes: "Researched 2026-04-17. Sources: [Flow Resource: Record Choice Set (help.salesforce.com/s/articleView - flow_ref_resources_recordchoice.htm); Picklist Choice Set Resource (flow_ref_resources_picklistchoice.htm)]. Key: Four distinct choice resource types - Static Choice, Picklist Choice Set, Record Choice Set, Collection Choice Set; Record Choice Set caps at 200 choices (first 200 records returned) and consumes one SOQL query per instance; Collection Choice Set bypasses both the 200-record cap and the database query by reusing a pre-fetched collection; Picklist Choice Set auto-updates with picklist metadata but cannot filter by record type or respect picklist dependencies. Gaps: dependent choice patterns beyond what Picklist Choice Set natively supports; multi-select picklist field behavior in non-screen flow contexts; Spring 26 updates to choice set filtering or record-type awareness."
-  source_line: 1515
-  history: []
-- id: "flow-action-framework"
-  status: "RESEARCHED"
-  skill: "flow-action-framework"
-  summary: "Flow action framework: standard actions, custom Apex actions, external service actions, action packs, Invocable variables. NOT for Invocable Methods in Apex."
-  notes: "Researched 2026-04-16. Sources: [InvocableMethod Annotation — Apex Developer Guide (apexcode/apex_classes_annotation_InvocableMethod.htm); InvocableVariable Annotation (apexcode/apex_classes_annotation_InvocableVariable.htm); Provided Flow Core Actions (platform.flow_ref_elements_actions_list.htm); Flow Element: Apex Action (sf.flow_ref_elements_apex_invocable.htm); Making Callouts from Invocable Actions (apexcode/apex_forcecom_flow_invocable_action_callout.htm)]. Key: Five action categories in Flow Builder: standard/core platform actions (Send Email, Post to Chatter, Submit for Approval), custom Apex (@InvocableMethod — input must be List<T>, output must be List<T> of same size), External Service actions (OpenAPI 2.0/3.0 via Named Credentials), subflows, and local actions (LWC). @InvocableVariable supports Apex primitives, sObjects, and List/List<List> of those types — NOT Object, Map, Set, static/final fields. For callouts from Apex actions in screen flows, callout=true modifier required on @InvocableMethod. LLM anti-pattern: generating @InvocableMethod processing a single record instead of List<T> — Flow batches records and throws runtime mismatch if output list size != input list size. Gaps: full standard core actions enumeration; action pack versioning for managed packages; callout=true behavior in auto-launched vs record-triggered flows."
-  source_line: 1516
   history: []
 - id: "flow-interview-debugging"
   status: "DUPLICATE"
@@ -306,13 +222,6 @@
   summary: "PMD for Apex: ruleset configuration, custom rules, Salesforce Code Analyzer integration, CI/CD gates, suppression patterns. NOT for manual code review (use secure-coding-review-checklist)."
   notes: "Covered by skills/devops/salesforce-code-analyzer. PMD engine selection (sf code-analyzer run --engine pmd), @SuppressWarnings suppression patterns (rule-specific vs blanket), CI gate configuration (--severity-threshold), and custom rule authoring in code-analyzer.yml already covered. v4 to v5 migration guidance (--pmdconfig retirement) is the only gap and should be added to existing skill."
   source_line: 1548
-  history: []
-- id: "devops-center-advanced"
-  status: "RESEARCHED"
-  skill: "devops-center-advanced"
-  summary: "DevOps Center advanced: work items, change tracking, pipeline stages, conflict resolution, org comparison, vs SFDX tradeoffs. NOT for DevOps Center basic setup."
-  notes: "Researched 2026-04-17. Sources: [DevOps Center - Conflict Detection and Resolution (sf.devops_center_promotion_conflict_detection.htm); Merge Conflict Prevention Tools (platform.devops_center_mcp_intro.htm); DevOps Center for Hybrid Teams blog (developer.salesforce.com)]. Key: ~70% overlap with existing devops/devops-center-pipeline skill (work items, pipeline stages, bundle promotion, conflict resolution); distinct uncovered scope: org comparison/environment diff (comparing two orgs for drift outside promotion context) and Merge Conflict Prevention (MCP) tooling; DevOps Center uses Metadata API internally (not sf deploy), surfaces no CLI deploy logs, does not support unlocked packages or namespace-scoped metadata, cannot be mixed with CLI deployments without diverging source tracking state. Gaps: org compare/environment diff feature ('Salesforce DevOps Center org compare'); MCP tools feature set via 'Salesforce DevOps Center merge conflict prevention site:help.salesforce.com'."
-  source_line: 1550
   history: []
 - id: "event-driven-salesforce-architecture"
   status: "DUPLICATE"
@@ -355,41 +264,6 @@
   summary: "Lightning Experience migration: readiness check, Visualforce gaps, JavaScript button alternatives, Classic-only features, hybrid rollout strategy. NOT for LWC development."
   notes: "Researched 2026-04-18. Sources: [How to Transition to Lightning Experience (help.salesforce.com sf.lex_welcome_to_lex.htm); Readiness Check (help.salesforce.com sf.lex_readiness_check.htm); Move Actions and Buttons to Lightning Experience (help.salesforce.com sf.lcc_actions_overview.htm); Prepare Visualforce Pages for Lightning Experience (help.salesforce.com sf.lcc_visualforce_overview.htm)]. Key: JavaScript buttons are NOT supported in Lightning Experience -- must be replaced with Quick Actions (Flow-based), LWC screen flows, or LWC; this is the most common Classic-to-Lightning blocker for button-heavy orgs. The Lightning Experience Readiness Check (Setup > Lightning Experience Migration Assistant) is the official starting point -- generates a report covering Visualforce pages, JavaScript buttons, Classic-only features, and user readiness. The Visualforce Report flags sforce.one library usage, iframe patterns, and direct record-ID URL links as incompatibility patterns. Local corpus has admin/app-and-tab-configuration covering app-level migration but no dedicated skill for the full migration process. LLM anti-pattern: suggesting just open Visualforce pages in Lightning Experience without noting that pages using sforce.one.navigateToSObject() or inline JavaScript will silently fail in the LEX Visualforce frame container. Gaps: full list of Classic-only unsupported LEX features; hybrid rollout via permission assignments; Switch to Classic toggle management; Aura component inventory as migration scope."
   source_line: 1631
-  history: []
-- id: "visualforce-to-lwc-migration"
-  status: "TODO"
-  skill: "visualforce-to-lwc-migration"
-  summary: "VF page → LWC conversion: controller → Apex service, action functions → imperative Apex, viewState elimination, component mapping, incremental migration. NOT for Aura migration (use aura-to-lwc-migration)."
-  notes: "lwc"
-  source_line: 1632
-  history: []
-- id: "attachment-to-files-migration"
-  status: "TODO"
-  skill: "attachment-to-files-migration"
-  summary: "Attachment/Note → ContentVersion/ContentNote migration: data mapping, parent linking, ContentDocumentLink creation, body encoding, bulk migration scripts. NOT for file upload LWC."
-  notes: "data"
-  source_line: 1633
-  history: []
-- id: "classic-email-template-migration"
-  status: "TODO"
-  skill: "classic-email-template-migration"
-  summary: "Classic email templates → Lightning email templates: merge field syntax changes, Handlebars, Enhanced Letterhead, folder structure, Custom type limitations. NOT for email deliverability."
-  notes: "admin"
-  source_line: 1634
-  history: []
-- id: "knowledge-classic-to-lightning"
-  status: "TODO"
-  skill: "knowledge-classic-to-lightning"
-  summary: "Knowledge Classic → Lightning Knowledge migration: article type consolidation, data categories, migration tool, validation rules, record type mapping. NOT for knowledge admin (use knowledge-base-administration)."
-  notes: "data"
-  source_line: 1635
-  history: []
-- id: "custom-button-to-action-migration"
-  status: "TODO"
-  skill: "custom-button-to-action-migration"
-  summary: "JavaScript buttons → Quick Actions/LWC actions: URL hack replacement, button behavior mapping, Mass Actions, Lightning-safe alternatives. NOT for global actions."
-  notes: "admin"
-  source_line: 1636
   history: []
 - id: "content-document-management"
   status: "RESEARCHED"
@@ -559,13 +433,6 @@
   notes: "apex"
   source_line: 1735
   history: []
-- id: "flow-screen-lwc-components"
-  status: "TODO"
-  skill: "flow-screen-lwc-components"
-  summary: "Custom LWC screen components for Flow: FlowAttributeChangeEvent, flow navigation events, validation, reactive inputs, FlowScreenComponentInterface. NOT for flow-custom-property-editors."
-  notes: "flow"
-  source_line: 1758
-  history: []
 - id: "report-and-dashboard-subscriptions"
   status: "TODO"
   skill: "report-and-dashboard-subscriptions"
@@ -593,13 +460,6 @@
   summary: "Path (Sales Path): key fields, guidance per stage, confetti, Kanban view configuration, Path on custom objects, Path vs business process. NOT for Opportunity management."
   notes: "admin"
   source_line: 1774
-  history: []
-- id: "dynamic-forms-migration"
-  status: "TODO"
-  skill: "dynamic-forms-migration"
-  summary: "Dynamic Forms migration: page layout to dynamic form conversion, field section creation, visibility rules, migration tool, Lightning App Builder, limitations by object. NOT for Dynamic Forms concepts (use dynamic-forms-and-actions)."
-  notes: "admin"
-  source_line: 1775
   history: []
 - id: "experience-cloud-builder-patterns"
   status: "TODO"

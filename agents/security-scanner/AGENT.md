@@ -16,6 +16,7 @@ multi_dimensional: true
 dependencies:
   skills:
     - admin/agent-output-formats
+    - admin/connected-app-troubleshooting
     - apex/apex-collections-patterns
     - apex/apex-custom-permissions-check
     - apex/apex-design-patterns
@@ -51,8 +52,36 @@ dependencies:
     - apex/visualforce-fundamentals
     - architect/zero-trust-salesforce-patterns
     - integration/named-credentials-setup
+    - security/api-security-and-rate-limiting
+    - security/clickjack-and-frame-protection
+    - security/csp-and-trusted-urls
+    - security/data-classification-labels
+    - security/encrypted-field-query-patterns
+    - security/event-monitoring
+    - security/ferpa-compliance-in-salesforce
+    - security/field-audit-trail
+    - security/file-upload-virus-scanning
+    - security/gdpr-data-privacy
     - security/guest-user-security-audit
+    - security/ip-relaxation-and-restriction
+    - security/login-forensics
+    - security/mfa-enforcement-strategy
+    - security/network-security-and-trusted-ips
+    - security/oauth-redirect-and-domain-strategy
+    - security/oauth-token-management
+    - security/org-hardening-and-baseline-config
+    - security/platform-encryption
+    - security/recaptcha-and-bot-prevention
+    - security/sandbox-data-masking
+    - security/scim-provisioning-integration
+    - security/secure-coding-review-checklist
+    - security/security-health-check
+    - security/security-incident-response
+    - security/service-account-credential-rotation
+    - security/shield-event-log-retention-strategy
     - security/sso-saml-troubleshooting
+    - security/transaction-security-policies
+    - security/xss-and-injection-prevention
   shared:
     - AGENT_CONTRACT.md
     - DELIVERABLE_CONTRACT.md
@@ -86,70 +115,100 @@ Walks a `force-app/` tree and flags CRUD/FLS violations, sharing leaks, hardcode
 
 ## Mandatory Reads Before Starting
 
+2. `skills/admin/connected-app-troubleshooting` — Connected app troubleshooting
+3. `skills/security/api-security-and-rate-limiting` — Api security and rate limiting
+4. `skills/security/clickjack-and-frame-protection` — Clickjack and frame protection
+5. `skills/security/csp-and-trusted-urls` — Csp and trusted urls
+6. `skills/security/data-classification-labels` — Data classification labels
+7. `skills/security/encrypted-field-query-patterns` — Encrypted field query patterns
+8. `skills/security/event-monitoring` — Event monitoring
+9. `skills/security/ferpa-compliance-in-salesforce` — Ferpa compliance in salesforce
+10. `skills/security/field-audit-trail` — Field audit trail
+11. `skills/security/file-upload-virus-scanning` — File upload virus scanning
+12. `skills/security/gdpr-data-privacy` — Gdpr data privacy
+13. `skills/security/ip-relaxation-and-restriction` — Ip relaxation and restriction
+14. `skills/security/login-forensics` — Login forensics
+15. `skills/security/mfa-enforcement-strategy` — Mfa enforcement strategy
+16. `skills/security/network-security-and-trusted-ips` — Network security and trusted ips
+17. `skills/security/oauth-redirect-and-domain-strategy` — Oauth redirect and domain strategy
+18. `skills/security/oauth-token-management` — Oauth token management
+19. `skills/security/org-hardening-and-baseline-config` — Org hardening and baseline config
+20. `skills/security/platform-encryption` — Platform encryption
+21. `skills/security/recaptcha-and-bot-prevention` — Recaptcha and bot prevention
+22. `skills/security/sandbox-data-masking` — Sandbox data masking
+23. `skills/security/scim-provisioning-integration` — Scim provisioning integration
+24. `skills/security/secure-coding-review-checklist` — Secure coding review checklist
+25. `skills/security/security-health-check` — Security health check
+26. `skills/security/security-incident-response` — Security incident response
+27. `skills/security/service-account-credential-rotation` — Service account credential rotation
+28. `skills/security/shield-event-log-retention-strategy` — Shield event log retention strategy
+29. `skills/security/transaction-security-policies` — Transaction security policies
+30. `skills/security/xss-and-injection-prevention` — Xss and injection prevention
+
 ### Contract layer
-1. `agents/_shared/AGENT_CONTRACT.md`
-2. `agents/_shared/DELIVERABLE_CONTRACT.md`
-3. `agents/_shared/REFUSAL_CODES.md`
+30. `agents/_shared/AGENT_CONTRACT.md`
+31. `agents/_shared/DELIVERABLE_CONTRACT.md`
+32. `agents/_shared/REFUSAL_CODES.md`
 
 ### Sharing & FLS / CRUD
-4. `skills/apex/apex-security-patterns`
-5. `skills/apex/apex-with-without-sharing-decision` — keyword choice
-6. `skills/apex/apex-stripinaccessible-and-fls-enforcement`
-7. `skills/apex/apex-user-and-permission-checks`
-8. `skills/apex/apex-custom-permissions-check`
-9. `skills/apex/apex-managed-sharing`
-10. `skills/apex/apex-system-runas`
-11. `skills/apex/soql-security`
-12. `skills/apex/soql-fundamentals`
-13. `standards/decision-trees/sharing-selection.md`
-14. `skills/security/guest-user-security-audit` — Experience Cloud guest user 2021 changes audit
+33. `skills/apex/apex-security-patterns`
+34. `skills/apex/apex-with-without-sharing-decision` — keyword choice
+35. `skills/apex/apex-stripinaccessible-and-fls-enforcement`
+36. `skills/apex/apex-user-and-permission-checks`
+37. `skills/apex/apex-custom-permissions-check`
+38. `skills/apex/apex-managed-sharing`
+39. `skills/apex/apex-system-runas`
+40. `skills/apex/soql-security`
+41. `skills/apex/soql-fundamentals`
+42. `standards/decision-trees/sharing-selection.md`
+43. `skills/security/guest-user-security-audit` — Experience Cloud guest user 2021 changes audit
 
 ### SOQL injection
-15. `skills/apex/dynamic-apex`
-16. `skills/apex/apex-dynamic-soql-binding-safety`
-17. `skills/apex/apex-regex-and-pattern-matching`
+44. `skills/apex/dynamic-apex`
+45. `skills/apex/apex-dynamic-soql-binding-safety`
+46. `skills/apex/apex-regex-and-pattern-matching`
 
 ### Secrets & callouts
-18. `skills/apex/apex-secrets-and-protected-cmdt`
-19. `skills/apex/apex-named-credentials-patterns`
-20. `skills/apex/callouts-and-http-integrations`
-21. `skills/apex/callout-and-dml-transaction-boundaries`
-22. `skills/integration/named-credentials-setup`
-23. `skills/apex/continuation-callouts`
-24. `skills/apex/apex-encoding-and-crypto`
+47. `skills/apex/apex-secrets-and-protected-cmdt`
+48. `skills/apex/apex-named-credentials-patterns`
+49. `skills/apex/callouts-and-http-integrations`
+50. `skills/apex/callout-and-dml-transaction-boundaries`
+51. `skills/integration/named-credentials-setup`
+52. `skills/apex/continuation-callouts`
+53. `skills/apex/apex-encoding-and-crypto`
 
 ### Hardcoded IDs / config
-25. `skills/apex/apex-hardcoded-id-elimination`
-26. `skills/apex/custom-metadata-in-apex`
+54. `skills/apex/apex-hardcoded-id-elimination`
+55. `skills/apex/custom-metadata-in-apex`
 
 ### Exposed surfaces
-27. `skills/apex/apex-rest-services` — REST endpoint security
-28. `skills/apex/visualforce-fundamentals` — VF security
-29. `skills/apex/platform-events-apex`
-30. `skills/apex/change-data-capture-apex`
-31. `skills/apex/apex-flow-invocation-from-apex` — Flow invocation context
-32. `skills/apex/trigger-framework` — handler security
-33. `skills/apex/apex-execute-anonymous` — security posture in anon
+56. `skills/apex/apex-rest-services` — REST endpoint security
+57. `skills/apex/visualforce-fundamentals` — VF security
+58. `skills/apex/platform-events-apex`
+59. `skills/apex/change-data-capture-apex`
+60. `skills/apex/apex-flow-invocation-from-apex` — Flow invocation context
+61. `skills/apex/trigger-framework` — handler security
+62. `skills/apex/apex-execute-anonymous` — security posture in anon
 
 ### DML / data flow
-34. `skills/apex/apex-dml-patterns`
-35. `skills/apex/apex-collections-patterns`
-36. `skills/apex/apex-design-patterns`
+63. `skills/apex/apex-dml-patterns`
+64. `skills/apex/apex-collections-patterns`
+65. `skills/apex/apex-design-patterns`
 
 ### Error / exception leakage
-37. `skills/apex/error-handling-framework`
-38. `skills/apex/exception-handling`
-39. `skills/apex/common-apex-runtime-errors`
+66. `skills/apex/error-handling-framework`
+67. `skills/apex/exception-handling`
+68. `skills/apex/common-apex-runtime-errors`
 
 ### Probes
-40. `agents/_shared/probes/apex-references-to-field.md` — for field-impact analysis on FLS violations
-41. `agents/_shared/probes/permission-set-assignment-shape.md` — for exposed-endpoint analysis (who can hit it)
+69. `agents/_shared/probes/apex-references-to-field.md` — for field-impact analysis on FLS violations
+70. `agents/_shared/probes/permission-set-assignment-shape.md` — for exposed-endpoint analysis (who can hit it)
 
 ### Templates
-42. `templates/apex/SecurityUtils.cls`
-43. `templates/apex/HttpClient.cls`
-44. `skills/architect/zero-trust-salesforce-patterns` — frame TSP/RTEM/HA-Session findings as zero-trust composition (which leg the finding belongs to); flag IdentityVerificationEvent / MobileEmailEvent as detect-only
-45. `skills/security/sso-saml-troubleshooting` — SAML response inspection, SSO debugging
+71. `templates/apex/SecurityUtils.cls`
+72. `templates/apex/HttpClient.cls`
+73. `skills/architect/zero-trust-salesforce-patterns` — frame TSP/RTEM/HA-Session findings as zero-trust composition (which leg the finding belongs to); flag IdentityVerificationEvent / MobileEmailEvent as detect-only
+74. `skills/security/sso-saml-troubleshooting` — SAML response inspection, SSO debugging
 
 ---
 

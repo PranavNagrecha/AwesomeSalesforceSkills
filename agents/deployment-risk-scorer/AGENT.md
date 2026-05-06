@@ -17,11 +17,45 @@ dependencies:
   skills:
     - admin/agent-output-formats
     - apex/apex-schema-describe
+    - devops/api-version-management
+    - devops/automated-regression-testing
+    - devops/bitbucket-pipelines-for-salesforce
+    - devops/cicd-for-experience-cloud
     - devops/code-coverage-orphan-class-cleanup
     - devops/code-review-checklist-salesforce
+    - devops/continuous-integration-testing
+    - devops/copado-essentials
+    - devops/cpq-deployment-administration
+    - devops/cpq-deployment-patterns
+    - devops/cross-cloud-deployment-patterns
+    - devops/cumulusci-automation
+    - devops/data-seeding-for-testing
+    - devops/deployment-error-diagnosis
     - devops/deployment-error-troubleshooting
+    - devops/deployment-monitoring
+    - devops/devops-center-pipeline
+    - devops/experience-cloud-deployment-admin
+    - devops/experience-cloud-deployment-dev
+    - devops/flow-deployment-activation-ordering
+    - devops/fsc-deployment-patterns
+    - devops/github-actions-for-salesforce
+    - devops/gitlab-ci-for-salesforce
+    - devops/go-live-cutover-planning
+    - devops/health-cloud-deployment-patterns
+    - devops/managed-package-development
+    - devops/metadata-api-retrieve-deploy
     - devops/metadata-diff-between-sandboxes
+    - devops/multi-package-development
+    - devops/org-shape-and-scratch-definition
+    - devops/performance-testing-salesforce
     - devops/pre-deployment-checklist
+    - devops/rollback-and-hotfix-strategy
+    - devops/salesforce-cli-automation
+    - devops/salesforce-code-analyzer
+    - devops/salesforce-devops-tooling-selection
+    - devops/salesforce-dx-project-structure
+    - devops/source-tracking-and-conflict-resolution
+    - devops/vscode-salesforce-extensions
   shared:
     - AGENT_CONTRACT.md
     - DELIVERABLE_CONTRACT.md
@@ -57,6 +91,40 @@ Before a user deploys a change set / package / SFDX delta, this agent compares w
 7. `skills/devops/metadata-diff-between-sandboxes` — diff source vs target metadata to inventory deployment scope
 8. `skills/devops/code-coverage-orphan-class-cleanup` — orphan-class cleanup as alternative to stub-test coverage rescue
 9. `skills/apex/apex-schema-describe` — Schema describe API perf, FLS, picklist enumeration
+10. `skills/devops/api-version-management` — Api version management
+11. `skills/devops/automated-regression-testing` — Automated regression testing
+12. `skills/devops/bitbucket-pipelines-for-salesforce` — Bitbucket pipelines for salesforce
+13. `skills/devops/cicd-for-experience-cloud` — Cicd for experience cloud
+14. `skills/devops/continuous-integration-testing` — Continuous integration testing
+15. `skills/devops/copado-essentials` — Copado essentials
+16. `skills/devops/cpq-deployment-administration` — Cpq deployment administration
+17. `skills/devops/cpq-deployment-patterns` — Cpq deployment patterns
+18. `skills/devops/cross-cloud-deployment-patterns` — Cross cloud deployment patterns
+19. `skills/devops/cumulusci-automation` — Cumulusci automation
+20. `skills/devops/data-seeding-for-testing` — Data seeding for testing
+21. `skills/devops/deployment-error-diagnosis` — Deployment error diagnosis
+22. `skills/devops/deployment-monitoring` — Deployment monitoring
+23. `skills/devops/devops-center-pipeline` — Devops center pipeline
+24. `skills/devops/experience-cloud-deployment-admin` — Experience cloud deployment admin
+25. `skills/devops/experience-cloud-deployment-dev` — Experience cloud deployment dev
+26. `skills/devops/flow-deployment-activation-ordering` — Flow deployment activation ordering
+27. `skills/devops/fsc-deployment-patterns` — Fsc deployment patterns
+28. `skills/devops/github-actions-for-salesforce` — Github actions for salesforce
+29. `skills/devops/gitlab-ci-for-salesforce` — Gitlab ci for salesforce
+30. `skills/devops/go-live-cutover-planning` — Go live cutover planning
+31. `skills/devops/health-cloud-deployment-patterns` — Health cloud deployment patterns
+32. `skills/devops/managed-package-development` — Managed package development
+33. `skills/devops/metadata-api-retrieve-deploy` — Metadata api retrieve deploy
+34. `skills/devops/multi-package-development` — Multi package development
+35. `skills/devops/org-shape-and-scratch-definition` — Org shape and scratch definition
+36. `skills/devops/performance-testing-salesforce` — Performance testing salesforce
+37. `skills/devops/rollback-and-hotfix-strategy` — Rollback and hotfix strategy
+38. `skills/devops/salesforce-cli-automation` — Salesforce cli automation
+39. `skills/devops/salesforce-code-analyzer` — Salesforce code analyzer
+40. `skills/devops/salesforce-devops-tooling-selection` — Salesforce devops tooling selection
+41. `skills/devops/salesforce-dx-project-structure` — Salesforce dx project structure
+42. `skills/devops/source-tracking-and-conflict-resolution` — Source tracking and conflict resolution
+43. `skills/devops/vscode-salesforce-extensions` — Vscode salesforce extensions
 
 ---
 

@@ -31,6 +31,7 @@ dependencies:
     - flow/flow-get-records-optimization
     - flow/flow-large-data-volume-patterns
     - flow/flow-loop-element-patterns
+    - flow/flow-orchestration-patterns
     - flow/flow-record-locking-and-contention
     - flow/flow-resource-patterns
     - flow/flow-rollback-patterns
@@ -119,6 +120,7 @@ Two modes:
 36. `templates/flow/FaultPath_Template.md` — every stage subflow's fault path follows this template
 37. `templates/flow/Subflow_Pattern.md` — every stage step is a subflow per this contract
 38. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+39. `skills/flow/flow-orchestration-patterns` — Flow orchestration patterns
 
 ---
 
