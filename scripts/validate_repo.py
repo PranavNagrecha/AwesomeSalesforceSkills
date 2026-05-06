@@ -386,11 +386,16 @@ def run_skill_validation(
 
 
 def _check_orphan_skills(filtered_dirs: list[Path]) -> list[ValidationIssue]:
-    """Emit a WARN for each filtered skill that no run-time agent cites.
+    """Emit an ERROR for each filtered skill with no agent decision recorded.
 
-    Scans `agents/*/AGENT.md` YAML frontmatter for `dependencies.skills:`
-    entries and treats the union as the set of cited skills. Skills with
-    `runtime_orphan: true` in their own frontmatter are skipped.
+    Every skill MUST make an explicit choice at creation time: either be
+    cited by at least one run-time agent (preferred), or set
+    ``runtime_orphan: true`` in its frontmatter (with an optional
+    ``runtime_orphan_reason`` to explain why no agent owns the topic).
+    Silent uncitedness is no longer allowed — the gate forces a decision.
+
+    Implementation: scans ``agents/*/AGENT.md`` YAML frontmatter for
+    ``dependencies.skills:`` entries and treats the union as the cited set.
     """
     cited: set[str] = set()
     skill_block_re = re.compile(
@@ -423,9 +428,13 @@ def _check_orphan_skills(filtered_dirs: list[Path]) -> list[ValidationIssue]:
         if skill_id not in cited:
             out.append(
                 ValidationIssue(
-                    "WARN", str(skill_md),
-                    f"skill `{skill_id}` is not cited by any run-time agent — wire it via "
-                    f"`scripts/patch_agent_skill.py` or set `runtime_orphan: true` in frontmatter",
+                    "ERROR", str(skill_md),
+                    f"skill `{skill_id}` has no agent decision — wire it to a run-time "
+                    f"agent via `python3 scripts/patch_agent_skill.py <agent_id> {skill_id} "
+                    f"\"### Mandatory Reads\" \"<description>\"` OR add "
+                    f"`runtime_orphan: true` to its frontmatter (with "
+                    f"`runtime_orphan_reason: <why>`). Every skill must record "
+                    f"an explicit choice.",
                 )
             )
     return out
