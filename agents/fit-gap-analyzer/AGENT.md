@@ -34,6 +34,7 @@ dependencies:
     - architect/loyalty-program-architecture
     - architect/metadata-coverage-and-dependencies
     - architect/nfr-definition-for-salesforce
+    - architect/revenue-cloud-architecture
     - architect/solution-design-patterns
     - data/data-model-design-patterns
     - data/external-id-strategy
@@ -111,21 +112,22 @@ The deliverable is what an architect or BA hands to a steering committee BEFORE 
 23. `skills/architect/loyalty-program-architecture` — Loyalty program architecture (tier ladder, qualifying-vs-non-qualifying split, partner topology, multi-region federation) — flag stories that conflict with the program's architectural decisions before treating them as fits
 24. `skills/admin/lightning-experience-transition` — Lightning Experience Transition program state — flag backlog stories that depend on LEX-only features (Dynamic Forms, LWC actions) when org has Classic users still in scope
 25. `skills/architect/hyperforce-architecture` — flag backlog stories dependent on Hyperforce-only features (Private Connect, regional Data Cloud) when org is on First-Generation infrastructure
+26. `skills/architect/revenue-cloud-architecture` — Revenue Cloud architecture for CPQ/Billing successor fit
 
 ### Data model fit
-26. `skills/data/data-model-design-patterns` — anti-patterns to flag (parallel object hierarchies, etc.)
-27. `skills/data/external-id-strategy` — fit signal for any integration-shaped story
+27. `skills/data/data-model-design-patterns` — anti-patterns to flag (parallel object hierarchies, etc.)
+28. `skills/data/external-id-strategy` — fit signal for any integration-shaped story
 
 ### Decision trees
-28. `standards/decision-trees/automation-selection.md` — drives "Config (Flow) vs Custom (Apex)" tier separation
-29. `standards/decision-trees/sharing-selection.md` — drives sharing-fit decisions
+29. `standards/decision-trees/automation-selection.md` — drives "Config (Flow) vs Custom (Apex)" tier separation
+30. `standards/decision-trees/sharing-selection.md` — drives sharing-fit decisions
 
 ### Probes
-30. `agents/_shared/probes/automation-graph-for-sobject.md` — find the existing automation an org already has on the target object
+31. `agents/_shared/probes/automation-graph-for-sobject.md` — find the existing automation an org already has on the target object
 
 ### Output handoff
-31. `skills/admin/configuration-workbook-authoring` — output rows must align with workbook section names so `config-workbook-author` consumes cleanly
-32. `skills/admin/requirements-traceability-matrix` — emit RTM rows so the gap shows up in traceability
+32. `skills/admin/configuration-workbook-authoring` — output rows must align with workbook section names so `config-workbook-author` consumes cleanly
+33. `skills/admin/requirements-traceability-matrix` — emit RTM rows so the gap shows up in traceability
 
 ---
 

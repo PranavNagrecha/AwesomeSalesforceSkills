@@ -243,6 +243,44 @@ No existing dedicated agent; skills are available for new agents and ad-hoc quer
 - `omnistudio/omnistudio-lwc-omniscript-migration`, `omnistudio/omnistudio-asynchronous-data-operations`
 - `omnistudio/omnistudio-cache-strategies`, `omnistudio/omnistudio-multi-language`, `omnistudio/omnistudio-field-mapping-governance`
 
+### Wave F (2026-05) — 20 new skills
+
+New skills landed 2026-05 and are wired into the agents shown below.
+
+#### Apex (4 new)
+`apex-builder`, `apex-refactorer`, `code-reviewer`, `deployment-risk-scorer`, `integration-catalog-builder`, `email-template-modernizer` additionally cite:
+- `apex/apex-schema-describe` → `apex-builder`, `apex-refactorer`, `code-reviewer`, `deployment-risk-scorer` — Schema describe API perf, FLS, picklist enumeration
+- `apex/apex-enum-patterns` → `apex-builder`, `apex-refactorer`, `code-reviewer` — enum dispatch, valueOf safety, ordinals
+- `apex/apex-jwt-bearer-flow` → `apex-builder`, `integration-catalog-builder` — JWT bearer for server-to-server auth
+- `apex/apex-outbound-email-patterns` → `apex-builder`, `email-template-modernizer` — Messaging.SingleEmailMessage, OWA, replies, templates
+
+#### LWC (7 new)
+`lwc-builder`, `lwc-auditor` additionally cite:
+- `lwc/lwc-lightning-record-forms` → `lwc-builder`, `lwc-auditor` — record-form / -edit-form / -view-form
+- `lwc/lwc-custom-lookup` → `lwc-builder` — typeahead lookup component
+- `lwc/lwc-datatable-advanced` → `lwc-builder`, `lwc-auditor` — inline edit, custom cell types, sorting
+- `lwc/lwc-css-and-styling` → `lwc-builder`, `lwc-auditor` — SLDS hooks, --slds-c-* tokens, shadow DOM, ::part()
+- `lwc/lwc-drag-and-drop` → `lwc-builder` — HTML5 drag and drop in LWC
+- `lwc/tableau-embedding-in-lightning` → `lwc-builder` — Tableau dashboards in Lightning, JWT SSO
+- `lwc/lwc-pubsub-patterns` → `lwc-builder`, `lwc-auditor` — Lightning Message Service, pubsub utility
+
+#### Data (4 new)
+`data-model-reviewer`, `sandbox-strategy-designer`, `integration-catalog-builder` additionally cite:
+- `data/salesforce-backup-and-restore` → `data-model-reviewer`, `sandbox-strategy-designer` — backup strategy, RPO/RTO
+- `data/data-virtualization-patterns` → `integration-catalog-builder`, `data-model-reviewer` — Salesforce Connect, External Objects, OData
+- `data/currency-management-patterns` → `data-model-reviewer` — multi-currency, dated exchange rates
+- `data/salesforce-files-architecture` → `data-model-reviewer` — ContentVersion, ContentDocument, ContentDocumentLink
+
+#### Security (2 new)
+`security-scanner`, `audit-router` additionally cite:
+- `security/sso-saml-troubleshooting` → `security-scanner`, `audit-router` (`my_domain_session_security` classifier) — SAML response inspection
+- `security/guest-user-security-audit` → `security-scanner`, `audit-router` (`sharing` classifier) — Experience Cloud guest user 2021 changes
+
+#### Architect / Admin / Integration (3 new)
+- `architect/revenue-cloud-architecture` → `waf-assessor`, `fit-gap-analyzer` — Revenue Cloud (CPQ/Billing successor) architecture
+- `admin/report-type-strategy` → `audit-router` (`report_dashboard` classifier) — custom report types, with/without joins
+- `integration/sustainability-reporting` → `integration-catalog-builder` — Net Zero Cloud / sustainability data integration
+
 ---
 
 ## MCP tools available to these agents

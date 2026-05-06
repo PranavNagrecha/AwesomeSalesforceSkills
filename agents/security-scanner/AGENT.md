@@ -51,6 +51,8 @@ dependencies:
     - apex/visualforce-fundamentals
     - architect/zero-trust-salesforce-patterns
     - integration/named-credentials-setup
+    - security/guest-user-security-audit
+    - security/sso-saml-troubleshooting
   shared:
     - AGENT_CONTRACT.md
     - DELIVERABLE_CONTRACT.md
@@ -100,52 +102,54 @@ Walks a `force-app/` tree and flags CRUD/FLS violations, sharing leaks, hardcode
 11. `skills/apex/soql-security`
 12. `skills/apex/soql-fundamentals`
 13. `standards/decision-trees/sharing-selection.md`
+14. `skills/security/guest-user-security-audit` — Experience Cloud guest user 2021 changes audit
 
 ### SOQL injection
-14. `skills/apex/dynamic-apex`
-15. `skills/apex/apex-dynamic-soql-binding-safety`
-16. `skills/apex/apex-regex-and-pattern-matching`
+15. `skills/apex/dynamic-apex`
+16. `skills/apex/apex-dynamic-soql-binding-safety`
+17. `skills/apex/apex-regex-and-pattern-matching`
 
 ### Secrets & callouts
-17. `skills/apex/apex-secrets-and-protected-cmdt`
-18. `skills/apex/apex-named-credentials-patterns`
-19. `skills/apex/callouts-and-http-integrations`
-20. `skills/apex/callout-and-dml-transaction-boundaries`
-21. `skills/integration/named-credentials-setup`
-22. `skills/apex/continuation-callouts`
-23. `skills/apex/apex-encoding-and-crypto`
+18. `skills/apex/apex-secrets-and-protected-cmdt`
+19. `skills/apex/apex-named-credentials-patterns`
+20. `skills/apex/callouts-and-http-integrations`
+21. `skills/apex/callout-and-dml-transaction-boundaries`
+22. `skills/integration/named-credentials-setup`
+23. `skills/apex/continuation-callouts`
+24. `skills/apex/apex-encoding-and-crypto`
 
 ### Hardcoded IDs / config
-24. `skills/apex/apex-hardcoded-id-elimination`
-25. `skills/apex/custom-metadata-in-apex`
+25. `skills/apex/apex-hardcoded-id-elimination`
+26. `skills/apex/custom-metadata-in-apex`
 
 ### Exposed surfaces
-26. `skills/apex/apex-rest-services` — REST endpoint security
-27. `skills/apex/visualforce-fundamentals` — VF security
-28. `skills/apex/platform-events-apex`
-29. `skills/apex/change-data-capture-apex`
-30. `skills/apex/apex-flow-invocation-from-apex` — Flow invocation context
-31. `skills/apex/trigger-framework` — handler security
-32. `skills/apex/apex-execute-anonymous` — security posture in anon
+27. `skills/apex/apex-rest-services` — REST endpoint security
+28. `skills/apex/visualforce-fundamentals` — VF security
+29. `skills/apex/platform-events-apex`
+30. `skills/apex/change-data-capture-apex`
+31. `skills/apex/apex-flow-invocation-from-apex` — Flow invocation context
+32. `skills/apex/trigger-framework` — handler security
+33. `skills/apex/apex-execute-anonymous` — security posture in anon
 
 ### DML / data flow
-33. `skills/apex/apex-dml-patterns`
-34. `skills/apex/apex-collections-patterns`
-35. `skills/apex/apex-design-patterns`
+34. `skills/apex/apex-dml-patterns`
+35. `skills/apex/apex-collections-patterns`
+36. `skills/apex/apex-design-patterns`
 
 ### Error / exception leakage
-36. `skills/apex/error-handling-framework`
-37. `skills/apex/exception-handling`
-38. `skills/apex/common-apex-runtime-errors`
+37. `skills/apex/error-handling-framework`
+38. `skills/apex/exception-handling`
+39. `skills/apex/common-apex-runtime-errors`
 
 ### Probes
-39. `agents/_shared/probes/apex-references-to-field.md` — for field-impact analysis on FLS violations
-40. `agents/_shared/probes/permission-set-assignment-shape.md` — for exposed-endpoint analysis (who can hit it)
+40. `agents/_shared/probes/apex-references-to-field.md` — for field-impact analysis on FLS violations
+41. `agents/_shared/probes/permission-set-assignment-shape.md` — for exposed-endpoint analysis (who can hit it)
 
 ### Templates
-41. `templates/apex/SecurityUtils.cls`
-42. `templates/apex/HttpClient.cls`
-43. `skills/architect/zero-trust-salesforce-patterns` — frame TSP/RTEM/HA-Session findings as zero-trust composition (which leg the finding belongs to); flag IdentityVerificationEvent / MobileEmailEvent as detect-only
+42. `templates/apex/SecurityUtils.cls`
+43. `templates/apex/HttpClient.cls`
+44. `skills/architect/zero-trust-salesforce-patterns` — frame TSP/RTEM/HA-Session findings as zero-trust composition (which leg the finding belongs to); flag IdentityVerificationEvent / MobileEmailEvent as detect-only
+45. `skills/security/sso-saml-troubleshooting` — SAML response inspection, SSO debugging
 
 ---
 

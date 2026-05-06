@@ -20,9 +20,13 @@ dependencies:
     - admin/object-creation-and-design
     - architect/high-volume-sales-data-architecture
     - architect/solution-design-patterns
+    - data/currency-management-patterns
     - data/data-model-design-patterns
+    - data/data-virtualization-patterns
     - data/external-id-strategy
     - data/roll-up-summary-alternatives
+    - data/salesforce-backup-and-restore
+    - data/salesforce-files-architecture
   shared:
     - AGENT_CONTRACT.md
     - AGENT_RULES.md
@@ -58,6 +62,10 @@ Reviews the data model of a target domain (a parent object + its descendants, or
 8. `skills/architect/solution-design-patterns`
 9. `skills/architect/high-volume-sales-data-architecture`
 10. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+11. `skills/data/salesforce-backup-and-restore` — Backup strategy, RPO/RTO planning
+12. `skills/data/data-virtualization-patterns` — Salesforce Connect, External Objects, OData adapter
+13. `skills/data/currency-management-patterns` — Multi-currency, dated exchange rates
+14. `skills/data/salesforce-files-architecture` — ContentVersion, ContentDocument, ContentDocumentLink architecture
 
 ---
 

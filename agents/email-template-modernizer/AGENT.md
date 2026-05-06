@@ -16,6 +16,7 @@ dependencies:
   skills:
     - admin/agent-output-formats
     - admin/email-templates-and-alerts
+    - apex/apex-outbound-email-patterns
   shared:
     - AGENT_CONTRACT.md
     - AGENT_RULES.md
@@ -45,6 +46,7 @@ Audits email templates (Classic HTML, Visualforce, Lightning) in the target org,
 2. `AGENT_RULES.md`
 3. `skills/admin/email-templates-and-alerts`
 4. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+5. `skills/apex/apex-outbound-email-patterns` — Messaging.SingleEmailMessage, OWA, replies, templates
 
 ---
 
