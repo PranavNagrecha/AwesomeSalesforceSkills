@@ -1,0 +1,99 @@
+{
+  "category": "admin",
+  "chunk_ids": [
+    "10bd96cbe990fdea8395",
+    "1679b8b3382ce2a27fee",
+    "167b4752727733face47",
+    "20393f8e77055c976d9a",
+    "252a6f31146c9c071582",
+    "2e1a2170d34706aad07e",
+    "31582089fc3cda7c97a3",
+    "34c6558080dfdb01facb",
+    "3543ce756f2976774139",
+    "373527dfff83ce7a8a6b",
+    "3a9a471d6725c4d63b03",
+    "3b0d26e896a677c797d0",
+    "3f7540b361e0d88eefd5",
+    "4291000157318fc332ba",
+    "4a92cadbb2b097d9b1b5",
+    "4aa2ac79c33c47cbf52e",
+    "4b23e0edb4a05557a80c",
+    "5e4b72b3afaf0dae5af3",
+    "62f7c689330b5349abd9",
+    "7872db378e23bca2a727",
+    "799f5341fb7ae0c556b0",
+    "8a34bf2bdd8f102587ca",
+    "8f8579f44fed39676a90",
+    "979ab9e55e23904dcdc1",
+    "99d63757985238b65803",
+    "9c975adcff92e70e4f88",
+    "9e726856a1daad2d19a7",
+    "a157baaff66871a95bf9",
+    "a16a74dbfa1eacf1de4f",
+    "a45b3171f8d131c39d21",
+    "ae7f29d664483eb9747b",
+    "b23d60628b64a70940e6",
+    "b4aea7c3ddfff62ed8e8",
+    "b5602770c5c94a2b291d",
+    "b61a3ff20c097070dc5a",
+    "b97756318122942604ad",
+    "bc93cf570f4a112a37b3",
+    "bd6c10b8b0d11e4933c9",
+    "be1640acbcfe6a5267ed",
+    "c5d4c10bf4509ecaba58",
+    "cb87b8dd7df789fa63c3",
+    "d54af559bb1f95b4790f",
+    "e64bf05dd622d35c6d80",
+    "f7ca8de448d0bbe81777",
+    "f9c3922f4af643d14891",
+    "fc5401a9b7653b2a7524",
+    "fcbc2e4903dd8305abd5",
+    "fd2655b6c6461ea5235e"
+  ],
+  "content_hash": "7ed838721a9aa4e9516f95a8cbc464fcb5b05e215bc8e6afa0310bfa72c6317b",
+  "dependencies": [],
+  "description": "Custom Report Type design \u2014 when to create a CRT vs use the standard, A-with-B-without and A-without-B joins, primary/secondary/related-via-lookup objects, the 60-field display limit, and field-set vs cross-join layouts. NOT for individual report definitions (use admin/report-design) or dashboards (use admin/dashboard-design).",
+  "file_location": "skills/admin/report-type-strategy",
+  "id": "admin/report-type-strategy",
+  "inputs": [
+    "Primary object and the join shape (with/without related, lookup vs master-detail)",
+    "Field set users actually need (vs everything on the object)",
+    "Whether the report type will be packaged or org-only"
+  ],
+  "name": "report-type-strategy",
+  "official_sources": [
+    "Create a Custom Report Type \u2014 https://help.salesforce.com/s/articleView?id=sf.reports_defining_report_types.htm",
+    "Cross Filters in Reports \u2014 https://help.salesforce.com/s/articleView?id=sf.reports_cross_filters.htm",
+    "Joined Reports Overview \u2014 https://help.salesforce.com/s/articleView?id=sf.reports_joined_about.htm",
+    "Considerations for Custom Report Types \u2014 https://help.salesforce.com/s/articleView?id=sf.reports_define_report_types_limits.htm",
+    "Salesforce Reports & Dashboards Limits \u2014 https://help.salesforce.com/s/articleView?id=sf.limits_reports.htm",
+    "Salesforce Well-Architected: Adaptable \u2014 https://architect.salesforce.com/well-architected/adaptable/composable"
+  ],
+  "outputs": [
+    "Decision: create CRT, reuse standard, or build a joined report",
+    "Object hierarchy (primary, secondary, optional tertiary, related-via-lookup) with join semantics",
+    "Field layout grouped by section, within the 1,000-field cap and 60-display limit"
+  ],
+  "references": [
+    "skills/admin/report-type-strategy/references/examples.md",
+    "skills/admin/report-type-strategy/references/gotchas.md",
+    "skills/admin/report-type-strategy/references/llm-anti-patterns.md",
+    "skills/admin/report-type-strategy/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/admin/report-type-strategy/scripts/check_report_type_strategy.py"
+  ],
+  "tags": [
+    "reports",
+    "custom-report-type",
+    "data-access",
+    "field-availability",
+    "performance"
+  ],
+  "templates": [
+    "skills/admin/report-type-strategy/templates/report-type-strategy-template.md"
+  ],
+  "updated": "2026-05-05",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

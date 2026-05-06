@@ -1,0 +1,101 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "0e10910557c759fe4160",
+    "178528419c8b08a2a21f",
+    "1b468f1e9203d1b1e72b",
+    "1c041e8eed38c6a81aa9",
+    "1f59fd36cb85852b387b",
+    "30ef03b31d07e5f4b727",
+    "39108fc2ca60ebe29b4c",
+    "4ee59bc0d5319a2b0dc9",
+    "5256aeb33c116e19f50a",
+    "545eed3622100691b822",
+    "5593d7d8382eed1536a8",
+    "58afe8f79bd51b3f7c37",
+    "5b210117124fd7843a94",
+    "605f85d4062f5895e463",
+    "6494d1116913715e2d42",
+    "671cbc08245089831ea0",
+    "67b90b7149351dd60e0f",
+    "7199b8dc1f53b21188eb",
+    "77d723dc99ea8ccffc73",
+    "79371a5bc748d6a4a89f",
+    "79c2a2c473fbdbd65f52",
+    "7c93099b50d175b6bfc6",
+    "7ef86774114232469061",
+    "80e86b311b708a451b0d",
+    "81e6ef17901aba0b02f0",
+    "8443b7499f30a0e18c1f",
+    "8a124c226334ae299d19",
+    "93a60a38e405b40bcd20",
+    "978b178d9658e737b673",
+    "afbb924de95b54fab1e8",
+    "b7b66ffff3df456fe848",
+    "b7cc3e3df141536dd903",
+    "bd8314f2eff1a837ada5",
+    "bd93f8ab37948df7079c",
+    "be6b18d679f38089a368",
+    "bf2a9c249e4ac5e64970",
+    "bfddf728809954e4f647",
+    "c5cd3262ef5afef6e8e9",
+    "cfb633898d3052189516",
+    "d17a6666c4899470c866",
+    "d1993caf117365d05278",
+    "d474e9d31486885ccdaa",
+    "e0d04dbcc8fbc05b6094",
+    "e1451784214df50259a4",
+    "e93aedf7b6aad7113c81",
+    "ea260c2c06c342def3c8",
+    "f063d211eaf221817e7a",
+    "f8404a91bcb2474b5160",
+    "f8bfbe1155b86ee881ae",
+    "fde756eb307f1900971b"
+  ],
+  "content_hash": "e5e85c62c2126a5a08932d3882067ec1020dc6c95ad472b90f246c6b62f0c34f",
+  "dependencies": [],
+  "description": "Apex outbound email via Messaging.SingleEmailMessage \u2014 OrgWideEmailAddress, ReplyTo and Reply-To header semantics, EmailTemplate merging with whatId/targetObjectId, attachment patterns, daily governor limits, and the difference between transactional sends and Email Alerts. NOT for inbound email handling (use apex/inbound-email-handler) or Marketing Cloud sends (use integration/marketing-cloud-rest-api).",
+  "file_location": "skills/apex/apex-outbound-email-patterns",
+  "id": "apex/apex-outbound-email-patterns",
+  "inputs": [
+    "Recipient identity: User Id, Contact/Lead Id, raw email string, or list of any of those",
+    "Whether the send is transactional (one record context) or bulk",
+    "Whether a reply should land in a shared inbox / On-behalf-of address"
+  ],
+  "name": "apex-outbound-email-patterns",
+  "official_sources": [
+    "Messaging.SingleEmailMessage Class \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_Messaging_SingleEmailMessage.htm",
+    "Messaging.sendEmail() \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_messaging.htm",
+    "OrgWideEmailAddress (Object Reference) \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_orgwideemailaddress.htm",
+    "Email Limits in Salesforce \u2014 https://help.salesforce.com/s/articleView?id=sf.limits_email.htm",
+    "Email Deliverability Settings \u2014 https://help.salesforce.com/s/articleView?id=sf.emailadmin_setup_deliverability.htm",
+    "Salesforce Well-Architected: Resilient \u2014 https://architect.salesforce.com/well-architected/resilient/observable"
+  ],
+  "outputs": [
+    "Apex builder pattern for Messaging.SingleEmailMessage with safe defaults",
+    "Decision: SingleEmailMessage vs Email Alert (Flow) vs MassEmailMessage",
+    "Daily-limit handling and partial-success error parsing"
+  ],
+  "references": [
+    "skills/apex/apex-outbound-email-patterns/references/examples.md",
+    "skills/apex/apex-outbound-email-patterns/references/gotchas.md",
+    "skills/apex/apex-outbound-email-patterns/references/llm-anti-patterns.md",
+    "skills/apex/apex-outbound-email-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/apex-outbound-email-patterns/scripts/check_apex_outbound_email_patterns.py"
+  ],
+  "tags": [
+    "email",
+    "messaging",
+    "templates",
+    "org-wide-email",
+    "governor-limits"
+  ],
+  "templates": [
+    "skills/apex/apex-outbound-email-patterns/templates/apex-outbound-email-patterns-template.md"
+  ],
+  "updated": "2026-05-05",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

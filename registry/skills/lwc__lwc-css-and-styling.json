@@ -1,0 +1,98 @@
+{
+  "category": "lwc",
+  "chunk_ids": [
+    "001edc09dfc765e2eb28",
+    "019416f089a0286c914d",
+    "04c64f27b0417abbe2d8",
+    "05b6c96c63d0bf422583",
+    "07c20fd3f7c3280a022a",
+    "13a44f9ab9a6e38626a2",
+    "1b26064a683f96175e08",
+    "1b33662066977c8de3b8",
+    "261456ab93c462ef53a2",
+    "26bad12c8032b9239c09",
+    "2eb204fc631432b2c8dc",
+    "3171a6069d79ff536082",
+    "3654c2f38e232a95bc39",
+    "38cee1128e7ce5d466af",
+    "3cdc6c5b2fd12c4f89ef",
+    "461fff61775870f1c862",
+    "4639cf5be18a4b8d0905",
+    "476586d4947fe91c5341",
+    "4a26fa640aabfb385ca5",
+    "5eb6f4d0e80af3226d23",
+    "6d6e291ce3471ef2bdec",
+    "71cbfa3db64d9a6deade",
+    "73516f3b9de8dae87aae",
+    "78ba10af63bc075cd6b6",
+    "7ec95d1f2674b62b7768",
+    "91d30812eaa6b610ce04",
+    "9c849f20f319fcf1652a",
+    "a78f1dc66057feb972cc",
+    "add3424b898ca8875e9b",
+    "b0344d6195f7996073d6",
+    "b45fabf2f1a2b001a36c",
+    "b504687c9d0f35fff6ed",
+    "b60fae146ca7b139cac5",
+    "bad7d0732b6a41cde7f0",
+    "bbe1a09f55fd35fedd15",
+    "bd195b4151ef4102d347",
+    "bdc0a3ac89dc27d4a1eb",
+    "c0909b328612cb538676",
+    "c0d57ffa1e85cca76a7e",
+    "cd0a7d00b24304a3199b",
+    "d02becc3d7bcfbb6eed2",
+    "d37cafd55bc5c64e7e51",
+    "e0e25147f32078785c74",
+    "ec34d88078ac4cdd37d1",
+    "f4e6e5125b2af7d7c78d",
+    "f805d46a2a4bf5835364",
+    "ff4a8c1943aa16313136"
+  ],
+  "content_hash": "c2cf3f32410b9342caae909983133091a2d2625ab78116502f9b6138b6d760e4",
+  "dependencies": [],
+  "description": "Styling LWC components \u2014 SLDS design tokens, --slds-c-* component styling hooks, scoped CSS via shadow DOM, ::part() for restyling base components, light DOM (lwc:render-mode='light'), and the usual gotchas (CSS doesn't pierce shadow boundaries, !important fights specificity, SLDS upgrades break hand-rolled selectors). NOT for SLDS Blueprints/icon usage (use lwc/lwc-slds-icons) or Aura styling (Aura is deprecated).",
+  "file_location": "skills/lwc/lwc-css-and-styling",
+  "id": "lwc/lwc-css-and-styling",
+  "inputs": [
+    "Which base component or slot needs custom styling",
+    "Whether the component is in a Lightning Page (themed) or standalone",
+    "Whether the component must theme dynamically (dark mode, brand variants)"
+  ],
+  "name": "lwc-css-and-styling",
+  "official_sources": [
+    "SLDS Styling Hooks (CSS custom properties for base components) \u2014 https://www.lightningdesignsystem.com/platforms/lightning/styling-hooks/",
+    "SLDS Design Tokens \u2014 https://www.lightningdesignsystem.com/design-tokens/",
+    "LWC CSS (Lightning Web Components Developer Guide) \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/create-components-css.html",
+    "Light DOM (lwc:render-mode) \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/create-light-dom.html",
+    "::part() (CSS Shadow Parts spec) \u2014 https://www.w3.org/TR/css-shadow-parts-1/",
+    "Salesforce Well-Architected: Adaptable \u2014 https://architect.salesforce.com/well-architected/adaptable/composable"
+  ],
+  "outputs": [
+    "Decision: SLDS hook (--slds-c-*) vs ::part() vs light DOM vs slot",
+    "Component CSS file using design tokens, no !important, no internal-selector hacks",
+    "Theming pattern that survives SLDS version upgrades"
+  ],
+  "references": [
+    "skills/lwc/lwc-css-and-styling/references/examples.md",
+    "skills/lwc/lwc-css-and-styling/references/gotchas.md",
+    "skills/lwc/lwc-css-and-styling/references/llm-anti-patterns.md",
+    "skills/lwc/lwc-css-and-styling/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/lwc/lwc-css-and-styling/scripts/check_lwc_css_and_styling.py"
+  ],
+  "tags": [
+    "css",
+    "slds",
+    "shadow-dom",
+    "styling-hooks",
+    "design-tokens"
+  ],
+  "templates": [
+    "skills/lwc/lwc-css-and-styling/templates/lwc-css-and-styling-template.md"
+  ],
+  "updated": "2026-05-05",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

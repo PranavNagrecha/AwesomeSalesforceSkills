@@ -1,0 +1,101 @@
+{
+  "category": "lwc",
+  "chunk_ids": [
+    "08dd9b4489208dd56f71",
+    "0929fb2e19e5c1a73e16",
+    "1198052f59486c25b84f",
+    "11e4050448ae7017ede8",
+    "162d79ee4c58e44f1b16",
+    "18ff7c9bd83359b9e1a0",
+    "251c47ae69eeb8fc974c",
+    "2dd417d8ae0a0326f30f",
+    "2f24147e31aaca9eac52",
+    "3292399e1036e38391b4",
+    "374e1b2f94a7fa70fc7a",
+    "3b2e54c8cc61e90ec297",
+    "3e803d5cf051fe3c6ce5",
+    "4a39f7086169c883ad9c",
+    "4d1451c03a2f6c340cea",
+    "5087939b7a4a70d93dc5",
+    "5667d171e1d7c38b78a0",
+    "5c20435a17d267cf7554",
+    "5c6038d215663e26644b",
+    "64f87c945a0c2b96289a",
+    "652e4f85a0d70f5c6337",
+    "654c1868f4f7d45b5ae7",
+    "664678250d57808c7a4b",
+    "68cd6f6a3aa66355af04",
+    "6c08a4cc2efc3a42988b",
+    "70486576dcdecf622baa",
+    "72c70c0dc3d68a1ac5db",
+    "798428a53d597fe7f5b5",
+    "7d63a29d92e3c496bd2f",
+    "7ed1becd0895f0ab8997",
+    "938a977804719c6de5db",
+    "94b4c90e95f3fd64a529",
+    "a78fa33b86b05eedfb7b",
+    "af6d8ce473a12b3d1f10",
+    "b27ed8721a363b1f4175",
+    "c6ab42cbda3b131ceba1",
+    "c9f99a5ce895b1a8dad3",
+    "ca8a7f9c7cd167cf7712",
+    "cd7d4e4434f607b79784",
+    "ddd18c48aa01d7a40402",
+    "e28f0b867f0d6aa8c3a9",
+    "e6a164ce48e9966b0cea",
+    "e747773a4d216381571f",
+    "e91975facb76bca19306",
+    "e96cfa463c2ca73c4353",
+    "e994275dbaccc7224005",
+    "ee1a946a2a5961c2c7e3",
+    "f353d3545aa9d32fa703",
+    "fbef625bd3b03e1a59f1",
+    "fc413498655cf07cc5fe"
+  ],
+  "content_hash": "1d1aaee578e1f1671e75a655ae08d27a15e938361d1a1cc636b7c02ff30954b3",
+  "dependencies": [],
+  "description": "Custom lookup component in LWC \u2014 typeahead/autocomplete that searches records via Apex SOSL/SOQL, shows pills, supports keyboard navigation, and manages open/close state. Use when lightning-input-field or lightning-record-picker won't work (cross-org search, computed filters, custom result rendering). NOT for in-form lookups inside lightning-record-edit-form (use lightning-input-field) or lookup filters (use admin lookup filter config).",
+  "file_location": "skills/lwc/lwc-custom-lookup",
+  "id": "lwc/lwc-custom-lookup",
+  "inputs": [
+    "Object(s) to search and which fields to show in results",
+    "Debounce window (ms) for search-as-you-type",
+    "Whether selection is single or multi-select"
+  ],
+  "name": "lwc-custom-lookup",
+  "official_sources": [
+    "lightning-record-picker (LWC Component Reference) \u2014 https://developer.salesforce.com/docs/component-library/bundle/lightning-record-picker/documentation",
+    "SOSL Reference (Apex Developer Guide) \u2014 https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_sosl.htm",
+    "WITH SECURITY_ENFORCED in SOQL \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_with_security_enforced.htm",
+    "@AuraEnabled cacheable=true \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-wire-service-about.html",
+    "ARIA combobox role \u2014 https://www.w3.org/WAI/ARIA/apg/patterns/combobox/",
+    "Salesforce Well-Architected: Performant \u2014 https://architect.salesforce.com/well-architected/performant/efficient"
+  ],
+  "outputs": [
+    "LWC component template + JS controller with debounced search",
+    "Cacheable Apex method using SOSL or SOQL with WITH SECURITY_ENFORCED",
+    "Pill/chip rendering pattern for selected record(s)"
+  ],
+  "references": [
+    "skills/lwc/lwc-custom-lookup/references/examples.md",
+    "skills/lwc/lwc-custom-lookup/references/gotchas.md",
+    "skills/lwc/lwc-custom-lookup/references/llm-anti-patterns.md",
+    "skills/lwc/lwc-custom-lookup/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/lwc/lwc-custom-lookup/scripts/check_lwc_custom_lookup.py"
+  ],
+  "tags": [
+    "lookup",
+    "typeahead",
+    "search",
+    "sosl",
+    "keyboard-accessibility"
+  ],
+  "templates": [
+    "skills/lwc/lwc-custom-lookup/templates/lwc-custom-lookup-template.md"
+  ],
+  "updated": "2026-05-05",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

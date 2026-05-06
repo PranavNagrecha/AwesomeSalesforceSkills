@@ -313,13 +313,6 @@
   notes: "Covered by skills/flow/flow-debugging — near-complete duplicate (fault email interpretation, Interview Log analysis, debug log review, flow version troubleshooting all covered v1.0.0 2026-04-04). Only delta is Apex-log-to-flow correlation when flow is invoked from Apex and Event Monitoring fallback when Interview Log entries are purged after 7 days."
   source_line: 1517
   history: []
-- id: "lwc-drag-and-drop"
-  status: "RESEARCHED"
-  skill: "lwc-drag-and-drop"
-  summary: "Drag-and-drop patterns in LWC: HTML5 drag API, sortable lists, kanban boards, file drop zones, cross-component drag. NOT for Lightning App Builder drag-and-drop."
-  notes: "Researched 2026-04-17. Sources: [LWC Developer Guide - Shadow DOM (create-dom.html); LWC Developer Guide - DOM Access Containment (locker-dom.html); LWC Developer Guide - Event Propagation (events-propagation.html)]. Key: HTML5 drag events work in LWC within single component shadow root but cross-component drag hits shadow DOM event re-targeting - event.target resolves to host element; use event.composedPath() to walk real path; Lightning Web Security (default Spring 22+) enforces DOM containment so document.querySelector is blocked - use this.template.querySelector; DataTransfer string payloads are safest cross-boundary channel; file drop zones via lightning-input type='file' cap at 3.5 MB per file. Gaps: touch-drag support on mobile - HTML5 drag API does not fire on touch; pointer-events polyfill needed for Salesforce Mobile App and Experience Cloud mobile."
-  source_line: 1526
-  history: []
 - id: "lwc-service-worker-patterns"
   status: "TODO"
   skill: "lwc-service-worker-patterns"
@@ -369,13 +362,6 @@
   notes: "Covered by skills/apex/formula-field-performance-and-limits. Compiled size limits (5,000 compiled characters), cross-object spanning (max 10 unique relationships per object, never indexable), SOQL indexability (formula fields require Support case for custom index on deterministic formulas), LDV full table scan behavior, and materialization pattern already covered. Admin-framing content can be added to existing skill's well-architected.md."
   source_line: 1567
   history: []
-- id: "report-type-strategy"
-  status: "RESEARCHED"
-  skill: "report-type-strategy"
-  summary: "Custom report types: object relationships, cross-filter design, bucketing, matrix reports, joined reports, analytics snapshots. NOT for dashboard design."
-  notes: "Researched 2026-04-17. Sources: [Custom Report Types (sf.reports_report_type_setup); Joined Report Limits (analytics.reports_unavailable_with_joined_reports); Cross Filter Considerations (sf.reports_cross_filters_overview); Reporting Snapshots (analytics.data_about_analytic_snap)]. Key: Joined reports cap at 5 blocks and 2000 rows per block and cannot be used directly in dashboards - LLMs ignore these limits; custom report types support up to 4 object levels and 1000 fields per CRT; analytics snapshots run on scheduled job mapping source summary/matrix report to target custom object - snapshot does NOT run in real time, fails silently if field mappings break after schema changes. NOTE: overlap with existing admin/reports-and-dashboards skills - scope strictly to CRT object-relationship modeling and analytics snapshot operational setup. Gaps: none on core topics."
-  source_line: 1568
-  history: []
 - id: "email-deliverability-monitoring"
   status: "RESEARCHED"
   skill: "email-deliverability-monitoring"
@@ -390,54 +376,12 @@
   notes: "apex"
   source_line: 1581
   history: []
-- id: "apex-enum-patterns"
-  status: "RESEARCHED"
-  skill: "apex-enum-patterns"
-  summary: "Enum definition and usage, enum-based dispatch, ordinal values, enum in Custom Metadata, global enums for packages, enum limitations. NOT for picklist fields."
-  notes: "Researched 2026-04-18. Sources: [Enums (langCon_apex_enums); Enum Methods (apex_methods_system_enum); Apex Developer Guide imported corpus (salesforce-apex-developer-guide.md)]. Key: Apex enums support name(), ordinal(), and values() built-in methods; unlike Java, Apex enum types have NO constructor syntax and cannot define custom methods or fields; global enum is required for managed package public APIs -- public enum is not accessible to subscriber orgs; switch on enumValue does not require when else but recommended. LLM anti-pattern: generating enum Status { OPEN(1), CLOSED(2) } Java-style associated data -- compile error in Apex. valueOf(String) throws System.TypeException (not null) on invalid string. Gaps: confirm enum usage in @InvocableMethod and @AuraEnabled -- enums serialize as name() string over the wire."
-  source_line: 1604
-  history: []
-- id: "apex-jwt-bearer-flow"
-  status: "RESEARCHED"
-  skill: "apex-jwt-bearer-flow"
-  summary: "JWT bearer token flow: certificate-based auth, server-to-server integration, Connected App JWT setup, token exchange, headless auth. NOT for OAuth interactive flows."
-  notes: "Researched 2026-04-18. Sources: [Auth.JWT/Auth.JWS/Auth.JWTBearerTokenExchange Apex Reference (apexref/apex_class_Auth_JWT; apexref/apex_class_Auth_JWS; apexref/apex_class_Auth_JWTBearerTokenExchange); OAuth 2.0 JWT Bearer Flow (help.salesforce.com remoteaccess_oauth_jwt_flow); Configure a Connected App for JWT (help.salesforce.com jwt_connectedapp_enable)]. Key: Three native Apex classes handle the full flow -- Auth.JWT builds the claims; Auth.JWS signs with a certificate from Salesforce Certificate and Key Management (referenced by developer name); Auth.JWTBearerTokenExchange POSTs the assertion and returns access token. The exp claim MUST be within 3 minutes (300 seconds) of request -- larger window rejected. No refresh token; each callout must re-execute the full exchange. Connected App must have Admin approved users are pre-authorized enabled and integration user pre-authorized. LLM anti-pattern: hardcoding private key in Apex rather than referencing Certificate and Key Management entry by developer name -- exposes key and fails certificate rotation. Gaps: token caching strategy; sandbox vs production audience URL handling."
-  source_line: 1607
-  history: []
-- id: "lwc-lightning-record-forms"
-  status: "RESEARCHED"
-  skill: "lwc-lightning-record-forms"
-  summary: "lightning-record-form vs record-edit-form vs record-view-form: when to use each, custom validation, field-level overrides, layout density, conditional fields. NOT for dynamic forms admin."
-  notes: "Researched 2026-04-18. Sources: [lightning-record-form Component Reference (component-library/bundle/lightning-record-form/documentation); lightning-record-edit-form Component Reference (component-library/bundle/lightning-record-edit-form/documentation)]. Key: lightning-record-form uses layout-type (Full or Compact) to pull fields from page layout -- fields attribute controls which fields appear but NOT their render order (governed by page layout). density takes auto, comfy, or compact. lightning-record-edit-form exposes onsubmit with event.preventDefault() for pre-save interception and REQUIRES lightning-messages inside the form when using a custom submit button. Hard limits: cannot be nested; external objects unsupported; multiple currencies unsupported; formula fields always read-only; Task and Event fields have limited support. Conditional field show/hide via lwc:if that destroys DOM discards unsaved field values -- use CSS class toggling instead. LLM anti-pattern: using lightning-record-edit-form when lightning-record-form suffices; omitting lightning-messages in custom submit button patterns. Gaps: columns attribute rendering rules; record-type-aware behavior; lightning-input-field variant attribute."
-  source_line: 1617
-  history: []
 - id: "lwc-lightning-out"
   status: "TODO"
   skill: "lwc-lightning-out"
   summary: "Lightning Out for Visualforce, LWC in external pages, $Lightning.use(), container page setup, authentication in external contexts, iframe alternatives. NOT for Experience Cloud LWC."
   notes: "lwc"
   source_line: 1620
-  history: []
-- id: "lwc-custom-lookup"
-  status: "RESEARCHED"
-  skill: "lwc-custom-lookup"
-  summary: "Custom lookup component: combobox search, debounced SOQL, record selection, multi-select lookup, lookup with custom display, lookup filtering. NOT for standard lightning-input-field."
-  notes: "Researched 2026-04-18. Sources: [lightning-combobox Component Reference (component-library/bundle/lightning-combobox/documentation); LWC Accessibility Patterns skill (skills/lwc/lwc-accessibility-patterns)]. Key: lightning-combobox explicitly does NOT support autocomplete or typeahead -- custom lookup must use lightning-input wired to a debounced Apex callout (minimum 300ms debounce established practice). WAI-ARIA listbox semantics required: container role=listbox, each option role=option with aria-selected; aria-controls across shadow DOM boundaries is blocked by LWC shadow enforcement -- keep input and listbox within the same component shadow. SOQL input MUST be sanitized to prevent SOQL injection; SOSL preferred for multi-field search (naturally injection-safe). Apex lookup methods must NOT be cacheable=true if search term is dynamic and real-time. LLM anti-pattern: setting Apex lookup methods as cacheable=true; omitting SOQL injection sanitization when concatenating user search string. Gaps: keyboard handling (Escape, arrow keys, Enter); @wire reactive searchTerm variable caching caveats; guest user SOQL governor limits for Experience Cloud lookups."
-  source_line: 1621
-  history: []
-- id: "lwc-datatable-advanced"
-  status: "RESEARCHED"
-  skill: "lwc-datatable-advanced"
-  summary: "Advanced datatable: inline editing, custom types, row actions, infinite scroll, lazy loading, type attributes, custom cell rendering. NOT for basic datatable (use lwc-data-table)."
-  notes: "Researched 2026-04-18. Sources: [lightning-datatable Component Reference (component-library/bundle/lightning-datatable/documentation); Custom Data Types Guide (developer.salesforce.com/docs/platform/lwc/guide/data-table-custom-types)]. Key: Custom cell types registered via static customTypes on a class extending LightningDatatable; typeAttributes names in column definition MUST be camelCase -- mismatched names fail silently. Inline editing: onsave fires with event.detail.draftValues; draftValues must be explicitly reset to [] after save or save bar persists. Infinite loading requires a defined container height. Hard limits: NOT supported on mobile; nesting lightning-datatable inside a custom cell type NOT supported; Date and Location column types do NOT support inline editing; sorting on custom type column returns undefined for event.detail.fieldName. LLM anti-pattern: clearing draftValues immediately on onsave before server call resolves; using kebab-case names inside typeAttributes column objects instead of camelCase. Gaps: customdatatypes slot approach vs class extension tradeoffs; column-widths-mode; large-dataset virtual scroll behavior."
-  source_line: 1622
-  history: []
-- id: "lwc-css-and-styling"
-  status: "RESEARCHED"
-  skill: "lwc-css-and-styling"
-  summary: "LWC CSS: :host, ::slotted, CSS custom properties, SLDS utility classes, responsive design, dynamic classes, styling limitations in Locker. NOT for SLDS framework."
-  notes: "Researched 2026-04-18. Sources: [LWC CSS Guide (developer.salesforce.com/docs/platform/lwc/guide/create-components-css.html); LWC Component Slots Guide (developer.salesforce.com/docs/platform/lwc/guide/create-components-slots.html)]. Key: Scoped shadow DOM -- cascaded styles do NOT cross shadow boundaries but inherited CSS properties (color, font) do; CSS custom properties explicitly traverse shadow boundaries and are the canonical theming primitive. :host styles the root element; :host(selector) applies when host carries a matching class/attribute. :host-context(), ::part, and ID selectors are NOT supported in LWC. ::slotted selects top-level slotted content only. Dynamic class binding uses a JavaScript getter returning a computed class string. SLDS utility classes (slds-*) are global and not scoped. Under LWS, document.querySelector outside component shadow and window global mutation are blocked; element.style.setProperty is permitted. LLM anti-pattern: writing ::part() selectors (not supported); using descendant CSS selectors expecting them to cross shadow boundaries. Gaps: --slds-c-* vs --dxp-* styling hooks; @layer CSS support status; LWS impact on constructable stylesheets."
-  source_line: 1623
   history: []
 - id: "classic-to-lightning-migration"
   status: "RESEARCHED"
@@ -662,13 +606,6 @@
   summary: "Recycle Bin patterns: undelete behavior, cascade undelete, 15-day/25-day limits, ALL ROWS SOQL, purge implications, Apex undelete trigger. NOT for data archival."
   notes: "data"
   source_line: 1710
-  history: []
-- id: "apex-outbound-email-patterns"
-  status: "TODO"
-  skill: "apex-outbound-email-patterns"
-  summary: "Messaging.SingleEmailMessage, MassEmailMessage, email templates in Apex, org-wide email address, setTargetObjectId vs setToAddresses, attachment handling. NOT for Email-to-Case or email alerts."
-  notes: "apex"
-  source_line: 1734
   history: []
 - id: "apex-wsdl2apex-patterns"
   status: "TODO"

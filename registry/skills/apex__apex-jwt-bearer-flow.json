@@ -1,0 +1,102 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "00896c59a99e059dad5d",
+    "02c4d7f573ac78c53a26",
+    "05d4c88af2189339ec1e",
+    "13dabd2ceecb98604c55",
+    "14718470a3173bb84881",
+    "15020ba87556bdba95a7",
+    "1a05b00ceea0ea3fbd96",
+    "1a5bfc56f870b965b8db",
+    "1d443b45807ded0cd216",
+    "284cfdf013bd44fe8904",
+    "2943e34f9be9ba4cef90",
+    "307426818f8527f6f718",
+    "3b2a9b07dda66deef070",
+    "406fb9b9d6b395b972ac",
+    "43a59a6b00c6f112ad32",
+    "472fef7019b2d75b00ce",
+    "525afa0f658ae38a13a4",
+    "5b6d66b66b7c55fb3ad4",
+    "5be386a01021b9588f23",
+    "5d9bfd1e5925ee97cb40",
+    "60a15d695ebe1cb60cd9",
+    "60f1f37d4d3c01b700dc",
+    "73ebbeafa0bc64d5d013",
+    "7448e520902fff821fb9",
+    "7758a5fe08a21293284e",
+    "81d18d7cb4317c304ac1",
+    "8428ffe33bfc693b6c8e",
+    "84a3d007b82bc748d675",
+    "869254f7fb65402579c5",
+    "8a257bc08caae96921d5",
+    "8b1ea85874a712ff0a1f",
+    "8d24f8e9938bb8d8deb2",
+    "9331fb7ce3899835ba6e",
+    "94b3587f8aeb8fec98be",
+    "956bb900594c4c765cae",
+    "96f5a0f2794be6cf03c4",
+    "9b0859de449797ad34a7",
+    "9dd43c8a93cd6a0472e2",
+    "a1e3f1ab09164492ee85",
+    "a2a685aa972eac3aeb93",
+    "aa693ed845b992a71b8f",
+    "aee972d604bc500f9ef1",
+    "b810005e72f5e7242af3",
+    "be92db53373143d4dad3",
+    "c3ffafdd2fb42942788c",
+    "d38aa406440d14709f65",
+    "d754d6846da952138bbc",
+    "e30bccd2de1d0fb07780",
+    "e3ab5d7fc64220d191f4",
+    "f7e339db7ee06b35cc5d",
+    "fec86fb474dfbf9cef8c"
+  ],
+  "content_hash": "814e71d9e53f278e72350b7e55f782250f542e7a3f60d439165cbefde1383874",
+  "dependencies": [],
+  "description": "OAuth 2.0 JWT Bearer Token Flow for server-to-server authentication from Apex \u2014 Connected App with certificate, Auth.JWT/Auth.JWS to mint signed assertions, token endpoint exchange, and the failure modes (clock skew, certificate not found, user not pre-authorized). NOT for user-context OAuth (use named-credentials-oauth-user-flow) or external client \u2192 Salesforce JWT (that is the inbound flow, configured in Connected App not Apex).",
+  "file_location": "skills/apex/apex-jwt-bearer-flow",
+  "id": "apex/apex-jwt-bearer-flow",
+  "inputs": [
+    "Target system's token endpoint URL",
+    "Issuer (consumer key / client_id) and subject (username) the JWT must carry",
+    "Certificate / private key location: Salesforce certificate label OR external JWKS"
+  ],
+  "name": "apex-jwt-bearer-flow",
+  "official_sources": [
+    "OAuth 2.0 JWT Bearer Token Flow \u2014 https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_jwt_flow.htm",
+    "`Auth.JWT` Class (Apex Reference Guide) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_Auth_JWT.htm",
+    "`Auth.JWS` Class (Apex Reference Guide) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_Auth_JWS.htm",
+    "Named Credentials with JWT Bearer (Salesforce Help) \u2014 https://help.salesforce.com/s/articleView?id=sf.named_credentials_about.htm",
+    "Configure a Connected App for the JWT Bearer Flow \u2014 https://help.salesforce.com/s/articleView?id=sf.connected_app_create_api_integration.htm",
+    "RFC 7523: JSON Web Token (JWT) Profile for OAuth 2.0 \u2014 https://datatracker.ietf.org/doc/html/rfc7523"
+  ],
+  "outputs": [
+    "Apex helper class that mints a signed JWT and exchanges it for an access token",
+    "Connected App / Named Credential configuration checklist",
+    "Error-handling pattern for 400/401 responses from the token endpoint"
+  ],
+  "references": [
+    "skills/apex/apex-jwt-bearer-flow/references/examples.md",
+    "skills/apex/apex-jwt-bearer-flow/references/gotchas.md",
+    "skills/apex/apex-jwt-bearer-flow/references/llm-anti-patterns.md",
+    "skills/apex/apex-jwt-bearer-flow/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/apex-jwt-bearer-flow/scripts/check_apex_jwt_bearer_flow.py"
+  ],
+  "tags": [
+    "oauth",
+    "jwt",
+    "authentication",
+    "connected-app",
+    "integration"
+  ],
+  "templates": [
+    "skills/apex/apex-jwt-bearer-flow/templates/apex-jwt-bearer-flow-template.md"
+  ],
+  "updated": "2026-05-05",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

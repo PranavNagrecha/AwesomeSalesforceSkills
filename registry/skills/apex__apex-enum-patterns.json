@@ -1,0 +1,97 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "006d4bc6758d5a548344",
+    "017fc2e82fc0ce3d8f0c",
+    "069aba85112961e77c33",
+    "0beb658f72b231fc02fe",
+    "1ab49dcc8d760f046765",
+    "2192583145625759b7fb",
+    "24ec96616cb10fe77743",
+    "3155df709d17d591a009",
+    "31e6c68131e805caeaa7",
+    "35c645274d3bc5dbe4f9",
+    "40b09feeb36f5078d2bc",
+    "417cab9740d32e12cd85",
+    "4f3dbc7632c006e994ad",
+    "5071bee846a19dbe079a",
+    "5284ff42089f2b89b86b",
+    "56e81411ba5dd376acba",
+    "62b77ec5e5cea220cec3",
+    "6475b2ea9b9e4e6956c2",
+    "662b35c93893bf5767b7",
+    "68eaa210bbc02dc9ab06",
+    "7053d4625d77760a3f3e",
+    "78d8ec3aa8d0b52f8f16",
+    "7c5eb929223725f12b1c",
+    "880424aafd8172315f4d",
+    "8d164e0e5ad6e1edd00e",
+    "8d8b0871e6deb76e6a65",
+    "906a3bbbbd0de5f9f3d2",
+    "969461daabd98541593c",
+    "96b0f862208fe10b1ea1",
+    "a503c4e83538d6e51fac",
+    "a9795f22e0246baf2fc7",
+    "ab60ccdaef7ccf679aa2",
+    "b7e8725f4af546614c8f",
+    "b974c71834c0031c45c5",
+    "bacef7edb09fc5ec3e1d",
+    "bdc1007655bf91ed603a",
+    "c6cbf6e15cae39064f4e",
+    "c6eb2addc6d4576f7829",
+    "d825aec9caadf3c384f3",
+    "e29029d973e38e142c2c",
+    "e4408316e7be397c7e50",
+    "e44a6301378fce79c661",
+    "e9113fc1d23eff53a4ff",
+    "e9959109d817c79857b6",
+    "ed9b276c25132cb7cf6f",
+    "f0496358005d9282fe8d",
+    "f6ac66d1cc51d3ed3fa5"
+  ],
+  "content_hash": "59b48fdb2dd390891db4f688955658ba9c4263694aa2a83f2778d7bd81d5437b",
+  "dependencies": [],
+  "description": "Apex enum patterns \u2014 enum-based dispatch instead of string switching, ordinal stability, enum values in Custom Metadata, package-global enums, and the limitations (no methods on enum constants, no associated data). Covers `Enum.values()`, `valueOf(String)` failures, and the right way to map an enum to/from a picklist value. NOT for picklist-field design (use admin/picklist-design).",
+  "file_location": "skills/apex/apex-enum-patterns",
+  "id": "apex/apex-enum-patterns",
+  "inputs": [
+    "What the enum is modeling: state machine, dispatch type, picklist mirror, message subtype",
+    "Whether the enum is in a managed package (global vs public)",
+    "Whether the enum is persisted (string serialization to a field)"
+  ],
+  "name": "apex-enum-patterns",
+  "official_sources": [
+    "Apex Enums (Apex Developer Guide) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_enums.htm",
+    "Switch Statement (Apex Developer Guide) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_switch.htm",
+    "System.NoSuchElementException (Apex Reference) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_NoSuchElementException.htm",
+    "Versioning Apex Code in Managed Packages \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_versioning_intro.htm",
+    "Salesforce Well-Architected: Adaptable \u2014 https://architect.salesforce.com/well-architected/adaptable/composable"
+  ],
+  "outputs": [
+    "Enum declaration with documented intent",
+    "Switch / dispatch pattern that handles all values",
+    "Safe conversion to/from string with default branch"
+  ],
+  "references": [
+    "skills/apex/apex-enum-patterns/references/examples.md",
+    "skills/apex/apex-enum-patterns/references/gotchas.md",
+    "skills/apex/apex-enum-patterns/references/llm-anti-patterns.md",
+    "skills/apex/apex-enum-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/apex-enum-patterns/scripts/check_apex_enum_patterns.py"
+  ],
+  "tags": [
+    "enum",
+    "dispatch",
+    "custom-metadata",
+    "managed-package",
+    "type-safety"
+  ],
+  "templates": [
+    "skills/apex/apex-enum-patterns/templates/apex-enum-patterns-template.md"
+  ],
+  "updated": "2026-05-05",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

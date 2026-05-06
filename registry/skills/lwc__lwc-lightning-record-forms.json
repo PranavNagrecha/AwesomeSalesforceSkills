@@ -1,0 +1,99 @@
+{
+  "category": "lwc",
+  "chunk_ids": [
+    "0111a9f00a4609affa26",
+    "02af6f1860a22267bb07",
+    "039e121efc4a7d889bdd",
+    "04d3e10daffccbfd9d85",
+    "058047474522b6eb1283",
+    "0747be89a641f3e81337",
+    "082aa3649addc4dac21d",
+    "0b986c06dbe60b5fce69",
+    "10e74f044f8ac4666cd3",
+    "144102b12d43454d53b4",
+    "227b9cad0e8ecb310727",
+    "25f9920e22b7897a5b2c",
+    "25fbec8a8a4d1fa98311",
+    "2753d4563e2f4cefe409",
+    "299f88138eec7059a5dd",
+    "2a2eb5a80df8e0d2e3e7",
+    "2e8b64b567f522fce672",
+    "3178fc1e1bdcad2fec1e",
+    "36b87fc827dc4e3e1caa",
+    "3a27f5a358c7d969583b",
+    "41aac3c6793136a462fe",
+    "4aaf019d27fab3190e93",
+    "5e434ccbae23da28b87f",
+    "617dd4031b9c1e9af0e1",
+    "6a64b56556862c824cf8",
+    "6b6af624d30c8d847bdd",
+    "6c9e9752d25e304c3d73",
+    "6dbc0cd996fc8388ecdc",
+    "6ff36d2f7f1018c3e10a",
+    "7526bcfb52ae849673ec",
+    "879c20ffe7467e1fa962",
+    "8e63418071ed0f86a3ee",
+    "9341e16a1dd7646ed6dd",
+    "95590bee3ce346c2cd19",
+    "95aad152868090c7fa48",
+    "a83b192439234a02a627",
+    "acdd991ceebfb27ed91f",
+    "b92618437e4b7e3c83fc",
+    "bae12ec07424521c1fe0",
+    "bc60b9e4bb8a4ae0e75a",
+    "cbb416b07b5c309d98d5",
+    "d9205c6876313c4f1c3d",
+    "da40ca9e2d878e2740e5",
+    "dfff69a433884c3fb243",
+    "e71cc22017851eab0c91",
+    "e76678bf88ce8c766477",
+    "f6add2107491863d5876",
+    "ff2ea7a011c6a7448834"
+  ],
+  "content_hash": "6e66e101163204d8f6eb1fbc7172fc6b7f762721849b4dd408cc66e30caf064e",
+  "dependencies": [],
+  "description": "Lightning Data Service form components for LWC \u2014 when to use lightning-record-form vs lightning-record-edit-form vs lightning-record-view-form, output-field vs input-field, density modes, layout types (Compact/Full), and the platform-managed validation/save/error UI. NOT for fully custom form layouts (use lwc/lwc-custom-form-with-uiRecordApi) or aura:recordEditForm (Aura is deprecated for new work).",
+  "file_location": "skills/lwc/lwc-lightning-record-forms",
+  "id": "lwc/lwc-lightning-record-forms",
+  "inputs": [
+    "Object API name and (optionally) record Id",
+    "Whether the form is read-only, edit, create, or mode-toggling",
+    "Whether the layout should be Compact, Full, or a hand-picked field list"
+  ],
+  "name": "lwc-lightning-record-forms",
+  "official_sources": [
+    "lightning-record-form (LWC Component Reference) \u2014 https://developer.salesforce.com/docs/component-library/bundle/lightning-record-form/documentation",
+    "lightning-record-edit-form \u2014 https://developer.salesforce.com/docs/component-library/bundle/lightning-record-edit-form/documentation",
+    "lightning-record-view-form \u2014 https://developer.salesforce.com/docs/component-library/bundle/lightning-record-view-form/documentation",
+    "Lightning Data Service Overview \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-ui-api.html",
+    "Importing References from `@salesforce/schema` \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/reference-salesforce-modules.html",
+    "Salesforce Well-Architected: Secure \u2014 https://architect.salesforce.com/well-architected/trusted/secure"
+  ],
+  "outputs": [
+    "Choice of lightning-record-form vs lightning-record-edit-form vs lightning-record-view-form",
+    "Template snippet wired to onsuccess / onsubmit / onerror",
+    "Density and layout-type configuration matching org standards"
+  ],
+  "references": [
+    "skills/lwc/lwc-lightning-record-forms/references/examples.md",
+    "skills/lwc/lwc-lightning-record-forms/references/gotchas.md",
+    "skills/lwc/lwc-lightning-record-forms/references/llm-anti-patterns.md",
+    "skills/lwc/lwc-lightning-record-forms/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/lwc/lwc-lightning-record-forms/scripts/check_lwc_lightning_record_forms.py"
+  ],
+  "tags": [
+    "lds",
+    "record-forms",
+    "field-level-security",
+    "layout",
+    "declarative-ui"
+  ],
+  "templates": [
+    "skills/lwc/lwc-lightning-record-forms/templates/lwc-lightning-record-forms-template.md"
+  ],
+  "updated": "2026-05-05",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}
