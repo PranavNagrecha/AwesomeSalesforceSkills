@@ -1,0 +1,101 @@
+{
+  "category": "lwc",
+  "chunk_ids": [
+    "00b28d4345b90774126d",
+    "018f75b2985c541e267e",
+    "0eaf8f1e7c2711261c42",
+    "11503f86ba5368716a90",
+    "1c9794824f1e1cd42cf4",
+    "20f740bf77a67e37eec2",
+    "214290bb01a9dcc9646b",
+    "24c1c71181070a9e2343",
+    "2b559e75467842fc554d",
+    "34e5abc43ad5e4ba5a70",
+    "36ed5606c757c4bf801f",
+    "3aac8e3bbccbee1c88fb",
+    "3ccbaf1bea94c042f2cf",
+    "3dd69ce60d8830d5f76b",
+    "4654c5f360c0500c29df",
+    "46a4dbca3b9bccabb03a",
+    "5296561c50cc8df5a4d8",
+    "56a34305647e3da3cb62",
+    "6882a49404b61fd85a1d",
+    "6995177e9d5109c64d41",
+    "6cd6ecef2a8e2319d990",
+    "7227eeab33b6458a8ca9",
+    "7ce6816d87a66e6d789d",
+    "7d6625c7faf21d6fe28d",
+    "8ae550ccfad88a8f45e7",
+    "8c429c7567861ad2ad37",
+    "978193292869634eb999",
+    "a0106d54765da0744dc8",
+    "a011ed34222a21e046c3",
+    "a22c1f63f1997c629b31",
+    "accdc60a3345172aad8f",
+    "acd668e108184e1bd500",
+    "ae034c95238be727b321",
+    "b8d79551e39ba3b11c02",
+    "b920300ca4da4bd746c4",
+    "bb28fccecb732d3b0171",
+    "c059ddb43c005c855b0f",
+    "c5ac3043de41f3ee6aa4",
+    "d2de0aa4983b7311be6a",
+    "d4177694ff7d1be213ce",
+    "d8e1bf44574df700e456",
+    "da0a418f93528dae09cb",
+    "e3edcaf3e9aea450354c",
+    "e78b854eca248f34bdea",
+    "e9e698bb8ae200457189",
+    "ed0605a486f94a6378be",
+    "eda9be669cb44e78d5a0",
+    "f1041108b6b2bd66bc2a",
+    "f7c0e161aab8921ed5da",
+    "ff0c62d3e9a1e11113e9"
+  ],
+  "content_hash": "061aaea6bc4b75e12c6d8a8d28832a18e18e1af5c89965fa6820e7129838d946",
+  "dependencies": [],
+  "description": "Sibling-component communication in LWC \u2014 Lightning Message Service (the modern, supported pattern via Message Channels), the legacy `pubsub` utility (community-shared, predates LMS), `scope = APPLICATION` vs `scope = ACTIVE` semantics, when LMS is the wrong tool (parent-child should use props / `CustomEvent`; cross-tab needs Platform Events), and the migration from `pubsub` to LMS. Covers the message channel `.messageChannel-meta.xml` definition, the `@wire(MessageContext)` pattern, `subscribe` / `unsubscribe` lifecycle, and avoiding leaked subscriptions on disconnectedCallback. NOT for parent-child LWC props / events (see lwc/lwc-component-communication), NOT for cross-org / cross-user messaging (use Platform Events).",
+  "file_location": "skills/lwc/lwc-pubsub-patterns",
+  "id": "lwc/lwc-pubsub-patterns",
+  "inputs": [
+    "Communication shape (parent-child, sibling on same page, cross-app, cross-tab)",
+    "Whether subscribers are LWC, Aura, or Visualforce",
+    "Scope requirement (within Lightning app vs across apps in same tab)"
+  ],
+  "name": "lwc-pubsub-patterns",
+  "official_sources": [
+    "Lightning Message Service Developer Guide \u2014 https://developer.salesforce.com/docs/component-library/documentation/en/lwc/lwc.message_channel",
+    "Communicate Across the DOM with Lightning Message Service \u2014 https://developer.salesforce.com/docs/component-library/documentation/en/lwc/lwc.use_message_channel_dom",
+    "Lightning Component Library: messageService \u2014 https://developer.salesforce.com/docs/component-library/bundle/lightning-message-service",
+    "LWC Component Lifecycle \u2014 https://developer.salesforce.com/docs/component-library/documentation/en/lwc/lwc.create_lifecycle_hooks",
+    "Salesforce Well-Architected Resilient \u2014 https://architect.salesforce.com/well-architected/trusted/resilient",
+    "Salesforce Well-Architected Composable \u2014 https://architect.salesforce.com/well-architected/adaptable/composable"
+  ],
+  "outputs": [
+    "Recommendation: parent-child events / LMS / Platform Events",
+    "Message channel metadata file (when LMS is the answer)",
+    "Subscribe / unsubscribe boilerplate that doesn't leak on disconnect"
+  ],
+  "references": [
+    "skills/lwc/lwc-pubsub-patterns/references/examples.md",
+    "skills/lwc/lwc-pubsub-patterns/references/gotchas.md",
+    "skills/lwc/lwc-pubsub-patterns/references/llm-anti-patterns.md",
+    "skills/lwc/lwc-pubsub-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/lwc/lwc-pubsub-patterns/scripts/check_lwc_pubsub_patterns.py"
+  ],
+  "tags": [
+    "lightning-message-service",
+    "lms",
+    "pubsub",
+    "message-channel",
+    "sibling-communication"
+  ],
+  "templates": [
+    "skills/lwc/lwc-pubsub-patterns/templates/lwc-pubsub-patterns-template.md"
+  ],
+  "updated": "2026-05-05",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}

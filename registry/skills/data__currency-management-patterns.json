@@ -1,0 +1,103 @@
+{
+  "category": "data",
+  "chunk_ids": [
+    "025246573cabcc7060c4",
+    "049c40e030c4eea9ddca",
+    "0630366f25be57e4fb3e",
+    "06609ae4661b76da215c",
+    "12809a75f32e20a86ced",
+    "13ff2aca80ca02962916",
+    "140d64dc1cfcceb37559",
+    "1b66362759cb82519fe9",
+    "2f29def2eb9b5193442e",
+    "3cfa7fd5e7309ee4e993",
+    "428a2083d79b03820c4f",
+    "44890acecfafef41c19f",
+    "48eaa3ff11d9422f422e",
+    "491b0c0baf955068ba95",
+    "4ca8f5dea6ce5a9b7cb6",
+    "4eb54fab8c9f68382d92",
+    "502f86dd1f7c8705f572",
+    "560f9e2b3f94aa4c32e7",
+    "565bae516a807e8b849e",
+    "5ba26ce61e0fcef8c400",
+    "5c7dd68a92f5a2d0f153",
+    "5ddb9031824d61af8440",
+    "5eedc2c3e425db21f128",
+    "6eaf85d0f561ae40cc35",
+    "711d707d60780536e2ca",
+    "7e141091005939601234",
+    "808a8c94a3974bdafbe9",
+    "83eb02c0aa7d30005d27",
+    "868e274e24d64fdb12bc",
+    "875f6227af81f1a1b6e5",
+    "8f69953aeb1fba4d6d7f",
+    "928cbf5d01097c56f302",
+    "97e1d7dd2b8414b42a2c",
+    "9c8f1540b69c384acae2",
+    "a21c0f8ecab75de33902",
+    "a229bf568de4d25c2c57",
+    "b69863beef099de65e64",
+    "b8d01d40150e9c628374",
+    "ba1fa2eb45bea544aa85",
+    "bbdde2aa058e34feda3a",
+    "c16eee681f83845b99f4",
+    "c8cbfd230c93e0f89c79",
+    "d16d838ff0d9b637d81c",
+    "d5d77cb73f5f76855e00",
+    "d71297dce35b1362941d",
+    "e015484bd5f0134b5bfe",
+    "e466246ad05ce44accf6",
+    "f3648c10f961ff7bd1d1",
+    "f62118f71c7d1ba06495",
+    "f9297b460c6204b38c13",
+    "f9ae07e31ca24161882b",
+    "fb0bfe6ccb22c20b95cd"
+  ],
+  "content_hash": "360811eb4365f92a6d6912da01dfaae2d9ebc9d39dee57ac66f61e3d4e94d58a",
+  "dependencies": [],
+  "description": "Working with multi-currency Salesforce orgs at the data layer \u2014 `CurrencyIsoCode` field semantics on every object, the `CurrencyType` and `DatedConversionRate` standard objects, the `convertCurrency()` SOQL function, Advanced Currency Management vs basic multi-currency, formula fields with currency conversion, roll-up summaries across currencies, and the irreversibility of enabling multi-currency on an org. NOT for currency UI formatting in LWC (that's Lightning's `lightning-formatted-number`), NOT for tax / financial-doc rounding rules (those are app-layer concerns).",
+  "file_location": "skills/data/currency-management-patterns",
+  "id": "data/currency-management-patterns",
+  "inputs": [
+    "Whether multi-currency is already enabled on the org (irreversible decision)",
+    "Whether Advanced Currency Management (dated exchange rates) is enabled",
+    "Source-of-truth for exchange rates (manual maintenance vs integration)"
+  ],
+  "name": "currency-management-patterns",
+  "official_sources": [
+    "Multiple Currencies Overview \u2014 https://help.salesforce.com/s/articleView?id=sf.admin_about_enabling_multicurrency.htm&type=5",
+    "Advanced Currency Management \u2014 https://help.salesforce.com/s/articleView?id=sf.admin_currency.htm&type=5",
+    "DatedConversionRate Object \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_datedconversionrate.htm",
+    "CurrencyType Object \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_currencytype.htm",
+    "SOQL `convertCurrency()` \u2014 https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_convertcurrency.htm",
+    "Salesforce Well-Architected Trustworthy \u2014 https://architect.salesforce.com/well-architected/trusted/secure"
+  ],
+  "outputs": [
+    "Pattern for SOQL queries that need currency conversion (`convertCurrency()` usage)",
+    "Formula-field design that survives multi-currency without producing nonsense values",
+    "Roll-up / report design that respects corporate vs record currency"
+  ],
+  "references": [
+    "skills/data/currency-management-patterns/references/examples.md",
+    "skills/data/currency-management-patterns/references/gotchas.md",
+    "skills/data/currency-management-patterns/references/llm-anti-patterns.md",
+    "skills/data/currency-management-patterns/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/data/currency-management-patterns/scripts/check_currency_management_patterns.py"
+  ],
+  "tags": [
+    "multi-currency",
+    "currency-iso-code",
+    "dated-conversion-rate",
+    "acm",
+    "convert-currency"
+  ],
+  "templates": [
+    "skills/data/currency-management-patterns/templates/currency-management-patterns-template.md"
+  ],
+  "updated": "2026-05-05",
+  "vector_embedding": null,
+  "version": "1.0.0"
+}
