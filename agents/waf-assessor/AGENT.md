@@ -22,6 +22,7 @@ dependencies:
     - architect/limits-and-scalability-planning
     - architect/loyalty-program-architecture
     - architect/nfr-definition-for-salesforce
+    - architect/revenue-cloud-architecture
     - architect/security-architecture-review
     - architect/well-architected-review
     - architect/zero-trust-salesforce-patterns
@@ -74,6 +75,7 @@ Runs a Well-Architected Framework (WAF) assessment against a Salesforce implemen
 15. `skills/architect/zero-trust-salesforce-patterns` — zero-trust composition pattern: four-leg coverage; RTEM TSP-supported event matrix; CAEP gap
 16. `skills/architect/loyalty-program-architecture` — Loyalty program architecture pillar review (Reliability tier-credit reversal, Scalability lifetime-ledger summary, Security fraud-prevention controls)
 17. `skills/architect/hyperforce-architecture` — Hyperforce-aware reliability and security: region selection, customer-managed-failover assumptions, IP allowlisting
+18. `skills/architect/revenue-cloud-architecture` — Revenue Cloud architecture (CPQ/Billing successor) reference patterns
 
 ---
 

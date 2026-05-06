@@ -9,6 +9,9 @@ owner: sfskills-core
 created: 2026-04-16
 updated: 2026-04-16
 dependencies:
+  skills:
+    - apex/apex-enum-patterns
+    - apex/apex-schema-describe
   shared:
     - AGENT_CONTRACT.md
     - AGENT_RULES.md
@@ -38,6 +41,8 @@ Reviews Apex classes, triggers, LWC components, and Flows against this library's
 4. `standards/code-review-checklist.md` — the checklist reviews must hit
 5. `standards/decision-trees/automation-selection.md` when a Flow-vs-Apex question surfaces
 6. Discovered skill-local validators via `python3 scripts/search_knowledge.py` for the component type
+7. `skills/apex/apex-schema-describe` — Schema describe API perf, FLS, picklist enumeration
+8. `skills/apex/apex-enum-patterns` — Apex enum dispatch, valueOf safety, ordinals
 
 ## Orchestration Plan
 

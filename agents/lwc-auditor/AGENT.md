@@ -26,9 +26,11 @@ dependencies:
     - lwc/lwc-base-component-recipes
     - lwc/lwc-conditional-rendering
     - lwc/lwc-cross-tab-state-sync
+    - lwc/lwc-css-and-styling
     - lwc/lwc-custom-datatable-types
     - lwc/lwc-custom-event-patterns
     - lwc/lwc-data-table
+    - lwc/lwc-datatable-advanced
     - lwc/lwc-debugging-devtools
     - lwc/lwc-dynamic-components
     - lwc/lwc-error-boundaries
@@ -39,10 +41,12 @@ dependencies:
     - lwc/lwc-internationalization
     - lwc/lwc-lds-writes
     - lwc/lwc-light-dom
+    - lwc/lwc-lightning-record-forms
     - lwc/lwc-locker-to-lws-migration
     - lwc/lwc-performance
     - lwc/lwc-performance-budgets
     - lwc/lwc-public-api-hardening
+    - lwc/lwc-pubsub-patterns
     - lwc/lwc-quick-actions
     - lwc/lwc-reactive-state-patterns
     - lwc/lwc-record-picker
@@ -121,48 +125,52 @@ Audits a Lightning Web Component bundle for accessibility, performance, security
 22. `skills/lwc/navigation-and-routing`
 23. `skills/lwc/lwc-cross-tab-state-sync` — subscribe/unsubscribe pairing audit for cross-tab listeners
 24. `skills/lwc/lightning-navigation-dead-link-handling` — audit Navigate calls for pre-check + fallback
+25. `skills/lwc/lwc-pubsub-patterns` — Lightning Message Service, pubsub utility
 
 ### Forms, datatables, surfaces
-25. `skills/lwc/lwc-forms-and-validation`
-26. `skills/lwc/lwc-record-picker`
-27. `skills/lwc/lwc-data-table`
-28. `skills/lwc/lwc-custom-datatable-types` — when JS extends `LightningDatatable`
-29. `skills/lwc/lwc-quick-actions` — when `.js-meta.xml` lists `lightning__RecordAction`
-30. `skills/lwc/virtualized-lists` — render budget for >500-row lists
+26. `skills/lwc/lwc-forms-and-validation`
+27. `skills/lwc/lwc-record-picker`
+28. `skills/lwc/lwc-data-table`
+29. `skills/lwc/lwc-custom-datatable-types` — when JS extends `LightningDatatable`
+30. `skills/lwc/lwc-quick-actions` — when `.js-meta.xml` lists `lightning__RecordAction`
+31. `skills/lwc/virtualized-lists` — render budget for >500-row lists
+32. `skills/lwc/lwc-lightning-record-forms` — lightning-record-form / -edit-form / -view-form patterns
+33. `skills/lwc/lwc-datatable-advanced` — Inline edit, custom cell types, sorting
 
 ### Accessibility, i18n, focus
-31. `skills/lwc/lwc-accessibility`
-32. `skills/lwc/lwc-accessibility-patterns`
-33. `skills/lwc/lwc-focus-management`
-34. `skills/lwc/lwc-internationalization`
-35. `skills/lwc/lwc-toast-and-notifications`
+34. `skills/lwc/lwc-accessibility`
+35. `skills/lwc/lwc-accessibility-patterns`
+36. `skills/lwc/lwc-focus-management`
+37. `skills/lwc/lwc-internationalization`
+38. `skills/lwc/lwc-toast-and-notifications`
 
 ### Styling, DOM mode, interop
-36. `skills/lwc/lwc-styling-hooks` — for every `.css` file
-37. `skills/lwc/lwc-light-dom` — when JS declares `static renderMode = 'light'`
-38. `skills/lwc/lwc-shadow-vs-light-dom-decision` — render-mode rationale audit
-39. `skills/lwc/lwc-web-components-interop`
-40. `skills/lwc/static-resources-in-lwc`
+39. `skills/lwc/lwc-styling-hooks` — for every `.css` file
+40. `skills/lwc/lwc-light-dom` — when JS declares `static renderMode = 'light'`
+41. `skills/lwc/lwc-shadow-vs-light-dom-decision` — render-mode rationale audit
+42. `skills/lwc/lwc-web-components-interop`
+43. `skills/lwc/static-resources-in-lwc`
+44. `skills/lwc/lwc-css-and-styling` — SLDS hooks, --slds-c-* tokens, shadow DOM, ::part()
 
 ### Performance, errors, debugging
-41. `skills/lwc/lwc-performance`
-42. `skills/lwc/lwc-performance-budgets`
-43. `skills/lwc/lwc-error-boundaries`
-44. `skills/lwc/common-lwc-runtime-errors`
-45. `skills/lwc/lwc-debugging-devtools` — console / logging hygiene
+45. `skills/lwc/lwc-performance`
+46. `skills/lwc/lwc-performance-budgets`
+47. `skills/lwc/lwc-error-boundaries`
+48. `skills/lwc/common-lwc-runtime-errors`
+49. `skills/lwc/lwc-debugging-devtools` — console / logging hygiene
 
 ### Security
-46. `skills/lwc/lwc-security`
-47. `skills/lwc/lwc-locker-to-lws-migration` — flag stale Locker workarounds in LWS-enabled orgs
+50. `skills/lwc/lwc-security`
+51. `skills/lwc/lwc-locker-to-lws-migration` — flag stale Locker workarounds in LWS-enabled orgs
 
 ### Testing
-48. `skills/lwc/lwc-testing`
+52. `skills/lwc/lwc-testing`
 
 ### Templates (for skeleton-alignment audit)
-49. `templates/lwc/component-skeleton/`
-50. `templates/lwc/jest.config.js`
-51. `templates/lwc/patterns/`
-52. `skills/lwc/lwc-reactive-state-patterns` — post–Spring '20 reactivity contract: when @track is needed; renderedCallback infinite-loop trap; Date/Set/Map non-reactivity
+53. `templates/lwc/component-skeleton/`
+54. `templates/lwc/jest.config.js`
+55. `templates/lwc/patterns/`
+56. `skills/lwc/lwc-reactive-state-patterns` — post–Spring '20 reactivity contract: when @track is needed; renderedCallback infinite-loop trap; Date/Set/Map non-reactivity
 
 ---
 

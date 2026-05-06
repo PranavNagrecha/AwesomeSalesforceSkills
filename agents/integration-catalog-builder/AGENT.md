@@ -19,8 +19,10 @@ dependencies:
     - admin/integration-admin-connected-apps
     - admin/integration-user-management
     - admin/remote-site-settings
+    - apex/apex-jwt-bearer-flow
     - architect/integration-framework-design
     - architect/integration-security-architecture
+    - data/data-virtualization-patterns
     - integration/api-governance-and-rate-limits
     - integration/api-versioning-strategy
     - integration/azure-salesforce-patterns
@@ -32,6 +34,7 @@ dependencies:
     - integration/platform-event-schema-evolution
     - integration/private-connect-setup
     - integration/salesforce-data-pipeline-etl
+    - integration/sustainability-reporting
     - integration/webhook-signature-verification
     - security/certificate-and-key-management
     - security/connected-app-security-policies
@@ -83,6 +86,9 @@ Builds a catalog of every live integration endpoint reachable from the org: Name
 21. `skills/integration/platform-event-schema-evolution` — schema evolution rules for live published events
 22. `skills/integration/data-cloud-zero-copy-federation` — Lakehouse Federation connectors (Snowflake/Databricks/BigQuery/Redshift) — auth surface, rotation hazards, governance inheritance
 23. `skills/integration/azure-salesforce-patterns` — Azure decision matrix — Service Bus Connector vs Apex→Function vs Data Cloud Blob ingestion vs Power Platform; auth model selection
+24. `skills/apex/apex-jwt-bearer-flow` — JWT bearer flow for server-to-server auth, signed assertions
+25. `skills/data/data-virtualization-patterns` — Salesforce Connect, External Objects, OData adapter
+26. `skills/integration/sustainability-reporting` — Net Zero Cloud / sustainability data integration
 
 ---
 

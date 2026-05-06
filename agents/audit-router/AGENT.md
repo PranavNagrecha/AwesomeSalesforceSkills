@@ -18,7 +18,10 @@ dependencies:
     - admin/agent-output-formats
     - admin/data-export-service
     - admin/lightning-experience-transition
+    - admin/report-type-strategy
     - devops/metadata-diff-between-sandboxes
+    - security/guest-user-security-audit
+    - security/sso-saml-troubleshooting
   shared:
     - AGENT_CONTRACT.md
     - DELIVERABLE_CONTRACT.md
@@ -55,6 +58,9 @@ Dispatches one of the audit domains in the [`audit_harness`](../_shared/harnesse
 9. `skills/devops/metadata-diff-between-sandboxes` — two-org metadata diff for org_drift classifier
 10. `skills/admin/lightning-experience-transition` — Lightning Experience Transition program orchestration — when an LE-Transition or readiness-check audit is requested, route to this skill for asset triage and wave planning instead of a single-page LRP audit
 11. `skills/admin/data-export-service` — Data Export Service vs real backup gap — flag any 'we have backups via weekly export' claim
+12. `skills/admin/report-type-strategy` — Custom report types, with/without joins, report type strategy
+13. `skills/security/guest-user-security-audit` — Experience Cloud guest user 2021 changes audit
+14. `skills/security/sso-saml-troubleshooting` — SAML response inspection, SSO debugging (my_domain_session_security)
 
 ---
 
