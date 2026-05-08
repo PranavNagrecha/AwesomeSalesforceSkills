@@ -240,7 +240,7 @@ Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
 
 ### Dimensions (Wave 10 contract)
 
-The agent's envelope MUST place every dimension below in either `dimensions_compared[]` or `dimensions_skipped[]`. Dimension state reflects whether the underlying probe ran fully, partially, or not at all.
+Every duplicate-rule design dimension below MUST land in either the envelope's `dimensions_compared[]` block or its `dimensions_skipped[]` block. Each entry's state must record whether the underlying probe ran end-to-end, partially, or not at all (`count-only` / `partial` / `not-run`).
 
 `existing-rule-conflict`, `match-basis-validation`, `boolean-filter-shape`, `policy-action`, `bypass-permission`, `convert-behavior`, `merge-behavior`, `person-account-edge-cases`, `cross-account-contact-shape`, `test-plan`.
 
