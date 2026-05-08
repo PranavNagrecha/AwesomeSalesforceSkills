@@ -2,6 +2,33 @@
 
 All notable changes to SfSkills are documented here. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The project uses semantic versioning keyed to the Salesforce release cadence (minor bumps per Spring/Summer/Winter release).
 
+## [Unreleased] — sfskills-mcp v0.4.1 (hygiene patch)
+
+Patch release rebuilding the data bundle attached to the GitHub Release
+without hardcoded `/Users/<author>/` paths. Wheel itself is unchanged
+in behaviour — only drops 2 unused imports. `sfskills-mcp-init` (which
+fetches `releases/latest`) auto-picks up the cleaned data bundle.
+
+### Changed
+
+- `commands/audit-router.md`, `commands/automation-migration-router.md`,
+  `commands/run-queue.md`, `docs/MIGRATION.md`,
+  `docs/archive/OPUS_RESEARCH_PROMPT.md`,
+  `agents/_shared/harnesses/migration_router/decision_table.md`,
+  `feedback/FEEDBACK_LOG.md`: replaced absolute `/Users/<author>/` paths
+  with relative references, `$(git rev-parse --show-toplevel)`, or
+  generic phrasing. The `/run-queue` prompt's body had `cd /Users/...`
+  snippets that wouldn't run on any other contributor's machine — fixed.
+- `mcp/sfskills-mcp/src/sfskills_mcp/init.py`: drop unused `tempfile`.
+- `mcp/sfskills-mcp/src/sfskills_mcp/resources.py`: drop unused `Any`.
+
+### Fixed
+
+- `agents/duplicate-rule-designer/AGENT.md`: rephrased the Dimensions
+  section so it's no longer byte-identical to `data-loader-pre-flight`'s
+  (the agent validator's "duplicate prose between AGENT.md files" rule
+  was rejecting both files until one of them was paraphrased).
+
 ## [Unreleased] — sfskills-mcp v0.4.0 (Tier A → D)
 
 A focused 4-tier evolution of `mcp/sfskills-mcp/` from the v0.1 prototype to a v0.4 production-ready MCP server. Plan + per-tier audit history live in [`.planning/mcp-v0.2-plan.md`](./.planning/mcp-v0.2-plan.md).

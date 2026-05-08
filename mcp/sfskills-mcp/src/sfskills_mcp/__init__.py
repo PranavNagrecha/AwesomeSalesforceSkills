@@ -6,4 +6,8 @@
 #   0.2.0 — Tier B: tool annotations + 68 prompts + 5 resource shapes + probe progress
 #   0.3.0 — Tier C: 14 new tools (8 dev-org + 5 search + suggest_agent)
 #   0.4.0 — Tier D: health tool + per-tool timeouts + PyPI publish prep
-__version__ = "0.4.0"
+#   0.4.1 — Hygiene patch: rebuild data bundle without hardcoded /Users/ paths
+#           in commands/audit-router.md / automation-migration-router.md /
+#           run-queue.md (the latter had broken `cd /Users/<author>/...` shell
+#           snippets in the prompt body); drop 2 unused imports.
+__version__ = "0.4.1"
