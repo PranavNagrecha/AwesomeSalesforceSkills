@@ -213,7 +213,7 @@ Five resource shapes, addressable from any MCP client without a tool call:
 
 Every tool registers with [`ToolAnnotations`](https://modelcontextprotocol.io/specification/2025-03-26/server/tools#tool-annotations) so MCP-aware clients can auto-approve safely:
 
-- **`readOnlyHint`** — `True` for 22/23 tools (everything except `emit_envelope` writes nothing).
+- **`readOnlyHint`** — `True` for every tool except `emit_envelope` (the only tool that writes to disk; output goes to `docs/reports/<agent>/<run_id>.{json,md}`).
 - **`destructiveHint`** — `False` for all tools.
 - **`openWorldHint`** — `True` for the 16 org-touching tools (output depends on external state); `False` for the 7 repo-only tools (deterministic, cacheable).
 - **`idempotentHint`** — `True` for read tools; `False` for `emit_envelope` (overwrite-protected by default; re-runs of the same `run_id` reject without `overwrite=True`).

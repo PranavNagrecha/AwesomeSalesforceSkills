@@ -1,13 +1,17 @@
 """Structural tests for the MCP tool surface.
 
-Wave 2: we promoted 4 probes to first-class MCP tools, bringing the total
-from 15 to 19. These tests assert that every expected tool is registered
-on the server, has a description, and that the probe/admin/skill modules
-can be imported without a live ``sf`` CLI.
+Asserts that every expected tool is registered on the server, has a
+description, and that the probe/admin/skill modules can be imported
+without a live ``sf`` CLI.
 
 End-to-end tests against a real org live in a separate harness
-(``evals/probes/``, Wave 6) — here we only verify structure + error-path
+(``evals/probes/``) — here we only verify structure + error-path
 behavior, so CI can run without Salesforce credentials.
+
+Wave history:
+- Wave-2 (2026-04): 23 tools (the original baseline).
+- Tier C (v0.3, 2026-05): +14 tools (8 dev-org + 5 search + 1 routing).
+- Tier D (v0.4, 2026-05): +1 tool (``health``).
 
 Run with:
 
@@ -45,7 +49,7 @@ EXPECTED_TOOLS = {
     "list_named_credentials",
     "list_approval_processes",
     "tooling_query",
-    # Probes (5 — Wave-2 promotion + 2026-04-19 automation graph)
+    # Probes (5)
     "probe_apex_references",
     "probe_flow_references",
     "probe_matching_rules",
@@ -54,10 +58,28 @@ EXPECTED_TOOLS = {
     # Agents (2)
     "list_agents",
     "get_agent",
-    # Meta / session bootstrap (3, added 2026-04-19 for MCP double-down)
+    # Meta / session bootstrap (3)
     "list_deprecated_redirects",
     "get_invocation_modes",
     "emit_envelope",
+    # Tier C — dev-org tools (8, v0.3)
+    "list_apex_classes",
+    "get_apex_class",
+    "list_apex_triggers",
+    "list_lwc_bundles",
+    "get_lwc_bundle",
+    "list_custom_fields",
+    "describe_object_full",
+    "list_orgs",
+    # Tier C — knowledge-search + routing (6, v0.3)
+    "search_agents",
+    "search_templates",
+    "search_decision_trees",
+    "get_template",
+    "get_decision_tree",
+    "suggest_agent",
+    # Tier D — production polish (1, v0.4)
+    "health",
 }
 
 
@@ -104,16 +126,15 @@ class TestProbeInputValidation(unittest.TestCase):
             self.assertIn("error", result, f"Expected error for scope={bad!r}")
 
     def test_expected_tool_count(self):
-        """2026-04-19 baseline: 23 tools (19 Wave-2 + 4 MCP double-down:
-        probe_automation_graph, list_deprecated_redirects,
-        get_invocation_modes, emit_envelope).
+        """v0.4.0 baseline: 38 tools (23 Wave-2 + 14 Tier-C + 1 Tier-D).
 
-        Changing this number without updating ``server.py``'s module docstring
-        + ``EXPECTED_TOOLS`` + ``docs/SKILLS.md`` is a failure by design.
+        Changing this number without updating ``EXPECTED_TOOLS`` is a failure
+        by design — adding a tool means a deliberate canon update, not a
+        silent test drift. Bump the floor when intentional.
         """
         self.assertEqual(
-            len(EXPECTED_TOOLS), 23,
-            "2026-04-19 baseline is 23 tools — update docstring if intentional",
+            len(EXPECTED_TOOLS), 38,
+            "v0.4.0 baseline is 38 tools — update EXPECTED_TOOLS if intentional",
         )
 
 

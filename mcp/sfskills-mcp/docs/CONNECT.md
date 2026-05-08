@@ -1,9 +1,13 @@
 # Connecting `sfskills-mcp` to your AI client
 
 This is the field guide. If your AI tool speaks the Model Context Protocol
-(MCP), it can consume the full `sfskills` tool surface — currently 23 tools
-spanning skill search, live-org metadata + SOQL, automation/permset/Apex/Flow
-probes, run-time agent discovery, and persistence — with the recipes below.
+(MCP), it can consume the full `sfskills` tool surface — skill / agent /
+template / decision-tree search + retrieval, live-org metadata + SOQL,
+Apex / LWC / object inventory, 5 probes (with progress notifications),
+task-to-agent routing (`suggest_agent`), `health` diagnostic, and
+persistence — plus 68 MCP prompts (one per `commands/*.md` wrapper) and
+5 resource shapes (`sfskills://catalog`, `sfskills://skill/{id}`, …).
+Recipes for every supported client below.
 
 > Every recipe assumes you've completed the one-time setup in [Prerequisites](#prerequisites).
 > Config-file **paths change occasionally**; if yours doesn't match, check your

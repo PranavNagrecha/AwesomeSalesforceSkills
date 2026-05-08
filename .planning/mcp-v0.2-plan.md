@@ -568,7 +568,7 @@ sfskills-mcp-init = "sfskills_mcp.__main__:init"   # downloads registry snapshot
 
 **Validation:** `pip install sfskills-mcp` from TestPyPI in a clean venv, run `sfskills-mcp-init`, then `npx @modelcontextprotocol/inspector sfskills-mcp` — connects, lists tools.
 
-**Risk:** PyPI publish requires API tokens — out of scope for the agent, must be done by the user. The plan delivers the workflow files; the user runs the publish step.
+**Risk:** PyPI publish requires API tokens — out of scope for the agent, must be done by the user. The plan delivers the workflow files; the user runs the publish step. **STATUS: DONE — published to PyPI as `sfskills-mcp` v0.4.0 on 2026-05-08 after the user added `PYPI_API_TOKEN` to repo Actions secrets and re-triggered the workflow.** https://pypi.org/project/sfskills-mcp/
 
 ---
 
@@ -596,7 +596,7 @@ Useful for CI environments and Code-Connect-style demos. Defer to a follow-up if
 
 - [x] `health` tool returns a populated dict (server / SDK / sf-CLI versions, registry size, agent counts, lexical-index freshness, repo root). Verified.
 - [~] **Plan said:** "All tools accept `timeout_seconds`". **Actual:** added `SFSKILLS_TIMEOUT_SECONDS` env var (deployer-wide override) instead of threading `timeout_seconds` through every tool signature. Reasoning: per-call overrides require a parameter on every tool's call signature (15+ touch points across `dev_org.py`, `admin.py`, `probes.py`); the env var approach gets 95% of the value with 1 touch point. `tooling_query` description points users at the env var. Documented in D6.
-- [x] PyPI publish workflow + console scripts shipped (`.github/workflows/publish-mcp.yml`, `pyproject.toml` updated, `init.py` written + tested). Actual `twine upload` step happens when the user runs the publish (token-gated).
+- [x] PyPI publish workflow + console scripts shipped (`.github/workflows/publish-mcp.yml`, `pyproject.toml` updated, `init.py` written + tested). **Actually published — sfskills-mcp v0.4.0 live at https://pypi.org/project/sfskills-mcp/ as of 2026-05-08.**
 - [x] Path-fallback to `~/.cache/sfskills-mcp/current` works end-to-end (covered by `tests/test_init_and_paths.py`).
 
 ### D6. Tier-D actual outcomes (not in original plan)
