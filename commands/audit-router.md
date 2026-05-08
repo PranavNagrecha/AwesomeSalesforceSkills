@@ -1,6 +1,6 @@
 # /audit-router
 
-Invoke the [audit-router](../agents/audit-router/AGENT.md) agent. Wave 3b-1 of the redesign (see [plan file](/Users/user/.claude/plans/keen-napping-wombat.md)).
+Invoke the [audit-router](../agents/audit-router/AGENT.md) agent. Wave 3b-1 of the redesign.
 
 ## Synopsis
 

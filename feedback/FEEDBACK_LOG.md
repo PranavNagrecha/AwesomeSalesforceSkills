@@ -70,7 +70,7 @@ The user's self-challenge counts as a second signal on the items I deferred too 
 ## 2026-04-19 — Cursor invocation review (all 75 agents)
 
 **Anchor:** `2026-04-19-cursor-invocation-review`
-**Source:** External AI assistant (Cursor) — `/Users/user/Desktop/agent-informal-invocation-analysis.md` (~1,170 lines, not committed). Same reviewer as the 2026-04-19 flow-builder entry below.
+**Source:** External AI assistant (Cursor) — `agent-informal-invocation-analysis.md` (~1,170 lines, kept locally / not committed). Same reviewer as the 2026-04-19 flow-builder entry below.
 **Decision owner:** Pranav Nagrecha + Claude Opus 4.7.
 **Decided on:** 2026-04-19.
 
@@ -195,7 +195,7 @@ Plus the full 19-entry deprecated-name redirect table.
 ## 2026-04-19 — Cursor (another AI assistant) review of `agents/flow-builder`
 
 **Source:** External AI assistant (Cursor 3.1.15) session transcript supplied by repo owner.
-**Session path:** `/Users/user/Downloads/cursor_flow_builder_functionality_in_sa.md` (not committed — summarized below).
+**Session path:** `cursor_flow_builder_functionality_in_sa.md` (kept locally / not committed — summarized below).
 **Decision owner:** Pranav Nagrecha (repo owner) + Claude Opus 4.7 (AI pair).
 **Decided on:** 2026-04-19.
 

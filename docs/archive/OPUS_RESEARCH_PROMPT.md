@@ -1,7 +1,6 @@
 # Master Research Prompt — Opus Queue Population
 
-Paste this entire prompt into a fresh Claude Opus session with access to the repo at:
-`/Users/user/VS Code/Personal/SfSkills`
+Paste this entire prompt into a fresh Claude Opus session with access to the SfSkills repo checkout.
 
 ---
 
@@ -379,7 +378,7 @@ Scan results to confirm no duplicates slipped through.
 ## Step 7 — Commit
 
 ```bash
-cd "/Users/user/VS Code/Personal/SfSkills"
+cd "$(git rev-parse --show-toplevel)"
 git add MASTER_QUEUE.md
 git commit -m "research: populate full queue — Phase 0 domain sweeps + Phases 2-16 all clouds
 

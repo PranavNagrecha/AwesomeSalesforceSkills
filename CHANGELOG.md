@@ -30,7 +30,7 @@ Before Tier A: 65 pass / 2 fail. After Tier D: **177 pass / 0 fail**.
 
 ## [Unreleased] — Full 8-Wave Redesign
 
-A substantial redesign completed in April 2026, landing all 8 waves of the approved plan at `/Users/user/.claude/plans/keen-napping-wombat.md`. This section documents Waves 4b, 4c, 5, 6, 7 added on top of the earlier Wave 3 + 4a work (originally in commits `8bcabde` through `f7de019`).
+A substantial redesign completed in April 2026, landing all 8 waves of the approved plan at `an internal redesign plan (kept locally)`. This section documents Waves 4b, 4c, 5, 6, 7 added on top of the earlier Wave 3 + 4a work (originally in commits `8bcabde` through `f7de019`).
 
 ### Added in Waves 4b + 4c + 5 + 6 + 7
 
@@ -130,4 +130,4 @@ Full list and removal timeline in [`docs/MIGRATION.md`](docs/MIGRATION.md). Stub
 
 The redesign documented above began from commit `1c65571` ("Wave D: wire the full 39-agent roster into docs + MCP registry", 16 April 2026). Pre-redesign changes are in git history; this changelog begins tracking with the redesign.
 
-The full as-built agent roster prior to redesign is documented in the Waves 0–D commit log. The redesign preserves every rule but consolidates the agent surface into routers + shared harnesses per `/Users/user/.claude/plans/keen-napping-wombat.md`.
+The full as-built agent roster prior to redesign is documented in the Waves 0–D commit log. The redesign preserves every rule but consolidates the agent surface into routers + shared harnesses per `an internal redesign plan (kept locally)`.

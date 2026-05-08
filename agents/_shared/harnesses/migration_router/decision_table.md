@@ -1,6 +1,6 @@
 # Migration Router — Decision Table
 
-**Approved by:** pending (Wave 3a user-approval gate #3 per `/Users/user/.claude/plans/keen-napping-wombat.md`).
+**Approved by:** pending (Wave 3a user-approval gate #3 per the internal redesign plan).
 **Owned by:** [`agents/automation-migration-router/AGENT.md`](../../../automation-migration-router/AGENT.md).
 **Reviewers must validate** that every cited skill path exists in `skills/` (the validator's citation-gate enforces this at PR time).
 

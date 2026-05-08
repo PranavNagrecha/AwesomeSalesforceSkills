@@ -1,6 +1,6 @@
 # Migration Guide — SfSkills Agent Consolidation
 
-This document records every agent deprecated during the Wave 3 consolidation (see `/Users/user/.claude/plans/keen-napping-wombat.md`) — what replaced it, how to migrate, and when the deprecation stub will be removed.
+This document records every agent deprecated during the Wave 3 consolidation — what replaced it, how to migrate, and when the deprecation stub will be removed.
 
 ## Deprecation Principles
 

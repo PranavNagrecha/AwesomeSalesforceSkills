@@ -37,7 +37,7 @@ import json
 import re
 from functools import lru_cache
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from . import paths, skills
 

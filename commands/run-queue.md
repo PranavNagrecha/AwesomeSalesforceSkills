@@ -68,7 +68,7 @@ Read the top results. Extract every distinct practitioner task the Role performs
 **2c. Check existing coverage**
 For each task identified, run:
 ```bash
-cd /Users/user/VS\ Code/Personal/SfSkills && python3 scripts/search_knowledge.py "<task>" 2>/dev/null
+cd "$(git rev-parse --show-toplevel)" && python3 scripts/search_knowledge.py "<task>" 2>/dev/null
 ```
 If `has_coverage: true` → skip it (mark DUPLICATE in your working list).
 If `has_coverage: false` → it is a confirmed gap.
@@ -156,7 +156,7 @@ Read the top 2-3 results. Extract:
 
 **2e. Scaffold the skill package**
 ```bash
-cd /Users/user/VS\ Code/Personal/SfSkills
+cd "$(git rev-parse --show-toplevel)"
 python3 scripts/new_skill.py <domain> <skill-name>
 ```
 This creates the full package structure with TODO markers. Do not write files manually.
@@ -206,7 +206,7 @@ Fill in order:
 
 **2g. Sync and validate**
 ```bash
-cd /Users/user/VS\ Code/Personal/SfSkills
+cd "$(git rev-parse --show-toplevel)"
 python3 scripts/skill_sync.py --skill skills/<domain>/<skill-name>
 ```
 Fix every ERROR reported. Do not use `--skip-validation`. Re-run until clean.

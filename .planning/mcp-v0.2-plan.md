@@ -26,7 +26,7 @@ Items are written so they can be cherry-picked. The order *within* a Tier is the
 
 | | |
 |---|---|
-| Repo root | `/Users/user/VS Code/Personal/SfSkills` |
+| Repo root | `<repo>` (the SfSkills checkout) |
 | MCP code | `mcp/sfskills-mcp/` |
 | Tools registered today | 23 (in `src/sfskills_mcp/server.py`) |
 | Tests | 67 cases in `tests/`; **65 pass, 2 fail** (content drift, not MCP bugs) |

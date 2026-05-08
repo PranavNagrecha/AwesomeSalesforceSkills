@@ -1,6 +1,6 @@
 # /migrate-automation
 
-Invoke the [automation-migration-router](../agents/automation-migration-router/AGENT.md) agent. Wave 3a of the redesign (see [plan file](/Users/user/.claude/plans/keen-napping-wombat.md)).
+Invoke the [automation-migration-router](../agents/automation-migration-router/AGENT.md) agent. Wave 3a of the redesign.
 
 ## Synopsis
 
