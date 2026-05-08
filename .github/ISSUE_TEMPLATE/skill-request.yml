@@ -1,0 +1,68 @@
+name: "📚 Skill request"
+description: Suggest a new Salesforce skill to add to the library.
+title: "[Skill Request] <domain>: <skill-name>"
+labels: ["skill-request", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping grow the SfSkills library!
+
+        Before opening:
+        - Check `python3 scripts/search_knowledge.py "<your topic>"` to see if it's already covered
+        - Check `BACKLOG.yaml` to see if it's already queued
+
+  - type: input
+    id: domain
+    attributes:
+      label: Domain
+      description: One of admin / apex / lwc / flow / omnistudio / agentforce / security / integration / data / devops / architect
+      placeholder: apex
+    validations:
+      required: true
+
+  - type: input
+    id: skill-name
+    attributes:
+      label: Proposed skill name
+      description: Lowercase, hyphenated. Example "trigger-recursion-guard"
+      placeholder: trigger-recursion-guard
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use case
+      description: When would an AI assistant reach for this skill?
+      placeholder: |
+        "When the user is writing an Apex trigger that calls a method that
+         could re-fire the same trigger via a related update."
+    validations:
+      required: true
+
+  - type: textarea
+    id: official-source
+    attributes:
+      label: Official Salesforce source(s)
+      description: |
+        Link to the Salesforce docs / Architects guide / Trailhead page that
+        would ground this skill. Source-grounded is non-negotiable —
+        skills without an authoritative source don't ship.
+      placeholder: |
+        https://developer.salesforce.com/docs/...
+        https://architect.salesforce.com/...
+    validations:
+      required: true
+
+  - type: textarea
+    id: anti-patterns
+    attributes:
+      label: LLM anti-patterns to refuse (optional)
+      description: |
+        What does an AI typically get wrong about this topic? Each skill
+        ships with a `references/llm-anti-patterns.md` listing 5+ mistakes
+        the model must refuse to produce.
+      placeholder: |
+        - Recommends `Trigger.isExecuting` as a recursion guard (only works once per transaction)
+        - Suggests static booleans without resetting in finally blocks

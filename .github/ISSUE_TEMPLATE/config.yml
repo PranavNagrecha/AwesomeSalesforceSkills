@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Question / general discussion
+    url: https://github.com/PranavNagrecha/AwesomeSalesforceSkills/discussions
+    about: Use GitHub Discussions for usage questions, ideas, or "how do I…" — not bugs.
+  - name: 📦 Install via PyPI
+    url: https://pypi.org/project/sfskills-mcp/
+    about: pip install sfskills-mcp + sfskills-mcp-init
+  - name: 🔌 Connect a specific MCP client
+    url: https://github.com/PranavNagrecha/AwesomeSalesforceSkills/blob/main/mcp/sfskills-mcp/docs/CONNECT.md
+    about: Setup recipes for Claude Desktop, Cursor, Cline, Continue, Codex, JetBrains, and 10+ more.

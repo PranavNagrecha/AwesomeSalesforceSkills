@@ -1,0 +1,56 @@
+name: "🔧 MCP tool request"
+description: Suggest a new tool, prompt, or resource for the sfskills-mcp server.
+title: "[MCP Tool Request] <name>"
+labels: ["mcp", "enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this when you want a new MCP tool / prompt / resource added to
+        `mcp/sfskills-mcp/`. For new SKILL content (markdown guides), use
+        the **Skill request** template instead.
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind of addition?
+      options:
+        - "New tool (e.g. list_omniscripts, list_data_streams)"
+        - "New probe (e.g. probe_dml_in_loop)"
+        - "New prompt / slash command"
+        - "New resource shape (sfskills://...)"
+        - "Improvement to an existing tool"
+    validations:
+      required: true
+
+  - type: input
+    id: name
+    attributes:
+      label: Proposed name
+      placeholder: "list_omniscripts"
+    validations:
+      required: true
+
+  - type: textarea
+    id: signature
+    attributes:
+      label: Proposed signature / inputs
+      placeholder: |
+        list_omniscripts(target_org=None, name_filter=None, active_only=False, limit=200)
+        Returns: {omniscript_count, omniscripts: [{id, name, type, version, active}]}
+      render: text
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Which run-time agent needs this? What can't they do today?
+    validations:
+      required: true
+
+  - type: textarea
+    id: soql
+    attributes:
+      label: SOQL / API draft (optional but appreciated)
+      description: If you know the Tooling-API or REST endpoint, paste it here to skip a research round-trip.
+      render: sql

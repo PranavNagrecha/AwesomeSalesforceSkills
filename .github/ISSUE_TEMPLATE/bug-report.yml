@@ -1,0 +1,67 @@
+name: "🐛 Bug report"
+description: Something is broken in a skill, agent, the MCP server, or a script.
+title: "[Bug] <area>: <short description>"
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. The more concrete the repro, the faster the fix.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - "MCP server (sfskills-mcp / pip)"
+        - "MCP tool output (wrong / missing data)"
+        - "MCP prompt or resource"
+        - "Skill content (factual error / broken example)"
+        - "Agent (AGENT.md instructions)"
+        - "Script (validate_repo / skill_sync / ...)"
+        - "Documentation"
+        - "Other"
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: sfskills-mcp version
+      description: Output of `pip show sfskills-mcp` OR commit hash if running from a clone
+      placeholder: "0.4.1 (or commit abc1234)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Exact commands or tool calls. Include the full error if any.
+      placeholder: |
+        1. Run `sfskills-mcp` against org alias `my-dev`
+        2. Call tool `list_apex_classes` with `{"name_filter": "Account"}`
+        3. Returns empty array even though `Account*` classes exist
+      render: bash
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: What actually happened
+    validations:
+      required: true
+
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      placeholder: "macOS 14.5, Python 3.12, sf CLI 2.103.7, MCP client = Claude Desktop 0.7.x"
