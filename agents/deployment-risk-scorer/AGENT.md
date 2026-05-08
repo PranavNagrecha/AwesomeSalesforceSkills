@@ -42,6 +42,7 @@ dependencies:
     - devops/gitlab-ci-for-salesforce
     - devops/go-live-cutover-planning
     - devops/health-cloud-deployment-patterns
+    - devops/isv-license-management-and-trialforce
     - devops/managed-package-development
     - devops/metadata-api-retrieve-deploy
     - devops/metadata-diff-between-sandboxes
@@ -125,6 +126,7 @@ Before a user deploys a change set / package / SFDX delta, this agent compares w
 41. `skills/devops/salesforce-dx-project-structure` — Salesforce dx project structure
 42. `skills/devops/source-tracking-and-conflict-resolution` — Source tracking and conflict resolution
 43. `skills/devops/vscode-salesforce-extensions` — Vscode salesforce extensions
+44. `skills/devops/isv-license-management-and-trialforce` — flag risk on managed-package deployments that change LMA wiring, alter Feature Parameter direction, or attempt FP propagation testing on beta versions
 
 ---
 

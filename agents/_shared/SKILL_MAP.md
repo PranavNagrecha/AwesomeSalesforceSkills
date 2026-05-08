@@ -172,6 +172,7 @@ under the classifier's `Mandatory Reads` section.
 - `devops/release-management`, `devops/environment-strategy`, `devops/package-development-strategy`
 - `devops/unlocked-package-development`, `devops/second-generation-managed-packages`
 - `devops/git-branching-for-salesforce`, `devops/release-notes-automation`
+- `devops/isv-license-management-and-trialforce` — ISV release-cycle items: LMA registration, Trialforce template re-approval, Feature Parameter rollout
 
 ### `waf-assessor`
 - `architect/well-architected-review`, `architect/security-architecture-review`
