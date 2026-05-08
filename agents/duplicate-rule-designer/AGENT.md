@@ -238,6 +238,12 @@ Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
 - **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
 - **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only. Each entry MUST name one of: `existing-rule-conflict`, `match-basis-validation`, `boolean-filter-shape`, `policy-action`, `bypass-permission`, `convert-behavior`, `merge-behavior`, `person-account-edge-cases`, `cross-account-contact-shape`, `test-plan`. If a dimension was skipped because the underlying probe could not run, the skip reason MUST link the refusal code.
 
+### Dimensions (Wave 10 contract)
+
+The agent's envelope MUST place every dimension below in either `dimensions_compared[]` or `dimensions_skipped[]`. Dimension state reflects whether the underlying probe ran fully, partially, or not at all.
+
+`existing-rule-conflict`, `match-basis-validation`, `boolean-filter-shape`, `policy-action`, `bypass-permission`, `convert-behavior`, `merge-behavior`, `person-account-edge-cases`, `cross-account-contact-shape`, `test-plan`.
+
 ## Escalation / Refusal Rules
 
 | Code | Trigger |

@@ -2,6 +2,32 @@
 
 All notable changes to SfSkills are documented here. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The project uses semantic versioning keyed to the Salesforce release cadence (minor bumps per Spring/Summer/Winter release).
 
+## [Unreleased] — sfskills-mcp v0.4.0 (Tier A → D)
+
+A focused 4-tier evolution of `mcp/sfskills-mcp/` from the v0.1 prototype to a v0.4 production-ready MCP server. Plan + per-tier audit history live in [`.planning/mcp-v0.2-plan.md`](./.planning/mcp-v0.2-plan.md).
+
+### Added
+
+- **Tier C tools (14 new):** `list_apex_classes`, `get_apex_class`, `list_apex_triggers`, `list_lwc_bundles`, `get_lwc_bundle`, `list_custom_fields` (with `include_pseudo_fields`), `describe_object_full` (composite), `list_orgs`, `search_agents`, `search_templates`, `search_decision_trees`, `get_template`, `get_decision_tree`, `suggest_agent` (free-text task → ranked agents).
+- **Tier D tools:** `health` diagnostic (server / SDK / sf-CLI versions, registry size, agent counts), `SFSKILLS_TIMEOUT_SECONDS` env var for deployer-wide subprocess timeout overrides.
+- **MCP Prompts:** every wrapper in `commands/*.md` registers as an MCP prompt — 68 native slash commands (`/refactor-apex`, `/audit-router`, `/build-apex`, …) for Cursor / Cline / Claude Desktop / etc.
+- **MCP Resources:** 5 shapes — `sfskills://catalog`, `sfskills://skill/{id}`, `sfskills://agent/{name}`, `sfskills://decision-tree/{name}`, `sfskills://template/{path}`. Use the `domain__name` form for IDs that contain slashes.
+- **Tool annotations:** every tool registers with `mcp.types.ToolAnnotations` (`readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`) so MCP-aware clients can auto-approve safely.
+- **Probe progress notifications:** the four heavy probes (`probe_apex_references`, `probe_flow_references`, `probe_matching_rules`, `probe_automation_graph`) emit `notifications/progress` at start + completion.
+- **PyPI publish path:** new `sfskills-mcp-init` console script downloads the registry + lexical index from a GitHub Release into `~/.cache/sfskills-mcp/`. End-user install becomes `pip install sfskills-mcp` + `sfskills-mcp-init`. Workflow: `.github/workflows/publish-mcp.yml`.
+
+### Changed
+
+- **Tier A drift fix:** `_RUNTIME_AGENTS` frozenset (37 hand-coded names) replaced with frontmatter-driven resolution from `agents/<name>/AGENT.md` (`class: runtime` + `status:` headers). Active runtime count now resolves at runtime — no more hand-edit required when adding an agent. Skill / agent counts in `SERVER_INSTRUCTIONS` and tool descriptions are loaded from `registry/skills.json` at server build time.
+- **Tier B annotations:** SDK floor bumped from `mcp>=1.2.0` to `mcp>=1.4.0` (annotations stable since 1.4).
+- **Tier B probes:** the four heavy probes are wrapped in async tool functions in `server.py`; `probes.py` itself stays sync to keep the test-stubbing pattern intact.
+- **Shared SOQL helpers** (`_run_soql`, `_validate_api_name`, `_strip_attributes`) lifted from `admin.py` to `_shared.py`. `admin.py` re-exports for backwards compatibility.
+- **Drift-prevention test** (`tests/test_meta_freshness.py`) now scans `src/` for 7 stale literals (`686+`, `_RUNTIME_AGENTS`, `twenty-three tools`, `six tools`, `56 total`, `56 run-time`, `56 runtime`) — anything that drifted before fails CI if it reappears.
+
+### Test count
+
+Before Tier A: 65 pass / 2 fail. After Tier D: **177 pass / 0 fail**.
+
 ## [Unreleased] — Full 8-Wave Redesign
 
 A substantial redesign completed in April 2026, landing all 8 waves of the approved plan at `/Users/user/.claude/plans/keen-napping-wombat.md`. This section documents Waves 4b, 4c, 5, 6, 7 added on top of the earlier Wave 3 + 4a work (originally in commits `8bcabde` through `f7de019`).

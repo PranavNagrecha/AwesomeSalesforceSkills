@@ -4,7 +4,7 @@ These tools don't talk to Salesforce. They surface repo conventions and
 handle persistence that every consuming AI would otherwise have to
 reimplement.
 
-Three tools:
+Four tools:
 
 - ``list_deprecated_redirects`` — dict mapping retired agent ids to the
   canonical router invocation. Saves MCP clients from ever routing to a
@@ -15,6 +15,10 @@ Three tools:
   markdown report to ``docs/reports/<agent>/<run_id>.{json,md}``, per
   ``docs/consumer-responsibilities.md``. Every consumer gets the
   persistence contract for free.
+- ``health`` — server diagnostic dump. Returns version, registry size,
+  index freshness, agent counts, sf CLI presence + version, repo root.
+  Cheap, never raises — useful for "is this MCP wired up correctly?"
+  diagnosis without making a real org call.
 """
 
 from __future__ import annotations
@@ -22,11 +26,15 @@ from __future__ import annotations
 import json
 import os
 import re
+import shutil
+import subprocess
 import tempfile
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 from . import paths
+from .__init__ import __version__ as _SERVER_VERSION
 
 
 # --------------------------------------------------------------------------- #
@@ -71,6 +79,122 @@ def list_deprecated_redirects() -> dict[str, Any]:
         "count": len(_DEPRECATED_REDIRECTS),
         "redirects": _DEPRECATED_REDIRECTS,
         "source": "agents/_shared/AGENT_DISAMBIGUATION.md + docs/MIGRATION.md",
+    }
+
+
+# --------------------------------------------------------------------------- #
+# health                                                                       #
+# --------------------------------------------------------------------------- #
+
+
+def _file_mtime_iso(path: Path) -> str | None:
+    if not path.exists():
+        return None
+    return datetime.fromtimestamp(path.stat().st_mtime, tz=timezone.utc).isoformat(timespec="seconds")
+
+
+def _sf_cli_version_or_none() -> str | None:
+    """Return ``sf --version`` output (CLI summary string) or ``None`` if
+    the binary isn't on PATH or returns nonzero. Never raises — health
+    must stay diagnostic-only."""
+    binary = os.environ.get("SFSKILLS_SF_BIN") or shutil.which("sf")
+    if not binary:
+        return None
+    try:
+        result = subprocess.run(
+            [binary, "--version"],
+            capture_output=True,
+            text=True,
+            timeout=5,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if result.returncode != 0:
+        return None
+    out = (result.stdout or result.stderr or "").strip().splitlines()
+    return out[0] if out else None
+
+
+def _sf_cli_block() -> dict[str, Any]:
+    """Resolve the sf-CLI metadata for ``health``. ``present`` requires the
+    binary path to actually exist on disk — pointing ``SFSKILLS_SF_BIN`` at
+    a bogus path should not lie about availability."""
+    explicit = os.environ.get("SFSKILLS_SF_BIN")
+    binary: str | None
+    if explicit:
+        binary = explicit
+        exists = Path(explicit).exists()
+    else:
+        binary = shutil.which("sf")
+        exists = bool(binary)
+    return {
+        "binary": binary,
+        "version": _sf_cli_version_or_none() if exists else None,
+        "present": exists,
+    }
+
+
+def _mcp_sdk_version_or_none() -> str | None:
+    """Best-effort import + introspect for the installed MCP SDK version."""
+    try:
+        import importlib.metadata
+        return importlib.metadata.version("mcp")
+    except Exception:
+        return None
+
+
+def health() -> dict[str, Any]:
+    """Return a server diagnostic snapshot for "is this MCP wired up?" checks.
+
+    Never touches the org. Never raises. Each missing piece comes back as
+    ``None`` with the rest of the dict intact, so a partial environment
+    (no ``sf`` CLI installed yet, registry not built) still yields useful
+    information for the user.
+    """
+    # Lazy local imports to avoid a load-time circular dep with server.py.
+    from . import agents as _agents
+
+    classes = _agents._agent_classes()
+    repo = paths.repo_root()
+
+    # Skill count from the registry. Cheap — we just open the file and
+    # count list entries. ``len(open(...).read().count("...id...:"))`` is
+    # not an option because the registry is real JSON.
+    registry_path = paths.registry_skills_json()
+    skill_count: int | None = None
+    if registry_path.exists():
+        try:
+            payload = json.loads(registry_path.read_text(encoding="utf-8"))
+            skill_count = len(payload.get("skills", []))
+        except (OSError, ValueError):
+            skill_count = None
+
+    return {
+        "server_version": _SERVER_VERSION,
+        "mcp_sdk_version": _mcp_sdk_version_or_none(),
+        "repo_root": str(repo),
+        "registry": {
+            "path": str(registry_path.relative_to(repo)) if registry_path.exists() else None,
+            "skill_count": skill_count,
+            "built_at": _file_mtime_iso(registry_path),
+        },
+        "lexical_index": {
+            "path": "vector_index/lexical.sqlite",
+            "built_at": _file_mtime_iso(paths.lexical_index_path()),
+            "byte_size": (
+                paths.lexical_index_path().stat().st_size
+                if paths.lexical_index_path().exists() else None
+            ),
+        },
+        "agents": {
+            "runtime": sum(1 for v in classes.values() if v == "runtime"),
+            "build": sum(1 for v in classes.values() if v == "build"),
+            "deprecated": sum(1 for v in classes.values() if v == "deprecated"),
+            "unknown": sum(1 for v in classes.values() if v == "unknown"),
+            "total": len(classes),
+        },
+        "sf_cli": _sf_cli_block(),
     }
 
 

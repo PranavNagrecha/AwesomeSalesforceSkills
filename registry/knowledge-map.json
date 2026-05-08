@@ -169,6 +169,7 @@
       "admin/mcae-pardot-setup",
       "admin/media-cloud-setup",
       "admin/messaging-and-chat-setup",
+      "admin/mobile-publisher",
       "admin/moscow-prioritization-for-sf-backlog",
       "admin/multi-language-and-translation",
       "admin/npsp-engagement-plans",
@@ -312,6 +313,7 @@
       "apex/apex-custom-notifications-from-apex",
       "apex/apex-custom-permissions-check",
       "apex/apex-custom-settings-hierarchy",
+      "apex/apex-decimal-arithmetic-precision",
       "apex/apex-design-patterns",
       "apex/apex-dml-patterns",
       "apex/apex-dynamic-soql-binding-safety",
@@ -682,6 +684,7 @@
       "devops/gitlab-ci-for-salesforce",
       "devops/go-live-cutover-planning",
       "devops/health-cloud-deployment-patterns",
+      "devops/isv-license-management-and-trialforce",
       "devops/managed-package-development",
       "devops/metadata-api-coverage-gaps",
       "devops/metadata-api-retrieve-deploy",
@@ -795,6 +798,7 @@
       "integration/data-cloud-integration-strategy",
       "integration/data-cloud-query-api",
       "integration/data-cloud-zero-copy-federation",
+      "integration/dataweave-for-apex",
       "integration/error-handling-in-integrations",
       "integration/event-driven-architecture-patterns",
       "integration/event-relay-configuration",
@@ -1528,6 +1532,7 @@
       "admin/health-cloud-timeline",
       "admin/lookup-filter-cross-object-patterns",
       "admin/mass-transfer-ownership",
+      "admin/mobile-publisher",
       "admin/object-creation-and-design",
       "admin/process-flow-as-is-to-be",
       "admin/sales-process-mapping",
@@ -1861,6 +1866,7 @@
       "apex/apex-callout-retry-and-resilience",
       "apex/apex-class-decomposition-pattern",
       "apex/apex-custom-permissions-check",
+      "apex/apex-decimal-arithmetic-precision",
       "apex/apex-dynamic-soql-binding-safety",
       "apex/apex-execute-anonymous",
       "apex/apex-future-method-patterns",
@@ -1894,6 +1900,7 @@
       "devops/code-review-checklist-salesforce",
       "flow/flow-invocable-from-apex",
       "flow/flow-migration-from-trigger",
+      "integration/dataweave-for-apex",
       "lwc/knowledge-article-lwc",
       "lwc/lwc-imperative-apex",
       "security/apex-managed-sharing-patterns"
@@ -2145,7 +2152,11 @@
     "app-manager": [
       "admin/app-and-tab-configuration"
     ],
+    "app-store": [
+      "admin/mobile-publisher"
+    ],
     "appexchange": [
+      "devops/isv-license-management-and-trialforce",
       "devops/package-development-strategy",
       "devops/salesforce-code-analyzer",
       "devops/second-generation-managed-packages",
@@ -2252,6 +2263,9 @@
     "aria": [
       "lwc/lwc-accessibility",
       "lwc/lwc-accessibility-patterns"
+    ],
+    "arithmetic": [
+      "apex/apex-decimal-arithmetic-precision"
     ],
     "article-lifecycle": [
       "architect/knowledge-taxonomy-design"
@@ -2781,7 +2795,8 @@
     ],
     "branding": [
       "admin/digital-storefront-requirements",
-      "admin/experience-cloud-site-setup"
+      "admin/experience-cloud-site-setup",
+      "admin/mobile-publisher"
     ],
     "branding-set": [
       "devops/cicd-for-experience-cloud"
@@ -4326,6 +4341,9 @@
     "cumulusci-yml": [
       "devops/cumulusci-automation"
     ],
+    "currency": [
+      "apex/apex-decimal-arithmetic-precision"
+    ],
     "currency-conversion": [
       "architect/multi-currency-sales-architecture"
     ],
@@ -4702,6 +4720,9 @@
     "data-manager": [
       "admin/analytics-data-manager"
     ],
+    "data-mapping": [
+      "integration/dataweave-for-apex"
+    ],
     "data-masking": [
       "agentforce/einstein-trust-layer"
     ],
@@ -4956,6 +4977,9 @@
       "lwc/lwc-datatable-advanced",
       "lwc/virtualized-lists"
     ],
+    "dataweave": [
+      "integration/dataweave-for-apex"
+    ],
     "date-granularity": [
       "data/analytics-dataset-optimization"
     ],
@@ -5024,6 +5048,9 @@
       "flow/flow-runtime-error-diagnosis",
       "omnistudio/omnistudio-debugging",
       "omnistudio/omnistudio-testing-patterns"
+    ],
+    "decimal": [
+      "apex/apex-decimal-arithmetic-precision"
     ],
     "decision": [
       "flow/flow-decision-element-patterns",
@@ -6169,6 +6196,7 @@
       "admin/experience-cloud-seo-settings",
       "admin/experience-cloud-site-setup",
       "admin/fsc-referral-management",
+      "admin/mobile-publisher",
       "admin/multi-language-and-translation",
       "admin/partner-community-requirements",
       "admin/portal-requirements-gathering",
@@ -6359,7 +6387,8 @@
     ],
     "feature-management": [
       "apex/apex-trigger-bypass-and-killswitch-patterns",
-      "apex/apex-user-and-permission-checks"
+      "apex/apex-user-and-permission-checks",
+      "devops/isv-license-management-and-trialforce"
     ],
     "feature-store": [
       "architect/ai-ready-data-architecture"
@@ -7789,6 +7818,7 @@
       "flow/flow-platform-events-integration",
       "integration/bulk-api-2-patterns",
       "integration/composite-api-patterns",
+      "integration/dataweave-for-apex",
       "integration/error-handling-in-integrations",
       "integration/event-relay-configuration",
       "integration/outbound-messages-and-callbacks",
@@ -7988,6 +8018,9 @@
       "architect/tenant-isolation-patterns",
       "devops/package-development-strategy",
       "devops/second-generation-managed-packages"
+    ],
+    "isv-license-management-and-trialforce": [
+      "devops/isv-license-management-and-trialforce"
     ],
     "iterable": [
       "apex/custom-iterators-and-iterables"
@@ -8812,6 +8845,7 @@
     "managed-packages": [
       "apex/salesforce-debug-log-analysis",
       "architect/tenant-isolation-patterns",
+      "devops/isv-license-management-and-trialforce",
       "devops/package-development-strategy"
     ],
     "managed-subscriptions": [
@@ -9116,6 +9150,9 @@
       "apex/entitlement-apex-hooks",
       "architect/sla-design-and-escalation-matrix"
     ],
+    "mime-types": [
+      "integration/dataweave-for-apex"
+    ],
     "mixed-dml": [
       "apex/apex-system-runas",
       "apex/mixed-dml-and-setup-objects"
@@ -9127,6 +9164,7 @@
       "admin/custom-notification-types",
       "admin/fsl-mobile-app-setup",
       "admin/global-actions-and-quick-actions",
+      "admin/mobile-publisher",
       "apex/fsl-custom-actions-mobile",
       "architect/fsl-offline-architecture"
     ],
@@ -9138,6 +9176,9 @@
     ],
     "mobile-lwc": [
       "lwc/lwc-offline-and-mobile"
+    ],
+    "mobile-publisher": [
+      "admin/mobile-publisher"
     ],
     "mobile-ux": [
       "admin/list-views-and-compact-layouts"
@@ -10575,6 +10616,9 @@
     "pre-release-testing": [
       "devops/automated-regression-testing"
     ],
+    "precision": [
+      "apex/apex-decimal-arithmetic-precision"
+    ],
     "predicate": [
       "architect/analytics-security-architecture"
     ],
@@ -11727,6 +11771,9 @@
     ],
     "rotation": [
       "security/service-account-credential-rotation"
+    ],
+    "rounding": [
+      "apex/apex-decimal-arithmetic-precision"
     ],
     "route-optimization": [
       "integration/salesforce-maps-setup"
@@ -13585,7 +13632,8 @@
     ],
     "transformation": [
       "admin/analytics-dataflow-development",
-      "admin/analytics-recipe-design"
+      "admin/analytics-recipe-design",
+      "integration/dataweave-for-apex"
     ],
     "transition-assistant": [
       "admin/lightning-experience-transition"
@@ -13606,6 +13654,9 @@
     ],
     "travel-mode": [
       "admin/fsl-scheduling-optimization-design"
+    ],
+    "trialforce": [
+      "devops/isv-license-management-and-trialforce"
     ],
     "trigger": [
       "apex/apex-event-bus-subscriber",

@@ -4,7 +4,10 @@ Resolution order for the repo root:
 
 1. ``SFSKILLS_REPO_ROOT`` environment variable (explicit override).
 2. Walk upward from this file until a directory containing
-   ``registry/skills.json`` is found.
+   ``registry/skills.json`` is found (development install).
+3. ``~/.cache/sfskills-mcp/current`` if populated by ``sfskills-mcp-init``
+   (PyPI install path).
+4. Override the cache location via ``SFSKILLS_CACHE_DIR``.
 
 Raising a ``RuntimeError`` early with an actionable message is preferred over
 silently returning wrong paths — MCP clients will surface the error to the user.
@@ -19,10 +22,16 @@ from pathlib import Path
 
 
 REGISTRY_SENTINEL = Path("registry") / "skills.json"
+DEFAULT_CACHE_DIR = Path.home() / ".cache" / "sfskills-mcp"
 
 
 class RepoRootNotFoundError(RuntimeError):
     """Raised when the SfSkills repo root cannot be located."""
+
+
+def _cache_root() -> Path:
+    override = os.environ.get("SFSKILLS_CACHE_DIR")
+    return Path(override).expanduser() if override else DEFAULT_CACHE_DIR
 
 
 @lru_cache(maxsize=1)
@@ -37,14 +46,35 @@ def repo_root() -> Path:
             )
         return candidate
 
+    # Walk upward from this file (development install — sfskills_mcp lives
+    # inside the repo itself).
     here = Path(__file__).resolve()
     for parent in (here, *here.parents):
         if (parent / REGISTRY_SENTINEL).exists():
             return parent
 
+    # PyPI install path: sfskills-mcp-init populated the cache.
+    cache_current = _cache_root() / "current"
+    if cache_current.exists():
+        # ``current`` may be a symlink (POSIX) or a pointer file
+        # (Windows fallback).
+        if cache_current.is_symlink() or cache_current.is_dir():
+            resolved = cache_current.resolve()
+        else:
+            try:
+                resolved = Path(cache_current.read_text(encoding="utf-8").strip()).resolve()
+            except OSError:
+                resolved = None  # type: ignore[assignment]
+        if resolved and (resolved / REGISTRY_SENTINEL).exists():
+            return resolved
+
     raise RepoRootNotFoundError(
-        "Could not locate the SfSkills repo root. Set the SFSKILLS_REPO_ROOT "
-        "environment variable to the absolute path of your SfSkills checkout."
+        "Could not locate the SfSkills data root. Three options:\n"
+        "  1. Set SFSKILLS_REPO_ROOT to your SfSkills checkout (developer install).\n"
+        "  2. Run `sfskills-mcp-init` to download the registry into "
+        f"{_cache_root()} (PyPI install).\n"
+        "  3. If you ran sfskills-mcp-init already, set SFSKILLS_CACHE_DIR "
+        "to its output directory."
     )
 
 

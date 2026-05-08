@@ -19,7 +19,22 @@ import subprocess
 from typing import Any, Sequence
 
 
-DEFAULT_TIMEOUT_SECONDS = 90
+def _default_timeout() -> int:
+    """Resolve the default ``sf`` subprocess timeout.
+
+    Environment override: ``SFSKILLS_TIMEOUT_SECONDS`` (positive int). Lets
+    a deployer raise the cap for orgs with thousands of Apex classes /
+    Flow versions without changing every tool call site. Falls back to
+    90s — covers ~95% of probes against typical orgs.
+    """
+    raw = os.environ.get("SFSKILLS_TIMEOUT_SECONDS")
+    if raw and raw.isdigit() and int(raw) > 0:
+        return int(raw)
+    return 90
+
+
+# Re-export so existing call sites that import this constant keep working.
+DEFAULT_TIMEOUT_SECONDS = _default_timeout()
 
 
 class SfCliError(RuntimeError):
@@ -44,14 +59,21 @@ def run_sf_json(
     args: Sequence[str],
     *,
     target_org: str | None = None,
-    timeout: int = DEFAULT_TIMEOUT_SECONDS,
+    timeout: int | None = None,
 ) -> dict[str, Any]:
     """Execute ``sf <args> --json`` and return the parsed payload.
+
+    Timeout precedence (highest first):
+      1. The ``timeout`` keyword arg (per-call override)
+      2. The ``SFSKILLS_TIMEOUT_SECONDS`` env var (deployer-wide override)
+      3. The 90-second default
 
     On command failure, returns a dict shaped as
     ``{"status": <int>, "error": <str>, "stderr": <str>, "args": [...]}``
     so callers can surface the error to the MCP client without raising.
     """
+    if timeout is None:
+        timeout = _default_timeout()
     try:
         binary = sf_binary()
     except SfCliError as exc:

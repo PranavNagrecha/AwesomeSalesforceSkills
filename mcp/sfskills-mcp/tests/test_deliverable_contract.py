@@ -213,7 +213,15 @@ class TestMultiDimensionalDeclaration(unittest.TestCase):
     def test_multi_dimensional_agents_enumerate_dimensions(self) -> None:
         failures = []
         for agent_id, path, meta, body in _runtime_agents():
-            if not meta.get("multi_dimensional"):
+            # The frontmatter parser stores scalar values as strings, so
+            # ``multi_dimensional: false`` arrives here as the truthy string
+            # ``"false"``. Coerce explicitly.
+            raw = meta.get("multi_dimensional")
+            is_multi_dim = (
+                raw is True
+                or (isinstance(raw, str) and raw.strip().lower() == "true")
+            )
+            if not is_multi_dim:
                 continue
             m = re.search(r"^## Output Contract\s*$(.*?)^## ", body, re.MULTILINE | re.DOTALL)
             if not m:

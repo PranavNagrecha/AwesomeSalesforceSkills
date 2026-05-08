@@ -14,12 +14,15 @@ output_formats:
   - json
 multi_dimensional: true
 dependencies:
+  probes:
+    - automation-graph-for-sobject.md
   skills:
     - admin/agent-output-formats
     - admin/configuration-workbook-authoring
     - admin/custom-field-creation
     - admin/fit-gap-analysis-against-org
     - admin/lightning-experience-transition
+    - admin/mobile-publisher
     - admin/object-creation-and-design
     - admin/permission-set-architecture
     - admin/record-type-strategy-at-scale
@@ -29,6 +32,7 @@ dependencies:
     - admin/standard-object-quirks
     - admin/user-story-writing-for-salesforce
     - architect/architecture-decision-records
+    - architect/hipaa-compliance-architecture
     - architect/hyperforce-architecture
     - architect/license-optimization-strategy
     - architect/loyalty-program-architecture
@@ -47,8 +51,6 @@ dependencies:
     - AGENT_RULES.md
     - DELIVERABLE_CONTRACT.md
     - REFUSAL_CODES.md
-  probes:
-    - automation-graph-for-sobject.md
   decision_trees:
     - automation-selection.md
     - sharing-selection.md
@@ -128,6 +130,7 @@ The deliverable is what an architect or BA hands to a steering committee BEFORE 
 ### Output handoff
 32. `skills/admin/configuration-workbook-authoring` — output rows must align with workbook section names so `config-workbook-author` consumes cleanly
 33. `skills/admin/requirements-traceability-matrix` — emit RTM rows so the gap shows up in traceability
+34. `skills/admin/mobile-publisher` — mobile publisher
 
 ---
 

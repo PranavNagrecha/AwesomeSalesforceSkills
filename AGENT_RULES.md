@@ -323,19 +323,41 @@ agent to its verified source skills, templates, and decision trees is
 
 **Rules for the MCP server:**
 
-- `list_agents` and `get_agent` are the only two tools that expose agent
-  instructions. The MCP server never executes an agent — execution happens
-  in the caller's model.
-- Any new run-time agent added to `agents/` MUST also be added to the
-  `_RUNTIME_AGENTS` frozenset in `mcp/sfskills-mcp/src/sfskills_mcp/agents.py`
-  (and the matching `EXPECTED_RUNTIME` test in
-  `mcp/sfskills-mcp/tests/test_agents.py`) so it shows up as `kind: "runtime"`
-  in `list_agents` output.
-- The admin-land MCP tools (`list_validation_rules`, `list_permission_sets`,
+- The MCP server never executes an agent. Tools that expose agent context
+  (`list_agents`, `get_agent`, `suggest_agent`) return instructions and the
+  caller's model executes them. Same posture for `get_skill`, `get_template`,
+  `get_decision_tree` — text in, text out, no side effects on the org.
+- Run-time agent classification is read from each AGENT.md's frontmatter
+  at server start: `class: runtime` + (optional) `status: deprecated`.
+  No hardcoded roster — adding a new runtime agent only requires the
+  frontmatter, not a Python edit. (See `agents/_shared/AGENT_CONTRACT.md`
+  for the frontmatter contract.) Deprecated stubs surface under
+  `kind="deprecated"` and resolve via `list_deprecated_redirects`.
+- Counts in tool descriptions and `SERVER_INSTRUCTIONS` come from the
+  registry / agents directory at runtime — never hand-edited. The
+  `tests/test_meta_freshness.py` suite scans `src/` for stale literals
+  (e.g. `686+`, `twenty-three tools`, `_RUNTIME_AGENTS`) to keep them
+  extinct.
+- Every tool carries `mcp.types.ToolAnnotations`: `readOnlyHint=True` for
+  every tool except `emit_envelope`; `destructiveHint=False` for all;
+  `openWorldHint=True` for the org-touching tools and `False` for repo-
+  only tools. Adding a new tool MUST set the matching annotation profile
+  (`_ANN_REPO_ONLY`, `_ANN_ORG_READ`, or `_ANN_ENVELOPE` in `server.py`).
+- Org-touching tools (`list_validation_rules`, `list_permission_sets`,
   `describe_permission_set`, `list_record_types`, `list_named_credentials`,
-  `list_approval_processes`, `tooling_query`) are read-only. `tooling_query`
-  rejects any SOQL containing DML keywords; adding a new admin probe MUST
-  keep that blocklist intact.
+  `list_approval_processes`, `tooling_query`, `list_apex_classes`,
+  `get_apex_class`, `list_apex_triggers`, `list_lwc_bundles`,
+  `get_lwc_bundle`, `list_custom_fields`, `describe_object_full`,
+  `list_orgs`, every `probe_*`) are strictly read-only. `tooling_query`
+  rejects any SOQL containing DML keywords; adding a new admin or dev
+  probe MUST keep that blocklist intact and validate object / field /
+  permission-set names through `_shared._validate_api_name`.
+- Default `sf` subprocess timeout is 90s. Deployers can raise it via
+  `SFSKILLS_TIMEOUT_SECONDS` (e.g. for orgs with thousands of Apex
+  classes). The four heavy probes (`probe_apex_references`,
+  `probe_flow_references`, `probe_matching_rules`,
+  `probe_automation_graph`) emit `notifications/progress` so clients
+  render real-time status.
 
 ---
 

@@ -21,6 +21,7 @@ dependencies:
     - admin/ai-use-case-assessment
     - admin/change-management-and-deployment
     - admin/change-management-and-training
+    - admin/compliance-documentation-requirements
     - admin/configuration-workbook-authoring
     - admin/fit-gap-analysis-against-org
     - admin/moscow-prioritization-for-sf-backlog
@@ -40,6 +41,8 @@ dependencies:
     - AGENT_RULES.md
     - DELIVERABLE_CONTRACT.md
     - REFUSAL_CODES.md
+  decision_trees:
+    - automation-selection.md
 ---
 # Story Drafter Agent
 

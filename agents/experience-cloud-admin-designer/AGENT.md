@@ -22,6 +22,7 @@ dependencies:
     - admin/experience-cloud-moderation
     - admin/experience-cloud-seo-settings
     - admin/experience-cloud-site-setup
+    - admin/mobile-publisher
     - admin/partner-community-requirements
     - admin/permission-set-architecture
     - admin/queues-and-public-groups
@@ -78,6 +79,7 @@ Two modes:
 16. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 17. `skills/admin/community-engagement-strategy` — Community engagement strategy
 18. `skills/admin/partner-community-requirements` — Partner community requirements
+19. `skills/admin/mobile-publisher` — mobile publisher
 
 ---
 

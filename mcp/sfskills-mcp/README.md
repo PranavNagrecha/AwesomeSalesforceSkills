@@ -3,16 +3,23 @@
 Model Context Protocol server that hands any MCP-capable AI coding assistant
 three things at once:
 
-1. The full **SfSkills** library (686+ Salesforce skills, source-grounded,
+1. The full **SfSkills** library (980+ Salesforce skills, source-grounded,
    role-tagged, versioned) — via `search_skill` and `get_skill`.
 2. **Live metadata from your actual Salesforce org** — via `describe_org`,
    `list_custom_objects`, `list_flows_on_object`, `list_validation_rules`,
    `list_permission_sets`, `describe_permission_set`, `list_record_types`,
    `list_named_credentials`, `list_approval_processes`, `tooling_query`, and
    `validate_against_org`.
-3. **Run-time agents** (56 total across developer, admin, strategic, and
-   vertical/governance tiers) that compose the skill library + live-org tools
-   into concrete deliverables — via `list_agents` and `get_agent`.
+3. **Run-time agents** (45+ active runtime agents across developer, admin,
+   strategic, and vertical/governance tiers, plus 14 build-time agents and
+   14 deprecation stubs that redirect via `list_deprecated_redirects`) that
+   compose the skill library + live-org tools into concrete deliverables —
+   via `list_agents` and `get_agent`.
+
+> **Counts are live.** The numbers above reflect the registry at the time of
+> writing; the server itself reads `registry/skills.json` and the AGENT.md
+> frontmatter at startup, so what you see in your client always matches your
+> checkout.
 
 The net effect: the agent can answer "does this trigger framework already
 exist in my org?" by itself instead of asking you — and if you say "refactor
@@ -58,8 +65,27 @@ This MCP server closes both gaps using the Salesforce CLI for org access
 | `list_named_credentials`  | Named Credentials + External Credentials (read-only; never returns secrets).                              |
 | `list_approval_processes` | Approval processes + steps + next approver rules for an sObject.                                          |
 | `tooling_query`           | Generic read-only Tooling API SOQL with a DML/mutation blocklist (escape hatch for admin-land agents).    |
+| `list_apex_classes`       | Apex class inventory + name filter + status filter. Primary consumer: apex-refactorer, code-reviewer.     |
+| `get_apex_class`          | Single Apex class by name; optional body for header-only calls.                                           |
+| `list_apex_triggers`      | Trigger inventory with per-event flags (BeforeInsert/AfterUpdate/etc.).                                   |
+| `list_lwc_bundles`        | LightningComponentBundle inventory.                                                                       |
+| `get_lwc_bundle`          | One bundle + every resource (js/html/css/meta-xml).                                                       |
+| `list_custom_fields`      | Field metadata via EntityParticle. Custom-only by default; `include_standard=true` for standard fields.   |
+| `describe_object_full`    | Composite read: fields + record types + validation rules + active flows in one call.                      |
+| `list_orgs`               | Wraps `sf org list` — every authenticated org normalized into one shape.                                  |
+| `search_agents`           | Rank agents by relevance to a natural-language query.                                                     |
+| `search_templates`        | Rank canonical building blocks under `templates/`.                                                         |
+| `search_decision_trees`   | Rank decision trees + return the best matching section per tree.                                          |
+| `get_template`            | Read one template by relative path (e.g. `apex/TriggerHandler.cls`).                                       |
+| `get_decision_tree`       | Read one decision tree by basename (e.g. `automation-selection`).                                          |
+| `suggest_agent`           | Take a free-text task; return ranked candidate agents + decision-tree branches + a `next_step` pointer.    |
 
-### Run-time agents reachable via `get_agent` (56)
+### Run-time agents reachable via `get_agent`
+
+Tier sizes below reflect the canonical roster. Some agents in the original
+tier rosters have since been retired and now redirect via
+`list_deprecated_redirects` (`audit-router` absorbs most of them); the live
+result of `list_agents(kind="runtime")` excludes those stubs.
 
 Developer + architecture tier (17):
 
@@ -75,7 +101,7 @@ Developer + architecture tier (17):
 | `lwc-auditor`              | A11y + performance + security audit of an LWC bundle |
 | `deployment-risk-scorer`   | HIGH/MEDIUM/LOW risk score + breaking-change list |
 | `agentforce-builder`       | Full Agentforce action scaffold: Apex + topic + test + eval |
-| `org-drift-detector`       | Library ↔ live-org gap and bloat report |
+| `org-drift-detector` *(deprecated → audit-router)* | Library ↔ live-org gap and bloat report |
 | `lwc-builder`              | Full LWC bundle (js/html/css/meta/tests) + optional Apex controller |
 | `lwc-debugger`             | Ranked hypotheses + diagnostic probes + proposed fix for a live LWC failure |
 | `apex-builder`             | Apex class(es) built from requirements + test class |
@@ -91,7 +117,7 @@ Admin accelerators — Tier 1 (15):
 | `object-designer`            | Setup-ready sObject design from a business concept |
 | `permission-set-architect`   | Profile-less PS / PSG / Muting design per persona |
 | `flow-builder`               | Flow design from requirements + automation-tree routing |
-| `validation-rule-auditor`    | VR audit (bypass, bulk safety, Flow coexistence) |
+| `validation-rule-auditor` *(deprecated → audit-router)* | VR audit (bypass, bulk safety, Flow coexistence) |
 | `data-loader-pre-flight`     | Go/no-go checklist for a Data Loader / Bulk API load |
 | `duplicate-rule-designer`    | Matching + Duplicate Rules + post-load hygiene |
 | `assignment-and-auto-response-rules-designer` | Assignment rule + auto-response rule design |
@@ -107,13 +133,13 @@ Strategic — Tier 2 (12):
 
 | Agent name                                 | What it returns |
 | ------------------------------------------ | --------------- |
-| `sharing-audit-agent`                      | OWD + sharing + data-skew + guest-user findings |
-| `lightning-record-page-auditor`            | Dynamic Forms + render-cost + Path scorecard |
-| `record-type-and-layout-auditor`           | RT + layout + LRP mapping audit |
-| `picklist-governor`                        | GVS adoption + drift + dependency audit |
+| `sharing-audit-agent` *(deprecated → audit-router)* | OWD + sharing + data-skew + guest-user findings |
+| `lightning-record-page-auditor` *(deprecated → audit-router)* | Dynamic Forms + render-cost + Path scorecard |
+| `record-type-and-layout-auditor` *(deprecated → audit-router)* | RT + layout + LRP mapping audit |
+| `picklist-governor` *(deprecated → audit-router)* | GVS adoption + drift + dependency audit |
 | `data-model-reviewer`                      | Data-model domain review (rollups, XID, growth) |
 | `integration-catalog-builder`              | Integration catalog + posture scorecard |
-| `report-and-dashboard-auditor`             | Report + dashboard hygiene audit |
+| `report-and-dashboard-auditor` *(deprecated → audit-router)* | Report + dashboard hygiene audit |
 | `csv-to-object-mapper`                     | CSV → sObject mapping + VR collision report |
 | `email-template-modernizer`                | Template classification + migration plan |
 | `audit-router`                             | Routes to appropriate single-mode auditor or runs multi-mode audit |
@@ -128,12 +154,12 @@ Vertical + governance — Tier 3 (12):
 | `knowledge-article-taxonomy-agent`    | Data categories + article types + channel-audience plan |
 | `sales-stage-designer`                | Opportunity stage ladder + forecast + VR gates |
 | `lead-routing-rules-designer`         | Source × geo × product routing matrix + SLAs |
-| `case-escalation-auditor`             | Assignment + escalation + milestone audit |
+| `case-escalation-auditor` *(deprecated → audit-router)* | Assignment + escalation + milestone audit |
 | `sandbox-strategy-designer`           | Environment ladder + pools + refresh calendar |
 | `release-train-planner`               | Package + branching + CI/CD + release calendar |
 | `waf-assessor`                        | Well-Architected scorecard + remediation backlog |
 | `agentforce-action-reviewer`          | Per-action A–F scorecard + guardrails gap list |
-| `prompt-library-governor`             | Prompt template inventory + consolidation plan |
+| `prompt-library-governor` *(deprecated → audit-router)* | Prompt template inventory + consolidation plan |
 | `profile-to-permset-migrator`         | Profile → Permission Set migration plan + PS / PSG design |
 | `user-access-diff`                    | Side-by-side access comparison report between users |
 
@@ -155,14 +181,95 @@ rest of the response.
 
 ---
 
+## Prompts
+
+Every wrapper file in [`commands/`](../../commands/) is exposed as an MCP
+Prompt (~68 prompts as of this writing). Type `/refactor-apex`,
+`/audit-router`, `/build-apex`, etc. in any MCP-capable client and the
+wrapper loads — Claude Code, Cursor, Cline, Claude Desktop all support this.
+
+Each prompt body is the wrapper's own markdown; it walks the user through
+input collection → agent execution → output. The MCP server registers them;
+the client's model executes them.
+
+## Resources
+
+Five resource shapes, addressable from any MCP client without a tool call:
+
+| URI | What |
+| --- | --- |
+| `sfskills://catalog` | Slim JSON list of every registered skill (id, category, description, tags) |
+| `sfskills://skill/{id}` | Full `SKILL.md` markdown. Use the `domain__name` form: `apex__trigger-framework` |
+| `sfskills://agent/{name}` | Full `AGENT.md` body for a named agent: `apex-refactorer`, `audit-router`, … |
+| `sfskills://decision-tree/{name}` | A routing tree from `standards/decision-trees/` (basename, no `.md`): `automation-selection` |
+| `sfskills://template/{path}` | Canonical building block under `templates/`. Same `__` convention: `apex__TriggerHandler.cls` |
+
+> **Why `__`:** MCP URI templates only match a single path segment, so we
+> use `__` as the on-the-wire separator and decode it server-side. The
+> registry already supports the same form (`apex/foo` and `apex__foo` are
+> equivalent everywhere).
+
+## Tool annotations
+
+Every tool registers with [`ToolAnnotations`](https://modelcontextprotocol.io/specification/2025-03-26/server/tools#tool-annotations) so MCP-aware clients can auto-approve safely:
+
+- **`readOnlyHint`** — `True` for 22/23 tools (everything except `emit_envelope` writes nothing).
+- **`destructiveHint`** — `False` for all tools.
+- **`openWorldHint`** — `True` for the 16 org-touching tools (output depends on external state); `False` for the 7 repo-only tools (deterministic, cacheable).
+- **`idempotentHint`** — `True` for read tools; `False` for `emit_envelope` (overwrite-protected by default; re-runs of the same `run_id` reject without `overwrite=True`).
+
+Honest annotations let Cursor's `autoApprove`, Cline's per-tool gating, and
+Claude Desktop's trust prompts make safe defaults without the user having
+to opt-in per tool.
+
+## Progress notifications
+
+Four probes — `probe_apex_references`, `probe_flow_references`,
+`probe_matching_rules`, `probe_automation_graph` — emit `notifications/progress`
+at start and completion. On orgs with thousands of Apex classes or Flow
+versions a probe can take 30+ seconds; the progress signal stops the client
+from looking frozen.
+
+`probe_permset_shape` deliberately stayed sync (more conditional branches,
+faster typical case); finer-grained progress inside any probe requires a
+follow-up that pushes `Context` into [probes.py](src/sfskills_mcp/probes.py).
+
+---
+
 ## Install
 
+Two paths:
+
+### Path A — PyPI (recommended for end users)
+
 ```bash
-# From the repo root
+pip install sfskills-mcp           # ~50 KB wheel
+sfskills-mcp-init                  # one-time data download (~160 MB → ~/.cache/sfskills-mcp/)
+sfskills-mcp                       # serves stdio
+```
+
+The data download fetches the registry, lexical index, agent corpus,
+templates, and decision trees from the latest GitHub Release into
+`~/.cache/sfskills-mcp/`. Override the cache location with
+`SFSKILLS_CACHE_DIR=/some/path` if your home directory is read-only.
+
+Pin a release: `sfskills-mcp-init --release mcp-v0.4.0`. Re-download:
+`sfskills-mcp-init --force`.
+
+### Path B — Editable install from a checkout (developer / contributor)
+
+```bash
+git clone https://github.com/PranavNagrecha/AwesomeSalesforceSkills.git
+cd AwesomeSalesforceSkills
 python3 -m pip install -e mcp/sfskills-mcp
 ```
 
-Python 3.10+ required.
+The package auto-detects the repo root via `registry/skills.json`; no
+init step needed.
+
+Python 3.10+ required for both paths.
+
+### Salesforce CLI
 
 You also need the **Salesforce CLI** (`sf`) on PATH, authenticated to at
 least one org:
@@ -175,6 +282,18 @@ sf config set target-org=my-dev
 
 The server never sees org credentials — it shells out to `sf`, which uses
 its own keyring-backed auth store.
+
+### Tuning timeouts
+
+Default `sf` subprocess timeout is 90s. Raise it for orgs with thousands
+of Apex classes / Flow versions:
+
+```bash
+export SFSKILLS_TIMEOUT_SECONDS=600
+```
+
+Verify the install with the `health` tool — it returns versions, registry
+size, sf-CLI presence, and agent counts without making a real org call.
 
 ---
 

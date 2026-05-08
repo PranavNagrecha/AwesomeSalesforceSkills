@@ -4,32 +4,53 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sfskills-mcp"
-version = "0.1.0"
-description = "Model Context Protocol server exposing the SfSkills library and live Salesforce org metadata."
+# Bumped at the end of each Tier; see src/sfskills_mcp/__init__.py for history.
+version = "0.4.0"
+description = "Model Context Protocol server exposing the SfSkills Salesforce skill library, agent + decision-tree corpus, and live Salesforce org metadata."
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [{ name = "Pranav Nagrecha" }]
 license = { text = "MIT" }
-keywords = ["salesforce", "mcp", "model-context-protocol", "ai", "sfskills"]
+keywords = [
+  "salesforce", "mcp", "model-context-protocol", "ai", "sfskills",
+  "salesforce-cli", "apex", "lwc", "flow", "agentforce",
+]
 classifiers = [
+  "Development Status :: 4 - Beta",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Intended Audience :: Developers",
   "Topic :: Software Development :: Libraries",
+  "Topic :: Software Development :: Code Generators",
+  "Operating System :: OS Independent",
+  "License :: OSI Approved :: MIT License",
 ]
 dependencies = [
-  "mcp>=1.2.0",
+  # Annotations (ToolAnnotations) and the prompt/resource decorators land in 1.4.
+  # The server uses all three, so the floor moves with them.
+  "mcp>=1.4.0",
 ]
 
 [project.optional-dependencies]
 dev = [
   "pytest>=7.4",
+  "build>=1.0",
+  "twine>=4.0",
 ]
+
+[project.urls]
+"Homepage" = "https://github.com/PranavNagrecha/AwesomeSalesforceSkills"
+"Repository" = "https://github.com/PranavNagrecha/AwesomeSalesforceSkills"
+"Documentation" = "https://github.com/PranavNagrecha/AwesomeSalesforceSkills/blob/main/mcp/sfskills-mcp/README.md"
+"Issues" = "https://github.com/PranavNagrecha/AwesomeSalesforceSkills/issues"
+"Connect Recipes" = "https://github.com/PranavNagrecha/AwesomeSalesforceSkills/blob/main/mcp/sfskills-mcp/docs/CONNECT.md"
 
 [project.scripts]
 sfskills-mcp = "sfskills_mcp.__main__:main"
+sfskills-mcp-init = "sfskills_mcp.init:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

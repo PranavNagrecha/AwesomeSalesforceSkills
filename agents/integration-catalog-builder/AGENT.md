@@ -38,6 +38,7 @@ dependencies:
     - integration/data-cloud-integration-strategy
     - integration/data-cloud-query-api
     - integration/data-cloud-zero-copy-federation
+    - integration/dataweave-for-apex
     - integration/error-handling-in-integrations
     - integration/event-driven-architecture-patterns
     - integration/event-relay-configuration
@@ -169,6 +170,7 @@ Builds a catalog of every live integration endpoint reachable from the org: Name
 64. `skills/integration/streaming-api-and-pushtopic` — Streaming api and pushtopic
 65. `skills/integration/tableau-salesforce-connector` — Tableau salesforce connector
 66. `skills/integration/webhook-inbound-patterns` — Webhook inbound patterns
+67. `skills/integration/dataweave-for-apex` — dataweave for apex
 
 ---
 

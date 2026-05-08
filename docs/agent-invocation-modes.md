@@ -46,19 +46,22 @@ MCP wins because:
 | Live-org grounding is ad-hoc | `describe_org`, `tooling_query`, `probe_apex_references`, `validate_against_org` all ship with the agent surface |
 | Consumer forgets persistence contract | Server can surface `docs/consumer-responsibilities.md` as a tool resource |
 
-**The tools MCP currently exposes** (as of 2026-04-19):
+**The MCP surface** (live count comes from `health` tool — these groups are stable):
 
-- **Agent discovery:** `list_agents`, `get_agent`
+- **Agent discovery:** `list_agents` (filters: `runtime` / `build` / `deprecated` / `all`), `get_agent`, `suggest_agent` (free-text → ranked agents + decision-tree branches)
 - **Skill discovery:** `search_skill`, `get_skill`
-- **Org grounding:** `describe_org`, `list_custom_objects`, `list_flows_on_object`, `list_validation_rules`, `list_permission_sets`, `describe_permission_set`, `list_record_types`, `list_named_credentials`, `list_approval_processes`, `tooling_query`, `validate_against_org`
-- **Probes:** `probe_apex_references`, `probe_flow_references`, `probe_matching_rules`, `probe_permset_shape`
+- **Knowledge search:** `search_agents`, `search_templates`, `search_decision_trees`, `get_template`, `get_decision_tree`
+- **Org grounding (core):** `describe_org`, `list_custom_objects`, `list_flows_on_object`, `validate_against_org`
+- **Org grounding (admin):** `list_validation_rules`, `list_permission_sets`, `describe_permission_set`, `list_record_types`, `list_named_credentials`, `list_approval_processes`, `tooling_query`
+- **Org grounding (developer):** `list_apex_classes`, `get_apex_class`, `list_apex_triggers`, `list_lwc_bundles`, `get_lwc_bundle`, `list_custom_fields`, `describe_object_full` (composite), `list_orgs`
+- **Probes:** `probe_apex_references`, `probe_flow_references`, `probe_matching_rules`, `probe_permset_shape`, `probe_automation_graph` (the four heavy probes emit `notifications/progress` so clients render real-time status)
+- **Meta / persistence:** `list_deprecated_redirects`, `get_invocation_modes`, `emit_envelope`, `health`
 
-**What MCP is missing** (tracked in `feedback/FEEDBACK_LOG.md` as ACCEPT-queued):
+Beyond Tools the server also exposes:
 
-- A `list_deprecated_redirects` tool so clients asking for `validation-rule-auditor` get routed to `audit-router --domain=validation_rule` automatically, not a dead stub.
-- A `get_invocation_modes` tool exposing this doc so clients can surface the right channel for the task.
-- An `automation_graph_for_sobject` probe tool (the recipe already exists at `agents/_shared/probes/automation-graph-for-sobject.md` — needs to be lifted into the server).
-- An `emit_envelope` helper that writes the final envelope + paired markdown to `docs/reports/<agent>/<run_id>.{json,md}` per `docs/consumer-responsibilities.md`, so consumers don't have to implement persistence themselves.
+- **Prompts** — every wrapper in `commands/*.md` registers as an MCP prompt (`/refactor-apex`, `/audit-router`, `/build-apex`, …). Clients render them as native slash commands.
+- **Resources** — `sfskills://catalog`, `sfskills://skill/{id}`, `sfskills://agent/{name}`, `sfskills://decision-tree/{name}`, `sfskills://template/{path}`. Use the `domain__name` form for IDs that contain slashes.
+- **Tool annotations** — every tool carries honest `readOnlyHint` / `destructiveHint` / `idempotentHint` / `openWorldHint` so MCP-aware clients can auto-approve safely.
 
 ---
 

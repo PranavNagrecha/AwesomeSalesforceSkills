@@ -21,10 +21,27 @@ Tools exposed:
 
 from __future__ import annotations
 
-import re
 from typing import Any
 
 from . import sf_cli
+from ._shared import _API_NAME_PATTERN, _run_soql, _strip_attributes, _validate_api_name
+
+
+# Re-export so existing ``from .admin import _run_soql`` callers in the rest
+# of the package keep working.
+__all__ = [
+    "_API_NAME_PATTERN",
+    "_run_soql",
+    "_strip_attributes",
+    "_validate_api_name",
+    "list_validation_rules",
+    "list_permission_sets",
+    "describe_permission_set",
+    "list_record_types",
+    "list_named_credentials",
+    "list_approval_processes",
+    "tooling_query",
+]
 
 
 MAX_VALIDATION_RULE_ROWS = 500
@@ -33,39 +50,6 @@ MAX_RECORD_TYPE_ROWS = 200
 MAX_NAMED_CREDENTIAL_ROWS = 200
 MAX_APPROVAL_PROCESS_ROWS = 200
 MAX_TOOLING_QUERY_ROWS = 2000
-
-_API_NAME_PATTERN = re.compile(r"^[A-Za-z][A-Za-z0-9_]*$")
-
-
-def _validate_api_name(value: str | None, *, kind: str) -> str | None:
-    """Return an error message if ``value`` is not a safe API name, else None."""
-    if not value or not _API_NAME_PATTERN.match(value):
-        return f"{kind} must match /^[A-Za-z][A-Za-z0-9_]*$/ (got: {value!r})"
-    return None
-
-
-def _strip_attributes(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    for record in records:
-        if isinstance(record, dict):
-            record.pop("attributes", None)
-    return records
-
-
-def _run_soql(
-    soql: str,
-    *,
-    target_org: str | None,
-    tooling: bool,
-) -> dict[str, Any]:
-    args = ["data", "query", "--query", soql]
-    if tooling:
-        args.append("--use-tooling-api")
-    payload = sf_cli.run_sf_json(args, target_org=target_org)
-    if "error" in payload and "result" not in payload:
-        return payload
-    records = (payload.get("result", {}) or {}).get("records", []) or []
-    _strip_attributes(records)
-    return {"record_count": len(records), "records": records}
 
 
 # --------------------------------------------------------------------------- #

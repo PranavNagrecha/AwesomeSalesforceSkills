@@ -7547,6 +7547,78 @@
       "domain": "lwc",
       "expected_skill": "lwc/lwc-pubsub-patterns",
       "top_k": 3
+    },
+    {
+      "query": "apex decimal divide returning wrong rounding scale rounding mode",
+      "domain": "apex",
+      "expected_skill": "apex/apex-decimal-arithmetic-precision",
+      "top_k": 3
+    },
+    {
+      "query": "apex currency calculation off by a penny line items header",
+      "domain": "apex",
+      "expected_skill": "apex/apex-decimal-arithmetic-precision",
+      "top_k": 3
+    },
+    {
+      "query": "apex integer divided by integer truncated zero decimal result",
+      "domain": "apex",
+      "expected_skill": "apex/apex-decimal-arithmetic-precision",
+      "top_k": 3
+    },
+    {
+      "query": "transform csv to json inside apex without external library dataweave",
+      "domain": "integration",
+      "expected_skill": "integration/dataweave-for-apex",
+      "top_k": 3
+    },
+    {
+      "query": "system dataweave script apex execute static resource salesforce native",
+      "domain": "integration",
+      "expected_skill": "integration/dataweave-for-apex",
+      "top_k": 3
+    },
+    {
+      "query": "apex transform xml payload to sobject list nested elements one or many",
+      "domain": "integration",
+      "expected_skill": "integration/dataweave-for-apex",
+      "top_k": 3
+    },
+    {
+      "query": "salesforce mobile publisher branded app experience cloud apple app store",
+      "domain": "admin",
+      "expected_skill": "admin/mobile-publisher",
+      "top_k": 3
+    },
+    {
+      "query": "mobile publisher push notification certificate APN auth key FCM service account",
+      "domain": "admin",
+      "expected_skill": "admin/mobile-publisher",
+      "top_k": 3
+    },
+    {
+      "query": "white label salesforce app distribute partner experience cloud play store",
+      "domain": "admin",
+      "expected_skill": "admin/mobile-publisher",
+      "top_k": 3
+    },
+    {
+      "query": "ISV License Management App LMA register managed package subscriber org enforce expiration",
+      "domain": "devops",
+      "expected_skill": "devops/isv-license-management-and-trialforce",
+      "top_k": 3
+    },
+    {
+      "query": "Trialforce Management Org TMO Trialforce Source Org TSO template signup AppExchange trial",
+      "domain": "devops",
+      "expected_skill": "devops/isv-license-management-and-trialforce",
+      "top_k": 3
+    },
+    {
+      "query": "FeatureParameterBoolean LmoToSubscriber SubscriberToLmo managed package feature flag without release",
+      "domain": "devops",
+      "expected_skill": "devops/isv-license-management-and-trialforce",
+      "top_k": 3
     }
   ]
 }

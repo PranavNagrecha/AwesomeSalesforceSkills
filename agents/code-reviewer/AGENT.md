@@ -10,6 +10,7 @@ created: 2026-04-16
 updated: 2026-04-16
 dependencies:
   skills:
+    - apex/apex-decimal-arithmetic-precision
     - apex/apex-enum-patterns
     - apex/apex-schema-describe
   shared:
@@ -43,6 +44,7 @@ Reviews Apex classes, triggers, LWC components, and Flows against this library's
 6. Discovered skill-local validators via `python3 scripts/search_knowledge.py` for the component type
 7. `skills/apex/apex-schema-describe` — Schema describe API perf, FLS, picklist enumeration
 8. `skills/apex/apex-enum-patterns` — Apex enum dispatch, valueOf safety, ordinals
+9. `skills/apex/apex-decimal-arithmetic-precision` — apex decimal arithmetic precision
 
 ## Orchestration Plan
 

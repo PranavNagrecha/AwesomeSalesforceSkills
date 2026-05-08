@@ -1,9 +1,9 @@
 # Connecting `sfskills-mcp` to your AI client
 
 This is the field guide. If your AI tool speaks the Model Context Protocol
-(MCP), it can consume the six `sfskills` tools — `search_skill`, `get_skill`,
-`describe_org`, `list_custom_objects`, `list_flows_on_object`,
-`validate_against_org` — with the recipes below.
+(MCP), it can consume the full `sfskills` tool surface — currently 23 tools
+spanning skill search, live-org metadata + SOQL, automation/permset/Apex/Flow
+probes, run-time agent discovery, and persistence — with the recipes below.
 
 > Every recipe assumes you've completed the one-time setup in [Prerequisites](#prerequisites).
 > Config-file **paths change occasionally**; if yours doesn't match, check your
@@ -50,15 +50,27 @@ python3 --version  # expect 3.10 or newer
 
 **2. Install `sfskills-mcp`.**
 
+Option A — **PyPI (recommended for end users):**
+
+```bash
+pip install sfskills-mcp           # ~50 KB wheel
+sfskills-mcp-init                  # one-time data fetch into ~/.cache/sfskills-mcp/
+```
+
+After `sfskills-mcp-init`, the server resolves its repo root automatically
+from the cache — no `SFSKILLS_REPO_ROOT` needed in your client config.
+Override the cache location with `SFSKILLS_CACHE_DIR=/some/path` if your
+home directory is read-only.
+
+Option B — **Editable from a clone (developer / contributor):**
+
 ```bash
 git clone https://github.com/PranavNagrecha/AwesomeSalesforceSkills.git
 cd AwesomeSalesforceSkills
-
-# Install the MCP package (editable is recommended so repo updates flow through)
 python3 -m pip install -e mcp/sfskills-mcp
 ```
 
-Verify:
+Verify (either path):
 
 ```bash
 python3 -m sfskills_mcp --help
@@ -195,7 +207,7 @@ In a chat, type `/mcp` to confirm the server is connected.
 ```
 
 Restart Claude Desktop. Click the **🔌 tools** icon in the composer — `sfskills`
-should show six tools.
+should show the full `sfskills` tool list.
 
 > macOS tip: Claude Desktop launches via LaunchServices, which strips PATH to a
 > minimal default. Always use absolute paths for `command` and `SFSKILLS_SF_BIN`.
@@ -222,7 +234,7 @@ your project (project-scoped — checked in for your team, overrides global).
 ```
 
 Restart Cursor. Open **Settings → Cursor Settings → MCP**. `sfskills` should
-be listed as `Running`; expand it to see the six tools. The agent will call
+be listed as `Running`; expand it to see the registered tools. The agent will call
 them automatically when it detects a Salesforce task, or you can invoke them
 explicitly with `@sfskills search_skill "trigger framework"`.
 
@@ -569,7 +581,7 @@ npx -y @modelcontextprotocol/inspector \
 Open the URL it prints. In the Inspector UI:
 
 1. Click **Connect**.
-2. Switch to the **Tools** tab — all six `sfskills` tools should list.
+2. Switch to the **Tools** tab — every `sfskills` tool should list.
 3. Call `search_skill` with `{"query": "trigger recursion"}` — expect a list
    of skills.
 4. Call `describe_org` with `{}` — expect either a live org summary or a
@@ -625,7 +637,7 @@ re-install:
 The Python MCP SDK isn't installed for that interpreter. Install it:
 
 ```bash
-/opt/homebrew/bin/python3 -m pip install 'mcp>=1.2.0'
+/opt/homebrew/bin/python3 -m pip install 'mcp>=1.4.0'
 ```
 
 ### `sf command timed out after 90s`
@@ -640,7 +652,7 @@ timing out, file an issue and include `sf --version` output.
   restart, not just a window refresh.
 - Check the client's logs for MCP errors (Cursor: **Output → Cursor MCP**;
   Claude Desktop: `~/Library/Logs/Claude/mcp*.log` on macOS).
-- Verify with the Inspector (above). If Inspector sees six tools and your
+- Verify with the Inspector (above). If Inspector sees every tool and your
   client doesn't, the problem is in the client's config shape — re-read its
   section above and check casing (`mcpServers` vs `context_servers` vs
   `servers` — they differ across clients).

@@ -1,0 +1,25 @@
+{
+  "comment": "Hand-curated task → expected-agent fixture for suggest_agent. Top-1 accuracy floor in test_routing.py is 80% (per .planning/mcp-v0.2-plan.md C3). Adjust cases when adding/renaming agents; keep at least 20 cases.",
+  "cases": [
+    {"task": "refactor a 2000-line Apex class", "expected": "apex-refactorer"},
+    {"task": "audit my picklists", "expected": "audit-router"},
+    {"task": "design a permission set for marketing", "expected": "permission-set-architect"},
+    {"task": "consolidate triggers on Account", "expected": "trigger-consolidator"},
+    {"task": "debug LWC component firing wire twice", "expected": "lwc-debugger"},
+    {"task": "plan deployment of a major release", "expected": "release-train-planner"},
+    {"task": "csv to object mapping for migration", "expected": "csv-to-object-mapper"},
+    {"task": "fit gap between requirements and current org", "expected": "fit-gap-analyzer"},
+    {"task": "build a Lightning Web Component for case timeline", "expected": "lwc-builder"},
+    {"task": "generate test class for AccountSelector", "expected": "test-class-generator"},
+    {"task": "audit my sharing rules", "expected": "audit-router"},
+    {"task": "design a duplicate rule for Lead", "expected": "duplicate-rule-designer"},
+    {"task": "build a flow for case escalation", "expected": "flow-builder"},
+    {"task": "write user stories for the marketing automation feature", "expected": "story-drafter"},
+    {"task": "audit my LWC components for accessibility", "expected": "lwc-auditor"},
+    {"task": "build an Apex class for handling SOAP callout", "expected": "apex-builder"},
+    {"task": "audit case escalation rules", "expected": "audit-router"},
+    {"task": "design Omni-Channel routing for service cases", "expected": "omni-channel-routing-designer"},
+    {"task": "build an Agentforce action for refund processing", "expected": "agentforce-builder"},
+    {"task": "score the risk of this deployment", "expected": "deployment-risk-scorer"}
+  ]
+}
