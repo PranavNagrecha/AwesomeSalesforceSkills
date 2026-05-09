@@ -22,6 +22,7 @@ dependencies:
     - admin/experience-cloud-moderation
     - admin/experience-cloud-seo-settings
     - admin/experience-cloud-site-setup
+    - admin/lightning-bolt-template-authoring
     - admin/mobile-publisher
     - admin/partner-community-requirements
     - admin/permission-set-architecture
@@ -80,6 +81,7 @@ Two modes:
 17. `skills/admin/community-engagement-strategy` — Community engagement strategy
 18. `skills/admin/partner-community-requirements` — Partner community requirements
 19. `skills/admin/mobile-publisher` — mobile publisher
+20. `skills/admin/lightning-bolt-template-authoring` — lightning bolt template authoring
 
 ---
 

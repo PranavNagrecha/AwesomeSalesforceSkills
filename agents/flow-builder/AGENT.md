@@ -69,6 +69,7 @@ dependencies:
     - flow/process-builder-to-flow-migration
     - flow/record-triggered-flow-patterns
     - flow/recursion-and-re-entry-prevention
+    - flow/scheduled-flow-not-running-debug
     - flow/scheduled-flows
     - flow/screen-flow-accessibility
     - flow/screen-flows
@@ -184,6 +185,7 @@ Given a business requirement, designs the correct Flow: Flow type (record-trigge
 66. `skills/flow/flow-time-based-patterns` — Flow time based patterns
 67. `skills/flow/process-builder-to-flow-migration` — Process builder to flow migration
 68. `skills/flow/workflow-rule-to-flow-migration` — Workflow rule to flow migration
+69. `skills/flow/scheduled-flow-not-running-debug` — scheduled flow not running debug
 
 ---
 

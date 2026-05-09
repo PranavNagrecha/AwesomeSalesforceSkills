@@ -37,6 +37,7 @@ dependencies:
     - agentforce/agentforce-in-slack
     - agentforce/agentforce-multi-turn-patterns
     - agentforce/agentforce-pii-redaction
+    - agentforce/agentforce-production-readiness-checklist
     - agentforce/agentforce-prompt-versioning
     - agentforce/agentforce-sales-ai-setup
     - agentforce/agentforce-service-ai-setup
@@ -53,10 +54,12 @@ dependencies:
     - agentforce/einstein-prediction-builder
     - agentforce/einstein-search-personalization
     - agentforce/einstein-trust-layer
+    - agentforce/employee-hr-service-agent-rollout
     - agentforce/mcp-tool-definition-apex
     - agentforce/model-builder-and-byollm
     - agentforce/prompt-builder-templates
     - agentforce/rag-patterns-in-salesforce
+    - agentforce/sales-coach-agent-rollout
     - agentforce/salesforce-mcp-server-setup
     - agentforce/sf-to-llm-data-pipelines
   shared:
@@ -137,6 +140,9 @@ Takes a requirements statement — what the agent action should do, for whom, on
 48. `skills/agentforce/rag-patterns-in-salesforce` — Rag patterns in salesforce
 49. `skills/agentforce/salesforce-mcp-server-setup` — Salesforce mcp server setup
 50. `skills/agentforce/sf-to-llm-data-pipelines` — Sf to llm data pipelines
+51. `skills/agentforce/agentforce-production-readiness-checklist` — agentforce production readiness checklist
+52. `skills/agentforce/sales-coach-agent-rollout` — sales coach agent rollout
+53. `skills/agentforce/employee-hr-service-agent-rollout` — employee hr service agent rollout
 
 ---
 

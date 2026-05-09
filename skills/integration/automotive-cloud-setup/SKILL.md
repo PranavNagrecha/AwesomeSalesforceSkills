@@ -33,6 +33,9 @@ triggers:
   - "setting up recall or service campaign orchestration with ActionableEvent"
   - "Vehicle vs VehicleDefinition: which to use when"
   - "Automotive Cloud FinancialAccount setup for retail credit deals"
+  - "automotive cloud vehicle and asset 360 data model"
+  - "vehicle 360 asset 360 auto industry data model in salesforce"
+  - "set up automotive cloud for a dealership network"
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha

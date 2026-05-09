@@ -138,6 +138,7 @@ dependencies:
     - apex/recursive-trigger-prevention
     - apex/sales-engagement-api
     - apex/salesforce-debug-log-analysis
+    - apex/scheduled-apex-failure-detection-and-monitoring
     - apex/service-cloud-rest-api
     - apex/sf-cli-and-sfdx-essentials
     - apex/soql-fundamentals
@@ -375,6 +376,7 @@ Produces Apex scaffolds for every canonical Apex surface: trigger + handler, ser
 152. `templates/apex/tests/MockHttpResponseGenerator.cls`
 153. `templates/apex/tests/TestUserFactory.cls`
 154. `templates/apex/tests/BulkTestPattern.cls`
+155. `skills/apex/scheduled-apex-failure-detection-and-monitoring` — scheduled apex failure detection and monitoring
 
 ---
 

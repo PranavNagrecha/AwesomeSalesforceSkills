@@ -38,6 +38,8 @@
       "admin/change-data-capture-admin",
       "admin/change-management-and-deployment",
       "admin/change-management-and-training",
+      "admin/chatter-group-governance",
+      "admin/chatter-notification-tuning",
       "admin/classic-email-template-migration",
       "admin/client-onboarding-design",
       "admin/clinical-data-requirements",
@@ -155,6 +157,7 @@
       "admin/lead-nurture-journey-design",
       "admin/lead-scoring-requirements",
       "admin/lightning-app-builder-advanced",
+      "admin/lightning-bolt-template-authoring",
       "admin/lightning-experience-transition",
       "admin/lightning-page-performance-tuning",
       "admin/list-views-and-compact-layouts",
@@ -273,6 +276,7 @@
       "agentforce/agentforce-observability",
       "agentforce/agentforce-persona-design",
       "agentforce/agentforce-pii-redaction",
+      "agentforce/agentforce-production-readiness-checklist",
       "agentforce/agentforce-prompt-versioning",
       "agentforce/agentforce-sales-ai-setup",
       "agentforce/agentforce-service-ai-setup",
@@ -289,12 +293,14 @@
       "agentforce/einstein-prediction-builder",
       "agentforce/einstein-search-personalization",
       "agentforce/einstein-trust-layer",
+      "agentforce/employee-hr-service-agent-rollout",
       "agentforce/mcp-tool-definition-apex",
       "agentforce/model-builder-and-byollm",
       "agentforce/prompt-builder-templates",
       "agentforce/prompt-injection-defense",
       "agentforce/prompt-template-versioning",
       "agentforce/rag-patterns-in-salesforce",
+      "agentforce/sales-coach-agent-rollout",
       "agentforce/salesforce-mcp-server-setup",
       "agentforce/sf-to-llm-data-pipelines"
     ],
@@ -432,6 +438,7 @@
       "apex/recursive-trigger-prevention",
       "apex/sales-engagement-api",
       "apex/salesforce-debug-log-analysis",
+      "apex/scheduled-apex-failure-detection-and-monitoring",
       "apex/service-cloud-rest-api",
       "apex/sf-cli-and-sfdx-essentials",
       "apex/soql-fundamentals",
@@ -774,6 +781,7 @@
       "flow/process-builder-to-flow-migration",
       "flow/record-triggered-flow-patterns",
       "flow/recursion-and-re-entry-prevention",
+      "flow/scheduled-flow-not-running-debug",
       "flow/scheduled-flows",
       "flow/screen-flow-accessibility",
       "flow/screen-flows",
@@ -831,6 +839,7 @@
       "integration/salesforce-functions-replacement",
       "integration/salesforce-maps-setup",
       "integration/salesforce-to-salesforce-integration",
+      "integration/scheduled-erp-sync-pattern",
       "integration/sis-integration-patterns",
       "integration/slack-connect-patterns",
       "integration/slack-salesforce-integration-setup",
@@ -883,11 +892,13 @@
       "lwc/lwc-imperative-apex",
       "lwc/lwc-in-flow-screens",
       "lwc/lwc-internationalization",
+      "lwc/lwc-jest-testing-with-accessibility",
       "lwc/lwc-lds-writes",
       "lwc/lwc-light-dom",
       "lwc/lwc-lightning-modal",
       "lwc/lwc-lightning-record-forms",
       "lwc/lwc-locker-to-lws-migration",
+      "lwc/lwc-mobile-offline-and-briefcase",
       "lwc/lwc-modal-and-overlay",
       "lwc/lwc-navigation-mixin",
       "lwc/lwc-offline-and-mobile",
@@ -1003,6 +1014,7 @@
       "security/shield-kms-byok-setup",
       "security/sso-saml-troubleshooting",
       "security/transaction-security-policies",
+      "security/visualforce-security-and-modernization",
       "security/xss-and-injection-prevention"
     ]
   },
@@ -1392,6 +1404,7 @@
       "lwc/lwc-chart-and-visualization",
       "lwc/lwc-drag-and-drop",
       "lwc/lwc-focus-management",
+      "lwc/lwc-jest-testing-with-accessibility",
       "lwc/lwc-lightning-modal",
       "lwc/lwc-record-picker",
       "lwc/lwc-shadow-vs-light-dom-decision"
@@ -1698,6 +1711,7 @@
       "agentforce/prompt-injection-defense",
       "agentforce/prompt-template-versioning",
       "agentforce/rag-patterns-in-salesforce",
+      "agentforce/sales-coach-agent-rollout",
       "agentforce/salesforce-mcp-server-setup",
       "agentforce/sf-to-llm-data-pipelines",
       "architect/ai-agent-org-integration-architecture",
@@ -1710,8 +1724,14 @@
       "architect/einstein-bot-architecture",
       "data/vector-database-management"
     ],
+    "agentforce-employee": [
+      "agentforce/employee-hr-service-agent-rollout"
+    ],
     "agentforce-nonprofit": [
       "architect/nonprofit-platform-architecture"
+    ],
+    "agentforce-production-readiness-checklist": [
+      "agentforce/agentforce-production-readiness-checklist"
     ],
     "agentforce-slack": [
       "agentforce/agentforce-in-slack"
@@ -2156,6 +2176,7 @@
       "admin/mobile-publisher"
     ],
     "appexchange": [
+      "admin/lightning-bolt-template-authoring",
       "devops/isv-license-management-and-trialforce",
       "devops/package-development-strategy",
       "devops/salesforce-code-analyzer",
@@ -2262,7 +2283,8 @@
     ],
     "aria": [
       "lwc/lwc-accessibility",
-      "lwc/lwc-accessibility-patterns"
+      "lwc/lwc-accessibility-patterns",
+      "lwc/lwc-jest-testing-with-accessibility"
     ],
     "arithmetic": [
       "apex/apex-decimal-arithmetic-precision"
@@ -2318,6 +2340,9 @@
       "architect/omnistudio-scalability-patterns",
       "integration/callout-limits-and-async-patterns"
     ],
+    "async-apex-job": [
+      "flow/scheduled-flow-not-running-debug"
+    ],
     "async-await": [
       "lwc/lwc-imperative-apex"
     ],
@@ -2344,7 +2369,8 @@
     ],
     "asyncapexjob": [
       "apex/batch-apex-patterns",
-      "apex/debug-and-logging"
+      "apex/debug-and-logging",
+      "apex/scheduled-apex-failure-detection-and-monitoring"
     ],
     "asynchronous-process": [
       "flow/orchestration-flows"
@@ -2519,6 +2545,9 @@
       "integration/aws-salesforce-patterns",
       "integration/event-relay-configuration"
     ],
+    "axe-core": [
+      "lwc/lwc-jest-testing-with-accessibility"
+    ],
     "azure": [
       "integration/azure-salesforce-patterns"
     ],
@@ -2642,6 +2671,9 @@
     ],
     "batch-size": [
       "data/data-loader-batch-window-sizing"
+    ],
+    "batchapexerrorevent": [
+      "apex/scheduled-apex-failure-detection-and-monitoring"
     ],
     "bdd": [
       "admin/acceptance-criteria-given-when-then"
@@ -2804,6 +2836,9 @@
     "breach-response": [
       "security/security-incident-response"
     ],
+    "briefcase-builder": [
+      "lwc/lwc-mobile-offline-and-briefcase"
+    ],
     "briefcase-priming": [
       "admin/fsl-mobile-workflow-design"
     ],
@@ -2853,7 +2888,8 @@
     ],
     "bulk-api-2": [
       "data/bulk-api-patterns",
-      "integration/bulk-api-2-patterns"
+      "integration/bulk-api-2-patterns",
+      "integration/scheduled-erp-sync-pattern"
     ],
     "bulk-api-v2": [
       "agentforce/sf-to-llm-data-pipelines"
@@ -3111,6 +3147,9 @@
     "can-spam": [
       "admin/consent-management-marketing"
     ],
+    "canary-rollout": [
+      "agentforce/agentforce-production-readiness-checklist"
+    ],
     "canvas": [
       "integration/heroku-salesforce-integration"
     ],
@@ -3348,7 +3387,15 @@
       "apex/service-cloud-rest-api"
     ],
     "chatter": [
+      "admin/chatter-group-governance",
+      "admin/chatter-notification-tuning",
       "integration/connect-rest-api-patterns"
+    ],
+    "chatter-group-governance": [
+      "admin/chatter-group-governance"
+    ],
+    "chatter-notification-tuning": [
+      "admin/chatter-notification-tuning"
     ],
     "check-in": [
       "integration/salesforce-maps-setup"
@@ -3569,6 +3616,9 @@
     ],
     "cohort": [
       "admin/npsp-program-management"
+    ],
+    "collaboration-group": [
+      "admin/chatter-group-governance"
     ],
     "collaborative-forecasts": [
       "admin/collaborative-forecasts"
@@ -4099,6 +4149,9 @@
     "cost-benefit": [
       "architect/cpq-vs-standard-products-decision"
     ],
+    "cost-monitoring": [
+      "agentforce/agentforce-production-readiness-checklist"
+    ],
     "cost-optimization": [
       "agentforce/agentforce-cost-optimization",
       "architect/license-optimization-strategy"
@@ -4234,6 +4287,9 @@
     "cron": [
       "apex/apex-scheduled-jobs"
     ],
+    "cron-trigger": [
+      "flow/scheduled-flow-not-running-debug"
+    ],
     "cross-cloud": [
       "architect/cross-cloud-data-deployment"
     ],
@@ -4298,7 +4354,8 @@
       "integration/sustainability-reporting"
     ],
     "csrf": [
-      "apex/visualforce-fundamentals"
+      "apex/visualforce-fundamentals",
+      "security/visualforce-security-and-modernization"
     ],
     "css": [
       "lwc/lwc-css-and-styling"
@@ -5004,7 +5061,8 @@
       "architect/technical-debt-assessment"
     ],
     "dead-letter-queue": [
-      "apex/apex-callout-retry-and-resilience"
+      "apex/apex-callout-retry-and-resilience",
+      "integration/scheduled-erp-sync-pattern"
     ],
     "deadlock": [
       "apex/record-locking-and-contention"
@@ -5742,6 +5800,7 @@
       "agentforce/agentforce-sales-ai-setup"
     ],
     "einstein-trust-layer": [
+      "agentforce/agentforce-production-readiness-checklist",
       "agentforce/einstein-trust-layer",
       "agentforce/rag-patterns-in-salesforce",
       "architect/ai-governance-architecture"
@@ -5780,6 +5839,9 @@
     ],
     "email-message-relation": [
       "data/case-history-migration"
+    ],
+    "email-notifications": [
+      "admin/chatter-notification-tuning"
     ],
     "email-service": [
       "admin/email-service-inbound"
@@ -5845,6 +5907,12 @@
     ],
     "empapi": [
       "lwc/lwc-server-sent-events"
+    ],
+    "employee-hr-service-agent-rollout": [
+      "agentforce/employee-hr-service-agent-rollout"
+    ],
+    "employee-self-service": [
+      "agentforce/employee-hr-service-agent-rollout"
     ],
     "emr-sync": [
       "architect/fhir-integration-architecture"
@@ -6115,6 +6183,7 @@
     ],
     "event-monitoring": [
       "admin/integration-admin-connected-apps",
+      "agentforce/agentforce-production-readiness-checklist",
       "architect/salesforce-shield-architecture",
       "architect/zero-trust-salesforce-patterns",
       "data/analytics-data-governance",
@@ -6188,6 +6257,9 @@
       "admin/experience-cloud-seo-settings",
       "lwc/lwc-app-builder-config"
     ],
+    "experience-bundle": [
+      "admin/lightning-bolt-template-authoring"
+    ],
     "experience-cloud": [
       "admin/community-engagement-strategy",
       "admin/experience-cloud-guest-access",
@@ -6196,6 +6268,7 @@
       "admin/experience-cloud-seo-settings",
       "admin/experience-cloud-site-setup",
       "admin/fsc-referral-management",
+      "admin/lightning-bolt-template-authoring",
       "admin/mobile-publisher",
       "admin/multi-language-and-translation",
       "admin/partner-community-requirements",
@@ -6404,6 +6477,9 @@
     ],
     "fedramp": [
       "architect/government-cloud-compliance"
+    ],
+    "feed-tracking": [
+      "admin/chatter-notification-tuning"
     ],
     "feedback-api": [
       "admin/ai-adoption-change-management"
@@ -6738,7 +6814,8 @@
       "flow/flow-custom-property-editors"
     ],
     "flow-debugging": [
-      "flow/flow-debugging"
+      "flow/flow-debugging",
+      "flow/scheduled-flow-not-running-debug"
     ],
     "flow-deployment-and-packaging": [
       "flow/flow-deployment-and-packaging"
@@ -6840,6 +6917,9 @@
       "flow/flow-runtime-context-and-sharing",
       "lwc/experience-cloud-api-access"
     ],
+    "fls-crud-enforcement": [
+      "security/visualforce-security-and-modernization"
+    ],
     "flying-saucer": [
       "apex/pdf-generation-patterns"
     ],
@@ -6855,6 +6935,7 @@
     "focus-management": [
       "lwc/lwc-accessibility",
       "lwc/lwc-accessibility-patterns",
+      "lwc/lwc-jest-testing-with-accessibility",
       "lwc/lwc-modal-and-overlay",
       "lwc/lwc-template-refs"
     ],
@@ -7161,7 +7242,8 @@
     ],
     "go-live": [
       "admin/change-management-and-training",
-      "agentforce/agent-deployment-checklist"
+      "agentforce/agent-deployment-checklist",
+      "agentforce/agentforce-production-readiness-checklist"
     ],
     "go-live-cutover-planning": [
       "devops/go-live-cutover-planning"
@@ -7238,6 +7320,12 @@
       "agentforce/data-cloud-grounding-for-agentforce",
       "agentforce/data-cloud-vector-search-dev",
       "agentforce/prompt-builder-templates"
+    ],
+    "group-archival": [
+      "admin/chatter-group-governance"
+    ],
+    "group-lifecycle": [
+      "admin/chatter-group-governance"
     ],
     "groupby": [
       "apex/apex-aggregate-queries"
@@ -7494,6 +7582,9 @@
     "households": [
       "data/constituent-data-migration"
     ],
+    "hris-integration": [
+      "agentforce/employee-hr-service-agent-rollout"
+    ],
     "http-action": [
       "omnistudio/integration-procedures",
       "omnistudio/omnistudio-security"
@@ -7563,6 +7654,7 @@
       "data/external-id-strategy",
       "flow/scheduled-flows",
       "integration/retry-and-backoff-patterns",
+      "integration/scheduled-erp-sync-pattern",
       "integration/webhook-inbound-patterns",
       "omnistudio/omnistudio-error-handling-patterns"
     ],
@@ -7860,7 +7952,8 @@
     "integration-pattern": [
       "integration/aws-salesforce-patterns",
       "integration/azure-salesforce-patterns",
-      "integration/heroku-salesforce-integration"
+      "integration/heroku-salesforce-integration",
+      "integration/scheduled-erp-sync-pattern"
     ],
     "integration-pattern-selection": [
       "admin/integration-pattern-selection"
@@ -8038,6 +8131,7 @@
       "devops/cicd-for-experience-cloud"
     ],
     "jest": [
+      "lwc/lwc-jest-testing-with-accessibility",
       "lwc/lwc-testing"
     ],
     "jmeter": [
@@ -8156,7 +8250,8 @@
     ],
     "keyboard-navigation": [
       "lwc/lwc-accessibility",
-      "lwc/lwc-accessibility-patterns"
+      "lwc/lwc-accessibility-patterns",
+      "lwc/lwc-jest-testing-with-accessibility"
     ],
     "keyboard-shortcuts": [
       "admin/service-console-configuration"
@@ -8254,6 +8349,9 @@
     "lds": [
       "lwc/lwc-lightning-record-forms"
     ],
+    "lds-offline-cache": [
+      "lwc/lwc-mobile-offline-and-briefcase"
+    ],
     "lds-writes": [
       "lwc/lwc-lds-writes"
     ],
@@ -8335,6 +8433,9 @@
     "legacy-integration": [
       "integration/soap-api-patterns"
     ],
+    "legacy-modernization": [
+      "security/visualforce-security-and-modernization"
+    ],
     "legal-entity": [
       "architect/revenue-cloud-architecture"
     ],
@@ -8414,6 +8515,12 @@
     ],
     "lightning-base-components": [
       "lwc/lwc-record-picker"
+    ],
+    "lightning-bolt": [
+      "admin/lightning-bolt-template-authoring"
+    ],
+    "lightning-bolt-template-authoring": [
+      "admin/lightning-bolt-template-authoring"
     ],
     "lightning-chart": [
       "lwc/lwc-chart-and-visualization"
@@ -8737,12 +8844,18 @@
     "lwc-interop": [
       "lwc/message-channel-patterns"
     ],
+    "lwc-jest-testing-with-accessibility": [
+      "lwc/lwc-jest-testing-with-accessibility"
+    ],
     "lwc-light-dom": [
       "lwc/lwc-light-dom"
     ],
     "lwc-migration": [
       "lwc/visualforce-to-lwc-migration",
       "omnistudio/omnistudio-lwc-omniscript-migration"
+    ],
+    "lwc-mobile-offline-and-briefcase": [
+      "lwc/lwc-mobile-offline-and-briefcase"
     ],
     "lwc-performance": [
       "lwc/lwc-performance"
@@ -8774,6 +8887,9 @@
     ],
     "lwc-testing": [
       "lwc/lwc-testing"
+    ],
+    "lwc-vf-interop": [
+      "security/visualforce-security-and-modernization"
     ],
     "lwr": [
       "admin/commerce-checkout-configuration",
@@ -9168,6 +9284,9 @@
       "apex/fsl-custom-actions-mobile",
       "architect/fsl-offline-architecture"
     ],
+    "mobile-conflict-resolution": [
+      "lwc/lwc-mobile-offline-and-briefcase"
+    ],
     "mobile-extensions": [
       "apex/fsl-mobile-app-extensions"
     ],
@@ -9235,6 +9354,7 @@
       "admin/batch-job-scheduling-and-monitoring",
       "apex/apex-limits-monitoring",
       "apex/custom-logging-and-monitoring",
+      "apex/scheduled-apex-failure-detection-and-monitoring",
       "architect/org-limits-monitoring",
       "devops/sfdx-hardis-integration",
       "flow/flow-error-monitoring"
@@ -9399,6 +9519,7 @@
       "devops/environment-specific-value-injection",
       "flow/flow-external-services",
       "integration/named-credentials-setup",
+      "integration/scheduled-erp-sync-pattern",
       "omnistudio/integration-procedures",
       "security/service-account-credential-rotation"
     ],
@@ -9527,6 +9648,9 @@
       "flow/flow-error-notification-patterns",
       "flow/flow-for-slack"
     ],
+    "notification-builder": [
+      "admin/chatter-notification-tuning"
+    ],
     "notification-type": [
       "apex/apex-custom-notifications-from-apex"
     ],
@@ -9651,7 +9775,8 @@
       "apex/fsl-mobile-app-extensions"
     ],
     "offline-priming": [
-      "admin/fsl-mobile-app-setup"
+      "admin/fsl-mobile-app-setup",
+      "lwc/lwc-mobile-offline-and-briefcase"
     ],
     "offline-workflow": [
       "admin/fsl-mobile-workflow-design"
@@ -9819,7 +9944,8 @@
       "admin/batch-job-scheduling-and-monitoring",
       "admin/data-export-service",
       "admin/devops-process-documentation",
-      "apex/apex-trigger-bypass-and-killswitch-patterns"
+      "apex/apex-trigger-bypass-and-killswitch-patterns",
+      "apex/scheduled-apex-failure-detection-and-monitoring"
     ],
     "opportunities": [
       "admin/opportunity-management"
@@ -9857,7 +9983,8 @@
       "apex/opportunity-trigger-patterns"
     ],
     "opportunity-stages": [
-      "admin/sales-process-mapping"
+      "admin/sales-process-mapping",
+      "agentforce/sales-coach-agent-rollout"
     ],
     "opportunity-territory": [
       "admin/enterprise-territory-management"
@@ -10049,6 +10176,9 @@
     "ownership-skew": [
       "admin/data-skew-and-sharing-performance"
     ],
+    "ownership-transfer": [
+      "admin/chatter-group-governance"
+    ],
     "package-architecture": [
       "devops/multi-package-development"
     ],
@@ -10159,6 +10289,9 @@
       "admin/portal-requirements-gathering",
       "data/external-user-data-sharing",
       "data/partner-data-access-patterns"
+    ],
+    "partner-distribution": [
+      "admin/lightning-bolt-template-authoring"
     ],
     "partner-loyalty": [
       "architect/loyalty-program-architecture",
@@ -10319,6 +10452,9 @@
       "omnistudio/integration-procedure-cacheable-patterns",
       "omnistudio/omnistudio-cache-strategies"
     ],
+    "performance-benchmarks": [
+      "agentforce/agentforce-production-readiness-checklist"
+    ],
     "performance-budget": [
       "lwc/lwc-performance-budgets"
     ],
@@ -10433,6 +10569,9 @@
       "data/data-quality-and-governance",
       "data/duplicate-rule-person-account-edge-cases",
       "security/data-classification-labels"
+    ],
+    "pii-handling": [
+      "agentforce/employee-hr-service-agent-rollout"
     ],
     "pii-protection": [
       "security/sandbox-data-masking"
@@ -10816,6 +10955,9 @@
     "product2": [
       "data/product-catalog-data-model"
     ],
+    "production-readiness": [
+      "agentforce/agentforce-production-readiness-checklist"
+    ],
     "production-recovery": [
       "devops/rollback-and-hotfix-strategy"
     ],
@@ -11068,7 +11210,8 @@
       "apex/field-level-security-in-async-contexts",
       "apex/governor-limits",
       "apex/long-running-process-orchestration",
-      "integration/callout-limits-and-async-patterns"
+      "integration/callout-limits-and-async-patterns",
+      "integration/scheduled-erp-sync-pattern"
     ],
     "queueable-callout": [
       "apex/callout-and-dml-transaction-boundaries"
@@ -11163,6 +11306,9 @@
       "agentforce/data-cloud-grounding-for-agentforce",
       "agentforce/rag-patterns-in-salesforce",
       "architect/ai-ready-data-architecture"
+    ],
+    "raisesplatformevents": [
+      "apex/scheduled-apex-failure-detection-and-monitoring"
     ],
     "range-vs-slab": [
       "admin/pricing-model-design"
@@ -11452,6 +11598,7 @@
     ],
     "reliability": [
       "apex/governor-limit-recovery-patterns",
+      "apex/scheduled-apex-failure-detection-and-monitoring",
       "flow/flow-transaction-finalizer-patterns",
       "integration/error-handling-in-integrations",
       "integration/outbound-webhook-from-salesforce"
@@ -11487,6 +11634,9 @@
       "admin/subscription-lifecycle-requirements",
       "architect/subscription-management-architecture",
       "data/historical-order-migration"
+    ],
+    "rep-enablement": [
+      "agentforce/sales-coach-agent-rollout"
     ],
     "replay": [
       "apex/apex-event-bus-subscriber",
@@ -11730,6 +11880,9 @@
       "admin/delegated-administration",
       "admin/sharing-and-visibility"
     ],
+    "role-play": [
+      "agentforce/sales-coach-agent-rollout"
+    ],
     "roll-up-summary": [
       "data/roll-up-summary-alternatives"
     ],
@@ -11744,11 +11897,17 @@
       "flow/flow-rollback-patterns",
       "omnistudio/omniscript-versioning"
     ],
+    "rollback-plan": [
+      "agentforce/agentforce-production-readiness-checklist"
+    ],
     "rollback-planning": [
       "admin/deployment-risk-assessment"
     ],
     "rollback-safe-logging": [
       "apex/error-handling-framework"
+    ],
+    "rollout-strategy": [
+      "agentforce/agentforce-production-readiness-checklist"
     ],
     "rollup": [
       "admin/financial-account-setup",
@@ -11896,6 +12055,12 @@
       "architect/multi-currency-sales-architecture",
       "architect/sales-cloud-architecture",
       "architect/sales-cloud-integration-patterns"
+    ],
+    "sales-coach": [
+      "agentforce/sales-coach-agent-rollout"
+    ],
+    "sales-coach-agent-rollout": [
+      "agentforce/sales-coach-agent-rollout"
     ],
     "sales-engagement": [
       "admin/sales-engagement-cadences",
@@ -12102,12 +12267,25 @@
     "schedule-triggered": [
       "flow/scheduled-flows"
     ],
+    "schedule-triggered-flow": [
+      "flow/scheduled-flow-not-running-debug"
+    ],
     "scheduled-apex": [
       "apex/apex-scheduled-jobs",
-      "architect/org-limits-monitoring"
+      "architect/org-limits-monitoring",
+      "integration/scheduled-erp-sync-pattern"
+    ],
+    "scheduled-apex-failure-detection-and-monitoring": [
+      "apex/scheduled-apex-failure-detection-and-monitoring"
+    ],
+    "scheduled-erp-sync-pattern": [
+      "integration/scheduled-erp-sync-pattern"
     ],
     "scheduled-flow": [
       "flow/flow-time-based-patterns"
+    ],
+    "scheduled-flow-not-running-debug": [
+      "flow/scheduled-flow-not-running-debug"
     ],
     "scheduled-flows": [
       "flow/scheduled-flows"
@@ -12620,6 +12798,7 @@
       "devops/sfdx-hardis-integration"
     ],
     "sfdx-lwc-jest": [
+      "lwc/lwc-jest-testing-with-accessibility",
       "lwc/lwc-testing"
     ],
     "sfdx-migration": [
@@ -12821,7 +13000,8 @@
       "integration/slack-connect-patterns"
     ],
     "slack-deployment": [
-      "agentforce/agent-channel-deployment"
+      "agentforce/agent-channel-deployment",
+      "agentforce/employee-hr-service-agent-rollout"
     ],
     "slack-integration": [
       "flow/flow-email-and-notifications"
@@ -13354,6 +13534,9 @@
     "team-members": [
       "apex/opportunity-trigger-patterns"
     ],
+    "teams-deployment": [
+      "agentforce/employee-hr-service-agent-rollout"
+    ],
     "tech-debt": [
       "devops/code-coverage-orphan-class-cleanup"
     ],
@@ -13366,6 +13549,9 @@
     ],
     "template-syntax": [
       "lwc/lwc-conditional-rendering"
+    ],
+    "template-versioning": [
+      "admin/lightning-bolt-template-authoring"
     ],
     "templates": [
       "admin/email-templates-and-alerts",
@@ -14021,7 +14207,8 @@
       "apex/visualforce-fundamentals"
     ],
     "view-state": [
-      "apex/visualforce-fundamentals"
+      "apex/visualforce-fundamentals",
+      "security/visualforce-security-and-modernization"
     ],
     "virtual-data": [
       "integration/salesforce-connect-external-objects"
@@ -14056,10 +14243,14 @@
       "apex/quote-pdf-customization",
       "apex/visualforce-fundamentals",
       "lwc/visualforce-to-lwc-migration",
+      "security/visualforce-security-and-modernization",
       "security/xss-and-injection-prevention"
     ],
     "visualforce-email": [
       "admin/classic-email-template-migration"
+    ],
+    "visualforce-security-and-modernization": [
+      "security/visualforce-security-and-modernization"
     ],
     "visualization": [
       "lwc/lwc-chart-and-visualization"
@@ -14095,7 +14286,8 @@
       "integration/automotive-cloud-setup"
     ],
     "watermark": [
-      "integration/mulesoft-salesforce-connector"
+      "integration/mulesoft-salesforce-connector",
+      "integration/scheduled-erp-sync-pattern"
     ],
     "wave": [
       "data/einstein-analytics-data-model"
@@ -14188,6 +14380,9 @@
     ],
     "wire-service": [
       "lwc/wire-service-patterns"
+    ],
+    "wire-service-mock": [
+      "lwc/lwc-jest-testing-with-accessibility"
     ],
     "work-item": [
       "devops/devops-center-advanced",

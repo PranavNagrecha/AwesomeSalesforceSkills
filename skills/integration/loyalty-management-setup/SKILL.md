@@ -33,6 +33,9 @@ triggers:
   - "DPE batch job for loyalty tier reset"
   - "partner loyalty DPE configuration"
   - "loyalty member portal Experience Cloud setup"
+  - "loyalty management cloud program and tier rules"
+  - "set up loyalty program rules tier point accrual"
+  - "configure loyalty management for retail brand"
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha

@@ -12,6 +12,9 @@ triggers:
   - "allow a non-admin to create users and assign profiles in a specific business unit"
   - "set up a regional admin who can only manage users in their own role hierarchy"
   - "delegated administrator cannot see the manage users button after being configured"
+  - "how do I set up a user to receive someone else's emails when they're on vacation"
+  - "out of office email forwarding receive emails on behalf of another user"
+  - "manager needs to handle records for a teammate who is on leave"
 tags:
   - delegated-administration
   - user-management

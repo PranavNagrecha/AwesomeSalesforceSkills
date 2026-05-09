@@ -15,6 +15,9 @@ triggers:
   - "our sender reputation dropped and bounce rates are climbing"
   - "how to suppress hard bounces and inactive subscribers automatically"
   - "difference between inbox placement rate and delivery rate"
+  - "is there a way to throttle outbound emails so we don't trigger spam filters"
+  - "throttle email sending rate to avoid spam filters"
+  - "salesforce sending too many emails too fast deliverability"
 tags:
   - email-deliverability
   - spf

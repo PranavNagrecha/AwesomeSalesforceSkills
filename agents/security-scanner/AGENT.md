@@ -81,6 +81,7 @@ dependencies:
     - security/shield-event-log-retention-strategy
     - security/sso-saml-troubleshooting
     - security/transaction-security-policies
+    - security/visualforce-security-and-modernization
     - security/xss-and-injection-prevention
   shared:
     - AGENT_CONTRACT.md
@@ -209,6 +210,7 @@ Walks a `force-app/` tree and flags CRUD/FLS violations, sharing leaks, hardcode
 72. `templates/apex/HttpClient.cls`
 73. `skills/architect/zero-trust-salesforce-patterns` — frame TSP/RTEM/HA-Session findings as zero-trust composition (which leg the finding belongs to); flag IdentityVerificationEvent / MobileEmailEvent as detect-only
 74. `skills/security/sso-saml-troubleshooting` — SAML response inspection, SSO debugging
+75. `skills/security/visualforce-security-and-modernization` — visualforce security and modernization
 
 ---
 

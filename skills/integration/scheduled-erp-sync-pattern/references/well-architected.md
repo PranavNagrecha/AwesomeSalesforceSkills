@@ -1,0 +1,39 @@
+# Well-Architected Notes — Scheduled ERP Sync Pattern
+
+## Relevant Pillars
+
+- **Reliability** — Scheduled ERP sync is a long-running, distributed-failure-prone surface area. The Reliability pillar shows up in three concrete decisions: (1) idempotent upsert via External ID makes every record retry-safe, (2) the dead-letter custom object preserves failed payloads instead of losing them in debug logs, (3) N-consecutive-cycle alerting catches the silent-failure mode where the integration "runs" every cycle but successfully transmits zero data. Without these three layers the integration *seems* reliable in absence of evidence and only reveals data loss at quarter-end audits.
+- **Performance Efficiency** — Polling is by definition wasteful at low-change times and underprovisioned at high-change times. The Performance Efficiency pillar applies most sharply to the cadence + volume decision in *Concept 4* of `SKILL.md` — picking 15 minutes "because that's what we picked last time" without measuring the actual change rate routinely produces 90% empty cycles. Conversely, picking nightly because it's "simpler" misses business-hour deltas entirely. Measure the change rate; pick cadence with intent. Beyond ~10K records per cycle or sub-minute SLA, the polling pattern is no longer the efficient answer and Bulk API 2.0 / Platform Events / CDC should take over.
+
+## Architectural Tradeoffs
+
+| Tradeoff | Why it matters |
+|---|---|
+| **Scheduled poll vs Change Data Capture (push)** | Polling is operationally simpler and works against any ERP that exposes a `modifiedSince` query, but it always introduces lag (½ × cadence on average) and consumes cycles even when nothing changed. CDC / Platform Events flip both: zero lag, zero idle cycles, but require the *ERP* to support change publication. Choose poll only when CDC is unavailable on the ERP side or when the cadence is genuinely slow (nightly low-volume). |
+| **Scheduled poll vs MuleSoft / iPaaS middleware** | Native scheduled Apex keeps the integration *inside the platform* — easier to deploy via SFDX, no separate license, no separate ops surface. iPaaS adds a layer but provides retries, transformation, and DLQ semantics out of the box. The line: native is correct when there is *one* ERP, simple field mapping, and a Salesforce-only ops team. iPaaS is correct when there are 3+ external systems, complex transformations, or a dedicated integrations team. |
+| **Custom Metadata vs Custom Setting for watermark / config** | Custom Settings store *data* (lost on sandbox refresh, no source-control diff). Custom Metadata stores *metadata* (deployable, source-controlled, survives refresh). The legacy reason teams use Custom Settings — Custom Metadata being read-only at runtime — is no longer true since the Apex Metadata API allows writes. Default to Custom Metadata; fall back to Custom Settings only for very-high-write-rate scenarios where the deploy latency is unacceptable. |
+| **Inline upsert vs staging object + reconciliation** | A direct ERP→live-object upsert is one less object and one less Queueable. It also couples the callout layer to the data-model layer — an ERP outage means no data, *and* a data-model change means re-running the ERP fetch. Staging decouples them: an ERP outage leaves staged data; a mapping bug can be fixed and reconciliation re-run without re-fetching. The cost is one extra object and one extra step. Worth it past the trivial-volume threshold. |
+| **Field mapping in Custom Metadata vs hardcoded vs MuleSoft** | Hardcoded mapping in Apex is the default and the wrong default — every mapping change is a deploy. Custom Metadata Type holding `(SF_Field, ERP_Field, Transform_Class)` rows is cheap, deployable, and lets non-developers (admins) propose mapping changes for review. MuleSoft / DataWeave is the right answer when transformations are non-trivial (date format normalization, currency conversion, multi-source merges) — but introducing it for two-field mappings is over-engineering. |
+| **Bidirectional with last-writer-wins vs explicit conflict resolution** | "Last writer wins" is not a strategy; it is a deferred bug. At quarter-end one side will overwrite a legitimate change made on the other side. Explicit options: (a) ERP is system of record — SF-side writes are queued and only applied if the ERP `LastModifiedDate` is older; (b) Salesforce is system of record — symmetric; (c) field-level lineage tracking (each field has a "last-changed-by-system" custom field). Document the choice in `references/well-architected.md` for the specific implementation, never assume default. |
+
+## Anti-Patterns
+
+1. **No External ID, no idempotency, no upsert** — Inserting fetched records on every cycle creates duplicates the moment any retry or replay happens. The fix is non-negotiable: every staged sObject must have a `Unique` + `External ID` field tied to the ERP-side primary key. If the ERP has no stable PK, the integration cannot be reliably built — escalate to product before writing code.
+2. **Watermark advanced to `Datetime.now()` after cycle completes** — Skips records modified *during* the cycle window. Always capture the watermark at cycle start and persist only after end-to-end success. See Gotcha 5.
+3. **Synchronous callout in trigger / @future scattered everywhere** — Real-time push from a trigger blocks the user transaction on ERP latency, hits the per-transaction callout cap, and bulkification breaks at 100 records. The right pattern is the outbox object + Queueable consumer, or — for genuine real-time need — Platform Events.
+4. **Logging failures only to `System.debug`** — Debug logs are not queryable, are size-capped, and are deleted after 24 hours. They do not survive sandbox refresh. They are not a DLQ. Build the `Integration_DLQ__c` object even on day one.
+5. **No retry exhaustion limit — infinite re-enqueue** — A Queueable that re-enqueues itself unconditionally on failure can hit the 50-job chain depth limit (per documented Queueable limits) and then start failing silently. Always carry a `retryCount` parameter and DLQ when it exceeds 3.
+6. **Picking cadence without measuring change rate** — A 15-minute cadence with 5 changes/hour means 90% of cycles transmit zero records. Measure the actual ERP change rate first; cadence should be tuned to data velocity, not assumed.
+
+## Official Sources Used
+
+- Salesforce Architects — Integration Patterns — https://architect.salesforce.com/docs/architect/fundamentals/guide/integration-patterns.html
+- Apex Developer Guide — Invoking Callouts Using Apex — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts.htm
+- Apex Developer Guide — Named Credentials as Callout Endpoints — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_named_credentials.htm
+- Apex Developer Guide — Using Queueable Apex — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_queueing_jobs.htm
+- Apex Reference — `System.scheduleBatch` — https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_system.htm
+- Apex Developer Guide — Update Custom Metadata Records Using Apex — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_metadata_update.htm
+- Bulk API 2.0 Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/asynch_api_intro.htm
+- Salesforce Well-Architected — Reliability — https://architect.salesforce.com/well-architected/trusted/resilient
+- Salesforce Well-Architected — Performance Efficiency — https://architect.salesforce.com/well-architected/well-managed/intentional
+- Apex Developer Guide — Per-Transaction Apex Limits — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm

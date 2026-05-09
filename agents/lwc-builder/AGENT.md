@@ -55,11 +55,13 @@ dependencies:
     - lwc/lwc-imperative-apex
     - lwc/lwc-in-flow-screens
     - lwc/lwc-internationalization
+    - lwc/lwc-jest-testing-with-accessibility
     - lwc/lwc-lds-writes
     - lwc/lwc-light-dom
     - lwc/lwc-lightning-modal
     - lwc/lwc-lightning-record-forms
     - lwc/lwc-locker-to-lws-migration
+    - lwc/lwc-mobile-offline-and-briefcase
     - lwc/lwc-modal-and-overlay
     - lwc/lwc-navigation-mixin
     - lwc/lwc-offline-and-mobile
@@ -230,6 +232,8 @@ Produces a full Lightning Web Component bundle for a described feature: `.js`, `
 82. `templates/apex/BaseService.cls` — if a controller class is emitted
 83. `templates/apex/SecurityUtils.cls`
 84. `skills/lwc/lwc-reactive-state-patterns` — use post–Spring '20 reactivity rules when generating components; never @track primitives; guard renderedCallback writes
+85. `skills/lwc/lwc-jest-testing-with-accessibility` — lwc jest testing with accessibility
+86. `skills/lwc/lwc-mobile-offline-and-briefcase` — lwc mobile offline and briefcase
 
 ---
 

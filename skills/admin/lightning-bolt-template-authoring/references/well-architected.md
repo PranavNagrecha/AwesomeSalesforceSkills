@@ -1,0 +1,33 @@
+# Well-Architected Notes — Lightning Bolt Template Authoring
+
+## Relevant Pillars
+
+- **Operational Excellence** — A Bolt is a deployable unit that crosses org boundaries. The operational concern is keeping the source-of-truth Bolt definition healthy across versions, ensuring downstream installations can be tracked, and that the dependencies it relies on (managed packages for custom objects, CMS workspaces, data seeding scripts) ship together as one composable shipment unit. The skill's bundled checker exists specifically to catch the dependency drift that breaks Bolts after deploy. Treat Bolt publishing the same way you treat package releases: versioned, audited, and accompanied by a dependency manifest.
+- **Reliability** — The biggest reliability hazard with Bolts is the *fork-at-instantiation* model. Existing target sites do not receive updates from new Bolt versions. Customers / downstream BUs running v1.0 of a Bolt are running it forever unless they manually re-create. This must be designed-around at the architecture stage — what is shipped via Bolt should be the *starter shape* (which doesn't need updates), and what needs updates should ride a managed-package layer with real upgrade semantics. Conflating the two creates a long-tail reliability problem where shipped sites diverge from the source over time and bug fixes require touching every install by hand.
+
+## Architectural Tradeoffs
+
+| Tradeoff | Why it matters |
+|---|---|
+| **Lightning Bolt vs managed package** | Bolt ships *site shape*; managed package ships *behavior*. Choosing the wrong one creates rework. A Bolt cannot carry Apex / custom objects / fields, so a "shipped community with custom CRM extensions" is always Bolt + package, not Bolt alone. A managed package cannot easily ship `ExperienceBundle` content because subscriber-org admins can't customize the site shape after install (managed = locked). Pick by what is being distributed; combine when both are needed. |
+| **Lightning Bolt vs cloning the Experience site** | Cloning works inside one org and is a single click. Bolt works across orgs but adds metadata-API ceremony and dependency planning. If the deliverable never crosses an org boundary, cloning is the right answer. If it does, cloning fails because cross-org metadata doesn't move via the New Site dialog. |
+| **Lightning Bolt vs unlocked package** | Unlocked packages give versioned, upgradable, editable distribution of Apex / fields / objects across orgs you control. They do *not* distribute `ExperienceBundle` cleanly because subscriber-org admins typically need to re-customize the site post-install. For internal multi-org reuse where the site shape will be edited downstream, ship the components via unlocked package and let downstream admins build their own sites — sometimes that's simpler than Bolting. For unmodified-at-install-time sites, Bolt is better. |
+| **Templated branding (Theme defaults) vs full theme override per install** | A Bolt with a strong opinionated `Theme` (specific colors, typography, header layout) makes downstream sites look-and-feel consistent — useful for franchise / multi-tenant reuse. A Bolt with a minimal default theme lets each downstream org brand fully — useful for AppExchange templates where each customer wants their own brand. Decide at design time; switching later forces every downstream install to redo theming. |
+| **One Bolt for many industries vs one Bolt per industry** | Bolts have no parameterization at install time — what is shipped is what gets instantiated. A single "generic" Bolt forces downstream admins to delete/replace pages they don't need. Per-industry Bolts duplicate effort but produce cleaner first-instantiation experiences. The tipping point is usually 4+ industries — at that point per-industry Bolts are easier to maintain than a single Bolt with extensive doc on what to delete per industry. |
+| **AppExchange listing vs direct deploy** | AppExchange gives audit trail, install history, partner-permission gating, and a self-serve install model. Direct deploy is faster for ≤3 known target orgs but has no audit trail and no version-tracking. AppExchange Bolt listings without Apex / custom objects skip security review, so the listing latency is days not weeks. |
+
+## Anti-Patterns
+
+1. **Using a Bolt to ship Apex, custom objects, or fields.** Bolts cannot carry these. Trying to "fit" them into a Bolt by including them in some related metadata bundle either fails at deploy or installs without the dependencies and produces broken sites. The right shape is Bolt + (managed or unlocked) package as a co-shipped pair.
+2. **Treating `versionNumber` as an upgrade promise.** Existing target-org sites are forks; they don't pick up new Bolt versions. Communicating "we'll release v2.0 next quarter and your site will get the updates" is incorrect and erodes trust when the update doesn't happen. Either set expectations correctly or ship behavior changes in a layered managed package.
+3. **Shipping a Bolt with hardcoded source-org URLs and source-org record IDs.** The Bolt deploys, the site instantiates, and runtime behavior breaks because navigation menu items point at URLs that resolve to the *source* org. Audit and replace with relative paths or named-credential references before publishing.
+4. **Skipping the dependency manifest in the Bolt's listing.** The Bolt installs cleanly; the customer's instantiated site shows broken pages because they didn't install the prerequisite managed package, didn't seed the data, or didn't recreate the CMS content. A documented "before you instantiate" checklist on every Bolt listing prevents the worst class of post-install support tickets.
+
+## Official Sources Used
+
+- Salesforce Help — Lightning Bolt Solutions Overview — https://help.salesforce.com/s/articleView?id=sf.communities_lightning_bolt.htm
+- Experience Cloud Developer Guide — Build a Lightning Bolt Solution — https://developer.salesforce.com/docs/atlas.en-us.communities_dev.meta/communities_dev/communities_dev_lightning_bolt_solutions.htm
+- Metadata API Developer Guide — `LightningBolt` metadata reference — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_lightningbolt.htm
+- Metadata API Developer Guide — overall metadata coverage and deploy semantics — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm
+- Salesforce Well-Architected — Operational Excellence — https://architect.salesforce.com/docs/architect/well-architected/guide/operational-excellence.html
+- Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

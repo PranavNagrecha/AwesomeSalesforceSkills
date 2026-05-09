@@ -7619,6 +7619,78 @@
       "domain": "devops",
       "expected_skill": "devops/isv-license-management-and-trialforce",
       "top_k": 3
+    },
+    {
+      "query": "chatter feed full of automated notifications nobody reads how to reduce",
+      "domain": "admin",
+      "expected_skill": "admin/chatter-notification-tuning",
+      "top_k": 3
+    },
+    {
+      "query": "we have hundreds of dead chatter groups how to clean up govern",
+      "domain": "admin",
+      "expected_skill": "admin/chatter-group-governance",
+      "top_k": 3
+    },
+    {
+      "query": "package experience cloud site as lightning bolt template solution",
+      "domain": "admin",
+      "expected_skill": "admin/lightning-bolt-template-authoring",
+      "top_k": 3
+    },
+    {
+      "query": "agentforce production readiness checklist before going live to users",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/agentforce-production-readiness-checklist",
+      "top_k": 3
+    },
+    {
+      "query": "roll out agentforce sales coach agent role play opportunity stages",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/sales-coach-agent-rollout",
+      "top_k": 3
+    },
+    {
+      "query": "agentforce employee hr service agent leave benefits onboarding",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/employee-hr-service-agent-rollout",
+      "top_k": 3
+    },
+    {
+      "query": "lwc jest test accessibility a11y aria axe-core",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-jest-testing-with-accessibility",
+      "top_k": 3
+    },
+    {
+      "query": "lwc mobile offline briefcase builder field service technician",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-mobile-offline-and-briefcase",
+      "top_k": 3
+    },
+    {
+      "query": "scheduled apex job failed silently no email notification monitor",
+      "domain": "apex",
+      "expected_skill": "apex/scheduled-apex-failure-detection-and-monitoring",
+      "top_k": 3
+    },
+    {
+      "query": "scheduled flow not running monday 6am cron debug",
+      "domain": "flow",
+      "expected_skill": "flow/scheduled-flow-not-running-debug",
+      "top_k": 3
+    },
+    {
+      "query": "integration scheduled sync oracle sap netsuite erp 15 minute",
+      "domain": "integration",
+      "expected_skill": "integration/scheduled-erp-sync-pattern",
+      "top_k": 3
+    },
+    {
+      "query": "visualforce security CSRF view state FLS legacy modernize",
+      "domain": "security",
+      "expected_skill": "security/visualforce-security-and-modernization",
+      "top_k": 3
     }
   ]
 }

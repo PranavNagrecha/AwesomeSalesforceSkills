@@ -28,6 +28,9 @@ triggers:
   - "my batch is stuck"
   - "platform event not firing"
   - "managed package trace (TracRTC, DLRS, CPQ, Vlocity, nCino, EDA, etc.)"
+  - "test class fails with INVALID_FIELD even though field exists in production"
+  - "test passes in sandbox but fails on production deployment"
+  - "deployment INVALID_FIELD test class debug"
 inputs:
   - "one or more captured .log files (apex-*.log, Dev Console export, CLI tail)"
   - "the user's symptom or question (field change, failure, performance, access)"

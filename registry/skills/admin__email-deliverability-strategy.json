@@ -101,7 +101,7 @@
     "f28b3efc75ab8d609624",
     "f5160fb0d4c2104e147a"
   ],
-  "content_hash": "87ad4d6f54fed3cc379d8ba209a6ea359689a9f5ec9bf5e4516f9b94f2ad8c8d",
+  "content_hash": "3b2c11ada1173ea0aa64fb1ccea28757b895c0abd08b5a91341b6cd60cb8e6db",
   "dependencies": [],
   "description": "Use this skill when configuring or troubleshooting email deliverability for Marketing Cloud or Salesforce orgs: sender authentication (SPF, DKIM, DMARC), private sending domain setup, dedicated IP warm-up, list hygiene practices, and sender reputation monitoring. NOT for email template design, HTML/CSS email coding, or Journey Builder message configuration.",
   "file_location": "skills/admin/email-deliverability-strategy",

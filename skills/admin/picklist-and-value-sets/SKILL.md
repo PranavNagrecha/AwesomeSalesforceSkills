@@ -20,6 +20,11 @@ triggers:
   - "what is the difference between a global value set and an object-local picklist"
   - "how do I deactivate a picklist value without losing historical data"
   - "users can still see deactivated picklist values on old records"
+  - "we have hundreds of picklist values and reps keep typing random ones"
+  - "picklist sprawl picklist value cleanup picklist governance"
+  - "data quality issues on picklist field with too many values"
+  - "consolidate or rationalize picklist values across objects"
+  - "duplicate or near-duplicate picklist values cluttering reports"
 inputs:
   - "Object and field names for the picklist field(s) involved"
   - "Whether values need to be shared across multiple objects or are object-specific"
