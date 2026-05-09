@@ -13,6 +13,7 @@ triggers:
   - "what HTTP method should I use to update main XMD versus system XMD in CRM Analytics"
   - "can I use SOQL to read WaveXmd metadata from a CRM Analytics dataset"
   - "how do I back up the current XMD before making changes to a CRM Analytics dataset"
+  - "PATCH main XMD CRM Analytics REST API field formatting overwriting"
 tags:
   - crm-analytics
   - xmd

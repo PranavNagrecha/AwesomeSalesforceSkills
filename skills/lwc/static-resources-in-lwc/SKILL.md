@@ -18,6 +18,7 @@ triggers:
   - "path inside zipped static resource in lwc"
   - "third party javascript library in salesforce"
   - "static resource versioning strategy"
+  - "resourceUrl loadScript static resource salesforce lwc"
 inputs:
   - "which library or asset is being loaded and whether it is zipped"
   - "whether the resource is JavaScript, CSS, images, fonts, or a mixed asset pack"

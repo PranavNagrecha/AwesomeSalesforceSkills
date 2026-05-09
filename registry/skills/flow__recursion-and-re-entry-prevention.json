@@ -68,7 +68,7 @@
     "f7d622f8d98e1783e85d",
     "fda3b4c08494ebb6c58d"
   ],
-  "content_hash": "dfe8cd144cecd947da892e656f99b24010ec85dadd8399e816896225c19cb985",
+  "content_hash": "48a8fd86f73ec141fc02f0e9aa420eb905d0fcf5334067639657486605a1c031",
   "dependencies": [],
   "description": "Use when a record-triggered Flow re-fires on the same record because its own DML (or a downstream Flow's DML) re-satisfies the entry criteria \u2014 causing CPU-limit failures, duplicated side effects, or 'Maximum Trigger Depth Exceeded' errors. Triggers: 'flow infinite loop', 'flow re-firing on same record', 'flow updates field then runs again', 'flow A and flow B keep updating each other', 'maximum trigger depth exceeded record-triggered flow', 'flow recursion limit hit'. NOT for Apex trigger recursion (use apex/recursive-trigger-prevention) or for Loop element design inside a single Flow run (use flow/flow-loop-element-patterns).",
   "file_location": "skills/flow/recursion-and-re-entry-prevention",

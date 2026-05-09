@@ -13,6 +13,7 @@ triggers:
   - "schema getsobjecttype dynamic apex"
   - "describe record type apex metadata"
   - "apex schema cache static final pattern"
+  - "schema getGlobalDescribe loop hot path CPU describe"
 tags:
   - schema
   - describe

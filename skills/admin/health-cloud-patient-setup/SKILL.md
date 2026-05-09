@@ -30,6 +30,7 @@ triggers:
   - "customize patient card component clinical data"
   - "enable person accounts for Health Cloud patients"
   - "health cloud patient record type setup"
+  - "Health Cloud patient setup care plan clinical data"
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha

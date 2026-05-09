@@ -13,6 +13,7 @@ triggers:
   - "How do I use Profiles to grade prospects by job title, industry, and company size in MCAE"
   - "How do I create an automation rule to assign a lead to Sales when score reaches 100 and grade is B or above"
   - "What is the difference between a completion action and an automation rule for score-based lead routing"
+  - "Pardot score decay automation rule MQL threshold configuration"
 tags:
   - mcae
   - pardot

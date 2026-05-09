@@ -20,6 +20,7 @@ triggers:
   - "typeof where clause syntax soql"
   - "polymorphic id type filter what.type"
   - "apex query all attachments across object types"
+  - "soql typeof polymorphic what who task query"
 inputs:
   - Polymorphic field and its possible target objects
   - Fields needed per target type

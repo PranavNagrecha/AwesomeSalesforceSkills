@@ -11,6 +11,7 @@ triggers:
   - "How do I auto-complete a CaseMilestone from an Apex trigger when a case status changes?"
   - "CaseMilestone.IsCompleted is read-only — how do I mark a milestone as complete in Apex?"
   - "How do I detect and react to SLA milestone violations in Apex without a native callback?"
+  - "auto complete case milestone apex CompletionDate IsViolated hooks"
 tags:
   - entitlements
   - milestones

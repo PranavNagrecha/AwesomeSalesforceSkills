@@ -73,7 +73,7 @@
     "fe9b1dfcb4b173bf64f5",
     "fff9c73a3da1576a9a45"
   ],
-  "content_hash": "418f5b58679088ab0014a8513ecfb44abfaacbb870cd1415bb547f526a897b34",
+  "content_hash": "8d2bedd73285b7dbff13e719ab78aa27099bd0e83f1f579186af00c569e5a780",
   "dependencies": [],
   "description": "Fault-path design and error notification for Salesforce Flow \u2014 what the default unhandled-fault email contains, when to add a Fault path explicitly, how `$Flow.FaultMessage` works, and how to route errors to a real notification channel (email alert, Apex-published Platform Event, custom log object) instead of relying on the org-default 'apex exception email recipient'. Covers the ordering rule (Fault path on every callout / DML / record-create-or-update), the difference between a screen-flow user-visible error and a record-triggered-flow silent failure, and how to suppress noisy expected-rejection paths. NOT for the basic 'how do I add a Fault connector' (use Salesforce help), NOT for Apex-trigger errors (different runtime, see apex/apex-exception-handling).",
   "file_location": "skills/flow/flow-error-notification-patterns",

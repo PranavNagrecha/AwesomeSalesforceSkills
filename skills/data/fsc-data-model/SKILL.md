@@ -10,6 +10,7 @@ triggers:
   - "How do I query financial account data in FSC and which namespace do my objects use?"
   - "Why are household financial totals not updating after I added a new financial account?"
   - "How does FSC model the relationship between a client and their household, and which objects are involved?"
+  - "FSC data model FinServ namespace FinancialAccount FinancialHolding rollup objects"
 tags:
   - fsc
   - data-model

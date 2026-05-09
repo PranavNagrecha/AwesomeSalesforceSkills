@@ -20,6 +20,7 @@ triggers:
   - "flow picklist choice set dynamic from record"
   - "flow formula resource reuse versus assignment"
   - "flow sobject variable null initialization"
+  - "flow record choice set dynamic picklist choice collection"
 inputs:
   - Flow type (screen, record-triggered, autolaunched)
   - Data you need to hold, compute, or render

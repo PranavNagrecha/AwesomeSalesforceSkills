@@ -19,6 +19,7 @@ triggers:
   - "hierarchical relationship on user object use case"
   - "polymorphic lookup field like task.whatid"
   - "relationship field limit 40 per object and 5 levels of soql"
+  - "master detail vs lookup relationship design tradeoffs"
 inputs:
   - Parent and child objects under design
   - Ownership and sharing requirements

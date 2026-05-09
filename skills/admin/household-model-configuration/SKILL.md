@@ -12,6 +12,7 @@ triggers:
   - "AccountContactRelation setup with FinServ__PrimaryGroup__c and FinServ__IncludeInGroup__c not working"
   - "FSC household model versus NPSP household model — which fields and objects to use"
   - "Rollups picklist values missing for Cases or Insurance Policies in existing FSC org"
+  - "FinServ__PrimaryGroup__c FinServ__IncludeInGroup__c AccountContactRelation household membership setup"
 tags:
   - financial-services-cloud
   - fsc

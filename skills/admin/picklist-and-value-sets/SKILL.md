@@ -25,6 +25,7 @@ triggers:
   - "data quality issues on picklist field with too many values"
   - "consolidate or rationalize picklist values across objects"
   - "duplicate or near-duplicate picklist values cluttering reports"
+  - "dependent picklist controlling field setup"
 inputs:
   - "Object and field names for the picklist field(s) involved"
   - "Whether values need to be shared across multiple objects or are object-specific"

@@ -10,6 +10,7 @@ triggers:
   - "soql parent to child subquery apex getSObjects iterate related records"
   - "relationship query dot notation child to parent five levels deep"
   - "polymorphic TYPEOF WhatId WhoId Task Event SOQL query"
+  - "TYPEOF WhatId WhoId polymorphic lookup Task Event SOQL"
 tags:
   - soql
   - relationship-queries

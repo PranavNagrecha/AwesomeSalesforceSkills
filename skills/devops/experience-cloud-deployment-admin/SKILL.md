@@ -14,6 +14,7 @@ triggers:
   - "The deployed site is unpublished and I cannot see it live after deployment"
   - "Enable Experience Bundle Metadata API checkbox must be checked before deploying"
   - "Network or CustomSite metadata missing from my deployment package"
+  - "how to deploy Experience Cloud site to production environment"
 tags:
   - experience-cloud
   - deployment

@@ -15,6 +15,7 @@ triggers:
   - "how do product schedules work and how do I enable them"
   - "I deactivated a product but existing opportunities still show it"
   - "can I delete a custom pricebook that is referenced by open opportunities"
+  - "set up standard pricebook custom pricebook product catalog"
 tags:
   - products
   - pricebooks

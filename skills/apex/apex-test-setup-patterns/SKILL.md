@@ -19,6 +19,7 @@ triggers:
   - "@testvisible private field apex test access"
   - "system.runas mixed dml setup vs hierarchy"
   - "testsetup fails test class aborts all tests"
+  - "testvisible runas mixed dml workaround apex test"
 inputs:
   - Test class objective
   - Shared data volume per test method

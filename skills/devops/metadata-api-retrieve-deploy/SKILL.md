@@ -19,6 +19,7 @@ triggers:
   - "rollbackonerror false partial deploy risk"
   - "metadata api ci pipeline authentication"
   - "package.xml wildcards vs explicit members"
+  - "package.xml destructivechanges pre post salesforce"
 inputs:
   - Source org auth alias
   - Target org auth alias

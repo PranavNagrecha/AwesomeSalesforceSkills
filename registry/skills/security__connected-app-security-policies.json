@@ -69,7 +69,7 @@
     "fa68fdfc1f1a9f39a795",
     "fb6da3883dc478bc23ca"
   ],
-  "content_hash": "5747a24aa611fbec9bde503edd9150ea3ad200bca80469155922ce4c531de5d1",
+  "content_hash": "3fd586e950003b8720c8f951a87ef0f091c1a1622715b0a840153f28f823fa4d",
   "dependencies": [],
   "description": "Managing OAuth policies, IP relaxation, session security, PKCE, and credential rotation for Salesforce Connected Apps. Use when hardening Connected App security, rotating client secrets, configuring IP restrictions, or requiring high-assurance sessions. NOT for basic Connected App setup or creation. NOT for OAuth flow implementation (use oauth-flows-and-connected-apps).",
   "file_location": "skills/security/connected-app-security-policies",

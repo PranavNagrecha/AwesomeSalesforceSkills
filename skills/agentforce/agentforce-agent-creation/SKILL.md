@@ -14,6 +14,7 @@ triggers:
   - "how do I assign an agent to a messaging channel or embedded service deployment"
   - "agent was deployed to production but is not active"
   - "what is the difference between Draft Active and Inactive agent states"
+  - "create agentforce agent deployment"
 tags:
   - agentforce
   - agent-creation

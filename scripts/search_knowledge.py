@@ -28,6 +28,13 @@ from pipelines.lexical_index import search_index
 from pipelines.ranking import aggregate_skill_scores, collect_official_sources, rerank_results
 from pipelines.sync_engine import load_retrieval_config
 
+# NOTE: scripts/query_enrichment.py is committed but NOT wired into run_search.
+# Bidirectional vocabulary expansion caused a -5% Hit@1 regression on the
+# author-curated baseline (over-expansion dilutes the precise keywords authors
+# pick). The module stays available for ad-hoc CLI use and future targeted
+# experiments (e.g. ABBREV→long expansion only, with score-boost rather than
+# token-stream concatenation). See evals/measurement/findings.md.
+
 
 def load_chunks(path: Path) -> dict[str, dict]:
     chunks: dict[str, dict] = {}

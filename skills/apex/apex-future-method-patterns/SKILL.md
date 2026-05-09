@@ -19,6 +19,7 @@ triggers:
   - "future method monitoring and error handling"
   - "50 future method limit per transaction hit"
   - "when to use future vs queueable apex"
+  - "future method cannot chain no sobject parameter"
 inputs:
   - Current sync code needing async offload
   - Operation type (callout, DML, computation)

@@ -28,6 +28,7 @@ triggers:
   - change set upload stuck or failed
   - validate change set before deploying
   - inbound change set not showing up in target org
+  - "how do I deploy a change set to production and avoid missing dependencies"
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha

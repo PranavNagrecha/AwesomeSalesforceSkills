@@ -12,6 +12,7 @@ triggers:
   - "how many batch jobs can run at the same time in a Salesforce org"
   - "scheduled Apex job is not firing at the expected time"
   - "how to get notified when a batch job fails"
+  - "how do I check if my batch Apex job is stuck or failed"
 tags:
   - batch-apex
   - scheduled-jobs

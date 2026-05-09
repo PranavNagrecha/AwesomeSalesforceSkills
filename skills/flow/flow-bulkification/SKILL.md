@@ -19,6 +19,7 @@ triggers:
   - "record triggered flow hitting governor limits"
   - "how do I bulkify a flow for 200 records"
   - "after save flow creates too many updates"
+  - "flow bulkification collection update import"
 inputs:
   - "flow type and trigger context"
   - "expected record volume per transaction or schedule"

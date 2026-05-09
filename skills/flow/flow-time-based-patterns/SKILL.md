@@ -13,6 +13,7 @@ triggers:
   - "workflow rule time based action migration to flow"
   - "flow scheduled path time zone confusion"
   - "scheduled path record changed cancel reschedule"
+  - "flow scheduled path record triggered delay reminder"
 tags:
   - flow
   - scheduled-path

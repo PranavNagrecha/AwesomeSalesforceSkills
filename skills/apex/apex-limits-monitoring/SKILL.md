@@ -13,6 +13,7 @@ triggers:
   - "how to avoid System.LimitException in Apex"
   - "Queueable re-queue when approaching CPU limit"
   - "batch scope sizing based on limit consumption"
+  - "Limits.getQueries getDmlRows getCpuTime approaching ceiling alert"
 tags:
   - apex-limits
   - governor-limits

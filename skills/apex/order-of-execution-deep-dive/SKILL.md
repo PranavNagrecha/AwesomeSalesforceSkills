@@ -12,6 +12,7 @@ triggers:
   - "workflow field update causing infinite trigger loop"
   - "before-save flow vs before trigger which runs first"
   - "order of execution for apex triggers and flows"
+  - "what is the Salesforce order of execution for triggers and flows"
 tags:
   - order-of-execution
   - triggers

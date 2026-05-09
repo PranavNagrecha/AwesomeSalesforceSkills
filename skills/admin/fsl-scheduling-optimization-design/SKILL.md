@@ -15,6 +15,7 @@ triggers:
   - "should I use aerial travel mode or street-level routing for field service optimization"
   - "optimizer is treating high-priority work orders the same as low-priority appointments"
   - "how to configure the FSL optimizer to minimize travel time across all scheduled appointments"
+  - "FSL scheduling optimization design architecture service objectives travel time SLA"
 tags:
   - field-service
   - fsl

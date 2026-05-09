@@ -12,6 +12,7 @@ triggers:
   - "How do I paginate through query job results using the Sforce-Locator header?"
   - "What is the difference between Bulk API 2.0 and legacy Bulk API v1 — when should I use each?"
   - "How do I perform a hard delete with Bulk API to bypass the Recycle Bin?"
+  - "how to load millions of records using Bulk API 2.0 ingest job"
 tags:
   - bulk-api
   - bulk-api-2

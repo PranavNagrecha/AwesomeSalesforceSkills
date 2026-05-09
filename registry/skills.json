@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 48
   },
-  "generated_from_hash": "c2dcefbd2951ff04f97dfe59a610511451cf4b7bc0b558725e90ee91a833063c",
+  "generated_from_hash": "66c47d68c543f986508544c893d304a654be93fe9cf9ac71946aab8df51e0177",
   "schema_version": 1,
   "skill_count": 994,
   "skills": [
@@ -225,7 +225,7 @@
         "f670e8efd186ea2a9538",
         "faa974c676eb235b421a"
       ],
-      "content_hash": "0b30a349c1b4c3e72cfce63d525a33895d7c16a8903caea41e3c24e410a35b04",
+      "content_hash": "5941604d14d8c470939191ff4790cfec1c89028d6dc87426833f11cd7f4633f8",
       "dependencies": [],
       "description": "Task and Event objects: polymorphic WhatId/WhoId, Activity object model, ActivityHistory vs OpenActivity, activity timeline customization, bulk task creation, Einstein Activity Capture boundaries. NOT for Calendar sharing (use calendar-sharing-setup). NOT for Email-to-Case (use case-management-setup).",
       "file_location": "skills/admin/activity-and-task-patterns",
@@ -2049,7 +2049,7 @@
         "fc6fa332421d3713d08f",
         "ff80eeedac1191af0ee9"
       ],
-      "content_hash": "209f21b167e3df8cef143d11a163c05b47751edb8ef335ae94b075dba9821c02",
+      "content_hash": "9b99dc536c7b27e5f620e4adc4a9f80e4e98029721c3c0c5cd7a7f4285e01e95",
       "dependencies": [],
       "description": "Use this skill when configuring CRM Analytics (formerly Einstein Analytics) app sharing, dataset-level permissions, row-level security predicates, sharing inheritance, or license assignment. Trigger keywords: CRM Analytics security, row-level security predicate, dataset permissions, analytics sharing inheritance, Analytics Plus license. NOT for standard Salesforce OWD/sharing rules, profile-based record access, or non-Analytics report folder sharing.",
       "file_location": "skills/admin/analytics-permission-and-sharing",
@@ -3417,7 +3417,7 @@
         "fc70dd6b6694f67578df",
         "ffdfb99abb368c9c4126"
       ],
-      "content_hash": "e2343c3f7d2f596aee3bbc2d437f258132c4974d2fd01ab5b84326e779280370",
+      "content_hash": "735d977b69942baa41640b9cf7e6616098eb9f4937793350e5dbec3ade6c381e",
       "dependencies": [],
       "description": "Use when monitoring, diagnosing, or managing Batch Apex, Scheduled Apex, Queueable, and Flow scheduled jobs: Setup > Apex Jobs, AsyncApexJob queries, concurrent limits, failure detection, and notification patterns. NOT for writing batch Apex code (use batch-apex-patterns) or writing Schedulable implementations (use apex-scheduled-jobs).",
       "file_location": "skills/admin/batch-job-scheduling-and-monitoring",
@@ -4253,7 +4253,7 @@
         "fe06afd210fe1add5844",
         "fff173fc428279281dea"
       ],
-      "content_hash": "22ebe76c084c34d99974955c97a912f9236b14abbbab96507ce58c2f9e212051",
+      "content_hash": "9d383f9549486e69824ab34be4ad18a3d279d838e57382b6718929036b71debc",
       "dependencies": [],
       "description": "Configuring Salesforce case management: case queues, assignment rules, escalation rules, auto-response rules, Email-to-Case, Web-to-Case, case teams, entitlements, and milestones. Use when setting up or troubleshooting the Service Cloud case handling layer. Trigger keywords: email-to-case, web-to-case, escalation rules, case teams, entitlements, milestones, auto-response, case queue. NOT for case assignment rule logic only (use assignment-rules skill). NOT for Omni-Channel routing (use omni-channel-routing-setup). NOT for CTI or telephony integration.",
       "file_location": "skills/admin/case-management-setup",
@@ -7793,7 +7793,7 @@
         "fde3c7281b8c36a104ce",
         "fdfac1a4ee1225553e54"
       ],
-      "content_hash": "52016f8aa3bb60de2c451f38c2a546926606763a09e1631bc151b421532774d0",
+      "content_hash": "c16bcc36d7b1a5589ff32a16f84dbee74778060d09ed5539c60997a61b38004e",
       "dependencies": [
         "cpq-pricing-rules",
         "cpq-product-catalog-setup"
@@ -8450,7 +8450,7 @@
         "fb5cc9b5dc5e64ff3e3d",
         "fc6e8f23c17f1251008e"
       ],
-      "content_hash": "b0e42c37d44505f0643fefd55afe20ed57d03278c4db1e1f27cd37845369b2fc",
+      "content_hash": "953820cd58ee60f1eae8af6101c54b03b974df108e83c64d8db9a6724c46288f",
       "dependencies": [
         "products-and-pricebooks"
       ],
@@ -9568,7 +9568,7 @@
         "f8c02da209f4da34426a",
         "f9c6dc4d7dc373c007a2"
       ],
-      "content_hash": "ef19289c5ec269815a5ad338278a112eecebcaf89718f2b4e00627fc45e0abcd",
+      "content_hash": "265d1a745676bc3e77a8c1f165819d55df82a0aea66606a1f37a68eb9ec39ee1",
       "dependencies": [],
       "description": "Custom Notification Types for desktop/mobile push alerts from Flow or Apex: type creation, target channels, Messaging.CustomNotification invocation, recipient limits, bulk notification patterns. NOT for email alerts (use email-templates-and-alerts). NOT for in-app bell notifications alone (use chatter-feed-customization).",
       "file_location": "skills/admin/custom-notification-types",
@@ -11793,7 +11793,7 @@
         "f55a764dc0d633bce59f",
         "f701273e8a68945df432"
       ],
-      "content_hash": "9268a3c4b8dfb1c9db946fc3c18b493b0e4de0c298bc39f6fb41216985cb3d6e",
+      "content_hash": "3180fa9248631ddb398cc552b1654175a6cc382abec080b9e20e49b29a0502f4",
       "dependencies": [
         "record-types-and-page-layouts"
       ],
@@ -15249,7 +15249,7 @@
         "f242d4abd82ed0b3840e",
         "fe065148c65b3322bc8a"
       ],
-      "content_hash": "1af30910ab3ce4c10afdb4605da7ab19a2e56b519ae33153381746aa1105183c",
+      "content_hash": "43931777d2f99f8399feab83ab24236f363ab1d989ead19288fd0ca96b9085d2",
       "dependencies": [],
       "description": "Use when designing, reviewing, or debugging Salesforce Flows from an Admin perspective. Triggers: 'flow', 'automation', 'record-triggered flow', 'screen flow', 'scheduled flow', 'flow error', 'flow interview'. NOT for OmniStudio OmniScripts \u2014 use omnistudio/ skills for that.",
       "file_location": "skills/admin/flow-for-admins",
@@ -16652,7 +16652,7 @@
         "fd81065edd5d27f8cd27",
         "fe3148a7cd5b3a5812fd"
       ],
-      "content_hash": "36b278fba20163d3eb7e76a0900728678b6a9813cd0bcfa1f9d59ba741f546c0",
+      "content_hash": "e9ade420d2ab701e863667698e7621104ea9031e93a2dfb038b1e83d463672c5",
       "dependencies": [],
       "description": "Use this skill to configure Field Service Lightning service resources \u2014 including ServiceResource types, skill assignments via ServiceResourceSkill, capacity-based resource setup, and ResourcePreference rules. NOT for service territory setup (see fsl-service-territory-setup), NOT for scheduling policy configuration, and NOT for FSL mobile app setup.",
       "file_location": "skills/admin/fsl-resource-management",
@@ -16822,7 +16822,7 @@
         "fafbd08c7891e67cabee",
         "fe6efa1a52617d31f986"
       ],
-      "content_hash": "207f6ab19fde0d56f96bb8d8dba1ce06d0fe7a1ffe125747b1170d6ca1e13c68",
+      "content_hash": "9bba88da4f93343ea75bc352a90d10b44069c67f802d73bb92ef2f6961e77f1c",
       "dependencies": [
         "fsl-scheduling-policies"
       ],
@@ -17540,7 +17540,7 @@
         "f8edf616619935bca492",
         "fa62d21faa4658288acb"
       ],
-      "content_hash": "84ab677be80a96eac666b1499c7121fb9c591083c124d5759ff5cb09f5292b08",
+      "content_hash": "c0b5b593347d7ee1ad9781e5770f4c14f66d393dab8d2a6883e82b1ed43ebd27",
       "dependencies": [],
       "description": "Configure and manage Field Service Lightning work orders: work types, work order line items, service appointments, status flow, and auto-creation via maintenance plans. NOT for case management, resource scheduling optimization, or dispatcher console configuration.",
       "file_location": "skills/admin/fsl-work-order-management",
@@ -18373,7 +18373,7 @@
         "fc147183b91194eec557",
         "ff755def8d586935667b"
       ],
-      "content_hash": "0646b0624105b7b4bc76a613afe4f41c06ba96dba3deccc04d8c0193cc3822fe",
+      "content_hash": "e41ffade25f39ea16f5259a0e0f529aae161049aa49961c3d4d9033153c3594a",
       "dependencies": [],
       "description": "Use this skill when configuring patient or member records in Salesforce Health Cloud \u2014 including Person Account enablement, Health Cloud patient record type creation, care team role configuration, patient card customization, and clinical data display. Trigger keywords: patient setup, Health Cloud person account, patient card component, care team roles, clinical data display. NOT for standard account setup, general CRM contact configuration, or non-Health-Cloud person account questions.",
       "file_location": "skills/admin/health-cloud-patient-setup",
@@ -18784,7 +18784,7 @@
         "fc92f1336a8f0f95f580",
         "fde40fce4a5052e74f81"
       ],
-      "content_hash": "1768c580b5010b0f43fcf3e20292d424abad116b5df40993da31c8dec53971d1",
+      "content_hash": "7022f80c65a619a12201c3e864c7e8d7b631ea7e5b77f593af5be4cc20f4f604",
       "dependencies": [
         "admin/financial-account-setup",
         "admin/person-accounts"
@@ -19687,7 +19687,7 @@
         "ec93208ebfa8a72c8b89",
         "ed709e4ad0c9a64fa890"
       ],
-      "content_hash": "69d94db1642e00897d9faca538798931fd4df5ee32eff3e690810c6390c5925e",
+      "content_hash": "f85aafa7ed28f280bad25bc1452729f68c6f98e46eb3dfbd519dbd04bedb850b",
       "dependencies": [],
       "description": "Public Sector Solutions (PSS) setup: licensing, permits, inspections, benefits, case management for government, citizen portals, and grant management. NOT for standard Service Cloud case management (use service-cloud-core-setup). NOT for generic Experience Cloud portals (use experience-cloud-site-setup).",
       "file_location": "skills/admin/industries-public-sector-setup",
@@ -21688,7 +21688,7 @@
         "fd86ed68e442da884f55",
         "ffc0e6a3f9be31daafd0"
       ],
-      "content_hash": "3e59aea7283c21d4b950ba88fdb076c10aba8a97884ef2600acfa9ba5ee0be9c",
+      "content_hash": "f1701162cceaa653b17a1a0fcd2bb0d16180b2e62b7c2dc89aed220b53cdad25",
       "dependencies": [],
       "description": "Designing Lookup vs Master-Detail vs Hierarchical vs External relationships: cascade delete, roll-up summaries, ownership, sharing implications, polymorphic lookups, relationship depth limits. NOT for record-type strategy (use data-model-design-patterns). NOT for junction object patterns (use many-to-many-relationships).",
       "file_location": "skills/admin/lookup-and-relationship-design",
@@ -22677,7 +22677,7 @@
         "fdf1dab8b4c81420ffaa",
         "fe2ddd2b10a6f39d233f"
       ],
-      "content_hash": "53be87c88ae66d2835284d1e5dfe19a23e43e52e47bee2c2631c7c26c4caa3e8",
+      "content_hash": "b7cd7cfc95b8f50fc69070e5f3ddef31bf66c58b052a8029fa7f52ea6753fb26",
       "dependencies": [
         "mcae-pardot-setup"
       ],
@@ -24277,7 +24277,7 @@
         "f968d4848399a9a0c5de",
         "f9c83c92ceb47815d4fe"
       ],
-      "content_hash": "bb23a1d35dc9a600d93a5fd38331efc07ea9c3259724ae5e12adee0514ed4482",
+      "content_hash": "bc9319a32953c416ba90cf36c1a5e42cb2b408e92c4c865936246a31e36f0ed2",
       "dependencies": [],
       "description": "Use this skill to gather, document, and validate OmniScript flow design requirements before development begins \u2014 covering screen layout requirements, branching logic, data source requirements, and user journey mapping. Trigger keywords: OmniScript requirements, OmniScript BA, OmniScript screen design, OmniScript user journey, OmniScript branching requirements. NOT for OmniScript development implementation, DataRaptor mapping, Integration Procedure design, or standard Screen Flow requirements.",
       "file_location": "skills/admin/omniscript-flow-design-requirements",
@@ -25952,7 +25952,7 @@
         "fc2fa3ce866d5cdc7b35",
         "fc8a6d4a575b59c9f2f1"
       ],
-      "content_hash": "1d7e1b7a217f1a1375b24477e38ab278bcd714de8120ffd6dc340577c2f301cd",
+      "content_hash": "d2778c841c14bc78c9c2b1767022ac9ffd7a19940c53441b9ce081f11d61b6a1",
       "dependencies": [],
       "description": "Use when creating or managing picklist fields: choosing between Global Value Sets and object-local picklists, configuring controlling and dependent field relationships, managing picklist values, and replacing values in existing data records. NOT for formula fields that reference picklists (use formula-fields), NOT for record type picklist filtering (use record-types-and-page-layouts), NOT for picklist fields in Flow (use the appropriate flow skill).",
       "file_location": "skills/admin/picklist-and-value-sets",
@@ -27074,7 +27074,7 @@
         "fdb8b550e8ca39de1a75",
         "fea005c622a9f121bc60"
       ],
-      "content_hash": "4c7688023036629192b1e0ca1e74e91142330ba2d8691c07ee22678500e1aac5",
+      "content_hash": "0af85775c428c55caea788714c45319095c1186fb537902bea7adb3d901bf486",
       "dependencies": [],
       "description": "Use when configuring the Salesforce product catalog and pricing structure: creating Product2 records, setting up Standard and custom Pricebooks, managing PricebookEntry junction records, enabling multi-currency pricing, configuring Product Schedules (Revenue and Quantity), or troubleshooting incorrect prices on Opportunity line items and Quotes. Triggers: 'add product to pricebook', 'pricebook entry', 'standard pricebook', 'product catalog', 'multi-currency product pricing', 'product schedule', 'revenue schedule', 'quantity schedule', 'deactivate product'. NOT for CPQ (Salesforce Revenue Cloud / SBQQ) product configuration, CPQ pricing rules, or CPQ bundle setup. NOT for Quote template layout or PDF generation.",
       "file_location": "skills/admin/products-and-pricebooks",
@@ -27977,7 +27977,7 @@
         "f9e42dcae312b184d29c",
         "fbc7d92c22ceddc483dd"
       ],
-      "content_hash": "a294788f3269e8b432f7459a0617230919e3a0074037b348902df6019615987f",
+      "content_hash": "173cd86898decfa8d8f946abac38bda3aac2cb08f3cb026930c7d5a4f349cc21",
       "dependencies": [],
       "description": "RecordType ID differences across orgs: dynamic lookup via Schema.SObjectType methods, DeveloperName for stable refs, hard-coded ID anti-patterns, record-type caching, deployment impact. NOT for record-type strategy or when to use record types (use admin-foundation or data-model-design).",
       "file_location": "skills/admin/record-type-id-management",
@@ -28941,7 +28941,7 @@
         "f46c232a213e8aeceb4c",
         "f4c0f883b700d95b47a9"
       ],
-      "content_hash": "2a59712f8548ffd172792a6a3dd9ca19ba9a8e875311ca6fb506409c98ea8d05",
+      "content_hash": "5efe01cae2c565d6e6a505e9a322d953013019133a121bb658be3d1c64b9a3e1",
       "dependencies": [],
       "description": "Use when building, auditing, or troubleshooting Salesforce Reports and Dashboards. Triggers: 'report', 'dashboard', 'missing data in report', 'pipeline report', 'cross-filter', 'report subscription', 'dashboard refresh'. NOT for Einstein Analytics / CRM Analytics \u2014 separate skill needed for that.",
       "file_location": "skills/admin/reports-and-dashboards",
@@ -29104,7 +29104,7 @@
         "fd315f4b1dc3ab6016e8",
         "ff6b3081f317a7ef462c"
       ],
-      "content_hash": "cc73982f366374cf113ee854c59d1abcad84a8f3942cf99714ba22ef88592b34",
+      "content_hash": "d54b5a4de8fabd445dc54d2d5c798062bc0ecc0c29d543132c3db33b1064c6b6",
       "dependencies": [],
       "description": "Use when learning, designing, or explaining Salesforce Reports and Dashboards from first principles \u2014 report types, custom report types, groupings, bucket fields, summary formulas, charts, dashboard components, dynamic dashboards, report subscriptions, and folder permissions. Triggers: 'how do I build a report', 'what report type should I use', 'set up a dashboard', 'joined report limits', 'bucket field vs formula', 'dynamic dashboard running user'. NOT for CRM Analytics (use crm-analytics-* skills). NOT for Einstein Discovery predictive analytics. NOT for troubleshooting missing report data caused by sharing model issues (use admin/reports-and-dashboards for that).",
       "file_location": "skills/admin/reports-and-dashboards-fundamentals",
@@ -34433,7 +34433,7 @@
         "fc4deffc053ad719c11b",
         "fc7a165bc77c37273857"
       ],
-      "content_hash": "f577cc23f2d8587ffef9de3301393670403b149461e19a4e634eb1ab8eb3d3dc",
+      "content_hash": "adb2f38ec1c07a3be01b805f574bd7233793f7bd559ec2781a4b41489689d9a1",
       "dependencies": [],
       "description": "Authoring and managing Agentforce agent definitions using the declarative Agent Script DSL (.agent files) and associated metadata types. Use when creating agents in source control, debugging agent metadata, or understanding the metadata lifecycle of GenAiPlugin/GenAiPlanner/BotVersion types. Triggers: 'how do I deploy an Agentforce agent using source control', 'what metadata types make up an Agentforce agent', 'agent test run command failing in CI pipeline', 'GenAiPlugin vs GenAiPlanner metadata relationship'. NOT for Apex-based agent actions (use custom-agent-actions-apex). NOT for UI-based agent creation (use agentforce-agent-creation).",
       "file_location": "skills/agentforce/agent-script-dsl",
@@ -34939,7 +34939,7 @@
         "fdb3e1fde54baa5e41fe",
         "fe32092f6248d306beb5"
       ],
-      "content_hash": "fd6f03824640f95945c7704738dc90121191a2492c4b1550a8ce6322669d2e07",
+      "content_hash": "611502c3be2eafaba9e9ad8a755991a248fd5aca418bd21dc14f762490014aa7",
       "dependencies": [],
       "description": "Use when creating, configuring, auditing, or troubleshooting an Agentforce agent end-to-end: agent definition, agent user setup, channel assignment, system instructions, activation, and lifecycle management. Triggers: 'create agentforce agent', 'agent not appearing to users', 'how to activate agent', 'agent channel setup', 'agent lifecycle', 'deploy agent to production'. NOT for topic design or action contract design \u2014 use agentforce/agent-topic-design and agentforce/agent-actions respectively.",
       "file_location": "skills/agentforce/agentforce-agent-creation",
@@ -38063,7 +38063,7 @@
         "fd0b1914a8523833f09d",
         "ffd0f3672179f362cb06"
       ],
-      "content_hash": "25c0cde38f4ab87b417f855081d7182c6c306cd0ae5fd94c36481ede53a5d0c3",
+      "content_hash": "8660166e489c1048ec9db7000726565be67d2ecd36f5079ee11f68b4c40372d2",
       "dependencies": [],
       "description": "Use this skill when integrating Einstein Discovery predictions into Salesforce apps, automating bulk scoring jobs, deploying stories as prediction definitions, managing models via API, or querying prediction history. Trigger keywords: Einstein Discovery, smartdatadiscovery, predict endpoint, bulk scoring job, model refresh job, prediction definition, story deployment, regression prediction, multiclass prediction, CRM Analytics ML. NOT for CRM Analytics dashboard design, TCRM dataset management, Einstein Prediction Builder binary classification (which requires no CRM Analytics license), or Einstein Next Best Action recommendation strategies.",
       "file_location": "skills/agentforce/einstein-discovery-development",
@@ -41462,7 +41462,7 @@
         "f829e320003a86c1a018",
         "ffd836748e907b8a0864"
       ],
-      "content_hash": "155fcebb57e04ff37d3d25035b7188870939c2c15a1d26617b98c0ddb0dbd486",
+      "content_hash": "5f40a4d885fccb7e1860e25e588e31531f4867da5340f689023db7577583d8a1",
       "dependencies": [],
       "description": "Use when sending Custom Notifications (bell icon / mobile push) from Apex via `Messaging.CustomNotification`. Covers target resolution, Notification Type discovery, recipient limits, and async-safe sending. NOT for email (Messaging.SingleEmailMessage), Chatter @mentions, Flow-triggered notifications, or Mobile Publisher push.",
       "file_location": "skills/apex/apex-custom-notifications-from-apex",
@@ -42679,7 +42679,7 @@
         "fb48e1797a56a584e8c5",
         "fef50f5c3cbe680898e7"
       ],
-      "content_hash": "c31192ef49f71eee0fa9f08aef8b6f19b45c6d0e5c5b8ba9f7ea476f204daa1a",
+      "content_hash": "8e0b34b53aa41002a8fa4a2dc3f524e490c4ca8efbd2f52dec2018b40ab3bd36",
       "dependencies": [],
       "description": "Execute Anonymous Apex: Developer Console, VS Code SFDX, `sf apex run`, variable scope, transaction semantics, governor limits, debugging output, common errors. NOT for scheduled/queueable async (use apex-async-patterns). NOT for debug log settings (use debug-log-management).",
       "file_location": "skills/apex/apex-execute-anonymous",
@@ -42889,7 +42889,7 @@
         "fdd79edd9e9465e2e898",
         "fe3758bb4f78b34ed6ca"
       ],
-      "content_hash": "5a526344c095a3c7eb50c2464c13b203b50a75f38243be482d878974ef8e197e",
+      "content_hash": "97a92642e7fa1ef6da5980ea67c976f0439cf933fff67f484145cc22ed7866be",
       "dependencies": [],
       "description": "@future methods: primitive-only parameters, callout=true, no chaining, 50 per transaction, error handling. When to prefer Queueable/Batch instead per async-selection decision tree. NOT for Queueable patterns (use apex-queueable-patterns). NOT for Batch Apex (use apex-batch-patterns).",
       "file_location": "skills/apex/apex-future-method-patterns",
@@ -43434,7 +43434,7 @@
         "f8435f180d62951245fd",
         "fabc3dc3247e556b11c1"
       ],
-      "content_hash": "82101d0d6ec20dd347685e39145a5a9f5840391daa4a68dc23759f6b3a487bf1",
+      "content_hash": "ecdcd41914fc2e00447455103d4a825c540d9ed79d2e5f4f211a61f21b547bf5",
       "dependencies": [],
       "description": "Use this skill when writing Apex that must check governor limits at runtime before executing expensive operations \u2014 guard clauses, early-exit patterns, Queueable re-queue on limit approach, and batch scope sizing. Trigger keywords: check governor limits before SOQL apex, defensive coding against limits apex, Limits.getDMLStatements getLimitDMLStatements, Limits class usage, guard clause governor limits, remaining SOQL queries Apex, heap size check before DML, LimitException handling. NOT for limit values themselves \u2014 see apex-cpu-and-heap-optimization. NOT for async job design choices \u2014 use the async-selection decision tree. NOT for org-level aggregate limit consumption \u2014 see architect/org-limits-monitoring.",
       "file_location": "skills/apex/apex-limits-monitoring",
@@ -44267,7 +44267,7 @@
         "f7fd120e1adcaf4c3726",
         "fc5661955c9dcbe8dc16"
       ],
-      "content_hash": "e62e38a184fd6c81c21ac8217bae45930737a6de95396a32ec23b341828b64fd",
+      "content_hash": "259d43ca5ace79ddccc5895c81fe8f08e4241322e4d9a69dd4393b01934b69ec",
       "dependencies": [],
       "description": "Polymorphic SOQL with TYPEOF: querying Task.WhatId, Task.WhoId, ContentDocumentLink.LinkedEntityId, FeedItem.ParentId; fallback to Type filters; indexing and selectivity. NOT for Activity object model (use activity-and-task-patterns). NOT for general SOQL (use apex-soql-patterns).",
       "file_location": "skills/apex/apex-polymorphic-soql",
@@ -44928,7 +44928,7 @@
         "fe4d6d9ff172239ca928",
         "fff7c9889491a7e3e202"
       ],
-      "content_hash": "3ac0e6eee25d94eca6e80d105be507cf50fdddf267d3f13bc67851f4c05b774d",
+      "content_hash": "a255eb6f5f63de9b5072089cf791bae647b92c5c4e8c4b725f3e2adfe6e8f70e",
       "dependencies": [],
       "description": "Database.Savepoint / Database.rollback for partial-transaction undo: placement rules, ID reset, limit counters, nested savepoints, rollback after callout. NOT for Database.allOrNone=false partial success semantics (use apex-partial-dml). NOT for Queueable chained rollback (use apex-queueable-patterns).",
       "file_location": "skills/apex/apex-savepoint-and-rollback",
@@ -45217,7 +45217,7 @@
         "f9dee01e26527a887e8b",
         "fdfd7a352b0f12dab838"
       ],
-      "content_hash": "6b26b06f3c249ae876063d88bbdc2ee8eaef848a9f580a091345d9e9d620500c",
+      "content_hash": "41dcba6b26d92b1c17ec25a62dd05d9d2c828bf85c19fe399c1e7891e0a20d59",
       "dependencies": [],
       "description": "Apex Schema describe API patterns \u2014 `Schema.getGlobalDescribe()`, `SObjectType.getDescribe()`, `DescribeFieldResult`, `getPicklistValues()`, and the per-namespace describe cost. Covers the lazy-vs-eager describe pattern (cache the SObjectType reference, not the full describe), the `SObjectField.getDescribe()` overhead at scale, and the FLS / record-type metadata access patterns. NOT for SOQL injection prevention via Schema (use apex/dynamic-soql), NOT for the Tooling API metadata layer (use apex/tooling-api).",
       "file_location": "skills/apex/apex-schema-describe",
@@ -45549,7 +45549,7 @@
         "fbb0adf22342f6562b58",
         "fe49271f4802ad199abf"
       ],
-      "content_hash": "13305eaebb2fca2dc8e1c72b79bf3b2a4fac2c5837e78e8e1cd81a3514bd03d2",
+      "content_hash": "cb56b8724cedd08e1f5471575163edaa38f77a8b98263511c7cf10c938a6c999",
       "dependencies": [],
       "description": "Use this skill when writing or debugging SOQL relationship queries in Apex \u2014 child-to-parent dot notation traversal, parent-to-child subqueries, and polymorphic TYPEOF lookups. Trigger keywords: relationship query, subquery, dot notation, getSObjects, TYPEOF, WhatId, WhoId. NOT for aggregate queries (use apex-aggregate-queries), NOT for SOSL text search, NOT for Bulk API data loads (subqueries unsupported there).",
       "file_location": "skills/apex/apex-soql-relationship-queries",
@@ -45996,7 +45996,7 @@
         "f5c12490b04675bebd6c",
         "ff23ad2db37d6602f389"
       ],
-      "content_hash": "009ba6833c4dc6ebd385cc3181701af68b7aa52c6881ef64a7d61ff6e4466d83",
+      "content_hash": "38ac43b29f663cfd6f6b4c35fc3a3ad4b6eef281b5a82eec4f27a6168dc0d99e",
       "dependencies": [],
       "description": "System.runAs in Apex tests: user-context impersonation, mixed-DML workaround, profile/permission testing, sharing verification, FLS NOT enforced, runAs nesting limits. NOT for general test setup (use apex-test-setup-patterns). NOT for WITH USER_MODE SOQL (use apex-user-mode-patterns).",
       "file_location": "skills/apex/apex-system-runas",
@@ -46091,7 +46091,7 @@
         "f990a54db3219360198d",
         "fd504d7820f45b0120d0"
       ],
-      "content_hash": "f108649fc84ebf8e0b2494fde816d7a4bf01d1e7c48e8dc25c2b8bd0c1b06c4e",
+      "content_hash": "3eea0ba36bac3fd1e7ccc5b1eb5e87d6712252b753a5eee53466b35a74c53be4",
       "dependencies": [],
       "description": "@TestSetup method semantics: one-time creation per test class, isolation behavior, @TestVisible, System.runAs, Test.startTest/stopTest governor reset, mixed-DML boundaries. NOT for building a test data factory (use test-data-factory-patterns). NOT for mocking callouts (use apex-http-callout-mocking).",
       "file_location": "skills/apex/apex-test-setup-patterns",
@@ -46195,7 +46195,7 @@
         "fcc14dd04ecc8c64b093",
         "ff76529704b5f7fe2a8a"
       ],
-      "content_hash": "7958b425583dce3df13637fe1a76507b50f3e0bfccb0c9d187c8397850c2a377",
+      "content_hash": "a25312b9e643c368717b451d341a8e3e33797a93739efba428fad1507765d593",
       "dependencies": [
         "apex-queueable-patterns"
       ],
@@ -47242,7 +47242,7 @@
         "ee5bca9be275d366a5bf",
         "fe72b9f7f48a64842464"
       ],
-      "content_hash": "852f69b92b39b025c872cc9043438323b6640ae95124c36b2d7138865da3dc86",
+      "content_hash": "7956d4208921215bf307e3ff1e7cd6c4014c1f1261263f6dbaaae9f0c43f6a49",
       "dependencies": [
         "callouts-and-http-integrations",
         "apex-queueable-patterns"
@@ -50507,7 +50507,7 @@
         "f425136bf192c3dd43b8",
         "f6cd87f8f41a437886a8"
       ],
-      "content_hash": "a02a23a8782aee7415593366a8311fd4d115ff359782676db060b0fa68e63935",
+      "content_hash": "70ce671ab238c099324938013fda36c07a6d3985b44d815c93a00193ee1a75bc",
       "dependencies": [],
       "description": "Use this skill when writing Apex triggers or classes that interact with CaseMilestone records \u2014 completing milestones, detecting violations, or reacting to SLA state changes. Trigger keywords: CaseMilestone trigger, auto-complete milestone Apex, milestone violation polling, CompletionDate write pattern. NOT for entitlement process admin setup, milestone configuration in Setup UI, or Flow-based milestone actions.",
       "file_location": "skills/apex/entitlement-apex-hooks",
@@ -52339,7 +52339,7 @@
         "fdcc95d7228222908207",
         "fed3cb9493576d901d8a"
       ],
-      "content_hash": "0fe142bed5cca278204b5625b6a07d5bd97220d39ffb9cd28898808947a3767d",
+      "content_hash": "72c3881dbe9630e8d990306fd2b9ce31127ea751ffd1a5053717502ca611e0ac",
       "dependencies": [
         "admin/fsl-scheduling-policies",
         "admin/fsl-service-territory-setup",
@@ -55733,7 +55733,7 @@
         "fe5705a838f3967739fb",
         "ff75e4710ee5d724f10d"
       ],
-      "content_hash": "20cd1e9a5cab87e63c6f86bb844009f9fcb2834fb0369f3656d0fe5182cc61e8",
+      "content_hash": "425d022f8e3deaf8c583b356224044aed7e56d1612e78cd40e701130d9b1ddd3",
       "dependencies": [],
       "description": "Complete reference for the Salesforce record save order of execution: all 18 steps from DB load through commit, covering trigger placement, validation rule sequencing, Flow execution timing, workflow field update re-fire behavior, and recursion patterns. Use when debugging unexpected automation behavior, designing multi-layer automation, or analyzing trigger vs Flow execution order. NOT for trigger framework design (use trigger-framework). NOT for record-triggered Flow patterns (use record-triggered-flow-patterns).",
       "file_location": "skills/apex/order-of-execution-deep-dive",
@@ -57560,7 +57560,7 @@
         "fb6856b874e9a5b4f073",
         "fcafb3abba5044f55bf2"
       ],
-      "content_hash": "ebf115d28a460393fea5d60022f8771c6fa0ad740d444ca78d83a1c8b32401f7",
+      "content_hash": "26a4fd51141d74f9f99efb67bfeb003f81b05fc252997c417dfae32adba110de",
       "dependencies": [],
       "description": "Use when nightly batch / scheduled Apex jobs are failing without anyone noticing \u2014 covers why uncaught exceptions in `execute()` go to the debug log instead of email, how to query `AsyncApexJob` for `Status`, `NumberOfErrors`, and `ExtendedStatus`, when to implement `Database.RaisesPlatformEvents` so the platform publishes `BatchApexErrorEvent` on uncaught failures, how to subscribe to that event with an Apex trigger and notify operators, and how to layer a custom watcher schedule on top so silent-failure modes (job that never started, scheduled class deleted, queue stuck on `Queued`) still surface. Triggers: 'nightly batch failed at 2am with no notification', 'how do we know if a scheduled apex job is failing', 'BatchApexErrorEvent vs custom retry logic', 'Setup Apex Jobs only shows last 7 days, where else can I look', 'job is stuck in queued status nobody noticed for a week'. NOT for general Apex exception handling patterns (use apex/apex-exception-handling-and-logging), NOT for Batch Apex authoring or chunking strategy (use apex/batch-apex-design), NOT for Setup \u2192 Apex Jobs UI walkthrough as an admin task (use admin/batch-job-scheduling-and-monitoring), NOT for retry logic itself (use apex/scheduled-apex-retry-patterns once authored).",
       "file_location": "skills/apex/scheduled-apex-failure-detection-and-monitoring",
@@ -58224,7 +58224,7 @@
         "f4cbce69035aee8bd74e",
         "fb685f0ee98252a5145d"
       ],
-      "content_hash": "0adee10073ae665639a66efc356009d95c2f3d8d3b60f85c492da94851d6200f",
+      "content_hash": "a9d83dcdab24bd6466f37941b9b684941c42081a72a9543abea6b2a4845da2ac",
       "dependencies": [],
       "description": "Use when writing, reviewing, or troubleshooting Apex queries that may expose SOQL injection or CRUD/FLS issues. Triggers: 'Database.query', 'WITH USER_MODE', 'WITH SECURITY_ENFORCED', 'stripInaccessible', 'security review finding'. NOT for record-sharing design unless the main issue is Apex query security.",
       "file_location": "skills/apex/soql-security",
@@ -60773,7 +60773,7 @@
         "f7d27c5b63fe6e94baf1",
         "fe9e3debf86eaed9a415"
       ],
-      "content_hash": "72417961810c5d323d2d9b46c522146486cabeab4a34fa0f1cb0869e7b80fc81",
+      "content_hash": "86d7b41bbc9929c8e3109fcacd5fa43caf2bf893f9d095f168521f963fffa251",
       "dependencies": [],
       "description": "Use this skill when designing API-led connectivity architecture for Salesforce integrations \u2014 covering System/Process/Experience layer separation, governance policy (catalog, versioning, deprecation, rate limits), multi-consumer strategy, and Agentforce Agent Fabric integration. Trigger keywords: API-led connectivity, MuleSoft three-tier, System API, Process API, Experience API, integration layer governance, API versioning policy, Agent Fabric. NOT for individual Apex callout implementation (use integration-pattern-selection), HTTP error response contracts (use api-error-handling-design), or retry backoff mechanics (use retry-and-backoff-patterns).",
       "file_location": "skills/architect/api-led-connectivity-architecture",
@@ -63406,7 +63406,7 @@
         "fa119a9df96a36d06a22",
         "ff590181940d25fcac3e"
       ],
-      "content_hash": "d1fbf8ffc0bf6b1368dcf54a20327a95f3f09c3bfbc3e8fe3ad41a7a6fad14b3",
+      "content_hash": "a68b087e04ef90dca28ba886cf6478fcaf2532dbf4efe7e033ef39b93dadcc50",
       "dependencies": [],
       "description": "Use this skill to architect CRM Analytics dashboard embedding in Lightning pages, Experience Cloud, or Visualforce \u2014 covering dashboard context strategy, filter/state management, cross-dashboard context propagation, performance optimization, and LWC vs Aura component selection. Trigger keywords: embed CRM Analytics dashboard, embedded analytics Lightning page, analytics dashboard filter, wave dashboard LWC, analytics state attribute. NOT for CRM Analytics dashboard design/building (use analytics skills), standard Lightning report embedding, or Data Cloud analytics.",
       "file_location": "skills/architect/embedded-analytics-architecture",
@@ -65936,7 +65936,7 @@
         "fb21b26949fd131df34b",
         "ff1ff537bd4e345ed305"
       ],
-      "content_hash": "5fa526f23be693043c75b0d5b7577f74d2da87fd48202a9a06303ebe3a61392a",
+      "content_hash": "4d3a4bc3b2ebbf60f0e8e20bdd40ea461c93007eb369393ce128dc86247193d5",
       "dependencies": [],
       "description": "Use this skill when designing the license model, cloud topology, and org structure for a Salesforce Health Cloud implementation that involves more than one Salesforce cloud product (Experience Cloud patient portals, OmniStudio engagement flows, Marketing Cloud care campaigns, or Service Cloud case management). Trigger keywords: Health Cloud multi-cloud, patient portal licensing, Health Cloud Experience Cloud add-on, OmniStudio Health Cloud PSL, Marketing Cloud HIPAA BAA healthcare, multi-cloud healthcare org design. NOT for individual cloud configuration setup (e.g. configuring a single Health Cloud record page or a single Experience Cloud site), NOT for single-cloud Health Cloud implementations, and NOT for Health Cloud data model object definitions (see health-cloud-data-model skill).",
       "file_location": "skills/architect/health-cloud-multi-cloud-strategy",
@@ -69660,7 +69660,7 @@
         "f74244786cea52534474",
         "fb125d063e8d9a7b958c"
       ],
-      "content_hash": "18ce64defd802f0cf8c8cd53e01cd109f9d95bb8b1283ea7b9a35c908921d29f",
+      "content_hash": "2344307dbbf37a6e97684a9e20a030e2beea2dd352300e9a3fcdbadc2b01248a",
       "dependencies": [],
       "description": "Use when designing or reviewing multi-currency behavior in Sales Cloud: advanced currency management (ACM), dated exchange rates, converted amount field behavior, roll-up summary currency handling, and reporting currency implications. Triggers: 'multi-currency reporting wrong amounts', 'dated exchange rates architecture', 'ACM converted amount fields'. NOT for initial multi-currency enablement or basic currency admin setup.",
       "file_location": "skills/architect/multi-currency-sales-architecture",
@@ -70422,7 +70422,7 @@
         "ecec5637ea2332855f88",
         "f4c8c21aa0e93b5aa5a5"
       ],
-      "content_hash": "6c0a0acf7cd7a21e0d7b7e1047bc3a2b56b0a2041955cf6a1458c237cecca5d4",
+      "content_hash": "d61cf87b96c0d874da845c2a979ca4c2de98e8b324767a73f3dfb420c407021e",
       "dependencies": [],
       "description": "Nonprofit Cloud vs NPSP decision and migration: choose NPSP (managed package) or Nonprofit Cloud (native), plan data migration, Account Model differences, Program Management, fundraising. NOT for nonprofit accounting (use revenue-cloud-foundation). NOT for generic Sales Cloud setup (use sales-cloud-core-setup).",
       "file_location": "skills/architect/nonprofit-cloud-vs-npsp-migration",
@@ -74491,7 +74491,7 @@
         "dcfa4e887012e0e2e92f",
         "e58072a8a8e4d80e3a2b"
       ],
-      "content_hash": "a6386d62462e4aa0de5d7928da7c8d417c5cb4974a3f77d0a0a929e613bea384",
+      "content_hash": "b6cd7c0f10167d9e10004ddf471a54ca536505dec9f2f50e71406b6cc2b9e164",
       "dependencies": [],
       "description": "Use this skill when customizing CRM Analytics dataset field metadata via the XMD (Extended Metadata) REST API or augmenting CRM Analytics recipes with external non-Salesforce data: labeling fields, setting display formats, reclassifying measures vs dimensions, and applying org-level field annotations via main XMD PATCH. Trigger keywords: XMD field labels, CRM Analytics main XMD update, dataset field formatting wave, analytics external data augmentation, WaveXmd REST API. NOT for recipe node transformation logic, dataflow SOQL extraction, dataset row count management, or standard CRM data quality \u2014 those are covered by analytics-recipe-design, analytics-dataflow-development, and analytics-dataset-management.",
       "file_location": "skills/data/analytics-data-preparation",
@@ -75556,7 +75556,7 @@
         "f9ac4253cb51b865ec7a",
         "fece47edd128cf0c3ae9"
       ],
-      "content_hash": "687181798045f964d556facfd802110591d083cb333c980ba455e0da96676350",
+      "content_hash": "bf83f4a0d859a01dfe4eec3295f9aebba763d7175c160d6f3bf59e741d16d40a",
       "dependencies": [],
       "description": "Use when implementing Bulk API 2.0 REST calls, choosing between Bulk API 2.0 and legacy Bulk API v1, handling CSV format requirements for bulk ingest, paginating query job results with locators, or constructing multipart job requests. Triggers: bulk api 2.0 endpoint, ingest job REST call, query job locator, bulk CSV format, hard delete bulk, v1 vs v2 bulk api. NOT for Data Loader UI steps (use data-import-and-management), NOT for strategic load-size decisions or concurrency mode selection (use bulk-api-and-large-data-loads).",
       "file_location": "skills/data/bulk-api-patterns",
@@ -80890,7 +80890,7 @@
         "fbd2240a14b08fc95afd",
         "fe8ecf78aec7abfabf77"
       ],
-      "content_hash": "fc148ccfa04dd202c486ea428dd96babbd72e9ea44fa92ec531c780cf92f971c",
+      "content_hash": "6ea0d3168e78447b319aee0166ceedeff6a2bc1322a6514d6f4c8976fcf508ff",
       "dependencies": [],
       "description": "Configure record visibility for external users (Customer Community, Customer Community Plus, Partner Community) using External OWDs, Sharing Sets, and external sharing rules. Trigger keywords: sharing data with external users, portal user record visibility, Experience Cloud sharing model, sharing set configuration, external OWD setup, Customer Community data access, High-Volume Portal sharing. NOT for internal sharing model configuration. NOT for internal user roles and hierarchies. NOT for guest user profile hardening.",
       "file_location": "skills/data/external-user-data-sharing",
@@ -81664,7 +81664,7 @@
         "fc2be24e9979a4fd0913",
         "ff074dcae5a9c97e316e"
       ],
-      "content_hash": "7f4cf900c388189d3f5a9a2a79e3a57618ce719ba5e888064e058c377cf0fcbd",
+      "content_hash": "42b4bae477f3e9653c7f24946da5d5cabb8d3ea368f8f3c63c84b814b135a253",
       "dependencies": [
         "data/person-accounts"
       ],
@@ -88174,7 +88174,7 @@
         "f3fac79bfd02c71c0d47",
         "fdfc0325e1fd5909c9b7"
       ],
-      "content_hash": "0f45e525988ec942250b3521701e803d1c72216e3036868227a74c1739e3b4d3",
+      "content_hash": "a750f86c9970c3ab8f3035e8930a457748e0bf55624c85ba7b9543cfbce72e38",
       "dependencies": [],
       "description": "Use when uploading, validating, or deploying a change set between Salesforce orgs through Setup UI. Trigger keywords: 'change set upload', 'validate change set', 'deploy inbound change set', 'change set stuck', 'missing dependency change set', 'change set component error'. NOT for SFDX-based deployments, DevOps Center pipelines, or CI/CD automation \u2014 use the sf-cli-and-sfdx-essentials or devops-center-pipeline skills for those.",
       "file_location": "skills/devops/change-set-deployment",
@@ -88957,7 +88957,7 @@
         "f9638aacb1674952db66",
         "f97432576adbb5c78178"
       ],
-      "content_hash": "580c9d8cba4f22374773fec24ddf8be525a2d8c5c69d6d293c97ad81c75d79cc",
+      "content_hash": "3d90838124c93a22814a4251746862f03f5f4566a07a4dd1168663aae246c929",
       "dependencies": [
         "devops/salesforce-devops-tooling-selection",
         "devops/copado-essentials"
@@ -90653,7 +90653,7 @@
         "fbc803dbfd1a1121f1bd",
         "fdeba881615a7236dd47"
       ],
-      "content_hash": "2ca6b222460a4ded8a1be3ff31dde893020641d1ceaa54a741a8fe84959822c5",
+      "content_hash": "7ed19e99956bf8a9adefa299f13440a1c0053c6f63f6ca2a7e64cf789f061f58",
       "dependencies": [],
       "description": "Use this skill when deploying an Experience Cloud site (formerly Community) between Salesforce orgs or sandboxes \u2014 including metadata ordering, ExperienceBundle enablement, post-deployment publishing, and change-set or SFDX-based migration. NOT for: LWC component development within Experience Builder, CMS content migration via Managed Content REST API, or Aura/LWC code authoring.",
       "file_location": "skills/devops/experience-cloud-deployment-admin",
@@ -92471,7 +92471,7 @@
         "f46bdc58e163a876f7c3",
         "fb51f90258df70eba892"
       ],
-      "content_hash": "8fcd7a0b657f1dca8215c2798657197de6b1be3bf86456e1cfc025afaf7c4265",
+      "content_hash": "18c90d1af0953dffa54b007d5bbc64e3dffef2643f4d1d0b715b334a455a48ca",
       "dependencies": [],
       "description": "Metadata API retrieve/deploy via sf CLI and package.xml: manifest authoring, destructiveChanges, deploy options (checkOnly, testLevel, rollbackOnError), CI scripting. NOT for DX source format conversions (use salesforce-dx-source-tracking). NOT for unlocked packages (use unlocked-packages).",
       "file_location": "skills/devops/metadata-api-retrieve-deploy",
@@ -94967,7 +94967,7 @@
         "fe0beaf87bddc6012f5e",
         "fe140423055326c5272d"
       ],
-      "content_hash": "7eb0dce08850d40e9bbe939a5686f3be412390dc2ad6f1f016f2875f340a089d",
+      "content_hash": "e57cf4abe9653909d8271fac7a71c355970d58d3b5202ddc29bca248555ccc27",
       "dependencies": [],
       "description": "Sandbox refresh cycles, sandbox templates, post-refresh automation via the SandboxPostCopy Apex interface, and data handling during refresh. NOT for sandbox type selection (use sandbox-strategy).",
       "file_location": "skills/devops/sandbox-refresh-and-templates",
@@ -95113,7 +95113,7 @@
         "f8aa9365abce37309f6b",
         "fe7d7d69759053c73c1d"
       ],
-      "content_hash": "85db7c8e538541562f50de61fc26bae26bb0f8824b370a42b0bbb80d45519044",
+      "content_hash": "85cfcfb0aa8f16dcf99d7348d310725d04cd5198208f42a0d800a962153b7471",
       "dependencies": [],
       "description": "Use this skill when designing, configuring, or troubleshooting scratch orgs: definition file structure, edition selection, allocation limits, Org Shape, CI automation via ScratchOrgInfo, and lifecycle management from the Dev Hub. NOT for SFDX CLI basics (use sf-cli-and-sfdx-essentials), sandbox management, or production org administration.",
       "file_location": "skills/devops/scratch-org-management",
@@ -96895,7 +96895,7 @@
         "f9d23f0ade7253c8960d",
         "fc5c8ec9b3605dccd0bd"
       ],
-      "content_hash": "9f22868519517ab7a8ba4ca422a22fedc44fa289182ea762079b75664ad7ad82",
+      "content_hash": "b5ba282ba10822cc224b7eac6c272982bd6cc16e3d90a96298e49704a5399f6d",
       "dependencies": [],
       "description": "Use when designing, reviewing, or troubleshooting Salesforce Flows that must survive data loads, integrations, or high-volume record changes without hitting transaction limits. Triggers: 'Get Records in loop', 'Flow bulkification', 'data loader causing flow errors', 'DML in loop', 'record-triggered flow scale'. NOT for general screen-flow UX or Flow type selection when scale is not the main risk.",
       "file_location": "skills/flow/flow-bulkification",
@@ -97219,7 +97219,7 @@
         "fa07556c146ab3df3c51",
         "fa6ed9e8fafed96ebb21"
       ],
-      "content_hash": "13cd2acd767a29c0e9e4163264da763cf3f06316f71a7404eefd29c491b24d11",
+      "content_hash": "8e1ff3bb709212adbc2db3f7d69b3091c1b65fd7d38591cba7b6834b7bf54916",
       "dependencies": [],
       "description": "Use when designing or reviewing Flow custom property editor patterns for screen components or actions, including when Flow Builder needs guided design-time configuration, generic type mapping, or builder-context-aware validation. Triggers: 'Flow custom property editor', 'configurationEditor', 'builderContext', 'inputVariables', 'Flow screen component setup'. NOT for general LWC runtime behavior when Flow Builder customization is not involved.",
       "file_location": "skills/flow/flow-custom-property-editors",
@@ -98243,7 +98243,7 @@
         "fe9b1dfcb4b173bf64f5",
         "fff9c73a3da1576a9a45"
       ],
-      "content_hash": "418f5b58679088ab0014a8513ecfb44abfaacbb870cd1415bb547f526a897b34",
+      "content_hash": "8d2bedd73285b7dbff13e719ab78aa27099bd0e83f1f579186af00c569e5a780",
       "dependencies": [],
       "description": "Fault-path design and error notification for Salesforce Flow \u2014 what the default unhandled-fault email contains, when to add a Fault path explicitly, how `$Flow.FaultMessage` works, and how to route errors to a real notification channel (email alert, Apex-published Platform Event, custom log object) instead of relying on the org-default 'apex exception email recipient'. Covers the ordering rule (Fault path on every callout / DML / record-create-or-update), the difference between a screen-flow user-visible error and a record-triggered-flow silent failure, and how to suppress noisy expected-rejection paths. NOT for the basic 'how do I add a Fault connector' (use Salesforce help), NOT for Apex-trigger errors (different runtime, see apex/apex-exception-handling).",
       "file_location": "skills/flow/flow-error-notification-patterns",
@@ -99621,7 +99621,7 @@
         "fe631ec50c8e98e0ddc1",
         "fec92fa27c1e4783603d"
       ],
-      "content_hash": "6e5d34e54bfdf9c06c2c041b1f28f14d24f30448e4bfc2b2b265add03e05e4ae",
+      "content_hash": "146493689403c20825ca5a6707f5c808f688f4db722facf3d29d5b993b98c5bb",
       "dependencies": [],
       "description": "Use when reviewing or authoring Flow logic that contains a Loop element \u2014 covers DML-in-loop / SOQL-in-loop refactors, the collect-then-DML idiom, nested loops, and loop-free alternatives (Collection Filter, Transform, Get-with-criteria). Triggers: 'DML inside flow loop', 'Get Records inside loop element', 'Update Records in loop blowing governor limits', 'nested loop in flow', 'Subflow in loop'. NOT for general collection processing semantics (see flow-collection-processing) and NOT for end-to-end bulkification redesign across an entire flow (see flow-bulkification).",
       "file_location": "skills/flow/flow-loop-element-patterns",
@@ -99962,7 +99962,7 @@
         "f17f4fc6112e2258a9d1",
         "ff53f02049c40411b2af"
       ],
-      "content_hash": "9bc98340d679afb1d42e83fae7e2907579657d86719b38443e3f96dc4ed7ed3b",
+      "content_hash": "4faf22ac5590d6efa5ddf03c6f36dd37549fe1b77aebcbc5e1a6f3bbdaee0e58",
       "dependencies": [],
       "description": "Tune Flow runtime performance: pick Before-Save over After-Save, consolidate Get Records, eliminate loop-DML, cache lookups, split with Scheduled Paths, and measure actual runtime. Covers benchmarking methodology, profiling tools, and the 80/20 wins. NOT for governor-limit math (use flow-governor-limits-deep-dive). NOT for LDV strategy (use flow-large-data-volume-patterns).",
       "file_location": "skills/flow/flow-performance-optimization",
@@ -100514,7 +100514,7 @@
         "f8579d135c56bc380433",
         "f9e4f5c831bcf03e4e3c"
       ],
-      "content_hash": "9d3ec2fb3b42707fec4d7bae1708135cbd385728ce3e2fd4211155d4afe45776",
+      "content_hash": "afa72c162a4c7b97e674929820a37f220be639cdccd3088e75d6e13679e1c456",
       "dependencies": [],
       "description": "Flow resource types and when to use each: Variables, Collection Variables, Constants, Formulas, Text Templates, Choices, Stages, Picklist Choice Sets, Record Choice Sets. Covers scope, data types, and reuse patterns. NOT for decision elements. NOT for custom metadata (use admin/custom-metadata-types).",
       "file_location": "skills/flow/flow-resource-patterns",
@@ -100900,7 +100900,7 @@
         "fc221e5b8c25bd56ee3a",
         "feff36a6068d4b6b9763"
       ],
-      "content_hash": "545805329a9fc603bd3ac0ff0221b2faa2989975eba68568df98b643adf6c8c5",
+      "content_hash": "9b6009987305237b9d34fdc318f7184384b4f9397427a08a7125ffd1e91ae6cd",
       "dependencies": [],
       "description": "Use when a Salesforce Flow throws a runtime error, sends an unhandled fault email, or produces unexpected results in production or sandbox. Triggers: 'Flow error email', 'Flow failed at element', 'null reference in Flow', 'Flow SOQL limit error', 'Flow DML in loop error'. NOT for Flow design or building new flows (use record-triggered-flow-patterns or other flow/* skills), NOT for Flow debug log setup (use flow-debugging).",
       "file_location": "skills/flow/flow-runtime-error-diagnosis",
@@ -101420,7 +101420,7 @@
         "f7cf59ffa4f1814941bc",
         "f97a5f31b4a6656190c9"
       ],
-      "content_hash": "e319b168025060d18fd2cb5ceda58ec06d25672a32d361e3419f6787ae811a26",
+      "content_hash": "67f985c7c1346f57812d1b5c94d10fc8708a01d291ce6fe3e0c025d23598e470",
       "dependencies": [],
       "description": "Time-based execution in Salesforce Flow \u2014 Scheduled Paths in record-triggered flows (delays measured against a record date or trigger fire time), the Wait element in autolaunched / orchestration flows, scheduled flows that run on a cron-like cadence, and the time-zone rules that decide when 'tomorrow at 9 AM' actually fires. Covers the offset semantics (`+N` days vs `-N` days from a date field), the requeueing behavior on the source record changing, and the workflow-rule-time-based-action replacement playbook. NOT for the basic `Decision` or `Loop` element (that's plain Flow), NOT for Apex `System.scheduleBatch` (different runtime, see apex/scheduled-apex).",
       "file_location": "skills/flow/flow-time-based-patterns",
@@ -102366,7 +102366,7 @@
         "f7d622f8d98e1783e85d",
         "fda3b4c08494ebb6c58d"
       ],
-      "content_hash": "dfe8cd144cecd947da892e656f99b24010ec85dadd8399e816896225c19cb985",
+      "content_hash": "48a8fd86f73ec141fc02f0e9aa420eb905d0fcf5334067639657486605a1c031",
       "dependencies": [],
       "description": "Use when a record-triggered Flow re-fires on the same record because its own DML (or a downstream Flow's DML) re-satisfies the entry criteria \u2014 causing CPU-limit failures, duplicated side effects, or 'Maximum Trigger Depth Exceeded' errors. Triggers: 'flow infinite loop', 'flow re-firing on same record', 'flow updates field then runs again', 'flow A and flow B keep updating each other', 'maximum trigger depth exceeded record-triggered flow', 'flow recursion limit hit'. NOT for Apex trigger recursion (use apex/recursive-trigger-prevention) or for Loop element design inside a single Flow run (use flow/flow-loop-element-patterns).",
       "file_location": "skills/flow/recursion-and-re-entry-prevention",
@@ -105218,7 +105218,7 @@
         "fa32dba2e418278ac341",
         "ff2e70ae521084b356a6"
       ],
-      "content_hash": "b21208b254df30eda7fbe7199a01f7a1bfa1d2016f95de59d3572459077df086",
+      "content_hash": "d61a02950a72a24884fc269b78ce5ee55d1dc8509c96586b4ba091b77ba8933f",
       "dependencies": [],
       "description": "Use this skill to design orchestration-layer error handling for Salesforce integrations \u2014 covering Platform Event replay recovery, dead-letter queue routing, cross-channel error notification patterns, circuit breaker design, and trigger suspension recovery. Trigger keywords: integration error handling, Platform Event retry, integration dead letter queue, EventBus RetryableException, integration circuit breaker, event bus trigger suspended. NOT for Apex exception handling (use apex-exception-handling skill), HTTP error response contracts (use api-error-handling-design), or retry backoff patterns (use retry-and-backoff-patterns).",
       "file_location": "skills/integration/error-handling-in-integrations",
@@ -108058,7 +108058,7 @@
         "fa29f83646192d880830",
         "fbe26fd02ede97632530"
       ],
-      "content_hash": "63ee26e7148a8f3d28866eb0e6f46344c3d301a984599be26af971e5e32d8744",
+      "content_hash": "a7dea915b90778e7296804c12f71b1932addcad1b2d58c67be6c27bacf715655",
       "dependencies": [],
       "description": "Use when designing, implementing, or reviewing Salesforce REST API integration \u2014 covering CRUD operations on sObjects, SOQL-based queries, paginated result sets, Composite requests, Composite Batch, and sObject Tree. Triggers: 'Salesforce REST API', 'composite API', 'nextRecordsUrl', 'sObject Tree', 'REST CRUD', 'REST pagination', 'API limits', 'OAuth Bearer token'. NOT for GraphQL API queries, Bulk API 2.0 large-data-load jobs, Metadata API deployments, or custom Apex REST endpoints.",
       "file_location": "skills/integration/rest-api-patterns",
@@ -110745,7 +110745,7 @@
         "f87f2ed928d0d41f0ca5",
         "fdb8e02a6789398f07bb"
       ],
-      "content_hash": "1445a5bba73780978a3bf0d7c9744b85902dce43929d9454b0b87f54bd812ee2",
+      "content_hash": "a61000b821abc01ea84c16d74d03d82df9da0a916e1bafd8ffe01025606ea7e0",
       "dependencies": [],
       "description": "Use when designing or reviewing how Lightning Web Components pass data and intent between parent, child, sibling, utility, or workspace contexts using `@api`, public methods, custom events, and Lightning Message Service. Triggers: 'LWC communication pattern', 'custom event not reaching parent', 'should I use LMS or @api', 'child component API'. NOT for data provisioning decisions, wire-service strategy, or page navigation when communication is not the main problem.",
       "file_location": "skills/lwc/component-communication",
@@ -115944,7 +115944,7 @@
         "fc9fb41871c2a894e5ad",
         "fd9dfa81f3b1011bd468"
       ],
-      "content_hash": "de9c67d9ca74f816b00fe1106b91af1804e9fa2fce033aef1fdeef00ca447028",
+      "content_hash": "0c20e9c7c070f76e27ed795c5fd7a6987731b1ae76f2b94a8c59dcd2bb3460c8",
       "dependencies": [],
       "description": "NavigationMixin for LWC: PageReference types (recordPage, recordRelationship, namedPage, webPage, comm__namedPage), navigate vs generateUrl, state params, Experience Cloud variants. NOT for routing inside custom SPA (use lwc-state-management). NOT for cross-app deep-linking (use deep-linking-patterns).",
       "file_location": "skills/lwc/lwc-navigation-mixin",
@@ -118230,7 +118230,7 @@
         "f88c44f94c1ac75d11f4",
         "fa7587c7659a5f3b6bb0"
       ],
-      "content_hash": "f7f4d96a7a665d81be19046122c2a6f4769ed011f33781bee0bcc70fa1823bf8",
+      "content_hash": "5614ff8b0de87df89071780c3e4c10fb73263613fe2b19e91fcd6afbb31c85b7",
       "dependencies": [],
       "description": "LWC interop with non-LWC web components: consuming third-party standard custom elements in LWC, exposing LWC as custom elements externally, Shadow DOM vs native web components, polyfills, and slotting patterns. NOT for LWC-to-LWC composition (use lwc-best-practices). NOT for Aura interop (use aura-to-lwc-migration).",
       "file_location": "skills/lwc/lwc-web-components-interop",
@@ -118589,7 +118589,7 @@
         "fe3b776d0bc93568b175",
         "feb73337885a1e14d034"
       ],
-      "content_hash": "62c438b107954cfeb69bed59fae71a490802363929bc29cfd352aaf616a727c7",
+      "content_hash": "5597af0474728b63e5ad55e23d910b331008ad88c99d420ed68b71e72969694c",
       "dependencies": [],
       "description": "Use when implementing Lightning Message Service (LMS) to enable cross-DOM communication between LWC, Aura, and Visualforce components on the same Lightning page, using message channels. Triggers: 'communicate between unrelated LWC components', 'send data between Visualforce and LWC', 'lightning message service not working', 'APPLICATION_SCOPE vs default scope', 'message channel metadata deployment'. NOT for parent-child component communication (use component-communication) or server-side events.",
       "file_location": "skills/lwc/message-channel-patterns",
@@ -118793,7 +118793,7 @@
         "f8a250876d669b046fe3",
         "fad266ce605ab9d0fe21"
       ],
-      "content_hash": "d0019044a40b801ac42db78f96470cdf4fa78c4019a72ad222566318ae8653bf",
+      "content_hash": "7d9e3ca12dbaa06cd42057ff5d356ead572b5ddcfb39101c4412271ca3535841",
       "dependencies": [],
       "description": "Use when packaging third-party JavaScript, CSS, or asset files into Salesforce static resources for Lightning Web Components, including `@salesforce/resourceUrl`, `loadScript`, `loadStyle`, zip pathing, versioning, and CSP-safe delivery. Triggers: 'static resource in lwc', 'loadScript not working', 'resourceUrl path in zip', 'third party library in salesforce'. NOT for npm-bundled code that should ship through the build pipeline or server-side integration assets.",
       "file_location": "skills/lwc/static-resources-in-lwc",
@@ -121900,7 +121900,7 @@
         "f2ab3d12b7efa316f3d4",
         "fd91067751e871f7f6da"
       ],
-      "content_hash": "fd0315195a466292600d7e3a280a940739a34c4f6790b05ba20ddc5952f6a5ff",
+      "content_hash": "75ccc6a3d5f77e7bd8a07e078172c9dcd34e9ef75c1546d63216e31a29dee812",
       "dependencies": [],
       "description": "Use when exporting, importing, or version-controlling OmniStudio components using DataPacks via the OmniStudio DataPacks tool or vlocity CLI. Covers DataPack export/import, Git version control integration, CI/CD for OmniStudio. NOT for SFDX-based metadata deployment of non-OmniStudio components.",
       "file_location": "skills/omnistudio/omnistudio-deployment-datapacks",
@@ -123797,7 +123797,7 @@
         "fa68fdfc1f1a9f39a795",
         "fb6da3883dc478bc23ca"
       ],
-      "content_hash": "5747a24aa611fbec9bde503edd9150ea3ad200bca80469155922ce4c531de5d1",
+      "content_hash": "3fd586e950003b8720c8f951a87ef0f091c1a1622715b0a840153f28f823fa4d",
       "dependencies": [],
       "description": "Managing OAuth policies, IP relaxation, session security, PKCE, and credential rotation for Salesforce Connected Apps. Use when hardening Connected App security, rotating client secrets, configuring IP restrictions, or requiring high-assurance sessions. NOT for basic Connected App setup or creation. NOT for OAuth flow implementation (use oauth-flows-and-connected-apps).",
       "file_location": "skills/security/connected-app-security-policies",
@@ -124406,7 +124406,7 @@
         "fadcb86095f76edd96e9",
         "fe59d2f1a1a642f4fad0"
       ],
-      "content_hash": "b2383c59d374f3b8d1b970b8b523d0dc29b851fd4a8843ab047d98294760d7cf",
+      "content_hash": "6eb820eeae90448a8f43ec5759db474fce44cc656a2e8f01806112c655d73b8c",
       "dependencies": [],
       "description": "Shield Event Monitoring: event log types, downloading logs via REST API and SOQL, real-time event monitoring with streaming API, and threat detection policies. NOT for debug logs (use debug-logs-and-developer-console). NOT for custom platform event publishing/subscribing (use platform-events-apex).",
       "file_location": "skills/security/event-monitoring",
@@ -125624,7 +125624,7 @@
         "fe062968a680b36eaf3c",
         "ff59badda752d581873a"
       ],
-      "content_hash": "2706d8df9039b7181989d1635c981f26fa6bdf8a71d8b84aae33c22ae2fc5893",
+      "content_hash": "279e073769a9a5c00b062d0097b1d77410c3fc0ccc8b86cf54a9ee9f2386c391",
       "dependencies": [],
       "description": "Investigate Salesforce login activity using LoginHistory, IdentityVerificationHistory, and Login Forensics (Event Monitoring add-on): reconstruct per-user login timelines, identify failed logins, analyze source IPs, review identity verification events, and configure Login Flows for step-up authentication. NOT for MFA setup (use org-setup-and-configuration). NOT for downloading EventLogFile CSVs or configuring real-time threat detection (use event-monitoring).",
       "file_location": "skills/security/login-forensics",

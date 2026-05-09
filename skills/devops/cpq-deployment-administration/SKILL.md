@@ -14,6 +14,7 @@ triggers:
   - "what order should I deploy CPQ objects like Price Actions and Option Constraints"
   - "CPQ custom field rename broke a product rule silently in production"
   - "what tools can migrate Salesforce CPQ configuration records between environments"
+  - "how to deploy CPQ product rules and price rules between environments"
 tags:
   - cpq
   - salesforce-cpq

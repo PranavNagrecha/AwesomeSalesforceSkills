@@ -13,6 +13,7 @@ triggers:
   - "record-triggered flow silent failure debug"
   - "flow error custom log platform event notification"
   - "flow fault on screen flow vs record-triggered"
+  - "flow.faultmessage screen flow display"
 tags:
   - flow
   - fault-path

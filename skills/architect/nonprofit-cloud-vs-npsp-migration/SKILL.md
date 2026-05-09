@@ -21,6 +21,7 @@ triggers:
   - "npsp contact to nonprofit cloud data migration plan"
   - "nonprofit cloud program management versus npsp program"
   - "fundraising data model nonprofit cloud decision"
+  - "nonprofit cloud vs npsp migration decision"
 inputs:
   - Current state (greenfield, on NPSP, or on legacy Nonprofit Success Pack)
   - Scope of nonprofit capability needed (fundraising, programs, grants, volunteers)

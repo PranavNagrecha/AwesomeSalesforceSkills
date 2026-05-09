@@ -20,6 +20,7 @@ triggers:
   - "lwc web components interop shadow dom slot"
   - "lwc static resource web component registration"
   - "lightning web component with standard custom element polyfill"
+  - "lwc third party web component static resource loadscript"
 inputs:
   - Third-party web component library (Material, Shoelace, Vaadin, custom)
   - Target Salesforce surface (Lightning app, Experience Cloud, Embedded)

@@ -21,6 +21,7 @@ triggers:
   - "team members are running out of scratch orgs and builds are failing because active org limit is hit"
   - "I want to use Org Shape so my scratch org matches the features enabled in our production org"
   - "what edition should I use in my scratch org definition file for package development"
+  - "how do I create a scratch org from a definition file with the right edition"
 inputs:
   - "Dev Hub edition (Developer, Enterprise, Performance, Unlimited, Partner)"
   - "Target org edition for development (Developer, Enterprise, Group, Professional, Partner Developer, Partner Enterprise)"

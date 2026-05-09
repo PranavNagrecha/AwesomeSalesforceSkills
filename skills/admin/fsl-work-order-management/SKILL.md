@@ -12,6 +12,7 @@ triggers:
   - "auto-create service appointments from work orders"
   - "work order line items not showing in Gantt"
   - "maintenance plan not generating work orders automatically"
+  - "FSL work order management field service mobile app"
 tags:
   - field-service
   - fsl

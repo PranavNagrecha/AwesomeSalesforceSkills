@@ -14,6 +14,7 @@ triggers:
   - "subflow called inside a loop and it does its own DML"
   - "loop iteration variable changes don't persist to the source records"
   - "should I use Collection Filter or a Loop with a Decision"
+  - "DML inside flow loop element collect then update bulkification governor limit"
 tags:
   - flow-loop-element-patterns
   - bulkification

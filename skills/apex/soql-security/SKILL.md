@@ -15,6 +15,7 @@ triggers:
   - "user is seeing data they should not via Apex"
   - "how do I safely use Database.query with user input"
   - "WITH USER_MODE not working as expected"
+  - "apex SOQL security review CRUD FLS injection"
 inputs: ["query context", "user input path", "sharing model"]
 outputs: ["security review findings", "secure query rewrite guidance", "crud-fls enforcement recommendations"]
 dependencies: []

@@ -12,6 +12,7 @@ triggers:
   - "CPQ bundle nesting options and feature grouping configuration"
   - "add configuration attributes to drive dynamic bundle behavior"
   - "filter rules to limit which product options appear in the CPQ configurator"
+  - "CPQ product catalog setup price book price rules"
 tags:
   - cpq
   - product-catalog

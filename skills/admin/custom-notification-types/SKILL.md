@@ -18,6 +18,7 @@ triggers:
   - "notification type id dynamic lookup flow apex"
   - "push notification salesforce mobile app flow"
   - "delivery guarantee and retry for custom notifications"
+  - "custom notification type 500 recipient limit apex"
 inputs:
   - Event triggering the notification
   - Target recipients (users, queues, groups)

@@ -12,6 +12,7 @@ triggers:
   - "CRM Analytics dashboard shows all data even though Salesforce sharing rules are configured"
   - "Setting up sharing inheritance for Analytics but some users still see too many rows"
   - "Analytics app sharing roles — difference between Viewer, Editor, and Manager"
+  - "How do I restrict which rows a user sees in a CRM Analytics dataset?"
 tags:
   - analytics
   - crm-analytics

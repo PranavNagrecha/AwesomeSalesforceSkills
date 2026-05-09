@@ -11,6 +11,7 @@ triggers:
   - "JWT Bearer flow returning invalid_grant error"
   - "require high assurance session for sensitive operations"
   - "PKCE configuration for web server flow"
+  - "connected app ip restriction oauth access policies"
 tags:
   - connected-app
   - oauth

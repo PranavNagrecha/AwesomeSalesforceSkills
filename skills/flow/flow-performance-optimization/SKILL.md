@@ -21,6 +21,7 @@ triggers:
   - "flow benchmark tool"
   - "flow tuning techniques"
   - "before-save vs after-save performance"
+  - "flow slow tuning cpu time hoist soql dml from loop"
 inputs:
   - Target flow + its entry point
   - Current runtime measurement (or target SLA)

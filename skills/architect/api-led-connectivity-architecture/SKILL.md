@@ -13,6 +13,7 @@ triggers:
   - "how should we govern API versioning, deprecation, and rate limits across our integration platform"
   - "Agentforce agents need to call external systems — how do we structure the API layer"
   - "direct system-to-system integrations are creating tight coupling and change management risk"
+  - "API-led connectivity layered system process experience architecture MuleSoft"
 tags:
   - integration
   - api-led-connectivity

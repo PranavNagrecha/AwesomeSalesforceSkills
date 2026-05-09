@@ -60,7 +60,7 @@
     "f17f4fc6112e2258a9d1",
     "ff53f02049c40411b2af"
   ],
-  "content_hash": "9bc98340d679afb1d42e83fae7e2907579657d86719b38443e3f96dc4ed7ed3b",
+  "content_hash": "4faf22ac5590d6efa5ddf03c6f36dd37549fe1b77aebcbc5e1a6f3bbdaee0e58",
   "dependencies": [],
   "description": "Tune Flow runtime performance: pick Before-Save over After-Save, consolidate Get Records, eliminate loop-DML, cache lookups, split with Scheduled Paths, and measure actual runtime. Covers benchmarking methodology, profiling tools, and the 80/20 wins. NOT for governor-limit math (use flow-governor-limits-deep-dive). NOT for LDV strategy (use flow-large-data-volume-patterns).",
   "file_location": "skills/flow/flow-performance-optimization",

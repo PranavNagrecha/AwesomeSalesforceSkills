@@ -12,6 +12,7 @@ triggers:
   - "need to design a dead-letter queue pattern for failed integration messages in Salesforce"
   - "external system is unstable and integration needs a circuit breaker to stop flooding it"
   - "integration failures are silent and data is drifting between systems without anyone noticing"
+  - "integration error handling retry circuit breaker dead letter queue"
 tags:
   - integration
   - error-handling

@@ -12,6 +12,7 @@ triggers:
   - "should we enable advanced currency management or stick with standard multi-currency"
   - "roll-up summary fields are not reflecting the correct currency conversion on parent records"
   - "reports show different converted amounts depending on who runs them"
+  - "advanced currency management multi currency dated exchange"
 tags:
   - multi-currency-sales-architecture
   - advanced-currency-management

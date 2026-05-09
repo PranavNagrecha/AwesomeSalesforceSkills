@@ -14,6 +14,7 @@ triggers:
   - "users cannot see a report folder"
   - "subscription sending report with wrong data to recipients"
   - "report running user is showing data the subscriber should not see"
+  - "report filter dashboard subscription"
 inputs: ["reporting question", "audience", "data source objects"]
 outputs: ["report design guidance", "dashboard findings", "visibility recommendations"]
 dependencies: []

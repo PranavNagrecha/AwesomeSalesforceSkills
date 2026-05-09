@@ -13,6 +13,7 @@ triggers:
   - "need to pass context from one embedded dashboard to another or to an LWC component"
   - "deciding whether to use the LWC wave-wave-dashboard or legacy Aura wave:waveDashboard component"
   - "embedded dashboard performance is slow or causes page load delays in Lightning Experience"
+  - "embedded analytics architecture CRM Analytics Tableau dashboard"
 tags:
   - crm-analytics
   - embedded-analytics

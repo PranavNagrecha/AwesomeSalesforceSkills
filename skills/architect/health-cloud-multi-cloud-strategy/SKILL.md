@@ -13,6 +13,7 @@ triggers:
   - "We need Marketing Cloud for care program campaigns in Health Cloud — what are the HIPAA compliance requirements for connecting them?"
   - "How do Service Cloud and Health Cloud licenses relate — do we need separate Service Cloud licenses for our agents?"
   - "We are designing the overall cloud topology for a multi-cloud healthcare Salesforce implementation — where do we start?"
+  - "do we need separate Experience Cloud license for Health Cloud patient portal"
 tags:
   - health-cloud
   - experience-cloud

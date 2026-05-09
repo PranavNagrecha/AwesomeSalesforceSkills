@@ -14,6 +14,7 @@ triggers:
   - "expired certification silently blocking field service appointments"
   - "set preferred or required resource for a service account in field service"
   - "field service resource skill record start and end date setup"
+  - "configure field service resource skill level certification expiry"
 tags:
   - field-service
   - fsl

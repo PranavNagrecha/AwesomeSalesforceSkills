@@ -9,6 +9,7 @@ triggers:
   - "queueable cleanup on failure apex"
   - "transaction finalizer run after exception"
   - "FinalizerContext getResult SUCCESS apex"
+  - "queueable finalizer handle failure retry apex async"
 tags:
   - apex-finalizer
   - queueable

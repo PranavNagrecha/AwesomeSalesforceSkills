@@ -18,6 +18,7 @@ triggers:
   - "sf apex run file script.apex cli"
   - "execute anonymous governor limits per run"
   - "anonymous apex cannot call test methods"
+  - "anonymous apex production dry run safeguard transaction"
 inputs:
   - Script purpose (one-off data fix, investigation, etc.)
   - Target org

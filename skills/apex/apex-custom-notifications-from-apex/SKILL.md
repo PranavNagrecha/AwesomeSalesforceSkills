@@ -13,6 +13,7 @@ triggers:
   - "notification body is exceeding the character limit silently"
   - "notify a queue or group of users when a record changes"
   - "Custom Notification failing with INVALID_RECIPIENT_IDS"
+  - "apex send bell notification Messaging CustomNotification CustomNotificationType target user"
 tags:
   - apex-custom-notifications-from-apex
   - messaging

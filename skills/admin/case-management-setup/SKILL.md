@@ -13,6 +13,7 @@ triggers:
   - "how do I configure entitlements and milestones for SLA tracking in Service Cloud"
   - "web-to-case form hit the 50000 pending request limit and new submissions are being dropped"
   - "case team members cannot see the case even though I added them to the predefined team"
+  - "how do I set up email to case so customer replies thread instead of creating new cases"
 tags:
   - cases
   - email-to-case

@@ -14,6 +14,7 @@ triggers:
   - "how do I check if a user bypassed MFA or identity verification during login"
   - "I need to audit who logged in during a specific time window for a compliance review"
   - "set up a Login Flow to enforce step-up authentication for privileged users"
+  - "analyze login history to detect suspicious access in Salesforce"
 tags:
   - login-forensics
   - login-history

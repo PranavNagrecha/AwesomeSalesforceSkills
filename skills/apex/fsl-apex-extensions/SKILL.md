@@ -13,6 +13,7 @@ triggers:
   - "how to trigger FSL optimization or run OAAS from Apex code"
   - "ScheduleService.schedule() fails with missing ServiceTerritory or scheduling policy error"
   - "how to call AppointmentBookingService.GetSlots() and then schedule the appointment in the same transaction"
+  - "FSL Apex GetSlots ScheduleService AppointmentBookingService callout DML transaction"
 tags:
   - fsl
   - field-service

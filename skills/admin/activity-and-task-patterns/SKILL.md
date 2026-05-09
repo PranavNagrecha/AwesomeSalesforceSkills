@@ -20,6 +20,7 @@ triggers:
   - "activityhistory openactivity difference"
   - "einstein activity capture data storage and reporting"
   - "custom fields on activity task event sharing"
+  - "salesforce task whatid whoid polymorphic typeof"
 inputs:
   - Objects requiring activity tracking
   - Volume of tasks/events generated per day

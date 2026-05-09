@@ -15,6 +15,7 @@ triggers:
   - "how do I migrate from process builder to flow"
   - "flow running multiple times on same record"
   - "screen flow not advancing to next screen"
+  - "record triggered flow automation"
 inputs: ["automation use case", "entry point", "data volume"]
 outputs: ["flow pattern recommendation", "flow review findings", "automation design guidance"]
 dependencies: []

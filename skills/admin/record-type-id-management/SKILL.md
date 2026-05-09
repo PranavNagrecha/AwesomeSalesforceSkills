@@ -19,6 +19,7 @@ triggers:
   - "record type id hardcoded in apex causing deployment failure"
   - "schema describe record type infos by developername"
   - "record type id changes when packaging or deploying"
+  - "hard coded recordtypeid apex migration between orgs"
 inputs:
   - Code or config referencing record types (Apex, Flow, LWC, Validation Rules, Formulas)
   - Target environments (sandbox set, packaging org, production)

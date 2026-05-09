@@ -12,6 +12,7 @@ triggers:
   - "lightning message service messages not received across DOM boundaries"
   - "how to use APPLICATION_SCOPE for message channels"
   - "how to unsubscribe from a message channel to prevent memory leaks"
+  - "lightning message service"
 tags:
   - lightning-message-service
   - message-channel

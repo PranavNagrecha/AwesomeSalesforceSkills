@@ -19,6 +19,8 @@ triggers:
   - "experience cloud navigation comm__namedpage"
   - "lwc navigate to related list with state"
   - "navigationmixin vs lightning-navigation"
+  - "lwc navigation mixin page reference recordpage"
+  - "lwc navigate to url state c__ prefix required"
 inputs:
   - Target page type (record, list, custom, external)
   - Context (internal app, Experience Cloud, mobile)

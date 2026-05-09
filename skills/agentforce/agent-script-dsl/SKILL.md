@@ -12,6 +12,7 @@ triggers:
   - "agent test run command failing in CI pipeline"
   - "GenAiPlugin vs GenAiPlanner metadata relationship"
   - "how do I write or edit .agent files for version-controlled agent development"
+  - "agentforce agent metadata types GenAiPlugin deployment"
 tags:
   - agentforce
   - agent-dsl

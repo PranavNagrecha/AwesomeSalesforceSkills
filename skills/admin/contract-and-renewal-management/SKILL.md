@@ -13,6 +13,7 @@ triggers:
   - "renewal quote is not being generated automatically after contract activation"
   - "co-termination is extending lines beyond the expected end date"
   - "large-scale amendment is timing out or failing with more than 1000 subscription lines"
+  - "CPQ contract amendment renewal subscription management co-termination"
 tags:
   - cpq
   - contracts

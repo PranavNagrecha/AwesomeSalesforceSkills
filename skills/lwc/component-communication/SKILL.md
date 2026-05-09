@@ -19,6 +19,7 @@ triggers:
   - "should i use lightning message service or @api"
   - "child component api feels too coupled"
   - "event detail is not crossing component boundaries"
+  - "custom event not reaching parent use lms or api"
 inputs:
   - "component relationship such as parent-child, sibling, utility, or app-wide"
   - "whether the communication is state down, intent up, or cross-hierarchy broadcast"

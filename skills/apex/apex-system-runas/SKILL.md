@@ -19,6 +19,7 @@ triggers:
   - "runas does not enforce field level security apex"
   - "runas version mode system context running user"
   - "nested system.runas apex test limit"
+  - "mixed dml error user setup object runas workaround"
 inputs:
   - Target user profile/permset
   - Permission/sharing scenario under test

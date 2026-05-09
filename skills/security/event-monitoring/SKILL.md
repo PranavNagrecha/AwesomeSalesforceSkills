@@ -13,6 +13,7 @@ triggers:
   - "query EventLogFile to see who exported report data"
   - "enable threat detection for credential stuffing attacks"
   - "API anomaly detection with Shield event monitoring"
+  - "enable event monitoring"
 tags:
   - event-monitoring
   - shield

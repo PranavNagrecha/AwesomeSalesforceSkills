@@ -20,6 +20,7 @@ triggers:
   - "what is the difference between composite batch and composite requests in Salesforce"
   - "how do I stay within Salesforce API rate limits in an integration"
   - "how do I pass an OAuth Bearer token to the Salesforce REST API"
+  - "how to use Salesforce REST API composite to create related records in one call"
 inputs:
   - "operation type: CRUD on single record, batch of independent requests, parent-child insert, or paginated query"
   - "authentication context: OAuth 2.0 access token availability and Connected App configuration"

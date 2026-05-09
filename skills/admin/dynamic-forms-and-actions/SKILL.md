@@ -14,6 +14,7 @@ triggers:
   - "How do I convert an existing page layout to Dynamic Forms in Lightning App Builder"
   - "Field visibility rules not working on my Lightning record page"
   - "Dynamic Forms not available for this standard object — what are my options"
+  - "dynamic forms lightning record page visibility rules field sections"
 tags:
   - dynamic-forms
   - dynamic-actions

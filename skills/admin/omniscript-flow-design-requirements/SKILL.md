@@ -12,6 +12,7 @@ triggers:
   - "team needs to capture OmniScript data requirements and define which data sources feed each step"
   - "stakeholder review requires an OmniScript wireframe or requirements document before build"
   - "scoping session to determine if OmniScript is the right tool and what the flow structure should be"
+  - "omniscript flow design requirements screen steps data raptor BA"
 tags:
   - omnistudio
   - omniscript

@@ -15,6 +15,7 @@ triggers:
   - "scheduled class was deleted but the schedule keeps firing somehow"
   - "where do I see the ExtendedStatus for a failed AsyncApexJob"
   - "how to send an email or Slack alert when a batch fails"
+  - "scheduled apex job failed silently no email notification monitor"
 tags:
   - scheduled-apex-failure-detection-and-monitoring
   - asyncapexjob

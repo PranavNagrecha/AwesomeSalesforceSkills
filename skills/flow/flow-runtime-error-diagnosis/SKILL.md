@@ -12,6 +12,7 @@ triggers:
   - "Flow throws a null reference error when processing certain records"
   - "Flow is hitting SOQL query limits or DML statement limits"
   - "how do I read the Flow fault path email to find the root cause"
+  - "flow error email"
 tags:
   - flow
   - error-diagnosis

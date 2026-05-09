@@ -12,6 +12,7 @@ triggers:
   - "builderContext and inputVariables in flow"
   - "custom property editor for a flow screen component"
   - "how do I validate flow builder inputs for an lwc"
+  - "flow custom property editor builder context validate"
 tags:
   - flow-custom-property-editor
   - flow-builder

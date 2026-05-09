@@ -18,6 +18,7 @@ triggers:
   - "savepoint limit counter reset behavior"
   - "rollback after http callout restriction"
   - "nested savepoint apex dml semantics"
+  - "database savepoint rollback partial dml apex"
 inputs:
   - Transaction boundary where partial rollback needed
   - DML operations to potentially undo

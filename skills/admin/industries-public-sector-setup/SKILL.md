@@ -22,6 +22,7 @@ triggers:
   - "grant management object model in pss"
   - "pss license application approval workflow"
   - "public sector inspections and enforcement setup"
+  - "pss contact centric model programs and applications"
 inputs:
   - Target cloud/edition (PSS license assigned, base Service Cloud present)
   - Business process in scope (license, permit, inspection, benefit, grant)

@@ -14,6 +14,7 @@ triggers:
   - "How do I deploy a story model and surface prediction scores on a Lightning record page?"
   - "I need to refresh my Einstein Discovery model automatically on a schedule"
   - "How do I get prediction factors and improvement suggestions from the Discovery REST API?"
+  - "Einstein Discovery model deployment prediction scoring API"
 tags:
   - einstein-discovery-development
   - einstein-discovery

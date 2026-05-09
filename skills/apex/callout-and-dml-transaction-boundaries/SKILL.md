@@ -12,6 +12,7 @@ triggers:
   - "how to do DML and a callout in the same Apex transaction"
   - "can I make a callout between two DML statements"
   - "callout fails in trigger because record was already saved"
+  - "how to fix uncommitted work pending error with callouts and DML in same transaction"
 tags:
   - callout-dml-boundary
   - uncommitted-work-pending

@@ -27,6 +27,7 @@ triggers:
   - "dynamic dashboard running user configuration"
   - "custom report type for multi-object reporting"
   - "report subscription not sending to all users"
+  - "how do I build a report in Salesforce and add it to a dashboard with filters"
 inputs:
   - "Business question the report must answer"
   - "Primary and related Salesforce objects involved"

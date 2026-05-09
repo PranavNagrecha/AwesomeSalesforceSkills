@@ -12,6 +12,7 @@ triggers:
   - "flow A updates a field, flow B fires, then flow A runs again"
   - "after-save flow re-runs on its own update"
   - "before-save flow seems to re-execute and CPU times out"
+  - "flow A flow B mutually triggering each other cascade"
 tags:
   - flow
   - record-triggered-flow

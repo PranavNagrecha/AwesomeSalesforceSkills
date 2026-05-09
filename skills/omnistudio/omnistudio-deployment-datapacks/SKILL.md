@@ -13,6 +13,7 @@ triggers:
   - "how to version control OmniStudio assets in a CI/CD pipeline"
   - "DataPack import succeeds but component is not activated in target org"
   - "environment-specific record IDs breaking DataPack deployment"
+  - "omnistudio datapack export import"
 tags:
   - omnistudio
   - datapacks
