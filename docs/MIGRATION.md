@@ -60,6 +60,16 @@ This document records every agent deprecated during the Wave 3 consolidation —
 
 **Removal target:** two minor versions after commit `03810f7` (Wave 3b-2 ship).
 
+**Update 2026-05-08 — alias commands removed early.** The 5 alias slash-command files below were deleted from `commands/` ahead of the original Wave 7 timeline (production-cleanup pass — old commands not used anymore should not ship). The functionality is fully preserved via `/audit-router --domain=<value>`:
+
+- `commands/audit-actions.md` → `/audit-router --domain=quick_action`
+- `commands/audit-identity-and-session.md` → `/audit-router --domain=my_domain_session_security`
+- `commands/audit-list-views.md` → `/audit-router --domain=list_view_search_layout`
+- `commands/audit-report-folder-sharing.md` → `/audit-router --domain=reports_dashboards_folder_sharing`
+- `commands/govern-field-history.md` → `/audit-router --domain=field_audit_trail_history_tracking`
+
+The retired AGENT directories under `agents/<retired-name>/` still exist for reference (Wave 7 retirement target unchanged). Documents in `agents/_shared/RUNTIME_VS_BUILD.md`, `agents/audit-router/AGENT.md`, and `agents/orchestrator/AGENT.md` continue to reference them as the canonical mapping.
+
 ## Wave 3c — Designer Base Harness
 
 Not a consolidation — a shared-convention documentation pass for 8 designer agents. NO AGENTS WERE RETIRED. Each of these 8 agents now declares `harness: designer_base` in frontmatter and inherits conventions from [`agents/_shared/harnesses/designer_base/`](../agents/_shared/harnesses/designer_base/README.md):

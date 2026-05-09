@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -143,9 +144,30 @@ def build_search_context(root: Path) -> SearchContext:
     )
 
 
+_FTS5_SAFE_RE = re.compile(r"[^A-Za-z0-9\-]+")
+
+
+def _sanitize_query_for_fts5(query: str) -> str:
+    """Reduce a user query to FTS5-safe tokens (alphanum + hyphen).
+
+    SQLite FTS5 raises a syntax error on raw user input that contains operator
+    characters: ``+``, ``%``, ``*``, ``"``, ``^``, ``(``, ``)``. Real users
+    type these in natural-language queries (e.g. "salesforce + slack",
+    "100% test coverage", "apex *ngFor"). Without this guard,
+    ``pipelines/lexical_index.search_index`` crashes with
+    ``sqlite3.OperationalError: fts5: syntax error near "+"``.
+
+    We strip down to alphanumerics and hyphens — that's a strict superset of
+    what the existing tokenizer indexes anyway, so retrieval quality is
+    unchanged on safe queries and graceful on previously-crashing queries.
+    """
+    return " ".join(t for t in _FTS5_SAFE_RE.sub(" ", query).split() if t)
+
+
 def run_search(query: str, ctx: SearchContext, domain: str | None = None) -> dict:
     """Run one query against the pre-loaded context. Returns the same payload
     shape the CLI emits with ``--json``. Pure (no stdout/stderr, no exit)."""
+    query = _sanitize_query_for_fts5(query)
     lexical_rows = search_index(
         ctx.root / "vector_index" / "lexical.sqlite",
         query,
