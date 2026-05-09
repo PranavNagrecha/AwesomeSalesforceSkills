@@ -19,10 +19,22 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "mcp" / "sfskills-mcp" / "src"))
+sys.path.insert(0, str(REPO / "scripts"))
 
 from sfskills_mcp import library, paths as _paths  # noqa: E402
 
 _paths.repo_root = lambda: REPO  # type: ignore[assignment]
+
+# Lazy-loaded skills SearchContext (chunks.jsonl is ~120 MB; load once).
+_SKILLS_CTX = None
+
+
+def _skills_ctx():
+    global _SKILLS_CTX
+    if _SKILLS_CTX is None:
+        import search_knowledge  # noqa: E402
+        _SKILLS_CTX = search_knowledge.build_search_context(REPO)
+    return _SKILLS_CTX
 
 
 def _agent_top_ids(query: str, k: int) -> list[str]:
@@ -37,10 +49,17 @@ def _tree_top_ids(query: str, k: int) -> list[str]:
     return [t["name"] for t in library.search_decision_trees(query, limit=k).get("trees", [])][:k]
 
 
+def _skill_top_ids(query: str, k: int) -> list[str]:
+    import search_knowledge
+    res = search_knowledge.run_search(query, _skills_ctx())
+    return [s["id"] for s in res.get("skills", [])][:k]
+
+
 SEARCHERS = {
     "agents": _agent_top_ids,
     "templates": _template_top_ids,
     "decision-trees": _tree_top_ids,
+    "skills": _skill_top_ids,
 }
 
 

@@ -159,14 +159,30 @@ def _parse_shard_spec(spec: str) -> tuple[int, int]:
 
 
 def _git_changed_files(root: Path) -> set[Path] | None:
-    """Return every path touched in the working tree (staged or unstaged,
-    relative to ``root``). Returns None if we're not in a git repo or git
-    fails — the caller should fall back to full validation."""
+    """Return paths the user is preparing to commit, relative to ``root``.
+
+    Scope is **staged-only** when there are staged paths (the pre-commit
+    hook's natural scope). Falls back to staged + unstaged + untracked
+    when nothing is staged — that's the interactive "what does my working
+    tree look like" use case.
+
+    Returns None if we're not in a git repo or git fails — the caller
+    should fall back to full validation in that case.
+
+    Pre-commit semantics matter here: the hook is gating "what is about
+    to land in HEAD", not "everything I have on disk". A pre-existing
+    untracked WIP skill scaffold (e.g. someone left
+    skills/devops/foo/SKILL.md half-filled in) would otherwise block any
+    unrelated commit (infra, docs, evals) from going through.
+    """
     try:
         staged = subprocess.run(
             ["git", "diff", "--name-only", "--cached"],
             cwd=root, capture_output=True, text=True, check=True,
         ).stdout.splitlines()
+        if any(p.strip() for p in staged):
+            return {Path(p) for p in staged if p.strip()}
+        # Nothing staged — interactive use. Include unstaged + untracked.
         unstaged = subprocess.run(
             ["git", "diff", "--name-only", "HEAD"],
             cwd=root, capture_output=True, text=True, check=True,
@@ -177,7 +193,7 @@ def _git_changed_files(root: Path) -> set[Path] | None:
         ).stdout.splitlines()
     except (subprocess.CalledProcessError, FileNotFoundError):
         return None
-    return {Path(p) for p in (staged + unstaged + untracked) if p.strip()}
+    return {Path(p) for p in (unstaged + untracked) if p.strip()}
 
 
 def _changed_skill_dirs(root: Path, all_skill_dirs: list[Path]) -> set[Path] | None:
@@ -306,7 +322,9 @@ def run_skill_validation(
         issues.extend(validate_knowledge_source(ROOT, source))
 
     # Step 3 — registry records (full repo; cheap in-memory).
-    state = build_state(ROOT)
+    # Skip embeddings rebuild during validation: it's the slow part and
+    # registry-record validation only inspects skill metadata, not vectors.
+    state = build_state(ROOT, skip_embeddings=True)
     for record in state.registry_records:
         issues.extend(validate_skill_registry_record(ROOT, record))
 
