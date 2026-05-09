@@ -2,6 +2,93 @@
 
 All notable changes to SfSkills are documented here. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The project uses semantic versioning keyed to the Salesforce release cadence (minor bumps per Spring/Summer/Winter release).
 
+## [Unreleased] — sfskills-mcp v0.4.2 (retrieval quality)
+
+Retrieval quality release. Three of the four MCP corpora (agents, templates,
+decision-trees) had no measured Hit@1 baseline before this. A 247/195/34-query
+NL audit revealed catastrophic numbers — 18.2% / 24.6% / 55.9% Hit@1 — and
+this release lifts them to 95.1% / 88.7% / 82.4% via a slug-aware scorer
+rewrite in `mcp/sfskills-mcp/src/sfskills_mcp/library.py`. Skills retrieval
+gets chunk-level fastembed embeddings as a hybrid rerank signal (NL Hit@3
++1.8pp, curated 98.6% sacred floor unchanged). The pre-commit hook is
+decoupled from the multi-hour embeddings rebuild so commits stay fast.
+
+### Added
+
+- **Slug-aware scoring** in `library.py`: whole-word match against the
+  document's slug/path/basename earns a 15× boost (vs the previous
+  scorer's substring counts that let long meta-documents — e.g.
+  apex-builder.AGENT.md mentioning "apex" 200+ times — drown short-named
+  target documents). Plus a light suffix stemmer (-er, -or, -ing,
+  -ation, -ies, -y, -ed, -es, -s, -e) so "consolidate" matches
+  "consolidator" and "build" matches "builder". Plus slug coverage bonus
+  (+20 × matched/total tokens) and bigram bonus (+8 per adjacent pair).
+  Body weight changed from 1.0 substring to `0.6 × sqrt(count)` so
+  documents that mention a term 100× contribute 6× not 100×.
+- **`scripts/build_skill_embeddings.py`** — encodes one fastembed vector
+  per skill (~994 vectors, ~88 sec on M-series CPU). Lightweight
+  alternative to chunk-level embeddings when the 2-hour full encode
+  isn't worth it. `vector_index/skill_embeddings.jsonl` is gitignored.
+- **`evals/measurement/nl_query_generator_corpora.py`** + **`retrieval_eval_corpora.py`**
+  + **`run_realistic_smoke.py`** + **`realistic_queries.json`** —
+  reusable audit harness for the secondary corpora plus a 71-query
+  hand-crafted realistic-user smoke test.
+- **`evals/measurement/improvement_loop.py`** — automated
+  measure → near-miss → trigger-fix-wave → re-measure runner. Stops on
+  plateau (<min_lift over 2 iters) or curated regression below floor.
+- **Build progress reporting** in `pipelines/embedding_backends.py`:
+  emits cached/to-encode counts at start, then ~50 progress lines with
+  chunks/sec rate and ETA. Suppress with `FASTEMBED_PROGRESS=0`.
+- **`--skip-embeddings`** flag on `scripts/skill_sync.py`: bypass the
+  embeddings encode for fast commits. Pre-commit hook now uses it.
+
+### Changed
+
+- **`config/retrieval-config.yaml`**: `embeddings.enabled` flipped to
+  `true` by default. Backend `fastembed` (BAAI/bge-small-en-v1.5,
+  384-dim, MIT, ONNX-q on CPU). Vector weight 0.2 in
+  `pipelines/ranking.rerank_results()` — measured sweet spot between
+  curated regression at 0.35 and no-op at 0.10.
+- **`pipelines/ranking.rerank_results()`**: now takes optional
+  `skill_embeddings` kwarg. Lookup order is skill-level first (by
+  `skill_id`), then chunk-level (by `chunk_id`). Pure lexical when
+  neither index is present (backwards compatible).
+- **`pipelines/embedding_backends.write_embeddings()`**: stream per-line
+  instead of building one large in-memory string before writing.
+  Eliminates ~2GB peak RAM during the 126K-chunk encode that triggered
+  OOMs on machines with <12GB free.
+- **`scripts/skill_sync.py --changed-only`**: validation now scopes to
+  STAGED skills only (was: validated every skill on disk). Pre-existing
+  ERRORs in unrelated skills no longer block infra/eval/doc commits.
+  Full-repo gate is preserved via `validate_repo.py` and
+  `skill_sync.py --all`.
+- **`scripts/validate_repo.py`**: `_git_changed_files()` returns staged
+  paths when anything is staged (the pre-commit hook's natural scope).
+  Falls back to staged + unstaged + untracked only when nothing is
+  staged. Plus `build_state(skip_embeddings=True)` for the registry
+  validation step — no need to re-encode 126K chunks just to validate
+  metadata.
+- **`.githooks/pre-commit`**: now invokes
+  `skill_sync.py --changed-only --skip-embeddings`. Embeddings are
+  rebuilt only by the explicit `python3 scripts/build_index.py`
+  invocation, never as a side effect of committing.
+
+### Performance
+
+Measured on 2026-05-09 across three audits. All gates passed.
+
+| Audit                                  | Lexical-only Hit@1 / Hit@3 | This release Hit@1 / Hit@3 |
+| -------------------------------------- | -------------------------: | -------------------------: |
+| Curated 1,285-Q (sacred floor ≥98%)    |             98.6% / 100.0% |             98.6% / 100.0% |
+| Synthetic NL 1,418-Q                   |              74.3% / 86.0% |              74.5% / 87.8% |
+| Realistic smoke 71-Q                   |              78.9% / 94.4% |              78.9% / 94.4% |
+| Agents NL 247-Q                        |              18.2% / 36.4% |              95.1% / 98.0% |
+| Templates NL 195-Q                     |             24.6% / 61.0%  |             88.7% / 100.0% |
+| Decision-trees NL 34-Q                 |              55.9% / 85.3% |              82.4% / 97.1% |
+
+Per-query latency (fastembed cold start ~14s once per process; per-query
+encode ~30ms after warm-up).
+
 ## [Unreleased] — sfskills-mcp v0.4.1 (hygiene patch)
 
 Patch release rebuilding the data bundle attached to the GitHub Release

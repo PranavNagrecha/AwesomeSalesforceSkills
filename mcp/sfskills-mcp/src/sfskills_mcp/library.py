@@ -93,6 +93,10 @@ _STEM_RULES: tuple[tuple[str, str], ...] = (
     ("or", ""),
     ("ies", "i"),
     ("ied", "i"),
+    # Verb-form -ate / -ates: consolidate ↔ consolidator → consolid.
+    # Length threshold (>=4 stem) prevents mangling "create" → "cre".
+    ("ates", ""),
+    ("ate", ""),
     ("y", "i"),
     ("ed", ""),
     ("es", ""),

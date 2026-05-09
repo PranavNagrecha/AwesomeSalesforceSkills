@@ -10,4 +10,14 @@
 #           in commands/audit-router.md / automation-migration-router.md /
 #           run-queue.md (the latter had broken `cd /Users/<author>/...` shell
 #           snippets in the prompt body); drop 2 unused imports.
-__version__ = "0.4.1"
+#   0.4.2 — Retrieval quality: agents/templates/decision-trees Hit@1 lifted
+#           18→95% / 25→89% / 56→82% via slug-aware scorer (whole-word slug
+#           match weight 15, light suffix stemmer for verb forms, slug
+#           coverage bonus, bigram bonus, sqrt-capped body weight). Pre-commit
+#           hook decoupled from chunk-level embeddings rebuild via
+#           --skip-embeddings (the explicit `python3 scripts/build_index.py`
+#           path still encodes). Skill-level + chunk-level embedding indexes
+#           plumbed through pipelines/ranking.rerank_results — chunk-level
+#           default at vector weight 0.2 lifts NL Hit@3 +1.8pp on 1,418-Q
+#           audit while curated 1,285-Q baseline holds at 98.6%.
+__version__ = "0.4.2"

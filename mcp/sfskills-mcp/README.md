@@ -41,8 +41,30 @@ doesn't know whether:
   exactly what you're about to ask the agent to invent.
 
 This MCP server closes both gaps using the Salesforce CLI for org access
-(so no secrets touch the server) and the SfSkills FTS5 index for retrieval
-(no API keys required).
+(so no secrets touch the server) and the SfSkills FTS5 index + fastembed
+semantic embeddings for retrieval (no API keys required — both run locally).
+
+### Retrieval quality (v0.4.2 benchmark, 2026-05-09)
+
+Measured against three audits with different ground-truth shapes. The
+secondary corpora (agents, templates, decision-trees) had no measured
+baseline before v0.4.2; the slug-aware scorer rewrite added in this
+release lifts them dramatically.
+
+| Audit                                | Hit@1 | Hit@3 |
+| ------------------------------------ | ----: | ----: |
+| Author-curated triggers (1,285 Q)    |  98.6%|  100.0%|
+| Synthetic NL skills (1,418 Q)        |  74.5%|   87.8%|
+| Realistic-user smoke (71 Q)          |  81.7%|   94.4%|
+| Agents NL (247 Q)                    |  95.5%|   98.0%|
+| Templates NL (195 Q)                 |  88.7%|  100.0%|
+| Decision-trees NL (34 Q)             |  82.4%|   97.1%|
+
+The NL Hit@1 number on skills is dragged down by labeling artifacts in
+the synthetic generator (multiple skills can legitimately answer one
+fixture query). The realistic-user smoke — hand-crafted queries with
+unambiguous expected answers — better reflects real-world quality at
+81.7% Hit@1 / 94.4% Hit@3.
 
 ---
 
