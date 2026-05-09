@@ -7691,6 +7691,24 @@
       "domain": "security",
       "expected_skill": "security/visualforce-security-and-modernization",
       "top_k": 3
+    },
+    {
+      "query": "how do I scaffold a custom sf CLI plugin from the salesforcecli template",
+      "domain": "devops",
+      "expected_skill": "devops/sf-cli-plugin-authoring",
+      "top_k": 3
+    },
+    {
+      "query": "extend SfCommand class with typed result for sf plugin v2 with json output",
+      "domain": "devops",
+      "expected_skill": "devops/sf-cli-plugin-authoring",
+      "top_k": 3
+    },
+    {
+      "query": "migrate sfdx plugin command to sf v2 topic separator deprecate aliases",
+      "domain": "devops",
+      "expected_skill": "devops/sf-cli-plugin-authoring",
+      "top_k": 3
     }
   ]
 }

@@ -720,6 +720,7 @@
       "devops/scratch-org-pools",
       "devops/scratch-org-snapshots",
       "devops/second-generation-managed-packages",
+      "devops/sf-cli-plugin-authoring",
       "devops/sfdx-hardis-integration",
       "devops/sfdx-monorepo-patterns",
       "devops/source-tracking-and-conflict-resolution",
@@ -3501,6 +3502,9 @@
     "cli-automation": [
       "devops/salesforce-cli-automation"
     ],
+    "cli-tooling": [
+      "devops/sf-cli-plugin-authoring"
+    ],
     "click-to-dial": [
       "apex/cti-adapter-development"
     ],
@@ -5392,6 +5396,7 @@
       "devops/sandbox-refresh-and-templates",
       "devops/scratch-org-management",
       "devops/scratch-org-pools",
+      "devops/sf-cli-plugin-authoring",
       "devops/source-tracking-and-conflict-resolution",
       "devops/unlocked-package-development",
       "flow/flow-deployment-and-packaging",
@@ -9666,6 +9671,9 @@
       "architect/nonprofit-platform-architecture",
       "architect/npsp-vs-nonprofit-cloud-decision"
     ],
+    "npm-distribution": [
+      "devops/sf-cli-plugin-authoring"
+    ],
     "nps": [
       "admin/salesforce-surveys"
     ],
@@ -9761,6 +9769,9 @@
     ],
     "ocapi": [
       "apex/commerce-order-api"
+    ],
+    "oclif": [
+      "devops/sf-cli-plugin-authoring"
     ],
     "odata": [
       "data/data-virtualization-patterns",
@@ -10670,6 +10681,9 @@
     ],
     "platform-strategy": [
       "architect/npsp-vs-nonprofit-cloud-decision"
+    ],
+    "plugin-development": [
+      "devops/sf-cli-plugin-authoring"
     ],
     "pmd": [
       "devops/salesforce-code-analyzer"
@@ -12087,7 +12101,8 @@
     ],
     "salesforce-cli": [
       "devops/destructive-changes-deployment",
-      "devops/salesforce-cli-automation"
+      "devops/salesforce-cli-automation",
+      "devops/sf-cli-plugin-authoring"
     ],
     "salesforce-code-analyzer": [
       "devops/salesforce-code-analyzer"
@@ -12761,10 +12776,14 @@
       "devops/source-tracking-and-conflict-resolution"
     ],
     "sf-cli-v2": [
-      "devops/salesforce-cli-automation"
+      "devops/salesforce-cli-automation",
+      "devops/sf-cli-plugin-authoring"
     ],
     "sf-data-bulk": [
       "devops/salesforce-cli-automation"
+    ],
+    "sf-plugins-core": [
+      "devops/sf-cli-plugin-authoring"
     ],
     "sf-project-deploy": [
       "devops/salesforce-cli-automation"
@@ -13954,6 +13973,9 @@
     "typeof": [
       "apex/apex-polymorphic-soql",
       "apex/apex-soql-relationship-queries"
+    ],
+    "typescript": [
+      "devops/sf-cli-plugin-authoring"
     ],
     "uat": [
       "admin/uat-and-acceptance-criteria",
