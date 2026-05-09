@@ -29,11 +29,14 @@ from pipelines.ranking import aggregate_skill_scores, collect_official_sources, 
 from pipelines.sync_engine import load_retrieval_config
 
 # NOTE: scripts/query_enrichment.py is committed but NOT wired into run_search.
-# Bidirectional vocabulary expansion caused a -5% Hit@1 regression on the
-# author-curated baseline (over-expansion dilutes the precise keywords authors
-# pick). The module stays available for ad-hoc CLI use and future targeted
-# experiments (e.g. ABBREV→long expansion only, with score-boost rather than
-# token-stream concatenation). See evals/measurement/findings.md.
+# Two attempts at vocabulary expansion both failed to lift NL Hit@1:
+#   - Token-stream concat (concat long-forms into the FTS5 query): -5% on
+#     curated baseline due to over-expansion diluting precise author keywords.
+#   - Post-retrieval score boost: flat on NL synthetic queries (74.3% →
+#     74.4%) and -0.2% on curated. The synthetic NL distribution doesn't
+#     lean heavily on abbreviations; the few that do are already resolved
+#     by FTS5 prefix matching (`fls*` matches `flsmanager`, etc.).
+# Keep query_enrichment.py available for ad-hoc CLI use.
 
 
 def load_chunks(path: Path) -> dict[str, dict]:

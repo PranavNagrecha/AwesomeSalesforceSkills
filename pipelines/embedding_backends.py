@@ -162,9 +162,13 @@ def write_embeddings(path: Path, embeddings: list[dict]) -> None:
         if path.exists():
             path.unlink()
         return
-    lines = [json.dumps(item, sort_keys=True) for item in embeddings]
-    content = "\n".join(lines) + "\n"
-    path.write_text(content, encoding="utf-8")
+    # Stream per-line. Building one large string in memory peaked at >2GB
+    # extra on the 126K-chunk skills corpus and triggered OOMs on machines
+    # with <12GB free RAM. Per-line write keeps peak at one record (~2KB).
+    with path.open("w", encoding="utf-8") as fh:
+        for item in embeddings:
+            fh.write(json.dumps(item, sort_keys=True))
+            fh.write("\n")
 
 
 def load_embeddings(path: Path) -> dict[str, dict]:
