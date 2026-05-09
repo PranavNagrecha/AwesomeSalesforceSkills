@@ -98,6 +98,8 @@ def _build_fastembed_embeddings(
     chunks: list[dict],
     existing_path: Path | None,
 ) -> list[dict]:
+    import os, sys, time
+
     cache: dict[tuple[str, str], dict] = {}
     if existing_path and existing_path.exists():
         for line in existing_path.read_text(encoding="utf-8").splitlines():
@@ -127,9 +129,23 @@ def _build_fastembed_embeddings(
             to_encode_indices.append(i)
             to_encode_texts.append(chunk["text"])
 
+    total_to_encode = len(to_encode_texts)
+    cached_count = len(chunks) - total_to_encode
+    progress = os.environ.get("FASTEMBED_PROGRESS", "1") != "0"
+    if progress and total_to_encode:
+        print(
+            f"[embed] cached={cached_count} to_encode={total_to_encode}  "
+            f"avg_chunk_chars={sum(len(t) for t in to_encode_texts)//max(1,total_to_encode)}",
+            file=sys.stderr,
+            flush=True,
+        )
+
     if to_encode_texts:
         model = _get_fastembed_model()
+        report_every = max(1, total_to_encode // 50)  # ~50 progress lines per build
+        t0 = time.time()
         # fastembed.embed yields a generator of np.ndarray; convert to lists.
+        done = 0
         for slot_index, vector in zip(to_encode_indices, model.embed(to_encode_texts)):
             chunk = chunks[slot_index]
             embeddings[slot_index] = {
@@ -141,6 +157,26 @@ def _build_fastembed_embeddings(
                 # lossless for our retrieval signal but cuts JSON size ~30%.
                 "vector": [round(float(v), 6) for v in vector],
             }
+            done += 1
+            if progress and done % report_every == 0:
+                elapsed = time.time() - t0
+                rate = done / max(elapsed, 0.001)
+                eta = (total_to_encode - done) / max(rate, 0.001)
+                print(
+                    f"[embed] {done}/{total_to_encode} "
+                    f"({done/total_to_encode:.0%})  "
+                    f"{rate:.1f} chunks/sec  "
+                    f"eta {int(eta//60)}m{int(eta%60)}s",
+                    file=sys.stderr,
+                    flush=True,
+                )
+        if progress:
+            print(
+                f"[embed] done {total_to_encode}/{total_to_encode} in "
+                f"{int((time.time()-t0)//60)}m{int((time.time()-t0)%60)}s",
+                file=sys.stderr,
+                flush=True,
+            )
 
     return embeddings  # type: ignore[return-value]
 

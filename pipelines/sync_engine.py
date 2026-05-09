@@ -36,7 +36,15 @@ def load_retrieval_config(root: Path) -> dict:
     return yaml.safe_load((root / "config" / "retrieval-config.yaml").read_text(encoding="utf-8")) or {}
 
 
-def build_state(root: Path) -> SyncState:
+def build_state(root: Path, *, skip_embeddings: bool = False) -> SyncState:
+    """Build the full sync state.
+
+    ``skip_embeddings``: when True, the embeddings pipeline is bypassed even
+    if config sets ``embeddings.enabled: true``. Used by the pre-commit hook
+    so commits don't trigger the multi-hour chunk-level encode. The explicit
+    ``python3 scripts/build_index.py`` path leaves this False so a deliberate
+    rebuild still runs the encoder.
+    """
     source_entries = load_sources_manifest(root)
     skill_dirs = discover_skill_dirs(root)
 
@@ -154,6 +162,15 @@ def build_state(root: Path) -> SyncState:
 
     config = load_retrieval_config(root)
     embedding_config = parse_embedding_config(config)
+    # Honor the per-call skip flag — pre-commit hook uses this to avoid the
+    # 3-hour chunk-level encode every time someone touches a skill file. The
+    # explicit `python3 scripts/build_index.py` path still respects config.
+    if skip_embeddings:
+        embedding_config = embedding_config.__class__(
+            enabled=False,
+            backend=embedding_config.backend,
+            dimensions=embedding_config.dimensions,
+        )
     embeddings = build_embeddings(
         chunks,
         embedding_config,

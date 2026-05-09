@@ -50,6 +50,15 @@ def main() -> int:
         action="store_true",
         help="Skip pre-sync validation. Not recommended — broken skills will enter the registry.",
     )
+    parser.add_argument(
+        "--skip-embeddings",
+        action="store_true",
+        help=(
+            "Skip embeddings rebuild even if config has embeddings.enabled=true. "
+            "Used by .githooks/pre-commit to keep commits fast — the explicit "
+            "python3 scripts/build_index.py path runs without this flag."
+        ),
+    )
     args = parser.parse_args()
 
     if args.skill:
@@ -88,7 +97,7 @@ def main() -> int:
         if warnings:
             print(f"\n⚠  {len(warnings)} warning(s). Sync will proceed — address warnings before committing.")
 
-    state = build_state(ROOT)
+    state = build_state(ROOT, skip_embeddings=args.skip_embeddings)
     changed = write_state(ROOT, state)
 
     if changed:

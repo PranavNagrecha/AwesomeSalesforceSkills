@@ -1,7 +1,12 @@
 #!/bin/sh
 set -eu
 
-python3 scripts/skill_sync.py --changed-only
+# --skip-embeddings: the chunk-level encode takes ~3 hours and the cache
+# only kicks in once the first full build completes. Without this flag,
+# enabling embeddings in config makes every commit attempt to build them,
+# which collides with any deliberate `python3 scripts/build_index.py` run
+# in another terminal. Embeddings are rebuilt explicitly, not by commit.
+python3 scripts/skill_sync.py --changed-only --skip-embeddings
 # --changed-only keeps the hook fast on 1-file commits while still running
 # the generated-artifact drift check (critical to prevent registry rot).
 # For a full-repo pass use: python3 scripts/validate_repo.py (or --all).
