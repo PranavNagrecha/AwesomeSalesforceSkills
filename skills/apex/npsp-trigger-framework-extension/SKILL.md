@@ -30,6 +30,7 @@ triggers:
   - "DML inside TDTM run method causing recursion or NPSP conflicts"
   - "npsp__Trigger_Handler__c registration not firing on expected object events"
   - "test class not isolating NPSP trigger handlers for unit testing"
+  - "we're having issues with trigger framework"
 dependencies:
   - apex/trigger-framework
 version: 1.0.0

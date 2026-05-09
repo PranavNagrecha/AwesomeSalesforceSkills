@@ -14,6 +14,7 @@ triggers:
   - "how do I set up a B2B Commerce store with buyer groups and entitlements"
   - "products appear in Commerce admin catalog but are missing from storefront search results"
   - "how to grant a contact access to transact on a B2B storefront"
+  - "we're having issues with b2b commerce"
 tags:
   - b2b-commerce
   - webstore

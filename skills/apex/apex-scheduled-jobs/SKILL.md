@@ -13,6 +13,7 @@ triggers:
   - how do I abort or reschedule a scheduled Apex job
   - scheduled Apex job not running or failing silently
   - query active scheduled jobs in Salesforce org
+  - "we're having issues with scheduled apex"
 tags:
   - schedulable
   - scheduled-apex

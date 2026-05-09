@@ -13,6 +13,7 @@ triggers:
   - "I need to debug Apex code in VS Code — should I use Interactive or Replay Debugger"
   - "VS Code is not recognizing my sfdx-project.json or custom objects"
   - "how do I authorize a Salesforce org from VS Code"
+  - "salesforce extensions isn't working"
 tags:
   - vscode
   - salesforce-extensions

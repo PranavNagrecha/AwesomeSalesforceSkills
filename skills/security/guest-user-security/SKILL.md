@@ -11,6 +11,7 @@ triggers:
   - "unauthenticated users can access sensitive data through our Apex controller"
   - "what permissions should the guest user profile have on my Experience Cloud site"
   - "guest sharing rules stopped working after a Salesforce upgrade"
+  - "we're having issues with guest user"
 tags:
   - guest-user
   - experience-cloud

@@ -15,6 +15,7 @@ triggers:
   - "subscription sending report with wrong data to recipients"
   - "report running user is showing data the subscriber should not see"
   - "report filter dashboard subscription"
+  - "report filters isn't working"
 inputs: ["reporting question", "audience", "data source objects"]
 outputs: ["report design guidance", "dashboard findings", "visibility recommendations"]
 dependencies: []

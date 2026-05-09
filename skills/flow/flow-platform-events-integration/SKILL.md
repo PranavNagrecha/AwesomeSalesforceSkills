@@ -23,6 +23,7 @@ triggers:
   - "pe subscriber error handling"
   - "integration fan-out from flow save"
   - "platform event subscriber running user"
+  - "I want to Flow is a Platform Event publisher"
 inputs:
   - Platform Event object definition (Standard-Volume or High-Volume)
   - Publisher context (Flow type, caller transaction)

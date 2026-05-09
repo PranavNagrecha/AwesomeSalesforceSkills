@@ -15,6 +15,7 @@ triggers:
   - "SandboxPostCopy class did not run and now sandbox is misconfigured after refresh"
   - "sandbox is making live API calls because Named Credentials still point to production"
   - "how do I prevent the sandbox from sending outbound email to real users"
+  - "data isolation isn't working"
 tags:
   - sandbox
   - data-isolation

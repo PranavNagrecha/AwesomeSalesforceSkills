@@ -13,6 +13,7 @@ triggers:
   - "how do I filter a collection without using a loop in flow"
   - "how to sort records in a collection variable before displaying in a screen flow"
   - "how do I use the transform element to create related records from a collection"
+  - "flow collections isn't working"
 tags:
   - flow-collections
   - loop-element

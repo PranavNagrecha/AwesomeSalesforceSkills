@@ -19,6 +19,7 @@ triggers:
   - "profile sprawl is making access changes risky"
   - "need a least privilege access bundle model"
   - "permission set group strategy for multiple personas"
+  - "permission set architecture isn't working"
 inputs:
   - "current profile, permission-set, and permission-set-group inventory"
   - "target personas, feature bundles, and license constraints"

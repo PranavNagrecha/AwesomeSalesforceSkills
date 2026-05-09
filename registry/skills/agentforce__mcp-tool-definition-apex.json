@@ -72,7 +72,7 @@
     "fc666b44dd419e18d72d",
     "fe90436c31c8c7bdf427"
   ],
-  "content_hash": "9ee1d4498f785eb74982b080c016901141576e85c41f5c96dfcd256696e1729e",
+  "content_hash": "b87055a66d8c990331756cd2b65b0eb31ee2d134c48a2ab712b4b3a2618367e3",
   "dependencies": [
     "salesforce-mcp-server-setup"
   ],

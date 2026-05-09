@@ -11,6 +11,8 @@ triggers:
   - "upload a CA-signed certificate to Salesforce for mTLS client authentication"
   - "self-signed certificate expired in connected app — how do I create and apply a new one"
   - "how do I export or migrate a Salesforce certificate to another org or sandbox"
+  - "mutual tls isn't working"
+  - "we're having issues with mutual tls"
 tags:
   - certificate
   - mutual-tls

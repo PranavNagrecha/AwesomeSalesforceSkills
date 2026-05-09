@@ -12,6 +12,7 @@ triggers:
   - "How do I define the inputSchema for an MCP tool in Apex?"
   - "My MCP tool validate() method needs to check required params before execute() runs"
   - "I want to expose a SOQL query or Apex DML operation as an MCP tool for Claude"
+  - "we're having issues with salesforce mcp lib"
 tags:
   - mcp
   - agentforce

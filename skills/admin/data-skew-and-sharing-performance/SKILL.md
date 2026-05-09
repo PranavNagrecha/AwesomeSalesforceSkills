@@ -13,6 +13,7 @@ triggers:
   - "could not acquire lock error during large data load or user provisioning"
   - "page load is slow when opening an account with thousands of child records"
   - "how do I fix data skew in Salesforce"
+  - "data skew hits the timeout"
 tags:
   - data-skew
   - sharing-recalculation

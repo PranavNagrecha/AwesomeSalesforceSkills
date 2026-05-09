@@ -52,7 +52,7 @@
     "f8bfbe1155b86ee881ae",
     "fde756eb307f1900971b"
   ],
-  "content_hash": "e5e85c62c2126a5a08932d3882067ec1020dc6c95ad472b90f246c6b62f0c34f",
+  "content_hash": "f17f0e60f4f9ccc77fdba8a3125aaadc52aaee89dd29f8713b65abcedf57fe5c",
   "dependencies": [],
   "description": "Apex outbound email via Messaging.SingleEmailMessage \u2014 OrgWideEmailAddress, ReplyTo and Reply-To header semantics, EmailTemplate merging with whatId/targetObjectId, attachment patterns, daily governor limits, and the difference between transactional sends and Email Alerts. NOT for inbound email handling (use apex/inbound-email-handler) or Marketing Cloud sends (use integration/marketing-cloud-rest-api).",
   "file_location": "skills/apex/apex-outbound-email-patterns",

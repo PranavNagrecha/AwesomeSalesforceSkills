@@ -13,6 +13,8 @@ triggers:
   - "salesforce bell notification from apex"
   - "slack custom notification salesforce"
   - "notification fatigue prevention"
+  - "custom notification type isn't working"
+  - "we're having issues with custom notification type"
 tags:
   - admin
   - notifications

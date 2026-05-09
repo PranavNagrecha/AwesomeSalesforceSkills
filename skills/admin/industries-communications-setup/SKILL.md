@@ -22,6 +22,7 @@ triggers:
   - "Communications Cloud account hierarchy setup — Billing Account, Service Account, Consumer Account"
   - "Industries Order Management setup and order decomposition configuration"
   - "TM Forum commercial to technical order decomposition in Salesforce"
+  - "we're having issues with communications cloud"
 inputs:
   - "Communications Cloud license type and edition confirmed in org (check Setup > Installed Packages)"
   - "Target account model — consumer B2C or business B2B"

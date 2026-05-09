@@ -30,6 +30,7 @@ triggers:
   - what data gets copied into a Partial Copy sandbox and how do I control it
   - integrations are broken in the sandbox after refresh and Named Credentials are missing
   - "sandbox refresh SandboxPostCopy automation"
+  - "sandbox refresh isn't working"
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha

@@ -22,6 +22,7 @@ triggers:
   - "interactive step vs background step orchestration"
   - "orchestration pause and resume on user action"
   - "evaluation flow in orchestration stage"
+  - "we're having issues with flow orchestration"
 inputs:
   - Process being orchestrated (steps, actors, decision points)
   - User assignment rules (queues, role hierarchy, explicit users)

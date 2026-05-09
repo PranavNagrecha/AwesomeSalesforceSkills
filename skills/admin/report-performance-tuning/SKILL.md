@@ -15,6 +15,7 @@ triggers:
   - "how do I run a report on millions of records without it failing"
   - "async report execution via Analytics API for large data sets"
   - "scheduled dashboard refresh not keeping up with data changes"
+  - "I want to a report or dashboard is slow"
 tags:
   - reports
   - dashboards

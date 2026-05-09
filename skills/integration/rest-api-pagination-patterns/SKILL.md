@@ -20,6 +20,7 @@ triggers:
   - "rate limit interaction with pagination loop"
   - "offset pagination drift on insert delete"
   - "batch size tuning for inbound rest integration"
+  - "we're having issues with link header"
 inputs:
   - Integration direction (inbound to Salesforce, outbound from Salesforce)
   - API style (cursor, offset, Link header, custom)

@@ -18,6 +18,7 @@ triggers:
   - "how do i show validation rule errors in a form"
   - "custom validation messages in lightning input"
   - "file upload with lwc form save flow"
+  - "lwc forms isn't working"
 inputs:
   - "whether the form uses LDS base components, UI API, or Apex"
   - "which fields need custom layout, conditional logic, or cross-field validation"

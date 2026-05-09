@@ -13,6 +13,7 @@ triggers:
   - "Work Summaries is greyed out or missing from Setup — what prerequisites do I need to enable generative AI features?"
   - "We are setting up Einstein for Service for the first time — what is the correct activation sequence and what can go wrong?"
   - "Article Recommendations or Reply Recommendations require a minimum number of cases or interactions — how do I verify we meet the data thresholds?"
+  - "we're having issues with einstein for service"
 tags:
   - einstein-for-service
   - case-classification

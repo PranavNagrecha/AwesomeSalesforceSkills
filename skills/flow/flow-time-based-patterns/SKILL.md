@@ -14,6 +14,7 @@ triggers:
   - "flow scheduled path time zone confusion"
   - "scheduled path record changed cancel reschedule"
   - "flow scheduled path record triggered delay reminder"
+  - "scheduled path isn't working"
 tags:
   - flow
   - scheduled-path

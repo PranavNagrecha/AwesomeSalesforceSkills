@@ -14,6 +14,7 @@ triggers:
   - "We need to understand what KPIs marketing can report on natively in Salesforce versus what requires MCAE B2B Marketing Analytics Plus"
   - "Our marketing team wants Campaign Intelligence dashboards — what settings need to be in place before we can use them?"
   - "How do we configure Campaign Influence to give revenue credit to the right campaigns?"
+  - "we're having issues with campaign influence"
 tags:
   - campaign-influence
   - attribution

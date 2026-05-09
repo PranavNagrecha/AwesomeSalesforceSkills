@@ -12,6 +12,7 @@ triggers:
   - "my Salesforce Site webhook endpoint is getting 401 errors from the external sender"
   - "how do I make my Apex REST webhook endpoint idempotent to handle retries"
   - "my webhook receiver is timing out because processing takes too long"
+  - "inbound integration isn't working"
 tags:
   - webhook
   - inbound-integration

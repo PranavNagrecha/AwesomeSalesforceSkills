@@ -18,6 +18,7 @@ triggers:
   - "is there a way to throttle outbound emails so we don't trigger spam filters"
   - "throttle email sending rate to avoid spam filters"
   - "salesforce sending too many emails too fast deliverability"
+  - "email deliverability isn't working"
 tags:
   - email-deliverability
   - spf

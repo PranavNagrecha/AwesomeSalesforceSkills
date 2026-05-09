@@ -15,6 +15,7 @@ triggers:
   - "dedicated IP assignment and sender reputation across business units"
   - "reply mail management configuration for Marketing Cloud BU"
   - "new business unit provisioning Enterprise 2.0 Marketing Cloud"
+  - "marketing cloud engagement isn't working"
 tags:
   - marketing-cloud-engagement
   - business-units

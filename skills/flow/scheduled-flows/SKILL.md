@@ -19,6 +19,7 @@ triggers:
   - "scheduled flow versus batch apex"
   - "time based workflow replacement with flow"
   - "scheduled flow volume and retry design"
+  - "scheduled flows isn't working"
 inputs:
   - "what recurrence is needed and whether the record set can be bounded tightly"
   - "how much data the flow will inspect or mutate on each run"

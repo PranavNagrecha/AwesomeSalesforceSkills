@@ -13,6 +13,7 @@ triggers:
   - "lwc renderedCallback infinite rerender loop"
   - "lwc reactive Date Map Set not updating"
   - "lwc state management modern reactivity rules"
+  - "we're having issues with rendered callback"
 tags:
   - lwc
   - reactivity

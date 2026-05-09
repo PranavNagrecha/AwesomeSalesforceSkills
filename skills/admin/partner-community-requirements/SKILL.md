@@ -13,6 +13,7 @@ triggers:
   - "channel partner portal requirements — tier management, MDF, co-marketing assets"
   - "lead distribution to partners using assignment rules"
   - "partner tier management Gold Silver Bronze feature access"
+  - "partner community isn't working"
 tags:
   - partner-community
   - prm

@@ -15,6 +15,7 @@ triggers:
   - "estimate effort tier S/M/L/XL for each salesforce requirement"
   - "find AppExchange alternative for requirements salesforce cannot satisfy"
   - "decide which fit-gap rows go to which downstream agent (object designer, flow builder, apex builder)"
+  - "fit gap analysis isn't working"
 tags:
   - fit-gap-analysis
   - capability-matrix

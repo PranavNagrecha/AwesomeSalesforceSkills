@@ -14,6 +14,7 @@ triggers:
   - "web-to-case form hit the 50000 pending request limit and new submissions are being dropped"
   - "case team members cannot see the case even though I added them to the predefined team"
   - "how do I set up email to case so customer replies thread instead of creating new cases"
+  - "we're having issues with email to case"
 tags:
   - cases
   - email-to-case

@@ -27,7 +27,7 @@
     "dfa05e06c65d15eb3cde",
     "e1c4308476facf23cf68"
   ],
-  "content_hash": "0b20d506335060ceab23918ff25da93e31ecf3f6b87a829554c97513467b765e",
+  "content_hash": "f78647843517aa12c1b8c7587901177291c5979eda19f8252fa61dec9f0f496d",
   "dependencies": [],
   "description": "Control LLM spend and Apex governor exposure for high-traffic Agentforce agents via per-user token budgets and graceful fallback. NOT for API rate-limiting of REST endpoints.",
   "file_location": "skills/agentforce/agent-rate-limit-strategy",

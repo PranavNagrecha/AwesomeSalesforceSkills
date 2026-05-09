@@ -19,6 +19,8 @@ triggers:
   - "how should i mock apex in an lwc test"
   - "lwc unit test needs flushPromises"
   - "need accessibility checks in lwc jest"
+  - "lwc testing isn't working"
+  - "we're having issues with lwc testing"
 inputs:
   - "component responsibilities, data sources, and important user interactions"
   - "whether the component uses wire adapters, imperative Apex, navigation, or LMS"

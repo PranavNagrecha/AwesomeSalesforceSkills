@@ -13,6 +13,7 @@ triggers:
   - "help center UX design and knowledge base search experience"
   - "case deflection strategy using knowledge article surfacing"
   - "friction-calibrated case submission form design"
+  - "we're having issues with case deflection"
 tags:
   - self-service-design
   - case-deflection

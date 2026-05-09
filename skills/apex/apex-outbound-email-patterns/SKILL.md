@@ -14,6 +14,7 @@ triggers:
   - "apex email daily limit governor"
   - "renderStoredEmailTemplate merge fields apex"
   - "apex email attachment fileattachment contentversion"
+  - "org wide email isn't working"
 tags:
   - email
   - messaging

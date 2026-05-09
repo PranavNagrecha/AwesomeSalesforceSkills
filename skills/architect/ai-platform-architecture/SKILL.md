@@ -13,6 +13,7 @@ triggers:
   - "should I use Salesforce Default model or bring my own LLM for our Agentforce deployment"
   - "what are the architectural constraints of the Einstein Trust Layer that affect model selection"
   - "how do I structure agent topology for a complex enterprise Agentforce implementation"
+  - "we're having issues with ai platform architecture"
 tags:
   - ai-platform-architecture
   - model-selection

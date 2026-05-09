@@ -15,6 +15,7 @@ triggers:
   - "how do I set up a discount approval on a quote"
   - "quote line items not reflecting on the opportunity"
   - "how do I add custom fields to a quote or quote line item"
+  - "quote templates isn't working"
 tags:
   - quotes
   - quote-templates

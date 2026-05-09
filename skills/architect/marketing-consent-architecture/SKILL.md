@@ -13,6 +13,7 @@ triggers:
   - "our marketing team says MC unsubscribes are not reflected in the CRM contact record and compliance is worried"
   - "should the CRM or Marketing Cloud be the system of record for subscriber consent preferences"
   - "explain the Individual, ContactPointTypeConsent, and ContactPointConsent objects and how they relate"
+  - "marketing consent isn't working"
 tags:
   - consent
   - marketing-consent

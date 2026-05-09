@@ -13,6 +13,7 @@ triggers:
   - "Einstein Discovery Flow action not showing recommendations for my records"
   - "My model refresh completed but records still show old prediction scores"
   - "How do I schedule bulk predict jobs for Einstein Discovery in Model Manager?"
+  - "we're having issues with einstein discovery"
 tags:
   - einstein-discovery
   - prediction-definition

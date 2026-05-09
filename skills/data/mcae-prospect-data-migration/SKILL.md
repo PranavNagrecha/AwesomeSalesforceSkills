@@ -13,6 +13,7 @@ triggers:
   - "My custom prospect fields are not mapping correctly during the MCAE list import"
   - "Can I import historical email opens and click data when migrating to MCAE?"
   - "What fields does MCAE support during CSV prospect import and how do I map them?"
+  - "prospect import isn't working"
 tags:
   - mcae
   - pardot

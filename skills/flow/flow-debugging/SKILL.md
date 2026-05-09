@@ -15,6 +15,7 @@ triggers:
   - "my flow fails silently and I cannot find any error message"
   - "how do I run a flow as a different user to test permissions"
   - "how do I create a flow test to validate expected outputs automatically"
+  - "flow debugging isn't working"
 tags:
   - flow-debugging
   - debug-mode

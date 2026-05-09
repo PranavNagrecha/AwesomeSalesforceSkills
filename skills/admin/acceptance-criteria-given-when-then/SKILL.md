@@ -15,6 +15,7 @@ triggers:
   - "scenario outline with examples table for parameterized salesforce AC"
   - "how to capture permission and data-state preconditions in AC"
   - "negative path acceptance criteria for salesforce flows and validation rules"
+  - "we're having issues with acceptance criteria"
 tags:
   - acceptance-criteria
   - given-when-then

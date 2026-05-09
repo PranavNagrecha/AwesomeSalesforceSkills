@@ -14,6 +14,7 @@ triggers:
   - "enable threat detection for credential stuffing attacks"
   - "API anomaly detection with Shield event monitoring"
   - "enable event monitoring"
+  - "we're having issues with event monitoring"
 tags:
   - event-monitoring
   - shield

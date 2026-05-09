@@ -15,6 +15,7 @@ triggers:
   - "salesforce light dom when to use"
   - "chart library can't find canvas in lwc"
   - "screen reader cannot see lwc content"
+  - "we're having issues with lwc light dom"
 tags:
   - lwc-light-dom
   - light-dom

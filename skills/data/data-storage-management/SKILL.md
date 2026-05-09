@@ -13,6 +13,7 @@ triggers:
   - "should we use Attachments or Files for user uploaded documents"
   - "large text area fields are inflating our storage usage unexpectedly"
   - "how do I calculate how much storage each object is using in Salesforce"
+  - "we're having issues with storage management"
 tags:
   - storage-management
   - data-storage

@@ -13,6 +13,8 @@ triggers:
   - "OmniStudio field mapping is getting messy"
   - "should this DataRaptor be moved to Integration Procedure or Apex"
   - "DataRaptor performance review"
+  - "turbo extract isn't working"
+  - "we're having issues with turbo extract"
 tags:
   - dataraptor
   - turbo-extract

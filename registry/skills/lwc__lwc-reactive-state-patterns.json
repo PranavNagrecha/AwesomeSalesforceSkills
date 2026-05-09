@@ -67,7 +67,7 @@
     "f1d1dd8ff6b32a8b9d95",
     "f8acafdf0fc10d420a48"
   ],
-  "content_hash": "d5cd3e6217d4b8ed4049b02e20964d4a666482882339c4a0298aec16658b6c84",
+  "content_hash": "e65d5901bd0cba068331df4a595611746c48ddfca5ad18b90dcf48102995e54f",
   "dependencies": [],
   "description": "How LWC reactivity actually works after Spring '20 (API v48+) \u2014 every class field is reactive on reassignment, but @track is still required for in-place mutation of plain object/array contents, and Date / Set / Map mutations are NEVER observed. Covers the renderedCallback infinite-loop trap, reactive-getter caching rules, and when @track is genuinely needed today. NOT for @wire reactive parameters (see lwc/wire-adapters), NOT for Lightning Data Service caching (see lwc/ldws-and-uirecordapi), NOT for cross-component reactive state (see lwc/message-channel-patterns and lwc/state-management-with-modules).",
   "file_location": "skills/lwc/lwc-reactive-state-patterns",

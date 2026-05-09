@@ -19,6 +19,7 @@ triggers:
   - "Limits.getCpuTime checkpoint usage"
   - "string concatenation in loops"
   - "regex or JSON causing performance issues"
+  - "cpu time isn't working"
 inputs:
   - "exact exception or hotspot location if known"
   - "whether the issue is CPU-heavy, heap-heavy, or both"

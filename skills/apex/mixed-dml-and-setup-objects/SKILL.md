@@ -13,6 +13,7 @@ triggers:
   - "cannot update PermissionSetAssignment and custom object together"
   - "@future method to avoid mixed DML restriction"
   - "mixed DML error in @testSetup method"
+  - "mixed dml isn't working"
 tags:
   - mixed-dml
   - setup-objects

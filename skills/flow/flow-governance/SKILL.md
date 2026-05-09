@@ -17,6 +17,7 @@ triggers:
   - "too many stale flow versions"
   - "who owns this automation"
   - "flow release readiness checklist"
+  - "flow governance isn't working"
 inputs:
   - "how many flows exist, which teams own them, and where operational confusion appears today"
   - "current naming, documentation, and activation practices"

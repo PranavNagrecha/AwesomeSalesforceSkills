@@ -25,6 +25,7 @@ triggers:
   - "rolling out a single loyalty program across the US, EU, and APAC"
   - "tier-descalation rules — how do we drop members down without losing them"
   - "what's the right exchange rate between qualifying and non-qualifying points"
+  - "we're having issues with loyalty management"
 inputs:
   - "Business goals: lifetime value uplift target, retention rate target, tier-distribution target"
   - "Existing customer transaction data (ARPU, transaction frequency, recency profile)"

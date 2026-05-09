@@ -18,6 +18,8 @@ triggers:
   - "Flow builderContext and inputVariables"
   - "custom property editor validate method"
   - "configuration_editor_input_value_changed event"
+  - "custom property editor isn't working"
+  - "we're having issues with custom property editor"
 inputs:
   - "whether the target is a Flow screen component or another Flow-exposed surface"
   - "which design-time fields must be configured in Flow Builder"

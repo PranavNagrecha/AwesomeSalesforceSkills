@@ -13,6 +13,8 @@ triggers:
   - "what data should I re-seed after a Salesforce sandbox refresh"
   - "SandboxPostCopy is failing with Automated Process user errors during data load"
   - "which objects does native Data Seeding not support in Salesforce"
+  - "data seeding isn't working"
+  - "we're having issues with data seeding"
 tags:
   - sandbox
   - data-seeding

@@ -21,6 +21,7 @@ triggers:
   - "what is the right number of data category groups for our knowledge base"
   - "how do I use KCS methodology and Search Activity Gaps to find content gaps in Knowledge"
   - "how deep should our knowledge category hierarchy be"
+  - "data categories isn't working"
 inputs:
   - Number of products or business units requiring distinct article sets
   - Current article count and growth rate

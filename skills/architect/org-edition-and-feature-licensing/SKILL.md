@@ -14,6 +14,8 @@ triggers:
   - "Flow Orchestration is not showing up in our org — which edition includes it"
   - "planning an org upgrade from Professional to Enterprise edition"
   - "which features require add-on licenses even in Unlimited edition"
+  - "feature availability is slow"
+  - "feature availability hits the timeout"
 tags:
   - architect
   - editions

@@ -11,6 +11,7 @@ triggers:
   - "How do I display a Knowledge article body in an LWC on an Experience Cloud site?"
   - "How do I query Knowledge__kav from Apex and wire it to a Lightning Web Component?"
   - "How do I let Experience Cloud guests search and vote on Knowledge articles without giving them too much access?"
+  - "knowledge article isn't working"
 tags:
   - knowledge
   - knowledge-article

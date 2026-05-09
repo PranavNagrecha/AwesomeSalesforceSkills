@@ -13,6 +13,7 @@ triggers:
   - "how to add Omni-Channel and Macros to the utility bar"
   - "how to create keyboard shortcuts for the Lightning console"
   - "what is Console Navigation and how is it different from Standard Navigation"
+  - "service console isn't working"
 tags:
   - service-console
   - console-navigation

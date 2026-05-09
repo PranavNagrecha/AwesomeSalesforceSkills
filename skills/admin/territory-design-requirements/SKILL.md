@@ -13,6 +13,8 @@ triggers:
   - "how many territories should we create and how deep should the hierarchy be"
   - "what information do I need to gather before setting up territory management"
   - "our territory alignment criteria need to be documented before implementation"
+  - "territory alignment isn't working"
+  - "we're having issues with territory alignment"
 tags:
   - territory-design
   - territory-alignment

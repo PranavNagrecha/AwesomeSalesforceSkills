@@ -34,6 +34,7 @@ triggers:
   - "how do we export a Slack Connect channel for eDiscovery or a legal hold"
   - "what Slack plan does a company need to use Slack Connect"
   - "cross-org Slack channel compliance requirements for a regulated industry"
+  - "slack connect isn't working"
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha

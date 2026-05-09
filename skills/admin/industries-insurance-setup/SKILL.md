@@ -13,6 +13,7 @@ triggers:
   - "setting up claim types and coverage configuration in FSC Insurance org"
   - "how to issue a policy using the Connect API insurance policy administration endpoint"
   - "enabling many-to-many policy relationships or multiple producers per policy in insurance settings"
+  - "we're having issues with policy administration"
 tags:
   - insurance
   - fsc

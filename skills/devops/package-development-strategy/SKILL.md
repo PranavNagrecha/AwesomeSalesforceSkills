@@ -13,6 +13,8 @@ triggers:
   - "which Salesforce package type can be listed on AppExchange as an ISV product"
   - "how do I choose a package strategy for modularizing a large internal Salesforce org"
   - "is 2GP or 1GP managed package recommended for new ISV development on Salesforce"
+  - "unlocked packages isn't working"
+  - "we're having issues with unlocked packages"
 tags:
   - packaging
   - unlocked-packages

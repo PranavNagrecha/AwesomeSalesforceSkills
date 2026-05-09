@@ -14,6 +14,7 @@ triggers:
   - "we need an audit trail for AI-generated recommendations surfaced to sales reps"
   - "what disclosures are required when Salesforce AI content is shown to customers"
   - "how do we build a risk inventory for AI use cases in our org"
+  - "ai governance isn't working"
 tags:
   - ai-governance
   - responsible-ai

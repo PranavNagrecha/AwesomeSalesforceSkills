@@ -40,7 +40,7 @@
     "f6929babb8cbf0fd47a2",
     "ffbd185319c61d560bc2"
   ],
-  "content_hash": "4b59b119ce8aa81b1585133fcf8dd9ac0c37461c42f4b9b0a2ec4060a70dcf16",
+  "content_hash": "6ad0c49cc6a7a1adcd1175be33c1509ec55044df3be88664402f11bdb51b7884",
   "dependencies": [
     "lwc/lwc-performance",
     "devops/pipeline-secrets-management"

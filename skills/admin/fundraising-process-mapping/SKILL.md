@@ -12,6 +12,7 @@ triggers:
   - "We are moving from NPSP to Nonprofit Cloud and need to remap our solicitation process stages"
   - "How should we model the moves management pipeline from prospect identification to stewardship?"
   - "Our gift officers need a standardized major gift workflow from cultivation through close and beyond"
+  - "moves management isn't working"
 tags:
   - nonprofit
   - NPSP

@@ -13,6 +13,7 @@ triggers:
   - "agentforce trust layer token count"
   - "why are agentforce runs expensive"
   - "model tier selection agentforce"
+  - "cost optimization isn't working"
 tags:
   - agentforce
   - cost-optimization

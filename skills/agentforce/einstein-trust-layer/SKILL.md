@@ -13,6 +13,8 @@ triggers:
   - "toxicity detection is blocking responses that should be allowed"
   - "data masking is not working for agent prompts in my org"
   - "how do I configure zero data retention for Einstein AI features"
+  - "einstein trust layer isn't working"
+  - "we're having issues with einstein trust layer"
 tags:
   - einstein-trust-layer
   - data-masking

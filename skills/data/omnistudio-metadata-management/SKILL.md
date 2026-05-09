@@ -13,6 +13,7 @@ triggers:
   - "need to identify stale or unused OmniStudio components for cleanup before a major release"
   - "impact analysis required before modifying an Integration Procedure that may be referenced by multiple OmniScripts"
   - "OmniStudio Metadata API Support must be enabled uniformly across sandboxes and production for reliable deployments"
+  - "we're having issues with impact analysis"
 tags:
   - omnistudio
   - metadata

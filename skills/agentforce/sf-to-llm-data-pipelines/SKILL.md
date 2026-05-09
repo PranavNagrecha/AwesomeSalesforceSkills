@@ -14,6 +14,7 @@ triggers:
   - "How do I scrub PII from Salesforce data before sending it to OpenAI or another external embedding model?"
   - "Our team wants to sync Salesforce Knowledge articles to Pinecone nightly — what extraction and chunking pipeline should we build?"
   - "We need incremental extraction of Salesforce data changes for an external ML pipeline using the API — what is the recommended pattern?"
+  - "we're having issues with bulk api v2"
 tags:
   - bulk-api-v2
   - external-llm

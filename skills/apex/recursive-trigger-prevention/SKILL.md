@@ -21,6 +21,7 @@ triggers:
   - "Set<Id> recursion guard pattern"
   - "trigger running twice"
   - "trigger firing multiple times"
+  - "trigger recursion isn't working"
 inputs:
   - "object and trigger events involved"
   - "whether recursion comes from self-DML, workflow/flow updates, or cross-object writes"

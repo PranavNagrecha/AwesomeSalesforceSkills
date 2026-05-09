@@ -18,6 +18,7 @@ triggers:
   - "how should i manage focus in an lwc modal"
   - "need aria labels or alternative text in lwc"
   - "custom lwc is not accessible"
+  - "we're having issues with lwc accessibility"
 inputs:
   - "which base components, custom markup, and interactive states the component uses"
   - "whether the issue affects keyboard users, screen readers, or both"

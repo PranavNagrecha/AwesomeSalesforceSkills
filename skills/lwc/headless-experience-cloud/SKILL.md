@@ -13,6 +13,7 @@ triggers:
   - "React app Salesforce content API — fetching news, banners, or rich content from an org via REST"
   - "custom frontend Experience Cloud data — non-Experience Builder frontend needing CMS articles or media"
   - "CMS delivery channel — obtaining or using a channel ID to gate headless content access"
+  - "headless cms isn't working"
 tags:
   - headless-cms
   - experience-cloud

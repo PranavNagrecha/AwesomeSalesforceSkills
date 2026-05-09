@@ -58,7 +58,7 @@
     "f4fe89c8360da85d397d",
     "f99316dd0c259d495ef0"
   ],
-  "content_hash": "54aa4c2347e8c32af4dd6a10a5bc98098108cef7939dfb77b3a8c0c1a56af4e2",
+  "content_hash": "9e9f87460be3bfc7dd367c61ce2ea1668d11798727fa6b85025b2dc846b53f56",
   "dependencies": [],
   "description": "Use when configuring Workflow-based Outbound Messages to push SOAP payloads to external endpoints \u2014 including endpoint setup, field selection, retry behavior, and delivery monitoring. NOT for Platform Events or Flow-based integrations.",
   "file_location": "skills/admin/outbound-message-setup",

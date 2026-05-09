@@ -16,6 +16,7 @@ triggers:
   - "I deactivated a product but existing opportunities still show it"
   - "can I delete a custom pricebook that is referenced by open opportunities"
   - "set up standard pricebook custom pricebook product catalog"
+  - "pricebook entry isn't working"
 tags:
   - products
   - pricebooks

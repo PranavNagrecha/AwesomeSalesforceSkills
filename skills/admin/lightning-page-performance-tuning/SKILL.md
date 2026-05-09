@@ -13,6 +13,7 @@ triggers:
   - "how to optimize Lightning page performance and reduce load time"
   - "Lightning Experience Insights shows a high-impact slow page"
   - "home page is slow for all users after login"
+  - "lightning pages hits the timeout"
 tags:
   - lightning-pages
   - EPT

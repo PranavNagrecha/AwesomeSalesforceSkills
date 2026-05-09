@@ -21,6 +21,7 @@ triggers:
   - "rollup recalculation timing out on large child object with 300k+ records"
   - "cross-object formula not updating when distant parent record changes"
   - "REQUEST_RUNNING_TOO_LONG during rollup recalculation on non-indexed filter field"
+  - "cross object formula is slow"
 inputs:
   - "Object relationship diagram showing parent-child and lookup chains involved"
   - "List of cross-object formula fields and rollup summary fields on the affected objects"

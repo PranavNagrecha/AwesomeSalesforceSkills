@@ -20,6 +20,8 @@ triggers:
   - "how to assign cases to a queue automatically when created from email-to-case"
   - "round-robin lead assignment between multiple users in Salesforce"
   - "assignment rule not running when I create a record via the API"
+  - "assignment rules isn't working"
+  - "we're having issues with assignment rules"
 inputs:
   - "Object type: Lead or Case (assignment rules only exist for these two objects)"
   - "Assignment target: specific User or Queue to receive matched records"

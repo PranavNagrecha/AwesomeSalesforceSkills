@@ -13,6 +13,7 @@ triggers:
   - "reps can't add prospects to cadence or call isn't logging"
   - "email in cadence not sending or wrong template used"
   - "Sales Engagement High Velocity Sales setup permission set dialer"
+  - "sales engagement isn't working"
 tags:
   - sales-engagement
   - cadences

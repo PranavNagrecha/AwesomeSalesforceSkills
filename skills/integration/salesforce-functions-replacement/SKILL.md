@@ -21,6 +21,7 @@ triggers:
   - "external compute pattern for salesforce apex heavy compute"
   - "long running compute salesforce replacement for functions"
   - "heroku vs lambda for replacing salesforce functions"
+  - "we're having issues with salesforce functions"
 inputs:
   - Current Functions workloads (Node.js, Java, Go, Python)
   - Invocation pattern (Apex `Function.get(...).invoke(...)`, process.platform events)

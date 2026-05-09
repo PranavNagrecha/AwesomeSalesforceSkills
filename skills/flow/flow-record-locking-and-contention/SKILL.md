@@ -20,6 +20,7 @@ triggers:
   - "FOR UPDATE in flow Get Records"
   - "parallel transactions deadlock from record-triggered flow"
   - "child update locks parent in flow"
+  - "UNABLE_TO_LOCK_ROW row lock contention"
 inputs:
   - "Flow XML or design + expected concurrent transaction volume"
   - "Object hierarchy (parent / child / Master-Detail relationships)"

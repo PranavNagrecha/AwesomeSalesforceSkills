@@ -13,6 +13,7 @@ triggers:
   - "offline behavior for lwc"
   - "barcode scanner or device api in lwc"
   - "should this be mobile sdk instead of lwc"
+  - "mobile lwc isn't working"
 tags:
   - mobile-lwc
   - offline

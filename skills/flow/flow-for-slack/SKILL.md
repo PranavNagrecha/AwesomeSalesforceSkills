@@ -29,6 +29,7 @@ triggers:
   - "Create Slack Channel from record-triggered flow"
   - "Flow cannot send Slack message synchronously"
   - "add users to Slack channel via Flow automation"
+  - "flow core actions isn't working"
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha

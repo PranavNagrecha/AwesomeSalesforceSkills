@@ -14,6 +14,7 @@ triggers:
   - "we need to define the shipping rules and payment methods for our B2B Commerce checkout before any development starts"
   - "how do I design a checkout flow that supports both registered buyers and guest buyers in Salesforce Commerce"
   - "what are the UX requirements and constraints I need to lock down before building checkout in a D2C storefront"
+  - "managed checkout isn't working"
 tags:
   - commerce
   - checkout

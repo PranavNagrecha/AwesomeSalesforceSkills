@@ -18,6 +18,7 @@ triggers:
   - "custom logging framework for Apex"
   - "AsyncApexJob monitoring and failure logs"
   - "which debug log levels should I use"
+  - "we're having issues with debug logs"
 inputs:
   - "execution context such as synchronous request, trigger, Queueable, Batch, or REST"
   - "whether the issue is development-time debugging or production-time observability"

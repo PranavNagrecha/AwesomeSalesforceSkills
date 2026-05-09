@@ -13,6 +13,8 @@ triggers:
   - "how do I handle errors from an imperative Apex call in a Lightning web component"
   - "how do I show a loading spinner while an Apex call is in progress in LWC"
   - "how do I run multiple Apex methods in parallel from a Lightning web component"
+  - "async await isn't working"
+  - "we're having issues with async await"
 tags:
   - lwc
   - apex

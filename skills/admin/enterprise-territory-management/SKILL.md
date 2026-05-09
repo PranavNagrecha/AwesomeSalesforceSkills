@@ -13,6 +13,7 @@ triggers:
   - "what is the difference between territory types and territory hierarchy"
   - "I activated the territory model and now assignment rules are running again"
   - "how do I deploy territory model configuration between sandboxes"
+  - "territory model isn't working"
 tags:
   - territory-model
   - account-assignment-rules

@@ -80,7 +80,7 @@
     "f8c02f54e416917e0acb",
     "fffe5240e5b794ed8e6b"
   ],
-  "content_hash": "c9390cca8fc255c4c0e4a6bf5572829456c7fe7041d8ebcd129156c908c215e5",
+  "content_hash": "470b4b705add2dc87ca49795900a56c1d09036d568f4d0f57cdd1693ae9fbc9f",
   "dependencies": [],
   "description": "Use when designing or reviewing the architecture of a Salesforce Loyalty Management program before configuration begins \u2014 tier-ladder economics, qualifying-vs-non-qualifying currency split, point inflation/deflation modeling, fraud-prevention controls, partner-network topology, multi-region program federation, and tier-descalation policy. Triggers: 'designing a loyalty program', 'how many tiers should we have', 'point economy design', 'preventing loyalty fraud', 'partner loyalty architecture', 'multi-region loyalty rollout', 'tier descalation policy', 'how do we set the qualifying threshold'. NOT for hands-on Loyalty Management setup (use integration/loyalty-management-setup) \u2014 this skill produces the architecture document, not the configuration steps. NOT for Marketing Cloud engagement programs (different product). NOT for B2B partner programs that aren't loyalty (regular Sales Cloud opportunity tracking applies).",
   "file_location": "skills/architect/loyalty-program-architecture",

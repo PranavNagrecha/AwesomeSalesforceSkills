@@ -24,6 +24,7 @@ triggers:
   - "factory pattern for dynamic service resolution in Apex"
   - "how do I avoid repeating HTTP logic across multiple integration classes"
   - "centralized callout dispatcher with logging and retry"
+  - "we're having issues with service interface"
 inputs:
   - "Number and types of external APIs to integrate"
   - "Synchronous vs asynchronous callout requirements"

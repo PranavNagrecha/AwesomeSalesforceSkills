@@ -30,6 +30,7 @@ triggers:
   - "how to link Salesforce org to Slack"
   - "Salesforce record preview in Slack channel"
   - "Slack org connection limit Salesforce"
+  - "salesforce for slack isn't working"
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha

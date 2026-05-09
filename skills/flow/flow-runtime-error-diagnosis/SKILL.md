@@ -13,6 +13,7 @@ triggers:
   - "Flow is hitting SOQL query limits or DML statement limits"
   - "how do I read the Flow fault path email to find the root cause"
   - "flow error email"
+  - "error diagnosis isn't working"
 tags:
   - flow
   - error-diagnosis

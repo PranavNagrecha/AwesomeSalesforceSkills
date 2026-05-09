@@ -13,6 +13,7 @@ triggers:
   - "which fields should I exclude to avoid data leakage in my Einstein ML model"
   - "how do I choose between Einstein Discovery and Einstein Prediction Builder for my use case"
   - "fill rate below threshold is causing Einstein to drop fields from my model"
+  - "we're having issues with machine learning"
 tags:
   - einstein
   - machine-learning

@@ -18,6 +18,7 @@ triggers:
   - "what should key field be in datatable"
   - "how do i do infinite loading in lightning datatable"
   - "custom cell type in lwc datatable"
+  - "lwc data table isn't working"
 inputs:
   - "row count, data source, and whether the table needs inline edit or row actions"
   - "how rows are keyed and whether selection state must survive pagination"

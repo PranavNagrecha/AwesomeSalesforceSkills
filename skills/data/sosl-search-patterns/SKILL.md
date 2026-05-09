@@ -18,6 +18,7 @@ triggers:
   - "Search.query SOSL injection prevention"
   - "FIND clause wildcard behavior"
   - "search layouts for global search style results"
+  - "search query isn't working"
 inputs:
   - "search use case and whether it spans one object or many"
   - "expected result volume and UI shape"

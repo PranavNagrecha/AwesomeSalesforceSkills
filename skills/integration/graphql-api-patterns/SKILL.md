@@ -18,6 +18,7 @@ triggers:
   - "GraphQL connection pagination in Salesforce"
   - "GraphQL query variables and field selection"
   - "Salesforce GraphQL aggregation or mutation design"
+  - "lightning graphql isn't working"
 inputs:
   - "client type such as LWC, Experience Cloud, mobile, or server integration"
   - "query shape and whether pagination, aggregation, or mutation behavior is needed"

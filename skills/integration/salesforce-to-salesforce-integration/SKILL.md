@@ -12,6 +12,7 @@ triggers:
   - "need to sync Account or Contact records across multiple Salesforce orgs via API"
   - "Platform Events need to be forwarded from one Salesforce org to another"
   - "team evaluating Salesforce Connect cross-org adapter vs REST API sync for cross-org integration"
+  - "cross org isn't working"
 tags:
   - integration
   - cross-org

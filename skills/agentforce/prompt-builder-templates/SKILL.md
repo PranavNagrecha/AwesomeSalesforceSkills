@@ -29,6 +29,7 @@ triggers:
   - how do I ground a prompt template with related record data
   - flex template not working as expected in agent action
   - how do I share or package a prompt template across orgs
+  - "prompt builder isn't working"
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha

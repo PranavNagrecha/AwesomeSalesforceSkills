@@ -12,6 +12,7 @@ triggers:
   - "External endpoint is getting the same Outbound Message hundreds of times — why?"
   - "Outbound Message retry is not stopping — how do I clear the queue?"
   - "What fields can I include in an Outbound Message payload?"
+  - "outbound message isn't working"
 tags:
   - outbound-message
   - workflow

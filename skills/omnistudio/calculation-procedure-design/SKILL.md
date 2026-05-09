@@ -13,6 +13,7 @@ triggers:
   - "pricing engine in omnistudio"
   - "rating matrix versioning"
   - "expression set in calc procedure"
+  - "calculation procedure isn't working"
 tags:
   - omnistudio
   - calculation-procedure

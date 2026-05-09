@@ -15,6 +15,7 @@ triggers:
   - "API integration authentication failing"
   - "named credential not connecting to external system"
   - "how do I set up OAuth for an integration"
+  - "connected apps isn't working"
 inputs: ["integration flow", "credential model", "environment constraints"]
 outputs: ["auth pattern recommendation", "connected app review findings", "credential governance actions"]
 dependencies: []

@@ -15,6 +15,7 @@ triggers:
   - "what handoff metadata should a story carry so the right downstream agent picks it up"
   - "how do I size a Salesforce user story when complexity is unclear"
   - "how do I check that my user stories pass the INVEST test"
+  - "user stories isn't working"
 tags:
   - user-stories
   - invest

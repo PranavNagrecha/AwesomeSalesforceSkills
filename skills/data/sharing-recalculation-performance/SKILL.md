@@ -15,6 +15,8 @@ triggers:
   - "role hierarchy restructuring caused long-running background sharing job"
   - "how to batch OWD changes and group updates to minimize recalculation time"
   - "criteria-based sharing rule is slow when target field is mass-updated"
+  - "sharing recalculation isn't working"
+  - "we're having issues with sharing recalculation"
 tags:
   - sharing-recalculation
   - defer-sharing-calculations

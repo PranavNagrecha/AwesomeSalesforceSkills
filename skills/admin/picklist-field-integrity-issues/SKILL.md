@@ -14,6 +14,7 @@ triggers:
   - "record type picklist value mapping is out of sync after deployment"
   - "how do I audit picklist values that violate the intended value set"
   - "picklist has hundreds of orphaned values from old imports"
+  - "picklist integrity isn't working"
 tags:
   - picklist-integrity
   - unrestricted-picklist

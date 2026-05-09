@@ -14,6 +14,8 @@ triggers:
   - "child record inserts locking parent row"
   - "deadlock between concurrent Apex transactions"
   - "data skew causing lock failures"
+  - "record locking isn't working"
+  - "we're having issues with record locking"
 tags:
   - record-locking
   - contention

@@ -97,7 +97,7 @@
     "fb1baaf92707d6329e93",
     "fe7f867496b201e79c39"
   ],
-  "content_hash": "92ff9a761a493973ab6921517770d27c78b712f8fa34eace508fa37b0f684e43",
+  "content_hash": "8381d9a01d211364c348f467cefeaf3968dd3e001ecdacb11f93c289c1f8731f",
   "dependencies": [],
   "description": "Use when implementing specific ARIA attributes, keyboard navigation patterns, screen reader live regions, WCAG 2.1 compliance, focus management, or accessible data tables in Lightning Web Components. Trigger keywords: ARIA, aria-live, aria-label, aria-labelledby, role=grid, tabindex, keydown handler, WCAG AA, focus trap, accessible datatable, shadow DOM ARIA boundary. NOT for general LWC styling, visual design, SLDS theming, or CSS that does not affect assistive-technology behavior.",
   "file_location": "skills/lwc/lwc-accessibility-patterns",

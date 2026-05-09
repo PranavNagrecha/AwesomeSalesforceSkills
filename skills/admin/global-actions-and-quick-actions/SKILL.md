@@ -19,6 +19,7 @@ triggers:
   - "quick action fields not showing up on mobile or Lightning Experience"
   - "how to add actions to the Salesforce mobile app action bar"
   - "action layout vs page layout — which one controls what appears in the quick action popup"
+  - "quick actions isn't working"
 inputs:
   - "The object (or global context) where the action should appear"
   - "The action type required (Create, Update, Log a Call, Custom, Flow)"

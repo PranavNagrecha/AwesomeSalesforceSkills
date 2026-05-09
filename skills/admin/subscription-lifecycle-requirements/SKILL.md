@@ -13,6 +13,7 @@ triggers:
   - "we need to document what happens to existing subscription lines when a contract is amended"
   - "our renewals team needs a requirements checklist for how subscriptions behave at term end"
   - "product owner is asking how proration is calculated when a customer adds a product mid-contract"
+  - "co termination isn't working"
 tags:
   - cpq
   - subscriptions

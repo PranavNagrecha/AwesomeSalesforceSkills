@@ -19,6 +19,7 @@ triggers:
   - "how do protected custom metadata records work"
   - "can flow or apex read custom metadata"
   - "feature flags in salesforce without hardcoding"
+  - "custom metadata types isn't working"
 inputs:
   - "who owns the configuration values and how often they change"
   - "whether the values must move through source control, packaging, or CI/CD"

@@ -14,6 +14,7 @@ triggers:
   - "FlexCard is slow to render when there are many cards or complex data sources"
   - "we are hitting API limits because OmniStudio makes too many calls per transaction"
   - "can I run an Integration Procedure asynchronously without blocking the user"
+  - "omnistudio performance isn't working"
 tags:
   - omnistudio-performance
   - integration-procedures

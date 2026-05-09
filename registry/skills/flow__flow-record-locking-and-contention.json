@@ -96,7 +96,7 @@
     "ff4721f1e82eb61d460c",
     "ffb532ecdb3de6c412b6"
   ],
-  "content_hash": "e4f412f97e81eaad52fceb03ab1e10be767b3f75b7eb795f613b57644eb6c781",
+  "content_hash": "7229e24f93af175d745f6fe0776dbd84f094a0569b6b7ec7d2e7af6f644d2257",
   "dependencies": [],
   "description": "Diagnose and prevent UNABLE_TO_LOCK_ROW + parent-record contention in record-triggered, scheduled, and screen flows by mapping the implicit lock chain and applying decouple patterns (Platform Events, Queueable handoff, Scheduled Paths). NOT for general flow bulkification \u2014 see flow-bulkification. NOT for fault-path catch logic \u2014 see flow-rollback-patterns.",
   "file_location": "skills/flow/flow-record-locking-and-contention",

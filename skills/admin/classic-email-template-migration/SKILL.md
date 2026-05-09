@@ -13,6 +13,7 @@ triggers:
   - "What happens to my Visualforce email templates in Lightning Experience?"
   - "Email Alert references a Classic template — how do I switch to Lightning?"
   - "Bulk export Classic templates and re-create as Lightning Email Templates"
+  - "we're having issues with email templates"
 tags:
   - email-templates
   - lightning-email-template

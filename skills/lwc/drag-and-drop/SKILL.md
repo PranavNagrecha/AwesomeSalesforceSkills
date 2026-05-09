@@ -11,6 +11,8 @@ triggers:
   - "reorder list lwc"
   - "drag file into lwc"
   - "kanban drag and drop lwc"
+  - "drag drop isn't working"
+  - "we're having issues with drag drop"
 tags:
   - lwc
   - drag-drop

@@ -12,6 +12,8 @@ triggers:
   - "TotalVolunteerHours is not updating in real time after logging hours in NPC"
   - "How to implement volunteer shift scheduling and sign-up in NPSP org"
   - "Volunteer recognition automation not triggering after hours are logged"
+  - "volunteer management isn't working"
+  - "we're having issues with volunteer management"
 tags:
   - volunteer-management
   - npsp

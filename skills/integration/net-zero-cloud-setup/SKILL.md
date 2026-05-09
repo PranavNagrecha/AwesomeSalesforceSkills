@@ -35,6 +35,7 @@ triggers:
   - "loading emission factor library Net Zero Cloud"
   - "DPE carbon calculation job not running or stale totals"
   - "supplier engagement scoring CSRD ESRS disclosure"
+  - "we're having issues with net zero cloud"
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha

@@ -12,6 +12,8 @@ triggers:
   - "how do I enable Translation Workbench and add a new language to the org"
   - "picklist values are showing in English even after I added translations"
   - "how do I support right-to-left languages like Arabic or Hebrew in Salesforce"
+  - "multi language isn't working"
+  - "we're having issues with multi language"
 tags:
   - translation
   - multi-language

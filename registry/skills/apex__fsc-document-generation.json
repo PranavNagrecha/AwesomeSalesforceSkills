@@ -91,7 +91,7 @@
     "f579322183bc9136b67b",
     "f64476fc38886d2fc0b9"
   ],
-  "content_hash": "8efe19e5e506a06e1898dcf0717b2dcf97975b9179c9f2d88a23e0850f4cdbd0",
+  "content_hash": "8035a30685a28792aec67b8e8ea5d1d2bcf439ad73d815ec742137bc3bdfc864",
   "dependencies": [
     "omnistudio/document-generation-omnistudio"
   ],

@@ -13,6 +13,7 @@ triggers:
   - "quick deploy returned a new ID and I lost track of the real status"
   - "deployment history disappeared after 30 days and I need to audit it"
   - "multiple deployments are queued and I do not know which one will run next"
+  - "deployment monitoring isn't working"
 tags:
   - deployment-monitoring
   - deploy-status

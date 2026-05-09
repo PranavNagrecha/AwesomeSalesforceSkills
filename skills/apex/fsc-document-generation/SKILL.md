@@ -13,6 +13,7 @@ triggers:
   - "How should I use AuthorizationForm and DataUseLegalBasis objects to drive compliant disclosure delivery?"
   - "What permission set licenses do FSC users need to run OmniStudio DocGen document jobs?"
   - "How do I set up a batch disclosure document run in FSC that produces PDFs for thousands of accounts?"
+  - "we're having issues with document generation"
 tags:
   - fsc
   - document-generation

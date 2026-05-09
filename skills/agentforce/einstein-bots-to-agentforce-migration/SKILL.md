@@ -13,6 +13,7 @@ triggers:
   - "hybrid pattern keeping legacy bot alongside Agentforce for structured flows"
   - "how does context pass from a bot session to an Agentforce handoff"
   - "what does the create AI agent from bot tool do and is the migration lossless"
+  - "einstein bots isn't working"
 tags:
   - einstein-bots
   - agentforce

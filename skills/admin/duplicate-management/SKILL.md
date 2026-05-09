@@ -15,6 +15,7 @@ triggers:
   - "duplicate alert showing on unrelated records"
   - "how do I prevent duplicates on data load"
   - "survivorship rules for merging accounts"
+  - "duplicate rules isn't working"
 inputs: ["duplicate scenarios", "merge policy", "stewardship owners"]
 outputs: ["duplicate strategy", "merge governance recommendations", "duplicate control findings"]
 dependencies: []

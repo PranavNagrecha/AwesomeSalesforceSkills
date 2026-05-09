@@ -18,6 +18,7 @@ triggers:
   - "how do I mock a dependency in Apex tests"
   - "Test.createStub pattern for service seams"
   - "mocking infrastructure for Apex tests"
+  - "test setmock isn't working"
 inputs:
   - "type of dependency being replaced such as HTTP, SOAP, service class, or helper"
   - "whether the seam is an interface, virtual class, or transport-level callout"

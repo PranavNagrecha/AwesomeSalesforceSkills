@@ -14,6 +14,7 @@ triggers:
   - "block pricing in CPQ to charge a fixed price per quantity range instead of per unit"
   - "percent of total pricing for a support or maintenance product priced as a percentage of other lines"
   - "CPQ price waterfall order and why a price rule is not applying as expected"
+  - "price rules isn't working"
 tags:
   - cpq
   - pricing

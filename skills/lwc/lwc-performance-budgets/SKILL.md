@@ -12,6 +12,7 @@ triggers:
   - lcp budget
   - lighthouse ci gate
   - inp budget lwc
+  - "performance budget is slow"
 tags:
   - lwc
   - performance

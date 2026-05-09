@@ -11,6 +11,7 @@ triggers:
   - "How do I set up Lightning Knowledge in a new Salesforce org?"
   - "Knowledge article record types are not showing the right fields to different user groups"
   - "How do Data Categories control who can see Knowledge articles, and how do I configure visibility by role?"
+  - "we're having issues with lightning knowledge"
 tags:
   - knowledge
   - lightning-knowledge

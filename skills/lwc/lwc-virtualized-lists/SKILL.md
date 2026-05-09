@@ -13,6 +13,7 @@ triggers:
   - "lwc windowed list lazy loading datatable alternative"
   - "lwc shadow dom intersection observer not working"
   - "lwc soql limit offset pagination infinite list"
+  - "infinite scroll is slow"
 tags:
   - virtualization
   - infinite-scroll

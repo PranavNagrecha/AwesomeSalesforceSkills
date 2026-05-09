@@ -13,6 +13,7 @@ triggers:
   - "batch processing salesforce records through mulesoft without losing failures"
   - "which salesforce API should my mule flow use bulk REST SOAP streaming"
   - "mulesoft replay topic subscriber for platform events"
+  - "anypoint connector isn't working"
 tags:
   - mulesoft
   - anypoint-connector

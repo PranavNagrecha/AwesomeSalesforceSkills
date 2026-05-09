@@ -12,6 +12,7 @@ triggers:
   - what gates must pass before a Salesforce release goes live
   - my deployment keeps failing in production but passes in sandbox
   - how do I back up production metadata before a release
+  - "pre deployment checklist isn't working"
 tags:
   - pre-deployment-checklist
   - validation-deploy

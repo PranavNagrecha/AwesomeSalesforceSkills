@@ -15,6 +15,7 @@ triggers:
   - "Customer Community data access — records not visible to community members"
   - "partner community sharing model — three-tier role hierarchy per account"
   - "external OWD setup how is it different from internal org-wide default portal users"
+  - "we're having issues with external users"
 tags:
   - external-users
   - experience-cloud

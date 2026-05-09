@@ -12,6 +12,7 @@ triggers:
   - "External system and Salesforce are out of sync and I need to find the discrepancies"
   - "Upsert is creating duplicates instead of updating existing records"
   - "My delta load is missing hard-deleted records from Salesforce"
+  - "we're having issues with data reconciliation"
 tags:
   - data-reconciliation
   - external-id

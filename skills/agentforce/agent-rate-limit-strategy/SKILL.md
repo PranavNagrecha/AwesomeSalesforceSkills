@@ -11,6 +11,8 @@ triggers:
   - "one user drives the whole agent quota"
   - "graceful fallback when agent is over limit"
   - "rate-limit agentforce per user"
+  - "rate limiting isn't working"
+  - "we're having issues with rate limiting"
 tags:
   - agentforce
   - rate-limiting

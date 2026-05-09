@@ -21,6 +21,7 @@ triggers:
   - "how do I implement a focus trap inside an LWC custom modal"
   - "WCAG 2.1 AA compliance for AppExchange app in lwc"
   - "custom data table in lwc needs accessible row and cell roles"
+  - "we're having issues with keyboard navigation"
 inputs:
   - "the interactive HTML structure of the component (template markup)"
   - "which ARIA attributes or keyboard interactions are needed"

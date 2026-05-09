@@ -13,6 +13,7 @@ triggers:
   - "Sales and marketing can't agree on when a lead is ready to hand off — help us document the handoff criteria"
   - "What fields and thresholds do we need to configure to route hot leads automatically to reps?"
   - "How do we design a composite lead score using formula fields in Salesforce?"
+  - "lead scoring isn't working"
 tags:
   - lead-scoring
   - mql
