@@ -131,6 +131,11 @@
     "skills/devops/go-live-cutover-planning/templates/go-live-cutover-planning-template.md"
   ],
   "updated": "2026-04-06",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-06",
+    "vector_id": "devops/go-live-cutover-planning"
+  },
   "version": "1.0.0"
 }

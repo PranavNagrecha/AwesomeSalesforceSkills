@@ -168,6 +168,11 @@
     "skills/admin/fsl-scheduling-optimization-design/templates/fsl-scheduling-optimization-design-template.md"
   ],
   "updated": "2026-04-10",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-10",
+    "vector_id": "admin/fsl-scheduling-optimization-design"
+  },
   "version": "1.0.0"
 }

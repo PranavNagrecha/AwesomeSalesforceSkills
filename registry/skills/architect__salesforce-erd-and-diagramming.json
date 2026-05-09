@@ -93,6 +93,11 @@
     "skills/architect/salesforce-erd-and-diagramming/templates/salesforce-erd-and-diagramming-template.md"
   ],
   "updated": "2026-04-21",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-21",
+    "vector_id": "architect/salesforce-erd-and-diagramming"
+  },
   "version": "1.0.0"
 }

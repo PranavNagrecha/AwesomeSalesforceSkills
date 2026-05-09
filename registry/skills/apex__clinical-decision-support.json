@@ -107,6 +107,11 @@
     "skills/apex/clinical-decision-support/templates/clinical-decision-support-template.md"
   ],
   "updated": "2026-04-10",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-10",
+    "vector_id": "apex/clinical-decision-support"
+  },
   "version": "1.0.0"
 }

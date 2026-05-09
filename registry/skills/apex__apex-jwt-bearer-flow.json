@@ -97,6 +97,11 @@
     "skills/apex/apex-jwt-bearer-flow/templates/apex-jwt-bearer-flow-template.md"
   ],
   "updated": "2026-05-05",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-05-05",
+    "vector_id": "apex/apex-jwt-bearer-flow"
+  },
   "version": "1.0.0"
 }

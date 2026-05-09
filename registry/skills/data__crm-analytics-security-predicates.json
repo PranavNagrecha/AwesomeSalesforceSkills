@@ -126,6 +126,11 @@
     "skills/data/crm-analytics-security-predicates/templates/crm-analytics-security-predicates-template.md"
   ],
   "updated": "2026-05-04",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-05-04",
+    "vector_id": "data/crm-analytics-security-predicates"
+  },
   "version": "1.0.0"
 }

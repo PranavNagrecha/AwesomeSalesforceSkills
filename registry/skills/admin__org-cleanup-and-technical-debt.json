@@ -120,6 +120,11 @@
     "skills/admin/org-cleanup-and-technical-debt/templates/org-cleanup-and-technical-debt-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-05",
+    "vector_id": "admin/org-cleanup-and-technical-debt"
+  },
   "version": "1.0.0"
 }

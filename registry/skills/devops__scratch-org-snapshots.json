@@ -68,6 +68,11 @@
     "skills/devops/scratch-org-snapshots/templates/scratch-org-snapshots-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "devops/scratch-org-snapshots"
+  },
   "version": "1.0.0"
 }

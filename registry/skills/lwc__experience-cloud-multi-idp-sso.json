@@ -126,6 +126,11 @@
     "skills/lwc/experience-cloud-multi-idp-sso/templates/experience-cloud-multi-idp-sso-template.md"
   ],
   "updated": "2026-04-06",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-06",
+    "vector_id": "lwc/experience-cloud-multi-idp-sso"
+  },
   "version": "1.0.0"
 }

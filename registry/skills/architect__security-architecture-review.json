@@ -139,6 +139,11 @@
     "skills/architect/security-architecture-review/templates/security-architecture-review-template.md"
   ],
   "updated": "2026-04-04",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-04",
+    "vector_id": "architect/security-architecture-review"
+  },
   "version": "1.0.0"
 }

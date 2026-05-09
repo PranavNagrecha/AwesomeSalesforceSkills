@@ -161,6 +161,11 @@
     "skills/apex/marketing-cloud-data-views/templates/marketing-cloud-data-views-template.md"
   ],
   "updated": "2026-04-10",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-10",
+    "vector_id": "apex/marketing-cloud-data-views"
+  },
   "version": "1.0.0"
 }

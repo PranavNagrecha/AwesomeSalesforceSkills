@@ -153,6 +153,11 @@
     "skills/architect/ci-cd-pipeline-architecture/templates/ci-cd-pipeline-architecture-template.md"
   ],
   "updated": "2026-04-15",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-15",
+    "vector_id": "architect/ci-cd-pipeline-architecture"
+  },
   "version": "1.0.0"
 }

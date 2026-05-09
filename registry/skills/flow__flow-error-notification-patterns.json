@@ -120,6 +120,11 @@
     "skills/flow/flow-error-notification-patterns/templates/flow-error-notification-patterns-template.md"
   ],
   "updated": "2026-05-04",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-05-04",
+    "vector_id": "flow/flow-error-notification-patterns"
+  },
   "version": "1.0.0"
 }

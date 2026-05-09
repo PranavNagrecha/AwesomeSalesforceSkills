@@ -185,6 +185,11 @@
     "skills/data/data-quality-and-governance/templates/data-quality-and-governance-template.md"
   ],
   "updated": "2026-04-04",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-04",
+    "vector_id": "data/data-quality-and-governance"
+  },
   "version": "1.0.0"
 }

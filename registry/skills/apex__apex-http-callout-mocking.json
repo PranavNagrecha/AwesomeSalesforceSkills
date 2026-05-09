@@ -90,6 +90,11 @@
     "skills/apex/apex-http-callout-mocking/templates/apex-http-callout-mocking-template.md"
   ],
   "updated": "2026-04-22",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-22",
+    "vector_id": "apex/apex-http-callout-mocking"
+  },
   "version": "1.0.0"
 }

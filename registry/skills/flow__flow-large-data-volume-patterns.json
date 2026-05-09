@@ -103,6 +103,11 @@
     "skills/flow/flow-large-data-volume-patterns/templates/flow-large-data-volume-patterns-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "flow/flow-large-data-volume-patterns"
+  },
   "version": "2.0.0"
 }

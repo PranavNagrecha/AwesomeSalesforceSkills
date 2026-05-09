@@ -112,6 +112,11 @@
     "skills/security/secure-coding-review-checklist/templates/secure-coding-review-checklist-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-05",
+    "vector_id": "security/secure-coding-review-checklist"
+  },
   "version": "1.0.0"
 }

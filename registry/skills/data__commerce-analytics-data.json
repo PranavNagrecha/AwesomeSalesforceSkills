@@ -129,6 +129,11 @@
     "skills/data/commerce-analytics-data/templates/commerce-analytics-data-template.md"
   ],
   "updated": "2026-04-15",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-15",
+    "vector_id": "data/commerce-analytics-data"
+  },
   "version": "1.0.0"
 }

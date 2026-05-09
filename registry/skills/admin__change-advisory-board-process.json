@@ -161,6 +161,11 @@
     "skills/admin/change-advisory-board-process/templates/change-advisory-board-process-template.md"
   ],
   "updated": "2026-04-13",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-13",
+    "vector_id": "admin/change-advisory-board-process"
+  },
   "version": "1.0.0"
 }

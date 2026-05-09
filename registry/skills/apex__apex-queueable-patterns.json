@@ -123,6 +123,11 @@
     "skills/apex/apex-queueable-patterns/templates/apex-queueable-patterns-template.md"
   ],
   "updated": "2026-04-04",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-04",
+    "vector_id": "apex/apex-queueable-patterns"
+  },
   "version": "1.0.0"
 }

@@ -87,6 +87,11 @@
     "skills/security/ip-relaxation-and-restriction/templates/ip-plan.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "security/ip-relaxation-and-restriction"
+  },
   "version": "1.0.0"
 }

@@ -98,6 +98,11 @@
     "skills/data/fsl-resource-and-skill-data/templates/fsl-resource-and-skill-data-template.md"
   ],
   "updated": "2026-04-10",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-10",
+    "vector_id": "data/fsl-resource-and-skill-data"
+  },
   "version": "1.0.0"
 }

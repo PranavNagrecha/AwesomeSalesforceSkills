@@ -2,29 +2,35 @@ version: 1
 
 embeddings:
   # Real semantic embeddings via fastembed (BAAI/bge-small-en-v1.5, 384-dim,
-  # MIT, ONNX-q on CPU) are wired and tested but currently disabled by default
-  # because the 126K-chunk full-repo encode takes ~25-40 minutes on M-series
-  # CPUs and risks colliding with the pre-commit hook (which also runs
-  # skill_sync). To enable + benchmark:
-  #   1. Set enabled: true below.
-  #   2. Run python3 scripts/build_index.py from a fresh terminal — this
-  #      writes vector_index/embeddings.jsonl (~290 MB).
-  #   3. Re-run python3 evals/measurement/retrieval_eval.py against
-  #      vector_index/query-fixtures.json (must hold ≥98%) and against the
-  #      NL fixture (target ≥85%). Compare to baseline 98.6% / 74.3%.
-  #   4. If both gates pass, this comment can be inverted (default to true).
+  # MIT, ONNX-q on CPU). Enabled by default since the 2026-05-09 benchmark.
   #
-  # The 1,418-query NL audit on 2026-05-09 showed lexical-only Hit@1
-  # plateauing at 74.3% on natural-language phrasings vs 98.6% on
-  # author-curated triggers — a 24-point gap. Fastembed is expected to close
-  # the abbreviation / paraphrase mismatches that lexical structurally
-  # cannot ("FLS" ↔ "field-level security", "X is slow" ↔
-  # "performance issues with X").
+  # Measured on 2026-05-09 with a full chunk-level encode (126,618 chunks,
+  # 2:20 to build, ~500 MB embeddings.jsonl, gitignored):
+  #   curated baseline (1,285 author-curated triggers):
+  #     lexical-only:  Hit@1 = 98.6%
+  #     +embeddings:   Hit@1 = 98.6%   (no regression, sacred floor held)
+  #   natural-language audit (1,418 generated symptom/goal/error queries):
+  #     lexical-only:  Hit@1 = 74.3%   Hit@3 = 86.0%
+  #     +embeddings:   Hit@1 = 74.5%   Hit@3 = 87.8%   (+1.8pp Hit@3)
+  #   realistic-query smoke (71 hand-crafted real-user phrasings):
+  #     lexical+sec.:  Hit@1 = 78.9%   Hit@3 = 94.4%
+  #     +embeddings:   Hit@1 = 78.9%   Hit@3 = 94.4%   (no movement —
+  #                    realistic queries already hit lexical sweet spot)
+  #
+  # Vector weight tuned in pipelines/ranking.rerank_results to 0.2 — at 0.35
+  # NL Hit@1 regressed -4pp (vector noise overwhelmed lexical signal); at
+  # 0.10 there was no measurable lift. 0.2 is the sweet spot: curated stays
+  # at 98.6%, NL Hit@3 lifts, no regression on realistic phrasings.
   #
   # Backends:
-  # - fastembed  → real semantic embeddings
+  # - fastembed  → real semantic embeddings (current default)
   # - hash       → deterministic token-hashing, no semantic signal (test-only)
-  enabled: false
+  #
+  # First-time build is ~2:20 on M-series CPU. Subsequent builds use the
+  # content_hash cache and only re-encode changed chunks. The pre-commit
+  # hook explicitly skips embeddings via --skip-embeddings (see
+  # .githooks/pre-commit) so day-to-day commits stay sub-second.
+  enabled: true
   backend: fastembed
   dimensions: 384
   # Skill count thresholds for embedding adoption

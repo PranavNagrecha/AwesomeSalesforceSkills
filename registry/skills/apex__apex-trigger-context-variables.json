@@ -89,6 +89,11 @@
     "skills/apex/apex-trigger-context-variables/templates/apex-trigger-context-variables-template.md"
   ],
   "updated": "2026-04-21",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-21",
+    "vector_id": "apex/apex-trigger-context-variables"
+  },
   "version": "1.0.0"
 }

@@ -109,6 +109,11 @@
     "skills/apex/apex-soql-relationship-queries/templates/apex-soql-relationship-queries-template.md"
   ],
   "updated": "2026-04-19",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-19",
+    "vector_id": "apex/apex-soql-relationship-queries"
+  },
   "version": "1.0.0"
 }

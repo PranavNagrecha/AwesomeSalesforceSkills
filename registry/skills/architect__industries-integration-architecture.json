@@ -166,6 +166,11 @@
     "skills/architect/industries-integration-architecture/templates/industries-integration-architecture-template.md"
   ],
   "updated": "2026-04-15",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-15",
+    "vector_id": "architect/industries-integration-architecture"
+  },
   "version": "1.0.0"
 }

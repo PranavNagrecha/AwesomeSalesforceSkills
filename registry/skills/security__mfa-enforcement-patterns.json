@@ -86,6 +86,11 @@
     "skills/security/mfa-enforcement-patterns/templates/mfa-plan.md"
   ],
   "updated": "2026-04-23",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-23",
+    "vector_id": "security/mfa-enforcement-patterns"
+  },
   "version": "1.0.0"
 }

@@ -92,6 +92,11 @@
     "skills/architect/cross-cloud-data-deployment/templates/cross-cloud-data-deployment-template.md"
   ],
   "updated": "2026-04-21",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-21",
+    "vector_id": "architect/cross-cloud-data-deployment"
+  },
   "version": "1.0.0"
 }

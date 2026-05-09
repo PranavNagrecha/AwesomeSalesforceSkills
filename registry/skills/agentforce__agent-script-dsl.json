@@ -153,6 +153,11 @@
     "skills/agentforce/agent-script-dsl/templates/agent-script-dsl-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-05",
+    "vector_id": "agentforce/agent-script-dsl"
+  },
   "version": "1.0.0"
 }

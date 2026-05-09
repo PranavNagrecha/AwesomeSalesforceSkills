@@ -138,6 +138,11 @@
     "skills/admin/b2b-commerce-store-setup/templates/b2b-commerce-store-setup-template.md"
   ],
   "updated": "2026-04-07",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-07",
+    "vector_id": "admin/b2b-commerce-store-setup"
+  },
   "version": "1.0.0"
 }

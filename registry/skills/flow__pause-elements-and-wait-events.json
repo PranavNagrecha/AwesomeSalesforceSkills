@@ -156,6 +156,11 @@
     "skills/flow/pause-elements-and-wait-events/templates/pause-elements-and-wait-events-template.md"
   ],
   "updated": "2026-04-04",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-04",
+    "vector_id": "flow/pause-elements-and-wait-events"
+  },
   "version": "1.0.0"
 }

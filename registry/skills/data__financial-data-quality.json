@@ -186,6 +186,11 @@
     "skills/data/financial-data-quality/templates/financial-data-quality-template.md"
   ],
   "updated": "2026-04-12",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-12",
+    "vector_id": "data/financial-data-quality"
+  },
   "version": "1.0.0"
 }

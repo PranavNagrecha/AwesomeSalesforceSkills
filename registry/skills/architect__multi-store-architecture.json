@@ -151,6 +151,11 @@
     "skills/architect/multi-store-architecture/templates/multi-store-architecture-template.md"
   ],
   "updated": "2026-04-12",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-12",
+    "vector_id": "architect/multi-store-architecture"
+  },
   "version": "1.0.0"
 }

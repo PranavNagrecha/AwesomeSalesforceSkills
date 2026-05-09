@@ -170,6 +170,11 @@
     "skills/agentforce/agentforce-custom-channel-dev/templates/agentforce-custom-channel-dev-template.md"
   ],
   "updated": "2026-04-13",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-13",
+    "vector_id": "agentforce/agentforce-custom-channel-dev"
+  },
   "version": "1.0.0"
 }

@@ -177,6 +177,11 @@
     "skills/apex/error-handling-framework/templates/error-handling-framework-template.md"
   ],
   "updated": "2026-04-04",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-04",
+    "vector_id": "apex/error-handling-framework"
+  },
   "version": "1.0.0"
 }

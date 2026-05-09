@@ -133,6 +133,11 @@
     "skills/architect/migration-architecture-patterns/templates/migration-architecture-patterns-template.md"
   ],
   "updated": "2026-05-04",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-05-04",
+    "vector_id": "architect/migration-architecture-patterns"
+  },
   "version": "1.0.0"
 }

@@ -166,6 +166,11 @@
     "skills/data/omnistudio-metadata-management/templates/omnistudio-metadata-management-template.md"
   ],
   "updated": "2026-04-15",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-15",
+    "vector_id": "data/omnistudio-metadata-management"
+  },
   "version": "1.0.0"
 }

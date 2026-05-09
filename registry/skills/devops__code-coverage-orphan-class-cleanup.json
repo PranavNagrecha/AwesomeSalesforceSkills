@@ -94,6 +94,11 @@
     "skills/devops/code-coverage-orphan-class-cleanup/templates/code-coverage-orphan-class-cleanup-template.md"
   ],
   "updated": "2026-04-30",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-30",
+    "vector_id": "devops/code-coverage-orphan-class-cleanup"
+  },
   "version": "1.0.0"
 }

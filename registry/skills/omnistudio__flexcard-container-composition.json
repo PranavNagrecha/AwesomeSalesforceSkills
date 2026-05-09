@@ -89,6 +89,11 @@
     "skills/omnistudio/flexcard-container-composition/templates/composition-plan.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "omnistudio/flexcard-container-composition"
+  },
   "version": "1.0.0"
 }

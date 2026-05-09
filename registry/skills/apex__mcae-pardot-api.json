@@ -140,6 +140,11 @@
     "skills/apex/mcae-pardot-api/templates/mcae-pardot-api-template.md"
   ],
   "updated": "2026-04-10",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-10",
+    "vector_id": "apex/mcae-pardot-api"
+  },
   "version": "1.0.0"
 }

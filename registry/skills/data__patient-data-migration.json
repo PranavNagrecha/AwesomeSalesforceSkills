@@ -155,6 +155,11 @@
     "skills/data/patient-data-migration/templates/patient-data-migration-template.md"
   ],
   "updated": "2026-04-11",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-11",
+    "vector_id": "data/patient-data-migration"
+  },
   "version": "1.0.0"
 }

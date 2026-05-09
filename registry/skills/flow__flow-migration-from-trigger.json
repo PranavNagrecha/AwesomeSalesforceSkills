@@ -100,6 +100,11 @@
     "skills/flow/flow-migration-from-trigger/templates/flow-migration-from-trigger-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "flow/flow-migration-from-trigger"
+  },
   "version": "1.0.0"
 }

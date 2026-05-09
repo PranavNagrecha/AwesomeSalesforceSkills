@@ -156,6 +156,11 @@
     "skills/admin/journey-builder-administration/templates/journey-builder-administration-template.md"
   ],
   "updated": "2026-04-07",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-07",
+    "vector_id": "admin/journey-builder-administration"
+  },
   "version": "1.0.0"
 }

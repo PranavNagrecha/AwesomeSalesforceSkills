@@ -129,6 +129,11 @@
     "skills/devops/cicd-for-experience-cloud/templates/cicd-for-experience-cloud-template.md"
   ],
   "updated": "2026-05-04",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-05-04",
+    "vector_id": "devops/cicd-for-experience-cloud"
+  },
   "version": "1.0.0"
 }

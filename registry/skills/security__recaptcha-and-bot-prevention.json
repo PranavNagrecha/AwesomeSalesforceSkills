@@ -121,6 +121,11 @@
     "skills/security/recaptcha-and-bot-prevention/templates/recaptcha-and-bot-prevention-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-05",
+    "vector_id": "security/recaptcha-and-bot-prevention"
+  },
   "version": "1.0.0"
 }

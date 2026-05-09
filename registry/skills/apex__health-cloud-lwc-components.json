@@ -104,6 +104,11 @@
     "skills/apex/health-cloud-lwc-components/templates/health-cloud-lwc-components-template.md"
   ],
   "updated": "2026-04-10",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-10",
+    "vector_id": "apex/health-cloud-lwc-components"
+  },
   "version": "1.0.0"
 }

@@ -93,6 +93,11 @@
     "skills/apex/apex-future-method-patterns/templates/apex-future-method-patterns-template.md"
   ],
   "updated": "2026-04-21",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-21",
+    "vector_id": "apex/apex-future-method-patterns"
+  },
   "version": "1.0.0"
 }

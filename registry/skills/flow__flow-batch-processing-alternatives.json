@@ -84,6 +84,11 @@
     "skills/flow/flow-batch-processing-alternatives/templates/batch-strategy.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "flow/flow-batch-processing-alternatives"
+  },
   "version": "1.0.0"
 }

@@ -92,6 +92,11 @@
     "skills/admin/mass-transfer-ownership/templates/mass-transfer-ownership-template.md"
   ],
   "updated": "2026-04-30",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-30",
+    "vector_id": "admin/mass-transfer-ownership"
+  },
   "version": "1.0.0"
 }

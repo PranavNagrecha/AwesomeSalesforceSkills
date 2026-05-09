@@ -124,6 +124,11 @@
     "skills/architect/salesforce-shield-architecture/templates/salesforce-shield-architecture-template.md"
   ],
   "updated": "2026-05-04",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-05-04",
+    "vector_id": "architect/salesforce-shield-architecture"
+  },
   "version": "1.0.0"
 }

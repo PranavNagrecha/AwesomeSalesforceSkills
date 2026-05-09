@@ -93,6 +93,11 @@
     "skills/architect/composable-commerce-architecture/templates/composable-commerce-architecture-template.md"
   ],
   "updated": "2026-04-21",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-21",
+    "vector_id": "architect/composable-commerce-architecture"
+  },
   "version": "1.0.0"
 }

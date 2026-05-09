@@ -90,6 +90,11 @@
     "skills/devops/flow-deployment-activation-ordering/templates/deploy-runbook.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "devops/flow-deployment-activation-ordering"
+  },
   "version": "1.0.0"
 }

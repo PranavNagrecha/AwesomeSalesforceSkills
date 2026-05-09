@@ -88,6 +88,11 @@
     "skills/flow/flow-cross-object-updates/templates/flow-cross-object-updates-template.md"
   ],
   "updated": "2026-04-22",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-22",
+    "vector_id": "flow/flow-cross-object-updates"
+  },
   "version": "1.0.0"
 }

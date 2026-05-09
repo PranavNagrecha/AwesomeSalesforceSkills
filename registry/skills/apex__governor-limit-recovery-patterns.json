@@ -149,6 +149,11 @@
     "skills/apex/governor-limit-recovery-patterns/templates/governor-limit-recovery-patterns-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-05",
+    "vector_id": "apex/governor-limit-recovery-patterns"
+  },
   "version": "1.0.0"
 }

@@ -145,6 +145,11 @@
     "skills/admin/dynamic-forms-migration/templates/dynamic-forms-migration-template.md"
   ],
   "updated": "2026-04-30",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-30",
+    "vector_id": "admin/dynamic-forms-migration"
+  },
   "version": "1.0.0"
 }

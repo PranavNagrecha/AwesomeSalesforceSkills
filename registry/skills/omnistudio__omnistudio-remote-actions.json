@@ -117,6 +117,11 @@
     "skills/omnistudio/omnistudio-remote-actions/templates/omnistudio-remote-actions-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-05",
+    "vector_id": "omnistudio/omnistudio-remote-actions"
+  },
   "version": "1.0.0"
 }

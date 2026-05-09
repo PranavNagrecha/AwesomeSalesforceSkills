@@ -115,6 +115,11 @@
     "skills/architect/high-volume-sales-data-architecture/templates/high-volume-sales-data-architecture-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-05",
+    "vector_id": "architect/high-volume-sales-data-architecture"
+  },
   "version": "1.0.0"
 }

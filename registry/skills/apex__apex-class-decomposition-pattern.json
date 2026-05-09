@@ -119,6 +119,11 @@
     "skills/apex/apex-class-decomposition-pattern/templates/apex-class-decomposition-pattern-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "apex/apex-class-decomposition-pattern"
+  },
   "version": "1.0.0"
 }

@@ -96,6 +96,11 @@
     "skills/data/commerce-order-history-migration/templates/commerce-order-history-migration-template.md"
   ],
   "updated": "2026-04-16",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-16",
+    "vector_id": "data/commerce-order-history-migration"
+  },
   "version": "1.0.0"
 }

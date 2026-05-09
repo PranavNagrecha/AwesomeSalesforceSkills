@@ -92,6 +92,11 @@
     "skills/admin/lookup-and-relationship-design/templates/lookup-and-relationship-design-template.md"
   ],
   "updated": "2026-04-21",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-21",
+    "vector_id": "admin/lookup-and-relationship-design"
+  },
   "version": "1.0.0"
 }

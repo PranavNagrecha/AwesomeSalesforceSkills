@@ -164,6 +164,11 @@
     "skills/admin/process-flow-as-is-to-be/templates/process-flow-as-is-to-be-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "admin/process-flow-as-is-to-be"
+  },
   "version": "1.0.0"
 }

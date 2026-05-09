@@ -113,6 +113,11 @@
     "skills/flow/flow-runtime-error-diagnosis/templates/flow-runtime-error-diagnosis-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "flow/flow-runtime-error-diagnosis"
+  },
   "version": "2.0.0"
 }

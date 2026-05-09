@@ -133,6 +133,11 @@
     "skills/architect/ai-agent-org-integration-architecture/templates/ai-agent-org-integration-architecture-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "architect/ai-agent-org-integration-architecture"
+  },
   "version": "1.0.0"
 }

@@ -131,6 +131,11 @@
     "skills/admin/fsl-work-order-management/templates/fsl-work-order-management-template.md"
   ],
   "updated": "2026-04-07",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-07",
+    "vector_id": "admin/fsl-work-order-management"
+  },
   "version": "1.0.0"
 }

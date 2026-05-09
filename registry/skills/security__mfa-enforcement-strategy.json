@@ -106,6 +106,11 @@
     "skills/security/mfa-enforcement-strategy/templates/mfa-enforcement-strategy-template.md"
   ],
   "updated": "2026-04-16",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-16",
+    "vector_id": "security/mfa-enforcement-strategy"
+  },
   "version": "1.0.0"
 }

@@ -134,6 +134,11 @@
     "skills/data/data-reconciliation-patterns/templates/data-reconciliation-patterns-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-05",
+    "vector_id": "data/data-reconciliation-patterns"
+  },
   "version": "1.0.0"
 }

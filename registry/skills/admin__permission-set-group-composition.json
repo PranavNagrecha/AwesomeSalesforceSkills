@@ -155,6 +155,11 @@
     "skills/admin/permission-set-group-composition/templates/permission-set-group-composition-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "admin/permission-set-group-composition"
+  },
   "version": "1.0.0"
 }

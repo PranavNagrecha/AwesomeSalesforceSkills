@@ -96,6 +96,11 @@
     "skills/apex/apex-dml-patterns/templates/apex-dml-patterns-template.md"
   ],
   "updated": "2026-04-19",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-19",
+    "vector_id": "apex/apex-dml-patterns"
+  },
   "version": "1.0.0"
 }

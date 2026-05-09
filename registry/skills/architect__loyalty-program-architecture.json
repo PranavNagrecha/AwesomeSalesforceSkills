@@ -133,6 +133,11 @@
     "skills/architect/loyalty-program-architecture/templates/loyalty-program-architecture-template.md"
   ],
   "updated": "2026-05-04",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-05-04",
+    "vector_id": "architect/loyalty-program-architecture"
+  },
   "version": "1.0.0"
 }

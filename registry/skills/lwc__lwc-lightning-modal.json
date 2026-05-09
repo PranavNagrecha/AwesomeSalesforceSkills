@@ -91,6 +91,11 @@
     "skills/lwc/lwc-lightning-modal/templates/lwc-lightning-modal-template.md"
   ],
   "updated": "2026-04-21",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-21",
+    "vector_id": "lwc/lwc-lightning-modal"
+  },
   "version": "1.0.0"
 }

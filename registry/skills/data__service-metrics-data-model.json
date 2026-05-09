@@ -156,6 +156,11 @@
     "skills/data/service-metrics-data-model/templates/service-metrics-data-model-template.md"
   ],
   "updated": "2026-04-06",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-06",
+    "vector_id": "data/service-metrics-data-model"
+  },
   "version": "1.0.0"
 }

@@ -90,6 +90,11 @@
     "skills/apex/apex-execute-anonymous/templates/apex-execute-anonymous-template.md"
   ],
   "updated": "2026-04-22",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-22",
+    "vector_id": "apex/apex-execute-anonymous"
+  },
   "version": "1.0.0"
 }

@@ -113,6 +113,11 @@
     "skills/flow/flow-invocable-from-apex/templates/flow-invocable-from-apex-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "flow/flow-invocable-from-apex"
+  },
   "version": "1.0.0"
 }

@@ -95,6 +95,11 @@
     "skills/integration/tableau-salesforce-connector/templates/tableau-salesforce-connector-template.md"
   ],
   "updated": "2026-04-21",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-21",
+    "vector_id": "integration/tableau-salesforce-connector"
+  },
   "version": "1.0.0"
 }

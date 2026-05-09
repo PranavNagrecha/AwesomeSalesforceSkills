@@ -121,6 +121,11 @@
     "skills/devops/salesforce-dx-project-structure/templates/salesforce-dx-project-structure-template.md"
   ],
   "updated": "2026-04-06",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-06",
+    "vector_id": "devops/salesforce-dx-project-structure"
+  },
   "version": "1.0.0"
 }

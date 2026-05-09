@@ -90,6 +90,11 @@
     "skills/lwc/lwc-focus-management/templates/focus-map.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "lwc/lwc-focus-management"
+  },
   "version": "1.0.0"
 }

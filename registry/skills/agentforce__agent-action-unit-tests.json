@@ -64,6 +64,11 @@
     "skills/agentforce/agent-action-unit-tests/templates/agent-action-unit-tests-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "agentforce/agent-action-unit-tests"
+  },
   "version": "1.0.0"
 }

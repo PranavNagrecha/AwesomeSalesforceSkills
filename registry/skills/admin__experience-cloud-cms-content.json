@@ -121,6 +121,11 @@
     "skills/admin/experience-cloud-cms-content/templates/experience-cloud-cms-content-template.md"
   ],
   "updated": "2026-04-06",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-06",
+    "vector_id": "admin/experience-cloud-cms-content"
+  },
   "version": "1.0.0"
 }

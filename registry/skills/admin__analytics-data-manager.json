@@ -154,6 +154,11 @@
     "skills/admin/analytics-data-manager/templates/analytics-data-manager-template.md"
   ],
   "updated": "2026-04-13",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-13",
+    "vector_id": "admin/analytics-data-manager"
+  },
   "version": "1.0.0"
 }

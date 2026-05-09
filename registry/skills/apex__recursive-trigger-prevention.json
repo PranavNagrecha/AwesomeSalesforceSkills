@@ -97,6 +97,11 @@
     "skills/apex/recursive-trigger-prevention/templates/recursive-trigger-prevention-template.md"
   ],
   "updated": "2026-03-13",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-03-13",
+    "vector_id": "apex/recursive-trigger-prevention"
+  },
   "version": "1.0.0"
 }

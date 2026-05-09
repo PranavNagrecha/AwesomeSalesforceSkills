@@ -100,6 +100,11 @@
     "skills/security/sso-saml-troubleshooting/templates/sso-saml-troubleshooting-template.md"
   ],
   "updated": "2026-05-05",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-05-05",
+    "vector_id": "security/sso-saml-troubleshooting"
+  },
   "version": "1.0.0"
 }

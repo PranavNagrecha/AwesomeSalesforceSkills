@@ -121,6 +121,11 @@
     "skills/devops/deployment-error-troubleshooting/templates/deployment-error-troubleshooting-template.md"
   ],
   "updated": "2026-04-06",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-06",
+    "vector_id": "devops/deployment-error-troubleshooting"
+  },
   "version": "1.0.0"
 }

@@ -97,6 +97,11 @@
     "skills/data/fsl-reporting-data-model/templates/fsl-reporting-data-model-template.md"
   ],
   "updated": "2026-04-10",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-10",
+    "vector_id": "data/fsl-reporting-data-model"
+  },
   "version": "1.0.0"
 }

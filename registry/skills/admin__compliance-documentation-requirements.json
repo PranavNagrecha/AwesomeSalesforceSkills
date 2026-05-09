@@ -167,6 +167,11 @@
     "skills/admin/compliance-documentation-requirements/templates/compliance-documentation-requirements-template.md"
   ],
   "updated": "2026-04-11",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-11",
+    "vector_id": "admin/compliance-documentation-requirements"
+  },
   "version": "1.0.0"
 }

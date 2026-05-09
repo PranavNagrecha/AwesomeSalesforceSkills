@@ -132,6 +132,11 @@
     "skills/apex/npsp-trigger-framework-extension/templates/npsp-trigger-framework-extension-template.md"
   ],
   "updated": "2026-04-11",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-11",
+    "vector_id": "apex/npsp-trigger-framework-extension"
+  },
   "version": "1.0.0"
 }

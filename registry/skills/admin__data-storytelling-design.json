@@ -92,6 +92,11 @@
     "skills/admin/data-storytelling-design/templates/data-storytelling-design-template.md"
   ],
   "updated": "2026-04-16",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-16",
+    "vector_id": "admin/data-storytelling-design"
+  },
   "version": "1.0.0"
 }

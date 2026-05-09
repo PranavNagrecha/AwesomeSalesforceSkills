@@ -117,6 +117,11 @@
     "skills/flow/flow-action-framework/templates/flow-action-framework-template.md"
   ],
   "updated": "2026-04-17",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-17",
+    "vector_id": "flow/flow-action-framework"
+  },
   "version": "2.0.0"
 }

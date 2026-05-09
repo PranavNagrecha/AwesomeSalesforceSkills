@@ -159,6 +159,11 @@
     "skills/admin/stakeholder-raci-for-sf-projects/templates/stakeholder-raci-for-sf-projects-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "admin/stakeholder-raci-for-sf-projects"
+  },
   "version": "1.0.0"
 }

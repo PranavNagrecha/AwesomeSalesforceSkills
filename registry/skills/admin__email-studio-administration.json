@@ -151,6 +151,11 @@
     "skills/admin/email-studio-administration/templates/email-studio-administration-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "admin/email-studio-administration"
+  },
   "version": "1.0.0"
 }

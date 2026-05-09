@@ -146,6 +146,11 @@
     "skills/admin/ai-ethics-and-governance-requirements/templates/ai-ethics-and-governance-requirements-template.md"
   ],
   "updated": "2026-04-11",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-11",
+    "vector_id": "admin/ai-ethics-and-governance-requirements"
+  },
   "version": "1.0.0"
 }

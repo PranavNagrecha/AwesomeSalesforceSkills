@@ -86,6 +86,11 @@
     "skills/security/oauth-redirect-and-domain-strategy/templates/redirect-matrix.md"
   ],
   "updated": "2026-04-23",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-23",
+    "vector_id": "security/oauth-redirect-and-domain-strategy"
+  },
   "version": "1.0.0"
 }

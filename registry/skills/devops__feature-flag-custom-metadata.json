@@ -67,6 +67,11 @@
     "skills/devops/feature-flag-custom-metadata/templates/feature-flag-custom-metadata-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "devops/feature-flag-custom-metadata"
+  },
   "version": "1.0.0"
 }

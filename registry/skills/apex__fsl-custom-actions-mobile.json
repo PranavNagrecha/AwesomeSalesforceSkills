@@ -101,6 +101,11 @@
     "skills/apex/fsl-custom-actions-mobile/templates/fsl-custom-actions-mobile-template.md"
   ],
   "updated": "2026-04-10",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-10",
+    "vector_id": "apex/fsl-custom-actions-mobile"
+  },
   "version": "1.0.0"
 }

@@ -116,6 +116,11 @@
     "skills/architect/experience-cloud-licensing-model/templates/experience-cloud-licensing-model-template.md"
   ],
   "updated": "2026-04-06",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-06",
+    "vector_id": "architect/experience-cloud-licensing-model"
+  },
   "version": "1.0.0"
 }

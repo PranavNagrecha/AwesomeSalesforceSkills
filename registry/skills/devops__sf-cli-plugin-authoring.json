@@ -151,6 +151,11 @@
     "skills/devops/sf-cli-plugin-authoring/templates/sf-cli-plugin-authoring-template.md"
   ],
   "updated": "2026-05-09",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-05-09",
+    "vector_id": "devops/sf-cli-plugin-authoring"
+  },
   "version": "1.0.0"
 }

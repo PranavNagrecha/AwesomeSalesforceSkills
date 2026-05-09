@@ -115,6 +115,11 @@
     "skills/admin/assignment-rules/templates/assignment-rules-template.md"
   ],
   "updated": "2026-04-03",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-03",
+    "vector_id": "admin/assignment-rules"
+  },
   "version": "1.0.0"
 }

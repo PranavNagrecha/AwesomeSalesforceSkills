@@ -184,6 +184,11 @@
     "skills/flow/flow-deployment-and-packaging/templates/flow-deployment-and-packaging-template.md"
   ],
   "updated": "2026-04-27",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-27",
+    "vector_id": "flow/flow-deployment-and-packaging"
+  },
   "version": "1.0.0"
 }

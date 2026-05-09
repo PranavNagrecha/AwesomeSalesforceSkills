@@ -90,6 +90,11 @@
     "skills/lwc/custom-property-editor-for-flow/templates/custom-property-editor-for-flow-template.md"
   ],
   "updated": "2026-03-13",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-03-13",
+    "vector_id": "lwc/custom-property-editor-for-flow"
+  },
   "version": "1.0.0"
 }

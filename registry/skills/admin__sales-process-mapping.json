@@ -170,6 +170,11 @@
     "skills/admin/sales-process-mapping/templates/sales-process-mapping-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "admin/sales-process-mapping"
+  },
   "version": "1.0.0"
 }

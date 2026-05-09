@@ -106,6 +106,11 @@
     "skills/devops/code-review-checklist-salesforce/templates/code-review-checklist-salesforce-template.md"
   ],
   "updated": "2026-04-16",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-16",
+    "vector_id": "devops/code-review-checklist-salesforce"
+  },
   "version": "1.0.0"
 }

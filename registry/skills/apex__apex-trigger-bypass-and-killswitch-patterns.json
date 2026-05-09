@@ -109,6 +109,11 @@
     "skills/apex/apex-trigger-bypass-and-killswitch-patterns/templates/apex-trigger-bypass-and-killswitch-patterns-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "apex/apex-trigger-bypass-and-killswitch-patterns"
+  },
   "version": "1.0.0"
 }

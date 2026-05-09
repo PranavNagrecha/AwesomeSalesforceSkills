@@ -147,6 +147,11 @@
     "skills/agentforce/employee-hr-service-agent-rollout/templates/employee-hr-service-agent-rollout-template.md"
   ],
   "updated": "2026-05-08",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-05-08",
+    "vector_id": "agentforce/employee-hr-service-agent-rollout"
+  },
   "version": "1.0.0"
 }

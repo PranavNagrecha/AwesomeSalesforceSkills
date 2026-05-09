@@ -95,6 +95,11 @@
     "skills/flow/flow-governance/templates/flow-governance-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "flow/flow-governance"
+  },
   "version": "2.0.0"
 }

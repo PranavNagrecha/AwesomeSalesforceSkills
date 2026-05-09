@@ -151,6 +151,11 @@
     "skills/apex/fsl-service-report-templates/templates/fsl-service-report-templates-template.md"
   ],
   "updated": "2026-04-10",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-10",
+    "vector_id": "apex/fsl-service-report-templates"
+  },
   "version": "1.0.0"
 }

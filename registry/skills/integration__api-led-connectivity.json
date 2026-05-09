@@ -124,6 +124,11 @@
     "skills/integration/api-led-connectivity/templates/api-led-connectivity-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-05",
+    "vector_id": "integration/api-led-connectivity"
+  },
   "version": "1.0.0"
 }

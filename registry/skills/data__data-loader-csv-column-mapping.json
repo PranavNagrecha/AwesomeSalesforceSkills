@@ -195,6 +195,11 @@
     "skills/data/data-loader-csv-column-mapping/templates/data-loader-csv-column-mapping-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "data/data-loader-csv-column-mapping"
+  },
   "version": "1.0.0"
 }

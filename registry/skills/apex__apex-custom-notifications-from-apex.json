@@ -111,6 +111,11 @@
     "skills/apex/apex-custom-notifications-from-apex/templates/apex-custom-notifications-from-apex-template.md"
   ],
   "updated": "2026-04-23",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-23",
+    "vector_id": "apex/apex-custom-notifications-from-apex"
+  },
   "version": "1.0.0"
 }

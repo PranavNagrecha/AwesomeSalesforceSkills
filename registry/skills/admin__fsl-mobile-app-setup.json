@@ -145,6 +145,11 @@
     "skills/admin/fsl-mobile-app-setup/templates/fsl-mobile-app-setup-template.md"
   ],
   "updated": "2026-04-07",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-07",
+    "vector_id": "admin/fsl-mobile-app-setup"
+  },
   "version": "1.0.0"
 }

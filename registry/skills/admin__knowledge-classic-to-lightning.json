@@ -145,6 +145,11 @@
     "skills/admin/knowledge-classic-to-lightning/templates/knowledge-classic-to-lightning-template.md"
   ],
   "updated": "2026-04-29",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-29",
+    "vector_id": "admin/knowledge-classic-to-lightning"
+  },
   "version": "1.0.0"
 }

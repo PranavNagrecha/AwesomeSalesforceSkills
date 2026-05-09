@@ -129,6 +129,11 @@
     "skills/admin/requirements-gathering-for-sf/templates/requirements-gathering-for-sf-template.md"
   ],
   "updated": "2026-04-03",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-03",
+    "vector_id": "admin/requirements-gathering-for-sf"
+  },
   "version": "1.0.0"
 }

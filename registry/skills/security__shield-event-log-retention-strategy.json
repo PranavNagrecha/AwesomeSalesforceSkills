@@ -94,6 +94,11 @@
     "skills/security/shield-event-log-retention-strategy/templates/retention-matrix.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "security/shield-event-log-retention-strategy"
+  },
   "version": "1.0.0"
 }

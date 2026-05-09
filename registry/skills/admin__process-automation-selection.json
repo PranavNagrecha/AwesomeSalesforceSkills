@@ -97,6 +97,11 @@
     "skills/admin/process-automation-selection/templates/process-automation-selection-template.md"
   ],
   "updated": "2026-03-13",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-03-13",
+    "vector_id": "admin/process-automation-selection"
+  },
   "version": "1.0.0"
 }

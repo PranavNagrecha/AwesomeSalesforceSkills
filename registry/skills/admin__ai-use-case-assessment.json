@@ -156,6 +156,11 @@
     "skills/admin/ai-use-case-assessment/templates/ai-use-case-assessment-template.md"
   ],
   "updated": "2026-04-11",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-11",
+    "vector_id": "admin/ai-use-case-assessment"
+  },
   "version": "1.0.0"
 }

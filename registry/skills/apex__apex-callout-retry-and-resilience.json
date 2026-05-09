@@ -133,6 +133,11 @@
     "skills/apex/apex-callout-retry-and-resilience/templates/apex-callout-retry-and-resilience-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "apex/apex-callout-retry-and-resilience"
+  },
   "version": "1.0.0"
 }

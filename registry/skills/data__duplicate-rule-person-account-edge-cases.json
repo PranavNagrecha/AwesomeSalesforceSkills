@@ -162,6 +162,11 @@
     "skills/data/duplicate-rule-person-account-edge-cases/templates/duplicate-rule-person-account-edge-cases-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "data/duplicate-rule-person-account-edge-cases"
+  },
   "version": "1.0.0"
 }

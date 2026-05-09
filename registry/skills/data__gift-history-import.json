@@ -105,6 +105,11 @@
     "skills/data/gift-history-import/templates/gift-history-import-template.md"
   ],
   "updated": "2026-04-16",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-16",
+    "vector_id": "data/gift-history-import"
+  },
   "version": "1.0.0"
 }

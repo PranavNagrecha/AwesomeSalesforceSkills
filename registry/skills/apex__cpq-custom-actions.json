@@ -126,6 +126,11 @@
     "skills/apex/cpq-custom-actions/templates/cpq-custom-actions-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "apex/cpq-custom-actions"
+  },
   "version": "1.0.0"
 }

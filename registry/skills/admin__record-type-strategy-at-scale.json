@@ -107,6 +107,11 @@
     "skills/admin/record-type-strategy-at-scale/templates/record-type-strategy-at-scale-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-05",
+    "vector_id": "admin/record-type-strategy-at-scale"
+  },
   "version": "1.0.0"
 }

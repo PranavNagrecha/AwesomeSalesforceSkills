@@ -137,6 +137,11 @@
     "skills/architect/industries-data-model/templates/industries-data-model-template.md"
   ],
   "updated": "2026-04-13",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-13",
+    "vector_id": "architect/industries-data-model"
+  },
   "version": "1.0.0"
 }

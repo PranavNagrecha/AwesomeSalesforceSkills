@@ -112,6 +112,11 @@
     "skills/apex/apex-stripinaccessible-and-fls-enforcement/templates/apex-stripinaccessible-and-fls-enforcement-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "apex/apex-stripinaccessible-and-fls-enforcement"
+  },
   "version": "1.0.0"
 }

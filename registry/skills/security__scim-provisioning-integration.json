@@ -94,6 +94,11 @@
     "skills/security/scim-provisioning-integration/templates/scim-mapping-worksheet.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "security/scim-provisioning-integration"
+  },
   "version": "1.0.0"
 }

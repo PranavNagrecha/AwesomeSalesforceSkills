@@ -85,6 +85,11 @@
     "skills/flow/flow-record-save-order-interaction/templates/save-order-map.md"
   ],
   "updated": "2026-04-23",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-23",
+    "vector_id": "flow/flow-record-save-order-interaction"
+  },
   "version": "1.0.0"
 }

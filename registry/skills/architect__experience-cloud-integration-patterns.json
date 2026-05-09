@@ -177,6 +177,11 @@
     "skills/architect/experience-cloud-integration-patterns/templates/experience-cloud-integration-patterns-template.md"
   ],
   "updated": "2026-04-07",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-07",
+    "vector_id": "architect/experience-cloud-integration-patterns"
+  },
   "version": "1.0.0"
 }

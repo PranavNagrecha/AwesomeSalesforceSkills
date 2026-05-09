@@ -68,6 +68,11 @@
     "skills/devops/sfdx-hardis-integration/templates/sfdx-hardis-integration-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "devops/sfdx-hardis-integration"
+  },
   "version": "1.0.0"
 }

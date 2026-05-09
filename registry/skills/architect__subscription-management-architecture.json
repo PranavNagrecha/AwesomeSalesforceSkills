@@ -182,6 +182,11 @@
     "skills/architect/subscription-management-architecture/templates/subscription-management-architecture-template.md"
   ],
   "updated": "2026-04-10",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-10",
+    "vector_id": "architect/subscription-management-architecture"
+  },
   "version": "1.0.0"
 }

@@ -93,6 +93,11 @@
     "skills/agentforce/agent-action-input-slot-extraction/templates/agent-action-input-slot-extraction-template.md"
   ],
   "updated": "2026-04-30",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-30",
+    "vector_id": "agentforce/agent-action-input-slot-extraction"
+  },
   "version": "1.0.0"
 }

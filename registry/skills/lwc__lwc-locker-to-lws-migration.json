@@ -163,6 +163,11 @@
     "skills/lwc/lwc-locker-to-lws-migration/templates/lwc-locker-to-lws-migration-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "lwc/lwc-locker-to-lws-migration"
+  },
   "version": "1.0.0"
 }

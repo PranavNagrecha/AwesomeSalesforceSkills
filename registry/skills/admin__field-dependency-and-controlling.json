@@ -91,6 +91,11 @@
     "skills/admin/field-dependency-and-controlling/templates/field-dependency-and-controlling-template.md"
   ],
   "updated": "2026-04-22",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-22",
+    "vector_id": "admin/field-dependency-and-controlling"
+  },
   "version": "1.0.0"
 }

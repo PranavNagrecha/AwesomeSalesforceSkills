@@ -68,6 +68,11 @@
     "skills/agentforce/agent-deployment-checklist/templates/agent-deployment-checklist-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "agentforce/agent-deployment-checklist"
+  },
   "version": "1.0.0"
 }

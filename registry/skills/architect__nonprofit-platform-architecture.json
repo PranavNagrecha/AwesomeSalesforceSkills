@@ -169,6 +169,11 @@
     "skills/architect/nonprofit-platform-architecture/templates/nonprofit-platform-architecture-template.md"
   ],
   "updated": "2026-04-12",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-12",
+    "vector_id": "architect/nonprofit-platform-architecture"
+  },
   "version": "1.0.0"
 }

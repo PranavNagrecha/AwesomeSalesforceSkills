@@ -96,6 +96,11 @@
     "skills/data/eda-data-model-and-patterns/templates/eda-data-model-and-patterns-template.md"
   ],
   "updated": "2026-04-21",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-21",
+    "vector_id": "data/eda-data-model-and-patterns"
+  },
   "version": "1.0.0"
 }

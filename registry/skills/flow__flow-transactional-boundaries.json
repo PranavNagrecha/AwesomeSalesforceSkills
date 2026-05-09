@@ -135,6 +135,11 @@
     "skills/flow/flow-transactional-boundaries/templates/flow-transactional-boundaries-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "flow/flow-transactional-boundaries"
+  },
   "version": "1.0.0"
 }

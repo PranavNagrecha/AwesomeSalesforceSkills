@@ -114,6 +114,11 @@
     "skills/apex/apex-connect-api-chatter/templates/apex-connect-api-chatter-template.md"
   ],
   "updated": "2026-04-23",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-23",
+    "vector_id": "apex/apex-connect-api-chatter"
+  },
   "version": "1.0.0"
 }

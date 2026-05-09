@@ -172,6 +172,11 @@
     "skills/apex/sf-cli-and-sfdx-essentials/templates/sf-cli-and-sfdx-essentials-template.md"
   ],
   "updated": "2026-04-04",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-04",
+    "vector_id": "apex/sf-cli-and-sfdx-essentials"
+  },
   "version": "1.0.0"
 }

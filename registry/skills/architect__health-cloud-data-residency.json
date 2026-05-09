@@ -173,6 +173,11 @@
     "skills/architect/health-cloud-data-residency/templates/health-cloud-data-residency-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "architect/health-cloud-data-residency"
+  },
   "version": "1.0.0"
 }

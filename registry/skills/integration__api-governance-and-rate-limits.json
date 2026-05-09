@@ -67,6 +67,11 @@
     "skills/integration/api-governance-and-rate-limits/templates/api-governance-and-rate-limits-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "integration/api-governance-and-rate-limits"
+  },
   "version": "1.0.0"
 }

@@ -135,6 +135,11 @@
     "skills/architect/nfr-definition-for-salesforce/templates/nfr-definition-for-salesforce-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-05",
+    "vector_id": "architect/nfr-definition-for-salesforce"
+  },
   "version": "1.0.0"
 }

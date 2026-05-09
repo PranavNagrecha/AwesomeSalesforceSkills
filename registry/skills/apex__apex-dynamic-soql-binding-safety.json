@@ -115,6 +115,11 @@
     "skills/apex/apex-dynamic-soql-binding-safety/templates/apex-dynamic-soql-binding-safety-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "apex/apex-dynamic-soql-binding-safety"
+  },
   "version": "1.0.0"
 }

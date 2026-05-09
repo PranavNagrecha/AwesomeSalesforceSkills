@@ -99,6 +99,11 @@
     "skills/admin/list-views-and-compact-layouts/templates/list-views-and-compact-layouts-template.md"
   ],
   "updated": "2026-03-13",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-03-13",
+    "vector_id": "admin/list-views-and-compact-layouts"
+  },
   "version": "1.0.0"
 }

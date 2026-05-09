@@ -155,6 +155,11 @@
     "skills/architect/marketing-cloud-vs-mcae-selection/templates/marketing-cloud-vs-mcae-selection-template.md"
   ],
   "updated": "2026-04-10",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-10",
+    "vector_id": "architect/marketing-cloud-vs-mcae-selection"
+  },
   "version": "1.0.0"
 }

@@ -151,6 +151,11 @@
     "skills/data/data-extension-design/templates/data-extension-design-template.md"
   ],
   "updated": "2026-04-07",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-07",
+    "vector_id": "data/data-extension-design"
+  },
   "version": "1.0.0"
 }

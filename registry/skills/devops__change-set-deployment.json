@@ -136,6 +136,11 @@
     "skills/devops/change-set-deployment/templates/change-set-deployment-template.md"
   ],
   "updated": "2026-04-04",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-04",
+    "vector_id": "devops/change-set-deployment"
+  },
   "version": "1.0.0"
 }

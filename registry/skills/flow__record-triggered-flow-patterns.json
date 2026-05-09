@@ -104,6 +104,11 @@
     "skills/flow/record-triggered-flow-patterns/templates/record-triggered-flow-patterns-template.md"
   ],
   "updated": "2026-04-17",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-17",
+    "vector_id": "flow/record-triggered-flow-patterns"
+  },
   "version": "2.0.0"
 }

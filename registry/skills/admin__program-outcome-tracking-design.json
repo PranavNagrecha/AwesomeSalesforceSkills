@@ -118,6 +118,11 @@
     "skills/admin/program-outcome-tracking-design/templates/program-outcome-tracking-design-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "admin/program-outcome-tracking-design"
+  },
   "version": "1.0.0"
 }

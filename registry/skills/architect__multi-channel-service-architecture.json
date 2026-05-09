@@ -116,6 +116,11 @@
     "skills/architect/multi-channel-service-architecture/templates/multi-channel-service-architecture-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "architect/multi-channel-service-architecture"
+  },
   "version": "1.0.0"
 }

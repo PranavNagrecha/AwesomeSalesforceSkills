@@ -132,6 +132,11 @@
     "skills/admin/data-cloud-calculated-insights/templates/data-cloud-calculated-insights-template.md"
   ],
   "updated": "2026-04-15",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-15",
+    "vector_id": "admin/data-cloud-calculated-insights"
+  },
   "version": "1.0.0"
 }

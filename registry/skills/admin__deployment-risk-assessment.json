@@ -140,6 +140,11 @@
     "skills/admin/deployment-risk-assessment/templates/deployment-risk-assessment-template.md"
   ],
   "updated": "2026-04-13",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-13",
+    "vector_id": "admin/deployment-risk-assessment"
+  },
   "version": "1.0.0"
 }

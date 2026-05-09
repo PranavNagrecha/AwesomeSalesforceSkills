@@ -114,6 +114,11 @@
     "skills/data/omnistudio-datapack-migration/templates/omnistudio-datapack-migration-template.md"
   ],
   "updated": "2026-04-14",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-14",
+    "vector_id": "data/omnistudio-datapack-migration"
+  },
   "version": "1.0.0"
 }

@@ -126,6 +126,11 @@
     "skills/omnistudio/document-generation-omnistudio/templates/document-generation-omnistudio-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-05",
+    "vector_id": "omnistudio/document-generation-omnistudio"
+  },
   "version": "1.0.0"
 }

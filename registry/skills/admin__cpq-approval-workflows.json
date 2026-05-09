@@ -180,6 +180,11 @@
     "skills/admin/cpq-approval-workflows/templates/cpq-approval-workflows-template.md"
   ],
   "updated": "2026-04-07",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-07",
+    "vector_id": "admin/cpq-approval-workflows"
+  },
   "version": "1.0.0"
 }

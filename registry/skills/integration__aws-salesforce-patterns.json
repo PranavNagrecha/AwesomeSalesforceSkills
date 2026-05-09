@@ -119,6 +119,11 @@
     "skills/integration/aws-salesforce-patterns/templates/aws-salesforce-patterns-template.md"
   ],
   "updated": "2026-05-01",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-05-01",
+    "vector_id": "integration/aws-salesforce-patterns"
+  },
   "version": "1.0.0"
 }

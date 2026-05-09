@@ -153,6 +153,11 @@
     "skills/architect/integration-security-architecture/templates/integration-security-architecture-template.md"
   ],
   "updated": "2026-04-15",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-15",
+    "vector_id": "architect/integration-security-architecture"
+  },
   "version": "1.0.0"
 }

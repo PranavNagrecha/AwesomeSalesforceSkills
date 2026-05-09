@@ -70,6 +70,11 @@
     "skills/security/privileged-access-management/templates/privileged-access-management-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "security/privileged-access-management"
+  },
   "version": "1.0.0"
 }

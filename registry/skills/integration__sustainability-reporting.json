@@ -96,6 +96,11 @@
     "skills/integration/sustainability-reporting/templates/sustainability-reporting-template.md"
   ],
   "updated": "2026-05-05",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-05-05",
+    "vector_id": "integration/sustainability-reporting"
+  },
   "version": "1.0.0"
 }

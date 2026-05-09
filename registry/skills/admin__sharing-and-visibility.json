@@ -94,6 +94,11 @@
     "skills/admin/sharing-and-visibility/templates/sharing-model-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "admin/sharing-and-visibility"
+  },
   "version": "1.0.0"
 }

@@ -120,6 +120,11 @@
     "skills/admin/user-access-policies/templates/user-access-policies-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-05",
+    "vector_id": "admin/user-access-policies"
+  },
   "version": "1.0.0"
 }

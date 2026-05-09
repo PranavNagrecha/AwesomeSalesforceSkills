@@ -92,6 +92,11 @@
     "skills/apex/apex-enum-patterns/templates/apex-enum-patterns-template.md"
   ],
   "updated": "2026-05-05",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-05-05",
+    "vector_id": "apex/apex-enum-patterns"
+  },
   "version": "1.0.0"
 }

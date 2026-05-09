@@ -88,6 +88,11 @@
     "skills/security/permission-set-groups-and-muting/templates/permission-set-groups-and-muting-template.md"
   ],
   "updated": "2026-03-13",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-03-13",
+    "vector_id": "security/permission-set-groups-and-muting"
+  },
   "version": "1.0.0"
 }

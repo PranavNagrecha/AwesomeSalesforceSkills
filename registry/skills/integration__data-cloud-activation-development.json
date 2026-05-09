@@ -108,6 +108,11 @@
     "skills/integration/data-cloud-activation-development/templates/data-cloud-activation-development-template.md"
   ],
   "updated": "2026-04-16",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-16",
+    "vector_id": "integration/data-cloud-activation-development"
+  },
   "version": "1.0.0"
 }

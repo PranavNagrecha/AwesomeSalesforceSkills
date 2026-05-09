@@ -134,6 +134,11 @@
     "skills/admin/gift-entry-and-processing/templates/gift-entry-and-processing-template.md"
   ],
   "updated": "2026-04-07",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-07",
+    "vector_id": "admin/gift-entry-and-processing"
+  },
   "version": "1.0.0"
 }

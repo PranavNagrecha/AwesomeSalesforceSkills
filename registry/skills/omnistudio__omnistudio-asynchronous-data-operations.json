@@ -63,6 +63,11 @@
     "skills/omnistudio/omnistudio-asynchronous-data-operations/templates/omnistudio-asynchronous-data-operations-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "omnistudio/omnistudio-asynchronous-data-operations"
+  },
   "version": "1.0.0"
 }

@@ -91,6 +91,11 @@
     "skills/lwc/lwc-cross-tab-state-sync/templates/lwc-cross-tab-state-sync-template.md"
   ],
   "updated": "2026-04-30",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-30",
+    "vector_id": "lwc/lwc-cross-tab-state-sync"
+  },
   "version": "1.0.0"
 }

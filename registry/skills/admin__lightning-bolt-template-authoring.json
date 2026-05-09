@@ -155,6 +155,11 @@
     "skills/admin/lightning-bolt-template-authoring/templates/lightning-bolt-template-authoring-template.md"
   ],
   "updated": "2026-05-08",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-05-08",
+    "vector_id": "admin/lightning-bolt-template-authoring"
+  },
   "version": "1.0.0"
 }

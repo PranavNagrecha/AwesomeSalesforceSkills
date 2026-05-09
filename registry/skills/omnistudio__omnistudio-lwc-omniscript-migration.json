@@ -64,6 +64,11 @@
     "skills/omnistudio/omnistudio-lwc-omniscript-migration/templates/omnistudio-lwc-omniscript-migration-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "omnistudio/omnistudio-lwc-omniscript-migration"
+  },
   "version": "1.0.0"
 }

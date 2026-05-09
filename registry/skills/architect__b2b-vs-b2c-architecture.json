@@ -153,6 +153,11 @@
     "skills/architect/b2b-vs-b2c-architecture/templates/b2b-vs-b2c-architecture-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "architect/b2b-vs-b2c-architecture"
+  },
   "version": "1.0.0"
 }

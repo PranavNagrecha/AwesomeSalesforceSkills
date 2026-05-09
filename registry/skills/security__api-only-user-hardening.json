@@ -68,6 +68,11 @@
     "skills/security/api-only-user-hardening/templates/api-only-user-hardening-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "security/api-only-user-hardening"
+  },
   "version": "1.0.0"
 }

@@ -134,6 +134,11 @@
     "skills/data/consent-data-model-health/templates/consent-data-model-health-template.md"
   ],
   "updated": "2026-04-11",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-11",
+    "vector_id": "data/consent-data-model-health"
+  },
   "version": "1.0.0"
 }

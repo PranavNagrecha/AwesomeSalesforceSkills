@@ -148,6 +148,11 @@
     "skills/admin/lead-scoring-requirements/templates/lead-scoring-requirements-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "admin/lead-scoring-requirements"
+  },
   "version": "1.0.0"
 }

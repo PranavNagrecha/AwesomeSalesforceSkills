@@ -93,6 +93,11 @@
     "skills/apex/apex-cpu-and-heap-optimization/templates/apex-cpu-and-heap-optimization-template.md"
   ],
   "updated": "2026-03-13",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-03-13",
+    "vector_id": "apex/apex-cpu-and-heap-optimization"
+  },
   "version": "1.0.0"
 }

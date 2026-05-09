@@ -139,6 +139,11 @@
     "skills/admin/fsc-action-plans/templates/fsc-action-plans-template.md"
   ],
   "updated": "2026-04-10",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-10",
+    "vector_id": "admin/fsc-action-plans"
+  },
   "version": "1.0.0"
 }

@@ -124,6 +124,11 @@
     "skills/agentforce/einstein-search-personalization/templates/einstein-search-personalization-template.md"
   ],
   "updated": "2026-04-12",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-12",
+    "vector_id": "agentforce/einstein-search-personalization"
+  },
   "version": "1.0.0"
 }

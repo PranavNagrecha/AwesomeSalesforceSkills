@@ -125,6 +125,11 @@
     "skills/admin/analytics-dashboard-json/templates/analytics-dashboard-json-template.md"
   ],
   "updated": "2026-04-13",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-13",
+    "vector_id": "admin/analytics-dashboard-json"
+  },
   "version": "1.0.0"
 }

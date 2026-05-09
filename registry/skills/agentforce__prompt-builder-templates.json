@@ -149,6 +149,11 @@
     "skills/agentforce/prompt-builder-templates/templates/prompt-builder-templates-template.md"
   ],
   "updated": "2026-04-04",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-04",
+    "vector_id": "agentforce/prompt-builder-templates"
+  },
   "version": "1.0.0"
 }

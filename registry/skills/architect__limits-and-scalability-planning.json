@@ -172,6 +172,11 @@
     "skills/architect/limits-and-scalability-planning/templates/limits-and-scalability-planning-template.md"
   ],
   "updated": "2026-04-04",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-04",
+    "vector_id": "architect/limits-and-scalability-planning"
+  },
   "version": "1.0.0"
 }

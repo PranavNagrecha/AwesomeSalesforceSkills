@@ -135,6 +135,11 @@
     "skills/agentforce/agentforce-sales-ai-setup/templates/agentforce-sales-ai-setup-template.md"
   ],
   "updated": "2026-04-11",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-11",
+    "vector_id": "agentforce/agentforce-sales-ai-setup"
+  },
   "version": "1.0.0"
 }

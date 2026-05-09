@@ -144,6 +144,11 @@
     "skills/devops/cumulusci-automation/templates/cumulusci-automation-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "devops/cumulusci-automation"
+  },
   "version": "1.0.0"
 }

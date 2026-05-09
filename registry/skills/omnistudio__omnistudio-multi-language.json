@@ -64,6 +64,11 @@
     "skills/omnistudio/omnistudio-multi-language/templates/omnistudio-multi-language-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "omnistudio/omnistudio-multi-language"
+  },
   "version": "1.0.0"
 }

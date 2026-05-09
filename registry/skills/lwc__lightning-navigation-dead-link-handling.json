@@ -93,6 +93,11 @@
     "skills/lwc/lightning-navigation-dead-link-handling/templates/lightning-navigation-dead-link-handling-template.md"
   ],
   "updated": "2026-04-30",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-30",
+    "vector_id": "lwc/lightning-navigation-dead-link-handling"
+  },
   "version": "1.0.0"
 }

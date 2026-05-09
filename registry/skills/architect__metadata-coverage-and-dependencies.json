@@ -123,6 +123,11 @@
     "skills/architect/metadata-coverage-and-dependencies/templates/metadata-coverage-and-dependencies-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "architect/metadata-coverage-and-dependencies"
+  },
   "version": "1.0.0"
 }

@@ -143,6 +143,11 @@
     "skills/lwc/commerce-lwc-components/templates/commerce-lwc-components-template.md"
   ],
   "updated": "2026-04-11",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-11",
+    "vector_id": "lwc/commerce-lwc-components"
+  },
   "version": "1.0.0"
 }

@@ -110,6 +110,11 @@
     "skills/apex/apex-user-and-permission-checks/templates/apex-user-and-permission-checks-template.md"
   ],
   "updated": "2026-04-23",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-23",
+    "vector_id": "apex/apex-user-and-permission-checks"
+  },
   "version": "1.0.0"
 }

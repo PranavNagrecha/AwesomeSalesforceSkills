@@ -108,6 +108,11 @@
     "skills/apex/metadata-api-and-package-xml/templates/metadata-api-and-package-xml-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "apex/metadata-api-and-package-xml"
+  },
   "version": "1.0.0"
 }

@@ -104,6 +104,11 @@
     "skills/admin/patient-engagement-requirements/templates/patient-engagement-requirements-template.md"
   ],
   "updated": "2026-04-10",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-10",
+    "vector_id": "admin/patient-engagement-requirements"
+  },
   "version": "1.0.0"
 }

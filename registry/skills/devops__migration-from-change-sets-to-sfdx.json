@@ -145,6 +145,11 @@
     "skills/devops/migration-from-change-sets-to-sfdx/templates/migration-from-change-sets-to-sfdx-template.md"
   ],
   "updated": "2026-04-06",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-06",
+    "vector_id": "devops/migration-from-change-sets-to-sfdx"
+  },
   "version": "1.0.0"
 }

@@ -144,6 +144,11 @@
     "skills/data/data-archival-strategies/templates/data-archival-strategies-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "data/data-archival-strategies"
+  },
   "version": "1.0.0"
 }

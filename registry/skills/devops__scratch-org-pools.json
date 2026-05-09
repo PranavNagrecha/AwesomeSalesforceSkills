@@ -144,6 +144,11 @@
     "skills/devops/scratch-org-pools/templates/scratch-org-pools-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "devops/scratch-org-pools"
+  },
   "version": "1.0.0"
 }

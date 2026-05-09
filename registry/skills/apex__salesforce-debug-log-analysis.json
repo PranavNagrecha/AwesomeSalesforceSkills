@@ -861,6 +861,11 @@
     "skills/apex/salesforce-debug-log-analysis/templates/log-triage-worksheet.md"
   ],
   "updated": "2026-04-24",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-24",
+    "vector_id": "apex/salesforce-debug-log-analysis"
+  },
   "version": "1.0.0"
 }

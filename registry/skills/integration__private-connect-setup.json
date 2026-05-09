@@ -67,6 +67,11 @@
     "skills/integration/private-connect-setup/templates/private-connect-setup-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "integration/private-connect-setup"
+  },
   "version": "1.0.0"
 }

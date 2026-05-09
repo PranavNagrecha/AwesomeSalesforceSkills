@@ -94,6 +94,11 @@
     "skills/apex/soql-null-ordering-patterns/templates/soql-null-ordering-patterns-template.md"
   ],
   "updated": "2026-04-30",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-30",
+    "vector_id": "apex/soql-null-ordering-patterns"
+  },
   "version": "1.0.0"
 }

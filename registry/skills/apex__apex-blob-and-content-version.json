@@ -121,6 +121,11 @@
     "skills/apex/apex-blob-and-content-version/templates/apex-blob-and-content-version-template.md"
   ],
   "updated": "2026-04-23",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-23",
+    "vector_id": "apex/apex-blob-and-content-version"
+  },
   "version": "1.0.0"
 }

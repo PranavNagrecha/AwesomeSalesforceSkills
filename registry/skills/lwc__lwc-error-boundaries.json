@@ -65,6 +65,11 @@
     "skills/lwc/lwc-error-boundaries/templates/lwc-error-boundaries-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "lwc/lwc-error-boundaries"
+  },
   "version": "1.0.0"
 }

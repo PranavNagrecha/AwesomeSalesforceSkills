@@ -105,6 +105,11 @@
     "skills/agentforce/custom-agent-actions-apex/templates/custom-agent-actions-apex-template.md"
   ],
   "updated": "2026-04-04",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-04",
+    "vector_id": "agentforce/custom-agent-actions-apex"
+  },
   "version": "1.0.0"
 }

@@ -113,6 +113,11 @@
     "skills/agentforce/agentforce-tool-use-patterns/templates/agentforce-tool-use-patterns-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "agentforce/agentforce-tool-use-patterns"
+  },
   "version": "1.0.0"
 }

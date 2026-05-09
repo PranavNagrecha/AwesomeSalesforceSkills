@@ -90,6 +90,11 @@
     "skills/admin/custom-label-management/templates/custom-label-management-template.md"
   ],
   "updated": "2026-04-21",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-21",
+    "vector_id": "admin/custom-label-management"
+  },
   "version": "1.0.0"
 }

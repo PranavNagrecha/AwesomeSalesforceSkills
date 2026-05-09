@@ -133,6 +133,11 @@
     "skills/architect/headless-vs-standard-experience/templates/headless-vs-standard-experience-template.md"
   ],
   "updated": "2026-04-07",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-07",
+    "vector_id": "architect/headless-vs-standard-experience"
+  },
   "version": "1.0.0"
 }

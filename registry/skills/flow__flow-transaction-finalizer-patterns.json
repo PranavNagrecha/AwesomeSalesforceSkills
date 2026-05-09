@@ -86,6 +86,11 @@
     "skills/flow/flow-transaction-finalizer-patterns/templates/post-commit-plan.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "flow/flow-transaction-finalizer-patterns"
+  },
   "version": "1.0.0"
 }

@@ -112,6 +112,11 @@
     "skills/admin/flow-for-admins/templates/flow-design-template.md"
   ],
   "updated": "2026-03-13",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-03-13",
+    "vector_id": "admin/flow-for-admins"
+  },
   "version": "1.0.0"
 }

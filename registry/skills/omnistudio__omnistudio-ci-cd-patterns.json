@@ -119,6 +119,11 @@
     "skills/omnistudio/omnistudio-ci-cd-patterns/templates/omnistudio-ci-cd-patterns-template.md"
   ],
   "updated": "2026-04-12",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-12",
+    "vector_id": "omnistudio/omnistudio-ci-cd-patterns"
+  },
   "version": "1.0.0"
 }

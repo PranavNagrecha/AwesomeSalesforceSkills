@@ -113,6 +113,11 @@
     "skills/flow/recursion-and-re-entry-prevention/templates/recursion-and-re-entry-prevention-template.md"
   ],
   "updated": "2026-04-30",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-30",
+    "vector_id": "flow/recursion-and-re-entry-prevention"
+  },
   "version": "1.0.0"
 }

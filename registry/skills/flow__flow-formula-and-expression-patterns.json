@@ -230,6 +230,11 @@
     "skills/flow/flow-formula-and-expression-patterns/templates/flow-formula-and-expression-patterns-template.md"
   ],
   "updated": "2026-04-27",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-27",
+    "vector_id": "flow/flow-formula-and-expression-patterns"
+  },
   "version": "1.0.0"
 }

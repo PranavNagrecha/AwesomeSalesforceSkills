@@ -180,6 +180,11 @@
     "skills/admin/pricing-model-design/templates/pricing-model-design-template.md"
   ],
   "updated": "2026-04-07",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-07",
+    "vector_id": "admin/pricing-model-design"
+  },
   "version": "1.0.0"
 }

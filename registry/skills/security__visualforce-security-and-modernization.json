@@ -168,6 +168,11 @@
     "skills/security/visualforce-security-and-modernization/templates/visualforce-security-and-modernization-template.md"
   ],
   "updated": "2026-05-08",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-05-08",
+    "vector_id": "security/visualforce-security-and-modernization"
+  },
   "version": "1.0.0"
 }

@@ -155,6 +155,11 @@
     "skills/architect/sla-design-and-escalation-matrix/templates/sla-design-and-escalation-matrix-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "architect/sla-design-and-escalation-matrix"
+  },
   "version": "1.0.0"
 }

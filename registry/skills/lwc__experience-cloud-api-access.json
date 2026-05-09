@@ -144,6 +144,11 @@
     "skills/lwc/experience-cloud-api-access/templates/experience-cloud-api-access-template.md"
   ],
   "updated": "2026-04-06",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-06",
+    "vector_id": "lwc/experience-cloud-api-access"
+  },
   "version": "1.0.0"
 }

@@ -146,6 +146,11 @@
     "skills/architect/order-management-architecture/templates/order-management-architecture-template.md"
   ],
   "updated": "2026-04-12",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-12",
+    "vector_id": "architect/order-management-architecture"
+  },
   "version": "1.0.0"
 }

@@ -158,6 +158,11 @@
     "skills/admin/cpq-guided-selling/templates/cpq-guided-selling-template.md"
   ],
   "updated": "2026-04-07",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-07",
+    "vector_id": "admin/cpq-guided-selling"
+  },
   "version": "1.0.0"
 }

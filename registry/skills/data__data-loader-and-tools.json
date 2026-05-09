@@ -138,6 +138,11 @@
     "skills/data/data-loader-and-tools/templates/data-loader-and-tools-template.md"
   ],
   "updated": "2026-04-17",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-17",
+    "vector_id": "data/data-loader-and-tools"
+  },
   "version": "1.0.0"
 }

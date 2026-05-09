@@ -111,6 +111,11 @@
     "skills/architect/knowledge-vs-external-cms/templates/knowledge-vs-external-cms-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-05",
+    "vector_id": "architect/knowledge-vs-external-cms"
+  },
   "version": "1.0.0"
 }

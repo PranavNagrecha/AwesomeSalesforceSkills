@@ -152,6 +152,11 @@
     "skills/apex/fsc-apex-extensions/templates/fsc-apex-extensions-template.md"
   ],
   "updated": "2026-04-11",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-11",
+    "vector_id": "apex/fsc-apex-extensions"
+  },
   "version": "1.0.0"
 }

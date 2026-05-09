@@ -112,6 +112,11 @@
     "skills/flow/fault-handling/templates/flow-fault-design-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "flow/fault-handling"
+  },
   "version": "2.0.0"
 }

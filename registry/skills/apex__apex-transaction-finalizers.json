@@ -101,6 +101,11 @@
     "skills/apex/apex-transaction-finalizers/templates/apex-transaction-finalizers-template.md"
   ],
   "updated": "2026-04-19",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-19",
+    "vector_id": "apex/apex-transaction-finalizers"
+  },
   "version": "1.0.0"
 }

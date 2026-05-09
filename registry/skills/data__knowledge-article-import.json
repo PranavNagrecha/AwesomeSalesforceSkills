@@ -117,6 +117,11 @@
     "skills/data/knowledge-article-import/templates/knowledge-article-import-template.md"
   ],
   "updated": "2026-04-06",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-06",
+    "vector_id": "data/knowledge-article-import"
+  },
   "version": "1.0.0"
 }

@@ -121,6 +121,11 @@
     "skills/admin/change-management-and-training/templates/change-management-and-training-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "admin/change-management-and-training"
+  },
   "version": "1.0.0"
 }

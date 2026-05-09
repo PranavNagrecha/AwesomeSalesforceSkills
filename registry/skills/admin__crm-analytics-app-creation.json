@@ -132,6 +132,11 @@
     "skills/admin/crm-analytics-app-creation/templates/crm-analytics-app-creation-template.md"
   ],
   "updated": "2026-04-12",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-12",
+    "vector_id": "admin/crm-analytics-app-creation"
+  },
   "version": "1.0.0"
 }

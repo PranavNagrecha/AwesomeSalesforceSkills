@@ -95,6 +95,11 @@
     "skills/omnistudio/omniscript-design-patterns/templates/omniscript-design-patterns-template.md"
   ],
   "updated": "2026-03-13",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-03-13",
+    "vector_id": "omnistudio/omniscript-design-patterns"
+  },
   "version": "1.0.0"
 }

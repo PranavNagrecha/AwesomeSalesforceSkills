@@ -113,6 +113,11 @@
     "skills/lwc/lwc-reactive-state-patterns/templates/lwc-reactive-state-patterns-template.md"
   ],
   "updated": "2026-05-01",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-05-01",
+    "vector_id": "lwc/lwc-reactive-state-patterns"
+  },
   "version": "1.0.0"
 }

@@ -136,6 +136,11 @@
     "skills/apex/common-apex-runtime-errors/templates/common-apex-runtime-errors-template.md"
   ],
   "updated": "2026-04-05",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-05",
+    "vector_id": "apex/common-apex-runtime-errors"
+  },
   "version": "1.0.0"
 }

@@ -150,6 +150,11 @@
     "skills/admin/report-performance-tuning/templates/report-performance-tuning-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "admin/report-performance-tuning"
+  },
   "version": "1.0.0"
 }

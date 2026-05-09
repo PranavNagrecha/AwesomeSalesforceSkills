@@ -145,6 +145,11 @@
     "skills/apex/dynamic-apex/templates/dynamic-apex-template.md"
   ],
   "updated": "2026-04-04",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-04",
+    "vector_id": "apex/dynamic-apex"
+  },
   "version": "1.0.0"
 }

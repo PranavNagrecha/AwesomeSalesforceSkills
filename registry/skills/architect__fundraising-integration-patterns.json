@@ -135,6 +135,11 @@
     "skills/architect/fundraising-integration-patterns/templates/fundraising-integration-patterns-template.md"
   ],
   "updated": "2026-04-12",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-12",
+    "vector_id": "architect/fundraising-integration-patterns"
+  },
   "version": "1.0.0"
 }

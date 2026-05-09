@@ -71,6 +71,11 @@
     "skills/security/customer-data-request-workflow/templates/customer-data-request-workflow-template.md"
   ],
   "updated": "2026-04-28",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-28",
+    "vector_id": "security/customer-data-request-workflow"
+  },
   "version": "1.0.0"
 }

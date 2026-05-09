@@ -91,6 +91,11 @@
     "skills/apex/apex-savepoint-and-rollback/templates/apex-savepoint-and-rollback-template.md"
   ],
   "updated": "2026-04-21",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-04-21",
+    "vector_id": "apex/apex-savepoint-and-rollback"
+  },
   "version": "1.0.0"
 }
