@@ -19,6 +19,12 @@ vector_index/chunks.jsonl
 # enables incremental re-encode of only changed chunks on subsequent runs.
 vector_index/embeddings.jsonl
 
+# skill_embeddings.jsonl holds one 384-dim vector per skill (~3 MB at 994
+# skills). Built ~100x faster than chunk-level embeddings.jsonl and useful
+# as a lightweight semantic-rerank signal when chunk-level isn't available.
+# Regenerate via `python3 scripts/build_skill_embeddings.py`.
+vector_index/skill_embeddings.jsonl
+
 # Export tree is a generated artifact (~130 MB for claude+mcp+cursor+windsurf+
 # aider+augment at 684 skills). Consumers regenerate via:
 #   python3 scripts/export_skills.py --all

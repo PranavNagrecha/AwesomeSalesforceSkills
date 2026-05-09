@@ -28,6 +28,28 @@ from pipelines.lexical_index import search_index
 from pipelines.ranking import aggregate_skill_scores, collect_official_sources, rerank_results
 from pipelines.sync_engine import load_retrieval_config
 
+
+def _load_skill_embeddings(path: Path) -> dict[str, dict]:
+    """Load skill-level embeddings (one vector per skill).
+
+    Built by ``scripts/build_skill_embeddings.py``. ~1000 vectors,
+    encodes in <2 minutes vs the chunk-level pipeline's ~3 hours.
+    """
+    if not path.exists():
+        return {}
+    out: dict[str, dict] = {}
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        try:
+            item = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        sid = item.get("skill_id")
+        if sid:
+            out[sid] = item
+    return out
+
 # NOTE: scripts/query_enrichment.py is committed but NOT wired into run_search.
 # Two attempts at vocabulary expansion both failed to lift NL Hit@1:
 #   - Token-stream concat (concat long-forms into the FTS5 query): -5% on
@@ -125,6 +147,7 @@ class SearchContext:
     min_skill_score: float
     embedding_config: object  # parse_embedding_config's opaque return
     embeddings: dict
+    skill_embeddings: dict
     chunks: dict
     registry_skills: dict
     source_manifest_by_id: dict
@@ -147,6 +170,7 @@ def build_search_context(root: Path) -> SearchContext:
         min_skill_score=float(retrieval_config.get("min_skill_score", 0.0)),
         embedding_config=parse_embedding_config(config),
         embeddings=load_embeddings(root / "vector_index" / "embeddings.jsonl"),
+        skill_embeddings=_load_skill_embeddings(root / "vector_index" / "skill_embeddings.jsonl"),
         chunks=load_chunks(root / "vector_index" / "chunks.jsonl"),
         registry_skills=load_registry_skills(root / "registry" / "skills.json"),
         source_manifest_by_id={item["id"]: item for item in source_manifest_entries},
@@ -185,7 +209,13 @@ def run_search(query: str, ctx: SearchContext, domain: str | None = None) -> dic
         ctx.lexical_limit,
     )
     query_vector = embed_query(query, ctx.embedding_config)
-    ranked = rerank_results(query_vector, lexical_rows, ctx.embeddings, domain)
+    ranked = rerank_results(
+        query_vector,
+        lexical_rows,
+        ctx.embeddings,
+        domain,
+        skill_embeddings=ctx.skill_embeddings,
+    )
     all_skills = aggregate_skill_scores(ranked, ctx.result_limit)
     skills = [s for s in all_skills if s["score"] >= ctx.min_skill_score]
     has_coverage = len(skills) > 0

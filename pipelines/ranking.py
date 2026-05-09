@@ -7,7 +7,29 @@ from collections import defaultdict
 from .embedding_backends import cosine_similarity
 
 
-def rerank_results(query_vector: list[float] | None, lexical_rows: list[dict], embeddings: dict[str, dict], domain: str | None) -> list[dict]:
+def rerank_results(
+    query_vector: list[float] | None,
+    lexical_rows: list[dict],
+    embeddings: dict[str, dict],
+    domain: str | None,
+    skill_embeddings: dict[str, dict] | None = None,
+) -> list[dict]:
+    """Rerank lexical hits with optional vector boost.
+
+    Two embedding sources, checked in order:
+      1. ``skill_embeddings[row["skill_id"]]`` — skill-level vector. ~1K
+         vectors total, covers the "which skill applies" question that
+         retrieval is actually asking. Build via
+         ``scripts/build_skill_embeddings.py``.
+      2. ``embeddings[row["chunk_id"]]`` — chunk-level vector. Built by
+         the full ``scripts/build_index.py`` pipeline (~3 hours on a Mac
+         CPU for the 126K-chunk corpus). Falls back to chunk-level for
+         finer-grained reranking when both indexes exist.
+
+    Either, both, or neither can be present. When neither is present the
+    function reduces to pure lexical reranking (its pre-2026-05-09 form).
+    """
+    skill_embeddings = skill_embeddings or {}
     ranked: list[dict] = []
     for index, row in enumerate(lexical_rows):
         # FTS5 bm25() returns negative values — more negative means more relevant.
@@ -23,9 +45,13 @@ def rerank_results(query_vector: list[float] | None, lexical_rows: list[dict], e
         if row.get("skill_id"):
             boost += 0.1
         vector_score = 0.0
-        if query_vector is not None and row["chunk_id"] in embeddings:
-            vector_score = cosine_similarity(query_vector, embeddings[row["chunk_id"]]["vector"])
-        total_score = lexical_score + boost + (0.35 * vector_score)
+        if query_vector is not None:
+            sid = row.get("skill_id")
+            if sid and sid in skill_embeddings:
+                vector_score = cosine_similarity(query_vector, skill_embeddings[sid]["vector"])
+            elif row["chunk_id"] in embeddings:
+                vector_score = cosine_similarity(query_vector, embeddings[row["chunk_id"]]["vector"])
+        total_score = lexical_score + boost + (0.2 * vector_score)
         ranked.append(
             {
                 **row,
