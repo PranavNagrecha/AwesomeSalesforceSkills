@@ -44,31 +44,171 @@ from . import paths, resources
 # --------------------------------------------------------------------------- #
 
 
-# Match word characters; case-insensitive comparison happens at scoring time.
+# Plain word tokens for free-text fields (titles, headings, body).
 _TOKEN_RE = re.compile(r"[A-Za-z0-9_]+")
+# Splitter for slug/path/name-style identifiers — handles kebab-case, snake_case,
+# and CamelCase. e.g. "TriggerHandler.cls" → ["trigger","handler","cls"];
+# "admin-skill-builder" → ["admin","skill","builder"].
+_IDENT_SPLIT_RE = re.compile(r"[A-Z]+(?=[A-Z][a-z])|[A-Z]?[a-z0-9]+|[A-Z]+|[0-9]+")
+# English stop words common enough to dilute body scoring without adding signal.
+# Intentionally short list — corpus is technical, most terms are meaningful.
+_STOP = frozenset({
+    "the", "a", "an", "of", "to", "in", "for", "on", "at", "by", "and", "or",
+    "is", "it", "this", "that", "with", "from", "as", "be", "are", "i", "we",
+    "my", "your", "our", "you", "me", "us", "do", "how", "what", "which", "who",
+    "vs", "versus", "between", "should", "would", "could", "can", "need",
+    "want", "give", "any", "specific", "finalized", "given",
+})
 
 
 def _tokenize(s: str) -> list[str]:
     return [t.lower() for t in _TOKEN_RE.findall(s or "")]
 
 
-def _score(query_terms: list[str], *, title: str, headings: str, body: str) -> float:
-    """Weighted token match. Title matches dominate; headings second; body third.
+def _ident_tokens(s: str) -> list[str]:
+    """Split an identifier into atomic tokens.
 
-    Trivial scoring on purpose — the corpora here are small enough that even
-    naive ranking gives the right top hit. Replace with FTS5 if accuracy
-    starts to matter.
+    >>> _ident_tokens("admin-skill-builder")
+    ['admin', 'skill', 'builder']
+    >>> _ident_tokens("apex/TriggerHandler.cls")
+    ['apex', 'trigger', 'handler', 'cls']
+    """
+    return [m.group(0).lower() for m in _IDENT_SPLIT_RE.finditer(s or "")]
+
+
+# One-step suffix stripper. Conservative — only strip when the resulting stem
+# is at least 4 chars, so "audit" stays "audit", "audited" → "audit",
+# "consolidator" → "consolid" (matching "consolidate" → "consolid"),
+# "stories" → "stori" (matching "story" → "stori" via -y → -i rule).
+_STEM_RULES: tuple[tuple[str, str], ...] = (
+    ("ations", "at"),
+    ("ation", "at"),
+    ("ators", ""),
+    ("ator", ""),
+    ("ings", ""),
+    ("ing", ""),
+    ("ers", ""),
+    ("er", ""),
+    ("ors", ""),
+    ("or", ""),
+    ("ies", "i"),
+    ("ied", "i"),
+    ("y", "i"),
+    ("ed", ""),
+    ("es", ""),
+    ("e", ""),
+    ("s", ""),
+)
+
+
+def _stem(token: str) -> str:
+    """Apply at most one suffix-stripping rule. Returns the stem.
+
+    Designed for slug/query token matching, not for general English NLP.
+    Empirically tuned on the agent/template/tree audit failures: the
+    suffix list is the union of forms that show up in agent slugs
+    (-er, -or, -ation) and the verb forms users type.
+    """
+    if len(token) <= 4:
+        return token
+    for suffix, replacement in _STEM_RULES:
+        if token.endswith(suffix) and len(token) - len(suffix) + len(replacement) >= 4:
+            return token[: -len(suffix)] + replacement
+    return token
+
+
+def _bigram_match_count(query_terms: list[str], target_tokens: list[str]) -> int:
+    """Count how many adjacent query bigrams appear adjacent in target tokens.
+
+    Rewards "admin skill" matching "admin-skill-builder" — pure single-token
+    matching can't tell that apart from "admin" + "skill" appearing 200 chars
+    apart in body text.
+    """
+    if len(query_terms) < 2 or len(target_tokens) < 2:
+        return 0
+    target_pairs = {(target_tokens[i], target_tokens[i + 1]) for i in range(len(target_tokens) - 1)}
+    return sum(
+        1
+        for i in range(len(query_terms) - 1)
+        if (query_terms[i], query_terms[i + 1]) in target_pairs
+    )
+
+
+def _score(
+    query_terms: list[str],
+    *,
+    name_tokens: list[str] | None = None,
+    title: str = "",
+    headings: str = "",
+    body: str = "",
+) -> float:
+    """Weighted token match.
+
+    Field weights tuned 2026-05-09 against the agent/template/tree NL audit:
+    - name_tokens (slug/path/basename, whole-word)  → 15x  (was untracked)
+    - title (free-text H1, substring)               →  5x
+    - headings (H2/H3, substring)                   →  2x
+    - body (everything else, substring, stopword-filtered) → 0.3x
+
+    The body weight dropped from 1.0 → 0.3 because long documents that mention
+    the query terms incidentally were beating short, tightly-named target
+    documents (e.g. ``object-designer.md`` mentions "admin" 284 times so it
+    was outranking the literally-named ``admin-skill-builder.md`` for
+    "admin skill builder"). Bigram bonus stacks on top to reward
+    multi-word queries that match adjacent tokens in the slug or title.
     """
     if not query_terms:
         return 0.0
+    filtered_terms = [t for t in query_terms if t not in _STOP]
+    if not filtered_terms:
+        filtered_terms = query_terms  # all-stopword query — fall back to as-is
+
     title_l = title.lower()
     headings_l = headings.lower()
     body_l = body.lower()
+    name_set: set[str] = set(name_tokens or [])
+    name_stems: set[str] = {_stem(t) for t in (name_tokens or [])}
     score = 0.0
-    for term in query_terms:
+    matched_name_tokens = 0
+    for term in filtered_terms:
+        term_stem = _stem(term)
+        # Whole-word slug match — exact or stem-equivalent.
+        if term in name_set:
+            score += 15.0
+            matched_name_tokens += 1
+        elif term_stem in name_stems:
+            score += 11.0  # Stem match — strong signal but slightly lower than exact.
+            matched_name_tokens += 1
+        # Substring counts on free-text fields.
+        # Body counts are square-root capped per-term so a term mentioned 100
+        # times contributes 10x not 100x — prevents long meta-documents (e.g.
+        # apex-builder.AGENT.md mentioning "apex" 200+ times) from drowning
+        # specific documents whose slug is the better match, while still
+        # rewarding documents that actually mention the term repeatedly.
         score += 5.0 * title_l.count(term)
         score += 2.0 * headings_l.count(term)
-        score += 1.0 * body_l.count(term)
+        body_count = body_l.count(term)
+        if body_count > 0:
+            score += 0.6 * (body_count ** 0.5)
+
+    # Slug coverage bonus: rewards documents whose ENTIRE slug is mentioned
+    # in the query, breaking ties between specific docs (e.g. trigger-consolidator
+    # for "consolidate my triggers" — slug-coverage 1.0) and broad docs
+    # (e.g. apex-builder — slug-coverage 0.5). Without this, body matches
+    # let broad docs outrank specific ones whose slug exactly describes intent.
+    if name_tokens and matched_name_tokens > 0:
+        coverage = matched_name_tokens / len(name_tokens)
+        score += 20.0 * coverage
+
+    # Bigram bonus on slug — meaningful if the query has 2+ tokens. Compare
+    # stems so "build agentforce" matches "agentforce-action-builder" tokens
+    # ("agentforce","action","builder") via stem("builder")=="build".
+    if name_tokens:
+        stemmed_query = [_stem(t) for t in filtered_terms]
+        stemmed_name = [_stem(t) for t in name_tokens]
+        bigrams = _bigram_match_count(stemmed_query, stemmed_name)
+        score += 8.0 * bigrams
+
     return score
 
 
@@ -136,7 +276,15 @@ def search_agents(query: str, limit: int = 10) -> dict[str, Any]:
     terms = _tokenize(query)
     hits: list[tuple[float, _AgentDoc]] = []
     for doc in _agent_corpus():
-        score = _score(terms, title=doc.title, headings=doc.summary, body=doc.body)
+        # Slug ("admin-skill-builder") drives the high-weight name match.
+        name_tokens = _ident_tokens(doc.name)
+        score = _score(
+            terms,
+            name_tokens=name_tokens,
+            title=doc.title,
+            headings=doc.summary,
+            body=doc.body,
+        )
         if score > 0:
             hits.append((score, doc))
     hits.sort(key=lambda x: x[0], reverse=True)
@@ -198,9 +346,17 @@ def search_templates(query: str, limit: int = 10) -> dict[str, Any]:
     terms = _tokenize(query)
     hits: list[tuple[float, _TemplateDoc]] = []
     for doc in _template_corpus():
-        # Treat the path itself (apex/TriggerHandler.cls) as title-grade signal.
-        path_title = doc.path.replace("/", " ").replace(".", " ")
-        score = _score(terms, title=path_title, headings="", body=doc.body)
+        # Path ("apex/TriggerHandler.cls") splits into tokens that also drive
+        # the high-weight name match: ["apex","trigger","handler","cls"].
+        name_tokens = _ident_tokens(doc.path)
+        path_title = doc.path.replace("/", " ").replace(".", " ").replace("-", " ").replace("_", " ")
+        score = _score(
+            terms,
+            name_tokens=name_tokens,
+            title=path_title,
+            headings="",
+            body=doc.body,
+        )
         if score > 0:
             hits.append((score, doc))
     hits.sort(key=lambda x: x[0], reverse=True)
@@ -282,12 +438,19 @@ def search_decision_trees(query: str, limit: int = 6) -> dict[str, Any]:
     terms = _tokenize(query)
     hits: list[tuple[float, _TreeDoc, str | None, float]] = []
     for doc in _tree_corpus():
-        # Score the tree as a whole.
+        # Tree basename ("automation-selection") provides high-weight name match.
+        name_tokens = _ident_tokens(doc.name)
         section_titles = " ".join(s[0] for s in doc.sections)
-        tree_score = _score(terms, title=doc.title, headings=section_titles, body=doc.body)
+        tree_score = _score(
+            terms,
+            name_tokens=name_tokens,
+            title=doc.title,
+            headings=section_titles,
+            body=doc.body,
+        )
         if tree_score == 0:
             continue
-        # Find best sub-section.
+        # Find best sub-section (no name field at section level — purely text).
         best_section: str | None = None
         best_section_score = 0.0
         for heading, content in doc.sections:
