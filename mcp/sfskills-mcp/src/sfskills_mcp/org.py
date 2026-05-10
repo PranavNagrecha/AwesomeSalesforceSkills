@@ -15,6 +15,7 @@ Tools:
 
 from __future__ import annotations
 
+import re
 from typing import Any
 
 from . import sf_cli
@@ -36,6 +37,15 @@ def describe_org(target_org: str | None = None) -> dict[str, Any]:
 
     Uses ``sf org display --json`` (and ``sf org list --json`` to hint at
     available aliases when no target is set).
+
+    ``is_sandbox`` resolution: prefer the value from sf CLI when set;
+    fall back to inferring from ``instance_url`` (``*.sandbox.my.salesforce.com``,
+    legacy ``cs<n>.my.salesforce.com``, ``*.scratch.my.salesforce.com``,
+    ``*.develop.my.salesforce.com``). The fall-back is essential because
+    ``sf org display`` returns ``isSandbox=null`` on some org types where
+    the CLI hasn't populated the flag. The ``is_sandbox_source`` field
+    tells consumers which path produced the value (``"cli"`` vs
+    ``"inferred-from-url"``).
     """
     payload = sf_cli.run_sf_json(["org", "display"], target_org=target_org)
     if "error" in payload and "result" not in payload:
@@ -43,20 +53,72 @@ def describe_org(target_org: str | None = None) -> dict[str, Any]:
         return {**payload, **({"available_orgs": hint} if hint else {})}
 
     result = payload.get("result", payload)
+    instance_url = result.get("instanceUrl")
+    cli_sandbox = result.get("isSandbox")
+    if cli_sandbox is not None:
+        is_sandbox: bool | None = bool(cli_sandbox)
+        is_sandbox_source = "cli"
+    else:
+        is_sandbox = _infer_sandbox_from_url(instance_url)
+        is_sandbox_source = "inferred-from-url" if is_sandbox is not None else None
     summary = {
         "username": result.get("username"),
         "org_id": result.get("id"),
-        "instance_url": result.get("instanceUrl"),
+        "instance_url": instance_url,
         "alias": result.get("alias"),
         "api_version": result.get("apiVersion"),
         "edition": result.get("edition"),
         "instance_name": result.get("instanceName"),
         "is_scratch_org": result.get("isScratchOrg"),
-        "is_sandbox": result.get("isSandbox"),
+        "is_sandbox": is_sandbox,
+        "is_sandbox_source": is_sandbox_source,
         "connected_status": result.get("connectedStatus"),
         "access_token_preview": _redact_token(result.get("accessToken")),
     }
     return {k: v for k, v in summary.items() if v is not None}
+
+
+def _infer_sandbox_from_url(instance_url: Any) -> bool | None:
+    """Classify an instance URL as sandbox / production / unknown.
+
+    Returns True for sandbox-class URLs (sandbox, scratch, developer),
+    False for production-shape URLs, None when we can't decide.
+
+    Sandbox-class URLs:
+      - ``*.sandbox.my.salesforce.com``     (My Domain sandboxes)
+      - ``cs<n>.my.salesforce.com``         (legacy CSn pods — all sandbox)
+      - ``cs<n>.salesforce.com``            (legacy classic)
+      - ``*.scratch.my.salesforce.com``     (scratch orgs)
+      - ``*.develop.my.salesforce.com``     (developer orgs — treat as
+                                              non-production for risk
+                                              decisions)
+
+    Production-shape URLs:
+      - ``*.my.salesforce.com`` (anything else under my.salesforce.com)
+    """
+    if not isinstance(instance_url, str) or not instance_url:
+        return None
+    url = instance_url.lower().rstrip("/")
+    # Strip scheme.
+    if "://" in url:
+        url = url.split("://", 1)[1]
+    # Anything under sandbox.my.salesforce.com is sandbox-class.
+    if url.endswith(".sandbox.my.salesforce.com"):
+        return True
+    if url.endswith(".scratch.my.salesforce.com"):
+        return True
+    if url.endswith(".develop.my.salesforce.com"):
+        return True
+    # Legacy CS pods are all sandbox (cs1 ... cs250 historically).
+    if re.match(r"^cs\d+\.my\.salesforce\.com", url) or re.match(r"^cs\d+\.salesforce\.com", url):
+        return True
+    if url.endswith(".my.salesforce.com"):
+        # Plain *.my.salesforce.com (no sandbox infix) → production My Domain.
+        return False
+    if url.endswith(".salesforce.com"):
+        # Bare *.salesforce.com (no My Domain) → production legacy.
+        return False
+    return None
 
 
 def _available_orgs_hint() -> list[dict[str, Any]]:
