@@ -135,17 +135,37 @@ def _intent_rank(
 # --------------------------------------------------------------------------- #
 
 
+#: Decision-tree score floor for inclusion in ``suggest_agent`` output.
+#: Empirical (Phase 6 audit, 8 realistic queries against real corpus):
+#:   - Relevant trees scored 40+ (flow-pattern-selector for "Flow vs Apex"
+#:     hit 41; agentforce-capability-selector for "Agentforce action" hit 40.5)
+#:   - Irrelevant noise scored 5-15 (performance-tuning kept showing up
+#:     because its body matched any query containing "apex"; sharing-selection
+#:     for unrelated audit queries scored 6)
+#:   - One borderline case: performance-tuning matched "refactor this Apex
+#:     class to use a trigger handler" at 15.3 — still noise.
+#: 20 is the floor: anything below is more noise than signal on this
+#: corpus. Callers can pass min_tree_score=0 to recover the v0.4.2
+#: "always return top tree" behavior.
+DEFAULT_MIN_TREE_SCORE = 20.0
+
+
 def suggest_agent(
     task: str,
     limit: int = 3,
     include_decision_trees: bool = True,
+    min_tree_score: float = DEFAULT_MIN_TREE_SCORE,
 ) -> dict[str, Any]:
     """Rank agents + decision trees for a free-text task description.
 
     Returns:
       ``agents``         — top-N runtime agents with relevance scores
       ``decision_trees`` — top decision-tree branches the agent should
-                           consult BEFORE recommending a technology
+                           consult BEFORE recommending a technology.
+                           Filtered by ``min_tree_score`` (default 15);
+                           below threshold the field is an empty list
+                           and the next_step skips the tree-citation
+                           sentence.
       ``next_step``      — one-line instruction pointing the caller at
                            ``get_agent`` for the top pick
     """
@@ -195,23 +215,39 @@ def suggest_agent(
         ][:bounded]
 
     # Step 3 — surface the decision trees that apply, when requested.
+    # Filter by min_tree_score so the model isn't asked to cite a tree
+    # that scored 5 (essentially irrelevant). Empirical: relevant trees
+    # score 30+, irrelevant ones 5-15. See DEFAULT_MIN_TREE_SCORE.
     trees: list[dict[str, Any]] = []
     if include_decision_trees:
         tree_payload = library.search_decision_trees(query=task, limit=3)
-        trees = tree_payload.get("trees", [])
+        trees = [
+            t for t in tree_payload.get("trees", [])
+            if float(t.get("score", 0)) >= min_tree_score
+        ]
 
     next_step = ""
     if top:
         first = top[0]
-        next_step = (
-            f"Call get_agent('{first['name']}') for the AGENT.md, then follow its "
-            "Plan section. Cite the decision-tree branches above when picking a "
-            "technology."
-        )
+        if trees:
+            next_step = (
+                f"Call get_agent('{first['name']}') for the AGENT.md, then follow its "
+                "Plan section. Cite the decision-tree branches above when picking a "
+                "technology."
+            )
+        else:
+            # No tree cleared the relevance threshold — drop the citation
+            # instruction so the LLM doesn't go hunting for a tree that
+            # doesn't apply.
+            next_step = (
+                f"Call get_agent('{first['name']}') for the AGENT.md, then follow its "
+                "Plan section."
+            )
 
     return {
         "task": task,
         "agents": top,
         "decision_trees": trees,
+        "min_tree_score": min_tree_score,
         "next_step": next_step,
     }
