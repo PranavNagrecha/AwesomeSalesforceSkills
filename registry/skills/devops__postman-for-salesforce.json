@@ -153,6 +153,11 @@
     "skills/devops/postman-for-salesforce/templates/postman-for-salesforce-template.md"
   ],
   "updated": "2026-05-10",
-  "vector_embedding": null,
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-05-10",
+    "vector_id": "devops/postman-for-salesforce"
+  },
   "version": "1.0.0"
 }

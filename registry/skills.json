@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 48
   },
-  "generated_from_hash": "bfbc03727cc57d1d8c9d0770c0bebea6f41b1f742c1a11dd79912380031f1695",
+  "generated_from_hash": "ccc368ba9ba51870615f3056a7e4b917d82c252dfcc05872bd2b7a2fe6e5f767",
   "schema_version": 1,
   "skill_count": 997,
   "skills": [
@@ -61302,7 +61302,12 @@
         "skills/apex/tooling-api-patterns/templates/tooling-api-patterns-template.md"
       ],
       "updated": "2026-05-10",
-      "vector_embedding": null,
+      "vector_embedding": {
+        "backend": "fastembed",
+        "dimension": 384,
+        "updated": "2026-05-10",
+        "vector_id": "apex/tooling-api-patterns"
+      },
       "version": "1.0.0"
     },
     {
@@ -97464,7 +97469,12 @@
         "skills/devops/postman-for-salesforce/templates/postman-for-salesforce-template.md"
       ],
       "updated": "2026-05-10",
-      "vector_embedding": null,
+      "vector_embedding": {
+        "backend": "fastembed",
+        "dimension": 384,
+        "updated": "2026-05-10",
+        "vector_id": "devops/postman-for-salesforce"
+      },
       "version": "1.0.0"
     },
     {

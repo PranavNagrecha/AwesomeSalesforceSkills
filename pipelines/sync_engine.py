@@ -30,10 +30,47 @@ class SyncState:
     source_entries: list[dict]
     validation_gates_index: str  # rendered markdown for standards/validation-gates.md
     queue_dashboard: str         # rendered markdown for docs/queue-progress.md
+    # When True, ``write_state`` MUST NOT delete vector_index/embeddings.jsonl
+    # even if state.embeddings is empty — the existing file on disk is valid
+    # (we just didn't re-encode this run). Set by build_state(skip_embeddings=True).
+    embeddings_authoritative: bool = True
 
 
 def load_retrieval_config(root: Path) -> dict:
     return yaml.safe_load((root / "config" / "retrieval-config.yaml").read_text(encoding="utf-8")) or {}
+
+
+def _load_existing_embeddings_for_chunks(path: Path, chunks: list[dict]) -> list[dict]:
+    """Read embeddings.jsonl and return only the records whose chunk_id +
+    content_hash matches the current chunk set.
+
+    Used by ``build_state(skip_embeddings=True)``: we want the registry's
+    vector_embedding metadata to stay accurate (i.e. populated when an
+    embeddings index exists on disk) without re-running the encoder.
+    Stale records (chunk_id changed text) are dropped silently — the
+    explicit ``python3 scripts/build_index.py`` will refresh them.
+    """
+    if not path.exists():
+        return []
+    cache: dict[tuple[str, str], dict] = {}
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        try:
+            item = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        cid = item.get("chunk_id")
+        ch = item.get("content_hash")
+        if cid and ch:
+            cache[(cid, ch)] = item
+    out: list[dict] = []
+    for chunk in chunks:
+        ch = hashlib.sha256(chunk["text"].encode("utf-8")).hexdigest()[:16]
+        record = cache.get((chunk["id"], ch))
+        if record is not None:
+            out.append(record)
+    return out
 
 
 def build_state(root: Path, *, skip_embeddings: bool = False) -> SyncState:
@@ -165,26 +202,33 @@ def build_state(root: Path, *, skip_embeddings: bool = False) -> SyncState:
     # Honor the per-call skip flag — pre-commit hook uses this to avoid the
     # 3-hour chunk-level encode every time someone touches a skill file. The
     # explicit `python3 scripts/build_index.py` path still respects config.
+    #
+    # When skip_embeddings is True we DON'T re-encode but we DO load any
+    # pre-existing embeddings.jsonl so the registry's vector_embedding
+    # metadata is preserved (otherwise validate_repo's drift check would
+    # flag every registry record as stale just because we skipped the
+    # encode step).
+    embeddings_path = root / "vector_index" / "embeddings.jsonl"
     if skip_embeddings:
-        embedding_config = embedding_config.__class__(
-            enabled=False,
-            backend=embedding_config.backend,
-            dimensions=embedding_config.dimensions,
+        embeddings = _load_existing_embeddings_for_chunks(embeddings_path, chunks)
+    else:
+        embeddings = build_embeddings(
+            chunks,
+            embedding_config,
+            existing_path=embeddings_path,
         )
-    embeddings = build_embeddings(
-        chunks,
-        embedding_config,
-        existing_path=root / "vector_index" / "embeddings.jsonl",
-    )
     embedding_lookup = {item["chunk_id"]: item for item in embeddings}
 
     records = []
+    has_embeddings_for_metadata = bool(embeddings) and (
+        embedding_config.enabled or skip_embeddings
+    )
     for skill_dir in skill_dirs:
         parsed = parse_markdown_with_frontmatter(skill_dir / "SKILL.md")
         metadata = parsed.metadata
         skill_id = f"{metadata['category']}/{metadata['name']}"
         vector_embedding = None
-        if embeddings:
+        if has_embeddings_for_metadata:
             vector_embedding = {
                 "backend": embedding_config.backend,
                 "vector_id": skill_id,
@@ -239,6 +283,7 @@ def build_state(root: Path, *, skip_embeddings: bool = False) -> SyncState:
         source_entries=source_entries,
         validation_gates_index=validation_gates_index,
         queue_dashboard=queue_dashboard,
+        embeddings_authoritative=not skip_embeddings,
     )
 
 
@@ -303,10 +348,20 @@ def write_state(root: Path, state: SyncState) -> list[str]:
     if before_hash != after_hash:
         changed.append(str(lexical_path.relative_to(root)).replace("\\", "/"))
 
-    write_embeddings(root / "vector_index" / "embeddings.jsonl", state.embeddings)
+    embeddings_path = root / "vector_index" / "embeddings.jsonl"
+    embeddings_existed_before = embeddings_path.exists()
+    write_embeddings(
+        embeddings_path,
+        state.embeddings,
+        # When state.embeddings_authoritative is False (skip_embeddings was
+        # used), DON'T delete an existing embeddings.jsonl just because we
+        # didn't re-encode. That file was produced by an explicit
+        # build_index.py run and is still authoritative.
+        delete_if_empty=state.embeddings_authoritative,
+    )
     if state.embeddings:
         changed.append("vector_index/embeddings.jsonl")
-    elif (root / "vector_index" / "embeddings.jsonl").exists():
+    elif embeddings_existed_before and state.embeddings_authoritative:
         changed.append("vector_index/embeddings.jsonl")
     return sorted(set(changed))
 

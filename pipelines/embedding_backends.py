@@ -193,9 +193,16 @@ def hash_embedding(text: str, dimensions: int) -> list[float]:
     return [value / norm for value in buckets]
 
 
-def write_embeddings(path: Path, embeddings: list[dict]) -> None:
+def write_embeddings(path: Path, embeddings: list[dict], *, delete_if_empty: bool = True) -> None:
+    """Write the embeddings list to ``path`` as JSONL.
+
+    ``delete_if_empty=False`` is set by callers that ran with skip_embeddings —
+    they pass an empty list because they didn't encode anything, but the
+    existing file on disk is still valid (encoded by an explicit prior
+    `build_index.py`) and must not be deleted.
+    """
     if not embeddings:
-        if path.exists():
+        if delete_if_empty and path.exists():
             path.unlink()
         return
     # Stream per-line. Building one large string in memory peaked at >2GB
