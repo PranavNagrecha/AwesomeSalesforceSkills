@@ -14,9 +14,89 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import shutil
 import subprocess
 from typing import Any, Sequence
+
+
+# --------------------------------------------------------------------------- #
+# Credential redaction                                                         #
+# --------------------------------------------------------------------------- #
+#
+# A live test session (2026-05-10) leaked an `accessToken` because:
+#   1. ``sf org display --json`` prepended an "update available" warning line
+#      to stdout.
+#   2. ``json.loads`` failed.
+#   3. The error path returned ``stdout[:2000]`` unredacted — and stdout
+#      contained the access token.
+#
+# Defense in depth: redact at two layers.
+#   - ``_redact_credentials_text`` — regex scrub for any code path that
+#     puts raw stdout/stderr text into a return value or log.
+#   - ``_redact_credentials_in_payload`` — walks parsed JSON and replaces
+#     sensitive-keyed values BEFORE the payload reaches any caller. So even
+#     if a downstream tool naively prints the payload, no token escapes.
+
+_REDACTED = "[REDACTED]"
+
+# Salesforce session/access token. Starts with the 15- or 18-char org id
+# prefix (``00D...``), a literal ``!``, then a base64-ish blob.
+_SF_TOKEN_RE = re.compile(r"\b00[A-Z][A-Za-z0-9]{12,15}![A-Za-z0-9._\-]{20,200}")
+
+# OAuth refresh / connected-app secret. Starts with ``5Aep`` / ``5At`` etc.
+# Length floor (30) avoids matching short legitimate strings that share the
+# prefix.
+_OAUTH_REFRESH_RE = re.compile(r"\b5A[a-zA-Z][A-Za-z0-9._\-]{30,200}")
+
+# Bearer header token (defensive — sf CLI doesn't emit these but downstream
+# wrappers might log curl-style HTTP captures).
+_BEARER_RE = re.compile(r"Bearer\s+[A-Za-z0-9._\-]+", re.IGNORECASE)
+
+# Lowercase keys that always carry credentials. We compare lowercased keys
+# at lookup time, so the frozenset stays case-folded.
+_SENSITIVE_KEYS = frozenset({
+    "accesstoken", "refreshtoken", "password", "clientsecret",
+    "securitytoken", "sessionid", "apitoken", "authtoken",
+})
+
+
+def _redact_credentials_text(text: str) -> str:
+    """Replace credential-shaped substrings in arbitrary text with ``[REDACTED]``.
+
+    Applied to every code path that surfaces raw stdout/stderr from ``sf``
+    subprocess invocations. Catches:
+      - Salesforce session tokens (``00D…!…``)
+      - OAuth refresh / connected-app tokens (``5A…``)
+      - ``Bearer …`` Authorization headers
+    """
+    if not text:
+        return text
+    text = _SF_TOKEN_RE.sub(_REDACTED, text)
+    text = _OAUTH_REFRESH_RE.sub(_REDACTED, text)
+    text = _BEARER_RE.sub(f"Bearer {_REDACTED}", text)
+    return text
+
+
+def _redact_credentials_in_payload(obj: Any) -> Any:
+    """Walk a parsed JSON payload and redact credential-keyed values + any
+    credential-shaped strings found in non-sensitive fields.
+
+    Pure (returns a redacted copy; does not mutate input). Idempotent.
+    """
+    if isinstance(obj, dict):
+        out: dict[str, Any] = {}
+        for k, v in obj.items():
+            if isinstance(k, str) and k.lower() in _SENSITIVE_KEYS and isinstance(v, str):
+                out[k] = _REDACTED
+            else:
+                out[k] = _redact_credentials_in_payload(v)
+        return out
+    if isinstance(obj, list):
+        return [_redact_credentials_in_payload(item) for item in obj]
+    if isinstance(obj, str):
+        return _redact_credentials_text(obj)
+    return obj
 
 
 def _default_timeout() -> int:
@@ -97,7 +177,7 @@ def run_sf_json(
         return {
             "status": 124,
             "error": f"sf command timed out after {timeout}s",
-            "stderr": (exc.stderr or "")[:2000],
+            "stderr": _redact_credentials_text((exc.stderr or "")[:2000]),
             "args": full_args[1:],
         }
     except OSError as exc:
@@ -113,16 +193,21 @@ def run_sf_json(
         return {
             "status": completed.returncode,
             "error": "sf did not return valid JSON",
-            "stdout": stdout[:2000],
-            "stderr": stderr[:2000],
+            "stdout": _redact_credentials_text(stdout[:2000]),
+            "stderr": _redact_credentials_text(stderr[:2000]),
             "args": full_args[1:],
         }
+
+    # Redact credential-keyed fields in the parsed payload BEFORE it leaves
+    # this function. So even if a downstream caller naively serialises the
+    # whole payload (e.g. a debug log), no token escapes.
+    parsed = _redact_credentials_in_payload(parsed)
 
     if completed.returncode != 0 or (isinstance(parsed, dict) and parsed.get("status", 0) != 0):
         return {
             "status": completed.returncode,
             "error": _extract_error_message(parsed) or "sf command failed",
-            "stderr": stderr[:2000],
+            "stderr": _redact_credentials_text(stderr[:2000]),
             "args": full_args[1:],
             "payload": parsed,
         }
