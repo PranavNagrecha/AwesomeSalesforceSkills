@@ -449,6 +449,7 @@
       "apex/test-class-standards",
       "apex/test-data-factory-patterns",
       "apex/timezone-and-datetime-pitfalls",
+      "apex/tooling-api-patterns",
       "apex/trigger-and-flow-coexistence",
       "apex/trigger-framework",
       "apex/visualforce-fundamentals"
@@ -705,6 +706,7 @@
       "devops/permission-set-deployment-ordering",
       "devops/pipeline-secrets-management",
       "devops/post-deployment-validation",
+      "devops/postman-for-salesforce",
       "devops/pr-policy-templates",
       "devops/pre-deployment-checklist",
       "devops/release-management",
@@ -1916,6 +1918,7 @@
       "apex/pdf-generation-patterns",
       "apex/soql-fundamentals",
       "apex/soql-null-ordering-patterns",
+      "apex/tooling-api-patterns",
       "architect/solution-design-patterns",
       "devops/code-coverage-orphan-class-cleanup",
       "devops/code-review-checklist-salesforce",
@@ -1949,6 +1952,9 @@
     ],
     "apex-chatter-posting": [
       "apex/apex-connect-api-chatter"
+    ],
+    "apex-class-compile": [
+      "apex/tooling-api-patterns"
     ],
     "apex-collections": [
       "apex/apex-collections-patterns"
@@ -2147,6 +2153,9 @@
     ],
     "api-security": [
       "security/api-security-and-rate-limiting"
+    ],
+    "api-testing": [
+      "devops/postman-for-salesforce"
     ],
     "api-throughput": [
       "devops/performance-testing-salesforce"
@@ -2883,6 +2892,7 @@
       "data/historical-order-migration",
       "data/opportunity-pipeline-migration",
       "data/patient-data-migration",
+      "devops/postman-for-salesforce",
       "integration/mulesoft-salesforce-connector",
       "integration/real-time-vs-batch-integration",
       "integration/salesforce-data-pipeline-etl"
@@ -3594,6 +3604,7 @@
       "security/secure-coding-review-checklist"
     ],
     "code-coverage": [
+      "apex/tooling-api-patterns",
       "devops/continuous-integration-testing",
       "devops/deployment-error-troubleshooting"
     ],
@@ -3629,6 +3640,9 @@
     ],
     "collection-filter": [
       "flow/flow-collection-processing"
+    ],
+    "collection-runner": [
+      "devops/postman-for-salesforce"
     ],
     "collection-sort": [
       "flow/flow-collection-processing"
@@ -5098,7 +5112,8 @@
     ],
     "debug-logs": [
       "apex/debug-and-logging",
-      "apex/debug-logs-and-developer-console"
+      "apex/debug-logs-and-developer-console",
+      "apex/tooling-api-patterns"
     ],
     "debug-mode": [
       "flow/flow-debugging",
@@ -5352,6 +5367,9 @@
       "devops/scratch-org-pools",
       "devops/second-generation-managed-packages",
       "devops/unlocked-package-development"
+    ],
+    "dev-tooling": [
+      "apex/tooling-api-patterns"
     ],
     "developer-console": [
       "apex/apex-execute-anonymous",
@@ -6044,6 +6062,9 @@
     "environment-topology": [
       "architect/ci-cd-pipeline-architecture",
       "architect/deployment-automation-architecture"
+    ],
+    "environment-variables": [
+      "devops/postman-for-salesforce"
     ],
     "epc": [
       "admin/industries-communications-setup"
@@ -7467,6 +7488,9 @@
     "heap": [
       "flow/flow-governor-limits-deep-dive"
     ],
+    "heap-dump": [
+      "apex/tooling-api-patterns"
+    ],
     "heap-limit": [
       "apex/apex-blob-and-content-version"
     ],
@@ -8216,6 +8240,7 @@
       "devops/salesforce-cli-automation"
     ],
     "jwt-bearer": [
+      "devops/postman-for-salesforce",
       "integration/oauth-flows-and-connected-apps"
     ],
     "jwt-bearer-flow": [
@@ -9180,6 +9205,9 @@
     "metadata-backup": [
       "devops/pre-deployment-checklist"
     ],
+    "metadata-container": [
+      "apex/tooling-api-patterns"
+    ],
     "metadata-coverage": [
       "architect/metadata-coverage-and-dependencies",
       "devops/metadata-api-coverage-gaps"
@@ -9724,6 +9752,7 @@
       "architect/ai-agent-org-integration-architecture",
       "architect/experience-cloud-integration-patterns",
       "architect/integration-security-architecture",
+      "devops/postman-for-salesforce",
       "integration/bulk-api-2-patterns",
       "integration/named-credentials-setup",
       "integration/oauth-flows-and-connected-apps",
@@ -10754,6 +10783,9 @@
     "postgres": [
       "integration/heroku-salesforce-integration"
     ],
+    "postman": [
+      "devops/postman-for-salesforce"
+    ],
     "postmonger": [
       "apex/marketing-cloud-custom-activities"
     ],
@@ -10768,6 +10800,9 @@
     ],
     "pre-release-testing": [
       "devops/automated-regression-testing"
+    ],
+    "pre-request-script": [
+      "devops/postman-for-salesforce"
     ],
     "precision": [
       "apex/apex-decimal-arithmetic-precision"
@@ -11760,6 +11795,7 @@
       "apex/service-cloud-rest-api",
       "architect/ai-agent-org-integration-architecture",
       "data/bulk-api-patterns",
+      "devops/postman-for-salesforce",
       "flow/auto-launched-flow-patterns",
       "integration/composite-api-patterns",
       "integration/file-and-document-integration",
@@ -12350,6 +12386,9 @@
     ],
     "schema-evolution": [
       "integration/platform-event-schema-evolution"
+    ],
+    "schema-introspection": [
+      "apex/tooling-api-patterns"
     ],
     "schema-management": [
       "integration/data-cloud-ingestion-api"
@@ -13767,6 +13806,7 @@
     ],
     "tooling-api": [
       "admin/salesforce-object-queryability",
+      "apex/tooling-api-patterns",
       "architect/metadata-coverage-and-dependencies",
       "security/security-health-check"
     ],

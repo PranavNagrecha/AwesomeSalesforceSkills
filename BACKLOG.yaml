@@ -315,19 +315,21 @@
   source_line: 1665
   history: []
 - id: "tooling-api-patterns"
-  status: "TODO"
+  status: "DONE"
   skill: "tooling-api-patterns"
   summary: "Tooling API: metadata queries, ApexLog retrieval, code coverage queries, debug level management, compile requests, limit info from REST headers. NOT for Metadata API (use apex-metadata-api)."
   notes: "apex"
   source_line: 1673
-  history: []
+  history:
+    - { at: "2026-05-10T00:00:01", status: "DONE", actor: "scheduled-task" }
 - id: "postman-for-salesforce"
-  status: "TODO"
+  status: "DONE"
   skill: "postman-for-salesforce"
   summary: "Postman for Salesforce API testing: OAuth setup, environment variables, collection organization, chaining requests, pre/post scripts, Salesforce collection templates. NOT for integration development."
   notes: "devops"
   source_line: 1675
-  history: []
+  history:
+    - { at: "2026-05-10T00:00:00", status: "DONE", actor: "scheduled-task" }
 - id: "salesforce-inspector-patterns"
   status: "TODO"
   skill: "salesforce-inspector-patterns"

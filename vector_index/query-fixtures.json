@@ -7709,6 +7709,42 @@
       "domain": "devops",
       "expected_skill": "devops/sf-cli-plugin-authoring",
       "top_k": 3
+    },
+    {
+      "query": "Tooling API ApexClass MetadataContainer ContainerAsyncRequest deploy",
+      "domain": "apex",
+      "expected_skill": "apex/tooling-api-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "ToolingApi.deploy ApexClassMember runValidationOnly partial deploy",
+      "domain": "apex",
+      "expected_skill": "apex/tooling-api-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "TraceFlag DebugLevel ApexLog body retrieve tooling api capture user logs window",
+      "domain": "apex",
+      "expected_skill": "apex/tooling-api-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "Postman Salesforce REST API testing collection import login OAuth",
+      "domain": "devops",
+      "expected_skill": "devops/postman-for-salesforce",
+      "top_k": 3
+    },
+    {
+      "query": "Postman pre-request script Salesforce JWT bearer flow access token cache",
+      "domain": "devops",
+      "expected_skill": "devops/postman-for-salesforce",
+      "top_k": 3
+    },
+    {
+      "query": "Postman environment variables instance url access token api version sandbox prod",
+      "domain": "devops",
+      "expected_skill": "devops/postman-for-salesforce",
+      "top_k": 3
     }
   ]
 }
