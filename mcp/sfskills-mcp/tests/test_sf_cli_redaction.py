@@ -147,6 +147,40 @@ class RunSfJsonRedactionIntegrationTest(unittest.TestCase):
         self.assertNotIn(MOCK_SF_TOKEN, str(result))
 
 
+class StripToJsonStartTest(unittest.TestCase):
+    """v0.4.3 hardening: sf CLI prepends update-available / deprecation
+    warning lines BEFORE JSON, breaking json.loads. ``_strip_to_json_start``
+    skips to the first ``{`` or ``[``."""
+
+    def test_warning_prefix_then_object(self) -> None:
+        out = sf_cli._strip_to_json_start("Warning: foo\n{\"x\": 1}")
+        self.assertEqual(out, '{"x": 1}')
+
+    def test_warning_prefix_then_array(self) -> None:
+        out = sf_cli._strip_to_json_start("›   Warning: bar\n[1,2,3]")
+        self.assertEqual(out, "[1,2,3]")
+
+    def test_already_clean_passes_through(self) -> None:
+        self.assertEqual(sf_cli._strip_to_json_start('{"x": 1}'), '{"x": 1}')
+        self.assertEqual(sf_cli._strip_to_json_start("[1,2]"), "[1,2]")
+
+    def test_no_json_returns_empty(self) -> None:
+        self.assertEqual(sf_cli._strip_to_json_start("no json here"), "")
+        self.assertEqual(sf_cli._strip_to_json_start(""), "")
+
+    def test_run_sf_json_handles_warning_prefix(self) -> None:
+        """End-to-end: a mocked subprocess returning warning-prefixed JSON
+        should parse cleanly. Pre-v0.4.3 this hit the JSONDecodeError path."""
+        leaky_stdout = ' ›   Warning: update available\n{"status": 0, "result": {"id": "00D000000000000"}}'
+        with mock.patch.object(sf_cli, "sf_binary", return_value="/fake/sf"), \
+             mock.patch("subprocess.run", return_value=mock.Mock(
+                 returncode=0, stdout=leaky_stdout, stderr=""
+             )):
+            result = sf_cli.run_sf_json(["org", "display"])
+        # No error path; parsed JSON visible to caller.
+        self.assertEqual(result.get("result", {}).get("id"), "00D000000000000")
+
+
 class PerformanceTest(unittest.TestCase):
     def test_redactor_overhead_under_10ms_per_call(self) -> None:
         text = f"some random text without a token, repeated " * 50

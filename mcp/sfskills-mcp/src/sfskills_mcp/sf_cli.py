@@ -188,7 +188,16 @@ def run_sf_json(
 
     parsed: Any
     try:
-        parsed = json.loads(stdout) if stdout.strip() else {}
+        # sf CLI sometimes prepends update-available / deprecation warning
+        # lines BEFORE its JSON output:
+        #   "›   Warning: @salesforce/cli update available from 2.103 to 2.133"
+        #   '{"status": 0, "result": {...}}'
+        # If json.loads() sees the warning, it raises — and the legacy
+        # error path returned raw stdout (which contained the access
+        # token; see fix #1). Strip lines until the first '{' or '['
+        # before parsing.
+        parseable = _strip_to_json_start(stdout)
+        parsed = json.loads(parseable) if parseable.strip() else {}
     except json.JSONDecodeError:
         return {
             "status": completed.returncode,
@@ -222,3 +231,25 @@ def _extract_error_message(payload: Any) -> str | None:
             if isinstance(value, str) and value.strip():
                 return value
     return None
+
+
+def _strip_to_json_start(text: str) -> str:
+    """Return ``text`` from the first ``{`` or ``[`` onward.
+
+    sf CLI prepends warning lines like ``›   Warning: update available``
+    before its JSON output. ``json.loads`` doesn't tolerate the prefix;
+    this helper finds the start of the actual JSON document.
+
+    Returns the empty string if no JSON-start character is found —
+    callers should treat that as "no JSON payload" rather than an empty
+    success.
+    """
+    if not text:
+        return ""
+    obj_start = text.find("{")
+    arr_start = text.find("[")
+    # Choose whichever comes first (and is non-negative).
+    candidates = [pos for pos in (obj_start, arr_start) if pos >= 0]
+    if not candidates:
+        return ""
+    return text[min(candidates):]
