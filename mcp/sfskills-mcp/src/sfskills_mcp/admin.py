@@ -378,6 +378,48 @@ _TOOLING_QUERY_BLOCKLIST = (
 )
 
 
+def _strip_soql_string_literals(soql: str) -> str:
+    """Remove the content of single- and double-quoted string literals so
+    the DML-keyword scan only sees statement tokens.
+
+    SOQL string literals use ``\\'`` to escape an embedded apostrophe.
+    This is a small state machine; the regex approach is fragile when
+    escapes appear at the end of a literal. Returns the SOQL with each
+    literal replaced by an empty literal (``''`` or ``""``) so column
+    positions stay close to the original for error messages.
+    """
+    out: list[str] = []
+    i = 0
+    n = len(soql)
+    while i < n:
+        ch = soql[i]
+        if ch in ("'", '"'):
+            quote = ch
+            out.append(quote)
+            i += 1
+            while i < n:
+                c = soql[i]
+                if c == "\\" and i + 1 < n:
+                    # Skip the escaped char entirely (could be \\, \', \", etc.).
+                    i += 2
+                    continue
+                if c == quote:
+                    out.append(quote)
+                    i += 1
+                    break
+                i += 1
+            else:
+                # Unterminated literal — keep what we consumed; caller's
+                # blocklist check below will either pass (no DML kw outside)
+                # or fail with the existing message, and Salesforce will
+                # ultimately reject the malformed SOQL with a clearer error.
+                pass
+        else:
+            out.append(ch)
+            i += 1
+    return "".join(out)
+
+
 def tooling_query(
     soql: str,
     target_org: str | None = None,
@@ -389,6 +431,9 @@ def tooling_query(
     Guardrails:
     - Refuses any statement that looks like DML (``INSERT``, ``UPDATE``,
       ``DELETE``, ``UPSERT``, ``MERGE``) or contains a ``;``.
+      DML-keyword detection only looks at statement tokens, not at
+      string-literal content — so ``WHERE Name = 'foo INSERT bar'`` is
+      legitimate and runs.
     - Refuses queries that do not start with ``SELECT``.
     - Bounds the returned row count at ``MAX_TOOLING_QUERY_ROWS``.
 
@@ -401,8 +446,11 @@ def tooling_query(
         return {"error": "soql is required"}
     if not upper.startswith("SELECT "):
         return {"error": "tooling_query only supports SELECT statements"}
+    # Strip string literals before scanning for DML — otherwise a literal
+    # like ``'foo INSERT bar'`` falsely matches the blocklist.
+    scrubbed_upper = _strip_soql_string_literals(upper)
     for banned in _TOOLING_QUERY_BLOCKLIST:
-        if banned in upper:
+        if banned in scrubbed_upper:
             return {"error": f"tooling_query refuses statements containing {banned.strip()!r}"}
 
     bounded = max(1, min(int(limit or 200), MAX_TOOLING_QUERY_ROWS))
