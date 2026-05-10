@@ -346,12 +346,20 @@ def probe_matching_rules(
     if err:
         return {"error": err}
 
-    active_clause = " AND IsActive = true" if active_only else ""
+    # MatchingRule uses RuleStatus (picklist), NOT IsActive. The old
+    # "IsActive = true" SOQL was rejected by Salesforce post-Spring '23
+    # with "No such column 'IsActive' on entity 'MatchingRule'". The
+    # picklist values are: 'Active', 'Activating', 'Deactivating',
+    # 'Inactive', 'RebuildIndex'. We treat anything other than 'Active'
+    # as inactive for our purposes.
+    mr_active_clause = " AND RuleStatus = 'Active'" if active_only else ""
+    # DuplicateRule still uses IsActive (boolean) — different table.
+    dr_active_clause = " AND IsActive = true" if active_only else ""
 
     mr_soql = (
-        "SELECT Id, DeveloperName, MasterLabel, IsActive, SobjectType "
+        "SELECT Id, DeveloperName, MasterLabel, RuleStatus, SobjectType "
         "FROM MatchingRule "
-        f"WHERE SobjectType = '{object_name}'{active_clause} "
+        f"WHERE SobjectType = '{object_name}'{mr_active_clause} "
         "LIMIT 200"
     )
     matching_rules = _run_soql(mr_soql, target_org=target_org, tooling=True)
@@ -362,15 +370,21 @@ def probe_matching_rules(
     mr_items_by_rule: dict[str, list[dict[str, Any]]] = {}
     if mr_ids:
         ids_clause = ", ".join(f"'{rid}'" for rid in mr_ids)
+        # MatchingRuleItem's column name is `Field`, NOT `FieldName`. The
+        # original SOQL used the wrong identifier — Salesforce returns
+        # "No such column 'FieldName' on entity 'MatchingRuleItem'".
         items_soql = (
-            "SELECT MatchingRuleId, FieldName, MatchingMethod, "
+            "SELECT MatchingRuleId, Field, MatchingMethod, "
             "BlankValueBehavior, SortOrder "
             "FROM MatchingRuleItem "
             f"WHERE MatchingRuleId IN ({ids_clause}) "
             "ORDER BY MatchingRuleId, SortOrder "
             "LIMIT 2000"
         )
-        items = _run_soql(items_soql, target_org=target_org, tooling=True)
+        # MatchingRuleItem is exposed via the Standard SOQL API, NOT the
+        # Tooling API. Using tooling=True on this query returns
+        # "sObject type 'MatchingRuleItem' is not supported".
+        items = _run_soql(items_soql, target_org=target_org, tooling=False)
         if "error" in items:
             return items
         for item in items["records"]:
@@ -378,14 +392,20 @@ def probe_matching_rules(
             if rule_id:
                 mr_items_by_rule.setdefault(rule_id, []).append(item)
 
+    # DuplicateRule, like MatchingRuleItem, is exposed via Standard SOQL,
+    # not the Tooling API. tooling=True returns
+    # "sObject type 'DuplicateRule' is not supported".
+    # Note: ParentId is NOT a real column on DuplicateRule (Salesforce
+    # never exposed a parent link here). The MCP previously SELECTed it
+    # and the query failed with "No such column 'ParentId'".
     dr_soql = (
         "SELECT Id, DeveloperName, MasterLabel, IsActive, SobjectType, "
-        "SobjectSubtype, ParentId "
+        "SobjectSubtype "
         "FROM DuplicateRule "
-        f"WHERE SobjectType = '{object_name}'{active_clause} "
+        f"WHERE SobjectType = '{object_name}'{dr_active_clause} "
         "LIMIT 200"
     )
-    duplicate_rules = _run_soql(dr_soql, target_org=target_org, tooling=True)
+    duplicate_rules = _run_soql(dr_soql, target_org=target_org, tooling=False)
     if "error" in duplicate_rules:
         return duplicate_rules
 
@@ -393,15 +413,17 @@ def probe_matching_rules(
     for rule in matching_rules["records"]:
         rule_id = rule.get("Id")
         items = mr_items_by_rule.get(rule_id, [])
+        rule_status = rule.get("RuleStatus")
         matching_out.append(
             {
                 "id": rule_id,
                 "developer_name": rule.get("DeveloperName"),
                 "label": rule.get("MasterLabel"),
-                "active": rule.get("IsActive"),
+                "active": rule_status == "Active",
+                "rule_status": rule_status,
                 "fields": [
                     {
-                        "field": item.get("FieldName"),
+                        "field": item.get("Field"),
                         "method": item.get("MatchingMethod"),
                         "blank_behavior": item.get("BlankValueBehavior"),
                         "sort_order": item.get("SortOrder"),
@@ -418,7 +440,6 @@ def probe_matching_rules(
             "label": rule.get("MasterLabel"),
             "active": rule.get("IsActive"),
             "subtype": rule.get("SobjectSubtype"),
-            "parent_id": rule.get("ParentId"),
         }
         for rule in duplicate_rules["records"]
     ]
