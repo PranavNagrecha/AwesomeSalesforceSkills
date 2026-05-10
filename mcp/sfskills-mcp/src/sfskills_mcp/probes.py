@@ -49,16 +49,28 @@ def probe_apex_references(
     field: str,
     target_org: str | None = None,
     include_managed: bool = False,
-    limit_per_query: int = 200,
+    limit_per_query: int = 2000,
 ) -> dict[str, Any]:
     """Enumerate ``ApexClass`` and ``ApexTrigger`` records whose body
     references ``<object>.<field>``.
 
-    The raw ``LIKE '%field%'`` SOQL filter over-matches (``Industry_Code__c``
-    would match ``Industry``); a post-fetch word-boundary regex trims the
-    list. Classifies each hit as ``read`` (query/condition context) or
-    ``write`` (assignment / DML payload); emits ``unknown`` when the
-    probe can't disambiguate without AST parsing.
+    Tooling API constraint: ``ApexClass.Body`` (and ``ApexTrigger.Body``)
+    can be SELECTed but NOT filtered in a SOQL ``WHERE`` clause — the
+    server rejects ``WHERE Body LIKE '%X%'`` with
+    ``field 'Body' can not be filtered in a query call``. So this probe
+    fetches Body rows in bulk (limited to non-managed by default) and
+    runs the field-reference regex client-side.
+
+    The post-fetch word-boundary regex distinguishes real references
+    from substring false positives (``Industry_Code__c`` won't match
+    ``Industry``). Classifies each hit as ``read`` (query/condition
+    context) or ``write`` (assignment / DML payload); emits ``unknown``
+    when the probe can't disambiguate without AST parsing.
+
+    ``limit_per_query`` defaults to 2000 (Tooling API max) so the probe
+    finds references in the entire custom-Apex set in one round trip on
+    typical orgs. For orgs with > 2000 custom Apex classes, raise the
+    limit or page externally; ``truncated`` flags the cap was hit.
     """
     err = _validate_api_name(object_name, kind="object_name")
     if err:
@@ -67,26 +79,29 @@ def probe_apex_references(
     if err:
         return {"error": err}
 
-    bounded = max(1, min(int(limit_per_query or 200), MAX_ROWS))
+    bounded = max(1, min(int(limit_per_query or 2000), MAX_ROWS))
     managed_clause = "" if include_managed else " AND NamespacePrefix = null"
 
-    # Step 1 — ApexClass
+    # Step 1 — ApexClass. Body is fetched but NOT filtered (Tooling API
+    # forbids WHERE on Body). Pre-filter by NamespacePrefix and Status to
+    # bound the result set; client-side regex does the real reference
+    # detection.
     class_soql = (
         "SELECT Id, Name, NamespacePrefix, Body "
         "FROM ApexClass "
-        f"WHERE Body LIKE '%{field}%'{managed_clause} "
+        f"WHERE Status = 'Active'{managed_clause} "
         f"LIMIT {bounded}"
     )
     classes = _run_soql(class_soql, target_org=target_org, tooling=True)
     if "error" in classes:
         return classes
 
-    # Step 2 — ApexTrigger (must target the object)
+    # Step 2 — ApexTrigger. Same Body-filter restriction; rely on
+    # TableEnumOrId (which IS filterable) plus the client-side regex.
     trigger_soql = (
         "SELECT Id, Name, NamespacePrefix, TableEnumOrId, Body "
         "FROM ApexTrigger "
-        f"WHERE TableEnumOrId = '{object_name}' "
-        f"AND Body LIKE '%{field}%' "
+        f"WHERE TableEnumOrId = '{object_name}'{managed_clause} "
         f"LIMIT {bounded}"
     )
     triggers = _run_soql(trigger_soql, target_org=target_org, tooling=True)
