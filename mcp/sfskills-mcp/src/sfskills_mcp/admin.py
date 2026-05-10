@@ -423,10 +423,17 @@ def _strip_soql_string_literals(soql: str) -> str:
 def tooling_query(
     soql: str,
     target_org: str | None = None,
-    tooling: bool = True,
+    tooling: bool = False,
     limit: int = 200,
 ) -> dict[str, Any]:
     """Escape hatch — run a read-only SOQL query against the org.
+
+    Default routes through the **Standard SOQL API** (``tooling=False``)
+    because that's what users querying ``Account``, ``Contact``,
+    ``Opportunity``, etc. — the vast majority of cases — need. Pass
+    ``tooling=True`` to query Tooling-API-only entities like
+    ``ApexClass``, ``Flow``, ``MetadataContainer``,
+    ``CustomObject`` (definitions, not records), ``ApexTrigger``, etc.
 
     Guardrails:
     - Refuses any statement that looks like DML (``INSERT``, ``UPDATE``,

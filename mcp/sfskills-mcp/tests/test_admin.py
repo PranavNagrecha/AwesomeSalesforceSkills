@@ -201,10 +201,20 @@ class ToolingQueryTest(unittest.TestCase):
     def test_returns_structured_output(self) -> None:
         records = [{"attributes": {}, "Id": "01p", "Name": "MyClass"}]
         with mock.patch.object(admin.sf_cli, "run_sf_json", return_value=_soql_payload(records)):
-            out = admin.tooling_query("SELECT Id, Name FROM ApexClass LIMIT 10")
+            # tooling=True explicit since v0.4.3 default flipped to False.
+            out = admin.tooling_query("SELECT Id, Name FROM ApexClass LIMIT 10", tooling=True)
             self.assertTrue(out["tooling_api"])
             self.assertEqual(out["row_count"], 1)
             self.assertEqual(out["rows"][0]["Name"], "MyClass")
+
+    def test_default_routes_to_standard_api(self) -> None:
+        # v0.4.3 default: tooling=False. Account is a Standard sObject —
+        # the most common ad-hoc query target.
+        records = [{"attributes": {}, "Id": "001", "Name": "Acme"}]
+        with mock.patch.object(admin.sf_cli, "run_sf_json", return_value=_soql_payload(records)):
+            out = admin.tooling_query("SELECT Id, Name FROM Account LIMIT 1")
+            self.assertFalse(out["tooling_api"])
+            self.assertEqual(out["row_count"], 1)
 
 
 if __name__ == "__main__":  # pragma: no cover
