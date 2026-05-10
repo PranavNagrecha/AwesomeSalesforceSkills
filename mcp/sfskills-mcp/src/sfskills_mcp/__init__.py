@@ -20,4 +20,31 @@
 #           plumbed through pipelines/ranking.rerank_results — chunk-level
 #           default at vector weight 0.2 lifts NL Hit@3 +1.8pp on 1,418-Q
 #           audit while curated 1,285-Q baseline holds at 98.6%.
-__version__ = "0.4.2"
+#   0.4.3 — Production hardening surfaced by live-org integration testing
+#           (ExampleOrg Dev PN sandbox, 4,000+ ApexClass, 30,000+ CustomField).
+#           10 fixes:
+#           Security (1): universal credential redactor in sf_cli covering
+#             every stdout/stderr path + parsed-payload walker. Stops the
+#             accessToken leak demonstrated when sf CLI emits a warning
+#             before its JSON.
+#           Broken probes (3): probe_apex_references (Body LIKE not
+#             filterable), probe_flow_references (Metadata one-row
+#             restriction → two-pass), probe_matching_rules (four schema
+#             mistakes: IsActive→RuleStatus, FieldName→Field, MatchingRuleItem
+#             and DuplicateRule require Standard API not Tooling,
+#             DuplicateRule.ParentId never existed).
+#           tooling_query polish (3): string-literal stripping so DML scan
+#             stops false-positive-blocking ``WHERE Name = 'foo INSERT bar'``,
+#             default flipped tooling=True→False (Standard API is the
+#             common case), SELECT detection allows newline/tab/leading
+#             whitespace.
+#           suggest_agent (1): decision-tree score floor (default 20)
+#             suppresses irrelevant trees — Phase 6 audit 2/8 correct →
+#             8/8 correct.
+#           Sandbox detection (1): infer is_sandbox from instance_url when
+#             sf CLI omits it (sandbox/scratch/develop variants + legacy
+#             CS pods).
+#           Warning-prefix JSON parsing (1): strip sf CLI warning lines
+#             before json.loads — same root cause as the security leak,
+#             now closed at the parsing layer too.
+__version__ = "0.4.3"

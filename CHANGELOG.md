@@ -2,6 +2,112 @@
 
 All notable changes to SfSkills are documented here. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The project uses semantic versioning keyed to the Salesforce release cadence (minor bumps per Spring/Summer/Winter release).
 
+## [Unreleased] — sfskills-mcp v0.4.3 (production hardening)
+
+10 fixes surfaced by live-org integration testing against an Education
+Cloud sandbox (4,000+ ApexClass, 30,000+ CustomField, 694 Flow, 1,209 LWC).
+The single biggest takeaway: **3 of the 4 heavy probes had never been
+tested against a real org** — each failed on its first SOQL invocation
+with a Salesforce-platform-level rejection. This release fixes them.
+
+### Migration
+
+Users on v0.4.2:
+- **`tooling_query` default flipped**: `tooling=False` now (was `True`).
+  Most ad-hoc queries target Standard sObjects (Account, Contact, etc.).
+  Tooling-API-only entities (`ApexClass.Body`, `Flow.Metadata`,
+  `MetadataContainer`, etc.) need explicit `tooling=True`.
+- **3 probes that silently returned errors now work**. If you had
+  scripts that handled `error` keys from `probe_apex_references`,
+  `probe_flow_references`, or `probe_matching_rules`, they'll now
+  receive populated `references` / `matching_rules` / `duplicate_rules`
+  lists. Update consumers to handle the success shape.
+- **`suggest_agent` returns fewer decision trees**. The new
+  `min_tree_score` parameter (default 20) suppresses low-relevance
+  trees. To recover v0.4.2 behavior pass `min_tree_score=0`.
+- **`describe_org` adds `is_sandbox_source`** field ("cli" | "inferred-
+  from-url" | absent). Existing consumers that only read `is_sandbox`
+  see no breakage; consumers that want to know provenance can opt in.
+
+### Security
+
+- **Universal credential redactor in `sf_cli.py`.** Live test session
+  leaked a Salesforce session token because `sf org display --json`
+  prepended a CLI warning line, `json.loads` failed, and the error
+  path returned raw stdout — which contained the access token. Added
+  `_redact_credentials_text` (regex scrub for SF session, OAuth
+  refresh, and Bearer patterns) and `_redact_credentials_in_payload`
+  (walks parsed JSON, redacts values keyed by `accessToken`,
+  `refreshToken`, `password`, `clientSecret`, `securityToken`,
+  `sessionId`, `apiToken`, `authToken`). Applied to every output path
+  in `run_sf_json` (TimeoutExpired stderr, JSONDecodeError stdout +
+  stderr, normal payload return). 15 new unit tests cover token
+  shapes, JSON-walker, and the exact live-leak failure pattern.
+
+### Fixed
+
+- **`probe_apex_references`** (broken since v0.4.0): Salesforce's
+  Tooling API rejects `WHERE Body LIKE '%X%'` on ApexClass /
+  ApexTrigger. Removed the unfilterable predicate; client-side
+  word-boundary regex on fetched bodies still scopes results
+  precisely. Default `limit_per_query` raised 200→2000 (Tooling API
+  max) so the probe finds references in the full custom-Apex set in
+  one round trip on typical orgs.
+- **`probe_flow_references`** (broken since v0.4.0): When SOQL selects
+  `Flow.Metadata`, Tooling API requires exactly one row in the
+  response. Two-pass implementation: list Flow IDs in one bulk query,
+  then fan out per-ID Metadata queries through an 8-thread pool.
+- **`probe_matching_rules`** (broken since v0.4.0): four distinct
+  schema errors fixed in one pass:
+  1. `MatchingRule.IsActive` → `RuleStatus` (the boolean column was
+     replaced with a richer picklist: Active, Activating, Deactivating,
+     Inactive, ActivationFailed, RebuildIndex).
+  2. `MatchingRuleItem.FieldName` → `Field` (column name typo).
+  3. `MatchingRuleItem` and `DuplicateRule` queries now route through
+     the Standard SOQL API (`tooling=False`); the Tooling API doesn't
+     expose them.
+  4. `DuplicateRule.ParentId` removed — that column has never existed.
+- **`tooling_query` false positives**: substring matching on DML
+  keywords blocked legitimate queries where the keyword appeared in
+  string literals: `WHERE Name = 'foo INSERT bar'`,
+  `WHERE Name LIKE '%UPDATE %'`, `WHERE Name = ';'`. New
+  `_strip_soql_string_literals` state machine strips quoted content
+  before the DML scan. All 5 stacked-DML bypass attempts still
+  blocked; 4 false-positive cases now pass.
+- **`tooling_query` SELECT detection** rejected multi-line SOQL
+  formatted with `SELECT\n  Id\nFROM ...`. Replaced
+  `startswith("SELECT ")` with `re.match(r"^\s*SELECT\b")`.
+
+### Changed
+
+- **`tooling_query` default flipped to `tooling=False`**. Standard
+  API is the common case for ad-hoc queries; Tooling API entities
+  opt in with explicit `tooling=True`.
+- **`suggest_agent` filters low-score decision trees**. The Phase 6
+  audit showed 6 of 8 realistic queries returned an irrelevant tree
+  (e.g. "security issues" → `async-selection`, score 10.7). New
+  `min_tree_score` parameter (default 20) suppresses noise. 2/8
+  correct → 8/8 correct on the same suite.
+- **`describe_org` infers `is_sandbox` from instance URL** when sf
+  CLI omits it. ExampleOrg Dev PN (URL
+  `ExampleOrg--devSandbox.sandbox.my.salesforce.com`) returned
+  `isSandbox=null` from the CLI; URL inference correctly classifies
+  as sandbox. New `is_sandbox_source` field tags the provenance.
+- **`run_sf_json` strips warning-prefix lines before parsing**.
+  `_strip_to_json_start` finds the first `{` or `[` in stdout so
+  `sf` CLI update-available banners no longer cause JSON-decode
+  errors (the same root cause as the security leak above).
+
+### Test infrastructure
+
+- 5 new test files (`test_sf_cli_redaction.py`,
+  `test_tooling_query_blocklist.py`, `test_sandbox_inference.py`, plus
+  expansions in `test_admin.py`).
+- 45 new unit tests, all pass.
+- Full suite: 205/205 tests pass (was 160 at the start of v0.4.2).
+- Every fix in this release was live-verified against ExampleOrg Dev PN
+  (Education Cloud + NPSP + several AppExchange managed packages).
+
 ## [Unreleased] — sfskills-mcp v0.4.2 (retrieval quality)
 
 Retrieval quality release. Three of the four MCP corpora (agents, templates,
