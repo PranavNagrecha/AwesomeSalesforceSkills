@@ -21,6 +21,7 @@ Tools exposed:
 
 from __future__ import annotations
 
+import re
 from typing import Any
 
 from . import sf_cli
@@ -451,7 +452,10 @@ def tooling_query(
     upper = raw.upper()
     if not raw:
         return {"error": "soql is required"}
-    if not upper.startswith("SELECT "):
+    # `SELECT` followed by ANY whitespace (newline, tab, space) starts a
+    # legit SOQL statement. Previously we checked startswith("SELECT ")
+    # which rejected multi-line SOQL formatted with `SELECT\n  Id …`.
+    if not re.match(r"^\s*SELECT\b", raw, re.IGNORECASE):
         return {"error": "tooling_query only supports SELECT statements"}
     # Strip string literals before scanning for DML — otherwise a literal
     # like ``'foo INSERT bar'`` falsely matches the blocklist.
