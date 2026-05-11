@@ -1,10 +1,13 @@
-# Decision Tree — Automation Selection
+# Decision Tree — Automation Selection (Flow vs Apex)
 
 Which automation tool should I use?
 **Flow · Apex · Agentforce · Approvals · Platform Events · Batch · External**
 
-Use this tree BEFORE activating any skill that proposes a specific technology.
-Route once, then pick the skill.
+This is the canonical **flow vs apex** routing tree. Use it BEFORE
+activating any skill that proposes a specific technology. Route once,
+then pick the skill. Compare with `flow-pattern-selector` (picks which
+type of Flow once you've decided on Flow) and `async-selection` (picks
+which async Apex once you've decided on Apex).
 
 ---
 
