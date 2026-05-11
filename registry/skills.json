@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 48
   },
-  "generated_from_hash": "ccc368ba9ba51870615f3056a7e4b917d82c252dfcc05872bd2b7a2fe6e5f767",
+  "generated_from_hash": "26e04f4f42034c80675e05c6853b80088a83321637568d59cecdecf957f831fb",
   "schema_version": 1,
   "skill_count": 997,
   "skills": [
@@ -100503,7 +100503,7 @@
         "ff0c5e489f7ba5b386ec",
         "ff520aa69c68d4e683ed"
       ],
-      "content_hash": "790d8edbb6888c6f95edf8504d1d503ab3942bbe1b47989a2524c52e731f1eef",
+      "content_hash": "defe6656a2439ada193ec0af47fd8287db93cf8e53f8b4a51389182bcd41c565",
       "dependencies": [],
       "description": "Use when designing, reviewing, or troubleshooting Salesforce Flow fault handling, error logging, and bulk-safe automation paths. Triggers: 'fault connector', '$Flow.FaultMessage', 'flow failed', 'record-triggered flow rollback', 'screen flow error'. NOT for generic Flow type selection unless the main risk is failure handling; NOT for Apex exception handling (see apex/exception-handling-patterns).",
       "file_location": "skills/flow/fault-handling",

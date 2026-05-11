@@ -17,6 +17,10 @@ triggers:
   - "flow error email message is confusing to users"
   - "what happens when flow fails"
   - "flow fails fault path"
+  - "fault path subflow"
+  - "fault path in flow"
+  - "fault path connector"
+  - "subflow fault handling"
 inputs: ["flow type", "failure points", "user impact"]
 outputs: ["fault handling review", "error path recommendations", "bulk safety findings"]
 dependencies: []
