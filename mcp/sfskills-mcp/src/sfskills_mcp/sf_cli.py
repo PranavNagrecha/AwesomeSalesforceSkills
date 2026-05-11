@@ -187,25 +187,46 @@ def run_sf_json(
     stderr = completed.stderr or ""
 
     parsed: Any
-    try:
-        # sf CLI sometimes prepends update-available / deprecation warning
-        # lines BEFORE its JSON output:
-        #   "›   Warning: @salesforce/cli update available from 2.103 to 2.133"
-        #   '{"status": 0, "result": {...}}'
-        # If json.loads() sees the warning, it raises — and the legacy
-        # error path returned raw stdout (which contained the access
-        # token; see fix #1). Strip lines until the first '{' or '['
-        # before parsing.
+    # sf CLI sometimes prepends update-available / deprecation warning lines
+    # BEFORE its JSON output:
+    #   "›   Warning: @salesforce/cli update available from 2.103 to 2.133"
+    #   '{"status": 0, "result": {...}}'
+    # If json.loads() sees the warning, it raises — and the legacy error
+    # path returned raw stdout (which contained the access token; see
+    # fix #1). Strip lines until the first '{' or '[' before parsing.
+    #
+    # Three cases:
+    #   1. stdout fully empty           → parsed = {} (no-output is success-shape)
+    #   2. stdout has content but no JSON start → "did not return valid JSON"
+    #   3. stdout has JSON              → json.loads, or JSONDecodeError handler
+    if not stdout.strip():
+        parsed = {}
+    else:
         parseable = _strip_to_json_start(stdout)
-        parsed = json.loads(parseable) if parseable.strip() else {}
-    except json.JSONDecodeError:
-        return {
-            "status": completed.returncode,
-            "error": "sf did not return valid JSON",
-            "stdout": _redact_credentials_text(stdout[:2000]),
-            "stderr": _redact_credentials_text(stderr[:2000]),
-            "args": full_args[1:],
-        }
+        if not parseable.strip():
+            # Case 2: regression caught by test_invalid_json_is_handled in
+            # the v0.4.3 P0-F fix. _strip_to_json_start returns "" when no
+            # '{' or '[' is found; a previous version (commit 213f96af)
+            # then took the empty-string branch and returned {} as if the
+            # call had succeeded. Now we explicitly error so callers can
+            # surface the diagnostic instead of getting a silent empty.
+            return {
+                "status": completed.returncode,
+                "error": "sf did not return valid JSON",
+                "stdout": _redact_credentials_text(stdout[:2000]),
+                "stderr": _redact_credentials_text(stderr[:2000]),
+                "args": full_args[1:],
+            }
+        try:
+            parsed = json.loads(parseable)
+        except json.JSONDecodeError:
+            return {
+                "status": completed.returncode,
+                "error": "sf did not return valid JSON",
+                "stdout": _redact_credentials_text(stdout[:2000]),
+                "stderr": _redact_credentials_text(stderr[:2000]),
+                "args": full_args[1:],
+            }
 
     # Redact credential-keyed fields in the parsed payload BEFORE it leaves
     # this function. So even if a downstream caller naively serialises the
