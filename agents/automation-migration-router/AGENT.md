@@ -36,7 +36,7 @@ Dispatches one of four source automation types (`wf_rule`, `process_builder`, `a
 ## Invocation
 
 - **Direct read** — "Follow `agents/automation-migration-router/AGENT.md` on Opportunity with source_type=wf_rule"
-- **Slash command** — [`/migrate-automation`](../../commands/automation-migration-router.md). Legacy aliases (`/migrate-wfr-to-flow`, `/migrate-pb-to-flow`, `/migrate-workflow-pb`, `/migrate-approval-to-orchestrator`) each invoke the router with a preset `source_type` and emit a one-line deprecation notice. Aliases ship until the removal window declared in `docs/MIGRATION.md` (Wave 7).
+- **Slash command** — [`/automation-migration-router`](../../commands/automation-migration-router.md). Legacy aliases (`/migrate-wfr-to-flow`, `/migrate-pb-to-flow`, `/migrate-workflow-pb`, `/migrate-approval-to-orchestrator`) each invoke the router with a preset `source_type` and emit a one-line deprecation notice. Aliases ship until the removal window declared in `docs/MIGRATION.md` (Wave 7).
 - **MCP** — `get_agent("automation-migration-router")`
 
 ---

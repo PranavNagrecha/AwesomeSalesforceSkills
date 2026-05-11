@@ -1,11 +1,11 @@
-# /migrate-automation
+# /automation-migration-router
 
 Invoke the [automation-migration-router](../agents/automation-migration-router/AGENT.md) agent. Wave 3a of the redesign.
 
 ## Synopsis
 
 ```
-/migrate-automation --source-type <wf_rule|process_builder|approval_process|auto>
+/automation-migration-router --source-type <wf_rule|process_builder|approval_process|auto>
                     --object <ApiName>
                     --target-org <alias>
                     [--mode analyze|plan|migrate]
@@ -26,10 +26,10 @@ These four aliases invoke the same router with a preset `--source-type` and emit
 
 | Alias | Equivalent to |
 |---|---|
-| `/migrate-wfr-to-flow` | `/migrate-automation --source-type wf_rule ...` |
-| `/migrate-pb-to-flow` | `/migrate-automation --source-type process_builder ...` |
-| `/migrate-workflow-pb` | `/migrate-automation --source-type auto ...` |
-| `/migrate-approval-to-orchestrator` | `/migrate-automation --source-type approval_process ...` |
+| `/migrate-wfr-to-flow` | `/automation-migration-router --source-type wf_rule ...` |
+| `/migrate-pb-to-flow` | `/automation-migration-router --source-type process_builder ...` |
+| `/migrate-workflow-pb` | `/automation-migration-router --source-type auto ...` |
+| `/migrate-approval-to-orchestrator` | `/automation-migration-router --source-type approval_process ...` |
 
 ## Safety
 
