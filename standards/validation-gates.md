@@ -5,7 +5,7 @@ by `scripts/generate_validation_index.py`. **Do not hand-edit.** The
 drift check in `scripts/validate_repo.py` catches stale copies.
 
 
-- total gates: **63**  ·  errors: **57**  ·  warnings: **6**
+- total gates: **64**  ·  errors: **57**  ·  warnings: **7**
 
 Each gate links to its source line. The intent line is the first line of
 the enclosing function's docstring — read it for *why* the gate exists,
@@ -34,16 +34,17 @@ not just what it checks.
 | [256](pipelines/validators.py#L256) | **ERROR** | `validate_skill_structure` | — | scripts/ must contain at least one Python file |
 | [265](pipelines/validators.py#L265) | **ERROR** | `validate_skill_structure` | — | missing `references/llm-anti-patterns.md` — add LLM-specific anti-patterns for this skill |
 | [270](pipelines/validators.py#L270) | **ERROR** | `validate_skill_structure` | — | llm-anti-patterns.md contains {…} unfilled TODO marker(s) |
-| [277](pipelines/validators.py#L277) | _WARN_ | `validate_skill_structure` | — | SKILL.md has no `## Recommended Workflow` section — add step-by-step agent instructions |
-| [283](pipelines/validators.py#L283) | **ERROR** | `validate_skill_structure` | — | missing `## Official Sources Used` section |
-| [289](pipelines/validators.py#L289) | **ERROR** | `validate_skill_structure` | — | `## Official Sources Used` section is empty; list at least one source |
-| [337](pipelines/validators.py#L337) | **ERROR** | `validate_skill_authoring_style` | Style-level checks against `standards/skill-authoring-style.md`. | body has `{…}` section — frontmatter `description` is the canonical trigger surface; remove the body section or fold it into the descriptio… |
-| [362](pipelines/validators.py#L362) | **ERROR** | `validate_skill_authoring_style` | Style-level checks against `standards/skill-authoring-style.md`. | body has `{…}` section while `references/well-architected.md` already covers it — keep pillar mapping in references/well-architected.md onl… |
-| [407](pipelines/validators.py#L407) | **ERROR** | `validate_skill_authoring_style` | Style-level checks against `standards/skill-authoring-style.md`. | {…} paragraph(s) appear verbatim in both SKILL.md and references/gotchas.md (e.g. "{…}…") — keep the deep version in references/gotchas.md,… |
-| [466](pipelines/validators.py#L466) | _WARN_ | `flush` | — | L{…}–L{…}: {…} consecutive `- **X** — ...` bullets should be a table (see standards/skill-authoring-style.md § 6.2) |
-| [513](pipelines/validators.py#L513) | **ERROR** | `validate_skill_registry_record` | — | — |
-| [520](pipelines/validators.py#L520) | **ERROR** | `validate_knowledge_source` | — | — |
-| [601](pipelines/validators.py#L601) | _WARN_ | `validate_skill_similarity` | Flag near-duplicate skills as WARN. | near-duplicate of `{…}` (score {…}, description {…}, tags {…}, triggers {…}); review with `python3 scripts/audit_duplicates.py` or merge/re… |
+| [279](pipelines/validators.py#L279) | _WARN_ | `validate_skill_structure` | — | llm-anti-patterns.md has only {…} anti-pattern(s); CLAUDE.md requires 5+ (any heading or numbered-list format). |
+| [291](pipelines/validators.py#L291) | _WARN_ | `validate_skill_structure` | — | SKILL.md has no `## Recommended Workflow` section — add step-by-step agent instructions |
+| [297](pipelines/validators.py#L297) | **ERROR** | `validate_skill_structure` | — | missing `## Official Sources Used` section |
+| [303](pipelines/validators.py#L303) | **ERROR** | `validate_skill_structure` | — | `## Official Sources Used` section is empty; list at least one source |
+| [351](pipelines/validators.py#L351) | **ERROR** | `validate_skill_authoring_style` | Style-level checks against `standards/skill-authoring-style.md`. | body has `{…}` section — frontmatter `description` is the canonical trigger surface; remove the body section or fold it into the descriptio… |
+| [376](pipelines/validators.py#L376) | **ERROR** | `validate_skill_authoring_style` | Style-level checks against `standards/skill-authoring-style.md`. | body has `{…}` section while `references/well-architected.md` already covers it — keep pillar mapping in references/well-architected.md onl… |
+| [421](pipelines/validators.py#L421) | **ERROR** | `validate_skill_authoring_style` | Style-level checks against `standards/skill-authoring-style.md`. | {…} paragraph(s) appear verbatim in both SKILL.md and references/gotchas.md (e.g. "{…}…") — keep the deep version in references/gotchas.md,… |
+| [512](pipelines/validators.py#L512) | _WARN_ | `flush` | — | L{…}–L{…}: {…} consecutive `- **X** — ...` bullets should be a table (see standards/skill-authoring-style.md § 6.2) |
+| [559](pipelines/validators.py#L559) | **ERROR** | `validate_skill_registry_record` | — | — |
+| [566](pipelines/validators.py#L566) | **ERROR** | `validate_knowledge_source` | — | — |
+| [647](pipelines/validators.py#L647) | _WARN_ | `validate_skill_similarity` | Flag near-duplicate skills as WARN. | near-duplicate of `{…}` (score {…}, description {…}, tags {…}, triggers {…}); review with `python3 scripts/audit_duplicates.py` or merge/re… |
 
 ## `pipelines/agent_validators.py`
 

@@ -268,6 +268,20 @@ def validate_skill_structure(path: Path) -> list[ValidationIssue]:
         llm_todo_lines = [ln for ln in llm_text.splitlines() if "TODO:" in ln and not ln.strip().startswith("<!--")]
         if llm_todo_lines:
             issues.append(ValidationIssue("ERROR", str(llm_ap_path), f"llm-anti-patterns.md contains {len(llm_todo_lines)} unfilled TODO marker(s)"))
+        # Anti-pattern minimum count (5+ per CLAUDE.md policy). Counts
+        # all observed formats in the corpus — heading-named
+        # ("## Anti-Pattern N"), heading-numbered ("## N. Title"),
+        # "## Pattern N", "## Mistake N", and top-level numbered lists.
+        # Fence stripping is line-anchored so inline ``` in prose doesn't
+        # eat a heading. P1 WARN — surfaces gaps without blocking PRs.
+        ap_count = _count_anti_patterns(llm_text)
+        if ap_count < 5:
+            issues.append(ValidationIssue(
+                "WARN",
+                str(llm_ap_path),
+                f"llm-anti-patterns.md has only {ap_count} anti-pattern(s); "
+                "CLAUDE.md requires 5+ (any heading or numbered-list format).",
+            ))
 
     # Recommended Workflow section in SKILL.md — WARN if missing
     skill_md_path = path / "SKILL.md"
@@ -428,6 +442,38 @@ _FENCE_RE = re.compile(r"^\s*```")
 _EXEMPT_HEADING_RE = re.compile(r"^#{2,6}\s+Related Skills\b", re.IGNORECASE)
 _PARALLEL_MIN_RUN = 4
 _PARALLEL_MAX_MEDIAN_CHARS = 220
+
+
+# Anti-pattern counter \u2014 multi-format aware (see qa-content-report \u00a7 1.4).
+# Fence stripping is anchored to start-of-line so inline triple-backticks
+# in prose ("...the ```json block..." example) don't eat headings.
+_AP_FENCE_RE = re.compile(r"^```[^\n]*\n[\s\S]*?\n^```\s*$", re.MULTILINE)
+_AP_HEADING_NAMED_RE = re.compile(
+    r"^##\s+(?:Anti[- ]?Pattern|Pattern|Mistake|Common\s+Mistake|Trap|Gotcha)\s*\d+\b",
+    re.IGNORECASE | re.MULTILINE,
+)
+_AP_HEADING_NUMBERED_RE = re.compile(r"^##\s+\d+\.\s+\S", re.MULTILINE)
+_AP_TOPLEVEL_NUMBERED_RE = re.compile(r"^(\d+)\.\s+\S", re.MULTILINE)
+
+
+def _count_anti_patterns(text: str) -> int:
+    """Count anti-patterns across the four observed formats in the corpus.
+
+    Returns the maximum count across:
+      a) named headings \u2014 ``## Anti-Pattern N``, ``## Pattern N``,
+         ``## Mistake N`` ...
+      b) numbered headings \u2014 ``## N. Title``
+      c) top-level numbered list \u2014 ``N. Title`` (outside code fences)
+
+    Why max-not-sum: each file uses ONE convention; mixed-format files
+    are vanishingly rare. Summing would double-count when both regexes
+    match the same logical item.
+    """
+    stripped = _AP_FENCE_RE.sub("", text)
+    h_named = len(_AP_HEADING_NAMED_RE.findall(stripped))
+    h_num = len(_AP_HEADING_NUMBERED_RE.findall(stripped))
+    list_num = len({m.group(1) for m in _AP_TOPLEVEL_NUMBERED_RE.finditer(stripped)})
+    return max(h_named, h_num, list_num)
 
 
 def _median_int(values: list[int]) -> float:
