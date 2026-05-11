@@ -379,6 +379,27 @@ _TOOLING_QUERY_BLOCKLIST = (
 )
 
 
+_AGGREGATE_FN_RE = re.compile(
+    r"\b(COUNT|COUNT_DISTINCT|SUM|AVG|MIN|MAX)\s*\(",
+    re.IGNORECASE,
+)
+
+
+def _is_non_grouped_aggregate(upper_soql: str) -> bool:
+    """Return True if the SOQL uses an aggregate function in SELECT
+    without GROUP BY.
+
+    Used by tooling_query to skip auto-LIMIT injection for queries
+    Salesforce rejects with "Non-grouped query that uses overall
+    aggregate functions cannot also use LIMIT".
+    """
+    if not _AGGREGATE_FN_RE.search(upper_soql):
+        return False
+    if " GROUP BY " in upper_soql:
+        return False
+    return True
+
+
 def _strip_soql_string_literals(soql: str) -> str:
     """Remove the content of single- and double-quoted string literals so
     the DML-keyword scan only sees statement tokens.
@@ -465,8 +486,19 @@ def tooling_query(
             return {"error": f"tooling_query refuses statements containing {banned.strip()!r}"}
 
     bounded = max(1, min(int(limit or 200), MAX_TOOLING_QUERY_ROWS))
+    # Auto-LIMIT, but skip aggregates. Salesforce SOQL forbids LIMIT on
+    # non-grouped queries that use overall aggregate functions
+    # (``SELECT COUNT()``, ``SUM()``, ``AVG()``, ``MIN()``, ``MAX()`` without
+    # GROUP BY) — server returns
+    # ``"Non-grouped query that uses overall aggregate functions cannot
+    # also use LIMIT"``. Detect aggregate-in-SELECT and skip the limit.
+    # GROUP BY queries CAN use LIMIT, so the presence of GROUP BY in the
+    # statement is treated as a grouped-aggregate and the LIMIT is kept.
     if " LIMIT " not in upper:
-        raw = f"{raw.rstrip()} LIMIT {bounded}"
+        if _is_non_grouped_aggregate(scrubbed_upper):
+            pass  # don't auto-LIMIT; server would reject
+        else:
+            raw = f"{raw.rstrip()} LIMIT {bounded}"
 
     probe = _run_soql(raw, target_org=target_org, tooling=bool(tooling))
     if "error" in probe:
