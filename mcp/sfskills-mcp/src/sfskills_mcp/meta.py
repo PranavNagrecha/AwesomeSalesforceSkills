@@ -234,7 +234,13 @@ def get_invocation_modes() -> dict[str, Any]:
 # --------------------------------------------------------------------------- #
 
 _AGENT_ID_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
-_RUN_ID_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9:\-_T.Z]{7,}$")  # ≥8 chars, safe
+# ≥8 chars, filename-safe. Excludes ':' explicitly: colons are illegal in
+# Windows filenames and historically confused HFS+/POSIX path tools. The
+# convention is ISO-8601-ish with dashes throughout
+# (``2026-05-11T00-13-41Z``). Pre-v0.4.4 the pattern allowed ':' and
+# emit_envelope wrote files like ``2026:05:10.json`` to disk — see P1-L
+# in .planning/qa-pre-prod-report-2026-05-10.md.
+_RUN_ID_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9\-_T.Z]{7,}$")
 
 
 def emit_envelope(
