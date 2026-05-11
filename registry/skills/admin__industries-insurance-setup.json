@@ -92,7 +92,7 @@
     "f9287a9de4fb0ebda77f",
     "f95be09f9aa25dc12a65"
   ],
-  "content_hash": "c2c09d297647e1efa729351547a1929d47f04bdb267fd7a25b507064874c6468",
+  "content_hash": "663ff1bfa7774f2f5b1709acae4c9890f4d902615514fc65b79b53525deddb4c",
   "dependencies": [],
   "description": "Use this skill to configure Salesforce Industries Insurance (Financial Services Cloud Insurance) including permission set licenses, irreversible org settings, core insurance objects, coverage types, claim configuration, and OmniScript-based quoting using the Insurance Product Administration API. Trigger keywords: insurance setup, FSC Insurance, InsurancePolicy object, InsurancePolicyCoverage, policy quoting OmniScript, claim type configuration, InsProductService, Digital Insurance Platform, many-to-many policy, multiple producers. NOT for generic OmniStudio setup, standard CPQ/Pricebook quoting, Health Cloud enrollment, or general FSC configuration unrelated to insurance line-of-business.",
   "file_location": "skills/admin/industries-insurance-setup",
@@ -110,9 +110,9 @@
     "Salesforce Help: Set Up Insurance for Financial Services Cloud \u2014 https://help.salesforce.com/s/articleView?id=sf.fsc_admin_insurance_setup.htm",
     "Salesforce Insurance Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.insurance_dev_guide.meta/insurance_dev_guide/insurance_dev_guide_intro.htm",
     "Insurance Policy Administration Connect API Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.chatterapi.meta/chatterapi/connect_resources_insurance_policy_admin.htm",
-    "Trailhead: Insurance for FSC Admin Essentials \u2014 https://trailhead.salesforce.com/content/learn/modules/insurance-for-fsc-admin-essentials",
-    "Trailhead: Insurance Policy and Claim Details Setup \u2014 https://trailhead.salesforce.com/content/learn/modules/insurance-policy-and-claim-details-setup",
-    "Trailhead: Create OmniScripts for Quoting \u2014 https://trailhead.salesforce.com/content/learn/modules/create-omniscripts-for-quoting",
+    "Trailhead: Insurance for FSC Admin Essentials \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
+    "Trailhead: Insurance Policy and Claim Details Setup \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
+    "Trailhead: Create OmniScripts for Quoting \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
     "Object Reference: InsurancePolicy \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_insurancepolicy.htm"
   ],

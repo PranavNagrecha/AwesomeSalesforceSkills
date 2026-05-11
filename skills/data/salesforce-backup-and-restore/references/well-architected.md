@@ -63,5 +63,5 @@
 - Recycle Bin (Records) — https://help.salesforce.com/s/articleView?id=sf.home_delete.htm&type=5
 - Bulk API 2.0 Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/asynch_api_intro.htm
 - Data Export (Weekly) — https://help.salesforce.com/s/articleView?id=sf.admin_exportdata.htm&type=5
-- Backup Your Data — Trailhead — https://trailhead.salesforce.com/content/learn/modules/data-management/backup-your-data
+- Backup Your Data — Trailhead — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Salesforce Well-Architected Reliability — https://architect.salesforce.com/well-architected/trusted/resilient

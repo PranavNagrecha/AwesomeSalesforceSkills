@@ -74,7 +74,7 @@
     "fd23948af82934d87d43",
     "fd5894e0abaaab15ac8f"
   ],
-  "content_hash": "fdfc3fad7b80dcc4b517e5f112665b94422b0a7fe142604a8fc998970172e88b",
+  "content_hash": "0e4175c858f8185d7a58ef5e019e7fbce6a8d506a0bb54cc53ac899c8d39ef81",
   "dependencies": [],
   "description": "Use when diagnosing or preventing performance problems caused by cross-object formula spanning relationships and roll-up summary field recalculations \u2014 especially in LDV orgs. Triggers: 'roll-up summary timing stale in trigger', 'Maximum 15 object references error', 'rollup recalculation timeout on large child set'. NOT for formula syntax authoring (use admin/formula-fields), formula compile-size limits (use apex/formula-field-performance-and-limits), or general governor-limit troubleshooting.",
   "file_location": "skills/apex/cross-object-formula-and-rollup-performance",
@@ -89,7 +89,7 @@
   "official_sources": [
     "Salesforce Help \u2014 Roll-Up Summary Field \u2014 https://help.salesforce.com/s/articleView?id=sf.fields_about_roll_up_summary_fields.htm",
     "Salesforce Help \u2014 Maximum 15 Object References \u2014 https://help.salesforce.com/s/articleView?id=000384498",
-    "Salesforce Engineering Blog \u2014 Record Locking \u2014 https://engineering.salesforce.com/reduce-record-locking/",
+    "Salesforce Engineering Blog \u2014 Record Locking \u2014 https://engineering.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
     "Apex Developer Guide \u2014 Order of Execution \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_triggers_order_of_execution.htm",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
   ],

@@ -93,7 +93,7 @@
     "fad3462914f96580113e",
     "ff2a04a8e7db226060b4"
   ],
-  "content_hash": "e882ea6c0a69ec3ebe022fab473227efbbde1b7b6064c565dd45a54b3057ea74",
+  "content_hash": "552e0e067403adf452d7d481d9d3de88475624d5eb64e78ca5ef9cc597d649b1",
   "dependencies": [],
   "description": "Use when designing or troubleshooting Salesforce CPQ (SBQQ) quote templates: building template sections, configuring line columns, conditionally showing sections, generating branded PDFs, or handling multi-language output. Triggers: 'CPQ quote template', 'SBQQ template', 'CPQ PDF', 'line columns', 'quote template sections', 'conditional section', 'CPQ quote document'. NOT for standard Salesforce quote templates (Setup > Quote Templates), Visualforce-only PDF customization, or CPQ pricing rules and price books.",
   "file_location": "skills/admin/cpq-quote-templates",
@@ -111,7 +111,7 @@
     "Salesforce CPQ Help: Building Your CPQ Documents with CPQ Templates \u2014 https://help.salesforce.com/s/articleView?id=sf.cpq_doc_building_cpq_doc.htm",
     "Salesforce CPQ Help: Conditionally Show Template Sections \u2014 https://help.salesforce.com/s/articleView?id=sf.cpq_doc_conditional_print.htm",
     "Salesforce CPQ Help: Template Line Columns \u2014 https://help.salesforce.com/s/articleView?id=sf.cpq_doc_line_columns.htm",
-    "Trailhead: Structure a Customized Quote Template \u2014 https://trailhead.salesforce.com/content/learn/modules/cpq-quote-templates",
+    "Trailhead: Structure a Customized Quote Template \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
     "Salesforce Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm"
   ],

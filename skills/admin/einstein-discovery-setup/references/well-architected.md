@@ -27,6 +27,6 @@
 ## Official Sources Used
 
 - Manage and Deploy Models in Einstein Discovery — https://help.salesforce.com/s/articleView?id=sf.bi_edd_story_deploy.htm
-- Einstein Discovery Basics: Create a Model (Trailhead) — https://trailhead.salesforce.com/content/learn/modules/einstein_discovery_basics
+- Einstein Discovery Basics: Create a Model (Trailhead) — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Einstein Discovery Prediction Writeback Fields in Salesforce — https://help.salesforce.com/s/articleView?id=sf.bi_edd_prediction_writeback.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

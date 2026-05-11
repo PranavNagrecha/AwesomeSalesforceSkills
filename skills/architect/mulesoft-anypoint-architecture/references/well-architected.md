@@ -44,6 +44,6 @@ CloudHub 2.0 private spaces allow VPC-level isolation without sacrificing MuleSo
 - MuleSoft Anypoint Platform Runtime Models: https://docs.mulesoft.com/runtime-manager/
 - MuleSoft CloudHub 2.0 Overview: https://docs.mulesoft.com/cloudhub-2/
 - MuleSoft Runtime Fabric Overview: https://docs.mulesoft.com/runtime-fabric/latest/
-- API Manager — Apply Policies: https://docs.mulesoft.com/api-manager/2.x/latest-tasks-policy-mule4
+- API Manager — Apply Policies: https://docs.mulesoft.com/  (page retired — see host index for current equivalent)
 - API Autodiscovery (Mule 4): https://docs.mulesoft.com/api-manager/2.x/api-auto-discovery-new-concept
 - Anypoint Exchange: https://docs.mulesoft.com/exchange/

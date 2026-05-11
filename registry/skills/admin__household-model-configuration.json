@@ -2,6 +2,7 @@
   "category": "admin",
   "chunk_ids": [
     "022683ea651613f0d8f0",
+    "03b56654241c01351e99",
     "053efa334754cd9a7b9b",
     "0c149cac73852ca91edb",
     "0db3cce4b91892ae0dc9",
@@ -113,7 +114,7 @@
     "fc92f1336a8f0f95f580",
     "fde40fce4a5052e74f81"
   ],
-  "content_hash": "7022f80c65a619a12201c3e864c7e8d7b631ea7e5b77f593af5be4cc20f4f604",
+  "content_hash": "17a2bcd71da2fec4e1d6d8e98ad5d8e09e1c73df8b0f92ae5e5d66ccc5eb2b0c",
   "dependencies": [
     "admin/financial-account-setup",
     "admin/person-accounts"
@@ -135,7 +136,7 @@
     "FSC Admin Guide: What Is a Group? \u2014 https://help.salesforce.com/s/articleView?id=sf.fsc_admin_groups_overview.htm",
     "FSC Admin Guide: Configure Record Rollups \u2014 https://help.salesforce.com/s/articleView?id=sf.fsc_admin_rollups.htm",
     "FSC Object Reference: AccountContactRelation FSC Fields \u2014 https://developer.salesforce.com/docs/atlas.en-us.financial_services_cloud_object_reference.meta/financial_services_cloud_object_reference/fsc_obj_accountcontactrelation.htm",
-    "FSC Trailhead: Configure Record Rollups \u2014 Group Level Opportunities \u2014 https://trailhead.salesforce.com/content/learn/modules/fsc-rollups/configure-group-level-rollups",
+    "FSC Trailhead: Configure Record Rollups \u2014 Group Level Opportunities \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)s/configure-group-level-rollups",
     "FSC Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.financial_services_cloud_object_reference.meta/financial_services_cloud_object_reference/fsc_intro.htm"
   ],
   "outputs": [

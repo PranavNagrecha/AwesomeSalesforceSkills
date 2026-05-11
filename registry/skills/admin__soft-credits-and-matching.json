@@ -104,7 +104,7 @@
     "fd9264f0c3fe8d720c63",
     "fe27013b91900706fe8c"
   ],
-  "content_hash": "7c54b80dbb5e8785b5e0b6d3ad6e425d8ece7b621cdabd29818ef2a3a9a10da8",
+  "content_hash": "2d3abb4558d937da09edce8ed548cdf05df371c9b7e1ae93aa636b896a065688",
   "dependencies": [
     "npsp-household-accounts",
     "gift-entry-and-processing"
@@ -124,7 +124,7 @@
     "Soft Credits Overview (NPSP Help) \u2014 https://help.salesforce.com/s/articleView?id=sfdo.NPSP_Soft_Credits_Overview.htm",
     "Manage Soft Credits (NPSP Help) \u2014 https://help.salesforce.com/s/articleView?id=sfdo.NPSP_Manage_Soft_Credits.htm",
     "Configure Matching Gifts (NPSP Help) \u2014 https://help.salesforce.com/s/articleView?id=sfdo.NPSP_Configure_Matching_Gifts.htm",
-    "Donation Soft Credit Management with NPSP (Trailhead) \u2014 https://trailhead.salesforce.com/content/learn/modules/npsp-donation-management/soft-credit-management",
+    "Donation Soft Credit Management with NPSP (Trailhead) \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
     "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
     "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"

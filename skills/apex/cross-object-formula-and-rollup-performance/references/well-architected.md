@@ -31,6 +31,6 @@ Reading a rollup in the same transaction is simpler and avoids async complexity.
 
 - Salesforce Help — Roll-Up Summary Field — https://help.salesforce.com/s/articleView?id=sf.fields_about_roll_up_summary_fields.htm
 - Salesforce Help — Maximum 15 Object References — https://help.salesforce.com/s/articleView?id=000384498
-- Salesforce Engineering Blog — Record Locking — https://engineering.salesforce.com/reduce-record-locking/
+- Salesforce Engineering Blog — Record Locking — https://engineering.salesforce.com/  (page retired — see host index for current equivalent)
 - Apex Developer Guide — Order of Execution — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_triggers_order_of_execution.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

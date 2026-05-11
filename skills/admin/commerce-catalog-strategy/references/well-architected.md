@@ -54,8 +54,8 @@ Search index reliability depends on the catalog staying within the 50-field sear
 
 ## Official Sources Used
 
-- B2C Commerce Catalogs and Navigation (Trailhead) — https://trailhead.salesforce.com/content/learn/modules/cc-digital-merchandising/cc-digital-merchandising-catalogs
-- Optimize Your Online Store for Search (Trailhead) — https://trailhead.salesforce.com/content/learn/modules/b2c-commerce-search-and-einstein/b2c-commerce-search-optimize-your-store
+- B2C Commerce Catalogs and Navigation (Trailhead) — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
+- Optimize Your Online Store for Search (Trailhead) — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Product Attributes Data Model — B2B Commerce Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.b2b_comm_dev.meta/b2b_comm_dev/b2b_comm_dev_product_attributes_data_model.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 - B2B Commerce Developer Guide (Salesforce Help) — https://developer.salesforce.com/docs/atlas.en-us.b2b_comm_dev.meta/b2b_comm_dev/b2b_comm_dev_intro.htm

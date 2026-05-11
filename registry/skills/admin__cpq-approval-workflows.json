@@ -120,7 +120,7 @@
     "fee033aea32a87da3fb4",
     "ffce0405d4c416e0eec0"
   ],
-  "content_hash": "dab2184789ad2d4877eab4047144981099f93b0a8140a3122f3f7b1dada735f1",
+  "content_hash": "2ebe8e5cd722e9d2a7be70ae3e435aa15109381660796b2048277809532d4836",
   "dependencies": [
     "cpq-product-catalog-setup",
     "cpq-pricing-rules"
@@ -141,7 +141,7 @@
     "Salesforce CPQ Advanced Approvals \u2014 Advanced Approvals for Salesforce CPQ Managed Package: https://help.salesforce.com/s/articleView?id=sf.cpq_adv_approvals.htm",
     "Salesforce CPQ Smart Approvals: https://help.salesforce.com/s/articleView?id=sf.cpq_smart_approvals.htm",
     "Salesforce CPQ Approval Chains: https://help.salesforce.com/s/articleView?id=sf.cpq_approval_chains.htm",
-    "Trailhead \u2014 Salesforce CPQ Advanced Approvals for Admins: https://trailhead.salesforce.com/content/learn/modules/salesforce-cpq-advanced-approvals-for-admins",
+    "Trailhead \u2014 Salesforce CPQ Advanced Approvals for Admins: https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
     "Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
     "Salesforce Well-Architected \u2014 Security Pillar: https://architect.salesforce.com/docs/architect/well-architected/guide/security.html",
     "Salesforce Well-Architected \u2014 Operational Excellence Pillar: https://architect.salesforce.com/docs/architect/well-architected/guide/operational-excellence.html",

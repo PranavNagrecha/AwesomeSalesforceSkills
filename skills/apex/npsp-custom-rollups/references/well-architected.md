@@ -32,9 +32,9 @@
 
 ## Official Sources Used
 
-- Customizable Rollups Overview — NPSP Help — https://powerofus.force.com/s/article/NPSP-Customizable-Rollups-Overview
-- Configure Customizable Rollups — NPSP Help — https://powerofus.force.com/s/article/NPSP-Configure-Customizable-Rollups
-- Create Filter Groups — NPSP Help — https://powerofus.force.com/s/article/NPSP-Create-Filter-Groups
-- Batch Job Modes for Customizable Rollups — NPSP Help — https://powerofus.force.com/s/article/NPSP-Batch-Job-Modes-for-Customizable-Rollups
+- Customizable Rollups Overview — NPSP Help — https://help.salesforce.com/s/nonprofit  (page retired — see host index for current equivalent)-Overview
+- Configure Customizable Rollups — NPSP Help — https://help.salesforce.com/s/nonprofit  (page retired — see host index for current equivalent)
+- Create Filter Groups — NPSP Help — https://help.salesforce.com/s/nonprofit  (page retired — see host index for current equivalent)
+- Batch Job Modes for Customizable Rollups — NPSP Help — https://help.salesforce.com/s/nonprofit  (page retired — see host index for current equivalent)
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 - Apex Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm

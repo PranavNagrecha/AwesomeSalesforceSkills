@@ -35,4 +35,4 @@ Post-deployment test quote generation is a mandatory validation step. CPQ config
 
 - Salesforce Help: CPQ Quote Calculation Sequence — https://help.salesforce.com/s/articleView?id=sf.cpq_quote_calc_sequence.htm
 - Salesforce Help: Integrating Salesforce CPQ and Salesforce Billing — https://help.salesforce.com/s/articleView?id=sf.cpq_billing_integrate.htm
-- SFDMU (Salesforce Data Move Utility): https://github.com/forcedotcom/SFDMU
+- SFDMU (Salesforce Data Move Utility): https://github.com/  (page retired — see host index for current equivalent)

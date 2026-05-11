@@ -112,7 +112,7 @@
     "fafbd08c7891e67cabee",
     "fe6efa1a52617d31f986"
   ],
-  "content_hash": "9bba88da4f93343ea75bc352a90d10b44069c67f802d73bb92ef2f6961e77f1c",
+  "content_hash": "c6f7c78beb1b687db2a221b46f99ce5cc4f8d6d08131a17e9e129221944439e1",
   "dependencies": [
     "fsl-scheduling-policies"
   ],
@@ -130,8 +130,8 @@
   ],
   "name": "fsl-scheduling-optimization-design",
   "official_sources": [
-    "Understanding Optimization in Field Service Scheduling (Trailhead) \u2014 https://trailhead.salesforce.com/content/learn/modules/field-service-lightning-quick-look/understand-optimization",
-    "Global Optimization Planning (Trailhead) \u2014 https://trailhead.salesforce.com/content/learn/modules/field-service-scheduling/global-optimization",
+    "Understanding Optimization in Field Service Scheduling (Trailhead) \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
+    "Global Optimization Planning (Trailhead) \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
     "Set Up Routing for Travel Time Calculations \u2014 https://help.salesforce.com/s/articleView?id=sf.fs_routing.htm",
     "Optimize Appointments Using Priorities \u2014 https://help.salesforce.com/s/articleView?id=sf.fs_optimizer_priorities.htm",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",

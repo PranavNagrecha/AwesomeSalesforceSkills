@@ -28,7 +28,7 @@
     "eb07ff015d8d9a4748c8",
     "ee138321efa00b806ab1"
   ],
-  "content_hash": "fa842dbaee99a5f95f9faf07d450a5e00de6019710085ee95f363e12037c18c8",
+  "content_hash": "84a26d460e60214699e7cbbec641c3cb800af7226141761a0ceeb1a0f4e5204c",
   "dependencies": [],
   "description": "Share state across LWCs using pub/sub, Lightning Message Service, @wire, and reactive stores. NOT for in-component reactivity.",
   "file_location": "skills/lwc/lwc-state-management",
@@ -42,7 +42,7 @@
     "Lightning Web Components Developer Guide \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/",
     "Lightning Data Service \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-wire-service-about.html",
     "LWC Recipes \u2014 https://github.com/trailheadapps/lwc-recipes",
-    "SLDS 2 \u2014 https://www.lightningdesignsystem.com/2e/"
+    "SLDS 2 \u2014 https://www.lightningdesignsystem.com/  (page retired \u2014 see host index for current equivalent)"
   ],
   "outputs": [
     "state-management decision + implementation snippets"

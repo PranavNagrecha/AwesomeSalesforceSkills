@@ -90,7 +90,7 @@
     "f5fd41d0bb6c1735ed16",
     "f82f59517c550660a207"
   ],
-  "content_hash": "0681f76450d0debb79112c9691436f8882b5e4c457c1aa6c437633cc9698a1e5",
+  "content_hash": "bba89f40e5b7d970f3d11e575a1bf0b40277825e743de4c033a6570f06851426",
   "dependencies": [],
   "description": "Configure and operate NPSP Gift Entry: gift entry templates, batch gift entry, payment processing, donation allocation, and receipting workflows. NOT for standard opportunity creation or direct GiftTransaction DML outside the Gift Entry framework.",
   "file_location": "skills/admin/gift-entry-and-processing",
@@ -105,7 +105,7 @@
   "official_sources": [
     "Salesforce Help \u2014 Configure Gift Entry (NPSP): https://help.salesforce.com/s/articleView?id=sf.npsp_gift_entry.htm",
     "Salesforce Fundraising Developer Guide \u2014 GiftEntry Object and processGiftEntries Action (API v59.0+): https://developer.salesforce.com/docs/atlas.en-us.fundraising_dev.meta/fundraising_dev/fundraising_gift_entry_api_overview.htm",
-    "Trailhead \u2014 Set Up Gift Entry in Nonprofit Success Pack: https://trailhead.salesforce.com/content/learn/projects/set-up-gift-entry-npsp",
+    "Trailhead \u2014 Set Up Gift Entry in Nonprofit Success Pack: https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
     "Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
   ],
   "outputs": [

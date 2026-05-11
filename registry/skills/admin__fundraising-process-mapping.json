@@ -99,7 +99,7 @@
     "fb04a260b2ed2b97262e",
     "fd1e9cf082ebf0e15d0b"
   ],
-  "content_hash": "1b961c691c924df3ed0c46222a044f1b2945e9e1d68a62b9c8eb4f16df561f52",
+  "content_hash": "90242e014867f49c53558db30aca75d786ccc000b37c8ae52ce2f997afd73739",
   "dependencies": [],
   "description": "Use this skill when designing or documenting nonprofit fundraising lifecycle stages, donor pipeline workflows, cultivation-to-stewardship cycles, major gift solicitation sequences, or Salesforce Opportunity sales process configuration for NPSP or Nonprofit Cloud. Trigger keywords: fundraising lifecycle, donor pipeline, cultivation stage, solicitation workflow, major gift process, moves management, NPSP Opportunity stages, stewardship cycle, NPC fundraising stages. NOT for implementation of Engagement Plans, gift entry processing, payment integration, or recurring donation configuration.",
   "file_location": "skills/admin/fundraising-process-mapping",
@@ -115,7 +115,7 @@
   "official_sources": [
     "Salesforce Help \u2014 Nonprofit Success Pack (NPSP) Opportunity Settings: https://help.salesforce.com/s/articleView?id=sf.npsp_setup_donations.htm",
     "Trailhead \u2014 Moves Management with Nonprofit Success Pack: https://trailhead.salesforce.com/content/learn/modules/moves-management-with-nonprofit-success-pack",
-    "Trailhead \u2014 Opportunity Settings in Nonprofit Success Pack: https://trailhead.salesforce.com/content/learn/modules/npsp-opportunity-settings",
+    "Trailhead \u2014 Opportunity Settings in Nonprofit Success Pack: https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
     "Salesforce Help \u2014 Nonprofit Cloud Overview: https://help.salesforce.com/s/articleView?id=sfdo.npc_overview.htm",
     "Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
     "Salesforce Well-Architected: Adaptability Pillar: https://architect.salesforce.com/docs/architect/well-architected/guide/adaptability.html",

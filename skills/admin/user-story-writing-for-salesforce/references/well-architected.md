@@ -30,7 +30,7 @@ User-story shape is upstream of every build pillar. The pillars below describe h
 ## Official Sources Used
 
 - Salesforce Trailhead — User Story Creation module — https://trailhead.salesforce.com/content/learn/modules/user-story-creation
-- Salesforce Trailhead — Agile Methods for Salesforce — https://trailhead.salesforce.com/content/learn/modules/agile-methods-for-salesforce
+- Salesforce Trailhead — Agile Methods for Salesforce — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Salesforce Certified Business Analyst Exam Guide — https://trailhead.salesforce.com/help?article=Salesforce-Certified-Business-Analyst-Exam-Guide
 - Salesforce Architects: Business Analysts and the Well-Architected Framework — https://architect.salesforce.com/well-architected
 - Object Reference — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm

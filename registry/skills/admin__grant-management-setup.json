@@ -90,7 +90,7 @@
     "fc30bbd4a3c89b1d827d",
     "fcf5683ea8a2f059e55b"
   ],
-  "content_hash": "2cc10de2d8216df66aa43d14eae58dcb3e526d03555e69acb95be4a9b0108bcc",
+  "content_hash": "44e2d134806181e0fae78c6a9fb1d36360806a63f091cfdec7e54580a08540fc",
   "dependencies": [],
   "description": "Use when configuring grant tracking in a Salesforce nonprofit org \u2014 covers both NPSP Outbound Funds Module (Opportunity-based, managed package path) and Nonprofit Cloud for Grantmaking (FundingAward, FundingDisbursement, FundingAwardRequirement objects, separate license). Trigger keywords: grant management, funding awards, disbursement tranches, grantmaking setup, OFM, FundingAward, FundingDisbursement, FundingAwardRequirement. NOT for standard Opportunity tracking or fundraising donor gifts.",
   "file_location": "skills/admin/grant-management-setup",
@@ -104,8 +104,8 @@
   "name": "grant-management-setup",
   "official_sources": [
     "Grants Management Product Documentation \u2014 https://help.salesforce.com/s/articleView?id=sfdo.Grants_Management.htm",
-    "Manage Funding Awards and Disbursements (Trailhead) \u2014 https://trailhead.salesforce.com/content/learn/modules/nonprofit-cloud-for-grantmaking",
-    "Fund Management Requirements and Disbursements Guide (Trailhead) \u2014 https://trailhead.salesforce.com/content/learn/modules/nonprofit-cloud-grantmaking-requirements",
+    "Manage Funding Awards and Disbursements (Trailhead) \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
+    "Fund Management Requirements and Disbursements Guide (Trailhead) \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
     "Grantmaking and Budget Management Data Model (Salesforce Developers) \u2014 https://developer.salesforce.com/docs/atlas.en-us.nonprofit_cloud.meta/nonprofit_cloud/npc_grantmaking_data_model.htm",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
   ],

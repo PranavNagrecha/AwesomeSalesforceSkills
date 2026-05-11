@@ -83,7 +83,7 @@
     "f638768dddbd7a0a4907",
     "f9ab00fa8855dd6f96ac"
   ],
-  "content_hash": "9281980901c6ef4ac7f8b69b8303b738cb58ff5a374e7c61c05acbf7f75d8cf8",
+  "content_hash": "6b86249bf4bcef8068a744f6319d7e99655f8aec7dcc888139a976281312896e",
   "dependencies": [],
   "description": "Use when planning, sequencing, or executing the final cutover to production for a Salesforce implementation or major release. Covers cutover runbooks, code freeze enforcement, mock deployments, go/no-go decision gates, validation deploy timing, quick deploy windows, hypercare scheduling, and rollback trigger definitions. NOT for deployment mechanics (use devops/post-deployment-validation). NOT for release calendar or versioning strategy (use devops/release-management). NOT for writing smoke tests (use devops/post-deployment-validation).",
   "file_location": "skills/devops/go-live-cutover-planning",
@@ -101,7 +101,7 @@
     "Salesforce Metadata API Developer Guide \u2014 Deploy: https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_deploy.htm",
     "Salesforce CLI Reference \u2014 sf project deploy: https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_project_commands_unified.htm",
     "Salesforce Architects \u2014 Well-Architected Operational Excellence: https://architect.salesforce.com/well-architected/operational-excellence",
-    "Trailhead \u2014 Prepare Your Org for a Successful Go-Live: https://trailhead.salesforce.com/content/learn/modules/go-live-readiness"
+    "Trailhead \u2014 Prepare Your Org for a Successful Go-Live: https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)"
   ],
   "outputs": [
     "Cutover runbook with sequenced steps, owners, estimated durations, and rollback triggers",

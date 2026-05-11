@@ -31,7 +31,7 @@
 - B2B Commerce Developer Guide — Buyer Group Data Limits — https://developer.salesforce.com/docs/atlas.en-us.b2b_comm_dev.meta/b2b_comm_dev/b2b_comm_buyer_group_data_limits.htm
 - B2B Commerce Developer Guide — Entitlement Data Limits — https://developer.salesforce.com/docs/atlas.en-us.b2b_comm_dev.meta/b2b_comm_dev/b2b_comm_entitlement_data_limits.htm
 - Salesforce Help — Set Up a Storefront — https://help.salesforce.com/s/articleView?id=sf.comm_setup_storefront.htm&type=5
-- Trailhead — Organize Commerce Store Access: Buyer Accounts and Groups — https://trailhead.salesforce.com/content/learn/modules/b2b-commerce-store-access
+- Trailhead — Organize Commerce Store Access: Buyer Accounts and Groups — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Object Reference — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm
 - Metadata API Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

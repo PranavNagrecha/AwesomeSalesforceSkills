@@ -32,6 +32,6 @@
 
 - Salesforce Sales Engagement Implementation Guide (Spring '26) — https://help.salesforce.com/s/articleView?id=sf.sales_engagement_implementation_guide.htm
 - Salesforce Help: Cadence Considerations — https://help.salesforce.com/s/articleView?id=sf.sales_cadence_considerations.htm
-- Trailhead: Standard Cadences for Sales Engagement — https://trailhead.salesforce.com/content/learn/modules/sales-engagement-for-admins
+- Trailhead: Standard Cadences for Sales Engagement — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 - Object Reference — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm

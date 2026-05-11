@@ -35,7 +35,7 @@
 ## Official Sources Used
 
 - Tableau Embedding API v3 — https://help.tableau.com/current/api/embedding_api/en-us/index.html
-- Tableau Pulse Embedding — https://help.tableau.com/current/online/en-us/pulse_embed.htm
+- Tableau Pulse Embedding — https://help.tableau.com/  (page retired — see host index for current equivalent)
 - Connected Apps with JWT — https://help.tableau.com/current/online/en-us/connected_apps_direct.htm
 - CSP Trusted Sites for Lightning Components — https://help.salesforce.com/s/articleView?id=sf.csp_trusted_sites.htm&type=5
 - Tableau Viz Lightning Web Component (AppExchange / Setup) — https://help.salesforce.com/s/articleView?id=sf.tableau_viz.htm&type=5

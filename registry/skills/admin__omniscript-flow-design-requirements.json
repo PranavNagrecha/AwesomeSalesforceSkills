@@ -62,7 +62,7 @@
     "f968d4848399a9a0c5de",
     "f9c83c92ceb47815d4fe"
   ],
-  "content_hash": "bc9319a32953c416ba90cf36c1a5e42cb2b408e92c4c865936246a31e36f0ed2",
+  "content_hash": "341022aeae3ea57b6aca261acd7c68f408bf660f30043e9adf2c8b4b132a707c",
   "dependencies": [],
   "description": "Use this skill to gather, document, and validate OmniScript flow design requirements before development begins \u2014 covering screen layout requirements, branching logic, data source requirements, and user journey mapping. Trigger keywords: OmniScript requirements, OmniScript BA, OmniScript screen design, OmniScript user journey, OmniScript branching requirements. NOT for OmniScript development implementation, DataRaptor mapping, Integration Procedure design, or standard Screen Flow requirements.",
   "file_location": "skills/admin/omniscript-flow-design-requirements",
@@ -76,7 +76,7 @@
   "name": "omniscript-flow-design-requirements",
   "official_sources": [
     "OmniScript Best Practices \u2014 https://help.salesforce.com/s/articleView?id=sf.os_omniscript_best_practices.htm",
-    "OmniScripts with Branching \u2014 https://trailhead.salesforce.com/content/learn/modules/omnistudio-omniscript/omniscripts-with-branching",
+    "OmniScripts with Branching \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
     "OmniStudio Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer_guide.meta/omnistudio_developer_guide/omnistudio_intro.htm",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
   ],

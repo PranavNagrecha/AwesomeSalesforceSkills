@@ -36,5 +36,5 @@ Insights Platform Data Integrity provides tight integration with `npsp__Address_
 - NPSP Address Management Overview — https://help.salesforce.com/s/articleView?id=sfdo.NPSP_Addresses_Overview.htm&type=5
 - About National Change of Address Updates (NPSP) — https://help.salesforce.com/s/articleView?id=sfdo.NPSP_NCOA.htm&type=5
 - Configure Duplicate Detection and NPSP Contact Merge — https://help.salesforce.com/s/articleView?id=sfdo.NPSP_Contact_Merge.htm&type=5
-- Insights Platform Data Integrity (Trailhead) — https://trailhead.salesforce.com/content/learn/modules/insights-platform-data-integrity
+- Insights Platform Data Integrity (Trailhead) — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - NPSP Documentation Overview — https://help.salesforce.com/s/articleView?id=sfdo.NPSP.htm&type=5

@@ -33,7 +33,7 @@
 - Salesforce Help: Set Up Entitlements for Work Orders — https://help.salesforce.com/s/articleView?id=sf.entitlements_work_orders.htm
 - Salesforce Help: Entitlements and Milestones Overview — https://help.salesforce.com/s/articleView?id=sf.entitlements_overview.htm
 - Salesforce Help: Business Hours in Entitlement Management — https://help.salesforce.com/s/articleView?id=sf.entitlements_biz_hours.htm
-- Trailhead: Use Entitlements with Work Orders — https://trailhead.salesforce.com/content/learn/modules/field-service-lightning-quick-look/use-entitlements-with-work-orders
+- Trailhead: Use Entitlements with Work Orders — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Salesforce Well-Architected: Reliable — https://architect.salesforce.com/docs/architect/well-architected/guide/reliable.html
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 - Object Reference: WorkOrderMilestone — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_workordermilestone.htm

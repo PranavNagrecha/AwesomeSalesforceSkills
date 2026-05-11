@@ -20,8 +20,8 @@
 
 ## Official Sources Used
 
-- Salesforce Trailhead: Business Analyst Certification Preparation — https://trailhead.salesforce.com/credentials/businessanalyst — recommends if/then form for AC; this skill's Given/When/Then is the more rigorous extension.
+- Salesforce Trailhead: Business Analyst Certification Preparation — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent) — recommends if/then form for AC; this skill's Given/When/Then is the more rigorous extension.
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html — anchors AC quality as a Reliability and Operational Excellence concern.
-- Salesforce Trailhead: User Story Basics — https://trailhead.salesforce.com/content/learn/modules/user-story-basics — covers INVEST quality criteria; behavior-driven AC is what makes the "T" (Testable) checkable.
+- Salesforce Trailhead: User Story Basics — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent) — covers INVEST quality criteria; behavior-driven AC is what makes the "T" (Testable) checkable.
 - Object Reference — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm — required when an AC needs to reference a standard object's lifecycle (Opportunity StageName, Case Status, etc.).
 - Metadata API Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm — required when AC mentions a permission set, validation rule, or sharing rule by metadata name.

@@ -27,8 +27,8 @@
 ## Official Sources Used
 
 - Set Up Shifts for Field Service — https://help.salesforce.com/s/articleView?id=sf.fs_shifts_setup.htm
-- Simplify Shift Creation with Templates and Patterns (Trailhead) — https://trailhead.salesforce.com/content/learn/modules/field-service-shifts/simplify-shift-creation
-- Understanding Shift Scheduling (Trailhead) — https://trailhead.salesforce.com/content/learn/modules/field-service-shifts
+- Simplify Shift Creation with Templates and Patterns (Trailhead) — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)/simplify-shift-creation
+- Understanding Shift Scheduling (Trailhead) — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Object Reference — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm
 - Metadata API Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

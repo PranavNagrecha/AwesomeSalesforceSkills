@@ -33,6 +33,6 @@
 - Object Reference — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm
 - Metadata API Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
-- Trailhead — Intelligent Referrals and Scoring with Financial Services Cloud — https://trailhead.salesforce.com/content/learn/modules/intelligent-referrals-and-scoring-with-financial-services-cloud
+- Trailhead — Intelligent Referrals and Scoring with Financial Services Cloud — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Salesforce Help — Intelligent Need-Based Referrals and Scoring — https://help.salesforce.com/s/articleView?id=ind.fsc_referral_management_intelligent_referrals.htm
 - Salesforce Help — Referral Scoring Feature for Financial Services Retirement Notice — https://help.salesforce.com/s/articleView?id=ind.fsc_referral_scoring_retirement.htm

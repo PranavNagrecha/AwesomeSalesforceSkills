@@ -28,7 +28,7 @@
     "e8a3e984e0bb72804234",
     "f2127ad24b8205401a01"
   ],
-  "content_hash": "c326c1f886f9a78d481b0cba4078a2276beb370acd86602257623205cba6523c",
+  "content_hash": "07052f4599db4a8f50b5746545ad12be9321d6fc4f91bffcf1425122c0ba9824",
   "dependencies": [],
   "description": "Build LWCs that support translation, locale-aware formatting, and RTL layouts. NOT for Translation Workbench setup.",
   "file_location": "skills/lwc/lwc-internationalization",
@@ -42,7 +42,7 @@
     "Lightning Web Components Developer Guide \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/",
     "Lightning Data Service \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-wire-service-about.html",
     "LWC Recipes \u2014 https://github.com/trailheadapps/lwc-recipes",
-    "SLDS 2 \u2014 https://www.lightningdesignsystem.com/2e/"
+    "SLDS 2 \u2014 https://www.lightningdesignsystem.com/  (page retired \u2014 see host index for current equivalent)"
   ],
   "outputs": [
     "component using custom labels + locale-aware components"

@@ -34,7 +34,7 @@
 - Salesforce Help — Release Updates: https://help.salesforce.com/s/articleView?id=sf.release_updates.htm&type=5
 - Salesforce Help — Upgrade Release Schedule FAQ (Knowledge Article 005224913): https://help.salesforce.com/s/articleView?id=000005224913&type=1
 - trust.salesforce.com — Planned Maintenance Calendar: https://status.salesforce.com/maintenance
-- admin.salesforce.com — Be Release Ready: https://admin.salesforce.com/blog/2023/be-release-ready
-- Trailhead — Advanced Release Readiness Strategies: https://trailhead.salesforce.com/content/learn/modules/advanced-release-readiness-strategies
+- admin.salesforce.com — Be Release Ready: https://admin.salesforce.com/  (page retired — see host index for current equivalent)
+- Trailhead — Advanced Release Readiness Strategies: https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Salesforce Well-Architected Framework — Operational Excellence: https://architect.salesforce.com/docs/architect/well-architected/guide/operational-excellence.html
 - Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

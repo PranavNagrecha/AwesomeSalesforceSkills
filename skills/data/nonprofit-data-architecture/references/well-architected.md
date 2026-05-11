@@ -35,7 +35,7 @@ The HH_Account model ties giving history to the household unit, which is the cor
 
 - NPSP Data Model Gallery — https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_erd_nonprofit_success_pack.htm
 - Nonprofit Cloud Data Model Developer Guide (Spring '26) — https://developer.salesforce.com/docs/atlas.en-us.nonprofit_cloud_dev.meta/nonprofit_cloud_dev/npc_data_model.htm
-- Trailhead: Explore the NPSP Data Model — https://trailhead.salesforce.com/content/learn/modules/npsp-data-model
-- NPSP Documentation Overview — https://powerofus.force.com/s/article/NPSP-Documentation
-- Customizable Rollups Developer Documentation — https://powerofus.force.com/s/article/NPSP-Customizable-Rollups
-- Program Management Module Documentation — https://powerofus.force.com/s/article/PMM-Documentation
+- Trailhead: Explore the NPSP Data Model — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
+- NPSP Documentation Overview — https://help.salesforce.com/s/nonprofit  (page retired — see host index for current equivalent)
+- Customizable Rollups Developer Documentation — https://help.salesforce.com/s/nonprofit  (page retired — see host index for current equivalent)
+- Program Management Module Documentation — https://help.salesforce.com/s/nonprofit  (page retired — see host index for current equivalent)

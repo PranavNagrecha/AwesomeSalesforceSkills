@@ -33,7 +33,7 @@
 - Salesforce Help — Quotes Overview: https://help.salesforce.com/s/articleView?id=sf.quotes_overview.htm
 - Salesforce Help — Syncing Quotes with Opportunities: https://help.salesforce.com/s/articleView?id=sf.quotes_syncing_overview.htm
 - Salesforce Help — Setting Up Quotes: https://help.salesforce.com/s/articleView?id=sf.quotes_setup.htm
-- Trailhead — Negotiate Enterprise Quotes: https://trailhead.salesforce.com/content/learn/modules/sales-cloud-platform-quick-look/negotiate-enterprise-quotes
+- Trailhead — Negotiate Enterprise Quotes: https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Trailhead — Build a Discount Approval Process: https://trailhead.salesforce.com/content/learn/projects/build-a-discount-approval-process
 - Salesforce Help — Create Orders from Quotes: https://help.salesforce.com/s/articleView?id=sf.quotes_create_orders.htm
 - Salesforce Help — Quote Template Limits: https://help.salesforce.com/s/articleView?id=sf.quotes_doc_limits.htm

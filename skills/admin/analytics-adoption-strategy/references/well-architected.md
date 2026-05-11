@@ -47,7 +47,7 @@ The template app is faster to stand up and tracks the right events (app/dashboar
   URL: https://help.salesforce.com/s/articleView?id=analytics.bi_template_adoption_create.htm
 
 - Embed a CRM Analytics Dashboard in Lightning Experience (Trailhead) — embedded analytics component configuration in Lightning App Builder
-  URL: https://trailhead.salesforce.com/content/learn/modules/wave_enable_crm_analytics/wave_enable_crm_analytics_lightning
+  URL: https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 
 - App Structuring and Design Concepts (Trailhead — Analytics App Design module) — app collections, sharing, and access level guidance
   URL: https://trailhead.salesforce.com/content/learn/modules/analytics-app-design/structure-your-app

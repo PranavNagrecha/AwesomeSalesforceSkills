@@ -21,6 +21,6 @@
 ## Official Sources Used
 
 - Salesforce SCIM 2.0 API — https://developer.salesforce.com/docs/atlas.en-us.identityImplGuide.meta/identityImplGuide/identity_scim.htm
-- Okta Salesforce SCIM connector — https://help.okta.com/en-us/content/topics/apps/apps_about_salesforce.htm
+- Okta Salesforce SCIM connector — https://help.okta.com/  (page retired — see host index for current equivalent)
 - Microsoft Entra Salesforce provisioning — https://learn.microsoft.com/en-us/entra/identity/saas-apps/salesforce-provisioning-tutorial
 - Salesforce Well-Architected Security — https://architect.salesforce.com/docs/architect/well-architected/trusted/secure

@@ -95,7 +95,7 @@
     "f6103f0943620d34580a",
     "ff349b09bdeb281095b3"
   ],
-  "content_hash": "4d87e36c1361032dee31945ac3e9effc33baf249a6f7300c2385cbfb0a96efe2",
+  "content_hash": "62866aacc75870b219b6808364f61817eafe84b7a67204dee09052b9e937aa7c",
   "dependencies": [],
   "description": "Use this skill when defining AI governance policies, designing human oversight workflows, documenting bias mitigation strategies, or meeting regulatory transparency requirements for Salesforce AI features. Trigger keywords: responsible AI, AI bias, AI audit trail, AI transparency, human-in-the-loop, AI risk inventory, AI disclosure. NOT for Trust Layer technical configuration \u2014 that is covered by agentforce/einstein-trust-layer.",
   "file_location": "skills/admin/ai-ethics-and-governance-requirements",
@@ -108,12 +108,12 @@
   ],
   "name": "ai-ethics-and-governance-requirements",
   "official_sources": [
-    "Salesforce Trailhead \u2014 AI Governance: Establishing Responsible Practices \u2014 https://trailhead.salesforce.com/content/learn/modules/ai-governance-establishing-responsible-practices",
+    "Salesforce Trailhead \u2014 AI Governance: Establishing Responsible Practices \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
     "Salesforce Trailhead \u2014 Trusted Agentic AI \u2014 https://trailhead.salesforce.com/content/learn/modules/trusted-agentic-ai",
     "Salesforce Help \u2014 Detect and Remove Bias from a Model \u2014 https://help.salesforce.com/s/articleView?id=sf.bi_edd_model_bias.htm",
     "Salesforce Help \u2014 Implement Data Governance Permissions for Audit \u2014 https://help.salesforce.com/s/articleView?id=sf.bi_edd_data_governance_perms.htm",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
-    "Salesforce Responsible AI Principles \u2014 https://www.salesforce.com/company/responsible-ai/"
+    "Salesforce Responsible AI Principles \u2014 https://www.salesforce.com/  (page retired \u2014 see host index for current equivalent)"
   ],
   "outputs": [
     "AI governance policy document outlining pillars, ownership, and review cadence",

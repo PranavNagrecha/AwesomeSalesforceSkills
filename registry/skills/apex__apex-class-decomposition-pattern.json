@@ -71,7 +71,7 @@
     "f7dc92ad641f7ef383e4",
     "f7e13527cfc7a56acdc6"
   ],
-  "content_hash": "1ebc19b31a60727b019d5d221e61b9e0ad254f5d8149ff0c6d95daeff5d90554",
+  "content_hash": "7ce798273ef385411dc5d45908ecca3dbf0a526bea7f49133a4a3327f65ebef9",
   "dependencies": [],
   "description": "When and how to split an Apex class into Domain / Service / Selector layers using this repo's lightweight base classes (BaseDomain, BaseService, BaseSelector). Covers splitting signals, ordering of extraction, and naming conventions. NOT for full fflib migration \u2014 see fflib-enterprise-patterns. NOT for trigger framework choice \u2014 see trigger-framework.",
   "file_location": "skills/apex/apex-class-decomposition-pattern",
@@ -84,7 +84,7 @@
   ],
   "name": "apex-class-decomposition-pattern",
   "official_sources": [
-    "**Salesforce Architects \u2014 Apex Enterprise Patterns**: <https://architect.salesforce.com/decision-guides/trigger-framework> and the Apex Enterprise Patterns trail (<https://trailhead.salesforce.com/content/learn/trails/build_apex_enterprise_patterns>) \u2014 the canonical articulation of the Domain / Service / Selector separation that this lightweight pattern derives from.",
+    "**Salesforce Architects \u2014 Apex Enterprise Patterns**: <https://architect.salesforce.com/decision-guides/trigger-framework> and the Apex Enterprise Patterns trail (<https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)>) \u2014 the canonical articulation of the Domain / Service / Selector separation that this lightweight pattern derives from.",
     "**Salesforce Well-Architected Framework \u2014 Maintainability pillar**: <https://architect.salesforce.com/well-architected/adaptable/resilient> and related Maintainability pages \u2014 defines modular, resilient, adaptable as the maintainability sub-attributes referenced above.",
     "**Salesforce Well-Architected Framework \u2014 Operational Excellence**: <https://architect.salesforce.com/well-architected/trusted/secure> and the Trusted pillar pages \u2014 frame the observability and compliance benefits.",
     "**Apex Developer Guide \u2014 `WITH USER_MODE` / `AccessLevel.USER_MODE`**: <https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_keywords_with_user_mode.htm> \u2014 the security default `BaseSelector.userMode()` returns.",

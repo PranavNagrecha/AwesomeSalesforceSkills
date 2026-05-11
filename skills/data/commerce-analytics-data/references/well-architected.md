@@ -34,7 +34,7 @@ Based on skill graph analysis:
 
 ## Official Sources Used
 
-- B2C Commerce Reports and Dashboards App — Trailhead: https://trailhead.salesforce.com/content/learn/modules/b2c-commerce-analytics
+- B2C Commerce Reports and Dashboards App — Trailhead: https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - B2C Commerce Historical Reports: Conversion — https://documentation.b2c.commercecloud.salesforce.com/DOC3/topic/com.demandware.dochelp/content/b2c_commerce/topics/site_development/b2c_conversion_reports.html
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 - B2B Commerce on Core Object Reference (WebCart) — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_webcart.htm

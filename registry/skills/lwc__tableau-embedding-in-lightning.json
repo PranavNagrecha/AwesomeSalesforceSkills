@@ -55,7 +55,7 @@
     "fc5cf1a31c261b7fd0d8",
     "fdf2ee51871af9f5e05a"
   ],
-  "content_hash": "4c401fdccf31d0e4a17cd1e7f0e0d508c924952cfe64a630966906883463973d",
+  "content_hash": "778896ddb643807c5039ef3980674ba4cb1e826bc99c203c0ad07c05400b24a7",
   "dependencies": [],
   "description": "Embedding Tableau dashboards (and Tableau Pulse insights) inside Lightning App / Record / Home pages \u2014 Tableau Embedding API v3 in an LWC, the connected-app + JWT trust pattern for SSO from Salesforce to Tableau, row-level security so a Salesforce user only sees their data in Tableau, CSP / Trusted Sites configuration for the Tableau host, and the Tableau Viz Lightning Web Component (drag-and-drop alternative to a custom LWC). NOT for building Tableau dashboards / data sources (that's Tableau-side work), NOT for CRM Analytics (Tableau is the separate product; see data/crm-analytics-patterns).",
   "file_location": "skills/lwc/tableau-embedding-in-lightning",
@@ -68,7 +68,7 @@
   "name": "tableau-embedding-in-lightning",
   "official_sources": [
     "Tableau Embedding API v3 \u2014 https://help.tableau.com/current/api/embedding_api/en-us/index.html",
-    "Tableau Pulse Embedding \u2014 https://help.tableau.com/current/online/en-us/pulse_embed.htm",
+    "Tableau Pulse Embedding \u2014 https://help.tableau.com/  (page retired \u2014 see host index for current equivalent)",
     "Connected Apps with JWT \u2014 https://help.tableau.com/current/online/en-us/connected_apps_direct.htm",
     "CSP Trusted Sites for Lightning Components \u2014 https://help.salesforce.com/s/articleView?id=sf.csp_trusted_sites.htm&type=5",
     "Tableau Viz Lightning Web Component (AppExchange / Setup) \u2014 https://help.salesforce.com/s/articleView?id=sf.tableau_viz.htm&type=5",

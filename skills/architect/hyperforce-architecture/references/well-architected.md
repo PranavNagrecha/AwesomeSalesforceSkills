@@ -57,4 +57,4 @@ For workloads where the failover region's residency posture matters (e.g., EU cu
 - Private Connect Setup — https://help.salesforce.com/s/articleView?id=sf.private_connect.htm&type=5
 - Salesforce Well-Architected Framework Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 - Salesforce Well-Architected — Trusted (residency / compliance) — https://architect.salesforce.com/well-architected/trusted/overview
-- Salesforce Government Cloud — https://www.salesforce.com/government/government-cloud-plus/
+- Salesforce Government Cloud — https://www.salesforce.com/  (page retired — see host index for current equivalent)

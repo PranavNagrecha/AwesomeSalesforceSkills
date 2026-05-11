@@ -26,8 +26,8 @@
 
 ## Official Sources Used
 
-- Understanding Optimization in Field Service Scheduling (Trailhead) — https://trailhead.salesforce.com/content/learn/modules/field-service-lightning-quick-look/understand-optimization
-- Global Optimization Planning (Trailhead) — https://trailhead.salesforce.com/content/learn/modules/field-service-scheduling/global-optimization
+- Understanding Optimization in Field Service Scheduling (Trailhead) — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
+- Global Optimization Planning (Trailhead) — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Set Up Routing for Travel Time Calculations — https://help.salesforce.com/s/articleView?id=sf.fs_routing.htm
 - Optimize Appointments Using Priorities — https://help.salesforce.com/s/articleView?id=sf.fs_optimizer_priorities.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

@@ -59,7 +59,7 @@
     "fd3c9dae6faaaa3c6d7c",
     "fdc1905e393fb78a62a3"
   ],
-  "content_hash": "e68e1473e065441eb7b3739b43018d1fe355b6385650957fa0878072a9304cfe",
+  "content_hash": "4483720a2f2d95d8623585e37e9fcee02cf8dfac9571e25194d553b19bc1747d",
   "dependencies": [],
   "description": "Use when deploying Salesforce CPQ configuration between environments in a CI/CD pipeline \u2014 covers the required data record dependency order (Price Books > Products > Price Rules > Product Rules > Quote Templates), External ID-based cross-org matching, multi-pass deployment for self-referential lookups, and the distinction between CPQ metadata deployment and CPQ data deployment. NOT for generic SFDX metadata deployment, CPQ implementation configuration, or Salesforce Billing deployment.",
   "file_location": "skills/devops/cpq-deployment-patterns",
@@ -73,7 +73,7 @@
   "official_sources": [
     "Salesforce Help: CPQ Quote Calculation Sequence \u2014 https://help.salesforce.com/s/articleView?id=sf.cpq_quote_calc_sequence.htm",
     "Salesforce Help: Integrating Salesforce CPQ and Salesforce Billing \u2014 https://help.salesforce.com/s/articleView?id=sf.cpq_billing_integrate.htm",
-    "SFDMU (Salesforce Data Move Utility): https://github.com/forcedotcom/SFDMU"
+    "SFDMU (Salesforce Data Move Utility): https://github.com/  (page retired \u2014 see host index for current equivalent)"
   ],
   "outputs": [
     "CPQ data deployment load order plan with dependency documentation",

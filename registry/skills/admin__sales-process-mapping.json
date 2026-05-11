@@ -118,7 +118,7 @@
     "fb4435ad2066d85ddebc",
     "fda7f3cf3314ef0637c8"
   ],
-  "content_hash": "15a178833db8cbfa6e0776e07f0eb716a9785333325d1c06633d92bffcae3361",
+  "content_hash": "ba62cfde0aa81d468386e65de1bf96106f13298462c3b1c35e90d43e970fa20c",
   "dependencies": [],
   "description": "Eliciting, documenting, and structuring a sales process before it is built in Salesforce: stage sequencing, entry/exit criteria per stage, win/loss analysis requirements, and stage transition rules. Use when a business needs to analyse or formalise its sales methodology before any Salesforce configuration begins. Trigger keywords: sales process design, stage discovery, entry criteria, exit criteria, stage gate, win/loss categorisation, sales methodology, pipeline stages, opportunity stage mapping. NOT for configuring OpportunityStage picklist values, Sales Processes, or record types in Setup (use opportunity-management skill). NOT for Path configuration. NOT for Collaborative Forecasts or quota alignment.",
   "file_location": "skills/admin/sales-process-mapping",
@@ -132,8 +132,8 @@
   ],
   "name": "sales-process-mapping",
   "official_sources": [
-    "Trailhead: Create and Manage Stages and Sales Processes \u2014 https://trailhead.salesforce.com/content/learn/modules/sales-cloud-basics/set-up-stages-and-sales-processes",
-    "Trailhead: Business Process Mapping \u2014 https://trailhead.salesforce.com/content/learn/modules/salesforce-business-analyst-quick-look/map-business-processes",
+    "Trailhead: Create and Manage Stages and Sales Processes \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
+    "Trailhead: Business Process Mapping \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
     "Salesforce Object Reference: OpportunityStage \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_opportunitystage.htm",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
     "Salesforce Help: Sales Processes \u2014 https://help.salesforce.com/s/articleView?id=sf.customize_salesstages.htm",

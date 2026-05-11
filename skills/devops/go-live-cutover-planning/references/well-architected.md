@@ -26,4 +26,4 @@
 - Salesforce Metadata API Developer Guide — Deploy: https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_deploy.htm
 - Salesforce CLI Reference — sf project deploy: https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_project_commands_unified.htm
 - Salesforce Architects — Well-Architected Operational Excellence: https://architect.salesforce.com/well-architected/operational-excellence
-- Trailhead — Prepare Your Org for a Successful Go-Live: https://trailhead.salesforce.com/content/learn/modules/go-live-readiness
+- Trailhead — Prepare Your Org for a Successful Go-Live: https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)

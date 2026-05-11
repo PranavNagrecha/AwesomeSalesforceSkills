@@ -92,7 +92,7 @@
     "fb91b58c983b1406923a",
     "fd2066f85dfc94f9f128"
   ],
-  "content_hash": "b6449f1b5530ed57f5d1e190465d5f570950b3babd3c2a2cf043a15cec934f88",
+  "content_hash": "b328fa9e7e1f46f217328355eb61f78780b085cf2680407964f75ae0436ec737",
   "dependencies": [],
   "description": "Use this skill when designing a product catalog taxonomy, planning attribute strategy, or determining search and navigation structure for a B2B or B2C/D2C Commerce store. Triggers on: taxonomy design questions, attribute planning, search index strategy, category navigation structure, or merchandising hierarchy decisions. NOT for catalog configuration \u2014 object creation, WebStoreCatalog wiring, entitlement policies, or product assignment steps are covered by admin/commerce-product-catalog.",
   "file_location": "skills/admin/commerce-catalog-strategy",
@@ -107,8 +107,8 @@
   ],
   "name": "commerce-catalog-strategy",
   "official_sources": [
-    "B2C Commerce Catalogs and Navigation (Trailhead) \u2014 https://trailhead.salesforce.com/content/learn/modules/cc-digital-merchandising/cc-digital-merchandising-catalogs",
-    "Optimize Your Online Store for Search (Trailhead) \u2014 https://trailhead.salesforce.com/content/learn/modules/b2c-commerce-search-and-einstein/b2c-commerce-search-optimize-your-store",
+    "B2C Commerce Catalogs and Navigation (Trailhead) \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
+    "Optimize Your Online Store for Search (Trailhead) \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
     "Product Attributes Data Model \u2014 B2B Commerce Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.b2b_comm_dev.meta/b2b_comm_dev/b2b_comm_dev_product_attributes_data_model.htm",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
     "B2B Commerce Developer Guide (Salesforce Help) \u2014 https://developer.salesforce.com/docs/atlas.en-us.b2b_comm_dev.meta/b2b_comm_dev/b2b_comm_dev_intro.htm"

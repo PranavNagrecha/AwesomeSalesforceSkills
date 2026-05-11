@@ -28,6 +28,6 @@ Once business users and managers have operated under CDS for even a short period
 ## Official Sources Used
 
 - Compliant Data Sharing for Financial Services Cloud — https://help.salesforce.com/s/articleView?id=sf.fsc_compliant_data_sharing.htm
-- Compliant Data Sharing Setup (Trailhead) — https://trailhead.salesforce.com/content/learn/modules/financial-services-cloud-compliant-data-sharing
+- Compliant Data Sharing Setup (Trailhead) — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Considerations and Limitations for Compliant Data Sharing — https://help.salesforce.com/s/articleView?id=sf.fsc_compliant_data_sharing_considerations.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

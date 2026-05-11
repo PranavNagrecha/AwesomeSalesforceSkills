@@ -54,7 +54,7 @@ Smart Approvals reduces re-approval friction but introduces a dependency on accu
 - Salesforce CPQ Advanced Approvals — Advanced Approvals for Salesforce CPQ Managed Package: https://help.salesforce.com/s/articleView?id=sf.cpq_adv_approvals.htm
 - Salesforce CPQ Smart Approvals: https://help.salesforce.com/s/articleView?id=sf.cpq_smart_approvals.htm
 - Salesforce CPQ Approval Chains: https://help.salesforce.com/s/articleView?id=sf.cpq_approval_chains.htm
-- Trailhead — Salesforce CPQ Advanced Approvals for Admins: https://trailhead.salesforce.com/content/learn/modules/salesforce-cpq-advanced-approvals-for-admins
+- Trailhead — Salesforce CPQ Advanced Approvals for Admins: https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 - Salesforce Well-Architected — Security Pillar: https://architect.salesforce.com/docs/architect/well-architected/guide/security.html
 - Salesforce Well-Architected — Operational Excellence Pillar: https://architect.salesforce.com/docs/architect/well-architected/guide/operational-excellence.html

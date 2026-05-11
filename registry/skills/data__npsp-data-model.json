@@ -83,7 +83,7 @@
     "f2f616186f534b49abce",
     "fc3dba472a07decb6194"
   ],
-  "content_hash": "a7630d9212e2e952ff99ef6eb3d7f703b1c410dbf855ab98b1285138d893d7cb",
+  "content_hash": "f44ad647fd0c209b728eb53f20d389679b4b66f29765b3a496249127c8372f49",
   "dependencies": [],
   "description": "Use this skill when working with NPSP (Nonprofit Success Pack) objects, namespace prefixes, GAU allocations, recurring donation objects, relationship and affiliation objects, or the NPSP data dictionary. Trigger keywords: npe01__, npe03__, npe4__, npe5__, npsp__, OppPayment__c, Recurring_Donation__c, Allocation__c, General_Accounting_Unit__c, NPSP data model. NOT for standard Salesforce data model, Financial Services Cloud data model, or Program Management Module (PMM) data model.",
   "file_location": "skills/data/npsp-data-model",
@@ -97,7 +97,7 @@
   "official_sources": [
     "NPSP Data Model Gallery \u2014 https://developer.salesforce.com/docs/nonprofit/npsp/guide/npsp-data-model.html",
     "NPSP Objects and Fields Data Dictionary \u2014 https://help.salesforce.com/s/articleView?id=sfdo.NPSP_Objects_and_Fields_Data_Dictionary.htm&type=5",
-    "Trailhead: Explore the NPSP Data Model \u2014 https://trailhead.salesforce.com/content/learn/modules/nonprofit-success-pack-basics/explore-the-npsp-data-model",
+    "Trailhead: Explore the NPSP Data Model \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
     "Salesforce Well-Architected Framework \u2014 https://architect.salesforce.com/well-architected/overview",
     "Object Reference (standard objects referenced by NPSP) \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm"
   ],

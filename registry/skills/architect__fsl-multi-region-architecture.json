@@ -60,7 +60,7 @@
     "ee5856d6a8c05a66cf10",
     "f54cf7cf65d9024d0c15"
   ],
-  "content_hash": "fd3eed19ef99d3a87138c92552ea77912234df8fc41eaa8211880af6e78e8d09",
+  "content_hash": "3610e8c825bf1fc7a36849cc0645b8cc37500b1ce35e33dd9f4c80a5b94e2a14",
   "dependencies": [
     "architect/fsl-optimization-architecture"
   ],
@@ -76,7 +76,7 @@
   "official_sources": [
     "Salesforce Help \u2014 Time Zones and Appointment Booking \u2014 https://help.salesforce.com/s/articleView?id=sf.fs_appointment_booking_timezones.htm",
     "Salesforce Help \u2014 Guidelines for Creating Service Territories \u2014 https://help.salesforce.com/s/articleView?id=sf.fs_service_territories_guidelines.htm",
-    "Trailhead \u2014 Configure Territories and Set Operating Hours \u2014 https://trailhead.salesforce.com/content/learn/modules/field-service-scheduling-foundations/configure-territories",
+    "Trailhead \u2014 Configure Territories and Set Operating Hours \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
   ],
   "outputs": [

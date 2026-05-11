@@ -28,7 +28,7 @@
 
 - FSC Admin Guide — Document Generation Overview — https://help.salesforce.com/s/articleView?id=sf.fsc_admin_doc_gen.htm
 - OmniStudio DocGen Foundations (Trailhead) — https://trailhead.salesforce.com/content/learn/modules/omnistudio-document-generation-foundations
-- Disclosures and Consent Management in FSC (Trailhead) — https://trailhead.salesforce.com/content/learn/modules/fsc-disclosures-and-consent-management
+- Disclosures and Consent Management in FSC (Trailhead) — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Personas and Permission Set Licenses for OmniStudio DocGen — https://help.salesforce.com/s/articleView?id=sf.os_docgen_permission_set_licenses.htm
 - Apex Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

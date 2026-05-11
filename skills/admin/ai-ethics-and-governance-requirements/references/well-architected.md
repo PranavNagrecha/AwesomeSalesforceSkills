@@ -30,9 +30,9 @@
 
 ## Official Sources Used
 
-- Salesforce Trailhead — AI Governance: Establishing Responsible Practices — https://trailhead.salesforce.com/content/learn/modules/ai-governance-establishing-responsible-practices
+- Salesforce Trailhead — AI Governance: Establishing Responsible Practices — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Salesforce Trailhead — Trusted Agentic AI — https://trailhead.salesforce.com/content/learn/modules/trusted-agentic-ai
 - Salesforce Help — Detect and Remove Bias from a Model — https://help.salesforce.com/s/articleView?id=sf.bi_edd_model_bias.htm
 - Salesforce Help — Implement Data Governance Permissions for Audit — https://help.salesforce.com/s/articleView?id=sf.bi_edd_data_governance_perms.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
-- Salesforce Responsible AI Principles — https://www.salesforce.com/company/responsible-ai/
+- Salesforce Responsible AI Principles — https://www.salesforce.com/  (page retired — see host index for current equivalent)

@@ -26,5 +26,5 @@
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 - Salesforce Help: Edition Comparison — https://help.salesforce.com/s/articleView?id=sf.overview_edition.htm (canonical authority for what is "Standard" per edition)
 - Salesforce Help: User Licenses and Permission Set Licenses — https://help.salesforce.com/s/articleView?id=sf.users_understanding_license_types.htm (license-blocker classification)
-- AppExchange Listing Standards — https://appexchange.salesforce.com/listingDetail (currency check for managed-package alternatives)
+- AppExchange Listing Standards — https://appexchange.salesforce.com/  (page retired — see host index for current equivalent) (currency check for managed-package alternatives)
 - Salesforce Architects: Well-Architected Adaptable framework — https://architect.salesforce.com/well-architected/adaptable/intentional (governance + customization-debt framing)

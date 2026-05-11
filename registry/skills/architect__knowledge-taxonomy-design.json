@@ -101,7 +101,7 @@
     "f9489519e1dd5e057f53",
     "fc4da965957a934a939c"
   ],
-  "content_hash": "fad77aa7228905f55c3123772aabf9c0114cb3ac4f3cf7ec9df398547fec5c0a",
+  "content_hash": "0d8ce7f829e5f04f50210da6ca9ffb29f3274c1e0b8ee6285e31e119aadde7e5",
   "dependencies": [],
   "description": "Use when designing or restructuring a Salesforce Knowledge taxonomy: Data Category Group structure, hierarchy depth, article type selection, article lifecycle governance (Draft/Published/Archived), Validation Status gating, and content gap analysis via KCS methodology and Search Activity Gaps. Triggers: knowledge taxonomy design, data category hierarchy, knowledge article lifecycle, knowledge governance model, KCS content gap analysis, search activity gaps, knowledge category structure. NOT for Knowledge admin feature setup (use admin/knowledge-setup), NOT for Experience Cloud search configuration, NOT for Einstein Article Recommendations tuning.",
   "file_location": "skills/architect/knowledge-taxonomy-design",
@@ -120,7 +120,7 @@
     "Knowledge Data Categories Best Practices \u2014 https://help.salesforce.com/s/articleView?id=sf.knowledge_data_category_best_practices.htm",
     "Work with Data Categories \u2014 https://help.salesforce.com/s/articleView?id=sf.knowledge_data_categories_parent.htm",
     "Archive Articles and Translations \u2014 https://help.salesforce.com/s/articleView?id=sf.knowledge_archiving_parent.htm",
-    "KCS Methodology \u2014 Trailhead (Knowledge-Centered Service) \u2014 https://trailhead.salesforce.com/content/learn/modules/knowledge-centered-service"
+    "KCS Methodology \u2014 Trailhead (Knowledge-Centered Service) \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)"
   ],
   "outputs": [
     "Data Category Group layout with recommended hierarchy depth",

@@ -21,7 +21,7 @@
 ## Official Sources Used
 
 - Salesforce Health Cloud Admin Guide — Intelligent Appointment Management: https://help.salesforce.com/s/articleView?id=ind.hc_iam.htm
-- Trailhead — Intelligent Appointment Management for Health Cloud: https://trailhead.salesforce.com/content/learn/modules/intelligent-appointment-management-for-health-cloud
+- Trailhead — Intelligent Appointment Management for Health Cloud: https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - OmniStudio Developer Guide: https://developer.salesforce.com/docs/industries/omnistudio/overview
 - Experience Cloud for Health Cloud: https://help.salesforce.com/s/articleView?id=ind.hc_exp_cloud_for_health_cloud.htm
 - Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

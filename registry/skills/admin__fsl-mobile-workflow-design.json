@@ -91,7 +91,7 @@
     "f781e10114d89f603450",
     "fadb1dc02424bf827a0d"
   ],
-  "content_hash": "b7095cbdd6846173b8e1e97eba6cf584523ec70130f241e7baf5f9bd32b7eb41",
+  "content_hash": "9ebc13efa479d269826216312117c91d04985c91585198ff26cebc275cf1c8c2",
   "dependencies": [],
   "description": "Use this skill when designing, troubleshooting, or reviewing FSL Mobile worker workflows \u2014 including job lifecycle management, offline data capture, customer signature collection, parts consumption, and geolocation-triggered status transitions. Trigger keywords: FSL mobile, field service mobile workflow, offline job lifecycle, technician mobile, service appointment status, briefcase priming, parts consumption mobile, signature capture FSL. NOT for mobile app installation/configuration, FSL scheduling optimization, Dispatcher Console setup, or Work Capacity management.",
   "file_location": "skills/admin/fsl-mobile-workflow-design",
@@ -107,7 +107,7 @@
   "official_sources": [
     "Field Service Mobile App (Offline Considerations) \u2014 https://help.salesforce.com/s/articleView?id=sf.fs_mobile_offline.htm",
     "Configure Offline Mode \u2014 Field Service Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.field_service_dev.meta/field_service_dev/fsl_dev_mobile_offline.htm",
-    "Track Field Service Jobs \u2014 Trailhead \u2014 https://trailhead.salesforce.com/content/learn/modules/field-service-mobile-app/track-field-service-jobs",
+    "Track Field Service Jobs \u2014 Trailhead \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
     "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm"
   ],

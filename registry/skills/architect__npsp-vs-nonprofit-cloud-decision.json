@@ -94,7 +94,7 @@
     "f9d8cc5288a999542dda",
     "fffe425962846032a24e"
   ],
-  "content_hash": "bc6f3da6a1e40ff62b5040e90dd5b3ee763f134cd012fc482337b429f2e5c5f2",
+  "content_hash": "b501f35043050a98cefeb5ba2817aa701b54cb9d83f30d882c5ddf195dd42f6c",
   "dependencies": [],
   "description": "Use this skill when an organization must decide whether to stay on NPSP (Nonprofit Success Pack) or move to Nonprofit Cloud (NPC), evaluate the timeline for that move, and understand what the migration entails at an architectural level. Trigger keywords: NPSP vs Nonprofit Cloud, upgrade NPSP, migrate to NPC, nonprofit platform decision, NPSP end of life, Nonprofit Cloud vs NPSP comparison. NOT for implementation \u2014 does not cover post-decision NPC build, NPSP customization, or data migration execution.",
   "file_location": "skills/architect/npsp-vs-nonprofit-cloud-decision",
@@ -113,7 +113,7 @@
     "Nonprofit Cloud Developer Guide: Introduction to Nonprofit Cloud \u2014 https://developer.salesforce.com/docs/atlas.en-us.nonprofit_cloud_dev.meta/nonprofit_cloud_dev/nonprofit_cloud_intro.htm",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
     "Nonprofit Cloud: Key Concepts \u2014 https://help.salesforce.com/s/articleView?id=sfdo.NPC_Key_Concepts.htm",
-    "NPSP Documentation Overview \u2014 https://powerofus.force.com/s/article/NPSP-Documentation"
+    "NPSP Documentation Overview \u2014 https://help.salesforce.com/s/nonprofit  (page retired \u2014 see host index for current equivalent)"
   ],
   "outputs": [
     "Structured go/stay decision recommendation with rationale",

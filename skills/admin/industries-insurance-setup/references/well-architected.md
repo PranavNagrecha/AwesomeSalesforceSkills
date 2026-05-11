@@ -31,8 +31,8 @@
 - Salesforce Help: Set Up Insurance for Financial Services Cloud — https://help.salesforce.com/s/articleView?id=sf.fsc_admin_insurance_setup.htm
 - Salesforce Insurance Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.insurance_dev_guide.meta/insurance_dev_guide/insurance_dev_guide_intro.htm
 - Insurance Policy Administration Connect API Reference — https://developer.salesforce.com/docs/atlas.en-us.chatterapi.meta/chatterapi/connect_resources_insurance_policy_admin.htm
-- Trailhead: Insurance for FSC Admin Essentials — https://trailhead.salesforce.com/content/learn/modules/insurance-for-fsc-admin-essentials
-- Trailhead: Insurance Policy and Claim Details Setup — https://trailhead.salesforce.com/content/learn/modules/insurance-policy-and-claim-details-setup
-- Trailhead: Create OmniScripts for Quoting — https://trailhead.salesforce.com/content/learn/modules/create-omniscripts-for-quoting
+- Trailhead: Insurance for FSC Admin Essentials — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
+- Trailhead: Insurance Policy and Claim Details Setup — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
+- Trailhead: Create OmniScripts for Quoting — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 - Object Reference: InsurancePolicy — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_insurancepolicy.htm

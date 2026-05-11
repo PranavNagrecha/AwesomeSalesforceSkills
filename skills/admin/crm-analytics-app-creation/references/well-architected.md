@@ -23,7 +23,7 @@
 ## Official Sources Used
 
 - CRM Analytics REST API Developer Guide Spring '26 — https://developer.salesforce.com/docs/atlas.en-us.bi_dev_guide_rest.meta/bi_dev_guide_rest/bi_rest_overview.htm
-- Trailhead Quick Start: Create an App and a Lens — https://trailhead.salesforce.com/content/learn/projects/quickstart-analytics-studio
+- Trailhead Quick Start: Create an App and a Lens — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Connect and Sync Your Data to CRM Analytics — https://help.salesforce.com/s/articleView?id=sf.bi_integrate_connecting_to_salesforce.htm&type=5
 - Add Row-Level Security with a Security Predicate — https://help.salesforce.com/s/articleView?id=sf.bi_security_dataset_predicate.htm&type=5
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

@@ -34,6 +34,6 @@
 - CumulusCI Documentation — Configuring Tasks and Flows — https://cumulusci.readthedocs.io/en/stable/config.html
 - CumulusCI Documentation — Standard Flows Reference — https://cumulusci.readthedocs.io/en/stable/flows.html
 - CumulusCI Documentation — Robot Framework Integration — https://cumulusci.readthedocs.io/en/stable/robot.html
-- CumulusCI Documentation — Cross-Project Sources — https://cumulusci.readthedocs.io/en/stable/sources.html
+- CumulusCI Documentation — Cross-Project Sources — https://cumulusci.readthedocs.io/  (page retired — see host index for current equivalent)
 - Salesforce DX Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm
 - Salesforce CLI Reference — sf org login jwt — https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_org_commands_unified.htm

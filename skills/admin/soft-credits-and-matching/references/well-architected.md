@@ -29,7 +29,7 @@
 - Soft Credits Overview (NPSP Help) — https://help.salesforce.com/s/articleView?id=sfdo.NPSP_Soft_Credits_Overview.htm
 - Manage Soft Credits (NPSP Help) — https://help.salesforce.com/s/articleView?id=sfdo.NPSP_Manage_Soft_Credits.htm
 - Configure Matching Gifts (NPSP Help) — https://help.salesforce.com/s/articleView?id=sfdo.NPSP_Configure_Matching_Gifts.htm
-- Donation Soft Credit Management with NPSP (Trailhead) — https://trailhead.salesforce.com/content/learn/modules/npsp-donation-management/soft-credit-management
+- Donation Soft Credit Management with NPSP (Trailhead) — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Object Reference — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm
 - Metadata API Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

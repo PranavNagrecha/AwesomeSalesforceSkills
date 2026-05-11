@@ -31,7 +31,7 @@ AI model endpoints can fail, throttle, return non-200 status codes, or time out.
 ## Official Sources Used
 
 - Access Models API with Apex — Agentforce Developer Guide — https://developer.salesforce.com/docs/einstein/genai/guide/access-models-api-with-apex.html
-- Einstein Platform Services Developer Guide — https://metamind.readme.io/docs/intro-to-einstein-platform-services
+- Einstein Platform Services Developer Guide — https://www.salesforce.com/products/einstein/  (page retired — see host index for current equivalent)
 - Apex Developer Guide — Named Credentials as Callout Endpoints — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts_named_credentials.htm
 - Apex Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm
 - Apex Reference Guide — https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm

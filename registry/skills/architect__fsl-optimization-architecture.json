@@ -57,7 +57,7 @@
     "ff3c4f91fb5ffd8432a4",
     "ff90c993aedb7b2131e6"
   ],
-  "content_hash": "7ed0843d482e1798ba9b10e4094e7fc7aa4e4720b3df8e26e9e257580607f75e",
+  "content_hash": "c8b1b2618e4340a0c7bcd270bab5d049eb55c55de944c5f94a312d11eec7b69a",
   "dependencies": [
     "architect/fsl-multi-region-architecture"
   ],
@@ -75,7 +75,7 @@
     "How Does the FSL Optimization Engine Work (help.salesforce.com) \u2014 https://help.salesforce.com/s/articleView?id=sf.fs_optimization_how.htm",
     "Enhanced Scheduling and Optimization (help.salesforce.com) \u2014 https://help.salesforce.com/s/articleView?id=sf.fs_enhanced_scheduling.htm",
     "Limits for Enhanced Scheduling (help.salesforce.com) \u2014 https://help.salesforce.com/s/articleView?id=sf.fs_enhanced_scheduling_limits.htm",
-    "Global Optimization (Trailhead) \u2014 https://trailhead.salesforce.com/content/learn/modules/field-service-scheduling-foundations/global-optimization",
+    "Global Optimization (Trailhead) \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
   ],
   "outputs": [

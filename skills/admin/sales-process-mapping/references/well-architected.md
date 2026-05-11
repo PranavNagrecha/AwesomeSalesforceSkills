@@ -26,8 +26,8 @@
 
 ## Official Sources Used
 
-- Trailhead: Create and Manage Stages and Sales Processes — https://trailhead.salesforce.com/content/learn/modules/sales-cloud-basics/set-up-stages-and-sales-processes
-- Trailhead: Business Process Mapping — https://trailhead.salesforce.com/content/learn/modules/salesforce-business-analyst-quick-look/map-business-processes
+- Trailhead: Create and Manage Stages and Sales Processes — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
+- Trailhead: Business Process Mapping — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Salesforce Object Reference: OpportunityStage — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_opportunitystage.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 - Salesforce Help: Sales Processes — https://help.salesforce.com/s/articleView?id=sf.customize_salesstages.htm

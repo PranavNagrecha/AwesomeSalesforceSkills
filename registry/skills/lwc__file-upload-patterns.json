@@ -28,7 +28,7 @@
     "f4e3abe795804219c990",
     "f8cd41234b742e678e97"
   ],
-  "content_hash": "5d412b156f2de8778d92e3dcd2c6a98f90cba4d10b8d9c92dd8e400ff2cd668b",
+  "content_hash": "0af9d9c1c49730cbd8bda20f987d9a4ac06d03a74ea64f36993958a3b534e86a",
   "dependencies": [],
   "description": "Upload files in LWC: lightning-file-upload, manual multipart, large-file chunked upload, and ContentDocument associations. NOT for ContentDocument query patterns.",
   "file_location": "skills/lwc/file-upload-patterns",
@@ -42,7 +42,7 @@
     "Lightning Web Components Developer Guide \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/",
     "Lightning Data Service \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-wire-service-about.html",
     "LWC Recipes \u2014 https://github.com/trailheadapps/lwc-recipes",
-    "SLDS 2 \u2014 https://www.lightningdesignsystem.com/2e/"
+    "SLDS 2 \u2014 https://www.lightningdesignsystem.com/  (page retired \u2014 see host index for current equivalent)"
   ],
   "outputs": [
     "component with appropriate upload strategy + server-side Apex"

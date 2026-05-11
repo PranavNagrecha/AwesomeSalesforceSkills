@@ -36,4 +36,4 @@
 - Nonprofit Cloud Developer Guide: Introduction to Nonprofit Cloud — https://developer.salesforce.com/docs/atlas.en-us.nonprofit_cloud_dev.meta/nonprofit_cloud_dev/nonprofit_cloud_intro.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 - Nonprofit Cloud: Key Concepts — https://help.salesforce.com/s/articleView?id=sfdo.NPC_Key_Concepts.htm
-- NPSP Documentation Overview — https://powerofus.force.com/s/article/NPSP-Documentation
+- NPSP Documentation Overview — https://help.salesforce.com/s/nonprofit  (page retired — see host index for current equivalent)

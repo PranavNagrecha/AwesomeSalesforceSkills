@@ -26,7 +26,7 @@
 
 ## Official Sources Used
 
-- Slack Connect guide: Work with external organizations — https://slack.com/help/articles/360035280511 (channel sharing setup, 250-org limit, admin acceptance requirement, paid plan requirement)
-- How data management features apply to Slack Connect — https://slack.com/help/articles/360035622694 (split-ownership retention, deletion asymmetry, eDiscovery scope)
-- Slack data loss prevention — https://slack.com/help/articles/1500001560242 (native DLP availability by plan tier, PCRE rules, Enterprise Grid/Enterprise+ restriction)
+- Slack Connect guide: Work with external organizations — https://slack.com/help  (page retired — see host index for current equivalent) (channel sharing setup, 250-org limit, admin acceptance requirement, paid plan requirement)
+- How data management features apply to Slack Connect — https://slack.com/help  (page retired — see host index for current equivalent) (split-ownership retention, deletion asymmetry, eDiscovery scope)
+- Slack data loss prevention — https://slack.com/help  (page retired — see host index for current equivalent) (native DLP availability by plan tier, PCRE rules, Enterprise Grid/Enterprise+ restriction)
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (pillar framing)

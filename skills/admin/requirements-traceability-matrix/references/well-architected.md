@@ -32,4 +32,4 @@ The key tradeoffs a delivery team faces:
 - Metadata API Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 - Salesforce Well-Architected — Operational Excellence — https://architect.salesforce.com/well-architected/adaptable/resilient
-- Salesforce Trailhead — Business Analyst Skills (requirements management and traceability practices) — https://trailhead.salesforce.com/credentials/businessanalyst
+- Salesforce Trailhead — Business Analyst Skills (requirements management and traceability practices) — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)

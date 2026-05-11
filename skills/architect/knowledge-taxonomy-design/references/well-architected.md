@@ -26,4 +26,4 @@
 - Knowledge Data Categories Best Practices — https://help.salesforce.com/s/articleView?id=sf.knowledge_data_category_best_practices.htm
 - Work with Data Categories — https://help.salesforce.com/s/articleView?id=sf.knowledge_data_categories_parent.htm
 - Archive Articles and Translations — https://help.salesforce.com/s/articleView?id=sf.knowledge_archiving_parent.htm
-- KCS Methodology — Trailhead (Knowledge-Centered Service) — https://trailhead.salesforce.com/content/learn/modules/knowledge-centered-service
+- KCS Methodology — Trailhead (Knowledge-Centered Service) — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)

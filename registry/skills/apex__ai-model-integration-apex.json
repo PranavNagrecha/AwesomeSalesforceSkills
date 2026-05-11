@@ -99,7 +99,7 @@
     "f9dac54d2e2f34b98756",
     "fb1e14ec23fa4e9387ef"
   ],
-  "content_hash": "1fc0dbdb3525056aee8bb7be1753c9d452ac2e92d374d059128d3f12e2675383",
+  "content_hash": "647d9c2d7c6e8f8c57456b2b0ed89379bf6bd1953f570d8d901763247f70e72d",
   "dependencies": [
     "apex/platform-cache",
     "apex/apex-queueable-patterns",
@@ -117,7 +117,7 @@
   "name": "ai-model-integration-apex",
   "official_sources": [
     "Access Models API with Apex \u2014 Agentforce Developer Guide \u2014 https://developer.salesforce.com/docs/einstein/genai/guide/access-models-api-with-apex.html",
-    "Einstein Platform Services Developer Guide \u2014 https://metamind.readme.io/docs/intro-to-einstein-platform-services",
+    "Einstein Platform Services Developer Guide \u2014 https://www.salesforce.com/products/einstein/  (page retired \u2014 see host index for current equivalent)",
     "Apex Developer Guide \u2014 Named Credentials as Callout Endpoints \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts_named_credentials.htm",
     "Apex Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm",
     "Apex Reference Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm",

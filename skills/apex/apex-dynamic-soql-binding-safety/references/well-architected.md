@@ -26,5 +26,5 @@
 - Apex Developer Guide — Dynamic SOQL — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dynamic_soql.htm
 - Apex Reference Guide — Database Class (`queryWithBinds`) — https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_database.htm
 - Apex Developer Guide — SOQL Injection — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/pages_security_tips_soql.htm
-- Salesforce Security Trailhead — SOQL Injection — https://trailhead.salesforce.com/content/learn/modules/secure-secrets-storage/protect-secrets-using-named-credentials (referenced unit on input safety) and the dedicated unit at https://trailhead.salesforce.com/content/learn/modules/improve-developer-experience-with-platform-cache (combined Apex security path)
+- Salesforce Security Trailhead — SOQL Injection — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent) (referenced unit on input safety) and the dedicated unit at https://trailhead.salesforce.com/  (page retired — see host index for current equivalent) (combined Apex security path)
 - Salesforce Well-Architected — Trusted (Security) — https://architect.salesforce.com/well-architected/trusted/secure

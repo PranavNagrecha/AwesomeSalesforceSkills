@@ -28,7 +28,7 @@
     "ec4af10c8b829d3b9a2e",
     "ff4ca98b50cb45925d4b"
   ],
-  "content_hash": "d72b18d5619d2be7fe967ed441b74d74d35e64154103c232b2b43cb64fad09d3",
+  "content_hash": "4135c441acb3ea436a3530e8aa7a8d0b8b0532bd2923a11fe38b0be7b7bfede2",
   "dependencies": [],
   "description": "Isolate component errors so one failure does not blank an entire page using errorCallback and graceful fallbacks. NOT for server-side Apex exception design.",
   "file_location": "skills/lwc/lwc-error-boundaries",
@@ -42,7 +42,7 @@
     "Lightning Web Components Developer Guide \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/",
     "Lightning Data Service \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-wire-service-about.html",
     "LWC Recipes \u2014 https://github.com/trailheadapps/lwc-recipes",
-    "SLDS 2 \u2014 https://www.lightningdesignsystem.com/2e/"
+    "SLDS 2 \u2014 https://www.lightningdesignsystem.com/  (page retired \u2014 see host index for current equivalent)"
   ],
   "outputs": [
     "wrapper boundary component + fallback UI"

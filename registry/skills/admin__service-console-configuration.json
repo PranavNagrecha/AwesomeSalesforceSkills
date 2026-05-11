@@ -78,7 +78,7 @@
     "fcfc3e9caa33458ebae5",
     "ffa0e719a06b3b82d463"
   ],
-  "content_hash": "99fd87f7752010cc9f9e61d783c4493980706a5d4b358d76813e9c826ec5ec6a",
+  "content_hash": "b5be43f5ef4a7645db43b612140580ba4d6e43baa9df490bdfec0a5dc2e05230",
   "dependencies": [],
   "description": "Use this skill to configure a Lightning Service Console app in Salesforce \u2014 setting Console Navigation (split view), defining workspace tabs and subtabs, configuring the utility bar with Omni-Channel, Macros, and History, creating Quick Text entries, setting up keyboard shortcuts, and defining navigation rules per object. Trigger keywords: Service Console, console app, workspace tabs, subtabs, utility bar macros, Omni-Channel utility, split view, Quick Text, console navigation rules, keyboard shortcuts service console. NOT for generic Lightning app creation (use app-and-tab-configuration), NOT for Omni-Channel routing configuration (use omni-channel-routing), NOT for CTI adapter installation (use open-cti-setup), NOT for Einstein Bot or Messaging setup.",
   "file_location": "skills/admin/service-console-configuration",
@@ -93,7 +93,7 @@
   "name": "service-console-configuration",
   "official_sources": [
     "Salesforce Help \u2014 Features Available in Lightning Console Apps: https://help.salesforce.com/s/articleView?id=sf.console2_features_available.htm",
-    "Salesforce Help \u2014 Set Up the Lightning Service Console (Trailhead reference): https://trailhead.salesforce.com/content/learn/modules/service_console",
+    "Salesforce Help \u2014 Set Up the Lightning Service Console (Trailhead reference): https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
     "Salesforce Help \u2014 Keyboard Shortcuts for Lightning Console Apps: https://help.salesforce.com/s/articleView?id=sf.console2_keyboard_shortcuts.htm",
     "Salesforce Help \u2014 Macros (Service Console Macros): https://help.salesforce.com/s/articleView?id=sf.macros_def.htm",
     "Salesforce Help \u2014 Quick Text: https://help.salesforce.com/s/articleView?id=sf.quick_text_overview.htm",

@@ -106,7 +106,7 @@
     "fe0a770523b798766fda",
     "fe2391e541d79e4bd730"
   ],
-  "content_hash": "33c602f7305220df1eb9fb2af4d3ce62529286a06e2085c4a21b98e1530a574b",
+  "content_hash": "c56ecea1d41cbee95f13dfb3a0059b30ee4fae38cbd2250a9a2c553314e2d8eb",
   "dependencies": [],
   "description": "Use when configuring or troubleshooting a Salesforce B2C Commerce (SFCC) storefront \u2014 including Business Manager site creation, SFRA cartridge path setup, customer groups, search index rebuilding, and key quota limits. Trigger keywords: SFCC, Commerce Cloud, Business Manager, storefront, cartridge, SFRA, site preferences, replication. NOT for B2B Commerce on Lightning platform (WebStore, BuyerGroup, CommerceEntitlementPolicy \u2014 see admin/b2b-commerce-store-setup for that).",
   "file_location": "skills/admin/b2c-commerce-store-setup",
@@ -122,8 +122,8 @@
   "official_sources": [
     "B2C Commerce Developer Guide \u2014 Architecture and Site Management: https://developer.salesforce.com/docs/commerce/b2c-commerce/guide/b2c-commerce-site-administration.html",
     "SFRA Developer Guide \u2014 Configure SFRA: https://developer.salesforce.com/docs/commerce/b2c-commerce/guide/sfra-configure.html",
-    "Trailhead \u2014 Architecture of Commerce Cloud Digital: https://trailhead.salesforce.com/content/learn/modules/cc-digital-for-developers/cc-digital-architecture",
-    "Trailhead \u2014 Guide to B2C Commerce Cartridges: https://trailhead.salesforce.com/content/learn/modules/cc-digital-for-developers/cc-digital-cartridges",
+    "Trailhead \u2014 Architecture of Commerce Cloud Digital: https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
+    "Trailhead \u2014 Guide to B2C Commerce Cartridges: https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
     "Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
   ],
   "outputs": [

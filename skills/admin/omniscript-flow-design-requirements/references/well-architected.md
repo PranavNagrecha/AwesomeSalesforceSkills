@@ -27,7 +27,7 @@
 ## Official Sources Used
 
 - OmniScript Best Practices — https://help.salesforce.com/s/articleView?id=sf.os_omniscript_best_practices.htm
-- OmniScripts with Branching — https://trailhead.salesforce.com/content/learn/modules/omnistudio-omniscript/omniscripts-with-branching
+- OmniScripts with Branching — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - OmniStudio Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer_guide.meta/omnistudio_developer_guide/omnistudio_intro.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 

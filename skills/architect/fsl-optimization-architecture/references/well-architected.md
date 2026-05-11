@@ -25,5 +25,5 @@
 - How Does the FSL Optimization Engine Work (help.salesforce.com) — https://help.salesforce.com/s/articleView?id=sf.fs_optimization_how.htm
 - Enhanced Scheduling and Optimization (help.salesforce.com) — https://help.salesforce.com/s/articleView?id=sf.fs_enhanced_scheduling.htm
 - Limits for Enhanced Scheduling (help.salesforce.com) — https://help.salesforce.com/s/articleView?id=sf.fs_enhanced_scheduling_limits.htm
-- Global Optimization (Trailhead) — https://trailhead.salesforce.com/content/learn/modules/field-service-scheduling-foundations/global-optimization
+- Global Optimization (Trailhead) — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

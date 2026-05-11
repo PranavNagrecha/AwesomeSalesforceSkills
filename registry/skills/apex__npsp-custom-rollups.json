@@ -79,7 +79,7 @@
     "fcb80c94298f12c7dd1b",
     "fcd1bedfbeae2ba25e94"
   ],
-  "content_hash": "47be989ebb821a4a5de6fad7052478c7ce1fe1535d8b59f9215a55ccaadec77f",
+  "content_hash": "8ab02aa42503e66b178354f8834e37d1f2b0d2d6ec78c8b7e9bbe7dceee3d02e",
   "dependencies": [],
   "description": "Use this skill when configuring, troubleshooting, or extending NPSP Customizable Rollups (CRLP) \u2014 including rollup definitions, filter groups, batch job modes, and the one-way migration from legacy NPSP rollups. Trigger keywords: CRLP, customizable rollups, rollup definition, filter group, rollup batch job, NPSP gift totals, NPSP recalculate rollups. NOT for standard Salesforce roll-up summary fields, Nonprofit Cloud (NPC) native aggregation, or Rollup Helper third-party solutions.",
   "file_location": "skills/apex/npsp-custom-rollups",
@@ -93,10 +93,10 @@
   ],
   "name": "npsp-custom-rollups",
   "official_sources": [
-    "Customizable Rollups Overview \u2014 NPSP Help \u2014 https://powerofus.force.com/s/article/NPSP-Customizable-Rollups-Overview",
-    "Configure Customizable Rollups \u2014 NPSP Help \u2014 https://powerofus.force.com/s/article/NPSP-Configure-Customizable-Rollups",
-    "Create Filter Groups \u2014 NPSP Help \u2014 https://powerofus.force.com/s/article/NPSP-Create-Filter-Groups",
-    "Batch Job Modes for Customizable Rollups \u2014 NPSP Help \u2014 https://powerofus.force.com/s/article/NPSP-Batch-Job-Modes-for-Customizable-Rollups",
+    "Customizable Rollups Overview \u2014 NPSP Help \u2014 https://help.salesforce.com/s/nonprofit  (page retired \u2014 see host index for current equivalent)-Overview",
+    "Configure Customizable Rollups \u2014 NPSP Help \u2014 https://help.salesforce.com/s/nonprofit  (page retired \u2014 see host index for current equivalent)",
+    "Create Filter Groups \u2014 NPSP Help \u2014 https://help.salesforce.com/s/nonprofit  (page retired \u2014 see host index for current equivalent)",
+    "Batch Job Modes for Customizable Rollups \u2014 NPSP Help \u2014 https://help.salesforce.com/s/nonprofit  (page retired \u2014 see host index for current equivalent)",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
     "Apex Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm"
   ],

@@ -84,7 +84,7 @@
     "f466a03db98905673e2c",
     "fd863f5353e8835bb1fb"
   ],
-  "content_hash": "cd137b926c1a2613985320e3172f653c99caaff59b5af7ceb57c2a2e266b3885",
+  "content_hash": "c1a7d280e27663dd43e9b8cb8173a052e19e71f9d57f11963cc76b1fdfc166dc",
   "dependencies": [],
   "description": "Use when scoring a list of business or solution requirements against the *actual* capabilities of a specific Salesforce org so each row can be classified Standard / Configuration / Low-Code / Custom / Unfit, given an effort tier (S/M/L/XL), a risk tag, and an AppExchange suggestion when applicable. Trigger keywords: fit gap salesforce requirements, score requirements against salesforce capabilities, salesforce capability matrix, classify requirement as standard config custom, fit-gap effort tier, AppExchange alternative for requirement. NOT for requirements elicitation (use admin/requirements-gathering-for-sf). NOT for architecture decisions on the GAP rows (use architect/solution-design-patterns and standards/decision-trees/). NOT for license or edition selection (use architect/license-optimization-strategy and architect/org-edition-and-feature-licensing). NOT for OmniStudio-specific fit-gap (use architect/omnistudio-vs-standard-decision).",
   "file_location": "skills/admin/fit-gap-analysis-against-org",
@@ -103,7 +103,7 @@
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
     "Salesforce Help: Edition Comparison \u2014 https://help.salesforce.com/s/articleView?id=sf.overview_edition.htm (canonical authority for what is \"Standard\" per edition)",
     "Salesforce Help: User Licenses and Permission Set Licenses \u2014 https://help.salesforce.com/s/articleView?id=sf.users_understanding_license_types.htm (license-blocker classification)",
-    "AppExchange Listing Standards \u2014 https://appexchange.salesforce.com/listingDetail (currency check for managed-package alternatives)",
+    "AppExchange Listing Standards \u2014 https://appexchange.salesforce.com/  (page retired \u2014 see host index for current equivalent) (currency check for managed-package alternatives)",
     "Salesforce Architects: Well-Architected Adaptable framework \u2014 https://architect.salesforce.com/well-architected/adaptable/intentional (governance + customization-debt framing)"
   ],
   "outputs": [

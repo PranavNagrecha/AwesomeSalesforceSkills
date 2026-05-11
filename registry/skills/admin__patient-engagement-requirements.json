@@ -54,7 +54,7 @@
     "fa88f6a732ea3035adf3",
     "fbefd52e74e671d09478"
   ],
-  "content_hash": "79491680b29df6afbc582a9407de038e1098b81f2c443a9386c3f42c4b7dca04",
+  "content_hash": "377423ac3a0b2c9391437d84f9a576eb851a4ba5306595b646491682074b10e4",
   "dependencies": [
     "admin/health-cloud-patient-setup",
     "admin/care-program-management"
@@ -71,7 +71,7 @@
   "name": "patient-engagement-requirements",
   "official_sources": [
     "Salesforce Health Cloud Admin Guide \u2014 Intelligent Appointment Management: https://help.salesforce.com/s/articleView?id=ind.hc_iam.htm",
-    "Trailhead \u2014 Intelligent Appointment Management for Health Cloud: https://trailhead.salesforce.com/content/learn/modules/intelligent-appointment-management-for-health-cloud",
+    "Trailhead \u2014 Intelligent Appointment Management for Health Cloud: https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
     "OmniStudio Developer Guide: https://developer.salesforce.com/docs/industries/omnistudio/overview",
     "Experience Cloud for Health Cloud: https://help.salesforce.com/s/articleView?id=ind.hc_exp_cloud_for_health_cloud.htm",
     "Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"

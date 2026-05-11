@@ -22,5 +22,5 @@
 
 - Salesforce Help — Time Zones and Appointment Booking — https://help.salesforce.com/s/articleView?id=sf.fs_appointment_booking_timezones.htm
 - Salesforce Help — Guidelines for Creating Service Territories — https://help.salesforce.com/s/articleView?id=sf.fs_service_territories_guidelines.htm
-- Trailhead — Configure Territories and Set Operating Hours — https://trailhead.salesforce.com/content/learn/modules/field-service-scheduling-foundations/configure-territories
+- Trailhead — Configure Territories and Set Operating Hours — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

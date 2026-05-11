@@ -25,7 +25,7 @@
 ## Official Sources Used
 
 - Calculate Key Performance Indicators Using CRM Analytics — https://help.salesforce.com/s/articleView?id=sf.bi_kpis.htm
-- CRM Analytics Design Principles — https://trailhead.salesforce.com/content/learn/modules/wave_analytics_design_principles
+- CRM Analytics Design Principles — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 
 ## Cross-Skill References

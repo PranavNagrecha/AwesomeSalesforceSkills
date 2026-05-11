@@ -32,6 +32,6 @@
 
 - B2C Commerce Developer Guide — Architecture and Site Management: https://developer.salesforce.com/docs/commerce/b2c-commerce/guide/b2c-commerce-site-administration.html
 - SFRA Developer Guide — Configure SFRA: https://developer.salesforce.com/docs/commerce/b2c-commerce/guide/sfra-configure.html
-- Trailhead — Architecture of Commerce Cloud Digital: https://trailhead.salesforce.com/content/learn/modules/cc-digital-for-developers/cc-digital-architecture
-- Trailhead — Guide to B2C Commerce Cartridges: https://trailhead.salesforce.com/content/learn/modules/cc-digital-for-developers/cc-digital-cartridges
+- Trailhead — Architecture of Commerce Cloud Digital: https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
+- Trailhead — Guide to B2C Commerce Cartridges: https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

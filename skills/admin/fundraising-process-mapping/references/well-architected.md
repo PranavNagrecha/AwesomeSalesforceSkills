@@ -36,7 +36,7 @@ Operational Excellence requires that the fundraising process is documented, repe
 
 - Salesforce Help — Nonprofit Success Pack (NPSP) Opportunity Settings: https://help.salesforce.com/s/articleView?id=sf.npsp_setup_donations.htm
 - Trailhead — Moves Management with Nonprofit Success Pack: https://trailhead.salesforce.com/content/learn/modules/moves-management-with-nonprofit-success-pack
-- Trailhead — Opportunity Settings in Nonprofit Success Pack: https://trailhead.salesforce.com/content/learn/modules/npsp-opportunity-settings
+- Trailhead — Opportunity Settings in Nonprofit Success Pack: https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Salesforce Help — Nonprofit Cloud Overview: https://help.salesforce.com/s/articleView?id=sfdo.npc_overview.htm
 - Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 - Salesforce Well-Architected: Adaptability Pillar: https://architect.salesforce.com/docs/architect/well-architected/guide/adaptability.html

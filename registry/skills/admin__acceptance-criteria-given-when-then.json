@@ -104,7 +104,7 @@
     "ff13e4246e5786b9dccb",
     "ff3ab2d087cc63cec3b3"
   ],
-  "content_hash": "c26b5500ef595ad684348e175b59dad7e2fc9a84d4b6a7ffeeb5341515d680b8",
+  "content_hash": "2470fac4fce19ef6b47fcc998798a74b692bbd791609ef3d60ffcad671e6cd83",
   "dependencies": [],
   "description": "Use this skill when writing test-first, behavior-driven acceptance criteria in Given/When/Then format for a Salesforce user story. Covers happy path, edge cases, negative paths, permission boundaries, and data-state preconditions so the AC block can drive UAT scripts and Apex test design downstream. Trigger keywords: given when then, gherkin, behavior driven AC, test first acceptance criteria, scenario outline, BDD acceptance criteria. NOT for the user-story format itself (use admin/user-story-writing-for-salesforce). NOT for UAT script writing (use admin/uat-test-case-design). NOT for Apex test method generation (use agents/test-generator). NOT for high-level UAT planning (use admin/uat-and-acceptance-criteria).",
   "file_location": "skills/admin/acceptance-criteria-given-when-then",
@@ -118,9 +118,9 @@
   ],
   "name": "acceptance-criteria-given-when-then",
   "official_sources": [
-    "Salesforce Trailhead: Business Analyst Certification Preparation \u2014 https://trailhead.salesforce.com/credentials/businessanalyst \u2014 recommends if/then form for AC; this skill's Given/When/Then is the more rigorous extension.",
+    "Salesforce Trailhead: Business Analyst Certification Preparation \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent) \u2014 recommends if/then form for AC; this skill's Given/When/Then is the more rigorous extension.",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html \u2014 anchors AC quality as a Reliability and Operational Excellence concern.",
-    "Salesforce Trailhead: User Story Basics \u2014 https://trailhead.salesforce.com/content/learn/modules/user-story-basics \u2014 covers INVEST quality criteria; behavior-driven AC is what makes the \"T\" (Testable) checkable.",
+    "Salesforce Trailhead: User Story Basics \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent) \u2014 covers INVEST quality criteria; behavior-driven AC is what makes the \"T\" (Testable) checkable.",
     "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm \u2014 required when an AC needs to reference a standard object's lifecycle (Opportunity StageName, Case Status, etc.).",
     "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm \u2014 required when AC mentions a permission set, validation rule, or sharing rule by metadata name."
   ],

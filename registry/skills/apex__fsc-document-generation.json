@@ -91,7 +91,7 @@
     "f579322183bc9136b67b",
     "f64476fc38886d2fc0b9"
   ],
-  "content_hash": "8035a30685a28792aec67b8e8ea5d1d2bcf439ad73d815ec742137bc3bdfc864",
+  "content_hash": "dba90304c26cf910da9ae4ee9aad3a347fdeb6f5104c177a3eefabd055efd3cd",
   "dependencies": [
     "omnistudio/document-generation-omnistudio"
   ],
@@ -109,7 +109,7 @@
   "official_sources": [
     "FSC Admin Guide \u2014 Document Generation Overview \u2014 https://help.salesforce.com/s/articleView?id=sf.fsc_admin_doc_gen.htm",
     "OmniStudio DocGen Foundations (Trailhead) \u2014 https://trailhead.salesforce.com/content/learn/modules/omnistudio-document-generation-foundations",
-    "Disclosures and Consent Management in FSC (Trailhead) \u2014 https://trailhead.salesforce.com/content/learn/modules/fsc-disclosures-and-consent-management",
+    "Disclosures and Consent Management in FSC (Trailhead) \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
     "Personas and Permission Set Licenses for OmniStudio DocGen \u2014 https://help.salesforce.com/s/articleView?id=sf.os_docgen_permission_set_licenses.htm",
     "Apex Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"

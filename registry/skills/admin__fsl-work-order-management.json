@@ -81,7 +81,7 @@
     "f8edf616619935bca492",
     "fa62d21faa4658288acb"
   ],
-  "content_hash": "c0b5b593347d7ee1ad9781e5770f4c14f66d393dab8d2a6883e82b1ed43ebd27",
+  "content_hash": "e141c9706367bd0e848bace63b68c87c15fe116e39975b3fbf7a409d55856c07",
   "dependencies": [],
   "description": "Configure and manage Field Service Lightning work orders: work types, work order line items, service appointments, status flow, and auto-creation via maintenance plans. NOT for case management, resource scheduling optimization, or dispatcher console configuration.",
   "file_location": "skills/admin/fsl-work-order-management",
@@ -99,7 +99,7 @@
     "Create Work Types \u2014 https://help.salesforce.com/s/articleView?id=sf.fs_create_work_types.htm",
     "WorkOrder Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.field_service_dev.meta/field_service_dev/apex_class_FSL_ScheduleServiceUtil.htm",
     "Field Service Developer Guide (WorkOrder) \u2014 https://developer.salesforce.com/docs/atlas.en-us.field_service_dev.meta/field_service_dev/fsl_dev_intro.htm",
-    "Track Field Service Jobs (Trailhead) \u2014 https://trailhead.salesforce.com/content/learn/modules/field-service-lightning-basics/track-field-service-jobs",
+    "Track Field Service Jobs (Trailhead) \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
   ],
   "outputs": [

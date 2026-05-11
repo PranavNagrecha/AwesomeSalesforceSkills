@@ -38,7 +38,7 @@ This skill maps primarily to **Operational Excellence** and **Scalability** in t
 
 ## Official Sources Used
 
-- **Salesforce Architects — Apex Enterprise Patterns**: <https://architect.salesforce.com/decision-guides/trigger-framework> and the Apex Enterprise Patterns trail (<https://trailhead.salesforce.com/content/learn/trails/build_apex_enterprise_patterns>) — the canonical articulation of the Domain / Service / Selector separation that this lightweight pattern derives from.
+- **Salesforce Architects — Apex Enterprise Patterns**: <https://architect.salesforce.com/decision-guides/trigger-framework> and the Apex Enterprise Patterns trail (<https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)>) — the canonical articulation of the Domain / Service / Selector separation that this lightweight pattern derives from.
 - **Salesforce Well-Architected Framework — Maintainability pillar**: <https://architect.salesforce.com/well-architected/adaptable/resilient> and related Maintainability pages — defines modular, resilient, adaptable as the maintainability sub-attributes referenced above.
 - **Salesforce Well-Architected Framework — Operational Excellence**: <https://architect.salesforce.com/well-architected/trusted/secure> and the Trusted pillar pages — frame the observability and compliance benefits.
 - **Apex Developer Guide — `WITH USER_MODE` / `AccessLevel.USER_MODE`**: <https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_keywords_with_user_mode.htm> — the security default `BaseSelector.userMode()` returns.

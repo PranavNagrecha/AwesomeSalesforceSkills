@@ -52,7 +52,7 @@
     "f4b85783e4ec0533914d",
     "f8374da5b24a652b5f76"
   ],
-  "content_hash": "f5a0f59483c49eb0d3944977bf7b034c455c5385b85699e4540047a09a537653",
+  "content_hash": "f1c5ee8c752f3236f4c5f0ecb2b0a3528e0312ed4a22ebc7e93e4865c843d76d",
   "dependencies": [],
   "description": "Use when designing or reviewing SCIM-based user lifecycle provisioning into Salesforce from Okta, Azure AD / Entra, or another IdP \u2014 create/update/deactivate, group-to-permission-set mapping, attribute mapping, and deprovisioning semantics. Triggers: 'scim provisioning', 'okta scim salesforce', 'entra salesforce provisioning', 'user deactivation automation', 'group to permission set mapping'. NOT for SSO/authentication setup (see single-sign-on skills).",
   "file_location": "skills/security/scim-provisioning-integration",
@@ -65,7 +65,7 @@
   "name": "scim-provisioning-integration",
   "official_sources": [
     "Salesforce SCIM 2.0 API \u2014 https://developer.salesforce.com/docs/atlas.en-us.identityImplGuide.meta/identityImplGuide/identity_scim.htm",
-    "Okta Salesforce SCIM connector \u2014 https://help.okta.com/en-us/content/topics/apps/apps_about_salesforce.htm",
+    "Okta Salesforce SCIM connector \u2014 https://help.okta.com/  (page retired \u2014 see host index for current equivalent)",
     "Microsoft Entra Salesforce provisioning \u2014 https://learn.microsoft.com/en-us/entra/identity/saas-apps/salesforce-provisioning-tutorial",
     "Salesforce Well-Architected Security \u2014 https://architect.salesforce.com/docs/architect/well-architected/trusted/secure"
   ],

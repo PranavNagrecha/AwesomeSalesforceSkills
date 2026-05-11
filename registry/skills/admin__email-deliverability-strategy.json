@@ -101,7 +101,7 @@
     "f28b3efc75ab8d609624",
     "f5160fb0d4c2104e147a"
   ],
-  "content_hash": "6f14b6b09d3df5d9ae941df33cd8a685a9ec0a71df660b7715951b17da1b836c",
+  "content_hash": "4c063f6a24c88d0044c12b3e6d2839980a6a9866e79f777600d4a4dbf99af129",
   "dependencies": [],
   "description": "Use this skill when configuring or troubleshooting email deliverability for Marketing Cloud or Salesforce orgs: sender authentication (SPF, DKIM, DMARC), private sending domain setup, dedicated IP warm-up, list hygiene practices, and sender reputation monitoring. NOT for email template design, HTML/CSS email coding, or Journey Builder message configuration.",
   "file_location": "skills/admin/email-deliverability-strategy",
@@ -120,7 +120,7 @@
     "Salesforce Help: Marketing Cloud Deliverability Options \u2014 https://help.salesforce.com/s/articleView?id=sf.mc_es_deliverability_options.htm",
     "Salesforce Help: Email Sending Reputation \u2014 https://help.salesforce.com/s/articleView?id=sf.mc_es_sending_reputation.htm",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
-    "Google Sender Guidelines (February 2024) \u2014 https://support.google.com/mail/answer/81126",
+    "Google Sender Guidelines (February 2024) \u2014 https://support.google.com/  (page retired \u2014 see host index for current equivalent)",
     "Yahoo Sender Best Practices \u2014 https://senders.yahooinc.com/best-practices/",
     "RFC 7208 (SPF) \u2014 https://datatracker.ietf.org/doc/html/rfc7208",
     "RFC 6376 (DKIM) \u2014 https://datatracker.ietf.org/doc/html/rfc6376",

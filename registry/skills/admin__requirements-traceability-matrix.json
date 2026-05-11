@@ -96,7 +96,7 @@
     "fcb105737041cf1b22cf",
     "ff9761cfbb65b7bb23e2"
   ],
-  "content_hash": "13fb59203ed74e01966fb3e09471896c2429707fe73d1e456fa2e74820746e3f",
+  "content_hash": "6e1787b9cbc88962e95cec20ecb5775f62913b023e04949820a831aac0901769",
   "dependencies": [],
   "description": "Use this skill when building or maintaining a Requirements Traceability Matrix (RTM) on a Salesforce project: one row per requirement, columns for source, user-story id(s), test-case id(s), defect id(s), sprint, release, and status. Covers forward traceability (req \u2192 story \u2192 code \u2192 test) and backward traceability (test \u2192 req). Trigger keywords: RTM, requirements traceability matrix, audit trail for salesforce delivery, traceability for steerco, deferred requirement tracking, regulatory traceability. NOT for requirements elicitation (use requirements-gathering-for-sf). NOT for user-story authoring (use user-story-writing-for-salesforce). NOT for UAT test design (use uat-test-case-design). NOT for Apex test design (use agents/test-generator/AGENT.md). NOT for backlog prioritization (use moscow-prioritization-for-sf-backlog).",
   "file_location": "skills/admin/requirements-traceability-matrix",
@@ -114,7 +114,7 @@
     "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
     "Salesforce Well-Architected \u2014 Operational Excellence \u2014 https://architect.salesforce.com/well-architected/adaptable/resilient",
-    "Salesforce Trailhead \u2014 Business Analyst Skills (requirements management and traceability practices) \u2014 https://trailhead.salesforce.com/credentials/businessanalyst"
+    "Salesforce Trailhead \u2014 Business Analyst Skills (requirements management and traceability practices) \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)"
   ],
   "outputs": [
     "Single-source-of-truth RTM (CSV + markdown rendering) with one row per requirement",

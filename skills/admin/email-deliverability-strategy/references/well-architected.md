@@ -30,7 +30,7 @@
 - Salesforce Help: Marketing Cloud Deliverability Options — https://help.salesforce.com/s/articleView?id=sf.mc_es_deliverability_options.htm
 - Salesforce Help: Email Sending Reputation — https://help.salesforce.com/s/articleView?id=sf.mc_es_sending_reputation.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
-- Google Sender Guidelines (February 2024) — https://support.google.com/mail/answer/81126
+- Google Sender Guidelines (February 2024) — https://support.google.com/  (page retired — see host index for current equivalent)
 - Yahoo Sender Best Practices — https://senders.yahooinc.com/best-practices/
 - RFC 7208 (SPF) — https://datatracker.ietf.org/doc/html/rfc7208
 - RFC 6376 (DKIM) — https://datatracker.ietf.org/doc/html/rfc6376

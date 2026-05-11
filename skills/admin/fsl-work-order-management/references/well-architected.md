@@ -65,5 +65,5 @@ Flat WO models with many WOLIs are simpler to query and report on but hit Gantt 
 - Create Work Types — https://help.salesforce.com/s/articleView?id=sf.fs_create_work_types.htm
 - WorkOrder Object Reference — https://developer.salesforce.com/docs/atlas.en-us.field_service_dev.meta/field_service_dev/apex_class_FSL_ScheduleServiceUtil.htm
 - Field Service Developer Guide (WorkOrder) — https://developer.salesforce.com/docs/atlas.en-us.field_service_dev.meta/field_service_dev/fsl_dev_intro.htm
-- Track Field Service Jobs (Trailhead) — https://trailhead.salesforce.com/content/learn/modules/field-service-lightning-basics/track-field-service-jobs
+- Track Field Service Jobs (Trailhead) — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

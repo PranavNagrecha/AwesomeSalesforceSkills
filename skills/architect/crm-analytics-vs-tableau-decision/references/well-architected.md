@@ -37,6 +37,6 @@
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 - CRM Analytics Setup and User Guide (Salesforce Help) — https://help.salesforce.com/s/articleView?id=sf.bi_admin_guide.htm
 - Tableau Salesforce Connector documentation — https://help.tableau.com/current/pro/desktop/en-us/examples_salesforce.htm
-- Tableau Next (Tableau+) product information — https://www.salesforce.com/products/tableau/tableau-next/
+- Tableau Next (Tableau+) product information — https://www.salesforce.com/  (page retired — see host index for current equivalent)
 - CRM Analytics Limits and Considerations (Salesforce Help) — https://help.salesforce.com/s/articleView?id=sf.bi_admin_limits.htm
 - Salesforce Analytics Platform License Overview — https://help.salesforce.com/s/articleView?id=sf.bi_admin_license.htm

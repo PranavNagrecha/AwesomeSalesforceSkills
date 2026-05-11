@@ -28,7 +28,7 @@
     "db2dc24d14097954af47",
     "efb9e573ff9457eb271d"
   ],
-  "content_hash": "c8c4e80dfead4461762c60bb5eeb6490c44bd06c43d7fbc801586eb98d38f7c8",
+  "content_hash": "d257cb7d0c53ac64e3ba81604d383f5d5273b36cd8b3f1c02187c1c0b235b351",
   "dependencies": [],
   "description": "Implement drag-and-drop in LWC using HTML5 Drag and Drop API, keyboard alternatives, and accessible announcements. NOT for kanban migration from legacy Lightning.",
   "file_location": "skills/lwc/drag-and-drop",
@@ -42,7 +42,7 @@
     "Lightning Web Components Developer Guide \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/",
     "Lightning Data Service \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-wire-service-about.html",
     "LWC Recipes \u2014 https://github.com/trailheadapps/lwc-recipes",
-    "SLDS 2 \u2014 https://www.lightningdesignsystem.com/2e/"
+    "SLDS 2 \u2014 https://www.lightningdesignsystem.com/  (page retired \u2014 see host index for current equivalent)"
   ],
   "outputs": [
     "component with dragstart/dragover/drop handlers + keyboard fallback"

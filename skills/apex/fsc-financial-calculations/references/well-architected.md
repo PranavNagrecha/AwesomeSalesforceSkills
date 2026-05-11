@@ -49,4 +49,4 @@
   https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 
 - Salesforce Trailhead — Summarize Financial Data in FSC — rollup configuration, RBL overview, recalculation batch
-  https://trailhead.salesforce.com/content/learn/modules/fsc-rollup
+  https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)

@@ -32,5 +32,5 @@
 - FSC Admin Guide: What Is a Group? — https://help.salesforce.com/s/articleView?id=sf.fsc_admin_groups_overview.htm
 - FSC Admin Guide: Configure Record Rollups — https://help.salesforce.com/s/articleView?id=sf.fsc_admin_rollups.htm
 - FSC Object Reference: AccountContactRelation FSC Fields — https://developer.salesforce.com/docs/atlas.en-us.financial_services_cloud_object_reference.meta/financial_services_cloud_object_reference/fsc_obj_accountcontactrelation.htm
-- FSC Trailhead: Configure Record Rollups — Group Level Opportunities — https://trailhead.salesforce.com/content/learn/modules/fsc-rollups/configure-group-level-rollups
+- FSC Trailhead: Configure Record Rollups — Group Level Opportunities — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)s/configure-group-level-rollups
 - FSC Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.financial_services_cloud_object_reference.meta/financial_services_cloud_object_reference/fsc_intro.htm

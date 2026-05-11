@@ -92,7 +92,7 @@
     "fa0da16d7a61cc8adbc2",
     "fe5f6be7a67962ad2006"
   ],
-  "content_hash": "92f486eebb0c577b0d4a4a58faa0c5e20cff02a80cb37025578090cbc4ca84cc",
+  "content_hash": "0b7250a1a51437a14665b8e6d0ea25066fc543e9c99446991cfa3f45094abcd7",
   "dependencies": [],
   "description": "Use when an architect must plan a Hyperforce migration, choose a Hyperforce region, validate Hyperforce-only feature dependencies, or assess data-residency and IP-allowlisting impact. Triggers: 'hyperforce migration', 'hyperforce region selection', 'first-generation infrastructure to hyperforce', 'hyperforce ip allowlisting', 'data residency on hyperforce', 'hyperforce features not on first gen'. NOT for general HA/DR strategy (use architect/ha-dr-architecture), NOT for Salesforce Functions decommission (use integration/salesforce-functions-replacement), NOT for vertical-specific data residency (use architect/health-cloud-data-residency or architect/government-cloud-compliance).",
   "file_location": "skills/architect/hyperforce-architecture",
@@ -113,7 +113,7 @@
     "Private Connect Setup \u2014 https://help.salesforce.com/s/articleView?id=sf.private_connect.htm&type=5",
     "Salesforce Well-Architected Framework Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
     "Salesforce Well-Architected \u2014 Trusted (residency / compliance) \u2014 https://architect.salesforce.com/well-architected/trusted/overview",
-    "Salesforce Government Cloud \u2014 https://www.salesforce.com/government/government-cloud-plus/"
+    "Salesforce Government Cloud \u2014 https://www.salesforce.com/  (page retired \u2014 see host index for current equivalent)"
   ],
   "outputs": [
     "Hyperforce migration readiness checklist tied to the announced migration window",

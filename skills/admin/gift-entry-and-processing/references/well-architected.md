@@ -48,5 +48,5 @@ The `GiftEntry` staging object grows with every unprocessed record. Orgs with hi
 
 - Salesforce Help — Configure Gift Entry (NPSP): https://help.salesforce.com/s/articleView?id=sf.npsp_gift_entry.htm
 - Salesforce Fundraising Developer Guide — GiftEntry Object and processGiftEntries Action (API v59.0+): https://developer.salesforce.com/docs/atlas.en-us.fundraising_dev.meta/fundraising_dev/fundraising_gift_entry_api_overview.htm
-- Trailhead — Set Up Gift Entry in Nonprofit Success Pack: https://trailhead.salesforce.com/content/learn/projects/set-up-gift-entry-npsp
+- Trailhead — Set Up Gift Entry in Nonprofit Success Pack: https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

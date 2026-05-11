@@ -78,7 +78,7 @@
     "fd0e84a24427b365720d",
     "ff9ab8a05f46bf2a2bb7"
   ],
-  "content_hash": "3ea80d59141ffc726c0cef1df39cc34586f7a9363b2727151e89462995d48a30",
+  "content_hash": "a3acf9553072140236fcb04dfe79c3fe181aec0367b73fc645903d1423101889",
   "dependencies": [],
   "description": "Use when creating or configuring a CRM Analytics (Einstein Analytics) app \u2014 including app containers, lenses, datasets, data source connections, and app sharing. NOT for standard Salesforce reports and dashboards or Tableau.",
   "file_location": "skills/admin/crm-analytics-app-creation",
@@ -92,7 +92,7 @@
   "name": "crm-analytics-app-creation",
   "official_sources": [
     "CRM Analytics REST API Developer Guide Spring '26 \u2014 https://developer.salesforce.com/docs/atlas.en-us.bi_dev_guide_rest.meta/bi_dev_guide_rest/bi_rest_overview.htm",
-    "Trailhead Quick Start: Create an App and a Lens \u2014 https://trailhead.salesforce.com/content/learn/projects/quickstart-analytics-studio",
+    "Trailhead Quick Start: Create an App and a Lens \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
     "Connect and Sync Your Data to CRM Analytics \u2014 https://help.salesforce.com/s/articleView?id=sf.bi_integrate_connecting_to_salesforce.htm&type=5",
     "Add Row-Level Security with a Security Predicate \u2014 https://help.salesforce.com/s/articleView?id=sf.bi_security_dataset_predicate.htm&type=5",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",

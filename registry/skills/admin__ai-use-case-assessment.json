@@ -102,7 +102,7 @@
     "fd75611759191621a5cd",
     "ffe6e2c8659c0a396260"
   ],
-  "content_hash": "018177877bb1c4caf3ebff3d959bd73b0d3b5476ae71ab4e250b1a3e5c28a890",
+  "content_hash": "e65d3fa0796def281b6efed783d716bf861fc77c3ef795137084af04b28b7cb5",
   "dependencies": [
     "ai-ready-data-architecture",
     "agentforce-service-ai-setup"
@@ -123,7 +123,7 @@
     "Salesforce Agentforce Use Cases \u2014 https://www.salesforce.com/agentforce/",
     "Salesforce Blog: 5 Ways to Measure Data Readiness for AI \u2014 https://www.salesforce.com/blog/data-readiness-for-ai/",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
-    "Salesforce AI Acceptable Use Policy \u2014 https://www.salesforce.com/company/legal/ai-acceptable-use-policy/",
+    "Salesforce AI Acceptable Use Policy \u2014 https://www.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
     "Einstein for Service Setup Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.einstein_for_service_setup.htm"
   ],
   "outputs": [

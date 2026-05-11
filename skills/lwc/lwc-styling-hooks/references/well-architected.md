@@ -24,6 +24,6 @@ A second tradeoff is coverage vs. stability. Not every internal property is expo
 - LWC CSS Custom Properties — https://developer.salesforce.com/docs/platform/lwc/guide/create-components-css-custom-properties.html
 - LWC Theming — https://developer.salesforce.com/docs/platform/lwc/guide/create-components-theming.html
 - SLDS Styling Hooks — https://lightningdesignsystem.com/platforms/lightning/styling-hooks/
-- SLDS 2 (2e) — https://lightningdesignsystem.com/2e/
+- SLDS 2 (2e) — https://www.lightningdesignsystem.com/  (page retired — see host index for current equivalent)
 - SLDS Validator / SLDS Linter — https://developer.salesforce.com/docs/platform/lwc/guide/reference-slds-validator.html
 - Lightning Component Reference — https://developer.salesforce.com/docs/platform/lightning-component-reference/guide

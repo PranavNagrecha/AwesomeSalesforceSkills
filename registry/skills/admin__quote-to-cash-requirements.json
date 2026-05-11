@@ -76,7 +76,7 @@
     "f33f48210e30c3d1d335",
     "f3f7103b4c6f0f7d5041"
   ],
-  "content_hash": "e4cb12b45212c11c6c725f93a1784bc9a1d3128961b71db7459c3b893ca8b1d3",
+  "content_hash": "f489c5c282a997e9b778f3732bf8c3a8d497696ed3088677e1fd8577fbef137a",
   "dependencies": [
     "products-and-pricebooks",
     "approval-processes"
@@ -96,7 +96,7 @@
     "Salesforce Help \u2014 Quotes Overview: https://help.salesforce.com/s/articleView?id=sf.quotes_overview.htm",
     "Salesforce Help \u2014 Syncing Quotes with Opportunities: https://help.salesforce.com/s/articleView?id=sf.quotes_syncing_overview.htm",
     "Salesforce Help \u2014 Setting Up Quotes: https://help.salesforce.com/s/articleView?id=sf.quotes_setup.htm",
-    "Trailhead \u2014 Negotiate Enterprise Quotes: https://trailhead.salesforce.com/content/learn/modules/sales-cloud-platform-quick-look/negotiate-enterprise-quotes",
+    "Trailhead \u2014 Negotiate Enterprise Quotes: https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
     "Trailhead \u2014 Build a Discount Approval Process: https://trailhead.salesforce.com/content/learn/projects/build-a-discount-approval-process",
     "Salesforce Help \u2014 Create Orders from Quotes: https://help.salesforce.com/s/articleView?id=sf.quotes_create_orders.htm",
     "Salesforce Help \u2014 Quote Template Limits: https://help.salesforce.com/s/articleView?id=sf.quotes_doc_limits.htm",

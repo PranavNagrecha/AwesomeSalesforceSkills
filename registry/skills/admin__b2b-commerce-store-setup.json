@@ -89,7 +89,7 @@
     "ee2dd7e7de797ce027f1",
     "fd9fbc503fa2b8f4b565"
   ],
-  "content_hash": "9d8e51881a6c4cf5256bf9611b60ec13350641f4c318ad2ffe4abccb8a984a61",
+  "content_hash": "77324053eb8c963be216cfac09b1217bc6cd411d5b8a2ea3f7eaa64bd44a6a42",
   "dependencies": [],
   "description": "Use this skill to configure a Salesforce B2B Commerce storefront: creating the WebStore, linking BuyerGroups, assigning CommerceEntitlementPolicies, and granting buyer contacts transactional access. Trigger keywords: B2B Commerce, WebStore, BuyerGroup, entitlement policy, buyer account, storefront access. NOT for B2C Commerce (LWR storefronts using Individual/Person Account models), CPQ quote configuration, or Order Management fulfillment flows.",
   "file_location": "skills/admin/b2b-commerce-store-setup",
@@ -106,7 +106,7 @@
     "B2B Commerce Developer Guide \u2014 Buyer Group Data Limits \u2014 https://developer.salesforce.com/docs/atlas.en-us.b2b_comm_dev.meta/b2b_comm_dev/b2b_comm_buyer_group_data_limits.htm",
     "B2B Commerce Developer Guide \u2014 Entitlement Data Limits \u2014 https://developer.salesforce.com/docs/atlas.en-us.b2b_comm_dev.meta/b2b_comm_dev/b2b_comm_entitlement_data_limits.htm",
     "Salesforce Help \u2014 Set Up a Storefront \u2014 https://help.salesforce.com/s/articleView?id=sf.comm_setup_storefront.htm&type=5",
-    "Trailhead \u2014 Organize Commerce Store Access: Buyer Accounts and Groups \u2014 https://trailhead.salesforce.com/content/learn/modules/b2b-commerce-store-access",
+    "Trailhead \u2014 Organize Commerce Store Access: Buyer Accounts and Groups \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
     "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
     "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"

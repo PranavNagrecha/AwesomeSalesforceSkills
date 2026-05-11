@@ -29,7 +29,7 @@ Setting `Load on Start = true` on heavy utilities (CTI softphone, Omni-Channel) 
 ## Official Sources Used
 
 - Salesforce Help — Features Available in Lightning Console Apps: https://help.salesforce.com/s/articleView?id=sf.console2_features_available.htm
-- Salesforce Help — Set Up the Lightning Service Console (Trailhead reference): https://trailhead.salesforce.com/content/learn/modules/service_console
+- Salesforce Help — Set Up the Lightning Service Console (Trailhead reference): https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Salesforce Help — Keyboard Shortcuts for Lightning Console Apps: https://help.salesforce.com/s/articleView?id=sf.console2_keyboard_shortcuts.htm
 - Salesforce Help — Macros (Service Console Macros): https://help.salesforce.com/s/articleView?id=sf.macros_def.htm
 - Salesforce Help — Quick Text: https://help.salesforce.com/s/articleView?id=sf.quick_text_overview.htm

@@ -105,7 +105,7 @@
     "f7a30c07625e4490fc72",
     "f93967ab80bfe6185bcb"
   ],
-  "content_hash": "0067742e44897b14a13efa95e0fcb7ec1d1bae74fc76809eb55713b04c8b499c",
+  "content_hash": "f78957e9eca1760b9afab6ce8a785c64c7bcb9c9039d7f96dab412f3184777cf",
   "dependencies": [],
   "description": "Use this skill when designing or querying the NPSP data model \u2014 constituent 360, household accounts, giving history rollups, and program participation. Trigger keywords: NPSP data model, household account, constituent record, giving rollups, CRLP, program engagement, ServiceDelivery, npo02__ fields. NOT for standard data model design, Nonprofit Cloud (NPC) data model, FSC household groups, or platform data modeling outside the NPSP context.",
   "file_location": "skills/data/nonprofit-data-architecture",
@@ -121,10 +121,10 @@
   "official_sources": [
     "NPSP Data Model Gallery \u2014 https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_erd_nonprofit_success_pack.htm",
     "Nonprofit Cloud Data Model Developer Guide (Spring '26) \u2014 https://developer.salesforce.com/docs/atlas.en-us.nonprofit_cloud_dev.meta/nonprofit_cloud_dev/npc_data_model.htm",
-    "Trailhead: Explore the NPSP Data Model \u2014 https://trailhead.salesforce.com/content/learn/modules/npsp-data-model",
-    "NPSP Documentation Overview \u2014 https://powerofus.force.com/s/article/NPSP-Documentation",
-    "Customizable Rollups Developer Documentation \u2014 https://powerofus.force.com/s/article/NPSP-Customizable-Rollups",
-    "Program Management Module Documentation \u2014 https://powerofus.force.com/s/article/PMM-Documentation"
+    "Trailhead: Explore the NPSP Data Model \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
+    "NPSP Documentation Overview \u2014 https://help.salesforce.com/s/nonprofit  (page retired \u2014 see host index for current equivalent)",
+    "Customizable Rollups Developer Documentation \u2014 https://help.salesforce.com/s/nonprofit  (page retired \u2014 see host index for current equivalent)",
+    "Program Management Module Documentation \u2014 https://help.salesforce.com/s/nonprofit  (page retired \u2014 see host index for current equivalent)"
   ],
   "outputs": [
     "Data model diagram describing three-layer NPSP constituent architecture",

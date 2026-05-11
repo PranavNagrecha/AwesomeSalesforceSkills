@@ -69,7 +69,7 @@
     "f96e47ff7f43db040ed0",
     "fde185c2fcb1ba46adc8"
   ],
-  "content_hash": "0aad6ea4c7143acc15203d1a3fb8629146ae936ce9f03029273cbfea656485e2",
+  "content_hash": "dbb475843178bd0a412ae4b5a2e98c491d238cfffe007908e9426d3f259d03d4",
   "dependencies": [],
   "description": "Safe construction of dynamic SOQL \u2014 Database.query bind variables (:varName, API 60+ semantics), Database.queryWithBinds(query, Map<String,Object>, AccessLevel) (API 55+), field-name allowlisting, ORDER BY direction whitelist, LIMIT/OFFSET typing, and the interaction with WITH USER_MODE / WITH SECURITY_ENFORCED. NOT for static SOQL \u2014 see apex-soql-fundamentals. NOT for FLS enforcement on results \u2014 see soql-security or apex-stripinaccessible-and-fls-enforcement.",
   "file_location": "skills/apex/apex-dynamic-soql-binding-safety",
@@ -85,7 +85,7 @@
     "Apex Developer Guide \u2014 Dynamic SOQL \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dynamic_soql.htm",
     "Apex Reference Guide \u2014 Database Class (`queryWithBinds`) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_database.htm",
     "Apex Developer Guide \u2014 SOQL Injection \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/pages_security_tips_soql.htm",
-    "Salesforce Security Trailhead \u2014 SOQL Injection \u2014 https://trailhead.salesforce.com/content/learn/modules/secure-secrets-storage/protect-secrets-using-named-credentials (referenced unit on input safety) and the dedicated unit at https://trailhead.salesforce.com/content/learn/modules/improve-developer-experience-with-platform-cache (combined Apex security path)",
+    "Salesforce Security Trailhead \u2014 SOQL Injection \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent) (referenced unit on input safety) and the dedicated unit at https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent) (combined Apex security path)",
     "Salesforce Well-Architected \u2014 Trusted (Security) \u2014 https://architect.salesforce.com/well-architected/trusted/secure"
   ],
   "outputs": [

@@ -107,7 +107,7 @@
     "fc97c796e74f8ba170cd",
     "fdc84f539fdf801745b7"
   ],
-  "content_hash": "1b713f199bb93792e43215d8738c056dd10e936a50a575ce1b52476e7f6797b2",
+  "content_hash": "6f4c9a95006b1e5b65551403283da93cc61edc092b659c83e744efaa42c11d8e",
   "dependencies": [
     "mcae-pardot-setup",
     "mcae-lead-scoring-and-grading"
@@ -127,7 +127,7 @@
   "official_sources": [
     "Engagement Studio (MCAE Help) \u2014 https://help.salesforce.com/s/articleView?id=sf.pardot_engagement_studio.htm",
     "Scoring and Grading (MCAE Help) \u2014 https://help.salesforce.com/s/articleView?id=sf.pardot_scoring_and_grading_about.htm",
-    "Lead Nurturing with MCAE (Trailhead) \u2014 https://trailhead.salesforce.com/content/learn/modules/pardot-lead-nurturing",
+    "Lead Nurturing with MCAE (Trailhead) \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
   ],
   "outputs": [

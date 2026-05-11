@@ -47,5 +47,5 @@ Scalability concerns in nurture journey design arise at the program and database
 
 - Engagement Studio (MCAE Help) — https://help.salesforce.com/s/articleView?id=sf.pardot_engagement_studio.htm
 - Scoring and Grading (MCAE Help) — https://help.salesforce.com/s/articleView?id=sf.pardot_scoring_and_grading_about.htm
-- Lead Nurturing with MCAE (Trailhead) — https://trailhead.salesforce.com/content/learn/modules/pardot-lead-nurturing
+- Lead Nurturing with MCAE (Trailhead) — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

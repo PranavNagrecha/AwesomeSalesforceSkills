@@ -86,7 +86,7 @@
     "fdee28da2d27dc8935f4",
     "ffa8f27b581670519165"
   ],
-  "content_hash": "000d02edc175ab94a513c9cc8f2f7523590f4a29b0b40e113462bc48794cb72e",
+  "content_hash": "6d70eb027e02fc0d0d3ddaf82404c048bfac2cdeb8f076389cb11fd235383f41",
   "dependencies": [],
   "description": "Use this skill to configure SLA enforcement for Salesforce Field Service (FSL) using Work Order entitlement processes: designing entitlement processes of type Work Order, defining FSL milestones (response time, on-site arrival, resolution), wiring milestone actions, and aligning Business Hours with service territory Operating Hours. NOT for Service Cloud Case SLAs, case escalation rules, or omni-channel routing \u2014 Case entitlement processes are a separate skill.",
   "file_location": "skills/admin/fsl-sla-configuration-requirements",
@@ -102,7 +102,7 @@
     "Salesforce Help: Set Up Entitlements for Work Orders \u2014 https://help.salesforce.com/s/articleView?id=sf.entitlements_work_orders.htm",
     "Salesforce Help: Entitlements and Milestones Overview \u2014 https://help.salesforce.com/s/articleView?id=sf.entitlements_overview.htm",
     "Salesforce Help: Business Hours in Entitlement Management \u2014 https://help.salesforce.com/s/articleView?id=sf.entitlements_biz_hours.htm",
-    "Trailhead: Use Entitlements with Work Orders \u2014 https://trailhead.salesforce.com/content/learn/modules/field-service-lightning-quick-look/use-entitlements-with-work-orders",
+    "Trailhead: Use Entitlements with Work Orders \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
     "Salesforce Well-Architected: Reliable \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/reliable.html",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
     "Object Reference: WorkOrderMilestone \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_workordermilestone.htm"

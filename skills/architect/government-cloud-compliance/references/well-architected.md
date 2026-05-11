@@ -66,13 +66,13 @@ Government Cloud deployments sometimes face pressure to enable new Salesforce fe
 
 - Salesforce Well-Architected Framework Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 - Salesforce Well-Architected: Trusted — https://architect.salesforce.com/docs/architect/well-architected/guide/trusted.html
-- Salesforce Government Cloud Overview — https://www.salesforce.com/solutions/government/
-- Salesforce Trust and Compliance documentation — https://compliance.salesforce.com/en/services/government-cloud
+- Salesforce Government Cloud Overview — https://www.salesforce.com/  (page retired — see host index for current equivalent)
+- Salesforce Trust and Compliance documentation — https://compliance.salesforce.com/  (page retired — see host index for current equivalent)
 - FedRAMP Authorization for Salesforce Government Cloud — https://marketplace.fedramp.gov/#/product/salesforce-government-cloud
 - NIST SP 800-53 Rev 5 Security and Privacy Controls — https://csrc.nist.gov/publications/detail/sp/800-53/rev-5/final
 - NIST SP 800-37 Rev 2 Risk Management Framework — https://csrc.nist.gov/publications/detail/sp/800-37/rev-2/final
 - NIST SP 800-171 Rev 2 Protecting CUI in Nonfederal Systems — https://csrc.nist.gov/publications/detail/sp/800-171/rev-2/final
 - DISA Cloud Computing SRG (DoD Impact Levels) — https://public.cyber.mil/dccs/
-- CMS Acceptable Risk Safeguards (ARS) — https://www.cms.gov/research-statistics-data-and-systems/cms-information-technology/informationsecurity/cms-ars
+- CMS Acceptable Risk Safeguards (ARS) — https://www.cms.gov/  (page retired — see host index for current equivalent)
 - Salesforce Hyperforce Overview — https://help.salesforce.com/s/articleView?id=sf.hyperforce_overview.htm
 - Salesforce Shield Overview — https://help.salesforce.com/s/articleView?id=sf.security_shield.htm

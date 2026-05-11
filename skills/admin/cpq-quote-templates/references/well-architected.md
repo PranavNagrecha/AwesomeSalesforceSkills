@@ -33,6 +33,6 @@
 - Salesforce CPQ Help: Building Your CPQ Documents with CPQ Templates — https://help.salesforce.com/s/articleView?id=sf.cpq_doc_building_cpq_doc.htm
 - Salesforce CPQ Help: Conditionally Show Template Sections — https://help.salesforce.com/s/articleView?id=sf.cpq_doc_conditional_print.htm
 - Salesforce CPQ Help: Template Line Columns — https://help.salesforce.com/s/articleView?id=sf.cpq_doc_line_columns.htm
-- Trailhead: Structure a Customized Quote Template — https://trailhead.salesforce.com/content/learn/modules/cpq-quote-templates
+- Trailhead: Structure a Customized Quote Template — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 - Salesforce Object Reference — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm

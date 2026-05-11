@@ -59,7 +59,7 @@
     "f7aaf74c51c5e0078f1e",
     "fef071e6baa079f33bd9"
   ],
-  "content_hash": "ec08e2007972b7e83dfc4388a9cb5cd8896386cf97ef3d8e80377d61766e1d39",
+  "content_hash": "65462a34c4a6b1b4d4d3a05118c043314d35762cea8fb061112ed54c2d152b84",
   "dependencies": [],
   "description": "Designing a backup and restore strategy for a Salesforce org \u2014 Salesforce Backup (the native paid product), the deprecated weekly Data Export Service, third-party tools (OwnBackup / Druva / Gearset / Spanning), and self-rolled Bulk API extracts. Covers RPO / RTO targeting, restore-of-a-single-record vs full-org restore, parent / child relationship rebuilding, and cost / coverage tradeoffs across vendors. NOT for sandbox refresh strategy (see devops/sandbox-strategy), NOT for metadata source-control / DevOps backups (see devops/sfdx-source-control).",
   "file_location": "skills/data/salesforce-backup-and-restore",
@@ -75,7 +75,7 @@
     "Recycle Bin (Records) \u2014 https://help.salesforce.com/s/articleView?id=sf.home_delete.htm&type=5",
     "Bulk API 2.0 Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/asynch_api_intro.htm",
     "Data Export (Weekly) \u2014 https://help.salesforce.com/s/articleView?id=sf.admin_exportdata.htm&type=5",
-    "Backup Your Data \u2014 Trailhead \u2014 https://trailhead.salesforce.com/content/learn/modules/data-management/backup-your-data",
+    "Backup Your Data \u2014 Trailhead \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
     "Salesforce Well-Architected Reliability \u2014 https://architect.salesforce.com/well-architected/trusted/resilient"
   ],
   "outputs": [

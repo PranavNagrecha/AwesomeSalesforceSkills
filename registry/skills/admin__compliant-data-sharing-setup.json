@@ -74,7 +74,7 @@
     "f80989ab5b0baf03aa75",
     "fe19fc5f0b300bad97a3"
   ],
-  "content_hash": "375c451fa1cfa1ba439c792487ebc7176fc8ba102e52be1b1ea8224b6856c741",
+  "content_hash": "31b069145f3f623bffa8be16361e6c882663f161ef4e4c83fc325abfcf1f5a67",
   "dependencies": [],
   "description": "Declarative setup of Compliant Data Sharing (CDS) in Financial Services Cloud: enabling CDS per-object in IndustriesSettings, configuring OWDs, creating CDS permissions, adding the Financial Deal Participants related list, and defining Participant Roles. Trigger keywords: ethical walls, compliant data sharing setup, FSC sharing model, isolate banking teams, participant roles. NOT for standard Salesforce sharing rules, OWD, or role hierarchy sharing. NOT for programmatic participant record DML (use fsc-compliant-sharing-api instead).",
   "file_location": "skills/admin/compliant-data-sharing-setup",
@@ -88,7 +88,7 @@
   "name": "compliant-data-sharing-setup",
   "official_sources": [
     "Compliant Data Sharing for Financial Services Cloud \u2014 https://help.salesforce.com/s/articleView?id=sf.fsc_compliant_data_sharing.htm",
-    "Compliant Data Sharing Setup (Trailhead) \u2014 https://trailhead.salesforce.com/content/learn/modules/financial-services-cloud-compliant-data-sharing",
+    "Compliant Data Sharing Setup (Trailhead) \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
     "Considerations and Limitations for Compliant Data Sharing \u2014 https://help.salesforce.com/s/articleView?id=sf.fsc_compliant_data_sharing_considerations.htm",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
   ],

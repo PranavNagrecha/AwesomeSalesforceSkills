@@ -92,7 +92,7 @@
     "f926c077a0fd91003e93",
     "fe4425f03d2c13611180"
   ],
-  "content_hash": "234ce14916ad25554083cfcf1cc9d921b18effd9ca6025faa81c2f33069f948a",
+  "content_hash": "2fab4b0382a45a35144d6b7c56db036446efbc82e5b57e101998b9f17c217fe5",
   "dependencies": [],
   "description": "Use this skill when standardizing addresses, detecting duplicate household Contacts, running NCOA processing, or improving data hygiene in an NPSP org. Triggers: address verification NPSP, household duplicate detection, NCOA update nonprofit, data hygiene NPSP. NOT for generic Salesforce data quality, Nonprofit Cloud (NPC) data quality, or standard Account/Contact deduplication outside NPSP.",
   "file_location": "skills/data/nonprofit-data-quality",
@@ -109,7 +109,7 @@
     "NPSP Address Management Overview \u2014 https://help.salesforce.com/s/articleView?id=sfdo.NPSP_Addresses_Overview.htm&type=5",
     "About National Change of Address Updates (NPSP) \u2014 https://help.salesforce.com/s/articleView?id=sfdo.NPSP_NCOA.htm&type=5",
     "Configure Duplicate Detection and NPSP Contact Merge \u2014 https://help.salesforce.com/s/articleView?id=sfdo.NPSP_Contact_Merge.htm&type=5",
-    "Insights Platform Data Integrity (Trailhead) \u2014 https://trailhead.salesforce.com/content/learn/modules/insights-platform-data-integrity",
+    "Insights Platform Data Integrity (Trailhead) \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
     "NPSP Documentation Overview \u2014 https://help.salesforce.com/s/articleView?id=sfdo.NPSP.htm&type=5"
   ],
   "outputs": [

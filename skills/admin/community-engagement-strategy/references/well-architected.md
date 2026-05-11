@@ -31,6 +31,6 @@
 - Encourage Idea Creation — Salesforce Help (Ideas feature setup and IdeaTheme configuration)
   URL: https://help.salesforce.com/s/articleView?id=sf.networks_ideas.htm
 - Trailhead: Optimize Community Engagement with Reputation Levels
-  URL: https://trailhead.salesforce.com/content/learn/modules/community_mgmt/community_mgmt_reputation
+  URL: https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Trailhead: Experience Cloud Site Strategy
   URL: https://trailhead.salesforce.com/content/learn/modules/experience-cloud-site-strategy

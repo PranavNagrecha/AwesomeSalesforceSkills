@@ -29,6 +29,6 @@ PMM permission sets are designed to be stacked with org-level profiles. Overridi
 
 - Program Management Module Managed Package (Salesforce Help) — https://help.salesforce.com/s/articleView?id=sfdo.PMM_Manage_the_Package.htm
 - Program Management Module Documentation (Salesforce Help) — https://help.salesforce.com/s/articleView?id=sfdo.PMM.htm
-- Service Delivery with Program Management Module (Trailhead) — https://trailhead.salesforce.com/content/learn/modules/program-management-module
+- Service Delivery with Program Management Module (Trailhead) — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Customize Bulk Service Deliveries (Salesforce Help) — https://help.salesforce.com/s/articleView?id=sfdo.PMM_Customize_Bulk_Service_Deliveries.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

@@ -30,5 +30,5 @@
 - Salesforce Agentforce Use Cases — https://www.salesforce.com/agentforce/
 - Salesforce Blog: 5 Ways to Measure Data Readiness for AI — https://www.salesforce.com/blog/data-readiness-for-ai/
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
-- Salesforce AI Acceptable Use Policy — https://www.salesforce.com/company/legal/ai-acceptable-use-policy/
+- Salesforce AI Acceptable Use Policy — https://www.salesforce.com/  (page retired — see host index for current equivalent)
 - Einstein for Service Setup Guide — https://help.salesforce.com/s/articleView?id=sf.einstein_for_service_setup.htm

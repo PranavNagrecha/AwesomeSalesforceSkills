@@ -27,7 +27,7 @@ Loose matching reduces duplicates but risks merging distinct individuals. Strict
 
 ## Official Sources Used
 
-- NPSP Documentation Overview — https://powerofus.force.com/s/article/NPSP-Overview (NPSP Data Importer behavior, npsp__DataImport__c staging object, Contact Matching Rules)
+- NPSP Documentation Overview — https://help.salesforce.com/s/nonprofit  (page retired — see host index for current equivalent) (NPSP Data Importer behavior, npsp__DataImport__c staging object, Contact Matching Rules)
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (architecture quality framing)
 - Bulk API 2.0 Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/asynch_api_intro.htm (staging record load via API)
 - Object Reference — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm (sObject semantics and field behavior)

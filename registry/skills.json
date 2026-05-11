@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 48
   },
-  "generated_from_hash": "7de63f88f51406c83c6bb7aa8c405165724eb481ff94ea7a0e28792845fd904b",
+  "generated_from_hash": "41fd117d2e70b49c08db1bedbfe4812b79f3b4ab99407d042b1b9eed20648447",
   "schema_version": 1,
   "skill_count": 997,
   "skills": [
@@ -122,7 +122,7 @@
         "ff13e4246e5786b9dccb",
         "ff3ab2d087cc63cec3b3"
       ],
-      "content_hash": "c26b5500ef595ad684348e175b59dad7e2fc9a84d4b6a7ffeeb5341515d680b8",
+      "content_hash": "2470fac4fce19ef6b47fcc998798a74b692bbd791609ef3d60ffcad671e6cd83",
       "dependencies": [],
       "description": "Use this skill when writing test-first, behavior-driven acceptance criteria in Given/When/Then format for a Salesforce user story. Covers happy path, edge cases, negative paths, permission boundaries, and data-state preconditions so the AC block can drive UAT scripts and Apex test design downstream. Trigger keywords: given when then, gherkin, behavior driven AC, test first acceptance criteria, scenario outline, BDD acceptance criteria. NOT for the user-story format itself (use admin/user-story-writing-for-salesforce). NOT for UAT script writing (use admin/uat-test-case-design). NOT for Apex test method generation (use agents/test-generator). NOT for high-level UAT planning (use admin/uat-and-acceptance-criteria).",
       "file_location": "skills/admin/acceptance-criteria-given-when-then",
@@ -136,9 +136,9 @@
       ],
       "name": "acceptance-criteria-given-when-then",
       "official_sources": [
-        "Salesforce Trailhead: Business Analyst Certification Preparation \u2014 https://trailhead.salesforce.com/credentials/businessanalyst \u2014 recommends if/then form for AC; this skill's Given/When/Then is the more rigorous extension.",
+        "Salesforce Trailhead: Business Analyst Certification Preparation \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent) \u2014 recommends if/then form for AC; this skill's Given/When/Then is the more rigorous extension.",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html \u2014 anchors AC quality as a Reliability and Operational Excellence concern.",
-        "Salesforce Trailhead: User Story Basics \u2014 https://trailhead.salesforce.com/content/learn/modules/user-story-basics \u2014 covers INVEST quality criteria; behavior-driven AC is what makes the \"T\" (Testable) checkable.",
+        "Salesforce Trailhead: User Story Basics \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent) \u2014 covers INVEST quality criteria; behavior-driven AC is what makes the \"T\" (Testable) checkable.",
         "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm \u2014 required when an AC needs to reference a standard object's lifecycle (Opportunity StageName, Case Status, etc.).",
         "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm \u2014 required when AC mentions a permission set, validation rule, or sharing rule by metadata name."
       ],
@@ -820,7 +820,7 @@
         "f6103f0943620d34580a",
         "ff349b09bdeb281095b3"
       ],
-      "content_hash": "4d87e36c1361032dee31945ac3e9effc33baf249a6f7300c2385cbfb0a96efe2",
+      "content_hash": "62866aacc75870b219b6808364f61817eafe84b7a67204dee09052b9e937aa7c",
       "dependencies": [],
       "description": "Use this skill when defining AI governance policies, designing human oversight workflows, documenting bias mitigation strategies, or meeting regulatory transparency requirements for Salesforce AI features. Trigger keywords: responsible AI, AI bias, AI audit trail, AI transparency, human-in-the-loop, AI risk inventory, AI disclosure. NOT for Trust Layer technical configuration \u2014 that is covered by agentforce/einstein-trust-layer.",
       "file_location": "skills/admin/ai-ethics-and-governance-requirements",
@@ -833,12 +833,12 @@
       ],
       "name": "ai-ethics-and-governance-requirements",
       "official_sources": [
-        "Salesforce Trailhead \u2014 AI Governance: Establishing Responsible Practices \u2014 https://trailhead.salesforce.com/content/learn/modules/ai-governance-establishing-responsible-practices",
+        "Salesforce Trailhead \u2014 AI Governance: Establishing Responsible Practices \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Salesforce Trailhead \u2014 Trusted Agentic AI \u2014 https://trailhead.salesforce.com/content/learn/modules/trusted-agentic-ai",
         "Salesforce Help \u2014 Detect and Remove Bias from a Model \u2014 https://help.salesforce.com/s/articleView?id=sf.bi_edd_model_bias.htm",
         "Salesforce Help \u2014 Implement Data Governance Permissions for Audit \u2014 https://help.salesforce.com/s/articleView?id=sf.bi_edd_data_governance_perms.htm",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
-        "Salesforce Responsible AI Principles \u2014 https://www.salesforce.com/company/responsible-ai/"
+        "Salesforce Responsible AI Principles \u2014 https://www.salesforce.com/  (page retired \u2014 see host index for current equivalent)"
       ],
       "outputs": [
         "AI governance policy document outlining pillars, ownership, and review cadence",
@@ -984,7 +984,7 @@
         "fd75611759191621a5cd",
         "ffe6e2c8659c0a396260"
       ],
-      "content_hash": "018177877bb1c4caf3ebff3d959bd73b0d3b5476ae71ab4e250b1a3e5c28a890",
+      "content_hash": "e65d3fa0796def281b6efed783d716bf861fc77c3ef795137084af04b28b7cb5",
       "dependencies": [
         "ai-ready-data-architecture",
         "agentforce-service-ai-setup"
@@ -1005,7 +1005,7 @@
         "Salesforce Agentforce Use Cases \u2014 https://www.salesforce.com/agentforce/",
         "Salesforce Blog: 5 Ways to Measure Data Readiness for AI \u2014 https://www.salesforce.com/blog/data-readiness-for-ai/",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
-        "Salesforce AI Acceptable Use Policy \u2014 https://www.salesforce.com/company/legal/ai-acceptable-use-policy/",
+        "Salesforce AI Acceptable Use Policy \u2014 https://www.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Einstein for Service Setup Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.einstein_for_service_setup.htm"
       ],
       "outputs": [
@@ -1164,7 +1164,7 @@
         "f99393b69bba9283cfb4",
         "fb48ee44652a37b66c37"
       ],
-      "content_hash": "0eb4c4e48ddff574ccf1c985d701af683e0e0da115af0715e2b7ed9a4800ac07",
+      "content_hash": "118c56829e1dea80907679ff5d74346fa007c74299da1885fe89d17aa1462ca2",
       "dependencies": [],
       "description": "Use this skill when driving adoption of CRM Analytics (Einstein Analytics) across an org \u2014 including setting up the Analytics Adoption App to measure who uses which dashboards, embedding analytics into Lightning pages for in-context discovery, pinning dashboards to the Analytics home page, building self-service personas, and defining analytics-specific success metrics. Triggers: analytics adoption, dashboard usage tracking, embedded analytics strategy, self-service analytics enablement, CRM Analytics rollout. NOT for general Salesforce change management (use change-management-and-training), NOT for In-App Guidance prompt mechanics (use in-app-guidance-and-walkthroughs), NOT for dashboard technical design or JSON (use analytics-dashboard-design or analytics-dashboard-json).",
       "file_location": "skills/admin/analytics-adoption-strategy",
@@ -1997,7 +1997,7 @@
         "f681b772f4f04f8eb5fc",
         "f6eb62b6ff862d108f2d"
       ],
-      "content_hash": "b3834d88b748a910132106ffed6f31929e08a6c6e3655db986529608eef8dbc0",
+      "content_hash": "27a7d3738667235a22b65f29bd4cb2e60625ef701de492e2e7694d1041f77943",
       "dependencies": [],
       "description": "Use this skill to define, document, and validate KPI metrics for CRM Analytics \u2014 covering metric formula design, dimension selection, target-dataset modeling, benchmark setting, and the KPI register that must exist before any dashboard or lens is built. Trigger keywords: KPI definition CRM Analytics, analytics metric design, analytics target attainment, CRM Analytics measures vs dimensions, analytics benchmark. NOT for building CRM Analytics dashboards or lenses (use analytics/dashboard-design), SOQL report KPI design, or Marketing Cloud analytics KPI work.",
       "file_location": "skills/admin/analytics-kpi-definition",
@@ -2011,7 +2011,7 @@
       "name": "analytics-kpi-definition",
       "official_sources": [
         "Calculate Key Performance Indicators Using CRM Analytics \u2014 https://help.salesforce.com/s/articleView?id=sf.bi_kpis.htm",
-        "CRM Analytics Design Principles \u2014 https://trailhead.salesforce.com/content/learn/modules/wave_analytics_design_principles",
+        "CRM Analytics Design Principles \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
       ],
       "outputs": [
@@ -3131,7 +3131,7 @@
         "ee2dd7e7de797ce027f1",
         "fd9fbc503fa2b8f4b565"
       ],
-      "content_hash": "9d8e51881a6c4cf5256bf9611b60ec13350641f4c318ad2ffe4abccb8a984a61",
+      "content_hash": "77324053eb8c963be216cfac09b1217bc6cd411d5b8a2ea3f7eaa64bd44a6a42",
       "dependencies": [],
       "description": "Use this skill to configure a Salesforce B2B Commerce storefront: creating the WebStore, linking BuyerGroups, assigning CommerceEntitlementPolicies, and granting buyer contacts transactional access. Trigger keywords: B2B Commerce, WebStore, BuyerGroup, entitlement policy, buyer account, storefront access. NOT for B2C Commerce (LWR storefronts using Individual/Person Account models), CPQ quote configuration, or Order Management fulfillment flows.",
       "file_location": "skills/admin/b2b-commerce-store-setup",
@@ -3148,7 +3148,7 @@
         "B2B Commerce Developer Guide \u2014 Buyer Group Data Limits \u2014 https://developer.salesforce.com/docs/atlas.en-us.b2b_comm_dev.meta/b2b_comm_dev/b2b_comm_buyer_group_data_limits.htm",
         "B2B Commerce Developer Guide \u2014 Entitlement Data Limits \u2014 https://developer.salesforce.com/docs/atlas.en-us.b2b_comm_dev.meta/b2b_comm_dev/b2b_comm_entitlement_data_limits.htm",
         "Salesforce Help \u2014 Set Up a Storefront \u2014 https://help.salesforce.com/s/articleView?id=sf.comm_setup_storefront.htm&type=5",
-        "Trailhead \u2014 Organize Commerce Store Access: Buyer Accounts and Groups \u2014 https://trailhead.salesforce.com/content/learn/modules/b2b-commerce-store-access",
+        "Trailhead \u2014 Organize Commerce Store Access: Buyer Accounts and Groups \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
         "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
@@ -3446,7 +3446,7 @@
         "fe0a770523b798766fda",
         "fe2391e541d79e4bd730"
       ],
-      "content_hash": "33c602f7305220df1eb9fb2af4d3ce62529286a06e2085c4a21b98e1530a574b",
+      "content_hash": "c56ecea1d41cbee95f13dfb3a0059b30ee4fae38cbd2250a9a2c553314e2d8eb",
       "dependencies": [],
       "description": "Use when configuring or troubleshooting a Salesforce B2C Commerce (SFCC) storefront \u2014 including Business Manager site creation, SFRA cartridge path setup, customer groups, search index rebuilding, and key quota limits. Trigger keywords: SFCC, Commerce Cloud, Business Manager, storefront, cartridge, SFRA, site preferences, replication. NOT for B2B Commerce on Lightning platform (WebStore, BuyerGroup, CommerceEntitlementPolicy \u2014 see admin/b2b-commerce-store-setup for that).",
       "file_location": "skills/admin/b2c-commerce-store-setup",
@@ -3462,8 +3462,8 @@
       "official_sources": [
         "B2C Commerce Developer Guide \u2014 Architecture and Site Management: https://developer.salesforce.com/docs/commerce/b2c-commerce/guide/b2c-commerce-site-administration.html",
         "SFRA Developer Guide \u2014 Configure SFRA: https://developer.salesforce.com/docs/commerce/b2c-commerce/guide/sfra-configure.html",
-        "Trailhead \u2014 Architecture of Commerce Cloud Digital: https://trailhead.salesforce.com/content/learn/modules/cc-digital-for-developers/cc-digital-architecture",
-        "Trailhead \u2014 Guide to B2C Commerce Cartridges: https://trailhead.salesforce.com/content/learn/modules/cc-digital-for-developers/cc-digital-cartridges",
+        "Trailhead \u2014 Architecture of Commerce Cloud Digital: https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
+        "Trailhead \u2014 Guide to B2C Commerce Cartridges: https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
       ],
       "outputs": [
@@ -5971,7 +5971,7 @@
         "fb91b58c983b1406923a",
         "fd2066f85dfc94f9f128"
       ],
-      "content_hash": "b6449f1b5530ed57f5d1e190465d5f570950b3babd3c2a2cf043a15cec934f88",
+      "content_hash": "b328fa9e7e1f46f217328355eb61f78780b085cf2680407964f75ae0436ec737",
       "dependencies": [],
       "description": "Use this skill when designing a product catalog taxonomy, planning attribute strategy, or determining search and navigation structure for a B2B or B2C/D2C Commerce store. Triggers on: taxonomy design questions, attribute planning, search index strategy, category navigation structure, or merchandising hierarchy decisions. NOT for catalog configuration \u2014 object creation, WebStoreCatalog wiring, entitlement policies, or product assignment steps are covered by admin/commerce-product-catalog.",
       "file_location": "skills/admin/commerce-catalog-strategy",
@@ -5986,8 +5986,8 @@
       ],
       "name": "commerce-catalog-strategy",
       "official_sources": [
-        "B2C Commerce Catalogs and Navigation (Trailhead) \u2014 https://trailhead.salesforce.com/content/learn/modules/cc-digital-merchandising/cc-digital-merchandising-catalogs",
-        "Optimize Your Online Store for Search (Trailhead) \u2014 https://trailhead.salesforce.com/content/learn/modules/b2c-commerce-search-and-einstein/b2c-commerce-search-optimize-your-store",
+        "B2C Commerce Catalogs and Navigation (Trailhead) \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
+        "Optimize Your Online Store for Search (Trailhead) \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Product Attributes Data Model \u2014 B2B Commerce Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.b2b_comm_dev.meta/b2b_comm_dev/b2b_comm_dev_product_attributes_data_model.htm",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
         "B2B Commerce Developer Guide (Salesforce Help) \u2014 https://developer.salesforce.com/docs/atlas.en-us.b2b_comm_dev.meta/b2b_comm_dev/b2b_comm_dev_intro.htm"
@@ -6917,7 +6917,7 @@
         "ec6fe33d3e53af311caf",
         "f958833e1701197d8c34"
       ],
-      "content_hash": "6665872d66cdb4a87ed8479e0961182058bab1ab1ca7b2c64f3a11e2315ca859",
+      "content_hash": "4364c6beb962fdd4de37e4bf1406dfd974dd8c9832d1eb73d5375cb9de9c9a7a",
       "dependencies": [],
       "description": "Use this skill to design and configure the engagement model for an Experience Cloud community: reputation levels, ideation, and content contribution strategy. Triggers: 'community engagement strategy', 'gamification Experience Cloud', 'reputation levels setup', 'ideation community portal', 'member recognition program'. NOT for moderation configuration (see experience-cloud-moderation). NOT for technical Experience Cloud site setup or Lightning template selection.",
       "file_location": "skills/admin/community-engagement-strategy",
@@ -7225,7 +7225,7 @@
         "f80989ab5b0baf03aa75",
         "fe19fc5f0b300bad97a3"
       ],
-      "content_hash": "375c451fa1cfa1ba439c792487ebc7176fc8ba102e52be1b1ea8224b6856c741",
+      "content_hash": "31b069145f3f623bffa8be16361e6c882663f161ef4e4c83fc325abfcf1f5a67",
       "dependencies": [],
       "description": "Declarative setup of Compliant Data Sharing (CDS) in Financial Services Cloud: enabling CDS per-object in IndustriesSettings, configuring OWDs, creating CDS permissions, adding the Financial Deal Participants related list, and defining Participant Roles. Trigger keywords: ethical walls, compliant data sharing setup, FSC sharing model, isolate banking teams, participant roles. NOT for standard Salesforce sharing rules, OWD, or role hierarchy sharing. NOT for programmatic participant record DML (use fsc-compliant-sharing-api instead).",
       "file_location": "skills/admin/compliant-data-sharing-setup",
@@ -7239,7 +7239,7 @@
       "name": "compliant-data-sharing-setup",
       "official_sources": [
         "Compliant Data Sharing for Financial Services Cloud \u2014 https://help.salesforce.com/s/articleView?id=sf.fsc_compliant_data_sharing.htm",
-        "Compliant Data Sharing Setup (Trailhead) \u2014 https://trailhead.salesforce.com/content/learn/modules/financial-services-cloud-compliant-data-sharing",
+        "Compliant Data Sharing Setup (Trailhead) \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Considerations and Limitations for Compliant Data Sharing \u2014 https://help.salesforce.com/s/articleView?id=sf.fsc_compliant_data_sharing_considerations.htm",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
       ],
@@ -8317,7 +8317,7 @@
         "fee033aea32a87da3fb4",
         "ffce0405d4c416e0eec0"
       ],
-      "content_hash": "dab2184789ad2d4877eab4047144981099f93b0a8140a3122f3f7b1dada735f1",
+      "content_hash": "2ebe8e5cd722e9d2a7be70ae3e435aa15109381660796b2048277809532d4836",
       "dependencies": [
         "cpq-product-catalog-setup",
         "cpq-pricing-rules"
@@ -8338,7 +8338,7 @@
         "Salesforce CPQ Advanced Approvals \u2014 Advanced Approvals for Salesforce CPQ Managed Package: https://help.salesforce.com/s/articleView?id=sf.cpq_adv_approvals.htm",
         "Salesforce CPQ Smart Approvals: https://help.salesforce.com/s/articleView?id=sf.cpq_smart_approvals.htm",
         "Salesforce CPQ Approval Chains: https://help.salesforce.com/s/articleView?id=sf.cpq_approval_chains.htm",
-        "Trailhead \u2014 Salesforce CPQ Advanced Approvals for Admins: https://trailhead.salesforce.com/content/learn/modules/salesforce-cpq-advanced-approvals-for-admins",
+        "Trailhead \u2014 Salesforce CPQ Advanced Approvals for Admins: https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
         "Salesforce Well-Architected \u2014 Security Pillar: https://architect.salesforce.com/docs/architect/well-architected/guide/security.html",
         "Salesforce Well-Architected \u2014 Operational Excellence Pillar: https://architect.salesforce.com/docs/architect/well-architected/guide/operational-excellence.html",
@@ -8971,7 +8971,7 @@
         "fad3462914f96580113e",
         "ff2a04a8e7db226060b4"
       ],
-      "content_hash": "e882ea6c0a69ec3ebe022fab473227efbbde1b7b6064c565dd45a54b3057ea74",
+      "content_hash": "552e0e067403adf452d7d481d9d3de88475624d5eb64e78ca5ef9cc597d649b1",
       "dependencies": [],
       "description": "Use when designing or troubleshooting Salesforce CPQ (SBQQ) quote templates: building template sections, configuring line columns, conditionally showing sections, generating branded PDFs, or handling multi-language output. Triggers: 'CPQ quote template', 'SBQQ template', 'CPQ PDF', 'line columns', 'quote template sections', 'conditional section', 'CPQ quote document'. NOT for standard Salesforce quote templates (Setup > Quote Templates), Visualforce-only PDF customization, or CPQ pricing rules and price books.",
       "file_location": "skills/admin/cpq-quote-templates",
@@ -8989,7 +8989,7 @@
         "Salesforce CPQ Help: Building Your CPQ Documents with CPQ Templates \u2014 https://help.salesforce.com/s/articleView?id=sf.cpq_doc_building_cpq_doc.htm",
         "Salesforce CPQ Help: Conditionally Show Template Sections \u2014 https://help.salesforce.com/s/articleView?id=sf.cpq_doc_conditional_print.htm",
         "Salesforce CPQ Help: Template Line Columns \u2014 https://help.salesforce.com/s/articleView?id=sf.cpq_doc_line_columns.htm",
-        "Trailhead: Structure a Customized Quote Template \u2014 https://trailhead.salesforce.com/content/learn/modules/cpq-quote-templates",
+        "Trailhead: Structure a Customized Quote Template \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
         "Salesforce Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm"
       ],
@@ -9111,7 +9111,7 @@
         "fd0e84a24427b365720d",
         "ff9ab8a05f46bf2a2bb7"
       ],
-      "content_hash": "3ea80d59141ffc726c0cef1df39cc34586f7a9363b2727151e89462995d48a30",
+      "content_hash": "a3acf9553072140236fcb04dfe79c3fe181aec0367b73fc645903d1423101889",
       "dependencies": [],
       "description": "Use when creating or configuring a CRM Analytics (Einstein Analytics) app \u2014 including app containers, lenses, datasets, data source connections, and app sharing. NOT for standard Salesforce reports and dashboards or Tableau.",
       "file_location": "skills/admin/crm-analytics-app-creation",
@@ -9125,7 +9125,7 @@
       "name": "crm-analytics-app-creation",
       "official_sources": [
         "CRM Analytics REST API Developer Guide Spring '26 \u2014 https://developer.salesforce.com/docs/atlas.en-us.bi_dev_guide_rest.meta/bi_dev_guide_rest/bi_rest_overview.htm",
-        "Trailhead Quick Start: Create an App and a Lens \u2014 https://trailhead.salesforce.com/content/learn/projects/quickstart-analytics-studio",
+        "Trailhead Quick Start: Create an App and a Lens \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Connect and Sync Your Data to CRM Analytics \u2014 https://help.salesforce.com/s/articleView?id=sf.bi_integrate_connecting_to_salesforce.htm&type=5",
         "Add Row-Level Security with a Security Predicate \u2014 https://help.salesforce.com/s/articleView?id=sf.bi_security_dataset_predicate.htm&type=5",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
@@ -13118,7 +13118,7 @@
         "fb8dff2fa0b4ec577823",
         "fc555f3f988e5e02ac6b"
       ],
-      "content_hash": "73499c4f28356e7e3358cf65fd14568ecd13d463382300b9bb69fdd5fbed582b",
+      "content_hash": "ac5e5b3ac424d125391f854e72388580b756540942f185569792d4344091eacf",
       "dependencies": [],
       "description": "Use this skill when an admin needs to create an Einstein Discovery story in CRM Analytics Studio, configure prediction definitions, deploy writeback fields, set up what-if analysis, or manage model refresh and activation. Trigger keywords: Einstein Discovery story, prediction definition, writeback field, CRM Analytics Studio, model refresh, what-if analysis, bulk scoring, prediction field, 1OR prefix. NOT for Prediction Builder (Einstein Prediction Builder is a separate product requiring no CRM Analytics license). NOT for the developer API path (programmatic scoring via the Connect REST API \u2014 see einstein-discovery-development skill).",
       "file_location": "skills/admin/einstein-discovery-setup",
@@ -13133,7 +13133,7 @@
       "name": "einstein-discovery-setup",
       "official_sources": [
         "Manage and Deploy Models in Einstein Discovery \u2014 https://help.salesforce.com/s/articleView?id=sf.bi_edd_story_deploy.htm",
-        "Einstein Discovery Basics: Create a Model (Trailhead) \u2014 https://trailhead.salesforce.com/content/learn/modules/einstein_discovery_basics",
+        "Einstein Discovery Basics: Create a Model (Trailhead) \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Einstein Discovery Prediction Writeback Fields in Salesforce \u2014 https://help.salesforce.com/s/articleView?id=sf.bi_edd_prediction_writeback.htm",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
       ],
@@ -13279,7 +13279,7 @@
         "f28b3efc75ab8d609624",
         "f5160fb0d4c2104e147a"
       ],
-      "content_hash": "6f14b6b09d3df5d9ae941df33cd8a685a9ec0a71df660b7715951b17da1b836c",
+      "content_hash": "4c063f6a24c88d0044c12b3e6d2839980a6a9866e79f777600d4a4dbf99af129",
       "dependencies": [],
       "description": "Use this skill when configuring or troubleshooting email deliverability for Marketing Cloud or Salesforce orgs: sender authentication (SPF, DKIM, DMARC), private sending domain setup, dedicated IP warm-up, list hygiene practices, and sender reputation monitoring. NOT for email template design, HTML/CSS email coding, or Journey Builder message configuration.",
       "file_location": "skills/admin/email-deliverability-strategy",
@@ -13298,7 +13298,7 @@
         "Salesforce Help: Marketing Cloud Deliverability Options \u2014 https://help.salesforce.com/s/articleView?id=sf.mc_es_deliverability_options.htm",
         "Salesforce Help: Email Sending Reputation \u2014 https://help.salesforce.com/s/articleView?id=sf.mc_es_sending_reputation.htm",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
-        "Google Sender Guidelines (February 2024) \u2014 https://support.google.com/mail/answer/81126",
+        "Google Sender Guidelines (February 2024) \u2014 https://support.google.com/  (page retired \u2014 see host index for current equivalent)",
         "Yahoo Sender Best Practices \u2014 https://senders.yahooinc.com/best-practices/",
         "RFC 7208 (SPF) \u2014 https://datatracker.ietf.org/doc/html/rfc7208",
         "RFC 6376 (DKIM) \u2014 https://datatracker.ietf.org/doc/html/rfc6376",
@@ -15678,7 +15678,7 @@
         "f466a03db98905673e2c",
         "fd863f5353e8835bb1fb"
       ],
-      "content_hash": "cd137b926c1a2613985320e3172f653c99caaff59b5af7ceb57c2a2e266b3885",
+      "content_hash": "c1a7d280e27663dd43e9b8cb8173a052e19e71f9d57f11963cc76b1fdfc166dc",
       "dependencies": [],
       "description": "Use when scoring a list of business or solution requirements against the *actual* capabilities of a specific Salesforce org so each row can be classified Standard / Configuration / Low-Code / Custom / Unfit, given an effort tier (S/M/L/XL), a risk tag, and an AppExchange suggestion when applicable. Trigger keywords: fit gap salesforce requirements, score requirements against salesforce capabilities, salesforce capability matrix, classify requirement as standard config custom, fit-gap effort tier, AppExchange alternative for requirement. NOT for requirements elicitation (use admin/requirements-gathering-for-sf). NOT for architecture decisions on the GAP rows (use architect/solution-design-patterns and standards/decision-trees/). NOT for license or edition selection (use architect/license-optimization-strategy and architect/org-edition-and-feature-licensing). NOT for OmniStudio-specific fit-gap (use architect/omnistudio-vs-standard-decision).",
       "file_location": "skills/admin/fit-gap-analysis-against-org",
@@ -15697,7 +15697,7 @@
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
         "Salesforce Help: Edition Comparison \u2014 https://help.salesforce.com/s/articleView?id=sf.overview_edition.htm (canonical authority for what is \"Standard\" per edition)",
         "Salesforce Help: User Licenses and Permission Set Licenses \u2014 https://help.salesforce.com/s/articleView?id=sf.users_understanding_license_types.htm (license-blocker classification)",
-        "AppExchange Listing Standards \u2014 https://appexchange.salesforce.com/listingDetail (currency check for managed-package alternatives)",
+        "AppExchange Listing Standards \u2014 https://appexchange.salesforce.com/  (page retired \u2014 see host index for current equivalent) (currency check for managed-package alternatives)",
         "Salesforce Architects: Well-Architected Adaptable framework \u2014 https://architect.salesforce.com/well-architected/adaptable/intentional (governance + customization-debt framing)"
       ],
       "outputs": [
@@ -16421,7 +16421,7 @@
         "f55185df29475c07d97c",
         "ff5648d6dd9ba03e24a6"
       ],
-      "content_hash": "057ba68063308e7169f5b78e11c06d8cb676007eb6ee1999d12d8cd950cfb070",
+      "content_hash": "f7c1ff0f5ac9093a1fce1c0dd35525eb6139d905e2af93339f73dd1e2fe1f0d4",
       "dependencies": [],
       "description": "Use this skill when configuring or troubleshooting FSC Referral Management: setting up referral types via ReferralRecordTypeMapping custom metadata, routing referrals through Lead Assignment Rules keyed on the Expressed Interest picklist, tracking Referrer Score, or enabling partner referral visibility in Experience Cloud. Trigger keywords: referral routing, FSC referral types, ReferralRecordTypeMapping, Expressed Interest picklist, partner referral Contact, Referrer Score Experience Cloud. NOT for standard Salesforce Lead management outside FSC, Einstein Referral Scoring (retiring feature), or Marketing Cloud referral campaigns.",
       "file_location": "skills/admin/fsc-referral-management",
@@ -16438,7 +16438,7 @@
         "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
         "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
-        "Trailhead \u2014 Intelligent Referrals and Scoring with Financial Services Cloud \u2014 https://trailhead.salesforce.com/content/learn/modules/intelligent-referrals-and-scoring-with-financial-services-cloud",
+        "Trailhead \u2014 Intelligent Referrals and Scoring with Financial Services Cloud \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Salesforce Help \u2014 Intelligent Need-Based Referrals and Scoring \u2014 https://help.salesforce.com/s/articleView?id=ind.fsc_referral_management_intelligent_referrals.htm",
         "Salesforce Help \u2014 Referral Scoring Feature for Financial Services Retirement Notice \u2014 https://help.salesforce.com/s/articleView?id=ind.fsc_referral_scoring_retirement.htm"
       ],
@@ -16585,7 +16585,7 @@
         "fc41508f9851426ea90b",
         "ff24d9d7675a5e6fb44a"
       ],
-      "content_hash": "ccc0efbe4b4f876f903eeaafd13ea7249a6fc8ebaf3dfdc3768425f01bde2b46",
+      "content_hash": "c9b17e12a3ebba87b24fd2062f0612179ca88de149a29775a9f4db129bab555c",
       "dependencies": [
         "admin/household-model-configuration",
         "admin/financial-account-setup",
@@ -16607,7 +16607,7 @@
         "FSC Admin Guide: Configure Record Rollups \u2014 https://help.salesforce.com/s/articleView?id=sf.fsc_admin_configure_rollups.htm",
         "FSC Object Reference: AccountContactRelation FSC Fields \u2014 https://developer.salesforce.com/docs/atlas.en-us.financial_services_cloud_object_reference.meta/financial_services_cloud_object_reference/sforce_api_objects_accountcontactrelation.htm",
         "FSC Developer Guide (Spring '26) \u2014 https://developer.salesforce.com/docs/atlas.en-us.financial_services_cloud_object_reference.meta/financial_services_cloud_object_reference/fsc_dev_guide.htm",
-        "FSC Trailhead: Create and Manage Household Groups for Financial Planning \u2014 https://trailhead.salesforce.com/content/learn/modules/financial-services-cloud-basics/create-and-manage-household-groups",
+        "FSC Trailhead: Create and Manage Household Groups for Financial Planning \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
       ],
       "outputs": [
@@ -17227,7 +17227,7 @@
         "f781e10114d89f603450",
         "fadb1dc02424bf827a0d"
       ],
-      "content_hash": "b7095cbdd6846173b8e1e97eba6cf584523ec70130f241e7baf5f9bd32b7eb41",
+      "content_hash": "9ebc13efa479d269826216312117c91d04985c91585198ff26cebc275cf1c8c2",
       "dependencies": [],
       "description": "Use this skill when designing, troubleshooting, or reviewing FSL Mobile worker workflows \u2014 including job lifecycle management, offline data capture, customer signature collection, parts consumption, and geolocation-triggered status transitions. Trigger keywords: FSL mobile, field service mobile workflow, offline job lifecycle, technician mobile, service appointment status, briefcase priming, parts consumption mobile, signature capture FSL. NOT for mobile app installation/configuration, FSL scheduling optimization, Dispatcher Console setup, or Work Capacity management.",
       "file_location": "skills/admin/fsl-mobile-workflow-design",
@@ -17243,7 +17243,7 @@
       "official_sources": [
         "Field Service Mobile App (Offline Considerations) \u2014 https://help.salesforce.com/s/articleView?id=sf.fs_mobile_offline.htm",
         "Configure Offline Mode \u2014 Field Service Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.field_service_dev.meta/field_service_dev/fsl_dev_mobile_offline.htm",
-        "Track Field Service Jobs \u2014 Trailhead \u2014 https://trailhead.salesforce.com/content/learn/modules/field-service-mobile-app/track-field-service-jobs",
+        "Track Field Service Jobs \u2014 Trailhead \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
         "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm"
       ],
@@ -17566,7 +17566,7 @@
         "fafbd08c7891e67cabee",
         "fe6efa1a52617d31f986"
       ],
-      "content_hash": "9bba88da4f93343ea75bc352a90d10b44069c67f802d73bb92ef2f6961e77f1c",
+      "content_hash": "c6f7c78beb1b687db2a221b46f99ce5cc4f8d6d08131a17e9e129221944439e1",
       "dependencies": [
         "fsl-scheduling-policies"
       ],
@@ -17584,8 +17584,8 @@
       ],
       "name": "fsl-scheduling-optimization-design",
       "official_sources": [
-        "Understanding Optimization in Field Service Scheduling (Trailhead) \u2014 https://trailhead.salesforce.com/content/learn/modules/field-service-lightning-quick-look/understand-optimization",
-        "Global Optimization Planning (Trailhead) \u2014 https://trailhead.salesforce.com/content/learn/modules/field-service-scheduling/global-optimization",
+        "Understanding Optimization in Field Service Scheduling (Trailhead) \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
+        "Global Optimization Planning (Trailhead) \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Set Up Routing for Travel Time Calculations \u2014 https://help.salesforce.com/s/articleView?id=sf.fs_routing.htm",
         "Optimize Appointments Using Priorities \u2014 https://help.salesforce.com/s/articleView?id=sf.fs_optimizer_priorities.htm",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
@@ -18020,7 +18020,7 @@
         "fc9e41760ee066acb443",
         "fd752eaa3a622197c795"
       ],
-      "content_hash": "d2405266f3e0b6fb4e13bc50d3a6b6b7f018bda5c14dda2806a25dae6015498a",
+      "content_hash": "4f79949c1bf5f3f551235bb51dd92fa84d96b4abbca24f04ab0dab031456cbf1",
       "dependencies": [
         "fsl-resource-management",
         "fsl-service-territory-setup"
@@ -18038,8 +18038,8 @@
       "name": "fsl-shifts-and-crew",
       "official_sources": [
         "Set Up Shifts for Field Service \u2014 https://help.salesforce.com/s/articleView?id=sf.fs_shifts_setup.htm",
-        "Simplify Shift Creation with Templates and Patterns (Trailhead) \u2014 https://trailhead.salesforce.com/content/learn/modules/field-service-shifts/simplify-shift-creation",
-        "Understanding Shift Scheduling (Trailhead) \u2014 https://trailhead.salesforce.com/content/learn/modules/field-service-shifts",
+        "Simplify Shift Creation with Templates and Patterns (Trailhead) \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)/simplify-shift-creation",
+        "Understanding Shift Scheduling (Trailhead) \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
         "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
@@ -18171,7 +18171,7 @@
         "fdee28da2d27dc8935f4",
         "ffa8f27b581670519165"
       ],
-      "content_hash": "000d02edc175ab94a513c9cc8f2f7523590f4a29b0b40e113462bc48794cb72e",
+      "content_hash": "6d70eb027e02fc0d0d3ddaf82404c048bfac2cdeb8f076389cb11fd235383f41",
       "dependencies": [],
       "description": "Use this skill to configure SLA enforcement for Salesforce Field Service (FSL) using Work Order entitlement processes: designing entitlement processes of type Work Order, defining FSL milestones (response time, on-site arrival, resolution), wiring milestone actions, and aligning Business Hours with service territory Operating Hours. NOT for Service Cloud Case SLAs, case escalation rules, or omni-channel routing \u2014 Case entitlement processes are a separate skill.",
       "file_location": "skills/admin/fsl-sla-configuration-requirements",
@@ -18187,7 +18187,7 @@
         "Salesforce Help: Set Up Entitlements for Work Orders \u2014 https://help.salesforce.com/s/articleView?id=sf.entitlements_work_orders.htm",
         "Salesforce Help: Entitlements and Milestones Overview \u2014 https://help.salesforce.com/s/articleView?id=sf.entitlements_overview.htm",
         "Salesforce Help: Business Hours in Entitlement Management \u2014 https://help.salesforce.com/s/articleView?id=sf.entitlements_biz_hours.htm",
-        "Trailhead: Use Entitlements with Work Orders \u2014 https://trailhead.salesforce.com/content/learn/modules/field-service-lightning-quick-look/use-entitlements-with-work-orders",
+        "Trailhead: Use Entitlements with Work Orders \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Salesforce Well-Architected: Reliable \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/reliable.html",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
         "Object Reference: WorkOrderMilestone \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_workordermilestone.htm"
@@ -18314,7 +18314,7 @@
         "f8edf616619935bca492",
         "fa62d21faa4658288acb"
       ],
-      "content_hash": "c0b5b593347d7ee1ad9781e5770f4c14f66d393dab8d2a6883e82b1ed43ebd27",
+      "content_hash": "e141c9706367bd0e848bace63b68c87c15fe116e39975b3fbf7a409d55856c07",
       "dependencies": [],
       "description": "Configure and manage Field Service Lightning work orders: work types, work order line items, service appointments, status flow, and auto-creation via maintenance plans. NOT for case management, resource scheduling optimization, or dispatcher console configuration.",
       "file_location": "skills/admin/fsl-work-order-management",
@@ -18332,7 +18332,7 @@
         "Create Work Types \u2014 https://help.salesforce.com/s/articleView?id=sf.fs_create_work_types.htm",
         "WorkOrder Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.field_service_dev.meta/field_service_dev/apex_class_FSL_ScheduleServiceUtil.htm",
         "Field Service Developer Guide (WorkOrder) \u2014 https://developer.salesforce.com/docs/atlas.en-us.field_service_dev.meta/field_service_dev/fsl_dev_intro.htm",
-        "Track Field Service Jobs (Trailhead) \u2014 https://trailhead.salesforce.com/content/learn/modules/field-service-lightning-basics/track-field-service-jobs",
+        "Track Field Service Jobs (Trailhead) \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
       ],
       "outputs": [
@@ -18474,7 +18474,7 @@
         "fb04a260b2ed2b97262e",
         "fd1e9cf082ebf0e15d0b"
       ],
-      "content_hash": "1b961c691c924df3ed0c46222a044f1b2945e9e1d68a62b9c8eb4f16df561f52",
+      "content_hash": "90242e014867f49c53558db30aca75d786ccc000b37c8ae52ce2f997afd73739",
       "dependencies": [],
       "description": "Use this skill when designing or documenting nonprofit fundraising lifecycle stages, donor pipeline workflows, cultivation-to-stewardship cycles, major gift solicitation sequences, or Salesforce Opportunity sales process configuration for NPSP or Nonprofit Cloud. Trigger keywords: fundraising lifecycle, donor pipeline, cultivation stage, solicitation workflow, major gift process, moves management, NPSP Opportunity stages, stewardship cycle, NPC fundraising stages. NOT for implementation of Engagement Plans, gift entry processing, payment integration, or recurring donation configuration.",
       "file_location": "skills/admin/fundraising-process-mapping",
@@ -18490,7 +18490,7 @@
       "official_sources": [
         "Salesforce Help \u2014 Nonprofit Success Pack (NPSP) Opportunity Settings: https://help.salesforce.com/s/articleView?id=sf.npsp_setup_donations.htm",
         "Trailhead \u2014 Moves Management with Nonprofit Success Pack: https://trailhead.salesforce.com/content/learn/modules/moves-management-with-nonprofit-success-pack",
-        "Trailhead \u2014 Opportunity Settings in Nonprofit Success Pack: https://trailhead.salesforce.com/content/learn/modules/npsp-opportunity-settings",
+        "Trailhead \u2014 Opportunity Settings in Nonprofit Success Pack: https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Salesforce Help \u2014 Nonprofit Cloud Overview: https://help.salesforce.com/s/articleView?id=sfdo.npc_overview.htm",
         "Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
         "Salesforce Well-Architected: Adaptability Pillar: https://architect.salesforce.com/docs/architect/well-architected/guide/adaptability.html",
@@ -18630,7 +18630,7 @@
         "f5fd41d0bb6c1735ed16",
         "f82f59517c550660a207"
       ],
-      "content_hash": "0681f76450d0debb79112c9691436f8882b5e4c457c1aa6c437633cc9698a1e5",
+      "content_hash": "bba89f40e5b7d970f3d11e575a1bf0b40277825e743de4c033a6570f06851426",
       "dependencies": [],
       "description": "Configure and operate NPSP Gift Entry: gift entry templates, batch gift entry, payment processing, donation allocation, and receipting workflows. NOT for standard opportunity creation or direct GiftTransaction DML outside the Gift Entry framework.",
       "file_location": "skills/admin/gift-entry-and-processing",
@@ -18645,7 +18645,7 @@
       "official_sources": [
         "Salesforce Help \u2014 Configure Gift Entry (NPSP): https://help.salesforce.com/s/articleView?id=sf.npsp_gift_entry.htm",
         "Salesforce Fundraising Developer Guide \u2014 GiftEntry Object and processGiftEntries Action (API v59.0+): https://developer.salesforce.com/docs/atlas.en-us.fundraising_dev.meta/fundraising_dev/fundraising_gift_entry_api_overview.htm",
-        "Trailhead \u2014 Set Up Gift Entry in Nonprofit Success Pack: https://trailhead.salesforce.com/content/learn/projects/set-up-gift-entry-npsp",
+        "Trailhead \u2014 Set Up Gift Entry in Nonprofit Success Pack: https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
       ],
       "outputs": [
@@ -18900,7 +18900,7 @@
         "fc30bbd4a3c89b1d827d",
         "fcf5683ea8a2f059e55b"
       ],
-      "content_hash": "2cc10de2d8216df66aa43d14eae58dcb3e526d03555e69acb95be4a9b0108bcc",
+      "content_hash": "44e2d134806181e0fae78c6a9fb1d36360806a63f091cfdec7e54580a08540fc",
       "dependencies": [],
       "description": "Use when configuring grant tracking in a Salesforce nonprofit org \u2014 covers both NPSP Outbound Funds Module (Opportunity-based, managed package path) and Nonprofit Cloud for Grantmaking (FundingAward, FundingDisbursement, FundingAwardRequirement objects, separate license). Trigger keywords: grant management, funding awards, disbursement tranches, grantmaking setup, OFM, FundingAward, FundingDisbursement, FundingAwardRequirement. NOT for standard Opportunity tracking or fundraising donor gifts.",
       "file_location": "skills/admin/grant-management-setup",
@@ -18914,8 +18914,8 @@
       "name": "grant-management-setup",
       "official_sources": [
         "Grants Management Product Documentation \u2014 https://help.salesforce.com/s/articleView?id=sfdo.Grants_Management.htm",
-        "Manage Funding Awards and Disbursements (Trailhead) \u2014 https://trailhead.salesforce.com/content/learn/modules/nonprofit-cloud-for-grantmaking",
-        "Fund Management Requirements and Disbursements Guide (Trailhead) \u2014 https://trailhead.salesforce.com/content/learn/modules/nonprofit-cloud-grantmaking-requirements",
+        "Manage Funding Awards and Disbursements (Trailhead) \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
+        "Fund Management Requirements and Disbursements Guide (Trailhead) \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Grantmaking and Budget Management Data Model (Salesforce Developers) \u2014 https://developer.salesforce.com/docs/atlas.en-us.nonprofit_cloud.meta/nonprofit_cloud/npc_grantmaking_data_model.htm",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
       ],
@@ -19014,7 +19014,7 @@
         "f7b927201ad1d544468c",
         "fd8edbec327f82b1450d"
       ],
-      "content_hash": "b65836294816055e789e37f06146d302dcb7fad331c72c72526898c03afa3336",
+      "content_hash": "842d80049bec374ec0d47a0626d82f5247f57340da88206f002334b7d2921b6d",
       "dependencies": [
         "admin/health-cloud-patient-setup",
         "admin/care-program-management"
@@ -19031,7 +19031,7 @@
       "name": "health-cloud-consent-management",
       "official_sources": [
         "Consent Management for Health Cloud: https://help.salesforce.com/s/articleView?id=ind.hc_consent_management.htm",
-        "Optimizing Health Cloud Consent Management (Trailhead): https://trailhead.salesforce.com/content/learn/modules/health-cloud-consent-management",
+        "Optimizing Health Cloud Consent Management (Trailhead): https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Privacy Consent Data Model: https://developer.salesforce.com/docs/atlas.en-us.health_cloud_object_reference.meta/health_cloud_object_reference/hco_object_authorization_form_consent.htm",
         "AuthorizationFormConsent Object Reference: https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_authorizationformconsent.htm",
         "Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
@@ -19501,6 +19501,7 @@
       "category": "admin",
       "chunk_ids": [
         "022683ea651613f0d8f0",
+        "03b56654241c01351e99",
         "053efa334754cd9a7b9b",
         "0c149cac73852ca91edb",
         "0db3cce4b91892ae0dc9",
@@ -19612,7 +19613,7 @@
         "fc92f1336a8f0f95f580",
         "fde40fce4a5052e74f81"
       ],
-      "content_hash": "7022f80c65a619a12201c3e864c7e8d7b631ea7e5b77f593af5be4cc20f4f604",
+      "content_hash": "17a2bcd71da2fec4e1d6d8e98ad5d8e09e1c73df8b0f92ae5e5d66ccc5eb2b0c",
       "dependencies": [
         "admin/financial-account-setup",
         "admin/person-accounts"
@@ -19634,7 +19635,7 @@
         "FSC Admin Guide: What Is a Group? \u2014 https://help.salesforce.com/s/articleView?id=sf.fsc_admin_groups_overview.htm",
         "FSC Admin Guide: Configure Record Rollups \u2014 https://help.salesforce.com/s/articleView?id=sf.fsc_admin_rollups.htm",
         "FSC Object Reference: AccountContactRelation FSC Fields \u2014 https://developer.salesforce.com/docs/atlas.en-us.financial_services_cloud_object_reference.meta/financial_services_cloud_object_reference/fsc_obj_accountcontactrelation.htm",
-        "FSC Trailhead: Configure Record Rollups \u2014 Group Level Opportunities \u2014 https://trailhead.salesforce.com/content/learn/modules/fsc-rollups/configure-group-level-rollups",
+        "FSC Trailhead: Configure Record Rollups \u2014 Group Level Opportunities \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)s/configure-group-level-rollups",
         "FSC Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.financial_services_cloud_object_reference.meta/financial_services_cloud_object_reference/fsc_intro.htm"
       ],
       "outputs": [
@@ -20218,7 +20219,7 @@
         "f9287a9de4fb0ebda77f",
         "f95be09f9aa25dc12a65"
       ],
-      "content_hash": "c2c09d297647e1efa729351547a1929d47f04bdb267fd7a25b507064874c6468",
+      "content_hash": "663ff1bfa7774f2f5b1709acae4c9890f4d902615514fc65b79b53525deddb4c",
       "dependencies": [],
       "description": "Use this skill to configure Salesforce Industries Insurance (Financial Services Cloud Insurance) including permission set licenses, irreversible org settings, core insurance objects, coverage types, claim configuration, and OmniScript-based quoting using the Insurance Product Administration API. Trigger keywords: insurance setup, FSC Insurance, InsurancePolicy object, InsurancePolicyCoverage, policy quoting OmniScript, claim type configuration, InsProductService, Digital Insurance Platform, many-to-many policy, multiple producers. NOT for generic OmniStudio setup, standard CPQ/Pricebook quoting, Health Cloud enrollment, or general FSC configuration unrelated to insurance line-of-business.",
       "file_location": "skills/admin/industries-insurance-setup",
@@ -20236,9 +20237,9 @@
         "Salesforce Help: Set Up Insurance for Financial Services Cloud \u2014 https://help.salesforce.com/s/articleView?id=sf.fsc_admin_insurance_setup.htm",
         "Salesforce Insurance Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.insurance_dev_guide.meta/insurance_dev_guide/insurance_dev_guide_intro.htm",
         "Insurance Policy Administration Connect API Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.chatterapi.meta/chatterapi/connect_resources_insurance_policy_admin.htm",
-        "Trailhead: Insurance for FSC Admin Essentials \u2014 https://trailhead.salesforce.com/content/learn/modules/insurance-for-fsc-admin-essentials",
-        "Trailhead: Insurance Policy and Claim Details Setup \u2014 https://trailhead.salesforce.com/content/learn/modules/insurance-policy-and-claim-details-setup",
-        "Trailhead: Create OmniScripts for Quoting \u2014 https://trailhead.salesforce.com/content/learn/modules/create-omniscripts-for-quoting",
+        "Trailhead: Insurance for FSC Admin Essentials \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
+        "Trailhead: Insurance Policy and Claim Details Setup \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
+        "Trailhead: Create OmniScripts for Quoting \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
         "Object Reference: InsurancePolicy \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_insurancepolicy.htm"
       ],
@@ -21664,7 +21665,7 @@
         "fc97c796e74f8ba170cd",
         "fdc84f539fdf801745b7"
       ],
-      "content_hash": "1b713f199bb93792e43215d8738c056dd10e936a50a575ce1b52476e7f6797b2",
+      "content_hash": "6f4c9a95006b1e5b65551403283da93cc61edc092b659c83e744efaa42c11d8e",
       "dependencies": [
         "mcae-pardot-setup",
         "mcae-lead-scoring-and-grading"
@@ -21684,7 +21685,7 @@
       "official_sources": [
         "Engagement Studio (MCAE Help) \u2014 https://help.salesforce.com/s/articleView?id=sf.pardot_engagement_studio.htm",
         "Scoring and Grading (MCAE Help) \u2014 https://help.salesforce.com/s/articleView?id=sf.pardot_scoring_and_grading_about.htm",
-        "Lead Nurturing with MCAE (Trailhead) \u2014 https://trailhead.salesforce.com/content/learn/modules/pardot-lead-nurturing",
+        "Lead Nurturing with MCAE (Trailhead) \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
       ],
       "outputs": [
@@ -24926,7 +24927,7 @@
         "fdebeff99cf5d62a97fc",
         "ffceca0a15a269e05e3d"
       ],
-      "content_hash": "8a1bcf898304457f792566511827ae6a6152dc41a2db93f703123518b93a9940",
+      "content_hash": "cdadf039d9fb6a4d0356d95ff577d849be568520c6830428fd0499a600c944d4",
       "dependencies": [],
       "description": "Use this skill when configuring or troubleshooting the Nonprofit Success Pack Program Management Module (PMM) \u2014 a separate managed package for program delivery, cohort setup, service scheduling, service delivery recording, and outcome/attendance tracking for beneficiaries. Trigger keywords: program management module, PMM, Program__c, ProgramEngagement__c, ServiceDelivery__c, cohort setup, bulk service delivery, service schedule, service participant. NOT for NPSP core donor management, gift entry, recurring donations, soft credits, or Health Cloud care programs.",
       "file_location": "skills/admin/npsp-program-management",
@@ -24942,7 +24943,7 @@
       "official_sources": [
         "Program Management Module Managed Package (Salesforce Help) \u2014 https://help.salesforce.com/s/articleView?id=sfdo.PMM_Manage_the_Package.htm",
         "Program Management Module Documentation (Salesforce Help) \u2014 https://help.salesforce.com/s/articleView?id=sfdo.PMM.htm",
-        "Service Delivery with Program Management Module (Trailhead) \u2014 https://trailhead.salesforce.com/content/learn/modules/program-management-module",
+        "Service Delivery with Program Management Module (Trailhead) \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Customize Bulk Service Deliveries (Salesforce Help) \u2014 https://help.salesforce.com/s/articleView?id=sfdo.PMM_Customize_Bulk_Service_Deliveries.htm",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
       ],
@@ -25345,7 +25346,7 @@
         "f968d4848399a9a0c5de",
         "f9c83c92ceb47815d4fe"
       ],
-      "content_hash": "bc9319a32953c416ba90cf36c1a5e42cb2b408e92c4c865936246a31e36f0ed2",
+      "content_hash": "341022aeae3ea57b6aca261acd7c68f408bf660f30043e9adf2c8b4b132a707c",
       "dependencies": [],
       "description": "Use this skill to gather, document, and validate OmniScript flow design requirements before development begins \u2014 covering screen layout requirements, branching logic, data source requirements, and user journey mapping. Trigger keywords: OmniScript requirements, OmniScript BA, OmniScript screen design, OmniScript user journey, OmniScript branching requirements. NOT for OmniScript development implementation, DataRaptor mapping, Integration Procedure design, or standard Screen Flow requirements.",
       "file_location": "skills/admin/omniscript-flow-design-requirements",
@@ -25359,7 +25360,7 @@
       "name": "omniscript-flow-design-requirements",
       "official_sources": [
         "OmniScript Best Practices \u2014 https://help.salesforce.com/s/articleView?id=sf.os_omniscript_best_practices.htm",
-        "OmniScripts with Branching \u2014 https://trailhead.salesforce.com/content/learn/modules/omnistudio-omniscript/omniscripts-with-branching",
+        "OmniScripts with Branching \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "OmniStudio Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer_guide.meta/omnistudio_developer_guide/omnistudio_intro.htm",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
       ],
@@ -26425,7 +26426,7 @@
         "fa88f6a732ea3035adf3",
         "fbefd52e74e671d09478"
       ],
-      "content_hash": "79491680b29df6afbc582a9407de038e1098b81f2c443a9386c3f42c4b7dca04",
+      "content_hash": "377423ac3a0b2c9391437d84f9a576eb851a4ba5306595b646491682074b10e4",
       "dependencies": [
         "admin/health-cloud-patient-setup",
         "admin/care-program-management"
@@ -26442,7 +26443,7 @@
       "name": "patient-engagement-requirements",
       "official_sources": [
         "Salesforce Health Cloud Admin Guide \u2014 Intelligent Appointment Management: https://help.salesforce.com/s/articleView?id=ind.hc_iam.htm",
-        "Trailhead \u2014 Intelligent Appointment Management for Health Cloud: https://trailhead.salesforce.com/content/learn/modules/intelligent-appointment-management-for-health-cloud",
+        "Trailhead \u2014 Intelligent Appointment Management for Health Cloud: https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "OmniStudio Developer Guide: https://developer.salesforce.com/docs/industries/omnistudio/overview",
         "Experience Cloud for Health Cloud: https://help.salesforce.com/s/articleView?id=ind.hc_exp_cloud_for_health_cloud.htm",
         "Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
@@ -28845,7 +28846,7 @@
         "f33f48210e30c3d1d335",
         "f3f7103b4c6f0f7d5041"
       ],
-      "content_hash": "e4cb12b45212c11c6c725f93a1784bc9a1d3128961b71db7459c3b893ca8b1d3",
+      "content_hash": "f489c5c282a997e9b778f3732bf8c3a8d497696ed3088677e1fd8577fbef137a",
       "dependencies": [
         "products-and-pricebooks",
         "approval-processes"
@@ -28865,7 +28866,7 @@
         "Salesforce Help \u2014 Quotes Overview: https://help.salesforce.com/s/articleView?id=sf.quotes_overview.htm",
         "Salesforce Help \u2014 Syncing Quotes with Opportunities: https://help.salesforce.com/s/articleView?id=sf.quotes_syncing_overview.htm",
         "Salesforce Help \u2014 Setting Up Quotes: https://help.salesforce.com/s/articleView?id=sf.quotes_setup.htm",
-        "Trailhead \u2014 Negotiate Enterprise Quotes: https://trailhead.salesforce.com/content/learn/modules/sales-cloud-platform-quick-look/negotiate-enterprise-quotes",
+        "Trailhead \u2014 Negotiate Enterprise Quotes: https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Trailhead \u2014 Build a Discount Approval Process: https://trailhead.salesforce.com/content/learn/projects/build-a-discount-approval-process",
         "Salesforce Help \u2014 Create Orders from Quotes: https://help.salesforce.com/s/articleView?id=sf.quotes_create_orders.htm",
         "Salesforce Help \u2014 Quote Template Limits: https://help.salesforce.com/s/articleView?id=sf.quotes_doc_limits.htm",
@@ -29598,7 +29599,7 @@
         "fec95320c84ae11cbbc2",
         "ff833f80bba450e3f912"
       ],
-      "content_hash": "9d54b696645dcb6807f665c11dfc1148d91f6db3d3dd8dd32113ee5a67085d77",
+      "content_hash": "7936f4baa64f6b8bd74efb3ad9141ff93ee37e1af04ebf1a160290574c33e4a3",
       "dependencies": [],
       "description": "Configure and manage NPSP Enhanced Recurring Donations (ERD): enable ERD mode, define schedule objects, configure installment behavior, set status automation thresholds, and interpret the Upcoming Installments UI. NOT for legacy recurring donations (pre-March 2021 model), one-time Opportunity creation, or custom payment gateway integrations beyond native NPSP.",
       "file_location": "skills/admin/recurring-donations-setup",
@@ -29614,7 +29615,7 @@
       "official_sources": [
         "NPSP Recurring Donations Overview \u2014 https://help.salesforce.com/s/articleView?id=sfdo.RD2_Overview.htm",
         "Configure Recurring Donations (NPSP) \u2014 https://help.salesforce.com/s/articleView?id=sfdo.RD2_Configure.htm",
-        "Manage Recurring Donations \u2014 https://trailhead.salesforce.com/content/learn/modules/nonprofit-success-pack-recurring-donations",
+        "Manage Recurring Donations \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
         "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
@@ -30541,7 +30542,7 @@
         "fc1fc330117e2ac027bc",
         "fdba1803204366cf8de1"
       ],
-      "content_hash": "a1ffe3a62fbc4230571897b63df5eb8fe42535401f19dac13aeae0e05d5fdb80",
+      "content_hash": "6879b68804907ed91df461449cce9bacd33cd0ef8dedb9e7f776a1f6658b06cf",
       "dependencies": [],
       "description": "Use this skill when eliciting, documenting, and structuring requirements for a Salesforce implementation or enhancement: writing Salesforce-specific user stories with acceptance criteria, mapping As-Is and To-Be business processes, conducting stakeholder discovery interviews, and performing gap analysis against standard Salesforce capabilities. Trigger keywords: requirements gathering, user story, As-Is To-Be, gap analysis, stakeholder interview, process mapping, business requirements, fit gap. NOT for technical design decisions (use solution-design-patterns). NOT for automation implementation (use flow/* or apex/* skills). NOT for data model design (use data-model-design-patterns or object-creation-and-design).",
       "file_location": "skills/admin/requirements-gathering-for-sf",
@@ -30555,7 +30556,7 @@
       "name": "requirements-gathering-for-sf",
       "official_sources": [
         "Salesforce Well-Architected Overview \u2014 architecture quality framing, operational excellence and user experience pillars \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
-        "Salesforce Certified Business Analyst Exam Guide \u2014 canonical BA role, exam domains (Stakeholder Collaboration 23%, Requirements 18%, User Stories 18%, Customer Discovery 17%, Business Process Mapping 12%, UAT/Dev Support 12%) \u2014 https://trailhead.salesforce.com/credentials/businessanalyst",
+        "Salesforce Certified Business Analyst Exam Guide \u2014 canonical BA role, exam domains (Stakeholder Collaboration 23%, Requirements 18%, User Stories 18%, Customer Discovery 17%, Business Process Mapping 12%, UAT/Dev Support 12%) \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Trailhead: User Story Creation module \u2014 if/then acceptance criteria format, INVEST framework, user story structure \u2014 https://trailhead.salesforce.com/content/learn/modules/user-story-creation",
         "Trailhead: Business Process Mapping module \u2014 UPN notation, 8\u201310 box limit per level, As-Is/To-Be/Transition State methodology \u2014 https://trailhead.salesforce.com/content/learn/modules/business-process-mapping",
         "Trailhead: Explore Techniques for Information Discovery \u2014 BABOK-aligned elicitation, stakeholder discovery \u2014 https://trailhead.salesforce.com/content/learn/modules/business-analyst_skills-strategies/explore-techniques--information-discovery",
@@ -30696,7 +30697,7 @@
         "fcb105737041cf1b22cf",
         "ff9761cfbb65b7bb23e2"
       ],
-      "content_hash": "13fb59203ed74e01966fb3e09471896c2429707fe73d1e456fa2e74820746e3f",
+      "content_hash": "6e1787b9cbc88962e95cec20ecb5775f62913b023e04949820a831aac0901769",
       "dependencies": [],
       "description": "Use this skill when building or maintaining a Requirements Traceability Matrix (RTM) on a Salesforce project: one row per requirement, columns for source, user-story id(s), test-case id(s), defect id(s), sprint, release, and status. Covers forward traceability (req \u2192 story \u2192 code \u2192 test) and backward traceability (test \u2192 req). Trigger keywords: RTM, requirements traceability matrix, audit trail for salesforce delivery, traceability for steerco, deferred requirement tracking, regulatory traceability. NOT for requirements elicitation (use requirements-gathering-for-sf). NOT for user-story authoring (use user-story-writing-for-salesforce). NOT for UAT test design (use uat-test-case-design). NOT for Apex test design (use agents/test-generator/AGENT.md). NOT for backlog prioritization (use moscow-prioritization-for-sf-backlog).",
       "file_location": "skills/admin/requirements-traceability-matrix",
@@ -30714,7 +30715,7 @@
         "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
         "Salesforce Well-Architected \u2014 Operational Excellence \u2014 https://architect.salesforce.com/well-architected/adaptable/resilient",
-        "Salesforce Trailhead \u2014 Business Analyst Skills (requirements management and traceability practices) \u2014 https://trailhead.salesforce.com/credentials/businessanalyst"
+        "Salesforce Trailhead \u2014 Business Analyst Skills (requirements management and traceability practices) \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)"
       ],
       "outputs": [
         "Single-source-of-truth RTM (CSV + markdown rendering) with one row per requirement",
@@ -31097,7 +31098,7 @@
         "f81f22d75416337b2a96",
         "f843296bc37f6f22fdb7"
       ],
-      "content_hash": "a1e4d88419bff25c3ceae434b2f6500f7204c04ee38466eb0bf030d7a42afefd",
+      "content_hash": "40e556b72471cd57edef96919a42f5f09f07974cba42b22001fa23b040ba5697",
       "dependencies": [],
       "description": "Use when setting up, configuring, or troubleshooting Salesforce Sales Engagement (formerly High Velocity Sales) cadences, call scripts, email templates, work queue, or rep assignment. Triggers: 'cadence builder', 'HVS cadence', 'work queue steps', 'sales engagement setup', 'sequence steps not appearing', 'cadence not sending email', 'Sales Engagement permission set'. NOT for Marketing Cloud campaigns, Marketing Cloud Account Engagement (Pardot) journeys, or custom Apex email services.",
       "file_location": "skills/admin/sales-engagement-cadences",
@@ -31113,7 +31114,7 @@
       "official_sources": [
         "Salesforce Sales Engagement Implementation Guide (Spring '26) \u2014 https://help.salesforce.com/s/articleView?id=sf.sales_engagement_implementation_guide.htm",
         "Salesforce Help: Cadence Considerations \u2014 https://help.salesforce.com/s/articleView?id=sf.sales_cadence_considerations.htm",
-        "Trailhead: Standard Cadences for Sales Engagement \u2014 https://trailhead.salesforce.com/content/learn/modules/sales-engagement-for-admins",
+        "Trailhead: Standard Cadences for Sales Engagement \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
         "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm"
       ],
@@ -31275,7 +31276,7 @@
         "fb4435ad2066d85ddebc",
         "fda7f3cf3314ef0637c8"
       ],
-      "content_hash": "15a178833db8cbfa6e0776e07f0eb716a9785333325d1c06633d92bffcae3361",
+      "content_hash": "ba62cfde0aa81d468386e65de1bf96106f13298462c3b1c35e90d43e970fa20c",
       "dependencies": [],
       "description": "Eliciting, documenting, and structuring a sales process before it is built in Salesforce: stage sequencing, entry/exit criteria per stage, win/loss analysis requirements, and stage transition rules. Use when a business needs to analyse or formalise its sales methodology before any Salesforce configuration begins. Trigger keywords: sales process design, stage discovery, entry criteria, exit criteria, stage gate, win/loss categorisation, sales methodology, pipeline stages, opportunity stage mapping. NOT for configuring OpportunityStage picklist values, Sales Processes, or record types in Setup (use opportunity-management skill). NOT for Path configuration. NOT for Collaborative Forecasts or quota alignment.",
       "file_location": "skills/admin/sales-process-mapping",
@@ -31289,8 +31290,8 @@
       ],
       "name": "sales-process-mapping",
       "official_sources": [
-        "Trailhead: Create and Manage Stages and Sales Processes \u2014 https://trailhead.salesforce.com/content/learn/modules/sales-cloud-basics/set-up-stages-and-sales-processes",
-        "Trailhead: Business Process Mapping \u2014 https://trailhead.salesforce.com/content/learn/modules/salesforce-business-analyst-quick-look/map-business-processes",
+        "Trailhead: Create and Manage Stages and Sales Processes \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
+        "Trailhead: Business Process Mapping \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Salesforce Object Reference: OpportunityStage \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_opportunitystage.htm",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
         "Salesforce Help: Sales Processes \u2014 https://help.salesforce.com/s/articleView?id=sf.customize_salesstages.htm",
@@ -31558,7 +31559,7 @@
         "f43845abcb3725ec63db",
         "fc3a945e147b41648c36"
       ],
-      "content_hash": "fb5c8003cf73079b6649be7834bab2646f2f8d689e10b25438271aaa291ed09e",
+      "content_hash": "11790cd4b42825b5c6478b44b9418ae51ab1502827ac2b3da8d7399ab5b17a31",
       "dependencies": [],
       "description": "Use when preparing for a Salesforce seasonal release \u2014 triaging release notes, reviewing Release Updates, opting into Sandbox Preview, and communicating change impact to stakeholders. Triggers: 'upcoming Salesforce release', 'release notes triage', 'Release Updates', 'sandbox preview opt-in', 'release readiness checklist', 'production upgrade date', 'feature impact', 'critical update'. NOT for deploying org-specific changes between sandboxes (use change-management-and-deployment), nor for long-term sandbox environment design (use sandbox-strategy).",
       "file_location": "skills/admin/salesforce-release-preparation",
@@ -31576,8 +31577,8 @@
         "Salesforce Help \u2014 Release Updates: https://help.salesforce.com/s/articleView?id=sf.release_updates.htm&type=5",
         "Salesforce Help \u2014 Upgrade Release Schedule FAQ (Knowledge Article 005224913): https://help.salesforce.com/s/articleView?id=000005224913&type=1",
         "trust.salesforce.com \u2014 Planned Maintenance Calendar: https://status.salesforce.com/maintenance",
-        "admin.salesforce.com \u2014 Be Release Ready: https://admin.salesforce.com/blog/2023/be-release-ready",
-        "Trailhead \u2014 Advanced Release Readiness Strategies: https://trailhead.salesforce.com/content/learn/modules/advanced-release-readiness-strategies",
+        "admin.salesforce.com \u2014 Be Release Ready: https://admin.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
+        "Trailhead \u2014 Advanced Release Readiness Strategies: https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Salesforce Well-Architected Framework \u2014 Operational Excellence: https://architect.salesforce.com/docs/architect/well-architected/guide/operational-excellence.html",
         "Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
       ],
@@ -32734,7 +32735,7 @@
         "fcfc3e9caa33458ebae5",
         "ffa0e719a06b3b82d463"
       ],
-      "content_hash": "99fd87f7752010cc9f9e61d783c4493980706a5d4b358d76813e9c826ec5ec6a",
+      "content_hash": "b5be43f5ef4a7645db43b612140580ba4d6e43baa9df490bdfec0a5dc2e05230",
       "dependencies": [],
       "description": "Use this skill to configure a Lightning Service Console app in Salesforce \u2014 setting Console Navigation (split view), defining workspace tabs and subtabs, configuring the utility bar with Omni-Channel, Macros, and History, creating Quick Text entries, setting up keyboard shortcuts, and defining navigation rules per object. Trigger keywords: Service Console, console app, workspace tabs, subtabs, utility bar macros, Omni-Channel utility, split view, Quick Text, console navigation rules, keyboard shortcuts service console. NOT for generic Lightning app creation (use app-and-tab-configuration), NOT for Omni-Channel routing configuration (use omni-channel-routing), NOT for CTI adapter installation (use open-cti-setup), NOT for Einstein Bot or Messaging setup.",
       "file_location": "skills/admin/service-console-configuration",
@@ -32749,7 +32750,7 @@
       "name": "service-console-configuration",
       "official_sources": [
         "Salesforce Help \u2014 Features Available in Lightning Console Apps: https://help.salesforce.com/s/articleView?id=sf.console2_features_available.htm",
-        "Salesforce Help \u2014 Set Up the Lightning Service Console (Trailhead reference): https://trailhead.salesforce.com/content/learn/modules/service_console",
+        "Salesforce Help \u2014 Set Up the Lightning Service Console (Trailhead reference): https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Salesforce Help \u2014 Keyboard Shortcuts for Lightning Console Apps: https://help.salesforce.com/s/articleView?id=sf.console2_keyboard_shortcuts.htm",
         "Salesforce Help \u2014 Macros (Service Console Macros): https://help.salesforce.com/s/articleView?id=sf.macros_def.htm",
         "Salesforce Help \u2014 Quick Text: https://help.salesforce.com/s/articleView?id=sf.quick_text_overview.htm",
@@ -33006,7 +33007,7 @@
         "fd9264f0c3fe8d720c63",
         "fe27013b91900706fe8c"
       ],
-      "content_hash": "7c54b80dbb5e8785b5e0b6d3ad6e425d8ece7b621cdabd29818ef2a3a9a10da8",
+      "content_hash": "2d3abb4558d937da09edce8ed548cdf05df371c9b7e1ae93aa636b896a065688",
       "dependencies": [
         "npsp-household-accounts",
         "gift-entry-and-processing"
@@ -33026,7 +33027,7 @@
         "Soft Credits Overview (NPSP Help) \u2014 https://help.salesforce.com/s/articleView?id=sfdo.NPSP_Soft_Credits_Overview.htm",
         "Manage Soft Credits (NPSP Help) \u2014 https://help.salesforce.com/s/articleView?id=sfdo.NPSP_Manage_Soft_Credits.htm",
         "Configure Matching Gifts (NPSP Help) \u2014 https://help.salesforce.com/s/articleView?id=sfdo.NPSP_Configure_Matching_Gifts.htm",
-        "Donation Soft Credit Management with NPSP (Trailhead) \u2014 https://trailhead.salesforce.com/content/learn/modules/npsp-donation-management/soft-credit-management",
+        "Donation Soft Credit Management with NPSP (Trailhead) \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
         "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
@@ -34594,7 +34595,7 @@
         "fd1f3f7da09d9ed6d09e",
         "feae78ddf52ba4a24753"
       ],
-      "content_hash": "459183a7745810d2b4e9d8a2f51b0156f37e00751bedc9cf1fd10c6c99f3fc32",
+      "content_hash": "7df566036cb4f7c390c2026b2c46c0e13d134fce3cbc14bd0c4c6d12ea4f6f39",
       "dependencies": [],
       "description": "Use this skill when authoring INVEST-compliant Salesforce user stories from gathered requirements: shaping the As-A/I-Want/So-That stem, writing Given-When-Then acceptance criteria, sizing complexity (S/M/L/XL), splitting stories that are too large for a sprint, and emitting handoff metadata that names the next downstream agent. Trigger keywords: user story, INVEST, story splitting, story sizing, As-A I-Want So-That, story handoff, recommended_agents, backlog item shape. NOT for requirements elicitation or stakeholder interviews (use admin/requirements-gathering-for-sf). NOT for the Given-When-Then technique itself in depth (use admin/acceptance-criteria-given-when-then). NOT for UAT test case design (use admin/uat-test-case-design). NOT for backlog prioritization (use admin/moscow-prioritization-for-sf-backlog).",
       "file_location": "skills/admin/user-story-writing-for-salesforce",
@@ -34608,7 +34609,7 @@
       "name": "user-story-writing-for-salesforce",
       "official_sources": [
         "Salesforce Trailhead \u2014 User Story Creation module \u2014 https://trailhead.salesforce.com/content/learn/modules/user-story-creation",
-        "Salesforce Trailhead \u2014 Agile Methods for Salesforce \u2014 https://trailhead.salesforce.com/content/learn/modules/agile-methods-for-salesforce",
+        "Salesforce Trailhead \u2014 Agile Methods for Salesforce \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Salesforce Certified Business Analyst Exam Guide \u2014 https://trailhead.salesforce.com/help?article=Salesforce-Certified-Business-Analyst-Exam-Guide",
         "Salesforce Architects: Business Analysts and the Well-Architected Framework \u2014 https://architect.salesforce.com/well-architected",
         "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
@@ -41932,7 +41933,7 @@
         "f9dac54d2e2f34b98756",
         "fb1e14ec23fa4e9387ef"
       ],
-      "content_hash": "1fc0dbdb3525056aee8bb7be1753c9d452ac2e92d374d059128d3f12e2675383",
+      "content_hash": "647d9c2d7c6e8f8c57456b2b0ed89379bf6bd1953f570d8d901763247f70e72d",
       "dependencies": [
         "apex/platform-cache",
         "apex/apex-queueable-patterns",
@@ -41950,7 +41951,7 @@
       "name": "ai-model-integration-apex",
       "official_sources": [
         "Access Models API with Apex \u2014 Agentforce Developer Guide \u2014 https://developer.salesforce.com/docs/einstein/genai/guide/access-models-api-with-apex.html",
-        "Einstein Platform Services Developer Guide \u2014 https://metamind.readme.io/docs/intro-to-einstein-platform-services",
+        "Einstein Platform Services Developer Guide \u2014 https://www.salesforce.com/products/einstein/  (page retired \u2014 see host index for current equivalent)",
         "Apex Developer Guide \u2014 Named Credentials as Callout Endpoints \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts_named_credentials.htm",
         "Apex Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm",
         "Apex Reference Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm",
@@ -42856,7 +42857,7 @@
         "f7dc92ad641f7ef383e4",
         "f7e13527cfc7a56acdc6"
       ],
-      "content_hash": "1ebc19b31a60727b019d5d221e61b9e0ad254f5d8149ff0c6d95daeff5d90554",
+      "content_hash": "7ce798273ef385411dc5d45908ecca3dbf0a526bea7f49133a4a3327f65ebef9",
       "dependencies": [],
       "description": "When and how to split an Apex class into Domain / Service / Selector layers using this repo's lightweight base classes (BaseDomain, BaseService, BaseSelector). Covers splitting signals, ordering of extraction, and naming conventions. NOT for full fflib migration \u2014 see fflib-enterprise-patterns. NOT for trigger framework choice \u2014 see trigger-framework.",
       "file_location": "skills/apex/apex-class-decomposition-pattern",
@@ -42869,7 +42870,7 @@
       ],
       "name": "apex-class-decomposition-pattern",
       "official_sources": [
-        "**Salesforce Architects \u2014 Apex Enterprise Patterns**: <https://architect.salesforce.com/decision-guides/trigger-framework> and the Apex Enterprise Patterns trail (<https://trailhead.salesforce.com/content/learn/trails/build_apex_enterprise_patterns>) \u2014 the canonical articulation of the Domain / Service / Selector separation that this lightweight pattern derives from.",
+        "**Salesforce Architects \u2014 Apex Enterprise Patterns**: <https://architect.salesforce.com/decision-guides/trigger-framework> and the Apex Enterprise Patterns trail (<https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)>) \u2014 the canonical articulation of the Domain / Service / Selector separation that this lightweight pattern derives from.",
         "**Salesforce Well-Architected Framework \u2014 Maintainability pillar**: <https://architect.salesforce.com/well-architected/adaptable/resilient> and related Maintainability pages \u2014 defines modular, resilient, adaptable as the maintainability sub-attributes referenced above.",
         "**Salesforce Well-Architected Framework \u2014 Operational Excellence**: <https://architect.salesforce.com/well-architected/trusted/secure> and the Trusted pillar pages \u2014 frame the observability and compliance benefits.",
         "**Apex Developer Guide \u2014 `WITH USER_MODE` / `AccessLevel.USER_MODE`**: <https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_keywords_with_user_mode.htm> \u2014 the security default `BaseSelector.userMode()` returns.",
@@ -43995,7 +43996,7 @@
         "f96e47ff7f43db040ed0",
         "fde185c2fcb1ba46adc8"
       ],
-      "content_hash": "0aad6ea4c7143acc15203d1a3fb8629146ae936ce9f03029273cbfea656485e2",
+      "content_hash": "dbb475843178bd0a412ae4b5a2e98c491d238cfffe007908e9426d3f259d03d4",
       "dependencies": [],
       "description": "Safe construction of dynamic SOQL \u2014 Database.query bind variables (:varName, API 60+ semantics), Database.queryWithBinds(query, Map<String,Object>, AccessLevel) (API 55+), field-name allowlisting, ORDER BY direction whitelist, LIMIT/OFFSET typing, and the interaction with WITH USER_MODE / WITH SECURITY_ENFORCED. NOT for static SOQL \u2014 see apex-soql-fundamentals. NOT for FLS enforcement on results \u2014 see soql-security or apex-stripinaccessible-and-fls-enforcement.",
       "file_location": "skills/apex/apex-dynamic-soql-binding-safety",
@@ -44011,7 +44012,7 @@
         "Apex Developer Guide \u2014 Dynamic SOQL \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dynamic_soql.htm",
         "Apex Reference Guide \u2014 Database Class (`queryWithBinds`) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_database.htm",
         "Apex Developer Guide \u2014 SOQL Injection \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/pages_security_tips_soql.htm",
-        "Salesforce Security Trailhead \u2014 SOQL Injection \u2014 https://trailhead.salesforce.com/content/learn/modules/secure-secrets-storage/protect-secrets-using-named-credentials (referenced unit on input safety) and the dedicated unit at https://trailhead.salesforce.com/content/learn/modules/improve-developer-experience-with-platform-cache (combined Apex security path)",
+        "Salesforce Security Trailhead \u2014 SOQL Injection \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent) (referenced unit on input safety) and the dedicated unit at https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent) (combined Apex security path)",
         "Salesforce Well-Architected \u2014 Trusted (Security) \u2014 https://architect.salesforce.com/well-architected/trusted/secure"
       ],
       "outputs": [
@@ -51656,7 +51657,7 @@
         "fd23948af82934d87d43",
         "fd5894e0abaaab15ac8f"
       ],
-      "content_hash": "fdfc3fad7b80dcc4b517e5f112665b94422b0a7fe142604a8fc998970172e88b",
+      "content_hash": "0e4175c858f8185d7a58ef5e019e7fbce6a8d506a0bb54cc53ac899c8d39ef81",
       "dependencies": [],
       "description": "Use when diagnosing or preventing performance problems caused by cross-object formula spanning relationships and roll-up summary field recalculations \u2014 especially in LDV orgs. Triggers: 'roll-up summary timing stale in trigger', 'Maximum 15 object references error', 'rollup recalculation timeout on large child set'. NOT for formula syntax authoring (use admin/formula-fields), formula compile-size limits (use apex/formula-field-performance-and-limits), or general governor-limit troubleshooting.",
       "file_location": "skills/apex/cross-object-formula-and-rollup-performance",
@@ -51671,7 +51672,7 @@
       "official_sources": [
         "Salesforce Help \u2014 Roll-Up Summary Field \u2014 https://help.salesforce.com/s/articleView?id=sf.fields_about_roll_up_summary_fields.htm",
         "Salesforce Help \u2014 Maximum 15 Object References \u2014 https://help.salesforce.com/s/articleView?id=000384498",
-        "Salesforce Engineering Blog \u2014 Record Locking \u2014 https://engineering.salesforce.com/reduce-record-locking/",
+        "Salesforce Engineering Blog \u2014 Record Locking \u2014 https://engineering.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Apex Developer Guide \u2014 Order of Execution \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_triggers_order_of_execution.htm",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
       ],
@@ -53479,7 +53480,7 @@
         "fdbe06d7efbd3a9ec84a",
         "ff9462f19ea33add411c"
       ],
-      "content_hash": "19aa9a457b8d12318ab21df872d0bc69b80ccd81ac4f643ed885fff68048d737",
+      "content_hash": "efae23c1fbc0af6144f8a96d964a9fce221715e0cadd6a759d4b5fe27cbae484",
       "dependencies": [
         "admin/clinical-data-requirements",
         "apex/health-cloud-apis"
@@ -53495,7 +53496,7 @@
       "name": "fhir-integration-patterns",
       "official_sources": [
         "Health Cloud Developer Guide \u2014 Mapping FHIR v4.0 to Salesforce Standard Objects: https://developer.salesforce.com/docs/atlas.en-us.health_cloud.meta/health_cloud/hco_dev_fhir_mapping.htm",
-        "MuleSoft Direct Integration Apps \u2014 Healthcare FHIR Patterns: https://docs.mulesoft.com/healthcare-accelerator/",
+        "MuleSoft Direct Integration Apps \u2014 Healthcare FHIR Patterns: https://docs.mulesoft.com/  (page retired \u2014 see host index for current equivalent)",
         "FHIR R4 Support for Better Interoperability (Release Notes): https://help.salesforce.com/s/articleView?id=release-notes.rn_ind_hc_fhir_r4.htm",
         "Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
       ],
@@ -54227,7 +54228,7 @@
         "f579322183bc9136b67b",
         "f64476fc38886d2fc0b9"
       ],
-      "content_hash": "8035a30685a28792aec67b8e8ea5d1d2bcf439ad73d815ec742137bc3bdfc864",
+      "content_hash": "dba90304c26cf910da9ae4ee9aad3a347fdeb6f5104c177a3eefabd055efd3cd",
       "dependencies": [
         "omnistudio/document-generation-omnistudio"
       ],
@@ -54245,7 +54246,7 @@
       "official_sources": [
         "FSC Admin Guide \u2014 Document Generation Overview \u2014 https://help.salesforce.com/s/articleView?id=sf.fsc_admin_doc_gen.htm",
         "OmniStudio DocGen Foundations (Trailhead) \u2014 https://trailhead.salesforce.com/content/learn/modules/omnistudio-document-generation-foundations",
-        "Disclosures and Consent Management in FSC (Trailhead) \u2014 https://trailhead.salesforce.com/content/learn/modules/fsc-disclosures-and-consent-management",
+        "Disclosures and Consent Management in FSC (Trailhead) \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Personas and Permission Set Licenses for OmniStudio DocGen \u2014 https://help.salesforce.com/s/articleView?id=sf.os_docgen_permission_set_licenses.htm",
         "Apex Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
@@ -54395,7 +54396,7 @@
         "fcd377bc39daac9e2522",
         "feaffcea688fcbe62d55"
       ],
-      "content_hash": "46f6173b0cd48f6dce20af3219a3690210d121ec1051ea2122fa91e259947d12",
+      "content_hash": "c629432d6c7bcc44a9ae5e32443d7a7aa7cd24c0d67d18ce3edd486b30365d50",
       "dependencies": [
         "admin/financial-account-setup"
       ],
@@ -57695,7 +57696,7 @@
         "fcb80c94298f12c7dd1b",
         "fcd1bedfbeae2ba25e94"
       ],
-      "content_hash": "47be989ebb821a4a5de6fad7052478c7ce1fe1535d8b59f9215a55ccaadec77f",
+      "content_hash": "8ab02aa42503e66b178354f8834e37d1f2b0d2d6ec78c8b7e9bbe7dceee3d02e",
       "dependencies": [],
       "description": "Use this skill when configuring, troubleshooting, or extending NPSP Customizable Rollups (CRLP) \u2014 including rollup definitions, filter groups, batch job modes, and the one-way migration from legacy NPSP rollups. Trigger keywords: CRLP, customizable rollups, rollup definition, filter group, rollup batch job, NPSP gift totals, NPSP recalculate rollups. NOT for standard Salesforce roll-up summary fields, Nonprofit Cloud (NPC) native aggregation, or Rollup Helper third-party solutions.",
       "file_location": "skills/apex/npsp-custom-rollups",
@@ -57709,10 +57710,10 @@
       ],
       "name": "npsp-custom-rollups",
       "official_sources": [
-        "Customizable Rollups Overview \u2014 NPSP Help \u2014 https://powerofus.force.com/s/article/NPSP-Customizable-Rollups-Overview",
-        "Configure Customizable Rollups \u2014 NPSP Help \u2014 https://powerofus.force.com/s/article/NPSP-Configure-Customizable-Rollups",
-        "Create Filter Groups \u2014 NPSP Help \u2014 https://powerofus.force.com/s/article/NPSP-Create-Filter-Groups",
-        "Batch Job Modes for Customizable Rollups \u2014 NPSP Help \u2014 https://powerofus.force.com/s/article/NPSP-Batch-Job-Modes-for-Customizable-Rollups",
+        "Customizable Rollups Overview \u2014 NPSP Help \u2014 https://help.salesforce.com/s/nonprofit  (page retired \u2014 see host index for current equivalent)-Overview",
+        "Configure Customizable Rollups \u2014 NPSP Help \u2014 https://help.salesforce.com/s/nonprofit  (page retired \u2014 see host index for current equivalent)",
+        "Create Filter Groups \u2014 NPSP Help \u2014 https://help.salesforce.com/s/nonprofit  (page retired \u2014 see host index for current equivalent)",
+        "Batch Job Modes for Customizable Rollups \u2014 NPSP Help \u2014 https://help.salesforce.com/s/nonprofit  (page retired \u2014 see host index for current equivalent)",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
         "Apex Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm"
       ],
@@ -65523,7 +65524,7 @@
         "fe27078b4a664a88404b",
         "fffc0d1a9ae33d233bc9"
       ],
-      "content_hash": "17e550b0fa0d5484c6d77cc4a3eabb4c008055d29094a14814465e828a842156",
+      "content_hash": "80c343890b6227b918da4ad29a937dce594f1b3c40da0dde39bf4bc021eb349b",
       "dependencies": [],
       "description": "Use when deciding between CRM Analytics (formerly Einstein Analytics / Tableau CRM) and Tableau Desktop, Tableau Server, or Tableau Cloud for a Salesforce-centric analytics requirement. Triggers: 'CRM Analytics vs Tableau', 'which BI tool for Salesforce', 'Tableau for Salesforce data', 'Einstein Analytics vs Tableau', 'analytics platform decision', 'licensing comparison CRM Analytics Tableau', 'Tableau Next', 'Tableau+ for Salesforce'. NOT for implementation guidance on configuring CRM Analytics datasets, recipes, or Tableau workbooks \u2014 use admin/einstein-analytics-basics for that.",
       "file_location": "skills/architect/crm-analytics-vs-tableau-decision",
@@ -65541,7 +65542,7 @@
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
         "CRM Analytics Setup and User Guide (Salesforce Help) \u2014 https://help.salesforce.com/s/articleView?id=sf.bi_admin_guide.htm",
         "Tableau Salesforce Connector documentation \u2014 https://help.tableau.com/current/pro/desktop/en-us/examples_salesforce.htm",
-        "Tableau Next (Tableau+) product information \u2014 https://www.salesforce.com/products/tableau/tableau-next/",
+        "Tableau Next (Tableau+) product information \u2014 https://www.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "CRM Analytics Limits and Considerations (Salesforce Help) \u2014 https://help.salesforce.com/s/articleView?id=sf.bi_admin_limits.htm",
         "Salesforce Analytics Platform License Overview \u2014 https://help.salesforce.com/s/articleView?id=sf.bi_admin_license.htm"
       ],
@@ -67230,7 +67231,7 @@
         "fe1b22b652838a5aff95",
         "feda97dfdc8697403100"
       ],
-      "content_hash": "1558201eb7c0f6884fbd67d2fa58c8ef91e04a83635eccb628225fe3992acf00",
+      "content_hash": "b9b32bccc33e9a20f8a2a302a14bdd19a280d4f27e56e378526c37725ac2aed9",
       "dependencies": [],
       "description": "Use this skill when architecting how Health Cloud connects to external EHR/EMR systems via FHIR R4 \u2014 covering integration pattern selection, transformation layer design, MuleSoft Accelerator usage, and EMR bidirectional sync topology. NOT for individual FHIR REST API call implementation, NOT for FHIR object-level data mapping or Apex code that reads/writes specific Health Cloud objects, and NOT for HL7 v2 message parsing internals.",
       "file_location": "skills/architect/fhir-integration-architecture",
@@ -67247,7 +67248,7 @@
       "official_sources": [
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
         "Salesforce Health Cloud Developer Guide \u2014 FHIR APIs \u2014 https://developer.salesforce.com/docs/health/health-cloud/references/fhir-r4-apis/fhir-r4-apis-intro.html",
-        "MuleSoft Accelerator for Healthcare Documentation \u2014 https://docs.mulesoft.com/healthcare-toolkit/latest/",
+        "MuleSoft Accelerator for Healthcare Documentation \u2014 https://docs.mulesoft.com/  (page retired \u2014 see host index for current equivalent)",
         "Salesforce Health Cloud \u2014 Configure the Generic FHIR Client \u2014 https://help.salesforce.com/s/articleView?id=sf.admin_generic_fhir_client.htm"
       ],
       "outputs": [
@@ -67629,7 +67630,7 @@
         "ee5856d6a8c05a66cf10",
         "f54cf7cf65d9024d0c15"
       ],
-      "content_hash": "fd3eed19ef99d3a87138c92552ea77912234df8fc41eaa8211880af6e78e8d09",
+      "content_hash": "3610e8c825bf1fc7a36849cc0645b8cc37500b1ce35e33dd9f4c80a5b94e2a14",
       "dependencies": [
         "architect/fsl-optimization-architecture"
       ],
@@ -67645,7 +67646,7 @@
       "official_sources": [
         "Salesforce Help \u2014 Time Zones and Appointment Booking \u2014 https://help.salesforce.com/s/articleView?id=sf.fs_appointment_booking_timezones.htm",
         "Salesforce Help \u2014 Guidelines for Creating Service Territories \u2014 https://help.salesforce.com/s/articleView?id=sf.fs_service_territories_guidelines.htm",
-        "Trailhead \u2014 Configure Territories and Set Operating Hours \u2014 https://trailhead.salesforce.com/content/learn/modules/field-service-scheduling-foundations/configure-territories",
+        "Trailhead \u2014 Configure Territories and Set Operating Hours \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
       ],
       "outputs": [
@@ -67856,7 +67857,7 @@
         "ff3c4f91fb5ffd8432a4",
         "ff90c993aedb7b2131e6"
       ],
-      "content_hash": "7ed0843d482e1798ba9b10e4094e7fc7aa4e4720b3df8e26e9e257580607f75e",
+      "content_hash": "c8b1b2618e4340a0c7bcd270bab5d049eb55c55de944c5f94a312d11eec7b69a",
       "dependencies": [
         "architect/fsl-multi-region-architecture"
       ],
@@ -67874,7 +67875,7 @@
         "How Does the FSL Optimization Engine Work (help.salesforce.com) \u2014 https://help.salesforce.com/s/articleView?id=sf.fs_optimization_how.htm",
         "Enhanced Scheduling and Optimization (help.salesforce.com) \u2014 https://help.salesforce.com/s/articleView?id=sf.fs_enhanced_scheduling.htm",
         "Limits for Enhanced Scheduling (help.salesforce.com) \u2014 https://help.salesforce.com/s/articleView?id=sf.fs_enhanced_scheduling_limits.htm",
-        "Global Optimization (Trailhead) \u2014 https://trailhead.salesforce.com/content/learn/modules/field-service-scheduling-foundations/global-optimization",
+        "Global Optimization (Trailhead) \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
       ],
       "outputs": [
@@ -68217,7 +68218,7 @@
         "fc651790ee7f55ae2466",
         "fe5f5c8dea4a7a8ff015"
       ],
-      "content_hash": "bc2853e87014851f9afaf198098f81c75c51fe95bc740a962d8e9bd64af26780",
+      "content_hash": "6ff3a889bd2fa4bf1b242240db1b64f14509c4bb392122a2156f9115431a7234",
       "dependencies": [
         "architect/security-architecture-review",
         "security/platform-encryption"
@@ -68238,14 +68239,14 @@
       "official_sources": [
         "Salesforce Well-Architected Framework Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
         "Salesforce Well-Architected: Trusted \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/trusted.html",
-        "Salesforce Government Cloud Overview \u2014 https://www.salesforce.com/solutions/government/",
-        "Salesforce Trust and Compliance documentation \u2014 https://compliance.salesforce.com/en/services/government-cloud",
+        "Salesforce Government Cloud Overview \u2014 https://www.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
+        "Salesforce Trust and Compliance documentation \u2014 https://compliance.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "FedRAMP Authorization for Salesforce Government Cloud \u2014 https://marketplace.fedramp.gov/#/product/salesforce-government-cloud",
         "NIST SP 800-53 Rev 5 Security and Privacy Controls \u2014 https://csrc.nist.gov/publications/detail/sp/800-53/rev-5/final",
         "NIST SP 800-37 Rev 2 Risk Management Framework \u2014 https://csrc.nist.gov/publications/detail/sp/800-37/rev-2/final",
         "NIST SP 800-171 Rev 2 Protecting CUI in Nonfederal Systems \u2014 https://csrc.nist.gov/publications/detail/sp/800-171/rev-2/final",
         "DISA Cloud Computing SRG (DoD Impact Levels) \u2014 https://public.cyber.mil/dccs/",
-        "CMS Acceptable Risk Safeguards (ARS) \u2014 https://www.cms.gov/research-statistics-data-and-systems/cms-information-technology/informationsecurity/cms-ars",
+        "CMS Acceptable Risk Safeguards (ARS) \u2014 https://www.cms.gov/  (page retired \u2014 see host index for current equivalent)",
         "Salesforce Hyperforce Overview \u2014 https://help.salesforce.com/s/articleView?id=sf.hyperforce_overview.htm",
         "Salesforce Shield Overview \u2014 https://help.salesforce.com/s/articleView?id=sf.security_shield.htm"
       ],
@@ -69654,7 +69655,7 @@
         "fa0da16d7a61cc8adbc2",
         "fe5f6be7a67962ad2006"
       ],
-      "content_hash": "92f486eebb0c577b0d4a4a58faa0c5e20cff02a80cb37025578090cbc4ca84cc",
+      "content_hash": "0b7250a1a51437a14665b8e6d0ea25066fc543e9c99446991cfa3f45094abcd7",
       "dependencies": [],
       "description": "Use when an architect must plan a Hyperforce migration, choose a Hyperforce region, validate Hyperforce-only feature dependencies, or assess data-residency and IP-allowlisting impact. Triggers: 'hyperforce migration', 'hyperforce region selection', 'first-generation infrastructure to hyperforce', 'hyperforce ip allowlisting', 'data residency on hyperforce', 'hyperforce features not on first gen'. NOT for general HA/DR strategy (use architect/ha-dr-architecture), NOT for Salesforce Functions decommission (use integration/salesforce-functions-replacement), NOT for vertical-specific data residency (use architect/health-cloud-data-residency or architect/government-cloud-compliance).",
       "file_location": "skills/architect/hyperforce-architecture",
@@ -69675,7 +69676,7 @@
         "Private Connect Setup \u2014 https://help.salesforce.com/s/articleView?id=sf.private_connect.htm&type=5",
         "Salesforce Well-Architected Framework Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
         "Salesforce Well-Architected \u2014 Trusted (residency / compliance) \u2014 https://architect.salesforce.com/well-architected/trusted/overview",
-        "Salesforce Government Cloud \u2014 https://www.salesforce.com/government/government-cloud-plus/"
+        "Salesforce Government Cloud \u2014 https://www.salesforce.com/  (page retired \u2014 see host index for current equivalent)"
       ],
       "outputs": [
         "Hyperforce migration readiness checklist tied to the announced migration window",
@@ -70747,7 +70748,7 @@
         "f9489519e1dd5e057f53",
         "fc4da965957a934a939c"
       ],
-      "content_hash": "fad77aa7228905f55c3123772aabf9c0114cb3ac4f3cf7ec9df398547fec5c0a",
+      "content_hash": "0d8ce7f829e5f04f50210da6ca9ffb29f3274c1e0b8ee6285e31e119aadde7e5",
       "dependencies": [],
       "description": "Use when designing or restructuring a Salesforce Knowledge taxonomy: Data Category Group structure, hierarchy depth, article type selection, article lifecycle governance (Draft/Published/Archived), Validation Status gating, and content gap analysis via KCS methodology and Search Activity Gaps. Triggers: knowledge taxonomy design, data category hierarchy, knowledge article lifecycle, knowledge governance model, KCS content gap analysis, search activity gaps, knowledge category structure. NOT for Knowledge admin feature setup (use admin/knowledge-setup), NOT for Experience Cloud search configuration, NOT for Einstein Article Recommendations tuning.",
       "file_location": "skills/architect/knowledge-taxonomy-design",
@@ -70766,7 +70767,7 @@
         "Knowledge Data Categories Best Practices \u2014 https://help.salesforce.com/s/articleView?id=sf.knowledge_data_category_best_practices.htm",
         "Work with Data Categories \u2014 https://help.salesforce.com/s/articleView?id=sf.knowledge_data_categories_parent.htm",
         "Archive Articles and Translations \u2014 https://help.salesforce.com/s/articleView?id=sf.knowledge_archiving_parent.htm",
-        "KCS Methodology \u2014 Trailhead (Knowledge-Centered Service) \u2014 https://trailhead.salesforce.com/content/learn/modules/knowledge-centered-service"
+        "KCS Methodology \u2014 Trailhead (Knowledge-Centered Service) \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)"
       ],
       "outputs": [
         "Data Category Group layout with recommended hierarchy depth",
@@ -72549,7 +72550,7 @@
         "fc08f8c0c6c32c828fc8",
         "fda27cc960d544af642b"
       ],
-      "content_hash": "0e17e91acd14e121e577d462f266f9ce19c2717eb994f6167e2e661a26586555",
+      "content_hash": "33b4a0e63915d69eca494d14cccb08f320b99315ae69d477e87096d338f8053d",
       "dependencies": [],
       "description": "Use when designing or evaluating MuleSoft Anypoint Platform deployment topology, runtime model selection, API governance with API Manager, or Anypoint Exchange strategy. Trigger keywords: CloudHub, Runtime Fabric, Anypoint Platform, API Manager, Anypoint Exchange, MuleSoft runtime model, private space, Anypoint Security. NOT for Salesforce-native integration patterns (use integration/api-led-connectivity), NOT for Salesforce Connector configuration in MuleSoft (use integration/mulesoft-salesforce-connector), NOT for MuleSoft flow implementation or DataWeave scripting.",
       "file_location": "skills/architect/mulesoft-anypoint-architecture",
@@ -72565,7 +72566,7 @@
         "MuleSoft Anypoint Platform Runtime Models: https://docs.mulesoft.com/runtime-manager/",
         "MuleSoft CloudHub 2.0 Overview: https://docs.mulesoft.com/cloudhub-2/",
         "MuleSoft Runtime Fabric Overview: https://docs.mulesoft.com/runtime-fabric/latest/",
-        "API Manager \u2014 Apply Policies: https://docs.mulesoft.com/api-manager/2.x/latest-tasks-policy-mule4",
+        "API Manager \u2014 Apply Policies: https://docs.mulesoft.com/  (page retired \u2014 see host index for current equivalent)",
         "API Autodiscovery (Mule 4): https://docs.mulesoft.com/api-manager/2.x/api-auto-discovery-new-concept",
         "Anypoint Exchange: https://docs.mulesoft.com/exchange/"
       ],
@@ -74071,7 +74072,7 @@
         "f9d8cc5288a999542dda",
         "fffe425962846032a24e"
       ],
-      "content_hash": "bc6f3da6a1e40ff62b5040e90dd5b3ee763f134cd012fc482337b429f2e5c5f2",
+      "content_hash": "b501f35043050a98cefeb5ba2817aa701b54cb9d83f30d882c5ddf195dd42f6c",
       "dependencies": [],
       "description": "Use this skill when an organization must decide whether to stay on NPSP (Nonprofit Success Pack) or move to Nonprofit Cloud (NPC), evaluate the timeline for that move, and understand what the migration entails at an architectural level. Trigger keywords: NPSP vs Nonprofit Cloud, upgrade NPSP, migrate to NPC, nonprofit platform decision, NPSP end of life, Nonprofit Cloud vs NPSP comparison. NOT for implementation \u2014 does not cover post-decision NPC build, NPSP customization, or data migration execution.",
       "file_location": "skills/architect/npsp-vs-nonprofit-cloud-decision",
@@ -74090,7 +74091,7 @@
         "Nonprofit Cloud Developer Guide: Introduction to Nonprofit Cloud \u2014 https://developer.salesforce.com/docs/atlas.en-us.nonprofit_cloud_dev.meta/nonprofit_cloud_dev/nonprofit_cloud_intro.htm",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
         "Nonprofit Cloud: Key Concepts \u2014 https://help.salesforce.com/s/articleView?id=sfdo.NPC_Key_Concepts.htm",
-        "NPSP Documentation Overview \u2014 https://powerofus.force.com/s/article/NPSP-Documentation"
+        "NPSP Documentation Overview \u2014 https://help.salesforce.com/s/nonprofit  (page retired \u2014 see host index for current equivalent)"
       ],
       "outputs": [
         "Structured go/stay decision recommendation with rationale",
@@ -79754,7 +79755,7 @@
         "fb8c87c41578b1d87965",
         "fb97b014de4e68ce652c"
       ],
-      "content_hash": "59e2f695e46cac9b6e3791ec77f323ae6f8fd0c7f40dae869e0c7cb4c6608955",
+      "content_hash": "0eb1251847e0820fcdcdf13f1efddb35e626ba29420b86d0bae7b803373a5317",
       "dependencies": [],
       "description": "Use when analyzing B2C Commerce storefront metrics (conversion funnel, cart abandonment, product performance, revenue trends) via the Business Manager Reports and Dashboards app, or when deriving B2B Commerce analytics via SOQL on core platform objects or the CRM Analytics B2B Commerce template. NOT for CRM Analytics platform configuration, Einstein Analytics, Experience Cloud analytics, or general Salesforce report builder usage.",
       "file_location": "skills/data/commerce-analytics-data",
@@ -79768,7 +79769,7 @@
       ],
       "name": "commerce-analytics-data",
       "official_sources": [
-        "B2C Commerce Reports and Dashboards App \u2014 Trailhead: https://trailhead.salesforce.com/content/learn/modules/b2c-commerce-analytics",
+        "B2C Commerce Reports and Dashboards App \u2014 Trailhead: https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "B2C Commerce Historical Reports: Conversion \u2014 https://documentation.b2c.commercecloud.salesforce.com/DOC3/topic/com.demandware.dochelp/content/b2c_commerce/topics/site_development/b2c_conversion_reports.html",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
         "B2B Commerce on Core Object Reference (WebCart) \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_webcart.htm",
@@ -80410,7 +80411,7 @@
         "fad619da6bfcebeee09c",
         "fbe15410f525c79a383d"
       ],
-      "content_hash": "4e1c78989b8d50503189624936ee2d2f504d534039973aa288139e3831bb1f35",
+      "content_hash": "0fdae9d45e9757d092529e12c4c4bfad65a2c57d21544b75ec36392ea7cadc8e",
       "dependencies": [],
       "description": "Use this skill when designing, implementing, querying, or troubleshooting the Health Cloud consent data model \u2014 specifically the five-object HIPAA authorization hierarchy (DataUsePurpose \u2192 AuthorizationForm \u2192 AuthorizationFormText \u2192 AuthorizationFormDataUse \u2192 AuthorizationFormConsent). Trigger keywords: authorization form consent, ConsentGiverId, AuthorizationFormConsent SOQL, CareProgramEnrollee consent gate, PHI consent trail, consent hierarchy setup. NOT for marketing consent or standard email opt-out tracking. NOT for ContactPointConsent or ContactPointTypeConsent objects used in Marketing Cloud or standard Salesforce Privacy Center.",
       "file_location": "skills/data/consent-data-model-health",
@@ -80427,7 +80428,7 @@
         "AuthorizationFormConsent Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_authorizationformconsent.htm",
         "Health Cloud Object Reference (AuthorizationForm) \u2014 https://developer.salesforce.com/docs/atlas.en-us.health_cloud_object_reference.meta/health_cloud_object_reference/hco_object_authorization_form_consent.htm",
         "Consent Management for Health Cloud (Help) \u2014 https://help.salesforce.com/s/articleView?id=ind.hc_consent_management.htm",
-        "Optimizing Health Cloud Consent Management (Trailhead) \u2014 https://trailhead.salesforce.com/content/learn/modules/health-cloud-consent-management",
+        "Optimizing Health Cloud Consent Management (Trailhead) \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
       ],
       "outputs": [
@@ -80542,7 +80543,7 @@
         "ff9a99374989fb310568",
         "ffce86e1384584c0ccb4"
       ],
-      "content_hash": "c9f4b7821869b02f3265788451bc92ab4dde2b541e2c4014790838adac4f8384",
+      "content_hash": "977aee6f00f0d67df3c6ddc5f10340fdd515f021e57f188801e84c17e3269cae",
       "dependencies": [],
       "description": "Use this skill when migrating constituent records (Contacts, Household Accounts, relationships, addresses, donations) into an NPSP org using the NPSP Data Importer. Triggers: importing contacts into NPSP, migrating nonprofit constituents, loading household data, bulk contact upload NPSP, constituent ETL. NOT for standard contact import, Nonprofit Cloud (NPC) migration, or generic Data Loader bulk loads.",
       "file_location": "skills/data/constituent-data-migration",
@@ -80555,7 +80556,7 @@
       ],
       "name": "constituent-data-migration",
       "official_sources": [
-        "NPSP Documentation Overview \u2014 https://powerofus.force.com/s/article/NPSP-Overview (NPSP Data Importer behavior, npsp__DataImport__c staging object, Contact Matching Rules)",
+        "NPSP Documentation Overview \u2014 https://help.salesforce.com/s/nonprofit  (page retired \u2014 see host index for current equivalent) (NPSP Data Importer behavior, npsp__DataImport__c staging object, Contact Matching Rules)",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (architecture quality framing)",
         "Bulk API 2.0 Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/asynch_api_intro.htm (staging record load via API)",
         "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm (sObject semantics and field behavior)"
@@ -87651,7 +87652,7 @@
         "f7a30c07625e4490fc72",
         "f93967ab80bfe6185bcb"
       ],
-      "content_hash": "0067742e44897b14a13efa95e0fcb7ec1d1bae74fc76809eb55713b04c8b499c",
+      "content_hash": "f78957e9eca1760b9afab6ce8a785c64c7bcb9c9039d7f96dab412f3184777cf",
       "dependencies": [],
       "description": "Use this skill when designing or querying the NPSP data model \u2014 constituent 360, household accounts, giving history rollups, and program participation. Trigger keywords: NPSP data model, household account, constituent record, giving rollups, CRLP, program engagement, ServiceDelivery, npo02__ fields. NOT for standard data model design, Nonprofit Cloud (NPC) data model, FSC household groups, or platform data modeling outside the NPSP context.",
       "file_location": "skills/data/nonprofit-data-architecture",
@@ -87667,10 +87668,10 @@
       "official_sources": [
         "NPSP Data Model Gallery \u2014 https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_erd_nonprofit_success_pack.htm",
         "Nonprofit Cloud Data Model Developer Guide (Spring '26) \u2014 https://developer.salesforce.com/docs/atlas.en-us.nonprofit_cloud_dev.meta/nonprofit_cloud_dev/npc_data_model.htm",
-        "Trailhead: Explore the NPSP Data Model \u2014 https://trailhead.salesforce.com/content/learn/modules/npsp-data-model",
-        "NPSP Documentation Overview \u2014 https://powerofus.force.com/s/article/NPSP-Documentation",
-        "Customizable Rollups Developer Documentation \u2014 https://powerofus.force.com/s/article/NPSP-Customizable-Rollups",
-        "Program Management Module Documentation \u2014 https://powerofus.force.com/s/article/PMM-Documentation"
+        "Trailhead: Explore the NPSP Data Model \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
+        "NPSP Documentation Overview \u2014 https://help.salesforce.com/s/nonprofit  (page retired \u2014 see host index for current equivalent)",
+        "Customizable Rollups Developer Documentation \u2014 https://help.salesforce.com/s/nonprofit  (page retired \u2014 see host index for current equivalent)",
+        "Program Management Module Documentation \u2014 https://help.salesforce.com/s/nonprofit  (page retired \u2014 see host index for current equivalent)"
       ],
       "outputs": [
         "Data model diagram describing three-layer NPSP constituent architecture",
@@ -87805,7 +87806,7 @@
         "f926c077a0fd91003e93",
         "fe4425f03d2c13611180"
       ],
-      "content_hash": "234ce14916ad25554083cfcf1cc9d921b18effd9ca6025faa81c2f33069f948a",
+      "content_hash": "2fab4b0382a45a35144d6b7c56db036446efbc82e5b57e101998b9f17c217fe5",
       "dependencies": [],
       "description": "Use this skill when standardizing addresses, detecting duplicate household Contacts, running NCOA processing, or improving data hygiene in an NPSP org. Triggers: address verification NPSP, household duplicate detection, NCOA update nonprofit, data hygiene NPSP. NOT for generic Salesforce data quality, Nonprofit Cloud (NPC) data quality, or standard Account/Contact deduplication outside NPSP.",
       "file_location": "skills/data/nonprofit-data-quality",
@@ -87822,7 +87823,7 @@
         "NPSP Address Management Overview \u2014 https://help.salesforce.com/s/articleView?id=sfdo.NPSP_Addresses_Overview.htm&type=5",
         "About National Change of Address Updates (NPSP) \u2014 https://help.salesforce.com/s/articleView?id=sfdo.NPSP_NCOA.htm&type=5",
         "Configure Duplicate Detection and NPSP Contact Merge \u2014 https://help.salesforce.com/s/articleView?id=sfdo.NPSP_Contact_Merge.htm&type=5",
-        "Insights Platform Data Integrity (Trailhead) \u2014 https://trailhead.salesforce.com/content/learn/modules/insights-platform-data-integrity",
+        "Insights Platform Data Integrity (Trailhead) \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "NPSP Documentation Overview \u2014 https://help.salesforce.com/s/articleView?id=sfdo.NPSP.htm&type=5"
       ],
       "outputs": [
@@ -87948,7 +87949,7 @@
         "f2f616186f534b49abce",
         "fc3dba472a07decb6194"
       ],
-      "content_hash": "a7630d9212e2e952ff99ef6eb3d7f703b1c410dbf855ab98b1285138d893d7cb",
+      "content_hash": "f44ad647fd0c209b728eb53f20d389679b4b66f29765b3a496249127c8372f49",
       "dependencies": [],
       "description": "Use this skill when working with NPSP (Nonprofit Success Pack) objects, namespace prefixes, GAU allocations, recurring donation objects, relationship and affiliation objects, or the NPSP data dictionary. Trigger keywords: npe01__, npe03__, npe4__, npe5__, npsp__, OppPayment__c, Recurring_Donation__c, Allocation__c, General_Accounting_Unit__c, NPSP data model. NOT for standard Salesforce data model, Financial Services Cloud data model, or Program Management Module (PMM) data model.",
       "file_location": "skills/data/npsp-data-model",
@@ -87962,7 +87963,7 @@
       "official_sources": [
         "NPSP Data Model Gallery \u2014 https://developer.salesforce.com/docs/nonprofit/npsp/guide/npsp-data-model.html",
         "NPSP Objects and Fields Data Dictionary \u2014 https://help.salesforce.com/s/articleView?id=sfdo.NPSP_Objects_and_Fields_Data_Dictionary.htm&type=5",
-        "Trailhead: Explore the NPSP Data Model \u2014 https://trailhead.salesforce.com/content/learn/modules/nonprofit-success-pack-basics/explore-the-npsp-data-model",
+        "Trailhead: Explore the NPSP Data Model \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Salesforce Well-Architected Framework \u2014 https://architect.salesforce.com/well-architected/overview",
         "Object Reference (standard objects referenced by NPSP) \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm"
       ],
@@ -90103,7 +90104,7 @@
         "f7aaf74c51c5e0078f1e",
         "fef071e6baa079f33bd9"
       ],
-      "content_hash": "ec08e2007972b7e83dfc4388a9cb5cd8896386cf97ef3d8e80377d61766e1d39",
+      "content_hash": "65462a34c4a6b1b4d4d3a05118c043314d35762cea8fb061112ed54c2d152b84",
       "dependencies": [],
       "description": "Designing a backup and restore strategy for a Salesforce org \u2014 Salesforce Backup (the native paid product), the deprecated weekly Data Export Service, third-party tools (OwnBackup / Druva / Gearset / Spanning), and self-rolled Bulk API extracts. Covers RPO / RTO targeting, restore-of-a-single-record vs full-org restore, parent / child relationship rebuilding, and cost / coverage tradeoffs across vendors. NOT for sandbox refresh strategy (see devops/sandbox-strategy), NOT for metadata source-control / DevOps backups (see devops/sfdx-source-control).",
       "file_location": "skills/data/salesforce-backup-and-restore",
@@ -90119,7 +90120,7 @@
         "Recycle Bin (Records) \u2014 https://help.salesforce.com/s/articleView?id=sf.home_delete.htm&type=5",
         "Bulk API 2.0 Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/asynch_api_intro.htm",
         "Data Export (Weekly) \u2014 https://help.salesforce.com/s/articleView?id=sf.admin_exportdata.htm&type=5",
-        "Backup Your Data \u2014 Trailhead \u2014 https://trailhead.salesforce.com/content/learn/modules/data-management/backup-your-data",
+        "Backup Your Data \u2014 Trailhead \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
         "Salesforce Well-Architected Reliability \u2014 https://architect.salesforce.com/well-architected/trusted/resilient"
       ],
       "outputs": [
@@ -93201,7 +93202,7 @@
         "fd3c9dae6faaaa3c6d7c",
         "fdc1905e393fb78a62a3"
       ],
-      "content_hash": "e68e1473e065441eb7b3739b43018d1fe355b6385650957fa0878072a9304cfe",
+      "content_hash": "4483720a2f2d95d8623585e37e9fcee02cf8dfac9571e25194d553b19bc1747d",
       "dependencies": [],
       "description": "Use when deploying Salesforce CPQ configuration between environments in a CI/CD pipeline \u2014 covers the required data record dependency order (Price Books > Products > Price Rules > Product Rules > Quote Templates), External ID-based cross-org matching, multi-pass deployment for self-referential lookups, and the distinction between CPQ metadata deployment and CPQ data deployment. NOT for generic SFDX metadata deployment, CPQ implementation configuration, or Salesforce Billing deployment.",
       "file_location": "skills/devops/cpq-deployment-patterns",
@@ -93215,7 +93216,7 @@
       "official_sources": [
         "Salesforce Help: CPQ Quote Calculation Sequence \u2014 https://help.salesforce.com/s/articleView?id=sf.cpq_quote_calc_sequence.htm",
         "Salesforce Help: Integrating Salesforce CPQ and Salesforce Billing \u2014 https://help.salesforce.com/s/articleView?id=sf.cpq_billing_integrate.htm",
-        "SFDMU (Salesforce Data Move Utility): https://github.com/forcedotcom/SFDMU"
+        "SFDMU (Salesforce Data Move Utility): https://github.com/  (page retired \u2014 see host index for current equivalent)"
       ],
       "outputs": [
         "CPQ data deployment load order plan with dependency documentation",
@@ -93496,7 +93497,7 @@
         "fbb78579ec8fb0d85a57",
         "ffde434d0fc71752e7f6"
       ],
-      "content_hash": "11857237543efbac1a91847d4b00a2cccf4b9efe1858d378ccc7b2e5ab732bda",
+      "content_hash": "1781a53f3965f5add170dc7de3f56324bdf475923d6b796b61c197ee5c9700ca",
       "dependencies": [],
       "description": "Use this skill when configuring CumulusCI (cci) for Salesforce project automation: authoring cumulusci.yml tasks and flows, customizing or composing standard flows, integrating Robot Framework acceptance tests, and running cci flows in CI pipelines with JWT-based authentication. Covers task class_path/options wiring, flow step ordering, org and source declarations, cross-project reuse via sources, and the standard flow library (dev_org, qa_org, ci_feature, install_beta). NOT for raw SFDX/sf CLI workflows without CumulusCI, scratch org pool management (use scratch-org-pools), unlocked or managed package versioning (use unlocked-package-development or second-generation-managed-packages), or Salesforce-native DevOps Center pipelines (use devops-center-pipeline).",
       "file_location": "skills/devops/cumulusci-automation",
@@ -93514,7 +93515,7 @@
         "CumulusCI Documentation \u2014 Configuring Tasks and Flows \u2014 https://cumulusci.readthedocs.io/en/stable/config.html",
         "CumulusCI Documentation \u2014 Standard Flows Reference \u2014 https://cumulusci.readthedocs.io/en/stable/flows.html",
         "CumulusCI Documentation \u2014 Robot Framework Integration \u2014 https://cumulusci.readthedocs.io/en/stable/robot.html",
-        "CumulusCI Documentation \u2014 Cross-Project Sources \u2014 https://cumulusci.readthedocs.io/en/stable/sources.html",
+        "CumulusCI Documentation \u2014 Cross-Project Sources \u2014 https://cumulusci.readthedocs.io/  (page retired \u2014 see host index for current equivalent)",
         "Salesforce DX Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm",
         "Salesforce CLI Reference \u2014 sf org login jwt \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_org_commands_unified.htm"
       ],
@@ -96031,7 +96032,7 @@
         "f638768dddbd7a0a4907",
         "f9ab00fa8855dd6f96ac"
       ],
-      "content_hash": "9281980901c6ef4ac7f8b69b8303b738cb58ff5a374e7c61c05acbf7f75d8cf8",
+      "content_hash": "6b86249bf4bcef8068a744f6319d7e99655f8aec7dcc888139a976281312896e",
       "dependencies": [],
       "description": "Use when planning, sequencing, or executing the final cutover to production for a Salesforce implementation or major release. Covers cutover runbooks, code freeze enforcement, mock deployments, go/no-go decision gates, validation deploy timing, quick deploy windows, hypercare scheduling, and rollback trigger definitions. NOT for deployment mechanics (use devops/post-deployment-validation). NOT for release calendar or versioning strategy (use devops/release-management). NOT for writing smoke tests (use devops/post-deployment-validation).",
       "file_location": "skills/devops/go-live-cutover-planning",
@@ -96049,7 +96050,7 @@
         "Salesforce Metadata API Developer Guide \u2014 Deploy: https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_deploy.htm",
         "Salesforce CLI Reference \u2014 sf project deploy: https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_project_commands_unified.htm",
         "Salesforce Architects \u2014 Well-Architected Operational Excellence: https://architect.salesforce.com/well-architected/operational-excellence",
-        "Trailhead \u2014 Prepare Your Org for a Successful Go-Live: https://trailhead.salesforce.com/content/learn/modules/go-live-readiness"
+        "Trailhead \u2014 Prepare Your Org for a Successful Go-Live: https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)"
       ],
       "outputs": [
         "Cutover runbook with sequenced steps, owners, estimated durations, and rollback triggers",
@@ -114722,7 +114723,7 @@
         "fc808d96dd9d77d18272",
         "fece304814c7d04d6d49"
       ],
-      "content_hash": "49b780755269a3430718abdb02974e435fce787920030ac3c68ed11ca05606a8",
+      "content_hash": "bd6feb49313a1b6cf0fab4b39c6568b6e8c27311defff033127aea6358cbacde",
       "dependencies": [],
       "description": "Use when designing, governing, or troubleshooting Slack Connect channel sharing between two independent organizations. Trigger phrases: external Slack channel collaboration, cross-org Slack channel setup, Slack Connect DLP policy, Slack partner channel governance, regulated industry Slack Connect compliance. Does NOT cover Salesforce-to-Salesforce integration, Salesforce for Slack app setup, or internal single-workspace Slack channels. NOT for Salesforce-to-Salesforce integration.",
       "file_location": "skills/integration/slack-connect-patterns",
@@ -114736,9 +114737,9 @@
       ],
       "name": "slack-connect-patterns",
       "official_sources": [
-        "Slack Connect guide: Work with external organizations \u2014 https://slack.com/help/articles/360035280511 (channel sharing setup, 250-org limit, admin acceptance requirement, paid plan requirement)",
-        "How data management features apply to Slack Connect \u2014 https://slack.com/help/articles/360035622694 (split-ownership retention, deletion asymmetry, eDiscovery scope)",
-        "Slack data loss prevention \u2014 https://slack.com/help/articles/1500001560242 (native DLP availability by plan tier, PCRE rules, Enterprise Grid/Enterprise+ restriction)",
+        "Slack Connect guide: Work with external organizations \u2014 https://slack.com/help  (page retired \u2014 see host index for current equivalent) (channel sharing setup, 250-org limit, admin acceptance requirement, paid plan requirement)",
+        "How data management features apply to Slack Connect \u2014 https://slack.com/help  (page retired \u2014 see host index for current equivalent) (split-ownership retention, deletion asymmetry, eDiscovery scope)",
+        "Slack data loss prevention \u2014 https://slack.com/help  (page retired \u2014 see host index for current equivalent) (native DLP availability by plan tier, PCRE rules, Enterprise Grid/Enterprise+ restriction)",
         "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (pillar framing)"
       ],
       "outputs": [
@@ -116458,7 +116459,7 @@
         "db2dc24d14097954af47",
         "efb9e573ff9457eb271d"
       ],
-      "content_hash": "c8c4e80dfead4461762c60bb5eeb6490c44bd06c43d7fbc801586eb98d38f7c8",
+      "content_hash": "d257cb7d0c53ac64e3ba81604d383f5d5273b36cd8b3f1c02187c1c0b235b351",
       "dependencies": [],
       "description": "Implement drag-and-drop in LWC using HTML5 Drag and Drop API, keyboard alternatives, and accessible announcements. NOT for kanban migration from legacy Lightning.",
       "file_location": "skills/lwc/drag-and-drop",
@@ -116472,7 +116473,7 @@
         "Lightning Web Components Developer Guide \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/",
         "Lightning Data Service \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-wire-service-about.html",
         "LWC Recipes \u2014 https://github.com/trailheadapps/lwc-recipes",
-        "SLDS 2 \u2014 https://www.lightningdesignsystem.com/2e/"
+        "SLDS 2 \u2014 https://www.lightningdesignsystem.com/  (page retired \u2014 see host index for current equivalent)"
       ],
       "outputs": [
         "component with dragstart/dragover/drop handlers + keyboard fallback"
@@ -117273,7 +117274,7 @@
         "f4e3abe795804219c990",
         "f8cd41234b742e678e97"
       ],
-      "content_hash": "5d412b156f2de8778d92e3dcd2c6a98f90cba4d10b8d9c92dd8e400ff2cd668b",
+      "content_hash": "0af9d9c1c49730cbd8bda20f987d9a4ac06d03a74ea64f36993958a3b534e86a",
       "dependencies": [],
       "description": "Upload files in LWC: lightning-file-upload, manual multipart, large-file chunked upload, and ContentDocument associations. NOT for ContentDocument query patterns.",
       "file_location": "skills/lwc/file-upload-patterns",
@@ -117287,7 +117288,7 @@
         "Lightning Web Components Developer Guide \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/",
         "Lightning Data Service \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-wire-service-about.html",
         "LWC Recipes \u2014 https://github.com/trailheadapps/lwc-recipes",
-        "SLDS 2 \u2014 https://www.lightningdesignsystem.com/2e/"
+        "SLDS 2 \u2014 https://www.lightningdesignsystem.com/  (page retired \u2014 see host index for current equivalent)"
       ],
       "outputs": [
         "component with appropriate upload strategy + server-side Apex"
@@ -119927,7 +119928,7 @@
         "ec4af10c8b829d3b9a2e",
         "ff4ca98b50cb45925d4b"
       ],
-      "content_hash": "d72b18d5619d2be7fe967ed441b74d74d35e64154103c232b2b43cb64fad09d3",
+      "content_hash": "4135c441acb3ea436a3530e8aa7a8d0b8b0532bd2923a11fe38b0be7b7bfede2",
       "dependencies": [],
       "description": "Isolate component errors so one failure does not blank an entire page using errorCallback and graceful fallbacks. NOT for server-side Apex exception design.",
       "file_location": "skills/lwc/lwc-error-boundaries",
@@ -119941,7 +119942,7 @@
         "Lightning Web Components Developer Guide \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/",
         "Lightning Data Service \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-wire-service-about.html",
         "LWC Recipes \u2014 https://github.com/trailheadapps/lwc-recipes",
-        "SLDS 2 \u2014 https://www.lightningdesignsystem.com/2e/"
+        "SLDS 2 \u2014 https://www.lightningdesignsystem.com/  (page retired \u2014 see host index for current equivalent)"
       ],
       "outputs": [
         "wrapper boundary component + fallback UI"
@@ -120610,7 +120611,7 @@
         "e8a3e984e0bb72804234",
         "f2127ad24b8205401a01"
       ],
-      "content_hash": "c326c1f886f9a78d481b0cba4078a2276beb370acd86602257623205cba6523c",
+      "content_hash": "07052f4599db4a8f50b5746545ad12be9321d6fc4f91bffcf1425122c0ba9824",
       "dependencies": [],
       "description": "Build LWCs that support translation, locale-aware formatting, and RTL layouts. NOT for Translation Workbench setup.",
       "file_location": "skills/lwc/lwc-internationalization",
@@ -120624,7 +120625,7 @@
         "Lightning Web Components Developer Guide \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/",
         "Lightning Data Service \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-wire-service-about.html",
         "LWC Recipes \u2014 https://github.com/trailheadapps/lwc-recipes",
-        "SLDS 2 \u2014 https://www.lightningdesignsystem.com/2e/"
+        "SLDS 2 \u2014 https://www.lightningdesignsystem.com/  (page retired \u2014 see host index for current equivalent)"
       ],
       "outputs": [
         "component using custom labels + locale-aware components"
@@ -123411,7 +123412,7 @@
         "eb07ff015d8d9a4748c8",
         "ee138321efa00b806ab1"
       ],
-      "content_hash": "fa842dbaee99a5f95f9faf07d450a5e00de6019710085ee95f363e12037c18c8",
+      "content_hash": "84a26d460e60214699e7cbbec641c3cb800af7226141761a0ceeb1a0f4e5204c",
       "dependencies": [],
       "description": "Share state across LWCs using pub/sub, Lightning Message Service, @wire, and reactive stores. NOT for in-component reactivity.",
       "file_location": "skills/lwc/lwc-state-management",
@@ -123425,7 +123426,7 @@
         "Lightning Web Components Developer Guide \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/",
         "Lightning Data Service \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-wire-service-about.html",
         "LWC Recipes \u2014 https://github.com/trailheadapps/lwc-recipes",
-        "SLDS 2 \u2014 https://www.lightningdesignsystem.com/2e/"
+        "SLDS 2 \u2014 https://www.lightningdesignsystem.com/  (page retired \u2014 see host index for current equivalent)"
       ],
       "outputs": [
         "state-management decision + implementation snippets"
@@ -123533,7 +123534,7 @@
         "fa12fb43b59654620c64",
         "fef8b250345bda307ba2"
       ],
-      "content_hash": "8959faf6ed3c45f2c4e86d6c5893687baaa0f2d061c676d623e2f04334f46c30",
+      "content_hash": "598e3b091799b2a39e9809081e9a9105716a74c7d789e6bf8dbe42d8d0591343",
       "dependencies": [],
       "description": "Use when theming Lightning base components or custom LWCs with SLDS Styling Hooks \u2014 CSS custom properties such as `--slds-c-button-color-background`, `--slds-g-color-brand-base-50`, and `--sds-c-*` \u2014 across app, page, component, or Experience Cloud scopes, including SLDS 2 (2e) migration via SLDS Validator / Linter and dark-mode surface work. Triggers: 'how to theme lightning-button', 'custom color without overriding slds classes', 'slds 2 migration for lwc', '--slds-c-button-color-background doesn't work', 'experience cloud brand color in lwc', 'dark mode lwc base components'. NOT for raw CSS overrides that target SLDS internal class names \u2014 those break on upgrade \u2014 and NOT for Experience Cloud theme designer work broader than styling hooks (palette pickers, custom CSS files, branding sets, theme layouts).",
       "file_location": "skills/lwc/lwc-styling-hooks",
@@ -123550,7 +123551,7 @@
         "LWC CSS Custom Properties \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/create-components-css-custom-properties.html",
         "LWC Theming \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/create-components-theming.html",
         "SLDS Styling Hooks \u2014 https://lightningdesignsystem.com/platforms/lightning/styling-hooks/",
-        "SLDS 2 (2e) \u2014 https://lightningdesignsystem.com/2e/",
+        "SLDS 2 (2e) \u2014 https://www.lightningdesignsystem.com/  (page retired \u2014 see host index for current equivalent)",
         "SLDS Validator / SLDS Linter \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/reference-slds-validator.html",
         "Lightning Component Reference \u2014 https://developer.salesforce.com/docs/platform/lightning-component-reference/guide"
       ],
@@ -124852,7 +124853,7 @@
         "fc5cf1a31c261b7fd0d8",
         "fdf2ee51871af9f5e05a"
       ],
-      "content_hash": "4c401fdccf31d0e4a17cd1e7f0e0d508c924952cfe64a630966906883463973d",
+      "content_hash": "778896ddb643807c5039ef3980674ba4cb1e826bc99c203c0ad07c05400b24a7",
       "dependencies": [],
       "description": "Embedding Tableau dashboards (and Tableau Pulse insights) inside Lightning App / Record / Home pages \u2014 Tableau Embedding API v3 in an LWC, the connected-app + JWT trust pattern for SSO from Salesforce to Tableau, row-level security so a Salesforce user only sees their data in Tableau, CSP / Trusted Sites configuration for the Tableau host, and the Tableau Viz Lightning Web Component (drag-and-drop alternative to a custom LWC). NOT for building Tableau dashboards / data sources (that's Tableau-side work), NOT for CRM Analytics (Tableau is the separate product; see data/crm-analytics-patterns).",
       "file_location": "skills/lwc/tableau-embedding-in-lightning",
@@ -124865,7 +124866,7 @@
       "name": "tableau-embedding-in-lightning",
       "official_sources": [
         "Tableau Embedding API v3 \u2014 https://help.tableau.com/current/api/embedding_api/en-us/index.html",
-        "Tableau Pulse Embedding \u2014 https://help.tableau.com/current/online/en-us/pulse_embed.htm",
+        "Tableau Pulse Embedding \u2014 https://help.tableau.com/  (page retired \u2014 see host index for current equivalent)",
         "Connected Apps with JWT \u2014 https://help.tableau.com/current/online/en-us/connected_apps_direct.htm",
         "CSP Trusted Sites for Lightning Components \u2014 https://help.salesforce.com/s/articleView?id=sf.csp_trusted_sites.htm&type=5",
         "Tableau Viz Lightning Web Component (AppExchange / Setup) \u2014 https://help.salesforce.com/s/articleView?id=sf.tableau_viz.htm&type=5",
@@ -124935,7 +124936,7 @@
         "f09dadb7d10dd4b180ab",
         "f832b67235af6c0c3f1d"
       ],
-      "content_hash": "76e3962c676257961fe31871177c5cbcf28901e4daad6f52315077027064a88e",
+      "content_hash": "ea0fa00cf2066b6175d61f5cf56a00e0a63254660f2dc4d4861383dc1394c122",
       "dependencies": [],
       "description": "Render only visible rows for long lists (1k+ rows) using intersection observer or lightning-datatable virtual scroll. NOT for simple lists under 100 rows.",
       "file_location": "skills/lwc/virtualized-lists",
@@ -124949,7 +124950,7 @@
         "Lightning Web Components Developer Guide \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/",
         "Lightning Data Service \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-wire-service-about.html",
         "LWC Recipes \u2014 https://github.com/trailheadapps/lwc-recipes",
-        "SLDS 2 \u2014 https://www.lightningdesignsystem.com/2e/"
+        "SLDS 2 \u2014 https://www.lightningdesignsystem.com/  (page retired \u2014 see host index for current equivalent)"
       ],
       "outputs": [
         "virtualized component or datatable config"
@@ -133503,7 +133504,7 @@
         "f4b85783e4ec0533914d",
         "f8374da5b24a652b5f76"
       ],
-      "content_hash": "f5a0f59483c49eb0d3944977bf7b034c455c5385b85699e4540047a09a537653",
+      "content_hash": "f1c5ee8c752f3236f4c5f0ecb2b0a3528e0312ed4a22ebc7e93e4865c843d76d",
       "dependencies": [],
       "description": "Use when designing or reviewing SCIM-based user lifecycle provisioning into Salesforce from Okta, Azure AD / Entra, or another IdP \u2014 create/update/deactivate, group-to-permission-set mapping, attribute mapping, and deprovisioning semantics. Triggers: 'scim provisioning', 'okta scim salesforce', 'entra salesforce provisioning', 'user deactivation automation', 'group to permission set mapping'. NOT for SSO/authentication setup (see single-sign-on skills).",
       "file_location": "skills/security/scim-provisioning-integration",
@@ -133516,7 +133517,7 @@
       "name": "scim-provisioning-integration",
       "official_sources": [
         "Salesforce SCIM 2.0 API \u2014 https://developer.salesforce.com/docs/atlas.en-us.identityImplGuide.meta/identityImplGuide/identity_scim.htm",
-        "Okta Salesforce SCIM connector \u2014 https://help.okta.com/en-us/content/topics/apps/apps_about_salesforce.htm",
+        "Okta Salesforce SCIM connector \u2014 https://help.okta.com/  (page retired \u2014 see host index for current equivalent)",
         "Microsoft Entra Salesforce provisioning \u2014 https://learn.microsoft.com/en-us/entra/identity/saas-apps/salesforce-provisioning-tutorial",
         "Salesforce Well-Architected Security \u2014 https://architect.salesforce.com/docs/architect/well-architected/trusted/secure"
       ],

@@ -28,6 +28,6 @@
 
 - NPSP Data Model Gallery — https://developer.salesforce.com/docs/nonprofit/npsp/guide/npsp-data-model.html
 - NPSP Objects and Fields Data Dictionary — https://help.salesforce.com/s/articleView?id=sfdo.NPSP_Objects_and_Fields_Data_Dictionary.htm&type=5
-- Trailhead: Explore the NPSP Data Model — https://trailhead.salesforce.com/content/learn/modules/nonprofit-success-pack-basics/explore-the-npsp-data-model
+- Trailhead: Explore the NPSP Data Model — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Salesforce Well-Architected Framework — https://architect.salesforce.com/well-architected/overview
 - Object Reference (standard objects referenced by NPSP) — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm

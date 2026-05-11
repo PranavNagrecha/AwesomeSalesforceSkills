@@ -38,5 +38,5 @@
 
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 - Salesforce Health Cloud Developer Guide — FHIR APIs — https://developer.salesforce.com/docs/health/health-cloud/references/fhir-r4-apis/fhir-r4-apis-intro.html
-- MuleSoft Accelerator for Healthcare Documentation — https://docs.mulesoft.com/healthcare-toolkit/latest/
+- MuleSoft Accelerator for Healthcare Documentation — https://docs.mulesoft.com/  (page retired — see host index for current equivalent)
 - Salesforce Health Cloud — Configure the Generic FHIR Client — https://help.salesforce.com/s/articleView?id=sf.admin_generic_fhir_client.htm

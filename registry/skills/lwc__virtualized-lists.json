@@ -28,7 +28,7 @@
     "f09dadb7d10dd4b180ab",
     "f832b67235af6c0c3f1d"
   ],
-  "content_hash": "76e3962c676257961fe31871177c5cbcf28901e4daad6f52315077027064a88e",
+  "content_hash": "ea0fa00cf2066b6175d61f5cf56a00e0a63254660f2dc4d4861383dc1394c122",
   "dependencies": [],
   "description": "Render only visible rows for long lists (1k+ rows) using intersection observer or lightning-datatable virtual scroll. NOT for simple lists under 100 rows.",
   "file_location": "skills/lwc/virtualized-lists",
@@ -42,7 +42,7 @@
     "Lightning Web Components Developer Guide \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/",
     "Lightning Data Service \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/data-wire-service-about.html",
     "LWC Recipes \u2014 https://github.com/trailheadapps/lwc-recipes",
-    "SLDS 2 \u2014 https://www.lightningdesignsystem.com/2e/"
+    "SLDS 2 \u2014 https://www.lightningdesignsystem.com/  (page retired \u2014 see host index for current equivalent)"
   ],
   "outputs": [
     "virtualized component or datatable config"

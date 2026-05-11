@@ -21,7 +21,7 @@
 ## Official Sources Used
 
 - Consent Management for Health Cloud: https://help.salesforce.com/s/articleView?id=ind.hc_consent_management.htm
-- Optimizing Health Cloud Consent Management (Trailhead): https://trailhead.salesforce.com/content/learn/modules/health-cloud-consent-management
+- Optimizing Health Cloud Consent Management (Trailhead): https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Privacy Consent Data Model: https://developer.salesforce.com/docs/atlas.en-us.health_cloud_object_reference.meta/health_cloud_object_reference/hco_object_authorization_form_consent.htm
 - AuthorizationFormConsent Object Reference: https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_authorizationformconsent.htm
 - Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

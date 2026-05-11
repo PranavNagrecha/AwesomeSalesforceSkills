@@ -75,7 +75,7 @@
     "ff9a99374989fb310568",
     "ffce86e1384584c0ccb4"
   ],
-  "content_hash": "c9f4b7821869b02f3265788451bc92ab4dde2b541e2c4014790838adac4f8384",
+  "content_hash": "977aee6f00f0d67df3c6ddc5f10340fdd515f021e57f188801e84c17e3269cae",
   "dependencies": [],
   "description": "Use this skill when migrating constituent records (Contacts, Household Accounts, relationships, addresses, donations) into an NPSP org using the NPSP Data Importer. Triggers: importing contacts into NPSP, migrating nonprofit constituents, loading household data, bulk contact upload NPSP, constituent ETL. NOT for standard contact import, Nonprofit Cloud (NPC) migration, or generic Data Loader bulk loads.",
   "file_location": "skills/data/constituent-data-migration",
@@ -88,7 +88,7 @@
   ],
   "name": "constituent-data-migration",
   "official_sources": [
-    "NPSP Documentation Overview \u2014 https://powerofus.force.com/s/article/NPSP-Overview (NPSP Data Importer behavior, npsp__DataImport__c staging object, Contact Matching Rules)",
+    "NPSP Documentation Overview \u2014 https://help.salesforce.com/s/nonprofit  (page retired \u2014 see host index for current equivalent) (NPSP Data Importer behavior, npsp__DataImport__c staging object, Contact Matching Rules)",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (architecture quality framing)",
     "Bulk API 2.0 Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/asynch_api_intro.htm (staging record load via API)",
     "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm (sObject semantics and field behavior)"

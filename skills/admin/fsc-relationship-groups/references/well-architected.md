@@ -30,5 +30,5 @@
 - FSC Admin Guide: Configure Record Rollups — https://help.salesforce.com/s/articleView?id=sf.fsc_admin_configure_rollups.htm
 - FSC Object Reference: AccountContactRelation FSC Fields — https://developer.salesforce.com/docs/atlas.en-us.financial_services_cloud_object_reference.meta/financial_services_cloud_object_reference/sforce_api_objects_accountcontactrelation.htm
 - FSC Developer Guide (Spring '26) — https://developer.salesforce.com/docs/atlas.en-us.financial_services_cloud_object_reference.meta/financial_services_cloud_object_reference/fsc_dev_guide.htm
-- FSC Trailhead: Create and Manage Household Groups for Financial Planning — https://trailhead.salesforce.com/content/learn/modules/financial-services-cloud-basics/create-and-manage-household-groups
+- FSC Trailhead: Create and Manage Household Groups for Financial Planning — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

@@ -155,7 +155,7 @@
     "fc651790ee7f55ae2466",
     "fe5f5c8dea4a7a8ff015"
   ],
-  "content_hash": "bc2853e87014851f9afaf198098f81c75c51fe95bc740a962d8e9bd64af26780",
+  "content_hash": "6ff3a889bd2fa4bf1b242240db1b64f14509c4bb392122a2156f9115431a7234",
   "dependencies": [
     "architect/security-architecture-review",
     "security/platform-encryption"
@@ -176,14 +176,14 @@
   "official_sources": [
     "Salesforce Well-Architected Framework Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
     "Salesforce Well-Architected: Trusted \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/trusted.html",
-    "Salesforce Government Cloud Overview \u2014 https://www.salesforce.com/solutions/government/",
-    "Salesforce Trust and Compliance documentation \u2014 https://compliance.salesforce.com/en/services/government-cloud",
+    "Salesforce Government Cloud Overview \u2014 https://www.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
+    "Salesforce Trust and Compliance documentation \u2014 https://compliance.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
     "FedRAMP Authorization for Salesforce Government Cloud \u2014 https://marketplace.fedramp.gov/#/product/salesforce-government-cloud",
     "NIST SP 800-53 Rev 5 Security and Privacy Controls \u2014 https://csrc.nist.gov/publications/detail/sp/800-53/rev-5/final",
     "NIST SP 800-37 Rev 2 Risk Management Framework \u2014 https://csrc.nist.gov/publications/detail/sp/800-37/rev-2/final",
     "NIST SP 800-171 Rev 2 Protecting CUI in Nonfederal Systems \u2014 https://csrc.nist.gov/publications/detail/sp/800-171/rev-2/final",
     "DISA Cloud Computing SRG (DoD Impact Levels) \u2014 https://public.cyber.mil/dccs/",
-    "CMS Acceptable Risk Safeguards (ARS) \u2014 https://www.cms.gov/research-statistics-data-and-systems/cms-information-technology/informationsecurity/cms-ars",
+    "CMS Acceptable Risk Safeguards (ARS) \u2014 https://www.cms.gov/  (page retired \u2014 see host index for current equivalent)",
     "Salesforce Hyperforce Overview \u2014 https://help.salesforce.com/s/articleView?id=sf.hyperforce_overview.htm",
     "Salesforce Shield Overview \u2014 https://help.salesforce.com/s/articleView?id=sf.security_shield.htm"
   ],

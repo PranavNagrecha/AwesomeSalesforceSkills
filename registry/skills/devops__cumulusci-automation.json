@@ -92,7 +92,7 @@
     "fbb78579ec8fb0d85a57",
     "ffde434d0fc71752e7f6"
   ],
-  "content_hash": "11857237543efbac1a91847d4b00a2cccf4b9efe1858d378ccc7b2e5ab732bda",
+  "content_hash": "1781a53f3965f5add170dc7de3f56324bdf475923d6b796b61c197ee5c9700ca",
   "dependencies": [],
   "description": "Use this skill when configuring CumulusCI (cci) for Salesforce project automation: authoring cumulusci.yml tasks and flows, customizing or composing standard flows, integrating Robot Framework acceptance tests, and running cci flows in CI pipelines with JWT-based authentication. Covers task class_path/options wiring, flow step ordering, org and source declarations, cross-project reuse via sources, and the standard flow library (dev_org, qa_org, ci_feature, install_beta). NOT for raw SFDX/sf CLI workflows without CumulusCI, scratch org pool management (use scratch-org-pools), unlocked or managed package versioning (use unlocked-package-development or second-generation-managed-packages), or Salesforce-native DevOps Center pipelines (use devops-center-pipeline).",
   "file_location": "skills/devops/cumulusci-automation",
@@ -110,7 +110,7 @@
     "CumulusCI Documentation \u2014 Configuring Tasks and Flows \u2014 https://cumulusci.readthedocs.io/en/stable/config.html",
     "CumulusCI Documentation \u2014 Standard Flows Reference \u2014 https://cumulusci.readthedocs.io/en/stable/flows.html",
     "CumulusCI Documentation \u2014 Robot Framework Integration \u2014 https://cumulusci.readthedocs.io/en/stable/robot.html",
-    "CumulusCI Documentation \u2014 Cross-Project Sources \u2014 https://cumulusci.readthedocs.io/en/stable/sources.html",
+    "CumulusCI Documentation \u2014 Cross-Project Sources \u2014 https://cumulusci.readthedocs.io/  (page retired \u2014 see host index for current equivalent)",
     "Salesforce DX Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm",
     "Salesforce CLI Reference \u2014 sf org login jwt \u2014 https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_org_commands_unified.htm"
   ],

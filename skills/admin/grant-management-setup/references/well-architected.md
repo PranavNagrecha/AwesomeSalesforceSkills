@@ -31,7 +31,7 @@
 ## Official Sources Used
 
 - Grants Management Product Documentation — https://help.salesforce.com/s/articleView?id=sfdo.Grants_Management.htm
-- Manage Funding Awards and Disbursements (Trailhead) — https://trailhead.salesforce.com/content/learn/modules/nonprofit-cloud-for-grantmaking
-- Fund Management Requirements and Disbursements Guide (Trailhead) — https://trailhead.salesforce.com/content/learn/modules/nonprofit-cloud-grantmaking-requirements
+- Manage Funding Awards and Disbursements (Trailhead) — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
+- Fund Management Requirements and Disbursements Guide (Trailhead) — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Grantmaking and Budget Management Data Model (Salesforce Developers) — https://developer.salesforce.com/docs/atlas.en-us.nonprofit_cloud.meta/nonprofit_cloud/npc_grantmaking_data_model.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

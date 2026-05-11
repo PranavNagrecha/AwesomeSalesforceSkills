@@ -27,7 +27,7 @@
 
 - NPSP Recurring Donations Overview — https://help.salesforce.com/s/articleView?id=sfdo.RD2_Overview.htm
 - Configure Recurring Donations (NPSP) — https://help.salesforce.com/s/articleView?id=sfdo.RD2_Configure.htm
-- Manage Recurring Donations — https://trailhead.salesforce.com/content/learn/modules/nonprofit-success-pack-recurring-donations
+- Manage Recurring Donations — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Object Reference — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm
 - Metadata API Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

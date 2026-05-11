@@ -21,6 +21,6 @@
 ## Official Sources Used
 
 - Health Cloud Developer Guide — Mapping FHIR v4.0 to Salesforce Standard Objects: https://developer.salesforce.com/docs/atlas.en-us.health_cloud.meta/health_cloud/hco_dev_fhir_mapping.htm
-- MuleSoft Direct Integration Apps — Healthcare FHIR Patterns: https://docs.mulesoft.com/healthcare-accelerator/
+- MuleSoft Direct Integration Apps — Healthcare FHIR Patterns: https://docs.mulesoft.com/  (page retired — see host index for current equivalent)
 - FHIR R4 Support for Better Interoperability (Release Notes): https://help.salesforce.com/s/articleView?id=release-notes.rn_ind_hc_fhir_r4.htm
 - Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

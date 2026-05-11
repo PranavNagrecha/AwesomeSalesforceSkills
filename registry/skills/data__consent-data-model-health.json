@@ -88,7 +88,7 @@
     "fad619da6bfcebeee09c",
     "fbe15410f525c79a383d"
   ],
-  "content_hash": "4e1c78989b8d50503189624936ee2d2f504d534039973aa288139e3831bb1f35",
+  "content_hash": "0fdae9d45e9757d092529e12c4c4bfad65a2c57d21544b75ec36392ea7cadc8e",
   "dependencies": [],
   "description": "Use this skill when designing, implementing, querying, or troubleshooting the Health Cloud consent data model \u2014 specifically the five-object HIPAA authorization hierarchy (DataUsePurpose \u2192 AuthorizationForm \u2192 AuthorizationFormText \u2192 AuthorizationFormDataUse \u2192 AuthorizationFormConsent). Trigger keywords: authorization form consent, ConsentGiverId, AuthorizationFormConsent SOQL, CareProgramEnrollee consent gate, PHI consent trail, consent hierarchy setup. NOT for marketing consent or standard email opt-out tracking. NOT for ContactPointConsent or ContactPointTypeConsent objects used in Marketing Cloud or standard Salesforce Privacy Center.",
   "file_location": "skills/data/consent-data-model-health",
@@ -105,7 +105,7 @@
     "AuthorizationFormConsent Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_authorizationformconsent.htm",
     "Health Cloud Object Reference (AuthorizationForm) \u2014 https://developer.salesforce.com/docs/atlas.en-us.health_cloud_object_reference.meta/health_cloud_object_reference/hco_object_authorization_form_consent.htm",
     "Consent Management for Health Cloud (Help) \u2014 https://help.salesforce.com/s/articleView?id=ind.hc_consent_management.htm",
-    "Optimizing Health Cloud Consent Management (Trailhead) \u2014 https://trailhead.salesforce.com/content/learn/modules/health-cloud-consent-management",
+    "Optimizing Health Cloud Consent Management (Trailhead) \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
   ],
   "outputs": [

@@ -70,7 +70,7 @@
     "f81f22d75416337b2a96",
     "f843296bc37f6f22fdb7"
   ],
-  "content_hash": "a1e4d88419bff25c3ceae434b2f6500f7204c04ee38466eb0bf030d7a42afefd",
+  "content_hash": "40e556b72471cd57edef96919a42f5f09f07974cba42b22001fa23b040ba5697",
   "dependencies": [],
   "description": "Use when setting up, configuring, or troubleshooting Salesforce Sales Engagement (formerly High Velocity Sales) cadences, call scripts, email templates, work queue, or rep assignment. Triggers: 'cadence builder', 'HVS cadence', 'work queue steps', 'sales engagement setup', 'sequence steps not appearing', 'cadence not sending email', 'Sales Engagement permission set'. NOT for Marketing Cloud campaigns, Marketing Cloud Account Engagement (Pardot) journeys, or custom Apex email services.",
   "file_location": "skills/admin/sales-engagement-cadences",
@@ -86,7 +86,7 @@
   "official_sources": [
     "Salesforce Sales Engagement Implementation Guide (Spring '26) \u2014 https://help.salesforce.com/s/articleView?id=sf.sales_engagement_implementation_guide.htm",
     "Salesforce Help: Cadence Considerations \u2014 https://help.salesforce.com/s/articleView?id=sf.sales_cadence_considerations.htm",
-    "Trailhead: Standard Cadences for Sales Engagement \u2014 https://trailhead.salesforce.com/content/learn/modules/sales-engagement-for-admins",
+    "Trailhead: Standard Cadences for Sales Engagement \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html",
     "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm"
   ],

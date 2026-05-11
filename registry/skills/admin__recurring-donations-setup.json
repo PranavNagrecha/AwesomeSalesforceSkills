@@ -89,7 +89,7 @@
     "fec95320c84ae11cbbc2",
     "ff833f80bba450e3f912"
   ],
-  "content_hash": "9d54b696645dcb6807f665c11dfc1148d91f6db3d3dd8dd32113ee5a67085d77",
+  "content_hash": "7936f4baa64f6b8bd74efb3ad9141ff93ee37e1af04ebf1a160290574c33e4a3",
   "dependencies": [],
   "description": "Configure and manage NPSP Enhanced Recurring Donations (ERD): enable ERD mode, define schedule objects, configure installment behavior, set status automation thresholds, and interpret the Upcoming Installments UI. NOT for legacy recurring donations (pre-March 2021 model), one-time Opportunity creation, or custom payment gateway integrations beyond native NPSP.",
   "file_location": "skills/admin/recurring-donations-setup",
@@ -105,7 +105,7 @@
   "official_sources": [
     "NPSP Recurring Donations Overview \u2014 https://help.salesforce.com/s/articleView?id=sfdo.RD2_Overview.htm",
     "Configure Recurring Donations (NPSP) \u2014 https://help.salesforce.com/s/articleView?id=sfdo.RD2_Configure.htm",
-    "Manage Recurring Donations \u2014 https://trailhead.salesforce.com/content/learn/modules/nonprofit-success-pack-recurring-donations",
+    "Manage Recurring Donations \u2014 https://trailhead.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
     "Object Reference \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm",
     "Metadata API Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
