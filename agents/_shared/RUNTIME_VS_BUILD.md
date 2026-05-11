@@ -25,7 +25,7 @@ Entry points: `/run-queue`, `/new-skill`, `/request-skill`, scheduled task.
 
 ---
 
-## Run-time agents (56)
+## Run-time agents (47)
 
 These agents use the skill library to do real Salesforce work against a user's org or codebase. They are the primary value delivered to consumers of SfSkills. Every run-time agent follows [`AGENT_CONTRACT.md`](./AGENT_CONTRACT.md) — including the mandatory **Process Observations** section that analyzes the org itself while producing the deliverable — and cites every skill / template / decision-tree it consumed.
 

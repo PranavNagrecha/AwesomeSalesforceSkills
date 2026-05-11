@@ -263,7 +263,7 @@ Two classes of agents live in `agents/`:
    code-reviewer, validator, currency-monitor, org-assessor,
    release-planner. These produce the library. Invoked by `/run-queue`.
 
-2. **Run-time (56)** — grouped in four tiers:
+2. **Run-time (47)** — grouped in four tiers:
    - **Developer + architecture (17):** `apex-refactorer`, `trigger-consolidator`,
      `test-class-generator`, `soql-optimizer`, `security-scanner`,
      `flow-analyzer`, `bulk-migration-planner`, `lwc-builder`, `lwc-auditor`,

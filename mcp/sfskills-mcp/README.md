@@ -10,7 +10,7 @@ three things at once:
    `list_permission_sets`, `describe_permission_set`, `list_record_types`,
    `list_named_credentials`, `list_approval_processes`, `tooling_query`, and
    `validate_against_org`.
-3. **Run-time agents** (45+ active runtime agents across developer, admin,
+3. **Run-time agents** (47 active runtime agents across developer, admin,
    strategic, and vertical/governance tiers, plus 14 build-time agents and
    14 deprecation stubs that redirect via `list_deprecated_redirects`) that
    compose the skill library + live-org tools into concrete deliverables —
