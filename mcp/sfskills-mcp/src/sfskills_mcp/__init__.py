@@ -47,4 +47,46 @@
 #           Warning-prefix JSON parsing (1): strip sf CLI warning lines
 #             before json.loads — same root cause as the security leak,
 #             now closed at the parsing layer too.
-__version__ = "0.4.3"
+#   0.4.4 — Pre-prod QA dispatch (ExampleOrg Dev PN, 997 skills, 47 runtime
+#           agents). 18 fixes spanning 6 P0 release blockers, 9 P1 polish,
+#           3 P2 housekeeping. Highlights:
+#           P0 product bugs (6): list_flows_on_object now queries
+#             FlowDefinitionView via Standard SOQL (Flow.DeveloperName fails
+#             on API 67); list_custom_fields drops the unsupported SOQL
+#             ESCAPE clause and filters __c suffix client-side; tooling_query
+#             skips auto-LIMIT on non-grouped aggregate queries; fastembed
+#             import is gracefully optional (pip install sfskills-mcp[embeddings]);
+#             dead citations to data-cloud-reverse-etl-to-core-salesforce
+#             removed from 2 build-time AGENT.mds; run_sf_json returns a
+#             structured error when stdout has no JSON object instead of
+#             silently returning {}.
+#           Envelope contract (3): emit_envelope now validates every
+#             envelope against output-envelope.schema.json via
+#             jsonschema.Draft202012Validator + a pre-loaded
+#             referencing.Registry (graceful fallback if jsonschema is
+#             absent); schema $ids migrated from
+#             https://sfskills.local/... to urn:sfskills:<name> so
+#             cross-schema $refs resolve without network access; run_id
+#             pattern rejects `:` per DELIVERABLE_CONTRACT.md (filesystem
+#             safety).
+#           Doc drift (1): 4 docs corrected — the old roster total dropped
+#             by 9 to the current 47 (the 9 that moved to deprecated
+#             wrappers via audit-router consolidation).
+#           Slash-command + alias mismatches (2): two AGENT.mds advertised
+#             slash commands that didn't exist (/design-cmt-or-settings,
+#             /design-entitlement-and-milestones); commands/
+#             automation-migration-router.md and its AGENT.md aligned on
+#             /automation-migration-router (legacy aliases preserved).
+#           Retrieval (2): flow/fault-handling adds 4 triggers covering
+#             "fault path subflow" phrasing; automation-selection title
+#             carries "(Flow vs Apex)" and a cross-tree comparison
+#             paragraph (lifts but does not fully solve the
+#             flow-pattern-selector slug bias).
+#           P2 housekeeping (3): sf CLI floor documented (2.0.0 minimum,
+#             2.103.7 tested in QA, latest recommended); access_token_preview
+#             docs corrected — fully masked ("***"), not prefix/suffix
+#             preview as previously claimed; the legacy hard-coded
+#             skill-count fallback string retired from
+#             SERVER_INSTRUCTIONS — registry/skills.json is the only source
+#             of truth, pinned in _STALE_LITERALS to prevent regression.
+__version__ = "0.4.4"

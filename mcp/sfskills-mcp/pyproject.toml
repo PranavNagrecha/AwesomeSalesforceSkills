@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "sfskills-mcp"
 # Bumped at the end of each Tier; see src/sfskills_mcp/__init__.py for history.
-version = "0.4.3"
+version = "0.4.4"
 description = "Model Context Protocol server exposing the SfSkills Salesforce skill library, agent + decision-tree corpus, and live Salesforce org metadata."
 readme = "README.md"
 requires-python = ">=3.10"
