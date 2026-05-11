@@ -305,6 +305,16 @@ sf config set target-org=my-dev
 The server never sees org credentials — it shells out to `sf`, which uses
 its own keyring-backed auth store.
 
+**Supported `sf` versions:**
+
+| | Version | Notes |
+|---|---|---|
+| **Minimum** | `2.0.0` | The unified `sf` CLI (post-`sfdx` rename). Earlier `sfdx`-prefixed builds will not work — the server invokes `sf data query` and `sf data query --use-tooling-api`. |
+| **Tested floor (v0.4.4 QA)** | `2.103.7` | Pre-prod regression suite passes against this version on a real Education-Cloud sandbox. |
+| **Recommended** | latest stable | Keep `sf` current — Salesforce ships frequent bug-fix releases. Run `sf update` periodically. |
+
+Check your version: `sf --version`
+
 ### Tuning timeouts
 
 Default `sf` subprocess timeout is 90s. Raise it for orgs with thousands
