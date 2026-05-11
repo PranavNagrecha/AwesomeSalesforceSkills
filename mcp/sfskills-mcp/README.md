@@ -499,8 +499,11 @@ mcp/sfskills-mcp/
 ## Design notes
 
 - **No secrets in-process.** Every org call routes through `sf`; the server
-  inherits the CLI's keyring-backed auth. Access tokens in `describe_org`
-  output are redacted to a short prefix/suffix preview.
+  inherits the CLI's keyring-backed auth. Access tokens, refresh tokens, and
+  other credentials in `describe_org` / `list_orgs` / `list_named_credentials`
+  output are **fully masked** — the `access_token_preview` field renders as
+  `"***"`. (Earlier docs claimed a prefix/suffix preview; the implementation
+  was hardened in v0.4.3 to drop all token bytes after a live-test leak.)
 - **Read-only.** No tool performs DML, deploys metadata, or runs apex. The
   full operation surface is `sobject describe`, `sobject list`, `data query`,
   `org display`, and `org list`.

@@ -669,8 +669,10 @@ to hit.
 
 ### Access tokens leaking into agent context
 
-They can't, by design — `describe_org` redacts the `accessToken` field to
-a `prefix…suffix` preview, and no other tool includes it in its output.
+They can't, by design — `describe_org` fully masks the `accessToken` field
+(the response carries `access_token_preview: "***"`, with no token bytes),
+and no other tool includes the token in its output. Hardened in v0.4.3
+after a live-test leak; earlier builds used a `prefix…suffix` preview.
 
 ---
 
@@ -679,7 +681,7 @@ a `prefix…suffix` preview, and no other tool includes it in its output.
 | Concern                    | How `sfskills-mcp` handles it                                                                   |
 | -------------------------- | ----------------------------------------------------------------------------------------------- |
 | **Credentials**            | Never in-process. All org calls shell out to `sf`, which uses its own keyring-backed auth store. |
-| **Access tokens**          | Redacted in tool outputs. Only a `prefix…suffix` preview is returned, never the full token.     |
+| **Access tokens**          | Fully masked in tool outputs. `describe_org` returns `access_token_preview: "***"` (no token bytes); `list_orgs` and `list_named_credentials` drop credential fields entirely. |
 | **Destructive operations** | None. Every tool is read-only (`sobject describe`, `sobject list`, `data query`, `org display`, `org list`). The server never writes metadata, runs apex, or executes DML. |
 | **Network scope**          | Only `sf`-initiated calls to the Salesforce instance the user is already authenticated to. The server itself opens no sockets. |
 | **Secrets in env**         | `SFSKILLS_REPO_ROOT` and `SFSKILLS_SF_BIN` are the only env vars read. Neither is a secret.    |
