@@ -37,7 +37,6 @@ dependencies:
     - integration/data-cloud-ingestion-api
     - integration/data-cloud-integration-strategy
     - integration/data-cloud-query-api
-    - integration/data-cloud-reverse-etl-to-core-salesforce
     - integration/data-cloud-zero-copy-federation
     - integration/dataweave-for-apex
     - integration/error-handling-in-integrations
@@ -173,8 +172,7 @@ Builds a catalog of every live integration endpoint reachable from the org: Name
 65. `skills/integration/tableau-salesforce-connector` — Tableau salesforce connector
 66. `skills/integration/webhook-inbound-patterns` — Webhook inbound patterns
 67. `skills/integration/dataweave-for-apex` — dataweave for apex
-68. `skills/integration/data-cloud-reverse-etl-to-core-salesforce` — data cloud reverse etl to core salesforce
-69. `skills/integration/scheduled-erp-sync-pattern` — scheduled erp sync pattern
+68. `skills/integration/scheduled-erp-sync-pattern` — scheduled erp sync pattern
 
 ---
 
