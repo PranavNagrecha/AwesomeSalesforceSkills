@@ -199,12 +199,24 @@ def list_custom_objects(
 # --------------------------------------------------------------------------- #
 
 
+# Query FlowDefinitionView via the Standard SOQL API (NOT Tooling API).
+# The Flow Tooling-API entity lacks the DeveloperName column and its
+# TriggerObjectOrEvent isn't a usable relationship field. FlowDefinitionView
+# exposes the developer name as ``ApiName``, the trigger target as
+# ``TriggerObjectOrEventLabel`` (string), and the active flag as
+# ``IsActive`` (boolean). Same approach as probe_automation_graph.
+#
+# Known limitation: TriggerObjectOrEventLabel stores the OBJECT LABEL,
+# not the API name. For standard objects (Account, Contact, etc.) the
+# label matches the API name. For custom objects with non-matching
+# labels (e.g. ``Custom_Foo__c`` labelled "Custom Foo") the user must
+# pass the label, not the __c API name. Future work: dereference via
+# EntityDefinition.QualifiedApiName when the input ends with __c.
 _FLOW_SOQL = (
-    "SELECT Id, DeveloperName, ApiVersion, ProcessType, TriggerType, "
-    "TriggerObjectOrEvent.QualifiedApiName, Status, LastModifiedDate, "
-    "Description "
-    "FROM Flow "
-    "WHERE TriggerObjectOrEvent.QualifiedApiName = '{obj}' "
+    "SELECT Id, ApiName, Label, ProcessType, TriggerType, "
+    "TriggerObjectOrEventLabel, IsActive, LastModifiedDate, Description "
+    "FROM FlowDefinitionView "
+    "WHERE TriggerObjectOrEventLabel = '{obj}' "
     "ORDER BY LastModifiedDate DESC "
     "LIMIT {limit}"
 )
@@ -229,8 +241,11 @@ def list_flows_on_object(
     bounded = max(1, min(int(limit or 50), MAX_FLOW_ROWS))
     soql = _FLOW_SOQL.format(obj=obj, limit=bounded)
 
+    # Standard SOQL API (no --use-tooling-api): FlowDefinitionView lives
+    # there, not in the Tooling API. Pre-v0.4.4 we passed --use-tooling-api
+    # and the server-side error masked the real problem.
     payload = sf_cli.run_sf_json(
-        ["data", "query", "--use-tooling-api", "--query", soql],
+        ["data", "query", "--query", soql],
         target_org=target_org,
     )
     if "error" in payload and "result" not in payload:
@@ -239,21 +254,26 @@ def list_flows_on_object(
     records = (payload.get("result", {}) or {}).get("records", []) or []
     rows: list[dict[str, Any]] = []
     for record in records:
-        status = record.get("Status")
-        if active_only and status != "Active":
+        # FlowDefinitionView.IsActive is a boolean. We synthesise a
+        # human-friendly "status" string so the response shape stays
+        # backwards-compatible with v0.4.3 consumers expecting
+        # status='Active'/'Inactive'. ApiVersion isn't exposed on
+        # FlowDefinitionView (the active version's API is on a
+        # different entity); omitted for now.
+        is_active = bool(record.get("IsActive"))
+        if active_only and not is_active:
             continue
-        trigger_object = (record.get("TriggerObjectOrEvent") or {}).get("QualifiedApiName") if isinstance(
-            record.get("TriggerObjectOrEvent"), dict
-        ) else None
+        status = "Active" if is_active else "Inactive"
         rows.append(
             {
                 "id": record.get("Id"),
-                "developer_name": record.get("DeveloperName"),
+                "developer_name": record.get("ApiName"),
+                "label": record.get("Label"),
                 "process_type": record.get("ProcessType"),
                 "trigger_type": record.get("TriggerType"),
-                "trigger_object": trigger_object,
+                "trigger_object": record.get("TriggerObjectOrEventLabel"),
                 "status": status,
-                "api_version": record.get("ApiVersion"),
+                "is_active": is_active,
                 "last_modified": record.get("LastModifiedDate"),
                 "description": record.get("Description"),
             }
