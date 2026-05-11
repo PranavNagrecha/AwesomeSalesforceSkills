@@ -180,23 +180,42 @@ class ListCustomFieldsTest(unittest.TestCase):
         self.assertIn("error", out)
 
     def test_default_filters_to_custom_only(self) -> None:
+        # Pre-v0.4.4: SOQL had `LIKE '%\_\_c' ESCAPE '\\\\'` (broken).
+        # v0.4.4: SOQL has NO LIKE filter; custom-only is enforced
+        # client-side by post-fetch suffix check. Verify the
+        # standard fields a mixed response returns get pruned.
+        rec_custom = {"QualifiedApiName": "MyField__c", "DataType": "double", "Label": "My Field"}
+        rec_std = {"QualifiedApiName": "Industry", "DataType": "picklist", "Label": "Industry"}
+        with mock.patch.object(dev_org, "_run_soql") as run:
+            run.return_value = _soql_result([rec_custom, rec_std])
+            out = dev_org.list_custom_fields(object_name="Account")
+            names = [f["name"] for f in out["fields"]]
+            self.assertIn("MyField__c", names)
+            self.assertNotIn("Industry", names)
+            self.assertEqual(out["field_count"], 1)
+
+    def test_include_standard_returns_both(self) -> None:
+        # When include_standard=True, the suffix filter is skipped so
+        # both __c and standard fields appear in the response.
+        rec_custom = {"QualifiedApiName": "MyField__c", "DataType": "double", "Label": "My Field"}
+        rec_std = {"QualifiedApiName": "Industry", "DataType": "picklist", "Label": "Industry"}
+        with mock.patch.object(dev_org, "_run_soql") as run:
+            run.return_value = _soql_result([rec_custom, rec_std])
+            out = dev_org.list_custom_fields(object_name="Account", include_standard=True)
+            names = [f["name"] for f in out["fields"]]
+            self.assertIn("MyField__c", names)
+            self.assertIn("Industry", names)
+            self.assertEqual(out["field_count"], 2)
+
+    def test_soql_omits_legacy_escape_clause(self) -> None:
+        # P0-B regression guard: SOQL does NOT support ESCAPE; the
+        # v0.4.3 query had it and every server-side call failed with
+        # MALFORMED_QUERY. Pin that the clause is gone.
         with mock.patch.object(dev_org, "_run_soql") as run:
             run.return_value = _soql_result([])
             dev_org.list_custom_fields(object_name="Account")
             soql = run.call_args.args[0]
-            # Underscores are SOQL ``LIKE`` wildcards, so they're escaped:
-            # ``LIKE '%\_\_c' ESCAPE '\\'``. Just verify both the LIKE clause
-            # and the ESCAPE marker appear so the suffix filter is real.
-            self.assertIn("LIKE", soql)
-            self.assertIn("ESCAPE", soql)
-            self.assertIn("_c", soql)  # \_\_c contains _c after escapes
-
-    def test_include_standard_drops_suffix_clause(self) -> None:
-        with mock.patch.object(dev_org, "_run_soql") as run:
-            run.return_value = _soql_result([])
-            dev_org.list_custom_fields(object_name="Account", include_standard=True)
-            soql = run.call_args.args[0]
-            self.assertNotIn("__c", soql)
+            self.assertNotIn("ESCAPE", soql)
 
     def test_reference_to_flattened(self) -> None:
         rec = {

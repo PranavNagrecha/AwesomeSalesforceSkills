@@ -339,18 +339,23 @@ def list_custom_fields(
         return {"error": err}
     bounded = max(1, min(int(limit or 500), MAX_CUSTOM_FIELD_ROWS))
 
-    # EntityParticle is queryable on the standard REST API (not Tooling). We
-    # cannot use ``IsCustom`` on the WHERE clause for every Salesforce edition,
-    # so we filter by the ``__c`` suffix when ``include_standard=False``.
-    name_clause = "" if include_standard else " AND QualifiedApiName LIKE '%\\_\\_c' ESCAPE '\\\\'"
+    # EntityParticle is queryable on the standard REST API (not Tooling).
+    # EntityParticle has no IsCustom column on this org/edition, and the
+    # SOQL LIKE wildcard (`_`) cannot be escaped portably for the
+    # double-underscore-c suffix pattern (the SQL `ESCAPE` clause is not
+    # supported by SOQL, and `\_` works inconsistently across editions).
+    # So we fetch broadly and filter the `__c` suffix client-side. The
+    # LIMIT is doubled when filtering so we still surface ~`bounded`
+    # custom fields after pruning standard fields.
+    fetch_limit = bounded if include_standard else min(bounded * 4, MAX_CUSTOM_FIELD_ROWS)
     soql = (
         "SELECT QualifiedApiName, DataType, Label, Length, Precision, "
         "Scale, IsNillable, IsCalculated, IsHtmlFormatted, ReferenceTo, "
         "RelationshipName "
         "FROM EntityParticle "
-        f"WHERE EntityDefinition.QualifiedApiName = '{object_name}'{name_clause} "
+        f"WHERE EntityDefinition.QualifiedApiName = '{object_name}' "
         "ORDER BY QualifiedApiName "
-        f"LIMIT {bounded}"
+        f"LIMIT {fetch_limit}"
     )
     probe = _run_soql(soql, target_org=target_org, tooling=False)
     if "error" in probe:
@@ -363,6 +368,12 @@ def list_custom_fields(
         if not include_pseudo_fields and name in _PSEUDO_FIELDS:
             pseudo_dropped += 1
             continue
+        # Custom-only filter: applied client-side because EntityParticle
+        # neither has IsCustom nor supports SOQL ESCAPE.
+        if not include_standard and not (name or "").endswith("__c"):
+            continue
+        if len(rows) >= bounded:
+            break
         ref = rec.get("ReferenceTo")
         ref_to: list[str] = []
         if isinstance(ref, dict):
