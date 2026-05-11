@@ -51,14 +51,33 @@ def _content_hash(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()[:16]
 
 
+class FastembedNotInstalledError(ImportError):
+    """Raised when fastembed backend is configured but the package isn't
+    installed. Callers in ``build_embeddings`` catch this and fall back
+    to a no-embeddings build with a stderr warning, so a fresh-install
+    PyPI user doesn't crash on validate_repo / skill_sync."""
+
+
 def _get_fastembed_model():
     """Lazy-load the fastembed model. First call downloads ~130 MB (cached
     by huggingface_hub afterwards). Subsequent calls in the same process
-    return the cached singleton."""
+    return the cached singleton.
+
+    Raises ``FastembedNotInstalledError`` (subclass of ImportError) when
+    the ``fastembed`` package isn't on sys.path. Callers MUST catch and
+    decide whether to fall back or surface the error.
+    """
     global _FASTEMBED_MODEL
     if _FASTEMBED_MODEL is None:
-        from fastembed import TextEmbedding
-
+        try:
+            from fastembed import TextEmbedding
+        except ImportError as exc:
+            raise FastembedNotInstalledError(
+                "fastembed package is not installed but config has "
+                "backend=fastembed. Install with "
+                "`pip install sfskills-mcp[embeddings]` or set "
+                "embeddings.enabled=false in config/retrieval-config.yaml."
+            ) from exc
         _FASTEMBED_MODEL = TextEmbedding(model_name=FASTEMBED_MODEL_NAME)
     return _FASTEMBED_MODEL
 
@@ -74,13 +93,29 @@ def build_embeddings(
     ``existing_path`` enables the content-hash cache: if a chunk's text
     hash matches an existing record at that path, the vector is reused
     rather than recomputed. Pass None to force full recompute.
+
+    Graceful fallback for the ``fastembed`` backend: if the package
+    isn't installed (fresh PyPI install without the ``[embeddings]``
+    extra), a stderr warning is printed and an empty embeddings list
+    is returned. Retrieval still works — just without the vector-score
+    boost. Pre-v0.4.4 this crashed with ``ModuleNotFoundError``.
     """
     if not config.enabled:
         return []
     if config.backend == "hash":
         return [_hash_record(chunk, config.dimensions) for chunk in chunks]
     if config.backend == "fastembed":
-        return _build_fastembed_embeddings(chunks, existing_path)
+        try:
+            return _build_fastembed_embeddings(chunks, existing_path)
+        except FastembedNotInstalledError as exc:
+            import sys
+            print(
+                f"[embed] WARNING: {exc}. Continuing without embeddings — "
+                "retrieval falls back to lexical-only.",
+                file=sys.stderr,
+                flush=True,
+            )
+            return []
     raise ValueError(f"Unsupported embedding backend `{config.backend}`")
 
 
@@ -227,12 +262,22 @@ def load_embeddings(path: Path) -> dict[str, dict]:
 
 
 def embed_query(query: str, config: EmbeddingConfig) -> list[float] | None:
+    """Encode a single query into a vector for rerank scoring.
+
+    Returns None when:
+      - embeddings are disabled, OR
+      - backend=fastembed and the package isn't installed (graceful
+        fallback; caller sees no vector boost but no crash).
+    """
     if not config.enabled:
         return None
     if config.backend == "hash":
         return hash_embedding(query, config.dimensions)
     if config.backend == "fastembed":
-        model = _get_fastembed_model()
+        try:
+            model = _get_fastembed_model()
+        except FastembedNotInstalledError:
+            return None
         vector = next(iter(model.embed([query])))
         return [float(v) for v in vector]
     raise ValueError(f"Unsupported embedding backend `{config.backend}`")

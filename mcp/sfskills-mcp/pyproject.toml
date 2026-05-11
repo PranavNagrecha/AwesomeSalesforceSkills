@@ -40,6 +40,13 @@ dev = [
   "build>=1.0",
   "twine>=4.0",
 ]
+# Semantic-embedding extras. Without these, the MCP server runs fine but
+# retrieval is lexical-only (no vector-score boost). Install with
+# `pip install sfskills-mcp[embeddings]`. ~700 MB once the model is
+# downloaded by huggingface_hub on first use.
+embeddings = [
+  "fastembed>=0.4,<1.0",
+]
 
 [project.urls]
 "Homepage" = "https://github.com/PranavNagrecha/AwesomeSalesforceSkills"
