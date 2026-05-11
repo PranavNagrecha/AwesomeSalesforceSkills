@@ -32,6 +32,11 @@ dependencies = [
   # Annotations (ToolAnnotations) and the prompt/resource decorators land in 1.4.
   # The server uses all three, so the floor moves with them.
   "mcp>=1.4.0",
+  # Schema validation for emit_envelope output (v0.4.4+).
+  # Soft dependency: if jsonschema is absent, emit_envelope skips schema
+  # validation rather than crashing — same fallback pattern as fastembed.
+  "jsonschema>=4.0,<5.0",
+  "referencing>=0.30,<1.0",
 ]
 
 [project.optional-dependencies]

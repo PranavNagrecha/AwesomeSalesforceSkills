@@ -243,6 +243,79 @@ _AGENT_ID_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 _RUN_ID_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9\-_T.Z]{7,}$")
 
 
+_SCHEMA_VALIDATOR_CACHE: dict[str, Any] = {}
+
+
+def _build_envelope_validator() -> Any:
+    """Lazily build a jsonschema validator for the output envelope with all
+    referenced schemas (observation, citation) pre-loaded into a Registry.
+
+    Returns a validator object whose ``.iter_errors(envelope)`` yields the
+    schema errors. None if jsonschema/referencing isn't available (we
+    skip validation rather than crash — same fallback discipline as
+    embedding_backends.py).
+    """
+    if "validator" in _SCHEMA_VALIDATOR_CACHE:
+        return _SCHEMA_VALIDATOR_CACHE["validator"]
+    try:
+        from jsonschema import Draft202012Validator
+        from referencing import Registry, Resource
+        from referencing.jsonschema import DRAFT202012
+    except ImportError:
+        _SCHEMA_VALIDATOR_CACHE["validator"] = None
+        return None
+    schemas_dir = paths.repo_root() / "agents" / "_shared" / "schemas"
+    if not schemas_dir.exists():
+        _SCHEMA_VALIDATOR_CACHE["validator"] = None
+        return None
+    # Load every schema, key by its $id so cross-schema $ref resolves.
+    resources: list[tuple[str, Resource]] = []
+    envelope_schema: dict | None = None
+    for schema_path in sorted(schemas_dir.glob("*.schema.json")):
+        try:
+            schema = json.loads(schema_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        schema_id = schema.get("$id")
+        if not schema_id:
+            continue
+        resources.append((schema_id, Resource.from_contents(schema, default_specification=DRAFT202012)))
+        if schema_id == "urn:sfskills:output-envelope":
+            envelope_schema = schema
+    if envelope_schema is None:
+        _SCHEMA_VALIDATOR_CACHE["validator"] = None
+        return None
+    registry = Registry().with_resources(resources)
+    validator = Draft202012Validator(envelope_schema, registry=registry)
+    _SCHEMA_VALIDATOR_CACHE["validator"] = validator
+    return validator
+
+
+def validate_envelope_schema(envelope: dict[str, Any]) -> list[str]:
+    """Return a list of human-readable schema-violation messages for
+    ``envelope``. Empty list = valid.
+
+    Returns [] (treated as valid) when the validator can't be built —
+    e.g. jsonschema package missing. Callers that want to enforce
+    validation should additionally check ``is_validator_available()``.
+    """
+    validator = _build_envelope_validator()
+    if validator is None:
+        return []
+    errors: list[str] = []
+    for err in validator.iter_errors(envelope):
+        path = ".".join(str(p) for p in err.absolute_path) or "<root>"
+        errors.append(f"{path}: {err.message}")
+    return errors
+
+
+def is_envelope_validator_available() -> bool:
+    """True if jsonschema + referencing are installed AND the schemas
+    load cleanly. False means validate_envelope_schema returns [] for
+    every envelope (skip validation rather than crash)."""
+    return _build_envelope_validator() is not None
+
+
 def emit_envelope(
     agent: str,
     run_id: str,
@@ -298,6 +371,19 @@ def emit_envelope(
     envelope.setdefault("run_id", run_id)
     envelope.setdefault("report_path", expected_md)
     envelope.setdefault("envelope_path", expected_js)
+
+    # Validate the envelope against output-envelope.schema.json BEFORE
+    # any write hits disk. Pre-v0.4.4 emit_envelope happily wrote
+    # schema-invalid envelopes (P1-J). Validator returns [] when the
+    # jsonschema package isn't installed — in that case we skip
+    # validation rather than crash (graceful degradation).
+    schema_errors = validate_envelope_schema(envelope)
+    if schema_errors:
+        return {
+            "error": "envelope does not match output-envelope.schema.json",
+            "schema_errors": schema_errors[:20],  # cap to keep response sane
+            "schema_error_count": len(schema_errors),
+        }
 
     repo = paths.repo_root()
     target_dir = repo / "docs" / "reports" / agent

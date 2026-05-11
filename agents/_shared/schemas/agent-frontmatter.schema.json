@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://sfskills.local/schemas/agent-frontmatter.schema.json",
+  "$id": "urn:sfskills:agent-frontmatter",
   "title": "Agent Frontmatter",
   "description": "YAML frontmatter required at the top of every agents/<slug>/AGENT.md.",
   "type": "object",
@@ -24,7 +24,10 @@
     },
     "class": {
       "type": "string",
-      "enum": ["runtime", "build"],
+      "enum": [
+        "runtime",
+        "build"
+      ],
       "description": "runtime = user-facing; build = skill-library factory agent."
     },
     "version": {
@@ -34,7 +37,11 @@
     },
     "status": {
       "type": "string",
-      "enum": ["stable", "beta", "deprecated"]
+      "enum": [
+        "stable",
+        "beta",
+        "deprecated"
+      ]
     },
     "requires_org": {
       "type": "boolean",
@@ -80,7 +87,7 @@
     "expected_mcp_calls": {
       "type": "integer",
       "minimum": 0,
-      "description": "Optional: rough upper bound on MCP tool invocations per run — surfaces cost."
+      "description": "Optional: rough upper bound on MCP tool invocations per run \u2014 surfaces cost."
     },
     "deprecated_in_favor_of": {
       "type": "string",
@@ -88,7 +95,11 @@
     },
     "harness": {
       "type": "string",
-      "enum": ["designer_base", "migration_router", "audit_harness"],
+      "enum": [
+        "designer_base",
+        "migration_router",
+        "audit_harness"
+      ],
       "description": "Optional: declares the agent inherits a shared harness under agents/_shared/harnesses/. The validator enforces shape compliance for declared harnesses. designer_base was added in Wave 3c."
     },
     "dependencies": {
@@ -98,34 +109,50 @@
       "properties": {
         "probes": {
           "type": "array",
-          "items": { "type": "string", "pattern": "^[a-z0-9-]+\\.md$" },
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]+\\.md$"
+          },
           "description": "Probe recipe filenames under agents/_shared/probes/, e.g. 'user-access-comparison.md'."
         },
         "skills": {
           "type": "array",
-          "items": { "type": "string", "pattern": "^[a-z0-9-]+/[a-z0-9-]+$" },
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]+/[a-z0-9-]+$"
+          },
           "description": "Skill ids in '<domain>/<slug>' form, e.g. 'admin/user-management'."
         },
         "shared": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "description": "Filenames under agents/_shared/ that this agent reads, e.g. 'AGENT_CONTRACT.md', 'REFUSAL_CODES.md'."
         },
         "templates": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "description": "Template paths under templates/, e.g. 'apex/TriggerHandler.cls'."
         },
         "decision_trees": {
           "type": "array",
-          "items": { "type": "string", "pattern": "^[a-z0-9-]+\\.md$" },
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]+\\.md$"
+          },
           "description": "Decision-tree filenames under standards/decision-trees/."
         }
       }
     },
     "dependency_path_mode": {
       "type": "string",
-      "enum": ["repo-absolute", "bundle-relative"],
+      "enum": [
+        "repo-absolute",
+        "bundle-relative"
+      ],
       "description": "How citation paths inside this AGENT.md are written. 'repo-absolute' (default for in-tree agents) = paths like 'agents/_shared/probes/foo.md' valid only from repo root. 'bundle-relative' (set by the exporter) = paths like './probes/foo.md' valid inside a bundled export. Never hand-edit; the exporter sets this when producing a bundle."
     },
     "multi_dimensional": {
@@ -138,9 +165,17 @@
       "uniqueItems": true,
       "items": {
         "type": "string",
-        "enum": ["markdown", "json", "xml", "csv", "html", "xlsx", "other"]
+        "enum": [
+          "markdown",
+          "json",
+          "xml",
+          "csv",
+          "html",
+          "xlsx",
+          "other"
+        ]
       },
-      "description": "Wave 10: the formats the agent natively emits as deliverables. 'markdown' + 'json' is the canonical pair required by DELIVERABLE_CONTRACT.md. Additional formats (xlsx, csv, etc.) are converted FROM the canonical artifacts by downstream tooling — never regenerated. Defaults to [\"markdown\", \"json\"]."
+      "description": "Wave 10: the formats the agent natively emits as deliverables. 'markdown' + 'json' is the canonical pair required by DELIVERABLE_CONTRACT.md. Additional formats (xlsx, csv, etc.) are converted FROM the canonical artifacts by downstream tooling \u2014 never regenerated. Defaults to [\"markdown\", \"json\"]."
     },
     "default_output_dir": {
       "type": "string",
@@ -150,8 +185,18 @@
   },
   "allOf": [
     {
-      "if": { "properties": { "status": { "const": "deprecated" } } },
-      "then": { "required": ["deprecated_in_favor_of"] }
+      "if": {
+        "properties": {
+          "status": {
+            "const": "deprecated"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "deprecated_in_favor_of"
+        ]
+      }
     }
   ]
 }
