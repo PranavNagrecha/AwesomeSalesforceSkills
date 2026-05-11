@@ -14,11 +14,12 @@ Enumerate active Flows whose metadata XML references a given `<sObject>.<Field>`
 
 ## Query
 
-Two steps — list then fetch.
+Two steps — list then fetch. The two queries use **different APIs**, which trips up agents that assume "everything Flow-related is Tooling."
 
-Step 1 — list candidate flows targeting the object:
+Step 1 — list candidate flows targeting the object (**Standard SOQL / REST API**):
 
 ```sql
+-- API: Standard SOQL (REST). FlowDefinitionView is NOT exposed via Tooling.
 SELECT Id, ApiName, ActiveVersionId, LatestVersionId, TriggerType
 FROM FlowDefinitionView
 WHERE (ProcessType = 'AutoLaunchedFlow'
@@ -31,9 +32,12 @@ LIMIT 2000
 
 (Agents that already know the object's automation context may use `list_flows_on_object(object_name)` directly.)
 
-Step 2 — for each flow id, fetch the metadata:
+Step 2 — for each flow id, fetch the metadata (**Tooling API**):
 
 ```sql
+-- API: Tooling. Flow.Metadata is only queryable via Tooling, and only
+-- one row at a time (DefinitionId equality). Bulk Metadata reads will
+-- fail with "Metadata is one row at a time."
 SELECT Id, DefinitionId, Metadata, Status
 FROM Flow
 WHERE DefinitionId = '<id>'

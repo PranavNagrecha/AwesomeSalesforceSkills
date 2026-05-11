@@ -230,9 +230,15 @@ def list_flows_on_object(
 ) -> dict[str, Any]:
     """List Flows whose trigger target is ``object_name`` (e.g. ``Account``).
 
-    Uses the Tooling API via ``sf data query --use-tooling-api``. The Flow
-    metadata returned includes record-triggered flows, scheduled-triggered
-    flows, and platform-event-triggered flows.
+    Queries ``FlowDefinitionView`` via the **Standard SOQL Query Resource
+    (REST API)**, NOT the Tooling API. Tooling does NOT expose
+    ``FlowDefinitionView`` (verified against API 67 — Tooling rejects with
+    ``sObject type 'FlowDefinitionView' is not supported.``). See probe
+    recipe ``agents/_shared/probes/automation-graph-for-sobject.md`` § 1
+    for the per-query API matrix.
+
+    The Flow metadata returned includes record-triggered flows,
+    scheduled-triggered flows, and platform-event-triggered flows.
     """
     obj = (object_name or "").strip()
     if not obj.replace("_", "").isalnum():

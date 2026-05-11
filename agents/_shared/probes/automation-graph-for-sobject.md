@@ -20,11 +20,14 @@ Consumed by `flow-builder` (Step 0 — preflight), `apex-builder` (recursion-ris
 
 ## Queries
 
-Run each query in order. All are Tooling API. For `Flow` and `FlowDefinitionView`, prefer `FlowDefinitionView` — it captures the latest active version without per-flow Metadata retrieval, which is lighter.
+Run each query in order. **API per query is NOT uniform** — `FlowDefinitionView` is queryable via the **Standard SOQL Query Resource (REST API)**, not Tooling. Tooling rejects it with `sObject type 'FlowDefinitionView' is not supported.` (verified against API 67 sandbox 2026-05-11 — see `.planning/qa-content-report-2026-05-10.md` § 5.3 / CT-P0-2.) The remaining queries use Tooling API as before. When the agent shells through `sf data query`, use the `--use-tooling-api` flag selectively — set it for queries 2–6, leave it OFF for query 1.
 
-### 1. Active Flows and Process Builders on the object
+For automation enumeration, prefer `FlowDefinitionView` over `Flow` — it captures the latest active version without per-flow Metadata retrieval, which is lighter.
+
+### 1. Active Flows and Process Builders on the object — **REST / Standard SOQL, NOT Tooling**
 
 ```sql
+-- API: Standard SOQL (REST). Tooling API does NOT expose FlowDefinitionView.
 SELECT DurableId, ApiName, Label, ProcessType, TriggerType, TriggerObjectOrEventLabel,
        IsActive, IsOutOfDate, ActiveVersionId, LatestVersionId, VersionNumber
 FROM FlowDefinitionView
@@ -42,9 +45,10 @@ Classify each row:
 - `ProcessType = 'AutoLaunchedFlow'` + no trigger type → **Auto-launched subflow** (fires when invoked).
 - `ProcessType = 'Orchestrator'` → **Orchestration Flow**.
 
-### 2. Apex triggers on the object
+### 2. Apex triggers on the object — **Tooling API**
 
 ```sql
+-- API: Tooling.
 SELECT Id, Name, TableEnumOrId, Status, UsageBeforeInsert, UsageBeforeUpdate,
        UsageBeforeDelete, UsageAfterInsert, UsageAfterUpdate, UsageAfterDelete,
        UsageAfterUndelete, NamespacePrefix, ApiVersion
@@ -56,36 +60,44 @@ WHERE TableEnumOrId = :object
 
 The `UsageBefore*` / `UsageAfter*` flags tell you which events the trigger handles — critical for order-of-execution reasoning.
 
-### 3. Validation rules
+### 3. Validation rules — **Tooling API**
 
 ```sql
+-- API: Tooling.
 SELECT Id, ValidationName, Active
 FROM ValidationRule
 WHERE EntityDefinition.QualifiedApiName = :object
   AND Active = true
 ```
 
-### 4. Workflow rules (still supported, deprecated)
+### 4. Workflow rules (still supported, deprecated) — **Tooling API**
 
 ```sql
+-- API: Tooling.
 SELECT Id, Name, TableEnumOrId, Active
 FROM WorkflowRule
 WHERE TableEnumOrId = :object
   AND Active = true
 ```
 
-### 5. Approval processes (if record-triggered logic may collide with approvals)
+### 5. Approval processes — **Standard SOQL (REST)**
 
 ```sql
+-- API: Standard SOQL (REST). ProcessDefinition is exposed via Standard SOQL,
+-- not Tooling.
 SELECT Id, DeveloperName, ObjectType, Active
 FROM ProcessDefinition
 WHERE ObjectType = :object
   AND Active = true
 ```
 
-### 6. Invocable actions defined in Apex (methods callable from Flow)
+### 6. Invocable actions defined in Apex (methods callable from Flow) — **Tooling API**
 
 ```sql
+-- API: Tooling. Body is only queryable via Tooling and only with
+-- ApexClass.Id-equality OR with a Body LIKE on a NamespacePrefix=null
+-- scope. A bare Body LIKE without a NamespacePrefix=null filter will fail
+-- on most orgs.
 SELECT Id, Name
 FROM ApexClass
 WHERE Body LIKE '%@InvocableMethod%'
