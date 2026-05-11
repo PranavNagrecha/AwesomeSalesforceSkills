@@ -100,6 +100,7 @@
   "scripts": [
     "skills/apex/apex-wrapper-class-patterns/scripts/check_apex_wrapper_class_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "apex-wrapper",
     "inner-class",

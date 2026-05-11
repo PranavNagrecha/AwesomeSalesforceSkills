@@ -93,6 +93,7 @@
   "scripts": [
     "skills/admin/referral-management-health/scripts/check_referral_management_health.py"
   ],
+  "status": "stable",
   "tags": [
     "health-cloud",
     "referral-management",

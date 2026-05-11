@@ -94,6 +94,7 @@
   "scripts": [
     "skills/architect/fsl-multi-region-architecture/scripts/check_fsl_multi_region_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "fsl",
     "field-service",

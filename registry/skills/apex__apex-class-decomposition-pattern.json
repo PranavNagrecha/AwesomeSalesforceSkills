@@ -106,6 +106,7 @@
   "scripts": [
     "skills/apex/apex-class-decomposition-pattern/scripts/check_apex_class_decomposition_pattern.py"
   ],
+  "status": "stable",
   "tags": [
     "apex",
     "decomposition",

@@ -131,6 +131,7 @@
   "scripts": [
     "skills/flow/flow-record-locking-and-contention/scripts/check_flow_record_locking_and_contention.py"
   ],
+  "status": "stable",
   "tags": [
     "flow-record-locking-and-contention",
     "concurrency",

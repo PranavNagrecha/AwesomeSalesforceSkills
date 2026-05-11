@@ -139,6 +139,7 @@
     "skills/devops/sandbox-refresh-and-templates/scripts/check_sandbox_refresh.py",
     "skills/devops/sandbox-refresh-and-templates/scripts/check_sandbox_refresh_and_templates.py"
   ],
+  "status": "stable",
   "tags": [
     "sandbox-refresh",
     "sandbox-templates",

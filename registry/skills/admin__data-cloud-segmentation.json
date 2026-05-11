@@ -114,6 +114,7 @@
   "scripts": [
     "skills/admin/data-cloud-segmentation/scripts/check_data_cloud_segmentation.py"
   ],
+  "status": "stable",
   "tags": [
     "data-cloud",
     "segmentation",

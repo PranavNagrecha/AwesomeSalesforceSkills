@@ -101,6 +101,7 @@
   "scripts": [
     "skills/flow/recursion-and-re-entry-prevention/scripts/check_recursion_and_re_entry_prevention.py"
   ],
+  "status": "stable",
   "tags": [
     "flow",
     "record-triggered-flow",

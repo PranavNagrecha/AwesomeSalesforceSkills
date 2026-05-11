@@ -118,6 +118,7 @@
   "scripts": [
     "skills/apex/opportunity-trigger-patterns/scripts/check_opportunity_trigger_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "opportunity",
     "trigger",

@@ -85,6 +85,7 @@
   "scripts": [
     "skills/data/commerce-order-history-migration/scripts/check_commerce_order_history_migration.py"
   ],
+  "status": "stable",
   "tags": [
     "order-management",
     "order-migration",

@@ -161,6 +161,7 @@
   "scripts": [
     "skills/devops/gitlab-ci-for-salesforce/scripts/check_gitlab_ci_for_salesforce.py"
   ],
+  "status": "stable",
   "tags": [
     "gitlab-ci",
     "ci-cd",

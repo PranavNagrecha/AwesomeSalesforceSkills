@@ -109,6 +109,7 @@
   "scripts": [
     "skills/apex/trigger-and-flow-coexistence/scripts/check_trigger_and_flow_coexistence.py"
   ],
+  "status": "stable",
   "tags": [
     "trigger-and-flow-coexistence",
     "automation-governance",

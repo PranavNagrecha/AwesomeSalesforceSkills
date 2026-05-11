@@ -155,6 +155,7 @@
   "scripts": [
     "skills/security/visualforce-security-and-modernization/scripts/check_visualforce_security_and_modernization.py"
   ],
+  "status": "stable",
   "tags": [
     "visualforce-security-and-modernization",
     "visualforce",

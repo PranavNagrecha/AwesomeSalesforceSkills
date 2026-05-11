@@ -119,6 +119,7 @@
   "scripts": [
     "skills/admin/fsl-work-order-management/scripts/check_fsl_work_order_management.py"
   ],
+  "status": "stable",
   "tags": [
     "field-service",
     "fsl",

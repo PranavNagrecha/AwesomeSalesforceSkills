@@ -128,6 +128,7 @@
   "scripts": [
     "skills/admin/path-and-guidance/scripts/check_path_and_guidance.py"
   ],
+  "status": "stable",
   "tags": [
     "path",
     "guidance",

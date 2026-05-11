@@ -74,6 +74,7 @@
   "scripts": [
     "skills/flow/flow-record-save-order-interaction/scripts/check_flow_record_save_order_interaction.py"
   ],
+  "status": "stable",
   "tags": [
     "flow",
     "save-order",

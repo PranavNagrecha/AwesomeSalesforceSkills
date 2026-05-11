@@ -148,6 +148,7 @@
   "scripts": [
     "skills/data/analytics-external-data/scripts/check_analytics_external_data.py"
   ],
+  "status": "stable",
   "tags": [
     "crm-analytics",
     "external-data",

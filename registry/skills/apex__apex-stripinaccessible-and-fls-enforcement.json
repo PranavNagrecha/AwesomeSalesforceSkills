@@ -99,6 +99,7 @@
   "scripts": [
     "skills/apex/apex-stripinaccessible-and-fls-enforcement/scripts/check_apex_stripinaccessible_and_fls_enforcement.py"
   ],
+  "status": "stable",
   "tags": [
     "apex",
     "stripinaccessible",

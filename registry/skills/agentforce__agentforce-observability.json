@@ -86,6 +86,7 @@
   "scripts": [
     "skills/agentforce/agentforce-observability/scripts/check_agentforce_observability.py"
   ],
+  "status": "stable",
   "tags": [
     "agentforce",
     "observability",

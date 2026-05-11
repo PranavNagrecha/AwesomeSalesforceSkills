@@ -152,6 +152,7 @@
   "scripts": [
     "skills/architect/limits-and-scalability-planning/scripts/check_limits_plan.py"
   ],
+  "status": "stable",
   "tags": [
     "governor-limits",
     "scalability",

@@ -125,6 +125,7 @@
   "scripts": [
     "skills/omnistudio/calculation-procedures/scripts/check_calculation_procedures.py"
   ],
+  "status": "stable",
   "tags": [
     "calculation-procedures",
     "expression-sets",

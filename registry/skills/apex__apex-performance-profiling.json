@@ -109,6 +109,7 @@
   "scripts": [
     "skills/apex/apex-performance-profiling/scripts/check_apex_performance_profiling.py"
   ],
+  "status": "stable",
   "tags": [
     "apex-performance-profiling",
     "flame-graph",

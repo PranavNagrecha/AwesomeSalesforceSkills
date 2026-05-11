@@ -129,6 +129,7 @@
   "scripts": [
     "skills/data/fsc-data-model/scripts/check_fsc_data_model.py"
   ],
+  "status": "stable",
   "tags": [
     "fsc",
     "data-model",

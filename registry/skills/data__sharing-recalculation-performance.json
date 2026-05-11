@@ -107,6 +107,7 @@
   "scripts": [
     "skills/data/sharing-recalculation-performance/scripts/check_sharing_recalculation_performance.py"
   ],
+  "status": "stable",
   "tags": [
     "sharing-recalculation",
     "defer-sharing-calculations",

@@ -130,6 +130,7 @@
   "scripts": [
     "skills/architect/hyperforce-architecture/scripts/check_hyperforce_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "hyperforce",
     "migration",

@@ -159,6 +159,7 @@
   "scripts": [
     "skills/admin/financial-account-setup/scripts/check_financial_account.py"
   ],
+  "status": "stable",
   "tags": [
     "financial-services-cloud",
     "fsc",

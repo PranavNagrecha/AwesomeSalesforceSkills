@@ -117,6 +117,7 @@
   "scripts": [
     "skills/admin/contract-and-renewal-management/scripts/check_contract_and_renewal_management.py"
   ],
+  "status": "stable",
   "tags": [
     "cpq",
     "contracts",

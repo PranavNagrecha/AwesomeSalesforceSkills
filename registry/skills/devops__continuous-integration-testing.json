@@ -124,6 +124,7 @@
   "scripts": [
     "skills/devops/continuous-integration-testing/scripts/check_continuous_integration_testing.py"
   ],
+  "status": "stable",
   "tags": [
     "continuous-integration-testing",
     "ci-cd",

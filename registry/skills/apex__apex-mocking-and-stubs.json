@@ -85,6 +85,7 @@
   "scripts": [
     "skills/apex/apex-mocking-and-stubs/scripts/check_apex_mocking_and_stubs.py"
   ],
+  "status": "stable",
   "tags": [
     "test-setmock",
     "httpcalloutmock",

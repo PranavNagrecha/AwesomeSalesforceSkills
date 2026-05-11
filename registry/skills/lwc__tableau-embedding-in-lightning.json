@@ -88,6 +88,7 @@
   "scripts": [
     "skills/lwc/tableau-embedding-in-lightning/scripts/check_tableau_embedding_in_lightning.py"
   ],
+  "status": "stable",
   "tags": [
     "tableau",
     "embedding",

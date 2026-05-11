@@ -143,6 +143,7 @@
   "scripts": [
     "skills/admin/marketing-cloud-connect/scripts/check_marketing_cloud_connect.py"
   ],
+  "status": "stable",
   "tags": [
     "marketing-cloud-connect",
     "synchronized-data-sources",

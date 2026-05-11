@@ -126,6 +126,7 @@
     "skills/lwc/lwc-toast-and-notifications/scripts/check_lwc_toast_and_notifications.py",
     "skills/lwc/lwc-toast-and-notifications/scripts/check_lwc_toasts.py"
   ],
+  "status": "stable",
   "tags": [
     "lwc",
     "toast",

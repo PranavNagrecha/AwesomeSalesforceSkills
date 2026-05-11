@@ -118,6 +118,7 @@
   "scripts": [
     "skills/devops/go-live-cutover-planning/scripts/check_go_live_cutover_planning.py"
   ],
+  "status": "stable",
   "tags": [
     "go-live-cutover-planning",
     "cutover-runbook",

@@ -77,6 +77,7 @@
   "scripts": [
     "skills/security/permission-set-groups-and-muting/scripts/check_permission_set_groups_and_muting.py"
   ],
+  "status": "stable",
   "tags": [
     "permission-set-groups",
     "muting",

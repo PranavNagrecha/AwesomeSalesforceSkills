@@ -105,6 +105,7 @@
     "skills/apex/apex-callable-interface/scripts/tests/missing-when-else/expected.json",
     "skills/apex/apex-callable-interface/scripts/tests/missing-when-else/input.cls"
   ],
+  "status": "stable",
   "tags": [
     "apex-callable-interface",
     "apex-dynamic-dispatch",

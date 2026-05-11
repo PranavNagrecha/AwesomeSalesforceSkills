@@ -171,6 +171,7 @@
   "scripts": [
     "skills/architect/headless-commerce-architecture/scripts/check_headless_commerce_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "commerce-cloud",
     "headless",

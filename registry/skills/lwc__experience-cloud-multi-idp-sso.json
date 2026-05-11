@@ -112,6 +112,7 @@
   "scripts": [
     "skills/lwc/experience-cloud-multi-idp-sso/scripts/check_experience_cloud_multi_idp_sso.py"
   ],
+  "status": "stable",
   "tags": [
     "experience-cloud",
     "sso",

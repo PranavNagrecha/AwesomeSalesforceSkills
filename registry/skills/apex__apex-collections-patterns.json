@@ -86,6 +86,7 @@
   "scripts": [
     "skills/apex/apex-collections-patterns/scripts/check_apex_collections_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "apex-collections",
     "bulkification",

@@ -122,6 +122,7 @@
   "scripts": [
     "skills/apex/pdf-generation-patterns/scripts/check_pdf_generation_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "pdf-generation",
     "visualforce",

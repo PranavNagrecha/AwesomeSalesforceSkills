@@ -129,6 +129,7 @@
   "scripts": [
     "skills/architect/service-cloud-architecture/scripts/check_service_cloud_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "service-cloud",
     "omni-channel",

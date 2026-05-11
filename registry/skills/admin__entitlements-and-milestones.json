@@ -136,6 +136,7 @@
   "scripts": [
     "skills/admin/entitlements-and-milestones/scripts/check_entitlements_and_milestones.py"
   ],
+  "status": "stable",
   "tags": [
     "entitlements",
     "milestones",

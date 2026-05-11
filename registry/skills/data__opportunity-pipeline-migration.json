@@ -194,6 +194,7 @@
   "scripts": [
     "skills/data/opportunity-pipeline-migration/scripts/check_opportunity_pipeline_migration.py"
   ],
+  "status": "stable",
   "tags": [
     "opportunity",
     "pipeline-migration",

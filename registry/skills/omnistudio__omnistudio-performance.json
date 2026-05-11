@@ -138,6 +138,7 @@
   "scripts": [
     "skills/omnistudio/omnistudio-performance/scripts/check_omnistudio_performance.py"
   ],
+  "status": "stable",
   "tags": [
     "omnistudio-performance",
     "integration-procedures",

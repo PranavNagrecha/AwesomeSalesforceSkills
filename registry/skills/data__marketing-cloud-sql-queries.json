@@ -107,6 +107,7 @@
   "scripts": [
     "skills/data/marketing-cloud-sql-queries/scripts/check_marketing_cloud_sql_queries.py"
   ],
+  "status": "stable",
   "tags": [
     "marketing-cloud",
     "automation-studio",

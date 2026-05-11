@@ -117,6 +117,7 @@
   "scripts": [
     "skills/admin/uat-and-acceptance-criteria/scripts/check_uat_and_acceptance_criteria.py"
   ],
+  "status": "stable",
   "tags": [
     "uat",
     "acceptance-criteria",

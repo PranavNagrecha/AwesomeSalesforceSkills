@@ -56,6 +56,7 @@
   "scripts": [
     "skills/flow/flow-and-platform-events/scripts/check_flow_and_platform_events.py"
   ],
+  "status": "stable",
   "tags": [
     "platform-events",
     "flow",

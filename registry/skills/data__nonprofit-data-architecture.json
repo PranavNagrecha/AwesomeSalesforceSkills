@@ -142,6 +142,7 @@
   "scripts": [
     "skills/data/nonprofit-data-architecture/scripts/check_nonprofit_data_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "npsp",
     "nonprofit-data-architecture",

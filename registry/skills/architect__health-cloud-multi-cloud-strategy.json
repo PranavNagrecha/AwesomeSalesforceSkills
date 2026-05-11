@@ -151,6 +151,7 @@
   "scripts": [
     "skills/architect/health-cloud-multi-cloud-strategy/scripts/check_health_cloud_multi_cloud_strategy.py"
   ],
+  "status": "stable",
   "tags": [
     "health-cloud",
     "experience-cloud",

@@ -125,6 +125,7 @@
   "scripts": [
     "skills/apex/fsc-integration-patterns-dev/scripts/check_fsc_integration_patterns_dev.py"
   ],
+  "status": "stable",
   "tags": [
     "fsc",
     "core-banking",

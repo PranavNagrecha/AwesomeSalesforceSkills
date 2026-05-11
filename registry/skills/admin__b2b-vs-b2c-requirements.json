@@ -124,6 +124,7 @@
   "scripts": [
     "skills/admin/b2b-vs-b2c-requirements/scripts/check_b2b_vs_b2c_requirements.py"
   ],
+  "status": "stable",
   "tags": [
     "b2b-commerce",
     "d2c-commerce",

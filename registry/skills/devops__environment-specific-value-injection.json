@@ -149,6 +149,7 @@
   "scripts": [
     "skills/devops/environment-specific-value-injection/scripts/check_environment_specific_value_injection.py"
   ],
+  "status": "stable",
   "tags": [
     "named-credentials",
     "custom-metadata",

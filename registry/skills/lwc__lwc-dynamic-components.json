@@ -132,6 +132,7 @@
     "skills/lwc/lwc-dynamic-components/scripts/check_lwc_dynamic.py",
     "skills/lwc/lwc-dynamic-components/scripts/check_lwc_dynamic_components.py"
   ],
+  "status": "stable",
   "tags": [
     "lwc-dynamic-components",
     "dynamic-import",

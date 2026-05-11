@@ -97,6 +97,7 @@
   "scripts": [
     "skills/agentforce/einstein-next-best-action/scripts/check_einstein_next_best_action.py"
   ],
+  "status": "stable",
   "tags": [
     "einstein-next-best-action",
     "recommendations",

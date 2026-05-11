@@ -109,6 +109,7 @@
   "scripts": [
     "skills/flow/flow-time-based-patterns/scripts/check_flow_time_based_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "flow",
     "scheduled-path",

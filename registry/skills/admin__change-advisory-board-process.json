@@ -147,6 +147,7 @@
   "scripts": [
     "skills/admin/change-advisory-board-process/scripts/check_change_advisory_board_process.py"
   ],
+  "status": "stable",
   "tags": [
     "change-advisory-board",
     "cab-process",

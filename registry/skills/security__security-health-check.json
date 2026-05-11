@@ -125,6 +125,7 @@
   "scripts": [
     "skills/security/security-health-check/scripts/check_security_health_check.py"
   ],
+  "status": "stable",
   "tags": [
     "security-health-check",
     "security-score",

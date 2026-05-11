@@ -138,6 +138,7 @@
   "scripts": [
     "skills/admin/collaborative-forecasts/scripts/check_collaborative_forecasts.py"
   ],
+  "status": "stable",
   "tags": [
     "collaborative-forecasts",
     "forecast-types",

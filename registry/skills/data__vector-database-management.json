@@ -113,6 +113,7 @@
   "scripts": [
     "skills/data/vector-database-management/scripts/check_vector_database_management.py"
   ],
+  "status": "stable",
   "tags": [
     "vector-database-management",
     "data-cloud",

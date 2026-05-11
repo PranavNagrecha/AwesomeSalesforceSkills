@@ -124,6 +124,7 @@
   "scripts": [
     "skills/admin/dynamic-forms-and-actions/scripts/check_dynamic_forms_and_actions.py"
   ],
+  "status": "stable",
   "tags": [
     "dynamic-forms",
     "dynamic-actions",

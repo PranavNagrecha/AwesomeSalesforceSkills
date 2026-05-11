@@ -99,6 +99,7 @@
   "scripts": [
     "skills/architect/multi-currency-sales-architecture/scripts/check_multi_currency_sales_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "multi-currency-sales-architecture",
     "advanced-currency-management",

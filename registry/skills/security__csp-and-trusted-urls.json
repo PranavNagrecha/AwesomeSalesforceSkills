@@ -58,6 +58,7 @@
   "scripts": [
     "skills/security/csp-and-trusted-urls/scripts/check_csp_and_trusted_urls.py"
   ],
+  "status": "stable",
   "tags": [
     "csp",
     "trusted-urls",

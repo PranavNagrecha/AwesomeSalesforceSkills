@@ -83,6 +83,7 @@
   "scripts": [
     "skills/flow/flow-custom-property-editors/scripts/check_flow_custom_property_editors.py"
   ],
+  "status": "stable",
   "tags": [
     "flow-custom-property-editor",
     "flow-builder",

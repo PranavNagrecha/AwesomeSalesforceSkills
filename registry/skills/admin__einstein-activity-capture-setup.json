@@ -136,6 +136,7 @@
   "scripts": [
     "skills/admin/einstein-activity-capture-setup/scripts/check_einstein_activity_capture_setup.py"
   ],
+  "status": "stable",
   "tags": [
     "einstein-activity-capture",
     "eac",

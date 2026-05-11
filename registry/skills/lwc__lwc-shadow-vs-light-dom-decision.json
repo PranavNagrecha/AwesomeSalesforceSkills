@@ -169,6 +169,7 @@
   "scripts": [
     "skills/lwc/lwc-shadow-vs-light-dom-decision/scripts/check_lwc_shadow_vs_light_dom_decision.py"
   ],
+  "status": "stable",
   "tags": [
     "lwc",
     "shadow-dom",

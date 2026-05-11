@@ -58,6 +58,7 @@
   "scripts": [
     "skills/devops/sfdx-monorepo-patterns/scripts/check_sfdx_monorepo_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "monorepo",
     "packaging",

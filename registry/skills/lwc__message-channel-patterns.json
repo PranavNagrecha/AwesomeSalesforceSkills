@@ -110,6 +110,7 @@
   "scripts": [
     "skills/lwc/message-channel-patterns/scripts/check_message_channel_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "lightning-message-service",
     "message-channel",

@@ -161,6 +161,7 @@
   "scripts": [
     "skills/architect/hipaa-compliance-architecture/scripts/check_hipaa_compliance_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "hipaa",
     "phi",

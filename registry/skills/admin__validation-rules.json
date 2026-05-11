@@ -92,6 +92,7 @@
   "scripts": [
     "skills/admin/validation-rules/scripts/check_validation_rules.py"
   ],
+  "status": "stable",
   "tags": [
     "validation-rules",
     "data-quality",

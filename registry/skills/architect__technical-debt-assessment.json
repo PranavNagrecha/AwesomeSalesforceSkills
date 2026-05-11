@@ -147,6 +147,7 @@
   "scripts": [
     "skills/architect/technical-debt-assessment/scripts/check_technical_debt.py"
   ],
+  "status": "stable",
   "tags": [
     "technical-debt",
     "org-health",

@@ -83,6 +83,7 @@
   "scripts": [
     "skills/admin/sharing-and-visibility/scripts/check_sharing_model.py"
   ],
+  "status": "stable",
   "tags": [
     "sharing",
     "owd",

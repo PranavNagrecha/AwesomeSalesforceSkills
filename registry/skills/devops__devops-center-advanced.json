@@ -57,6 +57,7 @@
   "scripts": [
     "skills/devops/devops-center-advanced/scripts/check_devops_center_advanced.py"
   ],
+  "status": "stable",
   "tags": [
     "devops-center",
     "work-item",

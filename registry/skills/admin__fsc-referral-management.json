@@ -118,6 +118,7 @@
   "scripts": [
     "skills/admin/fsc-referral-management/scripts/check_fsc_referral_management.py"
   ],
+  "status": "stable",
   "tags": [
     "fsc-referral-management",
     "financial-services-cloud",

@@ -96,6 +96,7 @@
   "scripts": [
     "skills/admin/data-skew-and-sharing-performance/scripts/check_data_skew_and_sharing_performance.py"
   ],
+  "status": "stable",
   "tags": [
     "data-skew",
     "sharing-recalculation",

@@ -97,6 +97,7 @@
   "scripts": [
     "skills/apex/metadata-api-and-package-xml/scripts/check_metadata_api_and_package_xml.py"
   ],
+  "status": "stable",
   "tags": [
     "metadata-api",
     "package-xml",

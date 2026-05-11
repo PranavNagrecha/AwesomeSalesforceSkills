@@ -103,6 +103,7 @@
   "scripts": [
     "skills/admin/email-service-inbound/scripts/check_email_service_inbound.py"
   ],
+  "status": "stable",
   "tags": [
     "email-service",
     "inboundemailhandler",

@@ -170,6 +170,7 @@
   "scripts": [
     "skills/lwc/common-lwc-runtime-errors/scripts/check_common_lwc_runtime_errors.py"
   ],
+  "status": "stable",
   "tags": [
     "lwc-runtime-errors",
     "wire-adapter",

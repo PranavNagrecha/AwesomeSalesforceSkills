@@ -846,6 +846,7 @@
   "scripts": [
     "skills/apex/salesforce-debug-log-analysis/scripts/triage_debug_logs.py"
   ],
+  "status": "stable",
   "tags": [
     "debug-log-analysis",
     "forensic-diagnostics",

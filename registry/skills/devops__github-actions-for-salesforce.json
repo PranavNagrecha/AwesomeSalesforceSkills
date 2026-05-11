@@ -151,6 +151,7 @@
   "scripts": [
     "skills/devops/github-actions-for-salesforce/scripts/check_github_actions_for_salesforce.py"
   ],
+  "status": "stable",
   "tags": [
     "github-actions",
     "ci-cd",

@@ -159,6 +159,7 @@
   "scripts": [
     "skills/agentforce/agentforce-guardrails/scripts/check_agentforce_guardrails.py"
   ],
+  "status": "stable",
   "tags": [
     "agentforce",
     "guardrails",

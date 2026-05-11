@@ -88,6 +88,7 @@
   "scripts": [
     "skills/apex/fsl-custom-actions-mobile/scripts/check_fsl_custom_actions_mobile.py"
   ],
+  "status": "stable",
   "tags": [
     "fsl",
     "field-service",

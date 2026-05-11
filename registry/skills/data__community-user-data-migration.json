@@ -120,6 +120,7 @@
   "scripts": [
     "skills/data/community-user-data-migration/scripts/check_community_user_data_migration.py"
   ],
+  "status": "stable",
   "tags": [
     "experience-cloud",
     "community-users",

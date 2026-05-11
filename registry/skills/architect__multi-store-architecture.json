@@ -136,6 +136,7 @@
   "scripts": [
     "skills/architect/multi-store-architecture/scripts/check_multi_store_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "commerce-cloud",
     "multi-store",

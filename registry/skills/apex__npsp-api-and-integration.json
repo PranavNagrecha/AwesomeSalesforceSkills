@@ -108,6 +108,7 @@
   "scripts": [
     "skills/apex/npsp-api-and-integration/scripts/check_npsp_api_and_integration.py"
   ],
+  "status": "stable",
   "tags": [
     "npsp",
     "bdi",

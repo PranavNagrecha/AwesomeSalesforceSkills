@@ -159,6 +159,7 @@
   "scripts": [
     "skills/agentforce/agentforce-in-slack/scripts/check_agentforce_in_slack.py"
   ],
+  "status": "stable",
   "tags": [
     "agentforce",
     "slack",

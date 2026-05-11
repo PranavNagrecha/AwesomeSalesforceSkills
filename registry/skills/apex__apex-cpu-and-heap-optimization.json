@@ -82,6 +82,7 @@
   "scripts": [
     "skills/apex/apex-cpu-and-heap-optimization/scripts/check_apex_cpu_and_heap_optimization.py"
   ],
+  "status": "stable",
   "tags": [
     "cpu-time",
     "heap-size",

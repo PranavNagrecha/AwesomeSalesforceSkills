@@ -79,6 +79,7 @@
   "scripts": [
     "skills/admin/lookup-filter-cross-object-patterns/scripts/check_lookup_filter_cross_object_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "lookup-filter",
     "data-integrity",

@@ -107,6 +107,7 @@
   "scripts": [
     "skills/lwc/lwc-imperative-apex/scripts/check_lwc_imperative_apex.py"
   ],
+  "status": "stable",
   "tags": [
     "lwc",
     "apex",

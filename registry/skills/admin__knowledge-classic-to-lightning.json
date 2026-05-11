@@ -132,6 +132,7 @@
   "scripts": [
     "skills/admin/knowledge-classic-to-lightning/scripts/check_knowledge_classic_to_lightning.py"
   ],
+  "status": "stable",
   "tags": [
     "knowledge",
     "lightning-knowledge",

@@ -139,6 +139,7 @@
   "scripts": [
     "skills/architect/ci-cd-pipeline-architecture/scripts/check_ci_cd_pipeline_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "ci-cd",
     "pipeline-architecture",

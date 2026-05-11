@@ -106,6 +106,7 @@
   "scripts": [
     "skills/data/knowledge-article-import/scripts/check_knowledge_article_import.py"
   ],
+  "status": "stable",
   "tags": [
     "knowledge",
     "knowledge-article-import",

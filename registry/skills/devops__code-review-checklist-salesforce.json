@@ -91,6 +91,7 @@
   "scripts": [
     "skills/devops/code-review-checklist-salesforce/scripts/check_code_review_checklist_salesforce.py"
   ],
+  "status": "stable",
   "tags": [
     "code-review-checklist-salesforce",
     "code-review",

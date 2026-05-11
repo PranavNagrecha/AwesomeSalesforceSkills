@@ -92,6 +92,7 @@
   "scripts": [
     "skills/admin/data-model-documentation/scripts/check_data_model_documentation.py"
   ],
+  "status": "stable",
   "tags": [
     "data-model",
     "field-inventory",

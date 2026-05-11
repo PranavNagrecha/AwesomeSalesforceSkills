@@ -121,6 +121,7 @@
   "scripts": [
     "skills/admin/service-cloud-voice-setup/scripts/check_service_cloud_voice_setup.py"
   ],
+  "status": "stable",
   "tags": [
     "service-cloud-voice",
     "amazon-connect",

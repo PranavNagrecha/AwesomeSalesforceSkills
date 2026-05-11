@@ -133,6 +133,7 @@
     "skills/admin/requirements-traceability-matrix/scripts/check_requirements_traceability_matrix.py",
     "skills/admin/requirements-traceability-matrix/scripts/check_rtm.py"
   ],
+  "status": "stable",
   "tags": [
     "requirements-traceability",
     "rtm",

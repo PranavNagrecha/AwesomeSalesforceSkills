@@ -135,6 +135,7 @@
   "scripts": [
     "skills/apex/apex-managed-sharing/scripts/check_apex_managed_sharing.py"
   ],
+  "status": "stable",
   "tags": [
     "apex-sharing",
     "share-objects",

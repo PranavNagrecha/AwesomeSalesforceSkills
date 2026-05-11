@@ -161,6 +161,7 @@
     "skills/apex/apex-scheduled-jobs/scripts/check_apex_scheduled.py",
     "skills/apex/apex-scheduled-jobs/scripts/check_apex_scheduled_jobs.py"
   ],
+  "status": "stable",
   "tags": [
     "schedulable",
     "scheduled-apex",

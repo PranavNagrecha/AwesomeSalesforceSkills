@@ -111,6 +111,11 @@
     "runtime_orphan": {
       "type": "boolean",
       "description": "Optional opt-out from the run-time-agent citation check. Set to true when no existing run-time agent owns this skill's domain."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["stable", "stub"],
+      "description": "Lifecycle status. Defaults to 'stable' when omitted. Set to 'stub' for scaffolded skills whose reference files still contain TODO placeholders — search_skill surfaces this flag so agents can avoid relying on TODO content."
     }
   }
 }

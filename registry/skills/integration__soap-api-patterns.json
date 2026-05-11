@@ -146,6 +146,7 @@
   "scripts": [
     "skills/integration/soap-api-patterns/scripts/check_soap_api_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "soap-api",
     "enterprise-wsdl",

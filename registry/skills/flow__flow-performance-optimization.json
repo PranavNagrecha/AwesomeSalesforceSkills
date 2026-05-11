@@ -93,6 +93,7 @@
   "scripts": [
     "skills/flow/flow-performance-optimization/scripts/check_flow_performance_optimization.py"
   ],
+  "status": "stable",
   "tags": [
     "flow",
     "performance",

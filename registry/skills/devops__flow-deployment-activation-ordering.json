@@ -79,6 +79,7 @@
   "scripts": [
     "skills/devops/flow-deployment-activation-ordering/scripts/check_flow_deployment_activation_ordering.py"
   ],
+  "status": "stable",
   "tags": [
     "devops",
     "flow",

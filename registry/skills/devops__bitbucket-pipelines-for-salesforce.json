@@ -155,6 +155,7 @@
   "scripts": [
     "skills/devops/bitbucket-pipelines-for-salesforce/scripts/check_bitbucket_pipelines_for_salesforce.py"
   ],
+  "status": "stable",
   "tags": [
     "bitbucket-pipelines",
     "ci-cd",

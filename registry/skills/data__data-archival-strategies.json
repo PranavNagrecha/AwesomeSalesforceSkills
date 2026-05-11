@@ -133,6 +133,7 @@
   "scripts": [
     "skills/data/data-archival-strategies/scripts/check_data_archival_strategies.py"
   ],
+  "status": "stable",
   "tags": [
     "archival",
     "big-objects",

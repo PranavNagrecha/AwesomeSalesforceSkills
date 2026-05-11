@@ -130,6 +130,7 @@
   "scripts": [
     "skills/architect/npsp-vs-nonprofit-cloud-decision/scripts/check_npsp_vs_nonprofit_cloud_decision.py"
   ],
+  "status": "stable",
   "tags": [
     "npsp",
     "nonprofit-cloud",

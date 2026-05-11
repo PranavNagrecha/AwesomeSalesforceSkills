@@ -92,6 +92,7 @@
   "scripts": [
     "skills/apex/health-cloud-lwc-components/scripts/check_health_cloud_lwc_components.py"
   ],
+  "status": "stable",
   "tags": [
     "health-cloud",
     "lwc",

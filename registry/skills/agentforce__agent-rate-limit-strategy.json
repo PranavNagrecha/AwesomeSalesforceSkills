@@ -58,6 +58,7 @@
   "scripts": [
     "skills/agentforce/agent-rate-limit-strategy/scripts/check_agent_rate_limit_strategy.py"
   ],
+  "status": "stable",
   "tags": [
     "agentforce",
     "rate-limiting",

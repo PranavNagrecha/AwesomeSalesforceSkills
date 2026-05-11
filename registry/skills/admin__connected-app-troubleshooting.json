@@ -106,6 +106,7 @@
   "scripts": [
     "skills/admin/connected-app-troubleshooting/scripts/check_connected_app_troubleshooting.py"
   ],
+  "status": "stable",
   "tags": [
     "connected-app",
     "oauth",

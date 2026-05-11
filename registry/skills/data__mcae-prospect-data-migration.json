@@ -132,6 +132,7 @@
   "scripts": [
     "skills/data/mcae-prospect-data-migration/scripts/check_mcae_prospect_data_migration.py"
   ],
+  "status": "stable",
   "tags": [
     "mcae",
     "pardot",

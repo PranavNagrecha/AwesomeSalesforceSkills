@@ -201,6 +201,7 @@
   "scripts": [
     "skills/agentforce/sf-to-llm-data-pipelines/scripts/check_sf_to_llm_data_pipelines.py"
   ],
+  "status": "stable",
   "tags": [
     "bulk-api-v2",
     "external-llm",

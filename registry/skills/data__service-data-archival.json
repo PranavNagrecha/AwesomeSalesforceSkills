@@ -149,6 +149,7 @@
   "scripts": [
     "skills/data/service-data-archival/scripts/check_service_data_archival.py"
   ],
+  "status": "stable",
   "tags": [
     "data-archival",
     "email-message",

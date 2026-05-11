@@ -89,6 +89,7 @@
   "scripts": [
     "skills/lwc/lwc-security/scripts/check_lwc_security.py"
   ],
+  "status": "stable",
   "tags": [
     "lwc-security",
     "lightning-web-security",

@@ -143,6 +143,7 @@
   "scripts": [
     "skills/admin/marketing-reporting-requirements/scripts/check_marketing_reporting_requirements.py"
   ],
+  "status": "stable",
   "tags": [
     "campaign-influence",
     "attribution",

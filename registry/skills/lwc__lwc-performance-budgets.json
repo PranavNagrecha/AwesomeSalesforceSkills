@@ -73,6 +73,7 @@
   "scripts": [
     "skills/lwc/lwc-performance-budgets/scripts/check_lwc_performance_budgets.py"
   ],
+  "status": "stable",
   "tags": [
     "lwc",
     "performance",

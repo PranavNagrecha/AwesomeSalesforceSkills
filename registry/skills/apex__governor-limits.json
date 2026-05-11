@@ -91,6 +91,7 @@
   "scripts": [
     "skills/apex/governor-limits/scripts/check_limit_usage.py"
   ],
+  "status": "stable",
   "tags": [
     "governor-limits",
     "bulkification",

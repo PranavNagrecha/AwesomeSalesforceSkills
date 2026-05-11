@@ -104,6 +104,7 @@
   "scripts": [
     "skills/admin/omnistudio-admin-configuration/scripts/check_omnistudio_admin_configuration.py"
   ],
+  "status": "stable",
   "tags": [
     "omnistudio-admin-configuration",
     "omnistudio-settings",

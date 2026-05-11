@@ -137,6 +137,7 @@
   "scripts": [
     "skills/architect/b2b-vs-b2c-architecture/scripts/check_b2b_vs_b2c_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "commerce-cloud",
     "B2B",

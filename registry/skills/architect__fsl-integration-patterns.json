@@ -86,6 +86,7 @@
   "scripts": [
     "skills/architect/fsl-integration-patterns/scripts/check_fsl_integration_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "fsl",
     "field-service",

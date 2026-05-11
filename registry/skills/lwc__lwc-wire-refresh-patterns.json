@@ -49,7 +49,7 @@
     "ee5bbd0172b73ae3def7",
     "fea792aead6428345476"
   ],
-  "content_hash": "923cdd5612ee7de5bda0f116738b7099c156544b7a995c47b2c20eb9d7b9b7e3",
+  "content_hash": "595fbb259ed6957ee37ac9195f92e353b59bf34f99b1cf1279b6a5a850e0bd57",
   "dependencies": [],
   "description": "refreshApex, getRecordNotifyChange, and RefreshView API for LWC data refresh: when wired data is stale, forcing re-fetch after imperative DML, cross-component refresh, 2024 RefreshView replacement of getRecordNotifyChange. NOT for wire basics (use lwc-wire-service). NOT for Lightning Data Service writes (use lwc-lds-writes).",
   "file_location": "skills/lwc/lwc-wire-refresh-patterns",
@@ -79,6 +79,7 @@
   "scripts": [
     "skills/lwc/lwc-wire-refresh-patterns/scripts/check_lwc_wire_refresh_patterns.py"
   ],
+  "status": "stub",
   "tags": [
     "lwc",
     "refreshapex",

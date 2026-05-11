@@ -109,6 +109,7 @@
   "scripts": [
     "skills/devops/deployment-error-diagnosis/scripts/check_deployment_error_diagnosis.py"
   ],
+  "status": "stable",
   "tags": [
     "deployment",
     "metadata-api",

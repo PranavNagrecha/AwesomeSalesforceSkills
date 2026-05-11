@@ -48,7 +48,7 @@
     "fc9fb41871c2a894e5ad",
     "fd9dfa81f3b1011bd468"
   ],
-  "content_hash": "0c20e9c7c070f76e27ed795c5fd7a6987731b1ae76f2b94a8c59dcd2bb3460c8",
+  "content_hash": "3c185c5ffddaba79f4211150efc3b7cf2200e422b7f4acb34514fe255b381aa6",
   "dependencies": [],
   "description": "NavigationMixin for LWC: PageReference types (recordPage, recordRelationship, namedPage, webPage, comm__namedPage), navigate vs generateUrl, state params, Experience Cloud variants. NOT for routing inside custom SPA (use lwc-state-management). NOT for cross-app deep-linking (use deep-linking-patterns).",
   "file_location": "skills/lwc/lwc-navigation-mixin",
@@ -79,6 +79,7 @@
   "scripts": [
     "skills/lwc/lwc-navigation-mixin/scripts/check_lwc_navigation_mixin.py"
   ],
+  "status": "stub",
   "tags": [
     "lwc",
     "navigation-mixin",

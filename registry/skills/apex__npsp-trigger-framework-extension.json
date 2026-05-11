@@ -119,6 +119,7 @@
   "scripts": [
     "skills/apex/npsp-trigger-framework-extension/scripts/check_npsp_trigger_framework_extension.py"
   ],
+  "status": "stable",
   "tags": [
     "npsp",
     "tdtm",

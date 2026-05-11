@@ -122,6 +122,7 @@
   "scripts": [
     "skills/apex/quote-pdf-customization/scripts/check_quote_pdf_customization.py"
   ],
+  "status": "stable",
   "tags": [
     "quote-pdf",
     "visualforce",

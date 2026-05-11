@@ -58,6 +58,7 @@
   "scripts": [
     "skills/integration/api-versioning-strategy/scripts/check_api_versioning_strategy.py"
   ],
+  "status": "stable",
   "tags": [
     "api",
     "versioning",

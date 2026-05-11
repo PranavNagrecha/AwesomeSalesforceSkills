@@ -119,6 +119,7 @@
   "scripts": [
     "skills/devops/salesforce-code-analyzer/scripts/check_salesforce_code_analyzer.py"
   ],
+  "status": "stable",
   "tags": [
     "salesforce-code-analyzer",
     "static-analysis",

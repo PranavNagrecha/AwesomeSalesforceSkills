@@ -125,6 +125,7 @@
   "scripts": [
     "skills/data/external-data-and-big-objects/scripts/check_external_data_and_big_objects.py"
   ],
+  "status": "stable",
   "tags": [
     "big-objects",
     "async-soql",

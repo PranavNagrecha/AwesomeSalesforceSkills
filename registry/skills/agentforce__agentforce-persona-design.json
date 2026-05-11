@@ -94,6 +94,7 @@
   "scripts": [
     "skills/agentforce/agentforce-persona-design/scripts/check_agentforce_persona_design.py"
   ],
+  "status": "stable",
   "tags": [
     "agentforce",
     "persona-design",

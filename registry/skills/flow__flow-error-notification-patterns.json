@@ -108,6 +108,7 @@
   "scripts": [
     "skills/flow/flow-error-notification-patterns/scripts/check_flow_error_notification_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "flow",
     "fault-path",

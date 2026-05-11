@@ -85,6 +85,7 @@
   "scripts": [
     "skills/devops/data-seeding-for-testing/scripts/check_data_seeding_for_testing.py"
   ],
+  "status": "stable",
   "tags": [
     "test-data",
     "data-seeding",

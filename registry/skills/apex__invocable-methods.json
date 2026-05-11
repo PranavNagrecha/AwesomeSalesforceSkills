@@ -87,6 +87,7 @@
   "scripts": [
     "skills/apex/invocable-methods/scripts/check_invocable_methods.py"
   ],
+  "status": "stable",
   "tags": [
     "invocablemethod",
     "invocablevariable",

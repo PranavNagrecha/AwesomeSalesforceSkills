@@ -116,6 +116,7 @@
   "scripts": [
     "skills/devops/devops-center-pipeline/scripts/check_devops_center_pipeline.py"
   ],
+  "status": "stable",
   "tags": [
     "devops-center",
     "pipeline",

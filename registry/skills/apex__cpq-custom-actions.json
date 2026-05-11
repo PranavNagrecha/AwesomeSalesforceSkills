@@ -114,6 +114,7 @@
   "scripts": [
     "skills/apex/cpq-custom-actions/scripts/check_cpq_custom_actions.py"
   ],
+  "status": "stable",
   "tags": [
     "cpq",
     "cpq-custom-actions",

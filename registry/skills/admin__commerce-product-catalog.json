@@ -135,6 +135,7 @@
   "scripts": [
     "skills/admin/commerce-product-catalog/scripts/check_commerce_product_catalog.py"
   ],
+  "status": "stable",
   "tags": [
     "commerce-product-catalog",
     "b2b-commerce",

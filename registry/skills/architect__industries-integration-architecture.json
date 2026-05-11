@@ -151,6 +151,7 @@
   "scripts": [
     "skills/architect/industries-integration-architecture/scripts/check_industries_integration_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "industries-integration-architecture",
     "insurance-integration",

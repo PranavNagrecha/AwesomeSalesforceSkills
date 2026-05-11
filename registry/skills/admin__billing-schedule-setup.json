@@ -126,6 +126,7 @@
   "scripts": [
     "skills/admin/billing-schedule-setup/scripts/check_billing_schedule_setup.py"
   ],
+  "status": "stable",
   "tags": [
     "billing-schedule-setup",
     "salesforce-billing",

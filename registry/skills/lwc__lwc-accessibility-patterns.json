@@ -132,6 +132,7 @@
   "scripts": [
     "skills/lwc/lwc-accessibility-patterns/scripts/check_lwc_accessibility_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "aria",
     "keyboard-navigation",

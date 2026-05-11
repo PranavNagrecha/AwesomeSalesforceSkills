@@ -100,6 +100,7 @@
   "scripts": [
     "skills/admin/sandbox-post-refresh-automation/scripts/check_sandbox_post_refresh_automation.py"
   ],
+  "status": "stable",
   "tags": [
     "sandbox",
     "sandboxpostcopy",

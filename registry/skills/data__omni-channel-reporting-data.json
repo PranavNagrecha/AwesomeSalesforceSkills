@@ -69,6 +69,7 @@
   "scripts": [
     "skills/data/omni-channel-reporting-data/scripts/check_omni_channel_reporting_data.py"
   ],
+  "status": "stable",
   "tags": [
     "omni-channel",
     "service-cloud",

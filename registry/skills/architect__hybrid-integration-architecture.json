@@ -93,6 +93,7 @@
   "scripts": [
     "skills/architect/hybrid-integration-architecture/scripts/check_hybrid_integration_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "hybrid-integration",
     "on-premises",

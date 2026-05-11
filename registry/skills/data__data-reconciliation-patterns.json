@@ -121,6 +121,7 @@
   "scripts": [
     "skills/data/data-reconciliation-patterns/scripts/check_data_reconciliation_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "data-reconciliation",
     "external-id",

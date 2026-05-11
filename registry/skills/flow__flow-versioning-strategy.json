@@ -82,6 +82,7 @@
   "scripts": [
     "skills/flow/flow-versioning-strategy/scripts/check_flow_versioning_strategy.py"
   ],
+  "status": "stable",
   "tags": [
     "flow",
     "versioning",

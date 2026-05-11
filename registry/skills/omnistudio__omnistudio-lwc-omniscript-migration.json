@@ -55,6 +55,7 @@
   "scripts": [
     "skills/omnistudio/omnistudio-lwc-omniscript-migration/scripts/check_omnistudio_lwc_omniscript_migration.py"
   ],
+  "status": "stable",
   "tags": [
     "omnistudio",
     "omniscript",

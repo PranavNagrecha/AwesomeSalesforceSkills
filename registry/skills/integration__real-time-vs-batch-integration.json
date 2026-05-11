@@ -140,6 +140,7 @@
   "scripts": [
     "skills/integration/real-time-vs-batch-integration/scripts/check_real_time_vs_batch_integration.py"
   ],
+  "status": "stable",
   "tags": [
     "integration",
     "real-time",

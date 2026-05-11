@@ -156,6 +156,7 @@
   "scripts": [
     "skills/agentforce/agent-channel-deployment/scripts/check_agent_channels.py"
   ],
+  "status": "stable",
   "tags": [
     "agentforce",
     "agent-channels",

@@ -105,6 +105,7 @@
   "scripts": [
     "skills/admin/program-outcome-tracking-design/scripts/check_program_outcome_tracking_design.py"
   ],
+  "status": "stable",
   "tags": [
     "npsp",
     "nonprofit-cloud",

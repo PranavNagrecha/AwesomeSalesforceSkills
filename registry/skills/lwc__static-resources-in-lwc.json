@@ -83,6 +83,7 @@
   "scripts": [
     "skills/lwc/static-resources-in-lwc/scripts/check_static_resources_in_lwc.py"
   ],
+  "status": "stable",
   "tags": [
     "static-resources",
     "resource-url",

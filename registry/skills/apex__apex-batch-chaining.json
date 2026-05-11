@@ -97,6 +97,7 @@
   "scripts": [
     "skills/apex/apex-batch-chaining/scripts/check_apex_batch_chaining.py"
   ],
+  "status": "stable",
   "tags": [
     "batch-apex",
     "batch-chaining",

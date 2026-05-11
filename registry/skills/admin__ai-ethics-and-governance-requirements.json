@@ -132,6 +132,7 @@
   "scripts": [
     "skills/admin/ai-ethics-and-governance-requirements/scripts/check_ai_ethics_and_governance_requirements.py"
   ],
+  "status": "stable",
   "tags": [
     "ai-governance",
     "responsible-ai",

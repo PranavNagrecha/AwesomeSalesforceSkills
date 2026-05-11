@@ -92,6 +92,7 @@
   "scripts": [
     "skills/admin/remote-site-settings/scripts/check_remote_site_settings.py"
   ],
+  "status": "stable",
   "tags": [
     "remote-site-settings",
     "apex-callout",

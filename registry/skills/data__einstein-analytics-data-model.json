@@ -78,6 +78,7 @@
   "scripts": [
     "skills/data/einstein-analytics-data-model/scripts/check_einstein_analytics_data_model.py"
   ],
+  "status": "stable",
   "tags": [
     "crm-analytics",
     "einstein-analytics",

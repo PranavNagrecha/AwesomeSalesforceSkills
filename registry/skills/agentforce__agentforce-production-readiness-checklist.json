@@ -175,6 +175,7 @@
   "scripts": [
     "skills/agentforce/agentforce-production-readiness-checklist/scripts/check_agentforce_production_readiness_checklist.py"
   ],
+  "status": "stable",
   "tags": [
     "agentforce-production-readiness-checklist",
     "production-readiness",

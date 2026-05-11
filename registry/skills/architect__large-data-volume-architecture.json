@@ -81,6 +81,7 @@
   "scripts": [
     "skills/architect/large-data-volume-architecture/scripts/check_large_data_volume_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "large-data-volume-architecture",
     "ldv",

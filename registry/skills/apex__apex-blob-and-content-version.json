@@ -110,6 +110,7 @@
   "scripts": [
     "skills/apex/apex-blob-and-content-version/scripts/check_apex_blob_and_content_version.py"
   ],
+  "status": "stable",
   "tags": [
     "apex-blob-and-content-version",
     "contentversion",

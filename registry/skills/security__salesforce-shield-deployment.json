@@ -60,6 +60,7 @@
   "scripts": [
     "skills/security/salesforce-shield-deployment/scripts/check_salesforce_shield_deployment.py"
   ],
+  "status": "stable",
   "tags": [
     "shield",
     "encryption",

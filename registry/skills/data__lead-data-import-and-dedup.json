@@ -123,6 +123,7 @@
   "scripts": [
     "skills/data/lead-data-import-and-dedup/scripts/check_lead_data_import_and_dedup.py"
   ],
+  "status": "stable",
   "tags": [
     "lead",
     "deduplication",

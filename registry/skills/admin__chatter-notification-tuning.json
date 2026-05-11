@@ -102,6 +102,7 @@
   "scripts": [
     "skills/admin/chatter-notification-tuning/scripts/check_chatter_notification_tuning.py"
   ],
+  "status": "stable",
   "tags": [
     "chatter-notification-tuning",
     "chatter",

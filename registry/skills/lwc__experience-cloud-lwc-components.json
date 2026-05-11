@@ -129,6 +129,7 @@
   "scripts": [
     "skills/lwc/experience-cloud-lwc-components/scripts/check_experience_cloud_lwc_components.py"
   ],
+  "status": "stable",
   "tags": [
     "experience-cloud",
     "lwc",

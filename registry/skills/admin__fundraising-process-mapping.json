@@ -138,6 +138,7 @@
   "scripts": [
     "skills/admin/fundraising-process-mapping/scripts/check_fundraising_process_mapping.py"
   ],
+  "status": "stable",
   "tags": [
     "nonprofit",
     "NPSP",

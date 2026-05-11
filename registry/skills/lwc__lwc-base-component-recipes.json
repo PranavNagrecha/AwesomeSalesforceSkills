@@ -112,6 +112,7 @@
   "scripts": [
     "skills/lwc/lwc-base-component-recipes/scripts/check_lwc_base_component_recipes.py"
   ],
+  "status": "stable",
   "tags": [
     "lwc",
     "base-components",

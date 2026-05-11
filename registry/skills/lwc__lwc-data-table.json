@@ -82,6 +82,7 @@
   "scripts": [
     "skills/lwc/lwc-data-table/scripts/check_lwc_data_table.py"
   ],
+  "status": "stable",
   "tags": [
     "lwc-data-table",
     "lightning-datatable",

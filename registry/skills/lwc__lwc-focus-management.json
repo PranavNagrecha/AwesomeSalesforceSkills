@@ -79,6 +79,7 @@
   "scripts": [
     "skills/lwc/lwc-focus-management/scripts/check_lwc_focus_management.py"
   ],
+  "status": "stable",
   "tags": [
     "lwc",
     "focus",

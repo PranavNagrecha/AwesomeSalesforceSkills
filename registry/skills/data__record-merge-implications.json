@@ -92,6 +92,7 @@
   "scripts": [
     "skills/data/record-merge-implications/scripts/check_record_merge_implications.py"
   ],
+  "status": "stable",
   "tags": [
     "data",
     "merge",

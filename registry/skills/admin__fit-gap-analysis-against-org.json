@@ -123,6 +123,7 @@
   "scripts": [
     "skills/admin/fit-gap-analysis-against-org/scripts/check_fit_gap_analysis_against_org.py"
   ],
+  "status": "stable",
   "tags": [
     "fit-gap-analysis",
     "capability-matrix",

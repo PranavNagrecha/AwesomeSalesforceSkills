@@ -115,6 +115,7 @@
   "scripts": [
     "skills/apex/sales-engagement-api/scripts/check_sales_engagement_api.py"
   ],
+  "status": "stable",
   "tags": [
     "sales-engagement",
     "high-velocity-sales",

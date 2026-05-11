@@ -142,6 +142,7 @@
   "scripts": [
     "skills/agentforce/agent-script-dsl/scripts/check_agent_script_dsl.py"
   ],
+  "status": "stable",
   "tags": [
     "agentforce",
     "agent-dsl",

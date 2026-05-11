@@ -142,6 +142,7 @@
   "scripts": [
     "skills/admin/b2c-commerce-store-setup/scripts/check_b2c_commerce_store_setup.py"
   ],
+  "status": "stable",
   "tags": [
     "b2c-commerce",
     "sfcc",

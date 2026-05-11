@@ -82,6 +82,7 @@
   "scripts": [
     "skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py"
   ],
+  "status": "stable",
   "tags": [
     "deployment",
     "release-management",

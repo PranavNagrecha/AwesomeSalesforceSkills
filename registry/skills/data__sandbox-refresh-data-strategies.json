@@ -89,6 +89,7 @@
   "scripts": [
     "skills/data/sandbox-refresh-data-strategies/scripts/check_sandbox_refresh_data_strategies.py"
   ],
+  "status": "stable",
   "tags": [
     "sandbox",
     "data-seeding",

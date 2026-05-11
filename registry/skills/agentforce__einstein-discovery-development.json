@@ -127,6 +127,7 @@
   "scripts": [
     "skills/agentforce/einstein-discovery-development/scripts/check_einstein_discovery_development.py"
   ],
+  "status": "stable",
   "tags": [
     "einstein-discovery-development",
     "einstein-discovery",

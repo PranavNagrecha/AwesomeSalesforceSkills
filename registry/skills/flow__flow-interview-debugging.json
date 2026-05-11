@@ -55,6 +55,7 @@
   "scripts": [
     "skills/flow/flow-interview-debugging/scripts/check_flow_interview_debugging.py"
   ],
+  "status": "stable",
   "tags": [
     "flow",
     "debug",

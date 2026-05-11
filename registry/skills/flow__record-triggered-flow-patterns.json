@@ -93,6 +93,7 @@
   "scripts": [
     "skills/flow/record-triggered-flow-patterns/scripts/check_record_triggered_flow_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "record-triggered-flow",
     "before-save",

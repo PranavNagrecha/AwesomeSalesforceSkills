@@ -121,6 +121,7 @@
   "scripts": [
     "skills/architect/event-driven-architecture/scripts/check_event_driven_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "event-driven-architecture",
     "choreography",

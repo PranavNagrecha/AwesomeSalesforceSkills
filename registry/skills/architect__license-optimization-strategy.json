@@ -138,6 +138,7 @@
   "scripts": [
     "skills/architect/license-optimization-strategy/scripts/check_license_optimization_strategy.py"
   ],
+  "status": "stable",
   "tags": [
     "licensing",
     "license-audit",

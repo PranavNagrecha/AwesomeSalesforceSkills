@@ -86,6 +86,7 @@
   "scripts": [
     "skills/architect/org-edition-and-feature-licensing/scripts/check_org_edition_and_feature_licensing.py"
   ],
+  "status": "stable",
   "tags": [
     "architect",
     "editions",

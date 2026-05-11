@@ -111,6 +111,7 @@
   "scripts": [
     "skills/apex/apex-encoding-and-crypto/scripts/check_apex_encoding_and_crypto.py"
   ],
+  "status": "stable",
   "tags": [
     "apex-encoding-and-crypto",
     "hmac",

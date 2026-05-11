@@ -56,6 +56,7 @@
   "scripts": [
     "skills/lwc/lwc-error-boundaries/scripts/check_lwc_error_boundaries.py"
   ],
+  "status": "stable",
   "tags": [
     "error-handling",
     "lwc",

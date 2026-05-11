@@ -108,6 +108,7 @@
   "scripts": [
     "skills/devops/salesforce-dx-project-structure/scripts/check_salesforce_dx_project_structure.py"
   ],
+  "status": "stable",
   "tags": [
     "sfdx-project-json",
     "source-format",

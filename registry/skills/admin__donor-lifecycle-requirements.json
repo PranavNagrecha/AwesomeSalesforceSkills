@@ -104,6 +104,7 @@
   "scripts": [
     "skills/admin/donor-lifecycle-requirements/scripts/check_donor_lifecycle_requirements.py"
   ],
+  "status": "stable",
   "tags": [
     "npsp",
     "nonprofit-cloud",

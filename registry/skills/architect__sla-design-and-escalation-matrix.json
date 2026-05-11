@@ -142,6 +142,7 @@
   "scripts": [
     "skills/architect/sla-design-and-escalation-matrix/scripts/check_sla_design_and_escalation_matrix.py"
   ],
+  "status": "stable",
   "tags": [
     "sla-design",
     "escalation-matrix",

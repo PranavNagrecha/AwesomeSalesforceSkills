@@ -111,6 +111,7 @@
   "scripts": [
     "skills/data/field-history-tracking/scripts/check_field_history_tracking.py"
   ],
+  "status": "stable",
   "tags": [
     "field-history-tracking",
     "audit",

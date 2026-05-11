@@ -83,6 +83,7 @@
   "scripts": [
     "skills/lwc/lightning-navigation-dead-link-handling/scripts/check_lightning_navigation_dead_link_handling.py"
   ],
+  "status": "stable",
   "tags": [
     "lwc",
     "navigation",

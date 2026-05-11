@@ -104,6 +104,7 @@
   "scripts": [
     "skills/apex/apex-connect-api-chatter/scripts/check_apex_connect_api_chatter.py"
   ],
+  "status": "stable",
   "tags": [
     "apex-connect-api-chatter",
     "apex-chatter-posting",

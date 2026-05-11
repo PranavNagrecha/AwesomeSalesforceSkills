@@ -153,6 +153,7 @@
   "scripts": [
     "skills/architect/platform-selection-guidance/scripts/check_platform_selection_guidance.py"
   ],
+  "status": "stable",
   "tags": [
     "architect",
     "platform-selection",

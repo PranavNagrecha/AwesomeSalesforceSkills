@@ -59,6 +59,7 @@
   "scripts": [
     "skills/agentforce/agent-action-error-handling/scripts/check_agent_action_error_handling.py"
   ],
+  "status": "stable",
   "tags": [
     "agentforce",
     "invocable-actions",

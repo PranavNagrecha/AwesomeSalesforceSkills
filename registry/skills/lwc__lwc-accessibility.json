@@ -78,6 +78,7 @@
   "scripts": [
     "skills/lwc/lwc-accessibility/scripts/check_lwc_accessibility.py"
   ],
+  "status": "stable",
   "tags": [
     "lwc-accessibility",
     "keyboard-navigation",

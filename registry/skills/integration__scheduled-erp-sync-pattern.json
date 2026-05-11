@@ -136,6 +136,7 @@
   "scripts": [
     "skills/integration/scheduled-erp-sync-pattern/scripts/check_scheduled_erp_sync_pattern.py"
   ],
+  "status": "stable",
   "tags": [
     "scheduled-erp-sync-pattern",
     "scheduled-apex",

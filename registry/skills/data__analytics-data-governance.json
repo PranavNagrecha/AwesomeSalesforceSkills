@@ -156,6 +156,7 @@
   "scripts": [
     "skills/data/analytics-data-governance/scripts/check_analytics_data_governance.py"
   ],
+  "status": "stable",
   "tags": [
     "crm-analytics",
     "data-governance",

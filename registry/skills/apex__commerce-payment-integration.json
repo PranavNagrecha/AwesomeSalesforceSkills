@@ -143,6 +143,7 @@
   "scripts": [
     "skills/apex/commerce-payment-integration/scripts/check_commerce_payment_integration.py"
   ],
+  "status": "stable",
   "tags": [
     "commerce-payment-integration",
     "CommercePayments",

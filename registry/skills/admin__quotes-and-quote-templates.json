@@ -119,6 +119,7 @@
   "scripts": [
     "skills/admin/quotes-and-quote-templates/scripts/check_quotes_and_quote_templates.py"
   ],
+  "status": "stable",
   "tags": [
     "quotes",
     "quote-templates",

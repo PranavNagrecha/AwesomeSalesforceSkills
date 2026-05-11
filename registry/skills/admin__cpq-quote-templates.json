@@ -131,6 +131,7 @@
   "scripts": [
     "skills/admin/cpq-quote-templates/scripts/check_cpq_quote_templates.py"
   ],
+  "status": "stable",
   "tags": [
     "cpq",
     "cpq-quote-templates",

@@ -100,6 +100,7 @@
   "scripts": [
     "skills/lwc/lwc-conditional-rendering/scripts/check_lwc_conditional_rendering.py"
   ],
+  "status": "stable",
   "tags": [
     "lwc-conditional-rendering",
     "lwc-if",

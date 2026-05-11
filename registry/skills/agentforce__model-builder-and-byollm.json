@@ -142,6 +142,7 @@
   "scripts": [
     "skills/agentforce/model-builder-and-byollm/scripts/check_model_builder_and_byollm.py"
   ],
+  "status": "stable",
   "tags": [
     "model-builder",
     "byollm",

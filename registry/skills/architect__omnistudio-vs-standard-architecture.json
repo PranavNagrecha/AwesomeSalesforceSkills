@@ -132,6 +132,7 @@
   "scripts": [
     "skills/architect/omnistudio-vs-standard-architecture/scripts/check_omnistudio_vs_standard_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "omnistudio",
     "screen-flow",

@@ -58,6 +58,7 @@
   "scripts": [
     "skills/security/dynamic-sharing-recalculation/scripts/check_dynamic_sharing_recalculation.py"
   ],
+  "status": "stable",
   "tags": [
     "sharing",
     "recalculation",

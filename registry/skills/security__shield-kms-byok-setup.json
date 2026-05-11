@@ -60,6 +60,7 @@
   "scripts": [
     "skills/security/shield-kms-byok-setup/scripts/check_shield_kms_byok_setup.py"
   ],
+  "status": "stable",
   "tags": [
     "shield",
     "encryption",

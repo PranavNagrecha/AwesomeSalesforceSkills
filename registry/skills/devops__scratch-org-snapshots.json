@@ -59,6 +59,7 @@
   "scripts": [
     "skills/devops/scratch-org-snapshots/scripts/check_scratch_org_snapshots.py"
   ],
+  "status": "stable",
   "tags": [
     "scratch-org",
     "ci",

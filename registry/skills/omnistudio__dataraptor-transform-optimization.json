@@ -84,6 +84,7 @@
   "scripts": [
     "skills/omnistudio/dataraptor-transform-optimization/scripts/check_dataraptor_transform_optimization.py"
   ],
+  "status": "stable",
   "tags": [
     "omnistudio",
     "dataraptor",

@@ -178,6 +178,7 @@
   "scripts": [
     "skills/devops/health-cloud-deployment-patterns/scripts/check_health_cloud_deployment_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "health-cloud",
     "managed-package",

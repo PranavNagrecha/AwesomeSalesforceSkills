@@ -119,6 +119,7 @@
   "scripts": [
     "skills/admin/experience-cloud-site-setup/scripts/check_experience_cloud_site_setup.py"
   ],
+  "status": "stable",
   "tags": [
     "experience-cloud",
     "lwr",

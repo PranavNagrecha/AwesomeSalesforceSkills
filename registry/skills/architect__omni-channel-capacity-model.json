@@ -102,6 +102,7 @@
   "scripts": [
     "skills/architect/omni-channel-capacity-model/scripts/check_omni_channel_capacity_model.py"
   ],
+  "status": "stable",
   "tags": [
     "omni-channel",
     "capacity-model",

@@ -76,6 +76,7 @@
   "scripts": [
     "skills/agentforce/agentforce-testing-strategy/scripts/check_agentforce_testing_strategy.py"
   ],
+  "status": "stable",
   "tags": [
     "agentforce",
     "testing",

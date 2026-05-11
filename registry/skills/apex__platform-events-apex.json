@@ -86,6 +86,7 @@
   "scripts": [
     "skills/apex/platform-events-apex/scripts/check_platform_events_apex.py"
   ],
+  "status": "stable",
   "tags": [
     "platform-events",
     "eventbus",

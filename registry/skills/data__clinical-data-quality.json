@@ -122,6 +122,7 @@
   "scripts": [
     "skills/data/clinical-data-quality/scripts/check_clinical_data_quality.py"
   ],
+  "status": "stable",
   "tags": [
     "health-cloud",
     "data-quality",

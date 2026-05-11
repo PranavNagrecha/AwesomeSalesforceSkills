@@ -125,6 +125,7 @@
   "scripts": [
     "skills/data/cpq-data-model/scripts/check_cpq_data_model.py"
   ],
+  "status": "stable",
   "tags": [
     "cpq",
     "sbqq",

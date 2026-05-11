@@ -117,6 +117,7 @@
   "scripts": [
     "skills/architect/sales-cloud-integration-patterns/scripts/check_sales_cloud_integration_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "sales-cloud",
     "erp-integration",

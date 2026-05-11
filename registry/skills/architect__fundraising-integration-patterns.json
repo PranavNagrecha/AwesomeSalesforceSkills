@@ -121,6 +121,7 @@
   "scripts": [
     "skills/architect/fundraising-integration-patterns/scripts/check_fundraising_integration_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "nonprofit-cloud",
     "npsp",

@@ -86,6 +86,7 @@
   "scripts": [
     "skills/integration/webhook-inbound-patterns/scripts/check_webhook_inbound_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "webhook",
     "inbound-integration",

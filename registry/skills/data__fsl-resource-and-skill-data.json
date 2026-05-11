@@ -86,6 +86,7 @@
   "scripts": [
     "skills/data/fsl-resource-and-skill-data/scripts/check_fsl_resource_and_skill_data.py"
   ],
+  "status": "stable",
   "tags": [
     "fsl",
     "field-service",

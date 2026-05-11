@@ -132,6 +132,7 @@
   "scripts": [
     "skills/data/person-accounts/scripts/check_person_accounts.py"
   ],
+  "status": "stable",
   "tags": [
     "person-accounts",
     "B2C",

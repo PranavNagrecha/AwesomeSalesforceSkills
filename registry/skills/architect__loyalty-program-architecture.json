@@ -118,6 +118,7 @@
   "scripts": [
     "skills/architect/loyalty-program-architecture/scripts/check_loyalty_program_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "loyalty-management",
     "loyalty-architecture",

@@ -135,6 +135,7 @@
   "scripts": [
     "skills/architect/analytics-embedded-components/scripts/check_analytics_embedded_components.py"
   ],
+  "status": "stable",
   "tags": [
     "crm-analytics",
     "embedded",

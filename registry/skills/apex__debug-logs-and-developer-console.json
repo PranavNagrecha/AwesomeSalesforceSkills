@@ -95,6 +95,7 @@
   "scripts": [
     "skills/apex/debug-logs-and-developer-console/scripts/check_debug_logs_and_developer_console.py"
   ],
+  "status": "stable",
   "tags": [
     "debug-logs",
     "developer-console",

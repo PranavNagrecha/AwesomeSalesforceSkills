@@ -59,6 +59,7 @@
   "scripts": [
     "skills/security/api-only-user-hardening/scripts/check_api_only_user_hardening.py"
   ],
+  "status": "stable",
   "tags": [
     "integration",
     "service-account",

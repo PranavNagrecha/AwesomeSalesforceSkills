@@ -122,6 +122,7 @@
   "scripts": [
     "skills/data/cdc-data-sync-patterns/scripts/check_cdc_data_sync_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "change-data-capture",
     "CDC",

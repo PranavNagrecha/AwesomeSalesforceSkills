@@ -108,6 +108,7 @@
   "scripts": [
     "skills/data/constituent-data-migration/scripts/check_constituent_data_migration.py"
   ],
+  "status": "stable",
   "tags": [
     "npsp",
     "constituent-data-migration",

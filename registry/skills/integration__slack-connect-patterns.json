@@ -105,6 +105,7 @@
   "scripts": [
     "skills/integration/slack-connect-patterns/scripts/check_slack_connect_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "slack",
     "slack-connect",

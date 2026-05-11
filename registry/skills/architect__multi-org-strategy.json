@@ -171,6 +171,7 @@
   "scripts": [
     "skills/architect/multi-org-strategy/scripts/check_multi_org.py"
   ],
+  "status": "stable",
   "tags": [
     "multi-org",
     "org-strategy",

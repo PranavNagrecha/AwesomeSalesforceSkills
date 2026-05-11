@@ -105,6 +105,7 @@
   "scripts": [
     "skills/integration/data-cloud-zero-copy-federation/scripts/check_data_cloud_zero_copy_federation.py"
   ],
+  "status": "stable",
   "tags": [
     "data-cloud",
     "zero-copy",

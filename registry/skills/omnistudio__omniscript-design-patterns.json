@@ -84,6 +84,7 @@
   "scripts": [
     "skills/omnistudio/omniscript-design-patterns/scripts/check_omniscript_design_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "omniscript",
     "guided-experience",

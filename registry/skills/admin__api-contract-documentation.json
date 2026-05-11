@@ -83,6 +83,7 @@
   "scripts": [
     "skills/admin/api-contract-documentation/scripts/check_api_contract_documentation.py"
   ],
+  "status": "stable",
   "tags": [
     "rest-api",
     "api-versioning",

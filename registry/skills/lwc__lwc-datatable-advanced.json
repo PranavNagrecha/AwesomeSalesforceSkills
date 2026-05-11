@@ -82,6 +82,7 @@
   "scripts": [
     "skills/lwc/lwc-datatable-advanced/scripts/check_lwc_datatable_advanced.py"
   ],
+  "status": "stable",
   "tags": [
     "datatable",
     "inline-edit",

@@ -82,6 +82,7 @@
   "scripts": [
     "skills/integration/oauth-flows-and-connected-apps/scripts/check_oauth_flows_and_connected_apps.py"
   ],
+  "status": "stable",
   "tags": [
     "oauth",
     "connected-apps",

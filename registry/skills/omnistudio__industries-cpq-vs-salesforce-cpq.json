@@ -124,6 +124,7 @@
   "scripts": [
     "skills/omnistudio/industries-cpq-vs-salesforce-cpq/scripts/check_industries_cpq_vs_salesforce_cpq.py"
   ],
+  "status": "stable",
   "tags": [
     "industries-cpq",
     "vlocity-cpq",

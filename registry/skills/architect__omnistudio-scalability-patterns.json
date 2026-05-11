@@ -137,6 +137,7 @@
   "scripts": [
     "skills/architect/omnistudio-scalability-patterns/scripts/check_omnistudio_scalability_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "omnistudio",
     "integration-procedure",

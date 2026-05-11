@@ -96,6 +96,7 @@
   "scripts": [
     "skills/apex/soql-security/scripts/check_soql_security.py"
   ],
+  "status": "stable",
   "tags": [
     "soql",
     "security",

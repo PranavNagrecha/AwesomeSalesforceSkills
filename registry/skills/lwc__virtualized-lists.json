@@ -56,6 +56,7 @@
   "scripts": [
     "skills/lwc/virtualized-lists/scripts/check_virtualized_lists.py"
   ],
+  "status": "stable",
   "tags": [
     "performance",
     "virtualization",

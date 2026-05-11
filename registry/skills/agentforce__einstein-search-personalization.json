@@ -112,6 +112,7 @@
   "scripts": [
     "skills/agentforce/einstein-search-personalization/scripts/check_einstein_search_personalization.py"
   ],
+  "status": "stable",
   "tags": [
     "Einstein-Search",
     "personalization",

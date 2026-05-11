@@ -58,6 +58,7 @@
   "scripts": [
     "skills/integration/mutual-tls-callouts/scripts/check_mutual_tls_callouts.py"
   ],
+  "status": "stable",
   "tags": [
     "mtls",
     "callout",

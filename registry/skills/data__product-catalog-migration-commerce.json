@@ -85,6 +85,7 @@
   "scripts": [
     "skills/data/product-catalog-migration-commerce/scripts/check_product_catalog_migration_commerce.py"
   ],
+  "status": "stable",
   "tags": [
     "commerce",
     "product-catalog",

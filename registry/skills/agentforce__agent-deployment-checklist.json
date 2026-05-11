@@ -58,6 +58,7 @@
   "scripts": [
     "skills/agentforce/agent-deployment-checklist/scripts/check_agent_deployment_checklist.py"
   ],
+  "status": "stable",
   "tags": [
     "agentforce",
     "deployment",

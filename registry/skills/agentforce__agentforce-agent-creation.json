@@ -129,6 +129,7 @@
     "skills/agentforce/agentforce-agent-creation/scripts/check_agent_creation.py",
     "skills/agentforce/agentforce-agent-creation/scripts/check_agentforce_agent_creation.py"
   ],
+  "status": "stable",
   "tags": [
     "agentforce",
     "agent-creation",

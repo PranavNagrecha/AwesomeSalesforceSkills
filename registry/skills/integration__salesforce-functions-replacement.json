@@ -51,7 +51,7 @@
     "fafdb7b0c4a17fd4d359",
     "fe750db314cdb0b572b7"
   ],
-  "content_hash": "ec9ae79d9c594c98244643309cd93d08dd5d7613cbfd82eb382b5345c32bd82b",
+  "content_hash": "296a6049515980191fe46f6223bdabfb9dc843846352a0c230a622893a8ac011",
   "dependencies": [],
   "description": "Salesforce Functions is retired (EOL Jan 2025). This skill maps Functions workloads to replacements: Heroku (with Hyperforce), external containers, Apex (where viable), Agentforce Actions, external compute via Named Credentials. NOT for Lambda / Azure Functions tutorials. NOT for Apex @future replacement (use async-selection tree).",
   "file_location": "skills/integration/salesforce-functions-replacement",
@@ -83,6 +83,7 @@
   "scripts": [
     "skills/integration/salesforce-functions-replacement/scripts/check_salesforce_functions_replacement.py"
   ],
+  "status": "stub",
   "tags": [
     "salesforce-functions",
     "heroku",

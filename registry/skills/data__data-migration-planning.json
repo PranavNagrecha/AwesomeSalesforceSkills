@@ -166,6 +166,7 @@
     "skills/data/data-migration-planning/scripts/check_data_migration_planning.py",
     "skills/data/data-migration-planning/scripts/check_migration_plan.py"
   ],
+  "status": "stable",
   "tags": [
     "data-migration",
     "etl",

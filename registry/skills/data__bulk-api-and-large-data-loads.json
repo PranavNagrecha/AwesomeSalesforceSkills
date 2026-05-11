@@ -119,6 +119,7 @@
   "scripts": [
     "skills/data/bulk-api-and-large-data-loads/scripts/check_bulk_api_and_large_data_loads.py"
   ],
+  "status": "stable",
   "tags": [
     "bulk-api",
     "large-data-volumes",

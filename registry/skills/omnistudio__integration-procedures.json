@@ -94,6 +94,7 @@
   "scripts": [
     "skills/omnistudio/integration-procedures/scripts/check_integration_procedure.py"
   ],
+  "status": "stable",
   "tags": [
     "omnistudio",
     "integration-procedure",

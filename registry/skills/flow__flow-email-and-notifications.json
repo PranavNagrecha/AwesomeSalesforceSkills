@@ -116,6 +116,7 @@
   "scripts": [
     "skills/flow/flow-email-and-notifications/scripts/check_flow_email_and_notifications.py"
   ],
+  "status": "stable",
   "tags": [
     "flow-email",
     "custom-notification",

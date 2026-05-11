@@ -113,6 +113,7 @@
   "scripts": [
     "skills/flow/flow-loop-element-patterns/scripts/check_flow_loop_element_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "flow-loop-element-patterns",
     "bulkification",

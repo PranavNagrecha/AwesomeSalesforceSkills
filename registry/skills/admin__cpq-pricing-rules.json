@@ -137,6 +137,7 @@
   "scripts": [
     "skills/admin/cpq-pricing-rules/scripts/check_cpq_pricing_rules.py"
   ],
+  "status": "stable",
   "tags": [
     "cpq",
     "pricing",

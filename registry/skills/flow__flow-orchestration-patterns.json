@@ -107,6 +107,7 @@
   "scripts": [
     "skills/flow/flow-orchestration-patterns/scripts/check_flow_orchestration_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "flow",
     "orchestration",

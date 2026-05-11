@@ -88,6 +88,7 @@
   "scripts": [
     "skills/flow/flow-error-monitoring/scripts/check_flow_error_monitoring.py"
   ],
+  "status": "stable",
   "tags": [
     "flow",
     "monitoring",

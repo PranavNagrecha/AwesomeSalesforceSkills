@@ -132,6 +132,7 @@
   "scripts": [
     "skills/architect/order-management-architecture/scripts/check_order_management_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "OMS",
     "order-management",

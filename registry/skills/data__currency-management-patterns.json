@@ -87,6 +87,7 @@
   "scripts": [
     "skills/data/currency-management-patterns/scripts/check_currency_management_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "multi-currency",
     "currency-iso-code",

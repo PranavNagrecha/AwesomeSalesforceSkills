@@ -76,6 +76,7 @@
   "scripts": [
     "skills/security/oauth-redirect-and-domain-strategy/scripts/check_oauth_redirect_and_domain_strategy.py"
   ],
+  "status": "stable",
   "tags": [
     "security",
     "oauth",

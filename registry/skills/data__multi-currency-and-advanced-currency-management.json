@@ -81,6 +81,7 @@
   "scripts": [
     "skills/data/multi-currency-and-advanced-currency-management/scripts/check_multi_currency_and_advanced_currency_management.py"
   ],
+  "status": "stable",
   "tags": [
     "multi-currency",
     "advanced-currency-management",

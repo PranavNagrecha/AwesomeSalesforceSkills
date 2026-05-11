@@ -125,6 +125,7 @@
   "scripts": [
     "skills/flow/flow-platform-events-integration/scripts/check_flow_platform_events_integration.py"
   ],
+  "status": "stable",
   "tags": [
     "flow",
     "platform-events",

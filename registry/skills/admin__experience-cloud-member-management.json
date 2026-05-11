@@ -122,6 +122,7 @@
   "scripts": [
     "skills/admin/experience-cloud-member-management/scripts/check_experience_cloud_member_management.py"
   ],
+  "status": "stable",
   "tags": [
     "experience-cloud",
     "external-users",

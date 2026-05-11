@@ -121,6 +121,7 @@
   "scripts": [
     "skills/apex/cpq-test-automation/scripts/check_cpq_test_automation.py"
   ],
+  "status": "stable",
   "tags": [
     "cpq",
     "sbqq",

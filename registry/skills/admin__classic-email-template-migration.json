@@ -123,6 +123,7 @@
   "scripts": [
     "skills/admin/classic-email-template-migration/scripts/check_classic_email_template_migration.py"
   ],
+  "status": "stable",
   "tags": [
     "email-templates",
     "lightning-email-template",

@@ -107,6 +107,7 @@
   "scripts": [
     "skills/apex/apex-event-bus-subscriber/scripts/check_apex_event_bus_subscriber.py"
   ],
+  "status": "stable",
   "tags": [
     "platform-events",
     "eventbus",

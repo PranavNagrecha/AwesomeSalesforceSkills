@@ -58,6 +58,7 @@
   "scripts": [
     "skills/integration/webhook-signature-verification/scripts/check_webhook_signature_verification.py"
   ],
+  "status": "stable",
   "tags": [
     "webhook",
     "hmac",

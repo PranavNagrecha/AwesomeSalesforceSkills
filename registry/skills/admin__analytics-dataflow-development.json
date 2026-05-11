@@ -139,6 +139,7 @@
   "scripts": [
     "skills/admin/analytics-dataflow-development/scripts/check_analytics_dataflow_development.py"
   ],
+  "status": "stable",
   "tags": [
     "crm-analytics",
     "dataflow",

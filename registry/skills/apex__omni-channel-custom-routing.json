@@ -123,6 +123,7 @@
   "scripts": [
     "skills/apex/omni-channel-custom-routing/scripts/check_omni_channel_custom_routing.py"
   ],
+  "status": "stable",
   "tags": [
     "omni-channel",
     "routing",

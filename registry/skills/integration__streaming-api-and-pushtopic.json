@@ -129,6 +129,7 @@
   "scripts": [
     "skills/integration/streaming-api-and-pushtopic/scripts/check_streaming_api_and_pushtopic.py"
   ],
+  "status": "stable",
   "tags": [
     "streaming-api",
     "pushtopic",

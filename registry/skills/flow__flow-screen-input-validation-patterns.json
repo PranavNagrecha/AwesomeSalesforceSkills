@@ -133,6 +133,7 @@
   "scripts": [
     "skills/flow/flow-screen-input-validation-patterns/scripts/check_flow_screen_input_validation_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "flow-screen-input-validation-patterns",
     "screen-flow",

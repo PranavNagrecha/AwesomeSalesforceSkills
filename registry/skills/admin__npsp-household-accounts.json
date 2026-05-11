@@ -128,6 +128,7 @@
     "skills/admin/npsp-household-accounts/scripts/check_household.py",
     "skills/admin/npsp-household-accounts/scripts/check_npsp_household_accounts.py"
   ],
+  "status": "stable",
   "tags": [
     "npsp",
     "nonprofit",

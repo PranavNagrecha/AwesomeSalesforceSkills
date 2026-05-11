@@ -127,6 +127,7 @@
   "scripts": [
     "skills/apex/formula-field-performance-and-limits/scripts/check_formula_field_performance_and_limits.py"
   ],
+  "status": "stable",
   "tags": [
     "formula-fields",
     "performance",

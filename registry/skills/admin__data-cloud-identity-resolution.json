@@ -151,6 +151,7 @@
   "scripts": [
     "skills/admin/data-cloud-identity-resolution/scripts/check_data_cloud_identity_resolution.py"
   ],
+  "status": "stable",
   "tags": [
     "data-cloud",
     "identity-resolution",

@@ -51,7 +51,7 @@
     "fb21aed6084628211bf6",
     "fffc41928ddc24e1258d"
   ],
-  "content_hash": "c3b8515f178c802504776883d7c349d912551149f2a2d4365d3cf83ea9b45f63",
+  "content_hash": "66ff46b24e019057a16ef42b76b373020655aac544957e0dfa846ac319e81787",
   "dependencies": [],
   "description": "Deployment automation architecture on Salesforce: pipeline orchestration, branch strategy, environment topology, quality gates, release trains. Selecting between Copado, Gearset, Flosum, and native SFDX + GitHub Actions. NOT for cloud-specific deploy mechanics (use cloud-specific-deployment-architecture). NOT for CI/CD tool tutorials.",
   "file_location": "skills/architect/deployment-automation-architecture",
@@ -81,6 +81,7 @@
   "scripts": [
     "skills/architect/deployment-automation-architecture/scripts/check_deployment_automation_architecture.py"
   ],
+  "status": "stub",
   "tags": [
     "deployment",
     "cicd",

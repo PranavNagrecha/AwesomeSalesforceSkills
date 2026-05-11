@@ -105,6 +105,7 @@
   "scripts": [
     "skills/lwc/lwc-slots-composition/scripts/check_lwc_slots_composition.py"
   ],
+  "status": "stable",
   "tags": [
     "lwc-slots-composition",
     "slot",

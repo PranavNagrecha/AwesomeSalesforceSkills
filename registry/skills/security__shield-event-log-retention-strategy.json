@@ -83,6 +83,7 @@
   "scripts": [
     "skills/security/shield-event-log-retention-strategy/scripts/check_shield_event_log_retention_strategy.py"
   ],
+  "status": "stable",
   "tags": [
     "security",
     "shield",

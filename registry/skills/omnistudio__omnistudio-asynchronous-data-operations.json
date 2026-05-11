@@ -54,6 +54,7 @@
   "scripts": [
     "skills/omnistudio/omnistudio-asynchronous-data-operations/scripts/check_omnistudio_asynchronous_data_operations.py"
   ],
+  "status": "stable",
   "tags": [
     "omnistudio",
     "integration-procedure",

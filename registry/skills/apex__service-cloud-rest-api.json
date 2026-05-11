@@ -135,6 +135,7 @@
   "scripts": [
     "skills/apex/service-cloud-rest-api/scripts/check_service_cloud_rest_api.py"
   ],
+  "status": "stable",
   "tags": [
     "service-cloud",
     "knowledge",

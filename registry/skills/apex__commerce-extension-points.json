@@ -126,6 +126,7 @@
   "scripts": [
     "skills/apex/commerce-extension-points/scripts/check_commerce_extension_points.py"
   ],
+  "status": "stable",
   "tags": [
     "commerce",
     "b2b-commerce",

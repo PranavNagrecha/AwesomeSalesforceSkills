@@ -86,6 +86,7 @@
   "scripts": [
     "skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "permission-set-architecture",
     "least-privilege",

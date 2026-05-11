@@ -120,6 +120,7 @@
   "scripts": [
     "skills/architect/nfr-definition-for-salesforce/scripts/check_nfr_definition_for_salesforce.py"
   ],
+  "status": "stable",
   "tags": [
     "nfr",
     "performance",

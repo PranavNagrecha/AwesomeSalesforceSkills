@@ -139,6 +139,7 @@
   "scripts": [
     "skills/admin/care-plan-configuration/scripts/check_care_plan_configuration.py"
   ],
+  "status": "stable",
   "tags": [
     "health-cloud",
     "care-plan",

@@ -90,6 +90,7 @@
   "scripts": [
     "skills/devops/package-development-strategy/scripts/check_package_development_strategy.py"
   ],
+  "status": "stable",
   "tags": [
     "packaging",
     "unlocked-packages",

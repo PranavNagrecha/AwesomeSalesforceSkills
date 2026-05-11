@@ -106,6 +106,7 @@
   "scripts": [
     "skills/flow/flow-debugging/scripts/check_flow_debugging.py"
   ],
+  "status": "stable",
   "tags": [
     "flow-debugging",
     "debug-mode",

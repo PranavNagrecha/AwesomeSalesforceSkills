@@ -125,6 +125,7 @@
   "scripts": [
     "skills/devops/change-set-deployment/scripts/check_change_set_deployment.py"
   ],
+  "status": "stable",
   "tags": [
     "change-sets",
     "deployment",

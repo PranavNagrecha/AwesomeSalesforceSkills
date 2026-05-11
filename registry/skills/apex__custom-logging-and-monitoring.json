@@ -87,6 +87,7 @@
   "scripts": [
     "skills/apex/custom-logging-and-monitoring/scripts/check_custom_logging_and_monitoring.py"
   ],
+  "status": "stable",
   "tags": [
     "logging",
     "apex-framework",

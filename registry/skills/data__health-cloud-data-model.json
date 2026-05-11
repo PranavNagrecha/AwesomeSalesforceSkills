@@ -128,6 +128,7 @@
   "scripts": [
     "skills/data/health-cloud-data-model/scripts/check_health_cloud_data_model.py"
   ],
+  "status": "stable",
   "tags": [
     "health-cloud",
     "data-model",

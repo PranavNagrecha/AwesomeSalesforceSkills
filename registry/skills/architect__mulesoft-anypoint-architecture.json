@@ -104,6 +104,7 @@
   "scripts": [
     "skills/architect/mulesoft-anypoint-architecture/scripts/check_mulesoft_anypoint_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "mulesoft",
     "anypoint-platform",

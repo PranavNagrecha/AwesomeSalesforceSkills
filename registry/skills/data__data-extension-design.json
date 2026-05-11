@@ -138,6 +138,7 @@
   "scripts": [
     "skills/data/data-extension-design/scripts/check_data_extension_design.py"
   ],
+  "status": "stable",
   "tags": [
     "data-extension",
     "marketing-cloud",

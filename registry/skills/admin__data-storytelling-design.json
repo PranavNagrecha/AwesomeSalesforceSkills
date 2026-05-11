@@ -80,6 +80,7 @@
   "scripts": [
     "skills/admin/data-storytelling-design/scripts/check_data_storytelling_design.py"
   ],
+  "status": "stable",
   "tags": [
     "crm-analytics",
     "tableau",

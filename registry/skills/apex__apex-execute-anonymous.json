@@ -49,7 +49,7 @@
     "fb48e1797a56a584e8c5",
     "fef50f5c3cbe680898e7"
   ],
-  "content_hash": "8e0b34b53aa41002a8fa4a2dc3f524e490c4ca8efbd2f52dec2018b40ab3bd36",
+  "content_hash": "5add45a9cb4d566b9687b58ebf442199a005317bfe8cf9de85df81492325b1cf",
   "dependencies": [],
   "description": "Execute Anonymous Apex: Developer Console, VS Code SFDX, `sf apex run`, variable scope, transaction semantics, governor limits, debugging output, common errors. NOT for scheduled/queueable async (use apex-async-patterns). NOT for debug log settings (use debug-log-management).",
   "file_location": "skills/apex/apex-execute-anonymous",
@@ -79,6 +79,7 @@
   "scripts": [
     "skills/apex/apex-execute-anonymous/scripts/check_apex_execute_anonymous.py"
   ],
+  "status": "stub",
   "tags": [
     "apex",
     "execute-anonymous",

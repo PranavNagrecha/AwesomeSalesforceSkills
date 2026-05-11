@@ -113,6 +113,7 @@
   "scripts": [
     "skills/apex/entitlement-apex-hooks/scripts/check_entitlement_apex_hooks.py"
   ],
+  "status": "stable",
   "tags": [
     "entitlements",
     "milestones",

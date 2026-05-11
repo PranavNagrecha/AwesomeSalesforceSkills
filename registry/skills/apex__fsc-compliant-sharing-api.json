@@ -131,6 +131,7 @@
   "scripts": [
     "skills/apex/fsc-compliant-sharing-api/scripts/check_fsc_compliant_sharing_api.py"
   ],
+  "status": "stable",
   "tags": [
     "compliant-data-sharing",
     "fsc",

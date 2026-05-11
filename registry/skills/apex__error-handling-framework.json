@@ -163,6 +163,7 @@
   "scripts": [
     "skills/apex/error-handling-framework/scripts/check_error_handling_framework.py"
   ],
+  "status": "stable",
   "tags": [
     "error-handling-framework",
     "platform-events",

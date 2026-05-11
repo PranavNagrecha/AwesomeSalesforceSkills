@@ -115,6 +115,7 @@
   "scripts": [
     "skills/architect/omnistudio-vs-standard-decision/scripts/check_omnistudio_vs_standard_decision.py"
   ],
+  "status": "stable",
   "tags": [
     "omnistudio",
     "omni-studio",

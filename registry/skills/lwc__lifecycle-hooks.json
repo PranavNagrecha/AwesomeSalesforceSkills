@@ -87,6 +87,7 @@
   "scripts": [
     "skills/lwc/lifecycle-hooks/scripts/check_lwc_lifecycle.py"
   ],
+  "status": "stable",
   "tags": [
     "lwc",
     "connectedcallback",

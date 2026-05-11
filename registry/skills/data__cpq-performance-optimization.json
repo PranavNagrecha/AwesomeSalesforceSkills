@@ -122,6 +122,7 @@
   "scripts": [
     "skills/data/cpq-performance-optimization/scripts/check_cpq_performance_optimization.py"
   ],
+  "status": "stable",
   "tags": [
     "cpq",
     "cpq-performance",

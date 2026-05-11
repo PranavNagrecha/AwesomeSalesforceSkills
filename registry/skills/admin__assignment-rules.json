@@ -104,6 +104,7 @@
   "scripts": [
     "skills/admin/assignment-rules/scripts/check_assignment_rules.py"
   ],
+  "status": "stable",
   "tags": [
     "assignment-rules",
     "lead-management",

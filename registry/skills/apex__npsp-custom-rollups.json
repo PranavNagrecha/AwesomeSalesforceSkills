@@ -116,6 +116,7 @@
   "scripts": [
     "skills/apex/npsp-custom-rollups/scripts/check_npsp_custom_rollups.py"
   ],
+  "status": "stable",
   "tags": [
     "npsp",
     "crlp",

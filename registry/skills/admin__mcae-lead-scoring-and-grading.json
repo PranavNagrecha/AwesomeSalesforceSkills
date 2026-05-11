@@ -138,6 +138,7 @@
   "scripts": [
     "skills/admin/mcae-lead-scoring-and-grading/scripts/check_mcae_lead_scoring_and_grading.py"
   ],
+  "status": "stable",
   "tags": [
     "mcae",
     "pardot",

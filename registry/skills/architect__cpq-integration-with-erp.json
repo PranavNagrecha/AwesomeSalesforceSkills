@@ -130,6 +130,7 @@
   "scripts": [
     "skills/architect/cpq-integration-with-erp/scripts/check_cpq_integration_with_erp.py"
   ],
+  "status": "stable",
   "tags": [
     "cpq",
     "erp",

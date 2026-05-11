@@ -129,6 +129,7 @@
   "scripts": [
     "skills/flow/flow-screen-lwc-components/scripts/check_flow_screen_lwc_components.py"
   ],
+  "status": "stable",
   "tags": [
     "flow-screen-lwc-components",
     "lwc",

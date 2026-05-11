@@ -156,6 +156,7 @@
   "scripts": [
     "skills/architect/marketing-integration-patterns/scripts/check_marketing_integration_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "marketing-cloud",
     "journey-builder",

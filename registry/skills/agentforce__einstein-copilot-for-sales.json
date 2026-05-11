@@ -142,6 +142,7 @@
     "skills/agentforce/einstein-copilot-for-sales/scripts/check_einstein_copilot_for_sales.py",
     "skills/agentforce/einstein-copilot-for-sales/scripts/check_einstein_sales.py"
   ],
+  "status": "stable",
   "tags": [
     "einstein",
     "copilot",

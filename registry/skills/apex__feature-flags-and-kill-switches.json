@@ -105,6 +105,7 @@
   "scripts": [
     "skills/apex/feature-flags-and-kill-switches/scripts/check_feature_flags_and_kill_switches.py"
   ],
+  "status": "stable",
   "tags": [
     "feature-flags-and-kill-switches",
     "custom-metadata-types",

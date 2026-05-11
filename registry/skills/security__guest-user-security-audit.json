@@ -87,6 +87,7 @@
   "scripts": [
     "skills/security/guest-user-security-audit/scripts/check_guest_user_security_audit.py"
   ],
+  "status": "stable",
   "tags": [
     "guest-user",
     "experience-cloud",

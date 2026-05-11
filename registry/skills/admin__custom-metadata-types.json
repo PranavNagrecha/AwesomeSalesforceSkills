@@ -95,6 +95,7 @@
   "scripts": [
     "skills/admin/custom-metadata-types/scripts/check_custom_metadata_types.py"
   ],
+  "status": "stable",
   "tags": [
     "custom-metadata-types",
     "configuration",

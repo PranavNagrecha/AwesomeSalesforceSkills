@@ -110,6 +110,7 @@
   "scripts": [
     "skills/admin/experience-cloud-guest-access/scripts/check_experience_cloud_guest_access.py"
   ],
+  "status": "stable",
   "tags": [
     "experience-cloud",
     "guest-user",

@@ -155,6 +155,7 @@
   "scripts": [
     "skills/devops/fsc-deployment-patterns/scripts/check_fsc_deployment_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "fsc",
     "financial-services-cloud",

@@ -89,6 +89,7 @@
   "scripts": [
     "skills/data/commerce-inventory-data/scripts/check_commerce_inventory_data.py"
   ],
+  "status": "stable",
   "tags": [
     "OCI",
     "omnichannel-inventory",

@@ -100,6 +100,7 @@
   "scripts": [
     "skills/apex/apex-limits-monitoring/scripts/check_apex_limits_monitoring.py"
   ],
+  "status": "stable",
   "tags": [
     "apex-limits",
     "governor-limits",

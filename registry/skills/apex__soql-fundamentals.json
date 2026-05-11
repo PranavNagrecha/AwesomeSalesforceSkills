@@ -101,6 +101,7 @@
   "scripts": [
     "skills/apex/soql-fundamentals/scripts/check_soql_fundamentals.py"
   ],
+  "status": "stable",
   "tags": [
     "soql",
     "query",

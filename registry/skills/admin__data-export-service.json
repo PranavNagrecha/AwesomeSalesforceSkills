@@ -109,6 +109,7 @@
   "scripts": [
     "skills/admin/data-export-service/scripts/check_data_export_service.py"
   ],
+  "status": "stable",
   "tags": [
     "data-export-service",
     "weekly-export",

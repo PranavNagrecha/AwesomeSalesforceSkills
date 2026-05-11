@@ -88,6 +88,7 @@
   "scripts": [
     "skills/integration/slack-salesforce-integration-setup/scripts/check_slack_salesforce_integration_setup.py"
   ],
+  "status": "stable",
   "tags": [
     "slack",
     "salesforce-for-slack",

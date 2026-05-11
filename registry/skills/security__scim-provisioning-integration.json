@@ -83,6 +83,7 @@
   "scripts": [
     "skills/security/scim-provisioning-integration/scripts/check_scim_provisioning_integration.py"
   ],
+  "status": "stable",
   "tags": [
     "security",
     "scim",

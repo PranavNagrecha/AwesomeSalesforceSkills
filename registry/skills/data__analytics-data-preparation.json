@@ -78,6 +78,7 @@
   "scripts": [
     "skills/data/analytics-data-preparation/scripts/check_analytics_data_preparation.py"
   ],
+  "status": "stable",
   "tags": [
     "crm-analytics",
     "xmd",

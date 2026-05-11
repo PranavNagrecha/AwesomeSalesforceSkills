@@ -90,6 +90,7 @@
   "scripts": [
     "skills/devops/cpq-deployment-patterns/scripts/check_cpq_deployment_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "CPQ",
     "deployment",

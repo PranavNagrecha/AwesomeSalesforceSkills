@@ -110,6 +110,7 @@
   "scripts": [
     "skills/lwc/lwc-virtualized-lists/scripts/check_lwc_virtualized_lists.py"
   ],
+  "status": "stable",
   "tags": [
     "virtualization",
     "infinite-scroll",

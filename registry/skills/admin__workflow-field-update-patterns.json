@@ -108,6 +108,7 @@
   "scripts": [
     "skills/admin/workflow-field-update-patterns/scripts/check_workflow_field_update_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "field-update",
     "automation-selection",

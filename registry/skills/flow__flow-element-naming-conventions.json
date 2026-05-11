@@ -109,6 +109,7 @@
   "scripts": [
     "skills/flow/flow-element-naming-conventions/scripts/check_flow_element_naming_conventions.py"
   ],
+  "status": "stable",
   "tags": [
     "flow-element-naming-conventions",
     "naming-conventions",

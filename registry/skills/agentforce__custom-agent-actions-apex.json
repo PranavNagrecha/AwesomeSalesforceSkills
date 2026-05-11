@@ -94,6 +94,7 @@
   "scripts": [
     "skills/agentforce/custom-agent-actions-apex/scripts/check_custom_agent_actions_apex.py"
   ],
+  "status": "stable",
   "tags": [
     "agentforce",
     "apex-actions",

@@ -163,6 +163,7 @@
   "scripts": [
     "skills/security/api-security-and-rate-limiting/scripts/check_api_security_and_rate_limiting.py"
   ],
+  "status": "stable",
   "tags": [
     "api-security",
     "rate-limiting",

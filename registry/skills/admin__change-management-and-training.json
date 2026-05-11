@@ -110,6 +110,7 @@
   "scripts": [
     "skills/admin/change-management-and-training/scripts/check_change_management_and_training.py"
   ],
+  "status": "stable",
   "tags": [
     "change-management",
     "user-adoption",

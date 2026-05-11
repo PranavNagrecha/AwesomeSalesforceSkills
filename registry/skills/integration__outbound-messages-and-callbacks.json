@@ -141,6 +141,7 @@
   "scripts": [
     "skills/integration/outbound-messages-and-callbacks/scripts/check_outbound_messages_and_callbacks.py"
   ],
+  "status": "stable",
   "tags": [
     "outbound-messages",
     "workflow-rules",

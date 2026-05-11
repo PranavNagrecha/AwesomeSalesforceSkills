@@ -99,6 +99,7 @@
   "scripts": [
     "skills/architect/knowledge-vs-external-cms/scripts/check_knowledge_vs_external_cms.py"
   ],
+  "status": "stable",
   "tags": [
     "knowledge-vs-external-cms",
     "salesforce-knowledge",

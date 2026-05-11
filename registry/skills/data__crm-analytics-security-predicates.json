@@ -114,6 +114,7 @@
   "scripts": [
     "skills/data/crm-analytics-security-predicates/scripts/check_crm_analytics_security_predicates.py"
   ],
+  "status": "stable",
   "tags": [
     "crm-analytics",
     "security-predicate",

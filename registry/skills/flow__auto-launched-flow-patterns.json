@@ -132,6 +132,7 @@
   "scripts": [
     "skills/flow/auto-launched-flow-patterns/scripts/check_auto_launched_flow_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "flow",
     "auto-launched-flow",

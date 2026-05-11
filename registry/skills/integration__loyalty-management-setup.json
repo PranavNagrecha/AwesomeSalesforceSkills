@@ -89,6 +89,7 @@
   "scripts": [
     "skills/integration/loyalty-management-setup/scripts/check_loyalty_management_setup.py"
   ],
+  "status": "stable",
   "tags": [
     "loyalty-management",
     "loyalty-program",

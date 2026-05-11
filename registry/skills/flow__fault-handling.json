@@ -101,6 +101,7 @@
   "scripts": [
     "skills/flow/fault-handling/scripts/check_flow_faults.py"
   ],
+  "status": "stable",
   "tags": [
     "flow-faults",
     "fault-connectors",

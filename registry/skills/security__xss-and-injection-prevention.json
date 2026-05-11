@@ -85,6 +85,7 @@
   "scripts": [
     "skills/security/xss-and-injection-prevention/scripts/check_xss_and_injection_prevention.py"
   ],
+  "status": "stable",
   "tags": [
     "xss",
     "injection-prevention",

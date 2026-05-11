@@ -81,6 +81,7 @@
   "scripts": [
     "skills/apex/apex-enum-patterns/scripts/check_apex_enum_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "enum",
     "dispatch",

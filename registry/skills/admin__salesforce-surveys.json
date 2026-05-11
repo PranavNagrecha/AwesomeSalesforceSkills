@@ -90,6 +90,7 @@
   "scripts": [
     "skills/admin/salesforce-surveys/scripts/check_salesforce_surveys.py"
   ],
+  "status": "stable",
   "tags": [
     "salesforce-surveys",
     "feedback-management",

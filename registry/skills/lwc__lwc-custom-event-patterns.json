@@ -162,6 +162,7 @@
   "scripts": [
     "skills/lwc/lwc-custom-event-patterns/scripts/check_lwc_custom_event_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "lwc",
     "custom-events",

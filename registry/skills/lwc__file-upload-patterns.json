@@ -56,6 +56,7 @@
   "scripts": [
     "skills/lwc/file-upload-patterns/scripts/check_file_upload_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "file-upload",
     "content-document",

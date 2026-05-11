@@ -95,6 +95,7 @@
   "scripts": [
     "skills/lwc/lwc-app-builder-config/scripts/check_lwc_app_builder_config.py"
   ],
+  "status": "stable",
   "tags": [
     "lwc-app-builder-config",
     "meta-xml",

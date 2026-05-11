@@ -144,6 +144,7 @@
   "scripts": [
     "skills/architect/fsc-architecture-patterns/scripts/check_fsc_architecture_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "fsc",
     "financial-services-cloud",

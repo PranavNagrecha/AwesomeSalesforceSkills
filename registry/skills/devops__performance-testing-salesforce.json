@@ -109,6 +109,7 @@
   "scripts": [
     "skills/devops/performance-testing-salesforce/scripts/check_performance_testing_salesforce.py"
   ],
+  "status": "stable",
   "tags": [
     "performance-testing-salesforce",
     "scale-test",

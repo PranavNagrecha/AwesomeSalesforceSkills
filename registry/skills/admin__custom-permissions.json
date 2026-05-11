@@ -118,6 +118,7 @@
   "scripts": [
     "skills/admin/custom-permissions/scripts/check_custom_permissions.py"
   ],
+  "status": "stable",
   "tags": [
     "custom-permissions",
     "access-control",

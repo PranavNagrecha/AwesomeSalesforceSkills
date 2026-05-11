@@ -102,6 +102,7 @@
   "scripts": [
     "skills/flow/flow-invocable-from-apex/scripts/check_flow_invocable_from_apex.py"
   ],
+  "status": "stable",
   "tags": [
     "flow",
     "apex",

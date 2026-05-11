@@ -103,6 +103,7 @@
   "scripts": [
     "skills/flow/flow-action-framework/scripts/check_flow_action_framework.py"
   ],
+  "status": "stable",
   "tags": [
     "flow-action-framework",
     "flow-builder",

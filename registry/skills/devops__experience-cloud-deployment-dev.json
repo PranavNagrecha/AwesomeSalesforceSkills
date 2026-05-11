@@ -155,6 +155,7 @@
   "scripts": [
     "skills/devops/experience-cloud-deployment-dev/scripts/check_experience_cloud_deployment_dev.py"
   ],
+  "status": "stable",
   "tags": [
     "experience-cloud",
     "experiencebundle",

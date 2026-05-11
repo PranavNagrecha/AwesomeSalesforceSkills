@@ -207,6 +207,7 @@
     "skills/architect/government-cloud-compliance/scripts/check_govcloud_compliance.py",
     "skills/architect/government-cloud-compliance/scripts/check_government_cloud_compliance.py"
   ],
+  "status": "stable",
   "tags": [
     "fedramp",
     "government-cloud",

@@ -115,6 +115,7 @@
   "scripts": [
     "skills/apex/lead-conversion-customization/scripts/check_lead_conversion_customization.py"
   ],
+  "status": "stable",
   "tags": [
     "lead-conversion",
     "Database.LeadConvert",

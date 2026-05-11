@@ -96,6 +96,7 @@
   "scripts": [
     "skills/apex/apex-trigger-bypass-and-killswitch-patterns/scripts/check_apex_trigger_bypass_and_killswitch_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "apex",
     "trigger",

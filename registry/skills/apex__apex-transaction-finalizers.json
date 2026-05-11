@@ -90,6 +90,7 @@
   "scripts": [
     "skills/apex/apex-transaction-finalizers/scripts/check_apex_transaction_finalizers.py"
   ],
+  "status": "stable",
   "tags": [
     "apex-finalizer",
     "queueable",

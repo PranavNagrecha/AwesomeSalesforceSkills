@@ -150,6 +150,7 @@
     "skills/apex/billing-integration-apex/scripts/check_billing_apex.py",
     "skills/apex/billing-integration-apex/scripts/check_billing_integration_apex.py"
   ],
+  "status": "stable",
   "tags": [
     "billing-integration-apex",
     "blng",

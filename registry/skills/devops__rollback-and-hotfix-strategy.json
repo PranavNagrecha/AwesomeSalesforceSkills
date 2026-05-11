@@ -112,6 +112,7 @@
   "scripts": [
     "skills/devops/rollback-and-hotfix-strategy/scripts/check_rollback_and_hotfix_strategy.py"
   ],
+  "status": "stable",
   "tags": [
     "rollback",
     "hotfix",

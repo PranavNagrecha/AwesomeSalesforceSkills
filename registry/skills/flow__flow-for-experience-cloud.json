@@ -84,6 +84,7 @@
   "scripts": [
     "skills/flow/flow-for-experience-cloud/scripts/check_flow_for_experience_cloud.py"
   ],
+  "status": "stable",
   "tags": [
     "experience-cloud",
     "lightning-flow",

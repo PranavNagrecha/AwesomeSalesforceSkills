@@ -75,6 +75,7 @@
   "scripts": [
     "skills/flow/flow-transaction-finalizer-patterns/scripts/check_flow_transaction_finalizer_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "flow",
     "transaction",

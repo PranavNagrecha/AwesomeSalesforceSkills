@@ -130,6 +130,7 @@
   "scripts": [
     "skills/apex/visualforce-fundamentals/scripts/check_visualforce_fundamentals.py"
   ],
+  "status": "stable",
   "tags": [
     "visualforce",
     "view-state",

@@ -115,6 +115,7 @@
   "scripts": [
     "skills/admin/analytics-dashboard-json/scripts/check_analytics_dashboard_json.py"
   ],
+  "status": "stable",
   "tags": [
     "crm-analytics",
     "dashboard",

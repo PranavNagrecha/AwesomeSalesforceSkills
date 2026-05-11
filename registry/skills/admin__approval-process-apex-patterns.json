@@ -115,6 +115,7 @@
   "scripts": [
     "skills/admin/approval-process-apex-patterns/scripts/check_approval_process_apex_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "approval-process",
     "apex",

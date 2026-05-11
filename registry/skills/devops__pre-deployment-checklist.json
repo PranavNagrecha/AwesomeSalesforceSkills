@@ -110,6 +110,7 @@
   "scripts": [
     "skills/devops/pre-deployment-checklist/scripts/check_pre_deployment_checklist.py"
   ],
+  "status": "stable",
   "tags": [
     "pre-deployment-checklist",
     "validation-deploy",

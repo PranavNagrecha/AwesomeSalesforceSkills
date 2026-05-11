@@ -146,6 +146,7 @@
   "scripts": [
     "skills/security/gdpr-data-privacy/scripts/check_gdpr_data_privacy.py"
   ],
+  "status": "stable",
   "tags": [
     "gdpr",
     "ccpa",

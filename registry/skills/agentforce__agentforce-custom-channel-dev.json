@@ -156,6 +156,7 @@
   "scripts": [
     "skills/agentforce/agentforce-custom-channel-dev/scripts/check_agentforce_custom_channel_dev.py"
   ],
+  "status": "stable",
   "tags": [
     "agentforce",
     "agent-api",

@@ -136,6 +136,7 @@
   "scripts": [
     "skills/admin/report-performance-tuning/scripts/check_report_performance_tuning.py"
   ],
+  "status": "stable",
   "tags": [
     "reports",
     "dashboards",

@@ -77,6 +77,7 @@
   "scripts": [
     "skills/security/org-hardening-and-baseline-config/scripts/check_org_hardening_and_baseline_config.py"
   ],
+  "status": "stable",
   "tags": [
     "org-hardening",
     "security-health-check",

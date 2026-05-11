@@ -141,6 +141,7 @@
   "scripts": [
     "skills/admin/commerce-checkout-configuration/scripts/check_commerce_checkout_configuration.py"
   ],
+  "status": "stable",
   "tags": [
     "commerce",
     "checkout",

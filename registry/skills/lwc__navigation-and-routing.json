@@ -83,6 +83,7 @@
   "scripts": [
     "skills/lwc/navigation-and-routing/scripts/check_navigation_and_routing.py"
   ],
+  "status": "stable",
   "tags": [
     "navigationmixin",
     "pagereference",

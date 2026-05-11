@@ -115,6 +115,7 @@
   "scripts": [
     "skills/admin/object-creation-and-design/scripts/check_object_creation_and_design.py"
   ],
+  "status": "stable",
   "tags": [
     "custom-objects",
     "object-design",

@@ -85,6 +85,7 @@
   "scripts": [
     "skills/lwc/lwc-pubsub-patterns/scripts/check_lwc_pubsub_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "lightning-message-service",
     "lms",

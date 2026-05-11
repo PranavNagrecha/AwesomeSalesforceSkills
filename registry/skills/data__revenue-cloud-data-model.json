@@ -91,6 +91,7 @@
   "scripts": [
     "skills/data/revenue-cloud-data-model/scripts/check_revenue_cloud_data_model.py"
   ],
+  "status": "stable",
   "tags": [
     "revenue-cloud",
     "rlm",

@@ -122,6 +122,7 @@
   "scripts": [
     "skills/architect/einstein-bot-architecture/scripts/check_einstein_bot_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "einstein-bot-architecture",
     "agentforce",

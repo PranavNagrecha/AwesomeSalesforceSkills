@@ -114,6 +114,7 @@
   "scripts": [
     "skills/admin/npsp-engagement-plans/scripts/check_npsp_engagement_plans.py"
   ],
+  "status": "stable",
   "tags": [
     "npsp",
     "engagement-plans",

@@ -82,6 +82,7 @@
   "scripts": [
     "skills/admin/analytics-kpi-definition/scripts/check_analytics_kpi_definition.py"
   ],
+  "status": "stable",
   "tags": [
     "crm-analytics",
     "kpi",

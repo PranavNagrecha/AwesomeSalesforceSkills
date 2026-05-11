@@ -93,6 +93,7 @@
   "scripts": [
     "skills/admin/analytics-dashboard-design/scripts/check_analytics_dashboard_design.py"
   ],
+  "status": "stable",
   "tags": [
     "crm-analytics",
     "analytics-dashboard-design",

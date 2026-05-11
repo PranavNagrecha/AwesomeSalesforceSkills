@@ -127,6 +127,7 @@
   "scripts": [
     "skills/omnistudio/omnistudio-debugging/scripts/check_omnistudio_debugging.py"
   ],
+  "status": "stable",
   "tags": [
     "omnistudio",
     "omniscript",

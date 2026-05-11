@@ -88,6 +88,7 @@
   "scripts": [
     "skills/apex/test-class-standards/scripts/check_test_class_standards.py"
   ],
+  "status": "stable",
   "tags": [
     "apex-testing",
     "test-data-factory",

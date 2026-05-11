@@ -117,6 +117,7 @@
   "scripts": [
     "skills/admin/picklist-and-value-sets/scripts/check_picklist_and_value_sets.py"
   ],
+  "status": "stable",
   "tags": [
     "picklist",
     "global-value-set",

@@ -94,6 +94,7 @@
   "scripts": [
     "skills/admin/clinical-data-requirements/scripts/check_clinical_data_requirements.py"
   ],
+  "status": "stable",
   "tags": [
     "health-cloud",
     "fhir-r4",

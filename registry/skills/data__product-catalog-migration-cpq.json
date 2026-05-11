@@ -149,6 +149,7 @@
   "scripts": [
     "skills/data/product-catalog-migration-cpq/scripts/check_product_catalog_migration_cpq.py"
   ],
+  "status": "stable",
   "tags": [
     "cpq",
     "sbqq",

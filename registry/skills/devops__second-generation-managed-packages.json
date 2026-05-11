@@ -143,6 +143,7 @@
   "scripts": [
     "skills/devops/second-generation-managed-packages/scripts/check_second_generation_managed_packages.py"
   ],
+  "status": "stable",
   "tags": [
     "2gp",
     "managed-package",

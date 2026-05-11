@@ -110,6 +110,7 @@
   "scripts": [
     "skills/devops/salesforce-devops-tooling-selection/scripts/check_salesforce_devops_tooling_selection.py"
   ],
+  "status": "stable",
   "tags": [
     "devops-tooling",
     "gearset",

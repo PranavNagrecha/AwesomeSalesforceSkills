@@ -107,6 +107,7 @@
   "scripts": [
     "skills/admin/picklist-field-integrity-issues/scripts/check_picklist_field_integrity_issues.py"
   ],
+  "status": "stable",
   "tags": [
     "picklist-integrity",
     "unrestricted-picklist",

@@ -83,6 +83,7 @@
   "scripts": [
     "skills/agentforce/agent-action-input-slot-extraction/scripts/check_agent_action_input_slot_extraction.py"
   ],
+  "status": "stable",
   "tags": [
     "agentforce",
     "actions",

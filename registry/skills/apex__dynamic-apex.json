@@ -133,6 +133,7 @@
   "scripts": [
     "skills/apex/dynamic-apex/scripts/check_dynamic_apex.py"
   ],
+  "status": "stable",
   "tags": [
     "dynamic-soql",
     "dynamic-sosl",

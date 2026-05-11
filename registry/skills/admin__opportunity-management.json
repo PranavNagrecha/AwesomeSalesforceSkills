@@ -116,6 +116,7 @@
   "scripts": [
     "skills/admin/opportunity-management/scripts/check_opportunity_management.py"
   ],
+  "status": "stable",
   "tags": [
     "opportunities",
     "sales-process",

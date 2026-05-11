@@ -154,6 +154,7 @@
   "scripts": [
     "skills/architect/multi-site-architecture/scripts/check_multi_site_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "experience-cloud",
     "multi-site",

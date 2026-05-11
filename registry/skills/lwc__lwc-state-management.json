@@ -56,6 +56,7 @@
   "scripts": [
     "skills/lwc/lwc-state-management/scripts/check_lwc_state_management.py"
   ],
+  "status": "stable",
   "tags": [
     "state",
     "lms",

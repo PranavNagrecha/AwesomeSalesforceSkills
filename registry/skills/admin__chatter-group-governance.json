@@ -131,6 +131,7 @@
   "scripts": [
     "skills/admin/chatter-group-governance/scripts/check_chatter_group_governance.py"
   ],
+  "status": "stable",
   "tags": [
     "chatter-group-governance",
     "chatter",

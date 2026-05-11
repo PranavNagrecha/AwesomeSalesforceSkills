@@ -153,6 +153,7 @@
     "skills/data/data-model-design-patterns/scripts/check_data_model.py",
     "skills/data/data-model-design-patterns/scripts/check_data_model_design_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "data-model",
     "relationships",

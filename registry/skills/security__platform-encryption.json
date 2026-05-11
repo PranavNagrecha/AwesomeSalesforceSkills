@@ -140,6 +140,7 @@
   "scripts": [
     "skills/security/platform-encryption/scripts/check_platform_encryption.py"
   ],
+  "status": "stable",
   "tags": [
     "shield",
     "encryption",

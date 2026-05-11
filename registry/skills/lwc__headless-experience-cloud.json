@@ -112,6 +112,7 @@
   "scripts": [
     "skills/lwc/headless-experience-cloud/scripts/check_headless_experience_cloud.py"
   ],
+  "status": "stable",
   "tags": [
     "headless-cms",
     "experience-cloud",

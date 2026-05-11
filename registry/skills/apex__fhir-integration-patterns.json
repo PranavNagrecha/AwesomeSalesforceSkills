@@ -92,6 +92,7 @@
   "scripts": [
     "skills/apex/fhir-integration-patterns/scripts/check_fhir_integration_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "health-cloud",
     "fhir-r4",

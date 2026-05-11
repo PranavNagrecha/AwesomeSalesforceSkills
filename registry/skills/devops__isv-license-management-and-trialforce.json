@@ -132,6 +132,7 @@
   "scripts": [
     "skills/devops/isv-license-management-and-trialforce/scripts/check_isv_license_management_and_trialforce.py"
   ],
+  "status": "stable",
   "tags": [
     "isv-license-management-and-trialforce",
     "managed-packages",

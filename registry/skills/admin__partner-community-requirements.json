@@ -132,6 +132,7 @@
   "scripts": [
     "skills/admin/partner-community-requirements/scripts/check_partner_community_requirements.py"
   ],
+  "status": "stable",
   "tags": [
     "partner-community",
     "prm",

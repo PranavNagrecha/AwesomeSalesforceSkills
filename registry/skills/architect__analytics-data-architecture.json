@@ -146,6 +146,7 @@
   "scripts": [
     "skills/architect/analytics-data-architecture/scripts/check_analytics_data_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "crm-analytics",
     "architecture",

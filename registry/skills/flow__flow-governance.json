@@ -84,6 +84,7 @@
   "scripts": [
     "skills/flow/flow-governance/scripts/check_flow_governance.py"
   ],
+  "status": "stable",
   "tags": [
     "flow-governance",
     "naming-conventions",

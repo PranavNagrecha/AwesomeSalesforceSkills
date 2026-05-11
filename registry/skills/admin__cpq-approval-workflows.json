@@ -165,6 +165,7 @@
   "scripts": [
     "skills/admin/cpq-approval-workflows/scripts/check_cpq_approval_workflows.py"
   ],
+  "status": "stable",
   "tags": [
     "cpq",
     "advanced-approvals",

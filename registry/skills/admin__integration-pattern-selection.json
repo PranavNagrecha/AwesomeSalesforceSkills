@@ -87,6 +87,7 @@
   "scripts": [
     "skills/admin/integration-pattern-selection/scripts/check_integration_pattern_selection.py"
   ],
+  "status": "stable",
   "tags": [
     "integration",
     "architecture",

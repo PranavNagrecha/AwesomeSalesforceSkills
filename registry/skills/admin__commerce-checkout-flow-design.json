@@ -145,6 +145,7 @@
   "scripts": [
     "skills/admin/commerce-checkout-flow-design/scripts/check_commerce_checkout_flow_design.py"
   ],
+  "status": "stable",
   "tags": [
     "commerce",
     "checkout",

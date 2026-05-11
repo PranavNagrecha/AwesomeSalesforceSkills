@@ -54,6 +54,7 @@
   "scripts": [
     "skills/omnistudio/omnistudio-field-mapping-governance/scripts/check_omnistudio_field_mapping_governance.py"
   ],
+  "status": "stable",
   "tags": [
     "dataraptor",
     "governance",

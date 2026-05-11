@@ -84,6 +84,7 @@
   "scripts": [
     "skills/lwc/lwc-testing/scripts/check_lwc_testing.py"
   ],
+  "status": "stable",
   "tags": [
     "lwc-testing",
     "jest",

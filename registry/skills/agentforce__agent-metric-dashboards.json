@@ -57,6 +57,7 @@
   "scripts": [
     "skills/agentforce/agent-metric-dashboards/scripts/check_agent_metric_dashboards.py"
   ],
+  "status": "stable",
   "tags": [
     "agentforce",
     "observability",

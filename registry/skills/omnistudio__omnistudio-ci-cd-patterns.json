@@ -107,6 +107,7 @@
   "scripts": [
     "skills/omnistudio/omnistudio-ci-cd-patterns/scripts/check_omnistudio_ci_cd_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "omnistudio",
     "cicd",

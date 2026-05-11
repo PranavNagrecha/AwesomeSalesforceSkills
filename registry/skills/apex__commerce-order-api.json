@@ -163,6 +163,7 @@
   "scripts": [
     "skills/apex/commerce-order-api/scripts/check_commerce_order_api.py"
   ],
+  "status": "stable",
   "tags": [
     "b2c-commerce",
     "scapi",

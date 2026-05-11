@@ -82,6 +82,7 @@
   "scripts": [
     "skills/admin/connected-apps-and-auth/scripts/check_connected_auth.py"
   ],
+  "status": "stable",
   "tags": [
     "connected-apps",
     "oauth",

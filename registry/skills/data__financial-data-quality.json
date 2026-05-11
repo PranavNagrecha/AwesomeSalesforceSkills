@@ -172,6 +172,7 @@
   "scripts": [
     "skills/data/financial-data-quality/scripts/check_financial_data_quality.py"
   ],
+  "status": "stable",
   "tags": [
     "fsc",
     "financial-data-quality",

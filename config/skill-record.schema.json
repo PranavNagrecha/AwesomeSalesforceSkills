@@ -51,6 +51,11 @@
         "updated": {"type": "string"}
       }
     },
-    "content_hash": {"type": "string"}
+    "content_hash": {"type": "string"},
+    "status": {
+      "type": "string",
+      "enum": ["stable", "stub"],
+      "description": "Lifecycle status. Defaults to 'stable' when omitted from frontmatter."
+    }
   }
 }

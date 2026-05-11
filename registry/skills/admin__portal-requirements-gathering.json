@@ -124,6 +124,7 @@
   "scripts": [
     "skills/admin/portal-requirements-gathering/scripts/check_portal_requirements_gathering.py"
   ],
+  "status": "stable",
   "tags": [
     "experience-cloud",
     "portal",

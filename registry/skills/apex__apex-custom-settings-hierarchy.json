@@ -95,6 +95,7 @@
   "scripts": [
     "skills/apex/apex-custom-settings-hierarchy/scripts/check_apex_custom_settings_hierarchy.py"
   ],
+  "status": "stable",
   "tags": [
     "apex-custom-settings-hierarchy",
     "configuration",

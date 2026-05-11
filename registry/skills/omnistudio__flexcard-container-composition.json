@@ -79,6 +79,7 @@
   "scripts": [
     "skills/omnistudio/flexcard-container-composition/scripts/check_flexcard_container_composition.py"
   ],
+  "status": "stable",
   "tags": [
     "omnistudio",
     "flexcard",

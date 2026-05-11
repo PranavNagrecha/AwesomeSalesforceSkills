@@ -104,6 +104,7 @@
   "scripts": [
     "skills/apex/apex-with-without-sharing-decision/scripts/check_apex_with_without_sharing_decision.py"
   ],
+  "status": "stable",
   "tags": [
     "apex",
     "sharing",

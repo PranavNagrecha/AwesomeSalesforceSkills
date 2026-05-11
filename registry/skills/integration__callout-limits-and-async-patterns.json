@@ -88,6 +88,7 @@
   "scripts": [
     "skills/integration/callout-limits-and-async-patterns/scripts/check_callout_limits_and_async_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "callouts",
     "governor-limits",

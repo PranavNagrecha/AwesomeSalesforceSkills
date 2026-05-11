@@ -90,6 +90,7 @@
   "scripts": [
     "skills/integration/revenue-lifecycle-management/scripts/check_revenue_lifecycle_management.py"
   ],
+  "status": "stable",
   "tags": [
     "revenue-cloud",
     "rlm",

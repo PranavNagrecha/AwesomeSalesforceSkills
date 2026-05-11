@@ -105,6 +105,7 @@
   "scripts": [
     "skills/admin/in-app-guidance-and-walkthroughs/scripts/check_in_app_guidance_and_walkthroughs.py"
   ],
+  "status": "stable",
   "tags": [
     "in-app-guidance",
     "walkthroughs",

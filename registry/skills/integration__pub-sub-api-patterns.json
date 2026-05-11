@@ -96,6 +96,7 @@
   "scripts": [
     "skills/integration/pub-sub-api-patterns/scripts/check_pub_sub_api_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "pub-sub-api",
     "grpc",

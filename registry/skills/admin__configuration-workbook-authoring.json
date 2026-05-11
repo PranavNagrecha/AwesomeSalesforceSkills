@@ -149,6 +149,7 @@
   "scripts": [
     "skills/admin/configuration-workbook-authoring/scripts/check_workbook.py"
   ],
+  "status": "stable",
   "tags": [
     "configuration-workbook-authoring",
     "admin-handoff",

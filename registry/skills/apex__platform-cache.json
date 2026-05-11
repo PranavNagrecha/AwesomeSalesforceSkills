@@ -82,6 +82,7 @@
   "scripts": [
     "skills/apex/platform-cache/scripts/check_platform_cache.py"
   ],
+  "status": "stable",
   "tags": [
     "platform-cache",
     "cache-org",

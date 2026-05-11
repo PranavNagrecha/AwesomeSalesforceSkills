@@ -128,6 +128,7 @@
   "scripts": [
     "skills/admin/deployment-risk-assessment/scripts/check_deployment_risk_assessment.py"
   ],
+  "status": "stable",
   "tags": [
     "deployment-risk-assessment",
     "release-management",

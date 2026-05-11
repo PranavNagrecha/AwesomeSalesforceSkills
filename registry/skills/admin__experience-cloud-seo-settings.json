@@ -107,6 +107,7 @@
   "scripts": [
     "skills/admin/experience-cloud-seo-settings/scripts/check_experience_cloud_seo_settings.py"
   ],
+  "status": "stable",
   "tags": [
     "experience-cloud",
     "seo",

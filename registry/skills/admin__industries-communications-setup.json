@@ -141,6 +141,7 @@
   "scripts": [
     "skills/admin/industries-communications-setup/scripts/check_industries_communications_setup.py"
   ],
+  "status": "stable",
   "tags": [
     "communications-cloud",
     "enterprise-product-catalog",

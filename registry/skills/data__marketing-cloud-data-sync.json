@@ -132,6 +132,7 @@
   "scripts": [
     "skills/data/marketing-cloud-data-sync/scripts/check_marketing_cloud_data_sync.py"
   ],
+  "status": "stable",
   "tags": [
     "marketing-cloud",
     "synchronized-data-extensions",

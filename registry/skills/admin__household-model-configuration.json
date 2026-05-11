@@ -154,6 +154,7 @@
   "scripts": [
     "skills/admin/household-model-configuration/scripts/check_household_model_configuration.py"
   ],
+  "status": "stable",
   "tags": [
     "financial-services-cloud",
     "fsc",

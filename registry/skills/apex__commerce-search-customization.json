@@ -138,6 +138,7 @@
   "scripts": [
     "skills/apex/commerce-search-customization/scripts/check_commerce_search_customization.py"
   ],
+  "status": "stable",
   "tags": [
     "commerce-search",
     "b2b-commerce",

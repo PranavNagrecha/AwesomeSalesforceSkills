@@ -217,6 +217,7 @@
   "scripts": [
     "skills/flow/flow-formula-and-expression-patterns/scripts/check_flow_formula_and_expression_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "flow-formula-and-expression-patterns",
     "formulas",

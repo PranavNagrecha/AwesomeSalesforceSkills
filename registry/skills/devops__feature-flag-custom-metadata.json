@@ -58,6 +58,7 @@
   "scripts": [
     "skills/devops/feature-flag-custom-metadata/scripts/check_feature_flag_custom_metadata.py"
   ],
+  "status": "stable",
   "tags": [
     "feature-flag",
     "custom-metadata",

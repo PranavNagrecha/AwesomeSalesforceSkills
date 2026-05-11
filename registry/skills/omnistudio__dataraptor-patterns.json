@@ -85,6 +85,7 @@
   "scripts": [
     "skills/omnistudio/dataraptor-patterns/scripts/check_dataraptor_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "dataraptor",
     "turbo-extract",

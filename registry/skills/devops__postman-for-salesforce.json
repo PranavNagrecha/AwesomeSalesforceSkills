@@ -138,6 +138,7 @@
   "scripts": [
     "skills/devops/postman-for-salesforce/scripts/check_postman_for_salesforce.py"
   ],
+  "status": "stable",
   "tags": [
     "postman",
     "api-testing",

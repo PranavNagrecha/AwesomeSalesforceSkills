@@ -147,6 +147,7 @@
   "scripts": [
     "skills/architect/marketing-data-architecture/scripts/check_marketing_data_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "marketing-cloud",
     "data-extensions",

@@ -133,6 +133,7 @@
   "scripts": [
     "skills/lwc/visualforce-to-lwc-migration/scripts/check_visualforce_to_lwc_migration.py"
   ],
+  "status": "stable",
   "tags": [
     "visualforce",
     "lwc-migration",

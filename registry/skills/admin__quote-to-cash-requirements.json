@@ -120,6 +120,7 @@
   "scripts": [
     "skills/admin/quote-to-cash-requirements/scripts/check_quote_to_cash_requirements.py"
   ],
+  "status": "stable",
   "tags": [
     "quote",
     "quote-to-cash",

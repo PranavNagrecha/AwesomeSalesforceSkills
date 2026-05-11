@@ -120,6 +120,7 @@
     "skills/integration/retry-and-backoff-patterns/scripts/check_retry_and_backoff_patterns.py",
     "skills/integration/retry-and-backoff-patterns/scripts/check_retry_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "retry",
     "backoff",

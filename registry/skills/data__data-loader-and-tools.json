@@ -123,6 +123,7 @@
   "scripts": [
     "skills/data/data-loader-and-tools/scripts/check_data_loader_and_tools.py"
   ],
+  "status": "stable",
   "tags": [
     "data-loader",
     "data-import-wizard",

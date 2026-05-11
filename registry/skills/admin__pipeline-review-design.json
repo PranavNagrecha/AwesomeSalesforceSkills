@@ -112,6 +112,7 @@
   "scripts": [
     "skills/admin/pipeline-review-design/scripts/check_pipeline_review_design.py"
   ],
+  "status": "stable",
   "tags": [
     "pipeline-inspection",
     "pipeline-review",

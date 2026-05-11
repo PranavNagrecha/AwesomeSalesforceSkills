@@ -97,6 +97,7 @@
   "scripts": [
     "skills/integration/net-zero-cloud-setup/scripts/check_net_zero_cloud_setup.py"
   ],
+  "status": "stable",
   "tags": [
     "net-zero-cloud",
     "sustainability-cloud",

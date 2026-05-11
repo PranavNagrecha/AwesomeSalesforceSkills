@@ -56,6 +56,7 @@
   "scripts": [
     "skills/flow/flow-data-tables/scripts/check_flow_data_tables.py"
   ],
+  "status": "stable",
   "tags": [
     "flow",
     "datatable",

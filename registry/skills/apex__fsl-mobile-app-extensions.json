@@ -161,6 +161,7 @@
     "skills/apex/fsl-mobile-app-extensions/scripts/check_fsl_mobile.py",
     "skills/apex/fsl-mobile-app-extensions/scripts/check_fsl_mobile_app_extensions.py"
   ],
+  "status": "stable",
   "tags": [
     "fsl-mobile-app-extensions",
     "field-service",

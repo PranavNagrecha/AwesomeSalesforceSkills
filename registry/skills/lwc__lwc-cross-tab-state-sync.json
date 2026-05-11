@@ -81,6 +81,7 @@
   "scripts": [
     "skills/lwc/lwc-cross-tab-state-sync/scripts/check_lwc_cross_tab_state_sync.py"
   ],
+  "status": "stable",
   "tags": [
     "lwc",
     "cross-tab",

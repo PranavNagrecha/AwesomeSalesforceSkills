@@ -89,6 +89,7 @@
   "scripts": [
     "skills/agentforce/agentforce-cost-optimization/scripts/check_agentforce_cost_optimization.py"
   ],
+  "status": "stable",
   "tags": [
     "agentforce",
     "cost-optimization",

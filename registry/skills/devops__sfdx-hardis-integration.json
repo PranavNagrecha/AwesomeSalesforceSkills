@@ -59,6 +59,7 @@
   "scripts": [
     "skills/devops/sfdx-hardis-integration/scripts/check_sfdx_hardis_integration.py"
   ],
+  "status": "stable",
   "tags": [
     "sfdx-hardis",
     "cicd",

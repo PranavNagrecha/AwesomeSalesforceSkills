@@ -132,6 +132,7 @@
   "scripts": [
     "skills/devops/scratch-org-pools/scripts/check_scratch_org_pools.py"
   ],
+  "status": "stable",
   "tags": [
     "scratch-org-pools",
     "ci-cd",

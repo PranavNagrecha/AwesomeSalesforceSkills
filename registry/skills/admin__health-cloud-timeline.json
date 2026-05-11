@@ -116,6 +116,7 @@
   "scripts": [
     "skills/admin/health-cloud-timeline/scripts/check_health_cloud_timeline.py"
   ],
+  "status": "stable",
   "tags": [
     "health-cloud",
     "enhanced-timeline",

@@ -94,6 +94,7 @@
   "scripts": [
     "skills/security/mfa-enforcement-strategy/scripts/check_mfa_enforcement_strategy.py"
   ],
+  "status": "stable",
   "tags": [
     "mfa-enforcement-strategy",
     "multi-factor-authentication",

@@ -102,6 +102,7 @@
   "scripts": [
     "skills/admin/mobile-publisher/scripts/check_mobile_publisher.py"
   ],
+  "status": "stable",
   "tags": [
     "admin",
     "mobile-publisher",

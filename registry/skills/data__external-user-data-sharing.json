@@ -111,6 +111,7 @@
   "scripts": [
     "skills/data/external-user-data-sharing/scripts/check_external_user_data_sharing.py"
   ],
+  "status": "stable",
   "tags": [
     "external-users",
     "experience-cloud",

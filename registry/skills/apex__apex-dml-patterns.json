@@ -83,6 +83,7 @@
   "scripts": [
     "skills/apex/apex-dml-patterns/scripts/check_apex_dml_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "apex-dml",
     "database-class",

@@ -104,6 +104,7 @@
   "scripts": [
     "skills/lwc/lwc-graphql-wire/scripts/check_lwc_graphql_wire.py"
   ],
+  "status": "stable",
   "tags": [
     "lwc-graphql-wire",
     "graphql",

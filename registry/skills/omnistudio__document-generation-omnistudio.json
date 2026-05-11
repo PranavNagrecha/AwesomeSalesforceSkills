@@ -112,6 +112,7 @@
   "scripts": [
     "skills/omnistudio/document-generation-omnistudio/scripts/check_document_generation_omnistudio.py"
   ],
+  "status": "stable",
   "tags": [
     "omnistudio",
     "document-generation",

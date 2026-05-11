@@ -99,6 +99,7 @@
   "scripts": [
     "skills/architect/cpq-vs-standard-products-decision/scripts/check_cpq_vs_standard_products_decision.py"
   ],
+  "status": "stable",
   "tags": [
     "cpq",
     "products",

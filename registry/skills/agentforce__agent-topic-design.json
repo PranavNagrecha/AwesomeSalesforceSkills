@@ -97,6 +97,7 @@
   "scripts": [
     "skills/agentforce/agent-topic-design/scripts/check_agent_topic_design.py"
   ],
+  "status": "stable",
   "tags": [
     "agentforce",
     "topic-design",

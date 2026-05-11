@@ -82,6 +82,7 @@
   "scripts": [
     "skills/devops/release-notes-automation/scripts/check_release_notes_automation.py"
   ],
+  "status": "stable",
   "tags": [
     "release",
     "changelog",

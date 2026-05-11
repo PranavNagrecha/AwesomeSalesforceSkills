@@ -109,6 +109,7 @@
   "scripts": [
     "skills/admin/user-access-policies/scripts/check_user_access_policies.py"
   ],
+  "status": "stable",
   "tags": [
     "user-access-policies",
     "permission-sets",

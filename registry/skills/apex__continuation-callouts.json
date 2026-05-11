@@ -151,6 +151,7 @@
   "scripts": [
     "skills/apex/continuation-callouts/scripts/check_continuation_callouts.py"
   ],
+  "status": "stable",
   "tags": [
     "continuation",
     "async-callout",

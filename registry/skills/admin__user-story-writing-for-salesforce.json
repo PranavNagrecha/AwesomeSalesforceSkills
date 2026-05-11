@@ -136,6 +136,7 @@
   "scripts": [
     "skills/admin/user-story-writing-for-salesforce/scripts/check_invest.py"
   ],
+  "status": "stable",
   "tags": [
     "user-stories",
     "invest",

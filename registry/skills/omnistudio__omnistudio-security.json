@@ -86,6 +86,7 @@
   "scripts": [
     "skills/omnistudio/omnistudio-security/scripts/check_omnistudio_security.py"
   ],
+  "status": "stable",
   "tags": [
     "omnistudio-security",
     "guest-users",

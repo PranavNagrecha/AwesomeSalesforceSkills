@@ -118,6 +118,7 @@
   "scripts": [
     "skills/admin/requirements-gathering-for-sf/scripts/check_requirements_gathering_for_sf.py"
   ],
+  "status": "stable",
   "tags": [
     "requirements-gathering",
     "business-analysis",

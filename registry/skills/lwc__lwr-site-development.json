@@ -122,6 +122,7 @@
   "scripts": [
     "skills/lwc/lwr-site-development/scripts/check_lwr_site_development.py"
   ],
+  "status": "stable",
   "tags": [
     "lwr",
     "experience-cloud",

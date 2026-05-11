@@ -140,6 +140,7 @@
   "scripts": [
     "skills/architect/marketing-cloud-vs-mcae-selection/scripts/check_marketing_cloud_vs_mcae_selection.py"
   ],
+  "status": "stable",
   "tags": [
     "marketing-cloud",
     "mcae",

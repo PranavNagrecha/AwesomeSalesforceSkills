@@ -85,6 +85,7 @@
   "scripts": [
     "skills/apex/apex-outbound-email-patterns/scripts/check_apex_outbound_email_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "email",
     "messaging",

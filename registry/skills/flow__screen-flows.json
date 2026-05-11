@@ -87,6 +87,7 @@
   "scripts": [
     "skills/flow/screen-flows/scripts/check_screen_flows.py"
   ],
+  "status": "stable",
   "tags": [
     "screen-flows",
     "flow-ux",

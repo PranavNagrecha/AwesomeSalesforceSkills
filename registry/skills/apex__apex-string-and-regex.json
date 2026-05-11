@@ -104,6 +104,7 @@
   "scripts": [
     "skills/apex/apex-string-and-regex/scripts/check_apex_string_and_regex.py"
   ],
+  "status": "stable",
   "tags": [
     "string",
     "regex",

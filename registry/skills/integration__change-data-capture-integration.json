@@ -135,6 +135,7 @@
   "scripts": [
     "skills/integration/change-data-capture-integration/scripts/check_change_data_capture_integration.py"
   ],
+  "status": "stable",
   "tags": [
     "change-data-capture",
     "CDC",

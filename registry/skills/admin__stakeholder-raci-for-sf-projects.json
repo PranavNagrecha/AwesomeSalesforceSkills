@@ -146,6 +146,7 @@
     "skills/admin/stakeholder-raci-for-sf-projects/scripts/check_raci.py",
     "skills/admin/stakeholder-raci-for-sf-projects/scripts/check_stakeholder_raci_for_sf_projects.py"
   ],
+  "status": "stable",
   "tags": [
     "raci",
     "stakeholder-management",

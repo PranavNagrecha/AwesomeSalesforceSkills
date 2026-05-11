@@ -80,6 +80,7 @@
   "scripts": [
     "skills/integration/slack-workflow-builder/scripts/check_slack_workflow_builder.py"
   ],
+  "status": "stable",
   "tags": [
     "slack-workflow-builder",
     "slack",

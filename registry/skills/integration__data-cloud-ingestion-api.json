@@ -91,6 +91,7 @@
   "scripts": [
     "skills/integration/data-cloud-ingestion-api/scripts/check_data_cloud_ingestion_api.py"
   ],
+  "status": "stable",
   "tags": [
     "data-cloud",
     "ingestion-api",

@@ -116,6 +116,7 @@
   "scripts": [
     "skills/devops/cicd-for-experience-cloud/scripts/check_cicd_for_experience_cloud.py"
   ],
+  "status": "stable",
   "tags": [
     "experience-cloud",
     "cicd",

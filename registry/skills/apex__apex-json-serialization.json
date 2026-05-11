@@ -84,6 +84,7 @@
   "scripts": [
     "skills/apex/apex-json-serialization/scripts/check_apex_json_serialization.py"
   ],
+  "status": "stable",
   "tags": [
     "apex-json",
     "serialization",

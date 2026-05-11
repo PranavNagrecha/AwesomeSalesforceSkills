@@ -94,6 +94,7 @@
   "scripts": [
     "skills/apex/apex-switch-on-sobject/scripts/check_apex_switch_on_sobject.py"
   ],
+  "status": "stable",
   "tags": [
     "switch-statement",
     "sobject-type",

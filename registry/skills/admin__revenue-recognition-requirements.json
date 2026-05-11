@@ -138,6 +138,7 @@
   "scripts": [
     "skills/admin/revenue-recognition-requirements/scripts/check_revenue_recognition_requirements.py"
   ],
+  "status": "stable",
   "tags": [
     "revenue-recognition-requirements",
     "salesforce-billing",

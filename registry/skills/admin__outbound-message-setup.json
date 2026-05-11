@@ -90,6 +90,7 @@
   "scripts": [
     "skills/admin/outbound-message-setup/scripts/check_outbound_message_setup.py"
   ],
+  "status": "stable",
   "tags": [
     "outbound-message",
     "workflow",

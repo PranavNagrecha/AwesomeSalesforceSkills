@@ -162,6 +162,7 @@
   "scripts": [
     "skills/omnistudio/flexcard-design-patterns/scripts/check_flexcard_design_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "omnistudio",
     "flexcard",

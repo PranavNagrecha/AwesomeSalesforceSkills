@@ -148,6 +148,7 @@
   "scripts": [
     "skills/admin/subscription-lifecycle-requirements/scripts/check_subscription_lifecycle_requirements.py"
   ],
+  "status": "stable",
   "tags": [
     "cpq",
     "subscriptions",

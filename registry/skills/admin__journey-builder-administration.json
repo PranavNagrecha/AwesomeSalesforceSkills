@@ -142,6 +142,7 @@
   "scripts": [
     "skills/admin/journey-builder-administration/scripts/check_journey_builder_administration.py"
   ],
+  "status": "stable",
   "tags": [
     "journey-builder",
     "marketing-cloud",

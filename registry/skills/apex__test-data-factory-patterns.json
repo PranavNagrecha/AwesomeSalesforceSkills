@@ -90,6 +90,7 @@
   "scripts": [
     "skills/apex/test-data-factory-patterns/scripts/check_test_data_factory_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "apex-testing",
     "test-data-factory",

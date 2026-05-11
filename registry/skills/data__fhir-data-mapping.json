@@ -148,6 +148,7 @@
   "scripts": [
     "skills/data/fhir-data-mapping/scripts/check_fhir_data_mapping.py"
   ],
+  "status": "stable",
   "tags": [
     "fhir",
     "health-cloud",

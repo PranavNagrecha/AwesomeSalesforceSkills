@@ -118,6 +118,7 @@
   "scripts": [
     "skills/admin/knowledge-base-administration/scripts/check_knowledge_base_administration.py"
   ],
+  "status": "stable",
   "tags": [
     "knowledge",
     "lightning-knowledge",

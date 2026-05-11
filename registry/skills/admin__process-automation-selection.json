@@ -86,6 +86,7 @@
   "scripts": [
     "skills/admin/process-automation-selection/scripts/check_process_automation_selection.py"
   ],
+  "status": "stable",
   "tags": [
     "automation-selection",
     "flow-vs-apex",

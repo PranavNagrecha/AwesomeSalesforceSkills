@@ -142,6 +142,7 @@
   "scripts": [
     "skills/admin/lightning-bolt-template-authoring/scripts/check_lightning_bolt_template_authoring.py"
   ],
+  "status": "stable",
   "tags": [
     "lightning-bolt-template-authoring",
     "lightning-bolt",

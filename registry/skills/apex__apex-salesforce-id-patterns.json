@@ -104,6 +104,7 @@
     "skills/apex/apex-salesforce-id-patterns/scripts/tests/prefix-string-check/expected.json",
     "skills/apex/apex-salesforce-id-patterns/scripts/tests/prefix-string-check/input.cls"
   ],
+  "status": "stable",
   "tags": [
     "apex-salesforce-id-patterns",
     "apex-id-prefix",

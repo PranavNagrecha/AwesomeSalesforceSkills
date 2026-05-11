@@ -133,6 +133,7 @@
   "scripts": [
     "skills/data/data-storage-management/scripts/check_data_storage_management.py"
   ],
+  "status": "stable",
   "tags": [
     "storage-management",
     "data-storage",

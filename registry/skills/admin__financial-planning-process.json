@@ -149,6 +149,7 @@
   "scripts": [
     "skills/admin/financial-planning-process/scripts/check_financial_planning_process.py"
   ],
+  "status": "stable",
   "tags": [
     "financial-planning-process",
     "financial-services-cloud",

@@ -92,6 +92,7 @@
   "scripts": [
     "skills/admin/hipaa-workflow-design/scripts/check_hipaa_workflow_design.py"
   ],
+  "status": "stable",
   "tags": [
     "health-cloud",
     "hipaa",

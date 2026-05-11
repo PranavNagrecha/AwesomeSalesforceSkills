@@ -133,6 +133,7 @@
   "scripts": [
     "skills/lwc/aura-to-lwc-migration/scripts/check_aura_to_lwc_migration.py"
   ],
+  "status": "stable",
   "tags": [
     "aura-to-lwc-migration",
     "interoperability",

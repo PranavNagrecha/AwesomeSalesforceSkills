@@ -103,6 +103,7 @@
   "scripts": [
     "skills/architect/multi-channel-service-architecture/scripts/check_multi_channel_service_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "multi-channel-service-architecture",
     "omni-channel",

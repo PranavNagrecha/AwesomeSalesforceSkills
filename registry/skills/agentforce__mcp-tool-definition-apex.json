@@ -110,6 +110,7 @@
   "scripts": [
     "skills/agentforce/mcp-tool-definition-apex/scripts/check_mcp_tool_definition_apex.py"
   ],
+  "status": "stable",
   "tags": [
     "mcp",
     "agentforce",

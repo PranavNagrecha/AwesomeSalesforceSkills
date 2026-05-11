@@ -127,6 +127,7 @@
     "skills/omnistudio/omnistudio-lwc-integration/scripts/check_omnistudio_lwc.py",
     "skills/omnistudio/omnistudio-lwc-integration/scripts/check_omnistudio_lwc_integration.py"
   ],
+  "status": "stable",
   "tags": [
     "omnistudio",
     "lwc",

@@ -88,6 +88,7 @@
   "scripts": [
     "skills/architect/fsl-offline-architecture/scripts/check_fsl_offline_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "fsl",
     "field-service",

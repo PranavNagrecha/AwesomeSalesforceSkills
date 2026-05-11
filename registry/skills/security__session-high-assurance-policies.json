@@ -59,6 +59,7 @@
   "scripts": [
     "skills/security/session-high-assurance-policies/scripts/check_session_high_assurance_policies.py"
   ],
+  "status": "stable",
   "tags": [
     "session",
     "mfa",

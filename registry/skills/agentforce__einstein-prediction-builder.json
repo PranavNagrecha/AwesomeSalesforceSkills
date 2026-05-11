@@ -131,6 +131,7 @@
     "skills/agentforce/einstein-prediction-builder/scripts/check_einstein_prediction_builder.py",
     "skills/agentforce/einstein-prediction-builder/scripts/check_prediction_builder.py"
   ],
+  "status": "stable",
   "tags": [
     "einstein-prediction-builder",
     "binary-classification",

@@ -90,6 +90,7 @@
   "scripts": [
     "skills/integration/data-cloud-query-api/scripts/check_data_cloud_query_api.py"
   ],
+  "status": "stable",
   "tags": [
     "data-cloud",
     "query-api",

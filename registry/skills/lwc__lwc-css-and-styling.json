@@ -82,6 +82,7 @@
   "scripts": [
     "skills/lwc/lwc-css-and-styling/scripts/check_lwc_css_and_styling.py"
   ],
+  "status": "stable",
   "tags": [
     "css",
     "slds",

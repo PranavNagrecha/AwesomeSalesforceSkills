@@ -120,6 +120,7 @@
   "scripts": [
     "skills/apex/scheduled-apex-failure-detection-and-monitoring/scripts/check_scheduled_apex_failure_detection_and_monitoring.py"
   ],
+  "status": "stable",
   "tags": [
     "scheduled-apex-failure-detection-and-monitoring",
     "asyncapexjob",

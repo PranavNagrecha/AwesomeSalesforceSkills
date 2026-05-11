@@ -143,6 +143,7 @@
   "scripts": [
     "skills/security/data-classification-labels/scripts/check_data_classification_labels.py"
   ],
+  "status": "stable",
   "tags": [
     "data-classification",
     "security-classification",

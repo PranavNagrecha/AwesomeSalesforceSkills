@@ -85,6 +85,7 @@
   "scripts": [
     "skills/agentforce/agentforce-agent-handoff-patterns/scripts/check_agentforce_agent_handoff_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "agentforce",
     "handoff",

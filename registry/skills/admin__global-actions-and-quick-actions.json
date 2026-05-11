@@ -103,6 +103,7 @@
   "scripts": [
     "skills/admin/global-actions-and-quick-actions/scripts/check_global_actions_and_quick_actions.py"
   ],
+  "status": "stable",
   "tags": [
     "quick-actions",
     "global-actions",

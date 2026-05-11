@@ -82,6 +82,7 @@
   "scripts": [
     "skills/integration/salesforce-to-salesforce-integration/scripts/check_salesforce_to_salesforce_integration.py"
   ],
+  "status": "stable",
   "tags": [
     "integration",
     "cross-org",

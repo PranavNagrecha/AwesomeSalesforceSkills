@@ -148,6 +148,7 @@
   "scripts": [
     "skills/apex/marketing-cloud-data-views/scripts/check_marketing_cloud_data_views.py"
   ],
+  "status": "stable",
   "tags": [
     "marketing-cloud",
     "system-data-views",

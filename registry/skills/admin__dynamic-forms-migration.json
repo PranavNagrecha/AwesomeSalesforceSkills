@@ -133,6 +133,7 @@
   "scripts": [
     "skills/admin/dynamic-forms-migration/scripts/check_dynamic_forms_migration.py"
   ],
+  "status": "stable",
   "tags": [
     "dynamic-forms",
     "page-layouts",

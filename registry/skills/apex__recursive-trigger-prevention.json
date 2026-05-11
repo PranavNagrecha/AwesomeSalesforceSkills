@@ -86,6 +86,7 @@
   "scripts": [
     "skills/apex/recursive-trigger-prevention/scripts/check_recursive_trigger_prevention.py"
   ],
+  "status": "stable",
   "tags": [
     "trigger-recursion",
     "static-boolean",

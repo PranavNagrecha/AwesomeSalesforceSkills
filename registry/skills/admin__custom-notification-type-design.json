@@ -81,6 +81,7 @@
   "scripts": [
     "skills/admin/custom-notification-type-design/scripts/check_custom_notification_type_design.py"
   ],
+  "status": "stable",
   "tags": [
     "admin",
     "notifications",

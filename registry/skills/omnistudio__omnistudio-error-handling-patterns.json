@@ -84,6 +84,7 @@
   "scripts": [
     "skills/omnistudio/omnistudio-error-handling-patterns/scripts/check_omnistudio_error_handling.py"
   ],
+  "status": "stable",
   "tags": [
     "omnistudio",
     "error-handling",

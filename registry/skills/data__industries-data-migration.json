@@ -151,6 +151,7 @@
   "scripts": [
     "skills/data/industries-data-migration/scripts/check_industries_data_migration.py"
   ],
+  "status": "stable",
   "tags": [
     "insurance",
     "energy-utilities",

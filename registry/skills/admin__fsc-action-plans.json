@@ -127,6 +127,7 @@
   "scripts": [
     "skills/admin/fsc-action-plans/scripts/check_fsc_action_plans.py"
   ],
+  "status": "stable",
   "tags": [
     "fsc-action-plans",
     "financial-services-cloud",

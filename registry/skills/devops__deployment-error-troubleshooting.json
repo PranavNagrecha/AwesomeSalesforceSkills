@@ -109,6 +109,7 @@
   "scripts": [
     "skills/devops/deployment-error-troubleshooting/scripts/check_deployment_error_troubleshooting.py"
   ],
+  "status": "stable",
   "tags": [
     "deployment",
     "troubleshooting",

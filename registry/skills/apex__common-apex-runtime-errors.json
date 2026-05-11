@@ -122,6 +122,7 @@
   "scripts": [
     "skills/apex/common-apex-runtime-errors/scripts/check_common_apex_runtime_errors.py"
   ],
+  "status": "stable",
   "tags": [
     "NullPointerException",
     "QueryException",

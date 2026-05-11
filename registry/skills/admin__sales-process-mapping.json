@@ -155,6 +155,7 @@
   "scripts": [
     "skills/admin/sales-process-mapping/scripts/check_sales_process_mapping.py"
   ],
+  "status": "stable",
   "tags": [
     "sales-process",
     "stage-design",

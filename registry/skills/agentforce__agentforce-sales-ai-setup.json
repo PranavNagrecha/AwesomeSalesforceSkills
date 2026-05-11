@@ -121,6 +121,7 @@
   "scripts": [
     "skills/agentforce/agentforce-sales-ai-setup/scripts/check_agentforce_sales_ai_setup.py"
   ],
+  "status": "stable",
   "tags": [
     "einstein-for-sales",
     "opportunity-scoring",

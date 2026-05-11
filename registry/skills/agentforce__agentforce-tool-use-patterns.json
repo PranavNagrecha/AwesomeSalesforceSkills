@@ -99,6 +99,7 @@
   "scripts": [
     "skills/agentforce/agentforce-tool-use-patterns/scripts/check_agentforce_tool_use_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "agentforce",
     "tool-use",

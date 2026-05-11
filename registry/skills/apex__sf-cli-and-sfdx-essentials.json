@@ -160,6 +160,7 @@
   "scripts": [
     "skills/apex/sf-cli-and-sfdx-essentials/scripts/check_sf_cli_and_sfdx_essentials.py"
   ],
+  "status": "stable",
   "tags": [
     "sf-cli",
     "sfdx",

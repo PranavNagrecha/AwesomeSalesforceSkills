@@ -179,6 +179,7 @@
   "scripts": [
     "skills/data/data-loader-csv-column-mapping/scripts/check_data_loader_csv_column_mapping.py"
   ],
+  "status": "stable",
   "tags": [
     "data-loader",
     "csv",

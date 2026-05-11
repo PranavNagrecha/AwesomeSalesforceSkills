@@ -82,6 +82,7 @@
   "scripts": [
     "skills/data/roll-up-summary-alternatives/scripts/check_roll_up_summary_alternatives.py"
   ],
+  "status": "stable",
   "tags": [
     "roll-up-summary",
     "dlrs",

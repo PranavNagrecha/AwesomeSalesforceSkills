@@ -83,6 +83,7 @@
   "scripts": [
     "skills/devops/release-management/scripts/check_release_management.py"
   ],
+  "status": "stable",
   "tags": [
     "release-management",
     "release-planning",

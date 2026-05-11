@@ -89,6 +89,7 @@
   "scripts": [
     "skills/security/sso-saml-troubleshooting/scripts/check_sso_saml_troubleshooting.py"
   ],
+  "status": "stable",
   "tags": [
     "saml",
     "sso",

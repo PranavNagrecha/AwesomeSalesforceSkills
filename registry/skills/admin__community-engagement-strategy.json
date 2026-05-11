@@ -102,6 +102,7 @@
   "scripts": [
     "skills/admin/community-engagement-strategy/scripts/check_community_engagement_strategy.py"
   ],
+  "status": "stable",
   "tags": [
     "experience-cloud",
     "community-engagement",

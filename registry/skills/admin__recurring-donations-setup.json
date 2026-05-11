@@ -126,6 +126,7 @@
   "scripts": [
     "skills/admin/recurring-donations-setup/scripts/check_recurring_donations_setup.py"
   ],
+  "status": "stable",
   "tags": [
     "npsp",
     "nonprofit",

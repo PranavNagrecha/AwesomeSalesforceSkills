@@ -145,6 +145,7 @@
   "scripts": [
     "skills/architect/solution-design-patterns/scripts/check_solution_design.py"
   ],
+  "status": "stable",
   "tags": [
     "solution-design",
     "automation-layers",

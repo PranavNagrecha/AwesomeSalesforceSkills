@@ -144,6 +144,7 @@
   "scripts": [
     "skills/admin/soft-credits-and-matching/scripts/check_soft_credits_and_matching.py"
   ],
+  "status": "stable",
   "tags": [
     "npsp",
     "soft-credits",

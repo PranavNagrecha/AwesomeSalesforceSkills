@@ -132,6 +132,7 @@
   "scripts": [
     "skills/admin/custom-button-to-action-migration/scripts/check_custom_button_to_action_migration.py"
   ],
+  "status": "stable",
   "tags": [
     "custom-buttons",
     "javascript-buttons",

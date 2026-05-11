@@ -119,6 +119,7 @@
   "scripts": [
     "skills/admin/saql-query-development/scripts/check_saql_query_development.py"
   ],
+  "status": "stable",
   "tags": [
     "saql",
     "crm-analytics",

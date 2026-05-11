@@ -55,6 +55,7 @@
   "scripts": [
     "skills/omnistudio/omnistudio-cache-strategies/scripts/check_omnistudio_cache_strategies.py"
   ],
+  "status": "stable",
   "tags": [
     "omnistudio",
     "cache",

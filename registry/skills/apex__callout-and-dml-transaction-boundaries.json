@@ -98,6 +98,7 @@
   "scripts": [
     "skills/apex/callout-and-dml-transaction-boundaries/scripts/check_callout_and_dml_transaction_boundaries.py"
   ],
+  "status": "stable",
   "tags": [
     "callout-dml-boundary",
     "uncommitted-work-pending",

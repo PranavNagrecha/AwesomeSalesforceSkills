@@ -100,6 +100,7 @@
   "scripts": [
     "skills/lwc/lwc-custom-datatable-types/scripts/check_lwc_custom_datatable_types.py"
   ],
+  "status": "stable",
   "tags": [
     "lwc-custom-datatable-types",
     "lightning-datatable",

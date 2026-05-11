@@ -87,6 +87,7 @@
   "scripts": [
     "skills/agentforce/agentforce-prompt-versioning/scripts/check_agentforce_prompt_versioning.py"
   ],
+  "status": "stable",
   "tags": [
     "agentforce",
     "prompts",

@@ -132,6 +132,7 @@
   "scripts": [
     "skills/architect/cpq-architecture-patterns/scripts/check_cpq_architecture_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "cpq",
     "cpq-architecture",

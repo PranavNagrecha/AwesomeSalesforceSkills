@@ -165,6 +165,7 @@
   "scripts": [
     "skills/agentforce/data-cloud-vector-search-dev/scripts/check_data_cloud_vector_search_dev.py"
   ],
+  "status": "stable",
   "tags": [
     "Data-Cloud",
     "vector-search",

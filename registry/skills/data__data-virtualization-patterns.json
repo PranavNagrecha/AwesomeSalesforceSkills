@@ -86,6 +86,7 @@
   "scripts": [
     "skills/data/data-virtualization-patterns/scripts/check_data_virtualization_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "salesforce-connect",
     "external-objects",

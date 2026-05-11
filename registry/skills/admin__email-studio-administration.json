@@ -137,6 +137,7 @@
   "scripts": [
     "skills/admin/email-studio-administration/scripts/check_email_studio_administration.py"
   ],
+  "status": "stable",
   "tags": [
     "email-studio",
     "content-builder",

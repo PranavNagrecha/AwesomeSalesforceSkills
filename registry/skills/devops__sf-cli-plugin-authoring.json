@@ -136,6 +136,7 @@
   "scripts": [
     "skills/devops/sf-cli-plugin-authoring/scripts/check_sf_cli_plugin_authoring.py"
   ],
+  "status": "stable",
   "tags": [
     "salesforce-cli",
     "sf-cli-v2",

@@ -148,6 +148,7 @@
     "skills/admin/health-cloud-patient-setup/scripts/check_health_cloud_patient_setup.py",
     "skills/admin/health-cloud-patient-setup/scripts/check_patient_setup.py"
   ],
+  "status": "stable",
   "tags": [
     "health-cloud",
     "patient",

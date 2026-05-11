@@ -116,6 +116,7 @@
     "skills/apex/order-of-execution-deep-dive/scripts/check_order_of_execution.py",
     "skills/apex/order-of-execution-deep-dive/scripts/check_order_of_execution_deep_dive.py"
   ],
+  "status": "stable",
   "tags": [
     "order-of-execution",
     "triggers",

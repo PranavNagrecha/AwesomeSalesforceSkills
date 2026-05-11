@@ -112,6 +112,7 @@
   "scripts": [
     "skills/admin/queues-and-public-groups/scripts/check_queues.py"
   ],
+  "status": "stable",
   "tags": [
     "queues",
     "public-groups",

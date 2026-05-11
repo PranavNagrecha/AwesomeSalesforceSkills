@@ -126,6 +126,7 @@
   "scripts": [
     "skills/admin/b2b-commerce-store-setup/scripts/check_b2b_commerce_store_setup.py"
   ],
+  "status": "stable",
   "tags": [
     "b2b-commerce",
     "webstore",

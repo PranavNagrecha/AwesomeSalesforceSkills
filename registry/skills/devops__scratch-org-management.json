@@ -131,6 +131,7 @@
   "scripts": [
     "skills/devops/scratch-org-management/scripts/check_scratch_org_management.py"
   ],
+  "status": "stable",
   "tags": [
     "scratch-org",
     "dev-hub",

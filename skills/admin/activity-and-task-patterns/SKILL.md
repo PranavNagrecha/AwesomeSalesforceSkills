@@ -35,6 +35,7 @@ dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
 updated: 2026-04-21
+status: stub
 ---
 
 # Activity and Task Patterns

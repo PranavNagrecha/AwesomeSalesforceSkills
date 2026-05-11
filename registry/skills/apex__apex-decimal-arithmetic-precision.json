@@ -94,6 +94,7 @@
   "scripts": [
     "skills/apex/apex-decimal-arithmetic-precision/scripts/check_apex_decimal_arithmetic_precision.py"
   ],
+  "status": "stable",
   "tags": [
     "apex",
     "decimal",

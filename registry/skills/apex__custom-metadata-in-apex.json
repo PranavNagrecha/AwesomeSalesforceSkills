@@ -82,6 +82,7 @@
   "scripts": [
     "skills/apex/custom-metadata-in-apex/scripts/check_custom_metadata_in_apex.py"
   ],
+  "status": "stable",
   "tags": [
     "custom-metadata",
     "__mdt",

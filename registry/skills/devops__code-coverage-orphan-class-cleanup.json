@@ -83,6 +83,7 @@
   "scripts": [
     "skills/devops/code-coverage-orphan-class-cleanup/scripts/check_code_coverage_orphan_class_cleanup.py"
   ],
+  "status": "stable",
   "tags": [
     "apex",
     "coverage",

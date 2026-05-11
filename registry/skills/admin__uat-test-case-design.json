@@ -156,6 +156,7 @@
     "skills/admin/uat-test-case-design/scripts/check_uat_case.py",
     "skills/admin/uat-test-case-design/scripts/check_uat_test_case_design.py"
   ],
+  "status": "stable",
   "tags": [
     "uat",
     "test-case",

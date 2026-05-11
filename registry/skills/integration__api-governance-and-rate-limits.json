@@ -58,6 +58,7 @@
   "scripts": [
     "skills/integration/api-governance-and-rate-limits/scripts/check_api_governance_and_rate_limits.py"
   ],
+  "status": "stable",
   "tags": [
     "api-limits",
     "governance",

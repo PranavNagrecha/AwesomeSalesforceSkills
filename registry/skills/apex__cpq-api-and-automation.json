@@ -134,6 +134,7 @@
   "scripts": [
     "skills/apex/cpq-api-and-automation/scripts/check_cpq_api_and_automation.py"
   ],
+  "status": "stable",
   "tags": [
     "cpq",
     "salesforce-cpq",

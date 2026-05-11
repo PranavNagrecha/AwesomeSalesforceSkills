@@ -87,6 +87,7 @@
   "scripts": [
     "skills/flow/flow-rollback-patterns/scripts/check_flow_rollback_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "flow",
     "rollback",

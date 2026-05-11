@@ -98,6 +98,7 @@
   "scripts": [
     "skills/admin/escalation-rules/scripts/check_escalation_rules.py"
   ],
+  "status": "stable",
   "tags": [
     "escalation-rules",
     "case-management",

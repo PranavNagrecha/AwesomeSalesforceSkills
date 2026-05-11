@@ -97,6 +97,7 @@
   "scripts": [
     "skills/omnistudio/omnistudio-testing-patterns/scripts/check_omnistudio_testing_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "omnistudio",
     "testing",

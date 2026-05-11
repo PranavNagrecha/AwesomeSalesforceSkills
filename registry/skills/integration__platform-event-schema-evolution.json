@@ -81,6 +81,7 @@
   "scripts": [
     "skills/integration/platform-event-schema-evolution/scripts/check_platform_event_schema_evolution.py"
   ],
+  "status": "stable",
   "tags": [
     "platform-events",
     "schema-evolution",

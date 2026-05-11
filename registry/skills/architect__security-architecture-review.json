@@ -127,6 +127,7 @@
   "scripts": [
     "skills/architect/security-architecture-review/scripts/check_security_architecture_review.py"
   ],
+  "status": "stable",
   "tags": [
     "security",
     "sharing-model",

@@ -108,6 +108,7 @@
   "scripts": [
     "skills/architect/integration-framework-design/scripts/check_integration_framework.py"
   ],
+  "status": "stable",
   "tags": [
     "integration",
     "service-interface",

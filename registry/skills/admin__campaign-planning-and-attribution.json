@@ -125,6 +125,7 @@
   "scripts": [
     "skills/admin/campaign-planning-and-attribution/scripts/check_campaign_planning_and_attribution.py"
   ],
+  "status": "stable",
   "tags": [
     "campaigns",
     "campaign-hierarchy",

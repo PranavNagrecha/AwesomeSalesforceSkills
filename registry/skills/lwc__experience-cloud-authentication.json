@@ -116,6 +116,7 @@
   "scripts": [
     "skills/lwc/experience-cloud-authentication/scripts/check_experience_cloud_authentication.py"
   ],
+  "status": "stable",
   "tags": [
     "experience-cloud",
     "authentication",

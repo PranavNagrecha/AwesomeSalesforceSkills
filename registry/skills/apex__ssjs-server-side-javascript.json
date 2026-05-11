@@ -110,6 +110,7 @@
   "scripts": [
     "skills/apex/ssjs-server-side-javascript/scripts/check_ssjs_server_side_javascript.py"
   ],
+  "status": "stable",
   "tags": [
     "ssjs",
     "marketing-cloud",

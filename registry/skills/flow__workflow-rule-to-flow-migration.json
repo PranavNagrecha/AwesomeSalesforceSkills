@@ -99,6 +99,7 @@
   "scripts": [
     "skills/flow/workflow-rule-to-flow-migration/scripts/check_workflow_rule_to_flow_migration.py"
   ],
+  "status": "stable",
   "tags": [
     "workflow-rules",
     "migration",

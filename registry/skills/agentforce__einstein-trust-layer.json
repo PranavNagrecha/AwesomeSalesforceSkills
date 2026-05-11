@@ -135,6 +135,7 @@
   "scripts": [
     "skills/agentforce/einstein-trust-layer/scripts/check_einstein_trust_layer.py"
   ],
+  "status": "stable",
   "tags": [
     "einstein-trust-layer",
     "data-masking",

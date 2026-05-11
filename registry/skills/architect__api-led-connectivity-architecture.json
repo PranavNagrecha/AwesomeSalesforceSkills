@@ -136,6 +136,7 @@
   "scripts": [
     "skills/architect/api-led-connectivity-architecture/scripts/check_api_led_connectivity_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "integration",
     "api-led-connectivity",

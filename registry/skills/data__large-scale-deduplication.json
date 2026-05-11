@@ -129,6 +129,7 @@
   "scripts": [
     "skills/data/large-scale-deduplication/scripts/check_large_scale_deduplication.py"
   ],
+  "status": "stable",
   "tags": [
     "deduplication",
     "merge",

@@ -118,6 +118,7 @@
   "scripts": [
     "skills/security/event-monitoring/scripts/check_event_monitoring.py"
   ],
+  "status": "stable",
   "tags": [
     "event-monitoring",
     "shield",

@@ -83,6 +83,7 @@
   "scripts": [
     "skills/admin/duplicate-management/scripts/check_duplicate_rules.py"
   ],
+  "status": "stable",
   "tags": [
     "duplicate-rules",
     "matching-rules",

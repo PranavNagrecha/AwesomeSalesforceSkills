@@ -95,6 +95,7 @@
   "scripts": [
     "skills/admin/system-field-behavior-and-audit/scripts/check_system_field_behavior_and_audit.py"
   ],
+  "status": "stable",
   "tags": [
     "system-fields",
     "audit-fields",

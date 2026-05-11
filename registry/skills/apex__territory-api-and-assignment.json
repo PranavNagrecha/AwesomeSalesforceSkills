@@ -140,6 +140,7 @@
   "scripts": [
     "skills/apex/territory-api-and-assignment/scripts/check_territory_api_and_assignment.py"
   ],
+  "status": "stable",
   "tags": [
     "territory2",
     "etm",

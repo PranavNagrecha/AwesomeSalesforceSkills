@@ -108,6 +108,7 @@
   "scripts": [
     "skills/security/recaptcha-and-bot-prevention/scripts/check_recaptcha_and_bot_prevention.py"
   ],
+  "status": "stable",
   "tags": [
     "recaptcha",
     "bot-prevention",

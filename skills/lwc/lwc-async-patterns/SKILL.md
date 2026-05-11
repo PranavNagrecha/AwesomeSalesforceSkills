@@ -31,6 +31,7 @@ dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
 updated: 2026-04-22
+status: stub
 ---
 
 # LWC Async Patterns

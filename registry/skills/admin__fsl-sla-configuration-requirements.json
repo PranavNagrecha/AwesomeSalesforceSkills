@@ -122,6 +122,7 @@
   "scripts": [
     "skills/admin/fsl-sla-configuration-requirements/scripts/check_fsl_sla_configuration_requirements.py"
   ],
+  "status": "stable",
   "tags": [
     "field-service",
     "FSL",

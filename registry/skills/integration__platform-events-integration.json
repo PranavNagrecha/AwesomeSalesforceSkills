@@ -113,6 +113,7 @@
   "scripts": [
     "skills/integration/platform-events-integration/scripts/check_platform_events_integration.py"
   ],
+  "status": "stable",
   "tags": [
     "platform-events",
     "cometd",

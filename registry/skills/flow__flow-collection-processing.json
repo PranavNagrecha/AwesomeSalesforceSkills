@@ -115,6 +115,7 @@
   "scripts": [
     "skills/flow/flow-collection-processing/scripts/check_flow_collection_processing.py"
   ],
+  "status": "stable",
   "tags": [
     "flow-collections",
     "loop-element",

@@ -84,6 +84,7 @@
   "scripts": [
     "skills/lwc/lwc-forms-and-validation/scripts/check_lwc_forms_and_validation.py"
   ],
+  "status": "stable",
   "tags": [
     "lwc-forms",
     "lightning-record-edit-form",

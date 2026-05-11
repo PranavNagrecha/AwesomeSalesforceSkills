@@ -181,6 +181,7 @@
   "scripts": [
     "skills/data/data-loader-picklist-validation-pre-load/scripts/check_data_loader_picklist_validation_pre_load.py"
   ],
+  "status": "stable",
   "tags": [
     "data-loader",
     "picklist",

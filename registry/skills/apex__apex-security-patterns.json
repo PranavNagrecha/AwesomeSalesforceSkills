@@ -85,6 +85,7 @@
   "scripts": [
     "skills/apex/apex-security-patterns/scripts/check_apex_security_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "apex-security",
     "inherited-sharing",

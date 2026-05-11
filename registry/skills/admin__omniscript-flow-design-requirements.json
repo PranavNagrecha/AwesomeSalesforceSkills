@@ -95,6 +95,7 @@
   "scripts": [
     "skills/admin/omniscript-flow-design-requirements/scripts/check_omniscript_flow_design_requirements.py"
   ],
+  "status": "stable",
   "tags": [
     "omnistudio",
     "omniscript",

@@ -146,6 +146,7 @@
   "scripts": [
     "skills/data/historical-order-migration/scripts/check_historical_order_migration.py"
   ],
+  "status": "stable",
   "tags": [
     "cpq",
     "legacy-data-upload",

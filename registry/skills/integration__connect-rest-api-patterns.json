@@ -58,6 +58,7 @@
   "scripts": [
     "skills/integration/connect-rest-api-patterns/scripts/check_connect_rest_api_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "connect-rest",
     "chatter",

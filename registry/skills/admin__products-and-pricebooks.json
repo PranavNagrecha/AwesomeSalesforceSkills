@@ -130,6 +130,7 @@
   "scripts": [
     "skills/admin/products-and-pricebooks/scripts/check_products_and_pricebooks.py"
   ],
+  "status": "stable",
   "tags": [
     "products",
     "pricebooks",

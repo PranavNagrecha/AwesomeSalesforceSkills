@@ -115,6 +115,7 @@
   "scripts": [
     "skills/admin/persona-and-journey-mapping-sf/scripts/check_persona.py"
   ],
+  "status": "stable",
   "tags": [
     "persona-and-journey-mapping-sf",
     "persona-design",

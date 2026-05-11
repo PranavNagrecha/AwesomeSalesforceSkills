@@ -125,6 +125,7 @@
   "scripts": [
     "skills/devops/cross-cloud-deployment-patterns/scripts/check_cross_cloud_deployment_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "deployment",
     "experience-cloud",

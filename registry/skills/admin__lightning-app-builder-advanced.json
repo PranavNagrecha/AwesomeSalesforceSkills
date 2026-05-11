@@ -116,6 +116,7 @@
   "scripts": [
     "skills/admin/lightning-app-builder-advanced/scripts/check_lightning_app_builder_advanced.py"
   ],
+  "status": "stable",
   "tags": [
     "lightning-app-builder",
     "visibility-filters",

@@ -115,6 +115,7 @@
   "scripts": [
     "skills/admin/einstein-discovery-deployment/scripts/check_einstein_discovery_deployment.py"
   ],
+  "status": "stable",
   "tags": [
     "einstein-discovery",
     "prediction-definition",

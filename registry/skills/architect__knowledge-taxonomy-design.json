@@ -138,6 +138,7 @@
   "scripts": [
     "skills/architect/knowledge-taxonomy-design/scripts/check_knowledge_taxonomy_design.py"
   ],
+  "status": "stable",
   "tags": [
     "knowledge",
     "data-categories",

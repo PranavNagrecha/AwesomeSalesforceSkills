@@ -57,6 +57,7 @@
   "scripts": [
     "skills/agentforce/prompt-template-versioning/scripts/check_prompt_template_versioning.py"
   ],
+  "status": "stable",
   "tags": [
     "agentforce",
     "prompt-builder",

@@ -108,6 +108,7 @@
   "scripts": [
     "skills/apex/cross-object-formula-and-rollup-performance/scripts/check_cross_object_formula_and_rollup_performance.py"
   ],
+  "status": "stable",
   "tags": [
     "cross-object-formula",
     "rollup-summary",

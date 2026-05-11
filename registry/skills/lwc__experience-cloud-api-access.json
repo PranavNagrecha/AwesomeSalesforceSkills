@@ -130,6 +130,7 @@
   "scripts": [
     "skills/lwc/experience-cloud-api-access/scripts/check_experience_cloud_api_access.py"
   ],
+  "status": "stable",
   "tags": [
     "experience-cloud",
     "api-access",

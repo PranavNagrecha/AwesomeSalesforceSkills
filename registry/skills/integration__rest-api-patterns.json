@@ -117,6 +117,7 @@
   "scripts": [
     "skills/integration/rest-api-patterns/scripts/check_rest_api_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "rest-api",
     "composite",

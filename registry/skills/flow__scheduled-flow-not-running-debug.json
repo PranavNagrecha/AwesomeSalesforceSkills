@@ -118,6 +118,7 @@
   "scripts": [
     "skills/flow/scheduled-flow-not-running-debug/scripts/check_scheduled_flow_not_running_debug.py"
   ],
+  "status": "stable",
   "tags": [
     "scheduled-flow-not-running-debug",
     "schedule-triggered-flow",

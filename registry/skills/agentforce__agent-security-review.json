@@ -57,6 +57,7 @@
   "scripts": [
     "skills/agentforce/agent-security-review/scripts/check_agent_security_review.py"
   ],
+  "status": "stable",
   "tags": [
     "agentforce",
     "security",

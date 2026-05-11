@@ -125,6 +125,7 @@
   "scripts": [
     "skills/architect/ai-governance-architecture/scripts/check_ai_governance_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "ai-governance",
     "agentforce",

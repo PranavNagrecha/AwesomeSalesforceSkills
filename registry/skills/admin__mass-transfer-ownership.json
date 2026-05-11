@@ -82,6 +82,7 @@
   "scripts": [
     "skills/admin/mass-transfer-ownership/scripts/check_mass_transfer_ownership.py"
   ],
+  "status": "stable",
   "tags": [
     "ownership",
     "data-management",

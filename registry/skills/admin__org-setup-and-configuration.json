@@ -127,6 +127,7 @@
   "scripts": [
     "skills/admin/org-setup-and-configuration/scripts/check_org_setup_and_configuration.py"
   ],
+  "status": "stable",
   "tags": [
     "org-setup",
     "mfa",

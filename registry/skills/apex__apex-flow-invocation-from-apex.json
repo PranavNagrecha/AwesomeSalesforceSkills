@@ -99,6 +99,7 @@
   "scripts": [
     "skills/apex/apex-flow-invocation-from-apex/scripts/check_apex_flow_invocation_from_apex.py"
   ],
+  "status": "stable",
   "tags": [
     "apex-flow-invocation-from-apex",
     "flow-interview",

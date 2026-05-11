@@ -103,6 +103,7 @@
   "scripts": [
     "skills/data/omnistudio-datapack-migration/scripts/check_omnistudio_datapack_migration.py"
   ],
+  "status": "stable",
   "tags": [
     "omnistudio",
     "datapack",

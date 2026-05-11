@@ -78,6 +78,7 @@
   "scripts": [
     "skills/agentforce/agentforce-pii-redaction/scripts/check_agentforce_pii_redaction.py"
   ],
+  "status": "stable",
   "tags": [
     "agentforce",
     "pii",

@@ -115,6 +115,7 @@
   "scripts": [
     "skills/admin/delegated-administration/scripts/check_delegated_administration.py"
   ],
+  "status": "stable",
   "tags": [
     "delegated-administration",
     "user-management",

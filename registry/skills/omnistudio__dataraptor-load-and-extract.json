@@ -81,6 +81,7 @@
   "scripts": [
     "skills/omnistudio/dataraptor-load-and-extract/scripts/check_dataraptor_load_and_extract.py"
   ],
+  "status": "stable",
   "tags": [
     "dataraptor",
     "omnistudio",

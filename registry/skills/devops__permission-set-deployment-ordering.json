@@ -111,6 +111,7 @@
   "scripts": [
     "skills/devops/permission-set-deployment-ordering/scripts/check_permission_set_deployment_ordering.py"
   ],
+  "status": "stable",
   "tags": [
     "permission-sets",
     "deployment",

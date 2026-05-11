@@ -111,6 +111,7 @@
   "scripts": [
     "skills/architect/case-deflection-strategy/scripts/check_case_deflection_strategy.py"
   ],
+  "status": "stable",
   "tags": [
     "case-deflection",
     "self-service",

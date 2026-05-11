@@ -85,6 +85,7 @@
   "scripts": [
     "skills/apex/batch-apex-patterns/scripts/check_batch_apex_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "batch-apex",
     "database-batchable",

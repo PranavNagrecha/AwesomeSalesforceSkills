@@ -91,6 +91,7 @@
   "scripts": [
     "skills/architect/data-cloud-vs-analytics-decision/scripts/check_data_cloud_vs_analytics_decision.py"
   ],
+  "status": "stable",
   "tags": [
     "Data-Cloud",
     "CRM-Analytics",

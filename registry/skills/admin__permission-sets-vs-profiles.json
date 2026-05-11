@@ -101,6 +101,7 @@
   "scripts": [
     "skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py"
   ],
+  "status": "stable",
   "tags": [
     "profiles",
     "permission-sets",

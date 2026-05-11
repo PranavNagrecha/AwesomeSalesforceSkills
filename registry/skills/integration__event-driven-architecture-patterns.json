@@ -145,6 +145,7 @@
   "scripts": [
     "skills/integration/event-driven-architecture-patterns/scripts/check_event_driven_architecture_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "platform-events",
     "change-data-capture",

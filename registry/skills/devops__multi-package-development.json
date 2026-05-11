@@ -119,6 +119,7 @@
   "scripts": [
     "skills/devops/multi-package-development/scripts/check_multi_package_development.py"
   ],
+  "status": "stable",
   "tags": [
     "multi-package",
     "package-dependencies",

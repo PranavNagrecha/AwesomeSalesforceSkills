@@ -93,6 +93,7 @@
   "scripts": [
     "skills/agentforce/agent-actions/scripts/check_agent_actions.py"
   ],
+  "status": "stable",
   "tags": [
     "agentforce",
     "agent-actions",

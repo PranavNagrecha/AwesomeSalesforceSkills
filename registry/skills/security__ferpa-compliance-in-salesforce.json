@@ -105,6 +105,7 @@
   "scripts": [
     "skills/security/ferpa-compliance-in-salesforce/scripts/check_ferpa_compliance_in_salesforce.py"
   ],
+  "status": "stable",
   "tags": [
     "ferpa",
     "education-cloud",

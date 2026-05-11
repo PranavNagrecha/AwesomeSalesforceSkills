@@ -137,6 +137,7 @@
   "scripts": [
     "skills/data/bulk-api-patterns/scripts/check_bulk_api_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "bulk-api",
     "bulk-api-2",

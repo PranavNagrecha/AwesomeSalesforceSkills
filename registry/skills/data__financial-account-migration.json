@@ -126,6 +126,7 @@
   "scripts": [
     "skills/data/financial-account-migration/scripts/check_financial_account_migration.py"
   ],
+  "status": "stable",
   "tags": [
     "fsc",
     "data-migration",

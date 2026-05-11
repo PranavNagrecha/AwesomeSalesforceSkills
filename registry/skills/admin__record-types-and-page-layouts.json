@@ -102,6 +102,7 @@
   "scripts": [
     "skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py"
   ],
+  "status": "stable",
   "tags": [
     "record-types",
     "page-layouts",

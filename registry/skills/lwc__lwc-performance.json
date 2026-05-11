@@ -96,6 +96,7 @@
   "scripts": [
     "skills/lwc/lwc-performance/scripts/check_lwc_performance.py"
   ],
+  "status": "stable",
   "tags": [
     "lwc-performance",
     "lazy-instantiation",

@@ -54,6 +54,7 @@
   "scripts": [
     "skills/agentforce/agent-action-unit-tests/scripts/check_agent_action_unit_tests.py"
   ],
+  "status": "stable",
   "tags": [
     "agentforce",
     "apex-tests",

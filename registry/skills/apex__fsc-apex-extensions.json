@@ -139,6 +139,7 @@
   "scripts": [
     "skills/apex/fsc-apex-extensions/scripts/check_fsc_apex_extensions.py"
   ],
+  "status": "stable",
   "tags": [
     "fsc",
     "financial-services-cloud",

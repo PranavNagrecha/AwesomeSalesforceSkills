@@ -93,6 +93,7 @@
   "scripts": [
     "skills/apex/record-locking-and-contention/scripts/check_record_locking_and_contention.py"
   ],
+  "status": "stable",
   "tags": [
     "record-locking",
     "contention",

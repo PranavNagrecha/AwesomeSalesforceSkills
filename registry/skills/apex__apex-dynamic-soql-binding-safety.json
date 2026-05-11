@@ -103,6 +103,7 @@
   "scripts": [
     "skills/apex/apex-dynamic-soql-binding-safety/scripts/check_apex_dynamic_soql_binding_safety.py"
   ],
+  "status": "stable",
   "tags": [
     "apex",
     "soql",

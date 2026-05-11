@@ -50,7 +50,7 @@
     "f17ae89ac58b52ac4e78",
     "fc42f6b04d6fa2e315b5"
   ],
-  "content_hash": "2c259d3610b7a86a3e8d1fd625213c3a3f28fc3b701ebb8210b49e0e00d0f7a1",
+  "content_hash": "f36d18ec056ed50f566622f7cccdbce06e3e7d353111a242ef9a324cdc143ff9",
   "dependencies": [],
   "description": "Async/await and Promise patterns in LWC: imperative Apex, loading states, error handling, concurrent wire + imperative, AbortController for in-flight cancellation, Promise.all for parallel calls. NOT for wire service basics (use lwc-wire-refresh-patterns). NOT for Lightning Data Service.",
   "file_location": "skills/lwc/lwc-async-patterns",
@@ -80,6 +80,7 @@
   "scripts": [
     "skills/lwc/lwc-async-patterns/scripts/check_lwc_async_patterns.py"
   ],
+  "status": "stub",
   "tags": [
     "lwc",
     "async",

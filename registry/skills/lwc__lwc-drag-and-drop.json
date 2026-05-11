@@ -87,6 +87,7 @@
   "scripts": [
     "skills/lwc/lwc-drag-and-drop/scripts/check_lwc_drag_and_drop.py"
   ],
+  "status": "stable",
   "tags": [
     "drag-and-drop",
     "dataTransfer",

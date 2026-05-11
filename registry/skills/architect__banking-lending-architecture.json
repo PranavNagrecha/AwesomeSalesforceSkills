@@ -102,6 +102,7 @@
   "scripts": [
     "skills/architect/banking-lending-architecture/scripts/check_banking_lending_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "banking",
     "lending",

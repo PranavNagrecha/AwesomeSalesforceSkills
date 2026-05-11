@@ -117,6 +117,7 @@
     "skills/devops/environment-strategy/scripts/check_env_strategy.py",
     "skills/devops/environment-strategy/scripts/check_environment_strategy.py"
   ],
+  "status": "stable",
   "tags": [
     "environment-strategy",
     "scratch-orgs",

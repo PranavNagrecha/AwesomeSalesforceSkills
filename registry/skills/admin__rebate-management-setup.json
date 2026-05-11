@@ -49,7 +49,7 @@
     "f7e77b307a6f98acaa3b",
     "fb939750eb765475a564"
   ],
-  "content_hash": "f3148b0bf2e16d48c01cacc0e5a7ce3feb877aea919d28861d61886ff8ce5b9f",
+  "content_hash": "bce491ee31d7a336c9c1e3a99f768cc7e5475023ead1b7eb60b71ecf1a5a693a",
   "dependencies": [],
   "description": "Rebate Management setup: rebate types, payout calculations, accruals, partner rebates, program setup, compliance reporting. NOT for CPQ discounts on quotes (use revenue-cloud-cpq-setup). NOT for channel loyalty programs (use partner-loyalty-programs).",
   "file_location": "skills/admin/rebate-management-setup",
@@ -81,6 +81,7 @@
   "scripts": [
     "skills/admin/rebate-management-setup/scripts/check_rebate_management_setup.py"
   ],
+  "status": "stub",
   "tags": [
     "rebate-management",
     "channel-incentives",

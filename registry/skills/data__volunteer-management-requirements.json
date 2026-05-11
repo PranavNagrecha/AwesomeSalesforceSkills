@@ -93,6 +93,7 @@
   "scripts": [
     "skills/data/volunteer-management-requirements/scripts/check_volunteer_management_requirements.py"
   ],
+  "status": "stable",
   "tags": [
     "volunteer-management",
     "npsp",

@@ -141,6 +141,7 @@
   "scripts": [
     "skills/security/transaction-security-policies/scripts/check_transaction_security.py"
   ],
+  "status": "stable",
   "tags": [
     "transaction-security",
     "shield",

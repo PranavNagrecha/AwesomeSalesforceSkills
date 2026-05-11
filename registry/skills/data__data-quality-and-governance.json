@@ -170,6 +170,7 @@
     "skills/data/data-quality-and-governance/scripts/check_data_quality.py",
     "skills/data/data-quality-and-governance/scripts/check_data_quality_and_governance.py"
   ],
+  "status": "stable",
   "tags": [
     "data-quality",
     "data-governance",

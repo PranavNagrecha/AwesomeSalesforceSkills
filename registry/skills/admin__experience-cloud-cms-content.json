@@ -108,6 +108,7 @@
   "scripts": [
     "skills/admin/experience-cloud-cms-content/scripts/check_experience_cloud_cms_content.py"
   ],
+  "status": "stable",
   "tags": [
     "experience-cloud-cms-content",
     "cms-workspace",

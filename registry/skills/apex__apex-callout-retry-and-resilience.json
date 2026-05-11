@@ -120,6 +120,7 @@
   "scripts": [
     "skills/apex/apex-callout-retry-and-resilience/scripts/check_apex_callout_retry_and_resilience.py"
   ],
+  "status": "stable",
   "tags": [
     "apex",
     "callout",

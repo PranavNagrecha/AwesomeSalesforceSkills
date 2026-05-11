@@ -87,6 +87,7 @@
   "scripts": [
     "skills/flow/flow-for-slack/scripts/check_flow_for_slack.py"
   ],
+  "status": "stable",
   "tags": [
     "flow",
     "slack",

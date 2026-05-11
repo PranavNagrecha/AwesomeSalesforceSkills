@@ -139,6 +139,7 @@
   "scripts": [
     "skills/admin/territory-design-requirements/scripts/check_territory_design_requirements.py"
   ],
+  "status": "stable",
   "tags": [
     "territory-design",
     "territory-alignment",

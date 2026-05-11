@@ -91,6 +91,7 @@
   "scripts": [
     "skills/flow/flow-large-data-volume-patterns/scripts/check_flow_large_data_volume_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "flow-large-data-volume-patterns",
     "governor-limits",

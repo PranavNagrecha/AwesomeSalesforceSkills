@@ -106,6 +106,7 @@
   "scripts": [
     "skills/architect/insurance-cloud-architecture/scripts/check_insurance_cloud_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "insurance-cloud",
     "fsc",

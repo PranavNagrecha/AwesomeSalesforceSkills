@@ -103,6 +103,7 @@
   "scripts": [
     "skills/security/sandbox-data-masking/scripts/check_sandbox_data_masking.py"
   ],
+  "status": "stable",
   "tags": [
     "sandbox-data-masking",
     "data-privacy",

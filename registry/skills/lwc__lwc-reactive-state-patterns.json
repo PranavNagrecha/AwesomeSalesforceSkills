@@ -101,6 +101,7 @@
   "scripts": [
     "skills/lwc/lwc-reactive-state-patterns/scripts/check_lwc_reactive_state_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "lwc",
     "reactivity",

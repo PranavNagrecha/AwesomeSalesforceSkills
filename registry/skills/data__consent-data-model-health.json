@@ -122,6 +122,7 @@
   "scripts": [
     "skills/data/consent-data-model-health/scripts/check_consent_data_model_health.py"
   ],
+  "status": "stable",
   "tags": [
     "health-cloud",
     "consent",

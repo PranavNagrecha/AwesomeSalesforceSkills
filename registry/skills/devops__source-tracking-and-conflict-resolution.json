@@ -173,6 +173,7 @@
   "scripts": [
     "skills/devops/source-tracking-and-conflict-resolution/scripts/check_source_tracking_and_conflict_resolution.py"
   ],
+  "status": "stable",
   "tags": [
     "source-tracking",
     "sfdx",

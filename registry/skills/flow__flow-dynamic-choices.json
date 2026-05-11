@@ -55,6 +55,7 @@
   "scripts": [
     "skills/flow/flow-dynamic-choices/scripts/check_flow_dynamic_choices.py"
   ],
+  "status": "stable",
   "tags": [
     "flow",
     "choices",

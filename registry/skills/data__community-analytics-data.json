@@ -122,6 +122,7 @@
   "scripts": [
     "skills/data/community-analytics-data/scripts/check_community_analytics_data.py"
   ],
+  "status": "stable",
   "tags": [
     "experience-cloud",
     "community",

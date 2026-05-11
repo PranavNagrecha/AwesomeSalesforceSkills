@@ -119,6 +119,7 @@
   "scripts": [
     "skills/architect/conversational-ai-architecture/scripts/check_conversational_ai_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "conversational-ai-architecture",
     "agentforce",

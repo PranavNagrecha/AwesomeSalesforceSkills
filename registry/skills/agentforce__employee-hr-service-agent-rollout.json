@@ -134,6 +134,7 @@
   "scripts": [
     "skills/agentforce/employee-hr-service-agent-rollout/scripts/check_employee_hr_service_agent_rollout.py"
   ],
+  "status": "stable",
   "tags": [
     "employee-hr-service-agent-rollout",
     "agentforce-employee",

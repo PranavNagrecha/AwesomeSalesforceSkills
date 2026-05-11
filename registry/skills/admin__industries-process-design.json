@@ -191,6 +191,7 @@
   "scripts": [
     "skills/admin/industries-process-design/scripts/check_industries_process_design.py"
   ],
+  "status": "stable",
   "tags": [
     "industries",
     "insurance-cloud",

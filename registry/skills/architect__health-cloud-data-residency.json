@@ -160,6 +160,7 @@
   "scripts": [
     "skills/architect/health-cloud-data-residency/scripts/check_health_cloud_data_residency.py"
   ],
+  "status": "stable",
   "tags": [
     "hyperforce",
     "hipaa",

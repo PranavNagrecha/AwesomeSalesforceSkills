@@ -98,6 +98,7 @@
   "scripts": [
     "skills/flow/process-builder-to-flow-migration/scripts/check_process_builder_to_flow_migration.py"
   ],
+  "status": "stable",
   "tags": [
     "process-builder",
     "migration",

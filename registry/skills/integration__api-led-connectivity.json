@@ -110,6 +110,7 @@
   "scripts": [
     "skills/integration/api-led-connectivity/scripts/check_api_led_connectivity.py"
   ],
+  "status": "stable",
   "tags": [
     "api-led-connectivity",
     "mulesoft",

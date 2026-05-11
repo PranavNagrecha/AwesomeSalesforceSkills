@@ -94,6 +94,7 @@
   "scripts": [
     "skills/admin/app-and-tab-configuration/scripts/check_app_and_tab_configuration.py"
   ],
+  "status": "stable",
   "tags": [
     "lightning-app",
     "custom-tabs",

@@ -93,6 +93,7 @@
   "scripts": [
     "skills/architect/architecture-decision-records/scripts/check_architecture_decision_records.py"
   ],
+  "status": "stable",
   "tags": [
     "architect",
     "adr",

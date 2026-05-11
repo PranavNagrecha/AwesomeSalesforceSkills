@@ -105,6 +105,7 @@
   "scripts": [
     "skills/apex/apex-aggregate-queries/scripts/check_apex_aggregate_queries.py"
   ],
+  "status": "stable",
   "tags": [
     "soql",
     "aggregate-queries",

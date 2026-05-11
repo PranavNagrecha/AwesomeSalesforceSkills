@@ -92,6 +92,7 @@
   "scripts": [
     "skills/devops/salesforce-cli-automation/scripts/check_salesforce_cli_automation.py"
   ],
+  "status": "stable",
   "tags": [
     "salesforce-cli",
     "sf-cli-v2",

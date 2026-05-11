@@ -149,6 +149,7 @@
   "scripts": [
     "skills/flow/flow-runtime-context-and-sharing/scripts/check_flow_runtime_context_and_sharing.py"
   ],
+  "status": "stable",
   "tags": [
     "flow-runtime-context-and-sharing",
     "security",

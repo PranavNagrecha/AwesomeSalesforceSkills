@@ -86,6 +86,7 @@
   "scripts": [
     "skills/flow/scheduled-flows/scripts/check_scheduled_flows.py"
   ],
+  "status": "stable",
   "tags": [
     "scheduled-flows",
     "schedule-triggered",

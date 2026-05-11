@@ -166,6 +166,7 @@
   "scripts": [
     "skills/admin/pricing-model-design/scripts/check_pricing_model_design.py"
   ],
+  "status": "stable",
   "tags": [
     "cpq",
     "pricing-method",

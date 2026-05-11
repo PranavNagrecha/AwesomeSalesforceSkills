@@ -129,6 +129,7 @@
   "scripts": [
     "skills/admin/commerce-catalog-strategy/scripts/check_commerce_catalog_strategy.py"
   ],
+  "status": "stable",
   "tags": [
     "commerce-catalog-strategy",
     "b2b-commerce",

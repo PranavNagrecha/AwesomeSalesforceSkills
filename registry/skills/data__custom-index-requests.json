@@ -91,6 +91,7 @@
   "scripts": [
     "skills/data/custom-index-requests/scripts/check_custom_index_requests.py"
   ],
+  "status": "stable",
   "tags": [
     "custom-index",
     "skinny-tables",

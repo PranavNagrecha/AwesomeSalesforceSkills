@@ -109,6 +109,7 @@
   "scripts": [
     "skills/integration/file-and-document-integration/scripts/check_file_and_document_integration.py"
   ],
+  "status": "stable",
   "tags": [
     "file-upload",
     "content-version",

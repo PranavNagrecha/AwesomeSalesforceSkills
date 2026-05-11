@@ -143,6 +143,7 @@
   "scripts": [
     "skills/architect/aml-kyc-process-architecture/scripts/check_aml_kyc_process_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "aml",
     "kyc",

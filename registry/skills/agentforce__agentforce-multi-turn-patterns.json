@@ -94,6 +94,7 @@
   "scripts": [
     "skills/agentforce/agentforce-multi-turn-patterns/scripts/check_agentforce_multi_turn_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "agentforce",
     "multi-turn",

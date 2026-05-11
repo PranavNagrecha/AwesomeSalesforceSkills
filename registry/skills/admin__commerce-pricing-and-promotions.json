@@ -133,6 +133,7 @@
   "scripts": [
     "skills/admin/commerce-pricing-and-promotions/scripts/check_commerce_pricing_and_promotions.py"
   ],
+  "status": "stable",
   "tags": [
     "commerce",
     "pricing",

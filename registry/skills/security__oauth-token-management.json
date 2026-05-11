@@ -88,6 +88,7 @@
   "scripts": [
     "skills/security/oauth-token-management/scripts/check_oauth_token_management.py"
   ],
+  "status": "stable",
   "tags": [
     "oauth-token-management",
     "oauth-2",

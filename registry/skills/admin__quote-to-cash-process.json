@@ -145,6 +145,7 @@
   "scripts": [
     "skills/admin/quote-to-cash-process/scripts/check_quote_to_cash_process.py"
   ],
+  "status": "stable",
   "tags": [
     "cpq",
     "revenue-cloud",

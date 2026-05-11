@@ -151,6 +151,7 @@
   "scripts": [
     "skills/architect/industries-cloud-selection/scripts/check_industries_cloud_selection.py"
   ],
+  "status": "stable",
   "tags": [
     "industries-cloud",
     "vertical-cloud",

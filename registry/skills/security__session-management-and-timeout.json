@@ -99,6 +99,7 @@
   "scripts": [
     "skills/security/session-management-and-timeout/scripts/check_session_management_and_timeout.py"
   ],
+  "status": "stable",
   "tags": [
     "session-management-and-timeout",
     "session-timeout",

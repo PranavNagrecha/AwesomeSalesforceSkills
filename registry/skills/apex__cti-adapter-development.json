@@ -122,6 +122,7 @@
   "scripts": [
     "skills/apex/cti-adapter-development/scripts/check_cti_adapter_development.py"
   ],
+  "status": "stable",
   "tags": [
     "open-cti",
     "cti-adapter",

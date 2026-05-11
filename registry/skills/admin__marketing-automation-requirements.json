@@ -168,6 +168,7 @@
   "scripts": [
     "skills/admin/marketing-automation-requirements/scripts/check_marketing_automation_requirements.py"
   ],
+  "status": "stable",
   "tags": [
     "marketing-automation",
     "mql",

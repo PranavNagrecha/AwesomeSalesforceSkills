@@ -107,6 +107,7 @@
   "scripts": [
     "skills/admin/org-cleanup-and-technical-debt/scripts/check_org_cleanup_and_technical_debt.py"
   ],
+  "status": "stable",
   "tags": [
     "org-cleanup",
     "technical-debt",

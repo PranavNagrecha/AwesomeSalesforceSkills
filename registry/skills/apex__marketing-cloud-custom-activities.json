@@ -130,6 +130,7 @@
   "scripts": [
     "skills/apex/marketing-cloud-custom-activities/scripts/check_marketing_cloud_custom_activities.py"
   ],
+  "status": "stable",
   "tags": [
     "marketing-cloud",
     "journey-builder",

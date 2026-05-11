@@ -69,6 +69,7 @@
   "scripts": [
     "skills/flow/flow-apex-defined-types/scripts/check_flow_apex_defined_types.py"
   ],
+  "status": "stable",
   "tags": [
     "flow",
     "apex-defined-type",

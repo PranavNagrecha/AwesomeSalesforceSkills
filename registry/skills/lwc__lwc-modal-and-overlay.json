@@ -80,6 +80,7 @@
   "scripts": [
     "skills/lwc/lwc-modal-and-overlay/scripts/check_lwc_modal_and_overlay.py"
   ],
+  "status": "stable",
   "tags": [
     "lightning-modal",
     "overlay",

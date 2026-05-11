@@ -129,6 +129,7 @@
   "scripts": [
     "skills/security/network-security-and-trusted-ips/scripts/check_network_security_and_trusted_ips.py"
   ],
+  "status": "stable",
   "tags": [
     "trusted-ip-ranges",
     "network-access",

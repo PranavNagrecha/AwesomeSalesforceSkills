@@ -73,6 +73,11 @@ def build_skill_record(root: Path, skill_dir: Path, chunk_ids: list[str], vector
             ],
             root=root,
         ),
+        # Optional lifecycle status. Defaults to 'stable' when frontmatter
+        # omits it. 'stub' marks scaffolded skills whose reference files
+        # still contain TODO placeholders — see qa-content-report-2026-05-10
+        # CT-P0-1.
+        "status": metadata.get("status", "stable"),
     }
     return record
 

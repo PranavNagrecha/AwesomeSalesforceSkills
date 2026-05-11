@@ -99,6 +99,7 @@
   "scripts": [
     "skills/lwc/lwc-template-refs/scripts/check_lwc_template_refs.py"
   ],
+  "status": "stable",
   "tags": [
     "lwc-template-refs",
     "lwc-ref",

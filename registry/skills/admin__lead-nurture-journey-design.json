@@ -147,6 +147,7 @@
   "scripts": [
     "skills/admin/lead-nurture-journey-design/scripts/check_lead_nurture_journey_design.py"
   ],
+  "status": "stable",
   "tags": [
     "mcae",
     "pardot",

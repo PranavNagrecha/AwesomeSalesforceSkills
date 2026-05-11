@@ -101,6 +101,7 @@
   "scripts": [
     "skills/admin/flow-for-admins/scripts/check_flow_metadata.py"
   ],
+  "status": "stable",
   "tags": [
     "flow",
     "record-triggered-flow",

@@ -129,6 +129,7 @@
   "scripts": [
     "skills/apex/timezone-and-datetime-pitfalls/scripts/check_timezone_and_datetime_pitfalls.py"
   ],
+  "status": "stable",
   "tags": [
     "datetime",
     "timezone",

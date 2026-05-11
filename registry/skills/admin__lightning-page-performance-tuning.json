@@ -124,6 +124,7 @@
   "scripts": [
     "skills/admin/lightning-page-performance-tuning/scripts/check_lightning_page_performance_tuning.py"
   ],
+  "status": "stable",
   "tags": [
     "lightning-pages",
     "EPT",

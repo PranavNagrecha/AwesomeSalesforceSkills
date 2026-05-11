@@ -143,6 +143,7 @@
   "scripts": [
     "skills/admin/fsl-resource-management/scripts/check_fsl_resource_management.py"
   ],
+  "status": "stable",
   "tags": [
     "field-service",
     "fsl",

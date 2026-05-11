@@ -141,6 +141,7 @@
     "skills/admin/acceptance-criteria-given-when-then/scripts/check_ac_format.py",
     "skills/admin/acceptance-criteria-given-when-then/scripts/check_acceptance_criteria_given_when_then.py"
   ],
+  "status": "stable",
   "tags": [
     "acceptance-criteria",
     "given-when-then",

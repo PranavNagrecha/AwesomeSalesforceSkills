@@ -95,6 +95,7 @@
   "scripts": [
     "skills/apex/apex-soql-relationship-queries/scripts/check_apex_soql_relationship_queries.py"
   ],
+  "status": "stable",
   "tags": [
     "soql",
     "relationship-queries",

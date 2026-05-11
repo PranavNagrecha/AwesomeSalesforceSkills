@@ -136,6 +136,7 @@
   "scripts": [
     "skills/admin/consent-management-marketing/scripts/check_consent_management_marketing.py"
   ],
+  "status": "stable",
   "tags": [
     "marketing-cloud",
     "consent",

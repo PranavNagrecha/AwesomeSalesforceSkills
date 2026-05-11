@@ -128,6 +128,7 @@
   "scripts": [
     "skills/agentforce/einstein-bots-to-agentforce-migration/scripts/check_einstein_bots_to_agentforce_migration.py"
   ],
+  "status": "stable",
   "tags": [
     "einstein-bots",
     "agentforce",

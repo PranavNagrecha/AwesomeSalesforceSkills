@@ -113,6 +113,7 @@
   "scripts": [
     "skills/integration/error-handling-in-integrations/scripts/check_error_handling_in_integrations.py"
   ],
+  "status": "stable",
   "tags": [
     "integration",
     "error-handling",

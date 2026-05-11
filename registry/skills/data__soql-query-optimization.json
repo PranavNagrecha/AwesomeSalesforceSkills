@@ -131,6 +131,7 @@
   "scripts": [
     "skills/data/soql-query-optimization/scripts/check_soql_query_optimization.py"
   ],
+  "status": "stable",
   "tags": [
     "soql",
     "query-optimization",

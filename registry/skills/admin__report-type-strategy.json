@@ -83,6 +83,7 @@
   "scripts": [
     "skills/admin/report-type-strategy/scripts/check_report_type_strategy.py"
   ],
+  "status": "stable",
   "tags": [
     "reports",
     "custom-report-type",

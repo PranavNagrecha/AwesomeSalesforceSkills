@@ -94,6 +94,7 @@
   "scripts": [
     "skills/integration/manufacturing-cloud-setup/scripts/check_manufacturing_cloud_setup.py"
   ],
+  "status": "stable",
   "tags": [
     "manufacturing-cloud",
     "sales-agreement",

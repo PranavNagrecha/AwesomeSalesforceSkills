@@ -59,6 +59,7 @@
   "scripts": [
     "skills/security/clickjack-and-frame-protection/scripts/check_clickjack_and_frame_protection.py"
   ],
+  "status": "stable",
   "tags": [
     "clickjack",
     "frame",

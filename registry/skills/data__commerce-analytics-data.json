@@ -115,6 +115,7 @@
   "scripts": [
     "skills/data/commerce-analytics-data/scripts/check_commerce_analytics_data.py"
   ],
+  "status": "stable",
   "tags": [
     "commerce",
     "b2c-commerce",

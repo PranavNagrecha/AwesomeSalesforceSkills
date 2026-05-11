@@ -136,6 +136,7 @@
   "scripts": [
     "skills/devops/experience-cloud-deployment-admin/scripts/check_experience_cloud_deployment_admin.py"
   ],
+  "status": "stable",
   "tags": [
     "experience-cloud",
     "deployment",

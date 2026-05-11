@@ -89,6 +89,7 @@
   "scripts": [
     "skills/integration/data-cloud-integration-strategy/scripts/check_data_cloud_integration_strategy.py"
   ],
+  "status": "stable",
   "tags": [
     "data-cloud",
     "ingestion-api",

@@ -79,6 +79,7 @@
   "scripts": [
     "skills/lwc/wire-service-patterns/scripts/check_wire_service_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "wire-service",
     "lightning-data-service",

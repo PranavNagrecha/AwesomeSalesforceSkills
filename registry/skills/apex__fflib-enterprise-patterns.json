@@ -98,6 +98,7 @@
   "scripts": [
     "skills/apex/fflib-enterprise-patterns/scripts/check_fflib_enterprise_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "fflib",
     "unit-of-work",

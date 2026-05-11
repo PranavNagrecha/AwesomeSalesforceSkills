@@ -165,6 +165,7 @@
   "scripts": [
     "skills/agentforce/einstein-copilot-for-service/scripts/check_einstein_copilot_for_service.py"
   ],
+  "status": "stable",
   "tags": [
     "einstein",
     "service-cloud",

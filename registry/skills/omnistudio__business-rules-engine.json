@@ -135,6 +135,7 @@
   "scripts": [
     "skills/omnistudio/business-rules-engine/scripts/check_business_rules_engine.py"
   ],
+  "status": "stable",
   "tags": [
     "business-rules-engine",
     "decision-table",

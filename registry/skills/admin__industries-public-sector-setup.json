@@ -48,7 +48,7 @@
     "ec93208ebfa8a72c8b89",
     "ed709e4ad0c9a64fa890"
   ],
-  "content_hash": "f85aafa7ed28f280bad25bc1452729f68c6f98e46eb3dfbd519dbd04bedb850b",
+  "content_hash": "e88c1707e2ea69efaf4238d7c28a9836db77109dd533d8feb80f17b5f0adaf01",
   "dependencies": [],
   "description": "Public Sector Solutions (PSS) setup: licensing, permits, inspections, benefits, case management for government, citizen portals, and grant management. NOT for standard Service Cloud case management (use service-cloud-core-setup). NOT for generic Experience Cloud portals (use experience-cloud-site-setup).",
   "file_location": "skills/admin/industries-public-sector-setup",
@@ -80,6 +80,7 @@
   "scripts": [
     "skills/admin/industries-public-sector-setup/scripts/check_industries_public_sector_setup.py"
   ],
+  "status": "stub",
   "tags": [
     "public-sector",
     "industries",

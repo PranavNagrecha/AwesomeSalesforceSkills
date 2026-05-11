@@ -87,6 +87,7 @@
   "scripts": [
     "skills/integration/graphql-api-patterns/scripts/check_graphql_api_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "graphql",
     "lightning-graphql",

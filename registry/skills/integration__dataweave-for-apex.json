@@ -92,6 +92,7 @@
   "scripts": [
     "skills/integration/dataweave-for-apex/scripts/check_dataweave_for_apex.py"
   ],
+  "status": "stable",
   "tags": [
     "integration",
     "apex",

@@ -106,6 +106,7 @@
   "scripts": [
     "skills/admin/salesforce-object-queryability/scripts/check_salesforce_object_queryability.py"
   ],
+  "status": "stable",
   "tags": [
     "soql",
     "sobject",

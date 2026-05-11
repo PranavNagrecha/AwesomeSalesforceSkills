@@ -79,6 +79,7 @@
   "scripts": [
     "skills/lwc/custom-property-editor-for-flow/scripts/check_custom_property_editor_for_flow.py"
   ],
+  "status": "stable",
   "tags": [
     "custom-property-editor",
     "flow-builder",

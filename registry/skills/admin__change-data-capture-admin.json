@@ -92,6 +92,7 @@
   "scripts": [
     "skills/admin/change-data-capture-admin/scripts/check_change_data_capture_admin.py"
   ],
+  "status": "stable",
   "tags": [
     "change-data-capture",
     "cdc",

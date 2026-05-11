@@ -100,6 +100,7 @@
   "scripts": [
     "skills/admin/user-management/scripts/check_user_management.py"
   ],
+  "status": "stable",
   "tags": [
     "user-management",
     "users",

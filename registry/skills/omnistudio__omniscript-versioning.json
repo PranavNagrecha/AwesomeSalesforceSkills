@@ -84,6 +84,7 @@
   "scripts": [
     "skills/omnistudio/omniscript-versioning/scripts/check_omniscript_versioning.py"
   ],
+  "status": "stable",
   "tags": [
     "omniscript",
     "versioning",

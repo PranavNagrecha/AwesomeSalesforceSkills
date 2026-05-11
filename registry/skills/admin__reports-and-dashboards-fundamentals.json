@@ -156,6 +156,7 @@
   "scripts": [
     "skills/admin/reports-and-dashboards-fundamentals/scripts/check_reports_and_dashboards_fundamentals.py"
   ],
+  "status": "stable",
   "tags": [
     "reports",
     "dashboards",

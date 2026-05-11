@@ -137,6 +137,7 @@
     "skills/security/certificate-and-key-management/scripts/check_certificate.py",
     "skills/security/certificate-and-key-management/scripts/check_certificate_and_key_management.py"
   ],
+  "status": "stable",
   "tags": [
     "certificate",
     "mutual-tls",

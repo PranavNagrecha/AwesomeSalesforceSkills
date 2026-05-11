@@ -141,6 +141,7 @@
   "scripts": [
     "skills/data/analytics-dataset-optimization/scripts/check_analytics_dataset_optimization.py"
   ],
+  "status": "stable",
   "tags": [
     "crm-analytics",
     "dataset-performance",

@@ -73,6 +73,7 @@
   "scripts": [
     "skills/flow/flow-batch-processing-alternatives/scripts/check_flow_batch_processing_alternatives.py"
   ],
+  "status": "stable",
   "tags": [
     "flow",
     "scale",

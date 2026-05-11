@@ -144,6 +144,7 @@
   "scripts": [
     "skills/devops/sandbox-data-isolation-gotchas/scripts/check_sandbox_data_isolation_gotchas.py"
   ],
+  "status": "stable",
   "tags": [
     "sandbox",
     "data-isolation",

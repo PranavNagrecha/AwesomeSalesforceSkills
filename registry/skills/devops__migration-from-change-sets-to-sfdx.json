@@ -132,6 +132,7 @@
   "scripts": [
     "skills/devops/migration-from-change-sets-to-sfdx/scripts/check_migration_from_change_sets_to_sfdx.py"
   ],
+  "status": "stable",
   "tags": [
     "migration",
     "change-sets",

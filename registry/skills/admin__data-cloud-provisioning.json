@@ -134,6 +134,7 @@
   "scripts": [
     "skills/admin/data-cloud-provisioning/scripts/check_data_cloud_provisioning.py"
   ],
+  "status": "stable",
   "tags": [
     "data-cloud",
     "data-cloud-provisioning",

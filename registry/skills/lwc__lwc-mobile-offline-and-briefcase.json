@@ -131,6 +131,7 @@
   "scripts": [
     "skills/lwc/lwc-mobile-offline-and-briefcase/scripts/check_lwc_mobile_offline_and_briefcase.py"
   ],
+  "status": "stable",
   "tags": [
     "lwc-mobile-offline-and-briefcase",
     "briefcase-builder",

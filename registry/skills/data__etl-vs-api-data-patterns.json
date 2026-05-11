@@ -81,6 +81,7 @@
   "scripts": [
     "skills/data/etl-vs-api-data-patterns/scripts/check_etl_vs_api_data_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "etl",
     "data-integration",

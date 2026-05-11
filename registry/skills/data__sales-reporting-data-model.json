@@ -147,6 +147,7 @@
   "scripts": [
     "skills/data/sales-reporting-data-model/scripts/check_sales_reporting_data_model.py"
   ],
+  "status": "stable",
   "tags": [
     "sales-reporting",
     "historical-trending",

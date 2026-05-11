@@ -119,6 +119,7 @@
     "skills/data/batch-data-cleanup-patterns/scripts/check_batch_data_cleanup_patterns.py",
     "skills/data/batch-data-cleanup-patterns/scripts/check_data_cleanup.py"
   ],
+  "status": "stable",
   "tags": [
     "batch-apex",
     "deletion",

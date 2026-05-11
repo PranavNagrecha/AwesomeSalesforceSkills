@@ -159,6 +159,7 @@
   "scripts": [
     "skills/agentforce/agent-testing-and-evaluation/scripts/check_agent_testing_and_evaluation.py"
   ],
+  "status": "stable",
   "tags": [
     "agentforce",
     "agent-testing",

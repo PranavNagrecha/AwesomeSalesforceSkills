@@ -112,6 +112,7 @@
   "scripts": [
     "skills/apex/marketing-cloud-api/scripts/check_marketing_cloud_api.py"
   ],
+  "status": "stable",
   "tags": [
     "marketing-cloud",
     "rest-api",

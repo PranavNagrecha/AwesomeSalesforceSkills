@@ -85,6 +85,7 @@
   "scripts": [
     "skills/omnistudio/omnistudio-vs-flow-decision/scripts/check_omnistudio_vs_flow_decision.py"
   ],
+  "status": "stable",
   "tags": [
     "omnistudio",
     "flow",

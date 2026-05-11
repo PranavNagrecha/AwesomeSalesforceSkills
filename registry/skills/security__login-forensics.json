@@ -133,6 +133,7 @@
   "scripts": [
     "skills/security/login-forensics/scripts/check_login_forensics.py"
   ],
+  "status": "stable",
   "tags": [
     "login-forensics",
     "login-history",

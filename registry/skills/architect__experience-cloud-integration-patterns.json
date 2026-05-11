@@ -160,6 +160,7 @@
   "scripts": [
     "skills/architect/experience-cloud-integration-patterns/scripts/check_experience_cloud_integration_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "experience-cloud",
     "sso",

@@ -126,6 +126,7 @@
   "scripts": [
     "skills/admin/fsl-mobile-workflow-design/scripts/check_fsl_mobile_workflow_design.py"
   ],
+  "status": "stable",
   "tags": [
     "fsl-mobile",
     "field-service",

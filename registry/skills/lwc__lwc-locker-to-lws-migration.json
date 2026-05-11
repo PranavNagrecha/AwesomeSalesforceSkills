@@ -149,6 +149,7 @@
   "scripts": [
     "skills/lwc/lwc-locker-to-lws-migration/scripts/check_lwc_locker_to_lws_migration.py"
   ],
+  "status": "stable",
   "tags": [
     "lwc",
     "locker",

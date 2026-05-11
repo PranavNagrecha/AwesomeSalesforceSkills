@@ -92,6 +92,7 @@
   "scripts": [
     "skills/data/salesforce-backup-and-restore/scripts/check_salesforce_backup_and_restore.py"
   ],
+  "status": "stable",
   "tags": [
     "backup",
     "disaster-recovery",

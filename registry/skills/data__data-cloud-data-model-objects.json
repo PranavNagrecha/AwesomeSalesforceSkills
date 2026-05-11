@@ -89,6 +89,7 @@
   "scripts": [
     "skills/data/data-cloud-data-model-objects/scripts/check_data_cloud_data_model_objects.py"
   ],
+  "status": "stable",
   "tags": [
     "data-cloud",
     "DMO",

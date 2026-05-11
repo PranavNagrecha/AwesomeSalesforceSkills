@@ -87,6 +87,7 @@
   "scripts": [
     "skills/apex/apex-rest-services/scripts/check_apex_rest_services.py"
   ],
+  "status": "stable",
   "tags": [
     "apex-rest",
     "restresource",

@@ -58,6 +58,7 @@
   "scripts": [
     "skills/agentforce/prompt-injection-defense/scripts/check_prompt_injection_defense.py"
   ],
+  "status": "stable",
   "tags": [
     "agentforce",
     "security",

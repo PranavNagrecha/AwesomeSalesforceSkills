@@ -106,6 +106,7 @@
   "scripts": [
     "skills/security/connected-app-security-policies/scripts/check_connected_app_security_policies.py"
   ],
+  "status": "stable",
   "tags": [
     "connected-app",
     "oauth",

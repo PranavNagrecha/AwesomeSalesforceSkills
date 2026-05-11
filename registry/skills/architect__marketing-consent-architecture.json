@@ -125,6 +125,7 @@
   "scripts": [
     "skills/architect/marketing-consent-architecture/scripts/check_marketing_consent_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "consent",
     "marketing-consent",

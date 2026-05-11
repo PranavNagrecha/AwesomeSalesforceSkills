@@ -130,6 +130,7 @@
   "scripts": [
     "skills/data/attachment-to-files-migration/scripts/check_attachment_to_files_migration.py"
   ],
+  "status": "stable",
   "tags": [
     "attachments",
     "notes",

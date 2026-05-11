@@ -102,6 +102,7 @@
   "scripts": [
     "skills/admin/reports-and-dashboards/scripts/check_report_inventory.py"
   ],
+  "status": "stable",
   "tags": [
     "reports",
     "dashboards",

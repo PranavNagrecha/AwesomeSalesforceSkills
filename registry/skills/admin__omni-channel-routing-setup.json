@@ -132,6 +132,7 @@
   "scripts": [
     "skills/admin/omni-channel-routing-setup/scripts/check_omni_channel_routing_setup.py"
   ],
+  "status": "stable",
   "tags": [
     "omni-channel",
     "routing-configuration",

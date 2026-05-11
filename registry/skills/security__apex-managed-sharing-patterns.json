@@ -59,6 +59,7 @@
   "scripts": [
     "skills/security/apex-managed-sharing-patterns/scripts/check_apex_managed_sharing_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "sharing",
     "apex",

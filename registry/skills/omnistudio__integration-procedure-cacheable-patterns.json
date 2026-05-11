@@ -78,6 +78,7 @@
   "scripts": [
     "skills/omnistudio/integration-procedure-cacheable-patterns/scripts/check_integration_procedure_cacheable_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "omnistudio",
     "integration-procedure",

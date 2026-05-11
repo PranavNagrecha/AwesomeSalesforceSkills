@@ -50,7 +50,7 @@
     "ec2900f5ee829abbfcb9",
     "f8426ddcf2750204dd43"
   ],
-  "content_hash": "e3c324f9843cb786c5f53ed1cd39e322926e91bdf9a4c29417928fc39b8722c8",
+  "content_hash": "ff6942401497e683afe4c574f449c4e3beb7a2fb5d21d0beeb0e7aa612db8ea7",
   "dependencies": [],
   "description": "Dependent picklists in Salesforce: controlling field (picklist or checkbox), dependent picklist, valueSettings matrix in metadata, API behavior via SOAP/REST, LWC lightning-combobox with dependency. NOT for record types (use admin/record-types). NOT for validation rules.",
   "file_location": "skills/admin/field-dependency-and-controlling",
@@ -80,6 +80,7 @@
   "scripts": [
     "skills/admin/field-dependency-and-controlling/scripts/check_field_dependency_and_controlling.py"
   ],
+  "status": "stub",
   "tags": [
     "admin",
     "picklist",

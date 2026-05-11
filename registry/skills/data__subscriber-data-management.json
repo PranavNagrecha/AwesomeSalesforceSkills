@@ -144,6 +144,7 @@
   "scripts": [
     "skills/data/subscriber-data-management/scripts/check_subscriber_data_management.py"
   ],
+  "status": "stable",
   "tags": [
     "subscriber-data-management",
     "marketing-cloud",

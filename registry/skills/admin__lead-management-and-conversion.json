@@ -117,6 +117,7 @@
   "scripts": [
     "skills/admin/lead-management-and-conversion/scripts/check_lead_management_and_conversion.py"
   ],
+  "status": "stable",
   "tags": [
     "leads",
     "lead-conversion",

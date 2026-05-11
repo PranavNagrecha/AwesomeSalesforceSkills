@@ -124,6 +124,7 @@
   "scripts": [
     "skills/architect/industries-data-model/scripts/check_industries_data_model.py"
   ],
+  "status": "stable",
   "tags": [
     "industries",
     "data-model",

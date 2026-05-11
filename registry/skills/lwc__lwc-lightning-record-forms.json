@@ -83,6 +83,7 @@
   "scripts": [
     "skills/lwc/lwc-lightning-record-forms/scripts/check_lwc_lightning_record_forms.py"
   ],
+  "status": "stable",
   "tags": [
     "lds",
     "record-forms",

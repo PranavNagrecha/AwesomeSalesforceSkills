@@ -127,6 +127,7 @@
   "scripts": [
     "skills/admin/commerce-order-management/scripts/check_commerce_order_management.py"
   ],
+  "status": "stable",
   "tags": [
     "order-management",
     "oms",

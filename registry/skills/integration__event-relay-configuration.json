@@ -79,6 +79,7 @@
   "scripts": [
     "skills/integration/event-relay-configuration/scripts/check_event_relay_configuration.py"
   ],
+  "status": "stable",
   "tags": [
     "integration",
     "event-relay",

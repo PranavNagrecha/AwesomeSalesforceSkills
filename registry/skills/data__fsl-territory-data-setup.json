@@ -88,6 +88,7 @@
   "scripts": [
     "skills/data/fsl-territory-data-setup/scripts/check_fsl_territory_data_setup.py"
   ],
+  "status": "stable",
   "tags": [
     "fsl",
     "field-service",

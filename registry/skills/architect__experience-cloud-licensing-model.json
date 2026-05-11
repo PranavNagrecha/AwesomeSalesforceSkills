@@ -105,6 +105,7 @@
   "scripts": [
     "skills/architect/experience-cloud-licensing-model/scripts/check_experience_cloud_licensing_model.py"
   ],
+  "status": "stable",
   "tags": [
     "experience-cloud",
     "licensing",

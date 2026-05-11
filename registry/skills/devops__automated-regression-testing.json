@@ -115,6 +115,7 @@
   "scripts": [
     "skills/devops/automated-regression-testing/scripts/check_automated_regression_testing.py"
   ],
+  "status": "stable",
   "tags": [
     "automated-regression-testing",
     "utam",

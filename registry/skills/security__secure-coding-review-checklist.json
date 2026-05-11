@@ -99,6 +99,7 @@
   "scripts": [
     "skills/security/secure-coding-review-checklist/scripts/check_secure_coding_review_checklist.py"
   ],
+  "status": "stable",
   "tags": [
     "secure-coding-review-checklist",
     "crud-fls",

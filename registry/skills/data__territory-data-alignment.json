@@ -147,6 +147,7 @@
   "scripts": [
     "skills/data/territory-data-alignment/scripts/check_territory_data_alignment.py"
   ],
+  "status": "stable",
   "tags": [
     "etm",
     "territory-management-2",

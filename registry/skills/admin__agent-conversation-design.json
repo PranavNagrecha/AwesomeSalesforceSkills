@@ -134,6 +134,7 @@
   "scripts": [
     "skills/admin/agent-conversation-design/scripts/check_agent_conversation_design.py"
   ],
+  "status": "stable",
   "tags": [
     "conversation-design",
     "utterance-authoring",

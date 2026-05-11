@@ -123,6 +123,7 @@
   "scripts": [
     "skills/apex/einstein-activity-capture-api/scripts/check_einstein_activity_capture_api.py"
   ],
+  "status": "stable",
   "tags": [
     "einstein-activity-capture",
     "activity-metrics",

@@ -130,6 +130,7 @@
   "scripts": [
     "skills/apex/fsc-document-generation/scripts/check_fsc_document_generation.py"
   ],
+  "status": "stable",
   "tags": [
     "fsc",
     "document-generation",

@@ -94,6 +94,7 @@
   "scripts": [
     "skills/apex/clinical-decision-support/scripts/check_clinical_decision_support.py"
   ],
+  "status": "stable",
   "tags": [
     "health-cloud",
     "clinical-decision-support",

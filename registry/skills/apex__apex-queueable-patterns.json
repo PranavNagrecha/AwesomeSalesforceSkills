@@ -111,6 +111,7 @@
   "scripts": [
     "skills/apex/apex-queueable-patterns/scripts/check_apex_queueable_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "queueable",
     "async-apex",

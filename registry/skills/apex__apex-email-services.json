@@ -114,6 +114,7 @@
   "scripts": [
     "skills/apex/apex-email-services/scripts/check_apex_email_services.py"
   ],
+  "status": "stable",
   "tags": [
     "apex-email-services",
     "inbound-email",

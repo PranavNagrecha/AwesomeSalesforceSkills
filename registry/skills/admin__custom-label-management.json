@@ -48,7 +48,7 @@
     "f7d504014c62e05d594e",
     "fe7bf0fa4ec80761fa1f"
   ],
-  "content_hash": "9f3998dac1af8279e86c589e5ad92f377efe05e02f729bddfa4143e95097bb29",
+  "content_hash": "b7f377ebcfb28b1a0ca55abf50586c334cde93d606ecbfb08ea842398cbaf71d",
   "dependencies": [],
   "description": "Custom Labels for i18n, configuration strings, and UI text: translation workbench, Apex System.Label, LWC @salesforce/label imports, 1,000-char limit. NOT for custom settings or custom metadata types (use custom-metadata-types). NOT for platform cache (use caching-strategies).",
   "file_location": "skills/admin/custom-label-management",
@@ -79,6 +79,7 @@
   "scripts": [
     "skills/admin/custom-label-management/scripts/check_custom_label_management.py"
   ],
+  "status": "stub",
   "tags": [
     "custom-labels",
     "i18n",

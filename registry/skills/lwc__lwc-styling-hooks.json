@@ -109,6 +109,7 @@
   "scripts": [
     "skills/lwc/lwc-styling-hooks/scripts/check_lwc_styling_hooks.py"
   ],
+  "status": "stable",
   "tags": [
     "lwc-styling-hooks",
     "slds",

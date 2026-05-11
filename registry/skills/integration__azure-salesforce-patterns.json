@@ -116,6 +116,7 @@
   "scripts": [
     "skills/integration/azure-salesforce-patterns/scripts/check_azure_salesforce_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "azure",
     "azure-service-bus",

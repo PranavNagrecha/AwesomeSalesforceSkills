@@ -109,6 +109,7 @@
   "scripts": [
     "skills/apex/fsl-scheduling-api/scripts/check_fsl_scheduling_api.py"
   ],
+  "status": "stable",
   "tags": [
     "fsl",
     "field-service",

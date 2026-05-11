@@ -127,6 +127,7 @@
   "scripts": [
     "skills/devops/copado-essentials/scripts/check_copado_essentials.py"
   ],
+  "status": "stable",
   "tags": [
     "copado-essentials",
     "user-stories",

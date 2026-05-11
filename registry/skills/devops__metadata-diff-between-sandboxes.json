@@ -87,6 +87,7 @@
   "scripts": [
     "skills/devops/metadata-diff-between-sandboxes/scripts/check_metadata_diff_between_sandboxes.py"
   ],
+  "status": "stable",
   "tags": [
     "org-diff",
     "drift",

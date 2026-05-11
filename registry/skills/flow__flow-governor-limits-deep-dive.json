@@ -92,6 +92,7 @@
   "scripts": [
     "skills/flow/flow-governor-limits-deep-dive/scripts/check_flow_governor_limits_deep_dive.py"
   ],
+  "status": "stable",
   "tags": [
     "flow",
     "governor-limits",

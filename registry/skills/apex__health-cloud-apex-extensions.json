@@ -132,6 +132,7 @@
   "scripts": [
     "skills/apex/health-cloud-apex-extensions/scripts/check_health_cloud_apex_extensions.py"
   ],
+  "status": "stable",
   "tags": [
     "health-cloud",
     "apex",

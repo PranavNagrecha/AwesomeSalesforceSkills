@@ -60,6 +60,7 @@
   "scripts": [
     "skills/security/privileged-access-management/scripts/check_privileged_access_management.py"
   ],
+  "status": "stable",
   "tags": [
     "pam",
     "admin",

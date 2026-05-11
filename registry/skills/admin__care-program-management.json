@@ -115,6 +115,7 @@
   "scripts": [
     "skills/admin/care-program-management/scripts/check_care_program_management.py"
   ],
+  "status": "stable",
   "tags": [
     "care-program-management",
     "health-cloud",

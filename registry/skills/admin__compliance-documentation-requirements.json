@@ -151,6 +151,7 @@
   "scripts": [
     "skills/admin/compliance-documentation-requirements/scripts/check_compliance_documentation_requirements.py"
   ],
+  "status": "stable",
   "tags": [
     "compliance",
     "kyc",

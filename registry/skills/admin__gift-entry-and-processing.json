@@ -123,6 +123,7 @@
   "scripts": [
     "skills/admin/gift-entry-and-processing/scripts/check_gift_entry_and_processing.py"
   ],
+  "status": "stable",
   "tags": [
     "npsp",
     "nonprofit",

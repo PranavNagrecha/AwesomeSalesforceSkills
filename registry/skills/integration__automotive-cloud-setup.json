@@ -95,6 +95,7 @@
   "scripts": [
     "skills/integration/automotive-cloud-setup/scripts/check_automotive_cloud_setup.py"
   ],
+  "status": "stable",
   "tags": [
     "automotive-cloud",
     "vehicle",

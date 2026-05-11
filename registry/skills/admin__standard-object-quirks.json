@@ -99,6 +99,7 @@
   "scripts": [
     "skills/admin/standard-object-quirks/scripts/check_standard_object_quirks.py"
   ],
+  "status": "stable",
   "tags": [
     "standard-object-quirks",
     "polymorphic-lookups",

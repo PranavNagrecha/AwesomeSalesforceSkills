@@ -126,6 +126,7 @@
   "scripts": [
     "skills/data/partner-data-access-patterns/scripts/check_partner_data_access_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "partner-community",
     "prm",

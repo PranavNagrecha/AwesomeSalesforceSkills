@@ -117,6 +117,7 @@
   "scripts": [
     "skills/architect/ai-agent-org-integration-architecture/scripts/check_ai_agent_org_integration_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "architecture",
     "agentforce",

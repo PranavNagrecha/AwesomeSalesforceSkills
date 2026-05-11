@@ -126,6 +126,7 @@
   "scripts": [
     "skills/architect/ai-ready-data-architecture/scripts/check_ai_ready_data_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "ai",
     "data-cloud",

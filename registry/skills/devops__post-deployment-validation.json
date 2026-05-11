@@ -113,6 +113,7 @@
   "scripts": [
     "skills/devops/post-deployment-validation/scripts/check_post_deployment_validation.py"
   ],
+  "status": "stable",
   "tags": [
     "post-deployment-validation",
     "deployment-verification",

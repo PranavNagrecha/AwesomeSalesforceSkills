@@ -84,6 +84,7 @@
   "scripts": [
     "skills/admin/einstein-analytics-basics/scripts/check_analytics_assets.py"
   ],
+  "status": "stable",
   "tags": [
     "crm-analytics",
     "reports",

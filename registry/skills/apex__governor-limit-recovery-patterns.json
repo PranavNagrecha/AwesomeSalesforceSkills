@@ -135,6 +135,7 @@
   "scripts": [
     "skills/apex/governor-limit-recovery-patterns/scripts/check_governor_limit_recovery_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "governor-limits",
     "LimitException",

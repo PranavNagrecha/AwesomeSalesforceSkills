@@ -140,6 +140,7 @@
   "scripts": [
     "skills/architect/ai-platform-architecture/scripts/check_ai_platform_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "ai-platform-architecture",
     "model-selection",

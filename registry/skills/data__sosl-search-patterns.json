@@ -81,6 +81,7 @@
   "scripts": [
     "skills/data/sosl-search-patterns/scripts/check_sosl_search_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "sosl",
     "search-query",

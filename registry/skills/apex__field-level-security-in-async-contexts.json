@@ -103,6 +103,7 @@
   "scripts": [
     "skills/apex/field-level-security-in-async-contexts/scripts/check_field_level_security_in_async_contexts.py"
   ],
+  "status": "stable",
   "tags": [
     "apex",
     "security",

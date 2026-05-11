@@ -134,6 +134,7 @@
   "scripts": [
     "skills/omnistudio/industries-api-extensions/scripts/check_industries_api_extensions.py"
   ],
+  "status": "stable",
   "tags": [
     "industries-api",
     "insurance",

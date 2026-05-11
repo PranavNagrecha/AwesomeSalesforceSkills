@@ -120,6 +120,7 @@
   "scripts": [
     "skills/architect/migration-architecture-patterns/scripts/check_migration_architecture_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "org-migration",
     "org-merge",

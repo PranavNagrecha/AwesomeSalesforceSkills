@@ -136,6 +136,7 @@
   "scripts": [
     "skills/architect/experience-cloud-performance/scripts/check_experience_cloud_performance.py"
   ],
+  "status": "stable",
   "tags": [
     "experience-cloud",
     "cdn",

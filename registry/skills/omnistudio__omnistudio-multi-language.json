@@ -55,6 +55,7 @@
   "scripts": [
     "skills/omnistudio/omnistudio-multi-language/scripts/check_omnistudio_multi_language.py"
   ],
+  "status": "stable",
   "tags": [
     "omnistudio",
     "i18n",

@@ -142,6 +142,7 @@
   "scripts": [
     "skills/data/service-metrics-data-model/scripts/check_service_metrics_data_model.py"
   ],
+  "status": "stable",
   "tags": [
     "service-metrics",
     "case",

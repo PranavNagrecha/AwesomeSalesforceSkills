@@ -90,6 +90,7 @@
   "scripts": [
     "skills/data/fsl-work-order-migration/scripts/check_fsl_work_order_migration.py"
   ],
+  "status": "stable",
   "tags": [
     "fsl",
     "field-service",

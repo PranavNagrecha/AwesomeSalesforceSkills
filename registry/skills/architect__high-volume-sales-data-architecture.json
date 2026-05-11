@@ -102,6 +102,7 @@
   "scripts": [
     "skills/architect/high-volume-sales-data-architecture/scripts/check_high_volume_sales_data_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "high-volume-sales-data-architecture",
     "data-skew",

@@ -92,6 +92,7 @@
   "scripts": [
     "skills/data/data-cloud-consent-and-privacy/scripts/check_data_cloud_consent_and_privacy.py"
   ],
+  "status": "stable",
   "tags": [
     "data-cloud",
     "consent",

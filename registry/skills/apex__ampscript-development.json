@@ -118,6 +118,7 @@
   "scripts": [
     "skills/apex/ampscript-development/scripts/check_ampscript_development.py"
   ],
+  "status": "stable",
   "tags": [
     "ampscript",
     "marketing-cloud",

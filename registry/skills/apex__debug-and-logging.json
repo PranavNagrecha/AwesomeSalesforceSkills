@@ -84,6 +84,7 @@
   "scripts": [
     "skills/apex/debug-and-logging/scripts/check_debug_and_logging.py"
   ],
+  "status": "stable",
   "tags": [
     "debug-logs",
     "system-debug",

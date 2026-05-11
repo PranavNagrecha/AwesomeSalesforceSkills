@@ -132,6 +132,7 @@
   "scripts": [
     "skills/security/field-audit-trail/scripts/check_field_audit_trail.py"
   ],
+  "status": "stable",
   "tags": [
     "field-audit-trail",
     "shield",

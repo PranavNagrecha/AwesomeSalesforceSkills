@@ -106,6 +106,7 @@
   "scripts": [
     "skills/admin/sales-engagement-cadences/scripts/check_sales_engagement_cadences.py"
   ],
+  "status": "stable",
   "tags": [
     "sales-engagement",
     "cadences",

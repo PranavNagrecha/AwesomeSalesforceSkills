@@ -124,6 +124,7 @@
   "scripts": [
     "skills/architect/multi-bu-marketing-architecture/scripts/check_multi_bu_marketing_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "marketing-cloud",
     "multi-bu",

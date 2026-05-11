@@ -158,6 +158,7 @@
   "scripts": [
     "skills/apex/tooling-api-patterns/scripts/check_tooling_api_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "tooling-api",
     "apex",

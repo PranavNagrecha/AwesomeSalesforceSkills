@@ -129,6 +129,7 @@
   "scripts": [
     "skills/lwc/commerce-lwc-components/scripts/check_commerce_lwc_components.py"
   ],
+  "status": "stable",
   "tags": [
     "commerce-lwc-components",
     "b2b-commerce",

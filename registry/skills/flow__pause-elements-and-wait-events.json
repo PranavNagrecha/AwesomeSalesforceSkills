@@ -142,6 +142,7 @@
   "scripts": [
     "skills/flow/pause-elements-and-wait-events/scripts/check_pause_elements_and_wait_events.py"
   ],
+  "status": "stable",
   "tags": [
     "pause-element",
     "wait-element",

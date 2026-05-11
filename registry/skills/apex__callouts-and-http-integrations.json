@@ -85,6 +85,7 @@
   "scripts": [
     "skills/apex/callouts-and-http-integrations/scripts/check_callouts_and_http_integrations.py"
   ],
+  "status": "stable",
   "tags": [
     "http-callout",
     "named-credentials",

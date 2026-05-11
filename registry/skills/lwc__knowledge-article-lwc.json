@@ -128,6 +128,7 @@
   "scripts": [
     "skills/lwc/knowledge-article-lwc/scripts/check_knowledge_article_lwc.py"
   ],
+  "status": "stable",
   "tags": [
     "knowledge",
     "knowledge-article",

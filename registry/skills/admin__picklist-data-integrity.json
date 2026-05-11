@@ -106,6 +106,7 @@
   "scripts": [
     "skills/admin/picklist-data-integrity/scripts/check_picklist_data_integrity.py"
   ],
+  "status": "stable",
   "tags": [
     "picklist",
     "global-value-set",

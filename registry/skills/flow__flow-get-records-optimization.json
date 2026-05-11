@@ -73,6 +73,7 @@
   "scripts": [
     "skills/flow/flow-get-records-optimization/scripts/check_flow_get_records_optimization.py"
   ],
+  "status": "stable",
   "tags": [
     "flow",
     "get-records",

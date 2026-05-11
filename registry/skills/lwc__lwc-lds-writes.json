@@ -113,6 +113,7 @@
   "scripts": [
     "skills/lwc/lwc-lds-writes/scripts/check_lwc_lds_writes.py"
   ],
+  "status": "stable",
   "tags": [
     "lds-writes",
     "uiRecordApi",

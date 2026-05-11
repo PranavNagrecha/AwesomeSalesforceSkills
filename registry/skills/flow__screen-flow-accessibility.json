@@ -76,6 +76,7 @@
   "scripts": [
     "skills/flow/screen-flow-accessibility/scripts/check_screen_flow_accessibility.py"
   ],
+  "status": "stable",
   "tags": [
     "flow",
     "screen-flow",

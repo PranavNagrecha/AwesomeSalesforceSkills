@@ -145,6 +145,7 @@
   "scripts": [
     "skills/apex/long-running-process-orchestration/scripts/check_long_running_process_orchestration.py"
   ],
+  "status": "stable",
   "tags": [
     "queueable",
     "finalizer",

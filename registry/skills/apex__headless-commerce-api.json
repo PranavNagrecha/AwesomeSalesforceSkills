@@ -152,6 +152,7 @@
   "scripts": [
     "skills/apex/headless-commerce-api/scripts/check_headless_commerce_api.py"
   ],
+  "status": "stable",
   "tags": [
     "headless-commerce",
     "SCAPI",

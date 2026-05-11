@@ -138,6 +138,7 @@
   "scripts": [
     "skills/apex/ai-model-integration-apex/scripts/check_ai_model_integration_apex.py"
   ],
+  "status": "stable",
   "tags": [
     "Apex",
     "AI",

@@ -85,6 +85,7 @@
   "scripts": [
     "skills/integration/sustainability-reporting/scripts/check_sustainability_reporting.py"
   ],
+  "status": "stable",
   "tags": [
     "net-zero-cloud",
     "sustainability",

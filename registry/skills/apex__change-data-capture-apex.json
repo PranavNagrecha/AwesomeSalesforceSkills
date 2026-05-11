@@ -118,6 +118,7 @@
   "scripts": [
     "skills/apex/change-data-capture-apex/scripts/check_change_data_capture_apex.py"
   ],
+  "status": "stable",
   "tags": [
     "change-data-capture",
     "CDC",

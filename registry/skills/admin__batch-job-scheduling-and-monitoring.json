@@ -92,6 +92,7 @@
   "scripts": [
     "skills/admin/batch-job-scheduling-and-monitoring/scripts/check_batch_job_scheduling_and_monitoring.py"
   ],
+  "status": "stable",
   "tags": [
     "batch-apex",
     "scheduled-jobs",

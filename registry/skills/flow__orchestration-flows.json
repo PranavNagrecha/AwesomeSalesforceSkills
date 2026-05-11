@@ -93,6 +93,7 @@
   "scripts": [
     "skills/flow/orchestration-flows/scripts/check_orchestration_flows.py"
   ],
+  "status": "stable",
   "tags": [
     "flow-orchestration",
     "work-items",

@@ -140,6 +140,7 @@
   "scripts": [
     "skills/architect/agent-console-requirements/scripts/check_agent_console_requirements.py"
   ],
+  "status": "stable",
   "tags": [
     "service-console",
     "agent-workspace",

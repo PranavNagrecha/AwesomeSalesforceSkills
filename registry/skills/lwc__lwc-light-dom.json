@@ -102,6 +102,7 @@
   "scripts": [
     "skills/lwc/lwc-light-dom/scripts/check_lwc_light_dom.py"
   ],
+  "status": "stable",
   "tags": [
     "lwc-light-dom",
     "light-dom",

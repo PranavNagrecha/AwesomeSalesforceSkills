@@ -86,6 +86,7 @@
   "scripts": [
     "skills/data/ai-training-data-preparation/scripts/check_ai_training_data_preparation.py"
   ],
+  "status": "stable",
   "tags": [
     "einstein",
     "machine-learning",

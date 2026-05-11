@@ -101,6 +101,7 @@
   "scripts": [
     "skills/devops/destructive-changes-deployment/scripts/check_destructive.py"
   ],
+  "status": "stable",
   "tags": [
     "destructive-changes",
     "metadata-deletion",

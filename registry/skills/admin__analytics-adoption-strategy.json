@@ -152,6 +152,7 @@
   "scripts": [
     "skills/admin/analytics-adoption-strategy/scripts/check_analytics_adoption_strategy.py"
   ],
+  "status": "stable",
   "tags": [
     "crm-analytics",
     "analytics-adoption",

@@ -123,6 +123,7 @@
   "scripts": [
     "skills/data/data-cloud-data-streams/scripts/check_data_cloud_data_streams.py"
   ],
+  "status": "stable",
   "tags": [
     "data-cloud",
     "data-streams",

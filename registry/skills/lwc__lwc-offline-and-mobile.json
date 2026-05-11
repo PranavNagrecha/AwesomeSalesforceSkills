@@ -79,6 +79,7 @@
   "scripts": [
     "skills/lwc/lwc-offline-and-mobile/scripts/check_lwc_offline_and_mobile.py"
   ],
+  "status": "stable",
   "tags": [
     "mobile-lwc",
     "offline",

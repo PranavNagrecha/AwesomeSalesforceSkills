@@ -136,6 +136,7 @@
   "scripts": [
     "skills/architect/crm-analytics-vs-tableau-decision/scripts/check_crm_analytics_vs_tableau_decision.py"
   ],
+  "status": "stable",
   "tags": [
     "crm-analytics",
     "tableau",

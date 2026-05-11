@@ -201,6 +201,7 @@
   "scripts": [
     "skills/data/case-history-migration/scripts/check_case_history_migration.py"
   ],
+  "status": "stable",
   "tags": [
     "case-migration",
     "email-message",

@@ -108,6 +108,7 @@
   "scripts": [
     "skills/integration/heroku-salesforce-integration/scripts/check_heroku_salesforce_integration.py"
   ],
+  "status": "stable",
   "tags": [
     "heroku",
     "heroku-connect",

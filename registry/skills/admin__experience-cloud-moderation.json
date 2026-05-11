@@ -102,6 +102,7 @@
   "scripts": [
     "skills/admin/experience-cloud-moderation/scripts/check_experience_cloud_moderation.py"
   ],
+  "status": "stable",
   "tags": [
     "experience-cloud",
     "moderation",

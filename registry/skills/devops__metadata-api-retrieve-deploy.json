@@ -52,7 +52,7 @@
     "f46bdc58e163a876f7c3",
     "fb51f90258df70eba892"
   ],
-  "content_hash": "18c90d1af0953dffa54b007d5bbc64e3dffef2643f4d1d0b715b334a455a48ca",
+  "content_hash": "5a1eb9b28e9d53810fb43195ad01eeae4baa177824d792e0fe37676afa8449e0",
   "dependencies": [],
   "description": "Metadata API retrieve/deploy via sf CLI and package.xml: manifest authoring, destructiveChanges, deploy options (checkOnly, testLevel, rollbackOnError), CI scripting. NOT for DX source format conversions (use salesforce-dx-source-tracking). NOT for unlocked packages (use unlocked-packages).",
   "file_location": "skills/devops/metadata-api-retrieve-deploy",
@@ -84,6 +84,7 @@
   "scripts": [
     "skills/devops/metadata-api-retrieve-deploy/scripts/check_metadata_api_retrieve_deploy.py"
   ],
+  "status": "stub",
   "tags": [
     "metadata-api",
     "sf-cli",

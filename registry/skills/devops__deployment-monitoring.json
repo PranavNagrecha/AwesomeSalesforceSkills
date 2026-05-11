@@ -145,6 +145,7 @@
   "scripts": [
     "skills/devops/deployment-monitoring/scripts/check_deployment_monitoring.py"
   ],
+  "status": "stable",
   "tags": [
     "deployment-monitoring",
     "deploy-status",

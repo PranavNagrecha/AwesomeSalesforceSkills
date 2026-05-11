@@ -119,6 +119,7 @@
   "scripts": [
     "skills/lwc/lwc-in-flow-screens/scripts/check_lwc_in_flow_screens.py"
   ],
+  "status": "stable",
   "tags": [
     "flow-screen",
     "lwc-in-flow",

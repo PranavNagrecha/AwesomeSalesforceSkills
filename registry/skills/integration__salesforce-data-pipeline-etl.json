@@ -58,6 +58,7 @@
   "scripts": [
     "skills/integration/salesforce-data-pipeline-etl/scripts/check_salesforce_data_pipeline_etl.py"
   ],
+  "status": "stable",
   "tags": [
     "etl",
     "bulk-api",

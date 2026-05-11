@@ -118,6 +118,7 @@
   "scripts": [
     "skills/agentforce/sales-coach-agent-rollout/scripts/check_sales_coach_agent_rollout.py"
   ],
+  "status": "stable",
   "tags": [
     "sales-coach-agent-rollout",
     "agentforce",

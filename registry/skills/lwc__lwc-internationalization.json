@@ -56,6 +56,7 @@
   "scripts": [
     "skills/lwc/lwc-internationalization/scripts/check_lwc_internationalization.py"
   ],
+  "status": "stable",
   "tags": [
     "i18n",
     "custom-labels",

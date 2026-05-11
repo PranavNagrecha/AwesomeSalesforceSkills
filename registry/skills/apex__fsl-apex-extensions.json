@@ -162,6 +162,7 @@
     "skills/apex/fsl-apex-extensions/scripts/check_fsl_apex.py",
     "skills/apex/fsl-apex-extensions/scripts/check_fsl_apex_extensions.py"
   ],
+  "status": "stable",
   "tags": [
     "fsl",
     "field-service",

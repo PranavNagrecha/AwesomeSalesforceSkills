@@ -80,6 +80,7 @@
   "scripts": [
     "skills/integration/outbound-webhook-from-salesforce/scripts/check_outbound_webhook_from_salesforce.py"
   ],
+  "status": "stable",
   "tags": [
     "integration",
     "webhook",

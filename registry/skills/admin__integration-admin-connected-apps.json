@@ -96,6 +96,7 @@
   "scripts": [
     "skills/admin/integration-admin-connected-apps/scripts/check_integration_admin_connected_apps.py"
   ],
+  "status": "stable",
   "tags": [
     "connected-app",
     "oauth",

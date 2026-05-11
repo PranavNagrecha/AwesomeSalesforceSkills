@@ -115,6 +115,7 @@
   "scripts": [
     "skills/admin/crm-analytics-app-creation/scripts/check_crm_analytics_app_creation.py"
   ],
+  "status": "stable",
   "tags": [
     "crm-analytics",
     "analytics-studio",

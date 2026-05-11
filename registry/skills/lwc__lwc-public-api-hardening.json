@@ -157,6 +157,7 @@
   "scripts": [
     "skills/lwc/lwc-public-api-hardening/scripts/check_lwc_public_api_hardening.py"
   ],
+  "status": "stable",
   "tags": [
     "lwc",
     "public-api",

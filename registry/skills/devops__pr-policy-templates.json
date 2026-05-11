@@ -58,6 +58,7 @@
   "scripts": [
     "skills/devops/pr-policy-templates/scripts/check_pr_policy_templates.py"
   ],
+  "status": "stable",
   "tags": [
     "pr",
     "github",

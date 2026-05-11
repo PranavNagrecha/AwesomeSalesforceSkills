@@ -111,6 +111,7 @@
   "scripts": [
     "skills/architect/salesforce-shield-architecture/scripts/check_salesforce_shield_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "shield",
     "platform-encryption",

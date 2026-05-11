@@ -120,6 +120,7 @@
   "scripts": [
     "skills/admin/data-cloud-calculated-insights/scripts/check_data_cloud_calculated_insights.py"
   ],
+  "status": "stable",
   "tags": [
     "data-cloud",
     "calculated-insights",

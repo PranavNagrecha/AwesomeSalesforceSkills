@@ -61,6 +61,7 @@
   "scripts": [
     "skills/security/customer-data-request-workflow/scripts/check_customer_data_request_workflow.py"
   ],
+  "status": "stable",
   "tags": [
     "privacy",
     "gdpr",

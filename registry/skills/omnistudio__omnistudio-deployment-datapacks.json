@@ -129,6 +129,7 @@
   "scripts": [
     "skills/omnistudio/omnistudio-deployment-datapacks/scripts/check_omnistudio_deployment_datapacks.py"
   ],
+  "status": "stable",
   "tags": [
     "omnistudio",
     "datapacks",

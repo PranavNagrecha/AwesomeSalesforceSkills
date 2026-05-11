@@ -95,6 +95,7 @@
   "scripts": [
     "skills/admin/record-type-strategy-at-scale/scripts/check_record_type_strategy_at_scale.py"
   ],
+  "status": "stable",
   "tags": [
     "record-type-strategy-at-scale",
     "record-types",

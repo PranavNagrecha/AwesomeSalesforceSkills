@@ -88,6 +88,7 @@
   "scripts": [
     "skills/flow/flow-migration-from-trigger/scripts/check_flow_migration_from_trigger.py"
   ],
+  "status": "stable",
   "tags": [
     "flow",
     "apex",

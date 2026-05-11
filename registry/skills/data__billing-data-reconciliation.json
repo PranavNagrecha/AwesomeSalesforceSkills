@@ -148,6 +148,7 @@
   "scripts": [
     "skills/data/billing-data-reconciliation/scripts/check_billing_data_reconciliation.py"
   ],
+  "status": "stable",
   "tags": [
     "billing-data-reconciliation",
     "salesforce-billing",

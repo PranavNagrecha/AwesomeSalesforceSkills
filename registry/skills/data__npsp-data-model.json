@@ -116,6 +116,7 @@
   "scripts": [
     "skills/data/npsp-data-model/scripts/check_npsp_data_model.py"
   ],
+  "status": "stable",
   "tags": [
     "npsp",
     "data-model",

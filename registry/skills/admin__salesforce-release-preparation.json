@@ -129,6 +129,7 @@
   "scripts": [
     "skills/admin/salesforce-release-preparation/scripts/check_salesforce_release_preparation.py"
   ],
+  "status": "stable",
   "tags": [
     "release-preparation",
     "release-readiness",

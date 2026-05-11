@@ -110,6 +110,7 @@
   "scripts": [
     "skills/architect/metadata-coverage-and-dependencies/scripts/check_metadata_coverage_and_dependencies.py"
   ],
+  "status": "stable",
   "tags": [
     "metadata-api",
     "metadata-coverage",

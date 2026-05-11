@@ -95,6 +95,7 @@
   "scripts": [
     "skills/admin/agent-output-formats/scripts/check_agent_output_formats.py"
   ],
+  "status": "stable",
   "tags": [
     "agent-output",
     "conversion",

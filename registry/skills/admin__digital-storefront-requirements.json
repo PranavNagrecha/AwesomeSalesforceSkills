@@ -152,6 +152,7 @@
   "scripts": [
     "skills/admin/digital-storefront-requirements/scripts/check_digital_storefront_requirements.py"
   ],
+  "status": "stable",
   "tags": [
     "commerce-cloud",
     "SFRA",

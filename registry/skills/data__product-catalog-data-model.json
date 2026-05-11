@@ -134,6 +134,7 @@
   "scripts": [
     "skills/data/product-catalog-data-model/scripts/check_product_catalog_data_model.py"
   ],
+  "status": "stable",
   "tags": [
     "product-catalog",
     "pricebook",

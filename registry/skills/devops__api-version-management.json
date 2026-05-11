@@ -127,6 +127,7 @@
   "scripts": [
     "skills/devops/api-version-management/scripts/check_api_version_management.py"
   ],
+  "status": "stable",
   "tags": [
     "api-version",
     "metadata",

@@ -134,6 +134,11 @@ def search_skill(
                     "description": record.get("description"),
                     "file_location": record.get("file_location"),
                     "tags": record.get("tags", []),
+                    # Lifecycle status. Defaults to "stable" when the record
+                    # omits it. "stub" flags skills whose reference files
+                    # still contain TODO placeholders — agents should treat
+                    # the body as a hint and avoid quoting the references.
+                    "status": record.get("status", "stable"),
                 }
             )
         enriched_skills.append(entry)

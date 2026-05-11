@@ -87,6 +87,7 @@
   "scripts": [
     "skills/architect/revenue-cloud-architecture/scripts/check_revenue_cloud_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "revenue-cloud",
     "rlm",

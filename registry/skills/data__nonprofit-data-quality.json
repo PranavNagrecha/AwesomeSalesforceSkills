@@ -128,6 +128,7 @@
   "scripts": [
     "skills/data/nonprofit-data-quality/scripts/check_nonprofit_data_quality.py"
   ],
+  "status": "stable",
   "tags": [
     "npsp",
     "nonprofit-data-quality",

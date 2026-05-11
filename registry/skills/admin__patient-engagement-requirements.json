@@ -92,6 +92,7 @@
   "scripts": [
     "skills/admin/patient-engagement-requirements/scripts/check_patient_engagement_requirements.py"
   ],
+  "status": "stable",
   "tags": [
     "health-cloud",
     "patient-engagement",

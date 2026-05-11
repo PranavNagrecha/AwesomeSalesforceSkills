@@ -139,6 +139,7 @@
   "scripts": [
     "skills/architect/analytics-security-architecture/scripts/check_analytics_security_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "crm-analytics",
     "security",

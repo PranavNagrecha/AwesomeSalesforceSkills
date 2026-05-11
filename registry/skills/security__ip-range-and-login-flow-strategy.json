@@ -115,6 +115,7 @@
   "scripts": [
     "skills/security/ip-range-and-login-flow-strategy/scripts/check_ip_range_and_login_flow_strategy.py"
   ],
+  "status": "stable",
   "tags": [
     "login-flow",
     "conditional-mfa",

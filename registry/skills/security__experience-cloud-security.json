@@ -87,6 +87,7 @@
   "scripts": [
     "skills/security/experience-cloud-security/scripts/check_experience_cloud_security.py"
   ],
+  "status": "stable",
   "tags": [
     "experience-cloud",
     "external-sharing",

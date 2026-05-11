@@ -83,6 +83,7 @@
   "scripts": [
     "skills/apex/soql-null-ordering-patterns/scripts/check_soql_null_ordering_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "soql",
     "apex",

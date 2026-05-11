@@ -98,6 +98,7 @@
   "scripts": [
     "skills/integration/idempotent-integration-patterns/scripts/check_idempotent_integration_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "idempotent",
     "external-id",

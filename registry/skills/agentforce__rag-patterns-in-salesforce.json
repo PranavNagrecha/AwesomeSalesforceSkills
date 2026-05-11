@@ -145,6 +145,7 @@
   "scripts": [
     "skills/agentforce/rag-patterns-in-salesforce/scripts/check_rag_patterns_in_salesforce.py"
   ],
+  "status": "stable",
   "tags": [
     "rag",
     "data-cloud",

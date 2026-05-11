@@ -93,6 +93,7 @@
   "scripts": [
     "skills/data/gift-history-import/scripts/check_gift_history_import.py"
   ],
+  "status": "stable",
   "tags": [
     "gift-import",
     "npsp",

@@ -110,6 +110,7 @@
   "scripts": [
     "skills/admin/moscow-prioritization-for-sf-backlog/scripts/check_moscow_prioritization_for_sf_backlog.py"
   ],
+  "status": "stable",
   "tags": [
     "moscow-prioritization",
     "backlog-management",

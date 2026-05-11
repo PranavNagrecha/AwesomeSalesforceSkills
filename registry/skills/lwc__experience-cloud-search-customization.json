@@ -127,6 +127,7 @@
   "scripts": [
     "skills/lwc/experience-cloud-search-customization/scripts/check_experience_cloud_search_customization.py"
   ],
+  "status": "stable",
   "tags": [
     "experience-cloud",
     "search",

@@ -106,6 +106,7 @@
   "scripts": [
     "skills/devops/org-shape-and-scratch-definition/scripts/check_org_shape_and_scratch_definition.py"
   ],
+  "status": "stable",
   "tags": [
     "scratch-org-definition",
     "org-shape",

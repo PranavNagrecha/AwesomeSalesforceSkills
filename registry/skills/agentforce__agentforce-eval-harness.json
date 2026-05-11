@@ -103,6 +103,7 @@
   "scripts": [
     "skills/agentforce/agentforce-eval-harness/scripts/check_agentforce_eval_harness.py"
   ],
+  "status": "stable",
   "tags": [
     "agentforce",
     "evaluation",

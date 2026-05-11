@@ -92,6 +92,7 @@
   "scripts": [
     "skills/apex/trigger-framework/scripts/check_trigger_framework.py"
   ],
+  "status": "stable",
   "tags": [
     "triggers",
     "handler-pattern",

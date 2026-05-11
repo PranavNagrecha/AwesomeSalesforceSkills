@@ -126,6 +126,7 @@
   "scripts": [
     "skills/apex/case-trigger-patterns/scripts/check_case_trigger_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "case-trigger",
     "assignment-rules",

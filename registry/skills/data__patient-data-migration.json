@@ -142,6 +142,7 @@
   "scripts": [
     "skills/data/patient-data-migration/scripts/check_patient_data_migration.py"
   ],
+  "status": "stable",
   "tags": [
     "health-cloud",
     "patient-migration",

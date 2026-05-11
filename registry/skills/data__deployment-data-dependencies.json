@@ -88,6 +88,7 @@
   "scripts": [
     "skills/data/deployment-data-dependencies/scripts/check_deployment_data_dependencies.py"
   ],
+  "status": "stable",
   "tags": [
     "deployment",
     "data-records",

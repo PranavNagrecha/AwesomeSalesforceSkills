@@ -87,6 +87,7 @@
   "scripts": [
     "skills/flow/flow-bulkification/scripts/check_flow_bulkification.py"
   ],
+  "status": "stable",
   "tags": [
     "flow-bulkification",
     "governor-limits",

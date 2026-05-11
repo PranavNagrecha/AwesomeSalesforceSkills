@@ -140,6 +140,7 @@
   "scripts": [
     "skills/devops/cpq-deployment-administration/scripts/check_cpq_deployment_administration.py"
   ],
+  "status": "stable",
   "tags": [
     "cpq",
     "salesforce-cpq",

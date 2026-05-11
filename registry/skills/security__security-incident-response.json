@@ -166,6 +166,7 @@
   "scripts": [
     "skills/security/security-incident-response/scripts/check_security_incident_response.py"
   ],
+  "status": "stable",
   "tags": [
     "incident-response",
     "event-monitoring",

@@ -149,6 +149,7 @@
   "scripts": [
     "skills/omnistudio/vlocity-to-native-omnistudio-migration/scripts/check_vlocity_to_native_omnistudio_migration.py"
   ],
+  "status": "stable",
   "tags": [
     "omnistudio",
     "vlocity",

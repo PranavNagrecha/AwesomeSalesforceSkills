@@ -107,6 +107,7 @@
   "scripts": [
     "skills/integration/aws-salesforce-patterns/scripts/check_aws_salesforce_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "aws",
     "amazon-appflow",

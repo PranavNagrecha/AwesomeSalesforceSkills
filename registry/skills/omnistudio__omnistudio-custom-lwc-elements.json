@@ -142,6 +142,7 @@
   "scripts": [
     "skills/omnistudio/omnistudio-custom-lwc-elements/scripts/check_omnistudio_custom_lwc_elements.py"
   ],
+  "status": "stable",
   "tags": [
     "omnistudio",
     "omniscript",

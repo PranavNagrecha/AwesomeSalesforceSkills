@@ -85,6 +85,7 @@
   "scripts": [
     "skills/data/fsl-reporting-data-model/scripts/check_fsl_reporting_data_model.py"
   ],
+  "status": "stable",
   "tags": [
     "fsl",
     "field-service",

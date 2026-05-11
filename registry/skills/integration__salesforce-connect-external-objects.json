@@ -83,6 +83,7 @@
   "scripts": [
     "skills/integration/salesforce-connect-external-objects/scripts/check_salesforce_connect_external_objects.py"
   ],
+  "status": "stable",
   "tags": [
     "salesforce-connect",
     "external-objects",

@@ -94,6 +94,7 @@
   "scripts": [
     "skills/integration/data-cloud-activation-development/scripts/check_data_cloud_activation_development.py"
   ],
+  "status": "stable",
   "tags": [
     "data-cloud",
     "data-action-target",

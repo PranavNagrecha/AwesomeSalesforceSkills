@@ -83,6 +83,7 @@
   "scripts": [
     "skills/admin/formula-fields/scripts/check_formula_fields.py"
   ],
+  "status": "stable",
   "tags": [
     "formula-fields",
     "cross-object",

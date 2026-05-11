@@ -137,6 +137,7 @@
     "skills/apex/fsl-service-report-templates/scripts/check_fsl_service_report_templates.py",
     "skills/apex/fsl-service-report-templates/scripts/check_service_report.py"
   ],
+  "status": "stable",
   "tags": [
     "field-service",
     "fsl",

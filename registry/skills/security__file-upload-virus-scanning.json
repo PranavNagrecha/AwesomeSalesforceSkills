@@ -82,6 +82,7 @@
   "scripts": [
     "skills/security/file-upload-virus-scanning/scripts/check_file_upload_virus_scanning.py"
   ],
+  "status": "stable",
   "tags": [
     "security",
     "files",

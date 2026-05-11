@@ -115,6 +115,7 @@
   "scripts": [
     "skills/devops/metadata-api-coverage-gaps/scripts/check_metadata_api_coverage_gaps.py"
   ],
+  "status": "stable",
   "tags": [
     "metadata-api",
     "metadata-coverage",

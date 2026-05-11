@@ -130,6 +130,7 @@
   "scripts": [
     "skills/devops/cumulusci-automation/scripts/check_cumulusci_automation.py"
   ],
+  "status": "stable",
   "tags": [
     "cumulusci",
     "cumulusci-yml",

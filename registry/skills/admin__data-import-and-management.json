@@ -83,6 +83,7 @@
   "scripts": [
     "skills/admin/data-import-and-management/scripts/check_load_plan.py"
   ],
+  "status": "stable",
   "tags": [
     "data-load",
     "migration",

@@ -124,6 +124,7 @@
   "scripts": [
     "skills/apex/mcae-pardot-api/scripts/check_mcae_pardot_api.py"
   ],
+  "status": "stable",
   "tags": [
     "mcae",
     "pardot",

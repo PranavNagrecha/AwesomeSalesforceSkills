@@ -119,6 +119,7 @@
     "skills/integration/composite-api-patterns/scripts/check_composite_api.py",
     "skills/integration/composite-api-patterns/scripts/check_composite_api_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "composite-api",
     "sobject-collection",

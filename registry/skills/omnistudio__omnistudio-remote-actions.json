@@ -104,6 +104,7 @@
   "scripts": [
     "skills/omnistudio/omnistudio-remote-actions/scripts/check_omnistudio_remote_actions.py"
   ],
+  "status": "stable",
   "tags": [
     "omnistudio",
     "remote-action",

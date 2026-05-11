@@ -93,6 +93,7 @@
   "scripts": [
     "skills/integration/bulk-api-2-patterns/scripts/check_bulk_api_2_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "integration",
     "bulk-api-2",

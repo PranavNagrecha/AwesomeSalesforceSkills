@@ -49,7 +49,7 @@
     "fe39dbdbc470f78ef443",
     "fee43772f2fa4ede6c02"
   ],
-  "content_hash": "d70c193d111bc9e2cad65cb524adcdb06de15fd5e0408e03e9a18a4ef06d33ee",
+  "content_hash": "8a8559db2f5c258f10426bba509004236c6c7976df33e5e5a57e2401ed0721d5",
   "dependencies": [],
   "description": "Revenue Intelligence setup: pipeline inspection, deal insights, forecast accuracy analytics, Einstein analytics for sales leaders. NOT for CRM Analytics platform admin (use analytics-studio-admin). NOT for forecasting category setup only (use forecasting-and-quotas).",
   "file_location": "skills/admin/revenue-intelligence-setup",
@@ -81,6 +81,7 @@
   "scripts": [
     "skills/admin/revenue-intelligence-setup/scripts/check_revenue_intelligence_setup.py"
   ],
+  "status": "stub",
   "tags": [
     "revenue-intelligence",
     "pipeline-inspection",

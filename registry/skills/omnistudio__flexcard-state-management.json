@@ -83,6 +83,7 @@
   "scripts": [
     "skills/omnistudio/flexcard-state-management/scripts/check_flexcard_state_management.py"
   ],
+  "status": "stable",
   "tags": [
     "omnistudio",
     "flexcard",

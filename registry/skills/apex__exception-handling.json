@@ -90,6 +90,7 @@
   "scripts": [
     "skills/apex/exception-handling/scripts/check_exception_handling.py"
   ],
+  "status": "stable",
   "tags": [
     "exception-handling",
     "dml-exception",

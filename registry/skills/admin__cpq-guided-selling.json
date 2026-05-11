@@ -145,6 +145,7 @@
   "scripts": [
     "skills/admin/cpq-guided-selling/scripts/check_cpq_guided_selling.py"
   ],
+  "status": "stable",
   "tags": [
     "cpq",
     "guided-selling",

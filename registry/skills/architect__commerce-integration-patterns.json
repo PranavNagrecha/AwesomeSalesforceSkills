@@ -158,6 +158,7 @@
   "scripts": [
     "skills/architect/commerce-integration-patterns/scripts/check_commerce_integration_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "commerce-cloud",
     "CartExtension",

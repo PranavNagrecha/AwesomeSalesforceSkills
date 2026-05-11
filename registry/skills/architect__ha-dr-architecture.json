@@ -113,6 +113,7 @@
   "scripts": [
     "skills/architect/ha-dr-architecture/scripts/check_ha_dr.py"
   ],
+  "status": "stable",
   "tags": [
     "high-availability",
     "disaster-recovery",

@@ -114,6 +114,7 @@
   "scripts": [
     "skills/apex/apex-hardcoded-id-elimination/scripts/check_apex_hardcoded_id_elimination.py"
   ],
+  "status": "stable",
   "tags": [
     "apex",
     "hardcoded-id",

@@ -153,6 +153,7 @@
   "scripts": [
     "skills/architect/data-cloud-architecture/scripts/check_data_cloud_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "Data-Cloud",
     "data-lake",

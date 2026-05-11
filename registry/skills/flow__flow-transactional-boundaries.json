@@ -121,6 +121,7 @@
   "scripts": [
     "skills/flow/flow-transactional-boundaries/scripts/check_flow_transactional_boundaries.py"
   ],
+  "status": "stable",
   "tags": [
     "flow",
     "transactions",

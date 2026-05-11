@@ -118,6 +118,7 @@
   "scripts": [
     "skills/lwc/lwc-debugging-devtools/scripts/check_lwc_debugging_devtools.py"
   ],
+  "status": "stable",
   "tags": [
     "lwc-debugging-devtools",
     "debug-mode",

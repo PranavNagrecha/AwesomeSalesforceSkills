@@ -57,6 +57,7 @@
   "scripts": [
     "skills/devops/packaging-dependency-graph/scripts/check_packaging_dependency_graph.py"
   ],
+  "status": "stable",
   "tags": [
     "packaging",
     "2gp",

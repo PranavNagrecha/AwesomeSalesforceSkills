@@ -84,6 +84,7 @@
   "scripts": [
     "skills/apex/health-cloud-apis/scripts/check_health_cloud_apis.py"
   ],
+  "status": "stable",
   "tags": [
     "health-cloud",
     "fhir-api",

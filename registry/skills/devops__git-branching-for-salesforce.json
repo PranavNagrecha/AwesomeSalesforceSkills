@@ -112,6 +112,7 @@
   "scripts": [
     "skills/devops/git-branching-for-salesforce/scripts/check_git_branching_for_salesforce.py"
   ],
+  "status": "stable",
   "tags": [
     "git-branching-for-salesforce",
     "trunk-based-development",

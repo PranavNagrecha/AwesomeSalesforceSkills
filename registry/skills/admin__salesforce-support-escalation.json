@@ -124,6 +124,7 @@
   "scripts": [
     "skills/admin/salesforce-support-escalation/scripts/check_salesforce_support_escalation.py"
   ],
+  "status": "stable",
   "tags": [
     "salesforce-support",
     "severity-levels",

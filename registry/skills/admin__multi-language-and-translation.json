@@ -86,6 +86,7 @@
   "scripts": [
     "skills/admin/multi-language-and-translation/scripts/check_multi_language_and_translation.py"
   ],
+  "status": "stable",
   "tags": [
     "translation",
     "multi-language",

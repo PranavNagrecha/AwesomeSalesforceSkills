@@ -139,6 +139,7 @@
   "scripts": [
     "skills/admin/self-service-design/scripts/check_self_service_design.py"
   ],
+  "status": "stable",
   "tags": [
     "self-service-design",
     "case-deflection",

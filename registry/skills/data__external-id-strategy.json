@@ -130,6 +130,7 @@
   "scripts": [
     "skills/data/external-id-strategy/scripts/check_external_id_strategy.py"
   ],
+  "status": "stable",
   "tags": [
     "external-id",
     "upsert",

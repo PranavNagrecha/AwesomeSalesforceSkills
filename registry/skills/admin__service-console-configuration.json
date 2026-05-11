@@ -116,6 +116,7 @@
   "scripts": [
     "skills/admin/service-console-configuration/scripts/check_service_console_configuration.py"
   ],
+  "status": "stable",
   "tags": [
     "service-console",
     "console-navigation",

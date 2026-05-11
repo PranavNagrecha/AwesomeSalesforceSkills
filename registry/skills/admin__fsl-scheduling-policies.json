@@ -117,6 +117,7 @@
   "scripts": [
     "skills/admin/fsl-scheduling-policies/scripts/check_fsl_scheduling_policies.py"
   ],
+  "status": "stable",
   "tags": [
     "field-service",
     "fsl",

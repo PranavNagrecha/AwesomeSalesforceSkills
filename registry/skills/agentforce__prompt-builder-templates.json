@@ -137,6 +137,7 @@
   "scripts": [
     "skills/agentforce/prompt-builder-templates/scripts/check_prompt_builder_templates.py"
   ],
+  "status": "stable",
   "tags": [
     "prompt-builder",
     "generative-ai",

@@ -118,6 +118,7 @@
   "scripts": [
     "skills/architect/well-architected-review/scripts/check_well_architected_review.py"
   ],
+  "status": "stable",
   "tags": [
     "well-architected",
     "architect",

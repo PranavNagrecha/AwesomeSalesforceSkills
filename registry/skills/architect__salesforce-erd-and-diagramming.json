@@ -50,7 +50,7 @@
     "f2a5e010ec2f791e081b",
     "f2af967f45206ba53466"
   ],
-  "content_hash": "966a4bbcf48da594c96e093c11f530f806cff709650cb1f1a75546aafc2abd5d",
+  "content_hash": "0f83a0ac514e8c633796f128f08b23530dc2e092b6d70034721a56e607062a11",
   "dependencies": [],
   "description": "Salesforce ERD and architecture diagram generation: Mermaid/PlantUML data-model diagrams for Sales, Service, FSL, Commerce, Revenue Cloud; OAuth flow diagrams; integration architecture diagrams; object-relationship visualization. NOT for data model design decisions (use data-model-design-patterns). NOT for UI wireframing (use lightning-experience-design).",
   "file_location": "skills/architect/salesforce-erd-and-diagramming",
@@ -80,6 +80,7 @@
   "scripts": [
     "skills/architect/salesforce-erd-and-diagramming/scripts/check_salesforce_erd_and_diagramming.py"
   ],
+  "status": "stub",
   "tags": [
     "erd",
     "diagramming",

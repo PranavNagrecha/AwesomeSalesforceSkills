@@ -88,6 +88,7 @@
   "scripts": [
     "skills/admin/analytics-requirements-gathering/scripts/check_analytics_requirements_gathering.py"
   ],
+  "status": "stable",
   "tags": [
     "crm-analytics",
     "requirements-gathering",

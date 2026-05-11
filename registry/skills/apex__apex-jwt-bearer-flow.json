@@ -86,6 +86,7 @@
   "scripts": [
     "skills/apex/apex-jwt-bearer-flow/scripts/check_apex_jwt_bearer_flow.py"
   ],
+  "status": "stable",
   "tags": [
     "oauth",
     "jwt",

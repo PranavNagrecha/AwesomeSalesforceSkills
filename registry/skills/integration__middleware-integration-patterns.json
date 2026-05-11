@@ -140,6 +140,7 @@
   "scripts": [
     "skills/integration/middleware-integration-patterns/scripts/check_middleware_integration_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "middleware",
     "ipaas",

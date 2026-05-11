@@ -117,6 +117,7 @@
   "scripts": [
     "skills/integration/mulesoft-salesforce-connector/scripts/check_mulesoft_salesforce_connector.py"
   ],
+  "status": "stable",
   "tags": [
     "mulesoft",
     "anypoint-connector",

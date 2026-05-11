@@ -146,6 +146,7 @@
   "scripts": [
     "skills/architect/fhir-integration-architecture/scripts/check_fhir_integration_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "fhir",
     "health-cloud",

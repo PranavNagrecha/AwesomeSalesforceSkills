@@ -89,6 +89,7 @@
   "scripts": [
     "skills/apex/async-apex/scripts/check_async_apex.py"
   ],
+  "status": "stable",
   "tags": [
     "async-apex",
     "queueable",

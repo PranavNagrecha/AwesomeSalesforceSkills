@@ -81,6 +81,7 @@
   "scripts": [
     "skills/admin/sandbox-strategy/scripts/check_sandbox_plan.py"
   ],
+  "status": "stable",
   "tags": [
     "sandboxes",
     "refresh",

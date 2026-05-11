@@ -150,6 +150,7 @@
   "scripts": [
     "skills/admin/wealth-management-requirements/scripts/check_wealth_management_requirements.py"
   ],
+  "status": "stable",
   "tags": [
     "financial-services-cloud",
     "fsc",

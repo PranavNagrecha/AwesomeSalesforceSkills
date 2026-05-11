@@ -128,6 +128,7 @@
   "scripts": [
     "skills/architect/customer-effort-scoring/scripts/check_customer_effort_scoring.py"
   ],
+  "status": "stable",
   "tags": [
     "customer-effort-scoring",
     "CSAT",

@@ -91,6 +91,7 @@
   "scripts": [
     "skills/admin/flexcard-requirements/scripts/check_flexcard_requirements.py"
   ],
+  "status": "stable",
   "tags": [
     "omnistudio",
     "flexcard",

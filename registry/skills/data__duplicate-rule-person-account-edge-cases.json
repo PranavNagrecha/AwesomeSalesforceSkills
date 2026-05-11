@@ -149,6 +149,7 @@
   "scripts": [
     "skills/data/duplicate-rule-person-account-edge-cases/scripts/check_duplicate_rule_person_account_edge_cases.py"
   ],
+  "status": "stable",
   "tags": [
     "duplicate-rules",
     "matching-rules",

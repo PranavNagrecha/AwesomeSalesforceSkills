@@ -87,6 +87,7 @@
   "scripts": [
     "skills/apex/apex-design-patterns/scripts/check_apex_design_patterns.py"
   ],
+  "status": "stable",
   "tags": [
     "service-layer",
     "selector-pattern",

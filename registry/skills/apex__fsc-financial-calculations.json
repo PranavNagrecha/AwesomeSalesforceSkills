@@ -139,6 +139,7 @@
   "scripts": [
     "skills/apex/fsc-financial-calculations/scripts/check_fsc_financial_calculations.py"
   ],
+  "status": "stable",
   "tags": [
     "fsc",
     "financial-services-cloud",

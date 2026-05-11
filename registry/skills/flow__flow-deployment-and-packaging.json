@@ -170,6 +170,7 @@
   "scripts": [
     "skills/flow/flow-deployment-and-packaging/scripts/check_flow_deployment_and_packaging.py"
   ],
+  "status": "stable",
   "tags": [
     "flow-deployment-and-packaging",
     "devops",

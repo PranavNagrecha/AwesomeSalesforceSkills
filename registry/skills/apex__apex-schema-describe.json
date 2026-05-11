@@ -97,6 +97,7 @@
   "scripts": [
     "skills/apex/apex-schema-describe/scripts/check_apex_schema_describe.py"
   ],
+  "status": "stable",
   "tags": [
     "schema",
     "describe",

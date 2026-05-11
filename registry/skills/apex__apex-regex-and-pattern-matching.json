@@ -104,6 +104,7 @@
     "skills/apex/apex-regex-and-pattern-matching/scripts/tests/single-backslash-literal/expected.json",
     "skills/apex/apex-regex-and-pattern-matching/scripts/tests/single-backslash-literal/input.cls"
   ],
+  "status": "stable",
   "tags": [
     "apex-regex-and-pattern-matching",
     "pattern-matcher",

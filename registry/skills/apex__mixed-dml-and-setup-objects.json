@@ -103,6 +103,7 @@
   "scripts": [
     "skills/apex/mixed-dml-and-setup-objects/scripts/check_mixed_dml_and_setup_objects.py"
   ],
+  "status": "stable",
   "tags": [
     "mixed-dml",
     "setup-objects",

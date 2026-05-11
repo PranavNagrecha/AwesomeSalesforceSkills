@@ -120,6 +120,7 @@
   "scripts": [
     "skills/architect/org-limits-monitoring/scripts/check_org_limits_monitoring.py"
   ],
+  "status": "stable",
   "tags": [
     "org-limits",
     "api-usage",

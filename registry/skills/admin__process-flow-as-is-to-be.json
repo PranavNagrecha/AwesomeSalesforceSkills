@@ -148,6 +148,7 @@
     "skills/admin/process-flow-as-is-to-be/scripts/check_process_flow_as_is_to_be.py",
     "skills/admin/process-flow-as-is-to-be/scripts/check_process_map.py"
   ],
+  "status": "stable",
   "tags": [
     "process-mapping",
     "as-is-to-be",

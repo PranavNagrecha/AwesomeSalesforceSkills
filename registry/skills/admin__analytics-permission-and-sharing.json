@@ -119,6 +119,7 @@
   "scripts": [
     "skills/admin/analytics-permission-and-sharing/scripts/check_analytics_permission_and_sharing.py"
   ],
+  "status": "stable",
   "tags": [
     "analytics",
     "crm-analytics",

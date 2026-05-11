@@ -112,6 +112,7 @@
   "scripts": [
     "skills/admin/custom-field-creation/scripts/check_custom_field_creation.py"
   ],
+  "status": "stable",
   "tags": [
     "custom-fields",
     "add-field",

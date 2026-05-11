@@ -120,6 +120,7 @@
   "scripts": [
     "skills/architect/headless-vs-standard-experience/scripts/check_headless_vs_standard_experience.py"
   ],
+  "status": "stable",
   "tags": [
     "experience-cloud",
     "lwr",

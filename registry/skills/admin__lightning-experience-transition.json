@@ -113,6 +113,7 @@
   "scripts": [
     "skills/admin/lightning-experience-transition/scripts/check_lightning_experience_transition.py"
   ],
+  "status": "stable",
   "tags": [
     "lightning-experience",
     "lex-transition",

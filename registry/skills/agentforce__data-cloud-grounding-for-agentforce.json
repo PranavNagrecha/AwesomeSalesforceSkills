@@ -79,6 +79,7 @@
   "scripts": [
     "skills/agentforce/data-cloud-grounding-for-agentforce/scripts/check_data_cloud_grounding_for_agentforce.py"
   ],
+  "status": "stable",
   "tags": [
     "agentforce",
     "data-cloud",

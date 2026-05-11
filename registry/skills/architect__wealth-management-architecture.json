@@ -119,6 +119,7 @@
   "scripts": [
     "skills/architect/wealth-management-architecture/scripts/check_wealth_management_architecture.py"
   ],
+  "status": "stable",
   "tags": [
     "fsc",
     "wealth-management",

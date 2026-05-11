@@ -141,6 +141,7 @@
   "scripts": [
     "skills/admin/analytics-data-manager/scripts/check_analytics_data_manager.py"
   ],
+  "status": "stable",
   "tags": [
     "crm-analytics",
     "data-manager",

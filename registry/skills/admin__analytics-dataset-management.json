@@ -119,6 +119,7 @@
   "scripts": [
     "skills/admin/analytics-dataset-management/scripts/check_analytics_dataset_management.py"
   ],
+  "status": "stable",
   "tags": [
     "crm-analytics",
     "dataset-management",

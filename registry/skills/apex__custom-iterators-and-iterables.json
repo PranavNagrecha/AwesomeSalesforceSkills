@@ -115,6 +115,7 @@
   "scripts": [
     "skills/apex/custom-iterators-and-iterables/scripts/check_custom_iterators_and_iterables.py"
   ],
+  "status": "stable",
   "tags": [
     "apex",
     "batch-apex",

@@ -85,6 +85,7 @@
   "scripts": [
     "skills/lwc/lwc-custom-lookup/scripts/check_lwc_custom_lookup.py"
   ],
+  "status": "stable",
   "tags": [
     "lookup",
     "typeahead",

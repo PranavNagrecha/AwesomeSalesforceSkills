@@ -143,6 +143,7 @@
   "scripts": [
     "skills/admin/permission-set-group-composition/scripts/check_permission_set_group_composition.py"
   ],
+  "status": "stable",
   "tags": [
     "permission-set-groups",
     "muting-permission-sets",

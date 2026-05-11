@@ -127,6 +127,7 @@
   "scripts": [
     "skills/flow/flow-external-services/scripts/check_flow_external_services.py"
   ],
+  "status": "stable",
   "tags": [
     "flow",
     "external-services",
