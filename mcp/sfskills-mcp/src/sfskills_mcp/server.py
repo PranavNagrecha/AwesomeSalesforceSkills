@@ -139,7 +139,7 @@ def _registry_skill_count() -> int:
 def _server_instructions() -> str:
     classes = agents._agent_classes()
     return SERVER_INSTRUCTIONS_TEMPLATE.format(
-        skill_count=_registry_skill_count() or "950+",
+        skill_count=_registry_skill_count() or "N/A",
         runtime_agent_count=sum(1 for v in classes.values() if v == "runtime"),
         build_agent_count=sum(1 for v in classes.values() if v == "build"),
         deprecated_agent_count=sum(1 for v in classes.values() if v == "deprecated"),
@@ -149,7 +149,10 @@ def _server_instructions() -> str:
 def build_server() -> FastMCP:
     mcp = FastMCP("sfskills", instructions=_server_instructions())
 
-    _skill_count = _registry_skill_count() or "950+"
+    # Honest fallback when registry/skills.json is missing (broken install). The
+    # live count is pulled from disk; we don't ship a hard-coded literal that
+    # would drift every wave. See test_meta_freshness for the stale-literal pin.
+    _skill_count = _registry_skill_count() or "N/A"
 
     @mcp.tool(
         name="search_skill",

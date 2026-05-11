@@ -29,6 +29,7 @@ from sfskills_mcp import agents, server  # noqa: E402
 # a doc-fix PR; the test pins them to extinction.
 _STALE_LITERALS = (
     "686+",
+    "950+",
     "_RUNTIME_AGENTS",
     "twenty-three tools",
     "registers twenty-three",
@@ -54,8 +55,9 @@ class NoStaleLiteralsInSourceTest(unittest.TestCase):
 class CountsAreLiveTest(unittest.TestCase):
     def test_server_instructions_reflect_real_skill_count(self) -> None:
         instructions = server._server_instructions()
-        # The real count comes from registry/skills.json; we only insist that
-        # the instructions mention it (or the fallback "950+").
+        # The real count comes from registry/skills.json. When the registry is
+        # present, the live count MUST appear in the instructions. The legacy
+        # hard-coded fallback was retired in v0.4.4 (P2-S).
         skill_count = server._registry_skill_count()
         if skill_count > 0:
             self.assertIn(str(skill_count), instructions)
