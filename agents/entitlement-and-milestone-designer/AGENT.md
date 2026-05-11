@@ -43,7 +43,7 @@ Two modes:
 ## Invocation
 
 - **Direct read** — "Follow `agents/entitlement-and-milestone-designer/AGENT.md` in design mode for a 4-hour-response 24x5 SLA"
-- **Slash command** — `/design-entitlement-and-milestones`
+- **Slash command** — [`/design-entitlements`](../../commands/design-entitlements.md)
 - **MCP** — `get_agent("entitlement-and-milestone-designer")`
 
 ---

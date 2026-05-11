@@ -45,7 +45,7 @@ Two modes:
 ## Invocation
 
 - **Direct read** — "Follow `agents/custom-metadata-and-settings-designer/AGENT.md` in design mode for a feature-flag registry used by 30 Apex classes"
-- **Slash command** — `/design-cmt-or-settings`
+- **Slash command** — [`/design-custom-metadata`](../../commands/design-custom-metadata.md)
 - **MCP** — `get_agent("custom-metadata-and-settings-designer")`
 
 ---
