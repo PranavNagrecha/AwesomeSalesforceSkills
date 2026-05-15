@@ -99,6 +99,17 @@ evals/measurement/per_row.jsonl
 .planning/qa-*.md
 .qa-venv/
 
+# Per-machine venvs spun up by the v0.4.4 publish gate (L0-2 / L0-3) and
+# similar release smoke-tests. Regenerated on every wheel build; never
+# belong in the repo.
+.build-venv/
+.smoke-venv/
+.verify-venv/
+
+# `python -m build` output. Wheels + sdists are uploaded to PyPI from
+# `mcp/sfskills-mcp/dist/` and don't need to live in git.
+mcp/sfskills-mcp/dist/
+
 # Pip's editable-install metadata bundle (`pip install -e .` writes this).
 # Per-machine, regenerated on every install — never belongs in the repo.
 *.egg-info/
