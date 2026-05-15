@@ -163,6 +163,7 @@
       "admin/list-views-and-compact-layouts",
       "admin/lookup-and-relationship-design",
       "admin/lookup-filter-cross-object-patterns",
+      "admin/managed-package-installation-and-upgrade",
       "admin/marketing-automation-requirements",
       "admin/marketing-cloud-connect",
       "admin/marketing-cloud-engagement-setup",
@@ -878,6 +879,7 @@
       "lwc/lwc-base-component-recipes",
       "lwc/lwc-chart-and-visualization",
       "lwc/lwc-conditional-rendering",
+      "lwc/lwc-console-workspace-api",
       "lwc/lwc-cross-tab-state-sync",
       "lwc/lwc-css-and-styling",
       "lwc/lwc-custom-datatable-types",
@@ -2187,6 +2189,7 @@
     ],
     "appexchange": [
       "admin/lightning-bolt-template-authoring",
+      "admin/managed-package-installation-and-upgrade",
       "devops/isv-license-management-and-trialforce",
       "devops/package-development-strategy",
       "devops/salesforce-code-analyzer",
@@ -3960,6 +3963,9 @@
       "admin/health-cloud-consent-management",
       "security/ferpa-compliance-in-salesforce",
       "security/gdpr-data-privacy"
+    ],
+    "console-developer": [
+      "lwc/lwc-console-workspace-api"
     ],
     "console-navigation": [
       "admin/service-console-configuration"
@@ -7889,6 +7895,9 @@
       "flow/flow-custom-property-editors",
       "lwc/custom-property-editor-for-flow"
     ],
+    "install": [
+      "admin/managed-package-installation-and-upgrade"
+    ],
     "installed-package": [
       "apex/marketing-cloud-custom-activities",
       "architect/marketing-integration-patterns"
@@ -8800,6 +8809,7 @@
       "lwc/lwc-async-patterns",
       "lwc/lwc-base-component-recipes",
       "lwc/lwc-chart-and-visualization",
+      "lwc/lwc-console-workspace-api",
       "lwc/lwc-cross-tab-state-sync",
       "lwc/lwc-custom-event-patterns",
       "lwc/lwc-error-boundaries",
@@ -8979,6 +8989,7 @@
     ],
     "managed-package": [
       "admin/cpq-approval-workflows",
+      "admin/managed-package-installation-and-upgrade",
       "apex/apex-enum-patterns",
       "apex/apex-metadata-api",
       "apex/billing-integration-apex",
@@ -12704,7 +12715,8 @@
     ],
     "service-console": [
       "admin/service-console-configuration",
-      "architect/agent-console-requirements"
+      "architect/agent-console-requirements",
+      "lwc/lwc-console-workspace-api"
     ],
     "service-delivery": [
       "admin/npsp-program-management"
@@ -13450,7 +13462,11 @@
       "integration/composite-api-patterns"
     ],
     "subscriber": [
+      "admin/managed-package-installation-and-upgrade",
       "apex/apex-event-bus-subscriber"
+    ],
+    "subscriber-admin": [
+      "admin/managed-package-installation-and-upgrade"
     ],
     "subscriber-data-management": [
       "data/subscriber-data-management"
@@ -13546,6 +13562,9 @@
     ],
     "t-sql": [
       "data/marketing-cloud-sql-queries"
+    ],
+    "tab-management": [
+      "lwc/lwc-console-workspace-api"
     ],
     "tableau": [
       "admin/data-storytelling-design",
@@ -14063,6 +14082,9 @@
     "unified-routing": [
       "architect/multi-channel-service-architecture"
     ],
+    "uninstall": [
+      "admin/managed-package-installation-and-upgrade"
+    ],
     "unit-of-work": [
       "apex/fflib-enterprise-patterns"
     ],
@@ -14093,6 +14115,7 @@
       "lwc/lwc-lds-writes"
     ],
     "upgrade": [
+      "admin/managed-package-installation-and-upgrade",
       "devops/api-version-management"
     ],
     "upsert": [
@@ -14176,7 +14199,8 @@
     "utility-bar": [
       "admin/app-and-tab-configuration",
       "admin/service-console-configuration",
-      "architect/agent-console-requirements"
+      "architect/agent-console-requirements",
+      "lwc/lwc-console-workspace-api"
     ],
     "utterance-authoring": [
       "admin/agent-conversation-design"
@@ -14510,6 +14534,9 @@
     ],
     "workspace": [
       "integration/slack-salesforce-integration-setup"
+    ],
+    "workspace-api": [
+      "lwc/lwc-console-workspace-api"
     ],
     "workspace-tabs": [
       "admin/service-console-configuration"

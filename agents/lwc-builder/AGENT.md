@@ -38,6 +38,7 @@ dependencies:
     - lwc/lwc-base-component-recipes
     - lwc/lwc-chart-and-visualization
     - lwc/lwc-conditional-rendering
+    - lwc/lwc-console-workspace-api
     - lwc/lwc-cross-tab-state-sync
     - lwc/lwc-css-and-styling
     - lwc/lwc-custom-datatable-types
@@ -234,6 +235,7 @@ Produces a full Lightning Web Component bundle for a described feature: `.js`, `
 84. `skills/lwc/lwc-reactive-state-patterns` — use post–Spring '20 reactivity rules when generating components; never @track primitives; guard renderedCallback writes
 85. `skills/lwc/lwc-jest-testing-with-accessibility` — lwc jest testing with accessibility
 86. `skills/lwc/lwc-mobile-offline-and-briefcase` — lwc mobile offline and briefcase
+87. `skills/lwc/lwc-console-workspace-api` — `lightning/platformWorkspaceApi` and `lightning/platformUtilityBarApi` for Service Console tab manipulation; IsConsoleNavigation gating; refreshTab / openSubtab / setTabLabel patterns
 
 ---
 

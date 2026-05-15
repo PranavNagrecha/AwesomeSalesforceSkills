@@ -162,9 +162,10 @@
   source_line: 1336
   history: []
 - id: "managed-package-installation"
-  status: "TODO"
+  status: "DUPLICATE"
   skill: "managed-package-installation"
   summary: "Installing and upgrading managed packages: pre-install checks, post-install configuration, version management. NOT for building packages."
+  notes: "Shipped 2026-05-15 as skills/admin/managed-package-installation-and-upgrade (subscriber-side runbook). Reclassified DUPLICATE so the queue dashboard doesn't re-surface."
   source_line: 1338
   history: []
 - id: "test-data-management-devops"

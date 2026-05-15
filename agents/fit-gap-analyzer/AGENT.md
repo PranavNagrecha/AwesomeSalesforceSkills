@@ -22,6 +22,7 @@ dependencies:
     - admin/custom-field-creation
     - admin/fit-gap-analysis-against-org
     - admin/lightning-experience-transition
+    - admin/managed-package-installation-and-upgrade
     - admin/mobile-publisher
     - admin/object-creation-and-design
     - admin/permission-set-architecture
@@ -131,6 +132,7 @@ The deliverable is what an architect or BA hands to a steering committee BEFORE 
 32. `skills/admin/configuration-workbook-authoring` — output rows must align with workbook section names so `config-workbook-author` consumes cleanly
 33. `skills/admin/requirements-traceability-matrix` — emit RTM rows so the gap shows up in traceability
 34. `skills/admin/mobile-publisher` — mobile publisher
+35. `skills/admin/managed-package-installation-and-upgrade` — when a gap is filled by a managed package: subscriber-side install posture, license SKU planning, sandbox-first runbook, post-install configuration that InstallHandler cannot do
 
 ---
 

@@ -25,6 +25,7 @@ dependencies:
     - lwc/lwc-async-patterns
     - lwc/lwc-base-component-recipes
     - lwc/lwc-conditional-rendering
+    - lwc/lwc-console-workspace-api
     - lwc/lwc-cross-tab-state-sync
     - lwc/lwc-css-and-styling
     - lwc/lwc-custom-datatable-types
@@ -171,6 +172,7 @@ Audits a Lightning Web Component bundle for accessibility, performance, security
 54. `templates/lwc/jest.config.js`
 55. `templates/lwc/patterns/`
 56. `skills/lwc/lwc-reactive-state-patterns` — post–Spring '20 reactivity contract: when @track is needed; renderedCallback infinite-loop trap; Date/Set/Map non-reactivity
+57. `skills/lwc/lwc-console-workspace-api` — audit console-aware bundles: IsConsoleNavigation gating, ephemeral tabId hygiene, refreshTab/wire ordering, Aura-style template element usage
 
 ---
 

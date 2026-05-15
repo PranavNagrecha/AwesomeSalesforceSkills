@@ -7745,6 +7745,42 @@
       "domain": "devops",
       "expected_skill": "devops/postman-for-salesforce",
       "top_k": 3
+    },
+    {
+      "query": "how do I safely install a managed package in production AppExchange",
+      "domain": "admin",
+      "expected_skill": "admin/managed-package-installation-and-upgrade",
+      "top_k": 3
+    },
+    {
+      "query": "subscriber side AppExchange package install upgrade post-install configuration",
+      "domain": "admin",
+      "expected_skill": "admin/managed-package-installation-and-upgrade",
+      "top_k": 3
+    },
+    {
+      "query": "uninstall managed package data export 48 hour retention rollback subscriber",
+      "domain": "admin",
+      "expected_skill": "admin/managed-package-installation-and-upgrade",
+      "top_k": 3
+    },
+    {
+      "query": "openSubtab refreshTab LWC service console workspace API lightning/platformWorkspaceApi",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-console-workspace-api",
+      "top_k": 3
+    },
+    {
+      "query": "IsConsoleNavigation detect LWC running in service console fall back to NavigationMixin",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-console-workspace-api",
+      "top_k": 3
+    },
+    {
+      "query": "set tab label icon dynamically from record wire in LWC console workspace",
+      "domain": "lwc",
+      "expected_skill": "lwc/lwc-console-workspace-api",
+      "top_k": 3
     }
   ]
 }

@@ -15,6 +15,7 @@ output_formats:
 dependencies:
   skills:
     - admin/agent-output-formats
+    - admin/managed-package-installation-and-upgrade
     - devops/devops-center-advanced
     - devops/environment-strategy
     - devops/feature-flag-custom-metadata
@@ -73,6 +74,7 @@ Plans a Salesforce release train: branch model, package strategy (unlocked vs 2G
 16. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 17. `skills/devops/release-notes-automation` — auto-generated release notes per cadence
 18. `skills/devops/isv-license-management-and-trialforce` — for ISV release trains: schedule LMA registration, Trialforce template re-snapshot/re-approval, and Feature Parameter rollout as part of every cycle that ships a managed package
+19. `skills/admin/managed-package-installation-and-upgrade` — subscriber-side install / upgrade runbook; sequence sandbox-first windows in the release train when a managed package version is in scope
 
 ---
 
