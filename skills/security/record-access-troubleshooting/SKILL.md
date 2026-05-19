@@ -28,10 +28,9 @@ outputs:
   - Sharing chain trace
   - Remediation recommendation
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-28
-status: stub
+updated: 2026-05-19
 ---
 
 # Record Access Troubleshooting
