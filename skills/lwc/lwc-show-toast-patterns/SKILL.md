@@ -26,10 +26,9 @@ outputs:
   - Dispatch code with correct variant + mode
   - Fallback plan for LWR sites
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-22
-status: stub
+updated: 2026-05-19
 ---
 
 # LWC ShowToast Patterns
@@ -75,7 +74,7 @@ export default class MyCmp extends LightningElement {
 
 | Mode | Behavior |
 |---|---|
-| `dismissible` (default) | Auto-dismisses after ~3 seconds; user can close |
+| `dismissible` (default) | Auto-dismisses after 5 seconds; user can close |
 | `pester` | Stays until user dismisses (only valid for `error` variant) |
 | `sticky` | Stays until user dismisses |
 
