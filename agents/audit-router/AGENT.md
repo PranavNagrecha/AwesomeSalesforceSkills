@@ -34,6 +34,7 @@ dependencies:
     - admin/einstein-discovery-deployment
     - admin/einstein-discovery-setup
     - admin/global-actions-and-quick-actions
+    - admin/global-search-configuration
     - admin/lightning-experience-transition
     - admin/list-views-and-compact-layouts
     - admin/marketing-reporting-requirements
@@ -111,6 +112,7 @@ Dispatches one of the audit domains in the [`audit_harness`](../_shared/harnesse
 37. `skills/admin/reports-and-dashboards` — Analytics/reporting: Reports and dashboards
 38. `skills/admin/reports-and-dashboards-fundamentals` — Analytics/reporting: Reports and dashboards fundamentals
 39. `skills/security/dynamic-sharing-recalculation` — Sharing/security: Dynamic sharing recalculation
+40. `skills/admin/global-search-configuration` — global search configuration
 
 ---
 

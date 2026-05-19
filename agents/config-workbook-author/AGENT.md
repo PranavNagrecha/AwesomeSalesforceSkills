@@ -23,6 +23,7 @@ dependencies:
     - admin/custom-permissions
     - admin/email-templates-and-alerts
     - admin/fit-gap-analysis-against-org
+    - admin/global-search-configuration
     - admin/object-creation-and-design
     - admin/permission-set-architecture
     - admin/persona-and-journey-mapping-sf
@@ -113,30 +114,31 @@ The workbook is what an admin team uses to execute a release — every row conve
 20. `skills/admin/sharing-and-visibility` — Sharing section
 21. `skills/admin/app-and-tab-configuration` — UI section (apps, tabs, list views)
 22. `skills/admin/email-templates-and-alerts` — UI / automation cross-references for email templates
+23. `skills/admin/global-search-configuration` — UI section — per-object Search Layouts and Synonym Groups for global-search rows
 
 ### Architecture context
-23. `skills/architect/license-optimization-strategy` — Org Profile section (license SKU + edition)
-24. `skills/architect/nfr-definition-for-salesforce` — Section 8 / 10 carry NFR-class tags
-25. `skills/architect/architecture-decision-records` — flag rows that need an ADR
+24. `skills/architect/license-optimization-strategy` — Org Profile section (license SKU + edition)
+25. `skills/architect/nfr-definition-for-salesforce` — Section 8 / 10 carry NFR-class tags
+26. `skills/architect/architecture-decision-records` — flag rows that need an ADR
 
 ### Data section
-26. `skills/data/data-loader-and-tools` — Data Migration section
-27. `skills/data/external-id-strategy` — every migrated object names its External ID
-28. `skills/admin/duplicate-management` — Data Migration section embeds dup-rule rows
+27. `skills/data/data-loader-and-tools` — Data Migration section
+28. `skills/data/external-id-strategy` — every migrated object names its External ID
+29. `skills/admin/duplicate-management` — Data Migration section embeds dup-rule rows
 
 ### Decision trees
-29. `standards/decision-trees/automation-selection.md` — Automation section row shape (Flow vs Apex vs Approval vs PE)
-30. `standards/decision-trees/sharing-selection.md` — Sharing section decisions
+30. `standards/decision-trees/automation-selection.md` — Automation section row shape (Flow vs Apex vs Approval vs PE)
+31. `standards/decision-trees/sharing-selection.md` — Sharing section decisions
 
 ### Probes
-31. `agents/_shared/probes/automation-graph-for-sobject.md` — surface existing automation in the Automation section so rows mark `extend` vs `create`
-32. `agents/_shared/probes/user-access-comparison.md` — confirm persona PSGs match the workbook's Permissions section
+32. `agents/_shared/probes/automation-graph-for-sobject.md` — surface existing automation in the Automation section so rows mark `extend` vs `create`
+33. `agents/_shared/probes/user-access-comparison.md` — confirm persona PSGs match the workbook's Permissions section
 
 ### Templates
-33. `templates/admin/naming-conventions.md` — every row's API name conforms
+34. `templates/admin/naming-conventions.md` — every row's API name conforms
 
 ### Output handoff
-34. `skills/admin/agent-output-formats` — defer Excel / Confluence export requests here
+35. `skills/admin/agent-output-formats` — defer Excel / Confluence export requests here
 
 ---
 

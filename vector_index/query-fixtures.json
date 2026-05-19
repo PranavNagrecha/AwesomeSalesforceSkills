@@ -7781,6 +7781,24 @@
       "domain": "lwc",
       "expected_skill": "lwc/lwc-console-workspace-api",
       "top_k": 3
+    },
+    {
+      "query": "users see only Name column in global search results how do I add Industry and Owner",
+      "domain": "admin",
+      "expected_skill": "admin/global-search-configuration",
+      "top_k": 3
+    },
+    {
+      "query": "create custom synonym group so searching VIP also matches Priority accounts",
+      "domain": "admin",
+      "expected_skill": "admin/global-search-configuration",
+      "top_k": 3
+    },
+    {
+      "query": "Setup search settings sidebar drop down list lookup auto-completion",
+      "domain": "admin",
+      "expected_skill": "admin/global-search-configuration",
+      "top_k": 3
     }
   ]
 }

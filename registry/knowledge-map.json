@@ -135,6 +135,7 @@
       "admin/fundraising-process-mapping",
       "admin/gift-entry-and-processing",
       "admin/global-actions-and-quick-actions",
+      "admin/global-search-configuration",
       "admin/grant-management-setup",
       "admin/health-cloud-consent-management",
       "admin/health-cloud-patient-setup",
@@ -1556,6 +1557,9 @@
       "admin/sales-process-mapping",
       "admin/user-access-policies",
       "security/privileged-access-management"
+    ],
+    "admin-configuration": [
+      "admin/global-search-configuration"
     ],
     "admin-declarative": [
       "admin/dynamic-forms-and-actions"
@@ -7267,6 +7271,9 @@
     "global-optimization": [
       "admin/fsl-scheduling-optimization-design"
     ],
+    "global-search": [
+      "admin/global-search-configuration"
+    ],
     "global-value-set": [
       "admin/picklist-and-value-sets",
       "admin/picklist-data-integrity",
@@ -8767,6 +8774,9 @@
       "data/data-model-design-patterns",
       "lwc/lwc-custom-lookup",
       "lwc/lwc-record-picker"
+    ],
+    "lookup-dialog": [
+      "admin/global-search-configuration"
     ],
     "lookup-filter": [
       "admin/lookup-filter-cross-object-patterns"
@@ -12485,6 +12495,7 @@
       "apex/commerce-search-customization"
     ],
     "search-layouts": [
+      "admin/global-search-configuration",
       "admin/list-views-and-compact-layouts",
       "data/sosl-search-patterns"
     ],
@@ -12500,6 +12511,9 @@
     ],
     "search-scope": [
       "lwc/experience-cloud-search-customization"
+    ],
+    "search-settings": [
+      "admin/global-search-configuration"
     ],
     "search-strategy": [
       "admin/commerce-catalog-strategy"
@@ -13540,6 +13554,9 @@
     "synchronized-data-sources": [
       "admin/marketing-cloud-connect"
     ],
+    "synonym-groups": [
+      "admin/global-search-configuration"
+    ],
     "system-api": [
       "integration/api-led-connectivity"
     ],
@@ -13562,6 +13579,9 @@
     ],
     "t-sql": [
       "data/marketing-cloud-sql-queries"
+    ],
+    "tab-columns": [
+      "admin/global-search-configuration"
     ],
     "tab-management": [
       "lwc/lwc-console-workspace-api"
