@@ -7799,6 +7799,24 @@
       "domain": "admin",
       "expected_skill": "admin/global-search-configuration",
       "top_k": 3
+    },
+    {
+      "query": "related list enhanced configuration quick related list page layout assignment columns",
+      "domain": "admin",
+      "expected_skill": "admin/related-list-configuration",
+      "top_k": 3
+    },
+    {
+      "query": "related list filtering sorting view all configure related records page",
+      "domain": "admin",
+      "expected_skill": "admin/related-list-configuration",
+      "top_k": 3
+    },
+    {
+      "query": "Enhanced Related Lists Spring 24 filter sort related records page layout",
+      "domain": "admin",
+      "expected_skill": "admin/related-list-configuration",
+      "top_k": 3
     }
   ]
 }

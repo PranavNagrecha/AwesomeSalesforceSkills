@@ -215,6 +215,7 @@
       "admin/record-types-and-page-layouts",
       "admin/recurring-donations-setup",
       "admin/referral-management-health",
+      "admin/related-list-configuration",
       "admin/remote-site-settings",
       "admin/report-performance-tuning",
       "admin/report-type-strategy",
@@ -1559,7 +1560,8 @@
       "security/privileged-access-management"
     ],
     "admin-configuration": [
-      "admin/global-search-configuration"
+      "admin/global-search-configuration",
+      "admin/related-list-configuration"
     ],
     "admin-declarative": [
       "admin/dynamic-forms-and-actions"
@@ -6001,6 +6003,9 @@
     "enhanced-recurring-donations": [
       "admin/recurring-donations-setup"
     ],
+    "enhanced-related-lists": [
+      "admin/related-list-configuration"
+    ],
     "enhanced-timeline": [
       "admin/health-cloud-timeline"
     ],
@@ -8557,7 +8562,8 @@
       "admin/dynamic-forms-and-actions",
       "admin/dynamic-forms-migration",
       "admin/lightning-app-builder-advanced",
-      "admin/lightning-page-performance-tuning"
+      "admin/lightning-page-performance-tuning",
+      "admin/related-list-configuration"
     ],
     "lightning-base-components": [
       "lwc/lwc-record-picker"
@@ -10277,7 +10283,8 @@
     "page-layouts": [
       "admin/dynamic-forms-migration",
       "admin/record-type-strategy-at-scale",
-      "admin/record-types-and-page-layouts"
+      "admin/record-types-and-page-layouts",
+      "admin/related-list-configuration"
     ],
     "page-performance": [
       "admin/lightning-app-builder-advanced",
@@ -11617,6 +11624,9 @@
     "regulatory-documentation": [
       "admin/compliance-documentation-requirements"
     ],
+    "related-lists": [
+      "admin/related-list-configuration"
+    ],
     "relational-data-model": [
       "architect/marketing-data-architecture"
     ],
@@ -12491,6 +12501,9 @@
       "lwc/experience-cloud-search-customization",
       "lwc/lwc-custom-lookup"
     ],
+    "search-filter-fields": [
+      "admin/related-list-configuration"
+    ],
     "search-index": [
       "apex/commerce-search-customization"
     ],
@@ -13225,6 +13238,9 @@
     ],
     "soql-selectivity": [
       "architect/limits-and-scalability-planning"
+    ],
+    "sort-fields": [
+      "admin/related-list-configuration"
     ],
     "sosl": [
       "data/sosl-search-patterns",

@@ -40,6 +40,7 @@ dependencies:
     - admin/marketing-reporting-requirements
     - admin/picklist-data-integrity
     - admin/record-type-id-management
+    - admin/related-list-configuration
     - admin/report-performance-tuning
     - admin/report-type-strategy
     - admin/reports-and-dashboards
@@ -113,6 +114,7 @@ Dispatches one of the audit domains in the [`audit_harness`](../_shared/harnesse
 38. `skills/admin/reports-and-dashboards-fundamentals` — Analytics/reporting: Reports and dashboards fundamentals
 39. `skills/security/dynamic-sharing-recalculation` — Sharing/security: Dynamic sharing recalculation
 40. `skills/admin/global-search-configuration` — global search configuration
+41. `skills/admin/related-list-configuration` — related list configuration
 
 ---
 
