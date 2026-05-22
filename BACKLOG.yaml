@@ -430,12 +430,15 @@
   source_line: 1710
   history: []
 - id: "apex-wsdl2apex-patterns"
-  status: "TODO"
+  status: "DONE"
   skill: "apex-wsdl2apex-patterns"
   summary: "WSDL-to-Apex generation: importing WSDL, generated class structure, callout from generated stubs, common WSDL parsing failures, testing WSDL callouts. NOT for REST callouts."
   notes: "apex"
   source_line: 1735
-  history: []
+  history:
+    - at: "2026-05-22T00:00:00"
+      status: "DONE"
+      actor: "scheduled-task"
 - id: "report-and-dashboard-subscriptions"
   status: "TODO"
   skill: "report-and-dashboard-subscriptions"

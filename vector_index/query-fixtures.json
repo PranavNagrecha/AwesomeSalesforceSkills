@@ -7817,6 +7817,24 @@
       "domain": "admin",
       "expected_skill": "admin/related-list-configuration",
       "top_k": 3
+    },
+    {
+      "query": "Apex stub class generate WSDL import third-party SOAP service",
+      "domain": "apex",
+      "expected_skill": "apex/apex-wsdl2apex-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "outbound SOAP callout from Apex WSDL parse generate proxy class",
+      "domain": "apex",
+      "expected_skill": "apex/apex-wsdl2apex-patterns",
+      "top_k": 3
+    },
+    {
+      "query": "WebServiceMock mock SOAP callout Test setMock wsdl2apex generated stub",
+      "domain": "apex",
+      "expected_skill": "apex/apex-wsdl2apex-patterns",
+      "top_k": 3
     }
   ]
 }

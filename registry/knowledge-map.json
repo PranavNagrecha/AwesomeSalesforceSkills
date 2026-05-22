@@ -367,6 +367,7 @@
       "apex/apex-user-and-permission-checks",
       "apex/apex-with-without-sharing-decision",
       "apex/apex-wrapper-class-patterns",
+      "apex/apex-wsdl2apex-patterns",
       "apex/async-apex",
       "apex/batch-apex-patterns",
       "apex/billing-integration-apex",
@@ -1913,6 +1914,7 @@
       "apex/apex-trigger-bypass-and-killswitch-patterns",
       "apex/apex-trigger-context-variables",
       "apex/apex-with-without-sharing-decision",
+      "apex/apex-wsdl2apex-patterns",
       "apex/commerce-payment-integration",
       "apex/custom-iterators-and-iterables",
       "apex/field-level-security-in-async-contexts",
@@ -3143,6 +3145,7 @@
       "apex/apex-future-method-patterns",
       "apex/apex-json-serialization",
       "apex/apex-named-credentials-patterns",
+      "apex/apex-wsdl2apex-patterns",
       "integration/callout-limits-and-async-patterns"
     ],
     "campaign-hierarchy": [
@@ -7944,6 +7947,7 @@
       "agentforce/sf-to-llm-data-pipelines",
       "apex/apex-json-serialization",
       "apex/apex-jwt-bearer-flow",
+      "apex/apex-wsdl2apex-patterns",
       "apex/fhir-integration-patterns",
       "apex/marketing-cloud-api",
       "apex/marketing-cloud-custom-activities",
@@ -9573,6 +9577,7 @@
       "agentforce/model-builder-and-byollm",
       "apex/apex-named-credentials-patterns",
       "apex/apex-secrets-and-protected-cmdt",
+      "apex/apex-wsdl2apex-patterns",
       "apex/callouts-and-http-integrations",
       "architect/integration-security-architecture",
       "architect/multi-org-strategy",
@@ -10194,6 +10199,7 @@
       "security/mfa-enforcement-strategy"
     ],
     "outbound": [
+      "apex/apex-wsdl2apex-patterns",
       "integration/outbound-webhook-from-salesforce"
     ],
     "outbound-message": [
@@ -13152,6 +13158,7 @@
       "integration/salesforce-data-pipeline-etl"
     ],
     "soap": [
+      "apex/apex-wsdl2apex-patterns",
       "integration/outbound-messages-and-callbacks"
     ],
     "soap-api": [
@@ -14449,6 +14456,9 @@
       "integration/webhook-inbound-patterns",
       "integration/webhook-signature-verification"
     ],
+    "webservicemock": [
+      "apex/apex-wsdl2apex-patterns"
+    ],
     "webstore": [
       "admin/b2b-commerce-store-setup",
       "admin/b2b-vs-b2c-requirements",
@@ -14582,6 +14592,12 @@
     ],
     "writeback-field": [
       "admin/einstein-discovery-setup"
+    ],
+    "wsdl": [
+      "apex/apex-wsdl2apex-patterns"
+    ],
+    "wsdl2apex": [
+      "apex/apex-wsdl2apex-patterns"
     ],
     "wsjf": [
       "admin/moscow-prioritization-for-sf-backlog"
