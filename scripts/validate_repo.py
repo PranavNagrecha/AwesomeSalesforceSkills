@@ -55,6 +55,7 @@ from pipelines.knowledge_builder import load_sources_manifest
 from pipelines.agent_validators import validate_agents
 from pipelines.frontmatter import parse_markdown_with_frontmatter
 from scripts.search_knowledge import build_search_context, run_search
+from scripts.check_doc_counts import collect_doc_count_issues
 
 
 # Thread pool size for parallel subprocess fan-out on skill-local scripts.
@@ -544,6 +545,14 @@ def main() -> int:
         agent_issues = run_agent_validation()
         issues.extend(agent_issues)
         agent_count = sum(1 for _ in (ROOT / "agents").glob("*/AGENT.md"))
+
+    # Repo-level doc-count consistency gate (README / MCP README / CLAUDE.md /
+    # AGENT_RULES.md / RUNTIME_VS_BUILD.md vs registry + agent frontmatter).
+    # Cheap and order-independent, so it runs on every invocation.
+    issues.extend(
+        ValidationIssue(level, path, message)
+        for level, path, message in collect_doc_count_issues(ROOT)
+    )
 
     for issue in issues:
         print_issue(issue)

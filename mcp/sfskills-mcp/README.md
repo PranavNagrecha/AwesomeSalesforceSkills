@@ -3,7 +3,7 @@
 Model Context Protocol server that hands any MCP-capable AI coding assistant
 three things at once:
 
-1. The full **SfSkills** library (980+ Salesforce skills, source-grounded,
+1. The full **SfSkills** library (1003 Salesforce skills, source-grounded,
    role-tagged, versioned) — via `search_skill` and `get_skill`.
 2. **Live metadata from your actual Salesforce org** — via `describe_org`,
    `list_custom_objects`, `list_flows_on_object`, `list_validation_rules`,
@@ -104,12 +104,12 @@ unambiguous expected answers — better reflects real-world quality at
 
 ### Run-time agents reachable via `get_agent`
 
-Tier sizes below reflect the canonical roster. Some agents in the original
-tier rosters have since been retired and now redirect via
-`list_deprecated_redirects` (`audit-router` absorbs most of them); the live
-result of `list_agents(kind="runtime")` excludes those stubs.
+Tier sizes below count the 47 active runtime agents. Fourteen single-mode
+auditors/governors were retired in Wave 3b and now redirect via
+`list_deprecated_redirects` (`audit-router` absorbs them); `list_agents(kind="runtime")`
+returns the active set shown here.
 
-Developer + architecture tier (17):
+Developer + architecture tier (16):
 
 | Agent name                 | What it returns |
 | -------------------------- | --------------- |
@@ -122,25 +122,21 @@ Developer + architecture tier (17):
 | `bulk-migration-planner`   | Bulk API 2.0 / PE / Pub-Sub / REST / Connect plan from volume + latency |
 | `lwc-auditor`              | A11y + performance + security audit of an LWC bundle |
 | `deployment-risk-scorer`   | HIGH/MEDIUM/LOW risk score + breaking-change list |
-| `agentforce-builder`       | Full Agentforce action scaffold: Apex + topic + test + eval |
-| `org-drift-detector` *(deprecated → audit-router)* | Library ↔ live-org gap and bloat report |
-| `lwc-builder`              | Full LWC bundle (js/html/css/meta/tests) + optional Apex controller |
+| `agentforce-builder`       | Full Agentforce action scaffold: Apex + topic + test + eval || `lwc-builder`              | Full LWC bundle (js/html/css/meta/tests) + optional Apex controller |
 | `lwc-debugger`             | Ranked hypotheses + diagnostic probes + proposed fix for a live LWC failure |
 | `apex-builder`             | Apex class(es) built from requirements + test class |
 | `changeset-builder`        | Change set manifest + deployment checklist |
 | `flow-orchestrator-designer` | Flow Orchestrator design + stage / step map |
 | `automation-migration-router` | WFR/PB automation inventory → Flow migration plan |
 
-Admin accelerators — Tier 1 (15):
+Admin accelerators — Tier 1 (14):
 
 | Agent name                   | What it returns |
 | ---------------------------- | --------------- |
 | `field-impact-analyzer`      | Blast-radius report before renaming / deleting a field |
 | `object-designer`            | Setup-ready sObject design from a business concept |
 | `permission-set-architect`   | Profile-less PS / PSG / Muting design per persona |
-| `flow-builder`               | Flow design from requirements + automation-tree routing |
-| `validation-rule-auditor` *(deprecated → audit-router)* | VR audit (bypass, bulk safety, Flow coexistence) |
-| `data-loader-pre-flight`     | Go/no-go checklist for a Data Loader / Bulk API load |
+| `flow-builder`               | Flow design from requirements + automation-tree routing || `data-loader-pre-flight`     | Go/no-go checklist for a Data Loader / Bulk API load |
 | `duplicate-rule-designer`    | Matching + Duplicate Rules + post-load hygiene |
 | `assignment-and-auto-response-rules-designer` | Assignment rule + auto-response rule design |
 | `business-hours-and-holidays-configurator` | Business hours + holiday set configuration plan |
@@ -151,38 +147,27 @@ Admin accelerators — Tier 1 (15):
 | `path-designer`              | Path + guidance + key fields design per object / stage |
 | `process-flow-mapper`        | Business process → Salesforce automation map |
 
-Strategic — Tier 2 (12):
+Strategic — Tier 2 (7):
 
 | Agent name                                 | What it returns |
-| ------------------------------------------ | --------------- |
-| `sharing-audit-agent` *(deprecated → audit-router)* | OWD + sharing + data-skew + guest-user findings |
-| `lightning-record-page-auditor` *(deprecated → audit-router)* | Dynamic Forms + render-cost + Path scorecard |
-| `record-type-and-layout-auditor` *(deprecated → audit-router)* | RT + layout + LRP mapping audit |
-| `picklist-governor` *(deprecated → audit-router)* | GVS adoption + drift + dependency audit |
-| `data-model-reviewer`                      | Data-model domain review (rollups, XID, growth) |
-| `integration-catalog-builder`              | Integration catalog + posture scorecard |
-| `report-and-dashboard-auditor` *(deprecated → audit-router)* | Report + dashboard hygiene audit |
-| `csv-to-object-mapper`                     | CSV → sObject mapping + VR collision report |
+| ------------------------------------------ | --------------- || `data-model-reviewer`                      | Data-model domain review (rollups, XID, growth) |
+| `integration-catalog-builder`              | Integration catalog + posture scorecard || `csv-to-object-mapper`                     | CSV → sObject mapping + VR collision report |
 | `email-template-modernizer`                | Template classification + migration plan |
 | `audit-router`                             | Routes to appropriate single-mode auditor or runs multi-mode audit |
 | `fit-gap-analyzer`                         | Fit / gap analysis: requirements vs org configuration |
 | `story-drafter`                            | User stories with Given/When/Then acceptance criteria |
 
-Vertical + governance — Tier 3 (12):
+Vertical + governance — Tier 3 (10):
 
 | Agent name                            | What it returns |
 | ------------------------------------- | --------------- |
 | `omni-channel-routing-designer`       | Queue + routing + presence design with capacity math |
 | `knowledge-article-taxonomy-agent`    | Data categories + article types + channel-audience plan |
 | `sales-stage-designer`                | Opportunity stage ladder + forecast + VR gates |
-| `lead-routing-rules-designer`         | Source × geo × product routing matrix + SLAs |
-| `case-escalation-auditor` *(deprecated → audit-router)* | Assignment + escalation + milestone audit |
-| `sandbox-strategy-designer`           | Environment ladder + pools + refresh calendar |
+| `lead-routing-rules-designer`         | Source × geo × product routing matrix + SLAs || `sandbox-strategy-designer`           | Environment ladder + pools + refresh calendar |
 | `release-train-planner`               | Package + branching + CI/CD + release calendar |
 | `waf-assessor`                        | Well-Architected scorecard + remediation backlog |
-| `agentforce-action-reviewer`          | Per-action A–F scorecard + guardrails gap list |
-| `prompt-library-governor` *(deprecated → audit-router)* | Prompt template inventory + consolidation plan |
-| `profile-to-permset-migrator`         | Profile → Permission Set migration plan + PS / PSG design |
+| `agentforce-action-reviewer`          | Per-action A–F scorecard + guardrails gap list || `profile-to-permset-migrator`         | Profile → Permission Set migration plan + PS / PSG design |
 | `user-access-diff`                    | Side-by-side access comparison report between users |
 
 ### `validate_against_org` routing

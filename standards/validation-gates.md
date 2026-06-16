@@ -5,7 +5,7 @@ by `scripts/generate_validation_index.py`. **Do not hand-edit.** The
 drift check in `scripts/validate_repo.py` catches stale copies.
 
 
-- total gates: **64**  ·  errors: **57**  ·  warnings: **7**
+- total gates: **65**  ·  errors: **57**  ·  warnings: **7**  ·  other: **1**
 
 Each gate links to its source line. The intent line is the first line of
 the enclosing function's docstring — read it for *why* the gate exists,
@@ -80,12 +80,13 @@ not just what it checks.
 
 | Line | Level | Function | Intent | Message |
 |---|---|---|---|---|
-| [94](scripts/validate_repo.py#L94) | **ERROR** | `_check_skill_local_script` | py_compile + ``--help`` smoke for a single skill-local helper script. | py_compile failed: {…} |
-| [104](scripts/validate_repo.py#L104) | **ERROR** | `_check_skill_local_script` | py_compile + ``--help`` smoke for a single skill-local helper script. | --help exited non-zero |
-| [128](scripts/validate_repo.py#L128) | **ERROR** | `validate_one_skill` | Validate a single skill's structure + frontmatter. Does NOT run the | unable to parse frontmatter: {…} |
-| [303](scripts/validate_repo.py#L303) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | duplicate skill id `{…}` also seen in {…} |
-| [312](scripts/validate_repo.py#L312) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | duplicate skill name `{…}` also seen in {…} |
-| [354](scripts/validate_repo.py#L354) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | skill `{…}` has no query fixture — add at least one entry |
-| [374](scripts/validate_repo.py#L374) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | query `{…}` did not return `{…}` in top {…} |
-| [385](scripts/validate_repo.py#L385) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | generated artifact is stale; run `python3 scripts/skill_sync.py --all` |
-| [448](scripts/validate_repo.py#L448) | **ERROR** | `_check_orphan_skills` | Emit an ERROR for each filtered skill with no agent decision recorded. | skill `{…}` has no agent decision — wire it to a run-time agent via `python3 scripts/patch_agent_skill.py <agent_id> {…} "### Mandatory Rea… |
+| [95](scripts/validate_repo.py#L95) | **ERROR** | `_check_skill_local_script` | py_compile + ``--help`` smoke for a single skill-local helper script. | py_compile failed: {…} |
+| [105](scripts/validate_repo.py#L105) | **ERROR** | `_check_skill_local_script` | py_compile + ``--help`` smoke for a single skill-local helper script. | --help exited non-zero |
+| [129](scripts/validate_repo.py#L129) | **ERROR** | `validate_one_skill` | Validate a single skill's structure + frontmatter. Does NOT run the | unable to parse frontmatter: {…} |
+| [304](scripts/validate_repo.py#L304) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | duplicate skill id `{…}` also seen in {…} |
+| [313](scripts/validate_repo.py#L313) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | duplicate skill name `{…}` also seen in {…} |
+| [355](scripts/validate_repo.py#L355) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | skill `{…}` has no query fixture — add at least one entry |
+| [375](scripts/validate_repo.py#L375) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | query `{…}` did not return `{…}` in top {…} |
+| [386](scripts/validate_repo.py#L386) | **ERROR** | `run_skill_validation` | Validate skills with optional partitioning. Returns (issues, count). | generated artifact is stale; run `python3 scripts/skill_sync.py --all` |
+| [449](scripts/validate_repo.py#L449) | **ERROR** | `_check_orphan_skills` | Emit an ERROR for each filtered skill with no agent decision recorded. | skill `{…}` has no agent decision — wire it to a run-time agent via `python3 scripts/patch_agent_skill.py <agent_id> {…} "### Mandatory Rea… |
+| [553](scripts/validate_repo.py#L553) | ? | `main` | — | — |

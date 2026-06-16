@@ -7,6 +7,10 @@ Drop this into Claude Code, Cursor, Aider, Windsurf, or any AI tool and get role
 **1003 skills · 75 agents · shared Apex/LWC/Flow templates · golden evals · live-org MCP server.**
 1097+ skills planned across 5 roles × 16 clouds. Live progress: [`docs/queue-progress.md`](./docs/queue-progress.md).
 
+[![Validate](https://github.com/PranavNagrecha/AwesomeSalesforceSkills/actions/workflows/validate.yml/badge.svg)](https://github.com/PranavNagrecha/AwesomeSalesforceSkills/actions/workflows/validate.yml)
+[![PR Lint](https://github.com/PranavNagrecha/AwesomeSalesforceSkills/actions/workflows/pr-lint.yml/badge.svg)](https://github.com/PranavNagrecha/AwesomeSalesforceSkills/actions/workflows/pr-lint.yml)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE)
+
 ---
 
 ## What Makes This Different
@@ -51,7 +55,7 @@ Three layers that turn generic LLMs into Salesforce-literate agents:
 Every probe, agent, and skill in this repo is verified against a live Salesforce org via three automated harnesses:
 
 - **Layer 1** — Probe SOQL correctness (every SOQL query executes against a real org)
-- **Layer 2** — Agent smoke tests (42/42 runtime agents pass structural + dependency checks)
+- **Layer 2** — Agent smoke tests (47/47 active runtime agents pass structural + dependency checks)
 - **Layer 3** — Skill factuality sampling (200-skill sample, 0 fabricated field references)
 
 Re-runnable on any dev/scratch org:
@@ -155,17 +159,17 @@ and dependency order.
 
 | Domain | Skills |
 |--------|--------|
-| Admin | 200 — custom fields, objects, picklists, users, org setup, page layouts, permission sets, sharing, validation rules, flows, reports, data skew, requirements gathering, Experience Cloud site setup, member management, CMS content, guest access, moderation, SEO, portal requirements, self-service design, partner community, community engagement, CPQ product catalog and bundles, CPQ pricing rules, CPQ quote templates, FSL work orders, service territories, resource management, scheduling policies, mobile app setup, Health Cloud patient setup, care plan configuration, care program management, FSC financial accounts, household model configuration, FSC referral management, NPSP household accounts, gift entry and processing, soft credits and matching, recurring donations, Marketing Cloud Engagement setup, MCAE/Pardot setup, Email Studio, Journey Builder, Marketing Cloud Connect, MCAE lead scoring and grading, consent management, email deliverability, B2B Commerce store setup, CRM Analytics app creation, analytics dashboard design, integration-admin connected apps, remote site settings, outbound message setup, integration user management, change data capture admin... |
-| Apex | 107 — trigger framework, batch, async, security patterns, callouts, mocking, platform cache, SOQL fundamentals, sf CLI and SFDX essentials, Metadata API and package.xml, debug logs and Developer Console, apex managed sharing, scheduled jobs, email services, fflib enterprise patterns, mixed DML and setup objects, record locking, callout-DML transaction boundaries, trigger-flow coexistence, apex performance profiling, JSON serialization, DML patterns, collections patterns, aggregate queries, SOQL relationship queries, batch chaining, transaction finalizers, wrapper class patterns, limits monitoring, named credentials patterns... |
-| LWC | 32 — wire service, component communication, testing, accessibility, offline, performance, toast and notifications, dynamic components, imperative Apex, message channel patterns, LWR site development, Experience Cloud LWC components, authentication flows, headless CMS API, API access patterns, search customization, multi-IdP SSO... |
-| Flow | 23 — record-triggered, screen flows, fault handling, bulkification, subflows, governance, debugging, auto-launched flow patterns, collection processing, External Services callouts, Flow for Slack Core Actions, flow action framework, flow large-data-volume patterns, Process Builder to Flow migration, Workflow Rule to Flow migration... |
-| OmniStudio | 21 — OmniScript design, DataRaptor, Integration Procedures, security, FlexCard design patterns, calculation procedures, DataPack deployment, performance optimization, Industries CPQ vs Salesforce CPQ, OmniStudio testing patterns, OmniStudio CI/CD patterns... |
-| Agentforce | 28 — agent actions, topic design, Einstein Trust Layer, agent creation, Einstein Copilot for Sales, Einstein Prediction Builder, Einstein Copilot for Service, Model Builder and BYOLLM, RAG patterns, agent testing and evaluation, persona design, MCP tool definition in Apex, Salesforce MCP server setup... |
-| Security | 25 — org hardening, permission set groups, Shield Platform Encryption, event monitoring, field audit trail, transaction security policies, login forensics, network security and trusted IPs, sandbox data masking, API security and rate limiting, experience cloud security, FERPA compliance, MFA enforcement strategy, OAuth token management... |
-| Integration | 35 — GraphQL, OAuth flows, Salesforce Connect, REST API patterns, SOAP API patterns, named credentials, Streaming API and PushTopic, platform events integration, Change Data Capture for external subscribers, callout limits and async patterns, file and document integration, idempotent integration patterns, Data Cloud Ingestion API streaming vs bulk, Pub/Sub API gRPC patterns, Revenue Lifecycle Management DRO, Loyalty Management setup, Slack Salesforce integration setup, Data Cloud query API, Data Cloud activation development, Data Cloud integration strategy, Bulk API 2.0 patterns, Slack Workflow Builder... |
-| Data | 85 — multi-currency, SOSL, rollup alternatives, data model design patterns, data migration planning, data quality and governance, bulk API and large data loads, data archival strategies, SOQL query optimization, service data archival, external user data sharing, community user migration, community analytics, partner data access patterns, volunteer management requirements, NPSP gift history import, B2B Commerce product catalog migration, Order Management order history migration, OCI inventory data, Data Cloud DMO identity resolution, Data Cloud consent and privacy, Revenue Cloud data model... |
-| Architect | 90 — solution design patterns, limits and scalability planning, multi-org strategy, technical debt assessment, well-architected review, platform selection guidance, security architecture review, Experience Cloud licensing model, multi-site architecture, headless vs LWR vs Aura decision framework, Experience Cloud performance and CDN, Experience Cloud integration patterns (SSO, widgets, Data Cloud), MuleSoft Anypoint Platform runtime model selection, large-data-volume architecture, Data Cloud vs CRM Analytics decision... |
-| DevOps | 50 — scratch org management, sandbox refresh and templates, unlocked package development, second-generation managed packages, DevOps Center pipeline, GitHub Actions for Salesforce, post-deployment validation, deployment error troubleshooting, rollback and hotfix strategy, pre-deployment checklist, go-live cutover planning, VS Code extensions, SFDX project structure, multi-package development, API version management, 1GP managed package development, CPQ deployment patterns, Salesforce CLI automation, code review checklist... |
+| Admin | 252 — custom fields, objects, picklists, users, org setup, page layouts, permission sets, sharing, validation rules, flows, reports, data skew, requirements gathering, Experience Cloud site setup, member management, CMS content, guest access, moderation, SEO, portal requirements, self-service design, partner community, community engagement, CPQ product catalog and bundles, CPQ pricing rules, CPQ quote templates, FSL work orders, service territories, resource management, scheduling policies, mobile app setup, Health Cloud patient setup, care plan configuration, care program management, FSC financial accounts, household model configuration, FSC referral management, NPSP household accounts, gift entry and processing, soft credits and matching, recurring donations, Marketing Cloud Engagement setup, MCAE/Pardot setup, Email Studio, Journey Builder, Marketing Cloud Connect, MCAE lead scoring and grading, consent management, email deliverability, B2B Commerce store setup, CRM Analytics app creation, analytics dashboard design, integration-admin connected apps, remote site settings, outbound message setup, integration user management, change data capture admin... |
+| Apex | 149 — trigger framework, batch, async, security patterns, callouts, mocking, platform cache, SOQL fundamentals, sf CLI and SFDX essentials, Metadata API and package.xml, debug logs and Developer Console, apex managed sharing, scheduled jobs, email services, fflib enterprise patterns, mixed DML and setup objects, record locking, callout-DML transaction boundaries, trigger-flow coexistence, apex performance profiling, JSON serialization, DML patterns, collections patterns, aggregate queries, SOQL relationship queries, batch chaining, transaction finalizers, wrapper class patterns, limits monitoring, named credentials patterns... |
+| LWC | 79 — wire service, component communication, testing, accessibility, offline, performance, toast and notifications, dynamic components, imperative Apex, message channel patterns, LWR site development, Experience Cloud LWC components, authentication flows, headless CMS API, API access patterns, search customization, multi-IdP SSO... |
+| Flow | 60 — record-triggered, screen flows, fault handling, bulkification, subflows, governance, debugging, auto-launched flow patterns, collection processing, External Services callouts, Flow for Slack Core Actions, flow action framework, flow large-data-volume patterns, Process Builder to Flow migration, Workflow Rule to Flow migration... |
+| OmniStudio | 34 — OmniScript design, DataRaptor, Integration Procedures, security, FlexCard design patterns, calculation procedures, DataPack deployment, performance optimization, Industries CPQ vs Salesforce CPQ, OmniStudio testing patterns, OmniStudio CI/CD patterns... |
+| Agentforce | 51 — agent actions, topic design, Einstein Trust Layer, agent creation, Einstein Copilot for Sales, Einstein Prediction Builder, Einstein Copilot for Service, Model Builder and BYOLLM, RAG patterns, agent testing and evaluation, persona design, MCP tool definition in Apex, Salesforce MCP server setup... |
+| Security | 48 — org hardening, permission set groups, Shield Platform Encryption, event monitoring, field audit trail, transaction security policies, login forensics, network security and trusted IPs, sandbox data masking, API security and rate limiting, experience cloud security, FERPA compliance, MFA enforcement strategy, OAuth token management... |
+| Integration | 61 — GraphQL, OAuth flows, Salesforce Connect, REST API patterns, SOAP API patterns, named credentials, Streaming API and PushTopic, platform events integration, Change Data Capture for external subscribers, callout limits and async patterns, file and document integration, idempotent integration patterns, Data Cloud Ingestion API streaming vs bulk, Pub/Sub API gRPC patterns, Revenue Lifecycle Management DRO, Loyalty Management setup, Slack Salesforce integration setup, Data Cloud query API, Data Cloud activation development, Data Cloud integration strategy, Bulk API 2.0 patterns, Slack Workflow Builder... |
+| Data | 97 — multi-currency, SOSL, rollup alternatives, data model design patterns, data migration planning, data quality and governance, bulk API and large data loads, data archival strategies, SOQL query optimization, service data archival, external user data sharing, community user migration, community analytics, partner data access patterns, volunteer management requirements, NPSP gift history import, B2B Commerce product catalog migration, Order Management order history migration, OCI inventory data, Data Cloud DMO identity resolution, Data Cloud consent and privacy, Revenue Cloud data model... |
+| Architect | 104 — solution design patterns, limits and scalability planning, multi-org strategy, technical debt assessment, well-architected review, platform selection guidance, security architecture review, Experience Cloud licensing model, multi-site architecture, headless vs LWR vs Aura decision framework, Experience Cloud performance and CDN, Experience Cloud integration patterns (SSO, widgets, Data Cloud), MuleSoft Anypoint Platform runtime model selection, large-data-volume architecture, Data Cloud vs CRM Analytics decision... |
+| DevOps | 68 — scratch org management, sandbox refresh and templates, unlocked package development, second-generation managed packages, DevOps Center pipeline, GitHub Actions for Salesforce, post-deployment validation, deployment error troubleshooting, rollback and hotfix strategy, pre-deployment checklist, go-live cutover planning, VS Code extensions, SFDX project structure, multi-package development, API version management, 1GP managed package development, CPQ deployment patterns, Salesforce CLI automation, code review checklist... |
 
 **See the full catalog:** [docs/SKILLS.md](./docs/SKILLS.md)
 
@@ -298,7 +302,7 @@ This repo ships **two classes of agents**, both as instruction files (`agents/<n
 | Class | Purpose | Who invokes |
 |---|---|---|
 | **Build-time (14)** | Produce and maintain the skill library itself | Repo maintainers, `/run-queue` |
-| **Run-time (56)** | Use the library to do real Salesforce work in your codebase / org | You — via slash commands, direct AGENT.md reads, or MCP `get_agent` |
+| **Run-time (47)** | Use the library to do real Salesforce work in your codebase / org | You — via slash commands, direct AGENT.md reads, or MCP `get_agent` |
 
 The contract every agent follows: [`agents/_shared/AGENT_CONTRACT.md`](./agents/_shared/AGENT_CONTRACT.md).
 The full roster: [`agents/_shared/RUNTIME_VS_BUILD.md`](./agents/_shared/RUNTIME_VS_BUILD.md).
@@ -315,23 +319,28 @@ Each agent takes concrete inputs, composes skills + templates + decision-trees +
 
 Every run-time agent follows the same 8-section contract (including a mandatory **Process Observations** block that flags healthy, concerning, and ambiguous patterns in the org while producing the output), cites every skill / template / decision-tree it used, and never writes to your org.
 
-#### Developer + architecture tier (11)
+#### Developer + architecture tier (16)
 
 | Agent | Slash command | What it does |
 |---|---|---|
 | `apex-refactorer` | [`/refactor-apex`](./commands/refactor-apex.md) | Refactor an Apex class onto the canonical `templates/apex/` patterns + generate a test class |
+| `apex-builder` | [`/build-apex`](./commands/build-apex.md) | Build Apex class(es) from requirements onto canonical patterns + a test class |
 | `trigger-consolidator` | [`/consolidate-triggers`](./commands/consolidate-triggers.md) | Collapse N triggers on one sObject into the handler framework with a deactivation plan |
 | `test-class-generator` | [`/gen-tests`](./commands/gen-tests.md) | Generate a bulk-safe ≥ 85%-coverage test class using `TestDataFactory` / `BulkTestPattern` |
 | `soql-optimizer` | [`/optimize-soql`](./commands/optimize-soql.md) | Find and fix SOQL anti-patterns (query-in-loop, non-selective, no-security) |
 | `security-scanner` | [`/scan-security`](./commands/scan-security.md) | Audit CRUD/FLS, sharing, hardcoded secrets, Remote Sites vs Named Credentials |
 | `flow-analyzer` | [`/analyze-flow`](./commands/analyze-flow.md) | Decide Flow vs Apex per the automation decision tree + bulkification review |
+| `flow-orchestrator-designer` | [`/design-flow-orchestrator`](./commands/design-flow-orchestrator.md) | Design a Flow Orchestration + stage / step map |
+| `automation-migration-router` | [`/automation-migration-router`](./commands/automation-migration-router.md) | Inventory WFR / Process Builder / Approvals → Flow migration plan |
 | `bulk-migration-planner` | [`/plan-bulk-migration`](./commands/plan-bulk-migration.md) | Pick Bulk API 2.0 / Platform Events / Pub/Sub / REST Composite from volume + latency |
+| `lwc-builder` | [`/build-lwc`](./commands/build-lwc.md) | Generate a full LWC bundle (js/html/css/meta/tests) + optional Apex controller |
 | `lwc-auditor` | [`/audit-lwc`](./commands/audit-lwc.md) | A11y + performance + security audit of an LWC bundle |
+| `lwc-debugger` | [`/debug-lwc`](./commands/debug-lwc.md) | Ranked hypotheses + diagnostic probes + proposed fix for a live LWC failure |
+| `changeset-builder` | [`/build-changeset`](./commands/build-changeset.md) | Build / validate a deployment change set manifest + checklist |
 | `deployment-risk-scorer` | [`/score-deployment`](./commands/score-deployment.md) | Pre-deploy risk score vs live org (breaking-change list via MCP probes) |
 | `agentforce-builder` | [`/build-agentforce-action`](./commands/build-agentforce-action.md) | Scaffold Agentforce action: Apex `@InvocableMethod` + topic YAML + test + golden eval |
-| `org-drift-detector` | [`/detect-drift`](./commands/detect-drift.md) | Library ↔ live-org gap and bloat report across every flagship prescription |
 
-#### Admin accelerators — Tier 1 (7)
+#### Admin accelerators — Tier 1 (14)
 
 | Agent | Slash command | What it does |
 |---|---|---|
@@ -339,25 +348,30 @@ Every run-time agent follows the same 8-section contract (including a mandatory 
 | `object-designer` | [`/design-object`](./commands/design-object.md) | Setup-ready sObject design from a concept (fields, RTs, VRs, layouts) |
 | `permission-set-architect` | [`/architect-perms`](./commands/architect-perms.md) | Profile-less PS / PSG / Muting design per persona |
 | `flow-builder` | [`/build-flow`](./commands/build-flow.md) | Design a Flow from requirements, route to Apex when the tree says so |
-| `validation-rule-auditor` | [`/audit-validation-rules`](./commands/audit-validation-rules.md) | Audit VRs for bypass, bulk safety, and Flow coexistence |
 | `data-loader-pre-flight` | [`/preflight-load`](./commands/preflight-load.md) | Go/no-go checklist for a Data Loader / Bulk API load |
 | `duplicate-rule-designer` | [`/design-duplicate-rule`](./commands/design-duplicate-rule.md) | Matching + Duplicate Rules scoped to the load and post-load hygiene |
+| `assignment-and-auto-response-rules-designer` | [`/design-assignment-rules`](./commands/design-assignment-rules.md) | Assignment + auto-response rule design |
+| `business-hours-and-holidays-configurator` | [`/configure-business-hours`](./commands/configure-business-hours.md) | Business hours + holiday set configuration plan |
+| `config-workbook-author` | [`/author-config-workbook`](./commands/author-config-workbook.md) | Compile the canonical 10-section configuration workbook |
+| `custom-metadata-and-settings-designer` | [`/design-custom-metadata`](./commands/design-custom-metadata.md) | CMDT / Custom Settings design + Apex usage patterns |
+| `entitlement-and-milestone-designer` | [`/design-entitlements`](./commands/design-entitlements.md) | Entitlement process + milestone design |
+| `experience-cloud-admin-designer` | [`/design-experience-cloud`](./commands/design-experience-cloud.md) | Experience Cloud site admin setup (member, guest, CMS) |
+| `path-designer` | [`/design-path`](./commands/design-path.md) | Path + guidance + key fields design per object / stage |
+| `process-flow-mapper` | [`/map-process-flow`](./commands/map-process-flow.md) | Map a process narrative to a Salesforce automation swim-lane |
 
-> Workflow Rule / Process Builder / Approval Process migration is now handled by the consolidated [`automation-migration-router`](./agents/automation-migration-router/AGENT.md) — see [`/automation-migration-router`](./commands/automation-migration-router.md).
+> Workflow Rule / Process Builder / Approval Process migration is handled by the consolidated [`automation-migration-router`](./agents/automation-migration-router/AGENT.md) (Developer tier) — see [`/automation-migration-router`](./commands/automation-migration-router.md).
 
-#### Strategic — Tier 2 (9)
+#### Strategic — Tier 2 (7)
 
 | Agent | Slash command | What it does |
 |---|---|---|
-| `sharing-audit-agent` | [`/audit-sharing`](./commands/audit-sharing.md) | OWD + sharing-rule findings, data-skew hot-list, guest-user exposure |
-| `lightning-record-page-auditor` | [`/audit-record-page`](./commands/audit-record-page.md) | Dynamic Forms, render cost, related-list strategy, Path, LWC weight |
-| `record-type-and-layout-auditor` | [`/audit-record-types`](./commands/audit-record-types.md) | Flag RT proliferation, Master Layout issues, LRP mapping gaps |
-| `picklist-governor` | [`/govern-picklists`](./commands/govern-picklists.md) | GVS adoption, inactive-value drift, dependent-chain probe |
 | `data-model-reviewer` | [`/review-data-model`](./commands/review-data-model.md) | Review relationships, rollups, External IDs, growth forecast, indexes |
 | `integration-catalog-builder` | [`/catalog-integrations`](./commands/catalog-integrations.md) | NCs + Remote Sites + Connected Apps + certs, scored for posture |
-| `report-and-dashboard-auditor` | [`/audit-reports`](./commands/audit-reports.md) | Stale / unfiltered / dashboard running-user leakage, subscription abuse |
 | `csv-to-object-mapper` | [`/map-csv-to-object`](./commands/map-csv-to-object.md) | Map CSV headers → sObject fields + External ID + VR collision report |
 | `email-template-modernizer` | [`/modernize-email-templates`](./commands/modernize-email-templates.md) | Classic / Lightning / Enhanced LEX classification + migration plan |
+| `audit-router` | [`/audit-router`](./commands/audit-router.md) | Routes to the right single-mode auditor or runs a multi-mode org audit (absorbs the retired auditors) |
+| `fit-gap-analyzer` | [`/run-fit-gap`](./commands/run-fit-gap.md) | Fit / gap analysis: requirements backlog vs target-org configuration |
+| `story-drafter` | [`/draft-stories`](./commands/draft-stories.md) | Salesforce-aware INVEST story backlog with Given/When/Then criteria |
 
 #### Vertical + governance — Tier 3 (10)
 
@@ -367,12 +381,14 @@ Every run-time agent follows the same 8-section contract (including a mandatory 
 | `knowledge-article-taxonomy-agent` | [`/design-knowledge-taxonomy`](./commands/design-knowledge-taxonomy.md) | Data categories, article types, channel-audience matrix, lifecycle |
 | `sales-stage-designer` | [`/design-sales-stages`](./commands/design-sales-stages.md) | Opportunity stage ladder + forecast categories + VR gates + Path |
 | `lead-routing-rules-designer` | [`/design-lead-routing`](./commands/design-lead-routing.md) | Source × geo × product routing matrix, queues, SLAs, conversion handoff |
-| `case-escalation-auditor` | [`/audit-case-escalation`](./commands/audit-case-escalation.md) | Assignment + escalation + entitlement + milestone coverage audit |
 | `sandbox-strategy-designer` | [`/design-sandbox-strategy`](./commands/design-sandbox-strategy.md) | Environment ladder + scratch pools + refresh calendar + masking |
 | `release-train-planner` | [`/plan-release-train`](./commands/plan-release-train.md) | Package strategy, branching, CI/CD gates, release calendar, hotfix plan |
 | `waf-assessor` | [`/assess-waf`](./commands/assess-waf.md) | Well-Architected scorecard across Trusted / Easy / Adaptable / Resilient / Composable |
 | `agentforce-action-reviewer` | [`/review-agentforce-action`](./commands/review-agentforce-action.md) | Per-action A–F scorecard + topic coherence + guardrails gap list |
-| `prompt-library-governor` | [`/govern-prompt-library`](./commands/govern-prompt-library.md) | Prompt template inventory, duplicate detection, Trust Layer alignment |
+| `profile-to-permset-migrator` | [`/migrate-profile-to-permset`](./commands/migrate-profile-to-permset.md) | Decompose a Profile into Permission Sets + PSGs |
+| `user-access-diff` | [`/diff-users`](./commands/diff-users.md) | Side-by-side access comparison between two Salesforce users |
+
+> **Deprecated (14):** the single-mode auditors/governors (`/audit-sharing`, `/audit-record-page`, `/audit-record-types`, `/govern-picklists`, `/audit-reports`, `/audit-validation-rules`, `/audit-case-escalation`, `/govern-prompt-library`, `/detect-drift`, plus 5 earlier stubs) are consolidated into [`/audit-router`](./commands/audit-router.md). Full deprecated roster + redirects: [`RUNTIME_VS_BUILD.md`](./agents/_shared/RUNTIME_VS_BUILD.md#deprecated-14).
 
 Full list + source-skill map: [`agents/_shared/SKILL_MAP.md`](./agents/_shared/SKILL_MAP.md).
 
@@ -394,6 +410,8 @@ agents/orchestrator/             routes TODOs to the right builder
       ├── agents/dev-skill-builder/     builds Apex / LWC / Flow / Integration / DevOps
       ├── agents/data-skill-builder/    builds data modeling, migration, SOQL
       ├── agents/architect-skill-builder/  builds solution design + WAF review
+      ├── agents/devops-skill-builder/  builds DevOps / release-engineering skills
+      ├── agents/security-skill-builder/   builds Security skills
       ├── agents/code-reviewer/         canon-gate review (templates, decision-trees, evals)
       ├── agents/validator/             structural + quality gates before every commit
       ├── agents/currency-monitor/      flags stale skills after each SF release

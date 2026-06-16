@@ -25,11 +25,11 @@ Entry points: `/run-queue`, `/new-skill`, `/request-skill`, scheduled task.
 
 ---
 
-## Run-time agents (56)
+## Run-time agents (47)
 
 These agents use the skill library to do real Salesforce work against a user's org or codebase. They are the primary value delivered to consumers of SfSkills. Every run-time agent follows [`AGENT_CONTRACT.md`](./AGENT_CONTRACT.md) — including the mandatory **Process Observations** section that analyzes the org itself while producing the deliverable — and cites every skill / template / decision-tree it consumed.
 
-### Developer + architecture tier (17)
+### Developer + architecture tier (16)
 
 | Agent | Domain | Primary output | Slash command |
 |---|---|---|---|
@@ -44,23 +44,19 @@ These agents use the skill library to do real Salesforce work against a user's o
 | `lwc-auditor` | LWC | A11y + perf + security findings per bundle | `/audit-lwc` |
 | `lwc-debugger` | LWC | Ranked hypotheses + diagnostic probes + proposed fix for a live LWC failure | `/debug-lwc` |
 | `deployment-risk-scorer` | DevOps | Risk score + breaking-change list for a change set | `/score-deployment` |
-| `agentforce-builder` | Agentforce | Full action scaffold: Apex + topic + eval | `/build-agentforce-action` |
-| `org-drift-detector` | Architect | Library ↔ org gap + bloat report | `/detect-drift` |
-| `apex-builder` | Apex | Apex class(es) built from requirements + test class | `/build-apex` |
+| `agentforce-builder` | Agentforce | Full action scaffold: Apex + topic + eval | `/build-agentforce-action` || `apex-builder` | Apex | Apex class(es) built from requirements + test class | `/build-apex` |
 | `changeset-builder` | DevOps | Change set manifest + deployment checklist | `/build-changeset` |
 | `flow-orchestrator-designer` | Flow | Flow Orchestrator design + stage / step map | `/design-flow-orchestrator` |
 | `automation-migration-router` | Flow / Apex | Automation inventory → WFR/PB-to-Flow migration plan | `/automation-migration-router` |
 
-### Admin accelerators — Tier 1 (15)
+### Admin accelerators — Tier 1 (14)
 
 | Agent | Domain | Primary output | Slash command |
 |---|---|---|---|
 | `field-impact-analyzer` | Admin / Data | Blast-radius report for a field | `/analyze-field-impact` |
 | `object-designer` | Admin / Architecture | Setup-ready sObject design | `/design-object` |
 | `permission-set-architect` | Admin / Security | PS / PSG / Muting design per persona | `/architect-perms` |
-| `flow-builder` | Flow / Admin | Flow design from requirements + tree-based routing | `/build-flow` |
-| `validation-rule-auditor` | Admin | VR audit (bypass, bulk safety, Flow coexistence) | `/audit-validation-rules` |
-| `data-loader-pre-flight` | Data | Go/no-go checklist for a data load | `/preflight-load` |
+| `flow-builder` | Flow / Admin | Flow design from requirements + tree-based routing | `/build-flow` || `data-loader-pre-flight` | Data | Go/no-go checklist for a data load | `/preflight-load` |
 | `duplicate-rule-designer` | Data / Admin | Matching + Duplicate Rules + post-load hygiene | `/design-duplicate-rule` |
 | `assignment-and-auto-response-rules-designer` | Admin | Assignment rule + auto-response rule design | `/design-assignment-rules` |
 | `business-hours-and-holidays-configurator` | Admin / Service | Business hours + holiday set configuration plan | `/configure-business-hours` |
@@ -71,24 +67,19 @@ These agents use the skill library to do real Salesforce work against a user's o
 | `path-designer` | Admin | Path + guidance + key fields design per object / stage | `/design-path` |
 | `process-flow-mapper` | Admin | Business process → Salesforce automation map | `/map-process-flow` |
 
-### Strategic — Tier 2 (12)
+### Strategic — Tier 2 (7)
 
 | Agent | Domain | Primary output | Slash command |
 |---|---|---|---|
-| `sharing-audit-agent` | Security / Architecture | OWD + sharing + data-skew findings | `/audit-sharing` |
-| `lightning-record-page-auditor` | Admin / UX | Record-page + Dynamic Forms scorecard | `/audit-record-page` |
-| `record-type-and-layout-auditor` | Admin | RT + layout + LRP mapping audit | `/audit-record-types` |
-| `picklist-governor` | Admin | GVS adoption + drift + dependency audit | `/govern-picklists` |
 | `data-model-reviewer` | Data / Architecture | Data-model domain review | `/review-data-model` |
 | `integration-catalog-builder` | Integration / Security | Integration catalog + posture scorecard | `/catalog-integrations` |
-| `report-and-dashboard-auditor` | Admin | Report + dashboard hygiene audit | `/audit-reports` |
 | `csv-to-object-mapper` | Data | CSV → sObject mapping + VR collision report | `/map-csv-to-object` |
 | `email-template-modernizer` | Admin | Template classification + migration plan | `/modernize-email-templates` |
 | `audit-router` | Admin / Security | Routes to appropriate single-mode auditor or runs multi-mode audit | `/audit-router` |
 | `fit-gap-analyzer` | Admin | Fit / gap analysis: requirements vs org configuration | `/run-fit-gap` |
 | `story-drafter` | Admin | User stories with Given/When/Then acceptance criteria | `/draft-stories` |
 
-### Vertical + governance — Tier 3 (12)
+### Vertical + governance — Tier 3 (10)
 
 | Agent | Domain | Primary output | Slash command |
 |---|---|---|---|
@@ -96,26 +87,32 @@ These agents use the skill library to do real Salesforce work against a user's o
 | `knowledge-article-taxonomy-agent` | Service / Experience | Taxonomy + lifecycle + channel-audience plan | `/design-knowledge-taxonomy` |
 | `sales-stage-designer` | Sales | Stage ladder + forecast + VR gates + Path | `/design-sales-stages` |
 | `lead-routing-rules-designer` | Sales / Marketing | Routing matrix + queues + SLAs | `/design-lead-routing` |
-| `case-escalation-auditor` | Service | Assignment + escalation + milestone audit | `/audit-case-escalation` |
 | `sandbox-strategy-designer` | DevOps | Environment ladder + scratch pools + refresh calendar | `/design-sandbox-strategy` |
 | `release-train-planner` | DevOps | Package + branching + CI/CD + release calendar | `/plan-release-train` |
 | `waf-assessor` | Architecture | Well-Architected scorecard + remediation backlog | `/assess-waf` |
-| `agentforce-action-reviewer` | Agentforce | Per-action A–F scorecard + guardrails gap list | `/review-agentforce-action` |
-| `prompt-library-governor` | Agentforce | Prompt template inventory + consolidation plan | `/govern-prompt-library` |
-| `profile-to-permset-migrator` | Admin / Security | Profile → Permission Set migration plan + PS / PSG design | `/migrate-profile-to-permset` |
+| `agentforce-action-reviewer` | Agentforce | Per-action A–F scorecard + guardrails gap list | `/review-agentforce-action` || `profile-to-permset-migrator` | Admin / Security | Profile → Permission Set migration plan + PS / PSG design | `/migrate-profile-to-permset` |
 | `user-access-diff` | Admin / Security | Side-by-side access comparison report between users | `/diff-users` |
 
-### Deprecated (5)
+### Deprecated (14)
 
-These agents have `status: deprecated` — their AGENT.md files remain for reference, and their slash commands are forwarded to `audit-router`.
+These agents have `status: deprecated` — their AGENT.md files remain for reference, and their slash commands are forwarded to `audit-router`. The Wave-3b consolidation folded the single-mode auditors and governors into `audit-router`; nine of these were previously listed in the runtime tiers above and have now been moved here so the tier counts reflect active agents only.
 
 | Agent | Deprecated slash command | Superseded by |
 |---|---|---|
+| `case-escalation-auditor` | `/audit-case-escalation` | `audit-router` |
 | `field-audit-trail-and-history-tracking-governor` | `/govern-field-history` | `audit-router` |
+| `lightning-record-page-auditor` | `/audit-record-page` | `audit-router` |
 | `list-view-and-search-layout-auditor` | `/audit-list-views` | `audit-router` |
 | `my-domain-and-session-security-auditor` | `/audit-identity-and-session` | `audit-router` |
+| `org-drift-detector` | `/detect-drift` | `audit-router` |
+| `picklist-governor` | `/govern-picklists` | `audit-router` |
+| `prompt-library-governor` | `/govern-prompt-library` | `audit-router` |
 | `quick-action-and-global-action-auditor` | `/audit-actions` | `audit-router` |
+| `record-type-and-layout-auditor` | `/audit-record-types` | `audit-router` |
+| `report-and-dashboard-auditor` | `/audit-reports` | `audit-router` |
 | `reports-and-dashboards-folder-sharing-auditor` | `/audit-report-folder-sharing` | `audit-router` |
+| `sharing-audit-agent` | `/audit-sharing` | `audit-router` |
+| `validation-rule-auditor` | `/audit-validation-rules` | `audit-router` |
 
 Entry points:
 - **Slash command** — ask the AI to follow `commands/<command-name>.md`

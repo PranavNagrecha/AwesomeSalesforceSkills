@@ -264,35 +264,43 @@ Two classes of agents live in `agents/`:
    release-planner. These produce the library. Invoked by `/run-queue`.
 
 2. **Run-time (47)** — grouped in four tiers:
-   - **Developer + architecture (17):** `apex-refactorer`, `trigger-consolidator`,
+   - **Developer + architecture (16):** `apex-refactorer`, `trigger-consolidator`,
      `test-class-generator`, `soql-optimizer`, `security-scanner`,
      `flow-analyzer`, `bulk-migration-planner`, `lwc-builder`, `lwc-auditor`,
      `lwc-debugger`, `deployment-risk-scorer`, `agentforce-builder`,
-     `org-drift-detector`, `apex-builder`, `changeset-builder`,
-     `flow-orchestrator-designer`, `automation-migration-router`.
-   - **Admin accelerators — Tier 1 (15):** `field-impact-analyzer`,
+     `apex-builder`, `changeset-builder`, `flow-orchestrator-designer`,
+     `automation-migration-router`.
+   - **Admin accelerators — Tier 1 (14):** `field-impact-analyzer`,
      `object-designer`, `permission-set-architect`, `flow-builder`,
-     `validation-rule-auditor`, `data-loader-pre-flight`,
-     `duplicate-rule-designer`, `assignment-and-auto-response-rules-designer`,
+     `data-loader-pre-flight`, `duplicate-rule-designer`,
+     `assignment-and-auto-response-rules-designer`,
      `business-hours-and-holidays-configurator`, `config-workbook-author`,
      `custom-metadata-and-settings-designer`, `entitlement-and-milestone-designer`,
      `experience-cloud-admin-designer`, `path-designer`, `process-flow-mapper`.
-   - **Strategic — Tier 2 (12):** `sharing-audit-agent`,
-     `lightning-record-page-auditor`,
-     `record-type-and-layout-auditor`, `picklist-governor`,
-     `data-model-reviewer`, `integration-catalog-builder`,
-     `report-and-dashboard-auditor`, `csv-to-object-mapper`,
+   - **Strategic — Tier 2 (7):** `data-model-reviewer`,
+     `integration-catalog-builder`, `csv-to-object-mapper`,
      `email-template-modernizer`, `audit-router`, `fit-gap-analyzer`,
      `story-drafter`.
-   - **Vertical + governance — Tier 3 (12):** `omni-channel-routing-designer`,
+   - **Vertical + governance — Tier 3 (10):** `omni-channel-routing-designer`,
      `knowledge-article-taxonomy-agent`, `sales-stage-designer`,
-     `lead-routing-rules-designer`, `case-escalation-auditor`,
-     `sandbox-strategy-designer`, `release-train-planner`, `waf-assessor`,
-     `agentforce-action-reviewer`, `prompt-library-governor`,
+     `lead-routing-rules-designer`, `sandbox-strategy-designer`,
+     `release-train-planner`, `waf-assessor`, `agentforce-action-reviewer`,
      `profile-to-permset-migrator`, `user-access-diff`.
 
    These USE the library to do real Salesforce work. Invoked via the matching
    `commands/<name>.md`, direct AGENT.md read, or the MCP `get_agent` tool.
+
+3. **Deprecated (14)** — single-mode auditors/governors consolidated into
+   `audit-router` during Wave 3b. Their AGENT.md files remain for reference and
+   their slash commands redirect: `case-escalation-auditor`,
+   `field-audit-trail-and-history-tracking-governor`,
+   `lightning-record-page-auditor`, `list-view-and-search-layout-auditor`,
+   `my-domain-and-session-security-auditor`, `org-drift-detector`,
+   `picklist-governor`, `prompt-library-governor`,
+   `quick-action-and-global-action-auditor`, `record-type-and-layout-auditor`,
+   `report-and-dashboard-auditor`,
+   `reports-and-dashboards-folder-sharing-auditor`, `sharing-audit-agent`,
+   `validation-rule-auditor`.
 
 The single source of truth for what an AGENT.md must contain is
 `agents/_shared/AGENT_CONTRACT.md`. The full roster lives in
