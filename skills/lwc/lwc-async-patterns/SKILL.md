@@ -28,10 +28,9 @@ outputs:
   - Loading-state management
   - AbortController usage (where applicable)
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-22
-status: stub
+updated: 2026-05-19
 ---
 
 # LWC Async Patterns
