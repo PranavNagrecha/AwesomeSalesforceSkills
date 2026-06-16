@@ -462,11 +462,11 @@ The `mcp/sfskills-mcp/` package exposes this library and your real Salesforce
 org to any MCP-capable AI tool so the agent can answer "does this trigger
 framework already exist in my org?" **without asking you**.
 
-Fifteen tools, all read-only:
+38 read-only tools — the fifteen most-used shown here:
 
 | Tool                       | What it does                                                                    |
 | -------------------------- | ------------------------------------------------------------------------------- |
-| `search_skill`             | Lexical search over the 700+ SfSkills corpus with optional domain filter.       |
+| `search_skill`             | Lexical search over the 1003-skill SfSkills corpus with optional domain filter. |
 | `get_skill`                | Full SKILL.md + registry metadata for a given skill id.                         |
 | `describe_org`             | `sf org display` summary (org id, instance, edition, sandbox/scratch flags).    |
 | `list_custom_objects`      | Custom sObjects in the target org with optional substring filter.               |
