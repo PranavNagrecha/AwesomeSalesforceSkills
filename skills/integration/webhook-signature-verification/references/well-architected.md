@@ -4,9 +4,7 @@
 
 ## Official Sources Used
 
-- Apex REST & Callouts — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts.htm
+- Apex Crypto Class — https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_Crypto.htm
+- Apex REST (RestResource) — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_rest.htm
 - Named Credentials — https://help.salesforce.com/s/articleView?id=sf.named_credentials_about.htm
-- Connect REST API — https://developer.salesforce.com/docs/atlas.en-us.chatterapi.meta/chatterapi/
-- Private Connect — https://help.salesforce.com/s/articleView?id=sf.private_connect_overview.htm
-- Bulk API 2.0 — https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/
-- Pub/Sub API — https://developer.salesforce.com/docs/platform/pub-sub-api/guide/intro.html
+- Custom Metadata Types — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_metadata_intro.htm
