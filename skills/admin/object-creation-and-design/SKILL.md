@@ -15,6 +15,7 @@ triggers:
   - "what features can I enable when creating a custom object"
   - "what are the limits on custom objects per Salesforce edition"
   - "my custom object does not appear in the navigation bar"
+  - "creating and configuring a custom object"
 tags:
   - custom-objects
   - object-design

@@ -13,6 +13,7 @@ triggers:
   - "how to filter by date range using date literals in SOQL"
   - "how to traverse relationships in SOQL using dot notation"
   - "how to use OFFSET and LIMIT for pagination in SOQL"
+  - "querying records and fields with a SOQL statement"
 tags:
   - soql
   - query

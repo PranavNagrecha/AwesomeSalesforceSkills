@@ -12,6 +12,7 @@ triggers:
   - "My Lightning record page loads too slowly on mobile — how do I optimize component count and visibility rules"
   - "How do I move the action bar to Lightning App Builder so I can control button visibility without code"
   - "I need per-tab visibility in the Tabs component on a Lightning page (Summer 24)"
+  - "building a FlexiPage record or app page in Lightning App Builder"
 tags:
   - lightning-app-builder
   - visibility-filters

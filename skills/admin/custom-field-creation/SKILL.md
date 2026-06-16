@@ -17,6 +17,7 @@ triggers:
   - "user cannot see a field I added to the page layout"
   - "what is the difference between text and text area field type"
   - "adding a new field to Account Contact Opportunity object"
+  - "creating a new custom field on a Salesforce object"
 tags:
   - custom-fields
   - add-field
