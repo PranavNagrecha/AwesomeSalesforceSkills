@@ -18,7 +18,7 @@
         loop — use a single Get Records before the loop and an in-memory map.
 -->
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
-    <apiVersion>64.0</apiVersion>
+    <apiVersion>67.0</apiVersion>
     <description>Skeleton record-triggered flow. Replace object, entry criteria, and actions.</description>
     <environments>Default</environments>
     <interviewLabel>Record Triggered Skeleton {!$Flow.CurrentDateTime}</interviewLabel>

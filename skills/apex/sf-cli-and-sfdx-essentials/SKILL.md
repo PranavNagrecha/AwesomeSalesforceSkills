@@ -14,6 +14,7 @@ triggers:
   - "jwt auth for CI/CD pipeline to Salesforce"
   - "package.xml not retrieving all metadata types"
   - "how to deploy to sandbox or production with sf CLI"
+  - "switching or setting the default org with the Salesforce CLI"
 tags:
   - sf-cli
   - sfdx

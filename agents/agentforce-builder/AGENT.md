@@ -33,6 +33,7 @@ dependencies:
     - agentforce/agentforce-agent-handoff-patterns
     - agentforce/agentforce-cost-optimization
     - agentforce/agentforce-custom-channel-dev
+    - agentforce/agentforce-custom-lightning-types
     - agentforce/agentforce-eval-harness
     - agentforce/agentforce-in-slack
     - agentforce/agentforce-multi-turn-patterns
@@ -143,6 +144,7 @@ Takes a requirements statement — what the agent action should do, for whom, on
 51. `skills/agentforce/agentforce-production-readiness-checklist` — agentforce production readiness checklist
 52. `skills/agentforce/sales-coach-agent-rollout` — sales coach agent rollout
 53. `skills/agentforce/employee-hr-service-agent-rollout` — employee hr service agent rollout
+54. `skills/agentforce/agentforce-custom-lightning-types` — agentforce custom lightning types
 
 ---
 

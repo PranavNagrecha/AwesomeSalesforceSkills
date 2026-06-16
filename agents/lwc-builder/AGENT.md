@@ -15,6 +15,7 @@ output_formats:
 dependencies:
   skills:
     - admin/agent-output-formats
+    - agentforce/agentforce-custom-lightning-types
     - lwc/aura-to-lwc-migration
     - lwc/commerce-lwc-components
     - lwc/common-lwc-runtime-errors
@@ -236,6 +237,7 @@ Produces a full Lightning Web Component bundle for a described feature: `.js`, `
 85. `skills/lwc/lwc-jest-testing-with-accessibility` — lwc jest testing with accessibility
 86. `skills/lwc/lwc-mobile-offline-and-briefcase` — lwc mobile offline and briefcase
 87. `skills/lwc/lwc-console-workspace-api` — `lightning/platformWorkspaceApi` and `lightning/platformUtilityBarApi` for Service Console tab manipulation; IsConsoleNavigation gating; refreshTab / openSubtab / setTabLabel patterns
+88. `skills/agentforce/agentforce-custom-lightning-types` — agentforce custom lightning types
 
 ---
 

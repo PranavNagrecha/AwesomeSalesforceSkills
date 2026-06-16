@@ -74,10 +74,10 @@ templates/
 
 ## Versioning
 
-- All Apex classes target `apiVersion 64.0` (Spring '26). Adjust `-meta.xml`
-  on copy if you're on an older release.
+- All template `-meta.xml` files target `apiVersion 67.0` (Summer '26). Adjust
+  `-meta.xml` on copy if you're on an older release.
 - LWC jest config tracks `@salesforce/sfdx-lwc-jest` defaults.
-- Breaking changes to any template are called out in `CHANGELOG.md` (to be added).
+- Breaking changes to any template are called out in [`CHANGELOG.md`](./CHANGELOG.md).
 
 ## What's *not* here
 

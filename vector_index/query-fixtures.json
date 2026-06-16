@@ -1,6 +1,18 @@
 {
   "queries": [
     {
+      "query": "agent renders my Apex action output as raw JSON, customize the UI with an LWC",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/agentforce-custom-lightning-types",
+      "top_k": 3
+    },
+    {
+      "query": "build a LightningTypeBundle to override an Agentforce agent action input and output UI",
+      "domain": "agentforce",
+      "expected_skill": "agentforce/agentforce-custom-lightning-types",
+      "top_k": 3
+    },
+    {
       "query": "partner user data visibility role hierarchy PRM sharing",
       "domain": "data",
       "expected_skill": "data/partner-data-access-patterns",

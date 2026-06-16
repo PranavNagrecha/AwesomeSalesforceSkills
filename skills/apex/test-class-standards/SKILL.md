@@ -20,6 +20,7 @@ triggers:
   - "how do I mock HTTP callouts in Apex tests"
   - "test class best practices"
   - "Apex test best practices"
+  - "writing and generating an Apex test class"
 inputs:
   - "class or trigger under test and its entry points"
   - "required data setup including users, permissions, and related records"

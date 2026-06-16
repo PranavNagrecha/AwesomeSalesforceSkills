@@ -272,6 +272,7 @@
       "agentforce/agentforce-agent-handoff-patterns",
       "agentforce/agentforce-cost-optimization",
       "agentforce/agentforce-custom-channel-dev",
+      "agentforce/agentforce-custom-lightning-types",
       "agentforce/agentforce-eval-harness",
       "agentforce/agentforce-guardrails",
       "agentforce/agentforce-in-slack",
@@ -1625,6 +1626,9 @@
     "after-save-flow": [
       "admin/workflow-field-update-patterns"
     ],
+    "agent-action-ui": [
+      "agentforce/agentforce-custom-lightning-types"
+    ],
     "agent-actions": [
       "agentforce/agent-actions",
       "agentforce/agentforce-tool-use-patterns",
@@ -1705,6 +1709,7 @@
       "agentforce/agentforce-agent-handoff-patterns",
       "agentforce/agentforce-cost-optimization",
       "agentforce/agentforce-custom-channel-dev",
+      "agentforce/agentforce-custom-lightning-types",
       "agentforce/agentforce-eval-harness",
       "agentforce/agentforce-guardrails",
       "agentforce/agentforce-in-slack",
@@ -4557,6 +4562,9 @@
     ],
     "custom-property-editor": [
       "lwc/custom-property-editor-for-flow"
+    ],
+    "custom-renderer": [
+      "agentforce/agentforce-custom-lightning-types"
     ],
     "custom-report-type": [
       "admin/report-type-strategy"
@@ -8659,6 +8667,9 @@
     "lightning-security": [
       "security/network-security-and-trusted-ips"
     ],
+    "lightning-types": [
+      "agentforce/agentforce-custom-lightning-types"
+    ],
     "lightning-utility-bar": [
       "apex/cti-adapter-development"
     ],
@@ -8667,6 +8678,9 @@
       "lwc/lwc-debugging-devtools",
       "lwc/lwc-security",
       "lwc/lwr-site-development"
+    ],
+    "lightningtypebundle": [
+      "agentforce/agentforce-custom-lightning-types"
     ],
     "limits": [
       "flow/flow-batch-processing-alternatives"
