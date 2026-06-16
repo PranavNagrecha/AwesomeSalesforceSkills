@@ -191,7 +191,7 @@ Must:
 - prefer skill-local validators where they exist
 - avoid referencing nonexistent repo-level analysis scripts
 
-### Run-time agents (47)
+### Run-time agents (56)
 
 These are user-facing agents that USE the library to do real Salesforce work — they do not build the library. The full roster is documented in [`agents/_shared/RUNTIME_VS_BUILD.md`](./agents/_shared/RUNTIME_VS_BUILD.md) and source-mapped in [`agents/_shared/SKILL_MAP.md`](./agents/_shared/SKILL_MAP.md).
 

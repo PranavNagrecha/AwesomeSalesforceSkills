@@ -28,7 +28,7 @@
     "d3970969868c3b120e90",
     "f338ad45248b9c725ca1"
   ],
-  "content_hash": "2fbd9322b871f960e0dedf226a4bbde89e026320755da14608b7b0fcfb808d90",
+  "content_hash": "4f496231d2ce48c00c0f97ab70a229706f75eaae2ee81fa0cdc907eb66c2a342",
   "dependencies": [],
   "description": "Accept inbound webhooks (Stripe, GitHub, Slack, partner) and verify HMAC signatures in Apex REST. NOT for outbound webhooks.",
   "file_location": "skills/integration/webhook-signature-verification",
@@ -39,12 +39,10 @@
   ],
   "name": "webhook-signature-verification",
   "official_sources": [
-    "Apex REST & Callouts \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts.htm",
+    "Apex Crypto Class \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_Crypto.htm",
+    "Apex REST (RestResource) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_rest.htm",
     "Named Credentials \u2014 https://help.salesforce.com/s/articleView?id=sf.named_credentials_about.htm",
-    "Connect REST API \u2014 https://developer.salesforce.com/docs/atlas.en-us.chatterapi.meta/chatterapi/",
-    "Private Connect \u2014 https://help.salesforce.com/s/articleView?id=sf.private_connect_overview.htm",
-    "Bulk API 2.0 \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/",
-    "Pub/Sub API \u2014 https://developer.salesforce.com/docs/platform/pub-sub-api/guide/intro.html"
+    "Custom Metadata Types \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_metadata_intro.htm"
   ],
   "outputs": [
     "@RestResource endpoint with signature verification"
