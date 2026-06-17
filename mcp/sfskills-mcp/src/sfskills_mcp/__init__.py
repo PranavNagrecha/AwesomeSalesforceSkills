@@ -89,4 +89,4 @@
 #             skill-count fallback string retired from
 #             SERVER_INSTRUCTIONS — registry/skills.json is the only source
 #             of truth, pinned in _STALE_LITERALS to prevent regression.
-__version__ = "0.4.4"
+__version__ = "0.4.6"
