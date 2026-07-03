@@ -79,6 +79,7 @@ python3 scripts/export_agent_bundle.py --agent user-access-diff --rewrite-paths 
 The bundle carries the AGENT.md **plus every probe, skill, template, and shared doc** it needs — with paths auto-rewritten to resolve inside the bundle. See [`docs/installing-single-agents.md`](./docs/installing-single-agents.md).
 
 ---
+- [Mautic](https://www.mautic.org) - Open-source marketing automation platform that helps with lead capture, segmentation, campaigns, and customer journeys.
 
 ## 5-Minute Setup
 
