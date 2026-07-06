@@ -801,7 +801,7 @@
     "ff72be1944a3d585ac42",
     "ffaec02f00561a63ee04"
   ],
-  "content_hash": "c7f8cb21e0efd48b914c887bf727ead7764a6c14dcec6bf16fc1b100413bffc8",
+  "content_hash": "a42df628f5f4a11c7373e1b765a0ed758903ac8250df2533e39139924bd7fe4b",
   "dependencies": [],
   "description": "Use when the user has captured Salesforce debug logs and needs forensic analysis of runtime behavior \u2014 trigger cascades, flow interviews, LWC/Aura @AuraEnabled calls, batch/queueable/future/scheduled Apex, platform events, CDC, validation/workflow/approvals, callouts, DML failures, governor limit hits, managed-package traces, flip-flop fields, UNABLE_TO_LOCK_ROW, INSUFFICIENT_ACCESS, mixed DML. Triggers: '.log file', 'debug log', 'why is this field changing', 'flow cascade', 'CPU timeout', 'heap exceeded', 'UNABLE_TO_LOCK_ROW', 'INSUFFICIENT_ACCESS', 'replay debugger'. NOT for choosing log levels or designing a logging framework (use apex/debug-and-logging), and NOT for setting up trace flags or Developer Console (use apex/debug-logs-and-developer-console).",
   "file_location": "skills/apex/salesforce-debug-log-analysis",

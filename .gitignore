@@ -56,8 +56,12 @@ docs/reports/
 # persistent record of each agent execution.
 docs/validation/agent_executions_*/*.prompt.txt
 
-# Local Claude Code session state (user-specific, not part of repo)
-.claude/
+# Local Claude Code session state (user-specific, not part of repo) — but
+# .claude/workflows/ IS committed: it holds the repo's named Workflow scripts
+# (e.g. source-onboarding.js). A blanket `dir/` ignore can't be negated for
+# children, hence the `/*` + `!` pattern.
+.claude/*
+!.claude/workflows/
 
 # Session artifacts from eval / build / audit runs.
 # The harness scripts under evals/measurement/*.py STAY committed (reusable
@@ -113,3 +117,6 @@ mcp/sfskills-mcp/dist/
 # Pip's editable-install metadata bundle (`pip install -e .` writes this).
 # Per-machine, regenerated on every install — never belongs in the repo.
 *.egg-info/
+
+# Session-local intake reports from scripts/onboard_source.py — never committed.
+.intake-reports/

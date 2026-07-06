@@ -49,3 +49,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** When teams are unfamiliar with TM Forum SID order decomposition concepts and treat the commercial order as the final order artifact. The Communications Cloud decomposition engine does not auto-decompose without explicit decomposition rule configuration pointing commercial order items to their EPC child item counterparts.
 
 **How to avoid:** After EPC catalog configuration, explicitly configure and test the order decomposition rules in Industries Order Management. Decomposition rules map commercial order line items to technical fulfillment actions based on EPC child item definitions. Test by placing a commercial order and verifying that corresponding technical order records are created in the vlocity_cmt decomposed order objects before declaring order management setup complete.
+
+---
+
+## Gotcha 6: Attributes Have Ordering Prerequisites — Category First, Picklist Before Linking
+
+**What happens:** An admin building out product configuration in Product Designer creates attributes ad hoc and then tries to organize them or wire up Cart value selection afterward. The attribute framework has hard prerequisites: every attribute must correspond to an attribute category, and picklists that drive attribute value selection in the Cart must be created before they can be linked to attributes. Working in the wrong order forces rework or leaves attributes that cannot present selectable values in the Cart.
+
+**When it occurs:** During initial catalog build-out, when teams treat attributes like freeform custom fields. Also occurs when practitioners model configurable characteristics (speed tier, contract length) as Product2 custom fields instead of attributes — those fields never participate in Cart configuration, attribute-based pricing rules, or order decomposition value-setting.
+
+**How to avoid:** Sequence attribute work as: attribute categories → picklists → attributes → link picklists to attributes → attach attributes to specs/products. Decide up front where each attribute's value should be set — design time, runtime in the CPQ Cart, or during order decomposition — because that is part of the attribute's configuration. Keep the fields-vs-attributes boundary clear: fields hold universal product information (name, ID, description) and require admin privileges; attributes hold product- or class-specific detail and are managed with Product Designer access.

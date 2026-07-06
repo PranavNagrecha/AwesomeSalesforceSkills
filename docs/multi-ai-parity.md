@@ -5,7 +5,7 @@
 
 ## Tier structure
 
-SfSkills supports six AI-coding-assistant + AI-agent platforms. They are not all equal.
+SfSkills supports eight AI-coding-assistant + AI-agent export targets. They are not all equal.
 
 ### First-class targets
 
@@ -17,8 +17,17 @@ Three platforms get a **strong parity guarantee**: the SET of skills available i
 
 ### Second-class targets
 
-Four platforms get a **best-effort subset guarantee**: every skill available in the first-class targets SHOULD be available here, but format-specific limitations may cause subset behavior.
+Five platforms get a **best-effort subset guarantee**: every skill available in the first-class targets SHOULD be available here, but format-specific limitations may cause subset behavior.
 
+- **Agents / cross-tool** (`--target agents`) — vendor-neutral `.agents/skills/<slug>/`
+  flat tree per the emerging Agent Skills convention (Codex CLI reads it as its
+  primary project path; Gemini CLI gives it precedence over `.gemini/skills/`;
+  Cursor ≥2.4 discovers it). Content is the unmodified canonical SKILL.md package;
+  slugs are globally unique so the flat layout is lossless. Companion installer:
+  `python3 scripts/export_skills.py --install <project-dir>` writes this tree into
+  a consuming project and symlinks each skill into `.claude/skills/` (copy fallback
+  where symlinks are unsupported). Pattern adapted, with attribution, from
+  Clientell-Ai/salesforce-skills (Apache-2.0).
 - **Windsurf** (`--target windsurf`) — `.windsurf/rules/*.md` format + `.windsurf/workflows/*.md` for slash-commands. Workflows capped at 12 KB per file; oversized commands are documented-skip.
 - **Aider** (`--target aider`) — single `CONVENTIONS.md` concatenation. Cannot represent per-skill routing; skills compressed into one file. No custom slash-command surface, so `commands/*.md` are indexed inside CONVENTIONS.md as prose references.
 - **Augment** (`--target augment`) — `.augment/rules/*.md` + `.augment/commands/*.md`. Also reads `.claude/commands/` for compatibility.

@@ -54,6 +54,13 @@ After any skill add or skill update:
 The full list of validator gates with file:line citations lives in
 `standards/validation-gates.md` — read it instead of grepping validator code.
 
+To onboard an **external source** (a GitHub repo, an attachment, or a bare
+topic) into the library, use `/onboard-source` (`commands/onboard-source.md`):
+deterministic intake + triage via `scripts/onboard_source.py`, then the
+`source-onboarding` named workflow (Sonnet research, Opus gate/author/review).
+It enforces the same gates as the manual workflow above, plus a license wall
+(permissive → adapt with attribution; everything else → strict clean-room).
+
 ## Repository Structure
 
 ```text

@@ -11,17 +11,21 @@
 ```text
 EPC Configuration Sequence:
 
-1. Create Product Specifications (one per component):
-   - "Broadband-Spec" (Type: Service)
-   - "TV-Basic-Spec"  (Type: Service)
-   - "Voice-Spec"     (Type: Service)
+1. Create Product Specifications (one simple product spec per
+   customer-facing component — service/resource specs are reserved for
+   fulfillment-only entities that are never sold directly):
+   - "Broadband-Spec" (simple product spec)
+   - "TV-Basic-Spec"  (simple product spec)
+   - "Voice-Spec"     (simple product spec)
 
-2. Create atomic Product Offerings referencing each Specification:
-   - "Broadband 100Mbps" → references Broadband-Spec, priced at $40/mo
-   - "Basic TV"          → references TV-Basic-Spec, priced at $20/mo
-   - "Voice Line"        → references Voice-Spec, priced at $15/mo
+2. Create atomic Product Offerings that apply each Specification
+   (the offering inherits the spec's product data):
+   - "Broadband 100Mbps" → applies Broadband-Spec, priced at $40/mo
+   - "Basic TV"          → applies TV-Basic-Spec, priced at $20/mo
+   - "Voice Line"        → applies Voice-Spec, priced at $15/mo
 
-3. Create a bundle Product Offering:
+3. Create a bundle Product Offering backed by a bundled product spec
+   (bundling is decided at the spec level, then expressed as Child Items):
    - "Triple Play Bundle" → priced at $60/mo (discounted)
 
 4. Create ProductChildItem records linking the bundle to each component:

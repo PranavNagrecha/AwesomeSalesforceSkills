@@ -14,6 +14,8 @@
 
 **Test coverage breadth vs. run time:** Testing API runs are asynchronous and each invocation adds latency. A test suite with hundreds of cases will block a CI pipeline noticeably. The tradeoff: run the full regression suite on release branches but run a smaller smoke suite (happy path only, ~10 cases per topic) on every feature branch merge. Document the tiering policy explicitly.
 
+**Raw Connect API scripting vs. Agentforce DX CLI:** The Connect API endpoints and the `sf agent test` command family drive the same evaluation engine. The CLI trades flexibility for operability: it reuses org auth, handles job polling (`--wait`, `resume`, `results --job-id`), and emits JUnit/TAP/JSON result files (`--result-format`, `--output-dir`) that CI runners parse natively — eliminating three classes of bespoke pipeline script. Prefer the CLI for pipelines; reserve raw Connect API calls (or `sf api request rest`) for callers outside a CLI environment or endpoints the command family doesn't wrap.
+
 **Pre-production testing vs. production monitoring:** No pre-production test suite can fully represent the diversity of real user utterances. The architecture that maximizes reliability combines automated pre-production tests (high confidence, low coverage) with post-deploy analytics from real conversations (high coverage, lagging signal). Neither is sufficient alone.
 
 ## Anti-Patterns
@@ -46,3 +48,15 @@
 
 - Salesforce Well-Architected Overview — architecture quality framing (Reliability, Operational Excellence pillars)
   URL: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+
+- Agentforce Developer Guide — Test Your Agent (Agentforce DX) — test spec YAML generation, agent test create metadata sync, VS Code Agent Tests panel requirements
+  URL: https://developer.salesforce.com/docs/ai/agentforce/guide/agent-dx-test.html
+
+- Agentforce Developer Guide — Run Agent Tests (Agentforce DX) — sf agent test run flags (--wait, --result-format, --output-dir), async default, resume/results/list commands
+  URL: https://developer.salesforce.com/docs/ai/agentforce/guide/agent-dx-test-run.html
+
+- Agentforce Developer Guide — Run Testing API Tests Using Salesforce CLI — project deploy start for AiEvaluationDefinition, sf api request rest against Connect API endpoints
+  URL: https://developer.salesforce.com/docs/ai/agentforce/guide/testing-api-cli.html
+
+- Salesforce CLI Command Reference — agent commands (agent generate test-spec, agent test create/run/resume/results/list, agent test run-eval Beta)
+  URL: https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_agent_commands_unified.htm

@@ -114,6 +114,48 @@ curl https://ORG_DOMAIN.my.salesforce.com/services/data/v62.0/connect/einstein/a
 
 ---
 
+## Example 3: CLI-Native CI Gate with Agentforce DX
+
+**Context:** The team from Example 1 wants the topic test suite to gate every promotion from the CI sandbox, without maintaining a custom curl-and-poll script.
+
+**Problem:** The raw Connect API approach requires the pipeline to manage a session token, poll the job ID in a loop, and parse the result JSON to decide pass/fail — three pieces of bespoke scripting that the Salesforce CLI already provides.
+
+**Solution:**
+
+```bash
+# One-time authoring (developer workstation):
+# scaffold a test spec YAML listing the test cases for the agent
+sf agent generate test-spec
+
+# create the test in the dev org from the spec — this also syncs the
+# resulting AiEvaluationDefinition metadata back into the DX project,
+# so the test is version-controlled without a manual retrieve
+sf agent test create   # pass the generated test spec file
+
+# Pipeline stage (CI runner):
+# deploy the test definition alongside the agent metadata
+sf project deploy start --source-dir force-app/main/default/aiEvaluationDefinitions
+
+# run synchronously; write JUnit result files the CI runner parses natively
+sf agent test run --api-name OrderAgentTopicTests --target-org ci-sandbox \
+  --wait 10 --result-format junit --output-dir ./agent-test-results
+```
+
+```bash
+# Async variant for long suites: submit now, collect in a later stage.
+# Without --wait, the run command prints the resume command and exits.
+sf agent test run --api-name OrderAgentTopicTests --target-org ci-sandbox
+# ...later stage:
+sf agent test results --job-id <jobId>
+
+# Discover test API names available in the target org before running
+sf agent test list
+```
+
+**Why it works:** `--wait` makes the run command block until completion, so the pipeline step itself gates promotion; `--result-format junit` plus `--output-dir` produces result files that CI systems (Jenkins, GitHub Actions, GitLab) parse without custom code. The CLI reuses the runner's existing org auth — no session-token handling. Keep `sf api request rest` (or raw curl) only for Connect API endpoints the `sf agent test` family doesn't wrap, such as pulling the full Get Test Results payload by `runId` for baseline archiving.
+
+---
+
 ## Anti-Pattern: Testing Only the Agent's Happy Path Utterances
 
 **What practitioners do:** They write one test per topic using the most obvious phrasing — "track my order", "I want to return something", "billing question" — and declare the agent ready for production when all three pass.

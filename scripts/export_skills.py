@@ -8,6 +8,8 @@ Converts the SfSkills repo into formats consumed by:
   - Windsurf     (.windsurf/rules/*.md)
   - Augment      (.augment/rules/*.md)
   - Claude Code  (.claude/skills/<name>/) — canonical format, no conversion needed
+  - Agents       (.agents/skills/<name>/) — vendor-neutral cross-tool convention
+                 (Codex CLI primary path; Gemini CLI precedence; Cursor ≥2.4)
 
 Usage:
   python3 scripts/export_skills.py --platform cursor
@@ -17,6 +19,11 @@ Usage:
   python3 scripts/export_skills.py --all
   python3 scripts/export_skills.py --platform cursor --domain apex
   python3 scripts/export_skills.py --platform cursor --skill apex/trigger-framework
+
+  # One-command install into a consuming project (write once, link everywhere):
+  # canonical files under .agents/skills/ + a .claude/skills symlink per skill
+  # (copy fallback where symlinks are unsupported; --copy forces copies).
+  python3 scripts/export_skills.py --install ~/dev/my-sf-project --domain apex
 
 Output directories:
   exports/cursor/
@@ -50,7 +57,7 @@ MANIFEST_FILE = REPO_ROOT / "registry" / "export_manifest.json"
 # Wave 11 added Codex (OpenAI CLI) and formalized per-target slash-command
 # mirroring. Aider is the only target with no user-extensible slash surface,
 # so its commands land as a navigation index inside CONVENTIONS.md.
-PLATFORMS = ["claude", "cursor", "mcp", "windsurf", "aider", "augment", "codex"]
+PLATFORMS = ["claude", "cursor", "mcp", "windsurf", "aider", "augment", "codex", "agents"]
 FIRST_CLASS_TARGETS = {"claude", "cursor", "mcp"}
 COMMANDS_SOURCE_DIR = REPO_ROOT / "commands"
 
@@ -600,6 +607,100 @@ description: {desc}
     return len(skills)
 
 
+def export_agents(skills: list[dict], output_dir: Path) -> int:
+    """Vendor-neutral target: flat ``.agents/skills/<slug>/`` tree.
+
+    ``.agents/skills/`` is the cross-tool Agent Skills convention (Wave 12):
+    Codex CLI reads it as its primary project path, Gemini CLI gives it
+    precedence over ``.gemini/skills/``, and Cursor ≥2.4 discovers skills
+    there. Content is the canonical SKILL.md package, unchanged — slugs are
+    globally unique across domains, so the flat layout is collision-free.
+
+    No slash-command mirroring here: commands are per-tool surfaces; this
+    target carries only the tool-agnostic skill packages.
+    """
+    skills_root = output_dir / ".agents" / "skills"
+    for skill in skills:
+        _write_claude_skill(skill, skills_root / skill["skill_name"])
+
+    lines = ["# SfSkills — vendor-neutral Agent Skills bundle\n\n"]
+    lines.append(
+        "Auto-generated (`python3 scripts/export_skills.py --target agents`). "
+        "Mount `.agents/skills/` at a consuming project's root; Codex CLI, "
+        "Gemini CLI, and Cursor ≥2.4 discover it natively. For Claude Code, "
+        "symlink entries into `.claude/skills/` — or use "
+        "`--install <project>` which does both.\n\n"
+    )
+    for skill in sorted(skills, key=lambda s: s["skill_name"]):
+        lines.append(f"- `.agents/skills/{skill['skill_name']}/SKILL.md` — {skill['name']}\n")
+    (output_dir / "INDEX.md").write_text("".join(lines), encoding="utf-8")
+    return len(skills)
+
+
+# ── Project installer (write once, link everywhere) ──────────────────────────
+# Pattern adapted from Clientell-Ai/salesforce-skills (Apache-2.0): canonical
+# copies in one directory, symlinked into each tool's discovery path, with a
+# copy fallback where symlinks aren't available (e.g. Windows without
+# developer mode). https://github.com/Clientell-Ai/salesforce-skills
+
+def _install_link(link: Path, target: Path, force_copy: bool, force: bool) -> str:
+    """Create ``link`` pointing at ``target`` (symlink, else copy). Returns
+    'linked' | 'copied' | 'skipped'. Never overwrites content we did not
+    create: an existing real directory that is not a prior install is only
+    replaced with ``force``."""
+    if link.is_symlink():
+        link.unlink()
+    elif link.exists():
+        marker = link / "SKILL.md"
+        ours = marker.exists() and "author: Pranav Nagrecha" in marker.read_text(
+            encoding="utf-8", errors="replace"
+        )
+        if not (ours or force):
+            return "skipped"
+        shutil.rmtree(link)
+
+    if not force_copy:
+        try:
+            rel = os.path.relpath(target, start=link.parent)
+            link.symlink_to(rel, target_is_directory=True)
+            return "linked"
+        except (OSError, NotImplementedError):
+            pass  # fall through to copy (FS or platform without symlinks)
+    shutil.copytree(target, link)
+    return "copied"
+
+
+def install_into_project(
+    skills: list[dict], project_dir: Path, force_copy: bool = False, force: bool = False
+) -> dict:
+    """Install skills into a consuming project: canonical files under
+    ``.agents/skills/<slug>/`` plus a ``.claude/skills/<slug>`` link each."""
+    project_dir = project_dir.expanduser().resolve()
+    if not project_dir.is_dir():
+        raise SystemExit(f"ERROR: --install target is not a directory: {project_dir}")
+
+    agents_root = project_dir / ".agents" / "skills"
+    claude_root = project_dir / ".claude" / "skills"
+    agents_root.mkdir(parents=True, exist_ok=True)
+    claude_root.mkdir(parents=True, exist_ok=True)
+
+    stats = {"installed": 0, "linked": 0, "copied": 0, "skipped": []}
+    for skill in skills:
+        slug = skill["skill_name"]
+        canonical = agents_root / slug
+        if canonical.exists() and not canonical.is_symlink():
+            shutil.rmtree(canonical)
+        _write_claude_skill(skill, canonical)
+        stats["installed"] += 1
+
+        outcome = _install_link(claude_root / slug, canonical, force_copy, force)
+        if outcome == "skipped":
+            stats["skipped"].append(f".claude/skills/{slug} (pre-existing, not ours — use --force)")
+        else:
+            stats[outcome] += 1
+    return stats
+
+
 # ── Manifest (determinism + set-parity contract) ──────────────────────────────
 
 def _sha256_file(path: Path) -> str:
@@ -636,6 +737,31 @@ def _hash_target_tree(target_dir: Path) -> tuple[str, dict[str, str]]:
                         h.update(file_path.read_bytes())
                         h.update(b"\0")
                 per_skill[skill_id] = h.hexdigest()
+
+    # Agents layout: exports/agents/.agents/skills/<slug>/... — flat tree;
+    # the domain half of the skill id is recovered from each SKILL.md's
+    # `category:` frontmatter so parity checks compare like-for-like ids.
+    agents_root = target_dir / ".agents" / "skills"
+    if agents_root.is_dir():
+        for skill_dir in sorted(agents_root.iterdir()):
+            if not skill_dir.is_dir():
+                continue
+            domain = ""
+            skill_md = skill_dir / "SKILL.md"
+            if skill_md.is_file():
+                for line in skill_md.read_text(encoding="utf-8").splitlines():
+                    if line.startswith("category:"):
+                        domain = line.split(":", 1)[1].strip().strip("\"'")
+                        break
+            skill_id = f"{domain}/{skill_dir.name}" if domain else skill_dir.name
+            h = hashlib.sha256()
+            for file_path in sorted(skill_dir.rglob("*")):
+                if file_path.is_file():
+                    h.update(file_path.relative_to(skill_dir).as_posix().encode("utf-8"))
+                    h.update(b"\0")
+                    h.update(file_path.read_bytes())
+                    h.update(b"\0")
+            per_skill[skill_id] = h.hexdigest()
 
     # Cursor layout: exports/cursor/.cursor/rules/<domain>-<slug>.mdc
     cursor_rules = target_dir / ".cursor" / "rules"
@@ -826,6 +952,7 @@ EXPORTERS = {
     "windsurf": export_windsurf,
     "augment": export_augment,
     "codex": export_codex,
+    "agents": export_agents,
 }
 
 
@@ -891,12 +1018,48 @@ Examples:
              "gate's local mirror.",
     )
 
+    parser.add_argument(
+        "--install",
+        metavar="PROJECT_DIR",
+        help="Install skills into a consuming project: canonical copies under "
+             "<dir>/.agents/skills/<slug>/ (cross-tool convention: Codex, "
+             "Gemini CLI, Cursor ≥2.4) plus a .claude/skills/<slug> symlink "
+             "each (copy fallback where symlinks are unsupported). "
+             "Combine with --domain/--skill to install a subset.",
+    )
+    parser.add_argument(
+        "--copy",
+        action="store_true",
+        help="With --install: always copy instead of symlinking.",
+    )
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="With --install: replace pre-existing .claude/skills/<slug> "
+             "directories that this tool did not create.",
+    )
+
     args = parser.parse_args()
 
     # --check runs without doing any user-visible exports; it builds in a
     # throwaway temp dir and compares against the committed manifest.
     if args.check:
         return _run_check(args)
+
+    # --install writes into a consuming project and skips the exports/ tree.
+    if args.install:
+        skills = load_all_skills(domain_filter=args.domain, skill_filter=args.skill)
+        if not skills:
+            print("ERROR: No skills found matching the filter.")
+            sys.exit(1)
+        stats = install_into_project(
+            skills, Path(args.install), force_copy=args.copy, force=args.force
+        )
+        print(f"Installed {stats['installed']} skill(s) → {args.install}/.agents/skills/")
+        print(f"  .claude/skills links: {stats['linked']} symlinked, {stats['copied']} copied")
+        for s in stats["skipped"]:
+            print(f"  SKIPPED {s}")
+        return
 
     # Resolve --target (canonical) / --platform (alias).
     selected = args.target or args.platform
@@ -957,6 +1120,8 @@ Examples:
     print("  Aider:        copy exports/aider/CONVENTIONS.md → your project root")
     print("  Windsurf:     copy exports/windsurf/.windsurf/ → your project root")
     print("  Augment:      copy exports/augment/.augment/ → your project root")
+    print("  Cross-tool:   copy exports/agents/.agents/ → your project root (Codex/Gemini/Cursor≥2.4)")
+    print("  One-command:  python3 scripts/export_skills.py --install <project-dir>  (writes .agents/skills/ + .claude/skills links)")
 
 
 def _run_check(args: argparse.Namespace) -> int:

@@ -1,6 +1,6 @@
 ---
 name: agent-testing-and-evaluation
-description: "Use when testing, evaluating, or building regression suites for Agentforce agents: conversation testing in Agent Builder, topic coverage and utterance testing, Testing API and AiEvaluationDefinition metadata, evaluation metrics (containment rate, escalation rate, CSAT, topic activation accuracy), and post-deploy analytics via Enhanced Event Logs. Triggers: 'how do I test my Agentforce agent', 'agent routes to wrong topic', 'write utterance tests', 'regression test after topic change', 'measure agent quality', 'agent containment rate'. NOT for agent creation, topic design, or action contract design — use agentforce/agentforce-agent-creation, agentforce/agent-topic-design, or agentforce/agent-actions respectively."
+description: "Use when testing, evaluating, or building regression suites for Agentforce agents: conversation testing in Agent Builder, topic coverage and utterance testing, Testing API and AiEvaluationDefinition metadata, Agentforce DX CLI test runs (sf agent generate test-spec, sf agent test create/run/resume/results/list), evaluation metrics (containment rate, escalation rate, CSAT, topic activation accuracy), and post-deploy analytics via Enhanced Event Logs. Triggers: 'how do I test my Agentforce agent', 'agent routes to wrong topic', 'write utterance tests', 'regression test after topic change', 'measure agent quality', 'agent containment rate', 'run agent tests from the CLI'. NOT for agent creation, topic design, or action contract design — use agentforce/agentforce-agent-creation, agentforce/agent-topic-design, or agentforce/agent-actions respectively."
 category: agentforce
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -12,6 +12,8 @@ triggers:
   - "I need to write regression tests so topic changes don't break existing conversations"
   - "how do I measure agent quality — containment rate, escalation rate, CSAT"
   - "I want to automate agent testing in CI so every deploy is validated"
+  - "run my Agentforce agent tests from the Salesforce CLI in a pipeline"
+  - "generate a test spec YAML for Agentforce agent tests"
 tags:
   - agentforce
   - agent-testing
@@ -29,14 +31,15 @@ inputs:
   - "baseline test results from the previous known-good agent version (for regression testing)"
 outputs:
   - "AiEvaluationDefinition metadata file with structured test cases"
+  - "test spec YAML scaffolded via sf agent generate test-spec for CLI-authored suites"
   - "topic coverage matrix showing utterances tested per topic"
   - "evaluation run results with pass/fail per test case and aggregate metrics"
   - "regression delta report identifying newly failing tests after a topic or action change"
   - "post-deploy monitoring recommendations using Enhanced Event Logs"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-07-06
 ---
 
 # Agent Testing and Evaluation
@@ -78,6 +81,26 @@ Agentforce provides two testing surfaces that share the same underlying evaluati
 | expectations | One or more assertions: expected topic classification, expected action(s) invoked, instruction adherence score threshold, or response content criteria |
 
 Test definitions deploy alongside the agent metadata, so test suites are version-controlled and environment-promotable.
+
+### Agentforce DX CLI — the `sf agent test` Command Family
+
+Agentforce DX adds a Salesforce CLI surface on top of the same `AiEvaluationDefinition` / Connect API machinery. For anyone wiring agent tests into a script or CI pipeline, these commands are the idiomatic path — raw curl against the Connect API (Pattern 1) still works but is no longer necessary:
+
+| Command | Purpose |
+|---|---|
+| `sf agent generate test-spec` | Scaffold a **test spec YAML** — a local file listing the test cases for a specific agent. This is an authoring entry point that precedes any `AiEvaluationDefinition` metadata; the spec supports context variables and out-of-the-box metrics in the test output |
+| `sf agent test create` | Take the test spec YAML and create the agent test (the `AiEvaluationDefinition`) in the dev org — and automatically sync the resulting metadata back into the local DX project source |
+| `sf agent test run --api-name <name>` | Start a test run in the target org. **Asynchronous by default** — the command prints the `sf agent test resume` command to fetch results later. Add `--wait <minutes>` to block synchronously (the pipeline-gate mode) |
+| `sf agent test resume` / `sf agent test results --job-id <id>` | Resume a previously started run / retrieve results of a completed run — the CLI equivalents of manually polling the Connect API job ID |
+| `sf agent test list` | Enumerate the agent tests available in the target org (first column is the test API name) — useful for pipeline scripts that discover or validate test API names before invoking a run |
+| `sf agent test run-eval` | Run rich evaluation tests against an agent — labeled **Beta** in the CLI command reference |
+
+Two supporting notes:
+
+- `sf agent test run` accepts `--result-format json|tap|junit` plus `--output-dir` to write result files to disk — JUnit output is what most CI systems parse natively for pass/fail gating.
+- The generic `sf api request rest` command can call the same Connect API endpoints (including Get Test Results by `runId`) when you need an endpoint the `sf agent test` family doesn't wrap.
+
+Deploying the `AiEvaluationDefinition` metadata itself remains a separate step via standard `sf project deploy start` — deployment installs the definition; only `sf agent test run` (or the Connect API POST) executes it.
 
 ### Three Test Types
 
@@ -187,6 +210,8 @@ curl https://ORG_DOMAIN.my.salesforce.com/services/data/v62.0/connect/einstein/a
 
 **Why not just use Conversation Preview manually:** Manual preview is valuable for exploratory testing but does not produce repeatable, trackable results. It cannot catch regressions after a future change.
 
+**CLI alternative:** steps 4–5 (execute + poll) collapse into a single `sf agent test run --api-name OrderAgentTopicTests --wait 10` — see Pattern 4. The raw Connect API calls above remain useful when the calling system is not a Salesforce CLI environment.
+
 ### Pattern 2: Regression Suite After Topic or Action Changes
 
 **When to use:** Any time a topic's classification description, instructions, or action set is modified.
@@ -213,6 +238,38 @@ curl https://ORG_DOMAIN.my.salesforce.com/services/data/v62.0/connect/einstein/a
 3. The agent evaluation engine replays the conversation including the provided history, then evaluates only the final user utterance against the expectations.
 4. Write separate test cases for different conversational states to test the full flow matrix, not just the terminal turn.
 
+### Pattern 4: CLI-Native Test Pipeline with Agentforce DX
+
+**When to use:** Wiring agent tests into a CI/CD pipeline, or authoring tests from a DX project instead of hand-writing `AiEvaluationDefinition` XML.
+
+**How it works:**
+
+1. Scaffold the test spec YAML locally — the authoring precursor to any metadata:
+
+```bash
+sf agent generate test-spec
+```
+
+2. Create the test in the dev org from the spec. This creates the `AiEvaluationDefinition` in the org and automatically syncs the resulting metadata back into the DX project source, so the test is version-controlled without a manual retrieve:
+
+```bash
+sf agent test create   # pass the generated test spec YAML file
+```
+
+3. In the pipeline, run synchronously and emit CI-native output:
+
+```bash
+sf agent test run --api-name Order_Agent_Tests --target-org ci-sandbox \
+  --wait 10 --result-format junit --output-dir ./agent-test-results
+```
+
+   `--wait <minutes>` blocks until completion so the pipeline step's exit status can gate promotion. `--result-format junit` (or `json` / `tap`) plus `--output-dir` writes result files most CI systems parse natively — no custom JSON-diffing script required for the pass/fail gate itself (you still persist the JSON payload for regression baselining, Pattern 2).
+
+4. For long suites, run asynchronously instead: omit `--wait`, capture the printed `sf agent test resume` command, and fetch results in a later pipeline stage with `sf agent test resume` or `sf agent test results --job-id <id>`.
+5. For scripts targeting multiple orgs, discover or validate test API names first with `sf agent test list` against the target org.
+
+**Why not raw curl:** The Connect API calls in Pattern 1 work, but they require you to manage session tokens, polling loops, and result parsing yourself. The `sf agent test` family reuses the CLI's org auth, handles polling, and produces JUnit output for free. Keep curl (or `sf api request rest`) for endpoints the command family doesn't wrap.
+
 ---
 
 ## Decision Guidance
@@ -222,7 +279,8 @@ curl https://ORG_DOMAIN.my.salesforce.com/services/data/v62.0/connect/einstein/a
 | Rapid iterative topic tuning during development | Conversation Preview in Agentforce Builder | Fastest feedback loop; no deploy required for instruction changes |
 | Pre-launch sign-off for a new agent | AiEvaluationDefinition + Testing API in sandbox | Produces structured pass/fail results and a saved baseline |
 | Post-change regression check | Re-run existing test suite; diff against baseline | Catches regressions introduced by the change without manual re-testing |
-| CI/CD pipeline gate | Testing API Connect endpoint triggered by deployment script | Automatable; blocks promotion on test failure |
+| CI/CD pipeline gate | `sf agent test run --wait <min> --result-format junit --output-dir <dir>` | Synchronous exit status + JUnit files CI runners parse natively; raw Connect API curl is the fallback when the CLI is unavailable |
+| Authoring tests without hand-writing AiEvaluationDefinition XML | `sf agent generate test-spec` then `sf agent test create` | Spec-YAML-first authoring; `test create` builds the org metadata and syncs it back to the DX project |
 | Post-deploy production monitoring | Enhanced Event Logs + containment/escalation rate dashboards | Real conversation data; Testing API does not replace live monitoring |
 | Evaluating response quality (tone, constraint adherence) | Instruction adherence tests in AiEvaluationDefinition | LLM-judge evaluation is more scalable than manual review at volume |
 | Multi-turn conversation validation | conversationHistory field in AiEvaluationDefinition test case | Single-utterance tests cannot catch context-dependent failures |
@@ -234,11 +292,11 @@ curl https://ORG_DOMAIN.my.salesforce.com/services/data/v62.0/connect/einstein/a
 Step-by-step instructions for an AI agent or practitioner working on agent testing:
 
 1. **Map topic coverage** — list all topics, identify utterance gaps, and produce a coverage matrix before writing any test cases. Prioritize boundary utterances between adjacent topics.
-2. **Author AiEvaluationDefinition metadata** — create structured test cases with utterances, expected topic names, expected action sequences, and instruction adherence expectations. Include multi-turn conversation history for context-dependent flows.
-3. **Deploy and execute in sandbox** — deploy the test definition via Metadata API, execute via the Testing API Connect endpoint (`POST /connect/einstein/ai-evaluations`), and poll for completion.
+2. **Author test cases** — either scaffold a test spec YAML with `sf agent generate test-spec` and create the org test (plus auto-synced metadata) with `sf agent test create`, or hand-author `AiEvaluationDefinition` metadata directly. Either way: structured test cases with utterances, expected topic names, expected action sequences, and instruction adherence expectations. Include multi-turn conversation history for context-dependent flows.
+3. **Deploy and execute in sandbox** — deploy the test definition via `sf project deploy start`, then execute with `sf agent test run --api-name <name> --wait <minutes>` (or the Testing API Connect endpoint `POST /connect/einstein/ai-evaluations` with manual polling when the CLI is not available).
 4. **Review and iterate** — inspect `FAIL` results, identify whether the failure is in topic routing (tune classification descriptions), action sequencing (revise topic instructions or action order), or instruction adherence (tighten topic instructions). Re-run until all cases pass.
 5. **Capture baseline** — save the passing test run results as the regression baseline before any further changes.
-6. **Integrate into DevOps pipeline** — include a Testing API execution step in the promotion pipeline from sandbox to production. Block promotion on test failures.
+6. **Integrate into DevOps pipeline** — add an `sf agent test run --wait <minutes> --result-format junit --output-dir <dir>` step to the promotion pipeline from sandbox to production and let the CI runner's JUnit parsing block promotion on test failures. Use `sf agent test list` in scripts that need to discover or validate test API names in the target org first.
 7. **Monitor post-deploy** — track containment rate, escalation rate, and CSAT via Enhanced Event Logs reports. Treat anomalies as signals to add new test cases for the conversation patterns causing failures.
 
 ---
@@ -255,7 +313,7 @@ Run through these before marking testing work complete:
 - [ ] Multi-turn conversation tests cover all context-dependent flows.
 - [ ] Baseline test results saved before any topic or action change.
 - [ ] Regression diff reviewed after each change — no newly broken cases remain.
-- [ ] Testing API execution integrated into the sandbox-to-production promotion pipeline.
+- [ ] Test execution integrated into the sandbox-to-production promotion pipeline (`sf agent test run --wait --result-format junit`, or Connect API when the CLI is unavailable).
 - [ ] Enhanced Event Logs enabled on the production agent for post-deploy monitoring.
 - [ ] Containment rate, escalation rate, and CSAT dashboards configured or scheduled.
 
@@ -270,6 +328,8 @@ Non-obvious platform behaviors that cause real production problems:
 3. **Topic classification is probabilistic — the same utterance can route differently on repeated runs** — the reasoning engine has inherent non-determinism. An utterance that sits on a topic boundary may alternate between two topics across test runs. Test suites with too many boundary utterances in the happy-path tier will produce flaky results. Move genuinely ambiguous utterances to a dedicated "boundary" tier and evaluate the routing distribution rather than expecting 100% consistency on them.
 4. **Enhanced Event Logs only capture production conversations, not Testing API runs** — test results are returned in the Testing API response payload, not in Enhanced Event Logs. Teams expecting to find test run failures in the Event Log will find nothing. Use Event Logs only for post-deploy monitoring of real user sessions.
 5. **Instruction adherence evaluation uses a secondary LLM judge and can be inconsistent at low test volumes** — the instruction adherence score is produced by a separate model evaluation, not a rule-based check. On very short or edge-case responses it can produce inconsistent pass/fail results across repeated runs of the same test. Use it as a trend signal, not a binary gate, until you have sufficient test volume to trust the distribution.
+6. **`sf agent test run` is asynchronous by default — a CI step that omits `--wait` exits before any results exist** — without `--wait`, the command only prints the `sf agent test resume` command and returns immediately. A pipeline that greps that step's output for pass/fail will gate on nothing. Add `--wait <minutes>` for synchronous gating, or split into an async run stage plus a later `sf agent test results --job-id` stage.
+7. **The VS Code Agent Tests panel requires the AiEvaluationDefinition in a local package directory** — tests run from VS Code execute in the same development org as `sf agent test run`, but VS Code additionally requires the test's `AiEvaluationDefinition` component to physically exist in a package directory of the DX project, not just in the org. `sf agent test create` satisfies this automatically because it syncs the metadata back; tests created only in the Testing Center UI won't appear until retrieved into source.
 
 ---
 
@@ -278,6 +338,7 @@ Non-obvious platform behaviors that cause real production problems:
 | Artifact | Description |
 |---|---|
 | `AiEvaluationDefinition` metadata file | Structured XML/JSON test definition for deployment and version control alongside agent metadata |
+| Test spec YAML | CLI-authored list of test cases scaffolded with `sf agent generate test-spec`; input to `sf agent test create`, which builds the org test and syncs the metadata back to the DX project |
 | Topic coverage matrix | Spreadsheet or table mapping each topic to its tested utterance types (happy path, edge case, boundary, out-of-scope) |
 | Baseline test results | Saved Testing API result payload representing the last known-good agent state |
 | Regression delta report | Diff between baseline and current test run identifying newly failing and newly passing cases |
