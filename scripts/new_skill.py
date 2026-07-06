@@ -683,6 +683,13 @@ After scaffolding:
         help="One-sentence explanation written to `runtime_orphan_reason:` in "
              "the frontmatter. Required (and only valid) with --runtime-orphan.",
     )
+    parser.add_argument(
+        "--assume-yes", action="store_true",
+        help="Non-interactive mode: answer 'y' to the coverage-warning prompt "
+             "instead of reading stdin (which EOF-crashes in pipelines). Does "
+             "NOT bypass --strict — the near-duplicate hard exit still applies. "
+             "Only use after the topic passed a manual/verbatim coverage gate.",
+    )
     args = parser.parse_args()
 
     # --agent and --runtime-orphan are mutually exclusive
@@ -723,10 +730,13 @@ After scaffolding:
             f"   Run `python3 scripts/search_knowledge.py \"{skill_name.replace('-', ' ')}\"` to review.\n"
             f"   If this skill is genuinely distinct, proceed. Otherwise extend the existing skill.\n"
         )
-        response = input("Continue scaffolding? [y/N] ").strip().lower()
-        if response != "y":
-            print("Aborted.")
-            return 0
+        if args.assume_yes:
+            print("   --assume-yes: proceeding past coverage warning.")
+        else:
+            response = input("Continue scaffolding? [y/N] ").strip().lower()
+            if response != "y":
+                print("Aborted.")
+                return 0
 
     # Similarity check — surface near-duplicates in the existing corpus.
     print(f"Checking pairwise similarity against {domain} corpus…")
@@ -749,6 +759,12 @@ After scaffolding:
                 "Drop --strict to override (you'll still see this warning), "
                 "or pick a more distinct name / scope."
             )
+        if args.assume_yes:
+            # Near-duplicate override stays a HUMAN decision: in non-interactive
+            # mode abort cleanly instead of EOF-crashing or silently overriding.
+            print("Aborted: --assume-yes refuses to override a near-duplicate "
+                  "warning. Re-run interactively or rename/rescope the skill.")
+            return 1
         response = input("Continue scaffolding anyway? [y/N] ").strip().lower()
         if response != "y":
             print("Aborted.")
