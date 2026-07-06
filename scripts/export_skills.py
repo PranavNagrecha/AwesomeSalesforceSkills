@@ -738,6 +738,31 @@ def _hash_target_tree(target_dir: Path) -> tuple[str, dict[str, str]]:
                         h.update(b"\0")
                 per_skill[skill_id] = h.hexdigest()
 
+    # Agents layout: exports/agents/.agents/skills/<slug>/... — flat tree;
+    # the domain half of the skill id is recovered from each SKILL.md's
+    # `category:` frontmatter so parity checks compare like-for-like ids.
+    agents_root = target_dir / ".agents" / "skills"
+    if agents_root.is_dir():
+        for skill_dir in sorted(agents_root.iterdir()):
+            if not skill_dir.is_dir():
+                continue
+            domain = ""
+            skill_md = skill_dir / "SKILL.md"
+            if skill_md.is_file():
+                for line in skill_md.read_text(encoding="utf-8").splitlines():
+                    if line.startswith("category:"):
+                        domain = line.split(":", 1)[1].strip().strip("\"'")
+                        break
+            skill_id = f"{domain}/{skill_dir.name}" if domain else skill_dir.name
+            h = hashlib.sha256()
+            for file_path in sorted(skill_dir.rglob("*")):
+                if file_path.is_file():
+                    h.update(file_path.relative_to(skill_dir).as_posix().encode("utf-8"))
+                    h.update(b"\0")
+                    h.update(file_path.read_bytes())
+                    h.update(b"\0")
+            per_skill[skill_id] = h.hexdigest()
+
     # Cursor layout: exports/cursor/.cursor/rules/<domain>-<slug>.mdc
     cursor_rules = target_dir / ".cursor" / "rules"
     if cursor_rules.is_dir():
