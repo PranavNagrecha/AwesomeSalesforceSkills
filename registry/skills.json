@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 48
   },
-  "generated_from_hash": "a759bcf13a88a9d014a9deaa069a799073fc7e7dddf0d6e8d83c34267674fc0c",
+  "generated_from_hash": "8f8688ecea0a4160c5e512f9f8659151452ce60bed1bc38a5cee88dedc156f59",
   "schema_version": 1,
   "skill_count": 1007,
   "skills": [
@@ -31946,7 +31946,6 @@
         "14aed197467359a335ee",
         "15b4a6203a3e4a41fffa",
         "26b0b8ecc775305bc006",
-        "26cc92f168878ccad962",
         "2e80b37619ef81f40c61",
         "3067426fbb43de62804d",
         "3521777461dd4b51fc1f",
@@ -31955,6 +31954,7 @@
         "40342873c234bc0cb917",
         "473db6e40aeb6b61781b",
         "492b496d6c8153d34fbd",
+        "49552f3d45facdb79a83",
         "49bfe9c77d5aaf152cf3",
         "4dc0fdd5c1557b5cbfea",
         "4ec8b80eb958aa2e6dc3",
@@ -31968,7 +31968,6 @@
         "69c39b3abb866b83757b",
         "6c4e6d5577f0a421e12e",
         "6e8af4f1d95dbbd6f8b8",
-        "70cfa81fdd59932f3feb",
         "73de1896b8c69313c3bd",
         "7826cdf7f5671fd0c42f",
         "815edb82c135e34c7307",
@@ -32009,9 +32008,10 @@
         "f39571fd9c95f14d1010",
         "f3c4a2f3b40640aa21cc",
         "f4e41da06614155eecb7",
-        "fb83807aa5e06f1ff4ce"
+        "fb83807aa5e06f1ff4ce",
+        "ff24ebec9ab4e8268234"
       ],
-      "content_hash": "bbc4140ff340c1c2435c83ccb114846e32542537d16e771965bde6b695c94363",
+      "content_hash": "3158608fdd7523bdbcf8a038d676a23cbdbc7724e0da17ab0c378661d75df7dc",
       "dependencies": [],
       "description": "Distinguish the six real reasons a Salesforce query can 'fail', and the protocol for diagnosing before declaring. Covers: object doesn't exist, not queryable in edition, permission-denied, field-level errors, namespace prefix missing, API version mismatch. NOT for SOQL performance tuning (use soql-optimization-patterns). NOT for Bulk API payload issues (use bulk-api-2-patterns).",
       "file_location": "skills/admin/salesforce-object-queryability",
@@ -61200,7 +61200,7 @@
         "ff72be1944a3d585ac42",
         "ffaec02f00561a63ee04"
       ],
-      "content_hash": "c7f8cb21e0efd48b914c887bf727ead7764a6c14dcec6bf16fc1b100413bffc8",
+      "content_hash": "a42df628f5f4a11c7373e1b765a0ed758903ac8250df2533e39139924bd7fe4b",
       "dependencies": [],
       "description": "Use when the user has captured Salesforce debug logs and needs forensic analysis of runtime behavior \u2014 trigger cascades, flow interviews, LWC/Aura @AuraEnabled calls, batch/queueable/future/scheduled Apex, platform events, CDC, validation/workflow/approvals, callouts, DML failures, governor limit hits, managed-package traces, flip-flop fields, UNABLE_TO_LOCK_ROW, INSUFFICIENT_ACCESS, mixed DML. Triggers: '.log file', 'debug log', 'why is this field changing', 'flow cascade', 'CPU timeout', 'heap exceeded', 'UNABLE_TO_LOCK_ROW', 'INSUFFICIENT_ACCESS', 'replay debugger'. NOT for choosing log levels or designing a logging framework (use apex/debug-and-logging), and NOT for setting up trace flags or Developer Console (use apex/debug-logs-and-developer-console).",
       "file_location": "skills/apex/salesforce-debug-log-analysis",
@@ -129056,7 +129056,7 @@
         "fbebc6e3875c6c02c1e1",
         "fc367c5a79b3c23fd9e7"
       ],
-      "content_hash": "561a3774be16f9939a8ee414019016c02c5402c865c4c4b3a9c176276b7f2c83",
+      "content_hash": "52d4aaabf5dd3851b49251bcd7692dc6b2bf0f94e5b26026f4dc8ab1d39155c6",
       "dependencies": [],
       "description": "Use when building, reviewing, or debugging OmniStudio Integration Procedures. Triggers: 'integration procedure', 'IP', 'HTTP action', 'DataRaptor', 'rollbackOnError', 'failureResponse'. NOT for Apex-only integrations unless the main design choice is whether OmniStudio is still appropriate.",
       "file_location": "skills/omnistudio/integration-procedures",
