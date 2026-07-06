@@ -268,6 +268,7 @@
       "agentforce/agent-security-review",
       "agentforce/agent-testing-and-evaluation",
       "agentforce/agent-topic-design",
+      "agentforce/agentexchange-publishing",
       "agentforce/agentforce-agent-creation",
       "agentforce/agentforce-agent-handoff-patterns",
       "agentforce/agentforce-cost-optimization",
@@ -592,6 +593,7 @@
       "data/currency-management-patterns",
       "data/custom-index-requests",
       "data/data-archival-strategies",
+      "data/data-cloud-code-extensions",
       "data/data-cloud-consent-and-privacy",
       "data/data-cloud-data-model-objects",
       "data/data-cloud-data-streams",
@@ -666,6 +668,7 @@
     ],
     "devops": [
       "devops/api-version-management",
+      "devops/appexchange-app-analytics",
       "devops/automated-regression-testing",
       "devops/bitbucket-pipelines-for-salesforce",
       "devops/change-set-deployment",
@@ -933,6 +936,7 @@
       "lwc/lwc-wire-refresh-patterns",
       "lwc/lwr-site-development",
       "lwc/message-channel-patterns",
+      "lwc/multi-framework-ui-bundles",
       "lwc/navigation-and-routing",
       "lwc/static-resources-in-lwc",
       "lwc/tableau-embedding-in-lightning",
@@ -1688,6 +1692,9 @@
     "agent-workspace": [
       "architect/agent-console-requirements"
     ],
+    "agentexchange": [
+      "agentforce/agentexchange-publishing"
+    ],
     "agentforce": [
       "admin/agent-conversation-design",
       "admin/ai-adoption-change-management",
@@ -1740,6 +1747,9 @@
       "architect/conversational-ai-architecture",
       "architect/einstein-bot-architecture",
       "data/vector-database-management"
+    ],
+    "agentforce-conversation-client": [
+      "lwc/multi-framework-ui-bundles"
     ],
     "agentforce-employee": [
       "agentforce/employee-hr-service-agent-rollout"
@@ -2191,6 +2201,9 @@
     "api-versioning": [
       "admin/api-contract-documentation"
     ],
+    "app-analytics": [
+      "devops/appexchange-app-analytics"
+    ],
     "app-extensions": [
       "admin/fsl-mobile-app-setup"
     ],
@@ -2200,9 +2213,13 @@
     "app-store": [
       "admin/mobile-publisher"
     ],
+    "appanalyticsqueryrequest": [
+      "devops/appexchange-app-analytics"
+    ],
     "appexchange": [
       "admin/lightning-bolt-template-authoring",
       "admin/managed-package-installation-and-upgrade",
+      "devops/appexchange-app-analytics",
       "devops/isv-license-management-and-trialforce",
       "devops/package-development-strategy",
       "devops/salesforce-code-analyzer",
@@ -2684,6 +2701,9 @@
     ],
     "batch-chaining": [
       "apex/apex-batch-chaining"
+    ],
+    "batch-data-transform": [
+      "data/data-cloud-code-extensions"
     ],
     "batch-jobs": [
       "apex/npsp-custom-rollups"
@@ -3437,7 +3457,8 @@
     ],
     "checkout": [
       "admin/commerce-checkout-configuration",
-      "admin/commerce-checkout-flow-design"
+      "admin/commerce-checkout-flow-design",
+      "agentforce/agentexchange-publishing"
     ],
     "checkout-design": [
       "admin/commerce-checkout-flow-design"
@@ -3624,6 +3645,9 @@
       "apex/tooling-api-patterns",
       "devops/continuous-integration-testing",
       "devops/deployment-error-troubleshooting"
+    ],
+    "code-extension": [
+      "data/data-cloud-code-extensions"
     ],
     "code-freeze": [
       "devops/go-live-cutover-planning"
@@ -4655,7 +4679,8 @@
       "data/record-merge-implications"
     ],
     "data-360": [
-      "architect/data-cloud-vs-analytics-decision"
+      "architect/data-cloud-vs-analytics-decision",
+      "data/data-cloud-code-extensions"
     ],
     "data-access": [
       "admin/report-type-strategy",
@@ -4703,6 +4728,7 @@
       "architect/cloud-specific-deployment-architecture",
       "architect/cross-cloud-data-deployment",
       "architect/experience-cloud-integration-patterns",
+      "data/data-cloud-code-extensions",
       "data/data-cloud-consent-and-privacy",
       "data/data-cloud-data-model-objects",
       "data/data-cloud-data-streams",
@@ -8171,6 +8197,7 @@
     "isv": [
       "apex/apex-metadata-api",
       "architect/tenant-isolation-patterns",
+      "devops/appexchange-app-analytics",
       "devops/package-development-strategy",
       "devops/second-generation-managed-packages"
     ],
@@ -8716,6 +8743,9 @@
     "list-views": [
       "admin/list-views-and-compact-layouts"
     ],
+    "listing-builder": [
+      "agentforce/agentexchange-publishing"
+    ],
     "live-agent": [
       "admin/messaging-and-chat-setup"
     ],
@@ -9027,6 +9057,7 @@
       "apex/apex-enum-patterns",
       "apex/apex-metadata-api",
       "apex/billing-integration-apex",
+      "devops/appexchange-app-analytics",
       "devops/health-cloud-deployment-patterns",
       "devops/managed-package-development",
       "devops/second-generation-managed-packages",
@@ -9522,6 +9553,9 @@
     ],
     "multi-factor-authentication": [
       "security/mfa-enforcement-strategy"
+    ],
+    "multi-framework": [
+      "lwc/multi-framework-ui-bundles"
     ],
     "multi-idp": [
       "lwc/experience-cloud-multi-idp-sso"
@@ -10378,6 +10412,9 @@
       "data/external-user-data-sharing",
       "data/partner-data-access-patterns"
     ],
+    "partner-console": [
+      "agentforce/agentexchange-publishing"
+    ],
     "partner-distribution": [
       "admin/lightning-bolt-template-authoring"
     ],
@@ -10955,6 +10992,9 @@
       "architect/integration-security-architecture",
       "integration/private-connect-setup"
     ],
+    "private-offers": [
+      "agentforce/agentexchange-publishing"
+    ],
     "privatelink": [
       "integration/private-connect-setup"
     ],
@@ -11255,6 +11295,9 @@
     "pushtopic": [
       "integration/streaming-api-and-pushtopic"
     ],
+    "python": [
+      "data/data-cloud-code-extensions"
+    ],
     "qcp": [
       "architect/cpq-architecture-patterns",
       "data/cpq-performance-optimization"
@@ -11428,6 +11471,9 @@
     ],
     "re-entry": [
       "flow/recursion-and-re-entry-prevention"
+    ],
+    "react-on-salesforce": [
+      "lwc/multi-framework-ui-bundles"
     ],
     "reactive": [
       "flow/flow-reactive-screen-components"
@@ -12526,6 +12572,9 @@
     ],
     "search-index": [
       "apex/commerce-search-customization"
+    ],
+    "search-index-chunking": [
+      "data/data-cloud-code-extensions"
     ],
     "search-layouts": [
       "admin/global-search-configuration",
@@ -14106,6 +14155,9 @@
     "ui-automation": [
       "devops/automated-regression-testing"
     ],
+    "ui-bundle": [
+      "lwc/multi-framework-ui-bundles"
+    ],
     "ui-simplification": [
       "admin/record-types-and-page-layouts"
     ],
@@ -14114,6 +14166,9 @@
     ],
     "uiRecordApi": [
       "lwc/lwc-lds-writes"
+    ],
+    "uibundle": [
+      "lwc/multi-framework-ui-bundles"
     ],
     "unable-to-lock-row": [
       "flow/flow-record-locking-and-contention"
@@ -14193,6 +14248,9 @@
     ],
     "usage-based-pricing": [
       "admin/usage-based-pricing-setup"
+    ],
+    "usage-telemetry": [
+      "devops/appexchange-app-analytics"
     ],
     "user-access-policies": [
       "admin/user-access-policies"

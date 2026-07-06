@@ -89,6 +89,7 @@ dependencies:
     - lwc/lwc-wire-refresh-patterns
     - lwc/lwr-site-development
     - lwc/message-channel-patterns
+    - lwc/multi-framework-ui-bundles
     - lwc/navigation-and-routing
     - lwc/static-resources-in-lwc
     - lwc/tableau-embedding-in-lightning
@@ -238,6 +239,7 @@ Produces a full Lightning Web Component bundle for a described feature: `.js`, `
 86. `skills/lwc/lwc-mobile-offline-and-briefcase` — lwc mobile offline and briefcase
 87. `skills/lwc/lwc-console-workspace-api` — `lightning/platformWorkspaceApi` and `lightning/platformUtilityBarApi` for Service Console tab manipulation; IsConsoleNavigation gating; refreshTab / openSubtab / setTabLabel patterns
 88. `skills/agentforce/agentforce-custom-lightning-types` — agentforce custom lightning types
+89. `skills/lwc/multi-framework-ui-bundles` — multi framework ui bundles
 
 ---
 

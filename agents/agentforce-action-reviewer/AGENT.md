@@ -25,6 +25,7 @@ dependencies:
     - agentforce/agent-security-review
     - agentforce/agent-testing-and-evaluation
     - agentforce/agent-topic-design
+    - agentforce/agentexchange-publishing
     - agentforce/agentforce-guardrails
     - agentforce/agentforce-observability
     - agentforce/agentforce-persona-design
@@ -81,6 +82,7 @@ Reviews an Agentforce agent (Topics + Actions + Persona + Guardrails) against be
 20. `skills/agentforce/agentforce-production-readiness-checklist` — agentforce production readiness checklist
 21. `skills/agentforce/sales-coach-agent-rollout` — sales coach agent rollout
 22. `skills/agentforce/employee-hr-service-agent-rollout` — employee hr service agent rollout
+23. `skills/agentforce/agentexchange-publishing` — agentexchange publishing
 
 ---
 

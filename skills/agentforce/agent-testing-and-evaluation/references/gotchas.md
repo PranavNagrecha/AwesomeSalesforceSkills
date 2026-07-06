@@ -49,3 +49,23 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** Most often when instruction adherence tests are used as hard pipeline gates with a single-run pass/fail criterion, particularly for topics with complex or nuanced instruction sets.
 
 **How to avoid:** Use instruction adherence tests as trend indicators rather than binary gates, especially early in the agent's testing lifecycle. Run them as informational checks alongside the deterministic topic and action tests. Once you have enough test-run history to understand the normal pass rate distribution for a given topic, you can set a threshold gate (e.g., "must pass > 80% of adherence checks over 5 runs") rather than relying on a single run. Reserve single-run hard gates for topic and action tests, which are deterministic.
+
+---
+
+## Gotcha 6: `sf agent test run` Is Asynchronous by Default — CI Steps Without `--wait` Gate on Nothing
+
+**What happens:** By default, `sf agent test run` submits the test job and immediately returns, printing the `sf agent test resume` command you would run later to view results. The step's console output contains no pass/fail data at all. A pipeline stage that runs the command and then inspects its output (or its exit code) for test failures passes vacuously every time.
+
+**When it occurs:** When a CI pipeline treats `sf agent test run` like `sf apex run test` with a default wait, or when a script author copies the command from local interactive use (where running async and resuming later is convenient) into a pipeline gate.
+
+**How to avoid:** For synchronous pipeline gating, always pass `--wait <minutes>` so the command blocks until the run completes, and pair it with `--result-format junit --output-dir <dir>` so the CI runner parses structured result files rather than console text. If the suite is too long to block on, split the pipeline into an async submit stage and a later results stage using `sf agent test resume` or `sf agent test results --job-id <id>`.
+
+---
+
+## Gotcha 7: VS Code Agent Tests Panel Requires the AiEvaluationDefinition in a Local Package Directory
+
+**What happens:** Running agent tests from the VS Code Agent Tests panel executes them in the development org — the same behavior as the CLI `agent test run` command. But VS Code additionally requires that the DX project contains the test's associated `AiEvaluationDefinition` metadata component in a package directory. A test that exists only in the org (for example, one authored in the Testing Center UI and never retrieved) does not appear in the panel.
+
+**When it occurs:** When a team authors tests in the Testing Center UI or deploys them from a different repo, then expects developers to run them from VS Code. The panel looks broken; the actual issue is missing local source.
+
+**How to avoid:** Author tests through the Agentforce DX round-trip — `sf agent generate test-spec` then `sf agent test create` — which creates the test in the org and automatically syncs the `AiEvaluationDefinition` back into the local package directory. For tests authored elsewhere, retrieve the `AiEvaluationDefinition` component into the project before expecting the VS Code panel to see it. This also keeps test metadata source-tracked, which Pattern 2 (regression baselining) depends on anyway.

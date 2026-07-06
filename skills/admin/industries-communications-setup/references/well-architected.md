@@ -30,6 +30,9 @@
 
 ## Official Sources Used
 
+- Trailhead: Discover Industries EPC (Shared Catalog foundation, commercial vs. technical products) — https://trailhead.salesforce.com/content/learn/modules/industries-epc-foundations/discover-industries-epc
+- Trailhead: Explore Products and Product Specifications (spec types, inheritance, simple vs. bundled) — https://trailhead.salesforce.com/content/learn/modules/industries-products-and-product-bundles/explore-products-and-product-specifications
+- Trailhead: Discover Product Attributes (attributes, categories, picklists, attribute-based pricing) — https://trailhead.salesforce.com/content/learn/modules/industries-picklists-and-product-attributes/discover-product-attributes
 - Industries Data Models for Communications — https://help.salesforce.com/s/articleView?id=ind.communications_data_model.htm
 - Communications Cloud Data Model Gallery — https://help.salesforce.com/s/articleView?id=ind.communications_data_model_gallery.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

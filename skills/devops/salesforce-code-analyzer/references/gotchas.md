@@ -2,13 +2,13 @@
 
 Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
 
-## Gotcha 1: Graph Engine Is Not in the Default Engine Set
+## Gotcha 1: Graph Engine (`sfge`) Coverage Depends Entirely on Your Rule Selector
 
-**What happens:** Developers run `sf code-analyzer run --rule-selector Security` expecting full security coverage including dataflow and taint analysis. Graph Engine does not run. SOQL injection paths and path-sensitive CRUD/FLS violations that only Graph Engine can detect are silently missed.
+**What happens:** Developers run `sf code-analyzer run` with a tag-based selector expecting full security coverage including Graph Engine data-flow analysis, and never verify that any `sfge` rules were actually selected. Path-sensitive violations that only Graph Engine's data-flow analysis can detect (such as `ApexFlsViolation` findings) are silently missed.
 
-**When it occurs:** Any scan where `--engine graph-engine` is not explicitly specified. The default engine set includes PMD, ESLint, RetireJS, and Regex. Graph Engine must be opted in because it is computationally expensive and can take significantly longer than the other engines on large codebases.
+**When it occurs:** Which rules run is governed by `--rule-selector` (the default is `Recommended`); nothing about a tag-based selector guarantees the `sfge` data-flow rules are included. The engine can also be turned off outright via `engines.sfge.disable_engine: true` in `code-analyzer.yml` — a sensible default for fast pipeline stages that then silently applies to security scans too.
 
-**How to avoid:** For AppExchange security reviews and security-focused pipeline stages, always add `--engine graph-engine` explicitly. Consider a two-stage CI approach: fast engines on every push, Graph Engine on a nightly or pre-release job. Document the split so developers know which checks run where.
+**How to avoid:** For security-focused pipeline stages, add `--rule-selector sfge` explicitly — per the official docs, "To select the Salesforce Graph Engine rules, use `--rule-selector sfge`." Verify what will run with `sf code-analyzer rules --rule-selector sfge`, and confirm the engine isn't disabled in `code-analyzer.yml`. Consider a two-stage CI approach: fast rules on every push, Graph Engine rules on a nightly or pre-release job, since data-flow analysis is significantly more expensive. Document the split so developers know which checks run where.
 
 ---
 
@@ -48,13 +48,32 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **When it occurs:** Projects that bundle third-party JS in static resources or have `node_modules` present in the target path. RetireJS has no awareness of whether the file is actually reachable.
 
-**How to avoid:** Exclude paths that are not part of the deployable package in `code-analyzer.yml`:
+**How to avoid:** Exclude paths that are not part of the deployable package via the top-level `ignores` section of `code-analyzer.yml` (ignores take priority when a file appears in both `target` and `ignores`):
 
 ```yaml
-global:
-  exclude:
-    - force-app/main/default/staticresources/vendor
-    - node_modules
+ignores:
+  - "force-app/main/default/staticresources/vendor/**"
+  - "**/node_modules/**"
 ```
 
 For findings that cannot be excluded, document the false positive in the AppExchange submission with evidence that the library is not loaded in the package's execution context.
+
+---
+
+## Gotcha 6: Custom Regex Rules Without a Global Modifier Fail at Run Time
+
+**What happens:** A custom rule under `engines.regex.custom_rules` is defined with a pattern like `/Todo/i`. Configuration parsing appears fine, but when the rule runs, the regex engine returns an error instead of scan results.
+
+**When it occurs:** Any custom regex rule whose pattern omits the global modifier. Per the official docs, `/Todo/gi` is valid; `/Todo/i` is not — a pattern without the global modifier causes the regex engine to error when the rule is run.
+
+**How to avoid:** Always include `g` in the modifier set of every `regex` (and `regex_ignore`) value. Add a smoke run of `sf code-analyzer rules --rule-selector Custom` plus a scan of a known-matching fixture file to CI whenever custom rules change, so an invalid pattern fails fast rather than in a release-gate scan.
+
+---
+
+## Gotcha 7: Java-Based PMD Rule JARs Need Two Config Entries, Not One
+
+**What happens:** A team compiles custom Java PMD rule classes into a JAR, lists the JAR's ruleset XML in `engines.pmd.custom_rulesets`, and the rules fail to load — PMD cannot find the rule classes.
+
+**When it occurs:** `custom_rulesets` only tells Code Analyzer where the ruleset XML definitions live (on disk relative to `config_root`, or as a classpath resource). The JAR containing the compiled rule classes must be separately registered in the `engines.pmd.java_classpath_entries` array so it is added to the Java classpath when PMD runs. XPath-based rules defined entirely in the ruleset XML don't have this problem — they need no compilation and no classpath entry.
+
+**How to avoid:** For Java-based rules, always pair the two keys: the ruleset XML (or its classpath resource path) in `custom_rulesets`, and the JAR path (absolute or relative to `config_root`) in `java_classpath_entries`. Verify loading with `sf code-analyzer rules --rule-selector Custom` — Code Analyzer auto-tags every custom PMD rule with `Custom`, and the ruleset's `name` attribute (spaces removed) becomes a second tag you can filter on.

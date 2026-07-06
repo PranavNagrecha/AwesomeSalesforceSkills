@@ -98,12 +98,15 @@ def check_code_analyzer_yml(manifest_dir: Path) -> list[str]:
             "from scanning development dependencies that are not deployed."
         )
 
-    # Warn if graph-engine is enabled by default (performance concern)
-    if re.search(r"graph-engine\s*:\s*\n\s+enabled\s*:\s*true", content):
+    # The Graph Engine's v5 engine name is 'sfge'; a 'graph-engine' key is not
+    # a documented engine name and its settings would not apply.
+    if re.search(r"^\s*graph-engine\s*:", content, re.MULTILINE):
         issues.append(
-            "[config-graph-engine] code-analyzer.yml enables graph-engine by "
-            "default. Graph Engine is memory-intensive and slow on large codebases. "
-            "Consider enabling it only in dedicated security pipeline stages."
+            "[config-graph-engine] code-analyzer.yml contains a 'graph-engine' "
+            "engine key. Code Analyzer v5 names the Graph Engine 'sfge', so "
+            "settings under 'graph-engine' do not apply. Use "
+            "'engines.sfge.disable_engine: true' to turn the engine off in "
+            "fast pipeline stages."
         )
 
     return issues

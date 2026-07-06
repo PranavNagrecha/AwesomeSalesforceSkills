@@ -15,8 +15,8 @@ These patterns help the consuming agent self-check its own output.
 # WRONG (v4, retired August 2025):
 sfdx scanner:run --target force-app --category Security --format json
 
-# CORRECT (v5):
-sf code-analyzer run --target force-app --rule-selector Security --format json
+# CORRECT (v5 — output format comes from the --output-file extension):
+sf code-analyzer run --workspace force-app --rule-selector Security --output-file results.json
 ```
 
 **Detection hint:** Any output containing `sfdx scanner:run`, `--category` (as a standalone flag), or `sfdx-scanner` in the plugin name is using v4 syntax. Flag and replace.
@@ -34,15 +34,14 @@ sf code-analyzer run --target force-app --rule-selector Security --format json
 ```yaml
 # WRONG — always exits 0, never fails the build:
 - name: Scan
-  run: sf code-analyzer run --rule-selector Security --format json --output-file results.json
+  run: sf code-analyzer run --rule-selector Security --output-file results.json
 
-# CORRECT — exits 1 if Critical or High violations found:
+# CORRECT — fails with a non-zero exit code if Critical or High violations found:
 - name: Scan
   run: |
     sf code-analyzer run \
       --rule-selector Security \
       --severity-threshold 2 \
-      --format json \
       --output-file results.json
 ```
 
@@ -60,17 +59,16 @@ sf code-analyzer run --target force-app --rule-selector Security --format json
 
 ```bash
 # WRONG — produces off-spec results for the security review:
-sf code-analyzer run --rule-selector all --format xml --output-file scan.xml
+sf code-analyzer run --rule-selector all --output-file scan.html
 
-# CORRECT — uses the required AppExchange preset:
+# CORRECT — uses the documented security-review selectors:
 sf code-analyzer run \
   --rule-selector AppExchange \
-  --engine graph-engine \
-  --format xml \
-  --output-file appexchange-scan.xml
+  --rule-selector Recommended:Security \
+  --output-file appexchange-scan.html
 ```
 
-**Detection hint:** AppExchange scan instructions that do not specify `--rule-selector AppExchange` and `--engine graph-engine` are incomplete.
+**Detection hint:** AppExchange scan instructions that do not specify `--rule-selector AppExchange --rule-selector Recommended:Security` are incomplete.
 
 ---
 
@@ -97,26 +95,26 @@ public void doSomething() { ... }
 
 ---
 
-## Anti-Pattern 5: Claiming Graph Engine Runs by Default
+## Anti-Pattern 5: Inventing an `--engine` Flag for Graph Engine
 
-**What the LLM generates:** Instructions stating that running `sf code-analyzer run --rule-selector Security` includes Graph Engine taint analysis.
+**What the LLM generates:** Commands like `sf code-analyzer run --engine graph-engine` to "enable" Graph Engine, or claims that a tag-based selector automatically includes Graph Engine data-flow analysis.
 
-**Why it happens:** Graph Engine is documented as part of Code Analyzer's engine suite, and LLMs conflate "available engine" with "default engine." Training data may also predate the v5 opt-in model.
+**Why it happens:** v4's `scanner:run` had an `--engine` flag, and older content calls the engine "Graph Engine" rather than by its v5 engine name `sfge`. LLMs blend the v4 flag surface with the v5 command name. In v5 there is no `--engine` flag — engines' rules are chosen through `--rule-selector`, and the docs state: "To select the Salesforce Graph Engine rules, use `--rule-selector sfge`."
 
 **Correct pattern:**
 
 ```bash
-# WRONG — Graph Engine does NOT run by default with Security selector:
-sf code-analyzer run --rule-selector Security --target force-app
+# WRONG — v5 has no --engine flag, and the engine's config name is sfge, not graph-engine:
+sf code-analyzer run --rule-selector Security --engine graph-engine --target force-app
 
-# CORRECT — Graph Engine must be explicitly opted in:
+# CORRECT — select the Graph Engine rules through the rule selector:
 sf code-analyzer run \
   --rule-selector Security \
-  --engine graph-engine \
-  --target force-app
+  --rule-selector sfge \
+  --workspace force-app
 ```
 
-**Detection hint:** Any claim that a standard `sf code-analyzer run` invocation includes dataflow or taint analysis without `--engine graph-engine` is incorrect.
+**Detection hint:** Any v5 command containing `--engine` or `--format`, or the engine name `graph-engine` in `code-analyzer.yml`, is using invented syntax. Engines are selected via `--rule-selector` (the graph engine is `sfge`), and output format comes from the `--output-file` extension.
 
 ---
 
@@ -129,11 +127,11 @@ sf code-analyzer run \
 **Correct pattern:**
 
 ```yaml
-# WRONG — Graph Engine on every push causes slow builds and OOM on large repos:
+# WRONG — Graph Engine data-flow rules on every push cause slow builds on large repos:
 - name: Scan
-  run: sf code-analyzer run --rule-selector Security --engine graph-engine ...
+  run: sf code-analyzer run --rule-selector Security --rule-selector sfge ...
 
-# CORRECT — fast engines on every push, Graph Engine on a scheduled/release stage:
+# CORRECT — fast rules on every push, Graph Engine rules on a scheduled/release stage:
 # push.yml:
 - name: Quick Scan
   run: sf code-analyzer run --rule-selector Security --severity-threshold 2 ...
@@ -141,10 +139,42 @@ sf code-analyzer run \
 # nightly.yml:
 - name: Deep Security Scan
   run: |
-    NODE_OPTIONS=--max-old-space-size=4096 sf code-analyzer run \
+    sf code-analyzer run \
       --rule-selector AppExchange \
-      --engine graph-engine \
+      --rule-selector Recommended:Security \
+      --rule-selector sfge \
       --severity-threshold 2 ...
 ```
 
-**Detection hint:** Any pipeline that runs `--engine graph-engine` on every push without memory configuration (`NODE_OPTIONS`) and without a rationale for the performance cost should be challenged.
+**Detection hint:** Any pipeline that runs the `sfge` rules on every push without memory tuning (`engines.sfge.java_max_heap_size` in `code-analyzer.yml` — Graph Engine limits path complexity based on the max Java heap) and without a rationale for the performance cost should be challenged.
+
+---
+
+## Anti-Pattern 7: Wiring Custom Rules Through CLI Flags Instead of code-analyzer.yml
+
+**What the LLM generates:** Instructions to register a custom PMD ruleset via `--rule-selector path/to/rules.xml` or a v4-style `--pmdconfig` flag, or to invent a Code-Analyzer-specific ESLint rule format.
+
+**Why it happens:** v4 wired custom PMD config through CLI flags, and training data blends v4 flag patterns with v5 command names. LLMs also assume every engine has a bespoke rule format rather than checking each engine's actual extension point.
+
+**Correct pattern:**
+
+```yaml
+# WRONG — --rule-selector selects existing rules by tag/name/preset; it does not load ruleset files.
+# CORRECT — register custom rules in code-analyzer.yml, per engine:
+engines:
+  pmd:
+    custom_rulesets:
+      - pmd/team-rules.xml            # ruleset XML (XPath rules need no compilation)
+    java_classpath_entries:
+      - libs/custom-pmd-rules.jar     # additionally required for Java-based rule classes
+  regex:
+    custom_rules:
+      NoTodoComments:
+        regex: /TODO/gi               # global modifier is mandatory
+        file_extensions: [".cls", ".trigger"]
+        description: "Flags TODO comments in Apex."
+  eslint:
+    eslint_config_file: eslint.config.js  # custom ESLint rules live in a normal ESLint config
+```
+
+**Detection hint:** Any instruction that passes a file path to `--rule-selector`, uses `--pmdconfig`, or defines ESLint rules in a non-ESLint format is wrong for v5. Custom-rule wiring lives in `code-analyzer.yml` under `engines.pmd.custom_rulesets`, `engines.regex.custom_rules`, and `engines.eslint.eslint_config_file`.

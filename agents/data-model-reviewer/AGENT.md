@@ -37,6 +37,7 @@ dependencies:
     - data/crm-analytics-security-predicates
     - data/currency-management-patterns
     - data/data-archival-strategies
+    - data/data-cloud-code-extensions
     - data/data-cloud-consent-and-privacy
     - data/data-cloud-data-model-objects
     - data/data-cloud-data-streams
@@ -172,6 +173,7 @@ Reviews the data model of a target domain (a parent object + its descendants, or
 65. `skills/data/territory-data-alignment` — Territory data alignment
 66. `skills/data/vector-database-management` — Vector database management
 67. `skills/data/volunteer-management-requirements` — Volunteer management requirements
+68. `skills/data/data-cloud-code-extensions` — data cloud code extensions
 
 ---
 

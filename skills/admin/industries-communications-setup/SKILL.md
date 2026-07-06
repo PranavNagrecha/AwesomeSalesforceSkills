@@ -23,6 +23,8 @@ triggers:
   - "Industries Order Management setup and order decomposition configuration"
   - "TM Forum commercial to technical order decomposition in Salesforce"
   - "we're having issues with communications cloud"
+  - "model product specifications and attributes in Enterprise Product Catalog"
+  - "set up attribute-based pricing for the Communications Cloud cart"
 inputs:
   - "Communications Cloud license type and edition confirmed in org (check Setup > Installed Packages)"
   - "Target account model — consumer B2C or business B2B"
@@ -37,9 +39,9 @@ outputs:
   - Permission set assignment plan
   - Contract lifecycle activation sequence
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-13
+updated: 2026-07-06
 ---
 
 # Industries Communications Setup
@@ -68,11 +70,60 @@ The Enterprise Product Catalog is the canonical source of truth for all communic
 
 Key EPC constructs:
 - **Product Specification**: the master template for a product or service type (e.g., "Broadband Internet 100Mbps"). Defined once, reused across catalog versions.
-- **Product Offering**: a market-facing bundle or individual service offer derived from a Product Specification, with pricing, eligibility rules, and effective dates.
+- **Product Offering**: a market-facing bundle or individual service offer that applies a Product Specification and inherits its data shape from it, with pricing, eligibility rules, and effective dates layered on top.
 - **Catalog Assignment**: links a Product Offering to one or more catalogs (Consumer, Business, Wholesale). Controls visibility per segment.
 - **Child Items** (vlocity_cmt__ProductChildItem__c): parent-child relationships that model bundle decomposition — a "Triple Play Bundle" parent contains child offering references for broadband, TV, and voice.
 
 EPC must be configured before any order decomposition flows, pricing rules, or subscriber provisioning flows can function. Skipping EPC and creating products directly in Product2 breaks order fulfillment because the decomposition engine reads EPC child item structure, not raw Product2 records.
+
+#### The Four Specification Types
+
+EPC defines four specification types, and choosing the right one is the first modeling decision for any new catalog entity:
+
+| Spec Type | Purpose | Customer-Facing? |
+|---|---|---|
+| Offer | Sellable, market-facing entity with pricing and activation settings | Yes |
+| Product | Reusable template of product data that offers inherit from | Yes |
+| Service | Fulfillment-side capability that supports delivery of a product | No — not sold directly |
+| Resource | Fulfillment-side asset (e.g., network element) consumed during delivery | No — not sold directly |
+
+Service and resource specs exist to support fulfillment; only offer and product specs face the customer. Modeling a fulfillment-only component as a sellable offer (or vice versa) breaks the commercial/technical separation the decomposition engine depends on.
+
+#### Spec Inheritance: Offers Apply Product Specs
+
+A product spec is a reusable design-time template that carries the product's data shape. When you create a sellable offer, you apply the product spec to the offer so the offer inherits all the product data — Salesforce compares this to how a record inherits structure from an object type. Because specs are reusable, one product spec can back many differently priced offers: launch a promotional offer, a retention offer, and a standard offer off the same spec without reconfiguring the same product information from scratch each time.
+
+#### Simple vs. Bundled Product Specs
+
+Bundling is a spec-level modeling decision, not just a Child Item relationship. Simple product specs create standalone products with no child products; bundled product specs are specifically for parent products that have associated child products. Pick the spec subtype first, then express the concrete parent-child links (with quantities and cardinalities) as Child Item records. Assembling a parent-child bundle under a simple spec contradicts these definitions — simple specs are for standalone products without child products — and building it through custom lookups on Product2 bypasses EPC entirely (see Pattern 1).
+
+#### Commercial vs. Technical Products
+
+EPC formally separates the two halves of the catalog:
+
+- **Commercial products** are the customer-facing assets available for purchase, managed by sales and marketing teams.
+- **Technical products** represent the underlying back-end components that order management engineers and delivery teams use to fulfill orders.
+
+The catalog maps commercial products to their technical products so that Order Management can decompose the order into the associated technical products during orchestration. This mapping is the catalog-side foundation of the TM Forum decomposition described in the next section — if the commercial-to-technical mapping is missing in EPC, decomposition has nothing to read.
+
+#### Shared Catalog: The Cross-Cloud Foundation
+
+EPC sits on **Shared Catalog**, a common foundation for all products, services, and resources used by Industries Communications, Media, and Energy & Utilities Cloud applications. Shared Catalog is included with Industries CPQ; EPC is a separately licensed layer that adds catalog entity versioning and lifecycle management on top of Shared Catalog's capabilities. Two practical consequences:
+
+1. Catalog modeling skills (spec types, inheritance, bundling, attributes) transfer directly between Communications and Energy & Utilities implementations — see `admin/industries-energy-utilities-setup` in Related Skills.
+2. When scoping a project, confirm whether the org has Shared Catalog only (via Industries CPQ) or the full EPC license — versioning and lifecycle-management features belong to EPC.
+
+#### Attributes, Attribute Categories, and Picklists
+
+Attributes are configurable key-value pairs on catalog items that capture product characteristics — tangible ones like size or color, and intangible ones like subscription type or SKU. The framework has three moving parts:
+
+- **Attributes**: key-value pairs whose value, depending on configuration, is set at design time, at runtime in the CPQ Cart, or during order decomposition. Runtime attributes are what make a product configurable by the customer or sales rep in the Cart.
+- **Attribute Categories**: every attribute must correspond to an attribute category, which holds a group of related attributes and organizes them into sections. Create the category before the attributes.
+- **Picklists**: drive dynamic attribute value selection in the Cart. Picklists must be created before they can be linked to attributes.
+
+Attributes also feed **attribute-based pricing rules** — price can vary based on the attribute values selected in the CPQ Cart, so configuration choices (speed tier, contract length) reprice the line without separate offerings per combination.
+
+Know the fields-vs-attributes boundary: fields store universal product information (name, ID, description) and require administrator privileges to manage; attributes capture product-specific or class-specific details and need only Product Designer access. Modeling a per-configuration characteristic as a Product2 custom field instead of an attribute strands it outside the Cart configuration and pricing-rule machinery.
 
 ### TM Forum-Aligned Order Decomposition (Commercial to Technical Order)
 
@@ -145,6 +196,10 @@ Permission sets must be assigned before configuring EPC catalogs, because EPC re
 | Situation | Recommended Approach | Reason |
 |---|---|---|
 | Setting up products for order capture | Configure in EPC (Product Specification → Product Offering → Catalog Assignment) | Order decomposition engine reads EPC; direct Product2 creation bypasses decomposition |
+| Modeling a new catalog entity | Pick the spec type first: offer/product for customer-facing, service/resource for fulfillment-only | Spec type determines visibility and purpose; service and resource specs are never sold directly |
+| Several price points for the same product | One product spec, multiple offers that apply it | Each offer inherits the spec's product data — no reconfiguring the same product information per offer |
+| Bundle vs. standalone product | Choose bundled vs. simple product spec at the spec level, then add Child Items | Bundling is a spec-level decision; Child Items express the concrete parent-child links |
+| Per-configuration characteristic (speed tier, contract length) | Model as an attribute in an attribute category, with a picklist if Cart-selectable | Attribute values can be set in the Cart or at decomposition and can drive attribute-based pricing; Product2 custom fields cannot |
 | Customer account creation | Create Billing Account first, then Service Account as child | Account hierarchy is required for billing and provisioning linkage |
 | Querying accounts in Apex or Flow | Always filter by `RecordType.DeveloperName` | Without filter, all account subtypes mix, causing data integrity failures |
 | Order management APIs | Use Industries Order Management (vlocity_cmt namespace) APIs | Salesforce Order Management (commerce) uses different object model and APIs |
@@ -161,7 +216,7 @@ Step-by-step instructions for an AI agent or practitioner setting up or validati
 
 2. **Design and confirm the account model** — Determine if the org is B2C (Consumer Accounts, possibly Person Accounts) or B2B (Billing + Service Account hierarchy). Document the RecordType DeveloperNames that will be used. Validate that RecordTypes for `Billing_Account`, `Service_Account`, and `Consumer_Account` exist on the Account object in Setup > Object Manager.
 
-3. **Build the EPC service catalog** — In the EPC app, create Catalogs (one per market segment), Product Specifications for each service component, Product Offerings with pricing, bundle Product Offerings with Child Items, and Catalog Assignments linking offerings to catalogs. Do not bypass EPC and create offerings in raw Product2.
+3. **Build the EPC service catalog** — In the EPC app, create Catalogs (one per market segment), then specs with the correct type for each entity: product specs for customer-facing templates (simple or bundled, decided at the spec level), service and resource specs for fulfillment-only components. Create Product Offerings that apply the product specs (inheriting their data shape) with pricing attached, bundle offerings with Child Items, and Catalog Assignments linking offerings to catalogs. Define attribute categories, picklists, and attributes for any characteristic the Cart or decomposition must configure. Do not bypass EPC and create offerings in raw Product2.
 
 4. **Configure order decomposition rules** — In Industries Order Management, define the decomposition rules that map commercial order line items to technical fulfillment actions. Reference the EPC Child Item relationships defined in Step 3. Test decomposition by submitting a sample order and verifying that technical order records are generated.
 
@@ -178,6 +233,9 @@ Run through these before marking work in this area complete:
 - [ ] Communications Cloud managed package confirmed installed in Setup > Installed Packages
 - [ ] Communications Cloud Admin permission set assigned before EPC configuration
 - [ ] EPC service catalog contains at least one Catalog, Product Specification, Product Offering, and Catalog Assignment
+- [ ] Every spec uses the correct type — offer/product for customer-facing entities, service/resource for fulfillment-only components
+- [ ] Bundles use bundled product specs at the spec level plus Child Items, not custom lookups or simple specs with ad hoc children
+- [ ] Configurable characteristics modeled as attributes (each in an attribute category), with picklists created before linking to attributes
 - [ ] Account RecordTypes (`Billing_Account`, `Service_Account`, `Consumer_Account`) confirmed present on Account object
 - [ ] All SOQL queries and Apex that touch Account include a `RecordType.DeveloperName` filter
 - [ ] Industries Order Management decomposition rules configured and tested (distinct from Salesforce Order Management)
@@ -216,4 +274,4 @@ Non-obvious platform behaviors that cause real production problems:
 
 - `architect/industries-data-model` — Use for understanding the full Industries data model across Communications, Insurance, Energy & Utilities, and Health Cloud, including Account subtype SOQL patterns
 - `omnistudio/omnistudio-custom-components` — Use when customizing OmniStudio-based order capture UIs within a Communications Cloud org
-- `admin/industries-energy-utilities-setup` — Use when configuring Energy & Utilities Cloud; shares similar account hierarchy and Industries Order Management patterns
+- `admin/industries-energy-utilities-setup` — Use when configuring Energy & Utilities Cloud; both clouds' catalogs sit on the same Shared Catalog foundation (along with Media Cloud), so spec-type, inheritance, bundling, and attribute patterns carry over, as do the account hierarchy and Industries Order Management patterns

@@ -142,3 +142,34 @@ Post-deploy validation:
 ```
 
 **Detection hint:** If a generated release checklist has `Testing API: all cases pass` as the last item before "activate in production," the anti-pattern is present.
+
+---
+
+## Anti-Pattern 7: Hand-Rolling curl Pipelines When the `sf agent test` CLI Exists
+
+**What the LLM generates:** CI pipeline scripts that obtain a session token, `curl -X POST` the Connect API ai-evaluations endpoint, sleep-and-poll the job ID in a bash loop, and parse the result JSON with `jq` to decide pass/fail — or, in the opposite failure mode, a pipeline that calls `sf agent test run` without `--wait` and then immediately checks for results that don't exist yet.
+
+**Why it happens:** The Connect API endpoints are older and more heavily represented in training data than the Agentforce DX command family, so LLMs default to raw HTTP. And LLMs pattern-match `sf agent test run` onto commands like `sf apex run test` that wait by default, missing that agent test runs are asynchronous by default.
+
+**Correct pattern:**
+
+```
+CI gate (synchronous):
+  sf agent test run --api-name <TestApiName> --wait <minutes> \
+    --result-format junit --output-dir <dir>
+  → CLI handles org auth, polling, and emits JUnit files the CI runner
+    parses natively. json and tap formats are also available.
+
+Long suite (asynchronous):
+  Stage A: sf agent test run --api-name <TestApiName>   # prints resume command
+  Stage B: sf agent test resume / sf agent test results --job-id <id>
+
+Authoring:
+  sf agent generate test-spec        # scaffold test spec YAML
+  sf agent test create               # create org test + auto-sync metadata to project
+
+Reserve raw curl / `sf api request rest` for Connect API endpoints the
+command family doesn't wrap (e.g., Get Test Results by runId for archiving).
+```
+
+**Detection hint:** Generated pipeline scripts containing a `while status != COMPLETED; sleep` polling loop against `/connect/einstein/ai-evaluations`, or an `sf agent test run` invocation with no `--wait` whose output is immediately parsed for pass/fail, both indicate this anti-pattern.

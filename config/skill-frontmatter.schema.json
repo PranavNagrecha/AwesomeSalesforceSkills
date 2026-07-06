@@ -114,8 +114,16 @@
     },
     "status": {
       "type": "string",
-      "enum": ["stable", "stub"],
-      "description": "Lifecycle status. Defaults to 'stable' when omitted. Set to 'stub' for scaffolded skills whose reference files still contain TODO placeholders — search_skill surfaces this flag so agents can avoid relying on TODO content."
+      "enum": [
+        "stable",
+        "stub"
+      ],
+      "description": "Lifecycle status. Defaults to 'stable' when omitted. Set to 'stub' for scaffolded skills whose reference files still contain TODO placeholders \u2014 search_skill surfaces this flag so agents can avoid relying on TODO content."
+    },
+    "runtime_orphan_reason": {
+      "type": "string",
+      "minLength": 10,
+      "description": "One-sentence justification for runtime_orphan: true \u2014 written by new_skill.py --orphan-reason and referenced by validate_repo.py's runtime-citation gate."
     }
   }
 }
