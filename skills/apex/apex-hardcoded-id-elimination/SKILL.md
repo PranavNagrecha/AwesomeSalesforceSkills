@@ -20,6 +20,8 @@ triggers:
   - "replace hardcoded queue id with developer name lookup"
   - "schema getrecordtypeinfosbydevelopername best practice"
   - "15 char vs 18 char id comparison failing in apex"
+  - "use metadata relationship field instead of hardcoding record id"
+  - "does getinstance query soql or use the application cache"
 inputs:
   - Apex class or trigger containing literal 15/18-char IDs
   - Org context (sandbox, scratch, prod) where IDs differ
@@ -31,9 +33,9 @@ outputs:
   - Custom Metadata mapping for config-driven IDs
   - Test class that inserts data instead of hardcoding IDs
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-07-07
 ---
 
 # Apex Hardcoded ID Elimination
@@ -60,7 +62,8 @@ The fix is to look IDs up by something stable — DeveloperName, MasterLabel via
 |---|---|---|
 | RecordType | `Schema.SObjectType.X.getRecordTypeInfosByDeveloperName()` | Describe is metadata-driven, no SOQL cost, DeveloperName is stable |
 | Profile / Group / Queue / UserRole | `[SELECT Id FROM Profile WHERE Name = :name]` cached per-transaction | DeveloperName / Name is stable; cache avoids SOQL-101 |
-| Configurable business-record IDs (default Account, fallback User) | Custom Metadata Type with `Lookup__c` or `Text__c` field | Subscriber-org safe, deployable, no code change to retarget |
+| Configurable metadata references (another CMDT record, object, field) | Custom Metadata Type with a **Metadata Relationship** field | Referential integrity, no raw ID string, `getInstance()` reads cache with no SOQL |
+| Configurable business-record IDs (default Account, fallback User) | Custom Metadata Type with a `Text__c` field holding the Id | Subscriber-org safe, deployable, no code change to retarget |
 | Test data IDs | `insert` then capture `record.Id` | Test data is created per run; never persistent |
 
 ### Schema describe for RecordType
@@ -97,7 +100,15 @@ The static map lives for the transaction. Subsequent calls are free.
 
 ### Custom Metadata for configurable IDs
 
-When the "right" ID is environment-specific (a default-owner User, a routing Queue, a fallback Account), put the mapping in a Custom Metadata Type. The metadata deploys with code; the value differs per org and changes without a code release.
+When the "right" ID is environment-specific (a default-owner User, a routing Queue, a fallback Account), put the mapping in a Custom Metadata Type. The records deploy through the Metadata API as declarative XML components inside packages and change sets — they travel as metadata artifacts, not database data rows — so the value differs per org and changes without a code release.
+
+**Prefer a Metadata Relationship field over a raw `Text__c` ID.** When the thing you're referencing is itself metadata — another custom metadata record, an object (EntityDefinition), a field (FieldDefinition), or an entity particle — Salesforce provides a purpose-built **Metadata Relationship** field type. It stores a stable reference and enforces referential integrity instead of parking a raw 15/18-char ID in a text field, which is exactly the failure mode this skill exists to remove. Custom metadata types have no Lookup relationship field type, and Master-detail is not offered either; Metadata Relationship is the only supported relationship field. Reserve a plain `Text__c` field (holding the record Id) for referencing *data* records (a specific Account or User) that metadata relationships can't target — a Text field is the only way to store a data-record Id on a custom metadata type.
+
+**`getInstance()` / `getAll()` are SOQL-free.** These static methods read from the application cache, not the database, so they cost no SOQL query and no query-row governor limits — a material reason to prefer CMDT over the cached-SOQL `Map` pattern used above for Profile/Group/Queue. `getAll()` returns a `Map<String, T__mdt>` keyed by DeveloperName; `getInstance(...)` returns one record by DeveloperName, record Id, or qualified API name.
+
+**Watch the 255-character truncation.** `getInstance()`/`getAll()` return only the first 255 characters of every field. If a config value (a long endpoint, a serialized payload) exceeds 255 chars, the cached read silently truncates it — fall back to a full SOQL query against the `__mdt` type to get the complete value.
+
+**Seeding and visibility.** Apex can create, read, and update custom metadata records but **cannot delete** them, and DML on custom metadata is not allowed through the Partner or Enterprise APIs — plan CMDT seeding scripts accordingly. Type visibility (Public, Protected, PackageProtected) controls which namespaces can see the type and its records: use Protected/PackageProtected when a managed package must hide environment-specific config such as API keys from subscriber-org Apex.
 
 ### Test class discipline
 
@@ -172,7 +183,8 @@ Id defaultQueueId = cfg.DefaultQueue__c;  // populated per-org
 | RecordType | `Schema.SObjectType.X.getRecordTypeInfosByDeveloperName()` |
 | Profile / Permission Set | SOQL by `Name` / `DeveloperName`, cached |
 | Group / Queue / UserRole | SOQL by `DeveloperName`, cached |
-| Environment-specific config (default user, fallback record) | Custom Metadata Type |
+| Reference to another CMDT record, object, or field | Custom Metadata Type with a Metadata Relationship field |
+| Environment-specific config (default user, fallback record) | Custom Metadata Type (`Text__c` holding the Id for data records) |
 | Test seed record | Insert in test, capture `.Id` |
 | External-system reference | Custom Metadata or Named Credential, never literal |
 
@@ -208,6 +220,8 @@ Id defaultQueueId = cfg.DefaultQueue__c;  // populated per-org
 1. **15 vs 18 char comparison fails as String.** Stored as `String`, the same record can have two different representations. Always use the `Id` type.
 2. **`Name='System Administrator'` is not portable.** Some orgs renamed it; Custom Metadata or `DeveloperName` is safer for any cross-org code.
 3. **`getRecordTypeInfosByName` uses translatable label.** Always prefer `getRecordTypeInfosByDeveloperName`.
+4. **`getInstance()`/`getAll()` truncate fields to 255 chars.** They read the application cache, not the row. Any config value longer than 255 characters comes back truncated — query the `__mdt` type with SOQL to get the full value.
+5. **Apex can't delete custom metadata records.** Create/read/update only; DML on CMDT is also blocked through the Partner and Enterprise APIs. Don't design a seeding routine that expects to `delete` CMDT rows.
 
 ---
 

@@ -1,0 +1,36 @@
+{
+  "workbook": "Account Description Cleanup",
+  "worksheet": "HTML to Markdown",
+  "goal": "bulk-update",
+  "beta_acknowledged": true,
+  "billing_reviewed": true,
+  "notes": "Grid is Beta (Winter '26) and metered in every lifecycle phase. Columns process left to right; every 'references' entry must name a column to its left. Lint with: python3 scripts/check_agentforce_grid.py --spec templates/grid-worksheet-spec.example.json",
+  "columns": [
+    {
+      "name": "Accounts",
+      "type": "data",
+      "source": "salesforce",
+      "object": "Account",
+      "fields": ["Id", "Description"],
+      "filter": "Description != null",
+      "maxResults": 200
+    },
+    {
+      "name": "Markdown",
+      "type": "ai",
+      "mode": "use-ai",
+      "model": "GPT 5",
+      "instruction": "Convert the HTML in the Description to clean Markdown.",
+      "runForEachRow": true,
+      "references": ["Accounts"]
+    },
+    {
+      "name": "WriteBack",
+      "type": "action",
+      "action": "update-record",
+      "object": "Account",
+      "field": "Description",
+      "references": ["Markdown"]
+    }
+  ]
+}

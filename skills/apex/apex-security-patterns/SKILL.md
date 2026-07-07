@@ -18,6 +18,8 @@ triggers:
   - "AuraEnabled method running in system context"
   - "stripInaccessible for DML pattern"
   - "secure Apex service layer review"
+  - "verify inner class and subclass sharing inheritance"
+  - "check default sharing mode after API 67 version bump"
 inputs:
   - "entry point such as AuraEnabled, REST, Flow-invocable, trigger handler, or Batch"
   - "required data access model for records, objects, and fields"
@@ -27,9 +29,9 @@ outputs:
   - "review findings for sharing, CRUD/FLS, and system-context risks"
   - "secure service-layer pattern for reads and writes"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-03-13
+updated: 2026-07-07
 ---
 
 Use this skill when Apex security needs to be explicit rather than assumed. The purpose is to choose the right sharing model, enforce CRUD and FLS deliberately on reads and writes, and prevent user-facing entry points from silently operating in broader system context than intended.
@@ -44,7 +46,21 @@ Use this skill when Apex security needs to be explicit rather than assumed. The 
 
 ### Sharing Keywords Set The Record-Access Boundary
 
-`with sharing`, `without sharing`, and `inherited sharing` are design choices, not style preferences. `with sharing` enforces row-level sharing rules for the class. `without sharing` explicitly widens record visibility and must be justified. `inherited sharing` makes the class adopt the caller’s sharing model and is often the safest default for reusable service layers that should not surprise reviewers.
+`with sharing`, `without sharing`, and `inherited sharing` are design choices, not style preferences. `with sharing` enforces row-level sharing rules for the class. `without sharing` explicitly widens record visibility and must be justified — for record-visibility purposes it lets the code see records as if the running user had Modify All Data. `inherited sharing` makes the class adopt the caller’s sharing model and is often the safest default for reusable service layers that should not surprise reviewers.
+
+Do not lean on the default. In API version 67.0 and later, a class with no explicit sharing declaration runs in `with sharing` mode. That is a safer default than older versions, but it also means a class that genuinely needs elevated visibility can silently start enforcing sharing after an API-version bump, and older code being uplifted may change behavior. Declare the intended mode explicitly rather than depending on the version default.
+
+### Sharing Mode Resolves By Definition, Not By Call Site
+
+Two inheritance and call-chain rules trip up reviewers who assume sharing "flows down" like a normal variable:
+
+- **A method's enforcement is fixed by where it is defined, not by who calls it.** A method defined in a `with sharing` class still enforces sharing rules even when called from a `without sharing` class, and vice versa. You cannot widen or narrow a method's sharing by changing the caller.
+- **Class inheritance and inner classes behave differently.** A class *without* its own declaration that `extends` a parent adopts the parent's sharing mode across the chain. But inner classes do **not** adopt the outer (container) class's mode — each inner class needs its own declaration or it falls back to the version default.
+- **`inherited sharing` resolves at the entry point.** When an `inherited sharing` class is itself the top-level entry point — an Aura component controller, an `@AuraEnabled` method called from LWC, a Visualforce controller, an Apex REST service, or an asynchronous Apex class — it runs in `with sharing`. It runs `without sharing` only when explicitly called from an already-established `without sharing` context. This is what makes `inherited sharing` the least-surprising default for reusable services.
+
+### Triggers Are Always `without sharing` But DML Defaults To User Mode
+
+Apex triggers cannot carry an explicit sharing keyword and always run implicitly in a `without sharing` context. That does not mean trigger DML ignores field and object permissions: database operations run in user mode unless system mode is explicitly specified, and user mode overrides the trigger's `without sharing` context for the operation. Review trigger logic on the record-visibility axis (it sees everything) separately from the CRUD/FLS axis (user-mode DML still applies).
 
 ### Record Access Is Not CRUD/FLS Enforcement
 
@@ -104,7 +120,10 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 
 ## Review Checklist
 
-- [ ] Every public or global Apex class declares `with`, `without`, or `inherited sharing` intentionally.
+- [ ] Every public or global Apex class declares `with`, `without`, or `inherited sharing` intentionally rather than relying on the API 67.0+ `with sharing` default.
+- [ ] Inner classes and `extends`-only subclasses have their intended sharing verified — inner classes do not inherit the outer class's mode, and undeclared subclasses adopt the parent's mode.
+- [ ] Cross-call sharing is judged by where each method is defined, not by the sharing mode of the caller.
+- [ ] Triggers are reviewed as implicitly `without sharing` for visibility, with DML still checked for the correct user-mode/system-mode intent.
 - [ ] Reviews distinguish record access from CRUD/FLS enforcement instead of conflating them.
 - [ ] User-facing entry points enforce access in both reads and writes.
 - [ ] `without sharing` usage is narrow, justified, and documented.
@@ -117,6 +136,9 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 2. **Aura-enabled Apex can still expose too much data if the query or DML path is not explicitly secured** — the class declaration alone is not enough.
 3. **`without sharing` in the wrong layer silently widens access for everything below it** — security reviews must trace the call chain, not just the top-level controller.
 4. **Secure read patterns and secure write patterns are different** — a class can query safely and still perform unsafe DML if writes are not sanitized.
+5. **Relying on the sharing default is fragile** — in API 67.0+ an undeclared class runs `with sharing`, so uplifting older code or bumping the API version can silently flip enforcement; declare the mode explicitly.
+6. **Inner classes do not inherit the outer class's sharing** — a `with sharing` outer class does not make its inner classes safe; each inner class needs its own declaration.
+7. **A trigger's `without sharing` context does not disable FLS** — trigger DML still runs in user mode unless system mode is explicitly requested.
 
 ## Output Artifacts
 

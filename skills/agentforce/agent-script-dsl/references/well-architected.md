@@ -25,6 +25,14 @@
 ## Official Sources Used
 
 - Agentforce Developer Guide — https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html
+- Agent Script overview — https://developer.salesforce.com/docs/ai/agentforce/guide/agent-script.html
+- Agent Script language fundamentals — https://developer.salesforce.com/docs/ai/agentforce/guide/ascript-lang.html
+- Agent Script reference — https://developer.salesforce.com/docs/ai/agentforce/guide/ascript-reference.html
+- Manage agents (org UI and Agentforce DX CLI) — https://developer.salesforce.com/docs/ai/agentforce/guide/ascript-manage.html
+- Agent Script example — https://developer.salesforce.com/docs/ai/agentforce/guide/ascript-example.html
+- Introducing hybrid reasoning with Agent Script (blog) — https://developer.salesforce.com/blogs/2025/10/introducing-hybrid-reasoning-with-agent-script
+- Agent Script language fundamentals (blog) — https://developer.salesforce.com/blogs/2026/02/agent-script-decoded-intro-to-agent-script-language-fundamentals
+- salesforce/agentscript — open-sourced parser, linter, compiler, and LSP (Apache 2.0) — https://github.com/salesforce/agentscript
 - Agentforce DX Metadata Types — https://developer.salesforce.com/docs/einstein/genai/guide/agent-dx-metadata-types.html
 - Agent Development Lifecycle — https://developer.salesforce.com/docs/einstein/genai/guide/agent-development-lifecycle.html
 - Metadata API Developer Guide — Bot metadata types — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_bot.htm

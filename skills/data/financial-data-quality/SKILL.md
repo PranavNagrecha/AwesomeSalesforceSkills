@@ -13,6 +13,8 @@ triggers:
   - "Our FSC FinancialAccount records have invalid or missing required fields after a data migration from the core banking platform"
   - "How do I validate FinancialAccount balances against a custodial feed and flag discrepancies in Salesforce?"
   - "FSC rollup batch failed and household KPIs are showing wrong values — how do I detect and recover?"
+  - "Bypass a Duplicate Rule Alert from an integration user when saving FSC parent records via Apex DML"
+  - "Run standard duplicate rules from Apex against the related Account or Contact for a FinancialAccount load"
 tags:
   - fsc
   - financial-data-quality
@@ -36,9 +38,9 @@ outputs:
   - Data quality checker script output for org metadata analysis
 dependencies:
   - data/fsc-data-model
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-12
+updated: 2026-07-07
 ---
 
 # Financial Data Quality
@@ -55,6 +57,7 @@ Gather this context before working on anything in this domain:
 
 - **Deployment type:** Is the org on managed-package FSC (`FinServ__FinancialAccount__c`) or Core FSC (`FinancialAccount`)? Every object name, validation rule target, and Apex reference depends on this. Check Setup > Installed Packages.
 - **Standard Duplicate Rules do not cover FinancialAccount:** This is the most consequential wrong assumption in this domain. `FinancialAccount` (Core FSC) and `FinServ__FinancialAccount__c` (managed-package) are not covered by the out-of-box Duplicate Rules framework. Standard Duplicate Rules in Salesforce are designed for Account, Contact, and Lead. There is no standard Matching Rule for `FinancialAccount`. Duplicate detection on financial records must be built using custom Matching Rules on the related Account or Contact objects, or through Apex trigger logic that checks for duplicates before insert.
+- **Even where standard rules exist, integration paths silently bypass them:** For the related Account, Contact, and Lead records that *do* support standard Duplicate Rules, the alert/block UI experience does not apply when records are added through the data import tools or created/edited through the Salesforce APIs — no alert is shown, a Block action is silently skipped, and the duplicate is saved. Because core banking and custodial feeds write through the API, standard Duplicate Rules on the parent objects offer no protection at load time. This is a large part of why the custom Apex and reconciliation patterns below exist.
 - **FSC rollup batch does not self-heal:** The FSC async rollup batch aggregates household-level KPIs (Total Assets, Total Liabilities, Net Worth). If the batch fails, stale values persist on the household Account without any platform alert. Recovery requires a manual re-run. This is the primary source of data reconciliation failures between FSC and source systems.
 - **Source system reconciliation is manual by default:** FSC does not have a native reconciliation framework for comparing `FinancialAccount.Balance` against a core banking or custodial feed. Reconciliation must be designed as a custom process: typically an inbound scheduled integration that compares current FSC values against the source, writes discrepancies to a staging object, and triggers review workflows.
 
@@ -76,11 +79,19 @@ Standard Salesforce Duplicate Rules are defined for Account, Contact, and Lead. 
 
 **Two supported approaches for FSC duplicate detection:**
 
-1. **Matching Rules on related Account/Contact:** Create a custom Matching Rule on the Account or Contact object that uses a field from the related financial account (e.g., external account number stored on the contact). This is indirect and only works when the duplicate signal exists on the parent object.
+1. **Matching Rules on related Account/Contact:** Create a custom Matching Rule on the Account or Contact object that uses a field from the related financial account (e.g., external account number stored on the contact). This is indirect and only works when the duplicate signal exists on the parent object. Three platform limits shape this option and matter for financial data:
+   - **Cardinality caps:** A maximum of five active matching rules per object and 25 active matching rules org-wide. FSC and any managed-package matching rules count against this budget, so custom rules on Account/Contact compete for the same slots as standard ones — plan the set deliberately rather than adding one rule per edge case.
+   - **Fuzzy matching is Latin-only:** Standard and custom matching rules using fuzzy matching methods support only Latin characters. Account holder or beneficiary names with diacritics or non-Latin scripts will not match reliably under fuzzy methods — use exact matching for those fields.
+   - **Shield Platform Encryption narrows matching:** Custom matching rules work only against deterministically encrypted fields; probabilistic encryption is not supported. With Shield enabled the matching service also searches fewer candidates (100 instead of 200), so encrypted PII used as a match key can produce fewer or no detected duplicates.
+   - **Person Account skip:** If a matching rule includes a Contact lookup field and the looked-up value is a Person Account, the rule is not applied. For Person Account households, match on account lookup fields instead.
 
 2. **Apex trigger-based duplicate detection:** For financial records specifically, implement a `before insert` Apex trigger on `FinancialAccount` (or `FinServ__FinancialAccount__c`) that queries for existing records with matching key attributes (e.g., `ExternalAccountNumber__c`, `AccountNumber`, `FinancialAccountType` + owner combination). Use `Database.query()` with selective filters. Block the insert and return a meaningful error message if a match is found.
 
+3. **Programmatically invoking or bypassing standard rules from Apex:** When the duplicate signal lives on the related Account or Contact rather than on `FinancialAccount` itself, you do not have to re-implement matching by hand. `Datacloud.FindDuplicates` (and `Datacloud.FindDuplicatesByIds`) run the object's active duplicate rules against a list of sObjects and return the matched records, so a `FinancialAccount` trigger can check for parent-record duplicates before promoting a load. Conversely, when a governed integration must save parent records that would otherwise trip a duplicate **Alert**, set `Database.DMLOptions.DuplicateRuleHeader.allowSave = true` to bypass the alert on that DML and save the record, and use `runAsCurrentUser` to control whether the current user's sharing rules are enforced while the duplicate rules run. `allowSave` applies only to the Alert action — it does **not** override a Block action, and a record flagged by a blocking duplicate rule cannot be saved regardless of this setting. (Integration paths skip the Alert/Block *UI* experience anyway; `allowSave` is the governed way to keep the rule active for interactive users while letting a service account save through an Alert.) `FindDuplicates` is capped at 50 sObjects per call and all must be the same type — batch parent lookups accordingly.
+
 The Apex trigger approach is the authoritative pattern for FSC financial record deduplication. It must be bulk-safe (process `Trigger.new` as a list, not record-by-record), governor-limit-aware, and bypass-capable for integration contexts.
+
+**Complementary batch layer — Duplicate Jobs for records at rest:** The three approaches above catch duplicates at insert time. For the household-level Account, Contact, and Lead records that already exist and *do* support standard matching, Duplicate Jobs run a matching rule as a batch over existing records, produce Duplicate Record Sets for review and merge, and email results on completion. Use them as a periodic retroactive sweep alongside insert-time detection — noting the feature is available only in Performance and Unlimited Editions.
 
 ### FSC Rollup Batch — Failure Modes and Reconciliation
 
@@ -216,6 +227,10 @@ global class FSCRollupHealthMonitor implements Schedulable {
 |---|---|---|
 | Need to block duplicate FinancialAccount on insert | Apex before-insert trigger with SOQL duplicate check | Standard Duplicate Rules have no FinancialAccount Matching Rule; trigger is the only blocking mechanism |
 | Need to report on potential FinancialAccount duplicates without blocking | Apex scheduled batch writing to FinancialAccountDuplicate__c review object | Non-blocking detection separates review from load; allows stewardship workflow |
+| Duplicate signal lives on the related Account/Contact, not FinancialAccount | Call `Datacloud.FindDuplicates` from the trigger to run the parent object's active duplicate rules (≤50 sObjects/call) | Reuses configured matching rules instead of re-implementing them; returns matched records for decisioning |
+| Governed integration must save parent records that would trigger a duplicate Alert | Set `Database.DMLOptions.DuplicateRuleHeader.allowSave = true` (and `runAsCurrentUser` for sharing) on the DML | Per-DML bypass of the **Alert** action only; it does not override a Block action, so a blocking rule still stops the save regardless of `allowSave` |
+| Need to sweep existing Account/Contact/Lead records at rest for duplicates | Duplicate Jobs (Performance/Unlimited Editions) producing Duplicate Record Sets | Batch retroactive detection over records already saved; insert-time rules do not re-scan history |
+| Match key holds non-Latin names or Shield-encrypted PII | Use exact (not fuzzy) matching; confirm fields are deterministically encrypted | Fuzzy methods support Latin characters only; probabilistic encryption is unsupported and Shield caps candidates at 100 |
 | FinancialAccount field required only for specific account type | Validation rule with RecordType guard and Custom Permission bypass | Universal required fields cannot express per-type conditionality |
 | Household totals don't match source system after bulk load | Check FSC rollup batch last-run timestamp; trigger manual re-run | Rollup is async and does not self-heal; stale values persist until re-run |
 | Need to detect balance discrepancies vs. core banking feed | Reconciliation staging object + Apex batch with configurable variance threshold | FSC has no native source-system reconciliation; custom batch is the standard pattern |
@@ -268,6 +283,10 @@ Non-obvious platform behaviors that cause real production problems:
 4. **Apex duplicate triggers must be explicitly bulk-safe** — During core banking integration loads (which commonly use Bulk API or batched REST calls), `Trigger.new` contains up to 200 records per execution. A trigger that runs a SOQL query inside a for-loop over `Trigger.new` will hit governor limits immediately. The correct pattern is to collect all deduplication keys into a Set before the SOQL query, execute one query for the entire batch, and check results in memory.
 
 5. **FinancialHolding validation rules cannot traverse two relationship levels** — Validation rules on `FinancialHolding` can access parent `FinancialAccount` fields in one-level cross-object formulas (e.g., `FinancialAccount.Status`). Attempting to access grandparent fields (e.g., `FinancialAccount.PrimaryOwner__r.Type`) will cause a compile error. For checks that require deeper traversal, implement a `before insert/update` Apex trigger on `FinancialHolding`.
+
+6. **Data import tools and the API silently bypass Duplicate Rule alerts and Block actions** — On the related Account, Contact, and Lead records that *do* support standard Duplicate Rules, no alert is shown and a Block action is skipped when records arrive through the data import tools or through Salesforce APIs — the duplicate saves without error. Since core banking and custodial feeds write through the API, do not assume a Duplicate Rule on the parent object protects an integration load; enforce detection in the load path (Apex, `Datacloud.FindDuplicates`) or sweep afterward with Duplicate Jobs.
+
+7. **Matching rules for financial data hit hard caps and character/encryption limits** — Only five matching rules can be active per object and 25 org-wide, a budget shared with FSC and other managed-package rules. Fuzzy matching methods support Latin characters only, so account-holder names with diacritics or non-Latin scripts need exact matching. Custom matching rules require deterministically encrypted fields (probabilistic Shield encryption is unsupported), and with Shield enabled the candidate search shrinks from 200 to 100 — encrypted PII match keys can therefore under-detect. A Contact-lookup matching rule is also skipped entirely when the looked-up record is a Person Account.
 
 ---
 

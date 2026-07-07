@@ -11,17 +11,18 @@ These patterns help the consuming agent self-check its own output.
 
 **Correct pattern:**
 ```
-// WRONG: standard SOQL
+// WRONG: standard SOQL against a non-existent object
 SELECT Id, SessionStatus FROM AgentConversationSession LIMIT 10
 
-// CORRECT: Data Cloud SQL query in Data Cloud Query Builder
-SELECT Id, SessionStatus, AgentName
-FROM AgentConversationSession
-WHERE SessionStartDateTime >= DATEADD(day, -30, GETDATE())
+// CORRECT: Data Cloud SQL against the canonical Session Tracing DMO
+SELECT Id, AgentName
+FROM AIAgentSession
 LIMIT 10
 ```
 
-**Detection hint:** Any suggestion to query `AgentConversationSession` or `AgentConversationSessionUtterance` via SOQL or from Apex.
+The canonical DMOs are `AIAgentSession`, `AIAgentSessionParticipant`, `AIAgentInteraction`, `AIAgentInteractionMessage`, and `AIAgentInteractionStep`. Any `AgentConversation*` name is fabricated.
+
+**Detection hint:** Any suggestion to query `AgentConversationSession`/`AgentConversationSessionUtterance` (fabricated), or to query the real `AIAgent*` DMOs via SOQL or from Apex.
 
 ---
 
@@ -31,7 +32,7 @@ LIMIT 10
 
 **Why it happens:** LLMs know that Salesforce has a Reports tab and that analytics is often done there. They are not aware that session trace objects are not in the main org's report object universe.
 
-**Correct pattern:** Build agent performance dashboards in CRM Analytics (Tableau CRM) using a dataset sourced from Data Cloud session trace objects. The standard Reports tab cannot access Data Cloud objects.
+**Correct pattern:** Build agent performance dashboards in **Tableau Next** (Agent Analytics) using a dataset sourced from the Session Tracing DMOs — not CRM Analytics, and not the standard Reports tab, which cannot access Data Cloud objects. Access requires the Tableau Next Limited Consumer / Platform Analyst permission set plus Data Cloud User and API Enabled.
 
 **Detection hint:** Any mention of "create a new report" or "use the Reports tab" for Agentforce session data.
 
@@ -43,7 +44,7 @@ LIMIT 10
 
 **Why it happens:** The legacy dashboard existed before GA and may appear in training data as the canonical monitoring solution.
 
-**Correct pattern:** The legacy Agentforce Analytics dashboard retires May 31, 2026. New monitoring should be built on CRM Analytics datasets from Data Cloud session trace objects, not the legacy dashboard.
+**Correct pattern:** The legacy Agentforce Analytics dashboard retired May 31, 2026 (a past retirement). New monitoring should be built on Tableau Next / Agent Analytics over the Session Tracing DMOs, not the legacy dashboard.
 
 **Detection hint:** Any recommendation to use the "Agentforce Analytics" setup page without noting the May 2026 retirement.
 
@@ -70,3 +71,27 @@ LIMIT 10
 **Correct pattern:** Utterance text in Data Cloud is subject to retention policies. Build aggregated metrics (deflection rate, session count, topic distribution) as the durable operational record. Use raw utterance queries only for recent sessions within the retention window.
 
 **Detection hint:** Any query or report design that assumes utterance text from 90+ days ago is available without checking the Data Cloud retention policy configuration.
+
+---
+
+## Anti-Pattern 6: Treating Observability as Analytics-Only
+
+**What the LLM generates:** Advice that Agentforce Observability equals deflection/escalation dashboards, with no mention of Agent Optimization or Agent Health Monitoring.
+
+**Why it happens:** The analytics pillar is the most visible, so LLMs collapse the whole product into "session metrics."
+
+**Correct pattern:** Observability has three pillars — **Agent Analytics** (effectiveness metrics), **Agent Optimization** (unresolved-interaction and knowledge-gap analysis over the reasoning chain, gated by the Access Agentforce Optimization permission set), and **Agent Health Monitoring** (near-real-time silent-failure signals on deployed agents). For "why is my agent failing?" reach for Optimization, not just an Analytics chart.
+
+**Detection hint:** Any recommendation that stops at deflection/escalation dashboards for a diagnosis-of-quality question.
+
+---
+
+## Anti-Pattern 7: Inventing a REST Endpoint for Session Export
+
+**What the LLM generates:** A made-up API path or a claim that you can bulk-export all sessions programmatically as JSON.
+
+**Why it happens:** LLMs pattern-match to generic REST and assume an unrestricted export exists.
+
+**Correct pattern:** The only documented programmatic trace export is the **Beta** OTel API — `GET /services/data/v66.0/einstein/audit/otel/{session-id}` — which is **single-session only**, returns OTLP v1.0 `ResourceSpans`, authenticates via OAuth 2.0 through an **External Client App**, and only covers sessions started in the **previous 72 hours**. Do not promise bulk historical export.
+
+**Detection hint:** Any session-export endpoint that isn't the `einstein/audit/otel/{session-id}` path, or any claim of bulk/multi-session export.

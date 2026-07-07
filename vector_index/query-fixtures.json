@@ -7895,6 +7895,54 @@
    "domain": "agentforce",
    "expected_skill": "agentforce/agentexchange-publishing",
    "top_k": 3
+  },
+  {
+   "query": "how do I write ApexDoc comments with @param and @return tags for my Apex methods",
+   "domain": "devops",
+   "expected_skill": "devops/development-documentation-standards",
+   "top_k": 3
+  },
+  {
+   "query": "set up code documentation and naming standards for our Salesforce development team",
+   "domain": "devops",
+   "expected_skill": "devops/development-documentation-standards",
+   "top_k": 3
+  },
+  {
+   "query": "bulk update thousands of accounts with AI-generated summaries in a spreadsheet",
+   "domain": "agentforce",
+   "expected_skill": "agentforce/agentforce-grid",
+   "top_k": 3
+  },
+  {
+   "query": "how many Flex Credits does an Agentforce Grid worksheet cost to run",
+   "domain": "agentforce",
+   "expected_skill": "agentforce/agentforce-grid",
+   "top_k": 3
+  },
+  {
+   "query": "embed a Salesforce LWC in our React app on an external website",
+   "domain": "lwc",
+   "expected_skill": "lwc/lightning-out-2-embedding",
+   "top_k": 3
+  },
+  {
+   "query": "migrate off the old Aura Lightning Out beta $Lightning.use to Lightning Out 2.0 frontdoor url auth",
+   "domain": "lwc",
+   "expected_skill": "lwc/lightning-out-2-embedding",
+   "top_k": 3
+  },
+  {
+   "query": "preview my LWC changes live in the browser without deploying to the org",
+   "domain": "lwc",
+   "expected_skill": "lwc/lwc-local-development",
+   "top_k": 3
+  },
+  {
+   "query": "why don't new @api properties show up when I save during sf lightning dev component preview",
+   "domain": "lwc",
+   "expected_skill": "lwc/lwc-local-development",
+   "top_k": 3
   }
  ]
 }

@@ -13,6 +13,8 @@ triggers:
   - "sf apex run test or sf project deploy start hangs in automation because we are not waiting or parsing async IDs correctly"
   - "how do I run sf data bulk or tree export import between orgs from a script without clicking in the UI"
   - "what flags should I always set when running sf in GitLab or Jenkins for repeatable non-interactive runs"
+  - "load records into an org from a CSV with sf data import bulk and poll the job until it finishes"
+  - "seed a scratch org with related records using sf data export tree and import tree"
 tags:
   - salesforce-cli
   - sf-cli-v2
@@ -37,9 +39,9 @@ outputs:
 dependencies:
   - apex/sf-cli-and-sfdx-essentials
   - devops/continuous-integration-testing
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-16
+updated: 2026-07-07
 ---
 
 # Salesforce CLI Automation
@@ -102,13 +104,32 @@ Automation must not rely on whatever `sf config get target-org` returns on a sha
 
 ---
 
+## The `sf data` Command Families
+
+Automation that moves records instead of metadata lives under the **`sf data`** topic. Picking the wrong family is a common footgun: single-record commands do not scale to volume, and bulk commands are overkill (and slower to spin up a job) for one row. The topic breaks into four families, all defined in the [`sf data` command reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_data_commands_unified.htm).
+
+| Family | Commands | Shape | When to use |
+|---|---|---|---|
+| Single-record CRUD | `sf data create record`, `sf data get record`, `sf data update record`, `sf data delete record`, `sf data create file` | One record (or one file upload, e.g. a `ContentVersion`) against a Salesforce or Tooling API object | Smoke-test steps, one-off fixups, uploading a single asset—not loops over many rows |
+| Ad-hoc query / search | `sf data query` (SOQL), `sf data search` (SOSL) | Read-only; pairs with `--json` to feed downstream steps | Deriving IDs, counts, or gate conditions inside a script |
+| Tree JSON import/export | `sf data export tree`, `sf data import tree` | One or more JSON files carrying related records | Seeding a scratch org or dev sandbox with a small, relationship-aware fixture set |
+| Bulk API 2.0 (CSV) | `sf data export bulk`, `sf data import bulk`, `sf data update bulk`, `sf data upsert bulk`, `sf data delete bulk` | CSV files in and out; each verb runs a Bulk API 2.0 job | Volume data movement between orgs where record-by-record REST would blow limits |
+
+**Bulk jobs are asynchronous by contract.** Every bulk verb has a matching **`... resume`** command (`sf data import resume`, `sf data upsert resume`, and so on) that reattaches to a job you already started by its **job ID**, so a script can start a load, exit the step, and poll status later. `sf data resume` reports the status of a running bulk job or batch, and `sf data bulk results` retrieves the success/failure detail of an ingest job you ran earlier. This is the same async discipline the rest of this skill applies to deploys and tests: either wait long enough for the job to finish or capture the job ID from `--json` and poll with the companion `resume`/`results` command before asserting success. Do not treat a returned prompt as a completed load.
+
+**Legacy note:** the predecessor `sfdx force:data:*` family is deprecated in favor of this unified `sf data` topic ([deprecated `force:data` reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_force_data.htm)). Treat any `force:data:tree:import` or `force:data:bulk:upsert` you find in older scripts the same way you treat `force:source:deploy`—map it to the `sf data` equivalent.
+
+---
+
 ## Decision Guidance
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
 | Need structured output for tooling | Add `--json` (and parse explicitly) | Stable schema-oriented integration per CLI reference |
 | Long deploy or full test suite in CI | Use `--wait` with a timeout above peak runtime | Prevents returning before completion |
-| Very large data movement between orgs | Use `sf data` bulk-related commands per docs | Designed for volume instead of record-by-record scripts |
+| Very large data movement between orgs | Use the `sf data ... bulk` verbs (Bulk API 2.0, CSV) and poll with `resume`/`bulk results` | Designed for volume instead of record-by-record scripts |
+| Seeding a scratch org with related fixture records | Use `sf data export tree` / `sf data import tree` (JSON) | Preserves relationships in a small, versionable fixture set |
+| A single record or file to create/read/fix | Use `sf data create/get/update/delete record` or `sf data create file` | Avoids spinning up a bulk job for one row |
 | Developer-only convenience script | Human output acceptable; still pin `--target-org` | Reduces accidental cross-org execution |
 
 ---

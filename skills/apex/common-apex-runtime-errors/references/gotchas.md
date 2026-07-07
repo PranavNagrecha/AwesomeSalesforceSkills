@@ -49,3 +49,23 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** Trigger handlers that are designed for insert/update but are accidentally deployed with `before delete` or `after delete` events included in the trigger definition.
 
 **How to avoid:** In the trigger handler, check `Trigger.isDelete` before accessing `Trigger.new`. Use a trigger framework that routes context-specific logic to separate handler methods keyed by `TriggerOperation` enum values (`BEFORE_INSERT`, `BEFORE_DELETE`, etc.) rather than checking `Trigger.new` defensively everywhere.
+
+---
+
+## Gotcha 6: MixedDmlException fires on setup + non-setup DML — not on mixing two ordinary objects
+
+**What happens:** `MixedDmlException` is thrown when a DML operation on a *setup* object (`User`, `UserRole`, `Group`, `GroupMember`, `PermissionSet`, `PermissionSetAssignment`, `Territory2`, `ObjectPermissions`, `FieldPermissions`, `QueueSObject`, …) is mixed with a DML operation on a *non-setup* object (`Account`, `Contact`, custom objects) in the same transaction. Developers frequently misdiagnose this as "you can't DML two object types at once" and waste time splitting unrelated `Account`/`Contact` writes, which are perfectly legal.
+
+**When it occurs:** A trigger, controller action, or test setup that, for example, inserts an `Account` and then assigns a `PermissionSet` (or creates a `User`) in the same execution context. Common in provisioning flows that create a business record and grant access in one go.
+
+**How to avoid:** Run the setup-object DML in a separate transaction. Move it into a `@future` method or a Queueable so it commits independently of the non-setup DML. In tests, wrap the setup-object DML in `System.runAs()` — mixed DML is permitted there. This is a hard platform restriction because setup objects can change the running user's record access mid-transaction, so it cannot be worked around by ordering the statements differently within one transaction.
+
+---
+
+## Gotcha 7: "Unable to lock row" is a timeout, not a permanent failure — retrying often succeeds
+
+**What happens:** `Unable to lock row - Record currently unavailable` surfaces as a `DmlException` after a transaction waits up to 10 seconds for another transaction to release a lock on the same record(s). Because it is a timeout on contention rather than a data-validity error, the same DML can succeed on retry once the competing lock clears — which makes it intermittent and hard to reproduce in a developer org with no concurrent load.
+
+**When it occurs:** Concurrent DML on shared records; Bulk API loads running in parallel mode where batches touch the same parent; long-running triggers or flows that hold locks while doing other work; many Master-Detail children updating and all locking the same parent row.
+
+**How to avoid:** Shorten the work done while a lock is held (defer non-critical processing to async). For Bulk API, switch parallel to serial mode or sort each batch by parent record ID so batches don't fight over the same parent. Distribute Master-Detail children across parents. When contention is unavoidable, implement a bounded retry with backoff around the DML rather than treating the first failure as terminal.

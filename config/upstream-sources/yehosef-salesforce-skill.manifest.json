@@ -1,0 +1,21 @@
+{
+ "upstream": "yehosef/salesforce-skill",
+ "license": "NONE",
+ "license_class": "clean-room",
+ "ref": "master",
+ "retrieved": "2026-07-07T19:27:32Z",
+ "skills": {
+  "skill": "",
+  "common-errors": "",
+  "data-migration-guide": "",
+  "deployment-guide": "",
+  "duplicate-detection": "",
+  "governor-limits": "",
+  "metadata-types": "",
+  "performance-tuning": "",
+  "rollback-procedures": "",
+  "sf-cli-reference": "",
+  "soql-patterns": "",
+  "testing-guide": ""
+ }
+}

@@ -135,3 +135,44 @@ sf agent test run --coverage-reporters text
 `sf agent test run` executes `AiEvaluationDefinition` metadata records (`.aiTest` files) against a live deployed agent. It tests LLM routing behavior and action invocation assertions — it does not measure Apex code coverage and its results are not included in the Apex test coverage report required for production deployments. Run both `sf apex run test` (for code coverage) and `sf agent test run` (for behavioral correctness) as separate CI steps.
 
 **Detection hint:** Any suggestion to combine `sf agent test run` results with Apex test coverage reporting, or to use it in place of `sf apex run test` for deployment code coverage gates, is incorrect.
+
+---
+
+## Anti-Pattern 7: Putting Deterministic Business Rules in `|` Prompt Instructions
+
+**What the LLM generates:** Agent Script that hands a rule which must run identically every time — an entitlement check, a compliance gate, variable math, a hard branch — to a `|` prompt instruction rather than a `->` logic instruction:
+
+```
+# Wrong: a compliance gate delegated to the LLM
+reasoning:
+  | If the customer is not a premium member, do not offer a refund.
+```
+
+**Why it happens:** Agent Script's hybrid-reasoning model deliberately supports both natural-language (`|`) and deterministic (`->`) instructions, and natural-language phrasing is the path of least resistance for an LLM generating an agent. The distinction is easy to overlook because both forms read fluently. But per the docs, prompt instructions are "natural language sent to the LLM. The LLM interprets these instructions and decides how to respond," whereas logic instructions "run deterministically every time."
+
+**Correct pattern:**
+
+Behavior that must be guaranteed belongs in a `->` logic instruction with explicit conditionals; only conversational nuance belongs in a `|` prompt instruction:
+
+```
+# Right: the gate is deterministic, the messaging is conversational
+reasoning:
+  -> if @variables.is_premium_member != True:
+       | Politely explain that refunds require a premium membership.
+```
+
+**Detection hint:** Any compliance, entitlement, security, or numeric rule expressed only as a `|` prompt instruction is suspect. Guarantee-required logic should appear as a `->` logic instruction, typically with `if` / `else` and `@variables` comparisons.
+
+---
+
+## Anti-Pattern 8: Treating the April 2026 Topic → Subagent Rename as a Behavioral Change
+
+**What the LLM generates:** Advice that a `subagent` block behaves differently from an older `topic`, or a migration plan that assigns functional meaning to swapping the vocabulary — for example, claiming routing semantics changed when metadata moved from GenAiPlugin-per-topic to `subagent` blocks.
+
+**Why it happens:** LLMs see two different terms in documentation of different vintages and infer a functional distinction. Salesforce's own docs are explicit that there is none: "Beginning in April 2026, agent topics are now called subagents. There are no changes to functionality."
+
+**Correct pattern:**
+
+Treat "topic" (older `.agent`/GenAiPlugin metadata) and "subagent" (newer Agent Script) as the same concept. The routing-quality principle is unchanged: the LLM classifies utterances against natural-language descriptions, so description quality — not the label of the block — is what drives correct routing.
+
+**Detection hint:** Any claim that converting a topic to a subagent alters routing, testing, or deployment behavior is incorrect; the rename is terminology only.

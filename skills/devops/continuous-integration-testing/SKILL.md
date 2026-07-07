@@ -12,6 +12,8 @@ triggers:
   - "my CI build shows 0% code coverage even though tests pass"
   - "how to get JUnit XML output from sf apex run test"
   - "RunLocalTests vs RunSpecifiedTests for managed packages"
+  - "view Apex test history and coverage in Setup or Developer Console"
+  - "why is my code coverage highlighting greyed out after editing the class"
 tags:
   - continuous-integration-testing
   - ci-cd
@@ -29,9 +31,9 @@ outputs:
   - "test result parsing strategy producing JUnit XML or equivalent"
   - "coverage enforcement script that gates deployment on org-wide and per-class thresholds"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-07-07
 ---
 
 # Continuous Integration Testing
@@ -73,9 +75,22 @@ The `--code-coverage` flag on `sf apex run test` instructs the platform to colle
 
 Most CI platforms can parse JUnit XML to display test results in their UI. Use `--result-format junit` on `sf apex run test` to produce this format. The output file can be declared as a test artifact in GitHub Actions, GitLab CI, or Jenkins to get per-test pass/fail reporting in the build dashboard.
 
+`--result-format` accepts four values, not just `junit`: `human` (the default terminal-readable table), `tap` (Test Anything Protocol), `junit` (the XML most dashboards ingest), and `json` (the full machine-readable payload you parse in a coverage-gate script). Pick `junit` for dashboard artifacts and `json` when the pipeline script needs to read coverage numbers programmatically.
+
+For per-test-method coverage rather than only aggregate per-class numbers, add `--detailed-coverage` alongside `--code-coverage`. This surfaces which specific test method exercised each class, which is useful when diagnosing why a class sits just under the gate — but it does not change the enforcement behavior, only the level of detail in the report.
+
 ### Asynchronous Test Execution and Polling
 
 By default, `sf apex run test` with `--synchronous` runs tests in a single synchronous request, which is limited to a smaller set of tests. Without `--synchronous`, tests run asynchronously and the CLI polls for completion when `--wait` is specified. A known platform behavior: combining `--code-coverage` with `--wait` on asynchronous runs can return 0% coverage. The workaround is to let the run complete, then retrieve results separately with `sf apex get test --test-run-id <id> --code-coverage`.
+
+### The UI Reporting Surfaces the Pipeline Replaces
+
+Before wiring coverage into CI, know the two in-org UI surfaces the same numbers come from — they are where developers cross-check a pipeline result or investigate a coverage drop by hand:
+
+- **Setup — Application Test Execution.** Enter `Application` in Quick Find, select **Application Test Execution**, click **Select Tests**, choose the test classes, and click **Run**. Clicking **View Test History** on this page shows every test run in the org — not just the ones the current user launched — so it is the shared record of test activity across the team. One constraint matters for anyone relying on it: results are retained for only **30 days** after they finish (unless cleared sooner), so it is not a long-term audit trail — treat it as a shared cross-check, not a system of record.
+- **Developer Console — Tests tab.** The Tests tab has an **Overall Code Coverage** panel reporting the coverage percentage for every Apex class in the org that has been included in a test run, and it highlights covered versus uncovered lines directly in the class editor. The gotcha: this line-level highlighting **goes stale the instant a class is edited** — the highlighting dims to signal the coverage is no longer valid, and you must rerun the tests to get accurate numbers again. Never trust dimmed coverage highlighting as a current signal.
+
+These UI surfaces do not enforce anything beyond the platform's own 75% deploy gate; they are for inspection. The pipeline is still where enforcement lives.
 
 ---
 
@@ -167,6 +182,8 @@ Non-obvious platform behaviors that cause real production problems:
 1. **`--code-coverage` with `--wait` returns 0%** -- when running asynchronous tests, combining these flags can result in coverage data showing 0% even when tests pass. The platform has not finished aggregating coverage by the time the CLI reads the result. Fix: retrieve coverage separately using `sf apex get test --test-run-id <id> --code-coverage`.
 2. **RunSpecifiedTests enforces per-class coverage, not org-wide** -- unlike `RunLocalTests`, which applies the 75% threshold org-wide, `RunSpecifiedTests` requires 75% coverage on every individual class and trigger in the deployment package. A single under-covered class blocks the entire deployment.
 3. **Parallel test execution is opt-in per class** -- by default, Salesforce runs test classes serially in a test run. The `@isTest(isParallel=true)` annotation opts a class into parallel execution, which can reduce total run time but introduces risk if tests share mutable state through `SeeAllData` or poorly isolated setup.
+4. **Developer Console coverage highlighting goes stale on edit** -- the line-level covered/uncovered highlighting in the Tests tab dims the moment you edit the class, signaling the coverage is no longer valid. A developer who reads dimmed highlighting as "still covered" is looking at numbers from before their change. Rerun the tests before trusting it.
+5. **Setup test history is retained only 30 days** -- results on the Application Test Execution / View Test History page disappear 30 days after they finish (or sooner if cleared). Do not treat it as a durable coverage-trend record — capture JUnit/JSON artifacts in the pipeline if you need history.
 
 ---
 

@@ -37,3 +37,7 @@ Tag findings as Operational Excellence when:
 - Apex Developer Guide — testing patterns, isolation guidance, and utility class usage
 - Apex Reference Guide — `Test`, `HttpCalloutMock`, and related testing APIs
 - Salesforce Well-Architected Overview — reliability and operational excellence framing
+- [Apex Reference Guide — `System.Assert` class](https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_Assert.htm) — assertion methods and String-message requirement
+- [Salesforce Developers blog — Write Clear and Intentional Apex Assertions with the New Assert Class](https://developer.salesforce.com/blogs/2022/11/write-clear-and-intentional-apex-assertions-with-the-new-assert-class) — Winter '23 introduction, readability, legacy-method status
+- [Apex Developer Guide — Stub API](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_testing_stub_api.htm) — mocking framework and unmockable elements
+- [Apex Reference Guide — `System.StubProvider` interface](https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_interface_System_StubProvider.htm) — `handleMethodCall` callback contract

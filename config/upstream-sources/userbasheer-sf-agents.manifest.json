@@ -1,0 +1,21 @@
+{
+ "upstream": "UserBasheer/sf-agents",
+ "license": "NONE",
+ "license_class": "clean-room",
+ "ref": "main",
+ "retrieved": "2026-07-07T20:03:00Z",
+ "skills": {
+  "claude": "",
+  "salesforce-admin": "",
+  "salesforce-code-review": "",
+  "salesforce-design": "",
+  "salesforce-developer": "",
+  "salesforce-devops": "",
+  "salesforce-documentation": "",
+  "salesforce-unit-testing": "",
+  "code-review-report": "",
+  "deployment-report": "",
+  "documentation-template": "",
+  "unit-testing-report": ""
+ }
+}

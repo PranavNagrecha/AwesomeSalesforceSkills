@@ -7,6 +7,7 @@
     "1972da016aeb2700d61f",
     "1b40598f13fe1628d717",
     "1c1d758be3c37ab0da70",
+    "1dd1ce72dd226c736216",
     "1fc4a6f964aa4b4e2341",
     "2172119fc3833cd9a04a",
     "2218056da4572f5b0d2d",
@@ -27,7 +28,9 @@
     "4efbe8289814860800a8",
     "52b064c3449438f841be",
     "57db9eee103433d42fb3",
+    "5a2b395ca01848495497",
     "5a82473825ddf1a17f23",
+    "5d977520c1022462e3a8",
     "5e2132af8cae6e838202",
     "60a805e81812e3087706",
     "64716a27fbe2eebbd8d0",
@@ -35,9 +38,12 @@
     "6e2d910ab48eb2e0f041",
     "71370f17c6f5b1f2549e",
     "75c783ca50b5b7d4f3af",
+    "7fd8df9765f527a29887",
     "8016bfc9b9bd7b7bbbc9",
     "8080404686d2bc5fb5d3",
     "81a3a0b086a557d64f1c",
+    "82ab0f568d605b59206c",
+    "83974dd1ad6c4afbf6e6",
     "89f25114ac68ab9a7a0f",
     "8a8ebbb49e8b4bda54ec",
     "8b2a5b8ef78c4debeda4",
@@ -45,9 +51,11 @@
     "955f0785b113bf6bd336",
     "970c70c14f3b2d555bb5",
     "97e762faeaccf70de1c3",
+    "99f7bf09a46d4d3eaf78",
     "9cc44fccf6763fc829fa",
     "9e13e031414827908aa9",
     "a4d4ba260f4ae331d10b",
+    "a6d55a62b905d1b99f1e",
     "a89fc38d7e9ec18880c9",
     "ac4f95da274ecaa9eb00",
     "adee306f7508840b7126",
@@ -72,6 +80,8 @@
     "da660645047f71097fdf",
     "dc1d004ae5065b862d67",
     "dec24c7acd577c6f1685",
+    "df7ffdf4ff2f70f72354",
+    "e5ac20300126e8ce816e",
     "e91902fc87d6fab646ba",
     "ea4825f1ea11c21c78b9",
     "f425dc447ee6f8cdd86f",
@@ -79,7 +89,7 @@
     "fa0940948661e43eba26",
     "ff9b11b65d283ecc79c6"
   ],
-  "content_hash": "a9a79a272d4c0b374f374f4183fadc7e3130d66ad3754d92ebf1c81b3070e2f5",
+  "content_hash": "521e62d9ae6de8c8634c59b670f0c1fe01365aa4ded06e55cde399ac73bfb73b",
   "dependencies": [],
   "description": "Remove hardcoded Salesforce record IDs (Profile, RecordType, User, Queue, custom) from Apex and replace with describe-API, name-based SOQL, or Custom Metadata-driven lookups. NOT for storing config data \u2014 see apex-custom-settings-hierarchy / custom-metadata-in-apex. NOT for ID-based sharing rules (see sharing-selection).",
   "file_location": "skills/apex/apex-hardcoded-id-elimination",
@@ -97,6 +107,11 @@
     "Apex Developer Guide \u2014 Working with Schema Information \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dynamic_schema.htm",
     "Salesforce Architects \u2014 Avoid Hardcoding IDs \u2014 https://architect.salesforce.com/well-architected/operational-excellence/operable",
     "Apex Developer Guide \u2014 Custom Metadata Types \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_metadata_intro.htm",
+    "Metadata API Developer Guide \u2014 Custom Metadata Types (deploy/DML model) \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_custommetadatatypes.htm",
+    "Salesforce Help \u2014 Custom Metadata Type Fields (supported field-type list; no Lookup type) \u2014 https://help.salesforce.com/s/articleView?id=platform.custommetadatatypes_fields.htm&language=en_US&type=5",
+    "Salesforce Help \u2014 Custom Metadata Relationship Fields \u2014 https://help.salesforce.com/s/articleView?id=sf.custommetadatatypes_relationships.htm&language=en_US&type=5",
+    "Apex Reference Guide \u2014 Custom Metadata Type Methods (getAll/getInstance, cache, 255-char limit) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_custom_metadata_types.htm",
+    "Salesforce Help \u2014 Custom Metadata Type Visibility (Public/Protected/PackageProtected) \u2014 https://help.salesforce.com/s/articleView?id=platform.custommetadatatypes_protection.htm&language=en_US&type=5",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
   ],
   "outputs": [
@@ -126,12 +141,12 @@
   "templates": [
     "skills/apex/apex-hardcoded-id-elimination/templates/apex-hardcoded-id-elimination-template.md"
   ],
-  "updated": "2026-04-28",
+  "updated": "2026-07-07",
   "vector_embedding": {
     "backend": "fastembed",
     "dimension": 384,
-    "updated": "2026-04-28",
+    "updated": "2026-07-07",
     "vector_id": "apex/apex-hardcoded-id-elimination"
   },
-  "version": "1.0.0"
+  "version": "1.1.0"
 }

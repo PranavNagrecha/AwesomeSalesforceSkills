@@ -32,11 +32,14 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-# Session trace objects that live in Data Cloud, not the main org
+# Session trace DMOs that live in Data Cloud, not the main org.
+# These are the canonical Data Model for Agentforce Session Tracing objects.
 DATA_CLOUD_SESSION_OBJECTS = {
-    "AgentConversationSession",
-    "AgentConversationSessionUtterance",
-    "AgentConversationSessionTopic",
+    "AIAgentSession",
+    "AIAgentSessionParticipant",
+    "AIAgentInteraction",
+    "AIAgentInteractionMessage",
+    "AIAgentInteractionStep",
 }
 
 
@@ -59,7 +62,7 @@ def check_soql_against_data_cloud_objects(source_dir: Path) -> list[str]:
                         issues.append(
                             f"{apex_file}:{i}: SOQL query targets '{obj_name}' which is a "
                             f"Data Cloud session trace object. This object is NOT queryable via "
-                            f"standard SOQL. Use Data Cloud SQL or CRM Analytics instead."
+                            f"standard SOQL. Use Data Cloud SQL or Tableau Next instead."
                         )
         except OSError:
             pass

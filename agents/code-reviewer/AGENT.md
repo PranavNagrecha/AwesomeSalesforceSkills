@@ -14,6 +14,7 @@ dependencies:
     - apex/apex-enum-patterns
     - apex/apex-schema-describe
     - apex/scheduled-apex-failure-detection-and-monitoring
+    - devops/development-documentation-standards
     - integration/scheduled-erp-sync-pattern
     - lwc/lwc-jest-testing-with-accessibility
     - lwc/lwc-mobile-offline-and-briefcase
@@ -55,6 +56,7 @@ Reviews Apex classes, triggers, LWC components, and Flows against this library's
 12. `skills/apex/scheduled-apex-failure-detection-and-monitoring` — scheduled apex failure detection and monitoring
 13. `skills/security/visualforce-security-and-modernization` — visualforce security and modernization
 14. `skills/integration/scheduled-erp-sync-pattern` — scheduled erp sync pattern
+15. `skills/devops/development-documentation-standards` — development documentation standards
 
 ## Orchestration Plan
 

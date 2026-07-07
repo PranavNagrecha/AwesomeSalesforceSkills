@@ -19,6 +19,7 @@ dependencies:
     - lwc/component-communication
     - lwc/lifecycle-hooks
     - lwc/lightning-navigation-dead-link-handling
+    - lwc/lightning-out-2-embedding
     - lwc/lwc-accessibility
     - lwc/lwc-accessibility-patterns
     - lwc/lwc-app-builder-config
@@ -173,6 +174,7 @@ Audits a Lightning Web Component bundle for accessibility, performance, security
 55. `templates/lwc/patterns/`
 56. `skills/lwc/lwc-reactive-state-patterns` — post–Spring '20 reactivity contract: when @track is needed; renderedCallback infinite-loop trap; Date/Set/Map non-reactivity
 57. `skills/lwc/lwc-console-workspace-api` — audit console-aware bundles: IsConsoleNavigation gating, ephemeral tabId hygiene, refreshTab/wire ordering, Aura-style template element usage
+58. `skills/lwc/lightning-out-2-embedding` — lightning out 2 embedding
 
 ---
 

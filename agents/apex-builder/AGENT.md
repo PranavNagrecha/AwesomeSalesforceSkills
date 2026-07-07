@@ -151,6 +151,7 @@ dependencies:
     - apex/timezone-and-datetime-pitfalls
     - apex/trigger-and-flow-coexistence
     - apex/trigger-framework
+    - devops/development-documentation-standards
     - integration/dataweave-for-apex
     - integration/platform-event-schema-evolution
   shared:
@@ -379,6 +380,7 @@ Produces Apex scaffolds for every canonical Apex surface: trigger + handler, ser
 154. `templates/apex/tests/TestUserFactory.cls`
 155. `templates/apex/tests/BulkTestPattern.cls`
 156. `skills/apex/scheduled-apex-failure-detection-and-monitoring` — scheduled apex failure detection and monitoring
+157. `skills/devops/development-documentation-standards` — development documentation standards
 
 ---
 

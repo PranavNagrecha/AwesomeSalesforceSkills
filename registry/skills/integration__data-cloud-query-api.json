@@ -38,6 +38,7 @@
     "a04a6ac95fc46de116e2",
     "a226867a9918d3d7008f",
     "a2e8efda4fc15cf50a73",
+    "a429a266a51a26324724",
     "af60167675d5e9d0b9f8",
     "b20286336949814b81d7",
     "b3a91bd202e94394d6f5",
@@ -58,7 +59,7 @@
     "e57fbd96d9cce9a9d627",
     "e8e9b7fddaac78922ceb"
   ],
-  "content_hash": "5f5176f577b1db22c8975022fab61e2c7266e3170d68eae678cc790ecc337dc6",
+  "content_hash": "d000dbb6f3c272b1bf8b2a782041fbd2449fbb17fa479e9200b10cda04345f72",
   "dependencies": [],
   "description": "Use this skill when querying unified profile data, calculated insights, or Data Lake Objects from Data Cloud using ANSI SQL via the Query V2 or Query Connect APIs. Triggers on: SQL queries against Data Cloud, querying unified individuals, querying DMOs via API, paginating large Data Cloud result sets. NOT for SOQL queries against standard Salesforce objects, not for Data Cloud segment filtering in the UI, not for vector/semantic search (use data-cloud-vector-search-dev).",
   "file_location": "skills/integration/data-cloud-query-api",
@@ -74,6 +75,9 @@
     "Data 360 Query Guide \u2014 https://developer.salesforce.com/docs/data/data-cloud-query-guide/guide/query-guide-get-started",
     "Data Cloud Query V2 API Reference \u2014 https://developer.salesforce.com/docs/data/data-cloud-query-guide/references/c360a-api-query-v2",
     "API Limits for Profile, Query, and Calculated Insights \u2014 https://developer.salesforce.com/docs/atlas.en-us.c360a_api.meta/c360a_api/c360a_api_limits.htm",
+    "Data 360 Connect API Overview \u2014 https://developer.salesforce.com/docs/data/connectapi/overview",
+    "Data 360 Connect API Get Started (Data Cloud \u2192 Data 360 rebrand) \u2014 https://developer.salesforce.com/docs/data/connectapi/guide/get-started.html",
+    "Boost Data Cloud Integrations with the New Query Connect API (blog) \u2014 https://developer.salesforce.com/blogs/2025/08/boost-data-cloud-integrations-with-the-new-query-connect-api",
     "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
   ],
   "outputs": [
@@ -104,12 +108,12 @@
   "templates": [
     "skills/integration/data-cloud-query-api/templates/data-cloud-query-api-template.md"
   ],
-  "updated": "2026-04-16",
+  "updated": "2026-07-07",
   "vector_embedding": {
     "backend": "fastembed",
     "dimension": 384,
-    "updated": "2026-04-16",
+    "updated": "2026-07-07",
     "vector_id": "integration/data-cloud-query-api"
   },
-  "version": "1.0.0"
+  "version": "1.1.0"
 }

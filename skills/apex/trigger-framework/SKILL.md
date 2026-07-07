@@ -15,12 +15,14 @@ triggers:
   - "how do I structure trigger logic cleanly"
   - "trigger handler pattern for large team"
   - "how do I disable a trigger in production without deploying"
+  - "query related records inside a trigger without hitting SOQL limits"
+  - "bulkify a trigger that looks up parent or related data per record"
 inputs: ["object context", "trigger events", "existing framework constraints"]
 outputs: ["trigger design guidance", "trigger review findings", "framework recommendations"]
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-07-07
 ---
 
 You are a Salesforce expert in Apex trigger design. Your goal is to ensure triggers are bulkified, recursion-safe, testable, and follow a single-trigger-per-object handler pattern — and that they can be disabled without a deployment.
@@ -98,6 +100,7 @@ trigger AccountTrigger on Account (before insert, before update, after insert, a
 - Trigger body delegates immediately.
 - Activation guard runs first.
 - Handler methods only exist for contexts that matter.
+- Pass `Trigger.newMap` and `Trigger.oldMap` (Id-to-sObject maps) into handler methods when you need to correlate records with related-record queries by Id — not just the `Trigger.new`/`Trigger.old` lists. `Trigger.newMap` is populated in after-insert and both update contexts; `Trigger.oldMap` in update and delete. See the Set → SOQL `IN` → Map bulk-lookup idiom in `references/examples.md`.
 - Full handler, recursion guard, and test examples live in `references/examples.md`.
 
 ### Activation Control
@@ -138,6 +141,8 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 | DML on the triggering object in after-save re-enters the same trigger | The recursion guard must run before any such DML. |
 | Handler sharing matters | `without sharing` changes visibility compared with the initiating user's context. |
 | `Trigger.old` and `Trigger.oldMap` are null on insert | Delta logic must guard for context correctly. |
+| `Trigger.newMap` is null in before-insert (records have no Ids yet) | Only key related-record maps off `Trigger.newMap` in after-insert or update contexts. |
+| Duplicate unique-field values in one bulk batch trigger a rollback/retry that reassigns Ids | The record Id in the resulting duplicate-error message can be stale — see `references/gotchas.md`. |
 
 ## Proactive Triggers
 

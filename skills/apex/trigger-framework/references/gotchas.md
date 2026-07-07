@@ -64,3 +64,16 @@ static void testAfterInsert_secondMethod() {
 - Default to `with sharing` on all handler classes
 - If a specific sub-operation needs elevated context (e.g. querying config records the user can't see): extract it to a private inner class `private without sharing class SystemContextHelper {...}` — scope the elevation to the minimum necessary code
 - Document why `without sharing` is used with a comment: `// without sharing: required to query TriggerSettings__c which is admin-only`
+
+---
+
+## Duplicate Unique-Field Values in One Bulk Batch Produce Misleading Error Messages
+
+**What happens:** A trigger enforces or relies on a unique field (a `Unique` custom field, or an External ID). A Bulk API / Data Loader batch arrives with two records carrying the *same* unique value. Because a trigger is present, Salesforce doesn't simply fail the batch — it runs an internal rollback/retry cycle. Per the Apex Developer Guide: the retry logic in bulk operations causes a rollback/retry cycle, and that cycle assigns new keys to the new records. The second duplicate fails reporting the ID of the first record; but once the system rolls back and re-inserts the first record by itself, that record receives a *new* ID — so the ID named in the error message is no longer valid.
+
+**When it bites you:** Any before-insert / before-upsert logic that validates against a unique field, or any code that parses the record ID out of a `DUPLICATE_VALUE` / unique-constraint error to report which row collided. The reported ID points at a record that no longer exists under that ID after the retry, so your "row X duplicates row Y" message is wrong.
+
+**How to avoid it:**
+- Detect in-batch duplicates *yourself* inside the handler before the platform's retry kicks in — build a `Map<Object, SObject>` keyed by the unique value while looping `Trigger.new`, and `addError()` the second occurrence with a message that does not depend on a persisted record ID.
+- Never key user-facing "duplicate of record ..." messages on the ID Salesforce returns in the constraint error during a bulk batch; identify the collision by the unique value itself.
+- Reproduce this with a bulk test that inserts 200 records containing an intentional in-batch duplicate — a single-record test will never surface the rollback/retry behavior.

@@ -32,6 +32,7 @@ dependencies:
     - lwc/knowledge-article-lwc
     - lwc/lifecycle-hooks
     - lwc/lightning-navigation-dead-link-handling
+    - lwc/lightning-out-2-embedding
     - lwc/lwc-accessibility
     - lwc/lwc-accessibility-patterns
     - lwc/lwc-app-builder-config
@@ -62,6 +63,7 @@ dependencies:
     - lwc/lwc-light-dom
     - lwc/lwc-lightning-modal
     - lwc/lwc-lightning-record-forms
+    - lwc/lwc-local-development
     - lwc/lwc-locker-to-lws-migration
     - lwc/lwc-mobile-offline-and-briefcase
     - lwc/lwc-modal-and-overlay
@@ -240,6 +242,8 @@ Produces a full Lightning Web Component bundle for a described feature: `.js`, `
 87. `skills/lwc/lwc-console-workspace-api` — `lightning/platformWorkspaceApi` and `lightning/platformUtilityBarApi` for Service Console tab manipulation; IsConsoleNavigation gating; refreshTab / openSubtab / setTabLabel patterns
 88. `skills/agentforce/agentforce-custom-lightning-types` — agentforce custom lightning types
 89. `skills/lwc/multi-framework-ui-bundles` — multi framework ui bundles
+90. `skills/lwc/lightning-out-2-embedding` — lightning out 2 embedding
+91. `skills/lwc/lwc-local-development` — lwc local development
 
 ---
 

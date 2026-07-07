@@ -59,3 +59,23 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** When a deployment included both schema changes (custom fields, objects) and Apex changes that reference the new schema. Rolling back the Apex without also rolling back the schema leaves the code referencing components that may or may not still exist depending on rollback order.
 
 **How to avoid:** Rollback plans must account for all metadata types deployed together. If Apex references new schema, either roll back both simultaneously (using a complete prior-state package) or roll back in reverse dependency order: Apex first (removing references to new schema), then schema.
+
+---
+
+## Gotcha 7: `--use-most-recent` on `deploy report` Has a 3-Day Window, Not 10
+
+**What happens:** You try to pull the status of a deployment from a few days ago with `sf project deploy report --use-most-recent` and the command cannot find it, even though you know a deploy job stays reportable for 10 days by ID. `--use-most-recent` is limited to deploy operations from the past 3 days or less for performance reasons; the 10-day figure applies to the explicit `--job-id`.
+
+**When it occurs:** When a release window slips and someone tries to report on a deploy older than 3 days using the convenience flag instead of the job ID. It is especially confusing because the 10-day quick-deploy validation window and the 10-day job-id reporting window are both "10 days," so people assume every window is 10 days.
+
+**How to avoid:** Capture and store the deploy/validation job IDs in the runbook. For anything older than 3 days, report with `--job-id <id>` explicitly. Reserve `--use-most-recent` for checking the deploy you just kicked off.
+
+---
+
+## Gotcha 8: `deploy report` Does Not Update Source Tracking
+
+**What happens:** In an sf project with source tracking enabled, you run `sf project deploy report` after a deploy and expect the local tracking state to reflect that the components are now in the org. It does not — the command explicitly doesn't update source tracking information. A later `sf project deploy start` or status check may still show those components as local changes to push.
+
+**When it occurs:** Any time `deploy report` is used as a substitute for reconciling tracking state after an out-of-band deploy (for example, a quick deploy or a deploy run from CI).
+
+**How to avoid:** Treat `deploy report` as read-only status/reporting. To reconcile source tracking, run a tracked deploy or a `sf project retrieve start` so the local tracking state advances correctly.

@@ -8,10 +8,12 @@
 
 **Solution:**
 
-1. Create a CRM Analytics dataset sourced from `AgentConversationSession` in Data Cloud.
-2. Build a CRMA dashboard with a bar chart of daily session counts colored by status (Completed vs Escalated vs Abandoned).
+1. Create a **Tableau Next** dataset sourced from the `AIAgentSession` DMO in Data Cloud (Agent Analytics also provides deflection/escalation/abandonment out of the box).
+2. Build a dashboard with a bar chart of daily session counts colored by status (Completed vs Escalated vs Abandoned).
 3. Add a KPI tile showing rolling 7-day deflection rate computed from the dataset.
 4. Schedule the dashboard for email delivery to stakeholders every Monday at 8 AM.
+
+> Object names below are the canonical Session Tracing DMOs; field/attribute names are illustrative — confirm them against the official "Data Model for Agentforce Session Tracing" reference before running.
 
 Key query for the deflection rate KPI:
 ```sql
@@ -21,7 +23,7 @@ SELECT
         SUM(CASE WHEN SessionStatus = 'Completed' THEN 1.0 ELSE 0.0 END)
         / COUNT(*) * 100, 1
     ) AS deflection_pct
-FROM AgentConversationSession
+FROM AIAgentSession
 WHERE AgentName = 'Service_Agent'
 GROUP BY 1
 ORDER BY 1 DESC
@@ -42,8 +44,8 @@ ORDER BY 1 DESC
 Step 1 — Find sessions that escalated while discussing billing:
 ```sql
 SELECT s.Id, s.SessionStartDateTime, s.SessionStatus, t.TopicName
-FROM AgentConversationSession s
-JOIN AgentConversationSessionTopic t ON s.Id = t.SessionId
+FROM AIAgentSession s
+JOIN AIAgentInteractionStep t ON s.Id = t.SessionId
 WHERE s.AgentName = 'Service_Agent'
   AND s.SessionStatus = 'Escalated'
   AND t.TopicName = 'Billing_Inquiry'
@@ -55,7 +57,7 @@ LIMIT 20
 Step 2 — Pull the utterance trace for the most recent escalated billing session:
 ```sql
 SELECT SequenceNumber, UtteranceText, ResponseText, ResponseLatencyMs
-FROM AgentConversationSessionUtterance
+FROM AIAgentInteractionMessage
 WHERE SessionId = '5MRxx...'
 ORDER BY SequenceNumber ASC
 ```
@@ -68,8 +70,8 @@ Step 3 — Review the utterance trace. In this case, the agent is not handling r
 
 ## Anti-Pattern: Using Standard SOQL to Query Session Data
 
-**What practitioners do:** Try to run SOQL queries from Developer Console or Apex to find `AgentConversationSession` records.
+**What practitioners do:** Try to run SOQL queries from Developer Console or Apex to find `AIAgentSession` records.
 
-**What goes wrong:** The session trace objects live in Data Cloud (Data 360), not in the standard Salesforce org database. Standard SOQL returns "Object type AgentConversationSession is not supported in queries" or simply finds no records.
+**What goes wrong:** The session trace objects live in Data Cloud (Data 360), not in the standard Salesforce org database. Standard SOQL returns "Object type AIAgentSession is not supported in queries" or simply finds no records.
 
-**Correct approach:** Use Data Cloud SQL via the Data Cloud Query Builder, CRM Analytics datasets, or the Data Cloud Einstein Analytics connector. Never attempt to query session trace objects via standard SOQL.
+**Correct approach:** Use Data Cloud SQL via the Data Cloud Query Builder, or consume through Tableau Next (Agent Analytics). Never attempt to query session trace DMOs via standard SOQL.

@@ -39,3 +39,23 @@
 **When it bites you:** Expiring certificates, security incidents, and audit findings.
 
 **How to avoid it:** Treat revoke, rotate, and recover as tested operational procedures.
+
+---
+
+## Assuming You Can Create a New Connected App in Spring '26+
+
+**What happens:** A design calls for a brand-new connected app, but starting in Spring '26 Salesforce blocks connected-app creation by default — through both the UI and the Metadata API. Only package installation is excepted, and creation otherwise requires an exception from Salesforce Support.
+
+**When it bites you:** Mid-build, when the "create connected app" step in the UI or a `ConnectedApp` metadata deploy fails in a Spring '26+ org and the whole integration timeline stalls.
+
+**How to avoid it:** Design net-new inbound integrations on an External Client App (ECA), Salesforce's stated successor to connected apps. If a connected app is genuinely required, deliver it through a package install or request a Support exception. Existing connected apps keep functioning without restriction, so this only affects net-new creation.
+
+---
+
+## Expecting an External Client App to Survive a Sandbox Refresh
+
+**What happens:** A team relies on the connected-app habit that local apps copy automatically when a sandbox is cloned or refreshed, then finds the ECA missing after a refresh.
+
+**When it bites you:** Post-refresh integration testing, when the auth container an integration depends on is simply not there.
+
+**How to avoid it:** External Client Apps do not copy into sandboxes automatically. Add ECA recreation or redeployment to the sandbox runbook, and don't treat a refresh as the mechanism that carries integration auth across environments.

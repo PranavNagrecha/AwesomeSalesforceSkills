@@ -57,3 +57,6 @@
 - Salesforce Well-Architected Overview — performance and operability framing for transaction design
 - Apex Developer Guide — transaction, bulk, and async behavior guidance
 - Apex Reference Guide — Limits class and async API reference confirmation
+- [Execution Governors and Limits (Apex Developer Guide)](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm) — per-transaction limit values including SOSL, trigger recursion depth, trigger batch size (200 vs 2,000 for platform events/CDC), max transaction execution time, `EventBus.publish` immediate, callout cumulative timeout, Apex/pagination cursors, and certified-package cross-namespace cumulative limits
+- [Understanding Execution Governors and Limits (Apex Developer Guide)](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_limits_intro.htm) — how governor limits are enforced per transaction
+- [Best Practices for Improving Apex Performance (Apex Developer Guide)](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_limits_tips.htm) — bulkification and limit-avoidance guidance

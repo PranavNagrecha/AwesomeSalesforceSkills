@@ -12,6 +12,8 @@ triggers:
   - "deployment succeeded but features are broken in production"
   - "how to roll back a failed Salesforce deployment"
   - "quick deploy expired after 10 days what do I do"
+  - "check the status of a Salesforce deploy from the CLI"
+  - "generate JUnit and coverage output from a deployment for CI"
 tags:
   - post-deployment-validation
   - deployment-verification
@@ -29,9 +31,9 @@ outputs:
   - Apex test result summary with per-class coverage analysis
   - Rollback plan if deployment introduced regressions
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-05
+updated: 2026-07-07
 ---
 
 # Post Deployment Validation
@@ -64,7 +66,24 @@ Quick deploy takes a previously validated deployment and commits it to the org w
 
 ### Deployment Status and Test Drill-Down
 
-The Deployment Status page in Setup (Setup > Deployment Status) shows both in-progress and completed deployments. For each deployment you can see the component-level success/failure breakdown, per-test class results with individual method pass/fail, per-class code coverage percentages, and error details for any failed components. The Metadata API also exposes this through `checkDeployStatus` which returns `DeployResult` with nested `RunTestsResult`, `CodeCoverageResult`, and `CodeCoverageWarning` objects. The sf CLI surfaces this with `sf project deploy report --job-id <id>`.
+The Deployment Status page in Setup (Setup > Deployment Status) shows both in-progress and completed deployments. It is a unified view — it lists **all** deployments regardless of how they were initiated: change sets, Metadata API-based deployments, deployments started from the Salesforce Extensions for Visual Studio Code, and package installations. The page tracks deployments that are in progress or that completed in the last 30 days, so the same window that governs retrieval of a deployment's detail applies here.
+
+While a deployment runs, the page renders real-time progress charts. The first chart shows how many components have already been deployed out of the total, including the number of components with errors. Once all components deploy, a second chart shows how many Apex tests have run out of the total and the number of errors returned. This gives live progress before any terminal status is reached, so you do not have to poll blindly.
+
+For each completed deployment you can drill into Deployment Details to see the component-level success/failure breakdown, per-test class results with individual method pass/fail, per-class code coverage percentages, and error details for any failed components. The Deployment Details page also surfaces Apex test errors **with stack-trace information**, code coverage warnings, and information about slow tests — data that is easy to miss if you only read the aggregate pass/fail count.
+
+The Metadata API also exposes this through `checkDeployStatus` which returns `DeployResult` with nested `RunTestsResult`, `CodeCoverageResult`, and `CodeCoverageWarning` objects. `DeployResult` additionally carries a `stateDetail` field that names exactly which component is being deployed or which Apex test class is currently running — the field that powers live-progress reporting rather than terminal-state polling. The REST deploy-status response nests the current `deployResult` alongside the original `deployOptions` (checkOnly, rollbackOnError, testLevel) and reports creation/start/lastModified/completion timestamps plus the creating and (if applicable) canceling user, so an audit trail can reconstruct who requested the deploy and with which options. The sf CLI surfaces all of this with `sf project deploy report --job-id <id>`.
+
+### Reporting on a Deploy with `sf project deploy report`
+
+`sf project deploy report` retrieves the status of a deploy operation for post-hoc analysis and CI integration. Two distinct — and easily confused — time windows govern it:
+
+- `--job-id <id>` targets a specific deploy operation and is **valid for 10 days post-deployment**. This is the same 10-day figure as the validation-ID quick-deploy window, but it is a separate constraint: it governs how long you can *report on* any deploy job, not just how long a validation stays quick-deployable.
+- `--use-most-recent` (`-r`) retrieves the status of the most recent deploy **but is limited to a 3-day window for performance**. If the last deploy is older than 3 days, `--use-most-recent` will not find it even though the job ID itself is still reportable for 10 days via `--job-id`. Reach for the explicit job ID once a deploy ages past 3 days.
+
+For CI, two flags matter. `--junit` emits JUnit-format test results that pipelines consume for test reporting. `--coverage-formatters` accepts eleven output formats beyond `json`: `clover`, `cobertura`, `html-spa`, `html`, `json`, `json-summary`, `lcovonly`, `none`, `teamcity`, `text`, and `text-summary` — pick `cobertura` or `clover` for coverage-gating in most CI servers, `text-summary` for a quick human-readable console line. `--results-dir` controls where coverage and JUnit output land (it defaults to the deploy ID).
+
+One caveat: `sf project deploy report` **doesn't update source tracking information**. It is a read-only status/reporting command, so running it never advances the local source-tracking state of an sf project — you still need a retrieve or a tracked deploy to reconcile tracking.
 
 ### Rollback Strategy
 
@@ -117,7 +136,7 @@ Salesforce has no native "undo deployment" button. Rollback means re-deploying t
 Step-by-step instructions for an AI agent or practitioner working on this task:
 
 1. **Identify the deployment state** — Determine whether you are dealing with a validation deploy that needs quick deploy execution, a completed deployment that needs post-landing verification, or a failed deployment that needs diagnosis and rollback. Check the Deployment Status page or run `sf project deploy report --job-id <id>`.
-2. **Review test results** — Pull the full test result detail from the Deployment Status page or Metadata API. Check per-class code coverage against the 75% threshold. Identify any newly failing tests versus pre-existing failures. Use `sf project deploy report --job-id <id> --coverage-formatters json` for programmatic analysis.
+2. **Review test results** — Pull the full test result detail from the Deployment Status page or Metadata API. On the Deployment Details page, check the code coverage warnings and slow-test information, not just the aggregate pass/fail. Check per-class code coverage against the 75% threshold. Identify any newly failing tests versus pre-existing failures. Use `sf project deploy report --job-id <id> --coverage-formatters json` for programmatic analysis; add `--junit` when a CI pipeline needs JUnit output, and choose a coverage formatter such as `cobertura` or `clover` for coverage gating. If the deploy is older than 3 days, use the explicit `--job-id` rather than `--use-most-recent`, whose lookup window is only 3 days.
 3. **Verify component landing** — Confirm that the key components in the deployment actually landed in the target org. Use a targeted retrieve (`sf project retrieve start --metadata <Type:Name>`) or check Setup directly for critical items like permission sets, flows, and custom objects.
 4. **Execute functional smoke tests** — Walk through the primary user-facing changes introduced by the deployment. Trigger relevant automations, verify field visibility, test page layouts, and confirm Lightning app navigation. Check debug logs for unexpected errors.
 5. **Document and escalate** — If post-deployment issues are found, document the regression, determine whether a rollback is needed, and execute the rollback by re-deploying the prior version from source control. Update the deployment runbook with any lessons learned.

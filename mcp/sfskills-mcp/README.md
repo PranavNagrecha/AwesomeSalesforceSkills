@@ -3,7 +3,7 @@
 Model Context Protocol server that hands any MCP-capable AI coding assistant
 three things at once:
 
-1. The full **SfSkills** library (1007 Salesforce skills, source-grounded,
+1. The full **SfSkills** library (1011 Salesforce skills, source-grounded,
    role-tagged, versioned) — via `search_skill` and `get_skill`.
 2. **Live metadata from your actual Salesforce org** — via `describe_org`,
    `list_custom_objects`, `list_flows_on_object`, `list_validation_rules`,

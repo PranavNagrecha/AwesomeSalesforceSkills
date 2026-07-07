@@ -52,7 +52,7 @@ handleResult(result) {
 }
 ```
 
-**Detection hint:** `\$\{` appearing anywhere inside a `gql\`...\`` literal. Any match is almost certainly a bug.
+**Detection hint:** `\$\{` appearing inside a `gql\`...\`` literal where the interpolated value is a **reactive per-record filter** (a record id, a user-changed filter). On v1 any such match is a bug. On v2, interpolation is a legitimate feature for **dynamic query construction** — varying the query's structure (an object name, a field set) at runtime — so a v2 match is only a bug when it carries reactive filter data that should be a declared `$` variable. Scope the flag by module and by what the interpolation carries, not by the presence of `${` alone.
 
 ---
 
@@ -97,7 +97,7 @@ async handleSaved() {
 
 **Why it happens:** `refreshApex` is by far the most common refresh primitive in LWC training data, so the model reaches for it reflexively even when the wire is not an Apex wire.
 
-**Correct pattern:**
+**Correct pattern (v1):**
 
 ```javascript
 import { gql, graphql, refreshGraphQL } from 'lightning/uiGraphQLApi';
@@ -107,37 +107,70 @@ async handleSaved() {
 }
 ```
 
-**Detection hint:** Any file that imports both `refreshApex` from `@salesforce/apex` and `graphql` from `lightning/uiGraphQLApi`, or any call to `refreshApex` with an argument that was populated by a `graphql` wire handler.
+**Correct pattern (v2):** there is no `refreshGraphQL` — refresh lives on the emitted result.
+
+```javascript
+import { gql, graphql } from 'lightning/graphql';
+
+async handleSaved() {
+    await this.graphqlResult.refresh();
+}
+```
+
+**Detection hint:** Any file that imports both `refreshApex` from `@salesforce/apex` and `graphql` from a GraphQL module, or any call to `refreshApex` with an argument that was populated by a `graphql` wire handler. Also flag `refreshGraphQL` imported from `lightning/graphql` (v2) — it does not exist there; v2 uses `result.refresh()`.
 
 ---
 
-## Anti-Pattern 4: Generating A `mutation` Block
+## Anti-Pattern 4: Putting A `mutation` Block Inside The Wired Query
 
 **What the LLM generates:**
 
 ```javascript
-const UPDATE_ACCOUNT = gql`
-    mutation UpdateAccount($id: ID!, $name: String!) {
-        updateAccount(input: { id: $id, name: $name }) { Id }
-    }
-`;
+@wire(graphql, {
+    query: gql`
+        mutation UpdateAccount($id: ID!, $name: String!) {
+            updateAccount(input: { id: $id, name: $name }) { Id }
+        }
+    `
+})
+wiredThing;
 ```
 
-**Why it happens:** Other GraphQL ecosystems (Apollo, Relay, GitHub, Shopify) all expose mutation support, and the model assumes Salesforce UI API GraphQL mirrors that shape. It does not — the adapter is read-only.
+**Why it happens:** Other GraphQL ecosystems (Apollo, Relay, GitHub, Shopify) run queries and mutations through the same client, so the model embeds a mutation into the wired query. On Salesforce the **wire is read-only** on both modules — a mutation in the wired query fails.
 
-**Correct pattern:**
+**Correct pattern — v2 (`lightning/graphql`, Spring '26+):** writes are a separate `executeMutation` call, not part of the wire.
+
+```javascript
+import { gql, graphql, executeMutation } from 'lightning/graphql';
+
+const UPDATE_CONTACT = gql`
+    mutation UpdateContactTitle($input: ContactUpdateInput) {
+        uiapi { ContactUpdate(input: $input) { Record { Id Title { value } } } }
+    }
+`;
+
+async save() {
+    await executeMutation({
+        query: UPDATE_CONTACT,
+        variables: { input: { Id: this.recordId, Contact: { Title: this.newTitle } } }
+    });
+    await this.graphqlResult.refresh(); // create/update need refresh; delete does not
+}
+```
+
+**Correct pattern — v1 (`lightning/uiGraphQLApi`, Mobile Offline):** no write path; use UI API.
 
 ```javascript
 import { updateRecord } from 'lightning/uiRecordApi';
 import { gql, graphql, refreshGraphQL } from 'lightning/uiGraphQLApi';
 
 async save() {
-    await updateRecord({ fields: { Id: this.recordId, Name: this.newName } });
+    await updateRecord({ fields: { Id: this.recordId, Title: this.newTitle } });
     await refreshGraphQL(this.wiredResult);
 }
 ```
 
-**Detection hint:** A `gql\`...\`` literal (or `gql(` call) whose contents contain the keyword `mutation`. Any match is wrong on this platform.
+**Detection hint:** The keyword `mutation` inside a `gql` literal that is passed to `@wire(graphql, ...)` — that is always wrong. A `mutation` literal passed to `executeMutation` on v2 is correct. The exact mutation field/input names come from the org's UI API GraphQL schema; introspect it rather than inventing Apollo-style `updateAccount(input:)` shapes.
 
 ---
 
@@ -185,3 +218,26 @@ gql`
 ```
 
 **Detection hint:** `edges` appearing inside a `gql` literal without a sibling `pageInfo` in the same connection block. Any connection query intended for pagination must select `pageInfo`.
+
+---
+
+## Anti-Pattern 6: Defaulting To `lightning/uiGraphQLApi` (v1) For New Components
+
+**What the LLM generates:**
+
+```javascript
+import { gql, graphql, refreshGraphQL } from 'lightning/uiGraphQLApi';
+```
+
+**Why it happens:** The v1 module dominates pre-Winter-'26 training data — blog posts, LWC Recipes snapshots, and Stack Exchange answers — so the model reaches for it reflexively even for brand-new components that will never run Mobile Offline.
+
+**Correct pattern:** default to v2, which the official reference recommends ("We recommend that you use `lightning/graphql` (v2) where possible").
+
+```javascript
+import { gql, graphql, executeMutation } from 'lightning/graphql';
+// refresh via the emitted result: await this.graphqlResult.refresh();
+```
+
+Only choose v1 when the component must run in a Mobile Offline context, which v2 "doesn't currently support."
+
+**Detection hint:** An import from `lightning/uiGraphQLApi` in a new component with no Mobile Offline requirement — especially paired with a request for optional fields, dynamic queries, or GraphQL mutations, none of which v1 supports.

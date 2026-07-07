@@ -33,6 +33,10 @@ Adding null guards and `isEmpty()` checks on every SOQL result adds defensive bo
 - Apex Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm
 - Apex Reference Guide — https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm
 - Apex Built-In Exceptions — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_exception_builtin.htm
+- Exception Class and Built-In Exceptions (Apex Reference) — https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_exception_methods.htm
+- sObjects That Cannot Be Used Together in DML Operations (mixed DML / setup objects) — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dml_non_mix_sobjects.htm
+- MIXED_DML_OPERATION error (Help) — https://help.salesforce.com/s/articleView?id=000382600&language=en_US&type=1
+- "Unable to lock row - Record currently unavailable" error (Help) — https://help.salesforce.com/s/articleView?id=000387767&language=en_US&type=1
 - Apex Governor Limits — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm
 - Apex Exception Statements — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_exception_statements.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

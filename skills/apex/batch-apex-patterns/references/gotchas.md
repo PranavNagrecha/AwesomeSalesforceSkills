@@ -39,3 +39,33 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** Tests enqueue the batch but do not force completion.
 
 **How to avoid:** Execute the batch between `Test.startTest()` and `Test.stopTest()`.
+
+---
+
+## The 50-Million QueryLocator Cap Silently Bounds Your Design
+
+**What happens:** A design assumes a `Database.QueryLocator` will address the entire object, but the addressable set is larger than the 50-million-record ceiling a QueryLocator can return.
+
+**When it occurs:** Truly large-data-volume objects are processed with a QueryLocator instead of a custom `Iterable` in `start()`.
+
+**How to avoid:** Past 50 million records, return an `Iterable` from `start()` — it is not subject to the QueryLocator cap, but the iterable must then be produced within normal per-transaction SOQL limits.
+
+---
+
+## Only Five Batch Jobs Run At Once — The Rest Queue
+
+**What happens:** A fan-out design fires many `Database.executeBatch()` calls expecting them to run in parallel, but the org only allows 5 batch jobs queued or active at a time.
+
+**When it occurs:** Multiple batches are launched together (e.g., one per region or per object) without accounting for concurrency.
+
+**How to avoid:** Serialize the work (chain the next batch from `finish()`) or schedule submissions. Beyond the 5-slot cap, jobs hold in the Apex flex queue, which tops out at 100 holding jobs.
+
+---
+
+## Tiny Scope Sizes Can Exhaust The 24-Hour Execution Ceiling
+
+**What happens:** An aggressively small scope on a huge dataset multiplies `execute()` invocations and pushes against the 250,000-executions-per-24-hours (or user-licenses × 200) ceiling.
+
+**When it occurs:** Scope size is minimized for per-scope safety without considering total execution count across the dataset.
+
+**How to avoid:** Choose scope size against both per-scope throughput and the 24-hour execution ceiling; each scope is one method execution counted toward that limit.
