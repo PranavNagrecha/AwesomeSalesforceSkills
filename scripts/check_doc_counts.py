@@ -18,12 +18,20 @@ It also enforces that the four runtime-tier sub-counts in each roster doc
 sum to the active-runtime total — the exact invariant that broke when nine
 deprecated agents were left in the runtime tiers while the headline said 56.
 
-stdlib only. Run standalone (`python3 scripts/check_doc_counts.py`) or import
-``collect_doc_count_issues`` from validate_repo.py.
+``--fix`` rewrites each drifted count in place with the canonical value,
+using the SAME patterns the checker matches on — check and fix share one
+source of truth, so they cannot drift apart. Values are always derived from
+registry + AGENT.md frontmatter, never hardcoded (the "56" regression guard).
+The runtime-tier breakdowns are deliberately NOT auto-fixed: only their sum
+has a canonical machine source; the per-tier split is a doc-level decision.
+
+stdlib only. Run standalone (`python3 scripts/check_doc_counts.py [--fix]`)
+or import ``collect_doc_count_issues`` from validate_repo.py.
 """
 
 from __future__ import annotations
 
+import argparse
 import json
 import re
 import sys
@@ -185,7 +193,97 @@ def collect_doc_count_issues(root: Path = ROOT) -> list[tuple[str, str, str]]:
     return issues
 
 
-def main() -> int:
+# ---------------------------------------------------------------------------
+# --fix — rewrite drifted counts with canonical values, via the SAME patterns
+# ---------------------------------------------------------------------------
+
+def _substitute_groups(m: re.Match, values: list[int]) -> str:
+    """Rebuild m.group(0) with each capture group replaced by its canonical
+    value, preserving thousands-comma formatting where the doc used it."""
+    text = m.string
+    out: list[str] = []
+    last = m.start(0)
+    for gi, val in enumerate(values, start=1):
+        out.append(text[last:m.start(gi)])
+        out.append(f"{val:,}" if "," in m.group(gi) else str(val))
+        last = m.end(gi)
+    out.append(text[last:m.end(0)])
+    return "".join(out)
+
+
+def apply_fixes(root: Path = ROOT) -> dict[str, list[str]]:
+    """Rewrite every drifted count that has a canonical machine source.
+
+    Reuses GLOBAL_CHECKS and DOMAIN_ROW_RE verbatim so the fixer can never
+    disagree with the checker about what a count is or where it lives.
+    Returns {relative path: [human-readable change descriptions]}.
+    Tier breakdowns and missing/renamed patterns are left for the re-check.
+    """
+    counts = canonical_counts(root)
+    original: dict[str, str] = {}
+    current: dict[str, str] = {}
+    changes: dict[str, list[str]] = {}
+
+    def load(rel: str) -> str | None:
+        if rel not in current:
+            fpath = root / rel
+            if not fpath.exists():
+                return None
+            original[rel] = current[rel] = fpath.read_text(encoding="utf-8")
+        return current[rel]
+
+    for rel, pattern, keys in GLOBAL_CHECKS:
+        text = load(rel)
+        if text is None:
+            continue
+        m = re.search(pattern, text)
+        if not m:
+            continue  # renamed/removed label — surfaced by the re-check, not fixable
+        expected = [counts[k] for k in keys]
+        actual = [int(m.group(i).replace(",", "")) for i in range(1, len(keys) + 1)]
+        if actual == expected:
+            continue
+        current[rel] = text[:m.start(0)] + _substitute_groups(m, expected) + text[m.end(0):]
+        for key, old, new in zip(keys, actual, expected):
+            if old != new:
+                changes.setdefault(rel, []).append(f"{key}: {old} -> {new} (/{pattern}/)")
+
+    # README per-domain "Covered Skills" table rows.
+    rel = "README.md"
+    text = load(rel)
+    if text is not None:
+        def _fix_row(m: re.Match) -> str:
+            label, num = m.group(1), int(m.group(2))
+            expected = counts["domain_counts"].get(label.lower())
+            if expected is None or expected == num:
+                return m.group(0)
+            changes.setdefault(rel, []).append(f"Covered-Skills {label}: {num} -> {expected}")
+            return f"| {label} | {expected} {DASH}"
+        current[rel] = DOMAIN_ROW_RE.sub(_fix_row, current[rel])
+
+    for rel in changes:
+        if current[rel] != original[rel]:
+            (root / rel).write_text(current[rel], encoding="utf-8")
+    return changes
+
+
+def main(argv: list[str] | None = None) -> int:
+    ap = argparse.ArgumentParser(description="Count-consistency gate for hand-maintained docs.")
+    ap.add_argument("--fix", action="store_true",
+                    help="rewrite drifted counts in place with the canonical values "
+                         "(derived from registry + AGENT.md — never hardcoded), then re-check")
+    args = ap.parse_args(argv)
+
+    if args.fix:
+        changes = apply_fixes(ROOT)
+        if changes:
+            for rel in sorted(changes):
+                print(f"fixed {rel}: {len(changes[rel])} replacement(s)")
+                for desc in changes[rel]:
+                    print(f"  {desc}")
+        else:
+            print("Nothing to fix.")
+
     issues = collect_doc_count_issues(ROOT)
     counts = canonical_counts(ROOT)
     if not issues:
@@ -198,7 +296,8 @@ def main() -> int:
         return 0
     for level, path, msg in issues:
         print(f"{level} {path}: {msg}")
-    print(f"{len(issues)} doc-count error(s).")
+    print(f"{len(issues)} doc-count error(s)" + (" remain after --fix (no canonical source "
+          "for these — fix by hand)." if args.fix else "."))
     return 1
 
 

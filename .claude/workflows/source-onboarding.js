@@ -21,6 +21,18 @@ const REPORT = a.report
 if (!REPORT) throw new Error('args.report (path to intake report JSON from scripts/onboard_source.py) is required')
 const MAX_VERIFY = a.maxVerify || 12
 const MAX_BUILD = a.maxBuild || 6
+// license_override can only TIGHTEN the gate (e.g. an MIT fork whose upstream
+// family is CC-BY-NC). Overriding to permissive would weaken the license wall,
+// so it is rejected outright — permissive must come from the intake script's
+// detected/attested license, never from a workflow arg.
+const LICENSE_OVERRIDE = a.license_override || null
+if (LICENSE_OVERRIDE && LICENSE_OVERRIDE !== 'clean-room') {
+  throw new Error(
+    `args.license_override may only be 'clean-room' (got ${JSON.stringify(LICENSE_OVERRIDE)}) — ` +
+    'the license gate can be tightened, never weakened.'
+  )
+}
+const LICENSE_NOTE = a.license_note || null
 const EXEMPLAR = 'skills/agentforce/agentforce-custom-lightning-types'
 
 // ---------------------------------------------------------------------------
@@ -186,6 +198,15 @@ const report = await agent(
   { label: 'load-report', phase: 'Load', schema: LOADED, model: 'sonnet', effort: 'low' }
 )
 if (!report) throw new Error('could not load intake report')
+// Apply the (tighten-only) override BEFORE any use of report.license_class —
+// sourceRules(), the gate prompt, and the returned result all read from here.
+if (LICENSE_OVERRIDE && report.license_class !== LICENSE_OVERRIDE) {
+  report.license = `${report.license} — forced ${LICENSE_OVERRIDE} via args.license_override`
+  report.license_class = LICENSE_OVERRIDE
+  log(`License override: treating source as ${LICENSE_OVERRIDE}${LICENSE_NOTE ? ` — ${LICENSE_NOTE}` : ''}`)
+} else if (LICENSE_NOTE) {
+  log(`License note: ${LICENSE_NOTE}`)
+}
 log(`${report.source} (${report.license}, ${report.license_class}) — ${report.candidates.length} candidates`)
 
 const actionable = report.candidates.filter(c => c.classification === 'NET_NEW' || c.classification === 'ENRICH')
@@ -194,7 +215,13 @@ if (actionable.length > MAX_VERIFY) log(`Capping verification at ${MAX_VERIFY} o
 const toVerify = actionable.slice(0, MAX_VERIFY)
 if (toVerify.length === 0) {
   log('Nothing actionable — every candidate is COVERED by the local catalog.')
-  return { source: report.source, built: [], enriched: [], dropped: covered.map(c => ({ id: c.id, reason: 'COVERED: ' + JSON.stringify(c.local_hits) })) }
+  return {
+    source: report.source,
+    license_class: report.license_class,
+    ...(LICENSE_NOTE ? { license_note: LICENSE_NOTE } : {}),
+    built: [], enriched: [],
+    dropped: covered.map(c => ({ id: c.id, reason: 'COVERED: ' + JSON.stringify(c.local_hits) })),
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -338,6 +365,7 @@ log(`${done.length}/${items.length} items completed authoring`)
 return {
   source: report.source,
   license_class: report.license_class,
+  ...(LICENSE_NOTE ? { license_note: LICENSE_NOTE } : {}),
   built: done.filter(r => r.it.kind === 'build').map(r => r.it.skill_path),
   enriched: done.filter(r => r.it.kind === 'enrich').map(r => r.it.skill_path),
   dropped: gate.drop,

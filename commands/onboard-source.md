@@ -105,6 +105,17 @@ Optional args: `maxVerify` (default 12 candidates per run), `maxBuild`
 (default 6 new skills per run). For a source with hundreds of candidates,
 run in waves — the BACKLOG carries the remainder.
 
+Two more optional args govern the license wall at the workflow level:
+
+- `license_override: "clean-room"` — treat the source as clean-room even if
+  the intake report says permissive (e.g. an MIT fork whose upstream family
+  is CC-BY-NC). **Tighten-only**: any other value, including `"permissive"`,
+  makes the workflow throw before a single agent runs — permissive status
+  must come from the intake script's detected/attested license, never from
+  a workflow arg.
+- `license_note: "<why>"` — free-text provenance rationale; logged at launch
+  and echoed in the returned result (and thus available for the PR body).
+
 Inside the workflow (see `.claude/workflows/source-onboarding.js`):
 
 1. **Load** (Sonnet, low): transcribes the intake report.
