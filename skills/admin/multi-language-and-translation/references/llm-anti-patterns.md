@@ -74,3 +74,32 @@ To test translations in Apex, create a test user with the target language and ru
 **Correct pattern:** Never disable Translation Workbench in production. To remove translations for a specific language, remove that language from the Supported Languages list. To reset individual translations, re-import a corrected translation file.
 
 **Detection hint:** Any recommendation to "disable Translation Workbench" in a production context.
+
+---
+
+## Anti-Pattern 6: Freelancing `toLabel()` Syntax and Its Restrictions
+
+**What the LLM generates:** SOQL/SOSL that uses `toLabel()` as if it behaved like any other `SELECT` expression — sorting on it, filtering a record type by its translated name, or returning the same field both raw and translated with no alias:
+```sql
+-- WRONG: ORDER BY on a toLabel() field (sort is ignored)
+SELECT Company, toLabel(Status) FROM Lead ORDER BY toLabel(Status)
+
+-- WRONG: filtering a record type on its translated name (returns nothing)
+SELECT Id FROM Lead WHERE toLabel(RecordType.Name) = 'Prospecto'
+
+-- WRONG: same field twice, no alias (won't compile)
+SELECT Status, toLabel(Status) FROM Lead
+```
+
+**Why it happens:** LLMs pattern-match `toLabel()` to a normal function call and assume it composes freely with every clause, so they generate the syntax that would work for an ordinary field.
+
+**Correct pattern:** Use `toLabel()` only as a display projection. Sort by the picklist's defined order (drop the `ORDER BY toLabel(...)`), filter record types on the master value or the Id, and alias the translated column when the raw field is also selected:
+```sql
+SELECT Status, toLabel(Status) translatedStatus FROM Lead
+-- filter/route on the API value; match the label only when you mean the label text
+SELECT Company, toLabel(Status) FROM Lead WHERE toLabel(Status) = 'le Draft'
+FIND {Joe} RETURNING Lead(Company, toLabel(RecordType.Name))
+```
+Also remember `LIKE` on a `toLabel()` picklist matches the label, not the API name, and `toLabel()` cannot appear in a `WHERE` clause for division or currency ISO-code picklists.
+
+**Detection hint:** Any query with `ORDER BY toLabel(...)`, a `WHERE` on `toLabel(RecordType.Name)`, or a field selected both raw and wrapped in `toLabel()` without an alias.

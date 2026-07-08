@@ -27,4 +27,7 @@
 - SOQL and SOSL Reference — Aggregate Functions: https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_agg_functions.htm
 - Apex Developer Guide — Working with SOQL Aggregate Functions: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_SOQL_agg_fns.htm
 - SOQL and SOSL Reference — GROUP BY Considerations: https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_group_by_considerations.htm
+- SOQL and SOSL Reference — GROUPING() to Identify Subtotals: https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_groupby_grouping.htm
+- SOQL and SOSL Reference — Add Subtotals with GROUP BY ROLLUP: https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_groupby_rollup.htm
+- SOQL and SOSL Reference — Add Subtotals with GROUP BY CUBE: https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_groupby_cube.htm
 - Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

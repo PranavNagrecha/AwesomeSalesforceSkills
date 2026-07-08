@@ -4324,3 +4324,498 @@
   history:
     - { at: "2026-07-08T14:14:51Z", status: "RESEARCH", actor: "onboard_source" }
     - { actor: "rescreen-not-a-skill-topic", status: "DUPLICATE", at: "2026-07-08T16:31:51Z" }
+- id: "soql-quoted-string-escape-sequences"
+  status: "DONE"
+  skill: "soql-quoted-string-escape-sequences"
+  summary: "SOQL Quoted String Escape Sequences — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: NET_NEW; search_knowledge top hits: no hits. License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "onboard-soql-wave1", status: "DONE", at: "2026-07-08T22:00:42+00:00" }
+- id: "soql-reserved-characters"
+  status: "DONE"
+  skill: "soql-reserved-characters"
+  summary: "SOQL Reserved Characters — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: NET_NEW; search_knowledge top hits: no hits. License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "onboard-soql-wave1", status: "DONE", at: "2026-07-08T22:00:43+00:00" }
+- id: "soql-alias-notation"
+  status: "RESEARCH"
+  skill: "soql-alias-notation"
+  summary: "SOQL Alias Notation — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: NET_NEW; search_knowledge top hits: apex/apex-soql-relationship-queries (1.6701447917736687), apex/apex-aggregate-queries (1.948992050606367), apex/soql-fundamentals (1.5927817695942723). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "soql-typeof"
+  status: "DUPLICATE"
+  skill: "soql-typeof"
+  summary: "SOQL TYPEOF — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: COVERED; search_knowledge top hits: apex/apex-polymorphic-soql (7.335943667211222), apex/apex-soql-relationship-queries (2.930653065203652). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "DUPLICATE", actor: "onboard_source" }
+- id: "soql-using-scope"
+  status: "DONE"
+  skill: "soql-using-scope"
+  summary: "SOQL USING SCOPE — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: NET_NEW; search_knowledge top hits: no hits. License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "onboard-soql-wave1", status: "DONE", at: "2026-07-08T22:00:42+00:00" }
+- id: "soql-date-formats-and-date-literals-in-where"
+  status: "DUPLICATE"
+  skill: "soql-date-formats-and-date-literals-in-where"
+  summary: "SOQL Date Formats and Date Literals in WHERE — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: COVERED; search_knowledge top hits: apex/timezone-and-datetime-pitfalls (7.36108131347753). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "DUPLICATE", actor: "onboard_source" }
+- id: "soql-filter-on-polymorphic-relationship-fields"
+  status: "RESEARCH"
+  skill: "soql-filter-on-polymorphic-relationship-fields"
+  summary: "SOQL Filter on Polymorphic Relationship Fields — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: NET_NEW; search_knowledge top hits: apex/apex-polymorphic-soql (2.855207352912959), apex/apex-soql-relationship-queries (3.403235796230666). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "soql-query-multi-select-picklists"
+  status: "RESEARCH"
+  skill: "soql-query-multi-select-picklists"
+  summary: "SOQL Query Multi-Select Picklists — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: NET_NEW; search_knowledge top hits: data/soql-query-optimization (1.619113602406727). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "soql-use-null-in-where"
+  status: "RESEARCH"
+  skill: "soql-use-null-in-where"
+  summary: "SOQL Use null in WHERE — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: NET_NEW; search_knowledge top hits: data/soql-query-optimization (2.239439671786902), apex/soql-null-ordering-patterns (1.5256397352597562). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "soql-with-data-category"
+  status: "DUPLICATE"
+  skill: "soql-with-data-category"
+  summary: "SOQL WITH DATA CATEGORY — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: COVERED; search_knowledge top hits: lwc/knowledge-article-lwc (5.469983909964232). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "DUPLICATE", actor: "onboard_source" }
+- id: "soql-with-recordvisibilitycontext"
+  status: "RESEARCH"
+  skill: "soql-with-recordvisibilitycontext"
+  summary: "SOQL WITH RecordVisibilityContext — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: NET_NEW; search_knowledge top hits: no hits. License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "soql-group-by-rollup"
+  status: "DUPLICATE"
+  skill: "soql-group-by-rollup"
+  summary: "SOQL GROUP BY ROLLUP — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: COVERED; search_knowledge top hits: apex/apex-aggregate-queries (10.246453446087605). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "DUPLICATE", actor: "onboard_source" }
+- id: "soql-group-by-cube"
+  status: "DUPLICATE"
+  skill: "soql-group-by-cube"
+  summary: "SOQL GROUP BY CUBE — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: COVERED; search_knowledge top hits: apex/apex-aggregate-queries (7.194999168399979). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "DUPLICATE", actor: "onboard_source" }
+- id: "soql-use-aliases-with-group-by"
+  status: "DUPLICATE"
+  skill: "soql-use-aliases-with-group-by"
+  summary: "SOQL Use Aliases with GROUP BY — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: COVERED; search_knowledge top hits: apex/apex-aggregate-queries (7.669869905625886). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "DUPLICATE", actor: "onboard_source" }
+- id: "soql-identify-subtotals-with-group-by"
+  status: "RESEARCH"
+  skill: "soql-identify-subtotals-with-group-by"
+  summary: "SOQL Identify Subtotals with GROUP BY — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: ENRICH; search_knowledge top hits: apex/apex-aggregate-queries (4.6521932145732965). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "soql-for-view-and-for-reference"
+  status: "DONE"
+  skill: "soql-for-view-and-for-reference"
+  summary: "SOQL FOR VIEW and FOR REFERENCE — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: NET_NEW; search_knowledge top hits: no hits. License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "onboard-soql-wave1", status: "DONE", at: "2026-07-08T22:00:43+00:00" }
+- id: "soql-for-update"
+  status: "RESEARCH"
+  skill: "soql-for-update"
+  summary: "SOQL FOR UPDATE — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: NET_NEW; search_knowledge top hits: apex/record-locking-and-contention (1.5791089430005105). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "soql-aggregate-functions"
+  status: "RESEARCH"
+  skill: "soql-aggregate-functions"
+  summary: "SOQL Aggregate Functions — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: NET_NEW; search_knowledge top hits: apex/apex-aggregate-queries (2.8543160632674733). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "soql-count-and-count-fieldname"
+  status: "RESEARCH"
+  skill: "soql-count-and-count-fieldname"
+  summary: "SOQL COUNT and COUNT fieldName — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: NET_NEW; search_knowledge top hits: apex/apex-aggregate-queries (1.540083770015841). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "soql-support-for-field-types-in-aggregate-functions"
+  status: "RESEARCH"
+  skill: "soql-support-for-field-types-in-aggregate-functions"
+  summary: "SOQL Support for Field Types in Aggregate Functions — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: NET_NEW; search_knowledge top hits: apex/apex-aggregate-queries (1.9333162785670102). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "soql-convertcurrency"
+  status: "RESEARCH"
+  skill: "soql-convertcurrency"
+  summary: "SOQL convertCurrency — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: ENRICH; search_knowledge top hits: data/multi-currency-and-advanced-currency-management (4.842478406078423), data/currency-management-patterns (2.7022225875082992). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "soql-converttimezone"
+  status: "DONE"
+  skill: "soql-converttimezone"
+  summary: "SOQL convertTimezone — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: NET_NEW; search_knowledge top hits: no hits. License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "onboard-soql-wave1", status: "DONE", at: "2026-07-08T22:00:43+00:00" }
+- id: "soql-date-functions"
+  status: "RESEARCH"
+  skill: "soql-date-functions"
+  summary: "SOQL Date Functions — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: NET_NEW; search_knowledge top hits: apex/apex-aggregate-queries (1.6352520813742761). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "soql-format"
+  status: "DONE"
+  skill: "soql-format"
+  summary: "SOQL FORMAT — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: NET_NEW; search_knowledge top hits: no hits. License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "onboard-soql-wave1", status: "DONE", at: "2026-07-08T22:00:10+00:00" }
+- id: "soql-grouping-fieldname"
+  status: "DONE"
+  skill: "soql-grouping-fieldname"
+  summary: "SOQL GROUPING fieldName — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: NET_NEW; search_knowledge top hits: no hits. License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "onboard-soql-wave1", status: "DONE", at: "2026-07-08T22:00:44+00:00" }
+- id: "soql-tolabel"
+  status: "DONE"
+  skill: "soql-tolabel"
+  summary: "SOQL toLabel — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: NET_NEW; search_knowledge top hits: no hits. License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "onboard-soql-wave1", status: "DONE", at: "2026-07-08T22:00:44+00:00" }
+- id: "soql-relationship-queries"
+  status: "DUPLICATE"
+  skill: "soql-relationship-queries"
+  summary: "SOQL Relationship Queries — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: COVERED; search_knowledge top hits: apex/apex-soql-relationship-queries (5.931976344468197), apex/soql-fundamentals (2.8867855239971125). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "DUPLICATE", actor: "onboard_source" }
+- id: "soql-using-relationship-queries"
+  status: "RESEARCH"
+  skill: "soql-using-relationship-queries"
+  summary: "SOQL Using Relationship Queries — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: NET_NEW; search_knowledge top hits: apex/soql-fundamentals (2.9302416105795177), apex/apex-soql-relationship-queries (3.494422148139752). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "soql-null-values-in-lookup-relationships-and-outer-joins"
+  status: "DONE"
+  skill: "soql-null-values-in-lookup-relationships-and-outer-joins"
+  summary: "SOQL null Values in Lookup Relationships and Outer Joins — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: NET_NEW; search_knowledge top hits: no hits. License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "onboard-soql-wave1", status: "DONE", at: "2026-07-08T22:00:42+00:00" }
+- id: "soql-understanding-relationship-fields-and-polymorphic-fields"
+  status: "RESEARCH"
+  skill: "soql-understanding-relationship-fields-and-polymorphic-fields"
+  summary: "SOQL Understanding Relationship Fields and Polymorphic Fields — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: NET_NEW; search_knowledge top hits: apex/apex-soql-relationship-queries (1.5875046185066033). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "soql-understanding-relationship-query-limitations"
+  status: "DUPLICATE"
+  skill: "soql-understanding-relationship-query-limitations"
+  summary: "SOQL Understanding Relationship Query Limitations — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: NET_NEW; search_knowledge top hits: no hits. License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "onboard-soql-wave1", status: "DUPLICATE", at: "2026-07-08T21:59:57+00:00" }
+- id: "soql-using-relationship-queries-with-history-objects"
+  status: "RESEARCH"
+  skill: "soql-using-relationship-queries-with-history-objects"
+  summary: "SOQL Using Relationship Queries with History Objects — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: NET_NEW; search_knowledge top hits: apex/apex-soql-relationship-queries (2.1266584461366222). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "soql-using-relationship-queries-with-data-category-selection-objects"
+  status: "RESEARCH"
+  skill: "soql-using-relationship-queries-with-data-category-selection-objects"
+  summary: "SOQL Using Relationship Queries with Data Category Selection Objects — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: NET_NEW; search_knowledge top hits: apex/soql-fundamentals (2.1625003960154956), apex/apex-soql-relationship-queries (1.546461737988797). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "soql-change-the-batch-size-in-queries"
+  status: "DUPLICATE"
+  skill: "soql-change-the-batch-size-in-queries"
+  summary: "SOQL Change the Batch Size in Queries — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: NET_NEW; search_knowledge top hits: no hits. License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "onboard-soql-wave1", status: "DUPLICATE", at: "2026-07-08T21:59:58+00:00" }
+- id: "soql-object-limits-and-limitations"
+  status: "DONE"
+  skill: "soql-object-limits-and-limitations"
+  summary: "SOQL Object Limits and Limitations — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: NET_NEW; search_knowledge top hits: no hits. License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "onboard-soql-wave1", status: "DONE", at: "2026-07-08T22:00:42+00:00" }
+- id: "location-based-soql-queries"
+  status: "DONE"
+  skill: "location-based-soql-queries"
+  summary: "Location-Based SOQL Queries — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: NET_NEW; search_knowledge top hits: apex/apex-soql-relationship-queries (1.67137794841452). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "onboard-soql-wave1", status: "DONE", at: "2026-07-08T22:00:44+00:00" }
+- id: "considerations-for-querying-currency-data-using-soql"
+  status: "DONE"
+  skill: "considerations-for-querying-currency-data-using-soql"
+  summary: "Considerations for Querying Currency Data Using SOQL — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: NET_NEW; search_knowledge top hits: no hits. License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "onboard-soql-wave1", status: "DONE", at: "2026-07-08T22:00:44+00:00" }
+- id: "sosl-limits-on-search-results"
+  status: "RESEARCH"
+  skill: "sosl-limits-on-search-results"
+  summary: "SOSL Limits on Search Results — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: NET_NEW; search_knowledge top hits: data/sosl-search-patterns (2.6367045979684405). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "sosl-limits-on-external-object-search-results"
+  status: "RESEARCH"
+  skill: "sosl-limits-on-external-object-search-results"
+  summary: "SOSL Limits on External Object Search Results — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: NET_NEW; search_knowledge top hits: admin/global-search-configuration (2.7530868094334955), data/sosl-search-patterns (2.448468475600637). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "sosl-find-searchquery"
+  status: "RESEARCH"
+  skill: "sosl-find-searchquery"
+  summary: "SOSL FIND SearchQuery — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: ENRICH; search_knowledge top hits: data/sosl-search-patterns (4.695373205834944). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "sosl-format"
+  status: "RESEARCH"
+  skill: "sosl-format"
+  summary: "SOSL FORMAT — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: NET_NEW; search_knowledge top hits: lwc/knowledge-article-lwc (1.5961310420374084), data/sosl-search-patterns (2.9299578971391775). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "sosl-in-searchgroup"
+  status: "DUPLICATE"
+  skill: "sosl-in-searchgroup"
+  summary: "SOSL IN SearchGroup — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: COVERED; search_knowledge top hits: data/sosl-search-patterns (5.538578233652506). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "DUPLICATE", actor: "onboard_source" }
+- id: "sosl-returning-fieldspec"
+  status: "RESEARCH"
+  skill: "sosl-returning-fieldspec"
+  summary: "SOSL RETURNING FieldSpec — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: NET_NEW; search_knowledge top hits: data/sosl-search-patterns (2.846954871119779). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "sosl-tolabel-fields"
+  status: "RESEARCH"
+  skill: "sosl-tolabel-fields"
+  summary: "SOSL toLabel fields — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: NET_NEW; search_knowledge top hits: data/sosl-search-patterns (1.9537586994638012). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "sosl-using-listview"
+  status: "DONE"
+  skill: "sosl-using-listview"
+  summary: "SOSL USING ListView — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: NET_NEW; search_knowledge top hits: no hits. License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "onboard-soql-wave1", status: "DONE", at: "2026-07-08T22:00:43+00:00" }
+- id: "sosl-with-data-category-datacategoryspec"
+  status: "DUPLICATE"
+  skill: "sosl-with-data-category-datacategoryspec"
+  summary: "SOSL WITH DATA CATEGORY DataCategorySpec — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: COVERED; search_knowledge top hits: lwc/knowledge-article-lwc (5.192179477379853). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "DUPLICATE", actor: "onboard_source" }
+- id: "sosl-with-highlight"
+  status: "RESEARCH"
+  skill: "sosl-with-highlight"
+  summary: "SOSL WITH HIGHLIGHT — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: NET_NEW; search_knowledge top hits: data/sosl-search-patterns (2.8074718177848537). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "sosl-with-metadata"
+  status: "DUPLICATE"
+  skill: "sosl-with-metadata"
+  summary: "SOSL WITH METADATA — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: COVERED; search_knowledge top hits: data/sosl-search-patterns (6.277390044807359). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "DUPLICATE", actor: "onboard_source" }
+- id: "sosl-with-network-networkidspec"
+  status: "RESEARCH"
+  skill: "sosl-with-network-networkidspec"
+  summary: "SOSL WITH NETWORK NetworkIdSpec — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: ENRICH; search_knowledge top hits: data/sosl-search-patterns (4.037266973806924). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "sosl-with-pricebookid"
+  status: "RESEARCH"
+  skill: "sosl-with-pricebookid"
+  summary: "SOSL WITH PricebookId — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: ENRICH; search_knowledge top hits: data/sosl-search-patterns (3.913806432452264). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "sosl-with-snippet"
+  status: "RESEARCH"
+  skill: "sosl-with-snippet"
+  summary: "SOSL WITH SNIPPET — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: ENRICH; search_knowledge top hits: data/sosl-search-patterns (3.353253685306018). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "sosl-with-spellcorrection"
+  status: "DUPLICATE"
+  skill: "sosl-with-spellcorrection"
+  summary: "SOSL WITH SPELLCORRECTION — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: COVERED; search_knowledge top hits: data/sosl-search-patterns (6.2470949978591985). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "DUPLICATE", actor: "onboard_source" }
+- id: "soql-using-relationship-queries-with-the-partner-wsdl"
+  status: "RESEARCH"
+  skill: "soql-using-relationship-queries-with-the-partner-wsdl"
+  summary: "SOQL Using Relationship Queries with the Partner WSDL — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: ENRICH; search_knowledge top hits: integration/soap-api-patterns (4.063264186983975), apex/apex-soql-relationship-queries (1.8241951746941252). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "syndication-feed-soql-and-mapping-syntax"
+  status: "RESEARCH"
+  skill: "syndication-feed-soql-and-mapping-syntax"
+  summary: "Syndication Feed SOQL and Mapping Syntax — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: NET_NEW; search_knowledge top hits: no hits. License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "sosl-with-divisionfilter"
+  status: "RESEARCH"
+  skill: "sosl-with-divisionfilter"
+  summary: "SOSL WITH DivisionFilter — intake from /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/407e785f-8fe1-4cc6-b4af-fdcece4b2bce/scratchpad/soql-sosl-reference-headings.md (file mode)."
+  notes: "Intake triage 2026-07-08T20:41:08Z: ENRICH; search_knowledge top hits: data/sosl-search-patterns (4.2507906276102165). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:41:08Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "schedule-triggered-flow-bulkification-and-the-loop-anti-pattern"
+  status: "DUPLICATE"
+  skill: "schedule-triggered-flow-bulkification-and-the-loop-anti-pattern"
+  summary: "Schedule-Triggered Flow Bulkification and the Loop Anti-Pattern — intake from https://salesforcebreak.com/2025/02/03/loop-inside-your-schedule-triggered-flow/ (url mode)."
+  notes: "Intake triage 2026-07-08T20:49:22Z: ENRICH; search_knowledge top hits: flow/recursion-and-re-entry-prevention (4.810985004705474), flow/flow-bulkification (2.459587572877184), flow/flow-loop-element-patterns (1.6041024564139517). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:49:22Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "onboard-salesforcebreak-2026-07-08", status: "DUPLICATE", at: "2026-07-08T21:06:02+00:00" }
+- id: "schedule-triggered-flow-batch-size-and-transaction-boundaries"
+  status: "DUPLICATE"
+  skill: "schedule-triggered-flow-batch-size-and-transaction-boundaries"
+  summary: "Schedule-Triggered Flow Batch Size and Transaction Boundaries — intake from https://salesforcebreak.com/2025/02/03/loop-inside-your-schedule-triggered-flow/ (url mode)."
+  notes: "Intake triage 2026-07-08T20:49:22Z: NET_NEW; search_knowledge top hits: flow/flow-batch-processing-alternatives (1.6582695731428623), admin/scheduled-path-patterns (2.0153579624218785), flow/flow-transactional-boundaries (2.7566631407460536). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:49:22Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "onboard-salesforcebreak-2026-07-08", status: "DUPLICATE", at: "2026-07-08T21:06:02+00:00" }
+- id: "schedule-triggered-flow-without-object-selection"
+  status: "DUPLICATE"
+  skill: "schedule-triggered-flow-without-object-selection"
+  summary: "Schedule-Triggered Flow Without Object Selection — intake from https://salesforcebreak.com/2025/02/03/loop-inside-your-schedule-triggered-flow/ (url mode)."
+  notes: "Intake triage 2026-07-08T20:49:22Z: COVERED; search_knowledge top hits: flow/scheduled-flows (7.1190196493402915), flow/scheduled-flow-not-running-debug (1.6482806974819757). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:49:22Z", status: "DUPLICATE", actor: "onboard_source" }
+    - { actor: "onboard-salesforcebreak-2026-07-08", status: "DUPLICATE", at: "2026-07-08T21:06:03+00:00" }
+- id: "schedule-triggered-flow-vs-scheduled-path-in-record-triggered-flow"
+  status: "DUPLICATE"
+  skill: "schedule-triggered-flow-vs-scheduled-path-in-record-triggered-flow"
+  summary: "Schedule-Triggered Flow vs Scheduled Path in Record-Triggered Flow — intake from https://salesforcebreak.com/2025/02/03/loop-inside-your-schedule-triggered-flow/ (url mode)."
+  notes: "Intake triage 2026-07-08T20:49:22Z: COVERED; search_knowledge top hits: admin/scheduled-path-patterns (6.034178252149209), flow/flow-time-based-patterns (2.4995580881628845), flow/scheduled-flows (1.8773953625526265). License class: clean-room."
+  history:
+    - { at: "2026-07-08T20:49:22Z", status: "DUPLICATE", actor: "onboard_source" }
+    - { actor: "onboard-salesforcebreak-2026-07-08", status: "DUPLICATE", at: "2026-07-08T21:06:03+00:00" }
+- id: "screen-flow-radio-button-group-component"
+  status: "RESEARCH"
+  skill: "screen-flow-radio-button-group-component"
+  summary: "Screen Flow Radio Button Group Component — intake from https://salesforcebreak.com/2026/05/21/summer-26-screen-flow-radio-button-group/ (url mode)."
+  notes: "Intake triage 2026-07-08T21:07:51Z: NET_NEW; search_knowledge top hits: flow/screen-flow-accessibility (2.5267010322978063), flow/screen-flows (2.0999082797851574). License class: clean-room."
+  history:
+    - { at: "2026-07-08T21:07:51Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "screen-flow-choice-component-selection-guide"
+  status: "RESEARCH"
+  skill: "screen-flow-choice-component-selection-guide"
+  summary: "Screen Flow Choice Component Selection Guide — intake from https://salesforcebreak.com/2026/05/21/summer-26-screen-flow-radio-button-group/ (url mode)."
+  notes: "Intake triage 2026-07-08T21:07:51Z: NET_NEW; search_knowledge top hits: flow/flow-resource-patterns (1.9808429149652236), flow/flow-dynamic-choices (4.18256613196937). License class: clean-room."
+  history:
+    - { at: "2026-07-08T21:07:51Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "screen-flow-visual-picker-component"
+  status: "RESEARCH"
+  skill: "screen-flow-visual-picker-component"
+  summary: "Screen Flow Visual Picker Component — intake from https://salesforcebreak.com/2026/05/21/summer-26-screen-flow-radio-button-group/ (url mode)."
+  notes: "Intake triage 2026-07-08T21:07:51Z: NET_NEW; search_knowledge top hits: lwc/lwc-in-flow-screens (1.520504573703728), flow/flow-screen-lwc-components (2.107028077834785), flow/flow-reactive-screen-components (1.5141278138318266). License class: clean-room."
+  history:
+    - { at: "2026-07-08T21:07:51Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "screen-flow-choice-lookup-component"
+  status: "RESEARCH"
+  skill: "screen-flow-choice-lookup-component"
+  summary: "Screen Flow Choice Lookup Component — intake from https://salesforcebreak.com/2026/05/21/summer-26-screen-flow-radio-button-group/ (url mode)."
+  notes: "Intake triage 2026-07-08T21:07:51Z: NET_NEW; search_knowledge top hits: flow/flow-for-experience-cloud (1.555001343905484), flow/flow-dynamic-choices (5.1664937361291035). License class: clean-room."
+  history:
+    - { at: "2026-07-08T21:07:51Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "screen-flow-checkbox-group-component"
+  status: "RESEARCH"
+  skill: "screen-flow-checkbox-group-component"
+  summary: "Screen Flow Checkbox Group Component — intake from https://salesforcebreak.com/2026/05/21/summer-26-screen-flow-radio-button-group/ (url mode)."
+  notes: "Intake triage 2026-07-08T21:07:51Z: ENRICH; search_knowledge top hits: flow/screen-flows (3.271839164465276), flow/flow-screen-lwc-components (1.8056253989000863), flow/flow-reactive-screen-components (1.557606337128752). License class: clean-room."
+  history:
+    - { at: "2026-07-08T21:07:51Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "screen-flow-choice-component-styling-overrides"
+  status: "DUPLICATE"
+  skill: "screen-flow-choice-component-styling-overrides"
+  summary: "Screen Flow Choice Component Styling Overrides — intake from https://salesforcebreak.com/2026/05/21/summer-26-screen-flow-radio-button-group/ (url mode)."
+  notes: "Intake triage 2026-07-08T21:07:51Z: COVERED; search_knowledge top hits: flow/flow-dynamic-choices (5.831310058509869). License class: clean-room."
+  history:
+    - { at: "2026-07-08T21:07:51Z", status: "DUPLICATE", actor: "onboard_source" }
+- id: "flow-open-a-page-core-action"
+  status: "DUPLICATE"
+  skill: "flow-open-a-page-core-action"
+  summary: "Flow Open a Page Core Action — intake from https://salesforcebreak.com/2026/06/04/open-a-page-action-screen-flow/ (url mode)."
+  notes: "Intake triage 2026-07-08T21:10:39Z: COVERED; search_knowledge top hits: flow/flow-action-framework (5.19135131479902). License class: clean-room."
+  history:
+    - { at: "2026-07-08T21:10:39Z", status: "DUPLICATE", actor: "onboard_source" }
+- id: "screen-flow-post-completion-navigation-and-redirect"
+  status: "DUPLICATE"
+  skill: "screen-flow-post-completion-navigation-and-redirect"
+  summary: "Screen Flow Post-Completion Navigation and Redirect — intake from https://salesforcebreak.com/2026/06/04/open-a-page-action-screen-flow/ (url mode)."
+  notes: "Intake triage 2026-07-08T21:10:39Z: COVERED; search_knowledge top hits: flow/screen-flows (6.099244914902337), lwc/lwc-in-flow-screens (2.7934490573537336). License class: clean-room."
+  history:
+    - { at: "2026-07-08T21:10:39Z", status: "DUPLICATE", actor: "onboard_source" }
+- id: "flow-action-redirect-to-external-url"
+  status: "RESEARCH"
+  skill: "flow-action-redirect-to-external-url"
+  summary: "Flow Action Redirect to External URL — intake from https://salesforcebreak.com/2026/06/04/open-a-page-action-screen-flow/ (url mode)."
+  notes: "Intake triage 2026-07-08T21:10:39Z: NET_NEW; search_knowledge top hits: security/oauth-redirect-and-domain-strategy (1.5056775441955166). License class: clean-room."
+  history:
+    - { at: "2026-07-08T21:10:39Z", status: "RESEARCH", actor: "onboard_source" }

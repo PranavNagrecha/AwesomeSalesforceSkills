@@ -22,3 +22,9 @@
 - SOQL and SOSL Reference SOSL - https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_sosl.htm
 - Apex Developer Guide SOSL - https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_SOSL.htm
 - Search Manager Overview - https://help.salesforce.com/s/articleView?id=sf.search_manager_overview.htm&type=5
+- SOSL USING ListView Clause - https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_sosl_using_listview.htm
+- SOSL FIND Syntax - https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_sosl_syntax.htm
+- SOQL Reserved Characters - https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_reservedcharacters.htm
+- SOQL Quoted String Escape Sequences - https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_quotedstringescapes.htm
+- SOSL FIND Clause Reserved Characters - https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_sosl_find.htm
+- Salesforce Help: SOQL LIKE Underscore Escape In Apex - https://help.salesforce.com/s/articleView?id=000382866&language=en_US&type=1

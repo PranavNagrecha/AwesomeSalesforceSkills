@@ -109,3 +109,38 @@ drop fields (geocode, stateCode) silently. Explicit mapping is stable.
 ```
 
 **Detection hint:** Integration code serializing a compound field directly and deserializing back into the compound.
+
+---
+
+## Anti-Pattern 6: Using `=` with DISTANCE or binding the DISTANCE unit
+
+**What the LLM generates:**
+
+```
+// Equality on an approximate distance
+WHERE DISTANCE(Location__c, GEOLOCATION(:lat, :lon), 'mi') = 5
+
+// Or binding the unit parameter like any other value
+String unit = 'mi';
+[SELECT Id FROM Store__c
+ WHERE DISTANCE(Location__c, GEOLOCATION(:lat, :lon), :unit) < 25]
+```
+
+**Why it happens:** Model treats DISTANCE like a normal numeric field
+(so `=` seems valid) and assumes every SOQL argument is bindable.
+
+**Correct pattern:**
+
+```
+DISTANCE in WHERE supports only > and < (within / beyond a radius) — there is
+no =, >=, or <= because the value is approximate. The unit must be a literal
+'mi' or 'km'; Apex bind variables aren't supported for the units parameter
+(coordinate binds like GEOLOCATION(:lat, :lon) are fine). The location field
+must come first and GEOLOCATION second.
+
+WHERE DISTANCE(Location__c, GEOLOCATION(:lat, :lon), 'mi') < 5
+```
+
+**Detection hint:** `DISTANCE(...)` compared with `=`, `>=`, or `<=`; a bind
+variable (`:unit`) in the third DISTANCE argument; or `GEOLOCATION(...)`
+appearing before the location field.

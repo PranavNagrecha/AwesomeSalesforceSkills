@@ -14,6 +14,8 @@ triggers:
   - "scheduled Apex fires at the wrong wall-clock time after daylight saving changes"
   - "a Flow DateTime comparison gives incorrect results compared to what the user entered"
   - "a Datetime stored via API shows the wrong date in the UI"
+  - "group a SOQL aggregate query by the user's local day or hour instead of UTC"
+  - "convert a dateTime field to the user's timezone inside a SOQL query"
 tags:
   - datetime
   - timezone
@@ -33,9 +35,9 @@ outputs:
   - "Pattern guidance for safe Datetime storage, display, and arithmetic"
   - "Explanation of which layer (DB, Apex runtime, UI, SOQL engine) applies timezone conversion and which does not"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-07-08
 ---
 
 # Timezone and Datetime Pitfalls
@@ -91,6 +93,26 @@ SOQL date literals (`TODAY`, `LAST_WEEK`, `LAST_N_DAYS:30`, `THIS_MONTH`) are ev
 This means the same SOQL statement can return different record sets depending on who runs it. A record created at `2025-06-15T01:00:00Z` will match `TODAY` for a user in UTC+3 (their local date is June 15) but will match `YESTERDAY` for a user in UTC-5 (their local date is still June 14).
 
 In Apex, the running user for a SOQL query is determined by whether the code runs in user mode or system mode — but the timezone used for date literals is still the **running user's timezone profile**, not the server timezone.
+
+### SOQL convertTimezone() Buckets dateTime Fields in the User's Timezone
+
+SOQL returns `dateTime` field values as UTC by default. The `convertTimezone()` function converts a `dateTime` field to the running user's timezone so that date and hour grouping reflects the user's local calendar rather than UTC. It is the SOQL-native counterpart to the offset-shifting you would otherwise do in Apex before extracting a date.
+
+Two constraints make this function easy to misuse:
+
+- **It cannot stand alone.** `convertTimezone()` is only valid *nested inside a SOQL date function* — for example `HOUR_IN_DAY(convertTimezone(CreatedDate))` or `DAY_ONLY(convertTimezone(CreatedDate))`. `SELECT convertTimezone(CreatedDate)` is not a valid query.
+- **The wrapping date function must be repeated verbatim in `GROUP BY`.** Any date function in the `SELECT` clause must also appear identically in `GROUP BY`, and that rule includes the `convertTimezone()` call nested inside it.
+
+```apex
+// Opportunities bucketed by the hour of day they were created, in the user's timezone
+AggregateResult[] byHour = [
+    SELECT HOUR_IN_DAY(convertTimezone(CreatedDate)) hourBucket, SUM(Amount) total
+    FROM Opportunity
+    GROUP BY HOUR_IN_DAY(convertTimezone(CreatedDate))
+];
+```
+
+`HOUR_IN_DAY()` and `DAY_ONLY()` — the functions most commonly wrapped around `convertTimezone()` — operate only on `dateTime` fields, not `Date` fields. `DAY_ONLY()` returns the date portion of the `dateTime`; without `convertTimezone()` that date portion is the UTC date, the same off-by-one trap as `.date()` in Apex (see Gotcha 3 in references/gotchas.md).
 
 ### Datetime.format() and Timezone-Aware Formatting
 
@@ -163,6 +185,28 @@ Datetime localDt = myDatetime.addSeconds(tz.getOffset(myDatetime) / 1000);
 Date localDate = localDt.date();
 ```
 
+### Time-Zone-Correct Day or Hour Bucketing in SOQL
+
+**When to use:** Aggregate reporting queries that count or sum records grouped by the user's local calendar day or hour — "opportunities created by hour", "cases opened per day" — without pulling every raw row into Apex to re-bucket.
+
+**How it works:**
+
+Wrap the `dateTime` field in `convertTimezone()`, wrap that in the date function you are grouping by, and repeat the whole expression in `GROUP BY`:
+
+```apex
+AggregateResult[] casesByDay = [
+    SELECT DAY_ONLY(convertTimezone(CreatedDate)) localDay, COUNT(Id) cnt
+    FROM Case
+    WHERE CreatedDate = LAST_N_DAYS:30
+    GROUP BY DAY_ONLY(convertTimezone(CreatedDate))
+    ORDER BY DAY_ONLY(convertTimezone(CreatedDate))
+];
+```
+
+**Why not bare `DAY_ONLY(CreatedDate)`:** Without `convertTimezone()` the date portion is extracted in UTC, so records created in the evening UTC hours land in the wrong local-day bucket for users east of UTC. Wrapping with `convertTimezone()` shifts the bucketing to the running user's timezone inside the SOQL engine, so you avoid querying raw rows and re-bucketing in Apex.
+
+**Tradeoff:** Because `convertTimezone()` uses the *running user's* timezone, an aggregate refreshed by users in different timezones can still produce different buckets. When you need a single fixed timezone regardless of who runs the query, compute explicit UTC range boundaries in Apex instead (see Example 2 in references/examples.md).
+
 ---
 
 ## Decision Guidance
@@ -171,6 +215,7 @@ Date localDate = localDt.date();
 |---|---|---|
 | Need today's date in Apex for the running user | `UserInfo.getTimeZone()` + `Datetime.now().addSeconds(offset/1000).date()` | `Date.today()` returns server UTC date, not user's local date |
 | SOQL filter by date must be timezone-independent | Use explicit ISO 8601 bind variable or date range in WHERE clause | Date literals depend on running user's timezone; explicit ranges are deterministic |
+| Aggregate SOQL must group by the user's local day or hour | Wrap the field: `DAY_ONLY(convertTimezone(field))` / `HOUR_IN_DAY(convertTimezone(field))`, repeated verbatim in `GROUP BY` | Bare `DAY_ONLY()`/`HOUR_IN_DAY()` bucket in UTC; `convertTimezone()` shifts to the running user's timezone, and `convertTimezone()` is only valid nested in a date function |
 | Displaying Datetime in a specific timezone | `dt.format('pattern', 'Timezone/ID')` | No-arg `format()` uses running user's locale, which varies by context |
 | Storing a Datetime received from an external API | Parse ISO 8601 with offset via `JSON.deserialize` or `Datetime.newInstanceGmt` | `Datetime.newInstance` uses server local timezone, not UTC |
 | Extracting a Date from a Datetime for a user | Shift Datetime by user's `getOffset()` before calling `.date()` | `.date()` extracts UTC date, not local date |
@@ -197,6 +242,7 @@ Date localDate = localDt.date();
 - [ ] SOQL date literals (`TODAY`, `THIS_WEEK`, etc.) are intentional; dynamic SOQL using explicit ranges used where timezone-independence is required
 - [ ] `Datetime.format()` calls include an explicit timezone string where output timezone matters
 - [ ] `Datetime.date()` calls that feed Date fields have been verified to extract the correct local date, not the UTC date
+- [ ] Aggregate SOQL that buckets by local day/hour wraps the field in `convertTimezone()` (nested inside `DAY_ONLY()`/`HOUR_IN_DAY()` and repeated in `GROUP BY`), or documents that UTC bucketing is intentional
 - [ ] Scheduled Apex fire times are calculated in UTC using the target date's offset, not a fixed offset
 - [ ] Test classes include at least one `System.runAs()` with a non-UTC timezone user for any date/time-sensitive logic
 

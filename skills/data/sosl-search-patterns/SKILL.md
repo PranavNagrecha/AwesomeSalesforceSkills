@@ -12,6 +12,7 @@ tags:
   - find-clause
   - search-layouts
   - injection
+  - list-view
 triggers:
   - "when should I use SOSL instead of SOQL"
   - "cross object search in Salesforce Apex"
@@ -19,6 +20,10 @@ triggers:
   - "FIND clause wildcard behavior"
   - "search layouts for global search style results"
   - "search query isn't working"
+  - "scope a SOSL search to a single list view"
+  - "search within a Salesforce list view using SOSL"
+  - "escape reserved characters in a SOSL FIND clause"
+  - "escape a special character in a SOQL LIKE query"
 inputs:
   - "search use case and whether it spans one object or many"
   - "expected result volume and UI shape"
@@ -28,9 +33,9 @@ outputs:
   - "review findings for search performance and injection risk"
   - "search pattern for result shaping and object grouping"
 dependencies: []
-version: 1.0.0
+version: 1.2.0
 author: Pranav Nagrecha
-updated: 2026-03-13
+updated: 2026-07-08
 ---
 
 # Sosl Search Patterns
@@ -67,6 +72,14 @@ Static SOSL with bind variables is the clean path. Dynamic `Search.query` usage 
 
 Search is a user-experience feature first. Teams should design for top matches, sensible caps, and clear object grouping instead of flooding the page with everything the platform can return.
 
+### A Search Can Be Scoped To One List View
+
+The optional `USING ListView=<Name>` clause narrows a `RETURNING` object to the records inside a single named list view instead of the whole object. Salesforce searches only the first 2,000 records of that list view, using the sort order the user has set on the view, so the clause is a scoping decision — the list view defines which records are eligible before the `FIND` text is matched. Only one list view can be specified, the clause is available in API version 41 or later, and it works in SOAP API, REST API, and Apex.
+
+### Reserved Characters And Escaping Differ Between SOQL And SOSL
+
+The two languages do not share a reserved-character set. SOQL reserves only the single quote (`'`) and the backslash (`\`); both must be preceded by a backslash when they appear as literals inside a quoted string, and the backslash is SOQL's escape character for a fixed table of sequences (`\n`, `\r`, `\t`, `\b`, `\f`, `\"`, `\'`, `\\`, `\uXXXX`, plus `\_` and `\%` that apply only inside `LIKE`). SOSL's `FIND` clause reserves a much larger set — `? & | ! { } [ ] ( ) ^ ~ * : \ " ' + -` — because that punctuation drives its Boolean and proximity syntax, and escaping is required even when the search string is wrapped in double quotes. Getting this wrong is not silently tolerated: an unescaped reserved character, or a backslash used outside a defined escape sequence, raises an error rather than matching literally.
+
 ---
 
 ## Common Patterns
@@ -101,6 +114,7 @@ Search is a user-experience feature first. Teams should design for top matches, 
 | Query targets one object with precise filters | SOQL | Better relational filtering and control |
 | Search term comes from user input in Apex | Static SOSL or carefully sanitized dynamic SOSL | Reduces injection and syntax risk |
 | UI needs controlled display fields and object grouping | SOSL plus shaped result mapping | Better fit than improvised SOQL fan-out |
+| Search must be limited to the records in one saved list view | SOSL with `USING ListView=<Name>` | Reuses the org's own view definition instead of duplicating its filter (API v41+) |
 
 ---
 
@@ -127,6 +141,7 @@ Run through these before marking work in this area complete:
 - [ ] Search layouts or display-field choices are intentional.
 - [ ] The design switches to SOQL once the workflow becomes object-specific.
 - [ ] Wildcard and relevance expectations are documented for the experience.
+- [ ] Reserved characters are escaped for the right language — `'` and `\` in SOQL, SOSL's larger `FIND` set — before a literal search term is run.
 
 ---
 
@@ -138,6 +153,7 @@ Non-obvious platform behaviors that cause real production problems:
 2. **Dynamic `Search.query` is the risky path** - string-built search text creates avoidable injection and syntax issues.
 3. **Search experiences need display discipline** - technically valid results can still feel unusable in the UI.
 4. **Many "search" problems are really SOQL problems** - picking SOSL too early can complicate exact filtering work.
+5. **`USING ListView` scopes a search to one saved list view** - it reuses the view's own filter and sort instead of the whole object and requires API version 41 or later.
 
 ---
 

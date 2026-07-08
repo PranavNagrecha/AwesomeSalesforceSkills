@@ -14,6 +14,8 @@ triggers:
   - "formula field currency conversion gotcha"
   - "roll-up summary across currencies opportunities"
   - "enable multi currency irreversible salesforce"
+  - "querying currency fields with convertcurrency in soql where and order by"
+  - "querying data cloud dlo dmo currency data soql iso code"
 tags:
   - multi-currency
   - currency-iso-code
@@ -29,9 +31,9 @@ outputs:
   - "Formula-field design that survives multi-currency without producing nonsense values"
   - "Roll-up / report design that respects corporate vs record currency"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-05-05
+updated: 2026-07-08
 ---
 
 # Currency Management Patterns
@@ -83,18 +85,82 @@ SELECT Amount, CurrencyIsoCode FROM Opportunity
 SELECT convertCurrency(Amount), CurrencyIsoCode FROM Opportunity
 ```
 
-`convertCurrency()` uses the static `CurrencyType.ConversionRate` — it
-does **not** consult `DatedConversionRate`, even when ACM is enabled.
-Reports built against the same field can produce different numbers
-than the SOQL-converted value because reports do consult dated rates
-for the eligible standard fields.
+`convertCurrency()` converts to the running user's currency and
+requires multiple currencies to be enabled. Which rate it applies
+depends on ACM. **Without** ACM it uses the current
+`CurrencyType.ConversionRate` (the most recent conversion date
+entered). **With** ACM it uses the dated rate that corresponds to the
+record's date field — for example `CloseDate` on opportunities — for
+the ACM-eligible standard fields (opportunities, opportunity line
+items, and opportunity history). For those fields `convertCurrency()`
+and standard reports agree. Fields outside the ACM-eligible set —
+custom currency fields, formula fields, roll-up summaries — always
+convert at the static `CurrencyType.ConversionRate`, even when ACM is
+on, so an as-of-date value on those fields still requires an explicit
+`DatedConversionRate` lookup.
+
+## Querying currency fields: what SOQL allows and forbids
+
+`convertCurrency()` is only valid in the `SELECT` clause. Two clauses
+reject it outright:
+
+- **`WHERE`** — `convertCurrency()` returns an error in a `WHERE`
+  clause. To filter by a value expressed in a specific currency, use
+  an ISO-code-qualified literal in place of a bare number:
+  `WHERE Amount > USD5000`. The literal is the ISO code immediately
+  followed by the value, no space.
+- **`ORDER BY`** — `convertCurrency()` can't be combined with
+  `ORDER BY`. Ordering on a currency field already runs against the
+  converted value, the same way reports sort, so no wrapper is needed.
+
+Aggregates change the currency out from under you. When a query has a
+`GROUP BY` or `HAVING` clause, currency data returned by an aggregate
+function such as `SUM()` or `MAX()` comes back in the org's default
+(corporate) currency — not the running user's currency, and not
+something `convertCurrency()` can redirect. You also can't wrap an
+aggregate in `convertCurrency()`, and you can't compare an aggregated
+currency value against an ISO-code literal.
+
+To render a converted amount as a locale-correct string, wrap the
+conversion in `FORMAT()`:
+
+```apex
+SELECT Amount, FORMAT(convertCurrency(Amount)) convertedCurrency
+FROM Opportunity WHERE Id = :oppId
+```
+
+## Data Cloud (DLO/DMO) currency query considerations
+
+Salesforce's page titled *Considerations for Querying Currency Data
+Using SOQL* is scoped specifically to Data Cloud objects — data lake
+objects (DLOs) and data model objects (DMOs) — not standard sObjects.
+Data Cloud currency semantics diverge from the core platform in four
+ways:
+
+- **ISO code lives in a different field.** Query the ISO code of a
+  Data Cloud record through the `cdp_sys_record_currency__c` system
+  field, not the standard `CurrencyIsoCode`.
+- **`toLabel(CurrencyIsoCode)` needs an alias in `SELECT`.** Selecting
+  `CurrencyIsoCode` from a DLO/DMO requires wrapping it in `toLabel()`
+  *and* giving it an alias —
+  `SELECT toLabel(CurrencyIsoCode) CurrencyCodeAlias, Currency__c FROM <DMO>`.
+  The alias is mandatory in `SELECT`; it isn't required when a currency
+  field appears in a `WHERE` or `ORDER BY` clause.
+- **All-null currency values mean a bad ISO code.** If a Data Cloud
+  SOQL query returns null for every currency field, the record's ISO
+  code is unsupported or invalid — verify it's configured as a
+  supported currency in the org's Manage Multiple Currencies setup.
+- **`convertCurrency()` doesn't round Data Cloud fields.** On currency
+  fields from Data Cloud objects, `convertCurrency()` does not round
+  the result to the org's configured decimal places for the currency.
+  Round in the consuming layer if exact presentation matters.
 
 ## Recommended Workflow
 
 1. **Confirm multi-currency status.** Setup -> Company Information shows whether multi-currency is enabled. If it is enabled, `CurrencyIsoCode` is on every currency-aware object. If considering enabling: it is irreversible. Plan accordingly.
 2. **Confirm ACM status.** Advanced Currency Management is a separate switch and only adds dated rates for a specific subset of fields. Enumerate which fields are in scope from the official ACM coverage list before designing.
 3. **Audit formula fields that mix currencies.** A formula like `Amount + Discount__c` where the two fields are in different currencies produces a meaningless number. The platform does not auto-convert. Either constrain both fields to the same currency, use a single-currency parent record, or compute the conversion explicitly.
-4. **Design SOQL queries with `convertCurrency()` deliberately.** When the calling code needs corporate-currency totals, use `convertCurrency()`. When it needs the record's native currency for display alongside its currency code, do not use it.
+4. **Design SOQL queries with `convertCurrency()` deliberately.** When the calling code needs a total converted to the running user's currency, use `convertCurrency()` (only in `SELECT`; filter with an ISO-code literal like `Amount > USD5000`, never `convertCurrency()` in `WHERE`). When it needs the record's native currency for display alongside its currency code, do not use it. Remember grouped aggregates return the org's default currency regardless.
 5. **Validate roll-up summaries cross-currency.** A roll-up sum on Account.Total_Open_Amount across child Opportunities in different currencies will sum the raw numeric values — meaningless if children are in mixed currencies. Either constrain children to the parent's currency or compute the sum in Apex with explicit conversion.
 6. **Set up the exchange-rate update process.** `CurrencyType` and `DatedConversionRate` need refreshing. Manual via Setup is the default; for production, integrate against an exchange-rate provider via scheduled Apex.
 7. **Document the rate-source for auditors.** Financial reporting auditors will ask which exchange rate was applied to which record on which date. ACM records this implicitly via `DatedConversionRate`; basic multi-currency does not, so document the rate source and update cadence.

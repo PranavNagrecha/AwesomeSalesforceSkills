@@ -187,7 +187,20 @@ AggregateResult[] results = [
 
 **Why it happens:** `DAY_ONLY()` is a documented SOQL date function and appears in many official examples for grouping by calendar date. LLMs use it as the natural answer to "group by date" without noting that it extracts the UTC date, not the user's local date.
 
-**Correct pattern:** If UTC bucketing is intentional (e.g., a system-level audit), document it explicitly. If local-timezone bucketing is needed, compute UTC boundaries for each local day and use range filters instead of `DAY_ONLY()`, or perform the bucketing in Apex after querying the raw Datetime values.
+**Correct pattern:** If UTC bucketing is intentional (e.g., a system-level audit), document it explicitly. If local-timezone bucketing is needed, the SOQL-native fix is to wrap the field in `convertTimezone()` inside the date function so the SOQL engine buckets in the running user's timezone:
+
+```apex
+// convertTimezone() shifts bucketing to the running user's timezone; it must stay
+// nested inside the date function and be repeated verbatim in GROUP BY
+AggregateResult[] results = [
+    SELECT DAY_ONLY(convertTimezone(CreatedDate)) dayBucket, COUNT(Id) cnt
+    FROM Case
+    GROUP BY DAY_ONLY(convertTimezone(CreatedDate))
+    ORDER BY DAY_ONLY(convertTimezone(CreatedDate))
+];
+```
+
+When you need a single fixed timezone regardless of who runs the query (not just the running user's), compute UTC boundaries for each local day and use range filters, or perform the bucketing in Apex after querying the raw Datetime values.
 
 ```apex
 // If user-timezone bucketing is required, query raw CreatedDate and bucket in Apex

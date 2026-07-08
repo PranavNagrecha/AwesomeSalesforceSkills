@@ -16,6 +16,7 @@ dependencies:
   skills:
     - admin/agent-output-formats
     - agentforce/agentforce-custom-lightning-types
+    - apex/soql-for-view-and-for-reference
     - lwc/aura-to-lwc-migration
     - lwc/commerce-lwc-components
     - lwc/common-lwc-runtime-errors
@@ -244,6 +245,7 @@ Produces a full Lightning Web Component bundle for a described feature: `.js`, `
 89. `skills/lwc/multi-framework-ui-bundles` — multi framework ui bundles
 90. `skills/lwc/lightning-out-2-embedding` — lightning out 2 embedding
 91. `skills/lwc/lwc-local-development` — lwc local development
+92. `skills/apex/soql-for-view-and-for-reference` — soql for view and for reference
 
 ---
 

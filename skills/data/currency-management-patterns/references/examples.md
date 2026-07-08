@@ -1,6 +1,6 @@
 # Examples — Currency Management Patterns
 
-## Example 1 — `convertCurrency()` does not consult dated rates
+## Example 1 — `convertCurrency()` and dated rates under ACM
 
 **Context.** Org has Advanced Currency Management enabled. Finance
 runs a SOQL-driven backfill in Apex:
@@ -13,16 +13,22 @@ List<Opportunity> opps = [
 ];
 ```
 
-**The bug.** `convertCurrency()` uses the static
-`CurrencyType.ConversionRate`, even when ACM is enabled. Opportunities
-closed 18 months ago are converted at today's rate, not the rate
-that was effective on `CloseDate`. The Lightning UI and standard
-Opportunity reports display the dated rate, producing a discrepancy
-between Apex output and the report.
+**What actually happens.** Under ACM, `convertCurrency(Amount)` on an
+Opportunity uses the dated exchange rate that corresponds to
+`CloseDate`, not today's rate. `Amount` is an ACM-eligible field, so
+the SOQL-converted value matches what the standard Opportunity report
+shows. The common mistake is assuming `convertCurrency()` always uses
+the current rate and then hand-rolling a `DatedConversionRate` lookup
+to "fix" a discrepancy that doesn't exist for this field. (The
+converted value is in the running user's currency, not necessarily
+corporate.)
 
-**Right answer.** Either accept the static-rate semantics for SOQL
-(document it), or compute the dated conversion explicitly by
-querying `DatedConversionRate`:
+**When you DO need the manual lookup.** ACM's dated rates cover only a
+defined set of standard fields (opportunities, opportunity line items,
+opportunity history). For a value that isn't ACM-eligible — a custom
+currency field, a formula input, or any field when ACM is off — an
+as-of-date conversion requires an explicit `DatedConversionRate`
+query:
 
 ```apex
 DatedConversionRate r = [
@@ -34,7 +40,7 @@ DatedConversionRate r = [
 ];
 ```
 
-Then apply `r.ConversionRate` manually to `opp.Amount`.
+Then apply `r.ConversionRate` manually to the non-eligible field.
 
 ---
 
@@ -142,5 +148,110 @@ Notes:
 | Total revenue in corporate currency for a dashboard | Yes | Dashboard expects single-currency totals |
 | Editing an Opportunity record (display Amount in the rep's currency) | No | Need the record's native value |
 | Comparing budget across regions | Yes | Apples-to-apples requires single currency |
-| Financial-period audit query | No (use `DatedConversionRate` explicitly) | `convertCurrency()` uses static rate; audit needs dated rate |
-| Cross-currency aggregations in a controller | Yes (and document the static-rate semantics) | Better than re-implementing rate lookup |
+| Financial-period audit on Opportunity `Amount` (ACM on) | Yes | Under ACM, `convertCurrency()` on `Amount` uses the `CloseDate` dated rate and matches reports |
+| Financial-period audit on a custom currency field | No (use `DatedConversionRate` explicitly) | Custom fields aren't ACM-eligible; `convertCurrency()` uses the static rate |
+| Cross-currency aggregations in a controller | Yes for per-row conversion; note grouped aggregates return the org default currency | Wrapping an aggregate in `convertCurrency()` isn't allowed |
+| Filtering by a currency threshold | No (`convertCurrency()` is banned in `WHERE`) | Use an ISO-code literal such as `Amount > USD5000` |
+
+---
+
+## Example 7 — Filtering by a currency threshold (`convertCurrency()` is banned in `WHERE`)
+
+**Context.** A controller needs opportunities worth more than 5,000
+US dollars, across mixed-currency records.
+
+**The bug.**
+
+```apex
+// Throws an error — convertCurrency() is not allowed in WHERE
+SELECT Id FROM Opportunity WHERE convertCurrency(Amount) > 5000
+```
+
+**Right answer.** `convertCurrency()` is only valid in `SELECT`. To
+filter by a value in a stated currency, use an ISO-code-qualified
+literal — the ISO code immediately followed by the number, no space:
+
+```apex
+SELECT Id, convertCurrency(Amount) FROM Opportunity WHERE Amount > USD5000
+```
+
+The literal denominates the threshold in US dollars and the platform
+handles the cross-currency comparison. `convertCurrency()` still
+belongs in the `SELECT` list if you also want the converted amount
+back. If you genuinely need "converted value above X", fetch the
+converted alias and filter in Apex.
+
+---
+
+## Example 8 — Grouped aggregates return the corporate currency, not the user's
+
+**Context.** A dashboard controller sums opportunity Amount by owner:
+
+```apex
+SELECT OwnerId, SUM(Amount) total
+FROM Opportunity
+GROUP BY OwnerId
+```
+
+**Behavior.** With a `GROUP BY` (or `HAVING`) clause, the currency
+value returned by `SUM()` (or `MAX()`, etc.) is in the org's default
+(corporate) currency — not the running user's currency, and not
+something you can redirect with `convertCurrency()`. You also can't
+wrap the aggregate in `convertCurrency()`, and you can't compare an
+aggregated currency value against an ISO-code literal.
+
+**Right answer.** Treat grouped aggregate currency results as
+corporate-currency figures and label them as such in the UI. If
+per-user-currency totals are required, select `convertCurrency(Amount)`
+per row and aggregate in Apex.
+
+---
+
+## Example 9 — Locale-formatted converted currency with `FORMAT()`
+
+**Context.** A Lightning controller returns a converted amount already
+formatted for the user's locale, avoiding client-side formatting.
+
+```apex
+SELECT Amount, FORMAT(convertCurrency(Amount)) convertedCurrency
+FROM Opportunity WHERE Id = :oppId
+```
+
+**Behavior.** `FORMAT()` wraps `convertCurrency()` to render the
+converted value as a locale-appropriate currency string (grouping
+separators, symbol, decimal places per the user's locale). The aliased
+field (`convertedCurrency`) comes back as a formatted string, so
+downstream code must treat it as text, not a number.
+
+---
+
+## Example 10 — Querying currency on a Data Cloud DLO/DMO
+
+**Context.** A SOQL query runs against a Data Cloud data model object
+(DMO) that carries a currency field.
+
+**The trap.** Data Cloud objects don't behave like standard sObjects
+for currency:
+
+```apex
+// Fails — toLabel(CurrencyIsoCode) needs an alias in SELECT
+SELECT toLabel(CurrencyIsoCode), Currency__c FROM <DMO>
+```
+
+**Right answer.**
+
+```apex
+SELECT toLabel(CurrencyIsoCode) CurrencyCodeAlias, Currency__c FROM <DMO>
+```
+
+- The alias on `toLabel(CurrencyIsoCode)` is mandatory in `SELECT`
+  (not in `WHERE` / `ORDER BY`).
+- To read the raw ISO code of a Data Cloud record, use the
+  `cdp_sys_record_currency__c` system field rather than
+  `CurrencyIsoCode`.
+- If every currency field comes back null, the record's ISO code is
+  unsupported or invalid — check the org's Manage Multiple Currencies
+  setup.
+- `convertCurrency()` on a Data Cloud currency field does not round to
+  the org's configured decimal places, so round in the consuming layer
+  if presentation precision matters.

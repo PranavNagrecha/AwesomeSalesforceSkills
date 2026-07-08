@@ -14,6 +14,8 @@ triggers:
   - "how do I support right-to-left languages like Arabic or Hebrew in Salesforce"
   - "multi language isn't working"
   - "we're having issues with multi language"
+  - "return translated picklist or record type values in a SOQL or SOSL query"
+  - "use toLabel() to show picklist values in the running user's language"
 tags:
   - translation
   - multi-language
@@ -31,9 +33,9 @@ outputs:
   - "Custom label translation setup"
   - "Experience Cloud language switcher configuration"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-07-08
 ---
 
 # Multi-Language and Translation
@@ -83,6 +85,25 @@ Picklist values are translated via Translation Workbench > Translate:
 3. Enter translated values for each language
 
 **Critical rule**: The picklist value API value (the stored database value) does not change when you add translations. Only the displayed label changes. Validation rules and Apex should use the API value, not the translated label.
+
+### Querying Translated Labels with `toLabel()`
+
+Translation Workbench and custom labels translate what users see in the standard UI, but query results return the master (default-language) value by default. So an LWC or Apex controller that renders values from its own SOQL — a custom console list, a report-style component, an Experience Cloud data table — will show English to a Spanish user even when the translations exist. The `toLabel()` SOQL/SOSL function returns the translation for the running user's language instead.
+
+- Wrap the field in the `SELECT` clause: `SELECT Company, toLabel(Status) FROM Lead`.
+- Supported fields: regular, multiselect, division, and currency-code picklists; data category group and data category unique-name fields; and record type names (`toLabel(RecordType.Name)`).
+- Any org can use `toLabel()`; it is most useful once Translation Workbench is enabled. When a value has no translation, it falls back to the master (default-language) value, so a single query serves every language.
+- The SOSL equivalent lives in the `RETURNING` clause: `FIND {Joe} RETURNING Lead(Company, toLabel(RecordType.Name))`.
+
+Query-clause restrictions (these are the ones that fail silently or won't compile):
+
+- **No `ORDER BY` on a `toLabel()` field** — SOQL always sorts by the picklist's defined order, never by the translated text.
+- **Alias required when the same field appears twice** — e.g. returning both the raw value (for logic) and the translated value (for display): `SELECT Status, toLabel(Status) translatedStatus FROM Lead`.
+- **You can filter a picklist on its label** — `WHERE toLabel(Status) = 'le Draft'` matches the translated label. But `LIKE` only matches the label text, never the API name.
+- **You cannot filter on a translated record type name** — filter on the master value or the record type Id instead.
+- **No `toLabel()` in a `WHERE` clause for division or currency ISO-code picklists.**
+
+This is the display-side complement to the API-value rule above: use the API value wherever a comparison drives behavior (Apex, validation rules, routing filters), and reach for `toLabel()` only when the goal is to *show* translated values in query output.
 
 ### Experience Cloud Language Switcher
 
@@ -138,6 +159,7 @@ For Arabic (ar), Hebrew (iw/he), or other RTL languages:
 | Translating strings in Apex/VF/Flow | Custom Labels with per-language translations | Labels are the standard translation mechanism for code strings |
 | Large-scale translation (100+ items) | Export/import via Translation Workbench spreadsheet | Enables vendor translation workflow |
 | Experience Cloud multi-language | Language Switcher component + Translation Workbench | Native Experience Cloud localization |
+| Returning translated picklist / record-type values in a query | `toLabel(field)` in SOQL `SELECT` or SOSL `RETURNING` | Returns the running user's language; falls back to master value when untranslated |
 | RTL support | Enable RTL language, test custom components | Custom LWC may need CSS direction adjustments |
 
 ---
@@ -171,6 +193,7 @@ For Arabic (ar), Hebrew (iw/he), or other RTL languages:
 1. **Picklist API value does NOT change with translation** — Translations only affect the displayed label. Validation rules, Apex conditions, and SOQL WHERE clauses must use the API value (the English/default language value), not the translated label.
 2. **Translation Workbench export includes metadata you may not intend to translate** — The export for a language includes all translatable metadata. Review the export carefully before sending to a vendor to avoid including internal/system labels that should not change.
 3. **RTL support requires more than enabling the language** — Native Lightning Experience and standard components support RTL. Custom LWC components and Experience Cloud custom templates may need explicit CSS `direction: rtl` adjustments.
+4. **`toLabel()` has query-clause restrictions** — see the *Querying Translated Labels with `toLabel()`* section above for the full list (no `ORDER BY`, no record-type-name filter, no `WHERE` on division/currency ISO-code picklists, alias-when-duplicated, `LIKE` matches label only). Treat it as a display-only projection.
 
 ---
 

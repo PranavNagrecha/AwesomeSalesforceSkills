@@ -192,3 +192,46 @@ public List<AggregateResult> start(Database.BatchableContext bc) {
 ```
 
 **Detection hint:** `Database.getQueryLocator(...)` where the SOQL string contains `GROUP BY`.
+
+---
+
+## Anti-Pattern 7: Detecting ROLLUP/CUBE Subtotals With a Null Check Instead of GROUPING()
+
+**What the LLM generates:**
+
+```apex
+List<AggregateResult> results = [
+    SELECT LeadSource, Rating, COUNT(Name) cnt
+    FROM Lead
+    GROUP BY ROLLUP(LeadSource, Rating)
+];
+for (AggregateResult ar : results) {
+    if (ar.get('LeadSource') == null) {
+        // "grand total" — WRONG when LeadSource is a nullable field
+    }
+}
+```
+
+**Why it happens:** The visible pattern in most ROLLUP tutorials is "subtotal rows have null in the rolled-up column," so the model reaches for a null check. It doesn't reason about the case the docs call out — a grouped field that itself holds a genuine null — where the subtotal placeholder null and a real null are the same value, so the check misclassifies real detail rows.
+
+**Correct pattern:**
+
+```apex
+List<AggregateResult> results = [
+    SELECT LeadSource, Rating,
+           GROUPING(LeadSource) grpLS,
+           GROUPING(Rating)     grpRating,
+           COUNT(Name)          cnt
+    FROM Lead
+    GROUP BY ROLLUP(LeadSource, Rating)
+];
+for (AggregateResult ar : results) {
+    Integer grpLS     = (Integer) ar.get('grpLS');     // 1 = subtotal for LeadSource
+    Integer grpRating = (Integer) ar.get('grpRating');  // 1 = subtotal for Rating
+    if (grpLS == 1 && grpRating == 1) {
+        // grand total
+    }
+}
+```
+
+**Detection hint:** A `get('<dimension>') == null` branch used to classify ROLLUP/CUBE rows when the dimension is a nullable picklist or lookup, with no `GROUPING(...)` column in the SELECT.

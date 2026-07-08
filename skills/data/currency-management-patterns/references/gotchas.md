@@ -20,20 +20,28 @@ of records and reports to validate the impact.
 
 ---
 
-## Gotcha 2: `convertCurrency()` ignores `DatedConversionRate`
+## Gotcha 2: `convertCurrency()`'s rate depends on ACM and the field
 
-**What happens.** SOQL `SELECT convertCurrency(Amount) FROM
-Opportunity` returns values converted at the static
-`CurrencyType.ConversionRate`, even when ACM is enabled. The same
-field viewed in a standard report uses the dated rate. Apex output
-and report output diverge.
+**What happens.** Whether `SELECT convertCurrency(Amount) FROM
+Opportunity` uses a dated or a static rate depends on two things.
+Without ACM it uses the current `CurrencyType.ConversionRate` (the
+most recent conversion date entered). With ACM it uses the dated rate
+tied to the field's date — `CloseDate` on opportunities — for the
+ACM-eligible standard fields (opportunities, opportunity line items,
+opportunity history), so it matches the standard report. For fields
+that are *not* ACM-eligible (custom currency fields, formula fields,
+roll-up summaries), it always uses the static rate even under ACM.
 
-**When it occurs.** Any Apex / SOQL that expects "the same value the
-report shows" while ACM is enabled.
+**When it occurs.** The two failure modes are opposite: assuming
+`convertCurrency()` never honors dated rates — and hand-rolling a
+`DatedConversionRate` lookup for Opportunity `Amount` that isn't
+needed — or assuming it honors dated rates for a custom currency
+field, which it doesn't.
 
-**How to avoid.** Explicitly query `DatedConversionRate` when you
-need the historical-as-of rate. Document for callers that
-`convertCurrency()` is the static-rate path.
+**How to avoid.** For ACM-eligible standard fields, trust
+`convertCurrency()` to match reports. For an as-of-date value on a
+non-eligible field, or when ACM is off, query `DatedConversionRate`
+explicitly.
 
 ---
 
@@ -110,9 +118,11 @@ its USD-equivalent is over 100K.
 **When it occurs.** Filters expressed in "amount above X" without
 specifying which currency X is in.
 
-**How to avoid.** Either compare in a uniform currency (use
-`convertCurrency()` in the SELECT and filter on the converted alias
-where supported) or document the filter as "native-currency >= X".
+**How to avoid.** `convertCurrency()` can't appear in a `WHERE`
+clause. To filter by a value in a stated currency, use an
+ISO-code-qualified literal — `WHERE Amount > USD5000` — or document
+the filter as "native-currency >= X". If you need "converted value
+above X", select `convertCurrency(Amount)` and filter in Apex.
 
 ---
 
@@ -144,3 +154,62 @@ corporate currency.
 **How to avoid.** Document explicitly which currency each surface
 displays. For executive dashboards, set the dashboard to display in
 corporate currency to remove ambiguity.
+
+---
+
+## Gotcha 10: `convertCurrency()` is rejected in `WHERE` and `ORDER BY`
+
+**What happens.** `convertCurrency()` is only valid in the `SELECT`
+clause. Putting it in a `WHERE` clause returns an error. It also can't
+be combined with `ORDER BY` — sorting on a currency field already runs
+against the converted value, the same as reports.
+
+**When it occurs.** Code that tries to filter or sort on a converted
+amount, e.g. `WHERE convertCurrency(Amount) > 5000` or
+`ORDER BY convertCurrency(Amount)`.
+
+**How to avoid.** Filter with an ISO-code-qualified literal
+(`WHERE Amount > USD5000`). To sort by converted value, `ORDER BY`
+the field directly — the platform already sorts on the converted
+value. Fall back to sorting in Apex only if you need a different order.
+
+---
+
+## Gotcha 11: Aggregates under `GROUP BY` / `HAVING` return the corporate currency
+
+**What happens.** When a query includes a `GROUP BY` or `HAVING`
+clause, currency data returned by an aggregate function such as
+`SUM()` or `MAX()` comes back in the org's default (corporate)
+currency — not the running user's currency. You can't wrap the
+aggregate in `convertCurrency()`, and you can't compare an aggregated
+currency value against an ISO-code literal.
+
+**When it occurs.** Grouped dashboards and summary controllers that
+present per-group currency totals to users whose currency isn't the
+corporate currency.
+
+**How to avoid.** Label aggregate results as corporate-currency
+figures. For per-user-currency totals, select `convertCurrency(Amount)`
+per row and aggregate in Apex.
+
+---
+
+## Gotcha 12: Data Cloud (DLO/DMO) currency queries follow different rules
+
+**What happens.** SOQL against Data Cloud data lake / data model
+objects diverges from standard sObjects: the ISO code lives in
+`cdp_sys_record_currency__c` (not `CurrencyIsoCode`);
+`toLabel(CurrencyIsoCode)` requires an alias in the `SELECT` clause
+(but not in `WHERE` / `ORDER BY`); an all-null currency result means
+the record's ISO code is unsupported or invalid; and
+`convertCurrency()` on a Data Cloud currency field does not round to
+the org's configured decimal places.
+
+**When it occurs.** Reusing standard-sObject currency query patterns
+against DLOs/DMOs, then hitting query errors, null values, or
+unrounded amounts.
+
+**How to avoid.** Use `cdp_sys_record_currency__c` for the ISO code,
+alias `toLabel(CurrencyIsoCode)` in `SELECT`, verify unsupported ISO
+codes against Manage Multiple Currencies when values come back null,
+and round Data Cloud converted amounts in the consuming layer.

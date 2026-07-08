@@ -19,6 +19,8 @@ triggers:
   - "billing address compound field report column filter"
   - "person account name compound field behavior"
   - "apex serialize compound field to json"
+  - "find nearest records within a radius using soql distance"
+  - "sort soql query results by distance from a geolocation"
 inputs:
   - Fields in scope (Name, Address, Geolocation on standard or custom object)
   - Access context (SOQL, Apex DML, LWC wire, Report)
@@ -29,9 +31,9 @@ outputs:
   - LWC/UI-API access pattern
   - Reporting and filtering plan
 dependencies: []
-version: 1.1.0
+version: 1.2.0
 author: Pranav Nagrecha
-updated: 2026-05-19
+updated: 2026-07-08
 ---
 
 # Compound Field Patterns
@@ -92,7 +94,7 @@ Collect form fields, assign to component fields on new SObject, DML.
 
 ### Pattern: Geolocation proximity search
 
-SOQL supports `DISTANCE(Location__c, GEOLOCATION(lat, lon), 'km')` in SELECT and ORDER BY. Use for store locators.
+`DISTANCE(location1, location2, 'unit')` calculates the distance between two location values; `GEOLOCATION(latitude, longitude)` builds a location from coordinates and must be paired with `DISTANCE`. `DISTANCE()` is supported in `SELECT`, `WHERE`, and `ORDER BY` clauses; `GEOLOCATION()` is supported in `WHERE` and `ORDER BY` only. Neither is supported in `GROUP BY`. Use for store locators — see gotchas.md (Gotcha 6) for the four non-obvious query constraints and examples.md Example 2 for the working Apex pattern.
 
 ### Pattern: Serialize compound to JSON
 
@@ -127,6 +129,7 @@ SOQL supports `DISTANCE(Location__c, GEOLOCATION(lat, lon), 'km')` in SELECT and
 - [ ] State & Country Picklists considered (adds -Code components)
 - [ ] Person Account name semantics documented if Person Accounts enabled
 - [ ] Proximity queries use DISTANCE, not manual math
+- [ ] DISTANCE uses only `>` / `<` operators and a literal `'mi'`/`'km'` unit (location field before GEOLOCATION)
 
 ## Salesforce-Specific Gotchas
 

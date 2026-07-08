@@ -42,7 +42,7 @@ The `DAY_ONLY()` SOQL function extracts the date portion of a Datetime in UTC, n
 
 **When it occurs:** Custom SOQL-backed analytics, LWC dashboards using wire adapters with SOQL aggregates, and any Apex code that groups or counts records by calendar date derived from a Datetime field.
 
-**How to avoid:** For timezone-correct date bucketing, compute the UTC boundaries of the target "day" in the desired timezone explicitly (as shown in Example 2 in examples.md) and use range filters rather than `DAY_ONLY()`. If you must use `DAY_ONLY()`, document that results are UTC-bucketed and adjust expectations — or compensate by querying an adjacent date range.
+**How to avoid:** The platform-native fix is to wrap the field in `convertTimezone()` inside the date function — `DAY_ONLY(convertTimezone(CreatedDate))`, repeated verbatim in `GROUP BY` — which buckets in the running user's timezone rather than UTC. Note that `convertTimezone()` is only valid nested inside a date function; it cannot be selected on its own. Because it uses the running user's timezone, the result still shifts by whoever runs the query. When you need a single fixed timezone for every viewer, compute the UTC boundaries of the target "day" in the desired timezone explicitly (as shown in Example 2 in examples.md) and use range filters rather than `DAY_ONLY()`. If you must use bare `DAY_ONLY()`, document that results are UTC-bucketed and adjust expectations — or compensate by querying an adjacent date range.
 
 ---
 

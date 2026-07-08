@@ -55,3 +55,28 @@ Decimal revenue = (rawVal != null) ? (Decimal) rawVal : 0;
 
 **How to avoid:** Run the aggregate query separately, collect the result IDs or values in Apex, and use them in a subsequent flat query. For Knowledge use cases, remove the aggregate function and use a flat query with `WITH DATA CATEGORY`.
 
+---
+
+## Gotcha 6: A ROLLUP/CUBE Subtotal Placeholder Null Is Indistinguishable From a Real Null
+
+**What happens:** Code detects subtotal rows with `if (ar.get('field') == null)`. For a grouped field that can hold a genuine null — an optional picklist like `LeadSource` or `Rating`, an unset lookup — a real detail row for the "(blank)" bucket produces the same `null` as the subtotal placeholder that ROLLUP/CUBE inserts. The branch fires on both, so genuine data is silently reclassified as a subtotal and dropped from the detail totals.
+
+**When it occurs:** Any ROLLUP or CUBE report where a grouped dimension is nullable, which is the common case for optional picklists and lookups.
+
+**How to avoid:** Use the `GROUPING(fieldName)` function instead of a null check. It returns `1` when the row is a subtotal for that field and `0` when the field carries an actual value (including a genuine null). Add one `GROUPING(field) alias` per rolled-up field, cast each to `Integer`, and branch on the flags:
+
+```apex
+// grp* = 1 means "subtotal for this field"; = 0 means the field holds real data
+Integer grpSource = (Integer) ar.get('grpSource');
+Integer grpRating = (Integer) ar.get('grpRating');
+if (grpSource == 1 && grpRating == 1) {
+    // grand total
+} else if (grpRating == 1) {
+    // subtotal per LeadSource (source may legitimately be null here)
+} else {
+    // detail row — LeadSource/Rating are real values, null included
+}
+```
+
+`GROUPING()` can also be used in the `HAVING` and `ORDER BY` clauses.
+

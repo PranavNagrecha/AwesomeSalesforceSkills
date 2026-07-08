@@ -48,7 +48,9 @@ List<AggregateResult> results = [
 ```apex
 for (AggregateResult ar : results) {
     // Cast each field via get('alias')
-    // Null-guard ROLLUP/CUBE subtotal rows before casting
+    // For ROLLUP/CUBE: branch on GROUPING(field) (1 = subtotal, 0 = data) when a
+    // grouped field is nullable; a bare null check can't tell a real null from a
+    // subtotal placeholder. Null-guard scalar casts either way.
 }
 ```
 
@@ -58,7 +60,7 @@ for (AggregateResult ar : results) {
 - [ ] Apex code uses ar.get('aliasName') with cast — not a typed SObject getter
 - [ ] Result row count (including ROLLUP/CUBE subtotals) is expected to stay under 2,000
 - [ ] Filters on aggregate values use HAVING, not WHERE
-- [ ] ROLLUP/CUBE subtotal rows are null-checked before casting
+- [ ] ROLLUP/CUBE subtotal rows are distinguished with GROUPING() (not a bare null check) when a grouped field is nullable
 - [ ] No aggregate GROUP BY inside an inner/subquery
 - [ ] No WITH DATA CATEGORY combined with GROUP BY
 - [ ] Unit tests cover the aggregate iteration logic

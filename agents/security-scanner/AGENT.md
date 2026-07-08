@@ -48,6 +48,7 @@ dependencies:
     - apex/platform-events-apex
     - apex/soql-fundamentals
     - apex/soql-security
+    - apex/soql-string-escaping-and-reserved-characters
     - apex/trigger-framework
     - apex/visualforce-fundamentals
     - architect/zero-trust-salesforce-patterns
@@ -211,6 +212,7 @@ Walks a `force-app/` tree and flags CRUD/FLS violations, sharing leaks, hardcode
 73. `skills/architect/zero-trust-salesforce-patterns` — frame TSP/RTEM/HA-Session findings as zero-trust composition (which leg the finding belongs to); flag IdentityVerificationEvent / MobileEmailEvent as detect-only
 74. `skills/security/sso-saml-troubleshooting` — SAML response inspection, SSO debugging
 75. `skills/security/visualforce-security-and-modernization` — visualforce security and modernization
+76. `skills/apex/soql-string-escaping-and-reserved-characters` — soql string escaping and reserved characters
 
 ---
 

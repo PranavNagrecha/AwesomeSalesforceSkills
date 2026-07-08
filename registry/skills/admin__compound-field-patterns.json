@@ -6,6 +6,7 @@
     "0bad6fa3767e1de4394c",
     "12ed7c4ecc9190d67207",
     "164fa5cef625dccdfc50",
+    "1798c4e7872c34a05f42",
     "1a2211d9000054bc3ebe",
     "208f82f8967d99545b34",
     "21312e6a642e8da7f855",
@@ -26,6 +27,7 @@
     "4ce79a48125a2558488a",
     "50064b5cc33cfd5d0786",
     "523940b1eeb8e6cf5aed",
+    "53c8120038d33bc2a3e7",
     "554b4858412c708b716e",
     "55e03f0fefe1d59708ca",
     "56c534aa08ba7d563618",
@@ -54,6 +56,8 @@
     "9cbd6cb880e9e66a9109",
     "9d5463f3c72a50800dac",
     "a462ea977f4246e5e284",
+    "a4a3cb790c7756f8da1a",
+    "a5134cb107a5cd713a23",
     "a7c235fb9c9b24dec973",
     "a8766bf01d47c7caea0e",
     "aa0dca745831852cfb46",
@@ -67,6 +71,7 @@
     "c58958b129d37edaba86",
     "c96acf327451461906fd",
     "cd1ab15d4205aa196d9f",
+    "cf7559f993d0e9829848",
     "d44084c8fee5df9ce552",
     "d4607941745ab3e4f09f",
     "db15b4917a309d0897d2",
@@ -79,7 +84,7 @@
     "fe55aa4eec9831b052d2",
     "fe8ed9c1bfce74bb9677"
   ],
-  "content_hash": "99df58105924d3d034e3ffa1dcccdc8d10f58e2cb5519671846f2ee354dc1c12",
+  "content_hash": "17cff4e1bc9685cf3d4c358c427d791eccf02bea0a9d7ad8b9b09157196274e9",
   "dependencies": [],
   "description": "Compound fields (Name, Address, Geolocation): SOQL access rules, DML semantics, component access in Apex/LWC, reporting column behavior, formula field restrictions. NOT for general field design (use custom-field-creation). NOT for address validation services (use address-validation-integration).",
   "file_location": "skills/admin/compound-field-patterns",
@@ -96,6 +101,7 @@
     "Geolocation Compound Field \u2014 Object Reference:",
     "SOQL SELECT with Compound Fields:",
     "Location-Based SOQL Queries (DISTANCE, GEOLOCATION):",
+    "Winter '13 \u2014 Using Apex and SOQL with Geolocation (introduction):",
     "Geolocation Custom Field overview:",
     "Configure State and Country/Territory Picklists:",
     "Impact on Apex Code if State and Country Picklists Feature is Enabled:",
@@ -128,12 +134,12 @@
   "templates": [
     "skills/admin/compound-field-patterns/templates/compound-field-patterns-template.md"
   ],
-  "updated": "2026-05-19",
+  "updated": "2026-07-08",
   "vector_embedding": {
     "backend": "fastembed",
     "dimension": 384,
-    "updated": "2026-05-19",
+    "updated": "2026-07-08",
     "vector_id": "admin/compound-field-patterns"
   },
-  "version": "1.1.0"
+  "version": "1.2.0"
 }
