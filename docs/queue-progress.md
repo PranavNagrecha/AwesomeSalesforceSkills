@@ -12,8 +12,8 @@ Backlog: **578** entries  ·  Filesystem: **1012** skills built  ·  Last refres
 |---|---:|---|
 | `TODO` | 43 | Not started; not yet researched. |
 | `RESEARCHED` | 3 | Background notes captured; ready to build. |
-| `RESEARCH` | 317 | Investigation needed before deciding TODO vs DUPLICATE. |
-| `DUPLICATE` | 190 | Already covered by an existing skill — kept for traceability. |
+| `RESEARCH` | 96 | Investigation needed before deciding TODO vs DUPLICATE. |
+| `DUPLICATE` | 411 | Already covered by an existing skill — kept for traceability. |
 
 ## Pending work by domain
 
@@ -21,16 +21,15 @@ Counts only entries in TODO / RESEARCHED / RESEARCH / IN_PROGRESS.
 
 | Domain | Pending |
 |---|---:|
-| `(uncategorized)` | 363 |
+| `(uncategorized)` | 142 |
 
 ## Drift
 
-**2** queue entries are still TODO/RESEARCHED/IN_PROGRESS but a skill with the same name already exists on disk. Either flip them to DUPLICATE (with a pointer to the existing skill) or remove the entry.
+**1** queue entries are still TODO/RESEARCHED/IN_PROGRESS but a skill with the same name already exists on disk. Either flip them to DUPLICATE (with a pointer to the existing skill) or remove the entry.
 
 | Entry id | Queue status | On disk as |
 |---|---|---|
 | `related-list-configuration` | TODO | `admin/related-list-configuration` |
-| `validation-rules` | RESEARCH | `admin/validation-rules` |
 
 ## Pick next
 
@@ -65,13 +64,13 @@ Last 10 status transitions captured in `BACKLOG.yaml` `history`.
 
 | When | Entry | New status | Actor |
 |---|---|---|---|
-| 2026-07-08T16:23:43 | `emails-in-cases-in-lightning` | `DONE` | `onboard-tdd-sf` |
-| 2026-07-08T16:23:32 | `multiple-ways-to-run-flows-for-multiple-records` | `DUPLICATE` | `onboard-tdd-sf` |
-| 2026-07-08T16:23:32 | `using-platform-events-in-flows` | `DUPLICATE` | `onboard-tdd-sf` |
-| 2026-07-08T16:23:31 | `flow-triggers-before-save-and-after-save` | `DONE` | `onboard-tdd-sf` |
-| 2026-07-08T16:23:31 | `fast-forms` | `DUPLICATE` | `onboard-tdd-sf` |
-| 2026-07-08T16:23:31 | `knowledge` | `DONE` | `onboard-tdd-sf` |
-| 2026-07-08T16:23:31 | `case-management-best-practices` | `DONE` | `onboard-tdd-sf` |
-| 2026-07-08T16:23:31 | `duplicate-management` | `DONE` | `onboard-tdd-sf` |
-| 2026-07-08T16:23:30 | `scratch-org` | `DONE` | `onboard-tdd-sf` |
-| 2026-07-08T16:23:30 | `devops-center` | `DONE` | `onboard-tdd-sf` |
+| 2026-07-08T16:32:09 | `partner-communities` | `RESEARCH` | `rescreen-unscored-kept-deliberately` |
+| 2026-07-08T16:31:51 | `accounts-and-contacts-rules` | `DUPLICATE` | `rescreen-not-a-skill-topic` |
+| 2026-07-08T16:31:51 | `knowledge-on-communities` | `DUPLICATE` | `rescreen-not-a-skill-topic` |
+| 2026-07-08T16:31:51 | `lightning-emails` | `DUPLICATE` | `rescreen-not-a-skill-topic` |
+| 2026-07-08T16:31:51 | `contacts` | `DUPLICATE` | `rescreen-not-a-skill-topic` |
+| 2026-07-08T16:31:51 | `public-knowledge-for-mobile-web-and-facebook` | `DUPLICATE` | `rescreen-not-a-skill-topic` |
+| 2026-07-08T16:31:51 | `leads` | `DUPLICATE` | `rescreen-not-a-skill-topic` |
+| 2026-07-08T16:31:51 | `report-chart-component-and-record-reports` | `DUPLICATE` | `rescreen-not-a-skill-topic` |
+| 2026-07-08T16:31:51 | `cases-in-lightning` | `DUPLICATE` | `rescreen-not-a-skill-topic` |
+| 2026-07-08T16:31:51 | `case-feeds` | `DUPLICATE` | `rescreen-not-a-skill-topic` |
