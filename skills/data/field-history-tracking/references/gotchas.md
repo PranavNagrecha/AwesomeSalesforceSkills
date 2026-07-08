@@ -50,7 +50,27 @@ WHERE Field = 'IsActive__c'
 
 ---
 
-## Gotcha 5: The 20-Field Limit Is Per Object and Cannot Be Raised Without Shield
+## Gotcha 5: The Child-to-Parent Relationship Name Differs — `Parent` on Custom History, the Object Name on Standard History
+
+**What happens:** The relationship name for traversing from a history object up to its parent record is not uniform. On a custom `__History` object the parent field is `ParentId`, so you reach parent fields with `Parent.Name`, `Parent.CustomField__c` — regardless of the parent's API name. On a standard history object the parent field is object-specific (`AccountId` on `AccountHistory`, `ContactId` on `ContactHistory`), so the traversal uses the object name: `Account.Name`, `Contact.Name`. Writing `Parent.Name` against `AccountHistory` — or `Project__r.Name` against `Project__History` — fails to compile.
+
+**When it occurs:** Writing child-to-parent relationship queries against history objects, especially in Apex where a wrong relationship name is a hard compile error, or when porting a query between a standard object (relationship `Account`, field `AccountId`) and a custom object (relationship `Parent`, field `ParentId`).
+
+**How to avoid:** Choose the relationship name by object type — `Parent.<field>` on custom `__History`, the object name (`Account.<field>`) on standard history — and match the parent-id filter field the same way (`ParentId` on custom, `AccountId`/`ContactId` on standard). When unsure, confirm the relationship name with a `describeSObject` call or in Setup before hardcoding it.
+
+---
+
+## Gotcha 6: History Relationship-Query Syntax Does Not Apply to Shield `FieldHistoryArchive`
+
+**What happens:** The clean relationship-query patterns that work against standard and custom History objects — child-to-parent traversal to the parent record and parent-to-child subqueries — silently do not carry over to Shield Field Audit Trail's `FieldHistoryArchive`. That object enforces a restricted SOQL grammar: the `WHERE` clause must lead with `FieldHistoryType`, followed by `ParentId` or `CreatedDate`; the operators `!=`, `LIKE`, `NOT IN`, `EXCLUDES`, and `INCLUDES` are rejected; and a query returns at most 2,000 rows unless a `LIMIT` clause raises the cap (page the rest with `queryMore()`).
+
+**When it occurs:** When a team graduates from standard history to Shield FAT for longer retention and assumes their existing history queries will keep working. A query that filtered on `Field != 'StageName'` or traversed to the parent record throws when re-pointed at `FieldHistoryArchive`.
+
+**How to avoid:** Treat `FieldHistoryArchive` as a separate query surface with its own rules — see the `field-audit-trail` skill. Structure filters as `FieldHistoryType = '...' AND ParentId = '...'` (or `AND CreatedDate ...`), avoid the disallowed operators, and always set an explicit `LIMIT` when you expect more than 2,000 rows.
+
+---
+
+## Gotcha 7: The 20-Field Limit Is Per Object and Cannot Be Raised Without Shield
 
 **What happens:** Salesforce enforces a hard limit of 20 tracked fields per object for standard Field History Tracking. When the 20th field is already selected and an admin tries to enable an additional field, the Save operation fails with an error. There is no way to raise this limit within standard editions — the only path to tracking more than 20 fields on a single object is to license Salesforce Shield Field Audit Trail, which supports up to 60 fields per object.
 

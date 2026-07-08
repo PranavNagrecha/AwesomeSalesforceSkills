@@ -14,7 +14,10 @@
   only the intended rows. (Enforce CRUD/FLS and injection safety separately via `apex/soql-security`.)
 - **Performance** — a filter that returns far more rows than intended (e.g. every `false` Boolean
   row, or all parent-less rows) inflates the result set, heap, and downstream processing. A
-  correct foreign-key filter keeps the query selective.
+  correct foreign-key filter keeps the query selective. The Apex Developer Guide also frames null
+  handling as an optimizer concern: "explicitly filtering out null values in the WHERE clause
+  allows Salesforce to improve query performance." So add an explicit `!= null` guard alongside a
+  value predicate rather than returning null rows and discarding them in Apex.
 
 ## Architectural Tradeoffs
 
@@ -44,3 +47,5 @@
 
 - SOQL and SOSL Reference — null Values in Lookup Relationships and Outer Joins — https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_relationships_lookup.htm
 - SOQL and SOSL Reference — Using null in a WHERE clause — https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_null.htm
+- SOQL and SOSL Reference — Comparison Operators — https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_comparisonoperators.htm
+- Apex Developer Guide — Improve Performance by Avoiding Null Values — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_SOQL_filtering_nulls.htm

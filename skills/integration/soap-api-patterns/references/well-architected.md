@@ -65,5 +65,9 @@ Enterprise WSDL gives compile-time safety and developer productivity for a known
 
 - SOAP API Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_quickstart_intro.htm
 - Metadata API Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm (login flow, WSDL usage, WSC patterns)
+- SOQL and SOSL Reference — Using Relationship Queries with the Partner WSDL — https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_relationships_query_partner_wsdl.htm
+- SOAP API Developer Guide — sObject (generic object / type resolution via DescribeSObjectResult name) — https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_partner_objects.htm
+- SOAP API Developer Guide — Partner WSDL (loosely typed data model) — https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_partner.htm
+- SOAP API Developer Guide — Queries and the Partner WSDL (QueryResult field ordering) — https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_partner_queries.htm
 - Integration Patterns — https://architect.salesforce.com/docs/architect/fundamentals/guide/integration-patterns.html
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

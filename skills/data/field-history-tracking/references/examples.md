@@ -86,6 +86,29 @@ LIMIT 50
 
 ---
 
+## Example 3: One Query for a Record and Its Full Change Log
+
+**Context:** A developer building an LWC change-log panel for `Project__c` needs, for a single project, the record's name and status alongside every tracked change — without issuing two separate queries (one for the record, one for `Project__History`).
+
+**Problem:** The naive approach runs `SELECT Name, Status__c FROM Project__c WHERE Id = :id` and then a second `SELECT OldValue, NewValue FROM Project__History WHERE ParentId = :id`. That is two SOQL statements, two governor-limit hits, and manual stitching of the results in Apex.
+
+**Solution:**
+
+A history object is the child of its tracked parent, so a single parent-to-child query returns both — the record fields plus its history rows nested as a subquery:
+
+```soql
+SELECT Name, Status__c,
+       (SELECT Field, OldValue, NewValue, CreatedBy.Name, CreatedDate
+        FROM Project__History
+        ORDER BY CreatedDate DESC)
+FROM Project__c
+WHERE Id = 'a01XXXXXXXXXXXX'
+```
+
+**Why it works:** Salesforce auto-generates the parent-child relationship between an object and its `__History` sObject when tracking is enabled. The subquery names the history object directly, collapsing two round-trips into one and keeping each change row grouped with the record it describes. To go the other way — from a change up to parent context — use the child-to-parent form in Concept 2, noting the relationship name is `Parent` on custom history but the object name (`Account`) on standard history (Gotcha 5). Neither form works against Shield's `FieldHistoryArchive` (Gotcha 6).
+
+---
+
 ## Anti-Pattern: Relying on Field History Tracking for Long-Term Compliance Audit
 
 **What practitioners do:** An admin enables Field History Tracking on `AnnualRevenue` on Account to satisfy a compliance requirement that financial field changes be retained for 5 years. The admin marks the task complete and informs the compliance team that audit history is captured.

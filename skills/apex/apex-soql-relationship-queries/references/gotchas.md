@@ -60,10 +60,20 @@ Never rely on `rows != null && !rows.isEmpty()` being equivalent — just use a 
 
 ---
 
-## Gotcha 6: TYPEOF Is a Developer Preview Feature
+## Gotcha 6: TYPEOF Is SELECT-Only — Use `.Type` to Filter
 
-**What happens:** `TYPEOF` syntax is documented in the Apex and SOQL Developer Guides but is flagged as a developer preview feature. It is not supported in all query execution contexts and may not be enabled in all orgs or API versions.
+**What happens:** `TYPEOF` is generally available (since API version 46.0, Summer '19 — the Developer Preview label applied only to earlier versions), so it needs no "is it enabled?" caveat. The real trap is that it is a **SELECT-clause-only** projection. Per the SOQL reference it is rejected in `WHERE`, in aggregate/`COUNT()` and `GROUP BY`/`HAVING` queries, in Bulk API SOQL, in Streaming API PushTopics, and in the SELECT list of a semi-join subquery. A query that tries to *filter* on a polymorphic type with `TYPEOF` fails to parse.
 
-**When it occurs:** Deploying a class with a `TYPEOF` query to a production org where the feature has not been enabled, or using `TYPEOF` in a Batch Apex query locator.
+**When it occurs:** Attempting `WHERE TYPEOF ...`, running a `TYPEOF` query through the Bulk API, or expecting `TYPEOF` to work inside an aggregate/`GROUP BY` query.
 
-**How to avoid:** Validate `TYPEOF` queries in a scratch org against the same API version as production before deploying. Check the current release notes for the GA status of `TYPEOF` in your Salesforce version. As a fallback, query `WhatId` alone, then use a separate `WHERE Id IN` query per object type using `getSObjectType()` grouping.
+**How to avoid:** Project per-type fields with `TYPEOF` in the SELECT clause only. To **filter** rows by polymorphic type, use the `.Type` qualifier instead — it compares against a plain string, has no API-version floor, and is the only legal option in the contexts above: `SELECT Id FROM Event WHERE What.Type IN ('Account', 'Opportunity')`. Once pinned to a single type, that type's fields are reachable by dot notation (`SELECT Id, Owner.Name FROM Event WHERE Owner.Type = 'User'`). Remember that a `.Type` filter silently excludes rows of other types rather than null-padding them.
+
+---
+
+## Gotcha 7: SOQL Reserved Words Are Rejected as Alias Names
+
+**What happens:** Alias notation lets you name an object in the FROM clause (`FROM Contact c, c.Account a`) and reference it by that alias in SELECT and WHERE — an implicit join that filters on a parent without selecting its fields. But SOQL rejects its own reserved keywords as alias identifiers. A tempting short alias such as `in`, `or`, or `not` produces a parse error because it matches the reserved `IN`, `OR`, and `NOT` keywords.
+
+**When it occurs:** Choosing terse, mnemonic aliases derived from an object's name (`Inventory__c in`, `Order or`), or generating aliases programmatically without screening them against the keyword list.
+
+**How to avoid:** Screen every alias against the reserved list before using it: AND, ASC, DESC, EXCLUDES, FIRST, FROM, GROUP, HAVING, IN, INCLUDES, LAST, LIKE, LIMIT, NOT, NULL, NULLS, OR, SELECT, USING, WHERE, WITH. Single letters (`c`, `a`, `o`) and multi-letter tokens that aren't on the list are safe — `inv` instead of `in`, `ord` instead of `or`.

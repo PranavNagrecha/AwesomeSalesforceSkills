@@ -148,3 +148,24 @@ FROM Task
 ```
 
 **Detection hint:** Dot notation applied to `WhatId`, `WhoId`, or `ParentId` on Task, Event, or FeedItem objects — these are always polymorphic and require `TYPEOF`.
+
+---
+
+## Anti-Pattern 7: Reserved Word Chosen as a FROM-Clause Alias
+
+**What the LLM generates:**
+
+```soql
+-- 'in' picked as an alias for Inventory__c — collides with the IN operator
+SELECT count() FROM Inventory__c in, in.Product__r p WHERE p.Name = 'Widget'
+```
+
+**Why it happens:** When generating alias notation, LLMs abbreviate an object to its leading letters (`Inventory` → `in`, `Order` → `or`, `Note` → `not`) without cross-checking against SOQL's reserved-word list. Those abbreviations happen to be operators, so the query fails to parse. The keyword-collision rule is SOQL-specific and thinly documented, so it is under-represented in training data.
+
+**Correct pattern:**
+
+```soql
+SELECT count() FROM Inventory__c inv, inv.Product__r p WHERE p.Name = 'Widget'
+```
+
+**Detection hint:** Any FROM-clause alias token that matches a SOQL reserved word — AND, ASC, DESC, EXCLUDES, FIRST, FROM, GROUP, HAVING, IN, INCLUDES, LAST, LIKE, LIMIT, NOT, NULL, NULLS, OR, SELECT, USING, WHERE, or WITH. Prefer a three-letter alias (`inv`, `ord`) to stay clear of the list.

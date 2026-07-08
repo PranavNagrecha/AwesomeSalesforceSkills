@@ -120,3 +120,23 @@ SOSL Reference and do not assert a GA/Beta/Pilot status the reference does not s
 
 **Detection hint:** a "Generally Available"/"Beta"/"since <release>" claim about relationship
 null semantics, or a non-`developer.salesforce.com` citation for the behavior.
+
+---
+
+## Anti-Pattern 7: Generating SQL-style `IS NULL` / `IS NOT NULL`
+
+**What the LLM generates:** `WHERE ActivityDate IS NOT NULL` or `WHERE AccountId IS NULL`, ported
+straight from SQL into a SOQL string.
+
+**Why it happens:** `IS NULL` / `IS NOT NULL` is the null idiom in nearly every SQL dialect the
+model trained on, so it emits the same syntax for SOQL, which has no such operator.
+
+**Correct pattern:**
+
+```sql
+-- SOQL compares to the null keyword directly; there is no IS NULL operator:
+SELECT Id FROM Event WHERE ActivityDate != null
+SELECT Id FROM Case  WHERE AccountId = null
+```
+
+**Detection hint:** the tokens `IS NULL` or `IS NOT NULL` anywhere in a generated SOQL string.

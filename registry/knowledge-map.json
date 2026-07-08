@@ -449,9 +449,12 @@
       "apex/scheduled-apex-failure-detection-and-monitoring",
       "apex/service-cloud-rest-api",
       "apex/sf-cli-and-sfdx-essentials",
+      "apex/soql-aggregate-field-type-support",
+      "apex/soql-date-functions",
       "apex/soql-for-view-and-for-reference",
       "apex/soql-format-function-localization",
       "apex/soql-fundamentals",
+      "apex/soql-multiselect-picklist-queries",
       "apex/soql-null-ordering-patterns",
       "apex/soql-object-limits-and-restrictions",
       "apex/soql-outer-join-null-semantics",
@@ -668,7 +671,10 @@
       "data/service-metrics-data-model",
       "data/sharing-recalculation-performance",
       "data/soql-query-optimization",
+      "data/sosl-external-object-search-limits",
       "data/sosl-search-patterns",
+      "data/sosl-search-result-limits",
+      "data/sosl-with-clauses",
       "data/subscriber-data-management",
       "data/territory-data-alignment",
       "data/vector-database-management",
@@ -1787,6 +1793,9 @@
     "agentwork": [
       "data/omni-channel-reporting-data"
     ],
+    "aggregate-functions": [
+      "apex/soql-aggregate-field-type-support"
+    ],
     "aggregate-queries": [
       "apex/apex-aggregate-queries"
     ],
@@ -1837,6 +1846,9 @@
     "alerting": [
       "architect/org-limits-monitoring",
       "flow/flow-error-monitoring"
+    ],
+    "alias-notation": [
+      "apex/apex-soql-relationship-queries"
     ],
     "all-subscribers": [
       "data/subscriber-data-management"
@@ -3156,6 +3168,9 @@
     ],
     "calculation-procedures": [
       "omnistudio/calculation-procedures"
+    ],
+    "calendar-quarter": [
+      "apex/soql-date-functions"
     ],
     "calendar-sync": [
       "admin/einstein-activity-capture-setup"
@@ -5148,6 +5163,9 @@
     "dataweave": [
       "integration/dataweave-for-apex"
     ],
+    "date-functions": [
+      "apex/soql-date-functions"
+    ],
     "date-granularity": [
       "data/analytics-dataset-optimization"
     ],
@@ -6520,6 +6538,7 @@
       "architect/multi-org-strategy",
       "data/data-virtualization-patterns",
       "data/external-data-and-big-objects",
+      "data/sosl-external-object-search-limits",
       "integration/salesforce-connect-external-objects"
     ],
     "external-owd": [
@@ -6725,6 +6744,7 @@
       "data/fsl-work-order-migration"
     ],
     "field-types": [
+      "apex/soql-aggregate-field-type-support",
       "data/data-model-design-patterns"
     ],
     "field-update": [
@@ -6839,6 +6859,9 @@
     ],
     "finserv-namespace": [
       "apex/fsc-apex-extensions"
+    ],
+    "fiscal-year": [
+      "apex/soql-date-functions"
     ],
     "fisma": [
       "architect/government-cloud-compliance"
@@ -7492,6 +7515,9 @@
     "group-archival": [
       "admin/chatter-group-governance"
     ],
+    "group-by-date": [
+      "apex/soql-date-functions"
+    ],
     "group-lifecycle": [
       "admin/chatter-group-governance"
     ],
@@ -7920,6 +7946,9 @@
     "incident-response": [
       "security/login-forensics",
       "security/security-incident-response"
+    ],
+    "includes-excludes": [
+      "apex/soql-multiselect-picklist-queries"
     ],
     "incremental": [
       "architect/analytics-data-architecture"
@@ -9663,6 +9692,7 @@
     ],
     "multi-currency": [
       "admin/products-and-pricebooks",
+      "apex/soql-aggregate-field-type-support",
       "architect/cpq-architecture-patterns",
       "architect/multi-store-architecture",
       "data/currency-management-patterns",
@@ -9698,6 +9728,9 @@
     ],
     "multi-region-loyalty": [
       "architect/loyalty-program-architecture"
+    ],
+    "multi-select-picklist": [
+      "apex/soql-multiselect-picklist-queries"
     ],
     "multi-site": [
       "architect/multi-site-architecture"
@@ -10011,6 +10044,7 @@
     ],
     "odata": [
       "data/data-virtualization-patterns",
+      "data/sosl-external-object-search-limits",
       "integration/salesforce-connect-external-objects"
     ],
     "offline": [
@@ -10725,6 +10759,9 @@
     "performance-testing-salesforce": [
       "devops/performance-testing-salesforce"
     ],
+    "permission-filtering": [
+      "data/sosl-search-result-limits"
+    ],
     "permission-set": [
       "admin/custom-permissions",
       "admin/integration-user-management",
@@ -10806,6 +10843,7 @@
       "admin/path-and-guidance",
       "admin/picklist-and-value-sets",
       "admin/picklist-data-integrity",
+      "apex/soql-aggregate-field-type-support",
       "data/data-loader-picklist-validation-pre-load",
       "flow/flow-formula-and-expression-patterns"
     ],
@@ -11460,6 +11498,9 @@
     "query-api": [
       "integration/data-cloud-query-api"
     ],
+    "query-correctness": [
+      "apex/soql-aggregate-field-type-support"
+    ],
     "query-optimization": [
       "data/soql-query-optimization"
     ],
@@ -12102,6 +12143,9 @@
     "return-order": [
       "admin/commerce-order-management"
     ],
+    "returning-clause": [
+      "data/sosl-search-patterns"
+    ],
     "returns": [
       "architect/order-management-architecture"
     ],
@@ -12394,6 +12438,7 @@
     "salesforce-connect": [
       "architect/multi-org-strategy",
       "data/data-virtualization-patterns",
+      "data/sosl-external-object-search-limits",
       "integration/heroku-salesforce-integration",
       "integration/salesforce-connect-external-objects"
     ],
@@ -12718,6 +12763,7 @@
       "admin/care-coordination-requirements"
     ],
     "search": [
+      "data/sosl-external-object-search-limits",
       "lwc/experience-cloud-search-customization",
       "lwc/lwc-custom-lookup"
     ],
@@ -12745,6 +12791,9 @@
       "agentforce/einstein-search-personalization",
       "apex/commerce-search-customization"
     ],
+    "search-result-cap": [
+      "data/sosl-search-result-limits"
+    ],
     "search-scope": [
       "lwc/experience-cloud-search-customization"
     ],
@@ -12753,6 +12802,9 @@
     ],
     "search-strategy": [
       "admin/commerce-catalog-strategy"
+    ],
+    "searchquery-length": [
+      "data/sosl-search-result-limits"
     ],
     "seasonal-release": [
       "admin/salesforce-release-preparation"
@@ -12880,6 +12932,9 @@
     ],
     "self-service-design": [
       "admin/self-service-design"
+    ],
+    "semicolon-grouping": [
+      "apex/soql-multiselect-picklist-queries"
     ],
     "send-classification": [
       "admin/email-studio-administration"
@@ -13272,6 +13327,9 @@
     "signature-capture": [
       "admin/fsl-mobile-workflow-design"
     ],
+    "silent-exclusion": [
+      "data/sosl-search-result-limits"
+    ],
     "single-component-preview": [
       "lwc/lwc-local-development"
     ],
@@ -13440,6 +13498,7 @@
       "apex/apex-soql-relationship-queries",
       "apex/einstein-activity-capture-api",
       "apex/formula-field-performance-and-limits",
+      "apex/soql-aggregate-field-type-support",
       "apex/soql-format-function-localization",
       "apex/soql-fundamentals",
       "apex/soql-null-ordering-patterns",
@@ -13456,6 +13515,9 @@
       "lwc/knowledge-article-lwc",
       "security/encrypted-field-query-patterns"
     ],
+    "soql-date-functions": [
+      "apex/soql-date-functions"
+    ],
     "soql-date-literals": [
       "apex/timezone-and-datetime-pitfalls"
     ],
@@ -13469,6 +13531,9 @@
       "security/secure-coding-review-checklist",
       "security/xss-and-injection-prevention"
     ],
+    "soql-multiselect-picklist-queries": [
+      "apex/soql-multiselect-picklist-queries"
+    ],
     "soql-outer-join-null-semantics": [
       "apex/soql-outer-join-null-semantics"
     ],
@@ -13481,14 +13546,25 @@
     "soql-selectivity": [
       "architect/limits-and-scalability-planning"
     ],
+    "soql-where-clause": [
+      "apex/soql-multiselect-picklist-queries"
+    ],
     "sort-fields": [
       "admin/related-list-configuration"
     ],
     "sosl": [
       "apex/soql-format-function-localization",
+      "data/sosl-external-object-search-limits",
       "data/sosl-search-patterns",
+      "data/sosl-with-clauses",
       "lwc/knowledge-article-lwc",
       "lwc/lwc-custom-lookup"
+    ],
+    "sosl-search-result-limits": [
+      "data/sosl-search-result-limits"
+    ],
+    "sosl-with-clauses": [
+      "data/sosl-with-clauses"
     ],
     "source-api-version": [
       "devops/salesforce-dx-project-structure"
@@ -13519,6 +13595,9 @@
     ],
     "special-category-data": [
       "architect/health-cloud-data-residency"
+    ],
+    "spell-correction": [
+      "data/sosl-with-clauses"
     ],
     "spf": [
       "admin/email-deliverability-strategy"
@@ -14770,6 +14849,18 @@
     ],
     "wire-service-mock": [
       "lwc/lwc-jest-testing-with-accessibility"
+    ],
+    "with-data-category": [
+      "data/sosl-with-clauses"
+    ],
+    "with-highlight": [
+      "data/sosl-with-clauses"
+    ],
+    "with-network": [
+      "data/sosl-with-clauses"
+    ],
+    "with-snippet": [
+      "data/sosl-with-clauses"
     ],
     "work-item": [
       "devops/devops-center-advanced",

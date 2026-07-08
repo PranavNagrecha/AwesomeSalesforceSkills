@@ -20,6 +20,8 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **How to avoid:** Use ORDER BY in the start query to group records by parent key. Handle locking within the execute method if needed, or sort the scope list before DML.
 
+**Don't confuse two separate rules.** The batch start query is a *non-locking* query, so `ORDER BY` is fine there. The related restriction is broader: you can't use `ORDER BY` in *any* SOQL query that uses `FOR UPDATE`, batch or not. If you need locked rows in a particular order, drop the `ORDER BY`, run the `FOR UPDATE` query, and sort the returned list in Apex.
+
 ---
 
 ## Gotcha 3: Aggregate SOQL Blocks on Locked Rows
@@ -49,3 +51,23 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** Any concurrent access to the same row, whether from Apex, Bulk API, Data Loader, or the UI.
 
 **How to avoid:** Design for short lock-hold times. Move expensive logic before or after the DML window. Use FOR UPDATE only when necessary, and keep post-query logic minimal.
+
+---
+
+## Gotcha 6: A Blocked FOR UPDATE Query Throws QueryException, Not DmlException
+
+**What happens:** The 10-second lock wait applies to `FOR UPDATE` SOQL just as it does to DML. But when a `FOR UPDATE` query can't acquire its lock in time, the failure surfaces as a `QueryException`, whereas an ordinary blocked DML write raises a `DmlException`. The two are different exception types, and the lock-error status code you'd inspect on a `DmlException` (`StatusCode.UNABLE_TO_LOCK_ROW`) isn't available the same way on the `QueryException`.
+
+**When it occurs:** Read-modify-write services and retry wrappers that lock rows with `FOR UPDATE`, then rely on a `catch (DmlException e)` block to detect and retry lock contention. A `FOR UPDATE` timeout sails straight past that catch.
+
+**How to avoid:** When a code path locks rows with `FOR UPDATE`, add a `catch (QueryException e)` branch alongside the `DmlException` handling, and route both to the same retry/backoff logic. Don't assume all lock failures are DML failures.
+
+---
+
+## Gotcha 7: FOR UPDATE Locks Are Released the Moment You Make a Callout
+
+**What happens:** Locks acquired in Apex via `FOR UPDATE` are automatically released when the transaction makes a callout — independent of whether the transaction has finished. The lock you thought you held for the whole transaction is gone as soon as the HTTP request goes out.
+
+**When it occurs:** Any read-modify-write that queries with `FOR UPDATE`, calls an external system (payment gateway, inventory service, enrichment API), and then writes back. Between the callout and the write, another transaction can acquire the row and change it — reintroducing exactly the race condition the `FOR UPDATE` was meant to prevent.
+
+**How to avoid:** Keep the callout outside the locked window. Acquire the lock, do the local read-modify-write, and commit before or after the callout — not straddling it. If the flow genuinely needs both a callout and a guaranteed no-change window, restructure so the lock-protected DML happens in its own transaction after the callout returns.

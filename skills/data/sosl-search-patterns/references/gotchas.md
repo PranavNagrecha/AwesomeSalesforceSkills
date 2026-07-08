@@ -42,10 +42,30 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 5: A `LIKE` Wildcard Escape Should Be Bound, Not Inlined
+## Gotcha 5: A Long `FIND` Search Query Silently Drops Operators Or Returns Nothing
+
+**What happens:** A search built from long free-text or concatenated user input starts returning far more rows than the `AND`-joined terms should allow — or comes back empty even though matches clearly exist.
+
+**When it occurs:** The search query string crosses a length cliff. Past 4,000 characters the logical operators are removed, so an `AND`-joined search no longer requires every term and the result set broadens unexpectedly. Past 10,000 characters no result rows are returned at all. Both cliffs are easy to hit when the term is assembled from user input, pasted text, or a long list of OR-joined values.
+
+**How to avoid:** Cap and validate the length of assembled search text before running the query, keeping it well under 4,000 characters. Treat a search string that approaches that mark as a signal to redesign the query — for example, narrow the scope, split the work, or feed the terms through a different pattern — rather than passing raw long text straight into `FIND`.
+
+---
+
+## Gotcha 6: A `LIKE` Wildcard Escape Should Be Bound, Not Inlined
 
 **What happens:** A SOQL `LIKE` query meant to match a literal underscore (so `name_a` matches but `namea` does not) matches too many records — the underscore keeps behaving as a wildcard even though it was escaped.
 
 **When it occurs:** The escape (`\_` or `\%`, the two escape sequences that exist only inside `LIKE`) is written straight into the query string literal in Apex, where the Apex string parser processes the backslash before the SOQL engine sees it.
 
 **How to avoid:** Bind the pattern as a `String` variable (`WHERE Name LIKE :searchTerm`) instead of concatenating it into the query text, so the platform handles the underscore/percent escaping rather than the Apex parser consuming it.
+
+---
+
+## Gotcha 7: Some Object Types Are Invisible Unless Named In `RETURNING`
+
+**What happens:** A broad `FIND ... IN ALL FIELDS` search never surfaces files, Chatter feed items, or `Solution` records, even though matching records clearly exist and the search text is widened repeatedly.
+
+**When it occurs:** A fixed set of object types — external objects, articles, documents, feed comments, feed items, files, products, and solutions — is excluded from SOSL results unless each is named explicitly in a `RETURNING` clause. A search that omits `RETURNING` (or omits those specific objects) silently skips them, so the missing records look like a relevance problem when they are really a scope problem.
+
+**How to avoid:** When any of those types must appear, list them by object name in `RETURNING` (for example `RETURNING FeedItem(Id, Body), Solution(Id, SolutionName)`). Don't try to reach them by broadening the `FIND` text — only naming the object type makes it eligible.

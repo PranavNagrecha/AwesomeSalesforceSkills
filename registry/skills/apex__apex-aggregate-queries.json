@@ -8,6 +8,7 @@
     "0483161995cf7a26c5e9",
     "09c93ca06740a52581bc",
     "0a6f254f5f0886e872ef",
+    "0c55b0dff1f659a041a7",
     "1149822aec1b315086d6",
     "16e5b9aa5fa2f527a31f",
     "17231b174d3bd0684bbf",
@@ -40,12 +41,15 @@
     "66f3fc897dbc9d57ff1e",
     "69425f650a739d45848e",
     "6b5d8a052a085594550f",
+    "6edd6404e7fc8be0ff69",
     "6ee75e4a02b7b5b9e636",
     "6f71a5cf916999b806b3",
     "7790e620f79a09486c81",
+    "78e974587df6685e6320",
     "7c0abe1e82494623899c",
     "7e223ccae4daff7c1425",
     "8051ebd36783e04c7788",
+    "8056a1718c8c543baabe",
     "82931e83a6278815abaf",
     "84ea93d94f256db53318",
     "85b8d325c90b13586c29",
@@ -59,6 +63,8 @@
     "9c3925716af6af851606",
     "9f162f21b8b07d664761",
     "a4aa3d9471b18d95806b",
+    "a714c5536abaf240b4e9",
+    "ad0392e01aa8a52670cc",
     "b0edfa234771558d0fb5",
     "b2cd214eeedf79362c11",
     "b4bf8abb7a924cadb544",
@@ -81,11 +87,12 @@
     "e663bd2aac2f02b6e549",
     "f20b4070c5e3ad88c849",
     "f400d9868b9dd1e69750",
+    "f7bc883e08edf4035b14",
     "faab77fb5c2e2e1b0b92",
     "fac9ad58a5d7810c9853",
     "fed5554651b6ef6df43d"
   ],
-  "content_hash": "29d551e502e115e1b8a753abc5a743d12dfcb6f0036ab71669d975780d0e57be",
+  "content_hash": "36903894407a419e74ed9d12d8db48c19761dd950131530fb975894cf79a6e2c",
   "dependencies": [],
   "description": "Use this skill when writing SOQL aggregate queries in Apex \u2014 GROUP BY, GROUP BY ROLLUP/CUBE, HAVING, COUNT/SUM/AVG/MIN/MAX, AggregateResult, the GROUPING() subtotal function, and date grouping functions. Trigger keywords: soql aggregate groupby apex, count sum group by salesforce, aggregateresult get alias, having clause soql, rollup cube subtotals, grouping function subtotal detection soql. NOT for relationship subqueries or inner queries (use apex-soql-relationship-queries), NOT for the Reporting API or Analytics Wave API.",
   "file_location": "skills/apex/apex-aggregate-queries",
@@ -98,6 +105,7 @@
   "name": "apex-aggregate-queries",
   "official_sources": [
     "SOQL and SOSL Reference \u2014 Aggregate Functions: https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_agg_functions.htm",
+    "SOQL and SOSL Reference \u2014 COUNT() and COUNT(fieldName): https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_count.htm",
     "Apex Developer Guide \u2014 Working with SOQL Aggregate Functions: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_SOQL_agg_fns.htm",
     "SOQL and SOSL Reference \u2014 GROUP BY Considerations: https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_group_by_considerations.htm",
     "SOQL and SOSL Reference \u2014 GROUPING() to Identify Subtotals: https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_groupby_grouping.htm",
@@ -140,5 +148,5 @@
     "updated": "2026-07-08",
     "vector_id": "apex/apex-aggregate-queries"
   },
-  "version": "1.1.0"
+  "version": "1.2.0"
 }

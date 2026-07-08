@@ -8027,6 +8027,78 @@
       "domain": "apex",
       "expected_skill": "apex/soql-for-view-and-for-reference",
       "top_k": 3
+    },
+    {
+      "query": "how do I highlight the matching search terms in a SOSL query",
+      "domain": "data",
+      "expected_skill": "data/sosl-with-clauses",
+      "top_k": 3
+    },
+    {
+      "query": "filter SOSL knowledge article search results by data category",
+      "domain": "data",
+      "expected_skill": "data/sosl-with-clauses",
+      "top_k": 3
+    },
+    {
+      "query": "query contacts whose multi-select picklist includes two specific values in SOQL",
+      "domain": "apex",
+      "expected_skill": "apex/soql-multiselect-picklist-queries",
+      "top_k": 3
+    },
+    {
+      "query": "SOQL equals filter on a multiselect picklist returns too few records",
+      "domain": "apex",
+      "expected_skill": "apex/soql-multiselect-picklist-queries",
+      "top_k": 3
+    },
+    {
+      "query": "why does SUM() on a date field throw a malformed query error in SOQL",
+      "domain": "apex",
+      "expected_skill": "apex/soql-aggregate-field-type-support",
+      "top_k": 3
+    },
+    {
+      "query": "which Salesforce field types support AVG and SUM aggregate functions",
+      "domain": "apex",
+      "expected_skill": "apex/soql-aggregate-field-type-support",
+      "top_k": 3
+    },
+    {
+      "query": "group opportunity amounts by fiscal quarter directly in a SOQL query",
+      "domain": "apex",
+      "expected_skill": "apex/soql-date-functions",
+      "top_k": 3
+    },
+    {
+      "query": "why can't I compare CALENDAR_YEAR of CloseDate to a date in a WHERE clause",
+      "domain": "apex",
+      "expected_skill": "apex/soql-date-functions",
+      "top_k": 3
+    },
+    {
+      "query": "my SOSL search only returns 250 records even though thousands match the term",
+      "domain": "data",
+      "expected_skill": "data/sosl-search-result-limits",
+      "top_k": 3
+    },
+    {
+      "query": "why does my dynamic Search.query return zero rows for a long search string",
+      "domain": "data",
+      "expected_skill": "data/sosl-search-result-limits",
+      "top_k": 3
+    },
+    {
+      "query": "SOSL search on a Salesforce Connect external object returns no records even though rows exist",
+      "domain": "data",
+      "expected_skill": "data/sosl-external-object-search-limits",
+      "top_k": 3
+    },
+    {
+      "query": "external object SOSL rejects LIKE and INCLUDES and needs an explicit RETURNING clause",
+      "domain": "data",
+      "expected_skill": "data/sosl-external-object-search-limits",
+      "top_k": 3
     }
   ]
 }

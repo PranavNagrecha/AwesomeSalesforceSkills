@@ -11,7 +11,7 @@
 
 **Single relationship query vs multiple flat queries:** A single query with subqueries minimizes SOQL count (critical for triggers processing large batches) but risks hitting the 50,000 total row limit faster than multiple targeted flat queries with specific WHERE filters. Choose based on expected data volume per parent record.
 
-**TYPEOF vs post-query split:** `TYPEOF` in SOQL is expressive and type-safe at query time but is a developer preview feature with deployment risk. The alternative — querying only the polymorphic ID field and then issuing type-specific lookups — uses additional SOQL but is fully GA. For production-critical code, prefer the post-query split pattern unless `TYPEOF` is confirmed GA in the target org.
+**TYPEOF vs `.Type` filter vs post-query split:** `TYPEOF` in SOQL is expressive and type-safe, projecting per-type fields in a single pass, and is GA (API 46.0+) with no preview deployment risk. Its real constraint is that it is SELECT-clause only: it cannot appear in `WHERE`, `GROUP BY`/aggregate queries, Bulk API SOQL, or semi-join subqueries. When the requirement is to *filter* rows by polymorphic type in any of those contexts, the `.Type` qualifier (`What.Type IN ('Account','Opportunity')`) is the only legal option and carries no API-version floor. Reserve the post-query split — query the polymorphic Id, partition in Apex, re-query per type — for cases where per-type downstream logic is genuinely complex, since it spends extra SOQL to buy that flexibility.
 
 **Subquery with LIMIT vs full child set:** Adding `LIMIT 200` to a subquery guards against large child sets but silently truncates data. If all child records must be processed, use a separate child query with a parent ID filter and process in batch.
 
@@ -27,6 +27,11 @@
 
 - SOQL and SOSL Reference — Using Relationship Queries: https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_relationships_query_using.htm
 - SOQL and SOSL Reference — Understanding Relationship Query Limitations: https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_relationships.htm
+- SOQL and SOSL Reference — Alias Notation: https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_alias.htm
+- SOQL and SOSL Reference — Using Aliases with GROUP BY: https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_groupby_alias.htm
+- SOQL and SOSL Reference — Filtering on Polymorphic Relationship Fields: https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_filtering_polymorphic_relationships.htm
+- SOQL and SOSL Reference — Understanding Relationship Fields and Polymorphic Keys: https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_relationships_and_polymorph_keys.htm
+- SOQL and SOSL Reference — TYPEOF: https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_typeof.htm
 - Apex Developer Guide — Polymorphic Relationships: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_SOQL_polymorphic_relationships.htm
 - Apex Developer Guide: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm
 - Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

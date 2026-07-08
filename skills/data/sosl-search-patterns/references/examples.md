@@ -73,6 +73,49 @@ List<List<SObject>> results = [FIND '\{1\+1\}\:2' IN ALL FIELDS RETURNING Case(I
 
 ---
 
+## Example 5: Combine `FIND` Operators With Explicit Parentheses
+
+**Context:** A search should match Acme accounts that mention either "renewal" or "expansion", but never "churn".
+
+**Problem:** The team writes `FIND 'Acme AND renewal OR expansion AND NOT churn'` assuming left-to-right evaluation, but the ungrouped `OR` binds more loosely than intended, so the result set is wrong.
+
+**Solution:** Group the intent with parentheses so it does not depend on precedence:
+
+```apex
+List<List<SObject>> results = [
+    FIND 'Acme AND (renewal OR expansion) AND NOT churn'
+    IN ALL FIELDS
+    RETURNING Account(Id, Name)
+];
+```
+
+**Why it works:** Parentheses are evaluated first, so the `OR` is confined to the renewal/expansion clause. To search for the literal words `and`, `or`, or `and not` instead of treating them as operators, wrap those words in double quotes.
+
+---
+
+## Example 6: Filter, Sort, And Page One Object's Slice Inside `RETURNING`
+
+**Context:** A cross-object search returns Accounts and Cases, but the Case slice should show only open cases, newest first.
+
+**Problem:** The team plans to fetch everything and filter/sort in Apex, which wastes rows against the 2,000-per-object cap and can't page server-side.
+
+**Solution:** Push each object's `WHERE`, `ORDER BY`, and `LIMIT` into `RETURNING`:
+
+```apex
+String searchTerm = 'Acme*';
+List<List<SObject>> hits = [
+    FIND :searchTerm
+    IN ALL FIELDS
+    RETURNING
+        Account(Id, Name ORDER BY Name LIMIT 10),
+        Case(Id, Subject WHERE IsClosed = false ORDER BY CreatedDate DESC LIMIT 10)
+];
+```
+
+**Why it works:** Per-object `WHERE` filters matched rows by field value (distinct from the `FIND` term), and `ORDER BY`/`LIMIT` shape each slice server-side. To page, add `OFFSET` — but only on a single-object search (`RETURNING Account(Id, Name ORDER BY Name LIMIT 10 OFFSET 10)`), where it must be the last sub-clause in the order `FieldList` → `WHERE` → `USING ListView` → `ORDER BY` → `LIMIT` → `OFFSET`.
+
+---
+
 ## Anti-Pattern: LIKE Everywhere
 
 **What practitioners do:** They write several SOQL queries with `LIKE '%term%'` for every object and call it search.

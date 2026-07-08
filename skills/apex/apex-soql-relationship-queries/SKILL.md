@@ -1,6 +1,6 @@
 ---
 name: apex-soql-relationship-queries
-description: "Use this skill when writing or debugging SOQL relationship queries in Apex — child-to-parent dot notation traversal, parent-to-child subqueries, and polymorphic TYPEOF lookups. Trigger keywords: relationship query, subquery, dot notation, getSObjects, TYPEOF, WhatId, WhoId. NOT for aggregate queries (use apex-aggregate-queries), NOT for SOSL text search, NOT for Bulk API data loads (subqueries unsupported there)."
+description: "Use this skill when writing or debugging SOQL relationship queries in Apex — child-to-parent dot notation traversal, parent-to-child subqueries, polymorphic TYPEOF projection and `.Type` type filtering, and FROM-clause alias notation for implicit-join filtering. Trigger keywords: relationship query, subquery, dot notation, getSObjects, TYPEOF, What.Type filter, WhatId, WhoId, alias notation. NOT for aggregate queries (use apex-aggregate-queries), NOT for SOSL text search, NOT for Bulk API data loads (subqueries unsupported there)."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -11,6 +11,8 @@ triggers:
   - "relationship query dot notation child to parent five levels deep"
   - "polymorphic TYPEOF WhatId WhoId Task Event SOQL query"
   - "TYPEOF WhatId WhoId polymorphic lookup Task Event SOQL"
+  - "aliasing a soql object in the from clause to filter its parent without selecting parent fields"
+  - "filter task or event by whatid whoid type in account opportunity soql"
 tags:
   - soql
   - relationship-queries
@@ -20,6 +22,7 @@ tags:
   - typeof
   - getSObjects
   - subquery
+  - alias-notation
 inputs:
   - "Object names and the relationship direction needed (child-to-parent or parent-to-child)"
   - "Whether any lookup field is polymorphic (Task.WhatId, Task.WhoId, Event.WhatId, Event.WhoId, FeedItem.ParentId)"
@@ -29,9 +32,9 @@ outputs:
   - "Apex code that safely accesses child records via getSObjects()"
   - "TYPEOF clause for polymorphic fields with WHEN/ELSE branches"
 dependencies: []
-version: 1.0.0
+version: 1.2.1
 author: Pranav Nagrecha
-updated: 2026-04-19
+updated: 2026-07-08
 ---
 
 # SOQL Relationship Queries in Apex
@@ -67,6 +70,22 @@ WHERE Account.Industry = 'Technology'
 - Maximum **5 levels** of dot traversal in a single chain (e.g. `A.B.C.D.E.F` is 5 hops — one more throws a parse error).
 - Maximum **55 relationship traversals** per query across all chains combined.
 - Cross-object formula fields **cannot** be used in the `WHERE` clause. Use the underlying field or traverse the relationship directly.
+
+### Alias Notation for Implicit-Join Filtering
+
+SOQL supports alias notation in SELECT queries. You assign a short name to an object in the `FROM` clause and then reference that object — or a related object reached through it — by the alias everywhere else in the query. To establish an alias, name the object first and put the alias token immediately after it. To bring in a related parent object, add a comma and reference it through the base object's relationship path, then give it its own alias.
+
+```soql
+SELECT count()
+FROM Contact c, c.Account a
+WHERE a.Name = 'MyriadPubs'
+```
+
+Here `Contact c` aliases the base object and `c.Account a` aliases its related Account. This is an implicit join: it lets you filter on a parent record in `WHERE` without listing any parent field in the `SELECT` clause. Plain dot notation (`WHERE Account.Name = 'MyriadPubs'`) resolves the same filter — alias notation is the documented alternative and reads more compactly when the same related object is referenced several times in one query.
+
+**Reserved words cannot be alias names.** These SOQL keywords are rejected as alias identifiers: `AND, ASC, DESC, EXCLUDES, FIRST, FROM, GROUP, HAVING, IN, INCLUDES, LAST, LIKE, LIMIT, NOT, NULL, NULLS, OR, SELECT, USING, WHERE, WITH`. Single letters (`c`, `a`) are safe, but avoid mnemonic short forms like `in`, `or`, and `not` — they collide with the reserved words and parse-error.
+
+This FROM-clause **object** aliasing is a separate feature from aliasing a **field or aggregate** in the `SELECT` list (e.g. `SELECT Name n, MAX(Amount) max FROM Opportunity GROUP BY Name`), which is covered in apex-aggregate-queries.
 
 ### Parent-to-Child Subqueries
 
@@ -125,10 +144,35 @@ WHERE ActivityDate = TODAY
 ```
 
 **Key rules:**
-- `TYPEOF` is required for polymorphic fields; dot notation like `WhatId.Name` is invalid.
-- The `ELSE` branch is mandatory — it handles any object types not listed in `WHEN` clauses.
-- `TYPEOF` is currently a **developer preview** feature; test in a scratch org before deploying to production and check release notes for GA status per your API version.
-- In Apex, check the `getSObjectType()` of the referenced field value before casting.
+- `TYPEOF` is required to project *type-specific* fields on a polymorphic lookup; plain dot notation like `WhatId.Name` is invalid.
+- The `ELSE` branch handles any object types not listed in `WHEN` clauses.
+- `TYPEOF` has been **generally available since API version 46.0** (Summer '19). The Developer Preview label of the SOQL Polymorphism feature applied only to API versions *before* 46.0 — on any currently supported version it is a stable, GA clause, so don't gate its use behind a "preview" caveat.
+- `TYPEOF` is **SELECT-clause only.** It is rejected in `WHERE`, `GROUP BY`/`HAVING`, aggregate/`COUNT()` queries, Bulk API SOQL, Streaming API PushTopics, and the SELECT list of a semi-join subquery. To *filter* a polymorphic field by type in any of those contexts, use the `.Type` qualifier (see below).
+- In Apex, check `getSObjectType()` (or use `instanceof`) on the referenced field value before casting.
+
+#### Filtering a Polymorphic Field by Type (`.Type`)
+
+Because `TYPEOF` is projection-only, the way to *filter* rows by the concrete type of a polymorphic field is the `.Type` qualifier. `Type` resolves to a plain string value (`'Account'`, `'User'`, `'Opportunity'`), so it compares with the ordinary string operators — `=`, `!=`, and, as the documented primary form, `IN`:
+
+```soql
+SELECT Id
+FROM Event
+WHERE What.Type IN ('Account', 'Opportunity')
+```
+
+Rows whose reference resolves to a type outside the list are **silently excluded** — they are dropped from the result set, not returned with null fields. Per the docs, an `Event` pointing at a `Campaign` in `What` would simply not appear above. Keep this in mind when auditing polymorphic-field data completeness: a `.Type IN (...)` filter quietly narrows the population.
+
+Once the filter pins the field to a single type, that type's own fields become addressable with ordinary dot notation:
+
+```soql
+SELECT Id, Owner.Name
+FROM Event
+WHERE Owner.Type = 'User'
+```
+
+Unlike `TYPEOF`, `.Type` filtering has **no API-version floor** and is the *only* legal way to select rows by polymorphic type inside the contexts where `TYPEOF` is banned — `WHERE`, Bulk API SOQL, semi-join inner queries, and `GROUP BY`/aggregate queries. The same `.Type` filter works verbatim from inside an Apex class; project the relationship with `TYPEOF`, then disambiguate the concrete type at runtime with `instanceof` before casting.
+
+A field is polymorphic (and therefore eligible for `.Type` filtering) precisely when its describe metadata reports `namePointing` and `polymorphicForeignKey` as `true` with more than one entry in `referenceTo`.
 
 ---
 
@@ -181,8 +225,10 @@ SELECT Id, (SELECT Id FROM My_Custom_Child__c) FROM Account  -- parse error
 | Situation | Recommended Approach | Reason |
 |---|---|---|
 | Need parent field value on a child record | Child-to-parent dot notation in SELECT | Simple, single query, no extra round-trip |
+| Filter on a parent object referenced repeatedly, no parent fields in SELECT | Alias notation (`FROM Contact c, c.Account a`) or plain dot notation | Both filter without selecting parent fields; the alias gives the object a compact handle for repeated references |
 | Need all related child records for a set of parents | Parent-to-child subquery with getSObjects() | One query, avoids N+1 SOQL problem |
-| Lookup can point to multiple object types | TYPEOF in subquery or outer query | Only valid syntax for polymorphic fields |
+| Need to *project* per-type fields off a polymorphic lookup | `TYPEOF ... WHEN ... END` in the SELECT clause | Only clause that returns different fields per referenced type |
+| Need to *filter* rows by polymorphic type (`WHERE`, Bulk API, aggregate, semi-join) | `.Type` qualifier, e.g. `What.Type IN ('Account','Opportunity')` | `TYPEOF` is SELECT-only; `.Type` is the only legal filter and has no API-version floor |
 | Running query through Bulk API | Separate queries, no subqueries | Bulk API rejects relationship subqueries at runtime |
 | More than 20 child object types needed | Break into multiple queries by object | Hard 20-subquery limit per outer query |
 | Need child records sorted for UI display | Sort in Apex after getSObjects() | ORDER BY in subquery has inconsistent API-version support |
@@ -209,9 +255,10 @@ SELECT Id, (SELECT Id FROM My_Custom_Child__c) FROM Account  -- parse error
 - [ ] `getSObjects()` called with the correct relationship name string (not the object API name)
 - [ ] Explicit `null` check present before iterating the `getSObjects()` result
 - [ ] Custom object relationships use `__r` suffix in both SOQL and `getSObjects()` call
-- [ ] `TYPEOF` used for any polymorphic field with a mandatory `ELSE` branch
+- [ ] `TYPEOF` used for any polymorphic field; add an `ELSE` branch (optional per the SOQL reference) when unlisted object types must still return a value
 - [ ] SOQL is outside all loops (bulkified)
 - [ ] Query not routed through Bulk API if subqueries are present
+- [ ] Any FROM-clause alias avoids SOQL reserved words (`in`, `or`, `not`, and the rest of the keyword list)
 
 ---
 
@@ -231,7 +278,8 @@ SELECT Id, (SELECT Id FROM My_Custom_Child__c) FROM Account  -- parse error
 |---|---|
 | SOQL query string | Relationship query ready for inline or `Database.query()` use |
 | Apex loop block | Null-guarded `getSObjects()` iteration pattern |
-| TYPEOF clause | Polymorphic field handler with all required WHEN/ELSE branches |
+| TYPEOF clause | Polymorphic field handler with the needed WHEN branches and an optional ELSE catch-all |
+| Alias-notation query | FROM-clause object aliases for implicit-join parent filtering |
 
 ---
 

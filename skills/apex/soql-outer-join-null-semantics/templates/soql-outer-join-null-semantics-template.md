@@ -29,12 +29,14 @@ State the ONE thing this query should return, in plain language:
 
 | Question | Answer | Action if it bites |
 |---|---|---|
+| Any SQL-style `IS NULL` / `IS NOT NULL`? | | Rewrite as `= null` / `!= null`; SOQL has no `IS NULL` operator |
 | Does the query traverse a relationship (dot notation)? | | Remember it is an outer join — null-FK rows are returned |
 | Any `WHERE Parent.Field = null`? | | Replace with a foreign-key filter (`ForeignKeyId = null`) — parent-field null also returns parent-less rows |
 | Any Boolean field compared to `null`? | | Rewrite as `= true` / `= false`; `= null` means `= false` |
 | Any `OR` branch on a relationship field? | | Confirm null-FK rows matching another branch are acceptable; add `ForeignKeyId != null` if not |
 | Any `ORDER BY` on a relationship field? | | It does not filter — null-FK rows still return (for sort *placement* see `apex/soql-null-ordering-patterns`) |
 | Does Apex read a parent field from the results? | | Null-guard the relationship object (`rec.Parent != null`) before dereferencing |
+| Selective equality filter that shouldn't return null rows? | | Add an explicit `AND Field != null` — filtering nulls in WHERE helps query performance |
 
 ## Corrected query
 

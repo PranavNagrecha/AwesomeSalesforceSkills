@@ -13,6 +13,8 @@ triggers:
   - "how do I query the history of a custom object field"
   - "set up field history tracking on a standard or custom object"
   - "how many fields can I track per object in Salesforce"
+  - "join a history object to its parent record in one SOQL query"
+  - "pull a record and its field history together with a relationship query"
 tags:
   - field-history-tracking
   - audit
@@ -32,9 +34,9 @@ outputs:
   - "Decision guidance on when to extend to Shield Field Audit Trail"
   - "Configuration checklist for enablement and review"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-07-08
 ---
 
 # Field History Tracking
@@ -73,9 +75,10 @@ Key fields on all History sObjects:
 | Field | Description |
 |---|---|
 | `Id` | Unique row identifier |
-| `ParentId` | Id of the record that was changed (foreign key to the parent object) |
-| `Field` | API name of the field that changed (e.g., `"AnnualRevenue"`, `"StageName"`) |
-| `OldValue` | Value before the change. Null if the record was created (new record) or if the field was previously blank. |
+| `ParentId` | Id of the record that was changed (foreign key to the parent object). On standard-object history sObjects this is exposed under the object-specific name — e.g., `AccountId` on `AccountHistory`, `ContactId` on `ContactHistory` — rather than the literal `ParentId`. Custom `__History` objects use `ParentId`. |
+| `Field` | API name of the field that changed (e.g., `"AnnualRevenue"`, `"StageName"`). Typed as a restricted picklist. |
+| `DataType` | Data type of the field that changed (picklist). Present on standard-object history records; useful when interpreting `OldValue`/`NewValue`, which are stored as `anyType`. |
+| `OldValue` | Value before the change (`anyType`). Null if the record was created (new record) or if the field was previously blank. |
 | `NewValue` | Value after the change. |
 | `CreatedById` | Id of the user who made the change |
 | `CreatedDate` | Timestamp when the change occurred |
@@ -113,6 +116,26 @@ ORDER BY CreatedDate ASC
 ```
 
 History sObjects are available in Salesforce Reports via the standard `[Object] History` report type when history is enabled on the object.
+
+**Relationship queries against history objects.** A history object is the child of its tracked parent, so SOQL can traverse the relationship in either direction and avoid a second round-trip to fetch parent fields.
+
+- *Child-to-parent* — from the history object, reach up to parent fields with the `Parent` relationship. This returns the change plus context about the record it belongs to in one query:
+
+  ```soql
+  SELECT OldValue, NewValue, Parent.Id, Parent.Name, Parent.CustomField__c
+  FROM MyObject__History
+  ```
+
+- *Parent-to-child* — from the parent object, nest the history rows as a subquery, so each record carries its own change log inline:
+
+  ```soql
+  SELECT Name, CustomField__c, (SELECT OldValue, NewValue FROM MyObject__History)
+  FROM MyObject__c
+  ```
+
+The child-to-parent relationship name depends on the object type: custom `__History` objects use `Parent` (matching their `ParentId` field), while standard history objects use the object name — `SELECT Account.Name FROM AccountHistory` (matching the `AccountId` field). Writing `Parent.Name` against a standard history object fails to compile; see Gotcha 5.
+
+> **Scope note.** These relationship-query forms work only on standard and custom History objects. Shield's `FieldHistoryArchive` enforces a restricted SOQL grammar and does *not* accept them — see Gotcha 6 and the `field-audit-trail` skill.
 
 ### Concept 3: 18-Month Retention and Data Loss
 
@@ -190,6 +213,8 @@ Diagnosis checklist:
 | Need more than 20 tracked fields on one object | Shield Field Audit Trail (up to 60 fields) or custom logging | Standard FHT hard-caps at 20 fields per object |
 | Formula, roll-up, or long text area field must be audited | Custom logging via Apex trigger or Flow | These field types are ineligible for standard history tracking |
 | Custom object field history in SOQL | Query `ObjectApiName__History` | Platform auto-generates this sObject when history is enabled |
+| Pull a record plus its field-change log in one round-trip | Parent-to-child subquery `SELECT ..., (SELECT OldValue, NewValue FROM Object__History) FROM Object__c` | History is a child of its parent; a subquery avoids a second query and keeps rows grouped by record |
+| Report the change alongside parent context (owner, name) | Child-to-parent traversal to parent fields — `Parent.*` on custom `__History`, the object name (`Account.*`) on standard history | One query returns `OldValue`/`NewValue` plus parent fields; no separate lookup needed |
 | Build a report of field changes | Use the built-in `[Object] History` report type | History sObjects are available natively in Report Builder |
 | Audit field changes after record deletion | Consider Shield FAT or custom logging pre-deletion | History is deleted along with the parent record |
 

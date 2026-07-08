@@ -19,6 +19,8 @@ triggers:
   - "my .NET or Java integration uses WSDL-generated stubs and I need to query or update records"
   - "when should I use SOAP API instead of REST API for a Salesforce integration"
   - "the Metadata API requires SOAP — how do I set up login and deploy metadata"
+  - "build a relationship SOQL query against the partner WSDL"
+  - "run describeSObjects to find the relationshipName for a partner-WSDL subquery"
 inputs:
   - "integration consumer type: internal org integration vs ISV/cross-org integration"
   - "development platform: .NET (Visual Studio), Java (WSC), or other SOAP toolkit"
@@ -33,9 +35,9 @@ outputs:
   - "session expiry handling strategy"
   - "review findings for an existing SOAP integration"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-07-08
 ---
 
 # SOAP API Patterns
@@ -69,7 +71,7 @@ The Salesforce SOAP API ships two distinct WSDLs with different type contracts:
 | **When to use** | Internal integrations for a specific org where developer productivity and compile-time safety matter | ISVs, packages, and cross-org integrations that must work against multiple or unknown orgs |
 | **WSDL endpoint** | `Setup > API > Generate Enterprise WSDL` | `Setup > API > Generate Partner WSDL` |
 | **SOAP service URL** | `/services/Soap/c/<version>/` | `/services/Soap/u/<version>/` |
-| **Critical drawback** | Must be re-downloaded and regenerated every time custom fields or objects are added or changed | Developer must resolve field metadata at runtime; relationship queries require extra care |
+| **Critical drawback** | Must be re-downloaded and regenerated every time custom fields or objects are added or changed | Developer must resolve field metadata at runtime; relationship queries need a `describeSObjects()` discovery step first (see [Relationship Queries with the Partner WSDL](#relationship-queries-with-the-partner-wsdl)) |
 
 Both WSDLs expose the same operations (`login`, `query`, `create`, `update`, `upsert`, `delete`, etc.). The difference is entirely in the type surface exposed to the client.
 
@@ -119,6 +121,23 @@ The response `LoginResult` contains:
 | `getUpdated()` / `getDeleted()` | Retrieve IDs of records changed or deleted in a time window | Useful for CDC-style polling when CDC/Streaming is not available |
 
 Each DML call accepts an array of up to 200 records. Salesforce processes all records in the call even if some fail — there is no all-or-none semantics by default (unlike REST Composite with `allOrNone: true`). Inspect each `SaveResult` or `UpsertResult` for per-record `success` and `errors`.
+
+### Relationship Queries with the Partner WSDL
+
+Relationship SOQL — a parent-to-child subquery like `SELECT Id, (SELECT Id FROM Assets) FROM Account`, or a child-to-parent dot-walk like `SELECT Id, Owner.Name FROM Case` — behaves differently under the partner WSDL because of its loosely-typed design. The partner WSDL "defines a single, generic object (`sObject`) that represents all the objects," so it "doesn't contain the detailed type information that's available in the enterprise WSDL which you need for a relationship SOQL query." The relationship names and reference-field names an enterprise-WSDL client reads from generated classes simply are not in the partner stubs.
+
+The partner-WSDL workflow is therefore **describe-first**:
+
+1. **Call `describeSObjects()`** for the object you intend to query. The returned `DescribeSObjectResult` carries the relationship metadata the WSDL omits.
+2. **Parent-to-child (one-to-many) subqueries** — read the `relationshipName` from the child relationships and use it as the subquery source. Example: `Assets` is the `relationshipName` for the child assets of an `Account`, giving `SELECT Id, (SELECT Id, Name FROM Assets) FROM Account`.
+3. **Child-to-parent traversal** — identify the reference (lookup/polymorphic) fields, such as `WhoId`, `WhatId`, or `OwnerId` on a `Lead`, `Case`, or custom object, and dot-walk through them: `SELECT Id, Owner.Name FROM Case`.
+
+Two follow-on traps come from the generic representation:
+
+- **Nested records are still generic `sObject`s.** A relationship query returns child records as the same untyped `sObject`, never a generated class. Resolve each nested record's real type from describe metadata — "for a particular object, its type is defined in the `name` field in the returned `DescribeSObjectResult`" — rather than casting to a compile-time type.
+- **Field order follows the query, not the WSDL.** "The ordering of fields in the `QueryResult` is determined by the field order in the `fieldList`, not the field order in the WSDL file." Parse partner-WSDL results positionally against the `SELECT` list you sent, which matters most when walking nested relationship results generically.
+
+Enterprise-WSDL clients avoid all of this: relationship names and typed accessors are baked into the generated classes, so relationship queries compile against known types with no describe step.
 
 ### When to Use SOAP Over REST
 
@@ -186,6 +205,7 @@ Check for these issues in priority order:
 4. **Is the enterprise WSDL up to date?** If custom fields or objects were added since the last WSDL regeneration, those fields are inaccessible from the stubs.
 5. **Are credentials hardcoded?** `login()` password with embedded security token must not be stored in source code.
 6. **Is `queryMore()` called when `done` is false?** Failing to paginate silently truncates query results.
+7. **For partner-WSDL relationship queries: are relationshipName and reference-field names discovered via `describeSObjects()`?** Partner-WSDL clients have no compile-time relationship metadata, and nested results must be type-resolved from describe metadata rather than cast to a generated class.
 
 ### Mode 3 — Troubleshoot a SOAP Integration
 
@@ -243,6 +263,7 @@ Run through these before marking work in this area complete:
 - [ ] Credentials and security tokens are not stored in source code or configuration files in version control.
 - [ ] Daily API call volume estimate fits within the org's edition limit (SOAP and REST share the same pool).
 - [ ] Compound fields (Address, Geolocation) are handled as nested complex types, not flat strings.
+- [ ] For partner-WSDL relationship queries: `describeSObjects()` is called first to obtain `relationshipName` / reference-field names, and nested records are type-resolved from describe metadata rather than cast to a generated class.
 
 ---
 

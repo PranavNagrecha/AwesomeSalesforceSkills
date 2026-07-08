@@ -11,6 +11,7 @@ triggers:
   - "aggregateresult get alias — practitioner accessing aggregate values via the get() method and needs alias rules"
   - "detect subtotal rows with grouping soql — practitioner using GROUP BY ROLLUP or CUBE who needs GROUPING() to tell subtotal rows from detail rows"
   - "distinguish real null from rollup placeholder — developer whose grouped field itself contains nulls and can't rely on a null check to find subtotals"
+  - "count all rows in soql apex — practitioner needs a total row count and must choose bare COUNT() vs COUNT(fieldName) and read the right result shape (QueryResult.size vs AggregateResult)"
 tags:
   - soql
   - aggregate-queries
@@ -29,7 +30,7 @@ outputs:
   - "Apex iteration code using AggregateResult.get('alias')"
   - "Guidance on row-cap implications and ROLLUP/CUBE subtotal rows"
 dependencies: []
-version: 1.1.0
+version: 1.2.0
 author: Pranav Nagrecha
 updated: 2026-07-08
 ---
@@ -54,13 +55,27 @@ Gather this context before working on anything in this domain:
 
 ### AggregateResult and Field Access
 
-SOQL aggregate queries return `List<AggregateResult>` instead of typed SObject lists. Every column in the result set — whether a grouped field or an aggregate function — must be accessed by alias string using `get('alias')`. There are no typed getters. The return type of `get()` is `Object`; cast to the expected type before use.
+Most SOQL aggregate queries return `List<AggregateResult>` instead of typed SObject lists (the exception is a bare `COUNT()` — see below). `AggregateResult` is a read-only sObject used only for query results; you cannot insert, update, or persist one. Every column in the result set — whether a grouped field or an aggregate function — must be accessed by alias string using `get('alias')`. There are no typed getters. The return type of `get()` is `Object`; cast to the expected type before use.
 
 Aliases are assigned with the `alias` keyword in SOQL (e.g. `SUM(Amount) totalRevenue`). When an aggregate function appears without an explicit alias Salesforce auto-assigns names like `expr0`, `expr1` in declaration order. Relying on auto-assigned aliases is fragile — always supply explicit aliases. When the same function appears twice in one SELECT (e.g. `COUNT(Id)` on two different fields), explicit aliases are mandatory; without them one result overwrites the other.
 
 ### COUNT() vs COUNT(fieldName)
 
-`COUNT()` (no argument) counts all rows that match the GROUP BY bucket, including rows where most fields are null. `COUNT(fieldName)` counts only rows where `fieldName` is non-null. The distinction matters when the counted field is optional or sparsely populated. `COUNT()` is equivalent to `COUNT_DISTINCT` only when used with no argument and no GROUP BY.
+`COUNT()` (no argument) and `COUNT(fieldName)` look interchangeable but differ in three ways — null handling, syntax, and result shape — and conflating them is a common source of invalid queries and runtime casts against the wrong type.
+
+**Null handling.** `COUNT()` counts every row that matches the filter, including rows where fields are null — it counts rows, not a specific field's populated values. `COUNT(fieldName)` counts only rows that have a non-null value for `fieldName`. The distinction matters when the counted field is optional or sparsely populated. `COUNT()` and `COUNT(Id)` are SOQL's equivalent of SQL's `COUNT(*)`.
+
+**Syntax.** Bare `COUNT()` must be the **only** element in the SELECT list — it cannot be combined with other fields, with other aggregate functions, or with a `GROUP BY` grouping field. `SELECT COUNT(), LeadSource FROM Lead GROUP BY LeadSource` is invalid; to get a per-bucket count, use `COUNT(Id)`: `SELECT LeadSource, COUNT(Id) cnt FROM Lead GROUP BY LeadSource`. `COUNT()` also can't be paired with `ORDER BY`, though it is compatible with `LIMIT`. `COUNT(fieldName)` carries none of these restrictions — you can list several `COUNT(fieldName)` items alongside other aggregates and grouped fields in one SELECT.
+
+**Result shape.** A bare `COUNT()` query does **not** return an `AggregateResult` — its result comes back through the `QueryResult` object's `size` field (the `records` field is null), so you assign it straight to an `Integer` with no iteration:
+
+```apex
+Integer leadCount = [SELECT COUNT() FROM Lead WHERE Status = 'Open'];
+```
+
+`COUNT(fieldName)` — like every other aggregate — returns inside an `AggregateResult` record; an unaliased `COUNT(fieldName)` lands under the implied alias `expr0`, so read it with `ar.get('expr0')` (or supply an explicit alias). Do not iterate a `List<AggregateResult>` over a bare `COUNT()` query, and do not assign a `COUNT(fieldName)` query to a bare `Integer`.
+
+**Governor cost.** A `COUNT()` or `COUNT(fieldName)` query consumes just one query row against limits — unless it has a `GROUP BY`, in which case one query row per grouping is consumed.
 
 ### GROUP BY Variants, HAVING, and the 2,000-Row Cap
 
@@ -130,6 +145,8 @@ The naive `ar.get('field') == null` subtotal check is only safe when the grouped
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
+| Need a single total row count, no grouping | Bare `COUNT()` assigned to an `Integer` | Returns via `QueryResult.size`, not an `AggregateResult`; can't be combined with fields or `GROUP BY` |
+| Need a count per group or alongside other columns | `COUNT(Id)` (or `COUNT(fieldName)`) in the SELECT | Bare `COUNT()` must be the only SELECT element; `COUNT(Id)` counts every row like SQL `COUNT(*)` |
 | Aggregate metric from a single object, result < 2,000 groups | Inline aggregate SOQL in Apex | Simplest; all processing in DB tier |
 | Aggregate metric, expected groups > 2,000 | Batch Apex with WHERE range partitioning | Aggregate query row cap is 2,000 |
 | Need subtotals without post-processing | GROUP BY ROLLUP or CUBE | Subtotals generated by DB; null sentinel marks subtotal rows |
@@ -177,6 +194,7 @@ Non-obvious platform behaviors that cause real production problems:
 2. **Missing alias causes NullPointerException** — Calling `ar.get('myAlias')` when the query used no alias (or a typo alias) returns `null`; subsequent casts like `(Decimal) ar.get('myAlias')` throw a `NullPointerException`. Auto-assigned aliases (`expr0`, `expr1`) can shift silently when the SELECT column order changes. Always use explicit, stable aliases.
 3. **ROLLUP row count inflation vs actual data** — `GROUP BY ROLLUP(A, B)` produces rows for each (A, B) pair PLUS one row per distinct A PLUS one grand total row. For N groups of A and M groups of B the row count is N×M + N + 1. Practitioners who only consider the base GROUP BY cardinality underestimate total rows and hit the 2,000-row cap unexpectedly.
 4. **A subtotal placeholder null looks exactly like a real null** — ROLLUP/CUBE fill the rolled-up dimension with `null` on subtotal rows. If the grouped field can also hold a legitimate null (an unset picklist, an empty lookup), a `get('field') == null` subtotal check treats those genuine detail rows as subtotals and double-counts or mislabels them. Use `GROUPING(field)` (returns `1` for a true subtotal, `0` for data) to discriminate.
+5. **Bare COUNT() does not drop into GROUP BY like COUNT(fieldName)** — Because most examples use `COUNT(fieldName)`, practitioners assume bare `COUNT()` behaves the same way and write `SELECT COUNT(), LeadSource FROM Lead GROUP BY LeadSource`, which is invalid: `COUNT()` must be the only element in the SELECT list. Its result also arrives differently — through `QueryResult.size` as a scalar `Integer`, not an `AggregateResult` — so code that iterates `List<AggregateResult>` over a bare `COUNT()` (or assigns a `COUNT(fieldName)` query to an `Integer`) breaks. Use `COUNT(Id)` when you need a count inside a grouped or multi-column query.
 
 ---
 

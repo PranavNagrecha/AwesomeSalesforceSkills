@@ -120,9 +120,9 @@ SELECT Id, Name, Test__c FROM Account WHERE Test__c = null
 SELECT Id, Name, Test__c FROM Account WHERE Test__c != null
 ```
 
-"Boolean fields never contain null values," and on an outer-joined object a Boolean is "treated
-as false when no records match the query." So `= null` is evaluated as `= false` and `!= null`
-as `= true`.
+A Boolean field is never null; the SOQL reference notes that `null` matches `FALSE` values, and
+on an outer-joined object a Boolean with no matching record is treated as `false`. So `= null` is
+evaluated as `= false` and `!= null` as `= true`.
 
 **Correct approach:** always compare Booleans to an explicit literal so the intent is clear:
 

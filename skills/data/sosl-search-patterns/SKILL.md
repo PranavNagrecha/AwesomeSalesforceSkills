@@ -2,7 +2,7 @@
 name: sosl-search-patterns
 description: "Use when choosing or implementing SOSL for cross-object or full-text search, especially around SOSL vs SOQL, search groups, result shaping, and injection-safe dynamic search. Triggers: 'SOSL', 'FIND clause', 'cross object search', 'Search.query', 'SOSL injection'. NOT for structured record retrieval where ordinary SOQL filters are the right tool."
 category: data
-salesforce-version: "Spring '25+'"
+salesforce-version: "Spring '25+"
 well-architected-pillars:
   - Performance
   - User Experience
@@ -13,6 +13,7 @@ tags:
   - search-layouts
   - injection
   - list-view
+  - returning-clause
 triggers:
   - "when should I use SOSL instead of SOQL"
   - "cross object search in Salesforce Apex"
@@ -24,6 +25,9 @@ triggers:
   - "search within a Salesforce list view using SOSL"
   - "escape reserved characters in a SOSL FIND clause"
   - "escape a special character in a SOQL LIKE query"
+  - "combine AND, OR, and AND NOT in a SOSL FIND clause"
+  - "paginate SOSL results with OFFSET inside a RETURNING clause"
+  - "filter or sort one object's slice in a SOSL RETURNING clause"
 inputs:
   - "search use case and whether it spans one object or many"
   - "expected result volume and UI shape"
@@ -33,7 +37,7 @@ outputs:
   - "review findings for search performance and injection risk"
   - "search pattern for result shaping and object grouping"
 dependencies: []
-version: 1.2.0
+version: 1.4.0
 author: Pranav Nagrecha
 updated: 2026-07-08
 ---
@@ -76,6 +80,14 @@ Search is a user-experience feature first. Teams should design for top matches, 
 
 The optional `USING ListView=<Name>` clause narrows a `RETURNING` object to the records inside a single named list view instead of the whole object. Salesforce searches only the first 2,000 records of that list view, using the sort order the user has set on the view, so the clause is a scoping decision — the list view defines which records are eligible before the `FIND` text is matched. Only one list view can be specified, the clause is available in API version 41 or later, and it works in SOAP API, REST API, and Apex.
 
+### `RETURNING` Shapes Each Object's Result Slice
+
+`USING ListView` is one of several sub-clauses `RETURNING` can attach to an object; the full per-object shape is `ObjectTypeName(FieldList WHERE ... USING ListView=... ORDER BY ... LIMIT n OFFSET n)`, and the sub-clauses must appear in that order, with at least one field present in `FieldList` before any of them. `FieldList` is a comma-separated list of one or more fields; relationship fields (e.g. `Account.Owner.Name`) follow SOQL's format and depth rules. The per-object `WHERE` filters matched rows by field value — distinct from the `FIND` term, which decides what matched — and `ORDER BY` sorts that object's slice. Two row caps bite: with no `LIMIT` each object returns at most 2,000 rows (API v28+), and an explicit `LIMIT n` still tops out at 2,000, so SOSL is not a bulk-extraction tool. `OFFSET n` pages the result set but is legal **only when the search returns a single object** and must be the last sub-clause. When more than one object is named, each `ObjectTypeName` must be distinct. (A separate class of object types — external objects, articles, documents, feed comments, feed items, files, products, and solutions — is invisible unless named explicitly in `RETURNING`; see gotchas.)
+
+### The `FIND` Search Query Has Operators, A Fixed Precedence, And Size Cliffs
+
+A `FIND` search query can combine terms with `AND`, `OR`, and `AND NOT` plus parentheses. Mixed operators are not read left to right: precedence is fixed as parentheses, then `AND`/`AND NOT` (evaluated right to left), then `OR` — so group intent with explicit parentheses. To match the literal words `and`, `or`, or `and not`, wrap them in double quotes. Text searches are case-insensitive, and the clause does not evaluate run-time expressions (no macros, functions, or regular expressions). Two length cliffs turn into silent production bugs when the search text is assembled from user input: past 4,000 characters the logical operators are removed (results broaden as `AND` constraints drop away), and past 10,000 characters no result rows come back at all. The search value is delimited by curly braces in the Query Editor and API, but by single quotes in Apex.
+
 ### Reserved Characters And Escaping Differ Between SOQL And SOSL
 
 The two languages do not share a reserved-character set. SOQL reserves only the single quote (`'`) and the backslash (`\`); both must be preceded by a backslash when they appear as literals inside a quoted string, and the backslash is SOQL's escape character for a fixed table of sequences (`\n`, `\r`, `\t`, `\b`, `\f`, `\"`, `\'`, `\\`, `\uXXXX`, plus `\_` and `\%` that apply only inside `LIKE`). SOSL's `FIND` clause reserves a much larger set — `? & | ! { } [ ] ( ) ^ ~ * : \ " ' + -` — because that punctuation drives its Boolean and proximity syntax, and escaping is required even when the search string is wrapped in double quotes. Getting this wrong is not silently tolerated: an unescaped reserved character, or a backslash used outside a defined escape sequence, raises an error rather than matching literally.
@@ -115,6 +127,8 @@ The two languages do not share a reserved-character set. SOQL reserves only the 
 | Search term comes from user input in Apex | Static SOSL or carefully sanitized dynamic SOSL | Reduces injection and syntax risk |
 | UI needs controlled display fields and object grouping | SOSL plus shaped result mapping | Better fit than improvised SOQL fan-out |
 | Search must be limited to the records in one saved list view | SOSL with `USING ListView=<Name>` | Reuses the org's own view definition instead of duplicating its filter (API v41+) |
+| Search combines `AND`, `OR`, and `AND NOT` | Group terms with explicit parentheses | Precedence is fixed (parentheses, then `AND`/`AND NOT` right-to-left, then `OR`), so grouping makes intent unambiguous |
+| One object's slice of a multi-object search needs its own filter, sort, or paging | Per-object `WHERE` / `ORDER BY` / `LIMIT` inside `RETURNING` (`OFFSET` single-object only) | Shapes that object independently of the `FIND` term without post-filtering in Apex |
 
 ---
 
@@ -142,6 +156,8 @@ Run through these before marking work in this area complete:
 - [ ] The design switches to SOQL once the workflow becomes object-specific.
 - [ ] Wildcard and relevance expectations are documented for the experience.
 - [ ] Reserved characters are escaped for the right language — `'` and `\` in SOQL, SOSL's larger `FIND` set — before a literal search term is run.
+- [ ] Mixed `FIND` operators are grouped with explicit parentheses, and an assembled search string stays well under the 4,000-character operator-stripping cliff (and the 10,000-character zero-row cliff).
+- [ ] Each `RETURNING` object's `WHERE` / `ORDER BY` / `LIMIT` / `OFFSET` is intentional, `OFFSET` is used only on single-object searches, and no per-object `LIMIT` assumes more than 2,000 rows.
 
 ---
 
@@ -154,6 +170,9 @@ Non-obvious platform behaviors that cause real production problems:
 3. **Search experiences need display discipline** - technically valid results can still feel unusable in the UI.
 4. **Many "search" problems are really SOQL problems** - picking SOSL too early can complicate exact filtering work.
 5. **`USING ListView` scopes a search to one saved list view** - it reuses the view's own filter and sort instead of the whole object and requires API version 41 or later.
+6. **A long `FIND` query silently changes meaning or returns nothing** - past 4,000 characters the logical operators are removed (results broaden); past 10,000 characters no rows return.
+7. **Some object types are invisible unless named in `RETURNING`** - external objects, articles, documents, feed comments/items, files, products, and solutions are skipped otherwise.
+8. **`OFFSET` is single-object only; each object caps at 2,000 rows** - `OFFSET` must be the last sub-clause and errors on multi-object searches, so SOSL can't bulk-extract.
 
 ---
 
