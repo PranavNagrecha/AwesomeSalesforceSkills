@@ -20,11 +20,13 @@ The pipeline was designed once by Fable; at run time it uses **only**:
 | Stage | Model | Why |
 |---|---|---|
 | Intake + triage | none (deterministic script) | evidence must not come from a model |
+| Topic screening (large sources only) | **Haiku** | high-volume, near-binary classification of short strings; survivors are re-verified downstream |
 | Report load, docs verification, scaffolding | **Sonnet** | parallel retrieval + citation gathering; outputs are re-verified downstream |
 | Gate, authoring, adversarial review, fixes | **Opus** | judgment and product-quality writing |
 
 The workflow file pins these via per-agent `model:` overrides. Do not
-substitute other models; do not add a planning stage.
+substitute other models; do not add a planning stage. Screening happens
+*before* the workflow, never inside it.
 
 ## The license wall (decides everything downstream)
 
@@ -73,6 +75,16 @@ python3 scripts/onboard_source.py topic "some salesforce capability"
   script, so distill the article into a headings file yourself (one `#`-prefixed
   Salesforce-shaped topic per line) and pass the true origin via `--source-url`
   — the report then records the URL, not the scratchpad path.
+- **Confluence spaces** have their own harvester so you don't hand-distill a
+  wiki: `scripts/confluence_to_headings.py --base-url https://<site>.atlassian.net
+  --space-key <KEY> --out <headings.md> --manifest <lock.json>`. It reads the
+  public REST v2 API (anonymous; `CONFLUENCE_EMAIL` + `CONFLUENCE_API_TOKEN` for
+  private spaces), emits **topic names only** — page titles plus H2/H3 headings,
+  never body prose — and drops stubs, link-dumps, and third-party clippings
+  (titles carrying a publisher attribution). Feed its output to `url` mode.
+  A wiki still yields ~10x more raw headings than real topics (`Details`,
+  `Setup`, `Notes`, vendor product names), so **screen the headings with a
+  cheap-tier model before intake** — see "Screening a large source" below.
 - File/url heading extraction **skips the document's first H1** and any heading
   matching the source slug — the title is a description of the source, not a
   capability, and produced a junk NET_NEW in every early production run.
@@ -89,6 +101,27 @@ Deterministic evidence is the anti-fabrication backbone: agents downstream
 *interpret* these scores; they may never assert local coverage themselves
 (memory: delegated gap analysis has fabricated "no skill found" before).
 
+### Step 1b — Screening a large source (Haiku, optional)
+
+`onboard_source.py` truncates at `--max-candidates` (200). A repo subtree or a
+wiki routinely yields ten times that, mostly document scaffolding and vendor
+product names, and every junk candidate that reaches the report burns a Sonnet
+verification slot. Before intake, screen the raw topic list with a **Haiku**
+fan-out (batches of ~60, one agent each, agents write verdicts to disk and
+return counts so the orchestrator's context stays clean). Tier each topic:
+
+- `core` — a durable platform capability that could headline a skill
+- `legacy` — a real Salesforce topic naming a retired product (Process Builder,
+  MavensMate, Classic Console). Keep it, but order it *behind* `core`.
+- `drop` — scaffolding, ISV product names, personal/event notes, blog titles
+
+Then emit `core` first, `legacy` after. **Ordering is load-bearing**: the
+workflow processes `actionable.slice(0, maxVerify)` from the front of the
+report, so tier order decides what the expensive stages ever see.
+
+A false `core` costs one research agent; a false `drop` costs one topic. Tell
+the screener to prefer `drop` when unsure.
+
 ### Step 2 — The `source-onboarding` workflow (Sonnet + Opus)
 
 Launch the workflow with the report path:
@@ -104,6 +137,13 @@ workflow registry has picked the file up; `scriptPath` is always reliable.)
 Optional args: `maxVerify` (default 12 candidates per run), `maxBuild`
 (default 6 new skills per run). For a source with hundreds of candidates,
 run in waves — the BACKLOG carries the remainder.
+
+Waves need **one report each**. The workflow always takes the front of the
+list (`actionable.slice(0, maxVerify)`), so re-running the same report
+re-processes the same candidates. Shard the master report into
+`.intake-reports/<slug>-wave-N-report.json` containing only candidates whose
+BACKLOG entry is still `RESEARCH`; that status is both the progress ledger and
+the loop's termination condition.
 
 Two more optional args govern the license wall at the workflow level:
 
@@ -142,6 +182,39 @@ Agents never run `skill_sync.py`/`validate_repo.py` and never touch
 `registry/`, `vector_index/`, `docs/` — shared generated artifacts are
 synced once, sequentially, in Step 3.
 
+### What a 2026-07-08 audit measured (read before trusting an enrich)
+
+An independent pass re-checked 24 Fix-stage corrections nobody had reviewed.
+All 24 were genuinely `RESOLVED`. But that same pass found **23 new blockers**
+in the fixed text. **Single-pass adversarial review does not converge — it
+samples.** A `PASS` verdict is not evidence a skill is correct.
+
+The new blockers tracked how much text was added, not the topic:
+
+| Change | Skills | New blockers |
+|---|---|---|
+| build (new skill, focused fact sheet) | 1 | 0 |
+| enrich **with a ~40-line budget** | 2 | 0 |
+| enrich with no budget (+145…+503 lines) | 6 | 22 |
+
+About one fabricated blocker per 70–100 new lines: invented scratch-org
+definition fields, invented metadata names, a refuted "GitHub only" product
+claim propagated across three files. The fabrication is not the source's
+fault — clean-room held — it is the model filling gaps from stale Salesforce
+priors that an old topic name primes.
+
+Therefore:
+
+- **Give every enrich author an explicit line budget (~40 net new lines) and
+  tell it why** — retrieval is a shared, zero-sum 30-chunk window, and volume
+  predicts fabrication. Budgeted authors returned +33/+36 and zero blockers.
+- **Prefer build over enrich.** A bad new skill is isolated and `--strict`
+  gates it. A bad enrichment corrupts a skill that already worked.
+- **Pin the enrich target** rather than letting the gate pick it. A gate-chosen
+  target once routed an MFA release-notes topic into an incident-response skill.
+- Treat one `PASS` as one sample. For anything you intend to keep, audit the
+  fixes with an agent that never saw them.
+
 ### Step 3 — Ship (deterministic, orchestrator)
 
 1. Append the returned `query_fixtures` to `vector_index/query-fixtures.json`.
@@ -171,6 +244,7 @@ synced once, sequentially, in Step 3.
 ## Related
 
 - `scripts/onboard_source.py` — deterministic intake/triage (this pipeline's step 1)
+- `scripts/confluence_to_headings.py` — Confluence space → headings file for `url` mode
 - `.claude/workflows/source-onboarding.js` — the Sonnet/Opus workflow (step 2)
 - `commands/sync-upstream-skills.md` — the sf-skills-specific weekly radar
 - `commands/new-skill.md` — the authoring standard each build follows

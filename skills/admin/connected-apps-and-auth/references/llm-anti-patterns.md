@@ -19,8 +19,8 @@ For server-to-server (machine-to-machine) integrations:
 For user-delegated access:
 - Use the OAuth 2.0 Authorization Code flow (with PKCE for public clients).
 
-The Username-Password flow is deprecated for new connected apps.
-Existing implementations should be migrated.
+Salesforce is deprecating the OAuth 2.0 username-password flow for
+connected apps. Orgs created in Summer '23 or later already block it by default.
 ```
 
 **Detection hint:** If the output includes `grant_type=password` or mentions passing a username and password in the OAuth token request body, the deprecated flow is being recommended. Search for `grant_type=password` or `Username-Password flow`.
@@ -80,12 +80,12 @@ Also configure Connected App policies:
 
 **What the LLM generates:** "Create a Named Credential and enter the username and password for the external system."
 
-**Why it happens:** LLMs reference the legacy Named Credential model (pre-Spring '23) where auth config was directly on the Named Credential. The new model separates the endpoint (Named Credential) from the authentication principal (External Credential), giving better governance and reuse.
+**Why it happens:** LLMs reference the legacy Named Credential model (pre-Winter '23) where auth config was directly on the Named Credential. The new model separates the endpoint (Named Credential) from the authentication principal (External Credential), giving better governance and reuse.
 
 **Correct pattern:**
 
 ```
-New Named Credential model (Spring '23+):
+New Named Credential model (Winter '23+):
 1. External Credential: defines the auth protocol (OAuth, Basic Auth, etc.)
    and holds the authentication principal (client ID, secret, certificate).
 2. Named Credential: references the External Credential and defines
@@ -93,7 +93,7 @@ New Named Credential model (Spring '23+):
 3. Permission Set Mapping: controls which users/integrations can use
    which External Credential principal.
 
-Legacy Named Credentials (pre-Spring '23):
+Legacy Named Credentials (pre-Winter '23):
 - Auth config is directly on the Named Credential.
 - Still functional but not recommended for new implementations.
 ```

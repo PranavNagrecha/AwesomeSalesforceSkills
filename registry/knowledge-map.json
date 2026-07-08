@@ -33,6 +33,7 @@
       "admin/care-coordination-requirements",
       "admin/care-plan-configuration",
       "admin/care-program-management",
+      "admin/case-feed-send-email-action",
       "admin/case-management-setup",
       "admin/change-advisory-board-process",
       "admin/change-data-capture-admin",
@@ -3306,6 +3307,9 @@
       "admin/self-service-design",
       "architect/case-deflection-strategy"
     ],
+    "case-feed": [
+      "admin/case-feed-send-email-action"
+    ],
     "case-history": [
       "data/case-history-migration"
     ],
@@ -5944,6 +5948,9 @@
     "email-notifications": [
       "admin/chatter-notification-tuning"
     ],
+    "email-quick-action": [
+      "admin/case-feed-send-email-action"
+    ],
     "email-service": [
       "admin/email-service-inbound"
     ],
@@ -5968,6 +5975,9 @@
       "admin/email-service-inbound",
       "admin/email-to-case-configuration",
       "architect/multi-channel-service-architecture"
+    ],
+    "emailmessage": [
+      "admin/case-feed-send-email-action"
     ],
     "emailservicesaddress": [
       "admin/email-service-inbound"
@@ -9544,6 +9554,9 @@
     "moscow-prioritization": [
       "admin/moscow-prioritization-for-sf-backlog"
     ],
+    "move-email": [
+      "admin/case-feed-send-email-action"
+    ],
     "moves-management": [
       "admin/donor-lifecycle-requirements",
       "admin/fundraising-process-mapping"
@@ -10730,6 +10743,9 @@
       "admin/health-cloud-consent-management",
       "admin/hipaa-workflow-design"
     ],
+    "phishing-resistant-mfa": [
+      "security/mfa-enforcement-strategy"
+    ],
     "picklist": [
       "admin/field-dependency-and-controlling",
       "admin/path-and-guidance",
@@ -11442,6 +11458,9 @@
     ],
     "quick-text": [
       "admin/service-console-configuration"
+    ],
+    "quickactiondefaultshandler": [
+      "admin/case-feed-send-email-action"
     ],
     "quota-management": [
       "admin/collaborative-forecasts"
@@ -12799,6 +12818,7 @@
       "admin/marketing-cloud-engagement-setup"
     ],
     "send-email-action": [
+      "admin/case-feed-send-email-action",
       "flow/flow-email-and-notifications"
     ],
     "send-relationship": [

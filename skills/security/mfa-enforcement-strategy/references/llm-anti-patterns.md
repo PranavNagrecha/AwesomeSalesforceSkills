@@ -28,10 +28,10 @@ Trusted IP and network features address session or network policy; they are not 
 **Correct pattern:**
 
 ```
-SSO with MFA at the IdP can satisfy Salesforce MFA expectations for users who authenticate through that SSO path, when direct Salesforce login is not a realistic bypass. Validate both IdP authentication strength and remaining Salesforce login channels against official Salesforce MFA and SSO documentation.
+SSO with MFA at the IdP can satisfy Salesforce MFA expectations for users who authenticate through that SSO path, when direct Salesforce login is not a realistic bypass. Under 2026 enforcement, the SSO path counts only when the IdP passes a standard-MFA or phishing-resistant-MFA signal to Salesforce via ACR or AMR (RFC 8176); an IdP that enforces MFA but sends no such claim still causes Salesforce to prompt users to register a verification method. Validate both IdP authentication strength and remaining Salesforce login channels against official Salesforce MFA and SSO documentation.
 ```
 
-**Detection hint:** Absolute words (“always,” “automatically”) paired with “SSO” and “MFA” with no mention of direct login or user population scope.
+**Detection hint:** Absolute words (“always,” “automatically”) paired with “SSO” and “MFA” with no mention of direct login, the ACR/AMR claim, or user population scope.
 
 ---
 
