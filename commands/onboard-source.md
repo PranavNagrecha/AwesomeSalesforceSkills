@@ -4,7 +4,9 @@ One entrypoint for turning outside knowledge into catalog-quality skills:
 
 ```
 /onboard-source https://github.com/owner/repo      # a GitHub repository
+/onboard-source https://github.com/o/r/tree/<sha>/plugins/x/skills  # a subtree at a pinned ref
 /onboard-source /path/to/notes.md                  # an attachment (md/txt)
+/onboard-source https://example.com/article        # a web article (distill to headings first)
 /onboard-source topic: "Data Cloud code extensions"  # a bare topic
 ```
 
@@ -41,13 +43,25 @@ substitute other models; do not add a planning stage.
 
 When in doubt the script defaults to clean-room. Never weaken this gate.
 
+Mode defaults and the `--license` flag:
+
+- **repo**: the GitHub-detected SPDX id decides. `--license clean-room`
+  tightens (e.g. an MIT fork whose upstream family is CC-BY-NC);
+  `--license permissive` on a non-permissive repo is **refused**.
+- **file / url**: default **clean-room** — unlicensed attachments and web
+  articles are the common case. `--license permissive` records a
+  user-attestation in the report when you actually hold the rights.
+- **topic**: nothing to read, so license class is moot (permissive).
+
 ## Pipeline
 
 ### Step 1 — Deterministic intake + triage (no LLM)
 
 ```bash
 python3 scripts/onboard_source.py repo  https://github.com/owner/repo --write-manifest --update-backlog
+python3 scripts/onboard_source.py repo  https://github.com/o/r/tree/<sha>/plugins/x/skills   # ref+subpath parsed from tree URLs; or pass --ref/--subpath
 python3 scripts/onboard_source.py file  /path/to/attachment.md        --update-backlog
+python3 scripts/onboard_source.py url   /path/to/headings.md --source-url https://example.com/article
 python3 scripts/onboard_source.py topic "some salesforce capability"
 ```
 
@@ -55,6 +69,16 @@ python3 scripts/onboard_source.py topic "some salesforce capability"
   the topic itself) and runs each through `search_knowledge.py`, embedding the
   **verbatim top hits** and a NET_NEW / ENRICH / COVERED classification in
   `.intake-reports/<slug>-report.json` (gitignored — session artifact).
+- **url mode** is for web articles: fetching is out of scope for the stdlib
+  script, so distill the article into a headings file yourself (one `#`-prefixed
+  Salesforce-shaped topic per line) and pass the true origin via `--source-url`
+  — the report then records the URL, not the scratchpad path.
+- File/url heading extraction **skips the document's first H1** and any heading
+  matching the source slug — the title is a description of the source, not a
+  capability, and produced a junk NET_NEW in every early production run.
+- `--subpath` (or a `/tree/<ref>/<path>` URL) scopes repo discovery to one
+  directory so monorepos don't flood BACKLOG with off-topic candidates;
+  `--ref` pins a commit/tag. The manifest and report record both.
 - `--write-manifest` (repo mode) writes the committed lockfile
   `config/upstream-sources/<slug>.manifest.json` for future delta runs.
 - `--update-backlog` appends `RESEARCH` entries (and `DUPLICATE` for COVERED,
