@@ -71,41 +71,33 @@ These patterns help the consuming agent self-check its own output.
 
 ## Anti-Pattern 3: Ignoring Active Scratch Org Limits
 
-**What the LLM generates:** "Create a new scratch org for each feature branch" without accounting for the Dev Hub's allocation constraints — and, when it does cite numbers, conflating the *active* allocation with the *daily* allocation (e.g., claiming a Developer Edition Dev Hub allows "6 active scratch orgs", when 6 is the daily creation allowance and 3 is the active ceiling).
+**What the LLM generates:** "Create a new scratch org for each feature branch" without accounting for the Dev Hub's active scratch org limit (default: 40 for Enterprise, varies by edition and add-on purchases).
 
-**Why it happens:** Scratch org creation is presented as lightweight and disposable. LLMs do not model the Dev Hub's allocation constraints, and the two allocations are frequently transposed in secondhand blog content that models train on.
+**Why it happens:** Scratch org creation is presented as lightweight and disposable. LLMs do not model the Dev Hub's allocation constraints, which become a bottleneck in teams with many developers.
 
 **Correct pattern:**
 
 ```text
-Scratch org allocations — TWO separate budgets, per Dev Hub (not per user):
+Scratch org allocation limits:
 
-Edition                        Active    Daily creations
------------------------------  --------  ---------------
-Developer Edition or trial     3         6
-Enterprise Edition             40        80
-Unlimited Edition              100       200
-Performance Edition            100       200
-Partner Business Org (active)  150       300
-Partner Business Org (trial)   20        40
-
-Active  = max scratch orgs existing at any one time.
-Daily   = max successful creations initiated in a ROLLING 24-hour window.
-          Deleting orgs frees Active. It does not refund Daily.
+Default active scratch org limits (varies by Dev Hub edition):
+- Developer Edition Dev Hub: 6 active scratch orgs
+- Enterprise Edition Dev Hub: 40 active scratch orgs
+- Unlimited Edition Dev Hub: 100 active scratch orgs
 
 Management strategies:
-1. Set short durations: --duration-days 1 for CI (default is 7, max is 30)
+1. Set short durations: --duration-days 7 (default is 7, max is 30)
 2. Delete unused scratch orgs: sf org delete scratch --target-org alias
-3. Check real headroom against the Dev Hub, not the local CLI:
-     sf org list limits --target-org <Dev Hub username or alias>
-   Read the ActiveScratchOrgs and DailyScratchOrgs limits.
-   (sf limits api display is a legacy alias of the same command.)
-4. In CI: create scratch org, run tests, delete unconditionally (if: always())
+3. Monitor allocation: sf org list --all (shows active count)
+4. In CI: create scratch org, run tests, delete immediately
+5. Use namespace org limits: check with sf org list limits --target-org devhub
+
+Query allocation:
+  SELECT ActiveScratchOrgs, MaxScratchOrgs FROM ScratchOrgInfo
+  (query the Dev Hub org)
 ```
 
-Note that `sf org list --all` reports orgs the *local CLI* knows about. It is not an allocation check — it will miss orgs created by CI runners or teammates against the same Dev Hub. Only the Dev Hub knows the true remaining allocation.
-
-**Detection hint:** Flag scratch org strategies for teams >5 developers that do not mention allocation limits or cleanup procedures. Also flag any generated text that gives a single "scratch org limit" number per edition without distinguishing active from daily, that quotes 6/3 for Developer Edition in the wrong column, or that invents allocation fields on `ScratchOrgInfo`. `ActiveScratchOrgs` and `DailyScratchOrgs` are names defined by the REST API Limits resource, not fields on `ScratchOrgInfo` — the object's field list (Object Reference) has no allocation or headroom fields, so `SELECT ActiveScratchOrgs, MaxScratchOrgs FROM ScratchOrgInfo` does not compile. Allocation headroom comes from the limits API, not SOQL.
+**Detection hint:** Flag scratch org strategies for teams >5 developers that do not mention allocation limits or cleanup procedures.
 
 ---
 

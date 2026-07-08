@@ -8,21 +8,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **When it occurs:** Any time CI is scheduled around midnight assuming a calendar-day reset. Also occurs when a team burns through the full daily limit late in the afternoon and expects availability first thing the next morning — the 24-hour window may not have fully rolled over.
 
-**How to avoid:** Treat the daily limit as a strict rolling 24-hour window over *successful creations initiated*, not a midnight reset. Two consequences follow from that definition and both surprise people:
-
-- Deleting active scratch orgs frees the **active** allocation. It does not refund the **daily** allocation — the creation already happened.
-- A team that burns the daily allocation at 4 p.m. does not get it back at 9 a.m. the next morning. It comes back creation-by-creation as each one ages out of the window.
-
-The authoritative pre-flight check is the Dev Hub's own limits, not a SOQL count:
-
-```bash
-# Reports both ActiveScratchOrgs and DailyScratchOrgs with remaining/max
-sf org list limits --target-org MyDevHub
-```
-
-(`sf limits api display` is a legacy alias of the same command and still appears in the SFDX Developer Guide. Prefer the canonical `sf org list limits`.)
-
-Use SOQL on `ScratchOrgInfo.CreatedDate` only as a supplement, to understand *when* the oldest creation in the current window will age out:
+**How to avoid:** Treat the daily limit as a strict 24-hour window starting from the timestamp of the first creation, not a midnight reset. Monitor `ScratchOrgInfo.CreatedDate` to understand when the oldest creation in the current window will age out. If allocation is critical, implement a pre-flight SOQL check before CI runs:
 
 ```bash
 sf data query \
@@ -97,33 +83,3 @@ sf data query \
 **When it occurs:** When a definition file is written without fully enumerating all features required for the work, or when requirements change mid-feature.
 
 **How to avoid:** Before creating the scratch org, audit the full feature set required by reviewing the components being developed and their associated feature dependencies. The Scratch Org Features list in the Salesforce DX Developer Guide provides the exact feature strings. For teams where production feature sets change frequently, use Org Shape so that the feature set is derived from production automatically rather than maintained manually.
-
----
-
-## Gotcha 6: Scratch Org Storage Is Fixed at 500 MB Data / 50 MB Files Regardless of the Edition You Declare
-
-**What happens:** A team sets `"edition": "Enterprise"` in the definition file, then runs the same data-seeding script they use against a full sandbox. The load fails partway through with storage limit errors, often after the org has already been provisioned and half-populated — so the failure surfaces in the middle of a CI run rather than at org creation.
-
-**When it occurs:** Any time a scratch org is treated as a small sandbox. It is common in CI pipelines that seed reference data (products, price books, territory hierarchies) or in bulkification tests that insert 100k+ records to exercise governor limits.
-
-**How to avoid:** Remember that `edition` controls the *feature set and license model*, not the storage allocation. Scratch orgs are limited to 500 MB for data and 50 MB for files. Entities defined as metadata types are not counted against these allocations, so a large metadata footprint is safe — it is record volume and file/attachment volume that will exhaust the ceiling.
-
-Practical consequences:
-
-- Size bulk-test data sets to the smallest volume that still crosses the governor limit under test (e.g., 201 records to prove a trigger is bulk-safe, not 200,000).
-- Load reference data as a trimmed subset rather than a production extract.
-- Prefer `Test.loadData()` with a small static resource, or a factory that generates records in-memory, over a bulk file import.
-- If a test genuinely requires production-scale data volume, a scratch org is the wrong environment. Use a Partial Copy or Full sandbox.
-
-Before a large load, size the record volume already in the org. From the CLI, run the command with no `--sobject` flag to get every available record count — these are the same counts the Setup UI shows on its Storage Usage page:
-
-```bash
-sf org list sobject record-counts --target-org my-scratch-org
-```
-
-Counts are approximate: they are calculated asynchronously, so storage usage lags a load that just finished. To read the consumed share of the 500 MB data allocation as a percentage, open the org and navigate to Setup → Storage Usage:
-
-```bash
-# Opens the org home page — navigate to Setup → Storage Usage from there
-sf org open --target-org my-scratch-org
-```

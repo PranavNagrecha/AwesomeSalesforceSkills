@@ -25,18 +25,7 @@ Configure duplicate rule actions by channel:
    rather than silently blocking integration records.
 ```
 
-For Apex-initiated DML, the per-transaction control is `Database.DMLOptions.DuplicateRuleHeader`:
-
-```apex
-Database.DMLOptions dml = new Database.DMLOptions();
-dml.DuplicateRuleHeader.allowSave = true;         // bypass an Alert-configured rule
-dml.DuplicateRuleHeader.runAsCurrentUser = true;  // enforce running user's sharing during matching
-Database.SaveResult sr = Database.insert(record, dml);
-```
-
-`allowSave = true` bypasses alerts and saves the duplicate; `false` prevents the save. It has no effect on a rule configured to Block — that is why "just set it to Block and let Apex opt out" does not work. `runAsCurrentUser = true` enforces the current user's sharing rules while duplicate rules run, so users can't be shown duplicate records that aren't available to them.
-
-**Detection hint:** If the output sets Block on the duplicate rule without differentiating between UI and API channels, integrations will break. Search for `API` or `integration` in the duplicate rule configuration. If the output tells an Apex developer to "handle" a Block-configured rule, it is wrong — no `DMLOptions` setting overrides Block.
+**Detection hint:** If the output sets Block on the duplicate rule without differentiating between UI and API channels, integrations will break. Search for `API` or `integration` in the duplicate rule configuration.
 
 ---
 
@@ -146,66 +135,3 @@ Configure cross-object duplicate detection:
 ```
 
 **Detection hint:** If the output creates duplicate rules scoped to only one object without mentioning cross-object matching (Lead-to-Contact or Contact-to-Lead), the detection is incomplete. Search for `cross-object` or references to both Lead and Contact in the same duplicate rule.
-
----
-
-## Anti-Pattern 6: Designing past the platform's rule ceilings
-
-**What the LLM generates:** "Create a duplicate rule for each matching scenario: one for email matches, one for phone matches, one for name+company, one for name+address, one for domain, and one for the D&B key."
-
-**Why it happens:** LLMs treat duplicate rules as free composable units, one per business scenario, the way they would write validation rules. The platform imposes hard ceilings. Salesforce documents up to five active duplicate rules per object, up to three matching rules in each duplicate rule with one active matching rule per object, and up to five active matching rules per object when using multiple duplicate rules. A six-rule design does not warn at design time; it fails at activation, usually in the target org rather than the sandbox where the sixth rule was never activated.
-
-**Correct pattern:**
-
-```
-Budget the rules before designing them:
-1. Active duplicate rules per object:               max 5
-2. Matching rules per duplicate rule:               max 3
-3. Active matching rules per object,
-   within one duplicate rule:                       max 1
-4. Active matching rules per object,
-   across all duplicate rules:                      max 5
-
-Consolidate along axes the platform respects:
-- Split by operation (create vs. edit), not by field.
-- Split by channel (UI vs. API/Apex), not by scenario.
-- Express "email OR (name AND phone)" as multiple criteria
-  inside ONE matching rule, not as multiple duplicate rules.
-
-Cross-object detection consumes the per-duplicate-rule budget fast:
-  Lead-to-Lead + Lead-to-Contact + Lead-to-Account = all 3 slots used.
-```
-
-**Detection hint:** Count the duplicate rules and matching rules in the output. If a single object has more than five active duplicate rules, more than three matching rules inside one duplicate rule, or two active matching rules targeting the same object inside one duplicate rule, the design cannot be activated as written.
-
----
-
-## Anti-Pattern 7: Assuming duplicate rules run on every record-creation path
-
-**What the LLM generates:** "Activate the duplicate rule on Contact and duplicates will be prevented across the org."
-
-**Why it happens:** LLMs model duplicate rules as an object-level invariant, like a uniqueness constraint in a relational database. They are a save-path control, and Salesforce documents specific paths that skip them entirely: Quick Create, Community Self-Registration, Lightning Sync, Einstein Activity Capture, manual merges, undelete, and lead conversion when "Use Apex Lead Convert" isn't enabled. None of these raise an error or write a log entry. An org with a self-registering community can have its largest duplicate source sitting completely outside the rule.
-
-The second, subtler version of this mistake: assuming the rule works uniformly for all users. If a user who updates a record doesn't have field-level access to one or more fields referenced in the matching rule, the duplicate rule doesn't work as expected for that user. The admin testing it sees correct behavior every time.
-
-**Correct pattern:**
-
-```
-Before claiming an object is protected:
-1. Inventory the create paths for the object:
-   UI save, Quick Create, API/Apex, Bulk API, Web-to-Lead,
-   self-registration, Lightning Sync, Einstein Activity Capture,
-   lead conversion, undelete, merge.
-2. Mark which ones duplicate rules actually evaluate.
-3. For each skipped path, move the control upstream:
-   - External ID + idempotent upsert for integrations
-   - explicit pre-insert query for Apex-created records
-   - a duplicate job / DuplicateRecordSet review for the rest
-4. Audit field-level security on EVERY field the matching rule
-   references, for every profile and permission set that
-   creates or edits the object.
-5. Report coverage as "% of create paths covered",
-   not "duplicate rule is active".
-```
-
-**Detection hint:** If the output claims duplicates are "prevented" or "impossible" after activating a rule, it is overclaiming. Search for whether the output names any skipped create path, and whether it mentions field-level access as a precondition for matching. Neither appearing means the coverage claim is untested.

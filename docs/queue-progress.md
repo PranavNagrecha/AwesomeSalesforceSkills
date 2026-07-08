@@ -12,8 +12,8 @@ Backlog: **578** entries  ·  Filesystem: **1012** skills built  ·  Last refres
 |---|---:|---|
 | `TODO` | 43 | Not started; not yet researched. |
 | `RESEARCHED` | 3 | Background notes captured; ready to build. |
-| `RESEARCH` | 95 | Investigation needed before deciding TODO vs DUPLICATE. |
-| `DUPLICATE` | 411 | Already covered by an existing skill — kept for traceability. |
+| `RESEARCH` | 100 | Investigation needed before deciding TODO vs DUPLICATE. |
+| `DUPLICATE` | 413 | Already covered by an existing skill — kept for traceability. |
 
 ## Pending work by domain
 
@@ -21,15 +21,16 @@ Counts only entries in TODO / RESEARCHED / RESEARCH / IN_PROGRESS.
 
 | Domain | Pending |
 |---|---:|
-| `(uncategorized)` | 141 |
+| `(uncategorized)` | 146 |
 
 ## Drift
 
-**1** queue entries are still TODO/RESEARCHED/IN_PROGRESS but a skill with the same name already exists on disk. Either flip them to DUPLICATE (with a pointer to the existing skill) or remove the entry.
+**2** queue entries are still TODO/RESEARCHED/IN_PROGRESS but a skill with the same name already exists on disk. Either flip them to DUPLICATE (with a pointer to the existing skill) or remove the entry.
 
 | Entry id | Queue status | On disk as |
 |---|---|---|
 | `related-list-configuration` | TODO | `admin/related-list-configuration` |
+| `duplicate-management` | RESEARCH | `admin/duplicate-management` |
 
 ## Pick next
 
@@ -64,13 +65,13 @@ Last 10 status transitions captured in `BACKLOG.yaml` `history`.
 
 | When | Entry | New status | Actor |
 |---|---|---|---|
+| 2026-07-08T18:39:56 | `flow-triggers-before-save-and-after-save` | `RESEARCH` | `revert-unbudgeted-enrichment` |
+| 2026-07-08T18:39:56 | `soap-vs-rest` | `DUPLICATE` | `gate-wave-2-covered` |
+| 2026-07-08T18:39:56 | `dx-for-deployments` | `DUPLICATE` | `gate-wave-2-covered` |
+| 2026-07-08T18:39:55 | `devops-center` | `RESEARCH` | `revert-unbudgeted-enrichment` |
+| 2026-07-08T18:39:55 | `setting-up-knowledge-on-communities` | `RESEARCH` | `revert-unbudgeted-enrichment` |
+| 2026-07-08T18:39:55 | `knowledge` | `RESEARCH` | `revert-unbudgeted-enrichment` |
+| 2026-07-08T18:39:55 | `case-management-best-practices` | `RESEARCH` | `revert-unbudgeted-enrichment` |
+| 2026-07-08T18:39:55 | `duplicate-management` | `RESEARCH` | `revert-unbudgeted-enrichment` |
+| 2026-07-08T18:39:54 | `scratch-org` | `RESEARCH` | `revert-unbudgeted-enrichment` |
 | 2026-07-08T17:07:29 | `salesforce-june-2026-security-changes` | `DONE` | `onboard-tdd-sf-pinned` |
-| 2026-07-08T16:32:09 | `partner-communities` | `RESEARCH` | `rescreen-unscored-kept-deliberately` |
-| 2026-07-08T16:31:51 | `accounts-and-contacts-rules` | `DUPLICATE` | `rescreen-not-a-skill-topic` |
-| 2026-07-08T16:31:51 | `knowledge-on-communities` | `DUPLICATE` | `rescreen-not-a-skill-topic` |
-| 2026-07-08T16:31:51 | `lightning-emails` | `DUPLICATE` | `rescreen-not-a-skill-topic` |
-| 2026-07-08T16:31:51 | `contacts` | `DUPLICATE` | `rescreen-not-a-skill-topic` |
-| 2026-07-08T16:31:51 | `public-knowledge-for-mobile-web-and-facebook` | `DUPLICATE` | `rescreen-not-a-skill-topic` |
-| 2026-07-08T16:31:51 | `leads` | `DUPLICATE` | `rescreen-not-a-skill-topic` |
-| 2026-07-08T16:31:51 | `report-chart-component-and-record-reports` | `DUPLICATE` | `rescreen-not-a-skill-topic` |
-| 2026-07-08T16:31:51 | `cases-in-lightning` | `DUPLICATE` | `rescreen-not-a-skill-topic` |

@@ -80,12 +80,12 @@ Also configure Connected App policies:
 
 **What the LLM generates:** "Create a Named Credential and enter the username and password for the external system."
 
-**Why it happens:** LLMs reference the legacy Named Credential model (pre-Spring '23) where auth config was directly on the Named Credential. The new model separates the endpoint (Named Credential) from the authentication principal (External Credential), giving better governance and reuse.
+**Why it happens:** LLMs reference the legacy Named Credential model (pre-Winter '23) where auth config was directly on the Named Credential. The new model separates the endpoint (Named Credential) from the authentication principal (External Credential), giving better governance and reuse.
 
 **Correct pattern:**
 
 ```
-New Named Credential model (Spring '23+):
+New Named Credential model (Winter '23+):
 1. External Credential: defines the auth protocol (OAuth, Basic Auth, etc.)
    and holds the authentication principal (client ID, secret, certificate).
 2. Named Credential: references the External Credential and defines
@@ -93,7 +93,7 @@ New Named Credential model (Spring '23+):
 3. Permission Set Mapping: controls which users/integrations can use
    which External Credential principal.
 
-Legacy Named Credentials (pre-Spring '23):
+Legacy Named Credentials (pre-Winter '23):
 - Auth config is directly on the Named Credential.
 - Still functional but not recommended for new implementations.
 ```

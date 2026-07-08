@@ -59,25 +59,3 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** If the "from" address or "reply-to" address on an auto-response email is set to (or accidentally matches) the Email-to-Case routing address, Salesforce receives the outgoing auto-response as a new inbound email and creates a new case. This is most common when the routing address is set up as both a send-from and receive-at address, or when a mail server misconfiguration bounces outgoing auto-responses back to the routing address.
 
 **How to avoid:** Set the auto-response "from" address to a non-routed email address (e.g., noreply@company.com). Never use the Email-to-Case routing address as the sender for auto-response emails. In Salesforce Setup, the Email-to-Case routing address should only be used for inbound routing. Test by inspecting the "from" and "reply-to" headers on the outgoing auto-response email before go-live.
-
----
-
-## Gotcha 7: Activating a Rule Silently Deactivates the Rule Already Holding That Slot
-
-**What happens:** An admin activates a newly built case assignment rule. Nothing warns them. The rule that had been routing production cases for two years is now inactive, and every case created from that moment forward is evaluated against the new rule's entries only. If the new rule has no catch-all entry, cases fall to the default case owner. Auto-responses tied to the old routing stop firing for anything the new rule does not match.
-
-**When it occurs:** Every time. Assignment, auto-response, and escalation rules each expose exactly one active slot for cases. Salesforce states it directly for auto-response rules — "you can activate only one rule for leads and one rule for cases at a time" — and assignment and escalation rules behave the same way. Activating one deactivates the incumbent.
-
-The three common triggers:
-
-- An admin builds a "test" rule in production to try new criteria and activates it to see it work.
-- A business unit asks for its own assignment rule for its own region or channel, and someone builds and activates a second rule believing both will coexist.
-- A deployment activates a rule as part of a metadata push, displacing an incumbent nobody on the deploying team knew about.
-
-**How to avoid:** Treat rule activation as a change-management event, not a Setup click.
-
-- Inventory the active rule in each of the three slots before building anything. Record its name.
-- Name rules with a version marker (`Case Assignment — 2026 Q3`) so the incumbent is identifiable and rollback is a single activation of the prior rule.
-- Never model per-region or per-channel behavior as separate active rules. It is impossible. Model it as ordered **entries inside the one active rule**, specific-to-catch-all.
-- Activate the replacement directly rather than deactivating the incumbent first. Deactivating first opens a window in which no rule is active, cases fall to the default case owner, and no auto-response sends.
-- Rehearse the swap in a sandbox with representative case creation from every inbound channel, and confirm Case History shows a "Rule Assignment" entry for each.

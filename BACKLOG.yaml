@@ -1065,21 +1065,23 @@
     - { at: "2026-07-08T14:14:51Z", status: "RESEARCH", actor: "onboard_source" }
     - { actor: "onboard-tdd-sf-pinned", status: "DONE", at: "2026-07-08T17:07:29+00:00" }
 - id: "flow-triggers-before-save-and-after-save"
-  status: "DONE"
+  status: "RESEARCH"
   skill: "flow-triggers-before-save-and-after-save"
   summary: "Flow Triggers Before-Save and After-Save — intake from https://tddprojects.atlassian.net/wiki/spaces/SF (url mode)."
   notes: "Intake triage 2026-07-08T14:14:51Z: NET_NEW; search_knowledge top hits: apex/order-of-execution-deep-dive (2.324039972376076), flow/flow-record-save-order-interaction (5.128565469033659). License class: clean-room."
   history:
     - { at: "2026-07-08T14:14:51Z", status: "RESEARCH", actor: "onboard_source" }
     - { actor: "onboard-tdd-sf", status: "DONE", at: "2026-07-08T16:23:31+00:00" }
+    - { actor: "revert-unbudgeted-enrichment", status: "RESEARCH", at: "2026-07-08T18:39:56+00:00" }
 - id: "scratch-org"
-  status: "DONE"
+  status: "RESEARCH"
   skill: "scratch-org"
   summary: "Scratch Org — intake from https://tddprojects.atlassian.net/wiki/spaces/SF (url mode)."
   notes: "Intake triage 2026-07-08T14:14:51Z: ENRICH; search_knowledge top hits: devops/org-shape-and-scratch-definition (3.906710347700277), devops/scratch-org-snapshots (1.776244078016511), devops/scratch-org-management (2.0087077253063352). License class: clean-room."
   history:
     - { at: "2026-07-08T14:14:51Z", status: "RESEARCH", actor: "onboard_source" }
     - { actor: "onboard-tdd-sf", status: "DONE", at: "2026-07-08T16:23:30+00:00" }
+    - { actor: "revert-unbudgeted-enrichment", status: "RESEARCH", at: "2026-07-08T18:39:54+00:00" }
 - id: "files-content-attachments-documents-etc"
   status: "DUPLICATE"
   skill: "files-content-attachments-documents-etc"
@@ -1102,13 +1104,14 @@
   history:
     - { at: "2026-07-08T14:14:51Z", status: "DUPLICATE", actor: "onboard_source" }
 - id: "devops-center"
-  status: "DONE"
+  status: "RESEARCH"
   skill: "devops-center"
   summary: "DevOps Center — intake from https://tddprojects.atlassian.net/wiki/spaces/SF (url mode)."
   notes: "Intake triage 2026-07-08T14:14:51Z: ENRICH; search_knowledge top hits: devops/devops-center-advanced (4.049256080319607), devops/devops-center-pipeline (5.531270306685399). License class: clean-room."
   history:
     - { at: "2026-07-08T14:14:51Z", status: "RESEARCH", actor: "onboard_source" }
     - { actor: "onboard-tdd-sf", status: "DONE", at: "2026-07-08T16:23:30+00:00" }
+    - { actor: "revert-unbudgeted-enrichment", status: "RESEARCH", at: "2026-07-08T18:39:55+00:00" }
 - id: "fast-forms"
   status: "DUPLICATE"
   skill: "fast-forms"
@@ -1118,13 +1121,14 @@
     - { at: "2026-07-08T14:14:51Z", status: "RESEARCH", actor: "onboard_source" }
     - { actor: "onboard-tdd-sf", status: "DUPLICATE", at: "2026-07-08T16:23:31+00:00" }
 - id: "setting-up-knowledge-on-communities"
-  status: "DONE"
+  status: "RESEARCH"
   skill: "setting-up-knowledge-on-communities"
   summary: "Setting up Knowledge on Communities — intake from https://tddprojects.atlassian.net/wiki/spaces/SF (url mode)."
   notes: "Intake triage 2026-07-08T14:14:51Z: ENRICH; search_knowledge top hits: admin/knowledge-classic-to-lightning (3.9298647017655477). License class: clean-room."
   history:
     - { at: "2026-07-08T14:14:51Z", status: "RESEARCH", actor: "onboard_source" }
     - { actor: "onboard-tdd-sf", status: "DONE", at: "2026-07-08T16:23:30+00:00" }
+    - { actor: "revert-unbudgeted-enrichment", status: "RESEARCH", at: "2026-07-08T18:39:55+00:00" }
 - id: "dynamic-lists"
   status: "DUPLICATE"
   skill: "dynamic-lists"
@@ -1163,29 +1167,32 @@
   history:
     - { at: "2026-07-08T14:14:51Z", status: "DUPLICATE", actor: "onboard_source" }
 - id: "knowledge"
-  status: "DONE"
+  status: "RESEARCH"
   skill: "knowledge"
   summary: "Knowledge — intake from https://tddprojects.atlassian.net/wiki/spaces/SF (url mode)."
   notes: "Intake triage 2026-07-08T14:14:51Z: ENRICH; search_knowledge top hits: data/knowledge-article-import (3.2012092572122337), admin/knowledge-base-administration (4.17214599200307), admin/knowledge-classic-to-lightning (1.856578520199765). License class: clean-room."
   history:
     - { at: "2026-07-08T14:14:51Z", status: "RESEARCH", actor: "onboard_source" }
     - { actor: "onboard-tdd-sf", status: "DONE", at: "2026-07-08T16:23:31+00:00" }
+    - { actor: "revert-unbudgeted-enrichment", status: "RESEARCH", at: "2026-07-08T18:39:55+00:00" }
 - id: "case-management-best-practices"
-  status: "DONE"
+  status: "RESEARCH"
   skill: "case-management-best-practices"
   summary: "Case Management Best Practices — intake from https://tddprojects.atlassian.net/wiki/spaces/SF (url mode)."
   notes: "Intake triage 2026-07-08T14:14:51Z: NET_NEW; search_knowledge top hits: no hits. License class: clean-room."
   history:
     - { at: "2026-07-08T14:14:51Z", status: "RESEARCH", actor: "onboard_source" }
     - { actor: "onboard-tdd-sf", status: "DONE", at: "2026-07-08T16:23:31+00:00" }
+    - { actor: "revert-unbudgeted-enrichment", status: "RESEARCH", at: "2026-07-08T18:39:55+00:00" }
 - id: "duplicate-management"
-  status: "DONE"
+  status: "RESEARCH"
   skill: "duplicate-management"
   summary: "Duplicate Management — intake from https://tddprojects.atlassian.net/wiki/spaces/SF (url mode)."
   notes: "Intake triage 2026-07-08T14:14:51Z: ENRICH; search_knowledge top hits: admin/duplicate-management (3.988112541608147), data/data-quality-and-governance (1.8006812841777236), data/clinical-data-quality (1.7898664942541833). License class: clean-room."
   history:
     - { at: "2026-07-08T14:14:51Z", status: "RESEARCH", actor: "onboard_source" }
     - { actor: "onboard-tdd-sf", status: "DONE", at: "2026-07-08T16:23:31+00:00" }
+    - { actor: "revert-unbudgeted-enrichment", status: "RESEARCH", at: "2026-07-08T18:39:55+00:00" }
 - id: "using-platform-events-in-flows"
   status: "DUPLICATE"
   skill: "using-platform-events-in-flows"
@@ -1306,12 +1313,13 @@
   history:
     - { at: "2026-07-08T14:14:51Z", status: "RESEARCH", actor: "onboard_source" }
 - id: "soap-vs-rest"
-  status: "RESEARCH"
+  status: "DUPLICATE"
   skill: "soap-vs-rest"
   summary: "SOAP vs REST — intake from https://tddprojects.atlassian.net/wiki/spaces/SF (url mode)."
   notes: "Intake triage 2026-07-08T14:14:51Z: NET_NEW; search_knowledge top hits: integration/soap-api-patterns (2.7630298155906496). License class: clean-room."
   history:
     - { at: "2026-07-08T14:14:51Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "gate-wave-2-covered", status: "DUPLICATE", at: "2026-07-08T18:39:56+00:00" }
 - id: "report-chart-component-and-record-reports"
   status: "DUPLICATE"
   skill: "report-chart-component-and-record-reports"
@@ -1329,12 +1337,13 @@
     - { at: "2026-07-08T14:14:51Z", status: "RESEARCH", actor: "onboard_source" }
     - { actor: "rescreen-not-a-skill-topic", status: "DUPLICATE", at: "2026-07-08T16:31:51Z" }
 - id: "dx-for-deployments"
-  status: "RESEARCH"
+  status: "DUPLICATE"
   skill: "dx-for-deployments"
   summary: "DX for Deployments — intake from https://tddprojects.atlassian.net/wiki/spaces/SF (url mode)."
   notes: "Intake triage 2026-07-08T14:14:51Z: NET_NEW; search_knowledge top hits: no hits. License class: clean-room."
   history:
     - { at: "2026-07-08T14:14:51Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "gate-wave-2-covered", status: "DUPLICATE", at: "2026-07-08T18:39:56+00:00" }
 - id: "case-feeds"
   status: "DUPLICATE"
   skill: "case-feeds"

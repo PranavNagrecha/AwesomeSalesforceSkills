@@ -8,11 +8,9 @@
 
 **Solution:**
 
-This team installed the managed package in 2024, so the managed-package path below is the one they follow. A team starting the same journey today would enable next-generation DevOps Center instead — see Example 3.
+Step 1 — Install DevOps Center from AppExchange and enable it in Setup.
 
-Step 1 — Confirm DevOps Center is installed (Setup > Installed Packages) and enabled in Setup.
-
-Step 2 — Assign permission sets to both admins: the **DevOps Center** base permission set to each of them, plus **DevOps Center Manager** (they configure the project, environments, and users) and **DevOps Center Release Manager** (they run the promotions). Add `sf_devops_InitializeEnvironments` and `sf_devops_NamedCredentials` for whoever wires up the environment connections.
+Step 2 — Assign the DevOps Center Admin permission set to both admins.
 
 Step 3 — Connect to GitHub using the GitHub OAuth flow in DevOps Center Setup. Create a new repository named `sf-org-config`.
 
@@ -53,34 +51,6 @@ Step 5 — The Bundle promotion to QA proceeds. All four components arrive in QA
 Step 6 — QA passes. The same Bundle is promoted to UAT, then to Production. Each promotion is one deployment event with one GitHub PR and one audit record.
 
 **Why it works:** Bundling forces all dependency and conflict issues to surface at the bundle-creation step, not mid-pipeline. The entire sprint's work travels as one unit, reducing the risk of partial deployments where some components are in production but their dependencies are not.
-
----
-
-## Example 3: Greenfield Setup on Next-Generation DevOps Center with Bitbucket
-
-**Scenario:** A company implementing Salesforce for the first time in 2026 wants source-controlled releases from day one. Their engineering org standardized on Bitbucket years ago and will not add a GitHub account for one team. Their Salesforce admin found a well-regarded blog post that begins "Install DevOps Center from AppExchange" and reports that the install does not work.
-
-**Problem:** Two stale facts are steering the team toward the wrong conclusion. New downloads and installations of the DevOps Center managed package are no longer supported, so the install genuinely cannot be performed — and the GitHub-only constraint the blog states would, if believed, rule DevOps Center out entirely for a Bitbucket shop. The team is one search result away from buying a third-party DevOps tool they do not need.
-
-**Solution:**
-
-Step 1 — Confirm the org has no DevOps Center in Setup > Installed Packages. That is expected for a new org, not a broken state.
-
-Step 2 — Enable DevOps Center. There is no package to download or install; once it is turned on in the DevOps Center Hub org, the team can start using it.
-
-Step 3 — Add both admins and the two developers as users in the DevOps Center Hub org. This is a discrete step, and it precedes creating any project. Assign each of them a DevOps Center permission set.
-
-Step 4 — Complete Source Control Setup against the company's existing Bitbucket account. Next-generation DevOps Center accepts a GitHub or Bitbucket provider account, so the Bitbucket standardization holds.
-
-Step 5 — Configure `.forceignore` before the first commit, excluding IDE configuration files, local test data, and environment-specific profiles.
-
-Step 6 — Create a DevOps Center project, then build the pipeline: Development (Developer sandbox) → UAT (Partial Copy sandbox) → Production.
-
-Step 7 — Create and assign Work Items. The developers use DX Inspector from inside their development orgs to manage work items and track changes without leaving the org.
-
-**Why it works:** The two facts that blocked the team were product-version facts, not platform facts. Establishing which DevOps Center is in play — before reading any setup instruction — resolves both at once. The team keeps Bitbucket, keeps a click-based release process, and spends nothing on tooling.
-
-**What to watch:** Bitbucket support is real today. GitLab and Azure Repos are not named as supported providers anywhere in Salesforce's documentation. Had this company standardized on GitLab, the correct answer would have been SFDX CLI plus their own CI platform — not a wait-for-the-roadmap plan built on a provider the docs never promise.
 
 ---
 

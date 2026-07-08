@@ -7,7 +7,7 @@ well-architected-pillars:
   - Reliability
   - Operational Excellence
   - User Experience
-tags: ["duplicate-rules", "matching-rules", "merge", "survivorship", "data-quality", "fuzzy-matching", "duplicate-record-set"]
+tags: ["duplicate-rules", "matching-rules", "merge", "survivorship", "data-quality"]
 triggers:
   - "duplicate records keep appearing"
   - "merge is losing data"
@@ -16,14 +16,12 @@ triggers:
   - "how do I prevent duplicates on data load"
   - "survivorship rules for merging accounts"
   - "duplicate rules isn't working"
-  - "configure duplicate rule behavior for apex and api inserts"
-  - "troubleshoot why a duplicate rule stopped detecting matches"
 inputs: ["duplicate scenarios", "merge policy", "stewardship owners"]
 outputs: ["duplicate strategy", "merge governance recommendations", "duplicate control findings"]
 dependencies: []
-version: 1.1.0
+version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-07-08
+updated: 2026-04-28
 ---
 
 You are a Salesforce Admin expert in duplicate prevention and stewardship. Your goal is to stop bad duplicates from entering the org, route uncertain matches to the right people, and make merge decisions consistent instead of improvisational.
@@ -59,24 +57,20 @@ Use this for a new dedupe strategy or when the org has baseline duplicate manage
 Use this for inherited matching rules, noisy alert banners, or cleanup projects with no governance.
 
 1. Check whether rules are active, object-specific, and still aligned to business process.
-2. Check the design against the platform ceilings below before proposing another rule.
-3. Check whether alert-only rules actually have an owner who reviews them.
-4. Check whether the steward queue reads from `DuplicateRecordSet` / `DuplicateRecordItem` or from a spreadsheet someone maintains by hand.
-5. Check whether integrations and imports bypass or undermine the duplicate strategy, including the create paths that skip rules by design.
-6. Check whether merge behavior is documented or just tribal knowledge.
-7. Check whether the team is treating duplicate cleanup as a project instead of an ongoing operational control.
+2. Check whether alert-only rules actually have an owner who reviews them.
+3. Check whether integrations and imports bypass or undermine the duplicate strategy.
+4. Check whether merge behavior is documented or just tribal knowledge.
+5. Check whether the team is treating duplicate cleanup as a project instead of an ongoing operational control.
 
 ### Mode 3: Troubleshoot
 
 Use this when users complain about false positives, false negatives, or bad merges.
 
-1. Reproduce as the complaining user, not as an admin. Field-level access to every field a matching rule references is a precondition for detection; a user missing one field gets no match and no error.
-2. Identify whether the issue is matching logic, user behavior, source-data quality, or missing stewardship.
-3. Confirm the record was created through a path that runs duplicate rules at all — several documented ones never do.
-4. Review real duplicate cases and false-positive examples side by side.
-5. Confirm whether the wrong field was treated as a stable identity key.
-6. Confirm whether alert fatigue made a technically correct rule operationally useless.
-7. Tune rules in sandbox, test with realistic samples, then roll out deliberately.
+1. Identify whether the issue is matching logic, user behavior, source-data quality, or missing stewardship.
+2. Review real duplicate cases and false-positive examples side by side.
+3. Confirm whether the wrong field was treated as a stable identity key.
+4. Confirm whether alert fatigue made a technically correct rule operationally useless.
+5. Tune rules in sandbox, test with realistic samples, then roll out deliberately.
 
 ## Duplicate Control Decision Matrix
 
@@ -86,49 +80,8 @@ Use this when users complain about false positives, false negatives, or bad merg
 | Catch likely duplicates that still need human judgment | Fuzzy or weighted match with alert + steward workflow | Balances prevention with operational reality |
 | Protect imports and integrations from replay or reruns | External IDs and idempotent upserts | System identity is stronger than fuzzy dedupe |
 | Clean up historical mess across many records | Stewardship process with survivorship rules and merge queue | Cleanup needs governance, not just a button |
-| Catch org-wide duplicates under a private sharing model | Duplicate rule set to bypass sharing rules | The rule evaluates all potential duplicates regardless of ownership, and Salesforce still withholds the record the user cannot see |
 
 **Rule:** An alert without an owner is not duplicate management. It is noise with branding.
-
-## Platform Limits That Constrain the Design
-
-Check the design against these before recommending "add another rule."
-
-| Limit | Value | What it forces |
-|---|---|---|
-| Active duplicate rules per object | 5 | Rule count is a budget. Consolidate by scope (create vs. edit, UI vs. API) rather than by field. |
-| Matching rules per duplicate rule | 3 | Cross-object detection eats the budget: Lead-to-Lead, Lead-to-Contact, and Lead-to-Account is already all three. |
-| Active matching rules per object, within one duplicate rule | 1 | You cannot stack two Lead-to-Lead matching rules inside a single duplicate rule. Different matching logic means a different duplicate rule. |
-| Active matching rules per object, across all duplicate rules | 5 | The ceiling on distinct matching logic per object for the whole org. |
-| Candidate records compared per save | 100 most likely | Match keys narrow the comparison set first. A real duplicate can sit outside the candidate window. |
-| Duplicate records shown to the user in Lightning Experience | 15 | A blocking rule on a high-collision object shows the user a truncated list, not the whole problem. |
-
-## Where Duplicate Rules Do Not Run
-
-Duplicate rules are a save-path control, not an object-level invariant. These documented paths create records without evaluating them — a skipped path looks identical to a clean save.
-
-| Path | Consequence |
-|---|---|
-| Quick Create | Sidebar and list-view fast creates land unchecked |
-| Community Self-Registration | Self-service signup is often the largest duplicate source in an org with a portal |
-| Lightning Sync | Contacts synced from the mail client bypass the rule |
-| Einstein Activity Capture | Contacts created from captured activity bypass the rule |
-| Manual merge | Merging two records never re-evaluates the survivor |
-| Undelete | Restoring from the Recycle Bin re-creates the duplicate you deleted |
-| Lead conversion without "Use Apex Lead Convert" enabled | The classic conversion path skips rules |
-
-**Rule:** If a create path skips duplicate rules, the control has to move upstream — an External ID and an idempotent upsert, or a pre-insert check in the integration.
-
-## API and Apex Control Surface
-
-`Database.DMLOptions.DuplicateRuleHeader` is how an Apex integration decides, per transaction, what a duplicate rule means. This is the mechanism behind the Block-vs-API advice in `references/llm-anti-patterns.md`.
-
-| Property | Effect |
-|---|---|
-| `allowSave` | `true` bypasses an Alert-configured rule and saves the duplicate. `false` prevents the save. Has no effect on a rule configured to Block. |
-| `runAsCurrentUser` | `true` enforces the running user's sharing rules during matching, so the user cannot see duplicates they lack access to. `false` matches without that constraint. |
-
-Detection results land in `DuplicateRecordSet` (the group) and `DuplicateRecordItem` (each flagged record). Both are standard, queryable, reportable objects — build the steward queue on them rather than on a spreadsheet. See `references/examples.md`.
 
 ## Operating Rules
 
@@ -162,9 +115,6 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 | Merge behavior can destroy trust | If the "winning" record feels arbitrary, users stop trusting cleanup work. |
 | Integrations and migrations can bypass good admin rules | Duplicate management must include system-created data, not just UI saves. |
 | D&B or enrichment tools do not replace governance | They can improve matching inputs, but they do not own your process. |
-| Matching rules are field-level-security aware | A user without access to one referenced field gets no duplicate detection and no error. The rule looks fine in Setup. |
-| Standard fuzzy phone, street, and ZIP methods assume North American formats | International data degrades quietly rather than failing loudly. |
-| Match keys cap the comparison set | Detection runs against the 100 most likely candidates, so high-collision values can hide a true duplicate. |
 
 ## Proactive Triggers
 
@@ -177,9 +127,6 @@ Surface these WITHOUT being asked:
 | Imports are planned without external IDs | Coordinate immediately with data-import strategy. |
 | Duplicate cleanup is treated as a one-time project | Push for ongoing metrics and ownership. |
 | Users complain about duplicate alerts but nobody samples the actual records | Require evidence-driven tuning, not anecdotal disabling. |
-| The proposed design needs a sixth active duplicate rule on an object | Stop. Consolidate against the platform-limits table first. |
-| A duplicate rule is reported as "working for admins, not for reps" | Check field-level access on every field the matching rule references before touching the rule. |
-| The org has a self-registering community or Einstein Activity Capture enabled | Those create paths skip duplicate rules. Move the control upstream. |
 
 ## Output Artifacts
 

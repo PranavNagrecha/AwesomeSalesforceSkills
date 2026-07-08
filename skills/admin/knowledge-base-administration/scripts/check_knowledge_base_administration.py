@@ -117,13 +117,6 @@ def check_knowledge_approval_processes(manifest_dir: Path) -> list[str]:
     return issues
 
 
-# Salesforce default Data Category limits, per the Knowledge Implementation Guide
-# ("Data Category Limits" table): "5 category groups, with 3 active at a time".
-# Salesforce Support can raise these on request, so both are warnings, not errors.
-MAX_CATEGORY_GROUPS = 5
-MAX_ACTIVE_CATEGORY_GROUPS = 3
-
-
 def check_data_category_groups(manifest_dir: Path) -> list[str]:
     """Check Data Category Group configurations for Knowledge."""
     issues: list[str] = []
@@ -133,7 +126,6 @@ def check_data_category_groups(manifest_dir: Path) -> list[str]:
         return issues
 
     knowledge_groups: list[str] = []
-    active_knowledge_groups: list[str] = []
     for dcg_file in dcg_dir.glob("*.dataCategory-meta.xml"):
         try:
             tree = ET.parse(dcg_file)
@@ -146,37 +138,17 @@ def check_data_category_groups(manifest_dir: Path) -> list[str]:
                 obj_name = obj.findtext("sf:object", namespaces=ns) or obj.findtext("object") or ""
                 if "Knowledge" in obj_name:
                     knowledge_groups.append(dcg_file.stem)
-                    active = root.findtext("sf:active", namespaces=ns)
-                    if active is None:
-                        active = root.findtext("active")
-                    # A group with no <active> element is treated as active, matching
-                    # the Metadata API default.
-                    if active is None or active.strip().lower() == "true":
-                        active_knowledge_groups.append(dcg_file.stem)
                     break
         except ET.ParseError as exc:
             issues.append(f"Could not parse Data Category Group file '{dcg_file.name}': {exc}")
 
-    def _sample(names: list[str]) -> str:
-        return f"{', '.join(names[:8])}{'...' if len(names) > 8 else ''}"
-
-    if len(active_knowledge_groups) > MAX_ACTIVE_CATEGORY_GROUPS:
-        issues.append(
-            f"Found {len(active_knowledge_groups)} ACTIVE Data Category Groups assigned to Knowledge: "
-            f"{_sample(active_knowledge_groups)}. "
-            f"Salesforce allows {MAX_ACTIVE_CATEGORY_GROUPS} active category groups by default "
-            f"(out of {MAX_CATEGORY_GROUPS} total). A group is hidden from users until it is "
-            "activated, so the active ceiling is the one that constrains a design. Consolidate "
-            "groups, deactivate lower-priority ones, or ask Salesforce Support to raise the limit."
-        )
-
-    if len(knowledge_groups) > MAX_CATEGORY_GROUPS:
+    if len(knowledge_groups) > 5:
         issues.append(
             f"Found {len(knowledge_groups)} Data Category Groups assigned to Knowledge: "
-            f"{_sample(knowledge_groups)}. "
-            f"Salesforce allows {MAX_CATEGORY_GROUPS} category groups by default. "
-            "Consolidate groups, remove the Knowledge object assignment from lower-priority "
-            "groups, or ask Salesforce Support to raise the limit."
+            f"{', '.join(knowledge_groups[:8])}{'...' if len(knowledge_groups) > 8 else ''}. "
+            "Salesforce Knowledge supports a maximum of 5 active Data Category Groups. "
+            "Exceeding this limit will cause activation errors. Consolidate groups or "
+            "remove Knowledge object assignment from lower-priority groups."
         )
 
     return issues

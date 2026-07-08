@@ -39,25 +39,6 @@ End
 
 ---
 
-## Example 3: Sequencing Two After-Save Flows With Trigger Order
-
-**Context:** An acquisition left the Case object with two after-save flows that must both stay: `Case_SLA_Stamp` (writes an SLA target onto a child record) and `Case_Escalation_Notify` (reads that SLA target and notifies). Notify was firing before Stamp about half the time.
-
-**Problem:** Neither flow had a trigger order value, so they ran in created-date order — and the deploy history of the two orgs made that order effectively arbitrary. The team's first fix was to set `Case_Escalation_Notify` to 1,500 "so it runs late." It ran first, because unset flows sequence *between* the 1–1,000 band and the 1,001–2,000 band.
-
-**Solution:**
-
-```text
-Case_SLA_Stamp          → trigger order 10
-Case_Escalation_Notify  → trigger order 20
-(no flow in the phase is left without a value)
-Verify the resulting sequence in Flow Trigger Explorer before deploying.
-```
-
-**Why it works:** Both flows sit in the 1–1,000 ascending band, so they sequence by value. The gap between 10 and 20 leaves room to insert a third flow later without renumbering. Leaving one flow unset would have reintroduced the band problem. Note the ceiling on this technique: trigger order sequences flow-against-flow inside one phase — it cannot move either flow ahead of the Case object's Apex triggers.
-
----
-
 ## Anti-Pattern: After-Save Update Of The Same Record
 
 **What practitioners do:** They build an after-save flow, check a condition, and then use `Update Records` to modify fields on the same record.

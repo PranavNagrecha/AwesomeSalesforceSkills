@@ -8,7 +8,7 @@ Common mistakes AI coding assistants make when generating or advising on Knowled
 
 **Why it happens:** The Migration Tool is the official Salesforce mechanism, so the model assumes it's safe in production.
 
-**Correct pattern:** Sandbox first — always. Lightning Knowledge enablement is irreversible without article deletion. Use a Full Copy sandbox, refreshed within the last month, to test the entire migration including downstream consumer rewiring. Only after sandbox sign-off — and after Salesforce Support has enabled the tool in production (see Anti-Pattern 12) — should the same plan run in production. The model must include both gates explicitly.
+**Correct pattern:** Sandbox first — always. Lightning Knowledge enablement is irreversible without article deletion. Use a Full Copy or Partial sandbox to test the entire migration including downstream consumer rewiring. Only after sandbox sign-off should the same plan run in production. The model must include this gate explicitly.
 
 ## Anti-Pattern 2: Inserting Translations as Standalone Records
 
@@ -101,19 +101,3 @@ insert article;
 **Why it happens:** Quick Actions are admin-configured, not code; they're often missed in code-grep audits.
 
 **Correct pattern:** Quick Actions on Cases (and other objects) often had "Insert Article" or related actions that referenced article-type sObjects. Audit Setup → Object Manager → Case → Buttons, Links, and Actions for any action whose URL or relationship contains `__kav`. Update to `Knowledge__kav`. Without this, "Insert Article" buttons silently break post-migration.
-
-## Anti-Pattern 11: Framing the Migration as Optional Modernization
-
-**What the LLM generates:** Advice weighing whether to migrate at all — "Lightning Knowledge offers better features, but if Classic Knowledge meets your needs today, staying is a reasonable choice." Or a cost-benefit analysis whose options include "do nothing."
-
-**Why it happens:** The model's training data is thick with 2018–2023 migration content written while Classic Knowledge was still a supported steady state, and it reasons about migrations generically as discretionary technical-debt work.
-
-**Correct pattern:** Salesforce lists *Classic Knowledge Data Model End of Support* on its Past Product & Feature Retirements page with a retirement date of March 1, 2026 — already in the past. "Stay on Classic" is not a supported option to weigh. The genuine decision is mechanism (Migration Tool vs. pre-processing vs. targeted custom code) and sequencing (which channel cuts over first), never whether. Be precise about what End of Support does and does not mean: articles are not deleted and the org does not break on a date, but Salesforce no longer commits to the model and new Knowledge capability ships for Lightning only. Do not upgrade this into a claim that Classic Knowledge has been shut off.
-
-## Anti-Pattern 12: Assuming the Migration Tool Can Be Run in Production On Demand
-
-**What the LLM generates:** A production runbook whose first step is "In production Setup, navigate to Knowledge → Lightning Knowledge Migration Tool and run it with the same mappings validated in sandbox." No mention of Salesforce Support.
-
-**Why it happens:** The tool is self-service in sandbox, and the model generalizes sandbox behavior to production — the reverse of the usual (correct) assumption that production is more locked down.
-
-**Correct pattern:** Production enablement is gated. An admin logs a case with Salesforce Support, answers an eight-question readiness questionnaire, and attaches a screen capture of the Validation-step results from a full copy sandbox refreshed within the last month. Salesforce states processing can take up to a week. Sandbox testing and production migration must occur on the same release, and the case requires a confirmed backup (full copy refresh with pre-migration Classic Knowledge data, or a completed full data export). Any generated plan must place the Support case on the critical path ahead of the change window — a plan that schedules the production run before enablement is confirmed will fail on the day.
