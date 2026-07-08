@@ -182,6 +182,39 @@ Agents never run `skill_sync.py`/`validate_repo.py` and never touch
 `registry/`, `vector_index/`, `docs/` — shared generated artifacts are
 synced once, sequentially, in Step 3.
 
+### What a 2026-07-08 audit measured (read before trusting an enrich)
+
+An independent pass re-checked 24 Fix-stage corrections nobody had reviewed.
+All 24 were genuinely `RESOLVED`. But that same pass found **23 new blockers**
+in the fixed text. **Single-pass adversarial review does not converge — it
+samples.** A `PASS` verdict is not evidence a skill is correct.
+
+The new blockers tracked how much text was added, not the topic:
+
+| Change | Skills | New blockers |
+|---|---|---|
+| build (new skill, focused fact sheet) | 1 | 0 |
+| enrich **with a ~40-line budget** | 2 | 0 |
+| enrich with no budget (+145…+503 lines) | 6 | 22 |
+
+About one fabricated blocker per 70–100 new lines: invented scratch-org
+definition fields, invented metadata names, a refuted "GitHub only" product
+claim propagated across three files. The fabrication is not the source's
+fault — clean-room held — it is the model filling gaps from stale Salesforce
+priors that an old topic name primes.
+
+Therefore:
+
+- **Give every enrich author an explicit line budget (~40 net new lines) and
+  tell it why** — retrieval is a shared, zero-sum 30-chunk window, and volume
+  predicts fabrication. Budgeted authors returned +33/+36 and zero blockers.
+- **Prefer build over enrich.** A bad new skill is isolated and `--strict`
+  gates it. A bad enrichment corrupts a skill that already worked.
+- **Pin the enrich target** rather than letting the gate pick it. A gate-chosen
+  target once routed an MFA release-notes topic into an incident-response skill.
+- Treat one `PASS` as one sample. For anything you intend to keep, audit the
+  fixes with an agent that never saw them.
+
 ### Step 3 — Ship (deterministic, orchestrator)
 
 1. Append the returned `query_fixtures` to `vector_index/query-fixtures.json`.
