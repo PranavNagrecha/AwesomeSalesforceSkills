@@ -37,3 +37,6 @@ Tag findings as Reliability when:
 - Apex Developer Guide — security and sharing keyword guidance
 - Secure Apex Classes — explicit CRUD/FLS and user-context recommendations
 - Salesforce Well-Architected Overview — security and reliability framing
+- [Using the with sharing, without sharing, and inherited sharing Keywords](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_keywords_sharing.htm) — API 67.0+ default mode, class/inner-class inheritance, method-definition enforcement rule, trigger context, and inherited-sharing entry-point resolution
+- [Enforcing Sharing Rules](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_security_sharing_rules.htm) — sharing vs CRUD/FLS independence and the without-sharing / Modify All Data equivalence
+- [Enforce Security With the stripInaccessible Method / Apex Security and Sharing](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_security_sharing_chapter.htm) — chapter framing for sharing and access enforcement

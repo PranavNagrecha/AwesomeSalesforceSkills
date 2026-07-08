@@ -4,21 +4,21 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 1: Session Data Lives in Data Cloud, Not the Main Org
 
-**What happens:** Admins and developers attempt to build reports in standard Salesforce report builder or run SOQL queries for session data — and find nothing. The `AgentConversationSession` objects are not in the standard org database.
+**What happens:** Admins and developers attempt to build reports in standard Salesforce report builder or run SOQL queries for session data — and find nothing. The `AIAgentSession` DMOs live in Data Cloud, not the standard org database. (They are also easy to misname — the canonical DMOs are `AIAgentSession`, `AIAgentSessionParticipant`, `AIAgentInteraction`, `AIAgentInteractionMessage`, `AIAgentInteractionStep`; `AgentConversation*` names do not exist.)
 
 **When it occurs:** Any attempt to build standard reports or run Developer Console SOQL against session trace objects.
 
-**How to avoid:** Always use Data Cloud SQL, CRM Analytics, or the Data Cloud Query Builder to access session trace data. Document this clearly in any runbook or monitoring setup guide.
+**How to avoid:** Always use Data Cloud SQL / the Data Cloud Query Builder, or consume through Tableau Next (Agent Analytics), to access session trace data. Document this clearly in any runbook or monitoring setup guide.
 
 ---
 
-## Gotcha 2: Legacy Analytics Dashboard Retires May 31, 2026
+## Gotcha 2: Legacy Analytics Dashboard Retired May 31, 2026
 
-**What happens:** The Agentforce Analytics dashboard that shipped with the pre-GA version will stop working on May 31, 2026. Any automated report, stakeholder notification, or operational process referencing it will fail or produce no data.
+**What happens:** The Agentforce Analytics dashboard that shipped with the pre-GA version stopped working on May 31, 2026 (now a past retirement). Any automated report, stakeholder notification, or operational process still referencing it fails or produces no data.
 
 **When it occurs:** Orgs that were early adopters of Agentforce and built monitoring workflows around the legacy dashboard before the GA observability feature shipped in November 2025.
 
-**How to avoid:** Audit all monitoring workflows for references to the legacy dashboard before May 2026. Recreate them using CRM Analytics datasets sourced from the Data Cloud session trace objects.
+**How to avoid:** Audit all monitoring workflows for lingering references to the legacy dashboard and recreate them as Tableau Next datasets/Agent Analytics sourced from the Session Tracing DMOs.
 
 ---
 

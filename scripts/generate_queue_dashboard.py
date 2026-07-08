@@ -243,7 +243,7 @@ def render_dashboard(
         if entry.history:
             last = entry.history[-1]
             activity.append((last.get("at", ""), entry, last))
-    activity.sort(reverse=True)
+    activity.sort(key=lambda t: t[0], reverse=True)
     if activity:
         out.append("## Recent activity")
         out.append("")

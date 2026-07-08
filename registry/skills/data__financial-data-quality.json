@@ -27,6 +27,7 @@
     "203a82d484d868773478",
     "240c1664a6ddb2b72615",
     "2702cee776fb9a925975",
+    "280741dab120fa5dd140",
     "284d931e35556cd6812b",
     "29b06254f5c87135087f",
     "2b0c2d7e46f220b84778",
@@ -35,8 +36,10 @@
     "2e3bf7159af96bfbf6d1",
     "3000a7f49aa4735214e5",
     "32164e0d82e455b67d1a",
+    "32cf54a66ad4276ee230",
     "33174731d83dbb3fa92a",
     "33d4945da98f426549e5",
+    "34185f2938a0e54ec0f8",
     "35f4d613b605872cd87a",
     "35f8b2dc89cbd9e4de0b",
     "3783574cec040521bbdc",
@@ -53,6 +56,7 @@
     "53147addaa130ca644fe",
     "58c5da4a4954a8e1a94b",
     "592b6af47b71d9156f4e",
+    "5f42679c1253a090e56d",
     "61aa305f6b678694fcf1",
     "61e03ca121f7630239cb",
     "63638ede8a3b4c639981",
@@ -75,6 +79,7 @@
     "7fd5ad0e03e4f28b2bc8",
     "819a931612b888d33ce2",
     "83bb994bbd74f1c3be3c",
+    "8488dde7d79450f8f625",
     "85ad42d1a9c95b618e47",
     "8747b580efdac903c1c8",
     "888fcd8a44475017d229",
@@ -86,6 +91,7 @@
     "90b9b89929362ed0779a",
     "90cba74282da41f294b1",
     "91a48e6208aa8ef935d7",
+    "92cc354d50df29c1780a",
     "93cdb69f032dc2f76056",
     "96c0276b4bdfcd58e879",
     "99148d95f312e437213e",
@@ -118,9 +124,12 @@
     "d1c7d96c89a75b852a71",
     "d9f795966652748f6abe",
     "dadebb73f1104511694b",
+    "db59a4c223cce5190f96",
     "ddf96f37d0f91c7c6c6f",
     "e568e47c5ba2a9e5546d",
     "e77f23ee99a1fe5c4747",
+    "ed3741a4d3686780a2f0",
+    "edc57782b64035cebc96",
     "efaca8b26ac7538365dd",
     "efcbd08b9fa03b4c3443",
     "f205b07367af5d065a0b",
@@ -132,7 +141,7 @@
     "fbe25de4e7570060c288",
     "fc712e7d494638d990c2"
   ],
-  "content_hash": "d879f59e6cc331cd52751e008e4318dcbbd0dbab014bede806897c18e494f521",
+  "content_hash": "db543cb87c0218259d945c80e79d91980325600682502c5b64b7adbe84a1ed4b",
   "dependencies": [
     "data/fsc-data-model"
   ],
@@ -154,6 +163,11 @@
     "Industries Common Resources Developer Guide \u2014 https://developer.salesforce.com/docs/atlas.en-us.industries_reference.meta/industries_reference/industries_dev_guide.htm",
     "Apex Developer Guide \u2014 Trigger Context Variables and Governor Limits \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_triggers_context_variables.htm",
     "Salesforce Duplicate Management \u2014 https://help.salesforce.com/s/articleView?id=sf.duplicate_management_overview.htm&type=5",
+    "Duplicate Rules Overview (import/API bypass behavior; Alert/Block/Report actions) \u2014 https://help.salesforce.com/s/articleView?id=sales.duplicate_rules_overview.htm&language=en_US&type=5",
+    "Matching Rule Considerations (active-rule caps, fuzzy Latin-only, Shield encryption, Person Account skip) \u2014 https://help.salesforce.com/s/articleView?id=sales.matching_rules_considerations.htm&language=en_US&type=5",
+    "Run Duplicate Jobs (batch scan of existing records; Performance/Unlimited Editions) \u2014 https://help.salesforce.com/s/articleView?id=sf.duplicate_jobs_run_and_manage.htm&language=en_US&type=5",
+    "Apex Reference \u2014 Database.DMLOptions.DuplicateRuleHeader (allowSave, runAsCurrentUser) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_Database_DMLOptions_DuplicateRuleHeader.htm",
+    "Apex Reference \u2014 Datacloud.FindDuplicates \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_Datacloud_FindDuplicates.htm",
     "Salesforce Well-Architected Framework \u2014 https://architect.salesforce.com/well-architected/overview"
   ],
   "outputs": [
@@ -186,12 +200,12 @@
   "templates": [
     "skills/data/financial-data-quality/templates/financial-data-quality-template.md"
   ],
-  "updated": "2026-04-12",
+  "updated": "2026-07-07",
   "vector_embedding": {
     "backend": "fastembed",
     "dimension": 384,
-    "updated": "2026-04-12",
+    "updated": "2026-07-07",
     "vector_id": "data/financial-data-quality"
   },
-  "version": "1.0.0"
+  "version": "1.1.0"
 }

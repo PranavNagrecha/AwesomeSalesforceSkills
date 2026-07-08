@@ -22,4 +22,6 @@
 
 - Metadata API Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm — clarifies what the CLI ultimately deploys or validates against the Metadata API contract.
 - Salesforce CLI Reference — https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm — authoritative list of `sf` topics, flags, `--json`, and data/project command behavior.
+- Salesforce CLI Reference, `sf data` commands — https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_data_commands_unified.htm — single-record CRUD, `data query`/`data search`, tree JSON import/export, and the Bulk API 2.0 verb families with their `resume`/`bulk results` companions.
+- Salesforce CLI Reference, deprecated `force:data` commands — https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_force_data.htm — confirms the legacy `sfdx force:data:*` family is superseded by the unified `sf data` topic.
 - Salesforce DX Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm — project layout, scratch org model, and CI authentication patterns such as JWT.

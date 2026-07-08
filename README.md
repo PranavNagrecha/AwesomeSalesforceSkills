@@ -4,7 +4,7 @@ The universal Salesforce knowledge layer for AI coding assistants.
 
 Drop this into Claude Code, Cursor, Aider, Windsurf, or any AI tool and get role-accurate, source-grounded Salesforce guidance — for every role, every cloud, every task.
 
-**1007 skills · 75 agents · shared Apex/LWC/Flow templates · golden evals · live-org MCP server.**
+**1011 skills · 75 agents · shared Apex/LWC/Flow templates · golden evals · live-org MCP server.**
 1097+ skills planned across 5 roles × 16 clouds. Live progress: [`docs/queue-progress.md`](./docs/queue-progress.md).
 
 [![Validate](https://github.com/PranavNagrecha/AwesomeSalesforceSkills/actions/workflows/validate.yml/badge.svg)](https://github.com/PranavNagrecha/AwesomeSalesforceSkills/actions/workflows/validate.yml)
@@ -17,7 +17,7 @@ Drop this into Claude Code, Cursor, Aider, Windsurf, or any AI tool and get role
 
 Three layers that turn generic LLMs into Salesforce-literate agents:
 
-1. **Skills** (`skills/<domain>/<skill>/`) — 1007 structured guides. Every skill carries source-grounded instructions, code examples, gotchas, WAF mapping, and a per-skill list of **LLM anti-patterns** the model must refuse to produce.
+1. **Skills** (`skills/<domain>/<skill>/`) — 1011 structured guides. Every skill carries source-grounded instructions, code examples, gotchas, WAF mapping, and a per-skill list of **LLM anti-patterns** the model must refuse to produce.
 2. **Shared canon** — One set of reusable building blocks the skills all point at, so the AI never reinvents them:
    - `templates/` → TriggerHandler, ApplicationLogger, SecurityUtils, HttpClient, TestDataFactory, LWC skeleton, Flow fault paths, Agentforce actions.
    - `standards/decision-trees/` → Routing for automation, async, integration, and sharing decisions — agents consult these **before** writing code.
@@ -161,15 +161,15 @@ and dependency order.
 |--------|--------|
 | Admin | 252 — custom fields, objects, picklists, users, org setup, page layouts, permission sets, sharing, validation rules, flows, reports, data skew, requirements gathering, Experience Cloud site setup, member management, CMS content, guest access, moderation, SEO, portal requirements, self-service design, partner community, community engagement, CPQ product catalog and bundles, CPQ pricing rules, CPQ quote templates, FSL work orders, service territories, resource management, scheduling policies, mobile app setup, Health Cloud patient setup, care plan configuration, care program management, FSC financial accounts, household model configuration, FSC referral management, NPSP household accounts, gift entry and processing, soft credits and matching, recurring donations, Marketing Cloud Engagement setup, MCAE/Pardot setup, Email Studio, Journey Builder, Marketing Cloud Connect, MCAE lead scoring and grading, consent management, email deliverability, B2B Commerce store setup, CRM Analytics app creation, analytics dashboard design, integration-admin connected apps, remote site settings, outbound message setup, integration user management, change data capture admin... |
 | Apex | 149 — trigger framework, batch, async, security patterns, callouts, mocking, platform cache, SOQL fundamentals, sf CLI and SFDX essentials, Metadata API and package.xml, debug logs and Developer Console, apex managed sharing, scheduled jobs, email services, fflib enterprise patterns, mixed DML and setup objects, record locking, callout-DML transaction boundaries, trigger-flow coexistence, apex performance profiling, JSON serialization, DML patterns, collections patterns, aggregate queries, SOQL relationship queries, batch chaining, transaction finalizers, wrapper class patterns, limits monitoring, named credentials patterns... |
-| LWC | 80 — wire service, component communication, testing, accessibility, offline, performance, toast and notifications, dynamic components, imperative Apex, message channel patterns, LWR site development, Experience Cloud LWC components, authentication flows, headless CMS API, API access patterns, search customization, multi-IdP SSO... |
+| LWC | 82 — wire service, component communication, testing, accessibility, offline, performance, toast and notifications, dynamic components, imperative Apex, message channel patterns, LWR site development, Experience Cloud LWC components, authentication flows, headless CMS API, API access patterns, search customization, multi-IdP SSO... |
 | Flow | 60 — record-triggered, screen flows, fault handling, bulkification, subflows, governance, debugging, auto-launched flow patterns, collection processing, External Services callouts, Flow for Slack Core Actions, flow action framework, flow large-data-volume patterns, Process Builder to Flow migration, Workflow Rule to Flow migration... |
 | OmniStudio | 34 — OmniScript design, DataRaptor, Integration Procedures, security, FlexCard design patterns, calculation procedures, DataPack deployment, performance optimization, Industries CPQ vs Salesforce CPQ, OmniStudio testing patterns, OmniStudio CI/CD patterns... |
-| Agentforce | 52 — agent actions, topic design, Einstein Trust Layer, agent creation, Einstein Copilot for Sales, Einstein Prediction Builder, Einstein Copilot for Service, Model Builder and BYOLLM, RAG patterns, agent testing and evaluation, persona design, MCP tool definition in Apex, Salesforce MCP server setup... |
+| Agentforce | 53 — agent actions, topic design, Einstein Trust Layer, agent creation, Einstein Copilot for Sales, Einstein Prediction Builder, Einstein Copilot for Service, Model Builder and BYOLLM, RAG patterns, agent testing and evaluation, persona design, MCP tool definition in Apex, Salesforce MCP server setup... |
 | Security | 48 — org hardening, permission set groups, Shield Platform Encryption, event monitoring, field audit trail, transaction security policies, login forensics, network security and trusted IPs, sandbox data masking, API security and rate limiting, experience cloud security, FERPA compliance, MFA enforcement strategy, OAuth token management... |
 | Integration | 61 — GraphQL, OAuth flows, Salesforce Connect, REST API patterns, SOAP API patterns, named credentials, Streaming API and PushTopic, platform events integration, Change Data Capture for external subscribers, callout limits and async patterns, file and document integration, idempotent integration patterns, Data Cloud Ingestion API streaming vs bulk, Pub/Sub API gRPC patterns, Revenue Lifecycle Management DRO, Loyalty Management setup, Slack Salesforce integration setup, Data Cloud query API, Data Cloud activation development, Data Cloud integration strategy, Bulk API 2.0 patterns, Slack Workflow Builder... |
 | Data | 98 — multi-currency, SOSL, rollup alternatives, data model design patterns, data migration planning, data quality and governance, bulk API and large data loads, data archival strategies, SOQL query optimization, service data archival, external user data sharing, community user migration, community analytics, partner data access patterns, volunteer management requirements, NPSP gift history import, B2B Commerce product catalog migration, Order Management order history migration, OCI inventory data, Data Cloud DMO identity resolution, Data Cloud consent and privacy, Revenue Cloud data model... |
 | Architect | 104 — solution design patterns, limits and scalability planning, multi-org strategy, technical debt assessment, well-architected review, platform selection guidance, security architecture review, Experience Cloud licensing model, multi-site architecture, headless vs LWR vs Aura decision framework, Experience Cloud performance and CDN, Experience Cloud integration patterns (SSO, widgets, Data Cloud), MuleSoft Anypoint Platform runtime model selection, large-data-volume architecture, Data Cloud vs CRM Analytics decision... |
-| DevOps | 69 — scratch org management, sandbox refresh and templates, unlocked package development, second-generation managed packages, DevOps Center pipeline, GitHub Actions for Salesforce, post-deployment validation, deployment error troubleshooting, rollback and hotfix strategy, pre-deployment checklist, go-live cutover planning, VS Code extensions, SFDX project structure, multi-package development, API version management, 1GP managed package development, CPQ deployment patterns, Salesforce CLI automation, code review checklist... |
+| DevOps | 70 — scratch org management, sandbox refresh and templates, unlocked package development, second-generation managed packages, DevOps Center pipeline, GitHub Actions for Salesforce, post-deployment validation, deployment error troubleshooting, rollback and hotfix strategy, pre-deployment checklist, go-live cutover planning, VS Code extensions, SFDX project structure, multi-package development, API version management, 1GP managed package development, CPQ deployment patterns, Salesforce CLI automation, code review checklist... |
 
 **See the full catalog:** [docs/SKILLS.md](./docs/SKILLS.md)
 
@@ -445,7 +445,7 @@ Every claim in every skill is grounded against a 4-tier trust ladder. When sourc
 
 **Shipped in v1:**
 
-- [x] 1007 skills across Admin, Apex, LWC, Flow, OmniStudio, Agentforce, Security, Integration, Data, Architect, DevOps
+- [x] 1011 skills across Admin, Apex, LWC, Flow, OmniStudio, Agentforce, Security, Integration, Data, Architect, DevOps
 - [x] Shared templates (Apex handler framework, logger, security utils, HTTP client, test factories, LWC skeleton, Flow fault paths, Agentforce action shell)
 - [x] Decision trees for automation, async, integration, and sharing selection
 - [x] Golden evals for 10 flagship skills (30 P0 cases)
@@ -484,7 +484,7 @@ framework already exist in my org?" **without asking you**.
 
 | Tool                       | What it does                                                                    |
 | -------------------------- | ------------------------------------------------------------------------------- |
-| `search_skill`             | Lexical search over the 1007-skill SfSkills corpus with optional domain filter. |
+| `search_skill`             | Lexical search over the 1011-skill SfSkills corpus with optional domain filter. |
 | `get_skill`                | Full SKILL.md + registry metadata for a given skill id.                         |
 | `describe_org`             | `sf org display` summary (org id, instance, edition, sandbox/scratch flags).    |
 | `list_custom_objects`      | Custom sObjects in the target org with optional substring filter.               |

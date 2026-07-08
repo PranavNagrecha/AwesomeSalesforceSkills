@@ -21,6 +21,8 @@ triggers:
   - "graphql wire uses errors instead of error"
   - "LWC not updating when data changes"
   - "component not updating when record changes"
+  - "debug wire data arriving after renderedCallback"
+  - "explain wire service and lifecycle hook order"
 inputs:
   - "data source such as UI API, Apex, or GraphQL"
   - "whether the component only reads data or also mutates it"
@@ -30,9 +32,9 @@ outputs:
   - "review findings for cache, reactive parameters, and refresh behavior"
   - "decision on wire adapters, LDS forms, or imperative Apex"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-03-13
+updated: 2026-07-07
 ---
 
 Use this skill when the LWC data path needs to be intentional rather than incidental. The wire service is excellent for declarative, cache-aware reads, but only if the component understands immutability, reactive parameters, and when wire adapters will or will not re-evaluate. Use it when the LWC is not updating when data changes—often because the wire adapter isn't re-evaluating or a refresh wasn't triggered.
@@ -49,9 +51,27 @@ Use this skill when the LWC data path needs to be intentional rather than incide
 
 Wire adapters provision data when their configuration is complete and when Salesforce determines fresh data should be emitted. The component should not assume wire execution timing matches `connectedCallback()` or `renderedCallback()`. The framework owns when data arrives.
 
+Knowing the concrete init sequence is what lets you debug the classic "flash of undefined data" bug. For a Lightning Data Service wire the order is:
+
+1. `constructor()` runs.
+2. LDS provisions an empty placeholder — an object where both `data` and `error` are `undefined`. This happens *before* your first render, so the wired property is defined-but-empty, not missing.
+3. `connectedCallback()`, `render()`, and `renderedCallback()` fire in that order. On this first pass the real data has **not** arrived yet — `data` is still `undefined`.
+4. Data becomes available from the adapter asynchronously and is set on the `data` property (with `error` remaining `undefined`).
+5. If the template consumes that data, `render()` and `renderedCallback()` fire **again**.
+
+So `renderedCallback()` legitimately runs at least twice with no user interaction: once against the empty placeholder and once (or more) as real data lands. Guarding the template on `data` being truthy — or handling `undefined` in `renderedCallback()` — is what prevents the empty first pass from rendering as broken UI. The official guidance is blunt: don't depend on receiving data from a wire adapter at any specific point in the component lifecycle.
+
+### Wire Emissions Are Multiple, Asynchronous, And Unordered
+
+A wire is a stream, not a single resolved value. An LDS wire can emit data multiple times without the component changing its configuration; LDS controls those emits and they aren't tied to the LWC lifecycle. That is why `renderedCallback()` can fire repeatedly for reasons the component never initiated — a cache update elsewhere in the app can push a fresh value.
+
+Wire adapter calls are also asynchronous unless the data is already cached, so the order of response and promise resolution is not sequential. Do not write logic that assumes wire A resolves before wire B, or that a wired value is present just because an imperative promise resolved. Each emission is a newer, immutable version of the previous value — treat the property as a read-only stream you react to, never a variable you populate at a known moment.
+
 ### Reactive Parameters Must Become Real Values
 
 Dynamic wire parameters prefixed with `$` only work when the underlying values are defined. If a required reactive parameter is `undefined`, the wire adapter is not evaluated. This is one of the most common reasons a wire "doesn't fire."
+
+The flip side is that when a reactive parameter's value *changes*, the wire service provisions new data — which then flows through the second render/`renderedCallback()` pass described above. A reactive parameter is therefore both a trigger for the first evaluation and a trigger for every subsequent re-provision, so expect the render cycle to run again each time the referenced property updates.
 
 ### Wired Data Should Be Treated As Immutable Input
 
@@ -122,6 +142,7 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 2. **Undefined reactive parameters stop evaluation** — many "wire isn't running" bugs are really incomplete configuration.
 3. **GraphQL wire returns `errors`, not `error`** — assuming the standard wire error shape causes broken error handling.
 4. **Async changes outside the adapter do not always auto-refresh** — Apex-triggered or Flow-triggered server updates often still need explicit refresh strategy.
+5. **`renderedCallback()` runs against undefined data on the first pass** — LDS provisions an empty `{data: undefined, error: undefined}` placeholder before the real value arrives, so the first render happens with no data. Guard the template or the callback instead of assuming data exists by the time the DOM renders.
 
 ## Output Artifacts
 

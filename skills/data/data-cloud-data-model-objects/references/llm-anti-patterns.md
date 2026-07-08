@@ -61,3 +61,15 @@ Common mistakes AI coding assistants make when generating or advising on Data Cl
 **Correct pattern:** Any data source that contains customer identity fields (email, phone, address, external customer ID) must map those fields to the mandatory identity DMOs: Contact Point Email, Contact Point Phone, Contact Point Address, Party Identification, and Individual. Omitting these mappings means the data source cannot contribute to unified profiles — with no error to indicate why.
 
 **Detection hint:** If a data stream onboarding plan shows all fields mapping to a custom DMO but none mapping to the five mandatory identity DMOs, and the source contains customer identity data, identity resolution coverage for that source will be zero.
+
+---
+
+## Anti-Pattern 6: Confusing Data Cloud Harmonization with the Marketing Cloud "Harmonization Center"
+
+**What the LLM generates:** In response to "harmonize my data in Data Cloud," instructions to open the Harmonization Center in the Connect & Mix tab and configure naming-convention patterns, classification rules, and harmonized dimensions.
+
+**Why it happens:** Two unrelated Salesforce features share the word "harmonize." The Harmonization Center is a real feature — but it belongs to Marketing Cloud Intelligence (formerly Datorama), not Data Cloud / Data 360. LLMs pattern-match on the word and pull in the wrong product's UI.
+
+**Correct pattern:** In Data Cloud / Data 360, harmonizing data means mapping DLO fields to standardized Customer 360 Data Model DMO fields (the Transform and Model lifecycle stage). It has no "Harmonization Center." Only reach for the Harmonization Center's naming-convention and classification-rule mechanics when the context is explicitly Marketing Cloud Intelligence / Datorama analytics.
+
+**Detection hint:** If Data Cloud DMO guidance mentions "Harmonization Center," "Connect & Mix," "harmonized dimensions," or "classification rules," it has drifted into the wrong product.

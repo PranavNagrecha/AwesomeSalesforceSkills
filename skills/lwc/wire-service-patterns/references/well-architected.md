@@ -29,5 +29,7 @@ Users experience stale data as a broken app. A deliberate wire strategy keeps th
 ## Official Sources Used
 
 - Understand the Wire Service — https://developer.salesforce.com/docs/platform/lwc/guide/data-wire-service-about
+- Use the Wire Service to Get Data — https://developer.salesforce.com/docs/platform/lwc/guide/data-wire-service.html
+- Create Lifecycle Hooks — https://developer.salesforce.com/docs/platform/lwc/guide/create-lifecycle-hooks.html
 - Lightning Data Service — https://developer.salesforce.com/docs/platform/lwc/guide/data-ui-api.html
 - GraphQL Wire Adapter for LWC — https://developer.salesforce.com/docs/platform/graphql/guide/graphql-wire-lwc

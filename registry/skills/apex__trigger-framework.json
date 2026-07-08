@@ -2,6 +2,7 @@
   "category": "apex",
   "chunk_ids": [
     "02190dfbd9d001fcd34c",
+    "0b1e9bea33f228305e66",
     "0cfc57ce8a7fd61a31d1",
     "0d93229741e923cb46b0",
     "14e44d717c91d4577585",
@@ -32,6 +33,7 @@
     "69b484b984bbae7bc52e",
     "6c58a1da5a625428b74d",
     "6cc29e587f297904b2ad",
+    "72f2f1b3b3ecaa06a7d2",
     "77358b49dc67e3b04404",
     "77f61edf80138ecabb8a",
     "79125baa4c474f159b9f",
@@ -46,8 +48,11 @@
     "a7bc9f3597baa20ea6f4",
     "ae75bd84a3798119328f",
     "b04be6651a908f98477c",
+    "b84ee61c390bea779c80",
     "ba897c94010d892f93a9",
+    "bb77d9b6c814b514ed60",
     "bc990216283627f4c5dc",
+    "c76616535b9765201c65",
     "c809a8e100f0271730ee",
     "d358dcdf13eeeca4b37f",
     "d3e4bbe1cfe599a8180e",
@@ -60,9 +65,10 @@
     "e7a6c8fe7b318f1a0074",
     "ecf410a9bb0eca283504",
     "f0318c16599e802b70e0",
-    "fad230e06c1914a41405"
+    "fad230e06c1914a41405",
+    "ff80798f3e0057c81fa7"
   ],
-  "content_hash": "9d2a11f3e7b77494f2468d3325ffd24f9bd7de119611ad672ea984bcfde9c9d6",
+  "content_hash": "c2bb2bd8b5188378a9b521dd1f711ec1834975113c048c44106b4f9f7a9938da",
   "dependencies": [],
   "description": "Use when writing, reviewing, or designing Apex triggers. Triggers: 'trigger', 'trigger handler', 'trigger framework', 'recursion', 'before insert', 'after update', 'one trigger per object'. NOT for Flow-based automation \u2014 use admin/flow-for-admins for declarative automation decisions.",
   "file_location": "skills/apex/trigger-framework",
@@ -76,7 +82,10 @@
   "official_sources": [
     "Salesforce Well-Architected Overview \u2014 reliability and operability framing for trigger architecture",
     "Apex Developer Guide \u2014 trigger behavior, testing, and transaction guidance",
-    "Apex Reference Guide \u2014 trigger context and Apex API reference confirmation"
+    "Apex Reference Guide \u2014 trigger context and Apex API reference confirmation",
+    "Apex Developer Guide, \"Trigger and Bulk Request Best Practices\" (https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_triggers_bestpract.htm) \u2014 minimize SOQL via preprocessing records into sets used with the `IN` clause; minimize DML by operating on collections; triggers are designed for bulk operation",
+    "Apex Developer Guide, \"Common Bulk Trigger Idioms\" (https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_triggers_bulk_idioms.htm) \u2014 Set \u2192 SOQL `IN` \u2192 Map-by-Id correlation idiom, `Trigger.newMap`/`Trigger.oldMap` for correlating with query results, and the unique-field bulk rollback/retry Id-reassignment gotcha",
+    "Apex Developer Guide, \"Bulk Triggers\" (https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_triggers_bulk.htm) \u2014 triggers fire on batches from Bulk API, Data Loader, and integrations, not single records"
   ],
   "outputs": [
     "trigger design guidance",
@@ -104,12 +113,12 @@
     "skills/apex/trigger-framework/templates/trigger_body.trigger",
     "skills/apex/trigger-framework/templates/trigger_handler.cls"
   ],
-  "updated": "2026-04-28",
+  "updated": "2026-07-07",
   "vector_embedding": {
     "backend": "fastembed",
     "dimension": 384,
-    "updated": "2026-04-28",
+    "updated": "2026-07-07",
     "vector_id": "apex/trigger-framework"
   },
-  "version": "1.0.0"
+  "version": "1.1.0"
 }

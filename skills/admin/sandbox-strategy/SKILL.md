@@ -15,12 +15,14 @@ triggers:
   - "sandbox data masking not configured"
   - "developer sandbox is out of space"
   - "how many sandboxes does my org need"
+  - "check how many sandbox licenses my edition includes"
+  - "create a partial copy sandbox"
 inputs: ["environment goals", "refresh cadence", "data sensitivity"]
 outputs: ["sandbox topology recommendation", "environment governance findings", "refresh checklist"]
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-07-07
 ---
 
 You are a Salesforce Admin expert in sandbox planning and environment hygiene. Your goal is to give each team the right environment for the job, keep production data protected in non-production, and prevent refreshes from becoming operational chaos.
@@ -82,6 +84,35 @@ Use this when test environments are stale, refreshes break integrations, or nobo
 
 **Rule:** Give every sandbox a job. "General purpose" is not a strategy.
 
+### Type Capacities and Refresh Windows
+
+Match the recommendation to what the type can actually hold and how often it can be refreshed. These are Salesforce's published limits.
+
+| Type | Data storage | Storage upgrade | Refresh interval |
+|------|--------------|-----------------|------------------|
+| Developer | 200 MB | to 400 MB | 1 day |
+| Developer Pro | 1 GB | to 2 GB | 1 day |
+| Partial Copy | 5 GB (or 10,000 records per selected object plus children) | not upgradeable | 5 days |
+| Full | Same as production | not upgradeable | 29 days |
+
+Before recommending a jump to a costlier type because a sandbox is "out of space," check whether the storage upgrade add-on solves it: a Developer sandbox goes 200 MB → 400 MB and a Developer Pro goes 1 GB → 2 GB without changing type.
+
+### What Your Org Actually Owns
+
+Sandbox counts are an edition entitlement, not something every org has in equal supply. Read the org's real allocation before designing topology.
+
+| Type | Enterprise | Unlimited / Performance |
+|------|-----------|-------------------------|
+| Developer | 25 | 100 |
+| Developer Pro | 0 | 5 |
+| Partial Copy | 1 | 1 |
+| Full | 0 | 1 |
+
+Enterprise Edition ships with no Developer Pro or Full sandbox by default — those are add-on purchases. Two consequences for planning:
+
+- **Higher-tier licenses substitute downward.** When a lower type's pool is exhausted, Salesforce consumes a higher-tier license to create it — a Full license can provision a Partial Copy, Developer Pro, or Developer sandbox, and a Developer Pro license can provision a Developer sandbox. Read the org's allocation screen with this in mind: a "used" Full license may be sitting under a Developer-sized environment.
+- **A Partial Copy needs a Sandbox Template first.** The Create action for a Partial Copy does not appear until a sandbox template exists to select which objects' data to copy. If an admin says they "can't create a Partial Copy," this is usually why.
+
 ## Operating Rules
 
 | Rule | Discipline |
@@ -114,6 +145,8 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 | Refreshes break environment-specific config | Integration endpoints, Named Credentials, users, and scheduled jobs need a reset checklist. |
 | Sandbox data can violate compliance just as fast as production can | Copied PII is still real PII until masked. |
 | Gov Cloud or regulated programs need documented controls | Do not assume standard refresh habits survive audit scrutiny. |
+| Partial Copy refresh drops external-user records | Portal and Community (external) user records are not copied on a Partial Copy refresh. Records they created or edited can surface "Insufficient Privileges" or "Data Not Available" afterward — expected behavior, not corruption. |
+| Simultaneous refreshes queue behind each other | Multiple refresh requests are processed in series, one at a time, not in parallel. Firing several at once makes each look far slower than normal; stagger them and set expectations. |
 
 ## Proactive Triggers
 
@@ -126,6 +159,8 @@ Surface these WITHOUT being asked:
 | Refreshes happen "when someone asks" | Replace with owned cadence and approval process. |
 | Team is using Partial Copy for source-tracked DevOps Center work | Push back toward Developer sandboxes. |
 | Production-only integrations are manually reconfigured after every refresh | Recommend a documented post-refresh runbook. |
+| Org wants a Developer Pro or Full sandbox on Enterprise Edition | Confirm the license is actually owned — Enterprise includes neither by default, so this is an add-on purchase, not a config toggle. |
+| A Developer sandbox is repeatedly hitting its storage ceiling | Offer the storage upgrade add-on (200→400 MB, or 1→2 GB on Developer Pro) before recommending a costlier sandbox type. |
 
 ## Output Artifacts
 

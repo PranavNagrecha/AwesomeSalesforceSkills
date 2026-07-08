@@ -9,7 +9,9 @@
     "1829554861458174a331",
     "264515ab316c298d83ae",
     "2b0862bcf99a2a912d58",
+    "2bb52ff470ccc9b39a22",
     "2da94bd4cec1d0a623e1",
+    "2dce090202445f6dd72e",
     "2f1b6eca9ddbe1e98d04",
     "316d2003424009b19f32",
     "35ea70af4272567d4053",
@@ -18,11 +20,14 @@
     "3d89747f712e3513d5a6",
     "419d983fb6bc570baf7b",
     "46085eeb3ee44f577c44",
+    "4ac9a0aa2f3872aaac34",
     "4e224b884374dc1f7e39",
     "52178896d365e2080916",
     "57c58ba495babf2d9b44",
+    "5c21990bddf4797d8f6e",
     "5d58f7bda3b65636fb7e",
     "5fe867a1788c3961cd31",
+    "608f9e970b282402d55f",
     "62042a51ac6991c012cd",
     "6bb7ef757ef92a1b0f8a",
     "6f61bea707e53f63bf5f",
@@ -37,6 +42,7 @@
     "a3491bb2dc14ef7d87de",
     "a38aaad7e143f0bd8417",
     "a53cc2f19fdab2ab1cc2",
+    "a9b0d8f464b0e6ad05f4",
     "acfd5eb2e20286483610",
     "af55c0a3e524f1ebad3f",
     "b32f5ca26f53b84dc63c",
@@ -61,7 +67,7 @@
     "fca19ee622e0f3194855",
     "fe800092efeef0ae0b9e"
   ],
-  "content_hash": "3cf7877896ea28a2b613cd8bc2be51e8816057c8c1298d41ff0a5f4bbcc90588",
+  "content_hash": "56e6570b955081f384cdf30dbe2c07a18594b6093e7b6f615aa7cd1f3e91c421",
   "dependencies": [],
   "description": "Use when writing, reviewing, or troubleshooting Apex that risks hitting Salesforce governor limits. Triggers: 'too many SOQL queries', 'too many DML statements', 'CPU time limit', 'bulkification', 'Queueable vs Batch'. NOT for trigger architecture decisions unless the core problem is limit consumption.",
   "file_location": "skills/apex/governor-limits",
@@ -75,7 +81,10 @@
   "official_sources": [
     "Salesforce Well-Architected Overview \u2014 performance and operability framing for transaction design",
     "Apex Developer Guide \u2014 transaction, bulk, and async behavior guidance",
-    "Apex Reference Guide \u2014 Limits class and async API reference confirmation"
+    "Apex Reference Guide \u2014 Limits class and async API reference confirmation",
+    "[Execution Governors and Limits (Apex Developer Guide)](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm) \u2014 per-transaction limit values including SOSL, trigger recursion depth, trigger batch size (200 vs 2,000 for platform events/CDC), max transaction execution time, `EventBus.publish` immediate, callout cumulative timeout, Apex/pagination cursors, and certified-package cross-namespace cumulative limits",
+    "[Understanding Execution Governors and Limits (Apex Developer Guide)](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_limits_intro.htm) \u2014 how governor limits are enforced per transaction",
+    "[Best Practices for Improving Apex Performance (Apex Developer Guide)](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_limits_tips.htm) \u2014 bulkification and limit-avoidance guidance"
   ],
   "outputs": [
     "limit triage findings",
@@ -102,12 +111,12 @@
   "templates": [
     "skills/apex/governor-limits/templates/bulk-safe-service.cls"
   ],
-  "updated": "2026-04-28",
+  "updated": "2026-07-07",
   "vector_embedding": {
     "backend": "fastembed",
     "dimension": 384,
-    "updated": "2026-04-28",
+    "updated": "2026-07-07",
     "vector_id": "apex/governor-limits"
   },
-  "version": "1.0.0"
+  "version": "1.1.0"
 }

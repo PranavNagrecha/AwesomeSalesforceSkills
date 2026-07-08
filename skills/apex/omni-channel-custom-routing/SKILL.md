@@ -1,6 +1,6 @@
 ---
 name: omni-channel-custom-routing
-description: "Use this skill to implement Apex-driven custom routing logic for Omni-Channel work items using PendingServiceRouting and SkillRequirement objects. Trigger keywords: PendingServiceRouting, SkillRequirement, IsReadyForRouting, skills-based routing, custom routing Apex. NOT for declarative Omni-Channel queue-based routing setup, routing configurations in Setup UI, or Einstein Classification routing rules."
+description: "Use this skill to implement Apex-driven custom routing logic for Omni-Channel work items using PendingServiceRouting and SkillRequirement objects. Trigger keywords: PendingServiceRouting, SkillRequirement, IsReadyForRouting, skills-based routing, custom routing Apex. Also orients you to the declarative alternative (Skills-Based Routing setup, Skill Mapping Sets) and to the Skill object's assignment join records (SkillUser, SkillProfile, ServiceResourceSkill) so you can choose config-over-code before writing Apex. Not a step-by-step declarative admin guide, and NOT for Omni-Channel queue-based routing setup or Einstein Classification routing rules."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -13,6 +13,9 @@ triggers:
   - "Skills-based routing Apex — SkillRequirement records not being matched"
   - "Custom routing logic for Omni-Channel with skill relaxation overflow"
   - "ServiceChannelId hardcoded in Apex breaks after sandbox refresh"
+  - "Decide between a declarative Skill Mapping Set and Apex PendingServiceRouting"
+  - "Assign skills to agents with SkillUser, SkillProfile, or Service Resource Skills"
+  - "Configure Skills-Based Routing in the Omni-Channel Setup UI without writing code"
 tags:
   - omni-channel
   - routing
@@ -30,9 +33,9 @@ outputs:
   - IsReadyForRouting flipped to true to activate routing
   - Guidance on skill relaxation overflow configuration
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-07-07
 ---
 
 # Omni-Channel Custom Routing (Apex)
@@ -49,6 +52,7 @@ Gather this context before working on anything in this domain:
 - Identify the `ServiceChannel` `DeveloperName` values that correspond to the work item type — never hardcode `Id` values, which differ across sandboxes and production.
 - Confirm the `Skill` `DeveloperName` values for each skill the routing logic requires. Query them at runtime rather than assuming they are stable.
 - Understand whether skill relaxation (overflow) is needed: when no agent with all required skills is available, the platform can drop `IsAdditionalSkill=true` skill requirements after a configured timeout.
+- Decide whether you need Apex at all. Salesforce ships a fully declarative Skills-Based Routing path in the Omni-Channel Setup UI — a **Skill Mapping Set** translates work-item field values into requested skills without code. Reach for `PendingServiceRouting` Apex only when the skill decision depends on runtime data a Skill Mapping Set cannot express (see the *Declarative vs Apex* subsection under Core Concepts). Choosing config-over-code here removes a whole class of deployment and governor-limit risk.
 
 ---
 
@@ -71,6 +75,39 @@ Each `SkillRequirement` record carries a `SkillId`, a `SkillLevel` (minimum prof
 ### ServiceChannelId Resolution
 
 `ServiceChannel.Id` is an org-specific value. It changes between sandbox refreshes and between sandbox and production. Code that hardcodes a `ServiceChannelId` breaks silently on deployment — the insert succeeds but the routing engine ignores the record or throws a runtime error. The only safe pattern is to query `ServiceChannel` by `DeveloperName` at runtime. Cache the result in a custom metadata type or platform cache when query volume is a concern, but never embed the raw `Id` in Apex.
+
+### Declarative vs Apex: Skill Mapping Sets Before PendingServiceRouting
+
+Before building any of the three-DML Apex sequence, confirm the requirement genuinely exceeds what the declarative engine can do. The out-of-the-box, code-free path is:
+
+1. Enable **Enhanced Omni-Channel Routing**, then turn on the **Skills-Based and Direct-to-Agent Routing** option in Omni-Channel Settings.
+2. Create `Skill` records on the **Skills** Setup page (this is a Setup action, not an Apex insert and not a data load).
+3. Assign skills to agents through the Service Resource UI (**Service Resource > Service Resource Skills**), or through the User- and Profile-level join records described below.
+4. On the **Routing Configuration**, enable **Use with Skills-Based Routing Rules**.
+5. Define a **Skill Mapping Set** — the declarative object that maps case / work-item field values to the skills an agent needs. This is the declarative counterpart to hand-building `SkillRequirement` records in Apex.
+
+In the declarative model the same required-vs-additional distinction applies: **required skills must match 100%**, while skills marked **additional** are dropped one at a time, in a configured **drop order**, after a timeout when no agent is free — the same relaxation behavior your Apex expresses with `IsAdditionalSkill = true`. Use Apex `PendingServiceRouting` only when the skill decision needs runtime inputs a Skill Mapping Set cannot reach (for example, skills derived from related-record entitlement tiers or from case-classification output).
+
+### The Skill Object and Its Assignment Records
+
+`Skill` is a standard object (available since **API v24.0**) that represents a category or group of Chat users or service resources in Field Service or Workforce Engagement. It carries `MasterLabel`, `DeveloperName`, `Description`, a `Language` picklist, and — since **API v58.0** — a `TypeId` that references the associated `SkillType`. The same `Skill` object underpins four distinct surfaces, which is why "assign a skill" means different join records depending on context:
+
+- **Chat / Omni-Channel** — agents are grouped by skill; `LiveChatButton` skills route requests to qualified agents.
+- **Field Service** — tracks technician certifications and expertise for skill-based work assignment.
+- **Salesforce Scheduler** — matches appointments to resources by required skill.
+- **Workforce Engagement** — represents job-profile expertise.
+
+Agent-to-skill assignment is not a single object. Choose the join by who holds the skill:
+
+| Join object | Links | Availability | Use for |
+|---|---|---|---|
+| `SkillUser` | `Skill` ↔ `User` | API v24.0+ | Skill tied to an individual user (classic Chat routing) |
+| `SkillProfile` | `Skill` ↔ `Profile` | API v24.0+ | Skill granted by a user's Profile rather than per-user |
+| `ServiceResourceSkill` | `Skill` ↔ `ServiceResource` | Field Service | Technician / resource skill with a `SkillLevel` and an `EffectiveStartDate`/`EffectiveEndDate` date range |
+
+`SkillRequirement` (used in the Apex sequence above) is a different thing: it is the *demand* side — the skills a specific work item requests — not the *supply* side that these three join objects express. Salesforce Scheduler also uses `Skill` + `SkillRequirement` for appointment-to-resource matching, so the same demand object appears outside Omni-Channel.
+
+Ongoing agent-skill administration (a supervisor adding, updating, or expiring an agent's Service Resource Skills so live queue routing reflects a staffing change) is a day-2 admin task, not only a bulk migration artifact — the `EffectiveStartDate`/`EffectiveEndDate` fields on `ServiceResourceSkill` exist precisely so an assignment can be scheduled or retired without deleting history.
 
 ### Avoiding SOQL in Loops for Skill Resolution
 
@@ -109,6 +146,10 @@ Each `PendingServiceRouting` record requires one or more `Skill` Ids. If the rou
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
+| Skill mapping can be expressed as "field value → skill" | Declarative **Skill Mapping Set** on a Skills-Based Routing Configuration | Config-over-code; no Apex, no deployment or governor-limit risk |
+| Skill decision needs runtime data a Skill Mapping Set can't reach | Apex `PendingServiceRouting` + `SkillRequirement` | Only justification for the custom sequence |
+| Skill held by a specific agent vs. by everyone on a profile | `SkillUser` (per user) vs. `SkillProfile` (per profile) | Pick the join that matches how the skill is granted |
+| Field Service technician certification with an expiry | `ServiceResourceSkill` with `EffectiveStartDate`/`EffectiveEndDate` | Scheduled/retired assignment without losing history |
 | Work items always need all skills matched | `IsAdditionalSkill = false` on all `SkillRequirement` records | No relaxation; agent must meet full requirement |
 | Need overflow routing after timeout | Add secondary skills with `IsAdditionalSkill = true` | Platform handles relaxation without custom timer logic |
 | Routing multiple work items in one transaction | Bulkify all three DML steps | Prevents DML governor limit breaches |
@@ -170,3 +211,4 @@ Non-obvious platform behaviors that cause real production problems:
 
 - `architect/omni-channel-capacity-model` — use alongside this skill when tuning agent capacity weights and channel throughput
 - `admin/sales-engagement-cadences` — if routing work items generated by cadence steps, coordinate channel setup with this skill
+- `data/fsl-resource-and-skill-data` — when the skill assignment is a Field Service technician certification loaded in bulk (`Skill` / `ServiceResourceSkill` data migration) rather than an Omni-Channel routing decision

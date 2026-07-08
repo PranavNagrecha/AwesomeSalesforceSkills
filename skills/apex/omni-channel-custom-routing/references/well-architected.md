@@ -12,6 +12,8 @@
 
 **Custom Apex routing vs. declarative routing rules.** Declarative routing configurations in Omni-Channel Setup (routing configurations, queues, skills assignments) cover the majority of standard routing scenarios with zero code. Custom Apex routing via `PendingServiceRouting` is appropriate only when routing decisions require runtime data unavailable to declarative rules — for example, routing based on entitlement levels read from related records, or dynamic skill requirements derived from case classification output. Defaulting to Apex routing when declarative rules suffice adds maintenance burden without capability benefit.
 
+**Skill Mapping Set vs. hand-built SkillRequirement records.** The declarative Skills-Based Routing path (Enhanced Omni-Channel Routing → Skills-Based and Direct-to-Agent Routing → a Routing Configuration with *Use with Skills-Based Routing Rules* → a **Skill Mapping Set**) expresses "field value → requested skill" without code, and enforces the same required-100%-match / additional-skill-drop-order relaxation the Apex path builds by hand with `IsAdditionalSkill`. Choosing a Skill Mapping Set when the mapping is a static function of field values eliminates the entire orphan-cleanup, hardcoded-Id, and SOQL-in-loop risk surface that the Apex sequence must defend against. Escalate to Apex only when the skill decision needs runtime inputs the mapping set cannot see. Note that `SkillRequirement` is the demand side of routing (what a work item asks for) and is distinct from the supply-side assignment joins — `SkillUser` (Skill↔User), `SkillProfile` (Skill↔Profile), and `ServiceResourceSkill` (Skill↔ServiceResource) — that record which agents actually hold a skill.
+
 **Skill relaxation vs. manual fallback queues.** Using `IsAdditionalSkill = true` for overflow keeps routing logic inside the platform's native engine, which manages timeout and retry automatically. Building a custom fallback (e.g., a scheduled job that re-inserts routing records targeting a broader queue after a timeout) creates more moving parts and is harder to monitor. Prefer native relaxation unless the org requires overflow behavior that the platform's relaxation model cannot express.
 
 **Trigger-based vs. batch-based routing.** Routing from an after-insert trigger provides the lowest latency but is subject to tighter governor limits. Batch-based routing allows more headroom and is preferable for backfill operations or high-volume scenarios. For real-time SLA requirements, use trigger-based routing with strict bulkification. For overnight or catch-up processing, use a batch job.
@@ -28,7 +30,13 @@
 
 - PendingServiceRouting Object Reference — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_pendingservicerouting.htm
 - SkillRequirement Object Reference — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_skillrequirement.htm
+- Skill Object Reference — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_skill.htm
+- Skill Object (Field Service Developer Guide) — https://developer.salesforce.com/docs/atlas.en-us.field_service_dev.meta/field_service_dev/sforce_api_objects_skill.htm
+- ServiceResourceSkill Object Reference — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_serviceresourceskill.htm
+- SkillUser Object Reference — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_skilluser.htm
 - How Skills-Based Routing Works — https://help.salesforce.com/s/articleView?id=sf.omnichannel_skills_based_routing_how_it_works.htm
+- How Skills-Based Routing Works (Service Cloud) — https://help.salesforce.com/s/articleView?language=en_US&id=service.omnichannel_how_skills_based_routing_works.htm&type=5
+- Create Skills for Skills-Based Routing — https://help.salesforce.com/s/articleView?id=sf.omnichannel_skills_based_routing_create_skills.htm&type=5&language=en_US
 - Omni-Channel Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.omni_channel_dev_guide.meta/omni_channel_dev_guide/omni_channel_dev_guide.htm
 - Apex Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

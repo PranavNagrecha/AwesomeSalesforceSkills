@@ -2,18 +2,31 @@
 """Checker script for the lwc-graphql-wire skill.
 
 Recursively scans `--manifest-dir` for `.js` files under `lwc/*` bundles and
-flags GraphQL-wire anti-patterns documented in this skill's references:
+flags GraphQL-wire anti-patterns documented in this skill's references.
 
-  1. A `gql` tagged-template literal that contains JS interpolation (`${ ... }`).
-     JS interpolation is NOT reactive on the GraphQL wire adapter — use a
-     declared query variable referenced via `variables: '$vars'` instead.
-  2. A file that imports from `lightning/uiGraphQLApi` AND calls `refreshApex`,
-     which is the wrong helper for graphql-provisioned results.
-     (Use `refreshGraphQL(this.wiredResult)` instead.)
-  3. A `gql` literal that uses `edges` but does not include `pageInfo` in the
-     same literal — breaks cursor pagination.
-  4. A `gql` literal that contains the keyword `mutation` — the adapter is
-     read-only; mutations must go through UI API or imperative Apex.
+Two modules ship the adapter and the checks are scoped by module:
+  * `lightning/graphql` (v2) — recommended; adds optional fields, dynamic
+    query construction, and `executeMutation` writes; refreshes via a `refresh`
+    method on the emitted result.
+  * `lightning/uiGraphQLApi` (v1) — Mobile Offline only; read-only wire;
+    refreshes via `refreshGraphQL(result)`.
+
+Checks:
+  1. A `gql` literal containing JS interpolation (`${ ... }`) in a v1 file.
+     Interpolation is NOT reactive on v1 — declare a query variable and pass it
+     via `variables: '$vars'`. (Skipped for v2 files, where interpolation is a
+     supported feature for dynamic query construction. The v2 misuse — routing
+     reactive per-record filter data through interpolation instead of a `$`
+     variable — cannot be told apart from legitimate dynamic queries statically,
+     so it is left to review rather than false-flagged here.)
+  2. A file importing a GraphQL module that calls the wrong refresh helper:
+     `refreshApex` (that is for `@wire(<apexMethod>)`), or `refreshGraphQL`
+     inside a v2 (`lightning/graphql`) file (v2 uses `result.refresh()`).
+  3. A `gql` literal that uses `edges` but not `pageInfo` — breaks pagination.
+  4. A `gql` literal containing `mutation` in a file that does NOT import
+     `executeMutation`. A mutation belongs in an `executeMutation` call (v2),
+     never inside the wired query. If `executeMutation` is imported the mutation
+     literal is assumed legitimate and not flagged.
 
 Uses stdlib only — no pip dependencies.
 
@@ -42,10 +55,11 @@ MUTATION_KEYWORD_RE = re.compile(r"\bmutation\b", re.IGNORECASE)
 EDGES_TOKEN_RE = re.compile(r"\bedges\b")
 PAGEINFO_TOKEN_RE = re.compile(r"\bpageInfo\b")
 
-GRAPHQL_IMPORT_RE = re.compile(
-    r"from\s+['\"]lightning/uiGraphQLApi['\"]"
-)
+V1_IMPORT_RE = re.compile(r"from\s+['\"]lightning/uiGraphQLApi['\"]")
+V2_IMPORT_RE = re.compile(r"from\s+['\"]lightning/graphql['\"]")
 REFRESH_APEX_RE = re.compile(r"\brefreshApex\s*\(")
+REFRESH_GRAPHQL_RE = re.compile(r"\brefreshGraphQL\s*\(")
+EXECUTE_MUTATION_RE = re.compile(r"\bexecuteMutation\b")
 
 
 # ---------- core scan ------------------------------------------------------
@@ -77,15 +91,28 @@ def _check_file(js_path: Path) -> list[str]:
     except (OSError, UnicodeDecodeError) as exc:
         return [f"{js_path}: could not read file ({exc})"]
 
-    imports_graphql_module = bool(GRAPHQL_IMPORT_RE.search(source))
+    imports_v1 = bool(V1_IMPORT_RE.search(source))
+    imports_v2 = bool(V2_IMPORT_RE.search(source))
+    imports_graphql_module = imports_v1 or imports_v2
+    imports_execute_mutation = bool(EXECUTE_MUTATION_RE.search(source))
 
-    # Check 2: graphql import paired with refreshApex call (wrong helper).
+    # Check 2: GraphQL file calling the wrong refresh helper.
     if imports_graphql_module:
         for match in REFRESH_APEX_RE.finditer(source):
             line = _line_number(source, match.start())
+            helper = "result.refresh()" if imports_v2 else "refreshGraphQL(this.wiredResult)"
             findings.append(
-                f"{js_path}:{line}: refreshApex() called in a file that imports "
-                "from 'lightning/uiGraphQLApi'. Use refreshGraphQL(this.wiredResult) instead."
+                f"{js_path}:{line}: refreshApex() called in a file that imports a "
+                f"GraphQL module. refreshApex is for @wire(apexMethod) — use {helper} instead."
+            )
+    # v2 has no refreshGraphQL — it refreshes via result.refresh().
+    if imports_v2 and not imports_v1:
+        for match in REFRESH_GRAPHQL_RE.finditer(source):
+            line = _line_number(source, match.start())
+            findings.append(
+                f"{js_path}:{line}: refreshGraphQL() called in a 'lightning/graphql' (v2) "
+                "file. v2 does not export refreshGraphQL — call the refresh method on the "
+                "emitted result instead (await this.<wiredResult>.refresh())."
             )
 
     # Walk every gql`...` block and apply per-block checks (1, 3, 4).
@@ -93,26 +120,32 @@ def _check_file(js_path: Path) -> list[str]:
         body = block_match.group(1)
         block_start_line = _line_number(source, block_match.start())
 
-        # Check 1: JS interpolation inside the gql literal.
-        for interp in JS_INTERPOLATION_RE.finditer(body):
-            rel_line = body.count("\n", 0, interp.start())
-            line = block_start_line + rel_line
-            findings.append(
-                f"{js_path}:{line}: gql template literal contains ${{...}} JS "
-                "interpolation. Declare a query variable and pass it via "
-                "variables: '$vars' instead — interpolation is not reactive."
-            )
+        # Check 1: JS interpolation inside a v1 gql literal (not reactive on v1).
+        # Skipped for v2, where interpolation is a supported dynamic-query feature.
+        if imports_v1 and not imports_v2:
+            for interp in JS_INTERPOLATION_RE.finditer(body):
+                rel_line = body.count("\n", 0, interp.start())
+                line = block_start_line + rel_line
+                findings.append(
+                    f"{js_path}:{line}: gql template literal contains ${{...}} JS "
+                    "interpolation in a 'lightning/uiGraphQLApi' (v1) file. Declare a "
+                    "query variable and pass it via variables: '$vars' — v1 interpolation "
+                    "is not reactive."
+                )
 
-        # Check 4: mutation keyword inside gql.
-        mutation_match = MUTATION_KEYWORD_RE.search(body)
-        if mutation_match:
-            rel_line = body.count("\n", 0, mutation_match.start())
-            line = block_start_line + rel_line
-            findings.append(
-                f"{js_path}:{line}: gql template literal contains 'mutation'. "
-                "The GraphQL wire adapter is read-only — use UI API "
-                "(updateRecord/createRecord/deleteRecord) or imperative Apex for writes."
-            )
+        # Check 4: mutation keyword inside a wired gql literal. Skipped when the
+        # file imports executeMutation, where a mutation literal is expected (v2).
+        if not imports_execute_mutation:
+            mutation_match = MUTATION_KEYWORD_RE.search(body)
+            if mutation_match:
+                rel_line = body.count("\n", 0, mutation_match.start())
+                line = block_start_line + rel_line
+                findings.append(
+                    f"{js_path}:{line}: gql template literal contains 'mutation' but the "
+                    "file does not import executeMutation. The wired query is read-only — "
+                    "run writes via executeMutation (lightning/graphql v2) or UI API / "
+                    "imperative Apex; never embed a mutation in the wired query."
+                )
 
         # Check 3: edges without pageInfo in the same literal.
         if EDGES_TOKEN_RE.search(body) and not PAGEINFO_TOKEN_RE.search(body):

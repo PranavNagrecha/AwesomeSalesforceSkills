@@ -13,10 +13,14 @@ triggers:
   - "LimitException Too many SOQL queries in my trigger — what does that mean and how do I debug it?"
   - "Apex debug log shows FATAL_ERROR or EXCEPTION_THROWN event — how do I read it?"
   - "ListException Index was out of range — how do I trace the cause in Apex?"
+  - "Fix MixedDmlException when inserting a User or PermissionSet alongside an Account in the same transaction"
+  - "Resolve Unable to lock row / Record currently unavailable DmlException under bulk load"
 tags:
   - NullPointerException
   - QueryException
   - DmlException
+  - MixedDmlException
+  - SObjectException
   - LimitException
   - TypeException
   - runtime-errors
@@ -31,9 +35,9 @@ outputs:
   - Defensive coding checklist for the specific exception type encountered
   - Decision table mapping exception type to the correct resolution approach
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-05
+updated: 2026-07-07
 ---
 
 # Common Apex Runtime Errors
@@ -81,12 +85,37 @@ Thrown when a DML operation (insert, update, delete, upsert) fails at the databa
 
 - Required field is null on the record being inserted or updated.
 - A duplicate rule fires and rejects the record.
-- Mixed SObject types passed to a single DML statement (e.g. inserting both `Account` and `Contact` in one `insert` list — this is allowed; the error occurs when inserting SObjects of two types in the same statement using the multi-object DML restriction in certain contexts).
 - A before-trigger or validation rule blocks the record.
+- **Row-lock contention** — `Unable to lock row - Record currently unavailable`. A transaction waits a maximum of 10 seconds for a lock to be released before timing out and throwing this error. It is one of the most frequently hit real-world DML failures, caused by concurrent DML on the same records, Apex triggers with long execution time, Bulk API loads in parallel mode, and Master-Detail child updates that all lock the same parent. See the dedicated Core Concept below.
+
+Note: mixing an insert of two *non-setup* types (e.g. an `Account` and a `Contact`) into separate DML statements in one transaction is fine — that is not what triggers a mixed-DML failure. The mixed-DML restriction is specifically about setup vs non-setup objects; see **MixedDmlException** below.
 
 The `DmlException` is the only common exception that carries per-row error details. Use `e.getNumDml()`, `e.getDmlMessage(i)`, `e.getDmlIndex(i)`, and `e.getDmlFields(i)` to extract which records failed and why.
 
 Resolution: Validate required fields before DML. Use Database.insert/update/delete with `allOrNone=false` and inspect `Database.SaveResult[]` for partial-success scenarios. Log per-row `getDmlMessage` errors rather than only the top-level exception message.
+
+### MixedDmlException
+
+Thrown when a DML operation on a *setup* object is mixed with a DML operation on a *non-setup* object in the same transaction. Per the official docs: "DML operations on certain sObjects, sometimes referred to as setup objects, can't be mixed with DML on non-setup sObjects in the same transaction." The restriction exists because some setup objects affect the running user's access to records.
+
+- **Setup objects** include `User`, `UserRole`, `Group`, `GroupMember`, `PermissionSet`, `PermissionSetAssignment`, `Territory2`, `ObjectPermissions`, `FieldPermissions`, `QueueSObject`, and others.
+- **Non-setup objects** are ordinary standard/custom records like `Account`, `Contact`, and custom objects.
+
+The failure is *not* caused by mixing two arbitrary non-setup types. It fires only when a setup-object DML and a non-setup-object DML land in the same transaction.
+
+Resolution: Run the setup-object DML in its own transaction. The standard fix is to move it into an asynchronous context — a `@future` method or a Queueable — so it executes in a separate transaction from the non-setup DML. In test code, `System.runAs()` blocks and async jobs called by the test are permitted to perform mixed DML.
+
+### Row-lock contention — "Unable to lock row"
+
+A distinct, very common `DmlException` variant: `Unable to lock row - Record currently unavailable`. Salesforce locks records during updates; a transaction can wait a maximum of 10 seconds for a lock to be released before timing out and throwing this error. Frequent sources are concurrent DML on the same records, long-running Apex triggers, Bulk API loads running in parallel mode, and Master-Detail child updates that contend for the same parent lock.
+
+Resolution: Reduce trigger execution time and avoid explicit `FOR UPDATE` locking statements in triggers. For Bulk API loads, reduce batch size, switch from parallel to serial mode, or sort each batch by parent record ID so batches don't contend for the same parent locks. For Master-Detail, distribute child records across parents rather than concentrating them. Enable debug logs for the affected user to identify the offending trigger, flow, or validation rule.
+
+### SObjectException
+
+A built-in exception raised for problems with sObject records — most commonly attempting to change a field in an `update` statement that can only be set during `insert`, or accessing a field that was not included in the SOQL query. The docs describe it as covering "any problem with sObject records, such as attempting to change a field in an update statement that can only be changed during insert."
+
+Resolution: Only write to fields that are updateable in the current DML context — never assign to read-only, formula, or insert-only fields on an existing record. Include every field you intend to read in the SOQL `SELECT` clause. This is one of many named built-in exceptions in Apex (the Apex Reference lists dozens, including `CalloutException`, `JSONException`, `SecurityException`, and `TypeException`); the six headline types in this skill are the most frequently hit, and `SObjectException` is a common near-neighbor worth recognizing on sight.
 
 ### ListException
 
@@ -180,6 +209,9 @@ List<Contact> contacts = [SELECT Id FROM Contact WHERE AccountId IN :accountIds]
 | QueryException: List has more than 1 row | Scalar SOQL matched multiple rows | Add WHERE filters or use LIMIT 1 |
 | DmlException: required field missing | Field blank on record before DML | Validate fields before insert/update |
 | DmlException: duplicate value | Duplicate rule or unique constraint hit | Check for existing record first or use upsert |
+| DmlException: Unable to lock row | Row-lock contention (concurrent DML, long triggers, Bulk API parallel mode, MD child updates) | Shorten triggers; Bulk API serial mode + batch sort by parent ID; distribute MD children |
+| MixedDmlException | Setup-object DML (User, Group, PermissionSet…) mixed with non-setup DML in one transaction | Defer setup-object DML to @future / Queueable so it runs in its own transaction |
+| SObjectException | Writing an insert-only/read-only field on update, or reading a field not in the SELECT | Only update updateable fields; add the field to the SOQL SELECT |
 | ListException: index out of bounds | Indexed access on empty or short list | Check list.size() before access |
 | LimitException: Too many SOQL queries | SOQL inside loop | Bulkify: move SOQL outside loop |
 | LimitException: CPU time exceeded | Nested loops or heavy string ops on large sets | Move work to Batch Apex |

@@ -48,4 +48,9 @@ Recommended decision: batch reconciliation is the standard pattern for FSC. Use 
 - Industries Common Resources Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.industries_reference.meta/industries_reference/industries_dev_guide.htm
 - Apex Developer Guide — Trigger Context Variables and Governor Limits — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_triggers_context_variables.htm
 - Salesforce Duplicate Management — https://help.salesforce.com/s/articleView?id=sf.duplicate_management_overview.htm&type=5
+- Duplicate Rules Overview (import/API bypass behavior; Alert/Block/Report actions) — https://help.salesforce.com/s/articleView?id=sales.duplicate_rules_overview.htm&language=en_US&type=5
+- Matching Rule Considerations (active-rule caps, fuzzy Latin-only, Shield encryption, Person Account skip) — https://help.salesforce.com/s/articleView?id=sales.matching_rules_considerations.htm&language=en_US&type=5
+- Run Duplicate Jobs (batch scan of existing records; Performance/Unlimited Editions) — https://help.salesforce.com/s/articleView?id=sf.duplicate_jobs_run_and_manage.htm&language=en_US&type=5
+- Apex Reference — Database.DMLOptions.DuplicateRuleHeader (allowSave, runAsCurrentUser) — https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_Database_DMLOptions_DuplicateRuleHeader.htm
+- Apex Reference — Datacloud.FindDuplicates — https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_Datacloud_FindDuplicates.htm
 - Salesforce Well-Architected Framework — https://architect.salesforce.com/well-architected/overview

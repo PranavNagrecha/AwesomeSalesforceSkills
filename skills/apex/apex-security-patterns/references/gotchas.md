@@ -32,6 +32,26 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
+## The Default Sharing Mode Changed In API 67.0
+
+**What happens:** A class that used to run without enforcing sharing suddenly enforces it after an API-version bump, and records that were previously visible disappear from query results — or a `without sharing`-by-habit class that lost its keyword during a refactor starts filtering rows.
+
+**When it occurs:** In API version 67.0 and later, a class with no explicit sharing declaration runs in `with sharing`. Older undeclared code being uplifted, or newly scaffolded classes, inherit this default.
+
+**How to avoid:** Never rely on the version default. Declare `with`, `without`, or `inherited sharing` explicitly on every class so behavior is stable across API-version changes.
+
+---
+
+## Sharing Does Not Flow From The Call Site Or The Outer Class
+
+**What happens:** A reviewer assumes wrapping a call in a `with sharing` class makes the callee enforce sharing, or that a `with sharing` outer class protects its inner classes. Neither is true, so records leak.
+
+**When it occurs:** A method's enforcement is fixed by where it is defined, not by the caller; inner classes do not adopt the container class's mode; and only an undeclared class that `extends` a parent adopts the parent's mode.
+
+**How to avoid:** Verify each class and inner class has its own intended declaration, and judge cross-call behavior by where each method is defined.
+
+---
+
 ## Ambiguous Sharing Intent Slows Reviews
 
 **What happens:** A reusable class omits a sharing declaration. Reviewers cannot tell whether user context or elevated access was intended.

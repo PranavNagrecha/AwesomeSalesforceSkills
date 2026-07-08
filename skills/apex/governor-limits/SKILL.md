@@ -18,12 +18,14 @@ triggers:
   - "how do I bulkify this trigger"
   - "too many SOQL queries"
   - "bulkify trigger avoid limits"
+  - "diagnose maximum trigger depth exceeded error"
+  - "resolve too many SOSL queries in transaction"
 inputs: ["failing transaction", "record volume", "entry point"]
 outputs: ["limit triage findings", "bulk-safe design guidance", "async pattern recommendation"]
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-07-07
 ---
 
 You are a Salesforce expert in Apex transaction design. Your goal is to keep Apex bulk-safe, limit-aware, and operationally predictable under real production volume. Use this skill when you see too many SOQL queries errors or need to bulkify a trigger to avoid limits.
@@ -43,7 +45,7 @@ Gather if not available:
 
 ### Mode 1: Build from Scratch
 
-1. Assume 200-record bulk execution unless the entry point proves otherwise.
+1. Assume 200-record bulk execution unless the entry point proves otherwise — but bump that to 2,000 for platform-event or Change Data Capture subscriber triggers.
 2. Design the transaction around the collect -> query once -> map -> process -> DML once pattern.
 3. Decide whether the work belongs in synchronous Apex, Queueable, Batch, or Platform Events.
 4. Keep callouts, cross-object fan-out, and large data movement out of fragile trigger paths.
@@ -72,12 +74,22 @@ Gather if not available:
 | Limit | Synchronous | Asynchronous | Why It Matters |
 |-------|-------------|--------------|----------------|
 | SOQL queries | 100 | 200 | Loop-driven query patterns fail first |
+| SOSL queries | 20 | 20 | SOSL has its own count, separate from SOQL — a loop full of `FIND` burns it fast |
+| SOSL records per query | 2,000 | 2,000 | A single search caps at 2,000 rows regardless of the SOQL 50,000 ceiling |
 | DML statements | 150 | 150 | Repeated `update` or `insert` in loops burns budget quickly |
 | DML rows | 10,000 | 10,000 | Large fan-out often needs Batch |
 | CPU time | 10,000 ms | 60,000 ms | Complex transforms and nested loops fail here |
+| Max transaction execution time | 10 min | 10 min | A hard wall-clock ceiling separate from CPU time — long callout waits or slow processing trip it even when CPU stays low |
 | Heap size | 6 MB | 12 MB | Large collections and JSON payloads dominate memory |
 | Callouts | 100 | 100 | Integration loops still hit a hard cap |
+| Callout cumulative timeout | 120 sec | 120 sec | Total wait across all callouts in a transaction — many small calls with generous timeouts add up |
+| `EventBus.publish` (immediate) | 150 | 150 | Publish-immediate platform events have their own cap, distinct from DML statements |
+| Trigger recursion stack depth | 16 | 16 | Recursive DML that re-fires triggers throws `Maximum trigger depth exceeded` at 16 |
 | Queueable jobs enqueued | 50 | 1 child/job | Matters for fan-out and chaining strategy |
+
+**Trigger batch size is 200 for standard DML — but 2,000 for platform events and Change Data Capture events.** Code in a platform-event or CDC subscriber trigger must be bulk-safe against 2,000 records per execution, not 200. The same governor budgets apply, so a per-record query or DML that "works" at 200 fails hard at 2,000.
+
+For AppExchange / ISV authors: a certified managed package gets **cumulative cross-namespace limits** on top of the per-namespace values above (for example 1,100 SOQL queries and 1,650 DML statements across all namespaces in a transaction). Your package still lives inside those totals when it runs alongside a subscriber's code and other packages.
 
 ### Bulkification Pattern
 
@@ -139,6 +151,8 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 | `@future` is a narrow tool | Primitive-only parameters, no chaining, weak observability — a poor default for new work. |
 | Callout after DML causes `uncommitted work pending` | If the transaction already changed data, offload the callout or redesign the process. |
 | Batch resets limits per execute chunk, not per job | Expensive code can still fail inside one chunk even though the whole job is "async." |
+| Recursion depth has its own limit of 16 | Recursive DML re-firing a trigger throws `Maximum trigger depth exceeded` well before count limits catch it. |
+| CPU time is not the only time-based ceiling | A hard 10-minute transaction wall applies even when CPU stays low — long callout waits count against it. |
 
 ## Proactive Triggers
 

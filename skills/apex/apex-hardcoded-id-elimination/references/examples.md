@@ -1,6 +1,6 @@
 # Examples — Apex Hardcoded ID Elimination
 
-Three end-to-end refactors showing how to eliminate hardcoded IDs.
+End-to-end refactors showing how to eliminate hardcoded IDs.
 
 ---
 
@@ -178,3 +178,31 @@ private class CaseRouterTest {
 ```
 
 The test creates its own data and captures IDs at runtime. Runs in any org.
+
+---
+
+## Example 5 — Metadata Relationship instead of a raw ID string
+
+A routing config needs to point at another custom metadata record (the SLA tier that applies to a case type). The tempting shortcut is a `Text__c` field holding the related record's 18-char Id — which re-imports the portability problem, because that Id differs per org.
+
+### Before (raw ID parked in a text field)
+
+```apex
+CaseRouting__mdt cfg = CaseRouting__mdt.getInstance(caseType);
+// SlaTierId__c is a Text field holding a hardcoded 18-char CMDT record Id
+Id slaTierId = (Id) cfg.SlaTierId__c;   // wrong record after any org copy
+```
+
+### After (Metadata Relationship field)
+
+Define `SlaTier__c` on `CaseRouting__mdt` as a **Metadata Relationship** field targeting the `SlaTier__mdt` type. The reference is stable metadata, not an org-specific literal, and travels with the deployment. The relationship field value resolves at runtime, so feed it straight into `getInstance()` — which accepts a record Id, DeveloperName, or qualified API name — to pull the related record from cache:
+
+```apex
+CaseRouting__mdt cfg = CaseRouting__mdt.getInstance(caseType);
+// The Metadata Relationship field holds a runtime-resolved reference to the related record.
+// Pass it to getInstance(), which reads the parent from cache — no SOQL, no query-row limits:
+SlaTier__mdt tier = SlaTier__mdt.getInstance(cfg.SlaTier__c);
+Integer firstResponseMins = tier.FirstResponseMinutes__c.intValue();
+```
+
+Both `getInstance()` calls read the application cache — no SOQL, no query-row limits. If any field on `SlaTier__mdt` can exceed 255 characters, read that field with a SOQL query on the `__mdt` type instead, since `getInstance()` truncates at 255.

@@ -33,4 +33,10 @@ A secondary tradeoff is **synchronous versus asynchronous execution**. Synchrono
 - Apex Developer Guide — Testing Best Practices — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_testing.htm
 - Metadata API Developer Guide — Deploy — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_deploy.htm
 - Salesforce CLI Reference — Apex Commands — https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_apex.htm
+- Salesforce CLI Reference — `apex run test` — https://developer.salesforce.com/docs/platform/salesforce-cli-reference/guide/cli_reference_apex_run_test.html
 - Salesforce DX Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm
+- Salesforce Help — View Apex Test Results — https://help.salesforce.com/s/articleView?id=sf.code_test_results.htm&type=5
+- Salesforce Help — View Apex Test Result Details — https://help.salesforce.com/s/articleView?id=sf.code_test_results_details.htm&type=5
+- Salesforce Help — Check Code Coverage in the Developer Console — https://help.salesforce.com/s/articleView?id=platform.code_dev_console_tests_coverage.htm&type=5
+- Salesforce Help — Run Unit Test Methods — https://help.salesforce.com/s/articleView?id=sf.code_run_tests.htm&type=5
+- Apex Developer Guide — Running Unit Test Methods — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_testing_unit_tests_running.htm

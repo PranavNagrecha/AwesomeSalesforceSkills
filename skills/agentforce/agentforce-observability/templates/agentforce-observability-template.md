@@ -6,8 +6,11 @@ Use this template when setting up or reviewing Agentforce agent monitoring.
 
 - **Agent name:** ___
 - **Agent ID:** ___
+- **Agent type:** (ASA / Employee Agent / Default Agent / SDR) — coverage varies: ASA & Employee get Analytics + Optimization; Default = Optimization only; SDR = Analytics only
 - **Target environment:** (production / full sandbox)
 - **Data Cloud provisioned:** Yes / No
+- **Setup toggles enabled (Einstein Audit, Analytics, and Monitoring Setup):** Session Tracing and Data Model ___ / Agentforce Optimization ___
+- **Access provisioned:** Tableau Next Limited Consumer or Platform Analyst ___ / Data Cloud User ___ / API Enabled ___ / Access Agentforce Optimization ___
 
 ## Baseline Metrics (First Week After Go-Live)
 
@@ -23,12 +26,14 @@ Run these queries and record baseline values:
 
 ## Monitoring Dashboard Components
 
-| Component | Visualization | Data Source | Refresh |
+Built in Tableau Next (Agent Analytics), sourced from the Session Tracing DMOs:
+
+| Component | Visualization | Data Source (DMO) | Refresh |
 |---|---|---|---|
-| Daily session count | Bar chart by status | AgentConversationSession | Daily |
-| Rolling deflection rate | KPI + trend line | AgentConversationSession | Daily |
-| Topic distribution | Pie chart | AgentConversationSessionTopic | Weekly |
-| Avg latency by agent | Table | AgentConversationSessionUtterance | Daily |
+| Daily session count | Bar chart by status | AIAgentSession | Daily |
+| Rolling deflection rate | KPI + trend line | AIAgentSession | Daily |
+| Topic distribution | Pie chart | Agent Analytics (topic effectiveness) | Weekly |
+| Avg latency by agent | Table | AIAgentInteraction / AIAgentInteractionMessage | Daily |
 
 ## Alert Thresholds
 
@@ -40,9 +45,17 @@ Run these queries and record baseline values:
 
 ## Legacy Dashboard Migration Status (if applicable)
 
-- [ ] Identified all monitoring workflows using legacy Agentforce Analytics dashboard
-- [ ] Recreated in CRM Analytics before May 31, 2026
+The legacy Agentforce Analytics dashboard retired May 31, 2026.
+
+- [ ] Identified all monitoring workflows using the legacy Agentforce Analytics dashboard
+- [ ] Recreated in Tableau Next (Agent Analytics) over the Session Tracing DMOs
 - [ ] Legacy dashboard references removed from runbooks
+
+## External Telemetry Export (optional, OTel API — Beta)
+
+- [ ] External Client App configured for OAuth 2.0
+- [ ] Target sink confirmed OTLP-capable (Splunk / Datadog / New Relic)
+- [ ] Aware of Beta limits: single session per request, 72-hour window
 
 ## Utterance Analysis Access Control
 

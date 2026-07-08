@@ -185,3 +185,62 @@ private class AccountTriggerHandlerTest {
     }
 }
 ```
+
+---
+
+## Example 4: Bulk-Safe Related-Record Lookup (Set → SOQL IN → Map → Correlate)
+
+The examples above only compare each record against its own prior state via `oldMap`.
+The other half of bulk safety is querying *related* records without a SOQL statement
+per row. The canonical idiom in the Apex Developer Guide is: collect the distinct
+foreign-key IDs from `Trigger.new` into a `Set`, run **one** SOQL query with an `IN`
+clause, index the results in a `Map` keyed by `Id`, then loop a second time to correlate.
+
+```apex
+public with sharing class OpportunityLineItemTriggerHandler {
+
+    // Before insert: stamp each line item with data from its PricebookEntry.
+    // One query serves the whole batch — never query inside the loop.
+    public void onBeforeInsert(List<OpportunityLineItem> newLines) {
+
+        // 1. Collect distinct related IDs into a Set (dedupes automatically).
+        Set<Id> pricebookEntryIds = new Set<Id>();
+        for (OpportunityLineItem oli : newLines) {
+            if (oli.PricebookEntryId != null) {
+                pricebookEntryIds.add(oli.PricebookEntryId);
+            }
+        }
+        if (pricebookEntryIds.isEmpty()) return;
+
+        // 2. One SOQL query with an IN clause against the Set,
+        //    indexed by Id in a Map (a SOQL-into-Map does this in one step).
+        Map<Id, PricebookEntry> entriesById = new Map<Id, PricebookEntry>([
+            SELECT Id, UnitPrice, Product2Id
+            FROM PricebookEntry
+            WHERE Id IN :pricebookEntryIds
+        ]);
+
+        // 3. Second loop — correlate each record with its queried data by Id.
+        for (OpportunityLineItem oli : newLines) {
+            PricebookEntry entry = entriesById.get(oli.PricebookEntryId);
+            if (entry != null) {
+                oli.List_Price_Snapshot__c = entry.UnitPrice;
+            }
+        }
+    }
+}
+```
+
+**Correlating with `Trigger.newMap` / `Trigger.oldMap`**: when the related query
+returns child records that point *back* at the triggering records, use
+`Trigger.newMap` (insert/update) or `Trigger.oldMap` (update/delete) — both are
+`Id`-to-sObject maps — to link the query results to the originating record without a
+nested loop. For example, `Trigger.oldMap.keySet()` yields the exact set of IDs to
+feed into a child query's `IN` clause, and each child's parent lookup then indexes
+straight back into the map. `keySet()` is also the cleanest way to build the `Set<Id>`
+in step 1 when the foreign key is the triggering record's own Id.
+
+**Why this matters**: querying inside the loop (`SELECT ... WHERE Id = :oli.PricebookEntryId`
+per row) burns one of the 100 SOQL statements per record and fails the moment Data
+Loader, the Bulk API, or an integration sends a batch. The Set → IN → Map idiom is
+constant in SOQL cost regardless of batch size.

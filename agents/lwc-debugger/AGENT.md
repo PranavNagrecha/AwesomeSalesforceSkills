@@ -36,6 +36,7 @@ dependencies:
     - lwc/lwc-internationalization
     - lwc/lwc-lds-writes
     - lwc/lwc-light-dom
+    - lwc/lwc-local-development
     - lwc/lwc-locker-to-lws-migration
     - lwc/lwc-performance
     - lwc/lwc-performance-budgets
@@ -157,6 +158,7 @@ Diagnoses a live LWC failure — a stack trace, "Unknown error", a wire that nev
 ### Templates
 45. `templates/lwc/component-skeleton/`
 46. `templates/lwc/patterns/`
+47. `skills/lwc/lwc-local-development` — lwc local development
 
 ---
 

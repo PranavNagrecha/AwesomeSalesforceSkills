@@ -29,4 +29,7 @@
 - Data 360 Query Guide — https://developer.salesforce.com/docs/data/data-cloud-query-guide/guide/query-guide-get-started
 - Data Cloud Query V2 API Reference — https://developer.salesforce.com/docs/data/data-cloud-query-guide/references/c360a-api-query-v2
 - API Limits for Profile, Query, and Calculated Insights — https://developer.salesforce.com/docs/atlas.en-us.c360a_api.meta/c360a_api/c360a_api_limits.htm
+- Data 360 Connect API Overview — https://developer.salesforce.com/docs/data/connectapi/overview
+- Data 360 Connect API Get Started (Data Cloud → Data 360 rebrand) — https://developer.salesforce.com/docs/data/connectapi/guide/get-started.html
+- Boost Data Cloud Integrations with the New Query Connect API (blog) — https://developer.salesforce.com/blogs/2025/08/boost-data-cloud-integrations-with-the-new-query-connect-api
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

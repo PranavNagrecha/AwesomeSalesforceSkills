@@ -436,9 +436,7 @@
   notes: "apex"
   source_line: 1735
   history:
-    - at: "2026-05-22T00:00:00"
-      status: "DONE"
-      actor: "scheduled-task"
+    - { at: "2026-05-22T00:00:00", status: "DONE", actor: "scheduled-task" }
 - id: "report-and-dashboard-subscriptions"
   status: "TODO"
   skill: "report-and-dashboard-subscriptions"
@@ -586,3 +584,461 @@
   notes: "data"
   source_line: 1827
   history: []
+- id: "sf-ai-agentforce"
+  status: "DUPLICATE"
+  skill: "sf-ai-agentforce"
+  summary: "sf ai agentforce — intake from Jaganpro/sf-skills (repo mode)."
+  notes: "Intake triage 2026-07-07T19:22:47Z: NET_NEW; search_knowledge top hits: agentforce/agentforce-pii-redaction (1.6705261134650946). License class: permissive."
+  history:
+    - { at: "2026-07-07T19:22:47Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "source-onboarding", status: "DUPLICATE", at: "2026-07-07T22:37:48+00:00" }
+- id: "sf-ai-agentforce-grid"
+  status: "DONE"
+  skill: "sf-ai-agentforce-grid"
+  summary: "sf ai agentforce grid — intake from Jaganpro/sf-skills (repo mode)."
+  notes: "Intake triage 2026-07-07T19:22:47Z: NET_NEW; search_knowledge top hits: admin/ai-ethics-and-governance-requirements (2.7268717695674782). License class: permissive."
+  history:
+    - { at: "2026-07-07T19:22:47Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "source-onboarding", status: "DONE", at: "2026-07-07T22:37:47+00:00" }
+- id: "sf-ai-agentforce-observability"
+  status: "DONE"
+  skill: "sf-ai-agentforce-observability"
+  summary: "sf ai agentforce observability — intake from Jaganpro/sf-skills (repo mode)."
+  notes: "Intake triage 2026-07-07T19:22:47Z: ENRICH; search_knowledge top hits: agentforce/agentforce-observability (4.858765465491042), agentforce/agent-metric-dashboards (2.2070153826840477), architect/ai-governance-architecture (1.5584281628265795). License class: permissive."
+  history:
+    - { at: "2026-07-07T19:22:47Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "source-onboarding", status: "DONE", at: "2026-07-07T22:37:47+00:00" }
+- id: "sf-ai-agentforce-persona"
+  status: "DUPLICATE"
+  skill: "sf-ai-agentforce-persona"
+  summary: "sf ai agentforce persona — intake from Jaganpro/sf-skills (repo mode)."
+  notes: "Intake triage 2026-07-07T19:22:47Z: COVERED; search_knowledge top hits: agentforce/agentforce-persona-design (10.513105475706096). License class: permissive."
+  history:
+    - { at: "2026-07-07T19:22:47Z", status: "DUPLICATE", actor: "onboard_source" }
+- id: "sf-ai-agentforce-testing"
+  status: "DUPLICATE"
+  skill: "sf-ai-agentforce-testing"
+  summary: "sf ai agentforce testing — intake from Jaganpro/sf-skills (repo mode)."
+  notes: "Intake triage 2026-07-07T19:22:47Z: COVERED; search_knowledge top hits: agentforce/agent-testing-and-evaluation (5.661444681535116). License class: permissive."
+  history:
+    - { at: "2026-07-07T19:22:47Z", status: "DUPLICATE", actor: "onboard_source" }
+- id: "sf-ai-agentscript"
+  status: "DONE"
+  skill: "sf-ai-agentscript"
+  summary: "sf ai agentscript — intake from Jaganpro/sf-skills (repo mode)."
+  notes: "Intake triage 2026-07-07T19:22:47Z: NET_NEW; search_knowledge top hits: agentforce/agentforce-pii-redaction (1.7037060118286356). License class: permissive."
+  history:
+    - { at: "2026-07-07T19:22:47Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "source-onboarding", status: "DONE", at: "2026-07-07T22:37:47+00:00" }
+- id: "sf-apex"
+  status: "RESEARCH"
+  skill: "sf-apex"
+  summary: "sf apex — intake from Jaganpro/sf-skills (repo mode)."
+  notes: "Intake triage 2026-07-07T19:22:47Z: NET_NEW; search_knowledge top hits: devops/bitbucket-pipelines-for-salesforce (2.9650270339263), devops/github-actions-for-salesforce (1.6942595455003957), devops/vscode-salesforce-extensions (1.7267826680419733). License class: permissive."
+  history:
+    - { at: "2026-07-07T19:22:47Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "sf-connected-apps"
+  status: "DONE"
+  skill: "sf-connected-apps"
+  summary: "sf connected apps — intake from Jaganpro/sf-skills (repo mode)."
+  notes: "Intake triage 2026-07-07T19:22:47Z: NET_NEW; search_knowledge top hits: integration/oauth-flows-and-connected-apps (2.0975177014883744), admin/integration-admin-connected-apps (2.234050484042949). License class: permissive."
+  history:
+    - { at: "2026-07-07T19:22:47Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "source-onboarding", status: "DONE", at: "2026-07-07T22:37:47+00:00" }
+- id: "sf-data"
+  status: "DONE"
+  skill: "sf-data"
+  summary: "sf data — intake from Jaganpro/sf-skills (repo mode)."
+  notes: "Intake triage 2026-07-07T19:22:47Z: ENRICH; search_knowledge top hits: architect/b2b-vs-b2c-architecture (3.5812225499629458), devops/salesforce-cli-automation (2.2564731351277167). License class: permissive."
+  history:
+    - { at: "2026-07-07T19:22:47Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "source-onboarding", status: "DONE", at: "2026-07-07T22:37:47+00:00" }
+- id: "sf-datacloud"
+  status: "DUPLICATE"
+  skill: "sf-datacloud"
+  summary: "sf datacloud — intake from Jaganpro/sf-skills (repo mode)."
+  notes: "Intake triage 2026-07-07T19:22:47Z: NET_NEW; search_knowledge top hits: no hits. License class: permissive."
+  history:
+    - { at: "2026-07-07T19:22:47Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "source-onboarding", status: "DUPLICATE", at: "2026-07-07T22:37:48+00:00" }
+- id: "sf-datacloud-act"
+  status: "DUPLICATE"
+  skill: "sf-datacloud-act"
+  summary: "sf datacloud act — intake from Jaganpro/sf-skills (repo mode)."
+  notes: "Intake triage 2026-07-07T19:22:47Z: NET_NEW; search_knowledge top hits: no hits. License class: permissive."
+  history:
+    - { at: "2026-07-07T19:22:47Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "source-onboarding", status: "DUPLICATE", at: "2026-07-07T22:37:48+00:00" }
+- id: "sf-datacloud-connect"
+  status: "DONE"
+  skill: "sf-datacloud-connect"
+  summary: "sf datacloud connect — intake from Jaganpro/sf-skills (repo mode)."
+  notes: "Intake triage 2026-07-07T19:22:47Z: NET_NEW; search_knowledge top hits: no hits. License class: permissive."
+  history:
+    - { at: "2026-07-07T19:22:47Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "source-onboarding", status: "DONE", at: "2026-07-07T22:37:48+00:00" }
+- id: "sf-datacloud-harmonize"
+  status: "DONE"
+  skill: "sf-datacloud-harmonize"
+  summary: "sf datacloud harmonize — intake from Jaganpro/sf-skills (repo mode)."
+  notes: "Intake triage 2026-07-07T19:22:47Z: NET_NEW; search_knowledge top hits: no hits. License class: permissive."
+  history:
+    - { at: "2026-07-07T19:22:47Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "source-onboarding", status: "DONE", at: "2026-07-07T22:37:47+00:00" }
+- id: "sf-datacloud-prepare"
+  status: "DONE"
+  skill: "sf-datacloud-prepare"
+  summary: "sf datacloud prepare — intake from Jaganpro/sf-skills (repo mode)."
+  notes: "Intake triage 2026-07-07T19:22:47Z: NET_NEW; search_knowledge top hits: no hits. License class: permissive."
+  history:
+    - { at: "2026-07-07T19:22:47Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "source-onboarding", status: "DONE", at: "2026-07-07T22:37:47+00:00" }
+- id: "sf-datacloud-retrieve"
+  status: "RESEARCH"
+  skill: "sf-datacloud-retrieve"
+  summary: "sf datacloud retrieve — intake from Jaganpro/sf-skills (repo mode)."
+  notes: "Intake triage 2026-07-07T19:22:47Z: NET_NEW; search_knowledge top hits: no hits. License class: permissive."
+  history:
+    - { at: "2026-07-07T19:22:47Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "sf-datacloud-segment"
+  status: "RESEARCH"
+  skill: "sf-datacloud-segment"
+  summary: "sf datacloud segment — intake from Jaganpro/sf-skills (repo mode)."
+  notes: "Intake triage 2026-07-07T19:22:47Z: NET_NEW; search_knowledge top hits: integration/data-cloud-zero-copy-federation (1.980865033333139). License class: permissive."
+  history:
+    - { at: "2026-07-07T19:22:47Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "sf-debug"
+  status: "RESEARCH"
+  skill: "sf-debug"
+  summary: "sf debug — intake from Jaganpro/sf-skills (repo mode)."
+  notes: "Intake triage 2026-07-07T19:22:47Z: ENRICH; search_knowledge top hits: apex/apex-execute-anonymous (4.685415366477671), devops/vscode-salesforce-extensions (3.0066247438142515). License class: permissive."
+  history:
+    - { at: "2026-07-07T19:22:47Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "sf-deploy"
+  status: "RESEARCH"
+  skill: "sf-deploy"
+  summary: "sf deploy — intake from Jaganpro/sf-skills (repo mode)."
+  notes: "Intake triage 2026-07-07T19:22:47Z: ENRICH; search_knowledge top hits: apex/sf-cli-and-sfdx-essentials (4.43427221731076). License class: permissive."
+  history:
+    - { at: "2026-07-07T19:22:47Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "sf-diagram-mermaid"
+  status: "DUPLICATE"
+  skill: "sf-diagram-mermaid"
+  summary: "sf diagram mermaid — intake from Jaganpro/sf-skills (repo mode)."
+  notes: "Intake triage 2026-07-07T19:22:47Z: COVERED; search_knowledge top hits: architect/salesforce-erd-and-diagramming (11.616738359154972). License class: permissive."
+  history:
+    - { at: "2026-07-07T19:22:47Z", status: "DUPLICATE", actor: "onboard_source" }
+- id: "sf-diagram-nanobananapro"
+  status: "DUPLICATE"
+  skill: "sf-diagram-nanobananapro"
+  summary: "sf diagram nanobananapro — intake from Jaganpro/sf-skills (repo mode)."
+  notes: "Intake triage 2026-07-07T19:22:47Z: COVERED; search_knowledge top hits: architect/salesforce-erd-and-diagramming (9.294176671397896). License class: permissive."
+  history:
+    - { at: "2026-07-07T19:22:47Z", status: "DUPLICATE", actor: "onboard_source" }
+- id: "sf-docs"
+  status: "RESEARCH"
+  skill: "sf-docs"
+  summary: "sf docs — intake from Jaganpro/sf-skills (repo mode)."
+  notes: "Intake triage 2026-07-07T19:22:47Z: NET_NEW; search_knowledge top hits: devops/sfdx-monorepo-patterns (1.9613139742007624). License class: permissive."
+  history:
+    - { at: "2026-07-07T19:22:47Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "sf-flex-estimator"
+  status: "RESEARCH"
+  skill: "sf-flex-estimator"
+  summary: "sf flex estimator — intake from Jaganpro/sf-skills (repo mode)."
+  notes: "Intake triage 2026-07-07T19:22:47Z: NET_NEW; search_knowledge top hits: omnistudio/flexcard-container-composition (1.5159113035186815). License class: permissive."
+  history:
+    - { at: "2026-07-07T19:22:47Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "sf-flow"
+  status: "RESEARCH"
+  skill: "sf-flow"
+  summary: "sf flow — intake from Jaganpro/sf-skills (repo mode)."
+  notes: "Intake triage 2026-07-07T19:22:47Z: NET_NEW; search_knowledge top hits: no hits. License class: permissive."
+  history:
+    - { at: "2026-07-07T19:22:47Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "sf-industry-cme-epc-model"
+  status: "DUPLICATE"
+  skill: "sf-industry-cme-epc-model"
+  summary: "sf industry cme epc model — intake from Jaganpro/sf-skills (repo mode)."
+  notes: "Intake triage 2026-07-07T19:22:47Z: COVERED; search_knowledge top hits: admin/industries-communications-setup (9.984291823730668). License class: permissive."
+  history:
+    - { at: "2026-07-07T19:22:47Z", status: "DUPLICATE", actor: "onboard_source" }
+- id: "sf-industry-commoncore-callable-apex"
+  status: "DUPLICATE"
+  skill: "sf-industry-commoncore-callable-apex"
+  summary: "sf industry commoncore callable apex — intake from Jaganpro/sf-skills (repo mode)."
+  notes: "Intake triage 2026-07-07T19:22:47Z: COVERED; search_knowledge top hits: apex/apex-callable-interface (10.434038178337566). License class: permissive."
+  history:
+    - { at: "2026-07-07T19:22:47Z", status: "DUPLICATE", actor: "onboard_source" }
+- id: "sf-industry-commoncore-datamapper"
+  status: "RESEARCH"
+  skill: "sf-industry-commoncore-datamapper"
+  summary: "sf industry commoncore datamapper — intake from Jaganpro/sf-skills (repo mode)."
+  notes: "Intake triage 2026-07-07T19:22:47Z: NET_NEW; search_knowledge top hits: no hits. License class: permissive."
+  history:
+    - { at: "2026-07-07T19:22:47Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "sf-industry-commoncore-flexcard"
+  status: "RESEARCH"
+  skill: "sf-industry-commoncore-flexcard"
+  summary: "sf industry commoncore flexcard — intake from Jaganpro/sf-skills (repo mode)."
+  notes: "Intake triage 2026-07-07T19:22:47Z: NET_NEW; search_knowledge top hits: omnistudio/flexcard-container-composition (2.460456105255346), omnistudio/omnistudio-vs-flow-decision (2.0714099279523843). License class: permissive."
+  history:
+    - { at: "2026-07-07T19:22:47Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "sf-industry-commoncore-integration-procedure"
+  status: "RESEARCH"
+  skill: "sf-industry-commoncore-integration-procedure"
+  summary: "sf industry commoncore integration procedure — intake from Jaganpro/sf-skills (repo mode)."
+  notes: "Intake triage 2026-07-07T19:22:47Z: NET_NEW; search_knowledge top hits: omnistudio/industries-api-extensions (2.2091326181678106). License class: permissive."
+  history:
+    - { at: "2026-07-07T19:22:47Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "sf-industry-commoncore-omniscript"
+  status: "RESEARCH"
+  skill: "sf-industry-commoncore-omniscript"
+  summary: "sf industry commoncore omniscript — intake from Jaganpro/sf-skills (repo mode)."
+  notes: "Intake triage 2026-07-07T19:22:47Z: ENRICH; search_knowledge top hits: admin/industries-process-design (4.489634546112309). License class: permissive."
+  history:
+    - { at: "2026-07-07T19:22:47Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "sf-industry-commoncore-omnistudio-analyze"
+  status: "DUPLICATE"
+  skill: "sf-industry-commoncore-omnistudio-analyze"
+  summary: "sf industry commoncore omnistudio analyze — intake from Jaganpro/sf-skills (repo mode)."
+  notes: "Intake triage 2026-07-07T19:22:47Z: COVERED; search_knowledge top hits: devops/salesforce-code-analyzer (8.300122137964381). License class: permissive."
+  history:
+    - { at: "2026-07-07T19:22:47Z", status: "DUPLICATE", actor: "onboard_source" }
+- id: "sf-integration"
+  status: "RESEARCH"
+  skill: "sf-integration"
+  summary: "sf integration — intake from Jaganpro/sf-skills (repo mode)."
+  notes: "Intake triage 2026-07-07T19:22:47Z: ENRICH; search_knowledge top hits: devops/sfdx-hardis-integration (3.7217646892426655), architect/b2b-vs-b2c-architecture (5.502045194566451). License class: permissive."
+  history:
+    - { at: "2026-07-07T19:22:47Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "sf-lwc"
+  status: "DUPLICATE"
+  skill: "sf-lwc"
+  summary: "sf lwc — intake from Jaganpro/sf-skills (repo mode)."
+  notes: "Intake triage 2026-07-07T19:22:47Z: COVERED; search_knowledge top hits: lwc/lwc-jest-testing-with-accessibility (5.524736046335008), lwc/lwc-testing (3.5671960270789724). License class: permissive."
+  history:
+    - { at: "2026-07-07T19:22:47Z", status: "DUPLICATE", actor: "onboard_source" }
+- id: "sf-metadata"
+  status: "RESEARCH"
+  skill: "sf-metadata"
+  summary: "sf metadata — intake from Jaganpro/sf-skills (repo mode)."
+  notes: "Intake triage 2026-07-07T19:22:47Z: NET_NEW; search_knowledge top hits: no hits. License class: permissive."
+  history:
+    - { at: "2026-07-07T19:22:47Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "sf-permissions"
+  status: "RESEARCH"
+  skill: "sf-permissions"
+  summary: "sf permissions — intake from Jaganpro/sf-skills (repo mode)."
+  notes: "Intake triage 2026-07-07T19:22:47Z: ENRICH; search_knowledge top hits: devops/permission-set-deployment-ordering (3.066221161424357), admin/custom-permissions (1.5206931499148912). License class: permissive."
+  history:
+    - { at: "2026-07-07T19:22:47Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "sf-soql"
+  status: "RESEARCH"
+  skill: "sf-soql"
+  summary: "sf soql — intake from Jaganpro/sf-skills (repo mode)."
+  notes: "Intake triage 2026-07-07T19:22:47Z: NET_NEW; search_knowledge top hits: security/encrypted-field-query-patterns (1.533304202985448). License class: permissive."
+  history:
+    - { at: "2026-07-07T19:22:47Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "sf-testing"
+  status: "DUPLICATE"
+  skill: "sf-testing"
+  summary: "sf testing — intake from Jaganpro/sf-skills (repo mode)."
+  notes: "Intake triage 2026-07-07T19:22:47Z: COVERED; search_knowledge top hits: devops/continuous-integration-testing (6.277462177825745), lwc/lwc-testing (1.9962266864959481), agentforce/agent-testing-and-evaluation (1.8924144041496547). License class: permissive."
+  history:
+    - { at: "2026-07-07T19:22:47Z", status: "DUPLICATE", actor: "onboard_source" }
+- id: "sf-vlocity-build-deploy"
+  status: "RESEARCH"
+  skill: "sf-vlocity-build-deploy"
+  summary: "sf vlocity build deploy — intake from Jaganpro/sf-skills (repo mode)."
+  notes: "Intake triage 2026-07-07T19:22:47Z: ENRICH; search_knowledge top hits: omnistudio/vlocity-to-native-omnistudio-migration (3.6758079031463184), omnistudio/omnistudio-deployment-datapacks (4.830602422028045), omnistudio/omnistudio-ci-cd-patterns (1.5663635029240512). License class: permissive."
+  history:
+    - { at: "2026-07-07T19:22:47Z", status: "RESEARCH", actor: "onboard_source" }
+- id: "common-errors"
+  status: "DONE"
+  skill: "common-errors"
+  summary: "common errors — intake from yehosef/salesforce-skill (repo mode)."
+  notes: "Intake triage 2026-07-07T19:27:32Z: ENRICH; search_knowledge top hits: apex/common-apex-runtime-errors (4.857804895043265), lwc/common-lwc-runtime-errors (3.133544198366805). License class: clean-room."
+  history:
+    - { at: "2026-07-07T19:27:32Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "source-onboarding", status: "DONE", at: "2026-07-07T22:37:48+00:00" }
+- id: "data-migration-guide"
+  status: "DUPLICATE"
+  skill: "data-migration-guide"
+  summary: "data migration guide — intake from yehosef/salesforce-skill (repo mode)."
+  notes: "Intake triage 2026-07-07T19:27:32Z: NET_NEW; search_knowledge top hits: data/omnistudio-datapack-migration (1.8085631064538648). License class: clean-room."
+  history:
+    - { at: "2026-07-07T19:27:32Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "source-onboarding", status: "DUPLICATE", at: "2026-07-07T22:37:49+00:00" }
+- id: "deployment-guide"
+  status: "DUPLICATE"
+  skill: "deployment-guide"
+  summary: "deployment guide — intake from yehosef/salesforce-skill (repo mode)."
+  notes: "Intake triage 2026-07-07T19:27:32Z: COVERED; search_knowledge top hits: admin/devops-process-documentation (10.278722786359108). License class: clean-room."
+  history:
+    - { at: "2026-07-07T19:27:32Z", status: "DUPLICATE", actor: "onboard_source" }
+- id: "duplicate-detection"
+  status: "DONE"
+  skill: "duplicate-detection"
+  summary: "duplicate detection — intake from yehosef/salesforce-skill (repo mode)."
+  notes: "Intake triage 2026-07-07T19:27:32Z: ENRICH; search_knowledge top hits: data/financial-data-quality (4.717703141926061), data/nonprofit-data-quality (3.0990711597297405). License class: clean-room."
+  history:
+    - { at: "2026-07-07T19:27:32Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "source-onboarding", status: "DONE", at: "2026-07-07T22:37:48+00:00" }
+- id: "governor-limits"
+  status: "DONE"
+  skill: "governor-limits"
+  summary: "governor limits — intake from yehosef/salesforce-skill (repo mode)."
+  notes: "Intake triage 2026-07-07T19:27:32Z: ENRICH; search_knowledge top hits: apex/governor-limits (3.175326995667687), flow/flow-governor-limits-deep-dive (2.665973391290063), apex/apex-limits-monitoring (1.6417986480243831). License class: clean-room."
+  history:
+    - { at: "2026-07-07T19:27:32Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "source-onboarding", status: "DONE", at: "2026-07-07T22:37:48+00:00" }
+- id: "metadata-types"
+  status: "DUPLICATE"
+  skill: "metadata-types"
+  summary: "metadata types — intake from yehosef/salesforce-skill (repo mode)."
+  notes: "Intake triage 2026-07-07T19:27:32Z: NET_NEW; search_knowledge top hits: admin/custom-metadata-types (2.9464704820257257), admin/custom-metadata-types-and-settings (2.2301280337235605), architect/metadata-coverage-and-dependencies (1.7467869593704695). License class: clean-room."
+  history:
+    - { at: "2026-07-07T19:27:32Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "source-onboarding", status: "DUPLICATE", at: "2026-07-07T22:37:49+00:00" }
+- id: "performance-tuning"
+  status: "DUPLICATE"
+  skill: "performance-tuning"
+  summary: "performance tuning — intake from yehosef/salesforce-skill (repo mode)."
+  notes: "Intake triage 2026-07-07T19:27:32Z: ENRICH; search_knowledge top hits: admin/report-performance-tuning (3.5651812464081507), admin/lightning-page-performance-tuning (3.002466375893609), flow/flow-performance-optimization (4.432263881523356). License class: clean-room."
+  history:
+    - { at: "2026-07-07T19:27:32Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "source-onboarding", status: "DUPLICATE", at: "2026-07-07T22:37:49+00:00" }
+- id: "rollback-procedures"
+  status: "DUPLICATE"
+  skill: "rollback-procedures"
+  summary: "rollback procedures — intake from yehosef/salesforce-skill (repo mode)."
+  notes: "Intake triage 2026-07-07T19:27:32Z: NET_NEW; search_knowledge top hits: omnistudio/omniscript-versioning (2.2592374391057253), omnistudio/calculation-procedures (3.382741966810196). License class: clean-room."
+  history:
+    - { at: "2026-07-07T19:27:32Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "source-onboarding", status: "DUPLICATE", at: "2026-07-07T22:37:48+00:00" }
+- id: "sf-cli-reference"
+  status: "DUPLICATE"
+  skill: "sf-cli-reference"
+  summary: "sf cli reference — intake from yehosef/salesforce-skill (repo mode)."
+  notes: "Intake triage 2026-07-07T19:27:32Z: NET_NEW; search_knowledge top hits: no hits. License class: clean-room."
+  history:
+    - { at: "2026-07-07T19:27:32Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "source-onboarding", status: "DUPLICATE", at: "2026-07-07T22:37:48+00:00" }
+- id: "skill"
+  status: "DONE"
+  skill: "skill"
+  summary: "skill — intake from yehosef/salesforce-skill (repo mode)."
+  notes: "Intake triage 2026-07-07T19:27:32Z: ENRICH; search_knowledge top hits: apex/omni-channel-custom-routing (4.186146706668192), data/fsl-resource-and-skill-data (2.718099143902368). License class: clean-room."
+  history:
+    - { at: "2026-07-07T19:27:32Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "source-onboarding", status: "DONE", at: "2026-07-07T22:37:48+00:00" }
+- id: "soql-patterns"
+  status: "DUPLICATE"
+  skill: "soql-patterns"
+  summary: "soql patterns — intake from yehosef/salesforce-skill (repo mode)."
+  notes: "Intake triage 2026-07-07T19:27:32Z: ENRICH; search_knowledge top hits: apex/soql-null-ordering-patterns (3.456376769048363). License class: clean-room."
+  history:
+    - { at: "2026-07-07T19:27:32Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "source-onboarding", status: "DUPLICATE", at: "2026-07-07T22:37:49+00:00" }
+- id: "testing-guide"
+  status: "DUPLICATE"
+  skill: "testing-guide"
+  summary: "testing guide — intake from yehosef/salesforce-skill (repo mode)."
+  notes: "Intake triage 2026-07-07T19:27:32Z: NET_NEW; search_knowledge top hits: no hits. License class: clean-room."
+  history:
+    - { at: "2026-07-07T19:27:32Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "source-onboarding", status: "DUPLICATE", at: "2026-07-07T22:37:49+00:00" }
+- id: "claude"
+  status: "DUPLICATE"
+  skill: "claude"
+  summary: "claude — intake from UserBasheer/sf-agents (repo mode)."
+  notes: "Intake triage 2026-07-07T20:03:00Z: COVERED; search_knowledge top hits: agentforce/salesforce-mcp-server-setup (9.335133038793257). License class: clean-room."
+  history:
+    - { at: "2026-07-07T20:03:00Z", status: "DUPLICATE", actor: "onboard_source" }
+- id: "code-review-report"
+  status: "DUPLICATE"
+  skill: "code-review-report"
+  summary: "code review report — intake from UserBasheer/sf-agents (repo mode)."
+  notes: "Intake triage 2026-07-07T20:03:00Z: NET_NEW; search_knowledge top hits: security/secure-coding-review-checklist (2.150322113896806). License class: clean-room."
+  history:
+    - { at: "2026-07-07T20:03:00Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "source-onboarding", status: "DUPLICATE", at: "2026-07-07T22:37:49+00:00" }
+- id: "deployment-report"
+  status: "DONE"
+  skill: "deployment-report"
+  summary: "deployment report — intake from UserBasheer/sf-agents (repo mode)."
+  notes: "Intake triage 2026-07-07T20:03:00Z: ENRICH; search_knowledge top hits: devops/post-deployment-validation (3.0477216269122396), devops/deployment-monitoring (2.704615273990142). License class: clean-room."
+  history:
+    - { at: "2026-07-07T20:03:00Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "source-onboarding", status: "DONE", at: "2026-07-07T22:37:48+00:00" }
+- id: "documentation-template"
+  status: "DUPLICATE"
+  skill: "documentation-template"
+  summary: "documentation template — intake from UserBasheer/sf-agents (repo mode)."
+  notes: "Intake triage 2026-07-07T20:03:00Z: NET_NEW; search_knowledge top hits: no hits. License class: clean-room."
+  history:
+    - { at: "2026-07-07T20:03:00Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "source-onboarding", status: "DUPLICATE", at: "2026-07-07T22:37:49+00:00" }
+- id: "salesforce-admin"
+  status: "DUPLICATE"
+  skill: "salesforce-admin"
+  summary: "salesforce admin — intake from UserBasheer/sf-agents (repo mode)."
+  notes: "Intake triage 2026-07-07T20:03:00Z: NET_NEW; search_knowledge top hits: admin/delegated-administration (2.138268567520026), integration/slack-salesforce-integration-setup (4.105477236056468). License class: clean-room."
+  history:
+    - { at: "2026-07-07T20:03:00Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "source-onboarding", status: "DUPLICATE", at: "2026-07-07T22:37:49+00:00" }
+- id: "salesforce-code-review"
+  status: "DUPLICATE"
+  skill: "salesforce-code-review"
+  summary: "salesforce code review — intake from UserBasheer/sf-agents (repo mode)."
+  notes: "Intake triage 2026-07-07T20:03:00Z: COVERED; search_knowledge top hits: devops/code-review-checklist-salesforce (9.164623802308899). License class: clean-room."
+  history:
+    - { at: "2026-07-07T20:03:00Z", status: "DUPLICATE", actor: "onboard_source" }
+- id: "salesforce-design"
+  status: "DUPLICATE"
+  skill: "salesforce-design"
+  summary: "salesforce design — intake from UserBasheer/sf-agents (repo mode)."
+  notes: "Intake triage 2026-07-07T20:03:00Z: NET_NEW; search_knowledge top hits: admin/data-storytelling-design (1.8192832000593107), architect/sla-design-and-escalation-matrix (2.657259893478712). License class: clean-room."
+  history:
+    - { at: "2026-07-07T20:03:00Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "source-onboarding", status: "DUPLICATE", at: "2026-07-07T22:37:49+00:00" }
+- id: "salesforce-developer"
+  status: "DUPLICATE"
+  skill: "salesforce-developer"
+  summary: "salesforce developer — intake from UserBasheer/sf-agents (repo mode)."
+  notes: "Intake triage 2026-07-07T20:03:00Z: NET_NEW; search_knowledge top hits: no hits. License class: clean-room."
+  history:
+    - { at: "2026-07-07T20:03:00Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "source-onboarding", status: "DUPLICATE", at: "2026-07-07T22:37:49+00:00" }
+- id: "salesforce-devops"
+  status: "DUPLICATE"
+  skill: "salesforce-devops"
+  summary: "salesforce devops — intake from UserBasheer/sf-agents (repo mode)."
+  notes: "Intake triage 2026-07-07T20:03:00Z: COVERED; search_knowledge top hits: devops/salesforce-devops-tooling-selection (6.025657050060587), devops/devops-center-pipeline (1.584505968472373). License class: clean-room."
+  history:
+    - { at: "2026-07-07T20:03:00Z", status: "DUPLICATE", actor: "onboard_source" }
+- id: "salesforce-documentation"
+  status: "DUPLICATE"
+  skill: "salesforce-documentation"
+  summary: "salesforce documentation — intake from UserBasheer/sf-agents (repo mode)."
+  notes: "Intake triage 2026-07-07T20:03:00Z: NET_NEW; search_knowledge top hits: no hits. License class: clean-room."
+  history:
+    - { at: "2026-07-07T20:03:00Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "source-onboarding", status: "DUPLICATE", at: "2026-07-07T22:37:49+00:00" }
+- id: "salesforce-unit-testing"
+  status: "DUPLICATE"
+  skill: "salesforce-unit-testing"
+  summary: "salesforce unit testing — intake from UserBasheer/sf-agents (repo mode)."
+  notes: "Intake triage 2026-07-07T20:03:00Z: ENRICH; search_knowledge top hits: lwc/lwc-testing (3.2189458051584787), agentforce/agentforce-testing-strategy (1.5854850683318775). License class: clean-room."
+  history:
+    - { at: "2026-07-07T20:03:00Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "source-onboarding", status: "DUPLICATE", at: "2026-07-07T22:37:49+00:00" }
+- id: "unit-testing-report"
+  status: "DONE"
+  skill: "unit-testing-report"
+  summary: "unit testing report — intake from UserBasheer/sf-agents (repo mode)."
+  notes: "Intake triage 2026-07-07T20:03:00Z: NET_NEW; search_knowledge top hits: agentforce/agentforce-testing-strategy (1.8158323994388654), lwc/lwc-testing (1.734785169084084). License class: clean-room."
+  history:
+    - { at: "2026-07-07T20:03:00Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "source-onboarding", status: "DONE", at: "2026-07-07T22:37:48+00:00" }

@@ -39,3 +39,23 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** Teams optimize for deployment thresholds instead of behavior contracts.
 
 **How to avoid:** Assert on specific field values, thrown exceptions, related records, and failure-path outcomes.
+
+---
+
+## The Stub API Cannot Mock Every Apex Member
+
+**What happens:** A developer reaches for `Test.createStub()` to fake a static utility method, a private helper, or a trigger, and the stub silently fails to intercept the call or throws at stub-creation time.
+
+**When it occurs:** The mocked type exposes the collaboration point as a static or `@future` method, a private method, a property getter/setter, a trigger, an inner class, a system type, a class that implements the `Batchable` interface, or a class that has only private constructors — none of which the Stub API supports. The mocked type must also be in the same namespace as the `Test.createStub()` call.
+
+**How to avoid:** Design the seam you want to mock as a non-static, non-private instance method on a top-level class. If a static utility must be substituted, wrap it behind an injectable instance method, or fall back to a hand-written test double for that specific case.
+
+---
+
+## `Assert` Messages Must Be Strings
+
+**What happens:** Code that passed an sObject or other object as the message argument to `System.assertEquals` fails to compile when mechanically converted to the `Assert` class.
+
+**When it occurs:** Migrating legacy assertions where the third argument was a non-`String` object; the legacy `System.assert*` methods tolerated arbitrary objects, but the `Assert` methods require a `String` message.
+
+**How to avoid:** Pass an explicit `String` message (call `String.valueOf(...)` if you were relying on an object's debug form). The legacy methods remain supported, so there is no need to migrate working tests purely for style.

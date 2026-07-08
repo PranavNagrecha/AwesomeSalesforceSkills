@@ -99,3 +99,21 @@ Test.stopTest(); // ← async actually runs here
 // Assert after stopTest
 System.assertEquals('Expected', [SELECT Status__c FROM MyObject__c WHERE Id = :id].Status__c);
 ```
+
+---
+
+## 11. Recursive DML Trips `Maximum Trigger Depth Exceeded` at 16, Not the SOQL/DML Count
+
+Trigger recursion is governed by its own stack-depth limit of **16**, separate from every count-based limit. A trigger that updates a record, which re-fires the same trigger, which updates again, hits this wall before it ever exhausts the 100 SOQL or 150 DML budget. Guard recursive paths with a static flag (`Set<Id>` of already-processed records) rather than assuming the count limits will catch runaway re-entry.
+
+---
+
+## 12. SOSL Has Its Own Limits — 20 Queries and 2,000 Records per Query
+
+`FIND` searches do not draw from the SOQL budget. A transaction gets **20 SOSL queries**, and any single search returns at most **2,000 records** — no `LIMIT` clause raises that ceiling. Code that leans on SOSL for fuzzy matching inside a loop fails on the query count long before a comparable SOQL loop would, and a broad search silently truncates at 2,000 rows.
+
+---
+
+## 13. Apex Cursors Are a Distinct Limit Family for Large-Dataset Iteration
+
+Cursor-based iteration (Apex query cursors and pagination cursors used for resumable, paged processing of large result sets) is governed separately from Batch and SOQL. The ceilings are large but real: **50 million rows across all cursors in a transaction**, and a cumulative **100 million cursor rows per rolling 24-hour period** org-wide. High-volume cursor pagination can exhaust the 24-hour pool even when each individual transaction looks cheap — budget it across the whole day's jobs, not per-transaction.

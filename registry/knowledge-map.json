@@ -275,6 +275,7 @@
       "agentforce/agentforce-custom-channel-dev",
       "agentforce/agentforce-custom-lightning-types",
       "agentforce/agentforce-eval-harness",
+      "agentforce/agentforce-grid",
       "agentforce/agentforce-guardrails",
       "agentforce/agentforce-in-slack",
       "agentforce/agentforce-multi-turn-patterns",
@@ -686,6 +687,7 @@
       "devops/deployment-error-troubleshooting",
       "devops/deployment-monitoring",
       "devops/destructive-changes-deployment",
+      "devops/development-documentation-standards",
       "devops/devops-center-advanced",
       "devops/devops-center-pipeline",
       "devops/environment-specific-value-injection",
@@ -879,6 +881,7 @@
       "lwc/knowledge-article-lwc",
       "lwc/lifecycle-hooks",
       "lwc/lightning-navigation-dead-link-handling",
+      "lwc/lightning-out-2-embedding",
       "lwc/lwc-accessibility",
       "lwc/lwc-accessibility-patterns",
       "lwc/lwc-app-builder-config",
@@ -909,6 +912,7 @@
       "lwc/lwc-light-dom",
       "lwc/lwc-lightning-modal",
       "lwc/lwc-lightning-record-forms",
+      "lwc/lwc-local-development",
       "lwc/lwc-locker-to-lws-migration",
       "lwc/lwc-mobile-offline-and-briefcase",
       "lwc/lwc-modal-and-overlay",
@@ -1243,6 +1247,9 @@
     "MetadataComponentDependency": [
       "architect/metadata-coverage-and-dependencies"
     ],
+    "MixedDmlException": [
+      "apex/common-apex-runtime-errors"
+    ],
     "NLS": [
       "agentforce/einstein-search-personalization"
     ],
@@ -1327,6 +1334,9 @@
     ],
     "SLAS": [
       "apex/headless-commerce-api"
+    ],
+    "SObjectException": [
+      "apex/common-apex-runtime-errors"
     ],
     "ServiceResourceCapacity": [
       "admin/fsl-capacity-planning"
@@ -1718,6 +1728,7 @@
       "agentforce/agentforce-custom-channel-dev",
       "agentforce/agentforce-custom-lightning-types",
       "agentforce/agentforce-eval-harness",
+      "agentforce/agentforce-grid",
       "agentforce/agentforce-guardrails",
       "agentforce/agentforce-in-slack",
       "agentforce/agentforce-multi-turn-patterns",
@@ -1753,6 +1764,9 @@
     ],
     "agentforce-employee": [
       "agentforce/employee-hr-service-agent-rollout"
+    ],
+    "agentforce-grid": [
+      "agentforce/agentforce-grid"
     ],
     "agentforce-nonprofit": [
       "architect/nonprofit-platform-architecture"
@@ -2127,6 +2141,9 @@
     ],
     "apex-wrapper": [
       "apex/apex-wrapper-class-patterns"
+    ],
+    "apexdoc": [
+      "devops/development-documentation-standards"
     ],
     "api": [
       "integration/api-versioning-strategy",
@@ -2910,6 +2927,9 @@
     "bulk": [
       "security/dynamic-sharing-recalculation"
     ],
+    "bulk-ai": [
+      "agentforce/agentforce-grid"
+    ],
     "bulk-api": [
       "admin/data-import-and-management",
       "apex/fsc-integration-patterns-dev",
@@ -3640,6 +3660,9 @@
     ],
     "code-analyzer": [
       "security/secure-coding-review-checklist"
+    ],
+    "code-comments": [
+      "devops/development-documentation-standards"
     ],
     "code-coverage": [
       "apex/tooling-api-patterns",
@@ -5398,6 +5421,9 @@
     "design-patterns": [
       "architect/solution-design-patterns"
     ],
+    "design-standards": [
+      "devops/development-documentation-standards"
+    ],
     "design-tokens": [
       "lwc/lwc-css-and-styling",
       "lwc/lwc-styling-hooks"
@@ -5429,6 +5455,9 @@
     ],
     "developername": [
       "admin/record-type-id-management"
+    ],
+    "development-documentation-standards": [
+      "devops/development-documentation-standards"
     ],
     "device-apis": [
       "lwc/lwc-offline-and-mobile"
@@ -6321,6 +6350,9 @@
     "execute-anonymous": [
       "apex/apex-execute-anonymous"
     ],
+    "execute-mutation": [
+      "lwc/lwc-graphql-wire"
+    ],
     "execution-timeline": [
       "apex/apex-performance-profiling"
     ],
@@ -6408,6 +6440,9 @@
     "expression-sets": [
       "omnistudio/business-rules-engine",
       "omnistudio/calculation-procedures"
+    ],
+    "external-app": [
+      "lwc/lightning-out-2-embedding"
     ],
     "external-collaboration": [
       "integration/slack-connect-patterns"
@@ -6783,6 +6818,9 @@
     "flame-graph": [
       "apex/apex-performance-profiling"
     ],
+    "flex-credits": [
+      "agentforce/agentforce-grid"
+    ],
     "flex-queue": [
       "apex/apex-batch-chaining"
     ],
@@ -7071,6 +7109,9 @@
     ],
     "friction-analysis": [
       "admin/persona-and-journey-mapping-sf"
+    ],
+    "frontdoor-url": [
+      "lwc/lightning-out-2-embedding"
     ],
     "fsc": [
       "admin/compliance-documentation-requirements",
@@ -7473,6 +7514,9 @@
     ],
     "hardening": [
       "lwc/lwc-public-api-hardening"
+    ],
+    "harmonization": [
+      "data/data-cloud-data-model-objects"
     ],
     "having": [
       "apex/apex-aggregate-queries"
@@ -8647,6 +8691,9 @@
     "lightning-graphql": [
       "integration/graphql-api-patterns"
     ],
+    "lightning-graphql-v2": [
+      "lwc/lwc-graphql-wire"
+    ],
     "lightning-inspector": [
       "lwc/lwc-debugging-devtools"
     ],
@@ -8672,6 +8719,7 @@
       "lwc/experience-cloud-lwc-components"
     ],
     "lightning-out": [
+      "lwc/lightning-out-2-embedding",
       "lwc/visualforce-to-lwc-migration"
     ],
     "lightning-pages": [
@@ -8752,6 +8800,9 @@
     "live-dataset": [
       "data/analytics-external-data"
     ],
+    "live-preview": [
+      "lwc/lwc-local-development"
+    ],
     "live-tracking": [
       "integration/salesforce-maps-setup"
     ],
@@ -8771,6 +8822,9 @@
     ],
     "loan-origination": [
       "architect/banking-lending-architecture"
+    ],
+    "local-dev": [
+      "lwc/lwc-local-development"
     ],
     "locale": [
       "lwc/lwc-internationalization"
@@ -8933,6 +8987,9 @@
     "lwc-elseif": [
       "lwc/lwc-conditional-rendering"
     ],
+    "lwc-embedding": [
+      "lwc/lightning-out-2-embedding"
+    ],
     "lwc-forms": [
       "lwc/lwc-forms-and-validation"
     ],
@@ -8953,6 +9010,9 @@
     ],
     "lwc-light-dom": [
       "lwc/lwc-light-dom"
+    ],
+    "lwc-local-development": [
+      "lwc/lwc-local-development"
     ],
     "lwc-migration": [
       "lwc/visualforce-to-lwc-migration",
@@ -9030,6 +9090,7 @@
       "architect/agent-console-requirements"
     ],
     "maintainability": [
+      "devops/development-documentation-standards",
       "flow/subflows-and-reusability"
     ],
     "maintenance-plans": [
@@ -9655,6 +9716,7 @@
       "admin/npsp-household-accounts"
     ],
     "naming-conventions": [
+      "devops/development-documentation-standards",
       "flow/flow-element-naming-conventions",
       "flow/flow-governance"
     ],
@@ -10140,6 +10202,9 @@
     ],
     "option-constraints": [
       "admin/cpq-product-catalog-setup"
+    ],
+    "optional-fields": [
+      "lwc/lwc-graphql-wire"
     ],
     "orchestration": [
       "apex/apex-flow-invocation-from-apex",
@@ -12929,6 +12994,9 @@
     "sf-data-bulk": [
       "devops/salesforce-cli-automation"
     ],
+    "sf-lightning-dev": [
+      "lwc/lwc-local-development"
+    ],
     "sf-plugins-core": [
       "devops/sf-cli-plugin-authoring"
     ],
@@ -13113,6 +13181,9 @@
     ],
     "signature-capture": [
       "admin/fsl-mobile-workflow-design"
+    ],
+    "single-component-preview": [
+      "lwc/lwc-local-development"
     ],
     "sis-integration": [
       "integration/sis-integration-patterns"
@@ -14155,6 +14226,9 @@
     "ui-automation": [
       "devops/automated-regression-testing"
     ],
+    "ui-bridge-api": [
+      "lwc/lightning-out-2-embedding"
+    ],
     "ui-bundle": [
       "lwc/multi-framework-ui-bundles"
     ],
@@ -14626,6 +14700,9 @@
     "workbench": [
       "data/data-loader-and-tools",
       "data/data-loader-csv-column-mapping"
+    ],
+    "workbook-worksheet": [
+      "agentforce/agentforce-grid"
     ],
     "workflow": [
       "admin/flow-orchestration-admin",

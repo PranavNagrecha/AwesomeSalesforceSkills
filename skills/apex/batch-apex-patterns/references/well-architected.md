@@ -10,6 +10,17 @@ Tag findings as Scalability when:
 - a very large dataset must be processed safely
 - direct list loading is used where QueryLocator would be safer
 - a smaller async mechanism is being stretched beyond its intended volume
+- the addressable set exceeds the 50-million-record `Database.QueryLocator` cap and should use a custom `Iterable`
+- a fan-out design ignores the 5-concurrent-job cap and the 100-job Apex flex queue
+
+### Governor Limits That Bound Large-Volume Design
+
+The hard ceilings that a large-data-volume batch design must respect:
+
+- **5** batch jobs queued or active concurrently; the Apex flex queue holds up to **100** more in `Holding`.
+- **250,000** batch method executions per 24-hour period, or user licenses × **200**, whichever is greater.
+- **50 million** records maximum from a `Database.QueryLocator`; a custom `Iterable` is not subject to this cap but falls under normal per-transaction SOQL limits.
+- Scope size defaults to **200** and maxes at **2,000** when `start()` returns a `QueryLocator`; an `Iterable` scope has no upper bound.
 
 ### Performance
 
@@ -43,6 +54,7 @@ Tag findings as Reliability when:
 
 ## Official Sources Used
 
-- Apex Developer Guide — Batch Apex lifecycle and behavior
-- Apex Reference Guide — `Database.Batchable` and `Database.executeBatch`
+- Apex Developer Guide — Batch Apex lifecycle, behavior, and governor limits (concurrency, flex queue, 24-hour execution ceiling, QueryLocator 50M cap, scope size): https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_batch_interface.htm
+- Apex Reference Guide — `Database.Batchable` interface (`start`/`execute`/`finish` signatures, QueryLocator vs Iterable return): https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_interface_database_batchable.htm
+- Apex Reference Guide — `Database.executeBatch` scope parameter
 - Salesforce Well-Architected Overview — scalability, performance, and reliability framing

@@ -33,3 +33,6 @@ Stable token handling, clear endpoint management, and tested recovery steps impr
 - Salesforce Well-Architected Overview — security and operational framing for integration access
 - REST API Developer Guide — OAuth and API usage context for connected-app design
 - Integration Patterns — auth and system-boundary tradeoffs for integrations
+- Salesforce Platform: New Connected Apps Can No Longer Be Created in Spring '26 (https://help.salesforce.com/s/articleView?id=005228017&language=en_US&type=1) — the default creation block via UI and Metadata API, the package-install exception, the Support-exception path, and that existing connected apps keep working
+- Connected Apps and External Client Apps Features (https://help.salesforce.com/s/articleView?id=sf.connected_apps_and_external_client_apps_features.htm&type=5&language=en_US) — CA vs ECA feature parity: shared OAuth 2.0 / SAML / OpenID Connect / custom attributes / Canvas support, the 1GP-vs-2GP packaging split, and the sandbox-copy behavior gap
+- Connected App to External Client App Migration (https://help.salesforce.com/s/articleView?id=xcloud.connected_app_to_external_client_app_migration.htm&language=en_US&type=5) — the documented migration flow, preserving the existing OAuth consumer key and secret

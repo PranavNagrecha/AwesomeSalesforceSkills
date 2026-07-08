@@ -1,6 +1,6 @@
 ---
 name: agent-script-dsl
-description: "Authoring and managing Agentforce agent definitions using the declarative Agent Script DSL (.agent files) and associated metadata types. Use when creating agents in source control, debugging agent metadata, or understanding the metadata lifecycle of GenAiPlugin/GenAiPlanner/BotVersion types. Triggers: 'how do I deploy an Agentforce agent using source control', 'what metadata types make up an Agentforce agent', 'agent test run command failing in CI pipeline', 'GenAiPlugin vs GenAiPlanner metadata relationship'. NOT for Apex-based agent actions (use custom-agent-actions-apex). NOT for UI-based agent creation (use agentforce-agent-creation)."
+description: "Authoring and managing Agentforce agent definitions using the declarative Agent Script DSL (.agent files) and associated metadata types, including the Agent Script language for the new Agentforce Builder (hybrid-reasoning -> logic vs | prompt instructions, @actions/@subagent/@variables references, subagents). Use when creating agents in source control, writing or debugging Agent Script, debugging agent metadata, or understanding the metadata lifecycle of GenAiPlugin/GenAiPlanner/BotVersion types. Triggers: 'how do I deploy an Agentforce agent using source control', 'what metadata types make up an Agentforce agent', 'agent test run command failing in CI pipeline', 'GenAiPlugin vs GenAiPlanner metadata relationship', 'Agent Script logic vs prompt instructions'. NOT for Apex-based agent actions (use custom-agent-actions-apex). NOT for UI-based agent creation (use agentforce-agent-creation)."
 category: agentforce
 salesforce-version: "Spring '26+"
 well-architected-pillars:
@@ -13,6 +13,8 @@ triggers:
   - "GenAiPlugin vs GenAiPlanner metadata relationship"
   - "how do I write or edit .agent files for version-controlled agent development"
   - "agentforce agent metadata types GenAiPlugin deployment"
+  - "write Agent Script logic instructions vs prompt instructions for hybrid reasoning"
+  - "convert an agent topic to a subagent in Agent Script"
 tags:
   - agentforce
   - agent-dsl
@@ -28,9 +30,9 @@ outputs:
   - "sf agent test run commands for CI pipeline integration"
   - "Source control layout and metadata deployment guidance for agents"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-05
+updated: 2026-07-07
 ---
 
 # Agent Script DSL
@@ -81,6 +83,39 @@ Key YAML keys in a typical `.agent` file:
 - `spec.plannerInstructions` — the full system prompt block governing persona, tone, and constraints
 
 The Salesforce Agentforce VS Code extension provides LSP validation against the `.agent` schema. Hover hints, inline error diagnostics, and autocomplete are available when the extension is active. Authoring `.agent` files without LSP validation significantly increases the risk of silent schema violations that only surface at deploy time.
+
+### Agent Script — the Language for the New Agentforce Builder
+
+Agent Script is the authoring language for the new Agentforce Builder. Salesforce describes it as "the language for building agents in Agentforce Builder" that "combines the flexibility of natural language instructions for handling conversational tasks with the reliability of programmatic expressions for handling business rules." It is a distinct, higher-level surface than the raw `.agent`/GenAiPlugin metadata described above: Agent Script is what an author writes, and the platform compiles it down into the lower-level runtime metadata.
+
+**Compiled, not interpreted.** Agent Script is a compiled language. Per the docs, "When you save a version of the agent, the script compiles into lower-level metadata that is used by the reasoning engine." The consequence for source control: the script is the source of truth, and the compiled metadata is a build artifact. Editing the compiled metadata directly rather than the script is the same anti-pattern as hand-editing generated output.
+
+**Hybrid reasoning — two instruction types.** Agent Script "combines deterministic logic with LLM reasoning in a single workflow. This hybrid approach gives you predictable execution where you need it, while preserving the LLM's ability to handle nuanced conversations." There are two instruction types:
+
+- **Logic instructions** use `->` and "run deterministically every time. Use them for business rules, running actions, setting variables, and conditional branching." These are the parts of an agent whose behavior you can guarantee.
+- **Prompt instructions** use `|` and contain "natural language sent to the LLM. The LLM interprets these instructions and decides how to respond to the customer." These are the parts you cannot fully guarantee — the same routing-quality concern that applies to topic descriptions (see below) applies here.
+
+Deciding which behavior belongs in a `->` logic instruction (deterministic: compliance checks, entitlement lookups, variable math, branching) versus a `|` prompt instruction (conversational: greeting, summarizing, empathetic handling) is the core design skill for Agent Script, and it is where hybrid reasoning earns its reliability.
+
+**Whitespace-sensitive.** Agent Script "is whitespace-sensitive, similar to languages like Python or YAML, meaning that indentation is used to indicate structure and relationships between properties." Mixed tabs/spaces and inconsistent indentation are structural errors, not cosmetic ones.
+
+**`@`-prefixed resource references.** Resources are accessed using the `@` symbol. The documented patterns are `@actions.<action_name>`, `@subagent.<subagent_name>`, `@variables.<variable_name>`, and `@outputs.<output_name>`. A set of built-in utilities is exposed under `@utils`, including `@utils.escalate` (escalate to a human service rep), `@utils.setVariables` (instruct the LLM to set variable values), and `@utils.transition to` (transition to a different subagent).
+
+**Top-level statement set.** The reference documents these top-level blocks: `config` (agent configuration), `connection` (external connections such as Enhanced Chat), `language` (supported languages), `system` (agent instructions and messages), `variables` (global agent variables), `subagent` (a subagent's instructions and actions), `start_agent` (entry point for subagent classification and routing), `reasoning` (instructions and tools for the LLM), and `after_reasoning` (an optional block inside a subagent that runs after the reasoning loop exits).
+
+**Control flow and action invocation.** Conditional branching uses `if` / `else` (for example, `if @variables.is_member == True:`), with comparison operators including `==`, `!=`, `<`, `>`, and `is None` / `is not None`. Actions are invoked with `run` (execute an action deterministically), `set` (store a value in a variable), and `with` (bind an input parameter).
+
+**Terminology — topics are now subagents.** Per the reference, "Beginning in April 2026, agent topics are now called subagents. There are no changes to functionality." When reconciling older `.agent` metadata (which uses topic terminology and GenAiPlugin-per-topic) against newer Agent Script authored in the Builder, treat "topic" and "subagent" as the same concept; the routing-quality concern is unchanged by the rename.
+
+**Three authoring surfaces in the new Builder.** The new Agentforce Builder exposes Agent Script through three views, and choosing the right one is part of the workflow:
+
+- **AI Assistance** — chat with Agentforce and describe what you want the agent to do; the system converts the request into structured components. Best for a first draft or bootstrapping an unfamiliar surface.
+- **Canvas** — Agent Script is "summarized into easily understandable blocks, which you can expand to view the underlying script." Best for review and for non-authors reasoning about behavior.
+- **Script view** — "Advanced users can switch to Script view to write and edit script directly, with developer-friendly aids like syntax highlighting, autocompletion, and validation." This is the surface that corresponds most directly to source-controlled authoring.
+
+**Maturity.** Agent Script and the new Agentforce Builder are pre-GA. Salesforce's launch blog states the capability entered pilot in October 2025 and became public beta in November 2025 ("Agent Script is currently in pilot and will be available in November 2025 as public beta for all customers"), and help-article guidance continues to frame it as open beta ("Cross-over options will be considered closer to GA"). No GA date is stated in the official documentation reviewed. Because assertion schemas and syntax can shift pre-GA, pin your CLI plugin versions and revalidate after each release. The new Builder itself carries no additional cost: "No additional cost if you have purchased Agentforce. The new builder is available at no charge in Agentforce Studio."
+
+**Open-sourced toolchain.** Salesforce open-sourced the Agent Script specification and its developer tooling — the parser (both a TypeScript parser and a Tree-sitter parser), an 18+-pass linter, the compiler (parsed AST → Salesforce runtime specification, with source-map support), and a Language Server Protocol implementation offering diagnostics, hover, completions, definition/references, rename, symbols, code actions, and semantic tokens — under Apache 2.0 at `github.com/salesforce/agentscript`. Because this repo is Apache 2.0, it is a viable dependency for local editor integration, CI linting, or custom validation. The **execution runtime is not open source**: "Agent Script compiles to a Salesforce-internal specification format that executes on Salesforce infrastructure," so "you can parse, lint, compile, and build tooling around Agent Script, but running agents requires Salesforce's runtime environment."
 
 ### LLM-Driven Orchestration vs. Legacy Einstein Bot FSM
 
@@ -184,6 +219,10 @@ Key behaviors:
 | CI pipeline needs automated agent testing | Use `sf agent test run` with `.aiTest` metadata | Only scriptable agent test mechanism; exit codes integrate with CI |
 | Topic routing is inconsistent | Edit topic descriptions in `.agent` file, not action definitions | The LLM planner uses topic descriptions for routing; actions are invoked after routing |
 | Agent changes made in Builder UI | Retrieve before next deploy | Prevents overwriting org state with stale source |
+| Behavior must run identically every time (compliance gate, entitlement check, variable math) | Author it as a `->` logic instruction in Agent Script | Logic instructions run deterministically; prompt instructions delegate to the LLM |
+| Behavior is conversational (greeting, summarizing, empathy) | Author it as a `|` prompt instruction | Natural-language handling is what the LLM layer is for |
+| Bootstrapping an unfamiliar agent from scratch | Start in the Builder's AI Assistance view, then refine in Script view | AI Assistance turns intent into structured components; Script view is the source-control-aligned surface |
+| Need local linting/validation of Agent Script in CI | Use the open-sourced `salesforce/agentscript` parser/linter/compiler (Apache 2.0) | Apache-2.0 license permits local tooling; the runtime stays proprietary but authoring tooling does not require it |
 
 ---
 
@@ -228,6 +267,11 @@ Non-obvious platform behaviors that cause real production problems:
 3. **Partial bundle deploys cause state divergence** — deploying GenAiPlugin records without the BotVersion, or vice versa, can leave the org in a state where the deployed agent references metadata that does not match the deployed plugin set. Always deploy the full bundle atomically.
 4. **Topic description content drives routing, not metadata structure** — structural validity (correct YAML schema, correct XML element nesting) does not guarantee correct agent behavior. LLM routing is based on the natural-language quality of topic descriptions. A valid deploy of a well-structured `.agent` file with vague topic descriptions produces a broken agent with no metadata errors.
 5. **`sf agent test run` requires an Active agent** — running agent tests against a Draft or Inactive agent returns an error that is easy to misread as a CLI or credential problem. Always confirm the agent is Active in the target org before running CI test jobs.
+6. **Agent Script is whitespace-sensitive** — like Python or YAML, indentation carries structure. A misindented `->` logic block or `|` prompt block silently changes which subagent or reasoning block an instruction belongs to. Configure the editor to show whitespace and never mix tabs and spaces in a `.agent`/script file.
+7. **Deterministic vs. LLM behavior is a choice you make, not a default** — putting a business rule in a `|` prompt instruction instead of a `->` logic instruction hands a guarantee-required check (entitlement, compliance gate, variable math) to the LLM, which may not honor it every time. Behavior that must be reliable belongs in `->` logic instructions; only conversational nuance belongs in `|` prompt instructions.
+8. **"Topic" and "subagent" are the same thing after April 2026** — the rename is terminology only, with no functional change. Older `.agent`/GenAiPlugin metadata still uses topic-per-GenAiPlugin structure, while newer Agent Script authored in the Builder uses `subagent` blocks. Do not treat a diff that only swaps this vocabulary as a behavioral change.
+9. **Do not hand-edit compiled agent metadata** — Agent Script compiles to lower-level runtime metadata on save. The script is the source of truth; the compiled metadata is a build artifact. Editing the compiled output rather than the script produces the same divergence problem as partial bundle deploys.
+10. **Pre-GA syntax and assertion schemas can change** — Agent Script and the new Agentforce Builder are in open beta with no stated GA date. Pin CLI plugin versions, keep the open-sourced `salesforce/agentscript` tooling version aligned with your target release, and revalidate scripts after each Salesforce release.
 
 ---
 
@@ -236,6 +280,7 @@ Non-obvious platform behaviors that cause real production problems:
 | Artifact | Description |
 |---|---|
 | `.agent` YAML file | Declarative agent definition for VS Code authoring and version control |
+| Agent Script source | Hybrid-reasoning script (`->` logic and `|` prompt instructions, `subagent`/`reasoning` blocks, `@`-references) authored in the new Agentforce Builder Script view; compiles to runtime metadata on save |
 | GenAiPlugin XML records | Metadata files for each topic, containing topic description and action references |
 | GenAiPlannerBundle XML | Metadata linking the planner instructions and plugins to the BotVersion |
 | BotVersion XML | Agent container with channel settings and GenAiPlannerBundle reference |
