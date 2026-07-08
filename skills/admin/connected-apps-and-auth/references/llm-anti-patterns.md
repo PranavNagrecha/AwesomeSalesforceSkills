@@ -19,8 +19,8 @@ For server-to-server (machine-to-machine) integrations:
 For user-delegated access:
 - Use the OAuth 2.0 Authorization Code flow (with PKCE for public clients).
 
-The Username-Password flow is deprecated for new connected apps.
-Existing implementations should be migrated.
+Salesforce is deprecating the OAuth 2.0 username-password flow for
+connected apps. Orgs created in Summer '23 or later already block it by default.
 ```
 
 **Detection hint:** If the output includes `grant_type=password` or mentions passing a username and password in the OAuth token request body, the deprecated flow is being recommended. Search for `grant_type=password` or `Username-Password flow`.

@@ -10768,6 +10768,9 @@
       "admin/health-cloud-consent-management",
       "admin/hipaa-workflow-design"
     ],
+    "phishing-resistant-mfa": [
+      "security/mfa-enforcement-strategy"
+    ],
     "picklist": [
       "admin/field-dependency-and-controlling",
       "admin/path-and-guidance",

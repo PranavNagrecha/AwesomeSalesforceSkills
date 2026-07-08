@@ -48,14 +48,14 @@
 
 **When it bites you:** Mid-build, when the "create connected app" step in the UI or a `ConnectedApp` metadata deploy fails in a Spring '26+ org and the whole integration timeline stalls.
 
-**How to avoid it:** Design net-new inbound integrations on an External Client App (ECA), Salesforce's stated successor to connected apps. If a connected app is genuinely required, deliver it through a package install or request a Support exception. Existing connected apps keep functioning without restriction, so this only affects net-new creation.
+**How to avoid it:** Design net-new inbound integrations on an External Client App (ECA), which Salesforce calls the new and improved generation of connected apps. If a connected app is genuinely required, deliver it through a package install or request a Support exception. All existing connected apps continue to work, so this only affects net-new creation.
 
 ---
 
-## Expecting an External Client App to Survive a Sandbox Refresh
+## Treating Block and the Permitted Users Switch as Reversible Experiments
 
-**What happens:** A team relies on the connected-app habit that local apps copy automatically when a sandbox is cloned or refreshed, then finds the ECA missing after a refresh.
+**What happens:** During a hardening pass an admin clicks **Block** on a connected app in the OAuth Usage page to see who complains, or flips **Permitted Users** from *All users may self-authorize* to *Admin approved users are pre-authorized* before assigning anyone.
 
-**When it bites you:** Post-refresh integration testing, when the auth container an integration depends on is simply not there.
+**When it bites you:** Immediately. Blocking ends all current user sessions for the app and prevents future sessions. Switching Permitted Users to admin-approved revokes access for current users unless their profile or permission set already grants access to the app.
 
-**How to avoid it:** External Client Apps do not copy into sandboxes automatically. Add ECA recreation or redeployment to the sandbox runbook, and don't treat a refresh as the mechanism that carries integration auth across environments.
+**How to avoid it:** Establish usage and ownership from the Connected Apps OAuth Usage page first, assign the profile or permission set before switching Permitted Users, and reserve Block for apps you have already decided to kill.

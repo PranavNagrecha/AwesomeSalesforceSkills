@@ -1057,12 +1057,13 @@
   history:
     - { at: "2026-07-08T14:14:51Z", status: "DUPLICATE", actor: "onboard_source" }
 - id: "salesforce-june-2026-security-changes"
-  status: "RESEARCH"
+  status: "DONE"
   skill: "salesforce-june-2026-security-changes"
   summary: "Salesforce June 2026 Security Changes — intake from https://tddprojects.atlassian.net/wiki/spaces/SF (url mode)."
   notes: "Intake triage 2026-07-08T14:14:51Z: ENRICH; search_knowledge top hits: security/security-incident-response (3.0867398854172934). License class: clean-room."
   history:
     - { at: "2026-07-08T14:14:51Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "onboard-tdd-sf-pinned", status: "DONE", at: "2026-07-08T17:07:29+00:00" }
 - id: "flow-triggers-before-save-and-after-save"
   status: "DONE"
   skill: "flow-triggers-before-save-and-after-save"

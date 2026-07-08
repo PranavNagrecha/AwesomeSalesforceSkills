@@ -12,7 +12,7 @@ Backlog: **578** entries  ·  Filesystem: **1012** skills built  ·  Last refres
 |---|---:|---|
 | `TODO` | 43 | Not started; not yet researched. |
 | `RESEARCHED` | 3 | Background notes captured; ready to build. |
-| `RESEARCH` | 96 | Investigation needed before deciding TODO vs DUPLICATE. |
+| `RESEARCH` | 95 | Investigation needed before deciding TODO vs DUPLICATE. |
 | `DUPLICATE` | 411 | Already covered by an existing skill — kept for traceability. |
 
 ## Pending work by domain
@@ -21,7 +21,7 @@ Counts only entries in TODO / RESEARCHED / RESEARCH / IN_PROGRESS.
 
 | Domain | Pending |
 |---|---:|
-| `(uncategorized)` | 142 |
+| `(uncategorized)` | 141 |
 
 ## Drift
 
@@ -64,6 +64,7 @@ Last 10 status transitions captured in `BACKLOG.yaml` `history`.
 
 | When | Entry | New status | Actor |
 |---|---|---|---|
+| 2026-07-08T17:07:29 | `salesforce-june-2026-security-changes` | `DONE` | `onboard-tdd-sf-pinned` |
 | 2026-07-08T16:32:09 | `partner-communities` | `RESEARCH` | `rescreen-unscored-kept-deliberately` |
 | 2026-07-08T16:31:51 | `accounts-and-contacts-rules` | `DUPLICATE` | `rescreen-not-a-skill-topic` |
 | 2026-07-08T16:31:51 | `knowledge-on-communities` | `DUPLICATE` | `rescreen-not-a-skill-topic` |
@@ -73,4 +74,3 @@ Last 10 status transitions captured in `BACKLOG.yaml` `history`.
 | 2026-07-08T16:31:51 | `leads` | `DUPLICATE` | `rescreen-not-a-skill-topic` |
 | 2026-07-08T16:31:51 | `report-chart-component-and-record-reports` | `DUPLICATE` | `rescreen-not-a-skill-topic` |
 | 2026-07-08T16:31:51 | `cases-in-lightning` | `DUPLICATE` | `rescreen-not-a-skill-topic` |
-| 2026-07-08T16:31:51 | `case-feeds` | `DUPLICATE` | `rescreen-not-a-skill-topic` |
