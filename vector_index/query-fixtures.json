@@ -7943,6 +7943,18 @@
    "domain": "lwc",
    "expected_skill": "lwc/lwc-local-development",
    "top_k": 3
+  },
+  {
+   "query": "the Email quick action is missing from Case Feed and agents can't email the customer",
+   "domain": "admin",
+   "expected_skill": "admin/case-feed-send-email-action",
+   "top_k": 3
+  },
+  {
+   "query": "apply a default email template automatically when an agent opens the case email composer",
+   "domain": "admin",
+   "expected_skill": "admin/case-feed-send-email-action",
+   "top_k": 3
   }
  ]
 }

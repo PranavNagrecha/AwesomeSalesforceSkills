@@ -92,11 +92,11 @@ Or use the built-in option: "Only when a record is updated to meet the condition
 
 Before creating a record-triggered flow:
 1. Check for existing Apex triggers on the same object
-2. Understand the order: Before-save flow --> Validation rules --> Before triggers --> After triggers --> After-save flow
+2. Understand the order: Before-save flow (step 3) --> Before triggers (step 4) --> Validation rules (step 5) --> Record saved, not committed (step 7) --> After triggers (step 8) --> After-save flow (step 14)
 3. Document which fields are managed by which automation
 4. Avoid having both a flow and a trigger modify the same field
 
-**Detection hint:** Record-triggered flow advice that does not mention checking for existing Apex triggers or order of execution.
+**Detection hint:** Record-triggered flow advice that does not mention checking for existing Apex triggers or order of execution. Also flag any answer that places validation rules *before* Apex before triggers — a common LLM inversion.
 
 ---
 
@@ -153,3 +153,41 @@ Account After Save Flow:
 Use subflows to keep the consolidated flow maintainable.
 
 **Detection hint:** Multiple active record-triggered flows on the same object with the same trigger type (e.g., after save on update).
+
+---
+
+## Anti-Pattern 7: Promising that trigger order can sequence a flow against Apex
+
+**What the LLM generates:**
+
+```
+"Set the trigger order on your after-save flow to 1 so it runs before the
+ Apex trigger on Account."
+```
+
+**Why it happens:** LLMs read "trigger order" as a global priority knob. It isn't. Trigger order only sequences record-triggered flows against other record-triggered flows on the same object *in the same phase*. Salesforce states plainly that "you can't prioritize an after-save flow to run before any before-save flows or before an Apex trigger." Apex before triggers are step 4 and after triggers are step 8; an after-save flow is step 14 no matter what number you type.
+
+**Correct pattern:**
+
+Establish which automation owns the field. If the flow must win, move the write into a before-save flow (step 3, ahead of the Apex before trigger at step 4) or move the logic into the Apex handler itself. Use trigger order only to sequence flow-against-flow within one phase.
+
+**Detection hint:** Any answer that uses a trigger order value to sequence a flow relative to Apex, a validation rule, or a flow in the other save phase.
+
+---
+
+## Anti-Pattern 8: Setting trigger order on one flow and leaving the rest unset
+
+**What the LLM generates:**
+
+```
+"Give the new flow trigger order 1 so it runs first. The two existing
+ flows have no trigger order, so they'll run after it."
+```
+
+**Why it happens:** The advice is accidentally right for value 1 and wrong for everything above 1,000, so LLMs generalize the wrong rule. Flows with trigger order values 1–1,000 run first in ascending order, then flows with **no** trigger order value run in created-date order, then flows with values 1,001–2,000 run in ascending order. A flow set to 1,500 runs *after* every unset flow, not before.
+
+**Correct pattern:**
+
+Assign an explicit trigger order value to **every** flow in the phase, spaced in tens, and verify the resulting sequence in Flow Trigger Explorer before deploying.
+
+**Detection hint:** Trigger order advice that sets a value on some flows but not all of them, or that treats "no trigger order" as equivalent to "runs last."

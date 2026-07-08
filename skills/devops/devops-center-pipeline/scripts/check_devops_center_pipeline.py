@@ -130,27 +130,42 @@ def check_connected_app_metadata(manifest_dir: Path) -> list[str]:
 
 
 def check_permission_set_metadata(manifest_dir: Path) -> list[str]:
-    """Verify DevOps Center permission sets are not being overridden.
+    """Verify DevOps Center permission sets are not being shadowed.
 
-    DevOps Center ships with managed permission sets (DevOps Center Admin,
-    DevOps Center User). If unmanaged permission sets in the project share the
-    same API name, they can overwrite the managed ones on deployment, breaking
-    access to DevOps Center.
+    The DevOps Center managed package ships five permission sets, documented at
+    "Assign the DevOps Center Permission Sets":
+
+        DevOps Center                 base set, for every DevOps Center user
+        DevOps Center Manager         set up projects, environments, and users
+        DevOps Center Release Manager perform promotions through the pipeline
+        sf_devops_InitializeEnvironments  manage work-environment connections
+        sf_devops_NamedCredentials        authenticate to environments
+
+    There is no "DevOps Center Admin" and no "DevOps Center User" permission set.
+
+    Salesforce Help does not publish namespaced API names for the three
+    label-only sets, so this check does not hardcode any. Instead it flags any
+    unmanaged permission set in the project whose name collides with the
+    package's `sf_devops` namespace, since deploying one can conflict with the
+    managed package and break DevOps Center access.
     """
     issues: list[str] = []
     ps_dir = manifest_dir / "permissionsets"
     if not ps_dir.is_dir():
         return issues
 
-    # DevOps Center managed permission set prefixes
-    reserved_names = {"sf_devops__DevOpsCenterAdmin", "sf_devops__DevOpsCenterUser"}
+    # Namespace prefix owned by the DevOps Center managed package. Covers both
+    # namespaced components (sf_devops__*) and the two documented permission
+    # sets that carry the prefix in their own name (sf_devops_*).
+    reserved_prefix = "sf_devops"
     for ps_file in ps_dir.glob("*.permissionset-meta.xml"):
         stem = ps_file.stem.replace(".permissionset-meta", "")
-        if stem in reserved_names:
+        if stem.startswith(reserved_prefix):
             issues.append(
-                f"Permission Set '{ps_file.name}' uses a name reserved for DevOps Center's "
-                "managed package (sf_devops namespace). Deploying an unmanaged permission set "
-                "with this name will conflict with the managed package and may break DevOps Center access."
+                f"Permission Set '{ps_file.name}' uses the 'sf_devops' namespace reserved by the "
+                "DevOps Center managed package. Deploying an unmanaged permission set with this "
+                "name can conflict with the managed package and may break DevOps Center access. "
+                "See SKILL.md — Before Starting, for the five permission sets the package ships."
             )
     return issues
 

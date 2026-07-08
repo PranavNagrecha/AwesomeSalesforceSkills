@@ -33,6 +33,7 @@
       "admin/care-coordination-requirements",
       "admin/care-plan-configuration",
       "admin/care-program-management",
+      "admin/case-feed-send-email-action",
       "admin/case-management-setup",
       "admin/change-advisory-board-process",
       "admin/change-data-capture-admin",
@@ -2826,6 +2827,9 @@
       "admin/analytics-dashboard-design",
       "admin/analytics-dashboard-json"
     ],
+    "bitbucket": [
+      "devops/devops-center-pipeline"
+    ],
     "bitbucket-pipelines": [
       "devops/bitbucket-pipelines-for-salesforce"
     ],
@@ -3306,6 +3310,10 @@
       "admin/self-service-design",
       "architect/case-deflection-strategy"
     ],
+    "case-feed": [
+      "admin/case-feed-send-email-action",
+      "admin/case-management-setup"
+    ],
     "case-history": [
       "data/case-history-migration"
     ],
@@ -3323,6 +3331,9 @@
     ],
     "case-milestone": [
       "apex/entitlement-apex-hooks"
+    ],
+    "case-queues": [
+      "admin/case-management-setup"
     ],
     "case-teams": [
       "admin/case-management-setup"
@@ -5730,6 +5741,9 @@
       "data/clinical-data-quality",
       "data/data-quality-and-governance"
     ],
+    "duplicate-record-set": [
+      "admin/duplicate-management"
+    ],
     "duplicate-rules": [
       "admin/duplicate-management",
       "data/duplicate-rule-person-account-edge-cases",
@@ -5944,6 +5958,9 @@
     "email-notifications": [
       "admin/chatter-notification-tuning"
     ],
+    "email-quick-action": [
+      "admin/case-feed-send-email-action"
+    ],
     "email-service": [
       "admin/email-service-inbound"
     ],
@@ -5968,6 +5985,9 @@
       "admin/email-service-inbound",
       "admin/email-to-case-configuration",
       "architect/multi-channel-service-architecture"
+    ],
+    "emailmessage": [
+      "admin/case-feed-send-email-action"
     ],
     "emailservicesaddress": [
       "admin/email-service-inbound"
@@ -6028,6 +6048,9 @@
       "security/platform-encryption",
       "security/salesforce-shield-deployment",
       "security/shield-kms-byok-setup"
+    ],
+    "end-of-support": [
+      "admin/knowledge-classic-to-lightning"
     ],
     "energy-utilities": [
       "admin/industries-energy-utilities-setup",
@@ -6378,6 +6401,7 @@
       "admin/experience-cloud-seo-settings",
       "admin/experience-cloud-site-setup",
       "admin/fsc-referral-management",
+      "admin/knowledge-base-administration",
       "admin/lightning-bolt-template-authoring",
       "admin/mobile-publisher",
       "admin/multi-language-and-translation",
@@ -6536,6 +6560,9 @@
     ],
     "fallback-strategy": [
       "admin/agent-conversation-design"
+    ],
+    "fast-field-updates": [
+      "flow/record-triggered-flow-patterns"
     ],
     "fault-connectors": [
       "flow/fault-handling"
@@ -7242,6 +7269,9 @@
       "apex/async-apex",
       "apex/mixed-dml-and-setup-objects"
     ],
+    "fuzzy-matching": [
+      "admin/duplicate-management"
+    ],
     "ga4": [
       "data/community-analytics-data"
     ],
@@ -7464,6 +7494,7 @@
     ],
     "guest-user": [
       "admin/experience-cloud-guest-access",
+      "admin/knowledge-base-administration",
       "admin/salesforce-surveys",
       "devops/cicd-for-experience-cloud",
       "flow/flow-for-experience-cloud",
@@ -7603,6 +7634,7 @@
       "apex/apex-cpu-and-heap-optimization"
     ],
     "help-center": [
+      "admin/knowledge-base-administration",
       "admin/self-service-design"
     ],
     "help-portal": [
@@ -9544,6 +9576,9 @@
     "moscow-prioritization": [
       "admin/moscow-prioritization-for-sf-backlog"
     ],
+    "move-email": [
+      "admin/case-feed-send-email-action"
+    ],
     "moves-management": [
       "admin/donor-lifecycle-requirements",
       "admin/fundraising-process-mapping"
@@ -9766,6 +9801,9 @@
     ],
     "new-field": [
       "admin/custom-field-creation"
+    ],
+    "next-generation-devops-center": [
+      "devops/devops-center-pipeline"
     ],
     "nfr": [
       "architect/nfr-definition-for-salesforce"
@@ -11443,6 +11481,9 @@
     "quick-text": [
       "admin/service-console-configuration"
     ],
+    "quickactiondefaultshandler": [
+      "admin/case-feed-send-email-action"
+    ],
     "quota-management": [
       "admin/collaborative-forecasts"
     ],
@@ -12799,6 +12840,7 @@
       "admin/marketing-cloud-engagement-setup"
     ],
     "send-email-action": [
+      "admin/case-feed-send-email-action",
       "flow/flow-email-and-notifications"
     ],
     "send-relationship": [
@@ -14019,6 +14061,7 @@
       "agentforce/agent-topic-design"
     ],
     "topics": [
+      "admin/knowledge-base-administration",
       "agentforce/agentforce-multi-turn-patterns"
     ],
     "toxicity-detection": [
@@ -14128,6 +14171,9 @@
     ],
     "trigger-old": [
       "apex/apex-trigger-context-variables"
+    ],
+    "trigger-order": [
+      "flow/record-triggered-flow-patterns"
     ],
     "trigger-recursion": [
       "apex/recursive-trigger-prevention"

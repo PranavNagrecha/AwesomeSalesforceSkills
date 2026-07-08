@@ -17,7 +17,12 @@ A hand-maintained definition file gives precise, portable, version-controlled co
 Short-lived orgs (1–2 days for CI, 7 days for feature work) minimize allocation pressure and enforce a clean-state discipline. Long-lived orgs (up to 30 days) reduce setup friction for extended feature work but accumulate drift and consume allocation slots. The right default is the shortest duration that covers the expected work unit.
 
 **Shared Dev Hub vs. Dedicated Dev Hub:**
-Using a Developer Edition as a shared Dev Hub caps the team at 3 active orgs and 6 daily creates — a hard bottleneck for teams with more than 2 developers plus CI. The architectural recommendation is to use an Enterprise or higher Dev Hub for any multi-developer team or automated CI pipeline.
+Using a Developer Edition (or trial) as a shared Dev Hub caps the team at 3 active orgs and 6 daily creations — a hard bottleneck for teams with more than 2 developers plus CI. An Enterprise Edition Dev Hub raises that to 40 active / 80 daily, and Unlimited or Performance to 100 active / 200 daily. The architectural recommendation is to use an Enterprise or higher Dev Hub for any multi-developer team or automated CI pipeline.
+
+Size the two allocations independently, because they constrain different things. **Active** allocation bounds concurrency: peak simultaneous orgs across developers and parallel CI jobs. **Daily** allocation bounds throughput: total creations in any rolling 24-hour window. A pipeline that creates and destroys a one-day org per pull request consumes one active slot briefly but one daily creation permanently for 24 hours — so a busy repository can exhaust the daily allocation while the active pool sits nearly empty. Deleting orgs will not rescue that situation; only time will.
+
+**Scratch Org vs. Sandbox for Data-Dependent Testing:**
+Scratch orgs carry a fixed 500 MB data / 50 MB file storage allocation that does not scale with the `edition` declared in the definition file (metadata types are excluded from the calculation). This makes scratch orgs excellent for metadata-heavy, data-light validation — unit tests, bulkification proofs, packaging — and a poor fit for tests that require production-scale record volume or large file/attachment corpora. When a test genuinely depends on data volume, the well-architected choice is a Partial Copy or Full sandbox, not a scratch org with a heroic seeding script.
 
 ## Anti-Patterns
 
@@ -32,6 +37,11 @@ Using a Developer Edition as a shared Dev Hub caps the team at 3 active orgs and
 - Salesforce DX Developer Guide (Scratch Orgs) — https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs.htm
 - Salesforce DX Developer Guide (Scratch Org Definition File) — https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_def_file.htm
 - Salesforce DX Developer Guide (Editions and Allocations) — https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_editions_and_allocations.htm
+- ISVforce Guide (Scratch Org Allocations for Partners) — https://developer.salesforce.com/docs/atlas.en-us.pkg1_dev.meta/pkg1_dev/isv_partner_scratch_org_allocations.htm
 - Salesforce DX Developer Guide (Manage Scratch Orgs from Dev Hub) — https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_view_lex.htm
+- Salesforce DX Developer Guide (Create a Scratch Org Based on an Org Shape) — https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_shape_intro.htm
 - Salesforce CLI Command Reference — https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm
+- Salesforce CLI Command Reference (org Commands — `sf org list limits`) — https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_org_commands_unified.htm
+- REST API Developer Guide (Limits resource — `ActiveScratchOrgs`, `DailyScratchOrgs`) — https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_limits.htm
+- Object Reference for the Salesforce Platform (ScratchOrgInfo) — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_scratchorginfo.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

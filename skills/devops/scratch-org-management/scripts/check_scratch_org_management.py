@@ -20,6 +20,8 @@ import sys
 from pathlib import Path
 
 # Valid scratch org editions per Salesforce DX Developer Guide
+# ("Build Your Own Scratch Org Definition File" — edition valid values).
+# The four "Partner *" editions require a Dev Hub in a Partner Business Org.
 VALID_EDITIONS = {
     "Developer",
     "Enterprise",
@@ -27,6 +29,8 @@ VALID_EDITIONS = {
     "Professional",
     "Partner Developer",
     "Partner Enterprise",
+    "Partner Group",
+    "Partner Professional",
 }
 
 # Maximum allowed duration in days per platform limit

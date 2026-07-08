@@ -19,6 +19,20 @@ Record the answers to the Before Starting questions from SKILL.md here.
 - **SLA requirements:** Response target: ___  Resolution target: ___
 - **Entitlements required?** [ ] Yes  [ ] No
 - **Entitlement Management enabled in Setup?** [ ] Yes  [ ] No  [ ] Unknown
+- **Routing model:** [ ] Queue pull  [ ] Omni-Channel push (→ `admin/omni-channel-routing-setup`)
+- **Review cadence agreed?** Owner: ___  Interval: ___
+
+## Active Rule Slot Inventory
+
+Only one assignment, one auto-response, and one escalation rule can be active for
+cases at a time. Activating a rule deactivates the incumbent. Record what is in
+each slot BEFORE building anything — these names are the rollback targets.
+
+| Slot | Currently active rule name | Replacing it? | Rollback target |
+|---|---|---|---|
+| Assignment | | [ ] Yes  [ ] No | |
+| Auto-Response | | [ ] Yes  [ ] No | |
+| Escalation | | [ ] Yes  [ ] No | |
 
 ## Configuration Checklist
 
@@ -27,18 +41,23 @@ Record the answers to the Before Starting questions from SKILL.md here.
 - [ ] Case queues exist with correct names and members
 - [ ] Each queue has "Case" in its Supported Objects list
 - [ ] Queue email addresses configured for notifications
+- [ ] Every queue has at least one active member who will pull from it
 
 ### Assignment Rules
 
 - [ ] One active case assignment rule exists
 - [ ] Rule entries ordered from specific to catch-all
 - [ ] Catch-all entry exists as the last entry
+- [ ] Per-region and per-channel logic modeled as entries, not as a second active rule
+- [ ] Replacement activated directly (incumbent NOT deactivated first — that opens a routing gap)
+- [ ] Post-cutover check: zero cases created today owned by the default case owner
 - [ ] Tested: cases from Web-to-Case and Email-to-Case route to correct queue
 
 ### Auto-Response Rules
 
 - [ ] Assignment rule confirmed to fire before configuring auto-response
 - [ ] Auto-response rule active with valid email template per entry
+- [ ] Per-channel acknowledgments modeled as entries within the single active rule
 - [ ] "From" address is NOT the Email-to-Case routing address (would create loop)
 
 ### Escalation Rules
@@ -67,6 +86,14 @@ Record the answers to the Before Starting questions from SKILL.md here.
 - [ ] Predefined teams built referencing the correct roles
 - [ ] Team members are active users
 
+### Case Feed (agent surface)
+
+- [ ] Agent surface validated in the interface agents actually use
+- [ ] Noted: official Case Feed setup topics (feed layouts, Case Feed actions, feed
+      items) are documented under Salesforce Classic — Lightning is configured via
+      the Lightning record page and quick actions
+- [ ] Send Email quick action configured if agents reply from the case (→ `admin/case-feed-send-email-action`)
+
 ### Entitlements and Milestones (if applicable)
 
 - [ ] Entitlement Management enabled in Setup
@@ -74,6 +101,13 @@ Record the answers to the Before Starting questions from SKILL.md here.
 - [ ] Milestones configured with warning and violation actions
 - [ ] Automation (Flow or Apex) applies entitlements to new cases
 - [ ] Lightning limitation acknowledged: no template-on-product UI
+
+### Post-Go-Live (case management is not set-and-forget)
+
+- [ ] Named owner recorded for each of the three active rule slots
+- [ ] Recurring review scheduled for rule entries, queue membership, SLA thresholds
+- [ ] Reports/dashboards surface routing outcomes and SLA attainment to leaders
+- [ ] Rollback target (displaced rule name) documented for each activation
 
 ## Approach
 

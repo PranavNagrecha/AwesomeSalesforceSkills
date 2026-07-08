@@ -18,6 +18,7 @@ dependencies:
   skills:
     - admin/agent-output-formats
     - admin/app-and-tab-configuration
+    - admin/case-feed-send-email-action
     - admin/configuration-workbook-authoring
     - admin/custom-field-creation
     - admin/custom-permissions
@@ -141,6 +142,7 @@ The workbook is what an admin team uses to execute a release — every row conve
 
 ### Output handoff
 36. `skills/admin/agent-output-formats` — defer Excel / Confluence export requests here
+37. `skills/admin/case-feed-send-email-action` — case feed send email action
 
 ---
 

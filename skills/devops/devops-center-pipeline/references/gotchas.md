@@ -47,10 +47,27 @@ DevOps Center does not configure these protections automatically. This is a manu
 
 ---
 
-## Gotcha 5: DevOps Center Requires GitHub — Other Git Hosts Are Not Supported
+## Gotcha 5: Which Git Hosts Are Supported Depends on Which DevOps Center You Have
 
-**What happens:** A team tries to connect DevOps Center to GitLab, Azure DevOps Repos, or Bitbucket, and finds that the Setup wizard has no option for those providers.
+**What happens:** A team tries to connect DevOps Center to GitLab, Azure DevOps Repos, or Bitbucket, and finds no option for their provider. Or the reverse: an architect reads a 2024-era article, tells the team "DevOps Center is GitHub-only," and the team walks away from a tool that would now accept their Bitbucket org.
 
-**When it occurs:** Teams that standardized on a non-GitHub Git host before adopting DevOps Center.
+**When it occurs:** Teams that standardized on a non-GitHub Git host before adopting DevOps Center — and anyone reasoning about provider support without first establishing which DevOps Center is in play.
 
-**How to avoid:** DevOps Center exclusively supports GitHub (github.com and GitHub Enterprise Server). This is a hard platform requirement, not a configuration limitation. Teams that need GitLab, Azure Repos, or Bitbucket must use the SFDX CLI + CI/CD pipeline approach instead. If the team wants DevOps Center's point-and-click experience, a GitHub account and repository are non-negotiable prerequisites. This should be confirmed before beginning any DevOps Center setup work.
+**How to avoid:** Establish the product first, then the provider list.
+
+- **Managed package:** GitHub only (github.com and GitHub Enterprise Server). Bitbucket, GitLab, and Azure Repos are not offered in the Setup wizard.
+- **Next-generation DevOps Center:** a source control provider account on **GitHub or Bitbucket**. Salesforce's documentation names no other provider. GitLab and Azure Repos are not documented as supported, so do not plan a GitLab pipeline against them.
+
+Teams on GitLab or Azure Repos today still need the SFDX CLI + CI/CD approach. Teams on Bitbucket no longer do, provided they are on next-generation. Confirm this before beginning any DevOps Center setup work, because it determines whether the tool is viable at all.
+
+---
+
+## Gotcha 6: New Managed-Package Installs Have Been Closed Since April 2026
+
+**What happens:** An admin follows a setup guide that begins "Install DevOps Center from AppExchange," goes looking for the listing, and either cannot install it or assumes their org lacks some entitlement. Time gets spent on a permissions or edition theory that has nothing to do with the actual cause.
+
+**When it occurs:** Any greenfield DevOps Center setup attempted from documentation, blog posts, or internal runbooks written before April 2026 — which is nearly all of the material a search will surface.
+
+**How to avoid:** Know the two facts and read them together. New downloads and installations of the DevOps Center managed package are no longer supported. Orgs that previously installed it can continue using it and access it from the App Launcher. Nothing was removed from any org; the door was closed to new ones.
+
+The correct move for a greenfield org is to enable next-generation DevOps Center in the Hub org — no package, no AppExchange, no install step. The correct move for an org already running the package is to keep running it and plan the documented switch deliberately. The failure mode is the middle path: an admin who half-believes the install should work, retries it, and eventually files a support case against a closed road.

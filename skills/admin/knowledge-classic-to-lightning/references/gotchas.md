@@ -8,7 +8,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **Why:** Lightning Knowledge fundamentally changes the object model. Salesforce does not support converting a Lightning Knowledge org back to Classic Knowledge. The only path back is "disable Knowledge" which deletes all article data; you cannot then re-enable Classic Knowledge with the original articles intact.
 
-**Mitigation:** Test the entire migration in Full Copy or Partial sandbox first. Sign off completely before enabling in production. Treat the production enablement as a one-way door.
+**Mitigation:** Test the entire migration in a Full Copy sandbox first — Salesforce's production-enablement requirements call for a recently refreshed full copy sandbox, so a Partial or Developer sandbox will not produce acceptable evidence even if it is enough to rehearse the mappings. Sign off completely before enabling in production. Treat the production enablement as a one-way door.
 
 ## Gotcha 2: Page Layouts Are Per-Record-Type, Not Global
 
@@ -73,3 +73,21 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **Why:** Approval processes were attached to the Classic Article Type sObject. They do not auto-port to Lightning Knowledge. Lightning approval processes attach to `Knowledge__kav` with record-type-aware entry criteria, but they must be recreated.
 
 **Mitigation:** Recreate approval processes on `Knowledge__kav` with entry criteria `RecordType.DeveloperName = 'FAQ'` (or equivalent per record type). Test the full approval cycle (submit → approver review → approval/rejection → publish) per record type before sign-off.
+
+## Gotcha 10: The Classic Knowledge Data Model Is Past End of Support
+
+**What happens:** A team scopes the Knowledge migration as a nice-to-have and defers it across two planning cycles. Meanwhile new Knowledge capability keeps shipping for Lightning only, and when the team finally opens a Support case about a Classic Knowledge behavior, they are told the data model is no longer supported.
+
+**Why:** Salesforce's Past Product & Feature Retirements page lists *Classic Knowledge Data Model End of Support* with a retirement date of March 1, 2026, and links a detail article (help.salesforce.com id `005239564`). The retirements page carries the entry name and the date and nothing more — it does not define End of Support, and it does not describe what changes on the date. Confirm the operational consequences against the linked detail article rather than inferring them from the listing. In particular, the listing alone neither promises that existing articles keep serving nor announces a shutoff; treating either as established is a claim the source does not make.
+
+**Mitigation:** Reframe the migration as remediation with a passed deadline rather than as a modernization initiative competing for roadmap space. When estimating, remember the Support enablement lead time (Gotcha 11) sits on top of the engineering effort — an org starting today is not weeks from done. Document the current exposure explicitly: which channels still serve Classic articles, and which of those are customer-facing.
+
+## Gotcha 11: Production Enablement of the Migration Tool Requires a Salesforce Support Case
+
+**What happens:** A team runs a clean sandbox migration, validates counts and translations, gets sign-off, and books a weekend production change window. On the day, the admin opens Setup → Knowledge and finds the Lightning Knowledge Migration Tool is not available in production. The window is lost.
+
+**Why:** The Migration Tool is self-service in sandbox but gated in production. An admin must log a case with Salesforce Support requesting enablement, and Salesforce documents case processing as potentially taking up to a week. The case must carry complete answers to an eight-question readiness questionnaire (sandbox testing completed, user access restricted during the migration, post-migration verification done, backup strategy, AppExchange apps and customizations tested, production timeline, understanding of the migration's limitations and its impact on existing applications and customizations, and a detailed implementation plan) plus a screen capture of the Validation-step results.
+
+Two conditions on that evidence are easy to miss. The sandbox must be a **full copy refreshed within the last month**, and **sandbox testing and the production migration must occur on the same release** — so a Salesforce seasonal upgrade landing between sandbox sign-off and the production run invalidates the validation. Salesforce also requires a confirmed backup: a recent full copy refresh containing pre-migration Classic Knowledge data, or confirmation that a full data export has completed.
+
+**Mitigation:** Log the enablement case as soon as sandbox validation produces a clean Validation step — not after sign-off, and never after booking the change window. Track the sandbox refresh date and the release version of both orgs on the migration plan; re-validate if either drifts. Treat "Support has confirmed enablement" as an explicit precondition on the production runbook, alongside the backup confirmation.

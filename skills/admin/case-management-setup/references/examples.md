@@ -122,6 +122,55 @@ On the Case record → Case Team related list → Add Predefined Team → High P
 
 ---
 
+## Example 5: Swapping the Active Assignment Rule Without a Routing Gap
+
+**Context:** Support is reorganizing from a product-based queue structure to a region-based one. The admin has authored a new case assignment rule with the region entries and wants to cut over on Monday morning.
+
+**Problem:** Only one case assignment rule can be active at a time. The admin's instinct is to deactivate the current rule, verify the new one looks right, then activate it. That sequence opens a window — however short — in which no assignment rule is active. Cases created in that window fall to the default case owner and, because auto-response rules fire only when an assignment rule fires, those customers receive no acknowledgment email. Nothing errors and nothing is logged; the gap is only discoverable by hunting for cases owned by the default owner.
+
+**Solution:**
+
+Step 1 — Record the incumbent before touching anything:
+
+```
+Setup → Case Assignment Rules
+  Note the name of the rule with Active = checked.
+  Example: "Case Assignment — Product Queues (2024)"
+  This name is the rollback target.
+```
+
+Step 2 — Rehearse the swap in a sandbox with representative traffic:
+
+```
+Sandbox → activate "Case Assignment — Region Queues (2026 Q3)"
+  Submit one test case per inbound channel: Web-to-Case, Email-to-Case, manual, API.
+  For each, open the case → History related list → confirm a "Rule Assignment" entry.
+  Confirm the auto-response fired for the channels that require one.
+  Confirm no case landed on the default case owner.
+```
+
+Step 3 — Cut over in production by activating the new rule directly:
+
+```
+Setup → Case Assignment Rules → "Case Assignment — Region Queues (2026 Q3)" → Active: checked → Save
+
+The incumbent rule is deactivated by this action. Do NOT deactivate it first.
+```
+
+Step 4 — Verify within the first hour:
+
+```
+Report: Cases created today WHERE Owner = [default case owner]
+  Expected result: zero rows. Any rows mean an entry gap in the new rule —
+  add or fix the catch-all entry.
+```
+
+Rollback, if needed, is one action: activate `Case Assignment — Product Queues (2024)`.
+
+**Why it works:** Activating a rule deactivates whichever rule holds that slot, so the swap is atomic — there is never a moment with zero active rules. Deactivating first would introduce exactly the gap the atomic activation avoids. Naming rules with a version marker makes the incumbent identifiable, which is what turns rollback into a single click rather than a rebuild. The same procedure applies to auto-response and escalation rules, which share the identical single-active-slot behavior.
+
+---
+
 ## Anti-Pattern: Configuring Auto-Response Rules Before Verifying Assignment Rules
 
 **What practitioners do:** An admin sets up an auto-response rule with a polished email template and an activation condition, then cannot understand why customers are not receiving the email. They spend time debugging the template, the "from" address, the organization-wide email address permissions, and deliverability settings.

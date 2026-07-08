@@ -186,32 +186,68 @@ public class KnowledgeVisibilityRegression {
 
 ---
 
-## Example 6: Channel Cutover Sequencing
+## Example 6: Production Enablement Readiness Case
+
+The Migration Tool is self-service in sandbox and gated in production. Before the production run, log a case with Salesforce Support requesting enablement (Salesforce directs the case to reference internal article #000384023) and answer Salesforce's readiness questionnaire. Salesforce states processing can take up to a week.
+
+```text
+Salesforce Support case — Lightning Knowledge Migration Tool production enablement
+
+Evidence attached:
+    [x] Screen capture of the migration process Validation step results (from sandbox)
+
+Sandbox facts (must hold at case time AND at production run time):
+    Sandbox type ................ Full Copy          (Partial/Developer do not qualify)
+    Last refresh ................ 2026-06-24         (must be within the last month)
+    Sandbox release ............. <release>
+    Production release .......... <release>          (MUST MATCH sandbox release)
+
+Readiness questionnaire (8 items):
+    1. Full migration process tested in the current sandbox?          .......... Yes / No
+    2. User access restricted during the migration?                   .......... Yes / No
+    3. Post-migration verification completed in sandbox?              .......... Yes / No
+    4. Backup: full copy refresh holding pre-migration Classic
+       Knowledge data, OR confirmed full data export?                 .......... Yes / No
+    5. AppExchange apps and customizations tested against
+       the migrated data model?                                       .......... Yes / No
+    6. Production migration timeline?                                 .......... <date/window>
+    7. Limitations and impact of migration on existing
+       applications and customizations understood?                    .......... Yes / No
+    8. Detailed migration implementation plan attached?               .......... Yes / No
+```
+
+**Critical:** Two conditions bite late. The sandbox refresh ages out after a month, and a Salesforce seasonal upgrade landing between sandbox sign-off and the production run breaks the same-release requirement — either one forces re-validation. Re-check both immediately before the change window, not only at case submission.
+
+---
+
+## Example 7: Channel Cutover Sequencing
 
 ```text
 Week 0: Migration Tool runs in Sandbox; full validation
-Week 1: Migration Tool runs in Production; channels disabled in Lightning
-Week 2 (Internal cutover):
+Week 1: Support enablement case logged; allow up to a week for processing
+Week 2: Re-confirm release alignment; Migration Tool runs in Production (post-enablement);
+        channels disabled in Lightning
+Week 3 (Internal cutover):
     - Enable Internal channel in Lightning Knowledge Settings
     - Disable Internal channel in Classic Knowledge Settings
     - Service agents now see Lightning Knowledge in Service Console
     - Validate: agent can search, view, attach articles to Cases
-Week 4 (Communities cutover):
+Week 5 (Communities cutover):
     - Update Community Builder pages: Knowledge tab references Knowledge__kav
     - Enable Customer (Csp) channel in Lightning
     - Disable Csp channel in Classic
     - Validate: Community user can search, view, file feedback on articles
-Week 6 (Public Knowledge Base cutover):
+Week 7 (Public Knowledge Base cutover):
     - Verify Public KB site templates reference Knowledge__kav
     - Enable Pkb channel in Lightning
     - Disable Pkb channel in Classic
     - Validate: anonymous browser can search and view articles via PKB URL
-Week 8: Decommission decision: retain Classic Article Types as read-only OR drop entirely
+Week 9: Decommission decision: retain Classic Article Types as read-only OR drop entirely
 ```
 
 ---
 
-## Example 7: Migration Audit Log Schema
+## Example 8: Migration Audit Log Schema
 
 ```text
 Custom Object: Knowledge_Migration_Log__c
