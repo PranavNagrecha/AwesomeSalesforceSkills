@@ -64,7 +64,27 @@ Entry Conditions: Processed__c = false
 
 ---
 
-## Anti-Pattern 3: Recommending scheduled flows for high-volume batch processing
+## Anti-Pattern 3: Get Records + Loop directly after an object-selected Start element
+
+**What the LLM generates:**
+
+```
+Start: Object = Contact, Criteria = Title = 'Director'
+  └── [Get Records: all Contacts where Title = 'Director']
+  └── [Loop] → [Update: Title = 'Senior Director']
+```
+
+**Why it happens:** LLMs pattern-match on record-triggered "bulkify your logic" advice and assume the builder must fetch and iterate. But when an object is selected, the platform already creates one interview per matching record and exposes it as `$Record`. The Get + Loop re-fetches the full set inside *every* interview, turning N records into N interviews × N iterations.
+
+**Correct pattern:** delete the Get and the Loop. Author the flow for a single record and operate on `$Record`. Put the record selection in the Start element's criteria. A loop is only correct here if no object is selected (see Anti-Pattern 3a below).
+
+**Anti-Pattern 3a (the inverse):** assuming a loop is *always* wrong. In an object-less scheduled flow there is no `$Record` and nothing iterates for you — Get Records + Loop is the required shape.
+
+**Detection hint:** a Get Records element whose filter restates the Start element's criteria.
+
+---
+
+## Anti-Pattern 4: Recommending scheduled flows for high-volume batch processing
 
 **What the LLM generates:**
 
@@ -72,7 +92,7 @@ Entry Conditions: Processed__c = false
 "Use a scheduled flow to process 100,000 inactive accounts every night."
 ```
 
-**Why it happens:** LLMs recommend Flow for everything because it is declarative. Scheduled flows process records in batches of 200, and the total records per schedule is limited. For very high volumes, Batch Apex is more appropriate.
+**Why it happens:** LLMs recommend Flow for everything because it is declarative. An object-selected scheduled flow processes interviews in batches — 200 by default, settable from 1 to 200 in the Start element — and the total interviews per schedule is capped (250,000 per flow; per 24 hours, 250,000 or user licenses × 200, whichever is greater). Note the range: batch size can only be lowered below 200, never raised. For very high volumes, Batch Apex is more appropriate.
 
 **Correct pattern:**
 
@@ -94,7 +114,7 @@ global class InactiveAccountBatch implements Database.Batchable<SObject> {
 
 ---
 
-## Anti-Pattern 4: Not handling partial failures in the batch
+## Anti-Pattern 5: Not handling partial failures in the batch
 
 **What the LLM generates:**
 
@@ -124,7 +144,7 @@ Or design the flow so that individual record failures do not block the batch:
 
 ---
 
-## Anti-Pattern 5: Setting the schedule without considering time zones
+## Anti-Pattern 6: Setting the schedule without considering time zones
 
 **What the LLM generates:**
 
@@ -145,7 +165,7 @@ Or design the flow so that individual record failures do not block the batch:
 
 ---
 
-## Anti-Pattern 6: Using a scheduled flow as a replacement for time-based workflow without migration testing
+## Anti-Pattern 7: Using a scheduled flow as a replacement for time-based workflow without migration testing
 
 **What the LLM generates:**
 
