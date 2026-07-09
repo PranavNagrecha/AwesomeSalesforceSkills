@@ -35,8 +35,12 @@
 
 ## Anti-Patterns
 
-1. **Treating `convertCurrency()` as ACM-aware.** It uses static
-   rates only.
+1. **Misstating which rate `convertCurrency()` uses.** Under ACM it
+   uses dated rates for ACM-eligible standard fields (opportunity
+   `Amount`, line items, history) and matches reports; custom /
+   formula / roll-up currency fields — and any field without ACM —
+   use the static rate. It converts to the running user's currency,
+   not corporate.
 2. **Inserting `DatedConversionRate` with `NextStartDate`.** Field
    is platform-computed.
 3. **Filtering on a currency-field threshold without naming the
@@ -52,4 +56,6 @@
 - DatedConversionRate Object — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_datedconversionrate.htm
 - CurrencyType Object — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_currencytype.htm
 - SOQL `convertCurrency()` — https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_convertcurrency.htm
+- Query Currency Fields in Multicurrency Orgs (`convertCurrency()`, `WHERE` / `ORDER BY` / aggregate rules, ACM dated rates) — https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_querying_currency_fields.htm
+- Considerations for Querying Currency Data Using SOQL (Data Cloud DLO/DMO currency) — https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_consider_cur_data.htm
 - Salesforce Well-Architected Trustworthy — https://architect.salesforce.com/well-architected/trusted/secure

@@ -59,3 +59,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** Salesforce periodically retires old API versions (typically versions below v21.0 as of recent announcements, with ongoing deprecation of older versions). Integrations that have not been updated in years and are pinned to old endpoint URLs hit this error after retirement.
 
 **How to avoid:** Pin endpoint URLs to API version v56.0 or later and audit SOAP endpoint URLs during annual integration reviews. Monitor the Salesforce release notes for API version retirement announcements. Treat the API version as a first-class dependency in your integration's configuration, not a buried constant.
+
+---
+
+## Gotcha 7: Partner-WSDL Relationship Queries Require a `describeSObjects()` Discovery Step
+
+**What happens:** A relationship SOQL query — a parent-to-child subquery such as `SELECT Id, (SELECT Id FROM Assets) FROM Account`, or a child-to-parent dot-walk such as `SELECT Id, Owner.Name FROM Case` — that an enterprise-WSDL client builds directly from its generated classes cannot be constructed the same way from a partner-WSDL client. The partner WSDL carries none of the relationship type metadata the enterprise WSDL bakes into its stubs, so the `relationshipName` for one-to-many subqueries and the reference-field names for child-to-parent traversal are not available at compile time.
+
+**When it occurs:** Any ISV, packaged, or multi-org integration built on the partner WSDL — the same audience that chose the partner WSDL precisely to avoid per-org regeneration. The partner WSDL "doesn't contain the detailed type information that's available in the enterprise WSDL which you need for a relationship SOQL query," because it "defines a single, generic object (`sObject`) that represents all the objects."
+
+**How to avoid:** Call `describeSObjects()` for the target object before building the query. From the `DescribeSObjectResult`, read the `relationshipName` for one-to-many relationships (for example, `Assets` on `Account`) to form subqueries, and identify the reference fields (for example, `WhoId`, `WhatId`, `OwnerId`, or custom lookups) for child-to-parent traversal. Because the query returns nested records as generic `sObject`s, resolve each nested record's real type from the `name` field of its `DescribeSObjectResult` instead of casting to a generated class, and parse fields in the order of your `SELECT` list rather than the WSDL's declared order.

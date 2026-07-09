@@ -8,11 +8,11 @@
 
 **Solution:**
 
-Run a bounded SOQL query directly against `OpportunityHistory`:
+Run a bounded SOQL query directly against `OpportunityFieldHistory` (the Opportunity *field*-history sObject — **not** `OpportunityHistory`, which is the separate stage-history object and has no `Field` column):
 
 ```soql
 SELECT OpportunityId, OldValue, NewValue, CreatedById, CreatedDate
-FROM OpportunityHistory
+FROM OpportunityFieldHistory
 WHERE Field = 'StageName'
   AND CreatedDate >= 2025-01-01T00:00:00Z
   AND CreatedDate <= 2025-03-31T23:59:59Z
@@ -23,7 +23,7 @@ To join user names, wrap in Apex or use a relationship query:
 
 ```soql
 SELECT OpportunityId, OldValue, NewValue, CreatedBy.Name, CreatedBy.Username, CreatedDate
-FROM OpportunityHistory
+FROM OpportunityFieldHistory
 WHERE Field = 'StageName'
   AND CreatedDate >= 2025-01-01T00:00:00Z
   AND CreatedDate <= 2025-03-31T23:59:59Z
@@ -33,7 +33,7 @@ LIMIT 10000
 
 Export results via Data Loader or Workbench for analysis in Excel or BI tools.
 
-**Why it works:** `OpportunityHistory` stores one row per tracked field change. Filtering on `Field = 'StageName'` isolates only stage transitions. `CreatedBy.Name` provides the user's full name via a relationship traversal. The `CreatedDate` bounds scope the result to the desired quarter and avoid full-table scans.
+**Why it works:** `OpportunityFieldHistory` stores one row per tracked field change. Filtering on `Field = 'StageName'` isolates only stage transitions. `CreatedBy.Name` provides the user's full name via a relationship traversal. The `CreatedDate` bounds scope the result to the desired quarter and avoid full-table scans.
 
 ---
 
@@ -83,6 +83,29 @@ LIMIT 50
 5. If no rows are returned for the expected change date, verify the change was made via the UI or API — history tracking does not capture changes made directly via Data Loader in `--no-trigger` mode or via certain metadata-level bulk operations.
 
 **Why it works:** Metadata retrieval confirms whether `trackHistory` is set at the field level, which is the most common root cause of missing history. The SOQL probe confirms whether rows exist at all for the record. Separating object-level enablement from field-level selection is critical — both must be true for history to be captured.
+
+---
+
+## Example 3: One Query for a Record and Its Full Change Log
+
+**Context:** A developer building an LWC change-log panel for `Project__c` needs, for a single project, the record's name and status alongside every tracked change — without issuing two separate queries (one for the record, one for `Project__History`).
+
+**Problem:** The naive approach runs `SELECT Name, Status__c FROM Project__c WHERE Id = :id` and then a second `SELECT OldValue, NewValue FROM Project__History WHERE ParentId = :id`. That is two SOQL statements, two governor-limit hits, and manual stitching of the results in Apex.
+
+**Solution:**
+
+A history object is the child of its tracked parent, so a single parent-to-child query returns both — the record fields plus its history rows nested as a subquery:
+
+```soql
+SELECT Name, Status__c,
+       (SELECT Field, OldValue, NewValue, CreatedBy.Name, CreatedDate
+        FROM Project__History
+        ORDER BY CreatedDate DESC)
+FROM Project__c
+WHERE Id = 'a01XXXXXXXXXXXX'
+```
+
+**Why it works:** Salesforce auto-generates the parent-child relationship between an object and its `__History` sObject when tracking is enabled. The subquery names the history object directly, collapsing two round-trips into one and keeping each change row grouped with the record it describes. To go the other way — from a change up to parent context — use the child-to-parent form in Concept 2, noting the relationship name is `Parent` on custom history but the object name (`Account`) on standard history (Gotcha 5). Neither form works against Shield's `FieldHistoryArchive` (Gotcha 6).
 
 ---
 

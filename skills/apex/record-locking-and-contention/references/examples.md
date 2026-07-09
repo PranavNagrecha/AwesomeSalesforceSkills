@@ -70,6 +70,8 @@ public class InventoryService {
 
 **Why it works:** FOR UPDATE serializes concurrent access. The key practice is keeping the logic between the FOR UPDATE query and the update DML as short as possible to minimize the lock-hold window.
 
+**Watch the callout boundary:** if `reserveStock` ever grew a callout — say, checking a warehouse API — between the `FOR UPDATE` query and the `update`, the lock would be released the instant that callout fired. The row could then be changed by another transaction before the decrement lands, resurrecting the double-decrement race. Keep any callout entirely outside the lock window: read and decrement in one locked stretch, and make the external call before or after it, never between the query and the DML.
+
 ---
 
 ## Example 3: Queueable Retry for Transient Lock Failures
@@ -120,12 +122,27 @@ public class OrderEventHandler implements Queueable {
 
 **Why it works:** Each Queueable execution runs in a separate transaction with a natural delay, giving the contending transaction time to release its locks. Capping retries prevents infinite chaining.
 
+**Caveat — this handler only sees DML lock failures.** The `catch (DmlException e)` above detects contention on the `update orders` write. If the same handler also locked rows with a `FOR UPDATE` query, a lock-wait timeout there would be thrown as a `QueryException`, not a `DmlException`, and would bypass this retry path entirely. When a code path both locks with `FOR UPDATE` and writes with DML, catch both exception types and route them to the same retry logic:
+
+```apex
+try {
+    // FOR UPDATE query and/or DML that can contend on the same rows
+    update orders;
+} catch (QueryException e) {
+    // FOR UPDATE lock-wait timeout surfaces here
+    handleLockFailure(e);
+} catch (DmlException e) {
+    // Blocked DML write surfaces here
+    if (isLockError(e)) { handleLockFailure(e); } else { throw e; }
+}
+```
+
 ---
 
 ## Anti-Pattern: Wrapping Every DML in FOR UPDATE "Just in Case"
 
 **What practitioners do:** Add FOR UPDATE to every SOQL query to "prevent lock errors," believing it provides safety.
 
-**What goes wrong:** FOR UPDATE acquires locks earlier and holds them longer than necessary. It actually increases contention by widening the lock window. It also fails in Batch Apex (FOR UPDATE is not allowed in batch start queries) and cannot be used with aggregate queries.
+**What goes wrong:** FOR UPDATE acquires locks earlier and holds them longer than necessary. It actually increases contention by widening the lock window. It also fails in Batch Apex (FOR UPDATE is not allowed in batch start queries), cannot be used with aggregate queries, and cannot be combined with `ORDER BY` — so any query that sorts its results won't compile as a locking query. Blanket application quietly boxes you out of common query shapes.
 
 **Correct approach:** Use FOR UPDATE only for read-modify-write patterns where two transactions could race on the same row. For most DML, the implicit lock acquired at DML time is sufficient and has the smallest possible window.

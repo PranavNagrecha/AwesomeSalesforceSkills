@@ -167,3 +167,28 @@ Always use the narrowest scope that satisfies the search requirement.
 ```
 
 **Detection hint:** Flag SOSL queries on large result sets that use `IN ALL FIELDS` or omit the IN clause entirely. Recommend narrower scope (NAME FIELDS, EMAIL FIELDS) when the search intent is clear.
+
+---
+
+## Anti-Pattern 6: Assuming Left-to-Right Operator Evaluation in a `FIND` Clause
+
+**What the LLM generates:** `FIND 'Acme AND renewal OR expansion AND NOT churn'` written as if it evaluates left to right — as if a FIND search query bound its operators like a SQL `WHERE` clause.
+
+**Why it happens:** LLMs treat the FIND search query like a SQL boolean expression, assuming left-to-right evaluation. Salesforce actually applies a fixed precedence that rarely appears in training data.
+
+**Correct pattern:**
+
+```text
+FIND operator precedence (fixed — not left to right):
+  1. Parentheses
+  2. AND and AND NOT (evaluated right to left)
+  3. OR
+
+// Group with parentheses so intent does not depend on precedence:
+  FIND 'Acme AND (renewal OR expansion) AND NOT churn'
+
+// Match the literal words and/or/and not by quoting them:
+  FIND '"HR and Payroll"'
+```
+
+**Detection hint:** Flag FIND clauses that mix `AND`/`OR`/`AND NOT` without parentheses. (The related length-cliff risk on assembled search strings is covered in gotchas.)

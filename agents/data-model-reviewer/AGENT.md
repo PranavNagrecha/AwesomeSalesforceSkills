@@ -76,7 +76,10 @@ dependencies:
     - data/sandbox-refresh-data-strategies
     - data/service-data-archival
     - data/service-metrics-data-model
+    - data/sosl-external-object-search-limits
     - data/sosl-search-patterns
+    - data/sosl-search-result-limits
+    - data/sosl-with-clauses
     - data/subscriber-data-management
     - data/territory-data-alignment
     - data/vector-database-management
@@ -174,6 +177,9 @@ Reviews the data model of a target domain (a parent object + its descendants, or
 66. `skills/data/vector-database-management` — Vector database management
 67. `skills/data/volunteer-management-requirements` — Volunteer management requirements
 68. `skills/data/data-cloud-code-extensions` — data cloud code extensions
+69. `skills/data/sosl-with-clauses` — sosl with clauses
+70. `skills/data/sosl-search-result-limits` — sosl search result limits
+71. `skills/data/sosl-external-object-search-limits` — sosl external object search limits
 
 ---
 

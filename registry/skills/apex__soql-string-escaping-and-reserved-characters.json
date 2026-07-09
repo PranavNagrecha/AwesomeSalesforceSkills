@@ -1,0 +1,113 @@
+{
+  "category": "apex",
+  "chunk_ids": [
+    "002ee87f6595be1550e6",
+    "030b1269922f0bff76e0",
+    "06cf82db8d7b83d6cada",
+    "1868ca602d85b3fbd058",
+    "18f6c61ace97486a423d",
+    "1c04d1db0d5a21e363c4",
+    "1ebff7e4cc2c0675716f",
+    "21b802405830a101e0d3",
+    "280b2dabc1ef7bc680f9",
+    "29b0212267cd74e207ce",
+    "2c534e3a234609b4617a",
+    "2ecb2896d0a96ea9c1e6",
+    "31049c4b1ba5ed58d321",
+    "3723d6e9e23471562552",
+    "38533eb1369bdbf71afa",
+    "3981b141cd8dbae5e127",
+    "46b377d0a9d9bebb1233",
+    "4ffd538273ae7e7794b1",
+    "53c949a32258160afe50",
+    "572a4fffc2a45f379f87",
+    "59df7d51ac6409090bb8",
+    "60352db5df234e401b81",
+    "61c25055f7744d31c406",
+    "683684ee84a58c03fdd9",
+    "6ece63ce5b9845bd6b64",
+    "6ed62a7fbb9365879b98",
+    "765729a3933dcab12018",
+    "7a2aadef02f71443049a",
+    "7f5c634b97b18b4f295d",
+    "85853a624735a8ae660e",
+    "88ec752c42f0c27fcfe9",
+    "967085fec815b245543e",
+    "9b61c1b51c8706352fa3",
+    "a0c29d1f3ed3cbc7c224",
+    "a6408fa38335ed508f65",
+    "a728d9303b2fffac6202",
+    "af5886715adf74e57c8a",
+    "b931a6b50238735cd547",
+    "bdf7a77a9beda60f99ad",
+    "bfbb3774ad4b99add4e1",
+    "c0bd761df3c0f5430372",
+    "c88e3914ceeb707bf897",
+    "cb8bb00deb0990ec09f7",
+    "d02157769e274d8a800d",
+    "d42812a9fa2ee458cc17",
+    "d4b48941e80939328331",
+    "d5ec1b16d626d85364a3",
+    "d87e13e7bdc1846bb4a8",
+    "dc82c1deae22cb802efd",
+    "dde24443e9e73875bfd6",
+    "e17bafddcccc26d7da04",
+    "e638cb748f75d9bdeaf1",
+    "eb90381de6719b0ce341",
+    "ecef317fdb0606cb1f05",
+    "f07d662d51f93901ffe1",
+    "f19a80ca2b42309894f5",
+    "f4de66253a5e9712884f",
+    "ff4cd7471297bb5ef859"
+  ],
+  "content_hash": "a78df29fba4262417262b7de47cadd34cfaef8408788a7c346c5c772ea646b74",
+  "dependencies": [],
+  "description": "Use when a SOQL single-quoted string literal contains a character that must be escaped: an apostrophe in a name (O'Brien, Bob's BBQ), a backslash, a tab/newline/other control character, a Unicode character via \\uXXXX, or a literal LIKE wildcard (\\_ or \\%). Covers the backslash escape character, the full quoted-string escape-sequence table, the two reserved characters (single quote and backslash) that must always be escaped, the LIKE-only \\_ / \\% wildcard escapes, the hard-error rule for any other backslash use, and String.escapeSingleQuotes on the Apex side. NOT for choosing bind variables vs concatenation or SOQL-injection defense-in-depth (see apex/apex-dynamic-soql-binding-safety and apex/soql-security), NOT for general SELECT/WHERE/ORDER BY syntax (see apex/soql-fundamentals), NOT for Apex String/regex methods (see apex/apex-string-and-regex).",
+  "file_location": "skills/apex/soql-string-escaping-and-reserved-characters",
+  "id": "apex/soql-string-escaping-and-reserved-characters",
+  "inputs": [
+    "A SOQL query (inline [SELECT ...] or a dynamic query string) containing a single-quoted string literal",
+    "The literal value being embedded \u2014 a name with an apostrophe, a path with a backslash, a LIKE pattern, or text with control/Unicode characters",
+    "Whether the value originates from user input (then binding and injection defense also apply)"
+  ],
+  "name": "soql-string-escaping-and-reserved-characters",
+  "official_sources": [
+    "SOQL and SOSL Reference \u2014 Quoted String Escape Sequences \u2014 https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_quotedstringescapes.htm",
+    "SOQL and SOSL Reference \u2014 Reserved Characters \u2014 https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_reservedcharacters.htm",
+    "Apex Reference Guide \u2014 String Class methods (escapeSingleQuotes) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html"
+  ],
+  "outputs": [
+    "A correctly escaped SOQL string literal that parses without a query error",
+    "The right escape sequence for each special character (\\', \\\\, \\n, \\uXXXX, and the LIKE-only \\_ / \\%)",
+    "Apex-side guidance: when String.escapeSingleQuotes covers the reserved characters and when to bind instead"
+  ],
+  "references": [
+    "skills/apex/soql-string-escaping-and-reserved-characters/references/examples.md",
+    "skills/apex/soql-string-escaping-and-reserved-characters/references/gotchas.md",
+    "skills/apex/soql-string-escaping-and-reserved-characters/references/llm-anti-patterns.md",
+    "skills/apex/soql-string-escaping-and-reserved-characters/references/well-architected.md"
+  ],
+  "scripts": [
+    "skills/apex/soql-string-escaping-and-reserved-characters/scripts/check_soql_string_escaping_and_reserved_characters.py"
+  ],
+  "status": "stable",
+  "tags": [
+    "soql",
+    "string-escaping",
+    "reserved-characters",
+    "like-wildcards",
+    "escape-sequences"
+  ],
+  "templates": [
+    "skills/apex/soql-string-escaping-and-reserved-characters/templates/soql-string-escaping-and-reserved-characters-template.md"
+  ],
+  "updated": "2026-07-08",
+  "vector_embedding": {
+    "backend": "fastembed",
+    "dimension": 384,
+    "updated": "2026-07-08",
+    "vector_id": "apex/soql-string-escaping-and-reserved-characters"
+  },
+  "version": "1.0.0"
+}

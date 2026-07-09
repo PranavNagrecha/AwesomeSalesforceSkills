@@ -142,8 +142,12 @@ dependencies:
     - apex/scheduled-apex-failure-detection-and-monitoring
     - apex/service-cloud-rest-api
     - apex/sf-cli-and-sfdx-essentials
+    - apex/soql-format-function-localization
     - apex/soql-fundamentals
+    - apex/soql-object-limits-and-restrictions
+    - apex/soql-outer-join-null-semantics
     - apex/soql-security
+    - apex/soql-using-scope-clause
     - apex/ssjs-server-side-javascript
     - apex/territory-api-and-assignment
     - apex/test-class-standards
@@ -381,6 +385,10 @@ Produces Apex scaffolds for every canonical Apex surface: trigger + handler, ser
 155. `templates/apex/tests/BulkTestPattern.cls`
 156. `skills/apex/scheduled-apex-failure-detection-and-monitoring` — scheduled apex failure detection and monitoring
 157. `skills/devops/development-documentation-standards` — development documentation standards
+158. `skills/apex/soql-outer-join-null-semantics` — soql outer join null semantics
+159. `skills/apex/soql-object-limits-and-restrictions` — soql object limits and restrictions
+160. `skills/apex/soql-format-function-localization` — soql format function localization
+161. `skills/apex/soql-using-scope-clause` — soql using scope clause
 
 ---
 

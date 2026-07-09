@@ -22,5 +22,7 @@
 - Salesforce Help — Set Up Translation Workbench — https://help.salesforce.com/s/articleView?id=sf.workbench_overview.htm
 - Salesforce Help — Translate Custom Labels — https://help.salesforce.com/s/articleView?id=sf.cl_translate.htm
 - Salesforce Help — Experience Cloud Language Support — https://help.salesforce.com/s/articleView?id=sf.networks_multilingual.htm
+- SOQL and SOSL Reference — toLabel() (SOQL SELECT) — https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_tolabel.htm
+- SOQL and SOSL Reference — toLabel() (SOSL RETURNING) — https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_sosl_tolabel.htm
 - Metadata API Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/well-architected/overview

@@ -35,6 +35,28 @@
 
 ---
 
+## Example 3: Showing Picklist and Record Type Values in the User's Language with `toLabel()`
+
+**Context:** A support console LWC lists Cases with their Status and Record Type. Its Apex controller runs its own SOQL. Translation Workbench already has Spanish translations for the Case Status picklist and the record types, but Spanish agents still saw English text in the component.
+
+**Problem:** SOQL returns the master (default-language) value by default. The custom query bypassed the standard UI translation path, so the component rendered English regardless of the agent's language.
+
+**Solution:**
+1. Wrap the display fields in `toLabel()` in the controller query:
+   ```sql
+   SELECT CaseNumber,
+          toLabel(Status) translatedStatus,
+          toLabel(RecordType.Name) translatedRecordType
+   FROM Case
+   WHERE Status = 'Escalated'
+   ```
+2. Note the aliases (`translatedStatus`, `translatedRecordType`) — they give the columns readable names in the result. An alias becomes *required* only when the raw field is also in the `SELECT` list (e.g. both `Status` and `toLabel(Status)`).
+3. Keep the `WHERE` clause on the API value (`Status = 'Escalated'`), never on `toLabel(Status)`, so the routing/filter logic stays language-independent.
+
+**Why it works:** `toLabel()` returns the running user's translation and falls back to the master value when no translation exists, so a single query serves every language without any conditional logic. Because filtering still uses the API value, the query returns the same rows for every agent — only the displayed labels differ.
+
+---
+
 ## Anti-Pattern: Using Picklist Translated Label in Apex or Validation Rules
 
 **What practitioners do:** Reference the translated label of a picklist value in an Apex condition or validation rule formula:

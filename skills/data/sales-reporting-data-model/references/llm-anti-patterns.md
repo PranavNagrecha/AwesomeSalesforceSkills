@@ -94,21 +94,22 @@ Always test with a known account/opportunity with no children
 **What the LLM generates:**
 "Instead of setting up Reporting Snapshots, you can query `OpportunityHistory` in SOQL to get pipeline history. This gives you all field changes going back to the Opportunity's creation date."
 
-Or: "Use `SELECT Field, OldValue, NewValue, CreatedDate FROM OpportunityHistory` to build your trending report."
+Or: "Use `SELECT Field, OldValue, NewValue, CreatedDate FROM OpportunityHistory` to build your trending report." (This query is invalid as written — `OpportunityHistory` has no `Field`/`OldValue`/`NewValue` columns; that schema belongs to `OpportunityFieldHistory`.)
 
-**Why it happens:** `OpportunityHistory` is a real sObject that tracks field changes, and LLMs trained on Salesforce development content know it exists. The LLM conflates "field change history exists" with "it can serve as a pipeline reporting mechanism," without understanding the critical differences.
+**Why it happens:** two related sObjects get conflated. `OpportunityHistory` is the **stage/pipeline-history** object — it stores a row when a forecast field changes, with columns `StageName`, `Amount`, `Probability`, `CloseDate`, `ForecastCategory`, `ExpectedRevenue` (no `Field`/`OldValue`/`NewValue`). `OpportunityFieldHistory` is the **field-history** object, with `Field`/`OldValue`/`NewValue` rows for tracked fields. LLMs blur the two, and separately conflate "change history exists" with "it can serve as a pipeline reporting mechanism."
 
 **Correct pattern:**
-`OpportunityHistory` records field-level changes (old value → new value) for tracked fields, but it is not suitable as a direct replacement for pipeline trend reporting for several reasons:
-1. It records changes only when a field value changes — it does not record the field value on a specific date if no change occurred on that date. You cannot reconstruct "what was the amount on December 31st" unless a change was logged on or before that date.
-2. It does not aggregate across deals — reconstructing pipeline-wide totals requires SOQL aggregation across all Opportunity records and their history, which is complex and hits governor limits for large orgs.
-3. It is not surfaceable in Lightning reports via standard report types — you cannot build a Lightning dashboard chart from an `OpportunityHistory` query without custom Apex or CRM Analytics.
+Both objects are *change logs*, not daily snapshots, so neither is a direct replacement for pipeline trend reporting:
+1. They record a row only when a value changes — not the value on a date with no change. You cannot reconstruct "what was the amount on December 31st" unless a change was logged on or before that date.
+2. They do not aggregate across deals — reconstructing pipeline-wide totals requires SOQL aggregation across all Opportunity records and their history, which is complex and hits governor limits for large orgs.
+3. They are not surfaceable in Lightning reports via standard report types — you cannot build a Lightning dashboard chart from such a query without custom Apex or CRM Analytics.
 
-For point-in-time pipeline snapshots: use Reporting Snapshots. For field-level change auditing (who changed what and when): `OpportunityHistory` is correct. For trend visualization in dashboards: use HTR or Reporting Snapshots.
+Choose by intent: point-in-time pipeline snapshots → Reporting Snapshots; forecast/stage change tracking → `OpportunityHistory`; who-changed-which-field auditing → `OpportunityFieldHistory`; trend visualization in dashboards → HTR or Reporting Snapshots.
 
 ```
-OpportunityHistory: change audit log (not a daily snapshot)
-Cannot reconstruct "value on date X" unless a change was logged on/before that date
+OpportunityHistory       = stage/pipeline change log (StageName/Amount/CloseDate/...)
+OpportunityFieldHistory  = field change log (Field/OldValue/NewValue)
+Neither is a daily snapshot: can't reconstruct "value on date X" without a logged change
 HTR and Reporting Snapshots are the correct tools for trend analysis
 ```
 

@@ -112,7 +112,9 @@ and breaks every integration that touches the old field names.
    exists.** Pulling all rows and computing distance client-side
    wastes SOQL governor budget and Apex CPU. The platform's
    `DISTANCE` function is indexed and orders of magnitude
-   faster; use it in SELECT, WHERE, and ORDER BY.
+   faster; use it in SELECT, WHERE, and ORDER BY — remembering
+   that in WHERE it accepts only `<` / `>` (never `=`) and takes
+   a literal `'mi'` / `'km'` unit.
 4. **Writing to the State text field when State & Country
    Picklists are enabled.** Direct writes to `MailingState =
    'CA'` save the string but leave `MailingStateCode` null,
@@ -140,6 +142,8 @@ and breaks every integration that touches the old field names.
   https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_compound_fields.htm
 - Location-Based SOQL Queries (DISTANCE, GEOLOCATION):
   https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_geolocate.htm
+- Winter '13 — Using Apex and SOQL with Geolocation (introduction):
+  https://developer.salesforce.com/blogs/developer-relations/2012/10/winter-13-using-apex-and-soql-with-geolocation
 - Geolocation Custom Field overview:
   https://help.salesforce.com/s/articleView?id=platform.custom_field_geolocate_overview.htm&type=5
 - Configure State and Country/Territory Picklists:

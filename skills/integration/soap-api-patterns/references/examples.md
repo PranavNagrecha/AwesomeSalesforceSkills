@@ -89,6 +89,41 @@ private void processBatch(SObject[] records) {
 
 **Trade-off:** Without compile-time type checking, field name typos cause runtime `null` values rather than compile errors. Unit tests should assert field presence and type before production deployment.
 
+**Relationship-query addendum (describe-first):** Suppose the same ISV integration also needs each Account's child Assets. The partner WSDL carries no relationship metadata, so the query cannot be built from generated classes — it must be discovered via `describeSObjects()` first:
+
+```java
+// Step 1: Discover the parent-to-child relationshipName BEFORE building the subquery.
+DescribeSObjectResult accountDescribe = connection.describeSObject("Account");
+for (ChildRelationship child : accountDescribe.getChildRelationships()) {
+    // e.g. relationshipName "Assets" for the Account -> Asset one-to-many
+    log(child.getRelationshipName() + " -> " + child.getChildSObject());
+}
+
+// Step 2: Also identify reference fields for any child-to-parent traversal
+//         (whoId / whatId / ownerId style, plus custom lookups).
+for (Field f : accountDescribe.getFields()) {
+    if (f.getType() == FieldType.reference) {
+        log("reference field: " + f.getName() + " -> " + Arrays.toString(f.getReferenceTo()));
+    }
+}
+
+// Step 3: Build the relationship query using the discovered relationshipName.
+QueryResult rel = connection.query(
+    "SELECT Id, Name, (SELECT Id, Name FROM Assets) FROM Account WHERE Id = '" + accountId + "'");
+
+// Step 4: Nested child records come back as the SAME generic sObject, not a typed Asset.
+//         Resolve each record's real type from describe metadata (getType() is backed by it),
+//         never by casting to a generated class.
+for (SObject acct : rel.getRecords()) {
+    String parentType = acct.getType();        // "Account"
+    // child Assets arrive nested under the parent as generic sObjects; iterate and
+    // resolve each nested record's type from getType() before mapping fields.
+    syncParentToDataPlatform(parentType, acct.getId());
+}
+```
+
+**Why it works:** `describeSObjects()` supplies the `relationshipName` (`Assets`) and reference-field names that the partner WSDL does not encode, so the subquery can be constructed at runtime. Treating every returned record — parent or nested child — as a generic `sObject` whose type is read from describe metadata keeps the integration portable across any customer org, exactly as the loosely-typed partner WSDL intends. Note that field order in the `QueryResult` follows the `SELECT` list, not the WSDL, so parse nested results positionally against the query you sent.
+
 ---
 
 ## Example 3: Metadata API Deploy via SOAP (Ant Migration Tool Pattern)

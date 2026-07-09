@@ -19,6 +19,8 @@ triggers:
   - "back button behavior in flow"
   - "custom lwc screen component in flow"
   - "when should screen flow save data"
+  - "convert checkbox group selections to a collection"
+  - "loop over multi-select picklist values in a flow"
 inputs:
   - "how many screens the interview needs and where data should be committed"
   - "which standard or custom screen components are required"
@@ -28,9 +30,9 @@ outputs:
   - "review findings for weak screen design or risky save placement"
   - "guidance for using standard components versus custom LWC screen components"
 dependencies: []
-version: 2.0.0
+version: 2.1.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-07-08
 ---
 
 Use this skill when the Flow is interactive and the quality of the user journey matters as much as the automation logic. Screen flows succeed when they guide the user through a deliberate sequence, validate at the right moments, and commit data only where the consequences are clear. They become fragile when navigation, validation, and side effects are all mixed together casually.
@@ -76,6 +78,8 @@ Standard screen components handle:
 - File Upload
 - Data Table (including editable)
 - Address compound input
+
+**Multi-select choice components output a string, not a collection.** Checkbox Group and Multi-Select Picklist let a user pick more than one value (unlike single-select Picklist and Radio Buttons), but they store every checked selection in a single semicolon-delimited text string, not a native Flow collection variable. Feeding that output straight into a Loop, a Get Records filter, or a Transform element fails — those elements expect structured (collection) data, so convert the string to a collection first. Checkbox Group, Choice Lookup, and Multi-Select Picklist are all explicitly incompatible with the Transform element for this reason, and all three require the Lightning runtime (they do not render on the Classic Flow runtime). On Lightning runtime version 58 and earlier these components also keep no built-in memory of their values: selections are dropped on Back navigation, pause/resume, or an input-validation error unless an attribute is configured to retain them. From Winter '24 (GA; Beta in Spring '23), Checkbox Group is a reactive source — other components on the same screen can react to its selections without a Next click — and since Spring '23 its choices can be backed by a multi-select picklist field with record-type awareness.
 
 A custom LWC screen component is warranted when you need: cascading reactive UI between multiple fields on the same screen, real-time external-system validation, a rendering that truly isn't expressible with standard components (drag-and-drop, inline image annotation, etc.), or when a reusable LWC you already own must be surfaced.
 
@@ -193,6 +197,8 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 8. **Back-button is disabled by default on some screen types** — explicitly enable if the UX needs it; don't rely on browser back.
 9. **Screen flows in Experience Cloud inherit the site's profile, not the invoking user's** — sharing implications differ (see `flow/flow-for-experience-cloud`).
 10. **Lookup component defaults to the first match on typeahead** — users sometimes pick the wrong record; include a disambiguator (e.g. show Account Name next to Contact Name).
+11. **Checkbox Group / Multi-Select Picklist output is a semicolon-delimited string, not a collection** — wiring it straight into a Loop or Get Records filter silently breaks; convert to a collection first. Checkbox Group, Choice Lookup, and Multi-Select Picklist are also incompatible with the Transform element.
+12. **Checkbox Group requires the Lightning runtime and, on runtime v58 and earlier, has no memory** — selections vanish on Back, pause/resume, or a validation error unless an attribute is configured to retain them. From Winter '24 it can serve as a reactive source for other same-screen components.
 
 ## Proactive Triggers
 
@@ -206,6 +212,7 @@ Surface these WITHOUT being asked:
 - **Custom LWC used where standard components would suffice** → Flag as Low. Maintenance-cost observation, not a bug.
 - **Back button disabled on a wizard-style flow** → Flag as Medium. Users want to go back; disabling surprises them.
 - **Screen flow embedded in Experience Cloud without guest-access review** → Flag as Critical. Route to `flow/flow-for-experience-cloud`.
+- **Checkbox Group / Multi-Select Picklist output wired directly into a Loop, Get Records filter, or Transform element** → Flag as High. The output is a semicolon-delimited string, not a collection; convert it first.
 
 ## Output Artifacts
 

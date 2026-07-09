@@ -25,5 +25,7 @@ Recurring automation must be idempotent and diagnosable. A job that cannot expla
 ## Official Sources Used
 
 - Schedule-Triggered Flows - https://help.salesforce.com/s/articleView?id=sf.flow_concepts_trigger_schedule.htm&type=5
+- Schedule-Triggered Flow Considerations - https://help.salesforce.com/s/articleView?id=sf.flow_considerations_trigger_schedule.htm&type=5
+- Optimizing Scheduled Automation Tasks (Trailhead) - https://trailhead.salesforce.com/content/learn/modules/autolaunched-scheduled-flows/schedule-a-flow
 - Flow Builder - https://help.salesforce.com/s/articleView?id=sf.flow.htm&type=5
 - Salesforce Well-Architected Overview - https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

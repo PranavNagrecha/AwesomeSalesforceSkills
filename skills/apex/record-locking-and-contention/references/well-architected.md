@@ -29,6 +29,7 @@ Adding Queueable retry logic increases code complexity and introduces eventual c
 ## Official Sources Used
 
 - Apex Developer Guide: Locking Statements — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_locking_statements.htm
+- Apex Developer Guide: Locking Records — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_locking_records.htm
 - SOQL FOR UPDATE Reference — https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_for_update.htm
 - Salesforce Help: Record Locking — https://help.salesforce.com/s/articleView?id=000384498&type=1
 - Designing Record Access for Enterprise Scale — https://architect.salesforce.com/design/decision-guides/record-access

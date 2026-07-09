@@ -5,27 +5,32 @@ Apex / SOQL / formula / report logic.
 
 ---
 
-## Anti-Pattern 1: Using `convertCurrency()` and assuming ACM dated rates apply
+## Anti-Pattern 1: Over-generalizing which rate `convertCurrency()` uses
 
 **What the LLM generates.**
 
 ```apex
-SELECT convertCurrency(Amount) FROM Opportunity WHERE CloseDate >= LAST_FISCAL_YEAR
+SELECT convertCurrency(Custom_Amount__c) FROM Opportunity
 ```
 
-> This converts each opportunity's amount to corporate currency using
-> the dated exchange rate effective on the close date.
+> This converts the custom amount to corporate currency using the
+> dated exchange rate effective on the close date.
 
-**Why it happens.** Documentation pages mention `convertCurrency()`
-and dated rates in the same general topic; the LLM conflates them.
+**Why it happens.** The LLM learns "ACM = dated rates" and "convert =
+corporate currency" as blanket rules and applies them to every field.
 
-**Correct pattern.** `convertCurrency()` consults the static
-`CurrencyType.ConversionRate`, never `DatedConversionRate`. For
-dated-rate conversion, query `DatedConversionRate` explicitly.
+**Correct pattern.** Two corrections. (1) `convertCurrency()` converts
+to the *running user's* currency, not the corporate currency. (2) It
+honors dated rates only under ACM and only for ACM-eligible standard
+fields (opportunities, opportunity line items, opportunity history); a
+custom currency field, formula field, or roll-up summary always
+converts at the static `CurrencyType.ConversionRate`. For an
+as-of-date value on a non-eligible field, query `DatedConversionRate`
+explicitly.
 
-**Detection hint.** Any code or comment that pairs
-`convertCurrency()` with the assertion that it uses dated /
-historical / period rates.
+**Detection hint.** Any claim that `convertCurrency()` returns the
+corporate currency, or that it applies dated rates to a custom /
+formula / roll-up currency field.
 
 ---
 
@@ -158,3 +163,75 @@ parent-child consistency matters.
 **Detection hint.** Any Apex insert of a currency-aware child
 without explicit `CurrencyIsoCode`, accompanied by an assumption
 that it will match the parent.
+
+---
+
+## Anti-Pattern 8: `convertCurrency()` in a `WHERE` or `ORDER BY` clause
+
+**What the LLM generates.**
+
+```apex
+SELECT Id FROM Opportunity
+WHERE convertCurrency(Amount) > 5000
+ORDER BY convertCurrency(Amount) DESC
+```
+
+**Why it happens.** By analogy with ordinary functions, the LLM
+assumes a `SELECT`-clause function is valid anywhere in the query.
+
+**Correct pattern.** `convertCurrency()` is only valid in `SELECT`. In
+`WHERE`, use an ISO-code-qualified literal (`WHERE Amount > USD5000`).
+For sorting, `ORDER BY Amount` already sorts on the converted value —
+`convertCurrency()` can't be combined with `ORDER BY`.
+
+**Detection hint.** `convertCurrency(` appearing anywhere other than
+the `SELECT` clause.
+
+---
+
+## Anti-Pattern 9: Assuming grouped aggregates return the user's currency
+
+**What the LLM generates.**
+
+```apex
+SELECT OwnerId, SUM(Amount) total FROM Opportunity GROUP BY OwnerId
+```
+
+> total is each owner's pipeline in the running user's currency.
+
+**Why it happens.** The LLM assumes currency results follow the same
+user-currency convention as ungrouped queries.
+
+**Correct pattern.** With `GROUP BY` or `HAVING`, aggregate currency
+results (`SUM()`, `MAX()`, …) come back in the org's default
+(corporate) currency. You can't wrap the aggregate in
+`convertCurrency()` or compare it to an ISO-code literal. Label the
+result as corporate currency, or aggregate converted per-row values in
+Apex.
+
+**Detection hint.** A grouped currency aggregate described as being in
+the user's or a per-record currency.
+
+---
+
+## Anti-Pattern 10: Querying Data Cloud currency like a standard sObject
+
+**What the LLM generates.**
+
+```apex
+SELECT CurrencyIsoCode, toLabel(CurrencyIsoCode), Currency__c FROM <DMO>
+```
+
+**Why it happens.** The LLM applies standard-sObject currency patterns
+to Data Cloud data lake / data model objects.
+
+**Correct pattern.** For DLOs/DMOs: read the ISO code from
+`cdp_sys_record_currency__c` (not `CurrencyIsoCode`); alias
+`toLabel(CurrencyIsoCode)` in `SELECT`
+(`toLabel(CurrencyIsoCode) CurrencyCodeAlias`); treat an all-null
+currency result as an unsupported/invalid ISO code; and round
+`convertCurrency()` output yourself, because it isn't rounded to the
+org's configured decimal places for Data Cloud fields.
+
+**Detection hint.** Standard `CurrencyIsoCode` usage, or an unaliased
+`toLabel(CurrencyIsoCode)`, against a Data Cloud DLO/DMO.

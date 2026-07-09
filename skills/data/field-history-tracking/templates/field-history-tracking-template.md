@@ -56,7 +56,8 @@ History related list added to page layouts: Yes / No / Not applicable
 ```soql
 -- Adjust object, field, and filters as needed
 SELECT Field, OldValue, NewValue, CreatedById, CreatedDate
-FROM [ObjectApiName]History          -- e.g., AccountHistory, OpportunityHistory, MyObject__History
+FROM [ObjectApiName]History          -- e.g., AccountHistory, CaseHistory, MyObject__History
+                                     -- exception: Opportunity field history is OpportunityFieldHistory (not OpportunityHistory)
 WHERE ParentId = '[RecordId]'
   AND Field = '[FieldApiName]'       -- omit to return all fields
   AND CreatedDate >= [StartDate]     -- e.g., 2025-01-01T00:00:00Z

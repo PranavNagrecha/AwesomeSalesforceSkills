@@ -6,10 +6,14 @@
     "0a9594c9327064411669",
     "0cac379e795c310e378e",
     "299d3889a5213fb1e1b7",
+    "338b573de3f18f939755",
     "39811ef248fe9eed7a4c",
     "3b439b2b6190bf36074f",
+    "45762c3fe24b3c0e8f43",
     "467b3d2c5301571949fa",
     "4cf0ee8bdd78b2197467",
+    "4fcb6c41c1ee9e2a5bbd",
+    "51d9f37683f3677bdace",
     "52e627742a5319fb2eea",
     "54ea3b10fdfe9046e193",
     "57e07e236908a48772fb",
@@ -18,16 +22,25 @@
     "5bb45cd7a5430117aee2",
     "5f72109e8c699cb839a1",
     "67a9362b5a43d44bdbd6",
+    "6cb6dd17b3953753fb85",
     "711780644dba22f3a29e",
     "88b21ade0058476dc47f",
+    "8c52089cbc6c13dc3b3d",
+    "9c3a7cf65f6a9bb97eba",
+    "a19e18a22df67ab65c9e",
+    "c4551c905dcb5fb813c1",
     "c55d161dc96b11fe6fb8",
+    "c689548c2cde559c463e",
     "cdcf9bd8c9391461bde9",
+    "d2fe592f7a7ea925e082",
     "d50e967ad325d816b8a9",
+    "d61c5010c62eba70e539",
+    "e0c2bb2b3d1acd17718c",
     "e857ae46bbe50718309b",
     "f5f53d5b0452093195a9",
     "fcdeabfc9104a61d9dfb"
   ],
-  "content_hash": "222b109fb8a6586dfdec2a074c0afcc086bf74a7119ae4cfd8775510e9446356",
+  "content_hash": "595dd501682529d77108ad0fbfb80457db13f6d1bfde3db7b2232ee303991e0a",
   "dependencies": [],
   "description": "Build picklists and choice sets in Flow Builder sourced from records, picklist fields, or collections, including dependent choices. NOT for static hard-coded choice sets.",
   "file_location": "skills/flow/flow-dynamic-choices",
@@ -41,7 +54,17 @@
     "Flow Builder Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.flow.htm",
     "Flow Best Practices \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_best_practices.htm",
     "Reactive Screens \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_screen_reactive.htm",
-    "Flow HTTP Callout Action \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_concepts_callout.htm"
+    "Flow HTTP Callout Action \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_concepts_callout.htm",
+    "Standard Flow Screen Components \u2014 https://help.salesforce.com/s/articleView?id=platform.flow_ref_elements_screencmp.htm&language=en_US&type=5",
+    "Visual Picker Screen Input Component \u2014 https://help.salesforce.com/s/articleView?id=platform.flow_ref_elements_screencmp_visual_picker.htm&language=en_US&type=5",
+    "Help Users Select Faster by Using Visual Cues in Choices \u2014 https://help.salesforce.com/s/articleView?id=platform.automate_flow_build_help_users_select_faster_by_using_visual_cues_in_choices.htm&language=en_US&type=5",
+    "Display Choices in Tiles with the Visual Picker Component (Summer '25 release note) \u2014 https://help.salesforce.com/s/articleView?id=release-notes.rn_automate_flow_builder_display_choices_in_tiles_with_the_visual_picker_component_in_screen_flows.htm&language=en_US&release=256&type=5",
+    "Choice Lookup Screen Input Component \u2014 https://help.salesforce.com/s/articleView?id=platform.flow_ref_elements_screencmp_choice_lookup.htm&language=en_US&type=5",
+    "Choose a Lookup Option for a Flow Screen \u2014 https://help.salesforce.com/s/articleView?id=platform.flow_ref_elements_screencmp_lookup_comparison.htm&language=en_US&type=5",
+    "Record Choice Set Resource \u2014 https://help.salesforce.com/s/articleView?id=platform.flow_ref_resources_recordchoice.htm&language=en_US&type=5",
+    "Customize Component and Field Layout in Screen Flows \u2014 https://help.salesforce.com/s/articleView?id=platform.automate_flow_build_customize_component_and_field_layout_in_screen_flows.htm&language=en_US&type=5",
+    "Provide Users a List of Choices for Easy Selection with Choice Lookup (Summer '23 GA release note) \u2014 https://help.salesforce.com/s/articleView?id=release-notes.rn_automate_flow_builder_choice_lookup_ga.htm&language=en_US&release=244&type=5",
+    "Select Multiple Choices with Choice Lookup Component (Winter '25 release note) \u2014 https://help.salesforce.com/s/articleView?id=release-notes.rn_automate_flow_builder_choice_lookup.htm&language=en_US&release=252&type=5"
   ],
   "outputs": [
     "Choice configuration + fallback on empty results"
@@ -64,12 +87,12 @@
   "templates": [
     "skills/flow/flow-dynamic-choices/templates/flow-dynamic-choices-template.md"
   ],
-  "updated": "2026-04-28",
+  "updated": "2026-07-08",
   "vector_embedding": {
     "backend": "fastembed",
     "dimension": 384,
-    "updated": "2026-04-28",
+    "updated": "2026-07-08",
     "vector_id": "flow/flow-dynamic-choices"
   },
-  "version": "1.0.0"
+  "version": "1.2.1"
 }

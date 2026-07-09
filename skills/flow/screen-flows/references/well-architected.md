@@ -27,3 +27,7 @@ Reliability in screen flows comes from predictable state transitions. Users shou
 - Screen Element - https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_screen.htm&type=5
 - Screen Components - https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_screen_fields.htm&type=5
 - Validate User Input for Custom Flow Screen Components - https://developer.salesforce.com/docs/platform/lwc/guide/use-flow-validate-external-internal-methods.html
+- Checkbox Group Screen Input Component - https://help.salesforce.com/s/articleView?id=platform.flow_ref_elements_screencmp_checkboxgroup.htm&language=en_US&type=5
+- Give Users a Choice (Screen Flows module) - https://trailhead.salesforce.com/content/learn/modules/screen-flows/give-users-a-choice
+- Multi-Select Resource and Screen Field Considerations - https://help.salesforce.com/s/articleView?id=sf.flow_considerations_design_multiselect.htm&language=en_US&type=5
+- Build Screen Flows with Reactive Choice Component Selections (Winter '24) - https://help.salesforce.com/s/articleView?id=release-notes.rn_automate_flow_builder_build_screen_flows_with_reactive_choice_component_selections.htm&language=en_US&release=246&type=5

@@ -29,9 +29,9 @@ outputs:
   - "review findings for unbounded scope, weak retry behavior, and volume risk"
   - "guidance on when to stay in Flow versus move heavy work to Apex"
 dependencies: []
-version: 2.0.0
+version: 2.1.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-07-08
 ---
 
 Use this skill when automation needs to run on a recurring cadence rather than directly from a record event. Schedule-triggered flows work well for bounded recurring tasks such as reminders, renewals, or cleanup logic. They become risky when teams treat them like a general-purpose batch engine and let the record scope or side effects grow without discipline.
@@ -64,6 +64,23 @@ Three options; only one is a schedule-triggered flow:
 | **Batch Apex scheduled via System.schedule** | High-volume periodic processing, complex joins, large record sets | When the workload truly fits Flow's model (small set, simple operations, admin-maintainable) |
 
 A wrong primitive choice is the most common scheduled-flow design error. If the requirement starts "when a record is X and Y days old", it's likely a scheduled path, not a schedule-triggered flow.
+
+### Two Execution Modes: With Or Without An Object
+
+The object in the Start element is **optional**, and that single choice changes the flow's entire execution model. Decide it before you draw anything else.
+
+| | **Object selected** (+ criteria) | **No object selected** |
+|---|---|---|
+| What runs | The platform queries matching records and creates **one interview per record** | A single interview, once per scheduled run |
+| `$Record` | Available — the flow's logic operates on one record | Not available |
+| Batching | Interviews run in batches (default 200, settable 1–200 in the Start element) | N/A — one interview |
+| Get + Loop over the same object | **Anti-pattern** — the platform already iterates for you | Correct and expected |
+
+Trailhead states it directly: "When the flow runs, it finds all of that object's records that match the criteria, and makes them available through `$Record`," and "If you don't set an object and criteria, `$Record` isn't available." Trailhead also notes `$Record` "actually refers to multiple records" — meaning it spans the whole matching set *across* interviews; within any single interview it resolves to exactly one record, which is why you author for one.
+
+The consequence most builders miss: **when an object is selected, you author the flow as if it handles exactly one record.** Adding a Get Records + Loop over that same object re-fetches the whole set inside every interview — N interviews × N iterations instead of N. The record scope belongs in the Start element's criteria, not in a Loop.
+
+Conversely, an object-less schedule-triggered flow is just a scheduled job. There is no `$Record` and nothing iterates for you, so Get Records + Loop (or Transform / Collection Filter / Collection Sort) is the correct shape — a loop at the top of *this* mode is not an anti-pattern.
 
 ### Bounded Selection Comes First
 
@@ -106,18 +123,20 @@ When the recurring job becomes large (> 500 records per run), computationally he
 
 **When to use:** Recurring reminder or status update on a bounded slice of records.
 
-**Structure:**
+**Structure** (object-selected mode — the platform iterates, so author for ONE record):
 ```text
-Schedule: Daily at 2am
-Entry criteria: Status = 'Pending' AND CreatedDate < TODAY - 7 AND Last_Reminded_Date__c != TODAY
-Plan:
-  └── [Get Records matching entry criteria, LIMIT 200]
-  └── [Loop]:
-       └── [Send Custom Notification OR Email Alert]
-       └── [Assignment: Last_Reminded_Date__c = TODAY]
-  └── [Update Records] (bulk update after loop)
+Start: Daily at 2am
+  Object: Case
+  Criteria: Status = 'Pending' AND CreatedDate < TODAY - 7 AND Last_Reminded_Date__c != TODAY
+Plan (runs once per matching record, $Record is that record):
+  └── [Send Custom Notification OR Email Alert]  → addressed from $Record
+  └── [Update Records: $Record.Last_Reminded_Date__c = TODAY]
   └── [Fault path: log + notify admin]
 ```
+
+No Get Records. No Loop. The Start element's criteria *are* the record selection; adding a Get + Loop here would re-query every matching Case inside every interview.
+
+**Object-less variant:** if you leave the object blank (say, to build a daily digest across several objects), the flow runs as one interview and you *do* need Get Records + Loop — plus an explicit `LIMIT` and a bulk Update after the loop, since nothing bounds the set for you.
 
 **Why not the alternative:** A broad nightly sweep without clear selection becomes unpredictable and expensive.
 

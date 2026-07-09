@@ -16,6 +16,8 @@ triggers:
   - "data skew causing lock failures"
   - "record locking isn't working"
   - "we're having issues with record locking"
+  - "catch a FOR UPDATE lock-wait timeout in Apex"
+  - "keep a FOR UPDATE lock from releasing on a callout"
 tags:
   - record-locking
   - contention
@@ -32,9 +34,9 @@ outputs:
   - "lock ordering and data-skew mitigation recommendations"
   - "retry strategy for transient lock failures"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-07-08
 ---
 
 # Record Locking and Contention
@@ -59,9 +61,15 @@ Gather this context before working on anything in this domain:
 
 Every DML statement in Salesforce acquires an exclusive row lock on the affected records for the duration of the transaction. If a second transaction attempts to lock the same row, it waits up to 10 seconds. After that timeout, the platform throws `UNABLE_TO_LOCK_ROW` and the waiting transaction fails. This is not configurable.
 
+The lock blocks writes, not reads. While a row is locked, no other client or user is allowed to update it — through code or the Salesforce UI — but other transactions can still query it. Frame contention as "concurrent writers waiting," not "the record is unavailable": readers pass through, and the lock's guarantee is only that the locked records won't be changed by another client during the lock period.
+
 ### FOR UPDATE Acquires Explicit Locks in SOQL
 
-Adding `FOR UPDATE` to a SOQL query acquires exclusive locks on the returned rows immediately, before any DML occurs. This is useful for read-modify-write patterns where you need to guarantee no other transaction changes the row between your read and your write. However, FOR UPDATE locks persist for the entire transaction, so long-running logic after the query extends the lock window and increases contention risk.
+Adding `FOR UPDATE` to a SOQL query acquires exclusive locks on the returned rows immediately, before any DML occurs — the platform's own framing is that you use it "to lock sObject records while they're being updated in order to prevent race conditions and other thread safety problems." This is useful for read-modify-write patterns where you need to guarantee no other transaction changes the row between your read and your write. Three behaviors are easy to miss:
+
+- **`ORDER BY` cannot be combined with locking — anywhere.** You can't use the `ORDER BY` clause in *any* SOQL query that uses `FOR UPDATE`. This is a universal restriction on locking queries, not just a batch-start-query quirk. Sort the results in Apex after the query instead.
+- **A blocked `FOR UPDATE` throws `QueryException`, not `DmlException`.** If the lock can't be acquired within the 10-second wait, the query itself fails with a `QueryException`. That is a different exception type than the `DmlException` an ordinary blocked DML raises, so retry logic that catches only `DmlException` will let a `FOR UPDATE` timeout slip through uncaught.
+- **Locks release on a callout, not only at commit.** FOR UPDATE locks persist for the rest of the transaction, so long-running logic after the query extends the lock window and increases contention risk. But the platform also releases them automatically the moment the transaction makes a callout. A callout between the `FOR UPDATE` query and the follow-up DML silently drops the guarantee, reopening the race the lock was meant to close.
 
 ### Parent-Child Lock Escalation
 
@@ -122,6 +130,8 @@ public class RetryableUpdate implements Queueable {
 
 **Why not the alternative:** Retrying synchronously in a loop wastes governor limits and still contends on the same lock window. Queueable retry introduces a natural delay.
 
+**Caveat:** This pattern catches `DmlException`, which covers a blocked *DML* write. If the contended access is a `FOR UPDATE` *query* that can't acquire its lock, the failure arrives as a `QueryException` instead — add a matching `catch (QueryException e)` branch or the retry silently won't fire.
+
 ### Bulk API Serial Mode for Skewed Data
 
 **When to use:** Bulk API loads that target child objects with high parent-record skew (such as loading Contacts where many share the same Account).
@@ -179,6 +189,8 @@ Non-obvious platform behaviors that cause real production problems:
 2. **FOR UPDATE locks persist for the entire transaction** — if you run expensive logic after a FOR UPDATE query, you hold locks far longer than necessary, creating a wide contention window for other transactions.
 3. **The 10-second lock timeout is not configurable** — you cannot extend or shorten it. If your transaction holds a lock for more than 10 seconds, any concurrent transaction waiting on the same row will fail.
 4. **Aggregate SOQL on locked rows also blocks** — a SOQL query with GROUP BY or aggregate functions on rows that another transaction has locked will wait and potentially time out, even though no DML is involved.
+5. **A stalled FOR UPDATE query throws QueryException, not DmlException** — the 10-second lock wait applies to `FOR UPDATE` queries too, but when it expires the query raises a `QueryException`. Retry and error-handling code written around `DmlException` won't see it.
+6. **A callout releases every FOR UPDATE lock** — issuing a callout mid-transaction automatically drops the locks acquired by `FOR UPDATE`, even though the transaction is still open. Reads-modify-writes that span a callout lose their concurrency guarantee.
 
 ---
 

@@ -218,3 +218,57 @@ The explicit DTO makes the wire format reviewable, versionable,
 and immune to platform-side shape changes. The same rule
 applies to `Name` and Geolocation compound fields — never wire-
 serialize the compound; always map to components first.
+
+---
+
+## Gotcha 6: `DISTANCE` has four constraints that look like ordinary SOQL but aren't
+
+**What happens:** `DISTANCE` and `GEOLOCATION` read like normal
+functions, so it's easy to write variants the parser rejects at
+query time — or that the platform simply refuses. Four rules from
+the location-based SOQL reference are non-obvious:
+
+1. **`DISTANCE` in `WHERE` supports only `>` and `<`.** The docs
+   state it "supports only the logical operators > and <,
+   returning values within (<) or beyond (>) a specified radius."
+   There is no `=`, `>=`, or `<=` — the value is an approximate
+   floating-point distance, so equality is meaningless.
+   `WHERE DISTANCE(...) = 5` fails.
+2. **The unit must be a literal.** Supported units are `'mi'`
+   (miles) and `'km'` (kilometers) only, and "Apex bind variables
+   aren't supported for the units parameter in the DISTANCE
+   function." You can bind the coordinates
+   (`GEOLOCATION(:lat, :lon)`) but not the unit — `DISTANCE(
+   Location__c, GEOLOCATION(:lat, :lon), :unit)` won't compile.
+3. **Argument order is fixed.** "If you use a location field and
+   a GEOLOCATION value, the location field must be the first
+   variable and the GEOLOCATION must be the second variable."
+   Reversing them — `DISTANCE(GEOLOCATION(...), Location__c,
+   'mi')` — is invalid.
+4. **Selecting the raw compound value is API-scoped.** The same
+   reference notes "Compound fields can only be used in SOQL
+   queries made through the SOAP and REST APIs." The `DISTANCE`
+   and `GEOLOCATION` *functions* run fine in Apex inline SOQL (see
+   examples.md, Example 2), and a query that returns the whole
+   compound value is served through the SOAP and REST APIs; in
+   Apex, read the individual `__Latitude__s` / `__Longitude__s`
+   components. `DISTANCE`/`GEOLOCATION` are also unavailable in
+   `GROUP BY`, so bucketing records by distance band in a single
+   aggregate query isn't possible.
+
+**When it occurs:** Store-locator and territory-assignment
+features are the usual triggers. A developer parameterizes a
+query for reuse — binding the unit so the same method serves both
+a US (`'mi'`) and an EU (`'km'`) audience — and the class won't
+compile. Or a query author writes `WHERE DISTANCE(...) = 0` to
+find records "at" a point and gets a malformed query. Or a
+generated method flips the `GEOLOCATION` value ahead of the
+location field and the query is rejected only at runtime.
+
+**How to avoid:** Treat the unit as a compile-time constant —
+branch in Apex and emit a separate literal query string per unit
+if you truly need both. Filter radii with `<` (within) or `>`
+(beyond) only; there is no equality test. Keep the location field
+first and `GEOLOCATION` second. When you need the compound value
+itself rather than a distance, go through the SOAP or REST API, or
+read the individual latitude/longitude components in Apex.

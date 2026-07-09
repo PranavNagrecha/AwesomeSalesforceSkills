@@ -37,9 +37,18 @@ dependencies:
     - apex/governor-limits
     - apex/platform-cache
     - apex/recursive-trigger-prevention
+    - apex/soql-aggregate-field-type-support
+    - apex/soql-date-functions
+    - apex/soql-for-view-and-for-reference
+    - apex/soql-format-function-localization
     - apex/soql-fundamentals
+    - apex/soql-multiselect-picklist-queries
     - apex/soql-null-ordering-patterns
+    - apex/soql-object-limits-and-restrictions
+    - apex/soql-outer-join-null-semantics
     - apex/soql-security
+    - apex/soql-string-escaping-and-reserved-characters
+    - apex/soql-using-scope-clause
     - apex/trigger-framework
     - data/custom-index-requests
     - data/soql-query-optimization
@@ -117,6 +126,15 @@ Scans a user-specified scope (file, folder, or entire `force-app/`) for SOQL ant
 30. `skills/apex/formula-field-performance-and-limits` — when WHERE references formula fields
 31. `skills/apex/cross-object-formula-and-rollup-performance` — cross-object formula query cost
 32. `skills/apex/apex-execute-anonymous` — manual query verification helpers
+33. `skills/apex/soql-outer-join-null-semantics` — soql outer join null semantics
+34. `skills/apex/soql-object-limits-and-restrictions` — soql object limits and restrictions
+35. `skills/apex/soql-string-escaping-and-reserved-characters` — soql string escaping and reserved characters
+36. `skills/apex/soql-format-function-localization` — soql format function localization
+37. `skills/apex/soql-using-scope-clause` — soql using scope clause
+38. `skills/apex/soql-for-view-and-for-reference` — soql for view and for reference
+39. `skills/apex/soql-multiselect-picklist-queries` — soql multiselect picklist queries
+40. `skills/apex/soql-aggregate-field-type-support` — soql aggregate field type support
+41. `skills/apex/soql-date-functions` — soql date functions
 
 ---
 
