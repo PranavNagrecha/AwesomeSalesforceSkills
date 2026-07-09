@@ -29,7 +29,7 @@ History sObjects are available in Salesforce Report Builder, making them accessi
 
 - Salesforce Help — Track Field History: https://help.salesforce.com/s/articleView?id=sf.tracking_field_history.htm
 - Salesforce Object Reference — AccountHistory Object: https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_accounthistory.htm
-- Salesforce Object Reference — OpportunityHistory Object: https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_opportunityhistory.htm
+- Salesforce Object Reference — OpportunityFieldHistory Object: https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_opportunityfieldhistory.htm
 - Salesforce SOQL and SOSL Reference — Using Relationship Queries with History Objects: https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_relationships_query_hist.htm
 - Salesforce Object Reference — StandardObjectNameHistory (associated history objects): https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_associated_objects_history.htm
 - Salesforce Field Audit Trail Implementation Guide — SOQL with the FieldHistoryArchive Object: https://developer.salesforce.com/docs/atlas.en-us.field_history_retention.meta/field_history_retention/field_history_soql.htm

@@ -32,6 +32,7 @@
     "5709b3a94940712315c9",
     "59210b6bd452737d4266",
     "592978be9e8e386d121d",
+    "5ee374324c5582b7dfb8",
     "63289ea39bcb5811ac19",
     "66df670c3a811d4f85bc",
     "66dfb35f1fd2f0c2b89d",
@@ -90,9 +91,9 @@
     "f74bc9b05a8a96f0eeb6",
     "fec2e79bc467177d0d8a"
   ],
-  "content_hash": "112a1c474c6303987e358b72f402f348c54bbe7033d79713c6d9810bf562e603",
+  "content_hash": "212fb0fdf8c6c2de396eee9c407404dba2ccd489cee2a3261a4a75ef0f4da1ce",
   "dependencies": [],
-  "description": "Use when enabling, configuring, or querying Salesforce field history tracking to audit changes to field values over time. Covers enabling tracking on objects and fields, the 20-field-per-object limit, 18-month data retention, querying standard History sObjects (AccountHistory, OpportunityHistory, custom __History), and troubleshooting missing records. NOT for Event Monitoring (use security skills), NOT for Shield Field Audit Trail or FieldHistoryArchive (use field-audit-trail).",
+  "description": "Use when enabling, configuring, or querying Salesforce field history tracking to audit changes to field values over time. Covers enabling tracking on objects and fields, the 20-field-per-object limit, 18-month data retention, querying standard History sObjects (AccountHistory, OpportunityFieldHistory, custom __History), and troubleshooting missing records. NOT for Event Monitoring (use security skills), NOT for Shield Field Audit Trail or FieldHistoryArchive (use field-audit-trail).",
   "file_location": "skills/data/field-history-tracking",
   "id": "data/field-history-tracking",
   "inputs": [
@@ -105,7 +106,7 @@
   "official_sources": [
     "Salesforce Help \u2014 Track Field History: https://help.salesforce.com/s/articleView?id=sf.tracking_field_history.htm",
     "Salesforce Object Reference \u2014 AccountHistory Object: https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_accounthistory.htm",
-    "Salesforce Object Reference \u2014 OpportunityHistory Object: https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_opportunityhistory.htm",
+    "Salesforce Object Reference \u2014 OpportunityFieldHistory Object: https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_opportunityfieldhistory.htm",
     "Salesforce SOQL and SOSL Reference \u2014 Using Relationship Queries with History Objects: https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_relationships_query_hist.htm",
     "Salesforce Object Reference \u2014 StandardObjectNameHistory (associated history objects): https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_associated_objects_history.htm",
     "Salesforce Field Audit Trail Implementation Guide \u2014 SOQL with the FieldHistoryArchive Object: https://developer.salesforce.com/docs/atlas.en-us.field_history_retention.meta/field_history_retention/field_history_soql.htm",

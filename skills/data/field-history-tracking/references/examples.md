@@ -8,11 +8,11 @@
 
 **Solution:**
 
-Run a bounded SOQL query directly against `OpportunityHistory`:
+Run a bounded SOQL query directly against `OpportunityFieldHistory` (the Opportunity *field*-history sObject — **not** `OpportunityHistory`, which is the separate stage-history object and has no `Field` column):
 
 ```soql
 SELECT OpportunityId, OldValue, NewValue, CreatedById, CreatedDate
-FROM OpportunityHistory
+FROM OpportunityFieldHistory
 WHERE Field = 'StageName'
   AND CreatedDate >= 2025-01-01T00:00:00Z
   AND CreatedDate <= 2025-03-31T23:59:59Z
@@ -23,7 +23,7 @@ To join user names, wrap in Apex or use a relationship query:
 
 ```soql
 SELECT OpportunityId, OldValue, NewValue, CreatedBy.Name, CreatedBy.Username, CreatedDate
-FROM OpportunityHistory
+FROM OpportunityFieldHistory
 WHERE Field = 'StageName'
   AND CreatedDate >= 2025-01-01T00:00:00Z
   AND CreatedDate <= 2025-03-31T23:59:59Z
@@ -33,7 +33,7 @@ LIMIT 10000
 
 Export results via Data Loader or Workbench for analysis in Excel or BI tools.
 
-**Why it works:** `OpportunityHistory` stores one row per tracked field change. Filtering on `Field = 'StageName'` isolates only stage transitions. `CreatedBy.Name` provides the user's full name via a relationship traversal. The `CreatedDate` bounds scope the result to the desired quarter and avoid full-table scans.
+**Why it works:** `OpportunityFieldHistory` stores one row per tracked field change. Filtering on `Field = 'StageName'` isolates only stage transitions. `CreatedBy.Name` provides the user's full name via a relationship traversal. The `CreatedDate` bounds scope the result to the desired quarter and avoid full-table scans.
 
 ---
 

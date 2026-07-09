@@ -17,9 +17,14 @@ History object naming conventions:
 Standard objects:
   Account -> AccountHistory
   Contact -> ContactHistory
-  Opportunity -> OpportunityHistory
   Lead -> LeadHistory
   Case -> CaseHistory
+
+Exception (field history uses <Object>FieldHistory, not <Object>History):
+  Opportunity -> OpportunityFieldHistory
+  (OpportunityHistory is a DIFFERENT object — stage/pipeline history,
+   with no Field/OldValue/NewValue columns. Always confirm the sObject
+   name in the object reference.)
 
 Custom objects:
   My_Object__c -> My_Object__History

@@ -1,6 +1,6 @@
 ---
 name: field-history-tracking
-description: "Use when enabling, configuring, or querying Salesforce field history tracking to audit changes to field values over time. Covers enabling tracking on objects and fields, the 20-field-per-object limit, 18-month data retention, querying standard History sObjects (AccountHistory, OpportunityHistory, custom __History), and troubleshooting missing records. NOT for Event Monitoring (use security skills), NOT for Shield Field Audit Trail or FieldHistoryArchive (use field-audit-trail)."
+description: "Use when enabling, configuring, or querying Salesforce field history tracking to audit changes to field values over time. Covers enabling tracking on objects and fields, the 20-field-per-object limit, 18-month data retention, querying standard History sObjects (AccountHistory, OpportunityFieldHistory, custom __History), and troubleshooting missing records. NOT for Event Monitoring (use security skills), NOT for Shield Field Audit Trail or FieldHistoryArchive (use field-audit-trail)."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -68,7 +68,9 @@ The History related list is configured separately in Setup > Page Layouts. It mu
 
 ### Concept 2: History sObjects and Query Structure
 
-Every object with Field History Tracking enabled has a corresponding History sObject. Standard objects use named sObjects: `AccountHistory`, `ContactHistory`, `LeadHistory`, `OpportunityHistory`, `CaseHistory`, etc. Custom objects use the pattern `ObjectApiName__History` (e.g., `Project__History` for `Project__c`).
+Every object with Field History Tracking enabled has a corresponding History sObject. Standard objects use named sObjects: `AccountHistory`, `ContactHistory`, `LeadHistory`, `CaseHistory`, etc. Custom objects use the pattern `ObjectApiName__History` (e.g., `Project__History` for `Project__c`).
+
+**Naming exception — Opportunity:** the field-history sObject for Opportunity is **`OpportunityFieldHistory`**, not `OpportunityHistory`. The object named `OpportunityHistory` is a *different* object — it stores opportunity **stage/pipeline history** (`StageName`, `Amount`, `Probability`, `CloseDate`, `ForecastCategory`) and has no `Field`/`OldValue`/`NewValue` columns. A field-history query must target `OpportunityFieldHistory`. (A handful of other standard objects follow the same `<Object>FieldHistory` pattern — always confirm the exact sObject name in the object reference.)
 
 Key fields on all History sObjects:
 
@@ -95,11 +97,11 @@ ORDER BY CreatedDate DESC
 LIMIT 200
 ```
 
-Example SOQL — who changed StageName across all Opportunities in the last 30 days:
+Example SOQL — who changed StageName across all Opportunities in the last 30 days (note the `OpportunityFieldHistory` sObject — `OpportunityHistory` would fail here because it has no `Field` column):
 
 ```soql
 SELECT OpportunityId, OldValue, NewValue, CreatedById, CreatedDate
-FROM OpportunityHistory
+FROM OpportunityFieldHistory
 WHERE Field = 'StageName'
   AND CreatedDate = LAST_N_DAYS:30
 ORDER BY CreatedDate DESC
@@ -265,7 +267,7 @@ Non-obvious platform behaviors that cause real production problems:
 | Artifact | Description |
 |---|---|
 | Field history enablement decisions | Per-object table of enabled fields, tracking status, and field type eligibility |
-| SOQL query set | Parameterized queries for AccountHistory, OpportunityHistory, custom `__History` objects |
+| SOQL query set | Parameterized queries for AccountHistory, OpportunityFieldHistory, custom `__History` objects |
 | Troubleshooting diagnosis | Root cause analysis for missing history records |
 | Retention advisory | Documentation of the 18-month limit and recommended escalation to Shield FAT if needed |
 
