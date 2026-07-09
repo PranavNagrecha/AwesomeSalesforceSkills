@@ -42,6 +42,7 @@ dependencies:
     - flow/flow-invocable-from-apex
     - flow/flow-large-data-volume-patterns
     - flow/flow-loop-element-patterns
+    - flow/flow-open-a-page-action
     - flow/flow-performance-optimization
     - flow/flow-platform-events-integration
     - flow/flow-reactive-screen-components
@@ -146,6 +147,7 @@ For a given Flow or sObject, decides whether the automation is in the right tool
 51. `skills/flow/recursion-and-re-entry-prevention` — Diagnose Flow loops via state-guard, hash, or lock pattern; tighten over-broad entry criteria
 52. `skills/admin/flow-for-admins` — Flow for admins
 53. `skills/admin/flow-orchestration-admin` — Flow orchestration admin
+54. `skills/flow/flow-open-a-page-action` — flow open a page action
 
 ---
 

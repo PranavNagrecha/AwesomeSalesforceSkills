@@ -49,6 +49,7 @@ dependencies:
     - flow/flow-large-data-volume-patterns
     - flow/flow-loop-element-patterns
     - flow/flow-migration-from-trigger
+    - flow/flow-open-a-page-action
     - flow/flow-performance-optimization
     - flow/flow-platform-events-integration
     - flow/flow-reactive-screen-components
@@ -190,6 +191,7 @@ Given a business requirement, designs the correct Flow: Flow type (record-trigge
 69. `skills/flow/scheduled-flow-not-running-debug` — scheduled flow not running debug
 70. `skills/flow/screen-flow-radio-button-group` — screen flow radio button group
 71. `skills/flow/screen-flow-choice-component-selection` — screen flow choice component selection
+72. `skills/flow/flow-open-a-page-action` — flow open a page action
 
 ---
 

@@ -4843,6 +4843,7 @@
   notes: "Intake triage 2026-07-08T21:10:39Z: COVERED; search_knowledge top hits: flow/flow-action-framework (5.19135131479902). License class: clean-room."
   history:
     - { at: "2026-07-08T21:10:39Z", status: "DUPLICATE", actor: "onboard_source" }
+    - { actor: "onboard-source4", status: "DUPLICATE", at: "2026-07-09T00:53:39+00:00" }
 - id: "screen-flow-post-completion-navigation-and-redirect"
   status: "DUPLICATE"
   skill: "screen-flow-post-completion-navigation-and-redirect"
@@ -4850,10 +4851,12 @@
   notes: "Intake triage 2026-07-08T21:10:39Z: COVERED; search_knowledge top hits: flow/screen-flows (6.099244914902337), lwc/lwc-in-flow-screens (2.7934490573537336). License class: clean-room."
   history:
     - { at: "2026-07-08T21:10:39Z", status: "DUPLICATE", actor: "onboard_source" }
+    - { actor: "onboard-source4", status: "DUPLICATE", at: "2026-07-09T00:53:40+00:00" }
 - id: "flow-action-redirect-to-external-url"
-  status: "RESEARCH"
+  status: "DONE"
   skill: "flow-action-redirect-to-external-url"
   summary: "Flow Action Redirect to External URL — intake from https://salesforcebreak.com/2026/06/04/open-a-page-action-screen-flow/ (url mode)."
   notes: "Intake triage 2026-07-08T21:10:39Z: NET_NEW; search_knowledge top hits: security/oauth-redirect-and-domain-strategy (1.5056775441955166). License class: clean-room."
   history:
     - { at: "2026-07-08T21:10:39Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "onboard-source4", status: "DONE", at: "2026-07-09T00:53:39+00:00" }

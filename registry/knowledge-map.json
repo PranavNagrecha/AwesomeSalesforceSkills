@@ -785,6 +785,7 @@
       "flow/flow-large-data-volume-patterns",
       "flow/flow-loop-element-patterns",
       "flow/flow-migration-from-trigger",
+      "flow/flow-open-a-page-action",
       "flow/flow-orchestration-patterns",
       "flow/flow-performance-optimization",
       "flow/flow-platform-events-integration",
@@ -6969,7 +6970,8 @@
     ],
     "flow-actions": [
       "admin/custom-notification-types",
-      "agentforce/agentforce-tool-use-patterns"
+      "agentforce/agentforce-tool-use-patterns",
+      "flow/flow-open-a-page-action"
     ],
     "flow-apex-action": [
       "apex/invocable-methods"
@@ -7040,6 +7042,9 @@
     "flow-navigation": [
       "flow/flow-screen-lwc-components",
       "lwc/lwc-in-flow-screens"
+    ],
+    "flow-open-a-page-action": [
+      "flow/flow-open-a-page-action"
     ],
     "flow-orchestration": [
       "admin/flow-orchestration-admin",
@@ -9834,6 +9839,7 @@
     ],
     "navigation": [
       "admin/app-and-tab-configuration",
+      "flow/flow-open-a-page-action",
       "flow/screen-flows",
       "lwc/lightning-navigation-dead-link-handling"
     ],
@@ -10220,6 +10226,9 @@
     ],
     "onboarding-process": [
       "admin/client-onboarding-design"
+    ],
+    "open-a-page": [
+      "flow/flow-open-a-page-action"
     ],
     "open-cti": [
       "apex/cti-adapter-development"
@@ -12750,6 +12759,7 @@
       "flow/fault-handling",
       "flow/flow-dynamic-choices",
       "flow/flow-for-experience-cloud",
+      "flow/flow-open-a-page-action",
       "flow/flow-screen-input-validation-patterns",
       "flow/flow-screen-lwc-components",
       "flow/screen-flow-accessibility",
