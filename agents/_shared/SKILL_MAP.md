@@ -2,7 +2,7 @@
 
 This is the authoring reference for the run-time agent roster. Every skill id listed below has been verified to exist in `skills/<domain>/<slug>/SKILL.md` at the time of writing. When adding a new agent, cite only skills from this map (or verify a new citation before committing).
 
-All 56 active run-time agents are documented in their own `AGENT.md`. This file maps every agent to the skills, templates, and decision trees it depends on.
+All 47 active run-time agents are documented in their own `AGENT.md`. This file maps every agent to the skills, templates, and decision trees it depends on.
 
 ## Harnesses (Wave 3)
 
@@ -282,6 +282,34 @@ New skills landed 2026-05 and are wired into the agents shown below.
 - `architect/revenue-cloud-architecture` → `waf-assessor`, `fit-gap-analyzer` — Revenue Cloud (CPQ/Billing successor) architecture
 - `admin/report-type-strategy` → `audit-router` (`report_dashboard` classifier) — custom report types, with/without joins
 - `integration/sustainability-reporting` → `integration-catalog-builder` — Net Zero Cloud / sustainability data integration
+
+### Wave G (2026-07-08) — SOQL/SOSL Reference + Flow onboarding (15 new skills)
+
+Onboarded from the official *SOQL and SOSL Reference* and three Flow articles (PR #7). Wired into the agents shown; existing agents can cite them without authoring changes.
+
+#### Apex — SOQL (9 new)
+`apex-builder`, `soql-optimizer`, `security-scanner`, `lwc-builder` additionally cite:
+- `apex/soql-outer-join-null-semantics` → `apex-builder`, `soql-optimizer` — `= null`/`!= null` in WHERE, outer-join null-vs-FALSE semantics
+- `apex/soql-object-limits-and-restrictions` → `apex-builder`, `soql-optimizer` — ContentDocumentLink filter requirement, 100k-row non-filter cap
+- `apex/soql-string-escaping-and-reserved-characters` → `security-scanner`, `soql-optimizer` — quoted-string escapes + reserved chars, injection-safe binding
+- `apex/soql-format-function-localization` → `apex-builder`, `soql-optimizer` — `FORMAT()` locale-aware currency/date/number
+- `apex/soql-using-scope-clause` → `apex-builder`, `soql-optimizer` — `USING SCOPE` (mine/everything/team/scoping rules)
+- `apex/soql-for-view-and-for-reference` → `lwc-builder`, `soql-optimizer` — `FOR VIEW` / `FOR REFERENCE` recent-items tracking
+- `apex/soql-multiselect-picklist-queries` → `soql-optimizer` — `INCLUDES`/`EXCLUDES` multi-select filtering
+- `apex/soql-aggregate-field-type-support` → `soql-optimizer` — which field types support `SUM`/`AVG`/`MIN`/`MAX`
+- `apex/soql-date-functions` → `soql-optimizer` — `CALENDAR_*`/`DAY_ONLY`/fiscal date grouping + the GROUP-BY-repeat rule
+
+#### Data — SOSL (3 new)
+`data-model-reviewer` additionally cites:
+- `data/sosl-with-clauses` → `data-model-reviewer` — the SOSL `WITH` clause family (NETWORK/SNIPPET/HIGHLIGHT/METADATA/PricebookId/DivisionFilter/SPELL_CORRECTION/DATA CATEGORY)
+- `data/sosl-search-result-limits` → `data-model-reviewer` — SOSL result-count limits and `RETURNING` shaping
+- `data/sosl-external-object-search-limits` → `data-model-reviewer` — external-object SOSL search limits
+
+#### Flow (3 new)
+`flow-builder`, `flow-analyzer` additionally cite:
+- `flow/screen-flow-radio-button-group` → `flow-builder` — Summer '26 compact single-select Radio Button Group component
+- `flow/screen-flow-choice-component-selection` → `flow-builder` — choosing among Radio/Picklist/Dependent/Checkbox/Visual Picker/Choice Lookup
+- `flow/flow-open-a-page-action` → `flow-builder`, `flow-analyzer` — Summer '26 Open a Page post-flow navigation/redirect action
 
 ---
 
