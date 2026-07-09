@@ -171,3 +171,31 @@ Screen:
 ```
 
 **Detection hint:** Screen flow sections with 3+ columns without mobile layout consideration.
+
+---
+
+## Anti-Pattern 7: Treating Checkbox Group / Multi-Select output as a collection
+
+**What the LLM generates:**
+
+```
+Screen: [Checkbox Group: selectedProducts]
+Loop over {!selectedProducts}   // iterate each checked product
+  [Get Records] where Id = {!Loop.currentItem}
+```
+
+**Why it happens:** The component lets a user check multiple boxes, so the LLM assumes its output is a Flow collection it can loop over. It is not — Checkbox Group (and Multi-Select Picklist) stores every selection in a single semicolon-delimited text string. Looping over a text string, filtering a Get Records with it, or passing it to a Transform element does not work; Checkbox Group, Choice Lookup, and Multi-Select Picklist are all incompatible with the Transform element.
+
+**Correct pattern:**
+
+```
+Screen: [Checkbox Group: selectedProducts]   // "id1;id2;id3"
+[Convert the semicolon-delimited string to a text collection]
+  (split on ";" via a formula/Apex action, or an "add to collection" pattern)
+Loop over {!productIdCollection}
+  [Get Records] where Id = {!Loop.currentItem}
+```
+
+Convert the string into a collection variable first, then loop, filter, or transform.
+
+**Detection hint:** A Checkbox Group / Multi-Select Picklist output referenced directly as the collection of a Loop, the filter value of a Get Records, or the source of a Transform element with no intervening string-to-collection conversion.

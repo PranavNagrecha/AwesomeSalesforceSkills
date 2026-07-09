@@ -4789,40 +4789,45 @@
     - { at: "2026-07-08T20:49:22Z", status: "DUPLICATE", actor: "onboard_source" }
     - { actor: "onboard-salesforcebreak-2026-07-08", status: "DUPLICATE", at: "2026-07-08T21:06:03+00:00" }
 - id: "screen-flow-radio-button-group-component"
-  status: "RESEARCH"
+  status: "DONE"
   skill: "screen-flow-radio-button-group-component"
   summary: "Screen Flow Radio Button Group Component — intake from https://salesforcebreak.com/2026/05/21/summer-26-screen-flow-radio-button-group/ (url mode)."
   notes: "Intake triage 2026-07-08T21:07:51Z: NET_NEW; search_knowledge top hits: flow/screen-flow-accessibility (2.5267010322978063), flow/screen-flows (2.0999082797851574). License class: clean-room."
   history:
     - { at: "2026-07-08T21:07:51Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "onboard-source3", status: "DONE", at: "2026-07-09T00:12:38+00:00" }
 - id: "screen-flow-choice-component-selection-guide"
-  status: "RESEARCH"
+  status: "DONE"
   skill: "screen-flow-choice-component-selection-guide"
   summary: "Screen Flow Choice Component Selection Guide — intake from https://salesforcebreak.com/2026/05/21/summer-26-screen-flow-radio-button-group/ (url mode)."
   notes: "Intake triage 2026-07-08T21:07:51Z: NET_NEW; search_knowledge top hits: flow/flow-resource-patterns (1.9808429149652236), flow/flow-dynamic-choices (4.18256613196937). License class: clean-room."
   history:
     - { at: "2026-07-08T21:07:51Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "onboard-source3", status: "DONE", at: "2026-07-09T00:12:38+00:00" }
 - id: "screen-flow-visual-picker-component"
-  status: "RESEARCH"
+  status: "DONE"
   skill: "screen-flow-visual-picker-component"
   summary: "Screen Flow Visual Picker Component — intake from https://salesforcebreak.com/2026/05/21/summer-26-screen-flow-radio-button-group/ (url mode)."
   notes: "Intake triage 2026-07-08T21:07:51Z: NET_NEW; search_knowledge top hits: lwc/lwc-in-flow-screens (1.520504573703728), flow/flow-screen-lwc-components (2.107028077834785), flow/flow-reactive-screen-components (1.5141278138318266). License class: clean-room."
   history:
     - { at: "2026-07-08T21:07:51Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "onboard-source3", status: "DONE", at: "2026-07-09T00:12:39+00:00" }
 - id: "screen-flow-choice-lookup-component"
-  status: "RESEARCH"
+  status: "DONE"
   skill: "screen-flow-choice-lookup-component"
   summary: "Screen Flow Choice Lookup Component — intake from https://salesforcebreak.com/2026/05/21/summer-26-screen-flow-radio-button-group/ (url mode)."
   notes: "Intake triage 2026-07-08T21:07:51Z: NET_NEW; search_knowledge top hits: flow/flow-for-experience-cloud (1.555001343905484), flow/flow-dynamic-choices (5.1664937361291035). License class: clean-room."
   history:
     - { at: "2026-07-08T21:07:51Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "onboard-source3", status: "DONE", at: "2026-07-09T00:12:39+00:00" }
 - id: "screen-flow-checkbox-group-component"
-  status: "RESEARCH"
+  status: "DONE"
   skill: "screen-flow-checkbox-group-component"
   summary: "Screen Flow Checkbox Group Component — intake from https://salesforcebreak.com/2026/05/21/summer-26-screen-flow-radio-button-group/ (url mode)."
   notes: "Intake triage 2026-07-08T21:07:51Z: ENRICH; search_knowledge top hits: flow/screen-flows (3.271839164465276), flow/flow-screen-lwc-components (1.8056253989000863), flow/flow-reactive-screen-components (1.557606337128752). License class: clean-room."
   history:
     - { at: "2026-07-08T21:07:51Z", status: "RESEARCH", actor: "onboard_source" }
+    - { actor: "onboard-source3", status: "DONE", at: "2026-07-09T00:12:39+00:00" }
 - id: "screen-flow-choice-component-styling-overrides"
   status: "DUPLICATE"
   skill: "screen-flow-choice-component-styling-overrides"
@@ -4830,6 +4835,7 @@
   notes: "Intake triage 2026-07-08T21:07:51Z: COVERED; search_knowledge top hits: flow/flow-dynamic-choices (5.831310058509869). License class: clean-room."
   history:
     - { at: "2026-07-08T21:07:51Z", status: "DUPLICATE", actor: "onboard_source" }
+    - { actor: "onboard-source3", status: "DUPLICATE", at: "2026-07-09T00:12:39+00:00" }
 - id: "flow-open-a-page-core-action"
   status: "DUPLICATE"
   skill: "flow-open-a-page-core-action"

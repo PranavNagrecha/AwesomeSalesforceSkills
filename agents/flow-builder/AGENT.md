@@ -72,6 +72,8 @@ dependencies:
     - flow/scheduled-flow-not-running-debug
     - flow/scheduled-flows
     - flow/screen-flow-accessibility
+    - flow/screen-flow-choice-component-selection
+    - flow/screen-flow-radio-button-group
     - flow/screen-flows
     - flow/subflows-and-reusability
     - flow/workflow-rule-to-flow-migration
@@ -186,6 +188,8 @@ Given a business requirement, designs the correct Flow: Flow type (record-trigge
 67. `skills/flow/process-builder-to-flow-migration` — Process builder to flow migration
 68. `skills/flow/workflow-rule-to-flow-migration` — Workflow rule to flow migration
 69. `skills/flow/scheduled-flow-not-running-debug` — scheduled flow not running debug
+70. `skills/flow/screen-flow-radio-button-group` — screen flow radio button group
+71. `skills/flow/screen-flow-choice-component-selection` — screen flow choice component selection
 
 ---
 

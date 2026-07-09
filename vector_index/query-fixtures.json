@@ -8099,6 +8099,30 @@
       "domain": "data",
       "expected_skill": "data/sosl-external-object-search-limits",
       "top_k": 3
+    },
+    {
+      "query": "make radio buttons in a screen flow take up less space with the new compact horizontal layout",
+      "domain": "flow",
+      "expected_skill": "flow/screen-flow-radio-button-group",
+      "top_k": 3
+    },
+    {
+      "query": "let users pick multiple options from a radio button group in a flow screen",
+      "domain": "flow",
+      "expected_skill": "flow/screen-flow-radio-button-group",
+      "top_k": 3
+    },
+    {
+      "query": "which flow screen component should I use to let users pick one option from a long list",
+      "domain": "flow",
+      "expected_skill": "flow/screen-flow-choice-component-selection",
+      "top_k": 3
+    },
+    {
+      "query": "why can't my loop iterate the values a user selected in a multi-select picklist screen flow",
+      "domain": "flow",
+      "expected_skill": "flow/screen-flow-choice-component-selection",
+      "top_k": 3
     }
   ]
 }

@@ -810,6 +810,8 @@
       "flow/scheduled-flow-not-running-debug",
       "flow/scheduled-flows",
       "flow/screen-flow-accessibility",
+      "flow/screen-flow-choice-component-selection",
+      "flow/screen-flow-radio-button-group",
       "flow/screen-flows",
       "flow/subflows-and-reusability",
       "flow/workflow-rule-to-flow-migration"
@@ -3521,6 +3523,13 @@
     "child-to-parent": [
       "apex/apex-soql-relationship-queries"
     ],
+    "choice-components": [
+      "flow/screen-flow-choice-component-selection",
+      "flow/screen-flow-radio-button-group"
+    ],
+    "choice-resources": [
+      "flow/screen-flow-choice-component-selection"
+    ],
     "choice-sets": [
       "flow/flow-resource-patterns"
     ],
@@ -3897,6 +3906,9 @@
     ],
     "component-count": [
       "admin/lightning-page-performance-tuning"
+    ],
+    "component-selection": [
+      "flow/screen-flow-choice-component-selection"
     ],
     "composable-commerce": [
       "architect/composable-commerce-architecture"
@@ -6946,6 +6958,7 @@
       "flow/flow-versioning-strategy",
       "flow/recursion-and-re-entry-prevention",
       "flow/screen-flow-accessibility",
+      "flow/screen-flow-radio-button-group",
       "omnistudio/omnistudio-vs-flow-decision"
     ],
     "flow-action": [
@@ -12740,13 +12753,18 @@
       "flow/flow-screen-input-validation-patterns",
       "flow/flow-screen-lwc-components",
       "flow/screen-flow-accessibility",
+      "flow/screen-flow-radio-button-group",
       "lwc/lwc-in-flow-screens",
       "security/ip-range-and-login-flow-strategy"
     ],
     "screen-flow-actions": [
       "admin/custom-button-to-action-migration"
     ],
+    "screen-flow-radio-button-group": [
+      "flow/screen-flow-radio-button-group"
+    ],
     "screen-flows": [
+      "flow/screen-flow-choice-component-selection",
       "flow/screen-flows"
     ],
     "screen-reader": [
@@ -13333,6 +13351,9 @@
     "single-component-preview": [
       "lwc/lwc-local-development"
     ],
+    "single-vs-multi-select": [
+      "flow/screen-flow-choice-component-selection"
+    ],
     "sis-integration": [
       "integration/sis-integration-patterns"
     ],
@@ -13851,6 +13872,9 @@
     ],
     "summary-formulas": [
       "admin/reports-and-dashboards-fundamentals"
+    ],
+    "summer-26": [
+      "flow/screen-flow-radio-button-group"
     ],
     "supervisor-specialist-topology": [
       "architect/ai-platform-architecture"
