@@ -1,0 +1,166 @@
+[
+ [
+  "fresh-clone-works",
+  "BLOCKING FOR QA \u2014 THE DELIVERABLES ARE UNCOMMITTED. scripts/bootstrap.py and docs/installing.md are untracked; .gitignore, pyproject.toml and CONNECT.md are unstaged. A literal `git clone` of HEAD 38aea1e34 therefore does NOT contain bootstrap.py, and every acceptance verify_command that clones the repo will fail with 'can't open file scripts/bootstrap.py'. I ran the acceptance suite by cloning the repo into a throwaway staging clone, committing ONLY my five owned files there, and cloning from that \u2014 a faithful simulation of the post-commit state. Commit these five paths before QA runs the verify_commands verbatim."
+ ],
+ [
+  "fresh-clone-works",
+  "README.md (not owned) \u2014 apply the three corrections from the spec's handoff list. (1) Replace `python3 scripts/build_index.py` in the install block with `python3 scripts/bootstrap.py   # one-time setup \u2014 index + slash commands`; build_index.py leaves 1,029 modified tracked files on a clean clone. (2) The asserted score `- apex/recursive-trigger-prevention (2.505)` is 2.350 on the default lexical-only index \u2014 replace with prose telling the reader to assert the skill id, not the score. (3) The paragraph claiming `Budget 15+ minutes \u2014 the embedding encode dominates` and `total roughly 800 MB` is false on the documented dep set: measured 9 s and 292 MB (lexical.sqlite 166 MB + chunks.jsonl 126 MB), because requirements.txt does not install fastembed. Suggested replacement text is in the spec's handoffs, but use 9 s not 14 s \u2014 I re-measured. Also add a docs/installing.md link next to docs/installing-single-agents.md."
+ ],
+ [
+  "fresh-clone-works",
+  "mcp/sfskills-mcp/requirements.txt (not owned) still reads `mcp>=1.4.0` \u2014 its only line. Change to `mcp>=1.7.0,<2.0` in lockstep with pyproject.toml or the two files disagree. Verified still stale as of this session."
+ ],
+ [
+  "fresh-clone-works",
+  "`.github/workflows/publish-mcp.yml` (not owned) is a hard blocker on defect (d). `cp -r vector_index _bundle/sfskills-data/` runs against a CI checkout where only manifest.json + 2 fixture files are tracked (verified: `git ls-files vector_index/` returns 3 paths; `grep -c 'build_index|skill_sync|bootstrap'` returns 0). A release cut today ships a tarball with no retrieval index, and sfskills-mcp-init would 'succeed' into a cache that answers nothing \u2014 worse than the current honest 404. Add `python3 -m pip install -r requirements.txt && python3 scripts/bootstrap.py --skip-commands` before the bundle step. Also add a smoke step (`pip install -e mcp/sfskills-mcp && python -c 'import sfskills_mcp.server'`) so an unbounded transitive pin can never ship again."
+ ],
+ [
+  "fresh-clone-works",
+  "mcp/sfskills-mcp/src/sfskills_mcp/init.py (not owned) should degrade more helpfully. Today the 404 prints only `HTTP 404 fetching <url>` + `Verify the release tag exists`. Recommended added line: `No published release carries sfskills-data.tar.gz yet. Until one is cut, clone the repo, run python3 scripts/bootstrap.py, and set SFSKILLS_REPO_ROOT=<checkout>. Maintainers: see docs/installing.md.`"
+ ],
+ [
+  "fresh-clone-works",
+  "scripts/search_knowledge.py (not owned) exits 0 whether or not vector_index/lexical.sqlite exists \u2014 verified both ways this session. A missing index is indistinguishable from an uncovered query, which is the root reason defect (b) was invisible. It should print `index not built \u2014 run python3 scripts/bootstrap.py` and exit non-zero when the sqlite is absent. This single change would make the failure self-diagnosing; bootstrap.py --verify-only is only a partial substitute because users do not know to run it."
+ ],
+ [
+  "fresh-clone-works",
+  "pipelines/sync_engine.py (not owned): write_state nulls `vector_embedding` on all 1,027 registry records and zeroes embedding_count in vector_index/manifest.json when the embeddings backend is unavailable, so scripts/build_index.py leaves 1,029 modified tracked files on a clean clone. bootstrap.py sidesteps this by never calling write_state, but anyone following the current README still hits it. Real fix: preserve existing vector_embedding metadata on the missing-backend path, as the skip_embeddings=True path already does via _load_existing_embeddings_for_chunks."
+ ],
+ [
+  "fresh-clone-works",
+  "VERSION DRIFT on PyPI (not owned), re-verified this session: `pip install sfskills-mcp` yields wheel version 0.4.6 but `sfskills_mcp.__version__` reports 0.4.4 \u2014 the published wheel was built from stale source. In-tree the two agree (both 0.4.6). Whoever cuts the next release must rebuild from current source."
+ ],
+ [
+  "fresh-clone-works",
+  "CUTTING THE GITHUB RELEASE IS THE OWNER'S CALL \u2014 explicitly not done and not doable by any agent. The runbook is docs/installing.md section 6. Note for the owner: workflow_dispatch will not work (publish-data is gated on refs/tags/mcp-v), and one tag per push is mandatory because GitHub suppresses push events when >3 tags arrive at once (officially documented, cited in the doc)."
+ ],
+ [
+  "fresh-clone-works",
+  "The GitHub repo description (outward-facing, owner's call) still says '982+ skills, 75 agents'. Actual: 1,027 skills, 47 active runtime agents."
+ ],
+ [
+  "fresh-clone-works",
+  "CROSS-ITEM: my .gitignore change adds !.claude/agents/ and !.claude/skills/, which supports the Claude-Code-plugin item (scripts/build_plugin.py). That agent must not also edit .gitignore. Note 71 files under those two trees are already tracked at HEAD, so reversing this decision is the larger change."
+ ],
+ [
+  "fresh-clone-works",
+  "EVIDENCE BRIEF CORRECTION to propagate: section 4b's '>14m36s with zero progress output' is not reproducible on the documented dependency set, and even the spec's revised 14 s estimate is high. Measured: build_index.py 35 s cold, bootstrap.py 9 s cold / 7-8 s warm. Section 4b also says '.gitignore:63' and 'exactly 1 file tracked under .claude/' \u2014 at HEAD it is .gitignore:84 and 72 files (48 agents + 23 skills + 1 workflow), because the checkpoint commit force-added them. And the README sentence '.claude/commands/ ships in-tree' named in the goal no longer exists at HEAD."
+ ],
+ [
+  "validator-integrity",
+  "CLAUDE.md (NOT OWNED) - 2 live validator ERRORs blocking a 0-error run: `active_runtime is 47 in doc but canonical is 48 (pattern /Run-time agents \\((\\d+)\\)/)` and `runtime tiers sum to 47 (16+14+7+10) but active-runtime total is 48`. Fix: `python3 scripts/check_doc_counts.py --fix` handles the first; the tier line must be hand-edited to 'Vertical + governance - Tier 3 (11)' with `omnistudio-designer` added, per agents/_shared/RUNTIME_VS_BUILD.md:82,95. I made the identical edit in AGENT_RULES.md - copy that wording."
+ ],
+ [
+  "validator-integrity",
+  "mcp/sfskills-mcp/README.md (NOT OWNED) - the same 2 doc-count ERRORs: `active_runtime is 47 in doc but canonical is 48 (pattern /\\((\\d+) active runtime agents/)` and the tier sum. Same fix as CLAUDE.md."
+ ],
+ [
+  "validator-integrity",
+  "agents/*/AGENT.md, 16 FILES (NOT OWNED) - BREAKS THE NEW mcp-tests CI JOB. test_agent_bundle.TestCitationsMatchDependencies fails: 16 agents cite `skills/admin/agent-output-formats` in their body but no longer declare it in frontmatter.dependencies.skills. Agents: agentforce-builder, apex-builder, apex-refactorer, data-loader-pre-flight, data-model-reviewer, deployment-risk-scorer, experience-cloud-admin-designer, flow-builder, integration-catalog-builder, lwc-auditor, lwc-builder, object-designer, security-scanner, soql-optimizer, test-class-generator, waf-assessor. Fix: `python3 scripts/migrate_agent_dependencies.py --agent <id> --force` per agent, OR restore the `    - admin/agent-output-formats` frontmatter line."
+ ],
+ [
+  "validator-integrity",
+  "vector_index/query-fixtures.json + retrieval ranking (NOT OWNED, generated) - enabling the fixture gate surfaces exactly 1 failure in 1,356: query `translate omniscript` does not return `omnistudio/omnistudio-multi-language` in top 3. STILL PRESENT as of my last run, so the concurrent retrieval agent's work has not resolved it. Owner must either sharpen that skill's triggers or widen the fixture's top_k. Do NOT delete the fixture (it is generated, and deleting it also trips the 'every skill has a fixture' ERROR) and do NOT re-add --skip-fixture-retrieval."
+ ],
+ [
+  "validator-integrity",
+  "ORCHESTRATOR DECISION NEEDED: with the fixture gate now on, the omnistudio shard of validate-skills WILL be red until the translate-omniscript failure is fixed. Choose: (a) fix the fixture/ranking first, or (b) merge knowingly red-by-one. I did not paper over it - the workflow comment documents it explicitly."
+ ],
+ [
+  "validator-integrity",
+  "GENERATED ARTIFACTS - run `python3 scripts/skill_sync.py --all` centrally after this item lands (I am forbidden from running it). It must (a) commit the docs/queue-progress.md 2-line date change as a generated artifact - do NOT hand-edit it back to 2026-08-01, and (b) clear the 21 stale-artifact ERRORs currently caused by other agents' unsynced skills/ edits. Also verify whether standards/validation-gates.md changes - I only edited an inline comment in validate_repo.py, and the gate-doc generator reads docstrings, so it most likely does not; verify rather than assume."
+ ],
+ [
+  "validator-integrity",
+  "pipelines/sync_engine.py (NOT OWNED) - COSMETIC ONLY, not required for correctness. Line 270 still passes `today=_date.today().isoformat()`; render_dashboard now ignores it, so the defect is already neutralised. Follow-up: drop the dead `from datetime import date as _date` (~line 259) and the `today=` argument. CRITICAL GUARDRAIL: nobody may 'fix' this by re-introducing a wall-clock date into the rendered text - that recreates the red-by-construction bug."
+ ],
+ [
+  "validator-integrity",
+  "README.md CI badge (NOT OWNED) - once the queue-progress fix, the 4 doc-count errors and the translate-omniscript fixture are all cleared, the badge can go green for the first time since 2026-07-09. Confirm it points at the `validate` workflow and re-check after the first post-fix run on main."
+ ],
+ [
+  "citation-integrity",
+  "LOAD-BEARING \u2014 scripts/validate_repo.py (owned by 'validator-integrity'). Without this the tree goes red by 501 ERRORs and the next contributor re-pads. (a) DEMOTE bare orphan-ness ERROR->WARN at the ValidationIssue in _check_orphan_skills (scripts/validate_repo.py:407-459, the issue is raised ~line 450). This RESTORES the documented contract: AGENT_RULES.md:132, commands/new-skill.md:108,112 and agents/_shared/AGENT_CONTRACT.md:169 all already say WARN; only CLAUDE.md:37 and the code say ERROR. CRITICAL: also rewrite the message text \u2014 the current message literally instructs the reader to run `patch_agent_skill.py ... \"<description>\"` to clear the ERROR. I read it in situ; that string IS the incentive loop that produced the 555 stubs. Suggested replacement: 'skill <id> is cited by no run-time agent (advisory). Wire it only if an agent's output would be wrong without it; otherwise leave it, or set runtime_orphan: true if it is deliberately human-reference.' (b) ADD ERROR for echo-stub citations: parse each agents/*/AGENT.md '## Mandatory Reads' section for `^(?:\\d+\\.|[-*])\\s+`skills/(<id>)`(?:\\s*[\u2014\u2013-]\\s*(<desc>))?$` and ERROR when is_echo_description(id, desc) is True. IMPORT the predicate from scripts/patch_agent_skill.py \u2014 it is shipped with exactly that signature so writer and gate cannot drift. (c) ADD the bound: ERROR when an agent's Mandatory Reads has >45 `skills/` lines, WARN >25. Count ONLY `skills/` lines; standards/, templates/, agents/, evals/ and probe entries are exempt. 45 deliberately spares every already-curated list (omnistudio-designer 44, test-class-generator 44, flow-analyzer, lwc-debugger 42). (d) RECOMMENDED parity ERROR: a dependencies.skills: entry with no matching Mandatory Reads line or vice versa \u2014 32 such YAML-only entries remain repo-wide (down from 57), all pre-existing and all outside the five reworked agents; without this rule padding can simply relocate into YAML where no human reads it."
+ ],
+ [
+  "citation-integrity",
+  "ORPHAN FALLOUT NUMBER FOR SIZING THE GATE CHANGE: 501 skills, not the projected 520. Per-domain: admin 128, apex 78, architect 73, data 71, integration 39, lwc 32, agentforce 26, devops 24, security 22, flow 8, omnistudio 0. Full sorted list: /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/c190ea2f-6abb-4296-8a86-59fc95885f09/scratchpad/newly_orphaned.txt (501 lines). Reproduce with scratchpad/orphan_report.py, which replicates _check_orphan_skills semantics exactly (frontmatter category/name, runtime_orphan exemption, YAML-block-only citation scan)."
+ ],
+ [
+  "citation-integrity",
+  "RESIDUAL HOLE I DELIBERATELY DID NOT PATCH \u2014 prefixed echo stubs. audit-router carries 25 reads shaped `skills/admin/analytics-dashboard-json` \u2014 'Analytics/reporting: Analytics dashboard json': a category label prepended to a slug echo. These are PRE-EXISTING (verified as unchanged context lines in the diff; the run only fixed audit-router's 2 true echo stubs at lines 40-41) and they DODGE the exact-match predicate, so AC-1 reads 0 while 25 near-worthless descriptions survive. I did not harden is_echo_description to strip a leading 'Label: ' prefix for two reasons: it would silently expand this item's scope into audit-router lines the spec did not assign me, and it would light up 25 fresh ERRORs the moment handoff (b) lands. RECOMMENDATION for validator-integrity: add prefix-stripping to the predicate (split on the first ':', compare the tail) AND assign audit-router's 25 lines to a follow-on item in the same change, so the gate and the content land together. The 5 AC-5 test vectors are unaffected by prefix-stripping ('for any Account-variant design' contains no colon)."
+ ],
+ [
+  "citation-integrity",
+  "CLAUDE.md:37 must be reworded once the gate changes \u2014 it currently asserts '`validate_repo.py` errors on any skill that's neither cited by an agent nor explicitly orphaned', which becomes false and is the one doc that disagrees with AGENT_RULES.md today. Not owned by this item. Replace so the ERROR is the QUALITY rule (no echo stubs, bounded lists) and the WARN is the coverage advisory."
+ ],
+ [
+  "citation-integrity",
+  "standards/validation-gates.md is generated and documents the orphan gate as ERROR at line 91. Regenerate after the validator change; do not hand-edit. Not owned by this item."
+ ],
+ [
+  "citation-integrity",
+  "scripts/skill_sync.py / registry / vector_index regeneration: not run by this item per house rules. Nothing in registry/, vector_index/, docs/SKILLS.md or docs/queue-progress.md was touched."
+ ],
+ [
+  "citation-integrity",
+  "POLICY: do NOT bulk-set runtime_orphan: true on the 501 newly-orphaned skills. That is the identical gaming pattern under a different label and would re-manufacture the coverage number. AC-9 pins the count at 41; it is still 41. Genuine per-skill orphan marking is a separate judgment-based item."
+ ],
+ [
+  "citation-integrity",
+  "agents/_shared/SKILL_MAP.md was not touched (not owned). Its object-designer entry (lines 27-34) was already the honest unpadded list and remains consistent with the 29-read rewrite. Spot-check the other reworked agents' entries \u2014 several agents shrank by 100+ reads, so any SKILL_MAP entry that enumerated the padded set would now be stale."
+ ],
+ [
+  "citation-integrity",
+  "The evidence brief's \u00a73b 'omnistudio 34/34 uncited' is STALE and should be corrected in EVIDENCE.md so a downstream agent does not build a redundant OmniStudio agent. agents/omnistudio-designer/AGENT.md exists with 44 skill reads, all real descriptions, 0 echo stubs, and contributes 0 to the 501 orphan set."
+ ],
+ [
+  "stub-skill-cleanup",
+  "REGENERATE ARTEFACTS, THEN RE-RUN THE RETRIEVAL CRITERIA. I did not run scripts/skill_sync.py or scripts/build_index.py (forbidden). vector_index/manifest.json is still the 10:06 build; my first write was 11:19. Acceptance criteria 3, 4 (top-skill half), 5 and 6 are retrieval assertions and CANNOT be evaluated until you run `python3 scripts/skill_sync.py --all` and rebuild the index. Run: skill_sync --all, build_index, then validate_repo.py, then criteria 3/4/5/6."
+ ],
+ [
+  "stub-skill-cleanup",
+  "RESTORE 3 AGENT CITATIONS \u2014 BLOCKS CRITERION 9, AND THE FILE IS NOT MINE. A concurrent agent removed 487 of 1,031 distinct skill citations from agents/** in the shared working tree (agents/lwc-builder/AGENT.md went 98 -> 49 citations; agents/integration-catalog-builder/AGENT.md 66 -> 26). Three of my 28 skills were cited at HEAD and are now orphaned, producing 3 ERRORs. Exact fix, in agents/** which is out of my scope: re-add `- lwc/file-upload-patterns` and `44. `skills/lwc/file-upload-patterns`` to agents/lwc-builder/AGENT.md; re-add `- integration/connect-rest-api-patterns`, `- integration/salesforce-data-pipeline-etl` and their numbered Mandatory Reads entries (`16. `skills/integration/connect-rest-api-patterns` \u2014 Connect API vs raw SObject`, `18. `skills/integration/salesforce-data-pipeline-etl` \u2014 Bulk + CDC lake pipelines`) to agents/integration-catalog-builder/AGENT.md. I deliberately did NOT add `runtime_orphan: true` to these three skills: all three are legitimately owned by a relevant agent, and marking them orphan would launder another agent's regression through exactly the Goodhart mechanism the evidence brief documents in \u00a7 3b/4d."
+ ],
+ [
+  "stub-skill-cleanup",
+  "487-CITATION REMOVAL IS A REPO-WIDE TIME BOMB, not just my 3. Once a full `validate_repo.py` runs, `_check_orphan_skills` will ERROR on roughly 487 skills across every domain (sample: admin/activity-and-task-patterns, admin/b2b-commerce-store-setup, admin/campaign-planning-and-attribution...). Reproduce with: `git grep -h -oE 'skills/[a-z]+/[a-z0-9-]+' HEAD -- agents/` vs the same without HEAD -> 1031 distinct vs 544. Decide before merge whether the echo-stub cleanup intends to leave those skills orphaned (in which case they need `runtime_orphan: true` + reasons) or whether the removal over-reached."
+ ],
+ [
+  "stub-skill-cleanup",
+  "FIX 3 STALE CLAIMS IN SKILL.md BODIES (I may only edit the 2 frontmatter lines). (a) skills/lwc/file-upload-patterns/SKILL.md body says `<lightning-file-upload> for \u22642GB files` and `Apex heap is 6MB / 12MB` + `chunk at 4.5MB`; the component reference documents 10 GB and no published chunk size \u2014 change '\u22642GB' to '\u226410GB' and drop the invented 4.5 MB constant. (b) skills/lwc/lwc-internationalization/SKILL.md body says 'Custom Labels have a 255-char limit'; documented limit is 1,000 characters, 5,000 labels per org \u2014 the 255 figure is pushing readers into an unnecessary CMDT workaround. (c) skills/omnistudio/omnistudio-asynchronous-data-operations/SKILL.md body says 'IPs sync limit: 120s overall, 10s per HTTP callout' as if these were OmniStudio settings; they are Apex callout limits (developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts_timeouts.htm) and should be attributed. Also skills/omnistudio/omnistudio-lwc-omniscript-migration/SKILL.md body carries an unsourced 'Performance improves 30\u201360% in our benchmarks' and skills/omnistudio/omnistudio-multi-language/SKILL.md body describes a per-script 'Language Data JSON' workflow that is not the documented mechanism (custom labels are)."
+ ],
+ [
+  "stub-skill-cleanup",
+  "FIX THE VALIDATOR GATE THAT PRODUCED THE WAVE (pipelines/validators.py, not my file). Line 281 warns only when anti-pattern count < 5 and all 38 stubs sat at exactly 5; line 296 errors only on a missing/empty `## Official Sources Used` heading, which one rubber-stamped per-domain list satisfied. Add: (a) WARN when references/llm-anti-patterns.md is under 2,000 bytes (corpus p10 is 2,966); (b) WARN when references/examples.md contains zero code fences (844/1027 already have one); (c) WARN/ERROR when two skills in the same domain have byte-identical `## Official Sources Used` blocks. Without these the next contributor who trips the 5-item gate re-creates this wave."
+ ],
+ [
+  "stub-skill-cleanup",
+  "10 MERGE RECOMMENDATIONS STAND, NONE EXECUTED \u2014 criterion 10 verified byte-identical (git status on all 10 paths prints nothing). They are also the ONLY in-scope stubs left: after my work exactly 17 files remain under 600 bytes = 7 security + these 10. Per the spec: lwc/drag-and-drop -> lwc/lwc-drag-and-drop; lwc/virtualized-lists -> lwc/lwc-virtualized-lists; flow/flow-and-platform-events -> flow/flow-platform-events-integration; flow/flow-interview-debugging -> flow/flow-debugging; agentforce/prompt-template-versioning -> agentforce/agentforce-prompt-versioning; agentforce/agent-deployment-checklist -> agentforce/agentforce-production-readiness-checklist; agentforce/agent-metric-dashboards -> agentforce/agentforce-observability; devops/devops-center-advanced -> devops/devops-center-pipeline; integration/webhook-signature-verification -> integration/webhook-inbound-patterns; omnistudio/omnistudio-cache-strategies -> omnistudio/integration-procedure-cacheable-patterns + omnistudio/omnistudio-performance. Deletion cascades into registry/, vector_index/chunks.jsonl, query-fixtures.json and agent citations \u2014 owner's call."
+ ],
+ [
+  "stub-skill-cleanup",
+  "TELL THE SECURITY-DEPTH AGENT ABOUT ITS OWN PACKAGE: skills/security/privileged-access-management is now 43.7 KB, over the 30 KB zero-sum cap, and its examples.md contains a 2-line fenced block that fails criterion 12's 3-line minimum. Its anti-patterns file also has 6 anti-patterns where the other deepened packages carry 7. I did not touch it (mtimes 10:55/10:58 vs my first write at 11:19)."
+ ],
+ [
+  "stub-skill-cleanup",
+  "CRITERION 5 HAS AN UNSTABLE EXPECTATION \u2014 1 of its 12 baselines fails on the PRE-CHANGE index, so it will fail after the rebuild for reasons unrelated to this item. `cache a dataraptor extract result` returns omnistudio/omnistudio-performance, not the expected omnistudio/dataraptor-load-and-extract. The spec's own merge note records these two at 1.496 vs 1.487 \u2014 a 0.009 margin. Either widen the expectation to accept either omnistudio skill or drop that row; do not fail this item on it."
+ ],
+ [
+  "stub-skill-cleanup",
+  "CRITERION 6 CONTRADICTS THE SPEC'S OWN DELIVERABLE NOTES \u2014 2 of 29 fail on the PRE-CHANGE index, both documented as pre-existing misroutes in the deliverables themselves: `pr template salesforce` -> integration/salesforce-to-salesforce-integration (deliverable text: 'currently misroutes to ... measure against that') and `private connect aws salesforce` -> architect/hybrid-integration-architecture (deliverable text: 'currently ties this stub ... 1.25 vs 1.26'). Criterion 6's claim that 'all 38 are today' rank 1 is wrong at baseline. Re-measure both post-rebuild: the deepening is intended to fix them, and improvement is the right bar, not a baseline that was never true."
+ ],
+ [
+  "stub-skill-cleanup",
+  "CRITERION 12'S COMMENT-ONLY DETECTOR IS BROKEN AND WILL REPORT 45 FALSE POSITIVES. `re.fullmatch(r'\\s*(/\\*.*?\\*/|//.*|#.*|<!--.*-->)\\s*', body, re.S)` \u2014 with re.S, `//.*` matches the entire body whenever the FIRST line is a `//` or `#` comment, so every idiomatic annotated code block is flagged. Corrected detector (every non-blank line must be a comment) finds exactly 1 real hit repo-wide and it is in security/privileged-access-management, not mine. Suggested fix: drop re.S from that pattern, or test `all(line.startswith(comment_prefix) for line in non_blank_lines)`."
+ ],
+ [
+  "stub-skill-cleanup",
+  "TWO WORKING-TREE PATHS OUTSIDE MY OWNERSHIP ARE DIRTY AND WILL TRIP CRITERION 11 \u2014 neither is mine, both provably. skills/security/privileged-access-management/references/{gotchas,llm-anti-patterns,well-architected}.md (mtimes 10:55:51 and 10:58:50, before my first write at 11:19:42; also present in my very first `git status` before I wrote anything) and docs/queue-progress.md (mtime 11:42:43; already listed as ` M` in the session-start git status, and I never ran generate_queue_dashboard.py, skill_sync.py or build_index.py). Criterion 11 assumes a working tree containing only this item's changes, which does not hold when agents share a tree."
+ ],
+ [
+  "stub-skill-cleanup",
+  "DOC-COUNT BASELINE HAS MOVED: the spec expected 6 `active_runtime is 47 ... canonical is 48` errors across CLAUDE.md, AGENT_RULES.md and mcp/sfskills-mcp/README.md. The current run emits 4 \u2014 AGENT_RULES.md appears to have been corrected concurrently. Adjust the filter in criterion 9 or QA will mis-count."
+ ]
+]
