@@ -262,6 +262,7 @@ def main() -> int:
 
     print(f"\nTotal metadata findings: {findings_count}")
     print("Refer to the skill workflow for remediation steps.")
+    print(f"ERROR: {findings_count} chatter-group-governance finding(s); see report above.", file=sys.stderr)
     return 1
 
 

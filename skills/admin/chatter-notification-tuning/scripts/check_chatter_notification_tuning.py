@@ -151,6 +151,7 @@ def main() -> int:
 
     print(f"\nTotal findings: {findings_count}")
     print("Refer to the skill workflow for remediation steps.")
+    print(f"ERROR: {findings_count} chatter-noise finding(s); see report above.", file=sys.stderr)
     return 1
 
 

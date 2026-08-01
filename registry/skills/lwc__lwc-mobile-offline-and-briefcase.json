@@ -94,7 +94,7 @@
     "f4c90f338f22e1896a9d",
     "f6e088e1dd2d1c1fd5f6"
   ],
-  "content_hash": "fa85d837df3e214d75e05bde4064c255428766320f93ff5466c8aff8f60f3340",
+  "content_hash": "080edfb81173f5623ada80c152ee015492da2e67aed09d46188ef1deb6bf3834",
   "dependencies": [],
   "description": "Use when designing LWCs that must work offline in the standard Salesforce Mobile App, and when configuring Briefcase Builder rules to prime records onto user devices. Covers form-factor detection (`@salesforce/client/formFactor`), Lightning Data Service offline-cache behavior, Briefcase priming-rule design, conflict resolution on reconnect, and the legacy SmartStore / IndexedDB picture for context. Triggers: 'briefcase builder rule design', 'lwc not working offline', 'how do I prime records to user devices', 'sync conflict on reconnect', 'offline draft persistence in lwc'. NOT for Field Service Mobile offline priming (use admin/fsl-mobile-app-setup or architect/fsl-offline-architecture \u2014 FSL has its own priming pipeline). NOT for general LWC mobile container patterns / device APIs (use lwc/lwc-offline-and-mobile).",
   "file_location": "skills/lwc/lwc-mobile-offline-and-briefcase",

@@ -1,6 +1,6 @@
 ---
 name: flow-custom-property-editors
-description: "Use when designing or reviewing Flow custom property editor patterns for screen components or actions, including when Flow Builder needs guided design-time configuration, generic type mapping, or builder-context-aware validation. Triggers: 'Flow custom property editor', 'configurationEditor', 'builderContext', 'inputVariables', 'Flow screen component setup'. NOT for general LWC runtime behavior when Flow Builder customization is not involved."
+description: "Decide whether a Flow screen component or invocable action needs a Custom Property Editor at all, and if it does, what the design-time contract owes the admin: which configuration fields are genuinely unmanageable in the default property pane, how generic sObject type mapping gets declared, and how the design-time editor is kept from drifting away from the runtime component it configures. Routing and design review, not implementation. Triggers: 'do we need a flow custom property editor', 'flow custom property editor builder context validate', 'Flow Builder admin configuration UX', 'design-time surface vs runtime surface'. NOT for authoring the editor LWC itself — its js-meta.xml hook, eventing, and validate() method belong to lwc/custom-property-editor-for-flow."
 category: flow
 salesforce-version: "Spring '25+'"
 well-architected-pillars:
@@ -16,9 +16,9 @@ triggers:
 tags:
   - flow-custom-property-editor
   - flow-builder
-  - configurationeditor
-  - buildercontext
-  - inputvariables
+  - flow-extensibility
+  - design-time-vs-runtime
+  - admin-configuration-ux
 inputs:
   - "whether the target is a screen component or flow action"
   - "which configuration fields are hard to manage in the default property pane"
@@ -28,9 +28,9 @@ outputs:
   - "review findings for builder-side contracts and metadata registration"
   - "property-editor design plan aligned to flow builder behavior"
 dependencies: []
-version: 2.0.0
+version: 2.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-07-31
 ---
 
 Use this skill when the Flow-side question is "should this component or action have a custom configuration experience in Flow Builder, and if so, what should that builder contract look like?" The purpose is to keep Flow Builder configuration clear for admins while preventing the runtime component contract and the design-time editor contract from drifting apart.

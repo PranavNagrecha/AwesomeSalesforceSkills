@@ -201,6 +201,7 @@ def main() -> int:
 
     print(f"\nTotal flagged bundles: {findings_count}")
     print("Refer to the skill workflow for review steps.")
+    print(f"ERROR: {findings_count} offline-readiness concern(s); see report above.", file=sys.stderr)
     return 1
 
 

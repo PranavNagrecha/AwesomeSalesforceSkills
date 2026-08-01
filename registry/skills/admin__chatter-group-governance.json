@@ -89,7 +89,7 @@
     "fd49c21b944ee8d74019",
     "fe366485e89cb6357cf3"
   ],
-  "content_hash": "2ac6ac4601e89d8ce88a043a12901624f6ae0e1f05d0fa85deefad3196d74b0f",
+  "content_hash": "e09c386fd374b2acd8fd15f322c6b268b3bcb617b69214c7d2ddfcf3043b1697",
   "dependencies": [],
   "description": "Use when admins are governing the Chatter group lifecycle \u2014 creation policy, public/private/unlisted visibility decisions, group ownership transfer when owners leave, archived vs inactive vs deleted state changes, auto-archive behavior, naming conventions, group templates (Information Templates), and orphan-group cleanup after user terminations. Triggers: 'we have 800 dead chatter groups', 'group owner left the company who owns it now', 'should this group be public private or unlisted', 'when does a chatter group auto-archive', 'how do I delete vs archive a chatter group', 'we need a chatter group naming convention'. NOT for Chatter notification / digest / feed-noise tuning (use admin/chatter-notification-tuning), NOT for Chatter REST API integration patterns (use apex/apex-connect-api-chatter), NOT for Custom Notifications API (use apex/apex-custom-notifications-from-apex), NOT for Experience Cloud / Customer Community group access (different sharing model).",
   "file_location": "skills/admin/chatter-group-governance",

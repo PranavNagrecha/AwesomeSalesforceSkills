@@ -1,6 +1,6 @@
 ---
 name: flexcard-requirements
-description: "Use this skill to gather, document, and validate FlexCard layout requirements before development begins — covering data visualization needs, action requirements, embedded component specifications, and user context mapping. Trigger keywords: FlexCard requirements, FlexCard BA, FlexCard layout design, FlexCard data sources, FlexCard actions. NOT for FlexCard development implementation, Card Designer configuration, or standard Lightning component requirements."
+description: "Specify a FlexCard before a developer opens Card Designer: the card-state set and the condition that selects each state, the data source type behind each card (DataRaptor, Integration Procedure, Apex remote, SOQL), the action menu users get (navigate, launch OmniScript, Apex, DataRaptor), and every embedded child FlexCard or custom LWC. Produces the artifacts a BA hands to the builder. Trigger keywords: FlexCard requirements, FlexCard BA, FlexCard layout design, FlexCard data sources, FlexCard actions, FlexCard card states, OmniStudio FlexCard scoping. NOT for building the card in Card Designer, NOT for OmniScript step and branching requirements (use admin/omniscript-flow-design-requirements), NOT for standard Lightning record-page component requirements."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -16,8 +16,8 @@ tags:
   - omnistudio
   - flexcard
   - requirements-gathering
-  - ba-role
   - card-design
+  - card-states
 inputs:
   - "Business process description and user context narrative"
   - "Data objects the FlexCard must display (Salesforce objects, external APIs, Integration Procedures)"
@@ -30,9 +30,9 @@ outputs:
   - "Embedded component specification"
   - "Card state template requirements (number of states, conditions)"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-07-31
 ---
 
 # FlexCard Requirements

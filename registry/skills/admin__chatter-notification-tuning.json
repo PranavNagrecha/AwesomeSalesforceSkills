@@ -65,7 +65,7 @@
     "f48388de26d9c61a94e1",
     "fd2cc88af68ec2165088"
   ],
-  "content_hash": "6534bcc196af990c803c7e37df56157bda9605f8858149ee0b8308e7b20e8f5b",
+  "content_hash": "ea6b41f9fd11bfba2f666e6eaca0888f91d950e5c2276bcbc6118824e1c6abb6",
   "dependencies": [],
   "description": "Use when admins are reducing Chatter signal-to-noise across an org \u2014 covers org-level Chatter Email Settings, per-user Email Settings preferences, group-level email digest frequency (Daily / Weekly / Limited / Never), bell-icon Custom Notifications vs Chatter feed-post tradeoffs, automated-feed suppression on record types via Feed Tracking config, and the Chatter Settings org defaults that control whether new users start with everything-on. Triggers: 'chatter feed full of automated posts nobody reads', 'users complain about chatter email volume', 'turn off chatter notifications for a specific group', 'change default chatter digest frequency', 'stop process builder posts from filling the feed'. NOT for Custom Notifications API design (use apex/apex-custom-notifications-from-apex), NOT for Connect API / Chatter REST API integration patterns (use apex/apex-connect-api-chatter), NOT for Chatter group lifecycle and governance (use admin/chatter-group-governance once authored).",
   "file_location": "skills/admin/chatter-notification-tuning",

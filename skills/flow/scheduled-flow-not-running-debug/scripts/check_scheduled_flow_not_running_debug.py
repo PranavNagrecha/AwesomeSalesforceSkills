@@ -164,6 +164,7 @@ def main() -> int:
 
     print(f"\nTotal risk indicators: {risk_findings}")
     print("Refer to skills/flow/scheduled-flow-not-running-debug/SKILL.md for remediation.")
+    print(f"ERROR: {risk_findings} scheduled-flow risk indicator(s); see report above.", file=sys.stderr)
     return 1
 
 

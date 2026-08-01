@@ -1,6 +1,6 @@
 ---
 name: omnistudio-vs-standard-architecture
-description: "Architecture decision framework for choosing between OmniStudio and the standard Salesforce platform (Screen Flow, LWC, Apex) for guided UI and data orchestration use cases. Covers the license gate, the Dynamic Forms → Screen Flow → OmniStudio continuum, Standard Runtime vs Vlocity managed package migration debt, and team skill considerations. NOT for implementation. NOT for OmniScript development or FlexCard configuration."
+description: "Pick and then document the OmniStudio runtime path an architect has to live with: Standard Runtime (natively embedded, Spring '25+, no namespace) versus the legacy vlocity_ins__ / industries__ managed package and the migration debt every new component on it accrues — gated first on whether the org actually holds a qualifying Industries license. Ends in a written ADR that records the license gate, the runtime path, team ramp cost, and the fallback to Screen Flow + LWC for a guided wizard when OmniStudio is not available. NOT for the OmniStudio-vs-standard-tooling capability matrix itself (use architect/omnistudio-vs-standard-decision), NOT for OmniScript, FlexCard, or Integration Procedure implementation."
 category: architect
 salesforce-version: "Spring '26+"
 well-architected-pillars:
@@ -14,13 +14,12 @@ triggers:
   - "is OmniStudio right for our team if we don't have certified developers"
 tags:
   - omnistudio
-  - screen-flow
-  - lwc
-  - decision-framework
-  - industries
-  - architecture
   - standard-runtime
   - vlocity
+  - migration-debt
+  - industries
+  - architecture
+  - adr
 inputs:
   - "Org license profile: which Salesforce Industries cloud (FSC, Health Cloud, Manufacturing Cloud, Nonprofit Cloud, Education Cloud) is held, if any"
   - "Use case description: number of steps, objects, external callouts, and branching complexity"
@@ -34,14 +33,16 @@ outputs:
   - "Documented architecture decision record (ADR) draft"
 dependencies:
   - omnistudio-vs-standard-decision
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-13
+updated: 2026-07-31
 ---
 
 # OmniStudio vs Standard Platform Architecture
 
 This skill activates when an architect or senior practitioner needs to make or document a technology selection decision between OmniStudio (OmniScript, FlexCards, Integration Procedures) and the standard Salesforce platform (Screen Flow, LWC, Apex) for a guided UI or data orchestration requirement. It covers the full architecture decision — license gate, capability continuum, runtime path selection, team readiness, and decision documentation.
+
+**Scope split with `architect/omnistudio-vs-standard-decision`:** that skill owns the feature-by-feature capability matrix — *can* OmniStudio do this, and what is the standard equivalent. This skill owns what an architect signs off on: which runtime path (Standard Runtime vs the Vlocity / `industries__` managed package) the org commits to, the migration debt that choice accrues, and the ADR that records it.
 
 ---
 

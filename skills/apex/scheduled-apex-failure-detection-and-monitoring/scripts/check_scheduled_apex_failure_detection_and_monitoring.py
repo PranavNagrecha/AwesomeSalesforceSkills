@@ -261,6 +261,7 @@ def main() -> int:
         "Refer to skills/apex/scheduled-apex-failure-detection-and-monitoring/SKILL.md "
         "for the recommended workflow."
     )
+    print(f"ERROR: {findings_count} failure-detection gap(s); see report above.", file=sys.stderr)
     return 1
 
 

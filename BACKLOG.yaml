@@ -295,12 +295,13 @@
   source_line: 1656
   history: []
 - id: "related-list-configuration"
-  status: "TODO"
+  status: "DUPLICATE"
   skill: "related-list-configuration"
   summary: "Related lists: Enhanced Related Lists, related list components, quick related list, related list filters, related list actions, single-record components. NOT for page layouts."
-  notes: "admin"
+  notes: "DUPLICATE 2026-07-31 (drift resolution). Covered by skills/admin/related-list-configuration — Enhanced Related Lists, the Related Lists / Related Lists - Single / Related List - Quick Links component choice, related-list filters and actions, and per-record-type assignment are all documented there."
   source_line: 1660
-  history: []
+  history:
+    - { actor: "repo-hygiene@local", status: "DUPLICATE", at: "2026-07-31T20:09:11+00:00" }
 - id: "salesforce-optimizer-usage"
   status: "TODO"
   skill: "salesforce-optimizer-usage"
@@ -1185,14 +1186,15 @@
     - { actor: "onboard-tdd-sf", status: "DONE", at: "2026-07-08T16:23:31+00:00" }
     - { actor: "revert-unbudgeted-enrichment", status: "RESEARCH", at: "2026-07-08T18:39:55+00:00" }
 - id: "duplicate-management"
-  status: "RESEARCH"
+  status: "DUPLICATE"
   skill: "duplicate-management"
   summary: "Duplicate Management — intake from https://tddprojects.atlassian.net/wiki/spaces/SF (url mode)."
-  notes: "Intake triage 2026-07-08T14:14:51Z: ENRICH; search_knowledge top hits: admin/duplicate-management (3.988112541608147), data/data-quality-and-governance (1.8006812841777236), data/clinical-data-quality (1.7898664942541833). License class: clean-room."
+  notes: "DUPLICATE 2026-07-31 (drift resolution). Covered by skills/admin/duplicate-management — matching rules, duplicate rules, merge/survivorship governance. Intake triage 2026-07-08T14:14:51Z: ENRICH; search_knowledge top hits: admin/duplicate-management (3.988112541608147), data/data-quality-and-governance (1.8006812841777236), data/clinical-data-quality (1.7898664942541833). License class: clean-room."
   history:
     - { at: "2026-07-08T14:14:51Z", status: "RESEARCH", actor: "onboard_source" }
     - { actor: "onboard-tdd-sf", status: "DONE", at: "2026-07-08T16:23:31+00:00" }
     - { actor: "revert-unbudgeted-enrichment", status: "RESEARCH", at: "2026-07-08T18:39:55+00:00" }
+    - { actor: "repo-hygiene@local", status: "DUPLICATE", at: "2026-07-31T20:09:11+00:00" }
 - id: "using-platform-events-in-flows"
   status: "DUPLICATE"
   skill: "using-platform-events-in-flows"

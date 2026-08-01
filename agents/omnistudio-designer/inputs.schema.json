@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sfskills.local/agents/omnistudio-designer/inputs.schema.json",
+  "title": "omnistudio-designer inputs",
+  "description": "Typed inputs for the omnistudio-designer runtime agent. Machine-readable mirror of the Inputs table in AGENT.md. The harness validates caller-supplied input packets against this schema before the agent begins work; validation failures surface the offending field to the caller rather than failing mid-run. `target_org_alias` is listed as required because audit mode cannot run without it; a design-only run may substitute `repo_path` or omit both, and the agent records the substitution in its confidence rationale.",
+  "type": "object",
+  "properties": {
+    "mode": {
+      "type": "string",
+      "description": "Which branch of the plan to run. `design` produces a layered build plan from business inputs; `audit` scores an existing implementation. One mode per invocation — mixed mode is not supported.",
+      "enum": [
+        "design",
+        "audit"
+      ],
+      "example": "design"
+    },
+    "target_org_alias": {
+      "type": "string",
+      "description": "sf CLI alias of the org to inspect. Mandatory for audit mode; optional for design mode, where it is used only for edition and API-version context.",
+      "example": "uat"
+    },
+    "capability": {
+      "type": "string",
+      "description": "The business capability being designed, in one sentence. Required for design mode.",
+      "example": "guided quote-to-application journey"
+    },
+    "layers": {
+      "type": "array",
+      "description": "Which OmniStudio asset families are in scope for this invocation. Drives which plan steps run and which dimensions the envelope must account for.",
+      "items": {
+        "type": "string",
+        "enum": [
+          "omniscript",
+          "flexcard",
+          "dataraptor",
+          "integration_procedure",
+          "business_rules"
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true,
+      "example": [
+        "omniscript",
+        "integration_procedure",
+        "dataraptor"
+      ]
+    },
+    "runtime_flavor": {
+      "type": "string",
+      "description": "Which OmniStudio runtime the org uses. Changes the metadata shape, the Apex service class namespace, and the promotion mechanism. Never inferred from the industry — inspect the org or the source tree.",
+      "enum": [
+        "native-omnistudio",
+        "vlocity-managed-package"
+      ],
+      "example": "native-omnistudio"
+    },
+    "user_surface": {
+      "type": "string",
+      "description": "Who reaches the surface. Sets the strictness of the security review; `guest` gets the strictest treatment because an over-broad data contract is externally reachable there. Required for design mode.",
+      "enum": [
+        "internal",
+        "experience-cloud-authenticated",
+        "guest"
+      ],
+      "example": "internal"
+    },
+    "expected_volume": {
+      "type": "string",
+      "description": "Expected throughput and peak, used to decide between single-request latency work and concurrency work in the performance step. Optional.",
+      "example": "800 journey starts per day, peak 120 per hour"
+    },
+    "repo_path": {
+      "type": "string",
+      "description": "Path to retrieved metadata or a DataPack export directory, read when no org is connected. Optional, and distinctive to this domain — an OmniStudio source of truth is frequently a JSON export rather than a live org.",
+      "example": "force-app/main/default/"
+    }
+  },
+  "required": [
+    "mode",
+    "target_org_alias",
+    "capability",
+    "layers",
+    "runtime_flavor",
+    "user_surface"
+  ]
+}

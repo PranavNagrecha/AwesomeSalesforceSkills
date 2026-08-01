@@ -15,7 +15,7 @@ import argparse
 import json
 import re
 import sys
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -152,6 +152,14 @@ class SearchContext:
     registry_skills: dict
     source_manifest_by_id: dict
     source_manifest_by_title: dict
+    # Trailing defaulted fields — added 2026-07-31. Defaults keep any existing
+    # positional SearchContext(...) construction working unchanged.
+    min_skill_max_score: float = 1.0
+    # {skill_id: (name, description)} for the skill-centrality bonus. Derived
+    # once from registry_skills; pipelines/ranking.py never touches the registry.
+    skill_meta: dict = field(default_factory=dict)
+    name_weight: float = 1.5
+    description_weight: float = 0.5
 
 
 def build_search_context(root: Path) -> SearchContext:
@@ -161,6 +169,7 @@ def build_search_context(root: Path) -> SearchContext:
     source_manifest_entries = [
         item for item in load_sources_manifest(root) if item.get("type") == "official-doc"
     ]
+    registry_skills = load_registry_skills(root / "registry" / "skills.json")
     return SearchContext(
         root=root,
         config=config,
@@ -172,9 +181,20 @@ def build_search_context(root: Path) -> SearchContext:
         embeddings=load_embeddings(root / "vector_index" / "embeddings.jsonl"),
         skill_embeddings=_load_skill_embeddings(root / "vector_index" / "skill_embeddings.jsonl"),
         chunks=load_chunks(root / "vector_index" / "chunks.jsonl"),
-        registry_skills=load_registry_skills(root / "registry" / "skills.json"),
+        registry_skills=registry_skills,
         source_manifest_by_id={item["id"]: item for item in source_manifest_entries},
         source_manifest_by_title={item["title"]: item for item in source_manifest_entries},
+        # In-code fallbacks, not zeros: scripts/validate_repo_bench.py writes a
+        # synthetic retrieval config that carries none of these keys. The
+        # min_skill_max_score fallback only ever ADMITS more skills, so a config
+        # that omits it behaves like the pre-2026-07-31 gate plus the OR arm.
+        min_skill_max_score=float(retrieval_config.get("min_skill_max_score", 1.0)),
+        skill_meta={
+            skill_id: (record.get("name", ""), record.get("description", ""))
+            for skill_id, record in registry_skills.items()
+        },
+        name_weight=float(retrieval_config.get("name_match_weight", 1.5)),
+        description_weight=float(retrieval_config.get("description_match_weight", 0.5)),
     )
 
 
@@ -216,8 +236,25 @@ def run_search(query: str, ctx: SearchContext, domain: str | None = None) -> dic
         domain,
         skill_embeddings=ctx.skill_embeddings,
     )
-    all_skills = aggregate_skill_scores(ranked, ctx.result_limit)
-    skills = [s for s in all_skills if s["score"] >= ctx.min_skill_score]
+    all_skills = aggregate_skill_scores(
+        ranked,
+        ctx.result_limit,
+        skill_meta=ctx.skill_meta,
+        query=query,
+        name_weight=ctx.name_weight,
+        description_weight=ctx.description_weight,
+    )
+    # Coverage gate reads max_score / score — deliberately NOT rank_score. The
+    # name/description bonus is a RANKING signal (which skill answers), not a
+    # CONFIDENCE signal (whether to answer at all); folding it into the gate
+    # would let a title coincidence manufacture coverage the corpus lacks.
+    # The OR is the fix for a units mismatch: the ranker sorted on max_score
+    # (best single chunk) while the gate read score (cumulative), so one precise
+    # match was suppressed while three weak ones passed.
+    skills = [
+        s for s in all_skills
+        if s["max_score"] >= ctx.min_skill_max_score or s["score"] >= ctx.min_skill_score
+    ]
     has_coverage = len(skills) > 0
     raw_official_sources = collect_official_sources(ranked, ctx.chunks, ctx.result_limit)
     official_sources = dedupe_official_sources(
@@ -320,7 +357,9 @@ def main() -> int:
         print("Coverage: NONE — no skill meets the confidence threshold. Use official sources below.")
     print("Top skills:")
     for skill in payload["skills"]:
-        print(f"- {skill['id']} ({skill['score']:.3f})")
+        # Print rank_score, the value the list is ordered by. Printing the
+        # cumulative `score` here made the output look unsorted.
+        print(f"- {skill['id']} ({skill['rank_score']:.3f})")
     print("")
     print("Top chunks:")
     for chunk in payload["chunks"]:

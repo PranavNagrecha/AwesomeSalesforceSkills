@@ -25,7 +25,7 @@ Entry points: `/run-queue`, `/new-skill`, `/request-skill`, scheduled task.
 
 ---
 
-## Run-time agents (47)
+## Run-time agents (48)
 
 These agents use the skill library to do real Salesforce work against a user's org or codebase. They are the primary value delivered to consumers of SfSkills. Every run-time agent follows [`AGENT_CONTRACT.md`](./AGENT_CONTRACT.md) — including the mandatory **Process Observations** section that analyzes the org itself while producing the deliverable — and cites every skill / template / decision-tree it consumed.
 
@@ -79,7 +79,7 @@ These agents use the skill library to do real Salesforce work against a user's o
 | `fit-gap-analyzer` | Admin | Fit / gap analysis: requirements vs org configuration | `/run-fit-gap` |
 | `story-drafter` | Admin | User stories with Given/When/Then acceptance criteria | `/draft-stories` |
 
-### Vertical + governance — Tier 3 (10)
+### Vertical + governance — Tier 3 (11)
 
 | Agent | Domain | Primary output | Slash command |
 |---|---|---|---|
@@ -92,6 +92,7 @@ These agents use the skill library to do real Salesforce work against a user's o
 | `waf-assessor` | Architecture | Well-Architected scorecard + remediation backlog | `/assess-waf` |
 | `agentforce-action-reviewer` | Agentforce | Per-action A–F scorecard + guardrails gap list | `/review-agentforce-action` || `profile-to-permset-migrator` | Admin / Security | Profile → Permission Set migration plan + PS / PSG design | `/migrate-profile-to-permset` |
 | `user-access-diff` | Admin / Security | Side-by-side access comparison report between users | `/diff-users` |
+| `omnistudio-designer` | OmniStudio / Industries | OmniScript + FlexCard + DataRaptor + Integration Procedure design or audit | `/design-omnistudio` |
 
 ### Deprecated (14)
 

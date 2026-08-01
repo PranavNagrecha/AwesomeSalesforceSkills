@@ -178,8 +178,30 @@ def run_base_search(query: str, domain: str | None) -> dict:
 
 # ── Boosting ──────────────────────────────────────────────────────────────────
 
+def _ranking_score(skill: dict) -> float:
+    """The value search_knowledge.py orders skills by.
+
+    ``rank_score`` = max_score + skill-name/description match bonus. Falls back
+    to ``max_score`` then ``score`` so a payload from an older search_knowledge
+    (or a hand-built one in a test) still sorts rather than raising KeyError.
+    """
+    for key in ("rank_score", "max_score", "score"):
+        if key in skill:
+            return float(skill[key])
+    return 0.0
+
+
 def apply_role_boost(skills: list[dict], role: str) -> list[dict]:
-    """Boost skills whose domain matches the role."""
+    """Boost skills whose domain matches the role.
+
+    Boosts and re-sorts ``rank_score`` — the key the upstream ranker orders on.
+    Boosting the cumulative ``score`` instead re-sorted the list into a
+    different order than the one search_knowledge.py computed, and the old
+    ``min(..., 2.0)`` cap actively INVERTED it: cumulative scores routinely
+    exceed 2.0 (3.347 observed live), so the cap flattened the strongest hits
+    down to the level of the weakest boosted ones. ``score`` and ``max_score``
+    are passed through untouched.
+    """
     role_key = role.lower().strip()
     boost_domains = ROLE_DOMAIN_BOOST.get(role_key, [])
     if not boost_domains:
@@ -189,16 +211,20 @@ def apply_role_boost(skills: list[dict], role: str) -> list[dict]:
     for skill in skills:
         skill_id = skill.get("id", "")
         domain = skill_id.split("/")[0] if "/" in skill_id else ""
-        score = skill["score"]
+        rank_score = _ranking_score(skill)
         if domain in boost_domains:
-            score = min(score + BOOST_AMOUNT, 2.0)  # cap at 2.0
-        boosted.append({**skill, "score": round(score, 6)})
+            rank_score += BOOST_AMOUNT
+        boosted.append({**skill, "rank_score": round(rank_score, 6)})
 
-    return sorted(boosted, key=lambda s: s["score"], reverse=True)
+    return sorted(boosted, key=_ranking_score, reverse=True)
 
 
 def apply_cloud_boost(skills: list[dict], cloud: str) -> list[dict]:
-    """Boost skills whose name/id contains cloud-specific signals."""
+    """Boost skills whose name/id contains cloud-specific signals.
+
+    Same contract as :func:`apply_role_boost`: mutate and re-sort ``rank_score``,
+    leave ``score`` / ``max_score`` alone, no cap.
+    """
     cloud_key = cloud.lower().strip()
     signals = CLOUD_SIGNALS.get(cloud_key, [])
     if not signals:
@@ -207,14 +233,14 @@ def apply_cloud_boost(skills: list[dict], cloud: str) -> list[dict]:
     boosted = []
     for skill in skills:
         skill_id = skill.get("id", "").lower()
-        score = skill["score"]
+        rank_score = _ranking_score(skill)
         for signal in signals:
             if signal in skill_id:
-                score = min(score + 0.15, 2.0)
+                rank_score += 0.15
                 break
-        boosted.append({**skill, "score": round(score, 6)})
+        boosted.append({**skill, "rank_score": round(rank_score, 6)})
 
-    return sorted(boosted, key=lambda s: s["score"], reverse=True)
+    return sorted(boosted, key=_ranking_score, reverse=True)
 
 
 # ── Output ────────────────────────────────────────────────────────────────────
@@ -239,7 +265,7 @@ def print_human(result: dict, original_query: str, expanded_query: str,
         print("Top skills:")
         for skill in skills[:5]:
             boost_note = " [boosted]" if skill.get("boosted") else ""
-            print(f"  {skill['id']} ({skill['score']:.3f}){boost_note}")
+            print(f"  {skill['id']} ({_ranking_score(skill):.3f}){boost_note}")
 
     chunks = result.get("chunks", [])
     if chunks:
@@ -308,7 +334,9 @@ Examples:
     if cloud:
         skills = apply_cloud_boost(skills, cloud)
 
-    # Recompute has_coverage after boosting
+    # The list is already gated upstream by search_knowledge.py
+    # (max_score >= min_skill_max_score OR score >= min_skill_score); boosting
+    # only reorders it. Do NOT re-apply the gate here — one gate, one place.
     result["skills"] = skills
     result["has_coverage"] = len(skills) > 0
     result["query"] = original_query

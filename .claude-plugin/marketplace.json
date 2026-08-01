@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "sfskills",
+  "description": "Salesforce skills, run-time agents and slash commands from the SfSkills library.",
+  "owner": {
+    "name": "Pranav Nagrecha",
+    "url": "https://github.com/PranavNagrecha/AwesomeSalesforceSkills"
+  },
+  "plugins": [
+    {
+      "name": "sfskills",
+      "source": "./",
+      "displayName": "SfSkills — Salesforce AI Skill Library",
+      "description": "Tiered Salesforce library: 12 router skills up front, 1,027 skill packages and 48 run-time agents reached on demand.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Pranav Nagrecha",
+        "url": "https://github.com/PranavNagrecha/AwesomeSalesforceSkills"
+      },
+      "homepage": "https://github.com/PranavNagrecha/AwesomeSalesforceSkills#readme",
+      "repository": "https://github.com/PranavNagrecha/AwesomeSalesforceSkills",
+      "license": "Apache-2.0",
+      "category": "development",
+      "keywords": [
+        "salesforce",
+        "apex",
+        "flow",
+        "lwc",
+        "agentforce",
+        "well-architected"
+      ],
+      "tags": [
+        "salesforce",
+        "crm",
+        "apex",
+        "soql",
+        "admin",
+        "architecture"
+      ],
+      "skills": [
+        "./.claude/skills/"
+      ]
+    }
+  ]
+}

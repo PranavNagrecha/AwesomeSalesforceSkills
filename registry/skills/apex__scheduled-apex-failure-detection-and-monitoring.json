@@ -86,7 +86,7 @@
     "fb6856b874e9a5b4f073",
     "fcafb3abba5044f55bf2"
   ],
-  "content_hash": "26a4fd51141d74f9f99efb67bfeb003f81b05fc252997c417dfae32adba110de",
+  "content_hash": "f8217276f1b73cb700bd48b0f46c401ce03f5570e03677ac090ddc79920995fe",
   "dependencies": [],
   "description": "Use when nightly batch / scheduled Apex jobs are failing without anyone noticing \u2014 covers why uncaught exceptions in `execute()` go to the debug log instead of email, how to query `AsyncApexJob` for `Status`, `NumberOfErrors`, and `ExtendedStatus`, when to implement `Database.RaisesPlatformEvents` so the platform publishes `BatchApexErrorEvent` on uncaught failures, how to subscribe to that event with an Apex trigger and notify operators, and how to layer a custom watcher schedule on top so silent-failure modes (job that never started, scheduled class deleted, queue stuck on `Queued`) still surface. Triggers: 'nightly batch failed at 2am with no notification', 'how do we know if a scheduled apex job is failing', 'BatchApexErrorEvent vs custom retry logic', 'Setup Apex Jobs only shows last 7 days, where else can I look', 'job is stuck in queued status nobody noticed for a week'. NOT for general Apex exception handling patterns (use apex/apex-exception-handling-and-logging), NOT for Batch Apex authoring or chunking strategy (use apex/batch-apex-design), NOT for Setup \u2192 Apex Jobs UI walkthrough as an admin task (use admin/batch-job-scheduling-and-monitoring), NOT for retry logic itself (use apex/scheduled-apex-retry-patterns once authored).",
   "file_location": "skills/apex/scheduled-apex-failure-detection-and-monitoring",

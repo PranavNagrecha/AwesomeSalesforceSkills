@@ -1595,6 +1595,9 @@
       "admin/global-search-configuration",
       "admin/related-list-configuration"
     ],
+    "admin-configuration-ux": [
+      "flow/flow-custom-property-editors"
+    ],
     "admin-declarative": [
       "admin/dynamic-forms-and-actions"
     ],
@@ -1618,7 +1621,8 @@
       "admin/ai-adoption-change-management"
     ],
     "adr": [
-      "architect/architecture-decision-records"
+      "architect/architecture-decision-records",
+      "architect/omnistudio-vs-standard-architecture"
     ],
     "advanced-approvals": [
       "admin/cpq-approval-workflows",
@@ -2674,7 +2678,6 @@
       "architect/marketing-cloud-vs-mcae-selection"
     ],
     "ba-role": [
-      "admin/flexcard-requirements",
       "admin/integration-pattern-selection",
       "admin/omniscript-flow-design-requirements"
     ],
@@ -2947,7 +2950,6 @@
       "admin/reports-and-dashboards-fundamentals"
     ],
     "buildercontext": [
-      "flow/flow-custom-property-editors",
       "lwc/custom-property-editor-for-flow"
     ],
     "bulk": [
@@ -3272,6 +3274,9 @@
       "omnistudio/flexcard-design-patterns"
     ],
     "card-design": [
+      "admin/flexcard-requirements"
+    ],
+    "card-states": [
       "admin/flexcard-requirements"
     ],
     "care-coordination": [
@@ -3991,7 +3996,6 @@
       "admin/configuration-workbook-authoring"
     ],
     "configurationeditor": [
-      "flow/flow-custom-property-editors",
       "lwc/custom-property-editor-for-flow"
     ],
     "confirm-dialog": [
@@ -5261,7 +5265,6 @@
       "architect/crm-analytics-vs-tableau-decision",
       "architect/data-cloud-vs-analytics-decision",
       "architect/npsp-vs-nonprofit-cloud-decision",
-      "architect/omnistudio-vs-standard-architecture",
       "architect/omnistudio-vs-standard-decision"
     ],
     "decision-log": [
@@ -5475,6 +5478,9 @@
     ],
     "design-standards": [
       "devops/development-documentation-standards"
+    ],
+    "design-time-vs-runtime": [
+      "flow/flow-custom-property-editors"
     ],
     "design-tokens": [
       "lwc/lwc-css-and-styling",
@@ -7014,6 +7020,9 @@
     "flow-email": [
       "flow/flow-email-and-notifications"
     ],
+    "flow-extensibility": [
+      "flow/flow-custom-property-editors"
+    ],
     "flow-faults": [
       "flow/fault-handling"
     ],
@@ -8081,7 +8090,6 @@
       "flow/subflows-and-reusability"
     ],
     "inputvariables": [
-      "flow/flow-custom-property-editors",
       "lwc/custom-property-editor-for-flow"
     ],
     "install": [
@@ -9018,7 +9026,6 @@
       "apex/fsl-custom-actions-mobile",
       "apex/health-cloud-lwc-components",
       "architect/analytics-embedded-components",
-      "architect/omnistudio-vs-standard-architecture",
       "architect/omnistudio-vs-standard-decision",
       "architect/platform-selection-guidance",
       "architect/solution-design-patterns",
@@ -9525,6 +9532,9 @@
       "lwc/lwc-locker-to-lws-migration",
       "omnistudio/industries-cpq-vs-salesforce-cpq",
       "omnistudio/vlocity-to-native-omnistudio-migration"
+    ],
+    "migration-debt": [
+      "architect/omnistudio-vs-standard-architecture"
     ],
     "migration-sequencing": [
       "data/data-migration-planning"
@@ -12754,7 +12764,6 @@
     "screen-flow": [
       "admin/client-onboarding-design",
       "admin/flow-for-admins",
-      "architect/omnistudio-vs-standard-architecture",
       "architect/omnistudio-vs-standard-decision",
       "flow/fault-handling",
       "flow/flow-dynamic-choices",

@@ -2,9 +2,56 @@
 
 from __future__ import annotations
 
+import re
 from collections import defaultdict
 
 from .embedding_backends import cosine_similarity
+
+
+# Tokenizer for the skill-name/description match signal. Kept deliberately
+# small and dumb: the +15pp held-out Hit@1 measurement on 2026-07-31 is tied to
+# this exact stopword set and >2-char rule, so "improving" it invalidates the
+# tuning of name_match_weight / description_match_weight in
+# config/retrieval-config.yaml.
+_STOPWORDS = {
+    "a", "an", "the", "how", "do", "i", "my", "is", "in", "to", "for", "of", "on",
+    "and", "or", "with", "what", "why", "set", "up", "get", "can", "does", "salesforce",
+}
+
+_TOKEN_SPLIT_RE = re.compile(r"[^a-z0-9]+")
+
+
+def _tokens(value: str) -> set[str]:
+    """Lowercase, split on non-alphanumerics, drop stopwords and short tokens."""
+    return {
+        token
+        for token in _TOKEN_SPLIT_RE.split((value or "").lower())
+        if token and token not in _STOPWORDS and len(token) > 2
+    }
+
+
+def _name_match_bonus(
+    query_tokens: set[str],
+    skill_id: str,
+    skill_meta: dict[str, tuple[str, str]],
+    name_weight: float,
+    description_weight: float,
+) -> float:
+    """Bonus for query overlap with a skill's OWN name and description.
+
+    Chunk-level lexical scoring answers "does this skill mention X". This
+    answers "is this skill ABOUT X" — the missing centrality signal. Overlap is
+    a fraction of the QUERY's tokens (not the name's), so a long descriptive
+    name is not penalised and a long query is not trivially satisfied.
+    """
+    if not query_tokens:
+        return 0.0
+    name, description = skill_meta.get(skill_id, (skill_id.split("/")[-1], ""))
+    name_tokens = _tokens(name.replace("-", " ")) | _tokens(skill_id.split("/")[-1].replace("-", " "))
+    description_tokens = _tokens(description)
+    name_overlap = len(query_tokens & name_tokens) / len(query_tokens)
+    description_overlap = len(query_tokens & description_tokens) / len(query_tokens)
+    return name_weight * name_overlap + description_weight * description_overlap
 
 
 def rerank_results(
@@ -64,7 +111,33 @@ def rerank_results(
     return sorted(ranked, key=lambda item: (-item["score"], item["position"]))
 
 
-def aggregate_skill_scores(rows: list[dict], limit: int) -> list[dict]:
+def aggregate_skill_scores(
+    rows: list[dict],
+    limit: int,
+    *,
+    skill_meta: dict[str, tuple[str, str]] | None = None,
+    query: str | None = None,
+    name_weight: float = 1.5,
+    description_weight: float = 0.5,
+) -> list[dict]:
+    """Roll chunk hits up to skills and rank them.
+
+    ``rows`` and ``limit`` stay positional — ``sfskills_mcp.skills.search_skill``
+    calls this as ``aggregate_skill_scores(ranked, bounded_limit)``. Everything
+    else is keyword-only and defaulted, so legacy callers are unaffected.
+
+    Each record carries:
+      ``score``     cumulative sum of every chunk this skill contributed
+      ``max_score`` the skill's single best chunk
+      ``rank_score`` ``max_score`` plus the name/description match bonus — the
+                    value the list is actually ordered by
+
+    Supplying ``skill_meta`` (``{skill_id: (name, description)}``) and ``query``
+    turns on the skill-centrality bonus (see :func:`_name_match_bonus`). With
+    either omitted the bonus is 0.0, ``rank_score == max_score``, and the
+    ordering is identical to the pre-2026-07-31 behaviour. Registry metadata is
+    never read here — the caller loads it once and passes it in.
+    """
     aggregate: dict[str, dict] = {}
     for row in rows:
         skill_id = row.get("skill_id")
@@ -85,11 +158,24 @@ def aggregate_skill_scores(rows: list[dict], limit: int) -> list[dict]:
         if row["score"] > current["max_score"]:
             current["max_score"] = row["score"]
             current["path"] = row["path"]
-    # Primary sort: max_score — the skill with the single most relevant chunk wins.
-    # Secondary: cumulative score breaks ties between skills with equal max_score.
+
+    # The bonus is applied BEFORE truncation so a skill sitting outside the top
+    # `limit` on chunk evidence alone can still be promoted on centrality.
+    query_tokens = _tokens(query) if (skill_meta and query) else set()
+    for record in aggregate.values():
+        bonus = (
+            _name_match_bonus(query_tokens, record["id"], skill_meta, name_weight, description_weight)
+            if query_tokens
+            else 0.0
+        )
+        record["rank_score"] = record["max_score"] + bonus
+
+    # Primary sort: rank_score — centrality-adjusted best chunk. With no
+    # metadata this reduces to max_score, i.e. the skill with the single most
+    # relevant chunk wins. Secondary: cumulative score breaks ties.
     return sorted(
         aggregate.values(),
-        key=lambda item: (-item["max_score"], -item["score"], -item["hit_count"], item["id"]),
+        key=lambda item: (-item["rank_score"], -item["score"], -item["hit_count"], item["id"]),
     )[:limit]
 
 

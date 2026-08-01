@@ -201,6 +201,7 @@ def main() -> int:
 
     print(f"\nTotal findings: {findings_count}")
     print("Refer to the skill workflow + references/gotchas.md for remediation steps.")
+    print(f"ERROR: {findings_count} scheduled-ERP-sync anti-pattern(s); see report above.", file=sys.stderr)
     return 1
 
 

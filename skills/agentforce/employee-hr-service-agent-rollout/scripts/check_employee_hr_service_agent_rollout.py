@@ -257,6 +257,7 @@ def main() -> int:
 
     print(f"\nTotal findings: {findings_count}")
     print("Refer to the skill workflow for remediation steps.")
+    print(f"ERROR: {findings_count} employee-HR-agent rollout gap(s); see report above.", file=sys.stderr)
     return 1
 
 

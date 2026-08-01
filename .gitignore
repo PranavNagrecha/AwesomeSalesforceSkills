@@ -4,7 +4,10 @@ __pycache__/
 *.pyo
 
 # lexical.sqlite grows past GitHub's 50 MB limit — regenerate with: python3 scripts/skill_sync.py --all
-vector_index/lexical.sqlite
+# Glob, not the literal path: it also covers SQLite's -wal/-shm sidecars and the
+# empty stray a mistyped `sqlite3 vector_index/lexical.sqlite3 ...` leaves behind
+# (the CLI creates the file as a side effect of being handed a missing name).
+vector_index/lexical.sqlite*
 
 # chunks.jsonl crosses GitHub's 50 MB warning threshold (~98 MB at 690 skills
 # and growing). Regenerate locally or in CI via `python3 scripts/build_index.py`
@@ -12,6 +15,24 @@ vector_index/lexical.sqlite
 # stay committed — they encode the content hash that detects rebuild drift,
 # so CI can verify reproducibility without the raw bytes.
 vector_index/chunks.jsonl
+
+# Clone cost, measured 2026-07-31 — what these ignores fix and what they don't.
+# `.git` is 524 MB (`du -sh .git`; `git count-objects -vH` → size-pack
+# 389.86 MiB). Reachable history holds 13,709 MB of blob bytes and ONE path is
+# 85.0% of it: vector_index/chunks.jsonl, 206 committed revisions totalling
+# 11,651 MB uncompressed, last tracked at 59e265ce6. lexical.sqlite adds 962 MB
+# across 30 revisions (last tracked at 27e89cda7). registry/skills.json is
+# 766 MB across 221 revisions and stays tracked BY DESIGN — it encodes the
+# content hash that detects rebuild drift — so it is now the largest *growing*
+# tracked artifact; revisit it before adding anything else of that shape.
+#
+# The rules above stop future growth. They cannot shrink an existing clone:
+# the bytes are already in the pack. Only a history rewrite (git filter-repo,
+# git lfs migrate) would reclaim them, and that is deliberately out of scope —
+# it rewrites every SHA and invalidates every existing clone, fork, and the
+# commit refs cited in MASTER_QUEUE.md and elsewhere in the docs.
+# Reproduce: git rev-list --objects --all | join against
+#   git cat-file --batch-check --batch-all-objects, then sum per path.
 
 # embeddings.jsonl holds 384-dim fastembed vectors for every chunk
 # (~500 MB at 120K chunks). Same pattern as chunks.jsonl — regenerate via

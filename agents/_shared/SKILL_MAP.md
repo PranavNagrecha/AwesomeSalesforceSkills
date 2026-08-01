@@ -2,7 +2,7 @@
 
 This is the authoring reference for the run-time agent roster. Every skill id listed below has been verified to exist in `skills/<domain>/<slug>/SKILL.md` at the time of writing. When adding a new agent, cite only skills from this map (or verify a new citation before committing).
 
-All 47 active run-time agents are documented in their own `AGENT.md`. This file maps every agent to the skills, templates, and decision trees it depends on.
+All 48 active run-time agents are documented in their own `AGENT.md`. This file maps every agent to the skills, templates, and decision trees it depends on.
 
 ## Harnesses (Wave 3)
 
@@ -10,8 +10,8 @@ Shared convention documents under `agents/_shared/harnesses/` that consolidate c
 
 - **`migration_router`** (Wave 3a) — consolidates 4 automation migrators into `automation-migration-router`. See [harness README](./harnesses/migration_router/README.md).
 - **`audit_harness`** (Wave 3b) — consolidates 15 single-mode auditors into `audit-router`. See [harness README](./harnesses/audit_harness/README.md).
-- **`designer_base`** (Wave 3c) — shared conventions for 8 designer agents (not a consolidation; designers keep their public identity). See [harness README](./harnesses/designer_base/README.md). Inheriting agents declare `harness: designer_base` in their frontmatter:
-  - `object-designer`, `permission-set-architect`, `flow-builder`, `omni-channel-routing-designer`, `sales-stage-designer`, `lead-routing-rules-designer`, `duplicate-rule-designer`, `sandbox-strategy-designer`.
+- **`designer_base`** (Wave 3c) — shared conventions for 9 designer agents (not a consolidation; designers keep their public identity). See [harness README](./harnesses/designer_base/README.md). Inheriting agents declare `harness: designer_base` in their frontmatter:
+  - `object-designer`, `permission-set-architect`, `flow-builder`, `omni-channel-routing-designer`, `sales-stage-designer`, `lead-routing-rules-designer`, `duplicate-rule-designer`, `sandbox-strategy-designer`, `omnistudio-designer` (Wave H).
 
 ---
 
@@ -241,7 +241,7 @@ New skills landed in 2026-04 and are available for citation. Existing agents can
 - `flow/flow-apex-defined-types` — structured Flow variables for HTTP callout / External Service / invocable payloads
 
 ### OmniStudio (5 new)
-No existing dedicated agent; skills are available for new agents and ad-hoc queries:
+Now owned by `omnistudio-designer` (see Wave H below), which cites all five along with the rest of the domain:
 - `omnistudio/omnistudio-lwc-omniscript-migration`, `omnistudio/omnistudio-asynchronous-data-operations`
 - `omnistudio/omnistudio-cache-strategies`, `omnistudio/omnistudio-multi-language`, `omnistudio/omnistudio-field-mapping-governance`
 
@@ -310,6 +310,54 @@ Onboarded from the official *SOQL and SOSL Reference* and three Flow articles (P
 - `flow/screen-flow-radio-button-group` → `flow-builder` — Summer '26 compact single-select Radio Button Group component
 - `flow/screen-flow-choice-component-selection` → `flow-builder` — choosing among Radio/Picklist/Dependent/Checkbox/Visual Picker/Choice Lookup
 - `flow/flow-open-a-page-action` → `flow-builder`, `flow-analyzer` — Summer '26 Open a Page post-flow navigation/redirect action
+
+---
+
+## Wave H (2026-07-31) — OmniStudio runtime agent
+
+Before this wave, `skills/omnistudio/` was the only domain with zero agent coverage: 34 of 34 skills were cited by no agent, so the domain was unreachable through the runtime layer. `omnistudio-designer` closes that hole and becomes the domain's front door.
+
+### `omnistudio-designer`
+
+Runtime, `harness: designer_base`, `modes: [design, audit]`, `multi_dimensional: true`, slash command `/design-omnistudio`. Do not confuse it with `omni-channel-routing-designer` — Omni-Channel is service work routing, a different product.
+
+UI layer:
+- `omnistudio/omniscript-design-patterns`, `omnistudio/omniscript-session-state`, `omnistudio/omniscript-versioning`
+- `omnistudio/flexcard-design-patterns`, `omnistudio/flexcard-container-composition`, `omnistudio/flexcard-state-management`
+- `omnistudio/omnistudio-lwc-integration`, `omnistudio/omnistudio-custom-lwc-elements`
+- `admin/omniscript-flow-design-requirements`, `admin/flexcard-requirements`
+
+Data + orchestration layer:
+- `omnistudio/dataraptor-patterns`, `omnistudio/dataraptor-load-and-extract`, `omnistudio/dataraptor-transform-optimization`
+- `omnistudio/omnistudio-field-mapping-governance`
+- `omnistudio/integration-procedures`, `omnistudio/integration-procedure-cacheable-patterns`, `omnistudio/omnistudio-remote-actions`
+- `omnistudio/omnistudio-asynchronous-data-operations`
+
+Rules, calculation, documents, and Industries surfaces:
+- `omnistudio/business-rules-engine`, `omnistudio/calculation-procedures`, `omnistudio/calculation-procedure-design`
+- `omnistudio/document-generation-omnistudio`, `omnistudio/omnistudio-multi-language`
+- `omnistudio/industries-api-extensions`, `omnistudio/industries-cpq-vs-salesforce-cpq`
+
+Reliability, security, performance:
+- `omnistudio/omnistudio-error-handling-patterns`, `omnistudio/omnistudio-debugging`, `omnistudio/omnistudio-testing-patterns`
+- `omnistudio/omnistudio-security`
+- `omnistudio/omnistudio-performance`, `omnistudio/omnistudio-cache-strategies`, `architect/omnistudio-scalability-patterns`
+
+Runtime flavour, deployment, and tool boundary:
+- `omnistudio/omnistudio-vs-flow-decision`, `architect/omnistudio-vs-standard-decision`, `architect/omnistudio-vs-standard-architecture`
+- `omnistudio/vlocity-to-native-omnistudio-migration`, `omnistudio/omnistudio-lwc-omniscript-migration`
+- `omnistudio/omnistudio-deployment-datapacks`, `omnistudio/omnistudio-ci-cd-patterns`
+- `data/omnistudio-metadata-management`, `data/omnistudio-datapack-migration`
+- `admin/omnistudio-admin-configuration`
+
+Wave 10 contract support:
+- `admin/agent-output-formats`, `admin/salesforce-object-queryability`
+
+Decision trees:
+- `standards/decision-trees/performance-tuning.md` — Q16 (OmniStudio runtime) is the only OmniStudio branch in the tree layer; cite it for every latency recommendation.
+- `standards/decision-trees/automation-selection.md` — cited for route-away only. This tree has no OmniStudio branch; the agent says so in plain text rather than inventing one.
+
+Templates: none. There is no `templates/omnistudio/` directory yet — a real gap, tracked as follow-up work.
 
 ---
 

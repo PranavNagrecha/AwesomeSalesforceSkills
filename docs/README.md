@@ -1,0 +1,125 @@
+# SfSkills documentation
+
+Every document in this repository, ordered by the journey a reader actually
+takes. This page is an index only — it links and classifies, it does not
+teach. Tutorials live in [getting-started.md](getting-started.md);
+explanation lives in [architecture.md](architecture.md).
+
+## Audience legend
+
+| Label | Means |
+|---|---|
+| `Consumer` | You are USING the library on a Salesforce project — searching skills, running agents, wiring the MCP server into your editor. You never edit this repo. |
+| `Contributor` | You are CHANGING the library — adding or revising a skill, an agent, a template, or the tooling. You run the sync and validation gates. |
+| `Both` | Useful either way. |
+
+That split is the single most confusing thing about this repo's docs: roughly
+half of them are contracts for people who maintain the library, and reading
+them as a user is a waste of an afternoon.
+
+---
+
+## 1. Start here
+
+| Doc | Audience | What it answers |
+|---|---|---|
+| [../README.md](../README.md) | Both | What is this and why would I want it? |
+| [getting-started.md](getting-started.md) | Consumer | Install to first useful output, for the three real entry points. |
+| [worked-example-trigger-consolidation.md](worked-example-trigger-consolidation.md) | Consumer | One complete Salesforce task, start to finish, with the real command output. |
+| [glossary.md](glossary.md) | Both | What is a "skill", a "chunk", a "coverage gate", a "probe"? |
+| [faq.md](faq.md) | Both | Do I need an org? Why is search slow? Why do the CLI and MCP disagree? |
+| [troubleshooting.md](troubleshooting.md) | Both | Symptom to cause to fix, for the failure modes a fresh clone actually hits. |
+
+## 2. Use the library
+
+| Doc | Audience | What it answers |
+|---|---|---|
+| [../mcp/sfskills-mcp/docs/CONNECT.md](../mcp/sfskills-mcp/docs/CONNECT.md) | Consumer | MCP client config for Claude Code, Claude Desktop, Cursor, Windsurf, Zed, VS Code, Cline, Continue, Codex CLI, Gemini CLI, Goose. |
+| [../mcp/sfskills-mcp/README.md](../mcp/sfskills-mcp/README.md) | Consumer | The 38 MCP tool schemas, annotations, and design notes. |
+| [installing-the-plugin.md](installing-the-plugin.md) | Consumer | Install the library as a Claude Code plugin from the marketplace. |
+| [installing-single-agents.md](installing-single-agents.md) | Consumer | Ship one agent into another project without dropping its skill and probe dependencies. |
+| [agent-invocation-modes.md](agent-invocation-modes.md) | Consumer | The canonical short list of ways to invoke an agent. Start with this one. |
+| [agent-informal-invocation-analysis.md](agent-informal-invocation-analysis.md) | Consumer | Deep background on the same subject, plus per-agent notes. 1,169 lines — reference, not reading. |
+| [consumer-responsibilities.md](consumer-responsibilities.md) | Consumer | What a consuming tool MUST do when it runs a runtime agent (persist reports, honour the JSON envelope). |
+| [multi-ai-parity.md](multi-ai-parity.md) | Consumer | Which export targets are first-class and what each one loses. |
+| [../agents/_shared/RUNTIME_VS_BUILD.md](../agents/_shared/RUNTIME_VS_BUILD.md) | Consumer | The agent roster: which agents do Salesforce work vs maintain the library. |
+| [../agents/_shared/SKILL_MAP.md](../agents/_shared/SKILL_MAP.md) | Consumer | Which agent cites which skills. |
+| [../standards/decision-trees/README.md](../standards/decision-trees/README.md) | Consumer | Routing before technology choice: Flow vs Apex, async tier, integration pattern, sharing mechanism. |
+| [../templates/README.md](../templates/README.md) | Consumer | The canonical Apex / LWC / Flow / Agentforce building blocks skills point at. |
+| [positioning.md](positioning.md) | Both | What this project claims, and what it refuses to claim. |
+| [comparison.md](comparison.md) | Both | How this compares to the alternatives, including where it loses. |
+
+## 3. Understand it
+
+| Doc | Audience | What it answers |
+|---|---|---|
+| [architecture.md](architecture.md) | Both | How skills, agents, commands, templates, decision trees, registry, index, evals and the MCP server fit together. |
+| [validation/README.md](validation/README.md) | Both | How the library verifies itself against a live org (three re-runnable harnesses). |
+| [../agents/_shared/AGENT_CONTRACT.md](../agents/_shared/AGENT_CONTRACT.md) | Both | The 8-section shape every AGENT.md must have. |
+| [../evals/README.md](../evals/README.md) | Both | Golden P0 output-quality cases for the flagship skills. |
+| [../SECURITY.md](../SECURITY.md) | Both | Threat model, secret handling, and how to report a vulnerability. |
+
+## 4. Contribute to it
+
+| Doc | Audience | What it answers |
+|---|---|---|
+| [../CONTRIBUTING.md](../CONTRIBUTING.md) | Contributor | Add a skill, fix a skill, report a gap, flag stale content. |
+| [../CLAUDE.md](../CLAUDE.md) | Contributor | The rules an AI assistant must follow inside this repo. |
+| [../AGENT_RULES.md](../AGENT_RULES.md) | Contributor | The full repo-wide workflow rules, in detail. |
+| [../AGENTS.md](../AGENTS.md) | Contributor | The agent-facing entry point (the `AGENTS.md` convention). |
+| [../standards/validation-gates.md](../standards/validation-gates.md) | Contributor | Every gate `validate_repo.py` enforces, with file and line citations. Generated. |
+| [MIGRATION.md](MIGRATION.md) | Contributor | Which agents were deprecated in the Wave 3 consolidation and what replaced them. |
+| [release-plans/v0.4.4-post-launch.md](release-plans/v0.4.4-post-launch.md) | Contributor | The MCP 0.4.4 release checklist. |
+| [go-to-market.md](go-to-market.md) | Contributor | The ranked launch sequence for the project itself. |
+| [../CHANGELOG.md](../CHANGELOG.md) | Both | What changed, when. |
+
+## 5. Reference
+
+### 5a. Generated artifacts — never hand-edit
+
+A drift check in `scripts/validate_repo.py` recomputes these from their
+sources and errors if the committed copy differs, so a hand-edit fails the
+gate on the next commit. Regenerate instead, with the command named in the
+last column.
+
+| Doc | Audience | What it answers | Regenerate with |
+|---|---|---|---|
+| [SKILLS.md](SKILLS.md) | Both | The full skill catalog. | `scripts/skill_sync.py --all` (via `scripts/generate_docs.py`) |
+| [queue-progress.md](queue-progress.md) | Contributor | Backlog dashboard: status counts, drift, next pick. | `scripts/generate_queue_dashboard.py` |
+| [reports/duplicate-candidates.md](reports/duplicate-candidates.md) | Contributor | Near-duplicate skill pairs above the similarity threshold. | `scripts/audit_duplicates.py` |
+
+### 5b. Hand-authored queue sources
+
+These are edited by hand. `queue-progress.md` above is derived from the first
+of them.
+
+| Doc | Audience | What it answers |
+|---|---|---|
+| [../BACKLOG.yaml](../BACKLOG.yaml) | Contributor | The machine-readable queue of pending / researched / blocked / duplicate skill entries. Edit this, then regenerate the dashboard. |
+| [../BACKLOG.md](../BACKLOG.md) | Contributor | Human-readable notes alongside the queue. |
+| [../MASTER_QUEUE.md](../MASTER_QUEUE.md) | Contributor | The narrative queue document that `BACKLOG.yaml` superseded for row data. |
+
+## 6. Historical
+
+Kept for provenance. None of it describes current behaviour.
+
+| Doc | Audience | What it answers |
+|---|---|---|
+| [archive/README.md](archive/README.md) | Contributor | Index of one-off documents kept for reference and wired into nothing. |
+| [QUEUE_FORMAT_PROPOSAL.md](QUEUE_FORMAT_PROPOSAL.md) | Contributor | An April 2026 proposal to move the queue out of Markdown. Superseded — `BACKLOG.yaml` and `queue-progress.md` now exist exactly as proposed. |
+
+---
+
+## What this library is not
+
+- Not a deployment tool. Nothing here pushes metadata to an org.
+- Not an org scanner on its own. Org-reading requires the MCP server plus
+  your own authenticated Salesforce CLI session.
+- Not org-dependent for skills. Search, agents, templates and decision trees
+  work with no Salesforce org at all.
+
+## Documents this index does not cover
+
+`docs/reports/` also holds per-agent output directories written by runtime
+agents at execution time. They are working artifacts, not documentation, and
+are not indexed here.

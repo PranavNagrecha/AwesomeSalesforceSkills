@@ -42,10 +42,42 @@ retrieval:
   vector_rerank_limit: 15
   result_limit: 10
   snippet_length: 220
-  # Skills scoring below this threshold are suppressed from results and
-  # has_coverage is set to false. Consumers should fall back to official_sources
-  # only when has_coverage is false rather than presenting a low-confidence skill.
+  # Coverage gate. A skill is kept when EITHER threshold is met:
+  #   max_score >= min_skill_max_score  OR  score >= min_skill_score
+  # Consumers should fall back to official_sources only when has_coverage is
+  # false rather than presenting a low-confidence skill.
+  #
+  # `score` is the CUMULATIVE sum of every chunk a skill contributed; `max_score`
+  # is its single best chunk. Gating on `score` alone rewards breadth of weak
+  # matches and suppresses one precise match — the units the ranker sorts on
+  # (max_score) and the units the gate read (score) had drifted apart. The OR
+  # form was swept on 2026-07-31 and is strictly dominant:
+  #   score >= 1.5 alone:            fixture Hit@1 94.8%  Hit@3 98.0%
+  #                                  fixture false-NONE 3, held-out NONE 23.3%
+  #   max >= 1.0 OR score >= 1.5:    fixture Hit@1 95.0%  Hit@3 98.8%
+  #                                  fixture false-NONE 0, held-out NONE  6.7%
+  # max_score alone at 1.5/1.2/1.0/0.8 all regress Hit@3 to 94.5% by discarding
+  # the cumulative signal — the OR keeps both.
   min_skill_score: 1.5
+  min_skill_max_score: 1.0
+  # Skill-centrality signal. Chunk-level lexical scoring cannot tell "this skill
+  # is ABOUT X" from "this skill MENTIONS X", so niche/adjacent skills outranked
+  # foundational ones ("create a validation rule" returned data/data-migration-
+  # planning). pipelines/ranking.aggregate_skill_scores adds
+  #   rank_score = max_score
+  #              + name_match_weight        * (query tokens matched in the name)
+  #              + description_match_weight * (query tokens matched in the description)
+  # This is a RANKING signal only — the coverage gate above still reads
+  # max_score/score, so the bonus can reorder results but never manufacture
+  # confidence. Swept on 2026-07-31 against a 20-query hand-labeled held-out set
+  # plus a 400-fixture sample:
+  #   baseline (max_score only): fixture H@1 95.0%  held-out H@1 50.0%  H@3 60.0%
+  #   name 1.5 / desc 0.5:       fixture H@1 95.5%  held-out H@1 65.0%  H@3 75.0%
+  #   name 2.0 / desc 1.0:       fixture H@1 94.0%  held-out H@1 65.0%  H@3 75.0%
+  #   name 3.0 / desc 1.0:       fixture H@1 93.0%  held-out H@1 60.0%  H@3 75.0%
+  # Weights above ~2.0 erode the fixture floor; 1.5/0.5 is the knee.
+  name_match_weight: 1.5
+  description_match_weight: 0.5
 
 # Pairwise duplicate detection — used by:
 #   - scripts/audit_duplicates.py        (on-demand top-N report)

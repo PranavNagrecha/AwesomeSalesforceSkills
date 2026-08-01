@@ -26,6 +26,76 @@ MAX_SEARCH_LIMIT = 50
 DEFAULT_SEARCH_LIMIT = 10
 MAX_REFERENCE_CHARS = 40_000
 
+# Fallbacks matching config/retrieval-config.yaml, used when the data bundle
+# ships without a config (PyPI install). Keep these in sync with that file.
+DEFAULT_MIN_SKILL_SCORE = 1.5
+DEFAULT_MIN_SKILL_MAX_SCORE = 1.0
+DEFAULT_NAME_MATCH_WEIGHT = 1.5
+DEFAULT_DESCRIPTION_MATCH_WEIGHT = 0.5
+
+
+@lru_cache(maxsize=1)
+def _retrieval_config() -> dict[str, float]:
+    """Gate + ranking knobs, read once from config/retrieval-config.yaml.
+
+    Falls back to the DEFAULT_* constants when the config is absent or PyYAML
+    is not installed, so a bare data bundle still gates identically to the CLI.
+    """
+    defaults = {
+        "min_skill_score": DEFAULT_MIN_SKILL_SCORE,
+        "min_skill_max_score": DEFAULT_MIN_SKILL_MAX_SCORE,
+        "name_match_weight": DEFAULT_NAME_MATCH_WEIGHT,
+        "description_match_weight": DEFAULT_DESCRIPTION_MATCH_WEIGHT,
+    }
+    try:
+        paths.ensure_pipelines_on_path()
+        from pipelines.sync_engine import load_retrieval_config  # type: ignore[import-not-found]
+
+        retrieval = (load_retrieval_config(paths.repo_root()) or {}).get("retrieval", {})
+    except Exception:  # noqa: BLE001 — a missing/!parseable config must not break search
+        return defaults
+    return {key: float(retrieval.get(key, fallback)) for key, fallback in defaults.items()}
+
+
+@lru_cache(maxsize=1)
+def _skill_meta() -> dict[str, tuple[str, str]]:
+    """``{skill_id: (name, description)}`` for the skill-centrality bonus.
+
+    Built from the already-cached registry — no extra file read per query.
+    """
+    return {
+        skill_id: (record.get("name", ""), record.get("description", ""))
+        for skill_id, record in _registry_by_id().items()
+    }
+
+
+@lru_cache(maxsize=1)
+def _skill_embeddings() -> dict[str, dict[str, Any]]:
+    """Skill-level vectors (one per skill, ~5 MB) if the bundle carries them.
+
+    Deliberately NEVER loads ``vector_index/embeddings.jsonl`` (535 MB of
+    chunk-level vectors). Every indexed chunk carries a ``skill_id``, and
+    ``pipelines.ranking.rerank_results`` prefers the skill-level vector whenever
+    one exists — so the chunk file would cost half a gigabyte of RSS to change
+    nothing.
+    """
+    path = paths.repo_root() / "vector_index" / "skill_embeddings.jsonl"
+    if not path.exists():
+        return {}
+    out: dict[str, dict[str, Any]] = {}
+    with path.open(encoding="utf-8") as handle:
+        for line in handle:
+            if not line.strip():
+                continue
+            try:
+                item = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            skill_id = item.get("skill_id")
+            if skill_id:
+                out[skill_id] = item
+    return out
+
 
 def _load_registry() -> dict[str, Any]:
     path = paths.registry_skills_json()
@@ -97,11 +167,13 @@ def search_skill(
     domain: str | None = None,
     limit: int = DEFAULT_SEARCH_LIMIT,
 ) -> dict[str, Any]:
-    """Lexical search across the SfSkills corpus.
+    """Search across the SfSkills corpus.
 
     Returns a payload mirroring ``scripts/search_knowledge.py --json`` but
     scoped to the fields an MCP client needs: aggregated skill hits, their
-    summary metadata, and top-matching chunks.
+    summary metadata, and top-matching chunks. Gating and ranking are kept in
+    lockstep with the CLI — see the parity notes inline below, and
+    ``evals/measurement/check_cli_mcp_parity.py`` for the regression test.
     """
     if not isinstance(query, str) or not query.strip():
         return {"error": "query is required", "query": query, "skills": [], "chunks": []}
@@ -109,6 +181,7 @@ def search_skill(
     bounded_limit = max(1, min(int(limit or DEFAULT_SEARCH_LIMIT), MAX_SEARCH_LIMIT))
 
     paths.ensure_pipelines_on_path()
+    from pipelines.embedding_backends import embed_query, parse_embedding_config  # type: ignore[import-not-found]
     from pipelines.lexical_index import search_index  # type: ignore[import-not-found]
     from pipelines.ranking import aggregate_skill_scores, rerank_results  # type: ignore[import-not-found]
 
@@ -118,14 +191,64 @@ def search_skill(
         domain,
         max(bounded_limit * 3, 30),
     )
-    ranked = rerank_results(None, lexical_rows, {}, domain)
-    aggregated = aggregate_skill_scores(ranked, bounded_limit)
+
+    # Vector parity, opportunistically. A DEV install (repo root on disk) has
+    # vector_index/skill_embeddings.jsonl and can rank exactly like the CLI. A
+    # PyPI install is lexical-only BY CONSTRUCTION and always will be:
+    #   - .gitignore excludes both embeddings.jsonl and skill_embeddings.jsonl,
+    #   - .github/workflows/publish-mcp.yml bundles vector_index/ from a bare
+    #     checkout without building an index, so neither file is in the wheel,
+    #   - fastembed is an optional [embeddings] extra, not a hard dependency.
+    # So we only pay fastembed's ~14s cold start when there are actually
+    # vectors to compare the query against; with none, embedding it would be
+    # pure latency for zero signal. The GATE is identical either way — that is
+    # the divergence that mattered, and it is closed.
+    skill_embeddings = _skill_embeddings()
+    query_vector = None
+    if skill_embeddings:
+        try:
+            from pipelines.sync_engine import load_retrieval_config  # type: ignore[import-not-found]
+
+            query_vector = embed_query(query, parse_embedding_config(load_retrieval_config(paths.repo_root())))
+        except Exception:  # noqa: BLE001 — no fastembed / no config: stay lexical
+            query_vector = None
+
+    ranked = rerank_results(
+        query_vector,
+        lexical_rows,
+        {},
+        domain,
+        skill_embeddings=skill_embeddings,
+    )
+
+    config = _retrieval_config()
+    aggregated = aggregate_skill_scores(
+        ranked,
+        bounded_limit,
+        skill_meta=_skill_meta(),
+        query=query,
+        name_weight=config["name_match_weight"],
+        description_weight=config["description_match_weight"],
+    )
+    # Same coverage gate as scripts/search_knowledge.run_search: max_score OR
+    # cumulative score, never rank_score (the name bonus ranks, it does not
+    # confer confidence). Previously this was `has_coverage = bool(results)`,
+    # which meant the MCP claimed coverage on any lexical hit at all.
+    gated = [
+        hit for hit in aggregated
+        if hit["max_score"] >= config["min_skill_max_score"]
+        or hit["score"] >= config["min_skill_score"]
+    ]
 
     registry = _registry_by_id()
     enriched_skills: list[dict[str, Any]] = []
-    for hit in aggregated:
+    for hit in gated:
         record = registry.get(hit["id"])
-        entry: dict[str, Any] = {"id": hit["id"], "score": hit["score"]}
+        entry: dict[str, Any] = {
+            "id": hit["id"],
+            "score": hit["score"],
+            "rank_score": hit["rank_score"],
+        }
         if record:
             entry.update(
                 {
@@ -158,7 +281,7 @@ def search_skill(
     return {
         "query": query,
         "domain_filter": domain,
-        "has_coverage": bool(enriched_skills),
+        "has_coverage": len(enriched_skills) > 0,
         "skills": enriched_skills,
         "chunks": chunks_payload,
     }

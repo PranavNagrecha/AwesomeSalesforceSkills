@@ -96,11 +96,11 @@
     "fe4b7051e884688d0a77",
     "ffb30faaaf5f978fbae6"
   ],
-  "content_hash": "28607b0dc844a33f719f06989aab731ffb366b015d94eea17dfe8e0c76a6d739",
+  "content_hash": "4bf5d9ce6dc6366e82c61ea8a3d9f0c8ac4eaecb7a14ce9e939ad15615dfb48d",
   "dependencies": [
     "omnistudio-vs-standard-decision"
   ],
-  "description": "Architecture decision framework for choosing between OmniStudio and the standard Salesforce platform (Screen Flow, LWC, Apex) for guided UI and data orchestration use cases. Covers the license gate, the Dynamic Forms \u2192 Screen Flow \u2192 OmniStudio continuum, Standard Runtime vs Vlocity managed package migration debt, and team skill considerations. NOT for implementation. NOT for OmniScript development or FlexCard configuration.",
+  "description": "Pick and then document the OmniStudio runtime path an architect has to live with: Standard Runtime (natively embedded, Spring '25+, no namespace) versus the legacy vlocity_ins__ / industries__ managed package and the migration debt every new component on it accrues \u2014 gated first on whether the org actually holds a qualifying Industries license. Ends in a written ADR that records the license gate, the runtime path, team ramp cost, and the fallback to Screen Flow + LWC for a guided wizard when OmniStudio is not available. NOT for the OmniStudio-vs-standard-tooling capability matrix itself (use architect/omnistudio-vs-standard-decision), NOT for OmniScript, FlexCard, or Integration Procedure implementation.",
   "file_location": "skills/architect/omnistudio-vs-standard-architecture",
   "id": "architect/omnistudio-vs-standard-architecture",
   "inputs": [
@@ -135,23 +135,22 @@
   "status": "stable",
   "tags": [
     "omnistudio",
-    "screen-flow",
-    "lwc",
-    "decision-framework",
+    "standard-runtime",
+    "vlocity",
+    "migration-debt",
     "industries",
     "architecture",
-    "standard-runtime",
-    "vlocity"
+    "adr"
   ],
   "templates": [
     "skills/architect/omnistudio-vs-standard-architecture/templates/omnistudio-vs-standard-architecture-template.md"
   ],
-  "updated": "2026-04-13",
+  "updated": "2026-07-31",
   "vector_embedding": {
     "backend": "fastembed",
     "dimension": 384,
-    "updated": "2026-04-13",
+    "updated": "2026-07-31",
     "vector_id": "architect/omnistudio-vs-standard-architecture"
   },
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

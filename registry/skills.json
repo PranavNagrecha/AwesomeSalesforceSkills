@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 48
   },
-  "generated_from_hash": "3285fea03515d64ec6c3fc440b0499980597e01d7f685df803690681d158660c",
+  "generated_from_hash": "86b8f2b0f8e45ca1258f05c42dc50afc80d9b139bc5ce1440a59bb580bb1821c",
   "schema_version": 1,
   "skill_count": 1027,
   "skills": [
@@ -5329,7 +5329,7 @@
         "fd49c21b944ee8d74019",
         "fe366485e89cb6357cf3"
       ],
-      "content_hash": "2ac6ac4601e89d8ce88a043a12901624f6ae0e1f05d0fa85deefad3196d74b0f",
+      "content_hash": "e09c386fd374b2acd8fd15f322c6b268b3bcb617b69214c7d2ddfcf3043b1697",
       "dependencies": [],
       "description": "Use when admins are governing the Chatter group lifecycle \u2014 creation policy, public/private/unlisted visibility decisions, group ownership transfer when owners leave, archived vs inactive vs deleted state changes, auto-archive behavior, naming conventions, group templates (Information Templates), and orphan-group cleanup after user terminations. Triggers: 'we have 800 dead chatter groups', 'group owner left the company who owns it now', 'should this group be public private or unlisted', 'when does a chatter group auto-archive', 'how do I delete vs archive a chatter group', 'we need a chatter group naming convention'. NOT for Chatter notification / digest / feed-noise tuning (use admin/chatter-notification-tuning), NOT for Chatter REST API integration patterns (use apex/apex-connect-api-chatter), NOT for Custom Notifications API (use apex/apex-custom-notifications-from-apex), NOT for Experience Cloud / Customer Community group access (different sharing model).",
       "file_location": "skills/admin/chatter-group-governance",
@@ -5459,7 +5459,7 @@
         "f48388de26d9c61a94e1",
         "fd2cc88af68ec2165088"
       ],
-      "content_hash": "6534bcc196af990c803c7e37df56157bda9605f8858149ee0b8308e7b20e8f5b",
+      "content_hash": "ea6b41f9fd11bfba2f666e6eaca0888f91d950e5c2276bcbc6118824e1c6abb6",
       "dependencies": [],
       "description": "Use when admins are reducing Chatter signal-to-noise across an org \u2014 covers org-level Chatter Email Settings, per-user Email Settings preferences, group-level email digest frequency (Daily / Weekly / Limited / Never), bell-icon Custom Notifications vs Chatter feed-post tradeoffs, automated-feed suppression on record types via Feed Tracking config, and the Chatter Settings org defaults that control whether new users start with everything-on. Triggers: 'chatter feed full of automated posts nobody reads', 'users complain about chatter email volume', 'turn off chatter notifications for a specific group', 'change default chatter digest frequency', 'stop process builder posts from filling the feed'. NOT for Custom Notifications API design (use apex/apex-custom-notifications-from-apex), NOT for Connect API / Chatter REST API integration patterns (use apex/apex-connect-api-chatter), NOT for Chatter group lifecycle and governance (use admin/chatter-group-governance once authored).",
       "file_location": "skills/admin/chatter-notification-tuning",
@@ -16131,9 +16131,9 @@
         "fb96618b56261d61dcc2",
         "fd3b7e04f3c0d2e08bcd"
       ],
-      "content_hash": "4711e4b3b70d6432085ea58cbd4584936e71ab331a167c0a3bf95f32c214fdb9",
+      "content_hash": "1c9eb81b2427b6bd21893223162b3875f0f80a2a663b0814bdd957b40b640eb4",
       "dependencies": [],
-      "description": "Use this skill to gather, document, and validate FlexCard layout requirements before development begins \u2014 covering data visualization needs, action requirements, embedded component specifications, and user context mapping. Trigger keywords: FlexCard requirements, FlexCard BA, FlexCard layout design, FlexCard data sources, FlexCard actions. NOT for FlexCard development implementation, Card Designer configuration, or standard Lightning component requirements.",
+      "description": "Specify a FlexCard before a developer opens Card Designer: the card-state set and the condition that selects each state, the data source type behind each card (DataRaptor, Integration Procedure, Apex remote, SOQL), the action menu users get (navigate, launch OmniScript, Apex, DataRaptor), and every embedded child FlexCard or custom LWC. Produces the artifacts a BA hands to the builder. Trigger keywords: FlexCard requirements, FlexCard BA, FlexCard layout design, FlexCard data sources, FlexCard actions, FlexCard card states, OmniStudio FlexCard scoping. NOT for building the card in Card Designer, NOT for OmniScript step and branching requirements (use admin/omniscript-flow-design-requirements), NOT for standard Lightning record-page component requirements.",
       "file_location": "skills/admin/flexcard-requirements",
       "id": "admin/flexcard-requirements",
       "inputs": [
@@ -16169,20 +16169,20 @@
         "omnistudio",
         "flexcard",
         "requirements-gathering",
-        "ba-role",
-        "card-design"
+        "card-design",
+        "card-states"
       ],
       "templates": [
         "skills/admin/flexcard-requirements/templates/flexcard-requirements-template.md"
       ],
-      "updated": "2026-04-28",
+      "updated": "2026-07-31",
       "vector_embedding": {
         "backend": "fastembed",
         "dimension": 384,
-        "updated": "2026-04-28",
+        "updated": "2026-07-31",
         "vector_id": "admin/flexcard-requirements"
       },
-      "version": "1.0.0"
+      "version": "1.0.1"
     },
     {
       "category": "admin",
@@ -41800,7 +41800,7 @@
         "f8ab21aa7f7b67913a20",
         "fcb5aa3d9eae78dc0eb5"
       ],
-      "content_hash": "186940980f574e46d98098da03122a3f102349d99a92003455ebd4b8b2d52003",
+      "content_hash": "7dc3b27bb9c4bb0d2380e72b6d512fb64c258d8e935525bb2b7f479ed17b496e",
       "dependencies": [],
       "description": "Use when an org is rolling out an Agentforce-based HR / Employee Service agent for self-service workflows like leave requests, benefits questions, onboarding tasks, and time-off balance lookups. Covers Employee Agent licensing posture, knowledge-base grounding for HR policy, integration patterns with HRIS systems of record (Workday, ADP, BambooHR) \u2014 read-only vs read-write trade-offs, employee-vs-manager visibility model, PII handling under the Einstein Trust Layer, surface-placement decision (in-Salesforce vs Slack-first vs Teams-first), and rollout measurement (deflection, first-response time, employee CSAT). Triggers: 'we want an HR self-service agent for leave and benefits', 'employees keep emailing HR for time-off balance \u2014 can Agentforce answer that?', 'roll out Employee Service agent in Slack', 'wire HRIS into our Agentforce HR bot', 'how do we handle PII when the agent reads Workday', 'measure deflection on the HR agent we just launched'. NOT for general Agentforce agent build mechanics (use agentforce/agentforce-persona-design + agentforce/custom-agent-actions-apex), NOT for the channel deployment plumbing (use agentforce/agent-channel-deployment), NOT for prompt/instruction authoring (use agentforce/agentforce-guardrails).",
       "file_location": "skills/agentforce/employee-hr-service-agent-rollout",
@@ -42732,7 +42732,7 @@
         "f8082d683e410068f038",
         "fe25e7e983cd926b33be"
       ],
-      "content_hash": "b59247734c6de06dd6c56ae94dd39304bdd60bccf63c544aecc96828af781a08",
+      "content_hash": "7482b452c4666040549fcd4c1490bca33ccb62c146b60116a55a5ff364f30c2e",
       "dependencies": [],
       "description": "Use when an admin or RevOps team is rolling out the out-of-the-box Sales Coach agent (the Agentforce template that role-plays opportunity-stage conversations with reps for Discovery, Needs Analysis, Qualification, Proposal/Pricing, and Negotiation/Review). Covers prerequisites (Agentforce SKU, Einstein Generative AI activation, Opportunity stage hygiene, knowledge grounding), stage-by-stage prompt configuration, customizing role-play scenarios with org-specific objections and value props, privacy posture for what gets captured in LLM context vs persisted, console-vs-portal embedding choices, and a measurement plan tying coached opportunities to win-rate signal. Triggers: 'roll out sales coach agent', 'set up Agentforce sales coach for our reps', 'sales coach not engaging reps on early-stage opps', 'customize sales coach role-play scenarios for our industry', 'how do we measure sales coach effectiveness', 'sales coach feedback contradicts our methodology'. NOT for building bespoke Agentforce agents from scratch (use agentforce/agentforce-agent-design once authored), NOT for Service Coach / Service Replies (different template, use agentforce/service-coach-rollout once authored), NOT for prompt-template authoring or Prompt Builder mechanics (use agentforce/prompt-builder-template-design), NOT for Einstein Conversation Insights / call-recording analysis (separate product line).",
       "file_location": "skills/agentforce/sales-coach-agent-rollout",
@@ -61907,7 +61907,7 @@
         "fb6856b874e9a5b4f073",
         "fcafb3abba5044f55bf2"
       ],
-      "content_hash": "26a4fd51141d74f9f99efb67bfeb003f81b05fc252997c417dfae32adba110de",
+      "content_hash": "f8217276f1b73cb700bd48b0f46c401ce03f5570e03677ac090ddc79920995fe",
       "dependencies": [],
       "description": "Use when nightly batch / scheduled Apex jobs are failing without anyone noticing \u2014 covers why uncaught exceptions in `execute()` go to the debug log instead of email, how to query `AsyncApexJob` for `Status`, `NumberOfErrors`, and `ExtendedStatus`, when to implement `Database.RaisesPlatformEvents` so the platform publishes `BatchApexErrorEvent` on uncaught failures, how to subscribe to that event with an Apex trigger and notify operators, and how to layer a custom watcher schedule on top so silent-failure modes (job that never started, scheduled class deleted, queue stuck on `Queued`) still surface. Triggers: 'nightly batch failed at 2am with no notification', 'how do we know if a scheduled apex job is failing', 'BatchApexErrorEvent vs custom retry logic', 'Setup Apex Jobs only shows last 7 days, where else can I look', 'job is stuck in queued status nobody noticed for a week'. NOT for general Apex exception handling patterns (use apex/apex-exception-handling-and-logging), NOT for Batch Apex authoring or chunking strategy (use apex/batch-apex-design), NOT for Setup \u2192 Apex Jobs UI walkthrough as an admin task (use admin/batch-job-scheduling-and-monitoring), NOT for retry logic itself (use apex/scheduled-apex-retry-patterns once authored).",
       "file_location": "skills/apex/scheduled-apex-failure-detection-and-monitoring",
@@ -77426,11 +77426,11 @@
         "fe4b7051e884688d0a77",
         "ffb30faaaf5f978fbae6"
       ],
-      "content_hash": "28607b0dc844a33f719f06989aab731ffb366b015d94eea17dfe8e0c76a6d739",
+      "content_hash": "4bf5d9ce6dc6366e82c61ea8a3d9f0c8ac4eaecb7a14ce9e939ad15615dfb48d",
       "dependencies": [
         "omnistudio-vs-standard-decision"
       ],
-      "description": "Architecture decision framework for choosing between OmniStudio and the standard Salesforce platform (Screen Flow, LWC, Apex) for guided UI and data orchestration use cases. Covers the license gate, the Dynamic Forms \u2192 Screen Flow \u2192 OmniStudio continuum, Standard Runtime vs Vlocity managed package migration debt, and team skill considerations. NOT for implementation. NOT for OmniScript development or FlexCard configuration.",
+      "description": "Pick and then document the OmniStudio runtime path an architect has to live with: Standard Runtime (natively embedded, Spring '25+, no namespace) versus the legacy vlocity_ins__ / industries__ managed package and the migration debt every new component on it accrues \u2014 gated first on whether the org actually holds a qualifying Industries license. Ends in a written ADR that records the license gate, the runtime path, team ramp cost, and the fallback to Screen Flow + LWC for a guided wizard when OmniStudio is not available. NOT for the OmniStudio-vs-standard-tooling capability matrix itself (use architect/omnistudio-vs-standard-decision), NOT for OmniScript, FlexCard, or Integration Procedure implementation.",
       "file_location": "skills/architect/omnistudio-vs-standard-architecture",
       "id": "architect/omnistudio-vs-standard-architecture",
       "inputs": [
@@ -77465,25 +77465,24 @@
       "status": "stable",
       "tags": [
         "omnistudio",
-        "screen-flow",
-        "lwc",
-        "decision-framework",
+        "standard-runtime",
+        "vlocity",
+        "migration-debt",
         "industries",
         "architecture",
-        "standard-runtime",
-        "vlocity"
+        "adr"
       ],
       "templates": [
         "skills/architect/omnistudio-vs-standard-architecture/templates/omnistudio-vs-standard-architecture-template.md"
       ],
-      "updated": "2026-04-13",
+      "updated": "2026-07-31",
       "vector_embedding": {
         "backend": "fastembed",
         "dimension": 384,
-        "updated": "2026-04-13",
+        "updated": "2026-07-31",
         "vector_id": "architect/omnistudio-vs-standard-architecture"
       },
-      "version": "1.0.0"
+      "version": "1.0.1"
     },
     {
       "category": "architect",
@@ -105957,9 +105956,9 @@
         "fa07556c146ab3df3c51",
         "fa6ed9e8fafed96ebb21"
       ],
-      "content_hash": "8e1ff3bb709212adbc2db3f7d69b3091c1b65fd7d38591cba7b6834b7bf54916",
+      "content_hash": "825216ea88ceb6170a8fc7e113dcf80b87fdda28ecb3170acb84c297c7191415",
       "dependencies": [],
-      "description": "Use when designing or reviewing Flow custom property editor patterns for screen components or actions, including when Flow Builder needs guided design-time configuration, generic type mapping, or builder-context-aware validation. Triggers: 'Flow custom property editor', 'configurationEditor', 'builderContext', 'inputVariables', 'Flow screen component setup'. NOT for general LWC runtime behavior when Flow Builder customization is not involved.",
+      "description": "Decide whether a Flow screen component or invocable action needs a Custom Property Editor at all, and if it does, what the design-time contract owes the admin: which configuration fields are genuinely unmanageable in the default property pane, how generic sObject type mapping gets declared, and how the design-time editor is kept from drifting away from the runtime component it configures. Routing and design review, not implementation. Triggers: 'do we need a flow custom property editor', 'flow custom property editor builder context validate', 'Flow Builder admin configuration UX', 'design-time surface vs runtime surface'. NOT for authoring the editor LWC itself \u2014 its js-meta.xml hook, eventing, and validate() method belong to lwc/custom-property-editor-for-flow.",
       "file_location": "skills/flow/flow-custom-property-editors",
       "id": "flow/flow-custom-property-editors",
       "inputs": [
@@ -105991,21 +105990,21 @@
       "tags": [
         "flow-custom-property-editor",
         "flow-builder",
-        "configurationeditor",
-        "buildercontext",
-        "inputvariables"
+        "flow-extensibility",
+        "design-time-vs-runtime",
+        "admin-configuration-ux"
       ],
       "templates": [
         "skills/flow/flow-custom-property-editors/templates/flow-custom-property-editors-template.md"
       ],
-      "updated": "2026-04-28",
+      "updated": "2026-07-31",
       "vector_embedding": {
         "backend": "fastembed",
         "dimension": 384,
-        "updated": "2026-04-28",
+        "updated": "2026-07-31",
         "vector_id": "flow/flow-custom-property-editors"
       },
-      "version": "2.0.0"
+      "version": "2.0.1"
     },
     {
       "category": "flow",
@@ -111661,6 +111660,7 @@
         "75c9dccad86db74243fb",
         "7b510a99ec4e9ca427d2",
         "7e2592fbfec3b84bd351",
+        "7e2f5c236a9e7376beac",
         "83ab7acbc7eb9dcfd1da",
         "8413e88944ecd56f8a7b",
         "85987b4a66aeee4e77d6",
@@ -111698,7 +111698,7 @@
         "fccb446e54e23dc54cf1",
         "fd3ca7eec523b1e03994"
       ],
-      "content_hash": "446b0bb26d81ab3529e453495e66f75af717969ed87b08b152a46c94911427b9",
+      "content_hash": "0ef7479f00378215cde527965153ad33ce0ad399f63aafdfcd5e90ef5aaa46a9",
       "dependencies": [],
       "description": "Use when a Schedule-Triggered Flow is configured but is not firing at the expected time, or appears active in Setup \u2192 Flows but never produces output. Covers where scheduled flows actually surface (Setup \u2192 Scheduled Jobs, NOT Setup \u2192 Apex Jobs), the AsyncApexJob / CronTrigger evidence trail, top causes (deactivated scheduling user, daylight-savings transitions, time-zone mismatches between scheduling user and org, fault-paths that quietly stop the schedule, daily async-Apex limit pressure), and recovery steps (re-schedule via Apex, run the flow manually with the same input, switch the scheduling user). Triggers: 'how do I schedule a flow to run every monday', 'scheduled flow not firing', 'flow scheduled but no execution', 'scheduled flow stopped working last week', 'monday 6am scheduled flow did not run after dst change'. NOT for designing a new scheduled flow's record scope or idempotency (use flow/scheduled-flows), NOT for record-triggered Scheduled Paths that don't fire (use flow/flow-time-based-patterns), NOT for general Batch Apex job monitoring (use admin/batch-job-scheduling-and-monitoring).",
       "file_location": "skills/flow/scheduled-flow-not-running-debug",
@@ -118847,7 +118847,7 @@
         "f500e470f3d3c322a188",
         "fc2069dad683c2fb9f6a"
       ],
-      "content_hash": "9841ced9c8561c5d36a4c6d750363ff69dd5e6bba5dcd491074a07e01cede9ef",
+      "content_hash": "d9afd2d24394c6dbcfa858157b1d9e3e42faf3bf454ddc6b8c35df6f04d93e24",
       "dependencies": [],
       "description": "Use when designing a recurring (15-minute / hourly / nightly) data exchange between Salesforce and an external ERP system (Oracle EBS, SAP, NetSuite, Workday, Dynamics, etc.) where Salesforce is the *initiator* and pulls or pushes deltas on a schedule. Covers the full pattern: scheduled Apex \u2192 Queueable callout chain \u2192 REST request to ERP \u2192 upsert into a staging custom object \u2192 downstream reconciliation; plus watermark management (timestamp / cursor / full-refresh modes), idempotency via External ID, retry with exponential backoff, dead-letter custom object, and the volume thresholds that should redirect you to Bulk API 2.0, Change Data Capture, or MuleSoft. Triggers: 'integration to oracle erp every 15 minutes', 'scheduled sync pattern enterprise erp', 'pull netsuite invoices into salesforce nightly', 'apex schedulable callout to sap', 'how do i sync salesforce contacts to workday hourly', 'design a polling integration to my erp'. NOT for one-shot ETL imports (use data/data-loader-bulk-api), NOT for real-time inbound from ERP via Platform Events / Pub-Sub API (use integration/platform-events-publish-subscribe), NOT for outbound *event-driven* push (use integration/change-data-capture-consumer-pattern), NOT for MuleSoft / iPaaS architecture decisions (use architect/mulesoft-vs-native-integration-decision). When the data volume routinely exceeds 10K records per cycle or sub-minute latency is required, explicitly route to the Streaming / CDC / iPaaS skills instead.",
       "file_location": "skills/integration/scheduled-erp-sync-pattern",
@@ -126506,7 +126506,7 @@
         "f4c90f338f22e1896a9d",
         "f6e088e1dd2d1c1fd5f6"
       ],
-      "content_hash": "fa85d837df3e214d75e05bde4064c255428766320f93ff5466c8aff8f60f3340",
+      "content_hash": "080edfb81173f5623ada80c152ee015492da2e67aed09d46188ef1deb6bf3834",
       "dependencies": [],
       "description": "Use when designing LWCs that must work offline in the standard Salesforce Mobile App, and when configuring Briefcase Builder rules to prime records onto user devices. Covers form-factor detection (`@salesforce/client/formFactor`), Lightning Data Service offline-cache behavior, Briefcase priming-rule design, conflict resolution on reconnect, and the legacy SmartStore / IndexedDB picture for context. Triggers: 'briefcase builder rule design', 'lwc not working offline', 'how do I prime records to user devices', 'sync conflict on reconnect', 'offline draft persistence in lwc'. NOT for Field Service Mobile offline priming (use admin/fsl-mobile-app-setup or architect/fsl-offline-architecture \u2014 FSL has its own priming pipeline). NOT for general LWC mobile container patterns / device APIs (use lwc/lwc-offline-and-mobile).",
       "file_location": "skills/lwc/lwc-mobile-offline-and-briefcase",
@@ -135062,33 +135062,69 @@
     {
       "category": "security",
       "chunk_ids": [
+        "0048b021348b245827a2",
+        "026e405cfb0fb92532f4",
+        "08fe2df70d33b2987557",
         "0aaa4de207c49248aa9e",
+        "0e4261698297ec07b010",
         "0f40c27b4425151c9380",
+        "15ed19de6c763bc7e264",
+        "1ad09c187ddb93a9d3b9",
+        "1ce477abba0cf164df0d",
+        "1ecead91e70ad4780a0a",
+        "2105cfe956c8864053e3",
+        "21b901a2f929263b8ce5",
+        "2489f95588a2e11ea10b",
         "322791053c727579da71",
+        "32e97cdef94bf15e0bf2",
+        "382d855ac5d7dfc2b670",
+        "3ba4df403cfa903f8bd0",
         "3db982906aec0e2a1366",
+        "3f1f2a45e3dfd2b6cebe",
+        "4057445901b5b614b86e",
+        "4065eb2e15f978895501",
         "42e02c3332c98763921b",
-        "4364ccc5b55221b6d859",
-        "440d2993ebe5f1ab6c2a",
+        "4843aea484a5e2d3e527",
+        "4a137bc7af5c9ea12232",
         "5440881376a90883832a",
+        "5536c2a58bd7605323ce",
         "56784a6b23db3f62f754",
+        "57b781569294f7a19323",
+        "61be5e9e0f664c4ecd3f",
+        "6759304e52a3e81a96fe",
         "68b3cd4153c93d83061e",
-        "74e34f1c2b8068aaff11",
+        "69f389d13ba51e5a1e8f",
+        "6b4a71e5da2b123bbe30",
+        "6e51f4be3fd8893e3d3f",
+        "70cbabc90a8ae2464aab",
+        "76972e281914a359ae5b",
         "7a02bc7fcf5a8243dfee",
-        "871ee5500d4fd670d7fe",
-        "9be704e53f285cb1a4ed",
-        "9f06cf5340e74b5f8f02",
+        "7b969ad7d50c32b03adc",
+        "7c204a7c19bf09079f9a",
+        "7da655f149c5f0d381e6",
+        "7e2cd7a763a22f8ca08c",
+        "8206e0e9915331804f63",
+        "919980e516fd64cd7a85",
+        "91a9cba498bb9c1892c0",
+        "925e74a4a5e937c79e7d",
+        "959760d6d73e563f80de",
+        "961bda3547f44ccca174",
+        "9ebcce00a669f7dfa539",
         "a6a82774f79630940546",
-        "b0b966e73879eb01340d",
-        "b6bf439ac4eb48ca9801",
-        "c273a269698892748a84",
+        "adeda9cbc7ca08f7bada",
+        "b24b9b5917add2c53b00",
+        "b331c95d3581279ca159",
+        "b859c612b65755cf59bb",
+        "bca499958cfa0b8fcb46",
+        "c57df6ace8da7ce4485e",
+        "ccbfe85c7e315c2b1d6f",
+        "ddd0eb5a61587d7270b4",
         "e0a6cda85c06b0d5b578",
-        "e80d1adf85c91a7a1d69",
+        "e1ec792c14dbd1362bc7",
         "e81e5623895a6c8dfc06",
-        "ef1f6157aa2afa1bbe6b",
-        "f75228bf5ef0dd23548f",
-        "fa48894adf4506be453d"
+        "ee9b92601188ba3f0f4e"
       ],
-      "content_hash": "f234b579111af61c4788a1eee49d2652b90806cb5e6820ed9eeffaa28b6165fb",
+      "content_hash": "ba6cd45c2612edbc8ce2b274390c20aa8baea060bdff105f750ed96994c173d1",
       "dependencies": [],
       "description": "Configure clickjack protection headers and frame-ancestors for VF pages, LWR sites, and Aura apps. NOT for CSP or Trusted URL configuration.",
       "file_location": "skills/security/clickjack-and-frame-protection",
@@ -135100,13 +135136,14 @@
       ],
       "name": "clickjack-and-frame-protection",
       "official_sources": [
-        "Apex Developer Guide \u2014 Sharing \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_understanding.htm",
-        "Salesforce Security Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security.htm",
-        "Shield Platform Encryption \u2014 https://help.salesforce.com/s/articleView?id=sf.security_pe_overview.htm",
-        "Session Security Levels \u2014 https://help.salesforce.com/s/articleView?id=sf.security_hap_session.htm",
-        "CSP and Trusted URLs \u2014 https://help.salesforce.com/s/articleView?id=sf.security_csp_overview.htm",
-        "API Only User Profile \u2014 https://help.salesforce.com/s/articleView?id=sf.users_profiles_api_only.htm",
-        "Privacy Center and DSR \u2014 https://help.salesforce.com/s/articleView?id=sf.privacy_center_overview.htm"
+        "Salesforce Security Guide \u2014 Modify Session Security Settings \u2014 https://help.salesforce.com/s/articleView?id=xcloud.admin_sessions.htm \u2014 used for the four clickjack option labels and their verbatim descriptions, and the Setup path.",
+        "Salesforce Help \u2014 Configure Clickjack Protection \u2014 https://help.salesforce.com/s/articleView?id=xcloud.security_clickjack_protection_configure.htm \u2014 used as the parent topic covering Visualforce pages, trusted domains, and less common browsers.",
+        "Salesforce Help \u2014 Specify Trusted Domains for Inline Frames \u2014 https://help.salesforce.com/s/articleView?id=xcloud.security_clickjack_specify_iframe_trusted_domains.htm \u2014 used for the trusted-domain list, the iframe-type selection, the 512 / 100 domain limits, and the 12 KB CSP header guidance.",
+        "Salesforce Help \u2014 Enable Clickjack Protection in Experience Cloud Sites \u2014 https://help.salesforce.com/s/articleView?id=experience.networks_clickjack_protection.htm \u2014 used for the four Clickjack Protection Levels, the same-origin default, the Experience Builder path, and the rule that mixed Experience Builder / Salesforce Tabs + Visualforce sites need both locations configured.",
+        "Visualforce Developer Guide \u2014 Put Visualforce Pages on External Domains \u2014 https://developer.salesforce.com/docs/atlas.en-us.pages.meta/pages/pages_quick_start_external_iframe.htm \u2014 used for the end-to-end external-framing procedure: enable both Visualforce options, then add the trusted domain with iframe type Visualforce Pages.",
+        "Salesforce Platform Developer Guide \u2014 Canvas framework introduction \u2014 https://developer.salesforce.com/docs/atlas.en-us.platform_connect.meta/platform_connect/canvas_framework_intro.htm \u2014 used to establish the framing direction: Canvas apps are loaded on a Salesforce page in an iframe, so Salesforce is the parent.",
+        "Salesforce Help \u2014 Enable Clickjack Protection in Site.com \u2014 https://help.salesforce.com/s/articleView?id=platform.siteforce_clickjacking_enable.htm \u2014 used to confirm that Salesforce Sites are configured separately again from both surfaces above.",
+        "W3C Content Security Policy Level 2 \u2014 `frame-ancestors` directive \u2014 https://www.w3.org/TR/CSP2/#directive-frame-ancestors \u2014 used for the standards-level rule that `frame-ancestors` is honoured only in an HTTP header and not in a `<meta http-equiv>` element."
       ],
       "outputs": [
         "Frame policy settings per page/site"
@@ -135129,14 +135166,14 @@
       "templates": [
         "skills/security/clickjack-and-frame-protection/templates/clickjack-and-frame-protection-template.md"
       ],
-      "updated": "2026-04-28",
+      "updated": "2026-07-31",
       "vector_embedding": {
         "backend": "fastembed",
         "dimension": 384,
-        "updated": "2026-04-28",
+        "updated": "2026-07-31",
         "vector_id": "security/clickjack-and-frame-protection"
       },
-      "version": "1.0.0"
+      "version": "1.1.0"
     },
     {
       "category": "security",
@@ -138137,33 +138174,52 @@
     {
       "category": "security",
       "chunk_ids": [
-        "02c401d2828f8a7d488a",
+        "046d745be9260e9b8cbe",
         "07b8ffdc2361152a1c1a",
-        "11ada7c4a3daca0834b1",
-        "1c1b3373634e42ace03a",
+        "127092790edcea917b7c",
+        "1b93b89c8fb9c7576810",
         "1c2b82e45b29950bf781",
-        "1c5be94e6a8ce9019e8b",
         "252545d717abe9d578da",
+        "2c0469a0431922361e30",
+        "3104848655abfa2a3623",
+        "358527007be58e548a62",
+        "365a32bf88d1465c88ab",
+        "3c4b079d5b0582880287",
         "3d11933cb638a41552a0",
+        "3e613df1b574ed582568",
+        "3e7c18a238d6339768da",
         "3fe1b5310b367054130e",
+        "485cbd1ff39e997aecc2",
+        "48c7ecb6350c37e8aaa9",
+        "49d6a067b74f7244a823",
+        "50fe8e9e056fb887152e",
         "51a5de48350cd468acc6",
         "5302f2798df4fee10d05",
+        "5e76510fb567d1411d71",
         "5ff4fa2bb1b955e7d82c",
-        "6ecc8386d702028c2adc",
-        "7511425a263fe5406980",
+        "6d4d5d8a62986055fb23",
+        "6d520f8de8136a1f30cc",
+        "7d47705706effc083e6d",
         "7e7a776a9762a9b0c91a",
+        "83df26075d4c563c4b11",
         "8536882f3d19365e29e3",
-        "8c7b38e4788c2bf959fb",
+        "865c4f6b3fc8e178f986",
+        "8b6c629fce2ba4196513",
+        "8fb16004fb7ba47f245e",
+        "a3195ef3ef41d00fa174",
         "b0118c6f7500d3617865",
         "bbb3206986d8e8d24156",
+        "c2f1b7c0ba1614e77cf3",
         "c43936a3a264fb0e0dcd",
-        "caac00162dad2e3bb205",
+        "c54b6b54af45eb6866ca",
+        "d3d46f68b92bd4d6ceee",
         "d7356e06ebce0f080e81",
-        "e0024c45a2fac2ec42de",
         "e1675db8889cefc12831",
+        "ed762a22bdf772305a0b",
+        "ef01497f6eab11baa1d4",
         "ef94ddd5a648221a5026"
       ],
-      "content_hash": "04a90226819d535eb733533ca98e119a10d162aef9ca25687b987c1bea86d828",
+      "content_hash": "f5f55b4f645feb292a49654ced88ed488b702fb9dd069f936af7b80bafd584c2",
       "dependencies": [],
       "description": "Design just-in-time elevation, break-glass accounts, and audit trails for Modify All Data / System Admin / Customize Application permissions. NOT for regular permission set design.",
       "file_location": "skills/security/privileged-access-management",
@@ -138206,14 +138262,14 @@
       "templates": [
         "skills/security/privileged-access-management/templates/privileged-access-management-template.md"
       ],
-      "updated": "2026-04-28",
+      "updated": "2026-07-31",
       "vector_embedding": {
         "backend": "fastembed",
         "dimension": 384,
-        "updated": "2026-04-28",
+        "updated": "2026-07-31",
         "vector_id": "security/privileged-access-management"
       },
-      "version": "1.0.0"
+      "version": "1.1.0"
     },
     {
       "category": "security",
@@ -139368,33 +139424,66 @@
     {
       "category": "security",
       "chunk_ids": [
-        "00dc2cbce0a258884b7c",
+        "00f258847f67733a5dcb",
+        "049af1d244f8fbf749ec",
+        "0a9bc70d87fa6b0ef603",
         "0b51b52e2b28c4ef9d9b",
         "0c7323528787a881bebe",
+        "0c79f8ac249dfe423a53",
         "115c07741211199c661d",
+        "11d4265ff186f2a5e1f0",
+        "14d3357ede0109cb7564",
+        "1685be41c783a9436b13",
+        "241cb11c68f458b0047e",
+        "2a55323876134dd2b164",
         "2c5edf05fddd90303889",
-        "2ce785efcea5ae990684",
-        "34c8a2bb067ac53acb1e",
-        "3e5ae7e01b8840877bc2",
+        "2ccd23ff3a78133fa14e",
+        "356384c1ed6a24ad4c0d",
+        "3718565dc3c12233c0fc",
+        "3c854e795f6bd1558155",
+        "3ed03d62bd337a52e76a",
+        "3edeff1450d54c0eff41",
         "483c184f710335d3590a",
         "4af7c97e39ed2d41af32",
-        "5162aeffd1a76559d50e",
+        "4b7a8e3a9e448698a549",
+        "51932547e89bbe1d181c",
         "5fcc9cbb3ba2a8042388",
-        "7894789e6b7593a7df69",
+        "605cd9cd4a7df265d5cf",
+        "61fa4967f02d2f971ca4",
+        "6765b3d1d0357d49346e",
+        "6b0f9a8e3c16f52cf1eb",
+        "6bea22919ddb7e03367b",
+        "72ad44b2815ff0412486",
         "7b4bd2f19aca6fb699f4",
-        "861b37adbcfff6ca0c2e",
-        "86f1890c774964cabacd",
-        "91e0e362f0acf2a14ef1",
-        "92bbe54dd820bb5e2a66",
+        "7dca5c777b852f0efb48",
+        "8dd451230ed6f2381fb7",
+        "8e73390df6e1082aa27f",
+        "8edce2ee8806a6813a81",
         "94b2b97a73b4d830d83b",
-        "a9cdd1862f9f5c0892fd",
+        "9b25b9e9f95216de1d0a",
+        "9de98c3df48d443ff1db",
+        "a8cbd3606afa1596405f",
+        "aa3df8705caafa110a5d",
+        "aad55a9538f60340f4e6",
+        "b20b3297386a050c0766",
+        "b20dae259eda1b1bffc7",
+        "b5a085d89441173411ce",
+        "b5b00fce4edbb535db45",
+        "c5fad67bf013b8358095",
+        "ca31a25fd5b052381f99",
+        "ca875f922e239ce97707",
         "cbe3a3e314dc9eaeb675",
-        "cbff004b112a8c8533d1",
+        "cec913a963d66c143963",
+        "d33684988194882c1e81",
+        "d8585a2294a5ffdeb1d7",
         "e1cc205064bbf99e1330",
+        "e21ed4d3482eb4eea0a2",
+        "e5bfa0f43541ef30016a",
         "ee831a47cc25f7186fa5",
-        "fe8ebf2f0e4c910c97eb"
+        "f0d884228715d17a503c",
+        "f5e65b33764f50f7f319"
       ],
-      "content_hash": "a56bc22d47eb31f76574d121f84ac62c821b11bc52280fdd7da0a1b34aff7cf7",
+      "content_hash": "2d4a6a8d025237820fea2da702bb0e82be96c43af8b181646869ff75339456b9",
       "dependencies": [],
       "description": "Enforce step-up authentication for sensitive pages/objects using High Assurance session level and login flow policies. NOT for initial MFA enrollment UX.",
       "file_location": "skills/security/session-high-assurance-policies",
@@ -139405,13 +139494,14 @@
       ],
       "name": "session-high-assurance-policies",
       "official_sources": [
-        "Apex Developer Guide \u2014 Sharing \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_understanding.htm",
-        "Salesforce Security Guide \u2014 https://help.salesforce.com/s/articleView?id=sf.security.htm",
-        "Shield Platform Encryption \u2014 https://help.salesforce.com/s/articleView?id=sf.security_pe_overview.htm",
-        "Session Security Levels \u2014 https://help.salesforce.com/s/articleView?id=sf.security_hap_session.htm",
-        "CSP and Trusted URLs \u2014 https://help.salesforce.com/s/articleView?id=sf.security_csp_overview.htm",
-        "API Only User Profile \u2014 https://help.salesforce.com/s/articleView?id=sf.users_profiles_api_only.htm",
-        "Privacy Center and DSR \u2014 https://help.salesforce.com/s/articleView?id=sf.privacy_center_overview.htm"
+        "Apex Reference Guide \u2014 `Auth.SessionManagement` class (method list, `getCurrentSession()` map keys including `SessionSecurityLevel`, `setSessionLevel`, `generateVerificationUrl`, `getRequiredSessionLevelForProfile`) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_Auth_SessionManagement.htm \u2014 used to replace the fabricated `UserInfo.getSessionSecurityLevel()` call and to source every Apex signature in this skill.",
+        "Apex Reference Guide \u2014 `System.UserInfo` methods \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_userinfo.htm \u2014 used to confirm that `getSessionId()` is the only session method on `UserInfo` and that no session-security accessor exists there.",
+        "Apex Reference Guide \u2014 `Auth.VerificationPolicy` enum \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_enum_Auth_VerificationPolicy.htm \u2014 used for the `HIGH_ASSURANCE` policy argument to `generateVerificationUrl`.",
+        "Object Reference \u2014 `AuthSession` \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_authsession.htm \u2014 used for the `SessionSecurityLevel` picklist wording (\"Standard or High\"), `SessionType`, `LoginHistoryId`, and the note that non-admins see only their own sessions.",
+        "Salesforce Security Guide \u2014 Require High-Assurance Session Security for Sensitive Operations \u2014 https://help.salesforce.com/s/articleView?id=xcloud.security_auth_require_ha_session.htm \u2014 used for the Setup \u2192 Identity Verification \u2192 Session Security Level Policies path, the list of gateable operations, and the raise-or-block actions.",
+        "Salesforce Security Guide \u2014 Modify Session Security Settings \u2014 https://help.salesforce.com/s/articleView?id=xcloud.admin_sessions.htm \u2014 used for the Session Security Levels login-method mapping and its documented per-method defaults.",
+        "Salesforce Knowledge \u2014 \"High Assurance\" Level Blocks Asynchronous Apex \u2014 https://help.salesforce.com/s/articleView?id=000392426&type=1 \u2014 used for the async-Apex conflict and the Multi-Factor Authentication for User Interface Logins workaround.",
+        "Salesforce Help \u2014 Edit Session Settings in Profiles \u2014 https://help.salesforce.com/s/articleView?id=platform.users_profiles_session.htm \u2014 used for the profile/permission-set \"Session Security Level Required at Login\" control."
       ],
       "outputs": [
         "Session Settings policy",
@@ -139435,14 +139525,14 @@
       "templates": [
         "skills/security/session-high-assurance-policies/templates/session-high-assurance-policies-template.md"
       ],
-      "updated": "2026-04-28",
+      "updated": "2026-07-31",
       "vector_embedding": {
         "backend": "fastembed",
         "dimension": 384,
-        "updated": "2026-04-28",
+        "updated": "2026-07-31",
         "vector_id": "security/session-high-assurance-policies"
       },
-      "version": "1.0.0"
+      "version": "1.1.0"
     },
     {
       "category": "security",

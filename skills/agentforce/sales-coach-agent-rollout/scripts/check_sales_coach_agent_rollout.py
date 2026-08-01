@@ -275,6 +275,7 @@ def main() -> int:
 
     print(f"\nTotal findings: {findings_count}")
     print("Refer to the skill workflow and gotchas for remediation steps.")
+    print(f"ERROR: {findings_count} Sales Coach rollout finding(s); see report above.", file=sys.stderr)
     return 1
 
 
