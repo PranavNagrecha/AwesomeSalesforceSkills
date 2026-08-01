@@ -13,11 +13,8 @@ dependencies:
     - apex/apex-decimal-arithmetic-precision
     - apex/apex-enum-patterns
     - apex/apex-schema-describe
-    - apex/scheduled-apex-failure-detection-and-monitoring
     - devops/development-documentation-standards
-    - integration/scheduled-erp-sync-pattern
     - lwc/lwc-jest-testing-with-accessibility
-    - lwc/lwc-mobile-offline-and-briefcase
     - security/visualforce-security-and-modernization
   shared:
     - AGENT_CONTRACT.md
@@ -50,13 +47,10 @@ Reviews Apex classes, triggers, LWC components, and Flows against this library's
 6. Discovered skill-local validators via `python3 scripts/search_knowledge.py` for the component type
 7. `skills/apex/apex-schema-describe` — Schema describe API perf, FLS, picklist enumeration
 8. `skills/apex/apex-enum-patterns` — Apex enum dispatch, valueOf safety, ordinals
-9. `skills/apex/apex-decimal-arithmetic-precision` — apex decimal arithmetic precision
-10. `skills/lwc/lwc-jest-testing-with-accessibility` — lwc jest testing with accessibility
-11. `skills/lwc/lwc-mobile-offline-and-briefcase` — lwc mobile offline and briefcase
-12. `skills/apex/scheduled-apex-failure-detection-and-monitoring` — scheduled apex failure detection and monitoring
-13. `skills/security/visualforce-security-and-modernization` — visualforce security and modernization
-14. `skills/integration/scheduled-erp-sync-pattern` — scheduled erp sync pattern
-15. `skills/devops/development-documentation-standards` — development documentation standards
+9. `skills/apex/apex-decimal-arithmetic-precision` — money-touching code: Decimal scale, `divide(scale, mode)` and currency-field rounding alignment — silent corruption if reviewed by eye
+10. `skills/lwc/lwc-jest-testing-with-accessibility` — the bar for an LWC test diff — a Jest suite with no accessibility assertions passes review too easily
+11. `skills/security/visualforce-security-and-modernization` — VF still under review: `escape=false`, legacy controllers, and what modernization actually buys
+12. `skills/devops/development-documentation-standards` — what a change is expected to document, so 'undocumented' is a citable finding rather than a preference
 
 ## Orchestration Plan
 

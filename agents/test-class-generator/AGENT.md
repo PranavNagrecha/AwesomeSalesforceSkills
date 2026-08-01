@@ -14,42 +14,25 @@ output_formats:
   - json
 dependencies:
   skills:
-    - admin/agent-output-formats
     - apex/apex-collections-patterns
     - apex/apex-dml-patterns
-    - apex/apex-flow-invocation-from-apex
-    - apex/apex-future-method-patterns
     - apex/apex-http-callout-mocking
-    - apex/apex-limits-monitoring
     - apex/apex-mocking-and-stubs
-    - apex/apex-polymorphic-soql
     - apex/apex-queueable-patterns
     - apex/apex-rest-services
-    - apex/apex-savepoint-and-rollback
-    - apex/apex-scheduled-jobs
     - apex/apex-system-runas
     - apex/apex-test-setup-patterns
     - apex/apex-trigger-bypass-and-killswitch-patterns
     - apex/apex-trigger-context-variables
     - apex/apex-user-and-permission-checks
-    - apex/apex-with-without-sharing-decision
     - apex/async-apex
     - apex/batch-apex-patterns
-    - apex/callouts-and-http-integrations
-    - apex/change-data-capture-apex
-    - apex/common-apex-runtime-errors
-    - apex/continuation-callouts
-    - apex/cpq-test-automation
     - apex/custom-metadata-in-apex
-    - apex/dynamic-apex
-    - apex/error-handling-framework
     - apex/exception-handling
-    - apex/feature-flags-and-kill-switches
     - apex/governor-limits
     - apex/invocable-methods
     - apex/mixed-dml-and-setup-objects
     - apex/platform-events-apex
-    - apex/record-locking-and-contention
     - apex/recursive-trigger-prevention
     - apex/soql-fundamentals
     - apex/soql-security
@@ -57,7 +40,6 @@ dependencies:
     - apex/test-data-factory-patterns
     - apex/timezone-and-datetime-pitfalls
     - apex/trigger-framework
-    - apex/visualforce-fundamentals
     - devops/code-coverage-orphan-class-cleanup
   shared:
     - AGENT_CONTRACT.md
@@ -91,76 +73,60 @@ Generates a bulk-safe Apex test class for a target class, targeting ≥ 85% code
 
 ## Mandatory Reads Before Starting
 
-2. `skills/apex/cpq-test-automation` — Cpq test automation
+**Why this list is broad (27 skill reads, target is 8–25):** the breadth is inherited from the input, not chosen — the *target* class can be any Apex surface, so the agent needs the test idiom for whichever one it is handed. Ten reads (entries 12–21) are exactly that: trigger context and re-entry, Queueable chaining, batch `finish`, `Test.getEventBus`, invocable list-in/list-out, `RestRequest` mocking — each used for one target kind and skipped for every other. The remaining seventeen are the fixture, assertion, permission and governor baseline every generated test carries.
 
 ### Contract layer
-2. `agents/_shared/AGENT_CONTRACT.md`
-3. `agents/_shared/DELIVERABLE_CONTRACT.md`
-4. `agents/_shared/REFUSAL_CODES.md`
+1. `agents/_shared/AGENT_CONTRACT.md`
+2. `agents/_shared/DELIVERABLE_CONTRACT.md`
+3. `agents/_shared/REFUSAL_CODES.md`
 
 ### Test standards & factories
-5. `skills/apex/test-class-standards`
-6. `skills/apex/test-data-factory-patterns`
-7. `skills/apex/apex-test-setup-patterns`
-8. `skills/apex/apex-mocking-and-stubs`
-9. `skills/apex/apex-http-callout-mocking`
-10. `skills/devops/code-coverage-orphan-class-cleanup` — if a class is orphan, delete is preferred over a stub test
+4. `skills/apex/test-class-standards` — the coverage bar, assertion style and naming every emitted test is held to
+5. `skills/apex/test-data-factory-patterns` — `@TestSetup` builds through the factory — inline literals are the defect this agent exists to avoid
+6. `skills/apex/apex-test-setup-patterns` — `@TestSetup` vs per-method setup, and when `@TestSetup` costs more than it saves
+7. `skills/apex/apex-mocking-and-stubs` — Stub API seams for collaborators the target class does not own
+8. `skills/apex/apex-http-callout-mocking` — a callout path with no `HttpCalloutMock` is untestable, not merely uncovered
+9. `skills/devops/code-coverage-orphan-class-cleanup` — if a class is orphan, delete is preferred over a stub test
 
 ### Sharing / permissions / runAs
-11. `skills/apex/apex-system-runas`
-12. `skills/apex/apex-user-and-permission-checks`
-13. `skills/apex/apex-with-without-sharing-decision`
+10. `skills/apex/apex-system-runas` — the permission-denial cases; without `runAs` the negative path is never actually exercised
+11. `skills/apex/apex-user-and-permission-checks` — what a permission test should assert, beyond 'no exception was thrown'
 
 ### Surface-specific test patterns
-14. `skills/apex/trigger-framework` — for trigger-class targets
-15. `skills/apex/recursive-trigger-prevention`
-16. `skills/apex/apex-trigger-context-variables`
-17. `skills/apex/apex-trigger-bypass-and-killswitch-patterns` — explicit-bypass test scenario
-18. `skills/apex/async-apex` — `Test.startTest`/`stopTest` semantics
-19. `skills/apex/apex-queueable-patterns`
-20. `skills/apex/apex-future-method-patterns`
-21. `skills/apex/batch-apex-patterns`
-22. `skills/apex/apex-scheduled-jobs`
-23. `skills/apex/platform-events-apex` — `Test.getEventBus`
-24. `skills/apex/change-data-capture-apex`
-25. `skills/apex/invocable-methods`
-26. `skills/apex/apex-rest-services` — `RestRequest`/`RestResponse` mocks
-27. `skills/apex/continuation-callouts`
-28. `skills/apex/apex-flow-invocation-from-apex`
-29. `skills/apex/callouts-and-http-integrations`
-30. `skills/apex/visualforce-fundamentals`
+12. `skills/apex/trigger-framework` — for trigger-class targets
+13. `skills/apex/recursive-trigger-prevention` — the re-entry case a trigger test must cover or the guard is untested
+14. `skills/apex/apex-trigger-context-variables` — which contexts the target trigger actually fires in, so the test exercises all of them
+15. `skills/apex/apex-trigger-bypass-and-killswitch-patterns` — explicit-bypass test scenario
+16. `skills/apex/async-apex` — `Test.startTest`/`stopTest` semantics
+17. `skills/apex/apex-queueable-patterns` — chained Queueables need `Test.startTest`/`stopTest` placed deliberately or only the first link runs
+18. `skills/apex/batch-apex-patterns` — batch scope and `finish` behaviour that a single-batch test silently skips
+19. `skills/apex/platform-events-apex` — `Test.getEventBus`
+20. `skills/apex/invocable-methods` — the List-in / List-out signature the bulk test case has to drive
+21. `skills/apex/apex-rest-services` — `RestRequest`/`RestResponse` mocks
 
 ### DML / data / locking gotchas
-31. `skills/apex/apex-dml-patterns`
-32. `skills/apex/apex-savepoint-and-rollback`
-33. `skills/apex/mixed-dml-and-setup-objects`
-34. `skills/apex/record-locking-and-contention`
+22. `skills/apex/apex-dml-patterns` — partial-success results need asserting; a bare `insert` in a test hides them
+23. `skills/apex/mixed-dml-and-setup-objects` — setup and non-setup DML in one test method fails at runtime regardless of the code under test
 
 ### SOQL semantics
-35. `skills/apex/soql-fundamentals`
-36. `skills/apex/soql-security`
-37. `skills/apex/apex-polymorphic-soql`
-38. `skills/apex/dynamic-apex`
-39. `skills/apex/apex-collections-patterns`
+24. `skills/apex/soql-fundamentals` — the queries the test must make return rows — the usual cause of a passing test that asserts nothing
+25. `skills/apex/soql-security` — tests running as an admin hide FLS bugs; this is why the permission cases matter
+26. `skills/apex/apex-collections-patterns` — bulk fixtures are built as collections; single-record fixtures cannot exercise the bulk path
 
 ### Errors / governor limits
-40. `skills/apex/governor-limits`
-41. `skills/apex/apex-limits-monitoring`
-42. `skills/apex/exception-handling`
-43. `skills/apex/common-apex-runtime-errors`
-44. `skills/apex/error-handling-framework`
+27. `skills/apex/governor-limits` — the headroom a bulk test asserts against, using `Limits` in the test body
+28. `skills/apex/exception-handling` — asserting the exception type and message, rather than catching and passing
 
 ### Stable test fixtures
-45. `skills/apex/timezone-and-datetime-pitfalls`
-46. `skills/apex/custom-metadata-in-apex`
-47. `skills/apex/feature-flags-and-kill-switches`
+29. `skills/apex/timezone-and-datetime-pitfalls` — hardcoded dates and org timezone are the top cause of tests that pass today and fail in March
+30. `skills/apex/custom-metadata-in-apex` — CMDT rows are not created by DML in tests — the fixture strategy has to account for that
 
 ### Templates
-48. `templates/apex/tests/TestDataFactory.cls`
-49. `templates/apex/tests/TestRecordBuilder.cls`
-50. `templates/apex/tests/MockHttpResponseGenerator.cls`
-51. `templates/apex/tests/TestUserFactory.cls`
-52. `templates/apex/tests/BulkTestPattern.cls`
+31. `templates/apex/tests/TestDataFactory.cls`
+32. `templates/apex/tests/TestRecordBuilder.cls`
+33. `templates/apex/tests/MockHttpResponseGenerator.cls`
+34. `templates/apex/tests/TestUserFactory.cls`
+35. `templates/apex/tests/BulkTestPattern.cls`
 
 ---
 
@@ -277,7 +243,7 @@ Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md`.
 Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
 
 - **Canonical data surface:** this agent's declared probes + the MCP tool set. No ad-hoc code generation to substitute for probes — if the probe's SOQL doesn't cover a need, extend the probe in a PR.
-- **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
+- **No new project dependencies:** this agent does NOT run `npm install` / `pip install` in the consumer's project. Converting the canonical `markdown` / `json` deliverable to any other format is a caller-side concern — the conversion-path pointer lives in `agents/_shared/DELIVERABLE_CONTRACT.md` § See also.
 - **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only. Dimensions: `happy-path`, `bulk-200`, `runAs-non-admin`, `negative-path`, `callout-mock`, `governor-stress`, `recursion-guard`, `setup-vs-data-dml`. Record each in `dimensions_compared[]` (with the test method name) or `dimensions_skipped[]` with reason.
 
 ## Escalation / Refusal Rules

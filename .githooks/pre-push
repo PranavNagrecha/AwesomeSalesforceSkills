@@ -12,6 +12,13 @@
 # Those all show up when CI runs the full shard sweep. This hook runs the
 # same check locally, before you push, so CI is never the first to tell you.
 #
+# NOT checked here, on purpose: the per-fixture retrieval-QUALITY gate (does
+# each of the 1,356 fixtures return its expected skill in the top 3). It costs
+# ~244s and this hook runs its 4 shards sequentially, so it would add ~4
+# minutes to every push. CI runs it in parallel across the 4-way matrix
+# instead — see .github/workflows/validate.yml. Fixture *coverage* (every
+# skill has a fixture) still runs here.
+#
 # Skip this hook:     git push --no-verify
 # Install all hooks:  python3 scripts/install_hooks.py
 

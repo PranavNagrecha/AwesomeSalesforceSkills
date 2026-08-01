@@ -21,9 +21,9 @@ inputs:
 outputs:
   - "Flow HTTP Callout action with schema + fault path"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-01
 ---
 
 # Flow HTTP Callout Action

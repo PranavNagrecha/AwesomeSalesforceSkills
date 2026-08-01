@@ -31,10 +31,8 @@ dependencies:
     - agentforce/agentforce-persona-design
     - agentforce/agentforce-production-readiness-checklist
     - agentforce/einstein-trust-layer
-    - agentforce/employee-hr-service-agent-rollout
     - agentforce/prompt-injection-defense
     - agentforce/prompt-template-versioning
-    - agentforce/sales-coach-agent-rollout
   shared:
     - AGENT_CONTRACT.md
     - AGENT_RULES.md
@@ -79,10 +77,8 @@ Reviews an Agentforce agent (Topics + Actions + Persona + Guardrails) against be
 17. `skills/agentforce/prompt-template-versioning` — prompt rev management
 18. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 19. `skills/agentforce/agent-action-input-slot-extraction` — scoring rubric for input description quality
-20. `skills/agentforce/agentforce-production-readiness-checklist` — agentforce production readiness checklist
-21. `skills/agentforce/sales-coach-agent-rollout` — sales coach agent rollout
-22. `skills/agentforce/employee-hr-service-agent-rollout` — employee hr service agent rollout
-23. `skills/agentforce/agentexchange-publishing` — agentexchange publishing
+20. `skills/agentforce/agentforce-production-readiness-checklist` — the ship / no-ship gate list this review's verdict has to map onto, rather than an ad-hoc opinion
+21. `skills/agentforce/agentexchange-publishing` — the higher review bar an action must clear if it is destined for AgentExchange rather than one org
 
 ---
 

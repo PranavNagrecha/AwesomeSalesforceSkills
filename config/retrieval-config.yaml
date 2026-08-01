@@ -30,7 +30,16 @@ embeddings:
   # content_hash cache and only re-encode changed chunks. The pre-commit
   # hook explicitly skips embeddings via --skip-embeddings (see
   # .githooks/pre-commit) so day-to-day commits stay sub-second.
-  enabled: true
+  # TEMPORARILY DISABLED 2026-08-01 for build-agent memory safety.
+  # Measured: loading vector_index/embeddings.jsonl (535 MB) puts a single
+  # search process at 3.84 GB peak RSS; --no-embeddings drops it to 0.88 GB.
+  # This machine has 16 GB total, so 3-4 concurrent build agents OOM it.
+  # Quality cost on the held-out set: Hit@1 35.7%->34.4%, Hit@3 46.8%->42.2%,
+  # NONE 4.5%->5.2%. Immaterial for construction work, NOT acceptable as the
+  # shipped default -- restore to true before release, and see the queued
+  # work item to fix the underlying architecture (load only the ~30 candidate
+  # chunk vectors after the lexical pass instead of the whole file).
+  enabled: false
   backend: fastembed
   dimensions: 384
   # Skill count thresholds for embedding adoption

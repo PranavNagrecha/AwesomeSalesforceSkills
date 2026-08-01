@@ -120,7 +120,7 @@ Two modes:
 36. `templates/flow/FaultPath_Template.md` — every stage subflow's fault path follows this template
 37. `templates/flow/Subflow_Pattern.md` — every stage step is a subflow per this contract
 38. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
-39. `skills/flow/flow-orchestration-patterns` — Flow orchestration patterns
+39. `skills/flow/flow-orchestration-patterns` — the stage / step / work-item vocabulary and the interactive-vs-background step rules this design is composed from
 
 ---
 

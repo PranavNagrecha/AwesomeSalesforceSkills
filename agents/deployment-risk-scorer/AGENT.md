@@ -15,48 +15,24 @@ output_formats:
 multi_dimensional: true
 dependencies:
   skills:
-    - admin/agent-output-formats
     - apex/apex-schema-describe
+    - data/deployment-data-dependencies
     - devops/api-version-management
     - devops/automated-regression-testing
-    - devops/bitbucket-pipelines-for-salesforce
-    - devops/cicd-for-experience-cloud
     - devops/code-coverage-orphan-class-cleanup
     - devops/code-review-checklist-salesforce
-    - devops/continuous-integration-testing
-    - devops/copado-essentials
-    - devops/cpq-deployment-administration
-    - devops/cpq-deployment-patterns
-    - devops/cross-cloud-deployment-patterns
-    - devops/cumulusci-automation
     - devops/data-seeding-for-testing
     - devops/deployment-error-diagnosis
     - devops/deployment-error-troubleshooting
-    - devops/deployment-monitoring
-    - devops/devops-center-pipeline
-    - devops/experience-cloud-deployment-admin
-    - devops/experience-cloud-deployment-dev
     - devops/flow-deployment-activation-ordering
-    - devops/fsc-deployment-patterns
-    - devops/github-actions-for-salesforce
-    - devops/gitlab-ci-for-salesforce
     - devops/go-live-cutover-planning
-    - devops/health-cloud-deployment-patterns
     - devops/isv-license-management-and-trialforce
-    - devops/managed-package-development
     - devops/metadata-api-retrieve-deploy
     - devops/metadata-diff-between-sandboxes
-    - devops/multi-package-development
-    - devops/org-shape-and-scratch-definition
-    - devops/performance-testing-salesforce
     - devops/pre-deployment-checklist
     - devops/rollback-and-hotfix-strategy
-    - devops/salesforce-cli-automation
     - devops/salesforce-code-analyzer
-    - devops/salesforce-devops-tooling-selection
-    - devops/salesforce-dx-project-structure
     - devops/source-tracking-and-conflict-resolution
-    - devops/vscode-salesforce-extensions
   shared:
     - AGENT_CONTRACT.md
     - DELIVERABLE_CONTRACT.md
@@ -83,50 +59,42 @@ Before a user deploys a change set / package / SFDX delta, this agent compares w
 
 ## Mandatory Reads Before Starting
 
+### Contract layer
 1. `agents/_shared/AGENT_CONTRACT.md`
-2. `skills/devops/code-review-checklist-salesforce/SKILL.md`
-3. `skills/devops/pre-deployment-checklist/SKILL.md` (or closest via `search_skill`)
-4. `skills/devops/deployment-error-troubleshooting/SKILL.md` (or closest)
-5. `standards/decision-trees/sharing-selection.md` — for profile/permission-set delta analysis
-6. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
-7. `skills/devops/metadata-diff-between-sandboxes` — diff source vs target metadata to inventory deployment scope
-8. `skills/devops/code-coverage-orphan-class-cleanup` — orphan-class cleanup as alternative to stub-test coverage rescue
-9. `skills/apex/apex-schema-describe` — Schema describe API perf, FLS, picklist enumeration
-10. `skills/devops/api-version-management` — Api version management
-11. `skills/devops/automated-regression-testing` — Automated regression testing
-12. `skills/devops/bitbucket-pipelines-for-salesforce` — Bitbucket pipelines for salesforce
-13. `skills/devops/cicd-for-experience-cloud` — Cicd for experience cloud
-14. `skills/devops/continuous-integration-testing` — Continuous integration testing
-15. `skills/devops/copado-essentials` — Copado essentials
-16. `skills/devops/cpq-deployment-administration` — Cpq deployment administration
-17. `skills/devops/cpq-deployment-patterns` — Cpq deployment patterns
-18. `skills/devops/cross-cloud-deployment-patterns` — Cross cloud deployment patterns
-19. `skills/devops/cumulusci-automation` — Cumulusci automation
-20. `skills/devops/data-seeding-for-testing` — Data seeding for testing
-21. `skills/devops/deployment-error-diagnosis` — Deployment error diagnosis
-22. `skills/devops/deployment-monitoring` — Deployment monitoring
-23. `skills/devops/devops-center-pipeline` — Devops center pipeline
-24. `skills/devops/experience-cloud-deployment-admin` — Experience cloud deployment admin
-25. `skills/devops/experience-cloud-deployment-dev` — Experience cloud deployment dev
-26. `skills/devops/flow-deployment-activation-ordering` — Flow deployment activation ordering
-27. `skills/devops/fsc-deployment-patterns` — Fsc deployment patterns
-28. `skills/devops/github-actions-for-salesforce` — Github actions for salesforce
-29. `skills/devops/gitlab-ci-for-salesforce` — Gitlab ci for salesforce
-30. `skills/devops/go-live-cutover-planning` — Go live cutover planning
-31. `skills/devops/health-cloud-deployment-patterns` — Health cloud deployment patterns
-32. `skills/devops/managed-package-development` — Managed package development
-33. `skills/devops/metadata-api-retrieve-deploy` — Metadata api retrieve deploy
-34. `skills/devops/multi-package-development` — Multi package development
-35. `skills/devops/org-shape-and-scratch-definition` — Org shape and scratch definition
-36. `skills/devops/performance-testing-salesforce` — Performance testing salesforce
-37. `skills/devops/rollback-and-hotfix-strategy` — Rollback and hotfix strategy
-38. `skills/devops/salesforce-cli-automation` — Salesforce cli automation
-39. `skills/devops/salesforce-code-analyzer` — Salesforce code analyzer
-40. `skills/devops/salesforce-devops-tooling-selection` — Salesforce devops tooling selection
-41. `skills/devops/salesforce-dx-project-structure` — Salesforce dx project structure
-42. `skills/devops/source-tracking-and-conflict-resolution` — Source tracking and conflict resolution
-43. `skills/devops/vscode-salesforce-extensions` — Vscode salesforce extensions
-44. `skills/devops/isv-license-management-and-trialforce` — flag risk on managed-package deployments that change LMA wiring, alter Feature Parameter direction, or attempt FP propagation testing on beta versions
+2. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+
+### The scoring rules
+3. `skills/devops/code-review-checklist-salesforce` — the rule set the static half of the score is computed from
+4. `skills/devops/pre-deployment-checklist` — the go/no-go items a score has to cover, so 'LOW risk' means checked rather than merely quiet
+5. `skills/devops/salesforce-code-analyzer` — the static-analysis signal behind the code-quality component of the score
+
+### What actually fails at deploy time
+6. `skills/devops/deployment-error-diagnosis` — the deploy-time error taxonomy — the score is a prediction of which of these will fire
+7. `skills/devops/deployment-error-troubleshooting` — maps a predicted failure to the error string the user will really see, which is what makes the finding actionable
+8. `skills/devops/metadata-api-retrieve-deploy` — what the Metadata API will and will not carry, so the manifest is scored for completeness and not just content
+9. `skills/devops/api-version-management` — an API version downgrade is one of this agent's named breaking changes; this is why it breaks
+10. `skills/devops/flow-deployment-activation-ordering` — a Flow that arrives inactive is the most common silent post-deploy regression and never shows up as a deploy error
+
+### Diffing source against the live org
+11. `skills/devops/metadata-diff-between-sandboxes` — diff source vs target metadata to inventory deployment scope
+12. `skills/devops/source-tracking-and-conflict-resolution` — drift in the target org since the branch was cut is risk the manifest diff alone cannot show
+
+### Data the metadata depends on
+13. `skills/data/deployment-data-dependencies` — record types, CMDT rows and reference data do not travel with metadata — a deploy that assumes them fails on arrival
+14. `skills/devops/data-seeding-for-testing` — a required-field addition on a populated table cannot deploy unless the target has conforming data
+
+### Coverage & regression surface
+15. `skills/devops/automated-regression-testing` — the test surface that would actually catch the breakages the score predicts
+16. `skills/devops/code-coverage-orphan-class-cleanup` — orphan-class cleanup as the alternative to rescuing coverage with stub tests
+17. `skills/apex/apex-schema-describe` — Schema describe is how the agent proves a referenced field or picklist value still exists in the target
+
+### If it goes wrong
+18. `skills/devops/rollback-and-hotfix-strategy` — a HIGH score is only actionable if the report can state what rollback would cost
+19. `skills/devops/go-live-cutover-planning` — sequencing when the change set is one step of a cutover rather than a routine deploy
+20. `skills/devops/isv-license-management-and-trialforce` — flag risk on managed-package deployments that change LMA wiring, alter Feature Parameter direction, or attempt FP propagation testing on beta versions
+
+### Decision trees
+21. `standards/decision-trees/sharing-selection.md` — for profile / permission-set delta analysis
 
 ---
 
@@ -231,7 +199,7 @@ Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md`.
 Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
 
 - **Canonical data surface:** this agent's declared probes + the MCP tool set. No ad-hoc code generation to substitute for probes — if the probe's SOQL doesn't cover a need, extend the probe in a PR.
-- **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
+- **No new project dependencies:** this agent does NOT run `npm install` / `pip install` in the consumer's project. Converting the canonical `markdown` / `json` deliverable to any other format is a caller-side concern — the conversion-path pointer lives in `agents/_shared/DELIVERABLE_CONTRACT.md` § See also.
 - **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only.
 
 ### Dimensions (Wave 10 contract)

@@ -44,7 +44,7 @@ Shared convention documents under `agents/_shared/harnesses/` that consolidate c
 ### `flow-builder`
 - `flow/record-triggered-flow-patterns`, `flow/screen-flows`, `flow/scheduled-flows`, `flow/auto-launched-flow-patterns`
 - `flow/flow-bulkification`, `flow/fault-handling`, `flow/subflows-and-reusability`
-- `flow/orchestration-flows`, `flow/flow-testing`
+- `flow/flow-testing`
 - `standards/decision-trees/automation-selection.md`
 - `templates/flow/FaultPath_Template.md`, `templates/flow/Subflow_Pattern.md`
 
@@ -125,7 +125,6 @@ under the classifier's `Mandatory Reads` section.
 - `admin/integration-admin-connected-apps`, `admin/connected-apps-and-auth`
 - `admin/remote-site-settings`, `admin/integration-user-management`
 - `integration/named-credentials-setup`, `integration/oauth-flows-and-connected-apps`
-- `integration/platform-event-schema-evolution`
 - `security/connected-app-security-policies`, `security/certificate-and-key-management`
 - `architect/integration-framework-design`, `architect/integration-security-architecture`
 
@@ -217,9 +216,10 @@ New skills landed in 2026-04 and are available for citation. Existing agents can
 
 ### Integration (7 new)
 `integration-catalog-builder` additionally cites:
-- `integration/api-versioning-strategy`, `integration/mutual-tls-callouts`, `integration/webhook-signature-verification`
+- `integration/api-versioning-strategy`, `integration/mutual-tls-callouts`
 - `integration/connect-rest-api-patterns`, `integration/private-connect-setup`
 - `integration/salesforce-data-pipeline-etl`, `integration/api-governance-and-rate-limits`
+- `integration/webhook-signature-verification` → (no runtime agent — uncited as of 2026-08-01) — inbound webhook HMAC/signature validation
 - `integration/data-cloud-zero-copy-federation` — Lakehouse Federation auth surface (Snowflake/Databricks/BigQuery/Redshift) and rotation hazards
 
 ### LWC (6 new)
@@ -228,9 +228,13 @@ New skills landed in 2026-04 and are available for citation. Existing agents can
 - `lwc/lwc-state-management`, `lwc/lwc-error-boundaries`, `lwc/lwc-internationalization`
 
 ### Flow (6 new)
-`flow-builder` additionally cites:
-- `flow/flow-dynamic-choices`, `flow/flow-interview-debugging`, `flow/flow-and-platform-events`
-- `flow/flow-reactive-screen-components`, `flow/flow-data-tables`, `flow/flow-http-callout-action`
+`flow-builder`, `flow-analyzer` and `flow-orchestrator-designer` additionally cite (per affinity — ownership of four of these moved from `flow-builder` to `flow-analyzer` on 2026-08-01):
+- `flow/flow-interview-debugging` → `flow-builder` — paused / errored interview inspection
+- `flow/flow-http-callout-action` → `flow-builder`, `flow-analyzer` — Flow HTTP Callout and External Service invocation
+- `flow/flow-dynamic-choices` → `flow-analyzer` — record-backed and picklist-backed choice sets in screen flows
+- `flow/flow-reactive-screen-components` → `flow-analyzer` — screen-component reactivity and cross-field dependencies
+- `flow/flow-data-tables` → `flow-analyzer` — the Data Table screen component and its selection model
+- `flow/flow-and-platform-events` → `flow-analyzer`, `flow-orchestrator-designer` — publishing to and subscribing from Platform Events in Flow
 
 ### Flow (5 Wave E additions — 2026-04)
 `flow-builder` and `automation-migration-router` additionally cite:
@@ -238,7 +242,7 @@ New skills landed in 2026-04 and are available for citation. Existing agents can
 - `flow/flow-get-records-optimization` — indexed filters, loop lift, field trim
 - `flow/flow-record-save-order-interaction` — before-save vs after-save placement + recursion
 - `flow/flow-versioning-strategy` — activation policy, paused-interview pinning, rollback-by-activate-prior (migration router Phase 4)
-- `flow/flow-apex-defined-types` — structured Flow variables for HTTP callout / External Service / invocable payloads
+- `flow/flow-apex-defined-types` → `flow-analyzer` — structured Flow variables for HTTP callout / External Service / invocable payloads (dropped by `flow-builder` 2026-08-01; the `automation-migration-router` half of this block's intro line was already inaccurate before that date and is left for a separate pass)
 
 ### OmniStudio (5 new)
 Now owned by `omnistudio-designer` (see Wave H below), which cites all five along with the rest of the domain:
@@ -250,66 +254,66 @@ Now owned by `omnistudio-designer` (see Wave H below), which cites all five alon
 New skills landed 2026-05 and are wired into the agents shown below.
 
 #### Apex (4 new)
-`apex-builder`, `apex-refactorer`, `code-reviewer`, `deployment-risk-scorer`, `integration-catalog-builder`, `email-template-modernizer` additionally cite:
-- `apex/apex-schema-describe` → `apex-builder`, `apex-refactorer`, `code-reviewer`, `deployment-risk-scorer` — Schema describe API perf, FLS, picklist enumeration
-- `apex/apex-enum-patterns` → `apex-builder`, `apex-refactorer`, `code-reviewer` — enum dispatch, valueOf safety, ordinals
-- `apex/apex-jwt-bearer-flow` → `apex-builder`, `integration-catalog-builder` — JWT bearer for server-to-server auth
-- `apex/apex-outbound-email-patterns` → `apex-builder`, `email-template-modernizer` — Messaging.SingleEmailMessage, OWA, replies, templates
+`code-reviewer`, `deployment-risk-scorer`, `integration-catalog-builder`, `email-template-modernizer` additionally cite:
+- `apex/apex-schema-describe` → `code-reviewer`, `deployment-risk-scorer` — Schema describe API perf, FLS, picklist enumeration
+- `apex/apex-enum-patterns` → `code-reviewer` — enum dispatch, valueOf safety, ordinals
+- `apex/apex-jwt-bearer-flow` → `integration-catalog-builder` — JWT bearer for server-to-server auth
+- `apex/apex-outbound-email-patterns` → `email-template-modernizer` — Messaging.SingleEmailMessage, OWA, replies, templates
 
 #### LWC (7 new)
 `lwc-builder`, `lwc-auditor` additionally cite:
 - `lwc/lwc-lightning-record-forms` → `lwc-builder`, `lwc-auditor` — record-form / -edit-form / -view-form
-- `lwc/lwc-custom-lookup` → `lwc-builder` — typeahead lookup component
-- `lwc/lwc-datatable-advanced` → `lwc-builder`, `lwc-auditor` — inline edit, custom cell types, sorting
+- `lwc/lwc-custom-lookup` → (no runtime agent — uncited as of 2026-08-01) — typeahead lookup component
+- `lwc/lwc-datatable-advanced` → (no runtime agent — uncited as of 2026-08-01) — inline edit, custom cell types, sorting
 - `lwc/lwc-css-and-styling` → `lwc-builder`, `lwc-auditor` — SLDS hooks, --slds-c-* tokens, shadow DOM, ::part()
-- `lwc/lwc-drag-and-drop` → `lwc-builder` — HTML5 drag and drop in LWC
-- `lwc/tableau-embedding-in-lightning` → `lwc-builder` — Tableau dashboards in Lightning, JWT SSO
-- `lwc/lwc-pubsub-patterns` → `lwc-builder`, `lwc-auditor` — Lightning Message Service, pubsub utility
+- `lwc/lwc-drag-and-drop` → (no runtime agent — uncited as of 2026-08-01) — HTML5 drag and drop in LWC
+- `lwc/tableau-embedding-in-lightning` → (no runtime agent — uncited as of 2026-08-01) — Tableau dashboards in Lightning, JWT SSO
+- `lwc/lwc-pubsub-patterns` → (no runtime agent — uncited as of 2026-08-01) — Lightning Message Service, pubsub utility
 
 #### Data (4 new)
-`data-model-reviewer`, `sandbox-strategy-designer`, `integration-catalog-builder` additionally cite:
+`data-model-reviewer`, `sandbox-strategy-designer` additionally cite:
 - `data/salesforce-backup-and-restore` → `data-model-reviewer`, `sandbox-strategy-designer` — backup strategy, RPO/RTO
-- `data/data-virtualization-patterns` → `integration-catalog-builder`, `data-model-reviewer` — Salesforce Connect, External Objects, OData
-- `data/currency-management-patterns` → `data-model-reviewer` — multi-currency, dated exchange rates
-- `data/salesforce-files-architecture` → `data-model-reviewer` — ContentVersion, ContentDocument, ContentDocumentLink
+- `data/data-virtualization-patterns` → (no runtime agent — uncited as of 2026-08-01) — Salesforce Connect, External Objects, OData
+- `data/currency-management-patterns` → (no runtime agent — uncited as of 2026-08-01) — multi-currency, dated exchange rates
+- `data/salesforce-files-architecture` → (no runtime agent — uncited as of 2026-08-01) — ContentVersion, ContentDocument, ContentDocumentLink
 
 #### Security (2 new)
 `security-scanner`, `audit-router` additionally cite:
-- `security/sso-saml-troubleshooting` → `security-scanner`, `audit-router` (`my_domain_session_security` classifier) — SAML response inspection
+- `security/sso-saml-troubleshooting` → `audit-router` (`my_domain_session_security` classifier) — SAML response inspection
 - `security/guest-user-security-audit` → `security-scanner`, `audit-router` (`sharing` classifier) — Experience Cloud guest user 2021 changes
 
 #### Architect / Admin / Integration (3 new)
 - `architect/revenue-cloud-architecture` → `waf-assessor`, `fit-gap-analyzer` — Revenue Cloud (CPQ/Billing successor) architecture
 - `admin/report-type-strategy` → `audit-router` (`report_dashboard` classifier) — custom report types, with/without joins
-- `integration/sustainability-reporting` → `integration-catalog-builder` — Net Zero Cloud / sustainability data integration
+- `integration/sustainability-reporting` → (no runtime agent — uncited as of 2026-08-01) — Net Zero Cloud / sustainability data integration
 
 ### Wave G (2026-07-08) — SOQL/SOSL Reference + Flow onboarding (15 new skills)
 
 Onboarded from the official *SOQL and SOSL Reference* and three Flow articles (PR #7). Wired into the agents shown; existing agents can cite them without authoring changes.
 
 #### Apex — SOQL (9 new)
-`apex-builder`, `soql-optimizer`, `security-scanner`, `lwc-builder` additionally cite:
-- `apex/soql-outer-join-null-semantics` → `apex-builder`, `soql-optimizer` — `= null`/`!= null` in WHERE, outer-join null-vs-FALSE semantics
-- `apex/soql-object-limits-and-restrictions` → `apex-builder`, `soql-optimizer` — ContentDocumentLink filter requirement, 100k-row non-filter cap
+`soql-optimizer`, `security-scanner` additionally cite:
+- `apex/soql-outer-join-null-semantics` → `soql-optimizer` — `= null`/`!= null` in WHERE, outer-join null-vs-FALSE semantics
+- `apex/soql-object-limits-and-restrictions` → `soql-optimizer` — ContentDocumentLink filter requirement, 100k-row non-filter cap
 - `apex/soql-string-escaping-and-reserved-characters` → `security-scanner`, `soql-optimizer` — quoted-string escapes + reserved chars, injection-safe binding
-- `apex/soql-format-function-localization` → `apex-builder`, `soql-optimizer` — `FORMAT()` locale-aware currency/date/number
-- `apex/soql-using-scope-clause` → `apex-builder`, `soql-optimizer` — `USING SCOPE` (mine/everything/team/scoping rules)
-- `apex/soql-for-view-and-for-reference` → `lwc-builder`, `soql-optimizer` — `FOR VIEW` / `FOR REFERENCE` recent-items tracking
+- `apex/soql-format-function-localization` → `soql-optimizer` — `FORMAT()` locale-aware currency/date/number
+- `apex/soql-using-scope-clause` → `soql-optimizer` — `USING SCOPE` (mine/everything/team/scoping rules)
+- `apex/soql-for-view-and-for-reference` → `soql-optimizer` — `FOR VIEW` / `FOR REFERENCE` recent-items tracking
 - `apex/soql-multiselect-picklist-queries` → `soql-optimizer` — `INCLUDES`/`EXCLUDES` multi-select filtering
 - `apex/soql-aggregate-field-type-support` → `soql-optimizer` — which field types support `SUM`/`AVG`/`MIN`/`MAX`
 - `apex/soql-date-functions` → `soql-optimizer` — `CALENDAR_*`/`DAY_ONLY`/fiscal date grouping + the GROUP-BY-repeat rule
 
 #### Data — SOSL (3 new)
-`data-model-reviewer` additionally cites:
-- `data/sosl-with-clauses` → `data-model-reviewer` — the SOSL `WITH` clause family (NETWORK/SNIPPET/HIGHLIGHT/METADATA/PricebookId/DivisionFilter/SPELL_CORRECTION/DATA CATEGORY)
-- `data/sosl-search-result-limits` → `data-model-reviewer` — SOSL result-count limits and `RETURNING` shaping
-- `data/sosl-external-object-search-limits` → `data-model-reviewer` — external-object SOSL search limits
+No runtime agent currently cites these — `data-model-reviewer`'s citations were removed 2026-08-01:
+- `data/sosl-with-clauses` → (no runtime agent — uncited as of 2026-08-01) — the SOSL `WITH` clause family (NETWORK/SNIPPET/HIGHLIGHT/METADATA/PricebookId/DivisionFilter/SPELL_CORRECTION/DATA CATEGORY)
+- `data/sosl-search-result-limits` → (no runtime agent — uncited as of 2026-08-01) — SOSL result-count limits and `RETURNING` shaping
+- `data/sosl-external-object-search-limits` → (no runtime agent — uncited as of 2026-08-01) — external-object SOSL search limits
 
 #### Flow (3 new)
-`flow-builder`, `flow-analyzer` additionally cite:
-- `flow/screen-flow-radio-button-group` → `flow-builder` — Summer '26 compact single-select Radio Button Group component
-- `flow/screen-flow-choice-component-selection` → `flow-builder` — choosing among Radio/Picklist/Dependent/Checkbox/Visual Picker/Choice Lookup
-- `flow/flow-open-a-page-action` → `flow-builder`, `flow-analyzer` — Summer '26 Open a Page post-flow navigation/redirect action
+`flow-analyzer` additionally cites:
+- `flow/screen-flow-radio-button-group` → (no runtime agent — uncited as of 2026-08-01) — Summer '26 compact single-select Radio Button Group component
+- `flow/screen-flow-choice-component-selection` → (no runtime agent — uncited as of 2026-08-01) — choosing among Radio/Picklist/Dependent/Checkbox/Visual Picker/Choice Lookup
+- `flow/flow-open-a-page-action` → `flow-analyzer` — Summer '26 Open a Page post-flow navigation/redirect action
 
 ---
 

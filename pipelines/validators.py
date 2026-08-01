@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import difflib
+import hashlib
 import json
 import re
 from dataclasses import dataclass
@@ -66,6 +67,23 @@ REQUIRED_SKILL_FILES = [
     "references/gotchas.md",
     "references/well-architected.md",
 ]
+
+
+# Depth floor for references/llm-anti-patterns.md. NOT a percentile: the
+# measured corpus p10 is 3365 bytes and the median 6830. A gate set at p10
+# would WARN on 102 skills including plenty of adequate ones; 2000 bytes hits
+# 57 and sits below the visible cliff in the distribution (42 at 1500, 57 at
+# 2000, 62 at 2500). Raise it only after the current 57 are paid down.
+MIN_ANTI_PATTERNS_BYTES = 2000
+
+# Any fenced block, language-agnostic. Deliberately not Apex/code-specific:
+# for a requirements- or governance-shaped skill the right worked artifact is
+# a YAML config, a JSON payload or a metadata XML snippet, and a code-only
+# predicate would push those authors to fabricate Apex.
+_FENCED_BLOCK_RE = re.compile(r"^\s*```", re.MULTILINE)
+
+_OFFICIAL_SOURCES_HEADING_RE = re.compile(r"^##\s+Official Sources Used\s*$", re.MULTILINE)
+_MARKDOWN_H2_RE = re.compile(r"^##\s+", re.MULTILINE)
 
 
 @dataclass(frozen=True)
@@ -281,6 +299,42 @@ def validate_skill_structure(path: Path) -> list[ValidationIssue]:
                 str(llm_ap_path),
                 f"llm-anti-patterns.md has only {ap_count} anti-pattern(s); "
                 "CLAUDE.md requires 5+ (any heading or numbered-list format).",
+            ))
+        # Depth gate — the 5-anti-pattern floor above is trivially satisfiable
+        # by five one-line assertions, and a stub wave did exactly that (38
+        # skills sat at exactly 5). Byte size is a crude but un-gameable-by-
+        # accident proxy for whether each entry carries mistake + why the LLM
+        # makes it + correct form. WARN, not ERROR: 57 corpus skills are under
+        # the threshold today and paying that down is incremental content work.
+        llm_bytes = len(llm_text.encode("utf-8"))
+        if llm_bytes < MIN_ANTI_PATTERNS_BYTES:
+            issues.append(ValidationIssue(
+                "WARN",
+                str(llm_ap_path),
+                f"llm-anti-patterns.md is {llm_bytes} bytes, under the "
+                f"{MIN_ANTI_PATTERNS_BYTES}-byte depth floor. For scale, the corpus "
+                "10th percentile is 3365 bytes and the median is 6830 — this floor is "
+                "deliberately set well below p10 so it only catches files whose entries "
+                "are one-line assertions rather than mistake + why-the-LLM-does-it + "
+                "correct-form.",
+            ))
+
+    # examples.md depth gate — a worked artifact, not prose about one. The
+    # required-file check above only proves the file exists. WARN because 158
+    # corpus skills have no fenced block today, and many are requirements- or
+    # process-shaped skills where inventing Apex to satisfy a gate would be
+    # strictly worse than the current prose — hence the non-code escape hatch
+    # spelled out in the message.
+    examples_path = path / "references" / "examples.md"
+    if examples_path.exists():
+        examples_text = examples_path.read_text(encoding="utf-8")
+        if not _FENCED_BLOCK_RE.search(examples_text):
+            issues.append(ValidationIssue(
+                "WARN",
+                str(examples_path),
+                "examples.md has no fenced block — add at least one worked artifact "
+                "(code, YAML, JSON, metadata XML, or a concrete payload/table), not a "
+                "prose description of one.",
             ))
 
     # Recommended Workflow section in SKILL.md — WARN if missing
@@ -653,4 +707,83 @@ def validate_skill_similarity(
                     "`python3 scripts/audit_duplicates.py` or merge/rename one",
                 )
             )
+    return issues
+
+
+def _official_sources_fingerprint(skill_dir: Path) -> str | None:
+    """Hash the `## Official Sources Used` body of a skill, or None if absent."""
+    waf_path = skill_dir / "references" / "well-architected.md"
+    if not waf_path.exists():
+        return None
+    try:
+        text = waf_path.read_text(encoding="utf-8")
+    except OSError:
+        return None
+    match = _OFFICIAL_SOURCES_HEADING_RE.search(text)
+    if not match:
+        return None
+    rest = text[match.end():]
+    next_heading = _MARKDOWN_H2_RE.search(rest)
+    body = rest[: next_heading.start()] if next_heading else rest
+    lines = [line.strip() for line in body.splitlines() if line.strip()]
+    if not lines:
+        return None
+    return hashlib.sha256("\n".join(lines).encode("utf-8")).hexdigest()
+
+
+def validate_official_sources_uniqueness(
+    root: Path,
+    skill_paths: list[Path],
+) -> list[ValidationIssue]:
+    """Flag skills in the same domain sharing a byte-identical Official Sources block.
+
+    The existing structural gate only checks that `## Official Sources Used`
+    exists and is non-empty, which one rubber-stamped per-domain source list
+    pasted across N skills satisfies. Grounding claimed at the domain level is
+    not grounding for the specific skill.
+
+    Corpus-level by construction, like ``validate_skill_similarity``: the
+    fingerprint map is always built over the FULL corpus regardless of
+    ``skill_paths``, because "two skills share a block" is undecidable from one
+    skill directory and under ``--shard N/M`` the two members of a pair almost
+    always land in different shards. Only skills present in ``skill_paths`` are
+    reported.
+
+    Cross-domain reuse is deliberately not flagged — a security skill and an
+    integration skill both citing the Named Credentials doc is normal.
+
+    WARN, not ERROR: 45 corpus skills across 10 intra-domain groups match
+    today, and some are legitimate (several AppExchange-security skills really
+    do rest on the same two Salesforce pages). At ERROR the cheapest fix would
+    be shuffling URLs to break the hash, which is the padding failure in a new
+    costume.
+    """
+    targets = {p.parent.resolve() for p in skill_paths}
+    by_fingerprint: dict[tuple[str, str], list[Path]] = {}
+    for skill_dir in sorted(root.glob("skills/*/*/SKILL.md")):
+        skill_dir = skill_dir.parent
+        fingerprint = _official_sources_fingerprint(skill_dir)
+        if fingerprint is None:
+            continue
+        by_fingerprint.setdefault((skill_dir.parent.name, fingerprint), []).append(skill_dir)
+
+    issues: list[ValidationIssue] = []
+    for (domain, _fingerprint), members in sorted(by_fingerprint.items()):
+        if len(members) < 2:
+            continue
+        for member in members:
+            if member.resolve() not in targets:
+                continue
+            siblings = [f"`{domain}/{other.name}`" for other in members if other != member]
+            shown = ", ".join(siblings[:4])
+            if len(siblings) > 4:
+                shown += f", +{len(siblings) - 4} more"
+            issues.append(ValidationIssue(
+                "WARN",
+                str(member / "references" / "well-architected.md"),
+                f"`## Official Sources Used` is byte-identical to {len(siblings)} other "
+                f"`{domain}` skill(s): {shown}. A shared per-domain source list is not "
+                "grounding for this skill — cite the specific pages that back THIS "
+                "skill's claims, and drop the ones it does not use.",
+            ))
     return issues

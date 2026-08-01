@@ -22,9 +22,9 @@ outputs:
   - "migration plan + parity matrix + rollout runbook"
 dependencies: []
 runtime_orphan: true
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-01
 ---
 
 # OmniStudio LWC OmniScript Migration
@@ -51,7 +51,7 @@ Any org still using VF-mode OmniScripts; required by the deprecation timeline.
 - Some template types (signature pad, legacy chart) need custom LWC rewrite.
 - Styles differ subtly in LWC mode; QA designers carefully.
 - LWC runtime is faster but strict about async patterns — some VF-only tricks won't port.
-- Performance improves 30–60% in our benchmarks.
+- Don't justify the migration with a borrowed percentage — the widely-quoted "30–60% faster" is attributable to nobody. Justify it on supportability (the AngularJS runtime is no longer supported) and measure your own scripts before and after if a number is wanted.
 
 ## Worked Examples (see `references/examples.md`)
 

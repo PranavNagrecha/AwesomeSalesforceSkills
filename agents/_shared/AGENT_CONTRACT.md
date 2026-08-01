@@ -158,6 +158,7 @@ Citations are data, not prose. Every output ends with a `citations[]` block wher
 - Running `sf project deploy`, `sf data upsert`, or any write operation against the org.
 - Inlining SOQL that already exists as a probe recipe.
 - Returning Process Observations that restate the deliverable instead of adding peripheral signal.
+- **Citing skills to clear the orphan gate.** `validate_repo.py` (`_check_orphan_skills`) emits a **WARN** — advisory, not an ERROR — for any skill that is neither cited in some agent's `dependencies.skills:` nor marked `runtime_orphan: true`. It used to ERROR, which made mass-citation the cheapest route to a green build; that is exactly how the stub wave happened, so coverage is now a signal rather than a contract. The WARN is cheap to leave standing. If a skill genuinely has no owner, record that with `runtime_orphan: true` plus a `runtime_orphan_reason:` — never with a citation the agent will not read, and never in bulk to quiet the warning. A citation the agent does not use makes the library measurably worse: it inflates the coverage number while diluting the reading list of the one agent that now has to carry it. That is how 52% of Mandatory Reads entries became echo stubs — see [Mandatory Reads](#mandatory-reads-human-authored-justified-bounded).
 - **Restating canonical content across AGENT.md files.** When two or more AGENT.md files contain the same prose paragraph word-for-word, the canonical version belongs in `agents/_shared/` (linked) rather than copy-pasted. Enforced as ERROR by `pipelines/agent_validators.py:_validate_no_cross_agent_duplication` — the analog of skills' style guide § 6.6 (verbatim duplication between SKILL.md and references/gotchas.md). Exemptions: paragraphs inside the deliberately-templated Wave 10 sub-sections `### Persistence (Wave 10 contract)` and `### Scope Guardrails (Wave 10 contract)` (per `DELIVERABLE_CONTRACT.md`), and AGENT.md files with `status: deprecated` (their stub language is intentional).
 
 ---
@@ -166,10 +167,40 @@ Citations are data, not prose. Every output ends with a `citations[]` block wher
 
 Two workflows govern the agent ↔ skill relationship; both treat the wiring as a judgment step, not a sweep:
 
-- **New skill** → see [`commands/new-skill.md`](../../commands/new-skill.md), Step 6. After scaffolding the skill, walk the agent roster and decide whether any agent meaningfully needs it. Zero is a valid answer; orphan WARNs are advisory.
+- **New skill** → see [`commands/new-skill.md`](../../commands/new-skill.md), Step 6. After scaffolding the skill, walk the agent roster and decide whether any agent meaningfully needs it. Zero agents is a valid answer, but not a silent one: record it as `runtime_orphan: true` with a reason, because the validator ERRORs on a skill that recorded no decision either way.
 - **New run-time agent** → see [`commands/new-agent.md`](../../commands/new-agent.md). After scaffolding the agent, walk the skill library and cite the skills that genuinely change the agent's output. Don't dilute `Mandatory Reads` with adjacent-but-unused skills, and don't fabricate citations to non-existent skills.
 
 The bar in both directions is the same: a citation should answer "the agent's output would be wrong without this skill in this scenario." If you can't name the scenario, drop the citation.
+
+### Mandatory Reads: human-authored, justified, bounded
+
+`## Mandatory Reads Before Starting` is a reading list a human has to defend, not an index of the library. Six normative rules:
+
+1. **Every `skills/<domain>/<slug>` line carries a justification, and a human wrote it.** The justification names the scenario in which this agent's output would be *wrong* without that skill — not what the skill is about. One line is enough.
+
+2. **A description that restates the slug is not a justification — it is an ERROR.** Dashes-to-spaces, any casing, trailing period, all the same defect:
+
+   ```text
+   BAD   `skills/admin/fsl-mobile-app-setup` — Fsl mobile app setup
+   GOOD  `skills/data/person-accounts` — for any Account-variant design
+   ```
+
+   The bad line tells the agent nothing it could not read off the path, so it buys no accuracy and spends context. `scripts/patch_agent_skill.py` refuses to write one (exit code 2, via its exported `is_echo_description()` predicate), and `validate_repo.py` (`_check_agent_citation_quality`) imports the same predicate and raises a per-line ERROR on any Mandatory Reads entry it rejects — so a stub hand-edited straight into an AGENT.md now fails CI too. Know what that predicate does and does not cover: it is an exact match after normalisation, so it catches a re-run of the machine-generated stub wave and nothing subtler — appending one word ("Fsl mobile app setup guidance") clears the gate while leaving the line just as useless. It is a regression guard, not a filler detector. Rule 2 is a rule about writing, and review still has to enforce it; CI only stops the exact shape that produced 555 stubs.
+
+3. **A bare citation — a `skills/…` line with no description at all — is not acceptable in a new or reworked list.** Pre-existing bare lines are tolerated until their agent is next revised; revising a list means justifying what survives it.
+
+4. **The list is bounded.** Two different things, kept apart on purpose:
+
+   - *Convention, enforced by review only.* Design target is **8–25** skill reads per agent. Above 25, the section should open with a one-line note saying why the agent is unusually broad. No code checks either number — treat them as the bar a reviewer holds you to, not as something a build will catch.
+   - *Gate, enforced by CI.* `validate_repo.py` (`_check_agent_citation_quality`) emits a **WARN** above **40** skill reads. Advisory, not an ERROR — the ceiling was set from the measured corpus (45/44/44/42, then a drop to 36), so it separates the outliers from the body of the distribution rather than asserting a principled maximum.
+
+   Only `skills/` lines count toward either bound; `agents/_shared/*`, `AGENT_RULES.md`, `standards/decision-trees/*`, `templates/*`, `evals/*` and probe entries are exempt, because they are per-run contracts rather than per-topic reference. The gate counts numbered `skills/…` lines **anywhere in the AGENT.md**, not just inside `## Mandatory Reads Before Starting`. Moving entries under some other heading is not a way to clear it: the agent still opens the same files, so the budget is unchanged. Shortening the list means dropping reads the agent does not need, or splitting the agent in two.
+
+5. **YAML and prose must agree.** Every entry in `dependencies.skills:` has exactly one matching Mandatory Reads line and vice versa. The validator's coverage check reads the YAML block only, so a citation that lives in YAML alone is invisible to every human reviewer — which is precisely where padding hides. The pairing governs the reading list, and only the reading list. A `skills/…` path named elsewhere in the AGENT.md as somewhere to *send the caller* — the Scope Guardrails format-referral to `skills/admin/agent-output-formats` is the standing example — is a pointer, not a read: the agent hands it to the user rather than loading it before starting. Do not back-fill such a pointer into `dependencies.skills:` to make the two "match"; that manufactures exactly the unread citation rule 1 exists to prevent.
+
+6. **Removing a read is a judgment call in both directions.** Be conservative about dropping something the agent plausibly consults on a normal run; be ruthless about vertical- or product-specific skills an agent's own `What This Agent Does` never claims to cover. When a skill is genuinely in scope but the line is an echo stub, the fix is to *write the justification*, not to delete the read.
+
+The matching anti-pattern — citing skills to clear the orphan gate — is listed under [Anti-patterns](#anti-patterns).
 
 ---
 

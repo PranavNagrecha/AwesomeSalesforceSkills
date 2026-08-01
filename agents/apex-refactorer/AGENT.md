@@ -14,68 +14,36 @@ output_formats:
   - json
 dependencies:
   skills:
-    - admin/agent-output-formats
-    - apex/apex-aggregate-queries
-    - apex/apex-callout-retry-and-resilience
     - apex/apex-class-decomposition-pattern
     - apex/apex-collections-patterns
     - apex/apex-cpu-and-heap-optimization
     - apex/apex-design-patterns
     - apex/apex-dml-patterns
     - apex/apex-dynamic-soql-binding-safety
-    - apex/apex-enum-patterns
-    - apex/apex-flow-invocation-from-apex
-    - apex/apex-future-method-patterns
     - apex/apex-hardcoded-id-elimination
-    - apex/apex-http-callout-mocking
-    - apex/apex-limits-monitoring
     - apex/apex-mocking-and-stubs
     - apex/apex-named-credentials-patterns
-    - apex/apex-polymorphic-soql
     - apex/apex-queueable-patterns
-    - apex/apex-rest-services
-    - apex/apex-savepoint-and-rollback
-    - apex/apex-schema-describe
-    - apex/apex-secrets-and-protected-cmdt
     - apex/apex-security-patterns
-    - apex/apex-soql-relationship-queries
     - apex/apex-stripinaccessible-and-fls-enforcement
-    - apex/apex-system-runas
-    - apex/apex-test-setup-patterns
-    - apex/apex-transaction-finalizers
     - apex/apex-trigger-bypass-and-killswitch-patterns
-    - apex/apex-trigger-context-variables
-    - apex/apex-user-and-permission-checks
     - apex/apex-with-without-sharing-decision
-    - apex/apex-wsdl2apex-patterns
     - apex/async-apex
     - apex/batch-apex-patterns
-    - apex/callout-and-dml-transaction-boundaries
     - apex/callouts-and-http-integrations
-    - apex/change-data-capture-apex
-    - apex/common-apex-runtime-errors
-    - apex/continuation-callouts
-    - apex/dynamic-apex
     - apex/error-handling-framework
-    - apex/exception-handling
     - apex/fflib-enterprise-patterns
     - apex/field-level-security-in-async-contexts
-    - apex/governor-limit-recovery-patterns
     - apex/governor-limits
-    - apex/invocable-methods
     - apex/mixed-dml-and-setup-objects
     - apex/order-of-execution-deep-dive
-    - apex/platform-events-apex
     - apex/recursive-trigger-prevention
-    - apex/record-locking-and-contention
     - apex/soql-fundamentals
     - apex/soql-null-ordering-patterns
     - apex/soql-security
     - apex/test-class-standards
     - apex/test-data-factory-patterns
-    - apex/trigger-and-flow-coexistence
     - apex/trigger-framework
-    - apex/visualforce-fundamentals
     - devops/code-coverage-orphan-class-cleanup
   shared:
     - AGENT_CONTRACT.md
@@ -125,6 +93,8 @@ Takes an existing Apex class the user points at, compares it against the canonic
 
 ## Mandatory Reads Before Starting
 
+Breadth note (`AGENT_CONTRACT.md` Mandatory Reads rule 4): 31 skill reads, above the 8–25 design target. A refactor rewrites whichever layers the input class actually touches, and the agent cannot know which those are until it has read the class. Triggers, async surfaces, callouts, SOQL, DML, security and the test rebuild are each a *possible* refactor target on any given run, so the reads are conditional-but-mandatory rather than uniformly consumed.
+
 ### Contract layer
 1. `agents/_shared/AGENT_CONTRACT.md`
 2. `AGENT_RULES.md`
@@ -132,112 +102,79 @@ Takes an existing Apex class the user points at, compares it against the canonic
 4. `agents/_shared/REFUSAL_CODES.md`
 
 ### Architecture / decomposition
-5. `skills/apex/apex-design-patterns`
+5. `skills/apex/apex-design-patterns` — the target shape a refactor moves toward; without it 'cleaner' is undefined
 6. `skills/apex/apex-class-decomposition-pattern` — Domain/Service/Selector split decision
 7. `skills/apex/fflib-enterprise-patterns` — recognize fflib-shaped code; do NOT auto-migrate
 8. `templates/apex/README.md` — template dependency order
 9. `skills/devops/code-coverage-orphan-class-cleanup` — delete orphan classes to lower coverage denominator instead of stubbing tests
-10. `skills/apex/apex-enum-patterns` — Apex enum dispatch, valueOf safety, ordinals
 
 ### Triggers & order
-11. `skills/apex/trigger-framework`
-12. `skills/apex/apex-trigger-context-variables`
-13. `skills/apex/recursive-trigger-prevention`
-14. `skills/apex/apex-trigger-bypass-and-killswitch-patterns`
-15. `skills/apex/order-of-execution-deep-dive`
-16. `skills/apex/trigger-and-flow-coexistence`
+10. `skills/apex/trigger-framework` — the handler shape a multi-trigger or logic-in-trigger refactor lands on
+11. `skills/apex/recursive-trigger-prevention` — a refactor that consolidates triggers changes re-entry behaviour — the guard has to move with it
+12. `skills/apex/apex-trigger-bypass-and-killswitch-patterns` — the bypass hook a consolidated handler must keep, or the org loses its only escape valve
+13. `skills/apex/order-of-execution-deep-dive` — reordering handler calls is only safe if the save-order semantics are preserved
 
 ### Async surfaces (refactor target candidates)
-17. `skills/apex/async-apex`
-18. `skills/apex/apex-queueable-patterns`
-19. `skills/apex/apex-future-method-patterns`
-20. `skills/apex/batch-apex-patterns`
-21. `skills/apex/apex-transaction-finalizers`
-22. `standards/decision-trees/async-selection.md`
-23. `skills/apex/field-level-security-in-async-contexts` — When refactoring sync Apex into async, preserve the originating user's FLS — async hops change the running user
+14. `skills/apex/async-apex` — sync→async is one of this agent's largest refactors and changes the transaction, not just the timing
+15. `skills/apex/apex-queueable-patterns` — the default landing surface for a `@future` method being modernised
+16. `skills/apex/batch-apex-patterns` — the landing surface when a loop must become chunked; `getQueryLocator` semantics decide feasibility
+17. `standards/decision-trees/async-selection.md`
+18. `skills/apex/field-level-security-in-async-contexts` — When refactoring sync Apex into async, preserve the originating user's FLS — async hops change the running user
 
 ### Callouts (refactor to HttpClient + Named Credentials)
-24. `skills/apex/callouts-and-http-integrations`
-25. `skills/apex/apex-named-credentials-patterns`
-26. `skills/apex/apex-callout-retry-and-resilience`
-27. `skills/apex/callout-and-dml-transaction-boundaries`
-28. `skills/apex/continuation-callouts`
-29. `skills/apex/apex-rest-services`
-30. `skills/apex/apex-wsdl2apex-patterns` — Refactor wsdl2apex callouts: endpoint via Named Credential, two-catch ladder (WebServiceCalloutException first), WebServiceMock not HttpCalloutMock
+19. `skills/apex/callouts-and-http-integrations` — the callout shapes to be refactored onto `templates/apex/HttpClient.cls`
+20. `skills/apex/apex-named-credentials-patterns` — endpoints and headers moved out of code — the credential half of a callout refactor
 
 ### SOQL refactor targets
-31. `skills/apex/soql-fundamentals`
-32. `skills/apex/soql-security`
-33. `skills/apex/apex-soql-relationship-queries`
-34. `skills/apex/apex-aggregate-queries`
-35. `skills/apex/apex-polymorphic-soql`
-36. `skills/apex/dynamic-apex`
-37. `skills/apex/apex-dynamic-soql-binding-safety`
-38. `skills/apex/apex-collections-patterns`
-39. `skills/apex/soql-null-ordering-patterns` — explicit NULLS clause + Id tiebreaker for stable order
-40. `skills/apex/apex-schema-describe` — Schema describe API perf, FLS, picklist enumeration
+21. `skills/apex/soql-fundamentals` — the query surface being rewritten, including clauses whose meaning changes when they move
+22. `skills/apex/soql-security` — a refactor must not quietly drop `WITH USER_MODE`; that is a regression, not a simplification
+23. `skills/apex/apex-dynamic-soql-binding-safety` — the bind-variable rewrite for concatenated queries encountered during the refactor
+24. `skills/apex/apex-collections-patterns` — the map/set idioms behind every query- and DML-out-of-loop refactor
+25. `skills/apex/soql-null-ordering-patterns` — explicit NULLS clause + Id tiebreaker for stable order
 
 ### DML / transactions
-41. `skills/apex/apex-dml-patterns`
-42. `skills/apex/apex-savepoint-and-rollback`
-43. `skills/apex/mixed-dml-and-setup-objects`
-44. `skills/apex/record-locking-and-contention`
+26. `skills/apex/apex-dml-patterns` — partial-success vs all-or-none semantics change when DML is hoisted out of a loop
+27. `skills/apex/mixed-dml-and-setup-objects` — consolidating DML can accidentally put setup and non-setup writes in one transaction
 
 ### Governor / performance
-45. `skills/apex/governor-limits`
-46. `skills/apex/governor-limit-recovery-patterns`
-47. `skills/apex/apex-cpu-and-heap-optimization`
-48. `skills/apex/apex-limits-monitoring`
+28. `skills/apex/governor-limits` — the budget the refactor is meant to improve — and the one it must not silently worsen
+29. `skills/apex/apex-cpu-and-heap-optimization` — CPU and heap, not SOQL count, are what a large-collection refactor usually fixes or breaks
 
 ### Security (refactor → SecurityUtils)
-49. `skills/apex/apex-security-patterns`
-50. `skills/apex/apex-with-without-sharing-decision`
-51. `skills/apex/apex-stripinaccessible-and-fls-enforcement`
-52. `skills/apex/apex-user-and-permission-checks`
-53. `skills/apex/apex-system-runas`
-54. `skills/apex/apex-secrets-and-protected-cmdt`
-55. `skills/apex/apex-hardcoded-id-elimination`
-56. `standards/decision-trees/sharing-selection.md`
+30. `skills/apex/apex-security-patterns` — the enforcement baseline a refactored class must still meet after the move
+31. `skills/apex/apex-with-without-sharing-decision` — moving logic between classes changes the sharing context it runs in
+32. `skills/apex/apex-stripinaccessible-and-fls-enforcement` — the FLS remediation to apply while the write path is already being touched
+33. `skills/apex/apex-hardcoded-id-elimination` — a classic refactor target: id literals block sandbox parity and encode privilege assumptions
+34. `standards/decision-trees/sharing-selection.md`
 
 ### Error handling
-57. `skills/apex/error-handling-framework`
-58. `skills/apex/exception-handling`
-59. `skills/apex/common-apex-runtime-errors`
+35. `skills/apex/error-handling-framework` — the exception taxonomy a refactored class logs against, so failures stay diagnosable
 
 ### Test rebuild after refactor
-60. `skills/apex/test-class-standards`
-61. `skills/apex/test-data-factory-patterns`
-62. `skills/apex/apex-test-setup-patterns`
-63. `skills/apex/apex-mocking-and-stubs`
-64. `skills/apex/apex-http-callout-mocking`
-
-### Other targets
-65. `skills/apex/visualforce-fundamentals` — when refactoring a VF controller
-66. `skills/apex/invocable-methods`
-67. `skills/apex/apex-flow-invocation-from-apex`
-68. `skills/apex/platform-events-apex`
-69. `skills/apex/change-data-capture-apex`
+36. `skills/apex/test-class-standards` — the bar the rebuilt tests must meet, since a refactor invalidates the old ones
+37. `skills/apex/test-data-factory-patterns` — refactored tests build data through the factory rather than re-inlining literals
+38. `skills/apex/apex-mocking-and-stubs` — decomposition makes collaborators injectable; this is how the new seams get tested
 
 ### Templates
-70. `templates/apex/TriggerHandler.cls`
-71. `templates/apex/TriggerControl.cls`
-72. `templates/apex/BaseService.cls`
-73. `templates/apex/BaseSelector.cls`
-74. `templates/apex/BaseDomain.cls`
-75. `templates/apex/ApplicationLogger.cls`
-76. `templates/apex/SecurityUtils.cls`
-77. `templates/apex/HttpClient.cls`
-78. `templates/apex/tests/BulkTestPattern.cls`
-79. `templates/apex/tests/TestDataFactory.cls`
-80. `templates/apex/tests/MockHttpResponseGenerator.cls`
-81. `templates/apex/tests/TestRecordBuilder.cls`
-82. `templates/apex/tests/TestUserFactory.cls`
+39. `templates/apex/TriggerHandler.cls`
+40. `templates/apex/TriggerControl.cls`
+41. `templates/apex/BaseService.cls`
+42. `templates/apex/BaseSelector.cls`
+43. `templates/apex/BaseDomain.cls`
+44. `templates/apex/ApplicationLogger.cls`
+45. `templates/apex/SecurityUtils.cls`
+46. `templates/apex/HttpClient.cls`
+47. `templates/apex/tests/BulkTestPattern.cls`
+48. `templates/apex/tests/TestDataFactory.cls`
+49. `templates/apex/tests/MockHttpResponseGenerator.cls`
+50. `templates/apex/tests/TestRecordBuilder.cls`
+51. `templates/apex/tests/TestUserFactory.cls`
 
 ### Probes
-83. `agents/_shared/probes/apex-references-to-field.md` — for understanding field-impact before lifting selector queries
+52. `agents/_shared/probes/apex-references-to-field.md` — for understanding field-impact before lifting selector queries
 
 ### Decision trees
-84. `standards/decision-trees/automation-selection.md`
+53. `standards/decision-trees/automation-selection.md`
 
 ---
 
@@ -340,7 +277,7 @@ Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md`.
 Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
 
 - **Canonical data surface:** this agent's declared probes + the MCP tool set. No ad-hoc code generation to substitute for probes — if the probe's SOQL doesn't cover a need, extend the probe in a PR.
-- **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
+- **No new project dependencies:** this agent does NOT run `npm install` / `pip install` in the consumer's project. Converting the canonical `markdown` / `json` deliverable to any other format is a caller-side concern — the conversion-path pointer lives in `agents/_shared/DELIVERABLE_CONTRACT.md` § See also.
 - **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only. Dimensions for this agent: `class-shape` (trigger / handler / service / selector / callout / mixed), `templates-applied` (which canonical templates wired in), `crud-fls-enforcement`, `sharing-keyword`, `id-handling`, `secret-handling`, `dynamic-soql-safety`, `bulk-safety`, `transaction-boundaries`, `test-class-generation`. When the source file doesn't exercise a dimension, record it in `dimensions_skipped[]` with `state: not-run` and a one-line reason.
 
 ## Escalation / Refusal Rules

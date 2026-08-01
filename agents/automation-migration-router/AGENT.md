@@ -51,7 +51,7 @@ Dispatches one of four source automation types (`wf_rule`, `process_builder`, `a
 6. `standards/decision-trees/automation-selection.md` — consulted whenever the router is tempted to suggest Apex instead
 7. Source-type–specific mandatory reads — pulled from `decision_table.md` based on the chosen `source_type`
 8. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
-9. `skills/flow/scheduled-flow-not-running-debug` — scheduled flow not running debug
+9. `skills/flow/scheduled-flow-not-running-debug` — a Workflow time-trigger migrated to a Scheduled Path fails silently when it fails; this is the parallel-run validation check for that case
 
 The agent MUST read the source-type row in `decision_table.md` before emitting any classification. Every mandatory skill/template listed in that row is then a hard requirement for this run.
 

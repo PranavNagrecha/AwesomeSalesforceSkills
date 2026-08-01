@@ -158,7 +158,7 @@ Diagnoses a live LWC failure — a stack trace, "Unknown error", a wire that nev
 ### Templates
 45. `templates/lwc/component-skeleton/`
 46. `templates/lwc/patterns/`
-47. `skills/lwc/lwc-local-development` — lwc local development
+47. `skills/lwc/lwc-local-development` — reproduce the reported failure locally before touching the org, so the diagnosis is testable rather than inferred
 
 ---
 

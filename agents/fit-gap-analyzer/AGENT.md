@@ -131,7 +131,7 @@ The deliverable is what an architect or BA hands to a steering committee BEFORE 
 ### Output handoff
 32. `skills/admin/configuration-workbook-authoring` — output rows must align with workbook section names so `config-workbook-author` consumes cleanly
 33. `skills/admin/requirements-traceability-matrix` — emit RTM rows so the gap shows up in traceability
-34. `skills/admin/mobile-publisher` — mobile publisher
+34. `skills/admin/mobile-publisher` — a story that implies a branded mobile app is a licensing and packaging gap, not a config gap — the tier is Unfit until that is priced
 35. `skills/admin/managed-package-installation-and-upgrade` — when a gap is filled by a managed package: subscriber-side install posture, license SKU planning, sandbox-first runbook, post-install configuration that InstallHandler cannot do
 
 ---

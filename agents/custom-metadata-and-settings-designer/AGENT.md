@@ -62,7 +62,7 @@ Two modes:
 8. `templates/apex/cmdt/` — if CMT query patterns are emitted
 9. `templates/admin/naming-conventions.md`
 10. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
-11. `skills/admin/custom-label-management` — Custom label management
+11. `skills/admin/custom-label-management` — custom labels are the third config store; a design that ignores them ends up with translatable text stranded in CMDT rows
 
 ---
 

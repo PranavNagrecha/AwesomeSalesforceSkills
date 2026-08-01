@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Add a skill citation to a run-time agent's AGENT.md.
+r"""Add a skill citation to a run-time agent's AGENT.md.
 
 Usage:
     python3 scripts/patch_agent_skill.py <agent_id> <skill_id> <section_heading> "<short description>"
@@ -8,9 +8,31 @@ Example:
     python3 scripts/patch_agent_skill.py field-impact-analyzer admin/lookup-filter-cross-object-patterns "### Field shape" "lookup filters cite fields"
 
 What it does:
-    1. Inserts `    - <skill_id>` into the YAML `dependencies.skills:` block, preserving alphabetical order.
-    2. Appends a numbered bullet `<N>. \`skills/<skill_id>\` — <description>` at the end of the block under <section_heading>.
-    3. Renumbers every subsequent numbered list item in the Mandatory Reads section so the sequence stays monotonic.
+    1. Rejects a description that merely echoes the slug, or is empty (see the guard below).
+    2. Inserts `    - <skill_id>` into the YAML `dependencies.skills:` block, preserving alphabetical order.
+    3. Appends a numbered bullet `<N>. \`skills/<skill_id>\` — <description>` at the end of the block under <section_heading>.
+    4. Renumbers every subsequent numbered list item in the Mandatory Reads section so the sequence stays monotonic.
+
+The echo guard:
+    A description that restates the slug ("fsl-mobile-app-setup" -> "Fsl mobile app setup")
+    tells the reading agent nothing the path did not already say. It buys no accuracy and
+    spends context, and mass-writing them is how the agent citation lists got padded past
+    50%. `is_echo_description()` is the single predicate for that defect, and it is exported
+    so the repo has one definition. `scripts/validate_repo.py` imports it and raises a
+    per-line ERROR on any Mandatory Reads entry it rejects, so the guard now covers the
+    reader as well as the writer: an echo stub hand-edited directly into an AGENT.md fails
+    validation. There is deliberately no override flag.
+
+    Scope of the predicate: it is an exact match after normalisation. It catches a re-run of
+    the machine-generated wave ("B2b commerce store setup") and nothing subtler — one
+    appended word ("B2b commerce store setup guidance") clears it. That is on purpose. It is
+    a regression guard, not a filler detector; hardening it into one is an arms race, and
+    the incentive to mass-cite went away when the orphan gate dropped to advisory WARN.
+
+Exit codes:
+    0  citation written, or already present (idempotent no-op)
+    1  agent or skill does not exist
+    2  description rejected by the echo guard — nothing was written
 
 Idempotent: re-running with the same args is a no-op (skill already cited).
 
@@ -24,6 +46,27 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
+
+
+def is_echo_description(skill_id: str, description: str) -> bool:
+    """True when `description` is not a justification for citing `skill_id`.
+
+    Two rejected shapes:
+      * empty / whitespace-only — a bare citation carries no reason at all;
+      * an echo of the slug — the last path segment with '-' turned into ' ',
+        compared case-insensitively, whitespace-collapsed, trailing '.' ignored.
+
+    >>> is_echo_description("admin/b2b-commerce-store-setup", "B2b commerce store setup")
+    True
+    >>> is_echo_description("data/person-accounts", "for any Account-variant design")
+    False
+    """
+    normalized = " ".join((description or "").split()).strip().rstrip(".").casefold()
+    if not normalized:
+        return True
+    slug = skill_id.rstrip("/").split("/")[-1]
+    echo = " ".join(slug.replace("-", " ").split()).casefold()
+    return normalized == echo
 
 
 def _yaml_skill_block_bounds(lines: list[str]) -> tuple[int, int]:
@@ -150,6 +193,24 @@ def main() -> int:
     p.add_argument("section_heading", help='e.g. "### Field shape & data model"')
     p.add_argument("description")
     args = p.parse_args()
+
+    # Guard runs before any read or write of AGENT.md: a rejected description
+    # must leave the working tree byte-identical.
+    if is_echo_description(args.skill_id, args.description):
+        slug = args.skill_id.rstrip("/").split("/")[-1]
+        print(
+            f"ERROR: refusing to cite {args.skill_id} in {args.agent_id} — the description "
+            f"{args.description!r} restates the slug '{slug}' (or is empty), so it is not a "
+            "justification.\n"
+            "       A justification names the scenario in which this agent's output would be "
+            "wrong without the skill, e.g.\n"
+            '         "for any Account-variant design"  /  '
+            '"lookup filters silently block otherwise-valid parents"\n'
+            "       If you cannot name that scenario, the agent does not need the skill — drop "
+            "it. See agents/_shared/AGENT_CONTRACT.md § Mandatory Reads. Nothing was written.",
+            file=sys.stderr,
+        )
+        return 2
 
     agent_md = REPO / "agents" / args.agent_id / "AGENT.md"
     if not agent_md.exists():

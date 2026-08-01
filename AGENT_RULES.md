@@ -119,7 +119,7 @@ The bar: an agent should cite a skill only when reading it would change the agen
 
 1. **Walk the roster.** Read `agents/_shared/RUNTIME_VS_BUILD.md` (full list) and `agents/_shared/SKILL_MAP.md` (existing citations). Generate 3–6 candidate agents whose domain overlaps. For each, name the concrete scenario where citing this skill would matter. Drop any candidate without one.
 
-2. **Patch only the candidates that pass.** Zero is a valid outcome.
+2. **Patch only the candidates that pass.** Zero agents is a valid outcome — but it is not a silent one: you must then declare the skill agent-less in step 4, because the validator refuses a skill with no recorded decision either way.
 
    ```bash
    python3 scripts/patch_agent_skill.py <agent-id> <skill-id> "<section-heading>" "<short description>"
@@ -129,9 +129,9 @@ The bar: an agent should cite a skill only when reading it would change the agen
 
 3. **Update `agents/_shared/SKILL_MAP.md`** when the wired agent has an entry there (Wave A/B/C tier agents). Developer-tier agents (apex-refactorer, lwc-builder, soql-optimizer, etc.) are tracked only in their own AGENT.md.
 
-4. **Validate.** `python3 scripts/validate_repo.py` emits a WARN for skills cited by no agent. The WARN is a flag, not a gate — orphan skills are accepted state. They may be picked up by a future agent. Skills authored deliberately as human / lexical-retrieval reference can mark `runtime_orphan: true` in frontmatter to silence the WARN with explicit intent.
+4. **Validate.** `python3 scripts/validate_repo.py` emits an **ERROR** for any skill that is neither cited in some `agents/*/AGENT.md` `dependencies.skills:` list nor marked `runtime_orphan: true` in its own frontmatter (paired with a `runtime_orphan_reason:` explaining why). Every skill must record an explicit choice — wire it to a run-time agent, or declare it deliberately agent-less. Skills authored as human / lexical-retrieval reference are the normal case for the second option. See `_check_orphan_skills` in [`standards/validation-gates.md`](./standards/validation-gates.md).
 
-A skill ships when validation has 0 errors. Orphan WARNs do not block the commit.
+A skill ships when validation has 0 errors, and an unwired skill *is* one of those errors — it blocks the commit until step 4 is resolved one way or the other.
 
 ### Step 7 — Commit
 
@@ -263,7 +263,7 @@ Two classes of agents live in `agents/`:
    code-reviewer, validator, currency-monitor, org-assessor,
    release-planner. These produce the library. Invoked by `/run-queue`.
 
-2. **Run-time (47)** — grouped in four tiers:
+2. **Run-time (48)** — grouped in four tiers:
    - **Developer + architecture (16):** `apex-refactorer`, `trigger-consolidator`,
      `test-class-generator`, `soql-optimizer`, `security-scanner`,
      `flow-analyzer`, `bulk-migration-planner`, `lwc-builder`, `lwc-auditor`,
@@ -281,11 +281,11 @@ Two classes of agents live in `agents/`:
      `integration-catalog-builder`, `csv-to-object-mapper`,
      `email-template-modernizer`, `audit-router`, `fit-gap-analyzer`,
      `story-drafter`.
-   - **Vertical + governance — Tier 3 (10):** `omni-channel-routing-designer`,
+   - **Vertical + governance — Tier 3 (11):** `omni-channel-routing-designer`,
      `knowledge-article-taxonomy-agent`, `sales-stage-designer`,
      `lead-routing-rules-designer`, `sandbox-strategy-designer`,
      `release-train-planner`, `waf-assessor`, `agentforce-action-reviewer`,
-     `profile-to-permset-migrator`, `user-access-diff`.
+     `profile-to-permset-migrator`, `user-access-diff`, `omnistudio-designer`.
 
    These USE the library to do real Salesforce work. Invoked via the matching
    `commands/<name>.md`, direct AGENT.md read, or the MCP `get_agent` tool.

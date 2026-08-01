@@ -14,33 +14,22 @@ output_formats:
   - json
 dependencies:
   skills:
-    - admin/agent-output-formats
     - lwc/common-lwc-runtime-errors
     - lwc/component-communication
     - lwc/lifecycle-hooks
     - lwc/lightning-navigation-dead-link-handling
-    - lwc/lightning-out-2-embedding
     - lwc/lwc-accessibility
-    - lwc/lwc-accessibility-patterns
     - lwc/lwc-app-builder-config
     - lwc/lwc-async-patterns
-    - lwc/lwc-base-component-recipes
     - lwc/lwc-conditional-rendering
-    - lwc/lwc-console-workspace-api
     - lwc/lwc-cross-tab-state-sync
     - lwc/lwc-css-and-styling
     - lwc/lwc-custom-datatable-types
     - lwc/lwc-custom-event-patterns
-    - lwc/lwc-data-table
-    - lwc/lwc-datatable-advanced
     - lwc/lwc-debugging-devtools
-    - lwc/lwc-dynamic-components
     - lwc/lwc-error-boundaries
     - lwc/lwc-focus-management
-    - lwc/lwc-forms-and-validation
     - lwc/lwc-graphql-wire
-    - lwc/lwc-imperative-apex
-    - lwc/lwc-internationalization
     - lwc/lwc-lds-writes
     - lwc/lwc-light-dom
     - lwc/lwc-lightning-record-forms
@@ -48,23 +37,15 @@ dependencies:
     - lwc/lwc-performance
     - lwc/lwc-performance-budgets
     - lwc/lwc-public-api-hardening
-    - lwc/lwc-pubsub-patterns
     - lwc/lwc-quick-actions
     - lwc/lwc-reactive-state-patterns
-    - lwc/lwc-record-picker
     - lwc/lwc-security
     - lwc/lwc-shadow-vs-light-dom-decision
     - lwc/lwc-slots-composition
-    - lwc/lwc-state-management
     - lwc/lwc-styling-hooks
     - lwc/lwc-template-refs
     - lwc/lwc-testing
-    - lwc/lwc-toast-and-notifications
-    - lwc/lwc-web-components-interop
     - lwc/lwc-wire-refresh-patterns
-    - lwc/message-channel-patterns
-    - lwc/navigation-and-routing
-    - lwc/static-resources-in-lwc
     - lwc/virtualized-lists
     - lwc/wire-service-patterns
   shared:
@@ -96,85 +77,69 @@ Audits a Lightning Web Component bundle for accessibility, performance, security
 
 ## Mandatory Reads Before Starting
 
+Breadth note (`AGENT_CONTRACT.md` Mandatory Reads rule 4): 34 skill reads, above the 8–25 design target. This agent audits a single bundle against three independent rubrics — accessibility, performance, security — and each rubric carries its own skill cluster. The list is wide because the deliverable promises all three; dropping a cluster would not narrow the agent, it would make the audit quietly incomplete on that axis.
+
 ### Contract layer
 1. `agents/_shared/AGENT_CONTRACT.md`
 2. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 persistence + scope guardrails
 3. `agents/_shared/REFUSAL_CODES.md` — canonical refusal enum
 
 ### Component shape & lifecycle
-4. `skills/lwc/component-communication`
-5. `skills/lwc/lifecycle-hooks`
-6. `skills/lwc/lwc-base-component-recipes`
-7. `skills/lwc/lwc-public-api-hardening` — `@api` typing audit
-8. `skills/lwc/lwc-template-refs` — for every DOM-lookup path
-9. `skills/lwc/lwc-conditional-rendering` — for every `.html` template
-10. `skills/lwc/lwc-dynamic-components` — `<lwc:component>` patterns
-11. `skills/lwc/lwc-slots-composition` — for `<slot>` content
-12. `skills/lwc/lwc-app-builder-config` — for every `.js-meta.xml`
+4. `skills/lwc/component-communication` — audit the chosen channel: props/events/LMS misuse is the defect this agent finds most often
+5. `skills/lwc/lifecycle-hooks` — empty, misordered or DOM-touching hooks — a static read of the JS cannot judge them without this
+6. `skills/lwc/lwc-public-api-hardening` — `@api` typing audit
+7. `skills/lwc/lwc-template-refs` — for every DOM-lookup path
+8. `skills/lwc/lwc-conditional-rendering` — for every `.html` template
+9. `skills/lwc/lwc-slots-composition` — for `<slot>` content
+10. `skills/lwc/lwc-app-builder-config` — for every `.js-meta.xml`
 
 ### Data binding
-13. `skills/lwc/wire-service-patterns`
-14. `skills/lwc/lwc-wire-refresh-patterns` — refresh helper choice (`refreshApex` vs `refreshGraphQL`)
-15. `skills/lwc/lwc-graphql-wire` — when bundle imports `lightning/uiGraphQLApi`
-16. `skills/lwc/lwc-imperative-apex`
-17. `skills/lwc/lwc-async-patterns`
-18. `skills/lwc/lwc-state-management`
-19. `skills/lwc/lwc-lds-writes` — audit LDS write call shapes (Id placement, .fieldApiName usage, dirty-field whitelisting) and error-handling depth
+11. `skills/lwc/wire-service-patterns` — wires whose parameters never change never re-fire; the audit has to recognise that shape
+12. `skills/lwc/lwc-wire-refresh-patterns` — refresh helper choice (`refreshApex` vs `refreshGraphQL`)
+13. `skills/lwc/lwc-async-patterns` — unawaited promises and work started in `connectedCallback` are silent correctness findings
+14. `skills/lwc/lwc-lds-writes` — audit LDS write call shapes (Id placement, .fieldApiName usage, dirty-field whitelisting) and error-handling depth
+15. `skills/lwc/lwc-graphql-wire` — the audit branch for bundles importing lightning/uiGraphQLApi — refresh and error handling differ from a UI API wire
 
 ### Events, messaging, navigation
-20. `skills/lwc/lwc-custom-event-patterns` — event bubbling/composed audit
-21. `skills/lwc/message-channel-patterns`
-22. `skills/lwc/navigation-and-routing`
-23. `skills/lwc/lwc-cross-tab-state-sync` — subscribe/unsubscribe pairing audit for cross-tab listeners
-24. `skills/lwc/lightning-navigation-dead-link-handling` — audit Navigate calls for pre-check + fallback
-25. `skills/lwc/lwc-pubsub-patterns` — Lightning Message Service, pubsub utility
+16. `skills/lwc/lwc-custom-event-patterns` — event bubbling/composed audit
+17. `skills/lwc/lwc-cross-tab-state-sync` — subscribe/unsubscribe pairing audit for cross-tab listeners
+18. `skills/lwc/lightning-navigation-dead-link-handling` — audit Navigate calls for pre-check + fallback
 
 ### Forms, datatables, surfaces
-26. `skills/lwc/lwc-forms-and-validation`
-27. `skills/lwc/lwc-record-picker`
-28. `skills/lwc/lwc-data-table`
-29. `skills/lwc/lwc-custom-datatable-types` — when JS extends `LightningDatatable`
-30. `skills/lwc/lwc-quick-actions` — when `.js-meta.xml` lists `lightning__RecordAction`
-31. `skills/lwc/virtualized-lists` — render budget for >500-row lists
-32. `skills/lwc/lwc-lightning-record-forms` — lightning-record-form / -edit-form / -view-form patterns
-33. `skills/lwc/lwc-datatable-advanced` — Inline edit, custom cell types, sorting
+19. `skills/lwc/lwc-custom-datatable-types` — when JS extends `LightningDatatable`
+20. `skills/lwc/virtualized-lists` — render budget for >500-row lists
+21. `skills/lwc/lwc-lightning-record-forms` — lightning-record-form / -edit-form / -view-form patterns
+22. `skills/lwc/lwc-quick-actions` — the audit branch when .js-meta.xml declares lightning__RecordAction — headless vs screen action rules
 
 ### Accessibility, i18n, focus
-34. `skills/lwc/lwc-accessibility`
-35. `skills/lwc/lwc-accessibility-patterns`
-36. `skills/lwc/lwc-focus-management`
-37. `skills/lwc/lwc-internationalization`
-38. `skills/lwc/lwc-toast-and-notifications`
+23. `skills/lwc/lwc-accessibility` — the a11y rule set the audit's findings are graded against
+24. `skills/lwc/lwc-focus-management` — missing focus handling after render or navigation is invisible in code review without this
 
 ### Styling, DOM mode, interop
-39. `skills/lwc/lwc-styling-hooks` — for every `.css` file
-40. `skills/lwc/lwc-light-dom` — when JS declares `static renderMode = 'light'`
-41. `skills/lwc/lwc-shadow-vs-light-dom-decision` — render-mode rationale audit
-42. `skills/lwc/lwc-web-components-interop`
-43. `skills/lwc/static-resources-in-lwc`
-44. `skills/lwc/lwc-css-and-styling` — SLDS hooks, --slds-c-* tokens, shadow DOM, ::part()
+25. `skills/lwc/lwc-styling-hooks` — for every `.css` file
+26. `skills/lwc/lwc-light-dom` — when JS declares `static renderMode = 'light'`
+27. `skills/lwc/lwc-shadow-vs-light-dom-decision` — render-mode rationale audit
+28. `skills/lwc/lwc-css-and-styling` — SLDS hooks, --slds-c-* tokens, shadow DOM, ::part()
 
 ### Performance, errors, debugging
-45. `skills/lwc/lwc-performance`
-46. `skills/lwc/lwc-performance-budgets`
-47. `skills/lwc/lwc-error-boundaries`
-48. `skills/lwc/common-lwc-runtime-errors`
-49. `skills/lwc/lwc-debugging-devtools` — console / logging hygiene
+29. `skills/lwc/lwc-performance` — the render-cost model behind every performance finding
+30. `skills/lwc/lwc-performance-budgets` — the thresholds that turn 'this feels heavy' into a scored finding
+31. `skills/lwc/lwc-error-boundaries` — a bundle with no `errorCallback` anywhere in the tree fails open to a blank page
+32. `skills/lwc/common-lwc-runtime-errors` — maps a suspicious code shape to the runtime error it will actually produce
+33. `skills/lwc/lwc-debugging-devtools` — console / logging hygiene
 
 ### Security
-50. `skills/lwc/lwc-security`
-51. `skills/lwc/lwc-locker-to-lws-migration` — flag stale Locker workarounds in LWS-enabled orgs
+34. `skills/lwc/lwc-security` — LWS constraints — flags code that only worked under Locker or only works with it off
+35. `skills/lwc/lwc-locker-to-lws-migration` — flag stale Locker workarounds in LWS-enabled orgs
 
 ### Testing
-52. `skills/lwc/lwc-testing`
+36. `skills/lwc/lwc-testing` — audits the bundle's own test coverage, which is part of the score
 
 ### Templates (for skeleton-alignment audit)
-53. `templates/lwc/component-skeleton/`
-54. `templates/lwc/jest.config.js`
-55. `templates/lwc/patterns/`
-56. `skills/lwc/lwc-reactive-state-patterns` — post–Spring '20 reactivity contract: when @track is needed; renderedCallback infinite-loop trap; Date/Set/Map non-reactivity
-57. `skills/lwc/lwc-console-workspace-api` — audit console-aware bundles: IsConsoleNavigation gating, ephemeral tabId hygiene, refreshTab/wire ordering, Aura-style template element usage
-58. `skills/lwc/lightning-out-2-embedding` — lightning out 2 embedding
+37. `templates/lwc/component-skeleton/`
+38. `templates/lwc/jest.config.js`
+39. `templates/lwc/patterns/`
+40. `skills/lwc/lwc-reactive-state-patterns` — post–Spring '20 reactivity contract: when @track is needed; renderedCallback infinite-loop trap; Date/Set/Map non-reactivity
 
 ---
 
@@ -377,7 +342,7 @@ Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md`.
 Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
 
 - **Canonical data surface:** this agent's declared probes + the MCP tool set. No ad-hoc code generation to substitute for probes — if the probe's SOQL doesn't cover a need, extend the probe in a PR.
-- **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
+- **No new project dependencies:** this agent does NOT run `npm install` / `pip install` in the consumer's project. Converting the canonical `markdown` / `json` deliverable to any other format is a caller-side concern — the conversion-path pointer lives in `agents/_shared/DELIVERABLE_CONTRACT.md` § See also.
 - **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only. Dimensions for this agent: `accessibility` (alt/labels/hierarchy/contrast/focus), `performance` (wire reactivity / loop cost / virtualization), `security` (innerHTML / eval / FLS), `public-api-shape` (`@api` typing + design-attribute coercion), `event-shape` (CustomEvent rules), `meta-xml-config` (`<targets>` / `<targetConfigs>` / property types), `template-idioms` (modern `lwc:if` / refs / dynamic components), `slots-and-composition`, `styling-isolation` (SLDS hooks vs piercing), `dom-mode` (shadow vs light decision), `lws-readiness`, `test-coverage`, `skeleton-alignment`. When the bundle doesn't exercise a dimension (e.g. no template files), record it in `dimensions_skipped[]` with `state: not-run`.
 
 ## Escalation / Refusal Rules

@@ -15,30 +15,22 @@ output_formats:
   - json
 dependencies:
   skills:
-    - admin/agent-output-formats
     - apex/trigger-and-flow-coexistence
     - flow/auto-launched-flow-patterns
     - flow/fault-handling
     - flow/flow-action-framework
-    - flow/flow-and-platform-events
-    - flow/flow-apex-defined-types
     - flow/flow-batch-processing-alternatives
     - flow/flow-bulkification
     - flow/flow-collection-processing
-    - flow/flow-cross-object-updates
     - flow/flow-custom-property-editors
-    - flow/flow-data-tables
     - flow/flow-debugging
     - flow/flow-decision-element-patterns
     - flow/flow-deployment-and-packaging
-    - flow/flow-dynamic-choices
     - flow/flow-element-naming-conventions
     - flow/flow-email-and-notifications
     - flow/flow-error-monitoring
-    - flow/flow-error-notification-patterns
     - flow/flow-external-services
     - flow/flow-for-experience-cloud
-    - flow/flow-for-slack
     - flow/flow-formula-and-expression-patterns
     - flow/flow-get-records-optimization
     - flow/flow-governance
@@ -48,11 +40,8 @@ dependencies:
     - flow/flow-invocable-from-apex
     - flow/flow-large-data-volume-patterns
     - flow/flow-loop-element-patterns
-    - flow/flow-migration-from-trigger
-    - flow/flow-open-a-page-action
     - flow/flow-performance-optimization
     - flow/flow-platform-events-integration
-    - flow/flow-reactive-screen-components
     - flow/flow-record-locking-and-contention
     - flow/flow-record-save-order-interaction
     - flow/flow-resource-patterns
@@ -62,22 +51,15 @@ dependencies:
     - flow/flow-screen-input-validation-patterns
     - flow/flow-screen-lwc-components
     - flow/flow-testing
-    - flow/flow-time-based-patterns
     - flow/flow-transaction-finalizer-patterns
     - flow/flow-transactional-boundaries
     - flow/flow-versioning-strategy
-    - flow/orchestration-flows
-    - flow/process-builder-to-flow-migration
     - flow/record-triggered-flow-patterns
     - flow/recursion-and-re-entry-prevention
-    - flow/scheduled-flow-not-running-debug
     - flow/scheduled-flows
     - flow/screen-flow-accessibility
-    - flow/screen-flow-choice-component-selection
-    - flow/screen-flow-radio-button-group
     - flow/screen-flows
     - flow/subflows-and-reusability
-    - flow/workflow-rule-to-flow-migration
   shared:
     - AGENT_CONTRACT.md
     - AGENT_RULES.md
@@ -120,78 +102,64 @@ Given a business requirement, designs the correct Flow: Flow type (record-trigge
 
 ## Mandatory Reads Before Starting
 
+**Why this list is broad — and why it is currently over the line (45 skill reads; target is 8–25, advisory ceiling is 40):** the agent builds every flow type from a bare requirement — record-triggered, screen, scheduled, autolaunched, plus the Platform Event and HTTP-callout variants — so a union of per-type reads is unavoidable and would exist under any decomposition. That justifies breadth; it does not justify 45. At least a dozen entries below are explicitly conditional on the input rather than mandatory (`flow-large-data-volume-patterns` only when `expected_volume == high`, `flow-action-framework` only when the flow calls an `@InvocableMethod`, `flow-rollback-patterns` only when the design uses a Rollback Records element, `flow-for-experience-cloud` only for guest-user flows), and each of those belongs to a narrower agent that owns that condition rather than to a single build-anything agent. Relocating them under another heading in this file would not fix it — `scripts/validate_repo.py` counts every numbered skill read in the file, correctly, because a read stays in the agent's path wherever it is written. The real fix is a scope split, which is a decision about the agent's boundary and not an edit to this note, so it is deferred and the `MAX_AGENT_SKILL_READS` WARN is knowingly accepted until that split is made.
+
 1. `agents/_shared/AGENT_CONTRACT.md`
 2. `AGENT_RULES.md`
-3. `skills/flow/record-triggered-flow-patterns`
-4. `skills/flow/screen-flows`
-5. `skills/flow/scheduled-flows`
-6. `skills/flow/auto-launched-flow-patterns`
-7. `skills/flow/flow-bulkification`
-8. `skills/flow/fault-handling`
-9. `skills/flow/subflows-and-reusability`
-10. `skills/flow/orchestration-flows` — if the requirement implies human steps + branching
-11. `skills/flow/flow-testing`
-12. `standards/decision-trees/automation-selection.md` — the Flow-vs-Apex-vs-Agentforce gate
-13. `templates/flow/FaultPath_Template.md`
-14. `templates/flow/Subflow_Pattern.md`
-15. `skills/flow/flow-dynamic-choices` — record/picklist/collection choice sets
-16. `skills/flow/flow-interview-debugging` — debug panel + fault path patterns
-17. `skills/flow/flow-and-platform-events` — PE publish/subscribe from Flow
-18. `skills/flow/flow-reactive-screen-components` — reactive screens (Winter '24+)
-19. `skills/flow/flow-data-tables` — Data Table screen selection
-20. `skills/flow/flow-http-callout-action` — declarative HTTP callouts
-21. `skills/flow/flow-decision-element-patterns` — default outcome, null-safe branching, ordering
-22. `skills/flow/flow-get-records-optimization` — indexed filters, loop lift, field trim
-23. `skills/flow/flow-record-save-order-interaction` — before-save vs after-save placement + recursion
-24. `skills/flow/flow-versioning-strategy` — activation, paused-interview pinning, rollback = activate prior
-25. `skills/flow/flow-apex-defined-types` — if HTTP callout / External Service / invocable returns a structured payload
-26. `skills/flow/flow-collection-processing` — assign-to-collection idiom inside loops; map-shaped outputs
-27. `skills/flow/flow-cross-object-updates` — related-record updates without spawning a second flow
-28. `skills/flow/flow-error-monitoring` — fault-path target sink (Application_Log__c, Platform Event, EmailAlert) — every emitted fault path must point at a canonical sink
-29. `skills/flow/screen-flow-accessibility` — WCAG-conformant screen flow design for any Screen Flow output
-30. `skills/flow/flow-loop-element-patterns` — collect-then-DML idiom; nested-loop and DML/SOQL-in-loop are P0; cited in Step 5 bulkification
-31. `skills/flow/flow-runtime-context-and-sharing` — System Context vs User Context; mandatory for every emitted flow's run-mode decision
-32. `skills/flow/flow-element-naming-conventions` — VerbObject element names + prefix-based variable names; cited in Step 3 element decomposition
-33. `skills/flow/flow-formula-and-expression-patterns` — NULL-safe formulas, ISPICKVAL, lazy re-evaluation cost in loops
-34. `skills/flow/flow-record-locking-and-contention` — UNABLE_TO_LOCK_ROW, child-then-parent lock chain, decouple via Platform Event / Queueable
-35. `skills/flow/flow-screen-input-validation-patterns` — component-level validationRule for any Screen Flow input
-36. `skills/flow/flow-screen-lwc-components` — when stock screen components don't suffice, the LWC contract (`lightning__FlowScreen`, `@api validate()`, FlowAttributeChangeEvent)
-37. `skills/flow/flow-deployment-and-packaging` — validate-then-quick-deploy, dependency bundling, FlowAccessPermission delivery (cited in Output Contract follow-up)
-38. `skills/flow/flow-transactional-boundaries` — what commits when (before-save vs after-save vs Async Path vs Pause); every emitted flow's commit-boundary decision must cite this
-39. `skills/flow/flow-resource-patterns` — when emitting variables / constants / formulas / templates / choice sets, pick the right resource type
-40. `skills/flow/flow-runtime-error-diagnosis` — symptom-to-cause map; cited in Process Observations when debug guidance is included
-41. `skills/flow/flow-debugging` — Debug button, fault-email diagnosis, run-as-user; emitted as a follow-up in the design doc
-42. `skills/flow/flow-large-data-volume-patterns` — if `expected_volume == high` or the entry criteria pull > 50k rows, this skill drives the volume guardrails
-43. `skills/flow/flow-performance-optimization` — before-save preference, Get-Records consolidation, lookup caching; cited in Step 5 alongside bulkification
-44. `skills/flow/flow-governor-limits-deep-dive` — per-entry-point governor budget math; cited when a single flow trips multiple limit categories
-45. `skills/flow/flow-batch-processing-alternatives` — if the design exceeds Flow's safe scale (Scheduled-Path chunking caps, async escalation to Apex Queueable/Batch)
-46. `skills/flow/flow-governance` — naming, ownership, version discipline, retirement; cited when emitting the design's lifecycle metadata
-47. `skills/flow/flow-action-framework` — Apex action element semantics (list-shaped inputs/outputs, bulk contract); cited when the flow calls an `@InvocableMethod`
-48. `skills/flow/flow-invocable-from-apex` — the Apex-side invocable contract (one-list-in / one-list-out, null handling); cited when the design recommends building an invocable
-49. `skills/flow/flow-rollback-patterns` — Flow Rollback Records element semantics + interaction with publish-after-commit Platform Events
-50. `skills/flow/flow-transaction-finalizer-patterns` — post-commit work (Platform Event finalizer, Queueable bridging) when the design needs work that survives the triggering transaction
-51. `skills/flow/flow-email-and-notifications` — Send Email / Send Custom Notification / SMS / bell-icon notification action shapes
-52. `skills/flow/flow-external-services` — External Services registration vs HTTP Callout action (cite the matching branch of `integration-pattern-selection.md`)
-53. `skills/flow/flow-platform-events-integration` — PE publisher/subscriber design (publish-after-commit vs immediate, high-volume PE) when the flow integrates via PE
-54. `skills/flow/flow-for-experience-cloud` — Experience Cloud Screen Flow constraints (guest user, LWR runtime differences) when the requirement targets a community/site
-55. `skills/flow/flow-custom-property-editors` — when a Screen Flow component needs design-time configuration (`configurationEditor`, `builderContext`, generic type mapping)
-56. `standards/decision-trees/flow-pattern-selector.md` — within-Flow pattern (record-triggered vs autolaunched + PE vs scheduled vs orchestrator vs screen)
-57. `standards/decision-trees/async-selection.md` — when the design needs async, picks `@future` / Queueable / Scheduled Path / Platform Event
-58. `standards/decision-trees/integration-pattern-selection.md` — when the flow integrates externally (HTTP Callout vs External Services vs Platform Event vs MuleSoft)
-59. `agents/_shared/REFUSAL_CODES.md` — canonical refusal codes used in the Escalation section
-60. `agents/_shared/probes/flow-references-to-field.md` — when the design touches a field that may already be referenced by other flows (blast-radius preflight)
-61. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
-62. `skills/flow/recursion-and-re-entry-prevention` — Record-triggered Flow recursion guards: state-tracking field, hash idempotency, or shared lock — not Apex static flags
-63. `skills/flow/flow-error-notification-patterns` — Flow error notification patterns
-64. `skills/flow/flow-for-slack` — Flow for slack
-65. `skills/flow/flow-migration-from-trigger` — Flow migration from trigger
-66. `skills/flow/flow-time-based-patterns` — Flow time based patterns
-67. `skills/flow/process-builder-to-flow-migration` — Process builder to flow migration
-68. `skills/flow/workflow-rule-to-flow-migration` — Workflow rule to flow migration
-69. `skills/flow/scheduled-flow-not-running-debug` — scheduled flow not running debug
-70. `skills/flow/screen-flow-radio-button-group` — screen flow radio button group
-71. `skills/flow/screen-flow-choice-component-selection` — screen flow choice component selection
-72. `skills/flow/flow-open-a-page-action` — flow open a page action
+3. `skills/flow/record-triggered-flow-patterns` — the default flow type; before-save vs after-save and entry criteria are the first two decisions of every build
+4. `skills/flow/screen-flows` — screen element vocabulary and navigation model for any user-facing build
+5. `skills/flow/scheduled-flows` — schedule granularity and batch semantics — the constraints that decide whether a scheduled flow is viable at all
+6. `skills/flow/auto-launched-flow-patterns` — the subflow / invocable-callable shape, including what it may not contain
+7. `skills/flow/flow-bulkification` — an unbulkified element inside a loop is the single most common Flow defect this agent must not emit
+8. `skills/flow/fault-handling` — every emitted element that can fail needs a fault path; `templates/flow/FaultPath_Template.md` is the shape
+9. `skills/flow/subflows-and-reusability` — when the requirement should become a subflow rather than another branch in an already-large flow
+10. `skills/flow/flow-testing` — the Flow Test coverage shipped with the build, not left as a follow-up
+11. `standards/decision-trees/automation-selection.md` — the Flow-vs-Apex-vs-Agentforce gate
+12. `templates/flow/FaultPath_Template.md`
+13. `templates/flow/Subflow_Pattern.md`
+14. `skills/flow/flow-interview-debugging` — debug panel + fault path patterns
+15. `skills/flow/flow-http-callout-action` — declarative HTTP callouts
+16. `skills/flow/flow-decision-element-patterns` — default outcome, null-safe branching, ordering
+17. `skills/flow/flow-get-records-optimization` — indexed filters, loop lift, field trim
+18. `skills/flow/flow-record-save-order-interaction` — before-save vs after-save placement + recursion
+19. `skills/flow/flow-versioning-strategy` — activation, paused-interview pinning, rollback = activate prior
+20. `skills/flow/flow-collection-processing` — assign-to-collection idiom inside loops; map-shaped outputs
+21. `skills/flow/flow-error-monitoring` — fault-path target sink (Application_Log__c, Platform Event, EmailAlert) — every emitted fault path must point at a canonical sink
+22. `skills/flow/screen-flow-accessibility` — WCAG-conformant screen flow design for any Screen Flow output
+23. `skills/flow/flow-loop-element-patterns` — collect-then-DML idiom; nested-loop and DML/SOQL-in-loop are P0; cited in Step 5 bulkification
+24. `skills/flow/flow-runtime-context-and-sharing` — System Context vs User Context; mandatory for every emitted flow's run-mode decision
+25. `skills/flow/flow-element-naming-conventions` — VerbObject element names + prefix-based variable names; cited in Step 3 element decomposition
+26. `skills/flow/flow-formula-and-expression-patterns` — NULL-safe formulas, ISPICKVAL, lazy re-evaluation cost in loops
+27. `skills/flow/flow-record-locking-and-contention` — UNABLE_TO_LOCK_ROW, child-then-parent lock chain, decouple via Platform Event / Queueable
+28. `skills/flow/flow-screen-input-validation-patterns` — component-level validationRule for any Screen Flow input
+29. `skills/flow/flow-screen-lwc-components` — when stock screen components don't suffice, the LWC contract (`lightning__FlowScreen`, `@api validate()`, FlowAttributeChangeEvent)
+30. `skills/flow/flow-deployment-and-packaging` — validate-then-quick-deploy, dependency bundling, FlowAccessPermission delivery (cited in Output Contract follow-up)
+31. `skills/flow/flow-transactional-boundaries` — what commits when (before-save vs after-save vs Async Path vs Pause); every emitted flow's commit-boundary decision must cite this
+32. `skills/flow/flow-resource-patterns` — when emitting variables / constants / formulas / templates / choice sets, pick the right resource type
+33. `skills/flow/flow-runtime-error-diagnosis` — symptom-to-cause map; cited in Process Observations when debug guidance is included
+34. `skills/flow/flow-debugging` — Debug button, fault-email diagnosis, run-as-user; emitted as a follow-up in the design doc
+35. `skills/flow/flow-large-data-volume-patterns` — if `expected_volume == high` or the entry criteria pull > 50k rows, this skill drives the volume guardrails
+36. `skills/flow/flow-performance-optimization` — before-save preference, Get-Records consolidation, lookup caching; cited in Step 5 alongside bulkification
+37. `skills/flow/flow-governor-limits-deep-dive` — per-entry-point governor budget math; cited when a single flow trips multiple limit categories
+38. `skills/flow/flow-batch-processing-alternatives` — if the design exceeds Flow's safe scale (Scheduled-Path chunking caps, async escalation to Apex Queueable/Batch)
+39. `skills/flow/flow-action-framework` — Apex action element semantics (list-shaped inputs/outputs, bulk contract); cited when the flow calls an `@InvocableMethod`
+40. `skills/flow/flow-external-services` — External Services registration vs HTTP Callout action (cite the matching branch of `integration-pattern-selection.md`)
+41. `skills/flow/flow-platform-events-integration` — PE publisher/subscriber design (publish-after-commit vs immediate, high-volume PE) when the flow integrates via PE
+42. `standards/decision-trees/flow-pattern-selector.md` — within-Flow pattern (record-triggered vs autolaunched + PE vs scheduled vs orchestrator vs screen)
+43. `standards/decision-trees/async-selection.md` — when the design needs async, picks `@future` / Queueable / Scheduled Path / Platform Event
+44. `standards/decision-trees/integration-pattern-selection.md` — when the flow integrates externally (HTTP Callout vs External Services vs Platform Event vs MuleSoft)
+45. `agents/_shared/REFUSAL_CODES.md` — canonical refusal codes used in the Escalation section
+46. `agents/_shared/probes/flow-references-to-field.md` — when the design touches a field that may already be referenced by other flows (blast-radius preflight)
+47. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+48. `skills/flow/recursion-and-re-entry-prevention` — Record-triggered Flow recursion guards: state-tracking field, hash idempotency, or shared lock — not Apex static flags
+49. `skills/flow/flow-transaction-finalizer-patterns` — Step 5.5: post-commit work that must survive the triggering transaction — notifications-after-success, audit trails, callouts
+50. `skills/flow/flow-rollback-patterns` — Step 5.5: partial-commit pitfalls and PE-publish interaction when the design includes a Rollback Records element
+51. `skills/flow/flow-governance` — Step 7's lifecycle block — owner, status, retirement criteria; without it the emitted design has no owner
+52. `skills/flow/flow-email-and-notifications` — Step 7: Send Email / Send Custom Notification / SMS / Slack action shapes and their silent-failure modes
+53. `skills/flow/flow-invocable-from-apex` — Step 7's Apex-action contract, Apex side — one-list-in / one-list-out, and what breaks when it is violated
+54. `skills/flow/flow-custom-property-editors` — Step 7: a custom Flow screen LWC that needs design-time configuration requires a CPE, which changes the build estimate
+55. `skills/flow/flow-for-experience-cloud` — REFUSAL_SECURITY_GUARD: Experience Cloud guest-user flows have different sharing and component constraints
+56. `skills/apex/trigger-and-flow-coexistence` — Steps 0 and 2 flag TRIGGER_AND_FLOW_COEXIST on the same timing context — order-of-execution risk the design must state
 
 ---
 
@@ -356,7 +324,7 @@ Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md`.
 Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
 
 - **Canonical data surface:** this agent's declared probes + the MCP tool set. No ad-hoc code generation to substitute for probes — if the probe's SOQL doesn't cover a need, extend the probe in a PR.
-- **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
+- **No new project dependencies:** this agent does NOT run `npm install` / `pip install` in the consumer's project. Converting the canonical `markdown` / `json` deliverable to any other format is a caller-side concern — the conversion-path pointer lives in `agents/_shared/DELIVERABLE_CONTRACT.md` § See also.
 - **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only.
 
 ## Escalation / Refusal Rules

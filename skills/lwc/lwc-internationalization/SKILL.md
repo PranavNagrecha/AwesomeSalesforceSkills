@@ -20,9 +20,9 @@ inputs:
 outputs:
   - "component using custom labels + locale-aware components"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-01
 ---
 
 # LWC Internationalization
@@ -46,7 +46,7 @@ Any LWC used in an org with multiple active locales.
 
 ## Key Considerations
 
-- Custom Labels have a 255-char limit — long paragraphs need Custom Metadata or content service.
+- Custom Labels hold up to 1,000 characters, 5,000 per org (managed-package labels don't count). The often-quoted 255 is a text-field limit, not this one — don't reach for Custom Metadata for a paragraph that fits, because only labels get Translation Workbench.
 - Pluralization is not built-in; template a simple singular/plural Custom Label pair.
 - Date formatting differences (US vs EU) silently cause misread reports.
 - RTL testing reveals icon/chevron directionality bugs.
@@ -59,7 +59,7 @@ Any LWC used in an org with multiple active locales.
 ## Common Gotchas (see `references/gotchas.md`)
 
 - **String concat dates** — 'MM/DD/YYYY' reads as DD/MM in EU.
-- **Label over 255 chars** — Deploy fails.
+- **Label over 1,000 chars** — Deploy fails.
 - **RTL icon mirroring** — Chevron points wrong way.
 
 ## Top LLM Anti-Patterns (full list in `references/llm-anti-patterns.md`)
@@ -71,6 +71,7 @@ Any LWC used in an org with multiple active locales.
 ## Official Sources Used
 
 - Lightning Web Components Developer Guide — https://developer.salesforce.com/docs/platform/lwc/guide/
+- Custom Labels (up to 5,000 per org, 1,000 characters each) — https://help.salesforce.com/s/articleView?id=platform.cl_about.htm&type=5
 - Lightning Data Service — https://developer.salesforce.com/docs/platform/lwc/guide/data-wire-service-about.html
 - LWC Recipes — https://github.com/trailheadapps/lwc-recipes
 - SLDS 2 — https://www.lightningdesignsystem.com/2e/

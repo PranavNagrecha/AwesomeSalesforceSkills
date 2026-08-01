@@ -21,27 +21,27 @@ inputs:
 outputs:
   - "component with appropriate upload strategy + server-side Apex"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-01
 ---
 
 # LWC File Upload Patterns
 
-LWC file upload has three tiers: (1) `<lightning-file-upload>` for ≤2GB files associated with a record; (2) custom input + fetch for more control; (3) chunked upload for very large files using ContentVersion.VersionData. This skill picks the right tier and shows the minimal implementation.
+LWC file upload has three tiers: (1) `<lightning-file-upload>` for files within the documented component maximum of 10 GB, associated with a record; (2) custom input + fetch for more control; (3) chunked upload for very large files using ContentVersion.VersionData. This skill picks the right tier and shows the minimal implementation.
 
 ## Adoption Signals
 
 Any file intake UI. Choose tier by max size, auth model, and UX requirements.
 
-- `lightning-file-upload` when files are <2 GB and the user already has CRUD on the parent record.
+- `lightning-file-upload` when the component's ceiling covers your files and the user already has CRUD on the parent record. The ceiling depends on the surface: 10 GB documented maximum, but 128 MB in an Experience Builder site on a `my.site.com` URL and 500 MB on a custom domain.
 - Chunked upload via Apex when files exceed the platform single-call limit and progress feedback matters.
 
 ## Recommended Workflow
 
-1. Start with `<lightning-file-upload record-id="…">` if files are ≤2GB and tied to one record.
+1. Start with `<lightning-file-upload record-id="…">` if the component ceiling for your surface (10 GB standard; 128 MB / 500 MB on Experience sites) covers the files and they are tied to one record.
 2. For custom flows: `<input type="file" @change=...>` → FileReader → POST to @AuraEnabled Apex with base64.
-3. For files >12MB via Apex: chunk at 4.5MB and assemble ContentVersion with multiple ContentBody chunks via server-side concat.
+3. When the Apex path is required, append chunks to one ContentVersion. Size the chunk from the heap limit (6 MB sync / 12 MB async, and base64 is ~4/3 of the bytes it encodes), confirmed with `Limits.getHeapSize()` — there is no documented fixed chunk size, so do not copy one from a blog post.
 4. Always validate MIME type client-side AND server-side.
 5. Enforce size caps in Apex; don't trust client.
 
@@ -72,6 +72,8 @@ Any file intake UI. Choose tier by max size, auth model, and UX requirements.
 ## Official Sources Used
 
 - Lightning Web Components Developer Guide — https://developer.salesforce.com/docs/platform/lwc/guide/
+- lightning-file-upload (10 GB maximum; 128 MB / 500 MB Experience Builder site limits) — https://developer.salesforce.com/docs/platform/lightning-component-reference/guide/lightning-file-upload.html
+- Apex Governor Limits (heap: 6 MB synchronous / 12 MB asynchronous) — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm
 - Lightning Data Service — https://developer.salesforce.com/docs/platform/lwc/guide/data-wire-service-about.html
 - LWC Recipes — https://github.com/trailheadapps/lwc-recipes
 - SLDS 2 — https://www.lightningdesignsystem.com/2e/

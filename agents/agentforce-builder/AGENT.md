@@ -14,55 +14,25 @@ output_formats:
   - json
 dependencies:
   skills:
-    - admin/agent-conversation-design
-    - admin/agent-output-formats
-    - admin/ai-adoption-change-management
-    - admin/ai-ethics-and-governance-requirements
-    - admin/data-cloud-calculated-insights
-    - admin/data-cloud-identity-resolution
-    - admin/data-cloud-provisioning
-    - admin/data-cloud-segmentation
-    - admin/einstein-activity-capture-setup
-    - admin/einstein-analytics-basics
+    - agentforce/agent-action-error-handling
     - agentforce/agent-action-input-slot-extraction
     - agentforce/agent-actions
-    - agentforce/agent-channel-deployment
-    - agentforce/agent-script-dsl
     - agentforce/agent-topic-design
     - agentforce/agentforce-agent-creation
-    - agentforce/agentforce-agent-handoff-patterns
-    - agentforce/agentforce-cost-optimization
-    - agentforce/agentforce-custom-channel-dev
-    - agentforce/agentforce-custom-lightning-types
     - agentforce/agentforce-eval-harness
-    - agentforce/agentforce-in-slack
-    - agentforce/agentforce-multi-turn-patterns
+    - agentforce/agentforce-guardrails
     - agentforce/agentforce-pii-redaction
     - agentforce/agentforce-production-readiness-checklist
-    - agentforce/agentforce-prompt-versioning
-    - agentforce/agentforce-sales-ai-setup
-    - agentforce/agentforce-service-ai-setup
     - agentforce/agentforce-testing-strategy
-    - agentforce/agentforce-tool-use-patterns
     - agentforce/custom-agent-actions-apex
     - agentforce/data-cloud-grounding-for-agentforce
-    - agentforce/data-cloud-vector-search-dev
-    - agentforce/einstein-bots-to-agentforce-migration
-    - agentforce/einstein-copilot-for-sales
-    - agentforce/einstein-copilot-for-service
-    - agentforce/einstein-discovery-development
-    - agentforce/einstein-next-best-action
-    - agentforce/einstein-prediction-builder
-    - agentforce/einstein-search-personalization
     - agentforce/einstein-trust-layer
-    - agentforce/employee-hr-service-agent-rollout
-    - agentforce/mcp-tool-definition-apex
-    - agentforce/model-builder-and-byollm
     - agentforce/prompt-builder-templates
+    - agentforce/prompt-injection-defense
     - agentforce/rag-patterns-in-salesforce
-    - agentforce/sales-coach-agent-rollout
-    - agentforce/salesforce-mcp-server-setup
-    - agentforce/sf-to-llm-data-pipelines
+    - apex/apex-security-patterns
+    - apex/invocable-methods
+    - apex/test-class-standards
   shared:
     - AGENT_CONTRACT.md
     - DELIVERABLE_CONTRACT.md
@@ -91,60 +61,42 @@ Takes a requirements statement — what the agent action should do, for whom, on
 
 ## Mandatory Reads Before Starting
 
+### Contract layer
 1. `agents/_shared/AGENT_CONTRACT.md`
-2. `skills/agentforce/agent-actions/SKILL.md` (or closest via `search_skill`)
-3. `skills/agentforce/agent-topic-design/SKILL.md`
-4. `skills/agentforce/einstein-trust-layer/SKILL.md`
-5. `templates/agentforce/AgentActionSkeleton.cls`
-6. `templates/agentforce/AgentTopic_Template.md`
-7. `templates/agentforce/AgentSkeleton.json`
-8. `evals/framework.md`
-9. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
-10. `skills/agentforce/agent-action-input-slot-extraction` — tune invocable input descriptions for slot extraction quality
-11. `skills/admin/agent-conversation-design` — Agent conversation design
-12. `skills/admin/ai-adoption-change-management` — Ai adoption change management
-13. `skills/admin/ai-ethics-and-governance-requirements` — Ai ethics and governance requirements
-14. `skills/admin/data-cloud-calculated-insights` — Data cloud calculated insights
-15. `skills/admin/data-cloud-identity-resolution` — Data cloud identity resolution
-16. `skills/admin/data-cloud-provisioning` — Data cloud provisioning
-17. `skills/admin/data-cloud-segmentation` — Data cloud segmentation
-18. `skills/admin/einstein-activity-capture-setup` — Einstein activity capture setup
-19. `skills/admin/einstein-analytics-basics` — Einstein analytics basics
-20. `skills/agentforce/agent-channel-deployment` — Agent channel deployment
-21. `skills/agentforce/agent-script-dsl` — Agent script dsl
-22. `skills/agentforce/agentforce-agent-creation` — Agentforce agent creation
-23. `skills/agentforce/agentforce-agent-handoff-patterns` — Agentforce agent handoff patterns
-24. `skills/agentforce/agentforce-cost-optimization` — Agentforce cost optimization
-25. `skills/agentforce/agentforce-custom-channel-dev` — Agentforce custom channel dev
-26. `skills/agentforce/agentforce-eval-harness` — Agentforce eval harness
-27. `skills/agentforce/agentforce-in-slack` — Agentforce in slack
-28. `skills/agentforce/agentforce-multi-turn-patterns` — Agentforce multi turn patterns
-29. `skills/agentforce/agentforce-pii-redaction` — Agentforce pii redaction
-30. `skills/agentforce/agentforce-prompt-versioning` — Agentforce prompt versioning
-31. `skills/agentforce/agentforce-sales-ai-setup` — Agentforce sales ai setup
-32. `skills/agentforce/agentforce-service-ai-setup` — Agentforce service ai setup
-33. `skills/agentforce/agentforce-testing-strategy` — Agentforce testing strategy
-34. `skills/agentforce/agentforce-tool-use-patterns` — Agentforce tool use patterns
-35. `skills/agentforce/custom-agent-actions-apex` — Custom agent actions apex
-36. `skills/agentforce/data-cloud-grounding-for-agentforce` — Data cloud grounding for agentforce
-37. `skills/agentforce/data-cloud-vector-search-dev` — Data cloud vector search dev
-38. `skills/agentforce/einstein-bots-to-agentforce-migration` — Einstein bots to agentforce migration
-39. `skills/agentforce/einstein-copilot-for-sales` — Einstein copilot for sales
-40. `skills/agentforce/einstein-copilot-for-service` — Einstein copilot for service
-41. `skills/agentforce/einstein-discovery-development` — Einstein discovery development
-42. `skills/agentforce/einstein-next-best-action` — Einstein next best action
-43. `skills/agentforce/einstein-prediction-builder` — Einstein prediction builder
-44. `skills/agentforce/einstein-search-personalization` — Einstein search personalization
-45. `skills/agentforce/mcp-tool-definition-apex` — Mcp tool definition apex
-46. `skills/agentforce/model-builder-and-byollm` — Model builder and byollm
-47. `skills/agentforce/prompt-builder-templates` — Prompt builder templates
-48. `skills/agentforce/rag-patterns-in-salesforce` — Rag patterns in salesforce
-49. `skills/agentforce/salesforce-mcp-server-setup` — Salesforce mcp server setup
-50. `skills/agentforce/sf-to-llm-data-pipelines` — Sf to llm data pipelines
-51. `skills/agentforce/agentforce-production-readiness-checklist` — agentforce production readiness checklist
-52. `skills/agentforce/sales-coach-agent-rollout` — sales coach agent rollout
-53. `skills/agentforce/employee-hr-service-agent-rollout` — employee hr service agent rollout
-54. `skills/agentforce/agentforce-custom-lightning-types` — agentforce custom lightning types
+2. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+
+### Action, topic & agent authoring (Steps 1–4)
+3. `skills/agentforce/agent-actions` — the action contract Step 2 emits against — input/output slots, idempotency, what an action may not do
+4. `skills/agentforce/agent-topic-design` — Step 3's classifier prompt and scope boundary; a topic with a vague classifier routes the wrong action at runtime
+5. `skills/agentforce/agentforce-agent-creation` — the agent definition Step 4 fills in — how topics, actions and channels actually bind
+6. `skills/agentforce/custom-agent-actions-apex` — `@InvocableMethod` shape for an agent action: List-in / List-out, `callout=true` only when it really calls out
+7. `skills/agentforce/agent-action-input-slot-extraction` — tune invocable input descriptions for slot extraction quality — the label text is the thing the LLM actually reads
+8. `skills/agentforce/agent-action-error-handling` — Step 2 requires a user-readable error, never a stack trace; this is the pattern for turning an exception into one
+9. `skills/agentforce/prompt-builder-templates` — grounding-source syntax for the topic's declared sObject and fields
+
+### Trust, grounding & guardrails
+10. `skills/agentforce/einstein-trust-layer` — why Step 1 forces a confirmation step on write actions, and what masking the Trust Layer does and does not do for you
+11. `skills/agentforce/agentforce-guardrails` — turns each `trust_constraints` entry into an enforceable scope-boundary line rather than a comment
+12. `skills/agentforce/agentforce-pii-redaction` — the concrete mechanism behind `no-pii-in-prompt` / `mask-email` constraints
+13. `skills/agentforce/prompt-injection-defense` — grounded record data is untrusted input; a retrieval action that concatenates it into the prompt is exploitable
+14. `skills/agentforce/rag-patterns-in-salesforce` — retrieval shape for read-only actions — what to ground on and how much
+15. `skills/agentforce/data-cloud-grounding-for-agentforce` — when the grounding source is Data Cloud rather than an sObject, the retrieval and permission model both change
+
+### Apex quality of the emitted action
+16. `skills/apex/invocable-methods` — the bulk semantics Step 5's `invoke-with-200-parents` test asserts
+17. `skills/apex/apex-security-patterns` — Step 2 requires `with sharing` / `USER_MODE` and `SecurityUtils`-guarded DML on every emitted path
+18. `skills/apex/test-class-standards` — Step 5's test class is held to the same bar as any other Apex; agent actions are not exempt
+
+### Testing, evaluation & readiness (Steps 5–6)
+19. `skills/agentforce/agentforce-testing-strategy` — what is worth asserting about a non-deterministic action, beyond the four named Apex cases
+20. `skills/agentforce/agentforce-eval-harness` — the golden-eval file Step 6 emits — case shape, assertions, rubric
+21. `skills/agentforce/agentforce-production-readiness-checklist` — the gap list between a scaffold and something that can face a customer; belongs in the output, not discovered later
+
+### Templates & eval framework
+22. `templates/agentforce/AgentActionSkeleton.cls`
+23. `templates/agentforce/AgentTopic_Template.md`
+24. `templates/agentforce/AgentSkeleton.json`
+25. `evals/framework.md`
 
 ---
 
@@ -251,7 +203,7 @@ Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md`.
 Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
 
 - **Canonical data surface:** this agent's declared probes + the MCP tool set. No ad-hoc code generation to substitute for probes — if the probe's SOQL doesn't cover a need, extend the probe in a PR.
-- **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
+- **No new project dependencies:** this agent does NOT run `npm install` / `pip install` in the consumer's project. Converting the canonical `markdown` / `json` deliverable to any other format is a caller-side concern — the conversion-path pointer lives in `agents/_shared/DELIVERABLE_CONTRACT.md` § See also.
 - **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only.
 
 ## Escalation / Refusal Rules

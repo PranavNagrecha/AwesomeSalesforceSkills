@@ -21,9 +21,9 @@ outputs:
   - "IP design with queued steps + error handling"
 dependencies: []
 runtime_orphan: true
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-08-01
 ---
 
 # OmniStudio Asynchronous Data Operations
@@ -47,7 +47,7 @@ Multi-system orchestrations >5s or bulk data transformations driven from an Omni
 
 ## Key Considerations
 
-- IPs sync limit: 120s overall, 10s per HTTP callout.
+- The "120s overall, 10s per callout" figures are **Apex callout limits**, not OmniStudio settings — they bind an IP because its HTTP action runs in an Apex transaction. Default is 10s per callout (settable from 1 ms to 120,000 ms), with 120s cumulative across all callouts in the transaction. There is no OmniStudio screen for either.
 - Cache responses where safe (cache-enabled IP) to reduce backend load.
 - Parallel Remote Actions reduce wall-clock; IP supports Send/Response parallel.
 - Don't put heavy transforms in DataRaptor — use Apex Action for perf-sensitive paths.
@@ -59,7 +59,7 @@ Multi-system orchestrations >5s or bulk data transformations driven from an Omni
 
 ## Common Gotchas (see `references/gotchas.md`)
 
-- **Sync >120s kill** — Whole IP aborts.
+- **Cumulative callout timeout exceeded** — the Apex 120s per-transaction ceiling aborts the whole IP.
 - **Cache stale** — Users see old data.
 - **No error branch** — Silent failure to user.
 
@@ -72,5 +72,6 @@ Multi-system orchestrations >5s or bulk data transformations driven from an Omni
 ## Official Sources Used
 
 - OmniStudio Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer.meta/omnistudio_developer/
+- Callout Limits and Limitations (10s default / 120,000 ms maximum per callout, 120s cumulative per transaction) — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts_timeouts.htm
 - OmniStudio for Salesforce — https://help.salesforce.com/s/articleView?id=sf.os_omnistudio_for_salesforce_overview.htm
 - OmniScript to LWC OSS — https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer.meta/omnistudio_developer/os_migrate_from_vf_to_lwc.htm

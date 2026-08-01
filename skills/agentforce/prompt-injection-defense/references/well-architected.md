@@ -1,12 +1,23 @@
 # Well-Architected Notes — Prompt Injection Defense
 
-**Security:** Prompt injection is the LLM equivalent of SQL injection — the mitigation is separating data from instructions at every boundary (channel, grounding, tool-use).
+**Security:** prompt injection is an authorization problem wearing a language-model
+costume. The durable mitigation is that no action trusts a value the model produced:
+every action re-establishes its own facts under the running user's access, and topic
+instructions are treated as a way to reduce attempt frequency rather than as a control.
 
-**Reliability:** A well-tested adversarial suite converts subjective 'agent feels secure' reviews into a pass/fail regression gate.
+**Reliability:** a committed adversarial suite, run under the agent's real run-as
+identity, converts "the agent feels safe" into a pass/fail gate that survives the next
+topic edit. Without it, guardrails decay silently because agent behaviour is not
+deterministic.
 
 ## Official Sources Used
 
-- Agentforce Developer Guide — https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html
-- Einstein Trust Layer — https://help.salesforce.com/s/articleView?id=sf.generative_ai_trust_layer.htm
-- Invocable Actions (Apex) — https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_invocable_action.htm
-- Agentforce Testing Center — https://help.salesforce.com/s/articleView?id=sf.agentforce_testing_center.htm
+- Enforcing Object and Field Permissions in Apex (WITH USER_MODE, stripInaccessible) — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_perms_enforcing.htm
+- Einstein Trust Layer — masking and toxicity filtering boundaries — https://help.salesforce.com/s/articleView?id=sf.generative_ai_trust_layer.htm
+- Agentforce Testing Center — running a committed adversarial suite — https://help.salesforce.com/s/articleView?id=sf.agentforce_testing_center.htm
+- Agentforce Developer Guide — topics, actions and grounding — https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html
+- InvocableMethod annotation — the Request/Response contract an action must honour — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableMethod.htm
+
+Threat taxonomy referenced by name only: OWASP Top 10 for LLM Applications, LLM01
+(Prompt Injection). It is not a Salesforce source and is not authoritative for platform
+behaviour.

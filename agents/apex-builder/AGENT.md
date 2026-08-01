@@ -14,150 +14,36 @@ output_formats:
   - json
 dependencies:
   skills:
-    - admin/agent-output-formats
-    - apex/ai-model-integration-apex
-    - apex/ampscript-development
-    - apex/apex-aggregate-queries
-    - apex/apex-batch-chaining
-    - apex/apex-blob-and-content-version
-    - apex/apex-callable-interface
-    - apex/apex-callout-retry-and-resilience
     - apex/apex-class-decomposition-pattern
     - apex/apex-collections-patterns
-    - apex/apex-connect-api-chatter
     - apex/apex-cpu-and-heap-optimization
-    - apex/apex-custom-notifications-from-apex
-    - apex/apex-custom-permissions-check
-    - apex/apex-custom-settings-hierarchy
-    - apex/apex-decimal-arithmetic-precision
     - apex/apex-design-patterns
     - apex/apex-dml-patterns
     - apex/apex-dynamic-soql-binding-safety
-    - apex/apex-email-services
-    - apex/apex-encoding-and-crypto
-    - apex/apex-enum-patterns
-    - apex/apex-event-bus-subscriber
-    - apex/apex-execute-anonymous
-    - apex/apex-flow-invocation-from-apex
-    - apex/apex-future-method-patterns
-    - apex/apex-hardcoded-id-elimination
-    - apex/apex-http-callout-mocking
-    - apex/apex-json-serialization
-    - apex/apex-jwt-bearer-flow
-    - apex/apex-limits-monitoring
-    - apex/apex-managed-sharing
-    - apex/apex-metadata-api
     - apex/apex-mocking-and-stubs
     - apex/apex-named-credentials-patterns
-    - apex/apex-outbound-email-patterns
-    - apex/apex-polymorphic-soql
     - apex/apex-queueable-patterns
-    - apex/apex-record-clone-patterns
-    - apex/apex-regex-and-pattern-matching
     - apex/apex-rest-services
-    - apex/apex-salesforce-id-patterns
-    - apex/apex-savepoint-and-rollback
-    - apex/apex-scheduled-jobs
-    - apex/apex-schema-describe
-    - apex/apex-secrets-and-protected-cmdt
     - apex/apex-security-patterns
-    - apex/apex-soql-relationship-queries
-    - apex/apex-string-and-regex
     - apex/apex-stripinaccessible-and-fls-enforcement
-    - apex/apex-switch-on-sobject
-    - apex/apex-system-runas
     - apex/apex-test-setup-patterns
-    - apex/apex-transaction-finalizers
-    - apex/apex-trigger-bypass-and-killswitch-patterns
-    - apex/apex-trigger-context-variables
-    - apex/apex-user-and-permission-checks
     - apex/apex-with-without-sharing-decision
-    - apex/apex-wrapper-class-patterns
-    - apex/apex-wsdl2apex-patterns
     - apex/async-apex
     - apex/batch-apex-patterns
-    - apex/billing-integration-apex
-    - apex/callout-and-dml-transaction-boundaries
     - apex/callouts-and-http-integrations
-    - apex/change-data-capture-apex
-    - apex/clinical-decision-support
-    - apex/commerce-extension-points
-    - apex/commerce-order-api
-    - apex/commerce-payment-integration
-    - apex/commerce-search-customization
-    - apex/common-apex-runtime-errors
-    - apex/continuation-callouts
-    - apex/cpq-apex-plugins
-    - apex/cpq-api-and-automation
-    - apex/cpq-custom-actions
-    - apex/cti-adapter-development
-    - apex/custom-iterators-and-iterables
-    - apex/custom-logging-and-monitoring
-    - apex/custom-metadata-in-apex
-    - apex/debug-and-logging
-    - apex/debug-logs-and-developer-console
-    - apex/dynamic-apex
-    - apex/einstein-activity-capture-api
     - apex/error-handling-framework
-    - apex/exception-handling
-    - apex/feature-flags-and-kill-switches
-    - apex/fhir-integration-patterns
-    - apex/field-level-security-in-async-contexts
-    - apex/fsc-apex-extensions
-    - apex/fsc-compliant-sharing-api
-    - apex/fsc-document-generation
-    - apex/fsc-financial-calculations
-    - apex/fsc-integration-patterns-dev
-    - apex/fsl-apex-extensions
-    - apex/fsl-custom-actions-mobile
-    - apex/fsl-mobile-app-extensions
-    - apex/fsl-scheduling-api
-    - apex/fsl-service-report-templates
-    - apex/governor-limit-recovery-patterns
     - apex/governor-limits
-    - apex/headless-commerce-api
-    - apex/health-cloud-apex-extensions
-    - apex/health-cloud-apis
-    - apex/health-cloud-lwc-components
     - apex/invocable-methods
-    - apex/long-running-process-orchestration
-    - apex/marketing-cloud-api
-    - apex/marketing-cloud-custom-activities
-    - apex/marketing-cloud-data-views
-    - apex/mcae-pardot-api
-    - apex/metadata-api-and-package-xml
     - apex/mixed-dml-and-setup-objects
-    - apex/npsp-api-and-integration
-    - apex/npsp-custom-rollups
-    - apex/omni-channel-custom-routing
     - apex/order-of-execution-deep-dive
-    - apex/pdf-generation-patterns
-    - apex/platform-cache
     - apex/platform-events-apex
-    - apex/quote-pdf-customization
-    - apex/record-locking-and-contention
     - apex/recursive-trigger-prevention
-    - apex/sales-engagement-api
-    - apex/salesforce-debug-log-analysis
-    - apex/scheduled-apex-failure-detection-and-monitoring
-    - apex/service-cloud-rest-api
-    - apex/sf-cli-and-sfdx-essentials
-    - apex/soql-format-function-localization
     - apex/soql-fundamentals
-    - apex/soql-object-limits-and-restrictions
-    - apex/soql-outer-join-null-semantics
     - apex/soql-security
-    - apex/soql-using-scope-clause
-    - apex/ssjs-server-side-javascript
-    - apex/territory-api-and-assignment
     - apex/test-class-standards
     - apex/test-data-factory-patterns
-    - apex/timezone-and-datetime-pitfalls
     - apex/trigger-and-flow-coexistence
     - apex/trigger-framework
-    - devops/development-documentation-standards
-    - integration/dataweave-for-apex
-    - integration/platform-event-schema-evolution
   shared:
     - AGENT_CONTRACT.md
     - DELIVERABLE_CONTRACT.md
@@ -202,193 +88,79 @@ Produces Apex scaffolds for every canonical Apex surface: trigger + handler, ser
 
 ## Mandatory Reads Before Starting
 
-2. `skills/apex/ai-model-integration-apex` — Ai model integration apex
-3. `skills/apex/ampscript-development` — Ampscript development
-4. `skills/apex/apex-event-bus-subscriber` — Apex event bus subscriber
-5. `skills/apex/apex-metadata-api` — Apex metadata api
-6. `skills/apex/apex-record-clone-patterns` — Apex record clone patterns
-7. `skills/apex/apex-string-and-regex` — Apex string and regex
-8. `skills/apex/apex-switch-on-sobject` — Apex switch on sobject
-9. `skills/apex/billing-integration-apex` — Billing integration apex
-10. `skills/apex/clinical-decision-support` — Clinical decision support
-11. `skills/apex/commerce-extension-points` — Commerce extension points
-12. `skills/apex/commerce-order-api` — Commerce order api
-13. `skills/apex/commerce-payment-integration` — Commerce payment integration
-14. `skills/apex/commerce-search-customization` — Commerce search customization
-15. `skills/apex/cpq-apex-plugins` — Cpq apex plugins
-16. `skills/apex/cpq-api-and-automation` — Cpq api and automation
-17. `skills/apex/cpq-custom-actions` — Cpq custom actions
-18. `skills/apex/cti-adapter-development` — Cti adapter development
-19. `skills/apex/debug-and-logging` — Debug and logging
-20. `skills/apex/debug-logs-and-developer-console` — Debug logs and developer console
-21. `skills/apex/einstein-activity-capture-api` — Einstein activity capture api
-22. `skills/apex/fhir-integration-patterns` — Fhir integration patterns
-23. `skills/apex/fsc-apex-extensions` — Fsc apex extensions
-24. `skills/apex/fsc-compliant-sharing-api` — Fsc compliant sharing api
-25. `skills/apex/fsc-document-generation` — Fsc document generation
-26. `skills/apex/fsc-financial-calculations` — Fsc financial calculations
-27. `skills/apex/fsc-integration-patterns-dev` — Fsc integration patterns dev
-28. `skills/apex/fsl-apex-extensions` — Fsl apex extensions
-29. `skills/apex/fsl-custom-actions-mobile` — Fsl custom actions mobile
-30. `skills/apex/fsl-mobile-app-extensions` — Fsl mobile app extensions
-31. `skills/apex/fsl-scheduling-api` — Fsl scheduling api
-32. `skills/apex/fsl-service-report-templates` — Fsl service report templates
-33. `skills/apex/headless-commerce-api` — Headless commerce api
-34. `skills/apex/health-cloud-apex-extensions` — Health cloud apex extensions
-35. `skills/apex/health-cloud-apis` — Health cloud apis
-36. `skills/apex/health-cloud-lwc-components` — Health cloud lwc components
-37. `skills/apex/long-running-process-orchestration` — Long running process orchestration
-38. `skills/apex/marketing-cloud-api` — Marketing cloud api
-39. `skills/apex/marketing-cloud-custom-activities` — Marketing cloud custom activities
-40. `skills/apex/marketing-cloud-data-views` — Marketing cloud data views
-41. `skills/apex/mcae-pardot-api` — Mcae pardot api
-42. `skills/apex/metadata-api-and-package-xml` — Metadata api and package xml
-43. `skills/apex/npsp-api-and-integration` — Npsp api and integration
-44. `skills/apex/npsp-custom-rollups` — Npsp custom rollups
-45. `skills/apex/omni-channel-custom-routing` — Omni channel custom routing
-46. `skills/apex/pdf-generation-patterns` — Pdf generation patterns
-47. `skills/apex/quote-pdf-customization` — Quote pdf customization
-48. `skills/apex/sales-engagement-api` — Sales engagement api
-49. `skills/apex/service-cloud-rest-api` — Service cloud rest api
-50. `skills/apex/sf-cli-and-sfdx-essentials` — Sf cli and sfdx essentials
-51. `skills/apex/ssjs-server-side-javascript` — Ssjs server side javascript
-52. `skills/apex/territory-api-and-assignment` — Territory api and assignment
+**Why this list is broad (30 skill reads, target is 8–25):** the agent emits fifteen distinct Apex surfaces from one `kind` parameter, and twelve of the thirty reads are surface-specific — the batch, queueable, REST, invocable, platform-event and trigger reads each apply to exactly one `kind` and are inert for the rest. Narrowing the list would mean splitting the agent per surface, which would duplicate the eighteen-read security / limits / testing baseline that every emitted class carries regardless of kind.
 
 ### Contract layer
-52. `agents/_shared/AGENT_CONTRACT.md`
-53. `agents/_shared/DELIVERABLE_CONTRACT.md` — persistence + scope guardrails
-54. `agents/_shared/REFUSAL_CODES.md` — canonical refusal enum
+1. `agents/_shared/AGENT_CONTRACT.md`
+2. `agents/_shared/DELIVERABLE_CONTRACT.md` — persistence + scope guardrails
+3. `agents/_shared/REFUSAL_CODES.md` — canonical refusal enum
 
 ### Architecture & decomposition
-55. `skills/apex/apex-design-patterns`
-56. `skills/apex/apex-class-decomposition-pattern` — when to split Domain / Service / Selector
-57. `skills/apex/apex-wrapper-class-patterns` — DTO inner-class shape for REST/JSON
+4. `skills/apex/apex-design-patterns` — the Domain / Service / Selector separation Step 2's class list assumes
+5. `skills/apex/apex-class-decomposition-pattern` — where the split actually falls for a given feature, so the scaffold is not one god class
 
-### Triggers, order of execution, recursion, bypass
-58. `skills/apex/trigger-framework`
-59. `skills/apex/apex-trigger-context-variables`
-60. `skills/apex/order-of-execution-deep-dive`
-61. `skills/apex/recursive-trigger-prevention`
-62. `skills/apex/apex-trigger-bypass-and-killswitch-patterns` — kill-switch via Trigger_Setting__mdt, FeatureManagement, TriggerControl
-63. `skills/apex/trigger-and-flow-coexistence`
+### Triggers, order of execution, recursion
+6. `skills/apex/trigger-framework` — the handler shape every `kind: trigger` scaffold extends, matching `templates/apex/TriggerHandler.cls`
+7. `skills/apex/order-of-execution-deep-dive` — which context the emitted handler methods may safely mutate, and what a later step will overwrite
+8. `skills/apex/recursive-trigger-prevention` — a fresh trigger scaffold with no re-entry guard will loop the first time a workflow updates its own object
+9. `skills/apex/trigger-and-flow-coexistence` — Step 1 cites this when routing trigger-vs-Flow; a scaffold that ignores an existing Flow on the object double-processes the record
 
 ### Async / scheduling / chaining
-64. `skills/apex/async-apex`
-65. `skills/apex/apex-queueable-patterns`
-66. `skills/apex/apex-future-method-patterns`
-67. `skills/apex/batch-apex-patterns`
-68. `skills/apex/apex-batch-chaining`
-69. `skills/apex/apex-scheduled-jobs`
-70. `skills/apex/apex-transaction-finalizers` — Queueable post-commit / dead-letter hooks
-71. `standards/decision-trees/async-selection.md`
-72. `skills/apex/field-level-security-in-async-contexts` — FLS evaluation in Queueable/Batch/Schedulable runs as the running user, not the originating user — capture and assert
+10. `skills/apex/async-apex` — async semantics shared by the batch / queueable / schedulable / continuation kinds
+11. `skills/apex/batch-apex-patterns` — start/execute/finish shape and scope sizing for `kind: batch`
+12. `skills/apex/apex-queueable-patterns` — chaining, depth limits and finalizers for `kind: queueable`, the default async scaffold
+13. `standards/decision-trees/async-selection.md` — Step 1 must cite the branch that justifies the chosen async surface
 
-### Bulk APIs (REST / SOAP / Continuation / events)
-73. `skills/apex/apex-rest-services`
-74. `skills/apex/apex-named-credentials-patterns`
-75. `skills/apex/apex-callout-retry-and-resilience` — retry, circuit-breaker, idempotency-key
-76. `skills/apex/callouts-and-http-integrations`
-77. `skills/apex/callout-and-dml-transaction-boundaries`
-78. `skills/apex/continuation-callouts`
-79. `skills/apex/apex-http-callout-mocking`
-80. `skills/apex/invocable-methods`
-81. `skills/apex/apex-flow-invocation-from-apex`
-82. `skills/apex/apex-callable-interface`
-83. `skills/apex/platform-events-apex`
-84. `skills/apex/change-data-capture-apex`
-85. `skills/integration/platform-event-schema-evolution` — evolve event fields without breaking subscribers
-86. `skills/apex/apex-jwt-bearer-flow` — JWT bearer flow for server-to-server auth, signed assertions
-87. `skills/apex/apex-wsdl2apex-patterns` — Generate Apex proxy from a third-party WSDL, wrap via Named Credential, mock with WebServiceMock (not HttpCalloutMock)
+### Callouts & services
+14. `skills/apex/callouts-and-http-integrations` — callout mechanics behind `templates/apex/HttpClient.cls` — the scaffold must never inline HttpRequest
+15. `skills/apex/apex-named-credentials-patterns` — the only acceptable way for an emitted callout to hold an endpoint or a credential
+16. `skills/apex/apex-rest-services` — URL mapping, verb methods and status handling for `kind: rest`
+17. `skills/apex/invocable-methods` — List-in / List-out signature for `kind: invocable`; a single-record signature makes the action non-bulk-safe from day one
+18. `skills/apex/platform-events-apex` — publish + subscribe semantics and replay behaviour for the platform-event and CDC subscriber kinds
 
 ### SOQL / data access
-88. `skills/apex/soql-fundamentals`
-89. `skills/apex/soql-security`
-90. `skills/apex/apex-soql-relationship-queries`
-91. `skills/apex/apex-aggregate-queries`
-92. `skills/apex/apex-polymorphic-soql`
-93. `skills/apex/dynamic-apex`
-94. `skills/apex/apex-dynamic-soql-binding-safety` — bind-safe Database.queryWithBinds
-95. `skills/apex/apex-collections-patterns`
-96. `skills/apex/apex-schema-describe` — Schema describe API for sObject metadata, FLS, picklist enumeration
+19. `skills/apex/soql-fundamentals` — relationship, aggregate and bind syntax in every emitted selector
+20. `skills/apex/soql-security` — `WITH USER_MODE` is the Step 3 default — this is what it does and where it is not enough
+21. `skills/apex/apex-collections-patterns` — Step 3 requires bulkification; these are the map/set idioms that make it real rather than a loop with a comment
+22. `skills/apex/apex-dynamic-soql-binding-safety` — bind-safe `Database.queryWithBinds` whenever the selector takes a caller-supplied filter
 
 ### DML / transactions / locking
-97. `skills/apex/apex-dml-patterns`
-98. `skills/apex/apex-savepoint-and-rollback`
-99. `skills/apex/mixed-dml-and-setup-objects`
-100. `skills/apex/record-locking-and-contention`
-101. `skills/apex/apex-decimal-arithmetic-precision` — Decimal scale, divide(scale,mode), and currency-field rounding alignment for money-touching code
+23. `skills/apex/apex-dml-patterns` — partial-success vs all-or-none on the emitted write paths, and how the result is reported
+24. `skills/apex/mixed-dml-and-setup-objects` — any scaffold that touches User / permission-set objects alongside data will fail at runtime without the split
 
 ### Governor limits / performance
-102. `skills/apex/governor-limits`
-103. `skills/apex/governor-limit-recovery-patterns`
-104. `skills/apex/apex-cpu-and-heap-optimization`
-105. `skills/apex/apex-limits-monitoring`
-106. `skills/apex/platform-cache`
+25. `skills/apex/governor-limits` — the budget the Output Contract's per-class governor-limit estimate is drawn from
+26. `skills/apex/apex-cpu-and-heap-optimization` — CPU and heap are what actually break a bulk scaffold at 200 rows; SOQL count rarely does
 
 ### Security
-107. `skills/apex/apex-security-patterns`
-108. `skills/apex/apex-with-without-sharing-decision` — keyword choice rationale
-109. `skills/apex/apex-stripinaccessible-and-fls-enforcement`
-110. `skills/apex/apex-user-and-permission-checks`
-111. `skills/apex/apex-custom-permissions-check`
-112. `skills/apex/apex-managed-sharing`
-113. `skills/apex/apex-system-runas`
-114. `skills/apex/apex-secrets-and-protected-cmdt`
-115. `skills/apex/apex-encoding-and-crypto`
-116. `skills/apex/apex-hardcoded-id-elimination` — eliminate Profile / RecordType / Group ID literals
-117. `skills/apex/apex-salesforce-id-patterns`
-118. `standards/decision-trees/sharing-selection.md`
+27. `skills/apex/apex-security-patterns` — the enforcement baseline behind `templates/apex/SecurityUtils.cls`
+28. `skills/apex/apex-with-without-sharing-decision` — keyword choice rationale — `without sharing` is never emitted without a written reason
+29. `skills/apex/apex-stripinaccessible-and-fls-enforcement` — the Step 3 fallback on write paths where `USER_MODE` cannot be used
+30. `standards/decision-trees/sharing-selection.md` — cite the branch when the scaffold's sharing keyword is contested
 
 ### Error handling / observability
-119. `skills/apex/error-handling-framework`
-120. `skills/apex/exception-handling`
-121. `skills/apex/common-apex-runtime-errors`
-122. `skills/apex/custom-logging-and-monitoring`
-123. `skills/apex/salesforce-debug-log-analysis`
-
-### Utilities, I/O, lifecycle
-124. `skills/apex/apex-blob-and-content-version`
-125. `skills/apex/apex-json-serialization`
-126. `skills/apex/apex-regex-and-pattern-matching`
-127. `skills/apex/apex-custom-settings-hierarchy`
-128. `skills/apex/custom-metadata-in-apex`
-129. `skills/apex/feature-flags-and-kill-switches`
-130. `skills/apex/timezone-and-datetime-pitfalls`
-131. `skills/apex/apex-custom-notifications-from-apex`
-132. `skills/apex/apex-connect-api-chatter`
-133. `skills/apex/apex-email-services`
-134. `skills/apex/custom-iterators-and-iterables`
-135. `skills/apex/apex-execute-anonymous`
-136. `skills/apex/apex-enum-patterns` — Apex enum dispatch, valueOf safety, ordinals
-137. `skills/apex/apex-outbound-email-patterns` — Messaging.SingleEmailMessage, OWA, replies, templates
-138. `skills/integration/dataweave-for-apex` — DataWeave-for-Apex (System.Dataweave / Dataweave.Script) for in-Apex CSV/JSON/XML transformations
+31. `skills/apex/error-handling-framework` — the exception taxonomy `templates/apex/ApplicationLogger.cls` logs against, so failures are diagnosable in production
 
 ### Testing
-139. `skills/apex/test-class-standards`
-140. `skills/apex/test-data-factory-patterns`
-141. `skills/apex/apex-test-setup-patterns`
-142. `skills/apex/apex-mocking-and-stubs`
+32. `skills/apex/test-class-standards` — the ≥85% bar and the assertion style every emitted test must meet
+33. `skills/apex/test-data-factory-patterns` — Step 5 `@TestSetup` builds data through the factory, never inline literals
+34. `skills/apex/apex-test-setup-patterns` — `@TestSetup` vs per-method setup, and when `@TestSetup` silently costs more than it saves
+35. `skills/apex/apex-mocking-and-stubs` — Stub API and `HttpCalloutMock` for the callout and service kinds — a callout scaffold without a mock is untestable
 
 ### Templates (canonical building blocks)
-143. `templates/apex/TriggerHandler.cls`
-144. `templates/apex/TriggerControl.cls`
-145. `templates/apex/BaseService.cls`
-146. `templates/apex/BaseSelector.cls`
-147. `templates/apex/BaseDomain.cls`
-148. `templates/apex/ApplicationLogger.cls`
-149. `templates/apex/SecurityUtils.cls`
-150. `templates/apex/HttpClient.cls`
-151. `templates/apex/tests/TestDataFactory.cls`
-152. `templates/apex/tests/TestRecordBuilder.cls`
-153. `templates/apex/tests/MockHttpResponseGenerator.cls`
-154. `templates/apex/tests/TestUserFactory.cls`
-155. `templates/apex/tests/BulkTestPattern.cls`
-156. `skills/apex/scheduled-apex-failure-detection-and-monitoring` — scheduled apex failure detection and monitoring
-157. `skills/devops/development-documentation-standards` — development documentation standards
-158. `skills/apex/soql-outer-join-null-semantics` — soql outer join null semantics
-159. `skills/apex/soql-object-limits-and-restrictions` — soql object limits and restrictions
-160. `skills/apex/soql-format-function-localization` — soql format function localization
-161. `skills/apex/soql-using-scope-clause` — soql using scope clause
+36. `templates/apex/TriggerHandler.cls`
+37. `templates/apex/TriggerControl.cls`
+38. `templates/apex/BaseService.cls`
+39. `templates/apex/BaseSelector.cls`
+40. `templates/apex/BaseDomain.cls`
+41. `templates/apex/ApplicationLogger.cls`
+42. `templates/apex/SecurityUtils.cls`
+43. `templates/apex/HttpClient.cls`
+44. `templates/apex/tests/TestDataFactory.cls`
+45. `templates/apex/tests/TestRecordBuilder.cls`
+46. `templates/apex/tests/MockHttpResponseGenerator.cls`
+47. `templates/apex/tests/TestUserFactory.cls`
+48. `templates/apex/tests/BulkTestPattern.cls`
 
 ---
 
@@ -524,7 +296,7 @@ Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md`.
 Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
 
 - **Canonical data surface:** this agent's declared probes + the MCP tool set. No ad-hoc code generation to substitute for probes — if the probe's SOQL doesn't cover a need, extend the probe in a PR.
-- **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
+- **No new project dependencies:** this agent does NOT run `npm install` / `pip install` in the consumer's project. Converting the canonical `markdown` / `json` deliverable to any other format is a caller-side concern — the conversion-path pointer lives in `agents/_shared/DELIVERABLE_CONTRACT.md` § See also.
 - **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only. Dimensions for this agent: `class-decomposition` (Domain/Service/Selector split), `governor-budget` (per-class SOQL/DML/CPU estimate), `security-posture` (sharing keyword + FLS enforcement), `secret-handling` (no hardcoded values), `id-handling` (no hardcoded IDs), `bulk-safety` (collection-iteration + 200-record test), `error-handling` (ApplicationLogger wired), `test-coverage` (≥85% target). When the feature kind doesn't exercise a dimension (e.g. `kind=test_only` skips `governor-budget`), record it in `dimensions_skipped[]` with `state: not-run` and a one-line reason.
 
 ## Escalation / Refusal Rules

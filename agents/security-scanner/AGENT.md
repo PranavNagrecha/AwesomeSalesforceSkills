@@ -15,73 +15,34 @@ output_formats:
 multi_dimensional: true
 dependencies:
   skills:
-    - admin/agent-output-formats
-    - admin/connected-app-troubleshooting
-    - apex/apex-collections-patterns
     - apex/apex-custom-permissions-check
-    - apex/apex-design-patterns
-    - apex/apex-dml-patterns
     - apex/apex-dynamic-soql-binding-safety
     - apex/apex-encoding-and-crypto
     - apex/apex-execute-anonymous
-    - apex/apex-flow-invocation-from-apex
     - apex/apex-hardcoded-id-elimination
     - apex/apex-managed-sharing
     - apex/apex-named-credentials-patterns
-    - apex/apex-regex-and-pattern-matching
     - apex/apex-rest-services
     - apex/apex-secrets-and-protected-cmdt
     - apex/apex-security-patterns
     - apex/apex-stripinaccessible-and-fls-enforcement
-    - apex/apex-system-runas
     - apex/apex-user-and-permission-checks
     - apex/apex-with-without-sharing-decision
-    - apex/callout-and-dml-transaction-boundaries
     - apex/callouts-and-http-integrations
-    - apex/change-data-capture-apex
-    - apex/common-apex-runtime-errors
-    - apex/continuation-callouts
     - apex/custom-metadata-in-apex
     - apex/dynamic-apex
     - apex/error-handling-framework
-    - apex/exception-handling
-    - apex/platform-events-apex
-    - apex/soql-fundamentals
     - apex/soql-security
     - apex/soql-string-escaping-and-reserved-characters
-    - apex/trigger-framework
     - apex/visualforce-fundamentals
     - architect/zero-trust-salesforce-patterns
     - integration/named-credentials-setup
-    - security/api-security-and-rate-limiting
-    - security/clickjack-and-frame-protection
     - security/csp-and-trusted-urls
-    - security/data-classification-labels
     - security/encrypted-field-query-patterns
-    - security/event-monitoring
-    - security/ferpa-compliance-in-salesforce
-    - security/field-audit-trail
-    - security/file-upload-virus-scanning
-    - security/gdpr-data-privacy
     - security/guest-user-security-audit
-    - security/ip-relaxation-and-restriction
-    - security/login-forensics
-    - security/mfa-enforcement-strategy
-    - security/network-security-and-trusted-ips
-    - security/oauth-redirect-and-domain-strategy
-    - security/oauth-token-management
-    - security/org-hardening-and-baseline-config
     - security/platform-encryption
-    - security/recaptcha-and-bot-prevention
-    - security/sandbox-data-masking
-    - security/scim-provisioning-integration
     - security/secure-coding-review-checklist
-    - security/security-health-check
-    - security/security-incident-response
     - security/service-account-credential-rotation
-    - security/shield-event-log-retention-strategy
-    - security/sso-saml-troubleshooting
-    - security/transaction-security-policies
     - security/visualforce-security-and-modernization
     - security/xss-and-injection-prevention
   shared:
@@ -117,102 +78,63 @@ Walks a `force-app/` tree and flags CRUD/FLS violations, sharing leaks, hardcode
 
 ## Mandatory Reads Before Starting
 
-2. `skills/admin/connected-app-troubleshooting` — Connected app troubleshooting
-3. `skills/security/api-security-and-rate-limiting` — Api security and rate limiting
-4. `skills/security/clickjack-and-frame-protection` — Clickjack and frame protection
-5. `skills/security/csp-and-trusted-urls` — Csp and trusted urls
-6. `skills/security/data-classification-labels` — Data classification labels
-7. `skills/security/encrypted-field-query-patterns` — Encrypted field query patterns
-8. `skills/security/event-monitoring` — Event monitoring
-9. `skills/security/ferpa-compliance-in-salesforce` — Ferpa compliance in salesforce
-10. `skills/security/field-audit-trail` — Field audit trail
-11. `skills/security/file-upload-virus-scanning` — File upload virus scanning
-12. `skills/security/gdpr-data-privacy` — Gdpr data privacy
-13. `skills/security/ip-relaxation-and-restriction` — Ip relaxation and restriction
-14. `skills/security/login-forensics` — Login forensics
-15. `skills/security/mfa-enforcement-strategy` — Mfa enforcement strategy
-16. `skills/security/network-security-and-trusted-ips` — Network security and trusted ips
-17. `skills/security/oauth-redirect-and-domain-strategy` — Oauth redirect and domain strategy
-18. `skills/security/oauth-token-management` — Oauth token management
-19. `skills/security/org-hardening-and-baseline-config` — Org hardening and baseline config
-20. `skills/security/platform-encryption` — Platform encryption
-21. `skills/security/recaptcha-and-bot-prevention` — Recaptcha and bot prevention
-22. `skills/security/sandbox-data-masking` — Sandbox data masking
-23. `skills/security/scim-provisioning-integration` — Scim provisioning integration
-24. `skills/security/secure-coding-review-checklist` — Secure coding review checklist
-25. `skills/security/security-health-check` — Security health check
-26. `skills/security/security-incident-response` — Security incident response
-27. `skills/security/service-account-credential-rotation` — Service account credential rotation
-28. `skills/security/shield-event-log-retention-strategy` — Shield event log retention strategy
-29. `skills/security/transaction-security-policies` — Transaction security policies
-30. `skills/security/xss-and-injection-prevention` — Xss and injection prevention
+**Why this list is broad (30 skill reads, target is 8–25):** this agent's failure mode is the false negative — a vulnerability class it was never taught to look for gets reported as clean, and the caller acts on a report that is wrong in the one direction that matters. The list is therefore a taxonomy of finding classes (sharing and FLS, injection, secrets and callout credentials, hardcoded ids, exposed VF/REST/anonymous surfaces, crypto misuse, encryption interaction) rather than depth on any one of them; each subsection heading below is a class of finding that would go unreported if its read were dropped.
 
 ### Contract layer
-30. `agents/_shared/AGENT_CONTRACT.md`
-31. `agents/_shared/DELIVERABLE_CONTRACT.md`
-32. `agents/_shared/REFUSAL_CODES.md`
+1. `agents/_shared/AGENT_CONTRACT.md`
+2. `agents/_shared/DELIVERABLE_CONTRACT.md`
+3. `agents/_shared/REFUSAL_CODES.md`
 
-### Sharing & FLS / CRUD
-33. `skills/apex/apex-security-patterns`
-34. `skills/apex/apex-with-without-sharing-decision` — keyword choice
-35. `skills/apex/apex-stripinaccessible-and-fls-enforcement`
-36. `skills/apex/apex-user-and-permission-checks`
-37. `skills/apex/apex-custom-permissions-check`
-38. `skills/apex/apex-managed-sharing`
-39. `skills/apex/apex-system-runas`
-40. `skills/apex/soql-security`
-41. `skills/apex/soql-fundamentals`
-42. `standards/decision-trees/sharing-selection.md`
-43. `skills/security/guest-user-security-audit` — Experience Cloud guest user 2021 changes audit
+### Sharing, CRUD & FLS
+4. `skills/apex/apex-security-patterns` — the enforcement baseline every finding is measured against, and the source of the remediation snippets
+5. `skills/apex/apex-with-without-sharing-decision` — a class with no sharing declaration inherits its caller's context — the most common silent leak in a scan
+6. `skills/apex/apex-stripinaccessible-and-fls-enforcement` — the canonical remediation this agent emits for an FLS finding
+7. `skills/apex/apex-user-and-permission-checks` — distinguishes a CRUD check that actually gates the DML from one that only looks like it does
+8. `skills/apex/apex-custom-permissions-check` — custom-permission gates are frequently the only control on an exposed method; a scan must recognise a correct one
+9. `skills/apex/apex-managed-sharing` — hand-rolled Apex sharing is where a leak hides from any declarative review
+10. `skills/apex/soql-security` — `WITH USER_MODE` / `WITH SECURITY_ENFORCED` semantics, and the cases where neither enforces what the author assumed
+11. `skills/security/guest-user-security-audit` — Experience Cloud guest user 2021 changes audit — guest-reachable Apex is the highest-severity finding class
+12. `standards/decision-trees/sharing-selection.md` — cite the branch when a finding's remediation changes the sharing model
 
-### SOQL injection
-44. `skills/apex/dynamic-apex`
-45. `skills/apex/apex-dynamic-soql-binding-safety`
-46. `skills/apex/apex-regex-and-pattern-matching`
+### Injection & untrusted input
+13. `skills/apex/dynamic-apex` — the dynamic SOQL / describe surfaces the scan has to enumerate before it can judge them
+14. `skills/apex/apex-dynamic-soql-binding-safety` — bind variables and `Database.queryWithBinds` — the remediation for every concatenated query finding
+15. `skills/apex/soql-string-escaping-and-reserved-characters` — `String.escapeSingleQuotes` is necessary but not sufficient; this is where it still lets injection through
+16. `skills/security/xss-and-injection-prevention` — the non-SOQL injection classes — XSS in VF/Aura/LWC, SOSL, and formula injection
+17. `skills/security/secure-coding-review-checklist` — the canonical checklist the scan enumerates against, so the finding set is complete rather than opportunistic
 
 ### Secrets & callouts
-47. `skills/apex/apex-secrets-and-protected-cmdt`
-48. `skills/apex/apex-named-credentials-patterns`
-49. `skills/apex/callouts-and-http-integrations`
-50. `skills/apex/callout-and-dml-transaction-boundaries`
-51. `skills/integration/named-credentials-setup`
-52. `skills/apex/continuation-callouts`
-53. `skills/apex/apex-encoding-and-crypto`
+18. `skills/apex/apex-secrets-and-protected-cmdt` — protected Custom Metadata is the sanctioned home for a secret; anything else in source is a finding
+19. `skills/apex/apex-named-credentials-patterns` — a callout that assembles its own endpoint or Authorization header bypasses the platform's credential store
+20. `skills/apex/callouts-and-http-integrations` — the callout surfaces to scan, including the ones that do not look like callouts
+21. `skills/integration/named-credentials-setup` — the org-side configuration a Named Credential remediation actually requires, so the fix is not hand-waved
+22. `skills/security/service-account-credential-rotation` — a credential stored correctly but impossible to rotate is still a finding
+23. `skills/apex/apex-encoding-and-crypto` — hand-rolled crypto, weak algorithms and `Crypto` class misuse — wrong in ways that compile fine
 
-### Hardcoded IDs / config
-54. `skills/apex/apex-hardcoded-id-elimination`
-55. `skills/apex/custom-metadata-in-apex`
+### Hardcoded IDs & configuration
+24. `skills/apex/apex-hardcoded-id-elimination` — hardcoded Profile / RecordType / Group ids break across orgs and often encode a privilege assumption
+25. `skills/apex/custom-metadata-in-apex` — the replacement for those literals, and how to reference it without a query per record
 
 ### Exposed surfaces
-56. `skills/apex/apex-rest-services` — REST endpoint security
-57. `skills/apex/visualforce-fundamentals` — VF security
-58. `skills/apex/platform-events-apex`
-59. `skills/apex/change-data-capture-apex`
-60. `skills/apex/apex-flow-invocation-from-apex` — Flow invocation context
-61. `skills/apex/trigger-framework` — handler security
-62. `skills/apex/apex-execute-anonymous` — security posture in anon
+26. `skills/apex/apex-rest-services` — `@RestResource` is reachable by anyone with API access; the scan must judge its own authorisation, not the org's
+27. `skills/apex/visualforce-fundamentals` — VF pages carry their own escaping rules and controller sharing context
+28. `skills/security/visualforce-security-and-modernization` — the VF-specific finding set: `escape=false`, `<apex:includeScript>` on user data, legacy controller patterns
+29. `skills/security/csp-and-trusted-urls` — a component that loads third-party script needs the CSP finding stated in terms the admin can act on
+30. `skills/apex/apex-execute-anonymous` — anonymous Apex checked into source runs as whoever executes it — a distinct posture finding
 
-### DML / data flow
-63. `skills/apex/apex-dml-patterns`
-64. `skills/apex/apex-collections-patterns`
-65. `skills/apex/apex-design-patterns`
-
-### Error / exception leakage
-66. `skills/apex/error-handling-framework`
-67. `skills/apex/exception-handling`
-68. `skills/apex/common-apex-runtime-errors`
+### Encryption & data handling
+31. `skills/security/platform-encryption` — encrypted fields change what a query may filter, sort or index on — a remediation that ignores that is a broken fix
+32. `skills/security/encrypted-field-query-patterns` — the concrete filter/sort restrictions, so an encryption-aware finding names the working alternative
+33. `skills/apex/error-handling-framework` — an exception surfaced to a user that carries a query, a record id or a stack trace is an information-disclosure finding
+34. `skills/architect/zero-trust-salesforce-patterns` — frame TSP/RTEM/HA-Session findings as zero-trust composition (which leg the finding belongs to); flag IdentityVerificationEvent / MobileEmailEvent as detect-only
 
 ### Probes
-69. `agents/_shared/probes/apex-references-to-field.md` — for field-impact analysis on FLS violations
-70. `agents/_shared/probes/permission-set-assignment-shape.md` — for exposed-endpoint analysis (who can hit it)
+35. `agents/_shared/probes/apex-references-to-field.md` — for field-impact analysis on FLS violations
+36. `agents/_shared/probes/permission-set-assignment-shape.md` — for exposed-endpoint analysis (who can hit it)
 
 ### Templates
-71. `templates/apex/SecurityUtils.cls`
-72. `templates/apex/HttpClient.cls`
-73. `skills/architect/zero-trust-salesforce-patterns` — frame TSP/RTEM/HA-Session findings as zero-trust composition (which leg the finding belongs to); flag IdentityVerificationEvent / MobileEmailEvent as detect-only
-74. `skills/security/sso-saml-troubleshooting` — SAML response inspection, SSO debugging
-75. `skills/security/visualforce-security-and-modernization` — visualforce security and modernization
-76. `skills/apex/soql-string-escaping-and-reserved-characters` — soql string escaping and reserved characters
+37. `templates/apex/SecurityUtils.cls`
+38. `templates/apex/HttpClient.cls`
 
 ---
 
@@ -319,7 +241,7 @@ Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md`.
 Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
 
 - **Canonical data surface:** this agent's declared probes + the MCP tool set. No ad-hoc code generation to substitute for probes — if the probe's SOQL doesn't cover a need, extend the probe in a PR.
-- **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
+- **No new project dependencies:** this agent does NOT run `npm install` / `pip install` in the consumer's project. Converting the canonical `markdown` / `json` deliverable to any other format is a caller-side concern — the conversion-path pointer lives in `agents/_shared/DELIVERABLE_CONTRACT.md` § See also.
 - **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only. The dimensions that MUST appear in either `dimensions_compared[]` or `dimensions_skipped[]` are: `apex-crud-fls`, `soql-injection`, `callout-auth`, `sharing-posture`, `open-redirects`, `exposed-endpoints`, `secret-leakage`. If a scan only counts findings without resolving severity for a dimension (e.g. dynamic-SOQL flagged but `escapeSingleQuotes`-only false-positive triage skipped), record it under `dimensions_skipped[]` with `state: count-only` and a one-line `reason`.
 
 ### Dimensions (Wave 10 contract)

@@ -49,8 +49,8 @@ Audits email templates (Classic HTML, Visualforce, Lightning) in the target org,
 3. `skills/admin/email-templates-and-alerts`
 4. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
 5. `skills/apex/apex-outbound-email-patterns` — Messaging.SingleEmailMessage, OWA, replies, templates
-6. `skills/admin/classic-email-template-migration` — Classic email template migration
-7. `skills/admin/case-feed-send-email-action` — case feed send email action
+6. `skills/admin/classic-email-template-migration` — the Classic → Lightning migration path this agent's whole plan is built on, including what does not survive it
+7. `skills/admin/case-feed-send-email-action` — the Case Feed Send Email action is a template consumer whose default template breaks silently when the template is re-pointed
 
 ---
 

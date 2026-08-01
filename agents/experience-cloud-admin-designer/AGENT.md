@@ -14,7 +14,6 @@ output_formats:
   - json
 dependencies:
   skills:
-    - admin/agent-output-formats
     - admin/community-engagement-strategy
     - admin/experience-cloud-cms-content
     - admin/experience-cloud-guest-access
@@ -63,25 +62,26 @@ Two modes:
 ## Mandatory Reads Before Starting
 
 1. `agents/_shared/AGENT_CONTRACT.md`
-2. `skills/admin/experience-cloud-site-setup`
-3. `skills/admin/experience-cloud-member-management`
-4. `skills/admin/experience-cloud-guest-access`
-5. `skills/admin/experience-cloud-moderation`
-6. `skills/admin/experience-cloud-cms-content`
-7. `skills/admin/experience-cloud-seo-settings`
-8. `skills/security/experience-cloud-security`
-9. `skills/security/guest-user-security`
-10. `skills/architect/experience-cloud-licensing-model`
-11. `skills/architect/experience-cloud-integration-patterns`
-12. `skills/admin/queues-and-public-groups`
-13. `skills/admin/sharing-and-visibility`
+2. `skills/admin/experience-cloud-site-setup` — the setup sequence the design output has to be orderable against
+3. `skills/admin/experience-cloud-member-management` — member profiles and licence assignment — the step that most often blocks go-live
+4. `skills/admin/experience-cloud-guest-access` — guest access is the default-open surface; a design that omits it ships an exposure
+5. `skills/admin/experience-cloud-moderation` — moderation rules and criteria, required wherever the site accepts user-generated content
+6. `skills/admin/experience-cloud-cms-content` — CMS workspaces and channels, which decide whether content is reusable across sites or trapped in one
+7. `skills/admin/experience-cloud-seo-settings` — public sites only: indexing, sitemap and object-page exposure, which are irreversible once crawled
+8. `skills/security/experience-cloud-security` — the site-level security posture the design must declare rather than inherit
+9. `skills/security/guest-user-security` — the guest user's own record access — the 2021 model, and why sharing sets are not optional
+10. `skills/architect/experience-cloud-licensing-model` — licence type constrains what the design may even propose; get it wrong and the whole design is unbuildable
+11. `skills/architect/experience-cloud-integration-patterns` — how the site reaches org data and external systems, which decides the sharing design
+12. `skills/admin/queues-and-public-groups` — the grouping primitives sharing sets and moderation assignments are built from
+13. `skills/admin/sharing-and-visibility` — external OWD and sharing sets behave differently from internal sharing — the single most common design error here
 14. `templates/admin/permission-set-patterns.md`
 15. `templates/admin/naming-conventions.md`
 16. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
-17. `skills/admin/community-engagement-strategy` — Community engagement strategy
-18. `skills/admin/partner-community-requirements` — Partner community requirements
-19. `skills/admin/mobile-publisher` — mobile publisher
-20. `skills/admin/lightning-bolt-template-authoring` — lightning bolt template authoring
+17. `skills/admin/community-engagement-strategy` — engagement mechanics (reputation, recognition, gamification) that decide whether the site is used at all
+18. `skills/admin/partner-community-requirements` — partner sites carry channel-manager, lead-distribution and account-relationship requirements no customer site has
+19. `skills/admin/mobile-publisher` — if the site will ship as a branded app, Mobile Publisher constraints bind the design up front, not after launch
+20. `skills/admin/lightning-bolt-template-authoring` — when the site should be a reusable template rather than a one-off build
+21. `skills/admin/permission-set-architecture` — external personas ride a PSG on top of a licence-matched baseline profile; the design output is unbuildable without that shape
 
 ---
 
@@ -258,7 +258,7 @@ Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md`.
 Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
 
 - **Canonical data surface:** this agent's declared probes + the MCP tool set. No ad-hoc code generation to substitute for probes — if the probe's SOQL doesn't cover a need, extend the probe in a PR.
-- **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
+- **No new project dependencies:** this agent does NOT run `npm install` / `pip install` in the consumer's project. Converting the canonical `markdown` / `json` deliverable to any other format is a caller-side concern — the conversion-path pointer lives in `agents/_shared/DELIVERABLE_CONTRACT.md` § See also.
 - **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only.
 
 ## Escalation / Refusal Rules

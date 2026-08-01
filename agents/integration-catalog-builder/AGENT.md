@@ -14,7 +14,6 @@ output_formats:
   - json
 dependencies:
   skills:
-    - admin/agent-output-formats
     - admin/connected-apps-and-auth
     - admin/integration-admin-connected-apps
     - admin/integration-user-management
@@ -22,62 +21,24 @@ dependencies:
     - apex/apex-jwt-bearer-flow
     - architect/integration-framework-design
     - architect/integration-security-architecture
-    - data/data-virtualization-patterns
-    - integration/api-error-handling-design
     - integration/api-governance-and-rate-limits
-    - integration/api-led-connectivity
     - integration/api-versioning-strategy
-    - integration/aws-salesforce-patterns
-    - integration/azure-salesforce-patterns
-    - integration/callout-limits-and-async-patterns
     - integration/change-data-capture-integration
-    - integration/composite-api-patterns
     - integration/connect-rest-api-patterns
-    - integration/data-cloud-activation-development
-    - integration/data-cloud-ingestion-api
-    - integration/data-cloud-integration-strategy
-    - integration/data-cloud-query-api
     - integration/data-cloud-zero-copy-federation
-    - integration/dataweave-for-apex
-    - integration/error-handling-in-integrations
-    - integration/event-driven-architecture-patterns
-    - integration/event-relay-configuration
-    - integration/file-and-document-integration
-    - integration/graphql-api-patterns
-    - integration/heroku-salesforce-integration
-    - integration/loyalty-management-setup
     - integration/middleware-integration-patterns
-    - integration/mulesoft-salesforce-connector
     - integration/mutual-tls-callouts
     - integration/named-credentials-setup
     - integration/oauth-flows-and-connected-apps
     - integration/outbound-messages-and-callbacks
-    - integration/outbound-webhook-from-salesforce
-    - integration/platform-event-publish-patterns
-    - integration/platform-event-schema-evolution
     - integration/platform-events-integration
     - integration/private-connect-setup
     - integration/pub-sub-api-patterns
-    - integration/real-time-vs-batch-integration
-    - integration/rest-api-pagination-patterns
     - integration/rest-api-patterns
-    - integration/retry-and-backoff-patterns
-    - integration/revenue-lifecycle-management
     - integration/salesforce-connect-external-objects
     - integration/salesforce-data-pipeline-etl
-    - integration/salesforce-functions-replacement
-    - integration/salesforce-to-salesforce-integration
-    - integration/scheduled-erp-sync-pattern
-    - integration/sis-integration-patterns
-    - integration/slack-connect-patterns
-    - integration/slack-salesforce-integration-setup
-    - integration/slack-workflow-builder
     - integration/soap-api-patterns
     - integration/streaming-api-and-pushtopic
-    - integration/sustainability-reporting
-    - integration/tableau-salesforce-connector
-    - integration/webhook-inbound-patterns
-    - integration/webhook-signature-verification
     - security/certificate-and-key-management
     - security/connected-app-security-policies
   shared:
@@ -105,74 +66,45 @@ Builds a catalog of every live integration endpoint reachable from the org: Name
 
 ## Mandatory Reads Before Starting
 
+Breadth note (`AGENT_CONTRACT.md` Mandatory Reads rule 4): 27 skill reads, just above the 8–25 design target. The deliverable is an inventory, and an inventory is judged by what it fails to list — an endpoint archetype this agent cannot name is an endpoint it silently omits, and the omission looks identical to a clean org. The classification section therefore carries one read per archetype the platform can egress through (REST, SOAP, Platform Events, CDC, Pub/Sub, streaming, external objects, outbound messages, Connect, and lakehouse ETL) rather than the subset an average org happens to use.
+
+### Contract layer
 1. `agents/_shared/AGENT_CONTRACT.md`
-2. `AGENT_RULES.md`
-3. `skills/admin/integration-admin-connected-apps`
-4. `skills/admin/connected-apps-and-auth`
-5. `skills/admin/remote-site-settings`
-6. `skills/admin/integration-user-management`
-7. `skills/integration/named-credentials-setup`
-8. `skills/integration/oauth-flows-and-connected-apps`
-9. `skills/security/connected-app-security-policies`
-10. `skills/security/certificate-and-key-management`
-11. `skills/architect/integration-framework-design`
-12. `skills/architect/integration-security-architecture`
-13. `skills/integration/api-versioning-strategy` — contract evolution + sunset policy
-14. `skills/integration/mutual-tls-callouts` — mTLS via Named Credentials
-15. `skills/integration/webhook-signature-verification` — inbound HMAC verification
-16. `skills/integration/connect-rest-api-patterns` — Connect API vs raw SObject
-17. `skills/integration/private-connect-setup` — Hyperforce private networking
-18. `skills/integration/salesforce-data-pipeline-etl` — Bulk + CDC lake pipelines
-19. `skills/integration/api-governance-and-rate-limits` — 24h allocation governance
-20. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
-21. `skills/integration/platform-event-schema-evolution` — schema evolution rules for live published events
-22. `skills/integration/data-cloud-zero-copy-federation` — Lakehouse Federation connectors (Snowflake/Databricks/BigQuery/Redshift) — auth surface, rotation hazards, governance inheritance
-23. `skills/integration/azure-salesforce-patterns` — Azure decision matrix — Service Bus Connector vs Apex→Function vs Data Cloud Blob ingestion vs Power Platform; auth model selection
-24. `skills/apex/apex-jwt-bearer-flow` — JWT bearer flow for server-to-server auth, signed assertions
-25. `skills/data/data-virtualization-patterns` — Salesforce Connect, External Objects, OData adapter
-26. `skills/integration/sustainability-reporting` — Net Zero Cloud / sustainability data integration
-27. `skills/integration/api-error-handling-design` — Api error handling design
-28. `skills/integration/api-led-connectivity` — Api led connectivity
-29. `skills/integration/aws-salesforce-patterns` — Aws salesforce patterns
-30. `skills/integration/callout-limits-and-async-patterns` — Callout limits and async patterns
-31. `skills/integration/change-data-capture-integration` — Change data capture integration
-32. `skills/integration/composite-api-patterns` — Composite api patterns
-33. `skills/integration/data-cloud-activation-development` — Data cloud activation development
-34. `skills/integration/data-cloud-ingestion-api` — Data cloud ingestion api
-35. `skills/integration/data-cloud-integration-strategy` — Data cloud integration strategy
-36. `skills/integration/data-cloud-query-api` — Data cloud query api
-37. `skills/integration/error-handling-in-integrations` — Error handling in integrations
-38. `skills/integration/event-driven-architecture-patterns` — Event driven architecture patterns
-39. `skills/integration/event-relay-configuration` — Event relay configuration
-40. `skills/integration/file-and-document-integration` — File and document integration
-41. `skills/integration/graphql-api-patterns` — Graphql api patterns
-42. `skills/integration/heroku-salesforce-integration` — Heroku salesforce integration
-43. `skills/integration/loyalty-management-setup` — Loyalty management setup
-44. `skills/integration/middleware-integration-patterns` — Middleware integration patterns
-45. `skills/integration/mulesoft-salesforce-connector` — Mulesoft salesforce connector
-46. `skills/integration/outbound-messages-and-callbacks` — Outbound messages and callbacks
-47. `skills/integration/outbound-webhook-from-salesforce` — Outbound webhook from salesforce
-48. `skills/integration/platform-event-publish-patterns` — Platform event publish patterns
-49. `skills/integration/platform-events-integration` — Platform events integration
-50. `skills/integration/pub-sub-api-patterns` — Pub sub api patterns
-51. `skills/integration/real-time-vs-batch-integration` — Real time vs batch integration
-52. `skills/integration/rest-api-pagination-patterns` — Rest api pagination patterns
-53. `skills/integration/rest-api-patterns` — Rest api patterns
-54. `skills/integration/retry-and-backoff-patterns` — Retry and backoff patterns
-55. `skills/integration/revenue-lifecycle-management` — Revenue lifecycle management
-56. `skills/integration/salesforce-connect-external-objects` — Salesforce connect external objects
-57. `skills/integration/salesforce-functions-replacement` — Salesforce functions replacement
-58. `skills/integration/salesforce-to-salesforce-integration` — Salesforce to salesforce integration
-59. `skills/integration/sis-integration-patterns` — Sis integration patterns
-60. `skills/integration/slack-connect-patterns` — Slack connect patterns
-61. `skills/integration/slack-salesforce-integration-setup` — Slack salesforce integration setup
-62. `skills/integration/slack-workflow-builder` — Slack workflow builder
-63. `skills/integration/soap-api-patterns` — Soap api patterns
-64. `skills/integration/streaming-api-and-pushtopic` — Streaming api and pushtopic
-65. `skills/integration/tableau-salesforce-connector` — Tableau salesforce connector
-66. `skills/integration/webhook-inbound-patterns` — Webhook inbound patterns
-67. `skills/integration/dataweave-for-apex` — dataweave for apex
-68. `skills/integration/scheduled-erp-sync-pattern` — scheduled erp sync pattern
+2. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+3. `AGENT_RULES.md`
+
+### The catalog surface — what is being inventoried
+4. `skills/admin/integration-admin-connected-apps` — Connected App inventory: what each row means and which fields carry the posture signal
+5. `skills/admin/connected-apps-and-auth` — OAuth scope and policy semantics, so a Connected App is scored rather than just listed
+6. `skills/admin/remote-site-settings` — Remote Sites are the legacy half of the catalog and the ones most likely to be stale
+7. `skills/integration/named-credentials-setup` — the modern endpoint record — external credential / principal split changes what 'who owns this' means
+8. `skills/admin/integration-user-management` — maps each endpoint to the integration user and PSG that actually exercises it
+9. `skills/integration/oauth-flows-and-connected-apps` — the flow chosen per endpoint is the single biggest posture score input
+10. `skills/apex/apex-jwt-bearer-flow` — JWT bearer flow for server-to-server auth, signed assertions — the flow most often mis-scored as password-grant
+11. `skills/security/connected-app-security-policies` — IP relaxation, refresh policy and admin-approval settings that turn a working endpoint into an exposed one
+12. `skills/security/certificate-and-key-management` — certificate expiry is the rotation-overdue signal; without it the age score is a guess
+13. `skills/integration/mutual-tls-callouts` — mTLS via Named Credentials — a certificate-backed endpoint that expires fails closed and silently
+14. `skills/integration/private-connect-setup` — Hyperforce private networking — an endpoint on Private Connect has a different exposure profile from the same URL over the internet
+
+### Classifying what each endpoint does
+15. `skills/integration/rest-api-patterns` — the default classification for an outbound endpoint, and the request shape to expect in referencing Apex
+16. `skills/integration/soap-api-patterns` — legacy SOAP endpoints carry WSDL-generated stubs the reference scan must recognise
+17. `skills/integration/platform-events-integration` — event-based integrations have no Named Credential at all; without this they are missing from the catalog
+18. `skills/integration/change-data-capture-integration` — CDC subscriptions are an egress path that no endpoint inventory surfaces on its own
+19. `skills/integration/pub-sub-api-patterns` — the gRPC subscriber surface, and how to tell a live subscriber from an abandoned one
+20. `skills/integration/streaming-api-and-pushtopic` — PushTopic and generic streaming are the deprecated predecessors most likely to be unused deprecation candidates
+21. `skills/integration/salesforce-connect-external-objects` — external data sources are endpoints with their own auth records, easy to miss entirely
+22. `skills/integration/outbound-messages-and-callbacks` — outbound messages carry their own endpoint URL and session id — a credential path outside every other inventory
+23. `skills/integration/middleware-integration-patterns` — when one Named Credential fronts a whole middleware estate, the catalog must say so rather than record one endpoint
+24. `skills/integration/data-cloud-zero-copy-federation` — Lakehouse Federation connectors (Snowflake/Databricks/BigQuery/Redshift) — auth surface, rotation hazards, governance inheritance
+25. `skills/integration/connect-rest-api-patterns` — Chatter / CMS / Experience Cloud traffic hits /connect/ resource paths rather than SObject rows, so a reference scan keyed on object names misses these consumers entirely; Connect also respects sharing where the equivalent SObject query would not, which changes the endpoint's posture score
+26. `skills/integration/salesforce-data-pipeline-etl` — a lakehouse feed is not one REST endpoint but a Bulk API 2.0 snapshot plus a standing CDC delta subscription; cataloguing only the half that owns the credential under-reports the largest bulk-egress path in the org
+
+### Governance & scoring
+27. `skills/integration/api-versioning-strategy` — contract evolution + sunset policy — the age dimension of the score
+28. `skills/integration/api-governance-and-rate-limits` — 24h allocation governance; a catalog without consumption context cannot prioritise cleanup
+29. `skills/architect/integration-framework-design` — the target-state shape the cleanup list should move the org toward
+30. `skills/architect/integration-security-architecture` — the posture rubric the findings are graded against
 
 ---
 
@@ -235,7 +167,7 @@ Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md`.
 Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
 
 - **Canonical data surface:** this agent's declared probes + the MCP tool set. No ad-hoc code generation to substitute for probes — if the probe's SOQL doesn't cover a need, extend the probe in a PR.
-- **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
+- **No new project dependencies:** this agent does NOT run `npm install` / `pip install` in the consumer's project. Converting the canonical `markdown` / `json` deliverable to any other format is a caller-side concern — the conversion-path pointer lives in `agents/_shared/DELIVERABLE_CONTRACT.md` § See also.
 - **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only.
 
 ## Escalation / Refusal Rules

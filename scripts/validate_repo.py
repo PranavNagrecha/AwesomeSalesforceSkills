@@ -46,6 +46,7 @@ from pipelines.validators import (
     ValidationIssue,
     validate_frontmatter,
     validate_knowledge_source,
+    validate_official_sources_uniqueness,
     validate_skill_authoring_style,
     validate_skill_registry_record,
     validate_skill_similarity,
@@ -56,6 +57,11 @@ from pipelines.agent_validators import validate_agents
 from pipelines.frontmatter import parse_markdown_with_frontmatter
 from scripts.search_knowledge import build_search_context, run_search
 from scripts.check_doc_counts import collect_doc_count_issues
+# Single source of truth for "this description restates the slug". Imported,
+# never reimplemented: the writer (patch_agent_skill.py) rejects echo stubs at
+# creation time and this gate rejects them at review time, and the two must not
+# be able to drift apart.
+from scripts.patch_agent_skill import is_echo_description
 
 
 # Thread pool size for parallel subprocess fan-out on skill-local scripts.
@@ -401,17 +407,34 @@ def run_skill_validation(
         skill_md_paths = [p / "SKILL.md" for p in filtered_dirs]
         issues.extend(validate_skill_similarity(ROOT, skill_md_paths))
 
+    # Step 9 — shared `## Official Sources Used` block check (WARN). Same
+    # corpus-level shape as Step 8: the fingerprint map is built over the FULL
+    # corpus so a pair whose members land in different shards is still caught,
+    # but only skills in the filtered set are reported.
+    issues.extend(
+        validate_official_sources_uniqueness(
+            ROOT, [p / "SKILL.md" for p in filtered_dirs]
+        )
+    )
+
     return issues, len(filtered_dirs)
 
 
 def _check_orphan_skills(filtered_dirs: list[Path]) -> list[ValidationIssue]:
-    """Emit an ERROR for each filtered skill with no agent decision recorded.
+    """Emit a WARN for each filtered skill no run-time agent cites (advisory).
 
-    Every skill MUST make an explicit choice at creation time: either be
-    cited by at least one run-time agent (preferred), or set
-    ``runtime_orphan: true`` in its frontmatter (with an optional
-    ``runtime_orphan_reason`` to explain why no agent owns the topic).
-    Silent uncitedness is no longer allowed — the gate forces a decision.
+    Coverage is a signal, not a contract. This gate used to be an ERROR whose
+    message handed the reader a ready-to-paste command that added a citation,
+    which made mass-citation the cheapest route to a green build — and produced
+    555 machine-generated citations whose description was just the slug
+    title-cased. Uncited-ness is now advisory; what carries ERROR severity is
+    citation QUALITY (see ``_check_agent_citation_quality``), because a
+    citation an agent will not read is worse than no citation at all.
+
+    A skill can still record the decision explicitly with ``runtime_orphan:
+    true`` in its frontmatter (plus ``runtime_orphan_reason``), which silences
+    the advisory. Doing that in bulk to quiet the WARN is the same gaming
+    pattern under a different label — the WARN is cheap to leave standing.
 
     Implementation: scans ``agents/*/AGENT.md`` YAML frontmatter for
     ``dependencies.skills:`` entries and treats the union as the cited set.
@@ -447,16 +470,186 @@ def _check_orphan_skills(filtered_dirs: list[Path]) -> list[ValidationIssue]:
         if skill_id not in cited:
             out.append(
                 ValidationIssue(
-                    "ERROR", str(skill_md),
-                    f"skill `{skill_id}` has no agent decision — wire it to a run-time "
-                    f"agent via `python3 scripts/patch_agent_skill.py <agent_id> {skill_id} "
-                    f"\"### Mandatory Reads\" \"<description>\"` OR add "
-                    f"`runtime_orphan: true` to its frontmatter (with "
-                    f"`runtime_orphan_reason: <why>`). Every skill must record "
-                    f"an explicit choice.",
+                    "WARN", str(skill_md),
+                    f"skill `{skill_id}` is cited by no run-time agent (advisory). "
+                    f"Wire it only if some agent's output would be wrong without it — "
+                    f"a citation an agent will not actually read inflates coverage while "
+                    f"diluting that agent's reading list. Otherwise leave it uncited, or "
+                    f"record the decision in frontmatter with `runtime_orphan: true` plus "
+                    f"`runtime_orphan_reason: <why no agent owns this topic>`.",
                 )
             )
     return out
+
+
+# A numbered Mandatory Reads entry pointing at a skill, with its optional
+# em-dash / en-dash / hyphen justification: "3. `skills/apex/foo` — why".
+_AGENT_READ_RE = re.compile(
+    r"^\s*\d+\.\s+`?skills/([a-z0-9\-]+/[a-z0-9\-]+)`?\s*(?:[—–-]\s*(.*))?$"
+)
+# "Analytics/reporting: " — a bucketing label some agents prefix onto the
+# description. Bounded length so it cannot swallow a real sentence.
+_AGENT_READ_LABEL_RE = re.compile(r"^[A-Z][^:]{0,40}:\s+")
+# Per-agent reading-list ceiling, counting numbered `skills/...` entries
+# anywhere in the AGENT.md (see the scoping note in the loop below).
+# Measured gap in the corpus: 45/44/44/42 then a drop to 36, so 40 separates
+# the four outliers from the body of the distribution without arbitrariness.
+# Shared-contract and harness reads are deliberately excluded from the count —
+# charging an agent for reading its own contract inverts the signal.
+MAX_AGENT_SKILL_READS = 40
+
+
+def _check_agent_citation_quality(
+    agents_root: Path = ROOT / "agents",
+) -> list[ValidationIssue]:
+    """Gate the quality and size of each run-time agent's reading list.
+
+    This is the ERROR side of the inversion that ``_check_orphan_skills``
+    gives up. Uncited-ness is advisory; a citation that carries no reason to
+    read it is a defect, because it spends the agent's context and buys no
+    accuracy. Four defect classes, three severities of aggregation:
+
+    * ERROR, per line — the description is present but merely echoes the slug
+      ("fsl-mobile-app-setup" -> "Fsl mobile app setup"). Zero hits on the
+      corpus today; this is a regression guard against the stub wave
+      recurring, and per-line so an offender is precisely locatable. The
+      predicate is an exact match after normalisation, so it catches a
+      re-run of the machine-generated wave and nothing subtler: one appended
+      word ("... setup guidance") clears it. That is deliberate — hardening
+      an echo detector into a filler detector is an arms race, and the
+      incentive to mass-cite is gone now that coverage is advisory.
+    * WARN, one per agent — reads with no description at all (133 lines
+      across 23 agents today). Same underlying defect, an order of magnitude
+      more of it, and writing 133 real justifications is content work.
+    * WARN, one per agent — reads that echo the slug once a bucketing label
+      prefix is stripped. Staged; see the comment on that branch.
+    * WARN, one per agent — more than ``MAX_AGENT_SKILL_READS`` numbered
+      skill reads anywhere in the file.
+
+    The description-quality branches read only the ``## Mandatory Reads*``
+    section, which is where the contract promises a justification. The
+    ceiling counts the whole file, because a read is a read whichever
+    heading it sits under.
+
+    The WARN classes are aggregated per agent per class rather than emitted
+    per line on purpose: 162 per-line WARNs would fire on every run including
+    the pre-commit hook, and a warning stream nobody reads is the same
+    Goodhart failure this gate exists to undo.
+
+    Known hazard: this runs unconditionally over every ``agents/*/AGENT.md``,
+    not over the changed set, so the per-line ERROR branch can red a build
+    for a file the contributor never touched — including under the
+    ``--changed-only`` pre-commit hook, where the failure would look
+    unrelated to the commit. Harmless while the branch has zero corpus hits,
+    but that shape is how gates end up disabled wholesale; if a real hit ever
+    lands here, scope the ERROR branch to changed agents before the next
+    contributor hits it cold.
+
+    ``agents_root`` is a parameter so the gate can be exercised against a
+    fixture without writing a deliberately-bad AGENT.md into ``agents/``.
+    """
+    issues: list[ValidationIssue] = []
+    for agent_md in sorted(agents_root.glob("*/AGENT.md")):
+        try:
+            lines = agent_md.read_text(encoding="utf-8").splitlines()
+        except OSError:
+            continue
+        agent_id = agent_md.parent.name
+        agent_path = f"agents/{agent_id}"
+
+        # Two counts, deliberately different in scope.
+        #   `reads`      — numbered skill entries INSIDE `## Mandatory Reads*`.
+        #                  The description-quality branches below apply only
+        #                  here, because only this section promises a reason.
+        #   `total_reads`— numbered skill entries ANYWHERE in the file. The
+        #                  ceiling is a budget on what the agent will actually
+        #                  open, and a read is a read whichever heading it sits
+        #                  under. Scoping the ceiling to one section made it
+        #                  evadable by moving lines verbatim under a new
+        #                  heading (`## Situational Reads`, etc.):
+        #                  `pipelines/agent_validators.py` enforces only the
+        #                  presence and relative order of required sections, so
+        #                  an extra heading is legal and the same 45 files stay
+        #                  in the agent's path. Counting the whole file changes
+        #                  no current output — no agent carries a numbered
+        #                  skill read outside Mandatory Reads today.
+        reads: list[tuple[str, str]] = []
+        total_reads = 0
+        in_section = False
+        for line in lines:
+            match = _AGENT_READ_RE.match(line)
+            if match:
+                total_reads += 1
+            if re.match(r"^##\s+Mandatory Reads", line):
+                in_section = True
+                continue
+            if in_section and re.match(r"^##\s+", line):
+                in_section = False
+            if in_section and match:
+                reads.append((match.group(1), (match.group(2) or "").strip()))
+
+        if not total_reads:
+            continue
+
+        undescribed: list[str] = []
+        label_echoes: list[str] = []
+        for skill_id, description in reads:
+            if not description:
+                undescribed.append(skill_id)
+            elif is_echo_description(skill_id, description):
+                issues.append(ValidationIssue(
+                    "ERROR", str(agent_md),
+                    f"Mandatory Reads entry for `skills/{skill_id}` is an echo stub — its "
+                    f"description ({description!r}) restates the slug and tells the agent "
+                    f"nothing the path did not already say. Write why THIS agent's output "
+                    f"would be wrong without the skill, or delete the citation.",
+                ))
+            elif is_echo_description(skill_id, _AGENT_READ_LABEL_RE.sub("", description)):
+                # Staged rollout. Identical defect to the ERROR branch above,
+                # just wearing a bucketing label ("Analytics/reporting:
+                # Analytics dashboard json"). All 25 current hits are in
+                # agents/audit-router/AGENT.md, which this change does not own,
+                # so shipping it at ERROR would red the tree for a file its
+                # author cannot touch. PROMOTE THIS BRANCH TO ERROR, merged
+                # into the exact-match branch above, once audit-router's reads
+                # carry real justifications.
+                label_echoes.append(skill_id)
+
+        def _sample(ids: list[str]) -> str:
+            shown = ", ".join(f"`{i}`" for i in ids[:5])
+            return shown + (f", +{len(ids) - 5} more" if len(ids) > 5 else "")
+
+        if undescribed:
+            issues.append(ValidationIssue(
+                "WARN", agent_path,
+                f"{len(undescribed)} Mandatory Reads entr(ies) carry no justification at "
+                f"all: {_sample(undescribed)}. A bare path tells the agent what to open "
+                f"but not why, so it cannot decide to skip — add one clause per entry "
+                f"naming what this agent gets wrong without it.",
+            ))
+
+        if label_echoes:
+            issues.append(ValidationIssue(
+                "WARN", agent_path,
+                f"{len(label_echoes)} Mandatory Reads entr(ies) restate the slug behind a "
+                f"bucketing label: {_sample(label_echoes)}. Stripping the label leaves a "
+                f"description identical to the skill name. Keep the label if it helps "
+                f"navigation, but follow it with a real reason to read.",
+            ))
+
+        if total_reads > MAX_AGENT_SKILL_READS:
+            issues.append(ValidationIssue(
+                "WARN", agent_path,
+                f"{total_reads} numbered skill reads in this AGENT.md, over the advisory "
+                f"ceiling of {MAX_AGENT_SKILL_READS}. Past that, the list stops being a "
+                f"reading list and becomes a coverage claim. Drop the entries this agent "
+                f"does not actually need, or split it into two agents with narrower "
+                f"scopes. Note that the count covers the whole file, not just the "
+                f"Mandatory Reads section: relocating entries under another heading "
+                f"leaves the same skills in the agent's path and does not clear this.",
+            ))
+
+    return issues
 
 
 def run_agent_validation() -> list[ValidationIssue]:
@@ -553,6 +746,14 @@ def main() -> int:
         ValidationIssue(level, path, message)
         for level, path, message in collect_doc_count_issues(ROOT)
     )
+
+    # Repo-level agent citation-QUALITY gate (echo stubs, undescribed reads,
+    # oversized reading lists). Same rationale as the doc-count gate above:
+    # cheap (76 small file reads) and order-independent, so it runs on every
+    # invocation rather than only under --agents. It is deliberately not inside
+    # run_agent_validation(): the defect it guards is what the skill-side
+    # orphan gate stopped ERRORing on, so a --skills-only run must still see it.
+    issues.extend(_check_agent_citation_quality())
 
     for issue in issues:
         print_issue(issue)

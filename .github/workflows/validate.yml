@@ -42,16 +42,26 @@ jobs:
       - name: build local retrieval index
         run: python3 scripts/build_index.py
 
-      # --skip-fixture-retrieval is scoped to WAVE 1.1 only.
-      # The retrieval-quality gate is re-enabled in Wave 6 once Wave 4 has
-      # deepened the weak Flow/Agentforce skills (today ~40 shallow skills
-      # return their expected skill outside top-3 because the body doesn't
-      # carry enough distinctive tokens). Coverage check, duplicate check,
-      # script --help check, frontmatter/structure, and drift check all still
-      # run on every shard. See docs/multi-ai-parity.md (Wave 6) for the
-      # re-enable criteria.
+      # Retrieval-quality gate: ENABLED. It used to be skipped here "for
+      # WAVE 1.1 only", pending a Wave 6 re-enable that never happened — so
+      # the 1,356-fixture gate ran in zero CI jobs and zero hooks while the
+      # comment claimed it was temporary.
+      #
+      # Measured before re-enabling (full local sweep, 2026-08-01): 1,356
+      # fixtures, 1 failure, 99.93% pass, ~244s single-process => ~61s per
+      # shard here. The old comment's "~40 shallow skills fail" estimate was
+      # stale by an order of magnitude.
+      #
+      # KNOWN FAILURE at re-enable time: query `translate omniscript` does not
+      # return `omnistudio/omnistudio-multi-language` in its top 3. That is a
+      # genuine retrieval defect, not a flake. Fix the ranking or that skill's
+      # triggers — do NOT re-add the skip flag to make the shard green.
+      #
+      # .githooks/pre-push deliberately keeps the skip: it runs all 4 shards
+      # sequentially, so the fixtures would add ~4 minutes to every push.
+      # CI absorbs the cost in parallel instead.
       - name: validate shard ${{ matrix.shard }}
-        run: python3 scripts/validate_repo.py --skills-only --shard ${{ matrix.shard }}/4 --skip-fixture-retrieval
+        run: python3 scripts/validate_repo.py --skills-only --shard ${{ matrix.shard }}/4
 
   # -----------------------------------------------------------------------
   # Agent validation — 72 agents validate in ~1 second; not worth sharding.
@@ -157,3 +167,94 @@ jobs:
 
       - name: bench 500 skills under 30s
         run: python3 scripts/validate_repo_bench.py --count 500 --threshold 30
+
+  # -----------------------------------------------------------------------
+  # Eval structure lint — the golden P0 cases (10 flagship skills x 3 = 30)
+  # and the agent baseline fixtures (53). Before this job they gated nothing:
+  # `grep -rn "run_evals\|evals/" .github/workflows/ .githooks/` returned no
+  # hits, so a malformed or truncated eval file could sit in the repo
+  # indefinitely and the "flagship skills are eval-covered" claim was
+  # unenforced.
+  #
+  # `--structure` is a lint, not a model run — no API key, no network, ~0.3s
+  # for both runners combined (measured 2026-08-01: 0.1s + 0.2s).
+  # -----------------------------------------------------------------------
+  evals:
+    name: eval structure lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: install deps
+        run: python3 -m pip install -r requirements.txt
+
+      - name: golden eval structure (evals/golden/)
+        run: python3 evals/scripts/run_evals.py --structure
+
+      - name: agent eval structure (evals/agents/)
+        run: python3 evals/agents/scripts/run_agent_evals.py --structure
+
+  # -----------------------------------------------------------------------
+  # MCP server — FULL test suite.
+  #
+  # Only 3 of 24 test modules used to run in CI (test_agent_frontmatter,
+  # test_tools, test_export_parity = 15 of 248 tests), so 233 tests never
+  # gated a merge — including both security modules for a server that talks
+  # to live orgs:
+  #   tests/test_tooling_query_blocklist.py  (14) — SOQL/Tooling DML blocklist
+  #   tests/test_sf_cli_redaction.py         (20) — secret redaction
+  #
+  # Measured 2026-08-01 against a clean HEAD tree: 248 tests, ~113s, 0 skips.
+  # No org, no credentials and no network are required — the org-touching
+  # modules (test_dev_org 29, test_sf_cli 4) are hermetic: test_dev_org
+  # patches `dev_org._run_soql` with unittest.mock, test_sf_cli points
+  # SFSKILLS_SF_BIN at a generated stub script. Nothing here needs an
+  # explicit org-gated skip. Live-org probes stay in
+  # .github/workflows/org-validation.yml, which is manual/cron and needs
+  # SFDX_AUTH_URL.
+  #
+  # The discovery form is load-bearing: `-t .` raises "Start directory is not
+  # importable" (tests/ has no __init__.py) and `-s . -p 'test_*.py'`
+  # discovers 0 tests while still exiting 0. Use `-s tests -t tests`.
+  # -----------------------------------------------------------------------
+  mcp-tests:
+    name: mcp server (full suite)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: install deps
+        run: python3 -m pip install -r requirements.txt
+
+      # tests/test_skills.py asserts real retrieval results (has_coverage for
+      # "trigger recursion") and lexical.sqlite is gitignored, so the index
+      # has to exist before the suite runs.
+      - name: build local retrieval index
+        run: python3 scripts/build_index.py
+
+      # Installs the mcp SDK so the server-registration tests execute instead
+      # of raising SkipTest.
+      #
+      # PREREQUISITE, not a fact about HEAD: this step requires the
+      # `mcp>=1.7.0,<2.0` ceiling in mcp/sfskills-mcp/pyproject.toml (added
+      # alongside this workflow change; HEAD still carries an unbounded
+      # `mcp>=1.4.0`). Without that ceiling pip resolves mcp 2.0.0, which
+      # removed `mcp.server.fastmcp`, and this job dies at import with
+      # ModuleNotFoundError instead of skipping. Land the two together.
+      - name: install sfskills-mcp
+        working-directory: mcp/sfskills-mcp
+        run: python3 -m pip install -e . --quiet
+
+      - name: full mcp test suite (248 tests, 24 modules)
+        working-directory: mcp/sfskills-mcp
+        run: python3 -m unittest discover -s tests -t tests -v

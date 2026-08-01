@@ -18,10 +18,10 @@ dependencies:
   skills:
     - admin/agent-output-formats
     - admin/app-and-tab-configuration
-    - admin/case-feed-send-email-action
     - admin/configuration-workbook-authoring
     - admin/custom-field-creation
     - admin/custom-permissions
+    - admin/duplicate-management
     - admin/email-templates-and-alerts
     - admin/fit-gap-analysis-against-org
     - admin/global-search-configuration
@@ -41,7 +41,6 @@ dependencies:
     - architect/architecture-decision-records
     - architect/license-optimization-strategy
     - architect/nfr-definition-for-salesforce
-    - admin/duplicate-management
     - data/data-loader-and-tools
     - data/external-id-strategy
   shared:
@@ -142,7 +141,6 @@ The workbook is what an admin team uses to execute a release — every row conve
 
 ### Output handoff
 36. `skills/admin/agent-output-formats` — defer Excel / Confluence export requests here
-37. `skills/admin/case-feed-send-email-action` — case feed send email action
 
 ---
 

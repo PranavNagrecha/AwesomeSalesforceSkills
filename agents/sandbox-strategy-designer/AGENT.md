@@ -66,8 +66,8 @@ Designs or audits the sandbox + scratch-org strategy for a Salesforce program: w
 10. `skills/admin/data-export-service` — Data Export role and limits in sandbox-seeding workflows; honest framing of what it does and doesn't cover
 11. `skills/architect/hyperforce-architecture` — Hyperforce migration cadence for production vs sandboxes; refresh window shifts post-migration
 12. `skills/data/salesforce-backup-and-restore` — Backup strategy, RPO/RTO; sandbox vs backup distinction
-13. `skills/admin/sandbox-post-refresh-automation` — Sandbox post refresh automation
-14. `skills/devops/sandbox-data-isolation-gotchas` — Sandbox data isolation gotchas
+13. `skills/admin/sandbox-post-refresh-automation` — every refresh in the proposed cadence needs its post-refresh steps costed, or the cadence is unaffordable in practice
+14. `skills/devops/sandbox-data-isolation-gotchas` — email deliverability, integration endpoints and scheduled jobs survive a refresh pointing at production — the strategy must disarm them
 
 ---
 

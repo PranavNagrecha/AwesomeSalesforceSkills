@@ -15,75 +15,26 @@ output_formats:
 multi_dimensional: true
 dependencies:
   skills:
-    - admin/agent-output-formats
     - admin/data-model-documentation
+    - admin/lookup-and-relationship-design
     - admin/object-creation-and-design
+    - admin/record-type-strategy-at-scale
+    - admin/sharing-and-visibility
+    - admin/validation-rules
     - architect/high-volume-sales-data-architecture
+    - architect/large-data-volume-architecture
     - architect/solution-design-patterns
-    - data/ai-training-data-preparation
-    - data/analytics-data-governance
-    - data/analytics-data-preparation
-    - data/analytics-dataset-optimization
-    - data/analytics-external-data
-    - data/billing-data-reconciliation
-    - data/cdc-data-sync-patterns
-    - data/clinical-data-quality
-    - data/commerce-analytics-data
-    - data/commerce-inventory-data
-    - data/community-analytics-data
-    - data/consent-data-model-health
-    - data/cpq-data-model
-    - data/cpq-performance-optimization
-    - data/crm-analytics-security-predicates
-    - data/currency-management-patterns
+    - data/custom-index-requests
     - data/data-archival-strategies
-    - data/data-cloud-code-extensions
-    - data/data-cloud-consent-and-privacy
-    - data/data-cloud-data-model-objects
-    - data/data-cloud-data-streams
-    - data/data-extension-design
     - data/data-model-design-patterns
-    - data/data-reconciliation-patterns
-    - data/data-virtualization-patterns
-    - data/deployment-data-dependencies
-    - data/eda-data-model-and-patterns
-    - data/einstein-analytics-data-model
+    - data/data-storage-management
     - data/external-data-and-big-objects
     - data/external-id-strategy
-    - data/external-user-data-sharing
-    - data/financial-data-quality
-    - data/fsc-data-model
-    - data/fsl-reporting-data-model
-    - data/fsl-resource-and-skill-data
-    - data/fsl-territory-data-setup
-    - data/gift-history-import
-    - data/health-cloud-data-model
-    - data/marketing-cloud-data-sync
-    - data/marketing-cloud-sql-queries
-    - data/multi-currency-and-advanced-currency-management
-    - data/nonprofit-data-architecture
-    - data/nonprofit-data-quality
-    - data/npsp-data-model
-    - data/omni-channel-reporting-data
-    - data/omnistudio-metadata-management
-    - data/partner-data-access-patterns
-    - data/product-catalog-data-model
-    - data/revenue-cloud-data-model
+    - data/field-history-tracking
+    - data/record-merge-implications
     - data/roll-up-summary-alternatives
-    - data/sales-reporting-data-model
     - data/salesforce-backup-and-restore
-    - data/salesforce-files-architecture
-    - data/sandbox-refresh-data-strategies
-    - data/service-data-archival
-    - data/service-metrics-data-model
-    - data/sosl-external-object-search-limits
-    - data/sosl-search-patterns
-    - data/sosl-search-result-limits
-    - data/sosl-with-clauses
-    - data/subscriber-data-management
-    - data/territory-data-alignment
-    - data/vector-database-management
-    - data/volunteer-management-requirements
+    - data/soql-query-optimization
   shared:
     - AGENT_CONTRACT.md
     - AGENT_RULES.md
@@ -109,77 +60,40 @@ Reviews the data model of a target domain (a parent object + its descendants, or
 
 ## Mandatory Reads Before Starting
 
+### Contract layer
 1. `agents/_shared/AGENT_CONTRACT.md`
-2. `AGENT_RULES.md`
-3. `skills/data/data-model-design-patterns`
-4. `skills/data/external-id-strategy`
-5. `skills/data/roll-up-summary-alternatives`
-6. `skills/admin/object-creation-and-design`
-7. `skills/admin/data-model-documentation`
-8. `skills/architect/solution-design-patterns`
-9. `skills/architect/high-volume-sales-data-architecture`
-10. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
-11. `skills/data/salesforce-backup-and-restore` — Backup strategy, RPO/RTO planning
-12. `skills/data/data-virtualization-patterns` — Salesforce Connect, External Objects, OData adapter
-13. `skills/data/currency-management-patterns` — Multi-currency, dated exchange rates
-14. `skills/data/salesforce-files-architecture` — ContentVersion, ContentDocument, ContentDocumentLink architecture
-15. `skills/data/ai-training-data-preparation` — Ai training data preparation
-16. `skills/data/analytics-data-governance` — Analytics data governance
-17. `skills/data/analytics-data-preparation` — Analytics data preparation
-18. `skills/data/analytics-dataset-optimization` — Analytics dataset optimization
-19. `skills/data/analytics-external-data` — Analytics external data
-20. `skills/data/billing-data-reconciliation` — Billing data reconciliation
-21. `skills/data/cdc-data-sync-patterns` — Cdc data sync patterns
-22. `skills/data/clinical-data-quality` — Clinical data quality
-23. `skills/data/commerce-analytics-data` — Commerce analytics data
-24. `skills/data/commerce-inventory-data` — Commerce inventory data
-25. `skills/data/community-analytics-data` — Community analytics data
-26. `skills/data/consent-data-model-health` — Consent data model health
-27. `skills/data/cpq-data-model` — Cpq data model
-28. `skills/data/cpq-performance-optimization` — Cpq performance optimization
-29. `skills/data/crm-analytics-security-predicates` — Crm analytics security predicates
-30. `skills/data/data-archival-strategies` — Data archival strategies
-31. `skills/data/data-cloud-consent-and-privacy` — Data cloud consent and privacy
-32. `skills/data/data-cloud-data-model-objects` — Data cloud data model objects
-33. `skills/data/data-cloud-data-streams` — Data cloud data streams
-34. `skills/data/data-extension-design` — Data extension design
-35. `skills/data/data-reconciliation-patterns` — Data reconciliation patterns
-36. `skills/data/deployment-data-dependencies` — Deployment data dependencies
-37. `skills/data/eda-data-model-and-patterns` — Eda data model and patterns
-38. `skills/data/einstein-analytics-data-model` — Einstein analytics data model
-39. `skills/data/external-data-and-big-objects` — External data and big objects
-40. `skills/data/external-user-data-sharing` — External user data sharing
-41. `skills/data/financial-data-quality` — Financial data quality
-42. `skills/data/fsc-data-model` — Fsc data model
-43. `skills/data/fsl-reporting-data-model` — Fsl reporting data model
-44. `skills/data/fsl-resource-and-skill-data` — Fsl resource and skill data
-45. `skills/data/fsl-territory-data-setup` — Fsl territory data setup
-46. `skills/data/gift-history-import` — Gift history import
-47. `skills/data/health-cloud-data-model` — Health cloud data model
-48. `skills/data/marketing-cloud-data-sync` — Marketing cloud data sync
-49. `skills/data/marketing-cloud-sql-queries` — Marketing cloud sql queries
-50. `skills/data/multi-currency-and-advanced-currency-management` — Multi currency and advanced currency management
-51. `skills/data/nonprofit-data-architecture` — Nonprofit data architecture
-52. `skills/data/nonprofit-data-quality` — Nonprofit data quality
-53. `skills/data/npsp-data-model` — Npsp data model
-54. `skills/data/omni-channel-reporting-data` — Omni channel reporting data
-55. `skills/data/omnistudio-metadata-management` — Omnistudio metadata management
-56. `skills/data/partner-data-access-patterns` — Partner data access patterns
-57. `skills/data/product-catalog-data-model` — Product catalog data model
-58. `skills/data/revenue-cloud-data-model` — Revenue cloud data model
-59. `skills/data/sales-reporting-data-model` — Sales reporting data model
-60. `skills/data/sandbox-refresh-data-strategies` — Sandbox refresh data strategies
-61. `skills/data/service-data-archival` — Service data archival
-62. `skills/data/service-metrics-data-model` — Service metrics data model
-63. `skills/data/sosl-search-patterns` — Sosl search patterns
-64. `skills/data/subscriber-data-management` — Subscriber data management
-65. `skills/data/territory-data-alignment` — Territory data alignment
-66. `skills/data/vector-database-management` — Vector database management
-67. `skills/data/volunteer-management-requirements` — Volunteer management requirements
-68. `skills/data/data-cloud-code-extensions` — data cloud code extensions
-69. `skills/data/sosl-with-clauses` — sosl with clauses
-70. `skills/data/sosl-search-result-limits` — sosl search result limits
-71. `skills/data/sosl-external-object-search-limits` — sosl external object search limits
+2. `agents/_shared/DELIVERABLE_CONTRACT.md` — Wave 10 output contract (persistence + scope guardrails)
+3. `AGENT_RULES.md`
+
+### Relationships & object design (Steps 1–2)
+4. `skills/data/data-model-design-patterns` — the pattern catalogue every relationship in Step 2 is scored against
+5. `skills/admin/lookup-and-relationship-design` — the Lookup-vs-Master-Detail rule the Step 2 P1 findings turn on, including reparenting and the 2-MD ceiling
+6. `skills/admin/object-creation-and-design` — the design bar a reviewed object is measured against, so findings are stated as deviations rather than opinions
+7. `skills/data/record-merge-implications` — merge quietly re-parents children and drops lookups — a domain graph that ignores it under-reports risk on Account/Contact/Lead
+8. `skills/admin/record-type-strategy-at-scale` — `record-type-usage` is a declared dimension; this is the threshold above which record-type sprawl is a finding
+
+### Rollups & external IDs (Steps 3–4)
+9. `skills/data/roll-up-summary-alternatives` — Step 3 flags > 10 RSFs on one parent; this is the Flow/Apex fallback the finding must recommend
+10. `skills/data/external-id-strategy` — Step 4 fails an integration-sourced object with no upsert key — this defines what an adequate External ID looks like
+
+### Growth, storage & archival (Step 5)
+11. `skills/architect/high-volume-sales-data-architecture` — the LDV thresholds Step 5's 12-month projection is compared against
+12. `skills/architect/large-data-volume-architecture` — partitioning and skinny-table options — an LDV flag with no remediation is not a finding
+13. `skills/data/data-storage-management` — converts the projected row count into the storage cost the report has to state
+14. `skills/data/data-archival-strategies` — the standard answer for an object on the growth curve; without it every LDV finding recommends 'buy storage'
+15. `skills/data/external-data-and-big-objects` — Big Objects and external objects as the archival target, and what you give up (no triggers, restricted SOQL)
+16. `skills/data/salesforce-backup-and-restore` — RPO/RTO for the domain — relationship depth determines whether a restore is even orderable
+
+### Indexes & query shape (Step 6)
+17. `skills/data/soql-query-optimization` — selectivity decides whether a proposed index would ever be used; recommending one without this is guesswork
+18. `skills/data/custom-index-requests` — what Salesforce Support will and will not index, so Step 6's P2 suggestions are actionable
+
+### Declared dimensions not covered above
+19. `skills/admin/sharing-and-visibility` — `sharing-posture` is a required envelope dimension — OWD and cascade behaviour follow from the MD/Lookup calls in Step 2
+20. `skills/data/field-history-tracking` — `history-tracking` is a required envelope dimension; the 20-field-per-object cap is a data-model constraint, not a Setup detail
+21. `skills/admin/validation-rules` — `validation-rule-hygiene` is a required envelope dimension — VR count and bypass-pattern compliance per object
+22. `skills/admin/data-model-documentation` — the ERD and field-dictionary shape the report's domain-graph section is expected to match
+23. `skills/architect/solution-design-patterns` — keeps the review anchored to the wider solution rather than scoring the domain in isolation
 
 ---
 
@@ -242,7 +156,7 @@ Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md`.
 Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
 
 - **Canonical data surface:** this agent's declared probes + the MCP tool set. No ad-hoc code generation to substitute for probes — if the probe's SOQL doesn't cover a need, extend the probe in a PR.
-- **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
+- **No new project dependencies:** this agent does NOT run `npm install` / `pip install` in the consumer's project. Converting the canonical `markdown` / `json` deliverable to any other format is a caller-side concern — the conversion-path pointer lives in `agents/_shared/DELIVERABLE_CONTRACT.md` § See also.
 - **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only.
 
 ### Dimensions (Wave 10 contract)

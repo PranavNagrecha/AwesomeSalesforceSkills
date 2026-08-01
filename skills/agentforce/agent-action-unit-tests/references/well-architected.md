@@ -1,12 +1,17 @@
 # Well-Architected Notes — Agent Action Unit Tests
 
-**Reliability:** Per-branch assertions catch silent regressions; bulk tests enforce the 200-record contract.
+**Reliability:** the documented Invocable contract is that inputs and outputs match on
+size and order. Asserting both, at a request count above one, is the only way that
+contract is verified before an agent batches real traffic through the action.
 
-**Operational Excellence:** Test class is the executable spec of the action's error taxonomy.
+**Operational Excellence:** the test class is the executable specification of the
+action's error taxonomy. Every literal the class can assign to `reasonCode` gets exactly
+one test, so a new branch cannot ship without a named, asserted failure mode.
 
 ## Official Sources Used
 
-- Agentforce Developer Guide — https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html
-- Einstein Trust Layer — https://help.salesforce.com/s/articleView?id=sf.generative_ai_trust_layer.htm
-- Invocable Actions (Apex) — https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_invocable_action.htm
-- Agentforce Testing Center — https://help.salesforce.com/s/articleView?id=sf.agentforce_testing_center.htm
+- InvocableMethod annotation — one per class, and "the Inputs and Outputs must match on both the size and the order" — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableMethod.htm
+- InvocableVariable annotation — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableVariable.htm
+- Apex Developer Guide — Testing Apex (Test.startTest/stopTest, async completion) — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_testing.htm
+- Testing HTTP Callouts with HttpCalloutMock — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts_testing.htm
+- Apex Governor Limits — 100 SOQL queries synchronous, 150 DML statements per transaction — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm

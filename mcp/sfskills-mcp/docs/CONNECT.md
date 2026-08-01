@@ -54,25 +54,47 @@ python3 --version  # expect 3.10 or newer
 
 **2. Install `sfskills-mcp`.**
 
-Option A — **PyPI (recommended for end users):**
+Option A — **Editable from a clone (recommended today — this is the path that works):**
+
+```bash
+git clone https://github.com/PranavNagrecha/AwesomeSalesforceSkills.git
+cd AwesomeSalesforceSkills
+python3 -m pip install -r requirements.txt
+python3 scripts/bootstrap.py                 # builds the retrieval index (~9 s)
+python3 -m pip install -e mcp/sfskills-mcp
+```
+
+`scripts/bootstrap.py` is not optional. The retrieval index
+(`vector_index/lexical.sqlite`) is gitignored, so a fresh clone has no index
+and every skill search returns no results until you build it. See
+[`docs/installing.md`](../../../docs/installing.md).
+
+This path needs `SFSKILLS_REPO_ROOT=/abs/path/to/AwesomeSalesforceSkills` in
+your client config (every client section below shows where it goes).
+
+Option B — **PyPI:**
 
 ```bash
 pip install sfskills-mcp           # ~50 KB wheel
 sfskills-mcp-init                  # one-time data fetch into ~/.cache/sfskills-mcp/
 ```
 
-After `sfskills-mcp-init`, the server resolves its repo root automatically
-from the cache — no `SFSKILLS_REPO_ROOT` needed in your client config.
-Override the cache location with `SFSKILLS_CACHE_DIR=/some/path` if your
-home directory is read-only.
+> **`sfskills-mcp-init` currently fails with HTTP 404** (verified 2026-08-01).
+> It downloads its data bundle from
+> `https://github.com/PranavNagrecha/AwesomeSalesforceSkills/releases/latest/download/sfskills-data.tar.gz`,
+> and the repository has **zero published GitHub releases**, so that URL 404s
+> and the command exits 1. Until a release is cut, use Option A.
+> Maintainers: the diagnosis and the exact release-cutting runbook are in
+> [`docs/installing.md`](../../../docs/installing.md#6-cutting-a-github-release-maintainer-only).
+>
+> Separately, if you installed `sfskills-mcp` from PyPI before 2026-08-01 you
+> also need `pip install 'mcp>=1.7.0,<2.0'` — see the
+> `No module named 'mcp.server.fastmcp'` entry under Troubleshooting.
 
-Option B — **Editable from a clone (developer / contributor):**
-
-```bash
-git clone https://github.com/PranavNagrecha/AwesomeSalesforceSkills.git
-cd AwesomeSalesforceSkills
-python3 -m pip install -e mcp/sfskills-mcp
-```
+Once `sfskills-mcp-init` works, the server resolves its repo root
+automatically from the cache — no `SFSKILLS_REPO_ROOT` needed in your client
+config. Override the cache location with `SFSKILLS_CACHE_DIR=/some/path` if
+your home directory is read-only.
 
 Verify (either path):
 
@@ -641,8 +663,50 @@ re-install:
 The Python MCP SDK isn't installed for that interpreter. Install it:
 
 ```bash
-/opt/homebrew/bin/python3 -m pip install 'mcp>=1.4.0'
+/opt/homebrew/bin/python3 -m pip install 'mcp>=1.7.0,<2.0'
 ```
+
+### `ModuleNotFoundError: No module named 'mcp.server.fastmcp'`
+
+pip resolved **mcp 2.0.0**, which removed the `mcp.server.fastmcp` module.
+`src/sfskills_mcp/server.py` imports `Context` and `FastMCP` from it, so the
+server dies at import time. Fix:
+
+```bash
+python3 -m pip install 'mcp>=1.7.0,<2.0'
+```
+
+`sfskills-mcp` **0.4.6 and earlier** declared the dependency with a floor of
+1.4.0 and no upper bound, so any `pip install sfskills-mcp` after mcp 2.0.0
+shipped picks up the broken version. Those installs need the downgrade above
+by hand; the pin is fixed in `pyproject.toml` for subsequent releases.
+
+That old floor was wrong at the bottom end too: mcp 1.4.0, 1.5.0 and 1.6.0
+all fail with
+`ImportError: cannot import name 'ToolAnnotations' from 'mcp.types'`.
+The measured working range is 1.7.0 through 1.29.0.
+
+### `sfskills-mcp-init: HTTP 404 fetching .../sfskills-data.tar.gz`
+
+Expected as of 2026-08-01: the repository has no published GitHub release, so
+`releases/latest/download/sfskills-data.tar.gz` does not exist. `sfskills-mcp`
+itself is fine — only its data-bundle download is broken.
+
+Workaround — use the clone (Option A under Prerequisites):
+
+```bash
+git clone https://github.com/PranavNagrecha/AwesomeSalesforceSkills.git
+cd AwesomeSalesforceSkills
+python3 -m pip install -r requirements.txt
+python3 scripts/bootstrap.py
+```
+
+then set `SFSKILLS_REPO_ROOT` to that checkout in your client config instead
+of relying on the cache.
+
+Maintainers: [`docs/installing.md`](../../../docs/installing.md#6-cutting-a-github-release-maintainer-only)
+carries the diagnosis and the exact release-cutting steps. Cutting the release
+is the repository owner's call.
 
 ### `sf command timed out after 90s`
 

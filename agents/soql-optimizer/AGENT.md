@@ -14,29 +14,16 @@ output_formats:
   - json
 dependencies:
   skills:
-    - admin/agent-output-formats
     - admin/data-skew-and-sharing-performance
     - apex/apex-aggregate-queries
-    - apex/apex-class-decomposition-pattern
     - apex/apex-collections-patterns
-    - apex/apex-cpu-and-heap-optimization
-    - apex/apex-design-patterns
     - apex/apex-dynamic-soql-binding-safety
-    - apex/apex-execute-anonymous
-    - apex/apex-limits-monitoring
-    - apex/apex-performance-profiling
     - apex/apex-polymorphic-soql
-    - apex/apex-security-patterns
     - apex/apex-soql-relationship-queries
-    - apex/apex-stripinaccessible-and-fls-enforcement
     - apex/batch-apex-patterns
-    - apex/cross-object-formula-and-rollup-performance
     - apex/dynamic-apex
     - apex/formula-field-performance-and-limits
-    - apex/governor-limit-recovery-patterns
     - apex/governor-limits
-    - apex/platform-cache
-    - apex/recursive-trigger-prevention
     - apex/soql-aggregate-field-type-support
     - apex/soql-date-functions
     - apex/soql-for-view-and-for-reference
@@ -85,56 +72,42 @@ Scans a user-specified scope (file, folder, or entire `force-app/`) for SOQL ant
 3. `agents/_shared/REFUSAL_CODES.md`
 
 ### Core SOQL optimization
-4. `skills/data/soql-query-optimization`
-5. `skills/data/custom-index-requests`
-6. `skills/admin/data-skew-and-sharing-performance`
-7. `skills/apex/soql-fundamentals`
-8. `skills/apex/soql-security`
-9. `skills/apex/apex-soql-relationship-queries`
-10. `skills/apex/apex-aggregate-queries`
-11. `skills/apex/apex-polymorphic-soql`
+4. `skills/data/soql-query-optimization` — the selectivity model every rewrite in this agent is scored against
+5. `skills/data/custom-index-requests` — when the right fix is an index request rather than a query rewrite
+6. `skills/admin/data-skew-and-sharing-performance` — sharing-driven query cost that no rewrite removes — recognise it before promising a speedup
+7. `skills/apex/soql-fundamentals` — the syntax surface being rewritten, including the clauses that quietly defeat an index
+8. `skills/apex/soql-security` — a rewrite that drops `WITH USER_MODE` is a security regression sold as an optimization
+9. `skills/apex/apex-soql-relationship-queries` — parent/child traversal versus a second query — the most common rewrite this agent proposes
+10. `skills/apex/apex-aggregate-queries` — pushing counting and grouping into the query instead of looping in Apex
+11. `skills/apex/apex-polymorphic-soql` — `TYPEOF` on polymorphic lookups, where a naive relationship rewrite silently changes the result set
 12. `skills/apex/soql-null-ordering-patterns` — explicit NULLS clause + Id tiebreaker for stable + paginated results
 
 ### Dynamic SOQL safety (concatenation rewrites)
-13. `skills/apex/dynamic-apex`
-14. `skills/apex/apex-dynamic-soql-binding-safety`
+13. `skills/apex/dynamic-apex` — the dynamic query surfaces that have to be treated differently from static SOQL
+14. `skills/apex/apex-dynamic-soql-binding-safety` — the bind-variable rewrite that makes a dynamic query safe without giving up the filter
 
 ### Centralization pattern (when to recommend a Selector)
-15. `skills/apex/apex-design-patterns`
-16. `skills/apex/apex-class-decomposition-pattern`
-17. `templates/apex/BaseSelector.cls`
+15. `templates/apex/BaseSelector.cls`
 
 ### Bulk-out-of-loop refactor target
-18. `skills/apex/apex-collections-patterns`
-19. `skills/apex/trigger-framework` — one-query-per-context discipline
-20. `skills/apex/recursive-trigger-prevention` — re-query on re-entry
-21. `skills/apex/batch-apex-patterns` — Database.getQueryLocator usage
+16. `skills/apex/apex-collections-patterns` — the map/set idioms behind every query-out-of-loop refactor this agent emits
+17. `skills/apex/trigger-framework` — one-query-per-context discipline
+18. `skills/apex/batch-apex-patterns` — Database.getQueryLocator usage
 
 ### Governor / performance context
-22. `skills/apex/governor-limits`
-23. `skills/apex/governor-limit-recovery-patterns`
-24. `skills/apex/apex-limits-monitoring`
-25. `skills/apex/apex-cpu-and-heap-optimization`
-26. `skills/apex/apex-performance-profiling`
-27. `skills/apex/platform-cache` — cache vs query trade-off
-
-### Security wrap on SOQL fixes
-28. `skills/apex/apex-security-patterns` — for `WITH USER_MODE` / `WITH SECURITY_ENFORCED` enforcement
-29. `skills/apex/apex-stripinaccessible-and-fls-enforcement`
+19. `skills/apex/governor-limits` — the limit budget the optimization is buying headroom against — the number the report has to move
 
 ### Edge cases
-30. `skills/apex/formula-field-performance-and-limits` — when WHERE references formula fields
-31. `skills/apex/cross-object-formula-and-rollup-performance` — cross-object formula query cost
-32. `skills/apex/apex-execute-anonymous` — manual query verification helpers
-33. `skills/apex/soql-outer-join-null-semantics` — soql outer join null semantics
-34. `skills/apex/soql-object-limits-and-restrictions` — soql object limits and restrictions
-35. `skills/apex/soql-string-escaping-and-reserved-characters` — soql string escaping and reserved characters
-36. `skills/apex/soql-format-function-localization` — soql format function localization
-37. `skills/apex/soql-using-scope-clause` — soql using scope clause
-38. `skills/apex/soql-for-view-and-for-reference` — soql for view and for reference
-39. `skills/apex/soql-multiselect-picklist-queries` — soql multiselect picklist queries
-40. `skills/apex/soql-aggregate-field-type-support` — soql aggregate field type support
-41. `skills/apex/soql-date-functions` — soql date functions
+20. `skills/apex/formula-field-performance-and-limits` — when WHERE references formula fields
+21. `skills/apex/soql-outer-join-null-semantics` — a child-relationship filter does not behave like a SQL outer join; rewrites that assume it drop rows
+22. `skills/apex/soql-object-limits-and-restrictions` — objects on which the usual optimizations are simply unavailable, so the recommendation has to change
+23. `skills/apex/soql-string-escaping-and-reserved-characters` — required whenever the rewrite keeps any dynamic component instead of eliminating it
+24. `skills/apex/soql-format-function-localization` — `FORMAT()` returns a localized string, so the result cannot be filtered, sorted or compared downstream
+25. `skills/apex/soql-using-scope-clause` — `USING SCOPE` narrows the row set before filters and is often the cheapest fix available
+26. `skills/apex/soql-for-view-and-for-reference` — `FOR VIEW` / `FOR REFERENCE` add write cost to a read query — a hidden multiplier on a hot path
+27. `skills/apex/soql-multiselect-picklist-queries` — `INCLUDES` / `EXCLUDES` are never selective — know that before recommending one as the fix
+28. `skills/apex/soql-aggregate-field-type-support` — which field types aggregate at all; an aggregate rewrite that cannot compile is not an optimization
+29. `skills/apex/soql-date-functions` — date functions in a WHERE clause defeat the index unless written the supported way
 
 ---
 
@@ -245,7 +218,7 @@ Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md`.
 Per `agents/_shared/DELIVERABLE_CONTRACT.md`:
 
 - **Canonical data surface:** this agent's declared probes + the MCP tool set. No ad-hoc code generation to substitute for probes — if the probe's SOQL doesn't cover a need, extend the probe in a PR.
-- **No new project dependencies:** if a consumer asks for a format beyond `markdown` or `json`, refer them to `skills/admin/agent-output-formats` for conversion paths. Do NOT run `npm install` / `pip install` in the consumer's project.
+- **No new project dependencies:** this agent does NOT run `npm install` / `pip install` in the consumer's project. Converting the canonical `markdown` / `json` deliverable to any other format is a caller-side concern — the conversion-path pointer lives in `agents/_shared/DELIVERABLE_CONTRACT.md` § See also.
 - **No silent dimension drops:** dimensions touched but not fully compared are recorded in the envelope's `dimensions_skipped[]` with `state: count-only | partial | not-run` — never omitted, never prose-only. Dimensions: `query-in-loop`, `selectivity`, `field-projection`, `security-clause`, `dynamic-soql-safety`, `pagination`, `aggregation`, `relationship-shape`, `formula-references`, `centralization`. Record skipped dimensions with reason (e.g. dynamic SOQL → `selectivity` = `not-run`).
 
 ## Escalation / Refusal Rules

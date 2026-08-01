@@ -113,8 +113,8 @@ Dispatches one of the audit domains in the [`audit_harness`](../_shared/harnesse
 37. `skills/admin/reports-and-dashboards` — Analytics/reporting: Reports and dashboards
 38. `skills/admin/reports-and-dashboards-fundamentals` — Analytics/reporting: Reports and dashboards fundamentals
 39. `skills/security/dynamic-sharing-recalculation` — Sharing/security: Dynamic sharing recalculation
-40. `skills/admin/global-search-configuration` — global search configuration
-41. `skills/admin/related-list-configuration` — related list configuration
+40. `skills/admin/global-search-configuration` — search-layout and searchable-field settings the list-view and record-page audit domains both depend on
+41. `skills/admin/related-list-configuration` — related-list scope for the record-page audit domain — a page can look clean while its related lists carry the debt
 
 ---
 
