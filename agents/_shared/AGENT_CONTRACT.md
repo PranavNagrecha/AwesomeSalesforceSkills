@@ -147,6 +147,33 @@ Citations are data, not prose. Every output ends with a `citations[]` block wher
 
 9. **Return a report the user can paste into a PR.** Every output ends with a "Citations" block listing every skill id, template path, probe id, and decision tree branch the agent consulted — structured per the Citations schema above.
 
+10. **The Apex security idiom is canonical here, not restated per agent.** Any agent that reads, writes, or scores Apex SOQL / SOSL / DML links [Apex security idiom by API version](#apex-security-idiom-by-api-version) rather than repeating the rule in its own Plan. The idiom is version-gated and changed in Summer '26; six divergent copies is exactly how the previous version went stale in-place.
+
+11. **Every Apex identifier in a Plan step is copied, never recalled.** Class names, method names, parameter lists, and enum values that appear in a Plan step must be pasted from the `templates/apex/**/*.cls` file the step cites, or from official Salesforce documentation named in the same step. Writing a plausible-sounding name from memory is worse than writing none: the agent hands it to the user as finished work, and it does not compile. This rule is mechanically checkable — extract every `Identifier.method` token from an AGENT.md's Plan sections and grep it against `templates/apex/**/*.cls` plus a short allowlist of platform namespaces (`System`, `Schema`, `Security`, `Database`, `Test`, `Limits`, `Messaging`, `ConnectApi`, `Http*`) — so a future validator can enforce it instead of leaving it to review. Names that reached shipped agents before this rule existed, none of which exist in Apex: `stripInaccessibleFields`, `SecurityUtils.requireUpdateable`, `TestDataFactory.accounts(200)`, `MockHttpResponseGenerator.forEndpoint(…)`, `TestUserFactory.standardUser()`, `Test.setMock(ConnectApi.ConnectApi.class, …)`.
+
+---
+
+## Apex security idiom by API version
+
+Canonical. Apex agents cite this section; they do not restate it.
+
+The controlling fact is the **`apiVersion` in the class's `.cls-meta.xml`**, not the org's release. A Summer '26 org runs a class pinned to 58.0 quite happily, and that class keeps the older behaviour. An agent that cannot see the `apiVersion` says so and states which row it assumed.
+
+| Class `apiVersion` | Default access mode | Read idiom | Write idiom | `WITH SECURITY_ENFORCED` |
+|---|---|---|---|---|
+| **67.0+** (Summer '26+) | **User mode.** SOQL, SOSL, DML, and `Database` methods enforce the running user's sharing rules, FLS, and object permissions with no keyword at all | `WITH USER_MODE` to state the intent explicitly; `WITH SYSTEM_MODE` plus a `// reason:` comment to opt out | `as user` / `as system`, or `AccessLevel.USER_MODE` on `Database` methods | **Does not compile.** Removed in 67.0. The compiler emits `WITH SECURITY_ENFORCED is no longer supported, use WITH USER_MODE instead` |
+| **57.0 – 66.0** | System mode | `WITH USER_MODE` — GA since Spring '23 (API 57.0) | `as user`, or `AccessLevel.USER_MODE` on `Database` methods | Compiles, but is the weaker construct: it checks only the `SELECT` list, mishandles polymorphic fields, and reports one violation rather than all. Legacy — migrate it |
+| **≤ 56.0** | System mode | `WITH SECURITY_ENFORCED`, or `Security.stripInaccessible` on the result (48.0+) | `Security.stripInaccessible(AccessType.CREATABLE, records).getRecords()` (48.0+); below that, explicit `Schema.DescribeFieldResult` checks | The idiom available at this version. Prefer raising the class's `apiVersion` over hardening it in place |
+
+What follows from the table:
+
+- **Never emit `WITH SECURITY_ENFORCED` into new or rewritten code.** `WITH USER_MODE` is the default read idiom for every class an agent authors, at every version from 57.0 up.
+- **A scanner flags `WITH SECURITY_ENFORCED` rather than scoring it clean.** On a 67.0+ class it is P0 — a compile failure, not a style note. On 57.0–66.0 it is P2 tech debt with a named migration. Treating its presence as evidence of a secure query is a defect in the scanner, at every version.
+- **Default user mode is not permission to drop enforcement.** A 67.0 class still needs `Security.stripInaccessible` on write paths that assemble records from user input: user mode throws and fails the whole DML, while `stripInaccessible` removes the inaccessible fields and continues. Choose per `skills/apex/apex-stripinaccessible-and-fls-enforcement` — the choice is about whether silent partial success is acceptable, and default user mode does not decide it.
+- **`Security.stripInaccessible(AccessType, records)` returns an `SObjectAccessDecision`.** Operate on `.getRecords()`; DML on the original list is unenforced. There is no `stripInaccessibleFields`.
+
+Official sources: *Database Operations Run in User Mode by Default, Not System Mode* (`release-notes.rn_apex_default_user_mode.htm`, Summer '26); *The WITH SECURITY_ENFORCED SOQL Clause Is Removed* (`release-notes.rn_apex_removed_withSecurityEnforced.htm`, Summer '26); *Secure Apex Code with User Mode Database Operations (Generally Available)* (`release-notes.rn_apex_User_Mode_GA.htm`, Spring '23); *Enforcing Object and Field Permissions in Apex* (Lightning Web Components Developer Guide).
+
 ---
 
 ## Anti-patterns

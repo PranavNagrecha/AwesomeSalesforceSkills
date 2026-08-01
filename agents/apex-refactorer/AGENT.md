@@ -215,8 +215,8 @@ Cross-reference each shape against `templates/apex/`:
 |---|---|---|
 | Trigger body | `templates/apex/TriggerHandler.cls` | Move all logic into a new `<Object>TriggerHandler extends TriggerHandler` class; trigger body becomes `new <Object>TriggerHandler().run();` |
 | Handler with ad-hoc dispatch | `TriggerHandler` | Replace dispatch with the template's virtual methods (`beforeInsert`, `afterUpdate`, etc.); add `TriggerControl` check if missing |
-| Service | `BaseService.cls` | Subclass `BaseService`; move DML through `SecurityUtils.requireCreatable/Updateable/Deletable` |
-| Selector | `BaseSelector.cls` | Subclass `BaseSelector`; centralize SOQL; enforce `WITH SECURITY_ENFORCED` or `stripInaccessibleFields` per `apex-security-patterns` |
+| Service | `BaseService.cls` | Subclass `BaseService`; move DML through `SecurityUtils.requireCreatable` / `requireUpdatable` / `requireDeletable` — spellings copied from `templates/apex/SecurityUtils.cls`, note `Updatable` not `Updateable` |
+| Selector | `BaseSelector.cls` | Subclass `BaseSelector`; centralize SOQL; enforce `WITH USER_MODE` per `apex-security-patterns`, or scrub the result with `Security.stripInaccessible(AccessType.READABLE, records).getRecords()` where the caller needs strip-and-continue instead of throw. Never emit `WITH SECURITY_ENFORCED` — see `AGENT_CONTRACT.md` § *Apex security idiom by API version* |
 | HTTP callout | `HttpClient.cls` | Replace raw `Http.send()` with `HttpClient` calls; move endpoints to Named Credentials |
 | Any | `ApplicationLogger.cls` | Replace `System.debug` with `ApplicationLogger.info/warn/error` |
 
@@ -224,12 +224,14 @@ Cross-reference each shape against `templates/apex/`:
 
 Per `skills/apex/apex-security-patterns`, every DML path must call `SecurityUtils` unless the class runs `with sharing` AND all fields are system-managed.
 
+Which idiom to insert depends on the class's `apiVersion` in its `.cls-meta.xml`, not on the org's release. Read it, then follow the table in `AGENT_CONTRACT.md` § *Apex security idiom by API version*. Two consequences for a refactor specifically: a class already carrying `WITH SECURITY_ENFORCED` is rewritten to `WITH USER_MODE` as part of this step, and at API 67.0+ that rewrite is required for the class to compile at all — report it as a correctness fix, not a hardening suggestion. If the meta file is not in the input scope, ask for it rather than guessing the version.
+
 ### Step 4 — Generate the test class
 
 Invoke the `test-class-generator` agent's plan inline (do not auto-chain to a separate agent — just apply its rules):
-- Use `templates/apex/tests/TestDataFactory.cls` for data
+- Use `templates/apex/tests/TestDataFactory.cls` for data — `createAccounts(count, overrides)`, `createContacts(count, accountId, overrides)`, and the sibling `createX` methods; every one returns a `List` and does NOT insert
 - Use `templates/apex/tests/BulkTestPattern.cls` for the 200-record test
-- Use `TestUserFactory` for `System.runAs` coverage of non-admin users
+- Use `TestUserFactory.createUser(profileName, permissionSetNames)` for `System.runAs` coverage of non-admin users
 - Target ≥ 85% coverage; name the test `<OriginalClass>_Test`
 
 ### Step 5 — Optional: check the org

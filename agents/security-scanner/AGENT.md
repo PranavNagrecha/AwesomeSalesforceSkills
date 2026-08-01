@@ -47,6 +47,7 @@ dependencies:
     - security/xss-and-injection-prevention
   shared:
     - AGENT_CONTRACT.md
+    - AGENT_RULES.md
     - DELIVERABLE_CONTRACT.md
     - REFUSAL_CODES.md
   probes:
@@ -82,59 +83,60 @@ Walks a `force-app/` tree and flags CRUD/FLS violations, sharing leaks, hardcode
 
 ### Contract layer
 1. `agents/_shared/AGENT_CONTRACT.md`
-2. `agents/_shared/DELIVERABLE_CONTRACT.md`
-3. `agents/_shared/REFUSAL_CODES.md`
+2. `AGENT_RULES.md`
+3. `agents/_shared/DELIVERABLE_CONTRACT.md`
+4. `agents/_shared/REFUSAL_CODES.md`
 
 ### Sharing, CRUD & FLS
-4. `skills/apex/apex-security-patterns` — the enforcement baseline every finding is measured against, and the source of the remediation snippets
-5. `skills/apex/apex-with-without-sharing-decision` — a class with no sharing declaration inherits its caller's context — the most common silent leak in a scan
-6. `skills/apex/apex-stripinaccessible-and-fls-enforcement` — the canonical remediation this agent emits for an FLS finding
-7. `skills/apex/apex-user-and-permission-checks` — distinguishes a CRUD check that actually gates the DML from one that only looks like it does
-8. `skills/apex/apex-custom-permissions-check` — custom-permission gates are frequently the only control on an exposed method; a scan must recognise a correct one
-9. `skills/apex/apex-managed-sharing` — hand-rolled Apex sharing is where a leak hides from any declarative review
-10. `skills/apex/soql-security` — `WITH USER_MODE` / `WITH SECURITY_ENFORCED` semantics, and the cases where neither enforces what the author assumed
-11. `skills/security/guest-user-security-audit` — Experience Cloud guest user 2021 changes audit — guest-reachable Apex is the highest-severity finding class
-12. `standards/decision-trees/sharing-selection.md` — cite the branch when a finding's remediation changes the sharing model
+5. `skills/apex/apex-security-patterns` — the enforcement baseline every finding is measured against, and the source of the remediation snippets
+6. `skills/apex/apex-with-without-sharing-decision` — a class with no sharing declaration inherits its caller's context — the most common silent leak in a scan
+7. `skills/apex/apex-stripinaccessible-and-fls-enforcement` — the canonical remediation this agent emits for an FLS finding
+8. `skills/apex/apex-user-and-permission-checks` — distinguishes a CRUD check that actually gates the DML from one that only looks like it does
+9. `skills/apex/apex-custom-permissions-check` — custom-permission gates are frequently the only control on an exposed method; a scan must recognise a correct one
+10. `skills/apex/apex-managed-sharing` — hand-rolled Apex sharing is where a leak hides from any declarative review
+11. `skills/apex/soql-security` — `WITH USER_MODE` semantics and the cases where it does not enforce what the author assumed; version gating for the removed `WITH SECURITY_ENFORCED` is in `AGENT_CONTRACT.md`, not here
+12. `skills/security/guest-user-security-audit` — Experience Cloud guest user 2021 changes audit — guest-reachable Apex is the highest-severity finding class
+13. `standards/decision-trees/sharing-selection.md` — cite the branch when a finding's remediation changes the sharing model
 
 ### Injection & untrusted input
-13. `skills/apex/dynamic-apex` — the dynamic SOQL / describe surfaces the scan has to enumerate before it can judge them
-14. `skills/apex/apex-dynamic-soql-binding-safety` — bind variables and `Database.queryWithBinds` — the remediation for every concatenated query finding
-15. `skills/apex/soql-string-escaping-and-reserved-characters` — `String.escapeSingleQuotes` is necessary but not sufficient; this is where it still lets injection through
-16. `skills/security/xss-and-injection-prevention` — the non-SOQL injection classes — XSS in VF/Aura/LWC, SOSL, and formula injection
-17. `skills/security/secure-coding-review-checklist` — the canonical checklist the scan enumerates against, so the finding set is complete rather than opportunistic
+14. `skills/apex/dynamic-apex` — the dynamic SOQL / describe surfaces the scan has to enumerate before it can judge them
+15. `skills/apex/apex-dynamic-soql-binding-safety` — bind variables and `Database.queryWithBinds` — the remediation for every concatenated query finding
+16. `skills/apex/soql-string-escaping-and-reserved-characters` — `String.escapeSingleQuotes` is necessary but not sufficient; this is where it still lets injection through
+17. `skills/security/xss-and-injection-prevention` — the non-SOQL injection classes — XSS in VF/Aura/LWC, SOSL, and formula injection
+18. `skills/security/secure-coding-review-checklist` — the canonical checklist the scan enumerates against, so the finding set is complete rather than opportunistic
 
 ### Secrets & callouts
-18. `skills/apex/apex-secrets-and-protected-cmdt` — protected Custom Metadata is the sanctioned home for a secret; anything else in source is a finding
-19. `skills/apex/apex-named-credentials-patterns` — a callout that assembles its own endpoint or Authorization header bypasses the platform's credential store
-20. `skills/apex/callouts-and-http-integrations` — the callout surfaces to scan, including the ones that do not look like callouts
-21. `skills/integration/named-credentials-setup` — the org-side configuration a Named Credential remediation actually requires, so the fix is not hand-waved
-22. `skills/security/service-account-credential-rotation` — a credential stored correctly but impossible to rotate is still a finding
-23. `skills/apex/apex-encoding-and-crypto` — hand-rolled crypto, weak algorithms and `Crypto` class misuse — wrong in ways that compile fine
+19. `skills/apex/apex-secrets-and-protected-cmdt` — protected Custom Metadata is the sanctioned home for a secret; anything else in source is a finding
+20. `skills/apex/apex-named-credentials-patterns` — a callout that assembles its own endpoint or Authorization header bypasses the platform's credential store
+21. `skills/apex/callouts-and-http-integrations` — the callout surfaces to scan, including the ones that do not look like callouts
+22. `skills/integration/named-credentials-setup` — the org-side configuration a Named Credential remediation actually requires, so the fix is not hand-waved
+23. `skills/security/service-account-credential-rotation` — a credential stored correctly but impossible to rotate is still a finding
+24. `skills/apex/apex-encoding-and-crypto` — hand-rolled crypto, weak algorithms and `Crypto` class misuse — wrong in ways that compile fine
 
 ### Hardcoded IDs & configuration
-24. `skills/apex/apex-hardcoded-id-elimination` — hardcoded Profile / RecordType / Group ids break across orgs and often encode a privilege assumption
-25. `skills/apex/custom-metadata-in-apex` — the replacement for those literals, and how to reference it without a query per record
+25. `skills/apex/apex-hardcoded-id-elimination` — hardcoded Profile / RecordType / Group ids break across orgs and often encode a privilege assumption
+26. `skills/apex/custom-metadata-in-apex` — the replacement for those literals, and how to reference it without a query per record
 
 ### Exposed surfaces
-26. `skills/apex/apex-rest-services` — `@RestResource` is reachable by anyone with API access; the scan must judge its own authorisation, not the org's
-27. `skills/apex/visualforce-fundamentals` — VF pages carry their own escaping rules and controller sharing context
-28. `skills/security/visualforce-security-and-modernization` — the VF-specific finding set: `escape=false`, `<apex:includeScript>` on user data, legacy controller patterns
-29. `skills/security/csp-and-trusted-urls` — a component that loads third-party script needs the CSP finding stated in terms the admin can act on
-30. `skills/apex/apex-execute-anonymous` — anonymous Apex checked into source runs as whoever executes it — a distinct posture finding
+27. `skills/apex/apex-rest-services` — `@RestResource` is reachable by anyone with API access; the scan must judge its own authorisation, not the org's
+28. `skills/apex/visualforce-fundamentals` — VF pages carry their own escaping rules and controller sharing context
+29. `skills/security/visualforce-security-and-modernization` — the VF-specific finding set: `escape=false`, `<apex:includeScript>` on user data, legacy controller patterns
+30. `skills/security/csp-and-trusted-urls` — a component that loads third-party script needs the CSP finding stated in terms the admin can act on
+31. `skills/apex/apex-execute-anonymous` — anonymous Apex checked into source runs as whoever executes it — a distinct posture finding
 
 ### Encryption & data handling
-31. `skills/security/platform-encryption` — encrypted fields change what a query may filter, sort or index on — a remediation that ignores that is a broken fix
-32. `skills/security/encrypted-field-query-patterns` — the concrete filter/sort restrictions, so an encryption-aware finding names the working alternative
-33. `skills/apex/error-handling-framework` — an exception surfaced to a user that carries a query, a record id or a stack trace is an information-disclosure finding
-34. `skills/architect/zero-trust-salesforce-patterns` — frame TSP/RTEM/HA-Session findings as zero-trust composition (which leg the finding belongs to); flag IdentityVerificationEvent / MobileEmailEvent as detect-only
+32. `skills/security/platform-encryption` — encrypted fields change what a query may filter, sort or index on — a remediation that ignores that is a broken fix
+33. `skills/security/encrypted-field-query-patterns` — the concrete filter/sort restrictions, so an encryption-aware finding names the working alternative
+34. `skills/apex/error-handling-framework` — an exception surfaced to a user that carries a query, a record id or a stack trace is an information-disclosure finding
+35. `skills/architect/zero-trust-salesforce-patterns` — frame TSP/RTEM/HA-Session findings as zero-trust composition (which leg the finding belongs to); flag IdentityVerificationEvent / MobileEmailEvent as detect-only
 
 ### Probes
-35. `agents/_shared/probes/apex-references-to-field.md` — for field-impact analysis on FLS violations
-36. `agents/_shared/probes/permission-set-assignment-shape.md` — for exposed-endpoint analysis (who can hit it)
+36. `agents/_shared/probes/apex-references-to-field.md` — for field-impact analysis on FLS violations
+37. `agents/_shared/probes/permission-set-assignment-shape.md` — for exposed-endpoint analysis (who can hit it)
 
 ### Templates
-37. `templates/apex/SecurityUtils.cls`
-38. `templates/apex/HttpClient.cls`
+38. `templates/apex/SecurityUtils.cls`
+39. `templates/apex/HttpClient.cls`
 
 ---
 
@@ -174,7 +176,7 @@ For each DML statement (`insert`, `update`, `upsert`, `delete`, `Database.insert
 
 | Check | Signal | Severity |
 |---|---|---|
-| **no-flsd-on-dml** | No `SecurityUtils.requireCreatable/Updateable/Deletable` nor `Schema.sObjectType.<X>.isCreateable()` nor `USER_MODE` on the call | P1 |
+| **no-flsd-on-dml** | Class below API 67.0 and none of: `SecurityUtils.requireCreatable` / `requireUpdatable` / `requireDeletable` (spellings per `templates/apex/SecurityUtils.cls`), a `Schema.SObjectType.<X>.getDescribe().isCreateable()` check, `as user`, or `AccessLevel.USER_MODE` on the call | P1 |
 | **bulk-stripInaccessible-missing** | DML on user-supplied data without `Security.stripInaccessible` | P1 (cite `apex-stripinaccessible-and-fls-enforcement`) |
 | **stripInaccessible-on-original** | `Security.stripInaccessible(...).getRecords()` chain, but DML executed on original parameter | P0 |
 | **dml-on-setup-and-data** | Same method does DML on Setup + non-Setup objects without `System.runAs` boundary | P1 |
@@ -182,10 +184,14 @@ For each DML statement (`insert`, `update`, `upsert`, `delete`, `Database.insert
 
 ### Step 3 — SOQL-level scan
 
+Read the class's `apiVersion` from its `.cls-meta.xml` before scoring any row here — the idiom is version-gated per `AGENT_CONTRACT.md` § *Apex security idiom by API version*. If the meta file is not in scope, score against the ≤66.0 rows and say the version was unknown.
+
 | Check | Signal | Severity |
 |---|---|---|
-| **soql-no-security** | Query lacks `WITH SECURITY_ENFORCED` / `USER_MODE` and no explicit `stripInaccessibleFields` on the result | P1 |
-| **soql-system-mode-unjustified** | `WITH SYSTEM_MODE` / `AccessLevel.SYSTEM_MODE` without `// reason:` comment | P1 |
+| **soql-security-enforced-removed** | `WITH SECURITY_ENFORCED` on a class at API 67.0+ — the clause was removed in 67.0 and the class does not compile | P0 |
+| **soql-security-enforced-legacy** | `WITH SECURITY_ENFORCED` on a class at API 57.0–66.0 — compiles, but checks only the `SELECT` list, mishandles polymorphic fields, and reports one violation rather than all. Migrate to `WITH USER_MODE` | P2 |
+| **soql-no-security** | Class below API 67.0, query lacks `WITH USER_MODE` / `AccessLevel.USER_MODE`, and no `Security.stripInaccessible(...).getRecords()` applied to the result | P1 |
+| **soql-system-mode-unjustified** | `WITH SYSTEM_MODE` / `AccessLevel.SYSTEM_MODE` without `// reason:` comment. At API 67.0+ this is the explicit opt-out of the default and always needs a justification | P1 |
 | **soql-all-rows-unjustified** | `ALL ROWS` keyword without `// reason:` (returns soft-deleted records — privacy implications) | P1 |
 
 ### Step 4 — Config-level scan

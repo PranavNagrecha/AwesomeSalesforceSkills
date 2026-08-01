@@ -51,6 +51,7 @@ dependencies:
     - apex/trigger-framework
   shared:
     - AGENT_CONTRACT.md
+    - AGENT_RULES.md
     - DELIVERABLE_CONTRACT.md
     - REFUSAL_CODES.md
   probes:
@@ -84,67 +85,68 @@ Finds every Apex trigger on a given sObject across the user's `force-app` tree, 
 
 ### Contract layer
 1. `agents/_shared/AGENT_CONTRACT.md`
-2. `agents/_shared/DELIVERABLE_CONTRACT.md`
-3. `agents/_shared/REFUSAL_CODES.md`
+2. `AGENT_RULES.md`
+3. `agents/_shared/DELIVERABLE_CONTRACT.md`
+4. `agents/_shared/REFUSAL_CODES.md`
 
 ### Trigger framework canon
-4. `skills/apex/trigger-framework`
-5. `skills/apex/recursive-trigger-prevention`
-6. `skills/apex/apex-trigger-context-variables`
-7. `skills/apex/apex-trigger-bypass-and-killswitch-patterns`
-8. `skills/apex/order-of-execution-deep-dive`
-9. `skills/apex/trigger-and-flow-coexistence`
+5. `skills/apex/trigger-framework`
+6. `skills/apex/recursive-trigger-prevention`
+7. `skills/apex/apex-trigger-context-variables`
+8. `skills/apex/apex-trigger-bypass-and-killswitch-patterns`
+9. `skills/apex/order-of-execution-deep-dive`
+10. `skills/apex/trigger-and-flow-coexistence`
 
 ### Architecture
-10. `skills/apex/apex-design-patterns`
-11. `skills/apex/apex-collections-patterns`
+11. `skills/apex/apex-design-patterns`
+12. `skills/apex/apex-collections-patterns`
 
 ### Cross-automation visibility
-12. `agents/_shared/probes/automation-graph-for-sobject.md` — finds Flows / PB / WF on the same SObject
-13. `standards/decision-trees/automation-selection.md` — when consolidating reveals the wrong tier of automation
+13. `agents/_shared/probes/automation-graph-for-sobject.md` — finds Flows / PB / WF on the same SObject
+14. `standards/decision-trees/automation-selection.md` — when consolidating reveals the wrong tier of automation
 
 ### Vertical-specific trigger patterns (object-aware mode)
-14. `skills/apex/case-trigger-patterns` — Case-specific
-15. `skills/apex/opportunity-trigger-patterns` — Opportunity-specific
-16. `skills/apex/lead-conversion-customization` — Lead-specific
-17. `skills/apex/entitlement-apex-hooks` — Case milestone hooks
-18. `skills/apex/npsp-trigger-framework-extension` — NPSP TDTM-specific (managed-package coexistence)
+15. `skills/apex/case-trigger-patterns` — Case-specific
+16. `skills/apex/opportunity-trigger-patterns` — Opportunity-specific
+17. `skills/apex/lead-conversion-customization` — Lead-specific
+18. `skills/apex/entitlement-apex-hooks` — Case milestone hooks
+19. `skills/apex/npsp-trigger-framework-extension` — NPSP TDTM-specific (managed-package coexistence)
 
 ### Async offload (when triggers should defer work)
-19. `skills/apex/async-apex`
-20. `skills/apex/apex-future-method-patterns`
-21. `skills/apex/apex-queueable-patterns`
-22. `skills/apex/platform-events-apex`
-23. `skills/apex/change-data-capture-apex`
+20. `skills/apex/async-apex`
+21. `skills/apex/apex-future-method-patterns`
+22. `skills/apex/apex-queueable-patterns`
+23. `skills/apex/platform-events-apex`
+24. `skills/apex/change-data-capture-apex`
 
 ### DML / locking under consolidated triggers
-24. `skills/apex/apex-dml-patterns`
-25. `skills/apex/apex-savepoint-and-rollback`
-26. `skills/apex/mixed-dml-and-setup-objects`
-27. `skills/apex/record-locking-and-contention`
+25. `skills/apex/apex-dml-patterns`
+26. `skills/apex/apex-savepoint-and-rollback`
+27. `skills/apex/mixed-dml-and-setup-objects`
+28. `skills/apex/record-locking-and-contention`
 
 ### Error handling / governance
-28. `skills/apex/error-handling-framework`
-29. `skills/apex/exception-handling`
-30. `skills/apex/common-apex-runtime-errors`
-31. `skills/apex/custom-logging-and-monitoring` — Application_Log__c
-32. `skills/apex/custom-metadata-in-apex` — Trigger_Setting__mdt access pattern
-33. `skills/apex/feature-flags-and-kill-switches`
-34. `skills/apex/governor-limits`
+29. `skills/apex/error-handling-framework`
+30. `skills/apex/exception-handling`
+31. `skills/apex/common-apex-runtime-errors`
+32. `skills/apex/custom-logging-and-monitoring` — Application_Log__c
+33. `skills/apex/custom-metadata-in-apex` — Trigger_Setting__mdt access pattern
+34. `skills/apex/feature-flags-and-kill-switches`
+35. `skills/apex/governor-limits`
 
 ### SOQL inside trigger handlers
-35. `skills/apex/soql-fundamentals`
-36. `skills/apex/apex-aggregate-queries`
+36. `skills/apex/soql-fundamentals`
+37. `skills/apex/apex-aggregate-queries`
 
 ### Tests after consolidation
-37. `skills/apex/test-class-standards`
-38. `skills/apex/test-data-factory-patterns`
-39. `skills/apex/apex-test-setup-patterns`
+38. `skills/apex/test-class-standards`
+39. `skills/apex/test-data-factory-patterns`
+40. `skills/apex/apex-test-setup-patterns`
 
 ### Templates
-40. `templates/apex/TriggerHandler.cls`
-41. `templates/apex/TriggerControl.cls`
-42. `templates/apex/cmdt/Trigger_Setting__mdt.object-meta.xml`
+41. `templates/apex/TriggerHandler.cls`
+42. `templates/apex/TriggerControl.cls`
+43. `templates/apex/cmdt/Trigger_Setting__mdt.object-meta.xml`
 
 ---
 

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Per-(object, handler) activation switch read by TriggerControl.cls. One record per handler you want to be able to switch off without a deployment. A missing record means ACTIVE - TriggerControl defaults to true on a cache miss.</description>
+    <label>Trigger Setting</label>
+    <pluralLabel>Trigger Settings</pluralLabel>
+    <visibility>Public</visibility>
+</CustomObject>

@@ -46,6 +46,7 @@ dependencies:
     - apex/trigger-framework
   shared:
     - AGENT_CONTRACT.md
+    - AGENT_RULES.md
     - DELIVERABLE_CONTRACT.md
     - REFUSAL_CODES.md
   templates:
@@ -92,75 +93,76 @@ Produces Apex scaffolds for every canonical Apex surface: trigger + handler, ser
 
 ### Contract layer
 1. `agents/_shared/AGENT_CONTRACT.md`
-2. `agents/_shared/DELIVERABLE_CONTRACT.md` — persistence + scope guardrails
-3. `agents/_shared/REFUSAL_CODES.md` — canonical refusal enum
+2. `AGENT_RULES.md`
+3. `agents/_shared/DELIVERABLE_CONTRACT.md` — persistence + scope guardrails
+4. `agents/_shared/REFUSAL_CODES.md` — canonical refusal enum
 
 ### Architecture & decomposition
-4. `skills/apex/apex-design-patterns` — the Domain / Service / Selector separation Step 2's class list assumes
-5. `skills/apex/apex-class-decomposition-pattern` — where the split actually falls for a given feature, so the scaffold is not one god class
+5. `skills/apex/apex-design-patterns` — the Domain / Service / Selector separation Step 2's class list assumes
+6. `skills/apex/apex-class-decomposition-pattern` — where the split actually falls for a given feature, so the scaffold is not one god class
 
 ### Triggers, order of execution, recursion
-6. `skills/apex/trigger-framework` — the handler shape every `kind: trigger` scaffold extends, matching `templates/apex/TriggerHandler.cls`
-7. `skills/apex/order-of-execution-deep-dive` — which context the emitted handler methods may safely mutate, and what a later step will overwrite
-8. `skills/apex/recursive-trigger-prevention` — a fresh trigger scaffold with no re-entry guard will loop the first time a workflow updates its own object
-9. `skills/apex/trigger-and-flow-coexistence` — Step 1 cites this when routing trigger-vs-Flow; a scaffold that ignores an existing Flow on the object double-processes the record
+7. `skills/apex/trigger-framework` — the handler shape every `kind: trigger` scaffold extends, matching `templates/apex/TriggerHandler.cls`
+8. `skills/apex/order-of-execution-deep-dive` — which context the emitted handler methods may safely mutate, and what a later step will overwrite
+9. `skills/apex/recursive-trigger-prevention` — a fresh trigger scaffold with no re-entry guard will loop the first time a workflow updates its own object
+10. `skills/apex/trigger-and-flow-coexistence` — Step 1 cites this when routing trigger-vs-Flow; a scaffold that ignores an existing Flow on the object double-processes the record
 
 ### Async / scheduling / chaining
-10. `skills/apex/async-apex` — async semantics shared by the batch / queueable / schedulable / continuation kinds
-11. `skills/apex/batch-apex-patterns` — start/execute/finish shape and scope sizing for `kind: batch`
-12. `skills/apex/apex-queueable-patterns` — chaining, depth limits and finalizers for `kind: queueable`, the default async scaffold
-13. `standards/decision-trees/async-selection.md` — Step 1 must cite the branch that justifies the chosen async surface
+11. `skills/apex/async-apex` — async semantics shared by the batch / queueable / schedulable / continuation kinds
+12. `skills/apex/batch-apex-patterns` — start/execute/finish shape and scope sizing for `kind: batch`
+13. `skills/apex/apex-queueable-patterns` — chaining, depth limits and finalizers for `kind: queueable`, the default async scaffold
+14. `standards/decision-trees/async-selection.md` — Step 1 must cite the branch that justifies the chosen async surface
 
 ### Callouts & services
-14. `skills/apex/callouts-and-http-integrations` — callout mechanics behind `templates/apex/HttpClient.cls` — the scaffold must never inline HttpRequest
-15. `skills/apex/apex-named-credentials-patterns` — the only acceptable way for an emitted callout to hold an endpoint or a credential
-16. `skills/apex/apex-rest-services` — URL mapping, verb methods and status handling for `kind: rest`
-17. `skills/apex/invocable-methods` — List-in / List-out signature for `kind: invocable`; a single-record signature makes the action non-bulk-safe from day one
-18. `skills/apex/platform-events-apex` — publish + subscribe semantics and replay behaviour for the platform-event and CDC subscriber kinds
+15. `skills/apex/callouts-and-http-integrations` — callout mechanics behind `templates/apex/HttpClient.cls` — the scaffold must never inline HttpRequest
+16. `skills/apex/apex-named-credentials-patterns` — the only acceptable way for an emitted callout to hold an endpoint or a credential
+17. `skills/apex/apex-rest-services` — URL mapping, verb methods and status handling for `kind: rest`
+18. `skills/apex/invocable-methods` — List-in / List-out signature for `kind: invocable`; a single-record signature makes the action non-bulk-safe from day one
+19. `skills/apex/platform-events-apex` — publish + subscribe semantics and replay behaviour for the platform-event and CDC subscriber kinds
 
 ### SOQL / data access
-19. `skills/apex/soql-fundamentals` — relationship, aggregate and bind syntax in every emitted selector
-20. `skills/apex/soql-security` — `WITH USER_MODE` is the Step 3 default — this is what it does and where it is not enough
-21. `skills/apex/apex-collections-patterns` — Step 3 requires bulkification; these are the map/set idioms that make it real rather than a loop with a comment
-22. `skills/apex/apex-dynamic-soql-binding-safety` — bind-safe `Database.queryWithBinds` whenever the selector takes a caller-supplied filter
+20. `skills/apex/soql-fundamentals` — relationship, aggregate and bind syntax in every emitted selector
+21. `skills/apex/soql-security` — `WITH USER_MODE` is the Step 3 default — this is what it does and where it is not enough
+22. `skills/apex/apex-collections-patterns` — Step 3 requires bulkification; these are the map/set idioms that make it real rather than a loop with a comment
+23. `skills/apex/apex-dynamic-soql-binding-safety` — bind-safe `Database.queryWithBinds` whenever the selector takes a caller-supplied filter
 
 ### DML / transactions / locking
-23. `skills/apex/apex-dml-patterns` — partial-success vs all-or-none on the emitted write paths, and how the result is reported
-24. `skills/apex/mixed-dml-and-setup-objects` — any scaffold that touches User / permission-set objects alongside data will fail at runtime without the split
+24. `skills/apex/apex-dml-patterns` — partial-success vs all-or-none on the emitted write paths, and how the result is reported
+25. `skills/apex/mixed-dml-and-setup-objects` — any scaffold that touches User / permission-set objects alongside data will fail at runtime without the split
 
 ### Governor limits / performance
-25. `skills/apex/governor-limits` — the budget the Output Contract's per-class governor-limit estimate is drawn from
-26. `skills/apex/apex-cpu-and-heap-optimization` — CPU and heap are what actually break a bulk scaffold at 200 rows; SOQL count rarely does
+26. `skills/apex/governor-limits` — the budget the Output Contract's per-class governor-limit estimate is drawn from
+27. `skills/apex/apex-cpu-and-heap-optimization` — CPU and heap are what actually break a bulk scaffold at 200 rows; SOQL count rarely does
 
 ### Security
-27. `skills/apex/apex-security-patterns` — the enforcement baseline behind `templates/apex/SecurityUtils.cls`
-28. `skills/apex/apex-with-without-sharing-decision` — keyword choice rationale — `without sharing` is never emitted without a written reason
-29. `skills/apex/apex-stripinaccessible-and-fls-enforcement` — the Step 3 fallback on write paths where `USER_MODE` cannot be used
-30. `standards/decision-trees/sharing-selection.md` — cite the branch when the scaffold's sharing keyword is contested
+28. `skills/apex/apex-security-patterns` — the enforcement baseline behind `templates/apex/SecurityUtils.cls`
+29. `skills/apex/apex-with-without-sharing-decision` — keyword choice rationale — `without sharing` is never emitted without a written reason
+30. `skills/apex/apex-stripinaccessible-and-fls-enforcement` — the Step 3 fallback on write paths where `USER_MODE` cannot be used
+31. `standards/decision-trees/sharing-selection.md` — cite the branch when the scaffold's sharing keyword is contested
 
 ### Error handling / observability
-31. `skills/apex/error-handling-framework` — the exception taxonomy `templates/apex/ApplicationLogger.cls` logs against, so failures are diagnosable in production
+32. `skills/apex/error-handling-framework` — the exception taxonomy `templates/apex/ApplicationLogger.cls` logs against, so failures are diagnosable in production
 
 ### Testing
-32. `skills/apex/test-class-standards` — the ≥85% bar and the assertion style every emitted test must meet
-33. `skills/apex/test-data-factory-patterns` — Step 5 `@TestSetup` builds data through the factory, never inline literals
-34. `skills/apex/apex-test-setup-patterns` — `@TestSetup` vs per-method setup, and when `@TestSetup` silently costs more than it saves
-35. `skills/apex/apex-mocking-and-stubs` — Stub API and `HttpCalloutMock` for the callout and service kinds — a callout scaffold without a mock is untestable
+33. `skills/apex/test-class-standards` — the ≥85% bar and the assertion style every emitted test must meet
+34. `skills/apex/test-data-factory-patterns` — Step 5 `@TestSetup` builds data through the factory, never inline literals
+35. `skills/apex/apex-test-setup-patterns` — `@TestSetup` vs per-method setup, and when `@TestSetup` silently costs more than it saves
+36. `skills/apex/apex-mocking-and-stubs` — Stub API and `HttpCalloutMock` for the callout and service kinds — a callout scaffold without a mock is untestable
 
 ### Templates (canonical building blocks)
-36. `templates/apex/TriggerHandler.cls`
-37. `templates/apex/TriggerControl.cls`
-38. `templates/apex/BaseService.cls`
-39. `templates/apex/BaseSelector.cls`
-40. `templates/apex/BaseDomain.cls`
-41. `templates/apex/ApplicationLogger.cls`
-42. `templates/apex/SecurityUtils.cls`
-43. `templates/apex/HttpClient.cls`
-44. `templates/apex/tests/TestDataFactory.cls`
-45. `templates/apex/tests/TestRecordBuilder.cls`
-46. `templates/apex/tests/MockHttpResponseGenerator.cls`
-47. `templates/apex/tests/TestUserFactory.cls`
-48. `templates/apex/tests/BulkTestPattern.cls`
+37. `templates/apex/TriggerHandler.cls`
+38. `templates/apex/TriggerControl.cls`
+39. `templates/apex/BaseService.cls`
+40. `templates/apex/BaseSelector.cls`
+41. `templates/apex/BaseDomain.cls`
+42. `templates/apex/ApplicationLogger.cls`
+43. `templates/apex/SecurityUtils.cls`
+44. `templates/apex/HttpClient.cls`
+45. `templates/apex/tests/TestDataFactory.cls`
+46. `templates/apex/tests/TestRecordBuilder.cls`
+47. `templates/apex/tests/MockHttpResponseGenerator.cls`
+48. `templates/apex/tests/TestUserFactory.cls`
+49. `templates/apex/tests/BulkTestPattern.cls`
 
 ---
 
@@ -213,7 +215,7 @@ A "feature" rarely maps to one class. Standard decomposition:
 | `iterator` | `<Feature>Iterator.cls implements Iterator<T>` + wrapper Iterable + test |
 | `controller` | `<Feature>Controller.cls` with `@AuraEnabled(cacheable=true)` where safe + test |
 | `callable` | `<Feature>Callable.cls implements Callable` with documented action vocabulary + test covering each action + unknown-action throw |
-| `chatter_poster` | `<Feature>ChatterService.cls` assembling `ConnectApi.FeedItemInput` with `MentionSegmentInput` segments + test using `Test.setMock(ConnectApi.ConnectApi.class, ...)` |
+| `chatter_poster` | `<Feature>ChatterService.cls` assembling `ConnectApi.FeedItemInput` with `MentionSegmentInput` segments + test using the `setTest*` static methods on the ConnectApi class the service calls (e.g. `ConnectApi.ChatterFeeds.setTestGetFeedElementsFromFeed(...)`), per *Testing ConnectApi Code* in the Apex Developer Guide. `Test.setMock` takes `HttpCalloutMock.class` or `WebServiceMock.class` only — it does not mock ConnectApi. Where the called method has no `setTest*` counterpart, put the ConnectApi call behind an injectable seam on the service and assert against the captured input; never reach for `SeeAllData=true` |
 | `notification_sender` | `<Feature>NotificationService.cls` using `Messaging.CustomNotification` with CustomNotificationType lookup by DeveloperName + test |
 | `flow_invoker` | `<Feature>FlowInvoker.cls` wrapping `Flow.Interview.createInterview(name, params).start()` with strict param typing + test |
 
@@ -224,7 +226,7 @@ For each class:
 1. Read the matching template (see Mandatory Reads).
 2. Instantiate: substitute SObject names, feature names, selector/service boundaries.
 3. Wire through `ApplicationLogger` (unless `include_logger=false`).
-4. Wire through `SecurityUtils` for every SOQL / DML path. SOQL uses `WITH USER_MODE` by default, falling back to `Security.stripInaccessible` on write paths. Never emit `WITHOUT SHARING` without an explicit business reason in a comment header.
+4. Wire through `SecurityUtils` for every SOQL / DML path. SOQL uses `WITH USER_MODE` by default, falling back to `Security.stripInaccessible` on write paths. Never emit `WITHOUT SHARING` without an explicit business reason in a comment header. The idiom is gated on the `api_version` this run stamps into the meta XML at Step 4 — check it against `AGENT_CONTRACT.md` § *Apex security idiom by API version*, and never emit `WITH SECURITY_ENFORCED` at any version.
 5. Apply the base class pattern: selectors extend `BaseSelector`, services extend `BaseService`, domains extend `BaseDomain`, trigger handlers extend the template.
 6. Bulkify. Every method that accepts collections iterates over the collection; no single-record paths. Collection size sentinel constants are named, not magic numbers.
 
