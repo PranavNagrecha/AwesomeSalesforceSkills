@@ -12,13 +12,17 @@ Non-obvious Salesforce platform behaviors that cause real production problems wh
 
 ---
 
-## Gotcha 2: Re-Enqueue Does Not Guarantee Any Specific Delay
+## Gotcha 2: The Enqueue Delay Is A Floor In Minutes, Capped At 10
 
-**What happens:** `System.enqueueJob()` places the job on the async Apex queue. The platform schedules it for the next available worker thread — this may be seconds or several minutes later depending on org load. There is no guarantee that a job enqueued with a "2-second backoff" will actually wait 2 seconds.
+**What happens:** two opposite mistakes, both common.
 
-**When it occurs:** Any time a developer communicates retry timing to stakeholders as precise ("it will retry in 10 seconds") or writes tests that assume deterministic retry intervals.
+First, assuming there is no delay control and letting the platform decide. One-argument `System.enqueueJob(queueable)` runs as soon as a worker is free, so a "2-second backoff" that exists only as a logged number is not a backoff — every retry lands immediately and the thundering herd arrives anyway.
 
-**How to avoid:** Document the retry delay as approximate and log the calculated delay value for observability, but do not design dependent systems that require precise retry timing. If exact timing is critical, consider Scheduled Apex (which has a 1-minute minimum interval, not suitable for short retries) or a native Outbound Messaging retry approach.
+Second, over-trusting the delay that does exist. `System.enqueueJob(queueable, delay)` takes a "specified minimum delay (0–10 minutes)" — a **minimum in whole minutes**. The platform will not start earlier, does not promise to start exactly then, and will not accept a value above 10. Code that computes `delaySeconds = 30` and passes it straight in is requesting a value outside the valid range, not 30 seconds.
+
+**When it occurs:** any time retry timing is communicated to stakeholders as precise ("it will retry in 10 seconds"), tests assume deterministic intervals, or a seconds-denominated backoff is carried into a minutes-denominated parameter without converting.
+
+**How to avoid:** convert to whole minutes and clamp — `(Integer) Math.min(10, Math.max(0, Math.ceil(delaySeconds / 60)))` — then pass it explicitly. Log the calculated delay next to the clamped one so a flattened backoff is visible in the data. For backoff beyond 10 minutes use Scheduled Apex. And know that a job enqueued with **no** delay may still be delayed: an admin can configure a default org-wide enqueue delay (1–600 seconds) in Apex Settings, which an explicit delay argument overrides.
 
 ---
 

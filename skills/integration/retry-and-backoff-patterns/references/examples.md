@@ -70,10 +70,16 @@ public class OrderSyncJob implements Queueable, Database.AllowsCallouts {
             // Calculate backoff: baseDelay * 2^retryCount + jitter
             Double jitter = BASE_DELAY_SECONDS * Math.random();
             Double delaySeconds = BASE_DELAY_SECONDS * Math.pow(2, currentRetry) + jitter;
-            // Note: Queueable scheduling does not enforce exact delay;
-            // delaySeconds is recorded in the log for observability.
+            // enqueueJob takes a MINIMUM delay in whole minutes, 0-10.
+            // Convert and clamp — passing delaySeconds directly is a bug.
+            Integer delayMinutes = (Integer) Math.min(
+                10, Math.max(0, Math.ceil(delaySeconds / 60))
+            );
+            // Log both so a clamped backoff is visible in the data.
             logRetryAttempt(orderId, errorMsg, statusCode, currentRetry, (Integer)delaySeconds);
-            System.enqueueJob(new OrderSyncJob(orderId, currentRetry + 1, idempotencyKey));
+            System.enqueueJob(
+                new OrderSyncJob(orderId, currentRetry + 1, idempotencyKey), delayMinutes
+            );
         } else {
             logDeadLetter(orderId, errorMsg, statusCode, currentRetry);
         }
@@ -207,4 +213,4 @@ if (cbConfig != null && cbConfig.Is_Open__c) {
 - DML before the loop (e.g., updating a status field) triggers the "callout after uncommitted work" exception on the first `Http.send()`.
 - The synchronous transaction has no mechanism for the idempotency key to persist if the transaction rolls back.
 
-**Correct approach:** Move the callout to a Queueable. Use Queueable chaining (re-enqueue) for retries. The platform's async scheduling provides the delay; the retry counter persists on the job instance.
+**Correct approach:** Move the callout to a Queueable and re-enqueue for retries, passing the backoff explicitly as `System.enqueueJob(job, delayMinutes)` — a "specified minimum delay (0–10 minutes)". The retry counter persists on the job instance. Do not rely on scheduler jitter to supply the delay: the one-argument `enqueueJob` runs as soon as a worker is free, which reproduces the same no-backoff behaviour as the synchronous loop, just asynchronously.

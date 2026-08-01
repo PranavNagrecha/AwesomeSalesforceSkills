@@ -43,6 +43,9 @@ Tag findings as Reliability when:
 
 ## Official Sources Used
 
+- Apex Developer Guide — Execution Governors and Limits ("Maximum number of methods with the future annotation allowed per Apex invocation": 50 sync; "0 in batch and future contexts; 50 in queueable context") — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm
+- Apex Developer Guide — Future Methods — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_invoking_future_methods.htm
+- Apex Developer Guide — Queueable Apex — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_queueing_jobs.htm
 - Apex Developer Guide — async Apex behavior and scheduling guidance
 - Apex Reference Guide — `Queueable`, `Database.Batchable`, and related API reference
 - Salesforce Well-Architected Overview — scalability, performance, and reliability framing

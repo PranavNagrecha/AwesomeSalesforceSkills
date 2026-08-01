@@ -30,3 +30,9 @@
   https://help.salesforce.com/s/articleView?id=sf.flow_distribute_version.htm
 - Paused Interviews —
   https://help.salesforce.com/s/articleView?id=sf.flow_concepts_runtime_paused.htm
+- Subflow version resolution ("the parent flow runs the child flow's active
+  version"; latest version if none is active) — Trailhead, Flow Builder:
+  Run a Flow Within a Flow —
+  https://trailhead.salesforce.com/content/learn/modules/flow-build-logic/run-flow-within-flow
+- Flow Element: Subflow —
+  https://help.salesforce.com/s/articleView?id=platform.flow_ref_elements_subflow.htm

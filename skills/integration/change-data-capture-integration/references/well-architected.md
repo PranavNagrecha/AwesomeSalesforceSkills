@@ -38,6 +38,10 @@
 
 - Change Data Capture Developer Guide — CDC event structure, channel types, replay ID, gap events, entity selection, allocations
   URL: https://developer.salesforce.com/docs/atlas.en-us.change_data_capture.meta/change_data_capture/cdc_intro.htm
+- Change Data Capture Developer Guide — Overflow Events (100,000-change threshold, `000000000000000AAA`)
+  URL: https://developer.salesforce.com/docs/atlas.en-us.change_data_capture.meta/change_data_capture/cdc_other_events_overflow.htm
+- Change Data Capture Developer Guide — Change Data Capture Allocations (delivery allocation, subscriber types, add-on)
+  URL: https://developer.salesforce.com/docs/atlas.en-us.change_data_capture.meta/change_data_capture/cdc_allocations.htm
 - Pub/Sub API Developer Guide — gRPC subscription, FetchRequest, changedFields availability
   URL: https://developer.salesforce.com/docs/platform/pub-sub-api/guide/pub-sub-api-intro.html
 - Integration Patterns — architecture pattern selection: CDC vs Platform Events vs outbound messaging

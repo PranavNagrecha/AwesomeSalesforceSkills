@@ -114,3 +114,43 @@ global static void handle() {
 ```
 
 **Detection hint:** Any @HttpPost handler that performs more than a simple HMAC check and upsert before returning the response.
+
+---
+
+## Anti-Pattern 6: Comparing HMAC Signatures with `String.equals()` and Labelling It Constant-Time
+
+**What the LLM generates:** a signature check that recomputes the MAC, hex-encodes it, and compares with `==` or `String.equals()` — very often with a comment claiming the comparison is constant-time:
+
+```apex
+String expected = 'sha256=' + EncodingUtil.convertToHex(
+    Crypto.generateMac('hmacSHA256', Blob.valueOf(body), Blob.valueOf(secret))
+);
+// Constant-time comparison to prevent timing attacks   <-- the comment is false
+return expected.equals(signature);
+```
+
+**Why it happens:** the model has learned the *phrase* "use a constant-time comparison to verify HMACs" alongside the *shape* of an equality check, and emits both together. Nothing in Apex flags it: `String.equals()` compiles, passes every functional test, and returns the right boolean. The defect is invisible except under timing measurement, so the comment survives code review. This is the worst class of generated security bug — correct-looking, self-certifying, and wrong.
+
+**Correct pattern:**
+
+```apex
+// WRONG: String.equals short-circuits on the first differing character.
+// Response latency reveals how many leading chars of a forged signature
+// were correct, so an attacker recovers the signature one char per retry.
+return expected.equals(signature);
+
+// CORRECT: platform-side verification, no Apex-level comparison at all.
+Blob macToVerify = EncodingUtil.convertFromHex(signature.substring(7)); // strip 'sha256='
+return Crypto.verifyHMac('hmacSHA256', Blob.valueOf(body), Blob.valueOf(secret), macToVerify);
+
+// CORRECT (only when verifyHMac does not fit the sender's scheme):
+// accumulate over every character, test the accumulator once at the end.
+Integer diff = expected.length() ^ actual.length();
+Integer n = Math.min(expected.length(), actual.length());
+for (Integer i = 0; i < n; i++) { diff |= expected.charAt(i) ^ actual.charAt(i); }
+return diff == 0;
+```
+
+`Crypto.verifyHMac(algorithmName, data, privateKey, macToVerify)` is the documented Apex method for this — valid `algorithmName` values are `hmacMD5`, `hmacSHA1`, `hmacSHA256`, `hmacSHA512`. There is **no** `Crypto.areEqualConstantTime()` on the platform; helpers with that name come from sample blog code, and generating a call to it is a compile error (`Method does not exist or incorrect signature: void areEqualConstantTime(Blob, Blob) from the type Crypto`).
+
+**Detection hint:** grep the diff for `.equals(` or `==` on the same line or within three lines of any of `signature`, `hmac`, `mac`, `digest`, `token`, or `secret`. Independently, grep for the string `constant-time` / `constant time` in a comment and confirm the very next comparison is a fixed-iteration accumulator or a `Crypto.verifyHMac` call — a constant-time *claim* sitting above an `equals()` is the signature of this anti-pattern. Also flag any call to `Crypto.areEqualConstantTime`.

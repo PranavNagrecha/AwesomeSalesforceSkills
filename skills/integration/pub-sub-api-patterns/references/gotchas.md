@@ -30,13 +30,19 @@
 
 ---
 
-## Gotcha 4: Events Retained for Only 3 Days
+## Gotcha 4: An Out-of-Window Replay ID Errors — It Does Not Silently Reposition
 
-**What happens:** A consumer that goes offline for 4 days reconnects using a stored replay ID. The events from 4 days ago are no longer available — the replay request silently starts from the earliest available event (3 days back) rather than the requested position.
+**What happens:** A consumer offline for four days reconnects with a stored replay ID. It does **not** quietly restart from the oldest retained event. The Subscribe call fails with `sfdc.platform.eventbus.grpc.subscription.fetch.replayid.corrupted` — documented as "Replay ID invalid or outside retention window." A consumer written on the assumption of silent repositioning has no handler for this path and stays down.
 
-**When it occurs:** When consumer downtime exceeds the 3-day event bus retention window.
+Three further facts about the window that change recovery design:
 
-**How to avoid:** Monitor consumer health and alert on downtime exceeding 24 hours. Design consumers with 3-day SLA tolerance. If consumer downtime may exceed 3 days, implement a parallel archive (e.g., log all events to S3 as they arrive) to enable historical replay from the archive rather than the event bus.
+- Retention is 72 hours and the boundary is fuzzy in the *permissive* direction only: "The purging process sometimes starts later, and as a result, platform events and change data capture events that are older than 72 hours can still be available. Salesforce doesn't guarantee the storage of events beyond the retention period of 72 hours." So a 74-hour-old replay ID may work in a test and fail in production. Never build a recovery path on events older than 72 hours.
+- Org migration wipes the stream: "the stream of retained events can be reset if the Salesforce org is moved to a new instance. As a result, you can no longer access the retained events." A stored replay ID can therefore become invalid with zero downtime on the subscriber side.
+- Replay IDs are opaque. "Replay ID values aren't guaranteed to be contiguous for consecutive events", so a gap between two IDs is not evidence of a lost event and arithmetic on them is meaningless.
+
+**The ReplayPreset trade-off — do not reflex to EARLIEST.** The documented recovery is "retry the `Subscribe` call with the `LATEST ReplayPreset` enum value to receive new events only, or use the `EARLIEST` option to receive all events that are stored." EARLIEST replays up to 72 hours of traffic through the org's 24-hour delivery allocation (25,000/day on Enterprise, 50,000 Performance/Unlimited, 10,000 Developer). On a busy channel that converts a recoverable gap into `...subscription.limit.exceeded` and a full-day outage for **every** subscriber in the org, because the allocation is org-wide. Prefer LATEST plus an out-of-band reconciliation (Bulk API re-query of the affected records) unless you have measured the replay volume against remaining allocation.
+
+**How to avoid:** Handle `replayid.corrupted` explicitly. Alert on subscriber downtime at 24 hours, well inside the window. If downtime beyond 72 hours is plausible, archive events on arrival so replay comes from your store rather than the event bus.
 
 ---
 

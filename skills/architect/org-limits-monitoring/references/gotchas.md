@@ -45,3 +45,25 @@ For monitoring purposes, treat the API-reported values as directionally accurate
 If you create a dedicated Scheduled Apex job for limit monitoring, it consumes one of the 100 available scheduled job slots. In orgs that already have many scheduled jobs (common in mature orgs with nightly batch chains), this can be a scarce resource. Furthermore, if the scheduled job is accidentally deleted or aborted, monitoring silently stops with no alert.
 
 Mitigation: Combine all limit monitoring into a single scheduled job rather than creating separate jobs per limit category. Use the `System.schedule()` method with a CRON expression and implement a "watchdog" pattern: have the monitoring job's `execute()` method re-schedule itself if it detects its future scheduled instance has been removed.
+
+---
+
+## Gotcha 7: Reading Only DailyAsyncApexExecutions Misreports Utilisation Once Elastic Limits Are On
+
+Every async-Apex monitor written before elastic limits shipped reads one key, `DailyAsyncApexExecutions`, and divides by a ceiling that is no longer the operative one. The consequences run in both directions and both are expensive:
+
+- An org running at 140% of its **licensed** limit is legal and functioning — elastic executions are "processed at a throttled rate" rather than rejected — but the old monitor reports a hard breach and pages on-call at 2 a.m. every night of a data migration.
+- An org genuinely saturating the elastic ceiling under-reports, because the monitor has no visibility of the headroom above the licensed number and cannot tell throttling from healthy operation.
+
+The two failures need opposite responses: the first is a throughput and scheduling problem, the second is an architectural one (move work to Batch Apex, or off the platform).
+
+Read `DailyAsyncApexElasticExecutions` alongside `DailyAsyncApexExecutions` and **null-check both**. Per Gotcha 1 above, `OrgLimits.getAll()` returns a curated subset; a key that is not present comes back as a missing map entry rather than an error, so a monitor that assumes the key exists will NPE or silently report zero on any org where the feature is not enabled. Because elastic limits are Beta and scoped to Queueable Apex and future methods only, the same monitor must keep the hard-ceiling arithmetic for Batch and Scheduled Apex.
+
+```apex
+Map<String, System.OrgLimit> limits = OrgLimits.getMap();
+System.OrgLimit licensed = limits.get('DailyAsyncApexExecutions');
+System.OrgLimit elastic  = limits.get('DailyAsyncApexElasticExecutions');
+Integer effectiveMax = (elastic != null) ? elastic.getLimit() : licensed.getLimit();
+Integer used          = licensed.getValue();
+Boolean throttling    = (elastic != null) && used > licensed.getLimit();
+```

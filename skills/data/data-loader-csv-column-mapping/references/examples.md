@@ -48,17 +48,19 @@ Operation: **Upsert** with `External ID = External_Contact_Id__c`.
 **Solution — explicit type-prefixed columns:**
 
 ```
-Subject,Status,ActivityDate,Who.Lead.Email,Who.Contact.Email,What.Account.External_Account_Id__c
+Subject,Status,ActivityDate,Lead:Who.Email,Contact:Who.Email,Account:What.External_Account_Id__c
 "Follow up demo","Completed",2026-04-28,,alice@example.com,EXT-A-001
 "Trial signup","In Progress",2026-04-28,bob.lead@example.com,,
 "Pricing question","Open",2026-04-28,,carla@example.com,EXT-A-002
 ```
 
-Each row populates exactly one of the two `Who.<Type>.Email` columns. The unused side is left blank — the API resolves whichever side has a value.
+Each row populates exactly one of the two `<Type>:Who.Email` columns. The unused side is left blank — the API resolves whichever side has a value.
 
-**Why it works:** Bulk API V2's relationship-name path supports the form `Who.<Type>.<ExternalIdField>` precisely to disambiguate polymorphic lookups. Lead/Contact emails are inherently unique-per-record by org convention, so they serve as External IDs without a custom field.
+**Why it works:** the Bulk API relationship-field header syntax is `ObjectType:RelationshipName.IndexedFieldName` — the object type is a colon-separated **prefix** and exists precisely to disambiguate polymorphic lookups. `Email` on Lead and Contact is an `idLookup=true` standard field, so it works as the indexed field without a custom External ID.
 
-**Watch out for:** if both `Who.Lead.Email` and `Who.Contact.Email` are populated on the same row, the row errors. Source-side validation must guarantee mutual exclusion before export.
+**Watch out for:** if both `Lead:Who.Email` and `Contact:Who.Email` are populated on the same row, the row errors. Source-side validation must guarantee mutual exclusion before export.
+
+**Do not write `Who.Lead.Email`.** The type goes in front of the colon, never mid-path.
 
 ---
 

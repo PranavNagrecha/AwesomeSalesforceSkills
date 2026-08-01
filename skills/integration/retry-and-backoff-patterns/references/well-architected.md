@@ -11,7 +11,7 @@
 
 **Retry depth vs. async Apex budget:** More retries (higher `maxRetries`) increases resilience to long-duration outages but also increases async Apex consumption. For high-volume integrations, a lower `maxRetries` (3) with a longer base delay is preferable to a higher count (8) with a short delay. The circuit breaker is the primary mechanism for handling extended outages.
 
-**Exact delay vs. approximate delay:** Queueable scheduling does not enforce specific timing. If integration SLAs require precise retry intervals, Outbound Messages (native platform retry) or an external orchestration system may be more appropriate than Apex Queueable chaining. Apex retry is best suited for "eventually consistent" integration patterns.
+**Exact delay vs. bounded delay:** `System.enqueueJob(queueable, delay)` enforces a *minimum* of 0–10 whole minutes, so Apex can guarantee a retry is not *earlier* than intended — but not that it lands on time, nor that it can wait longer than 10 minutes. For precise intervals or hours-long backoff, use Scheduled Apex, Outbound Messages, or an external orchestrator. Queueable retry suits "eventually consistent" patterns with sub-10-minute backoff.
 
 **Idempotency key scope:** Generating a key per-record (based on the Salesforce record Id) is simpler but means the same record can only have one in-flight idempotency key at a time. For bulk integrations, keys should be scoped to the request payload (record Id + operation type + timestamp window) to handle concurrent operations on the same record.
 
@@ -28,7 +28,9 @@
 ## Official Sources Used
 
 - Apex Developer Guide — Apex Callouts: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts.htm
-- Apex Developer Guide — Queueable Apex: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_queueing_jobs.htm
+- Apex Developer Guide — Queueable Apex ("specified minimum delay (0–10 minutes)"): https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_queueing_jobs.htm
+- Apex Reference Guide — AsyncOptions (`MinimumQueueableDelayInMinutes`): https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_AsyncOptions.htm
+- Salesforce Help — Org-Wide Default Delay in Scheduling Queueable Jobs (1–600 seconds): https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_orgWide_delayQueueable.htm&type=5
 - Apex Developer Guide — Governor Limits: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm
 - Salesforce Help — Outbound Messaging Retry: https://help.salesforce.com/s/articleView?id=sf.workflow_outbound_troubleshoot.htm
 - Platform Events Developer Guide — Event Replay: https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_subscribe_intro.htm

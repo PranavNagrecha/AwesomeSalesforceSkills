@@ -57,3 +57,57 @@
 **Correct pattern:** Replay from a stored replay ID is only possible if the events are still in the 3-day retention window. If consumer downtime exceeds 3 days, events older than 3 days are no longer available for replay. Design consumers with monitoring that alerts before the 3-day window is exceeded. For compliance use cases requiring longer replay horizons, archive events to durable storage (S3, BigQuery) as they arrive.
 
 **Detection hint:** Any claim that replay ID-based resumption works "regardless of how long" the consumer was offline ignores the 3-day retention window.
+
+---
+
+## Anti-Pattern 6: Catching `grpc.RpcError`, Logging the Status, and Never Reading the Trailers
+
+**What the LLM generates:**
+
+```python
+try:
+    for response in stub.Subscribe(fetch_requests, metadata=auth):
+        handle(response)
+except grpc.RpcError as e:
+    logging.error("Pub/Sub error: %s", e.code())
+    time.sleep(5)
+    resubscribe()
+```
+
+**Why it happens:** the gRPC status is the language-level API surface and dominates every generic gRPC tutorial. The Salesforce code lives one layer down in the trailing metadata, which is absent from that corpus. When asked for the Salesforce code specifically, models frequently invent plausible-looking constants — `SFDC_REPLAY_ID_EXPIRED`, `EVENT_BUS_LIMIT_EXCEEDED` — that appear nowhere in the API.
+
+**Correct pattern:** read the trailers, extract the `sfdc.platform.eventbus.grpc.*` string, and route through `references/error-codes.md`.
+
+```python
+except grpc.RpcError as e:
+    trailers = dict((k, v) for k, v in (e.trailing_metadata() or ()))
+    sfdc_code = trailers.get("error-code")          # getTrailers() equivalent
+    rpc_id = extract_rpc_id(e.details())            # after the 'rpcId:' prefix
+    action = ROUTE.get(sfdc_code, RETRY_WITH_BACKOFF)
+```
+
+`...topic.not.found` and `...subscription.limit.exceeded` must be excluded from the retry path entirely — the first loops forever on a name that will never resolve, the second retries against an allocation that only time restores.
+
+**Detection hint:** an exception handler that logs a gRPC status code with no Salesforce code string alongside it; a fixed `sleep(n)` retry with no per-code branch; or any `sfdc`-shaped constant in the code that does not literally begin `sfdc.platform.eventbus.grpc.`.
+
+---
+
+## Anti-Pattern 7: EARLIEST as the "Safe" Fallback, and Deduplication Keyed on `replay_id`
+
+**What the LLM generates:**
+
+```python
+# recovery path
+req = FetchRequest(topic_name=topic, replay_preset=ReplayPreset.EARLIEST,
+                   num_requested=100)          # "replay everything so we lose nothing"
+...
+if event.replay_id > last_seen_replay_id:      # treated as a monotonic sequence number
+    last_seen_replay_id = event.replay_id
+    process(event)
+```
+
+**Why it happens:** replay IDs look like sequence numbers, and EARLIEST reads as the conservative choice. Neither intuition survives contact with the docs.
+
+**Correct pattern:** replay IDs are opaque — "Replay ID values aren't guaranteed to be contiguous for consecutive events" — and the stream can be reset entirely by an org migration to a new instance, so a high-water mark built on them silently drops events after a gap or after a migration. Deduplicate on the event `id` field instead: "The system-generated `id` field value in the received events uniquely identifies each event." EARLIEST is a **capacity decision**, not a safety default: it replays up to 72 hours through the org-wide 24-hour delivery allocation and can trigger `...subscription.limit.exceeded` for every subscriber in the org. Choose it only with a volume estimate in hand; otherwise LATEST plus reconciliation.
+
+**Detection hint:** any comparison, increment, subtraction, or range operation on a replay ID; a `set()` or high-water mark named after replay rather than event ID; `ReplayPreset.EARLIEST` appearing on a recovery path with no stated volume estimate against the delivery allocation.

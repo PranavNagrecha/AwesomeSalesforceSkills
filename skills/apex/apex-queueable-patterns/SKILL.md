@@ -30,7 +30,7 @@ triggers:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-08-01
 ---
 
 # Apex Queueable Patterns
@@ -43,7 +43,7 @@ Use this skill when designing or reviewing Apex jobs that use the Queueable inte
 
 - Is the use case a single deferred operation, a multi-step chain, or a fan-out? Each has a different pattern.
 - Does the job require callouts? If so, `Database.AllowsCallouts` must also be implemented.
-- How deep can the chain realistically grow? The platform enforces a default maximum stack depth of 5 when using `AsyncOptions.MaximumQueueableStackDepth`.
+- How deep can the chain realistically grow? Only Developer Edition and Trial orgs cap it for you — "the maximum stack depth for chained jobs is 5, which means that you can chain jobs four times." Production editions enforce no depth limit, so the cap must come from `AsyncOptions.MaximumQueueableStackDepth`.
 - Does the job need to recover from failure or enqueue a follow-up regardless of success or failure? That is what the Finalizer interface is for.
 - How is state passed between chained jobs? Serialized fields or record IDs are the safe options.
 
@@ -61,7 +61,7 @@ Adding `Database.AllowsCallouts` to the `implements` clause is required for any 
 
 A Queueable can enqueue exactly one child job from within its `execute()` method. Attempting to enqueue a second child in the same execution throws a `System.LimitException`. This is the single-child chaining rule and it applies in production — in sandbox and scratch orgs the same rule holds, but tests run synchronously and skip the queue, so the limit is not exercised in unit tests.
 
-Chaining can continue indefinitely by default, but uncontrolled infinite chains are a production risk. The `AsyncOptions` class lets you cap depth explicitly:
+"Because no limit is enforced on the depth of chained jobs, you can chain one job to another" — in every edition except Developer and Trial, where the ceiling is a stack depth of 5. That asymmetry is the trap: a runaway chain is *caught* in a scratch org or Developer Edition sandbox and *not caught* in production. The `AsyncOptions` class supplies the cap the production org will not:
 
 ```apex
 AsyncOptions opts = new AsyncOptions();
@@ -70,6 +70,16 @@ System.enqueueJob(new MyJob(nextPayload), opts);
 ```
 
 `System.AsyncInfo.getCurrentQueueableStackDepth()` returns the current depth so the job can stop or branch safely. Together these two APIs are the canonical pattern for bounded chaining in production code (Apex Developer Guide — Queueable Apex).
+
+### Delayed Enqueue And Cross-Transaction Deduplication
+
+`AsyncOptions` carries two properties beyond `MaximumQueueableStackDepth`, and both are hard rules.
+
+**`MinimumQueueableDelayInMinutes`** is the supported back-off primitive: "Use the System.enqueueJob(queueable, delay) method to add queueable jobs to the asynchronous execution queue with a specified minimum delay (0–10 minutes)." An org-wide floor is set at **Setup → Apex Settings → "Default minimum enqueue delay (in seconds) for queueable jobs that do not have a delay parameter"** (1–600 seconds). An explicit delay **"ignores any org-wide enqueue delay setting"** — the two never compose, so passing `0` runs as fast as the platform allows even under a 600-second org floor. Read the effective value with `System.AsyncInfo.getMinimumQueueableDelayInMinutes()`.
+
+**`DuplicateSignature`** suppresses duplicate enqueues *across transactions*, which a static guard cannot. Build it with `QueueableDuplicateSignature.Builder()` plus `addId()` / `addString()` / `addInteger()`, then `build()`. A second enqueue with the same signature throws `DuplicateMessageException`: `Attempt to enqueue job with duplicate queueable signature`. See `references/gotchas.md` for the release-at-dequeue semantics.
+
+Two ceilings bound any retry loop built on these: the delay caps at 10 minutes, and a job failing on an unhandled exception "can be successively re-enqueued five times by a transaction finalizer." Anything longer or deeper needs Scheduled Apex or a staging record.
 
 ### The Finalizer Interface
 
@@ -144,7 +154,9 @@ This skill operates in three modes based on the practitioner's need:
 | Multi-step chain with bounded depth | Queueable + `AsyncOptions.MaximumQueueableStackDepth` + stack depth check | Prevents runaway chain |
 | Job makes outbound callouts | `implements Queueable, Database.AllowsCallouts` | Required by platform; omitting causes runtime exception |
 | Error recovery or compensating action after failure | Queueable + `System.attachFinalizer()` | Finalizer runs regardless of parent success or failure |
-| Need retry after transient callout failure | Finalizer re-enqueues same job with incremented retry counter | Only safe retry path that handles all failure modes |
+| Need retry after transient callout failure | Finalizer re-enqueues with an incremented counter and `MinimumQueueableDelayInMinutes` | Handles all failure modes; delay is the supported back-off |
+| Back-off > 10 min, or > 5 attempts | Scheduled Apex or a staging record | Past both ceilings of the delay + Finalizer pattern |
+| Same job enqueued from several transactions (Data Loader batches, retried API calls) | `AsyncOptions.DuplicateSignature` + catch `DuplicateMessageException` | Static guards reset per transaction |
 | Need fan-out to multiple parallel jobs | Reconsider: use Batch or Platform Events | Queueable allows only one child per execution |
 | Very large record volume (tens of thousands+) | Batch Apex, not Queueable | Batch provides fresh limits per scope and query locator support |
 
@@ -174,14 +186,18 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 - [ ] Tests use `Test.startTest()` / `Test.stopTest()` boundaries.
 - [ ] `AsyncApexJob` is used for operational visibility (job status, failure count).
 - [ ] Callout errors and limit exceptions are handled in the Finalizer, not only in `catch` blocks.
+- [ ] Retry back-off uses `AsyncOptions.MinimumQueueableDelayInMinutes` (0–10), not a Schedulable dispatcher or a CRON string.
+- [ ] Any dedup requirement that spans transactions uses `AsyncOptions.DuplicateSignature`, not a static Boolean or Set.
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-1. **Single-child chaining rule is enforced at runtime, not compile time** — code that enqueues two children inside `execute()` compiles cleanly but throws `System.LimitException` in the second enqueue call. Tests may not catch this because async jobs run synchronously in test context.
-2. **Finalizer runs in a separate transaction with fresh limits, but it is still subject to its own limits** — a Finalizer that performs expensive SOQL or DML can itself hit governor limits and fail silently unless the Finalizer is also guarded.
-3. **`AsyncOptions.MaximumQueueableStackDepth` must be set on every `enqueueJob` call in the chain** — setting it once on the first job does not propagate; each chained job must re-set the option or the guard does not apply downstream.
+1. **Single-child chaining is enforced at runtime, not compile time** — a second `enqueueJob` inside `execute()` compiles, then throws `System.LimitException: Too many queueable jobs added to the queue: 2`. Tests run async jobs synchronously and do not enforce it.
+2. **The Finalizer has fresh limits but is still subject to them** — expensive SOQL or DML inside a Finalizer can itself blow governor limits and lose the failure record it was written to create.
+3. **`MaximumQueueableStackDepth` does not propagate** — re-set the `AsyncOptions` on every enqueue in the chain, or the guard silently stops applying downstream.
+
+See `references/gotchas.md` for the full diagnosis of each, plus the duplicate-signature release semantics.
 
 ---
 

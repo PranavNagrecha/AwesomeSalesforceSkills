@@ -36,6 +36,8 @@
 - Data Loader Field Mapping (`.sdl`) — https://help.salesforce.com/s/articleView?id=sf.loader_field_mapping.htm&type=5
 - SOAP API Developer Guide — DescribeSObjectResult — https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_calls_describesobjects_describesobjectresult.htm
 - External ID and Upsert — https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/dome_upsert.htm
-- Polymorphic Foreign Keys — https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/datafiles_polymorphic_relationships.htm
+- Bulk API — Relationship Fields in a Header Row (`ObjectType:RelationshipName.IndexedFieldName`; `Lead:Who.Email`) — https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/datafiles_csv_rel_field_header_row.htm
+- Bulk API 2.0 — Relationship Fields in a Header Row (2.0) — https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/relationship_fields_in_a_header_row__2_0.htm
+- Bulk API — Prepare CSV Files — https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/datafiles_prepare_csv.htm
 - Workbench (Data Manipulation) — https://help.salesforce.com/s/articleView?id=000384982&type=1
 - Date Formats and Time Zones in Bulk API — https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/datafiles_date_format.htm

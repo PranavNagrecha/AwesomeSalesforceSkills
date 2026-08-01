@@ -56,9 +56,15 @@ Only primitives (Id, String, Integer, etc.) and collections of primitives. No SO
 
 Annotation: `@future(callout=true)`. Required for any HTTP callout. The method becomes a "future callout" and is counted separately in limits.
 
-### No chaining
+### No `@future`-to-`@future` chaining
 
-A `@future` cannot call another `@future` or a Queueable. Queueable can chain Queueable (up to 5 depth); `@future` cannot. This is the main modernization driver.
+A `@future` cannot call another `@future`: the allocation is "0 in batch and future contexts", so the platform throws `System.AsyncException: Future method cannot be called from a future or batch method`. Queueable can chain Queueable; `@future` cannot chain `@future`. This is the main modernization driver.
+
+It CAN, however, enqueue one Queueable — the `System.enqueueJob` allocation is 50 synchronously and **1** in an asynchronous context. So `@future` → single Queueable is a legal (if awkward) escape hatch.
+
+### The reverse direction is allowed — Queueable CAN call `@future`
+
+A `Queueable.execute()` has an allocation of **50** `@future` calls per Apex invocation: the limit reads "0 in batch and future contexts; 50 in queueable context". Calling `@future` from a Queueable does not throw. Salesforce advises against it on design grounds — "having multiple future methods fan out from a queueable job isn't a recommended practice as it can rapidly add many future methods to the asynchronous queue" — but it is not a platform restriction. Treat a `@future` call inside a Queueable as a code-review discussion, never as a defect to be "fixed" because it supposedly cannot compile.
 
 ### Governor limits
 

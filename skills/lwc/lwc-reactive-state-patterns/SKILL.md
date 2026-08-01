@@ -33,7 +33,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-05-01
+updated: 2026-08-01
 ---
 
 # LWC Reactive State Patterns
@@ -113,6 +113,23 @@ are silently NOT observed even with `@track`:
 - **Set** — `this.tags.add('vip')` does nothing visible. Fix: `this.tags = new Set([...this.tags, 'vip']);`
 - **Map** — `this.cache.set(key, value)` does nothing visible. Fix: `this.cache = new Map([...this.cache, [key, value]]);`
 - **3rd-party class instances** with their own internal mutability (Moment.js, RxJS Subjects, MobX observables, custom classes with setters). The framework cannot proxy them.
+
+### 3b. The read-set rule — the clause that explains what's left
+
+Even after §1–§3 are applied correctly, one rule remains and it is the
+usual cause of "I reassigned and still nothing happened":
+
+> A component rerenders only if a property accessed during the previous
+> rendering cycle is updated, even when the object is annotated with
+> `@track`.
+
+A property that was not *read* during the last render is not in that
+cycle's read-set, so mutating it schedules nothing. The two ways this
+happens in practice — an early `return` in a getter that short-circuits
+before touching the field, and a field first referenced inside an
+`lwc:if` branch that was false last render — are worked through with
+diagnostics in `references/gotchas.md` §7. Read it before reaching for
+any "force a re-render" workaround.
 
 ### 4. The `renderedCallback` infinite-loop trap
 
@@ -291,7 +308,8 @@ write a reactive field unconditionally.
 2. **Reactive proxies break `instanceof` checks.** `this.someClassInstance instanceof MyClass` may return `false` when the field is wrapped by the reactive proxy. Avoid `instanceof` on reactive-tracked references; tag the type with a string field instead.
 3. **Spread-and-reassign on a 100k-item array is not free.** `this.items = [...this.items, newItem]` is O(n) per append. For genuinely large arrays, accept `@track` and `push`, or move the data behind an `@wire` adapter that does paging.
 4. **`structuredClone` does not preserve reactivity.** A deep-cloned reactive object is no longer proxied. This rarely matters but bites if you clone, mutate the clone in place, then assign back — the assignment IS reactive, but intermediate steps are not what they look like.
-5. **`renderedCallback` fires on every prop change**, not just initial render. Aura's `afterRender` fired only once; LWC's hook is more aggressive. Migrating Aura code that initializes a chart library inside `afterRender` will create duplicate charts in LWC.
+5. **A property not read during the previous render will not trigger a re-render when it changes** — not a bug, the documented read-set rule (Core Concepts §3b, gotchas §7). Never "fix" it with a dummy-boolean toggle or `JSON.parse(JSON.stringify(...))`.
+6. **`renderedCallback` fires on every prop change**, not just initial render. Aura's `afterRender` fired only once; LWC's hook is more aggressive. Migrating Aura code that initializes a chart library inside `afterRender` will create duplicate charts in LWC.
 
 ---
 

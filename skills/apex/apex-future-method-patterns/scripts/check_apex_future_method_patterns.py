@@ -5,7 +5,10 @@ Scans Apex for:
 - @future methods missing callout=true when callouts are made
 - @future methods accepting SObject parameters
 - @future methods with non-void return types
-- @future methods calling enqueueJob or other @future methods
+- @future methods calling other @future methods (allocation is 0 in a future
+  context), and @future methods enqueueing more than one Queueable (the async
+  System.enqueueJob allocation is 1 — enqueueing exactly one is legal and is
+  reported as a REVIEW, not an error)
 
 Usage:
     python3 check_apex_future_method_patterns.py [--manifest-dir path/to/metadata]
@@ -79,9 +82,22 @@ def check_apex(root: Path) -> list[str]:
                     f"{path.relative_to(root)}:{line_no}: @future '{method_name}' makes callouts without callout=true"
                 )
 
-            if "enqueueJob" in body:
+            # NOTE: enqueueing from a @future is LEGAL. The "Maximum number of
+            # Apex jobs added to the queue with System.enqueueJob" limit is 50
+            # synchronously and 1 in an asynchronous context, so a future may
+            # enqueue exactly one Queueable. Report it as a design smell, not an
+            # error — asserting it "is not allowed" sends people chasing a
+            # non-existent compile failure.
+            if body.count("enqueueJob") > 1:
                 issues.append(
-                    f"{path.relative_to(root)}:{line_no}: @future '{method_name}' calls enqueueJob; chaining from @future is not allowed"
+                    f"{path.relative_to(root)}:{line_no}: @future '{method_name}' calls enqueueJob "
+                    f"more than once; the async enqueueJob allocation is 1 per transaction"
+                )
+            elif "enqueueJob" in body:
+                issues.append(
+                    f"{path.relative_to(root)}:{line_no}: REVIEW @future '{method_name}' enqueues a Queueable "
+                    f"(legal — async allocation is 1). Prefer making the outer method Queueable instead of "
+                    f"hopping @future -> Queueable"
                 )
     return issues
 

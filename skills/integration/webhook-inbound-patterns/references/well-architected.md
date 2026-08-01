@@ -17,9 +17,12 @@
 1. **Processing webhook payload synchronously without timeout protection** — Synchronous processing risks exceeding sender timeout, causing retries, causing more load, causing more timeouts. Always enqueue async for non-trivial processing.
 2. **Storing shared secrets in Apex code** — Hardcoded secrets cannot be rotated without a deployment. Store shared secrets in Custom Metadata or Custom Settings, accessible via SOQL.
 3. **Not implementing idempotency** — Webhook senders retry on any non-2xx response or network error. Without idempotency, retries create duplicate records.
+4. **Comparing the signature with `String.equals()` or `==`** — neither is constant-time; both return at the first differing character, so response latency reveals how many leading characters of a forged signature were correct. Verify with `Crypto.verifyHMac(algorithmName, data, privateKey, macToVerify)`, which the Apex Reference Guide documents as "Verifies the HMAC signature for the data blob using the specified algorithm, input data, private key, and the mac."
 
 ## Official Sources Used
 
+- Apex Reference Guide — Crypto Class (`verifyHMac`, `generateMac`) — https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_restful_crypto.htm
+- Apex Reference Guide — EncodingUtil Class (`convertFromHex`, `convertToHex`) — https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_restful_encodingUtil.htm
 - Apex Developer Guide — Apex REST Methods — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_rest_methods.htm
 - Apex Developer Guide — Apex REST — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_rest.htm
 - Salesforce Help — Remote Access — OAuth Endpoints — https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_endpoints.htm

@@ -19,19 +19,20 @@ try {
     res = http.send(req); // retry
 }
 
-// CORRECT — Queueable chaining provides async delay
+// CORRECT — re-enqueue with an EXPLICIT minimum delay (0-10 whole minutes)
 public void execute(QueueableContext ctx) {
     try {
         res = http.send(req);
     } catch (Exception e) {
         if (retryCount < MAX_RETRIES) {
-            System.enqueueJob(new RetryJob(payload, retryCount + 1));
+            Integer delayMinutes = (Integer) Math.min(10, Math.pow(2, retryCount));
+            System.enqueueJob(new RetryJob(payload, retryCount + 1), delayMinutes);
         }
     }
 }
 ```
 
-**Detection hint:** Search generated code for `Thread.sleep` — any occurrence is a compilation error in Apex.
+**Detection hint:** search generated code for `Thread.sleep` — any occurrence is a compilation error in Apex (`Method does not exist or incorrect signature`). Then check the opposite failure: a `System.enqueueJob` call with only one argument inside a retry branch means the backoff was calculated and thrown away. Also flag a second argument that is not in 0–10, which almost always means a seconds value was passed into the minutes parameter.
 
 ---
 

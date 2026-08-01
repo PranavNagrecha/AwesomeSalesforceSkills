@@ -18,7 +18,7 @@ public void execute(QueueableContext ctx) {
 }
 ```
 
-**Why it happens:** LLMs generate infinite chaining patterns without considering the platform stack depth limit (default 5 for `AsyncOptions.MaximumQueueableStackDepth`). In production, the chain silently stops when the depth limit is reached, leaving unprocessed records.
+**Why it happens:** LLMs generate infinite chaining patterns and assume the platform caps them. It does not: "Because no limit is enforced on the depth of chained jobs, you can chain one job to another." The 5-deep ceiling exists only in Developer Edition and Trial orgs — so the runaway chain is caught in a scratch org and runs forever in production.
 
 **Correct pattern:**
 
@@ -227,3 +227,36 @@ static void testQueueable() {
 ```
 
 **Detection hint:** `System\.enqueueJob` in a test method without `Test\.startTest` and `Test\.stopTest` bracketing it.
+
+---
+
+## Anti-Pattern 7: Asserting Apex cannot delay a job, then building a Schedulable dispatcher
+
+**What the LLM generates:**
+
+```apex
+// "Apex has no Thread.sleep() and no way to delay a queueable, so schedule it."
+public class RetryDispatcher implements Schedulable {
+    public void execute(SchedulableContext sc) {
+        for (Retry_Queue__c r : [SELECT Id, Payload__c FROM Retry_Queue__c
+                                 WHERE Next_Attempt__c <= :System.now()]) {
+            System.enqueueJob(new CalloutJob(r.Payload__c));
+        }
+    }
+}
+```
+
+**Why it happens:** the absence of `Thread.sleep()` is heavily represented in training data, and model exposure to `AsyncOptions` rarely extends past `MaximumQueueableStackDepth`. The model reasons from "no sleep" to "no delay at all."
+
+**Correct pattern:**
+
+```apex
+AsyncOptions opts = new AsyncOptions();
+opts.MinimumQueueableDelayInMinutes = Math.min(attempt * 2, 10); // platform ceiling is 10
+System.enqueueJob(new CalloutJob(payload, attempt + 1), opts);
+```
+
+The generated fix is worse, not merely unnecessary: the dispatcher consumes a slot in the 100-scheduled-Apex-jobs-per-org limit, needs its own staging object and reaper, and polls on an interval that no longer matches the requested back-off. Respect the two ceilings: the delay maxes at 10 minutes, and a job that failed on an unhandled exception "can be successively re-enqueued five times by a transaction finalizer." Only back-off beyond one of those justifies Scheduled Apex.
+
+**Detection hint:** `System.schedule(`, `System.scheduleBatch(`, or a CRON literal (`'0 0 * * * ?'`) in a file whose class name or comments mention retry, backoff, or re-attempt — or any `Next_Attempt__c`-style datetime field on a staging object.
+

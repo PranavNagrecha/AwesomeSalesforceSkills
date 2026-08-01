@@ -69,12 +69,16 @@ Without callout=true, any HTTP send throws
 **Correct pattern:**
 
 ```
-@future cannot invoke another @future or a Queueable. Use Queueable
-from the start — it supports chaining via System.enqueueJob in the
-finish method. Rewrite the chain as a series of Queueable jobs.
+@future cannot invoke another @future: the per-invocation allocation is
+"0 in batch and future contexts", so you get
+System.AsyncException: Future method cannot be called from a future or
+batch method.
+Use Queueable from the start — it chains via System.enqueueJob and, in
+the other direction, IS allowed to call @future (50 in queueable
+context). Rewrite the chain as a series of Queueable jobs.
 ```
 
-**Detection hint:** `@future`-annotated method calling a method marked `@future`, or calling `System.enqueueJob`.
+**Detection hint:** a `@future`-annotated method calling another method marked `@future`. Do **not** flag `System.enqueueJob` inside a `@future` — the async `enqueueJob` allocation is 1, so a future may legally enqueue a single Queueable. Do not flag `@future` calls inside a `Queueable` either; that direction is explicitly allocated 50.
 
 ---
 

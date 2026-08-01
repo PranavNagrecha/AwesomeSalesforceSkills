@@ -30,3 +30,5 @@
 - Salesforce Help: Custom Indexes — https://help.salesforce.com/s/articleView?id=sf.custom_indexes.htm
 - Salesforce Large Data Volumes Best Practices: Indexes — https://developer.salesforce.com/docs/atlas.en-us.salesforce_large_data_volumes_bp.meta/salesforce_large_data_volumes_bp/ldv_deployments_infrastructure_indexes.htm
 - Salesforce Large Data Volumes Best Practices: Skinny Tables — https://developer.salesforce.com/docs/atlas.en-us.salesforce_large_data_volumes_bp.meta/salesforce_large_data_volumes_bp/ldv_deployments_infrastructure_skinny_tables.htm
+- Salesforce Help: Non-Selective Query Error "System.QueryException" — https://help.salesforce.com/s/articleView?id=000386468&type=1
+- Salesforce Help: Developer Console Query Plan Tool FAQ — https://help.salesforce.com/s/articleView?id=000386864&type=1

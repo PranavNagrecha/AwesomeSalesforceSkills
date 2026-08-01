@@ -163,3 +163,25 @@ Skinny tables are not visible in Setup — they are a back-end optimization.
 ```
 
 **Detection hint:** Flag query optimization recommendations for large objects (>1M records) that only suggest custom indexes without mentioning skinny tables as an option.
+
+---
+
+## Anti-Pattern 6: Treating Non-Selectivity as a Performance Concern Only
+
+**What the LLM generates:**
+
+> "This query will be slow on a large object. Consider requesting a custom index on `Status__c`, and monitor the Query Plan cost."
+
+Correct thresholds, correct tool, wrong severity — and the review passes.
+
+**Why it happens:** models have absorbed the selectivity percentages from the LDV best-practices material, where the framing is throughput and timeouts. They have almost no exposure to the trigger-context enforcement, so having watched the query succeed in Developer Console they conclude it is safe to move into a trigger handler. The failure mode they predict (slow) is not the failure mode that occurs (thrown).
+
+**Correct pattern:** any SOQL that will execute inside a trigger, against an object over 200,000 rows, must be provably selective *before* it ships, because the platform converts the same condition into:
+
+```text
+System.QueryException: Non-selective query against large object type (more than 200000 rows). Consider an indexed filter or contact salesforce.com about custom indexing.
+```
+
+The advice to give is therefore a gate, not a suggestion: "Query Plan cost must be < 1.0 against production row counts, or this cannot go in a trigger." If it cannot be made selective, the recommendation is to relocate the query to an async context, not to tune it.
+
+**Detection hint:** a review comment or generated design note that approves relocating a query into a trigger, trigger handler, or `before insert`/`after update` path while citing only Query Plan cost, wall-clock time, or "monitor in production" — with no assertion that the filter clears the index threshold. Equivalently: any answer about `Non-selective query` that offers `LIMIT`, `ORDER BY`, or batching as the fix, none of which change selectivity.

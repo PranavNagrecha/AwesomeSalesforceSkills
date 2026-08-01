@@ -221,3 +221,25 @@ doesn't, but `UserRecordAccess` returns `HasReadAccess = true` for
 the user, you're looking at a Restriction Rule. Document the rule
 as the root cause; don't try to "fix" it by adding more sharing
 (the rule will still subtract).
+
+**The exemption that makes this a security finding, not just a
+diagnostic one:** per Restriction Rule Considerations, *"Restriction
+rules aren't applied for code executed in System Mode."* Any
+`@AuraEnabled` controller, any `without sharing` class, any
+system-context Flow, any Apex invoked from a trigger or a REST
+service in system mode returns **exactly the records the restriction
+rule was written to hide**. A restriction rule is a UI-and-user-mode
+filter, not a security boundary for code. Two more overrides worth
+stating on the same page: *"Users with the View All Records or View
+All Data permissions can view all records regardless of restriction
+rules. Users with the Modify All Records or Modify All Data
+permissions can view, edit, and delete all records regardless of
+restriction rules."*
+
+So when a restriction rule is the intended control, the audit is not
+"is the rule active" but "does every code path to this object run in
+user mode" — `WITH USER_MODE`, `with sharing` plus explicit FLS/CRUD,
+or `Security.stripInaccessible`. And note the edition ceiling while
+you are there: *"You can create up to two active restriction rules
+per object in Enterprise and Developer Editions and up to five active
+restriction rules per object in Performance and Unlimited Editions."*

@@ -53,4 +53,6 @@ Performance is secondary but relevant for state passing. Passing large SObject c
 - Apex Developer Guide — Transaction Finalizers: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_transaction_finalizers.htm
 - Apex Reference Guide — AsyncInfo Class: https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_AsyncInfo.htm
 - Apex Developer Guide — Execution Governors and Limits: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm
+- Apex Developer Guide — Detecting Duplicate Queueable Jobs: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dedupe_queueable.htm
+- Apex Reference Guide — AsyncOptions Class: https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_AsyncOptions.htm
 - Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

@@ -78,7 +78,7 @@ public class UpdateTargetAccountsJob implements Queueable {
 
 ---
 
-## Anti-Pattern 3: Calling a future method from a Batch or Queueable context
+## Anti-Pattern 3: Calling a future method from a Batch context
 
 **What the LLM generates:**
 
@@ -90,7 +90,9 @@ public void execute(Database.BatchableContext bc, List<Account> scope) {
 }
 ```
 
-**Why it happens:** LLMs generate `@future` calls without checking the calling context. You cannot call a `@future` method from another `@future` method, a Batch Apex `execute`, or a Queueable `execute`. The platform throws `System.AsyncException: Future method cannot be called from a future or batch method`.
+**Why it happens:** LLMs generate `@future` calls without checking the calling context. The governor limit "Maximum number of methods with the future annotation allowed per Apex invocation" is **50** synchronously and, asynchronously, **"0 in batch and future contexts; 50 in queueable context"**. So from a `@future` method or a Batch `execute()`/`finish()` the allocation is zero and the platform throws `System.AsyncException: Future method cannot be called from a future or batch method`.
+
+**Queueable is the exception, and it is a real one.** A `Queueable.execute()` gets an allocation of **50** `@future` calls — calling `@future` from a Queueable is documented and supported, not an error. Do not generate the AsyncException warning for a Queueable caller; it will not fire. Salesforce does caution that "having multiple future methods fan out from a queueable job isn't a recommended practice as it can rapidly add many future methods to the asynchronous queue" — that is a design smell to raise, not a platform restriction to assert.
 
 **Correct pattern:**
 
@@ -106,7 +108,7 @@ public void execute(Database.BatchableContext bc, List<Account> scope) {
 }
 ```
 
-**Detection hint:** `@future` method calls inside classes that implement `Database.Batchable` or `Queueable`.
+**Detection hint:** `@future` method calls inside classes that implement `Database.Batchable`, or inside another `@future`-annotated method. A `@future` call inside a `Queueable` is **legal** — flag it only as a design review item (fan-out), never as a compile/runtime error.
 
 ---
 

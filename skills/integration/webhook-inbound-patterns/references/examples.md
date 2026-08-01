@@ -40,10 +40,17 @@ global class GitHubWebhookHandler {
         if (signature == null || !signature.startsWith('sha256=')) return false;
         String secret = [SELECT Value__c FROM Webhook_Secret__mdt
                          WHERE DeveloperName = 'GitHub' LIMIT 1].Value__c;
-        String expected = 'sha256=' + EncodingUtil.convertToHex(
-            Crypto.generateMac('HmacSHA256', Blob.valueOf(body), Blob.valueOf(secret))
+        String hex = signature.substring(7);
+        if (hex.length() != 64) return false;
+        Blob macToVerify;
+        try { macToVerify = EncodingUtil.convertFromHex(hex); }
+        catch (Exception e) { return false; }
+        // Crypto.verifyHMac compares inside the platform. Do NOT recompute the
+        // MAC and use expected.equals(signature) — String.equals short-circuits
+        // on the first differing character and leaks the signature via timing.
+        return Crypto.verifyHMac(
+            'hmacSHA256', Blob.valueOf(body), Blob.valueOf(secret), macToVerify
         );
-        return expected.equals(signature);
     }
 }
 ```

@@ -32,7 +32,7 @@ triggers:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-08-01
 ---
 
 # SOQL Query Optimization
@@ -61,13 +61,13 @@ The Lightning Platform query optimizer decides whether to use an index or perfor
 
 **Standard indexed fields (indexed by default on most objects):** Id, Name, OwnerId, CreatedDate, SystemModstamp, RecordTypeId, and all master-detail and lookup relationship fields.
 
-**Selectivity thresholds (standard indexed fields):**
-- The index is used when the filter matches fewer than 30% of total records, or fewer than 1,000,000 records — whichever is less.
-- Example: on a 2M-record object, the standard index is used if the filter matches 450,000 or fewer records.
+Both thresholds are **tiered**, not flat percentages — the second tier is the part practitioners routinely miss.
 
-**Selectivity thresholds (custom indexed fields):**
-- The index is used when the filter matches fewer than 10% of total records, or fewer than 333,333 records — whichever is less.
-- Example: on a 5M-record object, a custom index is used if the filter matches 333,333 or fewer records.
+**Selectivity thresholds (standard indexed fields):** "30% of the first million records and 15% beyond that, capping at 1 million total targeted records."
+- Example: on a 2M-record object, the standard index is used up to 300,000 (30% of the first million) + 150,000 (15% of the second million) = 450,000 records.
+
+**Selectivity thresholds (custom indexed fields):** "10% of the first million records and 5% beyond, capping at 333,333 targeted records."
+- Example: on a 5M-record object, a custom index is used up to 100,000 + 5% × 4,000,000 = 300,000 records — the 333,333 cap is a ceiling, not the threshold itself.
 
 **AND conditions:** The query optimizer uses indexes unless one filter alone returns more than 20% of records or 666,666 total records.
 
@@ -77,7 +77,7 @@ If no selective filter exists, the optimizer performs a full-table scan, which w
 
 ### 2. The Query Plan Tool
 
-The Query Plan tool in Developer Console (Debug > Open Query Plan) shows the execution plan Salesforce would use for a given SOQL query — without actually running the query.
+The Query Plan tool in Developer Console (Debug > Open Query Plan) shows the execution plan Salesforce would use for a given SOQL query — without actually running the query. It is **off by default**: "In the Developer Console, click Help | Preferences. Set Enable Query Plan to TRUE." No permission set or licence gates it, but the Debug menu item does not appear until that preference is flipped, which is why practitioners often report the tool as "missing."
 
 **How to read output:**
 - **Cost < 1.0** — Salesforce plans to use an index. Lower cost = better.

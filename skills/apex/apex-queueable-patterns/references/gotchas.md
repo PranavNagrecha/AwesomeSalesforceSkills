@@ -22,6 +22,24 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
+## The Duplicate Signature Is Released At Dequeue, Not At Completion
+
+**What happens:** A team adds `AsyncOptions.DuplicateSignature` expecting "only one instance of this job runs at a time." What they get is "only one instance sits *in the queue* at a time." The signature is removed when the job starts processing, not when it finishes: per the Apex Developer Guide, "if other jobs with the same signature are already running when the new job is enqueued, then the enqueue operation for the new job succeeds." The removal is deliberate — it guarantees at least one job instance per signature runs. Two concurrent executions of the same logical work therefore remain possible, along with the row-lock contention the team hoped to remove.
+
+The suppressed enqueue is not silent. `System.enqueueJob(job, options)` throws `DuplicateMessageException`:
+
+```text
+Attempt to enqueue job with duplicate queueable signature
+```
+
+Thrown, not returned — so an uncaught one inside a trigger surfaces to the user as failed DML, not a benign no-op.
+
+**When it occurs:** A long-running recalculation enqueued from a record-triggered path while a prior instance is mid-execution; or any code that treats `DuplicateMessageException` as an error rather than the success path.
+
+**How to avoid:** Catch `DuplicateMessageException` and treat it as "work already queued — nothing to do." For true single-execution semantics the signature is not enough: pair it with a status field or a `FOR UPDATE`-guarded control record flipped at the start of `execute()`. Build signatures from stable business keys via `QueueableDuplicateSignature.Builder().addId(...).addString(...).build()` — including a timestamp or a `Trigger.new` size defeats the mechanism, because every transaction then produces a different signature.
+
+---
+
 ## Static Variables Do Not Survive Between Chained Queueable Transactions
 
 **What happens:** A developer uses a static variable to accumulate state across chained Queueable jobs — for example, a static `List<String>` to collect log entries. The list is populated in job 1 but is empty (re-initialized to its declaration default) when job 2 starts.

@@ -52,3 +52,21 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** Custom indexes created by Salesforce Support in production are automatically copied only to Full sandboxes. Developer sandboxes, Developer Pro sandboxes, and Partial sandboxes do not receive custom indexes from production.
 
 **How to avoid:** Use Query Plan in production (read-only diagnostic, no records touched) rather than sandbox for index validation. If sandbox testing is required, request that Salesforce Support manually create the same index in the specific sandbox, or use a Full sandbox for performance testing.
+
+---
+
+## Gotcha 6: Non-Selectivity Is a Thrown Exception Inside a Trigger, Not Just Slowness
+
+**What happens:** The identical query runs fine in Execute Anonymous, in a batch job, and behind a Lightning controller — then hard-fails the moment the same line is called from a trigger in production:
+
+```text
+System.QueryException: Non-selective query against large object type (more than 200000 rows). Consider an indexed filter or contact salesforce.com about custom indexing.
+```
+
+Salesforce Help is explicit that the exception occurs within Apex trigger contexts, and that the same query succeeds in the Developer Console or through SOAP/REST API, "which apply standard query timeouts instead of the trigger restriction." A query validated by hand is therefore not validated for the place it is about to ship.
+
+**200,000 is the size of the object, not the size of the result.** The check activates once the object holds more than 200,000 rows; a query returning three records still throws if it cannot use a selective index on an object that large. And "an indexed filter" means a filter that clears the tiered thresholds in Core Concepts — an index alone is not enough above 10% of the first million records.
+
+**When it occurs:** Most often when working code is moved, not written: a selector proven in a batch context is reused by a new trigger handler, or the org quietly crosses 200,000 rows on an object whose trigger has shipped unchanged for two years.
+
+**How to avoid:** Before any SOQL moves into or under a trigger, run it through Query Plan (cost < 1.0) against production-scale row counts, not sandbox counts. Treat "runs fine in Developer Console" as evidence of nothing. Where the filter genuinely cannot be made selective, move the work out of the trigger into an async path where the trigger-context restriction does not apply — and accept the standard query timeout there instead.

@@ -29,4 +29,8 @@
 - Pub/Sub API Allocations — https://developer.salesforce.com/docs/platform/pub-sub-api/guide/allocations.html
 - Pub/Sub API Authentication — https://developer.salesforce.com/docs/platform/pub-sub-api/guide/supported-auth.html
 - Managed Event Subscriptions — https://developer.salesforce.com/docs/platform/pub-sub-api/guide/managed-sub.html
+- Pub/Sub API Handle Errors — https://developer.salesforce.com/docs/platform/pub-sub-api/guide/handling-errors.html
+- Pub/Sub API Event Message Durability — https://developer.salesforce.com/docs/platform/pub-sub-api/guide/event-message-durability.html
+- Pub/Sub API Retry Long-Lived RPC Calls — https://developer.salesforce.com/docs/platform/pub-sub-api/guide/retry-rpc-calls.html
+- Pub/Sub API General Considerations (dedupe on the `id` field) — https://developer.salesforce.com/docs/platform/pub-sub-api/guide/considerations.html
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

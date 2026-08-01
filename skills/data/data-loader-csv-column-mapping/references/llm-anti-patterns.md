@@ -75,7 +75,7 @@ Subject,WhoId,Status
 **Correct pattern:**
 
 ```
-Subject,Status,Who.Lead.Email,Who.Contact.Email
+Subject,Status,Lead:Who.Email,Contact:Who.Email
 "Follow up","Open",,alice@example.com
 "Follow up","Open",bob.lead@example.com,
 ```
@@ -83,6 +83,28 @@ Subject,Status,Who.Lead.Email,Who.Contact.Email
 Type-explicit External ID columns let the bulk job resolve at load time, so the CSV producer never needs Salesforce Ids.
 
 **Detection hint:** any `WhoId` or `WhatId` column in a CSV example for an upsert workflow.
+
+---
+
+## Anti-Pattern 3b: Inventing `Who.<Type>.<Field>` as the polymorphic header syntax
+
+**What the LLM generates:** polymorphic relationship headers with the object type as a middle path segment — `Who.Lead.External_Id__c`, `Who.Contact.Email`, `What.Account.External_Account_Id__c`.
+
+**Why it happens:** the ordinary child-to-parent header really is `RelationshipName.IndexedFieldName` (`Account.External_Id__c`). Faced with a polymorphic field the model extends the dotted path by one segment — the shape surrounding examples taught it. It looks grammatical and fails at load time, after the CSV is produced.
+
+**Correct pattern:**
+
+```
+# WRONG — no load surface accepts this
+Subject,Status,Who.Lead.Email,What.Account.External_Account_Id__c
+
+# CORRECT — ObjectType:RelationshipName.IndexedFieldName
+Subject,Status,Lead:Who.Email,Account:What.External_Account_Id__c
+```
+
+The rule is symmetric: "You get an error if you omit this syntax for a polymorphic field. You also get an error if you include this syntax for a field that is not polymorphic." So `Contact.AccountId` stays plain `Account.External_Id__c`.
+
+**Detection hint:** regex headers for `^(Who|What|Owner|Parent)\.[A-Za-z_]+\.` — a relationship name followed by two dotted segments is always wrong. Conversely flag a colon on a non-polymorphic relationship. Both are checkable against `describeSObjectResult`: a field is polymorphic exactly when `referenceTo` has more than one entry.
 
 ---
 

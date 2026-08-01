@@ -66,21 +66,25 @@ Show a user-friendly message on screen. Log the technical details for admin diag
 Add a fault connector to the Assignment element in your before-save flow.
 ```
 
-**Why it happens:** LLMs apply fault-handling advice uniformly across all flow types. Before-save record-triggered flows do not support fault connectors — they have no DML elements and run in the same transaction as the triggering save.
+**Why it happens:** LLMs apply fault-handling advice uniformly across all flow types. A before-save (Fast Field Updates) flow contains no DML elements — it mutates `$Record` in memory before the save — so there is no failing element for a fault connector to hang off.
 
 **Correct pattern:**
 
-Before-save flows fail by adding an error to `$Record` using an Assignment element with a custom error message formula:
+Use the **Custom Error** element. It is a real Flow Builder element (metadata: `customErrors` on the `Flow` type) that "shows an error message of your design to the user, and rolls back the current transaction" — which in a before-save flow means the triggering save is blocked and the user sees your message.
 
 ```
 [Decision: Is data valid?]
-  No --> [Assignment: Add error to $Record] --> (Flow ends — record save is blocked)
+  No  --> [Custom Error: "Close Date can't be in the past"] --> (save blocked, txn rolled back)
   Yes --> [Assignment: Set field values on $Record]
 ```
 
-Fault connectors are only available in after-save and autolaunched flows that contain DML.
+The Custom Error element can target the whole record (a page-level error window) or a specific field (an inline field error), which is what makes it a replacement for a validation rule rather than just a logging device.
 
-**Detection hint:** Advice to add fault connectors in a flow described as "before-save" or "fast field update."
+**There is no "add an error to `$Record` via an Assignment element" mechanism.** Assignment sets variable and field values; it has no error-message capability and no custom-error formula. Generated instructions of the form "use an Assignment element with a custom error message formula" describe a Flow Builder that does not exist — the admin follows them, finds no such option, and loses the afternoon.
+
+Also do not state that fault connectors exist only in "after-save and autolaunched flows that contain DML" — fault paths attach to any element that can fail at run time (Get Records, DML, Action, Apex, Subflow), which includes screen flows. The accurate constraint is narrower: a before-save flow has no such elements to attach one to.
+
+**Detection hint:** in flow guidance, grep for `Assignment` within three lines of `error` — Assignment has no error semantics, so the pairing is always wrong. Separately, flag any before-save / "fast field update" guidance that mentions "fault connector" or "fault path", and any guidance that blocks a save without naming the Custom Error element.
 
 ---
 

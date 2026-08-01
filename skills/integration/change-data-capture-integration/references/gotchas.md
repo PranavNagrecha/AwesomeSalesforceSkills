@@ -38,11 +38,13 @@ The Setup page is authoritative only for the default `ChangeEvents` channel. Not
 
 ## Gotcha 4: Event Delivery Allocation Is Cumulative Across All API Subscribers
 
-**What happens:** An org deploys a second CometD or Pub/Sub API subscriber for a new integration. Both subscribers receive the same events. The combined delivery count doubles, and the org hits the daily delivery allocation unexpectedly, causing subscriber disconnection.
+**What happens:** A second external subscriber is added for a new integration. Both receive the same events, so the combined delivery count doubles with no code change and no warning. Each client counts independently against the org's rolling 24-hour allocation — 50,000 (Performance/Unlimited), 25,000 (Enterprise), 10,000 (Developer) — so two subscribers at 30,000 each total 60,000 and blow even the Unlimited default.
 
-**When it occurs:** Each CometD or Pub/Sub API client independently counts against the org's daily delivery allocation. The default allocation is 50,000 events per 24 hours (Performance/Unlimited Edition), 25,000 (Enterprise), 10,000 (Developer Edition). Two subscribers on the same channel each consuming 30,000 events totals 60,000 — exceeding the Unlimited/Performance default.
+**Which subscribers actually consume it:** Pub/Sub API, CometD, the empApi Lightning component, and event relays. Apex triggers, Flows, and Process Builder processes consume **none** of it — so an org can run millions of Apex-side change-event executions and still show near-zero delivery usage. The allocation is org-wide, not per-channel, and "The event delivery allocation is shared between high-volume platform events and Change Data Capture events", so a noisy platform event can exhaust the CDC budget.
 
-**How to avoid:** Design for a single authoritative bridge subscriber per integration bus where possible. Use custom channels with server-side filtering to reduce the per-subscriber event volume. If multiple subscribers are unavoidable, purchase the CDC add-on (moves to a monthly usage model with 3M/month per add-on unit). Monitor allocation usage via Setup > Event Manager or the REST API before adding new subscribers.
+**What exhaustion looks like:** subscriptions are disconnected with a transport-specific string — CometD returns `403::Organization total events daily limit exceeded`, Pub/Sub API returns `sfdc.platform.eventbus.grpc.subscription.limit.exceeded`, which must not be retried (see `integration/pub-sub-api-patterns/references/error-codes.md`).
+
+**How to avoid:** Design for a single authoritative bridge subscriber per integration bus. Use custom channels with server-side filtering to cut per-subscriber volume. If multiple subscribers are unavoidable, buy the **Change Data Capture add-on** — "100,000 per day (3 million a month)" and a monthly usage-based entitlement. Monitor via Setup > Event Manager or the REST API `DailyDeliveredPlatformEvents` limit before adding subscribers.
 
 ---
 

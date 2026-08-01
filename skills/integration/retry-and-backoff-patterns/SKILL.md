@@ -54,13 +54,35 @@ Gather this context before working on anything in this domain:
 
 ## Core Concepts
 
-### No Thread.sleep() in Apex — Use Queueable Chaining for Delay
+### No Thread.sleep() in Apex — Use the Queueable Delay Parameter
 
-Apex has no `Thread.sleep()` equivalent. Attempting a synchronous retry loop in the same transaction violates callout-after-DML rules and cannot introduce meaningful delay. The idiomatic pattern is **Queueable chaining**: when a callout fails, the Queueable job re-enqueues itself (via `System.enqueueJob()`) with an incremented retry counter. Each enqueue schedules a new async execution, not an immediate one. The platform schedules the next attempt based on worker availability, which naturally provides seconds-to-minutes of delay without explicit sleep.
+Apex has no `Thread.sleep()`, and a synchronous retry loop cannot introduce delay. But **Apex can schedule a delayed retry explicitly** — the claim that it can only hope for scheduler jitter is out of date. `System.enqueueJob` takes an optional delay: "use the `System.enqueueJob(queueable, delay)` method to add queueable jobs to the asynchronous execution queue with a specified minimum delay (0–10 minutes)."
+
+```apex
+System.enqueueJob(new MyQueueableClass(), 5);            // 5-minute minimum
+
+AsyncOptions opts = new AsyncOptions();                   // equivalent form
+opts.MinimumQueueableDelayInMinutes = 5;
+System.enqueueJob(new RetryCalloutJob(orderId, retryCount), opts);
+```
+
+- The delay is a **minimum**, not a guarantee, capped at **10 minutes**. Longer backoff needs Scheduled Apex.
+- Admins can set a default org-wide enqueue delay (1–600 seconds) in Apex Settings for jobs enqueued without one. An explicit delay "ignores any org-wide enqueue delay setting" — so a job you did *not* give a delay to may still be delayed by org config.
 
 ### Exponential Backoff with Jitter
 
-Exponential backoff calculates the delay between retries as `baseDelay * 2^retryCount`. Without jitter, every concurrent failing job wakes at the same moment and hammers the external system simultaneously — the **thundering-herd problem**. Adding jitter (`+ (Math.random() * baseDelay)`) scatters retry times across the time window. The base delay is typically 1–5 seconds, capped at a maximum (e.g., 60 seconds). Because Apex cannot enforce exact timing, the delay calculation is stored as metadata on the retry job and logged, but the actual elapsed time depends on Queueable scheduling.
+Exponential backoff calculates the delay between retries as `baseDelay * 2^retryCount`. Without jitter, every concurrent failing job wakes at the same moment and hammers the external system simultaneously — the **thundering-herd problem**. Adding jitter (`+ (Math.random() * baseDelay)`) scatters retry times across the time window.
+
+Because `System.enqueueJob(queueable, delay)` takes **whole minutes, 0–10**, convert the computed backoff to minutes and clamp it — do not pass a seconds value into a minutes parameter:
+
+```apex
+Integer delayMinutes = (Integer) Math.min(
+    10, Math.max(0, Math.ceil((baseDelaySeconds * Math.pow(2, retryCount) + jitter) / 60))
+);
+System.enqueueJob(new RetryCalloutJob(payload, retryCount + 1, maxRetries), delayMinutes);
+```
+
+The 10-minute ceiling is the real design constraint: 1/2/4/8 minutes fits, anything past that flattens to 10. Log the *calculated* delay alongside the clamped one so a flattened retry is visible in the data rather than looking like a scheduler anomaly.
 
 ### Idempotency Key via External Id Upsert
 
@@ -81,8 +103,8 @@ Every retry implementation must have an explicit maximum retry count (3–5 is t
 **How it works:**
 
 1. The initial callout attempt is made from a Queueable `execute()` method.
-2. On failure, increment `retryCount` on the job instance. Calculate `delaySeconds = baseDelay * Math.pow(2, retryCount) + (Math.random() * baseDelay)`.
-3. If `retryCount < maxRetries`, call `System.enqueueJob(new RetryCalloutJob(payload, retryCount, maxRetries))`.
+2. On failure, increment `retryCount` on the job instance. Calculate `delaySeconds = baseDelay * Math.pow(2, retryCount) + (Math.random() * baseDelay)`, then convert to whole minutes clamped to 0–10.
+3. If `retryCount < maxRetries`, call `System.enqueueJob(new RetryCalloutJob(payload, retryCount, maxRetries), delayMinutes)` — pass the delay rather than relying on scheduler jitter.
 4. If `retryCount >= maxRetries`, write a `Failed_Integration_Log__c` record and stop.
 
 **Why not a for-loop retry in the same transaction:** Each `Http.send()` call consumes a callout from the 100-per-transaction limit. More critically, you cannot introduce real delay in a synchronous loop, so you just hammer the endpoint repeatedly in milliseconds — worse than no retry.
@@ -134,7 +156,7 @@ Step-by-step instructions for an AI agent or practitioner implementing retry log
 1. **Confirm execution context:** Verify that the callout is already in a Queueable or Batch context. If it originates from a trigger or controller, extract it to a Queueable job first before adding retry logic.
 2. **Define retry parameters:** Decide `maxRetries` (3–5), `baseDelaySeconds` (1–5), and `maxDelaySeconds` (30–60). Document these as Custom Metadata fields in `Retry_Config__mdt` so they can be adjusted without a deploy.
 3. **Add retry counter and idempotency key fields:** Add `Retry_Count__c` (Integer, default 0) and `Integration_Idempotency_Key__c` (Text, External Id) to the driving SObject. Populate the idempotency key before the first enqueue.
-4. **Implement the Queueable retry chain:** In the `execute()` method, wrap the callout in a try-catch. On caught exceptions or non-2xx responses, increment the counter, calculate backoff delay (for logging/metadata — actual delay comes from Queueable scheduling), and re-enqueue if under the limit.
+4. **Implement the Queueable retry chain:** In the `execute()` method, wrap the callout in a try-catch. On caught exceptions or non-2xx responses, increment the counter, calculate the backoff, convert it to whole minutes clamped to 0–10, and re-enqueue with `System.enqueueJob(job, delayMinutes)` if under the limit. Log both the calculated and the clamped delay.
 5. **Implement the dead-letter path:** When `retryCount >= maxRetries`, insert a `Failed_Integration_Log__c` record with payload, error, HTTP status, retry count, and timestamp. Optionally publish a Platform Event to notify an operations flow.
 6. **Add the circuit breaker check:** At the start of `execute()`, read `Circuit_Breaker_Config__mdt`. If the circuit is open and cool-down has not elapsed, log and return without attempting the callout.
 7. **Test failure modes explicitly:** Write Apex tests that mock HTTP 429, 503, and timeout responses. Assert that retry count increments, dead-letter records are written at max retries, and idempotency keys are preserved across re-enqueues.
@@ -160,7 +182,7 @@ Run through these before marking integration retry work complete:
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **Queueable re-enqueue does not guarantee delay** — `System.enqueueJob()` schedules the job for the next available worker, which may be seconds or minutes later. You cannot control the exact retry interval. Document this for stakeholders: the backoff delay is approximate, not guaranteed.
+1. **The enqueue delay is a floor, not an appointment** — `System.enqueueJob(queueable, delay)` accepts a "specified minimum delay (0–10 minutes)". The platform will not run the job *before* that delay, but does not promise to run it *at* that delay — execution still waits for a worker. So: passing >10 or a seconds-scaled value is a bug, not a longer wait; and a job enqueued with **no** delay may still be delayed by the org-wide default (1–600 seconds) in Apex Settings, which an explicit delay "ignores". The retry interval is bounded below and approximate above.
 2. **Callout-after-DML rule applies inside Queueable** — If you write a `Failed_Integration_Log__c` record (DML) and then attempt a callout in the same `execute()` method, you hit the "callout after uncommitted work" exception. Always perform DML after the callout block, or use a separate inner Queueable for the logging path.
 3. **Daily async Apex limit is shared across all jobs** — Unlimited retry storms (e.g., a broken endpoint during peak processing) can consume the 250,000 daily Queueable executions, blocking all other background processing. The `maxRetries` guard and circuit breaker are critical safety valves, not optional.
 4. **`System.enqueueJob()` is limited to 50 per transaction** — A batch of failing records all trying to enqueue retry jobs in the same transaction will hit this limit. Design retry logic so each job re-enqueues itself (1 per transaction), not so a parent job enqueues N children.

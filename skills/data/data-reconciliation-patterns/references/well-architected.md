@@ -21,10 +21,12 @@
 
 2. **Delta loads without tombstone logic** — Using `LastModifiedDate > :lastRun` as the sole change detection mechanism misses hard-deleted records entirely. Integrations built on this pattern drift silently until count-level reconciliation surfaces the discrepancy. Pair every delta load strategy with a tombstone or CDC DELETE event handler.
 
-3. **Non-unique External ID fields used as upsert keys** — Skipping the Unique constraint on an External ID field allows duplicate values to accumulate. The first upsert operation that encounters duplicates produces `MULTIPLE_CHOICES` errors, and the root cause is hard to diagnose if the field was not intended to be non-unique. Enforce uniqueness at field definition time.
+3. **Non-unique External ID fields used as upsert keys** — Skipping the Unique constraint on an External ID field allows duplicate values to accumulate. The first upsert operation that encounters duplicates produces `DUPLICATE_EXTERNAL_ID` errors, and the root cause is hard to diagnose if the field was not intended to be non-unique. Enforce uniqueness at field definition time.
 
 ## Official Sources Used
 
+- SOAP API Developer Guide — StatusCode (`DUPLICATE_EXTERNAL_ID`) — https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_calls_concepts_core_data_objects.htm
+- REST API Developer Guide — Insert or Update (Upsert) a Record Using an External ID (HTTP 300 on ambiguous match) — https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/dome_upsert.htm
 - Bulk API 2.0 Developer Guide (Upsert) — https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/asynch_api_intro.htm
 - Change Data Capture Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.change_data_capture.meta/change_data_capture/cdc_intro.htm
 - Data Integration Decision Guide — https://architect.salesforce.com/decision-guides/data-integration

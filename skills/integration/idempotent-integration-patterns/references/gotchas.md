@@ -22,7 +22,9 @@
 
 ## Gotcha 3: External ID Upsert Errors on 2+ Matching Records Instead of Updating One
 
-**What happens:** An External ID upsert operation returns an error: `EXTERNAL_ID_NON_UNIQUE: More than one record found for the External ID field value`. The integration team is confused — if duplicates exist, shouldn't the upsert update one of them?
+**What happens:** An External ID upsert fails the row with StatusCode `DUPLICATE_EXTERNAL_ID`, defined in the SOAP API `StatusCode` enumeration as "A user-specified external ID matches more than one record during an upsert." The integration team is confused — if duplicates exist, shouldn't the upsert update one of them?
+
+**Match on the right code.** `DUPLICATE_EXTERNAL_ID` is the StatusCode returned by SOAP API, Bulk API and Apex `Database.upsert`. There is no `EXTERNAL_ID_NON_UNIQUE` StatusCode — retry/alerting logic that greps for it will never match. The REST single-record path is different again: `PATCH /services/data/vXX.0/sobjects/<Object>/<ExtIdField>/<value>` signals the same ambiguity with **HTTP 300**, where "a 300 error is reported, and the record isn't created or updated", together with a list of the records that matched. Handle both surfaces explicitly if your integration uses both.
 
 **When it occurs:** When an External ID field is not marked as Unique. Without the UNIQUE constraint, multiple records can share the same External ID value. When the upsert finds 2+ matching records, it errors rather than picking one to update — this is intentional Salesforce platform behavior to prevent ambiguous updates.
 

@@ -50,7 +50,7 @@
 
 ## Official Sources Used
 
-- LWC Reactivity for Fields, Objects, and Arrays — https://developer.salesforce.com/docs/platform/lwc/guide/reactivity-fields.html
+- LWC Reactivity for Fields, Objects, and Arrays (read-set rule: "A component rerenders only if a property accessed during the previous rendering cycle is updated") — https://developer.salesforce.com/docs/platform/lwc/guide/reactivity-fields.html
 - LWC Decorators Reference — https://developer.salesforce.com/docs/platform/lwc/guide/reference-decorators.html
 - LWC Lifecycle Hooks — https://developer.salesforce.com/docs/platform/lwc/guide/create-lifecycle-hooks.html
 - LWC Best Practices — https://developer.salesforce.com/docs/platform/lwc/guide/get-started-best-practices.html

@@ -84,9 +84,11 @@ Record-level reconciliation uses a shared key — typically a Salesforce Externa
 
 **How it works:** Bulk API 2.0 upsert jobs specify `externalIdFieldName` in the job creation payload. The platform performs a lookup against that field for each incoming row; if a match is found the record is updated, otherwise it is inserted. The job returns per-row success/failure results in `successfulResults` and `failedResults` endpoints.
 
-**Critical constraint:** The External ID field must be unique (unique checkbox on the field definition) to avoid `MULTIPLE_CHOICES` errors. If a non-unique external ID field is used in an upsert and two records match, the upsert fails with `MULTIPLE_CHOICES` for that row. Validate uniqueness in your source data before submitting to the bulk job.
+**Critical constraint:** The External ID field must be unique (Unique checkbox on the field definition) to avoid `DUPLICATE_EXTERNAL_ID` errors. If a non-unique external ID field is used in an upsert and two Salesforce records match the incoming value, that row fails with StatusCode `DUPLICATE_EXTERNAL_ID` — documented as "A user-specified external ID matches more than one record during an upsert." The row appears in `failedResults`; the rest of the job continues.
 
 **Why not REST single-record upsert:** For large datasets, REST PATCH by external ID (e.g., `PATCH /services/data/vXX.0/sobjects/Account/External_Id__c/ABC123`) works but is serial and subject to API call limits. Use Bulk API 2.0 for anything over a few hundred records.
+
+**The two surfaces report an ambiguous match differently.** SOAP and Bulk return StatusCode `DUPLICATE_EXTERNAL_ID`. REST PATCH by external ID instead returns **HTTP 300** (the status literally named `Multiple Choices`) — "a 300 error is reported, and the record isn't created or updated", plus a list of the matching records. `MULTIPLE_CHOICES` is *not* a Salesforce StatusCode: match `DUPLICATE_EXTERNAL_ID` in `failedResults`, and reserve HTTP-300 handling for the REST path.
 
 ### CDC-Driven Delta Load
 
@@ -117,7 +119,7 @@ Record-level reconciliation uses a shared key — typically a Salesforce Externa
 | Situation | Recommended Approach | Reason |
 |---|---|---|
 | Need to verify bulk load job completeness | Count-level SOQL reconciliation post-job | Fast, cheap, catches missing rows immediately |
-| Records exist in source but appear as duplicates in Salesforce | Verify External ID field has Unique constraint; check for case sensitivity mismatch | Non-unique external IDs cause MULTIPLE_CHOICES on upsert |
+| Records exist in source but appear as duplicates in Salesforce | Verify External ID field has Unique constraint; check for case sensitivity mismatch | Non-unique external IDs cause `DUPLICATE_EXTERNAL_ID` on upsert |
 | Need real-time detection of Salesforce changes | CDC via Pub/Sub API with replayId gap recovery | Lowest latency; handles insert/update/delete/undelete |
 | Periodic batch sync; CDC not available for object | SystemModstamp or LastModifiedDate delta + periodic full reconciliation | Covers most changes; supplement with tombstone for deletes |
 | Field values drifted between systems | Field-level hash comparison on key field projection | Pinpoints diverged records without full data export |
@@ -160,7 +162,7 @@ Non-obvious platform behaviors that cause real production problems:
 
 2. **External ID Text fields are case-sensitive** — A Text-type External ID field treats `ABC123` and `abc123` as different values. If the source system sends mixed-case keys, upserts will create duplicate records instead of updating. Either enforce normalization at the source (always uppercase/lowercase) or use a case-insensitive custom field approach with a formula-derived normalized field.
 
-3. **MULTIPLE_CHOICES on non-unique external IDs** — If an External ID field is not marked Unique and two Salesforce records share the same external ID value, a Bulk API 2.0 upsert targeting that field will fail with `MULTIPLE_CHOICES` for those rows. The error does not prevent other rows from processing but silently skips the affected rows unless `failedResults` is explicitly checked.
+3. **DUPLICATE_EXTERNAL_ID on non-unique external IDs** — If an External ID field is not marked Unique and two records share the same value, a Bulk API 2.0 upsert fails those rows with StatusCode `DUPLICATE_EXTERNAL_ID` ("A user-specified external ID matches more than one record during an upsert"). Other rows still process, so affected rows are silently skipped unless `failedResults` is checked. REST PATCH-by-external-ID signals the same ambiguity as **HTTP 300** instead.
 
 ---
 

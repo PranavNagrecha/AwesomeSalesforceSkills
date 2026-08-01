@@ -22,9 +22,11 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 3: MULTIPLE_CHOICES on Non-Unique External ID Fields
+## Gotcha 3: DUPLICATE_EXTERNAL_ID on Non-Unique External ID Fields
 
-**What happens:** Bulk API 2.0 upsert against an External ID field that is not marked Unique will fail with `MULTIPLE_CHOICES` for any row where more than one Salesforce record shares the same external ID value. The job does not fail entirely — it processes other rows and logs the affected rows in `failedResults` — so the failure is invisible unless `failedResults` is explicitly fetched.
+**What happens:** Bulk API 2.0 upsert against an External ID field that is not marked Unique fails with StatusCode `DUPLICATE_EXTERNAL_ID` for any row where more than one Salesforce record shares the same external ID value. The SOAP API `StatusCode` enumeration defines it as "A user-specified external ID matches more than one record during an upsert." The job does not fail entirely — it processes other rows and logs the affected rows in `failedResults` — so the failure is invisible unless `failedResults` is explicitly fetched.
+
+**Do not match on `MULTIPLE_CHOICES`.** Not a Salesforce StatusCode — the name comes from HTTP 300 Multiple Choices, which is what the *REST* single-record upsert (`PATCH /sobjects/<Object>/<ExtIdField>/<value>`) returns for the same ambiguity: "a 300 error is reported, and the record isn't created or updated", plus the matching records. Bulk/SOAP report `DUPLICATE_EXTERNAL_ID`; REST reports HTTP 300. Code grepping for `MULTIPLE_CHOICES` in a Bulk `failedResults` CSV will never fire.
 
 **When it occurs:** When a custom field has the External ID checkbox checked but not the Unique checkbox, and duplicate values were loaded historically (often from a prior import without uniqueness validation). The platform allows duplicate external ID values when uniqueness is not enforced; the upsert operation is the first point where the ambiguity becomes an error.
 

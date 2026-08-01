@@ -133,7 +133,9 @@ Loop over triggering records:
 [Update Records: contactsToUpdate]  // 1 DML call (bulk-safe up to 10k rows)
 ```
 
-**Why it works:** `O(N)` DML → `O(1)` DML. Also fails more predictably — if one record in the collection violates a validation rule, you get an `AllOrNone=false` partial success with itemized errors rather than a rollback.
+**Why it works:** `O(N)` DML → `O(1)` DML — it moves the element off the 150-DML-statements-per-transaction limit, which is the actual failure this pattern prevents.
+
+**What it does NOT buy you: partial success.** Flow's Update Records element has no `AllOrNone` setting and no partial-success mode — there is no Flow equivalent of Apex's `Database.update(records, false)` and no itemized per-row result collection. If one record in the collection violates a validation rule, the whole DML fails. Salesforce documents the same behaviour on the schedule-triggered path: "if a schedule-triggered flow has a Create Records, Delete Records, Get Records, or Update Records element that processes multiple records and some records fail, all records are rolled back." Bulkifying makes the Flow *fit inside limits*; it does not make failures granular. If you need per-record error isolation, you need Invocable Apex using `Database.update(records, false)` and inspecting `Database.SaveResult[]` — see Pattern 3.
 
 ### Pattern 3: Offload Heavy Work To Async Or Apex
 

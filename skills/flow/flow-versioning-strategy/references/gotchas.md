@@ -15,11 +15,26 @@ still resume on obsolete versions. Check before cleanup.
 Activating a flow in the repo does nothing. Activation is per-org
 metadata state. Track active version per environment.
 
-## 4. Subflow Version Is Resolved At Activation
+## 4. Subflow Version Is Resolved At Run Time, Not At Activation
 
-A subflow call resolves to whatever active version of the subflow
-existed when the parent version was activated. Updating the subflow
-activates for new interviews but doesn't re-bind existing paused.
+Resolution is late, not early: "If a child flow has multiple versions,
+the parent flow runs the child flow's active version. If a child flow
+has no active version, the parent flow runs the latest version." The
+parent holds a reference to the child flow, not to a pinned version
+number, so activating a new child version changes the behaviour of
+every already-active parent on its next interview — with no redeploy
+and no re-activation of the parent.
+
+Two consequences worth planning for:
+
+- A subflow edit is a **production change to every caller**. Search
+  metadata for `<flowName>` references before activating a new child
+  version; the blast radius is not visible from the child's own screen.
+- The "no active version" fallback is the trap. Deactivating a child
+  flow does not stop callers — it silently drops them onto the latest
+  (possibly unfinished, never-activated) draft. Deleting the version is
+  the only way to stop it being reachable, and Gotcha 1 still applies to
+  paused interviews pinned to it.
 
 ## 5. Variable Rename Silently Breaks Callers
 

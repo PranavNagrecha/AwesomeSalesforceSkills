@@ -42,7 +42,9 @@ else:
     process_fields(event_payload)
 ```
 
-**Detection hint:** Look for subscriber code that reads field values from the event body without first checking for the `GAP_` prefix on `changeType`. Also flag code that `strip("GAP_")` manipulates the changeType string to reuse normal processing logic.
+**`GAP_OVERFLOW` is a distinct, worse error.** The LLM responds to it by re-subscribing from an earlier replay ID plus `for record_id in header["recordIds"]: fetch_record(record_id)` — because "gap" reads as "I missed events while offline." Both fail: re-subscribing returns the same overflow event, and `recordIds` holds only the placeholder `000000000000000AAA`, so the fetch loop yields a malformed-id error or an empty result and the subscriber logs success. `GAP_OVERFLOW` means the *publisher* exceeded 100,000 changes in one transaction; the only correct response is a reconciliation job over the entity.
+
+**Detection hint:** subscriber code that reads field values from the event body without first checking the `GAP_` prefix on `changeType`; code that `strip("GAP_")`s the changeType to reuse normal processing; **any `GAP_` handler with a single code path for all five types**, or one that calls a record-fetch loop on `GAP_OVERFLOW`.
 
 ---
 

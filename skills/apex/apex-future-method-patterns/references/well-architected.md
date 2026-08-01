@@ -103,6 +103,9 @@ parameters (as a JSON-encoded `String`) rather than re-querying.
 
 - Apex Developer Guide — Future Methods:
   https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_invoking_future_methods.htm
+- Apex Developer Guide — Execution Governors and Limits (future-per-invocation:
+  "0 in batch and future contexts; 50 in queueable context"; enqueueJob: 50 sync / 1 async):
+  https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm
 - Apex Developer Guide — Async Apex limits:
   https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_async.htm
 - Apex Reference — `@future` annotation:

@@ -36,7 +36,7 @@ triggers:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-16
+updated: 2026-08-01
 ---
 
 # Pub/Sub API Patterns
@@ -94,7 +94,17 @@ Events are retained on the event bus for **3 days**. Replay options:
 - **Latest** — start from events published after subscription begins (no replay)
 - **Custom replay ID** — resume from a specific event position (use the `replayId` field from prior events)
 
+Replay IDs are opaque cursors, not sequence numbers: "Replay ID values aren't guaranteed to be contiguous for consecutive events." Never compare, increment, or range over them. For deduplication use the event's own identifier — "The system-generated `id` field value in the received events uniquely identifies each event. You can dedupe events using the `id` field", which "corresponds to the `EventUuid` field in events delivered to non-Pub/Sub API clients." One caveat from the same page: "If a Pub/Sub API publisher overrides the `id` field value, it's possible that the `id` isn't unique."
+
 For consumer resilience, clients should persist the last successfully processed `replayId` to an external store and pass it on reconnect.
+
+### Error Handling: Branch on the Salesforce Code, Never the gRPC Status
+
+**Hard rule.** A failed Pub/Sub call carries two independent signals. The gRPC status (`UNAVAILABLE`, `INTERNAL`, `PERMISSION_DENIED`) is the one the client library surfaces, and it is not actionable — the same status maps to at least four different recovery actions. The actionable one is the Salesforce code in the trailing metadata: "Pub/Sub API adds a custom error code in the Trailers section of the exception. You can retrieve the custom error code by calling `getTrailers()` on the exception." Extract the `sfdc.platform.eventbus.grpc.*` string and route on that. Also capture the RPC ID, which "the Pub/Sub API appends to the error message after the `rpcId:` prefix" — Support cannot trace the failure without it.
+
+Two codes must never be retried: `...topic.not.found` (permanently fatal for that name; a retry loop here never terminates) and `...subscription.limit.exceeded` (the 24-hour delivery allocation is gone; retrying cannot restore it).
+
+The full decoder table lives in `references/error-codes.md`. **Open it on a symptom — do not preload it.**
 
 ### Managed Subscriptions
 
@@ -205,6 +215,9 @@ for event_batch in stub.Subscribe(fetch_requests(), metadata=metadata):
 - [ ] Publish batches ≤ 200 events and ≤ 4 MB per batch
 - [ ] Managed Subscription limit (200 per org) checked if using ManagedSubscribe
 - [ ] Consumer handles 3-day event retention window in SLA design
+- [ ] Subscriber reads `getTrailers()` and routes on the `sfdc.platform.eventbus.grpc.*` code, not on the gRPC status
+- [ ] `topic.not.found` and `subscription.limit.exceeded` are excluded from the retry path
+- [ ] Deduplication keys on the event `id` field, never on `replay_id`
 
 ---
 

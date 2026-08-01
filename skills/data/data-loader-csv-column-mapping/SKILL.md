@@ -81,7 +81,7 @@ Every load tool resolves a CSV header against the target object's field API name
 - **Data Loader (Java client and CLI)** matches headers case-insensitively against field API names and against pre-saved `.sdl` mappings. Unknown headers are quietly dropped at mapping time unless you have a `.sdl` that explicitly references them.
 - **dataloader.io** is browser-based and behaves like Data Loader for case-insensitivity but persists mappings in the cloud project, not in a local file.
 - **Workbench Insert/Upsert** matches case-insensitively but offers no saved-mapping file — every load re-maps.
-- **Bulk API V2 (REST `/jobs/ingest`)** is **strict and case-sensitive**. The header `accountid` does not match the field `AccountId` and the row will return `InvalidBatch` or write `null`. Extra columns are also rejected — V1 was tolerant, V2 is not.
+- **Bulk API V2 (REST `/jobs/ingest`)** is **strict**: "Each field-name header in the file must be the same as the field's Field Name (for standard fields) or API Name (for custom fields)." An unbindable header — wrong casing, a typo, or a field the running user has no FLS on — surfaces as `InvalidBatch : Field name not found` and fails the **whole job**, not one row.
 
 If the same CSV will be loaded by both Data Loader and a custom Bulk API V2 client (a common dev/prod split), **author the header in the exact field API name casing** and assume the strictest rule wins.
 
@@ -109,14 +109,16 @@ A field with `Default Value = TODAY()` or a static literal on a custom field **d
 
 ### Polymorphic lookup needs a type prefix
 
-`Task.WhoId` (Lead or Contact) and `Task.WhatId` (Account, Opportunity, custom...) are polymorphic. A bare 18-character ID works because the prefix encodes the type, but **External ID upsert** on a polymorphic field requires the explicit relationship column form:
+`Task.WhoId` (Lead or Contact) and `Task.WhatId` (Account, Opportunity, custom...) are polymorphic. A bare 18-character ID works because the prefix encodes the type, but **External ID upsert** on a polymorphic field requires the documented `ObjectType:RelationshipName.IndexedFieldName` form — the object type goes **in front, separated by a colon**, not in the middle of the dotted path:
 
 ```
-Who.Lead.External_Id__c
-Who.Contact.External_Id__c
+Lead:Who.External_Id__c
+Contact:Who.External_Id__c
 ```
 
-Submitting just `Who.External_Id__c` without naming the target type is invalid — the API has no way to choose between `Lead` and `Contact`.
+The rule bites both ways: "You get an error if you omit this syntax for a polymorphic field. You also get an error if you include this syntax for a field that is not polymorphic." So `Who.External_Id__c` fails, and so does `Account:Account.External_Id__c` on the non-polymorphic `Contact.AccountId`.
+
+`Who.Lead.External_Id__c` — type as a middle path segment — is **not** valid on any load surface. From **API 57.0** the `ObjectType` must be the `apiName`: namespace included, `__c` for custom objects.
 
 ### Reference-field resolution by External ID
 
@@ -162,12 +164,12 @@ Translated orgs and picklists with global value sets often have labels that diff
 **How it works:**
 
 ```
-Subject,Status,Who.Contact.Email,Who.Lead.Email,What.Account.External_Account_Id__c
+Subject,Status,Contact:Who.Email,Lead:Who.Email,Account:What.External_Account_Id__c
 "Follow up","Completed",alice@example.com,,EXT-12345
 "Trial signup","In Progress",,bob@example.com,
 ```
 
-Each row populates exactly one of the `Who.Contact.Email` or `Who.Lead.Email` columns. The empty cell on the unused side is fine — the API resolves the populated one. Both columns must use a unique, indexed External ID field (`Email` is implicitly indexed and serves as External ID for Lead/Contact in many orgs).
+Each row populates exactly one of the `Contact:Who.Email` or `Lead:Who.Email` columns. The empty cell on the unused side is fine — the API resolves the populated one. Both columns must reference an indexed field on the target object: a custom field with External ID checked, or a standard field whose describe reports `idLookup=true` (`Email` on Lead and Contact qualifies).
 
 **Why not the alternative:** a single `WhoId` column with raw IDs forces the consumer of the CSV to pre-resolve every ID, which is exactly the work upsert was designed to skip.
 
@@ -204,7 +206,7 @@ Compare the four mainstream tools on column-mapping behaviour. Pick the row that
 | Extra columns in CSV | Tolerated, dropped at mapping | Tolerated | Tolerated | **Rejected — `InvalidBatch`** |
 | Missing required fields | Caught pre-load via describe | Caught pre-load | Caught at row error | Caught at row error only |
 | Saved mapping file | `.sdl` file (local) | Cloud project mapping | None — re-map every time | Caller's responsibility |
-| Polymorphic External ID syntax | `Who.Lead.<ExtId>` supported | Supported | Supported | Supported |
+| Polymorphic External ID syntax | `<Type>:Who.<ExtId>` supported | Supported | Supported | Supported |
 | Record Type by DeveloperName | Supported via `RecordType.DeveloperName` header | Supported | Supported | **Not supported — pre-resolve Id** |
 | Blank cell on update (Bulk V1 mode) | Leaves field unchanged unless "Insert Null Values" set | Same | N/A | N/A |
 | Blank cell on update (Bulk V2 mode) | **Sets field to null** | Same | Same | **Sets field to null** |
@@ -236,7 +238,7 @@ Run through these before any CSV load is considered complete:
 - [ ] Describe of the target SObject was pulled fresh, not copied from earlier notes
 - [ ] CSV header uses exact field API name casing (assume case-sensitive)
 - [ ] Every required field on the chosen operation is present in the CSV (or intentionally relying on field default with the column omitted entirely)
-- [ ] Polymorphic lookup columns use the explicit `Who.<Type>.<ExtIdField>` form
+- [ ] Polymorphic lookup columns use the `<ObjectType>:<Relationship>.<ExtIdField>` form (`Lead:Who.Email`) — colon prefix, NOT `Who.Lead.Email`
 - [ ] External ID fields used for upsert are `External ID = true` and `Unique = true`
 - [ ] Picklist columns contain API names, not translated labels
 - [ ] `RecordTypeId` is pre-resolved (or the tool supports `RecordType.DeveloperName`)
@@ -249,11 +251,11 @@ Run through these before any CSV load is considered complete:
 
 ## Salesforce-Specific Gotchas
 
-1. **Bulk API V2 case sensitivity** — `accountid` does not match `AccountId`. The row errors with `InvalidBatch` or, depending on client, the column is silently dropped. Data Loader users porting CSVs to a CI pipeline hit this every time.
+1. **Bulk API V2 header binding is exact** — `accountid` does not match `AccountId`. The job fails with `InvalidBatch : Field name not found`, or the column is silently dropped depending on client. The same text appears when the header is spelled right but the running user lacks FLS on it — read it as "not found *for this user*". Data Loader users porting CSVs to a CI pipeline hit this every time.
 2. **Field default does not fire for blank cells** — a `Default Value = TODAY()` field stays null if the column is in the CSV with a blank cell. Drop the column from the CSV entirely to let the default apply.
 3. **Datetime without timezone applies the loading user's TZ silently** — `2026-04-28T09:00:00` loaded by a user with `America/Los_Angeles` profile TZ is stored as `2026-04-28T16:00:00Z`. Always include the offset (`...09:00:00-07:00`) or explicit `Z`.
 4. **Picklist labels accepted in unrestricted picklists** — if "Restrict picklist to the values defined in the value set" is off, submitting a label writes the label as free text. The record looks fine in the UI but never matches a filter on API name.
-5. **Polymorphic upsert without type prefix is rejected** — `Who.External_Id__c` without `Lead` or `Contact` in the path is an invalid header. Always disambiguate.
+5. **Polymorphic upsert without the `ObjectType:` prefix is rejected** — `Who.External_Id__c` is invalid; the documented form is `Lead:Who.External_Id__c`. Colon-separated **prefix**, never a dotted middle segment. The rule is symmetric — the prefix on a non-polymorphic field is also an error.
 6. **Self-referential parent uses `Parent`, not the field name** — for Account hierarchy, the External ID upsert header is `Parent.External_Account_Id__c`, not `ParentId.External_Account_Id__c`.
 7. **FLS-hidden fields drop silently** — the loading user's profile must have field-level Edit on every column. Hidden fields produce a green load with the column unwritten and no per-row error.
 

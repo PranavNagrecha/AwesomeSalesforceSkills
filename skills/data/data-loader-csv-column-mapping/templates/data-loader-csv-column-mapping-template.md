@@ -33,7 +33,7 @@ Run through every box. Empty = blocking.
 - [ ] CSV header uses **exact field API name casing** (`AccountId`, not `accountid`)
 - [ ] All required fields for the chosen operation are present in the CSV — or intentionally omitted to let the field default fire
 - [ ] No "present-but-blank" columns where the intent is "use the default" (drop the column instead)
-- [ ] Polymorphic lookups use the explicit type form (`Who.Lead.<ExtId>`, `What.Account.<ExtId>`)
+- [ ] Polymorphic lookups use the `ObjectType:Relationship.<ExtId>` form (`Lead:Who.<ExtId>`, `Account:What.<ExtId>`) — colon prefix, NOT `Who.Lead.<ExtId>`
 - [ ] External ID fields used for upsert binding are `External ID = true` AND `Unique = true` — verified from describe, not from setup screenshots
 - [ ] Picklist columns contain **API names**, not translated labels — translation table built and applied
 - [ ] `RecordTypeId` is pre-resolved (or the chosen tool supports `RecordType.DeveloperName`)
@@ -68,8 +68,8 @@ Owner_Email=Owner.User.Email__c
 Account_Ext_Id=Account.External_Account_Id__c
 
 # Polymorphic lookup — pick exactly one per row
-Who_Lead_Email=Who.Lead.Email
-Who_Contact_Email=Who.Contact.Email
+Who_Lead_Email=Lead:Who.Email
+Who_Contact_Email=Contact:Who.Email
 
 # Source columns intentionally NOT loaded (right-hand side empty)
 Source_Region=
@@ -102,8 +102,8 @@ If the load runs through a custom Bulk V2 client, persist the same mapping as JS
     "Name": "Name",
     "Custom_Text": "Custom_Text__c",
     "Account_Ext_Id": "Account.External_Account_Id__c",
-    "Who_Lead_Email": "Who.Lead.Email",
-    "Who_Contact_Email": "Who.Contact.Email"
+    "Who_Lead_Email": "Lead:Who.Email",
+    "Who_Contact_Email": "Contact:Who.Email"
   },
   "ignoredColumns": ["Source_Region", "Audit_Notes"]
 }

@@ -35,7 +35,7 @@ outputs:
 dependencies: []
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-08-01
 ---
 
 # Change Data Capture Integration
@@ -50,7 +50,7 @@ Gather this context before working on anything in this domain:
 
 - **Which objects need CDC?** Confirm whether they are standard objects (count toward the 5-entity default limit), custom objects, or both.
 - **What subscriber technology is in use?** Pub/Sub API (gRPC) is the modern preferred path; CometD is the legacy path still supported for existing middleware.
-- **What Edition is the org on?** Default event delivery allocations differ: 50,000/day (Performance/Unlimited), 25,000/day (Enterprise), 10,000/day (Developer Edition). The add-on removes entity limits and shifts delivery to a monthly 3M/month model.
+- **What Edition is the org on?** Delivery allocations differ: 50,000/day (Performance/Unlimited), 25,000/day (Enterprise), 10,000/day (Developer). The CDC add-on removes entity limits and moves delivery to a monthly model.
 - **Replay requirement:** Does the subscriber need durable replay (full 72-hour window) or tip-only? Is storing and recovering the replay ID in external state required?
 - **Is Apex the subscriber?** If yes, stop — use `apex/platform-events-apex` instead. This skill covers external (non-Apex) subscribers only.
 
@@ -122,17 +122,13 @@ Durable subscription requires the subscriber to persist the last successfully pr
 
 **Replay ID storage responsibility lies entirely with the subscriber.** Salesforce does not maintain per-subscriber cursors — if a subscriber reconnects without a stored replay ID, it can only start at tip (`-1`) or replay all retained events (`-2`).
 
-### Gap Events
+### Gap Events And Overflow Events — Two Different Failures
 
-When Salesforce cannot generate a full change event (e.g., event exceeds the 1 MB maximum size, a bulk database operation bypasses the application server, or an internal error occurs), it sends a **gap event** instead.
+**Gap events** (`GAP_CREATE`, `GAP_UPDATE`, `GAP_DELETE`, `GAP_UNDELETE`) are sent when Salesforce cannot generate a full change event: "The change event size exceeds the maximum 1 MB message size", certain field-type conversions, internal errors, or "Changes that occur outside the application server transaction and are applied directly in the database." They carry real `recordIds` but no field data — detect the `GAP_` prefix, re-query current state by `recordIds` through REST, and reconcile against `commitTimestamp` so a newer non-gap event is not overwritten.
 
-Gap events have `changeType` values prefixed with `GAP_`: `GAP_CREATE`, `GAP_UPDATE`, `GAP_DELETE`, `GAP_UNDELETE`, `GAP_OVERFLOW`. They include the `recordIds` header field but contain **no changed field data**.
+**`GAP_OVERFLOW` is not one of these and must not share the code path.** It is emitted when a *single transaction* exceeds 100,000 changes: "The first 100,000 changes generate change events. The set of changes beyond that amount generates one overflow event for each entity type." The weighting is asymmetric — "A record creation, deletion, or undeletion counts as one change toward the threshold", but "In a record update, each field change counts toward the overflow threshold", so a 3-field update across 34,000 records crosses the line. Typical causes: a cascade delete of accounts with many child opportunities and activities, or a recurring event with hundreds of occurrences and attendees.
 
-Gap event handling strategy:
-1. Detect gap events by checking `changeType` for the `GAP_` prefix.
-2. Mark affected records as dirty in the external system.
-3. Issue a REST API query for the current record state using the `recordIds` from the gap event header.
-4. Reconcile using `commitTimestamp` to ensure you are not overwriting a newer non-gap change event.
+The overflow payload carries nothing usable: all data fields are null, `changedFields`/`nulledFields`/`diffFields` are empty, and "The record ID for the change is always set to 000000000000000AAA, which is the empty record ID." So there is **no per-record recovery path** — unlike the other `GAP_` types you cannot re-query what you missed. The fix is upstream (batch the originating operation below 100,000 changes) or a scheduled reconciliation job, never consumer scaling or replay tuning.
 
 ---
 
@@ -162,7 +158,7 @@ Gap event handling strategy:
 4. Each subscriber connects to its specific channel path, e.g., `/data/ERP_Sync__chn`.
 5. Each subscriber manages its own replay ID independently.
 
-**Why not the default channel:** The default channel broadcasts all selected entities to all subscribers. Custom channels isolate event scope and reduce delivery allocation consumption by filtering server-side before delivery.
+**Why not the default channel:** it broadcasts all selected entities to all subscribers; custom channels filter server-side before delivery.
 
 ### Pattern 3: CDC → Kafka Bridge for Fan-Out
 
@@ -174,7 +170,7 @@ Gap event handling strategy:
 3. Kafka consumers subscribe independently; the CDC-to-Kafka bridge manages Salesforce replay ID in its own persistent store.
 4. Kafka provides its own offset management and fan-out — Salesforce event delivery allocation is consumed only by the single bridge subscriber.
 
-**Why not multiple Salesforce subscribers:** Each additional CometD or Pub/Sub API subscriber counts independently against the org's event delivery allocation. Centralizing to one bridge protects the allocation.
+**Why not multiple Salesforce subscribers:** each additional external subscriber counts independently against the delivery allocation; one bridge protects it.
 
 ---
 
@@ -221,17 +217,17 @@ Gap event handling strategy:
 
 ## Salesforce-Specific Gotchas
 
-1. **`changedFields` is absent in CometD** — The `changedFields`, `nulledFields`, and `diffFields` header fields are only available via Pub/Sub API or Apex triggers. CometD delivers the full updated field set in the message body, not just deltas. Systems that build diff logic based on CometD payloads must compare against stored state, not rely on the header.
+1. **`changedFields` is absent in CometD** — `changedFields`, `nulledFields` and `diffFields` come only from Pub/Sub API or Apex triggers. CometD delivers the full field set, so diff logic there must compare against stored state.
 
-2. **Gap events contain no changed field data** — When a gap event fires, the subscriber only receives the `recordIds` and the gap `changeType`. There are no field values in the event body. Subscribers that ignore gap event detection and try to process them as normal change events will silently skip updates and accumulate data drift. Always check the `changeType` for the `GAP_` prefix before processing field values.
+2. **Gap events contain no changed field data** — the subscriber gets only `recordIds` and the gap `changeType`. Check the `GAP_` prefix before touching field values, and branch `GAP_OVERFLOW` separately (see Core Concepts) — it carries no usable record IDs either.
 
-3. **Entity selections in custom channels are invisible in Setup UI** — The Change Data Capture Setup page only reflects selections on the default `ChangeEvents` channel. Entities in custom channels do not appear there. Practitioners who audit CDC coverage via Setup will undercount actual event volume. Use `SELECT QualifiedApiName FROM PlatformEventChannelMember` in Tooling API to get the full picture.
+3. **Entity selections in custom channels are invisible in Setup UI** — the CDC Setup page reflects only the default `ChangeEvents` channel, so a Setup-based audit undercounts event volume. Use `SELECT QualifiedApiName FROM PlatformEventChannelMember` (Tooling API).
 
-4. **Event delivery allocation is per-subscriber, cumulative** — Each subscribed CometD or Pub/Sub API client independently consumes from the org's daily delivery allocation. Two subscribers receiving the same 20,000-event stream consume 40,000 of the allocation. High fan-out subscriptions exhaust the default allocation quickly. Use custom channels with server-side filtering or a single bridge to Kafka/middleware to control consumption.
+4. **Event delivery allocation is per-subscriber, cumulative** — two subscribers on the same 20,000-event stream consume 40,000 of the allocation. See `references/gotchas.md` Gotcha 4 for which subscriber types consume it and the exact disconnect strings.
 
-5. **72-hour retention is hard** — Events purged after the retention window cannot be replayed at any price. A subscriber that goes offline for more than 72 hours will have a gap that cannot be closed by replaying CDC events. Recovery requires a full Bulk API re-sync of the affected objects followed by re-subscribing at tip.
+5. **72-hour retention is hard** — a subscriber offline longer than that has a gap no replay can close. Recovery is a full Bulk API re-sync followed by re-subscribing at tip.
 
-6. **Formula fields and roll-ups do not generate CDC events** — CDC captures explicit DML changes to stored field values. Formula field recalculations and roll-up summary field updates triggered by child record changes do not generate change events for the parent record. Systems that track formula field state via CDC will silently miss recalculations.
+6. **Formula fields and roll-ups do not generate CDC events** — CDC captures explicit DML on stored values. Formula recalculations and roll-up updates driven by child records produce no parent change event, so formula state tracked via CDC silently drifts.
 
 ---
 

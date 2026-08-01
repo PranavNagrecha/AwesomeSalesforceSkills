@@ -40,7 +40,7 @@ dependencies:
   - limits-and-scalability-planning
 version: 1.0.0
 author: Pranav Nagrecha
-updated: 2026-04-05
+updated: 2026-08-01
 ---
 
 Use this skill when an org needs proactive, automated visibility into its consumption of Salesforce platform limits. Unlike per-transaction governor limits that are enforced inline during code execution, org-level limits are shared ceilings that accumulate over time -- daily API calls, data storage, file storage, custom object counts, platform event delivery allocations, and more. When these limits are exhausted, the impact is org-wide: all integrations fail, all users are blocked from creating records, or platform events are silently dropped. The correct response is not reactive firefighting but proactive monitoring with automated threshold alerts.
@@ -182,7 +182,25 @@ The org has basic monitoring (e.g., a weekly manual check or a simple email aler
 | Limit | Scope | How to Check |
 |---|---|---|
 | DailyAsyncApexExecutions | Per 24-hour rolling window | OrgLimits / REST /limits |
+| DailyAsyncApexElasticExecutions | Per 24-hour rolling window | OrgLimits / REST /limits |
+| DailyAsyncApexTests | Per 24-hour rolling window | REST /limits |
 | ConcurrentAsyncGetReportInstances | Concurrent | REST /limits |
+
+**Read both async keys, not just the first.** `DailyAsyncApexExecutions` is the *licensed* daily limit: "250,000 or the number of applicable user licenses in your org multiplied by 200, whichever is greater." `DailyAsyncApexElasticExecutions` is the separate key for "Daily number of Queueable Apex and future method executions that can be enqueued, including elastic executions processed at a throttled rate" — the elastic ceiling is "the org's daily asynchronous Apex method executions limit plus either the org's licensed daily asynchronous Apex method executions limit or 10 million executions, whichever is less."
+
+Elastic limits change the **failure mode**, not just the number: past the licensed limit, Queueable and future jobs are processed at a throttled rate rather than rejected outright. A monitor that alarms at 100% of the licensed key is therefore reporting a throughput condition, not an outage. Elastic limits are Beta and apply only to Queueable Apex and future methods — Batch and Scheduled Apex still consume `DailyAsyncApexExecutions` under the hard ceiling.
+
+### Concurrent Long-Running Apex
+
+Not exposed through `OrgLimits`. The limit is computed as "a ratio of 100 licenses to one concurrent long-running Apex transaction" for synchronous requests running longer than 5 seconds, with a minimum of 10 and a maximum of 50 per org. When it is exceeded, new Apex requests are rejected and the user sees:
+
+```text
+Unable to process request. Concurrent requests limit exceeded.
+```
+
+Two monitoring surfaces, both gated:
+- **`ConcurLongRunApexErrEvent`** — a platform event that "Notifies subscribers of errors that occur when a Salesforce org exceeds the concurrent long-running Apex limit." Fields worth capturing: `CurrentValue`, `LimitValue`, `Quiddity` (the outer execution type), `RequestId`, `RequestUri`, `UserId`. This is the near-real-time surface.
+- **`ConcurrentLongRunningApexLimit`** — the corresponding `EventLogFile` event type, for retrospective analysis. Querying it requires the **View Event Log Files** *and* **API Enabled** user permissions, and meaningful retention requires **Salesforce Shield** or the **Event Monitoring add-on** subscription: with it, "Log files are retained, by default, for 30 days after their CreatedDate"; without it, in Developer Edition and Trial orgs, "Log Files are available for one day."
 
 ---
 
@@ -191,4 +209,7 @@ The org has basic monitoring (e.g., a weekly manual check or a simple email aler
 - Apex Reference Guide -- OrgLimits class and OrgLimit methods
 - REST API Developer Guide -- Limits resource (`/services/data/vXX.0/limits`)
 - Salesforce Help -- Monitor API Usage and Limits
+- Apex Developer Guide -- Execution Governors and Limits: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm
+- REST API Developer Guide -- Using Event Monitoring: https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/using_resources_event_log_files.htm
+- Platform Events Developer Guide -- ConcurLongRunApexErrEvent: https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/sforce_api_objects_concurlongrunapexerrevent.htm
 - Salesforce Well-Architected Overview -- Operational Excellence pillar

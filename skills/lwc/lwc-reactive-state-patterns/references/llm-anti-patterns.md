@@ -143,3 +143,52 @@ weigh the bundle-size cost — LWC bundles are constrained.
 **Detection:** Output that mentions Redux, MobX, Pinia, Zustand, or
 "global store" without first ruling out custom events + shared
 modules + LMS.
+
+---
+
+## 6. The three reflex fixes for a re-render that did not happen
+
+**What the LLM generates:** given "my component doesn't update", models
+work down a fixed ladder. (1) Add `@track` — refuted by anti-patterns 1
+and 2 above. (2) Deep-clone the field to force a new reference. (3) Toggle
+a dummy boolean to force a render.
+
+```js
+// reflex 2
+this.rows = JSON.parse(JSON.stringify(this.rows));
+// reflex 3
+this._tick = !this._tick;   // "kick the template"
+```
+
+**Why it happens:** the ladder is ordered by how often each move appears in
+React/Vue troubleshooting text, not by LWC semantics. None of the three
+diagnoses the actual cause, and reflex 3 *appears* to work, which ends the
+investigation.
+
+**Why (2) is wrong here:** `JSON.parse(JSON.stringify(x))` converts every
+`Date` to an ISO string, silently drops keys whose value is `undefined`,
+throws `TypeError: Converting circular structure to JSON` on graphs with
+back-references, and doubles peak heap on a large wire payload. In a
+component whose bug was a stale `Date` (gotcha 1) it swaps a re-render bug
+for a data-corruption bug.
+
+**Why (3) is wrong here:** toggling an unrelated boolean re-runs the whole
+template, which re-reads the property and re-registers it in the read-set
+(gotcha 7). The next mutation therefore *does* re-render — once — and the
+real defect is masked for exactly one cycle before returning under a
+different branch.
+
+**Not a contradiction with `lwc/lwc-debugging-devtools`:** that skill
+recommends `JSON.parse(JSON.stringify(...))` repeatedly, and correctly —
+it is the idiom for unwrapping Lightning Locker / LWS proxies so a
+`console.log` prints readable values. It is a *logging* tool. Using it to
+repair component state is the misuse; no package should read the two as
+conflicting advice.
+
+**Correct pattern:** diagnose against the read-set rule (gotcha 7) and the
+Date/Set/Map rule (gotcha 1) first, then reassign the property normally.
+
+**Detection hint:** `JSON.parse(JSON.stringify(` appearing anywhere outside
+a `console.*` argument; a boolean class field whose only reads are
+`!this._x` self-assignments; or `this.x = this.x` / `Object.assign(this.x,
+...)` immediately after a mutation.

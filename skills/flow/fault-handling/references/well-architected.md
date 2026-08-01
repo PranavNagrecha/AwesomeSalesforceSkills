@@ -23,6 +23,9 @@
 
 ## Official Sources Used
 
+- Custom Error Element — https://help.salesforce.com/s/articleView?id=platform.flow_ref_elements_custom_error.htm&type=5
+- Trailhead — Optimize Salesforce Flows with Rollback & Custom Errors ("shows an error message of your design to the user, and rolls back the current transaction") — https://trailhead.salesforce.com/content/learn/modules/flow-implementation-2/roll-back-changes-after-an-error
+- Customize What Happens When a Flow Fails (fault connectors) — https://help.salesforce.com/s/articleView?id=sf.flow_build_logic_fault.htm&type=5
 - Salesforce Well-Architected Overview — reliability and operational-quality framing for automation design
 - Metadata API Developer Guide — Flow metadata and deployment semantics used to keep the guidance grounded in platform configuration behavior
 - Integration Patterns — error-handling tradeoffs when Flow interacts with external systems or async boundaries

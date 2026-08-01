@@ -136,6 +136,9 @@ the doc layout changes.
   https://help.salesforce.com/s/articleView?id=sf.security_sharing_considerations.htm
 - Sharing Considerations (Security Implementation Guide) —
   https://developer.salesforce.com/docs/atlas.en-us.securityImplGuide.meta/securityImplGuide/sharing_considerations.htm
+- Restriction Rules Developer Guide — Considerations (System Mode
+  exemption, View All / Modify All overrides, per-edition rule caps) —
+  https://developer.salesforce.com/docs/atlas.en-us.restriction_rules.meta/restriction_rules/restriction_rules_considerations.htm
 - View Record Sharing (Help) —
   https://help.salesforce.com/s/articleView?id=sf.users_view_record_sharing.htm
 - Organization-Wide Defaults (Help) —

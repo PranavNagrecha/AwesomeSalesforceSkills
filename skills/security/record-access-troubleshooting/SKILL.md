@@ -30,7 +30,7 @@ outputs:
 dependencies: []
 version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-05-19
+updated: 2026-08-01
 ---
 
 # Record Access Troubleshooting
@@ -142,6 +142,7 @@ If either is true, sharing is moot — explain the finding.
 - [ ] `__Share` RowCause chain enumerated
 - [ ] Role hierarchy relationship checked
 - [ ] Restriction rules checked for the object
+- [ ] If a restriction rule is the control, every Apex/Flow entry point to the object has been confirmed to run in user mode — restriction rules aren't applied for code executed in System Mode
 - [ ] Implicit-parent-share considered for child objects
 - [ ] Remediation aligns with `sharing-selection` decision tree
 
@@ -150,7 +151,7 @@ If either is true, sharing is moot — explain the finding.
 1. **Manual shares disappear on ownership change.** Re-create as Apex managed share with a RowCause (survives transfer).
 2. **"Grant Access Using Hierarchies" is per-object and defaults on.** Turning off for custom objects with Private OWD blocks role-based visibility.
 3. **`UserRecordAccess` requires the query user to have `View All Data` OR be the target user.** Running as a sandbox admin works; running as a normal user impersonating will fail.
-4. **Restriction Rules apply AFTER sharing is computed** — user may have a `__Share` row yet still see zero results.
+4. **Restriction Rules apply AFTER sharing is computed** — user may have a `__Share` row yet still see zero results. They are also bypassed entirely in System Mode, and by `View All Records`/`View All Data`/`Modify All Records`/`Modify All Data`.
 
 ## Output Artifacts
 

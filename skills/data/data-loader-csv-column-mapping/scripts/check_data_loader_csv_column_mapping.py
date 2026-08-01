@@ -11,8 +11,9 @@ Takes a CSV header row plus a target SObject's describe JSON and reports:
   - type mismatches between simple inferred CSV column types and the target
     field type (e.g. a date-shaped column mapped to a text field, or a free-text
     column mapped to a date field)
-  - polymorphic lookup columns missing the explicit type prefix
-    (e.g. `Who.External_Id__c` without `Who.Lead.` or `Who.Contact.`)
+  - polymorphic header errors: missing ObjectType prefix
+    (`Who.External_Id__c` vs `Lead:Who.External_Id__c`), a prefix applied to a
+    NON-polymorphic relationship, and the invalid `Who.Lead.Email` form
   - relationship-style headers (`Account.External_Account_Id__c`) referencing
     fields that are not configured as External ID + Unique
   - namespace-prefix mismatches (header missing the prefix that exists on the
@@ -251,9 +252,22 @@ class Issue:
         return f"{self.severity}: [{self.code}] {self.message}"
 
 
+def split_type_prefix(header: str) -> tuple[str | None, str]:
+    """Split `ObjectType:RelationshipName.IndexedFieldName`.
+
+    Bulk API puts the object type in front of the relationship name, colon
+    separated, ONLY for polymorphic fields (`Lead:Who.Email`).
+    """
+    if ":" in header:
+        obj_type, _, rest = header.partition(":")
+        return (obj_type.strip() or None), rest.strip()
+    return None, header
+
+
 def parse_relationship_header(header: str) -> tuple[str, ...]:
-    """Split a relationship-style header into its dotted parts."""
-    return tuple(p for p in header.split(".") if p)
+    """Dotted parts of a relationship header, `ObjectType:` prefix stripped."""
+    _, rest = split_type_prefix(header)
+    return tuple(p for p in rest.split(".") if p)
 
 
 def check_required_fields(
@@ -371,6 +385,7 @@ def check_polymorphic_lookup(
     issues: list[Issue],
 ) -> None:
     for h in headers:
+        obj_type, _ = split_type_prefix(h)
         parts = parse_relationship_header(h)
         if len(parts) < 2:
             continue
@@ -378,29 +393,64 @@ def check_polymorphic_lookup(
         if rel_lc not in obj.relationships_lc:
             continue
         rel = obj.relationships_lc[rel_lc]
-        if rel not in obj.polymorphic_relationships:
-            continue
-        # Polymorphic — second part must be one of the referenceTo SObjects
         field_api = obj.relationship_to_field[rel]
         targets = obj.fields[field_api].reference_to
-        if len(parts) < 3:
-            issues.append(
-                Issue(
-                    "ERROR",
-                    "POLYMORPHIC_NO_TYPE",
-                    f"Header '{h}' targets polymorphic relationship '{rel}' "
-                    f"({', '.join(targets)}) but lacks an explicit type. "
-                    f"Use '{rel}.<Type>.<ExternalIdField>' — e.g. '{rel}.{targets[0]}.<ExtIdField>'.",
+        is_polymorphic = rel in obj.polymorphic_relationships
+
+        # Relationship headers can't traverse past one level (no grandparent),
+        # so `Who.Lead.Email` is never valid — and it is the most common
+        # invented form, looking like an extension of `Account.External_Id__c`.
+        if len(parts) > 2:
+            if is_polymorphic and parts[1] in targets:
+                issues.append(
+                    Issue(
+                        "ERROR",
+                        "POLYMORPHIC_TYPE_IN_PATH",
+                        f"Header '{h}' puts the object type inside the dotted path; "
+                        f"not valid on any load surface. The type is a colon-separated "
+                        f"PREFIX: use '{parts[1]}:{rel}.{'.'.join(parts[2:])}'.",
+                    )
                 )
-            )
+            else:
+                issues.append(
+                    Issue(
+                        "ERROR",
+                        "RELATIONSHIP_TOO_DEEP",
+                        f"Header '{h}' traverses more than one relationship level; "
+                        f"headers are 'RelationshipName.IndexedFieldName' only.",
+                    )
+                )
             continue
-        if parts[1] not in targets:
+
+        if is_polymorphic:
+            if obj_type is None:
+                issues.append(
+                    Issue(
+                        "ERROR",
+                        "POLYMORPHIC_NO_TYPE",
+                        f"Header '{h}' targets polymorphic relationship '{rel}' "
+                        f"({', '.join(targets)}) but lacks the ObjectType prefix. "
+                        f"Use '{targets[0]}:{rel}.{parts[1]}'.",
+                    )
+                )
+            elif obj_type not in targets:
+                issues.append(
+                    Issue(
+                        "ERROR",
+                        "POLYMORPHIC_BAD_TYPE",
+                        f"Header '{h}' specifies ObjectType '{obj_type}' but '{rel}' "
+                        f"resolves to {', '.join(targets)}. From API 57.0 the prefix "
+                        f"must be the object's apiName.",
+                    )
+                )
+        elif obj_type is not None:
+            # Symmetric rule: the prefix is an error on a NON-polymorphic field.
             issues.append(
                 Issue(
                     "ERROR",
-                    "POLYMORPHIC_BAD_TYPE",
-                    f"Header '{h}' specifies type '{parts[1]}' but '{rel}' resolves to "
-                    f"{', '.join(targets)}.",
+                    "TYPE_PREFIX_ON_NONPOLYMORPHIC",
+                    f"Header '{h}' carries an ObjectType prefix but '{rel}' is not "
+                    f"polymorphic — use '{rel}.{parts[1]}'.",
                 )
             )
 
@@ -436,8 +486,10 @@ def check_relationship_external_id(
                 "WARN",
                 "REL_EXTID_UNVERIFIED",
                 f"Header '{h}' uses relationship binding. Verify the target field "
-                f"(last segment) is configured 'External ID = true' and 'Unique = true' "
-                f"on the related object — this checker only sees {obj.name}'s describe.",
+                f"is indexed on the related object — a custom field with 'External ID' "
+                f"(mark it Unique too, or ambiguous matches fail with "
+                f"DUPLICATE_EXTERNAL_ID), or a standard field with idLookup=true. "
+                f"This checker only sees {obj.name}'s describe.",
             )
         )
 

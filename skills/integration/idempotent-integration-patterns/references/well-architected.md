@@ -21,6 +21,7 @@
 
 ## Official Sources Used
 
+- SOAP API Developer Guide — StatusCode (`DUPLICATE_EXTERNAL_ID`) — https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_calls_concepts_core_data_objects.htm
 - Salesforce Integration Patterns — https://architect.salesforce.com/docs/architect/fundamentals/guide/integration-patterns.html
 - REST API Developer Guide: Upsert a Record Using an External ID — https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/dome_upsert.htm
 - EventBus.publish() — Apex Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_EventBus.htm

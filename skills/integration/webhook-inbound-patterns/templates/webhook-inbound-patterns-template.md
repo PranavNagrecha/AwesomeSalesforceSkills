@@ -32,7 +32,7 @@
 - **Signature format:** `sha256=<hex>` or `___`
 - **Shared secret storage:** Custom Metadata type `___`, record DeveloperName `___`
 - [ ] Verify over `req.requestBody.toString()` (raw, before JSON parse)
-- [ ] Constant-time comparison (`.equals()` — not `==`)
+- [ ] Signature verified with `Crypto.verifyHMac('hmacSHA256', data, key, macToVerify)` — NOT `expected.equals(signature)` and NOT `==`. Both short-circuit on the first differing character and leak the signature through response latency.
 
 ## Idempotency Design
 

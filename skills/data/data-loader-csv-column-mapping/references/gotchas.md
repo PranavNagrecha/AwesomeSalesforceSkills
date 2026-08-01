@@ -6,7 +6,7 @@ Non-obvious Salesforce platform behaviours that cause real production problems w
 
 ## Gotcha 1: Bulk API V2 headers are case-sensitive; Data Loader's are not
 
-**What happens:** a CSV with header `accountid` loads cleanly via Data Loader UI (which matches case-insensitively against `AccountId`). The same CSV piped through a custom Bulk API V2 client (`POST /services/data/vXX.X/jobs/ingest`) either errors with `InvalidBatch — column not found` or silently writes null to `AccountId` while the column is dropped, depending on the client.
+**What happens:** a CSV with header `accountid` loads cleanly via Data Loader UI (which matches case-insensitively against `AccountId`). The same CSV piped through a custom Bulk API V2 client (`POST /services/data/vXX.X/jobs/ingest`) either fails the job with `InvalidBatch : Field name not found` or silently writes null to `AccountId` while the column is dropped, depending on the client.
 
 **When it occurs:** any time a CSV authored for Data Loader is reused in a CI pipeline, sfdx automation, or a custom integration that hits the Bulk V2 ingest REST endpoint directly.
 
@@ -63,11 +63,13 @@ Non-obvious Salesforce platform behaviours that cause real production problems w
 
 ## Gotcha 6: Polymorphic External ID upsert needs explicit type, not just field
 
-**What happens:** a CSV header `Who.External_Id__c` is written with the intent "upsert WhoId by my custom External_Id__c that exists on both Lead and Contact." Bulk API V2 rejects every row with `InvalidBatch — relationship Who is polymorphic, type required`.
+**What happens:** a CSV header `Who.External_Id__c` is written with the intent "upsert WhoId by my custom External_Id__c that exists on both Lead and Contact." The load errors. The Bulk API guide states the rule directly: "You get an error if you omit this syntax for a polymorphic field. You also get an error if you include this syntax for a field that is not polymorphic."
 
 **When it occurs:** any Task or Activity load where the source data does not pre-classify rows as Lead-bound or Contact-bound.
 
-**How to avoid:** add a discriminator column in the source export, then split into two columns: `Who.Lead.External_Id__c` and `Who.Contact.External_Id__c`. Each row populates exactly one. The pre-load checker flags `Who.<field>` (without a type) as a polymorphic-prefix error.
+**How to avoid:** add a discriminator column in the source export, then split into two columns using the documented `ObjectType:RelationshipName.IndexedFieldName` form: `Lead:Who.External_Id__c` and `Contact:Who.External_Id__c`. Each row populates exactly one. The pre-load checker flags `Who.<field>` (no type prefix) as a polymorphic-prefix error.
+
+**The shape everyone gets wrong:** the type is a **colon-separated prefix**, not a middle path segment. `Lead:Who.Email` is valid; `Who.Lead.Email` is accepted by no load surface. From API 57.0 the `ObjectType` must be the object's `apiName` — namespace included, `__c` for custom objects.
 
 ---
 

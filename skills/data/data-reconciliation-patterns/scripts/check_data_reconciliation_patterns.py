@@ -49,7 +49,7 @@ def check_external_id_fields_have_unique(manifest_dir: Path) -> list[str]:
     """Warn when an External ID field does not also have the Unique constraint.
 
     Without the Unique constraint, upserts against the field will fail with
-    MULTIPLE_CHOICES if any two records share the same value.
+    DUPLICATE_EXTERNAL_ID if any two records share the same value.
     """
     issues: list[str] = []
     objects_dir = manifest_dir / "objects"
@@ -78,7 +78,7 @@ def check_external_id_fields_have_unique(manifest_dir: Path) -> list[str]:
         if is_ext_id and not is_unique:
             issues.append(
                 f"External ID field lacks Unique constraint: {fpath.relative_to(manifest_dir)}"
-                " — upserts will fail with MULTIPLE_CHOICES if duplicate values exist."
+                " — upserts will fail with DUPLICATE_EXTERNAL_ID if duplicate values exist."
                 " Add the Unique constraint or validate source data for uniqueness before loading."
             )
 
@@ -95,7 +95,7 @@ def check_external_id_fields_have_unique(manifest_dir: Path) -> list[str]:
             if is_ext_id and not is_unique:
                 issues.append(
                     f"External ID field '{label}' on {obj_name} lacks Unique constraint"
-                    " — upserts will fail with MULTIPLE_CHOICES if duplicate values exist."
+                    " — upserts will fail with DUPLICATE_EXTERNAL_ID if duplicate values exist."
                 )
 
     return issues

@@ -103,16 +103,45 @@ global class GitHubWebhookEndpoint {
 
     private static Boolean verifyHmac(String body, String signature, String secret) {
         if (signature == null || !signature.startsWith('sha256=')) return false;
-        String expected = 'sha256=' + EncodingUtil.convertToHex(
-            Crypto.generateMac('HmacSHA256', Blob.valueOf(body), Blob.valueOf(secret))
+        String hex = signature.substring(7);
+        if (hex.length() != 64) return false; // hmacSHA256 = 32 bytes = 64 hex chars
+        Blob macToVerify;
+        try {
+            macToVerify = EncodingUtil.convertFromHex(hex);
+        } catch (Exception e) {
+            return false; // non-hex payload in the header
+        }
+        // Crypto.verifyHMac does the comparison inside the platform — do NOT
+        // recompute the MAC and compare it with String.equals (see below).
+        return Crypto.verifyHMac(
+            'hmacSHA256', Blob.valueOf(body), Blob.valueOf(secret), macToVerify
         );
-        // Constant-time comparison to prevent timing attacks
-        return expected.equals(signature);
     }
 }
 ```
 
 **Key rule:** Use the raw request body (not parsed JSON) for HMAC computation. The signature is computed over the exact bytes sent, before any parsing.
+
+**Key rule — never compare signatures with `==` or `String.equals()`.** Apex `String.equals()` short-circuits at the first differing character, so the call returns measurably faster the fewer leading characters match. That is exactly the timing side-channel HMAC verification is supposed to close: an attacker who can retry a forged delivery can recover the signature one character at a time. Use `Crypto.verifyHMac(algorithmName, data, privateKey, macToVerify)` — the documented Apex method for "Verifies the HMAC signature for the data blob using the specified algorithm, input data, private key, and the mac." It accepts `hmacMD5`, `hmacSHA1`, `hmacSHA256`, and `hmacSHA512`.
+
+If the sender's scheme is not a plain HMAC-over-body (so `verifyHMac` does not apply) and you genuinely must compare two strings, compare them without an early exit:
+
+```apex
+// Fixed-iteration compare: every call touches every character of the
+// expected value, so elapsed time does not leak how many chars matched.
+@TestVisible
+private static Boolean equalsConstantTime(String expected, String actual) {
+    if (expected == null || actual == null) return false;
+    Integer diff = expected.length() ^ actual.length(); // length mismatch -> non-zero
+    Integer n = Math.min(expected.length(), actual.length());
+    for (Integer i = 0; i < n; i++) {
+        diff |= expected.charAt(i) ^ actual.charAt(i);  // charAt returns Integer
+    }
+    return diff == 0;                                    // one comparison, at the end
+}
+```
+
+Accumulate the XOR of every character pair and test the accumulator once, at the end. Compare lengths by folding the length difference into the same accumulator rather than returning early on a length mismatch. Hex-encoded HMAC-SHA256 signatures are always 64 characters, so the residual length leak is not exploitable here.
 
 ### Idempotency via External ID Upsert
 
@@ -180,6 +209,7 @@ The `WebhookProcessor` Queueable class does the actual DML and callout work. The
 
 ## Review Checklist
 
+- [ ] Signature compared with `Crypto.verifyHMac` (or a fixed-iteration accumulator) — never `==`, `String.equals()`, or `equalsIgnoreCase()`
 - [ ] HMAC signature verified before any processing — 401 returned immediately on failure
 - [ ] Shared secret stored in Custom Metadata, not hardcoded in Apex class
 - [ ] Idempotency key identified in payload and upsert used to prevent duplicate processing
@@ -194,7 +224,8 @@ The `WebhookProcessor` Queueable class does the actual DML and callout work. The
 
 1. **HMAC must be computed over the raw body bytes, not parsed JSON** — Parsing the body before HMAC computation changes the byte representation. Always use `req.requestBody.toString()` (the raw string) for signature verification, before any `JSON.deserialize()` calls.
 2. **Salesforce Site guest user must have explicit Apex class access** — Adding the class to the site is not enough. The guest user profile must explicitly have the class in its Apex Class Access list, or calls return 403.
-3. **Queueable for the async pattern does NOT inherit the HTTP response** — The HTTP response (status 200) is returned synchronously before the Queueable runs. The Queueable cannot modify the HTTP response. Design the response to be unconditional (always 200 on valid signature) and let the Queueable handle failures via Platform Events or logging.
+3. **`String.equals()` is not a constant-time comparison** — Apex `String.equals()` (and `==`) returns as soon as it finds a differing character, so signature checks written as `expected.equals(signature)` leak, through response latency, how many leading characters of the forged signature were correct. Use `Crypto.verifyHMac('hmacSHA256', Blob.valueOf(body), Blob.valueOf(secret), EncodingUtil.convertFromHex(hex))`. There is no `areEqualConstantTime` on the platform `Crypto` class — helpers by that name are hand-written sample code, not an Apex API.
+4. **Queueable for the async pattern does NOT inherit the HTTP response** — The HTTP response (status 200) is returned synchronously before the Queueable runs. The Queueable cannot modify the HTTP response. Design the response to be unconditional (always 200 on valid signature) and let the Queueable handle failures via Platform Events or logging.
 
 ---
 

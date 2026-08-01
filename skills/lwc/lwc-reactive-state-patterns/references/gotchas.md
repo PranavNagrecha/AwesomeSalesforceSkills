@@ -95,3 +95,46 @@ across components depending on each component's `apiVersion`.
 
 **How:** Pin `apiVersion` explicitly in every `js-meta.xml`. Treat the
 file as part of the contract, not a deploy-time accident.
+
+---
+
+## 7. The read-set rule: a property not READ last render will not schedule a re-render
+
+The reactivity contract has a clause that survives after §1–§3 above are
+applied correctly, and it is the one that explains the staleness bugs left
+over. Stated verbatim in the LWC Developer Guide:
+
+> A component rerenders only if a property accessed during the previous
+> rendering cycle is updated, even when the object is annotated with `@track`.
+
+The framework records which properties were *touched* during a render and
+re-renders only on mutations to that read-set. If `obj.value1` was read and
+`obj.value2` was not, changing `value2` — or adding a brand-new key to
+`obj` — schedules nothing.
+
+Two corollaries make this diagnosable in real code:
+
+**(a) An early return in a getter de-registers everything below it.**
+
+```js
+get summary() {
+    if (!this.isReady) { return ''; }   // short-circuits before touching this.rows
+    return this.rows.map(r => r.label).join(', ');
+}
+```
+
+On any cycle where `isReady` is false, `rows` is never read, so `rows`
+leaves the read-set. The next mutation of `rows` is silently inert — no
+re-render, no error, no console warning. Flipping `isReady` later works,
+because `isReady` *is* in the read-set.
+
+**(b) A property first referenced inside a false `lwc:if` branch is
+unregistered.** This is why an identical mutation re-renders in one branch
+and appears dead in the other, which reads as non-determinism and sends
+teams hunting for a race condition that does not exist.
+
+**How to avoid:** read the property unconditionally — hoist it into a local
+at the top of the getter, above any branch — or drive the branch from a
+property that is itself guaranteed to be in the read-set. When triaging,
+the first question is not "did I reassign?" but "was this property read
+during the *previous* render?"
